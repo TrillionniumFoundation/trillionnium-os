@@ -1,0 +1,681 @@
+diff --git a/tests/controller-exact-budget/ControllerAdmissionHostTest.java b/tests/controller-exact-budget/ControllerAdmissionHostTest.java
+new file mode 100644
+--- /dev/null
++++ b/tests/controller-exact-budget/ControllerAdmissionHostTest.java
+@@ -0,0 +1,96 @@
++package org.trillionnium.hepta.local;
++
++import android.graphics.Rect;
++import java.io.File;
++import java.util.*;
++import org.json.JSONArray;
++import org.json.JSONObject;
++
++/** Exercises extracted production prompt()/awaitModel(), not a copied policy. */
++public final class ControllerAdmissionHostTest {
++    private static int checks;
++    private static void check(boolean value,String message){checks++;if(!value)throw new AssertionError(message);}
++    private static String repeated(char c,int count){char[] value=new char[count];Arrays.fill(value,c);return new String(value);}
++    private static final String PACKAGE="com.example.calculator";
++    private static final String OWNER="SYNTHETIC_OWNER_BOUNDARY：保持测试目标甲与测试目标乙的先后顺序，完整保留这一句。";
++
++    private static PhoneObservation observation(){
++        List<PhoneObservation.Node> nodes=new ArrayList<PhoneObservation.Node>();
++        for(int i=0;i<24;i++)nodes.add(new PhoneObservation.Node("n"+i,PACKAGE,"android.widget.Button","button_"+i,
++                "目标"+i,"",new Rect(10+i,20+i,60+i,80+i),true,false,false,true,false,false,
++                ObservedChildText.notApplicable(),ObservedScrollActions.UNKNOWN));
++        for(int i=0;i<3;i++)nodes.add(new PhoneObservation.Node("optional"+i,PACKAGE,"android.widget.TextView","label_"+i,
++                "OPTIONAL_SHOULD_DROP_"+i+repeated('x',180),"",new Rect(10,100,300,130),false,false,false,true,false,false,
++                ObservedChildText.notApplicable(),ObservedScrollActions.UNKNOWN));
++        return new PhoneObservation("11111111111111111111111111111111",PACKAGE,1,1080,2400,0,1,
++                new Rect(0,0,1080,2400),null,"screen","tree",new ObservationState("tree",ImeVisibility.HIDDEN),
++                ObservedWindowMetadata.unknown(new int[]{0,0,1080,2400},"android.widget.FrameLayout"),false,nodes);
++    }
++    private static JSONArray history()throws Exception{
++        JSONArray rows=new JSONArray();
++        for(int step=1;step<=12;step++)rows.put(new JSONObject().put("step",step).put("action","type")
++                .put("node_label","历史目标"+step).put("node_id","past"+step).put("type_text",typed(step))
++                .put("before_package",PACKAGE).put("target_package",PACKAGE).put("package_after",PACKAGE)
++                .put("model_issued",true).put("accepted",true).put("dispatched",true).put("stale",false));
++        return rows;
++    }
++    private static String typed(int step){return "KEEP_FULL_TYPED_"+step+"_"+repeated('z',160);}
++    private static AppCatalogueRanker.Page catalogue(){
++        Map<String,String> apps=new HashMap<String,String>();apps.put(PACKAGE,"计算器");apps.put("com.example.settings","设置");
++        return new AppCatalogueRanker(apps,OWNER).search("",0);
++    }
++    private static final class Capture implements LocalInference {
++        final LocalRuntimeConfig config;int calls;String prompt,system;boolean reject;
++        Capture(LocalRuntimeConfig config){this.config=config;}
++        public LocalRuntimeConfig configuration(){return config;}
++        public Handle generate(String p,String s,File image,DecisionGrammar grammar,int maximum,long timeout,Callback callback){
++            calls++;prompt=p;system=s;
++            check(image==null,"controller remains text-only");check(maximum==256,"output reserve contract unchanged");
++            if(reject)callback.onFailure("native_failed: formatted_prompt_exceeds_fixed_context",true);
++            else callback.onSuccess("HOST_CALLBACK_ONLY","22222222222222222222222222222222");
++            return new Handle(){public void cancel(){}};
++        }
++    }
++    private static void expectRejected(ControllerPromptFixture fixture,Capture capture,String text)throws Exception{
++        int before=capture.calls;boolean rejected=false;
++        try{fixture.submitText(text,null);}catch(IllegalArgumentException|IllegalStateException expected){rejected=true;}
++        check(rejected,"invalid/bounded input must be rejected");check(capture.calls==before,"rejected Java input never reaches inference callback");
++    }
++    public static void main(String[] args)throws Exception{
++        boolean patched="candidate".equals(args[0]);
++        LocalRuntimeConfig config=new LocalRuntimeConfig(ModelProfile.GEMMA4_E4B,"npu",4096,4);
++        Capture capture=new Capture(config);ControllerPromptFixture fixture=new ControllerPromptFixture(capture);
++        ControllerPromptFixture.Frame frame=null;boolean rejected=false;
++        try{frame=ControllerPromptFixture.project(OWNER,catalogue(),observation(),history(),config);}
++        catch(IllegalStateException expected){rejected=true;check(expected.getMessage().contains("完整任务事实"),"same production baseline failure");}
++        if(!patched){
++            check(rejected&&frame==null,"baseline reproduces premature heuristic rejection");
++            expectRejected(fixture,capture,repeated('a',4000));
++            System.out.println("PASS baseline production projection and awaitModel reject before native; checks="+checks);return;
++        }
++        check(!rejected&&frame!=null,"complete required prompt reaches native decision");
++        check(!frame.estimateAdmitted(),"heuristic remains honestly false");
++        check(frame.text().endsWith("\nOWNER\n"+OWNER),"OWNER unchanged");
++        check(frame.history()==12,"entire ordered history retained");
++        for(int step=1;step<=12;step++)check(frame.text().contains(typed(step)),"complete typed history step "+step);
++        check(frame.nodes()==24&&frame.required()==24,"all required targets, only optional nodes removed");
++        for(int i=0;i<24;i++)check(frame.ids().contains("n"+i),"mandatory target "+i+" retained");
++        check(frame.visible()==0&&!frame.text().contains("OPTIONAL_SHOULD_DROP_"),"original optional reductions finish first");
++        String audit=frame.budget();
++        check(audit.contains("\"admitted\":false")&&audit.contains("\"controller_submission_allowed\":true")
++                &&audit.contains("\"native_exact_admission_deferred\":true"),"estimate, submission and exact authorization remain distinct");
++        check("HOST_CALLBACK_ONLY".equals(fixture.submit(frame)),"real awaitModel delegates bounded complete prompt");
++        check(capture.calls==1&&frame.text().equals(capture.prompt),"exact assembled bytes sent once");
++        check(ControllerPromptFixture.system().equals(capture.system),"system unchanged");
++        expectRejected(fixture,capture,repeated('a',65537));
++        expectRejected(fixture,capture,"bad\u0000prompt");
++        expectRejected(fixture,capture,"bad\ud800prompt");
++        Capture legacy=new Capture(new LocalRuntimeConfig(ModelProfile.LFM3,"npu",4096,4));
++        expectRejected(new ControllerPromptFixture(legacy),legacy,repeated('a',4000));
++        capture.reject=true;boolean failed=false;
++        try{fixture.submit(frame);}catch(IllegalStateException expected){failed=expected.getMessage().contains("formatted_prompt_exceeds_fixed_context");}
++        check(failed&&capture.calls==2,"native rejection cannot return a successful model answer");
++        System.out.println("PASS candidate production projection/awaitModel; checks="+checks+", prompt_bytes="+frame.text().getBytes("UTF-8").length
++                +", required_targets="+frame.required()+", full_history="+frame.history()+"; host IO fixtures only, no phone/model");
++    }
++}
+diff --git a/tests/controller-exact-budget/ControllerBudgetPolicyHostTest.java b/tests/controller-exact-budget/ControllerBudgetPolicyHostTest.java
+new file mode 100644
+--- /dev/null
++++ b/tests/controller-exact-budget/ControllerBudgetPolicyHostTest.java
+@@ -0,0 +1,58 @@
++package org.trillionnium.hepta.local;
++
++import java.util.Arrays;
++import java.util.HashMap;
++import java.util.Map;
++
++public final class ControllerBudgetPolicyHostTest {
++    private static int checks;
++    private static void check(boolean value,String message){checks++;if(!value)throw new AssertionError(message);}
++    private static String repeat(char c,int n){char[] out=new char[n];Arrays.fill(out,c);return new String(out);}
++    private static ConservativeTokenBudget estimate(int system,int prompt,ModelProfile profile){
++        return ConservativeTokenBudget.estimate(repeat('s',system),repeat('p',prompt),new LocalRuntimeConfig(profile,"npu",4096,4));
++    }
++    private static Map<String,Object> nativeReceipt(int bytes,int count){
++        Map<String,Object> b=new HashMap<String,Object>();
++        b.put("method","llama_tokenize_exact_same_input_ids");b.put("is_exact_token_count",true);
++        b.put("checked",true);b.put("admitted",true);b.put("formatted_utf8_bytes",bytes);
++        b.put("model_contract_sha256",ModelProfile.GEMMA4_E4B.sha256);b.put("tokenizer_source_commit",ModelProfile.LLAMA_COMMIT);
++        b.put("context_tokens",4096);b.put("generation_tokens",256);b.put("reserved_tokens",256);
++        b.put("add_special",true);b.put("parse_special",true);b.put("input_ids_passed_directly",true);
++        b.put("prompt_tokens_exact",count);b.put("input_ids_count",count);b.put("total_context_tokens",count+512);
++        b.put("input_ids_sha256",repeat('a',64));return b;
++    }
++    public static void main(String[] args){
++        ConservativeTokenBudget home=estimate(3593,2523,ModelProfile.GEMMA4_E4B);
++        ConservativeTokenBudget calculator=estimate(3593,2499,ModelProfile.GEMMA4_E4B);
++        check(home.totalContextUpper==4084&&calculator.totalContextUpper==4072,"numeric size fixture byte sizes/scores");
++        check(!home.provenUpperBound&&!calculator.provenUpperBound,"scores are never exact counts or proven bounds");
++        ConservativeTokenBudget next=estimate(3593,2600,ModelProfile.GEMMA4_E4B);
++        check(!next.admitted,"unchanged heuristic rejects larger next prompt");
++        check(!ControllerPromptAdmission.projectionReady(next,true),"optional content is reduced before delegation");
++        check(ControllerPromptAdmission.projectionReady(next,false)&&ControllerPromptAdmission.maySubmit(next),"bounded irreducible exact prompt may be submitted");
++        check(!next.admitted,"delegation never rewrites the heuristic result");
++        check(ControllerPromptAdmission.maySubmit(estimate(65536,65536,ModelProfile.GEMMA4_E4B)),"unchanged 65536 byte boundary permits native decision only");
++        check(!ControllerPromptAdmission.maySubmit(estimate(65537,10,ModelProfile.GEMMA4_E4B)),"system byte bound");
++        check(!ControllerPromptAdmission.maySubmit(estimate(10,65537,ModelProfile.GEMMA4_E4B)),"prompt byte bound");
++        check(!ControllerPromptAdmission.maySubmit(estimate(10,0,ModelProfile.GEMMA4_E4B)),"empty prompt rejected");
++        check(!ControllerPromptAdmission.maySubmit(null),"missing budget rejected");
++        check(!ControllerPromptAdmission.maySubmit(estimate(3593,2600,ModelProfile.LFM3)),"original byte-proven tokenizer still refuses");
++        for(String bad:new String[]{"x\u0000y","\ud800","\udc00","\ud800x"}){
++            boolean rejected=false;try{ConservativeTokenBudget.estimate("s",bad,new LocalRuntimeConfig(ModelProfile.GEMMA4_E4B,"npu",4096,4));}
++            catch(IllegalArgumentException expected){rejected=true;}check(rejected,"Unicode/NUL protection remains");
++        }
++        LocalRuntimeConfig cfg=new LocalRuntimeConfig(ModelProfile.GEMMA4_E4B,"npu",4096,4);
++        check(NativeBudgetVerifier.valid(nativeReceipt(6170,1945),cfg,256,1945),"size-a exact prompt1945 plus512 totals2457");
++        check(NativeBudgetVerifier.valid(nativeReceipt(6146,2061),cfg,256,2061),"size-b exact prompt2061 plus512 totals2573");
++        check(NativeBudgetVerifier.valid(nativeReceipt(10000,3584),cfg,256,3584),"exact total4096 boundary");
++        check(!NativeBudgetVerifier.valid(nativeReceipt(100,3585),cfg,256,3585),"small bytes cannot override actual token overflow");
++        Map<String,Object> b=nativeReceipt(6170,1945);b.put("admitted",false);
++        check(!NativeBudgetVerifier.valid(b,cfg,256,1945),"native refusal remains refusal");
++        b=nativeReceipt(6170,1945);b.put("input_ids_passed_directly",false);
++        check(!NativeBudgetVerifier.valid(b,cfg,256,1945),"no same-ID proof cannot authorize");
++        b=nativeReceipt(6170,1945);b.put("reserved_tokens",0);
++        check(!NativeBudgetVerifier.valid(b,cfg,256,1945),"reserve cannot be relaxed");
++        check(!NativeBudgetVerifier.valid(nativeReceipt(6170,1945),cfg,256,1946),"SDK count mismatch cannot authorize");
++        System.out.println("PASS "+checks+" policy/receipt boundary assertions; synthetic sizes only, no tokenizer/model inference");
++    }
++}
+diff --git a/tests/controller-exact-budget/prepare_fixture.py b/tests/controller-exact-budget/prepare_fixture.py
+new file mode 100644
+--- /dev/null
++++ b/tests/controller-exact-budget/prepare_fixture.py
+@@ -0,0 +1,185 @@
++"""Execute production prompt assembly / awaitModel with explicit host-only IO fixtures.
++
++The Android Rect/SystemClock and org.json containers are small test adapters;
++they are not an Android/runtime/serialization-equivalence test. All projection,
++history, target-domain, grammar and admission decisions come from production.
++"""
++import hashlib
++import json
++from pathlib import Path
++
++
++def section(text, start, end):
++    if text.count(start) != 1 or text.count(end) != 1:
++        raise ValueError("production extraction anchors must be unique")
++    return text[text.index(start):text.index(end, text.index(start))]
++
++
++FIXTURES = {
++    "android/graphics/Rect.java": '''package android.graphics;
++public final class Rect {
++ public final int left,top,right,bottom;
++ public Rect(int l,int t,int r,int b){left=l;top=t;right=r;bottom=b;}
++ public Rect(Rect value){this(value.left,value.top,value.right,value.bottom);}
++}
++''',
++    "android/os/SystemClock.java": '''package android.os;
++public final class SystemClock {
++ private SystemClock(){}
++ public static long elapsedRealtime(){return System.nanoTime()/1000000L;}
++}
++''',
++    "org/json/JSONException.java": '''package org.json;
++public final class JSONException extends Exception {
++ private static final long serialVersionUID=1L;
++ public JSONException(String message){super(message);}
++}
++''',
++    "org/json/JSONObject.java": r'''package org.json;
++import java.util.*;
++public final class JSONObject {
++ public static final Object NULL=new Object();
++ final Map<String,Object> fields=new LinkedHashMap<String,Object>();
++ public JSONObject(){}
++ public JSONObject(Map<?,?> value){for(Map.Entry<?,?> e:value.entrySet())fields.put(String.valueOf(e.getKey()),e.getValue());}
++ public JSONObject put(String key,Object value)throws JSONException {
++  if(key==null)throw new JSONException("null key");
++  if(value==null)fields.remove(key);else fields.put(key,value);return this;
++ }
++ public Object get(String key)throws JSONException {if(!fields.containsKey(key))throw new JSONException("missing "+key);return fields.get(key);}
++ public boolean has(String key){return fields.containsKey(key);}
++ public boolean isNull(String key){return fields.get(key)==null||fields.get(key)==NULL;}
++ public Iterator<String> keys(){return fields.keySet().iterator();}
++ public int length(){return fields.size();}
++ static String render(Object value){return JsonWriter.render(value);}
++ public String toString(){return render(fields);}
++}
++final class JsonWriter {
++ private JsonWriter(){}
++ static String quote(String value){
++  StringBuilder out=new StringBuilder("\"");
++  for(int i=0;i<value.length();i++){char c=value.charAt(i);switch(c){
++   case '"':out.append("\\\"");break;case '\\':out.append("\\\\");break;
++   case '\n':out.append("\\n");break;case '\r':out.append("\\r");break;case '\t':out.append("\\t");break;
++   default:if(c<32)out.append(String.format(java.util.Locale.ROOT,"\\u%04x",(int)c));else out.append(c);
++  }}return out.append('"').toString();
++ }
++ static String render(Object value){
++  if(value==null||value==JSONObject.NULL)return "null";
++  if(value instanceof JSONObject)return render(((JSONObject)value).fields);
++  if(value instanceof JSONArray)return render(((JSONArray)value).values);
++  if(value instanceof String||value instanceof Character)return quote(value.toString());
++  if(value instanceof Boolean||value instanceof Number)return value.toString();
++  if(value instanceof Map){StringBuilder out=new StringBuilder("{");boolean comma=false;
++   for(Map.Entry<?,?> e:((Map<?,?>)value).entrySet()){if(comma)out.append(',');comma=true;out.append(quote(String.valueOf(e.getKey()))).append(':').append(render(e.getValue()));}
++   return out.append('}').toString();}
++  if(value instanceof Iterable){StringBuilder out=new StringBuilder("[");boolean comma=false;
++   for(Object e:(Iterable<?>)value){if(comma)out.append(',');comma=true;out.append(render(e));}return out.append(']').toString();}
++  if(value.getClass().isArray()){StringBuilder out=new StringBuilder("[");for(int i=0;i<java.lang.reflect.Array.getLength(value);i++){if(i>0)out.append(',');out.append(render(java.lang.reflect.Array.get(value,i)));}return out.append(']').toString();}
++  throw new IllegalArgumentException("unsupported JSON fixture value "+value.getClass());
++ }
++}
++''',
++    "org/json/JSONArray.java": '''package org.json;
++import java.util.*;
++public final class JSONArray {
++ final List<Object> values=new ArrayList<Object>();
++ public JSONArray(){}
++ public JSONArray(Collection<?> source){values.addAll(source);}
++ public JSONArray(Object source)throws JSONException {
++  if(!source.getClass().isArray())throw new JSONException("array required");
++  for(int i=0;i<java.lang.reflect.Array.getLength(source);i++)values.add(java.lang.reflect.Array.get(source,i));
++ }
++ public JSONArray put(Object value){values.add(value==null?JSONObject.NULL:value);return this;}
++ public int length(){return values.size();}
++ public JSONObject getJSONObject(int index)throws JSONException {
++  Object value=values.get(index);if(value instanceof JSONObject)return (JSONObject)value;
++  if(value instanceof Map)return new JSONObject((Map<?,?>)value);throw new JSONException("object required");
++ }
++ public String toString(){return JSONObject.render(values);}
++}
++''',
++}
++
++
++def prepare(source, output):
++    source, output = Path(source), Path(output)
++    package = source / "src/org/trillionnium/hepta/local"
++    controller = (package / "LocalTaskController.java").read_text()
++    service = (package / "HeptaAccessibilityService.java").read_text()
++    parts = {
++        "system": section(controller, "    private static final String SYSTEM=", "    public LocalTaskController("),
++        "await_model": section(controller, "    private static final class ModelAnswer", "    private PhoneObservation awaitObservation("),
++        "active_exceptions": section(controller, "    private void checkActive(", "    private static final class PromptFrame"),
++        "prompt_assembly": section(controller, "    private static final class PromptFrame", "    private static JSONObject catalogueJson("),
++        "label_bound": next(line for line in service.splitlines(True) if line.startswith("    static String limited(")),
++    }
++    prelude = '''package org.trillionnium.hepta.local;
++import android.os.SystemClock;
++import org.json.JSONArray;
++import org.json.JSONObject;
++import java.util.concurrent.*;
++import java.util.concurrent.atomic.*;
++public final class ControllerPromptFixture {
++ private static final long MODEL_TIMEOUT_MS=55000;
++ private final LocalInference inference;
++ private final AtomicBoolean cancelled=new AtomicBoolean();
++ private final Object handleLock=new Object();
++ private LocalInference.Handle activeInference;
++ public ControllerPromptFixture(LocalInference inference){this.inference=inference;}
++'''
++    wrapper = '''
++ public static final class Frame {
++  private final PromptFrame value;
++  Frame(PromptFrame value){this.value=value;}
++  public String text(){return value.text;}
++  public String budget()throws Exception{return value.budgetJson().toString();}
++  public int nodes(){return value.nodesShown;}
++  public int required(){return value.requiredNodes;}
++  public int visible(){return value.visibleTextShown;}
++  public int history(){return value.historyShown;}
++  public boolean estimateAdmitted(){return value.budget.admitted;}
++  public java.util.Set<String> ids(){return value.nodeIds;}
++ }
++ public static String system(){return SYSTEM;}
++ public static Frame project(String owner,AppCatalogueRanker.Page catalogue,PhoneObservation observation,
++                             JSONArray history,LocalRuntimeConfig config)throws Exception{
++  return new Frame(prompt(owner,catalogue,observation,history,null,null,config,new RepeatActionGuard(),new SameStateNoEffectGuard()));
++ }
++ public String submit(Frame frame)throws Exception{return submitText(frame.text(),frame.value.grammar);}
++ public String submitText(String text,DecisionGrammar grammar)throws Exception{
++  return awaitModel(text,grammar,SystemClock.elapsedRealtime()+10000).text;
++ }
++}
++'''
++    generated = dict(FIXTURES)
++    generated["org/trillionnium/hepta/local/ControllerPromptFixture.java"] = (
++        prelude + parts["system"] + parts["await_model"] + parts["active_exceptions"] + parts["prompt_assembly"] + wrapper
++    )
++    generated["org/trillionnium/hepta/local/HeptaAccessibilityService.java"] = (
++        "package org.trillionnium.hepta.local;\npublic final class HeptaAccessibilityService {\n"
++        + parts["label_bound"] + "}\n"
++    )
++    paths = []
++    for relative, text in generated.items():
++        path = output / relative
++        path.parent.mkdir(parents=True, exist_ok=True)
++        path.write_text(text)
++        paths.append(path)
++    names = ["ActionDecision", "ActionPolicy", "ObservedTargetLabels", "ObservedScrollActions",
++             "RecentActionProjection", "PersistentActionPolicy", "ImeVisibility", "ObservationState",
++             "ObservedWindowMetadata", "ObservedChildText", "RepeatActionGuard", "SameStateNoEffectGuard",
++             "DecisionGrammar", "ModelProfile", "NativeBudgetVerifier", "LocalRuntimeConfig",
++             "ConservativeTokenBudget", "AppCatalogueRanker", "ObservedTextProjection",
++             "ObservedTransitionProjection", "PromptActionDomain", "PhoneObservation", "LocalInference"]
++    if (package / "ControllerPromptAdmission.java").is_file():
++        names += ["ControllerPromptAdmission"]
++    sources = [package / (name + ".java") for name in dict.fromkeys(names)]
++    record = {"scope": "Production prompt assembly and awaitModel; host JSON/Rect/clock and inference callback adapters only",
++              "controller_sha256": hashlib.sha256(controller.encode()).hexdigest(),
++              "parts": {name: {"bytes": len(text.encode()), "sha256": hashlib.sha256(text.encode()).hexdigest()} for name, text in parts.items()},
++              "source_inputs": [{"path": str(path.relative_to(source)), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()} for path in sources],
++              "generated_inputs": [{"path": str(path.relative_to(output)), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()} for path in paths],
++              "phone_tested": False, "model_inference": False, "android_json_equivalence_claimed": False}
++    (output / "EXTRACTION.json").write_text(json.dumps(record, indent=2) + "\n")
++    return sources + paths, record
+diff --git a/tests/controller-exact-budget/run_host_tests.py b/tests/controller-exact-budget/run_host_tests.py
+new file mode 100644
+--- /dev/null
++++ b/tests/controller-exact-budget/run_host_tests.py
+@@ -0,0 +1,115 @@
++#!/usr/bin/env python3
++"""Baseline/candidate and exact-budget native regression with synthetic inputs.
++
++Everything is host-only. These numeric size fixtures contain no private task,
++phone, prompt, instruction or request identifiers.
++"""
++import argparse
++import hashlib
++import importlib.util
++import json
++import os
++from pathlib import Path
++import shutil
++import subprocess
++import sys
++import time
++
++sys.dont_write_bytecode = True
++
++
++def digest(path):
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def load_module(path):
++    spec = importlib.util.spec_from_file_location("controller_budget_fixture", path)
++    value = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(value)
++    return value
++
++
++SIZES = [{'name': 'size-a', 'system_bytes': 3593, 'prompt_bytes': 2523, 'formatted_bytes': 6170, 'tokens': 1945, 'native_total': 2457, 'estimate': 4084}, {'name': 'size-b', 'system_bytes': 3593, 'prompt_bytes': 2499, 'formatted_bytes': 6146, 'tokens': 2061, 'native_total': 2573, 'estimate': 4072}]
++
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument("--baseline", required=True, type=Path)
++    parser.add_argument("--candidate", required=True, type=Path)
++    parser.add_argument("--out", required=True, type=Path)
++    args = parser.parse_args()
++    baseline, candidate, out = args.baseline.resolve(), args.candidate.resolve(), args.out.resolve()
++    out.mkdir(parents=True, exist_ok=False)
++    tests = Path(__file__).resolve().parent
++    prepare = load_module(tests / "prepare_fixture.py").prepare
++    java = shutil.which("java")
++    compiler = [shutil.which("javac")] if shutil.which("javac") else [java, "-m", "jdk.compiler/com.sun.tools.javac.Main"]
++    # The managed JRE exposes jdk.compiler but does not include ct.sym/release-8.
++    # This is a host behavior test, not Android or Java-8 API compatibility proof.
++    language = ["--release", "8", "-Xlint:all"] if shutil.which("javac") else ["-source", "8", "-target", "8", "-Xlint:all,-options"]
++    env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
++    report = {"schema": "hepta.controller-exact-budget-host.v1", "all_pass": False,
++              "phone_tested": False, "model_inference": False, "tests": [], "started_unix": time.time(),
++              "synthetic_size_fixtures": SIZES, "java_compiler": compiler, "java_language_options": language,
++              "android_or_java8_api_compatibility_proven": False}
++
++    def run(name, command, timeout=60):
++        process = subprocess.run([str(value) for value in command], capture_output=True, timeout=timeout, env=env)
++        (out / (name + ".stdout")).write_bytes(process.stdout)
++        (out / (name + ".stderr")).write_bytes(process.stderr)
++        report["tests"].append({"name": name, "exit_code": process.returncode,
++                                "stdout_sha256": hashlib.sha256(process.stdout).hexdigest(),
++                                "stderr_sha256": hashlib.sha256(process.stderr).hexdigest()})
++        if process.returncode:
++            raise RuntimeError(name + " failed:\n" + process.stderr.decode()[-8000:] + process.stdout.decode()[-3000:])
++        return process
++
++    try:
++        source_dir = Path("src/org/trillionnium/hepta/local")
++        pinned = [(baseline / source_dir / "LocalTaskController.java", "cdf2368963b6a3cb4c0432e86e04e7c38ad498fc4ab7197f3dd0483885c7b1c4"),
++                  (candidate / source_dir / "LocalTaskController.java", "c4e3aeaadb315d500b653108d679040a5687b60ddb7a3ff78473e4b7eacdbe25"),
++                  (candidate / source_dir / "ControllerPromptAdmission.java", "51df6e87f8d8dbb8a4791939a4d9cab270185574042c29d96eb1e3aa7a047be3")]
++        for path, expected in pinned:
++            assert digest(path) == expected, "this capsule qualifies only its exact baseline/candidate source pair"
++        report["exact_source_pair_verified"] = True
++        # These engines/guards remain bit-for-bit unchanged, including one-shot and image profiles.
++        immutable = ["ConservativeTokenBudget.java", "NativeBudgetVerifier.java", "LocalModelEngine.java", "EngineInferenceAdapter.java",
++                     "UiVenusModelEngine.java", "MobiMindModelEngine.java", "LocalRuntimeConfig.java", "ModelProfile.java"]
++        src = Path("src/org/trillionnium/hepta/local")
++        for name in immutable:
++            assert digest(baseline / src / name) == digest(candidate / src / name), name
++        for old in (baseline / "native").rglob("*"):
++            if old.is_file():
++                assert digest(old) == digest(candidate / old.relative_to(baseline)), old
++        report["unchanged_native_and_engines"] = True
++        for variant, source in (("baseline", baseline), ("candidate", candidate)):
++            folder = out / variant
++            folder.mkdir()
++            sources, extraction = prepare(source, folder / "fixture")
++            classes = folder / "classes"
++            classes.mkdir()
++            test_sources = [tests / "ControllerAdmissionHostTest.java", source / "tests/BudgetHostTest.java"]
++            if variant == "candidate":
++                test_sources.append(tests / "ControllerBudgetPolicyHostTest.java")
++            run(variant + "-compile", compiler + language + ["-encoding", "UTF-8", "-Werror", "-d", classes] + sources + test_sources)
++            run(variant + "-production-controller", [java, "-cp", classes, "org.trillionnium.hepta.local.ControllerAdmissionHostTest", variant])
++            run(variant + "-original-lfm3-budget", [java, "-cp", classes, "BudgetHostTest"])
++            if variant == "candidate":
++                run("candidate-policy-receipt", [java, "-cp", classes, "org.trillionnium.hepta.local.ControllerBudgetPolicyHostTest"])
++            report[variant + "_extraction"] = extraction
++        run("native-production-guard", [sys.executable, tests / "run_native_tests.py", "--source", candidate, "--out", out / "native"], 90)
++        report["native_result"] = json.loads((out / "native/RESULT.json").read_bytes())
++        assert report["native_result"]["all_pass"] is True
++        report["all_pass"] = True
++    except Exception as error:
++        report["error"] = repr(error)
++        raise
++    finally:
++        report["finished_unix"] = time.time()
++        (out / "RESULT.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
++    print(json.dumps({"all_pass": report["all_pass"], "tests": len(report["tests"]),
++                      "native_cases": len(report["native_result"]["cases"]), "phone_tested": False}))
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/tests/controller-exact-budget/run_native_tests.py b/tests/controller-exact-budget/run_native_tests.py
+new file mode 100644
+--- /dev/null
++++ b/tests/controller-exact-budget/run_native_tests.py
+@@ -0,0 +1,202 @@
++#!/usr/bin/env python3
++"""Exercise the real generated worker's admission/control flow with a fake SDK.
++
++The tokenizer is explicitly controlled, not Gemma. Production hashing, template
++byte checks, exact-count admission, input-ID binding, request loop and receipts
++run unchanged. This proves guard ordering, not model/NPU/Android behavior.
++"""
++import argparse
++import hashlib
++import importlib.util
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++
++sys.dont_write_bytecode = True
++
++
++def module(name, path):
++    spec = importlib.util.spec_from_file_location(name, path)
++    value = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(value)
++    return value
++
++
++def replace_once(text, old, new):
++    if text.count(old) != 1:
++        raise AssertionError("fake SDK adaptation anchor changed")
++    return text.replace(old, new)
++
++
++def build(source, out):
++    native = source / "native"
++    sys.path.insert(0, str(native))
++    generator = module("exact_budget_worker_generator", native / "generate_adapter.py")
++    existing = module("existing_warm_test", native / "tests/test_warm_runtime.py")
++    generated = out / "generated"
++    generated.mkdir()
++    adapter = generator.generate(source, generated)
++    expected = "b2276da3b7066d1da2a48097c58681e6f3b37bb786660c5bb7dc680b03910d0f"
++    if adapter["adapted_sha256"] != expected:
++        raise AssertionError("generated worker differs from actual v29/e49 compiled worker")
++    code = existing.HARNESS.replace("TEST_MODEL_SHA", hashlib.sha256(existing.WEIGHT).hexdigest()).replace("TEST_MODEL_BYTES", str(len(existing.WEIGHT)))
++    # Fixed-size fake template: explicit 54-byte overhead for the two numeric size fixtures.
++    code = replace_once(code, 'int n=asprintf(&out->formatted_text,"%s\\n%s",in->messages[0].content,in->messages[1].content);',
++                        'int n=asprintf(&out->formatted_text,"%053d%s\\n%s",0,in->messages[0].content,in->messages[1].content);')
++    old = '''    assert(vocab&&add_special&&parse_special);int32_t count=len+1;if(maximum<count)return -count;
++    tokens[0]=1;for(int32_t i=0;i<len;i++)tokens[i+1]=((unsigned char)text[i])+2;return count;'''
++    new = '''    assert(vocab&&add_special&&parse_special);
++    const char *marker=strstr(text,"HEPTA_TEST_TOKENS=");
++    int32_t count=marker?(int32_t)strtol(marker+18,NULL,10):len+1;
++    assert(count>0);
++    if(maximum<count)return -count;
++    for(int32_t i=0;i<count;i++)tokens[i]=(i%510)+1;
++    if(strstr(text,"HEPTA_TEST_MISMATCH"))return count-1;
++    return count;'''
++    code = replace_once(code, old, new)
++    code = replace_once(code, '    dirty=1;calls_generate++;out->full_text=strdup("x");',
++                        '    assert(in->input_ids==hepta_input_ids&&in->input_ids_count==hepta_input_count);\n'
++                        '    for(int32_t i=0;i<in->input_ids_count;i++)assert(in->input_ids[i]==(i%510)+1);\n'
++                        '    dirty=1;calls_generate++;out->full_text=strdup("x");')
++    test = out / "fake-sdk.c"
++    test.write_text(code)
++    binary = out / "worker-guard-test"
++    command = ["cc", "-std=c11", "-Wall", "-Wextra", "-Werror", "-O1",
++               "-I" + str(generated), "-I" + str(native), "-I" + str(native / "vendor"),
++               "-I" + str(native / "vendor/llama"), str(test), "-o", str(binary)]
++    compiled = subprocess.run(command, capture_output=True, timeout=40)
++    (out / "compile.stdout").write_bytes(compiled.stdout)
++    (out / "compile.stderr").write_bytes(compiled.stderr)
++    if compiled.returncode:
++        raise RuntimeError(compiled.stderr.decode())
++    return binary, existing, adapter
++
++
++def text_bytes(size, count, mismatch=False):
++    head = "HEPTA_TEST_TOKENS=" + str(count) + ";"
++    if mismatch:
++        head += "HEPTA_TEST_MISMATCH;"
++    if len(head) > size:
++        raise ValueError("fixture too short")
++    return head + "p" * (size - len(head))
++
++
++def exercise(binary, existing, directory, specs, expected_complete, expected_exit):
++    directory.mkdir(mode=0o700)
++    runs = directory / "runs"
++    runs.mkdir(mode=0o700)
++    (runs / existing.G).mkdir(mode=0o700)
++    weight = directory / "fixture.gguf"
++    weight.write_bytes(existing.WEIGHT)
++    weight.chmod(0o600)
++    ids = ["a" * 32, "b" * 32]
++    for rid, spec in zip(ids, specs):
++        existing.request_files(directory, rid, text_bytes(spec["prompt_bytes"], spec["tokens"], spec.get("mismatch", False)))
++        system = runs / rid / "system.txt"
++        system.write_bytes(b"s" * spec["system_bytes"])
++        system.chmod(0o600)
++    first = runs / ids[0]
++    argv = [str(binary), "--request-id", ids[0], "--mode", "llm", "--runtime", "llama_cpp", "--compute", "npu",
++            "--model", str(weight), "--prompt-file", str(first / "prompt.txt"), "--system-file", str(first / "system.txt"),
++            "--grammar-file", str(first / "grammar.gbnf"), "--result-file", str(first / "native-result.json"),
++            "--text-file", str(first / "raw-text.txt"), "--ctx-size", "4096", "--max-tokens", "256", "--threads", "2",
++            "--timeout-ms", "5000", "--log-level", "debug", "--warm-generation", existing.G,
++            "--warm-task-id", existing.T, "--warm-session-dir", str(runs / existing.G)]
++    process = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
++    receipts, reply_lines, originals = [], [], {}
++    try:
++        ready = existing.line(process)
++        assert ready == f"HEPTA_WARM_READY {existing.G} {existing.T} {process.pid}"
++        reply_lines.append(ready)
++        for index, (rid, spec) in enumerate(zip(ids, specs), 1):
++            process.stdin.write(f"RUN {existing.G} {existing.T} {rid} {index} 256 5000\n".encode())
++            process.stdin.flush()
++            rc = 0 if index <= expected_complete else 70
++            reply = existing.line(process)
++            reply_lines.append(reply)
++            assert reply == f"HEPTA_WARM_DONE {existing.G} {existing.T} {rid} {index} {rc}", reply
++            raw = (runs / rid / "native-result.json").read_bytes()
++            originals[rid] = raw
++            receipt = json.loads(raw)
++            budget = receipt["prompt_budget"]
++            assert budget["checked"] is True and budget["is_exact_token_count"] is True
++            assert budget["prompt_tokens_exact"] == spec["tokens"]
++            assert budget["total_context_tokens"] == spec["tokens"] + 512
++            assert budget["reserved_tokens"] == 256 and budget["generation_tokens"] == 256 and budget["context_tokens"] == 4096
++            assert budget["formatted_utf8_bytes"] == spec["system_bytes"] + spec["prompt_bytes"] + 54
++            if rc == 0:
++                assert receipt["generation_complete"] is True and budget["admitted"] is True
++                assert budget["input_ids_passed_directly"] is True and budget["input_ids_count"] == spec["tokens"]
++                assert receipt["profile"]["prompt_tokens"] == spec["tokens"]
++            else:
++                assert receipt["generation_complete"] is False and receipt["error"] == "formatted_prompt_exceeds_fixed_context"
++                assert budget["input_ids_passed_directly"] is False
++                if not spec.get("mismatch"):
++                    assert budget["admitted"] is False
++            receipts.append({"request": index, "spec": spec, "return_code": rc,
++                             "receipt_sha256": hashlib.sha256(raw).hexdigest(), "budget": budget})
++        if expected_exit == 0:
++            process.stdin.write(f"CLOSE {existing.G} {existing.T}\n".encode())
++            process.stdin.flush()
++        process.stdin.close()
++        code = process.wait(timeout=10)
++        stderr = process.stderr.read()
++        assert code == expected_exit, stderr.decode()
++        (directory / "stderr.log").write_bytes(stderr)
++        (directory / "control.log").write_text("\n".join(reply_lines) + "\n")
++        marker = f"reset={expected_complete} generate={expected_complete} destroy=1 deinit=1"
++        assert marker in stderr.decode(), stderr.decode()
++        terminal = json.loads((runs / existing.G / "native-session-result.json").read_bytes())
++        assert terminal["requests_received"] == len(specs) and terminal["requests_completed"] == expected_complete
++        assert terminal["sdk_destroy_rc"] == terminal["sdk_deinit_rc"] == 0
++        for rid, raw in originals.items():
++            assert (runs / rid / "native-result.json").read_bytes() == raw
++        return {"name": directory.name, "passed": True, "requests": len(specs), "generate_calls": expected_complete,
++                "process_exit": code, "receipts": receipts}
++    finally:
++        if process.poll() is None:
++            process.kill()
++            process.wait(timeout=10)
++        for stream in (process.stdin, process.stdout, process.stderr):
++            stream.close()
++
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument("--source", required=True, type=Path)
++    parser.add_argument("--out", required=True, type=Path)
++    args = parser.parse_args()
++    source, out = args.source.resolve(), args.out.resolve()
++    out.mkdir(parents=True, exist_ok=False)
++    report = {"scope": "actual unchanged generated worker with explicit fake SDK/tokenizer", "phone_tested": False,
++              "model_inference": False, "all_pass": False, "cases": []}
++    try:
++        binary, existing, adapter = build(source, out)
++        report["adapted_worker_sha256"] = adapter["adapted_sha256"]
++        home = {"system_bytes": 3593, "prompt_bytes": 2523, "tokens": 1945}
++        calc = {"system_bytes": 3593, "prompt_bytes": 2499, "tokens": 2061}
++        boundary = {"system_bytes": 3593, "prompt_bytes": 4000, "tokens": 3584}
++        overflow = {"system_bytes": 3593, "prompt_bytes": 2600, "tokens": 3585}
++        mismatch = {"system_bytes": 3593, "prompt_bytes": 2600, "tokens": 2061, "mismatch": True}
++        for name, specs, completed, code in [
++                ("synthetic-sizes-two-warm-requests", [home, calc], 2, 0),
++                ("exact-context-boundary", [boundary], 1, 0),
++                ("first-request-exact-overflow", [overflow], 0, 70),
++                ("second-request-exact-overflow", [home, overflow], 1, 70),
++                ("tokenizer-second-pass-mismatch", [mismatch], 0, 70)]:
++            report["cases"].append(exercise(binary, existing, out / name, specs, completed, code))
++        existing.exercise(binary, out / "original-one-shot", "once")
++        report["cases"].append({"name": "original-one-shot", "passed": True, "generate_calls": 1})
++        report["all_pass"] = True
++    except Exception as error:
++        report["error"] = repr(error)
++        raise
++    finally:
++        (out / "RESULT.json").write_text(json.dumps(report, indent=2) + "\n")
++    print(json.dumps({"all_pass": report["all_pass"], "cases": len(report["cases"]), "scope": report["scope"]}))
++
++
++if __name__ == "__main__":
++    main()

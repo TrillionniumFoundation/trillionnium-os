@@ -1,0 +1,67 @@
+diff --git a/src/org/trillionnium/hepta/local/LocalTaskController.java b/src/org/trillionnium/hepta/local/LocalTaskController.java
+--- a/src/org/trillionnium/hepta/local/LocalTaskController.java
++++ b/src/org/trillionnium/hepta/local/LocalTaskController.java
+@@ -275,7 +275,7 @@
+     }
+     private static final class ModelAnswer {final String text,runId;ModelAnswer(String text,String runId){this.text=text;this.runId=runId;}}
+     private ModelAnswer awaitModel(String prompt,DecisionGrammar grammar,long taskDeadline)throws Exception{
+-        if(!ConservativeTokenBudget.estimate(SYSTEM,prompt,inference.configuration()).admitted)
++        if(!ControllerPromptAdmission.maySubmit(ConservativeTokenBudget.estimate(SYSTEM,prompt,inference.configuration())))
+             throw new IllegalStateException("完整指令超出手机本地上下文上限，请拆分任务");
+         long remaining=taskDeadline-SystemClock.elapsedRealtime();if(remaining<1000)throw new IllegalStateException("任务时间已用完");
+         long timeout=Math.min(MODEL_TIMEOUT_MS,remaining);final CountDownLatch ready=new CountDownLatch(1);
+@@ -357,7 +357,11 @@
+                 .put("bos_eos_upper",ConservativeTokenBudget.BOS_EOS_BOUND).put("generation_tokens",ConservativeTokenBudget.GENERATION).put("reserved_tokens",ConservativeTokenBudget.RESERVED)
+                 .put(budget.provenUpperBound?"prompt_tokens_upper":"projection_prompt_score",budget.promptTokensUpper)
+                 .put(budget.provenUpperBound?"total_context_upper":"projection_context_score",budget.totalContextUpper)
+-                .put("context_tokens",budget.contextTokens).put("admitted",budget.admitted).put("nodes_shown",nodesShown)
++                .put("context_tokens",budget.contextTokens).put("admitted",budget.admitted)
++                .put("controller_text_utf8_limit",ControllerPromptAdmission.TEXT_UTF8_LIMIT)
++                .put("controller_submission_allowed",ControllerPromptAdmission.maySubmit(budget))
++                .put("native_exact_admission_deferred",!budget.admitted&&budget.profile.exactTokenizationRequired)
++                .put("nodes_shown",nodesShown)
+                 .put("grammar_schema",DecisionGrammar.SCHEMA).put("grammar_sha256",grammar.sha256)
+                 .put("grammar_observation_id",grammar.observationId).put("grammar_actions",new JSONArray(grammar.actions))
+                 .put("target_label_schema",ObservedTargetLabels.SCHEMA).put("target_label_sha256",targets.sha256)
+@@ -487,7 +491,8 @@
+             // Screenshots remain private action-verification evidence, never model input.
+             String text="UNTRUSTED_DATA\n"+promptSections(data).replace("<","\\u003c")+"\nOWNER\n"+owner;
+             ConservativeTokenBudget budget=ConservativeTokenBudget.estimate(SYSTEM,text,config);
+-            if(budget.admitted){
++            boolean optionalContextRemaining=visibleTextLimit>0||nodeCount>requiredIds.size();
++            if(ControllerPromptAdmission.projectionReady(budget,optionalContextRemaining)){
+                 PromptActionDomain.requireComplete(requiredIds,ids);
+                 ObservedTargetLabels targets=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,observation.id,observation.packageName,projectedLabels);
+                 DecisionGrammar grammar=DecisionGrammar.create(observation.id,observation.packageName,packages,clicks,edits,scrolls,targets);
+diff --git a/src/org/trillionnium/hepta/local/ControllerPromptAdmission.java b/src/org/trillionnium/hepta/local/ControllerPromptAdmission.java
+new file mode 100644
+--- /dev/null
++++ b/src/org/trillionnium/hepta/local/ControllerPromptAdmission.java
+@@ -0,0 +1,27 @@
++package org.trillionnium.hepta.local;
++
++/** Submission policy for the text-only, task-owned controller worker.
++ * The sizing estimate may reduce optional observations. It never replaces the
++ * worker's exact rendered-token check or authorizes a generated action.
++ * One-shot and image engines do not use this policy.
++ */
++public final class ControllerPromptAdmission {
++    public static final int TEXT_UTF8_LIMIT = 65536;
++    private ControllerPromptAdmission(){}
++
++    public static boolean withinTextLimit(ConservativeTokenBudget budget){
++        return budget!=null && budget.systemBytesUpper>=0 && budget.systemBytesUpper<=TEXT_UTF8_LIMIT
++                && budget.promptBytesUpper>0 && budget.promptBytesUpper<=TEXT_UTF8_LIMIT;
++    }
++
++    /** Native still has to admit the exact same rendered input IDs before generation. */
++    public static boolean maySubmit(ConservativeTokenBudget budget){
++        return withinTextLimit(budget) && (budget.admitted || budget.profile.exactTokenizationRequired);
++    }
++
++    /** Exhaust the existing optional reductions before delegating a failed estimate. */
++    public static boolean projectionReady(ConservativeTokenBudget budget,boolean optionalContextRemaining){
++        return withinTextLimit(budget) && (budget.admitted
++                || (!optionalContextRemaining && budget.profile.exactTokenizationRequired));
++    }
++}

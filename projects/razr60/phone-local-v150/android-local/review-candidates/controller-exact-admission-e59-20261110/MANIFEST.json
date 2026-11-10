@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.review-capsule-manifest.v1",
+  "scope": "alternative source candidate, patches and synthetic host evidence",
+  "self_excluded": true,
+  "files": [
+    {
+      "path": "BASELINE.json",
+      "bytes": 2572,
+      "sha256": "99334119b59d2fde6918c5fb9bc9d696716104872fabc5fd088f68cf24139838"
+    },
+    {
+      "path": "HOST-OUTPUT.txt",
+      "bytes": 782,
+      "sha256": "2966d10e2c27bf47e0860d1df055f466587b1c5cf0fadd20d2845dd212df5b26"
+    },
+    {
+      "path": "HOST-RESULTS.json",
+      "bytes": 25744,
+      "sha256": "d7a0977740782dfa63d140601f4aa92ccd417277ca27ce8fec23ac2bc42bcc48"
+    },
+    {
+      "path": "README.md",
+      "bytes": 7519,
+      "sha256": "3ebf7f03b22c6c8289c831a3bacd08b44a983499b2a96b6cf3d92d355fc95644"
+    },
+    {
+      "path": "VALIDATION.json",
+      "bytes": 3123,
+      "sha256": "06f0f0c1d247db9bf6debda789b42ed7051978b04cda75431d44b0d41be55e39"
+    },
+    {
+      "path": "controller-exact-admission-tests.patch",
+      "bytes": 41840,
+      "sha256": "ed6f4014691f5a657846bed636b06d1e760ac31a305d8d528924f8de552981c8"
+    },
+    {
+      "path": "controller-exact-admission.patch",
+      "bytes": 5061,
+      "sha256": "3ff3aae0ff6e65ae08093a9c1c23fe54e7c01f6ba476d749e5e82b7de6ed69f6"
+    }
+  ]
+}

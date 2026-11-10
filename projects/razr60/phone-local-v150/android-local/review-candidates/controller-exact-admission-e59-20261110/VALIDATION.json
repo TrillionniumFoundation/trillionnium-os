@@ -1,0 +1,86 @@
+{
+  "schema": "hepta.controller-exact-admission-public-validation.v1",
+  "scope": "Host-only independent alternative candidate",
+  "all_pass": true,
+  "phone_tested": false,
+  "model_inference": false,
+  "android_compiled": false,
+  "baseline_and_candidate_exact_source_pinned": true,
+  "production_patch_sha256": "3ff3aae0ff6e65ae08093a9c1c23fe54e7c01f6ba476d749e5e82b7de6ed69f6",
+  "tests_patch_sha256": "ed6f4014691f5a657846bed636b06d1e760ac31a305d8d528924f8de552981c8",
+  "public_host_result_sha256": "d7a0977740782dfa63d140601f4aa92ccd417277ca27ce8fec23ac2bc42bcc48",
+  "original_private_host_result_preserved_sha256": "7ef7c923c04653d59fd9cba2fc2446d96f3ef669e4bbe7e80876e0cd5a4d812e",
+  "execution_stages": 8,
+  "java_checks": {
+    "baseline_production_reproduction": 4,
+    "candidate_production_projection_and_await": 59,
+    "candidate_policy_and_native_receipt": 24,
+    "original_lfm3_budget_each_variant": 16
+  },
+  "native_scenarios": [
+    {
+      "name": "synthetic-sizes-two-warm-requests",
+      "passed": true,
+      "requests": 2,
+      "generate_calls": 2,
+      "process_exit": 0
+    },
+    {
+      "name": "exact-context-boundary",
+      "passed": true,
+      "requests": 1,
+      "generate_calls": 1,
+      "process_exit": 0
+    },
+    {
+      "name": "first-request-exact-overflow",
+      "passed": true,
+      "requests": 1,
+      "generate_calls": 0,
+      "process_exit": 70
+    },
+    {
+      "name": "second-request-exact-overflow",
+      "passed": true,
+      "requests": 2,
+      "generate_calls": 1,
+      "process_exit": 70
+    },
+    {
+      "name": "tokenizer-second-pass-mismatch",
+      "passed": true,
+      "requests": 1,
+      "generate_calls": 0,
+      "process_exit": 70
+    },
+    {
+      "name": "original-one-shot",
+      "passed": true,
+      "generate_calls": 1
+    }
+  ],
+  "peer_review": {
+    "mode": "Independent read-only source/control-flow/consumer review; tests not independently rerun",
+    "native_exact_guard_verified": true,
+    "same_input_ids_and_each_warm_request_verified": true,
+    "no_identified_java_boundary_bypass": true,
+    "current_and_r5_consumers_do_not_use_heuristic_step_budget_as_native_authorization": true
+  },
+  "privacy": {
+    "inputs": "synthetic only, numeric size fixtures",
+    "original_task_request_device_identifiers_included": false,
+    "real_phone_instructions_or_prompts_included": false,
+    "original_phone_results_modified": false,
+    "raw_private_evidence_republished": false
+  },
+  "limits": [
+    "Explicit fake SDK and controlled tokenizer, no actual model inference",
+    "JSON/Rect/clock and inference callback are host fixtures, not Android-equivalence claims",
+    "Java source/target 8 against host API, not Android or release-8 API build",
+    "Exact counts of previously rejected real next prompts remain unknown",
+    "Model creation precedes native prompt admission",
+    "This alternative can remove optional business readings before native admission",
+    "Does not validate or claim superiority to the separately existing v30 implementation",
+    "No duplicate deployment or phone operation performed"
+  ]
+}
