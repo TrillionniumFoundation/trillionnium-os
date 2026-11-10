@@ -16,7 +16,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
     static HeptaAccessibilityService live;
     static final int GLOBAL_ACTION_BACK=1,GLOBAL_ACTION_HOME=2;
     final Handler main=new Handler(Looper.getMainLooper());
-    String lease;Runnable stopListener;QualificationScopeConfig.Bound taskScope;
+    String lease;Runnable stopListener;QualificationScopeConfig.Bound taskScope;TaskAuthorization.Gate taskAuthorization;
     LocalTaskController ownedController;LocalInference testInference;
     PhoneObservation current;Graph currentGraph;AppCatalogueRanker appDiscovery;
     final Map<String,String> launchable=new LinkedHashMap<String,String>();
@@ -31,11 +31,11 @@ public final class HeptaAccessibilityService extends android.content.Context {
 {{lease}}
     private boolean locked(){return false;}
     private void refreshApps(){}
-    public AppCatalogueRanker.Page appCatalogue(String task,String instruction){appDiscovery=new AppCatalogueRanker(launchable,instruction);return appDiscovery.search("",0);}
+{{app_catalogue}}
     public AccessibilityNodeInfo getRootInActiveWindow(){rootsRead++;if(rootsRead==mutateOnRoot&&root!=null)root.pkg=mutateRootPackage;return root;}
     public void startActivity(Intent intent){opens++;if(effectHook!=null)effectHook.run();}
     public boolean performGlobalAction(int action){navigations++;if(effectHook!=null)effectHook.run();return true;}
-    private void coordinateClick(String task,PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets,Cancellation cancel,ActionCallback callback){gestures++;callback.onResult(new ActionOutcome(true,true,false,"fake gesture"));}
+    private void coordinateClick(String task,PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets,TaskAuthorization.Gate authorization,String modelRunId,Cancellation cancel,ActionCallback callback){gestures++;callback.onResult(new ActionOutcome(true,true,false,"fake gesture"));}
     private Graph readGraph(){
         if(root==null)throw new IllegalStateException("no root");
         Graph g=new Graph();g.packageName=root.pkg;g.windowId=root.windowId;g.rotation=0;g.bounds=new Rect(0,0,1080,2400);g.digest="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";return g;
@@ -59,11 +59,11 @@ public final class HeptaAccessibilityService extends android.content.Context {
     }
     public ActionOutcome execute(ActionDecision action)throws Exception{
         final ActionOutcome[] box=new ActionOutcome[1];ObservedTargetLabels labels=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,current.id,current.packageName,java.util.Collections.singletonMap("n0",node==null?"":node.text));
-        perform(lease,current,action,labels,()->false,value->box[0]=value);return box[0];
+        perform(lease,current,action,labels,taskAuthorization,"dddddddddddddddddddddddddddddddd",()->false,value->box[0]=value);return box[0];
     }
     public void enqueue(ActionDecision action,Cancellation cancel,ActionCallback callback){
         ObservedTargetLabels labels=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,current.id,current.packageName,java.util.Collections.singletonMap("n0",node==null?"":node.text));
-        perform(lease,current,action,labels,cancel,callback);
+        perform(lease,current,action,labels,taskAuthorization,"dddddddddddddddddddddddddddddddd",cancel,callback);
     }
     public int effects(){return opens+navigations+gestures+(node==null?0:node.actions);}
 {{scope_validate_dispatch}}

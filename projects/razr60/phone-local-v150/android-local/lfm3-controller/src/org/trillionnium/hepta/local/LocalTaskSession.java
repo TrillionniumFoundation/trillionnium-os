@@ -38,6 +38,7 @@ public final class LocalTaskSession {
     private volatile HeptaAccessibilityService controllerService;
     private Runnable pendingStart;
     private String state = "输入任务，然后点击开始任务。", log = "", taskId, origin, instructionSha, nonceSha;
+    private TaskAuthorization taskAuthorization;
     private LocalTaskController.TaskResult lastResult;
     private String expectedScopeSha,actualScopeSha;
     private volatile boolean pending, blocked, recovering;
@@ -69,7 +70,11 @@ public final class LocalTaskSession {
     /** Caller first reserves this one session, then moves its Activity behind the target window. */
     public boolean schedule(final String owner,String source,String testNonceSha,long delayMillis){return schedule(owner,source,testNonceSha,null,delayMillis);}
     public boolean schedule(final String owner, String source, String testNonceSha, final String expectedScopeSha256, long delayMillis) {
+        return schedule(owner,source,testNonceSha,expectedScopeSha256,TaskAuthorization.parse(owner),delayMillis);
+    }
+    public boolean schedule(final String owner,String source,String testNonceSha,final String expectedScopeSha256,final TaskAuthorization authorization,long delayMillis){
         QualificationScope.expected(expectedScopeSha256);
+        TaskAuthorization.require(authorization!=null,"任务授权合同缺失");authorization.requireOwner(owner);
         if (Looper.myLooper()!=Looper.getMainLooper()) throw new IllegalStateException("schedule must run on main thread");
         if (isRunning() || engine.isBusy() || blocked) return false;
         final HeptaAccessibilityService service=HeptaAccessibilityService.connected();
@@ -78,8 +83,9 @@ public final class LocalTaskSession {
         if (controllerService!=service) { controller=service.taskController(engine); controllerService=service; }
         final long epoch=++generation;
         origin=source; instructionSha=HeptaAccessibilityService.sha(owner.getBytes(StandardCharsets.UTF_8)); nonceSha=testNonceSha;
+        taskAuthorization=authorization;
         expectedScopeSha=expectedScopeSha256;actualScopeSha=null;
-        taskId=null;lastResult=null;log="";pending=true;setState("任务已准备，正在等待前台画面稳定…");
+        taskId=null;lastResult=null;log="";pending=true;setState("任务已准备，正在等待前台画面稳定…\n"+authorization.summary());
         // A durable non-terminal reservation must precede any controller or model start.
         if(!persist("pending",true)){pending=false;blocked=true;publish();return false;}
         pendingStart=new Runnable(){public void run(){
@@ -88,7 +94,7 @@ public final class LocalTaskSession {
             pending=false;
             if(HeptaAccessibilityService.connected()!=service){setState("无障碍服务已断开，任务未启动");persist("not_started",true);return;}
             try{
-                boolean started=controller.start(owner,expectedScopeSha256,new LocalTaskController.Listener(){
+                boolean started=controller.start(owner,expectedScopeSha256,authorization,new LocalTaskController.Listener(){
                     public void onState(String value){if(epoch>recoveryIgnoredGeneration&&epoch==generation&&!pending)receiveState(value);}
                     public void onFinished(LocalTaskController.TaskResult result){
                         if(epoch<=recoveryIgnoredGeneration)return;
@@ -210,7 +216,7 @@ public final class LocalTaskSession {
                         ||(oldController!=null&&oldController.isRunning()))throw new IOException("controller owner changed during acknowledgement");
                 if(service!=null)service.retireControllerAfterAcknowledgement(oldController,current);
                 acknowledgedSession=current;controller=null;controllerService=null;pending=false;pendingStart=null;
-                taskId=null;origin=null;instructionSha=null;nonceSha=null;lastResult=null;startupRecovery=null;expectedScopeSha=null;actualScopeSha=null;
+                taskId=null;origin=null;instructionSha=null;nonceSha=null;taskAuthorization=null;lastResult=null;startupRecovery=null;expectedScopeSha=null;actualScopeSha=null;
                 blocked=false;state="已建立新的空闲会话，可开始新任务。旧任务仍记为中断，原进程退出与清理状态仍未知。";
                 log=log+state+"\n没有自动启动、恢复或重放任何任务。\n";
                 if(log.length()>16000)log=log.substring(log.length()-16000);
@@ -417,6 +423,8 @@ public final class LocalTaskSession {
             JSONObject value=new JSONObject().put("schema","hepta.local-session.v1").put("status",status)
                 .put("task_id",taskId==null?JSONObject.NULL:taskId).put("origin",origin==null?JSONObject.NULL:origin)
                 .put("instruction_sha256",instructionSha==null?JSONObject.NULL:instructionSha)
+                    .put("task_authorization_sha256",taskAuthorization==null?JSONObject.NULL:taskAuthorization.sha256)
+                    .put("task_authorization",taskAuthorization==null?JSONObject.NULL:new JSONObject(taskAuthorization.evidence()))
                 .put("debug_nonce_sha256",nonceSha==null?JSONObject.NULL:nonceSha)
                 .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha))
                 .put("actual_scope_sha256",QualificationScopeConfig.nullable(actualScopeSha))

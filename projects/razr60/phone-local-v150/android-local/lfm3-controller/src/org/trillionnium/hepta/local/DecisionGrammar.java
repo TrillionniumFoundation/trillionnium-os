@@ -19,10 +19,11 @@ public final class DecisionGrammar {
     public final ObservedTargetLabels targets;
     public final String schema;
     public final ObservedAppLabels appLabels;
+    public final TaskAuthorization.Frame authorization;
     public final Map<String,List<String>> scrollDirections;
 
-    private DecisionGrammar(ObservedTargetLabels targets,String text,List<String> actions,Map<String,List<String>> scrollDirections,ObservedAppLabels appLabels){
-        this.appLabels=appLabels;this.schema=appLabels==null?SCHEMA:ObservedAppLabels.ACTION_SCHEMA;
+    private DecisionGrammar(ObservedTargetLabels targets,String text,List<String> actions,Map<String,List<String>> scrollDirections,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization){
+        this.authorization=authorization;this.appLabels=appLabels;this.schema=appLabels==null?SCHEMA:ObservedAppLabels.ACTION_SCHEMA;
         this.scrollDirections=Collections.unmodifiableMap(new TreeMap<String,List<String>>(scrollDirections));
         this.targets=targets;this.observationId=targets.observationId;this.currentPackage=targets.packageName;this.text=text;
         this.actions=Collections.unmodifiableList(new ArrayList<String>(actions));
@@ -37,7 +38,7 @@ public final class DecisionGrammar {
 
     public static DecisionGrammar create(String observationId,String currentPackage,Set<String> shownApps,
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,ObservedTargetLabels targets){
-        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,null);
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,null,null);
     }
 
     /** Explicit v4 entry; missing app metadata never selects the legacy grammar. */
@@ -45,12 +46,20 @@ public final class DecisionGrammar {
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
             ObservedTargetLabels targets,ObservedAppLabels appLabels){
         if(appLabels==null)throw new IllegalArgumentException("observed app pairs are required");
-        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,appLabels);
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,appLabels,null);
+    }
+
+    public static DecisionGrammar createAuthorized(String observationId,String currentPackage,Set<String> shownApps,
+            Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
+            ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization){
+        TaskAuthorization.require(authorization!=null,"动作语法缺少用户授权");
+        if(appLabels==null)throw new IllegalArgumentException("observed app pairs are required");
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,appLabels,authorization);
     }
 
     private static DecisionGrammar createInternal(String observationId,String currentPackage,Set<String> shownApps,
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
-            ObservedTargetLabels targets,ObservedAppLabels appLabels){
+            ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization){
         if(observationId==null||!observationId.matches("[0-9a-f]{32}"))throw new IllegalArgumentException("invalid observed id");
         checkPackage(currentPackage);
         if(targets==null||!observationId.equals(targets.observationId)||!currentPackage.equals(targets.packageName))
@@ -62,9 +71,18 @@ public final class DecisionGrammar {
                 ||!apps.equals(appLabels.labels.keySet())))throw new IllegalArgumentException("app pairs differ from the current allowed projection");
         TreeSet<String> clicks=checkedNodes(clickableNodes),edits=checkedNodes(editableNodes);
         Map<String,List<String>> scrolls=checkedScrollActions(scrollActions,targets);
+        if(authorization!=null){
+            TaskAuthorization.require(apps.equals(authorization.openPackages(apps)),"打开目标投影超出用户授权");
+            if(!authorization.allows("click"))clicks.clear();
+            if(!authorization.allows("type"))edits.clear();
+            if(!authorization.allows("scroll"))scrolls.clear();
+        }
         StringBuilder rules=new StringBuilder();List<String> branches=new ArrayList<String>();
-        branches.add("find_app");
-        rule(rules,"find-app",prefix("find_app",observationId)+field("package",jsonValue(currentPackage))+comma()+field("query","query-string")+comma()+field("offset","app-offset")+ending());
+        if(authorization==null||authorization.allows("find_app")){
+            branches.add("find_app");
+            String queryRule=authorization!=null&&authorization.authorization.requireFindAppBeforeOpen?jsonValue(authorization.authorization.findQuery):"query-string";
+            rule(rules,"find-app",prefix("find_app",observationId)+field("package",jsonValue(currentPackage))+comma()+field("query",queryRule)+comma()+field("offset","app-offset")+ending());
+        }
         if(!apps.isEmpty()){
             branches.add("open");
             if(appLabels==null){
@@ -88,12 +106,13 @@ public final class DecisionGrammar {
             rule(rules,"scroll-target",scrollPairs(scrolls,targets));
         }
         for(String name:new String[]{"back","home"}){
+            if(authorization!=null&&!authorization.allows(name))continue;
             branches.add(name);rule(rules,name,prefix(name,observationId)+field("package",jsonValue(currentPackage))+ending());
         }
-        branches.add("wait");rule(rules,"wait",prefix("wait",observationId)+field("package",jsonValue(currentPackage))+comma()+field("duration_ms","duration")+ending());
+        if(authorization==null||authorization.allows("wait")){branches.add("wait");rule(rules,"wait",prefix("wait",observationId)+field("package",jsonValue(currentPackage))+comma()+field("duration_ms","duration")+ending());}
         branches.add("done");rule(rules,"done",prefix("done",observationId)+field("package",jsonValue(currentPackage))+comma()+field("status","status")+comma()+field("summary","summary-string")+ending());
         // A brief state assessment precedes action selection in the generated JSON.
-        rule(rules,"status",alternatives(new TreeSet<String>(java.util.Arrays.asList("success","partial","failure"))));
+        rule(rules,"status",alternatives(new TreeSet<String>(java.util.Arrays.asList(authorization==null||authorization.successAllowed()?new String[]{"success","partial","failure"}:new String[]{"partial","failure"}))));
         rule(rules,"duration","[1-9] [0-9]{2} | "+literal("1")+" [0-9]{3} | "+literal("2000"));
         rule(rules,"app-offset",literal("0")+" | [1-9] [0-9]{0,2} | [1-3] [0-9]{3} | "+literal("40")+" [0-8] [0-9] | "+literal("409")+" [0-5]");
         rule(rules,"query-string",literal("\"")+" json-char{0,64} "+literal("\""));
@@ -104,7 +123,7 @@ public final class DecisionGrammar {
         rules.append("json-char ::= [^\"\\\\\\x00-\\x1F] | "+literal("\\")+" [\"\\\\/bfnrt]\n");
         rule(rules,"ws","[ \\t\\n\\r]{0,8}");
         List<String> ruleNames=new ArrayList<String>();for(String branch:branches)ruleNames.add(branch.replace('_','-'));
-        return new DecisionGrammar(targets,"root ::= ws ("+join(ruleNames," | ")+") ws\n"+rules.toString(),branches,scrolls,appLabels);
+        return new DecisionGrammar(targets,"root ::= ws ("+join(ruleNames," | ")+") ws\n"+rules.toString(),branches,scrolls,appLabels,authorization);
     }
 
     /** A direction cannot migrate to another node that has a different action list. */

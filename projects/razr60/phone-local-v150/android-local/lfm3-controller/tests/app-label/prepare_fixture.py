@@ -19,8 +19,8 @@ def prepare(source, output):
         raise RuntimeError("receipt block closing anchor differs")
     receipt = receipt[:-len("            }\n")]
     for call in ("ActionDecision.parse(answer.text,frame.grammar.schema)",
-                 "ActionPolicy.validateTextDecision(action,before.packageName,frame.appPackages,frame.targets,frame.grammar.appLabels)",
-                 "DecisionGrammar.createAppLabeled(observation.id,observation.packageName,packages,clicks,edits,scrolls,targets,appLabels)"):
+                 "ActionPolicy.validateAuthorizedDecision(action,before.packageName,frame.appPackages,frame.targets,frame.grammar.appLabels,authorization,frame.grammar.authorization)",
+                 "DecisionGrammar.createAuthorized(observation.id,observation.packageName,packages,clicks,edits,scrolls,targets,appLabels,authorization)"):
         if controller.count(call) != 1:
             raise RuntimeError("exact candidate production call site missing or ambiguous: " + call)
     fixture = output / "PromptAdmissionFixture.java"

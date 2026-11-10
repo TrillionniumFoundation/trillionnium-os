@@ -58,7 +58,7 @@ public final class PromptAdmissionFixture {
     public static Result build(String owner,AppCatalogueRanker.Page apps,PhoneObservation observation,
             JSONArray history,LocalRuntimeConfig config)throws Exception{
         return new Result(prompt(owner,apps,observation,history,null,null,config,
-                new RepeatActionGuard(),new SameStateNoEffectGuard()));
+                new RepeatActionGuard(),new SameStateNoEffectGuard(),TaskAuthorization.parse(owner).bind("cccccccccccccccccccccccccccccccc").frame(),null));
     }
     private interface InferenceConfig { LocalRuntimeConfig configuration(); }
     public static void awaitAdmission(String prompt,final LocalRuntimeConfig config)throws Exception{

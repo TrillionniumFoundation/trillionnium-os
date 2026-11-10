@@ -23,6 +23,7 @@ def prepare(source, output):
     s = (pkg / 'HeptaAccessibilityService.java').read_text()
     pieces = {
         'service_interfaces_outcome': section(s, '    public interface ObservationCallback', '    private static volatile HeptaAccessibilityService live;'),
+        'app_catalogue': section(s, '    public AppCatalogueRanker.Page appCatalogue(', '    /** Each observation owns'),
         'lease': section(s, '    public synchronized boolean acquireTask(', '    private boolean locked()'),
         'scope_validate_dispatch': section(s, '    synchronized void bindQualificationScope(', '    private void coordinateClick('),
         'node_graph': section(s, '    private static boolean hasAction(', '    /** Inspect window metadata only.'),
@@ -37,7 +38,7 @@ def prepare(source, output):
     (output / 'HeptaAccessibilityService.java').write_text(fixture)
     session = (pkg / 'LocalTaskSession.java').read_text()
     session_parts = {
-        'schedule': section(session, '    public boolean schedule(final String owner,String source', '    /** The only caller is the positive button'),
+        'schedule': section(session, '    public boolean schedule(final String owner,String source,String testNonceSha,long delayMillis)', '    /** The only caller is the positive button'),
         'persist': section(session, '    private boolean persist(', '\n}'),
     }
     fixture = (Path(__file__).parent / 'SessionFixture.template').read_text()
@@ -51,7 +52,7 @@ def prepare(source, output):
     fixture = (Path(__file__).parent / 'UiFixture.template').read_text()
     for name,code in ui_parts.items():fixture=fixture.replace('{{'+name+'}}',code)
     (output / 'ScopeUiFixture.java').write_text(fixture)
-    pure=['ActionDecision','ActionPolicy','ObservedTargetLabels','ObservedScrollActions','RecentActionProjection',
+    pure=['TaskAuthorization','ActionDecision','ActionPolicy','ObservedTargetLabels','ObservedScrollActions','RecentActionProjection',
           'PersistentActionPolicy','ImeVisibility','ObservationState','ObservedWindowMetadata','ObservedChildText',
           'RepeatActionGuard','SameStateNoEffectGuard','DecisionGrammar','ModelProfile','LocalRuntimeConfig',
           'ConservativeTokenBudget','AppCatalogueRanker','ObservedTextProjection','ObservedTransitionProjection',
@@ -62,7 +63,7 @@ def prepare(source, output):
     files += sorted(output.glob('*.java'))
     files += sorted((Path(__file__).parent/'fixtures').rglob('*.java'))
     files += [Path(__file__).parent/'QualificationScopeHostTest.java']
-    record={'schema':'hepta.scope-host-extraction.v1','source_files':{n:hashlib.sha256((pkg/n).read_bytes()).hexdigest() for n in ['HeptaAccessibilityService.java','LocalTaskSession.java','MainActivity.java','LocalTaskController.java','QualificationScope.java','QualificationScopeConfig.java']},
+    record={'schema':'hepta.scope-host-extraction.v1','source_files':{n:hashlib.sha256((pkg/n).read_bytes()).hexdigest() for n in ['TaskAuthorization.java','HeptaAccessibilityService.java','LocalTaskSession.java','MainActivity.java','LocalTaskController.java','QualificationScope.java','QualificationScopeConfig.java']},
         'extracted':{n:{'bytes':len(v.encode()),'sha256':hashlib.sha256(v.encode()).hexdigest()} for n,v in {**pieces,**session_parts,**ui_parts}.items()},
         'full_actual_classes':['LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles'],
         'boundary':'Android IO and effect endpoints are fakes; production admission/dispatch and controller code is executed',

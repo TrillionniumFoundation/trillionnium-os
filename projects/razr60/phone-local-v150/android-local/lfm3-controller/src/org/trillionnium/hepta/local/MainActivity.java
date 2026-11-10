@@ -24,6 +24,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     private UiVenusModelEngine uiVenusDiagnostic;
     private EditText taskInput, probePrompt;
     private TextView modelInfo, taskState, taskLog, taskResult, probeOutput;
+    private TextView taskAuthorizationInfo;
     private TextView visualProbeOutput;
     private TextView uiVenusProbeOutput;
     private LinearLayout diagnostics;
@@ -48,6 +49,13 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         modelInfo=text("",12);modelInfo.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);page.addView(modelInfo);
         taskInput=new EditText(this);taskInput.setHint("你想让手机完成什么？");
         taskInput.setText("打开计算器，计算 37 加 58，然后结束任务。");taskInput.setMinLines(3);page.addView(taskInput);
+        taskAuthorizationInfo=text("",12);page.addView(taskAuthorizationInfo);
+        taskInput.addTextChangedListener(new android.text.TextWatcher(){
+            public void beforeTextChanged(CharSequence s,int start,int count,int after){}
+            public void onTextChanged(CharSequence s,int start,int before,int count){previewTaskAuthorization();}
+            public void afterTextChanged(android.text.Editable value){}
+        });
+        previewTaskAuthorization();
         LinearLayout actions=new LinearLayout(this);page.addView(actions);
         startTask=button("开始任务");actions.addView(startTask);
         stopTask=button("停止");actions.addView(stopTask);
@@ -94,6 +102,11 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     private int dp(int value){return Math.round(value*getResources().getDisplayMetrics().density);}
     private TextView text(String value,int size){TextView view=new TextView(this);view.setText(value);view.setTextSize(size);view.setPadding(0,dp(5),0,dp(5));return view;}
     private Button button(String label){Button view=new Button(this);view.setText(label);return view;}
+    private void previewTaskAuthorization(){
+        if(taskAuthorizationInfo==null)return;
+        try{taskAuthorizationInfo.setText(TaskAuthorization.parse(taskInput.getText().toString()).summary());}
+        catch(Exception error){taskAuthorizationInfo.setText("本次限制无法识别，任务不会启动："+HeptaAccessibilityService.message(error));}
+    }
 
     @Override protected void onSaveInstanceState(Bundle state){
         super.onSaveInstanceState(state);
@@ -187,8 +200,9 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             if(!engine.modelFile().isFile())throw new IllegalStateException("所选本地模型尚未导入");
             engine.configuration();
             if(scopeLaunchError!=null)throw new IllegalStateException(scopeLaunchError);
+            final TaskAuthorization authorization=TaskAuthorization.parse(owner);
             final String expectedScope=scopeLaunch.claim(owner);
-            if(!tasks.schedule(owner,source,nonceSha,expectedScope,500))throw new IllegalStateException("本地任务未能取得唯一会话");
+            if(!tasks.schedule(owner,source,nonceSha,expectedScope,authorization,500))throw new IllegalStateException("本地任务未能取得唯一会话");
             scopeLaunch=scopeLaunch.accepted();
             InputMethodManager input=(InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
             if(input!=null)input.hideSoftInputFromWindow(taskInput.getWindowToken(),0);

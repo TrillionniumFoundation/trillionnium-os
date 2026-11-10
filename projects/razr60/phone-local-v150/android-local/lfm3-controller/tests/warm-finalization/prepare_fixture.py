@@ -42,6 +42,9 @@ public final class ControllerFinalizationFixture {
     /** Scope/config IO seam; default absent preserves all original 13 cases. */
     public interface ScopeCheck { void verifyUnchanged() throws Exception; }
     private ScopeCheck scope;
+    /** Admitted/live Owner authorization seam; actual admission runs in the controller harness. */
+    private interface AuthorizationCheck { void ready(); }
+    private final AuthorizationCheck authorization=new AuthorizationCheck(){public void ready(){}};
     public void setScopeCheck(ScopeCheck check){scope=check;}
     private interface Handle { void cancel(); }
     private void emit(String value) { /* Android listener fixture; no IO. */ }
