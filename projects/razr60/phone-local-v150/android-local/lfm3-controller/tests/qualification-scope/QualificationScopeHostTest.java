@@ -66,7 +66,7 @@ public final class QualificationScopeHostTest {
         void updateConfig(){config=bytes(new JSONObject(fields).toString());scopeSha=QualificationScope.hash(config);}
         void writeConfig()throws Exception{write(dir.resolve(QualificationScope.FILE_NAME),config,0600);}
         void bind(String expected)throws Exception{
-            check(service.acquireTask(task,()->{}),"lease acquisition");bound=QualificationScopeConfig.capture(service,task,expected,runtime);service.bindQualificationScope(task,bound);
+            check(service.acquireTask(task,()->{}),"lease acquisition");bound=QualificationScopeConfig.capture(service,task,expected,runtime);service.bindQualificationScope(task,bound);service.bindTaskAuthorization(task,TaskAuthorization.parse("打开设置并完成本地测试"));
         }
         ActionDecision action(String kind,String target)throws Exception{return ActionDecision.parse(actionText(kind,target),DecisionGrammar.SCHEMA);}
         String actionText(String kind,String target)throws Exception{
@@ -100,7 +100,13 @@ public final class QualificationScopeHostTest {
                 if("open".equals(action))try{
                     Object appLabels=grammar.getClass().getField("appLabels").get(grammar);
                     if(appLabels!=null){Object map=appLabels.getClass().getField("labels").get(appLabels);
-                        Object label=((Map<?,?>)map).get(target);check(label instanceof String,"test target was not supplied in actual app grammar");
+                        Object label=((Map<?,?>)map).get(target);
+                        if(!(label instanceof String)){
+                            // Deliberately adversarial raw output outside the supplied grammar.
+                            // The source domain must exclude it before the parser/dispatch gate.
+                            label=env.service.launchable.get(target);check(label instanceof String,"synthetic target fixture missing");
+                            write(env.dir.resolve("host-outside-projection-grammar.txt"),bytes(grammar.text),0600);
+                        }
                         JSONObject old=new JSONObject(text);text=new JSONObject().put("reason",old.get("reason")).put("action",old.get("action"))
                             .put("observation_id",old.get("observation_id")).put("app_label",label).put("package",old.get("package")).toString();}
                 }catch(NoSuchFieldException legacyV3){/* exact ec9 legacy grammar has no appLabels field */}
@@ -109,10 +115,13 @@ public final class QualificationScopeHostTest {
         }
     }
     static void productionControllerCases()throws Exception{
-        test("controller_foreign_open_terminal_failed_one_model_zero_dispatch",()->{try(Env e=new Env(true)){
+        test("controller_foreign_open_excluded_and_rejected_one_model_zero_dispatch",()->{try(Env e=new Env(true)){
             LocalTaskController.TaskResult r=e.controller("open",FOREIGN[2],null);check("failed".equals(r.status)&&!r.modelReportedSuccess&&r.cleanupKnown,"controller result must fail with known cleanup");check(e.service.effects()==0,"no foreign open");
             JSONObject result=new JSONObject(new String(Files.readAllBytes(r.evidenceDirectory.toPath().resolve("result.json")),StandardCharsets.UTF_8));check(e.scopeSha.equals(result.getString("expected_scope_sha256"))&&e.scopeSha.equals(result.getString("actual_scope_sha256")),"result scope bound");
-            JSONObject action=new JSONObject(new String(Files.readAllBytes(r.evidenceDirectory.toPath().resolve("step-01-action.json")),StandardCharsets.UTF_8));check(!action.getBoolean("dispatched")&&!action.getBoolean("accepted"),"actual action receipt denial");check("1".equals(new String(Files.readAllBytes(e.dir.resolve("host-native-call-count.txt")),StandardCharsets.UTF_8)),"no second model");
+            check(Files.isRegularFile(e.dir.resolve("host-outside-projection-grammar.txt")),"foreign target excluded by actual grammar");
+            check(Files.isRegularFile(r.evidenceDirectory.toPath().resolve("step-01-model-0.json")),"actual rejected model result retained");
+            check(!Files.exists(r.evidenceDirectory.toPath().resolve("step-01-action.json")),"owner/domain policy rejects before dispatch");
+            check("1".equals(new String(Files.readAllBytes(e.dir.resolve("host-native-call-count.txt")),StandardCharsets.UTF_8)),"no second model");
         }});
         test("controller_foreground_changes_after_model_before_action_zero_dispatch",()->{try(Env e=new Env(true)){
             LocalTaskController.TaskResult r=e.controller("click",SETTINGS,()->e.service.root.pkg=FOREIGN[0]);check("failed".equals(r.status)&&!r.modelReportedSuccess&&e.service.effects()==0,"late foreign foreground must fail");
@@ -295,7 +304,7 @@ public final class QualificationScopeHostTest {
             e.service.releaseTask(e.task);e.fields.put("qualification_id","synthetic-new-lease");e.updateConfig();e.writeConfig();
             // Reusing even the same synthetic ID must not borrow a different Bound.
             String next="type".equals(kind)?e.task:"22222222222222222222222222222222";
-            check(e.service.acquireTask(next,()->{}),"new lease");QualificationScopeConfig.Bound nextScope=QualificationScopeConfig.capture(e.service,next,e.scopeSha,e.runtime);nextScope.requireReady();e.service.bindQualificationScope(next,nextScope);
+            check(e.service.acquireTask(next,()->{}),"new lease");QualificationScopeConfig.Bound nextScope=QualificationScopeConfig.capture(e.service,next,e.scopeSha,e.runtime);nextScope.requireReady();e.service.bindQualificationScope(next,nextScope);e.service.bindTaskAuthorization(next,TaskAuthorization.parse("打开设置并完成本地测试"));
             e.service.prepare(CALC);oldNode.onRefresh=()->{throw new IllegalStateException("retired node must not be read");};
             Handler.drain();check(reply[0]!=null&&!reply[0].accepted&&!reply[0].stale&&reply[0].dispatched!= "wait".equals(kind),"late receipt rejected while actual dispatch preserved");
             JSONObject proof=reply[0].qualificationScope;check(oldSha.equals(proof.getString("actual_scope_sha256"))&&e.task.equals(proof.getString("task_id"))&&!proof.getBoolean("callback_lease_current"),"callback uses captured old identity");
@@ -306,7 +315,7 @@ public final class QualificationScopeHostTest {
         test("queued_perform_retired_before_main_dispatch_has_no_effect",()->{try(Env e=new Env(true)){
             e.bind(e.scopeSha);String oldSha=e.scopeSha;HeptaAccessibilityService.ActionOutcome[] reply=new HeptaAccessibilityService.ActionOutcome[1];Handler.holdPosts=true;
             e.service.enqueue(e.action("open",CALC),()->false,value->reply[0]=value);check(reply[0]==null,"main entry queued");e.service.releaseTask(e.task);
-            e.fields.put("qualification_id","replacement-task");e.updateConfig();e.writeConfig();check(e.service.acquireTask(e.task,()->{}),"new same-ID lease");QualificationScopeConfig.Bound replacement=QualificationScopeConfig.capture(e.service,e.task,e.scopeSha,e.runtime);replacement.requireReady();e.service.bindQualificationScope(e.task,replacement);
+            e.fields.put("qualification_id","replacement-task");e.updateConfig();e.writeConfig();check(e.service.acquireTask(e.task,()->{}),"new same-ID lease");QualificationScopeConfig.Bound replacement=QualificationScopeConfig.capture(e.service,e.task,e.scopeSha,e.runtime);replacement.requireReady();e.service.bindQualificationScope(e.task,replacement);e.service.bindTaskAuthorization(e.task,TaskAuthorization.parse("打开设置并完成本地测试"));
             Handler.drain();check(reply[0]!=null&&!reply[0].accepted&&!reply[0].dispatched&&e.service.effects()==0,"retired queued work did not dispatch");check(oldSha.equals(reply[0].qualificationScope.getString("actual_scope_sha256")),"no replacement scope borrowed");
         }});
         test("cancelled_delayed_type_skips_retired_node_and_preserves_effect",()->{try(Env e=new Env(true)){

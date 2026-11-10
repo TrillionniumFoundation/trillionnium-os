@@ -12,6 +12,7 @@ public final class LocalTaskSession {
     final Context context;final LocalModelEngine engine;final Handler main=new Handler(Looper.getMainLooper());
     LocalTaskController controller;HeptaAccessibilityService controllerService;Runnable pendingStart;
     String state="",log="",taskId,origin,instructionSha,nonceSha,expectedScopeSha,actualScopeSha;
+    TaskAuthorization taskAuthorization;
     LocalTaskController.TaskResult lastResult;boolean pending,blocked;long generation,recoveryIgnoredGeneration=-1;
     JSONObject startupRecovery;RecoveryJournalTransaction.Proof acknowledgedSession;
     public LocalTaskSession(Context context,LocalModelEngine engine){this.context=context;this.engine=engine;}

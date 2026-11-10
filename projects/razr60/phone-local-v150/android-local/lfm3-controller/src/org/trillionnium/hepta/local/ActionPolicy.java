@@ -6,6 +6,17 @@ import java.util.Set;
 public final class ActionPolicy {
     private ActionPolicy() {}
 
+    public static void validateAuthorizedDecision(ActionDecision action,String currentPackage,
+            Set<String> shownApps,ObservedTargetLabels targets,ObservedAppLabels apps,
+            TaskAuthorization.Gate owner,TaskAuthorization.Frame frame) throws ActionDecision.InvalidActionException {
+        TaskAuthorization.require(owner!=null&&frame!=null&&owner.authorization==frame.authorization
+                &&owner.taskId.equals(frame.taskId),"动作语法与当前任务授权不一致");
+        owner.ready();frame.requireDecision(action);
+        if("open".equals(action.action))
+            TaskAuthorization.require(shownApps!=null&&shownApps.contains(action.packageName),"打开目标不在本轮授权工具域内");
+        validateTextDecision(action,currentPackage,shownApps,targets,apps);
+    }
+
     public static void validateTextDecision(ActionDecision action, String currentPackage,
             Set<String> shownApps, ObservedTargetLabels targets) throws ActionDecision.InvalidActionException {
         if (!ObservedTargetLabels.ACTION_SCHEMA.equals(action.actionSchema))
