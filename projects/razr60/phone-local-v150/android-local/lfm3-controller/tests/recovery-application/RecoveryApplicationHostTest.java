@@ -21,6 +21,7 @@ public final class RecoveryApplicationHostTest {
         android.os.Looper.resetMain();android.os.Handler.reset();
         LocalTaskSession.initialBlocked=true;
         MobiMindModelEngine.initialBlocked=false;UiVenusModelEngine.initialBlocked=false;
+        BackgroundPermissionSession.initialBlocked=false;
         java.lang.reflect.Field f=LocalModelEngine.class.getDeclaredField("PROCESS_ACTIVE");f.setAccessible(true);
         ((AtomicReference<?>)f.get(null)).set(null);
     }
@@ -71,6 +72,118 @@ public final class RecoveryApplicationHostTest {
     }
     private static void run(String name,Checked test)throws Exception{
         test.run();cases++;System.out.println("PASS "+name);
+    }
+    private static LocalProbeApplication idleApp()throws Exception{
+        reset();LocalTaskSession.initialBlocked=false;LocalProbeApplication a=new LocalProbeApplication();a.onCreate();return a;
+    }
+    private static void permissionCases()throws Exception{
+        cases=0;assertions=0;
+        run("uninitialized_or_foreign_application_fails_closed",()->{
+            reset();LocalProbeApplication uninitialized=new LocalProbeApplication();
+            check(uninitialized.permissionPreparationBlocksWork(),"unclassified permission state blocks");
+            check(LocalProbeApplication.permissionPreparationBlocks(new android.content.Context()),"foreign Context blocks");
+            rejects(()->LocalProbeApplication.requirePermissionPreparationIdle(uninitialized));
+            LocalProbeApplication a=idleApp();
+            android.content.Context service=new android.content.Context(){@Override public android.content.Context getApplicationContext(){return a;}};
+            check(!LocalProbeApplication.permissionPreparationBlocks(service),"owned application Context accepted");
+        });
+        run("permission_only_block_does_not_create_control_barrier",()->{
+            reset();LocalTaskSession.initialBlocked=false;BackgroundPermissionSession.initialBlocked=true;
+            LocalProbeApplication a=new LocalProbeApplication();a.onCreate();
+            check(a.modelEngine().isBusy(),"independent permission block appears busy");
+            same(field(a,"recoveryBarrier"),null,"permission block is not a control recovery barrier");
+            check(!a.taskSession().blocked,"permission block does not rewrite task state");
+            check(!a.canAcknowledgeControlRecovery(),"control cannot acknowledge permission block");
+            rejects(()->a.prepareBackgroundPermissionFromOwnerButton());
+            check(a.backgroundPermissionPreparation().starts==0,"blocked permission never launches");
+        });
+        run("permission_block_preserves_exact_existing_control_barrier",()->{
+            reset();BackgroundPermissionSession.initialBlocked=true;LocalProbeApplication a=new LocalProbeApplication();a.onCreate();
+            Object barrier=field(a,"recoveryBarrier");check(barrier!=null,"original task barrier is still constructed");
+            check(!a.canAcknowledgeControlRecovery(),"permission block gates recovery borrow");
+            rejects(()->a.reserveControlRecovery());
+            a.backgroundPermissionPreparation().blocked=false;
+            same(field(a,"recoveryBarrier"),barrier,"permission classification does not replace task barrier");
+            check(a.taskSession().blocked&&a.canAcknowledgeControlRecovery(),"old task still requires explicit recovery");
+            LocalModelEngine.RecoveryReservation r=a.reserveControlRecovery();r.close();
+            same(field(a,"recoveryBarrier"),barrier,"failed recovery returns exact old barrier");
+        });
+        run("owner_button_reserves_real_external_slot_once",()->{
+            LocalProbeApplication a=idleApp();BackgroundPermissionSession p=a.backgroundPermissionPreparation();
+            a.prepareBackgroundPermissionFromOwnerButton();
+            check(p.running&&p.starts==1&&a.modelEngine().isBusy(),"one visible preparation owns slot");
+            same(a.backgroundPermissionPreparation(),p,"Application retains same preparation Session");
+            rejects(()->a.prepareBackgroundPermissionFromOwnerButton());
+            rejects(()->a.modelEngine().reserveExternal("11111111111111111111111111111111"));
+            rejects(()->a.modelEngine().reserveRecoveryBarrier());
+            check(p.starts==1,"refused overlaps do not start another preparation");
+            p.observeNoStartAndPublishTerminal();check(!a.modelEngine().isBusy(),"own no-start terminal releases own slot");
+            check(!a.taskSession().blocked&&!a.taskSession().running,"permission flow does not start or block task");
+        });
+        run("owner_button_refuses_every_existing_task_state",()->{
+            for(int state=0;state<4;state++){
+                LocalProbeApplication a=idleApp();LocalTaskSession t=a.taskSession();
+                if(state==0)t.running=true;if(state==1)t.blocked=true;if(state==2)t.recovering=true;if(state==3)t.backgroundLease=true;
+                rejects(()->a.prepareBackgroundPermissionFromOwnerButton());
+                check(a.backgroundPermissionPreparation().starts==0,"task state "+state+" prevents preparation");
+                check(t.running==(state==0)&&t.blocked==(state==1)&&t.recovering==(state==2)&&t.backgroundLease==(state==3),"task state preserved");
+            }
+        });
+        run("owner_button_refuses_both_diagnostic_owners",()->{
+            for(int state=0;state<4;state++){
+                LocalProbeApplication a=idleApp();
+                if(state==0)a.mobiMindDiagnostic().busy=true;if(state==1)a.mobiMindDiagnostic().blocked=true;
+                if(state==2)a.uiVenusDiagnostic().busy=true;if(state==3)a.uiVenusDiagnostic().blocked=true;
+                rejects(()->a.prepareBackgroundPermissionFromOwnerButton());
+                check(a.backgroundPermissionPreparation().starts==0,"diagnostic state "+state+" prevents preparation");
+            }
+        });
+        run("permission_and_control_recovery_cannot_share_slot",()->{
+            LocalProbeApplication a=app();LocalModelEngine.RecoveryReservation r=a.reserveControlRecovery();
+            rejects(()->a.prepareBackgroundPermissionFromOwnerButton());
+            check(a.backgroundPermissionPreparation().starts==0,"borrowed control slot excludes preparation");
+            r.close();check(a.taskSession().blocked,"preparation rejection leaves old recovery untouched");
+        });
+        run("direct_engine_recovery_entries_check_permission_gate",()->{
+            LocalProbeApplication a=app();LocalModelEngine model=a.modelEngine();
+            LocalModelEngine.RecoveryBarrier barrier=(LocalModelEngine.RecoveryBarrier)field(a,"recoveryBarrier");
+            a.backgroundPermissionPreparation().blocked=true;
+            check(!model.canReserveRecovery(barrier),"direct eligibility denies permission block");
+            rejects(()->model.reserveRecovery(barrier));
+            same(field(a,"recoveryBarrier"),barrier,"denied direct reserve preserves barrier");
+            a.backgroundPermissionPreparation().blocked=false;
+            check(model.canReserveRecovery(barrier),"own old barrier remains available after independent gate ends");
+        });
+        run("permission_change_during_recovery_install_prevents_commit",()->{
+            LocalProbeApplication a=app();Object barrier=field(a,"recoveryBarrier");
+            LocalModelEngine.RecoveryReservation r=a.reserveControlRecovery();RecoveryJournalTransaction.Proof p=proof(10001,r.transactionId());
+            rejects(()->a.completeControlRecovery(r,p,()->{a.taskSession().blocked=false;a.backgroundPermissionPreparation().blocked=true;}));
+            r.close();same(field(a,"recoveryBarrier"),barrier,"changed permission cannot release original barrier");
+            check(a.taskSession().blocked&&!a.canAcknowledgeControlRecovery(),"failed fresh permission check reblocks task");
+            a.backgroundPermissionPreparation().blocked=false;check(a.canAcknowledgeControlRecovery(),"subsequent explicit recovery remains possible");
+        });
+        run("direct_external_entry_denies_gate_without_creating_slot",()->{
+            LocalProbeApplication a=idleApp();a.backgroundPermissionPreparation().blocked=true;
+            rejects(()->a.modelEngine().reserveExternal("22222222222222222222222222222222"));
+            a.backgroundPermissionPreparation().blocked=false;check(!a.modelEngine().isBusy(),"denied external call never occupies slot");
+            LocalModelEngine.ExternalRunLease lease=a.modelEngine().reserveExternal("33333333333333333333333333333333");
+            lease.releaseAfterTerminalPublication(false);check(a.modelEngine().isBusy(),"unknown cleanup retains actual slot");
+            rejects(()->a.prepareBackgroundPermissionFromOwnerButton());
+            lease.releaseAfterTerminalPublication(true);check(!a.modelEngine().isBusy(),"only owned terminal releases actual slot");
+        });
+        run("permission_owner_button_is_main_thread_only",()->{
+            LocalProbeApplication a=idleApp();worker(()->rejects(()->a.prepareBackgroundPermissionFromOwnerButton()));
+            check(a.backgroundPermissionPreparation().starts==0&&!a.modelEngine().isBusy(),"off-main owner call has no effects");
+        });
+        run("application_termination_cancels_but_does_not_fake_cleanup",()->{
+            LocalProbeApplication a=idleApp();a.prepareBackgroundPermissionFromOwnerButton();
+            BackgroundPermissionSession p=a.backgroundPermissionPreparation();LocalModelEngine.ExternalRunLease lease=p.lease;
+            a.onTerminate();check(p.closed&&lease.isCancellationRequested(),"Application closes and cancels owned preparation");
+            check(a.modelEngine().isBusy()&&p.running,"termination does not claim process cleanup or release slot");
+            lease.releaseAfterTerminalPublication(true);p.running=false;
+            check(!a.modelEngine().isBusy(),"explicit fixture no-start terminal can settle cancelled owned slot");
+        });
+        System.out.println("PASS permission_cases="+cases+" assertions="+assertions);
     }
     public static void main(String[] args)throws Exception{
         run("control_startup_barrier_can_be_borrowed",()->{
@@ -185,5 +298,6 @@ public final class RecoveryApplicationHostTest {
             same(field(a,"controlRecoveryAttempt"),next,"old close leaves new reference");check(!next.isCancellationRequested(),"old close does not cancel retry");next.close();
         });
         System.out.println("PASS cases="+cases+" assertions="+assertions);
+        permissionCases();
     }
 }

@@ -15,6 +15,7 @@ def prepare(source,output):
     engine=(package/"LocalModelEngine.java").read_text(encoding="utf-8")
     parts={
         "RunHandle":_section(engine,"    public static final class RunHandle {","    /** Retains the existing process-wide slot"),
+        "external_path":_section(engine,"    /** Shares the existing single-model slot","    /** An aggregate startup barrier"),
         "recovery_path":_section(engine,"    /** An aggregate startup barrier","    public RunHandle start("),
     }
     declarations=[]
@@ -22,6 +23,7 @@ def prepare(source,output):
         "    private static final AtomicReference<RunHandle> PROCESS_ACTIVE",
         "    private final AtomicReference<RunHandle> active",
         "    private final AtomicBoolean closed",
+        "    private final Context context;",
         "    public boolean isBusy()",
         "    public void cancelActive()",
     ):
@@ -33,11 +35,11 @@ def prepare(source,output):
     # Every recovery ownership/cancellation/close member below is copied verbatim from production.
     rendered=(
         "package org.trillionnium.hepta.local;\n"
-        "import java.util.UUID;\nimport java.util.concurrent.atomic.*;\n"
+        "import android.content.Context;\nimport java.util.UUID;\nimport java.util.concurrent.atomic.*;\n"
         "public final class LocalModelEngine implements AutoCloseable {\n"
         +"\n".join(declarations)+"\n"
-        +"public LocalModelEngine(android.content.Context ignored){}\n"
-        +parts["RunHandle"]+parts["recovery_path"]
+        +"public LocalModelEngine(Context context){this.context=context.getApplicationContext();}\n"
+        +parts["RunHandle"]+parts["external_path"]+parts["recovery_path"]
         +"@Override public void close(){closed.set(true);cancelActive();}\n}\n"
     )
     engine_file=output/"LocalModelEngine.java";engine_file.write_text(rendered,encoding="utf-8")
@@ -45,12 +47,12 @@ def prepare(source,output):
            "RecoveryQuiescence.java","RecoveryJournalTransaction.java","DiagnosticStartupGate.java"]
     actual=[package/name for name in names]
     fixtures=sorted((source/"tests/recovery-application").rglob("*.java"))
-    if len(fixtures)!=10:
+    if len(fixtures)!=11:
         raise RuntimeError("unexpected Application host fixture closure")
     all_sources=actual+[engine_file]+fixtures
     digest=lambda b:hashlib.sha256(b).hexdigest()
     record={
-        "scope":"actual Application and exact Engine recovery members; Android/normal IO/Session/diagnostic fixtures",
+        "scope":"actual Application and exact Engine external/recovery members; Android/normal IO/Session/permission Session/diagnostic fixtures",
         "production_engine_sha256":digest(engine.encode()),
         "extracted_parts":{name:{"bytes":len(value.encode()),"sha256":digest(value.encode())}
                            for name,value in parts.items()},

@@ -7,6 +7,8 @@ public final class LocalProbeApplication extends Application {
     private LocalTaskSession tasks;
     private MobiMindModelEngine visualDiagnostic;
     private UiVenusModelEngine uiVenusDiagnostic;
+    private volatile BackgroundPermissionSession backgroundPermission;
+    private volatile boolean permissionInitialized;
     private LocalModelEngine.RecoveryBarrier recoveryBarrier;
     private LocalModelEngine.RecoveryReservation controlRecoveryAttempt;
     private boolean controlRecoveryCallbackFailed;
@@ -37,13 +39,29 @@ public final class LocalProbeApplication extends Application {
         initializeSessions();
         return uiVenusDiagnostic;
     }
+    public synchronized BackgroundPermissionSession backgroundPermissionPreparation(){initializeSessions();return backgroundPermission;}
+    /** Does not initialize recursively when queried by the model constructor/startup inspection. */
+    boolean permissionPreparationBlocksWork(){return !permissionInitialized||backgroundPermission==null||backgroundPermission.blocksOtherWork();}
+    static boolean permissionPreparationBlocks(android.content.Context context){
+        android.content.Context app=context.getApplicationContext();
+        return !(app instanceof LocalProbeApplication)||((LocalProbeApplication)app).permissionPreparationBlocksWork();
+    }
+    static void requirePermissionPreparationIdle(android.content.Context context){
+        if(permissionPreparationBlocks(context))throw new IllegalStateException("后台权限准备仍在运行或其进程退出未确认");
+    }
+    void prepareBackgroundPermissionFromOwnerButton(){
+        recoveryMainThread();initializeSessions();
+        if(tasks.isRunning()||tasks.isBlocked()||tasks.isRecovering()||tasks.hasBackgroundLease()||model.isBusy()||!otherDiagnosticsClean())
+            throw new IllegalStateException("请先结束当前任务、诊断或原后台空间；权限准备不会清除这些状态");
+        backgroundPermission.startFromOwnerButton();
+    }
 
     private static void recoveryMainThread(){
         if(android.os.Looper.myLooper()!=android.os.Looper.getMainLooper())
             throw new IllegalStateException("control recovery must run on the app main thread");
     }
     private boolean otherDiagnosticsClean(){
-        return !visualDiagnostic.isBlocked()&&!visualDiagnostic.isBusy()
+        return !permissionPreparationBlocksWork()&&!visualDiagnostic.isBlocked()&&!visualDiagnostic.isBusy()
                 &&!uiVenusDiagnostic.isBlocked()&&!uiVenusDiagnostic.isBusy();
     }
     private boolean controlRecoveryEligible(){
@@ -152,12 +170,15 @@ public final class LocalProbeApplication extends Application {
         tasks = new LocalTaskSession(this, model);
         visualDiagnostic = new MobiMindModelEngine(this, model);
         uiVenusDiagnostic = new UiVenusModelEngine(this, model);
+        backgroundPermission = new BackgroundPermissionSession(this,model);
+        permissionInitialized = true;
         DiagnosticStartupGate gate = new DiagnosticStartupGate(tasks.isBlocked(), visualDiagnostic.isBlocked(), uiVenusDiagnostic.isBlocked());
         gate.apply(() -> recoveryBarrier = model.reserveRecoveryBarrier());
         initialized = true;
     }
 
     @Override public void onTerminate() {
+        if(backgroundPermission!=null)backgroundPermission.close();
         if (visualDiagnostic != null) visualDiagnostic.close();
         if (uiVenusDiagnostic != null) uiVenusDiagnostic.close();
         if (model != null) model.close();

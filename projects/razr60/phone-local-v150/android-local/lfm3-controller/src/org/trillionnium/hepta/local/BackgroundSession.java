@@ -107,6 +107,7 @@ final class BackgroundSession {
 
     /** Worker only. The durable lease precedes su and the first create request. */
     void start(HeptaAccessibilityService.Cancellation cancellation)throws Exception{
+        LocalProbeApplication.requirePermissionPreparationIdle(context);
         if(android.os.Looper.myLooper()==android.os.Looper.getMainLooper())throw new IllegalStateException("后台创建不得阻塞主线程");
         requireUnlocked();filesRoot.unchanged(context);
         MobiMindPrivateFiles.writeNew(journal,baseJournal().toString().getBytes(StandardCharsets.UTF_8));
@@ -118,6 +119,7 @@ final class BackgroundSession {
                 +" --socket "+quote(socketName)+" --owner-uid "+android.os.Process.myUid()
                 +" --generation "+quote(generation)+" --allowed-packages "+quote(packages)
                 +" --ttl-ms "+TTL_MS+" --expires-elapsed-ms "+expiresElapsed;
+        LocalProbeApplication.requirePermissionPreparationIdle(context);
         brokerProcess=new ProcessBuilder("su","-c",command).redirectErrorStream(true).start();
         spawnAttempted=true;
         final Process launched=brokerProcess;

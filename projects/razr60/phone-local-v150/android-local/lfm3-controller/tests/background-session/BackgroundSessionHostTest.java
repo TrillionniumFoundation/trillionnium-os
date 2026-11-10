@@ -57,6 +57,10 @@ public final class BackgroundSessionHostTest {
         test("display_zero_id_refused",()->{try(Env e=new Env()){e.active();field(e.session,"displayId",0);rejects(e.session::requireActive);}});
         test("locked_and_unknown_lock_state_refused",()->{try(Env e=new Env()){e.active();e.context.keyguard.locked=true;rejects(e.session::requireActive);e.context.keyguard=null;rejects(e.session::requireActive);}});
         test("expired_and_retired_refused",()->{try(Env e=new Env()){e.active();SystemClock.now=e.session.expiresElapsed;rejects(e.session::requireActive);SystemClock.now=1000000;field(e.session,"retired",true);rejects(e.session::requireActive);}});
+        test("permission_preparation_blocks_client_before_lease_or_broker",()->{try(Env e=new Env()){
+            LocalProbeApplication.permissionBusy=true;try{rejects(()->e.session.start(()->false));check(!e.journalPresent()&&LocalSocket.connections==0,"permission preparation cannot create lease or broker");}
+            finally{LocalProbeApplication.permissionBusy=false;}
+        }});
         test("start_cannot_block_main_thread",()->{try(Env e=new Env()){rejects(()->e.session.start(()->false));check(!e.journalPresent()&&LocalSocket.connections==0,"no process or transport before thread check");}});
         test("client_authenticates_server_before_request",()->{LocalSocket.peerUid=10002;rejects(()->exchange(request(UUID.randomUUID().toString(),"state")));check(LocalSocket.sent.length==0,"untrusted server got request");});
         for(int uid:new int[]{0,2000})test("accepted_server_uid_"+uid,()->{LocalSocket.peerUid=uid;LocalSocket.responder=req->response(req,"ACTIVE",7,true,false);JSONObject result=exchange(request(UUID.randomUUID().toString(),"state"));check(result.getInt("display_id")==7&&LocalSocket.timeout==3500,"bound transport response");});

@@ -88,6 +88,7 @@ public final class LocalTaskController implements AutoCloseable {
     }
     public synchronized boolean start(final String instruction,final String expectedScopeSha256,final TaskAuthorization ownerAuthorization,
                                       final BackgroundSession.Selection backgroundSelection,final Listener callback){
+        LocalProbeApplication.requirePermissionPreparationIdle(service);
         TaskAuthorization.require(ownerAuthorization!=null,"任务授权合同缺失");ownerAuthorization.requireOwner(instruction);
         QualificationScope.expected(expectedScopeSha256);
         if(callback==null)throw new IllegalArgumentException("listener required");

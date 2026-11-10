@@ -17,11 +17,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 /** Visible owner task UI, application-owned session, and explicit local model diagnostics. */
-public final class MainActivity extends Activity implements LocalTaskSession.Listener {
+public final class MainActivity extends Activity implements LocalTaskSession.Listener,BackgroundPermissionSession.Listener {
     private LocalModelEngine engine;
     private LocalTaskSession tasks;
     private MobiMindModelEngine visualDiagnostic;
     private UiVenusModelEngine uiVenusDiagnostic;
+    private BackgroundPermissionSession backgroundPermission;
+    private Button prepareBackgroundPermission;
+    private TextView backgroundPermissionState;
     private EditText taskInput, probePrompt;
     private TextView modelInfo, taskState, taskLog, taskResult, probeOutput;
     private TextView taskAuthorizationInfo;
@@ -46,6 +49,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         super.onCreate(state);
         LocalProbeApplication app=(LocalProbeApplication)getApplication();
         engine=app.modelEngine();tasks=app.taskSession();visualDiagnostic=app.mobiMindDiagnostic();
+        backgroundPermission=app.backgroundPermissionPreparation();
         uiVenusDiagnostic=app.uiVenusDiagnostic();
         ScrollView outer=new ScrollView(this);outer.setFillViewport(true);
         LinearLayout page=new LinearLayout(this);page.setOrientation(LinearLayout.VERTICAL);
@@ -63,6 +67,13 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         });
         previewTaskAuthorization();
         backgroundMode=new CheckBox(this);backgroundMode.setText("在后台空间操作");page.addView(backgroundMode);
+        prepareBackgroundPermission=button("启用后台执行权限");page.addView(prepareBackgroundPermission);
+        backgroundPermissionState=text("",12);page.addView(backgroundPermissionState);
+        prepareBackgroundPermission.setOnClickListener(v -> {
+            if(!hasWindowFocus()||isFinishing()||isDestroyed())return;
+            try{app.prepareBackgroundPermissionFromOwnerButton();refresh();}
+            catch(Exception error){refresh();backgroundPermissionState.setText("权限准备未开始："+HeptaAccessibilityService.message(error));}
+        });
         page.addView(text("选择本次可操作的应用和起始应用。开始时会先打开起始应用，这一步由你的选择触发。后台任务需要本机 root 授权；应用兼容性可能影响隔离，遇到越界或锁屏会停止。",12));
         pickBackgroundApps=button("选择后台应用范围");page.addView(pickBackgroundApps);
         pickBackgroundApps.setOnClickListener(v -> chooseBackgroundApps());
@@ -355,6 +366,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             +"\n\n"+raw+"\n\n凭据："+result.runDirectory+"\n"+receipt);
     }
     @Override public void onSessionChanged(){refresh();}
+    @Override public void onPermissionPreparationChanged(){refresh();}
     private void refresh(){
         if(modelInfo==null)return;
         boolean available=HeptaAccessibilityService.connected()!=null;
@@ -363,12 +375,15 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         catch(Exception error) { device="运行参数待修正"; }
         modelInfo.setText(modelName+" · "+device+" · 无外部模型\n"
             +(engine.modelFile().isFile()?"本地模型已导入":"本地模型待导入")
-            +" · "+(available?"无障碍已启用":"无障碍未启用")+" · 可用 RAM "+String.format(Locale.US,"%.2f GiB",engine.availableMemoryBytes()/1073741824.0));
+            +" · "+(available?"无障碍已启用":"无障碍未启用"));
         taskState.setText(tasks.state());taskLog.setText(tasks.log());
         boolean busy=tasks.isRunning()||engine.isBusy();
+        backgroundPermissionState.setText(backgroundPermission.state());
+        prepareBackgroundPermission.setEnabled(!busy&&!tasks.isBlocked()&&!tasks.isRecovering()&&!tasks.hasBackgroundLease()
+                &&!visualDiagnostic.isBusy()&&!visualDiagnostic.isBlocked()&&!uiVenusDiagnostic.isBusy()&&!uiVenusDiagnostic.isBlocked());
         backgroundMode.setEnabled(!busy&&!tasks.isRecovering());pickBackgroundApps.setEnabled(!busy&&!tasks.isRecovering());initialBackgroundApp.setEnabled(!busy&&!tasks.isRecovering());
         cleanupBackground.setVisibility(tasks.hasBackgroundLease()?View.VISIBLE:View.GONE);
-        cleanupBackground.setEnabled(!tasks.isRunning()&&!tasks.isRecovering());
+        cleanupBackground.setEnabled(!tasks.isRunning()&&!tasks.isRecovering()&&!backgroundPermission.blocksOtherWork());
         boolean recoveryAvailable=tasks.canAcknowledgeInterruption();
         acknowledgeInterruption.setVisibility(tasks.isBlocked()||tasks.isRecovering()||recoveryAvailable?View.VISIBLE:View.GONE);
         acknowledgeInterruption.setEnabled(recoveryAvailable);
@@ -433,7 +448,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             android.system.Os.chmod(file.getBaseFile().getPath(),0600);
         }catch(Exception ignored){if(out!=null)file.failWrite(out);}
     }
-    @Override protected void onStart(){super.onStart();if(tasks!=null)tasks.bind(this);}
+    @Override protected void onStart(){super.onStart();if(tasks!=null)tasks.bind(this);if(backgroundPermission!=null)backgroundPermission.bind(this);}
     @Override protected void onResume(){super.onResume();if(tasks!=null)refresh();}
-    @Override protected void onStop(){if(tasks!=null)tasks.unbind(this);super.onStop();}
+    @Override protected void onStop(){if(tasks!=null)tasks.unbind(this);if(backgroundPermission!=null)backgroundPermission.unbind(this);super.onStop();}
 }

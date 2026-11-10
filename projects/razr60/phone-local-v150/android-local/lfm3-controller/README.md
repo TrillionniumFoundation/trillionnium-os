@@ -1,6 +1,17 @@
-# Hepta v38: observed query-field submission
+# Hepta v39: owner UI preparation for background execution
 
-The current candidate is versionCode 38 (`0.38.0-local-ime-submit`), based on v37.
+Current candidate: versionCode 39 (`0.39.0-local-background-setup`), based on frozen v38.
+
+The normal UI now offers **启用后台执行权限**, a fixed read-only `su -c /system/bin/id -u`
+probe under the ordinary application UID. It has independent receipts and shares
+the existing process lease, so preparation cannot overlap tasks or model diagnostics.
+See [CODE39-BACKGROUND-SETUP.md](CODE39-BACKGROUND-SETUP.md) for exact verification,
+interruption behavior and the distinction between one successful probe and permanent
+authorization. This candidate still requires Android build and real phone acceptance.
+
+## v38 predecessor: observed query-field submission
+
+The v38 predecessor was versionCode 38 (`0.38.0-local-ime-submit`), based on v37.
 It adds a strictly observed, query-labelled `ACTION_IME_ENTER` tool to the ordinary
 local controller, with task authorization, full input/window/display binding,
 durable pre-call attempt evidence and no automatic retry. Generic Enter, payment,

@@ -282,6 +282,11 @@ public final class QualificationScopeHostTest {
         test("sticky_refusal_no_done_home_back_rescue",()->{try(Env e=new Env(true)){e.bind(e.scopeSha);e.zeroDenied(e.run("open",FOREIGN[1]));for(String a:new String[]{"home","back","done"})e.zeroDenied(e.run(a,SETTINGS));}});
         test("scope_bound_once_lease_cannot_downgrade",()->{try(Env e=new Env(true)){e.bind(e.scopeSha);rejects(()->e.service.bindQualificationScope(e.task,e.bound));}});
         for(String action:new String[]{"click","type","scroll","back","home","open"})test("allowed_actual_dispatch_"+action,()->{try(Env e=new Env(true)){e.bind(e.scopeSha);HeptaAccessibilityService.ActionOutcome r=e.run(action,"open".equals(action)?CALC:SETTINGS);check(r.accepted&&r.dispatched&&e.service.effects()==1,"allowed one actual fake effect");}});
+        test("permission_preparation_blocks_direct_controller_before_task_lease",()->{try(Env e=new Env(false)){
+            CountingModel model=new CountingModel(e,"wait",SETTINGS,null);e.controller=new LocalTaskController(e.service,model);LocalProbeApplication.permissionBusy=true;
+            try{boolean refused=false;try{e.controller.start("打开设置",new LocalTaskController.Listener(){public void onState(String value){}public void onFinished(LocalTaskController.TaskResult value){}});}catch(IllegalStateException expected){refused=true;}check(refused&&!e.controller.isRunning()&&model.calls==0&&e.service.effects()==0,"no controller, model, display or app effect");}
+            finally{LocalProbeApplication.permissionBusy=false;}
+        }});
         test("unrestricted_absent_scope_preserves_foreign_open",()->{try(Env e=new Env(false)){e.bind(null);e.bound.requireReady();HeptaAccessibilityService.ActionOutcome r=e.run("open",FOREIGN[2]);check(r.dispatched&&e.service.opens==1&&!e.bound.restricted(),"daily behavior preserved");}});
         test("scope_added_during_unrestricted_task_ends_old_mode",()->{try(Env e=new Env(false)){e.bind(null);e.writeConfig();e.zeroDenied(e.run("open",FOREIGN[2]));}});
         test("launch_owner_edit_reuse_and_restoration_do_not_weaken",()->{

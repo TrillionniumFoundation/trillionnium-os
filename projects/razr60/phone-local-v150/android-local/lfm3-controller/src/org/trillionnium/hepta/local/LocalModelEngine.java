@@ -114,6 +114,7 @@ public final class LocalModelEngine implements AutoCloseable {
         private File directory()throws IOException{return new File(new File(files,"runs"),generation()).getCanonicalFile();}
     }
     public synchronized WarmTask beginWarmTask(String taskId){
+        LocalProbeApplication.requirePermissionPreparationIdle(context);
         if(!WarmProcessSession.validId(taskId)||closed.get())throw new IllegalStateException("invalid or closed task model session");
         configuration();
         WarmTask task=new WarmTask(taskId);
@@ -127,6 +128,7 @@ public final class LocalModelEngine implements AutoCloseable {
         task.owner.cancel();WarmProcessSession session=task.session;if(session!=null)session.cancel();
     }
     public RunHandle startWarmRequest(final WarmTask task,final Request request,final Listener listener){
+        LocalProbeApplication.requirePermissionPreparationIdle(context);
         if(request==null||listener==null)throw new IllegalArgumentException("request and listener required");
         if(task==null||warmActive.get()!=task||task.ending.get()||task.owner.isCancellationRequested()
                 ||PROCESS_ACTIVE.get()!=task.owner||closed.get())throw new IllegalStateException("task worker unavailable or retired");
@@ -223,6 +225,7 @@ public final class LocalModelEngine implements AutoCloseable {
         }
     }
     public ExternalRunLease reserveExternal(String requestId){
+        LocalProbeApplication.requirePermissionPreparationIdle(context);
         if(android.os.Looper.myLooper()!=android.os.Looper.getMainLooper())throw new IllegalStateException("external reservation must run on main thread");
         if(closed.get()||requestId==null||!requestId.matches("[0-9a-f]{32}"))throw new IllegalStateException("invalid external reservation");
         RunHandle handle=new RunHandle(requestId);
@@ -264,7 +267,7 @@ public final class LocalModelEngine implements AutoCloseable {
     }
     public boolean canReserveRecovery(RecoveryBarrier barrier){
         recoveryMainThread();
-        return !closed.get()&&barrier!=null&&barrier.owner==this
+        return !LocalProbeApplication.permissionPreparationBlocks(context)&&!closed.get()&&barrier!=null&&barrier.owner==this
                 &&barrier.handle.child.get()==null&&barrier.handoff.canBorrow();
     }
     interface RecoveryCloseListener { void onClosed(RecoveryReservation reservation); }
@@ -325,6 +328,7 @@ public final class LocalModelEngine implements AutoCloseable {
         }
     }
     public RecoveryReservation reserveRecovery(RecoveryBarrier barrier){
+        LocalProbeApplication.requirePermissionPreparationIdle(context);
         recoveryMainThread();
         if(closed.get()||barrier==null||barrier.owner!=this||barrier.handle.child.get()!=null)
             throw new IllegalStateException("owned recovery barrier is unavailable");
@@ -335,6 +339,7 @@ public final class LocalModelEngine implements AutoCloseable {
     }
 
     public RunHandle start(final Request request, final Listener listener) {
+        LocalProbeApplication.requirePermissionPreparationIdle(context);
         if (request == null || listener == null) throw new IllegalArgumentException("request and listener required");
         if (closed.get()) throw new IllegalStateException("engine is closed");
         final RunHandle handle = new RunHandle();
@@ -350,7 +355,7 @@ public final class LocalModelEngine implements AutoCloseable {
         return handle;
     }
 
-    public boolean isBusy() { return PROCESS_ACTIVE.get() != null; }
+    public boolean isBusy() { return PROCESS_ACTIVE.get() != null||LocalProbeApplication.permissionPreparationBlocks(context); }
     public Result lastResult() { return lastResult; }
     public void cancelActive() { RunHandle h = active.get(); if (h != null) h.cancel(); }
     public File modelDirectory() { return new File(files, "model"); }
