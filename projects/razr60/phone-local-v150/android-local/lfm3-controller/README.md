@@ -1,15 +1,26 @@
-# Hepta v41: background startup repair
+# Hepta v42: observed state and control metadata repair
 
-Current candidate: versionCode 41 (`0.41.0-local-background-repair`), based on frozen v40
-commit `d59542de6e7d67c81a60275571f008c21d17b3dd`.
+Current candidate: versionCode 42 (`0.42.0-local-observation-repair`), based on frozen v41
+commit `ebd495d93660f24a3229fe91fec25508c546fad4`.
 
-This candidate fixes the confirmed background socket setup order, narrowly
-handles empty organizer task metadata, retains bounded broker diagnostics and
-repairs the inherited app-label test fixture. The complete strict host gate,
-Android compilation and ordinary phone acceptance are still pending. Existing
-interrupted task journals must retain their original
-bytes; only the normal in-app cleanup and acknowledgement flow may restore task
-availability after it establishes the required cleanup evidence. See
+This candidate refreshes sampled background accessibility nodes, classifies
+same-target content changes as zero-dispatch stale observations, records actual
+broker and ordinary-app display policy readback, and exposes bounded observed
+resource/class properties for otherwise unlabeled controls. Node labels, action
+authority, model/runtime settings and existing cleanup gates remain bound to the
+original observed facts. Full strict host checks, Android compilation and v42
+ordinary phone acceptance are pending. These source repairs do not establish
+successful shopping, flight search or note creation. See
+[CODE42-OBSERVATION-REPAIR.md](CODE42-OBSERVATION-REPAIR.md).
+
+## v41 predecessor: background startup repair
+
+Version 41 (`0.41.0-local-background-repair`) fixed socket setup order, handled
+the narrowly defined empty organizer task shape and retained bounded broker
+diagnostics. Version-specific documents preserve their original freeze-time
+claims. Existing interrupted task journals must retain their original bytes;
+only normal in-app cleanup and acknowledgement may restore task availability
+after the required evidence is established. See
 [CODE41-BACKGROUND-REPAIR.md](CODE41-BACKGROUND-REPAIR.md).
 
 ## v40 predecessor: bounded model continuity and permission guidance

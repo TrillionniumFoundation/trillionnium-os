@@ -36,8 +36,25 @@ public final class BrokerProtocolHostTest {
             "--allowed-packages","com.motorola.cn.calculator,com.example.notes","--ttl-ms","540000",
             "--expires-elapsed-ms","600000"};
     }
+    static java.util.Map<String,Integer> displayConstants(){
+        java.util.Map<String,Integer> value=new java.util.LinkedHashMap<String,Integer>();
+        value.put("FLAG_TRUSTED",128);value.put("FLAG_OWN_FOCUS",2048);value.put("FLAG_STEAL_TOP_FOCUS_DISABLED",4096);
+        value.put("FLAG_SECURE",2);value.put("FLAG_ALWAYS_UNLOCKED",512);return value;
+    }
     public static void main(String[] ignored) throws Exception {
         final BrokerProtocol.Config config = BrokerProtocol.Config.parse(args());
+        test("display_numeric_policy_validates_runtime_mapping",()->{
+            BrokerProtocol.DisplayPolicy value=BrokerProtocol.DisplayPolicy.checked(6272,displayConstants(),2,2);
+            require(value.requiredMask==6272&&value.forbiddenMask==514&&value.flags==6272&&value.imeActual==2);
+            try{value.constants.put("FLAG_SECURE",1);throw new AssertionError();}catch(UnsupportedOperationException expected){}
+        });
+        for(int flags:new int[]{128,2176,4224,6274,6784,-1})test("display_required_or_forbidden_bits_refused_"+flags,()->
+            refusal("DISPLAY_FLAGS_NOT_ACCEPTED",()->BrokerProtocol.DisplayPolicy.checked(flags,displayConstants(),2,2)));
+        test("display_ime_actual_readback_must_match_hide",()->refusal("IME_POLICY_NOT_ACCEPTED",()->BrokerProtocol.DisplayPolicy.checked(6272,displayConstants(),0,2)));
+        test("display_mapping_missing_name_refused",()->{java.util.Map<String,Integer> m=displayConstants();m.remove("FLAG_OWN_FOCUS");refusal("DISPLAY_FLAG_CONSTANTS_INVALID",()->BrokerProtocol.DisplayPolicy.checked(6272,m,2,2));});
+        test("display_mapping_extra_name_refused",()->{java.util.Map<String,Integer> m=displayConstants();m.put("VIRTUAL_DISPLAY_FLAG_PUBLIC",1);refusal("DISPLAY_FLAG_CONSTANTS_INVALID",()->BrokerProtocol.DisplayPolicy.checked(6272,m,2,2));});
+        for(int value:new int[]{0,3,128,-1})test("display_mapping_zero_multibit_alias_negative_refused_"+value,()->{java.util.Map<String,Integer> m=displayConstants();m.put("FLAG_OWN_FOCUS",value);refusal("DISPLAY_FLAG_CONSTANTS_INVALID",()->BrokerProtocol.DisplayPolicy.checked(6272,m,2,2));});
+
         test("valid_config_has_immutable_exact_scope", () -> {
             require(config.ownerUid == 10245 && config.ttlMs == 540000 && config.expiresElapsedMs == 600000);
             require(config.packages.size() == 2);

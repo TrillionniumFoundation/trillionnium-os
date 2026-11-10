@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.observation-hints-fixture.v1",
+  "task_id": "ca52dec778e44c63a8939e5c9f8c62aa",
+  "run_id": "444e4351f26d4d0d99dc4aeb9f9f13d9",
+  "observed_defect": "n5 has an observed resource ID and an empty label; old prompt omits structural properties for this clickable node",
+  "artifacts": [
+    {
+      "fixture": "step-04-before.json",
+      "source_path": "/workspace/scratch/6cc233b67b11/evidence/moto-note-v41-run-r2/evidence/task/step-04-before.json",
+      "size": 7541,
+      "sha256": "bdced6a589e6ec723fcbff543aac3843cec4531b0e042b5a4781c9251004199c"
+    },
+    {
+      "fixture": "step-04-prompt.txt",
+      "source_path": "/workspace/scratch/6cc233b67b11/evidence/moto-note-v41-run-r2/evidence/runs/444e4351f26d4d0d99dc4aeb9f9f13d9/prompt.txt",
+      "size": 5103,
+      "sha256": "69dfa87658899c2c01fced6810066d2a146f9634dc31604e36ef6858b5981c53"
+    }
+  ],
+  "limits": [
+    "Saved node JSON does not include className; the reconstruction uses an empty className, never an invented widget class.",
+    "Host regression uses the real saved screen through the actual prompt builder with synthetic model/runtime IO; no new model or device success is asserted."
+  ]
+}

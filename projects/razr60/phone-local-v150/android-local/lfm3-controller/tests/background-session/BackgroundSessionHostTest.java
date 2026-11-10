@@ -33,14 +33,35 @@ public final class BackgroundSessionHostTest {
     static JSONObject request(String generation,String op)throws Exception{return new JSONObject().put("version",1).put("request_id",UUID.randomUUID().toString()).put("generation",generation).put("deadline_elapsed_ms",SystemClock.now+3000).put("op",op);}
     static JSONObject decode(byte[] frame)throws Exception{DataInputStream input=new DataInputStream(new ByteArrayInputStream(frame));int length=input.readInt();byte[] payload=new byte[length];input.readFully(payload);return new JSONObject(new String(payload,StandardCharsets.UTF_8));}
     static byte[] frame(byte[] payload)throws Exception{ByteArrayOutputStream out=new ByteArrayOutputStream();DataOutputStream data=new DataOutputStream(out);data.writeInt(payload.length);data.write(payload);return out.toByteArray();}
+    static JSONObject policy(String generation,int id)throws Exception{
+        Map<String,Integer> constants=new LinkedHashMap<String,Integer>();
+        constants.put("FLAG_TRUSTED",128);constants.put("FLAG_OWN_FOCUS",2048);constants.put("FLAG_STEAL_TOP_FOCUS_DISABLED",4096);
+        constants.put("FLAG_SECURE",2);constants.put("FLAG_ALWAYS_UNLOCKED",512);
+        org.trillionnium.hepta.background.BrokerProtocol.DisplayPolicy policy=
+            org.trillionnium.hepta.background.BrokerProtocol.DisplayPolicy.checked(6272,constants,2,2);
+        return new JSONObject(policy.numericEvidence()).put("schema",org.trillionnium.hepta.background.BrokerProtocol.DisplayPolicy.SCHEMA)
+            .put("source","broker_framework_readback").put("generation",generation).put("display_id",id)
+            .put("display_name","hepta-bg-"+generation).put("observed_started_elapsed_ms",SystemClock.now)
+            .put("observed_ended_elapsed_ms",SystemClock.now);
+    }
     static byte[] response(byte[] request,String state,int id,boolean ok,boolean dispatched)throws Exception{
-        JSONObject req=decode(request);return frame(new JSONObject().put("version",1).put("request_id",req.getString("request_id")).put("generation",req.getString("generation")).put("ok",ok).put("state",state).put("display_id",id).put("flags",0).put("width",720).put("height",1280).put("density",240).put("dispatched",dispatched).toString().getBytes(StandardCharsets.UTF_8));
+        JSONObject req=decode(request);String generation=req.getString("generation");
+        JSONObject value=new JSONObject().put("version",1).put("request_id",req.getString("request_id"))
+            .put("generation",generation).put("ok",ok).put("state",state).put("display_id",id)
+            .put("flags",6272).put("width",720).put("height",1280).put("density",240).put("dispatched",dispatched)
+            .put("display_name","hepta-bg-"+generation).put("expires_elapsed_ms",SystemClock.now+540000)
+            .put("operation",req.getString("op"));
+        if("ACTIVE".equals(state))value.put("display_policy_readback",policy(generation,id));
+        return frame(value.toString().getBytes(StandardCharsets.UTF_8));
     }
     static JSONObject exchange(JSONObject request)throws Exception{return (JSONObject)invoke(null,"exchange",new Class<?>[]{String.class,String.class,JSONObject.class,int.class},"hepta-bg-"+request.getString("generation"),request.getString("generation"),request,3500);}
     static final class Env implements AutoCloseable {
         final Path directory;final Context context;final BackgroundSession session;
         Env()throws Exception{directory=Files.createTempDirectory("hepta-background-client-");context=new Context(directory.toFile());session=new BackgroundSession(context,TASK,"写备忘录",new BackgroundSession.Selection(PKG,new TreeSet<String>(Arrays.asList(PKG,OTHER))),new QualificationScopeConfig.FilesRoot(context));}
-        void active()throws Exception{field(session,"state","ACTIVE");field(session,"displayId",7);context.displays.displays.put(7,new Display(7,session.displayName));}
+        void active()throws Exception{context.displays.displays.put(7,new Display(7,session.displayName));
+            JSONObject receipt=decode(response(frame(request(session.generation,"state").toString().getBytes(StandardCharsets.UTF_8)),"ACTIVE",7,true,false));
+            invoke(session,"accept",new Class<?>[]{JSONObject.class,boolean.class},receipt,true);
+        }
         void journal()throws Exception{JSONObject value=(JSONObject)invoke(session,"baseJournal",new Class<?>[]{});MobiMindPrivateFiles.writeNew(directory.resolve(BackgroundSession.JOURNAL).toFile(),value.toString().getBytes(StandardCharsets.UTF_8));field(session,"spawnAttempted",true);}
         boolean journalPresent(){return Files.exists(directory.resolve(BackgroundSession.JOURNAL));}
         public void close()throws IOException{android.system.Os.failUnlink=false;try(java.util.stream.Stream<Path> stream=Files.walk(directory)){Path[] paths=stream.sorted(Comparator.reverseOrder()).toArray(Path[]::new);for(Path p:paths)Files.deleteIfExists(p);}}
@@ -69,6 +90,32 @@ public final class BackgroundSessionHostTest {
         test("display_zero_id_refused",()->{try(Env e=new Env()){e.active();field(e.session,"displayId",0);rejects(e.session::requireActive);}});
         test("locked_and_unknown_lock_state_refused",()->{try(Env e=new Env()){e.active();e.context.keyguard.locked=true;rejects(e.session::requireActive);e.context.keyguard=null;rejects(e.session::requireActive);}});
         test("expired_and_retired_refused",()->{try(Env e=new Env()){e.active();SystemClock.now=e.session.expiresElapsed;rejects(e.session::requireActive);SystemClock.now=1000000;field(e.session,"retired",true);rejects(e.session::requireActive);}});
+        test("ordinary_app_flags_independently_match_broker_readback",()->{try(Env e=new Env()){
+            e.active();e.session.requireActive();JSONObject proof=e.session.evidence().getJSONObject("app_display_readback");
+            check(proof.getInt("flags")==6272&&proof.getInt("display_id")==7&&proof.getInt("app_uid")==android.os.Process.myUid(),"ordinary public readback missing");
+            check(e.session.generation.equals(proof.getString("generation"))&&e.session.displayName.equals(proof.getString("display_name"))&&proof.getBoolean("valid"),"readback display generation lost");
+            check(proof.getString("broker_request_id").equals(e.session.evidence().getJSONObject("last_broker_response").getString("request_id")),"readback not bound to authenticated request");
+        }});
+        for(int changed:new int[]{128,6272|2,6272|512,6272|4})test("ordinary_flags_change_refused_"+changed,()->{try(Env e=new Env()){
+            e.active();e.context.displays.displays.get(7).flags=changed;rejects(e.session::requireActive);
+            JSONObject mismatch=e.session.evidence().getJSONObject("app_display_readback");
+            check(mismatch.getInt("flags")==changed&&!mismatch.getBoolean("flags_match_broker"),"actual failed readback was lost or old success retained");
+        }});
+        for(String changed:new String[]{"generation","display_name","display_id","required_mask","forbidden_mask","ime_actual","flags_source","observed_ended_elapsed_ms"})test("broker_policy_identity_or_value_refused_"+changed,()->{try(Env e=new Env()){
+            e.active();JSONObject receipt=e.session.evidence().getJSONObject("last_broker_response");JSONObject policy=receipt.getJSONObject("display_policy_readback");
+            if("display_id".equals(changed))policy.put(changed,8);
+            else if("required_mask".equals(changed)||"forbidden_mask".equals(changed))policy.put(changed,0);
+            else if("ime_actual".equals(changed))policy.put(changed,0);
+            else if("observed_ended_elapsed_ms".equals(changed))policy.put(changed,SystemClock.now+1);
+            else policy.put(changed,"wrong");
+            receipt.put("display_policy_readback",policy);field(e.session,"lastResponse",receipt);rejects(e.session::requireActive);
+        }});
+        test("broker_policy_missing_refused",()->{try(Env e=new Env()){
+            e.active();JSONObject receipt=e.session.evidence().getJSONObject("last_broker_response");receipt.put("display_policy_readback",JSONObject.NULL);field(e.session,"lastResponse",receipt);rejects(e.session::requireActive);
+        }});
+        test("broker_policy_coerced_numeric_string_refused",()->{try(Env e=new Env()){
+            e.active();JSONObject receipt=e.session.evidence().getJSONObject("last_broker_response");JSONObject policy=receipt.getJSONObject("display_policy_readback");policy.put("flags","6272");receipt.put("display_policy_readback",policy);field(e.session,"lastResponse",receipt);rejects(e.session::requireActive);
+        }});
         test("permission_preparation_blocks_client_before_lease_or_broker",()->{try(Env e=new Env()){
             LocalProbeApplication.permissionBusy=true;try{rejects(()->e.session.start(()->false));check(!e.journalPresent()&&LocalSocket.connections==0,"permission preparation cannot create lease or broker");}
             finally{LocalProbeApplication.permissionBusy=false;}

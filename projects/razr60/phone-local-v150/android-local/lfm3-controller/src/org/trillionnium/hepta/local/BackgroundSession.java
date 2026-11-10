@@ -10,6 +10,7 @@ import android.os.SystemClock;
 import android.provider.Settings;
 import android.system.Os;
 import android.view.Display;
+import org.trillionnium.hepta.background.BrokerProtocol;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -25,6 +26,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -69,6 +72,7 @@ final class BackgroundSession {
     private volatile int displayId=-1;
     private volatile boolean retired,spawnAttempted,bootstrapDispatched,cleanupConfirmed;
     private volatile JSONObject lastResponse;
+    private volatile JSONObject appDisplayReadback;
     private Process brokerProcess;
     private volatile boolean brokerExitObserved;
     private volatile Integer brokerExitCode;
@@ -100,6 +104,7 @@ final class BackgroundSession {
                 .put("broker_process_exit_observed",brokerExitObserved)
                 .put("broker_process_exit_code",brokerExitCode==null?JSONObject.NULL:brokerExitCode)
                 .put("broker_output",brokerOutput==null?JSONObject.NULL:brokerOutput.evidence())
+                .put("app_display_readback",appDisplayReadback==null?JSONObject.NULL:new JSONObject(appDisplayReadback.toString()))
                 .put("last_broker_response",lastResponse==null?JSONObject.NULL:new JSONObject(lastResponse.toString()));}
         catch(Exception failure){throw new IllegalStateException("后台会话凭据编码失败",failure);}
     }
@@ -152,15 +157,76 @@ final class BackgroundSession {
         JSONObject response=call(operation,pkg,4000);accept(response,true);requireActive();return response;
     }
     void verifyRemote()throws Exception{requireActive();accept(call("state",null,1800),true);requireActive();}
-    void requireActive(){
+    synchronized void requireActive(){
         if(retired||!"ACTIVE".equals(state)||displayId<=Display.DEFAULT_DISPLAY)
             throw new IllegalStateException("后台空间已退休或未完成创建；不会使用主屏幕");
         if(SystemClock.elapsedRealtime()>=expiresElapsed)throw new IllegalStateException("后台会话已到期");
         requireUnlocked();
+        try{appDisplayReadback=readAppDisplay(lastResponse,displayId);}
+        catch(Exception failure){throw new IllegalStateException("后台屏幕策略读回不一致："+HeptaAccessibilityService.message(failure),failure);}
+    }
+    /** The ordinary app uses only public Display getters; hidden constants stay in the broker. */
+    private JSONObject readAppDisplay(JSONObject response,int id)throws Exception{
+        appDisplayReadback=null; // A failed current read must not retain a prior successful readback as current evidence.
+        BrokerProtocol.DisplayPolicy policy=readBrokerPolicy(response,id);
+        long started=SystemClock.elapsedRealtime();
         DisplayManager manager=(DisplayManager)context.getSystemService(Context.DISPLAY_SERVICE);
-        Display display=manager==null?null:manager.getDisplay(displayId);
-        if(display==null||!displayName.equals(display.getName())||!display.isValid())
-            throw new IllegalStateException("后台屏幕身份已变化；不会使用主屏幕");
+        Display display=manager==null?null:manager.getDisplay(id);
+        if(display==null||display.getDisplayId()!=id||!displayName.equals(display.getName())||!display.isValid())
+            throw new IOException("后台屏幕身份已变化；不会使用主屏幕");
+        int actualFlags=display.getFlags();
+        boolean matched=actualFlags==policy.flags&&(actualFlags&policy.requiredMask)==policy.requiredMask
+                &&(actualFlags&policy.forbiddenMask)==0;
+        JSONObject readback=new JSONObject().put("schema","hepta.background-app-display-readback.v1")
+                .put("source","ordinary_app_public_display_readback").put("flags_source","android.view.Display.getFlags")
+                .put("task_id",taskId).put("generation",generation).put("display_id",id).put("display_name",displayName)
+                .put("app_uid",android.os.Process.myUid()).put("app_pid",android.os.Process.myPid()).put("boot_count",bootCount)
+                .put("broker_request_id",response.getString("request_id")).put("flags",actualFlags).put("valid",true)
+                .put("flags_match_broker",matched)
+                .put("observed_started_elapsed_ms",started).put("observed_ended_elapsed_ms",SystemClock.elapsedRealtime());
+        appDisplayReadback=readback; // Retain an actual mismatch for diagnosis; it cannot authorize an action.
+        if(!matched)throw new IOException("应用与后台服务的屏幕 flags 读回不一致");
+        return readback;
+    }
+    private BrokerProtocol.DisplayPolicy readBrokerPolicy(JSONObject response,int id)throws Exception{
+        if(response==null||id<=0||!Boolean.TRUE.equals(response.get("ok"))||!"ACTIVE".equals(response.getString("state"))
+                ||strictInt(response,"version")!=1||!isUuid(response.getString("request_id"))||!generation.equals(response.getString("generation"))
+                ||!java.util.Arrays.asList("create","state","launch","back").contains(response.getString("operation"))
+                ||strictLong(response,"expires_elapsed_ms")!=expiresElapsed
+                ||id!=strictInt(response,"display_id")||!displayName.equals(response.getString("display_name")))
+            throw new IOException("后台策略回执身份不匹配");
+        JSONObject value=response.getJSONObject("display_policy_readback");
+        if(!BrokerProtocol.DisplayPolicy.SCHEMA.equals(value.getString("schema"))
+                ||!"broker_framework_readback".equals(value.getString("source"))
+                ||!"android.view.Display".equals(value.getString("flag_namespace"))
+                ||!"android.view.Display.getFlags".equals(value.getString("flags_source"))
+                ||!"android.view.IWindowManager.getDisplayImePolicy".equals(value.getString("ime_source"))
+                ||!"android.view.WindowManager.DISPLAY_IME_POLICY_HIDE".equals(value.getString("ime_hide_constant"))
+                ||!generation.equals(value.getString("generation"))||id!=strictInt(value,"display_id")
+                ||!displayName.equals(value.getString("display_name")))throw new IOException("后台策略读回来源或会话不匹配");
+        long begin=strictLong(value,"observed_started_elapsed_ms"),end=strictLong(value,"observed_ended_elapsed_ms");
+        if(begin<createdElapsed||end<begin||end>=expiresElapsed||end>SystemClock.elapsedRealtime())
+            throw new IOException("后台策略读回时间越界");
+        JSONObject constants=value.getJSONObject("flag_constants");
+        if(constants.length()!=BrokerProtocol.DisplayPolicy.REQUIRED.size()+BrokerProtocol.DisplayPolicy.FORBIDDEN.size())
+            throw new IOException("后台 Display 常量集合不完整");
+        Map<String,Integer> mapped=new LinkedHashMap<String,Integer>();
+        for(String name:BrokerProtocol.DisplayPolicy.REQUIRED)mapped.put(name,strictInt(constants,name));
+        for(String name:BrokerProtocol.DisplayPolicy.FORBIDDEN)mapped.put(name,strictInt(constants,name));
+        BrokerProtocol.DisplayPolicy checked=BrokerProtocol.DisplayPolicy.checked(strictInt(value,"flags"),mapped,
+                strictInt(value,"ime_actual"),strictInt(value,"ime_hide_value"));
+        if(checked.flags!=strictInt(response,"flags")||checked.requiredMask!=strictInt(value,"required_mask")
+                ||checked.forbiddenMask!=strictInt(value,"forbidden_mask"))throw new IOException("后台策略掩码或 flags 不匹配");
+        return checked;
+    }
+    private static long strictLong(JSONObject value,String key)throws Exception{
+        Object number=value.get(key);
+        if(!(number instanceof Integer)&&!(number instanceof Long))throw new IOException("后台策略数值类型错误："+key);
+        return ((Number)number).longValue();
+    }
+    private static int strictInt(JSONObject value,String key)throws Exception{
+        long number=strictLong(value,key);if(number<0||number>Integer.MAX_VALUE)throw new IOException("后台策略数值越界："+key);
+        return (int)number;
     }
     private void requireUnlocked(){KeyguardManager keyguard=(KeyguardManager)context.getSystemService(Context.KEYGUARD_SERVICE);
         if(keyguard==null||keyguard.isKeyguardLocked())throw new IllegalStateException("手机已锁定或锁屏状态未知，后台任务停止");}
@@ -168,7 +234,9 @@ final class BackgroundSession {
         String next=response.getString("state");int id=response.getInt("display_id");
         if(displayId>0&&id!=displayId)throw new IOException("后台屏幕标识发生变化");
         if("ACTIVE".equals(next)&&id<=0)throw new IOException("后台服务返回了主屏或无效屏幕");
+        JSONObject readback="ACTIVE".equals(next)?readAppDisplay(response,id):null;
         state=next;if(id>0)displayId=id;lastResponse=new JSONObject(response.toString());
+        if(readback!=null)appDisplayReadback=readback;
         if("RELEASED".equals(next)||"CLEANUP_UNKNOWN".equals(next)||"CLOSING".equals(next))retired=true;
         if(requireSuccess&&!response.getBoolean("ok"))throw new IOException("后台服务拒绝："+response.optString("error","operation_failed")
                 +" "+response.optString("message",""));

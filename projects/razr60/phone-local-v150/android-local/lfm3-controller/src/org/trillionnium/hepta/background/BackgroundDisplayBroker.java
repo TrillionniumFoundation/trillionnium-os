@@ -69,6 +69,8 @@ public final class BackgroundDisplayBroker {
     private volatile long cleanupAt;
     private volatile int displayId = -1;
     private volatile int displayFlags;
+    private volatile JSONObject displayPolicyReadback;
+    private final java.util.Map<String,Integer> displayFlagConstants=new java.util.LinkedHashMap<String,Integer>();
     private volatile LocalSocket connection;
     private volatile LocalServerSocket server;
     private volatile Context shell;
@@ -138,6 +140,8 @@ public final class BackgroundDisplayBroker {
             "VIRTUAL_DISPLAY_FLAG_TRUSTED", "VIRTUAL_DISPLAY_FLAG_OWN_FOCUS", "VIRTUAL_DISPLAY_FLAG_STEAL_TOP_FOCUS_DISABLED");
         requiredDisplayFlags = fields(Display.class, "FLAG_TRUSTED", "FLAG_OWN_FOCUS", "FLAG_STEAL_TOP_FOCUS_DISABLED");
         forbiddenDisplayFlags = fields(Display.class, "FLAG_SECURE", "FLAG_ALWAYS_UNLOCKED");
+        for(String name:BrokerProtocol.DisplayPolicy.REQUIRED)displayFlagConstants.put(name,Display.class.getField(name).getInt(null));
+        for(String name:BrokerProtocol.DisplayPolicy.FORBIDDEN)displayFlagConstants.put(name,Display.class.getField(name).getInt(null));
         imeHide = WindowManager.class.getField("DISPLAY_IME_POLICY_HIDE").getInt(null);
         activityTasks = Class.forName("android.app.ActivityTaskManager").getMethod("getService").invoke(null);
         Class<?> atm = Class.forName("android.app.IActivityTaskManager");
@@ -374,6 +378,7 @@ public final class BackgroundDisplayBroker {
     }
 
     private void verifyDisplay() throws Exception {
+        long readStarted=SystemClock.elapsedRealtime();
         if (displayId <= 0) throw new BrokerProtocol.Refusal("DISPLAY_ID_INVALID");
         Display actual = displays.getDisplay(displayId);
         if (actual == null || !actual.isValid() || !displayName.equals(actual.getName()))
@@ -384,6 +389,13 @@ public final class BackgroundDisplayBroker {
         Object policy = getImePolicy.invoke(windowManager, displayId);
         if (!(policy instanceof Integer) || ((Integer) policy).intValue() != imeHide)
             throw new BrokerProtocol.Refusal("IME_POLICY_NOT_ACCEPTED");
+        BrokerProtocol.DisplayPolicy checked=BrokerProtocol.DisplayPolicy.checked(flags,displayFlagConstants,((Integer)policy).intValue(),imeHide);
+        if(checked.requiredMask!=requiredDisplayFlags||checked.forbiddenMask!=forbiddenDisplayFlags)
+            throw new BrokerProtocol.Refusal("DISPLAY_FLAG_CONSTANTS_INVALID");
+        displayPolicyReadback=new JSONObject(checked.numericEvidence()).put("schema",BrokerProtocol.DisplayPolicy.SCHEMA)
+            .put("source","broker_framework_readback").put("generation",config.generation)
+            .put("display_id",displayId).put("display_name",displayName)
+            .put("observed_started_elapsed_ms",readStarted).put("observed_ended_elapsed_ms",SystemClock.elapsedRealtime());
     }
 
     private void ensureNameAbsent() throws BrokerProtocol.Refusal {
@@ -548,7 +560,8 @@ public final class BackgroundDisplayBroker {
             .put("width", WIDTH).put("height", HEIGHT).put("density", DENSITY)
             .put("dispatched", dispatched).put("display_name", displayName)
             .put("expires_elapsed_ms", expires).put("capture_secure", false).put("always_unlocked", false)
-            .put("ime_policy", "hide");
+            .put("ime_policy", "hide")
+            .put("display_policy_readback", displayPolicyReadback==null?JSONObject.NULL:new JSONObject(displayPolicyReadback.toString()));
         if (r != null) value.put("operation", r.operation);
         if (error != null) value.put("error", error);
         if (!terminalReason.isEmpty()) value.put("terminal_reason", terminalReason);

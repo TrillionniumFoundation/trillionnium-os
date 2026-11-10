@@ -37,6 +37,11 @@ class ExactAdmissionTest(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn("PASS cases=6 ", result.stdout)
             print(result.stdout, end="")
+            hints = subprocess.run([java, "-cp", str(classes), "org.trillionnium.hepta.local.ObservationHintsHostTest",
+                                    str(root / "tests/observation-hints")], capture_output=True, text=True, timeout=30)
+            self.assertEqual(hints.returncode, 0, hints.stdout + hints.stderr)
+            self.assertIn("ObservationHintsHostTest checks=", hints.stdout)
+            print(hints.stdout, end="")
 
 
 if __name__ == "__main__":

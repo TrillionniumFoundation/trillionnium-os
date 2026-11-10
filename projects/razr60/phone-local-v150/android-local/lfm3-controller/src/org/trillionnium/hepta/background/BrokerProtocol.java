@@ -34,6 +34,42 @@ public final class BrokerProtocol {
         public Refusal(String code) { super(code); this.code = code; }
     }
 
+    /** Exact numeric policy contract shared by the broker and ordinary app readback. */
+    public static final class DisplayPolicy {
+        public static final String SCHEMA="hepta.background-display-policy.v1";
+        public static final Set<String> REQUIRED=Collections.unmodifiableSet(new LinkedHashSet<String>(Arrays.asList(
+                "FLAG_TRUSTED","FLAG_OWN_FOCUS","FLAG_STEAL_TOP_FOCUS_DISABLED")));
+        public static final Set<String> FORBIDDEN=Collections.unmodifiableSet(new LinkedHashSet<String>(Arrays.asList(
+                "FLAG_SECURE","FLAG_ALWAYS_UNLOCKED")));
+        public final int flags,requiredMask,forbiddenMask,imeActual,imeHide;
+        public final Map<String,Integer> constants;
+        private DisplayPolicy(int flags,Map<String,Integer> values,int required,int forbidden,int actualIme,int hide){
+            this.flags=flags;constants=Collections.unmodifiableMap(new LinkedHashMap<String,Integer>(values));
+            requiredMask=required;forbiddenMask=forbidden;imeActual=actualIme;imeHide=hide;
+        }
+        public static DisplayPolicy checked(int flags,Map<String,Integer> values,int actualIme,int hide)throws Refusal{
+            Set<String> names=new LinkedHashSet<String>(REQUIRED);names.addAll(FORBIDDEN);
+            if(values==null||!values.keySet().equals(names))throw new Refusal("DISPLAY_FLAG_CONSTANTS_INVALID");
+            int used=0,required=0,forbidden=0;
+            for(String name:names){Integer boxed=values.get(name);int value=boxed==null?0:boxed.intValue();
+                if(value<=0||(value&(value-1))!=0||(used&value)!=0)throw new Refusal("DISPLAY_FLAG_CONSTANTS_INVALID");
+                used|=value;if(REQUIRED.contains(name))required|=value;else forbidden|=value;
+            }
+            if(flags<0||(flags&required)!=required||(flags&forbidden)!=0)throw new Refusal("DISPLAY_FLAGS_NOT_ACCEPTED");
+            if(actualIme<0||hide<0||actualIme!=hide)throw new Refusal("IME_POLICY_NOT_ACCEPTED");
+            return new DisplayPolicy(flags,values,required,forbidden,actualIme,hide);
+        }
+        public Map<String,Object> numericEvidence(){
+            Map<String,Object> value=new LinkedHashMap<String,Object>();
+            value.put("flag_namespace","android.view.Display");value.put("flags_source","android.view.Display.getFlags");
+            value.put("flags",flags);value.put("flag_constants",constants);
+            value.put("required_mask",requiredMask);value.put("forbidden_mask",forbiddenMask);
+            value.put("ime_source","android.view.IWindowManager.getDisplayImePolicy");value.put("ime_actual",imeActual);
+            value.put("ime_hide_constant","android.view.WindowManager.DISPLAY_IME_POLICY_HIDE");value.put("ime_hide_value",imeHide);
+            return value;
+        }
+    }
+
     public static final class Config {
         public final String socketName;
         public final int ownerUid;

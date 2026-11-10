@@ -252,7 +252,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(!observationActive(request))return;
         Graph graph=null;
         try{
-            try{graph=readGraph();}catch(NoActiveWindow busy){/* Only this explicit missing root is transient. */}
+            try{graph=readGraph();}catch(NoActiveWindow|StaleObservation busy){/* A missing root or failed node refresh supplies no stable frame. */}
             long now=SystemClock.elapsedRealtime();
             ObservationStabilityGate.Result result=request.gate.sample(now,graph==null?null:frameKey(graph),true);
             if(result==ObservationStabilityGate.Result.EXPIRED||result==ObservationStabilityGate.Result.CANCELLED){
@@ -313,7 +313,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 try{
                     bitmap=copyScreenshot(result);
                     if(!observationActive(request))return;
-                    try{after=readGraph();}catch(NoActiveWindow busy){retryObservation(request,200);return;}
+                    try{after=readGraph();}catch(NoActiveWindow|StaleObservation busy){retryObservation(request,200);return;}
                     if(!sameObservedFrame(request.captured,after)){retryObservation(request,200);return;}
                     after.close();after=null;
                     if(bitmap.getWidth()<1||bitmap.getHeight()<1||(long)bitmap.getWidth()*bitmap.getHeight()>16000000L)
@@ -329,7 +329,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     String digest=fileSha256(path);
                     // Encoding/fsync/hash can take time. Recheck the full observed graph before publication.
                     if(!observationActive(request))return;
-                    try{after=readGraph();}catch(NoActiveWindow busy){retryObservation(request,200);return;}
+                    try{after=readGraph();}catch(NoActiveWindow|StaleObservation busy){retryObservation(request,200);return;}
                     if(!sameObservedFrame(request.captured,after)){retryObservation(request,200);return;}
                     after.close();after=null;
                     if(!observationActive(request))return;
@@ -408,6 +408,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     &&Integer.valueOf(Display.DEFAULT_DISPLAY).equals(observation.windowMetadata.displayId),"observed application window metadata unknown");
         }catch(Exception error){scope.refuse(message(error));throw new QualificationScope.Violation(message(error));}
     }
+    /** Only freshness failures before an effect may request a new observation/model decision. */
+    private static final class StaleObservation extends IllegalStateException {
+        private static final long serialVersionUID=1L;
+        StaleObservation(String detail){super("stale:"+detail);}
+    }
     /** Runs on the service thread immediately before each actual tool dispatch. */
     private void scopeBeforeDispatch(String taskId,QualificationScopeConfig.Bound dispatchScope,PhoneObservation expected,ActionDecision action,AccessibilityNodeInfo node,boolean nodeRequired){
         QualificationScopeConfig.Bound scope=scopeFor(taskId);
@@ -439,7 +444,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             QualificationScope.require(frame!=null&&expected!=null&&frame.packageName.equals(expected.packageName)&&frame.windowId==expected.windowId,
                     "fresh scope window differs from bound observation");
             QualificationScope.require(ownsScope(taskId,scope),"scope lease retired before dispatch");
-        }catch(Exception error){scope.refuse(message(error));throw new QualificationScope.Violation(message(error));}
+        }catch(StaleObservation changed){throw changed;}
+        catch(Exception error){scope.refuse(message(error));throw new QualificationScope.Violation(message(error));}
         finally{if(window!=null)window.recycle();if(root!=null)root.recycle();}
     }
     private void backgroundBeforeDispatch(String taskId,PhoneObservation expected,ActionDecision action,AccessibilityNodeInfo node,boolean nodeRequired){
@@ -448,7 +454,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if("home".equals(action.action))throw new IllegalArgumentException("后台任务不提供 HOME，也不会回退到主屏导航");
         if("click".equals(action.action)&&action.nodeId==null)throw new IllegalArgumentException("后台任务只接受已观察节点动作，不派发坐标手势");
         if(!background.allows(action.packageName))throw new IllegalArgumentException("动作应用超出本次后台范围");
-        AccessibilityNodeInfo root=null;AccessibilityWindowInfo window=null,nodeWindow=null;
+        AccessibilityNodeInfo root=null;AccessibilityWindowInfo window=null;
         try{
             root=selectedRoot();window=root==null?null:root.getWindow();
             if(root==null||window==null||window.getDisplayId()!=background.displayId()
@@ -457,14 +463,28 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 throw new IllegalStateException("后台目标窗口已变化");
             if(nodeRequired){
                 NodeRef ref=currentGraph==null?null:currentGraph.refs.get(action.nodeId);
-                if(node==null||ref==null||ref.node!=node||!node.refresh()||!node.isVisibleToUser()||!node.isEnabled()
-                        ||!ref.signature.equals(nodeSignature(node,observedChildText(node))))throw new IllegalStateException("后台节点已变化");
-                nodeWindow=node.getWindow();
-                if(nodeWindow==null||nodeWindow.getDisplayId()!=background.displayId()||node.getWindowId()!=expected.windowId
-                        ||!background.allows(string(node.getPackageName())))throw new IllegalStateException("后台节点已移出绑定屏幕或应用");
+                if(node==null||ref==null||ref.node!=node)throw new IllegalStateException("后台节点不属于本次观察");
+                boolean refreshed=node.refresh();background.requireActive();
+                if(!refreshed)throw new StaleObservation("后台节点已不可用，需重新观察");
+                // Identity failures stay terminal, even when the same refresh also changes text.
+                requireBackgroundNodeWindow(background,expected,node);
+                if(!node.isVisibleToUser()||!node.isEnabled()
+                        ||!ref.signature.equals(nodeSignature(node,observedChildText(node,true))))
+                    throw new StaleObservation("后台节点内容已变化，需重新观察");
             }
             if(!ownsBackground(taskId,background))throw new IllegalStateException("后台任务租约已退休");
-        }finally{if(nodeWindow!=null)nodeWindow.recycle();if(window!=null)window.recycle();if(root!=null)root.recycle();}
+        }finally{if(window!=null)window.recycle();if(root!=null)root.recycle();}
+    }
+    private static void requireBackgroundNodeWindow(BackgroundSession background,PhoneObservation expected,AccessibilityNodeInfo node){
+        AccessibilityWindowInfo window=null;
+        try{
+            background.requireActive();
+            window=node.getWindow();
+            if(window==null||window.getDisplayId()!=background.displayId()||window.getType()!=AccessibilityWindowInfo.TYPE_APPLICATION
+                    ||window.getId()!=expected.windowId||node.getWindowId()!=expected.windowId
+                    ||!expected.packageName.equals(string(node.getPackageName()))||!background.allows(string(node.getPackageName())))
+                throw new IllegalStateException("后台节点已移出绑定屏幕、窗口或应用");
+        }finally{if(window!=null)window.recycle();}
     }
     private void scopeOpenIntent(String taskId,QualificationScopeConfig.Bound dispatchScope,String target,Intent launch){
         QualificationScopeConfig.Bound scope=scopeFor(taskId);QualificationScope.require(scope==dispatchScope,"dispatch scope was retired");if(scope.config==null)return;
@@ -497,17 +517,20 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             performOnMain(taskId,expected,decision,targets,cancel,boundCallback,captured,capturedAuthorization,modelRunId);
         }});
     }
+    private static String targetBindingError(PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets){
+        // The label/id pair is the immutable prompt projection, never a live-tree substitution.
+        if(expected==null||targets==null||!expected.id.equals(targets.observationId)||!expected.packageName.equals(targets.packageName))
+            return "目标标签投影不属于本次观察";
+        if(action.nodeId!=null&&!targets.matches(action.observationId,action.packageName,action.nodeId,action.nodeLabel))
+            return "节点文字与标识不是本次观察提供的原始配对";
+        return null;
+    }
     private String validate(String taskId,PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets,Cancellation cancel){
         if(cancel.isCancelled()||!owns(taskId))return "任务已停止";
         if(locked())return "手机已锁定";
         try{requireBackgroundObservation(taskId,expected);}catch(Exception mismatch){return "后台观察无效："+message(mismatch);}
         if(expected!=current||currentGraph==null||!expected.id.equals(action.observationId))return "stale:观察标识已失效";
-        // Use the controller's immutable, exact prompt projection. Never resolve a
-        // label to an ID or reconstruct a different ordering from the live tree.
-        if(targets==null||!expected.id.equals(targets.observationId)||!expected.packageName.equals(targets.packageName))
-            return "目标标签投影不属于本次观察";
-        if(action.nodeId!=null&&!targets.matches(action.observationId,action.packageName,action.nodeId,action.nodeLabel))
-            return "节点文字与标识不是本次观察提供的原始配对";
+        String bindingError=targetBindingError(expected,action,targets);if(bindingError!=null)return bindingError;
         long age=SystemClock.elapsedRealtime()-expected.capturedElapsedMillis;
         if(age<0||age>MAX_OBSERVATION_AGE_MS)return "stale:观察已过期";
         if(!"open".equals(action.action)&&!expected.packageName.equals(action.packageName))return "stale:动作应用与观察不一致";
@@ -518,7 +541,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(ActionPolicy.requiresStableTree(action)&&!currentGraph.digest.equals(now.digest))
                 return "stale:目标窗口内容已变化";
         }
-        catch(Exception e){return "stale:无法复核当前窗口";}finally{if(now!=null)now.close();}
+        catch(StaleObservation changed){return message(changed);}
+        catch(Exception e){return backgroundFor(taskId)==null?"stale:无法复核当前窗口":"后台窗口复核失败："+message(e);}
+        finally{if(now!=null)now.close();}
         return null;
     }
     private void performOnMain(final String taskId,final PhoneObservation expected,final ActionDecision action,
@@ -526,13 +551,17 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                                final QualificationScopeConfig.Bound dispatchScope,final TaskAuthorization.Gate authorization,final String modelRunId){
         try{
             authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
+            if(backgroundFor(taskId)!=null){
+                String bindingError=targetBindingError(expected,action,targets);
+                if(bindingError!=null)throw new IllegalArgumentException(bindingError);
+            }
             scopeBeforeDispatch(taskId,dispatchScope,expected,action,null,false);
             if((scopeFor(taskId).config!=null||backgroundFor(taskId)!=null)&&("click".equals(action.action)||"type".equals(action.action)||"submit".equals(action.action)||"scroll".equals(action.action))){
                 NodeRef ref=currentGraph==null?null:currentGraph.refs.get(action.nodeId);
                 scopeBeforeDispatch(taskId,dispatchScope,expected,action,ref==null?null:ref.node,true);
             }
         }
-        catch(Exception error){callback.onResult(new ActionOutcome(false,false,false,message(error)));return;}
+        catch(Exception error){callback.onResult(new ActionOutcome(false,false,error instanceof StaleObservation,message(error)));return;}
         String invalid=validate(taskId,expected,action,targets,cancel);
         if(invalid!=null){callback.onResult(new ActionOutcome(false,false,invalid.startsWith("stale:"),invalid));return;}
         try{
@@ -583,7 +612,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(scopeFor(taskId).config!=null){
                 if(!refreshed){scopeFor(taskId).refuse("scope node refresh failed");throw new QualificationScope.Violation("scope node refresh failed");}
             }
-            ObservedChildText.Result freshChildText=refreshed?observedChildText(node):ObservedChildText.notApplicable();
+            BackgroundSession background=backgroundFor(taskId);
+            if(refreshed&&background!=null)requireBackgroundNodeWindow(background,expected,node);
+            ObservedChildText.Result freshChildText=refreshed?observedChildText(node,background!=null):ObservedChildText.notApplicable();
             if(!refreshed||!reference.signature.equals(nodeSignature(node,freshChildText))||!node.isVisibleToUser()||!node.isEnabled()){
                 callback.onResult(new ActionOutcome(false,false,true,"stale:目标节点已变化"));return;
             }
@@ -643,7 +674,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     if(cancel.isCancelled()||!node.refresh()||!node.isEditable()||!node.isFocused()||!node.isVisibleToUser()
                             ||!node.isEnabled()||node.isPassword()||node.getWindowId()!=expected.windowId
                             ||!expected.packageName.equals(string(node.getPackageName()))
-                            ||!reference.signature.equals(nodeSignature(node,observedChildText(node))))
+                            ||!reference.signature.equals(nodeSignature(node,observedChildText(node,background!=null))))
                         throw new IllegalStateException("提交记录已消费，但字段或任务已变化；未调用编辑器，不重试");
                     requireSubmitWindow(node,expected.windowId,currentGraph.displayId);
                     guard.entering(attempt);
@@ -665,7 +696,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
                 accepted=node.performAction(operation);finishAfter(450,accepted,accepted?"滚动已接受":"滚动未接受",callback);
             }else throw new IllegalArgumentException("不支持的动作");
-        }catch(Exception e){callback.onResult(new ActionOutcome(false,false,false,message(e)));}
+        }catch(Exception e){callback.onResult(new ActionOutcome(false,false,e instanceof StaleObservation,message(e)));}
     }
     /** IPC runs off the service/main thread. A missing reply is a possible dispatch, never a retry. */
     private void dispatchBackgroundNavigation(final String id,final PhoneObservation expected,final ActionDecision action,
@@ -846,10 +877,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             }
             if(chosen==null)throw new NoActiveWindow();
             AccessibilityNodeInfo root=chosen.getRoot();if(root==null)throw new NoActiveWindow();
-            if(root.getWindowId()!=chosen.getId()||!background.allows(string(root.getPackageName()))||!root.isVisibleToUser()){
-                root.recycle();throw new IllegalStateException("后台屏幕出现未授权应用或不可见窗口，任务停止");
-            }
-            return root;
+            try{
+                boolean refreshed=root.refresh();background.requireActive();
+                if(!refreshed)throw new StaleObservation("后台根节点已不可用，需重新观察");
+                if(root.getWindowId()!=chosen.getId()||!background.allows(string(root.getPackageName()))||!root.isVisibleToUser())
+                    throw new IllegalStateException("后台屏幕出现未授权应用或不可见窗口，任务停止");
+                return root;
+            }catch(RuntimeException error){root.recycle();throw error;}
         }finally{for(AccessibilityWindowInfo window:windows)if(window!=null)window.recycle();}
     }
     private Graph readGraph(){
@@ -870,6 +904,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             while(!queue.isEmpty()&&visited<MAX_VISITED){
                 AccessibilityNodeInfo node=queue.removeFirst();visited++;
                 try{
+                    // selectedRoot refreshed the root before graph metadata was read.
+                    // Descendants may still be cached; never publish an old body as a new frame.
+                    if(background!=null&&node!=root&&!node.refresh())throw new StaleObservation("后台子节点已不可用，需重新观察");
                     Rect bounds=new Rect();node.getBoundsInScreen(bounds);boolean visible=node.isVisibleToUser()&&!bounds.isEmpty();
                     String text=node.isPassword()?"":limited(string(node.getText()),96);
                     String description=node.isPassword()?"":limited(string(node.getContentDescription()),96);
@@ -877,7 +914,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     ObservedImeEnter imeEnter=readImeEnter(node);String inputHash=inputTextHash(node);
                     boolean useful=visible&&(node.isClickable()||node.isEditable()||node.isScrollable()||!text.isEmpty()||!description.isEmpty());
                     if(useful){
-                        ObservedChildText.Result childText=graph.rows.size()<MAX_NODES?observedChildText(node):ObservedChildText.notApplicable();
+                        ObservedChildText.Result childText=graph.rows.size()<MAX_NODES?observedChildText(node,background!=null):ObservedChildText.notApplicable();
                         if(graph.rows.size()<MAX_NODES&&characters+text.length()+description.length()+childText.text.length()<2400){
                             String id="n"+graph.rows.size();NodeRef reference=new NodeRef(node,childText,scrollActions,imeEnter,inputHash);graph.refs.put(id,reference);signatures.append(reference.appTreeSignature).append('\n');
                             scrollStates.append(id).append('=').append(scrollActions.fingerprintInput()).append('\n');
@@ -889,7 +926,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     }
                     int children=Math.min(node.getChildCount(),MAX_VISITED-visited-queue.size());
                     if(children<node.getChildCount())graph.truncated=true;
-                    for(int index=0;index<children;index++){AccessibilityNodeInfo child=node.getChild(index);if(child!=null)queue.add(child);}
+                    for(int index=0;index<children;index++){
+                        AccessibilityNodeInfo child=node.getChild(index);
+                        if(child!=null)queue.add(child);
+                        else if(background!=null)throw new StaleObservation("后台子树已变化，需重新观察");
+                    }
                 }finally{node.recycle();}
             }
             if(!queue.isEmpty())graph.truncated=true;
@@ -952,11 +993,16 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             return ObservedScrollActions.observed(directions);
         }catch(RuntimeException unavailable){return ObservedScrollActions.UNKNOWN;}
     }
-    private static ObservedChildText.Result observedChildText(final AccessibilityNodeInfo root){
+    private static ObservedChildText.Result observedChildText(final AccessibilityNodeInfo root){return observedChildText(root,false);}
+    private static ObservedChildText.Result observedChildText(final AccessibilityNodeInfo root,final boolean refreshChildren){
         final Rect rootBounds=new Rect();root.getBoundsInScreen(rootBounds);
         final String ownerPackage=string(root.getPackageName());final int ownerWindow=root.getWindowId();
-        return ObservedChildText.collect(root,new ObservedChildText.Reader<AccessibilityNodeInfo>(){
+        final boolean[] staleChild={false};
+        ObservedChildText.Result result=ObservedChildText.collect(root,new ObservedChildText.Reader<AccessibilityNodeInfo>(){
             public ObservedChildText.Metadata metadata(AccessibilityNodeInfo node){
+                if(refreshChildren&&node!=root&&!node.refresh()){
+                    staleChild[0]=true;throw new StaleObservation("后台标签子节点已不可用，需重新观察");
+                }
                 Rect bounds=new Rect();node.getBoundsInScreen(bounds);
                 boolean inputLike=node.isEditable()||node.getInputType()!=0;
                 boolean clickAction=hasAction(node,AccessibilityNodeInfo.ACTION_CLICK);
@@ -980,6 +1026,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             public AccessibilityNodeInfo child(AccessibilityNodeInfo node,int index){return node.getChild(index);}
             public void release(AccessibilityNodeInfo node){node.recycle();}
         });
+        // collect() intentionally suppresses inaccessible child labels; a failed live
+        // refresh additionally invalidates this background frame, not just its label.
+        if(staleChild[0])throw new StaleObservation("后台标签子节点已不可用，需重新观察");
+        return result;
     }
     private static String baseNodeSignature(AccessibilityNodeInfo node){
         Rect bounds=new Rect();node.getBoundsInScreen(bounds);

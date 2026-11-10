@@ -292,7 +292,7 @@ public final class QualificationScopeHostTest {
         test("launch_owner_edit_reuse_and_restoration_do_not_weaken",()->{
             QualificationScope.Launch original=QualificationScope.Launch.prefill("原任务",H);check(H.equals(original.claim("原任务")),"bound owner");rejects(()->original.claim("已修改"));QualificationScope.Launch consumed=original.accepted();rejects(()->consumed.claim("原任务"));
             QualificationScope.Launch restored=QualificationScope.Launch.restore(consumed.expectedSha256,consumed.ownerSha256,consumed.consumed);rejects(()->restored.claim("原任务"));check(H.equals(original.claim("原任务")),"immutable prior task claim");check(QualificationScope.Launch.normal().claim("新任务")==null,"new normal UI");});
-        lifecycleCases();uiCases();productionControllerCases();
+        lifecycleCases();uiCases();productionControllerCases();BackgroundFreshnessHostTest.run();
         writeResult();
     }
     private static void writeResult()throws Exception{

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.trillionnium.hepta.local" android:versionCode="41" android:versionName="0.41.0-local-background-repair">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.trillionnium.hepta.local" android:versionCode="42" android:versionName="0.42.0-local-observation-repair">
     <uses-sdk android:minSdkVersion="30" android:targetSdkVersion="35" />
     <queries>
         <package android:name="com.android.settings" />
