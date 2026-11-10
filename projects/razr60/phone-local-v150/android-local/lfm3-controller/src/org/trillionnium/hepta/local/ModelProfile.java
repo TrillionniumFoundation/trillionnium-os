@@ -40,6 +40,13 @@ public final class ModelProfile {
     public static final ModelProfile QWEN35_9B=new ModelProfile("qwen3.5-9b-q4_0","Qwen 3.5 9B（实验）",
             "unsloth/Qwen3.5-9B-GGUF","3885219b6810b007914f3a7950a8d1b469d598a5","Qwen3.5-9B-Q4_0.gguf",5379417312L,
             "17670346b4260ddcb0173965145155885024f3c9a4a24389a3370751edbcde24","qwen35",true,8L<<30);
+    // Experimental text candidates; RAM gates are not measured peaks or qualification.
+    public static final ModelProfile BONSAI2_9B=new ModelProfile("bonsai2-9b-q2_0","Bonsai 2 9B（实验）",
+            "prism-ml/Ternary-Bonsai-2-9B-gguf","82265ccc78ddaac4700286a35e9badcc32376dd9","Ternary-Bonsai-2-9B-Q2_0.gguf",2556640128L,
+            "1f884aa56aacd2bbbb2e4b7abaead2b1102b74a9c75a23fc33dab916813a384d","qwen35",true,6L<<30);
+    public static final ModelProfile ORVENA4B=new ModelProfile("orvena-4b-q4_k_m","Orvena 4B（实验）",
+            "mradermacher/Orvena-4B-GGUF","a2f0300d9c43ee0911610d791ec3bfd302aafa6c","Orvena-4B.Q4_K_M.gguf",2783447904L,
+            "c5d6df6e9a0828fa3068dfc6f6ca2ff6c4d950adc7e60e4b7202ece61595aa57","qwen35",true,5L<<30);
     public final String id,displayName,repository,revision,fileName,sha256,architecture;
     public final long bytes,minimumAvailableBytes;
     public final boolean exactTokenizationRequired;
@@ -59,6 +66,8 @@ public final class ModelProfile {
         if(BOLT_E4B.id.equals(id))return BOLT_E4B;
         if(QWEN35_4B.id.equals(id))return QWEN35_4B;
         if(QWEN35_9B.id.equals(id))return QWEN35_9B;
+        if(BONSAI2_9B.id.equals(id))return BONSAI2_9B;
+        if(ORVENA4B.id.equals(id))return ORVENA4B;
         throw new IllegalArgumentException("unknown pinned model_profile");
     }
 }

@@ -13,6 +13,14 @@ def generate(root, out):
     last=source.index('static void destination_close(',first)
     replacement=(root/'native/publish-appuid.inc').read_text()
     adapted=source[:first]+replacement+'\n'+source[last:]
+    # The probe sets feature macros before its first system include. glibc may
+    # raise their values for _GNU_SOURCE; a subsequently included worker must
+    # preserve that already-selected feature set. Standalone generation keeps
+    # the original POSIX/XOPEN defaults when neither macro has been defined.
+    feature_prefix = '#define _POSIX_C_SOURCE 200809L\n#define _XOPEN_SOURCE 700\n'
+    assert adapted.startswith(feature_prefix)
+    guarded_prefix = '#ifndef _POSIX_C_SOURCE\n#define _POSIX_C_SOURCE 200809L\n#endif\n#ifndef _XOPEN_SOURCE\n#define _XOPEN_SOURCE 700\n#endif\n'
+    adapted = guarded_prefix + adapted[len(feature_prefix):]
     # Replace only the generated primitive. The pinned upstream bytes, full
     # per-request model read, SHA comparison, held FD and metadata fences stay.
     first=adapted.index('typedef struct { uint32_t h[8]; uint64_t bits; unsigned char block[64]; size_t used; } Sha256;')

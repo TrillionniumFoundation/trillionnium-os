@@ -28,6 +28,7 @@ import time
 import xml.etree.ElementTree as ET
 
 import phone_acceptance as _acceptance
+from model_profiles import PROFILES
 
 Adb, DriverError = _acceptance.Adb, _acceptance.DriverError
 digest, private_write, write_json, strict_json = (_acceptance.digest, _acceptance.private_write,
@@ -51,7 +52,7 @@ SESSION_KEYS = {
 }
 CONFIG_KEYS = {
     "schema": '"hepta[.]local-runtime[.]v[12]"', "compute": '"(npu|gpu)"',
-    "model_profile": '"(lfm3-1[.]7b-qad-q4_0|minicpm5-2b-q4_k_m|spark-x2[.]6-4b-q4_k_m)"',
+    "model_profile": '"(' + "|".join(re.escape(name) for name in PROFILES) + ')"',
     "context_tokens": "(4096|8192)", "threads": "[1-8]",
 }
 

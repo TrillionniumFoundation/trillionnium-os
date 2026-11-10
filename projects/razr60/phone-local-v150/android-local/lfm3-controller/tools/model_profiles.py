@@ -20,6 +20,10 @@ PROFILES = {
         "sha256": "298fcb5fe7a77ccc79745ae24751560c5ac56874caff4bb39b1f2055bd72b8bb", "architecture": "qwen35", "exact": True},
     "qwen3.5-9b-q4_0": {"file": "Qwen3.5-9B-Q4_0.gguf", "bytes": 5379417312,
         "sha256": "17670346b4260ddcb0173965145155885024f3c9a4a24389a3370751edbcde24", "architecture": "qwen35", "exact": True},
+    "bonsai2-9b-q2_0": {"file": "Ternary-Bonsai-2-9B-Q2_0.gguf", "bytes": 2556640128,
+        "sha256": "1f884aa56aacd2bbbb2e4b7abaead2b1102b74a9c75a23fc33dab916813a384d", "architecture": "qwen35", "exact": True},
+    "orvena-4b-q4_k_m": {"file": "Orvena-4B.Q4_K_M.gguf", "bytes": 2783447904,
+        "sha256": "c5d6df6e9a0828fa3068dfc6f6ca2ff6c4d950adc7e60e4b7202ece61595aa57", "architecture": "qwen35", "exact": True},
 }
 
 def profile(name=DEFAULT_PROFILE):
