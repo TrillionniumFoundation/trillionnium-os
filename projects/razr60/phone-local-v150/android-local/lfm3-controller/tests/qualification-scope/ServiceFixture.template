@@ -1,0 +1,73 @@
+package org.trillionnium.hepta.local;
+import android.content.*;
+import android.content.pm.*;
+import android.graphics.Rect;
+import android.os.*;
+import android.view.Display;
+import android.view.accessibility.*;
+import org.json.*;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.*;
+/** Only acquisition/observation/Android effects are IO fakes; extracted sections are production. */
+public final class HeptaAccessibilityService extends android.content.Context {
+{{service_interfaces_outcome}}
+    static HeptaAccessibilityService live;
+    static final int GLOBAL_ACTION_BACK=1,GLOBAL_ACTION_HOME=2;
+    final Handler main=new Handler(Looper.getMainLooper());
+    String lease;Runnable stopListener;QualificationScopeConfig.Bound taskScope;
+    LocalTaskController ownedController;LocalInference testInference;
+    PhoneObservation current;Graph currentGraph;AppCatalogueRanker appDiscovery;
+    final Map<String,String> launchable=new LinkedHashMap<String,String>();
+    static final long MAX_OBSERVATION_AGE_MS=90000;
+    public AccessibilityNodeInfo root,node;
+    public int rootsRead,opens,navigations,gestures,observations;
+    public int mutateOnRoot=-1;public String mutateRootPackage;
+    public Runnable effectHook;
+    public HeptaAccessibilityService(File files,PackageManager pm){super(files,pm);live=this;}
+    public static HeptaAccessibilityService connected(){return live;}
+    public synchronized LocalTaskController taskController(LocalModelEngine engine){if(ownedController==null)ownedController=new LocalTaskController(this,testInference);return ownedController;}
+{{lease}}
+    private boolean locked(){return false;}
+    private void refreshApps(){}
+    public AppCatalogueRanker.Page appCatalogue(String task,String instruction){appDiscovery=new AppCatalogueRanker(launchable,instruction);return appDiscovery.search("",0);}
+    public AccessibilityNodeInfo getRootInActiveWindow(){rootsRead++;if(rootsRead==mutateOnRoot&&root!=null)root.pkg=mutateRootPackage;return root;}
+    public void startActivity(Intent intent){opens++;if(effectHook!=null)effectHook.run();}
+    public boolean performGlobalAction(int action){navigations++;if(effectHook!=null)effectHook.run();return true;}
+    private void coordinateClick(String task,PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets,Cancellation cancel,ActionCallback callback){gestures++;callback.onResult(new ActionOutcome(true,true,false,"fake gesture"));}
+    private Graph readGraph(){
+        if(root==null)throw new IllegalStateException("no root");
+        Graph g=new Graph();g.packageName=root.pkg;g.windowId=root.windowId;g.rotation=0;g.bounds=new Rect(0,0,1080,2400);g.digest="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";return g;
+    }
+    public void prepare(String pkg){
+        root=new AccessibilityNodeInfo(pkg,7);node=new AccessibilityNodeInfo(pkg,7);node.text="测试";node.editable=true;node.scrollable=true;
+        node.onAction=()->{if(effectHook!=null)effectHook.run();};
+        currentGraph=readGraph();currentGraph.refs.put("n0",new NodeRef(node,observedChildText(node),readScrollActions(node)));
+        current=observation();
+    }
+    private PhoneObservation observation(){
+        String id=String.format(java.util.Locale.ROOT,"%032x",++observations);
+        String pkg=root==null?"":root.pkg;int window=root==null?-1:root.windowId;
+        ObservedWindowMetadata metadata=ObservedWindowMetadata.observed(new int[]{0,0,1080,2400},"FrameLayout",1,0,new int[]{0,0,1080,2400},"Settings");
+        List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();
+        if(node!=null)rows.add(new PhoneObservation.Node("n0",node.pkg,"TextView","synthetic:id/entry",node.text,"",new Rect(10,10,500,150),true,true,true,true,true,false,observedChildText(node),readScrollActions(node)));
+        return new PhoneObservation(id,pkg,SystemClock.elapsedRealtime(),1080,2400,0,window,new Rect(0,0,1080,2400),new File(getFilesDir(),"synthetic.png"),"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",new ObservationState("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",ImeVisibility.HIDDEN),metadata,false,rows);
+    }
+    public void observe(String task,File directory,Cancellation cancel,long deadline,ObservationCallback callback){
+        current=observation();currentGraph=readGraph();if(node!=null)currentGraph.refs.put("n0",new NodeRef(node,observedChildText(node),readScrollActions(node)));callback.onObservation(current);
+    }
+    public ActionOutcome execute(ActionDecision action)throws Exception{
+        final ActionOutcome[] box=new ActionOutcome[1];ObservedTargetLabels labels=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,current.id,current.packageName,java.util.Collections.singletonMap("n0",node==null?"":node.text));
+        perform(lease,current,action,labels,()->false,value->box[0]=value);return box[0];
+    }
+    public void enqueue(ActionDecision action,Cancellation cancel,ActionCallback callback){
+        ObservedTargetLabels labels=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,current.id,current.packageName,java.util.Collections.singletonMap("n0",node==null?"":node.text));
+        perform(lease,current,action,labels,cancel,callback);
+    }
+    public int effects(){return opens+navigations+gestures+(node==null?0:node.actions);}
+{{scope_validate_dispatch}}
+{{node_graph}}
+{{node_identity}}
+{{strings}}
+}

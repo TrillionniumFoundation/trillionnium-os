@@ -43,18 +43,25 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         public final boolean accepted, dispatched, stale;
         public final String detail;
         public final AppCatalogueRanker.Page appCatalogue;
+        public final JSONObject qualificationScope;
         ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail) {
             this(accepted,dispatched,stale,detail,null);
         }
         ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail,AppCatalogueRanker.Page appCatalogue) {
+            this(accepted,dispatched,stale,detail,appCatalogue,null);
+        }
+        private ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail,AppCatalogueRanker.Page appCatalogue,JSONObject scope){
             this.accepted=accepted;this.dispatched=dispatched;this.stale=stale;this.detail=detail;
-            this.appCatalogue=appCatalogue;
+            this.appCatalogue=appCatalogue;this.qualificationScope=scope;
+        }
+        ActionOutcome withScope(JSONObject scope){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,scope);
         }
     }
     private static volatile HeptaAccessibilityService live;
     public static HeptaAccessibilityService connected() { return live; }
     private final Handler main=new Handler(Looper.getMainLooper());
     private String lease;
+    private QualificationScopeConfig.Bound taskScope;
     private Runnable stopListener;
     private LocalTaskController ownedController;
     private long lastScreenshotAt;
@@ -106,13 +113,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             RecoveryJournalTransaction.Proof proof){
         if(proof==null||!recoveryControllerIdle(expected))throw new IllegalStateException("controller is not idle for acknowledgement");
         if(expected!=null){expected.setListener(null);expected.close();}
-        ownedController=null;lease=null;stopListener=null;appDiscovery=null;clearSnapshot();
+        ownedController=null;lease=null;stopListener=null;appDiscovery=null;taskScope=null;clearSnapshot();
     }
     private void requestStop() { Runnable value; synchronized(this){value=stopListener;} if(value!=null)value.run(); }
     public synchronized boolean acquireTask(String taskId,Runnable onStop) {
-        if(lease!=null || live!=this)return false;lease=taskId;stopListener=onStop;appDiscovery=null;return true;
+        if(lease!=null || live!=this)return false;lease=taskId;stopListener=onStop;appDiscovery=null;taskScope=null;return true;
     }
-    public synchronized void releaseTask(String taskId) { if(taskId.equals(lease)){lease=null;stopListener=null;appDiscovery=null;} }
+    public synchronized void releaseTask(String taskId) { if(taskId.equals(lease)){lease=null;stopListener=null;appDiscovery=null;taskScope=null;} }
     private synchronized boolean owns(String taskId) { return taskId.equals(lease) && live==this; }
     private boolean locked() { KeyguardManager value=(KeyguardManager)getSystemService(KEYGUARD_SERVICE);return value!=null&&value.isKeyguardLocked(); }
     private int rotation() { return ((WindowManager)getSystemService(WINDOW_SERVICE)).getDefaultDisplay().getRotation(); }
@@ -281,9 +288,95 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private void clearSnapshot(){if(currentGraph!=null)currentGraph.close();if(currentBitmap!=null)currentBitmap.recycle();current=null;currentGraph=null;currentBitmap=null;}
 
+    synchronized void bindQualificationScope(String taskId,QualificationScopeConfig.Bound scope){
+        QualificationScope.require(owns(taskId)&&taskScope==null&&scope!=null&&taskId.equals(scope.taskId),"scope lease binding invalid");
+        taskScope=scope;
+    }
+    private synchronized QualificationScopeConfig.Bound scopeFor(String taskId){
+        QualificationScope.require(owns(taskId)&&taskScope!=null&&taskId.equals(taskScope.taskId),"scope lease not bound");return taskScope;
+    }
+    JSONObject qualificationScopeEvidence(String taskId){return scopeFor(taskId).evidence();}
+    private synchronized boolean ownsScope(String taskId,QualificationScopeConfig.Bound scope){
+        return scope!=null&&owns(taskId)&&taskScope==scope;
+    }
+    private static JSONObject callbackScopeEvidence(String taskId,QualificationScopeConfig.Bound captured,boolean currentLease,boolean cancelled){
+        try{
+            JSONObject value=captured==null?new JSONObject().put("schema","hepta.qualification-task-scope.v1").put("task_id",taskId)
+                    .put("expected_scope_sha256",JSONObject.NULL).put("actual_scope_sha256",JSONObject.NULL)
+                    .put("scope_loaded",false).put("scope_refused",true).put("refusal","task scope unavailable at dispatch"):captured.evidence();
+            return value.put("callback_lease_current",currentLease).put("callback_cancelled",cancelled);
+        }catch(Exception error){throw new IllegalStateException("cannot encode captured action scope",error);}
+    }
+    void requireScopeObservation(String taskId,PhoneObservation observation){
+        QualificationScopeConfig.Bound scope=scopeFor(taskId);
+        try{
+            scope.verifyUnchanged();if(scope.config==null)return;
+            QualificationScope.require(observation!=null&&observation.windowId>=0&&scope.config.allows(observation.packageName),"observed package outside scope or unknown");
+            QualificationScope.require(observation.windowMetadata!=null&&"observed".equals(observation.windowMetadata.status)
+                    &&Integer.valueOf(AccessibilityWindowInfo.TYPE_APPLICATION).equals(observation.windowMetadata.type)
+                    &&Integer.valueOf(Display.DEFAULT_DISPLAY).equals(observation.windowMetadata.displayId),"observed application window metadata unknown");
+        }catch(Exception error){scope.refuse(message(error));throw new QualificationScope.Violation(message(error));}
+    }
+    /** Runs on the service thread immediately before each actual tool dispatch. */
+    private void scopeBeforeDispatch(String taskId,QualificationScopeConfig.Bound dispatchScope,PhoneObservation expected,ActionDecision action,AccessibilityNodeInfo node,boolean nodeRequired){
+        QualificationScopeConfig.Bound scope=scopeFor(taskId);
+        QualificationScope.require(scope==dispatchScope,"dispatch scope was retired");
+        AccessibilityNodeInfo root=null;AccessibilityWindowInfo window=null;
+        try{
+            scope.verifyUnchanged();
+            if(scope.config==null){
+                scope.gate.check(action.action,action.packageName,null,null,null,false);
+                QualificationScope.require(ownsScope(taskId,scope),"scope lease retired before dispatch");return;
+            }
+            root=getRootInActiveWindow();
+            if(root!=null)window=root.getWindow();
+            QualificationScope.Window frame=null;
+            if(root!=null&&window!=null&&window.getId()==root.getWindowId()){
+                Rect bounds=new Rect();root.getBoundsInScreen(bounds);
+                frame=new QualificationScope.Window(string(root.getPackageName()),root.getWindowId(),window.getType(),window.getDisplayId(),
+                        window.isActive(),root.isVisibleToUser()&&!bounds.isEmpty());
+            }
+            boolean refreshed=!nodeRequired||(node!=null&&node.refresh());
+            String operation="click".equals(action.action)&&action.nodeId==null?"coordinate_click":action.action;
+            scope.gate.check(operation,action.packageName,frame,!refreshed||node==null?null:string(node.getPackageName()),!refreshed||node==null?null:Integer.valueOf(node.getWindowId()),nodeRequired);
+            if(nodeRequired){
+                NodeRef ref=currentGraph==null?null:currentGraph.refs.get(action.nodeId);
+                QualificationScope.require(ref!=null&&ref.node==node&&node.isVisibleToUser()&&node.isEnabled()
+                        &&ref.signature.equals(nodeSignature(node,observedChildText(node))),"scope node changed before dispatch");
+            }
+            QualificationScope.require(frame!=null&&expected!=null&&frame.packageName.equals(expected.packageName)&&frame.windowId==expected.windowId,
+                    "fresh scope window differs from bound observation");
+            QualificationScope.require(ownsScope(taskId,scope),"scope lease retired before dispatch");
+        }catch(Exception error){scope.refuse(message(error));throw new QualificationScope.Violation(message(error));}
+        finally{if(window!=null)window.recycle();if(root!=null)root.recycle();}
+    }
+    private void scopeOpenIntent(String taskId,QualificationScopeConfig.Bound dispatchScope,String target,Intent launch){
+        QualificationScopeConfig.Bound scope=scopeFor(taskId);QualificationScope.require(scope==dispatchScope,"dispatch scope was retired");if(scope.config==null)return;
+        try{
+            ResolveInfo resolved=getPackageManager().resolveActivity(launch,0);
+            QualificationScope.require(launch.getComponent()!=null&&target.equals(launch.getComponent().getPackageName())
+                    &&resolved!=null&&resolved.activityInfo!=null&&target.equals(resolved.activityInfo.packageName),"launch entry resolves outside scoped target");
+        }catch(Exception error){scope.refuse(message(error));throw new QualificationScope.Violation(message(error));}
+    }
+
     public void perform(final String taskId,final PhoneObservation expected,final ActionDecision decision,
                         final ObservedTargetLabels targets,final Cancellation cancel,final ActionCallback callback){
-        main.post(new Runnable(){public void run(){performOnMain(taskId,expected,decision,targets,cancel,callback);}});
+        // Capture this task's source once. A late callback must never look up a
+        // retired lease or borrow a newly started task's scope.
+        final QualificationScopeConfig.Bound captured;
+        synchronized(this){captured=owns(taskId)?taskScope:null;}
+        final ActionCallback boundCallback=new ActionCallback(){public void onResult(ActionOutcome result){
+            boolean currentLease=ownsScope(taskId,captured),stopped=cancel.isCancelled();
+            ActionOutcome delivered=currentLease&&!stopped?result:new ActionOutcome(false,result.dispatched,false,
+                    "任务已停止或租约已退休；保留已发生的派发，不接受迟到回执",result.appCatalogue);
+            callback.onResult(delivered.withScope(callbackScopeEvidence(taskId,captured,currentLease,stopped)));
+        }};
+        main.post(new Runnable(){public void run(){
+            if(!ownsScope(taskId,captured)||cancel.isCancelled()){
+                boundCallback.onResult(new ActionOutcome(false,false,false,"任务已停止或作用范围未绑定"));return;
+            }
+            performOnMain(taskId,expected,decision,targets,cancel,boundCallback,captured);
+        }});
     }
     private String validate(String taskId,PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets,Cancellation cancel){
         if(cancel.isCancelled()||!owns(taskId))return "任务已停止";
@@ -309,7 +402,16 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         return null;
     }
     private void performOnMain(final String taskId,final PhoneObservation expected,final ActionDecision action,
-                               final ObservedTargetLabels targets,final Cancellation cancel,final ActionCallback callback){
+                               final ObservedTargetLabels targets,final Cancellation cancel,final ActionCallback callback,
+                               final QualificationScopeConfig.Bound dispatchScope){
+        try{
+            scopeBeforeDispatch(taskId,dispatchScope,expected,action,null,false);
+            if(scopeFor(taskId).config!=null&&("click".equals(action.action)||"type".equals(action.action)||"scroll".equals(action.action))){
+                NodeRef ref=currentGraph==null?null:currentGraph.refs.get(action.nodeId);
+                scopeBeforeDispatch(taskId,dispatchScope,expected,action,ref==null?null:ref.node,true);
+            }
+        }
+        catch(Exception error){callback.onResult(new ActionOutcome(false,false,false,message(error)));return;}
         String invalid=validate(taskId,expected,action,targets,cancel);
         if(invalid!=null){callback.onResult(new ActionOutcome(false,false,invalid.startsWith("stale:"),invalid));return;}
         try{
@@ -332,10 +434,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 if(launch==null)throw new IllegalArgumentException("找不到应用启动入口");
                 launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 if(cancel.isCancelled()){callback.onResult(new ActionOutcome(false,false,false,"任务已停止"));return;}
+                scopeOpenIntent(taskId,dispatchScope,action.packageName,launch);
+                scopeBeforeDispatch(taskId,dispatchScope,expected,action,null,false);
                 startActivity(launch);finishAfter(700,true,"已请求打开应用，下一步将重新观察",callback);return;
             }
             if("back".equals(action.action)||"home".equals(action.action)){
                 if(cancel.isCancelled()){callback.onResult(new ActionOutcome(false,false,false,"任务已停止"));return;}
+                scopeBeforeDispatch(taskId,dispatchScope,expected,action,null,false);
                 boolean accepted=performGlobalAction("back".equals(action.action)?GLOBAL_ACTION_BACK:GLOBAL_ACTION_HOME);
                 finishAfter(350,accepted,accepted?"系统导航已接受":"系统导航未接受",callback);return;
             }
@@ -344,6 +449,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(reference==null)throw new IllegalArgumentException("节点不属于这次观察");
             AccessibilityNodeInfo node=reference.node;
             boolean refreshed=node.refresh();
+            if(scopeFor(taskId).config!=null){
+                if(!refreshed){scopeFor(taskId).refuse("scope node refresh failed");throw new QualificationScope.Violation("scope node refresh failed");}
+            }
             ObservedChildText.Result freshChildText=refreshed?observedChildText(node):ObservedChildText.notApplicable();
             if(!refreshed||!reference.signature.equals(nodeSignature(node,freshChildText))||!node.isVisibleToUser()||!node.isEnabled()){
                 callback.onResult(new ActionOutcome(false,false,true,"stale:目标节点已变化"));return;
@@ -362,20 +470,30 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 if(!policy.allowed){
                     callback.onResult(new ActionOutcome(false,false,false,policy.reasonCode+": "+policy.detail));return;
                 }
+                scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true);
                 accepted=node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
                 finishAfter(350,accepted,accepted?"节点点击已接受":"节点点击未接受",callback);
             }else if("type".equals(action.action)){
                 if(!node.isEditable()||!hasAction(node,AccessibilityNodeInfo.ACTION_SET_TEXT))throw new IllegalArgumentException("目标不是可写文本节点");
                 Bundle args=new Bundle();args.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,action.text);
+                scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true);
                 accepted=node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT,args);
                 if(!accepted){callback.onResult(new ActionOutcome(false,false,false,"文本写入未被接受"));return;}
                 main.postDelayed(new Runnable(){public void run(){
-                    boolean verified=reference.node.refresh()&&action.text.equals(string(reference.node.getText()));
-                    callback.onResult(new ActionOutcome(verified,true,false,verified?"文本已按原文回读验证":"文本操作已发送，但原文回读未通过；不重试"));
+                    if(cancel.isCancelled()||!ownsScope(taskId,dispatchScope)){
+                        callback.onResult(new ActionOutcome(false,true,false,"文本已派发，任务已停止；不读取退休节点"));return;
+                    }
+                    try{
+                        boolean verified=reference.node.refresh()&&action.text.equals(string(reference.node.getText()));
+                        callback.onResult(new ActionOutcome(verified,true,false,verified?"文本已按原文回读验证":"文本操作已发送，但原文回读未通过；不重试"));
+                    }catch(RuntimeException retiredNode){
+                        callback.onResult(new ActionOutcome(false,true,false,"文本已派发，但节点回读不可用；不重试"));
+                    }
                 }},300);
             }else if("scroll".equals(action.action)){
                 int operation=scrollAction(action.direction);
                 if(!hasAction(node,operation))throw new IllegalArgumentException("这个节点未提供所选滚动方向");
+                scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true);
                 accepted=node.performAction(operation);finishAfter(450,accepted,accepted?"滚动已接受":"滚动未接受",callback);
             }else throw new IllegalArgumentException("不支持的动作");
         }catch(Exception e){callback.onResult(new ActionOutcome(false,false,false,message(e)));}

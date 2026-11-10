@@ -34,10 +34,14 @@ CONTROLLER_GRAMMAR_SCHEMAS = frozenset({
     "hepta.observed-action-gbnf.v1",
     "hepta.observed-action-gbnf.v2-reason-first",
     "hepta.observed-action-gbnf.v3-label-first",
+    "hepta.observed-action-gbnf.v4-app-label-first",
 })
 LABEL_ACTION_SCHEMA = "hepta.observed-action-gbnf.v3-label-first"
 LABEL_SCHEMA = "hepta.observed-target-labels.v1"
 LABEL_ENCODING = "utf8-length-prefixed-be32-sorted-node-id.v1"
+APP_LABEL_ACTION_SCHEMA = "hepta.observed-action-gbnf.v4-app-label-first"
+APP_LABEL_SCHEMA = "hepta.observed-app-labels.v1"
+APP_LABEL_ENCODING = "utf8-length-prefixed-be32-sorted-package.v1"
 
 
 class DriverError(Exception):
@@ -408,6 +412,80 @@ def target_label_binding_valid(receipt, native, prompt_bytes, raw_bytes):
         return False
 
 
+def app_label_binding_valid(receipt, native, prompt_bytes, raw_bytes):
+    """V4 pairs derive only from the exact native prompt, never from reason or a label lookup."""
+    if not isinstance(prompt_bytes, bytes) or not isinstance(raw_bytes, bytes):
+        return False
+    try:
+        inputs = native.get("input_sha256")
+        if (not isinstance(inputs, dict) or inputs.get("prompt") != digest(prompt_bytes)
+                or receipt.get("prompt_sha256") != digest(prompt_bytes)):
+            return False
+        text = prompt_bytes.decode("utf-8")
+        if not text.startswith("UNTRUSTED_DATA\n") or "\nOWNER\n" not in text:
+            return False
+        data = strict_json(text[len("UNTRUSTED_DATA\n"):].split("\nOWNER\n", 1)[0].encode("utf-8"))
+        if data.get("action_schema") != APP_LABEL_ACTION_SCHEMA:
+            return False
+        screen, rows, allowed = data.get("screen"), data.get("apps"), data.get("open_allowed_packages")
+        if (not isinstance(screen, dict) or not isinstance(rows, list) or len(rows) > 40
+                or not isinstance(allowed, list) or len(allowed) > 40):
+            return False
+        observation, current = screen.get("observation_id"), screen.get("package")
+        if observation != receipt.get("grammar_observation_id") or current != receipt.get("grammar_current_package"):
+            return False
+        labels = {}
+        package_pattern = re.compile(r"[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+\Z")
+        for row in rows:
+            if not isinstance(row, list) or len(row) != 2:
+                return False
+            package, label = row
+            if (not isinstance(package, str) or len(package) > 255 or package_pattern.fullmatch(package) is None
+                    or package in labels or not isinstance(label, str) or "\0" in label
+                    or len(label.encode("utf-16-be")) // 2 > 49):
+                return False
+            label.encode("utf-8")
+            labels[package] = label
+        if (any(not isinstance(package, str) or package not in labels or package in (current, "android") for package in allowed)
+                or len(set(allowed)) != len(allowed)):
+            return False
+        blocked = data.get("blocked")
+        if isinstance(blocked, dict) and any(package in allowed for package in blocked.get("open_packages", [])):
+            return False
+        blocked_action = data.get("blocked_action")
+        if isinstance(blocked_action, dict) and blocked_action.get("action") == "open" and blocked_action.get("package") in allowed:
+            return False
+        payload = bytearray()
+        def field(value):
+            encoded = value.encode("utf-8")
+            payload.extend(struct.pack(">I", len(encoded))); payload.extend(encoded)
+        for value in (APP_LABEL_SCHEMA, APP_LABEL_ENCODING, observation, current):
+            field(value)
+        payload.extend(struct.pack(">I", len(allowed)))
+        for package in sorted(allowed):
+            field(package); field(labels[package])
+        expected = {"schema": APP_LABEL_SCHEMA, "encoding": APP_LABEL_ENCODING,
+            "observation_id": observation, "package": current,
+            "sha256": digest(payload), "pairs_count": len(allowed)}
+        contract = receipt.get("app_label_contract")
+        if not isinstance(contract, dict) or contract != expected or type(contract.get("pairs_count")) is not int:
+            return False
+        action = strict_json(raw_bytes)
+        if not isinstance(action, dict) or action.get("observation_id") != observation:
+            return False
+        if action.get("action") != "open":
+            return "app_label" not in action and action.get("package") == current
+        if (not {"action", "observation_id", "app_label", "package"} <= set(action)
+                or set(action) - {"reason", "action", "observation_id", "app_label", "package"}
+                or any(not isinstance(value, str) for value in action.values())):
+            return False
+        package, label = action["package"], action["app_label"]
+        return (package in allowed and labels[package] == label
+                and list(action).index("app_label") < list(action).index("package"))
+    except (ValueError, TypeError, KeyError, AttributeError, UnicodeError, DriverError):
+        return False
+
+
 def controller_grammar_binding_valid(receipt, native, grammar_bytes, observation_packages,
         prompt_bytes=None, raw_bytes=None):
     """Known grammar schema plus the same native bytes and observed window identity.
@@ -432,6 +510,29 @@ def controller_grammar_binding_valid(receipt, native, grammar_bytes, observation
     if not (isinstance(input_hashes, dict) and receipt.get("grammar_sha256") == grammar_sha
             and input_hashes.get("grammar") == grammar_sha):
         return False
+    if schema == APP_LABEL_ACTION_SCHEMA:
+        return (target_label_binding_valid(receipt, native, prompt_bytes, raw_bytes)
+                and app_label_binding_valid(receipt, native, prompt_bytes, raw_bytes))
+    # A labeled request cannot qualify by changing only the mutable app-side schema.
+    # The discriminator in the real prompt is covered by the native input hash.
+    if "app_label_contract" in receipt:
+        return False
+    if isinstance(prompt_bytes, bytes):
+        try:
+            prompt_text = prompt_bytes.decode("utf-8")
+            if prompt_text.startswith("UNTRUSTED_DATA\n") and "\nOWNER\n" in prompt_text:
+                prompt_data = strict_json(prompt_text[len("UNTRUSTED_DATA\n"):].split("\nOWNER\n", 1)[0].encode("utf-8"))
+                if isinstance(prompt_data, dict) and "action_schema" in prompt_data:
+                    return False
+        except (ValueError, TypeError, UnicodeError, DriverError):
+            return False
+    if isinstance(raw_bytes, bytes):
+        try:
+            action = strict_json(raw_bytes)
+            if isinstance(action, dict) and "app_label" in action:
+                return False
+        except (ValueError, TypeError, UnicodeError, DriverError):
+            return False
     return schema != LABEL_ACTION_SCHEMA or target_label_binding_valid(receipt, native, prompt_bytes, raw_bytes)
 
 

@@ -49,7 +49,7 @@ def generate(root, out):
         nonlocal adapted
         assert adapted.count(old)==1,old
         adapted=adapted.replace(old,new)
-    replace_once('static bool output_metadata(', '#include "model-runtime.inc"\n#include "phase-timing.h"\n\nstatic bool output_metadata(')
+    replace_once('static bool output_metadata(', '#include "model-runtime.inc"\n#include "sampler-profile.inc"\n#include "phase-timing.h"\n\nstatic bool output_metadata(')
     replace_once('    if(!fence(PH_RESOLVE))goto sdk_cleanup;', '''    if(!hepta_verify_model(o.model)){error="pinned_model_identity_failed";goto sdk_cleanup;}
     if(!fence(PH_RESOLVE))goto sdk_cleanup;''')
     replace_once('    if(!hepta_verify_model(o.model)){error="pinned_model_identity_failed";goto sdk_cleanup;}', '''    hepta_timing_begin(HEPTA_TIMED_HASH);
@@ -80,7 +80,21 @@ def generate(root, out):
     if(!hepta_model_is_unchanged(o.model)){error="model_changed_before_generation";goto sdk_cleanup;}
     hepta_timing_end(HEPTA_TIMED_TEMPLATE_TOKENIZE);
 ''')
-    replace_once('.top_p=1.0f,.top_k=1,.repetition_penalty=1.0f', '.top_p=1.0f,.top_k=1,.min_p=0.0f,.repetition_penalty=1.0f')
+    # One fresh request-local sampler is both consumed by the SDK and serialized.
+    # This also runs on every invocation of the existing warm worker request path.
+    replace_once('    geniex_LlmGenerateOutput lo={0};geniex_VlmGenerateOutput vo={0};geniex_ProfileData profile={0};',
+                 '    geniex_SamplerConfig sampler=hepta_requested_sampler();\n    geniex_LlmGenerateOutput lo={0};geniex_VlmGenerateOutput vo={0};geniex_ProfileData profile={0};')
+    replace_once('    geniex_SamplerConfig sampler={.temperature=0.0f,.top_p=1.0f,.top_k=1,.repetition_penalty=1.0f,.seed=42,\n'
+                 '        .grammar_string=(char*)inputs[2].bytes,.chat_template_grammar=vlm?vt.chat_template_grammar:lt.chat_template_grammar};',
+                 '    sampler.grammar_string=(char*)inputs[2].bytes;\n'
+                 '    sampler.chat_template_grammar=vlm?vt.chat_template_grammar:lt.chat_template_grammar;')
+    replace_once('    const geniex_ProfileData *profile,const char *stop,',
+                 '    const geniex_SamplerConfig *sampler,const geniex_ProfileData *profile,const char *stop,')
+    replace_once('generate_rc,destroy_rc,deinit_rc,&profile,stop,',
+                 'generate_rc,destroy_rc,deinit_rc,&sampler,&profile,stop,')
+    sampler_lines=[line for line in adapted.splitlines() if 'sampler_requested' in line]
+    assert len(sampler_lines)==1
+    replace_once(sampler_lines[0], '    hepta_write_sampler_requested(f,sampler);')
     replace_once('.chat_template_grammar=vlm?vt.chat_template_grammar:lt.chat_template_grammar',
                  '.chat_template_grammar=inputs[2].bytes?(geniex_ChatTemplateGrammar){0}:(vlm?vt.chat_template_grammar:lt.chat_template_grammar)')
     replace_once('else{geniex_LlmGenerateInput in={.prompt_utf8=prompt,.config=&generation,.on_token=on_token};',

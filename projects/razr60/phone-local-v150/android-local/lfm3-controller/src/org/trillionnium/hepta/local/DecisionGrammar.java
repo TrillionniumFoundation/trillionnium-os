@@ -17,9 +17,12 @@ public final class DecisionGrammar {
     public final String observationId, currentPackage, text, sha256;
     public final List<String> actions;
     public final ObservedTargetLabels targets;
+    public final String schema;
+    public final ObservedAppLabels appLabels;
     public final Map<String,List<String>> scrollDirections;
 
-    private DecisionGrammar(ObservedTargetLabels targets,String text,List<String> actions,Map<String,List<String>> scrollDirections){
+    private DecisionGrammar(ObservedTargetLabels targets,String text,List<String> actions,Map<String,List<String>> scrollDirections,ObservedAppLabels appLabels){
+        this.appLabels=appLabels;this.schema=appLabels==null?SCHEMA:ObservedAppLabels.ACTION_SCHEMA;
         this.scrollDirections=Collections.unmodifiableMap(new TreeMap<String,List<String>>(scrollDirections));
         this.targets=targets;this.observationId=targets.observationId;this.currentPackage=targets.packageName;this.text=text;
         this.actions=Collections.unmodifiableList(new ArrayList<String>(actions));
@@ -34,6 +37,20 @@ public final class DecisionGrammar {
 
     public static DecisionGrammar create(String observationId,String currentPackage,Set<String> shownApps,
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,ObservedTargetLabels targets){
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,null);
+    }
+
+    /** Explicit v4 entry; missing app metadata never selects the legacy grammar. */
+    public static DecisionGrammar createAppLabeled(String observationId,String currentPackage,Set<String> shownApps,
+            Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
+            ObservedTargetLabels targets,ObservedAppLabels appLabels){
+        if(appLabels==null)throw new IllegalArgumentException("observed app pairs are required");
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,appLabels);
+    }
+
+    private static DecisionGrammar createInternal(String observationId,String currentPackage,Set<String> shownApps,
+            Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
+            ObservedTargetLabels targets,ObservedAppLabels appLabels){
         if(observationId==null||!observationId.matches("[0-9a-f]{32}"))throw new IllegalArgumentException("invalid observed id");
         checkPackage(currentPackage);
         if(targets==null||!observationId.equals(targets.observationId)||!currentPackage.equals(targets.packageName))
@@ -41,14 +58,22 @@ public final class DecisionGrammar {
         if(shownApps==null||shownApps.size()>40)throw new IllegalArgumentException("invalid application projection");
         TreeSet<String> apps=new TreeSet<String>();
         for(String name:shownApps){checkPackage(name);if(!currentPackage.equals(name)&&!"android".equals(name))apps.add(name);}
+        if(appLabels!=null&&(!observationId.equals(appLabels.observationId)||!currentPackage.equals(appLabels.currentPackage)
+                ||!apps.equals(appLabels.labels.keySet())))throw new IllegalArgumentException("app pairs differ from the current allowed projection");
         TreeSet<String> clicks=checkedNodes(clickableNodes),edits=checkedNodes(editableNodes);
         Map<String,List<String>> scrolls=checkedScrollActions(scrollActions,targets);
         StringBuilder rules=new StringBuilder();List<String> branches=new ArrayList<String>();
         branches.add("find_app");
         rule(rules,"find-app",prefix("find_app",observationId)+field("package",jsonValue(currentPackage))+comma()+field("query","query-string")+comma()+field("offset","app-offset")+ending());
         if(!apps.isEmpty()){
-            branches.add("open");rule(rules,"open",prefix("open",observationId)+field("package","open-package")+ending());
-            rule(rules,"open-package",alternatives(apps));
+            branches.add("open");
+            if(appLabels==null){
+                rule(rules,"open",prefix("open",observationId)+field("package","open-package")+ending());
+                rule(rules,"open-package",alternatives(apps));
+            }else{
+                rule(rules,"open",prefix("open",observationId)+"open-target"+ending());
+                rule(rules,"open-target",appPairs(appLabels));
+            }
         }
         if(!clicks.isEmpty()){
             branches.add("click");rule(rules,"click",prefix("click",observationId)+field("package",jsonValue(currentPackage))+comma()+"click-target"+ending());
@@ -79,7 +104,7 @@ public final class DecisionGrammar {
         rules.append("json-char ::= [^\"\\\\\\x00-\\x1F] | "+literal("\\")+" [\"\\\\/bfnrt]\n");
         rule(rules,"ws","[ \\t\\n\\r]{0,8}");
         List<String> ruleNames=new ArrayList<String>();for(String branch:branches)ruleNames.add(branch.replace('_','-'));
-        return new DecisionGrammar(targets,"root ::= ws ("+join(ruleNames," | ")+") ws\n"+rules.toString(),branches,scrolls);
+        return new DecisionGrammar(targets,"root ::= ws ("+join(ruleNames," | ")+") ws\n"+rules.toString(),branches,scrolls,appLabels);
     }
 
     /** A direction cannot migrate to another node that has a different action list. */
@@ -128,6 +153,12 @@ public final class DecisionGrammar {
             if(!targets.labels.containsKey(id))throw new IllegalArgumentException("action node was absent from the supplied label projection");
             pairs.add("("+field("node_label",jsonValue(targets.labels.get(id)))+comma()+field("node_id",jsonValue(id))+")");
         }
+        return join(pairs," | ");
+    }
+    private static String appPairs(ObservedAppLabels apps){
+        List<String> pairs=new ArrayList<String>();
+        for(Map.Entry<String,String> pair:apps.labels.entrySet())
+            pairs.add("("+field("app_label",jsonValue(pair.getValue()))+comma()+field("package",jsonValue(pair.getKey()))+")");
         return join(pairs," | ");
     }
     private static String join(Iterable<String> values,String separator){StringBuilder out=new StringBuilder();for(String value:values){if(out.length()>0)out.append(separator);out.append(value);}return out.toString();}

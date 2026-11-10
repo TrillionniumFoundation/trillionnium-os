@@ -8,6 +8,25 @@ public final class ActionPolicy {
 
     public static void validateTextDecision(ActionDecision action, String currentPackage,
             Set<String> shownApps, ObservedTargetLabels targets) throws ActionDecision.InvalidActionException {
+        if (!ObservedTargetLabels.ACTION_SCHEMA.equals(action.actionSchema))
+            throw new ActionDecision.InvalidActionException("v4 decisions require the observed app-pair policy");
+        validateCommon(action,currentPackage,shownApps,targets);
+    }
+
+    public static void validateTextDecision(ActionDecision action, String currentPackage,
+            Set<String> shownApps, ObservedTargetLabels targets, ObservedAppLabels apps)
+            throws ActionDecision.InvalidActionException {
+        if (!ObservedAppLabels.ACTION_SCHEMA.equals(action.actionSchema) || apps == null
+                || !apps.observationId.equals(action.observationId) || !apps.currentPackage.equals(currentPackage)
+                || shownApps == null || !apps.labels.keySet().equals(shownApps))
+            throw new ActionDecision.InvalidActionException("app-label projection belongs to a different frame or schema");
+        if ("open".equals(action.action) && !apps.matches(action.observationId,currentPackage,action.packageName,action.appLabel))
+            throw new ActionDecision.InvalidActionException("app_label and package must be the exact supplied pair for this observation");
+        validateCommon(action,currentPackage,shownApps,targets);
+    }
+
+    private static void validateCommon(ActionDecision action,String currentPackage,
+            Set<String> shownApps,ObservedTargetLabels targets) throws ActionDecision.InvalidActionException {
         if (targets == null || !currentPackage.equals(targets.packageName))
             throw new ActionDecision.InvalidActionException("target-label projection belongs to a different package");
         if ("open".equals(action.action)) {

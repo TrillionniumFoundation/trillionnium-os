@@ -468,7 +468,7 @@ public final class LocalModelEngine implements AutoCloseable {
             if(r.controllerGrammar!=null){
                 grammar=new File(run,"grammar.gbnf");
                 writePrivate(grammar,r.controllerGrammar.text.getBytes(StandardCharsets.UTF_8));
-                put(receipt,"grammar_schema",DecisionGrammar.SCHEMA);
+                put(receipt,"grammar_schema",r.controllerGrammar.schema);
                 put(receipt,"grammar_sha256",r.controllerGrammar.sha256);
                 put(receipt,"grammar_observation_id",r.controllerGrammar.observationId);
                 put(receipt,"grammar_current_package",r.controllerGrammar.currentPackage);
@@ -477,6 +477,10 @@ public final class LocalModelEngine implements AutoCloseable {
                 put(receipt,"target_label_contract",new JSONObject().put("schema",ObservedTargetLabels.SCHEMA)
                         .put("encoding",ObservedTargetLabels.ENCODING).put("observation_id",targets.observationId)
                         .put("package",targets.packageName).put("sha256",targets.sha256).put("pairs_count",targets.labels.size()));
+                ObservedAppLabels apps=r.controllerGrammar.appLabels;
+                if(apps!=null)put(receipt,"app_label_contract",new JSONObject().put("schema",ObservedAppLabels.SCHEMA)
+                        .put("encoding",ObservedAppLabels.ENCODING).put("observation_id",apps.observationId)
+                        .put("package",apps.currentPackage).put("sha256",apps.sha256).put("pairs_count",apps.labels.size()));
             }
             File resultFile = new File(run, "native-result.json"), rawFile = new File(run, "raw-text.txt");
             File logDirectory=task==null?run:task.directory();privateDirectory(logDirectory);

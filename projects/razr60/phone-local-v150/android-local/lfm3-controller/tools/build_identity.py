@@ -24,3 +24,29 @@ def source_inputs(root):
 def verify_source_inputs(root, receipt):
     if receipt.get("source_inputs") != source_inputs(root):
         raise RuntimeError("Cached Android outputs were not built from the current exact source; rebuild before assembly")
+
+
+def actual_build_identity(root, receipt):
+    """Deterministic asset; verify actual compiler inputs first, then bind their full map.
+
+    The generated asset is not a source input. The root historical SOURCE-MANIFEST
+    is not read. Explicit subordinate provenance files in source_inputs remain
+    ordinary hashed build inputs; they do not identify the current Java source.
+    """
+    import json
+    import xml.etree.ElementTree as ET
+    root = Path(root)
+    inputs = source_inputs(root)
+    if receipt.get("source_inputs") != inputs:
+        raise RuntimeError("Actual build identity requires the exact compiler source inputs")
+    manifest = (root / "AndroidManifest.xml").read_bytes()
+    expected_manifest = next(row["sha256"] for row in inputs if row["path"] == "AndroidManifest.xml")
+    if hashlib.sha256(manifest).hexdigest() != expected_manifest:
+        raise RuntimeError("Manifest changed while binding build identity")
+    version = ET.fromstring(manifest).get(
+        "{http://schemas.android.com/apk/res/android}versionCode")
+    if not version or not version.isdecimal() or int(version) < 1:
+        raise RuntimeError("Actual manifest version required for build identity")
+    payload = {"schema": "hepta.actual-build-inputs.v1", "version_code": int(version),
+               "source_inputs": inputs}
+    return (json.dumps(payload, ensure_ascii=True, sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8")

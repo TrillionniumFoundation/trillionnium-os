@@ -39,6 +39,7 @@ public final class LocalTaskSession {
     private Runnable pendingStart;
     private String state = "输入任务，然后点击开始任务。", log = "", taskId, origin, instructionSha, nonceSha;
     private LocalTaskController.TaskResult lastResult;
+    private String expectedScopeSha,actualScopeSha;
     private volatile boolean pending, blocked, recovering;
     private volatile long generation;
     private long recoveryIgnoredGeneration=-1;
@@ -66,7 +67,9 @@ public final class LocalTaskSession {
     public LocalTaskController.TaskResult lastResult() { return lastResult; }
 
     /** Caller first reserves this one session, then moves its Activity behind the target window. */
-    public boolean schedule(final String owner, String source, String testNonceSha, long delayMillis) {
+    public boolean schedule(final String owner,String source,String testNonceSha,long delayMillis){return schedule(owner,source,testNonceSha,null,delayMillis);}
+    public boolean schedule(final String owner, String source, String testNonceSha, final String expectedScopeSha256, long delayMillis) {
+        QualificationScope.expected(expectedScopeSha256);
         if (Looper.myLooper()!=Looper.getMainLooper()) throw new IllegalStateException("schedule must run on main thread");
         if (isRunning() || engine.isBusy() || blocked) return false;
         final HeptaAccessibilityService service=HeptaAccessibilityService.connected();
@@ -75,6 +78,7 @@ public final class LocalTaskSession {
         if (controllerService!=service) { controller=service.taskController(engine); controllerService=service; }
         final long epoch=++generation;
         origin=source; instructionSha=HeptaAccessibilityService.sha(owner.getBytes(StandardCharsets.UTF_8)); nonceSha=testNonceSha;
+        expectedScopeSha=expectedScopeSha256;actualScopeSha=null;
         taskId=null;lastResult=null;log="";pending=true;setState("任务已准备，正在等待前台画面稳定…");
         // A durable non-terminal reservation must precede any controller or model start.
         if(!persist("pending",true)){pending=false;blocked=true;publish();return false;}
@@ -84,7 +88,7 @@ public final class LocalTaskSession {
             pending=false;
             if(HeptaAccessibilityService.connected()!=service){setState("无障碍服务已断开，任务未启动");persist("not_started",true);return;}
             try{
-                boolean started=controller.start(owner,new LocalTaskController.Listener(){
+                boolean started=controller.start(owner,expectedScopeSha256,new LocalTaskController.Listener(){
                     public void onState(String value){if(epoch>recoveryIgnoredGeneration&&epoch==generation&&!pending)receiveState(value);}
                     public void onFinished(LocalTaskController.TaskResult result){
                         if(epoch<=recoveryIgnoredGeneration)return;
@@ -114,6 +118,7 @@ public final class LocalTaskSession {
     private void receiveState(String value) { setState(value); persist("running",true); }
     private void receiveFinished(LocalTaskController.TaskResult result) {
         lastResult=result;taskId=result.taskId;pending=false;blocked=!result.cleanupKnown;
+        expectedScopeSha=result.expectedScopeSha256;actualScopeSha=result.actualScopeSha256;
         setState(result.summary);persist(result.status,result.cleanupKnown);
     }
     private void setState(String value) {
@@ -205,7 +210,7 @@ public final class LocalTaskSession {
                         ||(oldController!=null&&oldController.isRunning()))throw new IOException("controller owner changed during acknowledgement");
                 if(service!=null)service.retireControllerAfterAcknowledgement(oldController,current);
                 acknowledgedSession=current;controller=null;controllerService=null;pending=false;pendingStart=null;
-                taskId=null;origin=null;instructionSha=null;nonceSha=null;lastResult=null;startupRecovery=null;
+                taskId=null;origin=null;instructionSha=null;nonceSha=null;lastResult=null;startupRecovery=null;expectedScopeSha=null;actualScopeSha=null;
                 blocked=false;state="已建立新的空闲会话，可开始新任务。旧任务仍记为中断，原进程退出与清理状态仍未知。";
                 log=log+state+"\n没有自动启动、恢复或重放任何任务。\n";
                 if(log.length()>16000)log=log.substring(log.length()-16000);
@@ -237,6 +242,7 @@ public final class LocalTaskSession {
     private static JSONObject newIdleJournal(RecoveryJournalTransaction.Acknowledgement a)throws Exception{
         return new JSONObject().put("schema","hepta.local-session.v1").put("status",RecoveryJournalTransaction.IDLE_STATUS)
                 .put("task_id",JSONObject.NULL).put("instruction_sha256",JSONObject.NULL).put("debug_nonce_sha256",JSONObject.NULL)
+                 .put("expected_scope_sha256",JSONObject.NULL).put("actual_scope_sha256",JSONObject.NULL)
                 .put("origin","user_recovery_confirmation").put("state","新会话空闲；旧任务中断，原清理状态未知")
                 .put("pending",false).put("running",false).put("blocked",false).put("cleanup_known",true)
                 .put("app_uid",a.uid).put("updated_wall_ms",a.wallMs).put("external_model",false)
@@ -404,6 +410,7 @@ public final class LocalTaskSession {
     }
 
     private boolean persist(String status,boolean cleanupKnown) {
+        if(taskId!=null&&controller!=null&&taskId.equals(controller.currentTaskId()))actualScopeSha=controller.currentActualScopeSha256();
         AtomicFile destination=new AtomicFile(new File(context.getFilesDir(),"control-session.json"));
         FileOutputStream out=null;
         try{
@@ -411,6 +418,8 @@ public final class LocalTaskSession {
                 .put("task_id",taskId==null?JSONObject.NULL:taskId).put("origin",origin==null?JSONObject.NULL:origin)
                 .put("instruction_sha256",instructionSha==null?JSONObject.NULL:instructionSha)
                 .put("debug_nonce_sha256",nonceSha==null?JSONObject.NULL:nonceSha)
+                .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha))
+                .put("actual_scope_sha256",QualificationScopeConfig.nullable(actualScopeSha))
                 .put("state",state).put("pending",pending).put("running",isRunning()).put("blocked",blocked)
                 .put("cleanup_known",cleanupKnown).put("app_uid",android.os.Process.myUid()).put("updated_wall_ms",System.currentTimeMillis())
                 .put("external_model",false).put("automatic_resume",false).put("goal_independently_verified",false);

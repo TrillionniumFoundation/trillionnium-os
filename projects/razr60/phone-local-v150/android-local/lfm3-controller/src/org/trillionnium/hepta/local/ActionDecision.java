@@ -22,6 +22,8 @@ public final class ActionDecision {
     public final String action;
     public final String observationId;
     public final String packageName;
+    public final String appLabel;
+    public final String actionSchema;
     public final String nodeId;
     public final String nodeLabel;
     public final String text;
@@ -35,12 +37,14 @@ public final class ActionDecision {
     public final int durationMs;
     public final int offset;
 
-    private ActionDecision(String action, String observationId, String packageName,
+    private ActionDecision(String action, String observationId, String packageName, String appLabel, String actionSchema,
                            String nodeId, String nodeLabel, String text, String direction, String status,
                            String summary, String reason, int x, int y, int durationMs, String query, int offset) {
         this.action = action;
         this.observationId = observationId;
         this.packageName = packageName;
+        this.appLabel = appLabel;
+        this.actionSchema = actionSchema;
         this.nodeId = nodeId;
         this.nodeLabel = nodeLabel;
         this.text = text;
@@ -70,7 +74,8 @@ public final class ActionDecision {
 
     /** The caller selects an explicit protocol; older or unknown node schemas are not inferred. */
     public static ActionDecision parse(String raw, String schema) throws InvalidActionException {
-        require(ObservedTargetLabels.ACTION_SCHEMA.equals(schema), "Unknown action schema");
+        boolean appLabeled = ObservedAppLabels.ACTION_SCHEMA.equals(schema);
+        require(appLabeled || ObservedTargetLabels.ACTION_SCHEMA.equals(schema), "Unknown action schema");
         require(raw != null && !raw.isEmpty(), "Empty model output");
         require(raw.length() <= MAX_JSON_UTF8_BYTES, "Model output exceeds size bound");
         validateUnicode(raw);
@@ -85,6 +90,7 @@ public final class ActionDecision {
         require(codePoints(reason) <= 256, "reason exceeds 256 characters");
 
         String nodeId = null;
+        String appLabel = null;
         String nodeLabel = null;
         String text = null;
         String direction = null;
@@ -98,7 +104,10 @@ public final class ActionDecision {
 
         switch (action) {
             case "open":
-                requireFields(fields, "package");
+                if (appLabeled) {
+                    requireFields(fields, "app_label", "package");
+                    appLabel = appLabel(fields);
+                } else requireFields(fields, "package");
                 break;
             case "find_app":
                 requireFields(fields, "package", "query", "offset");
@@ -153,7 +162,7 @@ public final class ActionDecision {
             default:
                 throw new InvalidActionException("Unsupported action");
         }
-        return new ActionDecision(action, observationId, packageName, nodeId, nodeLabel, text,
+        return new ActionDecision(action, observationId, packageName, appLabel, schema, nodeId, nodeLabel, text,
                 direction, status, summary, reason, x, y, durationMs, query, offset);
     }
 
@@ -184,6 +193,13 @@ public final class ActionDecision {
                 + "No other fields, duplicate keys, nested values, booleans, null, "
                 + "floating-point numbers, Markdown, explanations, or trailing content. "
                 + "The entire JSON is at most 16384 UTF-8 bytes.";
+    }
+
+    public static String schemaGuide(String schema) throws InvalidActionException {
+        require(ObservedTargetLabels.ACTION_SCHEMA.equals(schema) || ObservedAppLabels.ACTION_SCHEMA.equals(schema), "Unknown action schema");
+        if (ObservedTargetLabels.ACTION_SCHEMA.equals(schema)) return schemaGuide();
+        return schemaGuide().replace("open: no additional fields; ",
+                "open: app_label before package, copying the exact supplied app-label/package pair, including empty or duplicate labels; ");
     }
 
     private static void requireFields(Map<String, Object> fields, String... required)
@@ -221,6 +237,17 @@ public final class ActionDecision {
             require(!"node_id".equals(key), "node_label must precede node_id");
         }
         throw new InvalidActionException("Missing node_label");
+    }
+
+    private static String appLabel(Map<String, Object> fields) throws InvalidActionException {
+        String label = string(fields, "app_label");
+        try { ObservedAppLabels.requireProjectedLabel(label); }
+        catch (IllegalArgumentException error) { throw new InvalidActionException(error.getMessage()); }
+        for (String key : fields.keySet()) {
+            if ("app_label".equals(key)) return label;
+            require(!"package".equals(key), "app_label must precede package");
+        }
+        throw new InvalidActionException("Missing app_label");
     }
 
     private static int integer(Map<String, Object> fields, String name, int minimum, int maximum)

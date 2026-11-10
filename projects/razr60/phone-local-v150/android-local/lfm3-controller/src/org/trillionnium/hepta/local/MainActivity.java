@@ -29,6 +29,9 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     private LinearLayout diagnostics;
     private Button startTask, stopTask, runText, acknowledgeInterruption;
     private String lastShownProbeId;
+    private QualificationScope.Launch scopeLaunch=QualificationScope.Launch.normal();
+    private String scopeLaunchError;
+    private static final String SCOPE_INTENT_CONSUMED="hepta_scope_prefill_consumed";
     private String lastShownVisualProbeId;
     private String lastShownUiVenusProbeId;
 
@@ -50,7 +53,9 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         stopTask=button("停止");actions.addView(stopTask);
         Button accessibility=button("启用无障碍");actions.addView(accessibility);
         startTask.setOnClickListener(v -> beginTask(taskInput.getText().toString(),"user_button",null));
-        stopTask.setOnClickListener(v -> {tasks.stop();engine.cancelActive();refresh();});
+        stopTask.setOnClickListener(v -> {tasks.stop();engine.cancelActive();
+            // Explicitly ends this UI prefill only; the running task retains its immutable scope.
+            scopeLaunch=QualificationScope.Launch.normal();scopeLaunchError=null;refresh();});
         accessibility.setOnClickListener(v -> startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
         acknowledgeInterruption=button("确认中断并开始新会话");page.addView(acknowledgeInterruption);
         acknowledgeInterruption.setOnClickListener(v -> new AlertDialog.Builder(this)
@@ -83,15 +88,54 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         diagnostics.addView(text("UI-Venus 私有图像诊断；只显示模型原始输出，不执行动作。",12));
         uiVenusProbeOutput=text("尚未收到已准备的私有诊断请求。",11);uiVenusProbeOutput.setTypeface(Typeface.MONOSPACE);uiVenusProbeOutput.setTextIsSelectable(true);
         uiVenusProbeOutput.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);diagnostics.addView(uiVenusProbeOutput);
-        setContentView(outer);tasks.bind(this);refresh();handleIntent(getIntent());
+        setContentView(outer);tasks.bind(this);refresh();
+        if(state==null)handleIntent(getIntent());else restoreScopeUi(state);
     }
     private int dp(int value){return Math.round(value*getResources().getDisplayMetrics().density);}
     private TextView text(String value,int size){TextView view=new TextView(this);view.setText(value);view.setTextSize(size);view.setPadding(0,dp(5),0,dp(5));return view;}
     private Button button(String label){Button view=new Button(this);view.setText(label);return view;}
 
+    @Override protected void onSaveInstanceState(Bundle state){
+        super.onSaveInstanceState(state);
+        state.putBoolean("scope_ui_saved",true);state.putString("scope_ui_task",taskInput.getText().toString());
+        state.putString("scope_ui_expected",scopeLaunch.expectedSha256);state.putString("scope_ui_owner",scopeLaunch.ownerSha256);
+        state.putBoolean("scope_ui_consumed",scopeLaunch.consumed);state.putString("scope_ui_error",scopeLaunchError);
+    }
+    private void restoreScopeUi(Bundle state){
+        try{
+            QualificationScope.require(state.getBoolean("scope_ui_saved",false),"saved UI binding missing");
+            String owner=state.getString("scope_ui_task");QualificationScope.require(owner!=null,"saved task missing");taskInput.setText(owner);
+            String expected=state.getString("scope_ui_expected"),ownerSha=state.getString("scope_ui_owner");boolean consumed=state.getBoolean("scope_ui_consumed",false);
+            if(expected==null){QualificationScope.require(ownerSha==null&&!consumed,"saved unscoped binding inconsistent");scopeLaunch=QualificationScope.Launch.normal();}
+            else scopeLaunch=QualificationScope.Launch.restore(expected,ownerSha,consumed);
+            scopeLaunchError=state.getString("scope_ui_error");
+        }catch(Exception error){scopeLaunchError=HeptaAccessibilityService.message(error);}
+    }
+    /** Consume the restriction once. Reused Intents cannot replay or clear a pending claim. */
+    private void acceptScopePrefill(Intent intent,String task,String expected,boolean hasExpected,boolean autoTask){
+        if(intent.getBooleanExtra(SCOPE_INTENT_CONSUMED,false)||tasks.isRunning())return;
+        boolean normalEntry=Intent.ACTION_MAIN.equals(intent.getAction())&&intent.hasCategory(Intent.CATEGORY_LAUNCHER);
+        if(task==null&&!hasExpected&&!normalEntry&&!autoTask)return;
+        scopeLaunch=QualificationScope.Launch.normal();scopeLaunchError=null;
+        if(task!=null)taskInput.setText(task);
+        try{
+            QualificationScope.require(!hasExpected||expected!=null,"null expected scope extra");
+            if(!autoTask)scopeLaunch=QualificationScope.Launch.prefill(task,expected);
+            else QualificationScope.expected(expected); // The consumed private request supplies the exact OWNER below.
+        }catch(Exception error){scopeLaunchError=HeptaAccessibilityService.message(error);}
+    }
+
     @Override protected void onNewIntent(Intent intent){super.onNewIntent(intent);setIntent(intent);handleIntent(intent);}
     private void handleIntent(Intent intent){
         if(intent==null)return;
+        final String suppliedTask=intent.getStringExtra("task");
+        final boolean hasExpectedScope=intent.hasExtra(QualificationScope.EXPECTED_EXTRA);
+        final String expectedScope=intent.getStringExtra(QualificationScope.EXPECTED_EXTRA);
+        boolean scopeIntentReused=intent.getBooleanExtra(SCOPE_INTENT_CONSUMED,false);
+        acceptScopePrefill(intent,suppliedTask,expectedScope,hasExpectedScope,intent.getBooleanExtra("auto_task",false));
+        intent.removeExtra("task");intent.removeExtra(QualificationScope.EXPECTED_EXTRA);
+        intent.putExtra(SCOPE_INTENT_CONSUMED,true);
+        if(scopeIntentReused)return;
         if(intent.getBooleanExtra("auto_ui_venus_probe",false)){
             final String nonce=intent.getStringExtra("ui_venus_nonce");
             boolean conflict=intent.getBooleanExtra("auto_mobi_probe",false)||intent.getBooleanExtra("auto_task",false)||intent.getBooleanExtra("auto_run",false);
@@ -109,8 +153,6 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             runVisualProbe(nonce,conflict);
             return;
         }
-        String suppliedTask=intent.getStringExtra("task");
-        if(suppliedTask!=null&&!tasks.isRunning())taskInput.setText(suppliedTask);
         if(intent.getBooleanExtra("auto_task",false)){
             final String nonce=intent.getStringExtra("test_nonce");
             intent.removeExtra("auto_task");intent.removeExtra("test_nonce");
@@ -120,6 +162,9 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                 if(HeptaAccessibilityService.connected()==null)throw new IllegalStateException("请先正常启用 Hepta 本地操作无障碍服务");
                 PrivateDebugTask request=PrivateDebugTask.consume(this,nonce);
                 consumed=true;
+                if(scopeLaunchError!=null)throw new IllegalStateException(scopeLaunchError);
+                if(hasExpectedScope&&suppliedTask!=null)QualificationScope.require(suppliedTask.equals(request.instruction),"private OWNER differs from scoped prefill");
+                scopeLaunch=QualificationScope.Launch.prefill(request.instruction,expectedScope);
                 taskInput.setText(request.instruction);
                 boolean accepted=beginTask(request.instruction,"private_debug_nonce",request.nonceSha256);
                 recordDebugTrigger(request.nonceSha256,accepted,consumed,accepted?null:"前台任务未启动");
@@ -141,7 +186,10 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             if(tasks.isRunning()||tasks.isBlocked()||engine.isBusy())throw new IllegalStateException("已有本地请求正在运行或退出状态待确认");
             if(!engine.modelFile().isFile())throw new IllegalStateException("所选本地模型尚未导入");
             engine.configuration();
-            if(!tasks.schedule(owner,source,nonceSha,500))throw new IllegalStateException("本地任务未能取得唯一会话");
+            if(scopeLaunchError!=null)throw new IllegalStateException(scopeLaunchError);
+            final String expectedScope=scopeLaunch.claim(owner);
+            if(!tasks.schedule(owner,source,nonceSha,expectedScope,500))throw new IllegalStateException("本地任务未能取得唯一会话");
+            scopeLaunch=scopeLaunch.accepted();
             InputMethodManager input=(InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
             if(input!=null)input.hideSoftInputFromWindow(taskInput.getWindowToken(),0);
             if(!moveTaskToBack(true)){tasks.stop();taskState.setText("无法切换到手机前台画面，任务未开始");return false;}
