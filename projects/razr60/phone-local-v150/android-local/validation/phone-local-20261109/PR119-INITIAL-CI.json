@@ -1,0 +1,927 @@
+{
+  "schema": "hepta.pr119.initial-ci-history.v1",
+  "source_commit": "fdb7eca8d3a434c515da547365fcc47bb2f510d3",
+  "record_scope": "PR119 initial stacked base and one bounded retry; historical record, not the status of a later evidence head or retargeted base.",
+  "initial_base": {
+    "branch": "codex/razr-local-profiles-20261108-dda84ccf",
+    "sha": "3bd03425f7d080b3f43cc5a00eca655baf5ea32f"
+  },
+  "first_failures": [
+    {
+      "run_id": 42583953497,
+      "job_id": 129049144659,
+      "workflow": "G1 exact-head source qualification",
+      "stage": "Execute content-pinned TLC effect-lifecycle model",
+      "exit_code": 22,
+      "http_status": 504,
+      "tlc_executed": false,
+      "original_curl_retries_exhausted": true,
+      "log": "source-attempt1.log"
+    },
+    {
+      "run_id": 42583953490,
+      "job_id": 129049144597,
+      "workflow": "G1 synthetic-merge qualification",
+      "stage": "Run the complete source and planned matrix on the merge object",
+      "exit_code": 22,
+      "http_status": 504,
+      "tlc_executed": false,
+      "synthetic_merge_construction_and_parent_binding_passed": true,
+      "original_curl_retries_exhausted": true,
+      "log": "merge-attempt1.log"
+    }
+  ],
+  "fixed_tlc_identity": {
+    "url": "https://github.com/tlaplus/tlaplus/releases/download/v1.7.4/tla2tools.jar",
+    "sha1": "bee4a54f3ee3d4afc347c3240ec2d9e93b075104",
+    "sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88"
+  },
+  "single_failed_jobs_retry": {
+    "source": {
+      "run_id": 42583953497,
+      "all_five_substantive_source_jobs_pass": true,
+      "jobs": [
+        {
+          "job_id": 129051819490,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 2,
+              "name": "Install declared source-test system tools",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 3,
+              "name": "Check out exact source head",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 4,
+              "name": "Assert exact clean checkout",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 5,
+              "name": "Set up Python",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 6,
+              "name": "Set up Rust 1.93 for the complete Python source matrix",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 7,
+              "name": "Verify source-test prerequisites",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 8,
+              "name": "Verify G1 machine truth and generated documents",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 9,
+              "name": "Execute content-pinned TLC effect-lifecycle model",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 10,
+              "name": "Verify bounded broker mux and protocol contracts",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 11,
+              "name": "Run the complete Python source matrix",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 12,
+              "name": "Capture locked source graph",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 13,
+              "name": "Upload locked source graph",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 14,
+              "name": "Retain source-test diagnostics without qualification authority",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 27,
+              "name": "Post Set up Python",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 28,
+              "name": "Post Check out exact source head",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 29,
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "job_id": 129051821117,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 2,
+              "name": "Check out exact source head",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 3,
+              "name": "Assert exact clean checkout",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 4,
+              "name": "Set up Rust 1.93",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 5,
+              "name": "Verify lockfile, formatting, tests and strict Clippy",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 10,
+              "name": "Post Check out exact source head",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 11,
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "job_id": 129051822005,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 2,
+              "name": "Check out exact source head",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 3,
+              "name": "Set up Python",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 4,
+              "name": "Verify governance source readiness",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 7,
+              "name": "Post Set up Python",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 8,
+              "name": "Post Check out exact source head",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 9,
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "job_id": 129051877780,
+          "name": "L1 Android and packaging source-contract closure",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 2,
+              "name": "Check out exact source head",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 3,
+              "name": "Assert exact clean checkout",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 4,
+              "name": "Set up Python 3.13",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 5,
+              "name": "Verify Android source and packaging contracts",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 9,
+              "name": "Post Set up Python 3.13",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 10,
+              "name": "Post Check out exact source head",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 11,
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "job_id": 129051889617,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 2,
+              "name": "Check out exact source head",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 3,
+              "name": "Assert exact clean checkout",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 4,
+              "name": "Set up Rust 1.93",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 5,
+              "name": "Set up Python 3.13",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 6,
+              "name": "Verify planned workspaces with locked tests and strict Clippy",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 7,
+              "name": "Verify bounded global baseline harness",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 8,
+              "name": "Ensure source checks did not mutate the checkout",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 15,
+              "name": "Post Set up Python 3.13",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 16,
+              "name": "Post Check out exact source head",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 17,
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "job_id": 129053913335,
+          "name": "L1 exact-head direct-source aggregate",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 2,
+              "name": "Require all source jobs",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 3,
+              "name": "Check out exact source head",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 4,
+              "name": "Set up Python 3.13 for live aggregate binding",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 5,
+              "name": "Bind ordered-merge, Android and evidence workflow families",
+              "status": "completed",
+              "conclusion": "failure"
+            },
+            {
+              "number": 6,
+              "name": "Emit exact-head evidence manifest",
+              "status": "completed",
+              "conclusion": "skipped"
+            },
+            {
+              "number": 7,
+              "name": "Upload exact-head evidence",
+              "status": "completed",
+              "conclusion": "skipped"
+            },
+            {
+              "number": 13,
+              "name": "Post Set up Python 3.13 for live aggregate binding",
+              "status": "completed",
+              "conclusion": "skipped"
+            },
+            {
+              "number": 14,
+              "name": "Post Check out exact source head",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 15,
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        }
+      ],
+      "aggregate_conclusion": "failure",
+      "aggregate_job_id": 129053913335,
+      "aggregate_exit_code": 2,
+      "aggregate_error": "G1 PR source aggregate failed: integration branch is not protected",
+      "aggregate_log": "source-retry-aggregate.log"
+    },
+    "synthetic_merge": {
+      "run_id": 42583953490,
+      "conclusion": "success",
+      "jobs": [
+        {
+          "job_id": 129051838086,
+          "name": "L1 exact two-parent merge source qualification",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 2,
+              "name": "Install declared source-test system tools",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 3,
+              "name": "Check out the exact pull-request source parent",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 4,
+              "name": "Check out the exact manually selected source parent",
+              "status": "completed",
+              "conclusion": "skipped"
+            },
+            {
+              "number": 5,
+              "name": "Construct and bind the immutable synthetic merge",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 6,
+              "name": "Reject moving pull-request parents",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 7,
+              "name": "Set up Python 3.13",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 8,
+              "name": "Set up Rust 1.93",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 9,
+              "name": "Verify source-test prerequisites",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 10,
+              "name": "Run the complete source and planned matrix on the merge object",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 11,
+              "name": "Retain source-test diagnostics without qualification authority",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 12,
+              "name": "Emit merge-bound evidence manifest",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 13,
+              "name": "Upload merge-bound evidence",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 25,
+              "name": "Post Set up Python 3.13",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 26,
+              "name": "Post Check out the exact pull-request source parent",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 27,
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "job_id": 129054005904,
+          "name": "L1 exact-source-head aggregate candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 2,
+              "name": "Continuously bind the required context to this workflow attempt",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 3,
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "android_pr_run": {
+    "run_id": 42583953397,
+    "conclusion": "success",
+    "jobs": [
+      {
+        "job_id": 129049144339,
+        "name": "mnn-runtime",
+        "status": "completed",
+        "conclusion": "success",
+        "steps": [
+          {
+            "number": 1,
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 2,
+            "name": "Check out the exact candidate source for the macOS runtime build",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 3,
+            "name": "Set up Python",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 4,
+            "name": "Set up Java for the Android SDK manager",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 5,
+            "name": "Verify complete source closure",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 6,
+            "name": "Install and identify the original macOS NDK compiler",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 7,
+            "name": "Check out the fixed public MNN source",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 8,
+            "name": "Rebuild and match all three original runtime files on macOS",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 9,
+            "name": "Bind the exact rebuilt runtime to this source and workflow attempt",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 10,
+            "name": "Transfer only the exact runtime within this workflow",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 11,
+            "name": "Preserve actual macOS runtime build evidence",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 19,
+            "name": "Post Check out the fixed public MNN source",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 20,
+            "name": "Post Set up Java for the Android SDK manager",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 21,
+            "name": "Post Set up Python",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 22,
+            "name": "Post Check out the exact candidate source for the macOS runtime build",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 23,
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "job_id": 129052174566,
+        "name": "source-and-android",
+        "status": "completed",
+        "conclusion": "success",
+        "steps": [
+          {
+            "number": 1,
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 2,
+            "name": "Check out the exact candidate source",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 3,
+            "name": "Set up Python",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 4,
+            "name": "Set up Java",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 5,
+            "name": "Verify complete source closure",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 6,
+            "name": "Run host contracts",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 7,
+            "name": "Run independent core acceptance regressions",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 8,
+            "name": "Run independent GPU evidence regressions",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 9,
+            "name": "Run independent lifecycle guard regressions",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 10,
+            "name": "Run compatible base-driver regressions",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 11,
+            "name": "Run core-v2 goal and ordering regressions",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 12,
+            "name": "Run lifecycle path-binding regressions",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 13,
+            "name": "Run offline-transaction restoration regressions",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 14,
+            "name": "Run display-scoped lifecycle regressions",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 15,
+            "name": "Run qualified-data-key offline regressions",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 16,
+            "name": "Run exact-pixel lifecycle regressions",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 17,
+            "name": "Run physical-directory and live Stop guard regressions",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 18,
+            "name": "Run current offline-restoration transaction regressions",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 19,
+            "name": "Prepare Android build dependencies",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 20,
+            "name": "Test fixed-release transport adapter",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 21,
+            "name": "Verify and extract pinned GenieX runtime",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 22,
+            "name": "Compile Android Java and arm64 runner",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 23,
+            "name": "Download the current workflow's exact macOS runtime",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 24,
+            "name": "Reverify all original runtime bytes and the actual macOS build identity on Linux",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 25,
+            "name": "Verify packaging with an ephemeral development signer",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 26,
+            "name": "Preserve host and static build evidence",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 27,
+            "name": "Preserve the Linux runtime consumer verification",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 28,
+            "name": "Preserve unsigned build inputs for same-signer device assembly",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 54,
+            "name": "Post Set up Java",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 55,
+            "name": "Post Set up Python",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 56,
+            "name": "Post Check out the exact candidate source",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "number": 57,
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      }
+    ]
+  },
+  "unchanged_gates": true,
+  "branch_protection_modified": false,
+  "scope": "No successful old run substitutes for these original failures. The unprotected stacked-base aggregate refusal requires selecting the intended protected integration target; additional transport retry would not resolve it.",
+  "captured_at_utc": "2026-11-09T08:25:11.838329+00:00",
+  "original_log_digests": {
+    "source-attempt1.log": {
+      "bytes": 116832,
+      "sha256": "04cfb4e6381bbba650e29dad07fe88adfac46c833deb91540ab14cd745de63c9",
+      "private_or_ephemeral_host_path_exported": false
+    },
+    "merge-attempt1.log": {
+      "bytes": 133092,
+      "sha256": "cd2042a870e6ceec7ad8333cb3ae5480956b87af55766000d532d6fc4b0fd17b",
+      "private_or_ephemeral_host_path_exported": false
+    },
+    "source-retry-aggregate.log": {
+      "bytes": 70485,
+      "sha256": "110693adb9d3c61144f752c99981dd045019356ba2b4e3e3296cce5279b73686",
+      "private_or_ephemeral_host_path_exported": false
+    }
+  }
+}

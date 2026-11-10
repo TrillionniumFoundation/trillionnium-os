@@ -1,0 +1,779 @@
+{
+  "schema": "hepta.host-checks.v3",
+  "scope": "host_only",
+  "all_pass": false,
+  "android_compiled": false,
+  "phone_tested": false,
+  "native_grammar_model_tested": false,
+  "external_model_used": false,
+  "started_host_wall_ms": 1794274262692,
+  "checks": [
+    {
+      "name": "java-compile",
+      "exit_code": 2,
+      "elapsed_s": 0.10526949300401611,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "8170fa29d743b759ed08aa256ec3def67c7f2916b32e6eecd7441d8113a0f090"
+    }
+  ],
+  "source_inputs": [
+    {
+      "path": "assemble_pocket4.py",
+      "sha256": "1e90fd239610ae2c0e0ae042307998590d0234c4b519799c19971b629a2c9156"
+    },
+    {
+      "path": "build_mac.py",
+      "sha256": "dca1f29ff9978ff3e99e0f9c02055247140bf01f086ac3231f6b63f160da706a"
+    },
+    {
+      "path": "native/generate_adapter.py",
+      "sha256": "efd47d8d25d84868ad4d9803d54932b580c4541a83b7169e3c040f10dd079ce3"
+    },
+    {
+      "path": "native/model-profile.h",
+      "sha256": "bc1a0683ddb0c795343a36f1ee43547b524dbbd1a421ab86bf0bed8e571e3d51"
+    },
+    {
+      "path": "native/model-runtime.inc",
+      "sha256": "2e8c514c30b0689e3527e9687b6fdc5bae81583a7deb23a313ddc33e7a91ffab"
+    },
+    {
+      "path": "native/parent-death-guard.h",
+      "sha256": "92b094ecf9294907ba3f1e3d6c3a3b98fe2c01ec217e57055136bc69b7ee3a92"
+    },
+    {
+      "path": "native/phase-timing.h",
+      "sha256": "b338f8a2026b641a5ae2928826d1639c13e37b712df089751ef3fa4f377c111f"
+    },
+    {
+      "path": "native/probe-worker.c",
+      "sha256": "6fe2ca2ada2bd543b56ec83428c0ad3500059d1665a3635413ebc0c066195900"
+    },
+    {
+      "path": "native/prompt-budget.h",
+      "sha256": "47e8587a9762b6018748d3560344024fcbd875da280df93afb57976c5eee8c3e"
+    },
+    {
+      "path": "native/prompt-evidence.inc",
+      "sha256": "cd2f93f7b894eb64fb806e24e0ca214b512c148d3b4f19bed39e9e70196e56b0"
+    },
+    {
+      "path": "native/prompt_evidence_adapter.py",
+      "sha256": "deb988a8d3fd2299cb9441cbb2df7bff120d842ebc323971bf119962cf62a509"
+    },
+    {
+      "path": "native/publish-appuid.inc",
+      "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
+    },
+    {
+      "path": "native/sha256-dispatch.h",
+      "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
+    },
+    {
+      "path": "native/tests/lfm25_profile_contract.c",
+      "sha256": "abafcecc5d7d2a87a8d579f39831d38c09c2f85bc498269bff9301765ca15821"
+    },
+    {
+      "path": "native/tests/model_profile_contract.c",
+      "sha256": "c045929ef885803050275d3f206d25552121bd13a059dd4a7b2005105f7f1229"
+    },
+    {
+      "path": "native/tests/parent_death_contract.c",
+      "sha256": "d3824dcb181d2a8b6a9fd31b174281c3f7dfcf6663c98e3f1a9bb5e2671bf397"
+    },
+    {
+      "path": "native/tests/phase_timing_contract.c",
+      "sha256": "479c5e6e23d6bf86515a39046e07c62bc0cc33a5ffbbe3703f5e92cc91db5527"
+    },
+    {
+      "path": "native/tests/prompt_budget_contract.c",
+      "sha256": "71fe6d15efc4ecda21e47d805625e8463221af6bd63acfef1dedca6d5f6d0bc1"
+    },
+    {
+      "path": "native/tests/publish_contract.c",
+      "sha256": "6476304205a10486c32d33214e657f6b320efbcbdc6867df66e86dde6c996d05"
+    },
+    {
+      "path": "native/tests/qwen35_profile_contract.c",
+      "sha256": "f5f0088cd74bb6456c34143e5e49c737531d65ce7e42a8504e1028248c2e5094"
+    },
+    {
+      "path": "native/tests/sha256_probe.c",
+      "sha256": "4a88ff711def3aa8a9b0697830664e6d42488869be7d128441feb8d194ee9fb2"
+    },
+    {
+      "path": "native/tests/test_prompt_evidence.py",
+      "sha256": "89796beae2e41301a0e55650fb454b7dddae553d4d8ac756414ca2e3aa8fc713"
+    },
+    {
+      "path": "native/tests/test_sha256.py",
+      "sha256": "a986747ba4d3eaf520f3c1a95a8a4cbfcd066eb55efcafe7a9509e89992d5d9e"
+    },
+    {
+      "path": "native/vendor/geniex.h",
+      "sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40"
+    },
+    {
+      "path": "native/vendor/llama/ggml-alloc.h",
+      "sha256": "d114067f9099c4a0e2bbc0625c676d4894d9cf0ea27168ee072c7de0e71bb51d"
+    },
+    {
+      "path": "native/vendor/llama/ggml-backend.h",
+      "sha256": "0e5e8e1f16d11ebbf501e38bc6705d79eee819b5f0b17476533f2100ed9674e2"
+    },
+    {
+      "path": "native/vendor/llama/ggml-cpu.h",
+      "sha256": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e"
+    },
+    {
+      "path": "native/vendor/llama/ggml-opt.h",
+      "sha256": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2"
+    },
+    {
+      "path": "native/vendor/llama/ggml.h",
+      "sha256": "2b4dd92fa992cb4ef484917a6c62fef5097698744160ccc09214fd0c459c92c7"
+    },
+    {
+      "path": "native/vendor/llama/gguf.h",
+      "sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4"
+    },
+    {
+      "path": "native/vendor/llama/llama.h",
+      "sha256": "c0854771d3760a41642c4e59429c5b3b9fc774887c59d37eeadc4527681732cd"
+    },
+    {
+      "path": "native/worker-upstream.c",
+      "sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ActionDecision.java",
+      "sha256": "0f45bfca078c11c958782ac231ef922a78e80a55f216c59c127d780d9314f9dd"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ActionPolicy.java",
+      "sha256": "a8fb1e712e2e9e7fc6b00986c2f74ca6c28786bd10b23fd03c41a10fb3909ad7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+      "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CompactTaskHistory.java",
+      "sha256": "ba814f46710b1d155d107482fd1646e740fb35b0625b5b5dd2c3cf670c43a40d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ConservativeTokenBudget.java",
+      "sha256": "f44740ae90f4c05b60a9a79ff0955b5fe730c8c38c03926c1d23568d640f54d7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
+      "sha256": "e620c88e4f92fcd40d85fed30e95f2f0314bf9b8edfb8a7dcb0c0978b627040a"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/DiagnosticStartupGate.java",
+      "sha256": "b2656fc23d0ad7166c20330e7e05e89ba550be4a87ebf8f3512b906e16fbfb54"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/EngineInferenceAdapter.java",
+      "sha256": "400b04c858e8bf9fda019752548418890843f7bb0d061d0c8ec612952f97d624"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "sha256": "ba11f1b753762d9640b8a603555d09fa04e903ef39abc7d693283b9fd3f29747"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
+      "sha256": "4e7fdaf10d6d502e77642fb043296e8da5d94fbfc78d884826f60dafed8f6e36"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalInference.java",
+      "sha256": "9d752ade6e30119112fc02e745c0a3a145f4d85908f93516088a8160206cf52d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalModelEngine.java",
+      "sha256": "4341713a27daa27719f47ec44228daea291cfd5282828bbcac4792198ece27d7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalProbeApplication.java",
+      "sha256": "ddd0e8c8802e1c48bb73b2b2da039d507cc028d50a9c8d3c679a055e42d3a4b9"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
+      "sha256": "81447620dbc2a789bba8c22d561c768144f4d5619859b202d07cd83660a05dce"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "sha256": "b2626f4615f7710f64afa191f0189cce155248445a28d30bb6c09787f711981c"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
+      "sha256": "95ec12dbfe21926c31d868c10e3050d89c71c36f8c8df106226021a2d01f7848"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MainActivity.java",
+      "sha256": "da87217316db9493b665d35c332a53be7f7b3a9399fed90d8e97bc1307c1b1f3"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MemoryAvailability.java",
+      "sha256": "bce1c5e23aba1febec3fab53794cf80c16d713df4bedf4a4d404d05e3c833003"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindContract.java",
+      "sha256": "f0cb174fd287ea2b20c857fdfa2eeda13d31ddfccac303d1fd34800c4272f14f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindModelEngine.java",
+      "sha256": "331460f5826d184feda6ba827efdc402cfa72646dee10303ba602b16468a4207"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindPins.java",
+      "sha256": "2f7117fd3234d514775717eef9bf04a67e347f809a93a1f34623e62a8b7a552e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java",
+      "sha256": "27e1e87e94b74e7c15b88de9e804748537b1f33bc65bb3816b09c5b00110de22"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindSessionContract.java",
+      "sha256": "dfc7e7ffec3ac928ba9f22246fc9c09d3c5956e788e62554c83cda1c788bb250"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ModelFileVerifier.java",
+      "sha256": "77f9630a2d3ab77a723f6b0237d0e5a5f02e7371535e3fa53408b99315e1e4c7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ModelProfile.java",
+      "sha256": "7b3f860aa4575a7e87a4e6eff85f497bc498d6fc93ab53c4230e1264f5d06fae"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NativeBudgetVerifier.java",
+      "sha256": "1a03857c440ea1349fd35f875395c66a58f12aaa9daa6e59d72eafa6cb30c13d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservationStabilityGate.java",
+      "sha256": "ba98c74a6b4c89e04338bb1965fba913a4039f840b8f1073f96f0c9bfcdd8fe8"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservationState.java",
+      "sha256": "a2a664a3567995de8665e66d7667cfc089277fdd16175aa9dab837f7919dd257"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedChildText.java",
+      "sha256": "0de6647a787e033db5e5ab93a2f97d6c5c22ae92a4a244e772268e819269afe2"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+      "sha256": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+      "sha256": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedTextProjection.java",
+      "sha256": "1331624c4ea4144b31b8015e356d8840e6b2a330f18ca113ed265be3ebe4417d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedTransitionProjection.java",
+      "sha256": "a1f0cb19c3d461dadff7675819cdd551dcdb4e42a5a053417388aa52608010c3"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedWindowMetadata.java",
+      "sha256": "73948e97e6a164ef27753ba0536d0cfadac2ee670179aa2e5b4bb2af0e9e66c5"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PersistentActionPolicy.java",
+      "sha256": "0e498e9d58792be305b334bb12dc8d1f060e005c90555e04aa09b8f860f82db0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
+      "sha256": "2813b9a5d14834cdfb3ef6a2b1a8252e94fa877a767d617223f3385c38982eff"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PrivateDebugTask.java",
+      "sha256": "c4bd2c52a5050da897f0833dc9f15fe5bb96599255897e4eef804c8bc138be14"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PrivateMobiProbe.java",
+      "sha256": "7843916ea64172cbd208e7f6631844989323462bce3f5427038c5fcff47beba4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PrivateUiVenusProbe.java",
+      "sha256": "e26ea7ba9b8b96d41958102df5f2888954be7f213159c8cc64d6cab4df663c38"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PromptActionDomain.java",
+      "sha256": "6fd0be8a70763a8681412c0bd610907bb9c4166025b149454aeccad0a0b8b210"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecentActionProjection.java",
+      "sha256": "326ca2e0f75abbe929c09bc2fb4d2725352522e71d9f19254b153924ed4933b5"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryDispatch.java",
+      "sha256": "e04794c7a6bba50bc58e583b7e21338e422e6c318ebe20e1a790c6e3b14f8d0c"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryJournalStore.java",
+      "sha256": "cac25c2f6a849142a4075b12beb341bf3a2283d0810235d2f67dfdeaa918086d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryJournalTransaction.java",
+      "sha256": "5580e9a449b38d5b06c7a2e5a0cb454a1dfec949eefc94622e65000593347660"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryProcessInventory.java",
+      "sha256": "96459be86bd517cca66727e0e0768b1ada90122684163d7b6717db1dae7236c1"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryQuiescence.java",
+      "sha256": "590d91f50b19eed66d9ddec16592a44dd75132babfd72e37656a4d272ca177f0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoverySlotHandoff.java",
+      "sha256": "00c139dfa65af34ad5a9de1446064f193aabe2f5a7512b11da1723afcb0cf9a5"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RepeatActionGuard.java",
+      "sha256": "aa827865a773217eafda71046420cbaf704787b1280b3dcf0cd1af78649b2dbc"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/SameStateNoEffectGuard.java",
+      "sha256": "3f6fb02f485f27e081e3741f157e4fad267e66501dcff8527583bcfd6eeae8c5"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/SessionRecovery.java",
+      "sha256": "9139579bedd6ce965baa00813f94378ac638e6ba3b79503b2f3029c6261afcf3"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusContract.java",
+      "sha256": "422a4d98c86c81aca08820f44929beaa9855d4bac3c1b5a6ffd09c72ca904128"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusInputContract.java",
+      "sha256": "79688ad22a3e81effad1de1f08f52f776c27185c9f1bc27d1d0900197995d0d7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusModelEngine.java",
+      "sha256": "d5694b4c034d3a7147f2469f411ee6157a4f847e54ce56b50483fd29a4fd2216"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusPins.java",
+      "sha256": "6a1b7ae7259a25ba88e42976afe1e81b19858d339314a7cea0d166dcddd414dd"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusProcessContract.java",
+      "sha256": "96d7dbcb44b48801dd4751f516675847ad31861c8c63924ab26d969d5a55799f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusRequestContract.java",
+      "sha256": "2d508be473bd713bffaf041d31c9de666c2d50d5c0e611e4746ba43915969fdf"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusSessionContract.java",
+      "sha256": "aab2a12e324aae8191dff73c3b43f8643f7edba8a5f418d67219901bcdea6d1c"
+    },
+    {
+      "path": "tests/ActionFreshnessHostTest.java",
+      "sha256": "23bcebbe8857aa7ef9ae7eebba4b98bccf8e1f1cb339dd813ab4149735d6845d"
+    },
+    {
+      "path": "tests/AppCatalogueHostTest.java",
+      "sha256": "34793a57edb9587cdc98c9963bac545e4dc43b92be509771ebb68d3af382386e"
+    },
+    {
+      "path": "tests/BudgetHostTest.java",
+      "sha256": "053c6c3a1c9eff1d5055c425a6b97b6c323bbea72864abe3f6a391b45534d737"
+    },
+    {
+      "path": "tests/CompactEvidenceHostTest.java",
+      "sha256": "063f093177da6fe427818a4a247ebb866519a0b968ab152f16a9efdf42a82d7c"
+    },
+    {
+      "path": "tests/CompactSequenceHostTest.java",
+      "sha256": "0983579f04dec42f37e257aa940e3cb3f3e117b77b6973dab429a3456b3b472b"
+    },
+    {
+      "path": "tests/CompactTaskHistoryHostTest.java",
+      "sha256": "83c73d923fabf5c77c2ed027cbf9ff9875c9f2fb314c25276d7f99758fab925a"
+    },
+    {
+      "path": "tests/DiagnosticStartupGateHostTest.java",
+      "sha256": "5f9a001a7f9f9e305c1eb801fef9ad4f5516b936901391c1c6bd6f3ea7b26ff8"
+    },
+    {
+      "path": "tests/DispatchedActionSequenceHostTest.java",
+      "sha256": "2e079e310a7d659058efa44b7916c8fad13ac0e89322ea399db883a8bf195c2e"
+    },
+    {
+      "path": "tests/Gemma4ProfileHostTest.java",
+      "sha256": "b0eed227ceeebaede974ff2cf56ade8ba91d8463cd9257e13a5b78a983e3e0b1"
+    },
+    {
+      "path": "tests/ImeObservationHostTest.java",
+      "sha256": "03d9442b184d772976dbf0a482f8576509112203fe4700abe4cfb20e67f7cdca"
+    },
+    {
+      "path": "tests/Lfm25MoeProfileHostTest.java",
+      "sha256": "7686a04d009c62483707f202e9d8d4ca2a594d5373dd156e888aec17d4e3420c"
+    },
+    {
+      "path": "tests/LocalPolicyHostTest.java",
+      "sha256": "b05d1b82215ec82420e851d9e9940e9f45b7c76808437dafbfd4705f1bcb641e"
+    },
+    {
+      "path": "tests/MemoryAvailabilityHostTest.java",
+      "sha256": "c1d24b1d49dc9c8d73ac01ec69a53e8dced7d0b31623f399de665363167e7f61"
+    },
+    {
+      "path": "tests/MobiMindContractHostTest.java",
+      "sha256": "9ae8dd710b1cb763d748e047b260ffd00d3c226e1f7095cd46f167fc513cb9be"
+    },
+    {
+      "path": "tests/MobiMindSessionContractHostTest.java",
+      "sha256": "0adddcf74e0379ac7f2cd46aa255e22f43416bd1081f03cfde9beec1f376f0ec"
+    },
+    {
+      "path": "tests/ModelProfileHostTest.java",
+      "sha256": "7c52ceb208efbda8edacf6b132bccfdf7874c7b900e09afa2f5a56e6d75c7382"
+    },
+    {
+      "path": "tests/ObservationStabilityHostTest.java",
+      "sha256": "28b07236e1e4483f7850e9a86b04ff4d25014eac7f9a430a606ec503b603080e"
+    },
+    {
+      "path": "tests/ObservedChildTextHostTest.java",
+      "sha256": "26744b5406a1f59ffcd7cfbd5c0d96d2666d093b8685a1976995406e815a142d"
+    },
+    {
+      "path": "tests/ObservedScrollActionsHostTest.java",
+      "sha256": "4895b044a61be75552ab9abf44f414562342cfcda937e4074d2e31c58fd5c891"
+    },
+    {
+      "path": "tests/ObservedTargetLabelsHostTest.java",
+      "sha256": "ed3f87d01fa5d889c78da37de1e35a4828fd70b073f01885d28674a06a421ddb"
+    },
+    {
+      "path": "tests/ObservedTextProjectionHostTest.java",
+      "sha256": "b6b42ad38122f7d3be2eeae0c786b656ca000858e24de9b563c204699cbf0b1e"
+    },
+    {
+      "path": "tests/ObservedTransitionProjectionHostTest.java",
+      "sha256": "d65692eeb0033b98c69dd40bf95f8cf6225fc41db496aad9aab9aeb860906f37"
+    },
+    {
+      "path": "tests/ObservedWindowMetadataHostTest.java",
+      "sha256": "1cdfa93910fb613f59859ad4ef0eb7c1902d395297b61e8c9553a46c15604d43"
+    },
+    {
+      "path": "tests/PersistentActionPolicyHostTest.java",
+      "sha256": "238e3bb08c244a9dc765cb405860efafe1c1b788fabea030d81c6accc0023028"
+    },
+    {
+      "path": "tests/PromptActionDomainHostTest.java",
+      "sha256": "a1fef9fcc7eb07c920b95f480e888e842007e3ccc31be8ee209b7f1103ad21af"
+    },
+    {
+      "path": "tests/PromptCapabilityProjectionHostTest.java",
+      "sha256": "34aabe9f396787efcea8a403a7787f48b8440d35d153bf31332d638d19c203ef"
+    },
+    {
+      "path": "tests/Qwen35ProfileHostTest.java",
+      "sha256": "8ca8f62f1e95ae0847527fcaf2c3c6c5b0b222539a9e30f158cca5f974a738fd"
+    },
+    {
+      "path": "tests/ReadableActionHistoryHostTest.java",
+      "sha256": "cdebb165be2b8201fb15df2d32434b8244fd95fe21e674a39ca3bf5b0d0952aa"
+    },
+    {
+      "path": "tests/RecentActionProjectionHostTest.java",
+      "sha256": "a3fa7e95184c7629c3fc95d930a5c657d86377f04abbbf1c4e328a5f782a6857"
+    },
+    {
+      "path": "tests/RecoveryAcknowledgementHostTest.java",
+      "sha256": "512dab16b9406dc5e7a0896518ce5e94cfa3834c3fb1d61f9ac98c5fbbc96c83"
+    },
+    {
+      "path": "tests/RecoveryDispatchHostTest.java",
+      "sha256": "435b0f99eeafbc56481a6d1758492209cc63992c78eb0bb9bd710b47ee3f7333"
+    },
+    {
+      "path": "tests/RecoverySlotHandoffHostTest.java",
+      "sha256": "400b028fef921d05aa640a325d3c3f5cd63939c3af4aec47a75f615e5345877e"
+    },
+    {
+      "path": "tests/RepeatActionGuardHostTest.java",
+      "sha256": "67ac06e819c145a12a12e5fb8a8ed7de53b4cff14a5d9dccafdd802270a93e0c"
+    },
+    {
+      "path": "tests/RepeatClickProjectionHostTest.java",
+      "sha256": "ef768613f3db35022e3e8d4798bf856e7edb30eef3cc48c45854fd31380daf37"
+    },
+    {
+      "path": "tests/SameStateNoEffectGuardHostTest.java",
+      "sha256": "27db3ea93ad3b9528b1eed69811e0a85b10c05cc506c01745340e56efbb9f227"
+    },
+    {
+      "path": "tests/ScrollGrammarHostTest.java",
+      "sha256": "2b97d3d1b0f467bca96607cb207dad0328c9bd7178c76b21de29f2b011391df6"
+    },
+    {
+      "path": "tests/SessionRecoveryHostTest.java",
+      "sha256": "0baa30e51254e8886cad11978f178efe91330a673415f46349f27175bb68c802"
+    },
+    {
+      "path": "tests/UiVenusContractHostTest.java",
+      "sha256": "7e652343e4905a6137876131714428db0d1995a7f76aa8f1b8172d7abe30af00"
+    },
+    {
+      "path": "tests/UiVenusInputContractHostTest.java",
+      "sha256": "0d603ed12c228574640f52c3fdf25854831e91072bbc3370080dbf372b3d1f82"
+    },
+    {
+      "path": "tests/UiVenusProcessContractHostTest.java",
+      "sha256": "40350a82e03f3a19afab6a107949280b8330725647837b1b649c2fd4d4c3683b"
+    },
+    {
+      "path": "tests/UiVenusRequestContractHostTest.java",
+      "sha256": "ff773d205a101ac955628c021e2238bcf21b0ff6da1091223d06e199e46c23d1"
+    },
+    {
+      "path": "tests/UiVenusSessionContractHostTest.java",
+      "sha256": "9a2ce13ae09eda784c127f3a7c8348d2ac4176a9a537a85862e0d083419c231c"
+    },
+    {
+      "path": "tests/action-grammar/DecisionGrammarHostTest.java",
+      "sha256": "7e4d08d30f437587d84515359cf9faed5808db24fad98d76331d451b3e92865e"
+    },
+    {
+      "path": "tests/action-grammar/gbnf_recognizer.py",
+      "sha256": "a9317c9eb2e7461e9b4656a8541791e7f13ca9b60e9c0296d2d4ac94970ab1c3"
+    },
+    {
+      "path": "tests/action-grammar/test_completion_protocol.py",
+      "sha256": "9c1d7d8fb7fbd70af311d284ceca4e247576c95f71bfb38c4c86e11b67da7d14"
+    },
+    {
+      "path": "tests/action-grammar/test_decision_grammar.py",
+      "sha256": "22a6011d4c7b0c403076790cd2c56d4b275eeacce4e95839ff182fc7598569eb"
+    },
+    {
+      "path": "tests/action-grammar/test_same_state_no_effect_grammar.py",
+      "sha256": "db1b5e1011b7e6dbd4cd2d51c9a6b1d45964dfd3b92e1e9ded6470ebb5ab6068"
+    },
+    {
+      "path": "tests/action-grammar/test_scroll_grammar.py",
+      "sha256": "38aaec7ba80caa5ef5a296ec37d8ab96830d6dd8bb1d5fa5bbd3ea5d3bcc3755"
+    },
+    {
+      "path": "tests/action-parser/ActionDecisionHostTest.java",
+      "sha256": "7c29a1b329c4c5363267692e84608936a082a6b7c4603ade764f213961e0c519"
+    },
+    {
+      "path": "tests/action-parser/run_host_tests.py",
+      "sha256": "968c4be22dc5608e9571a48e8af43f58f5ba6a7533d11014d868b2a007962170"
+    },
+    {
+      "path": "tests/recovery-application/RecoveryApplicationHostTest.java",
+      "sha256": "561dcdb61cca4abeb3457802fd5b6501809d5da94cbb992c767ca9f4b3cf85a2"
+    },
+    {
+      "path": "tests/recovery-application/android/app/Application.java",
+      "sha256": "f5e2d48bc826ae0aef0675eebcde96c5600de4439825e7e1e9bd2006e9290bc4"
+    },
+    {
+      "path": "tests/recovery-application/android/content/Context.java",
+      "sha256": "16a2485cbb8d6de305df02a30a51a6ba542a4c3d4c1ac47715ec30f538f1ec86"
+    },
+    {
+      "path": "tests/recovery-application/android/content/pm/ApplicationInfo.java",
+      "sha256": "351132873a0dfff522a95d378044ffa2695dadaed30088e7f6c8ab5fb1d92ec3"
+    },
+    {
+      "path": "tests/recovery-application/android/os/Handler.java",
+      "sha256": "99d3e879572a34c6e6ffddfea2f0aff6baaf0be674b44ab21321c3270651d50d"
+    },
+    {
+      "path": "tests/recovery-application/android/os/Looper.java",
+      "sha256": "0490a5dfa058c9a9a38628953d387ee9cc6b82f8bb3a0904cb1ed0932db6c305"
+    },
+    {
+      "path": "tests/recovery-application/android/os/Process.java",
+      "sha256": "0afcc3ee62acb6c15f6fc789d541d4dabdd1fe65aeff775faed938afc68bf58c"
+    },
+    {
+      "path": "tests/recovery-application/org/trillionnium/hepta/local/LocalTaskSession.java",
+      "sha256": "30eaa216585ebefc95bb5cc50209f5b08224259991b2cc506e3ec18a46268874"
+    },
+    {
+      "path": "tests/recovery-application/org/trillionnium/hepta/local/MobiMindModelEngine.java",
+      "sha256": "6082cc71141649d2ccb4372b857791e2fcd011250305fbcdc299597208951daa"
+    },
+    {
+      "path": "tests/recovery-application/org/trillionnium/hepta/local/UiVenusModelEngine.java",
+      "sha256": "3f205fae6da0308829ec3a6edf51fd7cbb10a9b9d41a76004182e7fce22bdf06"
+    },
+    {
+      "path": "tests/recovery-application/prepare_engine_fixture.py",
+      "sha256": "51f44228401a95740b5c7cac72ecdf7e9b244d6ad9852835225e5dea1660875a"
+    },
+    {
+      "path": "tests/recovery-inventory/RecoveryInventoryHostTest.java",
+      "sha256": "30afe0066c62a72791ea9a52e929a44276858ef70033270581d65e0835a5794a"
+    },
+    {
+      "path": "tests/recovery-inventory/android/content/Context.java",
+      "sha256": "93a9d3726ff4f1f8cc9a510e27c27538e3e4caefd4f79c39882718fa994cba90"
+    },
+    {
+      "path": "tests/recovery-inventory/android/content/pm/ApplicationInfo.java",
+      "sha256": "52e318906b8d5de43270cb05edd537117ad39140bec86538ad93a67cdc5de6ed"
+    },
+    {
+      "path": "tests/recovery-inventory/android/os/Looper.java",
+      "sha256": "874485cc8a937d8a587e5a5e159e35ee8179a78ee2c997c118947e403b51a46f"
+    },
+    {
+      "path": "tests/recovery-inventory/android/os/Process.java",
+      "sha256": "e5a338c146ecd6afdc2578ca53530e862ec4ca1260e8a6b39b164618cb665d87"
+    },
+    {
+      "path": "tests/recovery-inventory/android/os/SystemClock.java",
+      "sha256": "930c17587c70ccf674dae45df00afeabd88344a25868244a129964b1fcff3ece"
+    },
+    {
+      "path": "tests/recovery-inventory/android/system/ErrnoException.java",
+      "sha256": "a854ff92ceaf29a827d5cec326ebb1899c2dac6c7c3248715995c9b1c78158a2"
+    },
+    {
+      "path": "tests/recovery-inventory/android/system/Os.java",
+      "sha256": "3268611e327926c84dedc4a9db6ce98b03c77644c9a99710bdc05d8702ba243d"
+    },
+    {
+      "path": "tests/recovery-inventory/android/system/OsConstants.java",
+      "sha256": "18352a11a86156e7e01fade6335bf564c2823ce60c4cb22fa8dc035b9d6a9d29"
+    },
+    {
+      "path": "tests/recovery-inventory/android/system/StructStat.java",
+      "sha256": "cf6846193c3242e6fefaba9fd8321b274eb8ca98e73cf793ca04ca29d9864089"
+    },
+    {
+      "path": "tests/test_ui_venus_q4_0_runtime.py",
+      "sha256": "9ec137a870aed4d02cf3c089119cbb07c508394f6f0758813e5e586aa21d58ac"
+    },
+    {
+      "path": "tools/build_identity.py",
+      "sha256": "ef875c4c07c9896077cad8f44b58543cd02cfb6a43eb3259820658c623fab100"
+    },
+    {
+      "path": "tools/create_debug_task.py",
+      "sha256": "db959a4382b4b4fc67504a9201311f0ea4a38a1c45dfcf093d68ed5a5b7583f2"
+    },
+    {
+      "path": "tools/fetch_pinned_runtime.py",
+      "sha256": "b7c97e4391984c85630fc15f66e71540d781c4bf7f8a458587714b61294a0664"
+    },
+    {
+      "path": "tools/model_profiles.py",
+      "sha256": "56d8553bfa7d0cd9f6f4b208112cb564cde85fda1d5d50ddb22528738c923774"
+    },
+    {
+      "path": "tools/phone_acceptance.py",
+      "sha256": "9305ff909e734a9d81598c2d2695b6b519e7fd94984acc4352941ace74f4a0f2"
+    },
+    {
+      "path": "tools/phone_inventory.py",
+      "sha256": "d25889ef9fffb22e08871f7a3b57a57e28d5f48977d4e42929364434599ea58e"
+    },
+    {
+      "path": "tools/phone_suite.py",
+      "sha256": "3ee862814c887faea4266f2c1d61892f3c3d2eed7c466c73f918fa8db4acdf65"
+    },
+    {
+      "path": "tools/run_host_checks.py",
+      "sha256": "54477c35f071a0dd4cca5109e211a69f669b7ba27d487cc5831e625165b4a198"
+    },
+    {
+      "path": "tools/test_build_identity.py",
+      "sha256": "508129733cb4b218e22da9e46990d1b3490233d968b158d6d5cc250f3bc54590"
+    },
+    {
+      "path": "tools/test_fixed_response_retry.py",
+      "sha256": "e9e1b2800c4397fc05922a47984b256b140d5a113567dab1788c3b4d5524f48f"
+    },
+    {
+      "path": "tools/test_labeled_target_binding.py",
+      "sha256": "6a8dcb8745c610e1e1325e325fc25a918f29140096a12bb9def2f09d9e46762b"
+    },
+    {
+      "path": "tools/test_lfm25_profile.py",
+      "sha256": "954930b1d0db2a73b3b65c194150b2769e8d929207cda76a1405d6d1af51f617"
+    },
+    {
+      "path": "tools/test_model_profiles.py",
+      "sha256": "99411bf66d49bc5a7679df7324efbfe3f8e33d726f2665ff7e29d7b5a50eaea5"
+    },
+    {
+      "path": "tools/test_phone_acceptance.py",
+      "sha256": "6fbeb39692e7d48f5ae9c67f9d62564661271341839bb1018577d539b99af2d3"
+    },
+    {
+      "path": "tools/test_phone_inventory.py",
+      "sha256": "b2846df4eb51933fe116d9a920ff4c19e92e746c52e6124040e1b6ad03cad4a4"
+    },
+    {
+      "path": "tools/test_phone_suite.py",
+      "sha256": "790549d00157e8cade573acea4ac62e5ae5d875684a8c1473855c07f03184506"
+    },
+    {
+      "path": "tools/test_profile_registry_consumers.py",
+      "sha256": "f72e54d54bd557c9bfbce44954296359ee595e6dfe87c237e70f9f4221b54b5a"
+    },
+    {
+      "path": "tools/test_qwen35_profile.py",
+      "sha256": "dcc9bcbdd6fefbaba06e87327783f0e23bef65682b3c7144ac85641358445c83"
+    },
+    {
+      "path": "tools/test_recovery_application.py",
+      "sha256": "a9f77b19b9d23d43333b9a0d4ce7f527bde47cb2bd79b67938a91d995d219481"
+    },
+    {
+      "path": "tools/test_recovery_inventory.py",
+      "sha256": "478b244b6cd0be175f5ed57ecd7d737d4181a0d5803c3105f3dd682987b75ae0"
+    },
+    {
+      "path": "tools/test_verify_mobimind_runtime.py",
+      "sha256": "57911fd63315474ea13d295246d56d9e06a793979ee6b04084900d6debcfa7be"
+    },
+    {
+      "path": "tools/test_verify_runtime.py",
+      "sha256": "70b32dcb6b4a900e715b4aa0e01610b9e308bee0a7a3f2cafb8f8deb334880dd"
+    },
+    {
+      "path": "tools/test_verify_source.py",
+      "sha256": "6070ec98bb1cd6f1bc23abfbd7e68a393348e9de23bac97b8cf8773690717e86"
+    },
+    {
+      "path": "tools/test_verify_ui_venus_runtime.py",
+      "sha256": "fabd3465edc295837415e56b13e654b86fe0919711ea7ca4006ecab989ef7622"
+    },
+    {
+      "path": "tools/verify_mobimind_runtime.py",
+      "sha256": "a35cba2df6a4b4441d97d732ae1f9c10cf68d995329d52036ba93703b2b789db"
+    },
+    {
+      "path": "tools/verify_runtime.py",
+      "sha256": "61fb290e21d1b83b619a2d2d8e851defc1534a286d97d2d265b4d76b30ef1c69"
+    },
+    {
+      "path": "tools/verify_source.py",
+      "sha256": "b8db2eb7b0ca64a54ed18f202abdf424d7c3424dadaf5e19ced2157d0f9a42bb"
+    },
+    {
+      "path": "tools/verify_ui_venus_runtime.py",
+      "sha256": "5622ec1b12e55136f0a66179dca64029db0e979b8fc2dec6bf6a318cac4a251a"
+    }
+  ],
+  "error": "java-compile failed: error: release version 8 not supported\nUsage: javac <options> <source files>\nuse --help for a list of possible options\n",
+  "finished_host_wall_ms": 1794274262802
+}

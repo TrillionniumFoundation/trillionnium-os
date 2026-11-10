@@ -1,0 +1,16 @@
+test_current_observation_and_package_are_bound (__main__.GrammarTests.test_current_observation_and_package_are_bound) ... ok
+test_discovery_changes_only_observed_open_permissions (__main__.GrammarTests.test_discovery_changes_only_observed_open_permissions) ... ok
+test_discovery_schema_is_bounded_and_read_only (__main__.GrammarTests.test_discovery_schema_is_bounded_and_read_only) ... ok
+test_each_action_has_legal_fields (__main__.GrammarTests.test_each_action_has_legal_fields) ... ok
+test_integer_ranges_and_enums (__main__.GrammarTests.test_integer_ranges_and_enums) ... ok
+test_navigation_rejects_inapplicable_fields (__main__.GrammarTests.test_navigation_rejects_inapplicable_fields) ... ok
+test_no_unknown_duplicate_or_trailing_content (__main__.GrammarTests.test_no_unknown_duplicate_or_trailing_content) ... ok
+test_real_failure_open_with_node_id_is_impossible (__main__.GrammarTests.test_real_failure_open_with_node_id_is_impossible) ... ok
+test_required_fields_and_action_specific_nodes (__main__.GrammarTests.test_required_fields_and_action_specific_nodes) ... ok
+test_system_window_has_only_available_actions (__main__.GrammarTests.test_system_window_has_only_available_actions) ... ok
+test_unicode_string_and_control_bounds (__main__.GrammarTests.test_unicode_string_and_control_bounds) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.021s
+
+OK

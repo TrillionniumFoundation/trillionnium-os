@@ -1,0 +1,32 @@
+{
+  "source_log_sha256": "b4c25bfa868e621797d2e697b1fd6123830852e6601af2afab928f1a70b76dc1",
+  "source_log_bytes": 40933,
+  "selected_lines": [
+    {
+      "line_number": 130,
+      "text": "\u001b[32m[ INFO] [plugins/llama_cpp/src/params.cpp:405:resolve_devices] Using 1 device(s): HTP0\u001b[0m"
+    },
+    {
+      "line_number": 265,
+      "text": "\u001b[34m[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] load_tensors: offloaded 43/43 layers to GPU\u001b[0m"
+    },
+    {
+      "line_number": 266,
+      "text": "\u001b[34m[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] load_tensors:          CPU model buffer size =  3536.00 MiB\u001b[0m"
+    },
+    {
+      "line_number": 267,
+      "text": "\u001b[34m[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] load_tensors:         HTP0 model buffer size =  3257.16 MiB\u001b[0m"
+    }
+  ],
+  "native_expected_fields": {
+    "model_profile": "nemotron-3.5-bolt-e4b-q4_k_m",
+    "compute_requested": "npu",
+    "device_resolved": "HTP0",
+    "n_gpu_layers_create": -1
+  },
+  "historical_fixture_only": true,
+  "source_version_code": 16,
+  "source_kind": "historical ordinary-app Bolt NPU stderr",
+  "extraction": "Only the four selected native device/layer/model-buffer lines are retained, unchanged. All other source-log lines and all private locators are omitted. This fixture does not qualify Code25."
+}

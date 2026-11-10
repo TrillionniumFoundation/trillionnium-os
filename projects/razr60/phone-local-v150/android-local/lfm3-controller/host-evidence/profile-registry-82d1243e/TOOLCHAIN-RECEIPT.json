@@ -1,0 +1,178 @@
+{
+  "schema": "hepta.private-host-toolchain.v1",
+  "source": "existing configured Ubuntu APT indexes",
+  "system_packages_modified": false,
+  "privileged_install_performed": false,
+  "package_version": "17.0.21.0.3+1-1~26.04.1",
+  "packages": [
+    {
+      "package": "openjdk-17-jdk-headless",
+      "version": "17.0.21.0.3+1-1~26.04.1",
+      "filename": "openjdk-17-jdk-headless_17.0.21.0.3+1-1~26.04.1_amd64.deb",
+      "bytes": 71906392,
+      "sha256": "f2ca258bc05fbefbffacd2c019011f76a64f51cb85bd4586d26c12374066cf74",
+      "matches_apt_index": true
+    },
+    {
+      "package": "openjdk-17-jre-headless",
+      "version": "17.0.21.0.3+1-1~26.04.1",
+      "filename": "openjdk-17-jre-headless_17.0.21.0.3+1-1~26.04.1_amd64.deb",
+      "bytes": 48216840,
+      "sha256": "09b806fb68456085299d7b63686ba66a6c96fd06237b03c659168671507e28a1",
+      "matches_apt_index": true
+    }
+  ],
+  "relocated_package_configuration_links": [
+    {
+      "path": "conf/accessibility.properties",
+      "original_target": "/etc/java-17-openjdk/accessibility.properties",
+      "relocated_target": "../../../../../etc/java-17-openjdk/accessibility.properties",
+      "target_sha256": "e8a107880e6ec598c99a4865bc2d24678e8370142bfdb5ca27fdbe266b4c6cb7"
+    },
+    {
+      "path": "conf/logging.properties",
+      "original_target": "/etc/java-17-openjdk/logging.properties",
+      "relocated_target": "../../../../../etc/java-17-openjdk/logging.properties",
+      "target_sha256": "b62d2733ab99556b108a1951d894c5a8d76b1ac7a00c02c388f9eb9be046c56f"
+    },
+    {
+      "path": "conf/management/jmxremote.access",
+      "original_target": "/etc/java-17-openjdk/management/jmxremote.access",
+      "relocated_target": "../../../../../../etc/java-17-openjdk/management/jmxremote.access",
+      "target_sha256": "0c25d26ee212ca1e8c33f67c3c460d43fe849c3a1d23dbe341148517602b280c"
+    },
+    {
+      "path": "conf/management/management.properties",
+      "original_target": "/etc/java-17-openjdk/management/management.properties",
+      "relocated_target": "../../../../../../etc/java-17-openjdk/management/management.properties",
+      "target_sha256": "f80096ec028dcb71625c398ec16d12023cafc6a1c055aceaed07d02e8d56f637"
+    },
+    {
+      "path": "conf/net.properties",
+      "original_target": "/etc/java-17-openjdk/net.properties",
+      "relocated_target": "../../../../../etc/java-17-openjdk/net.properties",
+      "target_sha256": "2e070ed1d97052f0ce8771ed2ef74a38d7c260a45fde7a3682c8844e5fdf58a4"
+    },
+    {
+      "path": "conf/security/java.policy",
+      "original_target": "/etc/java-17-openjdk/security/java.policy",
+      "relocated_target": "../../../../../../etc/java-17-openjdk/security/java.policy",
+      "target_sha256": "1224c11b69032c80e1493416641c82a37e558913a41f959f83ab2f96f097d6c0"
+    },
+    {
+      "path": "conf/security/java.security",
+      "original_target": "/etc/java-17-openjdk/security/java.security",
+      "relocated_target": "../../../../../../etc/java-17-openjdk/security/java.security",
+      "target_sha256": "849bf2bc79290e550c5bf882accf44f41edf5443e479bbef9d91f2fb8ea5b5cd"
+    },
+    {
+      "path": "conf/security/nss.cfg",
+      "original_target": "/etc/java-17-openjdk/security/nss.cfg",
+      "relocated_target": "../../../../../../etc/java-17-openjdk/security/nss.cfg",
+      "target_sha256": "84b778712c4b3f09798681f9d8ff3a298bcad76bb65ae8925ed8bd80a14621f4"
+    },
+    {
+      "path": "conf/security/policy/README.txt",
+      "original_target": "/etc/java-17-openjdk/security/policy/README.txt",
+      "relocated_target": "../../../../../../../etc/java-17-openjdk/security/policy/README.txt",
+      "target_sha256": "6da0747334b0fea7592fd92614b2bbc8b126535e129b1fee483774d914e98eb5"
+    },
+    {
+      "path": "conf/security/policy/limited/default_US_export.policy",
+      "original_target": "/etc/java-17-openjdk/security/policy/limited/default_US_export.policy",
+      "relocated_target": "../../../../../../../../etc/java-17-openjdk/security/policy/limited/default_US_export.policy",
+      "target_sha256": "758b930a526fc670ab7537f8c26321527050a31f5f42149a2dda623c56a0a1a9"
+    },
+    {
+      "path": "conf/security/policy/limited/default_local.policy",
+      "original_target": "/etc/java-17-openjdk/security/policy/limited/default_local.policy",
+      "relocated_target": "../../../../../../../../etc/java-17-openjdk/security/policy/limited/default_local.policy",
+      "target_sha256": "2b2627548e61316150d47ffc3e6cad465ca05b3cccd4785eb7d21aa7baa0f441"
+    },
+    {
+      "path": "conf/security/policy/limited/exempt_local.policy",
+      "original_target": "/etc/java-17-openjdk/security/policy/limited/exempt_local.policy",
+      "relocated_target": "../../../../../../../../etc/java-17-openjdk/security/policy/limited/exempt_local.policy",
+      "target_sha256": "8c3d7648abcd95a272ce12db870082937f4d7f6878d730d83cb7fbb31eb8b2c9"
+    },
+    {
+      "path": "conf/security/policy/unlimited/default_US_export.policy",
+      "original_target": "/etc/java-17-openjdk/security/policy/unlimited/default_US_export.policy",
+      "relocated_target": "../../../../../../../../etc/java-17-openjdk/security/policy/unlimited/default_US_export.policy",
+      "target_sha256": "758b930a526fc670ab7537f8c26321527050a31f5f42149a2dda623c56a0a1a9"
+    },
+    {
+      "path": "conf/security/policy/unlimited/default_local.policy",
+      "original_target": "/etc/java-17-openjdk/security/policy/unlimited/default_local.policy",
+      "relocated_target": "../../../../../../../../etc/java-17-openjdk/security/policy/unlimited/default_local.policy",
+      "target_sha256": "8d8a318e6d90dfd7e26612d2b6385aa704f686ca6134c551f8928418d92b851a"
+    },
+    {
+      "path": "conf/sound.properties",
+      "original_target": "/etc/java-17-openjdk/sound.properties",
+      "relocated_target": "../../../../../etc/java-17-openjdk/sound.properties",
+      "target_sha256": "299c2360b6155eb28990ec49cd21753f97e43442fe8fab03e04f3e213df43a66"
+    },
+    {
+      "path": "conf/swing.properties",
+      "original_target": "/etc/java-17-openjdk/swing.properties",
+      "relocated_target": "../../../../../etc/java-17-openjdk/swing.properties",
+      "target_sha256": "a5ba486e49d565f1b0eb6a08e7518f2f79d23bed2a1a527f454f81b7eae8fb9d"
+    },
+    {
+      "path": "lib/jfr/default.jfc",
+      "original_target": "/etc/java-17-openjdk/jfr/default.jfc",
+      "relocated_target": "../../../../../../etc/java-17-openjdk/jfr/default.jfc",
+      "target_sha256": "51099f07cbdafe8c9e12e94ea74db1c92c3e1ae950679ebf6d37a9b4be4f7634"
+    },
+    {
+      "path": "lib/jfr/profile.jfc",
+      "original_target": "/etc/java-17-openjdk/jfr/profile.jfc",
+      "relocated_target": "../../../../../../etc/java-17-openjdk/jfr/profile.jfc",
+      "target_sha256": "9da7ab71c763344677cabe8898496b0aad1fb42fe49363d5e1ae00df8a1baded"
+    },
+    {
+      "path": "lib/jvm.cfg",
+      "original_target": "/etc/java-17-openjdk/jvm-amd64.cfg",
+      "relocated_target": "../../../../../etc/java-17-openjdk/jvm-amd64.cfg",
+      "target_sha256": "d5ad5a3e0c1cd2236d5f983f48f9a4b3612662dc7c89a6bb21994ed8327be25e"
+    },
+    {
+      "path": "lib/psfont.properties.ja",
+      "original_target": "/etc/java-17-openjdk/psfont.properties.ja",
+      "relocated_target": "../../../../../etc/java-17-openjdk/psfont.properties.ja",
+      "target_sha256": "5a4bd51b969bf187ff86d94f4a71fdfbfa602762975fa3c73d264b4575f7c78f"
+    },
+    {
+      "path": "lib/psfontj2d.properties",
+      "original_target": "/etc/java-17-openjdk/psfontj2d.properties",
+      "relocated_target": "../../../../../etc/java-17-openjdk/psfontj2d.properties",
+      "target_sha256": "780c565d5af3ee6f68b887b75c041cdf46a0592f67012f12eeb691283e92630a"
+    },
+    {
+      "path": "lib/security/blocked.certs",
+      "original_target": "/etc/java-17-openjdk/security/blocked.certs",
+      "relocated_target": "../../../../../../etc/java-17-openjdk/security/blocked.certs",
+      "target_sha256": "2596bb6dda83c66d96c5a252d7b2ae1f24cc1ae3f1890223b4f3591a8d52bf10"
+    },
+    {
+      "path": "lib/security/default.policy",
+      "original_target": "/etc/java-17-openjdk/security/default.policy",
+      "relocated_target": "../../../../../../etc/java-17-openjdk/security/default.policy",
+      "target_sha256": "84d5057b12f2ed66aaa7c2027a5f06b461416eee879c1f4d242ff19dab9f400c"
+    },
+    {
+      "path": "lib/security/public_suffix_list.dat",
+      "original_target": "/etc/java-17-openjdk/security/public_suffix_list.dat",
+      "relocated_target": "../../../../../../etc/java-17-openjdk/security/public_suffix_list.dat",
+      "target_sha256": "16b42002aa6f83a7763c4cdbd399ecf738460377d447e362884495545afd60a3"
+    }
+  ],
+  "java_home": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64",
+  "ct_sym_sha256": "0ebe1d420d23d9aa3ff901863d825608116bbccc475713c4b48e77b024a3ca32",
+  "java_version": "openjdk version \"17.0.21.0.3\" 2026-10-24\nOpenJDK Runtime Environment (build 17.0.21.0.3+1-1-26.04.1-Ubuntu)\nOpenJDK 64-Bit Server VM (build 17.0.21.0.3+1-1-26.04.1-Ubuntu, mixed mode, sharing)",
+  "javac_version": "javac 17.0.21.0.3",
+  "release_8_probe_passed": true,
+  "compiler_flags_rewritten": false,
+  "recorded_host_wall_ms": 1794274586141
+}

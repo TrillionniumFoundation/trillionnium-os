@@ -1,0 +1,13 @@
+{
+  "schema": "hepta.public-project-research-provenance.v2",
+  "research_revision": "v5",
+  "copied_original_byte_for_byte": true,
+  "document": {
+    "bytes": 18988,
+    "sha256": "418a5f2b348cc1367f33269bc6caf4591409594f3ad6c7ffe7692b176015dbc1"
+  },
+  "previous_publication_work_copy_sha256": "a80322deacfea7ceaacbd5d79ef5138be7515c4d24ab4fd7fa31750ae728179d",
+  "scope": "Project-authored research and versioned phone outcomes through Code19 interrupted original suite; not a current live-device authority.",
+  "original_source_modified": false,
+  "separate_apk_and_phone_qualification_required": true
+}

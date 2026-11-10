@@ -1,0 +1,238 @@
+{
+  "schema": "hepta.ui-venus.app-native-source-manifest.v1",
+  "variant": "q4_0-model-contract-only",
+  "files": [
+    {
+      "path": "APP-PROCESS-BINDING.json",
+      "bytes": 2598,
+      "sha256": "7f4e0cbf7eaa6aefd473097a4a80518712692569fd3731fd2f6b90cdfad42409"
+    },
+    {
+      "path": "BUILD-HELPER.patch",
+      "bytes": 5395,
+      "sha256": "f7c5e3a1343230850c6afcc8e978245710b7ae11180e4b4962c182fc41d677a4"
+    },
+    {
+      "path": "Q4KM-TO-Q40-BUILDER.patch",
+      "bytes": 1849,
+      "sha256": "dcb5380565046d2c54c610dffd51de4abfb6eacee912b8f83b28d5bcd651a39a"
+    },
+    {
+      "path": "Q4KM-TO-Q40-NATIVE.patch",
+      "bytes": 1304,
+      "sha256": "e892f6a0eab286d2247d13162cd0563e81f74da653baee928025f499d14de745"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2017,
+      "sha256": "857ff0ff584b8a840b2d9dec113baa145040e51883ec71feb07b74ae4f925054"
+    },
+    {
+      "path": "SHELL-TO-APP-WRAPPER.patch",
+      "bytes": 14565,
+      "sha256": "31030056c2d0413891c0a9401da34113c69ce2105a6e64c0b79fe7c4f9ea0c1e"
+    },
+    {
+      "path": "SOURCE-BOUNDARY.json",
+      "bytes": 6293,
+      "sha256": "d9eea89459fe8903157484548975c86009ec400a9430b63f43fdd74532c5a845"
+    },
+    {
+      "path": "SOURCE-GENERATION.json",
+      "bytes": 5655,
+      "sha256": "4bd089e0d061ce1832fda00e764b28e282eb2a991c6037fa50d6f585f3543000"
+    },
+    {
+      "path": "native/app-entry-guard.h",
+      "bytes": 12192,
+      "sha256": "f9d8d6d4cc29257990c9a1d85dda5550157a473511f199683d63b7aa45f24bf5"
+    },
+    {
+      "path": "native/official-mobile.h",
+      "bytes": 3630,
+      "sha256": "9fa089893f13a1ed809227b38d79bc6600f518a1521aa0cefb30cafff6075c0b"
+    },
+    {
+      "path": "native/parent-death-guard.h",
+      "bytes": 2096,
+      "sha256": "92b094ecf9294907ba3f1e3d6c3a3b98fe2c01ec217e57055136bc69b7ee3a92"
+    },
+    {
+      "path": "native/phase-timing.h",
+      "bytes": 2899,
+      "sha256": "b338f8a2026b641a5ae2928826d1639c13e37b712df089751ef3fa4f377c111f"
+    },
+    {
+      "path": "native/probe-worker.c",
+      "bytes": 3880,
+      "sha256": "1dc01c74a612f3566a4f3190266bcc808dc55582da0aea4cce652a6f299b9f04"
+    },
+    {
+      "path": "native/publish-appuid.inc",
+      "bytes": 1006,
+      "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
+    },
+    {
+      "path": "native/sha256-dispatch.h",
+      "bytes": 7208,
+      "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
+    },
+    {
+      "path": "native/vendor/geniex.h",
+      "bytes": 46665,
+      "sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40"
+    },
+    {
+      "path": "native/vendor/llama/LICENSE",
+      "bytes": 1078,
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d"
+    },
+    {
+      "path": "native/vendor/llama/PIN.json",
+      "bytes": 1406,
+      "sha256": "c475b19715dcc77af1e444f6dbf190dc7b564f4e8487ae4cfe20e8be12307986"
+    },
+    {
+      "path": "native/vendor/llama/ggml-alloc.h",
+      "bytes": 3689,
+      "sha256": "d114067f9099c4a0e2bbc0625c676d4894d9cf0ea27168ee072c7de0e71bb51d"
+    },
+    {
+      "path": "native/vendor/llama/ggml-backend.h",
+      "bytes": 27570,
+      "sha256": "0e5e8e1f16d11ebbf501e38bc6705d79eee819b5f0b17476533f2100ed9674e2"
+    },
+    {
+      "path": "native/vendor/llama/ggml-cpu.h",
+      "bytes": 7753,
+      "sha256": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e"
+    },
+    {
+      "path": "native/vendor/llama/ggml-opt.h",
+      "bytes": 14040,
+      "sha256": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2"
+    },
+    {
+      "path": "native/vendor/llama/ggml.h",
+      "bytes": 118304,
+      "sha256": "2b4dd92fa992cb4ef484917a6c62fef5097698744160ccc09214fd0c459c92c7"
+    },
+    {
+      "path": "native/vendor/llama/gguf.h",
+      "bytes": 11355,
+      "sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4"
+    },
+    {
+      "path": "native/vendor/llama/llama.h",
+      "bytes": 90962,
+      "sha256": "c0854771d3760a41642c4e59429c5b3b9fc774887c59d37eeadc4527681732cd"
+    },
+    {
+      "path": "native/venus-runtime.inc",
+      "bytes": 14585,
+      "sha256": "28c7209d50b4a13e03b22d65afad92defbb0761aaac6e93c39170ea7d13ac396"
+    },
+    {
+      "path": "native/worker-venus.c",
+      "bytes": 31575,
+      "sha256": "c029dc5b81f655f7f15eab158e4dc3f37ba70e9bd21b0abdd92ab0bd1cb4fa78"
+    },
+    {
+      "path": "prepare_entry_tests.py",
+      "bytes": 6943,
+      "sha256": "220fb55304dae76e6bc62358e177a8107b2258439b01ecac779653004e5ccf5f"
+    },
+    {
+      "path": "provenance/ORIGINAL-APP-DRAFT-MANIFEST.json",
+      "bytes": 6255,
+      "sha256": "62dc3be1929d7c99314ad596711966e12504463490eb080d1bb2675acadbedbc"
+    },
+    {
+      "path": "provenance/ORIGINAL-APP-README.md",
+      "bytes": 8523,
+      "sha256": "81f46292c6d9d284b94092c5f35edcb013a9d3e3b5edcd4afcd08d833cc2e83e"
+    },
+    {
+      "path": "provenance/ORIGINAL-APP-SOURCE-GENERATION.json",
+      "bytes": 5216,
+      "sha256": "c84fd4e7d97f2657aaf3e16f1307ba032ca9dc6c03f0f5d5a4fa3659960a91d5"
+    },
+    {
+      "path": "provenance/ORIGINAL-APP-build_android.py",
+      "bytes": 7991,
+      "sha256": "66f1fb1ab88850d565a618b064c35890ca8146547b84301f859ff853e73b0943"
+    },
+    {
+      "path": "provenance/ORIGINAL-APP-venus-runtime.inc",
+      "bytes": 14589,
+      "sha256": "c08cc9ec60a1e3abb5e5e4305cfb8340544537f49374a8c59418a02690df7000"
+    },
+    {
+      "path": "provenance/ORIGINAL-APP-verify_source_boundary.py",
+      "bytes": 3517,
+      "sha256": "e39860c4d0b20620cf4a4ce10b58183d143f32288cab5b228495aea9f69fe2bc"
+    },
+    {
+      "path": "provenance/SDK-RUNTIME-PINS.json",
+      "bytes": 2493,
+      "sha256": "97f4e0a383eb09d559fca08d1a786337991ed4b91e095bcdebf7c9e227608c19"
+    },
+    {
+      "path": "provenance/SHELL-BUILD-RECEIPT.json",
+      "bytes": 7197,
+      "sha256": "cbe7ad58f62c0e35a2840f9ea2fe4bbad16b39eb11cec0045907dbbadf24870b"
+    },
+    {
+      "path": "provenance/SHELL-NATIVE-SOURCES.json",
+      "bytes": 3022,
+      "sha256": "dabf4affdf2062da325290aafc7a31af05aab98f68b0cb22d830a623ae1b9bd0"
+    },
+    {
+      "path": "provenance/SHELL-SOURCE-GENERATION.json",
+      "bytes": 4349,
+      "sha256": "ffee82c294c5859019ab0229d6df768d4ac17cd9549f8ea97228c51e6301f65f"
+    },
+    {
+      "path": "provenance/SHELL-build_android.py",
+      "bytes": 6988,
+      "sha256": "dd327d49517127fb2d42bd89047bd17e30a336327c6d86e02a8866f8173ec6b7"
+    },
+    {
+      "path": "provenance/SHELL-probe-worker.c",
+      "bytes": 3228,
+      "sha256": "2aef28e69cb8cc4e9f7f42c00b42760105d0ae7692565784669e977f9805f1ab"
+    },
+    {
+      "path": "tests/HOST-CHECKS.json",
+      "bytes": 820,
+      "sha256": "991127a9a9b45cdf9d952f61dd0207087a3b0fce5c5f33a81e7bb1fcb16e426c"
+    },
+    {
+      "path": "tests/PREPARED.json",
+      "bytes": 540,
+      "sha256": "9d9681b6bb361245ef56aabd06e19982d301ee55f4ff7d1e708813360a69f040"
+    },
+    {
+      "path": "tests/app_entry_contract.c",
+      "bytes": 9539,
+      "sha256": "f61c7c665281907b21bb49242a4697dfc126d6ac0e56fa060f275fbfec51f829"
+    },
+    {
+      "path": "tools/build_android.py",
+      "bytes": 8407,
+      "sha256": "8ffbf2f722cc7279d7495ef96c62fe1b60fe9463f2b29e7e9fa396f190ed112d"
+    },
+    {
+      "path": "tools/sdk-runtime-pins.json",
+      "bytes": 2493,
+      "sha256": "97f4e0a383eb09d559fca08d1a786337991ed4b91e095bcdebf7c9e227608c19"
+    },
+    {
+      "path": "verify_source_boundary.py",
+      "bytes": 3304,
+      "sha256": "bbb06f73cd903cd39e8caeb0b682f81f98ecc7fb147424f9b0c366db405dd02e"
+    }
+  ],
+  "phone_contact": false,
+  "native_inference": false
+}

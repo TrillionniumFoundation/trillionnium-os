@@ -1,0 +1,10 @@
+{
+  "package": "org.trillionnium.hepta.local",
+  "apk_sha256": "bafa1a98cf893561209e0cc7fc1c89ff052a8e5d30a39ef8cde82a97609f2f8f",
+  "version_code": 4,
+  "model_sha256": "ec2d5801640099e97d8d7e8003ad4d81f336e757811f03a26173dddf386602fd",
+  "model_profile": "minicpm5-2b-q4_k_m",
+  "compute": "npu",
+  "context_tokens": 8192,
+  "threads": 4
+}

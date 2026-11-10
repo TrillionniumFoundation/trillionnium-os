@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.code19-public-retained-evidence.v1",
+  "prior_publication_commit": "5ac37bdb7b32ab4d2f11dde53e373a3d68abb4e9",
+  "frozen_source_commit": "fdb7eca8d3a434c515da547365fcc47bb2f510d3",
+  "frozen_source_manifest_sha256": "9817f2af3937a402b52176565233c763869495d203080deffd7e279f9f621b69",
+  "original_suite_counts": {
+    "pass": 1,
+    "unknown": 1,
+    "not_run": 7
+  },
+  "continuation_calculator_verdict": "fail",
+  "other_continuation_cases_outside_scope": true,
+  "full_phone_acceptance_claimed": false,
+  "prior_publication_34_files_unchanged": true,
+  "source_and_apk_unchanged": true,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3560,
+      "sha256": "bef3e1007624d8a65adcd8a21585c587d0aa7f4522be192890427193fc010d29"
+    },
+    {
+      "path": "calculator/PUBLIC-SUMMARY.json",
+      "bytes": 5241,
+      "sha256": "87b52afc262a535029c1e171c2dbee501c00585cd8489ca3dc3e423fc1da5bc5"
+    },
+    {
+      "path": "calculator/PUBLIC-SUMMARY.md",
+      "bytes": 2152,
+      "sha256": "f3800844fb2c8af84e23601150cafa02a53d19acaccfdb7a9492ec49bdbf0534"
+    },
+    {
+      "path": "interrupted-suite/PUBLIC-SUMMARY.json",
+      "bytes": 2827,
+      "sha256": "3c6e61b6e707b08598ec787a2f8c13396ae280632b91027f86320a6af01cc624"
+    },
+    {
+      "path": "interrupted-suite/PUBLIC-SUMMARY.md",
+      "bytes": 1882,
+      "sha256": "2168199d03fbb2320e0c8438e53daafaa59aba5ae1f8f547a47d316b29e61f59"
+    }
+  ],
+  "manifest_excludes_itself": true
+}
