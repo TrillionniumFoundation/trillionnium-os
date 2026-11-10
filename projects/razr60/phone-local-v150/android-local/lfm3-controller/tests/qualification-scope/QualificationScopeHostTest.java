@@ -65,8 +65,11 @@ public final class QualificationScopeHostTest {
         }
         void updateConfig(){config=bytes(new JSONObject(fields).toString());scopeSha=QualificationScope.hash(config);}
         void writeConfig()throws Exception{write(dir.resolve(QualificationScope.FILE_NAME),config,0600);}
-        void bind(String expected)throws Exception{
+        void bind(String expected)throws Exception{bindOwner(expected,"执行合成测试任务。");}
+        OwnerActionPolicy bindOwner(String expected,String owner)throws Exception{
             check(service.acquireTask(task,()->{}),"lease acquisition");bound=QualificationScopeConfig.capture(service,task,expected,runtime);service.bindQualificationScope(task,bound);
+            OwnerActionPolicy policy=OwnerActionPolicy.compile(task,owner);service.bindOwnerActionPolicy(task,policy);
+            return policy;
         }
         ActionDecision action(String kind,String target)throws Exception{return ActionDecision.parse(actionText(kind,target),DecisionGrammar.SCHEMA);}
         String actionText(String kind,String target)throws Exception{
@@ -295,7 +298,7 @@ public final class QualificationScopeHostTest {
             e.service.releaseTask(e.task);e.fields.put("qualification_id","synthetic-new-lease");e.updateConfig();e.writeConfig();
             // Reusing even the same synthetic ID must not borrow a different Bound.
             String next="type".equals(kind)?e.task:"22222222222222222222222222222222";
-            check(e.service.acquireTask(next,()->{}),"new lease");QualificationScopeConfig.Bound nextScope=QualificationScopeConfig.capture(e.service,next,e.scopeSha,e.runtime);nextScope.requireReady();e.service.bindQualificationScope(next,nextScope);
+            check(e.service.acquireTask(next,()->{}),"new lease");QualificationScopeConfig.Bound nextScope=QualificationScopeConfig.capture(e.service,next,e.scopeSha,e.runtime);nextScope.requireReady();e.service.bindQualificationScope(next,nextScope);e.service.bindOwnerActionPolicy(next,OwnerActionPolicy.compile(next,"执行合成测试任务。"));
             e.service.prepare(CALC);oldNode.onRefresh=()->{throw new IllegalStateException("retired node must not be read");};
             Handler.drain();check(reply[0]!=null&&!reply[0].accepted&&!reply[0].stale&&reply[0].dispatched!= "wait".equals(kind),"late receipt rejected while actual dispatch preserved");
             JSONObject proof=reply[0].qualificationScope;check(oldSha.equals(proof.getString("actual_scope_sha256"))&&e.task.equals(proof.getString("task_id"))&&!proof.getBoolean("callback_lease_current"),"callback uses captured old identity");
@@ -306,7 +309,7 @@ public final class QualificationScopeHostTest {
         test("queued_perform_retired_before_main_dispatch_has_no_effect",()->{try(Env e=new Env(true)){
             e.bind(e.scopeSha);String oldSha=e.scopeSha;HeptaAccessibilityService.ActionOutcome[] reply=new HeptaAccessibilityService.ActionOutcome[1];Handler.holdPosts=true;
             e.service.enqueue(e.action("open",CALC),()->false,value->reply[0]=value);check(reply[0]==null,"main entry queued");e.service.releaseTask(e.task);
-            e.fields.put("qualification_id","replacement-task");e.updateConfig();e.writeConfig();check(e.service.acquireTask(e.task,()->{}),"new same-ID lease");QualificationScopeConfig.Bound replacement=QualificationScopeConfig.capture(e.service,e.task,e.scopeSha,e.runtime);replacement.requireReady();e.service.bindQualificationScope(e.task,replacement);
+            e.fields.put("qualification_id","replacement-task");e.updateConfig();e.writeConfig();check(e.service.acquireTask(e.task,()->{}),"new same-ID lease");QualificationScopeConfig.Bound replacement=QualificationScopeConfig.capture(e.service,e.task,e.scopeSha,e.runtime);replacement.requireReady();e.service.bindQualificationScope(e.task,replacement);e.service.bindOwnerActionPolicy(e.task,OwnerActionPolicy.compile(e.task,"执行合成测试任务。"));
             Handler.drain();check(reply[0]!=null&&!reply[0].accepted&&!reply[0].dispatched&&e.service.effects()==0,"retired queued work did not dispatch");check(oldSha.equals(reply[0].qualificationScope.getString("actual_scope_sha256")),"no replacement scope borrowed");
         }});
         test("cancelled_delayed_type_skips_retired_node_and_preserves_effect",()->{try(Env e=new Env(true)){
@@ -328,7 +331,7 @@ public final class QualificationScopeHostTest {
         test("actual_ui_reused_intent_and_rotation_keep_pending_restriction",()->{try(Env e=new Env(true)){
             LocalModelEngine engine=new LocalModelEngine(Paths.get(e.pm.packages.get("org.trillionnium.hepta.local").applicationInfo.sourceDir).toFile(),e.runtime);LocalTaskSession tasks=new LocalTaskSession(e.service,engine);ScopeUiFixture ui=new ScopeUiFixture(tasks,engine);
             Intent intent=new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).putExtra("task","打开设置").putExtra(QualificationScope.EXPECTED_EXTRA,e.scopeSha);
-            ui.intent(intent);check(!intent.hasExtra("task")&&!intent.hasExtra(QualificationScope.EXPECTED_EXTRA),"consume extras");ui.intent(intent);check(e.scopeSha.equals(ui.scopeLaunch.claim("打开设置")),"reused cleared intent cannot downgrade");
+            ui.intent(intent);check(ui.outer.scrollCalls==1&&ui.taskInput.focusClears==1&&!tasks.isRunning(),"fresh ordinary prefill reveals form without starting");check(!intent.hasExtra("task")&&!intent.hasExtra(QualificationScope.EXPECTED_EXTRA),"consume extras");ui.intent(intent);check(ui.outer.scrollCalls==1,"reused intent does not scroll again");check(e.scopeSha.equals(ui.scopeLaunch.claim("打开设置")),"reused cleared intent cannot downgrade");
             Bundle state=new Bundle();ui.save(state);ScopeUiFixture restored=new ScopeUiFixture(tasks,engine);restored.restore(state);check(e.scopeSha.equals(restored.scopeLaunch.claim("打开设置")),"recreated Activity claim");
             restored.intent(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER));check(restored.scopeLaunch.claim("正常新任务")==null,"explicit normal new launcher session clears UI binding");
         }});
@@ -353,7 +356,7 @@ public final class QualificationScopeHostTest {
         test("actual_ui_bad_or_edited_expected_prefill_cannot_start",()->{try(Env e=new Env(true)){
             LocalModelEngine engine=new LocalModelEngine(Paths.get(e.pm.packages.get("org.trillionnium.hepta.local").applicationInfo.sourceDir).toFile(),e.runtime);LocalTaskSession tasks=new LocalTaskSession(e.service,engine);ScopeUiFixture ui=new ScopeUiFixture(tasks,engine);
             ui.intent(new Intent().putExtra("task","打开设置").putExtra(QualificationScope.EXPECTED_EXTRA,e.scopeSha));ui.taskInput.text="修改任务";check(!ui.start()&&!tasks.isRunning(),"edited owner denied");
-            ui.intent(new Intent().putExtra("task","打开设置").putExtra(QualificationScope.EXPECTED_EXTRA,"bad"));check(!ui.start(),"malformed expectation denied");
+            int scrolls=ui.outer.scrollCalls;ui.intent(new Intent().putExtra("task","打开设置").putExtra(QualificationScope.EXPECTED_EXTRA,"bad"));check(ui.outer.scrollCalls==scrolls,"invalid prefill does not scroll");check(!ui.start(),"malformed expectation denied");
             ui.endUi();check(ui.scopeLaunch.claim("普通任务")==null,"explicit stop clears only UI claim");
         }});
         test("actual_private_debug_start_passes_same_expected_scope",()->{try(Env e=new Env(true)){

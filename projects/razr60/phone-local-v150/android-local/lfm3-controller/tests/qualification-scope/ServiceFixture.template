@@ -16,7 +16,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
     static HeptaAccessibilityService live;
     static final int GLOBAL_ACTION_BACK=1,GLOBAL_ACTION_HOME=2;
     final Handler main=new Handler(Looper.getMainLooper());
-    String lease;Runnable stopListener;QualificationScopeConfig.Bound taskScope;
+    String lease;Runnable stopListener;QualificationScopeConfig.Bound taskScope;OwnerActionPolicy taskOwnerPolicy;
     LocalTaskController ownedController;LocalInference testInference;
     PhoneObservation current;Graph currentGraph;AppCatalogueRanker appDiscovery;
     final Map<String,String> launchable=new LinkedHashMap<String,String>();
@@ -35,7 +35,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
     public AccessibilityNodeInfo getRootInActiveWindow(){rootsRead++;if(rootsRead==mutateOnRoot&&root!=null)root.pkg=mutateRootPackage;return root;}
     public void startActivity(Intent intent){opens++;if(effectHook!=null)effectHook.run();}
     public boolean performGlobalAction(int action){navigations++;if(effectHook!=null)effectHook.run();return true;}
-    private void coordinateClick(String task,PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets,Cancellation cancel,ActionCallback callback){gestures++;callback.onResult(new ActionOutcome(true,true,false,"fake gesture"));}
+    private void coordinateClick(String task,PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets,Cancellation cancel,ActionCallback callback,OwnerActionPolicy dispatchOwner){gestures++;callback.onResult(new ActionOutcome(true,true,false,"fake gesture"));}
     private Graph readGraph(){
         if(root==null)throw new IllegalStateException("no root");
         Graph g=new Graph();g.packageName=root.pkg;g.windowId=root.windowId;g.rotation=0;g.bounds=new Rect(0,0,1080,2400);g.digest="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";return g;

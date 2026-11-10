@@ -1,0 +1,24 @@
+    // Android screenshot/gesture endpoints only; coordinateClick below is exact production.
+    private boolean capturePending;private long lastScreenshotAt,captureSerial;
+    private Bitmap currentBitmap=new Bitmap();
+    boolean holdScreenshot,pixelsMatch=true;TakeScreenshotCallback pendingScreenshot;
+    static final class Bitmap {int getWidth(){return 1080;}int getHeight(){return 2400;}void recycle(){}}
+    static final class Path {void moveTo(int x,int y){}}
+    static final class HardwareBuffer {void close(){}}
+    static final class ScreenshotResult {HardwareBuffer getHardwareBuffer(){return new HardwareBuffer();}}
+    interface TakeScreenshotCallback {void onFailure(int code);void onSuccess(ScreenshotResult result);}
+    static class GestureResultCallback {public void onCompleted(GestureDescription value){}public void onCancelled(GestureDescription value){}}
+    static final class GestureDescription {
+        static final class StrokeDescription {StrokeDescription(Path path,long start,long duration){}}
+        static final class Builder {Builder addStroke(StrokeDescription stroke){return this;}GestureDescription build(){return new GestureDescription();}}
+    }
+    private java.util.concurrent.Executor getMainExecutor(){return Runnable::run;}
+    private void takeScreenshot(int display,java.util.concurrent.Executor executor,TakeScreenshotCallback callback){
+        if(holdScreenshot)pendingScreenshot=callback;else callback.onSuccess(new ScreenshotResult());
+    }
+    void deliverScreenshot(){TakeScreenshotCallback callback=pendingScreenshot;pendingScreenshot=null;callback.onSuccess(new ScreenshotResult());}
+    private static Bitmap copyScreenshot(ScreenshotResult ignored){return new Bitmap();}
+    private boolean samePatch(Bitmap before,Bitmap after,int x,int y){return pixelsMatch;}
+    private boolean dispatchGesture(GestureDescription gesture,GestureResultCallback callback,Handler handler){
+        gestures++;if(effectHook!=null)effectHook.run();callback.onCompleted(gesture);return true;
+    }

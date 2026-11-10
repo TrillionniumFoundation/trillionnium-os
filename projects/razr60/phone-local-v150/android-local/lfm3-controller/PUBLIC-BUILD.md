@@ -1,12 +1,13 @@
 # Build the independent local controller
 
-The source is an ordinary Android app candidate, versionCode **25**, versionName
-**0.25.0-local-gpu-cache-verified-navigation**. A successful build is not device acceptance or adoption into
+The source is an ordinary Android app candidate, versionCode **35**, versionName
+**0.35.0-local-owner-action-policy**. A successful build is not device acceptance or adoption into
 the protected owner-open implementation. Read `CONTROL-INTEGRATION.md` first.
 
-Code25 adds a private OpenCL kernel-cache path for explicit GPU requests and a
-general search-result navigation instruction. Real cache hits and phone-task
-completion remain pending device verification; see `docs/CODE25-QUALIFICATION.md`.
+Code35 enforces finite original-owner action restrictions in the controller and
+service. Model/backend selection and native runtime pins are unchanged. This
+build does not establish permission enforcement on an Android device or task
+success; see `docs/OWNER-ACTION-POLICY.md`.
 
 ## Source and host verification
 
@@ -75,8 +76,8 @@ python3 -B assemble_pocket4.py
 The assembler refuses stale build inputs, changed artifacts, mismatched actual
 APK identity/version, missing runtime libraries and unexpected dependencies.
 It checks the manifest, service guard, ABI, signature, resource alignment and
-packaged library hashes. It outputs `hepta-local-0.25.0.apk` under the build output
-and `control-v25-static/STATIC-ACCEPTANCE.json` as its static packaging receipt.
+packaged library hashes. It outputs `hepta-local-0.35.0.apk` under the build output
+and `control-v35-static/STATIC-ACCEPTANCE.json` as its static packaging receipt.
 
 The separate `MOBIMIND_ANDROID_RUNTIME_DIR` must contain the unchanged r4
 `hepta-mobimind-probe`, `libMNN.so`, `libc++_shared.so` and their original

@@ -1,8 +1,6 @@
-# Code26: observed transitions and an explicit 9B candidate
+# Code35: original-owner action restrictions
 
-The current candidate is versionCode 26 (`0.26.0-local-observed-transitions`). It places the current screen after the complete recorded action history and adds the last step's actual before/after editable text, window title and IME observations. Those facts do not infer causality or task completion. An independently pinned Qwen3.5-9B Q4_0 text profile is available for qualification; it does not replace the configured or default model. Existing action permissions, freshness, recovery and local-only inference gates remain. See `docs/CODE26-QUALIFICATION.md` for the change and qualification boundary.
-
-The prior exact Code24 source passed 70 host checks and Android compilation; Code24 was not installed for phone testing. Those artifacts remain separate from Code25 qualification.
+The current candidate is versionCode 35 (`0.35.0-local-owner-action-policy`). It compiles a finite set of explicit action restrictions from the original task instruction and enforces the immutable task-bound policy in both the controller and the Accessibility service. A forbidden action terminates without a format-repair retry; raw model output, earlier actual dispatches and cleanup uncertainty remain recorded. Existing scope, freshness, label and cancellation guards remain mandatory. See [OWNER-ACTION-POLICY.md](docs/OWNER-ACTION-POLICY.md) for the supported syntax, uncompiled semantics, effect boundary and verification contract.
 
 The selected model is read from the existing app-private runtime configuration. Installation does not select or import a model. The APK has no INTERNET permission and does not fall back to an external model. The ordinary task controller remains text-based; the separate MobiMind and UI-Venus image diagnostics do not dispatch phone actions. A signed build or passing host tests does not establish production readiness.
 

@@ -7,11 +7,11 @@ import android.view.inputmethod.InputMethodManager;
 /** Exact production binding/Intent/beginTask methods; view rendering is synthetic. */
 public final class ScopeUiFixture extends Activity {
     LocalModelEngine engine;LocalTaskSession tasks;
-    Widget taskInput=new Widget(),taskState=new Widget(),probePrompt=new Widget();Widget diagnostics=new Widget();
+    Widget taskInput=new Widget(),taskState=new Widget(),probePrompt=new Widget();Widget diagnostics=new Widget(),outer=new Widget();
     QualificationScope.Launch scopeLaunch=QualificationScope.Launch.normal();String scopeLaunchError;
     static final String SCOPE_INTENT_CONSUMED="hepta_scope_prefill_consumed";
     static final class View{static final int VISIBLE=1;}
-    static final class Widget{String text="";String getText(){return text;}void setText(String v){text=v;}Object getWindowToken(){return null;}void setVisibility(int v){}void post(Runnable r){r.run();}}
+    static final class Widget{int scrollCalls,focusClears;void clearFocus(){focusClears++;}void scrollTo(int x,int y){if(x!=0||y!=0)throw new AssertionError("expected task form top");scrollCalls++;}String text="";String getText(){return text;}void setText(String v){text=v;}Object getWindowToken(){return null;}void setVisibility(int v){}void post(Runnable r){r.run();}}
     public ScopeUiFixture(LocalTaskSession tasks,LocalModelEngine engine){this.tasks=tasks;this.engine=engine;}
     void intent(Intent i){handleIntent(i);}boolean start(){return beginTask(taskInput.text,"user_button",null);}
     void restore(Bundle b){restoreScopeUi(b);}void save(Bundle b){onSaveInstanceState(b);}

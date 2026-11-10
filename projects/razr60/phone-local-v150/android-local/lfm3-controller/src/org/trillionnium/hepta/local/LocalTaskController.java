@@ -117,6 +117,7 @@ public final class LocalTaskController implements AutoCloseable {
 
     private void runTask(String taskId,String instruction,String expectedScopeSha256){
         QualificationScopeConfig.Bound scope=null;
+        OwnerActionPolicy ownerPolicy=null;String ownerConstraintFailure=null;
         File evidence=null;PhoneObservation observation=null;int steps=0,repairs=0,staleRounds=0;
         String finalStatus="failed",summary="任务未完成";boolean modelSuccess=false,cleanup=true;
         long deadline=SystemClock.elapsedRealtime()+MAX_TASK_MS;
@@ -131,6 +132,12 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("external_model",false).put("automatic_resume",false)
                     .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha256))
                     .put("actual_scope_sha256",JSONObject.NULL).put("qualification_scope",JSONObject.NULL);
+            ownerPolicy=OwnerActionPolicy.compile(taskId,instruction);
+            JSONObject ownerPolicyEvidence=new JSONObject(ownerPolicy.evidence());
+            owner.put("owner_action_policy",ownerPolicyEvidence);
+            record(evidence,"owner-action-policy.json",ownerPolicyEvidence);
+            if(!ownerPolicy.supported()){record(evidence,"owner.json",owner);ownerPolicy.requireSupported();}
+            service.bindOwnerActionPolicy(taskId,ownerPolicy);
             final LocalRuntimeConfig config;
             try{config=inference.configuration();}
             catch(Exception invalidRuntime){record(evidence,"owner.json",owner);throw invalidRuntime;}
@@ -164,6 +171,19 @@ public final class LocalTaskController implements AutoCloseable {
                     checkActive(deadline);
                     try{
                         action=ActionDecision.parse(answer.text,frame.grammar.schema);
+                        // Permission refusal is terminal, before structural/label repair.
+                        try{ownerPolicy.requireAllowed(taskId,action.action);}
+                        catch(OwnerActionPolicy.Violation denied){
+                            record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-action.json",steps),
+                                    new JSONObject().put("action",new JSONObject(answerJson(action))).put("accepted",false)
+                                            .put("dispatched",false).put("stale",false).put("detail",denied.getMessage())
+                                            .put("owner_constraint_violation",denied.code).put("owner_action_policy",new JSONObject(ownerPolicy.evidence()))
+                                            .put("model_run_id",answer.runId).put("model_issued",true)
+                                            .put("raw_model_text_sha256",HeptaAccessibilityService.sha(answer.text.getBytes(StandardCharsets.UTF_8)))
+                                            .put("raw_model_record",String.format(java.util.Locale.ROOT,"step-%02d-model-%d.json",steps,attempt))
+                                            .put("qualification_scope",scope.evidence()));
+                            throw denied;
+                        }
                         ActionPolicy.validateTextDecision(action,before.packageName,frame.appPackages,frame.targets,frame.grammar.appLabels);
                         if("scroll".equals(action.action)&&!frame.grammar.allowsScroll(action.nodeId,action.direction))
                             throw new ActionDecision.InvalidActionException("scroll node/direction was not supplied by this observation");
@@ -200,7 +220,8 @@ public final class LocalTaskController implements AutoCloseable {
                 JSONObject actionReceipt=new JSONObject().put("action",new JSONObject(answerJson(action))).put("accepted",outcome.accepted)
                         .put("dispatched",outcome.dispatched).put("stale",outcome.stale).put("detail",outcome.detail)
                         .put("model_run_id",decisionRunId).put("model_issued",true)
-                        .put("qualification_scope",outcome.qualificationScope==null?JSONObject.NULL:outcome.qualificationScope);
+                        .put("qualification_scope",outcome.qualificationScope==null?JSONObject.NULL:outcome.qualificationScope)
+                        .put("owner_action_policy",outcome.ownerActionPolicy==null?JSONObject.NULL:outcome.ownerActionPolicy);
                 if(ActionPolicy.isReadOnlyDiscovery(action))actionReceipt.put("read_only",true).put("effect","launcher_catalogue_read");
                 record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-action.json",steps),actionReceipt);
                 if(outcome.stale&&!outcome.dispatched){
@@ -255,7 +276,8 @@ public final class LocalTaskController implements AutoCloseable {
                         outcome.accepted,outcome.dispatched,outcome.stale);
             }
             if(steps>=MAX_STEPS&&"failed".equals(finalStatus)&&"任务未完成".equals(summary))summary="已达到本次任务的步骤上限，停止继续操作";
-        }catch(Stopped error){finalStatus="cancelled";summary="已停止；已经发生的操作不会自动重做";}
+        }catch(OwnerActionPolicy.Violation error){finalStatus="failed";modelSuccess=false;ownerConstraintFailure=error.code;summary=error.getMessage();}
+        catch(Stopped error){finalStatus="cancelled";summary="已停止；已经发生的操作不会自动重做";}
         catch(CleanupUnknown error){blocked=true;cleanup=false;finalStatus="blocked";summary=error.getMessage();}
         catch(Exception error){finalStatus=cancelled.get()?"cancelled":"failed";summary=HeptaAccessibilityService.message(error);}
         finally{
@@ -280,6 +302,8 @@ public final class LocalTaskController implements AutoCloseable {
             }
             if(evidence!=null){try{record(evidence,"result.json",new JSONObject().put("task_id",taskId).put("status",finalStatus)
                     .put("summary",summary).put("steps",steps).put("model_reported_success",modelSuccess)
+                    .put("owner_action_policy",ownerPolicy==null?JSONObject.NULL:new JSONObject(ownerPolicy.evidence()))
+                    .put("owner_constraint_violation",ownerConstraintFailure==null?JSONObject.NULL:ownerConstraintFailure)
                     .put("final_observation_id",observation==null?JSONObject.NULL:observation.id).put("cleanup_known",cleanup)
                     .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha256))
                     .put("actual_scope_sha256",scope==null?JSONObject.NULL:QualificationScopeConfig.nullable(scope.actualSha256))
