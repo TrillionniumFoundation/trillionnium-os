@@ -2,6 +2,7 @@
 from pathlib import Path
 import hashlib, json, difflib
 from prompt_evidence_adapter import adapt as add_prompt_evidence
+from warm_runtime_adapter import adapt as add_warm_runtime
 
 def generate(root, out):
     source_path=root/'native/worker-upstream.c'
@@ -13,6 +14,14 @@ def generate(root, out):
     last=source.index('static void destination_close(',first)
     replacement=(root/'native/publish-appuid.inc').read_text()
     adapted=source[:first]+replacement+'\n'+source[last:]
+    # The probe sets feature macros before its first system include. glibc may
+    # raise their values for _GNU_SOURCE; a subsequently included worker must
+    # preserve that already-selected feature set. Standalone generation keeps
+    # the original POSIX/XOPEN defaults when neither macro has been defined.
+    feature_prefix = '#define _POSIX_C_SOURCE 200809L\n#define _XOPEN_SOURCE 700\n'
+    assert adapted.startswith(feature_prefix)
+    guarded_prefix = '#ifndef _POSIX_C_SOURCE\n#define _POSIX_C_SOURCE 200809L\n#endif\n#ifndef _XOPEN_SOURCE\n#define _XOPEN_SOURCE 700\n#endif\n'
+    adapted = guarded_prefix + adapted[len(feature_prefix):]
     # Replace only the generated primitive. The pinned upstream bytes, full
     # per-request model read, SHA comparison, held FD and metadata fences stay.
     first=adapted.index('typedef struct { uint32_t h[8]; uint64_t bits; unsigned char block[64]; size_t used; } Sha256;')
@@ -101,6 +110,7 @@ def generate(root, out):
     assert insertions==1
     adapted=''.join(lines)
     adapted=add_prompt_evidence(adapted)
+    adapted=add_warm_runtime(adapted)
     (out/'worker-appuid.c').write_text(adapted)
     difference=''.join(difflib.unified_diff(source.splitlines(True),adapted.splitlines(True),fromfile='frozen/worker-upstream.c',tofile='generated/worker-appuid.c'))
     (out/'worker-adapter.diff').write_text(difference)
@@ -112,7 +122,9 @@ def generate(root, out):
         'llama_source_commit':'19cce6919992fdffd92e0ac152caaf1e2b8f254e',
         'model_verification':'native full SHA256, exact filename/size/architecture, held descriptor, unchanged metadata',
         'sha256_dispatch':'runtime HWCAP_SHA2; target(sha2) function; exact upstream portable compression fallback',
-        'model_digest_cache':False,'full_model_read_every_request':True,
+        'model_digest_cache':False,'full_model_read_every_one_shot_request':True,
+        'task_worker_mode':{'schema':'hepta.geniex-task-request.result.v1','hash_scope':'one_full_read_per_owned_generation',
+            'reuse_scope':'one_task','reset_every_request':True,'one_shot_contract_unchanged':True},
         'private_prompt_evidence':'create-only formatted bytes and actual direct input IDs; same private request directory',
         'new_profile_exact_token_count':True,'no_context_truncation':True,
         'phase_timing_schema':'hepta.native-phase-timing.v1',

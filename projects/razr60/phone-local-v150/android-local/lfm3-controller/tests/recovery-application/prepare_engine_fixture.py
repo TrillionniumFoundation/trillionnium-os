@@ -14,7 +14,7 @@ def prepare(source,output):
     package=source/"src/org/trillionnium/hepta/local"
     engine=(package/"LocalModelEngine.java").read_text(encoding="utf-8")
     parts={
-        "RunHandle":_section(engine,"    public static final class RunHandle {","    /** Shares the existing single-model slot"),
+        "RunHandle":_section(engine,"    public static final class RunHandle {","    /** Retains the existing process-wide slot"),
         "recovery_path":_section(engine,"    /** An aggregate startup barrier","    public RunHandle start("),
     }
     declarations=[]

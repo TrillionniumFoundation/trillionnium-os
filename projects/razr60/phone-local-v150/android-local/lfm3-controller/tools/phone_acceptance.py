@@ -19,6 +19,7 @@ import sys
 import time
 import uuid
 import xml.etree.ElementTree as ET
+from warm_receipts import APP_REQUEST, NATIVE_REQUEST, request_contract, session_contract, collection_verified
 
 PACKAGE = "org.trillionnium.hepta.local"
 COMPONENT = PACKAGE + "/.MainActivity"
@@ -438,6 +439,7 @@ def collect_evidence(adb, directory, task_id, instruction, baseline_runs, screen
     from model_profiles import profile
     selected=profile(expected_model_profile)
     report = {"task_id": task_id, "associated_runs": [], "omitted_screenshots": [], "errors": [], "files": []}
+    warm_records = {}
     observations, explicit_runs, observation_packages = set(), set(), {}
     if not task_id:
         return report
@@ -481,6 +483,7 @@ def collect_evidence(adb, directory, task_id, instruction, baseline_runs, screen
             report["errors"].append("associate " + run_id + ": " + str(error))
     for run_id in sorted(associated):
         row = {"run_id": run_id, "association": "step_model_run_id" if run_id in explicit_runs else "exact_owner_and_observation_id", "files": []}
+        receipt, native = {}, {}
         try:
             for name in adb.list_children("files/runs/" + run_id):
                 if not (name.endswith((".json", ".txt", ".log", ".pending", ".gbnf")) or (screenshots and name == "image.bin")): continue
@@ -493,9 +496,10 @@ def collect_evidence(adb, directory, task_id, instruction, baseline_runs, screen
             if app_file.exists():
                 receipt = strict_json(app_file.read_bytes())
                 row.update({"run_id_binding_valid": receipt.get("run_id") == run_id,
+                    "app_receipt_schema": receipt.get("schema"),
                     "process_exit_observed": receipt.get("process_exit_observed"), "exit_code": receipt.get("exit_code"),
                     "inference_completed": receipt.get("inference_completed"), "status": receipt.get("status"),
-                    "app_identity_and_runtime_valid": (receipt.get("schema") == "hepta.local-model.receipt.v2"
+                    "app_identity_and_runtime_valid": (receipt.get("schema") in ("hepta.local-model.receipt.v2", APP_REQUEST)
                         and receipt.get("package_name") == PACKAGE and receipt.get("app_uid") == expected_uid
                         and expected_uid is not None and receipt.get("runtime") == "llama_cpp" and receipt.get("mode") == "llm"
                         and receipt.get("compute_requested") == expected_compute and receipt.get("context_tokens") == expected_context
@@ -513,7 +517,8 @@ def collect_evidence(adb, directory, task_id, instruction, baseline_runs, screen
             row["controller_grammar_binding_valid"] = False
             if native_file.exists() and raw_file.exists():
                 native = strict_json(native_file.read_bytes()); raw = raw_file.read_bytes(); raw.decode("utf-8")
-                row["native_output_binding_valid"] = (native.get("schema") == "hepta.geniex-once.result.v1"
+                row["native_output_binding_valid"] = (native.get("schema") ==
+                    (NATIVE_REQUEST if receipt.get("schema") == APP_REQUEST else "hepta.geniex-once.result.v1")
                     and native.get("request_id") == run_id and native.get("raw_text_sha256") == digest(raw)
                     and native.get("raw_text_bytes") == len(raw) and native.get("generation_complete") is True
                     and native.get("raw_text_truncated") is False and native.get("raw_text_utf8") is True
@@ -539,9 +544,53 @@ def collect_evidence(adb, directory, task_id, instruction, baseline_runs, screen
                         receipt, native, grammar_file.read_bytes(), observation_packages,
                         prompt_file.read_bytes() if prompt_file.is_file() else None,raw)
                 row["runtime_evidence"] = {k: native.get(k) for k in ("mode", "runtime", "compute_requested", "device_resolved", "device_warning", "n_ctx_create", "n_gpu_layers_create", "prompt_budget", "profile")}
+            if receipt.get("schema") == APP_REQUEST:
+                generation = receipt.get("worker_generation")
+                row["worker_generation"] = generation
+                row["request_sequence"] = receipt.get("request_sequence")
+                row["task_request_binding_valid"] = request_contract(receipt, native, task_id)
+                if isinstance(generation, str) and HEX32.fullmatch(generation):
+                    warm_records.setdefault(generation, []).append((receipt, native))
         except Exception as error:
             report["errors"].append("collect " + run_id + ": " + str(error))
         report["associated_runs"].append(row)
+    if warm_records:
+        report["task_model_sessions"] = []
+        final_file = directory / "task" / "result.json"
+        final = strict_json(final_file.read_bytes()) if final_file.is_file() else {}
+        for generation, records in sorted(warm_records.items()):
+            session = {"worker_generation": generation, "binding_valid": False, "files": []}
+            try:
+                for name in ("app-session-receipt.json", "native-session-result.json", "stdout.log", "stderr.log"):
+                    data = adb.app_bytes("files/runs/" + generation + "/" + name, optional=True)
+                    if data is None:
+                        continue
+                    target = "runs/" + generation + "/" + name
+                    private_write(directory / target, data)
+                    session["files"].append({"path": target, "bytes": len(data), "sha256": digest(data)})
+                app_file = directory / "runs" / generation / "app-session-receipt.json"
+                native_file = directory / "runs" / generation / "native-session-result.json"
+                if app_file.is_file() and native_file.is_file():
+                    app, native = strict_json(app_file.read_bytes()), strict_json(native_file.read_bytes())
+                    session["binding_valid"] = session_contract(app, native, digest(app_file.read_bytes()),
+                        final, records, task_id, expected_uid)
+                    session["process_exit_observed"] = app.get("process_exit_observed")
+                    session["exit_code"] = app.get("exit_code")
+                    session["requests_received"] = native.get("requests_received")
+                    session["model_create_count"] = native.get("model_create_count")
+                    session["model_reset_count"] = native.get("model_reset_count")
+                stderr_file = directory / "runs" / generation / "stderr.log"
+                logs = accelerator_log_evidence(stderr_file.read_text(errors="replace") if stderr_file.is_file() else "", expected_compute)
+                for row in report["associated_runs"]:
+                    if row.get("worker_generation") == generation:
+                        row["accelerator_log_evidence"] = logs
+                        row["accelerator_offload_observed"] = logs["accelerator_offload_observed"]
+                        row["accelerator_log_scope"] = "same_owned_task_generation"
+            except Exception as error:
+                report["errors"].append("collect task worker " + generation + ": " + str(error))
+            report["task_model_sessions"].append(session)
+        report["task_model_sessions_valid"] = (len(report["task_model_sessions"]) == 1
+            and all(session["binding_valid"] is True for session in report["task_model_sessions"]))
     write_json(directory / "collection.json", report)
     return report
 
@@ -665,14 +714,7 @@ def run_task(args):
             collection = collect_evidence(adb, directory, task_id, instruction, baseline_runs, args.include_screenshots, report.get("app_uid"), args.expected_compute, args.expected_context,getattr(args,"expected_model_profile","lfm3-1.7b-qad-q4_0"))
             report["collection"] = collection
             if collection["errors"] and report["verdict"] == "pass": report["verdict"] = "unverified"
-            runs = collection["associated_runs"]
-            report["native_receipts_verified"] = bool(runs) and all(r.get("app_receipt_available") is True
-                and r.get("run_id_binding_valid") is True and r.get("process_exit_observed") is True
-                and r.get("exit_code") == 0 and r.get("inference_completed") is True
-                and r.get("native_output_binding_valid") is True and r.get("accelerator_runtime_valid") is True
-                and r.get("accelerator_offload_observed") is True
-                and r.get("controller_grammar_binding_valid") is True
-                and r.get("app_identity_and_runtime_valid") is True for r in runs)
+            report["native_receipts_verified"] = collection_verified(collection)
             if report["verdict"] == "pass" and not report["native_receipts_verified"]:
                 report["verdict"] = "unverified"
         except Exception as error:

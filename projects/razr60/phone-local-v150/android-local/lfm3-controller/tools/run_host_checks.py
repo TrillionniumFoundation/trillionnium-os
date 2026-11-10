@@ -14,7 +14,7 @@ import sys
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
-PURE_CLASSES=['ActionDecision', 'ActionPolicy', 'ObservedTargetLabels', 'ObservedScrollActions', 'ObservationStabilityGate', 'RecentActionProjection', 'PersistentActionPolicy', 'ImeVisibility', 'ObservationState', 'ObservedWindowMetadata', 'ObservedChildText', 'RepeatActionGuard', 'SameStateNoEffectGuard', 'DecisionGrammar', 'ModelProfile', 'NativeBudgetVerifier', 'LocalRuntimeConfig', 'ModelFileVerifier', 'ConservativeTokenBudget', 'MemoryAvailability', 'AppCatalogueRanker', 'SessionRecovery', 'MobiMindPins', 'MobiMindContract', 'MobiMindSessionContract', 'UiVenusPins', 'UiVenusInputContract', 'UiVenusRequestContract', 'UiVenusContract', 'UiVenusProcessContract', 'UiVenusSessionContract', 'DiagnosticStartupGate', 'ObservedTextProjection', 'ObservedTransitionProjection', 'CompactTaskHistory', 'PromptActionDomain', 'RecoveryQuiescence', 'RecoveryDispatch', 'RecoveryJournalTransaction', 'RecoverySlotHandoff']
+PURE_CLASSES=['ActionDecision', 'ActionPolicy', 'ObservedTargetLabels', 'ObservedScrollActions', 'ObservationStabilityGate', 'RecentActionProjection', 'PersistentActionPolicy', 'ImeVisibility', 'ObservationState', 'ObservedWindowMetadata', 'ObservedChildText', 'RepeatActionGuard', 'SameStateNoEffectGuard', 'DecisionGrammar', 'ModelProfile', 'NativeBudgetVerifier', 'LocalRuntimeConfig', 'ModelFileVerifier', 'ConservativeTokenBudget', 'MemoryAvailability', 'AppCatalogueRanker', 'SessionRecovery', 'MobiMindPins', 'MobiMindContract', 'MobiMindSessionContract', 'UiVenusPins', 'UiVenusInputContract', 'UiVenusRequestContract', 'UiVenusContract', 'UiVenusProcessContract', 'UiVenusSessionContract', 'DiagnosticStartupGate', 'ObservedTextProjection', 'ObservedTransitionProjection', 'CompactTaskHistory', 'PromptActionDomain', 'RecoveryQuiescence', 'RecoveryDispatch', 'RecoveryJournalTransaction', 'RecoverySlotHandoff', 'WarmProcessSession']
 
 
 def main():
@@ -87,6 +87,7 @@ def main():
         run("native-adapter-syntax",[cc,"-std=c11","-Wall","-Wextra","-Werror","-fsyntax-only",
             "-I"+str(ROOT/"native/vendor"),"-I"+str(ROOT/"native"),"-I"+str(generated),ROOT/"native/probe-worker.c"])
         run("private-prompt-evidence",[sys.executable,ROOT/"native/tests/test_prompt_evidence.py"])
+        run("task-worker-native-lifecycle",[sys.executable,ROOT/"native/tests/test_warm_runtime.py"])
         if all_inputs()!=report["source_inputs"]: raise RuntimeError("Source changed during host checks")
         report["all_pass"]=True
     except Exception as error:
