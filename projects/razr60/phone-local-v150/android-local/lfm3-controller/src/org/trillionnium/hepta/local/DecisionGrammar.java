@@ -38,7 +38,7 @@ public final class DecisionGrammar {
 
     public static DecisionGrammar create(String observationId,String currentPackage,Set<String> shownApps,
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,ObservedTargetLabels targets){
-        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,null,null);
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,null,null,false);
     }
 
     /** Explicit v4 entry; missing app metadata never selects the legacy grammar. */
@@ -46,7 +46,7 @@ public final class DecisionGrammar {
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
             ObservedTargetLabels targets,ObservedAppLabels appLabels){
         if(appLabels==null)throw new IllegalArgumentException("observed app pairs are required");
-        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,appLabels,null);
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,appLabels,null,false);
     }
 
     public static DecisionGrammar createAuthorized(String observationId,String currentPackage,Set<String> shownApps,
@@ -54,12 +54,21 @@ public final class DecisionGrammar {
             ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization){
         TaskAuthorization.require(authorization!=null,"动作语法缺少用户授权");
         if(appLabels==null)throw new IllegalArgumentException("observed app pairs are required");
-        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,appLabels,authorization);
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,appLabels,authorization,false);
+    }
+
+    /** A background display has no global HOME tool. Owner authorization is retained unchanged. */
+    public static DecisionGrammar createBackgroundAuthorized(String observationId,String currentPackage,Set<String> shownApps,
+            Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
+            ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization){
+        TaskAuthorization.require(authorization!=null,"后台动作语法缺少用户授权");
+        if(appLabels==null)throw new IllegalArgumentException("observed app pairs are required");
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,appLabels,authorization,true);
     }
 
     private static DecisionGrammar createInternal(String observationId,String currentPackage,Set<String> shownApps,
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
-            ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization){
+            ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization,boolean background){
         if(observationId==null||!observationId.matches("[0-9a-f]{32}"))throw new IllegalArgumentException("invalid observed id");
         checkPackage(currentPackage);
         if(targets==null||!observationId.equals(targets.observationId)||!currentPackage.equals(targets.packageName))
@@ -106,6 +115,7 @@ public final class DecisionGrammar {
             rule(rules,"scroll-target",scrollPairs(scrolls,targets));
         }
         for(String name:new String[]{"back","home"}){
+            if(background&&"home".equals(name))continue;
             if(authorization!=null&&!authorization.allows(name))continue;
             branches.add(name);rule(rules,name,prefix(name,observationId)+field("package",jsonValue(currentPackage))+ending());
         }

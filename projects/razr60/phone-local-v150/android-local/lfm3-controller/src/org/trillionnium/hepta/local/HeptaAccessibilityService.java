@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.hardware.HardwareBuffer;
+import android.hardware.display.DisplayManager;
+import android.util.SparseArray;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -45,19 +47,21 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         public final AppCatalogueRanker.Page appCatalogue;
         public final JSONObject qualificationScope;
         public final JSONObject taskAuthorization;
+        public final JSONObject backgroundSession;
         ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail) {
             this(accepted,dispatched,stale,detail,null);
         }
         ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail,AppCatalogueRanker.Page appCatalogue) {
-            this(accepted,dispatched,stale,detail,appCatalogue,null,null);
+            this(accepted,dispatched,stale,detail,appCatalogue,null,null,null);
         }
-        private ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail,AppCatalogueRanker.Page appCatalogue,JSONObject scope,JSONObject authorization){
+        private ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail,AppCatalogueRanker.Page appCatalogue,JSONObject scope,JSONObject authorization,JSONObject background){
             this.accepted=accepted;this.dispatched=dispatched;this.stale=stale;this.detail=detail;
-            this.appCatalogue=appCatalogue;this.qualificationScope=scope;this.taskAuthorization=authorization;
+            this.appCatalogue=appCatalogue;this.qualificationScope=scope;this.taskAuthorization=authorization;this.backgroundSession=background;
         }
-        ActionOutcome withScope(JSONObject scope){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,scope,taskAuthorization);
+        ActionOutcome withScope(JSONObject scope){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,scope,taskAuthorization,backgroundSession);
         }
-        ActionOutcome withAuthorization(JSONObject authorization){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,authorization);}
+        ActionOutcome withAuthorization(JSONObject authorization){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,authorization,backgroundSession);}
+        ActionOutcome withBackground(JSONObject background){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,background);}
     }
     private static volatile HeptaAccessibilityService live;
     public static HeptaAccessibilityService connected() { return live; }
@@ -65,6 +69,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private String lease;
     private QualificationScopeConfig.Bound taskScope;
     private TaskAuthorization.Gate taskAuthorization;
+    private BackgroundSession taskBackground;
+    private final java.util.concurrent.ExecutorService backgroundIo=java.util.concurrent.Executors.newSingleThreadExecutor();
     private Runnable stopListener;
     private LocalTaskController ownedController;
     private long lastScreenshotAt;
@@ -95,7 +101,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(controller!=null)controller.close();
         requestStop();
         if(activeObservation!=null)failObservation(activeObservation,"无障碍服务已断开");
-        if(live==this)live=null;clearSnapshot();super.onDestroy();
+        if(live==this)live=null;clearSnapshot();backgroundIo.shutdown();super.onDestroy();
     }
     /** Service-owned session survives Activity recreation. The controller stays injectable. */
     public synchronized LocalTaskController taskController(LocalInference inference){
@@ -110,6 +116,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(Looper.myLooper()!=Looper.getMainLooper())throw new IllegalStateException("recovery service check must run on main thread");
         return live==this&&ownedController==expected&&(expected==null||!expected.isRunning())
                 &&activeObservation==null&&!capturePending
+                &&(taskBackground==null||taskBackground.released())
                 &&(lease==null||(expected!=null&&lease.equals(expected.currentTaskId())));
     }
     synchronized void retireControllerAfterAcknowledgement(LocalTaskController expected,
@@ -117,16 +124,47 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(proof==null||!recoveryControllerIdle(expected))throw new IllegalStateException("controller is not idle for acknowledgement");
         if(expected!=null){expected.setListener(null);expected.close();}
         if(taskAuthorization!=null)taskAuthorization.retire();taskAuthorization=null;
-        ownedController=null;lease=null;stopListener=null;appDiscovery=null;taskScope=null;clearSnapshot();
+        ownedController=null;lease=null;stopListener=null;appDiscovery=null;taskScope=null;taskBackground=null;clearSnapshot();
     }
     private void requestStop() { Runnable value; synchronized(this){value=stopListener;} if(value!=null)value.run(); }
     public synchronized boolean acquireTask(String taskId,Runnable onStop) {
-        if(lease!=null || live!=this)return false;lease=taskId;stopListener=onStop;appDiscovery=null;taskScope=null;taskAuthorization=null;return true;
+        if(lease!=null || live!=this)return false;lease=taskId;stopListener=onStop;appDiscovery=null;taskScope=null;taskAuthorization=null;taskBackground=null;return true;
     }
-    public synchronized void releaseTask(String taskId) { if(taskId.equals(lease)){if(taskAuthorization!=null)taskAuthorization.retire();taskAuthorization=null;lease=null;stopListener=null;appDiscovery=null;taskScope=null;} }
+    public synchronized void releaseTask(String taskId) { if(taskId.equals(lease)){
+        if(taskBackground!=null&&!taskBackground.released())throw new IllegalStateException("后台空间未核验释放，不能释放任务租约");
+        if(taskAuthorization!=null)taskAuthorization.retire();taskAuthorization=null;lease=null;stopListener=null;appDiscovery=null;taskScope=null;taskBackground=null;} }
     private synchronized boolean owns(String taskId) { return taskId.equals(lease) && live==this; }
     private boolean locked() { KeyguardManager value=(KeyguardManager)getSystemService(KEYGUARD_SERVICE);return value!=null&&value.isKeyguardLocked(); }
-    private int rotation() { return ((WindowManager)getSystemService(WINDOW_SERVICE)).getDefaultDisplay().getRotation(); }
+    private int rotation(int displayId) {
+        DisplayManager manager=(DisplayManager)getSystemService(DISPLAY_SERVICE);
+        Display display=manager==null?null:manager.getDisplay(displayId);
+        if(display==null||!display.isValid())throw new IllegalStateException("目标屏幕已不可用");return display.getRotation();
+    }
+    synchronized void bindBackgroundSession(String taskId,BackgroundSession background){
+        QualificationScope.require(owns(taskId)&&taskScope!=null&&!taskScope.restricted()&&taskBackground==null
+                &&background!=null&&taskId.equals(background.taskId),"background lease requires an unscoped current task");
+        taskScope.verifyUnchanged();taskBackground=background;
+    }
+    private synchronized BackgroundSession backgroundFor(String taskId){
+        if(!owns(taskId))throw new IllegalStateException("任务已停止");return taskBackground;
+    }
+    private synchronized BackgroundSession currentBackground(){return taskBackground;}
+    private synchronized boolean ownsBackground(String id,BackgroundSession background){return owns(id)&&taskBackground==background;}
+    JSONObject backgroundEvidence(String id){BackgroundSession background=backgroundFor(id);return background==null?null:background.evidence();}
+    synchronized void acceptBackgroundReconciliation(JSONObject proof)throws Exception{
+        if(ownedController!=null&&ownedController.isRunning())throw new IllegalStateException("后台控制器尚未停止");
+        if(taskBackground!=null)taskBackground.acceptReconciliation(proof);
+    }
+    void verifyBackgroundRemote(String id)throws Exception{BackgroundSession background=backgroundFor(id);if(background!=null)background.verifyRemote();}
+    void requireBackgroundObservation(String id,PhoneObservation observed){
+        BackgroundSession background=backgroundFor(id);
+        if(background==null){if(observed.backgroundGeneration!=null)throw new IllegalStateException("前台任务收到了后台观察");return;}
+        background.requireActive();
+        if(!background.generation.equals(observed.backgroundGeneration)||observed.windowMetadata.displayId==null
+                ||background.displayId()!=observed.windowMetadata.displayId.intValue()||!background.allows(observed.packageName))
+            throw new IllegalStateException("观察不属于本次后台屏幕与应用范围");
+    }
+
 
     private void refreshApps() {
         launchable.clear();Intent query=new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER);
@@ -137,11 +175,20 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     /** Snapshot only installed launcher entries; model searches cannot add entries. */
     public AppCatalogueRanker.Page appCatalogue(String taskId,String instruction) {
-        if(!owns(taskId))throw new IllegalStateException("任务已停止");
-        refreshApps();AppCatalogueRanker snapshot=new AppCatalogueRanker(new HashMap<String,String>(launchable),instruction);
+        final QualificationScopeConfig.Bound scope=scopeFor(taskId);
+        final BackgroundSession background=backgroundFor(taskId);
+        scope.verifyUnchanged();refreshApps();
+        Map<String,String> available=new HashMap<String,String>(launchable);
+        // The immutable catalogue is filtered before ranking/pagination (93cbeb scope fix).
+        java.util.Iterator<Map.Entry<String,String>> entries=available.entrySet().iterator();
+        while(entries.hasNext()){
+            String pkg=entries.next().getKey();
+            if((scope.config!=null&&!scope.config.allows(pkg))||(background!=null&&!background.allows(pkg)))entries.remove();
+        }
+        AppCatalogueRanker snapshot=new AppCatalogueRanker(available,instruction);
         synchronized(this){
-            if(!owns(taskId))throw new IllegalStateException("任务已停止");
-            appDiscovery=snapshot;
+            QualificationScope.require(ownsScope(taskId,scope)&&ownsBackground(taskId,background),"task lease retired before app catalogue publication");
+            scope.requireReady();appDiscovery=snapshot;
         }
         AppCatalogueRanker.Page initial=snapshot.search("",0);authorizationFor(taskId).bindCatalogue(initial);return initial;
     }
@@ -233,7 +280,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         capturePending=true;request.shotPending=true;lastScreenshotAt=SystemClock.elapsedRealtime();
         final long token=++captureSerial;request.token=token;
         watchCapture(request,lastScreenshotAt+5000);
-        try{takeScreenshot(Display.DEFAULT_DISPLAY,getMainExecutor(),new TakeScreenshotCallback(){
+        try{takeScreenshot(request.captured.displayId,getMainExecutor(),new TakeScreenshotCallback(){
             @Override public void onFailure(int code){
                 if(request.finished||activeObservation!=request||captureSerial!=token)return;
                 capturePending=false;captureSerial++;request.shotPending=false;
@@ -271,7 +318,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     if(!observationActive(request))return;
                     Graph graph=request.captured;
                     PhoneObservation observation=new PhoneObservation(id,graph.packageName,SystemClock.elapsedRealtime(),
-                            bitmap.getWidth(),bitmap.getHeight(),graph.rotation,graph.windowId,graph.bounds,path,digest,graph.digest,graph.state,graph.windowMetadata,graph.truncated,graph.rows);
+                            bitmap.getWidth(),bitmap.getHeight(),graph.rotation,graph.windowId,graph.bounds,path,digest,graph.digest,graph.state,graph.windowMetadata,graph.truncated,graph.rows,graph.backgroundGeneration,graph.backgroundBootstrapPackage,graph.backgroundAllowedPackages);
                     clearSnapshot();current=observation;currentGraph=graph;currentBitmap=bitmap;
                     request.captured=null;bitmap=null; // Ownership transfers only here. Late callbacks cannot close this snapshot.
                     request.finished=true;request.gate.retire();activeObservation=null;
@@ -351,6 +398,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         AccessibilityNodeInfo root=null;AccessibilityWindowInfo window=null;
         try{
             scope.verifyUnchanged();
+            backgroundBeforeDispatch(taskId,expected,action,node,nodeRequired);
             if(scope.config==null){
                 scope.gate.check(action.action,action.packageName,null,null,null,false);
                 QualificationScope.require(ownsScope(taskId,scope),"scope lease retired before dispatch");return;
@@ -377,6 +425,30 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }catch(Exception error){scope.refuse(message(error));throw new QualificationScope.Violation(message(error));}
         finally{if(window!=null)window.recycle();if(root!=null)root.recycle();}
     }
+    private void backgroundBeforeDispatch(String taskId,PhoneObservation expected,ActionDecision action,AccessibilityNodeInfo node,boolean nodeRequired){
+        BackgroundSession background=backgroundFor(taskId);if(background==null)return;
+        requireBackgroundObservation(taskId,expected);
+        if("home".equals(action.action))throw new IllegalArgumentException("后台任务不提供 HOME，也不会回退到主屏导航");
+        if("click".equals(action.action)&&action.nodeId==null)throw new IllegalArgumentException("后台任务只接受已观察节点动作，不派发坐标手势");
+        if(!background.allows(action.packageName))throw new IllegalArgumentException("动作应用超出本次后台范围");
+        AccessibilityNodeInfo root=null;AccessibilityWindowInfo window=null,nodeWindow=null;
+        try{
+            root=selectedRoot();window=root==null?null:root.getWindow();
+            if(root==null||window==null||window.getDisplayId()!=background.displayId()
+                    ||window.getType()!=AccessibilityWindowInfo.TYPE_APPLICATION||root.getWindowId()!=expected.windowId
+                    ||!expected.packageName.equals(string(root.getPackageName()))||!root.isVisibleToUser())
+                throw new IllegalStateException("后台目标窗口已变化");
+            if(nodeRequired){
+                NodeRef ref=currentGraph==null?null:currentGraph.refs.get(action.nodeId);
+                if(node==null||ref==null||ref.node!=node||!node.refresh()||!node.isVisibleToUser()||!node.isEnabled()
+                        ||!ref.signature.equals(nodeSignature(node,observedChildText(node))))throw new IllegalStateException("后台节点已变化");
+                nodeWindow=node.getWindow();
+                if(nodeWindow==null||nodeWindow.getDisplayId()!=background.displayId()||node.getWindowId()!=expected.windowId
+                        ||!background.allows(string(node.getPackageName())))throw new IllegalStateException("后台节点已移出绑定屏幕或应用");
+            }
+            if(!ownsBackground(taskId,background))throw new IllegalStateException("后台任务租约已退休");
+        }finally{if(nodeWindow!=null)nodeWindow.recycle();if(window!=null)window.recycle();if(root!=null)root.recycle();}
+    }
     private void scopeOpenIntent(String taskId,QualificationScopeConfig.Bound dispatchScope,String target,Intent launch){
         QualificationScopeConfig.Bound scope=scopeFor(taskId);QualificationScope.require(scope==dispatchScope,"dispatch scope was retired");if(scope.config==null)return;
         try{
@@ -391,17 +463,18 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         final Cancellation cancel,final ActionCallback callback){
         // Capture this task's source once. A late callback must never look up a
         // retired lease or borrow a newly started task's scope.
-        final QualificationScopeConfig.Bound captured;final TaskAuthorization.Gate capturedAuthorization;
-        synchronized(this){captured=owns(taskId)?taskScope:null;capturedAuthorization=owns(taskId)?taskAuthorization:null;}
+        final QualificationScopeConfig.Bound captured;final TaskAuthorization.Gate capturedAuthorization;final BackgroundSession capturedBackground;
+        synchronized(this){captured=owns(taskId)?taskScope:null;capturedAuthorization=owns(taskId)?taskAuthorization:null;capturedBackground=owns(taskId)?taskBackground:null;}
         final ActionCallback boundCallback=new ActionCallback(){public void onResult(ActionOutcome result){
-            boolean currentLease=ownsScope(taskId,captured)&&ownsAuthorization(taskId,capturedAuthorization)&&capturedAuthorization==expectedAuthorization,stopped=cancel.isCancelled();
+            boolean currentLease=ownsScope(taskId,captured)&&ownsAuthorization(taskId,capturedAuthorization)&&capturedAuthorization==expectedAuthorization&&ownsBackground(taskId,capturedBackground),stopped=cancel.isCancelled();
             ActionOutcome delivered=currentLease&&!stopped?result:new ActionOutcome(false,result.dispatched,false,
                     "任务已停止或租约已退休；保留已发生的派发，不接受迟到回执",result.appCatalogue);
             callback.onResult(delivered.withScope(callbackScopeEvidence(taskId,captured,currentLease,stopped))
-                    .withAuthorization(callbackAuthorizationEvidence(capturedAuthorization,currentLease,stopped)));
+                    .withAuthorization(callbackAuthorizationEvidence(capturedAuthorization,currentLease,stopped))
+                    .withBackground(capturedBackground==null?null:capturedBackground.evidence()));
         }};
         main.post(new Runnable(){public void run(){
-            if(!ownsScope(taskId,captured)||!ownsAuthorization(taskId,capturedAuthorization)||capturedAuthorization!=expectedAuthorization||cancel.isCancelled()){
+            if(!ownsScope(taskId,captured)||!ownsAuthorization(taskId,capturedAuthorization)||capturedAuthorization!=expectedAuthorization||!ownsBackground(taskId,capturedBackground)||cancel.isCancelled()){
                 boundCallback.onResult(new ActionOutcome(false,false,false,"任务已停止或作用范围未绑定"));return;
             }
             performOnMain(taskId,expected,decision,targets,cancel,boundCallback,captured,capturedAuthorization,modelRunId);
@@ -410,6 +483,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private String validate(String taskId,PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets,Cancellation cancel){
         if(cancel.isCancelled()||!owns(taskId))return "任务已停止";
         if(locked())return "手机已锁定";
+        try{requireBackgroundObservation(taskId,expected);}catch(Exception mismatch){return "后台观察无效："+message(mismatch);}
         if(expected!=current||currentGraph==null||!expected.id.equals(action.observationId))return "stale:观察标识已失效";
         // Use the controller's immutable, exact prompt projection. Never resolve a
         // label to an ID or reconstruct a different ordering from the live tree.
@@ -436,7 +510,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         try{
             authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
             scopeBeforeDispatch(taskId,dispatchScope,expected,action,null,false);
-            if(scopeFor(taskId).config!=null&&("click".equals(action.action)||"type".equals(action.action)||"scroll".equals(action.action))){
+            if((scopeFor(taskId).config!=null||backgroundFor(taskId)!=null)&&("click".equals(action.action)||"type".equals(action.action)||"scroll".equals(action.action))){
                 NodeRef ref=currentGraph==null?null:currentGraph.refs.get(action.nodeId);
                 scopeBeforeDispatch(taskId,dispatchScope,expected,action,ref==null?null:ref.node,true);
             }
@@ -461,6 +535,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 callback.onResult(new ActionOutcome(true,false,false,"已只读查询本机应用目录",page));return;
             }
             if("open".equals(action.action)){
+                if(backgroundFor(taskId)!=null){dispatchBackgroundNavigation(taskId,expected,action,authorization,modelRunId,cancel,callback);return;}
                 refreshApps();if(!launchable.containsKey(action.packageName))throw new IllegalArgumentException("目标不是已列出的可启动应用");
                 Intent launch=getPackageManager().getLaunchIntentForPackage(action.packageName);
                 if(launch==null)throw new IllegalArgumentException("找不到应用启动入口");
@@ -476,6 +551,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 finishAfter(700,true,"已请求打开应用，下一步将重新观察",callback);return;
             }
             if("back".equals(action.action)||"home".equals(action.action)){
+                if(backgroundFor(taskId)!=null){dispatchBackgroundNavigation(taskId,expected,action,authorization,modelRunId,cancel,callback);return;}
                 if(cancel.isCancelled()){callback.onResult(new ActionOutcome(false,false,false,"任务已停止"));return;}
                 scopeBeforeDispatch(taskId,dispatchScope,expected,action,null,false);
                 authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
@@ -539,12 +615,35 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             }else throw new IllegalArgumentException("不支持的动作");
         }catch(Exception e){callback.onResult(new ActionOutcome(false,false,false,message(e)));}
     }
+    /** IPC runs off the service/main thread. A missing reply is a possible dispatch, never a retry. */
+    private void dispatchBackgroundNavigation(final String id,final PhoneObservation expected,final ActionDecision action,
+            final TaskAuthorization.Gate authorization,final String modelRunId,final Cancellation cancel,final ActionCallback callback){
+        final BackgroundSession background=backgroundFor(id);
+        if(background==null||"home".equals(action.action)){callback.onResult(new ActionOutcome(false,false,false,"后台 HOME 不可用"));return;}
+        try{backgroundIo.execute(new Runnable(){public void run(){
+            boolean sent=false;
+            try{
+                if(cancel.isCancelled()||!ownsBackground(id,background))throw new IllegalStateException("后台任务已停止");
+                scopeFor(id).verifyUnchanged();authorizationBeforeDispatch(id,authorization,action,modelRunId);
+                background.requireActive();sent=true;
+                JSONObject receipt=background.action("open".equals(action.action)?"launch":"back",action.packageName,cancel);
+                final boolean dispatched=receipt.optBoolean("dispatched",true);
+                if("open".equals(action.action)&&dispatched)authorization.opened(action,modelRunId);
+                final ActionOutcome result=new ActionOutcome(true,dispatched,false,"后台工具已定向派发；下一步重新观察");
+                main.postDelayed(new Runnable(){public void run(){callback.onResult(result);}},350);
+            }catch(Exception error){
+                final ActionOutcome result=new ActionOutcome(false,sent,false,"后台工具未完成："+message(error)+(sent?"；可能已有派发，不重试":""));
+                main.post(new Runnable(){public void run(){callback.onResult(result);}});
+            }
+        }});}catch(RuntimeException unavailable){callback.onResult(new ActionOutcome(false,false,false,"后台执行队列已关闭"));}
+    }
     private void finishAfter(long delay,final boolean accepted,final String detail,final ActionCallback callback){
         main.postDelayed(new Runnable(){public void run(){callback.onResult(new ActionOutcome(accepted,accepted,false,detail));}},delay);
     }
     private void coordinateClick(final String taskId,final PhoneObservation expected,final ActionDecision action,
                                  final ObservedTargetLabels targets,final TaskAuthorization.Gate authorization,final String modelRunId,
                                  final Cancellation cancel,final ActionCallback callback){
+        if(backgroundFor(taskId)!=null){callback.onResult(new ActionOutcome(false,false,false,"后台任务禁止坐标手势和主屏回退"));return;}
         if(capturePending){callback.onResult(new ActionOutcome(false,false,true,"stale:截图正在更新"));return;}
         final int x=Math.min(expected.width-1,(int)Math.round(action.x*(expected.width-1)/1000.0));
         final int y=Math.min(expected.height-1,(int)Math.round(action.y*(expected.height-1)/1000.0));
@@ -607,29 +706,31 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
     }
     private static final class Graph {
-        String packageName,digest;int windowId,rotation;Rect bounds;boolean truncated;
+        String packageName,digest,backgroundGeneration,backgroundBootstrapPackage;int windowId,rotation,displayId;Rect bounds;boolean truncated;
+        List<String> backgroundAllowedPackages=java.util.Collections.emptyList();
         ObservationState state;
         ObservedWindowMetadata windowMetadata;
         final List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();
         final Map<String,NodeRef> refs=new HashMap<String,NodeRef>();
-        boolean sameWindow(Graph other){return windowId==other.windowId&&rotation==other.rotation&&packageName.equals(other.packageName)&&bounds.equals(other.bounds);}
+        boolean sameWindow(Graph other){return windowId==other.windowId&&rotation==other.rotation&&displayId==other.displayId
+                &&java.util.Objects.equals(backgroundGeneration,other.backgroundGeneration)&&packageName.equals(other.packageName)&&bounds.equals(other.bounds);}
         boolean sameWindowAndTree(Graph other){return sameWindow(other)&&digest.equals(other.digest);}
         void close(){for(NodeRef n:refs.values())n.node.recycle();refs.clear();}
     }
     /** Inspect window metadata only. Never traverse an IME root or collect its text. */
-    private ImeVisibility readImeVisibility(int targetWindowId){
+    private ImeVisibility readImeVisibility(int targetWindowId,int targetDisplayId){
         List<AccessibilityWindowInfo> windows=null;
         try{
             AccessibilityServiceInfo info=getServiceInfo();
             if(info==null||(info.flags&AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS)==0
                     ||(info.getCapabilities()&AccessibilityServiceInfo.CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT)==0)
                 return ImeVisibility.UNKNOWN;
-            windows=getWindows();
+            windows=windowsForDisplay(targetDisplayId);
             if(windows==null||windows.isEmpty())return ImeVisibility.UNKNOWN;
             boolean complete=true,targetPresent=false,imePresent=false;
             for(AccessibilityWindowInfo window:windows){
                 if(window==null){complete=false;continue;}
-                if(window.getDisplayId()!=Display.DEFAULT_DISPLAY)continue;
+                if(window.getDisplayId()!=targetDisplayId)continue;
                 if(window.getId()==targetWindowId)targetPresent=true;
                 if(window.getType()==AccessibilityWindowInfo.TYPE_INPUT_METHOD){
                     Rect bounds=new Rect();window.getBoundsInScreen(bounds);
@@ -643,14 +744,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }}
     }
     /** Read only the selected root's window metadata; never traverse another/IME window. */
-    private ObservedWindowMetadata readWindowMetadata(AccessibilityNodeInfo root,Rect rootBounds,int windowId){
+    private ObservedWindowMetadata readWindowMetadata(AccessibilityNodeInfo root,Rect rootBounds,int windowId,int targetDisplayId){
         int[] bounds=new int[]{rootBounds.left,rootBounds.top,rootBounds.right,rootBounds.bottom};
         String rootClass=null;
         AccessibilityWindowInfo window=null;
         try{
             CharSequence actualClass=root.getClassName();rootClass=actualClass==null?null:actualClass.toString();
             window=root.getWindow();
-            if(window==null||window.getId()!=windowId||window.getDisplayId()!=Display.DEFAULT_DISPLAY)
+            if(window==null||window.getId()!=windowId||window.getDisplayId()!=targetDisplayId)
                 return ObservedWindowMetadata.unknown(bounds,rootClass);
             Rect actualBounds=new Rect();window.getBoundsInScreen(actualBounds);
             int type=window.getType();
@@ -666,11 +767,47 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         private static final long serialVersionUID=1L;
         NoActiveWindow(){super("没有活动窗口");}
     }
+    private List<AccessibilityWindowInfo> windowsForDisplay(int displayId){
+        SparseArray<List<AccessibilityWindowInfo>> all=getWindowsOnAllDisplays();
+        if(all==null)return java.util.Collections.emptyList();
+        List<AccessibilityWindowInfo> selected=all.get(displayId);
+        for(int i=0;i<all.size();i++)if(all.keyAt(i)!=displayId){
+            List<AccessibilityWindowInfo> others=all.valueAt(i);if(others!=null)for(AccessibilityWindowInfo window:others)if(window!=null)window.recycle();
+        }
+        return selected==null?java.util.Collections.<AccessibilityWindowInfo>emptyList():selected;
+    }
+    /** A background root comes only from the immutable display ID; own-focus need not be globally active. */
+    private AccessibilityNodeInfo selectedRoot(){
+        BackgroundSession background=currentBackground();
+        if(background==null)return getRootInActiveWindow();
+        background.requireActive();List<AccessibilityWindowInfo> windows=windowsForDisplay(background.displayId());
+        AccessibilityWindowInfo chosen=null;
+        try{
+            for(AccessibilityWindowInfo window:windows){
+                if(window==null||window.getDisplayId()!=background.displayId()||window.getType()!=AccessibilityWindowInfo.TYPE_APPLICATION)continue;
+                if(chosen==null||(window.isFocused()&&!chosen.isFocused())
+                        ||(window.isFocused()==chosen.isFocused()&&window.getLayer()>chosen.getLayer()))chosen=window;
+            }
+            if(chosen==null)throw new NoActiveWindow();
+            AccessibilityNodeInfo root=chosen.getRoot();if(root==null)throw new NoActiveWindow();
+            if(root.getWindowId()!=chosen.getId()||!background.allows(string(root.getPackageName()))||!root.isVisibleToUser()){
+                root.recycle();throw new IllegalStateException("后台屏幕出现未授权应用或不可见窗口，任务停止");
+            }
+            return root;
+        }finally{for(AccessibilityWindowInfo window:windows)if(window!=null)window.recycle();}
+    }
     private Graph readGraph(){
-        AccessibilityNodeInfo root=getRootInActiveWindow();if(root==null)throw new NoActiveWindow();
-        Graph graph=new Graph();graph.packageName=string(root.getPackageName());graph.windowId=root.getWindowId();graph.rotation=rotation();graph.bounds=new Rect();root.getBoundsInScreen(graph.bounds);
+        BackgroundSession background=currentBackground();
+        AccessibilityNodeInfo root=selectedRoot();if(root==null)throw new NoActiveWindow();
+        Graph graph=new Graph();graph.displayId=background==null?Display.DEFAULT_DISPLAY:background.displayId();
+        graph.backgroundGeneration=background==null?null:background.generation;
+        graph.backgroundBootstrapPackage=background==null?null:background.selection.initialPackage;
+        graph.backgroundAllowedPackages=background==null?java.util.Collections.<String>emptyList():background.selection.allowedPackages;
+        graph.packageName=string(root.getPackageName());graph.windowId=root.getWindowId();graph.rotation=rotation(graph.displayId);graph.bounds=new Rect();root.getBoundsInScreen(graph.bounds);
         if(graph.packageName.isEmpty()||graph.bounds.isEmpty()){root.recycle();throw new IllegalStateException("活动窗口身份不可用");}
-        graph.windowMetadata=readWindowMetadata(root,graph.bounds,graph.windowId);
+        graph.windowMetadata=readWindowMetadata(root,graph.bounds,graph.windowId,graph.displayId);
+        if(background!=null&&(graph.windowMetadata.displayId==null||graph.windowMetadata.displayId.intValue()!=graph.displayId
+                ||!background.allows(graph.packageName))){root.recycle();throw new IllegalStateException("后台观察窗口越界");}
         ArrayDeque<AccessibilityNodeInfo> queue=new ArrayDeque<AccessibilityNodeInfo>();queue.add(root);
         StringBuilder signatures=new StringBuilder(),focusStates=new StringBuilder(),scrollStates=new StringBuilder();int visited=0,characters=0;
         try{
@@ -698,8 +835,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 }finally{node.recycle();}
             }
             if(!queue.isEmpty())graph.truncated=true;
-            String appTree=sha((graph.packageName+"|"+graph.windowId+"|"+graph.rotation+"|"+graph.bounds+"|"+signatures).getBytes(StandardCharsets.UTF_8));
-            graph.state=new ObservationState(appTree,readImeVisibility(graph.windowId));
+            String binding=background==null?"":("background="+background.generation+"|display="+graph.displayId+"|");
+            String appTree=sha((binding+graph.packageName+"|"+graph.windowId+"|"+graph.rotation+"|"+graph.bounds+"|"+signatures).getBytes(StandardCharsets.UTF_8));
+            graph.state=new ObservationState(appTree,readImeVisibility(graph.windowId,graph.displayId));
             // Focus is newly model-visible evidence, not an expansion of the old progress predicate.
             graph.digest=sha(graph.windowMetadata.bindFreshness(graph.state.fingerprintInput()+"\nnode_focus="+focusStates+"\nnode_scroll_actions="+scrollStates)
                     .getBytes(StandardCharsets.UTF_8));return graph;

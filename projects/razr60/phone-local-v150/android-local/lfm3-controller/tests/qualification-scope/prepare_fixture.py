@@ -23,6 +23,7 @@ def prepare(source, output):
     s = (pkg / 'HeptaAccessibilityService.java').read_text()
     pieces = {
         'service_interfaces_outcome': section(s, '    public interface ObservationCallback', '    private static volatile HeptaAccessibilityService live;'),
+        'background_binding': section(s, '    synchronized void bindBackgroundSession(', '    private void refreshApps()'),
         'app_catalogue': section(s, '    public AppCatalogueRanker.Page appCatalogue(', '    /** Each observation owns'),
         'lease': section(s, '    public synchronized boolean acquireTask(', '    private boolean locked()'),
         'scope_validate_dispatch': section(s, '    synchronized void bindQualificationScope(', '    private void coordinateClick('),

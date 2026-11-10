@@ -70,12 +70,16 @@ def main():
         run("scroll-grammar-recognition",[sys.executable,ROOT/"tests/action-grammar/test_scroll_grammar.py",fixtures])
         run("completion-protocol",[sys.executable,ROOT/"tests/action-grammar/test_completion_protocol.py",fixtures])
         run("same-state-no-effect-grammar",[sys.executable,ROOT/"tests/action-grammar/test_same_state_no_effect_grammar.py",fixtures])
+        run("background-client",[sys.executable,"-B",ROOT/"tests/background-session/run_host_tests.py",
+            "--source",ROOT,"--output",out/"background-client","--release8"])
         run("qualification-scope",[sys.executable,ROOT/"tests/qualification-scope/run_host_tests.py",
             "--source",ROOT,"--output",out/"qualification-scope","--release8"])
         run("owner-authorization",[sys.executable,"-B",ROOT/"tests/owner-authorization/run_host_tests.py",
             "--source",ROOT,"--output",out/"owner-authorization","--release8"])
         run("owner-grammar",[sys.executable,"-B",ROOT/"tests/owner-grammar/run_host_tests.py",
             "--source",ROOT,"--output",out/"owner-grammar","--release8"])
+        run("background-broker",[sys.executable,"-B",ROOT/"tests/background-broker/run_host_checks.py",
+            "--java",java,"--javac",shutil.which("javac"),"--out",out/"background-broker"])
         run("python-tools",[sys.executable,"-m","unittest","discover","-s","tools","-p","test_*.py","-v"])
         run("mobimind-private-staging",[sys.executable,"-m","unittest","discover","-s",
             ROOT/"provenance/mobimind-app-only-r1/tests","-p","test_*.py","-v"])

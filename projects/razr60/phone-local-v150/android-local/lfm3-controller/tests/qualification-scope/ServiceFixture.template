@@ -16,7 +16,8 @@ public final class HeptaAccessibilityService extends android.content.Context {
     static HeptaAccessibilityService live;
     static final int GLOBAL_ACTION_BACK=1,GLOBAL_ACTION_HOME=2;
     final Handler main=new Handler(Looper.getMainLooper());
-    String lease;Runnable stopListener;QualificationScopeConfig.Bound taskScope;TaskAuthorization.Gate taskAuthorization;
+    String lease;Runnable stopListener;QualificationScopeConfig.Bound taskScope;TaskAuthorization.Gate taskAuthorization;BackgroundSession taskBackground;
+    final java.util.concurrent.Executor backgroundIo=Runnable::run;
     LocalTaskController ownedController;LocalInference testInference;
     PhoneObservation current;Graph currentGraph;AppCatalogueRanker appDiscovery;
     final Map<String,String> launchable=new LinkedHashMap<String,String>();
@@ -31,7 +32,9 @@ public final class HeptaAccessibilityService extends android.content.Context {
 {{lease}}
     private boolean locked(){return false;}
     private void refreshApps(){}
+{{background_binding}}
 {{app_catalogue}}
+    private AccessibilityNodeInfo selectedRoot(){return getRootInActiveWindow();}
     public AccessibilityNodeInfo getRootInActiveWindow(){rootsRead++;if(rootsRead==mutateOnRoot&&root!=null)root.pkg=mutateRootPackage;return root;}
     public void startActivity(Intent intent){opens++;if(effectHook!=null)effectHook.run();}
     public boolean performGlobalAction(int action){navigations++;if(effectHook!=null)effectHook.run();return true;}

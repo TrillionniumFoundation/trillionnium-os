@@ -39,6 +39,7 @@ public final class LocalTaskSession {
     private Runnable pendingStart;
     private String state = "输入任务，然后点击开始任务。", log = "", taskId, origin, instructionSha, nonceSha;
     private TaskAuthorization taskAuthorization;
+    private BackgroundSession.Selection backgroundSelection;
     private LocalTaskController.TaskResult lastResult;
     private String expectedScopeSha,actualScopeSha;
     private volatile boolean pending, blocked, recovering;
@@ -57,10 +58,11 @@ public final class LocalTaskSession {
     public void bind(Listener listener) { ui = new WeakReference<>(listener); publish(); }
     public void unbind(Listener listener) { if (ui.get()==listener) ui.clear(); }
     public boolean isRunning() { return pending || (controller!=null && controller.isRunning()); }
-    public boolean isBlocked() { return blocked; }
+    public boolean isBlocked() { return blocked||BackgroundSession.hasUnreleased(context); }
+    public boolean hasBackgroundLease(){return BackgroundSession.hasUnreleased(context);}
     public boolean isRecovering() { return recovering; }
     public boolean canAcknowledgeInterruption(){
-        return !recovering&&!isRunning()&&((LocalProbeApplication)context).canAcknowledgeControlRecovery();
+        return !recovering&&!isRunning()&&!BackgroundSession.hasUnreleased(context)&&((LocalProbeApplication)context).canAcknowledgeControlRecovery();
     }
     public String state() { return state; }
     public String log() { return log; }
@@ -73,19 +75,23 @@ public final class LocalTaskSession {
         return schedule(owner,source,testNonceSha,expectedScopeSha256,TaskAuthorization.parse(owner),delayMillis);
     }
     public boolean schedule(final String owner,String source,String testNonceSha,final String expectedScopeSha256,final TaskAuthorization authorization,long delayMillis){
+        return schedule(owner,source,testNonceSha,expectedScopeSha256,authorization,null,delayMillis);
+    }
+    public boolean schedule(final String owner,String source,String testNonceSha,final String expectedScopeSha256,final TaskAuthorization authorization,
+                            final BackgroundSession.Selection selection,long delayMillis){
         QualificationScope.expected(expectedScopeSha256);
         TaskAuthorization.require(authorization!=null,"任务授权合同缺失");authorization.requireOwner(owner);
         if (Looper.myLooper()!=Looper.getMainLooper()) throw new IllegalStateException("schedule must run on main thread");
-        if (isRunning() || engine.isBusy() || blocked) return false;
+        if (isRunning() || engine.isBusy() || isBlocked() || recovering) return false;
         final HeptaAccessibilityService service=HeptaAccessibilityService.connected();
         if (service==null) throw new IllegalStateException("请先启用 Hepta 本地操作无障碍服务");
         if (owner==null || owner.trim().isEmpty()) throw new IllegalArgumentException("请先输入要完成的手机任务");
         if (controllerService!=service) { controller=service.taskController(engine); controllerService=service; }
         final long epoch=++generation;
         origin=source; instructionSha=HeptaAccessibilityService.sha(owner.getBytes(StandardCharsets.UTF_8)); nonceSha=testNonceSha;
-        taskAuthorization=authorization;
+        taskAuthorization=authorization;backgroundSelection=selection;
         expectedScopeSha=expectedScopeSha256;actualScopeSha=null;
-        taskId=null;lastResult=null;log="";pending=true;setState("任务已准备，正在等待前台画面稳定…\n"+authorization.summary());
+        taskId=null;lastResult=null;log="";pending=true;setState((selection==null?"任务已准备，正在等待前台画面稳定…":"任务已准备，正在建立后台空间…")+"\n"+authorization.summary());
         // A durable non-terminal reservation must precede any controller or model start.
         if(!persist("pending",true)){pending=false;blocked=true;publish();return false;}
         pendingStart=new Runnable(){public void run(){
@@ -94,7 +100,7 @@ public final class LocalTaskSession {
             pending=false;
             if(HeptaAccessibilityService.connected()!=service){setState("无障碍服务已断开，任务未启动");persist("not_started",true);return;}
             try{
-                boolean started=controller.start(owner,expectedScopeSha256,authorization,new LocalTaskController.Listener(){
+                boolean started=controller.start(owner,expectedScopeSha256,authorization,selection,new LocalTaskController.Listener(){
                     public void onState(String value){if(epoch>recoveryIgnoredGeneration&&epoch==generation&&!pending)receiveState(value);}
                     public void onFinished(LocalTaskController.TaskResult result){
                         if(epoch<=recoveryIgnoredGeneration)return;
@@ -216,7 +222,7 @@ public final class LocalTaskSession {
                         ||(oldController!=null&&oldController.isRunning()))throw new IOException("controller owner changed during acknowledgement");
                 if(service!=null)service.retireControllerAfterAcknowledgement(oldController,current);
                 acknowledgedSession=current;controller=null;controllerService=null;pending=false;pendingStart=null;
-                taskId=null;origin=null;instructionSha=null;nonceSha=null;taskAuthorization=null;lastResult=null;startupRecovery=null;expectedScopeSha=null;actualScopeSha=null;
+                taskId=null;origin=null;instructionSha=null;nonceSha=null;taskAuthorization=null;backgroundSelection=null;lastResult=null;startupRecovery=null;expectedScopeSha=null;actualScopeSha=null;
                 blocked=false;state="已建立新的空闲会话，可开始新任务。旧任务仍记为中断，原进程退出与清理状态仍未知。";
                 log=log+state+"\n没有自动启动、恢复或重放任何任务。\n";
                 if(log.length()>16000)log=log.substring(log.length()-16000);
@@ -415,6 +421,28 @@ public final class LocalTaskSession {
         return archived;
     }
 
+    /** Only closes a previously recorded display; never resumes an interrupted controller. */
+    public void reconcileBackgroundFromOwnerButton(){
+        if(Looper.myLooper()!=Looper.getMainLooper())throw new IllegalStateException("background cleanup must begin on main thread");
+        if(isRunning()||recovering)throw new IllegalStateException("请先停止正在运行的任务");
+        final long epoch=++generation;final HeptaAccessibilityService service=HeptaAccessibilityService.connected();
+        recovering=true;setState("正在核验并释放上一次后台空间；不会恢复或重做任务…");
+        recoveryWorker.execute(new Runnable(){public void run(){
+            BackgroundSession.Cleanup result=null;Exception failure=null;
+            try{result=BackgroundSession.reconcile(context);}catch(Exception error){failure=error;}
+            final BackgroundSession.Cleanup observed=result;final Exception error=failure;
+            main.post(new Runnable(){public void run(){
+                if(generation!=epoch)return;
+                recovering=false;
+                if(error!=null){setState("后台空间清理未确认："+HeptaAccessibilityService.message(error));return;}
+                if(observed==null||!observed.known){setState("后台空间仍未确认释放，继续暂停新任务；请稍后再次清理");return;}
+                try{if(service!=null&&service==HeptaAccessibilityService.connected())service.acceptBackgroundReconciliation(observed.evidence);}
+                catch(Exception mismatch){blocked=true;setState("后台释放凭据未匹配原会话："+HeptaAccessibilityService.message(mismatch));return;}
+                setState("后台空间已确认释放。旧任务不会恢复；若会话仍中断，请确认中断后建立新会话。");
+            }});
+        }});
+    }
+
     private boolean persist(String status,boolean cleanupKnown) {
         if(taskId!=null&&controller!=null&&taskId.equals(controller.currentTaskId()))actualScopeSha=controller.currentActualScopeSha256();
         AtomicFile destination=new AtomicFile(new File(context.getFilesDir(),"control-session.json"));
@@ -425,6 +453,8 @@ public final class LocalTaskSession {
                 .put("instruction_sha256",instructionSha==null?JSONObject.NULL:instructionSha)
                     .put("task_authorization_sha256",taskAuthorization==null?JSONObject.NULL:taskAuthorization.sha256)
                     .put("task_authorization",taskAuthorization==null?JSONObject.NULL:new JSONObject(taskAuthorization.evidence()))
+                    .put("background_request",backgroundSelection==null?JSONObject.NULL:backgroundSelection.json())
+                    .put("background_lease_unreleased",BackgroundSession.hasUnreleased(context))
                 .put("debug_nonce_sha256",nonceSha==null?JSONObject.NULL:nonceSha)
                 .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha))
                 .put("actual_scope_sha256",QualificationScopeConfig.nullable(actualScopeSha))

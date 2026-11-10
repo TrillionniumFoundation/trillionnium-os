@@ -1,6 +1,7 @@
 package org.trillionnium.hepta.local;
 import android.app.Activity;
 import java.nio.charset.StandardCharsets;
+import java.io.File;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.inputmethod.InputMethodManager;
@@ -8,11 +9,16 @@ import android.view.inputmethod.InputMethodManager;
 public final class ScopeUiFixture extends Activity {
     LocalModelEngine engine;LocalTaskSession tasks;
     Widget taskInput=new Widget(),taskState=new Widget(),probePrompt=new Widget();Widget diagnostics=new Widget();
+    Widget backgroundMode=new Widget();
+    java.util.Set<String> backgroundPackages=new java.util.TreeSet<String>();
+    String selectedBackgroundPackage(){return null;}
     QualificationScope.Launch scopeLaunch=QualificationScope.Launch.normal();String scopeLaunchError;
     static final String SCOPE_INTENT_CONSUMED="hepta_scope_prefill_consumed";
     static final class View{static final int VISIBLE=1;}
-    static final class Widget{String text="";String getText(){return text;}void setText(String v){text=v;}Object getWindowToken(){return null;}void setVisibility(int v){}void post(Runnable r){r.run();}}
+    static final class Widget{boolean checked;boolean isChecked(){return checked;}void setChecked(boolean v){checked=v;}String text="";String getText(){return text;}void setText(String v){text=v;}Object getWindowToken(){return null;}void setVisibility(int v){}void post(Runnable r){r.run();}}
     public ScopeUiFixture(LocalTaskSession tasks,LocalModelEngine engine){this.tasks=tasks;this.engine=engine;}
+    @Override public File getFilesDir(){return tasks.context.getFilesDir();}
+    @Override public android.content.pm.PackageManager getPackageManager(){return tasks.context.getPackageManager();}
     void intent(Intent i){handleIntent(i);}boolean start(){return beginTask(taskInput.text,"user_button",null);}
     void restore(Bundle b){restoreScopeUi(b);}void save(Bundle b){onSaveInstanceState(b);}
     void endUi(){tasks.stop();scopeLaunch=QualificationScope.Launch.normal();scopeLaunchError=null;}
