@@ -186,3 +186,45 @@ through the existing host test discovery. The fixture substitutes Android,
 filesystem and model IO; it establishes neither real model inference nor phone
 cancellation latency. VersionCode 29 and all model/runtime profiles remain
 unchanged. The patch does not automatically repeat or undo an action.
+
+## Exact-token profiles and Java input admission
+
+For profiles that require native exact tokenization, the Java UTF-8/2 score is
+diagnostic information. A score above the context limit does not prove that the
+rendered prompt's actual token count exceeds that limit. The controller keeps
+the original projection target and reduction order: optional visible text,
+then nonrequired current-screen nodes. If the smallest complete required frame
+still exceeds the heuristic, it reaches native checking when each raw message
+stays within the existing 65536-byte UTF-8 limit. The heuristic alone can no
+longer finally reject that frame. Optional projection reduction stops as before
+when the sizing target is met; required facts and the original OWNER are never
+removed to meet it.
+
+The original LFM3 byte-bound path remains unchanged. The native per-input limit,
+rendered-template limit, exact tokenizer, generation allowance, 256-token
+reserve, same-input-ID requirement and NativeBudgetVerifier are unchanged.
+Actual context overflow is still refused before SDK generation and cannot
+produce an accepted action. This patch adds no retry of rejected inference.
+
+Prompt-budget evidence becomes v3. It distinguishes Java admission from the
+diagnostic projection score and states that native context admission has not
+yet been verified. The ordinary app/native inference receipts continue to
+require the original exact native proof. Complete OWNER text, readable history,
+the current app page, required targets and target-bound grammar are preserved;
+no benchmark goal, case, model profile, default configuration or dispatcher
+policy changes.
+
+ExactPromptAdmissionHostTest uses the prior public API, so the original source
+compiles and fails the specific heuristic-rejection regression. It also checks
+the same native receipt validator at its exact boundary and one token beyond,
+missing same-ID proof, UTF-8 message limits, invalid input, the unchanged LFM3
+bound and a complete 40-target action domain. These host checks do not establish
+real token counts or phone quality. Android build and phone qualification remain
+pending for this isolated review candidate.
+
+tools/test_prompt_admission.py additionally extracts the actual production
+admission, complete-target, grammar, optional-pruning and refusal decisions.
+Ten cases distinguish keeping optional context, stopping reduction at the old
+target, reaching the complete minimum frame, hard byte-limit refusal and the
+unchanged LFM3 path. Android observation and JSON rendering are explicit test
+fixtures; this does not claim an Android controller or model execution.

@@ -275,8 +275,11 @@ public final class LocalTaskController implements AutoCloseable {
     }
     private static final class ModelAnswer {final String text,runId;ModelAnswer(String text,String runId){this.text=text;this.runId=runId;}}
     private ModelAnswer awaitModel(String prompt,DecisionGrammar grammar,long taskDeadline)throws Exception{
-        if(!ConservativeTokenBudget.estimate(SYSTEM,prompt,inference.configuration()).admitted)
-            throw new IllegalStateException("完整指令超出手机本地上下文上限，请拆分任务");
+        ConservativeTokenBudget preflight=ConservativeTokenBudget.estimate(SYSTEM,prompt,inference.configuration());
+        if(!preflight.admitted)
+            throw new IllegalStateException(preflight.inputBytesWithinLimit
+                    ?"完整指令超出手机本地上下文上限，请拆分任务"
+                    :"完整输入超出手机本地每条消息的 UTF-8 字节上限，请拆分任务");
         long remaining=taskDeadline-SystemClock.elapsedRealtime();if(remaining<1000)throw new IllegalStateException("任务时间已用完");
         long timeout=Math.min(MODEL_TIMEOUT_MS,remaining);final CountDownLatch ready=new CountDownLatch(1);
         final AtomicReference<ModelAnswer> result=new AtomicReference<ModelAnswer>();
@@ -347,10 +350,15 @@ public final class LocalTaskController implements AutoCloseable {
             this.visibleTextShown=visibleTextShown;this.visibleTextObserved=visibleTextObserved;this.eventHistory=eventHistory;this.appSearch=appSearch;
             this.historyProjectionBytes=historyProjectionBytes;this.requiredNodes=requiredNodes;
         }
-        JSONObject budgetJson()throws Exception{return new JSONObject().put("schema","hepta.local-prompt-budget.v2")
+        JSONObject budgetJson()throws Exception{return new JSONObject().put("schema","hepta.local-prompt-budget.v3")
                 .put("method",budget.method).put("is_exact_token_count",false).put("is_proven_upper_bound",budget.provenUpperBound)
                 .put("model_profile",budget.profile.id).put("model_sha256",budget.profile.sha256)
                 .put("native_exact_tokenization_required",budget.profile.exactTokenizationRequired)
+                .put("java_admission_scope",budget.provenUpperBound?"byte_bound_with_native_rendered_guard":"input_bytes_only_native_exact_tokens_required")
+                .put("input_utf8_byte_limit_per_message",ConservativeTokenBudget.INPUT_UTF8_LIMIT)
+                .put("input_bytes_within_limit",budget.inputBytesWithinLimit)
+                .put("projection_within_context",budget.projectionWithinContext)
+                .put("native_context_admission_verified",false)
                 .put("tokenizer_reference_sha256",budget.provenUpperBound?ConservativeTokenBudget.TOKENIZER_REFERENCE_SHA256:JSONObject.NULL)
                 .put("system_utf8_upper",budget.systemBytesUpper).put("prompt_utf8_upper",budget.promptBytesUpper)
                 .put("formatter_upper",ConservativeTokenBudget.TEMPLATE_BOUND).put("image_tokens",0).put("image_sent_to_model",false)
@@ -487,7 +495,11 @@ public final class LocalTaskController implements AutoCloseable {
             // Screenshots remain private action-verification evidence, never model input.
             String text="UNTRUSTED_DATA\n"+promptSections(data).replace("<","\\u003c")+"\nOWNER\n"+owner;
             ConservativeTokenBudget budget=ConservativeTokenBudget.estimate(SYSTEM,text,config);
-            if(budget.admitted){
+            // Preserve the existing optional-context reduction target. Once
+            // only complete required facts remain, an exact profile proceeds
+            // to native tokenization even when the heuristic still exceeds it.
+            if(budget.admitted&&(budget.projectionWithinContext||
+                    (visibleTextLimit==0&&nodeCount==requiredIds.size()))){
                 PromptActionDomain.requireComplete(requiredIds,ids);
                 ObservedTargetLabels targets=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,observation.id,observation.packageName,projectedLabels);
                 DecisionGrammar grammar=DecisionGrammar.create(observation.id,observation.packageName,packages,clicks,edits,scrolls,targets);
@@ -495,10 +507,14 @@ public final class LocalTaskController implements AutoCloseable {
                         editableFields.size(),editableFieldsObserved,visibleText.size(),visibleTextObserved,events,historyBytes,appSearch,requiredIds.size());
             }
             // Keep the complete readable action trace, including labels and typed text.
-            // Only optional current-screen context may be reduced; native checks exact tokens.
+            // Reduce only optional current-screen context toward the existing
+            // projection target and the input-byte limit. An exact profile's
+            // heuristic cannot remove required facts or finally reject them.
             if(visibleTextLimit>0){visibleTextLimit--;continue;}
             if(nodeCount>requiredIds.size()){nodeCount--;continue;}
-            throw new IllegalStateException("完整任务事实与当前可操作目标超过本地上下文上限，请拆分任务");
+            throw new IllegalStateException(budget.inputBytesWithinLimit
+                    ?"完整任务事实与当前可操作目标超过本地上下文上限，请拆分任务"
+                    :"完整任务事实与当前可操作目标超过每条输入的 UTF-8 字节上限，请拆分任务");
         }
     }
     /** One JSON object with readable top-level boundaries; the current screen is last. */

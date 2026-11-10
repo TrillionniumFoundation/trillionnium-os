@@ -16,7 +16,7 @@
   "wake_permission_added": false,
   "execution_freshness_relaxed": false,
   "mobimind_phone_action_dispatch_connected": false,
-  "candidate_status": "host_candidate_phone_pending",
+  "candidate_status": "host_tested_android_phone_pending",
   "merge_parents": {
     "frozen_code20_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
     "history_guard_source_inputs_sha256": "a42e176bb279aee8d398efcf36f532a7d92e48d86bb31aa7b18a505abca7dc74",
@@ -88,8 +88,8 @@
     },
     {
       "path": "CODE29-TASK-WORKER.md",
-      "bytes": 11651,
-      "sha256": "351742d18380fe521434b4912e9909f3a8d8558bdeef626df55eed39d86d114b"
+      "bytes": 14267,
+      "sha256": "d44bb3490e8fe21d21a76060c021c18a3dc928613cdef971a4d4e48ef04eb589"
     },
     {
       "path": "CODE5-PROGRESS.md",
@@ -4813,8 +4813,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ConservativeTokenBudget.java",
-      "bytes": 3395,
-      "sha256": "f44740ae90f4c05b60a9a79ff0955b5fe730c8c38c03926c1d23568d640f54d7"
+      "bytes": 3964,
+      "sha256": "f27bf8f73ee8e5fdfe871e4eb5855060ab64522ba1def746a4638c790359b280"
     },
     {
       "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
@@ -4863,8 +4863,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 53060,
-      "sha256": "cdf2368963b6a3cb4c0432e86e04e7c38ad498fc4ab7197f3dd0483885c7b1c4"
+      "bytes": 54408,
+      "sha256": "49e6142196f94303577a59315e5d54dabc3ddf571d0d99a7215cfb1f733c1dce"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -5122,6 +5122,11 @@
       "sha256": "2e079e310a7d659058efa44b7916c8fad13ac0e89322ea399db883a8bf195c2e"
     },
     {
+      "path": "tests/ExactPromptAdmissionHostTest.java",
+      "bytes": 8044,
+      "sha256": "30f6b886a0a2b1ee9483d5be27c866ece175faff90426a636db73b02233edc69"
+    },
+    {
       "path": "tests/Gemma4ProfileHostTest.java",
       "bytes": 4294,
       "sha256": "b0eed227ceeebaede974ff2cf56ade8ba91d8463cd9257e13a5b78a983e3e0b1"
@@ -5345,6 +5350,16 @@
       "path": "tests/action-parser/run_host_tests.py",
       "bytes": 3758,
       "sha256": "968c4be22dc5608e9571a48e8af43f58f5ba6a7533d11014d868b2a007962170"
+    },
+    {
+      "path": "tests/prompt-admission/PromptAdmissionHostTest.java",
+      "bytes": 4206,
+      "sha256": "f84bf2e9d3b1d66142e24c8c37026d4010fd2288efc29fb2577c197105823a83"
+    },
+    {
+      "path": "tests/prompt-admission/prepare_fixture.py",
+      "bytes": 5316,
+      "sha256": "24c557a5ceaa4713fbaa380d8d3d8a3e7018277b49439785c0cdb9af9ff6fa33"
     },
     {
       "path": "tests/recovery-application/README.md",
@@ -5627,6 +5642,11 @@
       "sha256": "f72e54d54bd557c9bfbce44954296359ee595e6dfe87c237e70f9f4221b54b5a"
     },
     {
+      "path": "tools/test_prompt_admission.py",
+      "bytes": 2652,
+      "sha256": "c8646276c8c92b014cf2857eeb16ad1abc27d06ee42934de57dbd627deafbd22"
+    },
+    {
       "path": "tools/test_qwen35_profile.py",
       "bytes": 1820,
       "sha256": "397155470dc312309c1c66e209f3c8b9b3185381085fdf8f1446e9b0bb9e6d10"
@@ -5754,7 +5774,7 @@
   },
   "derived_from_public_profile_manifest_sha256": "2b3a358de4655b8fa73dc97b4fda64eaf9e0c8fc4957c0a569008fc72645cc03",
   "code24_change_inputs_sha256": "41149f60f085b31b8ec1dda9749e0c5b001268e506e297c0ea518df7577b1f00",
-  "host_qualified": false,
+  "host_qualified": true,
   "android_qualified": false,
   "code24_qualification": {
     "host": "pending_exact_source_run",
@@ -5882,5 +5902,33 @@
     "host_tests": "requires exact source host receipt",
     "android_build": "requires exact source build receipt",
     "phone_qualification": "not_run"
+  },
+  "code29_exact_token_admission_derivation": {
+    "parent_git_head": "dd6217e19f4c947e3bc287d7e1e676264ec7f594",
+    "parent_source_manifest_sha256": "e49de8bdaf84d35c8b5acc2ba40be2a5bf5287daf39cff470adf00c0f6fdc445",
+    "changed_members_excluding_manifest": [
+      "CODE29-TASK-WORKER.md",
+      "src/org/trillionnium/hepta/local/ConservativeTokenBudget.java",
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "tests/ExactPromptAdmissionHostTest.java",
+      "tests/prompt-admission/PromptAdmissionHostTest.java",
+      "tests/prompt-admission/prepare_fixture.py",
+      "tools/test_prompt_admission.py"
+    ],
+    "scope": "Retain optional projection order and the LFM3 bound; exact profiles reach unchanged native tokenization at a complete required frame despite an unproven sizing score.",
+    "application_version_unchanged": true,
+    "per_message_utf8_limit": 65536,
+    "owner_history_required_targets_preserved": true,
+    "native_exact_admission_unchanged": true,
+    "native_engine_model_profiles_unchanged": true,
+    "stop_finalization_fix_preserved": true,
+    "java_budget_receipt_schema": "hepta.local-prompt-budget.v3",
+    "host_checks": 77,
+    "host_receipt_sha256": "945ecc32583e10c6337372b3e196dd0e2a69a02bcfcbcc20bd7fb4e430c65596",
+    "baseline_behavioral_regression_reproduced": true,
+    "android_build": "pending_exact_frozen_source_build",
+    "phone_qualification": "not_run",
+    "historical_receipts_relabelled": false,
+    "independent_goal_assertions_relaxed": false
   }
 }

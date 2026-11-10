@@ -3,9 +3,10 @@ package org.trillionnium.hepta.local;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Upper bound for the pinned LFM3 byte-level BPE tokenizer, not an exact count.
- * It has no normalizer or added prefix space. Native code repeats the bound on
- * the actually rendered chat template before generation.
+ * Java input admission and a diagnostic sizing score, never native token proof.
+ * The pinned LFM3 byte-level BPE upper bound is retained. Other profiles require
+ * exact native tokenization of the rendered template; a UTF-8 sizing heuristic
+ * cannot establish that their actual token count exceeds the context.
  */
 public final class ConservativeTokenBudget {
     public static final String TOKENIZER_REFERENCE_SHA256="7e226e34bface23ccf6e495d157bf77186c1c30a7659880e1a8994db528c3701";
@@ -13,9 +14,12 @@ public final class ConservativeTokenBudget {
     // Two text messages, no tools/images, thinking disabled. The native guard
     // checks the actual template, so an underestimated template cannot act.
     public static final int TEMPLATE_BOUND=512, BOS_EOS_BOUND=2;
+    // Same per-message limit as LocalModelEngine.TEXT_LIMIT and native INPUT_LIMIT.
+    public static final int INPUT_UTF8_LIMIT=65536;
     public static final String METHOD="pinned_lfm3_utf8_bytes_upper_bound_native_checks_rendered_template";
     public final int systemBytesUpper,promptBytesUpper,promptTokensUpper,totalContextUpper,contextTokens;
-    public final boolean admitted;
+    /** Permission to submit to the unchanged native guard, not token authorization. */
+    public final boolean admitted,inputBytesWithinLimit,projectionWithinContext;
     public final ModelProfile profile;
     public final boolean provenUpperBound;
     public final String method;
@@ -26,10 +30,13 @@ public final class ConservativeTokenBudget {
         method=provenUpperBound?METHOD:"utf8_projection_heuristic_native_exact_tokenization_required";
         systemBytesUpper=bytesUpper(system);promptBytesUpper=bytesUpper(prompt);
         int projectedBytes=systemBytesUpper+promptBytesUpper;
-        // New profiles use only a sizing heuristic for observation selection.
-        // It is never token authorization: native counts the rendered prompt.
+        // Retain the old score as an optional-projection target. It cannot
+        // finally reject a complete, byte-bounded exact-profile prompt.
         promptTokensUpper=(provenUpperBound?projectedBytes:(projectedBytes+1)/2)+TEMPLATE_BOUND+BOS_EOS_BOUND;
-        totalContextUpper=promptTokensUpper+GENERATION+RESERVED;admitted=totalContextUpper<=contextTokens;
+        totalContextUpper=promptTokensUpper+GENERATION+RESERVED;
+        projectionWithinContext=totalContextUpper<=contextTokens;
+        inputBytesWithinLimit=systemBytesUpper<=INPUT_UTF8_LIMIT&&promptBytesUpper<=INPUT_UTF8_LIMIT;
+        admitted=inputBytesWithinLimit&&(!provenUpperBound||projectionWithinContext);
     }
     public static ConservativeTokenBudget estimate(String system,String prompt,int contextTokens){
         if(system==null||prompt==null)throw new IllegalArgumentException("missing prompt");
