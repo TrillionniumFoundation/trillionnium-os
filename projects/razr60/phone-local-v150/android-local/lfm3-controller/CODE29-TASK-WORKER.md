@@ -163,3 +163,26 @@ create/reset counts and PID reuse in an ordinary app UID, compare first and
 later request timing, confirm Stop and timeout leave no owned worker, and
 repeat the offline phone-task suite. No such phone result is claimed by this
 source candidate.
+
+
+## Stop during terminal cleanup
+
+The Stop control remains effective while the task waits for its retained model
+worker to exit. After the single owned endTask() call returns, the controller
+checks the Stop flag again before recording a normal terminal result. Confirmed
+cleanup with Stop records cancelled and clears the model-success flag, even
+when process termination makes the native close receipt invalid.
+
+Unconfirmed model cleanup still records blocked and now also clears the
+model-success flag. An earlier unknown action outcome remains blocked; a later
+Stop cannot make that outcome known or release its admission block. Without
+Stop, an invalid terminal receipt rejects both model_reported_done and partial.
+An unrelated earlier failure retains its status and explanation.
+
+tools/test_warm_finalization.py extracts the exact production Stop method,
+endTask() call and terminal decisions. Its Java barrier injects Stop while
+close is in progress and exercises 13 deterministic terminal cases. This runs
+through the existing host test discovery. The fixture substitutes Android,
+filesystem and model IO; it establishes neither real model inference nor phone
+cancellation latency. VersionCode 29 and all model/runtime profiles remain
+unchanged. The patch does not automatically repeat or undo an action.

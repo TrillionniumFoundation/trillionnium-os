@@ -88,8 +88,8 @@
     },
     {
       "path": "CODE29-TASK-WORKER.md",
-      "bytes": 10337,
-      "sha256": "83cd22c7e7b1ed05622d7520ca9a44b24a7ffcb44ab6f864c69d6708cc7c083f"
+      "bytes": 11651,
+      "sha256": "351742d18380fe521434b4912e9909f3a8d8558bdeef626df55eed39d86d114b"
     },
     {
       "path": "CODE5-PROGRESS.md",
@@ -1942,16 +1942,6 @@
       "sha256": "fa8c93f30ea6622aa3d70efe88a497bcdf84b1c039bf59d3e5f9662fd3308fbe"
     },
     {
-      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
-      "bytes": 1696,
-      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
-    },
-    {
-      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
-      "bytes": 0,
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
-    {
       "path": "host-evidence/code5-r1/grammar/all.gbnf",
       "bytes": 3187,
       "sha256": "eb3a4ab7b3289e4742555499dd26e1998b7d03872db2cbb91d093201409790fb"
@@ -1990,6 +1980,16 @@
       "path": "host-evidence/code5-r1/grammar/system.gbnf",
       "bytes": 1882,
       "sha256": "5e844f20ef35b582bc40acd3557ebad7058267aad54d1bd12579a4158ec9e87e"
+    },
+    {
+      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
+      "bytes": 1696,
+      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
+    },
+    {
+      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "path": "host-evidence/code5-r1/java-compile.stderr",
@@ -4382,11 +4382,6 @@
       "sha256": "50d0b9a73b4c2e08f0ce0dd5df953637bd69eb519bce0dcd4e5b9001fddfef14"
     },
     {
-      "path": "provenance/mobimind-worker-r4-build.json",
-      "bytes": 3066,
-      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
-    },
-    {
       "path": "provenance/mobimind-worker-r4/CMakeLists.txt",
       "bytes": 1257,
       "sha256": "25260a2133c91a849287e8b09211ead6524e0f56e9ba1685af1a3be1011a197f"
@@ -4495,6 +4490,11 @@
       "path": "provenance/mobimind-worker-r4/tests/util_contract.cpp",
       "bytes": 3372,
       "sha256": "bd2ac495f8dc7c5188dee6bbae71446b57e90edc054ce5ab8f5a0708037a1b3f"
+    },
+    {
+      "path": "provenance/mobimind-worker-r4-build.json",
+      "bytes": 3066,
+      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
     },
     {
       "path": "provenance/ui-venus-app-r1/BASELINE.json",
@@ -4863,8 +4863,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 52628,
-      "sha256": "729158a4d9194ae2f9c1d4d1ca850ea1a33ba4208063d90b04ecbe184b539641"
+      "bytes": 53060,
+      "sha256": "cdf2368963b6a3cb4c0432e86e04e7c38ad498fc4ab7197f3dd0483885c7b1c4"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -5492,6 +5492,16 @@
       "sha256": "c490db14eaddaed65d43b38967586825abad0934ca5c6e5060a47e16aa1eb582"
     },
     {
+      "path": "tests/warm-finalization/WarmFinalizationHostTest.java",
+      "bytes": 6647,
+      "sha256": "42d37b5677c469db401aacf2ca21f93e512f2cb67ac8f68cd3abffc2c36071e7"
+    },
+    {
+      "path": "tests/warm-finalization/prepare_fixture.py",
+      "bytes": 4060,
+      "sha256": "f66bff1702ec9d40f967a69509b9e78472886d822f25e0bacfe4bee17322a3a3"
+    },
+    {
       "path": "tools/PHONE-ACCEPTANCE.md",
       "bytes": 8828,
       "sha256": "4bd6613e923e4224b5e49aa3627956dbcc20c0f7955fe6b79f869e22f37e382b"
@@ -5655,6 +5665,11 @@
       "path": "tools/test_warm_collection.py",
       "bytes": 5341,
       "sha256": "4d97a5c80829c0b3cc18111380b5248d20bfa85d36cc0f9280499121e0f2fc4a"
+    },
+    {
+      "path": "tools/test_warm_finalization.py",
+      "bytes": 2278,
+      "sha256": "759e5f00721512169d0cbeb71f692d77b4b5cceaa8f5fb82fdd6042f04e8e966"
     },
     {
       "path": "tools/test_warm_receipts.py",
@@ -5853,6 +5868,19 @@
     "independent_goal_assertions_relaxed": false,
     "host_qualification": "pending_exact_r4_gate",
     "android_build": "pending_exact_r4_build",
+    "phone_qualification": "not_run"
+  },
+  "code29_stop_finalization_derivation": {
+    "parent_git_head": "d5ff017ae550432a8ddd0f478fcc4c523c6970ca",
+    "parent_source_manifest_sha256": "340a5390337f829cd94bd7511208d62c59bc752ca6bd89c7f32369434b6db5d6",
+    "baseline_controller_sha256": "729158a4d9194ae2f9c1d4d1ca850ea1a33ba4208063d90b04ecbe184b539641",
+    "patched_controller_sha256": "cdf2368963b6a3cb4c0432e86e04e7c38ad498fc4ab7197f3dd0483885c7b1c4",
+    "scope": "Reclassify a Stop received during owned endTask after terminal cleanup; preserve unresolved blocks, clear stale model success and reject partial outcomes without valid terminal receipt.",
+    "application_version_unchanged": true,
+    "model_profiles_unchanged": true,
+    "engine_lifecycle_implementation_preserved": true,
+    "host_tests": "requires exact source host receipt",
+    "android_build": "requires exact source build receipt",
     "phone_qualification": "not_run"
   }
 }
