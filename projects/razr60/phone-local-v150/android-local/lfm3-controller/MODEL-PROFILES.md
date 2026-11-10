@@ -168,3 +168,28 @@ its original per-request load and verification. Initial model-specific RAM
 admission, exact token budgets, per-request deadlines, output bounds and
 fallback rejection remain in force. See `CODE29-TASK-WORKER.md`; the lifecycle
 change does not establish model quality, speed, or phone qualification.
+
+## Experimental Nanbeige4.2 3B profile
+
+`nanbeige4.2-3b-q4_k_m` selects only
+`Nanbeige_Nanbeige4.2-3B-Q4_K_M.gguf`, **2684023968 bytes**, SHA-256
+`b92d2e35c9876b0c4bc671996360204f4149d0546c23d5954d5eb3b106c81f24`,
+from `bartowski/Nanbeige_Nanbeige4.2-3B-GGUF` revision
+`210b0d6d6c1046044c7ea9d16c9ce3b5716ec2d2`. It is a community GGUF
+conversion of `Nanbeige/Nanbeige4.2-3B` and uses the `nanbeige` architecture.
+The full artifact and actual header must be verified before import; a source
+registration or upstream LFS identity does not prove a completed download.
+
+The first device qualification plan uses **NPU, context 4096, threads 4**.
+The **6 GiB** available-memory gate is an initial admission margin, not a
+measured peak. Existing explicit 4096/8192 configuration remains unchanged;
+an 8192 experiment requires a separately recorded configuration and evidence.
+No default model, saved configuration, version number, tokenizer, prompt,
+tool grammar, worker lifecycle or accelerator fallback rule changes here.
+
+The profile requires the existing full native file hash, exact architecture,
+held-descriptor metadata fences and exact same-input-ID token proof before
+generation. Every request still retains output/reserve and byte limits. The
+new profile does not admit a projector, arbitrary model path or CPU fallback.
+The installed runtime must still demonstrate real load and correct output
+before any tool or phone-task qualification is claimed.

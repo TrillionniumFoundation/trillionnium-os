@@ -12,7 +12,7 @@ int main(void){
     assert(!strcmp(profile->sha256,"298fcb5fe7a77ccc79745ae24751560c5ac56874caff4bb39b1f2055bd72b8bb"));
     const char *legacy[]={"lfm3-1.7b-qad-q4_0","minicpm5-2b-q4_k_m","spark-x2.6-4b-q4_k_m",
       "gemma4-e4b-qat-q4_0","gemma4-e2b-qat-q4_0","nemotron-3.5-bolt-e4b-q4_k_m","lfm2.5-8b-a1b-q4_0"};
-    assert(sizeof(hepta_profiles)/sizeof(hepta_profiles[0])==11);
+    assert(sizeof(hepta_profiles)/sizeof(hepta_profiles[0])==12);
     for(size_t i=0;i<sizeof(legacy)/sizeof(legacy[0]);i++){
         assert(!strcmp(hepta_profiles[i].id,legacy[i]));
         assert(hepta_find_profile(legacy[i])==&hepta_profiles[i]);
