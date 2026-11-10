@@ -54,10 +54,21 @@ public final class BackgroundSessionHostTest {
         if("ACTIVE".equals(state))value.put("display_policy_readback",policy(generation,id));
         return frame(value.toString().getBytes(StandardCharsets.UTF_8));
     }
+    static final String ATTEMPT="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    static JSONObject fixedResponse(byte[] request,org.trillionnium.hepta.background.FixedIntentTarget target)throws Exception{
+        JSONObject req=decode(request);JSONObject value=decode(response(request,"ACTIVE",7,true,true));
+        JSONObject proof=new JSONObject().put("schema","hepta.background-fixed-intent.v1").put("request_id",req.getString("request_id"))
+                .put("generation",req.getString("generation")).put("display_id",7).put("action",target.action)
+                .put("attempt_id",req.getString("attempt_id")).put("payload_sha256",org.trillionnium.hepta.background.FixedIntentTarget.payloadSha256(req.getString("payload")))
+                .put("target",new JSONObject(target.evidence())).put("ordinary_caller_uid",android.os.Process.myUid()).put("attempt_consumed",true)
+                .put("resolved_type",org.trillionnium.hepta.background.FixedIntentTools.forAction(target.action).mimeType==null?JSONObject.NULL:org.trillionnium.hepta.background.FixedIntentTools.forAction(target.action).mimeType);
+        return value.put("fixed_intent",proof);
+    }
     static JSONObject exchange(JSONObject request)throws Exception{return (JSONObject)invoke(null,"exchange",new Class<?>[]{String.class,String.class,JSONObject.class,int.class},"hepta-bg-"+request.getString("generation"),request.getString("generation"),request,3500);}
     static final class Env implements AutoCloseable {
         final Path directory;final Context context;final BackgroundSession session;
-        Env()throws Exception{directory=Files.createTempDirectory("hepta-background-client-");context=new Context(directory.toFile());session=new BackgroundSession(context,TASK,"写备忘录",new BackgroundSession.Selection(PKG,new TreeSet<String>(Arrays.asList(PKG,OTHER))),new QualificationScopeConfig.FilesRoot(context));}
+        Env()throws Exception{this(null);}
+        Env(String extra)throws Exception{directory=Files.createTempDirectory("hepta-background-client-");context=new Context(directory.toFile());Set<String> allowed=new TreeSet<String>(Arrays.asList(PKG,OTHER));if(extra!=null)allowed.add(extra);session=new BackgroundSession(context,TASK,"写备忘录",new BackgroundSession.Selection(PKG,allowed),new QualificationScopeConfig.FilesRoot(context));}
         void active()throws Exception{context.displays.displays.put(7,new Display(7,session.displayName));
             JSONObject receipt=decode(response(frame(request(session.generation,"state").toString().getBytes(StandardCharsets.UTF_8)),"ACTIVE",7,true,false));
             invoke(session,"accept",new Class<?>[]{JSONObject.class,boolean.class},receipt,true);
@@ -143,6 +154,36 @@ public final class BackgroundSessionHostTest {
         test("truncated_response_refused",()->{LocalSocket.responder=req->new byte[]{0,0,0,8,123};rejects(()->exchange(request(UUID.randomUUID().toString(),"state")));});
         test("invalid_utf8_refused",()->{LocalSocket.responder=req->frame(new byte[]{(byte)0xc3,0x28});rejects(()->exchange(request(UUID.randomUUID().toString(),"state")));});
         test("transport_timeout_not_retried",()->{LocalSocket.responder=req->{throw new java.net.SocketTimeoutException("fixture");};rejects(()->exchange(request(UUID.randomUUID().toString(),"state")));check(LocalSocket.connections==1,"unknown request replayed");});
+        for(String action:new String[]{"notes.create","web.search"})test("fixed_client_exact_payload_binding_"+action,()->{
+            org.trillionnium.hepta.background.FixedIntentTools.Profile profile=org.trillionnium.hepta.background.FixedIntentTools.forAction(action);
+            org.trillionnium.hepta.background.FixedIntentTarget target=new org.trillionnium.hepta.background.FixedIntentTarget(action,"actual-installed-label",10382,null);
+            try(Env e=new Env(profile.packageName)){e.active();LocalSocket.responder=req->frame(fixedResponse(req,target).toString().getBytes(StandardCharsets.UTF_8));
+                e.session.fixedIntent(target,"原文\n中文🙂",ATTEMPT,()->false);JSONObject sent=decode(LocalSocket.sent);
+                check(sent.length()==9&&sent.getString("op").equals(action)&&sent.getString("package").equals(target.packageName)
+                    &&sent.getString("payload").equals("原文\n中文🙂")&&sent.getInt("target_uid")==10382&&sent.getString("attempt_id").equals(ATTEMPT),"fixed wire must preserve actual model payload/identity without arbitrary fields");
+                check(LocalSocket.connections==1,"single bounded transport");
+            }
+        });
+        for(String changed:new String[]{"action","attempt_id","payload_sha256","display_id","generation","ordinary_caller_uid","target_uid","component","app_label","required_permission","exported","activity_enabled","application_enabled","declared_intent_filter_matched","ordinary_caller_permission_checked","resolved_type"})test("fixed_client_changed_proof_refused_"+changed,()->{
+            org.trillionnium.hepta.background.FixedIntentTarget target=new org.trillionnium.hepta.background.FixedIntentTarget("notes.create","label",10382,null);
+            try(Env e=new Env(target.packageName)){e.active();LocalSocket.responder=req->{JSONObject value=fixedResponse(req,target),proof=value.getJSONObject("fixed_intent");
+                if("target_uid".equals(changed))proof.getJSONObject("target").put(changed,10383);
+                else if("component".equals(changed))proof.getJSONObject("target").put(changed,"com.example.foreign/.Activity");
+                else if(java.util.Arrays.asList("app_label","required_permission").contains(changed))proof.getJSONObject("target").put(changed,"wrong");
+                else if(java.util.Arrays.asList("exported","activity_enabled","application_enabled","declared_intent_filter_matched","ordinary_caller_permission_checked").contains(changed))proof.getJSONObject("target").put(changed,false);
+                else proof.put(changed,"display_id".equals(changed)||"ordinary_caller_uid".equals(changed)?Integer.valueOf(12345):"wrong");
+                return frame(value.toString().getBytes(StandardCharsets.UTF_8));};
+                rejects(()->e.session.fixedIntent(target,"正文",ATTEMPT,()->false));check(LocalSocket.connections==1,"mismatched receipt not retried");
+            }
+        });
+        test("fixed_client_outside_scope_or_cancel_zero_request",()->{org.trillionnium.hepta.background.FixedIntentTarget target=new org.trillionnium.hepta.background.FixedIntentTarget("notes.create","label",10382,null);
+            try(Env e=new Env()){e.active();rejects(()->e.session.fixedIntent(target,"正文",ATTEMPT,()->false));check(LocalSocket.connections==0,"outside selected package scope");}
+            try(Env e=new Env(target.packageName)){e.active();rejects(()->e.session.fixedIntent(target,"正文",ATTEMPT,()->true));check(LocalSocket.connections==0,"cancelled before transport");}
+        });
+        test("fixed_client_timeout_is_not_retried",()->{org.trillionnium.hepta.background.FixedIntentTarget target=new org.trillionnium.hepta.background.FixedIntentTarget("notes.create","label",10382,null);
+            try(Env e=new Env(target.packageName)){e.active();LocalSocket.responder=req->{throw new java.net.SocketTimeoutException("uncertain fixed intent reply");};
+                rejects(()->e.session.fixedIntent(target,"正文",ATTEMPT,()->false));check(LocalSocket.connections==1,"unknown fixed intent request replayed");}
+        });
         test("background_home_foreign_and_cancel_zero_requests",()->{try(Env e=new Env()){e.active();rejects(()->e.session.action("home",PKG,()->false));rejects(()->e.session.action("launch","com.example.foreign",()->false));rejects(()->e.session.action("back",PKG,()->true));check(LocalSocket.connections==0,"forbidden command sent");}});
         test("back_binds_observed_package",()->{try(Env e=new Env()){e.active();LocalSocket.responder=req->response(req,"ACTIVE",7,true,true);e.session.action("back",PKG,()->false);JSONObject sent=decode(LocalSocket.sent);check(PKG.equals(sent.getString("package"))&&"back".equals(sent.getString("op")),"BACK lost expected package");}});
         test("response_cannot_rebind_display",()->{try(Env e=new Env()){e.active();LocalSocket.responder=req->response(req,"ACTIVE",0,true,true);rejects(()->e.session.action("back",PKG,()->false));check(e.session.displayId()==7,"default display rebound");}});

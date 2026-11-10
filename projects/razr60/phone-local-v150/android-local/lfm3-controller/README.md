@@ -1,6 +1,20 @@
-# Hepta v42: observed state and control metadata repair
+# Hepta v43: fixed local note and search tools
 
-Current candidate: versionCode 42 (`0.42.0-local-observation-repair`), based on frozen v41
+Current candidate: versionCode 43 (`0.43.0-local-fixed-intent-tools`), based on
+frozen v42 commit `3c4894ad4c7958c94741b0e7e6709380d6ac8ff7`.
+
+The ordinary local model can choose `notes.create(text)` or `web.search(query)`.
+Two compiled local Intent adapters preserve exact model content, ordinary-app
+eligibility, task authorization, background display scope and durable one-shot
+dispatch. A launch receipt does not establish saved notes or useful search
+results; subsequent real UI observations must verify those goals. Model/runtime
+selection and native inference are unchanged. Full strict host/Android gates and
+phone acceptance are pending at source freeze. See
+[CODE43-FIXED-INTENT-TOOLS.md](CODE43-FIXED-INTENT-TOOLS.md).
+
+## v42 predecessor: observed state and control metadata repair
+
+The v42 predecessor is versionCode 42 (`0.42.0-local-observation-repair`), based on frozen v41
 commit `ebd495d93660f24a3229fe91fec25508c546fad4`.
 
 This candidate refreshes sampled background accessibility nodes, classifies

@@ -83,6 +83,8 @@ public final class BackgroundDisplayBroker {
     private Method allRootTasks, startActivityAsUser, setImePolicy, getImePolicy, injectInput, keyDisplayId;
     private int virtualFlags, requiredDisplayFlags, forbiddenDisplayFlags, imeHide;
     private final Set<String> launched = new HashSet<String>();
+    private final Set<String> fixedToolsConsumed=new HashSet<String>();
+    private final java.util.Map<String,JSONObject> fixedIntentProofs=new java.util.LinkedHashMap<String,JSONObject>();
 
     private BackgroundDisplayBroker(BrokerProtocol.Config config) throws BrokerProtocol.Refusal {
         this.config = config;
@@ -277,22 +279,43 @@ public final class BackgroundDisplayBroker {
                 }
             } else if ("state".equals(r.operation)) {
                 if ("ACTIVE".equals(state)) { verifyDisplay(); verifyLaunchedLocations(snapshot()); }
-            } else if ("launch".equals(r.operation)) {
+            } else if ("launch".equals(r.operation)||FixedIntentTools.isTool(r.operation)) {
                 guard(r, true);
                 TaskSnapshot before = snapshot(); before.requireNoOtherDisplay(r.packageName, displayId);
-                Intent base = shell.getPackageManager().getLaunchIntentForPackage(r.packageName);
-                if (base == null || base.getComponent() == null
-                    || !r.packageName.equals(base.getComponent().getPackageName()))
-                    throw new BrokerProtocol.Refusal("PACKAGE_NOT_LAUNCHABLE");
-                ActivityInfo info = shell.getPackageManager().getActivityInfo(base.getComponent(), 0);
-                if (!info.enabled || !info.exported) throw new BrokerProtocol.Refusal("ACTIVITY_NOT_EXPORTED");
-                Intent intent = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
-                    .setComponent(base.getComponent()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                final FixedIntentTarget fixedTarget;
+                final Intent intent;
+                final String resolvedType;
+                if(FixedIntentTools.isTool(r.operation)){
+                    fixedTarget=FixedIntentDispatch.inspect(shell,config.ownerUid,r.operation);
+                    if(fixedTarget.uid!=r.targetUid)throw new BrokerProtocol.Refusal("FIXED_TARGET_UID_CHANGED");
+                    intent=FixedIntentDispatch.intent(fixedTarget,r.payload);
+                    resolvedType=FixedIntentTools.forAction(r.operation).mimeType;
+                }else{
+                    fixedTarget=null;resolvedType=null;
+                    Intent base = shell.getPackageManager().getLaunchIntentForPackage(r.packageName);
+                    if (base == null || base.getComponent() == null
+                        || !r.packageName.equals(base.getComponent().getPackageName()))
+                        throw new BrokerProtocol.Refusal("PACKAGE_NOT_LAUNCHABLE");
+                    ActivityInfo info = shell.getPackageManager().getActivityInfo(base.getComponent(), 0);
+                    if (!info.enabled || !info.exported) throw new BrokerProtocol.Refusal("ACTIVITY_NOT_EXPORTED");
+                    intent = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+                        .setComponent(base.getComponent()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                }
                 ActivityOptions options = ActivityOptions.makeBasic().setLaunchDisplayId(displayId);
                 synchronized (dispatchGate) {
                     guard(r, true);
                     snapshot().requireNoOtherDisplay(r.packageName, displayId);
                     if (closing.get()) throw new BrokerProtocol.Refusal("SESSION_CLOSING");
+                    if(fixedTarget!=null){
+                        FixedIntentDispatch.recheck(shell,config.ownerUid,fixedTarget);
+                        if(!fixedToolsConsumed.add(r.operation))throw new BrokerProtocol.Refusal("FIXED_TOOL_ALREADY_CONSUMED");
+                        fixedIntentProofs.put(r.requestId,new JSONObject().put("schema","hepta.background-fixed-intent.v1")
+                            .put("request_id",r.requestId).put("generation",config.generation).put("display_id",displayId)
+                            .put("action",r.operation).put("attempt_id",r.attemptId).put("payload_sha256",FixedIntentTarget.payloadSha256(r.payload))
+                            .put("target",new JSONObject(fixedTarget.evidence())).put("ordinary_caller_uid",config.ownerUid)
+                            .put("resolved_type",resolvedType==null?JSONObject.NULL:resolvedType).put("attempt_consumed",true)
+                            .put("goal_independently_verified",false));
+                    }
                     dispatched = true; launched.add(r.packageName);
                     effectInFlight = true;
                     try {
@@ -301,7 +324,7 @@ public final class BackgroundDisplayBroker {
                         // ApplicationThread and ActivityStarter rejects that caller. Use the existing
                         // shell/root Binder identity, null app caller, and the fixed user-0 contract.
                         Object launchResult = startActivityAsUser.invoke(activityTasks,
-                            null, "com.android.shell", null, intent, null, null, null, 0, 0,
+                            null, "com.android.shell", null, intent, resolvedType, null, null, 0, 0,
                             null, options.toBundle(), 0);
                         if (!(launchResult instanceof Integer) || ((Integer) launchResult).intValue() < 0)
                             throw new BrokerProtocol.Refusal("FRAMEWORK_LAUNCH_NOT_ACCEPTED");
@@ -562,7 +585,9 @@ public final class BackgroundDisplayBroker {
             .put("expires_elapsed_ms", expires).put("capture_secure", false).put("always_unlocked", false)
             .put("ime_policy", "hide")
             .put("display_policy_readback", displayPolicyReadback==null?JSONObject.NULL:new JSONObject(displayPolicyReadback.toString()));
-        if (r != null) value.put("operation", r.operation);
+        if (r != null) {value.put("operation", r.operation);
+            if(fixedIntentProofs.containsKey(r.requestId))value.put("fixed_intent",fixedIntentProofs.get(r.requestId));
+        }
         if (error != null) value.put("error", error);
         if (!terminalReason.isEmpty()) value.put("terminal_reason", terminalReason);
         return value.toString().getBytes(StandardCharsets.UTF_8);

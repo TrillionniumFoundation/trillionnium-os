@@ -47,6 +47,7 @@ public final class ComponentName {
 }
 ''')
     files += [fixture,component,root/'tests/background-broker/BrokerTaskSnapshotHostTest.java']
+    files.append(root/'src/org/trillionnium/hepta/background/FixedIntentTools.java')
     compiler = [str(args.javac)] if args.javac else [str(args.java), '-m', 'jdk.compiler/com.sun.tools.javac.Main']
     flags = [] if args.development_platform_only else ['--release', '8']
     compile_argv = compiler + flags + ['-Xlint:all', '-Werror', '-encoding', 'UTF-8', '-d', str(classes)] + list(map(str, files))

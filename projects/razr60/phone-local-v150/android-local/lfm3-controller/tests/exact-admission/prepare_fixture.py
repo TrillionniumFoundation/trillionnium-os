@@ -87,6 +87,7 @@ public final class PromptAdmissionFixture {
     if len(values) != 1:
         raise RuntimeError("one production pure-class list required")
     files += [package / (name + ".java") for name in values[0]] + [package / "PhoneObservation.java"]
+    files += [source/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol")]
     digest = lambda value: hashlib.sha256(value).hexdigest()
     record = {
         "scope": "Exact production full prompt builder, Java pre-native guard and LocalModelEngine UTF-8 input limit; Android Rect and JSON serialization are explicit IO fixtures",

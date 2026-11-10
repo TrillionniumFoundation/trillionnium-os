@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.trillionnium.hepta.local" android:versionCode="42" android:versionName="0.42.0-local-observation-repair">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.trillionnium.hepta.local" android:versionCode="43" android:versionName="0.43.0-local-fixed-intent-tools">
     <uses-sdk android:minSdkVersion="30" android:targetSdkVersion="35" />
     <queries>
         <package android:name="com.android.settings" />
@@ -7,6 +7,8 @@
         <package android:name="com.motorola.cn.calculator" />
         <package android:name="com.motorola.launcher3" />
         <package android:name="com.topjohnwu.magisk" />
+        <package android:name="com.motorola.stylus" />
+        <package android:name="com.zui.browser" />
         <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent>
         <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.HOME" /></intent>
     </queries>

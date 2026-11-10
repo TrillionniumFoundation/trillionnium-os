@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
  */
 public final class ActionDecision {
     public static final String IME_ACTION_SCHEMA="hepta.observed-action-gbnf.v5-ime-enter";
+    public static final String FIXED_INTENT_ACTION_SCHEMA="hepta.observed-action-gbnf.v6-fixed-intents";
     private static final int MAX_JSON_UTF8_BYTES = 16384;
     private static final int MAX_TEXT_UTF8_BYTES = 4096;
     private static final Pattern OBSERVATION_ID = Pattern.compile("[0-9a-fA-F]{32}");
@@ -75,7 +76,8 @@ public final class ActionDecision {
 
     /** The caller selects an explicit protocol; older or unknown node schemas are not inferred. */
     public static ActionDecision parse(String raw, String schema) throws InvalidActionException {
-        boolean imeProtocol = IME_ACTION_SCHEMA.equals(schema);
+        boolean fixedIntents = FIXED_INTENT_ACTION_SCHEMA.equals(schema);
+        boolean imeProtocol = fixedIntents || IME_ACTION_SCHEMA.equals(schema);
         boolean appLabeled = imeProtocol || ObservedAppLabels.ACTION_SCHEMA.equals(schema);
         require(appLabeled || ObservedTargetLabels.ACTION_SCHEMA.equals(schema), "Unknown action schema");
         require(raw != null && !raw.isEmpty(), "Empty model output");
@@ -105,6 +107,17 @@ public final class ActionDecision {
         int offset = -1;
 
         switch (action) {
+            case "notes.create":
+            case "web.search":
+                require(fixedIntents,"fixed intent tools require the explicit v6 schema");
+                requireFields(fields,"app_label","package","notes.create".equals(action)?"text":"query");
+                appLabel=appLabel(fields);
+                String payload=string(fields,"notes.create".equals(action)?"text":"query");
+                org.trillionnium.hepta.background.FixedIntentTools.Profile profile=org.trillionnium.hepta.background.FixedIntentTools.forAction(action);
+                require(profile.packageName.equals(packageName),"fixed intent package mismatch");
+                try{profile.validatePayload(payload);}catch(IllegalArgumentException invalid){throw new InvalidActionException(invalid.getMessage());}
+                if("notes.create".equals(action))text=payload;else query=payload;
+                break;
             case "open":
                 if (appLabeled) {
                     requireFields(fields, "app_label", "package");
@@ -203,11 +216,12 @@ public final class ActionDecision {
     }
 
     public static String schemaGuide(String schema) throws InvalidActionException {
-        require(ObservedTargetLabels.ACTION_SCHEMA.equals(schema) || ObservedAppLabels.ACTION_SCHEMA.equals(schema) || IME_ACTION_SCHEMA.equals(schema), "Unknown action schema");
+        require(ObservedTargetLabels.ACTION_SCHEMA.equals(schema) || ObservedAppLabels.ACTION_SCHEMA.equals(schema) || IME_ACTION_SCHEMA.equals(schema) || FIXED_INTENT_ACTION_SCHEMA.equals(schema), "Unknown action schema");
         if (ObservedTargetLabels.ACTION_SCHEMA.equals(schema)) return schemaGuide();
         String guide=schemaGuide().replace("open: no additional fields; ",
                 "open: app_label before package, copying the exact supplied app-label/package pair, including empty or duplicate labels; ");
-        return IME_ACTION_SCHEMA.equals(schema)?guide.replace("scroll: node_label,node_id,direction; ",
+        if(FIXED_INTENT_ACTION_SCHEMA.equals(schema))guide+=" notes.create: exact supplied app_label,package,text; web.search: exact supplied app_label,package,query. These only request an editor or web search; never imply saved content or verified results. Fixed payload has 1..1024 Unicode scalars, at most 4096 UTF-8 bytes.";
+        return (IME_ACTION_SCHEMA.equals(schema)||FIXED_INTENT_ACTION_SCHEMA.equals(schema))?guide.replace("scroll: node_label,node_id,direction; ",
                 "submit: node_label,node_id, only a currently supplied query-labelled IME-enter capability; scroll: node_label,node_id,direction; "):guide;
     }
 

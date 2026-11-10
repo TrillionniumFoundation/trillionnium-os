@@ -56,7 +56,7 @@ public final class TaskAuthorizationDomainHostTest {
         Set<String> expected=new TreeSet<String>(Arrays.asList("find_app","open","done"));
         check(clock.allowedTools.equals(expected)&&clock.requireFindAppBeforeOpen&&"时钟".equals(clock.findQuery),
                 "original constrained Clock contract changed");passed++;
-        check("hepta.owner-tool-clauses.zh.v3-ime-submit".equals(TaskAuthorization.PARSER),"changed semantics need a new parser identity");passed++;
+        check("hepta.owner-tool-clauses.zh.v4-fixed-intents".equals(TaskAuthorization.PARSER),"changed semantics need a new parser identity");passed++;
         System.out.println("TaskAuthorizationDomainHostTest: "+passed+" cases passed; real parser, no phone/model operations");
     }
 }

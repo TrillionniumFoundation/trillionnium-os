@@ -31,6 +31,10 @@ public final class BrokerProtocolHostTest {
     static BrokerProtocol.Request request(String op, String pkg) throws Exception {
         return BrokerProtocol.Request.parse(bytes(json(I,G,op,2000,pkg)));
     }
+    static String fixed(String tool,String pkg){
+        String base=json(I,G,tool,2000,pkg);
+        return base.substring(0,base.length()-1)+",\"payload\":\"正文🙂\",\"attempt_id\":\""+String.join("",java.util.Collections.nCopies(64,"a"))+"\",\"target_uid\":10382}";
+    }
     static String[] args() {
         return new String[] {"--socket","hepta-bg-"+G,"--owner-uid","10245","--generation",G,
             "--allowed-packages","com.motorola.cn.calculator,com.example.notes","--ttl-ms","540000",
@@ -55,6 +59,25 @@ public final class BrokerProtocolHostTest {
         test("display_mapping_extra_name_refused",()->{java.util.Map<String,Integer> m=displayConstants();m.put("VIRTUAL_DISPLAY_FLAG_PUBLIC",1);refusal("DISPLAY_FLAG_CONSTANTS_INVALID",()->BrokerProtocol.DisplayPolicy.checked(6272,m,2,2));});
         for(int value:new int[]{0,3,128,-1})test("display_mapping_zero_multibit_alias_negative_refused_"+value,()->{java.util.Map<String,Integer> m=displayConstants();m.put("FLAG_OWN_FOCUS",value);refusal("DISPLAY_FLAG_CONSTANTS_INVALID",()->BrokerProtocol.DisplayPolicy.checked(6272,m,2,2));});
 
+        for(String tool:new String[]{"notes.create","web.search"})test("fixed_request_exact_contract_"+tool,()->{
+            String pkg=FixedIntentTools.forAction(tool).packageName;BrokerProtocol.Request request=BrokerProtocol.Request.parse(bytes(fixed(tool,pkg)));
+            require(request.targetUid==10382&&request.payload.equals("正文🙂")&&request.operation.equals(tool));
+            String[] allowed=args();allowed[7]=pkg;request.authenticate(BrokerProtocol.Config.parse(allowed),10245);
+            refusal("CALLER_UID_MISMATCH",()->request.authenticate(BrokerProtocol.Config.parse(allowed),0));
+            refusal("PACKAGE_NOT_ALLOWED",()->request.authenticate(config,10245));
+        });
+        test("fixed_request_foreign_package_refused",()->refusal("FIXED_TARGET_PACKAGE_MISMATCH",()->BrokerProtocol.Request.parse(bytes(fixed("notes.create","com.example.mail")))));
+        for(String key:new String[]{"component","intent","uri","flags","display_id","extras"})test("fixed_request_extra_field_refused_"+key,()->{
+            String value=fixed("notes.create","com.motorola.stylus");value=value.substring(0,value.length()-1)+",\""+key+"\":\"arbitrary\"}";
+            final String invalid=value;refusal("REQUEST_FIELDS",()->BrokerProtocol.Request.parse(bytes(invalid)));
+        });
+        for(String value:new String[]{"0","2000","90000","1010382"})test("fixed_request_target_uid_refused_"+value,()->refusal("FIXED_TARGET_IDENTITY_INVALID",()->BrokerProtocol.Request.parse(bytes(fixed("notes.create","com.motorola.stylus").replace("10382",value)))));
+        for(String value:new String[]{""," ","\\u0000","\\ud800"})test("fixed_request_invalid_payload_refused_"+Integer.toHexString(value.hashCode()),()->refusal("FIXED_PAYLOAD_INVALID",()->BrokerProtocol.Request.parse(bytes(fixed("notes.create","com.motorola.stylus").replace("正文🙂",value)))));
+        test("fixed_request_id_replay_cannot_change_model_payload",()->{
+            BrokerProtocol.Receipts receipts=new BrokerProtocol.Receipts();BrokerProtocol.Request request=BrokerProtocol.Request.parse(bytes(fixed("notes.create","com.motorola.stylus")));
+            receipts.remember(request,bytes("accepted"));require(Arrays.equals(bytes("accepted"),receipts.replay(request)));
+            refusal("REQUEST_ID_REUSED",()->receipts.replay(BrokerProtocol.Request.parse(bytes(fixed("notes.create","com.motorola.stylus").replace("正文🙂","another body")))));
+        });
         test("valid_config_has_immutable_exact_scope", () -> {
             require(config.ownerUid == 10245 && config.ttlMs == 540000 && config.expiresElapsedMs == 600000);
             require(config.packages.size() == 2);

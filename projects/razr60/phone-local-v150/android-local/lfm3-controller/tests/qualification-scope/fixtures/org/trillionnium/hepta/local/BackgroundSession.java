@@ -28,4 +28,5 @@ final class BackgroundSession {
     void start(HeptaAccessibilityService.Cancellation c){if(controllerDisplay<1||c.isCancelled())throw new UnsupportedOperationException();}
     JSONObject action(String op,String pkg,HeptaAccessibilityService.Cancellation c){throw new UnsupportedOperationException();}
     Cleanup close(){testClosed=true;return new Cleanup(true);}
+JSONObject fixedIntent(org.trillionnium.hepta.background.FixedIntentTarget target,String payload,String attemptId,HeptaAccessibilityService.Cancellation cancel)throws Exception{throw new IllegalStateException("fixed intent transport not enabled in legacy scope IO fake");}
 }

@@ -49,6 +49,7 @@ public final class LocalSocket implements Closeable {
   dst=output/name;dst.parent.mkdir(parents=True,exist_ok=True);dst.write_text(text);files.append(dst)
  files += [pkg/(name+'.java') for name in ('BackgroundSession','MobiMindPrivateFiles','QualificationScope')]
  files.append(source/'src/org/trillionnium/hepta/background/BrokerProtocol.java')
+ files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget')]
  # The exact finalization block is shared with the existing warm-finalization harness.
  # Android/model IO remains fake; the status policy itself is not reimplemented here.
  warm_helper=source/'tests/warm-finalization/prepare_fixture.py'

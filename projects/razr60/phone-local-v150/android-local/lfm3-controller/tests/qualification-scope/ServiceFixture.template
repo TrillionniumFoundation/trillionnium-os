@@ -16,7 +16,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
     static HeptaAccessibilityService live;
     static final int GLOBAL_ACTION_BACK=1,GLOBAL_ACTION_HOME=2;
     final Handler main=new Handler(Looper.getMainLooper());
-    String lease;Runnable stopListener;QualificationScopeConfig.Bound taskScope;TaskAuthorization.Gate taskAuthorization;BackgroundSession taskBackground;SubmitAttemptGuard taskSubmitAttempts;
+    String lease;Runnable stopListener;QualificationScopeConfig.Bound taskScope;TaskAuthorization.Gate taskAuthorization;BackgroundSession taskBackground;SubmitAttemptGuard taskSubmitAttempts;FixedIntentAttemptGuard taskFixedIntentAttempts;
     final java.util.concurrent.Executor backgroundIo=Runnable::run;
     LocalTaskController ownedController;LocalInference testInference;
     PhoneObservation current;Graph currentGraph;AppCatalogueRanker appDiscovery;
@@ -25,7 +25,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
     public AccessibilityNodeInfo root,node;
     public int rootsRead,opens,navigations,gestures,observations;
     public int mutateOnRoot=-1;public String mutateRootPackage;
-    public Runnable effectHook;
+    public Runnable effectHook;public Intent lastStartedIntent;
     public HeptaAccessibilityService(File files,PackageManager pm){super(files,pm);live=this;}
     public static HeptaAccessibilityService connected(){return live;}
     public synchronized LocalTaskController taskController(LocalModelEngine engine){if(ownedController==null)ownedController=new LocalTaskController(this,testInference);return ownedController;}
@@ -36,7 +36,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
 {{app_catalogue}}
     private AccessibilityNodeInfo selectedRoot(){return getRootInActiveWindow();}
     public AccessibilityNodeInfo getRootInActiveWindow(){rootsRead++;if(rootsRead==mutateOnRoot&&root!=null)root.pkg=mutateRootPackage;return root;}
-    public void startActivity(Intent intent){opens++;if(effectHook!=null)effectHook.run();}
+    public void startActivity(Intent intent){lastStartedIntent=intent;opens++;if(effectHook!=null)effectHook.run();}
     public boolean performGlobalAction(int action){navigations++;if(effectHook!=null)effectHook.run();return true;}
     private void coordinateClick(String task,PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets,TaskAuthorization.Gate authorization,String modelRunId,Cancellation cancel,ActionCallback callback){gestures++;callback.onResult(new ActionOutcome(true,true,false,"fake gesture"));}
     private Graph readGraph(){

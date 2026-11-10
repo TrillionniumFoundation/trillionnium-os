@@ -28,6 +28,7 @@ def main():
     source = args.source.resolve(strict=True)
     labels_source = source.with_name("ObservedTargetLabels.java").resolve(strict=True)
     app_labels_source = source.with_name("ObservedAppLabels.java").resolve(strict=True)
+    fixed_tools_source = source.parent.parent / "background/FixedIntentTools.java"
     tests = Path(__file__).resolve().with_name("ActionDecisionHostTest.java")
     out = args.out.absolute()
     out.mkdir(mode=0o700, parents=False, exist_ok=False)
@@ -39,7 +40,7 @@ def main():
     javac = shutil.which("javac")
     compiler = [javac] if javac else [java, "-m", "jdk.compiler/com.sun.tools.javac.Main"]
     compile_argv = compiler + ["--release", "8", "-encoding", "UTF-8", "-Xlint:all",
-                              "-Werror", "-d", str(classes), str(source), str(labels_source), str(app_labels_source), str(tests)]
+                              "-Werror", "-d", str(classes), str(source), str(labels_source), str(app_labels_source), str(fixed_tools_source), str(tests)]
     started = time.time()
     compiled = subprocess.run(compile_argv, capture_output=True, timeout=30)
     write_new(out / "compile.stdout", compiled.stdout)
@@ -74,6 +75,7 @@ def main():
         "app_labels_source_sha256": digest(app_labels_source),
         "test_source_sha256": digest(tests),
         "runner_sha256": digest(Path(__file__)),
+        "fixed_tools_sha256": digest(fixed_tools_source),
         "compile_argv": compile_argv,
         "compile_exit": compiled.returncode,
         "class_major_version": major,

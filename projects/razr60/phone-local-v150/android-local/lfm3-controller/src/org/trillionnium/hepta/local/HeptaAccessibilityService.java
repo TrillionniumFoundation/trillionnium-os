@@ -49,6 +49,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         public final JSONObject taskAuthorization;
         public final JSONObject backgroundSession;
         public final JSONObject imeSubmit;
+        public final JSONObject fixedIntent;
         ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail) {
             this(accepted,dispatched,stale,detail,null);
         }
@@ -56,14 +57,18 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             this(accepted,dispatched,stale,detail,appCatalogue,null,null,null,null);
         }
         private ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail,AppCatalogueRanker.Page appCatalogue,JSONObject scope,JSONObject authorization,JSONObject background,JSONObject imeSubmit){
+            this(accepted,dispatched,stale,detail,appCatalogue,scope,authorization,background,imeSubmit,null);
+        }
+        private ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail,AppCatalogueRanker.Page appCatalogue,JSONObject scope,JSONObject authorization,JSONObject background,JSONObject imeSubmit,JSONObject fixedIntent){
             this.accepted=accepted;this.dispatched=dispatched;this.stale=stale;this.detail=detail;
-            this.appCatalogue=appCatalogue;this.qualificationScope=scope;this.taskAuthorization=authorization;this.backgroundSession=background;this.imeSubmit=imeSubmit;
+            this.appCatalogue=appCatalogue;this.qualificationScope=scope;this.taskAuthorization=authorization;this.backgroundSession=background;this.imeSubmit=imeSubmit;this.fixedIntent=fixedIntent;
         }
-        ActionOutcome withScope(JSONObject scope){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,scope,taskAuthorization,backgroundSession,imeSubmit);
+        ActionOutcome withScope(JSONObject scope){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,scope,taskAuthorization,backgroundSession,imeSubmit,fixedIntent);
         }
-        ActionOutcome withAuthorization(JSONObject authorization){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,authorization,backgroundSession,imeSubmit);}
-        ActionOutcome withBackground(JSONObject background){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,background,imeSubmit);}
-        ActionOutcome withSubmit(JSONObject value){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,backgroundSession,value);}
+        ActionOutcome withAuthorization(JSONObject authorization){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,authorization,backgroundSession,imeSubmit,fixedIntent);}
+        ActionOutcome withBackground(JSONObject background){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,background,imeSubmit,fixedIntent);}
+        ActionOutcome withSubmit(JSONObject value){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,backgroundSession,value,fixedIntent);}
+        ActionOutcome withFixedIntent(JSONObject value){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,backgroundSession,imeSubmit,value);}
     }
     private static volatile HeptaAccessibilityService live;
     public static HeptaAccessibilityService connected() { return live; }
@@ -73,6 +78,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private TaskAuthorization.Gate taskAuthorization;
     private BackgroundSession taskBackground;
     private SubmitAttemptGuard taskSubmitAttempts;
+    private FixedIntentAttemptGuard taskFixedIntentAttempts;
     private final java.util.concurrent.ExecutorService backgroundIo=java.util.concurrent.Executors.newSingleThreadExecutor();
     private Runnable stopListener;
     private LocalTaskController ownedController;
@@ -128,19 +134,46 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(expected!=null){expected.setListener(null);expected.close();}
         if(taskAuthorization!=null)taskAuthorization.retire();taskAuthorization=null;
         if(taskSubmitAttempts!=null)taskSubmitAttempts.retire();taskSubmitAttempts=null;
+        if(taskFixedIntentAttempts!=null)taskFixedIntentAttempts.retire();taskFixedIntentAttempts=null;
         ownedController=null;lease=null;stopListener=null;appDiscovery=null;taskScope=null;taskBackground=null;clearSnapshot();
     }
     private void requestStop() { Runnable value; synchronized(this){value=stopListener;} if(value!=null)value.run(); }
     public synchronized boolean acquireTask(String taskId,Runnable onStop) {
-        if(lease!=null || live!=this)return false;lease=taskId;stopListener=onStop;appDiscovery=null;taskScope=null;taskAuthorization=null;taskBackground=null;taskSubmitAttempts=null;return true;
+        if(lease!=null || live!=this)return false;lease=taskId;stopListener=onStop;appDiscovery=null;taskScope=null;taskAuthorization=null;taskBackground=null;taskSubmitAttempts=null;taskFixedIntentAttempts=null;return true;
     }
     public synchronized void releaseTask(String taskId) { if(taskId.equals(lease)){
         if(taskBackground!=null&&!taskBackground.released())throw new IllegalStateException("后台空间未核验释放，不能释放任务租约");
-        if(taskAuthorization!=null)taskAuthorization.retire();if(taskSubmitAttempts!=null)taskSubmitAttempts.retire();taskSubmitAttempts=null;taskAuthorization=null;lease=null;stopListener=null;appDiscovery=null;taskScope=null;taskBackground=null;} }
+        if(taskAuthorization!=null)taskAuthorization.retire();if(taskSubmitAttempts!=null)taskSubmitAttempts.retire();taskSubmitAttempts=null;if(taskFixedIntentAttempts!=null)taskFixedIntentAttempts.retire();taskFixedIntentAttempts=null;taskAuthorization=null;lease=null;stopListener=null;appDiscovery=null;taskScope=null;taskBackground=null;} }
     synchronized void bindSubmitAttempts(String taskId,SubmitAttemptGuard attempts){
         if(!owns(taskId)||taskScope==null||taskAuthorization==null||taskSubmitAttempts!=null||attempts==null||!taskId.equals(attempts.taskId))
             throw new IllegalStateException("submit ledger requires the current bound task");
         taskSubmitAttempts=attempts;
+    }
+    synchronized void bindFixedIntentAttempts(String taskId,FixedIntentAttemptGuard attempts){
+        if(!owns(taskId)||taskScope==null||taskAuthorization==null||taskFixedIntentAttempts!=null||attempts==null||!taskId.equals(attempts.taskId))
+            throw new IllegalStateException("fixed intent ledger requires the current bound task");
+        taskFixedIntentAttempts=attempts;
+    }
+    private synchronized FixedIntentAttemptGuard fixedIntentsFor(String taskId){
+        if(!owns(taskId)||taskFixedIntentAttempts==null||!taskId.equals(taskFixedIntentAttempts.taskId))throw new IllegalStateException("fixed intent ledger unavailable");
+        return taskFixedIntentAttempts;
+    }
+    java.util.Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedIntentTargets(String taskId,TaskAuthorization.Frame authorization){
+        QualificationScopeConfig.Bound scope=scopeFor(taskId);scope.verifyUnchanged();
+        TaskAuthorization.require(authorization!=null&&taskId.equals(authorization.taskId),"fixed intent task differs");
+        BackgroundSession background=backgroundFor(taskId);FixedIntentAttemptGuard ledger=fixedIntentsFor(taskId);
+        java.util.Map<String,org.trillionnium.hepta.background.FixedIntentTarget> targets=new java.util.TreeMap<String,org.trillionnium.hepta.background.FixedIntentTarget>();
+        // Legacy qualification fixtures never acquire a new effect from this feature.
+        if(scope.config!=null)return targets;
+        for(String action:new String[]{"notes.create","web.search"}){
+            if(!authorization.allows(action)||!ledger.available(action))continue;
+            org.trillionnium.hepta.background.FixedIntentTools.Profile profile=org.trillionnium.hepta.background.FixedIntentTools.forAction(action);
+            if(background!=null&&!background.allows(profile.packageName))continue;
+            try{targets.put(action,org.trillionnium.hepta.background.FixedIntentDispatch.inspect(this,android.os.Process.myUid(),action));}
+            catch(Exception unavailable){/* Missing/export/permission/filter failures expose no tool authority. */}
+        }
+        QualificationScope.require(ownsScope(taskId,scope)&&ownsBackground(taskId,background),"fixed intent publication lease retired");
+        return targets;
     }
     private synchronized SubmitAttemptGuard submitFor(String taskId){
         if(!owns(taskId)||taskSubmitAttempts==null||!taskId.equals(taskSubmitAttempts.taskId))
@@ -498,6 +531,12 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     public void perform(final String taskId,final PhoneObservation expected,final ActionDecision decision,
                         final ObservedTargetLabels targets,final TaskAuthorization.Gate expectedAuthorization,final String modelRunId,
                         final Cancellation cancel,final ActionCallback callback){
+        perform(taskId,expected,decision,targets,null,expectedAuthorization,modelRunId,cancel,callback);
+    }
+    public void perform(final String taskId,final PhoneObservation expected,final ActionDecision decision,
+                        final ObservedTargetLabels targets,final org.trillionnium.hepta.background.FixedIntentTarget fixedTarget,
+                        final TaskAuthorization.Gate expectedAuthorization,final String modelRunId,
+                        final Cancellation cancel,final ActionCallback callback){
         // Capture this task's source once. A late callback must never look up a
         // retired lease or borrow a newly started task's scope.
         final QualificationScopeConfig.Bound captured;final TaskAuthorization.Gate capturedAuthorization;final BackgroundSession capturedBackground;
@@ -505,7 +544,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final ActionCallback boundCallback=new ActionCallback(){public void onResult(ActionOutcome result){
             boolean currentLease=ownsScope(taskId,captured)&&ownsAuthorization(taskId,capturedAuthorization)&&capturedAuthorization==expectedAuthorization&&ownsBackground(taskId,capturedBackground),stopped=cancel.isCancelled();
             ActionOutcome delivered=currentLease&&!stopped?result:new ActionOutcome(false,result.dispatched,false,
-                    "任务已停止或租约已退休；保留已发生的派发，不接受迟到回执",result.appCatalogue).withSubmit(result.imeSubmit);
+                    "任务已停止或租约已退休；保留已发生的派发，不接受迟到回执",result.appCatalogue).withSubmit(result.imeSubmit).withFixedIntent(result.fixedIntent);
             callback.onResult(delivered.withScope(callbackScopeEvidence(taskId,captured,currentLease,stopped))
                     .withAuthorization(callbackAuthorizationEvidence(capturedAuthorization,currentLease,stopped))
                     .withBackground(capturedBackground==null?null:capturedBackground.evidence()));
@@ -514,7 +553,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(!ownsScope(taskId,captured)||!ownsAuthorization(taskId,capturedAuthorization)||capturedAuthorization!=expectedAuthorization||!ownsBackground(taskId,capturedBackground)||cancel.isCancelled()){
                 boundCallback.onResult(new ActionOutcome(false,false,false,"任务已停止或作用范围未绑定"));return;
             }
-            performOnMain(taskId,expected,decision,targets,cancel,boundCallback,captured,capturedAuthorization,modelRunId);
+            performOnMain(taskId,expected,decision,targets,fixedTarget,cancel,boundCallback,captured,capturedAuthorization,modelRunId);
         }});
     }
     private static String targetBindingError(PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets){
@@ -533,7 +572,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         String bindingError=targetBindingError(expected,action,targets);if(bindingError!=null)return bindingError;
         long age=SystemClock.elapsedRealtime()-expected.capturedElapsedMillis;
         if(age<0||age>MAX_OBSERVATION_AGE_MS)return "stale:观察已过期";
-        if(!"open".equals(action.action)&&!expected.packageName.equals(action.packageName))return "stale:动作应用与观察不一致";
+        if(!"open".equals(action.action)&&!org.trillionnium.hepta.background.FixedIntentTools.isTool(action.action)&&!expected.packageName.equals(action.packageName))return "stale:动作应用与观察不一致";
         Graph now=null;
         try{
             now=readGraph();
@@ -547,7 +586,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         return null;
     }
     private void performOnMain(final String taskId,final PhoneObservation expected,final ActionDecision action,
-                               final ObservedTargetLabels targets,final Cancellation cancel,final ActionCallback callback,
+                               final ObservedTargetLabels targets,final org.trillionnium.hepta.background.FixedIntentTarget fixedTarget,final Cancellation cancel,final ActionCallback callback,
                                final QualificationScopeConfig.Bound dispatchScope,final TaskAuthorization.Gate authorization,final String modelRunId){
         try{
             authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
@@ -579,6 +618,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 // Pure lookup: no Intent, accessibility action, gesture, shell,
                 // network or app launch is dispatched by this tool.
                 callback.onResult(new ActionOutcome(true,false,false,"已只读查询本机应用目录",page));return;
+            }
+            if(org.trillionnium.hepta.background.FixedIntentTools.isTool(action.action)){
+                dispatchFixedIntent(taskId,expected,action,targets,fixedTarget,authorization,modelRunId,cancel,callback,dispatchScope);return;
             }
             if("open".equals(action.action)){
                 if(backgroundFor(taskId)!=null){dispatchBackgroundNavigation(taskId,expected,action,authorization,modelRunId,cancel,callback);return;}
@@ -699,6 +741,59 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }catch(Exception e){callback.onResult(new ActionOutcome(false,false,e instanceof StaleObservation,message(e)));}
     }
     /** IPC runs off the service/main thread. A missing reply is a possible dispatch, never a retry. */
+    private void dispatchFixedIntent(final String taskId,final PhoneObservation expected,final ActionDecision action,
+            final ObservedTargetLabels labels,final org.trillionnium.hepta.background.FixedIntentTarget target,
+            final TaskAuthorization.Gate authorization,final String run,final Cancellation cancel,final ActionCallback callback,
+            final QualificationScopeConfig.Bound scope)throws Exception{
+        if(!ActionDecision.FIXED_INTENT_ACTION_SCHEMA.equals(action.actionSchema)||target==null||!target.action.equals(action.action)
+                ||!target.packageName.equals(action.packageName)||!ObservedAppLabels.project(target.appLabel).equals(action.appLabel))
+            throw new IllegalStateException("fixed intent target not bound to native decision frame");
+        QualificationScope.require(scope.config==null,"fixed intent tools are outside legacy qualification scope");
+        final int caller=android.os.Process.myUid();
+        final String payload="notes.create".equals(action.action)?action.text:action.query;
+        org.trillionnium.hepta.background.FixedIntentDispatch.recheck(this,caller,target);
+        final BackgroundSession background=backgroundFor(taskId);
+        final int display=background==null?Display.DEFAULT_DISPLAY:background.displayId();
+        final FixedIntentAttemptGuard ledger=fixedIntentsFor(taskId);
+        // Consume and fsync before either ordinary Android or broker call. A failed journal cannot dispatch.
+        final FixedIntentAttemptGuard.Attempt attempt=ledger.consume(new FixedIntentAttemptGuard.Binding(taskId,run,expected.id,
+                expected.packageName,expected.windowId,display,background==null?null:background.generation,target,payload));
+        try{
+            if(cancel.isCancelled())throw new IllegalStateException("task cancelled before fixed intent");
+            String invalid=validate(taskId,expected,action,labels,cancel);if(invalid!=null)throw new IllegalStateException(invalid);
+            scopeBeforeDispatch(taskId,scope,expected,action,null,false);authorizationBeforeDispatch(taskId,authorization,action,run);
+            org.trillionnium.hepta.background.FixedIntentDispatch.recheck(this,caller,target);
+            if(background==null){
+                Intent intent=org.trillionnium.hepta.background.FixedIntentDispatch.intent(target,payload);
+                ledger.entering(attempt);
+                try{startActivity(intent);ledger.finished(attempt,Boolean.TRUE);}
+                catch(Exception unknown){ledger.finished(attempt,null);callback.onResult(new ActionOutcome(false,true,false,"固定本地入口派发结果未知，不自动重试："+message(unknown)).withFixedIntent(new JSONObject(ledger.evidence(attempt))));return;}
+                main.postDelayed(new Runnable(){public void run(){callback.onResult(new ActionOutcome(true,true,false,
+                        "固定本地入口请求已接受；须重新观察编辑器/搜索页，尚未证明保存或查询结果").withFixedIntent(new JSONObject(ledger.evidence(attempt))));}},700);
+                return;
+            }
+            backgroundIo.execute(new Runnable(){public void run(){
+                boolean entered=false;
+                try{
+                    if(cancel.isCancelled()||!ownsBackground(taskId,background))throw new IllegalStateException("background task retired");
+                    scope.verifyUnchanged();authorizationBeforeDispatch(taskId,authorization,action,run);background.requireActive();
+                    org.trillionnium.hepta.background.FixedIntentDispatch.recheck(HeptaAccessibilityService.this,caller,target);
+                    ledger.entering(attempt);entered=true;
+                    JSONObject response=background.fixedIntent(target,payload,attempt.id,cancel);
+                    ledger.finished(attempt,Boolean.TRUE);
+                    final JSONObject proof=new JSONObject(ledger.evidence(attempt)).put("broker_response",response);
+                    main.postDelayed(new Runnable(){public void run(){callback.onResult(new ActionOutcome(true,true,false,
+                            "后台固定本地入口已派发；须重新观察，尚未证明保存或查询结果").withFixedIntent(proof));}},350);
+                }catch(final Exception failure){
+                    if(entered)ledger.finished(attempt,null);
+                    final JSONObject proof=new JSONObject(ledger.evidence(attempt));final boolean dispatched=entered;
+                    main.post(new Runnable(){public void run(){callback.onResult(new ActionOutcome(false,dispatched,false,
+                            "后台固定本地入口未得到完整确认，不自动重试："+message(failure)).withFixedIntent(proof));}});
+                }
+            }});
+        }catch(Exception beforeCall){callback.onResult(new ActionOutcome(false,false,false,"固定本地入口未派发，尝试已消费："+message(beforeCall)).withFixedIntent(new JSONObject(ledger.evidence(attempt))));}
+    }
+
     private void dispatchBackgroundNavigation(final String id,final PhoneObservation expected,final ActionDecision action,
             final TaskAuthorization.Gate authorization,final String modelRunId,final Cancellation cancel,final ActionCallback callback){
         final BackgroundSession background=backgroundFor(id);

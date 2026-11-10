@@ -124,7 +124,10 @@ public final class BrokerProtocol {
         public final String operation;
         public final String packageName;
         public final long deadline;
-        private Request(byte[] bytes, String id, String gen, String op, String pkg, long deadline) {
+        public final String payload,attemptId;
+        public final int targetUid;
+        private Request(byte[] bytes, String id, String gen, String op, String pkg, long deadline,String payload,String attemptId,int targetUid) {
+            this.payload=payload;this.attemptId=attemptId;this.targetUid=targetUid;
             this.bytes = bytes.clone(); requestId = id; generation = gen; operation = op;
             packageName = pkg; this.deadline = deadline;
         }
@@ -139,18 +142,29 @@ public final class BrokerProtocol {
             Set<String> expected = new LinkedHashSet<String>(Arrays.asList("version", "request_id",
                 "generation", "deadline_elapsed_ms", "op"));
             String op = string(map, "op");
-            if ("launch".equals(op) || "back".equals(op)) expected.add("package");
+            boolean fixed=FixedIntentTools.isTool(op);
+            if ("launch".equals(op) || "back".equals(op)||fixed) expected.add("package");
+            if(fixed)expected.addAll(Arrays.asList("payload","attempt_id","target_uid"));
             if (!map.keySet().equals(expected)) throw new Refusal("REQUEST_FIELDS");
             if (number(map, "version") != VERSION) throw new Refusal("PROTOCOL_VERSION");
             String id = string(map, "request_id"), gen = string(map, "generation");
             if (!uuid(id) || !uuid(gen)) throw new Refusal("INVALID_REQUEST_IDENTITY");
-            if (!Arrays.asList("create", "state", "launch", "back", "close").contains(op))
+            if (!fixed&&!Arrays.asList("create", "state", "launch", "back", "close").contains(op))
                 throw new Refusal("OPERATION_NOT_ALLOWED");
-            String pkg = ("launch".equals(op) || "back".equals(op)) ? string(map, "package") : null;
+            String pkg = ("launch".equals(op) || "back".equals(op)||fixed) ? string(map, "package") : null;
             if (pkg != null && !packageName(pkg)) throw new Refusal("INVALID_PACKAGE");
             long deadline = number(map, "deadline_elapsed_ms");
             if (deadline <= 0) throw new Refusal("INVALID_DEADLINE");
-            return new Request(input, id, gen, op, pkg, deadline);
+            String payload=null,attempt=null;int targetUid=-1;
+            if(fixed){
+                FixedIntentTools.Profile profile=FixedIntentTools.forAction(op);
+                if(!profile.packageName.equals(pkg))throw new Refusal("FIXED_TARGET_PACKAGE_MISMATCH");
+                payload=string(map,"payload");attempt=string(map,"attempt_id");long uid=number(map,"target_uid");
+                if(uid<10000||uid>=90000||!attempt.matches("[0-9a-f]{64}"))throw new Refusal("FIXED_TARGET_IDENTITY_INVALID");
+                try{profile.validatePayload(payload);}catch(IllegalArgumentException invalid){throw new Refusal("FIXED_PAYLOAD_INVALID");}
+                targetUid=(int)uid;
+            }
+            return new Request(input, id, gen, op, pkg, deadline,payload,attempt,targetUid);
         }
         public void authenticate(Config config, int peerUid) throws Refusal {
             if (peerUid != config.ownerUid) throw new Refusal("CALLER_UID_MISMATCH");
@@ -236,7 +250,7 @@ public final class BrokerProtocol {
                 else { int start = p; while (p < text.length() && Character.isDigit(text.charAt(p))) p++;
                     value = Long.valueOf(decimal(text.substring(start, p))); }
                 if (result.containsKey(key)) throw new Refusal("DUPLICATE_FIELD");
-                result.put(key, value); if (result.size() > 6) throw new Refusal("REQUEST_FIELDS");
+                result.put(key, value); if (result.size() > 9) throw new Refusal("REQUEST_FIELDS");
                 ws(); if (p < text.length() && text.charAt(p) == '}') { p++; break; }
                 take(',');
             }

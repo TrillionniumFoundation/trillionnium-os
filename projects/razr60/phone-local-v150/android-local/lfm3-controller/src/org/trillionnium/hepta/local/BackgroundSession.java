@@ -156,6 +156,36 @@ final class BackgroundSession {
         if(pkg!=null&&!allows(pkg))throw new IllegalArgumentException("目标应用未在本次后台范围内");
         JSONObject response=call(operation,pkg,4000);accept(response,true);requireActive();return response;
     }
+    JSONObject fixedIntent(org.trillionnium.hepta.background.FixedIntentTarget target,String payload,String attemptId,HeptaAccessibilityService.Cancellation cancellation)throws Exception{
+        if(target==null||!org.trillionnium.hepta.background.FixedIntentTools.isTool(target.action))throw new IllegalArgumentException("fixed background tool required");
+        org.trillionnium.hepta.background.FixedIntentTools.forAction(target.action).validatePayload(payload);
+        if(attemptId==null||!attemptId.matches("[0-9a-f]{64}"))throw new IllegalArgumentException("durable attempt binding required");
+        requireActive();if(cancellation.isCancelled())throw new IllegalStateException("任务已停止");
+        if(!allows(target.packageName))throw new IllegalArgumentException("固定工具目标不在后台范围");
+        JSONObject request=new JSONObject().put("version",1).put("request_id",UUID.randomUUID().toString())
+                .put("generation",generation).put("deadline_elapsed_ms",SystemClock.elapsedRealtime()+4000).put("op",target.action)
+                .put("package",target.packageName).put("target_uid",target.uid).put("payload",payload).put("attempt_id",attemptId);
+        JSONObject response=exchange(socketName,generation,request,4500);
+        accept(response,true);requireActive();
+        if(!target.action.equals(response.getString("operation"))||!response.getBoolean("dispatched"))throw new IOException("固定工具回执未确认派发");
+        JSONObject proof=response.getJSONObject("fixed_intent"),installed=proof.getJSONObject("target");
+        if(!"hepta.background-fixed-intent.v1".equals(proof.getString("schema"))||!request.getString("request_id").equals(proof.getString("request_id"))
+                ||!generation.equals(proof.getString("generation"))||displayId()!=strictInt(proof,"display_id")
+                ||!target.action.equals(proof.getString("action"))||!attemptId.equals(proof.getString("attempt_id"))
+                ||!org.trillionnium.hepta.background.FixedIntentTarget.payloadSha256(payload).equals(proof.getString("payload_sha256"))
+                ||strictInt(installed,"target_uid")!=target.uid||!target.packageName.equals(installed.getString("package"))
+                ||!(target.packageName+"/"+target.className).equals(installed.getString("component"))
+                ||!target.action.equals(installed.getString("action"))||!target.appLabel.equals(installed.getString("app_label"))
+                ||!(target.permission==null?JSONObject.NULL.equals(installed.get("required_permission")):target.permission.equals(installed.get("required_permission")))
+                ||!installed.getBoolean("exported")||!installed.getBoolean("activity_enabled")||!installed.getBoolean("application_enabled")
+                ||!installed.getBoolean("declared_intent_filter_matched")||!installed.getBoolean("ordinary_caller_permission_checked")
+                ||strictInt(proof,"ordinary_caller_uid")!=android.os.Process.myUid()||!proof.getBoolean("attempt_consumed"))
+            throw new IOException("固定工具回执与本次动作/目标不匹配");
+        String mime=org.trillionnium.hepta.background.FixedIntentTools.forAction(target.action).mimeType;
+        if(!(mime==null?JSONObject.NULL.equals(proof.get("resolved_type")):mime.equals(proof.get("resolved_type"))))
+            throw new IOException("固定工具回执 MIME 不匹配");
+        return response;
+    }
     void verifyRemote()throws Exception{requireActive();accept(call("state",null,1800),true);requireActive();}
     synchronized void requireActive(){
         if(retired||!"ACTIVE".equals(state)||displayId<=Display.DEFAULT_DISPLAY)
@@ -191,7 +221,7 @@ final class BackgroundSession {
     private BrokerProtocol.DisplayPolicy readBrokerPolicy(JSONObject response,int id)throws Exception{
         if(response==null||id<=0||!Boolean.TRUE.equals(response.get("ok"))||!"ACTIVE".equals(response.getString("state"))
                 ||strictInt(response,"version")!=1||!isUuid(response.getString("request_id"))||!generation.equals(response.getString("generation"))
-                ||!java.util.Arrays.asList("create","state","launch","back").contains(response.getString("operation"))
+                ||!java.util.Arrays.asList("create","state","launch","back","notes.create","web.search").contains(response.getString("operation"))
                 ||strictLong(response,"expires_elapsed_ms")!=expiresElapsed
                 ||id!=strictInt(response,"display_id")||!displayName.equals(response.getString("display_name")))
             throw new IOException("后台策略回执身份不匹配");
