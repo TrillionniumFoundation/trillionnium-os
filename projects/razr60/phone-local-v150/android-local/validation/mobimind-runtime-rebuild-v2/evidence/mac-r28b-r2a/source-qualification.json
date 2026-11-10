@@ -1,0 +1,18 @@
+{
+  "commit": "bce7456ce60b5e51b4d3b357f303515860353d8c",
+  "transforms": {
+    "express/Executor.cpp": {
+      "upstream_sha256": "79fd37b7111e91201efcbca12aa61f287d6ffe7d05a95cc7e9b215a6990cda05",
+      "patched_sha256": "73415fa6b438c14c47be37294fbc0e46aa16bdf0901cfbb30746d4617280a4eb"
+    },
+    "source/core/Pipeline.cpp": {
+      "upstream_sha256": "f7cd899354b062e55f19643a3b88becfcf4a33983f57b249362a4d72ded2cfa2",
+      "patched_sha256": "2df51615121e33986b35c814dfd6d09192bdd6eb841759efd7b5508744822d01"
+    },
+    "transformers/llm/engine/src/llm.cpp": {
+      "upstream_sha256": "30fafe27c266787512fd6a0a18811f7c7aeaed4b0215d185599e8e50777cf0b8",
+      "patched_sha256": "185a0aba9e3c38dc8e9e4a39eb486609d633b9edec2be850057b8b5e03c057cc"
+    }
+  },
+  "worker_manifest_sha256": "b642269f327219c23d9fd778621921c85fd19cb8a35def970e5097ca88d2d8f5"
+}

@@ -1,0 +1,611 @@
+{
+  "schema": "hepta.host-checks.v3",
+  "scope": "host_only",
+  "all_pass": true,
+  "android_compiled": false,
+  "phone_tested": false,
+  "native_grammar_model_tested": false,
+  "external_model_used": false,
+  "started_host_wall_ms": 1794166432908,
+  "checks": [
+    {
+      "name": "java-compile",
+      "exit_code": 0,
+      "elapsed_s": 1.4367172549973475,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ActionFreshnessHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.03708093200111762,
+      "stdout_sha256": "3113abbad4e9c7c60cc84e78860cba766af52654b938d4eb0b71ecbdf69b896f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "AppCatalogueHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.20408268699247856,
+      "stdout_sha256": "62857df360fcb7fb759ab8a7c532ae591436f3fef488eb8ab629e091f54cf466",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "BudgetHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.03771189600229263,
+      "stdout_sha256": "624058253b558d50dbd60045ed55d5d7b11a346ab9f69d9db682bd065f43ffe5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ImeObservationHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.03865874599432573,
+      "stdout_sha256": "1388ed89a212aa21af6683bc9b42f9ccb85235b3a9778f870b6e3cd43f3fce35",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "LocalPolicyHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.06046745300409384,
+      "stdout_sha256": "a5951199cbf4f1423d72661f1b8c358583c9778b225957b1b9e499e4cd14f27e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "MemoryAvailabilityHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.04287766599736642,
+      "stdout_sha256": "5b5bb21f651b68576a420f8de7fb4e3e961db1e06694a867f92ed648c18f4860",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ModelProfileHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.0484902360039996,
+      "stdout_sha256": "65d8b4bd17d59155ef8adbf4f077cb6852a49f16a8d0733dbd67b3dbd360cf53",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "RepeatActionGuardHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.09140945499530062,
+      "stdout_sha256": "e8d395211f8bd74419d966fcf45379d11a85e1421ce997a0a5d3e7a1ad2e6664",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "SessionRecoveryHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.04184438999800477,
+      "stdout_sha256": "fa8c93f30ea6622aa3d70efe88a497bcdf84b1c039bf59d3e5f9662fd3308fbe",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ActionDecisionHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.08188099700782914,
+      "stdout_sha256": "b01898fef4bdd9dbc0d6c090370599c82db677e12fc798c9a7d907a267e619e3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "DecisionGrammarHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.08347354400029872,
+      "stdout_sha256": "b35fef67c52462adb0185c7d9be33f4cc41a8c7a81d45cf4911576e8864c3126",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "grammar-recognition",
+      "exit_code": 0,
+      "elapsed_s": 0.09156655198603403,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "95ce488b879baeb3add30c50de1004efc2f84f8d7c7c95fc7c20a1c780ea349e"
+    },
+    {
+      "name": "completion-protocol",
+      "exit_code": 0,
+      "elapsed_s": 0.03552756499266252,
+      "stdout_sha256": "4da7a3cf760b2f930365d91d615792d31657a91c5665cd4a287f314471755ae1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python-tools",
+      "exit_code": 0,
+      "elapsed_s": 2.6231172700063325,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "a7d78133ae1b0f6cc75b1b630171015ced8151b7de0b85811263620decd4e85c"
+    },
+    {
+      "name": "model_profile_contract-compile",
+      "exit_code": 0,
+      "elapsed_s": 0.08158848500170279,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "model_profile_contract",
+      "exit_code": 0,
+      "elapsed_s": 0.001049464990501292,
+      "stdout_sha256": "bc9b99969b373d72ec83464d72b513fd5e74e5715c2b033f64a3f4af366d06a2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "parent_death_contract-compile",
+      "exit_code": 0,
+      "elapsed_s": 0.13872438500402495,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "parent_death_contract",
+      "exit_code": 0,
+      "elapsed_s": 0.04236297799798194,
+      "stdout_sha256": "3b78bb55324e37b41ebd8b91ef5928bf8bedc2349cc2f964e827bfe1107af360",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "phase_timing_contract-compile",
+      "exit_code": 0,
+      "elapsed_s": 0.0879323499975726,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "phase_timing_contract",
+      "exit_code": 0,
+      "elapsed_s": 0.0011053399939555675,
+      "stdout_sha256": "f95229894848bdfe84b59efdf63c18ca140edcc526bb84f2dcaa48cc85ed3887",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "prompt_budget_contract-compile",
+      "exit_code": 0,
+      "elapsed_s": 0.04945014099939726,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "prompt_budget_contract",
+      "exit_code": 0,
+      "elapsed_s": 0.000983816004008986,
+      "stdout_sha256": "6c4810c55d6d7e97b50ca7215cd9b1de00140c4dcb22095ba4a752d82fe2fb66",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "publish_contract-compile",
+      "exit_code": 0,
+      "elapsed_s": 0.08525726301013492,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "publish_contract",
+      "exit_code": 0,
+      "elapsed_s": 0.004131412002607249,
+      "stdout_sha256": "01c5c6781c6c3303246dbe138b3e6f6b7a23baebd4f6756b00f2082f18a6b81f",
+      "stderr_sha256": "0e1ee1829a099dcbcf1a0b85600b0ee89f8a0f672d86c1b2984d2727052cf6ea"
+    },
+    {
+      "name": "sha256_probe-compile",
+      "exit_code": 0,
+      "elapsed_s": 0.24825045200122986,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "sha256_probe",
+      "exit_code": 0,
+      "elapsed_s": 0.10173771000700071,
+      "stdout_sha256": "cf4e1dc1c076bcd93550a61b6c766a3ba425299a21a0fde818915d0e9f9937ac",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "sha256-hashlib-differential",
+      "exit_code": 0,
+      "elapsed_s": 3.386179703986272,
+      "stdout_sha256": "7e874f33e133453e8c0d174975d446891f8af6d317663f959ebf5f4b33630c73",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "native-adapter-syntax",
+      "exit_code": 0,
+      "elapsed_s": 0.06507644000521395,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "private-prompt-evidence",
+      "exit_code": 0,
+      "elapsed_s": 0.3185394429892767,
+      "stdout_sha256": "8c0b45d132c7bd5d06ad705b049243e6983f38541079700e535a549c0ddb28a6",
+      "stderr_sha256": "47b7630c4181961731722083771a47078e1a8acc388e66fa7b6f96cce3340d83"
+    }
+  ],
+  "source_inputs": [
+    {
+      "path": "assemble_pocket4.py",
+      "sha256": "a04ca89c0663646afcd0f5f3fc0951d728bb948a887bb815f2a54d5f97b8eca2"
+    },
+    {
+      "path": "build_mac.py",
+      "sha256": "25e1ab8e8bf76b76a1a58458d5e1d4dea050f853c90bbd84c6513f3e5e50e943"
+    },
+    {
+      "path": "native/generate_adapter.py",
+      "sha256": "efd47d8d25d84868ad4d9803d54932b580c4541a83b7169e3c040f10dd079ce3"
+    },
+    {
+      "path": "native/model-profile.h",
+      "sha256": "ee62a9b8be9c490401cc6965876241ca6eba68b791b2f9047486468967dc1ee4"
+    },
+    {
+      "path": "native/model-runtime.inc",
+      "sha256": "2e8c514c30b0689e3527e9687b6fdc5bae81583a7deb23a313ddc33e7a91ffab"
+    },
+    {
+      "path": "native/parent-death-guard.h",
+      "sha256": "92b094ecf9294907ba3f1e3d6c3a3b98fe2c01ec217e57055136bc69b7ee3a92"
+    },
+    {
+      "path": "native/phase-timing.h",
+      "sha256": "b338f8a2026b641a5ae2928826d1639c13e37b712df089751ef3fa4f377c111f"
+    },
+    {
+      "path": "native/probe-worker.c",
+      "sha256": "6fe2ca2ada2bd543b56ec83428c0ad3500059d1665a3635413ebc0c066195900"
+    },
+    {
+      "path": "native/prompt-budget.h",
+      "sha256": "47e8587a9762b6018748d3560344024fcbd875da280df93afb57976c5eee8c3e"
+    },
+    {
+      "path": "native/prompt-evidence.inc",
+      "sha256": "cd2f93f7b894eb64fb806e24e0ca214b512c148d3b4f19bed39e9e70196e56b0"
+    },
+    {
+      "path": "native/prompt_evidence_adapter.py",
+      "sha256": "deb988a8d3fd2299cb9441cbb2df7bff120d842ebc323971bf119962cf62a509"
+    },
+    {
+      "path": "native/publish-appuid.inc",
+      "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
+    },
+    {
+      "path": "native/sha256-dispatch.h",
+      "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
+    },
+    {
+      "path": "native/tests/model_profile_contract.c",
+      "sha256": "81db054ea7b8b2fb35bf8fc543064f560ea7682a37fb6cd58e464b123c2c2eb8"
+    },
+    {
+      "path": "native/tests/parent_death_contract.c",
+      "sha256": "d3824dcb181d2a8b6a9fd31b174281c3f7dfcf6663c98e3f1a9bb5e2671bf397"
+    },
+    {
+      "path": "native/tests/phase_timing_contract.c",
+      "sha256": "479c5e6e23d6bf86515a39046e07c62bc0cc33a5ffbbe3703f5e92cc91db5527"
+    },
+    {
+      "path": "native/tests/prompt_budget_contract.c",
+      "sha256": "71fe6d15efc4ecda21e47d805625e8463221af6bd63acfef1dedca6d5f6d0bc1"
+    },
+    {
+      "path": "native/tests/publish_contract.c",
+      "sha256": "6476304205a10486c32d33214e657f6b320efbcbdc6867df66e86dde6c996d05"
+    },
+    {
+      "path": "native/tests/sha256_probe.c",
+      "sha256": "4a88ff711def3aa8a9b0697830664e6d42488869be7d128441feb8d194ee9fb2"
+    },
+    {
+      "path": "native/tests/test_prompt_evidence.py",
+      "sha256": "89796beae2e41301a0e55650fb454b7dddae553d4d8ac756414ca2e3aa8fc713"
+    },
+    {
+      "path": "native/tests/test_sha256.py",
+      "sha256": "a986747ba4d3eaf520f3c1a95a8a4cbfcd066eb55efcafe7a9509e89992d5d9e"
+    },
+    {
+      "path": "native/vendor/geniex.h",
+      "sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40"
+    },
+    {
+      "path": "native/vendor/llama/ggml-alloc.h",
+      "sha256": "d114067f9099c4a0e2bbc0625c676d4894d9cf0ea27168ee072c7de0e71bb51d"
+    },
+    {
+      "path": "native/vendor/llama/ggml-backend.h",
+      "sha256": "0e5e8e1f16d11ebbf501e38bc6705d79eee819b5f0b17476533f2100ed9674e2"
+    },
+    {
+      "path": "native/vendor/llama/ggml-cpu.h",
+      "sha256": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e"
+    },
+    {
+      "path": "native/vendor/llama/ggml-opt.h",
+      "sha256": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2"
+    },
+    {
+      "path": "native/vendor/llama/ggml.h",
+      "sha256": "2b4dd92fa992cb4ef484917a6c62fef5097698744160ccc09214fd0c459c92c7"
+    },
+    {
+      "path": "native/vendor/llama/gguf.h",
+      "sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4"
+    },
+    {
+      "path": "native/vendor/llama/llama.h",
+      "sha256": "c0854771d3760a41642c4e59429c5b3b9fc774887c59d37eeadc4527681732cd"
+    },
+    {
+      "path": "native/worker-upstream.c",
+      "sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ActionDecision.java",
+      "sha256": "ee6fd0cc6573127091e3e7a26da17f8bc826979644d283d324391181e3cefb29"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ActionPolicy.java",
+      "sha256": "c22c1d8c1f14e66b6f27a7e2a8a596a205e6d261a772f43189af7c7cb6fcae8d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+      "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ConservativeTokenBudget.java",
+      "sha256": "f44740ae90f4c05b60a9a79ff0955b5fe730c8c38c03926c1d23568d640f54d7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
+      "sha256": "78f921e2676b25499200f568af4b294f00bd496181b28cf68c9c9dd086911ef6"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/EngineInferenceAdapter.java",
+      "sha256": "400b04c858e8bf9fda019752548418890843f7bb0d061d0c8ec612952f97d624"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "sha256": "6c6399e9a579f47c927ca6622db96bfb868348af7040076c7a4c9a3f494f66ae"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
+      "sha256": "4e7fdaf10d6d502e77642fb043296e8da5d94fbfc78d884826f60dafed8f6e36"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalInference.java",
+      "sha256": "9d752ade6e30119112fc02e745c0a3a145f4d85908f93516088a8160206cf52d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalModelEngine.java",
+      "sha256": "004c6538841141290182bf696c9ef8606db41a15a47c062ab5b3e697adc5b1c0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalProbeApplication.java",
+      "sha256": "f5a41d9e717ff2e3fdfd663bf0298b6d7ce83ef5eff1903cdc20bd50d540be0e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
+      "sha256": "a21c20bf4862c7b246738f15321db66f733d3336eb57d8968c02c4f4e634c813"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "sha256": "a88ed05063f19fc2664946e410f39ebc7aefb801e42f312b4912af0cb754a862"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
+      "sha256": "ebb057e591f5ad7a7605ca8dd342846cf181a32828b4c7cd1958f6a17c4ab6eb"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MainActivity.java",
+      "sha256": "f8dddb642f8153ee5e78e4d7940bfbe34d230d29129468aff470298f16e4ab06"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MemoryAvailability.java",
+      "sha256": "bce1c5e23aba1febec3fab53794cf80c16d713df4bedf4a4d404d05e3c833003"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ModelFileVerifier.java",
+      "sha256": "77f9630a2d3ab77a723f6b0237d0e5a5f02e7371535e3fa53408b99315e1e4c7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ModelProfile.java",
+      "sha256": "19851ccdcd056f114300d0d9fc0ac8d76363fa601ed7f0a5c6b9eaaa57dc0bac"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NativeBudgetVerifier.java",
+      "sha256": "1a03857c440ea1349fd35f875395c66a58f12aaa9daa6e59d72eafa6cb30c13d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservationState.java",
+      "sha256": "a2a664a3567995de8665e66d7667cfc089277fdd16175aa9dab837f7919dd257"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
+      "sha256": "3d64c6a83664c285fe851e38f83cabca2ed3db7a8cdc30de495e597c0cae6547"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PrivateDebugTask.java",
+      "sha256": "c4bd2c52a5050da897f0833dc9f15fe5bb96599255897e4eef804c8bc138be14"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RepeatActionGuard.java",
+      "sha256": "fef94a33a0efbb019f0ae48ae97182fc81186c528833f323a22e9ad7bbd8631e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/SessionRecovery.java",
+      "sha256": "6461143f68156fd0269d5bf7b2f6b636a2d88c467332ac1e3cecf4340e6092b4"
+    },
+    {
+      "path": "tests/ActionFreshnessHostTest.java",
+      "sha256": "9000ca110ce7826c93e671fa9e6192d264d6bfc3f44f263e285e228624ace361"
+    },
+    {
+      "path": "tests/AppCatalogueHostTest.java",
+      "sha256": "a81f2430619c1afb97f1cd8d7687a8480d1f4fc498aacab2828dd9af9a020ec4"
+    },
+    {
+      "path": "tests/BudgetHostTest.java",
+      "sha256": "053c6c3a1c9eff1d5055c425a6b97b6c323bbea72864abe3f6a391b45534d737"
+    },
+    {
+      "path": "tests/ImeObservationHostTest.java",
+      "sha256": "03d9442b184d772976dbf0a482f8576509112203fe4700abe4cfb20e67f7cdca"
+    },
+    {
+      "path": "tests/LocalPolicyHostTest.java",
+      "sha256": "fdeab32002efc17f20c0c034a232661d84cdd28d97d51bd8bb089866facd69c6"
+    },
+    {
+      "path": "tests/MemoryAvailabilityHostTest.java",
+      "sha256": "c1d24b1d49dc9c8d73ac01ec69a53e8dced7d0b31623f399de665363167e7f61"
+    },
+    {
+      "path": "tests/ModelProfileHostTest.java",
+      "sha256": "599faafd180fcd593d872282d00e25dce320a74d5541f48f15635b7742ffdd58"
+    },
+    {
+      "path": "tests/RepeatActionGuardHostTest.java",
+      "sha256": "e7e2b9f57b6edc5058c55d58e7a7e1b2338a4b20d44b9313b37ca996b8ffc14f"
+    },
+    {
+      "path": "tests/SessionRecoveryHostTest.java",
+      "sha256": "0baa30e51254e8886cad11978f178efe91330a673415f46349f27175bb68c802"
+    },
+    {
+      "path": "tests/action-grammar/DecisionGrammarHostTest.java",
+      "sha256": "bf890c50d8cceeb651e57253e454ed8fad8e0127cea16cbe2c84dae1b2d1f73d"
+    },
+    {
+      "path": "tests/action-grammar/gbnf_recognizer.py",
+      "sha256": "a9317c9eb2e7461e9b4656a8541791e7f13ca9b60e9c0296d2d4ac94970ab1c3"
+    },
+    {
+      "path": "tests/action-grammar/test_completion_protocol.py",
+      "sha256": "02bf67122bd3921ef641ae4b1d5a786355d986606a47b71005008c8237d6dfed"
+    },
+    {
+      "path": "tests/action-grammar/test_decision_grammar.py",
+      "sha256": "8c8154e9c5c0192a275d92726ad2e140b1817771b7cb38eb7fb3f13dcfc6cc9f"
+    },
+    {
+      "path": "tests/action-parser/ActionDecisionHostTest.java",
+      "sha256": "8f7b30e281288a25389303f811ed2189ffb2db6655136e5c948d5c2666c3eece"
+    },
+    {
+      "path": "tests/action-parser/run_host_tests.py",
+      "sha256": "2106bda52fc6c56a93a924af1bc984110c850c1dfa90aec44ab57685099a34a9"
+    },
+    {
+      "path": "tools/build_identity.py",
+      "sha256": "4116f87e2cef1e5de1dacadf9500c7fa15d7e0d7db19fff3d111cecf62e6427c"
+    },
+    {
+      "path": "tools/create_debug_task.py",
+      "sha256": "db959a4382b4b4fc67504a9201311f0ea4a38a1c45dfcf093d68ed5a5b7583f2"
+    },
+    {
+      "path": "tools/fetch_pinned_runtime.py",
+      "sha256": "3fd70e3fbe4e5f617a2cbab08bd703dd4795137c9d9562936cf996a9fe77f05c"
+    },
+    {
+      "path": "tools/model_profiles.py",
+      "sha256": "85b5a72f24912f705ec07bb033204724bdfbf5aad30dfdc0e76b9fccbda91c90"
+    },
+    {
+      "path": "tools/phone_acceptance.py",
+      "sha256": "d461a28b5739a3fad92283e82bd258fb5a315bc7264e621d71723a9d6c4432eb"
+    },
+    {
+      "path": "tools/phone_inventory.py",
+      "sha256": "e3a679c4f08c3a9ef2b9f1dda786a5b2638f1de349bb2c257c60dd1a7be32863"
+    },
+    {
+      "path": "tools/phone_suite.py",
+      "sha256": "3ee862814c887faea4266f2c1d61892f3c3d2eed7c466c73f918fa8db4acdf65"
+    },
+    {
+      "path": "tools/run_host_checks.py",
+      "sha256": "cad7db9df46606c1bec96a8c30765091e13413ffe7e8a379aab4099fdc65191c"
+    },
+    {
+      "path": "tools/test_build_identity.py",
+      "sha256": "cadc1bcdb9c132ee1f102223cf234cfba26bd74f45b5ab9373083422c3fc0333"
+    },
+    {
+      "path": "tools/test_model_profiles.py",
+      "sha256": "99411bf66d49bc5a7679df7324efbfe3f8e33d726f2665ff7e29d7b5a50eaea5"
+    },
+    {
+      "path": "tools/test_phone_acceptance.py",
+      "sha256": "cb97d6b34b41b752f5dfcf8359a37fa953180e7de75e08a8ed0d74d0024e7ec9"
+    },
+    {
+      "path": "tools/test_phone_inventory.py",
+      "sha256": "b2846df4eb51933fe116d9a920ff4c19e92e746c52e6124040e1b6ad03cad4a4"
+    },
+    {
+      "path": "tools/test_phone_suite.py",
+      "sha256": "790549d00157e8cade573acea4ac62e5ae5d875684a8c1473855c07f03184506"
+    },
+    {
+      "path": "tools/test_verify_runtime.py",
+      "sha256": "70b32dcb6b4a900e715b4aa0e01610b9e308bee0a7a3f2cafb8f8deb334880dd"
+    },
+    {
+      "path": "tools/verify_runtime.py",
+      "sha256": "61fb290e21d1b83b619a2d2d8e851defc1534a286d97d2d265b4d76b30ef1c69"
+    },
+    {
+      "path": "tools/verify_source.py",
+      "sha256": "d2b41fe70ac8f71b81d4af04db73993239bc35b7298a6d89d7d4520845bb5b8d"
+    }
+  ],
+  "native_adapter": {
+    "upstream_sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e",
+    "adapted_sha256": "605a080c42415bc461e050385da537d94af9a880c73b5d651c65e3a88c1f1c3a",
+    "publication": "renameat2(RENAME_NOREPLACE)",
+    "no_overwrite": true,
+    "fallback_overwriting_rename": false,
+    "errno_diagnostics": [
+      "write_all",
+      "file_fsync",
+      "renameat2_noreplace",
+      "directory_fsync"
+    ],
+    "runtime": "llama_cpp",
+    "mode": "llm",
+    "compute_modes": [
+      "npu",
+      "gpu"
+    ],
+    "context_sizes": [
+      4096,
+      8192
+    ],
+    "prompt_guard": "LFM3 original byte bound; other profiles exact same input_ids + output + reserve256",
+    "llama_source_commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+    "model_verification": "native full SHA256, exact filename/size/architecture, held descriptor, unchanged metadata",
+    "sha256_dispatch": "runtime HWCAP_SHA2; target(sha2) function; exact upstream portable compression fallback",
+    "model_digest_cache": false,
+    "full_model_read_every_request": true,
+    "private_prompt_evidence": "create-only formatted bytes and actual direct input IDs; same private request directory",
+    "new_profile_exact_token_count": true,
+    "no_context_truncation": true,
+    "phase_timing_schema": "hepta.native-phase-timing.v1",
+    "phase_timing_clock": "CLOCK_MONOTONIC",
+    "phase_timing_stages": [
+      "hash",
+      "vocab",
+      "create",
+      "template_tokenize",
+      "generate",
+      "destroy",
+      "deinit"
+    ],
+    "phase_timing_diagnostic_only": true,
+    "controller_grammar": "optional fixed-schema per-observation GBNF; same private request directory and native SHA binding",
+    "model_contract_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
+  },
+  "finished_host_wall_ms": 1794166442500
+}

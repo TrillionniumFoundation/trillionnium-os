@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.interrupted-suite-public-summary.v1",
+  "scope": "retained_evidence_only",
+  "original_suite": {
+    "planned_case_count": 9,
+    "counts": {
+      "pass": 1,
+      "fail": 0,
+      "unknown": 1,
+      "not_run": 7
+    },
+    "completion": "incomplete",
+    "original_suite_unchanged": true,
+    "nine_case_acceptance_claimed": false
+  },
+  "candidate": {
+    "version_code": 19,
+    "context_tokens": 4096,
+    "compute": "NPU"
+  },
+  "cases": [
+    {
+      "case_id": "core-settings-home-01",
+      "original_verdict": "pass",
+      "classification": "original_retained_pass_recomputed",
+      "native_inference_count": 3,
+      "dispatched_effect_count": 1,
+      "original_native_and_action_bindings_recomputed": true,
+      "original_goal_and_sequence_assertions_recomputed": true,
+      "clean_terminal_recorded": true
+    },
+    {
+      "case_id": "core-settings-apps-01",
+      "original_verdict": "unknown",
+      "classification": "supplemental_recovery_predicates_pass_with_late_ui",
+      "native_inference_count": 4,
+      "dispatched_effect_count": 2,
+      "original_native_and_action_bindings_recomputed": true,
+      "original_goal_and_sequence_assertions_recomputed": true,
+      "clean_terminal_recorded": true,
+      "original_final_observation_identity_matches_terminal_record": true,
+      "original_app_observation_contains_expected_page_markers": true,
+      "supplemental_independent_ui_predicates_pass": true,
+      "supplemental_ui_delay_after_terminal_seconds": 392.522,
+      "supplemental_ui_delay_after_network_restoration_seconds": 109.874,
+      "supplemental_ui_claimed_as_atomic_historical_terminal": false,
+      "continuous_offline_execution_proven": false,
+      "counted_as_formal_original_suite_pass": false
+    }
+  ],
+  "native_evidence": {
+    "observed_offloaded_layer_count": 43,
+    "context_tokens": 4096,
+    "model_receipt_bindings_valid": true,
+    "complete_output_bindings_valid": true,
+    "exact_context_budget_valid": true,
+    "full_operator_coverage_proven": false
+  },
+  "audit": {
+    "phone_contacted": false,
+    "original_evidence_modified": false,
+    "input_file_count": 169,
+    "input_files_unchanged": true
+  },
+  "evidence_digests": {
+    "original_suite_sha256": "a8655f145c2786285ca166eb4b93fd2b350d76bab503247ffe9b0a93c451b6e2",
+    "original_plan_sha256": "ef92f1103041d8453f35c13b8718a1834dfd84bd69f2e8afd871c12f8c17983c",
+    "independent_audit_sha256": "fdea53b6393927e6d2224dc189c7a58477337040e89bd3e5bb8a5b843e5a7878",
+    "original_core_driver_sha256": "22f1e4643e3076f630749a79c7f2a30beba7171097c5ef8c36bcaa80d83c753c",
+    "original_assertions_sha256": "65999f565846afda7ff7ba75dee4eff1cc4e32a29f670b9182039139eec0d836",
+    "original_collector_sha256": "705f10b732546c1d85fb41d545615c949b51012d68e9270cd161b35f93177922"
+  }
+}

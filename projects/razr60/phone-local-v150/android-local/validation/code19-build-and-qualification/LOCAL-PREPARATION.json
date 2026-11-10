@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.code19.public-local-preparation.v1",
+  "source_head_sha": "fdb7eca8d3a434c515da547365fcc47bb2f510d3",
+  "source_manifest_sha256": "9817f2af3937a402b52176565233c763869495d203080deffd7e279f9f621b69",
+  "source_members": 866,
+  "source_verified": true,
+  "source_archive_sha256": "7d446f1fc05df6de4a4d66224c53f37b56450c123fa5f453a44c641d20c5cf35",
+  "source_archive_bytes": 696662,
+  "version_code": 19,
+  "version_name": "0.19.0-local-stable-observation",
+  "package": "org.trillionnium.hepta.local",
+  "apk_sha256": "e9eb1d119c265e12402975bece2db450bd999436e41e64d62cb64cf315668782",
+  "apk_bytes": 20612784,
+  "signer_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "same_original_signer": true,
+  "new_signing_key_created": false,
+  "permissions": [],
+  "true_java_dex_native_rebuild": true,
+  "mac_build_receipt_sha256": "38cc8deca3cd3c7460de9d96693f18a089a4f1a08ca19988a2d68037750203a1",
+  "unsigned_archive_sha256": "ef94d60bccfcd9523645b63b4501df6926f4c032e7321f6bfee56afed226854c",
+  "default_context_tokens_for_fresh_lfm3": 8192,
+  "explicit_configurations_migrated": false,
+  "native_members": 16,
+  "native_payloads_identical_to_code18": true,
+  "host_qualification": {
+    "actual_java_contracts_pass": true,
+    "java_compile_and_contract_count": 27,
+    "linux_python_tools_tests": 152,
+    "linux_mobimind_private_staging_tests": 4,
+    "all_listed_pass": true,
+    "single_host_full_suite_pass": false,
+    "mac_full_suite_failed_checks": [
+      "python-tools"
+    ],
+    "complete_exact_head_ci_is_separate": true
+  },
+  "focused_observation_contracts": {
+    "new_contracts": 8,
+    "pass": true,
+    "old_gate_negative_control_expected_failure": true,
+    "original_host_report_sha256": "96c35676a2d5299e258015a42ff2d3c197063dea472affda8b9bcce2d317f56f"
+  },
+  "inherited_code18_prompt_replay_boundary": {
+    "controller_unchanged": true,
+    "qualified_historical_frames": [
+      "calc9",
+      "calc12",
+      "calc15",
+      "settings5",
+      "settings15"
+    ],
+    "unresolved_old_launcher_frames": [
+      4,
+      6,
+      16
+    ],
+    "all_historical_frames_pass": false
+  },
+  "document_privacy_adjustment": {
+    "path": "docs/CODE19-STABLE-OBSERVATION.md",
+    "owner_sha256": "cbf911b4237c4c0ea1e8f4e18c6eeffd686c6bc997ec70f11ee55096b46fffad",
+    "published_sha256": "9c7eafe810a8e8ae9e314df625ebab72c53ea55d61a0a2b3eca0c13bbcfe94ff",
+    "removed_field": "private task UUID",
+    "case_id_and_receipt_hashes_retained": true,
+    "owner_source_preserved": true
+  },
+  "static_acceptance_sha256": "ec009f9607d23ffdaa3a569d475ab6f3a46398adbc08fc030d16c23f2096d5c2",
+  "phone_contacted": false,
+  "phone_tested": false,
+  "installed": false,
+  "selected_model_task_quality_qualified": false,
+  "record_scope": "Historical build preparation only; this is not current phone state.",
+  "original_preparation_sha256": "1dff52e0c91ef422ea40c5cf257cde2345f1c5dd3f7f23339bc16823e26bd2a7",
+  "apk_filename": "hepta-local-0.19.0.apk"
+}

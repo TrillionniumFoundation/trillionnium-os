@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.ui-venus.ordinary-app-design.v1",
+  "base_source_manifest_sha256": "c75ab9b8aa01705e7dd0805baa45dfc41650837874ff8618e28442b73d77454f",
+  "scope": "host-only independent Code16 draft; no install, inference, action dispatcher or default config change",
+  "worker_owner": "hexagon_moe_research",
+  "java_packaging_owner": "latest_mobile_models",
+  "runtime": {
+    "worker": "libhepta_ui_venus_runner.so",
+    "worker_pin_status": "actual independent Android worker build pinned; ordinary App VLM runtime not yet qualified",
+    "sdk_members": "same 12 pinned GenieX 0.10.0 members",
+    "models_directory": "files/ui-venus-model",
+    "run_directory": "files/ui-venus-runs/<request-id>",
+    "native_prefix": [
+      "--expected-parent-pid",
+      "<App pid>",
+      "--expected-app-uid",
+      "<App uid>",
+      "--app-files-dir",
+      "<canonical files>"
+    ],
+    "native_mode": "llama_cpp VLM; NPU HTP0 text + GPUOpenCL vision; one-shot; no fallback",
+    "context_tokens": 8192,
+    "max_tokens": 1024,
+    "native_timeout_ms": 300000,
+    "app_preflight_limit_ms": 30000,
+    "app_process_supervisor_ms": 325000,
+    "term_to_force_ms": 2000,
+    "termination_confirmation_limit_ms": 12000,
+    "native_timeout_clock": "core monotonic before inputs/weight SHA, after wrapper identity/plugin bootstrap",
+    "budgets_authorized_by_root": true
+  },
+  "inputs": {
+    "request": "files/ui-venus-probe-request.json",
+    "input_directory": "files/ui-venus-probe-inputs/<request-id>",
+    "consumed": "files/ui-venus-probe-consumed/<nonce-sha>.json",
+    "nonce": "64 lowercase hex, exact private request, exclusive durable claim before removal",
+    "fixture": "same official Mobile first-frame fixture schema; one original PNG, original OWNER, exact pinned SYSTEM rendering, no previous history claimed",
+    "text_prompt": "Current Screenshot:\n",
+    "no_resizing_by_app": true
+  },
+  "lifecycle": {
+    "slot": "LocalModelEngine.ExternalRunLease",
+    "session": "files/ui-venus-probe-session.json",
+    "latch": "files/ui-venus-probe-interrupted.json",
+    "startup_order": [
+      "construct original LocalModelEngine",
+      "inspect original LocalTaskSession",
+      "inspect MobiMind journal without independently reserving shared lease",
+      "inspect UiVenus journal without independently reserving shared lease",
+      "reserve exactly one Application-owned recovery barrier if any blocked"
+    ],
+    "automatic_resume": false,
+    "cancel": "existing visible Stop -> broker.cancelActive -> bound child; SIGTERM then bounded destroyForcibly; publication before slot release",
+    "release_requires": "observed child exit or verified no launch; durable terminal publication; unknown retains slot"
+  },
+  "ui": {
+    "intent": "auto_ui_venus_probe with ui_venus_nonce; conflict with other auto triggers is refused",
+    "status": "separate diagnostic output; raw is never dispatched"
+  },
+  "qualification_boundaries": [
+    "shell qualification is independent of ordinary App",
+    "native sidecar binds parent/uid/files but outer actual Android process/maps/receipts still required",
+    "text-only token IDs do not count image expansion",
+    "post-run SDK token count is supporting observation only, not no-context-shift proof",
+    "threshold 8GiB is engineering admission only; no peak-memory guarantee",
+    "original source16 and original VLM shell worker remain unchanged"
+  ]
+}

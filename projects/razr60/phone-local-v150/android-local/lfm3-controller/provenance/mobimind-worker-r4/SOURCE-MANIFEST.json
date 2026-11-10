@@ -1,0 +1,131 @@
+{
+  "schema": "hepta.mobimind.model-only-source.v1",
+  "revision": "r4",
+  "mnn_revision": "bce7456ce60b5e51b4d3b357f303515860353d8c",
+  "model_revision": "f02848b6b7796988ea95df8f78a7b38bd71e2a90",
+  "files": [
+    {
+      "path": "CMakeLists.txt",
+      "bytes": 1257,
+      "sha256": "25260a2133c91a849287e8b09211ead6524e0f56e9ba1685af1a3be1011a197f"
+    },
+    {
+      "path": "README.md",
+      "bytes": 12420,
+      "sha256": "11c3ceab6a3aca3788b30c687d091a870f37765af2a2ef18817205fde76aa552"
+    },
+    {
+      "path": "evidence/code9-sha256-dispatch.h",
+      "bytes": 7208,
+      "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
+    },
+    {
+      "path": "evidence/git-byte-qualification.json",
+      "bytes": 3336,
+      "sha256": "5f757ecb732f2e17348b00ba0b261d1f95d8bd239d364502c425d9517a6fb402"
+    },
+    {
+      "path": "evidence/r3-sha_utf8.hpp",
+      "bytes": 3593,
+      "sha256": "83a8099330d01d24d1a00d36b9a178a332a1087800a544e924f5dde2e90def88"
+    },
+    {
+      "path": "evidence/upstream-source-sha256.json",
+      "bytes": 256,
+      "sha256": "2c59d9de491c3bbe98ab0dedbfea6d177aa7b580809bc794941071a6f7cd8562"
+    },
+    {
+      "path": "make_prompt.py",
+      "bytes": 1333,
+      "sha256": "886aa0b9674a082c506aef40ad49dc153065895821f1ab07e4bcd4ce51a4bea1"
+    },
+    {
+      "path": "native/model_pins.hpp",
+      "bytes": 1541,
+      "sha256": "8dbb493327e72bb3d1a9771bce6bec2d9e329b39eb88195404e32bae89778674"
+    },
+    {
+      "path": "native/probe_util.hpp",
+      "bytes": 8366,
+      "sha256": "ea7c2e7898096c200e8b7ef5a43194b7b790082d368e5374d9145abb02b576ca"
+    },
+    {
+      "path": "native/sha256-dispatch.hpp",
+      "bytes": 7245,
+      "sha256": "23b508fd84f211faf430ec35ce7271bef7a77888d24a2658aa59bdf61241543c"
+    },
+    {
+      "path": "native/sha_utf8.hpp",
+      "bytes": 754,
+      "sha256": "f538924ad8f3b2c1646b93a85f68d37645ba4629b87570e8d2c2e30bc436d51a"
+    },
+    {
+      "path": "native/worker.cpp",
+      "bytes": 26303,
+      "sha256": "642eb342af59e02e0fa43d8c5bacfa75fe44b6a1f6a5c42dcb565dcc7facf34c"
+    },
+    {
+      "path": "patch_runtime.py",
+      "bytes": 3961,
+      "sha256": "1e314d857919013de282d6d012fafa562dbb3cab9e6f22887107ca81aa7bc21f"
+    },
+    {
+      "path": "tests/check_sha_equivalence.py",
+      "bytes": 4993,
+      "sha256": "8886b4b4e2d0ffd3738db49824545d2897795405e1f0eb94e03a274ffa983aef"
+    },
+    {
+      "path": "tests/run_host_checks.py",
+      "bytes": 3010,
+      "sha256": "c0e2404e54561c8e14981c685266d492d06ad11c862dca3f784b30e98586c8f6"
+    },
+    {
+      "path": "tests/sha_probe.cpp",
+      "bytes": 8765,
+      "sha256": "d7bbb25e599769f5864123381a3ad030826dbc5ff550f250cb2ff824ea87168f"
+    },
+    {
+      "path": "tests/test_patch.py",
+      "bytes": 2173,
+      "sha256": "47c629ce0c02f959e3dc7a0d9bbe459d962bd0c88bd51adcb0abdd4ea39e528c"
+    },
+    {
+      "path": "tests/upstream/Executor.cpp",
+      "bytes": 24833,
+      "sha256": "79fd37b7111e91201efcbca12aa61f287d6ffe7d05a95cc7e9b215a6990cda05"
+    },
+    {
+      "path": "tests/upstream/Pipeline.cpp",
+      "bytes": 55493,
+      "sha256": "f7cd899354b062e55f19643a3b88becfcf4a33983f57b249362a4d72ded2cfa2"
+    },
+    {
+      "path": "tests/upstream/llm.cpp",
+      "bytes": 75079,
+      "sha256": "30fafe27c266787512fd6a0a18811f7c7aeaed4b0215d185599e8e50777cf0b8"
+    },
+    {
+      "path": "tests/util_contract.cpp",
+      "bytes": 3372,
+      "sha256": "bd2ac495f8dc7c5188dee6bbae71446b57e90edc054ce5ab8f5a0708037a1b3f"
+    }
+  ],
+  "predecessor_source_manifest_sha256": "f9960fcb4425ef538b09312f060dd2190425000df069a30571e37695ede841c7",
+  "sha_dispatch_reference_sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a",
+  "host_checks": {
+    "path": "/workspace/scratch/dda84ccf2855/mobimind-r4-host-checks-r1/HOST-CHECKS.json",
+    "sha256": "01fb4661f7944b4ef7156bca9ca52a87271b025975d05bbbf43a349959c01194",
+    "all_pass": true,
+    "host_runtime_hwcap_sha2": false,
+    "hardware_blocks_observed": 0,
+    "android_build": "pending true NDK worker-only compile",
+    "phone_tested": false
+  },
+  "retained": {
+    "full_file_hash_each_request": true,
+    "digest_cache": false,
+    "model_pins_unchanged": true,
+    "mnn_config_and_sampling_unchanged": true,
+    "raw_only_no_actions": true
+  }
+}

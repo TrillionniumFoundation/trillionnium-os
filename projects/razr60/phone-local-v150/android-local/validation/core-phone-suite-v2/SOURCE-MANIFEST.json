@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.core-suite-source.v2",
+  "phone_contacted": false,
+  "host_regressions": 35,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 5408,
+      "sha256": "cb977a166dc9bfa64db624e907d012309cfbb7a12def805f0aacca5100d15df8"
+    },
+    {
+      "path": "core_assertions.py",
+      "bytes": 24477,
+      "sha256": "65999f565846afda7ff7ba75dee4eff1cc4e32a29f670b9182039139eec0d836"
+    },
+    {
+      "path": "core_phone_suite.py",
+      "bytes": 23278,
+      "sha256": "22f1e4643e3076f630749a79c7f2a30beba7171097c5ef8c36bcaa80d83c753c"
+    },
+    {
+      "path": "test_core_assertions.py",
+      "bytes": 20724,
+      "sha256": "44f69ff496f49f6bd25375b6179ddcfe130026302a0904f906177ae616e823ba"
+    }
+  ]
+}
