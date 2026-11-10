@@ -1,0 +1,15 @@
+driver.cpp: In function ‘int remote_handle64_close(remote_handle64)’:
+driver.cpp:9:38: error: conversion from ‘remote_handle64’ {aka ‘long unsigned int’} to ‘remote_handle’ {aka ‘unsigned int’} may change value [-Werror=conversion]
+    9 |     return remote_handle64_close_pfn(h);
+      |                                      ^
+driver.cpp: At global scope:
+driver.cpp:14:81: error: static assertion failed: FAST_RPC64_CLOSE_ABI_MISMATCH
+   14 | static_assert(std::is_same<remote_handle64_close_pfn_t, FastRpcClosePrototype>::value,
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+driver.cpp: In function ‘void install_close_stub(FastRpcClosePrototype)’:
+driver.cpp:18:33: error: invalid conversion from ‘FastRpcClosePrototype’ {aka ‘int (*)(long unsigned int)’} to ‘remote_handle64_close_pfn_t’ {aka ‘int (*)(unsigned int)’} [-fpermissive]
+   18 |     remote_handle64_close_pfn = pointer;
+      |                                 ^~~~~~~
+      |                                 |
+      |                                 FastRpcClosePrototype {aka int (*)(long unsigned int)}
+cc1plus: all warnings being treated as errors

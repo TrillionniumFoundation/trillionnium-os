@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.hexagon-close-review-baseline.v1",
+  "source_scope": "One-line backport into an exact external dependency; no SDK or shared tree is modified",
+  "publication_repository": "TrillionniumFoundation/trillionnium-os",
+  "publication_parent_commit": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+  "publication_parent_tree": "3b805316ffdb03fc1fb581896d56910bf96c77ab",
+  "sdk": {
+    "repository": "qualcomm/GenieX",
+    "tag": "v0.10.0",
+    "commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+    "release_url": "https://github.com/qualcomm/GenieX/releases/tag/v0.10.0",
+    "release_published_at": "2026-10-28T00:06:02Z",
+    "submodule_path": "third-party/llama.cpp",
+    "submodule_commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+    "submodule_url": "https://github.com/ggml-org/llama.cpp/tree/19cce6919992fdffd92e0ac152caaf1e2b8f254e"
+  },
+  "driver": {
+    "repository": "ggml-org/llama.cpp",
+    "commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+    "path": "ggml/src/ggml-hexagon/htp-drv.cpp",
+    "source_url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/ggml/src/ggml-hexagon/htp-drv.cpp",
+    "before_sha256": "8b93060b8f5a0aceb77c708d1772c56699810e901a52ab0ae1a4826f9f3e6854",
+    "before_git_blob": "437e367c9d35d58de9d5f1c0b310d218910f50f0",
+    "before_bytes": 18461,
+    "after_sha256": "926f4a49fa4b5f840c9ec424add67b509b2171e03d537409f02662bc9b35d273",
+    "after_git_blob": "246286b6494f05ba7d6b285a73e07f3ba34e9095",
+    "after_bytes": 18463,
+    "upstream_newer_file_git_blob": "9ae4ea7275ac57f077fa35fa3ba192b77c96fc8f",
+    "newer_file_not_used_as_backport": true
+  },
+  "upstream": {
+    "pull_request": {
+      "url": "https://github.com/ggml-org/llama.cpp/pull/30952",
+      "title": "hexagon: fix 64-bit FastRPC handle truncation on close",
+      "merged": true,
+      "merged_at": "2026-11-10T00:10:14Z",
+      "merge_commit_sha": "cf6463ace735a570d5734da4957d54b720cac6f8",
+      "author": "dmnobunaga"
+    },
+    "commit": "cf6463ace735a570d5734da4957d54b720cac6f8",
+    "changed_files": 1,
+    "additions": 1,
+    "deletions": 1,
+    "release": {
+      "tag": "b12241",
+      "published_at": "2026-11-10T01:44:35Z",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/tag/b12241"
+    },
+    "author_hardware_claim_scope": "PR author reports Snapdragon 8 Elite Gen 5 / Hexagon v81 close 0x2c to 0; no claim here for razr v79 or separate 0x2e/app-action failures"
+  },
+  "api_reference": {
+    "repository": "qualcomm/fastrpc",
+    "commit": "8f5927397d1b7c87e6724cb1ddbde956a7f34cab",
+    "path": "inc/remote.h",
+    "url": "https://github.com/qualcomm/fastrpc/blob/8f5927397d1b7c87e6724cb1ddbde956a7f34cab/inc/remote.h",
+    "sha256": "f9d0690cfd8953697d6fc3163c2be448a7b5b801148808c9b1b360857aeabc44",
+    "git_blob": "4d4eb8f9b571b9527715b76fe5cc770ec5b00bbc",
+    "bytes": 65625,
+    "test_input_only": true,
+    "sdk_dependency_changed": false
+  },
+  "patch": {
+    "path": "hexagon-close-abi.patch",
+    "sha256": "dfca8028640875c587018bb897878f74e69b2db9d2afcc2e71fc43319a6d997b",
+    "bytes": 879,
+    "scope": "one typedef parameter; no DSP-side edit"
+  },
+  "license_sources": {
+    "llama_cpp": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/LICENSE",
+    "fastrpc": "https://github.com/qualcomm/fastrpc/blob/8f5927397d1b7c87e6724cb1ddbde956a7f34cab/LICENSE.txt"
+  }
+}
