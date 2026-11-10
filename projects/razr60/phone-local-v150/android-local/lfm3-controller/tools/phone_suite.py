@@ -19,6 +19,7 @@ from types import SimpleNamespace
 import phone_acceptance as acceptance
 from model_profiles import profile as selected_profile, DEFAULT_PROFILE
 from phone_inventory import require_existing_adb_server
+from warm_receipts import APP_REQUEST, NATIVE_REQUEST, request_contract, session_contract, collection_verified
 
 SCHEMA = "hepta.phone-suite.v1"
 SHA = re.compile(r"[0-9a-f]{64}\Z")
@@ -169,6 +170,88 @@ def _action_identity(value):
                       separators=(",", ":"), allow_nan=False).encode("utf-8")
 
 
+def _collected_bytes(directory, relative, entries):
+    """Read exact collected bytes; a cached verified flag cannot mask a changed file."""
+    path = directory / relative
+    if any(parent.is_symlink() for parent in (path, *path.parents) if parent != directory.parent):
+        raise acceptance.DriverError("warm evidence path is a symlink")
+    selected = [entry for entry in entries if isinstance(entry, dict) and entry.get("path") == relative]
+    if len(selected) != 1:
+        raise acceptance.DriverError("warm evidence must have one exact collection hash: " + relative)
+    data = path.read_bytes(); entry = selected[0]
+    if type(entry.get("bytes")) is not int or len(data) != entry["bytes"] or acceptance.digest(data) != entry.get("sha256"):
+        raise acceptance.DriverError("warm evidence changed after collection: " + relative)
+    return data
+
+
+def _warm_task_model_binding(directory, run_id, current_native, owner):
+    """Revalidate the whole owned generation from actual files before counting an effect."""
+    collection = _evidence_object(directory / "collection.json")
+    task_id, uid = collection.get("task_id"), collection.get("app_uid_expected")
+    rows = collection.get("associated_runs")
+    if (not isinstance(task_id, str) or not acceptance.HEX32.fullmatch(task_id) or owner.get("task_id") != task_id
+            or type(uid) is not int or uid < 10000 or not isinstance(rows, list)
+            or not all(isinstance(row, dict) for row in rows) or not collection_verified(collection)):
+        raise acceptance.DriverError("warm action has no complete task/UID-bound collection")
+    if not 1 <= len(rows) <= 64 or len({row.get("run_id") for row in rows}) != len(rows):
+        raise acceptance.DriverError("warm collection contains duplicate or invalid request membership")
+    records = []; selected = None
+    for row in rows:
+        identity = row.get("run_id")
+        if not isinstance(identity, str) or not acceptance.HEX32.fullmatch(identity):
+            raise acceptance.DriverError("invalid warm request directory identity")
+        prefix = "runs/" + identity + "/"
+        files = row.get("files")
+        if not isinstance(files, list):
+            raise acceptance.DriverError("missing warm request collection hashes")
+        app = acceptance.strict_json(_collected_bytes(directory, prefix + "app-receipt.json", files))
+        native = acceptance.strict_json(_collected_bytes(directory, prefix + "native-result.json", files))
+        raw = _collected_bytes(directory, prefix + "raw-text.txt", files)
+        raw.decode("utf-8", "strict")
+        for name in ("prompt.txt", "system.txt", "grammar.gbnf"):
+            _collected_bytes(directory, prefix + name, files)
+        if not (isinstance(app, dict) and isinstance(native, dict) and app.get("schema") == APP_REQUEST
+                and app.get("run_id") == identity and app.get("package_name") == acceptance.PACKAGE
+                and type(app.get("app_uid")) is int and app["app_uid"] == uid
+                and type(app.get("app_pid")) is int and app["app_pid"] > 0
+                and type(app.get("expected_parent_pid")) is int and app["expected_parent_pid"] == app["app_pid"]
+                and app.get("parent_death_guard_requested") is True
+                and app.get("parent_death_guard_is_cleanup_proof") is False
+                and request_contract(app, native, task_id)
+                and type(native.get("raw_text_bytes")) is int and native["raw_text_bytes"] == len(raw)
+                and native.get("raw_text_sha256") == acceptance.digest(raw) == app.get("raw_text_sha256_read")
+                and native.get("raw_text_utf8") is True and native.get("raw_text_truncated") is False
+                and "error" in native and native["error"] is None):
+            raise acceptance.DriverError("warm request, parent/UID or raw-output contract differs")
+        records.append((app, native))
+        if identity == run_id:
+            if native != current_native:
+                raise acceptance.DriverError("current action's native result changed during binding")
+            selected = app
+    if selected is None:
+        raise acceptance.DriverError("current model run is not a member of the warm task")
+    generation = selected["worker_generation"]
+    sessions = collection.get("task_model_sessions")
+    if (not isinstance(sessions, list) or len(sessions) != 1 or not isinstance(sessions[0], dict)
+            or sessions[0].get("worker_generation") != generation):
+        raise acceptance.DriverError("warm task has no unique collected worker generation")
+    session_files = sessions[0].get("files")
+    if not isinstance(session_files, list):
+        raise acceptance.DriverError("warm task has no terminal file hashes")
+    prefix = "runs/" + generation + "/"
+    terminal_bytes = _collected_bytes(directory, prefix + "app-session-receipt.json", session_files)
+    app_terminal = acceptance.strict_json(terminal_bytes)
+    native_terminal = acceptance.strict_json(_collected_bytes(directory, prefix + "native-session-result.json", session_files))
+    _collected_bytes(directory, prefix + "stderr.log", session_files)
+    final = _evidence_object(directory / "task" / "result.json")
+    digest = acceptance.digest(terminal_bytes)
+    if not session_contract(app_terminal, native_terminal, digest, final, records, task_id, uid):
+        raise acceptance.DriverError("warm action lacks actual complete task-session terminal binding")
+    return {"task_session_binding_valid": True, "worker_generation": generation,
+        "task_id": task_id, "worker_pid": selected["worker_pid"], "app_uid": uid,
+        "app_session_receipt_sha256": digest}
+
+
 def model_action_binding(directory, path, receipt, before, instruction_sha256=None):
     """Independently tie one dispatched action to its exact collected native output.
 
@@ -220,12 +303,18 @@ def model_action_binding(directory, path, receipt, before, instruction_sha256=No
         native_path = run_directory / "native-result.json"
         native = _evidence_object(native_path)
         raw_sha = acceptance.digest(raw)
-        if (native.get("schema") != "hepta.geniex-once.result.v1" or native.get("request_id") != run_id
+        if (native.get("request_id") != run_id
                 or native.get("raw_text_sha256") != raw_sha
                 or type(native.get("raw_text_bytes")) is not int or native["raw_text_bytes"] != len(raw)
                 or native.get("generation_complete") is not True or native.get("raw_text_utf8") is not True
                 or native.get("raw_text_truncated") is not False or "error" not in native or native["error"] is not None):
             raise acceptance.DriverError("native result does not bind this complete model output")
+        if native.get("schema") == NATIVE_REQUEST:
+            result.update(_warm_task_model_binding(directory, run_id, native, owner))
+        elif native.get("schema") != "hepta.geniex-once.result.v1":
+            raise acceptance.DriverError("unsupported native result schema for an effect")
+        elif any(key in native for key in ("worker_generation", "task_id", "request_sequence")):
+            raise acceptance.DriverError("task-worker evidence cannot use the one-shot schema")
         generated_action = acceptance.strict_json(raw)
         if _action_identity(generated_action) != _action_identity(receipt["action"]):
             raise acceptance.DriverError("dispatched action differs from the model's exact decoded decision")

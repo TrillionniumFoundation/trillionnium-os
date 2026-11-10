@@ -89,6 +89,17 @@ accelerator log to that same generation. Existing one-shot evidence still
 requires an observed per-request exit. Independent UI goal predicates remain
 required for a phone-test pass.
 
+The suite's dispatched-action verifier independently rereads the collected
+request and terminal files. A cached collector success is insufficient. Every
+request must match the current task, expected app UID, parent/worker PIDs,
+generation and consecutive request sequence. File lengths and SHA-256 values,
+the native output and the step's exact raw model text must agree. The selected
+action must be the same decoded decision. The full generation must have its
+actual terminal exit and the task result must bind the exact terminal receipt.
+A missing terminal, changed raw output, foreign generation or schema downgrade
+cannot qualify an effect. This verification preserves the one-shot path and
+does not treat a successful warm request as an exited process.
+
 ## Cancellation, deadlines and failures
 
 User Stop cancels the task owner and active request. The app rejects cancelled,
@@ -141,6 +152,10 @@ unknown final exit, late/uncommitted requests, stale generation/PID, duplicate
 or missing sequences, incorrect reset/create counts, destroy failure, shared
 log absence and corrupt output. The collector's original model, context,
 grammar, offload and independent-UI checks remain in force.
+File-backed suite tests pass explicit synthetic records through the real
+collector and then the real action verifier; their counterexamples retain
+cached positive flags so those flags cannot hide changed request or terminal
+files. These fixtures are host evidence only.
 
 Before installing this candidate, build and sign the exact frozen source and
 record its complete identity. Subsequent phone qualification must verify real

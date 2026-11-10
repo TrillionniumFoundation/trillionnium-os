@@ -88,8 +88,8 @@
     },
     {
       "path": "CODE29-TASK-WORKER.md",
-      "bytes": 9308,
-      "sha256": "487aff014aced1b1460be02ca90dfdd942c360293e91d02f0cc0d634b4422c42"
+      "bytes": 10337,
+      "sha256": "83cd22c7e7b1ed05622d7520ca9a44b24a7ffcb44ab6f864c69d6708cc7c083f"
     },
     {
       "path": "CODE5-PROGRESS.md",
@@ -5543,8 +5543,8 @@
     },
     {
       "path": "tools/phone_acceptance.py",
-      "bytes": 48902,
-      "sha256": "9f41cc25216980483e341d41d096c610941eb810224e9b6045c7f1b0054d786f"
+      "bytes": 49078,
+      "sha256": "c5398a4cba3379b0618eae2c7021a66d23a4da35fa7343cf5dcfa84b612ffe76"
     },
     {
       "path": "tools/phone_inventory.py",
@@ -5553,8 +5553,8 @@
     },
     {
       "path": "tools/phone_suite.py",
-      "bytes": 27038,
-      "sha256": "3ee862814c887faea4266f2c1d61892f3c3d2eed7c466c73f918fa8db4acdf65"
+      "bytes": 33257,
+      "sha256": "9be00e301c1fd5986e2f64c7ccf4033ca608d9a1874d42663b5d708990fd2f79"
     },
     {
       "path": "tools/run_host_checks.py",
@@ -5660,6 +5660,11 @@
       "path": "tools/test_warm_receipts.py",
       "bytes": 6806,
       "sha256": "88c806e8d65e7350c44e21551c661472861af565d420c99a8896c087c2f7a124"
+    },
+    {
+      "path": "tools/test_warm_suite.py",
+      "bytes": 7446,
+      "sha256": "515842f2b2129d2e99726425f0c0a5e3c1d723b9b1ea673fe1e9585a2b3bd8c7"
     },
     {
       "path": "tools/verify_mobimind_runtime.py",
@@ -5833,5 +5838,21 @@
     "warm_only_manifest_sha256": "e8cbb349747d6e21fe6961889d4859ca52d182ac480e4a45c71b662687826ff7",
     "profile_manifest_sha256": "4a36a88646d95c2f21ac75c189abb81876a58e50fde0522d45d6554ec0b1c618",
     "profile_cli_commit": "99332dc7a94b837d2d2c000f85da47abbe675826"
+  },
+  "code29_suite_binding_derivation": {
+    "frozen_integrated_parent_manifest_sha256": "b3c7dd556fe3bb5ecc31decb27aa1739bed795f7b3f733159e1bcab17da8ff2b",
+    "parent_git_head": "e885821c9a26099c446fafc2cb88bf3cd587a6b9",
+    "changed_members_excluding_manifest": [
+      "CODE29-TASK-WORKER.md",
+      "tools/phone_acceptance.py",
+      "tools/phone_suite.py",
+      "tools/test_warm_suite.py"
+    ],
+    "scope": "Revalidate actual collected warm requests and task-session terminal before qualifying each model-issued effect; bind task, app UID and parent, generation, sequence, current run and exact raw output; preserve one-shot behavior.",
+    "android_runtime_sources_changed": false,
+    "independent_goal_assertions_relaxed": false,
+    "host_qualification": "pending_exact_r4_gate",
+    "android_build": "pending_exact_r4_build",
+    "phone_qualification": "not_run"
   }
 }

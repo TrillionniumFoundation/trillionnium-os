@@ -439,7 +439,9 @@ def collect_evidence(adb, directory, task_id, instruction, baseline_runs, screen
         expected_compute="npu", expected_context=4096, expected_model_profile="lfm3-1.7b-qad-q4_0"):
     from model_profiles import profile
     selected=profile(expected_model_profile)
-    report = {"task_id": task_id, "associated_runs": [], "omitted_screenshots": [], "errors": [], "files": []}
+    report = {"task_id": task_id, "associated_runs": [], "omitted_screenshots": [], "errors": [], "files": [],
+        "app_uid_expected": expected_uid, "compute_expected": expected_compute,
+        "context_expected": expected_context, "model_profile_expected": expected_model_profile}
     warm_records = {}
     observations, explicit_runs, observation_packages = set(), set(), {}
     if not task_id:
