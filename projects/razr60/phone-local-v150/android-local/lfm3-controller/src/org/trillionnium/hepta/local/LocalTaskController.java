@@ -124,7 +124,7 @@ public final class LocalTaskController implements AutoCloseable {
         SameStateNoEffectGuard noEffectGuard=new SameStateNoEffectGuard();
         ObservedTransitionProjection.Transition lastTransition=null;
         try{
-            File root=new File(service.getFilesDir(),"control-tasks");privateDirectory(root);
+            File root=new File(service.getFilesDir().getCanonicalFile(),"control-tasks");privateDirectory(root);
             evidence=new File(root,taskId);if(!evidence.mkdir())throw new IllegalStateException("无法创建独立任务目录");privateDirectory(evidence);
             JSONObject owner=new JSONObject().put("schema","hepta.local-owner.v1").put("task_id",taskId)
                     .put("instruction",instruction).put("instruction_utf8_sha256",HeptaAccessibilityService.sha(instruction.getBytes(StandardCharsets.UTF_8)))

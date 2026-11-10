@@ -37,7 +37,14 @@ final class QualificationScopeConfig {
         MobiMindPrivateFiles.Read scopeFile,runtimeFile;
         final List<Installed> installed=new ArrayList<Installed>();
         private String failure;
-        Bound(Context context,String task,String expected){this.context=context;taskId=task;expectedSha256=expected;scopePath=new File(context.getFilesDir(),QualificationScope.FILE_NAME);}
+        Bound(Context context,String task,String expected){
+            this.context=context;taskId=task;expectedSha256=expected;
+            // Resolve only the framework-owned root; child aliases remain forbidden by the private-file reader.
+            File files=context.getFilesDir();
+            try{files=files.getCanonicalFile();}
+            catch(java.io.IOException error){refuse(error.getMessage()==null?"private root cannot be resolved":error.getMessage());}
+            scopePath=new File(files,QualificationScope.FILE_NAME);
+        }
         boolean restricted(){return raw!=null||expectedSha256!=null||failure!=null;}
         synchronized void requireReady(){if(failure!=null)throw new QualificationScope.Violation(failure);}
         synchronized void refuse(String reason){if(failure==null)failure=reason;gate.fail(reason);}
@@ -67,6 +74,7 @@ final class QualificationScopeConfig {
     static Bound capture(Context context,String taskId,String expected,LocalRuntimeConfig runtime){
         Bound bound=new Bound(context,taskId,expected);
         try{
+            bound.requireReady();
             QualificationScope.expected(expected);
             if(!MobiMindPrivateFiles.exists(bound.scopePath)){
                 QualificationScope.require(expected==null,"expected scope file missing");return bound;
@@ -81,7 +89,7 @@ final class QualificationScopeConfig {
             JSONObject asset=new JSONObject(new String(bound.buildBytes,StandardCharsets.UTF_8));
             QualificationScope.require("hepta.actual-build-inputs.v1".equals(asset.getString("schema"))
                     &&asset.getLong("version_code")==bound.config.heptaVersionCode&&asset.getJSONArray("source_inputs").length()>0,"build identity contract mismatch");
-            bound.runtimeFile=MobiMindPrivateFiles.read(new File(context.getFilesDir(),"model/runtime-config.json"),4096,true);
+            bound.runtimeFile=MobiMindPrivateFiles.read(new File(bound.scopePath.getParentFile(),"model/runtime-config.json"),4096,true);
             bound.runtimeConfigSha256=QualificationScope.hash(bound.runtimeFile.bytes);
             QualificationScope.require(bound.config.runtimeConfigSha256.equals(bound.runtimeConfigSha256),"runtime configuration hash mismatch");
             JSONObject runtimeJson=new JSONObject(new String(bound.runtimeFile.bytes,StandardCharsets.UTF_8));

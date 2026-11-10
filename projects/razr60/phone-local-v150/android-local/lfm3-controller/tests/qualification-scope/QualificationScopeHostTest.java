@@ -27,15 +27,22 @@ public final class QualificationScopeHostTest {
         final LocalRuntimeConfig runtime=new LocalRuntimeConfig(ModelProfile.ORVENA4B,"npu",8192,4);
         final Map<String,Object> fields=new LinkedHashMap<String,Object>();final String task="11111111111111111111111111111111";
         byte[] config;String scopeSha;QualificationScopeConfig.Bound bound;LocalTaskController controller;boolean cleanupUnknown,invalidRuntime;Case closeMutation;
-        Env(boolean scoped)throws Exception{
-            dir=Files.createTempDirectory(output,"scope-");
+        Env(boolean scoped)throws Exception{this(scoped,false);}
+        Env(boolean scoped,boolean frameworkAlias)throws Exception{
+            Path parent=Files.createTempDirectory(output,"scope-");File frameworkFiles;
+            if(frameworkAlias){
+                dir=Files.createDirectory(parent.resolve("files"));
+                Path alias=parent.resolveSibling(parent.getFileName().toString()+"-framework-alias");
+                Files.createSymbolicLink(alias,parent);frameworkFiles=alias.resolve("files").toFile();
+                check(!frameworkFiles.getAbsoluteFile().equals(frameworkFiles.getCanonicalFile()),"fixture must expose a real ancestor alias");
+            }else{dir=parent;frameworkFiles=dir.toFile();}
             String[] packages={"org.trillionnium.hepta.local",SETTINGS,SEARCH,CALC,HOME};
             for(int i=0;i<packages.length;i++){
                 PackageInfo info=new PackageInfo();info.packageName=packages[i];info.version=i==0?30:100+i;
                 info.applicationInfo=new ApplicationInfo();info.applicationInfo.packageName=packages[i];info.applicationInfo.uid=i==0?android.os.Process.myUid():10000+i;
                 Path apk=dir.resolve("installed/"+i+".apk");write(apk,bytes("synthetic-apk-"+packages[i]),0644);info.applicationInfo.sourceDir=apk.toString();pm.packages.put(packages[i],info);
             }
-            service=new HeptaAccessibilityService(dir.toFile(),pm);service.prepare(SETTINGS);
+            service=new HeptaAccessibilityService(frameworkFiles,pm);service.prepare(SETTINGS);
             service.launchable.put(SETTINGS,"设置");service.launchable.put(CALC,"计算器");service.launchable.put(HOME,"桌面");
             for(String p:FOREIGN)service.launchable.put(p,"synthetic-foreign");
             byte[] asset=bytes("{\"schema\":\"hepta.actual-build-inputs.v1\",\"version_code\":30,\"source_inputs\":[{\"path\":\"synthetic-fixture-only\",\"sha256\":\""+H+"\"}]}");
@@ -144,8 +151,36 @@ public final class QualificationScopeHostTest {
             LocalTaskController.TaskResult r=e.controller("done",SETTINGS,null);check("model_reported_done".equals(r.status)&&r.modelReportedSuccess&&r.cleanupKnown&&e.service.effects()==0,"valid done control");check(e.scopeSha.equals(r.expectedScopeSha256)&&e.scopeSha.equals(r.actualScopeSha256),"result object identity");
         }});
     }
+    static void privatePathCases()throws Exception{
+        test("framework_root_alias_scope_runtime_controller_evidence_and_revalidation",()->{try(Env e=new Env(true,true)){
+            QualificationScopeConfig.Bound bound=QualificationScopeConfig.capture(e.service,e.task,e.scopeSha,e.runtime);
+            bound.requireReady();bound.verifyUnchanged();
+            check(bound.scopePath.equals(e.dir.resolve(QualificationScope.FILE_NAME).toFile()),"scope must retain canonical root plus unchanged child");
+            check(bound.runtimeFile.path.equals(e.dir.resolve("model/runtime-config.json").toFile()),"runtime must share captured canonical root");
+            LocalTaskController.TaskResult r=e.controller("done",SETTINGS,null);
+            check("model_reported_done".equals(r.status)&&r.modelReportedSuccess&&r.cleanupKnown&&r.steps==1,"scoped controller must reach one synthetic model step: "+r.summary);
+            check(e.scopeSha.equals(r.expectedScopeSha256)&&e.scopeSha.equals(r.actualScopeSha256)&&e.service.effects()==0,"scope identity and zero UI effects");
+            Path evidence=r.evidenceDirectory.toPath();
+            check(Arrays.equals(e.config,Files.readAllBytes(evidence.resolve("qualification-scope.json"))),"scope evidence exact bytes");
+            check(Arrays.equals(bound.buildBytes,Files.readAllBytes(evidence.resolve("build-identity.json"))),"build evidence exact bytes");
+            check(Arrays.equals(bound.runtimeFile.bytes,Files.readAllBytes(evidence.resolve("scope-runtime-config.json"))),"runtime evidence exact bytes");
+            bound.verifyUnchanged();
+        }});
+        test("framework_root_alias_does_not_accept_scope_leaf_symlink",()->{try(Env e=new Env(true,true)){
+            Path scope=e.dir.resolve(QualificationScope.FILE_NAME),target=e.dir.resolve("same-scope-bytes.json");
+            Files.move(scope,target);Files.createSymbolicLink(scope,target);
+            QualificationScopeConfig.Bound bound=QualificationScopeConfig.capture(e.service,e.task,e.scopeSha,e.runtime);
+            rejects(()->bound.requireReady());check(bound.restricted()&&bound.raw==null,"leaf symlink must be refused before scope bytes load");
+        }});
+        test("framework_root_alias_does_not_accept_model_directory_symlink",()->{try(Env e=new Env(true,true)){
+            Path model=e.dir.resolve("model"),target=e.dir.resolve("same-model-directory");
+            Files.move(model,target);Files.createSymbolicLink(model,target);
+            QualificationScopeConfig.Bound bound=QualificationScopeConfig.capture(e.service,e.task,e.scopeSha,e.runtime);
+            rejects(()->bound.requireReady());check(bound.restricted()&&e.scopeSha.equals(bound.actualSha256)&&bound.runtimeFile==null,"intermediate child symlink must be refused before runtime read");
+        }});
+    }
     public static void main(String[] args)throws Exception{
-        output=Paths.get(args[0]);Files.createDirectories(output);
+        output=Paths.get(args[0]);Files.createDirectories(output);privatePathCases();
         test("closed_config_exact_roles_and_proof_identity",()->{try(Env e=new Env(true)){QualificationScope.Config c=QualificationScope.Config.parse(e.config);check(c.allows(SETTINGS)&&c.allows(SEARCH)&&c.allows(CALC)&&c.allows(HOME),"all roles");for(String p:FOREIGN)check(!c.allows(p),"foreign excluded");}});
         test("closed_config_missing_unknown_duplicate_and_type_rejected",()->{try(Env e=new Env(true)){
             final Map<String,Object> missing=new LinkedHashMap<String,Object>(e.fields);missing.remove("search_observation_sha256");rejects(()->QualificationScope.Config.parse(bytes(new JSONObject(missing).toString())));
