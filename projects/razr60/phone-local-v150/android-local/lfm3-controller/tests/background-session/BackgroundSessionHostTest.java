@@ -79,6 +79,21 @@ public final class BackgroundSessionHostTest {
         test("reconcile_confirmed_reboot_absent_known",()->{try(Env e=new Env()){e.journal();LocalSocket.missing=true;Settings.Global.boot=11;SystemClock.now=100;check(BackgroundSession.reconcile(e.context).known&&!e.journalPresent(),"boot-changed absence not reconciled");}});
         test("bad_journal_expiry_refused",()->{try(Env e=new Env()){JSONObject value=(JSONObject)invoke(e.session,"baseJournal",new Class<?>[]{});value.put("expires_elapsed_ms",1);MobiMindPrivateFiles.writeNew(e.directory.resolve(BackgroundSession.JOURNAL).toFile(),value.toString().getBytes(StandardCharsets.UTF_8));rejects(()->BackgroundSession.reconcile(e.context));check(e.journalPresent(),"invalid journal discarded");}});
         test("unstarted_close_is_known_without_broker",()->{try(Env e=new Env()){check(e.session.close().known&&e.session.released()&&LocalSocket.connections==0,"unstarted close tried broker");}});
+        for(boolean stop:new boolean[]{false,true})test("cleanup_unknown_with_late_scope_refusal_stop_"+stop,()->{
+            final int[] closes={0},cancels={0};
+            LocalInference model=new LocalInference(){
+                public void cancelTask(){cancels[0]++;}
+                public LocalInference.TaskCleanup endTask(){closes[0]++;return LocalInference.TaskCleanup.noWorker();}
+            };
+            ControllerFinalizationFixture controller=new ControllerFinalizationFixture(model);
+            controller.setScopeCheck(()->{throw new IllegalStateException("scope changed during model teardown");});
+            if(stop)controller.stop();
+            ControllerFinalizationFixture.Outcome result=controller.finish("blocked","background display release unknown",false,false,true);
+            check("blocked".equals(result.status)&&!result.cleanupKnown&&result.blocked&&!result.modelSuccess,
+                    "late scope refusal or Stop erased unresolved cleanup status");
+            check("scope changed during model teardown".equals(result.summary),"terminal reason was discarded");
+            check(closes[0]==1&&cancels[0]==(stop?1:0),"finalization repeated model cleanup or cancellation");
+        });
         Path output=Paths.get(args[0]);Files.createDirectories(output);JSONObject result=new JSONObject().put("schema","hepta.background-client-host-cases.v1").put("passed",passed).put("failed",rows.size()-passed).put("cases",new JSONArray(rows)).put("android_runtime",false).put("root_process_started",false).put("phone_actions",false);
         Files.write(output.resolve("RESULT.json"),result.toString(2).getBytes(StandardCharsets.UTF_8));System.out.println("background client host cases: "+passed+"/"+rows.size());if(passed!=rows.size())throw new AssertionError("client cases failed");
     }

@@ -321,6 +321,9 @@ public final class LocalTaskController implements AutoCloseable {
                     &&("model_reported_done".equals(finalStatus)||"partial".equals(finalStatus))){
                 finalStatus="failed";modelSuccess=false;summary="任务模型清理已完成，但运行回执未通过验证，请核对已经发生的操作";
             }
+            // An unresolved action/display cleanup remains an admission block even if a later
+            // scope/authorization check fails. Keep that later reason without weakening status.
+            if(!cleanup){blocked=true;finalStatus="blocked";modelSuccess=false;}
             if(evidence!=null){try{record(evidence,"result.json",new JSONObject().put("task_id",taskId).put("status",finalStatus)
                     .put("summary",summary).put("steps",steps).put("model_reported_success",modelSuccess)
                     .put("final_observation_id",observation==null?JSONObject.NULL:observation.id).put("cleanup_known",cleanup)

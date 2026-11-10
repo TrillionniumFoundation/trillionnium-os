@@ -1,6 +1,6 @@
 """Compile actual BackgroundSession and FilesRoot with explicit Android transport/display IO fakes."""
 from pathlib import Path
-import hashlib,json
+import hashlib,json,importlib.util
 
 def prepare(source,output):
  source,output=Path(source),Path(output);output.mkdir(parents=True,exist_ok=True)
@@ -13,7 +13,7 @@ def prepare(source,output):
   if name=='org/json/JSONObject.java':
    text=text.replace('    public boolean has(String key)', '    public String optString(String key){return optString(key,"");}\n    public String optString(String key,String fallback){Object value=fields.get(key);return value instanceof String?(String)value:fallback;}\n    public boolean has(String key)')
   if name=='android/system/Os.java':
-   text=text.replace(' public static void close(', ' public static boolean failUnlink;\n public static void unlink(String s)throws Exception{if(failUnlink)throw new IOException("synthetic unlink failure");Files.delete(Paths.get(s));}\n public static void rename(String a,String b)throws Exception{Files.move(Paths.get(a),Paths.get(b),StandardCopyOption.REPLACE_EXISTING);}\n public static void close(')
+   text=text.replace(' public static void close(', ' public static boolean failUnlink;\n public static void remove(String s)throws Exception{if(failUnlink)throw new IOException("synthetic remove failure");Files.delete(Paths.get(s));}\n public static void rename(String a,String b)throws Exception{Files.move(Paths.get(a),Paths.get(b),StandardCopyOption.REPLACE_EXISTING);}\n public static void close(')
   dst.write_text(text);files.append(dst)
  code={
  'org/json/JSONTokener.java':'''package org.json; public final class JSONTokener {private final String raw;public JSONTokener(String raw){this.raw=raw;}public Object nextValue()throws JSONException{return new JSONObject(raw);}public char nextClean(){return 0;}}''',
@@ -33,6 +33,14 @@ def prepare(source,output):
  for name,text in code.items():
   dst=output/name;dst.parent.mkdir(parents=True,exist_ok=True);dst.write_text(text);files.append(dst)
  files += [pkg/(name+'.java') for name in ('BackgroundSession','MobiMindPrivateFiles','QualificationScope')]
- records={'schema':'hepta.background-client-host-extraction.v1','actual_full_classes':['BackgroundSession','MobiMindPrivateFiles','QualificationScope'],'actual_files_root_sha256':hashlib.sha256(part.encode()).hexdigest(),'boundary':'Android LocalSocket/DisplayManager/Keyguard/clock IO are explicit fakes; no broker process, Android runtime, root, model or phone actions','source_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in files if p.parent==pkg}}
+ # The exact finalization block is shared with the existing warm-finalization harness.
+ # Android/model IO remains fake; the status policy itself is not reimplemented here.
+ warm_helper=source/'tests/warm-finalization/prepare_fixture.py'
+ warm_spec=importlib.util.spec_from_file_location('background_terminal_fixture',warm_helper)
+ warm=importlib.util.module_from_spec(warm_spec);warm_spec.loader.exec_module(warm)
+ terminal_files,terminal_record=warm.prepare(source,output/'terminal')
+ files += [p for p in terminal_files if p.name in ('LocalInference.java','ControllerFinalizationFixture.java')]
+
+ records={'schema':'hepta.background-client-host-extraction.v1','actual_full_classes':['BackgroundSession','MobiMindPrivateFiles','QualificationScope'],'actual_files_root_sha256':hashlib.sha256(part.encode()).hexdigest(),'boundary':'Android LocalSocket/DisplayManager/Keyguard/clock IO are explicit fakes; no broker process, Android runtime, root, model or phone actions','source_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in files if p.parent==pkg},'controller_finalization':terminal_record}
  (output/'EXTRACTION.json').write_text(json.dumps(records,indent=2)+'\n')
  return files,records

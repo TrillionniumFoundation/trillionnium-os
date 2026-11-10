@@ -243,7 +243,7 @@ final class BackgroundSession {
     private void deleteJournal()throws Exception{
         filesRoot.unchanged(context);JSONObject prior=readJournal(journal);
         if(!generation.equals(prior.getString("generation")))throw new IOException("后台租约已替换，不能删除");
-        Os.unlink(journal.getPath());MobiMindPrivateFiles.syncDirectory(filesRoot.path);
+        Os.remove(journal.getPath());MobiMindPrivateFiles.syncDirectory(filesRoot.path);
     }
     static boolean hasUnreleased(Context context){
         try{return MobiMindPrivateFiles.exists(new File(new QualificationScopeConfig.FilesRoot(context).path,JOURNAL));}
@@ -272,7 +272,7 @@ final class BackgroundSession {
                 .put("no_late_create",noLateCreate).put("display_absence_observed",displayAbsent(context,id,name))
                 .put("automatic_resume",false).put("broker_response",response==null?JSONObject.NULL:response);
         if(known){root.unchanged(context);if(!generation.equals(readJournal(path).getString("generation")))throw new IOException("清理期间后台租约发生变化");
-            Os.unlink(path.getPath());MobiMindPrivateFiles.syncDirectory(root.path);}
+            Os.remove(path.getPath());MobiMindPrivateFiles.syncDirectory(root.path);}
         return new Cleanup(known,evidence);
     }
     private static JSONObject readJournal(File file)throws Exception{
