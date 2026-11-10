@@ -1,0 +1,15 @@
+{
+  "schema": "hepta.ui-venus.app-draft-baseline.v1",
+  "base": "razr-model-profiles-code16-r1",
+  "source_manifest_sha256": "c75ab9b8aa01705e7dd0805baa45dfc41650837874ff8618e28442b73d77454f",
+  "base_modified": false,
+  "version_not_changed": false,
+  "built": false,
+  "installed": false,
+  "phone_contacted": false,
+  "native_worker_pin_pending": false,
+  "independent_android_worker_build_receipt_sha256": "da1a09791952e535bbd4bcf73b0da414c44b94b53f002338a4701e0a722060aa",
+  "candidate_version_code": 17,
+  "candidate_version_name": "0.17.0-local-ui-venus-probe",
+  "original_code16_modified": false
+}

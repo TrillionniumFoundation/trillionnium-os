@@ -1,0 +1,12 @@
+{
+  "schema": "hepta.code15.ci-binding-check.v1",
+  "frozen_code15_accepted": true,
+  "frozen_code14_rejected": true,
+  "previous_code14_build_receipt_rejected": true,
+  "new_helper_hash_and_source_pins_match": true,
+  "python_parse_pass": true,
+  "compiler_qualifier_unchanged": true,
+  "phone_contacted": false,
+  "runtime_build_executed": false,
+  "runtime_pins_changed": false
+}

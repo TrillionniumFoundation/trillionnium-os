@@ -1,0 +1,89 @@
+{
+  "schema": "hepta.mnn.git-byte-qualification.v1",
+  "job_id": "1a1bc895a80-138b0-321",
+  "source_commit": "bce7456ce60b5e51b4d3b357f303515860353d8c",
+  "files": [
+    {
+      "path": "express/Executor.cpp",
+      "checkout": {
+        "bytes": 24833,
+        "sha256": "79fd37b7111e91201efcbca12aa61f287d6ffe7d05a95cc7e9b215a6990cda05",
+        "crlf": 0,
+        "lonecr": 0,
+        "normalized_sha": "79fd37b7111e91201efcbca12aa61f287d6ffe7d05a95cc7e9b215a6990cda05"
+      },
+      "gitblob": {
+        "bytes": 24833,
+        "sha256": "79fd37b7111e91201efcbca12aa61f287d6ffe7d05a95cc7e9b215a6990cda05",
+        "crlf": 0,
+        "lonecr": 0,
+        "normalized_sha": "79fd37b7111e91201efcbca12aa61f287d6ffe7d05a95cc7e9b215a6990cda05"
+      },
+      "fixture": {
+        "bytes": 24834,
+        "sha256": "dfa3281b4f412be065233169b0f4cf2fe854af8b2f1b4fa7944af15a0a162c65",
+        "crlf": 0,
+        "lonecr": 0,
+        "normalized_sha": "dfa3281b4f412be065233169b0f4cf2fe854af8b2f1b4fa7944af15a0a162c65"
+      },
+      "first_difference": 24833,
+      "checkout_slice": "b' // namespace Express\\n} // namespace MNN'",
+      "fixture_slice": "b' // namespace Express\\n} // namespace MNN\\n'"
+    },
+    {
+      "path": "source/core/Pipeline.cpp",
+      "checkout": {
+        "bytes": 55493,
+        "sha256": "f7cd899354b062e55f19643a3b88becfcf4a33983f57b249362a4d72ded2cfa2",
+        "crlf": 0,
+        "lonecr": 0,
+        "normalized_sha": "f7cd899354b062e55f19643a3b88becfcf4a33983f57b249362a4d72ded2cfa2"
+      },
+      "gitblob": {
+        "bytes": 55493,
+        "sha256": "f7cd899354b062e55f19643a3b88becfcf4a33983f57b249362a4d72ded2cfa2",
+        "crlf": 0,
+        "lonecr": 0,
+        "normalized_sha": "f7cd899354b062e55f19643a3b88becfcf4a33983f57b249362a4d72ded2cfa2"
+      },
+      "fixture": {
+        "bytes": 55493,
+        "sha256": "f7cd899354b062e55f19643a3b88becfcf4a33983f57b249362a4d72ded2cfa2",
+        "crlf": 0,
+        "lonecr": 0,
+        "normalized_sha": "f7cd899354b062e55f19643a3b88becfcf4a33983f57b249362a4d72ded2cfa2"
+      },
+      "first_difference": 55493,
+      "checkout_slice": "b'pTensors.clear();\\n}\\n\\n} // namespace MNN\\n'",
+      "fixture_slice": "b'pTensors.clear();\\n}\\n\\n} // namespace MNN\\n'"
+    },
+    {
+      "path": "transformers/llm/engine/src/llm.cpp",
+      "checkout": {
+        "bytes": 75079,
+        "sha256": "30fafe27c266787512fd6a0a18811f7c7aeaed4b0215d185599e8e50777cf0b8",
+        "crlf": 0,
+        "lonecr": 0,
+        "normalized_sha": "30fafe27c266787512fd6a0a18811f7c7aeaed4b0215d185599e8e50777cf0b8"
+      },
+      "gitblob": {
+        "bytes": 75079,
+        "sha256": "30fafe27c266787512fd6a0a18811f7c7aeaed4b0215d185599e8e50777cf0b8",
+        "crlf": 0,
+        "lonecr": 0,
+        "normalized_sha": "30fafe27c266787512fd6a0a18811f7c7aeaed4b0215d185599e8e50777cf0b8"
+      },
+      "fixture": {
+        "bytes": 75079,
+        "sha256": "30fafe27c266787512fd6a0a18811f7c7aeaed4b0215d185599e8e50777cf0b8",
+        "crlf": 0,
+        "lonecr": 0,
+        "normalized_sha": "30fafe27c266787512fd6a0a18811f7c7aeaed4b0215d185599e8e50777cf0b8"
+      },
+      "first_difference": 75079,
+      "checkout_slice": "b'amespace Transformer\\n} // namespace MNN\\n'",
+      "fixture_slice": "b'amespace Transformer\\n} // namespace MNN\\n'"
+    }
+  ]
+}
+

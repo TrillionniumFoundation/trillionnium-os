@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.mobimind.packaging-pins.v1",
+  "worker_revision": "r4",
+  "mnn_source_commit": "bce7456ce60b5e51b4d3b357f303515860353d8c",
+  "worker_source_archive_sha256": "6dba288425cae32b15a74a66e7449d9a393ed56111fdcc237497b08088546080",
+  "worker_source_manifest_sha256": "b642269f327219c23d9fd778621921c85fd19cb8a35def970e5097ca88d2d8f5",
+  "build_receipt_sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab",
+  "geniex_release_members": false,
+  "http_resources_compiled": false,
+  "libraries": [
+    {
+      "source_name": "hepta-mobimind-probe",
+      "apk_name": "libhepta_mobimind_runner.so",
+      "bytes": 2186768,
+      "sha256": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020",
+      "needed": ["libMNN.so", "liblog.so", "libandroid.so", "libdl.so", "libm.so", "libc++_shared.so", "libc.so"],
+      "pie_executable": true
+    },
+    {
+      "source_name": "libMNN.so",
+      "apk_name": "libMNN.so",
+      "bytes": 6408488,
+      "sha256": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d",
+      "needed": ["liblog.so", "libm.so", "libandroid.so", "libc++_shared.so", "libdl.so", "libc.so"],
+      "pie_executable": false
+    },
+    {
+      "source_name": "libc++_shared.so",
+      "apk_name": "libc++_shared.so",
+      "bytes": 9236352,
+      "sha256": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754",
+      "needed": ["libc.so", "libm.so", "libdl.so"],
+      "pie_executable": false
+    }
+  ]
+}
