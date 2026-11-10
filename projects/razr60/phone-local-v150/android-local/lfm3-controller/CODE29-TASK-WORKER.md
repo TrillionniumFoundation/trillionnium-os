@@ -4,14 +4,18 @@ This candidate changes model lifetime within a controller task. The first
 request still loads and verifies the selected model. Subsequent requests in the
 same task retain the owned process and SDK model instance. Every request passes
 its complete current prompt and resets model state before generation. The
-candidate does not reuse a prior prompt's KV prefix, select a new model, change
-the model registry or change the controller's action policy.
+candidate does not reuse a prior prompt's KV prefix or change the controller's
+action policy. This integrated source inherits the complete closed model
+registry and CLI consumers from version 28, including Bonsai 2 9B Q2_0 and
+Orvena 4B Q4_K_M. The saved configuration and original default are preserved;
+the warm runtime does not select a model or backend automatically.
 
 Phone qualification is pending. Host tests with protocol peers or fake SDK
 functions do not establish real GenieX model behavior, NPU/GPU execution,
 latency, memory headroom, thermal behavior or phone task success. Actual Android
 compilation and signed artifacts require separate receipts for these exact
-source inputs. Existing version 27 evidence remains historical evidence.
+source inputs. Existing version 27, version 28 and the earlier warm-only
+version 29 host results remain historical evidence for their exact sources.
 
 ## Ownership and lifetime
 

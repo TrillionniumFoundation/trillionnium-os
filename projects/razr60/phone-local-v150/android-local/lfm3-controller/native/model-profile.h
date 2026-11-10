@@ -19,7 +19,9 @@ static const HeptaModelProfile hepta_profiles[]={
     {"nemotron-3.5-bolt-e4b-q4_k_m","Nemotron-3.5-Bolt-E4B-Q4_K_M.gguf","c8af2b8aea10a690a1d9491db744a9446660173cb38fc489612b556615a69612","gemma4",UINT64_C(6180446208),true},
     {"lfm2.5-8b-a1b-q4_0","LFM2.5-8B-A1B-Q4_0.gguf","48ed1465d761311b2fd57b7fb46cf969a20b3a8281945b04e10f52bd1609e715","lfm2moe",UINT64_C(4844678368),true},
     {"qwen3.5-4b-q4_0","Qwen3.5-4B-Q4_0.gguf","298fcb5fe7a77ccc79745ae24751560c5ac56874caff4bb39b1f2055bd72b8bb","qwen35",UINT64_C(2583221408),true},
-    {"qwen3.5-9b-q4_0","Qwen3.5-9B-Q4_0.gguf","17670346b4260ddcb0173965145155885024f3c9a4a24389a3370751edbcde24","qwen35",UINT64_C(5379417312),true}
+    {"qwen3.5-9b-q4_0","Qwen3.5-9B-Q4_0.gguf","17670346b4260ddcb0173965145155885024f3c9a4a24389a3370751edbcde24","qwen35",UINT64_C(5379417312),true},
+    {"bonsai2-9b-q2_0","Ternary-Bonsai-2-9B-Q2_0.gguf","1f884aa56aacd2bbbb2e4b7abaead2b1102b74a9c75a23fc33dab916813a384d","qwen35",UINT64_C(2556640128),true},
+    {"orvena-4b-q4_k_m","Orvena-4B.Q4_K_M.gguf","c5d6df6e9a0828fa3068dfc6f6ca2ff6c4d950adc7e60e4b7202ece61595aa57","qwen35",UINT64_C(2783447904),true}
 };
 static const HeptaModelProfile *hepta_model_profile;
 static const HeptaModelProfile *hepta_find_profile(const char *id){

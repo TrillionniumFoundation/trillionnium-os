@@ -20,6 +20,7 @@ import time
 import uuid
 import xml.etree.ElementTree as ET
 from warm_receipts import APP_REQUEST, NATIVE_REQUEST, request_contract, session_contract, collection_verified
+from model_profiles import DEFAULT_PROFILE, PROFILES
 
 PACKAGE = "org.trillionnium.hepta.local"
 COMPONENT = PACKAGE + "/.MainActivity"
@@ -744,7 +745,7 @@ def main():
     run.add_argument("--expected-package"); run.add_argument("--expected-visible-text", action="append", default=[])
     run.add_argument("--expected-compute", choices=("npu", "gpu"), default="npu")
     run.add_argument("--expected-context", type=int, choices=(4096,8192), default=4096)
-    run.add_argument("--expected-model-profile",choices=("lfm3-1.7b-qad-q4_0","minicpm5-2b-q4_k_m","spark-x2.6-4b-q4_k_m"),default="lfm3-1.7b-qad-q4_0")
+    run.add_argument("--expected-model-profile", choices=tuple(PROFILES), default=DEFAULT_PROFILE)
     run.add_argument("--text-match", choices=("exact", "contains"), default="exact")
     run.add_argument("--timeout", type=float, default=540); run.add_argument("--poll", type=float, default=2)
     run.add_argument("--stop-grace", type=float, default=25)

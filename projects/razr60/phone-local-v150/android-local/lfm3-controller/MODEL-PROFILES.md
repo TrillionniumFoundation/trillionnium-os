@@ -127,3 +127,44 @@ still LFM3. Installing this candidate does not rewrite a saved model configurati
 The official card specifies OpenMDW 1.1; no base-model license is inferred from
 the architecture. See `docs/CODE14-WINDOWS.md` for the pinned source,
 qualification boundaries and the independent controller changes.
+
+## Code28 experimental mobile-agent profiles
+
+| Profile | Source revision | Artifact | Bytes | SHA-256 |
+|---|---|---|---:|---|
+| bonsai2-9b-q2_0 | prism-ml/Ternary-Bonsai-2-9B-gguf at 82265ccc78ddaac4700286a35e9badcc32376dd9 | Ternary-Bonsai-2-9B-Q2_0.gguf | 2556640128 | 1f884aa56aacd2bbbb2e4b7abaead2b1102b74a9c75a23fc33dab916813a384d |
+| orvena-4b-q4_k_m | mradermacher/Orvena-4B-GGUF at a2f0300d9c43ee0911610d791ec3bfd302aafa6c | Orvena-4B.Q4_K_M.gguf | 2783447904 | c5d6df6e9a0828fa3068dfc6f6ca2ff6c4d950adc7e60e4b7202ece61595aa57 |
+
+Both candidates use qwen35 and exact same-input-ID token admission. The 256-token
+output limit, 55-second one-shot deadline, private file checks, closed grammar,
+controller prompt and explicit accelerator selection are unchanged. Installing
+this candidate does not alter saved configuration. No projector or automatic
+CPU/model fallback is admitted. RAM admission gates are 6 GiB for Bonsai and
+5 GiB for Orvena; these are not measured peak-memory claims.
+
+Bonsai is official Q2_0, not fork-only PQ2_0/PTQ1_0. The pinned llama.cpp source
+includes Bonsai graph transforms, Q2_0 Hexagon kernels and Hadamard processing.
+Source support does not qualify packaged binaries, SM8750 load, correct output,
+or phone-task completion. Initial qualification selects NPU. Pinned OpenCL
+does not advertise Q2_0 matrix multiplication.
+
+Orvena's GGUF is a community conversion; official model source Orvena/Orvena-4B
+is pinned at 050579754d478eab021b1b1ba063cfc809b95936. Its published 30-language
+evaluation omits Chinese and cannot establish Chinese Android UI performance.
+Verify each complete GGUF hash, byte count and actual header before import.
+The CLI/inventory registry fix from local commit
+99332dc7a94b837d2d2c000f85da47abbe675826 is included. Unknown profiles remain
+rejected and existing model identities/order are retained. Host tests do not
+establish inference or device qualification.
+
+## Code29 task-local worker lifetime
+
+Version 29 inherits the exact version 28 model identities and CLI registry. Its
+controller can retain one model instance within one task, reset it before each
+complete prompt and prove actual owned exit at task termination. The full
+native weight hash is performed once per owned generation, with held-descriptor
+metadata fences for every request. The one-shot diagnostic path still performs
+its original per-request load and verification. Initial model-specific RAM
+admission, exact token budgets, per-request deadlines, output bounds and
+fallback rejection remain in force. See `CODE29-TASK-WORKER.md`; the lifecycle
+change does not establish model quality, speed, or phone qualification.

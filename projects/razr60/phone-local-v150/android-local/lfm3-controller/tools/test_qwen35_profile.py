@@ -27,7 +27,7 @@ class Qwen35ClosedProfile(unittest.TestCase):
     def test_existing_default_is_unchanged(self):
         self.assertEqual(DEFAULT_PROFILE,"lfm3-1.7b-qad-q4_0")
         self.assertEqual(profile(),PROFILES[DEFAULT_PROFILE])
-        self.assertEqual(list(PROFILES)[-2],ID)
-        self.assertEqual(list(PROFILES)[-1],"qwen3.5-9b-q4_0")
+        self.assertEqual(list(PROFILES)[7],ID)
+        self.assertEqual(list(PROFILES)[8],"qwen3.5-9b-q4_0")
 
 if __name__=="__main__":unittest.main()

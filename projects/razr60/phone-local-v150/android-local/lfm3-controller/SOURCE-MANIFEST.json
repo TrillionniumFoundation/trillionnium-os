@@ -5,7 +5,7 @@
   "derived_from_code16_source_manifest_sha256": "c75ab9b8aa01705e7dd0805baa45dfc41650837874ff8618e28442b73d77454f",
   "android_build": "separate actual build receipt; source and host results do not establish Android or phone qualification",
   "phone_qualified": false,
-  "functional_scope": "Task-local serial native model instance; explicit reset for every complete prompt; actual owned terminal exit and generation-bound request/session evidence. Model profile registry, controller instructions and action domain remain inherited from v27.",
+  "functional_scope": "Task-local serial owned model worker and generation-bound request/terminal evidence, integrated with the exact closed code28 Bonsai/Orvena profile registry and CLI/inventory consumers. Full-prompt reset, action domain, default configuration and independent goal gates retained.",
   "ui_venus_native_host_build_receipt_sha256": "3dac4c0e91bd9c088e7330394953f6df74596feff04c7e815672ee8d3392e705",
   "ui_venus_phone_action_dispatch_connected": false,
   "ui_venus_ordinary_app_runtime_qualified": false,
@@ -88,8 +88,8 @@
     },
     {
       "path": "CODE29-TASK-WORKER.md",
-      "bytes": 9001,
-      "sha256": "a6f2efcdafe34d66956ac41832a31f0c11391d886181ed117a0176615b45bd02"
+      "bytes": 9308,
+      "sha256": "487aff014aced1b1460be02ca90dfdd942c360293e91d02f0cc0d634b4422c42"
     },
     {
       "path": "CODE5-PROGRESS.md",
@@ -133,8 +133,8 @@
     },
     {
       "path": "MODEL-PROFILES.md",
-      "bytes": 7832,
-      "sha256": "ff1abbae2b87d25c870525f44f8d93358ca727afe8b6299997f7bc41137acfce"
+      "bytes": 10488,
+      "sha256": "fa3d2f77ba00a8ae4a43e6be672ad9c8efac4f93abb05a26087926930b3eb25e"
     },
     {
       "path": "PUBLIC-BUILD.md",
@@ -4058,8 +4058,8 @@
     },
     {
       "path": "native/model-profile.h",
-      "bytes": 2588,
-      "sha256": "bc1a0683ddb0c795343a36f1ee43547b524dbbd1a421ab86bf0bed8e571e3d51"
+      "bytes": 2899,
+      "sha256": "ebd6af35cb207475348224757cfb23ba08ebe94fb31441f669b899c8129eca49"
     },
     {
       "path": "native/model-runtime.inc",
@@ -4112,6 +4112,11 @@
       "sha256": "abafcecc5d7d2a87a8d579f39831d38c09c2f85bc498269bff9301765ca15821"
     },
     {
+      "path": "native/tests/mobile_agent_profiles_contract.c",
+      "bytes": 1245,
+      "sha256": "16e8bfe0f45883ea05068f1bb1b8f813c89bac7e567afbf8546935641cdf422e"
+    },
+    {
       "path": "native/tests/model_profile_contract.c",
       "bytes": 1669,
       "sha256": "c045929ef885803050275d3f206d25552121bd13a059dd4a7b2005105f7f1229"
@@ -4138,8 +4143,8 @@
     },
     {
       "path": "native/tests/qwen35_profile_contract.c",
-      "bytes": 2417,
-      "sha256": "f5f0088cd74bb6456c34143e5e49c737531d65ce7e42a8504e1028248c2e5094"
+      "bytes": 2418,
+      "sha256": "5d699490eaa673baebd8db28fd03c95ccde1690996511da3605dbe6c03249b63"
     },
     {
       "path": "native/tests/sha256_probe.c",
@@ -4908,8 +4913,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ModelProfile.java",
-      "bytes": 5340,
-      "sha256": "7b3f860aa4575a7e87a4e6eff85f497bc498d6fc93ab53c4230e1264f5d06fae"
+      "bytes": 6213,
+      "sha256": "05b6470bbeffec320432ba8ac7d323fda08c7823eee8fe303201a0bdde6c7795"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeBudgetVerifier.java",
@@ -5150,6 +5155,11 @@
       "path": "tests/MobiMindSessionContractHostTest.java",
       "bytes": 4373,
       "sha256": "0adddcf74e0379ac7f2cd46aa255e22f43416bd1081f03cfde9beec1f376f0ec"
+    },
+    {
+      "path": "tests/MobileAgentProfilesHostTest.java",
+      "bytes": 2443,
+      "sha256": "34195d82c4fe1ae2357b764fc76c5b7fe99b0f08befe1b3c82992e4e4cbc911a"
     },
     {
       "path": "tests/ModelProfileHostTest.java",
@@ -5483,8 +5493,8 @@
     },
     {
       "path": "tools/PHONE-ACCEPTANCE.md",
-      "bytes": 7040,
-      "sha256": "8b0b5ff513ecfa594793f47a629a6331115141ca89fb867cac3f567332fdcc9e"
+      "bytes": 8828,
+      "sha256": "4bd6613e923e4224b5e49aa3627956dbcc20c0f7955fe6b79f869e22f37e382b"
     },
     {
       "path": "tools/PHONE-SUITE.md",
@@ -5528,18 +5538,18 @@
     },
     {
       "path": "tools/model_profiles.py",
-      "bytes": 2281,
-      "sha256": "56d8553bfa7d0cd9f6f4b208112cb564cde85fda1d5d50ddb22528738c923774"
+      "bytes": 2702,
+      "sha256": "f5c296c5f57ec770e6a46a111c27fc72dbf09972041655556d1123397e497b9e"
     },
     {
       "path": "tools/phone_acceptance.py",
-      "bytes": 48903,
-      "sha256": "a79034f5ff11c6967db6cfa49296ba7b163d7b5de8e8caca99fc8cfaa8908a43"
+      "bytes": 48902,
+      "sha256": "9f41cc25216980483e341d41d096c610941eb810224e9b6045c7f1b0054d786f"
     },
     {
       "path": "tools/phone_inventory.py",
-      "bytes": 50865,
-      "sha256": "e3a679c4f08c3a9ef2b9f1dda786a5b2638f1de349bb2c257c60dd1a7be32863"
+      "bytes": 50893,
+      "sha256": "d25889ef9fffb22e08871f7a3b57a57e28d5f48977d4e42929364434599ea58e"
     },
     {
       "path": "tools/phone_suite.py",
@@ -5577,6 +5587,11 @@
       "sha256": "954930b1d0db2a73b3b65c194150b2769e8d929207cda76a1405d6d1af51f617"
     },
     {
+      "path": "tools/test_mobile_agent_profiles.py",
+      "bytes": 2984,
+      "sha256": "a9654a499bee006b361a27f1b785edab7a2b6ed4007fba062b10c116c12d7e29"
+    },
+    {
       "path": "tools/test_model_profiles.py",
       "bytes": 3293,
       "sha256": "99411bf66d49bc5a7679df7324efbfe3f8e33d726f2665ff7e29d7b5a50eaea5"
@@ -5597,9 +5612,14 @@
       "sha256": "790549d00157e8cade573acea4ac62e5ae5d875684a8c1473855c07f03184506"
     },
     {
+      "path": "tools/test_profile_registry_consumers.py",
+      "bytes": 6076,
+      "sha256": "f72e54d54bd557c9bfbce44954296359ee595e6dfe87c237e70f9f4221b54b5a"
+    },
+    {
       "path": "tools/test_qwen35_profile.py",
-      "bytes": 1822,
-      "sha256": "dcc9bcbdd6fefbaba06e87327783f0e23bef65682b3c7144ac85641358445c83"
+      "bytes": 1820,
+      "sha256": "397155470dc312309c1c66e209f3c8b9b3185381085fdf8f1446e9b0bb9e6d10"
     },
     {
       "path": "tools/test_recovery_application.py",
@@ -5804,6 +5824,14 @@
   },
   "derived_from_code27_source_manifest_sha256": "43fc6394d564683eee7d1e5b1874527e7f4f52e71e6baf04c7125ceec928772d",
   "derived_from_code27_git_head": "de197700828dbddef9d1077dfe3d457a5cbe9295",
-  "model_profiles_changed": false,
-  "validation_note": "Retained historical metadata and root HOST-CHECKS.json do not qualify code29; exact new host/build receipts are separately recorded. Phone qualification remains pending."
+  "model_profiles_changed": true,
+  "validation_note": "Historical v27/v28 and warm-only v29 records are retained for their exact sources. This integrated source requires new exact host/Android receipts; phone qualification and real GenieX reset/close remain pending.",
+  "model_profiles_equal_to_code28": true,
+  "warm_runtime_changes_model_registry": false,
+  "code29_source_parents": {
+    "warm_only_commit": "587e477cb2d8312138f6a2aa44c4fb64a948b97b",
+    "warm_only_manifest_sha256": "e8cbb349747d6e21fe6961889d4859ca52d182ac480e4a45c71b662687826ff7",
+    "profile_manifest_sha256": "4a36a88646d95c2f21ac75c189abb81876a58e50fde0522d45d6554ec0b1c618",
+    "profile_cli_commit": "99332dc7a94b837d2d2c000f85da47abbe675826"
+  }
 }
