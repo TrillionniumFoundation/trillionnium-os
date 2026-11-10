@@ -23,7 +23,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     private MobiMindModelEngine visualDiagnostic;
     private UiVenusModelEngine uiVenusDiagnostic;
     private BackgroundPermissionSession backgroundPermission;
-    private Button prepareBackgroundPermission;
+    private Button prepareBackgroundPermission,openRootManager;
     private TextView backgroundPermissionState;
     private EditText taskInput, probePrompt;
     private TextView modelInfo, taskState, taskLog, taskResult, probeOutput;
@@ -67,7 +67,10 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         });
         previewTaskAuthorization();
         backgroundMode=new CheckBox(this);backgroundMode.setText("在后台空间操作");page.addView(backgroundMode);
-        prepareBackgroundPermission=button("启用后台执行权限");page.addView(prepareBackgroundPermission);
+        page.addView(text("后台操作需要本机 root 权限。Magisk 31.1 及以上不再弹出授权请求：请在管理器的「超级用户」页点「+」，添加并允许 Hepta（org.trillionnium.hepta.local，UID "+android.os.Process.myUid()+"），然后返回核验。其它版本请按管理器界面操作。",12));
+        openRootManager=button("打开 Magisk 管理器");page.addView(openRootManager);
+        openRootManager.setOnClickListener(v -> openRootManagerFromOwnerButton());
+        prepareBackgroundPermission=button("核验后台执行权限");page.addView(prepareBackgroundPermission);
         backgroundPermissionState=text("",12);page.addView(backgroundPermissionState);
         prepareBackgroundPermission.setOnClickListener(v -> {
             if(!hasWindowFocus()||isFinishing()||isDestroyed())return;
@@ -127,6 +130,26 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     private int dp(int value){return Math.round(value*getResources().getDisplayMetrics().density);}
     private TextView text(String value,int size){TextView view=new TextView(this);view.setText(value);view.setTextSize(size);view.setPadding(0,dp(5),0,dp(5));return view;}
     private Button button(String label){Button view=new Button(this);view.setText(label);return view;}
+    /** Normal owner navigation only; no grant, su request, task or permission-state update. */
+    private void openRootManagerFromOwnerButton(){
+        if(!hasWindowFocus()||isFinishing()||isDestroyed())return;
+        if(!rootManagerNavigationIdle()){
+            backgroundPermissionState.setText("请先结束当前任务、诊断或权限核验，再打开管理器。");return;
+        }
+        try{
+            Intent launch=getPackageManager().getLaunchIntentForPackage("com.topjohnwu.magisk");
+            if(launch==null){backgroundPermissionState.setText("未找到默认包名的 Magisk 管理器。若管理器已隐藏或改名，请从桌面手动打开；授权 Hepta 后返回核验。");return;}
+            startActivity(launch);
+        }catch(android.content.ActivityNotFoundException|SecurityException error){
+            backgroundPermissionState.setText("无法打开 Magisk 管理器，请从桌面手动打开并授权 Hepta，然后返回核验。");
+        }
+    }
+    private boolean rootManagerNavigationIdle(){
+        return !tasks.isRunning()&&!tasks.isBlocked()&&!tasks.isRecovering()&&!tasks.hasBackgroundLease()
+                &&!engine.isBusy()&&!backgroundPermission.blocksOtherWork()
+                &&!visualDiagnostic.isBusy()&&!visualDiagnostic.isBlocked()
+                &&!uiVenusDiagnostic.isBusy()&&!uiVenusDiagnostic.isBlocked();
+    }
     private void previewTaskAuthorization(){
         if(taskAuthorizationInfo==null)return;
         try{taskAuthorizationInfo.setText(TaskAuthorization.parse(taskInput.getText().toString()).summary());}
@@ -379,6 +402,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         taskState.setText(tasks.state());taskLog.setText(tasks.log());
         boolean busy=tasks.isRunning()||engine.isBusy();
         backgroundPermissionState.setText(backgroundPermission.state());
+        openRootManager.setEnabled(rootManagerNavigationIdle());
         prepareBackgroundPermission.setEnabled(!busy&&!tasks.isBlocked()&&!tasks.isRecovering()&&!tasks.hasBackgroundLease()
                 &&!visualDiagnostic.isBusy()&&!visualDiagnostic.isBlocked()&&!uiVenusDiagnostic.isBusy()&&!uiVenusDiagnostic.isBlocked());
         backgroundMode.setEnabled(!busy&&!tasks.isRecovering());pickBackgroundApps.setEnabled(!busy&&!tasks.isRecovering());initialBackgroundApp.setEnabled(!busy&&!tasks.isRecovering());

@@ -26,7 +26,7 @@ public final class BackgroundPermissionSession implements AutoCloseable {
     private WeakReference<Listener> listener=new WeakReference<Listener>(null);
     private volatile LocalModelEngine.ExternalRunLease active;
     private volatile boolean blocked=true,closed;
-    private volatile String state="后台执行权限尚未核验。每次核验只确认当时的权限，不保证永久授权。";
+    private volatile String state="后台执行权限尚未核验。请先在 root 管理器中允许 Hepta，再核验当前权限；每次核验不保证永久授权。";
     private byte[] historicalUnknownRecord;
     BackgroundPermissionSession(Context context,LocalModelEngine model){
         this(context,model,()->new ProcessBuilder(BackgroundPermissionPreparation.command()).start(),SystemClock::elapsedRealtime,Executors.newSingleThreadExecutor());
@@ -58,7 +58,7 @@ public final class BackgroundPermissionSession implements AutoCloseable {
         requireMain();if(closed||blocksOtherWork()||model.isBusy())throw new IllegalStateException("权限准备或其他本地请求仍在运行，或退出未确认");
         final BackgroundPermissionPreparation.Request request=request(UUID.randomUUID().toString().replace("-",""));
         final LocalModelEngine.ExternalRunLease lease=model.reserveExternal(request.id);active=lease;
-        setState("正在请求本机 root 授权，请在系统授权界面选择；最多等待 60 秒。尚未创建后台空间。");
+        setState("正在只读核验 Hepta 当前的 root 权限，最多等待 60 秒。Magisk 31.1 及以上需事先在管理器中授权，不会弹出授权请求。尚未创建后台空间。");
         try{worker.execute(()->execute(request,lease));}
         catch(RuntimeException failure){
             // No worker was submitted, but release still requires an independently durable terminal.
@@ -84,7 +84,7 @@ public final class BackgroundPermissionSession implements AutoCloseable {
                 });
         if(result.cleanupKnown){
             try{lease.releaseAfterTerminalPublication(true);active=null;
-                setState(result.verified?"本次后台执行权限核验通过。尚未创建后台空间；授权期限由系统授权管理决定，不保证永久授权。":"本次权限未通过核验（"+result.status+"）。未创建后台空间，请查看记录后由你决定是否重新核验。");}
+                setState(result.verified?"本次后台执行权限核验通过。尚未创建后台空间；授权期限由系统授权管理决定，不保证永久授权。":"本次权限未通过核验（"+result.status+"）。未创建后台空间。若使用 Magisk 31.1 及以上，请先在「超级用户」中添加并允许 Hepta，再返回核验；打开管理器本身不表示已授权。");}
             catch(RuntimeException failure){blocked=true;persistLatch(failure);setState("权限准备的退出记录未能释放原进程占用；新请求已暂停。");}
         }else{
             blocked=true;

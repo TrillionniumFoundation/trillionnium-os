@@ -35,7 +35,7 @@ class ExactAdmissionTest(unittest.TestCase):
             result = subprocess.run([java, "-cp", str(classes), "org.trillionnium.hepta.local.PromptAdmissionHostTest"],
                                     capture_output=True, text=True, timeout=30)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertIn("PASS cases=5 ", result.stdout)
+            self.assertIn("PASS cases=6 ", result.stdout)
             print(result.stdout, end="")
 
 

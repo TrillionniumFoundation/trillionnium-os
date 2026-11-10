@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.trillionnium.hepta.local" android:versionCode="39" android:versionName="0.39.0-local-background-setup">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.trillionnium.hepta.local" android:versionCode="40" android:versionName="0.40.0-local-progress-guidance">
     <uses-sdk android:minSdkVersion="30" android:targetSdkVersion="35" />
     <queries>
         <package android:name="com.android.settings" />
         <package android:name="com.android.settings.intelligence" />
         <package android:name="com.motorola.cn.calculator" />
         <package android:name="com.motorola.launcher3" />
+        <package android:name="com.topjohnwu.magisk" />
         <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent>
         <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.HOME" /></intent>
     </queries>

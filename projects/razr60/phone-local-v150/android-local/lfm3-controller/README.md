@@ -1,13 +1,34 @@
-# Hepta v39: owner UI preparation for background execution
+# Hepta v40: bounded model continuity and permission guidance
 
-Current candidate: versionCode 39 (`0.39.0-local-background-setup`), based on frozen v38.
+Current candidate: versionCode 40 (`0.40.0-local-progress-guidance`), based on frozen v39
+commit `5a68ef538ca8a9d76591dd6adb089b90b0ad97d4`.
+
+The owner UI explains Magisk 31.1's requirement to configure a grant in its
+Superuser page before running a command. **打开 Magisk 管理器** opens only the normal
+launcher for `com.topjohnwu.magisk`; hidden or renamed managers must be opened
+manually. **核验后台执行权限** retains the existing fixed read-only probe and its
+independent receipts. Opening the manager does not grant or verify permission.
+See [CODE40-PROGRESS-GUIDANCE.md](CODE40-PROGRESS-GUIDANCE.md).
+
+The ordinary controller now retains one bounded prior model intention after a
+real accepted/dispatched step. It is explicitly marked as model output rather
+than observation evidence and cannot supply tool authority or old target pairs.
+This tests a continuity hypothesis from the actual Qwen failure; improved model
+quality has not been established. System instructions, model selection, native
+inference, action dispatch and permission preparation semantics remain unchanged.
+Full host/Android compilation and real-device acceptance for v40 remain outstanding.
+
+## v39 predecessor: owner UI preparation
+
+The v39 predecessor is versionCode 39 (`0.39.0-local-background-setup`), based on frozen v38.
 
 The normal UI now offers **启用后台执行权限**, a fixed read-only `su -c /system/bin/id -u`
 probe under the ordinary application UID. It has independent receipts and shares
 the existing process lease, so preparation cannot overlap tasks or model diagnostics.
 See [CODE39-BACKGROUND-SETUP.md](CODE39-BACKGROUND-SETUP.md) for exact verification,
 interruption behavior and the distinction between one successful probe and permanent
-authorization. This candidate still requires Android build and real phone acceptance.
+authorization. That historical implementation is retained; its old qualification
+notes do not substitute for v40 build or device evidence.
 
 ## v38 predecessor: observed query-field submission
 

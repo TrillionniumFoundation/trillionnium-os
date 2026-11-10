@@ -244,6 +244,7 @@ public final class OwnerAuthorizationWiringHostTest {
             check("failed".equals(r.status)&&!r.modelReportedSuccess&&r.cleanupKnown&&model.calls==1&&e.service.effects()==0,"Owner violation is terminal, not format repair or successful done");
             check(!model.grammars.get(0).actions.contains("click")&&!model.grammars.get(0).actions.contains("type"),"actual prompt grammar already narrows forbidden tools");
             check(!Files.exists(r.evidenceDirectory.toPath().resolve("step-01-action.json")),"rejected proposal never reaches Service action dispatch");
+            check(!promptData(model.prompts.get(0)).has("last_model_decision"),"rejected first proposal creates no retained model intention");
         }});
         test("controller_real_find_open_observation_done_full_evidence_chain",()->{try(QualificationScopeHostTest.Env e=env()){
             ScriptModel model=new ScriptModel(e,"sequence");e.service.effectHook=()->e.service.prepare(CLOCK);LocalTaskController.TaskResult r=controller(e,model);controllerIdentity(r,model);
@@ -256,6 +257,15 @@ public final class OwnerAuthorizationWiringHostTest {
                 check(r.taskId.equals(auth.getString("task_id"))&&a.getString("model_run_id").equals(last.getString("model_run_id"))&&last.getBoolean("allowed")&&auth.getBoolean("callback_lease_current")&&!auth.getBoolean("callback_cancelled"),"actual callback evidence closed");
                 JSONObject data=promptData(model.prompts.get(step-1));boolean expectedSuccess=step==3;
                 check(data.getJSONObject("task_authorization").getBoolean("success_done_allowed")==expectedSuccess,"success gate only opens after real target observation");
+                if(step<3)check(!data.has("last_model_decision"),"initial frame and read-only find_app do not manufacture dispatched intention");
+                else{
+                    JSONObject prior=data.getJSONObject("last_model_decision");
+                    String actualReason=json(evidence.resolve("step-02-action.json")).getJSONObject("action").getString("reason");
+                    check("prior_model_output_not_observation".equals(prior.getString("source"))&&prior.getInt("step")==2
+                            &&"open".equals(prior.getString("action"))&&actualReason.equals(prior.getString("reason")),"actual prior dispatched model output reaches ordinary next prompt");
+                    check(!prior.has("node_id")&&!prior.has("observation_id")&&!prior.has("success")&&!prior.has("allowed_tools"),"model intention cannot reissue a historical action or authority");
+                    check(!model.grammars.get(step-1).actions.contains("click")&&!model.grammars.get(step-1).actions.contains("type"),"retained model permission claim cannot widen actual next grammar");
+                }
             }
             JSONObject terminal=json(evidence.resolve("result.json")),gate=terminal.getJSONObject("task_authorization");String observed=gate.getString("opened_observation_id");
             JSONObject observation=json(evidence.resolve("scope-observation-"+observed+".json"));

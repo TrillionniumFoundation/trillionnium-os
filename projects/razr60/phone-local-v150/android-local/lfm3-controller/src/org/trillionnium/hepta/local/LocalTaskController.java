@@ -143,6 +143,7 @@ public final class LocalTaskController implements AutoCloseable {
         JSONArray history=new JSONArray();RepeatActionGuard repeatGuard=new RepeatActionGuard();
         SameStateNoEffectGuard noEffectGuard=new SameStateNoEffectGuard();
         ObservedTransitionProjection.Transition lastTransition=null;
+        LastModelDecisionProjection lastModelDecision=null;
         try{
             QualificationScopeConfig.FilesRoot filesRoot=new QualificationScopeConfig.FilesRoot(service);
             File root=MobiMindPrivateFiles.directory(new File(filesRoot.path,"control-tasks"),false);
@@ -195,7 +196,7 @@ public final class LocalTaskController implements AutoCloseable {
                 checkActive(deadline);steps++;
                 final PhoneObservation before=observation;
                 record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-before.json",steps),before.toJson());
-                PromptFrame frame=prompt(instruction,apps,before,history,lastTransition,null,config,repeatGuard,noEffectGuard,authorization.frame(),scope.config);
+                PromptFrame frame=prompt(instruction,apps,before,history,lastTransition,lastModelDecision,null,config,repeatGuard,noEffectGuard,authorization.frame(),scope.config);
                 String prompt=frame.text;
                 ActionDecision action=null;String decisionRunId=null;
                 for(int attempt=0;attempt<2;attempt++){
@@ -223,7 +224,7 @@ public final class LocalTaskController implements AutoCloseable {
                                 .put("validator_error",HeptaAccessibilityService.limited(error.getMessage(),96))
                                 .put("rejected_output",HeptaAccessibilityService.limited(answer.text,220))
                                 .put("excerpt",answer.text.length()>220);
-                        frame=prompt(instruction,apps,before,history,lastTransition,correction,config,repeatGuard,noEffectGuard,authorization.frame(),scope.config);
+                        frame=prompt(instruction,apps,before,history,lastTransition,lastModelDecision,correction,config,repeatGuard,noEffectGuard,authorization.frame(),scope.config);
                         prompt=frame.text;
                     }
                 }
@@ -299,6 +300,9 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("find_returned",outcome.appCatalogue.apps.size()).put("find_matches",outcome.appCatalogue.matchingApps)
                         .put("find_catalogue_sha256",outcome.appCatalogue.catalogueSha256);
                 history.put(row);record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-after.json",steps),observation.toJson());
+                LastModelDecisionProjection dispatchedDecision=LastModelDecisionProjection.fromOutcome(taskId,steps,decisionRunId,before.id,action,
+                        outcome.accepted,outcome.dispatched,outcome.stale);
+                if(dispatchedDecision!=null)lastModelDecision=dispatchedDecision;
                 lastTransition=observedTransition(steps,before,observation);
                 if("done".equals(action.action)){
                     if(!before.packageName.equals(observation.packageName)||before.windowId!=observation.windowId
@@ -490,7 +494,7 @@ public final class LocalTaskController implements AutoCloseable {
                 .put("event_history_detail_omitted_steps",new JSONArray())
                 .put("original_instruction_unchanged",true);}
     }
-    private static PromptFrame prompt(final String owner,AppCatalogueRanker.Page catalogue,PhoneObservation observation,JSONArray history,ObservedTransitionProjection.Transition lastTransition,JSONObject repair,LocalRuntimeConfig config,RepeatActionGuard repeatGuard,SameStateNoEffectGuard noEffectGuard,TaskAuthorization.Frame authorization,QualificationScope.Config scope)throws Exception{
+    private static PromptFrame prompt(final String owner,AppCatalogueRanker.Page catalogue,PhoneObservation observation,JSONArray history,ObservedTransitionProjection.Transition lastTransition,LastModelDecisionProjection lastModelDecision,JSONObject repair,LocalRuntimeConfig config,RepeatActionGuard repeatGuard,SameStateNoEffectGuard noEffectGuard,TaskAuthorization.Frame authorization,QualificationScope.Config scope)throws Exception{
         TaskAuthorization.require(authorization!=null,"提示缺少任务授权");authorization.authorization.requireOwner(owner);
         java.util.List<AppCatalogueRanker.Entry> allApps=catalogue.apps;
         java.util.List<PhoneObservation.Node> nodes=new java.util.ArrayList<PhoneObservation.Node>(observation.nodes);
@@ -605,6 +609,7 @@ public final class LocalTaskController implements AutoCloseable {
             }
             if(repair!=null)data.put("format_correction",repair);
             data.put("events",eventJson);
+            if(lastModelDecision!=null)data.put("last_model_decision",new JSONObject(lastModelDecision.forPrompt(authorization.taskId,historyRows)));
             if(lastTransition!=null)data.put("last_transition",new JSONObject(lastTransition.forCurrent(observation.id,observation.packageName)));
             data.put("screen",screen);
             // Escape markup only in untrusted JSON. Owner text is unchanged.
@@ -636,7 +641,7 @@ public final class LocalTaskController implements AutoCloseable {
     private static String promptSections(JSONObject data)throws Exception{
         StringBuilder out=new StringBuilder("{\n");int included=0;
         for(String key:new String[]{"action_schema","task_authorization","background_session","apps","open_allowed_packages","apps_omitted","app_search",
-                "blocked_action","blocked","format_correction","events","last_transition","screen"}){
+                "blocked_action","blocked","format_correction","events","last_model_decision","last_transition","screen"}){
             if(!data.has(key))continue;
             if(included++>0)out.append(",\n");
             String section=new JSONObject().put(key,data.get(key)).toString();

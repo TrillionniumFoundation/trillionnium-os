@@ -43,13 +43,14 @@ public final class PromptAdmissionFixture {
 """ + parts["system"] + parts["prompt_builder"] + """
     public static final class Result {
         public final String text;
+        public final DecisionGrammar grammar;
         public final ConservativeTokenBudget budget;
         public final java.util.Set<String> ids;
         public final int nodes,required,visibleText,history;
         public final RecentActionProjection.ReadableEvents events;
         public final JSONObject budgetReceipt;
         Result(PromptFrame frame)throws Exception{
-            text=frame.text;budget=frame.budget;ids=frame.nodeIds;
+            text=frame.text;grammar=frame.grammar;budget=frame.budget;ids=frame.nodeIds;
             nodes=frame.nodesShown;required=frame.requiredNodes;
             visibleText=frame.visibleTextShown;history=frame.historyShown;
             events=frame.eventHistory;budgetReceipt=frame.budgetJson();
@@ -57,7 +58,11 @@ public final class PromptAdmissionFixture {
     }
     public static Result build(String owner,AppCatalogueRanker.Page apps,PhoneObservation observation,
             JSONArray history,LocalRuntimeConfig config)throws Exception{
-        return new Result(prompt(owner,apps,observation,history,null,null,config,
+        return buildWithDecision(owner,apps,observation,history,config,null);
+    }
+    public static Result buildWithDecision(String owner,AppCatalogueRanker.Page apps,PhoneObservation observation,
+            JSONArray history,LocalRuntimeConfig config,LastModelDecisionProjection prior)throws Exception{
+        return new Result(prompt(owner,apps,observation,history,null,prior,null,config,
                 new RepeatActionGuard(),new SameStateNoEffectGuard(),TaskAuthorization.parse(owner).bind("cccccccccccccccccccccccccccccccc").frame(),null));
     }
     private interface InferenceConfig { LocalRuntimeConfig configuration(); }
