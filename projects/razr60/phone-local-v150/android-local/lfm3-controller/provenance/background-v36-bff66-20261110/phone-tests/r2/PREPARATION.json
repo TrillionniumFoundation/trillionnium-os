@@ -1,0 +1,603 @@
+{
+  "schema": "hepta.background-phone-test-preparation.v2",
+  "revision": "r2",
+  "status": "prepared_phone_not_executed",
+  "python_ast_parse": true,
+  "pure_parser_regression_executed": true,
+  "fixture_origin": "synthetic_not_phone_observations",
+  "cases": 22,
+  "passed": 22,
+  "results": [
+    {
+      "name": "root_app_process",
+      "processes": [
+        {
+          "pid": 601,
+          "uid": 0,
+          "ppid": 500,
+          "args": "/system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": true,
+      "expected_pids": [
+        601
+      ],
+      "actual": {
+        "verified": true,
+        "pids": [
+          601
+        ],
+        "matched_sample_count": 1,
+        "identities": [
+          {
+            "pid": 601,
+            "uid": 0,
+            "argv0": "/system/bin/app_process"
+          }
+        ],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "shell_uid_app_process64",
+      "processes": [
+        {
+          "pid": 602,
+          "uid": 2000,
+          "ppid": 500,
+          "args": "/system/bin/app_process64 / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": true,
+      "expected_pids": [
+        602
+      ],
+      "actual": {
+        "verified": true,
+        "pids": [
+          602
+        ],
+        "matched_sample_count": 1,
+        "identities": [
+          {
+            "pid": 602,
+            "uid": 2000,
+            "argv0": "/system/bin/app_process64"
+          }
+        ],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "exact_java_class_argv0",
+      "processes": [
+        {
+          "pid": 603,
+          "uid": 0,
+          "ppid": 500,
+          "args": "org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": true,
+      "expected_pids": [
+        603
+      ],
+      "actual": {
+        "verified": true,
+        "pids": [
+          603
+        ],
+        "matched_sample_count": 1,
+        "identities": [
+          {
+            "pid": 603,
+            "uid": 0,
+            "argv0": "org.trillionnium.hepta.background.BackgroundDisplayBroker"
+          }
+        ],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "repeated_samples_same_pid",
+      "processes": [
+        {
+          "pid": 601,
+          "uid": 0,
+          "ppid": 500,
+          "args": "/system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        },
+        {
+          "pid": 601,
+          "uid": 0,
+          "ppid": 500,
+          "args": "/system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": true,
+      "expected_pids": [
+        601
+      ],
+      "actual": {
+        "verified": true,
+        "pids": [
+          601
+        ],
+        "matched_sample_count": 2,
+        "identities": [
+          {
+            "pid": 601,
+            "uid": 0,
+            "argv0": "/system/bin/app_process"
+          }
+        ],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "ordinary_uid_su_wrapper_and_real_root",
+      "processes": [
+        {
+          "pid": 604,
+          "uid": 10481,
+          "ppid": 500,
+          "args": "su -c 'CLASSPATH=/data/app/example/base.apk /system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999'"
+        },
+        {
+          "pid": 601,
+          "uid": 0,
+          "ppid": 500,
+          "args": "/system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": true,
+      "expected_pids": [
+        601
+      ],
+      "actual": {
+        "verified": true,
+        "pids": [
+          601
+        ],
+        "matched_sample_count": 1,
+        "identities": [
+          {
+            "pid": 601,
+            "uid": 0,
+            "argv0": "/system/bin/app_process"
+          }
+        ],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "root_sh_wrapper_and_real_root",
+      "processes": [
+        {
+          "pid": 605,
+          "uid": 0,
+          "ppid": 500,
+          "args": "/system/bin/sh -c 'CLASSPATH=/data/app/example/base.apk /system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999'"
+        },
+        {
+          "pid": 601,
+          "uid": 0,
+          "ppid": 500,
+          "args": "/system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": true,
+      "expected_pids": [
+        601
+      ],
+      "actual": {
+        "verified": true,
+        "pids": [
+          601
+        ],
+        "matched_sample_count": 1,
+        "identities": [
+          {
+            "pid": 601,
+            "uid": 0,
+            "argv0": "/system/bin/app_process"
+          }
+        ],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "ordinary_uid_su_wrapper_only",
+      "processes": [
+        {
+          "pid": 604,
+          "uid": 10481,
+          "ppid": 500,
+          "args": "su -c 'CLASSPATH=/data/app/example/base.apk /system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999'"
+        }
+      ],
+      "expected_verified": false,
+      "expected_pids": [],
+      "actual": {
+        "verified": false,
+        "pids": [],
+        "matched_sample_count": 0,
+        "identities": [],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "root_sh_wrapper_only",
+      "processes": [
+        {
+          "pid": 605,
+          "uid": 0,
+          "ppid": 500,
+          "args": "/system/bin/sh -c 'CLASSPATH=/data/app/example/base.apk /system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999'"
+        }
+      ],
+      "expected_verified": false,
+      "expected_pids": [],
+      "actual": {
+        "verified": false,
+        "pids": [],
+        "matched_sample_count": 0,
+        "identities": [],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "root_su_wrapper_only",
+      "processes": [
+        {
+          "pid": 604,
+          "uid": 0,
+          "ppid": 500,
+          "args": "su -c 'CLASSPATH=/data/app/example/base.apk /system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999'"
+        }
+      ],
+      "expected_verified": false,
+      "expected_pids": [],
+      "actual": {
+        "verified": false,
+        "pids": [],
+        "matched_sample_count": 0,
+        "identities": [],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "fake_class_substring",
+      "processes": [
+        {
+          "pid": 606,
+          "uid": 0,
+          "ppid": 500,
+          "args": "/system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBrokerFake --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": false,
+      "expected_pids": [],
+      "actual": {
+        "verified": false,
+        "pids": [],
+        "matched_sample_count": 0,
+        "identities": [],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "fake_argv0_substring",
+      "processes": [
+        {
+          "pid": 607,
+          "uid": 0,
+          "ppid": 500,
+          "args": "/system/bin/app_process_fake / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": false,
+      "expected_pids": [],
+      "actual": {
+        "verified": false,
+        "pids": [],
+        "matched_sample_count": 0,
+        "identities": [],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "fake_class_argv0_substring",
+      "processes": [
+        {
+          "pid": 608,
+          "uid": 0,
+          "ppid": 500,
+          "args": "org.trillionnium.hepta.background.BackgroundDisplayBrokerFake --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": false,
+      "expected_pids": [],
+      "actual": {
+        "verified": false,
+        "pids": [],
+        "matched_sample_count": 0,
+        "identities": [],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "generation_substring_only",
+      "processes": [
+        {
+          "pid": 609,
+          "uid": 0,
+          "ppid": 500,
+          "args": "/system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc0 --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": false,
+      "expected_pids": [],
+      "actual": {
+        "verified": false,
+        "pids": [],
+        "matched_sample_count": 0,
+        "identities": [],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "generation_absent",
+      "processes": [
+        {
+          "pid": 610,
+          "uid": 0,
+          "ppid": 500,
+          "args": "/system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": false,
+      "expected_pids": [],
+      "actual": {
+        "verified": false,
+        "pids": [],
+        "matched_sample_count": 0,
+        "identities": [],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "duplicate_generation_flag",
+      "processes": [
+        {
+          "pid": 611,
+          "uid": 0,
+          "ppid": 500,
+          "args": "/system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999 --generation 12345678-1234-1234-1234-123456789abc"
+        }
+      ],
+      "expected_verified": false,
+      "expected_pids": [],
+      "actual": {
+        "verified": false,
+        "pids": [],
+        "matched_sample_count": 0,
+        "identities": [],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "socket_generation_mismatch",
+      "processes": [
+        {
+          "pid": 612,
+          "uid": 0,
+          "ppid": 500,
+          "args": "/system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-00000000-0000-0000-0000-000000000000 --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": false,
+      "expected_pids": [],
+      "actual": {
+        "verified": false,
+        "pids": [],
+        "matched_sample_count": 0,
+        "identities": [],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "owner_uid_mismatch",
+      "processes": [
+        {
+          "pid": 613,
+          "uid": 0,
+          "ppid": 500,
+          "args": "/system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10482 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": false,
+      "expected_pids": [],
+      "actual": {
+        "verified": false,
+        "pids": [],
+        "matched_sample_count": 0,
+        "identities": [],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "ordinary_uid_actual_app_process",
+      "processes": [
+        {
+          "pid": 601,
+          "uid": 10481,
+          "ppid": 500,
+          "args": "/system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": false,
+      "expected_pids": [
+        601
+      ],
+      "actual": {
+        "verified": false,
+        "pids": [
+          601
+        ],
+        "matched_sample_count": 1,
+        "identities": [
+          {
+            "pid": 601,
+            "uid": 10481,
+            "argv0": "/system/bin/app_process"
+          }
+        ],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "two_distinct_actual_broker_pids",
+      "processes": [
+        {
+          "pid": 601,
+          "uid": 0,
+          "ppid": 500,
+          "args": "/system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        },
+        {
+          "pid": 602,
+          "uid": 2000,
+          "ppid": 500,
+          "args": "/system/bin/app_process64 / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": false,
+      "expected_pids": [
+        601,
+        602
+      ],
+      "actual": {
+        "verified": false,
+        "pids": [
+          601,
+          602
+        ],
+        "matched_sample_count": 2,
+        "identities": [
+          {
+            "pid": 601,
+            "uid": 0,
+            "argv0": "/system/bin/app_process"
+          },
+          {
+            "pid": 602,
+            "uid": 2000,
+            "argv0": "/system/bin/app_process64"
+          }
+        ],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "truncated_named_process_no_flags",
+      "processes": [
+        {
+          "pid": 614,
+          "uid": 0,
+          "ppid": 500,
+          "args": "org.trillionnium.hepta.background.BackgroundDisplayBroker"
+        }
+      ],
+      "expected_verified": false,
+      "expected_pids": [],
+      "actual": {
+        "verified": false,
+        "pids": [],
+        "matched_sample_count": 0,
+        "identities": [],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "boolean_uid_is_not_root",
+      "processes": [
+        {
+          "pid": 601,
+          "uid": false,
+          "ppid": 500,
+          "args": "/system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": false,
+      "expected_pids": [],
+      "actual": {
+        "verified": false,
+        "pids": [],
+        "matched_sample_count": 0,
+        "identities": [],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    },
+    {
+      "name": "unclosed_quote_argv",
+      "processes": [
+        {
+          "pid": 601,
+          "uid": 0,
+          "ppid": 500,
+          "args": "'/system/bin/app_process / org.trillionnium.hepta.background.BackgroundDisplayBroker --socket hepta-bg-12345678-1234-1234-1234-123456789abc --owner-uid 10481 --generation 12345678-1234-1234-1234-123456789abc --allowed-packages com.example.calculator --ttl-ms 540000 --expires-elapsed-ms 999999999"
+        }
+      ],
+      "expected_verified": false,
+      "expected_pids": [],
+      "actual": {
+        "verified": false,
+        "pids": [],
+        "matched_sample_count": 0,
+        "identities": [],
+        "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+      },
+      "passed": true
+    }
+  ],
+  "driver_entry_executed": false,
+  "host_helper_executed": false,
+  "phone_operations": false,
+  "phone_test_passed": false,
+  "files": {
+    "background_calculator_acceptance.py": {
+      "bytes": 38237,
+      "sha256": "533c27c1d1ae400862b4322ff269aeb9557a1f113c539c253f8c7f9f091ff7af"
+    },
+    "README.md": {
+      "bytes": 15516,
+      "sha256": "ca77773076628b7dbdb3928ea55ba58a76c5158b869c0367cc81933a4c2e94b8"
+    },
+    "test_process_identity.py": {
+      "bytes": 6678,
+      "sha256": "83064bbba65bb64032e792a57dbf82655f54122bc44b5ee3d52fb46f50894ba0"
+    }
+  }
+}
