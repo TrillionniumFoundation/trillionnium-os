@@ -48,20 +48,22 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         public final JSONObject qualificationScope;
         public final JSONObject taskAuthorization;
         public final JSONObject backgroundSession;
+        public final JSONObject imeSubmit;
         ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail) {
             this(accepted,dispatched,stale,detail,null);
         }
         ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail,AppCatalogueRanker.Page appCatalogue) {
-            this(accepted,dispatched,stale,detail,appCatalogue,null,null,null);
+            this(accepted,dispatched,stale,detail,appCatalogue,null,null,null,null);
         }
-        private ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail,AppCatalogueRanker.Page appCatalogue,JSONObject scope,JSONObject authorization,JSONObject background){
+        private ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail,AppCatalogueRanker.Page appCatalogue,JSONObject scope,JSONObject authorization,JSONObject background,JSONObject imeSubmit){
             this.accepted=accepted;this.dispatched=dispatched;this.stale=stale;this.detail=detail;
-            this.appCatalogue=appCatalogue;this.qualificationScope=scope;this.taskAuthorization=authorization;this.backgroundSession=background;
+            this.appCatalogue=appCatalogue;this.qualificationScope=scope;this.taskAuthorization=authorization;this.backgroundSession=background;this.imeSubmit=imeSubmit;
         }
-        ActionOutcome withScope(JSONObject scope){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,scope,taskAuthorization,backgroundSession);
+        ActionOutcome withScope(JSONObject scope){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,scope,taskAuthorization,backgroundSession,imeSubmit);
         }
-        ActionOutcome withAuthorization(JSONObject authorization){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,authorization,backgroundSession);}
-        ActionOutcome withBackground(JSONObject background){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,background);}
+        ActionOutcome withAuthorization(JSONObject authorization){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,authorization,backgroundSession,imeSubmit);}
+        ActionOutcome withBackground(JSONObject background){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,background,imeSubmit);}
+        ActionOutcome withSubmit(JSONObject value){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,backgroundSession,value);}
     }
     private static volatile HeptaAccessibilityService live;
     public static HeptaAccessibilityService connected() { return live; }
@@ -70,6 +72,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private QualificationScopeConfig.Bound taskScope;
     private TaskAuthorization.Gate taskAuthorization;
     private BackgroundSession taskBackground;
+    private SubmitAttemptGuard taskSubmitAttempts;
     private final java.util.concurrent.ExecutorService backgroundIo=java.util.concurrent.Executors.newSingleThreadExecutor();
     private Runnable stopListener;
     private LocalTaskController ownedController;
@@ -124,15 +127,29 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(proof==null||!recoveryControllerIdle(expected))throw new IllegalStateException("controller is not idle for acknowledgement");
         if(expected!=null){expected.setListener(null);expected.close();}
         if(taskAuthorization!=null)taskAuthorization.retire();taskAuthorization=null;
+        if(taskSubmitAttempts!=null)taskSubmitAttempts.retire();taskSubmitAttempts=null;
         ownedController=null;lease=null;stopListener=null;appDiscovery=null;taskScope=null;taskBackground=null;clearSnapshot();
     }
     private void requestStop() { Runnable value; synchronized(this){value=stopListener;} if(value!=null)value.run(); }
     public synchronized boolean acquireTask(String taskId,Runnable onStop) {
-        if(lease!=null || live!=this)return false;lease=taskId;stopListener=onStop;appDiscovery=null;taskScope=null;taskAuthorization=null;taskBackground=null;return true;
+        if(lease!=null || live!=this)return false;lease=taskId;stopListener=onStop;appDiscovery=null;taskScope=null;taskAuthorization=null;taskBackground=null;taskSubmitAttempts=null;return true;
     }
     public synchronized void releaseTask(String taskId) { if(taskId.equals(lease)){
         if(taskBackground!=null&&!taskBackground.released())throw new IllegalStateException("后台空间未核验释放，不能释放任务租约");
-        if(taskAuthorization!=null)taskAuthorization.retire();taskAuthorization=null;lease=null;stopListener=null;appDiscovery=null;taskScope=null;taskBackground=null;} }
+        if(taskAuthorization!=null)taskAuthorization.retire();if(taskSubmitAttempts!=null)taskSubmitAttempts.retire();taskSubmitAttempts=null;taskAuthorization=null;lease=null;stopListener=null;appDiscovery=null;taskScope=null;taskBackground=null;} }
+    synchronized void bindSubmitAttempts(String taskId,SubmitAttemptGuard attempts){
+        if(!owns(taskId)||taskScope==null||taskAuthorization==null||taskSubmitAttempts!=null||attempts==null||!taskId.equals(attempts.taskId))
+            throw new IllegalStateException("submit ledger requires the current bound task");
+        taskSubmitAttempts=attempts;
+    }
+    private synchronized SubmitAttemptGuard submitFor(String taskId){
+        if(!owns(taskId)||taskSubmitAttempts==null||!taskId.equals(taskSubmitAttempts.taskId))
+            throw new IllegalStateException("submit ledger unavailable or retired");
+        return taskSubmitAttempts;
+    }
+    private synchronized boolean submitAvailable(String pkg,String textSha){
+        return taskSubmitAttempts!=null&&owns(taskSubmitAttempts.taskId)&&taskSubmitAttempts.available(pkg,textSha);
+    }
     private synchronized boolean owns(String taskId) { return taskId.equals(lease) && live==this; }
     private boolean locked() { KeyguardManager value=(KeyguardManager)getSystemService(KEYGUARD_SERVICE);return value!=null&&value.isKeyguardLocked(); }
     private int rotation(int displayId) {
@@ -468,7 +485,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final ActionCallback boundCallback=new ActionCallback(){public void onResult(ActionOutcome result){
             boolean currentLease=ownsScope(taskId,captured)&&ownsAuthorization(taskId,capturedAuthorization)&&capturedAuthorization==expectedAuthorization&&ownsBackground(taskId,capturedBackground),stopped=cancel.isCancelled();
             ActionOutcome delivered=currentLease&&!stopped?result:new ActionOutcome(false,result.dispatched,false,
-                    "任务已停止或租约已退休；保留已发生的派发，不接受迟到回执",result.appCatalogue);
+                    "任务已停止或租约已退休；保留已发生的派发，不接受迟到回执",result.appCatalogue).withSubmit(result.imeSubmit);
             callback.onResult(delivered.withScope(callbackScopeEvidence(taskId,captured,currentLease,stopped))
                     .withAuthorization(callbackAuthorizationEvidence(capturedAuthorization,currentLease,stopped))
                     .withBackground(capturedBackground==null?null:capturedBackground.evidence()));
@@ -510,7 +527,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         try{
             authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
             scopeBeforeDispatch(taskId,dispatchScope,expected,action,null,false);
-            if((scopeFor(taskId).config!=null||backgroundFor(taskId)!=null)&&("click".equals(action.action)||"type".equals(action.action)||"scroll".equals(action.action))){
+            if((scopeFor(taskId).config!=null||backgroundFor(taskId)!=null)&&("click".equals(action.action)||"type".equals(action.action)||"submit".equals(action.action)||"scroll".equals(action.action))){
                 NodeRef ref=currentGraph==null?null:currentGraph.refs.get(action.nodeId);
                 scopeBeforeDispatch(taskId,dispatchScope,expected,action,ref==null?null:ref.node,true);
             }
@@ -606,6 +623,41 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         callback.onResult(new ActionOutcome(false,true,false,"文本已派发，但节点回读不可用；不重试"));
                     }
                 }},300);
+            }else if("submit".equals(action.action)){
+                if(!ActionDecision.IME_ACTION_SCHEMA.equals(action.actionSchema)||!reference.imeEnter.queryAllowed()
+                        ||!node.isEditable()||!node.isFocused()||!ObservedImeEnter.isSha(reference.inputTextSha256))
+                    throw new IllegalArgumentException("当前字段没有已观察且语义明确的查询提交动作");
+                scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true);
+                authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
+                final SubmitAttemptGuard guard=submitFor(taskId);
+                requireSubmitWindow(node,expected.windowId,currentGraph.displayId);
+                final SubmitAttemptGuard.Attempt attempt=guard.consume(new SubmitAttemptGuard.Binding(taskId,modelRunId,
+                        expected.id,expected.packageName,action.nodeId,expected.windowId,currentGraph.displayId,
+                        expected.backgroundGeneration,reference.inputTextSha256,reference.imeEnter));
+                try{
+                    // The durable journal can take time. Revalidate before consuming the platform call.
+                    String changed=validate(taskId,expected,action,targets,cancel);
+                    if(changed!=null)throw new IllegalStateException(changed);
+                    scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true);
+                    authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
+                    if(cancel.isCancelled()||!node.refresh()||!node.isEditable()||!node.isFocused()||!node.isVisibleToUser()
+                            ||!node.isEnabled()||node.isPassword()||node.getWindowId()!=expected.windowId
+                            ||!expected.packageName.equals(string(node.getPackageName()))
+                            ||!reference.signature.equals(nodeSignature(node,observedChildText(node))))
+                        throw new IllegalStateException("提交记录已消费，但字段或任务已变化；未调用编辑器，不重试");
+                    requireSubmitWindow(node,expected.windowId,currentGraph.displayId);
+                    guard.entering(attempt);
+                    boolean apiAccepted=node.performAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_IME_ENTER.getId());
+                    final JSONObject proof=new JSONObject(guard.finished(attempt,Boolean.valueOf(apiAccepted)));
+                    final ActionOutcome result=new ActionOutcome(apiAccepted,true,false,apiAccepted
+                            ?"查询编辑器动作已接受；业务结果仍需重新观察，不重试相同输入":"查询编辑器动作未接受；已记录尝试，不重试").withSubmit(proof);
+                    main.postDelayed(new Runnable(){public void run(){callback.onResult(result);}},350);
+                }catch(Exception uncertain){
+                    Map<String,Object> proof=guard.evidence(attempt);
+                    boolean entered=Boolean.TRUE.equals(proof.get("dispatch_attempted"));
+                    callback.onResult(new ActionOutcome(false,entered,false,"查询提交未完成："+message(uncertain)+"；保留消费记录，不重试")
+                            .withSubmit(new JSONObject(proof)));
+                }
             }else if("scroll".equals(action.action)){
                 int operation=scrollAction(action.direction);
                 if(!hasAction(node,operation))throw new IllegalArgumentException("这个节点未提供所选滚动方向");
@@ -699,10 +751,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private static final class NodeRef {
         final AccessibilityNodeInfo node;final String signature,appTreeSignature;
+        final ObservedImeEnter imeEnter;final String inputTextSha256;
         NodeRef(AccessibilityNodeInfo node,ObservedChildText.Result childText,ObservedScrollActions scrollActions){
-            this.node=AccessibilityNodeInfo.obtain(node);
+            this(node,childText,scrollActions,readImeEnter(node),inputTextHash(node));
+        }
+        NodeRef(AccessibilityNodeInfo node,ObservedChildText.Result childText,ObservedScrollActions scrollActions,ObservedImeEnter imeEnter,String inputTextSha256){
+            this.node=AccessibilityNodeInfo.obtain(node);this.imeEnter=imeEnter;this.inputTextSha256=inputTextSha256;
             this.appTreeSignature=childText.bind(baseNodeSignature(node));
-            this.signature=scrollActions.bindFreshness(appTreeSignature);
+            this.signature=imeEnter.bindFreshness(scrollActions.bindFreshness(appTreeSignature),node.isFocused(),inputTextSha256);
         }
     }
     private static final class Graph {
@@ -818,14 +874,16 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     String text=node.isPassword()?"":limited(string(node.getText()),96);
                     String description=node.isPassword()?"":limited(string(node.getContentDescription()),96);
                     ObservedScrollActions scrollActions=readScrollActions(node);
+                    ObservedImeEnter imeEnter=readImeEnter(node);String inputHash=inputTextHash(node);
                     boolean useful=visible&&(node.isClickable()||node.isEditable()||node.isScrollable()||!text.isEmpty()||!description.isEmpty());
                     if(useful){
                         ObservedChildText.Result childText=graph.rows.size()<MAX_NODES?observedChildText(node):ObservedChildText.notApplicable();
                         if(graph.rows.size()<MAX_NODES&&characters+text.length()+description.length()+childText.text.length()<2400){
-                            String id="n"+graph.rows.size();NodeRef reference=new NodeRef(node,childText,scrollActions);graph.refs.put(id,reference);signatures.append(reference.appTreeSignature).append('\n');
+                            String id="n"+graph.rows.size();NodeRef reference=new NodeRef(node,childText,scrollActions,imeEnter,inputHash);graph.refs.put(id,reference);signatures.append(reference.appTreeSignature).append('\n');
                             scrollStates.append(id).append('=').append(scrollActions.fingerprintInput()).append('\n');
-                            boolean focused=node.isFocused();focusStates.append(id).append('=').append(focused).append('\n');
-                            graph.rows.add(new PhoneObservation.Node(id,string(node.getPackageName()),string(node.getClassName()),limited(string(node.getViewIdResourceName()),96),text,description,bounds,node.isClickable(),node.isEditable(),node.isScrollable(),node.isEnabled(),focused,node.isPassword(),childText,scrollActions));
+                            boolean focused=node.isFocused();focusStates.append(id).append('=').append(focused).append('|').append(imeEnter.fingerprintInput()).append('|').append(inputHash).append('\n');
+                            graph.rows.add(new PhoneObservation.Node(id,string(node.getPackageName()),string(node.getClassName()),limited(string(node.getViewIdResourceName()),96),text,description,bounds,node.isClickable(),node.isEditable(),node.isScrollable(),node.isEnabled(),focused,node.isPassword(),childText,scrollActions,imeEnter,inputHash,
+                                    node.isEditable()&&focused&&node.isEnabled()&&!node.isPassword()&&imeEnter.queryAllowed()&&submitAvailable(string(node.getPackageName()),inputHash)));
                             characters+=text.length()+description.length()+childText.text.length();
                         }else graph.truncated=true;
                     }
@@ -846,7 +904,34 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private static String nodeSignature(AccessibilityNodeInfo node,ObservedChildText.Result childText){
         // Capture and target refresh both supply the same bounded subtree observation.
-        return readScrollActions(node).bindFreshness(childText.bind(baseNodeSignature(node)));
+        return readImeEnter(node).bindFreshness(readScrollActions(node).bindFreshness(childText.bind(baseNodeSignature(node))),node.isFocused(),inputTextHash(node));
+    }
+    private static String inputTextHash(AccessibilityNodeInfo node){
+        if(!node.isEditable()||node.isPassword())return null;
+        CharSequence text=node.getText();
+        return ObservedImeEnter.completeTextHash(text==null?null:text.toString());
+    }
+    private static void requireSubmitWindow(AccessibilityNodeInfo node,int windowId,int displayId){
+        AccessibilityWindowInfo window=node.getWindow();
+        try{
+            if(window==null||window.getId()!=windowId||window.getDisplayId()!=displayId||window.getType()!=AccessibilityWindowInfo.TYPE_APPLICATION)
+                throw new IllegalStateException("查询提交节点已移出绑定应用窗口或屏幕");
+        }finally{if(window!=null)window.recycle();}
+    }
+    private static ObservedImeEnter readImeEnter(AccessibilityNodeInfo node){
+        try{
+            List<AccessibilityNodeInfo.AccessibilityAction> actions=node.getActionList();
+            if(actions==null||actions.size()>128)return ObservedImeEnter.UNKNOWN;
+            ObservedImeEnter result=ObservedImeEnter.ABSENT;boolean found=false;
+            for(AccessibilityNodeInfo.AccessibilityAction action:actions){
+                if(action==null)return ObservedImeEnter.UNKNOWN;
+                if(action.getId()==AccessibilityNodeInfo.AccessibilityAction.ACTION_IME_ENTER.getId()){
+                    if(found)return ObservedImeEnter.UNKNOWN;found=true;
+                    CharSequence label=action.getLabel();result=ObservedImeEnter.present(label==null?null:label.toString());
+                }
+            }
+            return result;
+        }catch(RuntimeException unavailable){return ObservedImeEnter.UNKNOWN;}
     }
     /** No aliasing of logical forward/backward to content directions. */
     private static ObservedScrollActions readScrollActions(AccessibilityNodeInfo node){

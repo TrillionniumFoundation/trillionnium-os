@@ -18,9 +18,9 @@ import java.util.regex.Pattern;
  * This enforces documented tool/method clauses, not arbitrary business semantics. */
 public final class TaskAuthorization {
     public static final String SCHEMA="hepta.owner-task-authorization.v1";
-    public static final String PARSER="hepta.owner-tool-clauses.zh.v2";
+    public static final String PARSER="hepta.owner-tool-clauses.zh.v3-ime-submit";
     public static final Set<String> TOOLS=Collections.unmodifiableSet(new TreeSet<String>(Arrays.asList(
-            "find_app","open","click","type","scroll","back","home","wait","done")));
+            "find_app","open","click","type","submit","scroll","back","home","wait","done")));
     public static final class Violation extends IllegalStateException {
         private static final long serialVersionUID=1L;
         Violation(String message){super("task_authorization: "+message);}
@@ -31,6 +31,7 @@ public final class TaskAuthorization {
         Map<String,String> names=new LinkedHashMap<String,String>();
         String[][] rows={{"find_app","查找本机应用","查找应用","查找","find_app"},
                 {"open","打开应用","打开","open"},{"click","点击","click"},{"type","输入","type"},
+                {"submit","提交输入","提交","submit"},
                 {"scroll","滚动","scroll"},{"back","返回上一页","返回","back"},
                 {"home","回到桌面","返回桌面","home"},{"wait","等待","wait"},
                 {"done","结束任务","结束","done"}};
@@ -186,6 +187,7 @@ public final class TaskAuthorization {
     public String summary(){
         Map<String,String> display=new LinkedHashMap<String,String>();
         display.put("find_app","查找应用");display.put("open","打开应用");display.put("click","点击");display.put("type","输入文字");
+        display.put("submit","提交已观察查询字段");
         display.put("scroll","滚动");display.put("back","返回");display.put("home","回桌面");display.put("wait","等待");display.put("done","成功结束");
         List<String> names=new ArrayList<String>();for(String tool:display.keySet())if(allowedTools.contains(tool))names.add(display.get(tool));
         return "已识别的工具权限："+names+(requireFindAppBeforeOpen?"；须先查找“"+findQuery+"”并打开真实结果才能成功结束":"")

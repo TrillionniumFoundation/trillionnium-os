@@ -1,25 +1,27 @@
 package org.trillionnium.hepta.local;
 import android.content.Context;
 import org.json.JSONObject;
-/** Explicit boundary fake for foreground scope/owner regressions. Never claims background support. */
+/** Explicit IO boundary fake. Controlled display metadata is not an Android VirtualDisplay test. */
 final class BackgroundSession {
     static final class Selection {
         final String initialPackage;final java.util.List<String> allowedPackages;
         Selection(String initial,java.util.Set<String> packages){initialPackage=initial;allowedPackages=new java.util.ArrayList<String>(packages);}
         JSONObject json(){return new JSONObject();}
     }
-    static final class Cleanup {final boolean known=false;final JSONObject evidence=new JSONObject();}
-    final String taskId="unused",generation="unused";final Selection selection=null;
+    static final class Cleanup {final boolean known;final JSONObject evidence=new JSONObject();Cleanup(boolean value){known=value;}}
+    final String taskId,generation;final Selection selection;final int testDisplay;boolean testClosed;
     BackgroundSession(Context c,String id,String owner,Selection s,QualificationScopeConfig.FilesRoot root){throw new UnsupportedOperationException("background is outside foreground fixture");}
+    private BackgroundSession(String id,int display,java.util.Set<String> packages){taskId=id;generation="12345678-1234-1234-1234-123456789abc";selection=new Selection(packages.iterator().next(),packages);testDisplay=display;}
+    static BackgroundSession fixture(String id,int display,java.util.Set<String> packages){return new BackgroundSession(id,display,packages);}
     static boolean hasUnreleased(Context c){return false;}
-    boolean released(){throw new UnsupportedOperationException();}
-    boolean allows(String p){throw new UnsupportedOperationException();}
-    int displayId(){throw new UnsupportedOperationException();}
-    JSONObject evidence(){throw new UnsupportedOperationException();}
+    boolean released(){return testClosed;}
+    boolean allows(String p){return selection.allowedPackages.contains(p);}
+    int displayId(){return testDisplay;}
+    JSONObject evidence(){try{return new JSONObject().put("task_id",taskId).put("generation",generation).put("display_id",testDisplay);}catch(Exception error){throw new IllegalStateException(error);}}
     void acceptReconciliation(JSONObject p){throw new UnsupportedOperationException();}
     void verifyRemote(){throw new UnsupportedOperationException();}
-    void requireActive(){throw new UnsupportedOperationException();}
+    void requireActive(){if(testClosed)throw new IllegalStateException("fixture display closed");}
     void start(HeptaAccessibilityService.Cancellation c){throw new UnsupportedOperationException();}
     JSONObject action(String op,String pkg,HeptaAccessibilityService.Cancellation c){throw new UnsupportedOperationException();}
-    Cleanup close(){throw new UnsupportedOperationException();}
+    Cleanup close(){testClosed=true;return new Cleanup(true);}
 }

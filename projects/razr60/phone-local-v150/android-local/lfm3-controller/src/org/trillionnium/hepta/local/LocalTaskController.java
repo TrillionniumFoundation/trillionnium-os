@@ -55,7 +55,7 @@ public final class LocalTaskController implements AutoCloseable {
             "events按step顺序列出全部已记录动作、参数和前后包名；accepted是策略接受，dispatched是已交给执行器，stale是观察已失效，均不证明目标完成。缺字段是未记录，null是未知。历史node_id/node_label只属于当时画面，不能当成当前可操作目标。\n" +
             "last_transition是对应step前后实际观察的字段、窗口标题和输入法状态；执行或拒绝状态见events，不证明因果或完成。before是过去，after对应末尾screen。判断当前输入以screen.editable_fields.text为准，不能把历史项或OWNER文字当作已输入。\n" +
             "app_search.source=model_find_app且model_issued=true表示已执行该查询，step是来源，returned是实际返回数；本轮apps是其当前结果页，能打开的目标以open_allowed_packages为准。初始目录不等于已经调用find_app。blocked_action和blocked中的click_ids/open_packages禁选，后者只引用当前frame。\n" +
-            "工具：open打开应用，不能重开当前应用；click(node_label,node_id)点击；type(node_label,node_id,text)替换完整文字，不提交或发按键，回读相同不保证业务接受；scroll(node_label,node_id,direction)只选screen.scroll_actions该节点已列方向，空/null不可滚动；back返回；home到桌面；wait(duration_ms)仅在加载时等100..2000毫秒；find_app(query,offset)只读查本机应用，空query浏览，首次offset=0，续页用app_search.next_offset；done(status,summary)结束。\n" +
+            "工具：open打开应用，不能重开当前应用；click(node_label,node_id)点击；type(node_label,node_id,text)替换完整文字，不提交或发按键，回读相同不保证业务接受；submit(node_label,node_id)仅调用screen.submit_actions列出的当前聚焦字段查询动作，真实标签必须明确为查询，不接受通用Enter、付款、下单或发送；已尝试的同包同输入不得再次submit，accepted不证明搜索完成；scroll(node_label,node_id,direction)只选screen.scroll_actions该节点已列方向，空/null不可滚动；back返回；home到桌面；wait(duration_ms)仅在加载时等100..2000毫秒；find_app(query,offset)只读查本机应用，空query浏览，首次offset=0，续页用app_search.next_offset；done(status,summary)结束。\n" +
             "页面内搜索词或搜索结果与目标同名，不表示已进入目标页；任务要求进入时，点击对应结果后重新观察。\n" +
             "启动应用可能恢复子页，用可见返回键/back回到目标页，勿为重试打开无关应用。全部目标按原顺序实现且历史动作和当前可见结果支持才done且status=success；不能完成用partial或failure。done须同时含status和summary；wait不表示完成/停留。禁止其它字段、输入密码、网络或代码命令。\n";
 
@@ -135,6 +135,7 @@ public final class LocalTaskController implements AutoCloseable {
     private void runTask(String taskId,String instruction,String expectedScopeSha256,TaskAuthorization.Gate authorization,BackgroundSession.Selection backgroundSelection){
         QualificationScopeConfig.Bound scope=null;
         BackgroundSession background=null;BackgroundSession.Cleanup backgroundCleanup=null;
+        SubmitAttemptGuard submitAttempts=null;
         File evidence=null;PhoneObservation observation=null;int steps=0,repairs=0,staleRounds=0;
         String finalStatus="failed",summary="任务未完成";boolean modelSuccess=false,cleanup=true;
         long deadline=SystemClock.elapsedRealtime()+MAX_TASK_MS;
@@ -145,6 +146,8 @@ public final class LocalTaskController implements AutoCloseable {
             QualificationScopeConfig.FilesRoot filesRoot=new QualificationScopeConfig.FilesRoot(service);
             File root=MobiMindPrivateFiles.directory(new File(filesRoot.path,"control-tasks"),false);
             evidence=MobiMindPrivateFiles.directory(new File(root,taskId),true);filesRoot.unchanged(service);
+            // Persist both newly created directory entries before a submit journal can authorize a call.
+            MobiMindPrivateFiles.syncDirectory(root);MobiMindPrivateFiles.syncDirectory(filesRoot.path);
             JSONObject owner=new JSONObject().put("schema","hepta.local-owner.v1").put("task_id",taskId)
                     .put("instruction",instruction).put("instruction_utf8_sha256",HeptaAccessibilityService.sha(instruction.getBytes(StandardCharsets.UTF_8)))
                     .put("task_authorization_sha256",authorization.authorization.sha256).put("task_authorization",new JSONObject(authorization.authorization.evidence()))
@@ -158,6 +161,14 @@ public final class LocalTaskController implements AutoCloseable {
             scope=QualificationScopeConfig.capture(service,taskId,expectedScopeSha256,config,filesRoot);
             currentActualScopeSha256=scope.actualSha256;
             service.bindQualificationScope(taskId,scope);
+            final File submitEvidence=evidence;
+            submitAttempts=new SubmitAttemptGuard(taskId,new SubmitAttemptGuard.Journal(){
+                public void write(SubmitAttemptGuard.Attempt attempt)throws Exception{
+                    MobiMindPrivateFiles.writeNew(new File(submitEvidence,String.format(java.util.Locale.ROOT,"ime-submit-%02d-attempt.json",attempt.ordinal)),
+                            new JSONObject(attempt.journal()).toString(2).getBytes(StandardCharsets.UTF_8));
+                }
+            });
+            service.bindSubmitAttempts(taskId,submitAttempts);
             owner.put("actual_scope_sha256",QualificationScopeConfig.nullable(scope.actualSha256)).put("qualification_scope",scope.evidence());
             record(evidence,"owner.json",owner);
             if(scope.raw!=null)MobiMindPrivateFiles.writeNew(new File(evidence,"qualification-scope.json"),scope.raw);
@@ -197,6 +208,8 @@ public final class LocalTaskController implements AutoCloseable {
                     try{
                         action=ActionDecision.parse(answer.text,frame.grammar.schema);
                         ActionPolicy.validateAuthorizedDecision(action,before.packageName,frame.appPackages,frame.targets,frame.grammar.appLabels,authorization,frame.grammar.authorization);
+                        if("submit".equals(action.action)&&!frame.grammar.allowsSubmit(action.nodeId))
+                            throw new ActionDecision.InvalidActionException("submit node was not supplied by this observation");
                         if("scroll".equals(action.action)&&!frame.grammar.allowsScroll(action.nodeId,action.direction))
                             throw new ActionDecision.InvalidActionException("scroll node/direction was not supplied by this observation");
                         decisionRunId=answer.runId;
@@ -235,7 +248,8 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("qualification_scope",outcome.qualificationScope==null?JSONObject.NULL:outcome.qualificationScope)
                         .put("task_authorization_sha256",authorization.authorization.sha256)
                         .put("task_authorization",outcome.taskAuthorization==null?JSONObject.NULL:outcome.taskAuthorization)
-                        .put("background_session",outcome.backgroundSession==null?JSONObject.NULL:outcome.backgroundSession);
+                        .put("background_session",outcome.backgroundSession==null?JSONObject.NULL:outcome.backgroundSession)
+                        .put("ime_submit",outcome.imeSubmit==null?JSONObject.NULL:outcome.imeSubmit);
                 if(ActionPolicy.isReadOnlyDiscovery(action))actionReceipt.put("read_only",true).put("effect","launcher_catalogue_read");
                 record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-action.json",steps),actionReceipt);
                 TaskAuthorization.require(outcome.taskAuthorization!=null,"动作回执缺少任务授权");
@@ -270,6 +284,13 @@ public final class LocalTaskController implements AutoCloseable {
                 if("open".equals(action.action))row.put("app_label",action.appLabel).put("exact_package_match",action.packageName.equals(observation.packageName));
                 if(action.nodeId!=null){
                     row.put("node_label",action.nodeLabel).put("node_id",action.nodeId);
+                }
+                if("submit".equals(action.action)&&outcome.imeSubmit!=null){
+                    row.put("submit_input_sha256",outcome.imeSubmit.getString("input_text_sha256"))
+                            .put("submit_action_label",outcome.imeSubmit.getString("action_label"))
+                            .put("submit_attempt_id",outcome.imeSubmit.getString("attempt_id"))
+                            .put("submit_result",outcome.imeSubmit.getString("result"))
+                            .put("submit_attempt_consumed",outcome.imeSubmit.getBoolean("attempt_consumed"));
                 }
                 if("type".equals(action.action))row.put("type_text",action.text);
                 if("scroll".equals(action.action))row.put("direction",action.direction);
@@ -332,6 +353,7 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("qualification_scope",scope==null?JSONObject.NULL:scope.evidence())
                     .put("task_authorization_sha256",authorization.authorization.sha256).put("task_authorization",new JSONObject(authorization.evidence()))
                     .put("background_session",background==null?JSONObject.NULL:background.evidence())
+                    .put("submit_attempts",submitAttempts==null?new JSONArray():new JSONArray(submitAttempts.snapshot()))
                     .put("background_cleanup",backgroundCleanup==null?JSONObject.NULL:backgroundCleanup.evidence)
                     .put("model_session",new JSONObject().put("worker_generation",modelCleanup.generation==null?JSONObject.NULL:modelCleanup.generation)
                             .put("task_id",modelCleanup.taskId==null?JSONObject.NULL:modelCleanup.taskId)
@@ -515,17 +537,20 @@ public final class LocalTaskController implements AutoCloseable {
             java.util.Map<String,String> projectedLabels=new java.util.HashMap<String,String>();
             java.util.Set<String> clicks=new java.util.HashSet<String>(),edits=new java.util.HashSet<String>();
             java.util.Map<String,ObservedScrollActions> scrolls=new java.util.HashMap<String,ObservedScrollActions>();
+            java.util.Map<String,ObservedImeEnter> submits=new java.util.HashMap<String,ObservedImeEnter>();
             for(int i=0;i<nodeCount;i++){
                 PhoneObservation.Node node=nodes.get(i);
                 if(!PromptActionDomain.eligible(observation.packageName,node.packageName,node.enabled,node.password))continue;
                 if(node.clickable)clicks.add(node.id);if(node.editable)edits.add(node.id);
+                if(node.submitAvailable&&node.editable&&node.focused&&node.imeEnter.queryAllowed())submits.put(node.id,node.imeEnter);
                 scrolls.put(node.id,node.scrollActions);
             }
             clicks=noEffects.allowedClicks(repeatGuard.allowedClicks(clicks,observation.state));
             if(!authorization.allows("click"))clicks.clear();
             if(!authorization.allows("type"))edits.clear();
+            if(!authorization.allows("submit"))submits.clear();
             if(!authorization.allows("scroll"))scrolls.clear();
-            JSONObject scrollActionsJson=new JSONObject();
+            JSONObject scrollActionsJson=new JSONObject(),submitActionsJson=new JSONObject();
             for(int i=0;i<nodeCount;i++){
                 PhoneObservation.Node node=nodes.get(i);
                 if(!ids.add(node.id))throw new IllegalStateException("观察包含重复节点标识");
@@ -534,11 +559,13 @@ public final class LocalTaskController implements AutoCloseable {
                 ObservedScrollActions permittedScroll=scrolls.get(node.id);
                 if(permittedScroll!=null&&permittedScroll.hasAny())
                     scrollActionsJson.put(node.id,new JSONArray(permittedScroll.directions));
+                if(submits.containsKey(node.id))submitActionsJson.put(node.id,new JSONObject(node.imeEnter.projection(node.inputTextSha256)));
                 String actions=PromptActionDomain.promptFlags(node.id,node.focused,clicks,edits,scrolls);
                 projectedNodes.put(new JSONArray().put(node.id).put(label)
                         .put(new JSONArray(new int[]{node.bounds.left,node.bounds.top,node.bounds.right,node.bounds.bottom})).put(actions));
             }
             if(scrollActionsJson.length()>0)screen.put("scroll_actions",scrollActionsJson);
+            screen.put("submit_actions",submitActionsJson);
             screen.put("nodes",projectedNodes).put("nodes_omitted",observation.nodes.size()-nodeCount+(observation.nodesTruncated?1:0));
             // Both projections are facts from this same immutable observation.
             // Metadata never adds an ID absent from the final budgeted node set.
@@ -558,7 +585,7 @@ public final class LocalTaskController implements AutoCloseable {
             packages=authorization.openPackages(packages);
             if(scope!=null){java.util.Iterator<String> permitted=packages.iterator();while(permitted.hasNext())if(!scope.allows(permitted.next()))permitted.remove();}
             JSONObject appSearch=searchMetadata(catalogue,appCount,historyRows);
-            JSONObject data=new JSONObject().put("action_schema",ObservedAppLabels.ACTION_SCHEMA).put("apps",apps)
+            JSONObject data=new JSONObject().put("action_schema",ActionDecision.IME_ACTION_SCHEMA).put("apps",apps)
                     .put("open_allowed_packages",new JSONArray(new java.util.TreeSet<String>(packages)))
                     .put("apps_omitted",catalogue.matchingApps-appCount).put("app_search",appSearch);
             data.put("task_authorization",new JSONObject(authorization.evidence()));
@@ -592,9 +619,8 @@ public final class LocalTaskController implements AutoCloseable {
                 java.util.Map<String,String> allowedAppLabels=new java.util.TreeMap<String,String>();
                 for(String packageName:packages)allowedAppLabels.put(packageName,shownAppLabels.get(packageName));
                 ObservedAppLabels appLabels=ObservedAppLabels.create(ObservedAppLabels.SCHEMA,observation.id,observation.packageName,allowedAppLabels);
-                DecisionGrammar grammar=observation.backgroundGeneration==null
-                        ?DecisionGrammar.createAuthorized(observation.id,observation.packageName,packages,clicks,edits,scrolls,targets,appLabels,authorization)
-                        :DecisionGrammar.createBackgroundAuthorized(observation.id,observation.packageName,packages,clicks,edits,scrolls,targets,appLabels,authorization);
+                DecisionGrammar grammar=DecisionGrammar.createImeAuthorized(observation.id,observation.packageName,packages,
+                        clicks,edits,scrolls,submits,targets,appLabels,authorization,observation.backgroundGeneration!=null);
                 return new PromptFrame(text,ids,packages,budget,grammar,nodeCount,observation.nodes.size(),appCount,history.length(),catalogue,
                         editableFields.size(),editableFieldsObserved,visibleText.size(),visibleTextObserved,events,historyBytes,appSearch,requiredIds.size());
             }
@@ -678,7 +704,7 @@ public final class LocalTaskController implements AutoCloseable {
         if(a.query!=null)value.put("query",a.query);if(a.offset>=0)value.put("offset",a.offset);
         if(a.status!=null)value.put("status",a.status);if(a.summary!=null)value.put("summary",a.summary);if(!a.reason.isEmpty())value.put("reason",a.reason);return value.toString();
     }
-    private static String chineseAction(String action){switch(action){case "find_app":return "搜索本机应用";case "open":return "打开应用";case "click":return "点击";case "type":return "输入文字";case "scroll":return "滚动";case "back":return "返回";case "home":return "回到桌面";case "wait":return "等待页面";default:return "检查完成状态";}}
+    private static String chineseAction(String action){switch(action){case "find_app":return "搜索本机应用";case "open":return "打开应用";case "click":return "点击";case "type":return "输入文字";case "submit":return "提交查询字段";case "scroll":return "滚动";case "back":return "返回";case "home":return "回到桌面";case "wait":return "等待页面";default:return "检查完成状态";}}
     private static void privateDirectory(File directory)throws Exception{if(!directory.isDirectory()&&!directory.mkdirs())throw new IllegalStateException("无法建立任务目录");android.system.Os.chmod(directory.getPath(),0700);}
     private static void record(File directory,String name,JSONObject value)throws Exception{
         File file=new File(directory,name);if(!file.createNewFile())throw new IllegalStateException("证据文件标识重复");

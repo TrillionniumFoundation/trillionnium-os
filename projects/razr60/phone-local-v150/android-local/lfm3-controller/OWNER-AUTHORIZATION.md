@@ -1,4 +1,4 @@
-# Owner tool authorization (v37)
+# Owner tool authorization (v38)
 
 The ordinary user task entry now derives an immutable tool contract from the exact
 Owner instruction before reserving a task. This closes the observed gap where a
@@ -26,13 +26,19 @@ reason for ambiguous or unsupported clauses that the parser identifies.
   replaces text. It leaves observed key clicks available; it never chooses a key
   or computes the expected answer on behalf of the model.
 
-The tool vocabulary is `find_app`, `open`, `click`, `type`, `scroll`, `back`,
+The tool vocabulary is `find_app`, `open`, `click`, `type`, `submit`, `scroll`, `back`,
 `home`, `wait`, and `done`, with the aliases in `TaskAuthorization.java`.
 Unknown items in an explicit tool allowlist, conflicting permission clauses,
 recognized double negatives, ambiguous quoted tool restrictions, and unsupported
 lookup ordering are refused before task reservation. Unconstrained ordinary
 instructions retain the existing tool set. The UI summary is not a claim that
 all other semantics in arbitrary prose have been parsed.
+
+`submit`, `提交输入`, and `提交` name a separate tool. `只输入` or `禁止提交`
+does not allow that tool. Its v38 executor is narrower still: only an actual
+focused editable node with an observed query-labelled ACTION_IME_ENTER is usable.
+Generic Enter, payment, order and send labels do not qualify. See
+`CODE38-IME-SUBMIT.md`; tool permission never infers business completion.
 
 The Clock regression instruction yields only `find_app`, `open`, and `done`, and
 the literal lookup query `时钟`. No Clock package is hardcoded. The broader
@@ -71,7 +77,7 @@ proof. Delayed type readback does not read the retired node.
 ## Evidence contract
 
 The fixed contract schema is `hepta.owner-task-authorization.v1`, parser
-`hepta.owner-tool-clauses.zh.v2`. It contains `instruction_sha256`,
+`hepta.owner-tool-clauses.zh.v3-ime-submit`. It contains `instruction_sha256`,
 `authorization_sha256`, sorted `allowed_tools`,
 `require_find_app_before_open`, `find_query`, `recognized_rules`, and the explicit
 `arbitrary_semantic_constraints_verified=false` boundary.

@@ -20,7 +20,7 @@ def prepare(source, output):
     receipt = receipt[:-len("            }\n")]
     for call in ("ActionDecision.parse(answer.text,frame.grammar.schema)",
                  "ActionPolicy.validateAuthorizedDecision(action,before.packageName,frame.appPackages,frame.targets,frame.grammar.appLabels,authorization,frame.grammar.authorization)",
-                 "DecisionGrammar.createAuthorized(observation.id,observation.packageName,packages,clicks,edits,scrolls,targets,appLabels,authorization)"):
+                 "DecisionGrammar.createImeAuthorized(observation.id,observation.packageName,packages,\n                        clicks,edits,scrolls,submits,targets,appLabels,authorization,observation.backgroundGeneration!=null)"):
         if controller.count(call) != 1:
             raise RuntimeError("exact candidate production call site missing or ambiguous: " + call)
     fixture = output / "PromptAdmissionFixture.java"
@@ -47,7 +47,7 @@ def prepare(source, output):
     record["extracted_parts"]["answer_json"] = {"bytes": len(answer.encode()), "sha256": hashlib.sha256(answer.encode()).hexdigest()}
     record["extracted_parts"]["grammar_receipt"] = {"bytes": len(receipt.encode()), "sha256": hashlib.sha256(receipt.encode()).hexdigest()}
     record["receipt_fixture_only_identifier_substitution"] = "r.controllerGrammar -> grammarObject; File and JSON put are explicit IO fixtures"
-    record["production_controller_v4_call_sites_checked"] = True
+    record["production_controller_v5_call_sites_checked"] = True
     record["full_android_controller_thread_executed"] = False
     (output / "EXTRACTION.json").write_text(json.dumps(record, indent=2) + "\n")
     return files, record

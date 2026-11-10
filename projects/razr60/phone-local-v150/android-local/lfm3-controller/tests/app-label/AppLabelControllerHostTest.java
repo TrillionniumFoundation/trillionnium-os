@@ -32,9 +32,9 @@ public final class AppLabelControllerHostTest {
         String owner="打开指定应用并保留目标窗口；这是匿名合成任务。";
         AppCatalogueRanker.Page page=new AppCatalogueRanker(installed,owner).search("",0);
         PromptAdmissionFixture.Result frame=PromptAdmissionFixture.build(owner,page,observation(),new JSONArray(),new LocalRuntimeConfig(ModelProfile.GEMMA4_E4B,"npu",8192,4));
-        check(frame.grammar.schema.equals(ObservedAppLabels.ACTION_SCHEMA),"actual prompt frame is v4");
+        check(frame.grammar.schema.equals(ActionDecision.IME_ACTION_SCHEMA),"actual prompt frame is explicit v5 with preserved app-label binding");
         check(frame.grammar.appLabels.labels.size()==5&&!frame.grammar.appLabels.labels.containsKey(CURRENT),"current-app exclusion preserved");
-        check(frame.text.contains("\"action_schema\":\""+ObservedAppLabels.ACTION_SCHEMA+"\""),"native-bound prompt explicitly declares schema");
+        check(frame.text.contains("\"action_schema\":\""+ActionDecision.IME_ACTION_SCHEMA+"\""),"native-bound prompt explicitly declares schema");
         check(frame.text.contains("[\"org.example.target_a\",\"同名\"]")&&frame.text.contains("[\"org.example.target_b\",\"同名\"]"),"both same-label apps remain in prompt");
         check(frame.text.contains("12345678901234567890123456789012345678901234567…"),"same safe display projection reaches prompt");
         check(frame.text.endsWith("\nOWNER\n"+owner),"original instruction unchanged");
@@ -52,7 +52,7 @@ public final class AppLabelControllerHostTest {
             if(firstRaw==null){firstRaw=raw;firstAction=serialized;}
         }
         JSONObject receipt=PromptAdmissionFixture.grammarReceipt(frame.grammar);
-        check(receipt.get("grammar_schema").equals(ObservedAppLabels.ACTION_SCHEMA),"engine emits instance schema");
+        check(receipt.get("grammar_schema").equals(ActionDecision.IME_ACTION_SCHEMA),"engine emits instance schema");
         check(receipt.getJSONObject("app_label_contract").get("sha256").equals(frame.grammar.appLabels.sha256),"engine emits actual app contract");
         check(Integer.valueOf(5).equals(receipt.getJSONObject("app_label_contract").get("pairs_count")),"engine preserves duplicate-label count by package");
         check(receipt.has("target_label_contract"),"existing node contract retained");

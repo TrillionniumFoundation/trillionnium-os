@@ -2,6 +2,8 @@ package android.system;
 import java.io.*;import java.nio.file.*;import java.util.*;
 /** Host filesystem surrogate. Directory fsync/Android UID authorization are not simulated claims. */
 public final class Os {
+ public static String failFsyncPath;
+ public static final java.util.List<String> syncLog=new java.util.ArrayList<String>();
  private static final Map<FileDescriptor,Open> OPEN=new IdentityHashMap<FileDescriptor,Open>();
  private static final class Open {final Path path;final RandomAccessFile file;Open(Path p,RandomAccessFile f){path=p;file=f;}}
  public static StructStat lstat(String s)throws Exception{Path p=Paths.get(s);if(!Files.exists(p,LinkOption.NOFOLLOW_LINKS))throw new ErrnoException("lstat",2);Map<String,Object> a=Files.readAttributes(p,"unix:*",LinkOption.NOFOLLOW_LINKS);StructStat r=new StructStat();r.st_dev=((Number)a.get("dev")).longValue();r.st_ino=((Number)a.get("ino")).longValue();r.st_size=((Number)a.get("size")).longValue();r.st_nlink=((Number)a.get("nlink")).longValue();r.st_uid=((Number)a.get("uid")).intValue();r.st_mode=((Number)a.get("mode")).intValue();r.st_mtime=((java.nio.file.attribute.FileTime)a.get("lastModifiedTime")).toMillis()/1000;r.st_ctime=((java.nio.file.attribute.FileTime)a.get("ctime")).toMillis()/1000;return r;}
@@ -14,5 +16,5 @@ public final class Os {
  public static void chmod(String s,int mode)throws Exception{Files.setAttribute(Paths.get(s),"unix:mode",mode);}
  public static void mkdir(String s,int mode)throws Exception{Files.createDirectory(Paths.get(s));chmod(s,mode);}
  public static int write(FileDescriptor fd,byte[] b,int p,int n)throws Exception{OPEN.get(fd).file.write(b,p,n);return n;}
- public static void fsync(FileDescriptor fd)throws Exception{if(fd.valid())fd.sync();}
+ public static void fsync(FileDescriptor fd)throws Exception{String path=OPEN.get(fd).path.toString();syncLog.add(path);if(path.equals(failFsyncPath))throw new IOException("injected fsync failure");if(fd.valid())fd.sync();}
 }

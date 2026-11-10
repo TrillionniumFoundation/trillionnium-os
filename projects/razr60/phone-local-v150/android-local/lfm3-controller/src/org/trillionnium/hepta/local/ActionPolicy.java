@@ -27,7 +27,7 @@ public final class ActionPolicy {
     public static void validateTextDecision(ActionDecision action, String currentPackage,
             Set<String> shownApps, ObservedTargetLabels targets, ObservedAppLabels apps)
             throws ActionDecision.InvalidActionException {
-        if (!ObservedAppLabels.ACTION_SCHEMA.equals(action.actionSchema) || apps == null
+        if (!(ObservedAppLabels.ACTION_SCHEMA.equals(action.actionSchema)||ActionDecision.IME_ACTION_SCHEMA.equals(action.actionSchema)) || apps == null
                 || !apps.observationId.equals(action.observationId) || !apps.currentPackage.equals(currentPackage)
                 || shownApps == null || !apps.labels.keySet().equals(shownApps))
             throw new ActionDecision.InvalidActionException("app-label projection belongs to a different frame or schema");

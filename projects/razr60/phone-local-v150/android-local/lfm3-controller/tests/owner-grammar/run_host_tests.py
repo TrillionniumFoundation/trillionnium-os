@@ -18,7 +18,7 @@ def main():
     # Compile the actual dependency closure of this grammar task. Unrelated
     # process/session classes remain in the unchanged comprehensive host gate.
     names=('TaskAuthorization','ActionDecision','DecisionGrammar','ObservedTargetLabels',
-           'ObservedAppLabels','ObservedScrollActions','AppCatalogueRanker')
+           'ObservedAppLabels','ObservedScrollActions','ObservedImeEnter','AppCatalogueRanker')
     inputs=[source/'src/org/trillionnium/hepta/local'/(name+'.java') for name in names]
     inputs.append(source/'tests/owner-grammar/OwnerGrammarHostTest.java')
     pins={str(p.relative_to(source)):hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs}

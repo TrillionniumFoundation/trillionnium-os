@@ -1,6 +1,18 @@
-# Code26: observed transitions and an explicit 9B candidate
+# Hepta v38: observed query-field submission
 
-The current candidate is versionCode 26 (`0.26.0-local-observed-transitions`). It places the current screen after the complete recorded action history and adds the last step's actual before/after editable text, window title and IME observations. Those facts do not infer causality or task completion. An independently pinned Qwen3.5-9B Q4_0 text profile is available for qualification; it does not replace the configured or default model. Existing action permissions, freshness, recovery and local-only inference gates remain. See `docs/CODE26-QUALIFICATION.md` for the change and qualification boundary.
+The current candidate is versionCode 38 (`0.38.0-local-ime-submit`), based on v37.
+It adds a strictly observed, query-labelled `ACTION_IME_ENTER` tool to the ordinary
+local controller, with task authorization, full input/window/display binding,
+durable pre-call attempt evidence and no automatic retry. Generic Enter, payment,
+order and send labels do not qualify. The background broker, qualification scope
+and configured model are unchanged. See [CODE38-IME-SUBMIT.md](CODE38-IME-SUBMIT.md)
+for the compatibility boundary and host-versus-device qualification.
+
+## Retained implementation history
+
+### Code26: observed transitions and an explicit 9B candidate
+
+The historical Code26 candidate is versionCode 26 (`0.26.0-local-observed-transitions`). It places the current screen after the complete recorded action history and adds the last step's actual before/after editable text, window title and IME observations. Those facts do not infer causality or task completion. An independently pinned Qwen3.5-9B Q4_0 text profile is available for qualification; it does not replace the configured or default model. Existing action permissions, freshness, recovery and local-only inference gates remain. See `docs/CODE26-QUALIFICATION.md` for the change and qualification boundary.
 
 The prior exact Code24 source passed 70 host checks and Android compilation; Code24 was not installed for phone testing. Those artifacts remain separate from Code25 qualification.
 
