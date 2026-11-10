@@ -21,7 +21,8 @@ static const HeptaModelProfile hepta_profiles[]={
     {"qwen3.5-4b-q4_0","Qwen3.5-4B-Q4_0.gguf","298fcb5fe7a77ccc79745ae24751560c5ac56874caff4bb39b1f2055bd72b8bb","qwen35",UINT64_C(2583221408),true},
     {"qwen3.5-9b-q4_0","Qwen3.5-9B-Q4_0.gguf","17670346b4260ddcb0173965145155885024f3c9a4a24389a3370751edbcde24","qwen35",UINT64_C(5379417312),true},
     {"bonsai2-9b-q2_0","Ternary-Bonsai-2-9B-Q2_0.gguf","1f884aa56aacd2bbbb2e4b7abaead2b1102b74a9c75a23fc33dab916813a384d","qwen35",UINT64_C(2556640128),true},
-    {"orvena-4b-q4_k_m","Orvena-4B.Q4_K_M.gguf","c5d6df6e9a0828fa3068dfc6f6ca2ff6c4d950adc7e60e4b7202ece61595aa57","qwen35",UINT64_C(2783447904),true}
+    {"orvena-4b-q4_k_m","Orvena-4B.Q4_K_M.gguf","c5d6df6e9a0828fa3068dfc6f6ca2ff6c4d950adc7e60e4b7202ece61595aa57","qwen35",UINT64_C(2783447904),true},
+    {"nanbeige4.2-3b-q4_k_m","Nanbeige_Nanbeige4.2-3B-Q4_K_M.gguf","b92d2e35c9876b0c4bc671996360204f4149d0546c23d5954d5eb3b106c81f24","nanbeige",UINT64_C(2684023968),true}
 };
 static const HeptaModelProfile *hepta_model_profile;
 static const HeptaModelProfile *hepta_find_profile(const char *id){

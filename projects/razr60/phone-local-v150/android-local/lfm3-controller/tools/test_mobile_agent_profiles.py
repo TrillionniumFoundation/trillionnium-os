@@ -37,5 +37,5 @@ class MobileAgentProfiles(unittest.TestCase):
     def test_legacy_order_and_default_retained(self):
         self.assertEqual(profiles.DEFAULT_PROFILE,"lfm3-1.7b-qad-q4_0")
         self.assertEqual(list(profiles.PROFILES)[7:9],["qwen3.5-4b-q4_0","qwen3.5-9b-q4_0"])
-        self.assertEqual(list(profiles.PROFILES)[9:],list(EXPECTED))
+        self.assertEqual(list(profiles.PROFILES)[9:11],list(EXPECTED))
 if __name__=="__main__":unittest.main()

@@ -106,7 +106,7 @@ public final class PromptAdmissionHostTest {
                 PromptAdmissionFixture.awaitAdmission(frame.text,config);exactProfiles++;
             }else upperProfiles++;
         }
-        check(exactProfiles==10&&upperProfiles==1,"all declared profiles covered");
+        check(exactProfiles==11&&upperProfiles==1,"all declared profiles covered");
         cases++;
 
         final LocalRuntimeConfig bounded=new LocalRuntimeConfig(ModelProfile.LFM3,"npu",4096,4);

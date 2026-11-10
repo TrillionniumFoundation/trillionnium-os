@@ -47,6 +47,11 @@ public final class ModelProfile {
     public static final ModelProfile ORVENA4B=new ModelProfile("orvena-4b-q4_k_m","Orvena 4B（实验）",
             "mradermacher/Orvena-4B-GGUF","a2f0300d9c43ee0911610d791ec3bfd302aafa6c","Orvena-4B.Q4_K_M.gguf",2783447904L,
             "c5d6df6e9a0828fa3068dfc6f6ca2ff6c4d950adc7e60e4b7202ece61595aa57","qwen35",true,5L<<30);
+    // Experimental text-only candidate; the first device qualification plan
+    // uses context 4096. The 6 GiB admission threshold is not a measured peak.
+    public static final ModelProfile NANBEIGE42_3B=new ModelProfile("nanbeige4.2-3b-q4_k_m","Nanbeige4.2 3B（实验）",
+            "bartowski/Nanbeige_Nanbeige4.2-3B-GGUF","210b0d6d6c1046044c7ea9d16c9ce3b5716ec2d2","Nanbeige_Nanbeige4.2-3B-Q4_K_M.gguf",2684023968L,
+            "b92d2e35c9876b0c4bc671996360204f4149d0546c23d5954d5eb3b106c81f24","nanbeige",true,6L<<30);
     public final String id,displayName,repository,revision,fileName,sha256,architecture;
     public final long bytes,minimumAvailableBytes;
     public final boolean exactTokenizationRequired;
@@ -68,6 +73,7 @@ public final class ModelProfile {
         if(QWEN35_9B.id.equals(id))return QWEN35_9B;
         if(BONSAI2_9B.id.equals(id))return BONSAI2_9B;
         if(ORVENA4B.id.equals(id))return ORVENA4B;
+        if(NANBEIGE42_3B.id.equals(id))return NANBEIGE42_3B;
         throw new IllegalArgumentException("unknown pinned model_profile");
     }
 }

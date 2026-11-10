@@ -24,9 +24,12 @@ PROFILES = {
         "sha256": "1f884aa56aacd2bbbb2e4b7abaead2b1102b74a9c75a23fc33dab916813a384d", "architecture": "qwen35", "exact": True},
     "orvena-4b-q4_k_m": {"file": "Orvena-4B.Q4_K_M.gguf", "bytes": 2783447904,
         "sha256": "c5d6df6e9a0828fa3068dfc6f6ca2ff6c4d950adc7e60e4b7202ece61595aa57", "architecture": "qwen35", "exact": True},
+    "nanbeige4.2-3b-q4_k_m": {"file": "Nanbeige_Nanbeige4.2-3B-Q4_K_M.gguf", "bytes": 2684023968,
+        "sha256": "b92d2e35c9876b0c4bc671996360204f4149d0546c23d5954d5eb3b106c81f24", "architecture": "nanbeige", "exact": True},
 }
 
 def profile(name=DEFAULT_PROFILE):
     if not isinstance(name, str) or name not in PROFILES:
         raise ValueError("unknown pinned model_profile")
     return dict(PROFILES[name])
+
