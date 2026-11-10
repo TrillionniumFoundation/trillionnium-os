@@ -1,11 +1,11 @@
 {
   "schema": "hepta.local-source.v3",
-  "version_code": 29,
-  "version_name": "0.29.0-local-task-worker",
+  "version_code": 30,
+  "version_name": "0.30.0-local-exact-admission",
   "derived_from_code16_source_manifest_sha256": "c75ab9b8aa01705e7dd0805baa45dfc41650837874ff8618e28442b73d77454f",
   "android_build": "separate actual build receipt; source and host results do not establish Android or phone qualification",
   "phone_qualified": false,
-  "functional_scope": "Task-local serial owned model worker and generation-bound request/terminal evidence, integrated with the exact closed code28 Bonsai/Orvena profile registry and CLI/inventory consumers. Full-prompt reset, action domain, default configuration and independent goal gates retained.",
+  "functional_scope": "Separate Java sizing projection from native exact-token admission while preserving complete bounded observation and action facts; retain task-owned worker, Stop finalization, native limits and independent goal gates.",
   "ui_venus_native_host_build_receipt_sha256": "3dac4c0e91bd9c088e7330394953f6df74596feff04c7e815672ee8d3392e705",
   "ui_venus_phone_action_dispatch_connected": false,
   "ui_venus_ordinary_app_runtime_qualified": false,
@@ -63,8 +63,8 @@
     },
     {
       "path": "AndroidManifest.xml",
-      "bytes": 1863,
-      "sha256": "96f27f8ba4a773d6eae9b7ac74e21ec9957ca2a00524f220a34f09fd35283439"
+      "bytes": 1867,
+      "sha256": "1042f5e6fa3288e3dfc17bf319459146ba381aa204c144d7b55c43393be09d2c"
     },
     {
       "path": "CODE10-LABELS.md",
@@ -90,6 +90,11 @@
       "path": "CODE29-TASK-WORKER.md",
       "bytes": 11651,
       "sha256": "351742d18380fe521434b4912e9909f3a8d8558bdeef626df55eed39d86d114b"
+    },
+    {
+      "path": "CODE30-EXACT-ADMISSION.md",
+      "bytes": 3911,
+      "sha256": "b5cede8f6464c4ebbd8a65cebd171418e5399f4d24277acba8c9ab44fe58e044"
     },
     {
       "path": "CODE5-PROGRESS.md",
@@ -4813,8 +4818,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ConservativeTokenBudget.java",
-      "bytes": 3395,
-      "sha256": "f44740ae90f4c05b60a9a79ff0955b5fe730c8c38c03926c1d23568d640f54d7"
+      "bytes": 3755,
+      "sha256": "63430401d14d944a03f00c23aad7373e95997c0f409f5837e191f6d169b140ea"
     },
     {
       "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
@@ -4863,8 +4868,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 53060,
-      "sha256": "cdf2368963b6a3cb4c0432e86e04e7c38ad498fc4ab7197f3dd0483885c7b1c4"
+      "bytes": 53500,
+      "sha256": "da3455080e441e18c9e4ed8f96d77891feff35b3faea0bf55664cd434ec387a9"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -5347,6 +5352,36 @@
       "sha256": "968c4be22dc5608e9571a48e8af43f58f5ba6a7533d11014d868b2a007962170"
     },
     {
+      "path": "tests/exact-admission/PromptAdmissionHostTest.java",
+      "bytes": 10394,
+      "sha256": "0e89e26bb316de00c18170718262a7dbec91156e933fe45265c424ba9b95df43"
+    },
+    {
+      "path": "tests/exact-admission/android/graphics/Rect.java",
+      "bytes": 368,
+      "sha256": "2a3e1369304813cf1d0232c5246859da9ff1efa8624c3609e495323f3305e103"
+    },
+    {
+      "path": "tests/exact-admission/org/json/JSONArray.java",
+      "bytes": 1241,
+      "sha256": "981b41f6a1661b5c7096807f2926dbb51ad196b575c9e092fd287c8a9b97c74b"
+    },
+    {
+      "path": "tests/exact-admission/org/json/JSONException.java",
+      "bytes": 182,
+      "sha256": "0970084f500c6be873496ca16394e90d0c15f9866da256736925263dae1f1f0a"
+    },
+    {
+      "path": "tests/exact-admission/org/json/JSONObject.java",
+      "bytes": 3438,
+      "sha256": "0a7ff2fb1a45108bed1c9cf5a4c3f8dd83036ca65343cf650648914460a8f656"
+    },
+    {
+      "path": "tests/exact-admission/prepare_fixture.py",
+      "bytes": 5500,
+      "sha256": "c1b81bbb507454eb6db9f995303f69fca1d2fb3f970d9ace36d03097af022219"
+    },
+    {
       "path": "tests/recovery-application/README.md",
       "bytes": 1158,
       "sha256": "516acf4097d916af553fd7b1e525cfd24c7318d4b02f0d2e1dd22a85ee493632"
@@ -5580,6 +5615,11 @@
       "path": "tools/test_build_identity.py",
       "bytes": 3512,
       "sha256": "508129733cb4b218e22da9e46990d1b3490233d968b158d6d5cc250f3bc54590"
+    },
+    {
+      "path": "tools/test_exact_admission.py",
+      "bytes": 2258,
+      "sha256": "51df38468b87e209e405f441ca3107803203b771e0c29c5eb915d33d509eacc6"
     },
     {
       "path": "tools/test_fixed_response_retry.py",
@@ -5882,5 +5922,20 @@
     "host_tests": "requires exact source host receipt",
     "android_build": "requires exact source build receipt",
     "phone_qualification": "not_run"
+  },
+  "code30_exact_admission_derivation": {
+    "parent_git_head": "dd6217e19f4c947e3bc287d7e1e676264ec7f594",
+    "parent_source_manifest_sha256": "e49de8bdaf84d35c8b5acc2ba40be2a5bf5287daf39cff470adf00c0f6fdc445",
+    "scope": "Two Java admission callers use the exact-profile-only native-attempt decision; retain native guard, proved LFM3 upper bound and 65536-byte engine input limit.",
+    "system_instruction_unchanged": true,
+    "complete_action_facts_retained": true,
+    "native_source_unchanged": true,
+    "model_profiles_unchanged": true,
+    "default_model_changed": false,
+    "independent_goal_assertions_relaxed": false,
+    "auto_replay_added": false,
+    "phone_qualification": "not_run",
+    "host_tests": "requires exact source host receipt",
+    "android_build": "requires exact source build receipt"
   }
 }

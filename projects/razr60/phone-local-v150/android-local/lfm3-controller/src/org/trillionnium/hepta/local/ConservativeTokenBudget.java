@@ -26,10 +26,18 @@ public final class ConservativeTokenBudget {
         method=provenUpperBound?METHOD:"utf8_projection_heuristic_native_exact_tokenization_required";
         systemBytesUpper=bytesUpper(system);promptBytesUpper=bytesUpper(prompt);
         int projectedBytes=systemBytesUpper+promptBytesUpper;
-        // New profiles use only a sizing heuristic for observation selection.
+        // Exact-token profiles retain a diagnostic sizing projection only.
         // It is never token authorization: native counts the rendered prompt.
         promptTokensUpper=(provenUpperBound?projectedBytes:(projectedBytes+1)/2)+TEMPLATE_BOUND+BOS_EOS_BOUND;
         totalContextUpper=promptTokensUpper+GENERATION+RESERVED;admitted=totalContextUpper<=contextTokens;
+    }
+    /**
+     * Allows only an attempt at native admission, never generation or an action.
+     * The UTF-8 projection remains advisory for profiles whose exact rendered
+     * input IDs are counted and bounded by the native worker before generation.
+     */
+    public boolean mayAttemptNative(){
+        return admitted||profile.exactTokenizationRequired;
     }
     public static ConservativeTokenBudget estimate(String system,String prompt,int contextTokens){
         if(system==null||prompt==null)throw new IllegalArgumentException("missing prompt");
