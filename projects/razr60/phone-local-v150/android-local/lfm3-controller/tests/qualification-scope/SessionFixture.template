@@ -1,0 +1,22 @@
+package org.trillionnium.hepta.local;
+import android.content.Context;
+import android.os.*;
+import android.util.AtomicFile;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import org.json.*;
+/** Actual schedule, receive, stop and persist methods; Android UI/recovery IO is explicit. */
+public final class LocalTaskSession {
+    public interface Listener{void onSessionChanged();}
+    java.lang.ref.WeakReference<Listener> ui=new java.lang.ref.WeakReference<Listener>(null);
+    final Context context;final LocalModelEngine engine;final Handler main=new Handler(Looper.getMainLooper());
+    LocalTaskController controller;HeptaAccessibilityService controllerService;Runnable pendingStart;
+    String state="",log="",taskId,origin,instructionSha,nonceSha,expectedScopeSha,actualScopeSha;
+    LocalTaskController.TaskResult lastResult;boolean pending,blocked;long generation,recoveryIgnoredGeneration=-1;
+    JSONObject startupRecovery;RecoveryJournalTransaction.Proof acknowledgedSession;
+    public LocalTaskSession(Context context,LocalModelEngine engine){this.context=context;this.engine=engine;}
+    public boolean isRunning(){return pending||(controller!=null&&controller.isRunning());}
+    public boolean isBlocked(){return blocked;}
+{{schedule}}
+{{persist}}
+}

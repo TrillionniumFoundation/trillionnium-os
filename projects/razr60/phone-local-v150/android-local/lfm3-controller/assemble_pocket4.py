@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 
 ROOT=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tools'))
-from build_identity import verify_source_inputs
+from build_identity import verify_source_inputs, actual_build_identity
 from model_profiles import PROFILES,DEFAULT_PROFILE,LLAMA_COMMIT
 from verify_runtime import verify_runtime_archive
 from verify_mobimind_runtime import verify_mobimind_runtime,verify_worker_linker_policy
@@ -77,6 +77,8 @@ if set(ui_venus_expected)&set(libraries):
 libraries.update({name:item['path'] for name,item in ui_venus_expected.items()})
 build=json.loads((OUT/'mac-build-receipt.json').read_text())
 verify_source_inputs(ROOT,build)
+actual_build_asset=actual_build_identity(ROOT,build)
+actual_build_asset_name='assets/hepta-build-identity.json'
 expected_outputs={'classes.dex':OUT/'dex/classes.dex','base.apk':OUT/'base.apk','libhepta_local_runner.so':OUT/'libhepta_local_runner.so'}
 seen=set()
 expected_artifact_sha={}
@@ -120,6 +122,8 @@ if ui_venus_linker_policy is None:
     raise RuntimeError('Independent UI-Venus App worker linker policy was not verified')
 
 with zipfile.ZipFile(OUT/'base.apk') as base, zipfile.ZipFile(UNSIGNED,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+    if actual_build_asset_name in base.namelist(): raise RuntimeError('Unexpected preexisting build identity asset')
+    z.writestr(actual_build_asset_name,actual_build_asset)
     for info in base.infolist():
         if info.filename=='resources.arsc':
             resource=zipfile.ZipInfo(info.filename,(2026,11,8,0,0,0))
@@ -194,6 +198,7 @@ if 'DYN (Position-Independent Executable file)' not in venus_elf or '/system/bin
 (REPORT/'ui-venus-runner-elf.txt').write_text(venus_elf)
 with zipfile.ZipFile(APK) as z:
     if len(z.namelist())!=len(set(z.namelist())): raise RuntimeError('Duplicate APK member')
+    if z.read(actual_build_asset_name)!=actual_build_asset: raise RuntimeError('Packaged build identity differs from verified compiler inputs')
     resource=z.getinfo('resources.arsc')
     with APK.open('rb') as raw_apk:
         raw_apk.seek(resource.header_offset)
@@ -223,6 +228,7 @@ receipt={'schema':'hepta.local-model.static-acceptance.v3','apk':str(APK),'apk_b
     'new_development_signing_key_created':created_signing_key,'existing_installation_signer_match_proven':False,
     'package':'org.trillionnium.hepta.local','permissions':[],'abi':['arm64-v8a'],
     'version_code':version_code, 'version_name':version_name,
+    'actual_build_identity_asset':actual_build_asset_name,'actual_build_identity_sha256':hashlib.sha256(actual_build_asset).hexdigest(),
     'debuggable':True,'extract_native_libs':True,'compile_sdk':34,'min_sdk':30,'target_sdk':35,
     'uses_native_libraries_optional':['libadsprpc.so','libcdsprpc.so','libOpenCL.so'],
     'runtime':'llama_cpp','model':'LiquidAI/LFM3-1.7B-GGUF','default_compute':'npu','default_context':8192,

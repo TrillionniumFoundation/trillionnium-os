@@ -9,7 +9,7 @@ public final class RecentActionProjection {
 
     public static final String READABLE_SCHEMA="hepta.readable-action-history.v1";
     private static final String[] READABLE_FIELD_ORDER={
-            "step","action","node_label","node_id","type_text","direction","query","offset","duration_ms",
+            "step","action","app_label","node_label","node_id","type_text","direction","query","offset","duration_ms",
             "before_package","target_package","package_after","model_issued","accepted","dispatched","stale",
             "window_changed","ime_visible_before","ime_visible_after","exact_package_match","read_only",
             "find_returned","find_matches","find_catalogue_sha256","observation_after","action_rejected","detail"};
@@ -69,6 +69,7 @@ public final class RecentActionProjection {
         copy(entry,result,"target_package");
         copy(entry,result,"before_package");
         Object action = entry.get("action");
+        if ("open".equals(action)) copy(entry,result,"app_label");
         if ("click".equals(action) || "type".equals(action) || "scroll".equals(action)) {
             copy(entry,result,"node_label");
         }
@@ -114,6 +115,7 @@ public final class RecentActionProjection {
         // Rename only an actually observed after-package; never infer it from the action or target.
         if(entry.containsKey("package_after"))result.put("after_package",entry.get("package_after"));
         Object action=entry.get("action");
+        if("open".equals(action))copy(entry,result,"app_label");
         if("click".equals(action)||"type".equals(action)||"scroll".equals(action))copy(entry,result,"node_label");
         if("scroll".equals(action))copy(entry,result,"direction");
         if("type".equals(action)&&entry.containsKey("type_text")){
@@ -176,7 +178,7 @@ public final class RecentActionProjection {
                 }
             }
             Map<String,Object> details=new LinkedHashMap<String,Object>();
-            for(String key:new String[]{"node_label","direction","type_text","type_text_truncated"})copy(effect,details,key);
+            for(String key:new String[]{"app_label","node_label","direction","type_text","type_text_truncated"})copy(effect,details,key);
             if(!absent.isEmpty())details.put("absent_columns",java.util.Collections.unmodifiableList(absent));
             row.add(java.util.Collections.unmodifiableMap(details));
             rows.add(java.util.Collections.unmodifiableList(row));
@@ -277,6 +279,7 @@ public final class RecentActionProjection {
     private static Map<String,Object> eventArguments(Map<String,Object> entry,int level){
         Map<String,Object> result=new LinkedHashMap<String,Object>();
         Object action=entry.get("action");
+        if("open".equals(action))copy(entry,result,"app_label");
         if("scroll".equals(action))copy(entry,result,"direction");
         if(level>=1&&("click".equals(action)||"type".equals(action)||"scroll".equals(action)))copy(entry,result,"node_label");
         if(level==2&&"type".equals(action)&&entry.containsKey("type_text")){
