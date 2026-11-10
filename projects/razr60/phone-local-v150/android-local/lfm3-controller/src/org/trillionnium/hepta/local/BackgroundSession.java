@@ -13,6 +13,7 @@ import android.view.Display;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -71,6 +72,8 @@ final class BackgroundSession {
     private Process brokerProcess;
     private volatile boolean brokerExitObserved;
     private volatile Integer brokerExitCode;
+    private BrokerOutput brokerOutput;
+    private Thread brokerOutputThread;
 
     BackgroundSession(Context context,String taskId,String owner,Selection selection,
                       QualificationScopeConfig.FilesRoot filesRoot)throws Exception{
@@ -96,6 +99,7 @@ final class BackgroundSession {
                 .put("bootstrap_dispatched",bootstrapDispatched).put("bootstrap_model_issued",false)
                 .put("broker_process_exit_observed",brokerExitObserved)
                 .put("broker_process_exit_code",brokerExitCode==null?JSONObject.NULL:brokerExitCode)
+                .put("broker_output",brokerOutput==null?JSONObject.NULL:brokerOutput.evidence())
                 .put("last_broker_response",lastResponse==null?JSONObject.NULL:new JSONObject(lastResponse.toString()));}
         catch(Exception failure){throw new IllegalStateException("后台会话凭据编码失败",failure);}
     }
@@ -119,14 +123,14 @@ final class BackgroundSession {
                 +" --socket "+quote(socketName)+" --owner-uid "+android.os.Process.myUid()
                 +" --generation "+quote(generation)+" --allowed-packages "+quote(packages)
                 +" --ttl-ms "+TTL_MS+" --expires-elapsed-ms "+expiresElapsed;
+        File taskRoot=MobiMindPrivateFiles.directory(new File(filesRoot.path,"control-tasks"),false);
+        File taskDirectory=MobiMindPrivateFiles.directory(new File(taskRoot,taskId),false);
         LocalProbeApplication.requirePermissionPreparationIdle(context);
         brokerProcess=new ProcessBuilder("su","-c",command).redirectErrorStream(true).start();
         spawnAttempted=true;
-        final Process launched=brokerProcess;
-        Thread drain=new Thread(new Runnable(){public void run(){
-            try(InputStream input=launched.getInputStream()){byte[] bytes=new byte[1024];while(input.read(bytes)!=-1){/* Never expose root process output as model input. */}}
-            catch(IOException ignored){}
-        }},"hepta-background-broker-output");drain.setDaemon(true);drain.start();
+        brokerOutput=new BrokerOutput(brokerProcess,taskDirectory,taskId,generation,command);
+        brokerOutputThread=new Thread(brokerOutput,"hepta-background-broker-output");
+        brokerOutputThread.setDaemon(true);brokerOutputThread.start();
         long connectDeadline=Math.min(expiresElapsed,SystemClock.elapsedRealtime()+4500);
         Exception connectionFailure=null;
         while(SystemClock.elapsedRealtime()<connectDeadline){
@@ -184,9 +188,10 @@ final class BackgroundSession {
         byte[] bytes=request.toString().getBytes(StandardCharsets.UTF_8);
         if(bytes.length<1||bytes.length>REQUEST_LIMIT)throw new IOException("后台请求长度越界");
         try(LocalSocket socket=new LocalSocket()){
-            socket.setSoTimeout(timeout);
             try{socket.connect(new LocalSocketAddress(name,LocalSocketAddress.Namespace.ABSTRACT));}
             catch(IOException unavailable){throw new ConnectionUnavailable(unavailable);}
+            // Android creates the socket FD during connect; setSoTimeout before it throws.
+            socket.setSoTimeout(timeout);
             Credentials peer=socket.getPeerCredentials();
             if(peer==null||(peer.getUid()!=0&&peer.getUid()!=2000))throw new IOException("后台服务身份不是 shell/root");
             DataOutputStream output=new DataOutputStream(socket.getOutputStream());output.writeInt(bytes.length);output.write(bytes);output.flush();
@@ -238,9 +243,71 @@ final class BackgroundSession {
             catch(InterruptedException interrupted){Thread.currentThread().interrupt();}
             if(!known&&!brokerExitObserved)brokerProcess.destroy(); // Never counts as release evidence.
         }
+        if(brokerOutput!=null){
+            try{if(brokerOutputThread!=null)brokerOutputThread.join(200);}
+            catch(InterruptedException interrupted){Thread.currentThread().interrupt();}
+            brokerOutput.persist("session_close_snapshot");
+        }
         cleanupConfirmed=known;
         try{return new Cleanup(known,evidence().put("cleanup_known",known).put("cleanup_error",error==null?JSONObject.NULL:error));}
         catch(Exception impossible){throw new IllegalStateException(impossible);}
+    }
+    /** Diagnostic bytes only. A log, EOF, exit, or reported RELEASED never grants lease cleanup. */
+    private static final class BrokerOutput implements Runnable {
+        private static final int LIMIT=65536;
+        private final Process process;
+        private final File directory;
+        private final String task,generation,commandSha,name;
+        private final long started=SystemClock.elapsedRealtime();
+        private final ByteArrayOutputStream bytes=new ByteArrayOutputStream();
+        private long count;
+        private boolean eof,readFailed;
+        private JSONObject captured;
+        BrokerOutput(Process process,File directory,String task,String generation,String command){
+            this.process=process;this.directory=directory;this.task=task;this.generation=generation;
+            commandSha=HeptaAccessibilityService.sha(command.getBytes(StandardCharsets.UTF_8));
+            name="background-broker-"+generation;
+        }
+        public void run(){
+            try(InputStream input=process.getInputStream()){
+                byte[] buffer=new byte[1024];int n;
+                while((n=input.read(buffer))!=-1){synchronized(this){
+                    count+=n;int keep=Math.min(n,LIMIT-bytes.size());
+                    if(keep>0)bytes.write(buffer,0,keep);
+                }}
+                synchronized(this){eof=true;}
+            }catch(IOException failure){synchronized(this){readFailed=true;}}
+            finally{persist("stream_terminal");}
+        }
+        private JSONObject snapshot(byte[] kept)throws Exception{return new JSONObject()
+                .put("schema","hepta.background-broker-output.v1").put("task_id",task).put("generation",generation)
+                .put("app_uid",android.os.Process.myUid()).put("app_pid",android.os.Process.myPid())
+                .put("process_binding","owned_java_process_merged_stream").put("process_reference",System.identityHashCode(process))
+                .put("command_sha256",commandSha).put("started_elapsed_ms",started)
+                .put("output_file",name+".bin").put("receipt_file",name+".json")
+                .put("output_limit_bytes",LIMIT).put("observed_bytes",count).put("stored_bytes",kept.length)
+                .put("stored_sha256",HeptaAccessibilityService.sha(kept)).put("overflow",count>LIMIT)
+                .put("eof_seen",eof).put("read_failed",readFailed)
+                .put("merged_stdout_stderr",true).put("model_input",false).put("release_evidence",false);}
+        synchronized void persist(String reason){
+            if(captured!=null)return;
+            byte[] kept=bytes.toByteArray();JSONObject value;
+            try{value=snapshot(kept).put("capture_reason",reason).put("persisted",false);}
+            catch(Exception impossible){throw new IllegalStateException(impossible);}
+            try{
+                MobiMindPrivateFiles.directory(directory,false);
+                MobiMindPrivateFiles.writeNew(new File(directory,name+".bin"),kept);
+                value.put("persisted",true);
+                MobiMindPrivateFiles.writeNew(new File(directory,name+".json"),value.toString().getBytes(StandardCharsets.UTF_8));
+            }catch(Exception failure){
+                try{value.put("persisted",false).put("persistence_error",failure.getClass().getSimpleName());}
+                catch(Exception impossible){throw new IllegalStateException(impossible);}
+            }
+            captured=value;
+        }
+        synchronized JSONObject evidence()throws Exception{
+            return captured==null?snapshot(bytes.toByteArray()).put("persisted",false):new JSONObject(captured.toString());
+        }
     }
     private void deleteJournal()throws Exception{
         filesRoot.unchanged(context);JSONObject prior=readJournal(journal);

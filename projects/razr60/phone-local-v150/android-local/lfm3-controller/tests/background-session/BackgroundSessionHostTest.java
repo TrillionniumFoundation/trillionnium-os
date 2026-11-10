@@ -45,6 +45,18 @@ public final class BackgroundSessionHostTest {
         boolean journalPresent(){return Files.exists(directory.resolve(BackgroundSession.JOURNAL));}
         public void close()throws IOException{android.system.Os.failUnlink=false;try(java.util.stream.Stream<Path> stream=Files.walk(directory)){Path[] paths=stream.sorted(Comparator.reverseOrder()).toArray(Path[]::new);for(Path p:paths)Files.deleteIfExists(p);}}
     }
+    static Process exitedProcess(final InputStream input){return new Process(){
+        public InputStream getInputStream(){return input;}
+        public InputStream getErrorStream(){return new ByteArrayInputStream(new byte[0]);}
+        public OutputStream getOutputStream(){return new ByteArrayOutputStream();}
+        public int waitFor(){return 70;}public int exitValue(){return 70;}public void destroy(){}
+    };}
+    static Object output(Process process,Env e)throws Exception{
+        Class<?> type=Class.forName("org.trillionnium.hepta.local.BackgroundSession$BrokerOutput");
+        Constructor<?> constructor=type.getDeclaredConstructor(Process.class,File.class,String.class,String.class,String.class);
+        constructor.setAccessible(true);return constructor.newInstance(process,e.directory.toFile(),TASK,e.session.generation,"fixture-only-no-process-launch");
+    }
+    static JSONObject outputEvidence(Object output)throws Exception{Method m=output.getClass().getDeclaredMethod("evidence");m.setAccessible(true);return (JSONObject)m.invoke(output);}
     public static void main(String[] args)throws Exception{
         test("selection_empty_refused",()->rejects(()->new BackgroundSession.Selection(PKG,Collections.<String>emptySet())));
         test("selection_initial_must_belong",()->rejects(()->new BackgroundSession.Selection(OTHER,Collections.singleton(PKG))));
@@ -62,6 +74,21 @@ public final class BackgroundSessionHostTest {
             finally{LocalProbeApplication.permissionBusy=false;}
         }});
         test("start_cannot_block_main_thread",()->{try(Env e=new Env()){rejects(()->e.session.start(()->false));check(!e.journalPresent()&&LocalSocket.connections==0,"no process or transport before thread check");}});
+        test("android_timeout_requires_created_socket",()->{try(LocalSocket socket=new LocalSocket()){
+            try{socket.setSoTimeout(3500);throw new AssertionError("uncreated socket accepted timeout");}
+            catch(IOException expected){check("socket not created".equals(expected.getMessage()),"wrong Android lifecycle failure");}
+        }});
+        test("exchange_connects_then_configures_and_authenticates_before_bytes",()->{
+            LocalSocket.responder=req->response(req,"ACTIVE",7,true,false);
+            exchange(request(UUID.randomUUID().toString(),"state"));
+            check(LocalSocket.events.equals(Arrays.asList("connect","timeout","peer","output","input","close")),"socket lifecycle or UID-before-bytes ordering changed");
+        });
+        test("absent_socket_is_typed_before_timeout_or_request",()->{
+            LocalSocket.missing=true;
+            try{exchange(request(UUID.randomUUID().toString(),"state"));throw new AssertionError("absent endpoint accepted");}
+            catch(IOException expected){check("ConnectionUnavailable".equals(expected.getClass().getSimpleName()),"absent endpoint lost retry/reconcile type");}
+            check(LocalSocket.events.equals(Arrays.asList("connect","close"))&&LocalSocket.sent.length==0,"absent endpoint configured or sent bytes");
+        });
         test("client_authenticates_server_before_request",()->{LocalSocket.peerUid=10002;rejects(()->exchange(request(UUID.randomUUID().toString(),"state")));check(LocalSocket.sent.length==0,"untrusted server got request");});
         for(int uid:new int[]{0,2000})test("accepted_server_uid_"+uid,()->{LocalSocket.peerUid=uid;LocalSocket.responder=req->response(req,"ACTIVE",7,true,false);JSONObject result=exchange(request(UUID.randomUUID().toString(),"state"));check(result.getInt("display_id")==7&&LocalSocket.timeout==3500,"bound transport response");});
         for(String changed:new String[]{"request_id","generation","version","state"})test("response_identity_"+changed,()->{LocalSocket.responder=req->{JSONObject value=decode(response(req,"ACTIVE",7,true,false));value.put(changed,"version".equals(changed)?Integer.valueOf(2):"mismatch");return frame(value.toString().getBytes(StandardCharsets.UTF_8));};rejects(()->exchange(request(UUID.randomUUID().toString(),"state")));});
@@ -82,6 +109,26 @@ public final class BackgroundSessionHostTest {
         test("reconcile_expired_named_display_still_blocks",()->{try(Env e=new Env()){e.journal();e.context.displays.displays.put(8,new Display(8,e.session.displayName));LocalSocket.missing=true;SystemClock.now=e.session.expiresElapsed+2001;check(!BackgroundSession.reconcile(e.context).known&&e.journalPresent(),"unknown ID bypassed generation display");}});
         test("reconcile_confirmed_reboot_absent_known",()->{try(Env e=new Env()){e.journal();LocalSocket.missing=true;Settings.Global.boot=11;SystemClock.now=100;check(BackgroundSession.reconcile(e.context).known&&!e.journalPresent(),"boot-changed absence not reconciled");}});
         test("bad_journal_expiry_refused",()->{try(Env e=new Env()){JSONObject value=(JSONObject)invoke(e.session,"baseJournal",new Class<?>[]{});value.put("expires_elapsed_ms",1);MobiMindPrivateFiles.writeNew(e.directory.resolve(BackgroundSession.JOURNAL).toFile(),value.toString().getBytes(StandardCharsets.UTF_8));rejects(()->BackgroundSession.reconcile(e.context));check(e.journalPresent(),"invalid journal discarded");}});
+        test("broker_output_is_bounded_and_bound_to_owned_process",()->{try(Env e=new Env()){
+            byte[] raw=new byte[65536+123];Arrays.fill(raw,(byte)'x');Process process=exitedProcess(new ByteArrayInputStream(raw));
+            Object capture=output(process,e);((Runnable)capture).run();JSONObject receipt=outputEvidence(capture);
+            byte[] kept=MobiMindPrivateFiles.read(e.directory.resolve(receipt.getString("output_file")).toFile(),65536,true).bytes;
+            check(receipt.getBoolean("persisted")&&receipt.getBoolean("eof_seen")&&receipt.getBoolean("overflow"),"output completeness/overflow lost");
+            check(receipt.getLong("observed_bytes")==raw.length&&kept.length==65536,"cap must not stop draining");
+            check(receipt.getString("stored_sha256").equals(HeptaAccessibilityService.sha(kept)),"stored hash mismatch");
+            check(TASK.equals(receipt.getString("task_id"))&&e.session.generation.equals(receipt.getString("generation"))&&receipt.getInt("process_reference")==System.identityHashCode(process),"output lost owned task/process binding");
+            check(!receipt.getBoolean("model_input")&&!receipt.getBoolean("release_evidence"),"diagnostics became model or lease evidence");
+            JSONObject saved=new JSONObject(new String(MobiMindPrivateFiles.read(e.directory.resolve(receipt.getString("receipt_file")).toFile(),16384,true).bytes,StandardCharsets.UTF_8));
+            check(saved.toString().equals(receipt.toString()),"receipt differs from persisted snapshot");
+        }});
+        test("broker_read_failure_and_exit_never_release_lease",()->{try(Env e=new Env()){
+            e.journal();Process process=exitedProcess(new InputStream(){public int read()throws IOException{throw new IOException("synthetic stream failure");}});
+            Object capture=output(process,e);((Runnable)capture).run();JSONObject log=outputEvidence(capture);
+            check(log.getBoolean("read_failed")&&!log.getBoolean("eof_seen")&&log.getBoolean("persisted"),"incomplete stream masqueraded as EOF");
+            field(e.session,"brokerProcess",process);field(e.session,"brokerOutput",capture);LocalSocket.missing=true;
+            BackgroundSession.Cleanup cleanup=e.session.close();
+            check(!cleanup.known&&e.journalPresent()&&cleanup.evidence.getBoolean("broker_process_exit_observed")&&cleanup.evidence.getInt("broker_process_exit_code")==70,"exited broker output erased release barrier");
+        }});
         test("unstarted_close_is_known_without_broker",()->{try(Env e=new Env()){check(e.session.close().known&&e.session.released()&&LocalSocket.connections==0,"unstarted close tried broker");}});
         for(boolean stop:new boolean[]{false,true})test("cleanup_unknown_with_late_scope_refusal_stop_"+stop,()->{
             final int[] closes={0},cancels={0};

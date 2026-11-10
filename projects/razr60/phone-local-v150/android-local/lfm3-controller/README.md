@@ -1,6 +1,20 @@
-# Hepta v40: bounded model continuity and permission guidance
+# Hepta v41: background startup repair
 
-Current candidate: versionCode 40 (`0.40.0-local-progress-guidance`), based on frozen v39
+Current candidate: versionCode 41 (`0.41.0-local-background-repair`), based on frozen v40
+commit `d59542de6e7d67c81a60275571f008c21d17b3dd`.
+
+This candidate fixes the confirmed background socket setup order, narrowly
+handles empty organizer task metadata, retains bounded broker diagnostics and
+repairs the inherited app-label test fixture. The complete strict host gate,
+Android compilation and ordinary phone acceptance are still pending. Existing
+interrupted task journals must retain their original
+bytes; only the normal in-app cleanup and acknowledgement flow may restore task
+availability after it establishes the required cleanup evidence. See
+[CODE41-BACKGROUND-REPAIR.md](CODE41-BACKGROUND-REPAIR.md).
+
+## v40 predecessor: bounded model continuity and permission guidance
+
+The v40 predecessor is versionCode 40 (`0.40.0-local-progress-guidance`), based on frozen v39
 commit `5a68ef538ca8a9d76591dd6adb089b90b0ad97d4`.
 
 The owner UI explains Magisk 31.1's requirement to configure a grant in its
@@ -16,7 +30,10 @@ than observation evidence and cannot supply tool authority or old target pairs.
 This tests a continuity hypothesis from the actual Qwen failure; improved model
 quality has not been established. System instructions, model selection, native
 inference, action dispatch and permission preparation semantics remain unchanged.
-Full host/Android compilation and real-device acceptance for v40 remain outstanding.
+Its Mac Android compilation passed with 172 compiler inputs. The complete host
+gate stopped at an inherited app-label fixture error (one error among 267 Python
+tests), so v40 was not signed or installed. Real-device acceptance remains
+unestablished; these predecessor results do not qualify v41.
 
 ## v39 predecessor: owner UI preparation
 

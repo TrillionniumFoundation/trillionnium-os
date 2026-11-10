@@ -25,12 +25,9 @@ def prepare(source, output):
             raise RuntimeError("exact candidate production call site missing or ambiguous: " + call)
     fixture = output / "PromptAdmissionFixture.java"
     text = fixture.read_text()
-    old = "        public final ConservativeTokenBudget budget;"
-    if text.count(old) != 1: raise RuntimeError("fixture budget anchor not unique")
-    text = text.replace(old, old + "\n        public final DecisionGrammar grammar;")
-    old = "            text=frame.text;budget=frame.budget;ids=frame.nodeIds;"
-    if text.count(old) != 1: raise RuntimeError("fixture result anchor not unique")
-    text = text.replace(old, old + "grammar=frame.grammar;")
+    if (text.count("        public final DecisionGrammar grammar;") != 1
+            or text.count("            text=frame.text;grammar=frame.grammar;budget=frame.budget;ids=frame.nodeIds;") != 1):
+        raise RuntimeError("base fixture grammar contract missing or ambiguous")
     if not text.endswith("}\n"): raise RuntimeError("fixture class closing anchor differs")
     methods = "\n" + answer + """
     public static String serialize(ActionDecision action)throws Exception{return answerJson(action);}

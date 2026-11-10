@@ -407,6 +407,9 @@ public final class BackgroundDisplayBroker {
             Class<?> type = root.getClass();
             int id = type.getField("displayId").getInt(root);
             boolean visible = type.getField("visible").getBoolean(root);
+            int activities = type.getField("numActivities").getInt(root);
+            if (activities < 0 || activities > 2048)
+                throw new BrokerProtocol.Refusal("TASK_SNAPSHOT_BOUNDS");
             Set<String> packages = new LinkedHashSet<String>();
             ComponentName top = component(type.getField("topActivity").get(root));
             ComponentName base = component(type.getField("baseActivity").get(root));
@@ -419,10 +422,14 @@ public final class BackgroundDisplayBroker {
                 throw new BrokerProtocol.Refusal("TASK_SNAPSHOT_INCOMPLETE");
             String[] names = (String[]) childNames; childrenCount += names.length;
             if (id < 0 || childrenCount > 2048) throw new BrokerProtocol.Refusal("TASK_SNAPSHOT_BOUNDS");
+            // Root TaskInfo counts non-finishing descendant activities. Empty organizer containers have
+            // literal "unknown" child names; admission requires all independent fields here.
+            boolean emptyContainer = activities == 0 && !visible && top == null && base == null;
             for (String name : names) {
                 ComponentName child = name == null ? null : ComponentName.unflattenFromString(name);
                 if (child != null) packages.add(child.getPackageName());
                 else if (BrokerProtocol.packageName(name)) packages.add(name);
+                else if (emptyContainer && "unknown".equals(name)) { /* Empty task metadata; never ignore a resolved app package. */ }
                 else throw new BrokerProtocol.Refusal("TASK_COMPONENT_UNRESOLVED");
             }
             rows.add(new TaskRow(id, visible, top == null ? null : top.getPackageName(), packages));
