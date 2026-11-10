@@ -198,9 +198,15 @@ final class QualificationScopeConfig {
             ApplicationInfo app=info.applicationInfo;QualificationScope.require(app!=null&&app.enabled&&info.packageName.equals(app.packageName)&&app.sourceDir!=null,"installed package missing or disabled");
             Map<String,String> paths=new TreeMap<String,String>();paths.put("base",app.sourceDir);
             String[] names=info.splitNames,files=app.splitSourceDirs;
-            QualificationScope.require((names==null&&files==null)||(names!=null&&files!=null&&names.length==files.length),"APK splits unknown");
-            if(names!=null)for(int i=0;i<names.length;i++){
-                QualificationScope.require(names[i]!=null&&names[i].matches("[a-zA-Z0-9_.-]+")&&files[i]!=null&&!paths.containsKey("split:"+names[i]),"APK split name invalid");paths.put("split:"+names[i],files[i]);}
+            int nameCount=names==null?0:names.length,fileCount=files==null?0:files.length;
+            String shape="package="+info.packageName+", splitNames_length="+(names==null?"null":Integer.toString(names.length))
+                    +", splitSourceDirs_length="+(files==null?"null":Integer.toString(files.length));
+            // PackageManager can represent an empty split set with null or an empty array.
+            // Nonempty metadata still requires exact name/path pairing and the full APK-set hash.
+            QualificationScope.require(nameCount==fileCount,"APK splits unknown: "+shape);
+            for(int i=0;i<nameCount;i++){
+                QualificationScope.require(names[i]!=null&&names[i].matches("[a-zA-Z0-9_.-]+")&&files[i]!=null&&!files[i].isEmpty()
+                        &&!paths.containsKey("split:"+names[i]),"APK split name invalid: "+shape+", index="+i);paths.put("split:"+names[i],files[i]);}
             return paths;
         }
     }

@@ -61,7 +61,7 @@ def prepare(source, output):
     files=[pkg/(name+'.java') for name in dict.fromkeys(pure)]
     files += sorted(output.glob('*.java'))
     files += sorted((Path(__file__).parent/'fixtures').rglob('*.java'))
-    files += [Path(__file__).parent/'QualificationScopeHostTest.java',Path(__file__).parent/'QualificationScopePrivateRootHostTest.java']
+    files += [Path(__file__).parent/'QualificationScopeHostTest.java',Path(__file__).parent/'QualificationScopePrivateRootHostTest.java',Path(__file__).parent/'QualificationScopeSplitMetadataHostTest.java']
     record={'schema':'hepta.scope-host-extraction.v1','source_files':{n:hashlib.sha256((pkg/n).read_bytes()).hexdigest() for n in ['HeptaAccessibilityService.java','LocalTaskSession.java','MainActivity.java','LocalTaskController.java','QualificationScope.java','QualificationScopeConfig.java']},
         'extracted':{n:{'bytes':len(v.encode()),'sha256':hashlib.sha256(v.encode()).hexdigest()} for n,v in {**pieces,**session_parts,**ui_parts}.items()},
         'full_actual_classes':['LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles'],
