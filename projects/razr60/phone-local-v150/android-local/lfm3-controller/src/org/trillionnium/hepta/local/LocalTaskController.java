@@ -168,11 +168,16 @@ public final class LocalTaskController implements AutoCloseable {
                 if(action.nodeId!=null&&!frame.nodeIds.contains(action.nodeId))
                     throw new IllegalStateException("模型选择了未提供的节点标识，任务已停止");
                 if(!before.id.equals(action.observationId)){
+                    record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-action.json",steps),
+                            new JSONObject().put("action",new JSONObject(answerJson(action))).put("accepted",false)
+                                    .put("dispatched",false).put("stale",true).put("detail","observation_id mismatch; nothing dispatched")
+                                    .put("model_run_id",decisionRunId).put("model_issued",true));
                     if(++staleRounds>2)throw new IllegalStateException("模型连续使用错误的观察标识，任务已停止");
                     history.put(new JSONObject().put("step",steps).put("action",action.action).put("target_package",action.packageName)
                             .put("before_package",before.packageName).put("model_issued",true).put("accepted",false)
                             .put("dispatched",false).put("stale",true).put("action_rejected","observation_id mismatch; nothing dispatched"));
                     observation=awaitObservation(taskId,evidence,deadline);
+                    record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-after.json",steps),observation.toJson());
                     lastTransition=observedTransition(steps,before,observation);continue;
                 }
                 if(repeatGuard.rejects(action,before.state)||noEffectGuard.rejects(action,before.packageName,before.state))
@@ -190,6 +195,7 @@ public final class LocalTaskController implements AutoCloseable {
                             .put("before_package",before.packageName).put("model_issued",true).put("accepted",outcome.accepted)
                             .put("dispatched",outcome.dispatched).put("stale",outcome.stale).put("action_rejected",outcome.detail));
                     emit("画面发生变化，正在重新观察…");observation=awaitObservation(taskId,evidence,deadline);
+                    record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-after.json",steps),observation.toJson());
                     lastTransition=observedTransition(steps,before,observation);continue;
                 }
                 if(!outcome.accepted)throw new IllegalStateException(outcome.detail);

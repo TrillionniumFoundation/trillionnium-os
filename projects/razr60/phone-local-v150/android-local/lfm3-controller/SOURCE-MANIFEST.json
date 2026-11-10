@@ -232,6 +232,11 @@
       "sha256": "5c04459babc6a99d86d53fc0f460dcf8e48243526c29dbeef25bc6c1bda41ab4"
     },
     {
+      "path": "docs/STALE-OBSERVATION-JOURNAL.md",
+      "bytes": 2290,
+      "sha256": "85d3c51d6925f1df01257a5ed80e499249d0cbd4fddece16e955535d6bbd0422"
+    },
+    {
       "path": "host-evidence/code10-final-r2/ActionDecisionHostTest.stderr",
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -4863,8 +4868,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 54408,
-      "sha256": "49e6142196f94303577a59315e5d54dabc3ddf571d0d99a7215cfb1f733c1dce"
+      "bytes": 55115,
+      "sha256": "17e8164b24f59023e7d481010359298f5e447011f5058b5f788aced2b834547d"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -5477,6 +5482,16 @@
       "sha256": "cf6846193c3242e6fefaba9fd8321b274eb8ca98e73cf793ca04ca29d9864089"
     },
     {
+      "path": "tests/stale-observation-journal/StaleObservationJournalHostTest.java",
+      "bytes": 7165,
+      "sha256": "f8b1b9d8838f0451795dc15ed437b215f1acd7294487e2266cd3f1ba5cd05d51"
+    },
+    {
+      "path": "tests/stale-observation-journal/prepare_fixture.py",
+      "bytes": 6843,
+      "sha256": "d9b303ff233a9c4ef0c4863d1f89a47a524cd315e1432c302eaf059f8395dae8"
+    },
+    {
       "path": "tests/test_ui_venus_q4_0_runtime.py",
       "bytes": 4938,
       "sha256": "9ec137a870aed4d02cf3c089119cbb07c508394f6f0758813e5e586aa21d58ac"
@@ -5660,6 +5675,11 @@
       "path": "tools/test_recovery_inventory.py",
       "bytes": 3221,
       "sha256": "478b244b6cd0be175f5ed57ecd7d737d4181a0d5803c3105f3dd682987b75ae0"
+    },
+    {
+      "path": "tools/test_stale_observation_journal.py",
+      "bytes": 2318,
+      "sha256": "e48a01bfa4c47a579b7371cd06a7e126957b5c538278528e9ea65ce2bdadbaf9"
     },
     {
       "path": "tools/test_verify_mobimind_runtime.py",
@@ -5930,5 +5950,18 @@
     "phone_qualification": "not_run",
     "historical_receipts_relabelled": false,
     "independent_goal_assertions_relaxed": false
+  },
+  "stale_observation_journal_derivation": {
+    "base_git_head": "b00fbc3c70be0d62862cf4d1872c99b933fbd7d8",
+    "base_source_manifest_sha256": "157d8b6f8644963c5b00c23f2811f79f5c07566a884ca501cd98d4fec91d21b0",
+    "scope": "Add truthful rejected-action and fresh-after journals to existing stale branches; no action, observation, retry, Stop or deadline behavior added.",
+    "original_action_ids_preserved": true,
+    "after_only_from_successful_await": true,
+    "historical_evidence_backfilled": false,
+    "consumer_grading_changed": false,
+    "native_source_changed": false,
+    "android_built": false,
+    "phone_tested": false,
+    "host_checks": "Separate exact-source receipt; not inferred from the parent gate."
   }
 }
