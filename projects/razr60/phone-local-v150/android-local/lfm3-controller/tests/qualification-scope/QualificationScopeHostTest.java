@@ -151,6 +151,61 @@ public final class QualificationScopeHostTest {
             LocalTaskController.TaskResult r=e.controller("done",SETTINGS,null);check("model_reported_done".equals(r.status)&&r.modelReportedSuccess&&r.cleanupKnown&&e.service.effects()==0,"valid done control");check(e.scopeSha.equals(r.expectedScopeSha256)&&e.scopeSha.equals(r.actualScopeSha256),"result object identity");
         }});
     }
+    static void apkSplitCases()throws Exception{
+        for(int combination=0;combination<4;combination++){
+            final int shape=combination;
+            test("installed_base_only_null_empty_shape_"+shape,()->{try(Env e=new Env(true)){
+                for(PackageInfo info:e.pm.packages.values()){
+                    info.splitNames=(shape&1)==0?null:new String[0];
+                    info.applicationInfo.splitSourceDirs=(shape&2)==0?null:new String[0];
+                }
+                QualificationScopeConfig.Bound bound=QualificationScopeConfig.capture(e.service,e.task,e.scopeSha,e.runtime);
+                bound.requireReady();bound.verifyUnchanged();
+                check(e.scopeSha.equals(bound.actualSha256),"base-only scope identity retained");
+                // Equivalent zero representations do not change the installed APK set.
+                for(PackageInfo info:e.pm.packages.values()){
+                    info.splitNames=info.splitNames==null?new String[0]:null;
+                    info.applicationInfo.splitSourceDirs=info.applicationInfo.splitSourceDirs==null?new String[0]:null;
+                }
+                bound.verifyUnchanged();
+                LocalTaskController.TaskResult result=e.controller("done",SETTINGS,null);
+                check("model_reported_done".equals(result.status)&&result.steps==1&&result.cleanupKnown,"base-only controller must reach one synthetic model step: "+result.summary);
+            }});
+        }
+        test("installed_nonempty_split_pairs_hash_and_revalidation",()->{try(Env e=new Env(true)){
+            PackageInfo info=e.pm.packages.get(CALC);Path first=e.dir.resolve("installed/config.en.apk"),second=e.dir.resolve("installed/config.arm64_v8a.apk");
+            byte[] firstBytes=bytes("synthetic English split"),secondBytes=bytes("synthetic arm64 split");
+            write(first,firstBytes,0644);write(second,secondBytes,0644);
+            info.splitNames=new String[]{"config.en","config.arm64_v8a"};
+            info.applicationInfo.splitSourceDirs=new String[]{first.toString(),second.toString()};
+            String rows="base\t"+QualificationScope.hash(Files.readAllBytes(Paths.get(info.applicationInfo.sourceDir)))+"\n"
+                    +"split:config.arm64_v8a\t"+QualificationScope.hash(secondBytes)+"\n"
+                    +"split:config.en\t"+QualificationScope.hash(firstBytes)+"\n";
+            e.fields.put("calculator_apk_set_sha256",QualificationScope.hash(bytes(rows)));e.updateConfig();e.writeConfig();
+            e.bind(e.scopeSha);e.bound.requireReady();e.bound.verifyUnchanged();
+            info.applicationInfo.splitSourceDirs[1]=first.toString();
+            rejects(()->e.bound.verifyUnchanged());
+        }});
+        for(int variant=0;variant<8;variant++){
+            final int shape=variant;
+            test("installed_malformed_splits_still_refused_"+shape,()->{try(Env e=new Env(true)){
+                PackageInfo info=e.pm.packages.get(CALC);String apk=info.applicationInfo.sourceDir;
+                switch(shape){
+                    case 0:info.splitNames=new String[]{"config.en"};info.applicationInfo.splitSourceDirs=null;break;
+                    case 1:info.splitNames=null;info.applicationInfo.splitSourceDirs=new String[]{apk};break;
+                    case 2:info.splitNames=new String[]{"config.en"};info.applicationInfo.splitSourceDirs=new String[0];break;
+                    case 3:info.splitNames=new String[0];info.applicationInfo.splitSourceDirs=new String[]{apk};break;
+                    case 4:info.splitNames=new String[]{"config.en"};info.applicationInfo.splitSourceDirs=new String[]{apk,apk};break;
+                    case 5:info.splitNames=new String[]{null};info.applicationInfo.splitSourceDirs=new String[]{apk};break;
+                    case 6:info.splitNames=new String[]{"config.en"};info.applicationInfo.splitSourceDirs=new String[]{null};break;
+                    default:info.splitNames=new String[]{"config.en","config.en"};info.applicationInfo.splitSourceDirs=new String[]{apk,apk};break;
+                }
+                e.bind(e.scopeSha);rejects(()->e.bound.requireReady());check(e.bound.restricted(),"malformed split metadata must not downgrade to unrestricted");
+                if(shape<5){String refusal=e.bound.evidence().getString("refusal");
+                    check(refusal.contains(CALC)&&refusal.contains("splitNames=")&&refusal.contains("splitSourceDirs=")&&!refusal.contains(e.dir.toString()),"count failure must identify package/shape without private paths");}
+            }});
+        }
+    }
     static void privatePathCases()throws Exception{
         test("framework_root_alias_scope_runtime_controller_evidence_and_revalidation",()->{try(Env e=new Env(true,true)){
             QualificationScopeConfig.Bound bound=QualificationScopeConfig.capture(e.service,e.task,e.scopeSha,e.runtime);
@@ -180,7 +235,10 @@ public final class QualificationScopeHostTest {
         }});
     }
     public static void main(String[] args)throws Exception{
-        output=Paths.get(args[0]);Files.createDirectories(output);privatePathCases();
+        check(args.length==1||(args.length==2&&"--apk-splits-only".equals(args[1])),"unexpected host test mode");
+        output=Paths.get(args[0]);Files.createDirectories(output);apkSplitCases();
+        if(args.length==2){writeResult();return;}
+        privatePathCases();
         test("closed_config_exact_roles_and_proof_identity",()->{try(Env e=new Env(true)){QualificationScope.Config c=QualificationScope.Config.parse(e.config);check(c.allows(SETTINGS)&&c.allows(SEARCH)&&c.allows(CALC)&&c.allows(HOME),"all roles");for(String p:FOREIGN)check(!c.allows(p),"foreign excluded");}});
         test("closed_config_missing_unknown_duplicate_and_type_rejected",()->{try(Env e=new Env(true)){
             final Map<String,Object> missing=new LinkedHashMap<String,Object>(e.fields);missing.remove("search_observation_sha256");rejects(()->QualificationScope.Config.parse(bytes(new JSONObject(missing).toString())));
@@ -221,6 +279,9 @@ public final class QualificationScopeHostTest {
             QualificationScope.Launch original=QualificationScope.Launch.prefill("原任务",H);check(H.equals(original.claim("原任务")),"bound owner");rejects(()->original.claim("已修改"));QualificationScope.Launch consumed=original.accepted();rejects(()->consumed.claim("原任务"));
             QualificationScope.Launch restored=QualificationScope.Launch.restore(consumed.expectedSha256,consumed.ownerSha256,consumed.consumed);rejects(()->restored.claim("原任务"));check(H.equals(original.claim("原任务")),"immutable prior task claim");check(QualificationScope.Launch.normal().claim("新任务")==null,"new normal UI");});
         lifecycleCases();uiCases();productionControllerCases();
+        writeResult();
+    }
+    private static void writeResult()throws Exception{
         JSONObject result=new JSONObject().put("schema","hepta.scope-host-tests.v1").put("passed",passed.size()).put("failed",0).put("cases",new JSONArray(passed)).put("phone_operations",false).put("native_inference",false).put("android_runtime",false);
         Files.write(output.resolve("RESULT.json"),bytes(result.toString(2)+"\n"));System.out.println(result.toString());
     }

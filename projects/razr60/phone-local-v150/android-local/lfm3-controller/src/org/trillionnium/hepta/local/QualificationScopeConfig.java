@@ -140,8 +140,12 @@ final class QualificationScopeConfig {
             ApplicationInfo app=info.applicationInfo;QualificationScope.require(app!=null&&app.enabled&&info.packageName.equals(app.packageName)&&app.sourceDir!=null,"installed package missing or disabled");
             Map<String,String> paths=new TreeMap<String,String>();paths.put("base",app.sourceDir);
             String[] names=info.splitNames,files=app.splitSourceDirs;
-            QualificationScope.require((names==null&&files==null)||(names!=null&&files!=null&&names.length==files.length),"APK splits unknown");
-            if(names!=null)for(int i=0;i<names.length;i++){
+            // Android may represent no splits as null or an empty array in either field.
+            int nameCount=names==null?0:names.length,fileCount=files==null?0:files.length;
+            QualificationScope.require(nameCount==fileCount,"APK splits unknown: "+info.packageName
+                    +" splitNames="+(names==null?"null":Integer.toString(nameCount))
+                    +" splitSourceDirs="+(files==null?"null":Integer.toString(fileCount)));
+            for(int i=0;i<nameCount;i++){
                 QualificationScope.require(names[i]!=null&&names[i].matches("[a-zA-Z0-9_.-]+")&&files[i]!=null&&!paths.containsKey("split:"+names[i]),"APK split name invalid");paths.put("split:"+names[i],files[i]);}
             return paths;
         }
