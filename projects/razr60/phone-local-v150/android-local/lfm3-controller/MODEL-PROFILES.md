@@ -156,3 +156,15 @@ The CLI/inventory registry fix from local commit
 99332dc7a94b837d2d2c000f85da47abbe675826 is included. Unknown profiles remain
 rejected and existing model identities/order are retained. Host tests do not
 establish inference or device qualification.
+
+## Code29 task-local worker lifetime
+
+Version 29 inherits the exact version 28 model identities and CLI registry. Its
+controller can retain one model instance within one task, reset it before each
+complete prompt and prove actual owned exit at task termination. The full
+native weight hash is performed once per owned generation, with held-descriptor
+metadata fences for every request. The one-shot diagnostic path still performs
+its original per-request load and verification. Initial model-specific RAM
+admission, exact token budgets, per-request deadlines, output bounds and
+fallback rejection remain in force. See `CODE29-TASK-WORKER.md`; the lifecycle
+change does not establish model quality, speed, or phone qualification.

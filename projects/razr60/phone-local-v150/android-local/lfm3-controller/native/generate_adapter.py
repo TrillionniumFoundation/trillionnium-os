@@ -2,6 +2,7 @@
 from pathlib import Path
 import hashlib, json, difflib
 from prompt_evidence_adapter import adapt as add_prompt_evidence
+from warm_runtime_adapter import adapt as add_warm_runtime
 
 def generate(root, out):
     source_path=root/'native/worker-upstream.c'
@@ -109,6 +110,7 @@ def generate(root, out):
     assert insertions==1
     adapted=''.join(lines)
     adapted=add_prompt_evidence(adapted)
+    adapted=add_warm_runtime(adapted)
     (out/'worker-appuid.c').write_text(adapted)
     difference=''.join(difflib.unified_diff(source.splitlines(True),adapted.splitlines(True),fromfile='frozen/worker-upstream.c',tofile='generated/worker-appuid.c'))
     (out/'worker-adapter.diff').write_text(difference)
@@ -120,7 +122,9 @@ def generate(root, out):
         'llama_source_commit':'19cce6919992fdffd92e0ac152caaf1e2b8f254e',
         'model_verification':'native full SHA256, exact filename/size/architecture, held descriptor, unchanged metadata',
         'sha256_dispatch':'runtime HWCAP_SHA2; target(sha2) function; exact upstream portable compression fallback',
-        'model_digest_cache':False,'full_model_read_every_request':True,
+        'model_digest_cache':False,'full_model_read_every_one_shot_request':True,
+        'task_worker_mode':{'schema':'hepta.geniex-task-request.result.v1','hash_scope':'one_full_read_per_owned_generation',
+            'reuse_scope':'one_task','reset_every_request':True,'one_shot_contract_unchanged':True},
         'private_prompt_evidence':'create-only formatted bytes and actual direct input IDs; same private request directory',
         'new_profile_exact_token_count':True,'no_context_truncation':True,
         'phase_timing_schema':'hepta.native-phase-timing.v1',

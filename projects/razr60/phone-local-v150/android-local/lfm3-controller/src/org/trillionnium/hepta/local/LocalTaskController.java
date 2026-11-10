@@ -96,6 +96,7 @@ public final class LocalTaskController implements AutoCloseable {
     }
     public void stop(){
         if(!running)return;cancelled.set(true);emit("正在停止本地任务，等待当前推理退出…");
+        inference.cancelTask();
         synchronized(handleLock){if(activeInference!=null)activeInference.cancel();}
     }
     @Override public synchronized void close(){closed=true;stop();worker.shutdown();}
@@ -126,6 +127,7 @@ public final class LocalTaskController implements AutoCloseable {
             AppCatalogueRanker.Page apps=service.appCatalogue(taskId,instruction);
             record(evidence,"initial-app-catalogue.json",catalogueJson(apps).put("model_issued",false).put("read_only",true));
             final LocalRuntimeConfig config=inference.configuration();
+            inference.beginTask(taskId);
             emit("正在观察当前屏幕…");observation=awaitObservation(taskId,evidence,deadline);
             while(steps<MAX_STEPS){
                 checkActive(deadline);steps++;
@@ -237,9 +239,22 @@ public final class LocalTaskController implements AutoCloseable {
         catch(Exception error){finalStatus=cancelled.get()?"cancelled":"failed";summary=HeptaAccessibilityService.message(error);}
         finally{
             synchronized(handleLock){activeInference=null;}
+            LocalInference.TaskCleanup modelCleanup;
+            try{modelCleanup=inference.endTask();}
+            catch(Exception closeError){modelCleanup=new LocalInference.TaskCleanup(false,true,false,null,null,taskId,false,null);}
+            if(!modelCleanup.cleanupKnown){cleanup=false;blocked=true;finalStatus="blocked";summary="任务模型进程退出尚未确认，已停止接受新任务";}
+            else if(modelCleanup.processStarted&&!modelCleanup.receiptValid&&"model_reported_done".equals(finalStatus)){
+                finalStatus="failed";modelSuccess=false;summary="任务模型清理已完成，但运行回执未通过验证，请核对已经发生的操作";
+            }
             if(evidence!=null){try{record(evidence,"result.json",new JSONObject().put("task_id",taskId).put("status",finalStatus)
                     .put("summary",summary).put("steps",steps).put("model_reported_success",modelSuccess)
                     .put("final_observation_id",observation==null?JSONObject.NULL:observation.id).put("cleanup_known",cleanup)
+                    .put("model_session",new JSONObject().put("worker_generation",modelCleanup.generation==null?JSONObject.NULL:modelCleanup.generation)
+                            .put("task_id",modelCleanup.taskId==null?JSONObject.NULL:modelCleanup.taskId)
+                            .put("process_started",modelCleanup.processStarted).put("process_exit_observed",modelCleanup.processExitObserved)
+                            .put("exit_code",modelCleanup.exitCode==null?JSONObject.NULL:modelCleanup.exitCode)
+                            .put("receipt_valid",modelCleanup.receiptValid)
+                            .put("app_receipt_sha256",modelCleanup.receiptSha256==null?JSONObject.NULL:modelCleanup.receiptSha256))
                     .put("external_model",false).put("automatic_replay",false).put("goal_independently_verified",false));}catch(Exception ignored){summary=summary+"（结果记录保存失败）";}}
             if(cleanup)service.releaseTask(taskId);
             final TaskResult result=new TaskResult(taskId,finalStatus,summary,steps,evidence,observation,modelSuccess,cleanup);

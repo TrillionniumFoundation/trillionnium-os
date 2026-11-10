@@ -39,6 +39,18 @@ This subcommand only reads the app's trigger, Session and final task receipts. I
 
 A `pass` requires a nonce/owner-bound terminal `model_reported_done`, known cleanup, independent final Android UI XML predicates, and complete associated native receipts: actual process exit, successful inference, matching run IDs and raw output size/hash. Every app receipt must identify the fixed package and the UID observed through `run-as` before launch, use the expected schema, declare `runtime=llama_cpp`, `compute_requested` matching the explicit expected mode, and confirm native binding. Every native receipt must explicitly identify `runtime=llama_cpp`, `compute_requested` matching the explicit expected mode, `device_resolved=HTP0 for NPU or GPUOpenCL for GPU`, `device_warning=null`, and UTF-8 output. Backend evidence is part of the pass gate, not merely recorded metadata. Model self-report alone is never a pass. With no independent predicates, a normal terminal task is `unverified`. Missing native evidence also downgrades a potential pass to `unverified`.
 
+Version 29 additionally supports explicit task-worker schemas. A successful
+request in a retained worker has `process_exit_observed=false` and
+`exit_code=null`; it cannot pass the old one-shot exit contract. The collector
+requires `warm_receipts.py` alongside this driver and fetches the exact
+generation's app/native terminal receipts and shared accelerator log. All
+requests must bind to one task, generation and PID, consecutive unique request
+IDs and reset counts, and the controller's final terminal-receipt SHA. The app
+terminal must record actual owned exit, successful native destruction/deinit
+and known cleanup. Missing terminal proof, an uncommitted late output or a
+foreign generation cannot qualify even when final UI predicates happen to
+match. See `../CODE29-TASK-WORKER.md` for the complete lifecycle contract.
+
 The directory contains `acceptance.json`, `file-manifest.json`, bound trigger/Session/owner records, task JSON, and associated native run receipts, raw text, prompt/system text, complete logs and incomplete `.pending` outputs. When failed inference never produced a step-model record, association uses both the exact owner bytes and the task's unique observation ID from the saved native prompt. Other candidate runs are not added to the associated run list. Screenshots are not exported by default; `--include-screenshots` explicitly enables copying existing task screenshots and native image inputs.
 
 Final UI observation uses Android's `uiautomator dump` only after the nonce/task-bound terminal receipt declares known cleanup and the matching Session confirms both pending and running are false. The default UiAutomation observer may temporarily suppress and reconnect Accessibility services, so it is never used while a task is active. It writes a unique temporary XML in `/data/local/tmp` that is removed after collection; it does not navigate or execute a model action. Raw XML and window-focus output are retained on the host. Full stdout, stderr, return codes and timestamps for ADB commands are saved. Evidence includes private phone UI and instructions and must not be committed or uploaded as source code.

@@ -51,9 +51,11 @@ static int probe_bootstrap(void) {
 #define main upstream_worker_main
 #include "worker-appuid.c"
 #undef main
+#include "warm-protocol.inc"
 
 int main(int argc, char **argv) {
     if (argc == 2 && !strcmp(argv[1], "--help")) return upstream_worker_main(argc, argv);
+    if(hepta_take_warm_arguments(&argc,argv)!=0)return 78;
     pid_t expected_parent = 0;
     if(hepta_take_model_profile(&argc,argv)!=0){
         fputs("HEPTA_MODEL_PROFILE missing, duplicated or unknown pinned profile\n",stderr);return 78;
@@ -73,6 +75,7 @@ int main(int argc, char **argv) {
     if (!version || (strcmp(version,"v0.10.0") && strcmp(version,"0.10.0"))) {
         fputs("HEPTA_APPUID_BOOTSTRAP pinned SDK version mismatch\n",stderr); return 78;
     }
+    if(!hepta_warm_prepare_control())return 78;
     int rc = probe_bootstrap();
-    return rc == 0 ? upstream_worker_main(argc, argv) : rc;
+    return rc == 0 ? (hepta_warm_enabled?hepta_warm_loop(argc,argv):upstream_worker_main(argc, argv)) : rc;
 }
