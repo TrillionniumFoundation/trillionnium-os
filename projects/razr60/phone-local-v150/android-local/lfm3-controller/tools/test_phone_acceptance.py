@@ -60,6 +60,7 @@ class FakeAdb:
             model_path='/data/user/0/'+m.PACKAGE+'/files/model/'+m.MODEL_FILE
             records['files/runs/'+RUN+'/app-receipt.json'].update({'mode':'llm','compute_requested':self.compute,
                 'context_tokens':self.context,'model_sha256_verified':m.MODEL_SHA256,'model_path':model_path,
+                'model_profile':m.DEFAULT_PROFILE,
                 'image_sent_to_model':False,'fallback_allowed':False,'native_context_budget_valid':True,
                 'grammar_constraint_enabled':True,'grammar_binding_valid':True,'grammar_schema':'hepta.observed-action-gbnf.v1',
                 'grammar_sha256':m.digest(grammar),'grammar_observation_id':OBS,'grammar_current_package':'com.example.calculator'})
@@ -67,9 +68,16 @@ class FakeAdb:
                 'device_resolved':'HTP0' if self.compute=='npu' else 'GPUOpenCL', 'model_path':model_path,
                 'n_ctx_create':self.context,'n_gpu_layers_create':-1,'max_tokens':256,
                 'input_sha256':{'grammar':m.digest(grammar)},
-                'prompt_budget':{'method':'lfm3_rendered_utf8_bytes_upper_bound','model_contract_sha256':m.MODEL_SHA256,
-                    'checked':True,'admitted':True,'is_exact_token_count':False,'formatted_utf8_bytes':500,
-                    'bos_eos_upper':2,'generation_tokens':256,'reserved_tokens':256,'total_context_upper':1014,'context_tokens':self.context}})
+                'model_profile':m.DEFAULT_PROFILE,'model_sha256_verified':m.MODEL_SHA256,
+                'model_architecture':'lfm3','model_bytes_verified':m.PROFILES[m.DEFAULT_PROFILE]['bytes'],
+                'model_metadata_unchanged':True,'chat_template_enable_thinking':False,'automatic_cpu_fallback':False,
+                'profile':{'prompt_tokens':500},
+                'prompt_budget':{'method':'llama_tokenize_exact_same_input_ids','model_contract_sha256':m.MODEL_SHA256,
+                    'tokenizer_source_commit':'19cce6919992fdffd92e0ac152caaf1e2b8f254e',
+                    'checked':True,'admitted':True,'is_exact_token_count':True,'formatted_utf8_bytes':500,
+                    'add_special':True,'parse_special':True,'input_ids_passed_directly':True,
+                    'prompt_tokens_exact':500,'input_ids_count':500,'input_ids_sha256':'a'*64,
+                    'generation_tokens':256,'reserved_tokens':256,'total_context_tokens':1012,'context_tokens':self.context}})
             records['files/runs/'+RUN+'/native-result.json'].update(self.native_overrides)
             records['files/runs/'+RUN+'/app-receipt.json'].update(self.app_overrides)
             self.files.update({k:json.dumps(v).encode() for k,v in records.items()})

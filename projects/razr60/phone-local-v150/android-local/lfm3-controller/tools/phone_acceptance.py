@@ -268,7 +268,11 @@ def native_budget_valid(native, expected_context, expected_model_profile="lfm3-1
     budget = native.get("prompt_budget")
     if not isinstance(budget, dict): return False
     size, generation = budget.get("formatted_utf8_bytes"), native.get("max_tokens")
-    if type(size) is not int or size <= 0 or type(generation) is not int or not 1 <= generation <= 1024: return False
+    # Match the native rendered-prompt cap and Java receipt verifier. Exact
+    # token admission never authorizes an unbounded byte payload.
+    if (type(size) is not int or not 0 < size <= 262144
+            or type(expected_context) is not int or expected_context not in (4096, 8192)
+            or type(generation) is not int or not 1 <= generation <= 1024): return False
     if selected["exact"]:
         tokens=budget.get("prompt_tokens_exact")
         sdk_profile=native.get("profile")

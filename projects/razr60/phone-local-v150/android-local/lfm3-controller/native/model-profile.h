@@ -11,7 +11,7 @@ typedef struct {
     bool exact_tokens;
 } HeptaModelProfile;
 static const HeptaModelProfile hepta_profiles[]={
-    {"lfm3-1.7b-qad-q4_0","LFM3-1.7B-QAD-Q4_0.gguf","43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452","lfm3",1049615680u,false},
+    {"lfm3-1.7b-qad-q4_0","LFM3-1.7B-QAD-Q4_0.gguf","43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452","lfm3",1049615680u,true},
     {"minicpm5-2b-q4_k_m","MiniCPM5-2B-Q4_K_M.gguf","ec2d5801640099e97d8d7e8003ad4d81f336e757811f03a26173dddf386602fd","llama",1561318368u,true},
     {"spark-x2.6-4b-q4_k_m","Spark-X2.6-4B-Q4_K_M.gguf","91cb2811aebb47ac916aa619d27d4cdd7f4143106b7917accb8ead4cd7f5cbd9","spark2_5",3543441312u,true},
     {"gemma4-e4b-qat-q4_0","gemma-4-E4B_q4_0-it.gguf","676c35070db6dbe52f93e9c864ee0fba4eddea94b9c875d9cb10daff453fbaee","gemma4",UINT64_C(5154941280),true},

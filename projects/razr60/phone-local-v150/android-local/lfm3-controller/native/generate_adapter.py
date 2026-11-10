@@ -118,7 +118,7 @@ def generate(root, out):
         'publication':'renameat2(RENAME_NOREPLACE)','no_overwrite':True,'fallback_overwriting_rename':False,
         'errno_diagnostics':['write_all','file_fsync','renameat2_noreplace','directory_fsync'],
         'runtime':'llama_cpp','mode':'llm','compute_modes':['npu','gpu'],'context_sizes':[4096,8192],
-        'prompt_guard':'LFM3 original byte bound; other profiles exact same input_ids + output + reserve256',
+        'prompt_guard':'All registered profiles exact same input_ids + output + reserve256; byte caps retained',
         'llama_source_commit':'19cce6919992fdffd92e0ac152caaf1e2b8f254e',
         'model_verification':'native full SHA256, exact filename/size/architecture, held descriptor, unchanged metadata',
         'sha256_dispatch':'runtime HWCAP_SHA2; target(sha2) function; exact upstream portable compression fallback',
