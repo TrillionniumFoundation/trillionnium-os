@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.public-v32-producer-fixture.v1",
+  "role": "Three public source files used by synthetic host tests; not a complete source inventory or phone/build evidence.",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "source_commit": "e07c6624b7309b0acf3fe10e31b0605a29e3e72d",
+  "source_tree": "81955c2053ba24cab0783c9cb7636a49c0f186de",
+  "source_directory": "projects/razr60/phone-local-v150/android-local/lfm3-controller",
+  "source_directory_tree": "97de6cf3df0566044e02476377c91b65b1d89372",
+  "source_tools_tree": "d0a7e21a2fda059d2d01b0a532cd60ca018d4bce",
+  "git_blob_and_size_checked_against_public_tree": true,
+  "files": [
+    {
+      "path": "tools/build_identity.py",
+      "bytes": 2970,
+      "sha256": "7d5ad2641e9a3635fd04aa47ce3ea50a1a4f16b883a98b2ab407878eef36f6e6",
+      "git_blob_sha": "393b3133c988a422f53a37ecb6052e60d508bf2e"
+    },
+    {
+      "path": "tools/model_profiles.py",
+      "bytes": 2931,
+      "sha256": "9ba9403bdf64c2d765b31ffbbed2e95ac846f50df6ecb4e21efd4ebc926a397a",
+      "git_blob_sha": "5546ed2b0d56e41825e26edfae7bf3f081110111"
+    },
+    {
+      "path": "tools/run_host_checks.py",
+      "bytes": 7517,
+      "sha256": "2ab4d162ddf9512df9f3bfba616559706a6fbf5e34bae1e121ff061552cbaa48",
+      "git_blob_sha": "f27b1e1e50b6a67c9d46323ff5c26a78c543cb22"
+    }
+  ],
+  "full_live_source_count": 1194,
+  "full_live_portable_source_sha256": "b9c1355c16658c354550aad818053e9e5d8bb12ce7150d7b861de109a1000b90"
+}

@@ -1,0 +1,117 @@
+{
+  "schema": "hepta.public-v32-upgrade-release.v1",
+  "state": "frozen_host_only",
+  "source_commit": "e07c6624b7309b0acf3fe10e31b0605a29e3e72d",
+  "source_tree": "81955c2053ba24cab0783c9cb7636a49c0f186de",
+  "runtime_manifest_sha256": "79ec20d7b17eea1b167d5cb38a252b78918241ff7ae01dd70e7c1d6bd53b74da",
+  "transfer_manifest_sha256": "7e5e10bf13d01c4aa79ff56d30334fc365a0de9944677e93adfe27a10c662674",
+  "host_result_sha256": "a47e360b70eb6e828126ada6d93d0d8075a699a78d0205ea5362ec49f8456092",
+  "files": [
+    {
+      "path": "MANIFEST.json",
+      "bytes": 1373,
+      "sha256": "79ec20d7b17eea1b167d5cb38a252b78918241ff7ae01dd70e7c1d6bd53b74da",
+      "git_blob_sha": "c5fb97966554b53ed839af7910fdc879f3af3fc0"
+    },
+    {
+      "path": "README.md",
+      "bytes": 10535,
+      "sha256": "51e0938112b92fa2580e2c7746b53670cc10cbae783d0a6dd5db3cb5564685f2",
+      "git_blob_sha": "b1a68a60613adbef274942a3b954fa90cd9ca190"
+    },
+    {
+      "path": "TRANSFER-MANIFEST.json",
+      "bytes": 1505,
+      "sha256": "7e5e10bf13d01c4aa79ff56d30334fc365a0de9944677e93adfe27a10c662674",
+      "git_blob_sha": "c2643e72d8086b4ee837728dad194a0665e544b5"
+    },
+    {
+      "path": "libcxx-runtime-fix.patch",
+      "bytes": 525,
+      "sha256": "eee8404fb454398deee0e67b198b4fd8e5c5e5f0aeb96dec893e84e4618f80aa",
+      "git_blob_sha": "b10d804561bb1176ac4c53d08f013d77e47e4d88"
+    },
+    {
+      "path": "package/select_runtime_once_v32_r1.py",
+      "bytes": 30568,
+      "sha256": "3fb80f4bf8ebd153d2d448415f9f1512a29a209697f1468545df069532a40721",
+      "git_blob_sha": "340536af79a330622a912aa8547320684ebf5598"
+    },
+    {
+      "path": "package/test_v32_upgrade_select.py",
+      "bytes": 43858,
+      "sha256": "d99ceeb38491dc2d96bcb2eb0bb75e8c5fe77c0c9c0fd4fabdbda8c73c1ea3c6",
+      "git_blob_sha": "b4d4247c1eb63045ca2550541ec9f7071d553ab7"
+    },
+    {
+      "path": "package/test_v32_zip_runtime_names.py",
+      "bytes": 4386,
+      "sha256": "e233e80405e8488b37b090f3d76788bd9e9e83f6aec6ab09086b99b10fe60852",
+      "git_blob_sha": "3fe3347951bc34785b7f1eec49f1543f66ee2814"
+    },
+    {
+      "path": "package/upgrade_v32_once_r1.py",
+      "bytes": 17674,
+      "sha256": "b6619f7e9e15c1aa465c4af0a405667fe288a0579c6a2240cb9afaef4c6b02d4",
+      "git_blob_sha": "e196adab7886126c83bfd4df0e7c5160b3d921f6"
+    },
+    {
+      "path": "package/v32_identity.py",
+      "bytes": 22226,
+      "sha256": "e00335dba12953431aedaf0eac0185d5b58a2e248b287431b08e747008113476",
+      "git_blob_sha": "f1c16be1d771779b85cdc195b7449df956b306d3"
+    },
+    {
+      "path": "tests/fixtures/producer/SOURCE-MANIFEST.json",
+      "bytes": 1476,
+      "sha256": "6050f13abffa9fd8a1ea1dfd174121324850b7033efa49dc6ad425a49e0d4156",
+      "git_blob_sha": "73c393ba8b99af3b0e14308114c033bc0396c42f"
+    },
+    {
+      "path": "tests/fixtures/producer/tools/build_identity.py",
+      "bytes": 2970,
+      "sha256": "7d5ad2641e9a3635fd04aa47ce3ea50a1a4f16b883a98b2ab407878eef36f6e6",
+      "git_blob_sha": "393b3133c988a422f53a37ecb6052e60d508bf2e"
+    },
+    {
+      "path": "tests/fixtures/producer/tools/model_profiles.py",
+      "bytes": 2931,
+      "sha256": "9ba9403bdf64c2d765b31ffbbed2e95ac846f50df6ecb4e21efd4ebc926a397a",
+      "git_blob_sha": "5546ed2b0d56e41825e26edfae7bf3f081110111"
+    },
+    {
+      "path": "tests/fixtures/producer/tools/run_host_checks.py",
+      "bytes": 7517,
+      "sha256": "2ab4d162ddf9512df9f3bfba616559706a6fbf5e34bae1e121ff061552cbaa48",
+      "git_blob_sha": "f27b1e1e50b6a67c9d46323ff5c26a78c543cb22"
+    },
+    {
+      "path": "tests/run_host_validation.py",
+      "bytes": 7940,
+      "sha256": "ff651d0e90230ff0d7344c42db44b1f448406cef02a735a526f5720041e8f667",
+      "git_blob_sha": "f66d432de24400549d92499f4296f42952147407"
+    },
+    {
+      "path": "validation/HOST-RESULT.json",
+      "bytes": 7230,
+      "sha256": "a47e360b70eb6e828126ada6d93d0d8075a699a78d0205ea5362ec49f8456092",
+      "git_blob_sha": "2c894c7d0f57fb86a590a02376af7f577154026f"
+    },
+    {
+      "path": "validation/host-tests.stderr",
+      "bytes": 6960,
+      "sha256": "b4a8f373a3f4fabb642920576b761b872cab37a66e67a24fdf32c951c2b07724",
+      "git_blob_sha": "08f8dc2c1436b1ef4e1df79dcca5feecd2fb725d"
+    },
+    {
+      "path": "validation/host-tests.stdout",
+      "bytes": 370,
+      "sha256": "dc0198be67cf185aa7ed9cde9644c1f0e0c4fac4476759c3a56c0e5fc98c77a5",
+      "git_blob_sha": "f57daae693660c35f4d7643f18792a907f27fbe2"
+    }
+  ],
+  "manifest_excludes_itself": true,
+  "phone_contacted": false,
+  "android_apk_source_changed": false,
+  "private_phone_evidence_included": false
+}
