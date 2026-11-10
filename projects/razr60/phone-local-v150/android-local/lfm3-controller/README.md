@@ -1,4 +1,41 @@
-# Code26: observed transitions and an explicit 9B candidate
+# Code 34: scoped local tools, exact LFM3 admission and cancellation evidence
+
+This integration candidate is versionCode **34** (`0.34.0-local-scoped-lfm3-timeline`).
+Its base is `e07c6624b7309b0acf3fe10e31b0605a29e3e72d`: scoped tools, the app-label-first
+action grammar, the Orvena numeric sampler and the Nanbeige profile are retained.
+The reviewed LFM3 correction requires exact same-input-ID admission for all 12
+registered text profiles. Parent cancellation telemetry records actual process
+API invocations and observed exits without claiming a signal-delivery or DSP cause.
+See [LFM3-EXACT-ADMISSION.md](LFM3-EXACT-ADMISSION.md) and
+[the cancellation evidence contract](docs/PARENT-CANCELLATION-TIMELINE.md).
+
+This source candidate still requires its own complete host gate, Android build,
+original-certificate signature verification, and fresh ordinary-app qualification.
+Historical manifests and receipts below do not qualify this candidate. Installation
+does not select a model or rewrite the app-private runtime configuration.
+
+## Trusted app directory handling
+
+The framework's app ancestor can have an alias. The current candidate resolves
+that trusted ancestor once, while rejecting an alias at the `files` leaf or any
+appended scope, runtime, control-task or task directory. One captured directory
+identity binds scope loading and the three scope-evidence writes. It is checked
+again before subsequent scope validation; inode/owner/type changes or permission
+widening refuse the task. The existing strict `MobiMindPrivateFiles` implementation
+is byte-identical to e07c. Scope evidence includes bounded, metadata-only path
+diagnostics to establish the app process's actual namespace on the device.
+
+The independent v33 repair (`95527c7196b390c13a5fc659147a9b8c2b46a324`)
+also addresses scope/runtime and controller evidence paths. Code 34 stays on the
+exact e07c parent and applies the reviewed narrow fix directly. Its captured root
+and permission-tightening checks add explicit identity continuity and reject an
+alias at the private `files` leaf. All 71 original scope cases remain, with 28
+additional real temporary-directory/alias cases. Host path fixtures reproduce
+both the baseline scope refusal and the later evidence-write refusal of a
+scope-loader-only fix; they do not prove Android task completion.
+
+## Retained Code 26 history
+
 
 The current candidate is versionCode 26 (`0.26.0-local-observed-transitions`). It places the current screen after the complete recorded action history and adds the last step's actual before/after editable text, window title and IME observations. Those facts do not infer causality or task completion. An independently pinned Qwen3.5-9B Q4_0 text profile is available for qualification; it does not replace the configured or default model. Existing action permissions, freshness, recovery and local-only inference gates remain. See `docs/CODE26-QUALIFICATION.md` for the change and qualification boundary.
 

@@ -1,3 +1,32 @@
+# Code 34 build identity
+
+Build this candidate from the complete module at its published commit. Keep every
+production, native, test, tool and subordinate provenance input. Place outputs
+outside the source tree and set `PYTHONDONTWRITEBYTECODE=1` when invoking Python.
+Run the unchanged standard entry point `tools/run_host_checks.py --out <new-output>`
+with a complete JDK; it includes scoped dispatch, app-label, Nanbeige, sampler,
+LFM3 admission and cancellation tests after integration.
+
+`build_mac.py` records the actual compiler input hashes; `assemble_pocket4.py`
+requires an identical input map and embeds `assets/hepta-build-identity.json`.
+The asset binds versionCode 34 and the actual input hashes. The root historical
+`SOURCE-MANIFEST.json`, `HOST-CHECKS.json` and `host-evidence/` are retained source
+history, not the identity of this build. Record a separate complete source
+inventory, compiler receipt, host-gate receipt and signed APK hash/certificate.
+Do not substitute a historical manifest for the actual compiler input asset.
+
+The standalone `tests/nanbeige42/run_host_profile_checks.py` additionally demands
+byte-identical ec9 files and is historical to that profile-only patch; those
+assumptions no longer describe e07c or this integration. Its retained failure is
+separate from the standard combined gate, which still runs the real Nanbeige
+Java/C/profile-consumer tests. Never relabel that standalone failure as a pass.
+
+The existing GenieX 0.10.0 and llama.cpp source/runtime pins remain unchanged.
+Use the existing signing certificate. A static build does not establish actual
+Android model inference, NPU/GPU execution, ordinary tool actions or Stop/reopen.
+
+## Retained build reference
+
 # Build the independent local controller
 
 The source is an ordinary Android app candidate, versionCode **25**, versionName

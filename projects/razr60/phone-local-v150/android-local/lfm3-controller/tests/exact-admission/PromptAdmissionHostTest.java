@@ -92,6 +92,30 @@ public final class PromptAdmissionHostTest {
         PromptAdmissionFixture.inputText(frame.text,true);
         cases++;
 
+        // The actual inherited SYSTEM alone exceeds the former 4096-byte gate.
+        // This assertion uses production text, not a shortened test prompt.
+        int systemBytes=ConservativeTokenBudget.bytesUpper(PromptAdmissionFixture.system());
+        int oldEmptyPromptFloor=systemBytes+ConservativeTokenBudget.TEMPLATE_BOUND
+                +ConservativeTokenBudget.BOS_EOS_BOUND+ConservativeTokenBudget.GENERATION+ConservativeTokenBudget.RESERVED;
+        check(systemBytes==3794&&oldEmptyPromptFloor==4820&&oldEmptyPromptFloor>4096,
+                "frozen production system reproduces impossible legacy LFM3/4096 admission");
+        final LocalRuntimeConfig lfm=new LocalRuntimeConfig(ModelProfile.LFM3,"npu",4096,4);
+        // On the exact e07c parent this calls the real builder and throws before
+        // inference; on this change it retains the full frame for native proof.
+        PromptAdmissionFixture.Result lfmFrame=PromptAdmissionFixture.build(OWNER,apps,screen,history,lfm);
+        check(lfmFrame.text.equals(frame.text)&&lfmFrame.ids.equals(frame.ids),"LFM3 retains identical full observation/history/owner");
+        check(!lfmFrame.budget.provenUpperBound&&lfmFrame.budget.mayAttemptNative(),"LFM3 projection is advisory only");
+        PromptAdmissionFixture.awaitAdmission(lfmFrame.text,lfm);
+        check(NativeBudgetVerifier.valid(nativeReceipt(lfm,3584),lfm,256,3584),"synthetic LFM3 exact boundary accepted");
+        check(!NativeBudgetVerifier.valid(nativeReceipt(lfm,3585),lfm,256,3585),"actual-token overflow cannot be admitted");
+        check(!NativeBudgetVerifier.valid(nativeReceipt(lfm,3584),lfm,256,3583),"SDK consumed count must equal counted IDs");
+        Map<String,Object> legacy=nativeReceipt(lfm,500);
+        legacy.put("method","lfm3_rendered_utf8_bytes_upper_bound");legacy.put("is_exact_token_count",false);
+        check(!NativeBudgetVerifier.valid(legacy,lfm,256,500),"historical LFM3 byte receipt cannot qualify this candidate");
+        Map<String,Object> oversized=nativeReceipt(lfm,500);oversized.put("formatted_utf8_bytes",262145);
+        check(!NativeBudgetVerifier.valid(oversized,lfm,256,500),"rendered byte hard cap retained despite small token claim");
+        cases++;
+
         Method attempt=ConservativeTokenBudget.class.getMethod("mayAttemptNative");
         int exactProfiles=0,upperProfiles=0;
         for(Field field:ModelProfile.class.getFields()){
@@ -106,16 +130,7 @@ public final class PromptAdmissionHostTest {
                 PromptAdmissionFixture.awaitAdmission(frame.text,config);exactProfiles++;
             }else upperProfiles++;
         }
-        check(exactProfiles==11&&upperProfiles==1,"all declared profiles covered");
-        cases++;
-
-        final LocalRuntimeConfig bounded=new LocalRuntimeConfig(ModelProfile.LFM3,"npu",4096,4);
-        rejects(new Throwing(){public void run()throws Exception{PromptAdmissionFixture.build(OWNER,apps,screen,history,bounded);}},
-                IllegalStateException.class,"proven byte upper bound retains mandatory-frame refusal");
-        rejects(new Throwing(){public void run()throws Exception{PromptAdmissionFixture.awaitAdmission(frame.text,bounded);}},
-                IllegalStateException.class,"LFM3 await guard cannot bypass upper bound");
-        ConservativeTokenBudget small=ConservativeTokenBudget.estimate("system","prompt",bounded);
-        check(small.provenUpperBound&&small.admitted&&Boolean.TRUE.equals(attempt.invoke(small)),"valid LFM3 still admitted");
+        check(exactProfiles==12&&upperProfiles==0,"every declared profile requires exact same-input-ID proof");
         cases++;
 
         check(NativeBudgetVerifier.valid(nativeReceipt(exact,3584),exact,256,3584),"native exact boundary accepted");

@@ -18,7 +18,7 @@ int main(void){
     char *duplicate[]={"runner","--model-profile","lfm2.5-8b-a1b-q4_0","--model-profile","lfm3-1.7b-qad-q4_0",NULL};argc=5;
     assert(hepta_take_model_profile(&argc,duplicate)!=0);
     const HeptaModelProfile *legacy=hepta_find_profile("lfm3-1.7b-qad-q4_0");
-    assert(legacy&&!legacy->exact_tokens&&legacy->bytes==UINT64_C(1049615680));
+    assert(legacy&&legacy->exact_tokens&&legacy->bytes==UINT64_C(1049615680));
     puts("PASS native MoE profile identity, uint64 size and unique argument selection; inference=false");
     return 0;
 }

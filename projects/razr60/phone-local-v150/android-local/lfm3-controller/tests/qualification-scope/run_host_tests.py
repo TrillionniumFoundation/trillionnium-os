@@ -21,14 +21,17 @@ def main():
     # checking remains a separate v32/JDK17 Android build gate, never silently weakened.
     compile_args=compiler+(['--release','8'] if args.release8 else ['-source','8','-target','8'])+['-encoding','UTF-8','-Xlint:all,-options','-Werror','-d',str(classes),*map(str,files)]
     records=[]
-    for name,command in [('compile',compile_args),('production-tests',['java','-cp',str(classes),'org.trillionnium.hepta.local.QualificationScopeHostTest',str(out/'cases')])]:
+    for name,command in [('compile',compile_args),('production-tests',['java','-cp',str(classes),'org.trillionnium.hepta.local.QualificationScopeHostTest',str(out/'cases')]),
+                         ('private-root-tests',['java','-cp',str(classes),'org.trillionnium.hepta.local.QualificationScopePrivateRootHostTest',str(out/'private-root-cases')])]:
         start=time.monotonic();result=subprocess.run(command,text=True,capture_output=True,timeout=90)
         (out/(name+'.stdout')).write_text(result.stdout);(out/(name+'.stderr')).write_text(result.stderr)
         records.append({'name':name,'exit_code':result.returncode,'elapsed_seconds':time.monotonic()-start})
         if result.returncode:
             (out/'VALIDATION.json').write_text(json.dumps({'status':'failed','stages':records,'scope':'host only'},indent=2)+'\n');print(result.stdout[-3000:]);print(result.stderr[-9000:]);return result.returncode
     result=json.loads((out/'cases/RESULT.json').read_text())
-    validation={'schema':'hepta.scope-host-validation.v1','status':'passed','stages':records,'java_tests_passed':result['passed'],
+    private_result=json.loads((out/'private-root-cases/RESULT.json').read_text())
+    validation={'schema':'hepta.scope-host-validation.v1','status':'passed','stages':records,'java_tests_passed':result['passed']+private_result['passed'],
+        'original_scope_cases_passed':result['passed'],'private_root_cases_passed':private_result['passed'],
         'compiler_contract':'Java 8 API release, syntax and class target' if args.release8 else 'Java 8 syntax and class target; this stripped JDK does not provide a Java 8 API --release gate',
         'phone_operations':False,'native_inference':False,'android_runtime':False,'source_identity':extraction['source_files'],
         'extraction_sha256':hashlib.sha256((out/'fixture/EXTRACTION.json').read_bytes()).hexdigest()}

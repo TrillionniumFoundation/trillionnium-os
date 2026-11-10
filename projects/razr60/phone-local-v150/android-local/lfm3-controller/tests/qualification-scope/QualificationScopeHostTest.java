@@ -27,15 +27,23 @@ public final class QualificationScopeHostTest {
         final LocalRuntimeConfig runtime=new LocalRuntimeConfig(ModelProfile.ORVENA4B,"npu",8192,4);
         final Map<String,Object> fields=new LinkedHashMap<String,Object>();final String task="11111111111111111111111111111111";
         byte[] config;String scopeSha;QualificationScopeConfig.Bound bound;LocalTaskController controller;boolean cleanupUnknown,invalidRuntime;Case closeMutation;
-        Env(boolean scoped)throws Exception{
-            dir=Files.createTempDirectory(output,"scope-");
+        final Path frameworkAlias;
+        Env(boolean scoped)throws Exception{this(scoped,false);}
+        Env(boolean scoped,boolean useFrameworkAlias)throws Exception{
+            Path parent=Files.createTempDirectory(output,"scope-");File frameworkFiles;
+            if(useFrameworkAlias){
+                dir=Files.createDirectory(parent.resolve("files"));
+                frameworkAlias=parent.resolveSibling(parent.getFileName().toString()+"-framework-alias");
+                Files.createSymbolicLink(frameworkAlias,parent);frameworkFiles=frameworkAlias.resolve("files").toFile();
+                check(!frameworkFiles.getAbsoluteFile().equals(frameworkFiles.getCanonicalFile()),"fixture requires a real framework ancestor alias");
+            }else{dir=parent;frameworkAlias=null;frameworkFiles=dir.toFile();}
             String[] packages={"org.trillionnium.hepta.local",SETTINGS,SEARCH,CALC,HOME};
             for(int i=0;i<packages.length;i++){
                 PackageInfo info=new PackageInfo();info.packageName=packages[i];info.version=i==0?30:100+i;
                 info.applicationInfo=new ApplicationInfo();info.applicationInfo.packageName=packages[i];info.applicationInfo.uid=i==0?android.os.Process.myUid():10000+i;
                 Path apk=dir.resolve("installed/"+i+".apk");write(apk,bytes("synthetic-apk-"+packages[i]),0644);info.applicationInfo.sourceDir=apk.toString();pm.packages.put(packages[i],info);
             }
-            service=new HeptaAccessibilityService(dir.toFile(),pm);service.prepare(SETTINGS);
+            service=new HeptaAccessibilityService(frameworkFiles,pm);service.prepare(SETTINGS);
             service.launchable.put(SETTINGS,"设置");service.launchable.put(CALC,"计算器");service.launchable.put(HOME,"桌面");
             for(String p:FOREIGN)service.launchable.put(p,"synthetic-foreign");
             byte[] asset=bytes("{\"schema\":\"hepta.actual-build-inputs.v1\",\"version_code\":30,\"source_inputs\":[{\"path\":\"synthetic-fixture-only\",\"sha256\":\""+H+"\"}]}");
@@ -72,9 +80,12 @@ public final class QualificationScopeHostTest {
         HeptaAccessibilityService.ActionOutcome run(String kind,String target)throws Exception{return service.execute(action(kind,target));}
         void zeroDenied(HeptaAccessibilityService.ActionOutcome result){check(result!=null&&!result.accepted&&!result.dispatched&&!result.stale&&service.effects()==0,"scope denial must be terminal and dispatch nothing");check(result.qualificationScope!=null,"scope receipt missing");}
         LocalTaskController.TaskResult controller(String firstAction,String target,Runnable atModel)throws Exception{
+            return controller(firstAction,target,atModel,scopeSha);
+        }
+        LocalTaskController.TaskResult controller(String firstAction,String target,Runnable atModel,String expectedScope)throws Exception{
             CountingModel model=new CountingModel(this,firstAction,target,atModel);service.testInference=model;
             controller=new LocalTaskController(service,model);final LocalTaskController.TaskResult[] result=new LocalTaskController.TaskResult[1];CountDownLatch latch=new CountDownLatch(1);
-            check(controller.start("打开设置并完成本地测试",scopeSha,new LocalTaskController.Listener(){public void onState(String s){}public void onFinished(LocalTaskController.TaskResult r){result[0]=r;latch.countDown();}}),"controller starts");
+            check(controller.start("打开设置并完成本地测试",expectedScope,new LocalTaskController.Listener(){public void onState(String s){}public void onFinished(LocalTaskController.TaskResult r){result[0]=r;latch.countDown();}}),"controller starts");
             check(latch.await(10,TimeUnit.SECONDS),"controller terminal timeout");
             write(dir.resolve("host-native-call-count.txt"),bytes(Integer.toString(model.calls)),0600);return result[0];
         }

@@ -124,8 +124,10 @@ public final class LocalTaskController implements AutoCloseable {
         SameStateNoEffectGuard noEffectGuard=new SameStateNoEffectGuard();
         ObservedTransitionProjection.Transition lastTransition=null;
         try{
-            File root=new File(service.getFilesDir(),"control-tasks");privateDirectory(root);
-            evidence=new File(root,taskId);if(!evidence.mkdir())throw new IllegalStateException("无法创建独立任务目录");privateDirectory(evidence);
+            QualificationScopeConfig.FilesRoot filesRoot=new QualificationScopeConfig.FilesRoot(service);
+            File root=MobiMindPrivateFiles.directory(new File(filesRoot.path,"control-tasks"),false);
+            evidence=MobiMindPrivateFiles.directory(new File(root,taskId),true);
+            filesRoot.unchanged(service);
             JSONObject owner=new JSONObject().put("schema","hepta.local-owner.v1").put("task_id",taskId)
                     .put("instruction",instruction).put("instruction_utf8_sha256",HeptaAccessibilityService.sha(instruction.getBytes(StandardCharsets.UTF_8)))
                     .put("external_model",false).put("automatic_resume",false)
@@ -134,7 +136,7 @@ public final class LocalTaskController implements AutoCloseable {
             final LocalRuntimeConfig config;
             try{config=inference.configuration();}
             catch(Exception invalidRuntime){record(evidence,"owner.json",owner);throw invalidRuntime;}
-            scope=QualificationScopeConfig.capture(service,taskId,expectedScopeSha256,config);
+            scope=QualificationScopeConfig.capture(service,taskId,expectedScopeSha256,config,filesRoot);
             currentActualScopeSha256=scope.actualSha256;
             service.bindQualificationScope(taskId,scope);
             owner.put("actual_scope_sha256",QualificationScopeConfig.nullable(scope.actualSha256)).put("qualification_scope",scope.evidence());
@@ -619,7 +621,6 @@ public final class LocalTaskController implements AutoCloseable {
         if(a.status!=null)value.put("status",a.status);if(a.summary!=null)value.put("summary",a.summary);if(!a.reason.isEmpty())value.put("reason",a.reason);return value.toString();
     }
     private static String chineseAction(String action){switch(action){case "find_app":return "搜索本机应用";case "open":return "打开应用";case "click":return "点击";case "type":return "输入文字";case "scroll":return "滚动";case "back":return "返回";case "home":return "回到桌面";case "wait":return "等待页面";default:return "检查完成状态";}}
-    private static void privateDirectory(File directory)throws Exception{if(!directory.isDirectory()&&!directory.mkdirs())throw new IllegalStateException("无法建立任务目录");android.system.Os.chmod(directory.getPath(),0700);}
     private static void record(File directory,String name,JSONObject value)throws Exception{
         File file=new File(directory,name);if(!file.createNewFile())throw new IllegalStateException("证据文件标识重复");
         try(FileOutputStream stream=new FileOutputStream(file)){stream.write(value.toString(2).getBytes(StandardCharsets.UTF_8));stream.getFD().sync();}

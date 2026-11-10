@@ -49,22 +49,23 @@ def change_once(text, old, new):
 
 def harness(existing):
     code = existing.HARNESS
-    code = change_once(code, 'static const HeptaModelProfile test_profile=', 'static HeptaModelProfile test_profile=')
-    code = change_once(code, '(void)hepta_take_model_profile;hepta_model_profile=&test_profile;', '''(void)hepta_take_model_profile;
+    code = change_once(code, '''    const HeptaModelProfile *production=hepta_find_profile("lfm3-1.7b-qad-q4_0");
+    assert(production&&production->exact_tokens);
+    test_profile.exact_tokens=production->exact_tokens;hepta_model_profile=&test_profile;''', '''
     const HeptaModelProfile *selected=hepta_find_profile(getenv("HEPTA_TEST_PROFILE"));assert(selected);
+    assert(selected->exact_tokens);
     test_profile.id=selected->id;test_profile.exact_tokens=selected->exact_tokens;
     hepta_model_profile=&test_profile;''')
     code = change_once(code, '.exact=true,.model_sha256=test_profile.sha256', '.exact=test_profile.exact_tokens,.model_sha256=test_profile.sha256')
     code = change_once(code, 'assert(!strcmp(in->plugin_id,"llama_cpp")&&!strcmp(in->mode,"npu"));out->device_id=strdup("HTP0");out->ngl=-1;return 0;',
                         'assert(!strcmp(in->plugin_id,"llama_cpp")&&(!strcmp(in->mode,"npu")||!strcmp(in->mode,"gpu")));out->device_id=strdup(!strcmp(in->mode,"npu")?"HTP0":"GPUOpenCL");out->ngl=-1;return 0;')
-    code = change_once(code, 'int n=asprintf(&out->formatted_text,"%s\\n%s",in->messages[0].content,in->messages[1].content);assert(n>0);return 0;',
-                        '''int n=asprintf(&out->formatted_text,"%s\\n%s",in->messages[0].content,in->messages[1].content);assert(n>0);
+    code = change_once(code, 'last_formatted=out->formatted_text;return 0;',
+                        '''last_formatted=out->formatted_text;
     out->chat_template_grammar.grammar_type=GENIEX_GRAMMAR_TYPE_USER;
     out->chat_template_grammar.grammar=strdup("root ::= \\\"x\\\"\\n");return 0;''')
-    code = change_once(code, '''    assert(handle==(geniex_LLM *)&fake_handle&&!dirty&&in->input_ids&&in->input_ids_count>0&&!in->prompt_utf8);
-    assert(in->config&&in->config->sampler_config&&in->config->sampler_config->grammar_string&&in->on_token("x",in->user_data));''', r'''    assert(handle==(geniex_LLM *)&fake_handle&&!dirty);
-    if(test_profile.exact_tokens)assert(in->input_ids&&in->input_ids_count>0&&!in->prompt_utf8);
-    else assert(in->prompt_utf8&&!in->input_ids&&in->input_ids_count==0);
+    # Keep the shared harness's counted/generated/exported ID equality checks.
+    # Only replace its sampler assertions with the per-profile numeric policy.
+    code = change_once(code, '''    assert(in->config&&in->config->sampler_config&&in->config->sampler_config->grammar_string&&in->on_token("x",in->user_data));''', r'''
     assert(in->config&&in->config->sampler_config);
     const geniex_SamplerConfig *s=in->config->sampler_config;
     bool orvena=!strcmp(test_profile.id,"orvena-4b-q4_k_m");
@@ -82,8 +83,6 @@ def harness(existing):
     fprintf(stderr,"HOST_SAMPLER_CONFIG {\"temperature\":%.17g,\"top_p\":%.17g,\"top_k\":%d,\"min_p\":%.17g,\"repetition_penalty\":%.17g,\"presence_penalty\":%.17g,\"frequency_penalty\":%.17g,\"seed\":%d}\n",
         (double)s->temperature,(double)s->top_p,s->top_k,(double)s->min_p,(double)s->repetition_penalty,(double)s->presence_penalty,(double)s->frequency_penalty,s->seed);
     assert(in->on_token("x",in->user_data));''')
-    code = change_once(code, 'out->profile_data.prompt_tokens=in->input_ids_count;',
-                        'out->profile_data.prompt_tokens=test_profile.exact_tokens?in->input_ids_count:(int32_t)strlen(in->prompt_utf8)+1;')
     code = change_once(code, '(void)model;assert(!strcmp(key,"general.architecture"));return snprintf(buf,size,"host-test");',
                         '(void)model;if(!strcmp(key,"tokenizer.ggml.pre"))return snprintf(buf,size,"minicpm5");assert(!strcmp(key,"general.architecture"));return snprintf(buf,size,"host-test");')
     # JSON and C share these ASCII string escapes; keep one literal for both grammar checks.

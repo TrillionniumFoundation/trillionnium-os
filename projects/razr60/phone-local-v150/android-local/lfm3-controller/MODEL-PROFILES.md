@@ -1,5 +1,11 @@
 # Explicit local model profiles
 
+The 2026-11-10 LFM3 exact-admission correction now requires the same native
+input-ID proof for **every registered profile**, including the original LFM3
+artifact and legacy v1 configuration. See `LFM3-EXACT-ADMISSION.md` for the
+reproduced 4096-context refusal, retained limits and deployment gates. Historical
+byte-bound receipts do not qualify this candidate.
+
 Version 0.4.0 / code 4 introduced the explicit, closed artifact allowlist retained
 by code 5. The original
 LFM3 filename, bytes and SHA256 are unchanged. Its factory default is NPU / 8192; existing explicit configurations, including 4096 and other model selections, are not migrated. The original acceptance driver remains unchanged: LFM3 qualification supplies `--expected-context 8192` explicitly through its candidate plan.
@@ -57,8 +63,7 @@ The build links the same packaged `libllama.so` already validated by the officia
 runtime tarball hash. That exact source includes `llama`, `lfm3`, `spark2_5`
 model constructors and the `minicpm5` tokenizer preprocessor.
 
-LFM3 retains its original, artifact-specific rendered UTF-8 upper bound. Other
-profiles cannot use that proof. For MiniCPM5 and Spark, a vocabulary-only model
+Every registered profile uses exact token admission. A vocabulary-only model
 performs `llama_tokenize(add_special=true, parse_special=true)` on the actual
 rendered chat template. It allocates no neural inference context or weight tensors.
 The identical token IDs, with their SHA256 over little-endian int32 values, are
@@ -67,10 +72,12 @@ input path. Count + requested output + reserve256 must fit the selected context.
 The SDK's consumed prompt-token count must equal the counted IDs in a successful
 receipt. A failed exact tokenizer or admission never falls back to a byte estimate.
 
-Java observation selection for the new profiles uses a clearly labeled sizing
-heuristic (half UTF-8 bytes plus a formatting allowance); it is not a tokenizer
-proof. The native exact admission is authoritative. An underestimate fails closed;
-it does not truncate or change the owner's instruction and does not retry.
+Java records a clearly labeled sizing heuristic (half UTF-8 bytes plus a
+formatting allowance); it is not a tokenizer proof. The complete already-bounded
+observation and history proceed to native exact admission even when that
+diagnostic estimate is large. Actual token overflow fails closed; it does not
+truncate or change the owner's instruction and does not retry. The 65,536-byte
+input and 262,144-byte rendered-prompt limits remain enforced.
 
 Chat templates receive `enable_thinking=false`. Controller history remains text
 inside the prompt; native tool-call XML is not used. When the controller supplies
