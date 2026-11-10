@@ -1,0 +1,188 @@
+[
+  {
+    "case_id": "core-settings-home-01",
+    "instruction": "打开系统设置，停留在设置首页。",
+    "expected_package": "com.android.settings",
+    "expected_visible_text": [
+      "搜索设置"
+    ],
+    "text_match": "exact",
+    "required_actions": [],
+    "setup_home": true,
+    "timeout_seconds": 540,
+    "assertion": "settings_home",
+    "goal_visits": [],
+    "precondition": null
+  },
+  {
+    "case_id": "core-settings-apps-01",
+    "instruction": "打开系统设置，进入“应用”页面，停留在这个页面。",
+    "expected_package": "com.android.settings",
+    "expected_visible_text": [
+      "特殊应用权限",
+      "应用管理"
+    ],
+    "text_match": "exact",
+    "required_actions": [],
+    "setup_home": true,
+    "timeout_seconds": 540,
+    "assertion": "apps_management",
+    "goal_visits": [],
+    "precondition": null
+  },
+  {
+    "case_id": "core-calculator-keypad-01",
+    "instruction": "打开计算器，清除当前输入，使用计算器按键计算23乘以19，按等号并保留结果。不要直接输入答案。",
+    "expected_package": "com.motorola.cn.calculator",
+    "expected_visible_text": [
+      "437"
+    ],
+    "text_match": "exact",
+    "required_actions": [
+      {
+        "action": "click",
+        "package": "com.motorola.cn.calculator"
+      },
+      {
+        "action": "click",
+        "package": "com.motorola.cn.calculator"
+      },
+      {
+        "action": "click",
+        "package": "com.motorola.cn.calculator"
+      },
+      {
+        "action": "click",
+        "package": "com.motorola.cn.calculator"
+      },
+      {
+        "action": "click",
+        "package": "com.motorola.cn.calculator"
+      },
+      {
+        "action": "click",
+        "package": "com.motorola.cn.calculator"
+      },
+      {
+        "action": "click",
+        "package": "com.motorola.cn.calculator"
+      }
+    ],
+    "setup_home": true,
+    "timeout_seconds": 540,
+    "assertion": "calculator_keypad",
+    "goal_visits": [],
+    "precondition": null
+  },
+  {
+    "case_id": "core-settings-chinese-search-01",
+    "instruction": "打开系统设置，在搜索框输入“蓝牙”，停留在搜索结果页面。",
+    "expected_package": "com.android.settings.intelligence",
+    "expected_visible_text": [
+      "蓝牙"
+    ],
+    "text_match": "exact",
+    "required_actions": [
+      {
+        "action": "type",
+        "package": "com.android.settings.intelligence"
+      }
+    ],
+    "setup_home": true,
+    "timeout_seconds": 540,
+    "assertion": "chinese_search",
+    "goal_visits": [],
+    "precondition": null
+  },
+  {
+    "case_id": "core-search-return-home-01",
+    "instruction": "返回系统设置首页。如果当前停留在设置的搜索页或子页面，请逐级返回，最后停留在设置首页，不修改任何设置。",
+    "expected_package": "com.android.settings",
+    "expected_visible_text": [
+      "搜索设置"
+    ],
+    "text_match": "exact",
+    "required_actions": [],
+    "setup_home": false,
+    "timeout_seconds": 540,
+    "assertion": "search_return_home",
+    "goal_visits": [],
+    "precondition": {
+      "initial_package": "com.android.settings.intelligence"
+    }
+  },
+  {
+    "case_id": "core-settings-home-settings-01",
+    "instruction": "依次完成：打开系统设置，回到桌面，再次打开系统设置并停留在设置首页。不要修改设置。",
+    "expected_package": "com.android.settings",
+    "expected_visible_text": [
+      "搜索设置"
+    ],
+    "text_match": "exact",
+    "required_actions": [],
+    "setup_home": true,
+    "timeout_seconds": 540,
+    "assertion": "ordered_navigation",
+    "goal_visits": [
+      "settings",
+      "home",
+      "settings"
+    ],
+    "precondition": null
+  },
+  {
+    "case_id": "core-cross-app-01",
+    "instruction": "依次打开系统设置、计算器，再次打开系统设置并停留在设置首页。不修改设置，不进行计算。",
+    "expected_package": "com.android.settings",
+    "expected_visible_text": [
+      "搜索设置"
+    ],
+    "text_match": "exact",
+    "required_actions": [],
+    "setup_home": true,
+    "timeout_seconds": 540,
+    "assertion": "cross_app",
+    "goal_visits": [
+      "settings",
+      "calculator",
+      "settings"
+    ],
+    "precondition": null
+  },
+  {
+    "case_id": "core-settings-scroll-01",
+    "instruction": "打开系统设置，回到设置首页，向下滚动设置列表至少一次并停留在滚动后的列表。不修改任何设置。",
+    "expected_package": "com.android.settings",
+    "expected_visible_text": [],
+    "text_match": "exact",
+    "required_actions": [
+      {
+        "action": "scroll",
+        "package": "com.android.settings"
+      }
+    ],
+    "setup_home": true,
+    "timeout_seconds": 540,
+    "assertion": "scroll",
+    "goal_visits": [],
+    "precondition": null
+  },
+  {
+    "case_id": "core-find-calculator-01",
+    "instruction": "请先使用本机应用查找工具find_app搜索“计算器”，再从查找结果打开计算器。不进行计算。",
+    "expected_package": "com.motorola.cn.calculator",
+    "expected_visible_text": [],
+    "text_match": "exact",
+    "required_actions": [
+      {
+        "action": "open",
+        "package": "com.motorola.cn.calculator"
+      }
+    ],
+    "setup_home": true,
+    "timeout_seconds": 540,
+    "assertion": "find_app",
+    "goal_visits": [],
+    "precondition": null
+  }
+]
