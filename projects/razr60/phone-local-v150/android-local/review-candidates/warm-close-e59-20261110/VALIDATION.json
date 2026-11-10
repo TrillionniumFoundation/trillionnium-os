@@ -1,0 +1,503 @@
+{
+  "schema": "hepta.warm-close-review-validation.v1",
+  "scope": "Scoped Pocket4 OpenJDK17 host regressions and Java8-target strict compilation, earlier supplemental Java21 evidence, and limited source review; not Android, inference or phone qualification",
+  "path_normalization": {
+    "workspace_prefix": "removed; paths below refer to the retained review evidence root",
+    "java_executable": "normalized to java; exact original command identity retained by SHA256",
+    "commands_are_historical_records_not_capsule_execution_instructions": true,
+    "later_host_commands": "Executables normalized to python3/java/javac and working-tree paths to relative names; original evidence identities are retained separately."
+  },
+  "original_evidence": [
+    {
+      "path": "BASELINE.json",
+      "sha256": "1a3cae63b22758068d7e03c9e1f7cb272f11738095c34cccaf6dc8955d46c18a",
+      "bytes": 5925,
+      "retained_outside_capsule": true
+    },
+    {
+      "path": "VALIDATION.json",
+      "sha256": "0551daac6dca6a533f8c12c66f091154a1b67bb6d5b4cd636d0a80606a4163dd",
+      "bytes": 12928,
+      "retained_outside_capsule": true
+    },
+    {
+      "path": "checks-baseline/RESULT.json",
+      "sha256": "31180db1e796e54474afa9aab2cf6e35b94a35a9089583c07ebd009f58b76415",
+      "bytes": 4552,
+      "retained_outside_capsule": true
+    },
+    {
+      "path": "checks-patched/RESULT.json",
+      "sha256": "186a1e632d9a7116cae274cb5d13786e5bd1b6d2437912f1707b3aaa977d7f49",
+      "bytes": 5828,
+      "retained_outside_capsule": true
+    },
+    {
+      "path": "checks-baseline/terminal-fixture/EXTRACTION.json",
+      "sha256": "6d1742450312c5b987036cc713f03e536d74e410025b934b496ba5b547e95fff",
+      "bytes": 1082,
+      "retained_outside_capsule": true
+    },
+    {
+      "path": "checks-patched/terminal-fixture/EXTRACTION.json",
+      "sha256": "8274ba61bbd53b3ac2d9041acdad33f24ff0f9e71eca5ceb7bd0e5e77cd8b12c",
+      "bytes": 1083,
+      "retained_outside_capsule": true
+    },
+    {
+      "path": "checks-patched/recovery-fixture/EXTRACTION.json",
+      "sha256": "5b0c089d1d8e47069f7ddae23fadab30045f55e524ccc9a4989b06ec4a056181",
+      "bytes": 4734,
+      "retained_outside_capsule": true
+    },
+    {
+      "path": "combined-r2-host-RESULT.json",
+      "sha256": "370fd28160a715aea489447fb11c398863429087d5562ccd129ab29fcf4c5e01",
+      "bytes": 17355,
+      "retained_outside_capsule": true,
+      "local_transfer_copy_sha256": "add1928f390973a0b1e19ce4dfaef80a30fc4dabf75cd07591f1da4a8e315628",
+      "local_transfer_copy_bytes": 17356,
+      "transfer_normalization": "Local copy adds one trailing LF; removing only that LF reproduces the original SHA256."
+    },
+    {
+      "path": "combined-r2-warm-process-CORRECTED.json",
+      "sha256": "89ec2191336dd292dd0d22f7b68ac2035fb599ef330d3e99a46c503df613ba80",
+      "bytes": 818,
+      "retained_outside_capsule": true,
+      "local_transfer_copy_sha256": "9de001ef04197fa49c2dbebc329e8485b395abfb557e188aea4bf5e4142e4229",
+      "local_transfer_copy_bytes": 819,
+      "transfer_normalization": "Local copy adds one trailing LF; removing only that LF reproduces the original SHA256."
+    }
+  ],
+  "synthetic_log_mapping": [
+    {
+      "capsule_path": "baseline-stop-failure.txt",
+      "original_evidence_path": "checks-baseline/terminal-behavior.stderr",
+      "original_sha256": "e7bea054bc747479c7f1a27a721f7336f7ddc2c18df79b23baca46f5d0dfec18",
+      "published_sha256": "e7bea054bc747479c7f1a27a721f7336f7ddc2c18df79b23baca46f5d0dfec18",
+      "byte_exact": true,
+      "real_phone_log": false
+    },
+    {
+      "capsule_path": "patched-terminal-pass.txt",
+      "original_evidence_path": "checks-patched/terminal-behavior.stdout",
+      "original_sha256": "8116cd0c34ea7fb9862762a56e4419e5540edde871e271948ff8b45a820d5792",
+      "published_sha256": "8116cd0c34ea7fb9862762a56e4419e5540edde871e271948ff8b45a820d5792",
+      "byte_exact": true,
+      "real_phone_log": false
+    },
+    {
+      "capsule_path": "patched-recovery-pass.txt",
+      "original_evidence_path": "checks-patched/recovery-behavior.stdout",
+      "original_sha256": "9f356f91e8328b76748b46b427dd4bfd0e86f591da17f7a85f0f01707c76edc0",
+      "published_sha256": "9f356f91e8328b76748b46b427dd4bfd0e86f591da17f7a85f0f01707c76edc0",
+      "byte_exact": true,
+      "real_phone_log": false
+    }
+  ],
+  "java21_supplemental": {
+    "compiler": "Existing OpenJDK 21 compiler module",
+    "warnings_are_errors": true,
+    "flags": [
+      "-encoding",
+      "UTF-8",
+      "-Xlint:all",
+      "-Werror"
+    ],
+    "terminal_cases_passed": 13,
+    "recovery_cases_passed": 18,
+    "recovery_assertions_passed": 74,
+    "baseline_stop_defect_reproduced": true,
+    "baseline_recovery_compile_errors": 45,
+    "full_host_gate_passed": false,
+    "additional_unchanged_warm_process_compile": "Rejected by Java21 serial lint under unchanged -Werror; no warning suppressed"
+  },
+  "java8_gate": {
+    "status": "PASS_SCOPED_HOST_REGRESSIONS",
+    "passed": true,
+    "scope": "Exact controller-fragment terminal regression, existing recovery fixture, and unchanged WarmProcessSession strict compilation; corrected subprocess behavior separately recorded",
+    "compiler": "OpenJDK javac 17.0.21.0.3",
+    "runtime": "OpenJDK 17.0.21.0.3",
+    "target_release": "8",
+    "original_flags": [
+      "--release",
+      "8",
+      "-Xlint:all",
+      "-Werror"
+    ],
+    "test_entry_points_weakened": false,
+    "prior_r1_attempt": {
+      "status": "UNKNOWN",
+      "passed": null,
+      "original_flags": [
+        "--release",
+        "8",
+        "-Xlint:all",
+        "-Werror"
+      ],
+      "test_entry_points_weakened": false,
+      "local_attempt": "Cannot run: local runtime lacks ct.sym",
+      "remote_attempt": "MCP timeout followed by channel Internal errors; durable execution and result not confirmed",
+      "remote_result_inferred": false,
+      "automatic_retry": false
+    },
+    "prior_r1_request_reconciled": false,
+    "separate_later_result_sha256": "370fd28160a715aea489447fb11c398863429087d5562ccd129ab29fcf4c5e01",
+    "combined_run_all_expected_outcomes": false,
+    "full_android_or_phone_gate_passed": false
+  },
+  "independent_source_review": {
+    "accepts_limited_change": true,
+    "scope": [
+      "Re-read accepted Stop after endTask returns",
+      "Preserve unknown effect/process cleanup blocking",
+      "Do not conflate invalid terminal proof with unknown physical cleanup",
+      "Confirm recovery fixture hunk already satisfied in observed Code29"
+    ],
+    "formal_non_author_github_approval": false,
+    "full_lifecycle_approval": false
+  },
+  "remaining_race": {
+    "status": "OPEN",
+    "description": "The final cancelled.get() and subsequent result publication are not one atomic operation. Stop can arrive in the remaining tail window; this capsule does not close that race.",
+    "covered_by_the_13_cases": false
+  },
+  "claims": {
+    "android_compiled": false,
+    "model_inference_tested": false,
+    "gpu_npu_execution_tested": false,
+    "phone_task_accepted": false,
+    "deployed": false,
+    "real_phone_data_included": false,
+    "scoped_java8_target_host_regressions_passed": true,
+    "warm_process_real_subprocess_test_with_synthetic_peer_passed": true,
+    "complete_combined_runner_passed": false
+  },
+  "checks": [
+    {
+      "name": "terminal-compile",
+      "exit_code": 0,
+      "elapsed_s": 3.2423,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase": "baseline",
+      "command": [
+        "java",
+        "-m",
+        "jdk.compiler/com.sun.tools.javac.Main",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:all",
+        "-Werror",
+        "-d",
+        "checks-baseline/terminal-classes",
+        "checks-baseline/terminal-fixture/LocalInference.java",
+        "checks-baseline/terminal-fixture/ControllerFinalizationFixture.java",
+        "source/tests/warm-finalization/WarmFinalizationHostTest.java"
+      ],
+      "original_command_sha256": "0ea2628bd2b6569fecd6eb36641f6dd9b1adcff81d5f42458e37eee15bca91c4"
+    },
+    {
+      "name": "terminal-behavior",
+      "exit_code": 1,
+      "elapsed_s": 0.1175,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e7bea054bc747479c7f1a27a721f7336f7ddc2c18df79b23baca46f5d0dfec18",
+      "phase": "baseline",
+      "command": [
+        "java",
+        "-cp",
+        "checks-baseline/terminal-classes",
+        "org.trillionnium.hepta.local.WarmFinalizationHostTest"
+      ],
+      "original_command_sha256": "58f54d6a958f72b223b6d82017cb3fe1b66ba5decbb7cf38405943c332332efa"
+    },
+    {
+      "name": "recovery-compile",
+      "exit_code": 1,
+      "elapsed_s": 1.4148,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "255a44378222e6a2328dda5d2e383c5902303f412922ae9df50b9e792cb37973",
+      "phase": "baseline",
+      "command": [
+        "java",
+        "-m",
+        "jdk.compiler/com.sun.tools.javac.Main",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:all",
+        "-Werror",
+        "-d",
+        "checks-baseline/recovery-classes",
+        "baseline/src/org/trillionnium/hepta/local/LocalProbeApplication.java",
+        "baseline/src/org/trillionnium/hepta/local/RecoverySlotHandoff.java",
+        "baseline/src/org/trillionnium/hepta/local/RecoveryDispatch.java",
+        "baseline/src/org/trillionnium/hepta/local/RecoveryQuiescence.java",
+        "baseline/src/org/trillionnium/hepta/local/RecoveryJournalTransaction.java",
+        "baseline/src/org/trillionnium/hepta/local/DiagnosticStartupGate.java",
+        "checks-baseline/recovery-fixture/LocalModelEngine.java",
+        "baseline/tests/recovery-application/RecoveryApplicationHostTest.java",
+        "baseline/tests/recovery-application/android/app/Application.java",
+        "baseline/tests/recovery-application/android/content/Context.java",
+        "baseline/tests/recovery-application/android/content/pm/ApplicationInfo.java",
+        "baseline/tests/recovery-application/android/os/Handler.java",
+        "baseline/tests/recovery-application/android/os/Looper.java",
+        "baseline/tests/recovery-application/android/os/Process.java",
+        "baseline/tests/recovery-application/org/trillionnium/hepta/local/LocalTaskSession.java",
+        "baseline/tests/recovery-application/org/trillionnium/hepta/local/MobiMindModelEngine.java",
+        "baseline/tests/recovery-application/org/trillionnium/hepta/local/UiVenusModelEngine.java"
+      ],
+      "original_command_sha256": "4316fb2cafe208d7381d2951d2970247d0c50e9c22821065c31fc838daf48ef0"
+    },
+    {
+      "name": "terminal-compile",
+      "exit_code": 0,
+      "elapsed_s": 1.0221,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase": "patched",
+      "command": [
+        "java",
+        "-m",
+        "jdk.compiler/com.sun.tools.javac.Main",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:all",
+        "-Werror",
+        "-d",
+        "checks-patched/terminal-classes",
+        "checks-patched/terminal-fixture/LocalInference.java",
+        "checks-patched/terminal-fixture/ControllerFinalizationFixture.java",
+        "source/tests/warm-finalization/WarmFinalizationHostTest.java"
+      ],
+      "original_command_sha256": "bd28e4299b9e41ea1da84783e2b471e6abcf77081da133b42cc2b916e98221c1"
+    },
+    {
+      "name": "terminal-behavior",
+      "exit_code": 0,
+      "elapsed_s": 0.0879,
+      "stdout_sha256": "8116cd0c34ea7fb9862762a56e4419e5540edde871e271948ff8b45a820d5792",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase": "patched",
+      "command": [
+        "java",
+        "-cp",
+        "checks-patched/terminal-classes",
+        "org.trillionnium.hepta.local.WarmFinalizationHostTest"
+      ],
+      "original_command_sha256": "1af1c1cb9954f603a400d28dfe59c87993e3a748b9d89bc10d23e25404f02ada"
+    },
+    {
+      "name": "recovery-compile",
+      "exit_code": 0,
+      "elapsed_s": 1.8952,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase": "patched",
+      "command": [
+        "java",
+        "-m",
+        "jdk.compiler/com.sun.tools.javac.Main",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:all",
+        "-Werror",
+        "-d",
+        "checks-patched/recovery-classes",
+        "source/src/org/trillionnium/hepta/local/LocalProbeApplication.java",
+        "source/src/org/trillionnium/hepta/local/RecoverySlotHandoff.java",
+        "source/src/org/trillionnium/hepta/local/RecoveryDispatch.java",
+        "source/src/org/trillionnium/hepta/local/RecoveryQuiescence.java",
+        "source/src/org/trillionnium/hepta/local/RecoveryJournalTransaction.java",
+        "source/src/org/trillionnium/hepta/local/DiagnosticStartupGate.java",
+        "checks-patched/recovery-fixture/LocalModelEngine.java",
+        "source/tests/recovery-application/RecoveryApplicationHostTest.java",
+        "source/tests/recovery-application/android/app/Application.java",
+        "source/tests/recovery-application/android/content/Context.java",
+        "source/tests/recovery-application/android/content/pm/ApplicationInfo.java",
+        "source/tests/recovery-application/android/os/Handler.java",
+        "source/tests/recovery-application/android/os/Looper.java",
+        "source/tests/recovery-application/android/os/Process.java",
+        "source/tests/recovery-application/org/trillionnium/hepta/local/LocalTaskSession.java",
+        "source/tests/recovery-application/org/trillionnium/hepta/local/MobiMindModelEngine.java",
+        "source/tests/recovery-application/org/trillionnium/hepta/local/UiVenusModelEngine.java"
+      ],
+      "original_command_sha256": "65834109bf15434a91a2d4831a2b094687f4cbbdfdfe67b3ab5adb6f7e2e8da8"
+    },
+    {
+      "name": "recovery-behavior",
+      "exit_code": 0,
+      "elapsed_s": 0.5579,
+      "stdout_sha256": "9f356f91e8328b76748b46b427dd4bfd0e86f591da17f7a85f0f01707c76edc0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase": "patched",
+      "command": [
+        "java",
+        "-cp",
+        "checks-patched/recovery-classes",
+        "org.trillionnium.hepta.local.RecoveryApplicationHostTest"
+      ],
+      "original_command_sha256": "7842b2f5587009ebd2cdb2a47985a59700e472d2e96dd4bbc960223c9ffd1c33"
+    },
+    {
+      "name": "warm-process-compile",
+      "exit_code": 1,
+      "elapsed_s": 2.0626,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "67268663cd769653e1f2617420290eba9598856e9505ea59dba38598c31c85cc",
+      "phase": "patched",
+      "command": [
+        "java",
+        "-m",
+        "jdk.compiler/com.sun.tools.javac.Main",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:all",
+        "-Werror",
+        "-d",
+        "checks-patched/warm-classes",
+        "source/src/org/trillionnium/hepta/local/WarmProcessSession.java",
+        "source/tests/WarmProcessSessionHostTest.java"
+      ],
+      "original_command_sha256": "028e79561d33486bafc4813d690c6d197ecd326168edfc0acd580fa399f79015"
+    }
+  ],
+  "pocket4_jdk17_host_checks": {
+    "source_result_sha256": "370fd28160a715aea489447fb11c398863429087d5562ccd129ab29fcf4c5e01",
+    "source_archive_sha256": "538cd8fb9ea1ed0b70decc5fc4b7d4bd416a2cfc8ee503079930814d47b4ec5c",
+    "original_combined_all_expected_outcomes": false,
+    "prior_r1_request_reconciled": false,
+    "no_phone_commands": true,
+    "no_model_inference": true,
+    "no_android_build": true,
+    "checks": [
+      {
+        "name": "java8-baseline-finalization",
+        "expected_exit": 1,
+        "exit_code": 1,
+        "stdout_sha256": "9c1e8bf825423960f2d9baca2105d1e02d24ceec7d2aeb4049da1f8910eea18e",
+        "stderr_sha256": "ded44b196144a41c62052342c341ab0a25799287d85fa2de3d6e684ded0f251f",
+        "command": [
+          "python3",
+          "-B",
+          "tools/test_warm_finalization.py"
+        ],
+        "outcome": "EXPECTED_FAILURE",
+        "baseline_stop_defect_reproduced": true,
+        "diagnostic": "Stop during invalid close: expected cancelled, got failed",
+        "controller_sha256": "729158a4d9194ae2f9c1d4d1ca850ea1a33ba4208063d90b04ecbe184b539641"
+      },
+      {
+        "name": "java8-patched-finalization",
+        "expected_exit": 0,
+        "exit_code": 0,
+        "stdout_sha256": "5855239f31db1fc752a942fbb845146cfc997a1605d8c55807b3a751dac7b957",
+        "stderr_sha256": "a8cf0f4285bb8ff163ccd3e44e677873569bc995191e2ce700e708b8ac14970b",
+        "command": [
+          "python3",
+          "-B",
+          "tools/test_warm_finalization.py"
+        ],
+        "outcome": "PASS",
+        "terminal_cases_passed": 13,
+        "controller_sha256": "cdf2368963b6a3cb4c0432e86e04e7c38ad498fc4ab7197f3dd0483885c7b1c4"
+      },
+      {
+        "name": "java8-patched-recovery",
+        "expected_exit": 0,
+        "exit_code": 0,
+        "stdout_sha256": "9f356f91e8328b76748b46b427dd4bfd0e86f591da17f7a85f0f01707c76edc0",
+        "stderr_sha256": "9ef8b7598a66ef54b9e49569473fd7fba9ab02a4d650f4ab84cda2fef9eaf0ac",
+        "command": [
+          "python3",
+          "-B",
+          "tools/test_recovery_application.py"
+        ],
+        "outcome": "PASS",
+        "recovery_cases_passed": 18,
+        "recovery_assertions_passed": 74
+      },
+      {
+        "name": "java8-warm-process-compile",
+        "expected_exit": 0,
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "command": [
+          "javac",
+          "--release",
+          "8",
+          "-encoding",
+          "UTF-8",
+          "-Xlint:all",
+          "-Werror",
+          "-d",
+          "warm-process-classes",
+          "src/org/trillionnium/hepta/local/WarmProcessSession.java",
+          "tests/WarmProcessSessionHostTest.java"
+        ],
+        "outcome": "PASS",
+        "warnings_are_errors": true,
+        "target_release": "8"
+      },
+      {
+        "name": "java8-warm-process-behavior",
+        "expected_exit": 0,
+        "exit_code": 1,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "f67ae422b46647910a924d9a0429c6573ace6d3fd3de768cdb8cdc8314c40681",
+        "command": [
+          "java",
+          "-cp",
+          "warm-process-classes",
+          "org.trillionnium.hepta.local.WarmProcessSessionHostTest"
+        ],
+        "outcome": "RUNNER_ENTRYPOINT_ERROR",
+        "diagnostic": "ClassNotFoundException: org.trillionnium.hepta.local.WarmProcessSessionHostTest",
+        "behavior_executed": false,
+        "failure_history_preserved": true
+      },
+      {
+        "name": "r2-acceptance-host",
+        "expected_exit": 0,
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "af6fb6127aecc9b75ce3035adc15993ae875f33c9d973d45298b12b8c5dcd6b9",
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "test_phone_acceptance",
+          "test_labeled_target_binding",
+          "test_warm_receipts",
+          "test_warm_collection",
+          "test_warm_collection_integrity",
+          "test_phone_suite"
+        ],
+        "outcome": "PASS",
+        "test_methods_passed": 114,
+        "scope": "Adjacent acceptance-tool candidate in the same bundle; not part of this controller patch and not phone qualification"
+      }
+    ],
+    "separate_corrected_behavior": {
+      "source_result_sha256": "89ec2191336dd292dd0d22f7b68ac2035fb599ef330d3e99a46c503df613ba80",
+      "prior_result_sha256": "370fd28160a715aea489447fb11c398863429087d5562ccd129ab29fcf4c5e01",
+      "command": [
+        "java",
+        "-cp",
+        "warm-process-classes",
+        "WarmProcessSessionHostTest"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "7d70a2221e029cd5539426cedd182a8f9a6108416db5408c430b52e6d854bc9e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_summary": "WarmProcessSession: real reuse/exit, stale/overlap/cancel/deadline rejection and unknown cleanup PASS; synthetic peer only",
+      "model_peer": "synthetic child process",
+      "no_phone_commands": true,
+      "prior_result_rewritten": false,
+      "prior_combined_failure_retained": true
+    }
+  }
+}
