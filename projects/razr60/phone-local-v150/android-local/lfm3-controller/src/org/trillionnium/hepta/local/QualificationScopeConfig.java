@@ -26,9 +26,43 @@ import java.util.TreeMap;
 /** App-private opt-in loader; a captured task never reloads into a weaker mode. */
 final class QualificationScopeConfig {
     private QualificationScopeConfig(){}
+    /** Resolve only the framework-supplied application ancestor, never private children. */
+    static final class FilesRoot {
+        final File path;
+        private final StructStat identity;
+        private int allowedPermissions;
+        FilesRoot(Context context)throws Exception{
+            path=resolve(context);identity=Os.lstat(path.getPath());ownedDirectory(identity);allowedPermissions=identity.st_mode&07777;
+        }
+        private static File resolve(Context context)throws Exception{
+            File supplied=context.getFilesDir();
+            QualificationScope.require(supplied!=null&&supplied.isAbsolute()&&supplied.getParentFile()!=null,"app files root unavailable");
+            // Android can expose its app ancestor through different framework paths.
+            // The files directory itself, and all appended children, must not be aliases.
+            File value=new File(supplied.getParentFile().getCanonicalFile(),supplied.getName());
+            QualificationScope.require(value.getAbsoluteFile().equals(value.getCanonicalFile()),"app files directory alias refused");
+            return value;
+        }
+        private static void ownedDirectory(StructStat value){
+            QualificationScope.require(OsConstants.S_ISDIR(value.st_mode)&&value.st_uid==android.os.Process.myUid(),"app files directory ownership/type mismatch");
+        }
+        synchronized void unchanged(Context context)throws Exception{
+            QualificationScope.require(path.equals(resolve(context)),"app files root changed");
+            StructStat now=Os.lstat(path.getPath());ownedDirectory(now);
+            QualificationScope.require(identity.st_dev==now.st_dev&&identity.st_ino==now.st_ino&&identity.st_uid==now.st_uid,
+                    "app files directory identity changed");
+            // Engine initialization can tighten this directory to 0700. Creating
+            // journals and task directories legitimately changes other directory stats.
+            int permissions=now.st_mode&07777;
+            QualificationScope.require((permissions|allowedPermissions)==allowedPermissions,"app files directory permissions widened");
+            allowedPermissions=permissions;
+        }
+    }
     static final class Bound {
         final Context context;
         final String taskId,expectedSha256;
+        private final FilesRoot filesRoot;
+        private final JSONObject privatePathDiagnostics;
         final File scopePath;
         String actualSha256,buildIdentitySha256,runtimeConfigSha256;
         byte[] raw,buildBytes;
@@ -37,13 +71,10 @@ final class QualificationScopeConfig {
         MobiMindPrivateFiles.Read scopeFile,runtimeFile;
         final List<Installed> installed=new ArrayList<Installed>();
         private String failure;
-        Bound(Context context,String task,String expected){
-            this.context=context;taskId=task;expectedSha256=expected;
-            // Resolve only the framework-owned root; child aliases remain forbidden by the private-file reader.
-            File files=context.getFilesDir();
-            try{files=files.getCanonicalFile();}
-            catch(java.io.IOException error){refuse(error.getMessage()==null?"private root cannot be resolved":error.getMessage());}
-            scopePath=new File(files,QualificationScope.FILE_NAME);
+        Bound(Context context,String task,String expected,FilesRoot root){
+            this.context=context;taskId=task;expectedSha256=expected;filesRoot=root;
+            scopePath=root==null?null:new File(root.path,QualificationScope.FILE_NAME);
+            privatePathDiagnostics=pathDiagnostics(context,root);
         }
         boolean restricted(){return raw!=null||expectedSha256!=null||failure!=null;}
         synchronized void requireReady(){if(failure!=null)throw new QualificationScope.Violation(failure);}
@@ -51,6 +82,7 @@ final class QualificationScopeConfig {
         void verifyUnchanged(){
             requireReady();
             try{
+                QualificationScope.require(filesRoot!=null,"app files root not captured");filesRoot.unchanged(context);
                 if(config==null){QualificationScope.require(!MobiMindPrivateFiles.exists(scopePath),"scope mode changed during unrestricted task");return;}
                 scopeFile.unchangedPath();
                 MobiMindPrivateFiles.Read fresh=MobiMindPrivateFiles.read(scopePath,QualificationScope.MAX_CONFIG_BYTES,true);
@@ -67,15 +99,20 @@ final class QualificationScopeConfig {
                     .put("restricted",restricted()).put("scope_loaded",config!=null).put("qualification_id",config==null?JSONObject.NULL:config.qualificationId)
                     .put("build_identity_sha256",nullable(buildIdentitySha256)).put("runtime_config_sha256",nullable(runtimeConfigSha256))
                     .put("scope_refused",failure!=null||gate.refusal()!=null).put("refusal",nullable(failure!=null?failure:gate.refusal()))
+                    .put("private_path_diagnostics",privatePathDiagnostics)
                     .put("last_check",new JSONObject(gate.proof()));}
             catch(Exception error){throw new IllegalStateException("scope evidence cannot be encoded",error);}
         }
     }
     static Bound capture(Context context,String taskId,String expected,LocalRuntimeConfig runtime){
-        Bound bound=new Bound(context,taskId,expected);
+        return capture(context,taskId,expected,runtime,null);
+    }
+    static Bound capture(Context context,String taskId,String expected,LocalRuntimeConfig runtime,FilesRoot capturedRoot){
+        final FilesRoot root;
+        try{QualificationScope.expected(expected);root=capturedRoot==null?new FilesRoot(context):capturedRoot;root.unchanged(context);}
+        catch(Exception error){Bound refused=new Bound(context,taskId,expected,null);refused.refuse(error.getMessage()==null?error.getClass().getSimpleName():error.getMessage());return refused;}
+        Bound bound=new Bound(context,taskId,expected,root);
         try{
-            bound.requireReady();
-            QualificationScope.expected(expected);
             if(!MobiMindPrivateFiles.exists(bound.scopePath)){
                 QualificationScope.require(expected==null,"expected scope file missing");return bound;
             }
@@ -89,7 +126,7 @@ final class QualificationScopeConfig {
             JSONObject asset=new JSONObject(new String(bound.buildBytes,StandardCharsets.UTF_8));
             QualificationScope.require("hepta.actual-build-inputs.v1".equals(asset.getString("schema"))
                     &&asset.getLong("version_code")==bound.config.heptaVersionCode&&asset.getJSONArray("source_inputs").length()>0,"build identity contract mismatch");
-            bound.runtimeFile=MobiMindPrivateFiles.read(new File(bound.scopePath.getParentFile(),"model/runtime-config.json"),4096,true);
+            bound.runtimeFile=MobiMindPrivateFiles.read(new File(root.path,"model/runtime-config.json"),4096,true);
             bound.runtimeConfigSha256=QualificationScope.hash(bound.runtimeFile.bytes);
             QualificationScope.require(bound.config.runtimeConfigSha256.equals(bound.runtimeConfigSha256),"runtime configuration hash mismatch");
             JSONObject runtimeJson=new JSONObject(new String(bound.runtimeFile.bytes,StandardCharsets.UTF_8));
@@ -107,6 +144,27 @@ final class QualificationScopeConfig {
         }catch(Exception error){bound.refuse(error.getMessage()==null?error.getClass().getSimpleName():error.getMessage());}
         return bound;
     }
+    /** Bounded app-process metadata only. Canonical diagnostic paths are never opened. */
+    private static JSONObject pathDiagnostics(Context context,FilesRoot root){
+        JSONObject out=new JSONObject();
+        try{
+            out.put("schema","hepta.private-path-diagnostics.v1").put("metadata_only",true);
+            File supplied=context.getFilesDir();
+            diagnosticPath(out,"framework_files",supplied);
+            diagnosticPath(out,"framework_scope",supplied==null?null:new File(supplied,QualificationScope.FILE_NAME));
+            diagnosticPath(out,"framework_runtime",supplied==null?null:new File(supplied,"model/runtime-config.json"));
+            out.put("captured_files_absolute",root==null?JSONObject.NULL:boundedPath(root.path.getAbsolutePath()));
+        }catch(Exception error){
+            try{out.put("diagnostic_error",error.getClass().getSimpleName());}catch(Exception ignored){}
+        }
+        return out;
+    }
+    private static void diagnosticPath(JSONObject out,String name,File path)throws Exception{
+        out.put(name+"_absolute",path==null?JSONObject.NULL:boundedPath(path.getAbsolutePath()));
+        try{out.put(name+"_canonical",path==null?JSONObject.NULL:boundedPath(path.getCanonicalPath()));}
+        catch(Exception error){out.put(name+"_canonical",JSONObject.NULL).put(name+"_canonical_error",error.getClass().getSimpleName());}
+    }
+    private static String boundedPath(String path){return path.length()<=4096?path:path.substring(0,4096);}
     static Object nullable(Object value){return value==null?JSONObject.NULL:value;}
     static String home(Context context)throws Exception{
         Intent intent=new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME);
@@ -140,13 +198,15 @@ final class QualificationScopeConfig {
             ApplicationInfo app=info.applicationInfo;QualificationScope.require(app!=null&&app.enabled&&info.packageName.equals(app.packageName)&&app.sourceDir!=null,"installed package missing or disabled");
             Map<String,String> paths=new TreeMap<String,String>();paths.put("base",app.sourceDir);
             String[] names=info.splitNames,files=app.splitSourceDirs;
-            // Android may represent no splits as null or an empty array in either field.
             int nameCount=names==null?0:names.length,fileCount=files==null?0:files.length;
-            QualificationScope.require(nameCount==fileCount,"APK splits unknown: "+info.packageName
-                    +" splitNames="+(names==null?"null":Integer.toString(nameCount))
-                    +" splitSourceDirs="+(files==null?"null":Integer.toString(fileCount)));
+            String shape="package="+info.packageName+", splitNames="+(names==null?"null":Integer.toString(names.length))
+                    +", splitSourceDirs="+(files==null?"null":Integer.toString(files.length));
+            // PackageManager can represent an empty split set with null or an empty array.
+            // Nonempty metadata still requires exact name/path pairing and the full APK-set hash.
+            QualificationScope.require(nameCount==fileCount,"APK splits unknown: "+shape);
             for(int i=0;i<nameCount;i++){
-                QualificationScope.require(names[i]!=null&&names[i].matches("[a-zA-Z0-9_.-]+")&&files[i]!=null&&!paths.containsKey("split:"+names[i]),"APK split name invalid");paths.put("split:"+names[i],files[i]);}
+                QualificationScope.require(names[i]!=null&&names[i].matches("[a-zA-Z0-9_.-]+")&&files[i]!=null&&!files[i].isEmpty()
+                        &&!paths.containsKey("split:"+names[i]),"APK split name invalid: "+shape+", index="+i);paths.put("split:"+names[i],files[i]);}
             return paths;
         }
     }
@@ -168,3 +228,4 @@ final class QualificationScopeConfig {
                 &&a.st_mode==b.st_mode&&a.st_nlink==b.st_nlink&&a.st_mtime==b.st_mtime&&a.st_ctime==b.st_ctime;}
     }
 }
+

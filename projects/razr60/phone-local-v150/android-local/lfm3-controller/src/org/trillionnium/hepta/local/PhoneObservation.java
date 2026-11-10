@@ -63,12 +63,22 @@ public final class PhoneObservation {
     public final boolean nodesTruncated;
     public final File screenshot;
     public final List<Node> nodes;
+    public final String backgroundGeneration,backgroundBootstrapPackage;
+    public final List<String> backgroundAllowedPackages;
     public final ObservationState state;
     public final ObservedWindowMetadata windowMetadata;
     final Rect windowBounds;
     PhoneObservation(String id,String packageName,long at,int width,int height,int rotation,int windowId,
                      Rect bounds,File screenshot,String screenshotSha256,String treeSha256,
                      ObservationState state,ObservedWindowMetadata windowMetadata,boolean truncated,List<Node> nodes) {
+        this(id,packageName,at,width,height,rotation,windowId,bounds,screenshot,screenshotSha256,treeSha256,state,windowMetadata,truncated,nodes,null,null,Collections.<String>emptyList());
+    }
+    PhoneObservation(String id,String packageName,long at,int width,int height,int rotation,int windowId,
+                     Rect bounds,File screenshot,String screenshotSha256,String treeSha256,
+                     ObservationState state,ObservedWindowMetadata windowMetadata,boolean truncated,List<Node> nodes,
+                     String backgroundGeneration,String backgroundBootstrapPackage,List<String> backgroundAllowedPackages) {
+        this.backgroundGeneration=backgroundGeneration;this.backgroundBootstrapPackage=backgroundBootstrapPackage;
+        this.backgroundAllowedPackages=Collections.unmodifiableList(new ArrayList<String>(backgroundAllowedPackages));
         this.id=id;this.packageName=packageName;this.capturedElapsedMillis=at;
         this.width=width;this.height=height;this.rotation=rotation;this.windowId=windowId;
         this.windowBounds=new Rect(bounds);this.screenshot=screenshot;this.screenshotSha256=screenshotSha256;
@@ -104,12 +114,21 @@ public final class PhoneObservation {
         if(value.promptRootClassTruncated())result.put("root_class_truncated",true);
         return result;
     }
+    JSONObject backgroundJson() throws JSONException {
+        if(backgroundGeneration==null)return null;
+        return new JSONObject().put("mode","background").put("generation",backgroundGeneration)
+                .put("display_id",windowMetadata.displayId==null?JSONObject.NULL:windowMetadata.displayId)
+                .put("allowed_packages",new JSONArray(backgroundAllowedPackages))
+                .put("bootstrap_package",backgroundBootstrapPackage).put("bootstrap_source","owner_selected_initial_app")
+                .put("bootstrap_model_issued",false).put("home_allowed",false).put("main_display_fallback",false);
+    }
     /** Node content is untrusted screen data, never a replacement instruction. */
     public JSONObject toJson() throws JSONException {
         JSONObject value=new JSONObject();value.put("observation_id",id);value.put("package",packageName);
         value.put("screen_width",width);value.put("screen_height",height);value.put("rotation",rotation);
         value.put("window_id",windowId);value.put("screen_sha256",screenshotSha256);
         value.put("window",windowJson());
+        if(backgroundGeneration!=null)value.put("background_session",backgroundJson());
         value.put("app_tree_sha256",state.appTreeSha256);value.put("observation_state_sha256",treeSha256);
         value.put("ime_visible",state.imeVisibility.value()==null?JSONObject.NULL:state.imeVisibility.value());
         value.put("scroll_actions_schema",ObservedScrollActions.SCHEMA);

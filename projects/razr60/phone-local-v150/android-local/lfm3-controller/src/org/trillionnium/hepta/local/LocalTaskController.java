@@ -84,10 +84,20 @@ public final class LocalTaskController implements AutoCloseable {
         return start(instruction,expectedScopeSha256,TaskAuthorization.parse(instruction),callback);
     }
     public synchronized boolean start(final String instruction,final String expectedScopeSha256,final TaskAuthorization ownerAuthorization,final Listener callback){
+        return start(instruction,expectedScopeSha256,ownerAuthorization,null,callback);
+    }
+    public synchronized boolean start(final String instruction,final String expectedScopeSha256,final TaskAuthorization ownerAuthorization,
+                                      final BackgroundSession.Selection backgroundSelection,final Listener callback){
         TaskAuthorization.require(ownerAuthorization!=null,"任务授权合同缺失");ownerAuthorization.requireOwner(instruction);
         QualificationScope.expected(expectedScopeSha256);
         if(callback==null)throw new IllegalArgumentException("listener required");
         if(closed||running||blocked)return false;
+        if(BackgroundSession.hasUnreleased(service))throw new IllegalStateException("上一次后台空间尚未确认释放，请先清理后台空间");
+        if(backgroundSelection!=null){
+            if(expectedScopeSha256!=null)throw new IllegalStateException("qualification scope 任务不能切换到后台屏幕");
+            if(ownerAuthorization.requireFindAppBeforeOpen||!ownerAuthorization.allowedTools.contains("open"))
+                throw new IllegalArgumentException("当前方法限制不允许预先打开所选后台起始应用，请使用前台模式");
+        }
         if(instruction==null||instruction.trim().isEmpty())throw new IllegalArgumentException("请先输入要完成的手机任务");
         if(instruction.indexOf('\0')>=0||instruction.contains("<__image__>")||instruction.contains("<|")||instruction.getBytes(StandardCharsets.UTF_8).length>1600)
             throw new IllegalArgumentException("指令太长或包含不支持的字符，请拆分任务");
@@ -102,7 +112,7 @@ public final class LocalTaskController implements AutoCloseable {
         try{authorization=service.bindTaskAuthorization(id,ownerAuthorization);}
         catch(RuntimeException error){service.releaseTask(id);throw error;}
         listener=callback;currentTaskId=id;currentActualScopeSha256=null;lastResult=null;cancelled.set(false);running=true;
-        try{worker.execute(new Runnable(){public void run(){runTask(id,instruction,expectedScopeSha256,authorization);}});}
+        try{worker.execute(new Runnable(){public void run(){runTask(id,instruction,expectedScopeSha256,authorization,backgroundSelection);}});}
         catch(RuntimeException error){running=false;service.releaseTask(id);throw error;}
         return true;
     }
@@ -122,8 +132,9 @@ public final class LocalTaskController implements AutoCloseable {
         }});
     }
 
-    private void runTask(String taskId,String instruction,String expectedScopeSha256,TaskAuthorization.Gate authorization){
+    private void runTask(String taskId,String instruction,String expectedScopeSha256,TaskAuthorization.Gate authorization,BackgroundSession.Selection backgroundSelection){
         QualificationScopeConfig.Bound scope=null;
+        BackgroundSession background=null;BackgroundSession.Cleanup backgroundCleanup=null;
         File evidence=null;PhoneObservation observation=null;int steps=0,repairs=0,staleRounds=0;
         String finalStatus="failed",summary="任务未完成";boolean modelSuccess=false,cleanup=true;
         long deadline=SystemClock.elapsedRealtime()+MAX_TASK_MS;
@@ -131,18 +142,20 @@ public final class LocalTaskController implements AutoCloseable {
         SameStateNoEffectGuard noEffectGuard=new SameStateNoEffectGuard();
         ObservedTransitionProjection.Transition lastTransition=null;
         try{
-            File root=new File(service.getFilesDir().getCanonicalFile(),"control-tasks");privateDirectory(root);
-            evidence=new File(root,taskId);if(!evidence.mkdir())throw new IllegalStateException("无法创建独立任务目录");privateDirectory(evidence);
+            QualificationScopeConfig.FilesRoot filesRoot=new QualificationScopeConfig.FilesRoot(service);
+            File root=MobiMindPrivateFiles.directory(new File(filesRoot.path,"control-tasks"),false);
+            evidence=MobiMindPrivateFiles.directory(new File(root,taskId),true);filesRoot.unchanged(service);
             JSONObject owner=new JSONObject().put("schema","hepta.local-owner.v1").put("task_id",taskId)
                     .put("instruction",instruction).put("instruction_utf8_sha256",HeptaAccessibilityService.sha(instruction.getBytes(StandardCharsets.UTF_8)))
                     .put("task_authorization_sha256",authorization.authorization.sha256).put("task_authorization",new JSONObject(authorization.authorization.evidence()))
                     .put("external_model",false).put("automatic_resume",false)
                     .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha256))
                     .put("actual_scope_sha256",JSONObject.NULL).put("qualification_scope",JSONObject.NULL);
+            if(backgroundSelection!=null)owner.put("background_request",backgroundSelection.json());
             final LocalRuntimeConfig config;
             try{config=inference.configuration();}
             catch(Exception invalidRuntime){record(evidence,"owner.json",owner);throw invalidRuntime;}
-            scope=QualificationScopeConfig.capture(service,taskId,expectedScopeSha256,config);
+            scope=QualificationScopeConfig.capture(service,taskId,expectedScopeSha256,config,filesRoot);
             currentActualScopeSha256=scope.actualSha256;
             service.bindQualificationScope(taskId,scope);
             owner.put("actual_scope_sha256",QualificationScopeConfig.nullable(scope.actualSha256)).put("qualification_scope",scope.evidence());
@@ -151,6 +164,17 @@ public final class LocalTaskController implements AutoCloseable {
             if(scope.buildBytes!=null)MobiMindPrivateFiles.writeNew(new File(evidence,"build-identity.json"),scope.buildBytes);
             if(scope.runtimeFile!=null)MobiMindPrivateFiles.writeNew(new File(evidence,"scope-runtime-config.json"),scope.runtimeFile.bytes);
             record(evidence,"scope-binding.json",scope.evidence());scope.requireReady();
+            if(backgroundSelection!=null){
+                QualificationScope.require(!scope.restricted(),"qualification scope 已启用，后台任务拒绝；原测试范围保持不变");
+                checkActive(deadline);
+                background=new BackgroundSession(service,taskId,instruction,backgroundSelection,filesRoot);
+                service.bindBackgroundSession(taskId,background);
+                record(evidence,"background-binding.json",background.evidence());
+                emit("正在建立手机后台空间，并打开你选择的起始应用…");
+                try{background.start(new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}});}
+                finally{record(evidence,"background-bootstrap.json",background.evidence());}
+                checkActive(deadline);
+            }
             AppCatalogueRanker.Page apps=service.appCatalogue(taskId,instruction);
             record(evidence,"initial-app-catalogue.json",catalogueJson(apps).put("model_issued",false).put("read_only",true));
             inference.beginTask(taskId);
@@ -210,7 +234,8 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("model_run_id",decisionRunId).put("model_issued",true)
                         .put("qualification_scope",outcome.qualificationScope==null?JSONObject.NULL:outcome.qualificationScope)
                         .put("task_authorization_sha256",authorization.authorization.sha256)
-                        .put("task_authorization",outcome.taskAuthorization==null?JSONObject.NULL:outcome.taskAuthorization);
+                        .put("task_authorization",outcome.taskAuthorization==null?JSONObject.NULL:outcome.taskAuthorization)
+                        .put("background_session",outcome.backgroundSession==null?JSONObject.NULL:outcome.backgroundSession);
                 if(ActionPolicy.isReadOnlyDiscovery(action))actionReceipt.put("read_only",true).put("effect","launcher_catalogue_read");
                 record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-action.json",steps),actionReceipt);
                 TaskAuthorization.require(outcome.taskAuthorization!=null,"动作回执缺少任务授权");
@@ -271,6 +296,12 @@ public final class LocalTaskController implements AutoCloseable {
         catch(Exception error){finalStatus=cancelled.get()?"cancelled":"failed";summary=HeptaAccessibilityService.message(error);}
         finally{
             synchronized(handleLock){activeInference=null;}
+            // Release the display before waiting for model teardown; neither part can prove the other.
+            if(background!=null){
+                backgroundCleanup=background.close();
+                if(evidence!=null)try{record(evidence,"background-cleanup.json",backgroundCleanup.evidence);}catch(Exception ignored){}
+                if(!backgroundCleanup.known){cleanup=false;blocked=true;finalStatus="blocked";modelSuccess=false;summary="后台屏幕释放尚未确认，已停止接受新任务";}
+            }
             LocalInference.TaskCleanup modelCleanup;
             try{modelCleanup=inference.endTask();}
             catch(Exception closeError){modelCleanup=new LocalInference.TaskCleanup(false,true,false,null,null,taskId,false,null);}
@@ -290,6 +321,9 @@ public final class LocalTaskController implements AutoCloseable {
                     &&("model_reported_done".equals(finalStatus)||"partial".equals(finalStatus))){
                 finalStatus="failed";modelSuccess=false;summary="任务模型清理已完成，但运行回执未通过验证，请核对已经发生的操作";
             }
+            // An unresolved action/display cleanup remains an admission block even if a later
+            // scope/authorization check fails. Keep that later reason without weakening status.
+            if(!cleanup){blocked=true;finalStatus="blocked";modelSuccess=false;}
             if(evidence!=null){try{record(evidence,"result.json",new JSONObject().put("task_id",taskId).put("status",finalStatus)
                     .put("summary",summary).put("steps",steps).put("model_reported_success",modelSuccess)
                     .put("final_observation_id",observation==null?JSONObject.NULL:observation.id).put("cleanup_known",cleanup)
@@ -297,6 +331,8 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("actual_scope_sha256",scope==null?JSONObject.NULL:QualificationScopeConfig.nullable(scope.actualSha256))
                     .put("qualification_scope",scope==null?JSONObject.NULL:scope.evidence())
                     .put("task_authorization_sha256",authorization.authorization.sha256).put("task_authorization",new JSONObject(authorization.evidence()))
+                    .put("background_session",background==null?JSONObject.NULL:background.evidence())
+                    .put("background_cleanup",backgroundCleanup==null?JSONObject.NULL:backgroundCleanup.evidence)
                     .put("model_session",new JSONObject().put("worker_generation",modelCleanup.generation==null?JSONObject.NULL:modelCleanup.generation)
                             .put("task_id",modelCleanup.taskId==null?JSONObject.NULL:modelCleanup.taskId)
                             .put("process_started",modelCleanup.processStarted).put("process_exit_observed",modelCleanup.processExitObserved)
@@ -340,7 +376,7 @@ public final class LocalTaskController implements AutoCloseable {
         ModelAnswer answer=result.get();if(answer==null||answer.text==null)throw new IllegalStateException("本地模型没有返回结果");return answer;
     }
     private PhoneObservation awaitObservation(String id,File directory,TaskAuthorization.Gate authorization,long deadline)throws Exception{
-        checkActive(deadline);
+        checkActive(deadline);service.verifyBackgroundRemote(id);checkActive(deadline);
         final long observationDeadline=Math.min(deadline,SystemClock.elapsedRealtime()+10000);
         final CountDownLatch ready=new CountDownLatch(1);
         final AtomicReference<PhoneObservation> value=new AtomicReference<PhoneObservation>();
@@ -360,9 +396,10 @@ public final class LocalTaskController implements AutoCloseable {
             if(SystemClock.elapsedRealtime()>=observationDeadline)throw new IllegalStateException("系统屏幕观察超时");
             if(error.get()!=null)throw new IllegalStateException(error.get());
             PhoneObservation result=value.get();if(result==null)throw new IllegalStateException("没有取得屏幕观察");
-            try{service.requireTaskAuthorization(id,authorization);service.requireScopeObservation(id,result);service.requireAuthorizationObservation(id,authorization,result);}
+            try{service.requireTaskAuthorization(id,authorization);service.requireScopeObservation(id,result);service.requireBackgroundObservation(id,result);service.requireAuthorizationObservation(id,authorization,result);}
             finally{record(directory,"scope-observation-"+result.id+".json",new JSONObject().put("observation",result.toJson())
-                    .put("qualification_scope",service.qualificationScopeEvidence(id)).put("task_authorization",new JSONObject(authorization.evidence())));}
+                    .put("qualification_scope",service.qualificationScopeEvidence(id)).put("task_authorization",new JSONObject(authorization.evidence()))
+                    .put("background_session",service.backgroundEvidence(id)==null?JSONObject.NULL:service.backgroundEvidence(id)));}
             return result;
         }finally{abandoned.set(true);}
     }
@@ -525,6 +562,7 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("open_allowed_packages",new JSONArray(new java.util.TreeSet<String>(packages)))
                     .put("apps_omitted",catalogue.matchingApps-appCount).put("app_search",appSearch);
             data.put("task_authorization",new JSONObject(authorization.evidence()));
+            if(observation.backgroundGeneration!=null)data.put("background_session",observation.backgroundJson());
             if(blockedOpen!=null&&!noEffects.blockedOpenPackages.contains(blockedOpen))data.put("blocked_action",new JSONObject().put("action","open").put("package",blockedOpen)
                     .put("reason_code","repeat_action_unchanged_screen")
                     .put("reason","同一画面上该动作已无可确认变化，本轮已排除；请根据当前观察选择其它动作"));
@@ -554,7 +592,9 @@ public final class LocalTaskController implements AutoCloseable {
                 java.util.Map<String,String> allowedAppLabels=new java.util.TreeMap<String,String>();
                 for(String packageName:packages)allowedAppLabels.put(packageName,shownAppLabels.get(packageName));
                 ObservedAppLabels appLabels=ObservedAppLabels.create(ObservedAppLabels.SCHEMA,observation.id,observation.packageName,allowedAppLabels);
-                DecisionGrammar grammar=DecisionGrammar.createAuthorized(observation.id,observation.packageName,packages,clicks,edits,scrolls,targets,appLabels,authorization);
+                DecisionGrammar grammar=observation.backgroundGeneration==null
+                        ?DecisionGrammar.createAuthorized(observation.id,observation.packageName,packages,clicks,edits,scrolls,targets,appLabels,authorization)
+                        :DecisionGrammar.createBackgroundAuthorized(observation.id,observation.packageName,packages,clicks,edits,scrolls,targets,appLabels,authorization);
                 return new PromptFrame(text,ids,packages,budget,grammar,nodeCount,observation.nodes.size(),appCount,history.length(),catalogue,
                         editableFields.size(),editableFieldsObserved,visibleText.size(),visibleTextObserved,events,historyBytes,appSearch,requiredIds.size());
             }
@@ -568,7 +608,7 @@ public final class LocalTaskController implements AutoCloseable {
     /** One JSON object with readable top-level boundaries; the current screen is last. */
     private static String promptSections(JSONObject data)throws Exception{
         StringBuilder out=new StringBuilder("{\n");int included=0;
-        for(String key:new String[]{"action_schema","task_authorization","apps","open_allowed_packages","apps_omitted","app_search",
+        for(String key:new String[]{"action_schema","task_authorization","background_session","apps","open_allowed_packages","apps_omitted","app_search",
                 "blocked_action","blocked","format_correction","events","last_transition","screen"}){
             if(!data.has(key))continue;
             if(included++>0)out.append(",\n");
