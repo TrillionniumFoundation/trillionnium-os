@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.native-timing-host-checks.v1",
+  "phone_tested": false,
+  "android_compiled": false,
+  "all_pass": true,
+  "json_receipts_parsed": 3,
+  "generated_runtime_equal_after_removing_timing_only": true,
+  "code4_adapter_sha256": "6c5d2964e49c0e84ca5de190a3e10d5a47110caabe5fe834a295a808a566d06e",
+  "code5_adapter_sha256": "c4fc668620756411edf0862aca67edd0c67e8afde6461d17d671169ad26bfbcb",
+  "changed_files": [
+    {
+      "path": "native/generate_adapter.py",
+      "sha256": "2a8a10086ed8015eae2dcf7293f53da0cfe410b1f3df4159d2152335164c0768"
+    },
+    {
+      "path": "native/phase-timing.h",
+      "sha256": "b338f8a2026b641a5ae2928826d1639c13e37b712df089751ef3fa4f377c111f"
+    },
+    {
+      "path": "native/tests/phase_timing_contract.c",
+      "sha256": "479c5e6e23d6bf86515a39046e07c62bc0cc33a5ffbbe3703f5e92cc91db5527"
+    }
+  ]
+}

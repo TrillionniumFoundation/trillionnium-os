@@ -1,0 +1,188 @@
+--- a/src/org/trillionnium/hepta/local/LocalModelEngine.java
++++ b/src/org/trillionnium/hepta/local/LocalModelEngine.java
+@@ -77,7 +77,9 @@
+     }
+ 
+     public static final class RunHandle {
+-        public final String runId = UUID.randomUUID().toString().replace("-", "");
++        public final String runId;
++        private RunHandle(){this(UUID.randomUUID().toString().replace("-", ""));}
++        private RunHandle(String runId){this.runId=runId;}
+         private final AtomicBoolean cancelRequested = new AtomicBoolean(false);
+         private final AtomicReference<Process> child = new AtomicReference<>();
+         public void cancel() {
+@@ -86,6 +88,35 @@
+             if (p != null && p.isAlive()) p.destroy();
+         }
+         public boolean isCancellationRequested() { return cancelRequested.get(); }
++    }
++
++    /** Shares the existing single-model slot and visible Stop with a model-only native worker.
++     * The caller must durably reserve its own diagnostic session before attaching a child,
++     * and may release only after owned exit (or no start) and durable terminal publication.
++     */
++    public final class ExternalRunLease {
++        private final RunHandle handle;private boolean released;
++        private ExternalRunLease(RunHandle handle){this.handle=handle;}
++        public String requestId(){return handle.runId;}
++        public boolean isCancellationRequested(){return handle.isCancellationRequested();}
++        public void cancel(){handle.cancel();}
++        public synchronized void attach(Process process){
++            if(released||process==null||!handle.child.compareAndSet(null,process))throw new IllegalStateException("invalid external child ownership");
++            if(handle.isCancellationRequested()&&process.isAlive())process.destroy();
++        }
++        public synchronized void releaseAfterTerminalPublication(boolean cleanupKnown){
++            if(!cleanupKnown)return;
++            Process process=handle.child.get();if(process!=null&&process.isAlive())throw new IllegalStateException("external child still alive");
++            if(released)return;released=true;handle.child.set(null);
++            active.compareAndSet(handle,null);PROCESS_ACTIVE.compareAndSet(handle,null);
++        }
++    }
++    public ExternalRunLease reserveExternal(String requestId){
++        if(android.os.Looper.myLooper()!=android.os.Looper.getMainLooper())throw new IllegalStateException("external reservation must run on main thread");
++        if(closed.get()||requestId==null||!requestId.matches("[0-9a-f]{32}"))throw new IllegalStateException("invalid external reservation");
++        RunHandle handle=new RunHandle(requestId);
++        if(!PROCESS_ACTIVE.compareAndSet(null,handle))throw new IllegalStateException("another local model owns the process slot");
++        active.set(handle);return new ExternalRunLease(handle);
+     }
+ 
+     public RunHandle start(final Request request, final Listener listener) {
+--- a/src/org/trillionnium/hepta/local/LocalProbeApplication.java
++++ b/src/org/trillionnium/hepta/local/LocalProbeApplication.java
+@@ -6,6 +6,13 @@
+ public final class LocalProbeApplication extends Application {
+     private LocalModelEngine model;
+     private LocalTaskSession tasks;
++    private MobiMindModelEngine visualDiagnostic;
++    @Override public void onCreate() {
++        super.onCreate();
++        // Inspect a previous visual diagnostic before any Activity or service can
++        // reserve the shared local-model process slot. Never replay an old request.
++        mobiMindDiagnostic();
++    }
+     public synchronized LocalModelEngine modelEngine() {
+         if (model == null) model = new LocalModelEngine(this);
+         return model;
+@@ -14,7 +21,12 @@
+         if (tasks == null) tasks = new LocalTaskSession(this, modelEngine());
+         return tasks;
+     }
++    public synchronized MobiMindModelEngine mobiMindDiagnostic() {
++        if (visualDiagnostic == null) visualDiagnostic = new MobiMindModelEngine(this, modelEngine());
++        return visualDiagnostic;
++    }
+     @Override public void onTerminate() {
++        if (visualDiagnostic != null) visualDiagnostic.close();
+         if (model != null) model.close();
+         super.onTerminate();
+     }
+--- a/src/org/trillionnium/hepta/local/MainActivity.java
++++ b/src/org/trillionnium/hepta/local/MainActivity.java
+@@ -19,16 +19,19 @@
+ public final class MainActivity extends Activity implements LocalTaskSession.Listener {
+     private LocalModelEngine engine;
+     private LocalTaskSession tasks;
++    private MobiMindModelEngine visualDiagnostic;
+     private EditText taskInput, probePrompt;
+     private TextView modelInfo, taskState, taskLog, taskResult, probeOutput;
++    private TextView visualProbeOutput;
+     private LinearLayout diagnostics;
+     private Button startTask, stopTask, runText;
+     private String lastShownProbeId;
++    private String lastShownVisualProbeId;
+ 
+     @Override public void onCreate(Bundle state) {
+         super.onCreate(state);
+         LocalProbeApplication app=(LocalProbeApplication)getApplication();
+-        engine=app.modelEngine();tasks=app.taskSession();
++        engine=app.modelEngine();tasks=app.taskSession();visualDiagnostic=app.mobiMindDiagnostic();
+         ScrollView outer=new ScrollView(this);outer.setFillViewport(true);
+         LinearLayout page=new LinearLayout(this);page.setOrientation(LinearLayout.VERTICAL);
+         int pad=dp(16);page.setPadding(pad,pad,pad,pad);outer.addView(page);
+@@ -60,6 +63,9 @@
+         runText.setOnClickListener(v -> runProbe(false,128));
+         probeOutput=text("",11);probeOutput.setTypeface(Typeface.MONOSPACE);probeOutput.setTextIsSelectable(true);
+         probeOutput.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);diagnostics.addView(probeOutput);
++        diagnostics.addView(text("私有截图诊断只生成本地视觉模型输出，不会操作手机。",12));
++        visualProbeOutput=text("",11);visualProbeOutput.setTypeface(Typeface.MONOSPACE);visualProbeOutput.setTextIsSelectable(true);
++        visualProbeOutput.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);diagnostics.addView(visualProbeOutput);
+         setContentView(outer);tasks.bind(this);refresh();handleIntent(getIntent());
+     }
+     private int dp(int value){return Math.round(value*getResources().getDisplayMetrics().density);}
+@@ -69,6 +75,16 @@
+     @Override protected void onNewIntent(Intent intent){super.onNewIntent(intent);setIntent(intent);handleIntent(intent);}
+     private void handleIntent(Intent intent){
+         if(intent==null)return;
++        if(intent.getBooleanExtra("auto_mobi_probe",false)){
++            final String nonce=intent.getStringExtra("mobi_nonce");
++            // A recreated Activity cannot replay this one-use launch extra.
++            intent.removeExtra("auto_mobi_probe");intent.removeExtra("mobi_nonce");
++            boolean conflict=intent.getBooleanExtra("auto_task",false)||intent.getBooleanExtra("auto_run",false);
++            intent.removeExtra("auto_task");intent.removeExtra("auto_run");intent.removeExtra("test_nonce");
++            diagnostics.setVisibility(View.VISIBLE);
++            runVisualProbe(nonce,conflict);
++            return;
++        }
+         String suppliedTask=intent.getStringExtra("task");
+         if(suppliedTask!=null&&!tasks.isRunning())taskInput.setText(suppliedTask);
+         if(intent.getBooleanExtra("auto_task",false)){
+@@ -129,6 +145,32 @@
+         String raw=result.rawText.length()>16000?result.rawText.substring(0,16000)+"\n（此处显示前 16000 字符，完整输出保存在凭据目录）":result.rawText;
+         probeOutput.setText("状态："+result.status+"\n真实进程退出："+result.processExitObserved+" / "+result.exitCode
+             +"\n推理完整完成："+result.inferenceCompleted+"\n\n"+raw+"\n\n凭据："+result.runDirectory+"\n"+receipt);
++    }
++    private void runVisualProbe(String nonce,boolean conflict){
++        boolean consumed=false;String requestId=null;
++        try{
++            if(conflict)throw new IllegalStateException("视觉诊断不能与其它启动请求合并");
++            if(tasks.isRunning()||tasks.isBlocked()||engine.isBusy()||visualDiagnostic.isBlocked())
++                throw new IllegalStateException("已有本地请求或退出状态待确认");
++            PrivateMobiProbe request=PrivateMobiProbe.consume(this,nonce);consumed=true;requestId=request.id;
++            visualProbeOutput.setText("正在执行私有截图的手机本地 GPU 推理；输出不会用于操作手机……");
++            visualDiagnostic.start(request,tasks,result -> {renderVisualProbe(result);refresh();});
++            recordVisualTrigger(nonce,requestId,true,consumed,null);
++            refresh();
++        }catch(Exception error){
++            visualProbeOutput.setText("未启动视觉诊断："+HeptaAccessibilityService.message(error));
++            recordVisualTrigger(nonce,requestId,false,consumed,HeptaAccessibilityService.message(error));
++            refresh();
++        }
++    }
++    private void renderVisualProbe(MobiMindModelEngine.Result result){
++        lastShownVisualProbeId=result.runId;String receipt;
++        try{receipt=result.receipt.toString(2);}catch(Exception error){receipt=result.receipt.toString();}
++        String raw=result.rawText.length()>16000?result.rawText.substring(0,16000)+"\n（完整原始输出保存在凭据目录）":result.rawText;
++        visualProbeOutput.setText("仅模型推理，未执行手机操作\n状态："+result.status
++            +"\n真实进程退出："+result.processExitObserved+" / "+result.exitCode
++            +"\n推理完整完成："+result.inferenceCompleted+"\n退出与回执已确认："+result.cleanupKnown
++            +"\n\n"+raw+"\n\n凭据："+result.runDirectory+"\n"+receipt);
+     }
+     @Override public void onSessionChanged(){refresh();}
+     private void refresh(){
+@@ -151,6 +193,26 @@
+         else taskResult.setText("");
+         LocalModelEngine.Result probe=engine.lastResult();
+         if(probe!=null&&!engine.isBusy()&&!probe.runId.equals(lastShownProbeId))renderProbe(probe);
++        MobiMindModelEngine.Result visual=visualDiagnostic.lastResult();
++        if(visual!=null&&!visual.runId.equals(lastShownVisualProbeId))renderVisualProbe(visual);
++        if(visualDiagnostic.isBlocked()){
++            startTask.setEnabled(false);runText.setEnabled(false);
++            if(visual==null)visualProbeOutput.setText(visualDiagnostic.recoveryMessage());
++        }
++    }
++    private void recordVisualTrigger(String nonce,String requestId,boolean accepted,boolean consumed,String error){
++        AtomicFile file=new AtomicFile(new File(getFilesDir(),"mobi-probe-trigger-result.json"));FileOutputStream out=null;
++        try{
++            JSONObject value=new JSONObject().put("schema","hepta.private-mobimind-trigger.v1").put("accepted",accepted)
++                .put("request_id",requestId==null?JSONObject.NULL:requestId)
++                .put("nonce_sha256",nonce==null?JSONObject.NULL:MobiMindContract.sha(nonce.getBytes(StandardCharsets.UTF_8)))
++                .put("error",error==null?JSONObject.NULL:error).put("app_uid",android.os.Process.myUid())
++                .put("app_pid",android.os.Process.myPid()).put("at_wall_ms",System.currentTimeMillis())
++                .put("private_request_consumed",consumed?Boolean.TRUE:JSONObject.NULL)
++                .put("consume_completed",consumed).put("actions_executed",false).put("automatic_resume",false);
++            out=file.startWrite();out.write(value.toString(2).getBytes(StandardCharsets.UTF_8));out.getFD().sync();file.finishWrite(out);out=null;
++            android.system.Os.chmod(file.getBaseFile().getPath(),0600);
++        }catch(Exception ignored){if(out!=null)file.failWrite(out);}
+     }
+     private void recordDebugTrigger(String nonceSha,boolean accepted,boolean consumed,String error){
+         AtomicFile file=new AtomicFile(new File(getFilesDir(),"debug-trigger-result.json"));FileOutputStream out=null;

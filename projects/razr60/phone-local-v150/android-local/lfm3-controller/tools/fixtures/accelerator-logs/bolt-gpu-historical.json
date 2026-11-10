@@ -1,0 +1,32 @@
+{
+  "source_log_sha256": "0ce767295d96a82e02e4665ddfd9909db15af27b0662c0edd9099f6df1684c82",
+  "source_log_bytes": 39218,
+  "selected_lines": [
+    {
+      "line_number": 128,
+      "text": "\u001b[32m[ INFO] [plugins/llama_cpp/src/params.cpp:405:resolve_devices] Using 1 device(s): GPUOpenCL\u001b[0m"
+    },
+    {
+      "line_number": 265,
+      "text": "\u001b[34m[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] load_tensors: offloaded 43/43 layers to GPU\u001b[0m"
+    },
+    {
+      "line_number": 266,
+      "text": "\u001b[34m[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] load_tensors:          CPU model buffer size =  3536.00 MiB\u001b[0m"
+    },
+    {
+      "line_number": 267,
+      "text": "\u001b[34m[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] load_tensors:       OpenCL model buffer size =  3023.23 MiB\u001b[0m"
+    }
+  ],
+  "native_expected_fields": {
+    "model_profile": "nemotron-3.5-bolt-e4b-q4_k_m",
+    "compute_requested": "gpu",
+    "device_resolved": "GPUOpenCL",
+    "n_gpu_layers_create": -1
+  },
+  "historical_fixture_only": true,
+  "source_version_code": 16,
+  "source_kind": "historical ordinary-app Bolt GPU stderr",
+  "extraction": "Only the four selected native device/layer/model-buffer lines are retained, unchanged. All other source-log lines and all private locators are omitted. This fixture does not qualify Code25."
+}

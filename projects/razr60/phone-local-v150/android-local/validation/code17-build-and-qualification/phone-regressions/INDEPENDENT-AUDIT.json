@@ -1,0 +1,146 @@
+{
+  "schema": "hepta.code17-independent-statistics-audit.v1",
+  "scope": "host_only_readonly_review",
+  "source_version_code": 17,
+  "phone_contacted": false,
+  "original_source_or_run_modified": false,
+  "verifications": {
+    "collector_sources_reviewed": true,
+    "completed_and_offload_denominators_checked": true,
+    "count_recalculation_from_retained_statistics_equal": true,
+    "original_monitor_jsonl_recalculated": true,
+    "current_hal_only_temperature_min_median_max_equal": true,
+    "suite_window_sample_counts_equal": true,
+    "original_memavailable_min_and_same_uid_rss_max_equal": true,
+    "monitor_brackets_and_sample_hashes_equal": true,
+    "all_four_initial_observations_retain_a_stable_launcher_window": true,
+    "all_dispatched_model_output_receipt_bindings_in_reviewed_statistics_verified": true,
+    "original_core_and_sequence_recomputed_by_pinned_collector": true,
+    "full_core_evaluator_rerun_by_this_audit": false
+  },
+  "statistics": {
+    "gemma_npu4096": {
+      "case_counts": {
+        "fail": 2,
+        "pass": 2
+      },
+      "native_calls": 40,
+      "completed_native_and_app": 39,
+      "positive_accelerator_offload_runs": 40,
+      "offloaded_layers_observed": [
+        43
+      ],
+      "suite_samples": 85,
+      "temperature_max_celsius": {
+        "battery": 30,
+        "NSP": 60.3,
+        "CPU": 66.1,
+        "GPU": 58.8,
+        "skin": 41.051
+      },
+      "global_thermal_status_max": 3,
+      "kernel_memavailable_min_kib": 2031232,
+      "sum_same_uid_rss_max_kib": 3239000
+    },
+    "lfm3_npu8192": {
+      "case_counts": {
+        "fail": 4
+      },
+      "native_calls": 11,
+      "completed_native_and_app": 11,
+      "positive_accelerator_offload_runs": 11,
+      "offloaded_layers_observed": [
+        25
+      ],
+      "suite_samples": 12,
+      "temperature_max_celsius": {
+        "battery": 25,
+        "NSP": 52.3,
+        "CPU": 53.4,
+        "GPU": 47.3,
+        "skin": 34.144
+      },
+      "global_thermal_status_max": 0,
+      "kernel_memavailable_min_kib": 6714836,
+      "sum_same_uid_rss_max_kib": 537816
+    }
+  },
+  "lfm3_failure_classification": [
+    {
+      "case_id": "core-calculator-keypad-01",
+      "classification": "wrong_application_selected_after_correct_launch",
+      "evidence": {
+        "current_controls_complete": true,
+        "shown_nodes": 25,
+        "observed_nodes": 25,
+        "required_keypad_controls_in_actual_grammar": true,
+        "history_omitted": 0,
+        "sequence_omitted": 0,
+        "strict_context_upper": 6899,
+        "context_tokens": 8192,
+        "raw_decision_and_dispatched_action_equal": true,
+        "final_permission_dialog_observed": true
+      },
+      "conclusion": "The required current action was available. This failure is not explained by prompt pruning or context overflow."
+    },
+    {
+      "case_id": "core-settings-home-settings-01",
+      "classification": "after_observation_failure_cause_undetermined",
+      "evidence": {
+        "initial_launcher_observation_stable": true,
+        "requested_application_open_dispatched": true,
+        "post_action_stable_observation_missing": true,
+        "independent_final_ui_in_requested_application": true,
+        "independent_final_ui_permission_dialog": false
+      },
+      "conclusion": "The retained evidence does not establish that the preceding permission dialog caused this case to fail. Do not classify the application selection itself as wrong."
+    },
+    {
+      "case_id": "core-cross-app-01",
+      "classification": "wrong_first_application_order_then_wrong_application_selection",
+      "evidence": {
+        "initial_launcher_observation_stable": true,
+        "first_required_visit_skipped_by_model": true,
+        "raw_decisions_and_dispatched_actions_equal": true,
+        "final_permission_dialog_observed": true
+      },
+      "conclusion": "The first ordered-visit error occurred within this case before its later permission dialog."
+    },
+    {
+      "case_id": "core-find-calculator-01",
+      "classification": "input_action_during_navigation_only_task",
+      "evidence": {
+        "initial_launcher_observation_stable": true,
+        "read_only_discovery_and_application_open_completed": true,
+        "stable_before_and_after_input_observations": true,
+        "prohibited_input_dispatched": true,
+        "repeat_guard_stopped_later_repetition": true,
+        "independent_final_ui_permission_dialog": false
+      },
+      "conclusion": "The owner-method violation is supported independently of an earlier case's permission dialog."
+    }
+  ],
+  "evidence_sha256": {
+    "gemma_collector": "ec7717fdb576dba21a07bd374416538807a6a60d5cbd5008da0a5188c9c10714",
+    "lfm3_collector": "0a876ff1607f4b88967ad594e11b9a7ee28a25feb54c121196d9ccad3da92897",
+    "gemma_statistics": "2d2b46fc6a5183d4674c95e30de8f67d3b0591029923efd5784fa07a56461d95",
+    "lfm3_statistics": "32bd1e6697e6e8978d14aa58b693609c5f38209770516ef3cc8fa7182bab4f6f",
+    "gemma_monitor_jsonl": "b9ffcfded527b371627245fa0e7b3e14129195137d61d208702920a8796f979f",
+    "lfm3_monitor_jsonl": "14dbda312563034e6b6d03271fa60d56315b53ce9f17aafab986420ba713ce2a",
+    "lfm3_calculator_step2_prompt": "e2d175ac0f5c2e2a9d1b5f93a4a649d886cb15614ad5d44c15addf86c9f641f6",
+    "lfm3_calculator_step2_grammar": "b2820e412c695550fadf79641bce6757659bb6048bc84fed35595f00f186b271",
+    "lfm3_calculator_step2_budget": "678e90490cbf51fe9ff3b4cf8cb99c2308ecce2d06738b7c6004266b78f5628e",
+    "lfm3_calculator_and_cross_final_ui": "3f0c93ca3cc1829a56a36cd46c3b0aac8891813e499918081cdf8ec0dc58e857",
+    "lfm3_ordered_home_final_ui": "0043bd4f9261b0cf59a9ef7c53ddfbc47422bdf8b4d3c8d30b3bd9dd923ea0ff",
+    "lfm3_find_final_ui": "3a3ee45ac318295e68b6ebefba87711a3c7319bd748fb9d5154153760aee7b38"
+  },
+  "limits": [
+    "The collector counts all model calls for offload and only jointly completed native/App calls for performance; a cancelled call is not a successful task.",
+    "HTP layer offload establishes positive accelerator use, not complete operator coverage, utilization or energy consumption.",
+    "Current HAL samples are discrete and restricted to the suite window. Group medians combine observed sensors and sample times; no throttling, power or continuous peak is inferred.",
+    "Same-UID summed RSS can double count shared pages and is not total NPU memory. Kernel MemAvailable is separate system availability.",
+    "The profiles use different contexts and different resulting workloads. These retained task outcomes are not an identical-prompt model performance ranking.",
+    "A final post-suite phone screenshot is not evidence of an earlier case's initial state.",
+    "No screenshot, UI text, raw model reason, account identifier or network identifier is included in this audit."
+  ]
+}

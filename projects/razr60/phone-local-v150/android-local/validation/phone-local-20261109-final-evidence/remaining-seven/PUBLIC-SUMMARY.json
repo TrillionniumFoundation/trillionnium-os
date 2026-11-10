@@ -1,0 +1,461 @@
+{
+  "schema": "hepta.public-code19-completed-seven-with-qualification-gaps.v1",
+  "scope": {
+    "source_version": 19,
+    "original_full9_positions": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "original_cases_order_assertions_and_21_drivers_unchanged": true,
+    "earlier_interrupted_full9": {
+      "pass": 1,
+      "unknown": 1,
+      "not_run": 7,
+      "recomputed_in_this_audit": false
+    },
+    "later_second_case_supplement": "Separate post-interruption evidence; original unknown is unchanged.",
+    "aggregate_full9_score_produced": false,
+    "ordinary_user_start_stop_restart_qualified_by_this_run": false
+  },
+  "candidate": {
+    "apk_sha256": "e9eb1d119c265e12402975bece2db450bd999436e41e64d62cb64cf315668782",
+    "source_manifest_sha256": "9817f2af3937a402b52176565233c763869495d203080deffd7e279f9f621b69",
+    "model_profile": "gemma4-e4b-qat-q4_0",
+    "model_sha256": "676c35070db6dbe52f93e9c864ee0fba4eddea94b9c875d9cb10daff453fbaee",
+    "model_bytes": 5154941280,
+    "compute": "npu",
+    "context_tokens": 4096,
+    "threads": 4
+  },
+  "result": {
+    "cases": 7,
+    "pass": 3,
+    "fail": 4,
+    "unknown": 0,
+    "not_run": 0,
+    "original_verdicts_preserved": true,
+    "all_seven_assertions_action_sequences_and_raw_native_action_bindings_recomputed_equal": true
+  },
+  "cases": [
+    {
+      "case_id": "core-calculator-keypad-01",
+      "label": "计算器按键运算",
+      "verdict": "fail",
+      "reported_task_steps": 17,
+      "host_elapsed_seconds": 496.38392263800006,
+      "native_calls": 17,
+      "complete_native_and_app_calls": 16,
+      "positive_htp_offload_calls": 16,
+      "action_receipts": 16,
+      "model_bound_action_receipts": 16,
+      "accepted_dispatched_effects": 16,
+      "native_exit_codes": {
+        "0": 16,
+        "143": 1
+      },
+      "model_reported_success": false,
+      "task_cleanup_known": true,
+      "base_cleanup_unknown": false,
+      "goal_specific_checks_all_passed": false,
+      "interpretation": {
+        "classification": "deadline_without_verified_calculator_goal"
+      }
+    },
+    {
+      "case_id": "core-settings-chinese-search-01",
+      "label": "设置中文搜索",
+      "verdict": "pass",
+      "reported_task_steps": 5,
+      "host_elapsed_seconds": 156.65164428399999,
+      "native_calls": 5,
+      "complete_native_and_app_calls": 5,
+      "positive_htp_offload_calls": 5,
+      "action_receipts": 5,
+      "model_bound_action_receipts": 5,
+      "accepted_dispatched_effects": 3,
+      "native_exit_codes": {
+        "0": 5
+      },
+      "model_reported_success": true,
+      "task_cleanup_known": true,
+      "base_cleanup_unknown": false,
+      "goal_specific_checks_all_passed": true,
+      "interpretation": {
+        "classification": "original_assertions_passed"
+      }
+    },
+    {
+      "case_id": "core-search-return-home-01",
+      "label": "搜索后返回设置首页",
+      "verdict": "pass",
+      "reported_task_steps": 5,
+      "host_elapsed_seconds": 157.28604279899992,
+      "native_calls": 5,
+      "complete_native_and_app_calls": 5,
+      "positive_htp_offload_calls": 5,
+      "action_receipts": 5,
+      "model_bound_action_receipts": 5,
+      "accepted_dispatched_effects": 4,
+      "native_exit_codes": {
+        "0": 5
+      },
+      "model_reported_success": true,
+      "task_cleanup_known": true,
+      "base_cleanup_unknown": false,
+      "goal_specific_checks_all_passed": true,
+      "interpretation": {
+        "classification": "original_assertions_passed"
+      }
+    },
+    {
+      "case_id": "core-settings-home-settings-01",
+      "label": "设置 → 桌面 → 设置",
+      "verdict": "pass",
+      "reported_task_steps": 4,
+      "host_elapsed_seconds": 128.57216952,
+      "native_calls": 4,
+      "complete_native_and_app_calls": 4,
+      "positive_htp_offload_calls": 4,
+      "action_receipts": 4,
+      "model_bound_action_receipts": 4,
+      "accepted_dispatched_effects": 3,
+      "native_exit_codes": {
+        "0": 4
+      },
+      "model_reported_success": true,
+      "task_cleanup_known": true,
+      "base_cleanup_unknown": false,
+      "goal_specific_checks_all_passed": true,
+      "interpretation": {
+        "classification": "original_assertions_passed"
+      }
+    },
+    {
+      "case_id": "core-cross-app-01",
+      "label": "跨应用按序访问",
+      "verdict": "fail",
+      "reported_task_steps": 13,
+      "host_elapsed_seconds": 426.5252743780002,
+      "native_calls": 13,
+      "complete_native_and_app_calls": 13,
+      "positive_htp_offload_calls": 13,
+      "action_receipts": 12,
+      "model_bound_action_receipts": 12,
+      "accepted_dispatched_effects": 12,
+      "native_exit_codes": {
+        "0": 13
+      },
+      "model_reported_success": false,
+      "task_cleanup_known": true,
+      "base_cleanup_unknown": false,
+      "goal_specific_checks_all_passed": false,
+      "interpretation": {
+        "classification": "visit_order_passed_final_page_failed"
+      }
+    },
+    {
+      "case_id": "core-settings-scroll-01",
+      "label": "设置滚动",
+      "verdict": "fail",
+      "reported_task_steps": 16,
+      "host_elapsed_seconds": 499.94741311999996,
+      "native_calls": 16,
+      "complete_native_and_app_calls": 15,
+      "positive_htp_offload_calls": 16,
+      "action_receipts": 15,
+      "model_bound_action_receipts": 15,
+      "accepted_dispatched_effects": 15,
+      "native_exit_codes": {
+        "0": 15,
+        "143": 1
+      },
+      "model_reported_success": false,
+      "task_cleanup_known": true,
+      "base_cleanup_unknown": false,
+      "goal_specific_checks_all_passed": true,
+      "interpretation": {
+        "classification": "scroll_changed_content_but_task_did_not_finish"
+      }
+    },
+    {
+      "case_id": "core-find-calculator-01",
+      "label": "查找并打开计算器",
+      "verdict": "fail",
+      "reported_task_steps": 17,
+      "host_elapsed_seconds": 498.9234039959997,
+      "native_calls": 17,
+      "complete_native_and_app_calls": 16,
+      "positive_htp_offload_calls": 16,
+      "action_receipts": 16,
+      "model_bound_action_receipts": 16,
+      "accepted_dispatched_effects": 0,
+      "native_exit_codes": {
+        "0": 16,
+        "124": 1
+      },
+      "model_reported_success": false,
+      "task_cleanup_known": true,
+      "base_cleanup_unknown": false,
+      "goal_specific_checks_all_passed": false,
+      "interpretation": {
+        "classification": "repeated_read_only_search_without_open"
+      }
+    }
+  ],
+  "native": {
+    "calls": 77,
+    "complete_native_and_app_calls": 74,
+    "incomplete_calls": 3,
+    "exit_codes": {
+      "0": 74,
+      "124": 1,
+      "143": 2
+    },
+    "positive_htp_offload_calls": 75,
+    "complete_calls_with_positive_htp_offload": 74,
+    "observed_offloaded_layers": 43,
+    "model_bound_action_receipts": 73,
+    "accepted_dispatched_effects": 53,
+    "full_operator_coverage_proven": false,
+    "full_model_bytes_hashed_per_complete_call": 5154941280
+  },
+  "performance": {
+    "denominator": "74 calls with both native generation complete and an observed successful App receipt; incomplete calls excluded from timing summaries.",
+    "native_elapsed_ms": {
+      "n": 74,
+      "min": 25219.827,
+      "median": 28724.8655,
+      "max": 33566.427,
+      "sum": 2131009.926
+    },
+    "app_elapsed_ms": {
+      "n": 74,
+      "min": 25379,
+      "median": 28848.5,
+      "max": 33687,
+      "sum": 2140685
+    },
+    "sdk_ttft_ms": {
+      "n": 74,
+      "min": 4166.952,
+      "median": 6002.474,
+      "max": 6372.396
+    },
+    "sdk_ttft_is_user_instruction_to_first_action_latency": false,
+    "prefill_tokens_per_second": {
+      "n": 74,
+      "min": 341.3660838276366,
+      "median": 349.174007338371,
+      "max": 374.35336052620653
+    },
+    "decode_tokens_per_second": {
+      "n": 74,
+      "min": 6.834354935389215,
+      "median": 9.681289614491675,
+      "max": 12.679804601724852
+    },
+    "prefill_weighted_tokens_per_second": 351.23554543239686,
+    "decode_weighted_tokens_per_second": 9.890810047921088,
+    "weighted_rate_definition": "sum of complete-call tokens divided by sum of corresponding SDK prompt/decode microseconds, multiplied by 1,000,000.",
+    "phases_ms": {
+      "hash": {
+        "n": 74,
+        "min": 4655.327,
+        "median": 5817.6705,
+        "max": 6215.801,
+        "sum": 423762.343
+      },
+      "vocab": {
+        "n": 74,
+        "min": 490.414,
+        "median": 562.6030000000001,
+        "max": 607.636,
+        "sum": 41444.019
+      },
+      "create": {
+        "n": 74,
+        "min": 6002.535,
+        "median": 6504.360000000001,
+        "max": 7013.806,
+        "sum": 482280.804
+      },
+      "template_tokenize": {
+        "n": 74,
+        "min": 129.852,
+        "median": 145.88549999999998,
+        "max": 172.749,
+        "sum": 10789.612000000001
+      },
+      "generate": {
+        "n": 74,
+        "min": 12273.784,
+        "median": 15435.200499999999,
+        "max": 19391.58,
+        "sum": 1139341.396
+      },
+      "destroy": {
+        "n": 74,
+        "min": 415.285,
+        "median": 445.422,
+        "max": 486.177,
+        "sum": 32790.465
+      },
+      "deinit": {
+        "n": 74,
+        "min": 0.034,
+        "median": 0.044,
+        "max": 0.078,
+        "sum": 3.285
+      }
+    },
+    "hash_plus_create_total_ms": 906043.147,
+    "hash_plus_create_fraction_of_complete_native_elapsed": 0.4251707774541825,
+    "reuse_speedup_measured": false
+  },
+  "resources": {
+    "sample_interval_seconds": 15,
+    "total_samples": 159,
+    "samples_inside_suite_window": 158,
+    "suite_duration_seconds": 2367.911,
+    "source": "Only the Current temperatures from HAL section; cached thermal sections excluded.",
+    "current_hal_temperature_celsius": {
+      "battery": {
+        "n": 158,
+        "min": 23,
+        "median": 30,
+        "max": 30,
+        "max_sensor_status": 0
+      },
+      "NSP": {
+        "n": 1106,
+        "min": 30.7,
+        "median": 48.4,
+        "max": 61.1,
+        "max_sensor_status": 0
+      },
+      "CPU": {
+        "n": 1264,
+        "min": 32.6,
+        "median": 50.7,
+        "max": 63.8,
+        "max_sensor_status": 0
+      },
+      "GPU": {
+        "n": 1264,
+        "min": 31.9,
+        "median": 48.4,
+        "max": 57.6,
+        "max_sensor_status": 0
+      },
+      "skin": {
+        "n": 158,
+        "min": 26.491,
+        "median": 40.5545,
+        "max": 41.66,
+        "max_sensor_status": 3
+      }
+    },
+    "temperature_summary_unit": "Sensor readings within the suite window; a CPU/GPU/NSP group contains multiple sensors per sample.",
+    "global_thermal_status_max": 3,
+    "kernel_memavailable_kib": {
+      "n": 158,
+      "min": 1743212,
+      "median": 4035518,
+      "max": 9441764
+    },
+    "summed_same_uid_rss_kib": {
+      "n": 158,
+      "min": 119560,
+      "median": 2440678,
+      "max": 3229788
+    },
+    "app_rss_kib": {
+      "n": 158,
+      "min": 119560,
+      "median": 153642,
+      "max": 180520
+    },
+    "other_same_uid_process_rss_kib": {
+      "n": 152,
+      "min": 1960,
+      "median": 2974628,
+      "max": 3059492
+    },
+    "rss_is_total_npu_memory": false,
+    "continuous_peaks_established": false,
+    "power_watts_measured": false,
+    "energy_consumption_measured": false,
+    "npu_utilization_measured": false,
+    "thermal_frequency_loss_quantified": false
+  },
+  "terminal_evidence": {
+    "seven_case_terminal_records_complete": true,
+    "original_offline_verdict": "completed_and_restored",
+    "original_offline_errors": [],
+    "offline_precondition_observed_twice": true,
+    "offline_conditions_observed_through_normal_suite": true,
+    "whole_device_continuous_network_absence_claimed": false,
+    "network": {
+      "verified_twice": true,
+      "selected_preferences_restored": true,
+      "original_default_connectivity_reestablished": false
+    },
+    "original_wrapper_phone_cleanup_known": null,
+    "all_seven_task_results_cleanup_known": true,
+    "all_seven_base_cleanup_unknown_false": true,
+    "host": {
+      "original_wrapper_and_suite_identities_observed_absent_twice": true,
+      "authoritative_hjob_terminal_available": false,
+      "host_exit_code": null,
+      "normal_exit_claimed": false,
+      "original_boot_id_not_recorded": true
+    },
+    "monitor": {
+      "completion_reason": "operator_stop_marker",
+      "observed_suite_terminal_file": true,
+      "full_log_digest_and_count_verified": true,
+      "first_sample_minus_suite_start_ms": -4194,
+      "last_sample_minus_suite_finish_ms": -2106,
+      "missing_start_bracketing_ms": 0,
+      "missing_finish_bracketing_ms": 2106,
+      "brackets_entire_suite": false,
+      "continuous_observation_claimed": false
+    },
+    "final_evidence_qualified": false,
+    "resource_section_qualified": false,
+    "degraded_collector_policy_exit_code": 3,
+    "strict_final_acceptance_changed": false
+  },
+  "evidence": {
+    "statistics_sha256": "43efe15d496973b6119bd4262f059ec20f92389e39a9a5ea7e691dbdd4ac0c94",
+    "source_pins_sha256": "d2a11aaa4c8f4aa73da30f3fc7f2b72844408137fc8d13e1dacfcdc3e155e1c8",
+    "artifacts_sha256": "d31b9eb8d317d6b262d489e7affdd6e33beaa72f7ffea7e2c87fd5b3861edda2",
+    "collector_sha256": "c510e845bd40fbbec8ec2b569183002e95e843c56984afa4ff18894a5b6db5ed",
+    "source_pin_files_verified": 1285,
+    "source_members_verified": 866,
+    "suite_result_sha256": "476431ec607b861e00ef328af757daf3156f1e89f0104dcdf637a62e2d5be37f",
+    "offline_result_sha256": "7b2dbd0a75116f4f93d507797c4a98aedeecce06092b52bdcd5526035a4e5521",
+    "monitor_samples_sha256": "3b53333e7afdfa1b707b5a32e65e34ab0ecd077c1bd94d91c4e740a69e28bbc8",
+    "monitor_completion_sha256": "3ddc5510a260f6d9342e454e72a81e4ab32fafeab55dc47927d7859d20920225",
+    "causal_public_summary_sha256": "290f48f61a1e3116b976b262a8e3b2d9234ae027682eed8087e10aecf7f12ac9",
+    "independent_audit_sha256": "51fa2b0b0100a444108faa1c1d641355b2570d8ac919aa3eb0d31b1cd6457fd2",
+    "original_full9_plan_sha256": "ef92f1103041d8453f35c13b8718a1834dfd84bd69f2e8afd871c12f8c17983c",
+    "remaining_seven_plan_sha256": "8d1ab8d38ce6412819fb4e82df574b663d3e35473f63df7ff927d495f657235b"
+  },
+  "limits": [
+    "These are the seven completed continuation cases, not a continuous full9 qualification.",
+    "Original goal predicates alone never replace successful task completion; scroll remains fail.",
+    "75 positive HTP observations include one incomplete call; 74 complete calls have positive offload. No full-operator NPU claim.",
+    "SDK TTFT excludes full model hash and creation. Task host seconds and native/App call seconds are different measurements.",
+    "Telemetry ends 2.106 seconds before the suite finish; no later observation fills that gap.",
+    "Preference restoration was observed twice; default connectivity was not reestablished in the original receipt.",
+    "Host absence observations do not provide an authoritative wrapper exit code.",
+    "HAL and memory statistics describe this retained seven-case window, not subsequent Stop/recovery events.",
+    "No user UI text, task/run identifiers, nonces, serials, network identifiers, screenshots, local paths or installed-package lists are included."
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "schema": "hepta.mobimind.app-overlay-source.v1",
+  "base_source_manifest_sha256": "519b46dba5078e591bc1c9ef1a0e20c92bef2a68e023108c6c7c582bea774394",
+  "files": [
+    {
+      "path": "HOST-CHECKS.json",
+      "bytes": 526,
+      "sha256": "ac5d07583838229187900e2626e4c7e1e411880e6f9f870efed0e454c02586f9"
+    },
+    {
+      "path": "INTEGRATION-MANIFEST.json",
+      "bytes": 2283,
+      "sha256": "c5c4dc591ddcc3bad08c7d958393ccf82cf14c4974917db364667ca911aed33a"
+    },
+    {
+      "path": "README.md",
+      "bytes": 9460,
+      "sha256": "79ef76eb53f74fea68c3091803ca600338bb5edf44286230708aed47ed7bcd11"
+    },
+    {
+      "path": "assets/official-gui-prompts.json",
+      "bytes": 2097,
+      "sha256": "57b6fc209afc1387a0bce841cba8399736537dd5e8a2729875ec031ca93f0e7c"
+    },
+    {
+      "path": "host-evidence/android-compile-input-manifest.json",
+      "bytes": 7323,
+      "sha256": "3297246c43a888ada8ffb7e087c96b6b6db6e370ad03ae6fad87abf655b7d3d3"
+    },
+    {
+      "path": "host-evidence/android-compile-r1.json",
+      "bytes": 2059,
+      "sha256": "3e6d2af828b88eaaa83ca518090819b6cafde2da31b31a7353ac9f0bec661098"
+    },
+    {
+      "path": "host-evidence/android-compile-r2.json",
+      "bytes": 1685,
+      "sha256": "ed6c7bcd59eb7a7464d889358a2c3f4c3f7926d77cbb57769565c448daf608c0"
+    },
+    {
+      "path": "host-evidence/contracts-r3/report.json",
+      "bytes": 1305,
+      "sha256": "59ede360d24e8a4d33896dab851197b05347d211db76047d9a611b24cc58a531"
+    },
+    {
+      "path": "integration-code10.patch",
+      "bytes": 12102,
+      "sha256": "8b944965edededbee60c1a529111520ce3915b64aa01a613bbcbe1a355dd9ebb"
+    },
+    {
+      "path": "integration-src/org/trillionnium/hepta/local/LocalModelEngine.java",
+      "bytes": 31204,
+      "sha256": "f2bb0ce3f9531279da50ed64dc2015fbec7ff85b9fc83313db95202ba41951d9"
+    },
+    {
+      "path": "integration-src/org/trillionnium/hepta/local/LocalProbeApplication.java",
+      "bytes": 1326,
+      "sha256": "5f96c9d32772c91651997f4247eb91f5e7ac20a376f4420bcaca36907725c9e8"
+    },
+    {
+      "path": "integration-src/org/trillionnium/hepta/local/MainActivity.java",
+      "bytes": 17179,
+      "sha256": "f734b29824b3bfd08a87c84a1d32d6ad4afb3b3adfb087b3612ff836f0b14936"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindContract.java",
+      "bytes": 15174,
+      "sha256": "f0cb174fd287ea2b20c857fdfa2eeda13d31ddfccac303d1fd34800c4272f14f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindModelEngine.java",
+      "bytes": 21496,
+      "sha256": "13decbcc1416a9e3850dff072ce4b08c2ed48bfaaafe4e7dd1ba7bc189504e2e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindPins.java",
+      "bytes": 2565,
+      "sha256": "2f7117fd3234d514775717eef9bf04a67e347f809a93a1f34623e62a8b7a552e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java",
+      "bytes": 3910,
+      "sha256": "27e1e87e94b74e7c15b88de9e804748537b1f33bc65bb3816b09c5b00110de22"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindSessionContract.java",
+      "bytes": 2764,
+      "sha256": "dfc7e7ffec3ac928ba9f22246fc9c09d3c5956e788e62554c83cda1c788bb250"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PrivateMobiProbe.java",
+      "bytes": 9097,
+      "sha256": "7843916ea64172cbd208e7f6631844989323462bce3f5427038c5fcff47beba4"
+    },
+    {
+      "path": "tests/MobiMindContractHostTest.java",
+      "bytes": 8539,
+      "sha256": "9ae8dd710b1cb763d748e047b260ffd00d3c226e1f7095cd46f167fc513cb9be"
+    },
+    {
+      "path": "tests/MobiMindSessionContractHostTest.java",
+      "bytes": 4373,
+      "sha256": "0adddcf74e0379ac7f2cd46aa255e22f43416bd1081f03cfde9beec1f376f0ec"
+    },
+    {
+      "path": "tests/test_prepare_private_request.py",
+      "bytes": 4118,
+      "sha256": "f5ac76571fa8835e05bd90c6d361555d62cac455fdf9d7c3000ccdeb38b569e7"
+    },
+    {
+      "path": "tools/prepare_private_request.py",
+      "bytes": 6900,
+      "sha256": "50d0b9a73b4c2e08f0ce0dd5df953637bd69eb519bce0dcd4e5b9001fddfef14"
+    }
+  ],
+  "phone_actions_connected": false,
+  "native_worker_version": "r4"
+}

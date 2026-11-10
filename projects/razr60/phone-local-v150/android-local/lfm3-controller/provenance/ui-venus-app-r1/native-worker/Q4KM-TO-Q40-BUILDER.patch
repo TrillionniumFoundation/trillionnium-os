@@ -1,0 +1,23 @@
+--- frozen17/tools/build_android.py
++++ q4_0/tools/build_android.py
+@@ -35,7 +35,7 @@
+         p=source/m['path']
+         if p.is_symlink() or p.stat().st_size!=m['bytes'] or sha_file(p)!=m['sha256']:raise ValueError('prepared source changed')
+     boundary=json.loads(run([sys.executable,source/'verify_source_boundary.py'],out,'source-boundary'))
+-    if boundary.get('passed') is not True or boundary.get('original_files_unchanged')!=17:
++    if boundary.get('passed') is not True or boundary.get('original_files_unchanged')!=18 or boundary.get('original_files_changed')!=['native/venus-runtime.inc'] or boundary.get('only_model_identity_literals_changed') is not True:
+         raise ValueError('App thin-wrapper source boundary differs')
+     pins=json.loads((ROOT/'sdk-runtime-pins.json').read_text())
+     verified=[]
+@@ -85,7 +85,10 @@
+              'worker_source_sha256':recipe['worker_source_sha256'],'wrapper_source_sha256':recipe['wrapper_source_sha256'],
+              'entry_guard_sha256':recipe['entry_guard_sha256'],'sdk_source_commit':recipe['sdk_source_commit'],
+              'llama_source_commit':recipe['llama_source_commit'],'source_boundary':boundary,
+-             'original_core_byte_unchanged':True,'original_shell_candidate_modified':False,
++             'original_core_byte_unchanged':False,'original_shell_candidate_modified':False,
++             'only_model_identity_literals_changed':True,'profile':recipe['profile'],
++             'runtime_core_source_sha256':sha_file(source/'native/venus-runtime.inc'),
++             'baseline_app_source_generation_sha256':recipe['baseline_app_source_generation_sha256'],
+              'build_helper_sha256':sha_file(Path(__file__)),
+              'sdk_runtime_pins_sha256':sha_file(ROOT/'sdk-runtime-pins.json'),
+              'model':recipe['model'],'mmproj':recipe['mmproj'],

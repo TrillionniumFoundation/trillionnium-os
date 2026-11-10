@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.independent-validation-source.v1",
+  "revision": "offline-r2",
+  "files": [
+    {
+      "path": "phone_offline_suite.py",
+      "bytes": 30392,
+      "sha256": "889c2fc39b09c7b3e71e7bdc8f1a254d80629a5cf389b63412f297688ba1e7fd"
+    },
+    {
+      "path": "offline_guards.py",
+      "bytes": 5325,
+      "sha256": "8497a6311e97d3863291bd7867b7e04c41c4c4f2469a2f19efd16af3a4311665"
+    },
+    {
+      "path": "test_offline_transaction.py",
+      "bytes": 14686,
+      "sha256": "9e31855f83cdf444c93bb8bb7e4e963223449a426ce2aebb652f3777900e4f36"
+    },
+    {
+      "path": "README.md",
+      "bytes": 9824,
+      "sha256": "13bfb7112935a9e4e17d84c7bd92a0f996723d4ea12d35f00b9f4ca05ad582ad"
+    }
+  ],
+  "phone_contacted": false
+}
