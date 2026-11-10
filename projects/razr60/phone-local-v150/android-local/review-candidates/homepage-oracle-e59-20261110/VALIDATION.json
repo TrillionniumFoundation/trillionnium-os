@@ -1,0 +1,298 @@
+{
+  "schema": "hepta.homepage-oracle-publication-validation.v1",
+  "scope": "Host oracle only; no device execution, deployment or historic result rewrite",
+  "synthetic": {
+    "schema": "hepta.homepage-oracle-public-validation.v1",
+    "generated_utc": "2026-11-10T03:24:00.026797+00:00",
+    "mode": "synthetic-only",
+    "passed": true,
+    "test_methods": 77,
+    "successful_subtests": 34,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "fixture_manifest": {
+      "bytes": 13201,
+      "sha256": "6d51ba1282942470dd905aee7e5a59ee43d9469b70fbaaf6e5b751e092b32aa3"
+    },
+    "fixture_files_verified_before_and_after": 76,
+    "logic_patch": {
+      "bytes": 24422,
+      "sha256": "f9655d01573f6af927c92f83674d713cfac9a96f7f0aa1af179e3c0c718818d8"
+    },
+    "applied_candidate": {
+      "core_assertions.py": {
+        "bytes": 44178,
+        "sha256": "53c041e8207f87ca7f52b9352ee2328ccce690938e0f01863708a5e54cf0d89d"
+      },
+      "core_phone_suite.py": {
+        "bytes": 23238,
+        "sha256": "d1bae5a4a43b92d3b7bb0b87664449107777dc515df45c31848265f7d8d35db4"
+      }
+    },
+    "test_files": {
+      "synthetic_homepage_fixtures.py": {
+        "bytes": 6377,
+        "sha256": "d9df72fd7862dc6d701c77520c6c0c3039ae2126688ddf43fa4396463cf86aa1"
+      },
+      "test_core_assertions.py": {
+        "bytes": 25758,
+        "sha256": "c50bc1685bbb2b3519535a679d563f12a5ab9a2c079dd93bb0ba51c2ba30c95b"
+      },
+      "test_settings_homepage.py": {
+        "bytes": 20888,
+        "sha256": "5864290a83eab7b9131ba7f293ddadd5ba882323b74895c9e62ad0b7f979c455"
+      }
+    },
+    "runner": {
+      "bytes": 8567,
+      "sha256": "6a09bd9edbcae0423985713c551041220d6680d28ca3631e17bc93a86784fe1e"
+    },
+    "host_log": {
+      "bytes": 11416,
+      "sha256": "eaf19c50d6045c638526c0d31f52bf65742c06ba85449e8a8cd2d35b1296fdb4"
+    },
+    "patch_check_and_apply_to_exact_baseline": true,
+    "inputs_unchanged": true,
+    "phone_contacted": false,
+    "network_access_during_replay": false,
+    "real_phone_files_included_in_capsule": false,
+    "full_phone_or_current_apk_qualification_claimed": false,
+    "historical_formal_suite_counts_unchanged": {
+      "pass": 2,
+      "fail": 7
+    },
+    "replays": {
+      "core-settings-home-01": {
+        "passed": true,
+        "evidence_complete": true,
+        "error_count": 0,
+        "checks": [
+          {
+            "kind": "native_bound_terminal_done",
+            "passed": true
+          },
+          {
+            "kind": "stable_complete_terminal_observation",
+            "passed": true
+          },
+          {
+            "kind": "independent_visible_unobscured_settings_activity",
+            "passed": true
+          },
+          {
+            "kind": "same_window_homepage_structure",
+            "passed": true
+          },
+          {
+            "kind": "independent_xml_matches_terminal_home_content",
+            "passed": true
+          }
+        ]
+      },
+      "core-cross-app-01": {
+        "passed": true,
+        "evidence_complete": true,
+        "error_count": 0,
+        "checks": [
+          {
+            "kind": "native_bound_terminal_done",
+            "passed": true
+          },
+          {
+            "kind": "stable_complete_terminal_observation",
+            "passed": true
+          },
+          {
+            "kind": "independent_visible_unobscured_settings_activity",
+            "passed": true
+          },
+          {
+            "kind": "same_window_homepage_structure",
+            "passed": true
+          },
+          {
+            "kind": "independent_xml_matches_terminal_home_content",
+            "passed": true
+          }
+        ]
+      },
+      "core-search-return-home-01": {
+        "passed": false,
+        "evidence_complete": true,
+        "error_count": 0,
+        "checks": [
+          {
+            "kind": "native_bound_terminal_done",
+            "passed": true
+          },
+          {
+            "kind": "stable_complete_terminal_observation",
+            "passed": true
+          },
+          {
+            "kind": "independent_visible_unobscured_settings_activity",
+            "passed": false
+          },
+          {
+            "kind": "same_window_homepage_structure",
+            "passed": false
+          },
+          {
+            "kind": "independent_xml_matches_terminal_home_content",
+            "passed": false
+          }
+        ]
+      }
+    }
+  },
+  "private_external_replay_summary": {
+    "schema": "hepta.homepage-oracle-public-validation.v1",
+    "generated_utc": "2026-11-10T03:24:00.238936+00:00",
+    "mode": "external-private-replay",
+    "passed": true,
+    "test_methods": 77,
+    "successful_subtests": 34,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "fixture_manifest": {
+      "bytes": 12744,
+      "sha256": "d4fb96caa4a0d20ff35a47b83da8f2093603331e8f8e840a61c9e4110b0965e9"
+    },
+    "fixture_files_verified_before_and_after": 36,
+    "logic_patch": {
+      "bytes": 24422,
+      "sha256": "f9655d01573f6af927c92f83674d713cfac9a96f7f0aa1af179e3c0c718818d8"
+    },
+    "applied_candidate": {
+      "core_assertions.py": {
+        "bytes": 44178,
+        "sha256": "53c041e8207f87ca7f52b9352ee2328ccce690938e0f01863708a5e54cf0d89d"
+      },
+      "core_phone_suite.py": {
+        "bytes": 23238,
+        "sha256": "d1bae5a4a43b92d3b7bb0b87664449107777dc515df45c31848265f7d8d35db4"
+      }
+    },
+    "test_files": {
+      "synthetic_homepage_fixtures.py": {
+        "bytes": 6377,
+        "sha256": "d9df72fd7862dc6d701c77520c6c0c3039ae2126688ddf43fa4396463cf86aa1"
+      },
+      "test_core_assertions.py": {
+        "bytes": 25758,
+        "sha256": "c50bc1685bbb2b3519535a679d563f12a5ab9a2c079dd93bb0ba51c2ba30c95b"
+      },
+      "test_settings_homepage.py": {
+        "bytes": 20888,
+        "sha256": "5864290a83eab7b9131ba7f293ddadd5ba882323b74895c9e62ad0b7f979c455"
+      }
+    },
+    "runner": {
+      "bytes": 8567,
+      "sha256": "6a09bd9edbcae0423985713c551041220d6680d28ca3631e17bc93a86784fe1e"
+    },
+    "host_log": {
+      "bytes": 11416,
+      "sha256": "4b6e09cb6a790ed5ed468145e77e0311025dc8c93cc30c6e761c81d2a9380d6f"
+    },
+    "patch_check_and_apply_to_exact_baseline": true,
+    "inputs_unchanged": true,
+    "phone_contacted": false,
+    "network_access_during_replay": false,
+    "real_phone_files_included_in_capsule": false,
+    "full_phone_or_current_apk_qualification_claimed": false,
+    "historical_formal_suite_counts_unchanged": {
+      "pass": 2,
+      "fail": 7
+    },
+    "replays": {
+      "core-settings-home-01": {
+        "passed": true,
+        "evidence_complete": true,
+        "error_count": 0,
+        "checks": [
+          {
+            "kind": "native_bound_terminal_done",
+            "passed": true
+          },
+          {
+            "kind": "stable_complete_terminal_observation",
+            "passed": true
+          },
+          {
+            "kind": "independent_visible_unobscured_settings_activity",
+            "passed": true
+          },
+          {
+            "kind": "same_window_homepage_structure",
+            "passed": true
+          },
+          {
+            "kind": "independent_xml_matches_terminal_home_content",
+            "passed": true
+          }
+        ]
+      },
+      "core-cross-app-01": {
+        "passed": true,
+        "evidence_complete": true,
+        "error_count": 0,
+        "checks": [
+          {
+            "kind": "native_bound_terminal_done",
+            "passed": true
+          },
+          {
+            "kind": "stable_complete_terminal_observation",
+            "passed": true
+          },
+          {
+            "kind": "independent_visible_unobscured_settings_activity",
+            "passed": true
+          },
+          {
+            "kind": "same_window_homepage_structure",
+            "passed": true
+          },
+          {
+            "kind": "independent_xml_matches_terminal_home_content",
+            "passed": true
+          }
+        ]
+      },
+      "core-search-return-home-01": {
+        "passed": false,
+        "evidence_complete": true,
+        "error_count": 0,
+        "checks": [
+          {
+            "kind": "native_bound_terminal_done",
+            "passed": true
+          },
+          {
+            "kind": "stable_complete_terminal_observation",
+            "passed": true
+          },
+          {
+            "kind": "independent_visible_unobscured_settings_activity",
+            "passed": false
+          },
+          {
+            "kind": "same_window_homepage_structure",
+            "passed": false
+          },
+          {
+            "kind": "independent_xml_matches_terminal_home_content",
+            "passed": false
+          }
+        ]
+      }
+    }
+  },
+  "production_source_independent_read_only_review_completed": true,
+  "formal_non_author_github_approval": false,
+  "github_pushed": false,
+  "deployed": false
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.homepage-oracle-public-baseline.v1",
+  "scope": "Unadopted host oracle review capsule. No device execution or deployment input.",
+  "publication_base": {
+    "repository": "TrillionniumFoundation/trillionnium-os",
+    "branch": "integration/razr60-r9-20261107",
+    "commit": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+    "tree": "3b805316ffdb03fc1fb581896d56910bf96c77ab",
+    "is_exact_oracle_source_base": false
+  },
+  "requires_exact_baseline_bytes": true,
+  "source_files": [
+    {
+      "path": "core_assertions.py",
+      "sha256": "65999f565846afda7ff7ba75dee4eff1cc4e32a29f670b9182039139eec0d836",
+      "bytes": 24477
+    },
+    {
+      "path": "core_phone_suite.py",
+      "sha256": "22f1e4643e3076f630749a79c7f2a30beba7171097c5ef8c36bcaa80d83c753c",
+      "bytes": 23278
+    }
+  ],
+  "driver_files": [
+    {
+      "path": "phone_acceptance.py",
+      "bytes": 45878,
+      "sha256": "78dda5387a474480e262f1c2f7a2ab54ed9127119f5a142174d7a87565937a29"
+    },
+    {
+      "path": "phone_suite.py",
+      "bytes": 27038,
+      "sha256": "3ee862814c887faea4266f2c1d61892f3c3d2eed7c466c73f918fa8db4acdf65"
+    },
+    {
+      "path": "phone_inventory.py",
+      "bytes": 50865,
+      "sha256": "e3a679c4f08c3a9ef2b9f1dda786a5b2638f1de349bb2c257c60dd1a7be32863"
+    },
+    {
+      "path": "model_profiles.py",
+      "bytes": 2281,
+      "sha256": "56d8553bfa7d0cd9f6f4b208112cb564cde85fda1d5d50ddb22528738c923774"
+    }
+  ],
+  "after_source_files": {
+    "core_assertions.py": {
+      "bytes": 44178,
+      "sha256": "53c041e8207f87ca7f52b9352ee2328ccce690938e0f01863708a5e54cf0d89d"
+    },
+    "core_phone_suite.py": {
+      "bytes": 23238,
+      "sha256": "d1bae5a4a43b92d3b7bb0b87664449107777dc515df45c31848265f7d8d35db4"
+    }
+  },
+  "logic_patch": {
+    "path": "homepage-evidence.patch",
+    "bytes": 24422,
+    "sha256": "f9655d01573f6af927c92f83674d713cfac9a96f7f0aa1af179e3c0c718818d8"
+  },
+  "synthetic_fixtures_generated_from_scratch": true,
+  "real_phone_evidence_included": false,
+  "historical_full_suite_counts_unchanged": {
+    "pass": 2,
+    "fail": 7
+  },
+  "historical_replay_version_code": 27,
+  "current_installed_apk_qualified": false,
+  "private_replay_manifest_sha256": "d4fb96caa4a0d20ff35a47b83da8f2093603331e8f8e840a61c9e4110b0965e9"
+}

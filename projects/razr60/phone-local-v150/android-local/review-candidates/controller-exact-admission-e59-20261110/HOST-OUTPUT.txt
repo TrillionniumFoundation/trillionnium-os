@@ -1,0 +1,17 @@
+baseline-original-lfm3-budget
+PASS 16 LFM3 byte-budget assertions; exact_token_count=false; phone_tested=false
+
+baseline-production-controller
+PASS baseline production projection and awaitModel reject before native; checks=4
+
+candidate-original-lfm3-budget
+PASS 16 LFM3 byte-budget assertions; exact_token_count=false; phone_tested=false
+
+candidate-policy-receipt
+PASS 24 policy/receipt boundary assertions; synthetic sizes only, no tokenizer/model inference
+
+candidate-production-controller
+PASS candidate production projection/awaitModel; checks=59, prompt_bytes=7301, required_targets=24, full_history=12; host IO fixtures only, no phone/model
+
+native-production-guard
+{"all_pass": true, "cases": 6, "scope": "actual unchanged generated worker with explicit fake SDK/tokenizer"}

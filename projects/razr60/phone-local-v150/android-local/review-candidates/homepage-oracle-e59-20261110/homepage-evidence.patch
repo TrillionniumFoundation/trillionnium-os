@@ -1,0 +1,339 @@
+--- a/core_assertions.py
++++ b/core_assertions.py
+@@ -16,6 +16,294 @@
+ KINDS = {"settings_home", "apps_management", "calculator_keypad", "chinese_search",
+          "search_return_home", "ordered_navigation", "cross_app", "scroll", "find_app"}
+ SETTINGS_FAMILY = frozenset({SETTINGS, SEARCH})
++HOME_KINDS = frozenset({"settings_home", "search_return_home", "ordered_navigation", "cross_app"})
++
++
++def settings_homepage_evidence(directory, case, suite, acceptance):
++    """Classify the retained final page; never run a device command or upgrade a task.
++
++    This oracle is deliberately scoped to the observed Motorola Settings layout.
++    A collapsed visible title is not a page identity. Require a native-bound done
++    observation, the independently visible Settings activity, and matching home
++    structure in the independent XML. Missing/ambiguous evidence stays unverified.
++    The caller must still enforce all original nonce/runtime/effect/goal gates.
++    """
++    directory = Path(directory)
++    result = {"schema": "hepta.settings-homepage-evidence.v1", "passed": False,
++              "evidence_complete": False, "checks": [], "errors": [], "source_files": {},
++              "phone_contacted": False, "full_task_acceptance_claimed": False}
++
++    def need(value, message):
++        if not value:
++            raise ValueError(message)
++
++    def read(relative, limit=131072):
++        path = directory / relative
++        need(path.is_relative_to(directory), "evidence path escaped case")
++        current = path
++        while current != directory.parent:
++            need(not current.is_symlink(), "symlink in homepage evidence path")
++            current = current.parent
++        need(path.is_file() and 0 < path.stat().st_size <= limit, "missing or oversized " + relative)
++        raw = path.read_bytes()
++        need(0 < len(raw) <= limit, "evidence size changed beyond bound")
++        result["source_files"][relative] = {"bytes": len(raw), "sha256": acceptance.digest(raw)}
++        return raw
++
++    def obj(relative):
++        value = acceptance.strict_json(read(relative))
++        need(isinstance(value, dict), "evidence object required: " + relative)
++        return value
++
++    def check(kind, passed, **detail):
++        result["checks"].append({"kind": kind, "passed": bool(passed), **detail})
++
++    def bounds(value):
++        if isinstance(value, str):
++            match = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", value)
++            value = list(map(int, match.groups())) if match else None
++        return (value if isinstance(value, list) and len(value) == 4
++                and all(type(x) is int for x in value) else None)
++
++    def inside(value, outer):
++        return (value is not None and outer[0] <= value[0] < value[2] <= outer[2]
++                and outer[1] <= value[1] < value[3] <= outer[3])
++
++    def one(pattern, text, label):
++        values = re.findall(pattern, text, re.MULTILINE)
++        need(len(values) == 1, "missing or ambiguous window " + label)
++        return values[0]
++
++    try:
++        need(case.get("assertion") in HOME_KINDS and case.get("expected_package") == SETTINGS,
++             "homepage oracle requires a Settings-home case")
++        owner = obj("task/owner.json")
++        terminal = obj("task/result.json")
++        instruction = case["instruction"]
++        need(owner.get("instruction") == instruction
++             and owner.get("instruction_utf8_sha256") == acceptance.digest(instruction.encode("utf-8")),
++             "homepage evidence belongs to another owner instruction")
++        need(isinstance(owner.get("task_id"), str) and acceptance.HEX32.fullmatch(owner["task_id"])
++             and terminal.get("task_id") == owner["task_id"], "terminal task identity differs")
++        need(terminal.get("status") == "model_reported_done" and terminal.get("model_reported_success") is True
++             and terminal.get("cleanup_known") is True, "terminal task is not completed and clean")
++        step = terminal.get("steps")
++        need(type(step) is int and 1 <= step <= 99, "invalid terminal step")
++        prefix = "task/step-%02d" % step
++        before, after = obj(prefix + "-before.json"), obj(prefix + "-after.json")
++        receipt = obj(prefix + "-action.json")
++        action = receipt.get("action", {})
++        need(receipt.get("accepted") is True and receipt.get("dispatched") is False
++             and receipt.get("stale") is False and action.get("action") == "done"
++             and action.get("status") == "success" and action.get("package") == SETTINGS
++             and action.get("observation_id") == before.get("observation_id"), "terminal done action differs")
++        binding = suite.model_action_binding(directory, directory / (prefix + "-action.json"),
++                                            receipt, before, acceptance.digest(instruction.encode("utf-8")))
++        need(binding.get("verified") is True, "terminal model binding: " + str(binding.get("reason")))
++        for name in ("step_model_receipt", "native_raw_output", "native_result"):
++            read(binding[name])
++        run_id = binding["model_run_id"]
++        prompt_raw = read("runs/" + run_id + "/prompt.txt")
++        native = obj(binding["native_result"])
++        need(native.get("input_sha256", {}).get("prompt") == acceptance.digest(prompt_raw),
++             "terminal native input does not bind the original prompt bytes")
++        need(acceptance.prompt_binding(prompt_raw.decode("utf-8"), instruction, {before.get("observation_id")}),
++             "terminal prompt does not bind this owner and observation")
++        prompt = acceptance.strict_json(prompt_raw[len("UNTRUSTED_DATA\n"):].split(b"\nOWNER\n", 1)[0])
++        need(prompt.get("screen", {}).get("package") == SETTINGS, "terminal prompt package differs")
++        check("native_bound_terminal_done", True, binding=binding, task_id=owner["task_id"])
++
++        stable_fields = ("package", "screen_width", "screen_height", "rotation", "window_id", "window",
++                         "app_tree_sha256", "observation_state_sha256", "ime_visible", "nodes")
++        for observation in (before, after):
++            need(isinstance(observation.get("observation_id"), str)
++                 and acceptance.HEX32.fullmatch(observation["observation_id"]), "invalid final observation id")
++            need(observation.get("package") == SETTINGS and observation.get("nodes_truncated") is False,
++                 "final Settings observation missing or truncated")
++            need(observation.get("ime_visible") is False, "final IME visibility is not known hidden")
++            need(isinstance(observation.get("nodes"), list) and 0 < len(observation["nodes"]) <= 512
++                 and all(isinstance(n, dict) for n in observation["nodes"]), "invalid final nodes")
++            for key in ("app_tree_sha256", "observation_state_sha256"):
++                need(isinstance(observation.get(key), str) and re.fullmatch(r"[0-9a-f]{64}", observation[key]),
++                     "missing final observation digest")
++        need(terminal.get("final_observation_id") == after["observation_id"], "terminal final observation differs")
++        need(all(before.get(key) == after.get(key) for key in stable_fields), "page changed across terminal done")
++        width, height = after.get("screen_width"), after.get("screen_height")
++        need(type(width) is int and type(height) is int and 0 < width <= 40000 and 0 < height <= 40000,
++             "invalid final screen dimensions")
++        frame = [0, 0, width, height]
++        window = after.get("window")
++        need(isinstance(window, dict) and window.get("scope") == "active_root_only"
++             and window.get("metadata_status") == "observed" and type(window.get("type")) is int and window["type"] == 1
++             and type(window.get("window_id")) is int and type(after.get("window_id")) is int
++             and window["window_id"] == after["window_id"] and window["window_id"] >= 0
++             and type(window.get("display_id")) is int and window["display_id"] >= 0
++             and window.get("root_bounds") == frame and window.get("bounds") == frame
++             and isinstance(window.get("root_class"), str) and window.get("root_class_truncated") is False
++             and window.get("title_truncated") is False, "active-root window identity incomplete")
++        projected = prompt["screen"]
++        need(projected.get("size") == [width, height] and projected.get("ime_visible") is False
++             and type(projected.get("nodes_omitted")) is int and projected["nodes_omitted"] == 0,
++             "terminal native screen projection incomplete or different")
++        projected_window = projected.get("window")
++        need(isinstance(projected_window, dict) and type(projected_window.get("type")) is int
++             and bounds(projected_window.get("root_bounds")) == frame
++             and bounds(projected_window.get("bounds")) == frame
++             and all(projected_window.get(key) == window.get(key)
++                     for key in ("scope", "root_bounds", "bounds", "type", "title", "root_class")),
++             "terminal native window projection differs")
++        rows = projected.get("nodes")
++        need(isinstance(rows, list) and 0 < len(rows) <= 512
++             and all(isinstance(n, list) and len(n) == 4 and isinstance(n[0], str) for n in rows)
++             and len({n[0] for n in rows}) == len(rows), "terminal native node projection ambiguous")
++        projected_nodes = {n[0]: n for n in rows}
++        need(all(isinstance(n.get("id"), str) for n in after["nodes"])
++             and len({n["id"] for n in after["nodes"]}) == len(after["nodes"]), "final node identity ambiguous")
++        check("stable_complete_terminal_observation", True, observation_id=after["observation_id"],
++              tree_sha256=after["app_tree_sha256"], state_sha256=after["observation_state_sha256"])
++
++        window_text = read("ui-final-window.txt", 2 * 1024 * 1024).decode("utf-8", "strict")
++        need(window_text.startswith("WINDOW MANAGER WINDOWS"), "independent window dump header missing")
++        blocks = re.split(r"(?m)(?=^  Window #\d+ Window\{)", window_text)[1:]
++        need(bool(blocks), "independent window dump has no window records")
++        focused_display = int(one(r"^  mTopFocusedDisplayId=(\d+)\s*$", window_text, "focused display"))
++        homes, other_visible, system_bars = [], [], []
++        for block in blocks:
++            lines = block.splitlines()
++            header = lines[0]
++            # The final window is followed by global WMS sections. They are not
++            # properties of that window and may contain more display/window IDs.
++            end = next((i for i, line in enumerate(lines[1:], 1)
++                        if line.strip() and len(line) - len(line.lstrip()) < 4), len(lines))
++            block = "\n".join(lines[:end])
++            kinds = set(re.findall(r"\bty=([A-Z_]+)\b", block))
++            need(len(kinds) == 1, "window type missing or contradictory")
++            kind = next(iter(kinds))
++            display = int(one(r"\bmDisplayId=(\d+)\b", block, "display id"))
++            visible = one(r"^\s*isVisible=(true|false)\s*$", block, "visibility") == "true"
++            on_screen = one(r"^\s*isOnScreen=(true|false)\s*$", block, "on-screen state") == "true"
++            is_home = (kind == "BASE_APPLICATION" and bool(re.fullmatch(
++                r"  Window #\d+ Window\{[^ }]+ u\d+ com\.android\.settings/(?:com\.android\.settings)?\.Settings\}:", header)))
++            # A partially covering dialog/overlay need not set mObscured=true on
++            # the app. Ordinary system bars must have their real SystemUI
++            # identity and a thin edge frame; a type name alone proves nothing.
++            if display == window["display_id"] and visible and on_screen and not is_home:
++                allowed_bar = False
++                if kind in {"STATUS_BAR", "NAVIGATION_BAR"}:
++                    bar_frame = bounds(one(r"^\s*Frames:.*?\bframe=(\[\d+,\d+\]\[\d+,\d+\])", block, "system bar frame"))
++                    package = one(r"\bmOwnerUid=\d+\s+showForAllUsers=\w+\s+package=([^\s]+)", block, "system bar owner")
++                    label = "StatusBar" if kind == "STATUS_BAR" else "NavigationBar" + str(display)
++                    identity = bool(re.fullmatch(r"  Window #\d+ Window\{[^ }]+ u\d+ " + re.escape(label) + r"\}:", header))
++                    allowed_bar = (inside(bar_frame, frame) and package == "com.android.systemui" and identity
++                                   and bar_frame[0] == 0 and bar_frame[2] == width
++                                   and bar_frame[3] - bar_frame[1] <= min(height // 16, width // 4)
++                                   and (bar_frame[1] == 0 if kind == "STATUS_BAR" else bar_frame[3] == height))
++                    if allowed_bar:
++                        system_bars.append(bar_frame)
++                if not allowed_bar:
++                    other_visible.append({"header": header, "type": kind})
++            if not is_home:
++                continue
++            observed_frame = one(r"^\s*Frames:.*?\bframe=(\[\d+,\d+\]\[\d+,\d+\])", block, "frame")
++            activity = one(r"^\s*mActivityRecord=ActivityRecord\{([^\n]+)\}\s*$", block, "activity record")
++            has_surface = one(r"\bmHasSurface=(true|false)\b", block, "surface") == "true"
++            surfaces = re.findall(r"^\s*Surface:\s*shown=([^\n]+)\s*$", block, re.MULTILINE)
++            need(len(surfaces) <= 1 and (len(surfaces) == 1 or not has_surface), "missing or ambiguous window drawn surface")
++            surface = surfaces[0] if surfaces else ""
++            explicit_alpha = re.findall(r"\b(?:alpha|mAlpha|mShownAlpha)=([^\s}]+)", block)
++            flags = {
++                "visible": visible, "on_screen": on_screen,
++                "view_visible": one(r"\bmViewVisibility=(0x[0-9a-fA-F]+)\b", block, "view visibility") == "0x0",
++                "unobscured": one(r"\bmObscured=(true|false)\b", block, "occlusion") == "false",
++                "has_surface": has_surface,
++                "ready": one(r"\bisReadyForDisplay\(\)=(true|false)\b", block, "display readiness") == "true",
++                "matching_frame": bounds(observed_frame) == frame,
++                "matching_display": display == window["display_id"],
++                "drawn": bool(re.fullmatch(r"true\s+mDrawState=HAS_DRAWN\s+mLastHidden=false\s*", surface)),
++                "activity": bool(re.search(r"\bcom\.android\.settings/(?:com\.android\.settings)?\.Settings\s", activity)),
++                "no_explicit_transparency": all(float(alpha) == 1.0 for alpha in explicit_alpha),
++            }
++            homes.append({"header": header, "flags": flags, "explicit_alpha_values": explicit_alpha})
++        visible_home = (len(homes) == 1 and all(homes[0]["flags"].values()) and not other_visible
++                        and focused_display == window["display_id"])
++        check("independent_visible_unobscured_settings_activity", visible_home,
++              home_windows=homes, other_visible_windows=other_visible, focused_display_id=focused_display,
++              ordinary_system_bar_frames=system_bars)
++
++        xml_raw = read("ui-final.xml", 2 * 1024 * 1024)
++        need(b"<!DOCTYPE" not in xml_raw and b"<!ENTITY" not in xml_raw, "unexpected XML declaration")
++        xml = ET.fromstring(xml_raw)
++        need(xml.tag == "hierarchy" and len(xml) == 1 and xml[0].tag == "node", "one independent XML root required")
++        need(type(after.get("rotation")) is int and after["rotation"] in range(4)
++             and xml.get("rotation") == str(after["rotation"]), "independent XML rotation differs")
++        root = xml[0]
++        parents = {child: parent for parent in xml.iter() for child in parent}
++
++        def under(node, ancestor):
++            while node in parents:
++                node = parents[node]
++                if node is ancestor:
++                    return True
++            return False
++
++        def live(node):
++            if node.get("package") != SETTINGS or node.get("enabled") != "true" or not inside(bounds(node.get("bounds")), frame):
++                return False
++            current = node
++            while current is not xml:
++                if current.get("visible-to-user") == "false":
++                    return False
++                current = parents.get(current, xml)
++            return True
++
++        def uncovered(node):
++            value = bounds(node.get("bounds"))
++            return value is not None and not any(value[0] < bar[2] and bar[0] < value[2]
++                and value[1] < bar[3] and bar[1] < value[3] for bar in system_bars)
++
++        nodes = list(root.iter("node"))
++        need(len(nodes) <= 4096, "independent XML node bound exceeded")
++        ids = ("settings_homepage_container", "homepage_app_bar_regular_phone_view",
++               "homepage_container", "main_content_scrollable_container")
++        anchors = {name: [n for n in nodes if n.get("resource-id") == SETTINGS + ":id/" + name and live(n)] for name in ids}
++        layout = (root.get("package") == SETTINGS and root.get("class") == window["root_class"]
++                  and bounds(root.get("bounds")) == frame and all(n.get("package") == SETTINGS for n in nodes)
++                  and all(len(found) == 1 for found in anchors.values()))
++        if layout:
++            home = anchors["settings_homepage_container"][0]
++            layout = all(under(anchors[name][0], home) for name in ids[1:])
++            layout = layout and under(anchors["homepage_container"][0], anchors["main_content_scrollable_container"][0])
++        searches = [n for n in nodes if n.get("resource-id") == SETTINGS + ":id/search_action_bar_title"
++                    and n.get("text") == "搜索设置" and live(n)]
++        search_ok = (layout and len(searches) == 1 and under(searches[0], anchors["homepage_app_bar_regular_phone_view"][0])
++                     and any(p.get("resource-id") == SETTINGS + ":id/search_action_bar" and p.get("clickable") == "true"
++                             and live(p) and under(searches[0], p) for p in nodes))
++        forbidden = [n.get("resource-id") or n.get("class") for n in nodes if live(n)
++                     and ("EditText" in n.get("class", "") or n.get("resource-id") == "android:id/search_src_text"
++                          or n.get("resource-id") == SETTINGS + ":id/collapsing_toolbar")]
++        observed_titles = {(n.get("view_id"), n.get("text"), tuple(n.get("bounds", [])))
++                           for n in after["nodes"] if n.get("text") and inside(bounds(n.get("bounds")), frame)
++                           and n["id"] in projected_nodes and projected_nodes[n["id"]][1] == n["text"]
++                           and projected_nodes[n["id"]][2] == n["bounds"]}
++        categories = []
++        if layout:
++            for node in nodes:
++                label = node.get("text", "")
++                if (live(node) and uncovered(node) and node.get("resource-id") == "android:id/title" and label
++                        and under(node, anchors["homepage_container"][0])
++                        and ("android:id/title", label, tuple(bounds(node.get("bounds")))) in observed_titles):
++                    categories.append(label)
++        search_bound = (len(searches) == 1 and uncovered(searches[0])
++                        and (searches[0].get("resource-id"), "搜索设置", tuple(bounds(searches[0].get("bounds")))) in observed_titles)
++        check("same_window_homepage_structure", layout and search_ok and not forbidden,
++              unique_visible_anchors={name: len(found) for name, found in anchors.items()}, forbidden_surfaces=forbidden)
++        check("independent_xml_matches_terminal_home_content", search_bound and len(set(categories)) >= 3,
++              search_bound=search_bound, matched_top_level_categories=sorted(set(categories)))
++        result["evidence_complete"] = True
++        result["passed"] = all(c["passed"] for c in result["checks"])
++    except (OSError, ValueError, TypeError, KeyError, AttributeError, ET.ParseError, acceptance.DriverError) as error:
++        result["errors"].append(str(error))
++    return result
+ 
+ 
+ def _node(event, capability):
+@@ -260,10 +548,11 @@
+         check("independent_final_ui", final["all_passed"], evidence=final)
+         nodes = [n.attrib for n in ui["xml"].iter("node") if n.get("visible-to-user", "true") != "false"]
+         kind = case["assertion"]
+-        if kind in {"settings_home", "search_return_home", "ordered_navigation", "cross_app"}:
+-            titles = {n.get("text", "") for n in nodes if n.get("package") == SETTINGS}
+-            descriptions = {n.get("content-desc", "") for n in nodes if n.get("package") == SETTINGS}
+-            check("settings_home_title_and_search_entry", "设置" in titles | descriptions and "搜索设置" in titles | descriptions)
++        if kind in HOME_KINDS:
++            homepage = settings_homepage_evidence(directory, case, suite, acceptance)
++            check("independent_settings_homepage", homepage["passed"], evidence=homepage)
++            if not homepage["evidence_complete"]:
++                errors.extend("homepage evidence: " + e for e in homepage["errors"])
+         if kind in {"settings_home", "apps_management"}:
+             # The independent terminal UI supplies the exact page predicates.
+             # Activation can be open, launcher click, back from a restored child,
+--- a/core_phone_suite.py
++++ b/core_phone_suite.py
+@@ -94,7 +94,7 @@
+     def action(kind, package=None):
+         return {"action": kind, **({"package": package} if package else {})}
+     return [
+-        case("core-settings-home-01", "打开系统设置，停留在设置首页。", settings, ["设置", "搜索设置"],
++        case("core-settings-home-01", "打开系统设置，停留在设置首页。", settings, ["搜索设置"],
+              [], "settings_home"),
+         case("core-settings-apps-01", "打开系统设置，进入“应用”页面，停留在这个页面。", settings, ["特殊应用权限", "应用管理"],
+              [], "apps_management"),
+@@ -102,11 +102,11 @@
+              [action("click", calculator) for _ in range(7)], "calculator_keypad"),
+         case("core-settings-chinese-search-01", "打开系统设置，在搜索框输入“蓝牙”，停留在搜索结果页面。", search, ["蓝牙"],
+              [action("type", search)], "chinese_search"),
+-        case("core-search-return-home-01", "返回系统设置首页。如果当前停留在设置的搜索页或子页面，请逐级返回，最后停留在设置首页，不修改任何设置。", settings, ["设置", "搜索设置"],
++        case("core-search-return-home-01", "返回系统设置首页。如果当前停留在设置的搜索页或子页面，请逐级返回，最后停留在设置首页，不修改任何设置。", settings, ["搜索设置"],
+              [], "search_return_home", False, precondition={"initial_package": search}),
+-        case("core-settings-home-settings-01", "依次完成：打开系统设置，回到桌面，再次打开系统设置并停留在设置首页。不要修改设置。", settings, ["设置", "搜索设置"],
++        case("core-settings-home-settings-01", "依次完成：打开系统设置，回到桌面，再次打开系统设置并停留在设置首页。不要修改设置。", settings, ["搜索设置"],
+              [], "ordered_navigation", goal_visits=["settings", "home", "settings"]),
+-        case("core-cross-app-01", "依次打开系统设置、计算器，再次打开系统设置并停留在设置首页。不修改设置，不进行计算。", settings, ["设置", "搜索设置"],
++        case("core-cross-app-01", "依次打开系统设置、计算器，再次打开系统设置并停留在设置首页。不修改设置，不进行计算。", settings, ["搜索设置"],
+              [], "cross_app", goal_visits=["settings", "calculator", "settings"]),
+         case("core-settings-scroll-01", "打开系统设置，回到设置首页，向下滚动设置列表至少一次并停留在滚动后的列表。不修改任何设置。", settings, [],
+              [action("scroll", settings)], "scroll"),

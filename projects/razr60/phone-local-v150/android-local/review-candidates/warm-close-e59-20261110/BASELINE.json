@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.warm-close-review-baseline.v1",
+  "scope": "Unadopted source-review capsule; not an executable app or a deployment input",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "suggested_branch": "codex/razr-warm-close-review-20261110-e59e7b75",
+  "publication_base": {
+    "branch": "integration/razr60-r9-20261107",
+    "commit": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+    "tree": "3b805316ffdb03fc1fb581896d56910bf96c77ab",
+    "is_warm_source_base": false
+  },
+  "latest_observed_published_controller": {
+    "branch": "codex/razr-local-profile-cli-20261109-82d1243e",
+    "commit": "b37e4f67b7c97c98dd541ba1b7912403b5b1125d",
+    "contains_observed_warm_candidate": false
+  },
+  "unpublished_warm_observation": {
+    "version_code": 29,
+    "version_name": "0.29.0-local-task-worker",
+    "source_manifest_sha256": "e8cbb349747d6e21fe6961889d4859ca52d182ac480e4a45c71b662687826ff7",
+    "declared_code27_parent": "de197700828dbddef9d1077dfe3d457a5cbe9295",
+    "declared_parent_github_object_verified": false,
+    "known_published_warm_commit": null,
+    "observation_is_not_an_atomic_whole_source_snapshot": true
+  },
+  "controller_patch": {
+    "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
+    "before_sha256": "729158a4d9194ae2f9c1d4d1ca850ea1a33ba4208063d90b04ecbe184b539641",
+    "after_sha256": "cdf2368963b6a3cb4c0432e86e04e7c38ad498fc4ab7197f3dd0483885c7b1c4",
+    "patch_sha256": "b99a3963c99a3ae54b98c97e5f240db82db64c1e801d047c31197b451a8aa631",
+    "requires_exact_before_bytes": true,
+    "published_file": "controller-stop.patch"
+  },
+  "recovery_fixture": {
+    "path": "tests/recovery-application/prepare_engine_fixture.py",
+    "original_before_sha256": "51f44228401a95740b5c7cac72ecdf7e9b244d6ad9852835225e5dea1660875a",
+    "required_current_sha256": "0c4dcdf940d9423fb8f85d2a1643df37439cfa4126cef07221f158683c1dfcc6",
+    "status": "already_satisfied_in_observed_Code29",
+    "hunk_in_main_patch": false,
+    "rewrite_or_overwrite_required": false
+  },
+  "copied_tests": [
+    {
+      "path": "tests/warm-finalization/prepare_fixture.py",
+      "sha256": "f66bff1702ec9d40f967a69509b9e78472886d822f25e0bacfe4bee17322a3a3",
+      "bytes": 4060,
+      "copied_byte_exact": true
+    },
+    {
+      "path": "tests/warm-finalization/WarmFinalizationHostTest.java",
+      "sha256": "42d37b5677c469db401aacf2ca21f93e512f2cb67ac8f68cd3abffc2c36071e7",
+      "bytes": 6647,
+      "copied_byte_exact": true
+    },
+    {
+      "path": "tools/test_warm_finalization.py",
+      "sha256": "759e5f00721512169d0cbeb71f692d77b4b5cceaa8f5fb82fdd6042f04e8e966",
+      "bytes": 2278,
+      "copied_byte_exact": true
+    }
+  ],
+  "original_five_file_patch": {
+    "retained_outside_capsule": true,
+    "original_evidence_relative_path": "warm-close-review.patch",
+    "sha256": "a1b2bfa75a77c3d8dc01f7751a68aae12c34341f0b5927d470879d71c44ec3a3",
+    "included_in_capsule": false,
+    "not_rewritten": true
+  },
+  "deployment": {
+    "apk_built": false,
+    "phone_operated": false,
+    "installed": false,
+    "warm_source_overlaid": false
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "schema": "hepta.warm-acceptance-validation.v1",
+  "revision": "r5",
+  "scope": "host_only; synthetic protocol/UI evidence; no ADB/Android/native inference",
+  "checks": [
+    {
+      "name": "r5-combined-host",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "test_phone_acceptance",
+        "test_labeled_target_binding",
+        "test_warm_receipts",
+        "test_warm_collection",
+        "test_warm_collection_integrity",
+        "test_phone_suite",
+        "test_warm_action_binding",
+        "test_warm_core_integration",
+        "test_warm_terminal_closure",
+        "test_warm_terminal_verdict",
+        "test_core_assertions"
+      ],
+      "cwd": "source/tools",
+      "exit_code": 0,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "HEPTA_WARM_CORE_SOURCE": "reviewed-core-with-closure-patch",
+        "HEPTA_CORE_TEST_DRIVERS": "isolated-source/tools",
+        "PYTHONPATH": "reviewed-core-with-closure-patch"
+      },
+      "test_methods": 186,
+      "skipped": 0,
+      "breakdown": {
+        "r2_related_closure": 114,
+        "warm_binding_r3": 15,
+        "real_core_integration_r3": 7,
+        "terminal_and_import_regressions_r4": 7,
+        "verdict_wait_done_state_regressions_r5": 8,
+        "existing_core_synthetic": 35
+      },
+      "summary": [
+        "Ran 186 tests in 3.430s",
+        "OK"
+      ],
+      "log": {
+        "original_relative_path": "logs/r5-host.stderr",
+        "original_sha256": "10a5337e4830b1e6b7dc75b5cc07f5634fa5be3b794c90f9499fb7840ce9c8c4",
+        "original_bytes": 28963,
+        "published_file": "r5-host-pass.txt",
+        "published_sha256": "10a5337e4830b1e6b7dc75b5cc07f5634fa5be3b794c90f9499fb7840ce9c8c4",
+        "published_bytes": 28963
+      }
+    },
+    {
+      "name": "r4-new-regressions",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "test_warm_terminal_verdict"
+      ],
+      "cwd": "regression-baseline/tools",
+      "exit_code": 1,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "HEPTA_WARM_CORE_SOURCE": "review-r4-evidence/integration-drivers",
+        "HEPTA_CORE_TEST_DRIVERS": "regression-baseline/tools",
+        "PYTHONPATH": "review-r4-evidence/integration-drivers"
+      },
+      "production_baseline_matches_r4": [
+        {
+          "path": "phone_acceptance.py",
+          "sha256": "d5dc260e5cb2068b8687eb7634175398ff926f3a0b424ea2fe77ac5422ebfa92"
+        },
+        {
+          "path": "phone_suite.py",
+          "sha256": "bc739f3c5bfbc34d6b0f01f28fcd0523c237ea1d2ea9fe257dfb451967674d1b"
+        },
+        {
+          "path": "warm_receipts.py",
+          "sha256": "085b74070b0eb1a0b3e4763c8996d02443469da6bd4788d0c983126b6cfc3bbc"
+        },
+        {
+          "path": "warm_action_evidence.py",
+          "sha256": "cb235f197264140ebfe750bd39fee05e39b1c44fb3a21e8c03b13ee31f2c0339"
+        }
+      ],
+      "fixture_only_overlay": [
+        "test_warm_action_binding.py",
+        "test_warm_terminal_verdict.py"
+      ],
+      "test_methods": 8,
+      "expected_failing_assertions": 16,
+      "errors": 0,
+      "reason": "Base pass vs non-success terminal, non-stable/missing done state, and supported non-dispatched wait were not correctly handled",
+      "log": {
+        "original_relative_path": "logs/r4-new-regressions.stderr",
+        "original_sha256": "c32ead4c3736d2241bf88bbbf9fca81a405250c9ef05f88b9031a08d1ddfc99e",
+        "original_bytes": 99136,
+        "published_file": "r4-new-regressions-fail.txt",
+        "published_sha256": "6085df1f797f8f684029c1804cbe93fd1e4849b8d2efd626ce5059717c13afe1",
+        "published_bytes": 16825,
+        "normalization": "scratch prefixes replaced with relative evidence aliases; large synthetic assertion result payloads abridged; all test/subtest identities, traces and failure reasons retained",
+        "large_result_payloads_omitted": 15
+      }
+    }
+  ],
+  "prior_validation_preserved": {
+    "r3_host_methods_passed": 171,
+    "r2_positive_case_methods_failed": 3,
+    "r2_host_methods_passed": 114,
+    "r1_new_regression_methods": 7,
+    "r1_new_regression_failing_assertions": 22,
+    "r1_host_methods_passed": 107,
+    "original_code29_regression_failing_assertions": 8,
+    "r4_host_methods_passed": 178,
+    "r3_new_regression_methods": 7,
+    "r3_new_regression_failing_assertions": 21
+  },
+  "manifest_and_shared_baseline_hashes_match": true,
+  "cumulative_tools_patch_apply_check": true,
+  "r3_delta_apply_check": true,
+  "core_closure_patch_apply_check": true,
+  "both_patch_after_hashes_verified_in_disposable_copies": true,
+  "r3_original_hashes_rechecked_unchanged": true,
+  "independent_review": {
+    "agent": "hepta_android_audit",
+    "status": "read_only_review_complete_no_new_blocker_in_r5_increment",
+    "tests_rerun_by_reviewer": false,
+    "scope": "R4 terminal journals/import closure and R5 verdict/wait/done state increment; host review only",
+    "r4_findings_fixed": [
+      "complete step and terminal native binding",
+      "preloaded/post-import foreign helper origins"
+    ],
+    "r5_findings_fixed": [
+      "base pass requires successful terminal",
+      "legal wait retained without treating it as an effect",
+      "producer done state invariants"
+    ],
+    "not_formal_github_approval": true,
+    "reviewer_is_author": false,
+    "review_date_utc": "2026-11-10",
+    "limitations": [
+      "Read-only source and saved-log review",
+      "No test rerun by reviewer",
+      "No phone, Android build or native inference qualification"
+    ]
+  },
+  "limitations": [
+    "No Android build or installation; no phone operation",
+    "No native model quality, throughput, thermal or power qualification",
+    "Complete controller before/action/after records required; current stale-reobserve producer branches omit some records and remain unverified",
+    "No reconstruction of unrecorded controller steps and no task replay",
+    "No proof of lost remote files absent from captured directory; collector remains responsible for acquisition",
+    "No atomic Android publication, disk durability, concurrent-host-edit or in-memory-code attestation",
+    "No whole-phone/offline/background qualification",
+    "Existing frozen plan pins must be deliberately refreshed over reviewed tool and core closures"
+  ],
+  "r4_original_hashes_rechecked_unchanged": true,
+  "r4_delta_apply_check": true
+}

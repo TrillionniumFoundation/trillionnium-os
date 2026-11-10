@@ -1,0 +1,1725 @@
+diff --git a/tools/phone_acceptance.py b/tools/phone_acceptance.py
+--- a/tools/phone_acceptance.py
++++ b/tools/phone_acceptance.py
+@@ -434,13 +434,36 @@
+     return schema != LABEL_ACTION_SCHEMA or target_label_binding_valid(receipt, native, prompt_bytes, raw_bytes)
+ 
+ 
++def warm_request_artifacts_valid(receipt, native, run_directory, instruction, observations):
++    """Bind an owned warm request to the collected inputs and decoded output.
++
++    Receipt ownership finds failed/unpublished requests too. It cannot replace
++    proof that the exact model input contained this task's original instruction.
++    """
++    try:
++        prompt = (run_directory / "prompt.txt").read_bytes()
++        raw = (run_directory / "raw-text.txt").read_bytes()
++        system_file = run_directory / "system.txt"
++        system_hash = digest(system_file.read_bytes()) if system_file.is_file() else None
++        inputs = native.get("input_sha256")
++        return (isinstance(inputs, dict)
++            and receipt.get("prompt_sha256") == inputs.get("prompt") == digest(prompt)
++            and "system" in inputs and inputs["system"] == system_hash
++            and receipt.get("raw_text_sha256_read") == native.get("raw_text_sha256") == digest(raw)
++            and prompt_binding(prompt.decode("utf-8"), instruction, observations))
++    except (OSError, UnicodeError, ValueError, TypeError, AttributeError, DriverError):
++        return False
++
++
+ def collect_evidence(adb, directory, task_id, instruction, baseline_runs, screenshots, expected_uid,
+-        expected_compute="npu", expected_context=4096, expected_model_profile="lfm3-1.7b-qad-q4_0"):
++        expected_compute="npu", expected_context=4096, expected_model_profile="lfm3-1.7b-qad-q4_0",
++        expected_final=None):
+     from model_profiles import profile
+     selected=profile(expected_model_profile)
+     report = {"task_id": task_id, "associated_runs": [], "omitted_screenshots": [], "errors": [], "files": []}
+-    warm_records = {}
+-    observations, explicit_runs, observation_packages = set(), set(), {}
++    warm_records, warm_generations = {}, set()
++    final = {}
++    observations, explicit_runs, receipt_runs, observation_packages = set(), set(), set(), {}
+     if not task_id:
+         return report
+     task_path = "files/control-tasks/" + task_id
+@@ -459,6 +482,10 @@
+             report["files"].append({"path": "task/" + name, "bytes": len(data), "sha256": digest(data)})
+             if name.endswith(".json"):
+                 value = strict_json(data)
++                if not isinstance(value, dict):
++                    raise DriverError("task JSON object required")
++                if name == "result.json":
++                    final = value
+                 observation = value.get("observation_id")
+                 if isinstance(observation, str) and HEX32.fullmatch(observation):
+                     observations.add(observation)
+@@ -469,6 +496,20 @@
+                 if isinstance(run, str) and HEX32.fullmatch(run): explicit_runs.add(run)
+         except Exception as error:
+             report["errors"].append(name + ": " + str(error))
++    # The task terminal is an independent mode/ownership anchor. Even if all
++    # request receipts are missing, retain its worker exit evidence and logs.
++    summary = final.get("model_session")
++    declared_generation = summary.get("worker_generation") if isinstance(summary, dict) else None
++    report["task_model_session_expected"] = (declared_generation is not None
++        or isinstance(summary, dict) and summary.get("process_started") is True)
++    # JSON booleans and integers must not compare equal across the two snapshots.
++    report["observed_terminal_binding_valid"] = (expected_final is None
++        or json.dumps(final, sort_keys=True, allow_nan=False)
++        == json.dumps(expected_final, sort_keys=True, allow_nan=False))
++    if isinstance(declared_generation, str) and HEX32.fullmatch(declared_generation):
++        warm_generations.add(declared_generation)
++    elif declared_generation is not None:
++        report["errors"].append("invalid task terminal worker generation")
+     try:
+         candidates = set(adb.list_children("files/runs", directories=True)) - baseline_runs
+     except Exception as error:
+@@ -477,12 +518,29 @@
+     for run_id in sorted(candidates - associated):
+         if not HEX32.fullmatch(run_id): continue
+         try:
++            # An unsuccessful request may never publish a step-model record or
++            # prompt. Include it by either owned task or owned generation, then
++            # fail closed on the full contracts below; never hide it from counts.
++            owned = False
++            for name in ("app-receipt.json", "native-result.json"):
++                data = adb.app_bytes("files/runs/" + run_id + "/" + name, optional=True)
++                if data is None:
++                    continue
++                receipt = strict_json(data)
++                if (isinstance(receipt, dict)
++                        and (receipt.get("task_id") == task_id
++                             or declared_generation is not None and receipt.get("worker_generation") == declared_generation)):
++                    associated.add(run_id); receipt_runs.add(run_id); owned = True; break
++            if owned:
++                continue
+             prompt = adb.app_bytes("files/runs/" + run_id + "/prompt.txt", optional=True)
+             if prompt is not None and prompt_binding(prompt.decode("utf-8"), instruction, observations): associated.add(run_id)
+         except Exception as error:
+             report["errors"].append("associate " + run_id + ": " + str(error))
+     for run_id in sorted(associated):
+-        row = {"run_id": run_id, "association": "step_model_run_id" if run_id in explicit_runs else "exact_owner_and_observation_id", "files": []}
++        association = ("step_model_run_id" if run_id in explicit_runs else
++                       "task_or_generation_receipt" if run_id in receipt_runs else "exact_owner_and_observation_id")
++        row = {"run_id": run_id, "association": association, "files": []}
+         receipt, native = {}, {}
+         try:
+             for name in adb.list_children("files/runs/" + run_id):
+@@ -544,21 +602,27 @@
+                         receipt, native, grammar_file.read_bytes(), observation_packages,
+                         prompt_file.read_bytes() if prompt_file.is_file() else None,raw)
+                 row["runtime_evidence"] = {k: native.get(k) for k in ("mode", "runtime", "compute_requested", "device_resolved", "device_warning", "n_ctx_create", "n_gpu_layers_create", "prompt_budget", "profile")}
++            if native.get("schema") == NATIVE_REQUEST and native.get("task_id") == task_id:
++                native_generation = native.get("worker_generation")
++                if isinstance(native_generation, str) and HEX32.fullmatch(native_generation):
++                    warm_generations.add(native_generation)
+             if receipt.get("schema") == APP_REQUEST:
+                 generation = receipt.get("worker_generation")
+                 row["worker_generation"] = generation
+                 row["request_sequence"] = receipt.get("request_sequence")
+                 row["task_request_binding_valid"] = request_contract(receipt, native, task_id)
++                row["task_request_artifacts_valid"] = warm_request_artifacts_valid(
++                    receipt, native, directory / "runs" / run_id, instruction, observations)
+                 if isinstance(generation, str) and HEX32.fullmatch(generation):
++                    warm_generations.add(generation)
+                     warm_records.setdefault(generation, []).append((receipt, native))
+         except Exception as error:
+             report["errors"].append("collect " + run_id + ": " + str(error))
+         report["associated_runs"].append(row)
+-    if warm_records:
++    if warm_generations:
+         report["task_model_sessions"] = []
+-        final_file = directory / "task" / "result.json"
+-        final = strict_json(final_file.read_bytes()) if final_file.is_file() else {}
+-        for generation, records in sorted(warm_records.items()):
++        for generation in sorted(warm_generations):
++            records = warm_records.get(generation, [])
+             session = {"worker_generation": generation, "binding_valid": False, "files": []}
+             try:
+                 for name in ("app-session-receipt.json", "native-session-result.json", "stdout.log", "stderr.log"):
+@@ -711,7 +775,7 @@
+         report["cleanup_unknown"] = report["launch_attempt_count"] > 0 and final is None and not report.get("trigger_rejected", False)
+     finally:
+         try:
+-            collection = collect_evidence(adb, directory, task_id, instruction, baseline_runs, args.include_screenshots, report.get("app_uid"), args.expected_compute, args.expected_context,getattr(args,"expected_model_profile","lfm3-1.7b-qad-q4_0"))
++            collection = collect_evidence(adb, directory, task_id, instruction, baseline_runs, args.include_screenshots, report.get("app_uid"), args.expected_compute, args.expected_context,getattr(args,"expected_model_profile","lfm3-1.7b-qad-q4_0"),expected_final=final)
+             report["collection"] = collection
+             if collection["errors"] and report["verdict"] == "pass": report["verdict"] = "unverified"
+             report["native_receipts_verified"] = collection_verified(collection)
+diff --git a/tools/phone_suite.py b/tools/phone_suite.py
+--- a/tools/phone_suite.py
++++ b/tools/phone_suite.py
+@@ -19,6 +19,7 @@
+ import phone_acceptance as acceptance
+ from model_profiles import profile as selected_profile, DEFAULT_PROFILE
+ from phone_inventory import require_existing_adb_server
++from warm_action_evidence import requires_warm_binding, verify_warm_action
+ 
+ SCHEMA = "hepta.phone-suite.v1"
+ SHA = re.compile(r"[0-9a-f]{64}\Z")
+@@ -220,7 +221,9 @@
+         native_path = run_directory / "native-result.json"
+         native = _evidence_object(native_path)
+         raw_sha = acceptance.digest(raw)
+-        if (native.get("schema") != "hepta.geniex-once.result.v1" or native.get("request_id") != run_id
++        warm = requires_warm_binding(directory, run_id, native)
++        expected_schema = "hepta.geniex-task-request.result.v1" if warm else "hepta.geniex-once.result.v1"
++        if (native.get("schema") != expected_schema or native.get("request_id") != run_id
+                 or native.get("raw_text_sha256") != raw_sha
+                 or type(native.get("raw_text_bytes")) is not int or native["raw_text_bytes"] != len(raw)
+                 or native.get("generation_complete") is not True or native.get("raw_text_utf8") is not True
+@@ -229,10 +232,13 @@
+         generated_action = acceptance.strict_json(raw)
+         if _action_identity(generated_action) != _action_identity(receipt["action"]):
+             raise acceptance.DriverError("dispatched action differs from the model's exact decoded decision")
++        if warm:
++            result.update(verify_warm_action(directory, path, receipt, before, model_path, model,
++                                            native, raw, owner_sha, _action_identity))
+         result.update(verified=True, step_model_receipt=str(model_path.relative_to(directory)),
+                       native_raw_output=str(raw_path.relative_to(directory)),
+                       native_result=str(native_path.relative_to(directory)), raw_text_sha256=raw_sha)
+-    except (acceptance.DriverError, OSError, ValueError, TypeError, KeyError, RecursionError) as error:
++    except (acceptance.DriverError, OSError, ValueError, TypeError, KeyError, AttributeError, RecursionError) as error:
+         result["reason"] = str(error)
+     return result
+ 
+diff --git a/tools/warm_receipts.py b/tools/warm_receipts.py
+--- a/tools/warm_receipts.py
++++ b/tools/warm_receipts.py
+@@ -3,6 +3,7 @@
+ These checks consume recorded evidence. Actual process ownership and waitFor
+ belong to the app; native code cannot assert that its own process has exited.
+ """
++import math
+ import re
+ 
+ ID = re.compile(r"[0-9a-f]{32}\Z")
+@@ -18,6 +19,30 @@
+ 
+ def integer(value, minimum=0):
+     return type(value) is int and value >= minimum
++
++
++def json_equivalent(left, right):
++    """JSON value equality without Python's boolean/number equivalence.
++
++    JSONObject may serialize 1.0 as 1; preserve that numeric equivalence.
++    Protocol integer fields still have their separate strict integer gates.
++    """
++    if type(left) is bool or type(right) is bool:
++        return type(left) is bool and type(right) is bool and left is right
++    if left is None or right is None:
++        return left is None and right is None
++    if type(left) in (int, float) and type(right) in (int, float):
++        return ((type(left) is int or math.isfinite(left))
++                and (type(right) is int or math.isfinite(right)) and left == right)
++    if type(left) is str and type(right) is str:
++        return left == right
++    if type(left) is list and type(right) is list:
++        return len(left) == len(right) and all(json_equivalent(a, b) for a, b in zip(left, right))
++    if type(left) is dict and type(right) is dict:
++        return (all(type(key) is str for key in left) and all(type(key) is str for key in right)
++                and left.keys() == right.keys()
++                and all(json_equivalent(left[key], right[key]) for key in left))
++    return False
+ 
+ 
+ def request_contract(app, native, task_id):
+@@ -39,7 +64,7 @@
+         and app.get("status") == "request_completed" and app.get("request_committed") is True
+         and app.get("inference_completed") is True and app.get("cancel_requested") is False
+         and app.get("timeout_observed") is False and app.get("force_destroy_sent") is False
+-        and app.get("native_receipt") == native
++        and json_equivalent(app.get("native_receipt"), native)
+         and native.get("worker_retained") is True and native.get("process_exit_observed") is False
+         and "worker_exit_status_planned" in native and native["worker_exit_status_planned"] is None
+         and native.get("request_status") == 0 and type(native.get("request_status")) is int
+@@ -85,7 +110,7 @@
+         and app.get("cleanup_known") is True and app.get("native_session_binding_valid") is True
+         and app.get("force_destroy_sent") is False and app.get("cancel_requested") is False
+         and app.get("automatic_restart") is False and app.get("cross_task_reuse") is False
+-        and app.get("native_session_receipt") == native and native.get("process_exit_observed") is False
++        and json_equivalent(app.get("native_session_receipt"), native) and native.get("process_exit_observed") is False
+         and all(type(app.get(key)) is int and app[key] == count
+                 for key in ("requests_sent", "requests_accepted"))
+         and all(type(native.get(key)) is int and native[key] == count
+@@ -105,16 +130,19 @@
+ 
+ def collection_verified(collection):
+     rows = collection.get("associated_runs", [])
+-    if not rows:
++    if not rows or collection.get("errors"):
+         return False
+-    warm = any(row.get("app_receipt_schema") == APP_REQUEST for row in rows)
++    warm = (collection.get("task_model_session_expected") is True
++            or any(row.get("app_receipt_schema") == APP_REQUEST for row in rows))
+     if warm and not (all(row.get("app_receipt_schema") == APP_REQUEST for row in rows)
+-                     and collection.get("task_model_sessions_valid") is True):
++                     and collection.get("task_model_sessions_valid") is True
++                     and collection.get("observed_terminal_binding_valid") is True):
+         return False
+     common = ("app_receipt_available", "run_id_binding_valid", "inference_completed",
+               "app_identity_and_runtime_valid", "native_output_binding_valid", "accelerator_runtime_valid",
+               "accelerator_offload_observed", "controller_grammar_binding_valid")
+     return all(all(row.get(key) is True for key in common)
+-               and (row.get("task_request_binding_valid") is True if warm
++               and (row.get("task_request_binding_valid") is True
++                    and row.get("task_request_artifacts_valid") is True if warm
+                     else row.get("process_exit_observed") is True and type(row.get("exit_code")) is int
+                     and row["exit_code"] == 0) for row in rows)
+diff --git a/tools/warm_action_evidence.py b/tools/warm_action_evidence.py
+new file mode 100644
+--- /dev/null
++++ b/tools/warm_action_evidence.py
+@@ -0,0 +1,297 @@
++"""Recheck an entire collected task worker before qualifying any of its actions.
++
++This module reads a completed case directory only. It never runs a process,
++contacts a device, changes evidence, or supplies an action. Collector summaries
++are required, but cannot substitute for the request/session artifacts below.
++"""
++from pathlib import Path
++import json
++import re
++
++import phone_acceptance as acceptance
++from model_profiles import DEFAULT_PROFILE, profile
++from warm_receipts import (APP_REQUEST, NATIVE_REQUEST, collection_verified,
++                           json_equivalent, request_contract, session_contract)
++
++
++def need(value, message):
++    if not value:
++        raise acceptance.DriverError("warm action evidence: " + message)
++
++
++class Snapshot:
++    """A bounded, per-call byte snapshot; no cached approval survives a call."""
++    def __init__(self, directory):
++        self.directory = Path(directory)
++        self.data, self.manifest = {}, {}
++
++    def read(self, relative, pinned=True):
++        path = Path(relative)
++        need(not path.is_absolute() and path.parts and all(p not in (".", "..") for p in path.parts)
++             and str(path) == relative, "unsafe evidence path")
++        target = self.directory / path
++        current = target
++        while current != self.directory.parent:
++            need(not current.is_symlink(), "symlink in " + relative)
++            current = current.parent
++        if relative not in self.data:
++            need(target.is_file() and target.stat().st_size <= 16 * 1024 * 1024,
++                 "missing or oversized " + relative)
++            raw = target.read_bytes()
++            need(len(raw) <= 16 * 1024 * 1024, "evidence grew beyond bound")
++            self.data[relative] = raw
++            need(sum(map(len, self.data.values())) <= 128 * 1024 * 1024, "case exceeds byte bound")
++        raw = self.data[relative]
++        if pinned:
++            item = self.manifest.get(relative, {})
++            need(type(item.get("bytes")) is int and item["bytes"] == len(raw)
++                 and item.get("sha256") == acceptance.digest(raw), "manifest differs for " + relative)
++        return raw
++
++    def obj(self, relative, pinned=True):
++        value = acceptance.strict_json(self.read(relative, pinned))
++        need(isinstance(value, dict), "object required in " + relative)
++        return value
++
++    def add_files(self, files, scope):
++        need(isinstance(files, list) and len(files) <= 2048, "invalid file inventory")
++        for item in files:
++            need(isinstance(item, dict) and isinstance(item.get("path"), str), "invalid inventory entry")
++            relative = item["path"]
++            path = Path(relative)
++            need(str(path.parent) == scope and acceptance.SAFE_FILE.fullmatch(path.name)
++                 and relative not in self.manifest, "duplicate or foreign inventory path")
++            self.manifest[relative] = item
++        folder = self.directory / scope
++        need(folder.is_dir() and not folder.is_symlink(), "missing or linked inventory directory")
++        observed = {str(p.relative_to(self.directory)) for p in folder.iterdir()}
++        expected = {name for name in self.manifest if str(Path(name).parent) == scope}
++        need(observed == expected, "unlisted or missing collected files in " + scope)
++
++
++def requires_warm_binding(directory, run_id, native):
++    """Recognize task mode independently of the selected result's schema."""
++    if native.get("schema") == NATIVE_REQUEST or "worker_generation" in native:
++        return True
++    snapshot = Snapshot(directory)
++    for relative in ("runs/" + run_id + "/app-receipt.json", "task/result.json", "collection.json"):
++        path = Path(directory) / relative
++        if not path.exists() and not path.is_symlink():
++            continue
++        value = snapshot.obj(relative, pinned=False)
++        summary = value.get("model_session")
++        if (value.get("schema") == APP_REQUEST or "worker_generation" in value
++                or isinstance(summary, dict) and (summary.get("worker_generation") is not None
++                                                   or summary.get("process_started") is True)
++                or value.get("task_model_session_expected") is True
++                or any(isinstance(row, dict) and row.get("app_receipt_schema") == APP_REQUEST
++                       for row in value.get("associated_runs", []))):
++            return True
++    return False
++
++
++def verify_warm_action(directory, action_path, receipt, before, model_path, model, native, raw, owner_sha,
++                       action_identity):
++    """Return evidence for one action only after the whole generation verifies."""
++    snapshot = Snapshot(directory)
++    collection = snapshot.obj("collection.json", pinned=False)
++    report = snapshot.obj("acceptance.json", pinned=False)
++    need(json_equivalent(report.get("collection"), collection)
++         and collection_verified(collection) and report.get("native_receipts_verified") is True,
++         "complete verified collection is unavailable")
++    need(collection.get("task_model_session_expected") is True
++         and collection.get("observed_terminal_binding_valid") is True,
++         "task mode or observed terminal is unbound")
++    rows, sessions = collection.get("associated_runs"), collection.get("task_model_sessions")
++    need(isinstance(rows, list) and 1 <= len(rows) <= 64
++         and isinstance(sessions, list) and len(sessions) == 1, "one complete generation required")
++    generation = sessions[0].get("worker_generation")
++    need(isinstance(generation, str) and acceptance.HEX32.fullmatch(generation), "invalid generation")
++    by_run = {}
++    snapshot.add_files(collection.get("files"), "task")
++    for row in rows:
++        need(isinstance(row, dict), "invalid request summary")
++        run_id = row.get("run_id")
++        need(isinstance(run_id, str) and acceptance.HEX32.fullmatch(run_id)
++             and run_id not in by_run and run_id != generation, "duplicate or invalid request identity")
++        by_run[run_id] = row
++        snapshot.add_files(row.get("files"), "runs/" + run_id)
++    snapshot.add_files(sessions[0].get("files"), "runs/" + generation)
++    run_root = Path(directory) / "runs"
++    need(not run_root.is_symlink() and {p.name for p in run_root.iterdir()} == set(by_run) | {generation},
++         "unlisted or missing request directory")
++    for relative in snapshot.manifest:
++        snapshot.read(relative)
++
++    owner, final = snapshot.obj("task/owner.json"), snapshot.obj("task/result.json")
++    task_id, instruction = owner.get("task_id"), owner.get("instruction")
++    need(isinstance(task_id, str) and acceptance.HEX32.fullmatch(task_id)
++         and task_id == collection.get("task_id") == report.get("task_id") == final.get("task_id"),
++         "task identity differs")
++    need(isinstance(instruction, str) and acceptance.digest(instruction.encode("utf-8")) == owner_sha
++         and owner.get("instruction_utf8_sha256") == report.get("instruction_sha256") == owner_sha
++         and report.get("instruction") == instruction, "original instruction differs")
++    need(json.dumps(final, sort_keys=True, allow_nan=False)
++         == json.dumps(report.get("task_result"), sort_keys=True, allow_nan=False)
++         and final.get("status") in acceptance.TERMINAL and final.get("external_model") is False
++         and final.get("cleanup_known") is True and report.get("cleanup_unknown") is False,
++         "collected terminal differs or cleanup is unresolved")
++    expected_uid = report.get("app_uid")
++    need(type(expected_uid) is int and expected_uid >= 10000, "application UID is unavailable")
++
++    observations, steps = {}, []
++    for relative in sorted(snapshot.manifest):
++        if re.fullmatch(r"task/step-[0-9]{2}-(before|after)\.json", relative):
++            observation = snapshot.obj(relative)
++            identifier, package = observation.get("observation_id"), observation.get("package")
++            need(isinstance(identifier, str) and acceptance.HEX32.fullmatch(identifier)
++                 and isinstance(package, str) and package, "invalid collected observation")
++            observations.setdefault(identifier, set()).add(package)
++        match = re.fullmatch(r"task/step-([0-9]{2})-model-([01])\.json", relative)
++        if match:
++            steps.append((int(match[1]), int(match[2]), relative, snapshot.obj(relative)))
++        elif re.fullmatch(r"task/step-.*-model-.*\.json", relative):
++            need(False, "invalid model attempt filename")
++    need(len(steps) == len(rows) and {m.get("run_id") for _, _, _, m in steps} == set(by_run),
++         "request inventory and step-model inventory differ")
++    need({step for step, _, _, _ in steps} == set(range(1, max(step for step, _, _, _ in steps) + 1)),
++         "controller model steps are not contiguous")
++    step_numbers = {step for step, _, _, _ in steps}
++    for suffix in ("before", "action", "after"):
++        actual = {name for name in snapshot.manifest
++                  if re.fullmatch(r"task/step-.*-" + suffix + r"\.json", name)}
++        expected = {"task/step-%02d-%s.json" % (step, suffix) for step in step_numbers}
++        need(actual == expected, "controller step " + suffix + " inventory is incomplete")
++    records, runtime = [], None
++    last_models = {}
++    for sequence, (step, attempt, relative, step_model) in enumerate(sorted(steps), 1):
++        need(step >= 1 and (attempt == 0 or any(s == step and t == 0 for s, t, _, _ in steps)),
++             "corrected request lacks its first attempt")
++        run_id = step_model["run_id"]
++        prefix = "runs/" + run_id + "/"
++        app, request = snapshot.obj(prefix + "app-receipt.json"), snapshot.obj(prefix + "native-result.json")
++        need(request_contract(app, request, task_id) and app["worker_generation"] == generation
++             and app["run_id"] == run_id and app["request_sequence"] == sequence
++             and by_run[run_id].get("worker_generation") == generation
++             and type(by_run[run_id].get("request_sequence")) is int
++             and by_run[run_id]["request_sequence"] == sequence, "request/step sequence or generation differs")
++        output, prompt = snapshot.read(prefix + "raw-text.txt"), snapshot.read(prefix + "prompt.txt")
++        observed = snapshot.obj("task/step-%02d-before.json" % step)
++        need(step_model.get("observation_id") == observed.get("observation_id")
++             and step_model.get("original_instruction_sha256") == owner_sha
++             and isinstance(step_model.get("raw_text"), str)
++             and step_model["raw_text"].encode("utf-8") == output, "step output or observation differs")
++        inputs = request.get("input_sha256")
++        system = prefix + "system.txt"
++        system_sha = acceptance.digest(snapshot.read(system)) if system in snapshot.manifest else None
++        need(isinstance(inputs, dict) and app.get("prompt_sha256") == inputs.get("prompt") == acceptance.digest(prompt)
++             and "system" in inputs and inputs["system"] == system_sha
++             and acceptance.prompt_binding(prompt.decode("utf-8"), instruction, {observed.get("observation_id")}),
++             "prompt/system does not bind this exact step and owner")
++        prompt_data = acceptance.strict_json(prompt[len(b"UNTRUSTED_DATA\n"):].split(b"\nOWNER\n", 1)[0])
++        need(prompt_data.get("screen", {}).get("package") == observed.get("package")
++             and app.get("grammar_observation_id") == observed.get("observation_id"), "prompt screen differs")
++        need(0 < len(output) <= 16384 and request.get("raw_text_utf8") is True
++             and request.get("raw_text_truncated") is False and type(request.get("raw_text_bytes")) is int
++             and request["raw_text_bytes"] == len(output) and "error" in request and request["error"] is None
++             and app.get("raw_text_sha256_read") == request.get("raw_text_sha256") == acceptance.digest(output),
++             "native output is incomplete or changed")
++        output.decode("utf-8", "strict")
++        need(acceptance.controller_grammar_binding_valid(app, request, snapshot.read(prefix + "grammar.gbnf"),
++                                                        observations, prompt, output), "controller grammar is unbound")
++        compute, context = app.get("compute_requested"), app.get("context_tokens")
++        model_profile = app.get("model_profile", DEFAULT_PROFILE)
++        selected = profile(model_profile)
++        current_runtime = (compute, context, model_profile, app.get("model_path"))
++        need(runtime is None or runtime == current_runtime, "runtime changed inside one generation")
++        runtime = current_runtime
++        need(compute in ("npu", "gpu") and type(context) is int and context in (4096, 8192)
++             and app.get("package_name") == acceptance.PACKAGE and app.get("app_uid") == expected_uid
++             and app.get("runtime") == request.get("runtime") == "llama_cpp"
++             and app.get("mode") == request.get("mode") == "llm"
++             and app.get("model_sha256_verified") == selected["sha256"]
++             and all(app.get(k) is True for k in ("native_context_budget_valid", "grammar_constraint_enabled",
++                     "grammar_binding_valid", "native_result_binding_valid"))
++             and app.get("image_sent_to_model") is False and app.get("fallback_allowed") is False
++             and request.get("compute_requested") == compute
++             and request.get("device_resolved") == ("HTP0" if compute == "npu" else "GPUOpenCL")
++             and "device_warning" in request and request["device_warning"] is None
++             and type(request.get("n_gpu_layers_create")) is int and request["n_gpu_layers_create"] != 0
++             and type(request.get("n_ctx_create")) is int and request["n_ctx_create"] == context
++             and isinstance(request.get("model_path"), str) and request["model_path"] == app.get("model_path")
++             and Path(request["model_path"]).name == selected["file"]
++             and acceptance.native_budget_valid(request, context, model_profile), "runtime/model/budget is invalid")
++        records.append((app, request))
++        last_models[step] = (run_id, output)
++    decisions = {}
++    for step in sorted(step_numbers):
++        prefix = "task/step-%02d" % step
++        step_before, step_after = snapshot.obj(prefix + "-before.json"), snapshot.obj(prefix + "-after.json")
++        action_receipt = snapshot.obj(prefix + "-action.json")
++        run_id, output = last_models[step]
++        action = action_receipt.get("action")
++        generated = acceptance.strict_json(output)
++        need(action_identity(action) == action_identity(generated)
++             and action_receipt.get("model_issued") is True
++             and action_receipt.get("model_run_id") == run_id
++             and action.get("observation_id") == step_before.get("observation_id"),
++             "controller step action differs from its selected native output")
++        kind = action.get("action")
++        effects = {"open", "click", "type", "scroll", "back", "home"}
++        need(kind in effects | {"done", "find_app", "wait"}
++             and action_receipt.get("accepted") is True and action_receipt.get("stale") is False
++             and action_receipt.get("dispatched") is (kind in effects)
++             and (kind == "open" or action.get("package") == step_before.get("package")),
++             "controller step has inconsistent action outcome")
++        need(kind != "find_app" or action_receipt.get("read_only") is True
++             and action_receipt.get("effect") == "launcher_catalogue_read", "discovery is not recorded as read-only")
++        need(kind != "wait" or type(action.get("duration_ms")) is int
++             and 100 <= action["duration_ms"] <= 2000, "wait duration is not an exact bounded integer")
++        decisions[step] = (action, step_after)
++    last_step = max(step_numbers)
++    terminal_action, terminal_after = decisions[last_step]
++    need(type(final.get("steps")) is int and final["steps"] == last_step
++         and final.get("final_observation_id") == terminal_after.get("observation_id"),
++         "task terminal does not identify the last complete controller step")
++    need(report.get("verdict") != "pass" or final.get("status") == "model_reported_done",
++         "base pass contradicts an unsuccessful task terminal")
++    if final.get("status") == "model_reported_done":
++        need(final.get("model_reported_success") is True and terminal_action.get("action") == "done"
++             and terminal_action.get("status") == "success", "successful terminal lacks a native done success decision")
++        terminal_before = snapshot.obj("task/step-%02d-before.json" % last_step)
++        for observation in (terminal_before, terminal_after):
++            need(isinstance(observation.get("package"), str) and observation["package"]
++                 and type(observation.get("window_id")) is int
++                 and type(observation.get("rotation")) is int and observation["rotation"] in (0, 1, 2, 3)
++                 and isinstance(observation.get("observation_state_sha256"), str)
++                 and re.fullmatch(r"[0-9a-f]{64}", observation["observation_state_sha256"]),
++                 "successful terminal observation lacks complete producer state")
++        need(all(terminal_before[key] == terminal_after[key]
++                 for key in ("package", "window_id", "rotation", "observation_state_sha256")),
++             "producer state changed across the successful done action")
++    app_session = snapshot.obj("runs/" + generation + "/app-session-receipt.json")
++    native_session = snapshot.obj("runs/" + generation + "/native-session-result.json")
++    session_sha = acceptance.digest(snapshot.read("runs/" + generation + "/app-session-receipt.json"))
++    need(session_contract(app_session, native_session, session_sha, final, records, task_id, expected_uid),
++         "generation lacks a complete request sequence and independently observed exit")
++    stderr = "runs/" + generation + "/stderr.log"
++    need(acceptance.accelerator_log_evidence(snapshot.read(stderr).decode("utf-8", "replace"), runtime[0])
++         ["accelerator_offload_observed"], "same-generation accelerator offload is unavailable")
++    action_relative, model_relative = (str(Path(p).relative_to(directory)) for p in (action_path, model_path))
++    step_prefix = action_relative.removesuffix("-action.json")
++    need(json_equivalent(snapshot.obj(action_relative), receipt)
++         and json_equivalent(snapshot.obj(step_prefix + "-before.json"), before)
++         and json_equivalent(snapshot.obj(model_relative), model), "caller evidence differs from collected snapshot")
++    run_id = model["run_id"]
++    need(any(path == model_relative and item["run_id"] == run_id for _, _, path, item in steps)
++         and json_equivalent(snapshot.obj("runs/" + run_id + "/native-result.json"), native)
++         and snapshot.read("runs/" + run_id + "/raw-text.txt") == raw, "selected request differs from snapshot")
++    return {"inference_mode": "task_worker", "task_id": task_id, "worker_generation": generation,
++            "request_sequence": next(a["request_sequence"] for a, _ in records if a["run_id"] == run_id),
++            "generation_requests_verified": len(records), "generation_process_exit_observed": True,
++            "generation_exit_code": 0, "generation_app_receipt_sha256": session_sha,
++            "generation_stderr_sha256": acceptance.digest(snapshot.read(stderr)),
++            "controller_steps_verified": len(step_numbers), "terminal_action_run_id": last_models[last_step][0],
++            "terminal_action_raw_sha256": acceptance.digest(last_models[last_step][1]),
++            "terminal_observation_id": terminal_after["observation_id"],
++            "collection_sha256": acceptance.digest(snapshot.read("collection.json", pinned=False))}
+diff --git a/tools/test_warm_collection.py b/tools/test_warm_collection.py
+--- a/tools/test_warm_collection.py
++++ b/tools/test_warm_collection.py
+@@ -8,7 +8,7 @@
+ import types
+ import unittest
+ from unittest.mock import patch
+-from test_phone_acceptance import FakeAdb, TASK, RUN, m, xml_view
++from test_phone_acceptance import FakeAdb, TASK, RUN, OBS, m, xml_view
+ from test_warm_receipts import fixture, G
+ 
+ 
+@@ -25,6 +25,11 @@
+         app.update(pairs[0][0]); native.update(pairs[0][1])
+         app.update(task_id=TASK, run_id=RUN, app_uid=10042)
+         native.update(task_id=TASK, request_id=RUN)
++        prompt = ("UNTRUSTED_DATA\n" + json.dumps({"screen": {"observation_id": OBS}})
++                  + "\nOWNER\n" + self.instruction).encode()
++        self.files[root + "prompt.txt"] = prompt
++        app.update(prompt_sha256=m.digest(prompt), raw_text_sha256_read=m.digest(self.files[root + "raw-text.txt"]))
++        native["input_sha256"].update(prompt=m.digest(prompt), system=None)
+         app["native_receipt"] = copy.deepcopy(native)
+         terminal.update(task_id=TASK, app_uid=10042, requests_sent=1, requests_accepted=1)
+         native_terminal.update(task_id=TASK, requests_received=1, requests_completed=1, model_reset_count=1)
+diff --git a/tools/test_warm_collection_integrity.py b/tools/test_warm_collection_integrity.py
+new file mode 100644
+--- /dev/null
++++ b/tools/test_warm_collection_integrity.py
+@@ -0,0 +1,239 @@
++"""Run the real collector against adversarial multi-request files; no ADB/network."""
++import contextlib
++import copy
++import io
++import json
++import os
++from pathlib import Path
++import sys
++import tempfile
++import types
++import unittest
++from unittest.mock import patch
++
++if os.environ.get("HEPTA_WARM_ACCEPTANCE_SOURCE"):
++    sys.path.insert(0, str(Path(os.environ["HEPTA_WARM_ACCEPTANCE_SOURCE"]) / "tools"))
++from test_phone_acceptance import FakeAdb, TASK, RUN, OBS, m, xml_view
++from test_warm_collection import WarmFakeAdb
++from test_warm_receipts import G
++
++SECOND = "0" * 32  # Collection order must not be mistaken for protocol order.
++
++
++class EvidenceAdb(WarmFakeAdb):
++    scenario = None
++    damage = None
++
++    def __init__(self, args, evidence=None):
++        super().__init__(args, evidence)
++        self.final_reads = 0
++
++    def list_children(self, path, directories=False):
++        if directories and path == "files/runs":
++            return sorted({key[len(path) + 1:].split("/", 1)[0]
++                           for key in self.files if key.startswith(path + "/")})
++        return super().list_children(path, directories)
++
++    def write_request(self, run_id, app, native):
++        root = "files/runs/" + run_id + "/"
++        app["native_receipt"] = copy.deepcopy(native)
++        self.files[root + "app-receipt.json"] = json.dumps(app).encode()
++        self.files[root + "native-result.json"] = json.dumps(native).encode()
++
++    def update_terminal(self, count):
++        root = "files/runs/" + G + "/"
++        app = json.loads(self.files[root + "app-session-receipt.json"])
++        native = json.loads(self.files[root + "native-session-result.json"])
++        app.update(requests_sent=count, requests_accepted=count)
++        native.update(requests_received=count, requests_completed=count, model_reset_count=count)
++        app["native_session_receipt"] = copy.deepcopy(native)
++        data = json.dumps(app).encode()
++        self.files[root + "app-session-receipt.json"] = data
++        self.files[root + "native-session-result.json"] = json.dumps(native).encode()
++        path = "files/control-tasks/" + TASK + "/result.json"
++        final = json.loads(self.files[path])
++        final["model_session"]["app_receipt_sha256"] = m.digest(data)
++        self.files[path] = json.dumps(final).encode()
++
++    def command(self, command, **kwargs):
++        result = super().command(command, **kwargs)
++        if kwargs.get("label") != "launch-once":
++            return result
++        root = "files/runs/" + RUN + "/"
++        app = json.loads(self.files[root + "app-receipt.json"])
++        native = json.loads(self.files[root + "native-result.json"])
++        prompt = ("UNTRUSTED_DATA\n" + json.dumps({"screen": {"observation_id": OBS}})
++                  + "\nOWNER\n" + self.instruction).encode()
++        system = b"offline fixture system"
++        self.files[root + "prompt.txt"], self.files[root + "system.txt"] = prompt, system
++        app.update(prompt_sha256=m.digest(prompt), raw_text_sha256_read=m.digest(self.files[root + "raw-text.txt"]))
++        native["input_sha256"].update(prompt=m.digest(prompt), system=m.digest(system))
++        self.write_request(RUN, app, native)
++
++        damaged_schema = self.scenario is not None and self.scenario.startswith("hidden_bad_")
++        if self.scenario in {"two_requests", "hidden_uncommitted", "missing_sequence", "duplicate_sequence", "unrelated_receipt"} or damaged_schema:
++            second = "files/runs/" + SECOND + "/"
++            for name in ("prompt.txt", "system.txt", "grammar.gbnf", "raw-text.txt"):
++                self.files[second + name] = self.files[root + name]
++            next_app, next_native = copy.deepcopy(app), copy.deepcopy(native)
++            sequence = 3 if self.scenario == "missing_sequence" else 1 if self.scenario == "duplicate_sequence" else 2
++            next_app.update(run_id=SECOND, request_sequence=sequence, worker_started_this_request=sequence == 1)
++            next_native.update(request_id=SECOND, request_sequence=sequence,
++                               model_reset_count=sequence, model_hash_performed_this_request=sequence == 1)
++            if self.scenario in {"hidden_uncommitted", "unrelated_receipt"} or damaged_schema:
++                # A receipt that belongs to this task cannot be silently omitted
++                # just because its prompt or step-model publication is unavailable.
++                next_app.update(request_committed=False, inference_completed=False, status="native_failed")
++                del self.files[second + "prompt.txt"]
++            else:
++                self.update_terminal(2)
++            self.write_request(SECOND, next_app, next_native)
++            if damaged_schema:
++                origin, schema_kind, binding = self.scenario[len("hidden_bad_"):].split("_")
++                record = next_app if origin == "app" else next_native
++                if schema_kind == "missing":
++                    record.pop("schema")
++                else:
++                    record["schema"] = ("unknown.schema" if schema_kind == "unknown" else
++                        "hepta.local-model.receipt.v2" if origin == "app" else "hepta.geniex-once.result.v1")
++                if binding == "generation":
++                    record["task_id"] = "f" * 32
++                else:
++                    record["worker_generation"] = "e" * 32
++                retained = "app-receipt.json" if origin == "app" else "native-result.json"
++                removed = "native-result.json" if origin == "app" else "app-receipt.json"
++                self.files[second + retained] = json.dumps(record).encode()
++                del self.files[second + removed]
++            elif self.scenario == "unrelated_receipt":
++                next_app.update(schema="hepta.local-model.receipt.v2", task_id="f" * 32, worker_generation="e" * 32)
++                self.files[second + "app-receipt.json"] = json.dumps(next_app).encode()
++                del self.files[second + "native-result.json"]
++
++        if self.scenario == "no_requests":
++            for path in list(self.files):
++                if path.startswith(root):
++                    del self.files[path]
++        elif self.scenario == "schema_downgrade":
++            app.update(schema="hepta.local-model.receipt.v2", process_exit_observed=True, exit_code=0)
++            native["schema"] = "hepta.geniex-once.result.v1"
++            self.write_request(RUN, app, native)
++            self.files[root + "stderr.log"] = self.files["files/runs/" + G + "/stderr.log"]
++        elif self.scenario == "prompt_changed":
++            self.files[root + "prompt.txt"] = prompt + b" changed owner"
++        elif self.scenario == "system_changed":
++            self.files[root + "system.txt"] = b"different system"
++        elif self.scenario == "app_raw_hash_changed":
++            app["raw_text_sha256_read"] = "f" * 64
++            self.write_request(RUN, app, native)
++        elif self.scenario == "foreign_log":
++            data = self.files.pop("files/runs/" + G + "/stderr.log")
++            self.files["files/runs/" + "f" * 32 + "/stderr.log"] = data
++        return result
++
++    def app_bytes(self, path, optional=False):
++        data = super().app_bytes(path, optional)
++        if data is not None and path == "files/control-tasks/" + TASK + "/result.json":
++            self.final_reads += 1
++            if self.scenario in {"terminal_changed", "terminal_type_changed"} and self.final_reads >= 3:
++                changed = json.loads(data)
++                if self.scenario == "terminal_changed":
++                    changed["status"] = "partial"
++                else:
++                    changed["external_model"] = 0  # False == 0 in Python, unlike JSON types.
++                return json.dumps(changed).encode()
++        return data
++
++
++class WarmCollectionIntegrityTest(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.temp.cleanup)
++        EvidenceAdb.scenario = None
++        WarmFakeAdb.damage = None
++        FakeAdb.native_overrides = {}; FakeAdb.app_overrides = {}
++        FakeAdb.reject = False; FakeAdb.missing_native = False
++        FakeAdb.corrupt_raw = False; FakeAdb.missing_offload_log = False
++
++    def run_case(self, scenario):
++        EvidenceAdb.scenario = scenario
++        args = types.SimpleNamespace(case_id=scenario, instruction="计算 37 加 58。", evidence_root=Path(self.temp.name),
++            adb="/never/executed", adb_host="127.0.0.1", adb_port=12345, serial="FAKE", command_timeout=1,
++            timeout=1, poll=.01, stop_grace=0, setup_home=False, include_screenshots=False,
++            expected_package="com.example.calculator", expected_visible_text=["95"], text_match="exact",
++            expected_compute="npu", expected_context=4096)
++        with patch.object(m, "Adb", EvidenceAdb), patch.object(m, "capture_ui", return_value=xml_view()), contextlib.redirect_stdout(io.StringIO()):
++            code = m.run_task(args)
++        return code, json.loads((args.evidence_root / scenario / "acceptance.json").read_bytes())
++
++    def test_two_requests_one_exit_with_reverse_filename_order(self):
++        code, report = self.run_case("two_requests")
++        self.assertEqual(code, 0, report)
++        rows = report["collection"]["associated_runs"]
++        self.assertEqual([row["request_sequence"] for row in rows], [2, 1])
++        self.assertTrue(all(row["process_exit_observed"] is False for row in rows))
++        self.assertTrue(report["collection"]["task_model_sessions_valid"])
++
++    def test_terminal_and_log_are_collected_even_if_all_request_receipts_are_lost(self):
++        code, report = self.run_case("no_requests")
++        self.assertEqual(code, 3, report)
++        self.assertFalse(report["native_receipts_verified"])
++        evidence = Path(self.temp.name) / "no_requests/runs" / G
++        self.assertTrue((evidence / "app-session-receipt.json").is_file())
++        self.assertTrue((evidence / "native-session-result.json").is_file())
++        self.assertTrue((evidence / "stderr.log").is_file())
++        self.assertFalse(report["collection"]["task_model_sessions_valid"])
++
++    def test_unjournaled_incomplete_owned_request_is_not_ignored(self):
++        code, report = self.run_case("hidden_uncommitted")
++        self.assertEqual(code, 3, report)
++        self.assertFalse(report["native_receipts_verified"])
++        self.assertEqual({row["run_id"] for row in report["collection"]["associated_runs"]}, {RUN, SECOND})
++
++    def test_hidden_owned_receipt_is_discovered_before_schema_validation(self):
++        for origin in ("app", "native"):
++            for schema_kind in ("unknown", "old", "missing"):
++                for binding in ("task", "generation"):
++                    scenario = "hidden_bad_" + "_".join((origin, schema_kind, binding))
++                    with self.subTest(scenario=scenario):
++                        code, report = self.run_case(scenario)
++                        self.assertEqual(code, 3, report)
++                        self.assertFalse(report["native_receipts_verified"])
++                        rows = report["collection"]["associated_runs"]
++                        self.assertEqual({row["run_id"] for row in rows}, {RUN, SECOND})
++                        self.assertEqual(next(row for row in rows if row["run_id"] == SECOND)["association"],
++                                         "task_or_generation_receipt")
++
++    def test_unrelated_old_schema_receipt_does_not_contaminate_this_task(self):
++        code, report = self.run_case("unrelated_receipt")
++        self.assertEqual(code, 0, report)
++        self.assertEqual([row["run_id"] for row in report["collection"]["associated_runs"]], [RUN])
++
++    def test_warm_terminal_cannot_be_qualified_as_oneshot(self):
++        code, report = self.run_case("schema_downgrade")
++        self.assertEqual(code, 3, report)
++        self.assertFalse(report["native_receipts_verified"])
++
++    def test_changed_terminal_cannot_reuse_earlier_ui_success(self):
++        for scenario in ("terminal_changed", "terminal_type_changed"):
++            with self.subTest(scenario=scenario):
++                code, report = self.run_case(scenario)
++                self.assertEqual(code, 3, report)
++                self.assertFalse(report["native_receipts_verified"])
++
++    def test_prompt_system_and_app_output_hashes_are_bound(self):
++        for scenario in ("prompt_changed", "system_changed", "app_raw_hash_changed"):
++            with self.subTest(scenario=scenario):
++                code, report = self.run_case(scenario)
++                self.assertEqual(code, 3, report)
++                self.assertFalse(report["native_receipts_verified"])
++
++    def test_sequence_gaps_duplicates_and_foreign_offload_log_fail(self):
++        for scenario in ("missing_sequence", "duplicate_sequence", "foreign_log"):
++            with self.subTest(scenario=scenario):
++                code, report = self.run_case(scenario)
++                self.assertEqual(code, 3, report)
++                self.assertFalse(report["native_receipts_verified"])
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/tools/test_warm_receipts.py b/tools/test_warm_receipts.py
+--- a/tools/test_warm_receipts.py
++++ b/tools/test_warm_receipts.py
+@@ -98,9 +98,53 @@
+         self.assertTrue(collection_verified(dict(associated_runs=[row])))
+         row["process_exit_observed"] = False
+         self.assertFalse(collection_verified(dict(associated_runs=[row])))
+-        row.update(app_receipt_schema="hepta.local-model.task-request.v1", task_request_binding_valid=True)
++        row.update(app_receipt_schema="hepta.local-model.task-request.v1", task_request_binding_valid=True,
++                   task_request_artifacts_valid=True)
+         self.assertFalse(collection_verified(dict(associated_runs=[row])))
+-        self.assertTrue(collection_verified(dict(associated_runs=[row], task_model_sessions_valid=True)))
++        self.assertTrue(collection_verified(dict(associated_runs=[row], task_model_sessions_valid=True,
++                                                 observed_terminal_binding_valid=True)))
++
++
++class EmbeddedReceiptEqualityTests(unittest.TestCase):
++    def test_embedded_request_booleans_and_numbers_are_distinct(self):
++        for key, value in (("process_exit_observed", 0), ("worker_retained", 1),
++                           ("model_hash_count", True), ("request_status", False)):
++            with self.subTest(field=key):
++                f = fixture()
++                f[4][0][0]["native_receipt"][key] = value
++                self.assertFalse(session_contract(*f))
++
++    def test_embedded_terminal_booleans_and_numbers_are_distinct(self):
++        for key, value in (("process_exit_observed", 0), ("close_requested", 1),
++                           ("model_hash_count", True), ("sdk_destroy_rc", False)):
++            with self.subTest(field=key):
++                f = fixture()
++                f[0]["native_session_receipt"][key] = value
++                self.assertFalse(session_contract(*f))
++
++    def test_nested_native_metadata_preserves_json_boolean_type(self):
++        for value in (0, 1):
++            with self.subTest(numeric_value=value):
++                f = fixture()
++                f[4][0][1]["profile"] = {"samples": [{"completed": bool(value)}]}
++                f[4][0][0]["native_receipt"] = copy.deepcopy(f[4][0][1])
++                f[4][0][0]["native_receipt"]["profile"]["samples"][0]["completed"] = value
++                self.assertFalse(session_contract(*f))
++
++    def test_jsonobject_numeric_normalization_remains_valid(self):
++        f = fixture()
++        f[4][0][1]["profile"] = {"timings": [1.0, 2, 3.25]}
++        f[4][0][0]["native_receipt"] = copy.deepcopy(f[4][0][1])
++        f[4][0][0]["native_receipt"]["profile"]["timings"] = [1, 2.0, 3.25]
++        f[4][0][0]["native_receipt"]["model_hash_count"] = 1.0
++        f[0]["native_session_receipt"]["model_create_count"] = 1.0
++        self.assertTrue(session_contract(*f))
++
++    def test_native_counter_still_requires_integer(self):
++        f = fixture()
++        f[4][0][1]["model_hash_count"] = 1.0
++        f[4][0][0]["native_receipt"] = copy.deepcopy(f[4][0][1])
++        self.assertFalse(session_contract(*f))
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/tools/test_warm_action_binding.py b/tools/test_warm_action_binding.py
+new file mode 100644
+--- /dev/null
++++ b/tools/test_warm_action_binding.py
+@@ -0,0 +1,378 @@
++"""Synthetic completed warm tasks; actual collector and action verifier, no phone.
++
++Some mutations deliberately reseal the host inventory while leaving its prior
++success flags true. A pass must therefore depend on rechecked source contracts,
++not a schema allowlist or a cached/edited collection verdict.
++"""
++import copy
++import json
++from pathlib import Path
++import socket
++import subprocess
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import phone_acceptance as acceptance
++import phone_suite as suite
++from test_warm_receipts import fixture, G, UID
++
++TASK, FIRST, SECOND = "a" * 32, "d" * 32, "0" * 32
++PACKAGE = "com.android.settings"
++INSTRUCTION = "打开设置，然后报告完成。"
++
++
++def write(path, value):
++    acceptance.write_json(path, value)
++
++
++def basic_source(root, corrected=False):
++    """Controller-shaped journals; reverse run-name order is intentional."""
++    owner_sha = acceptance.digest(INSTRUCTION.encode())
++    write(root / "task/owner.json", dict(task_id=TASK, instruction=INSTRUCTION,
++                                       instruction_utf8_sha256=owner_sha))
++    for step, run_id, kind in ((1, FIRST, "open"), (2, SECOND, "done")):
++        before_id, after_id = "%032x" % (step * 2), "%032x" % (step * 2 + 1)
++        before = dict(observation_id=before_id, package="com.motorola.launcher" if step == 1 else PACKAGE,
++                      nodes=[])
++        action = dict(action=kind, observation_id=before_id, package=PACKAGE)
++        if kind == "done": action["status"] = "success"
++        prefix = root / "task" / ("step-%02d" % step)
++        raw = (json.dumps(action, ensure_ascii=False) + "\n").encode()
++        write(Path(str(prefix) + "-before.json"), before)
++        write(Path(str(prefix) + "-after.json"), dict(observation_id=after_id, package=PACKAGE, nodes=[]))
++        write(Path(str(prefix) + "-action.json"), dict(action=action, model_issued=True, model_run_id=run_id,
++              accepted=True, dispatched=kind == "open", stale=False))
++        write(Path(str(prefix) + "-model-0.json"), dict(run_id=run_id, raw_text=raw.decode(),
++              observation_id=before_id, original_instruction_sha256=owner_sha))
++        run = root / "runs" / run_id
++        run.mkdir(parents=True)
++        (run / "raw-text.txt").write_bytes(raw)
++        prompt = "UNTRUSTED_DATA\n" + json.dumps(dict(screen=before, apps=[[PACKAGE, "设置"]]), ensure_ascii=False)
++        (run / "prompt.txt").write_text(prompt + "\nOWNER\n" + INSTRUCTION)
++    write(root / "task/result.json", dict(task_id=TASK, steps=2, status="model_reported_done",
++          model_reported_success=True, cleanup_known=True, final_observation_id="%032x" % 5))
++    if corrected:
++        selected = root / "task/step-01-model-0.json"
++        selected.rename(selected.with_name("step-01-model-1.json"))
++        rejected = "9" * 32
++        first = json.loads(selected.with_name("step-01-model-1.json").read_bytes())
++        first.update(run_id=rejected, raw_text='{"invalid_controller_decision":true}')
++        write(selected, first)
++        target = root / "runs" / rejected
++        target.mkdir()
++        (target / "raw-text.txt").write_text(first["raw_text"])
++        (target / "prompt.txt").write_bytes((root / "runs" / FIRST / "prompt.txt").read_bytes())
++
++
++class SourceFiles:
++    """Only the collector's read methods; intentionally no command method."""
++    def __init__(self, source, task_id):
++        self.source, self.task_id = source, task_id
++
++    def local(self, path):
++        task = "files/control-tasks/" + self.task_id
++        if path == task or path.startswith(task + "/"):
++            return self.source / "task" / path[len(task):].lstrip("/")
++        if path == "files/runs" or path.startswith("files/runs/"):
++            return self.source / "runs" / path[len("files/runs"):].lstrip("/")
++        raise AssertionError("unexpected collector path: " + path)
++
++    def list_children(self, path, directories=False):
++        directory = self.local(path)
++        if not directory.is_dir(): return []
++        if directories:
++            return sorted(p.name for p in directory.iterdir() if p.is_dir())
++        return sorted(p.name for p in directory.iterdir() if p.is_file())
++
++    def app_bytes(self, path, optional=False):
++        file = self.local(path)
++        if optional and not file.exists(): return None
++        return file.read_bytes()
++
++
++def collect_warm(source, directory, verdict="pass", compute="npu"):
++    """Add the full native/app protocol to synthetic controller journals."""
++    # Complete synthetic observations at construction time. The real verifier
++    # never fills absent evidence. The frozen core fixture's homepage already
++    # supplies these fields; older non-home test builders omitted their values.
++    for path in (source / "task").glob("step-*.json"):
++        if not path.name.endswith(("-before.json", "-after.json")):
++            continue
++        observation = json.loads(path.read_bytes())
++        observation.setdefault("window_id", 1)
++        observation.setdefault("rotation", 0)
++        state = json.dumps({"package": observation.get("package"), "nodes": observation.get("nodes", [])}, sort_keys=True)
++        observation.setdefault("observation_state_sha256", acceptance.digest(state.encode()))
++        write(path, observation)
++    owner = json.loads((source / "task/owner.json").read_bytes())
++    task_id, instruction = owner["task_id"], owner["instruction"]
++    app_session, native_session, _, _, templates, _, _ = fixture()
++    models = sorted((source / "task").glob("step-*-model-*.json"))
++    model_path = "/synthetic-model/" + acceptance.MODEL_FILE
++    for sequence, model_file in enumerate(models, 1):
++        model = json.loads(model_file.read_bytes())
++        run_id, run = model["run_id"], source / "runs" / model["run_id"]
++        raw, prompt = (run / "raw-text.txt").read_bytes(), (run / "prompt.txt").read_bytes()
++        before = json.loads(model_file.with_name(model_file.name.split("-model-")[0] + "-before.json").read_bytes())
++        grammar, system = b'root ::= "synthetic grammar fixture"\n', b"Synthetic local controller system."
++        (run / "grammar.gbnf").write_bytes(grammar); (run / "system.txt").write_bytes(system)
++        app, native = copy.deepcopy(templates[0])
++        native.update(task_id=task_id, request_id=run_id, request_sequence=sequence,
++            model_hash_performed_this_request=sequence == 1, model_reset_count=sequence,
++            runtime="llama_cpp", mode="llm", compute_requested=compute,
++            device_resolved="HTP0" if compute == "npu" else "GPUOpenCL", device_warning=None,
++            n_ctx_create=4096, n_gpu_layers_create=-1, model_path=model_path, max_tokens=256,
++            raw_text_utf8=True, raw_text_truncated=False, raw_text_bytes=len(raw), raw_text_sha256=acceptance.digest(raw), error=None,
++            input_sha256=dict(prompt=acceptance.digest(prompt), system=acceptance.digest(system), grammar=acceptance.digest(grammar)),
++            prompt_budget=dict(method="lfm3_rendered_utf8_bytes_upper_bound", model_contract_sha256=acceptance.MODEL_SHA256,
++                checked=True, admitted=True, is_exact_token_count=False, formatted_utf8_bytes=500,
++                bos_eos_upper=2, generation_tokens=256, reserved_tokens=256, total_context_upper=1014, context_tokens=4096))
++        app.update(task_id=task_id, run_id=run_id, request_sequence=sequence, worker_started_this_request=sequence == 1,
++            package_name=acceptance.PACKAGE, runtime="llama_cpp", mode="llm", compute_requested=compute,
++            context_tokens=4096, model_sha256_verified=acceptance.MODEL_SHA256, model_path=model_path,
++            image_sent_to_model=False, fallback_allowed=False, native_context_budget_valid=True,
++            grammar_constraint_enabled=True, grammar_binding_valid=True, native_result_binding_valid=True,
++            grammar_schema="hepta.observed-action-gbnf.v1", grammar_sha256=acceptance.digest(grammar),
++            grammar_observation_id=before["observation_id"], grammar_current_package=before["package"],
++            prompt_sha256=acceptance.digest(prompt), raw_text_sha256_read=acceptance.digest(raw),
++            native_receipt=copy.deepcopy(native))
++        write(run / "app-receipt.json", app); write(run / "native-result.json", native)
++    count = len(models)
++    native_session.update(task_id=task_id, requests_received=count, requests_completed=count, model_reset_count=count)
++    app_session.update(task_id=task_id, requests_sent=count, requests_accepted=count,
++                       native_session_receipt=copy.deepcopy(native_session))
++    generation = source / "runs" / G
++    write(generation / "app-session-receipt.json", app_session)
++    write(generation / "native-session-result.json", native_session)
++    (generation / "stderr.log").write_text("llama_model_load: offloaded 25/25 layers to GPU\n"
++        "llama_model_load: " + ("HTP0" if compute == "npu" else "OpenCL") + " model buffer size = 1000.00 MiB\n")
++    (generation / "stdout.log").write_bytes(b"")
++    final = json.loads((source / "task/result.json").read_bytes())
++    final.update(external_model=False, model_session=dict(worker_generation=G, task_id=task_id,
++        process_started=True, process_exit_observed=True, exit_code=0, receipt_valid=True,
++        app_receipt_sha256=acceptance.digest((generation / "app-session-receipt.json").read_bytes())))
++    write(source / "task/result.json", final)
++    collection = acceptance.collect_evidence(SourceFiles(source, task_id), directory, task_id, instruction,
++        set(), False, UID, compute, 4096, expected_final=final)
++    if not acceptance.collection_verified(collection):
++        raise AssertionError("synthetic collector fixture invalid: " + json.dumps(collection))
++    report = dict(schema="hepta.host-acceptance.v1", case_id=directory.name, task_id=task_id,
++                  instruction=instruction, instruction_sha256=owner["instruction_utf8_sha256"], app_uid=UID,
++                  task_result=final, native_receipts_verified=True, collection=collection,
++                  cleanup_unknown=False, verdict=verdict, launch_attempt_count=1)
++    write(directory / "acceptance.json", report)
++    return report
++
++
++def reseal(directory, synchronize_terminal=False):
++    """An adversarial edited host summary must not bypass source validation."""
++    collection = json.loads((directory / "collection.json").read_bytes())
++    if synchronize_terminal:
++        final = json.loads((directory / "task/result.json").read_bytes())
++        final["model_session"]["app_receipt_sha256"] = acceptance.digest(
++            (directory / "runs" / G / "app-session-receipt.json").read_bytes())
++        write(directory / "task/result.json", final)
++    inventories = [collection["files"]] + [row["files"] for row in collection["associated_runs"] + collection["task_model_sessions"]]
++    for files in inventories:
++        for item in files:
++            path = directory / item["path"]
++            if path.is_file():
++                data = path.read_bytes(); item.update(bytes=len(data), sha256=acceptance.digest(data))
++    write(directory / "collection.json", collection)
++    report = json.loads((directory / "acceptance.json").read_bytes())
++    report["collection"] = copy.deepcopy(collection)
++    if synchronize_terminal: report["task_result"] = json.loads((directory / "task/result.json").read_bytes())
++    write(directory / "acceptance.json", report)
++
++
++class WarmActionBindingTests(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
++        self.root = Path(self.temp.name)
++        for target in ((acceptance, "Adb"), (socket, "create_connection"), (subprocess, "Popen"), (subprocess, "run")):
++            guard = patch.object(*target, side_effect=AssertionError("phone/network/process access forbidden"))
++            guard.start(); self.addCleanup(guard.stop)
++
++    def case(self, name="case", corrected=False, compute="npu"):
++        source, directory = self.root / (name + "-source"), self.root / name
++        basic_source(source, corrected)
++        collect_warm(source, directory, compute=compute)
++        return directory
++
++    def action_result(self, directory):
++        return suite.action_sequence(directory, [{"action": "open", "package": PACKAGE}],
++                                     acceptance.digest(INSTRUCTION.encode()))
++
++    def reject(self, directory):
++        result = self.action_result(directory)
++        self.assertFalse(result["passed"], result)
++        self.assertFalse(result["evidence_complete"], result)
++        self.assertTrue(result["missing_evidence"], result)
++
++    def change(self, directory, relative, mutate):
++        path = directory / relative
++        value = json.loads(path.read_bytes()); mutate(value); write(path, value)
++
++    def test_complete_warm_action_sequence_with_reverse_run_name_order(self):
++        directory = self.case()
++        result = self.action_result(directory)
++        self.assertTrue(result["passed"], result); self.assertTrue(result["evidence_complete"], result)
++        binding = result["model_action_bindings"][0]
++        self.assertEqual((binding["task_id"], binding["worker_generation"], binding["request_sequence"]), (TASK, G, 1))
++        self.assertEqual(binding["generation_requests_verified"], 2)
++        self.assertIs(binding["generation_process_exit_observed"], True)
++        self.assertEqual(binding["generation_exit_code"], 0)
++        done_path = directory / "task/step-02-action.json"
++        done = suite.model_action_binding(directory, done_path, json.loads(done_path.read_bytes()),
++            json.loads((directory / "task/step-02-before.json").read_bytes()))
++        self.assertTrue(done["verified"], done); self.assertEqual(done["request_sequence"], 2)
++
++    def test_corrected_second_attempt_preserves_complete_sequence(self):
++        result = self.action_result(self.case(corrected=True))
++        self.assertTrue(result["passed"], result)
++        binding = result["model_action_bindings"][0]
++        self.assertEqual(binding["request_sequence"], 2)
++        self.assertEqual(binding["generation_requests_verified"], 3)
++        self.assertTrue(binding["step_model_receipt"].endswith("-model-1.json"))
++
++    def test_gpu_generation_can_qualify_with_its_exact_log(self):
++        result = self.action_result(self.case(compute="gpu"))
++        self.assertTrue(result["passed"], result)
++
++    def test_all_terminal_and_collection_artifacts_are_required(self):
++        paths = ("acceptance.json", "collection.json", "task/result.json",
++                 "runs/" + G + "/app-session-receipt.json", "runs/" + G + "/native-session-result.json",
++                 "runs/" + G + "/stderr.log", "runs/" + SECOND + "/app-receipt.json")
++        for i, path in enumerate(paths):
++            with self.subTest(missing=path):
++                directory = self.case("missing%d" % i); (directory / path).unlink(); self.reject(directory)
++
++    def test_request_or_session_semantic_damage_cannot_reuse_success_flags(self):
++        cases = [("runs/" + SECOND + "/native-result.json", "worker_generation", "f" * 32),
++                 ("runs/" + SECOND + "/app-receipt.json", "request_committed", False),
++                 ("runs/" + SECOND + "/native-result.json", "raw_text_sha256", "f" * 64),
++                 ("runs/" + G + "/app-session-receipt.json", "process_exit_observed", False),
++                 ("runs/" + G + "/app-session-receipt.json", "exit_code", None),
++                 ("runs/" + G + "/app-session-receipt.json", "cancel_requested", True),
++                 ("runs/" + G + "/app-session-receipt.json", "force_destroy_sent", True),
++                 ("runs/" + G + "/native-session-result.json", "requests_completed", 1),
++                 ("runs/" + G + "/native-session-result.json", "sdk_destroy_rc", -1)]
++        for i, (relative, field, value) in enumerate(cases):
++            with self.subTest(path=relative, field=field):
++                directory = self.case("semantic%d" % i)
++                self.change(directory, relative, lambda item: item.update({field: value}))
++                reseal(directory, synchronize_terminal=True)
++                self.assertTrue(acceptance.collection_verified(json.loads((directory / "collection.json").read_bytes())))
++                self.reject(directory)
++
++    def test_generation_sequence_cannot_be_spliced_or_reordered(self):
++        for mode in ("gap", "duplicate", "reordered"):
++            with self.subTest(mode=mode):
++                directory = self.case(mode)
++                sequences = {FIRST: 2 if mode == "reordered" else 1,
++                             SECOND: 3 if mode == "gap" else 1}
++                for run_id, sequence in sequences.items():
++                    relative = "runs/" + run_id + "/"
++                    self.change(directory, relative + "native-result.json", lambda value: value.update(
++                        request_sequence=sequence, model_reset_count=sequence, model_hash_performed_this_request=sequence == 1))
++                    native = json.loads((directory / relative / "native-result.json").read_bytes())
++                    self.change(directory, relative + "app-receipt.json", lambda value: value.update(
++                        request_sequence=sequence, worker_started_this_request=sequence == 1, native_receipt=native))
++                collection = json.loads((directory / "collection.json").read_bytes())
++                for row in collection["associated_runs"]: row["request_sequence"] = sequences[row["run_id"]]
++                write(directory / "collection.json", collection); reseal(directory); self.reject(directory)
++
++    def test_model_journals_cannot_skip_a_controller_step(self):
++        source, directory = self.root / "source", self.root / "case"
++        basic_source(source)
++        for path in (source / "task").glob("step-02-*.json"):
++            path.rename(path.with_name(path.name.replace("step-02-", "step-03-")))
++        final_path = source / "task/result.json"
++        final = json.loads(final_path.read_bytes()); final["steps"] = 3; write(final_path, final)
++        collect_warm(source, directory)
++        self.reject(directory)
++
++    def test_unlisted_owned_request_and_missing_step_journal_are_incomplete(self):
++        directory = self.case("hidden")
++        write(directory / "runs" / ("e" * 32) / "app-receipt.json", dict(schema="unknown", task_id=TASK, worker_generation=G))
++        self.reject(directory)
++        directory = self.case("no-step")
++        (directory / "task/step-02-model-0.json").unlink()
++        collection = json.loads((directory / "collection.json").read_bytes())
++        collection["files"] = [v for v in collection["files"] if v["path"] != "task/step-02-model-0.json"]
++        write(directory / "collection.json", collection); reseal(directory); self.reject(directory)
++
++    def test_prompt_must_bind_selected_step_not_another_valid_observation(self):
++        directory = self.case()
++        prefix = directory / "runs" / FIRST
++        prompt = (prefix / "prompt.txt").read_bytes().replace(b'"observation_id": "' + b"0" * 31 + b'2"',
++                                                              b'"observation_id": "' + b"0" * 31 + b'4"')
++        (prefix / "prompt.txt").write_bytes(prompt)
++        self.change(directory, "runs/" + FIRST + "/native-result.json", lambda value: value["input_sha256"].update(prompt=acceptance.digest(prompt)))
++        native = json.loads((prefix / "native-result.json").read_bytes())
++        self.change(directory, "runs/" + FIRST + "/app-receipt.json", lambda value: value.update(
++            prompt_sha256=acceptance.digest(prompt), native_receipt=native))
++        reseal(directory); self.reject(directory)
++
++    def test_changed_raw_action_step_owner_and_observation_are_rejected(self):
++        changes = [("task/step-01-model-0.json", lambda v: v.update(raw_text="changed")),
++                   ("task/step-01-action.json", lambda v: v["action"].update(package="other.application")),
++                   ("task/step-01-before.json", lambda v: v.update(observation_id="f" * 32)),
++                   ("task/owner.json", lambda v: v.update(task_id="f" * 32)),
++                   ("task/result.json", lambda v: v.update(cleanup_known=False))]
++        for i, (relative, change) in enumerate(changes):
++            with self.subTest(path=relative):
++                directory = self.case("binding%d" % i); self.change(directory, relative, change)
++                reseal(directory); self.reject(directory)
++
++    def test_warm_schema_downgrade_cannot_use_oneshot_fast_path(self):
++        directory = self.case()
++        self.change(directory, "runs/" + FIRST + "/native-result.json", lambda v: v.update(schema="hepta.geniex-once.result.v1"))
++        reseal(directory); self.reject(directory)
++
++    def test_missing_offload_and_runtime_evidence_fail_after_resealing(self):
++        for mode in ("log", "device", "budget", "grammar", "system"):
++            with self.subTest(mode=mode):
++                directory = self.case(mode)
++                if mode == "log": (directory / "runs" / G / "stderr.log").write_text("CPU model buffer only\n")
++                elif mode == "system": (directory / "runs" / SECOND / "system.txt").write_text("changed")
++                elif mode == "grammar": (directory / "runs" / SECOND / "grammar.gbnf").write_text("changed")
++                else:
++                    self.change(directory, "runs/" + SECOND + "/native-result.json", lambda v: v.update(
++                        {"device_resolved": "CPU"} if mode == "device" else {"prompt_budget": {}}))
++                    native = json.loads((directory / "runs" / SECOND / "native-result.json").read_bytes())
++                    self.change(directory, "runs/" + SECOND + "/app-receipt.json", lambda v: v.update(native_receipt=native))
++                reseal(directory); self.reject(directory)
++
++    def test_embedded_boolean_numeric_mutation_is_rejected(self):
++        for i, (relative, embedded) in enumerate((("runs/" + SECOND + "/app-receipt.json", "native_receipt"),
++                                                ("runs/" + G + "/app-session-receipt.json", "native_session_receipt"))):
++            directory = self.case("bool%d" % i)
++            self.change(directory, relative, lambda value: value[embedded].update(process_exit_observed=0))
++            reseal(directory, synchronize_terminal=True); self.reject(directory)
++
++    def test_collection_corruption_cannot_raise_or_keep_cached_approval(self):
++        for i, mutate in enumerate((lambda v: v.update(task_model_sessions=[None]),
++                                   lambda v: v.update(associated_runs=[None]),
++                                   lambda v: v.update(errors=["incomplete collection"]))):
++            directory = self.case("corrupt%d" % i)
++            self.assertTrue(self.action_result(directory)["passed"])
++            self.change(directory, "collection.json", mutate)
++            collection = json.loads((directory / "collection.json").read_bytes())
++            self.change(directory, "acceptance.json", lambda v: v.update(collection=collection))
++            self.reject(directory)
++
++    def test_symlink_and_stale_inventory_fail_closed(self):
++        for mode in ("link", "bytes"):
++            directory = self.case(mode)
++            path = directory / "runs" / SECOND / "prompt.txt"
++            if mode == "link":
++                saved = self.root / "outside-prompt.txt"; saved.write_bytes(path.read_bytes())
++                path.unlink(); path.symlink_to(saved)
++            else: path.write_bytes(path.read_bytes() + b" ")
++            self.reject(directory)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/tools/test_warm_core_integration.py b/tools/test_warm_core_integration.py
+new file mode 100644
+--- /dev/null
++++ b/tools/test_warm_core_integration.py
+@@ -0,0 +1,134 @@
++"""Actual frozen core oracle + synthetic warm collector + actual action binder.
++
++Set HEPTA_WARM_CORE_SOURCE to the reviewed core source directory containing
++core_assertions.py, core_phone_suite.py and test_core_assertions.py. Set
++HEPTA_CORE_TEST_DRIVERS to the acceptance tools being tested. No private phone
++fixture is needed, and this test never contacts a device or starts a process.
++"""
++import json
++import os
++from pathlib import Path
++import socket
++import subprocess
++import sys
++import tempfile
++import unittest
++from unittest.mock import patch
++
++CORE_SOURCE = os.environ.get("HEPTA_WARM_CORE_SOURCE")
++if not CORE_SOURCE:
++    raise unittest.SkipTest("explicit reviewed core source required for warm integration")
++sys.path.insert(0, str(Path(CORE_SOURCE).resolve()))
++import core_assertions as checks
++import core_phone_suite as core
++import test_core_assertions as synthetic_core
++import phone_acceptance as acceptance
++import phone_suite as suite
++from test_warm_action_binding import collect_warm, reseal, write
++from test_warm_receipts import G
++
++
++class WarmCoreIntegrationTests(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
++        self.root = Path(self.temp.name)
++        for target in ((acceptance, "Adb"), (socket, "create_connection"), (subprocess, "Popen"), (subprocess, "run")):
++            guard = patch.object(*target, side_effect=AssertionError("phone/network/process access forbidden"))
++            guard.start(); self.addCleanup(guard.stop)
++
++    def collect(self, fixture, verdict="pass"):
++        if not (fixture.root / "task/result.json").is_file():
++            previous = json.loads((fixture.root / "task" / ("step-%02d-after.json" % fixture.step)).read_bytes())
++            step, _, _, after = fixture.event("done", previous["package"], status="success")
++            path = fixture.root / "task" / ("step-%02d-action.json" % step)
++            receipt = json.loads(path.read_bytes()); receipt["dispatched"] = False; write(path, receipt)
++            write(fixture.root / "task/result.json", dict(task_id=fixture.task_id, steps=step,
++                status="model_reported_done", model_reported_success=True, cleanup_known=True,
++                final_observation_id=after["observation_id"]))
++        directory = self.root / "collected" / fixture.case["case_id"]
++        collect_warm(fixture.root, directory, verdict)
++        for name in ("ui-final.xml", "ui-final-window.txt"):
++            (directory / name).write_bytes((fixture.root / name).read_bytes())
++        return directory
++
++    def home(self, assertion="settings_home"):
++        fixture = synthetic_core.Evidence(self.root / "source", assertion)
++        if assertion == "search_return_home":
++            fixture.event("back", checks.SEARCH, after_package=checks.SETTINGS)
++        else:
++            fixture.event("open", "com.motorola.launcher", target_package=checks.SETTINGS, after_package=checks.SETTINGS)
++        fixture.homepage_ui()
++        return fixture
++
++    def test_actual_core_driver_pin_includes_new_helper_and_rejects_omission(self):
++        directory = Path(suite.__file__).parent
++        pin, content = core.driver_files(directory)
++        self.assertIn("warm_action_evidence.py", content)
++        helper = next(item for item in pin["files"] if item["path"] == "warm_action_evidence.py")
++        self.assertEqual(helper["sha256"], acceptance.digest(content[helper["path"]]))
++        loaded_suite, loaded_acceptance = core.load_drivers(pin, directory)
++        self.assertIs(loaded_suite, suite); self.assertIs(loaded_acceptance, acceptance)
++        pin["files"] = [item for item in pin["files"] if item["path"] != "warm_action_evidence.py"]
++        with self.assertRaisesRegex(ValueError, "changed from the frozen plan"):
++            core.verify_driver_pin(pin, directory)
++
++    def test_real_core_homepage_done_and_bound_effects_accept_complete_warm_case(self):
++        fixture = self.home(); directory = self.collect(fixture)
++        result = core.evaluate_one(directory, fixture.case, suite, acceptance)
++        self.assertEqual(result["verdict"], "pass", result)
++        self.assertTrue(result["action_sequence"]["passed"], result)
++        extra = result["goal_specific_checks"]
++        self.assertTrue(extra["evidence_complete"]); self.assertTrue(extra["all_passed"])
++        home = next(c["evidence"] for c in extra["checks"] if c["kind"] == "independent_settings_homepage")
++        done = next(c["binding"] for c in home["checks"] if c["kind"] == "native_bound_terminal_done")
++        self.assertEqual(done["request_sequence"], 2)
++        self.assertTrue(done["generation_process_exit_observed"])
++        self.assertFalse(home["phone_contacted"]); self.assertFalse(home["full_task_acceptance_claimed"])
++
++    def test_real_core_initial_precondition_uses_the_same_complete_collection(self):
++        fixture = self.home("search_return_home"); directory = self.collect(fixture)
++        result = core.evaluate_one(directory, fixture.case, suite, acceptance)
++        self.assertEqual(result["verdict"], "pass", result)
++        precondition = result["goal_specific_checks"]["precondition_evidence"]
++        self.assertEqual(precondition["observed_initial_package"], checks.SEARCH)
++        self.assertEqual(precondition["model_binding"]["worker_generation"], G)
++        self.assertEqual(precondition["model_binding"]["generation_requests_verified"], 2)
++
++    def test_real_core_read_only_find_app_and_later_open_are_bound(self):
++        builder = synthetic_core.CoreChecks(); builder.root = self.root / "source"
++        fixture = builder.discovery(); directory = self.collect(fixture)
++        result = core.evaluate_one(directory, fixture.case, suite, acceptance)
++        self.assertEqual(result["verdict"], "pass", result)
++        bindings = result["goal_specific_checks"]["model_action_bindings"]
++        self.assertEqual([b["request_sequence"] for b in bindings], [1, 2])
++        self.assertTrue(all(b["generation_requests_verified"] == 3 for b in bindings))
++
++    def test_valid_homepage_cannot_override_missing_worker_exit_evidence(self):
++        fixture = self.home(); directory = self.collect(fixture)
++        (directory / "runs" / G / "app-session-receipt.json").unlink()
++        result = core.evaluate_one(directory, fixture.case, suite, acceptance)
++        self.assertEqual(result["verdict"], "unverified", result)
++        self.assertEqual(result["launch_attempt_count"], 1)
++        self.assertFalse(result["action_sequence"]["evidence_complete"])
++        self.assertFalse(result["goal_specific_checks"]["evidence_complete"])
++
++    def test_complete_warm_homepage_never_upgrades_original_failure(self):
++        fixture = self.home(); directory = self.collect(fixture, "fail")
++        result = core.evaluate_one(directory, fixture.case, suite, acceptance)
++        self.assertEqual(result["verdict"], "fail", result)
++        self.assertEqual(result["original_case_verdict"], "fail")
++        self.assertTrue(result["action_sequence"]["passed"])
++        self.assertTrue(result["goal_specific_checks"]["all_passed"])
++
++    def test_resealed_terminal_mismatch_is_unverified_through_actual_core(self):
++        fixture = self.home(); directory = self.collect(fixture)
++        path = directory / "task/result.json"
++        terminal = json.loads(path.read_bytes()); terminal["status"] = "partial"; write(path, terminal)
++        reseal(directory)
++        result = core.evaluate_one(directory, fixture.case, suite, acceptance)
++        self.assertEqual(result["verdict"], "unverified", result)
++        self.assertFalse(result["action_sequence"]["evidence_complete"])
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/tools/test_warm_terminal_closure.py b/tools/test_warm_terminal_closure.py
+new file mode 100644
+--- /dev/null
++++ b/tools/test_warm_terminal_closure.py
+@@ -0,0 +1,149 @@
++"""Adversarial terminal-journal and pinned-import regressions; no phone input."""
++import copy
++import importlib
++import json
++from pathlib import Path
++import socket
++import subprocess
++import sys
++import tempfile
++import types
++import unittest
++from unittest.mock import patch
++
++import test_warm_core_integration as integration
++from test_warm_action_binding import reseal, write
++
++acceptance, suite, core = integration.acceptance, integration.suite, integration.core
++
++
++class WarmTerminalClosureTests(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
++        self.root = Path(self.temp.name)
++        for target in ((acceptance, "Adb"), (socket, "create_connection"), (subprocess, "Popen"), (subprocess, "run")):
++            guard = patch.object(*target, side_effect=AssertionError("phone/network/process access forbidden"))
++            guard.start(); self.addCleanup(guard.stop)
++
++    def case(self, name):
++        builder = integration.WarmCoreIntegrationTests(); builder.root = self.root / name
++        original = integration.synthetic_core.CoreChecks(); original.root = builder.root / "source"
++        fixture = original.discovery()
++        directory = builder.collect(fixture)
++        return directory, fixture
++
++    def reject_core(self, directory, fixture):
++        result = core.evaluate_one(directory, fixture.case, suite, acceptance)
++        self.assertEqual(result["verdict"], "unverified", result)
++        self.assertFalse(result["action_sequence"]["evidence_complete"], result)
++        self.assertEqual(result["launch_attempt_count"], 1)
++
++    def omit(self, directory, paths):
++        for relative in paths: (directory / relative).unlink()
++        collection = json.loads((directory / "collection.json").read_bytes())
++        collection["files"] = [item for item in collection["files"] if item["path"] not in paths]
++        write(directory / "collection.json", collection); reseal(directory)
++
++    def test_missing_terminal_action_or_after_cannot_pass_real_find_app_case(self):
++        for suffixes in (("action",), ("after",), ("action", "after")):
++            with self.subTest(missing=suffixes):
++                directory, fixture = self.case("missing-" + "-".join(suffixes))
++                self.omit(directory, ["task/step-03-" + suffix + ".json" for suffix in suffixes])
++                self.reject_core(directory, fixture)
++
++    def test_unselected_terminal_action_must_equal_its_native_raw_decision(self):
++        for field, value in (("status", "blocked"), ("summary", "different summary"),
++                             ("observation_id", "f" * 32), ("package", "another.application")):
++            with self.subTest(field=field):
++                directory, fixture = self.case(field)
++                path = directory / "task/step-03-action.json"
++                receipt = json.loads(path.read_bytes()); receipt["action"][field] = value; write(path, receipt)
++                reseal(directory); self.reject_core(directory, fixture)
++
++    def test_terminal_step_and_final_observation_must_name_last_complete_step(self):
++        changes = (("steps", 1), ("steps", True), ("steps", 99), ("steps", None),
++                   ("final_observation_id", "f" * 32), ("final_observation_id", None))
++        for index, (field, value) in enumerate(changes):
++            with self.subTest(field=field, value=value):
++                directory, fixture = self.case("terminal%d" % index)
++                path = directory / "task/result.json"
++                terminal = json.loads(path.read_bytes())
++                if value is None: terminal.pop(field)
++                else: terminal[field] = value
++                write(path, terminal); reseal(directory, synchronize_terminal=True)
++                self.reject_core(directory, fixture)
++
++    def test_success_terminal_requires_last_native_done_success(self):
++        for mode in ("non-done", "unsuccessful-done"):
++            with self.subTest(mode=mode):
++                directory, fixture = self.case(mode)
++                action_path = directory / "task/step-03-action.json"
++                receipt = json.loads(action_path.read_bytes())
++                if mode == "non-done":
++                    receipt["action"]["action"] = "back"; receipt["action"].pop("status")
++                    receipt["dispatched"] = True
++                else:
++                    receipt["action"]["status"] = "blocked"
++                raw = (json.dumps(receipt["action"]) + "\n").encode()
++                write(action_path, receipt)
++                model_path = directory / "task/step-03-model-0.json"
++                model = json.loads(model_path.read_bytes()); model["raw_text"] = raw.decode(); write(model_path, model)
++                run = directory / "runs" / model["run_id"]
++                (run / "raw-text.txt").write_bytes(raw)
++                native = json.loads((run / "native-result.json").read_bytes())
++                native.update(raw_text_sha256=acceptance.digest(raw), raw_text_bytes=len(raw))
++                write(run / "native-result.json", native)
++                app = json.loads((run / "app-receipt.json").read_bytes())
++                app.update(native_receipt=copy.deepcopy(native), raw_text_sha256_read=acceptance.digest(raw))
++                write(run / "app-receipt.json", app)
++                reseal(directory); self.reject_core(directory, fixture)
++
++    def test_missing_other_step_action_or_after_cannot_qualify_selected_open(self):
++        for suffix in ("action", "after"):
++            with self.subTest(missing=suffix):
++                directory, fixture = self.case("earlier-" + suffix)
++                self.omit(directory, ["task/step-01-" + suffix + ".json"])
++                result = suite.action_sequence(directory, fixture.case["required_actions"], fixture.owner_sha)
++                self.assertFalse(result["evidence_complete"], result)
++
++    def foreign(self, name):
++        module = types.ModuleType(name)
++        module.__dict__.update(importlib.import_module(name).__dict__)
++        module.__file__ = str(self.root / "unreviewed" / (name + ".py"))
++        if name == "warm_action_evidence":
++            module.verify_warm_action = lambda *args, **kwargs: {"foreign_helper_executed": True}
++        return module
++
++    def test_frozen_core_rejects_preloaded_foreign_warm_helpers(self):
++        directory = Path(suite.__file__).parent
++        pin, _ = core.driver_files(directory)
++        for name in ("warm_action_evidence", "warm_receipts"):
++            with self.subTest(module=name):
++                foreign = self.foreign(name)
++                with patch.dict(sys.modules, {name: foreign}), patch.object(sys, "path", list(sys.path)):
++                    sys.modules.pop("phone_suite", None)
++                    if name == "warm_receipts": sys.modules.pop("warm_action_evidence", None)
++                    with self.assertRaisesRegex(ValueError, "another version|unexpected directory"):
++                        loaded_suite, _ = core.load_drivers(pin, directory)
++                        if name == "warm_action_evidence":
++                            self.assertTrue(loaded_suite.verify_warm_action()["foreign_helper_executed"])
++
++    def test_frozen_core_rechecks_helper_origins_after_import(self):
++        directory = Path(suite.__file__).parent
++        pin, _ = core.driver_files(directory)
++        for name in ("warm_action_evidence", "warm_receipts"):
++            with self.subTest(module=name):
++                foreign = self.foreign(name)
++                original = importlib.import_module
++                def import_then_change(module, *args, **kwargs):
++                    result = original(module, *args, **kwargs)
++                    if module == "phone_suite": sys.modules[name] = foreign
++                    return result
++                with patch.dict(sys.modules), patch.object(sys, "path", list(sys.path)), patch.object(
++                        core.importlib, "import_module", side_effect=import_then_change):
++                    with self.assertRaisesRegex(ValueError, "another version|unexpected directory"):
++                        core.load_drivers(pin, directory)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/tools/test_warm_terminal_verdict.py b/tools/test_warm_terminal_verdict.py
+new file mode 100644
+--- /dev/null
++++ b/tools/test_warm_terminal_verdict.py
+@@ -0,0 +1,147 @@
++"""Base verdict coherence, producer done invariants, and bounded local waits."""
++import copy
++import json
++from pathlib import Path
++import socket
++import subprocess
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import test_warm_core_integration as integration
++import test_warm_terminal_closure as terminal_tests
++from test_warm_action_binding import basic_source, collect_warm, reseal, write, FIRST
++
++acceptance, suite, core = integration.acceptance, integration.suite, integration.core
++
++
++class WarmTerminalVerdictTests(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
++        self.root = Path(self.temp.name)
++        for target in ((acceptance, "Adb"), (socket, "create_connection"), (subprocess, "Popen"), (subprocess, "run")):
++            guard = patch.object(*target, side_effect=AssertionError("phone/network/process access forbidden"))
++            guard.start(); self.addCleanup(guard.stop)
++
++    def case(self, name):
++        builder = terminal_tests.WarmTerminalClosureTests(); builder.root = self.root
++        return builder.case(name)
++
++    def change_terminal(self, directory, status, verdict):
++        path = directory / "task/result.json"
++        final = json.loads(path.read_bytes()); final.update(status=status, model_reported_success=False); write(path, final)
++        path = directory / "acceptance.json"
++        report = json.loads(path.read_bytes()); report["verdict"] = verdict; write(path, report)
++        reseal(directory, synchronize_terminal=True)
++
++    def test_base_pass_requires_successful_terminal_even_with_matching_hashes(self):
++        for status in ("partial", "failed", "cancelled", "blocked"):
++            with self.subTest(status=status):
++                directory, fixture = self.case(status)
++                self.change_terminal(directory, status, "pass")
++                result = core.evaluate_one(directory, fixture.case, suite, acceptance)
++                self.assertEqual(result["verdict"], "unverified", result)
++                self.assertFalse(result["action_sequence"]["evidence_complete"])
++
++    def test_failed_base_can_retain_action_diagnostics_without_upgrade(self):
++        directory, fixture = self.case("failure")
++        self.change_terminal(directory, "partial", "fail")
++        result = core.evaluate_one(directory, fixture.case, suite, acceptance)
++        self.assertEqual(result["verdict"], "fail", result)
++        self.assertEqual(result["original_case_verdict"], "fail")
++        self.assertTrue(result["action_sequence"]["passed"])
++        self.assertTrue(result["action_sequence"]["evidence_complete"])
++
++    def test_done_observation_must_keep_producer_fields_stable(self):
++        changes = (("package", "other.application"), ("window_id", 8), ("rotation", 1),
++                   ("observation_state_sha256", "f" * 64))
++        for field, value in changes:
++            with self.subTest(field=field):
++                directory, fixture = self.case("changed-" + field)
++                path = directory / "task/step-03-after.json"
++                after = json.loads(path.read_bytes()); after[field] = value; write(path, after)
++                reseal(directory)
++                result = core.evaluate_one(directory, fixture.case, suite, acceptance)
++                self.assertEqual(result["verdict"], "unverified", result)
++
++    def test_equal_missing_or_wrong_typed_done_fields_cannot_qualify(self):
++        changes = (("window_id", None), ("rotation", None), ("observation_state_sha256", None),
++                   ("window_id", True), ("rotation", False), ("observation_state_sha256", "not-a-digest"))
++        for index, (field, value) in enumerate(changes):
++            with self.subTest(field=field, value=value):
++                directory, fixture = self.case("invalid%d" % index)
++                for suffix in ("before", "after"):
++                    path = directory / ("task/step-03-" + suffix + ".json")
++                    observation = json.loads(path.read_bytes())
++                    if value is None: observation.pop(field)
++                    else: observation[field] = value
++                    write(path, observation)
++                reseal(directory)
++                result = core.evaluate_one(directory, fixture.case, suite, acceptance)
++                self.assertEqual(result["verdict"], "unverified", result)
++
++    def wait_case(self, name, duration=100):
++        source, directory = self.root / (name + "-source"), self.root / name
++        basic_source(source)
++        before_path = source / "task/step-01-before.json"
++        before = json.loads(before_path.read_bytes()); before["package"] = "com.android.settings"; write(before_path, before)
++        path = source / "task/step-01-action.json"
++        receipt = json.loads(path.read_bytes()); receipt["action"].update(action="wait", duration_ms=duration)
++        receipt["dispatched"] = False; write(path, receipt)
++        raw = (json.dumps(receipt["action"]) + "\n").encode()
++        path = source / "task/step-01-model-0.json"
++        model = json.loads(path.read_bytes()); model["raw_text"] = raw.decode(); write(path, model)
++        run = source / "runs" / FIRST
++        (run / "raw-text.txt").write_bytes(raw)
++        prompt = (run / "prompt.txt").read_text().replace('"com.motorola.launcher"', '"com.android.settings"')
++        (run / "prompt.txt").write_text(prompt)
++        collect_warm(source, directory)
++        return directory
++
++    def binding(self, directory, step=1):
++        path = directory / ("task/step-%02d-action.json" % step)
++        before = directory / ("task/step-%02d-before.json" % step)
++        return suite.model_action_binding(directory, path, json.loads(path.read_bytes()), json.loads(before.read_bytes()))
++
++    def test_complete_wait_then_done_is_bound_without_inventing_an_effect(self):
++        for duration in (100, 2000):
++            directory = self.wait_case("wait%d" % duration, duration)
++            binding = self.binding(directory)
++            self.assertTrue(binding["verified"], binding)
++            self.assertEqual(binding["controller_steps_verified"], 2)
++            self.assertTrue(self.binding(directory, 2)["verified"])
++            self.assertNotIn("wait", suite.EFFECTS)
++
++    def test_actual_core_open_wait_done_preserves_real_effect_requirement(self):
++        builder = integration.WarmCoreIntegrationTests(); builder.root = self.root
++        fixture = integration.synthetic_core.Evidence(self.root / "source", "settings_home")
++        fixture.event("open", "com.motorola.launcher", target_package=integration.checks.SETTINGS,
++                      after_package=integration.checks.SETTINGS)
++        step, _, _, _ = fixture.event("wait", integration.checks.SETTINGS, duration_ms=100)
++        path = fixture.root / ("task/step-%02d-action.json" % step)
++        receipt = json.loads(path.read_bytes()); receipt["dispatched"] = False; write(path, receipt)
++        fixture.homepage_ui()
++        directory = builder.collect(fixture)
++        result = core.evaluate_one(directory, fixture.case, suite, acceptance)
++        self.assertEqual(result["verdict"], "pass", result)
++        self.assertEqual([item["action"] for item in result["action_sequence"]["observed_dispatched_actions"]], ["open"])
++
++    def test_wait_cannot_dispatch_or_substitute_a_duration(self):
++        for mode in ("dispatched", "changed-duration"):
++            directory = self.wait_case(mode)
++            path = directory / "task/step-01-action.json"
++            receipt = json.loads(path.read_bytes())
++            if mode == "dispatched": receipt["dispatched"] = True
++            else: receipt["action"]["duration_ms"] = 200
++            write(path, receipt); reseal(directory)
++            self.assertFalse(self.binding(directory)["verified"])
++
++    def test_wait_duration_requires_exact_bounded_integer_in_all_records(self):
++        for index, duration in enumerate((99, 2001, True, 100.0)):
++            with self.subTest(duration=duration):
++                directory = self.wait_case("duration%d" % index, duration)
++                self.assertFalse(self.binding(directory)["verified"])
++
++
++if __name__ == "__main__":
++    unittest.main()

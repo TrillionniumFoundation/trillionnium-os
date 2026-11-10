@@ -1,0 +1,8 @@
+handle=0x0000000000000001 observed=0x0000000000000001 return=0 PASS
+handle=0x0000000112345678 observed=0x0000000112345678 return=44 PASS
+handle=0x123456789abcdef0 observed=0x123456789abcdef0 return=-17 PASS
+handle=0xffffffff00000001 observed=0xffffffff00000001 return=0 PASS
+handle=0x8000000000000000 observed=0x8000000000000000 return=44 PASS
+handle=0xffffffffffffffff observed=0xffffffffffffffff return=-17 PASS
+PASS cases=6 high32_nonzero_cases=5 actual_stub_dispatches=6 return_values_preserved=true
+SCOPE host-only extracted production typedef/storage/wrapper; no Android, DSP or device validation

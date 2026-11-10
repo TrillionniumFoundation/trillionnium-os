@@ -1,0 +1,302 @@
+{
+  "schema": "hepta.warm-acceptance-review-baseline.v1",
+  "revision": "r5",
+  "scope": "Unadopted host-only review candidate; no active source overlay or device qualification",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "suggested_branch": "codex/razr-warm-close-review-20261110-e59e7b75",
+  "publication_parent": {
+    "commit": "a578ec8f823d700b7eb9fdf0c551c2ee238b74da",
+    "tree": "6a70c9e4b2a45d3a980c3985e26fb9642d9b708c",
+    "pull_request": 125,
+    "is_warm_source_base": false
+  },
+  "original_publication_storage_base": {
+    "branch": "integration/razr60-r9-20261107",
+    "commit": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+    "tree": "3b805316ffdb03fc1fb581896d56910bf96c77ab",
+    "is_warm_source_base": false
+  },
+  "source_baseline": {
+    "version_code": 29,
+    "version_name": "0.29.0-local-task-worker",
+    "source_manifest_sha256": "e8cbb349747d6e21fe6961889d4859ca52d182ac480e4a45c71b662687826ff7",
+    "source_manifest_bytes": 219167,
+    "declared_code27_parent": "de197700828dbddef9d1077dfe3d457a5cbe9295",
+    "declared_parent_github_object_verified": false,
+    "known_published_warm_commit": null,
+    "observation_is_not_an_atomic_whole_source_snapshot": true,
+    "changed_existing_file_bytes_match_manifest_and_current_observation": true
+  },
+  "source_baseline_is_installed_phone_claim": false,
+  "cumulative_tools_patch": {
+    "published_file": "acceptance-evidence.patch",
+    "sha256": "6be356c2bb90ac812d3f75092595d151ec83716dc6072888a2780418f7e01504",
+    "bytes": 103753,
+    "base": "exact observed Code29 before hashes",
+    "changed_files": [
+      {
+        "path": "tools/phone_acceptance.py",
+        "before_sha256": "a79034f5ff11c6967db6cfa49296ba7b163d7b5de8e8caca99fc8cfaa8908a43",
+        "r4_sha256": "d5dc260e5cb2068b8687eb7634175398ff926f3a0b424ea2fe77ac5422ebfa92",
+        "after_sha256": "d5dc260e5cb2068b8687eb7634175398ff926f3a0b424ea2fe77ac5422ebfa92",
+        "bytes": 52817
+      },
+      {
+        "path": "tools/phone_suite.py",
+        "before_sha256": "3ee862814c887faea4266f2c1d61892f3c3d2eed7c466c73f918fa8db4acdf65",
+        "r4_sha256": "bc739f3c5bfbc34d6b0f01f28fcd0523c237ea1d2ea9fe257dfb451967674d1b",
+        "after_sha256": "bc739f3c5bfbc34d6b0f01f28fcd0523c237ea1d2ea9fe257dfb451967674d1b",
+        "bytes": 27488
+      },
+      {
+        "path": "tools/warm_receipts.py",
+        "before_sha256": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5",
+        "r4_sha256": "085b74070b0eb1a0b3e4763c8996d02443469da6bd4788d0c983126b6cfc3bbc",
+        "after_sha256": "085b74070b0eb1a0b3e4763c8996d02443469da6bd4788d0c983126b6cfc3bbc",
+        "bytes": 8915
+      },
+      {
+        "path": "tools/warm_action_evidence.py",
+        "before_sha256": null,
+        "r4_sha256": "cb235f197264140ebfe750bd39fee05e39b1c44fb3a21e8c03b13ee31f2c0339",
+        "after_sha256": "b0a98b85a6569a930e2b4c906b2c4731b7e1d9be34d52eda452a76e27ccaf157",
+        "bytes": 19795
+      },
+      {
+        "path": "tools/test_warm_collection.py",
+        "before_sha256": "4d97a5c80829c0b3cc18111380b5248d20bfa85d36cc0f9280499121e0f2fc4a",
+        "r4_sha256": "091c920d86a516de8c0afd3185395b79732a623f79144dae09b9a8e5a2c28e64",
+        "after_sha256": "091c920d86a516de8c0afd3185395b79732a623f79144dae09b9a8e5a2c28e64",
+        "bytes": 5736
+      },
+      {
+        "path": "tools/test_warm_collection_integrity.py",
+        "before_sha256": null,
+        "r4_sha256": "7cc498e63666fcc8bfc44bb2e61165c98efc213fe884c7ccecf0b36b8f9dc32b",
+        "after_sha256": "7cc498e63666fcc8bfc44bb2e61165c98efc213fe884c7ccecf0b36b8f9dc32b",
+        "bytes": 13031
+      },
+      {
+        "path": "tools/test_warm_receipts.py",
+        "before_sha256": "88c806e8d65e7350c44e21551c661472861af565d420c99a8896c087c2f7a124",
+        "r4_sha256": "948a1b3ae742fe70be492f60f55804c9bd1cc984580b39de79a784aa377c4cd8",
+        "after_sha256": "948a1b3ae742fe70be492f60f55804c9bd1cc984580b39de79a784aa377c4cd8",
+        "bytes": 9037
+      },
+      {
+        "path": "tools/test_warm_action_binding.py",
+        "before_sha256": null,
+        "r4_sha256": "3653d662ed6399fcef47a7005f78461de10a9c6b801176ea93c1bd35132b0854",
+        "after_sha256": "1e33b0068c24b6330552197faf32b088d055f43dfe901ca8926ba63f198e3575",
+        "bytes": 23606
+      },
+      {
+        "path": "tools/test_warm_core_integration.py",
+        "before_sha256": null,
+        "r4_sha256": "3efcf7666a8b165d7b1f97cc5e3b854fb6d0e757e6fa072031df7e17c6104ee5",
+        "after_sha256": "3efcf7666a8b165d7b1f97cc5e3b854fb6d0e757e6fa072031df7e17c6104ee5",
+        "bytes": 7667
+      },
+      {
+        "path": "tools/test_warm_terminal_closure.py",
+        "before_sha256": null,
+        "r4_sha256": "cf4a3a3f8cfad8fd7f3df21b516d1185bc57060cf7e80a517459ee4cfa887646",
+        "after_sha256": "cf4a3a3f8cfad8fd7f3df21b516d1185bc57060cf7e80a517459ee4cfa887646",
+        "bytes": 8171
+      },
+      {
+        "path": "tools/test_warm_terminal_verdict.py",
+        "before_sha256": null,
+        "r4_sha256": null,
+        "after_sha256": "6c7049083d22fbcb9b41123b2127844b51a1c612b6423a05bfc8364d92bcf3b6",
+        "bytes": 8168
+      }
+    ],
+    "git_apply_check_passed": true,
+    "disposable_apply_output_matches_all_after_hashes": true,
+    "includes_r1_r2_r3_r4_r5": true
+  },
+  "core_closure_patch": {
+    "published_file": "core-driver-closure.patch",
+    "sha256": "6cd6097a844819d118a7e2258635cf6c51019a3e5f88c1cca07354fbe875582b",
+    "bytes": 1647,
+    "base": "exact reviewed homepage oracle R2 output; apply after its logic patch",
+    "file": {
+      "path": "core_phone_suite.py",
+      "before_sha256": "d1bae5a4a43b92d3b7bb0b87664449107777dc515df45c31848265f7d8d35db4",
+      "after_sha256": "87cf221f07b0a36395e0760123f782ecab210d42a5b7f306146755d7d36e04c1",
+      "bytes": 23726
+    },
+    "git_apply_check_passed": true,
+    "disposable_apply_output_matches_after_hash": true
+  },
+  "core_integration_inputs": [
+    {
+      "path": "core_assertions.py",
+      "sha256": "53c041e8207f87ca7f52b9352ee2328ccce690938e0f01863708a5e54cf0d89d",
+      "bytes": 44178,
+      "r3_before_sha256": "53c041e8207f87ca7f52b9352ee2328ccce690938e0f01863708a5e54cf0d89d"
+    },
+    {
+      "path": "core_phone_suite.py",
+      "sha256": "87cf221f07b0a36395e0760123f782ecab210d42a5b7f306146755d7d36e04c1",
+      "bytes": 23726,
+      "r3_before_sha256": "d1bae5a4a43b92d3b7bb0b87664449107777dc515df45c31848265f7d8d35db4"
+    },
+    {
+      "path": "test_core_assertions.py",
+      "sha256": "c50bc1685bbb2b3519535a679d563f12a5ab9a2c079dd93bb0ba51c2ba30c95b",
+      "bytes": 25758,
+      "r3_before_sha256": "c50bc1685bbb2b3519535a679d563f12a5ab9a2c079dd93bb0ba51c2ba30c95b"
+    }
+  ],
+  "r3_evidence_preserved": {
+    "archive_manifest_path": "review-r4-evidence/R3-EVIDENCE.json",
+    "sha256": "19482bdd380bfa5326489a249ba0364707c7646581a11f7f43933f8c55844af6",
+    "bytes": 7353,
+    "all_original_hashes_rechecked": true,
+    "original_source_and_capsule_not_rewritten": true,
+    "original_patch": {
+      "sha256": "33870e652497a89a4a255343c71a7dfbf3cd93cf22c302332f801081ccf04fc5",
+      "bytes": 81785
+    },
+    "original_171_pass_log": {
+      "sha256": "7c52e4f4cb1581442d3b04a50e0895e9cf3bec8f88f27875d487b58b81f19f18",
+      "bytes": 26172
+    },
+    "original_r2_three_positive_failures_log": {
+      "sha256": "5c13da51c64d32c2225900cb8ce187f74bef6d03c50c2c1a42c5bcdef544b4de",
+      "bytes": 4045
+    },
+    "r3_to_r4_tools_delta": {
+      "sha256": "0a84db66cb660044961958aaec17a7a86758c5b594f85bfe8af0e009fbfa3300",
+      "bytes": 14253
+    }
+  },
+  "r2_evidence_preserved": {
+    "revision": "r3",
+    "r2_preserved": true,
+    "records": [
+      {
+        "path": "review-r2-evidence/warm-acceptance-review-r2.patch",
+        "sha256": "33873f54a94c05ba8fb44d4fa0a6b92373aaa68e9845ee3985f687776671aa36",
+        "bytes": 31658
+      },
+      {
+        "path": "review-r2-evidence/r1-to-r2.patch",
+        "sha256": "558658f22e855d168b1f5c427a2144e60de2e62991f6efd7ea25a6a876effd6b",
+        "bytes": 11253
+      },
+      {
+        "path": "review-r2-evidence/VALIDATION.json",
+        "sha256": "59422e22168ec4759e1706e62207091ff52fa9e9a56f714c7e5099b6451ebcda",
+        "bytes": 1540
+      },
+      {
+        "path": "review-r2-evidence/PATCH-CONTENT.json",
+        "sha256": "b4cb3ab20470595ab3ecdc54dd2242141094beb3d520ac9a4099c92299d0040e",
+        "bytes": 1791
+      },
+      {
+        "path": "review-r2-evidence/logs/r2-host.stderr",
+        "sha256": "15bfcba8f6cdaf91dbb56df3ce4724bcab48dfc194f5af40308603eefaf88135",
+        "bytes": 17381
+      },
+      {
+        "path": "review-r2-evidence/logs/r1-new-regressions.stderr",
+        "sha256": "9dab70e37b1a31ead6dbcf31dd833639a977de3f3d99806ab227bcf924bde3b3",
+        "bytes": 92541
+      }
+    ]
+  },
+  "r1_evidence_preserved": {
+    "r1_directory_name": "warm-acceptance-review",
+    "records": [
+      {
+        "path": "BASELINE.json",
+        "sha256": "dc4022e13b9b062e856690eb85cc656706c713066acb9b32bce68ad58e648f86",
+        "bytes": 6295,
+        "retained_in_r1": true
+      },
+      {
+        "path": "PATCH-CONTENT.json",
+        "sha256": "e0303dc94d1ee07d56f0d080fd49111d9aff9c0683bfaa6a1fd766014d474538",
+        "bytes": 1339,
+        "retained_in_r1": true
+      },
+      {
+        "path": "VALIDATION.json",
+        "sha256": "0ef066e60570214b6c1e99d92d5ce0691a4d7a5afe472d5d2ea44294bc4cc3ef",
+        "bytes": 2022,
+        "retained_in_r1": true
+      },
+      {
+        "path": "warm-acceptance-review.patch",
+        "sha256": "bf0fcad1962d6395f7a4019f516c57560110fb5c16439ecdec4768ce6fcfd184",
+        "bytes": 23813,
+        "retained_in_r1": true
+      },
+      {
+        "path": "logs/baseline-integrity.stderr",
+        "sha256": "92d655683188aff11e97cac76d6fda1e8f28e67e7098921dad0a00ee8b4c05e1",
+        "bytes": 47359,
+        "retained_in_r1": true
+      },
+      {
+        "path": "logs/patched-host.stderr",
+        "sha256": "243169e265c2c34ac74aad388dc615615fc18f82b27bee8ad495bca9e3811408",
+        "bytes": 16172,
+        "retained_in_r1": true
+      }
+    ],
+    "originals_unchanged": true
+  },
+  "deployment": {
+    "apk_built": false,
+    "phone_operated": false,
+    "installed": false,
+    "shared_source_overlaid": false,
+    "active_acceptance_tools_replaced": false
+  },
+  "copied_review_sources": {
+    "test_files": 7,
+    "new_helpers": 1,
+    "byte_exact_to_patch_output": true,
+    "existing_production_tools_and_core_not_copied_in_full": true
+  },
+  "r4_evidence_preserved": {
+    "archive_manifest_path": "review-r5-evidence/R4-EVIDENCE.json",
+    "sha256": "9342d3c9cd32a9ea2022b0c1ca3ac77e3fc7ed1225f4a0bc52763c07586ba304",
+    "bytes": 7838,
+    "all_original_hashes_rechecked": true,
+    "original_source_capsule_and_logs_not_rewritten": true,
+    "original_patch": {
+      "sha256": "e0fb757188891b6fc847cc8d0be3d79aae7235e7dc0f805b09e591f29625d9df",
+      "bytes": 93232
+    },
+    "original_178_pass_log": {
+      "sha256": "50e7f411bc8fe88bee7e4d7a12d3a4a0cfbfcb6be565df8f23e669cf4320efd4",
+      "bytes": 27481
+    },
+    "original_r3_seven_method_twenty_one_failures_log": {
+      "sha256": "2a321464914849d8c9e1c27416d015614396580ee9efc7e8fdf1859799a797ac",
+      "bytes": 103401
+    },
+    "r4_to_r5_tools_delta": {
+      "sha256": "fded046a88c3daf6c47d6f9c18bc2b933d8d84d8b3ea34ce76e61cc49507bcf1",
+      "bytes": 12978
+    }
+  },
+  "producer_invariants_checked": {
+    "source_baseline": "Code29",
+    "done": [
+      "LocalTaskController.java compares packageName, windowId, rotation, treeSha256 before model_reported_done",
+      "PhoneObservation.java serializes treeSha256 as observation_state_sha256"
+    ],
+    "wait": [
+      "DecisionGrammar.java includes wait",
+      "ActionDecision.java requires duration_ms integer 100..2000",
+      "HeptaAccessibilityService.java records wait as accepted without dispatch"
+    ]
+  }
+}

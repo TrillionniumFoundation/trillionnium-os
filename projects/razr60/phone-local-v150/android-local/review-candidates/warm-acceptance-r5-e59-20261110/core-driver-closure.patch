@@ -1,0 +1,32 @@
+diff --git a/core_phone_suite.py b/core_phone_suite.py
+--- a/core_phone_suite.py
++++ b/core_phone_suite.py
+@@ -71,13 +71,24 @@
+ 
+ 
+ def load_drivers(pin, directory=None):
+-    path, _ = verify_driver_pin(pin, directory)
++    path, content = verify_driver_pin(pin, directory)
++    names = {Path(name).stem for name in content if Path(name).suffix == ".py"}
++
++    def verify_loaded_origins():
++        # A correct on-disk pin does not replace an already imported dependency.
++        # Check every Python module in the frozen closure, including newly added
++        # warm receipt/action helpers, before and after importing the entrypoints.
++        for name in names:
++            if name in sys.modules:
++                origin = getattr(sys.modules[name], "__file__", None)
++                if not isinstance(origin, str) or Path(origin).resolve().parent != path:
++                    raise ValueError("another version of the base driver dependency is already loaded: " + name)
++
++    verify_loaded_origins()
+     sys.path.insert(0, str(path))
+-    for name in ("phone_acceptance", "phone_inventory", "phone_suite", "model_profiles"):
+-        if name in sys.modules and Path(sys.modules[name].__file__).resolve().parent != path:
+-            raise ValueError("another version of the base driver is already loaded")
+     acceptance = importlib.import_module("phone_acceptance")
+     suite = importlib.import_module("phone_suite")
++    verify_loaded_origins()
+     for module in (acceptance, suite):
+         if Path(module.__file__).resolve().parent != path:
+             raise ValueError("base driver import came from an unexpected directory")

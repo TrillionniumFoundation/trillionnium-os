@@ -1,0 +1,4 @@
+Exception in thread "main" java.lang.AssertionError: Stop during invalid close: expected cancelled, got failed
+	at org.trillionnium.hepta.local.WarmFinalizationHostTest.check(WarmFinalizationHostTest.java:11)
+	at org.trillionnium.hepta.local.WarmFinalizationHostTest.expect(WarmFinalizationHostTest.java:35)
+	at org.trillionnium.hepta.local.WarmFinalizationHostTest.main(WarmFinalizationHostTest.java:71)

@@ -1,0 +1,200 @@
+test_actual_core_open_wait_done_preserves_real_effect_requirement (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_actual_core_open_wait_done_preserves_real_effect_requirement) ... FAIL
+test_base_pass_requires_successful_terminal_even_with_matching_hashes (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_base_pass_requires_successful_terminal_even_with_matching_hashes) ... 
+  test_base_pass_requires_successful_terminal_even_with_matching_hashes (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_base_pass_requires_successful_terminal_even_with_matching_hashes) (status='partial') ... FAIL
+  test_base_pass_requires_successful_terminal_even_with_matching_hashes (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_base_pass_requires_successful_terminal_even_with_matching_hashes) (status='failed') ... FAIL
+  test_base_pass_requires_successful_terminal_even_with_matching_hashes (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_base_pass_requires_successful_terminal_even_with_matching_hashes) (status='cancelled') ... FAIL
+  test_base_pass_requires_successful_terminal_even_with_matching_hashes (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_base_pass_requires_successful_terminal_even_with_matching_hashes) (status='blocked') ... FAIL
+test_complete_wait_then_done_is_bound_without_inventing_an_effect (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_complete_wait_then_done_is_bound_without_inventing_an_effect) ... FAIL
+test_done_observation_must_keep_producer_fields_stable (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_done_observation_must_keep_producer_fields_stable) ... 
+  test_done_observation_must_keep_producer_fields_stable (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_done_observation_must_keep_producer_fields_stable) (field='package') ... FAIL
+  test_done_observation_must_keep_producer_fields_stable (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_done_observation_must_keep_producer_fields_stable) (field='window_id') ... FAIL
+  test_done_observation_must_keep_producer_fields_stable (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_done_observation_must_keep_producer_fields_stable) (field='rotation') ... FAIL
+  test_done_observation_must_keep_producer_fields_stable (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_done_observation_must_keep_producer_fields_stable) (field='observation_state_sha256') ... FAIL
+test_equal_missing_or_wrong_typed_done_fields_cannot_qualify (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_equal_missing_or_wrong_typed_done_fields_cannot_qualify) ... 
+  test_equal_missing_or_wrong_typed_done_fields_cannot_qualify (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_equal_missing_or_wrong_typed_done_fields_cannot_qualify) (field='window_id', value=None) ... FAIL
+  test_equal_missing_or_wrong_typed_done_fields_cannot_qualify (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_equal_missing_or_wrong_typed_done_fields_cannot_qualify) (field='rotation', value=None) ... FAIL
+  test_equal_missing_or_wrong_typed_done_fields_cannot_qualify (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_equal_missing_or_wrong_typed_done_fields_cannot_qualify) (field='observation_state_sha256', value=None) ... FAIL
+  test_equal_missing_or_wrong_typed_done_fields_cannot_qualify (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_equal_missing_or_wrong_typed_done_fields_cannot_qualify) (field='window_id', value=True) ... FAIL
+  test_equal_missing_or_wrong_typed_done_fields_cannot_qualify (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_equal_missing_or_wrong_typed_done_fields_cannot_qualify) (field='rotation', value=False) ... FAIL
+  test_equal_missing_or_wrong_typed_done_fields_cannot_qualify (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_equal_missing_or_wrong_typed_done_fields_cannot_qualify) (field='observation_state_sha256', value='not-a-digest') ... FAIL
+test_failed_base_can_retain_action_diagnostics_without_upgrade (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_failed_base_can_retain_action_diagnostics_without_upgrade) ... ok
+test_wait_cannot_dispatch_or_substitute_a_duration (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_wait_cannot_dispatch_or_substitute_a_duration) ... ok
+test_wait_duration_requires_exact_bounded_integer_in_all_records (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_wait_duration_requires_exact_bounded_integer_in_all_records) ... ok
+
+======================================================================
+FAIL: test_actual_core_open_wait_done_preserves_real_effect_requirement (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_actual_core_open_wait_done_preserves_real_effect_requirement)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "review-r5-evidence/regression-baseline/tools/test_warm_terminal_verdict.py", line 126, in test_actual_core_open_wait_done_preserves_real_effect_requirement
+    self.assertEqual(result["verdict"], "pass", result)
+AssertionError: 'unverified' != 'pass'
+- unverified
++ pass
+ : [large synthetic result payload omitted; original bytes SHA-bound in VALIDATION.json]
+
+======================================================================
+FAIL: test_base_pass_requires_successful_terminal_even_with_matching_hashes (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_base_pass_requires_successful_terminal_even_with_matching_hashes) (status='partial')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "review-r5-evidence/regression-baseline/tools/test_warm_terminal_verdict.py", line 43, in test_base_pass_requires_successful_terminal_even_with_matching_hashes
+    self.assertEqual(result["verdict"], "unverified", result)
+AssertionError: 'pass' != 'unverified'
+- pass
++ unverified
+ : [large synthetic result payload omitted; original bytes SHA-bound in VALIDATION.json]
+
+======================================================================
+FAIL: test_base_pass_requires_successful_terminal_even_with_matching_hashes (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_base_pass_requires_successful_terminal_even_with_matching_hashes) (status='failed')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "review-r5-evidence/regression-baseline/tools/test_warm_terminal_verdict.py", line 43, in test_base_pass_requires_successful_terminal_even_with_matching_hashes
+    self.assertEqual(result["verdict"], "unverified", result)
+AssertionError: 'pass' != 'unverified'
+- pass
++ unverified
+ : [large synthetic result payload omitted; original bytes SHA-bound in VALIDATION.json]
+
+======================================================================
+FAIL: test_base_pass_requires_successful_terminal_even_with_matching_hashes (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_base_pass_requires_successful_terminal_even_with_matching_hashes) (status='cancelled')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "review-r5-evidence/regression-baseline/tools/test_warm_terminal_verdict.py", line 43, in test_base_pass_requires_successful_terminal_even_with_matching_hashes
+    self.assertEqual(result["verdict"], "unverified", result)
+AssertionError: 'pass' != 'unverified'
+- pass
++ unverified
+ : [large synthetic result payload omitted; original bytes SHA-bound in VALIDATION.json]
+
+======================================================================
+FAIL: test_base_pass_requires_successful_terminal_even_with_matching_hashes (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_base_pass_requires_successful_terminal_even_with_matching_hashes) (status='blocked')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "review-r5-evidence/regression-baseline/tools/test_warm_terminal_verdict.py", line 43, in test_base_pass_requires_successful_terminal_even_with_matching_hashes
+    self.assertEqual(result["verdict"], "unverified", result)
+AssertionError: 'pass' != 'unverified'
+- pass
++ unverified
+ : [large synthetic result payload omitted; original bytes SHA-bound in VALIDATION.json]
+
+======================================================================
+FAIL: test_complete_wait_then_done_is_bound_without_inventing_an_effect (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_complete_wait_then_done_is_bound_without_inventing_an_effect)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "review-r5-evidence/regression-baseline/tools/test_warm_terminal_verdict.py", line 110, in test_complete_wait_then_done_is_bound_without_inventing_an_effect
+    self.assertTrue(binding["verified"], binding)
+AssertionError: False is not true : {'verified': False, 'action_receipt': 'task/step-01-action.json', 'model_run_id': 'dddddddddddddddddddddddddddddddd', 'reason': 'warm action evidence: controller step has inconsistent action outcome'}
+
+======================================================================
+FAIL: test_done_observation_must_keep_producer_fields_stable (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_done_observation_must_keep_producer_fields_stable) (field='package')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "review-r5-evidence/regression-baseline/tools/test_warm_terminal_verdict.py", line 65, in test_done_observation_must_keep_producer_fields_stable
+    self.assertEqual(result["verdict"], "unverified", result)
+AssertionError: 'pass' != 'unverified'
+- pass
++ unverified
+ : [large synthetic result payload omitted; original bytes SHA-bound in VALIDATION.json]
+
+======================================================================
+FAIL: test_done_observation_must_keep_producer_fields_stable (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_done_observation_must_keep_producer_fields_stable) (field='window_id')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "review-r5-evidence/regression-baseline/tools/test_warm_terminal_verdict.py", line 65, in test_done_observation_must_keep_producer_fields_stable
+    self.assertEqual(result["verdict"], "unverified", result)
+AssertionError: 'pass' != 'unverified'
+- pass
++ unverified
+ : [large synthetic result payload omitted; original bytes SHA-bound in VALIDATION.json]
+
+======================================================================
+FAIL: test_done_observation_must_keep_producer_fields_stable (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_done_observation_must_keep_producer_fields_stable) (field='rotation')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "review-r5-evidence/regression-baseline/tools/test_warm_terminal_verdict.py", line 65, in test_done_observation_must_keep_producer_fields_stable
+    self.assertEqual(result["verdict"], "unverified", result)
+AssertionError: 'pass' != 'unverified'
+- pass
++ unverified
+ : [large synthetic result payload omitted; original bytes SHA-bound in VALIDATION.json]
+
+======================================================================
+FAIL: test_done_observation_must_keep_producer_fields_stable (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_done_observation_must_keep_producer_fields_stable) (field='observation_state_sha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "review-r5-evidence/regression-baseline/tools/test_warm_terminal_verdict.py", line 65, in test_done_observation_must_keep_producer_fields_stable
+    self.assertEqual(result["verdict"], "unverified", result)
+AssertionError: 'pass' != 'unverified'
+- pass
++ unverified
+ : [large synthetic result payload omitted; original bytes SHA-bound in VALIDATION.json]
+
+======================================================================
+FAIL: test_equal_missing_or_wrong_typed_done_fields_cannot_qualify (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_equal_missing_or_wrong_typed_done_fields_cannot_qualify) (field='window_id', value=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "review-r5-evidence/regression-baseline/tools/test_warm_terminal_verdict.py", line 81, in test_equal_missing_or_wrong_typed_done_fields_cannot_qualify
+    self.assertEqual(result["verdict"], "unverified", result)
+AssertionError: 'pass' != 'unverified'
+- pass
++ unverified
+ : [large synthetic result payload omitted; original bytes SHA-bound in VALIDATION.json]
+
+======================================================================
+FAIL: test_equal_missing_or_wrong_typed_done_fields_cannot_qualify (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_equal_missing_or_wrong_typed_done_fields_cannot_qualify) (field='rotation', value=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "review-r5-evidence/regression-baseline/tools/test_warm_terminal_verdict.py", line 81, in test_equal_missing_or_wrong_typed_done_fields_cannot_qualify
+    self.assertEqual(result["verdict"], "unverified", result)
+AssertionError: 'pass' != 'unverified'
+- pass
++ unverified
+ : [large synthetic result payload omitted; original bytes SHA-bound in VALIDATION.json]
+
+======================================================================
+FAIL: test_equal_missing_or_wrong_typed_done_fields_cannot_qualify (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_equal_missing_or_wrong_typed_done_fields_cannot_qualify) (field='observation_state_sha256', value=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "review-r5-evidence/regression-baseline/tools/test_warm_terminal_verdict.py", line 81, in test_equal_missing_or_wrong_typed_done_fields_cannot_qualify
+    self.assertEqual(result["verdict"], "unverified", result)
+AssertionError: 'pass' != 'unverified'
+- pass
++ unverified
+ : [large synthetic result payload omitted; original bytes SHA-bound in VALIDATION.json]
+
+======================================================================
+FAIL: test_equal_missing_or_wrong_typed_done_fields_cannot_qualify (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_equal_missing_or_wrong_typed_done_fields_cannot_qualify) (field='window_id', value=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "review-r5-evidence/regression-baseline/tools/test_warm_terminal_verdict.py", line 81, in test_equal_missing_or_wrong_typed_done_fields_cannot_qualify
+    self.assertEqual(result["verdict"], "unverified", result)
+AssertionError: 'pass' != 'unverified'
+- pass
++ unverified
+ : [large synthetic result payload omitted; original bytes SHA-bound in VALIDATION.json]
+
+======================================================================
+FAIL: test_equal_missing_or_wrong_typed_done_fields_cannot_qualify (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_equal_missing_or_wrong_typed_done_fields_cannot_qualify) (field='rotation', value=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "review-r5-evidence/regression-baseline/tools/test_warm_terminal_verdict.py", line 81, in test_equal_missing_or_wrong_typed_done_fields_cannot_qualify
+    self.assertEqual(result["verdict"], "unverified", result)
+AssertionError: 'pass' != 'unverified'
+- pass
++ unverified
+ : [large synthetic result payload omitted; original bytes SHA-bound in VALIDATION.json]
+
+======================================================================
+FAIL: test_equal_missing_or_wrong_typed_done_fields_cannot_qualify (test_warm_terminal_verdict.WarmTerminalVerdictTests.test_equal_missing_or_wrong_typed_done_fields_cannot_qualify) (field='observation_state_sha256', value='not-a-digest')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "review-r5-evidence/regression-baseline/tools/test_warm_terminal_verdict.py", line 81, in test_equal_missing_or_wrong_typed_done_fields_cannot_qualify
+    self.assertEqual(result["verdict"], "unverified", result)
+AssertionError: 'pass' != 'unverified'
+- pass
++ unverified
+ : [large synthetic result payload omitted; original bytes SHA-bound in VALIDATION.json]
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.835s
+
+FAILED (failures=16)

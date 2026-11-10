@@ -1,0 +1,210 @@
+{
+  "schema": "hepta.hexagon-close-review-validation.v1",
+  "host_result": {
+    "schema": "hepta.hexagon-close-host-abi.v1",
+    "scope": "Host-only exact source extraction and synthetic C++ ABI peer; no driver loading or DSP",
+    "compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+    "machine": "x86_64",
+    "compiler_flags": [
+      "-std=c++17",
+      "-O0",
+      "-fno-lto",
+      "-Wall",
+      "-Wextra",
+      "-Wconversion",
+      "-Werror",
+      "-pedantic-errors"
+    ],
+    "inputs": {
+      "driver_baseline_sha256": "8b93060b8f5a0aceb77c708d1772c56699810e901a52ab0ae1a4826f9f3e6854",
+      "driver_one_line_candidate_sha256": "926f4a49fa4b5f840c9ec424add67b509b2171e03d537409f02662bc9b35d273",
+      "fastrpc_header_sha256": "f9d0690cfd8953697d6fc3163c2be448a7b5b801148808c9b1b360857aeabc44",
+      "runner_sha256": "4f0646f40af2d1d093e4c8c5639b547cfe3985b8a7816d9878fd64a14a25e079"
+    },
+    "extracted_member_sha256": {
+      "baseline": {
+        "typedef": "956ce5a69dbefece0771febc91ed8c258a77ec75bf0cebedc6065ae83eca1fae",
+        "pointer_storage": "3d17f3e96abfb43f4a26e67540d9881baea6e176991f6bc5d992225b5c03dacc",
+        "wrapper": "e753a6e6b6d44f34bab0888f4390003dd6a5e977dbdab906c29fd72d101f84b9"
+      },
+      "patched": {
+        "typedef": "5c4a9e846d08c3fb9de4b3503b4f2a5581c34bba170c45ff5bcb8eedfa4efe92",
+        "pointer_storage": "3d17f3e96abfb43f4a26e67540d9881baea6e176991f6bc5d992225b5c03dacc",
+        "wrapper": "e753a6e6b6d44f34bab0888f4390003dd6a5e977dbdab906c29fd72d101f84b9"
+      },
+      "api": {
+        "handle32": "df87761df480953310b9d3b017272ccd4a09f3587fa093274d4bd37bca0c2201",
+        "handle64": "1511500e76d02e7fa8fc3d238ab428f8129811b7a22a43e85aca165d59eef299",
+        "close_prototype": "461eb3ebc9cc4ed2869c93cf2b3c357c6becb2396d187eebf04e0c2bd01e4d63"
+      }
+    },
+    "checks": [
+      {
+        "command": [
+          "c++",
+          "-std=c++17",
+          "-O0",
+          "-fno-lto",
+          "-Wall",
+          "-Wextra",
+          "-Wconversion",
+          "-Werror",
+          "-pedantic-errors",
+          "driver.cpp",
+          "main.cpp",
+          "-o",
+          "abi-test"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "7975d2986bec959cd136275163f155faeaa54f4a2d8588732b249ec19a12034f",
+        "stdout_bytes": 0,
+        "stderr_bytes": 1206,
+        "name": "baseline-compile",
+        "generated_file_sha256": {
+          "api-fragment.h": "df10c14bb225944aa71d683584cac2e394cde7e1a8c9e7c59c2f98dcacdfb589",
+          "driver.cpp": "8ec005c53cd9b011e56cb36f388cf04ecff6b01ef6b1775ef8dbd62e00d1415e",
+          "main.cpp": "0389b411b82671bb4f5e3026810733dc4e89902f449dc09dd7712301a44929a6"
+        },
+        "expected_rejection_observed": true
+      },
+      {
+        "command": [
+          "c++",
+          "-std=c++17",
+          "-O0",
+          "-fno-lto",
+          "-Wall",
+          "-Wextra",
+          "-Wconversion",
+          "-Werror",
+          "-pedantic-errors",
+          "driver.cpp",
+          "main.cpp",
+          "-o",
+          "abi-test"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 0,
+        "stderr_bytes": 0,
+        "name": "patched-compile",
+        "generated_file_sha256": {
+          "api-fragment.h": "df10c14bb225944aa71d683584cac2e394cde7e1a8c9e7c59c2f98dcacdfb589",
+          "driver.cpp": "0d132a17f363b8417ad212f32dab277c0c46f00785fdecd78b4c9c8956449791",
+          "main.cpp": "0389b411b82671bb4f5e3026810733dc4e89902f449dc09dd7712301a44929a6"
+        }
+      },
+      {
+        "command": [
+          "./abi-test"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "2bd134fa4f912961a92a698d0fde27c64f8fb0f6cb599b116ead68abb921af23",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 603,
+        "stderr_bytes": 0,
+        "name": "patched-behavior",
+        "cases": 6,
+        "high32_nonzero_cases": 5,
+        "actual_stub_dispatches": 6,
+        "separate_translation_units": true,
+        "expected_pass_observed": true
+      }
+    ],
+    "baseline_binary_executed": false,
+    "input_files_modified": false,
+    "android_built": false,
+    "fastrpc_library_loaded": false,
+    "dsp_contacted": false,
+    "phone_contacted": false,
+    "model_inference_tested": false,
+    "deployed": false,
+    "input_files_unchanged_verified": true,
+    "all_expected_outcomes": true
+  },
+  "original_result": {
+    "path": "checks-r1/RESULT.json",
+    "sha256": "65680efdbe75d455d297a919c1cfeeb755ece156cb75ba0df0251219a30cb467",
+    "bytes": 4367,
+    "retained_outside_capsule": true
+  },
+  "published_logs": [
+    {
+      "path": "baseline-compile.stderr",
+      "sha256": "7975d2986bec959cd136275163f155faeaa54f4a2d8588732b249ec19a12034f",
+      "bytes": 1206,
+      "byte_exact": true,
+      "synthetic_host_output": true,
+      "phone_log": false
+    },
+    {
+      "path": "patched-behavior.stdout",
+      "sha256": "2bd134fa4f912961a92a698d0fde27c64f8fb0f6cb599b116ead68abb921af23",
+      "bytes": 603,
+      "byte_exact": true,
+      "synthetic_host_output": true,
+      "phone_log": false
+    }
+  ],
+  "patch_application": {
+    "isolated_copy": true,
+    "commands": [
+      {
+        "command": [
+          "git",
+          "apply",
+          "--check",
+          "hexagon-close-abi.patch"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": [
+          "git",
+          "apply",
+          "hexagon-close-abi.patch"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "result_sha256": "926f4a49fa4b5f840c9ec424add67b509b2171e03d537409f02662bc9b35d273",
+    "result_git_blob": "246286b6494f05ba7d6b285a73e07f3ba34e9095",
+    "exact_expected_result": true,
+    "shared_source_changed": false
+  },
+  "upstream_claim_not_repeated_here": {
+    "v81_hardware": false,
+    "v79_hardware": false,
+    "full_rpcmem_cleanup": false,
+    "repeated_device_session_lifecycle": false
+  },
+  "review_status": "Unadopted candidate; scoped host checks and an independent read-only source/evidence review recorded",
+  "deployed": false,
+  "independent_source_review": {
+    "accepted_for_stated_host_scope": true,
+    "reviewer": "Separate collaborating agent; independent of the patch and test author",
+    "formal_non_author_github_approval": false,
+    "tests_rerun_by_reviewer": false,
+    "files_modified_by_reviewer": false,
+    "checks": [
+      "Recomputed exact external driver/header and isolated patched-file hashes",
+      "Read the actual 64-bit wrapper, old 32-bit function-pointer type and independent FastRPC API declaration",
+      "Reviewed unique extraction, no-cast type gate and separate-translation-unit synthetic dispatch",
+      "Checked all six handle bit patterns, five nonzero high-32-bit inputs, call counts and return-value assertions",
+      "Checked the three baseline compiler diagnostics and saved patched output against recorded hashes"
+    ],
+    "reviewed_runner_sha256": "4f0646f40af2d1d093e4c8c5639b547cfe3985b8a7816d9878fd64a14a25e079",
+    "reviewed_patch_sha256": "dfca8028640875c587018bb897878f74e69b2db9d2afcc2e71fc43319a6d997b",
+    "limitations": [
+      "No new compiler execution by the reviewer",
+      "No dynamic-symbol resolution or real FastRPC library loading",
+      "No Android arm64 binary, DSP/v79, RPCMEM, phone-task or root-cause qualification"
+    ]
+  }
+}

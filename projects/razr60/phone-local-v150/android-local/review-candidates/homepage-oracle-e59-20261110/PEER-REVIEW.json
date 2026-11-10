@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.homepage-oracle-independent-review.v1",
+  "review_type": "Limited independent read-only source review; reviewer did not rerun tests",
+  "scope": "Frozen two-file production candidate and regression coverage, historical Motorola one-shot evidence",
+  "reviewed_source": {
+    "core_assertions.py": {
+      "bytes": 44178,
+      "sha256": "53c041e8207f87ca7f52b9352ee2328ccce690938e0f01863708a5e54cf0d89d"
+    },
+    "core_phone_suite.py": {
+      "bytes": 23238,
+      "sha256": "d1bae5a4a43b92d3b7bb0b87664449107777dc515df45c31848265f7d8d35db4"
+    }
+  },
+  "issues_identified_and_resolved": [
+    "System-bar type whitelist did not constrain identity/frame/occlusion",
+    "Known native prompt window projection fields were not all bound to terminal observation",
+    "Explicit transparent alpha and contradictory WMS fields were not rejected"
+  ],
+  "final_review_no_new_blocker_in_scope": true,
+  "base_failure_upgrade_remains_forbidden": true,
+  "template_change_limited_to_four_home_cases": true,
+  "historical_result_unchanged": {
+    "pass": 2,
+    "fail": 7
+  },
+  "current_device_or_warm_runtime_qualification": false,
+  "formal_non_author_github_approval": false,
+  "author_reported_validation": {
+    "test_methods": 77,
+    "successful_subtests": 34,
+    "private_evidence_files_unchanged": 36
+  }
+}

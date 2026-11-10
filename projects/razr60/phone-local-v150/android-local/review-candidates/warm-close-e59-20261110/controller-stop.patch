@@ -1,0 +1,19 @@
+--- a/src/org/trillionnium/hepta/local/LocalTaskController.java
++++ b/src/org/trillionnium/hepta/local/LocalTaskController.java
+@@ -242,8 +242,14 @@
+             LocalInference.TaskCleanup modelCleanup;
+             try{modelCleanup=inference.endTask();}
+             catch(Exception closeError){modelCleanup=new LocalInference.TaskCleanup(false,true,false,null,null,taskId,false,null);}
+-            if(!modelCleanup.cleanupKnown){cleanup=false;blocked=true;finalStatus="blocked";summary="任务模型进程退出尚未确认，已停止接受新任务";}
+-            else if(modelCleanup.processStarted&&!modelCleanup.receiptValid&&"model_reported_done".equals(finalStatus)){
++            if(!modelCleanup.cleanupKnown){cleanup=false;blocked=true;finalStatus="blocked";modelSuccess=false;summary="任务模型进程退出尚未确认，已停止接受新任务";}
++            // Stop can arrive while endTask waits for the retained worker to exit.
++            // Preserve an unresolved action/cleanup block before classifying cancellation.
++            else if(cleanup&&cancelled.get()){
++                finalStatus="cancelled";modelSuccess=false;summary="已停止；已经发生的操作不会自动重做";
++            }
++            else if(modelCleanup.processStarted&&!modelCleanup.receiptValid
++                    &&("model_reported_done".equals(finalStatus)||"partial".equals(finalStatus))){
+                 finalStatus="failed";modelSuccess=false;summary="任务模型清理已完成，但运行回执未通过验证，请核对已经发生的操作";
+             }
+             if(evidence!=null){try{record(evidence,"result.json",new JSONObject().put("task_id",taskId).put("status",finalStatus)
