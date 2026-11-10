@@ -42,7 +42,8 @@ def prepare(source,output):
     )
     engine_file=output/"LocalModelEngine.java";engine_file.write_text(rendered,encoding="utf-8")
     names=["LocalProbeApplication.java","RecoverySlotHandoff.java","RecoveryDispatch.java",
-           "RecoveryQuiescence.java","RecoveryJournalTransaction.java","DiagnosticStartupGate.java"]
+           "RecoveryQuiescence.java","RecoveryJournalTransaction.java","DiagnosticStartupGate.java",
+           "WarmProcessTimeline.java"]
     actual=[package/name for name in names]
     fixtures=sorted((source/"tests/recovery-application").rglob("*.java"))
     if len(fixtures)!=10:

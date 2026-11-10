@@ -81,6 +81,8 @@ then exercise repeated warm requests and a genuine over-context request.
 Run ordinary Hepta entry at both explicit context sizes with offline tool tasks
 and independent final phone-state predicates.
 
-This is a source correction awaiting integration review. The inherited APK
-version and source manifest are historical; they do not qualify a new build.
-A separately identified build and device qualification must precede adoption.
+The standalone correction was reviewed and published separately; its
+inherited APK version and source manifest remain historical. Code32 identifies
+the combined Android candidate described in `docs/CODE32-LFM3-TIMELINE.md`.
+That candidate still requires its own build and device qualification before
+adoption.

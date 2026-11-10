@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.trillionnium.hepta.local" android:versionCode="30" android:versionName="0.30.0-local-exact-admission">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.trillionnium.hepta.local" android:versionCode="32" android:versionName="0.32.0-local-lfm3-cancel-timeline">
     <uses-sdk android:minSdkVersion="30" android:targetSdkVersion="35" />
     <queries><intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent></queries>
     <application android:name=".LocalProbeApplication" android:label="Hepta" android:theme="@android:style/Theme.Material.Light.NoActionBar" android:debuggable="true" android:allowBackup="false" android:extractNativeLibs="true" android:usesCleartextTraffic="false" android:supportsRtl="true">

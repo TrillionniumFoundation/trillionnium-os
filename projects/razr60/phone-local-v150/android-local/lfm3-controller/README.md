@@ -1,6 +1,21 @@
-# Code26: observed transitions and an explicit 9B candidate
+# Code32: LFM3 token admission and cancellation observations
 
-The current candidate is versionCode 26 (`0.26.0-local-observed-transitions`). It places the current screen after the complete recorded action history and adds the last step's actual before/after editable text, window title and IME observations. Those facts do not infer causality or task completion. An independently pinned Qwen3.5-9B Q4_0 text profile is available for qualification; it does not replace the configured or default model. Existing action permissions, freshness, recovery and local-only inference gates remain. See `docs/CODE26-QUALIFICATION.md` for the change and qualification boundary.
+The current Android candidate is versionCode **32**
+(`0.32.0-local-lfm3-cancel-timeline`). It combines LFM3 exact native token
+admission with additive Java parent cancellation and exit observations. The
+runtime, model profiles, action protocol and existing cancellation behavior
+retain the reviewed v30 pins and contracts. See
+[Code32 qualification](docs/CODE32-LFM3-TIMELINE.md) for source scope,
+verification and the required device gates.
+
+This is a staged candidate. Host tests and a signed APK do not qualify real
+model output, ordinary-App accelerator execution or successful phone tasks.
+The selected app-private model configuration remains the authority for a
+request; installing an APK does not select a model.
+
+## Code26 implementation history
+
+The Code26 candidate used versionCode 26 (`0.26.0-local-observed-transitions`). It places the current screen after the complete recorded action history and adds the last step's actual before/after editable text, window title and IME observations. Those facts do not infer causality or task completion. An independently pinned Qwen3.5-9B Q4_0 text profile is available for qualification; it does not replace the configured or default model. Existing action permissions, freshness, recovery and local-only inference gates remain. See `docs/CODE26-QUALIFICATION.md` for the change and qualification boundary.
 
 The prior exact Code24 source passed 70 host checks and Android compilation; Code24 was not installed for phone testing. Those artifacts remain separate from Code25 qualification.
 
