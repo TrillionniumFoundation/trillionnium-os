@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.v32-upgrade-selector-package.v1",
+  "state": "frozen_host_runtime",
+  "source_commit": "e07c6624b7309b0acf3fe10e31b0605a29e3e72d",
+  "source_tree": "81955c2053ba24cab0783c9cb7636a49c0f186de",
+  "revision": "libcxx-runtime-basename-compatibility-r1",
+  "files": [
+    {
+      "path": "package/v32_identity.py",
+      "bytes": 22226,
+      "sha256": "e00335dba12953431aedaf0eac0185d5b58a2e248b287431b08e747008113476",
+      "git_blob_sha": "f1c16be1d771779b85cdc195b7449df956b306d3"
+    },
+    {
+      "path": "package/upgrade_v32_once_r1.py",
+      "bytes": 17674,
+      "sha256": "b6619f7e9e15c1aa465c4af0a405667fe288a0579c6a2240cb9afaef4c6b02d4",
+      "git_blob_sha": "e196adab7886126c83bfd4df0e7c5160b3d921f6"
+    },
+    {
+      "path": "package/select_runtime_once_v32_r1.py",
+      "bytes": 30568,
+      "sha256": "3fb80f4bf8ebd153d2d448415f9f1512a29a209697f1468545df069532a40721",
+      "git_blob_sha": "340536af79a330622a912aa8547320684ebf5598"
+    }
+  ],
+  "runtime_files": [
+    "package/v32_identity.py",
+    "package/upgrade_v32_once_r1.py",
+    "package/select_runtime_once_v32_r1.py"
+  ],
+  "baseline_identity_sha256": "480154279eed6d941d1cb240d4faf071088d4646f36f5bd35b926e3001c98e34",
+  "changed_runtime_files": [
+    "package/v32_identity.py"
+  ],
+  "android_application_source_changed": false,
+  "phone_qualification_claimed": false
+}

@@ -1,0 +1,2 @@
+{"status": "planned", "phone_contacted": false, "selected_config": {"schema": "hepta.local-runtime.v2", "model_profile": "nanbeige4.2-3b-q4_k_m", "compute": "npu", "context_tokens": 8192, "threads": 4}, "error": null, "final_configuration_sha256": null}
+{"status": "planned", "phone_contacted": false, "candidate_path": null, "runtime_config_path": null, "error": null}

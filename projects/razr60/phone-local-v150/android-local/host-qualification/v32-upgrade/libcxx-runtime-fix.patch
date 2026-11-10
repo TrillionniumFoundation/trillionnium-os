@@ -1,0 +1,11 @@
+--- a/package/v32_identity.py
++++ b/package/v32_identity.py
+@@ -282,7 +282,7 @@
+         names = set()
+         for row in libraries:
+             name = row.get("name")
+-            need(isinstance(name, str) and re.fullmatch(r"[A-Za-z0-9_.-]+[.]so", name) and name not in names,
++            need(isinstance(name, str) and re.fullmatch(r"[A-Za-z0-9_.+-]+[.]so", name) and name not in names,
+                  "unexpected runtime library")
+             names.add(name)
+             info = z.getinfo("lib/arm64-v8a/" + name)
