@@ -697,7 +697,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     }
                 }},300);
             }else if("submit".equals(action.action)){
-                if(!ActionDecision.IME_ACTION_SCHEMA.equals(action.actionSchema)||!reference.imeEnter.queryAllowed()
+                if(!(ActionDecision.IME_ACTION_SCHEMA.equals(action.actionSchema)||ActionDecision.FIXED_INTENT_ACTION_SCHEMA.equals(action.actionSchema))||!reference.imeEnter.queryAllowed()
                         ||!node.isEditable()||!node.isFocused()||!ObservedImeEnter.isSha(reference.inputTextSha256))
                     throw new IllegalArgumentException("当前字段没有已观察且语义明确的查询提交动作");
                 scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true);

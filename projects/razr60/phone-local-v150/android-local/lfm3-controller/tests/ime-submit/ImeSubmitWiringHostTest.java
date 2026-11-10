@@ -75,6 +75,27 @@ public final class ImeSubmitWiringHostTest {
             HeptaAccessibilityService.ActionOutcome r=s.run(s.action());check(r.accepted&&r.dispatched&&s.service.effects()==1,"one accepted call");
             check(s.service.node.lastAction==AccessibilityNodeInfo.AccessibilityAction.ACTION_IME_ENTER.getId()&&s.service.node.lastBundle==null,"fixed action with no model arguments");proof(s,r,"accepted");
         }});
+        test("v6_submit_retains_once_and_exact_node_binding",()->{try(Setup s=new Setup("查询商品。")){
+            s.service.node.onAction=()->check(s.journals.size()==1&&!s.ledger.available(s.service.node.pkg,ObservedImeEnter.hash("耳机")),"v6 consumes before fixed node action");
+            HeptaAccessibilityService.ActionOutcome r=s.run(ActionDecision.parse(raw(s.service.current,"submit",null),ActionDecision.FIXED_INTENT_ACTION_SCHEMA));
+            check(r.accepted&&r.dispatched&&s.service.effects()==1&&s.service.node.lastAction==AccessibilityNodeInfo.AccessibilityAction.ACTION_IME_ENTER.getId(),"v6 uses exactly the observed IME action");proof(s,r,"accepted");
+            s.capture();HeptaAccessibilityService.ActionOutcome repeated=s.run(ActionDecision.parse(raw(s.service.current,"submit",null),ActionDecision.FIXED_INTENT_ACTION_SCHEMA));
+            check(!repeated.dispatched&&s.service.effects()==1&&s.journals.size()==1,"v6 cannot replay consumed content");
+        }});
+        for(String changed:new String[]{"permission","label","display","text"})test("v6_submit_retains_boundary_"+changed,()->{try(Setup s=new Setup("permission".equals(changed)?"只允许输入和结束。":"查询商品。")){
+            if("label".equals(changed)){s.service.node.imeLabel="发送";s.capture();}
+            ActionDecision action=ActionDecision.parse(raw(s.service.current,"submit",null),ActionDecision.FIXED_INTENT_ACTION_SCHEMA);
+            if("display".equals(changed))s.service.node.window.display=9;
+            if("text".equals(changed))s.service.node.text="不同的完整输入";
+            zero(s,s.run(action));check(s.journals.isEmpty(),"v6 cannot bypass the existing owner/query/display/text binding");
+        }});
+        test("unknown_schema_cannot_reach_submit_dispatch",()->{try(Setup s=new Setup("查询商品。")){
+            for(String schema:new String[]{ObservedTargetLabels.ACTION_SCHEMA,ObservedAppLabels.ACTION_SCHEMA,"hepta.observed-action-gbnf.v7-unknown"}){
+                boolean rejected=false;try{ActionDecision.parse(raw(s.service.current,"submit",null),schema);}catch(ActionDecision.InvalidActionException expected){rejected=true;}
+                check(rejected,"submit requires an explicitly supported schema");
+            }
+            check(s.service.effects()==0&&s.journals.isEmpty(),"rejected schemas cannot consume or invoke");
+        }});
         for(String label:new String[]{"Enter","Go","Done","发送","付款","下单","",null})test("unverified_or_commit_label_"+String.valueOf(label),()->{try(Setup s=new Setup("查询商品。")){
             s.service.node.imeLabel=label;s.capture();check(!s.service.current.nodes.get(0).submitAvailable,"unsupported label absent from capability");zero(s,s.run(s.action()));check(s.journals.isEmpty(),"no attempt for unverified action");
         }});
@@ -152,7 +173,7 @@ public final class ImeSubmitWiringHostTest {
                 public LocalRuntimeConfig configuration(){return e.runtime;}
                 public Handle generate(String prompt,String system,File image,DecisionGrammar grammar,int tokens,long timeout,Callback callback){
                     try{
-                        int step=++calls[0];prompts.add(prompt);check(ActionDecision.IME_ACTION_SCHEMA.equals(grammar.schema),"normal controller uses explicit v5");
+                        int step=++calls[0];prompts.add(prompt);check(ActionDecision.FIXED_INTENT_ACTION_SCHEMA.equals(grammar.schema),"normal controller uses explicit v6 with retained IME binding");
                         if(step==2)check(grammar.allowsSubmit("n0"),"after type current field has submit");
                         if(step==2&&"callback".equals(syncFailure))Handler.hold=true;
                         else if(step==2&&syncFailure!=null){
