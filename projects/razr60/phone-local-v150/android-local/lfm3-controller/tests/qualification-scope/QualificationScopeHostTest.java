@@ -104,7 +104,11 @@ public final class QualificationScopeHostTest {
                 if("open".equals(action))try{
                     Object appLabels=grammar.getClass().getField("appLabels").get(grammar);
                     if(appLabels!=null){Object map=appLabels.getClass().getField("labels").get(appLabels);
-                        Object label=((Map<?,?>)map).get(target);check(label instanceof String,"test target was not supplied in actual app grammar");
+                        Object label=((Map<?,?>)map).get(target);
+                        // The foreign-output cases deliberately violate the supplied
+                        // grammar, using a real installed label to exercise validation.
+                        if(label==null)label=env.service.launchable.get(target);
+                        check(label instanceof String,"synthetic target must be installed");
                         JSONObject old=new JSONObject(text);text=new JSONObject().put("reason",old.get("reason")).put("action",old.get("action"))
                             .put("observation_id",old.get("observation_id")).put("app_label",label).put("package",old.get("package")).toString();}
                 }catch(NoSuchFieldException legacyV3){/* exact ec9 legacy grammar has no appLabels field */}
@@ -113,10 +117,12 @@ public final class QualificationScopeHostTest {
         }
     }
     static void productionControllerCases()throws Exception{
-        test("controller_foreign_open_terminal_failed_one_model_zero_dispatch",()->{try(Env e=new Env(true)){
+        test("controller_foreign_output_rejected_before_dispatch",()->{try(Env e=new Env(true)){
             LocalTaskController.TaskResult r=e.controller("open",FOREIGN[2],null);check("failed".equals(r.status)&&!r.modelReportedSuccess&&r.cleanupKnown,"controller result must fail with known cleanup");check(e.service.effects()==0,"no foreign open");
             JSONObject result=new JSONObject(new String(Files.readAllBytes(r.evidenceDirectory.toPath().resolve("result.json")),StandardCharsets.UTF_8));check(e.scopeSha.equals(result.getString("expected_scope_sha256"))&&e.scopeSha.equals(result.getString("actual_scope_sha256")),"result scope bound");
-            JSONObject action=new JSONObject(new String(Files.readAllBytes(r.evidenceDirectory.toPath().resolve("step-01-action.json")),StandardCharsets.UTF_8));check(!action.getBoolean("dispatched")&&!action.getBoolean("accepted"),"actual action receipt denial");check("1".equals(new String(Files.readAllBytes(e.dir.resolve("host-native-call-count.txt")),StandardCharsets.UTF_8)),"no second model");
+            check(!Files.exists(r.evidenceDirectory.toPath().resolve("step-01-action.json")),"out-of-domain output never reaches dispatch");
+            check(Files.exists(r.evidenceDirectory.toPath().resolve("step-01-model-0.json"))&&Files.exists(r.evidenceDirectory.toPath().resolve("step-01-model-1.json")),"both rejected model outputs retained");
+            check("2".equals(new String(Files.readAllBytes(e.dir.resolve("host-native-call-count.txt")),StandardCharsets.UTF_8)),"existing bounded format repair is exhausted before any effect");
         }});
         test("controller_foreground_changes_after_model_before_action_zero_dispatch",()->{try(Env e=new Env(true)){
             LocalTaskController.TaskResult r=e.controller("click",SETTINGS,()->e.service.root.pkg=FOREIGN[0]);check("failed".equals(r.status)&&!r.modelReportedSuccess&&e.service.effects()==0,"late foreign foreground must fail");
@@ -196,7 +202,7 @@ public final class QualificationScopeHostTest {
         test("launch_owner_edit_reuse_and_restoration_do_not_weaken",()->{
             QualificationScope.Launch original=QualificationScope.Launch.prefill("原任务",H);check(H.equals(original.claim("原任务")),"bound owner");rejects(()->original.claim("已修改"));QualificationScope.Launch consumed=original.accepted();rejects(()->consumed.claim("原任务"));
             QualificationScope.Launch restored=QualificationScope.Launch.restore(consumed.expectedSha256,consumed.ownerSha256,consumed.consumed);rejects(()->restored.claim("原任务"));check(H.equals(original.claim("原任务")),"immutable prior task claim");check(QualificationScope.Launch.normal().claim("新任务")==null,"new normal UI");});
-        lifecycleCases();uiCases();productionControllerCases();
+        ScopedCatalogueHostTest.run();lifecycleCases();uiCases();productionControllerCases();
         JSONObject result=new JSONObject().put("schema","hepta.scope-host-tests.v1").put("passed",passed.size()).put("failed",0).put("cases",new JSONArray(passed)).put("phone_operations",false).put("native_inference",false).put("android_runtime",false);
         Files.write(output.resolve("RESULT.json"),bytes(result.toString(2)+"\n"));System.out.println(result.toString());
     }

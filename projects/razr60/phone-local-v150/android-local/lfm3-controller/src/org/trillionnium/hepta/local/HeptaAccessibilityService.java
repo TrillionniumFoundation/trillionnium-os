@@ -133,11 +133,20 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     /** Snapshot only installed launcher entries; model searches cannot add entries. */
     public AppCatalogueRanker.Page appCatalogue(String taskId,String instruction) {
-        if(!owns(taskId))throw new IllegalStateException("任务已停止");
-        refreshApps();AppCatalogueRanker snapshot=new AppCatalogueRanker(new HashMap<String,String>(launchable),instruction);
+        final QualificationScopeConfig.Bound scope=scopeFor(taskId);
+        scope.verifyUnchanged();refreshApps();
+        Map<String,String> available=new HashMap<String,String>(launchable);
+        // Filter the immutable snapshot before ranking and pagination. Initial
+        // apps, find_app results, prompt labels and the open grammar must describe
+        // the same permitted domain; the fresh dispatch gate remains authoritative.
+        if(scope.config!=null){
+            java.util.Iterator<Map.Entry<String,String>> rows=available.entrySet().iterator();
+            while(rows.hasNext())if(!scope.config.allows(rows.next().getKey()))rows.remove();
+        }
+        AppCatalogueRanker snapshot=new AppCatalogueRanker(available,instruction);
         synchronized(this){
-            if(!owns(taskId))throw new IllegalStateException("任务已停止");
-            appDiscovery=snapshot;
+            QualificationScope.require(ownsScope(taskId,scope),"scope lease retired before app catalogue publication");
+            scope.requireReady();appDiscovery=snapshot;
         }
         return snapshot.search("",0);
     }

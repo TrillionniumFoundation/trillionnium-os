@@ -24,6 +24,7 @@ def prepare(source, output):
     pieces = {
         'service_interfaces_outcome': section(s, '    public interface ObservationCallback', '    private static volatile HeptaAccessibilityService live;'),
         'lease': section(s, '    public synchronized boolean acquireTask(', '    private boolean locked()'),
+        'app_catalogue': section(s, '    /** Snapshot only installed launcher entries;', '    /** Each observation owns its samples/capture'),
         'scope_validate_dispatch': section(s, '    synchronized void bindQualificationScope(', '    private void coordinateClick('),
         'node_graph': section(s, '    private static boolean hasAction(', '    /** Inspect window metadata only.'),
         'node_identity': section(s, '    private static String nodeSignature(', '    private static String fileSha256('),
@@ -61,7 +62,7 @@ def prepare(source, output):
     files=[pkg/(name+'.java') for name in dict.fromkeys(pure)]
     files += sorted(output.glob('*.java'))
     files += sorted((Path(__file__).parent/'fixtures').rglob('*.java'))
-    files += [Path(__file__).parent/'QualificationScopeHostTest.java',Path(__file__).parent/'QualificationScopePrivateRootHostTest.java',Path(__file__).parent/'QualificationScopeSplitMetadataHostTest.java']
+    files += [Path(__file__).parent/'QualificationScopeHostTest.java',Path(__file__).parent/'QualificationScopePrivateRootHostTest.java',Path(__file__).parent/'QualificationScopeSplitMetadataHostTest.java',Path(__file__).parent/'ScopedCatalogueHostTest.java']
     record={'schema':'hepta.scope-host-extraction.v1','source_files':{n:hashlib.sha256((pkg/n).read_bytes()).hexdigest() for n in ['HeptaAccessibilityService.java','LocalTaskSession.java','MainActivity.java','LocalTaskController.java','QualificationScope.java','QualificationScopeConfig.java']},
         'extracted':{n:{'bytes':len(v.encode()),'sha256':hashlib.sha256(v.encode()).hexdigest()} for n,v in {**pieces,**session_parts,**ui_parts}.items()},
         'full_actual_classes':['LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles'],

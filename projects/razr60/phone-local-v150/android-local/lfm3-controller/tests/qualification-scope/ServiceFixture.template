@@ -31,7 +31,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
 {{lease}}
     private boolean locked(){return false;}
     private void refreshApps(){}
-    public AppCatalogueRanker.Page appCatalogue(String task,String instruction){appDiscovery=new AppCatalogueRanker(launchable,instruction);return appDiscovery.search("",0);}
+{{app_catalogue}}
     public AccessibilityNodeInfo getRootInActiveWindow(){rootsRead++;if(rootsRead==mutateOnRoot&&root!=null)root.pkg=mutateRootPackage;return root;}
     public void startActivity(Intent intent){opens++;if(effectHook!=null)effectHook.run();}
     public boolean performGlobalAction(int action){navigations++;if(effectHook!=null)effectHook.run();return true;}
