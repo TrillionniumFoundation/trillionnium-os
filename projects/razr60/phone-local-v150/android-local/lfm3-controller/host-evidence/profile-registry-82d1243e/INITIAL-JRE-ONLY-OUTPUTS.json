@@ -1,0 +1,12 @@
+{
+  "schema": "hepta.host-output-bundle.v1",
+  "encoding": "utf-8",
+  "scope": "host_only",
+  "outputs": [
+    {
+      "name": "java-compile",
+      "stdout": "",
+      "stderr": "error: release version 8 not supported\nUsage: javac <options> <source files>\nuse --help for a list of possible options\n"
+    }
+  ]
+}

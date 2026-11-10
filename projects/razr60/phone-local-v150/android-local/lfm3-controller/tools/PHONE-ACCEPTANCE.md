@@ -14,6 +14,15 @@ python3 phone_acceptance.py \
 
 `--setup-home` is optional and is recorded as a test precondition, never as a model action. `--expected-visible-text '95'` adds an exact text/content-description predicate; multiple such flags require every value. `--text-match contains` explicitly permits substring matching. When an expected package is supplied, text matches must belong to that package and an explicitly different focused window fails the package predicate.
 
+`--expected-model-profile <id>` accepts exactly the closed `PROFILES` registry in
+`model_profiles.py`; omission retains its `DEFAULT_PROFILE`. The read-only
+`phone_inventory.py` v2 configuration projection uses the same registry. An
+unknown profile is rejected by the task CLI or leaves the v2 inventory projection
+unverified. Selecting an expected profile does not change phone configuration,
+import weights, or relax model identity, native execution, and independent goal
+checks. Legacy v1 inventory remains a four-field projection without an inferred
+`model_profile`.
+
 Every case gets a new directory and conflicts are refused before contacting ADB. The phone's own `date +%s` supplies request time. The driver writes a new app-private 0600 debug request without clobbering an existing one, verifies its bytes, and sends exactly one launch Intent. A command timeout does not cause another submission. Trigger nonce SHA, Session nonce SHA, stable task ID and the task's exact original owner text/SHA must agree. All commands, including binary file reads, use `adb shell -T` with shell v2 exit-status handling; exit 40 alone means a missing optional file. Empty bytes from exit 0 remain a corrupt JSON error, not a missing file.
 
 ## Read-only status
@@ -43,6 +52,12 @@ Exit codes: `0` pass, `2` failure/driver error, `3` unverified. Failure artifact
 ## Offline checks
 
 `test_phone_acceptance.py` uses only an in-memory FakeAdb and synthetic XML/JSON. The 23 checks cover independent predicates, missing/corrupt native evidence, nonce rejection without replay, directory conflicts, literal instruction transport, exact text/focus checks, failed-run association, Stop-button uniqueness, read-only status, shell-v2 exit transport, explicit backend/app identity gates, and timeout collection with no UI commands. These tests do not establish real device acceptance.
+
+`test_profile_registry_consumers.py` exercises the actual CLI parser for every
+registered profile and runs the actual scalar projection script against private
+host fixtures. It checks the unchanged default and legacy configuration, rejects
+unknown profiles, and retains the other configuration limits. It contacts no
+phone and supplies no model-quality or device-qualification evidence.
 
 ## LFM3-specific gates
 

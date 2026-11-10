@@ -3977,6 +3977,46 @@
       "sha256": "cf4e1dc1c076bcd93550a61b6c766a3ba425299a21a0fde818915d0e9f9937ac"
     },
     {
+      "path": "host-evidence/profile-registry-82d1243e/HOST-CHECKS.json",
+      "bytes": 54361,
+      "sha256": "52b888dbf4c9a2c215e9a70e6ca96fb10c7b9a5d4f51a2e9a2f07c2eff410969"
+    },
+    {
+      "path": "host-evidence/profile-registry-82d1243e/HOST-OUTPUTS.json",
+      "bytes": 55750,
+      "sha256": "6dd8293c9dc4a3ce7271b528c04d588db9de49dadffed33b755fed54dd3d8c1e"
+    },
+    {
+      "path": "host-evidence/profile-registry-82d1243e/INITIAL-JRE-ONLY-CHECKS.json",
+      "bytes": 30423,
+      "sha256": "686394f38dbc0efd688714f0b751214eedcfe4752f5f8f00219e169d377ea3cb"
+    },
+    {
+      "path": "host-evidence/profile-registry-82d1243e/INITIAL-JRE-ONLY-OUTPUTS.json",
+      "bytes": 316,
+      "sha256": "b1d1bc7a456b8e643c78560b7dffbff02b5b4deb58cc1ac06add41aad5e1e432"
+    },
+    {
+      "path": "host-evidence/profile-registry-82d1243e/SUPPLEMENTAL-CHECKS.json",
+      "bytes": 7025,
+      "sha256": "9153429c3807d5105238279bd612fb69cfebeea919241309818671da04a2d7a4"
+    },
+    {
+      "path": "host-evidence/profile-registry-82d1243e/SUPPLEMENTAL-OUTPUTS.json",
+      "bytes": 6394,
+      "sha256": "68ca37f495704a99582f4037227d1d0bdbeb32c44cb12fc65e5ac38b2a09f652"
+    },
+    {
+      "path": "host-evidence/profile-registry-82d1243e/TOOLCHAIN-RECEIPT.json",
+      "bytes": 9229,
+      "sha256": "6e7678030988fc69388522f595981531164fa7d6ee5eae3e47cce8eeec0dce29"
+    },
+    {
+      "path": "host-evidence/profile-registry-82d1243e/VALIDATION.json",
+      "bytes": 1597,
+      "sha256": "5bb7c21b6d442cda2c253401272aff94b143078f058c1e4af98d1b77df51550f"
+    },
+    {
       "path": "host-evidence/r3/ActionDecisionHostTest.stdout",
       "bytes": 200,
       "sha256": "b01898fef4bdd9dbc0d6c090370599c82db677e12fc798c9a7d907a267e619e3"
@@ -5448,8 +5488,8 @@
     },
     {
       "path": "tools/PHONE-ACCEPTANCE.md",
-      "bytes": 7040,
-      "sha256": "8b0b5ff513ecfa594793f47a629a6331115141ca89fb867cac3f567332fdcc9e"
+      "bytes": 8000,
+      "sha256": "3629b28e4d240dfac5e44b3e2b1800e472c0e7e92bbbd3d2c4b63d8a9662fb52"
     },
     {
       "path": "tools/PHONE-SUITE.md",
@@ -5499,12 +5539,12 @@
     {
       "path": "tools/phone_acceptance.py",
       "bytes": 45878,
-      "sha256": "78dda5387a474480e262f1c2f7a2ab54ed9127119f5a142174d7a87565937a29"
+      "sha256": "9305ff909e734a9d81598c2d2695b6b519e7fd94984acc4352941ace74f4a0f2"
     },
     {
       "path": "tools/phone_inventory.py",
-      "bytes": 50865,
-      "sha256": "e3a679c4f08c3a9ef2b9f1dda786a5b2638f1de349bb2c257c60dd1a7be32863"
+      "bytes": 50893,
+      "sha256": "d25889ef9fffb22e08871f7a3b57a57e28d5f48977d4e42929364434599ea58e"
     },
     {
       "path": "tools/phone_suite.py",
@@ -5560,6 +5600,11 @@
       "path": "tools/test_phone_suite.py",
       "bytes": 25678,
       "sha256": "790549d00157e8cade573acea4ac62e5ae5d875684a8c1473855c07f03184506"
+    },
+    {
+      "path": "tools/test_profile_registry_consumers.py",
+      "bytes": 6076,
+      "sha256": "f72e54d54bd557c9bfbce44954296359ee595e6dfe87c237e70f9f4221b54b5a"
     },
     {
       "path": "tools/test_qwen35_profile.py",
@@ -5637,7 +5682,7 @@
   "native_production_changes_from_code21": [
     "native/model-profile.h"
   ],
-  "host_checks_embedded_status": "retained historical receipts; no qualification of the new source is implied",
+  "host_checks_embedded_status": "Historical receipts retained without relabelling; current profile-registry host-evidence records partial host checks and a reproduced baseline glibc compiler incompatibility. Full host, Android and phone qualification remain false.",
   "profile_import": {
     "source_manifest_sha256": "90be733a3eec1f76dcb4febe1eb9b19ce2add841c9811eb50265c306ff046e9c",
     "source_manifest_recorded_version_code": 22,
@@ -5735,5 +5780,37 @@
     "phone": "pending_exact_installed_apk_run",
     "new_model_phone_qualified": false,
     "historical_evidence_relabelled": false
+  },
+  "profile_registry_consumer_fix": {
+    "base_public_git_head": "8030cee3a228bc1540cd78d41305d3ea4695bf32",
+    "base_public_source_manifest_sha256": "ff5929cff3e63ed4877934576d5f4985a789c7dc721549c68d804fc5c24a8237",
+    "reviewed_patch_sha256": "6543e1fc907d9204f68fb8f3249260383a882c3d6994af5263bacffd024dd360",
+    "scope": "Use the canonical PROFILES registry for formal acceptance CLI choices and read-only inventory projection; preserve default and reject unknown profiles.",
+    "supported_profile_count": 9,
+    "modified_existing_members": [
+      "tools/phone_acceptance.py",
+      "tools/phone_inventory.py",
+      "tools/PHONE-ACCEPTANCE.md"
+    ],
+    "added_test_members": [
+      "tools/test_profile_registry_consumers.py"
+    ],
+    "application_version_unchanged": true,
+    "java_native_resources_android_manifest_bytes_unchanged": true,
+    "default_model_changed": false,
+    "native_requested_resolved_device_gates_unchanged": true,
+    "independent_goal_assertions_relaxed": false,
+    "other_configuration_allowlists_unchanged": true,
+    "host": "69_of_70_runner_checks_passed; native-adapter-syntax_and_separately_run_private-prompt-evidence_blocked_by_reproduced_baseline_glibc_2.43_macro_redefinition",
+    "android_build_performed": false,
+    "phone_actions_performed": false,
+    "phone_task_success_claimed": false,
+    "historical_evidence_relabelled": false,
+    "host_evidence_directory": "host-evidence/profile-registry-82d1243e",
+    "host_checks_sha256": "52b888dbf4c9a2c215e9a70e6ca96fb10c7b9a5d4f51a2e9a2f07c2eff410969",
+    "supplemental_checks_sha256": "9153429c3807d5105238279bd612fb69cfebeea919241309818671da04a2d7a4",
+    "validation_summary_sha256": "5bb7c21b6d442cda2c253401272aff94b143078f058c1e4af98d1b77df51550f",
+    "host_source_input_hash_count": 189,
+    "host_source_input_hashes_reverified": true
   }
 }
