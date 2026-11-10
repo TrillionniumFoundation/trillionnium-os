@@ -1,7 +1,7 @@
 # Standalone local Android controller contract
 
 This subtree is a source-only candidate for `org.trillionnium.hepta.local`,
-versionCode 13 / 0.13.0-local-gemma4. It is outside the active Cargo/G1 delivery graph.
+versionCode 35 / 0.35.0-local-owner-action-policy. It is outside the active Cargo/G1 delivery graph.
 It changes no owner-open protocol, protected package, ingress, claims, SELinux
 policy or existing machine authority. Adoption requires independent review and
 exact-build phone evidence; publication of this subtree does not grant adoption.
@@ -30,6 +30,19 @@ acts on foreground apps. This does not promise invisible parallel app operation,
 locked-screen operation, screen-off interaction, Android permission bypass, or
 complete coverage of all installed apps.
 
+## Original-owner action restrictions
+
+The accepted original task instruction is the sole input to an immutable finite
+permission compiler. It intersects explicit action-type restrictions with all
+existing dispatch guards, and is bound once to the same task lease. The model,
+screen and history cannot expand it. Controller rejection occurs after parsing
+and before structural format repair; the service independently checks the
+captured lease immediately before effects, including asynchronous clicks.
+Refusal preserves raw output and prior dispatch facts, and retains the existing
+unknown-cleanup barrier. The compiler does not verify goals, business effects,
+order or page conditions. See [OWNER-ACTION-POLICY.md](docs/OWNER-ACTION-POLICY.md)
+for exact input, evidence and rollback boundaries.
+
 ## State, ownership and failure semantics
 
 The session persists pending ownership before scheduling the controller.
@@ -53,7 +66,7 @@ screens, insufficient memory and malformed output fail explicitly.
 
 Only a file from the explicit Java/native/host SHA-pinned profile allowlist in
 the app's model directory is accepted. The original default remains LFM3 with
-GenieX 0.10.0 / llama_cpp / HTP NPU, 4096 context, four support
+GenieX 0.10.0 / llama_cpp / HTP NPU, 8192 context, four support
 threads. Explicit app-private configuration permits GPUOpenCL, context 8192 or
 1..8 support threads. It is read once per app process and never falls back to CPU.
 

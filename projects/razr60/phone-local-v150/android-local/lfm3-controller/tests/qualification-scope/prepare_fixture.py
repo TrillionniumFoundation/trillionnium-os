@@ -24,7 +24,7 @@ def prepare(source, output):
     pieces = {
         'service_interfaces_outcome': section(s, '    public interface ObservationCallback', '    private static volatile HeptaAccessibilityService live;'),
         'lease': section(s, '    public synchronized boolean acquireTask(', '    private boolean locked()'),
-        'scope_validate_dispatch': section(s, '    synchronized void bindQualificationScope(', '    private void coordinateClick('),
+        'scope_validate_dispatch': section(s, '    synchronized void bindOwnerActionPolicy(', '    private void coordinateClick('),
         'node_graph': section(s, '    private static boolean hasAction(', '    /** Inspect window metadata only.'),
         'node_identity': section(s, '    private static String nodeSignature(', '    private static String fileSha256('),
         'strings': section(s, '    private static String string(', '\n}'),
@@ -51,7 +51,7 @@ def prepare(source, output):
     fixture = (Path(__file__).parent / 'UiFixture.template').read_text()
     for name,code in ui_parts.items():fixture=fixture.replace('{{'+name+'}}',code)
     (output / 'ScopeUiFixture.java').write_text(fixture)
-    pure=['ActionDecision','ActionPolicy','ObservedTargetLabels','ObservedScrollActions','RecentActionProjection',
+    pure=['OwnerActionPolicy','ActionDecision','ActionPolicy','ObservedTargetLabels','ObservedScrollActions','RecentActionProjection',
           'PersistentActionPolicy','ImeVisibility','ObservationState','ObservedWindowMetadata','ObservedChildText',
           'RepeatActionGuard','SameStateNoEffectGuard','DecisionGrammar','ModelProfile','LocalRuntimeConfig',
           'ConservativeTokenBudget','AppCatalogueRanker','ObservedTextProjection','ObservedTransitionProjection',
@@ -64,7 +64,7 @@ def prepare(source, output):
     files += [Path(__file__).parent/'QualificationScopeHostTest.java']
     record={'schema':'hepta.scope-host-extraction.v1','source_files':{n:hashlib.sha256((pkg/n).read_bytes()).hexdigest() for n in ['HeptaAccessibilityService.java','LocalTaskSession.java','MainActivity.java','LocalTaskController.java','QualificationScope.java','QualificationScopeConfig.java']},
         'extracted':{n:{'bytes':len(v.encode()),'sha256':hashlib.sha256(v.encode()).hexdigest()} for n,v in {**pieces,**session_parts,**ui_parts}.items()},
-        'full_actual_classes':['LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles'],
+        'full_actual_classes':['OwnerActionPolicy','LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles'],
         'boundary':'Android IO and effect endpoints are fakes; production admission/dispatch and controller code is executed',
         'phone_operations':False,'native_inference':False}
     (output/'EXTRACTION.json').write_text(json.dumps(record,indent=2)+'\n')
