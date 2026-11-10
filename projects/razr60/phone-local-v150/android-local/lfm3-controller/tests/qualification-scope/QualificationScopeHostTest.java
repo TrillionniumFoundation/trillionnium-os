@@ -331,7 +331,7 @@ public final class QualificationScopeHostTest {
         test("actual_ui_reused_intent_and_rotation_keep_pending_restriction",()->{try(Env e=new Env(true)){
             LocalModelEngine engine=new LocalModelEngine(Paths.get(e.pm.packages.get("org.trillionnium.hepta.local").applicationInfo.sourceDir).toFile(),e.runtime);LocalTaskSession tasks=new LocalTaskSession(e.service,engine);ScopeUiFixture ui=new ScopeUiFixture(tasks,engine);
             Intent intent=new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).putExtra("task","打开设置").putExtra(QualificationScope.EXPECTED_EXTRA,e.scopeSha);
-            ui.intent(intent);check(!intent.hasExtra("task")&&!intent.hasExtra(QualificationScope.EXPECTED_EXTRA),"consume extras");ui.intent(intent);check(e.scopeSha.equals(ui.scopeLaunch.claim("打开设置")),"reused cleared intent cannot downgrade");
+            ui.intent(intent);check(ui.outer.scrollCalls==1&&ui.taskInput.focusClears==1&&!tasks.isRunning(),"fresh ordinary prefill reveals form without starting");check(!intent.hasExtra("task")&&!intent.hasExtra(QualificationScope.EXPECTED_EXTRA),"consume extras");ui.intent(intent);check(ui.outer.scrollCalls==1,"reused intent does not scroll again");check(e.scopeSha.equals(ui.scopeLaunch.claim("打开设置")),"reused cleared intent cannot downgrade");
             Bundle state=new Bundle();ui.save(state);ScopeUiFixture restored=new ScopeUiFixture(tasks,engine);restored.restore(state);check(e.scopeSha.equals(restored.scopeLaunch.claim("打开设置")),"recreated Activity claim");
             restored.intent(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER));check(restored.scopeLaunch.claim("正常新任务")==null,"explicit normal new launcher session clears UI binding");
         }});
@@ -356,7 +356,7 @@ public final class QualificationScopeHostTest {
         test("actual_ui_bad_or_edited_expected_prefill_cannot_start",()->{try(Env e=new Env(true)){
             LocalModelEngine engine=new LocalModelEngine(Paths.get(e.pm.packages.get("org.trillionnium.hepta.local").applicationInfo.sourceDir).toFile(),e.runtime);LocalTaskSession tasks=new LocalTaskSession(e.service,engine);ScopeUiFixture ui=new ScopeUiFixture(tasks,engine);
             ui.intent(new Intent().putExtra("task","打开设置").putExtra(QualificationScope.EXPECTED_EXTRA,e.scopeSha));ui.taskInput.text="修改任务";check(!ui.start()&&!tasks.isRunning(),"edited owner denied");
-            ui.intent(new Intent().putExtra("task","打开设置").putExtra(QualificationScope.EXPECTED_EXTRA,"bad"));check(!ui.start(),"malformed expectation denied");
+            int scrolls=ui.outer.scrollCalls;ui.intent(new Intent().putExtra("task","打开设置").putExtra(QualificationScope.EXPECTED_EXTRA,"bad"));check(ui.outer.scrollCalls==scrolls,"invalid prefill does not scroll");check(!ui.start(),"malformed expectation denied");
             ui.endUi();check(ui.scopeLaunch.claim("普通任务")==null,"explicit stop clears only UI claim");
         }});
         test("actual_private_debug_start_passes_same_expected_scope",()->{try(Env e=new Env(true)){

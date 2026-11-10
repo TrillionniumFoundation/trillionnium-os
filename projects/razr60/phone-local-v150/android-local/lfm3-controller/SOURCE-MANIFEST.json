@@ -4,7 +4,7 @@
   "version_name": "0.35.0-local-owner-action-policy",
   "source_identity_only": true,
   "source_base_commit": "27c35693d2543d8c150f1fc46ee6997ee828bcb3",
-  "functional_scope": "Finite action restrictions compiled only from the original task instruction; immutable controller and service effect-time enforcement intersects existing scope, label, freshness and cancellation gates.",
+  "functional_scope": "Finite action restrictions compiled only from the original task instruction; immutable controller and service effect-time enforcement intersects existing scope, label, freshness and cancellation gates. A valid idle ordinary task prefill restores the task form to view without starting work.",
   "android_build": "Separate actual compiler input and signed APK receipts are required; source closure does not establish Android or phone qualification.",
   "phone_qualified": false,
   "full_instruction_semantics_enforced": false,
@@ -4863,8 +4863,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "bytes": 27242,
-      "sha256": "e5073829af0b7f17285096c072f54856b2d36baa4554a9854dfaf46b1779dc96"
+      "bytes": 27849,
+      "sha256": "b3214d6f4cc87d201c3802101e812cdf5b37f0407d3840827dbcdff38763155d"
     },
     {
       "path": "src/org/trillionnium/hepta/local/MemoryAvailability.java",
@@ -5433,8 +5433,8 @@
     },
     {
       "path": "tests/qualification-scope/QualificationScopeHostTest.java",
-      "bytes": 44453,
-      "sha256": "eab1bde089f6a7b8c5d06984ab1bf2e65ced7f3f76bb2a2d4658bad32814a91f"
+      "bytes": 44761,
+      "sha256": "954eac05ee8ff666148655cb013cf19d8cf32254b752843f0b3b05a3714cb808"
     },
     {
       "path": "tests/qualification-scope/ServiceFixture.template",
@@ -5448,8 +5448,8 @@
     },
     {
       "path": "tests/qualification-scope/UiFixture.template",
-      "bytes": 1602,
-      "sha256": "5b1064df51af2ad40fae6fbee87421092a93e696d729cbcdeab65762c5d3dd86"
+      "bytes": 1789,
+      "sha256": "afa1d799bae6ffc7a8811d8dbdb71e909882965e5abdd718d1ed26f5a811ef8b"
     },
     {
       "path": "tests/qualification-scope/fixtures/android/app/Activity.java",

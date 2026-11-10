@@ -27,6 +27,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     private TextView visualProbeOutput;
     private TextView uiVenusProbeOutput;
     private LinearLayout diagnostics;
+    private ScrollView outer;
     private Button startTask, stopTask, runText, acknowledgeInterruption;
     private String lastShownProbeId;
     private QualificationScope.Launch scopeLaunch=QualificationScope.Launch.normal();
@@ -40,7 +41,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         LocalProbeApplication app=(LocalProbeApplication)getApplication();
         engine=app.modelEngine();tasks=app.taskSession();visualDiagnostic=app.mobiMindDiagnostic();
         uiVenusDiagnostic=app.uiVenusDiagnostic();
-        ScrollView outer=new ScrollView(this);outer.setFillViewport(true);
+        outer=new ScrollView(this);outer.setFillViewport(true);
         LinearLayout page=new LinearLayout(this);page.setOrientation(LinearLayout.VERTICAL);
         int pad=dp(16);page.setPadding(pad,pad,pad,pad);outer.addView(page);
         TextView title=text("Hepta",25);page.addView(title);
@@ -123,6 +124,16 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             if(!autoTask)scopeLaunch=QualificationScope.Launch.prefill(task,expected);
             else QualificationScope.expected(expected); // The consumed private request supplies the exact OWNER below.
         }catch(Exception error){scopeLaunchError=HeptaAccessibilityService.message(error);}
+        if(task!=null&&!autoTask&&scopeLaunchError==null&&!tasks.isBlocked()&&!engine.isBusy()
+                &&!intent.getBooleanExtra("auto_run",false)
+                &&!intent.getBooleanExtra("auto_mobi_probe",false)
+                &&!intent.getBooleanExtra("auto_ui_venus_probe",false)){
+            final QualificationScope.Launch acceptedPrefill=scopeLaunch;
+            taskInput.clearFocus();
+            outer.post(() -> {
+                if(scopeLaunch==acceptedPrefill&&!tasks.isRunning()&&!tasks.isBlocked()&&!engine.isBusy())outer.scrollTo(0,0);
+            });
+        }
     }
 
     @Override protected void onNewIntent(Intent intent){super.onNewIntent(intent);setIntent(intent);handleIntent(intent);}
