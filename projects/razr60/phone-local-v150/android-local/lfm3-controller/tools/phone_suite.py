@@ -119,7 +119,7 @@ def preflight(adb, candidate):
         raise acceptance.DriverError("INTERNET appears in actual package permissions")
     config = adb.app_json("files/model/runtime-config.json", optional=True)
     if config is None:
-        config = {"schema": "hepta.local-runtime.v1", "compute": "npu", "context_tokens": 4096, "threads": 4}
+        config = {"schema": "hepta.local-runtime.v1", "compute": "npu", "context_tokens": 8192, "threads": 4}
         origin = "fixed_application_default"
     else:
         origin = "app_private_config"
