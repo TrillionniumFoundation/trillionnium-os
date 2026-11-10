@@ -1,0 +1,82 @@
+{
+  "schema": "hepta.orvena-v32-scoped-package.v1",
+  "source_commit": "e07c6624b7309b0acf3fe10e31b0605a29e3e72d",
+  "files": {
+    "core/core_assertions.py": {
+      "bytes": 29766,
+      "sha256": "49f1ce7e51815ddab990bbdaf49dad7a2497cb2bb539a49690f6be75e60df24a"
+    },
+    "core/core_phone_suite.py": {
+      "bytes": 26800,
+      "sha256": "c47591c54db2bd324c9a1ca64ceb29e4b704d9e233a5f5339ae893f72e6add4f"
+    },
+    "drivers/model_profiles.py": {
+      "bytes": 2931,
+      "sha256": "9ba9403bdf64c2d765b31ffbbed2e95ac846f50df6ecb4e21efd4ebc926a397a"
+    },
+    "drivers/phone_acceptance.py": {
+      "bytes": 58945,
+      "sha256": "35e10c8e28ac0c96657514f5eff61a2427b65ea165af1254c4a393ed9048e4d1"
+    },
+    "drivers/phone_inventory.py": {
+      "bytes": 52379,
+      "sha256": "2443c0dc3532eab81ef4fe1f95dd7efbb5e284dd966a5ab5a5bd337e10d76812"
+    },
+    "drivers/phone_suite.py": {
+      "bytes": 34928,
+      "sha256": "3f8c9c5e62e938cf478175a01ec117a3ce01a7b43cc268b32002e4c1e6711926"
+    },
+    "drivers/qualification_scope.py": {
+      "bytes": 28580,
+      "sha256": "d1a3626afe92c383d9d6834ccf599770638ce44b8a0c90d18f575e3535ff0654"
+    },
+    "drivers/warm_receipts.py": {
+      "bytes": 7410,
+      "sha256": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5"
+    },
+    "normalize_roles.py": {
+      "bytes": 3441,
+      "sha256": "69ded8aa19f71710767b487a3991eeb709a421ba02d804672fe9fd8ee4c22fba"
+    },
+    "offline/offline_guards.py": {
+      "bytes": 6004,
+      "sha256": "0550345c9eac7bf88a8511987c63979f0453da0f11f3648f2c532b3ad314b317"
+    },
+    "offline/phone_offline_suite.py": {
+      "bytes": 32626,
+      "sha256": "5c262142da2b838b5a438ba4693510c12b0765eaf5e5b70d97b88d924b683097"
+    },
+    "offline_core9_supervisor.py": {
+      "bytes": 6366,
+      "sha256": "879e3001b55efe432eae75b0cdf71e880b3615ae61b25e5b4682bd1c30bedfb6"
+    },
+    "ordinary/core_assertions.py": {
+      "bytes": 29766,
+      "sha256": "49f1ce7e51815ddab990bbdaf49dad7a2497cb2bb539a49690f6be75e60df24a"
+    },
+    "ordinary/ordinary_launcher.py": {
+      "bytes": 31467,
+      "sha256": "a146bc4995f7c467b5545e16acb08d79a2500dc1d171ea174ebb981f3c994933"
+    },
+    "ordinary/ordinary_start_observer.py": {
+      "bytes": 75068,
+      "sha256": "9b59e1017c9a6a2ff2fa7022c0bb50a81a44dc2bc458e7315db9851d6ad9a8cb"
+    },
+    "orvena_qualification.py": {
+      "bytes": 46148,
+      "sha256": "240f26481971d1658a1150423b2ab0493a5b27cc958c1b8488c8c49af668b319"
+    },
+    "prepare_binding.py": {
+      "bytes": 14089,
+      "sha256": "cbfce4e5fe86317819f13d827309b9db7c4ded940fe00a9335824a333098aa2d"
+    },
+    "reference/EXPECTED-FULL-V32-INVENTORY.json": {
+      "bytes": 301129,
+      "sha256": "557d48bfa14b64d9cdb387e878f73253ca75d5fac07c9cf3e1f640a76c1e94b1"
+    },
+    "reference/core-cases.json": {
+      "bytes": 5438,
+      "sha256": "0d7c742be79eff036da5f91615042516a2d437a8c65fe5ab012f069cb18293db"
+    }
+  }
+}

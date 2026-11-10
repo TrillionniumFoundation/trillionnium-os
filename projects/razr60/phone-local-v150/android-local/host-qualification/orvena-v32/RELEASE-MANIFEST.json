@@ -1,0 +1,401 @@
+{
+  "schema": "hepta.orvena-scoped-host-release.v1",
+  "runtime_package_manifest_sha256": "40e427145a910b748fed7f0f72d2746a101f72914fd283d9bf69e366ea1d5870",
+  "application_source_commit": "e07c6624b7309b0acf3fe10e31b0605a29e3e72d",
+  "application_source_modified": false,
+  "host_binding_schema": "hepta.orvena-scoped-host-binding.v2",
+  "android_scope_schema": "hepta.qualification-scope.v1",
+  "file_count": 96,
+  "bytes": 2192572,
+  "self_contained_host_tests": true,
+  "private_identifier_scan_hits": [],
+  "credential_pattern_scan_hits": [],
+  "binary_files": [],
+  "fixture_notice": "tests/fixtures/LEGACY-FIXTURE-NOTICE.md",
+  "files": {
+    "README.md": {
+      "bytes": 7785,
+      "sha256": "08e5d96e50a13dbe4f44d05b8fd82f2a0a08cc77d834f3484797a98ca7a1fe25"
+    },
+    "candidate/PACKAGE-MANIFEST.json": {
+      "bytes": 2946,
+      "sha256": "40e427145a910b748fed7f0f72d2746a101f72914fd283d9bf69e366ea1d5870"
+    },
+    "candidate/core/core_assertions.py": {
+      "bytes": 29766,
+      "sha256": "49f1ce7e51815ddab990bbdaf49dad7a2497cb2bb539a49690f6be75e60df24a"
+    },
+    "candidate/core/core_phone_suite.py": {
+      "bytes": 26800,
+      "sha256": "c47591c54db2bd324c9a1ca64ceb29e4b704d9e233a5f5339ae893f72e6add4f"
+    },
+    "candidate/drivers/model_profiles.py": {
+      "bytes": 2931,
+      "sha256": "9ba9403bdf64c2d765b31ffbbed2e95ac846f50df6ecb4e21efd4ebc926a397a"
+    },
+    "candidate/drivers/phone_acceptance.py": {
+      "bytes": 58945,
+      "sha256": "35e10c8e28ac0c96657514f5eff61a2427b65ea165af1254c4a393ed9048e4d1"
+    },
+    "candidate/drivers/phone_inventory.py": {
+      "bytes": 52379,
+      "sha256": "2443c0dc3532eab81ef4fe1f95dd7efbb5e284dd966a5ab5a5bd337e10d76812"
+    },
+    "candidate/drivers/phone_suite.py": {
+      "bytes": 34928,
+      "sha256": "3f8c9c5e62e938cf478175a01ec117a3ce01a7b43cc268b32002e4c1e6711926"
+    },
+    "candidate/drivers/qualification_scope.py": {
+      "bytes": 28580,
+      "sha256": "d1a3626afe92c383d9d6834ccf599770638ce44b8a0c90d18f575e3535ff0654"
+    },
+    "candidate/drivers/warm_receipts.py": {
+      "bytes": 7410,
+      "sha256": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5"
+    },
+    "candidate/normalize_roles.py": {
+      "bytes": 3441,
+      "sha256": "69ded8aa19f71710767b487a3991eeb709a421ba02d804672fe9fd8ee4c22fba"
+    },
+    "candidate/offline/offline_guards.py": {
+      "bytes": 6004,
+      "sha256": "0550345c9eac7bf88a8511987c63979f0453da0f11f3648f2c532b3ad314b317"
+    },
+    "candidate/offline/phone_offline_suite.py": {
+      "bytes": 32626,
+      "sha256": "5c262142da2b838b5a438ba4693510c12b0765eaf5e5b70d97b88d924b683097"
+    },
+    "candidate/offline_core9_supervisor.py": {
+      "bytes": 6366,
+      "sha256": "879e3001b55efe432eae75b0cdf71e880b3615ae61b25e5b4682bd1c30bedfb6"
+    },
+    "candidate/ordinary/core_assertions.py": {
+      "bytes": 29766,
+      "sha256": "49f1ce7e51815ddab990bbdaf49dad7a2497cb2bb539a49690f6be75e60df24a"
+    },
+    "candidate/ordinary/ordinary_launcher.py": {
+      "bytes": 31467,
+      "sha256": "a146bc4995f7c467b5545e16acb08d79a2500dc1d171ea174ebb981f3c994933"
+    },
+    "candidate/ordinary/ordinary_start_observer.py": {
+      "bytes": 75068,
+      "sha256": "9b59e1017c9a6a2ff2fa7022c0bb50a81a44dc2bc458e7315db9851d6ad9a8cb"
+    },
+    "candidate/orvena_qualification.py": {
+      "bytes": 46148,
+      "sha256": "240f26481971d1658a1150423b2ab0493a5b27cc958c1b8488c8c49af668b319"
+    },
+    "candidate/prepare_binding.py": {
+      "bytes": 14089,
+      "sha256": "cbfce4e5fe86317819f13d827309b9db7c4ded940fe00a9335824a333098aa2d"
+    },
+    "candidate/reference/EXPECTED-FULL-V32-INVENTORY.json": {
+      "bytes": 301129,
+      "sha256": "557d48bfa14b64d9cdb387e878f73253ca75d5fac07c9cf3e1f640a76c1e94b1"
+    },
+    "candidate/reference/core-cases.json": {
+      "bytes": 5438,
+      "sha256": "0d7c742be79eff036da5f91615042516a2d437a8c65fe5ab012f069cb18293db"
+    },
+    "requirements.txt": {
+      "bytes": 11,
+      "sha256": "53233e8dfbed17a27fb6404f34b68fe2a8d00d68c743c4e6f4ac073b2833bab2"
+    },
+    "tests/fixtures/LEGACY-FIXTURE-NOTICE.md": {
+      "bytes": 862,
+      "sha256": "0c688737f87db5ac02b0e95775265f7d5fededbd12a07ec23f9c617089bced12"
+    },
+    "tests/fixtures/PUBLIC-SOURCE-FIXTURE.json": {
+      "bytes": 3999,
+      "sha256": "0885ef654899b6fe2e53c0c3e9fcc7b9a301e8c317d4da0faf04a00b04d3e8e0"
+    },
+    "tests/fixtures/build-asset-inputs.json": {
+      "bytes": 25495,
+      "sha256": "9af4f6a746ccbc2fcf3bd761aacdea55ec36eb608acde63fbab3d90489b032ce"
+    },
+    "tests/fixtures/legacy-loader-package/PACKAGE-MANIFEST.json": {
+      "bytes": 2947,
+      "sha256": "5655aafa516f804a0093cd0ddbed8916da718afe5c74648a411708331db97daf"
+    },
+    "tests/fixtures/legacy-loader-package/core/core_assertions.py": {
+      "bytes": 29766,
+      "sha256": "49f1ce7e51815ddab990bbdaf49dad7a2497cb2bb539a49690f6be75e60df24a"
+    },
+    "tests/fixtures/legacy-loader-package/core/core_phone_suite.py": {
+      "bytes": 25900,
+      "sha256": "bd11dcc948c1f46d90db4975757770bd54e74491b257de7720c4392e6249f276"
+    },
+    "tests/fixtures/legacy-loader-package/drivers/model_profiles.py": {
+      "bytes": 2931,
+      "sha256": "9ba9403bdf64c2d765b31ffbbed2e95ac846f50df6ecb4e21efd4ebc926a397a"
+    },
+    "tests/fixtures/legacy-loader-package/drivers/phone_acceptance.py": {
+      "bytes": 57428,
+      "sha256": "105a3fea92f7556f3c6d547a40bd3b55a924a7155627866d5eebeae0396ecf8b"
+    },
+    "tests/fixtures/legacy-loader-package/drivers/phone_inventory.py": {
+      "bytes": 50893,
+      "sha256": "d25889ef9fffb22e08871f7a3b57a57e28d5f48977d4e42929364434599ea58e"
+    },
+    "tests/fixtures/legacy-loader-package/drivers/phone_suite.py": {
+      "bytes": 33419,
+      "sha256": "ea04ab32da81525c56102497abbda611e507a57b4d6c03f5d2301925e9717dcf"
+    },
+    "tests/fixtures/legacy-loader-package/drivers/qualification_scope.py": {
+      "bytes": 27195,
+      "sha256": "e296f5af8774aa0a176e1f28b7be924eecff0b50824faaad98a50d94d7ba0b48"
+    },
+    "tests/fixtures/legacy-loader-package/drivers/warm_receipts.py": {
+      "bytes": 7410,
+      "sha256": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5"
+    },
+    "tests/fixtures/legacy-loader-package/normalize_roles.py": {
+      "bytes": 3122,
+      "sha256": "0172959145e7d1716487ac3283a6d0eef9b804a851ff6e27dc69b246774a943f"
+    },
+    "tests/fixtures/legacy-loader-package/offline/offline_guards.py": {
+      "bytes": 6004,
+      "sha256": "0550345c9eac7bf88a8511987c63979f0453da0f11f3648f2c532b3ad314b317"
+    },
+    "tests/fixtures/legacy-loader-package/offline/phone_offline_suite.py": {
+      "bytes": 30827,
+      "sha256": "62e63c0c7905d036e0eb65e7f1d17bb79ef46b8ef470288fed89728914711155"
+    },
+    "tests/fixtures/legacy-loader-package/offline_core9_supervisor.py": {
+      "bytes": 14456,
+      "sha256": "7add65ad6065ea3253ec462ecd98fdd1972784eb123a1fc7dcef693117607e39"
+    },
+    "tests/fixtures/legacy-loader-package/ordinary/core_assertions.py": {
+      "bytes": 29766,
+      "sha256": "49f1ce7e51815ddab990bbdaf49dad7a2497cb2bb539a49690f6be75e60df24a"
+    },
+    "tests/fixtures/legacy-loader-package/ordinary/ordinary_launcher.py": {
+      "bytes": 31051,
+      "sha256": "daaa123969c1556647d002c689e35833d7191307513c1d2bd032a0bd1096180b"
+    },
+    "tests/fixtures/legacy-loader-package/ordinary/ordinary_start_observer.py": {
+      "bytes": 73621,
+      "sha256": "9da8dc489f4fcd7060895511662cd3ddd11b770e9b7bafcac3b3433f32ee9f35"
+    },
+    "tests/fixtures/legacy-loader-package/orvena_qualification.py": {
+      "bytes": 45181,
+      "sha256": "a5fa0b5acc2cf1ea074ac04115c26438161571975e6aa55e7ee580197ceac0c5"
+    },
+    "tests/fixtures/legacy-loader-package/prepare_binding.py": {
+      "bytes": 13112,
+      "sha256": "da0cb141b7192bf0e549c14de44a3c76d8504115c1e494ce719437445947174e"
+    },
+    "tests/fixtures/legacy-loader-package/reference/EXPECTED-FULL-V32-INVENTORY.json": {
+      "bytes": 301129,
+      "sha256": "557d48bfa14b64d9cdb387e878f73253ca75d5fac07c9cf3e1f640a76c1e94b1"
+    },
+    "tests/fixtures/legacy-loader-package/reference/core-cases.json": {
+      "bytes": 5438,
+      "sha256": "0d7c742be79eff036da5f91615042516a2d437a8c65fe5ab012f069cb18293db"
+    },
+    "tests/fixtures/production-scope-positive/task/build-identity.json": {
+      "bytes": 187,
+      "sha256": "3be5ce96ca1d6e993349ee0f7096a6685f3b01dd1451a23df0371ae9b7895506"
+    },
+    "tests/fixtures/production-scope-positive/task/initial-app-catalogue.json": {
+      "bytes": 700,
+      "sha256": "3b8efa29582ca9ecc83b7295ec3f486e74575131d6ff6c48d20dea9b7ef581b7"
+    },
+    "tests/fixtures/production-scope-positive/task/owner.json": {
+      "bytes": 1057,
+      "sha256": "25d82de520f21f49b09b3bf124e4e6567f73d3abec12185a6013c73ee53562fd"
+    },
+    "tests/fixtures/production-scope-positive/task/qualification-scope.json": {
+      "bytes": 1612,
+      "sha256": "74bb2d597399f8ece18e3d425d606801ee07ddb0813f7a9cd1c0e9ec81b01b2f"
+    },
+    "tests/fixtures/production-scope-positive/task/result.json": {
+      "bytes": 1697,
+      "sha256": "9ec697a21a376ebae5bc416cc8152acf044b09883b5792aef6bdc8421e21a288"
+    },
+    "tests/fixtures/production-scope-positive/task/scope-binding.json": {
+      "bytes": 585,
+      "sha256": "4aa56f0db54d54a555b6566ad247b09077e8ab490dc07020313a34fb42538eae"
+    },
+    "tests/fixtures/production-scope-positive/task/scope-observation-00000000000000000000000000000002.json": {
+      "bytes": 1666,
+      "sha256": "b129dff5d727166d57b2d78308dbb95ca980ab9cf2ebfda1876bc010f980b03f"
+    },
+    "tests/fixtures/production-scope-positive/task/scope-observation-00000000000000000000000000000003.json": {
+      "bytes": 2056,
+      "sha256": "b3e21969b1fcc252887bb7995658cf3833a4a316c6d002f184aab4501ea3a921"
+    },
+    "tests/fixtures/production-scope-positive/task/scope-runtime-config.json": {
+      "bytes": 120,
+      "sha256": "4b0411af51b54d5a6f822a42c83bcbad43243c6be1b3ee3d3b6b8cafa8d86284"
+    },
+    "tests/fixtures/production-scope-positive/task/step-01-action.json": {
+      "bytes": 1435,
+      "sha256": "5a6fd17cd7d4f51d10b1eb04a98e8ae310fea18640b5089bf4d3aa48f85f32f0"
+    },
+    "tests/fixtures/production-scope-positive/task/step-01-after.json": {
+      "bytes": 1042,
+      "sha256": "4fbd009bd13a9243a0e1ac0eb641eb42b900e2efd5be3104bc7f1411e372e5a0"
+    },
+    "tests/fixtures/production-scope-positive/task/step-01-before.json": {
+      "bytes": 1042,
+      "sha256": "bce5f0c1fff881ed955b59380e307051152ec0b74f731c0f96cf534770ec7e84"
+    },
+    "tests/fixtures/production-scope-positive/task/step-01-budget-0.json": {
+      "bytes": 2454,
+      "sha256": "678c28626f28c691cfd9894e8904bd06a62afc609330ca405e080bb9dd96d04d"
+    },
+    "tests/fixtures/production-scope-positive/task/step-01-model-0.json": {
+      "bytes": 431,
+      "sha256": "f414340227047c8198d4b924bd58fcb462db4c77cddd01951a8b997f398b455a"
+    },
+    "tests/fixtures/upgrade-select-helpers/select_runtime_once_v32_r1.py": {
+      "bytes": 30568,
+      "sha256": "3fb80f4bf8ebd153d2d448415f9f1512a29a209697f1468545df069532a40721"
+    },
+    "tests/fixtures/upgrade-select-helpers/upgrade_v32_once_r1.py": {
+      "bytes": 17674,
+      "sha256": "b6619f7e9e15c1aa465c4af0a405667fe288a0579c6a2240cb9afaef4c6b02d4"
+    },
+    "tests/fixtures/upgrade-select-helpers/v32_identity.py": {
+      "bytes": 22225,
+      "sha256": "480154279eed6d941d1cb240d4faf071088d4646f36f5bd35b926e3001c98e34"
+    },
+    "tests/fixtures/v32-source-inputs/AndroidManifest.xml": {
+      "bytes": 2257,
+      "sha256": "b419d8dabe690ec6ec25f9bbb51295e8b019d098e6c927ac7ee4b246f05a24f6"
+    },
+    "tests/fixtures/v32-source-inputs/native/generate_adapter.py": {
+      "bytes": 11951,
+      "sha256": "539eb1476d4c13034b8a4ddb6a8d6fa33f6f824f6b1b8bddd772ac42d8ee5bcc"
+    },
+    "tests/fixtures/v32-source-inputs/native/publish-appuid.inc": {
+      "bytes": 1006,
+      "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
+    },
+    "tests/fixtures/v32-source-inputs/native/sampler-profile.inc": {
+      "bytes": 1918,
+      "sha256": "ded53bf62e861a365a9c41e10bb914efe81844d2d9b2e936fe2b69ee5b211169"
+    },
+    "tests/fixtures/v32-source-inputs/native/warm-protocol.inc": {
+      "bytes": 8760,
+      "sha256": "5766de2194fd35cce08c6061db369420234acb2c993d7cf91c058c3ca593a86b"
+    },
+    "tests/fixtures/v32-source-inputs/native/warm_runtime_adapter.py": {
+      "bytes": 5107,
+      "sha256": "804f891e470313e670cf0b3b45d7c340e8828ab8471de762d98c9a737ff656ad"
+    },
+    "tests/fixtures/v32-source-inputs/native/worker-upstream.c": {
+      "bytes": 30066,
+      "sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e"
+    },
+    "tests/fixtures/v32-source-inputs/src/org/trillionnium/hepta/local/ActionDecision.java": {
+      "bytes": 21291,
+      "sha256": "2dc8f94a55b2511901410128e4de51090bcc7394f158cd1b31f87b18f70385f0"
+    },
+    "tests/fixtures/v32-source-inputs/src/org/trillionnium/hepta/local/ActionPolicy.java": {
+      "bytes": 4003,
+      "sha256": "36a12c3bce3388f864aa5214dcaa6350215bc67f1043b7cda3e9052eebcd086c"
+    },
+    "tests/fixtures/v32-source-inputs/src/org/trillionnium/hepta/local/DecisionGrammar.java": {
+      "bytes": 12849,
+      "sha256": "33e0375d2f79daed69491c54236b0799f1ba052524a05bec06644d93b3a7bfcd"
+    },
+    "tests/fixtures/v32-source-inputs/src/org/trillionnium/hepta/local/HeptaAccessibilityService.java": {
+      "bytes": 56104,
+      "sha256": "435c7f1bc3963215528226ddb8a46dde494c804908706b34fa410edd0a4d5d06"
+    },
+    "tests/fixtures/v32-source-inputs/src/org/trillionnium/hepta/local/LocalModelEngine.java": {
+      "bytes": 52219,
+      "sha256": "ff8796c76d42c9ba821d17539925723b4c4e9e416971d8e1a62505f066768922"
+    },
+    "tests/fixtures/v32-source-inputs/src/org/trillionnium/hepta/local/LocalTaskController.java": {
+      "bytes": 57698,
+      "sha256": "08c03df96f13a04be76b5ee53ecb3ab407ad842e9cc89da8c48cda651a92f37b"
+    },
+    "tests/fixtures/v32-source-inputs/src/org/trillionnium/hepta/local/LocalTaskSession.java": {
+      "bytes": 31584,
+      "sha256": "7e6e2007b0f18827a3d616ab19bd91a267039c9eede926f45d159abe010cf0af"
+    },
+    "tests/fixtures/v32-source-inputs/src/org/trillionnium/hepta/local/MainActivity.java": {
+      "bytes": 27242,
+      "sha256": "e5073829af0b7f17285096c072f54856b2d36baa4554a9854dfaf46b1779dc96"
+    },
+    "tests/fixtures/v32-source-inputs/src/org/trillionnium/hepta/local/MobiMindSessionContract.java": {
+      "bytes": 2764,
+      "sha256": "dfc7e7ffec3ac928ba9f22246fc9c09d3c5956e788e62554c83cda1c788bb250"
+    },
+    "tests/fixtures/v32-source-inputs/src/org/trillionnium/hepta/local/ObservedAppLabels.java": {
+      "bytes": 4889,
+      "sha256": "0276171bb8aaebee880a6d36fea5cbfdb157b09d2728a07148e4ce85d5ffbb9e"
+    },
+    "tests/fixtures/v32-source-inputs/src/org/trillionnium/hepta/local/QualificationScope.java": {
+      "bytes": 14462,
+      "sha256": "1879d69f1f344e3f4f7d2f8afd12a78a2747ca183d8895ac9e5e2b6f4f0e3a5d"
+    },
+    "tests/fixtures/v32-source-inputs/src/org/trillionnium/hepta/local/QualificationScopeConfig.java": {
+      "bytes": 12666,
+      "sha256": "319ae0d366664c0fec2ef68168303886f864f7e4039e6f9c1eebe6c7b06fd6b8"
+    },
+    "tests/fixtures/v32-source-inputs/src/org/trillionnium/hepta/local/SessionRecovery.java": {
+      "bytes": 6516,
+      "sha256": "9139579bedd6ce965baa00813f94378ac638e6ba3b79503b2f3029c6261afcf3"
+    },
+    "tests/fixtures/v32-source-inputs/src/org/trillionnium/hepta/local/UiVenusSessionContract.java": {
+      "bytes": 2762,
+      "sha256": "aab2a12e324aae8191dff73c3b43f8643f7edba8a5f418d67219901bcdea6d1c"
+    },
+    "tests/fixtures/v32-source-inputs/src/org/trillionnium/hepta/local/WarmProcessSession.java": {
+      "bytes": 9268,
+      "sha256": "2fb586da3b13924a67f9f5afb21c121c31356aef2df9a8305051acadb283b7cb"
+    },
+    "tests/fixtures/v32-source-inputs/tools/build_identity.py": {
+      "bytes": 2970,
+      "sha256": "7d5ad2641e9a3635fd04aa47ce3ea50a1a4f16b883a98b2ab407878eef36f6e6"
+    },
+    "tests/helpers.py": {
+      "bytes": 10335,
+      "sha256": "44395c577e99bc6119b4bc0c9654915bb69da13ddf4734a8bff9728fd281b973"
+    },
+    "tests/run_host_validation.py": {
+      "bytes": 2880,
+      "sha256": "f55884eda7c4c956e3e4582d08c6e769f59a1cb6055ad23f7adeda3caf43a35a"
+    },
+    "tests/test_host_wiring.py": {
+      "bytes": 8960,
+      "sha256": "8ec1e8fc5e7dd4208886ec598abbfeb9a1d40b74284e4af2e7c2153ad5f2f83f"
+    },
+    "tests/test_ordinary_stage.py": {
+      "bytes": 7077,
+      "sha256": "0a991642ae501651f60eaaba3b37b18101d83b98d1a433584c2606be0684d886"
+    },
+    "tests/test_private_device_target.py": {
+      "bytes": 5209,
+      "sha256": "b07e9184b334e43acc92f2891c27e63df2f79e951246f87d88ce23925453b209"
+    },
+    "tests/test_probe_contract.py": {
+      "bytes": 20216,
+      "sha256": "eb5639410202c46295b8879c1ae359b13a9fce3684f599241ed0dfa454cd52ce"
+    },
+    "tests/test_scope_contract.py": {
+      "bytes": 11147,
+      "sha256": "cfeb2386f43f708fcdd92fe2be6be941618b47da3dec8454c0b2f072dbbff9e1"
+    },
+    "tests/test_scope_stage_install.py": {
+      "bytes": 11806,
+      "sha256": "4d8765ff81ac252c460e5388d90011e4514748fa5e14d755a3f5eafc29ce5d82"
+    },
+    "tests/test_source_cache.py": {
+      "bytes": 7873,
+      "sha256": "861ccdc41a4b8c83f6791cc2e26961fb99136592dfdc09de0f773576b295a643"
+    },
+    "tests/test_stage_cli.py": {
+      "bytes": 6267,
+      "sha256": "7318dbe335536c596acf960f724004fdc27492398d5282fb20925d58ffe397c6"
+    },
+    "tests/test_task_transport.py": {
+      "bytes": 7924,
+      "sha256": "56a6d02c0313b1901bdf0a297972d04cdc3b1aac7a0114f8f47526db62aa3bb2"
+    }
+  }
+}

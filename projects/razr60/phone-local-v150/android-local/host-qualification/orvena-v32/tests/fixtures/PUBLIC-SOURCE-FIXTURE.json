@@ -1,0 +1,99 @@
+{
+  "schema": "hepta.public-source-host-test-subset.v1",
+  "source_commit": "e07c6624b7309b0acf3fe10e31b0605a29e3e72d",
+  "complete_build_source": false,
+  "files": {
+    "src/org/trillionnium/hepta/local/SessionRecovery.java": {
+      "bytes": 6516,
+      "sha256": "9139579bedd6ce965baa00813f94378ac638e6ba3b79503b2f3029c6261afcf3"
+    },
+    "src/org/trillionnium/hepta/local/MobiMindSessionContract.java": {
+      "bytes": 2764,
+      "sha256": "dfc7e7ffec3ac928ba9f22246fc9c09d3c5956e788e62554c83cda1c788bb250"
+    },
+    "src/org/trillionnium/hepta/local/UiVenusSessionContract.java": {
+      "bytes": 2762,
+      "sha256": "aab2a12e324aae8191dff73c3b43f8643f7edba8a5f418d67219901bcdea6d1c"
+    },
+    "src/org/trillionnium/hepta/local/LocalTaskController.java": {
+      "bytes": 57698,
+      "sha256": "08c03df96f13a04be76b5ee53ecb3ab407ad842e9cc89da8c48cda651a92f37b"
+    },
+    "src/org/trillionnium/hepta/local/LocalModelEngine.java": {
+      "bytes": 52219,
+      "sha256": "ff8796c76d42c9ba821d17539925723b4c4e9e416971d8e1a62505f066768922"
+    },
+    "src/org/trillionnium/hepta/local/WarmProcessSession.java": {
+      "bytes": 9268,
+      "sha256": "2fb586da3b13924a67f9f5afb21c121c31356aef2df9a8305051acadb283b7cb"
+    },
+    "src/org/trillionnium/hepta/local/MainActivity.java": {
+      "bytes": 27242,
+      "sha256": "e5073829af0b7f17285096c072f54856b2d36baa4554a9854dfaf46b1779dc96"
+    },
+    "src/org/trillionnium/hepta/local/LocalTaskSession.java": {
+      "bytes": 31584,
+      "sha256": "7e6e2007b0f18827a3d616ab19bd91a267039c9eede926f45d159abe010cf0af"
+    },
+    "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java": {
+      "bytes": 56104,
+      "sha256": "435c7f1bc3963215528226ddb8a46dde494c804908706b34fa410edd0a4d5d06"
+    },
+    "src/org/trillionnium/hepta/local/QualificationScope.java": {
+      "bytes": 14462,
+      "sha256": "1879d69f1f344e3f4f7d2f8afd12a78a2747ca183d8895ac9e5e2b6f4f0e3a5d"
+    },
+    "src/org/trillionnium/hepta/local/QualificationScopeConfig.java": {
+      "bytes": 12666,
+      "sha256": "319ae0d366664c0fec2ef68168303886f864f7e4039e6f9c1eebe6c7b06fd6b8"
+    },
+    "src/org/trillionnium/hepta/local/ActionDecision.java": {
+      "bytes": 21291,
+      "sha256": "2dc8f94a55b2511901410128e4de51090bcc7394f158cd1b31f87b18f70385f0"
+    },
+    "src/org/trillionnium/hepta/local/ActionPolicy.java": {
+      "bytes": 4003,
+      "sha256": "36a12c3bce3388f864aa5214dcaa6350215bc67f1043b7cda3e9052eebcd086c"
+    },
+    "src/org/trillionnium/hepta/local/DecisionGrammar.java": {
+      "bytes": 12849,
+      "sha256": "33e0375d2f79daed69491c54236b0799f1ba052524a05bec06644d93b3a7bfcd"
+    },
+    "src/org/trillionnium/hepta/local/ObservedAppLabels.java": {
+      "bytes": 4889,
+      "sha256": "0276171bb8aaebee880a6d36fea5cbfdb157b09d2728a07148e4ce85d5ffbb9e"
+    },
+    "native/worker-upstream.c": {
+      "bytes": 30066,
+      "sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e"
+    },
+    "native/publish-appuid.inc": {
+      "bytes": 1006,
+      "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
+    },
+    "native/warm-protocol.inc": {
+      "bytes": 8760,
+      "sha256": "5766de2194fd35cce08c6061db369420234acb2c993d7cf91c058c3ca593a86b"
+    },
+    "native/generate_adapter.py": {
+      "bytes": 11951,
+      "sha256": "539eb1476d4c13034b8a4ddb6a8d6fa33f6f824f6b1b8bddd772ac42d8ee5bcc"
+    },
+    "native/warm_runtime_adapter.py": {
+      "bytes": 5107,
+      "sha256": "804f891e470313e670cf0b3b45d7c340e8828ab8471de762d98c9a737ff656ad"
+    },
+    "native/sampler-profile.inc": {
+      "bytes": 1918,
+      "sha256": "ded53bf62e861a365a9c41e10bb914efe81844d2d9b2e936fe2b69ee5b211169"
+    },
+    "AndroidManifest.xml": {
+      "bytes": 2257,
+      "sha256": "b419d8dabe690ec6ec25f9bbb51295e8b019d098e6c927ac7ee4b246f05a24f6"
+    },
+    "tools/build_identity.py": {
+      "bytes": 2970,
+      "sha256": "7d5ad2641e9a3635fd04aa47ce3ea50a1a4f16b883a98b2ab407878eef36f6e6"
+    }
+  }
+}
