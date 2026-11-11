@@ -14,7 +14,7 @@ import sys
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
-PURE_CLASSES=['FixedIntentAttemptGuard', 'LastModelDecisionProjection', 'BackgroundPermissionPreparation', 'TaskAuthorization', 'QualificationScope', 'ActionDecision', 'ActionPolicy', 'ObservedTargetLabels', 'ObservedAppLabels', 'ObservedScrollActions', 'ObservedImeEnter', 'SubmitAttemptGuard', 'ObservationStabilityGate', 'RecentActionProjection', 'PersistentActionPolicy', 'ImeVisibility', 'ObservationState', 'ObservedWindowMetadata', 'ObservedChildText', 'RepeatActionGuard', 'SameStateNoEffectGuard', 'DecisionGrammar', 'ModelProfile', 'NativeBudgetVerifier', 'LocalRuntimeConfig', 'ModelFileVerifier', 'ConservativeTokenBudget', 'MemoryAvailability', 'AppCatalogueRanker', 'SessionRecovery', 'MobiMindPins', 'MobiMindContract', 'MobiMindSessionContract', 'UiVenusPins', 'UiVenusInputContract', 'UiVenusRequestContract', 'UiVenusContract', 'UiVenusProcessContract', 'UiVenusSessionContract', 'DiagnosticStartupGate', 'ObservedTextProjection', 'ObservedTransitionProjection', 'CompactTaskHistory', 'PromptActionDomain', 'RecoveryQuiescence', 'RecoveryDispatch', 'RecoveryJournalTransaction', 'RecoverySlotHandoff', 'WarmProcessSession']
+PURE_CLASSES=['TaskCompletionGate', 'NotesCompletionEvidence', 'FixedIntentAttemptGuard', 'LastModelDecisionProjection', 'BackgroundPermissionPreparation', 'TaskAuthorization', 'QualificationScope', 'ActionDecision', 'ActionPolicy', 'ObservedTargetLabels', 'ObservedAppLabels', 'ObservedScrollActions', 'ObservedImeEnter', 'SubmitAttemptGuard', 'ObservationStabilityGate', 'RecentActionProjection', 'PersistentActionPolicy', 'ImeVisibility', 'ObservationState', 'ObservedWindowMetadata', 'ObservedChildText', 'RepeatActionGuard', 'SameStateNoEffectGuard', 'DecisionGrammar', 'ModelProfile', 'NativeBudgetVerifier', 'LocalRuntimeConfig', 'ModelFileVerifier', 'ConservativeTokenBudget', 'MemoryAvailability', 'AppCatalogueRanker', 'SessionRecovery', 'MobiMindPins', 'MobiMindContract', 'MobiMindSessionContract', 'UiVenusPins', 'UiVenusInputContract', 'UiVenusRequestContract', 'UiVenusContract', 'UiVenusProcessContract', 'UiVenusSessionContract', 'DiagnosticStartupGate', 'ObservedTextProjection', 'ObservedTransitionProjection', 'CompactTaskHistory', 'PromptActionDomain', 'RecoveryQuiescence', 'RecoveryDispatch', 'RecoveryJournalTransaction', 'RecoverySlotHandoff', 'WarmProcessSession']
 
 
 def main():
@@ -40,6 +40,7 @@ def main():
         for directory, extensions in (("src",("*.java",)),("tests",("*.java","*.py")),
                                       ("native",("*.c","*.h","*.inc","*.py")),("tools",("*.py",))):
             for extension in extensions: paths.update((ROOT/directory).rglob(extension))
+        paths.update(p for p in (ROOT/"tests/completion/fixtures").rglob("*") if p.is_file())
         if any(p.is_symlink() for p in paths): raise RuntimeError("Host inputs must not be symbolic links")
         return [{"path":str(p.relative_to(ROOT)),"sha256":hashlib.sha256(p.read_bytes()).hexdigest()}
                 for p in sorted(paths)]
@@ -113,6 +114,10 @@ def main():
         run("task-worker-native-lifecycle",[sys.executable,ROOT/"native/tests/test_warm_runtime.py"])
         run("profile-sampler",[sys.executable,"-B",ROOT/"native/tests/test_profile_sampler.py",
             "--source",ROOT,"--output",out/"profile-sampler"])
+        run("notes-completion-evidence",[sys.executable,"-B",ROOT/"tests/completion/test_notes_completion.py",
+            "--java",java,"--report",out/"notes-completion-evidence"/"VALIDATION.json","--release8"])
+        run("task-completion",[sys.executable,"-B",ROOT/"tests/completion/run_host_tests.py",
+            "--source",ROOT,"--output",out/"task-completion","--release8"])
         if all_inputs()!=report["source_inputs"]: raise RuntimeError("Source changed during host checks")
         report["all_pass"]=True
     except Exception as error:

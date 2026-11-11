@@ -25,11 +25,17 @@ public final class LocalTaskController implements AutoCloseable {
         public final int steps;
         public final File evidenceDirectory;
         public final PhoneObservation finalObservation;
-        public final boolean modelReportedSuccess,cleanupKnown;
+        public final boolean modelReportedSuccess,cleanupKnown,completionVerified;
+        public final java.util.Map<String,Object> completionEvidence;
         TaskResult(String taskId,String status,String summary,int steps,File evidence,PhoneObservation observation,
                    boolean modelSuccess,boolean cleanupKnown,String expectedScope,String actualScope){
+            this(taskId,status,summary,steps,evidence,observation,modelSuccess,cleanupKnown,expectedScope,actualScope,false,java.util.Collections.<String,Object>emptyMap());
+        }
+        TaskResult(String taskId,String status,String summary,int steps,File evidence,PhoneObservation observation,
+                   boolean modelClaim,boolean cleanupKnown,String expectedScope,String actualScope,boolean completionVerified,java.util.Map<String,Object> completionEvidence){
             this.taskId=taskId;this.status=status;this.summary=summary;this.steps=steps;this.evidenceDirectory=evidence;
-            this.finalObservation=observation;this.modelReportedSuccess=modelSuccess;this.cleanupKnown=cleanupKnown;
+            this.finalObservation=observation;this.modelReportedSuccess=modelClaim;this.cleanupKnown=cleanupKnown;this.completionVerified=completionVerified;
+            this.completionEvidence=java.util.Collections.unmodifiableMap(new java.util.LinkedHashMap<String,Object>(completionEvidence));
             this.expectedScopeSha256=expectedScope;this.actualScopeSha256=actualScope;
         }
     }
@@ -139,7 +145,10 @@ public final class LocalTaskController implements AutoCloseable {
         BackgroundSession background=null;BackgroundSession.Cleanup backgroundCleanup=null;
         SubmitAttemptGuard submitAttempts=null;FixedIntentAttemptGuard fixedIntentAttempts=null;
         File evidence=null;PhoneObservation observation=null;int steps=0,repairs=0,staleRounds=0;
-        String finalStatus="failed",summary="任务未完成";boolean modelSuccess=false,cleanup=true;
+        String finalStatus="failed",summary="任务未完成";boolean modelSuccess=false,cleanup=true,rawModelSuccessClaimed=false;
+        String lastModelDoneStatus=null,lastModelDoneSummary=null;
+        TaskCompletionGate completion=new TaskCompletionGate(taskId,instruction,authorization.authorization);
+        QualificationScopeConfig.CompletionInstalledIdentity completionInstalled=null;
         long deadline=SystemClock.elapsedRealtime()+MAX_TASK_MS;
         JSONArray history=new JSONArray();RepeatActionGuard repeatGuard=new RepeatActionGuard();
         SameStateNoEffectGuard noEffectGuard=new SameStateNoEffectGuard();
@@ -154,6 +163,7 @@ public final class LocalTaskController implements AutoCloseable {
             JSONObject owner=new JSONObject().put("schema","hepta.local-owner.v1").put("task_id",taskId)
                     .put("instruction",instruction).put("instruction_utf8_sha256",HeptaAccessibilityService.sha(instruction.getBytes(StandardCharsets.UTF_8)))
                     .put("task_authorization_sha256",authorization.authorization.sha256).put("task_authorization",new JSONObject(authorization.authorization.evidence()))
+                    .put("completion_contract",new JSONObject(completion.contract.evidence()))
                     .put("external_model",false).put("automatic_resume",false)
                     .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha256))
                     .put("actual_scope_sha256",JSONObject.NULL).put("qualification_scope",JSONObject.NULL);
@@ -185,6 +195,19 @@ public final class LocalTaskController implements AutoCloseable {
             if(scope.buildBytes!=null)MobiMindPrivateFiles.writeNew(new File(evidence,"build-identity.json"),scope.buildBytes);
             if(scope.runtimeFile!=null)MobiMindPrivateFiles.writeNew(new File(evidence,"scope-runtime-config.json"),scope.runtimeFile.bytes);
             record(evidence,"scope-binding.json",scope.evidence());scope.requireReady();
+            if(TaskCompletionGate.NOTES.equals(completion.contract.kind)){
+                checkActive(deadline);
+                try{
+                    completionInstalled=QualificationScopeConfig.CompletionInstalledIdentity.captureNotes(service);
+                    completion.bindInstalled(new NotesCompletionEvidence.Installed(completionInstalled.packageName,completionInstalled.uid,completionInstalled.apkHashes));
+                    record(evidence,"completion-installed-identity.json",new JSONObject(completionInstalled.evidence()));
+                }catch(Exception unavailable){
+                    completion.invalidateInstalled("installed_notes_identity_unavailable");
+                    record(evidence,"completion-installed-identity.json",new JSONObject().put("available",false)
+                            .put("reason",HeptaAccessibilityService.limited(HeptaAccessibilityService.message(unavailable),160)));
+                }
+                checkActive(deadline);
+            }
             if(backgroundSelection!=null){
                 QualificationScope.require(!scope.restricted(),"qualification scope 已启用，后台任务拒绝；原测试范围保持不变");
                 checkActive(deadline);
@@ -200,11 +223,12 @@ public final class LocalTaskController implements AutoCloseable {
             record(evidence,"initial-app-catalogue.json",catalogueJson(apps).put("model_issued",false).put("read_only",true));
             inference.beginTask(taskId);
             emit("正在观察当前屏幕…");observation=awaitObservation(taskId,evidence,authorization,deadline);
+            completion.observed(completionFrame(observation));
             while(steps<MAX_STEPS){
                 checkActive(deadline);steps++;
                 final PhoneObservation before=observation;
                 record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-before.json",steps),before.toJson());
-                PromptFrame frame=prompt(instruction,apps,before,history,lastTransition,lastModelDecision,null,config,repeatGuard,noEffectGuard,authorization.frame(),scope.config,service.fixedIntentTargets(taskId,authorization.frame()));
+                PromptFrame frame=prompt(instruction,apps,before,history,lastTransition,lastModelDecision,null,config,repeatGuard,noEffectGuard,authorization.frame(),scope.config,service.fixedIntentTargets(taskId,authorization.frame()),completion);
                 String prompt=frame.text;
                 ActionDecision action=null;String decisionRunId=null;
                 for(int attempt=0;attempt<2;attempt++){
@@ -223,6 +247,10 @@ public final class LocalTaskController implements AutoCloseable {
                         if("scroll".equals(action.action)&&!frame.grammar.allowsScroll(action.nodeId,action.direction))
                             throw new ActionDecision.InvalidActionException("scroll node/direction was not supplied by this observation");
                         decisionRunId=answer.runId;
+                        if("done".equals(action.action)){
+                            lastModelDoneStatus=action.status;lastModelDoneSummary=action.summary;
+                            if("success".equals(action.status))rawModelSuccessClaimed=true;
+                        }
                         break;
                     }
                     catch(ActionDecision.InvalidActionException error){
@@ -232,7 +260,7 @@ public final class LocalTaskController implements AutoCloseable {
                                 .put("validator_error",HeptaAccessibilityService.limited(error.getMessage(),96))
                                 .put("rejected_output",HeptaAccessibilityService.limited(answer.text,220))
                                 .put("excerpt",answer.text.length()>220);
-                        frame=prompt(instruction,apps,before,history,lastTransition,lastModelDecision,correction,config,repeatGuard,noEffectGuard,authorization.frame(),scope.config,service.fixedIntentTargets(taskId,authorization.frame()));
+                        frame=prompt(instruction,apps,before,history,lastTransition,lastModelDecision,correction,config,repeatGuard,noEffectGuard,authorization.frame(),scope.config,service.fixedIntentTargets(taskId,authorization.frame()),completion);
                         prompt=frame.text;
                     }
                 }
@@ -319,17 +347,30 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("find_returned",outcome.appCatalogue.apps.size()).put("find_matches",outcome.appCatalogue.matchingApps)
                         .put("find_catalogue_sha256",outcome.appCatalogue.catalogueSha256);
                 history.put(row);record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-after.json",steps),observation.toJson());
+                if(completionInstalled!=null)try{completionInstalled.verify(service);}catch(Exception changed){completion.invalidateInstalled("installed_notes_identity_changed");}
+                completion.action(steps,decisionRunId,action,outcome.accepted,outcome.dispatched,outcome.stale,
+                        completionFrame(before),completionFrame(observation),completionFixed(outcome.fixedIntent));
                 LastModelDecisionProjection dispatchedDecision=LastModelDecisionProjection.fromOutcome(taskId,steps,decisionRunId,before.id,action,
                         outcome.accepted,outcome.dispatched,outcome.stale);
                 if(dispatchedDecision!=null)lastModelDecision=dispatchedDecision;
                 lastTransition=observedTransition(steps,before,observation);
                 if("done".equals(action.action)){
-                    if(!before.packageName.equals(observation.packageName)||before.windowId!=observation.windowId
-                            ||before.rotation!=observation.rotation||!before.treeSha256.equals(observation.treeSha256))
-                        throw new IllegalStateException("模型结束前后画面发生变化，未确认最终状态");
-                    finalStatus="success".equals(action.status)?"model_reported_done":"partial".equals(action.status)?"partial":"failed";
-                    summary="success".equals(action.status)?"模型已结束，请核对结果："+action.summary:action.summary;
-                    modelSuccess="success".equals(action.status);break;
+                    boolean stable=before.packageName.equals(observation.packageName)&&before.windowId==observation.windowId
+                            &&before.rotation==observation.rotation&&before.treeSha256.equals(observation.treeSha256);
+                    if("success".equals(action.status)){
+                        TaskCompletionGate.Check check=completion.successClaim(steps,decisionRunId,completionFrame(observation),stable);
+                        record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-completion-check.json",steps),new JSONObject(check.evidence));
+                        if(check.verified){finalStatus="model_reported_done";summary=completion.completionSummary();modelSuccess=true;break;}
+                        summary=completion.incompleteSummary();
+                        if(!check.retryAllowed||steps>=MAX_STEPS){finalStatus="partial";break;}
+                        emit("完成证据尚不完整，正在重新观察并继续原任务…");
+                        observation=awaitObservation(taskId,evidence,authorization,deadline);completion.observed(completionFrame(observation));
+                        record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-completion-reobserve.json",steps),observation.toJson());
+                        lastTransition=observedTransition(steps,before,observation);continue;
+                    }
+                    finalStatus="partial".equals(action.status)?"partial":"failed";
+                    summary=("partial".equals(action.status)?"任务部分完成；模型说明：":"模型报告无法完成：")+action.summary;
+                    break;
                 }
                 repeatGuard.observed(action,before.state,observation.state);
                 noEffectGuard.observed(action,before.packageName,before.state,observation.packageName,observation.state,
@@ -369,8 +410,19 @@ public final class LocalTaskController implements AutoCloseable {
             // An unresolved action/display cleanup remains an admission block even if a later
             // scope/authorization check fails. Keep that later reason without weakening status.
             if(!cleanup){blocked=true;finalStatus="blocked";modelSuccess=false;}
+            if(completionInstalled!=null)try{completionInstalled.verify(service);}catch(Exception changed){
+                completion.invalidateInstalled("installed_notes_identity_changed_after_cleanup");
+                if(modelSuccess){modelSuccess=false;finalStatus="partial";summary="笔记应用身份在完成核验后发生变化，未确认本次目标。";}
+            }
+            boolean completionVerified=modelSuccess&&cleanup&&modelCleanup.receiptValid&&completion.verified(completionFrame(observation));
+            java.util.Map<String,Object> completionEvidence=completion.evidence(completionFrame(observation));
+            completionEvidence.put("observation_chain_verified",completion.verified(completionFrame(observation)));
+            completionEvidence.put("terminal_binding_and_cleanup_verified",completionVerified);
             if(evidence!=null){try{record(evidence,"result.json",new JSONObject().put("task_id",taskId).put("status",finalStatus)
-                    .put("summary",summary).put("steps",steps).put("model_reported_success",modelSuccess)
+                    .put("summary",summary).put("steps",steps).put("model_reported_success",rawModelSuccessClaimed)
+                    .put("model_done_status",lastModelDoneStatus==null?JSONObject.NULL:lastModelDoneStatus)
+                    .put("model_done_summary",lastModelDoneSummary==null?JSONObject.NULL:lastModelDoneSummary)
+                    .put("completion_verified",completionVerified).put("completion_evidence",new JSONObject(completionEvidence))
                     .put("final_observation_id",observation==null?JSONObject.NULL:observation.id).put("cleanup_known",cleanup)
                     .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha256))
                     .put("actual_scope_sha256",scope==null?JSONObject.NULL:QualificationScopeConfig.nullable(scope.actualSha256))
@@ -386,9 +438,9 @@ public final class LocalTaskController implements AutoCloseable {
                             .put("exit_code",modelCleanup.exitCode==null?JSONObject.NULL:modelCleanup.exitCode)
                             .put("receipt_valid",modelCleanup.receiptValid)
                             .put("app_receipt_sha256",modelCleanup.receiptSha256==null?JSONObject.NULL:modelCleanup.receiptSha256))
-                    .put("external_model",false).put("automatic_replay",false).put("goal_independently_verified",false));}catch(Exception ignored){summary=summary+"（结果记录保存失败）";}}
+                    .put("external_model",false).put("automatic_replay",false).put("goal_independently_verified",completionVerified));}catch(Exception ignored){summary=summary+"（结果记录保存失败）";}}
             if(cleanup)service.releaseTask(taskId);
-            final TaskResult result=new TaskResult(taskId,finalStatus,summary,steps,evidence,observation,modelSuccess,cleanup,expectedScopeSha256,scope==null?null:scope.actualSha256);
+            final TaskResult result=new TaskResult(taskId,finalStatus,summary,steps,evidence,observation,rawModelSuccessClaimed,cleanup,expectedScopeSha256,scope==null?null:scope.actualSha256,completionVerified,completionEvidence);
             final Listener selected;
             synchronized(this){lastResult=result;selected=listener;running=false;}
             main.post(new Runnable(){public void run(){
@@ -397,6 +449,40 @@ public final class LocalTaskController implements AutoCloseable {
                 }
             }});
         }
+    }
+    private static NotesCompletionEvidence.Frame completionFrame(PhoneObservation o){
+        if(o==null)return null;
+        java.util.List<NotesCompletionEvidence.Node> nodes=new java.util.ArrayList<NotesCompletionEvidence.Node>();
+        for(PhoneObservation.Node n:o.nodes){
+            String label=n.label();
+            if(n.text.trim().isEmpty()&&n.description.trim().isEmpty()&&(n.childText.truncated||!"derived".equals(n.childText.status)))label="";
+            nodes.add(new NotesCompletionEvidence.Node(n.id,n.packageName,n.text,label,n.viewId,n.inputTextSha256,
+                    new int[]{n.bounds.left,n.bounds.top,n.bounds.right,n.bounds.bottom},n.editable,n.clickable,n.scrollable,n.enabled,n.password));
+        }
+        return new NotesCompletionEvidence.Frame(o.id,o.packageName,o.windowId,o.windowMetadata.displayId==null?-1:o.windowMetadata.displayId,
+                o.backgroundGeneration,o.windowMetadata.type==null?-1:o.windowMetadata.type,"observed".equals(o.windowMetadata.status),o.nodesTruncated,nodes);
+    }
+    private static java.util.Map<String,Object> completionFixed(JSONObject object)throws Exception{
+        if(object==null)return null;java.util.Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();
+        java.util.Iterator<String> keys=object.keys();while(keys.hasNext()){
+            String key=keys.next();Object item=object.get(key);
+            if(item==JSONObject.NULL)value.put(key,null);else if(item instanceof JSONObject)value.put(key,completionFixed((JSONObject)item));
+            else if(item instanceof java.util.Map<?,?>)value.put(key,completionMap((java.util.Map<?,?>)item));
+            else if(item instanceof String||item instanceof Number||item instanceof Boolean)value.put(key,item);
+            else throw new IllegalStateException("completion receipt contains unsupported value");
+        }
+        return value;
+    }
+    private static java.util.Map<String,Object> completionMap(java.util.Map<?,?> raw)throws Exception{
+        java.util.Map<String,Object> result=new java.util.LinkedHashMap<String,Object>();
+        for(java.util.Map.Entry<?,?> entry:raw.entrySet()){
+            if(!(entry.getKey() instanceof String))throw new IllegalStateException("completion receipt key must be a string");
+            Object v=entry.getValue();if(v==JSONObject.NULL||v==null)v=null;
+            else if(v instanceof JSONObject)v=completionFixed((JSONObject)v);else if(v instanceof java.util.Map<?,?>)v=completionMap((java.util.Map<?,?>)v);
+            else if(!(v instanceof String||v instanceof Number||v instanceof Boolean))throw new IllegalStateException("completion receipt value unsupported");
+            result.put((String)entry.getKey(),v);
+        }
+        return result;
     }
     private static final class ModelAnswer {final String text,runId;ModelAnswer(String text,String runId){this.text=text;this.runId=runId;}}
     private ModelAnswer awaitModel(String prompt,DecisionGrammar grammar,long taskDeadline)throws Exception{
@@ -518,6 +604,9 @@ public final class LocalTaskController implements AutoCloseable {
         return prompt(owner,catalogue,observation,history,lastTransition,lastModelDecision,repair,config,repeatGuard,noEffectGuard,authorization,scope,null);
     }
     private static PromptFrame prompt(final String owner,AppCatalogueRanker.Page catalogue,PhoneObservation observation,JSONArray history,ObservedTransitionProjection.Transition lastTransition,LastModelDecisionProjection lastModelDecision,JSONObject repair,LocalRuntimeConfig config,RepeatActionGuard repeatGuard,SameStateNoEffectGuard noEffectGuard,TaskAuthorization.Frame authorization,QualificationScope.Config scope,java.util.Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets)throws Exception{
+        return prompt(owner,catalogue,observation,history,lastTransition,lastModelDecision,repair,config,repeatGuard,noEffectGuard,authorization,scope,fixedTargets,null);
+    }
+    private static PromptFrame prompt(final String owner,AppCatalogueRanker.Page catalogue,PhoneObservation observation,JSONArray history,ObservedTransitionProjection.Transition lastTransition,LastModelDecisionProjection lastModelDecision,JSONObject repair,LocalRuntimeConfig config,RepeatActionGuard repeatGuard,SameStateNoEffectGuard noEffectGuard,TaskAuthorization.Frame authorization,QualificationScope.Config scope,java.util.Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,TaskCompletionGate completion)throws Exception{
         TaskAuthorization.require(authorization!=null,"提示缺少任务授权");authorization.authorization.requireOwner(owner);
         java.util.List<AppCatalogueRanker.Entry> allApps=catalogue.apps;
         java.util.List<PhoneObservation.Node> nodes=new java.util.ArrayList<PhoneObservation.Node>(observation.nodes);
@@ -630,6 +719,7 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("open_allowed_packages",new JSONArray(new java.util.TreeSet<String>(packages)))
                     .put("apps_omitted",catalogue.matchingApps-appCount).put("app_search",appSearch);
             data.put("task_authorization",new JSONObject(authorization.evidence()));
+            if(completion!=null)data.put("completion",new JSONObject(completion.prompt(completionFrame(observation))));
             if(fixedTargets!=null){
                 JSONArray tools=new JSONArray();
                 for(org.trillionnium.hepta.background.FixedIntentTarget target:fixedTargets.values()){
@@ -690,7 +780,7 @@ public final class LocalTaskController implements AutoCloseable {
     /** One JSON object with readable top-level boundaries; the current screen is last. */
     private static String promptSections(JSONObject data)throws Exception{
         StringBuilder out=new StringBuilder("{\n");int included=0;
-        for(String key:new String[]{"action_schema","task_authorization","background_session","fixed_intent_tools","apps","open_allowed_packages","apps_omitted","app_search",
+        for(String key:new String[]{"action_schema","task_authorization","completion","background_session","fixed_intent_tools","apps","open_allowed_packages","apps_omitted","app_search",
                 "blocked_action","blocked","format_correction","events","last_model_decision","last_transition","screen"}){
             if(!data.has(key))continue;
             if(included++>0)out.append(",\n");

@@ -27,6 +27,7 @@ def prepare(source, output):
         "system": section(controller, "    private static final String SYSTEM=", "    public LocalTaskController("),
         "prompt_builder": section(controller, "    private static final class PromptFrame {",
                                   "    private static JSONObject catalogueJson("),
+        "completion_observation_bridge": section(controller, "    private static NotesCompletionEvidence.Frame completionFrame(", "    private static java.util.Map<String,Object> completionFixed("),
         "await_guard": await_guard,
         "text_limit": section(engine, "    private static void validateText(", "    private static void privateDirectory("),
         "label_limit": limited,
@@ -40,7 +41,7 @@ import java.nio.charset.StandardCharsets;
 import org.json.JSONArray;
 import org.json.JSONObject;
 public final class PromptAdmissionFixture {
-""" + parts["system"] + parts["prompt_builder"] + """
+""" + parts["system"] + parts["completion_observation_bridge"] + parts["prompt_builder"] + """
     public static final class Result {
         public final String text;
         public final DecisionGrammar grammar;

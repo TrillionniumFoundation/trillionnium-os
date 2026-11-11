@@ -472,7 +472,9 @@ public final class LocalTaskSession {
                     .put("process_inventory_scope",RecoveryJournalTransaction.SCOPE);
             }
             if(lastResult!=null)value.put("evidence_directory",lastResult.evidenceDirectory==null?JSONObject.NULL:lastResult.evidenceDirectory.getPath())
-                .put("model_reported_success",lastResult.modelReportedSuccess).put("steps",lastResult.steps);
+                .put("model_reported_success",lastResult.modelReportedSuccess).put("steps",lastResult.steps)
+                .put("completion_verified",lastResult.completionVerified).put("completion_evidence",new JSONObject(lastResult.completionEvidence))
+                .put("goal_independently_verified",lastResult.completionVerified);
             out=destination.startWrite();out.write(value.toString(2).getBytes(StandardCharsets.UTF_8));destination.finishWrite(out);out=null;
             android.system.Os.chmod(destination.getBaseFile().getPath(),0600);
             return true;

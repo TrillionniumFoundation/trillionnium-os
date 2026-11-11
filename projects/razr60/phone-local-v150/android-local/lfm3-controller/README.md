@@ -1,16 +1,23 @@
-# Hepta v43: fixed local note and search tools
+# Hepta v44: completion evidence for local tool tasks
 
-Current candidate: versionCode 43 (`0.43.0-local-fixed-intent-tools`), based on
-frozen v42 commit `3c4894ad4c7958c94741b0e7e6709380d6ac8ff7`.
+Current candidate: versionCode 44 (`0.44.0-local-completion-evidence`), based on
+frozen v43 commit `c76be7243b70e2142c6c87733c292c6df0d88652`.
 
-The ordinary local model can choose `notes.create(text)` or `web.search(query)`.
-Two compiled local Intent adapters preserve exact model content, ordinary-app
-eligibility, task authorization, background display scope and durable one-shot
-dispatch. A launch receipt does not establish saved notes or useful search
-results; subsequent real UI observations must verify those goals. Model/runtime
-selection and native inference are unchanged. Full strict host/Android gates and
-phone acceptance are pending at source freeze. See
-[CODE43-FIXED-INTENT-TOOLS.md](CODE43-FIXED-INTENT-TOOLS.md).
+A model's success statement is now checked separately from tool authorization
+and launch acceptance. A first claim without the required evidence leads to a
+fresh observation and continued local reasoning; a second rejected claim ends
+as partial. The supported Notes contract requires the model's exact note text,
+visible editor, save/list transition and a model click on the same observed item
+followed by reopened body evidence. Search requests and unsupported goals remain
+partial when actual result proof is unavailable. No write is required merely to
+complete a read-only task.
+
+The v6 tool grammar, SYSTEM text, runtime/model/sampler, existing permissions,
+background broker and one-shot dispatch ledgers are unchanged. Raw model claims
+and verified completion are recorded independently. Strict host/Android gates
+and real phone business acceptance are separate evidence; source status does not
+claim they passed. See [CODE44-COMPLETION-EVIDENCE.md](CODE44-COMPLETION-EVIDENCE.md)
+for the supported owner forms, exact Notes representation and remaining limits.
 
 ## v42 predecessor: observed state and control metadata repair
 

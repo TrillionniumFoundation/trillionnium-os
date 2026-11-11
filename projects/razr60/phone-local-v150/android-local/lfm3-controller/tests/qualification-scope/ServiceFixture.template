@@ -26,6 +26,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
     public int rootsRead,opens,navigations,gestures,observations;
     public int mutateOnRoot=-1;public String mutateRootPackage;
     public Runnable effectHook;public Intent lastStartedIntent;
+    public java.util.function.Supplier<List<PhoneObservation.Node>> observationRows;
     public HeptaAccessibilityService(File files,PackageManager pm){super(files,pm);live=this;}
     public static HeptaAccessibilityService connected(){return live;}
     public synchronized LocalTaskController taskController(LocalModelEngine engine){if(ownedController==null)ownedController=new LocalTaskController(this,testInference);return ownedController;}
@@ -55,6 +56,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
         ObservedWindowMetadata metadata=ObservedWindowMetadata.observed(new int[]{0,0,1080,2400},"FrameLayout",1,root==null?0:root.window.display,new int[]{0,0,1080,2400},"Settings");
         List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();
         if(node!=null)rows.add(new PhoneObservation.Node("n0",node.pkg,"TextView","synthetic:id/entry",node.text,"",new Rect(10,10,500,150),node.clickable,node.editable,node.scrollable,node.enabled,node.focused,node.password,observedChildText(node),readScrollActions(node),readImeEnter(node),inputTextHash(node),node.editable&&node.focused&&node.enabled&&!node.password&&readImeEnter(node).queryAllowed()&&submitAvailable(node.pkg,inputTextHash(node))));
+        if(observationRows!=null)rows=observationRows.get();
         return new PhoneObservation(id,pkg,SystemClock.elapsedRealtime(),1080,2400,0,window,new Rect(0,0,1080,2400),new File(getFilesDir(),"synthetic.png"),"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",new ObservationState("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",ImeVisibility.HIDDEN),metadata,false,rows,taskBackground==null?null:taskBackground.generation,taskBackground==null?null:taskBackground.selection.initialPackage,taskBackground==null?Collections.<String>emptyList():taskBackground.selection.allowedPackages);
     }
     public void observe(String task,File directory,Cancellation cancel,long deadline,ObservationCallback callback){
