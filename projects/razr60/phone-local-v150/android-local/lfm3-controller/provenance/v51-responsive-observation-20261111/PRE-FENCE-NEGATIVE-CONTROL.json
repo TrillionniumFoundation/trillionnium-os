@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.observation-pipeline-host.v1",
+  "production_sha256": "8f675aeb2c805a5bce2739e19a5fbb188597bc475c676d0b3620c792b041d55f",
+  "template_sha256": "b6b3615ccf35fbf13985ef80bfd4fd0328de5abb319d7f79f2bae30e9278a7be",
+  "generated_fixture_sha256": "ac60a432c2ae3f543de51bb1ab52ec124e94dfe5beaf83c344fbbeb7fb28fa1d",
+  "runner_sha256": "2495c8401897ec056c151473f01a39ed802a0081981dac91486463ca854a1dea",
+  "stability_gate_sha256": "ba98c74a6b4c89e04338bb1965fba913a4039f840b8f1073f96f0c9bfcdd8fe8",
+  "extracted": {
+    "acquire": "47bfb28b4858784cf0a3b21691492f2daf65a7480586996744a707658ef94257",
+    "observation": "3c6b186a26d23cf8bf4a01c43c1c52a00e95ccfafd9fa230da6feb6d6443722a"
+  },
+  "phone_operations": false,
+  "android_runtime": false,
+  "native_inference": false,
+  "production_methods_executed": [
+    "acquireTask",
+    "observe",
+    "sampleObservation",
+    "acceptSample",
+    "watchObservation",
+    "captureObservation",
+    "watchCapture",
+    "processScreenshot",
+    "acceptScreenshot",
+    "failObservation",
+    "retryObservation",
+    "copyScreenshot"
+  ],
+  "boundary": "Android graph, screenshot and callback IO are instrumented fakes; production deadline, ownership, event fence and worker/main delivery execute unchanged.",
+  "stages": [
+    {
+      "name": "compile",
+      "exit_code": 0,
+      "elapsed_s": 2.7510692639998524
+    },
+    {
+      "name": "tests",
+      "exit_code": 1,
+      "elapsed_s": 0.37433136599975114
+    }
+  ],
+  "status": "failed"
+}

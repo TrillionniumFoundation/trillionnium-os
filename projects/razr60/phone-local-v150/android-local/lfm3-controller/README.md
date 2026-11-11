@@ -1,6 +1,30 @@
-# Hepta v50: bind success choices to current proof and expose collection limits
+# Hepta v51: keep observation deadlines responsive
 
-Current candidate: versionCode 50 (`0.50.0-local-observation`), based on frozen
+Current source candidate: versionCode 51 (`0.51.0-local-responsive-observation`),
+based on v50 commit `9ecf87f313ef08cfd2f963671a19eb2358cebbfe`.
+
+This integrates the independent observation worker from the earlier observer
+candidate into the newer controller. Accessibility traversal, screenshot copy,
+PNG encoding, fsync, hashing and both graph rechecks execute on a single
+process-wide read worker. Main-looper deadline and Stop delivery remain
+responsive while that worker is busy. Retired results cannot publish, and a
+replacement service or task cannot create another read queue around stalled IO.
+
+The v50 collection limits, actual collection statistics, Notes and Calculator
+input domains, and proof-bound success choices are preserved. Cancellation
+during the final installed-identity read is rechecked before terminal publication.
+The terminal result records pending observation work independently of native,
+action and display cleanup. There is no new model, runtime, permission or tool.
+
+Blocking Android calls are not forcibly interrupted. New task admission remains
+unavailable until the actual read exits; action-side synchronous validation is
+outside this change. Compilation and host fixtures cannot establish physical
+phone responsiveness, background coexistence or business completion. Retained
+failed tasks remain failed. See [responsive observation contract](docs/RESPONSIVE-OBSERVATION.md).
+
+## v50 predecessor: bind success choices to current proof and expose collection limits
+
+The v50 predecessor is versionCode 50 (`0.50.0-local-observation`), based on frozen
 v49 commit `06fb07b957c63622628afae90ec52887523b0860`.
 
 The controller now intersects the immutable OWNER permission for success with
