@@ -21,9 +21,13 @@ public final class DecisionGrammar {
     public final ObservedAppLabels appLabels;
     public final TaskAuthorization.Frame authorization;
     public final Map<String,List<String>> scrollDirections;
+    public final Set<String> submitNodes;
+    public final Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedIntentTargets;
 
-    private DecisionGrammar(ObservedTargetLabels targets,String text,List<String> actions,Map<String,List<String>> scrollDirections,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization){
-        this.authorization=authorization;this.appLabels=appLabels;this.schema=appLabels==null?SCHEMA:ObservedAppLabels.ACTION_SCHEMA;
+    private DecisionGrammar(ObservedTargetLabels targets,String text,List<String> actions,Map<String,List<String>> scrollDirections,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization,Set<String> submits,boolean imeProtocol,Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets){
+        this.submitNodes=Collections.unmodifiableSet(new TreeSet<String>(submits));
+        this.fixedIntentTargets=Collections.unmodifiableMap(new TreeMap<String,org.trillionnium.hepta.background.FixedIntentTarget>(fixedTargets==null?Collections.<String,org.trillionnium.hepta.background.FixedIntentTarget>emptyMap():fixedTargets));
+        this.authorization=authorization;this.appLabels=appLabels;this.schema=fixedTargets!=null?ActionDecision.FIXED_INTENT_ACTION_SCHEMA:imeProtocol?ActionDecision.IME_ACTION_SCHEMA:appLabels==null?SCHEMA:ObservedAppLabels.ACTION_SCHEMA;
         this.scrollDirections=Collections.unmodifiableMap(new TreeMap<String,List<String>>(scrollDirections));
         this.targets=targets;this.observationId=targets.observationId;this.currentPackage=targets.packageName;this.text=text;
         this.actions=Collections.unmodifiableList(new ArrayList<String>(actions));
@@ -38,7 +42,7 @@ public final class DecisionGrammar {
 
     public static DecisionGrammar create(String observationId,String currentPackage,Set<String> shownApps,
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,ObservedTargetLabels targets){
-        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,null,null,false);
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,null,null,false,Collections.<String>emptySet(),false,null);
     }
 
     /** Explicit v4 entry; missing app metadata never selects the legacy grammar. */
@@ -46,7 +50,7 @@ public final class DecisionGrammar {
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
             ObservedTargetLabels targets,ObservedAppLabels appLabels){
         if(appLabels==null)throw new IllegalArgumentException("observed app pairs are required");
-        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,appLabels,null,false);
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,appLabels,null,false,Collections.<String>emptySet(),false,null);
     }
 
     public static DecisionGrammar createAuthorized(String observationId,String currentPackage,Set<String> shownApps,
@@ -54,7 +58,7 @@ public final class DecisionGrammar {
             ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization){
         TaskAuthorization.require(authorization!=null,"动作语法缺少用户授权");
         if(appLabels==null)throw new IllegalArgumentException("observed app pairs are required");
-        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,appLabels,authorization,false);
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,appLabels,authorization,false,Collections.<String>emptySet(),false,null);
     }
 
     /** A background display has no global HOME tool. Owner authorization is retained unchanged. */
@@ -63,12 +67,49 @@ public final class DecisionGrammar {
             ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization){
         TaskAuthorization.require(authorization!=null,"后台动作语法缺少用户授权");
         if(appLabels==null)throw new IllegalArgumentException("observed app pairs are required");
-        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,appLabels,authorization,true);
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,targets,appLabels,authorization,true,Collections.<String>emptySet(),false,null);
+    }
+
+    /** Explicit v5 entry. Legacy grammar entry points cannot acquire submit. */
+    public static DecisionGrammar createImeAuthorized(String observationId,String currentPackage,Set<String> shownApps,
+            Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
+            Map<String,ObservedImeEnter> submitActions,ObservedTargetLabels targets,ObservedAppLabels appLabels,
+            TaskAuthorization.Frame authorization,boolean background){
+        TaskAuthorization.require(authorization!=null,"IME 动作语法缺少用户授权");
+        if(appLabels==null||targets==null||submitActions==null||submitActions.size()>200)
+            throw new IllegalArgumentException("observed query action projection required");
+        Set<String> submits=checkedNodes(submitActions.keySet());
+        for(String id:submits)if(!targets.labels.containsKey(id)||submitActions.get(id)==null||!submitActions.get(id).queryAllowed())
+            throw new IllegalArgumentException("submit is not a supplied query-labelled action");
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
+                targets,appLabels,authorization,background,submits,true,null);
+    }
+
+    /** Explicit v6: supplied installed targets are separate from launcher-open pairs. */
+    public static DecisionGrammar createFixedIntentAuthorized(String observationId,String currentPackage,Set<String> shownApps,
+            Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
+            Map<String,ObservedImeEnter> submitActions,ObservedTargetLabels targets,ObservedAppLabels appLabels,
+            TaskAuthorization.Frame authorization,boolean background,Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets){
+        // Reuse the exact v5 validation for the existing node/action domain.
+        DecisionGrammar checked=createImeAuthorized(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
+                submitActions,targets,appLabels,authorization,background);
+        if(fixedTargets==null||fixedTargets.size()>2)throw new IllegalArgumentException("installed fixed targets required");
+        Map<String,org.trillionnium.hepta.background.FixedIntentTarget> permitted=new TreeMap<String,org.trillionnium.hepta.background.FixedIntentTarget>();
+        for(Map.Entry<String,org.trillionnium.hepta.background.FixedIntentTarget> entry:fixedTargets.entrySet()){
+            org.trillionnium.hepta.background.FixedIntentTarget target=entry.getValue();
+            if(target==null||!entry.getKey().equals(target.action)||!org.trillionnium.hepta.background.FixedIntentTools.isTool(target.action))
+                throw new IllegalArgumentException("invalid installed fixed target");
+            ObservedAppLabels.requireProjectedLabel(ObservedAppLabels.project(target.appLabel));
+            TaskAuthorization.require(authorization.allows(target.action),"fixed intent exceeds owner tool authorization");
+            permitted.put(target.action,target);
+        }
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
+                targets,appLabels,authorization,background,checked.submitNodes,true,permitted);
     }
 
     private static DecisionGrammar createInternal(String observationId,String currentPackage,Set<String> shownApps,
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
-            ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization,boolean background){
+            ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization,boolean background,Set<String> submitNodes,boolean imeProtocol,Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets){
         if(observationId==null||!observationId.matches("[0-9a-f]{32}"))throw new IllegalArgumentException("invalid observed id");
         checkPackage(currentPackage);
         if(targets==null||!observationId.equals(targets.observationId)||!currentPackage.equals(targets.packageName))
@@ -78,12 +119,13 @@ public final class DecisionGrammar {
         for(String name:shownApps){checkPackage(name);if(!currentPackage.equals(name)&&!"android".equals(name))apps.add(name);}
         if(appLabels!=null&&(!observationId.equals(appLabels.observationId)||!currentPackage.equals(appLabels.currentPackage)
                 ||!apps.equals(appLabels.labels.keySet())))throw new IllegalArgumentException("app pairs differ from the current allowed projection");
-        TreeSet<String> clicks=checkedNodes(clickableNodes),edits=checkedNodes(editableNodes);
+        TreeSet<String> clicks=checkedNodes(clickableNodes),edits=checkedNodes(editableNodes),submits=checkedNodes(submitNodes);
         Map<String,List<String>> scrolls=checkedScrollActions(scrollActions,targets);
         if(authorization!=null){
             TaskAuthorization.require(apps.equals(authorization.openPackages(apps)),"打开目标投影超出用户授权");
             if(!authorization.allows("click"))clicks.clear();
             if(!authorization.allows("type"))edits.clear();
+            if(!authorization.allows("submit"))submits.clear();
             if(!authorization.allows("scroll"))scrolls.clear();
         }
         StringBuilder rules=new StringBuilder();List<String> branches=new ArrayList<String>();
@@ -102,6 +144,13 @@ public final class DecisionGrammar {
                 rule(rules,"open-target",appPairs(appLabels));
             }
         }
+        if(fixedTargets!=null)for(org.trillionnium.hepta.background.FixedIntentTarget target:fixedTargets.values()){
+            branches.add(target.action);
+            rule(rules,target.action.replace('.','-'),prefix(target.action,observationId)
+                    +field("app_label",jsonValue(ObservedAppLabels.project(target.appLabel)))+comma()
+                    +field("package",jsonValue(target.packageName))+comma()
+                    +field("notes.create".equals(target.action)?"text":"query","fixed-payload-string")+ending());
+        }
         if(!clicks.isEmpty()){
             branches.add("click");rule(rules,"click",prefix("click",observationId)+field("package",jsonValue(currentPackage))+comma()+"click-target"+ending());
             rule(rules,"click-target",targetPairs(clicks,targets));
@@ -109,6 +158,11 @@ public final class DecisionGrammar {
         if(!edits.isEmpty()){
             branches.add("type");rule(rules,"type",prefix("type",observationId)+field("package",jsonValue(currentPackage))+comma()+"type-target"+comma()+field("text","text-string")+ending());
             rule(rules,"type-target",targetPairs(edits,targets));
+        }
+        if(!submits.isEmpty()){
+            if(!imeProtocol)throw new IllegalArgumentException("legacy protocol cannot submit");
+            branches.add("submit");rule(rules,"submit",prefix("submit",observationId)+field("package",jsonValue(currentPackage))+comma()+"submit-target"+ending());
+            rule(rules,"submit-target",targetPairs(submits,targets));
         }
         if(!scrolls.isEmpty()){
             branches.add("scroll");rule(rules,"scroll",prefix("scroll",observationId)+field("package",jsonValue(currentPackage))+comma()+"scroll-target"+ending());
@@ -129,12 +183,15 @@ public final class DecisionGrammar {
         rule(rules,"reason-string",literal("\"")+" json-char{1,96} "+literal("\""));
         // At most 1024 Unicode scalar values imply at most 4096 decoded UTF-8 bytes.
         rule(rules,"text-string",literal("\"")+" json-char{0,1024} "+literal("\""));
+        if(fixedTargets!=null)rule(rules,"fixed-payload-string",literal("\"")+" json-char{1,1024} "+literal("\""));
         rule(rules,"summary-string",literal("\"")+" json-char{1,1024} "+literal("\""));
         rules.append("json-char ::= [^\"\\\\\\x00-\\x1F] | "+literal("\\")+" [\"\\\\/bfnrt]\n");
         rule(rules,"ws","[ \\t\\n\\r]{0,8}");
-        List<String> ruleNames=new ArrayList<String>();for(String branch:branches)ruleNames.add(branch.replace('_','-'));
-        return new DecisionGrammar(targets,"root ::= ws ("+join(ruleNames," | ")+") ws\n"+rules.toString(),branches,scrolls,appLabels,authorization);
+        List<String> ruleNames=new ArrayList<String>();for(String branch:branches)ruleNames.add(branch.replace('_','-').replace('.','-'));
+        return new DecisionGrammar(targets,"root ::= ws ("+join(ruleNames," | ")+") ws\n"+rules.toString(),branches,scrolls,appLabels,authorization,submits,imeProtocol,fixedTargets);
     }
+
+    public boolean allowsSubmit(String nodeId){return submitNodes.contains(nodeId);}
 
     /** A direction cannot migrate to another node that has a different action list. */
     public boolean allowsScroll(String nodeId,String direction){

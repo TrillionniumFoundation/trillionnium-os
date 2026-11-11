@@ -176,6 +176,29 @@ final class QualificationScopeConfig {
         ByteArrayOutputStream out=new ByteArrayOutputStream();byte[] block=new byte[8192];int count;
         while((count=input.read(block))!=-1){QualificationScope.require(out.size()+count<=limit,"build identity byte bound");out.write(block,0,count);}return out.toByteArray();
     }
+    /** Read-only reuse of the existing full installed-APK capture/unchanged check.
+     * This exposes identity facts only; it does not install a scope or grant tools. */
+    static final class CompletionInstalledIdentity {
+        private final Installed installed;
+        final String packageName;final int uid;final Map<String,String> apkHashes;
+        private CompletionInstalledIdentity(Installed value){
+            installed=value;packageName=value.packageName;uid=value.uid;
+            Map<String,String> hashes=new TreeMap<String,String>();
+            for(Map.Entry<String,Apk> e:value.apks.entrySet())hashes.put(e.getKey(),e.getValue().sha256);
+            apkHashes=java.util.Collections.unmodifiableMap(hashes);
+        }
+        static CompletionInstalledIdentity captureNotes(Context context)throws Exception{
+            Installed value=Installed.capture(context,"com.motorola.stylus");
+            QualificationScope.require(value.uid>=10000&&value.uid<90000,"completion target must be an ordinary installed app");
+            return new CompletionInstalledIdentity(value);
+        }
+        void verify(Context context)throws Exception{installed.verify(context);}
+        Map<String,Object> evidence(){
+            Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();value.put("source","ordinary_package_manager_and_full_apk_hash");
+            value.put("package",packageName);value.put("uid",uid);value.put("apk_hashes",apkHashes);
+            value.put("apk_set_sha256",installed.apkSetSha256);value.put("version_code",installed.version);return value;
+        }
+    }
     /** APK-set hash = SHA256 of sorted UTF-8 `base|split:name<TAB>sha256<LF>` rows. */
     private static final class Installed {
         final String packageName,apkSetSha256;

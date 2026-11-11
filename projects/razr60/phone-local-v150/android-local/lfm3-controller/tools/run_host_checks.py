@@ -14,7 +14,7 @@ import sys
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
-PURE_CLASSES=['TaskAuthorization', 'QualificationScope', 'ActionDecision', 'ActionPolicy', 'ObservedTargetLabels', 'ObservedAppLabels', 'ObservedScrollActions', 'ObservationStabilityGate', 'RecentActionProjection', 'PersistentActionPolicy', 'ImeVisibility', 'ObservationState', 'ObservedWindowMetadata', 'ObservedChildText', 'RepeatActionGuard', 'SameStateNoEffectGuard', 'DecisionGrammar', 'ModelProfile', 'NativeBudgetVerifier', 'LocalRuntimeConfig', 'ModelFileVerifier', 'ConservativeTokenBudget', 'MemoryAvailability', 'AppCatalogueRanker', 'SessionRecovery', 'MobiMindPins', 'MobiMindContract', 'MobiMindSessionContract', 'UiVenusPins', 'UiVenusInputContract', 'UiVenusRequestContract', 'UiVenusContract', 'UiVenusProcessContract', 'UiVenusSessionContract', 'DiagnosticStartupGate', 'ObservedTextProjection', 'ObservedTransitionProjection', 'CompactTaskHistory', 'PromptActionDomain', 'RecoveryQuiescence', 'RecoveryDispatch', 'RecoveryJournalTransaction', 'RecoverySlotHandoff', 'WarmProcessSession']
+PURE_CLASSES=['TaskCompletionGate', 'NotesCompletionEvidence', 'FixedIntentAttemptGuard', 'LastModelDecisionProjection', 'BackgroundPermissionPreparation', 'TaskAuthorization', 'QualificationScope', 'ActionDecision', 'ActionPolicy', 'ObservedTargetLabels', 'ObservedAppLabels', 'ObservedScrollActions', 'ObservedImeEnter', 'SubmitAttemptGuard', 'ObservationStabilityGate', 'RecentActionProjection', 'PersistentActionPolicy', 'ImeVisibility', 'ObservationState', 'ObservedWindowMetadata', 'ObservedChildText', 'RepeatActionGuard', 'SameStateNoEffectGuard', 'DecisionGrammar', 'ModelProfile', 'NativeBudgetVerifier', 'LocalRuntimeConfig', 'ModelFileVerifier', 'ConservativeTokenBudget', 'MemoryAvailability', 'AppCatalogueRanker', 'SessionRecovery', 'MobiMindPins', 'MobiMindContract', 'MobiMindSessionContract', 'UiVenusPins', 'UiVenusInputContract', 'UiVenusRequestContract', 'UiVenusContract', 'UiVenusProcessContract', 'UiVenusSessionContract', 'DiagnosticStartupGate', 'ObservedTextProjection', 'ObservedTransitionProjection', 'CompactTaskHistory', 'PromptActionDomain', 'RecoveryQuiescence', 'RecoveryDispatch', 'RecoveryJournalTransaction', 'RecoverySlotHandoff', 'WarmProcessSession']
 
 
 def main():
@@ -31,6 +31,7 @@ def main():
             "external_model_used":False,"started_host_wall_ms":int(time.time()*1000),"checks":[]}
     source_dir=ROOT/"src/org/trillionnium/hepta/local"
     sources=[source_dir/(name+".java") for name in PURE_CLASSES]
+    sources += [ROOT/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol")]
     tests=sorted((ROOT/"tests").glob("*HostTest.java"))+[
         ROOT/"tests/action-parser/ActionDecisionHostTest.java",
         ROOT/"tests/action-grammar/DecisionGrammarHostTest.java"]
@@ -39,6 +40,7 @@ def main():
         for directory, extensions in (("src",("*.java",)),("tests",("*.java","*.py")),
                                       ("native",("*.c","*.h","*.inc","*.py")),("tools",("*.py",))):
             for extension in extensions: paths.update((ROOT/directory).rglob(extension))
+        paths.update(p for p in (ROOT/"tests/completion/fixtures").rglob("*") if p.is_file())
         if any(p.is_symlink() for p in paths): raise RuntimeError("Host inputs must not be symbolic links")
         return [{"path":str(p.relative_to(ROOT)),"sha256":hashlib.sha256(p.read_bytes()).hexdigest()}
                 for p in sorted(paths)]
@@ -64,6 +66,7 @@ def main():
             name=test.stem
             command=[java,"-cp",classes,name]
             if name in ("DecisionGrammarHostTest","AppCatalogueHostTest","RepeatActionGuardHostTest","ScrollGrammarHostTest","SameStateNoEffectGuardHostTest","ObservedAppLabelsHostTest"):command.append(fixtures)
+            if name=="LastModelDecisionProjectionHostTest":command.append(ROOT/"tests/last-model-decision")
             run(name,command)
         run("grammar-recognition",[sys.executable,ROOT/"tests/action-grammar/test_decision_grammar.py",fixtures])
         run("app-label-grammar-recognition",[sys.executable,ROOT/"tests/action-grammar/test_app_label_grammar.py",fixtures])
@@ -78,6 +81,16 @@ def main():
             "--source",ROOT,"--output",out/"owner-authorization","--release8"])
         run("owner-grammar",[sys.executable,"-B",ROOT/"tests/owner-grammar/run_host_tests.py",
             "--source",ROOT,"--output",out/"owner-grammar","--release8"])
+        run("ime-submit",[sys.executable,"-B",ROOT/"tests/ime-submit/run_host_tests.py",
+            "--source",ROOT,"--output",out/"ime-submit","--release8"])
+        run("fixed-intent-tools",[sys.executable,"-B",ROOT/"tests/fixed-intent-tools/run_host_tests.py",
+            "--source",ROOT/"src/org/trillionnium/hepta/background/FixedIntentTools.java","--out",out/"fixed-intent-tools","--release8"])
+        run("fixed-intent-integration",[sys.executable,"-B",ROOT/"tests/fixed-intent-tools/run_integration_tests.py",
+            "--source",ROOT,"--output",out/"fixed-intent-integration","--release8"])
+        run("background-permission",[sys.executable,"-B",ROOT/"tests/background-permission/run_host_tests.py",
+            "--source",ROOT,"--output",out/"background-permission","--release8"])
+        run("background-permission-session",[sys.executable,"-B",ROOT/"tests/background-permission/run_session_tests.py",
+            "--source",ROOT,"--output",out/"background-permission-session","--release8"])
         run("background-broker",[sys.executable,"-B",ROOT/"tests/background-broker/run_host_checks.py",
             "--java",java,"--javac",shutil.which("javac"),"--out",out/"background-broker"])
         run("python-tools",[sys.executable,"-m","unittest","discover","-s","tools","-p","test_*.py","-v"])
@@ -101,6 +114,10 @@ def main():
         run("task-worker-native-lifecycle",[sys.executable,ROOT/"native/tests/test_warm_runtime.py"])
         run("profile-sampler",[sys.executable,"-B",ROOT/"native/tests/test_profile_sampler.py",
             "--source",ROOT,"--output",out/"profile-sampler"])
+        run("notes-completion-evidence",[sys.executable,"-B",ROOT/"tests/completion/test_notes_completion.py",
+            "--java",java,"--report",out/"notes-completion-evidence"/"VALIDATION.json","--release8"])
+        run("task-completion",[sys.executable,"-B",ROOT/"tests/completion/run_host_tests.py",
+            "--source",ROOT,"--output",out/"task-completion","--release8"])
         if all_inputs()!=report["source_inputs"]: raise RuntimeError("Source changed during host checks")
         report["all_pass"]=True
     except Exception as error:

@@ -69,8 +69,9 @@ public final class RecentActionProjection {
         copy(entry,result,"target_package");
         copy(entry,result,"before_package");
         Object action = entry.get("action");
+        if("submit".equals(action))submitFacts(entry,result);
         if ("open".equals(action)) copy(entry,result,"app_label");
-        if ("click".equals(action) || "type".equals(action) || "scroll".equals(action)) {
+        if ("click".equals(action) || "type".equals(action) || "scroll".equals(action) || "submit".equals(action)) {
             copy(entry,result,"node_label");
         }
         if ("type".equals(action) && entry.containsKey("type_text")) {
@@ -115,8 +116,9 @@ public final class RecentActionProjection {
         // Rename only an actually observed after-package; never infer it from the action or target.
         if(entry.containsKey("package_after"))result.put("after_package",entry.get("package_after"));
         Object action=entry.get("action");
+        if("submit".equals(action))submitFacts(entry,result);
         if("open".equals(action))copy(entry,result,"app_label");
-        if("click".equals(action)||"type".equals(action)||"scroll".equals(action))copy(entry,result,"node_label");
+        if("click".equals(action)||"type".equals(action)||"scroll".equals(action)||"submit".equals(action))copy(entry,result,"node_label");
         if("scroll".equals(action))copy(entry,result,"direction");
         if("type".equals(action)&&entry.containsKey("type_text")){
             Object value=entry.get("type_text");
@@ -178,7 +180,7 @@ public final class RecentActionProjection {
                 }
             }
             Map<String,Object> details=new LinkedHashMap<String,Object>();
-            for(String key:new String[]{"app_label","node_label","direction","type_text","type_text_truncated"})copy(effect,details,key);
+            for(String key:new String[]{"app_label","node_label","direction","type_text","type_text_truncated","submit_input_sha256","submit_action_label","submit_attempt_id","submit_result","submit_attempt_consumed"})copy(effect,details,key);
             if(!absent.isEmpty())details.put("absent_columns",java.util.Collections.unmodifiableList(absent));
             row.add(java.util.Collections.unmodifiableMap(details));
             rows.add(java.util.Collections.unmodifiableList(row));
@@ -276,9 +278,15 @@ public final class RecentActionProjection {
         if(index<0){index=dictionary.size();dictionary.add(value);}return index;
     }
 
+    private static void submitFacts(Map<String,Object> entry,Map<String,Object> result){
+        for(String key:new String[]{"node_label","node_id","submit_input_sha256","submit_action_label","submit_attempt_id","submit_result","submit_attempt_consumed"})
+            copy(entry,result,key);
+    }
+
     private static Map<String,Object> eventArguments(Map<String,Object> entry,int level){
         Map<String,Object> result=new LinkedHashMap<String,Object>();
         Object action=entry.get("action");
+        if("submit".equals(action))submitFacts(entry,result);
         if("open".equals(action))copy(entry,result,"app_label");
         if("scroll".equals(action))copy(entry,result,"direction");
         if(level>=1&&("click".equals(action)||"type".equals(action)||"scroll".equals(action)))copy(entry,result,"node_label");

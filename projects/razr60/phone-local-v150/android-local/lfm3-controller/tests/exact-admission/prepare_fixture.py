@@ -27,6 +27,7 @@ def prepare(source, output):
         "system": section(controller, "    private static final String SYSTEM=", "    public LocalTaskController("),
         "prompt_builder": section(controller, "    private static final class PromptFrame {",
                                   "    private static JSONObject catalogueJson("),
+        "completion_observation_bridge": section(controller, "    private static NotesCompletionEvidence.Frame completionFrame(", "    private static java.util.Map<String,Object> completionFixed("),
         "await_guard": await_guard,
         "text_limit": section(engine, "    private static void validateText(", "    private static void privateDirectory("),
         "label_limit": limited,
@@ -40,16 +41,17 @@ import java.nio.charset.StandardCharsets;
 import org.json.JSONArray;
 import org.json.JSONObject;
 public final class PromptAdmissionFixture {
-""" + parts["system"] + parts["prompt_builder"] + """
+""" + parts["system"] + parts["completion_observation_bridge"] + parts["prompt_builder"] + """
     public static final class Result {
         public final String text;
+        public final DecisionGrammar grammar;
         public final ConservativeTokenBudget budget;
         public final java.util.Set<String> ids;
         public final int nodes,required,visibleText,history;
         public final RecentActionProjection.ReadableEvents events;
         public final JSONObject budgetReceipt;
         Result(PromptFrame frame)throws Exception{
-            text=frame.text;budget=frame.budget;ids=frame.nodeIds;
+            text=frame.text;grammar=frame.grammar;budget=frame.budget;ids=frame.nodeIds;
             nodes=frame.nodesShown;required=frame.requiredNodes;
             visibleText=frame.visibleTextShown;history=frame.historyShown;
             events=frame.eventHistory;budgetReceipt=frame.budgetJson();
@@ -57,7 +59,11 @@ public final class PromptAdmissionFixture {
     }
     public static Result build(String owner,AppCatalogueRanker.Page apps,PhoneObservation observation,
             JSONArray history,LocalRuntimeConfig config)throws Exception{
-        return new Result(prompt(owner,apps,observation,history,null,null,config,
+        return buildWithDecision(owner,apps,observation,history,config,null);
+    }
+    public static Result buildWithDecision(String owner,AppCatalogueRanker.Page apps,PhoneObservation observation,
+            JSONArray history,LocalRuntimeConfig config,LastModelDecisionProjection prior)throws Exception{
+        return new Result(prompt(owner,apps,observation,history,null,prior,null,config,
                 new RepeatActionGuard(),new SameStateNoEffectGuard(),TaskAuthorization.parse(owner).bind("cccccccccccccccccccccccccccccccc").frame(),null));
     }
     private interface InferenceConfig { LocalRuntimeConfig configuration(); }
@@ -82,6 +88,7 @@ public final class PromptAdmissionFixture {
     if len(values) != 1:
         raise RuntimeError("one production pure-class list required")
     files += [package / (name + ".java") for name in values[0]] + [package / "PhoneObservation.java"]
+    files += [source/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol")]
     digest = lambda value: hashlib.sha256(value).hexdigest()
     record = {
         "scope": "Exact production full prompt builder, Java pre-native guard and LocalModelEngine UTF-8 input limit; Android Rect and JSON serialization are explicit IO fixtures",

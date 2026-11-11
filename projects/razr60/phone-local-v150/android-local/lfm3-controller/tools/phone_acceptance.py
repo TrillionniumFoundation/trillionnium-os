@@ -17,6 +17,7 @@ import struct
 import subprocess
 import sys
 import time
+import unicodedata
 import uuid
 import xml.etree.ElementTree as ET
 from warm_receipts import APP_REQUEST, NATIVE_REQUEST, request_contract, session_contract, collection_verified
@@ -35,6 +36,7 @@ CONTROLLER_GRAMMAR_SCHEMAS = frozenset({
     "hepta.observed-action-gbnf.v2-reason-first",
     "hepta.observed-action-gbnf.v3-label-first",
     "hepta.observed-action-gbnf.v4-app-label-first",
+    "hepta.observed-action-gbnf.v5-ime-enter",
 })
 LABEL_ACTION_SCHEMA = "hepta.observed-action-gbnf.v3-label-first"
 LABEL_SCHEMA = "hepta.observed-target-labels.v1"
@@ -42,6 +44,10 @@ LABEL_ENCODING = "utf8-length-prefixed-be32-sorted-node-id.v1"
 APP_LABEL_ACTION_SCHEMA = "hepta.observed-action-gbnf.v4-app-label-first"
 APP_LABEL_SCHEMA = "hepta.observed-app-labels.v1"
 APP_LABEL_ENCODING = "utf8-length-prefixed-be32-sorted-package.v1"
+IME_SUBMIT_ACTION_SCHEMA = "hepta.observed-action-gbnf.v5-ime-enter"
+IME_ENTER_SCHEMA = "hepta.observed-ime-enter.v1"
+IME_QUERY_LABELS = frozenset({"搜索", "搜尋", "查询", "查詢", "查找", "search", "query", "find"})
+SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 
 
 class DriverError(Exception):
@@ -342,6 +348,82 @@ def accelerator_log_evidence(log, compute):
         "full_operator_coverage_proven": False}
 
 
+def ime_query_label_allowed(label):
+    """The exact observed action label is the only classification input.
+
+    Match Java's NFKC + String.trim + Locale.ROOT lower-case contract. A field's
+    text, resource ID or owner wording never turns generic Enter into SEARCH.
+    """
+    if not isinstance(label, str) or not label or "\0" in label:
+        return False
+    try:
+        label.encode("utf-8", "strict")
+        if len(label.encode("utf-16-be")) // 2 > 256:
+            return False
+    except UnicodeError:
+        return False
+    normalized = unicodedata.normalize("NFKC", label).strip("".join(map(chr, range(33)))).lower()
+    return normalized in IME_QUERY_LABELS
+
+
+def ime_submit_prompt_capability(data, action):
+    """Return a validated v5 capability from the exact native prompt, or None.
+
+    This proves the model was supplied the capability, not that Android executed
+    it or that a business goal succeeded. Those require separate action evidence.
+    """
+    try:
+        if (not isinstance(data, dict) or data.get("action_schema") != IME_SUBMIT_ACTION_SCHEMA
+                or not isinstance(action, dict) or action.get("action") != "submit"):
+            return None
+        required = {"action", "observation_id", "package", "node_label", "node_id"}
+        if (not required <= set(action) or set(action) - required - {"reason"}
+                or any(not isinstance(value, str) for value in action.values())
+                or list(action).index("node_label") > list(action).index("node_id")
+                or len(action.get("reason", "")) > 256):
+            return None
+        screen = data.get("screen")
+        if (not isinstance(screen, dict) or action["observation_id"] != screen.get("observation_id")
+                or action["package"] != screen.get("package")):
+            return None
+        nodes, fields, capabilities = screen.get("nodes"), screen.get("editable_fields"), screen.get("submit_actions")
+        if (not isinstance(nodes, list) or len(nodes) > 200 or not isinstance(fields, list)
+                or len(fields) > 200 or not isinstance(capabilities, dict) or not 1 <= len(capabilities) <= 200):
+            return None
+        by_id = {}
+        for row in nodes:
+            if (not isinstance(row, list) or len(row) != 4 or not isinstance(row[0], str)
+                    or re.fullmatch(r"n[0-9]{1,5}", row[0]) is None or row[0] in by_id
+                    or not isinstance(row[1], str) or not isinstance(row[3], str)):
+                return None
+            by_id[row[0]] = row
+        editable = {}
+        for field in fields:
+            if (not isinstance(field, dict) or not isinstance(field.get("node_id"), str)
+                    or field["node_id"] in editable or field["node_id"] not in by_id):
+                return None
+            editable[field["node_id"]] = field
+        capability_keys = {"schema", "action_name", "action_label", "action_label_sha256", "input_text_sha256"}
+        for node_id, capability in capabilities.items():
+            field = editable.get(node_id)
+            if (node_id not in by_id or not isinstance(capability, dict) or set(capability) != capability_keys
+                    or capability.get("schema") != IME_ENTER_SCHEMA or capability.get("action_name") != "ACTION_IME_ENTER"
+                    or not ime_query_label_allowed(capability.get("action_label"))
+                    or capability.get("action_label_sha256") != digest(capability["action_label"].encode("utf-8"))
+                    or not isinstance(capability.get("input_text_sha256"), str)
+                    or not SHA256.fullmatch(capability["input_text_sha256"])
+                    or "f" not in by_id[node_id][3] or not isinstance(field, dict)
+                    or field.get("role") != "editable_text" or field.get("focused") is not True
+                    or field.get("enabled") is not True):
+                return None
+        node_id = action["node_id"]
+        if node_id not in capabilities or by_id[node_id][1] != action["node_label"]:
+            return None
+        return dict(capabilities[node_id])
+    except (ValueError, TypeError, KeyError, AttributeError, UnicodeError):
+        return None
+
+
 def target_label_binding_valid(receipt, native, prompt_bytes, raw_bytes):
     """Recompute the immutable pair receipt from the exact native prompt.
 
@@ -401,19 +483,23 @@ def target_label_binding_valid(receipt, native, prompt_bytes, raw_bytes):
         action = strict_json(raw_bytes)
         if not isinstance(action, dict):
             return False
-        if action.get("action") in {"click", "type", "scroll"}:
+        if action.get("action") in {"click", "type", "scroll", "submit"}:
             node_id, label = action.get("node_id"), action.get("node_label")
             keys = list(action)
-            return (isinstance(node_id, str) and isinstance(label, str) and node_id in labels
+            bound = (isinstance(node_id, str) and isinstance(label, str) and node_id in labels
                     and labels[node_id] == label and action.get("observation_id") == observation
                     and action.get("package") == package and keys.index("node_label") < keys.index("node_id"))
+            if action.get("action") == "submit":
+                return (bound and receipt.get("grammar_schema") == IME_SUBMIT_ACTION_SCHEMA
+                        and ime_submit_prompt_capability(data, action) is not None)
+            return bound
         return "node_id" not in action and "node_label" not in action
     except (ValueError, TypeError, KeyError, AttributeError, UnicodeError, DriverError):
         return False
 
 
 def app_label_binding_valid(receipt, native, prompt_bytes, raw_bytes):
-    """V4 pairs derive only from the exact native prompt, never from reason or a label lookup."""
+    """V4/v5 pairs derive from the exact same protocol in the native prompt."""
     if not isinstance(prompt_bytes, bytes) or not isinstance(raw_bytes, bytes):
         return False
     try:
@@ -425,7 +511,8 @@ def app_label_binding_valid(receipt, native, prompt_bytes, raw_bytes):
         if not text.startswith("UNTRUSTED_DATA\n") or "\nOWNER\n" not in text:
             return False
         data = strict_json(text[len("UNTRUSTED_DATA\n"):].split("\nOWNER\n", 1)[0].encode("utf-8"))
-        if data.get("action_schema") != APP_LABEL_ACTION_SCHEMA:
+        if (receipt.get("grammar_schema") not in (APP_LABEL_ACTION_SCHEMA, IME_SUBMIT_ACTION_SCHEMA)
+                or data.get("action_schema") != receipt.get("grammar_schema")):
             return False
         screen, rows, allowed = data.get("screen"), data.get("apps"), data.get("open_allowed_packages")
         if (not isinstance(screen, dict) or not isinstance(rows, list) or len(rows) > 40
@@ -473,6 +560,8 @@ def app_label_binding_valid(receipt, native, prompt_bytes, raw_bytes):
         action = strict_json(raw_bytes)
         if not isinstance(action, dict) or action.get("observation_id") != observation:
             return False
+        if action.get("action") == "submit" and data.get("action_schema") != IME_SUBMIT_ACTION_SCHEMA:
+            return False
         if action.get("action") != "open":
             return "app_label" not in action and action.get("package") == current
         if (not {"action", "observation_id", "app_label", "package"} <= set(action)
@@ -510,7 +599,14 @@ def controller_grammar_binding_valid(receipt, native, grammar_bytes, observation
     if not (isinstance(input_hashes, dict) and receipt.get("grammar_sha256") == grammar_sha
             and input_hashes.get("grammar") == grammar_sha):
         return False
-    if schema == APP_LABEL_ACTION_SCHEMA:
+    if isinstance(raw_bytes, bytes):
+        try:
+            raw_action = strict_json(raw_bytes)
+            if isinstance(raw_action, dict) and raw_action.get("action") == "submit" and schema != IME_SUBMIT_ACTION_SCHEMA:
+                return False
+        except (ValueError, TypeError, UnicodeError, DriverError):
+            return False
+    if schema in (APP_LABEL_ACTION_SCHEMA, IME_SUBMIT_ACTION_SCHEMA):
         return (target_label_binding_valid(receipt, native, prompt_bytes, raw_bytes)
                 and app_label_binding_valid(receipt, native, prompt_bytes, raw_bytes))
     # A labeled request cannot qualify by changing only the mutable app-side schema.

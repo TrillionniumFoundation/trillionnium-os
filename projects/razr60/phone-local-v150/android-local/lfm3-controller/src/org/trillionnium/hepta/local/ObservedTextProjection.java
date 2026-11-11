@@ -8,7 +8,34 @@ import java.util.Map;
 /** Factual text metadata from one observed node; never a field/result classifier or action grant. */
 public final class ObservedTextProjection {
     public static final String SCHEMA="hepta.observed-text-projection.v1";
+    public static final String CONTROL_HINT_SCHEMA="hepta.observed-unlabeled-controls.v1";
+    public static final String CONTROL_HINT_SOURCE="observed_node_properties_not_labels_or_authority";
+    public static final int MAX_CONTROL_HINTS=16,CONTROL_PROPERTY_UTF16_LIMIT=96;
     private ObservedTextProjection() {}
+
+    /** Only caller-selected current action targets with an empty observed label.
+     * Resource/class names are untrusted facts, never translated to a UI name or purpose.
+     */
+    public static Map<String,Object> unlabeledControlHint(String nodeId,String label,String viewId,String className,boolean actionable){
+        if(nodeId==null||label==null||viewId==null||className==null)throw new IllegalArgumentException("complete observed control facts required");
+        if(!actionable||!label.isEmpty()||(viewId.isEmpty()&&className.isEmpty()))return null;
+        Map<String,Object> value=new LinkedHashMap<String,Object>();value.put("node_id",nodeId);
+        if(!viewId.isEmpty()){
+            value.put("view_id",boundedProperty(viewId));
+            if(viewId.length()>CONTROL_PROPERTY_UTF16_LIMIT)value.put("view_id_truncated",true);
+        }
+        if(!className.isEmpty()){
+            value.put("class_name",boundedProperty(className));
+            if(className.length()>CONTROL_PROPERTY_UTF16_LIMIT)value.put("class_name_truncated",true);
+        }
+        return Collections.unmodifiableMap(value);
+    }
+    private static String boundedProperty(String value){
+        if(value.length()<=CONTROL_PROPERTY_UTF16_LIMIT)return value;
+        int end=CONTROL_PROPERTY_UTF16_LIMIT;
+        if(Character.isHighSurrogate(value.charAt(end-1)))end--;
+        return value.substring(0,end)+"…";
+    }
 
     /** Empty editable text is evidence too. Descriptions never replace the observed text value. */
     public static Map<String,Object> project(String nodeId,String text,String description,String viewId,

@@ -17,11 +17,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 /** Visible owner task UI, application-owned session, and explicit local model diagnostics. */
-public final class MainActivity extends Activity implements LocalTaskSession.Listener {
+public final class MainActivity extends Activity implements LocalTaskSession.Listener,BackgroundPermissionSession.Listener {
     private LocalModelEngine engine;
     private LocalTaskSession tasks;
     private MobiMindModelEngine visualDiagnostic;
     private UiVenusModelEngine uiVenusDiagnostic;
+    private BackgroundPermissionSession backgroundPermission;
+    private Button prepareBackgroundPermission,openRootManager;
+    private TextView backgroundPermissionState;
     private EditText taskInput, probePrompt;
     private TextView modelInfo, taskState, taskLog, taskResult, probeOutput;
     private TextView taskAuthorizationInfo;
@@ -46,6 +49,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         super.onCreate(state);
         LocalProbeApplication app=(LocalProbeApplication)getApplication();
         engine=app.modelEngine();tasks=app.taskSession();visualDiagnostic=app.mobiMindDiagnostic();
+        backgroundPermission=app.backgroundPermissionPreparation();
         uiVenusDiagnostic=app.uiVenusDiagnostic();
         ScrollView outer=new ScrollView(this);outer.setFillViewport(true);
         LinearLayout page=new LinearLayout(this);page.setOrientation(LinearLayout.VERTICAL);
@@ -63,6 +67,16 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         });
         previewTaskAuthorization();
         backgroundMode=new CheckBox(this);backgroundMode.setText("在后台空间操作");page.addView(backgroundMode);
+        page.addView(text("后台操作需要本机 root 权限。Magisk 31.1 及以上不再弹出授权请求：请在管理器的「超级用户」页点「+」，添加并允许 Hepta（org.trillionnium.hepta.local，UID "+android.os.Process.myUid()+"），然后返回核验。其它版本请按管理器界面操作。",12));
+        openRootManager=button("打开 Magisk 管理器");page.addView(openRootManager);
+        openRootManager.setOnClickListener(v -> openRootManagerFromOwnerButton());
+        prepareBackgroundPermission=button("核验后台执行权限");page.addView(prepareBackgroundPermission);
+        backgroundPermissionState=text("",12);page.addView(backgroundPermissionState);
+        prepareBackgroundPermission.setOnClickListener(v -> {
+            if(!hasWindowFocus()||isFinishing()||isDestroyed())return;
+            try{app.prepareBackgroundPermissionFromOwnerButton();refresh();}
+            catch(Exception error){refresh();backgroundPermissionState.setText("权限准备未开始："+HeptaAccessibilityService.message(error));}
+        });
         page.addView(text("选择本次可操作的应用和起始应用。开始时会先打开起始应用，这一步由你的选择触发。后台任务需要本机 root 授权；应用兼容性可能影响隔离，遇到越界或锁屏会停止。",12));
         pickBackgroundApps=button("选择后台应用范围");page.addView(pickBackgroundApps);
         pickBackgroundApps.setOnClickListener(v -> chooseBackgroundApps());
@@ -116,6 +130,26 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     private int dp(int value){return Math.round(value*getResources().getDisplayMetrics().density);}
     private TextView text(String value,int size){TextView view=new TextView(this);view.setText(value);view.setTextSize(size);view.setPadding(0,dp(5),0,dp(5));return view;}
     private Button button(String label){Button view=new Button(this);view.setText(label);return view;}
+    /** Normal owner navigation only; no grant, su request, task or permission-state update. */
+    private void openRootManagerFromOwnerButton(){
+        if(!hasWindowFocus()||isFinishing()||isDestroyed())return;
+        if(!rootManagerNavigationIdle()){
+            backgroundPermissionState.setText("请先结束当前任务、诊断或权限核验，再打开管理器。");return;
+        }
+        try{
+            Intent launch=getPackageManager().getLaunchIntentForPackage("com.topjohnwu.magisk");
+            if(launch==null){backgroundPermissionState.setText("未找到默认包名的 Magisk 管理器。若管理器已隐藏或改名，请从桌面手动打开；授权 Hepta 后返回核验。");return;}
+            startActivity(launch);
+        }catch(android.content.ActivityNotFoundException|SecurityException error){
+            backgroundPermissionState.setText("无法打开 Magisk 管理器，请从桌面手动打开并授权 Hepta，然后返回核验。");
+        }
+    }
+    private boolean rootManagerNavigationIdle(){
+        return !tasks.isRunning()&&!tasks.isBlocked()&&!tasks.isRecovering()&&!tasks.hasBackgroundLease()
+                &&!engine.isBusy()&&!backgroundPermission.blocksOtherWork()
+                &&!visualDiagnostic.isBusy()&&!visualDiagnostic.isBlocked()
+                &&!uiVenusDiagnostic.isBusy()&&!uiVenusDiagnostic.isBlocked();
+    }
     private void previewTaskAuthorization(){
         if(taskAuthorizationInfo==null)return;
         try{taskAuthorizationInfo.setText(TaskAuthorization.parse(taskInput.getText().toString()).summary());}
@@ -355,6 +389,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             +"\n\n"+raw+"\n\n凭据："+result.runDirectory+"\n"+receipt);
     }
     @Override public void onSessionChanged(){refresh();}
+    @Override public void onPermissionPreparationChanged(){refresh();}
     private void refresh(){
         if(modelInfo==null)return;
         boolean available=HeptaAccessibilityService.connected()!=null;
@@ -363,12 +398,16 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         catch(Exception error) { device="运行参数待修正"; }
         modelInfo.setText(modelName+" · "+device+" · 无外部模型\n"
             +(engine.modelFile().isFile()?"本地模型已导入":"本地模型待导入")
-            +" · "+(available?"无障碍已启用":"无障碍未启用")+" · 可用 RAM "+String.format(Locale.US,"%.2f GiB",engine.availableMemoryBytes()/1073741824.0));
+            +" · "+(available?"无障碍已启用":"无障碍未启用"));
         taskState.setText(tasks.state());taskLog.setText(tasks.log());
         boolean busy=tasks.isRunning()||engine.isBusy();
+        backgroundPermissionState.setText(backgroundPermission.state());
+        openRootManager.setEnabled(rootManagerNavigationIdle());
+        prepareBackgroundPermission.setEnabled(!busy&&!tasks.isBlocked()&&!tasks.isRecovering()&&!tasks.hasBackgroundLease()
+                &&!visualDiagnostic.isBusy()&&!visualDiagnostic.isBlocked()&&!uiVenusDiagnostic.isBusy()&&!uiVenusDiagnostic.isBlocked());
         backgroundMode.setEnabled(!busy&&!tasks.isRecovering());pickBackgroundApps.setEnabled(!busy&&!tasks.isRecovering());initialBackgroundApp.setEnabled(!busy&&!tasks.isRecovering());
         cleanupBackground.setVisibility(tasks.hasBackgroundLease()?View.VISIBLE:View.GONE);
-        cleanupBackground.setEnabled(!tasks.isRunning()&&!tasks.isRecovering());
+        cleanupBackground.setEnabled(!tasks.isRunning()&&!tasks.isRecovering()&&!backgroundPermission.blocksOtherWork());
         boolean recoveryAvailable=tasks.canAcknowledgeInterruption();
         acknowledgeInterruption.setVisibility(tasks.isBlocked()||tasks.isRecovering()||recoveryAvailable?View.VISIBLE:View.GONE);
         acknowledgeInterruption.setEnabled(recoveryAvailable);
@@ -433,7 +472,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             android.system.Os.chmod(file.getBaseFile().getPath(),0600);
         }catch(Exception ignored){if(out!=null)file.failWrite(out);}
     }
-    @Override protected void onStart(){super.onStart();if(tasks!=null)tasks.bind(this);}
+    @Override protected void onStart(){super.onStart();if(tasks!=null)tasks.bind(this);if(backgroundPermission!=null)backgroundPermission.bind(this);}
     @Override protected void onResume(){super.onResume();if(tasks!=null)refresh();}
-    @Override protected void onStop(){if(tasks!=null)tasks.unbind(this);super.onStop();}
+    @Override protected void onStop(){if(tasks!=null)tasks.unbind(this);if(backgroundPermission!=null)backgroundPermission.unbind(this);super.onStop();}
 }

@@ -142,6 +142,7 @@ public final class LocalTaskSession {
 
     /** The only caller is the positive button of MainActivity's visible owner confirmation. */
     public void acknowledgeInterruptionFromOwnerButton(){
+        LocalProbeApplication.requirePermissionPreparationIdle(context);
         if(Looper.myLooper()!=Looper.getMainLooper())throw new IllegalStateException("owner confirmation must run on main thread");
         if(!canAcknowledgeInterruption())throw new IllegalStateException("会话、其它诊断或模型槽状态不允许确认中断");
         final LocalProbeApplication application=(LocalProbeApplication)context;
@@ -423,6 +424,7 @@ public final class LocalTaskSession {
 
     /** Only closes a previously recorded display; never resumes an interrupted controller. */
     public void reconcileBackgroundFromOwnerButton(){
+        LocalProbeApplication.requirePermissionPreparationIdle(context);
         if(Looper.myLooper()!=Looper.getMainLooper())throw new IllegalStateException("background cleanup must begin on main thread");
         if(isRunning()||recovering)throw new IllegalStateException("请先停止正在运行的任务");
         final long epoch=++generation;final HeptaAccessibilityService service=HeptaAccessibilityService.connected();
@@ -470,7 +472,9 @@ public final class LocalTaskSession {
                     .put("process_inventory_scope",RecoveryJournalTransaction.SCOPE);
             }
             if(lastResult!=null)value.put("evidence_directory",lastResult.evidenceDirectory==null?JSONObject.NULL:lastResult.evidenceDirectory.getPath())
-                .put("model_reported_success",lastResult.modelReportedSuccess).put("steps",lastResult.steps);
+                .put("model_reported_success",lastResult.modelReportedSuccess).put("steps",lastResult.steps)
+                .put("completion_verified",lastResult.completionVerified).put("completion_evidence",new JSONObject(lastResult.completionEvidence))
+                .put("goal_independently_verified",lastResult.completionVerified);
             out=destination.startWrite();out.write(value.toString(2).getBytes(StandardCharsets.UTF_8));destination.finishWrite(out);out=null;
             android.system.Os.chmod(destination.getBaseFile().getPath(),0600);
             return true;

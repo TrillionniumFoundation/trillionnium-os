@@ -18,9 +18,9 @@ import java.util.regex.Pattern;
  * This enforces documented tool/method clauses, not arbitrary business semantics. */
 public final class TaskAuthorization {
     public static final String SCHEMA="hepta.owner-task-authorization.v1";
-    public static final String PARSER="hepta.owner-tool-clauses.zh.v1";
+    public static final String PARSER="hepta.owner-tool-clauses.zh.v4-fixed-intents";
     public static final Set<String> TOOLS=Collections.unmodifiableSet(new TreeSet<String>(Arrays.asList(
-            "find_app","open","click","type","scroll","back","home","wait","done")));
+            "find_app","open","click","type","submit","scroll","back","home","wait","done","notes.create","web.search")));
     public static final class Violation extends IllegalStateException {
         private static final long serialVersionUID=1L;
         Violation(String message){super("task_authorization: "+message);}
@@ -31,6 +31,9 @@ public final class TaskAuthorization {
         Map<String,String> names=new LinkedHashMap<String,String>();
         String[][] rows={{"find_app","查找本机应用","查找应用","查找","find_app"},
                 {"open","打开应用","打开","open"},{"click","点击","click"},{"type","输入","type"},
+                {"submit","提交输入","提交","submit"},
+                {"notes.create","创建笔记","新建笔记","写备忘录","notes.create"},
+                {"web.search","网页搜索","网页查询","web.search"},
                 {"scroll","滚动","scroll"},{"back","返回上一页","返回","back"},
                 {"home","回到桌面","返回桌面","home"},{"wait","等待","wait"},
                 {"done","结束任务","结束","done"}};
@@ -44,6 +47,13 @@ public final class TaskAuthorization {
     private static final Pattern SEQUENCE=Pattern.compile("先([^。；;\\n]*?)(?:再|然后)([^。；;\\n]*)");
     private static final Pattern QUOTED_QUERY=Pattern.compile("(?:搜索|查找)\\s*[‘“\"']([^‘’“”\"'\\r\\n]{1,64})[’”\"']");
     private static final Pattern NAMED_QUERY=Pattern.compile("(?:查找|搜索)(?:手机上|本机|手机中)?(?:已安装的|安装的)?([^，,。；;\\n]{1,64}?)(?:应用|APP|App)?[，,\\s]*$");
+    // An app-discovery prerequisite needs an explicit application/tool domain.
+    // "查找机票/商品，再打开详情" describes app content, not installed apps.
+    // This pattern only sees quote-masked text; quoted payload is never authority.
+    private static final Pattern APP_LOOKUP=Pattern.compile(
+            "(?<![A-Za-z0-9_])find_app(?![A-Za-z0-9_])"
+            +"|(?:查找|搜索)(?:手机上|本机|手机中)?(?:已安装的|安装的)"
+            +"|(?:查找|搜索)[^，,。；;\\n]{0,96}?(?:应用|APP|App)(?=[，,。；;\\s]|$|并|再|然后)");
     public final String instructionSha256,sha256,findQuery;
     public final Set<String> allowedTools;
     public final boolean requireFindAppBeforeOpen;
@@ -91,21 +101,24 @@ public final class TaskAuthorization {
         if(onlySeen)for(String tool:granted)require(allowed.contains(tool),"工具白名单后出现扩大授权的条款");
         allowed.removeAll(denied);
         boolean first=false;String query=null;
-        Matcher sequence=SEQUENCE.matcher(owner);
+        // Masking preserves UTF-16 offsets. Recognize the method in unquoted
+        // text, then recover its literal query from the same original span.
+        Matcher sequence=SEQUENCE.matcher(unquoted);
         while(sequence.find()){
             String before=sequence.group(1),after=sequence.group(2);
-            if((before.contains("查找")||before.contains("find_app"))&&(after.contains("打开")||after.contains("open"))){
+            if(explicitAppLookup(before)&&(after.contains("打开")||after.contains("open"))){
                 require(!first,"多个查找前置目标暂不支持");
                 require(!EXCEPTION.matcher(before).find(),"查找前置条件有歧义");
-                query=queryFrom(before);first=true;rules.add("find_app_before_open");
+                query=queryFrom(owner.substring(sequence.start(1),sequence.end(1)));first=true;rules.add("find_app_before_open");
             }
         }
-        if(!first&&unquoted.contains("先")&&(unquoted.contains("find_app")||unquoted.contains("查找"))
+        if(!first&&unquoted.contains("先")&&explicitAppLookup(unquoted)
                 &&(unquoted.contains("打开")||unquoted.contains("open")))
             throw new Violation("查找与打开顺序不在已支持的明确先后语法内");
         if(first)require(allowed.contains("find_app")&&allowed.contains("open"),"查找前置与工具限制冲突");
         return new TaskAuthorization(owner,allowed,first,query,rules);
     }
+    private static boolean explicitAppLookup(String text){return APP_LOOKUP.matcher(text.trim()).find();}
     private static String queryFrom(String before){
         Matcher quoted=QUOTED_QUERY.matcher(before);String query=null;
         if(quoted.find()){query=quoted.group(1);require(!quoted.find(),"查找前置含多个文字目标");}
@@ -176,6 +189,8 @@ public final class TaskAuthorization {
     public String summary(){
         Map<String,String> display=new LinkedHashMap<String,String>();
         display.put("find_app","查找应用");display.put("open","打开应用");display.put("click","点击");display.put("type","输入文字");
+        display.put("submit","提交已观察查询字段");
+        display.put("notes.create","打开本地笔记草稿");display.put("web.search","打开网页查询");
         display.put("scroll","滚动");display.put("back","返回");display.put("home","回桌面");display.put("wait","等待");display.put("done","成功结束");
         List<String> names=new ArrayList<String>();for(String tool:display.keySet())if(allowedTools.contains(tool))names.add(display.get(tool));
         return "已识别的工具权限："+names+(requireFindAppBeforeOpen?"；须先查找“"+findQuery+"”并打开真实结果才能成功结束":"")

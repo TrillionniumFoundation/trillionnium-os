@@ -1,6 +1,99 @@
-# Code26: observed transitions and an explicit 9B candidate
+# Hepta v44: completion evidence for local tool tasks
 
-The current candidate is versionCode 26 (`0.26.0-local-observed-transitions`). It places the current screen after the complete recorded action history and adds the last step's actual before/after editable text, window title and IME observations. Those facts do not infer causality or task completion. An independently pinned Qwen3.5-9B Q4_0 text profile is available for qualification; it does not replace the configured or default model. Existing action permissions, freshness, recovery and local-only inference gates remain. See `docs/CODE26-QUALIFICATION.md` for the change and qualification boundary.
+Current candidate: versionCode 44 (`0.44.0-local-completion-evidence`), based on
+frozen v43 commit `c76be7243b70e2142c6c87733c292c6df0d88652`.
+
+A model's success statement is now checked separately from tool authorization
+and launch acceptance. A first claim without the required evidence leads to a
+fresh observation and continued local reasoning; a second rejected claim ends
+as partial. The supported Notes contract requires the model's exact note text,
+visible editor, save/list transition and a model click on the same observed item
+followed by reopened body evidence. Search requests and unsupported goals remain
+partial when actual result proof is unavailable. No write is required merely to
+complete a read-only task.
+
+The v6 tool grammar, SYSTEM text, runtime/model/sampler, existing permissions,
+background broker and one-shot dispatch ledgers are unchanged. Raw model claims
+and verified completion are recorded independently. Strict host/Android gates
+and real phone business acceptance are separate evidence; source status does not
+claim they passed. See [CODE44-COMPLETION-EVIDENCE.md](CODE44-COMPLETION-EVIDENCE.md)
+for the supported owner forms, exact Notes representation and remaining limits.
+
+## v42 predecessor: observed state and control metadata repair
+
+The v42 predecessor is versionCode 42 (`0.42.0-local-observation-repair`), based on frozen v41
+commit `ebd495d93660f24a3229fe91fec25508c546fad4`.
+
+This candidate refreshes sampled background accessibility nodes, classifies
+same-target content changes as zero-dispatch stale observations, records actual
+broker and ordinary-app display policy readback, and exposes bounded observed
+resource/class properties for otherwise unlabeled controls. Node labels, action
+authority, model/runtime settings and existing cleanup gates remain bound to the
+original observed facts. Full strict host checks, Android compilation and v42
+ordinary phone acceptance are pending. These source repairs do not establish
+successful shopping, flight search or note creation. See
+[CODE42-OBSERVATION-REPAIR.md](CODE42-OBSERVATION-REPAIR.md).
+
+## v41 predecessor: background startup repair
+
+Version 41 (`0.41.0-local-background-repair`) fixed socket setup order, handled
+the narrowly defined empty organizer task shape and retained bounded broker
+diagnostics. Version-specific documents preserve their original freeze-time
+claims. Existing interrupted task journals must retain their original bytes;
+only normal in-app cleanup and acknowledgement may restore task availability
+after the required evidence is established. See
+[CODE41-BACKGROUND-REPAIR.md](CODE41-BACKGROUND-REPAIR.md).
+
+## v40 predecessor: bounded model continuity and permission guidance
+
+The v40 predecessor is versionCode 40 (`0.40.0-local-progress-guidance`), based on frozen v39
+commit `5a68ef538ca8a9d76591dd6adb089b90b0ad97d4`.
+
+The owner UI explains Magisk 31.1's requirement to configure a grant in its
+Superuser page before running a command. **打开 Magisk 管理器** opens only the normal
+launcher for `com.topjohnwu.magisk`; hidden or renamed managers must be opened
+manually. **核验后台执行权限** retains the existing fixed read-only probe and its
+independent receipts. Opening the manager does not grant or verify permission.
+See [CODE40-PROGRESS-GUIDANCE.md](CODE40-PROGRESS-GUIDANCE.md).
+
+The ordinary controller now retains one bounded prior model intention after a
+real accepted/dispatched step. It is explicitly marked as model output rather
+than observation evidence and cannot supply tool authority or old target pairs.
+This tests a continuity hypothesis from the actual Qwen failure; improved model
+quality has not been established. System instructions, model selection, native
+inference, action dispatch and permission preparation semantics remain unchanged.
+Its Mac Android compilation passed with 172 compiler inputs. The complete host
+gate stopped at an inherited app-label fixture error (one error among 267 Python
+tests), so v40 was not signed or installed. Real-device acceptance remains
+unestablished; these predecessor results do not qualify v41.
+
+## v39 predecessor: owner UI preparation
+
+The v39 predecessor is versionCode 39 (`0.39.0-local-background-setup`), based on frozen v38.
+
+The normal UI now offers **启用后台执行权限**, a fixed read-only `su -c /system/bin/id -u`
+probe under the ordinary application UID. It has independent receipts and shares
+the existing process lease, so preparation cannot overlap tasks or model diagnostics.
+See [CODE39-BACKGROUND-SETUP.md](CODE39-BACKGROUND-SETUP.md) for exact verification,
+interruption behavior and the distinction between one successful probe and permanent
+authorization. That historical implementation is retained; its old qualification
+notes do not substitute for v40 build or device evidence.
+
+## v38 predecessor: observed query-field submission
+
+The v38 predecessor was versionCode 38 (`0.38.0-local-ime-submit`), based on v37.
+It adds a strictly observed, query-labelled `ACTION_IME_ENTER` tool to the ordinary
+local controller, with task authorization, full input/window/display binding,
+durable pre-call attempt evidence and no automatic retry. Generic Enter, payment,
+order and send labels do not qualify. The background broker, qualification scope
+and configured model are unchanged. See [CODE38-IME-SUBMIT.md](CODE38-IME-SUBMIT.md)
+for the compatibility boundary and host-versus-device qualification.
+
+## Retained implementation history
+
+### Code26: observed transitions and an explicit 9B candidate
+
+The historical Code26 candidate is versionCode 26 (`0.26.0-local-observed-transitions`). It places the current screen after the complete recorded action history and adds the last step's actual before/after editable text, window title and IME observations. Those facts do not infer causality or task completion. An independently pinned Qwen3.5-9B Q4_0 text profile is available for qualification; it does not replace the configured or default model. Existing action permissions, freshness, recovery and local-only inference gates remain. See `docs/CODE26-QUALIFICATION.md` for the change and qualification boundary.
 
 The prior exact Code24 source passed 70 host checks and Android compilation; Code24 was not installed for phone testing. Those artifacts remain separate from Code25 qualification.
 

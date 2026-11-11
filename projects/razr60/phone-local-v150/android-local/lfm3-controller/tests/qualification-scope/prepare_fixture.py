@@ -37,6 +37,19 @@ def prepare(source, output):
     if '{{' in fixture:
         raise RuntimeError('unfilled service fixture template')
     (output / 'HeptaAccessibilityService.java').write_text(fixture)
+    snapshot_parts = {
+        'stale_type': section(s, '    /** Only freshness failures before an effect', '    /** Runs on the service thread'),
+        'graph_limits': section(s, '    private static final int MAX_NODES=', '\n    private final Map<String,String> launchable='),
+        'node_graph': pieces['node_graph'],
+        'window_metadata': section(s, '    /** Read only the selected root\'s window metadata;', '    private List<AccessibilityWindowInfo> windowsForDisplay('),
+        'snapshot': section(s, '    /** A background root comes only', '    private static String nodeSignature('),
+        'node_identity': pieces['node_identity'],
+        'strings': pieces['strings'],
+    }
+    fixture = (Path(__file__).parent / 'BackgroundObservationFixture.template').read_text()
+    for name, code in snapshot_parts.items():fixture=fixture.replace('{{'+name+'}}',code)
+    if '{{' in fixture:raise RuntimeError('unfilled background snapshot fixture')
+    (output / 'BackgroundObservationFixture.java').write_text(fixture)
     session = (pkg / 'LocalTaskSession.java').read_text()
     session_parts = {
         'schedule': section(session, '    public boolean schedule(final String owner,String source,String testNonceSha,long delayMillis)', '    /** The only caller is the positive button'),
@@ -53,7 +66,7 @@ def prepare(source, output):
     fixture = (Path(__file__).parent / 'UiFixture.template').read_text()
     for name,code in ui_parts.items():fixture=fixture.replace('{{'+name+'}}',code)
     (output / 'ScopeUiFixture.java').write_text(fixture)
-    pure=['TaskAuthorization','ActionDecision','ActionPolicy','ObservedTargetLabels','ObservedScrollActions','RecentActionProjection',
+    pure=['TaskCompletionGate','NotesCompletionEvidence','FixedIntentAttemptGuard','LastModelDecisionProjection','TaskAuthorization','ActionDecision','ActionPolicy','ObservedTargetLabels','ObservedScrollActions','ObservedImeEnter','SubmitAttemptGuard','RecentActionProjection',
           'PersistentActionPolicy','ImeVisibility','ObservationState','ObservedWindowMetadata','ObservedChildText',
           'RepeatActionGuard','SameStateNoEffectGuard','DecisionGrammar','ModelProfile','LocalRuntimeConfig',
           'ConservativeTokenBudget','AppCatalogueRanker','ObservedTextProjection','ObservedTransitionProjection',
@@ -61,12 +74,13 @@ def prepare(source, output):
           'QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','LocalTaskController','LocalInference','PhoneObservation']
     if (pkg/'ObservedAppLabels.java').is_file():pure.append('ObservedAppLabels')
     files=[pkg/(name+'.java') for name in dict.fromkeys(pure)]
+    files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','FixedIntentDispatch','BrokerProtocol')]
     files += sorted(output.glob('*.java'))
     files += sorted((Path(__file__).parent/'fixtures').rglob('*.java'))
-    files += [Path(__file__).parent/'QualificationScopeHostTest.java']
+    files += [Path(__file__).parent/'QualificationScopeHostTest.java',Path(__file__).parent/'BackgroundFreshnessHostTest.java']
     record={'schema':'hepta.scope-host-extraction.v1','source_files':{n:hashlib.sha256((pkg/n).read_bytes()).hexdigest() for n in ['TaskAuthorization.java','HeptaAccessibilityService.java','LocalTaskSession.java','MainActivity.java','LocalTaskController.java','QualificationScope.java','QualificationScopeConfig.java']},
-        'extracted':{n:{'bytes':len(v.encode()),'sha256':hashlib.sha256(v.encode()).hexdigest()} for n,v in {**pieces,**session_parts,**ui_parts}.items()},
-        'full_actual_classes':['LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles'],
+        'extracted':{n:{'bytes':len(v.encode()),'sha256':hashlib.sha256(v.encode()).hexdigest()} for n,v in {**pieces,**session_parts,**ui_parts,**{'background_'+n:v for n,v in snapshot_parts.items()}}.items()},
+        'full_actual_classes':['TaskCompletionGate','NotesCompletionEvidence','LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles'],
         'boundary':'Android IO and effect endpoints are fakes; production admission/dispatch and controller code is executed',
         'phone_operations':False,'native_inference':False}
     (output/'EXTRACTION.json').write_text(json.dumps(record,indent=2)+'\n')

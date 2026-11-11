@@ -24,7 +24,7 @@ from warm_receipts import APP_REQUEST, NATIVE_REQUEST, request_contract, session
 SCHEMA = "hepta.phone-suite.v1"
 SHA = re.compile(r"[0-9a-f]{64}\Z")
 PKG = re.compile(r"[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+\Z")
-EFFECTS = {"open", "click", "type", "scroll", "back", "home"}
+EFFECTS = {"open", "click", "type", "scroll", "back", "home", "submit"}
 UNASSESSED = ["all_installed_apps", "vision", "locked_or_screen_off", "offline_device",
               "cancellation_and_timeout", "process_restart_no_replay", "sustained_thermal_and_power"]
 INTERRUPTED_LATCH_PROBE = (
@@ -119,7 +119,7 @@ def preflight(adb, candidate):
         raise acceptance.DriverError("INTERNET appears in actual package permissions")
     config = adb.app_json("files/model/runtime-config.json", optional=True)
     if config is None:
-        config = {"schema": "hepta.local-runtime.v1", "compute": "npu", "context_tokens": 4096, "threads": 4}
+        config = {"schema": "hepta.local-runtime.v1", "compute": "npu", "context_tokens": 8192, "threads": 4}
         origin = "fixed_application_default"
     else:
         origin = "app_private_config"
@@ -168,6 +168,151 @@ def _action_identity(value):
         if normalized["reason"] == "": del normalized["reason"]
     return json.dumps(normalized, ensure_ascii=False, sort_keys=True,
                       separators=(",", ":"), allow_nan=False).encode("utf-8")
+
+
+IME_SUBMIT_IDENTITY = frozenset({"task_id", "model_run_id", "observation_id", "package", "node_id",
+    "window_id", "display_id", "background_generation", "input_text_sha256", "action_label",
+    "action_label_sha256", "attempt_id", "attempt_ordinal"})
+BACKGROUND_GENERATION = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\Z")
+
+
+def _submit_journal_identity(value, task_id):
+    """Validate one durable before-call record without claiming that it was dispatched."""
+    expected = IME_SUBMIT_IDENTITY | {"schema", "attempt_consumed", "stage", "automatic_retry_allowed"}
+    if (not isinstance(value, dict) or set(value) != expected
+            or value.get("schema") != "hepta.ime-submit-attempt.v1"
+            or value.get("task_id") != task_id or value.get("attempt_consumed") is not True
+            or value.get("stage") != "consumed_before_call" or value.get("automatic_retry_allowed") is not False):
+        raise acceptance.DriverError("submit attempt journal has missing/unknown fields or state")
+    for key in ("task_id", "model_run_id", "observation_id"):
+        if not isinstance(value.get(key), str) or not acceptance.HEX32.fullmatch(value[key]):
+            raise acceptance.DriverError("submit attempt identity is malformed: " + key)
+    if (not isinstance(value.get("package"), str) or not PKG.fullmatch(value["package"])
+            or not isinstance(value.get("node_id"), str) or re.fullmatch(r"n[0-9]{1,5}", value["node_id"]) is None
+            or type(value.get("window_id")) is not int or value["window_id"] < 0
+            or type(value.get("display_id")) is not int or value["display_id"] < 0
+            or type(value.get("attempt_ordinal")) is not int or not 1 <= value["attempt_ordinal"] <= 20
+            or not isinstance(value.get("attempt_id"), str) or not 1 <= len(value["attempt_id"]) <= 256
+            or "\0" in value["attempt_id"]):
+        raise acceptance.DriverError("submit attempt target or ordinal is malformed")
+    generation = value.get("background_generation")
+    if generation is not None and (not isinstance(generation, str) or not BACKGROUND_GENERATION.fullmatch(generation)):
+        raise acceptance.DriverError("submit attempt background generation is malformed")
+    if (not isinstance(value.get("input_text_sha256"), str) or not SHA.fullmatch(value["input_text_sha256"])
+            or not acceptance.ime_query_label_allowed(value.get("action_label"))
+            or value.get("action_label_sha256") != acceptance.digest(value["action_label"].encode("utf-8"))):
+        raise acceptance.DriverError("submit attempt lacks an exact query action label/input hash")
+    return {key: value[key] for key in IME_SUBMIT_IDENTITY}
+
+
+def _ime_submit_action_binding(directory, run_directory, run_id, receipt, before, owner, native, raw):
+    """Bind a successful editor-action API call to prompt, observed node and consumed attempt.
+
+    The result is still not a search/save/business-goal verification. Generic Enter,
+    unknown outcomes and repeated consumed inputs cannot qualify as accepted effects.
+    """
+    action = receipt["action"]
+    task_id = owner.get("task_id")
+    if not isinstance(task_id, str) or not acceptance.HEX32.fullmatch(task_id):
+        raise acceptance.DriverError("submit has no exact owner task identity")
+    app = _evidence_object(run_directory / "app-receipt.json")
+    input_files = [run_directory / "prompt.txt", run_directory / "grammar.gbnf"]
+    if any(path.is_symlink() for path in input_files):
+        raise acceptance.DriverError("submit native input evidence is a symlink")
+    prompt, grammar = [path.read_bytes() for path in input_files]
+    observation, package = before.get("observation_id"), before.get("package")
+    if (app.get("run_id") != run_id or app.get("grammar_schema") != acceptance.IME_SUBMIT_ACTION_SCHEMA
+            or not acceptance.prompt_binding(prompt.decode("utf-8"), owner["instruction"], {observation})
+            or not acceptance.controller_grammar_binding_valid(app, native, grammar,
+                {observation: {package}}, prompt, raw)):
+        raise acceptance.DriverError("submit lacks the exact v5 native prompt/grammar/target binding")
+    data = acceptance.strict_json(prompt[len(b"UNTRUSTED_DATA\n"):].split(b"\nOWNER\n", 1)[0])
+    capability = acceptance.ime_submit_prompt_capability(data, action)
+    if capability is None:
+        raise acceptance.DriverError("submit node capability is not present in the native prompt")
+    result = receipt.get("ime_submit")
+    result_keys = IME_SUBMIT_IDENTITY | {"schema", "attempt_consumed", "dispatch_attempted", "api_accepted",
+        "result", "automatic_retry_allowed", "goal_independently_verified"}
+    if (not isinstance(result, dict) or set(result) != result_keys
+            or result.get("schema") != "hepta.ime-submit-result.v1"
+            or result.get("attempt_consumed") is not True or result.get("dispatch_attempted") is not True
+            or result.get("api_accepted") is not True or result.get("result") != "accepted"
+            or result.get("automatic_retry_allowed") is not False or result.get("goal_independently_verified") is not False
+            or type(result.get("attempt_ordinal")) is not int or not 1 <= result["attempt_ordinal"] <= 20
+            or not isinstance(result.get("attempt_id"), str) or not 1 <= len(result["attempt_id"]) <= 256
+            or "\0" in result["attempt_id"]
+            or receipt.get("accepted") is not True or receipt.get("dispatched") is not True or receipt.get("stale") is not False):
+        raise acceptance.DriverError("submit outcome is not a consumed, attempted and API-accepted call")
+    if any(result.get(key) != value for key, value in {
+            "task_id": task_id, "model_run_id": run_id, "observation_id": observation,
+            "package": package, "node_id": action.get("node_id"),
+            "input_text_sha256": capability["input_text_sha256"],
+            "action_label": capability["action_label"], "action_label_sha256": capability["action_label_sha256"]}.items()):
+        raise acceptance.DriverError("submit result identity differs from task/model/prompt capability")
+    window = before.get("window")
+    if (not isinstance(window, dict) or window.get("metadata_status") != "observed"
+            or type(before.get("window_id")) is not int or before["window_id"] < 0
+            or type(window.get("window_id")) is not int or window["window_id"] != before["window_id"]
+            or type(window.get("type")) is not int or window["type"] != 1
+            or type(window.get("display_id")) is not int or window["display_id"] < 0
+            or type(result.get("window_id")) is not int or result["window_id"] != before["window_id"]
+            or type(result.get("display_id")) is not int or result["display_id"] != window["display_id"]):
+        raise acceptance.DriverError("submit window/display is not bound to the actual before observation")
+    background = before.get("background_session")
+    if background is None:
+        if (result.get("background_generation") is not None or window["display_id"] != 0
+                or data.get("background_session") is not None or receipt.get("background_session") is not None):
+            raise acceptance.DriverError("foreground submit cannot reuse a background identity or display")
+    else:
+        action_background = receipt.get("background_session")
+        if (not isinstance(background, dict) or background.get("mode") != "background"
+                or data.get("background_session") != background
+                or not isinstance(background.get("generation"), str) or not BACKGROUND_GENERATION.fullmatch(background["generation"])
+                or result.get("background_generation") != background["generation"]
+                or type(background.get("display_id")) is not int or background["display_id"] != window["display_id"]
+                or window["display_id"] == 0 or background.get("home_allowed") is not False
+                or background.get("main_display_fallback") is not False
+                or not isinstance(background.get("allowed_packages"), list) or package not in background["allowed_packages"]
+                or not isinstance(action_background, dict) or action_background.get("task_id") != task_id
+                or action_background.get("generation") != background["generation"]
+                or type(action_background.get("display_id")) is not int or action_background["display_id"] != window["display_id"]):
+            raise acceptance.DriverError("submit background generation/display/package binding differs")
+    nodes = before.get("nodes")
+    if not isinstance(nodes, list) or not 1 <= len(nodes) <= 200:
+        raise acceptance.DriverError("submit before observation has no bounded node list")
+    selected = [node for node in nodes if isinstance(node, dict) and node.get("id") == action.get("node_id")]
+    if len(selected) != 1:
+        raise acceptance.DriverError("submit target is missing or duplicated in before observation")
+    node = selected[0]
+    observed = node.get("ime_enter")
+    if (node.get("editable") is not True or node.get("focused") is not True or node.get("enabled", True) is not True
+            or node.get("password", False) is not False or node.get("submit_available") is not True
+            or node.get("input_text_sha256") != capability["input_text_sha256"]
+            or not isinstance(observed, dict) or observed.get("schema") != acceptance.IME_ENTER_SCHEMA
+            or observed.get("observed") is not True or observed.get("present") is not True
+            or observed.get("query_allowed") is not True or observed.get("action_label") != capability["action_label"]
+            or observed.get("action_label_sha256") != capability["action_label_sha256"]):
+        raise acceptance.DriverError("submit target lacks the same observed editable/focused query capability and complete text hash")
+    journals = sorted((directory / "task").glob("ime-submit-*-attempt.json"))
+    if not 1 <= len(journals) <= 20:
+        raise acceptance.DriverError("submit requires its bounded durable before-call attempt journal")
+    ids, input_keys, matching = set(), set(), []
+    for path in journals:
+        journal = _evidence_object(path)
+        identity = _submit_journal_identity(journal, task_id)
+        if path.name != "ime-submit-%02d-attempt.json" % identity["attempt_ordinal"]:
+            raise acceptance.DriverError("submit attempt journal filename and ordinal differ")
+        key = (identity["package"], identity["input_text_sha256"])
+        if identity["attempt_id"] in ids or key in input_keys:
+            raise acceptance.DriverError("submit repeats an attempt or a consumed package/input within the task")
+        ids.add(identity["attempt_id"]); input_keys.add(key)
+        if identity["attempt_id"] == result["attempt_id"]:
+            matching.append(identity)
+    if len(matching) != 1 or matching[0] != {key: result[key] for key in IME_SUBMIT_IDENTITY}:
+        raise acceptance.DriverError("submit outcome has no exact matching durable before-call attempt")
+    return {"ime_submit_binding_valid": True, "ime_submit_attempt_id": result["attempt_id"],
+        "ime_submit_attempt_ordinal": result["attempt_ordinal"], "ime_submit_api_accepted": True,
+        "ime_submit_goal_independently_verified": False}
 
 
 def _collected_bytes(directory, relative, entries):
@@ -318,6 +463,8 @@ def model_action_binding(directory, path, receipt, before, instruction_sha256=No
         generated_action = acceptance.strict_json(raw)
         if _action_identity(generated_action) != _action_identity(receipt["action"]):
             raise acceptance.DriverError("dispatched action differs from the model's exact decoded decision")
+        if generated_action.get("action") == "submit":
+            result.update(_ime_submit_action_binding(directory, run_directory, run_id, receipt, before, owner, native, raw))
         result.update(verified=True, step_model_receipt=str(model_path.relative_to(directory)),
                       native_raw_output=str(raw_path.relative_to(directory)),
                       native_result=str(native_path.relative_to(directory)), raw_text_sha256=raw_sha)

@@ -21,7 +21,7 @@ def prepare(source, output):
     service = (package / "HeptaAccessibilityService.java").read_text(encoding="utf-8")
     parts = {
         "stop": section(controller, "    public void stop(){", "    @Override public synchronized void close()"),
-        "close_result": section(controller, "            LocalInference.TaskCleanup modelCleanup;", "            if(evidence!=null){try{record(evidence,\"result.json\""),
+        "close_result": section(controller, "            LocalInference.TaskCleanup modelCleanup;", "            if(completionInstalled!=null)try{completionInstalled.verify(service);}catch(Exception changed){\n"),
         "cleanup_contract": section(inference, "    final class TaskCleanup {", "    interface Handle {"),
         "message_helpers": section(service, "    static String limited(", "\n}"),
     }
@@ -81,6 +81,7 @@ public final class ControllerFinalizationFixture {
     digest = lambda value: hashlib.sha256(value).hexdigest()
     record = {
         "scope": "Exact production Stop method, endTask/exception handling, post-close scope check, terminal decisions and TaskCleanup; Android UI, model and scope/config IO are fixtures",
+        "completion_boundary": "Exact original cleanup/status block retained; new completion-identity/result projection runs in the full-controller completion harness",
         "scope_io_default": "absent; all original 13 cases retained; configured production checks also run in qualification-scope full-controller harness",
         "controller_sha256": digest(controller.encode()),
         "inference_sha256": digest(inference.encode()),

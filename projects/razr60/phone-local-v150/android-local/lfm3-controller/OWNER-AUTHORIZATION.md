@@ -1,4 +1,4 @@
-# Owner tool authorization (v35)
+# Owner tool authorization (v38)
 
 The ordinary user task entry now derives an immutable tool contract from the exact
 Owner instruction before reserving a task. This closes the observed gap where a
@@ -16,17 +16,29 @@ reason for ambiguous or unsupported clauses that the parser identifies.
 - Direct prohibitions such as `不点击、不输入`, `禁止点击、输入`, and `不要直接输入答案`.
 - A single explicit lookup sequence, for example `先只读查找手机上安装的时钟应用，再打开它`
   or `请先使用本机应用查找工具find_app搜索‘计算器’，再从查找结果打开计算器`.
+  It must identify the installed-application domain through an app/APP marker,
+  an installed-app qualifier, or the explicit `find_app` tool. Searching for
+  flights, goods or document content does not create an installed-app prerequisite.
+  Method recognition excludes quoted payload. A literal quoted app query remains
+  available from the corresponding original instruction span after the unquoted
+  method has been recognized.
 - A method clause such as `使用计算器按键计算…` prohibits the `type` tool, which
   replaces text. It leaves observed key clicks available; it never chooses a key
   or computes the expected answer on behalf of the model.
 
-The tool vocabulary is `find_app`, `open`, `click`, `type`, `scroll`, `back`,
+The tool vocabulary is `find_app`, `open`, `click`, `type`, `submit`, `scroll`, `back`,
 `home`, `wait`, and `done`, with the aliases in `TaskAuthorization.java`.
 Unknown items in an explicit tool allowlist, conflicting permission clauses,
 recognized double negatives, ambiguous quoted tool restrictions, and unsupported
 lookup ordering are refused before task reservation. Unconstrained ordinary
 instructions retain the existing tool set. The UI summary is not a claim that
 all other semantics in arbitrary prose have been parsed.
+
+`submit`, `提交输入`, and `提交` name a separate tool. `只输入` or `禁止提交`
+does not allow that tool. Its v38 executor is narrower still: only an actual
+focused editable node with an observed query-labelled ACTION_IME_ENTER is usable.
+Generic Enter, payment, order and send labels do not qualify. See
+`CODE38-IME-SUBMIT.md`; tool permission never infers business completion.
 
 The Clock regression instruction yields only `find_app`, `open`, and `done`, and
 the literal lookup query `时钟`. No Clock package is hardcoded. The broader
@@ -65,7 +77,7 @@ proof. Delayed type readback does not read the retired node.
 ## Evidence contract
 
 The fixed contract schema is `hepta.owner-task-authorization.v1`, parser
-`hepta.owner-tool-clauses.zh.v1`. It contains `instruction_sha256`,
+`hepta.owner-tool-clauses.zh.v3-ime-submit`. It contains `instruction_sha256`,
 `authorization_sha256`, sorted `allowed_tools`,
 `require_find_app_before_open`, `find_query`, `recognized_rules`, and the explicit
 `arbitrary_semantic_constraints_verified=false` boundary.
@@ -102,3 +114,10 @@ API image. Supplemental source/target-8 tests are explicitly labeled; they do no
 replace the complete JDK 17 release/API gate, Android build, or phone acceptance.
 The genuine local full-gate capability failure is retained. No task, model run or
 phone operation is performed by these host tests.
+
+`tests/TaskAuthorizationDomainHostTest.java` exercises 25 content/domain cases
+against the real production parser and its actual Gate frame. It is automatically
+included by the full host runner's `*HostTest.java` inventory. The former parser
+fails the flight-content regression. The v37 parser preserves the constrained
+Clock lookup, quoted application queries, existing tool prohibitions and rejection
+of unsupported explicit app-lookup order. See `CODE37-TASK-AUTHORIZATION.md`.

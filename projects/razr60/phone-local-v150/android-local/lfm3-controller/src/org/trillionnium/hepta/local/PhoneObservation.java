@@ -15,17 +15,31 @@ public final class PhoneObservation {
         public final String id, packageName, className, viewId, text, description;
         public final ObservedChildText.Result childText;
         public final ObservedScrollActions scrollActions;
+        public final ObservedImeEnter imeEnter;
+        public final String inputTextSha256;
+        public final boolean submitAvailable;
         public final Rect bounds;
         public final boolean clickable, editable, scrollable, enabled, focused, password;
         Node(String id, String packageName, String className, String viewId, String text,
              String description, Rect bounds, boolean clickable, boolean editable,
              boolean scrollable, boolean enabled, boolean focused, boolean password,ObservedChildText.Result childText,
              ObservedScrollActions scrollActions) {
+            this(id,packageName,className,viewId,text,description,bounds,clickable,editable,scrollable,enabled,focused,password,
+                    childText,scrollActions,ObservedImeEnter.UNKNOWN,null,false);
+        }
+        Node(String id, String packageName, String className, String viewId, String text,
+             String description, Rect bounds, boolean clickable, boolean editable,
+             boolean scrollable, boolean enabled, boolean focused, boolean password,ObservedChildText.Result childText,
+             ObservedScrollActions scrollActions,ObservedImeEnter imeEnter,String inputTextSha256,boolean submitAvailable) {
             this.id=id; this.packageName=packageName; this.className=className; this.viewId=viewId;
             this.text=text; this.description=description; this.bounds=new Rect(bounds);
             this.childText=childText;
             if(scrollActions==null)throw new IllegalArgumentException("observed scroll action state required");
             this.scrollActions=scrollActions;
+            if(imeEnter==null)throw new IllegalArgumentException("observed IME action state required");
+            if(submitAvailable&&(!editable||!focused||!enabled||password||!imeEnter.queryAllowed()||!ObservedImeEnter.isSha(inputTextSha256)))
+                throw new IllegalArgumentException("submit capability lacks observed field facts");
+            this.imeEnter=imeEnter;this.inputTextSha256=inputTextSha256;this.submitAvailable=submitAvailable;
             this.clickable=clickable; this.editable=editable; this.scrollable=scrollable;
             this.enabled=enabled; this.focused=focused; this.password=password;
         }
@@ -51,6 +65,8 @@ public final class PhoneObservation {
             if (scrollable) value.put("scrollable",true); // Platform isScrollable, not a direction grant.
             value.put("scroll_actions_observed",scrollActions.observed);
             value.put("scroll_directions",scrollActions.observed?new JSONArray(scrollActions.directions):JSONObject.NULL);
+            value.put("input_text_sha256",inputTextSha256==null?JSONObject.NULL:inputTextSha256);
+            value.put("ime_enter",new JSONObject(imeEnter.evidence())).put("submit_available",submitAvailable);
             if (!enabled) value.put("enabled",false);
             if (focused) value.put("focused",true);
             if (password) value.put("password",true);

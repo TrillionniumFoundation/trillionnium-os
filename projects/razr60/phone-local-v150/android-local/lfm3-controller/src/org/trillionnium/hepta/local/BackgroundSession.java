@@ -10,9 +10,11 @@ import android.os.SystemClock;
 import android.provider.Settings;
 import android.system.Os;
 import android.view.Display;
+import org.trillionnium.hepta.background.BrokerProtocol;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -24,6 +26,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -68,9 +72,12 @@ final class BackgroundSession {
     private volatile int displayId=-1;
     private volatile boolean retired,spawnAttempted,bootstrapDispatched,cleanupConfirmed;
     private volatile JSONObject lastResponse;
+    private volatile JSONObject appDisplayReadback;
     private Process brokerProcess;
     private volatile boolean brokerExitObserved;
     private volatile Integer brokerExitCode;
+    private BrokerOutput brokerOutput;
+    private Thread brokerOutputThread;
 
     BackgroundSession(Context context,String taskId,String owner,Selection selection,
                       QualificationScopeConfig.FilesRoot filesRoot)throws Exception{
@@ -96,6 +103,8 @@ final class BackgroundSession {
                 .put("bootstrap_dispatched",bootstrapDispatched).put("bootstrap_model_issued",false)
                 .put("broker_process_exit_observed",brokerExitObserved)
                 .put("broker_process_exit_code",brokerExitCode==null?JSONObject.NULL:brokerExitCode)
+                .put("broker_output",brokerOutput==null?JSONObject.NULL:brokerOutput.evidence())
+                .put("app_display_readback",appDisplayReadback==null?JSONObject.NULL:new JSONObject(appDisplayReadback.toString()))
                 .put("last_broker_response",lastResponse==null?JSONObject.NULL:new JSONObject(lastResponse.toString()));}
         catch(Exception failure){throw new IllegalStateException("后台会话凭据编码失败",failure);}
     }
@@ -107,6 +116,7 @@ final class BackgroundSession {
 
     /** Worker only. The durable lease precedes su and the first create request. */
     void start(HeptaAccessibilityService.Cancellation cancellation)throws Exception{
+        LocalProbeApplication.requirePermissionPreparationIdle(context);
         if(android.os.Looper.myLooper()==android.os.Looper.getMainLooper())throw new IllegalStateException("后台创建不得阻塞主线程");
         requireUnlocked();filesRoot.unchanged(context);
         MobiMindPrivateFiles.writeNew(journal,baseJournal().toString().getBytes(StandardCharsets.UTF_8));
@@ -118,13 +128,14 @@ final class BackgroundSession {
                 +" --socket "+quote(socketName)+" --owner-uid "+android.os.Process.myUid()
                 +" --generation "+quote(generation)+" --allowed-packages "+quote(packages)
                 +" --ttl-ms "+TTL_MS+" --expires-elapsed-ms "+expiresElapsed;
+        File taskRoot=MobiMindPrivateFiles.directory(new File(filesRoot.path,"control-tasks"),false);
+        File taskDirectory=MobiMindPrivateFiles.directory(new File(taskRoot,taskId),false);
+        LocalProbeApplication.requirePermissionPreparationIdle(context);
         brokerProcess=new ProcessBuilder("su","-c",command).redirectErrorStream(true).start();
         spawnAttempted=true;
-        final Process launched=brokerProcess;
-        Thread drain=new Thread(new Runnable(){public void run(){
-            try(InputStream input=launched.getInputStream()){byte[] bytes=new byte[1024];while(input.read(bytes)!=-1){/* Never expose root process output as model input. */}}
-            catch(IOException ignored){}
-        }},"hepta-background-broker-output");drain.setDaemon(true);drain.start();
+        brokerOutput=new BrokerOutput(brokerProcess,taskDirectory,taskId,generation,command);
+        brokerOutputThread=new Thread(brokerOutput,"hepta-background-broker-output");
+        brokerOutputThread.setDaemon(true);brokerOutputThread.start();
         long connectDeadline=Math.min(expiresElapsed,SystemClock.elapsedRealtime()+4500);
         Exception connectionFailure=null;
         while(SystemClock.elapsedRealtime()<connectDeadline){
@@ -145,16 +156,107 @@ final class BackgroundSession {
         if(pkg!=null&&!allows(pkg))throw new IllegalArgumentException("目标应用未在本次后台范围内");
         JSONObject response=call(operation,pkg,4000);accept(response,true);requireActive();return response;
     }
+    JSONObject fixedIntent(org.trillionnium.hepta.background.FixedIntentTarget target,String payload,String attemptId,HeptaAccessibilityService.Cancellation cancellation)throws Exception{
+        if(target==null||!org.trillionnium.hepta.background.FixedIntentTools.isTool(target.action))throw new IllegalArgumentException("fixed background tool required");
+        org.trillionnium.hepta.background.FixedIntentTools.forAction(target.action).validatePayload(payload);
+        if(attemptId==null||!attemptId.matches("[0-9a-f]{64}"))throw new IllegalArgumentException("durable attempt binding required");
+        requireActive();if(cancellation.isCancelled())throw new IllegalStateException("任务已停止");
+        if(!allows(target.packageName))throw new IllegalArgumentException("固定工具目标不在后台范围");
+        JSONObject request=new JSONObject().put("version",1).put("request_id",UUID.randomUUID().toString())
+                .put("generation",generation).put("deadline_elapsed_ms",SystemClock.elapsedRealtime()+4000).put("op",target.action)
+                .put("package",target.packageName).put("target_uid",target.uid).put("payload",payload).put("attempt_id",attemptId);
+        JSONObject response=exchange(socketName,generation,request,4500);
+        accept(response,true);requireActive();
+        if(!target.action.equals(response.getString("operation"))||!response.getBoolean("dispatched"))throw new IOException("固定工具回执未确认派发");
+        JSONObject proof=response.getJSONObject("fixed_intent"),installed=proof.getJSONObject("target");
+        if(!"hepta.background-fixed-intent.v1".equals(proof.getString("schema"))||!request.getString("request_id").equals(proof.getString("request_id"))
+                ||!generation.equals(proof.getString("generation"))||displayId()!=strictInt(proof,"display_id")
+                ||!target.action.equals(proof.getString("action"))||!attemptId.equals(proof.getString("attempt_id"))
+                ||!org.trillionnium.hepta.background.FixedIntentTarget.payloadSha256(payload).equals(proof.getString("payload_sha256"))
+                ||strictInt(installed,"target_uid")!=target.uid||!target.packageName.equals(installed.getString("package"))
+                ||!(target.packageName+"/"+target.className).equals(installed.getString("component"))
+                ||!target.action.equals(installed.getString("action"))||!target.appLabel.equals(installed.getString("app_label"))
+                ||!(target.permission==null?JSONObject.NULL.equals(installed.get("required_permission")):target.permission.equals(installed.get("required_permission")))
+                ||!installed.getBoolean("exported")||!installed.getBoolean("activity_enabled")||!installed.getBoolean("application_enabled")
+                ||!installed.getBoolean("declared_intent_filter_matched")||!installed.getBoolean("ordinary_caller_permission_checked")
+                ||strictInt(proof,"ordinary_caller_uid")!=android.os.Process.myUid()||!proof.getBoolean("attempt_consumed"))
+            throw new IOException("固定工具回执与本次动作/目标不匹配");
+        String mime=org.trillionnium.hepta.background.FixedIntentTools.forAction(target.action).mimeType;
+        if(!(mime==null?JSONObject.NULL.equals(proof.get("resolved_type")):mime.equals(proof.get("resolved_type"))))
+            throw new IOException("固定工具回执 MIME 不匹配");
+        return response;
+    }
     void verifyRemote()throws Exception{requireActive();accept(call("state",null,1800),true);requireActive();}
-    void requireActive(){
+    synchronized void requireActive(){
         if(retired||!"ACTIVE".equals(state)||displayId<=Display.DEFAULT_DISPLAY)
             throw new IllegalStateException("后台空间已退休或未完成创建；不会使用主屏幕");
         if(SystemClock.elapsedRealtime()>=expiresElapsed)throw new IllegalStateException("后台会话已到期");
         requireUnlocked();
+        try{appDisplayReadback=readAppDisplay(lastResponse,displayId);}
+        catch(Exception failure){throw new IllegalStateException("后台屏幕策略读回不一致："+HeptaAccessibilityService.message(failure),failure);}
+    }
+    /** The ordinary app uses only public Display getters; hidden constants stay in the broker. */
+    private JSONObject readAppDisplay(JSONObject response,int id)throws Exception{
+        appDisplayReadback=null; // A failed current read must not retain a prior successful readback as current evidence.
+        BrokerProtocol.DisplayPolicy policy=readBrokerPolicy(response,id);
+        long started=SystemClock.elapsedRealtime();
         DisplayManager manager=(DisplayManager)context.getSystemService(Context.DISPLAY_SERVICE);
-        Display display=manager==null?null:manager.getDisplay(displayId);
-        if(display==null||!displayName.equals(display.getName())||!display.isValid())
-            throw new IllegalStateException("后台屏幕身份已变化；不会使用主屏幕");
+        Display display=manager==null?null:manager.getDisplay(id);
+        if(display==null||display.getDisplayId()!=id||!displayName.equals(display.getName())||!display.isValid())
+            throw new IOException("后台屏幕身份已变化；不会使用主屏幕");
+        int actualFlags=display.getFlags();
+        boolean matched=actualFlags==policy.flags&&(actualFlags&policy.requiredMask)==policy.requiredMask
+                &&(actualFlags&policy.forbiddenMask)==0;
+        JSONObject readback=new JSONObject().put("schema","hepta.background-app-display-readback.v1")
+                .put("source","ordinary_app_public_display_readback").put("flags_source","android.view.Display.getFlags")
+                .put("task_id",taskId).put("generation",generation).put("display_id",id).put("display_name",displayName)
+                .put("app_uid",android.os.Process.myUid()).put("app_pid",android.os.Process.myPid()).put("boot_count",bootCount)
+                .put("broker_request_id",response.getString("request_id")).put("flags",actualFlags).put("valid",true)
+                .put("flags_match_broker",matched)
+                .put("observed_started_elapsed_ms",started).put("observed_ended_elapsed_ms",SystemClock.elapsedRealtime());
+        appDisplayReadback=readback; // Retain an actual mismatch for diagnosis; it cannot authorize an action.
+        if(!matched)throw new IOException("应用与后台服务的屏幕 flags 读回不一致");
+        return readback;
+    }
+    private BrokerProtocol.DisplayPolicy readBrokerPolicy(JSONObject response,int id)throws Exception{
+        if(response==null||id<=0||!Boolean.TRUE.equals(response.get("ok"))||!"ACTIVE".equals(response.getString("state"))
+                ||strictInt(response,"version")!=1||!isUuid(response.getString("request_id"))||!generation.equals(response.getString("generation"))
+                ||!java.util.Arrays.asList("create","state","launch","back","notes.create","web.search").contains(response.getString("operation"))
+                ||strictLong(response,"expires_elapsed_ms")!=expiresElapsed
+                ||id!=strictInt(response,"display_id")||!displayName.equals(response.getString("display_name")))
+            throw new IOException("后台策略回执身份不匹配");
+        JSONObject value=response.getJSONObject("display_policy_readback");
+        if(!BrokerProtocol.DisplayPolicy.SCHEMA.equals(value.getString("schema"))
+                ||!"broker_framework_readback".equals(value.getString("source"))
+                ||!"android.view.Display".equals(value.getString("flag_namespace"))
+                ||!"android.view.Display.getFlags".equals(value.getString("flags_source"))
+                ||!"android.view.IWindowManager.getDisplayImePolicy".equals(value.getString("ime_source"))
+                ||!"android.view.WindowManager.DISPLAY_IME_POLICY_HIDE".equals(value.getString("ime_hide_constant"))
+                ||!generation.equals(value.getString("generation"))||id!=strictInt(value,"display_id")
+                ||!displayName.equals(value.getString("display_name")))throw new IOException("后台策略读回来源或会话不匹配");
+        long begin=strictLong(value,"observed_started_elapsed_ms"),end=strictLong(value,"observed_ended_elapsed_ms");
+        if(begin<createdElapsed||end<begin||end>=expiresElapsed||end>SystemClock.elapsedRealtime())
+            throw new IOException("后台策略读回时间越界");
+        JSONObject constants=value.getJSONObject("flag_constants");
+        if(constants.length()!=BrokerProtocol.DisplayPolicy.REQUIRED.size()+BrokerProtocol.DisplayPolicy.FORBIDDEN.size())
+            throw new IOException("后台 Display 常量集合不完整");
+        Map<String,Integer> mapped=new LinkedHashMap<String,Integer>();
+        for(String name:BrokerProtocol.DisplayPolicy.REQUIRED)mapped.put(name,strictInt(constants,name));
+        for(String name:BrokerProtocol.DisplayPolicy.FORBIDDEN)mapped.put(name,strictInt(constants,name));
+        BrokerProtocol.DisplayPolicy checked=BrokerProtocol.DisplayPolicy.checked(strictInt(value,"flags"),mapped,
+                strictInt(value,"ime_actual"),strictInt(value,"ime_hide_value"));
+        if(checked.flags!=strictInt(response,"flags")||checked.requiredMask!=strictInt(value,"required_mask")
+                ||checked.forbiddenMask!=strictInt(value,"forbidden_mask"))throw new IOException("后台策略掩码或 flags 不匹配");
+        return checked;
+    }
+    private static long strictLong(JSONObject value,String key)throws Exception{
+        Object number=value.get(key);
+        if(!(number instanceof Integer)&&!(number instanceof Long))throw new IOException("后台策略数值类型错误："+key);
+        return ((Number)number).longValue();
+    }
+    private static int strictInt(JSONObject value,String key)throws Exception{
+        long number=strictLong(value,key);if(number<0||number>Integer.MAX_VALUE)throw new IOException("后台策略数值越界："+key);
+        return (int)number;
     }
     private void requireUnlocked(){KeyguardManager keyguard=(KeyguardManager)context.getSystemService(Context.KEYGUARD_SERVICE);
         if(keyguard==null||keyguard.isKeyguardLocked())throw new IllegalStateException("手机已锁定或锁屏状态未知，后台任务停止");}
@@ -162,7 +264,9 @@ final class BackgroundSession {
         String next=response.getString("state");int id=response.getInt("display_id");
         if(displayId>0&&id!=displayId)throw new IOException("后台屏幕标识发生变化");
         if("ACTIVE".equals(next)&&id<=0)throw new IOException("后台服务返回了主屏或无效屏幕");
+        JSONObject readback="ACTIVE".equals(next)?readAppDisplay(response,id):null;
         state=next;if(id>0)displayId=id;lastResponse=new JSONObject(response.toString());
+        if(readback!=null)appDisplayReadback=readback;
         if("RELEASED".equals(next)||"CLEANUP_UNKNOWN".equals(next)||"CLOSING".equals(next))retired=true;
         if(requireSuccess&&!response.getBoolean("ok"))throw new IOException("后台服务拒绝："+response.optString("error","operation_failed")
                 +" "+response.optString("message",""));
@@ -182,9 +286,10 @@ final class BackgroundSession {
         byte[] bytes=request.toString().getBytes(StandardCharsets.UTF_8);
         if(bytes.length<1||bytes.length>REQUEST_LIMIT)throw new IOException("后台请求长度越界");
         try(LocalSocket socket=new LocalSocket()){
-            socket.setSoTimeout(timeout);
             try{socket.connect(new LocalSocketAddress(name,LocalSocketAddress.Namespace.ABSTRACT));}
             catch(IOException unavailable){throw new ConnectionUnavailable(unavailable);}
+            // Android creates the socket FD during connect; setSoTimeout before it throws.
+            socket.setSoTimeout(timeout);
             Credentials peer=socket.getPeerCredentials();
             if(peer==null||(peer.getUid()!=0&&peer.getUid()!=2000))throw new IOException("后台服务身份不是 shell/root");
             DataOutputStream output=new DataOutputStream(socket.getOutputStream());output.writeInt(bytes.length);output.write(bytes);output.flush();
@@ -236,9 +341,71 @@ final class BackgroundSession {
             catch(InterruptedException interrupted){Thread.currentThread().interrupt();}
             if(!known&&!brokerExitObserved)brokerProcess.destroy(); // Never counts as release evidence.
         }
+        if(brokerOutput!=null){
+            try{if(brokerOutputThread!=null)brokerOutputThread.join(200);}
+            catch(InterruptedException interrupted){Thread.currentThread().interrupt();}
+            brokerOutput.persist("session_close_snapshot");
+        }
         cleanupConfirmed=known;
         try{return new Cleanup(known,evidence().put("cleanup_known",known).put("cleanup_error",error==null?JSONObject.NULL:error));}
         catch(Exception impossible){throw new IllegalStateException(impossible);}
+    }
+    /** Diagnostic bytes only. A log, EOF, exit, or reported RELEASED never grants lease cleanup. */
+    private static final class BrokerOutput implements Runnable {
+        private static final int LIMIT=65536;
+        private final Process process;
+        private final File directory;
+        private final String task,generation,commandSha,name;
+        private final long started=SystemClock.elapsedRealtime();
+        private final ByteArrayOutputStream bytes=new ByteArrayOutputStream();
+        private long count;
+        private boolean eof,readFailed;
+        private JSONObject captured;
+        BrokerOutput(Process process,File directory,String task,String generation,String command){
+            this.process=process;this.directory=directory;this.task=task;this.generation=generation;
+            commandSha=HeptaAccessibilityService.sha(command.getBytes(StandardCharsets.UTF_8));
+            name="background-broker-"+generation;
+        }
+        public void run(){
+            try(InputStream input=process.getInputStream()){
+                byte[] buffer=new byte[1024];int n;
+                while((n=input.read(buffer))!=-1){synchronized(this){
+                    count+=n;int keep=Math.min(n,LIMIT-bytes.size());
+                    if(keep>0)bytes.write(buffer,0,keep);
+                }}
+                synchronized(this){eof=true;}
+            }catch(IOException failure){synchronized(this){readFailed=true;}}
+            finally{persist("stream_terminal");}
+        }
+        private JSONObject snapshot(byte[] kept)throws Exception{return new JSONObject()
+                .put("schema","hepta.background-broker-output.v1").put("task_id",task).put("generation",generation)
+                .put("app_uid",android.os.Process.myUid()).put("app_pid",android.os.Process.myPid())
+                .put("process_binding","owned_java_process_merged_stream").put("process_reference",System.identityHashCode(process))
+                .put("command_sha256",commandSha).put("started_elapsed_ms",started)
+                .put("output_file",name+".bin").put("receipt_file",name+".json")
+                .put("output_limit_bytes",LIMIT).put("observed_bytes",count).put("stored_bytes",kept.length)
+                .put("stored_sha256",HeptaAccessibilityService.sha(kept)).put("overflow",count>LIMIT)
+                .put("eof_seen",eof).put("read_failed",readFailed)
+                .put("merged_stdout_stderr",true).put("model_input",false).put("release_evidence",false);}
+        synchronized void persist(String reason){
+            if(captured!=null)return;
+            byte[] kept=bytes.toByteArray();JSONObject value;
+            try{value=snapshot(kept).put("capture_reason",reason).put("persisted",false);}
+            catch(Exception impossible){throw new IllegalStateException(impossible);}
+            try{
+                MobiMindPrivateFiles.directory(directory,false);
+                MobiMindPrivateFiles.writeNew(new File(directory,name+".bin"),kept);
+                value.put("persisted",true);
+                MobiMindPrivateFiles.writeNew(new File(directory,name+".json"),value.toString().getBytes(StandardCharsets.UTF_8));
+            }catch(Exception failure){
+                try{value.put("persisted",false).put("persistence_error",failure.getClass().getSimpleName());}
+                catch(Exception impossible){throw new IllegalStateException(impossible);}
+            }
+            captured=value;
+        }
+        synchronized JSONObject evidence()throws Exception{
+            return captured==null?snapshot(bytes.toByteArray()).put("persisted",false):new JSONObject(captured.toString());
+        }
     }
     private void deleteJournal()throws Exception{
         filesRoot.unchanged(context);JSONObject prior=readJournal(journal);

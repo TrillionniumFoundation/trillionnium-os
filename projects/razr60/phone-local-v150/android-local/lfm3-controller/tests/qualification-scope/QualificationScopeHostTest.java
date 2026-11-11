@@ -152,12 +152,12 @@ public final class QualificationScopeHostTest {
         }});
         for(String changed:new String[]{QualificationScope.FILE_NAME,"model/runtime-config.json"})test("controller_rechecks_"+changed+"_after_blocking_close",()->{try(Env e=new Env(true)){
             e.closeMutation=()->write(e.dir.resolve(changed),bytes("{}"),0600);LocalTaskController.TaskResult r=e.controller("done",SETTINGS,null);
-            check("failed".equals(r.status)&&!r.modelReportedSuccess&&r.cleanupKnown&&r.steps==1,"post-close mutation must downgrade done");
+            check("failed".equals(r.status)&&r.modelReportedSuccess&&!r.completionVerified&&r.cleanupKnown&&r.steps==2,"post-close mutation must fail while preserving the raw unverified model claim");
             JSONObject value=new JSONObject(new String(Files.readAllBytes(r.evidenceDirectory.toPath().resolve("result.json")),StandardCharsets.UTF_8));
             check(value.getJSONObject("qualification_scope").getBoolean("scope_refused"),"post-close refusal recorded");
         }});
         test("controller_valid_done_retains_expected_actual_and_scope_receipt",()->{try(Env e=new Env(true)){
-            LocalTaskController.TaskResult r=e.controller("done",SETTINGS,null);check("model_reported_done".equals(r.status)&&r.modelReportedSuccess&&r.cleanupKnown&&e.service.effects()==0,"valid done control");check(e.scopeSha.equals(r.expectedScopeSha256)&&e.scopeSha.equals(r.actualScopeSha256),"result object identity");
+            LocalTaskController.TaskResult r=e.controller("done",SETTINGS,null);check("partial".equals(r.status)&&r.modelReportedSuccess&&!r.completionVerified&&r.steps==2&&r.cleanupKnown&&e.service.effects()==0,"authorized done preserves scope without manufacturing goal proof");check(e.scopeSha.equals(r.expectedScopeSha256)&&e.scopeSha.equals(r.actualScopeSha256),"result object identity");
         }});
     }
     static void apkSplitCases()throws Exception{
@@ -178,7 +178,7 @@ public final class QualificationScopeHostTest {
                 }
                 bound.verifyUnchanged();
                 LocalTaskController.TaskResult result=e.controller("done",SETTINGS,null);
-                check("model_reported_done".equals(result.status)&&result.steps==1&&result.cleanupKnown,"base-only controller must reach one synthetic model step: "+result.summary);
+                check("partial".equals(result.status)&&result.steps==2&&result.modelReportedSuccess&&!result.completionVerified&&result.cleanupKnown,"base-only controller must reach bounded unverified model completion: "+result.summary);
             }});
         }
         test("installed_nonempty_split_pairs_hash_and_revalidation",()->{try(Env e=new Env(true)){
@@ -222,7 +222,7 @@ public final class QualificationScopeHostTest {
             check(bound.scopePath.equals(e.dir.resolve(QualificationScope.FILE_NAME).toFile()),"scope must retain canonical root plus unchanged child");
             check(bound.runtimeFile.path.equals(e.dir.resolve("model/runtime-config.json").toFile()),"runtime must share captured canonical root");
             LocalTaskController.TaskResult r=e.controller("done",SETTINGS,null);
-            check("model_reported_done".equals(r.status)&&r.modelReportedSuccess&&r.cleanupKnown&&r.steps==1,"scoped controller must reach one synthetic model step: "+r.summary);
+            check("partial".equals(r.status)&&r.modelReportedSuccess&&!r.completionVerified&&r.cleanupKnown&&r.steps==2,"scoped controller must reach bounded unverified model completion: "+r.summary);
             check(e.scopeSha.equals(r.expectedScopeSha256)&&e.scopeSha.equals(r.actualScopeSha256)&&e.service.effects()==0,"scope identity and zero UI effects");
             Path evidence=r.evidenceDirectory.toPath();
             check(Arrays.equals(e.config,Files.readAllBytes(evidence.resolve("qualification-scope.json"))),"scope evidence exact bytes");
@@ -282,12 +282,17 @@ public final class QualificationScopeHostTest {
         test("sticky_refusal_no_done_home_back_rescue",()->{try(Env e=new Env(true)){e.bind(e.scopeSha);e.zeroDenied(e.run("open",FOREIGN[1]));for(String a:new String[]{"home","back","done"})e.zeroDenied(e.run(a,SETTINGS));}});
         test("scope_bound_once_lease_cannot_downgrade",()->{try(Env e=new Env(true)){e.bind(e.scopeSha);rejects(()->e.service.bindQualificationScope(e.task,e.bound));}});
         for(String action:new String[]{"click","type","scroll","back","home","open"})test("allowed_actual_dispatch_"+action,()->{try(Env e=new Env(true)){e.bind(e.scopeSha);HeptaAccessibilityService.ActionOutcome r=e.run(action,"open".equals(action)?CALC:SETTINGS);check(r.accepted&&r.dispatched&&e.service.effects()==1,"allowed one actual fake effect");}});
+        test("permission_preparation_blocks_direct_controller_before_task_lease",()->{try(Env e=new Env(false)){
+            CountingModel model=new CountingModel(e,"wait",SETTINGS,null);e.controller=new LocalTaskController(e.service,model);LocalProbeApplication.permissionBusy=true;
+            try{boolean refused=false;try{e.controller.start("打开设置",new LocalTaskController.Listener(){public void onState(String value){}public void onFinished(LocalTaskController.TaskResult value){}});}catch(IllegalStateException expected){refused=true;}check(refused&&!e.controller.isRunning()&&model.calls==0&&e.service.effects()==0,"no controller, model, display or app effect");}
+            finally{LocalProbeApplication.permissionBusy=false;}
+        }});
         test("unrestricted_absent_scope_preserves_foreign_open",()->{try(Env e=new Env(false)){e.bind(null);e.bound.requireReady();HeptaAccessibilityService.ActionOutcome r=e.run("open",FOREIGN[2]);check(r.dispatched&&e.service.opens==1&&!e.bound.restricted(),"daily behavior preserved");}});
         test("scope_added_during_unrestricted_task_ends_old_mode",()->{try(Env e=new Env(false)){e.bind(null);e.writeConfig();e.zeroDenied(e.run("open",FOREIGN[2]));}});
         test("launch_owner_edit_reuse_and_restoration_do_not_weaken",()->{
             QualificationScope.Launch original=QualificationScope.Launch.prefill("原任务",H);check(H.equals(original.claim("原任务")),"bound owner");rejects(()->original.claim("已修改"));QualificationScope.Launch consumed=original.accepted();rejects(()->consumed.claim("原任务"));
             QualificationScope.Launch restored=QualificationScope.Launch.restore(consumed.expectedSha256,consumed.ownerSha256,consumed.consumed);rejects(()->restored.claim("原任务"));check(H.equals(original.claim("原任务")),"immutable prior task claim");check(QualificationScope.Launch.normal().claim("新任务")==null,"new normal UI");});
-        lifecycleCases();uiCases();productionControllerCases();
+        lifecycleCases();uiCases();productionControllerCases();BackgroundFreshnessHostTest.run();
         writeResult();
     }
     private static void writeResult()throws Exception{
@@ -352,7 +357,7 @@ public final class QualificationScopeHostTest {
             // terminal session write, rather than racing controller.running=false.
             while(System.currentTimeMillis()<end){
                 try{JSONObject candidate=new JSONObject(new String(Files.readAllBytes(e.dir.resolve("control-session.json")),StandardCharsets.UTF_8));
-                    if(tasks.lastResult!=null&&"model_reported_done".equals(candidate.getString("status"))){session=candidate;break;}}
+                    if(tasks.lastResult!=null&&"partial".equals(candidate.getString("status"))){session=candidate;break;}}
                 catch(Exception transientWrite){/* host AtomicFile fixture can expose an in-progress write */}
                 Thread.sleep(1);
             }

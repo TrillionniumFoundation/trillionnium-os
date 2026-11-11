@@ -22,7 +22,7 @@ def plan():
             "setup_home": True, "timeout_seconds": 540}
     return {"schema": s.SCHEMA, "suite_id": "navigation-r3", "candidate": {
         "package": a.PACKAGE, "apk_sha256": "1"*64, "version_code": 3, "model_sha256": a.MODEL_SHA256,
-        "compute": "npu", "context_tokens": 4096, "threads": 4}, "cases": [case]}
+        "compute": "npu", "context_tokens": 8192, "threads": 4}, "cases": [case]}
 
 
 class FakeAdb:
@@ -101,10 +101,17 @@ class SuiteTests(unittest.TestCase):
 
     def test_preflight_matches_actual_apk_and_default_config(self):
         r = s.preflight(FakeAdb(), plan()["candidate"])
+        self.assertEqual(r["config_origin"], "fixed_application_default")
+        self.assertEqual(r["runtime_config"]["context_tokens"], 8192)
         self.assertFalse(r["device_offline_proven"])
         self.assertFalse(r["inference_has_run"])
         self.assertFalse(r["interrupted_session_latch_present"])
         self.assertTrue(all(c[0] in ("pm", "sha256sum", "dumpsys", "read", "run-as") for c in FakeAdb.calls))
+        p = plan(); p["candidate"]["context_tokens"] = 4096
+        FakeAdb.config = {"schema": "hepta.local-runtime.v1", "compute": "npu", "context_tokens": 4096, "threads": 4}
+        configured = s.preflight(FakeAdb(), p["candidate"])
+        self.assertEqual(configured["config_origin"], "app_private_config")
+        self.assertEqual(configured["runtime_config"], FakeAdb.config)
 
     def test_preflight_rejects_changed_binary(self):
         FakeAdb.wrong_sha = True
@@ -118,9 +125,11 @@ class SuiteTests(unittest.TestCase):
         FakeAdb.active = True
         with self.assertRaises(a.DriverError): s.preflight(FakeAdb(), plan()["candidate"])
 
-    def test_preflight_does_not_change_compute(self):
-        p = plan(); p["candidate"]["compute"] = "gpu"
-        with self.assertRaises(a.DriverError): s.preflight(FakeAdb(), p["candidate"])
+    def test_preflight_does_not_change_runtime_config(self):
+        for field, value in (("compute", "gpu"), ("context_tokens", 4096)):
+            p = plan(); p["candidate"][field] = value
+            with self.subTest(field=field), self.assertRaisesRegex(a.DriverError, "actual on-phone configuration differs"):
+                s.preflight(FakeAdb(), p["candidate"])
         self.assertFalse(any("write" in c for c in FakeAdb.calls))
 
     def test_preflight_blocks_interrupted_latch_despite_clean_session(self):
