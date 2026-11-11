@@ -1,6 +1,45 @@
-# Hepta v51: complete authorized note creation with an observed tool workflow
+# Hepta v52: remember explicit background UI choices
 
-Current candidate: versionCode 51 (`0.51.0-local-notes-workflow`), based on frozen
+Current candidate: versionCode 52 (`0.52.0-local-background-preferences`), based on
+frozen v51 commit `ed98f11db804f191a65254c378b195b1fb5f13be`.
+
+The normal Hepta launcher now remembers the user's explicit background-mode
+choice, selected application range and initial application in private preferences.
+Reopening the screen restores those UI choices without starting or resuming a
+task. Each selected package is rechecked against its current installed UID,
+current signing certificates and launcher availability. Missing applications or
+changed identities remain visible as an invalid saved selection: background
+Start stays unavailable until the user explicitly selects the range again.
+The controller does not silently change to foreground mode or discard a missing
+package. A new task still performs its original full installed-APK, OWNER,
+authorization and display-lease checks; saved UI preferences grant no authority.
+
+Production changes are limited to MainActivity, a new BackgroundUiPreferences
+helper and version metadata. The pre-existing foreground scope host fixture adds
+a throwing interface stub for the new background-choice check; no permission or
+UI preference is simulated by that stub. This release note records the change. The launcher label remains **Hepta**, package
+`org.trillionnium.hepta.local`, and accessibility label **Hepta 本地操作**. This is
+an update of the same application, not an additional launcher package. Existing
+Start, Stop, recovery, cleanup, Notes parsing/workflow, task completion, native
+runtime and model profiles are unchanged. No new permission, network client,
+WEB provider or helper integration is included in this v52 artifact.
+
+The Notes recognizer retains v51's bounded, completely consumed patterns. It
+accepts short unquoted forms such as “明天下午三点看牙记一下” and colon-prefixed
+“帮我记一下：明天下午三点看牙”, as well as explicitly quoted bodies containing
+commas. It does not yet accept arbitrary comma-separated natural instructions;
+for example “帮我记一下，明天下午三点看牙，带检查资料” is outside the current
+recognizer. Bodies remain exact single-line OWNER spans of at most 94 UTF-16
+units, with no marker insertion or date rewriting. Broader natural-note parsing
+and controlled WEB support belong to later candidates.
+
+Host regression results, Android compilation, same-signer installation and real
+cold-reopen/selection/Notes behavior each require their own actual receipts.
+This source note does not claim those validation stages have passed.
+
+## v51 predecessor: complete authorized note creation with an observed tool workflow
+
+The v51 predecessor is versionCode 51 (`0.51.0-local-notes-workflow`), based on frozen
 v50 commit `9ecf87f313ef08cfd2f963671a19eb2358cebbfe`.
 
 For an already recognized new-note/save/list/reopen request, the actual
