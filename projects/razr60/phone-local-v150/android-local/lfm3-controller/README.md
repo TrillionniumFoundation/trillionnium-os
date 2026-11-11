@@ -22,6 +22,15 @@ outside this change. Compilation and host fixtures cannot establish physical
 phone responsiveness, background coexistence or business completion. Retained
 failed tasks remain failed. See [responsive observation contract](docs/RESPONSIVE-OBSERVATION.md).
 
+The accompanying Python acceptance tools now verify the production v6 fixed-intent
+grammar, its separate target-label domain and complete one-use consumption
+journals. Launch acceptance remains separate from saved-note or search-result
+verification. The final r2 host gate has 100 successful stages, 367 unchanged
+source inputs and 289 Python-tool tests. These Python changes do not alter the
+182 Android inputs frozen at `b4ff6d2c0b09208d341cacf8fc1cac18489c9cfd`.
+See [physical-phone acceptance scope](docs/PHONE-ACCEPTANCE-V51.md) and the
+[retained evidence](provenance/v51-responsive-observation-20261111/README.md).
+
 ## v50 predecessor: bind success choices to current proof and expose collection limits
 
 The v50 predecessor is versionCode 50 (`0.50.0-local-observation`), based on frozen
