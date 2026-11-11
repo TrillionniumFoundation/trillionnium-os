@@ -1,0 +1,390 @@
+{
+  "schema": "hepta.task-completion-host.v1",
+  "source_inputs": {
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/NotesTaskPhaseGuard.java": "cc9d0d0289a2df3aa8d96cd4fc66d88c56ec8c9361a55945f327e4a2ab515b66",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/TaskCompletionGate.java": "69988929e340ef31d26867bd3ad7e733fa5200f5aab4c1ac680148d968ef1577",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/CalculatorCompletionEvidence.java": "49abcafc94bb8a8aba818dd760558944d7ae15c6388fd834aca8671527dc3b73",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/NotesCompletionEvidence.java": "1ce2e8dfc588ae51545f88a0eccb2002cfd91f647db0225fd95398ff04157f7d",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/FixedIntentAttemptGuard.java": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/LastModelDecisionProjection.java": "e735d83030e480e4426d93a6f8a0bc6a0716142f18be4c60dc777a043f287c63",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/TaskAuthorization.java": "95ca76c558adefe876059fb8ad580d0b7e16f89558ba320be87f6c8a51996b67",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ActionDecision.java": "4f6556a78da9b0673e66b98338c2fec754aa47549baaab7aea153174fb5ce13f",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ActionPolicy.java": "9ccae423f9679b9e49635e67afabecd9df016dd70ca88853601901029e00f2f2",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservedTargetLabels.java": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservedScrollActions.java": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservedImeEnter.java": "e449d61e928dca5a72730b5394fa8f95a7db4dd4006440a95f839818e165acf1",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/SubmitAttemptGuard.java": "a6fd24ca70899afb80e00a8b13132d71348240ed0c193739861333ddc7a01c71",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/RecentActionProjection.java": "100b8c9b036e9b2032f2a05ba0fffddaf50507d9752619d01c28858f6729d678",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/PersistentActionPolicy.java": "0e498e9d58792be305b334bb12dc8d1f060e005c90555e04aa09b8f860f82db0",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ImeVisibility.java": "4e7fdaf10d6d502e77642fb043296e8da5d94fbfc78d884826f60dafed8f6e36",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservationState.java": "a2a664a3567995de8665e66d7667cfc089277fdd16175aa9dab837f7919dd257",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservedWindowMetadata.java": "73948e97e6a164ef27753ba0536d0cfadac2ee670179aa2e5b4bb2af0e9e66c5",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservedChildText.java": "56433b62f9c4c895edac441160fcdc4aaee7365586daa4b86863448dc4dd54d5",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/RepeatActionGuard.java": "aa827865a773217eafda71046420cbaf704787b1280b3dcf0cd1af78649b2dbc",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/SameStateNoEffectGuard.java": "c4de5fc3d60876eeeba8f11801e47d99965e943962d0e203d8404268dd7ddeb1",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/DecisionGrammar.java": "45827b221c65a10ff6644bc56dd118576bbcee9e1e5afbb8c864881cf134eec2",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ModelProfile.java": "8ef4facf78773e58b479552ed8c47403847c18eb7970089e043f34c6ff620ef3",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/LocalRuntimeConfig.java": "81447620dbc2a789bba8c22d561c768144f4d5619859b202d07cd83660a05dce",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ConservativeTokenBudget.java": "e4aa0a5e36c3676b0b2ee9912f5aaaa036ce7088a83645715800766f762cee14",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/AppCatalogueRanker.java": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservedTextProjection.java": "6fa92103e2984452a0ea16f1fb87187b0bea66c58e87a54f81399284ad5fff50",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservedTransitionProjection.java": "a1f0cb19c3d461dadff7675819cdd551dcdb4e42a5a053417388aa52608010c3",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/CompactTaskHistory.java": "ba814f46710b1d155d107482fd1646e740fb35b0625b5b5dd2c3cf670c43a40d",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/PromptActionDomain.java": "7fc0549f7fccf5516386b6b5c0f2dac1fcaf7b3effa419cb3c88b594fe49d688",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/RecoveryQuiescence.java": "590d91f50b19eed66d9ddec16592a44dd75132babfd72e37656a4d272ca177f0",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/RecoveryJournalTransaction.java": "5580e9a449b38d5b06c7a2e5a0cb454a1dfec949eefc94622e65000593347660",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/QualificationScope.java": "1879d69f1f344e3f4f7d2f8afd12a78a2747ca183d8895ac9e5e2b6f4f0e3a5d",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/QualificationScopeConfig.java": "b8f302dcf05384ff153aad6b255d405ad5da99f4295eda0fa8566b23b7606af0",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java": "27e1e87e94b74e7c15b88de9e804748537b1f33bc65bb3816b09c5b00110de22",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/LocalTaskController.java": "8aff4879438e19bf6f78321eda12f03a4cb9aa4fa2eff8b8c3388a269c2a4270",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/LocalInference.java": "1f4e40a7d74f392c92e7076cc9abc369b59a1f24507addc1b3111c208a0d70b3",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/PhoneObservation.java": "655aa1ba2016479f4624828ec033ad370841b6ffe6c2951d39ffe479e9b3dd8b",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservedAppLabels.java": "0276171bb8aaebee880a6d36fea5cbfdb157b09d2728a07148e4ce85d5ffbb9e",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/background/FixedIntentTools.java": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/background/FixedIntentTarget.java": "f5f3936a8185185cf5f036a74665ee6edfbd5c1f617299dd9cd6edd4bf7b23e2",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/background/FixedIntentDispatch.java": "5a441f84cdda25b3a50901d4bd9abbcc406eb15e4317df083c24cbee733cc7a4",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/background/BrokerProtocol.java": "34c282a961d7209028c337f4b97401b92711a5c86e07bde9c82c0f9ab372c93e",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/fixture/BackgroundObservationFixture.java": "98a21dfe5a27504d0324dd7b5af8060463c28c8f4042eeebcfd0f017bca319d9",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/fixture/HeptaAccessibilityService.java": "a41f974d802d30a62afa6e63374c750f46a877e9c469a2d1dd240c8e1800ac18",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/fixture/LocalTaskSession.java": "12b913129056ff86651287803c1e1d5bc6567923681a57ae87873ca3d74d4dd0",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/fixture/ScopeUiFixture.java": "1e3a03097093f7f4a9319dae08e47040428c75a3c3b3ddc083cd8f8287cc4479",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/app/Activity.java": "3078cddd818699488bb30a0da62a9190372a2862694893ac6265fb711b43face",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/ComponentName.java": "9260a59ec2cf461b461090d25f603bdd836d737d3c1cb999ec779c2a7605af66",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/Context.java": "9566fdf96b9d71c0f51f215aae97b2bbcc8ab9979430192b0fb2ece484d12c31",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/Intent.java": "f9fa230debe434e655bd15f043548376db7782d55000d282466767e1621aa1fe",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/pm/ActivityInfo.java": "e389e3dd9949478bbe4fa340ae32279b5a939af93f2e7e209f7933c0c38a87cc",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/pm/ApplicationInfo.java": "0aea7ad33689355df5adc080a7e10149889028b66c3260278be85f5390f7e44a",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/pm/PackageInfo.java": "4206abab1110623c41271bed6e6eae04ff1ea800977f2d649f890d26550333f7",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/pm/PackageManager.java": "f68315f3805165e71e456eb870ae21318edee695d743e6a369be84aaa7d17a65",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/pm/ResolveInfo.java": "29f512b9e365852b2f45c1b8be6b46dead33e7f02da8807d5082a6a4914a9fe7",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/res/AssetManager.java": "8b89b0d554e0b59f5fbdd8c179b836642f97ea50829dcfc34113e84439662909",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/graphics/Rect.java": "6d3a2cbd8addc45df561f48779486fd31a3f3ef10a3d7ae22b686783e06bb6be",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/os/Bundle.java": "b2991bd300de208fda2eea0d3e271a4eb349aa803cba475a1a7907a932d10673",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/os/Handler.java": "236f0b1729f0a0e819bd1d58d4f5324813da20bc66d13a849d92ca63a9c8157c",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/os/Looper.java": "4482d82f17e7b24ee8d624d1ac443b7b1312a02bd939d17889b9b47e8c2a56e9",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/os/SystemClock.java": "0599b8e9b6b7672fdfd3b142f191dcdbcc8b45f5ba5abe45115258ccf86c0f82",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/system/ErrnoException.java": "82862a73196a107b7dc457f853c0462b93d6d158429779a69fe22ccc3fe12ee6",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/system/OsConstants.java": "5bcaf8b3285e9f21b3521db7e624b03f30b77a8b4be5245f6364c6e5641246de",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/system/StructStat.java": "7bda01d378b4343f2afdd150647db95fb5f0f70c0a249c64742780e85e0c6fa5",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/util/AtomicFile.java": "518b9081da78cc0a64921cc7eb719fa6e2316cf1979dea31a20ca78a6deb90b1",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/view/Display.java": "797c98ecd9819d6815d4e4bc36c8f15a6a0717f2af00b14f5d126d20f7374dfc",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/view/accessibility/AccessibilityNodeInfo.java": "dc4980df4cbd400cfabd34f2860fd9d474f60fa19a5ed4d9dd519b39a510a8f4",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/view/accessibility/AccessibilityWindowInfo.java": "ae2a2aef58c1b7a3473f340f6834d3c0b79f5c9c611e8d3c99d4b6a6b7c233ef",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/view/inputmethod/InputMethodManager.java": "71af0b48e066b63e32f1d1fc3664cc129f2c48e6fba05765500cdd6e08c6aaa9",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/org/json/FixtureJson.java": "2a6ccd4425c29366cfcb0b147e6d2580118cf68260ba52e22a4b60d63f27d38b",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/org/json/JSONArray.java": "ad6d26d77bbe345e88e226d9ce41c33d7fa97e7758ad0e428209dd9746f6fe75",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/org/json/JSONException.java": "0970084f500c6be873496ca16394e90d0c15f9866da256736925263dae1f1f0a",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/org/json/JSONObject.java": "11f5ec289e22cd69b740cdd1725a4f6170749571ce5fede476e64b57af026e5f",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/org/trillionnium/hepta/local/BackgroundSession.java": "e77690ddfac7e34c9c70e0134740d5581bf6afc7c1cbe194fbf16a997a8117ee",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/org/trillionnium/hepta/local/LocalModelEngine.java": "79f117b06dbeef4baef7e5ad1c6f8d5d3fb9e8743f196b73770741508ebeda38",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/org/trillionnium/hepta/local/LocalProbeApplication.java": "c166191abe27bb2fbb7f17468a1d0b0aba692033ac6d9e150bb244287f171b6c",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/org/trillionnium/hepta/local/PrivateDebugTask.java": "a50e1bf377d1ae6016db5ad4aa81ef813c8f43d6779b35edfd06514642ee58ea",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/QualificationScopeHostTest.java": "eb125669bdfe6bb2a5193fd3862efd2d05d5a2cd8ad26c6a13ebe7b4505c9c93",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/BackgroundFreshnessHostTest.java": "433d4b246448eab0758c53b1a3ceb42cae03efa6c97a277d382a34f7c6b424db",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/uid-io/Process.java": "b0e07f58fc1cda9c818853573373922de5ef373b0a34e3b2b8c7fd1926c08b15",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/uid-io/Os.java": "de6dc4cf129a2ac9345749addd4141ba91fbf24bb93b5bd328e376fa34982900",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/fixed-intent-tools/FixedIntentIntegrationHostTest.java": "fb38bef1b3622619fb46bc60f50a6befb803656ef251d167d0fe66e591fd0543",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/completion/TaskCompletionGateHostTest.java": "eaec7403526371247191b1e2bd950e949dbe1d66e66d972bc53af72155320ca0",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/completion/CalculatorCompletionHostTest.java": "57aac594e1e1fc5ca78a603a09b9123f77ff669dbc124d5b1715860d1f9c9844",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/NotesTaskPhaseHostTest.java": "5c50c515ea40edb22a367b9d2c028c8b013b5a497b92c5bbcfe5efef1c21c302",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/NotesListProvenanceHostTest.java": "4bb6e1c6e79fbb9e2214521c15ad45be16e1e6b4310825650fdd7e074c954101",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/NotesRecoveryHostTest.java": "f3a2782069f0e3ce83d7a1190c61255cd776a4a85b461c6a3006838ee9f5afb3",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/fixtures/v45-notes-trace.json": "963f320837ff09709ce10416bcd974d61a94b33d79bcf18b72ae6635becf5696",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/test_phase_grammar.py": "849a1017c0407f1597c0f21d0d172f83c366d81c9e97e881e8f4cb82d37b4a28",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/fixtures/manual-notes-list.xml": "56b5f62e246a9945c1c4c0e9eea1273eb44152014d3d272cd8769776185cb7db",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/run_recovery_test.py": "425e3dd66eefb08de74cbe3378ed8e5f15dfbe1543c1648d79550ab12a12d40a",
+    "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/fixtures/v46-notes-recovery-pins.json": "0b94d793b78708968b8754bc6d9d6822ef5aa3c05bf441eb58009365877cf7fc"
+  },
+  "extraction": {
+    "schema": "hepta.scope-host-extraction.v1",
+    "source_files": {
+      "TaskAuthorization.java": "95ca76c558adefe876059fb8ad580d0b7e16f89558ba320be87f6c8a51996b67",
+      "HeptaAccessibilityService.java": "589673768fa3ae6380c5b37fc49930211bd967aa86e80c676bd66d840d0cd65d",
+      "LocalTaskSession.java": "395c33da730d6605dbf729c497a096b9f7f18a6980ef60c9fef4487a8d90b07e",
+      "MainActivity.java": "1380c7cceb742913373c63c8f695dcb30093db9c5c56edd5839f0fc601216f50",
+      "LocalTaskController.java": "8aff4879438e19bf6f78321eda12f03a4cb9aa4fa2eff8b8c3388a269c2a4270",
+      "QualificationScope.java": "1879d69f1f344e3f4f7d2f8afd12a78a2747ca183d8895ac9e5e2b6f4f0e3a5d",
+      "QualificationScopeConfig.java": "b8f302dcf05384ff153aad6b255d405ad5da99f4295eda0fa8566b23b7606af0"
+    },
+    "extracted": {
+      "service_interfaces_outcome": {
+        "bytes": 2980,
+        "sha256": "516331db0b4f5962434bc4191b7c67b21fb152d11330d57700fa5af44e596a9c"
+      },
+      "background_binding": {
+        "bytes": 2050,
+        "sha256": "d87f43430644cb298121ac42a9f5b92dda1da27707b713a2f6e676dff47f5dc3"
+      },
+      "app_catalogue": {
+        "bytes": 1212,
+        "sha256": "104c556f6ba3c9c5caa9f8b1fc9a512eba3d0a3a842c0b935d9191082fbd9fed"
+      },
+      "lease": {
+        "bytes": 4261,
+        "sha256": "71114035ba05f548abf567d8221dbd1dc25a7ebec4c0e1f668e2fed4603815bf"
+      },
+      "scope_validate_dispatch": {
+        "bytes": 38235,
+        "sha256": "940e2b8b12671bc48558bf97c108adc2729c42854179dc4f30d28e28c3054db1"
+      },
+      "node_graph": {
+        "bytes": 2982,
+        "sha256": "3644580e1be390f7e687266e35de0424c3ba583a9c1d86b4d7caba96bff621c1"
+      },
+      "node_identity": {
+        "bytes": 8326,
+        "sha256": "2b4f460d43ffd0593a8c1766c2a2be5dc2cc5067d87ec87d1093bcef7145e2bd"
+      },
+      "strings": {
+        "bytes": 421,
+        "sha256": "735b5a843258de6a77898c63952c2ed65ace08bc2b72b09909f3eb905e9d610a"
+      },
+      "schedule": {
+        "bytes": 5432,
+        "sha256": "3580c10c96c29a005b8709d1eebef6b9c70502ea594e4635f6636b1596436caa"
+      },
+      "persist": {
+        "bytes": 3301,
+        "sha256": "793551972f949537ba370c4739cefdb1ef8f00ddce18054de690ea9bc18665aa"
+      },
+      "binding": {
+        "bytes": 2743,
+        "sha256": "4125f8fdb30ba7067fa6c9743362adac3e85ad1131410fca6abc054a6f4cedc3"
+      },
+      "intent_start": {
+        "bytes": 6508,
+        "sha256": "649f13660d7c8f437b6700051b219179b799c43f2616125d6b9d488bf2603618"
+      },
+      "background_stale_type": {
+        "bytes": 304,
+        "sha256": "a060440493b766295052ebf529dfe259692f6b58e1ff757121c1806b18277376"
+      },
+      "background_graph_limits": {
+        "bytes": 59,
+        "sha256": "3cd43716f879c4eed77ac73d77622febb43be6a31a5c81629b48f328da75189f"
+      },
+      "background_node_graph": {
+        "bytes": 2982,
+        "sha256": "3644580e1be390f7e687266e35de0424c3ba583a9c1d86b4d7caba96bff621c1"
+      },
+      "background_window_metadata": {
+        "bytes": 1740,
+        "sha256": "3917379ba4a38a24093ba69f53e91a525fc5858d963711f0538768f36af289a2"
+      },
+      "background_snapshot": {
+        "bytes": 7986,
+        "sha256": "3207018875703ee4b9bbeaef5822cd4a2054824e1b4a8fa3115dd5121a81adff"
+      },
+      "background_node_identity": {
+        "bytes": 8326,
+        "sha256": "2b4f460d43ffd0593a8c1766c2a2be5dc2cc5067d87ec87d1093bcef7145e2bd"
+      },
+      "background_strings": {
+        "bytes": 421,
+        "sha256": "735b5a843258de6a77898c63952c2ed65ace08bc2b72b09909f3eb905e9d610a"
+      }
+    },
+    "full_actual_classes": [
+      "TaskCompletionGate",
+      "CalculatorCompletionEvidence",
+      "NotesCompletionEvidence",
+      "LocalTaskController",
+      "QualificationScope",
+      "QualificationScopeConfig",
+      "MobiMindPrivateFiles"
+    ],
+    "boundary": "Android IO and effect endpoints are fakes; production admission/dispatch and controller code is executed",
+    "phone_operations": false,
+    "native_inference": false,
+    "ordinary_android_uid_io_fake": {
+      "uid": 10481,
+      "host_uid_mapped": 1000,
+      "not_android_permission_proof": true
+    }
+  },
+  "compiler_contract": "Java 8 API release",
+  "phone_operations": false,
+  "native_inference": false,
+  "android_runtime": false,
+  "stages": [
+    {
+      "name": "compile",
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+        "--release",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:all",
+        "-Werror",
+        "-d",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/classes",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/NotesTaskPhaseGuard.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/CalculatorCompletionEvidence.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/FixedIntentAttemptGuard.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/LastModelDecisionProjection.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/TaskAuthorization.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ActionDecision.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ActionPolicy.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservedImeEnter.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/SubmitAttemptGuard.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/RecentActionProjection.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/PersistentActionPolicy.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ImeVisibility.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservationState.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservedWindowMetadata.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservedChildText.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/RepeatActionGuard.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/SameStateNoEffectGuard.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/DecisionGrammar.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ModelProfile.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ConservativeTokenBudget.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservedTextProjection.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservedTransitionProjection.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/CompactTaskHistory.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/PromptActionDomain.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/RecoveryQuiescence.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/RecoveryJournalTransaction.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/QualificationScope.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/QualificationScopeConfig.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/LocalTaskController.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/LocalInference.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/PhoneObservation.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/local/ObservedAppLabels.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/background/FixedIntentTools.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/background/FixedIntentDispatch.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/src/org/trillionnium/hepta/background/BrokerProtocol.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/fixture/BackgroundObservationFixture.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/fixture/HeptaAccessibilityService.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/fixture/LocalTaskSession.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/fixture/ScopeUiFixture.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/app/Activity.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/ComponentName.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/Context.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/Intent.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/pm/ActivityInfo.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/pm/ApplicationInfo.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/pm/PackageInfo.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/pm/PackageManager.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/pm/ResolveInfo.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/content/res/AssetManager.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/graphics/Rect.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/os/Bundle.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/os/Handler.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/os/Looper.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/os/SystemClock.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/system/ErrnoException.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/system/OsConstants.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/system/StructStat.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/util/AtomicFile.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/view/Display.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/view/accessibility/AccessibilityNodeInfo.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/view/accessibility/AccessibilityWindowInfo.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/android/view/inputmethod/InputMethodManager.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/org/json/FixtureJson.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/org/json/JSONArray.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/org/json/JSONException.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/org/json/JSONObject.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/org/trillionnium/hepta/local/BackgroundSession.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/org/trillionnium/hepta/local/LocalModelEngine.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/org/trillionnium/hepta/local/LocalProbeApplication.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/fixtures/org/trillionnium/hepta/local/PrivateDebugTask.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/QualificationScopeHostTest.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/qualification-scope/BackgroundFreshnessHostTest.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/uid-io/Process.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/uid-io/Os.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/fixed-intent-tools/FixedIntentIntegrationHostTest.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/completion/TaskCompletionGateHostTest.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/completion/CalculatorCompletionHostTest.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/NotesTaskPhaseHostTest.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/NotesListProvenanceHostTest.java",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/NotesRecoveryHostTest.java"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 1.70082084601745
+    },
+    {
+      "name": "actual-completion",
+      "argv": [
+        "java",
+        "-cp",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/classes",
+        "org.trillionnium.hepta.local.TaskCompletionGateHostTest",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/cases"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 0.530840771010844
+    },
+    {
+      "name": "notes-task-phase",
+      "argv": [
+        "java",
+        "-cp",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/classes",
+        "org.trillionnium.hepta.local.NotesTaskPhaseHostTest",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/fixtures/v45-notes-trace.json",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/notes-task-phase"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 0.19437313301023096
+    },
+    {
+      "name": "notes-task-phase-grammar",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/test_phase_grammar.py",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/notes-task-phase/grammar-cases.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 0.027754251001169905
+    },
+    {
+      "name": "notes-list-provenance",
+      "argv": [
+        "java",
+        "-cp",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/classes",
+        "org.trillionnium.hepta.local.NotesListProvenanceHostTest",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/fixtures/manual-notes-list.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 0.13069343901588582
+    },
+    {
+      "name": "calculator-completion",
+      "argv": [
+        "java",
+        "-cp",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/classes",
+        "org.trillionnium.hepta.local.CalculatorCompletionHostTest",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/calculator-cases"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 0.6781300189904869
+    },
+    {
+      "name": "notes-recovery",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/run_recovery_test.py",
+        "--source",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source",
+        "--classes",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/classes",
+        "--output",
+        "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/notes-recovery"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 0.23736861001816578
+    }
+  ],
+  "passed": true
+}

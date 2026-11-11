@@ -1,0 +1,117 @@
+{
+  "schema": "hepta.phone-v48-preparation.v1",
+  "status": "frozen_from_actual_build_artifacts",
+  "device_contacted": false,
+  "remote_executed": false,
+  "owner_511205_accessed_or_interrupted": false,
+  "base_manifest_sha256": "2157694a475ff3997b623e190e4ca3be3df0b1687fb21188a76f40fc6a64cf7c",
+  "expected_previous_version": 46,
+  "expected_previous_apk_sha256": "4b9378f4c244059e4521a23f351f1447e24736617d9a0dc6d1a14d59071298f5",
+  "build_identity": {
+    "source_commit": "588e79570b87417dbbc754ecec1ca4fc5a0012ba",
+    "source_inventory_sha256": "dd3c9eb9e42e1fbe2a02b9f058c1f526f51978cd4d511d5e53532284b12259f7",
+    "version_code": 48,
+    "source_file_count": 515,
+    "actual_compiler_source_inputs": 180,
+    "host_check_records": 98,
+    "host_input_count": 341
+  },
+  "artifacts": {
+    "build_receipt_sha256": "993d297ac0f47c66a796eadfc18aff73c094c82937c948d0bcd68bf276ae5333",
+    "source_inventory_sha256": "dd3c9eb9e42e1fbe2a02b9f058c1f526f51978cd4d511d5e53532284b12259f7",
+    "package_receipt_sha256": "ec4d454d4ca04da712a5af5c48c168704f09feb61ceb9df0177587f7eecd1c69",
+    "source_package_sha256": "b7d4c5fa16045da007df88025cd3b5595dfdf22501ef5f00b401ef8d7b2f1f35",
+    "assembly_script_sha256": "d2339f831158c95636440aef77b268ddc801dbee2b84c05ab28f2b2672288bac",
+    "apk_sha256": "970630c6cd891b9abc24767e08832a4f13a2c62f0b809b85c9a8a3be77b52085"
+  },
+  "files": [
+    {
+      "name": "background_helpers_r7_v48.py",
+      "sha256": "d2b86da775a7e1d836633b11b191ed97aa3e37a6dd174c22bfae997a84da7084",
+      "base": "background_helpers_r7_v46.py",
+      "base_sha256": "c74edc0d5d1c600f07775720474b3a9634542c1749c3e7c904fc097e1a6cb6b5",
+      "bytes": 78410
+    },
+    {
+      "name": "moto_note_legacy_v48_r2.py",
+      "sha256": "1d37fe5cbe15c4ce15d6edebcd81e3e0799a8c6f00bcb12db67e5a846aa8631d",
+      "base": "moto_note_legacy_v46_r2.py",
+      "base_sha256": "a84847e2858fa4388c430ef44c9b3c759ac5899da3e6348809ff87055c62b110",
+      "bytes": 27523
+    },
+    {
+      "name": "fixed_intent_v6_acceptance.py",
+      "sha256": "4b556bcbd080a7bc96b8a8c3111482de9b14e47ca1b2695b7a2899288d4b0069",
+      "base": "fixed_intent_v6_acceptance.py",
+      "base_sha256": "4b556bcbd080a7bc96b8a8c3111482de9b14e47ca1b2695b7a2899288d4b0069",
+      "bytes": 24574
+    },
+    {
+      "name": "moto_note_body_evidence.py",
+      "sha256": "ebc78db5081a897f3ce832e5dfa8ee5462c2846115a56cbeca802e3bcda95f31",
+      "base": "moto_note_body_evidence.py",
+      "base_sha256": "ebc78db5081a897f3ce832e5dfa8ee5462c2846115a56cbeca802e3bcda95f31",
+      "bytes": 19439
+    },
+    {
+      "name": "moto_note_v48_r1.py",
+      "sha256": "68bff87e16c080ebfac932188cc1dec6164756e511b0b30d1b7a13c7bdaa49ae",
+      "base": "moto_note_v46_r1.py",
+      "base_sha256": "b5483ad51dc3639a734d07169a7ad928f0ddf7ad2f5a46da4b3461abe8170c98",
+      "bytes": 35555
+    },
+    {
+      "name": "finalize_note_review_v48.py",
+      "sha256": "dcb616dd17a168b4743742b20ff0f3534aef554cbd14892cf66370efa0b99f17",
+      "base": "finalize_note_review_v46.py",
+      "base_sha256": "83f684a54e6d4b25c2e84076766662976ee9b003a647b85ac970d9f63a6ac1d1",
+      "bytes": 8693
+    },
+    {
+      "name": "configure_local_profile_v48_helper_r1.py",
+      "sha256": "636d93ce82fbffbb2d2cfcd47916ef843cb5420f420ca0b2a973295bf16e322b",
+      "base": "configure_local_profile_v46_helper_r1.py",
+      "base_sha256": "d880565d91c32e1abd4ab5bb2556f87ba1169bd3b0ff869087b560cd6b9bb302",
+      "bytes": 33425
+    },
+    {
+      "name": "install_v48_idle_r1.py",
+      "sha256": "08bc0094899d7be2c7d02bc4568c67f156cb736aa007f0968832b6d2a7b4ae2c",
+      "base": "install_v46_idle_r1.py",
+      "base_sha256": "ad3669e3241c0bbdbdf19a415235268156f2daa4b98de467dbe04c76e639a346",
+      "bytes": 32530
+    },
+    {
+      "name": "background_r12_v48.py",
+      "sha256": "2ad8c24a05b325d174b673d8417d24844b740d733f24437b2d40fec73412fad5",
+      "base": "background_r12_v46.py",
+      "base_sha256": "d5a2caec2ad96b524d89651c0b4fbb63107678745dd4ccfa33368999fc0f817c",
+      "bytes": 108762
+    },
+    {
+      "name": "prepare_background_v48_r1.py",
+      "sha256": "8df3287a4789e18dc1d58d40e0658ef83abe7ba7f20bf28db7f630951ea3674c",
+      "base": "prepare_background_v46_r1.py",
+      "base_sha256": "20afb33ade158e3b68392c5015e615655b1568fc6d4a92db436fe49247c3d39d",
+      "bytes": 22122
+    }
+  ],
+  "integrated_evidence_sha256": {
+    "host-checks/observation-pipeline/RESULT.json": "08ec110dff8d27222cae2f65798798935f1e2767f7690b3371e675e160a92962",
+    "host-checks/observation-pipeline/tests.stdout": "17fb06bc5457b9896a210932cd82e634a32cde1e22102d7e9a809afa05e581e0",
+    "host-checks/task-completion/RESULT.json": "4eb2209defea4e9a81d06cdc356343bdc28756020568ce6c6948b68e9d27a43c",
+    "host-checks/task-completion/calculator-completion.stdout": "37213686d8891a17c062895a708bc68733b44e31cf9c2349d6f586a5ab867558",
+    "host-checks/task-completion/notes-recovery.stdout": "e8d3af644e6f70e2a9f85088ab470380bd10877d2c18633dd2a467c9135b0c76"
+  },
+  "identity_helper_sha256": "a4a751cf03956783e551f54b16dd37769f00d5b7cd2a0225b667becbc6e6d003",
+  "source_tools": "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tools",
+  "calculator_owner": "打开计算器，在当前主输入区计算 31 乘以 47，确认当前结果框显示计算结果后结束任务。",
+  "calculator_owner_sha256": "6f5d3425c7bb011868c53256db71361d6e201af6d37d611bb3685ac062b6271a",
+  "old_business_predicates_removed": false,
+  "new_controller_calculator_proof_required": true,
+  "qualified": false,
+  "phone_tested": false,
+  "runtime_config_sha256": null,
+  "current_device_uid": null,
+  "current_terminal_task_id": null
+}

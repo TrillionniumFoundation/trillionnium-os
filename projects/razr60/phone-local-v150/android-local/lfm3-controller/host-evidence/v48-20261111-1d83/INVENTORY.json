@@ -1,0 +1,121 @@
+{
+  "schema": "hepta.v48-review-inventory.v1",
+  "source_commit": "588e79570b87417dbbc754ecec1ca4fc5a0012ba",
+  "files": [
+    {
+      "path": "PACKAGE.json",
+      "bytes": 812,
+      "sha256": "ec4d454d4ca04da712a5af5c48c168704f09feb61ceb9df0177587f7eecd1c69"
+    },
+    {
+      "path": "QUALIFICATION-STATUS.json",
+      "bytes": 1499,
+      "sha256": "35418756984adfdaf710891ec8f240046a6f5a8da5dc196069874ff31e9321dc"
+    },
+    {
+      "path": "README.md",
+      "bytes": 6262,
+      "sha256": "598594e5bbbaf7fadd58426c66fa4e2d2d17c5c55e2ebdd410b72a4198c228f9"
+    },
+    {
+      "path": "SOURCE-INVENTORY.json",
+      "bytes": 88505,
+      "sha256": "dd3c9eb9e42e1fbe2a02b9f058c1f526f51978cd4d511d5e53532284b12259f7"
+    },
+    {
+      "path": "mac/STAGE-RESULT.json",
+      "bytes": 1104,
+      "sha256": "61999d53cb313f55199ef88bfaa0e832880d5a83b5fd8502781ffe079596e334"
+    },
+    {
+      "path": "pocket/STAGE-RESULT.json",
+      "bytes": 1029,
+      "sha256": "b2ba95baabfb67c8fa44d53f3daef9f2b117ccca538b9982e13479f36963f461"
+    },
+    {
+      "path": "pocket/assembly-r1/RESULT.json",
+      "bytes": 7160,
+      "sha256": "993d297ac0f47c66a796eadfc18aff73c094c82937c948d0bcd68bf276ae5333"
+    },
+    {
+      "path": "pocket/host-checks/HOST-CHECKS.json",
+      "bytes": 86560,
+      "sha256": "7d99683b974f80ea4fd7fc6e35820e02699a8133d509453f80e487a0528a8cc8"
+    },
+    {
+      "path": "pocket/host-checks/observation-pipeline/RESULT.json",
+      "bytes": 1569,
+      "sha256": "08ec110dff8d27222cae2f65798798935f1e2767f7690b3371e675e160a92962"
+    },
+    {
+      "path": "pocket/host-checks/observation-pipeline/tests.stdout",
+      "bytes": 1183,
+      "sha256": "17fb06bc5457b9896a210932cd82e634a32cde1e22102d7e9a809afa05e581e0"
+    },
+    {
+      "path": "pocket/host-checks/task-completion/RESULT.json",
+      "bytes": 37111,
+      "sha256": "4eb2209defea4e9a81d06cdc356343bdc28756020568ce6c6948b68e9d27a43c"
+    },
+    {
+      "path": "pocket/host-checks/task-completion/calculator-completion.stdout",
+      "bytes": 1582,
+      "sha256": "37213686d8891a17c062895a708bc68733b44e31cf9c2349d6f586a5ab867558"
+    },
+    {
+      "path": "pocket/host-checks/task-completion/notes-recovery/RESULT.json",
+      "bytes": 2019,
+      "sha256": "55a41fa59070188992b4c1909d49e570c780a2a57ae40000e9cfdfe3d7fd3b76"
+    },
+    {
+      "path": "pocket/host-checks/task-completion/notes-recovery.stdout",
+      "bytes": 107,
+      "sha256": "e8d3af644e6f70e2a9f85088ab470380bd10877d2c18633dd2a467c9135b0c76"
+    },
+    {
+      "path": "pocket/out/control-v48-static/STATIC-ACCEPTANCE.json",
+      "bytes": 17507,
+      "sha256": "2d0a249876aa6e7687a63e2f637a57b65f504fa77cf9fe7d6080248329ce66dc"
+    },
+    {
+      "path": "pocket/phone-adapters-v48/MANIFEST.json",
+      "bytes": 5669,
+      "sha256": "32e2648c45045d2c5f5da9a00ae4104c6ede0709bb185fe4ec67d8274755b378"
+    },
+    {
+      "path": "pocket/phone-public-query-v48-r1/MANIFEST.json",
+      "bytes": 3124,
+      "sha256": "231612acd1aa001527a7b79b8b94da9e0b5a84ffc6a48a93e8ecba35af4b2575"
+    },
+    {
+      "path": "public-query-local-checks.json",
+      "bytes": 5630,
+      "sha256": "34ffd9aaa23aa7a127cf6c88db12260507941742e6e641c8143164ea298a158a"
+    },
+    {
+      "path": "retained-v46-lfm3-performance.json",
+      "bytes": 10721,
+      "sha256": "a6385a7c87f24a1d3590948e91c265b09a69fe538e22454f4e2fc57e6021809a"
+    },
+    {
+      "path": "tooling/assemble-and-freeze.py",
+      "bytes": 2803,
+      "sha256": "91c82717c1b65ee98b01e995caeeb4c0c6fbdb56d66e4a91f5f54145d4e930c8"
+    },
+    {
+      "path": "tooling/derive_public_v48.py",
+      "bytes": 20782,
+      "sha256": "dc082d6119f653cc11aa56e26c89d669beaad254f0dc1e8eed02a34075e1ef79"
+    },
+    {
+      "path": "tooling/derive_v48.py",
+      "bytes": 16639,
+      "sha256": "66bbeda30260b442bca19d24fc6dbf5ee1e09abce5d1acf9117c78b4d2346b05"
+    },
+    {
+      "path": "tooling/v48_assembly_filled.py",
+      "bytes": 31546,
+      "sha256": "d2339f831158c95636440aef77b268ddc801dbee2b84c05ab28f2b2672288bac"
+    }
+  ]
+}

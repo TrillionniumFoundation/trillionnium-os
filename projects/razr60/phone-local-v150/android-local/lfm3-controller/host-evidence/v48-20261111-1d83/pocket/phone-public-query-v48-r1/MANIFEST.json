@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.v48-public-query-adapters.v1",
+  "status": "frozen_against_actual_core",
+  "core_manifest_sha256": "32e2648c45045d2c5f5da9a00ae4104c6ede0709bb185fe4ec67d8274755b378",
+  "core_source_commit": "588e79570b87417dbbc754ecec1ca4fc5a0012ba",
+  "actual_apk_sha256": "970630c6cd891b9abc24767e08832a4f13a2c62f0b809b85c9a8a3be77b52085",
+  "actual_assembly_receipt_sha256": "993d297ac0f47c66a796eadfc18aff73c094c82937c948d0bcd68bf276ae5333",
+  "core_r7_sha256": "d2b86da775a7e1d836633b11b191ed97aa3e37a6dd174c22bfae997a84da7084",
+  "files": [
+    {
+      "path": "public_query_v48_r1.py",
+      "bytes": 28372,
+      "sha256": "ddc80741a8fb8324ab33a82e8c7899f37c8095f2cdbf394be89141b30401ba9e",
+      "base": "public_query_v46_r1.py",
+      "base_sha256": "fafd82e3091a4f10160c4409a89ffde5ba5c7b78a92b10df9dffbfd60c45e115"
+    },
+    {
+      "path": "public_query_evidence_v48_r1.py",
+      "bytes": 27980,
+      "sha256": "ee812fe4e017c9fdcbb7a9393f954361f80a92a81b22aa08fcb8cbfc91c505bd",
+      "base": "public_query_evidence_v46_r1.py",
+      "base_sha256": "8ca61fefade0c914604d38e1e7da694207352915c0f4a8ef09fa02455c132589"
+    },
+    {
+      "path": "fixed_intent_v6_acceptance.py",
+      "bytes": 24574,
+      "sha256": "4b556bcbd080a7bc96b8a8c3111482de9b14e47ca1b2695b7a2899288d4b0069",
+      "base": "fixed_intent_v6_acceptance.py",
+      "base_sha256": "4b556bcbd080a7bc96b8a8c3111482de9b14e47ca1b2695b7a2899288d4b0069"
+    }
+  ],
+  "remote_executed": false,
+  "phone_contacted": false,
+  "integrated_evidence_sha256": {
+    "host-checks/observation-pipeline/RESULT.json": "08ec110dff8d27222cae2f65798798935f1e2767f7690b3371e675e160a92962",
+    "host-checks/observation-pipeline/tests.stdout": "17fb06bc5457b9896a210932cd82e634a32cde1e22102d7e9a809afa05e581e0",
+    "host-checks/task-completion/RESULT.json": "4eb2209defea4e9a81d06cdc356343bdc28756020568ce6c6948b68e9d27a43c",
+    "host-checks/task-completion/calculator-completion.stdout": "37213686d8891a17c062895a708bc68733b44e31cf9c2349d6f586a5ab867558",
+    "host-checks/task-completion/notes-recovery.stdout": "e8d3af644e6f70e2a9f85088ab470380bd10877d2c18633dd2a467c9135b0c76"
+  },
+  "actual_source_inventory_sha256": "dd3c9eb9e42e1fbe2a02b9f058c1f526f51978cd4d511d5e53532284b12259f7",
+  "actual_package_receipt_sha256": "ec4d454d4ca04da712a5af5c48c168704f09feb61ceb9df0177587f7eecd1c69",
+  "actual_source_package_sha256": "b7d4c5fa16045da007df88025cd3b5595dfdf22501ef5f00b401ef8d7b2f1f35",
+  "actual_assembly_script_sha256": "d2339f831158c95636440aef77b268ddc801dbee2b84c05ab28f2b2672288bac",
+  "core_package_modified": false,
+  "qualified": false,
+  "web_completion_provider_available": false,
+  "original_input_ids_bytes_required": true,
+  "business_answer_manual_review_required": true,
+  "public_search_results_only": true,
+  "public_details_allowed": false,
+  "booking_cart_order_payment_allowed": false,
+  "allowed_model_tools": [
+    "done",
+    "scroll",
+    "wait",
+    "web.search"
+  ],
+  "navigation_semantics_hard_enforced_by_tool_whitelist": false,
+  "flight_plan_fixture_date": "2026-11-17",
+  "actual_user_itinerary_assumed": false
+}

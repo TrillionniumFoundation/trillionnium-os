@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.notes-recovery-lanes.v1",
+  "phone_operations": false,
+  "native_inference": false,
+  "fresh_model_task_success": false,
+  "external_inputs_sha256": {},
+  "lanes": [
+    {
+      "fixture_mode": "synthetic",
+      "stages": [
+        {
+          "name": "java",
+          "argv": [
+            "java",
+            "-cp",
+            "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/classes",
+            "org.trillionnium.hepta.local.NotesRecoveryHostTest",
+            "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/notes-recovery/synthetic",
+            "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/fixtures/v46-notes-recovery-pins.json"
+          ],
+          "exit_code": 0,
+          "elapsed_s": 0.16103810901404358
+        },
+        {
+          "name": "grammar",
+          "argv": [
+            "/usr/bin/python3",
+            "/home/alex/hepta-local-1d83-20261111/v48-build-r1/source/tests/notes-task-phase/test_phase_grammar.py",
+            "/home/alex/hepta-local-1d83-20261111/v48-build-r1/host-checks/task-completion/notes-recovery/synthetic/grammar-cases.json"
+          ],
+          "exit_code": 0,
+          "elapsed_s": 0.03382395001244731
+        }
+      ],
+      "passed": true,
+      "evidence": {
+        "schema": "hepta.notes-recovery-host.v1",
+        "passed": true,
+        "fixture_mode": "synthetic",
+        "input_files_sha256": {},
+        "checks": 43,
+        "grammar_cases": 9,
+        "historical_prefix_steps": 3,
+        "historical_prefix_model_run_ids": [
+          "00000000000000000000000000001f45",
+          "00000000000000000000000000001f46",
+          "00000000000000000000000000001f47"
+        ],
+        "continuation_model_and_observation_io": "synthetic",
+        "phone_tested": false,
+        "native_inference": false,
+        "fresh_model_task_success": false,
+        "completion_predicate_changed": false
+      }
+    }
+  ],
+  "passed": true
+}

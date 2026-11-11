@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.v48-complete-build-package.v1",
+  "source_commit": "588e79570b87417dbbc754ecec1ca4fc5a0012ba",
+  "source_inventory_sha256": "dd3c9eb9e42e1fbe2a02b9f058c1f526f51978cd4d511d5e53532284b12259f7",
+  "source_file_count": 515,
+  "archive_sha256": "b7d4c5fa16045da007df88025cd3b5595dfdf22501ef5f00b401ef8d7b2f1f35",
+  "archive_bytes": 1128371,
+  "stage_sha256": "59f71c7e566c221bdd976849652e35b40205d726aa11edb7f10fdae4a1f82f01",
+  "version_code": 48,
+  "version_name": "0.48.0-local-notes-recovery",
+  "expected_compiler_source_inputs": 180,
+  "mac_root": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-1d83-v48-r1",
+  "pocket4_root": "/home/alex/hepta-local-1d83-20261111/v48-build-r1",
+  "source_git_blobs_verified": true,
+  "built": false,
+  "signed": false,
+  "phone_contacted": false
+}

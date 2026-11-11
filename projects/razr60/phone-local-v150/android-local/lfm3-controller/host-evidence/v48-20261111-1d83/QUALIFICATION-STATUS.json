@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.v48-qualification-status.v1",
+  "source_commit": "588e79570b87417dbbc754ecec1ca4fc5a0012ba",
+  "version_code": 48,
+  "strict_host_passed": true,
+  "host_check_records": 98,
+  "android_compiled": true,
+  "compiler_inputs": 180,
+  "original_signer_assembly_passed": true,
+  "apk_sha256": "970630c6cd891b9abc24767e08832a4f13a2c62f0b809b85c9a8a3be77b52085",
+  "phone_installed": false,
+  "fresh_v48_native_model_tested": false,
+  "notes_task_success": false,
+  "background_main_screen_coexistence_qualified": false,
+  "flight_business_qualified": false,
+  "shopping_business_qualified": false,
+  "public_query_freezer_executed_on_pocket4": true,
+  "public_query_device_entry_executed": false,
+  "blocker": {
+    "kind": "valid_live_independent_phone_owner",
+    "observed_utc": "2026-11-11T06:07:55Z",
+    "kernel_lock_and_process_identity_match": true,
+    "child_count_at_snapshot": 0,
+    "normal_owner_close_observed": false,
+    "owner_interrupted": false,
+    "phone_operations_issued_for_v48": false
+  },
+  "last_synchronized_phone": {
+    "version_code": 46,
+    "model_profile": "lfm2.5-8b-a1b-q4_0",
+    "compute": "npu",
+    "context_tokens": 8192,
+    "threads": 4,
+    "configuration_write_observed": true,
+    "moe_native_inference_observed": false,
+    "fresh_under_own_lock_read_required": true
+  },
+  "default_model_selection_status": "LFM3 is a measured NPU baseline, not yet a successfully qualified business default",
+  "no_purchase_or_booking_executed": true
+}

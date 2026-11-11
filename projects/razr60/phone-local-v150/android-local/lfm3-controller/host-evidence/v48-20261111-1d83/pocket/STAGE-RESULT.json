@@ -1,0 +1,28 @@
+{
+  "all_pass": true,
+  "android_compiled": false,
+  "archive_sha256": "b7d4c5fa16045da007df88025cd3b5595dfdf22501ef5f00b401ef8d7b2f1f35",
+  "base_inventory_sha256": null,
+  "finished_utc": "2026-11-11T05:54:17Z",
+  "host": "pocket4",
+  "host_check_records": 98,
+  "installed_on_phone": false,
+  "java8_release_gate": true,
+  "java_home": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64",
+  "phone_contacted": false,
+  "phone_tested": false,
+  "schema": "hepta.background-host-stage.v1",
+  "source_assembly_type": "complete_archive",
+  "source_commit": "588e79570b87417dbbc754ecec1ca4fc5a0012ba",
+  "source_file_count": 515,
+  "started_utc": "2026-11-11T05:53:29Z",
+  "steps": [
+    {
+      "elapsed_seconds": 47.49689927499276,
+      "exit_code": 0,
+      "name": "full-host-checks",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a37d234cda9985ce014d461496c7fb0e98ec0c39195e6166829573b1597b8e56"
+    }
+  ]
+}
