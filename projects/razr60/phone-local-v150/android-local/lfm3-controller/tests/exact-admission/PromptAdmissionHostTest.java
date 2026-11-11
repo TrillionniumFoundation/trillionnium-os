@@ -157,7 +157,8 @@ public final class PromptAdmissionHostTest {
         Map<String,Object> withData=MobiMindContract.jsonObject(with.text.substring("UNTRUSTED_DATA\n".length(),with.text.indexOf("\nOWNER\n")).getBytes(StandardCharsets.UTF_8));
         Map<String,Object> withoutData=MobiMindContract.jsonObject(without.text.substring("UNTRUSTED_DATA\n".length(),without.text.indexOf("\nOWNER\n")).getBytes(StandardCharsets.UTF_8));
         Map<?,?> memory=(Map<?,?>)withData.remove("last_model_decision");
-        check(memory!=null&&LastModelDecisionProjection.SOURCE.equals(memory.get("source"))&&old.reason.equals(memory.get("reason")),"only bounded actual prior text and explicit model provenance are projected");
+        check(memory!=null&&LastModelDecisionProjection.SOURCE.equals(memory.get("source"))&&old.packageName.equals(memory.get("target_package"))
+                &&Boolean.TRUE.equals(memory.get("dispatched"))&&!memory.containsKey("reason"),"only bound dispatch facts are projected; prior free-form text is not re-fed");
         check(withData.equals(withoutData),"existing observations, history, task authorization and tool domains remain structurally identical");
         check(with.budget.totalContextUpper>without.budget.totalContextUpper,"added model intention remains counted by existing input budget");
         cases++;

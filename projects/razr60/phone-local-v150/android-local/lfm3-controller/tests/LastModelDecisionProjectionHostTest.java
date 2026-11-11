@@ -67,10 +67,11 @@ public final class LastModelDecisionProjectionHostTest {
         Map<String,Object> projected=saved.forPrompt(TASK,actualHistory);
         check(TASK.equals(saved.taskId)&&RUN.equals(saved.modelRunId)&&OBS.equals(saved.sourceObservationId),"task, model run and original observation are immutable source bindings");
         check(Integer.valueOf(3).equals(projected.get("step"))&&"click".equals(projected.get("action")),"actual dispatched step and action retained");
-        check(actual.reason.equals(projected.get("reason"))&&!saved.reasonTruncated,"real reason copied exactly, no next-action oracle");
+        check(actual.reason.equals(saved.reason)&&!saved.reasonTruncated&&!projected.containsKey("reason"),"original reason remains in immutable evidence but is not re-fed");
         check(!prompt.contains(actual.reason)&&!frame.containsKey("last_model_decision"),"regression fixture reproduces dropped prior intention");
         check(LastModelDecisionProjection.SOURCE.equals(projected.get("source")),"model text explicitly differs from observation evidence");
-        check(projected.size()==4&&!projected.containsKey("node_id")&&!projected.containsKey("package")&&!projected.containsKey("observation_id")
+        check(projected.size()==5&&actual.packageName.equals(projected.get("target_package"))&&Boolean.TRUE.equals(projected.get("dispatched"))
+                &&!projected.containsKey("node_id")&&!projected.containsKey("package")&&!projected.containsKey("observation_id")
                 &&!projected.containsKey("success")&&!projected.containsKey("allowed_tools"),"projection grants no old executable target or completion/permission state");
         Map<?,?> screen=(Map<?,?>)frame.get("screen");
         check("f1a3aff3cd644c7eabadc9520407a491".equals(screen.get("observation_id")),"real current observation differs from historical model source");
@@ -107,12 +108,12 @@ public final class LastModelDecisionProjectionHostTest {
         ActionDecision generic=decision("open","继续原任务；先打开编辑器。");
         LastModelDecisionProjection other=LastModelDecisionProjection.fromOutcome(TASK,4,RUN,OBS,generic,true,true,false);
         Map<String,Object> genericPrompt=other.forPrompt(TASK,Collections.singletonList(row(4,"open",true,true,false)));
-        check(generic.reason.equals(genericPrompt.get("reason")),"ordinary non-calculator output is projected identically");
+        check(generic.packageName.equals(genericPrompt.get("target_package"))&&!genericPrompt.containsKey("reason"),"ordinary tasks retain dispatched target facts without free-form reason feedback");
         ActionDecision unicode=decision("click",repeat("😀",97));
         LastModelDecisionProjection bounded=LastModelDecisionProjection.fromOutcome(TASK,4,RUN,OBS,unicode,true,true,false);
         Map<String,Object> boundedPrompt=bounded.forPrompt(TASK,Collections.singletonList(row(4,"click",true,true,false)));
         check(bounded.reason.codePointCount(0,bounded.reason.length())==96&&bounded.reason.equals(repeat("😀",96)),"one bounded reason preserves complete Unicode scalars");
-        check(Boolean.TRUE.equals(boundedPrompt.get("reason_truncated")),"shortened prefix is explicitly marked");
+        check(bounded.reasonTruncated&&!boundedPrompt.containsKey("reason")&&!boundedPrompt.containsKey("reason_truncated"),"bounded prior text stays out of the next prompt");
         boolean immutable=false;try{projected.put("reason","fabricated");}catch(UnsupportedOperationException expected){immutable=true;}
         check(immutable,"published projection is immutable");
         System.out.println("PASS LastModelDecisionProjectionHostTest checks="+checks+" saved_real_step3_4=true model_inference=false phone_tested=false");

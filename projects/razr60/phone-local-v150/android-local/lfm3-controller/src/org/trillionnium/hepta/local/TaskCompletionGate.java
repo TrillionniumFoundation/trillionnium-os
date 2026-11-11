@@ -62,7 +62,7 @@ public final class TaskCompletionGate {
     public final String taskId;public final Contract contract;
     private NotesCompletionEvidence.Installed installed;
     private boolean domainBound,identityInvalid,launchProved,editorObserved,listObserved,reopened,webDispatched;
-    private int displayId=-1,rejectedSuccess;private String generation,identityFailure;
+    private int displayId=-1,rejectedSuccess;private String generation,identityFailure,editorObservationId;
     private final List<Map<String,Object>> proofs=new ArrayList<Map<String,Object>>();
     private final List<Map<String,Object>> claims=new ArrayList<Map<String,Object>>();
     public TaskCompletionGate(String task,String owner,TaskAuthorization authorization){
@@ -76,8 +76,22 @@ public final class TaskCompletionGate {
         if(!domainShape(frame))return;
         if(!domainBound){displayId=frame.displayId;generation=frame.backgroundGeneration;domainBound=true;}
         if(!sameDomain(frame)){identityInvalid=true;identityFailure="observation_display_generation_changed";return;}
-        if(NOTES.equals(contract.kind)&&launchProved&&!editorObserved&&body(frame).matched){
-            editorObserved=true;proofs.add(proof("editor_body_observed",0,null,frame,frame));
+        if(!NOTES.equals(contract.kind)||!launchProved||identityInvalid||installed==null)return;
+        if(!editorObserved&&body(frame).matched){
+            editorObserved=true;editorObservationId=frame.observationId;
+            proofs.add(proof("editor_body_observed",0,null,frame,frame));
+        }
+        // Saving may become observable after an app switch or a later reobserve.
+        // The current complete list is evidence; no particular navigation API or
+        // accepted action is itself a save acknowledgement. Prior task-bound
+        // create/body proof and the later model click/reopened body remain required.
+        if(editorObserved&&!listObserved){
+            NotesCompletionEvidence.ListEvidence list=NotesCompletionEvidence.list(frame,contract.body);
+            if(list.matched){
+                listObserved=true;Map<String,Object> p=proof("post_create_observed_list",0,null,null,frame);
+                p.put("editor_observation_id",editorObservationId);p.put("list_body_evidence",list.evidence());
+                proofs.add(p);
+            }
         }
     }
     public void action(int step,String run,ActionDecision action,boolean accepted,boolean dispatched,boolean stale,

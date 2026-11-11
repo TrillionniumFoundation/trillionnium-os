@@ -90,6 +90,20 @@ public final class TaskCompletionGateHostTest {
             return new TaskCleanup(true,true,true,0,id(77),task,!"close_invalid_receipt".equals(mode),H);
         }
         void setup(){
+            if("detour".equals(mode)){
+                e.service.effectHook=()->{
+                    if(e.service.opens==1&&phase==0){phase=1;e.service.root.pkg=P;e.service.node.pkg=P;e.service.node.text=BODY;e.service.node.editable=true;}
+                    else if(e.service.opens==2&&phase==1){phase=2;e.service.root.pkg="org.trillionnium.hepta.local";e.service.node.pkg=e.service.root.pkg;e.service.node.editable=false;}
+                    else if(e.service.opens==3&&phase==2){phase=3;e.service.root.pkg=P;e.service.node.pkg=P;e.service.node.editable=false;}
+                    else if(e.service.node.actions==1&&phase==3){phase=4;e.service.node.editable=true;}
+                };
+                e.service.observationRows=()->{
+                    if(phase==0||phase==2)return Collections.singletonList(row("n0",e.service.root.pkg,"synthetic unrelated screen","",new Rect(10,10,500,150),false,false,false));
+                    if(phase==1||phase==4)return Arrays.asList(row("n0",P,BODY,"",new Rect(10,10,500,150),true,true,false),row("n1",P,"NoteEditor","",new Rect(0,0,1080,2400),false,false,true));
+                    return Arrays.asList(row("n0",P,BODY,"",new Rect(10,10,500,150),false,true,false),row("n1",P,"",P+":id/view_pager2",new Rect(0,0,1080,2400),false,false,true),row("n2",P,"所有笔记",P+":id/title_text",new Rect(0,0,100,30),false,false,false));
+                };
+                return;
+            }
             e.service.effectHook=()->{
                 if(e.service.opens==1&&phase==0){phase=1;e.service.root.pkg=P;e.service.node.pkg=P;e.service.node.text=BODY;e.service.node.editable=true;}
                 else if(e.service.navigations==1&&phase==1){phase=2;e.service.node.editable=false;}
@@ -108,12 +122,16 @@ public final class TaskCompletionGateHostTest {
                 check(ActionDecision.FIXED_INTENT_ACTION_SCHEMA.equals(grammar.schema)&&grammar.text.contains("success"),"v6 grammar remains unchanged, completion is controller-only");
                 String tool="done";
                 if("complete".equals(mode)||mode.startsWith("close_")){tool=calls==2?"notes.create":calls==3?"back":calls==4?"click":"done";}
+                if("detour".equals(mode))tool=calls==1?"notes.create":calls==2||calls==3?"open":calls==4?"click":"done";
                 if("draft".equals(mode))tool=calls==1?"notes.create":"done";
                 if("web".equals(mode))tool=calls==2?"web.search":"done";
                 if("cancel".equals(mode)&&calls==2)e.controller.stop();
                 JSONObject a=new JSONObject().put("reason","synthetic native IO choice").put("action",tool).put("observation_id",grammar.observationId);
                 if(FixedIntentTools.isTool(tool)){
                     FixedIntentTarget t=grammar.fixedIntentTargets.get(tool);check(t!=null,"fixed tool is actually offered");a.put("app_label",ObservedAppLabels.project(t.appLabel)).put("package",t.packageName).put("notes.create".equals(tool)?"text":"query","notes.create".equals(tool)?BODY:"蓝色水杯 价格");
+                }else if("open".equals(tool)){
+                    String target=calls==2?"org.trillionnium.hepta.local":P;
+                    a.put("app_label",grammar.appLabels.labels.get(target)).put("package",target);
                 }else{
                     a.put("package",grammar.currentPackage);
                     if("click".equals(tool))a.put("node_label",ObservedTargetLabels.project(BODY)).put("node_id","n0");
@@ -126,6 +144,7 @@ public final class TaskCompletionGateHostTest {
     static void controllerCase(String mode,String owner,boolean verified,int expectedCalls)throws Exception{
         try(QualificationScopeHostTest.Env e=new QualificationScopeHostTest.Env(false)){
             installPackage(e,"notes.create");installPackage(e,"web.search");Model m=new Model(e,mode,owner);if(!"web".equals(mode))m.setup();
+            if("detour".equals(mode)){e.service.launchable.clear();e.service.launchable.put(P,P);e.service.launchable.put("org.trillionnium.hepta.local","Hepta");}
             e.controller=new LocalTaskController(e.service,m);CountDownLatch done=new CountDownLatch(1);LocalTaskController.TaskResult[] box=new LocalTaskController.TaskResult[1];
             check(e.controller.start(owner,null,new LocalTaskController.Listener(){public void onState(String v){}public void onFinished(LocalTaskController.TaskResult r){box[0]=r;done.countDown();}}),"ordinary task starts");check(done.await(10,TimeUnit.SECONDS),"ordinary controller finishes");
             LocalTaskController.TaskResult r=box[0];check(r!=null&&r.cleanupKnown&&r.modelReportedSuccess&&r.completionVerified==verified,"raw model claim and independently checked completion separated: "+mode+" / "+(r==null?"null":r.status+" "+r.summary));
@@ -134,6 +153,7 @@ public final class TaskCompletionGateHostTest {
             JSONObject result=FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("result.json"));check(result.getBoolean("model_reported_success")&&result.getBoolean("completion_verified")==verified,"terminal keeps original native success claim");
             check(result.getBoolean("goal_independently_verified")==verified,"independent goal field follows actual supported completion evidence");
             if("complete".equals(mode)){check(e.service.opens==1&&e.service.navigations==1&&e.service.node.actions==1,"one actual fixed Intent then actual back and same-node click");check(Files.exists(r.evidenceDirectory.toPath().resolve("step-01-completion-reobserve.json")),"premature first done led to a new recorded observation");}
+            if("detour".equals(mode))check(e.service.opens==3&&e.service.navigations==0&&e.service.node.actions==1,"create plus model-selected app detour/list reopen completes with no forced back or automatic replay");
             if("readonly".equals(mode)||"cancel".equals(mode))check(e.service.effects()==0,"read-only unknown task was never forced to write or navigate");
             if("draft".equals(mode))check(e.service.opens==1&&e.service.navigations==0&&e.service.node.actions==0,"accepted draft alone never becomes saved note; no replay");
             if("web".equals(mode))check(e.service.opens==1&&result.getJSONObject("completion_evidence").getBoolean("web_query_dispatched"),"web method executed exactly once but result proof unavailable");
@@ -153,6 +173,7 @@ public final class TaskCompletionGateHostTest {
         output=Paths.get(args[0]);Files.createDirectories(output);QualificationScopeHostTest.output=output;
         pureCases();test("bridge_clears_whitespace_masked_truncated_child",()->bridgeCase());
         test("actual_controller_first_done_recovers_and_real_note_chain_completes",()->controllerCase("complete",OWNER,true,5));
+        test("actual_controller_open_detour_recovers_only_after_same_item_click",()->controllerCase("detour",OWNER,true,5));
         test("actual_controller_draft_only_done_remains_partial_once",()->controllerCase("draft",OWNER,false,3));
         test("actual_controller_web_effect_without_results_is_partial",()->controllerCase("web",WEB,false,3));
         test("actual_controller_unknown_readonly_two_claims_zero_effects",()->controllerCase("readonly","读出当前页面的标题，不要点击或输入。",false,2));

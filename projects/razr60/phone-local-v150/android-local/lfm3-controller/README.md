@@ -1,6 +1,29 @@
-# Hepta v46: protect existing notes and verify observed sources
+# Hepta v47: recover observed note progress after app switching
 
-Current candidate: versionCode 46 (`0.46.0-local-note-phases`), based on frozen
+Current candidate: versionCode 47 (`0.47.0-local-note-recovery`), based on frozen
+v46 commit `59432f43633fc710a4c8843d77803bcdbf613ec6`.
+
+After this task's verified `notes.create` receipt and complete editor body, an
+actual unique full-body Notes list item can establish the list stage even when
+it appears after an app switch or a later observation. Navigation acceptance
+alone proves nothing. The original source/parent binding, installed app identity,
+task/display binding, model-selected same-item click, reopened complete body and
+stable final completion checks remain required. No next action is scripted.
+
+The prompt now asks for a short rationale about the current observation and
+next action. Prior free-form reasons remain in original action/model receipts
+and are not fed back into the next prompt. The last actual dispatch keeps its
+structured step, action and target package; complete event/observation facts
+remain available separately. General app-opening authority, catalogue ranking,
+model/runtime/sampler pins and permissions are unchanged.
+
+The original failed v46 trace is a regression fixture, not a successful phone
+run. Full release8 host checks, Android build and phone qualification require
+separate receipts. See [CODE47-NOTE-RECOVERY.md](CODE47-NOTE-RECOVERY.md).
+
+## v46 predecessor: protect existing notes and verify observed sources
+
+The v46 predecessor is versionCode 46 (`0.46.0-local-note-phases`), based on frozen
 v45 commit `c0195c1d7708c76dcd18dbb31083f1b5c1c5123f`.
 
 The supported literal new-note contract now narrows the ordinary controller's

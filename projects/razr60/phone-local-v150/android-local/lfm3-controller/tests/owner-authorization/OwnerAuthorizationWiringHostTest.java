@@ -262,7 +262,8 @@ public final class OwnerAuthorizationWiringHostTest {
                     JSONObject prior=data.getJSONObject("last_model_decision");
                     String actualReason=json(evidence.resolve("step-02-action.json")).getJSONObject("action").getString("reason");
                     check("prior_model_output_not_observation".equals(prior.getString("source"))&&prior.getInt("step")==2
-                            &&"open".equals(prior.getString("action"))&&actualReason.equals(prior.getString("reason")),"actual prior dispatched model output reaches ordinary next prompt");
+                            &&"open".equals(prior.getString("action"))&&CLOCK.equals(prior.getString("target_package"))&&prior.getBoolean("dispatched")
+                            &&!prior.has("reason")&&!actualReason.isEmpty(),"actual dispatch facts reach next prompt while original reason stays in its action receipt");
                     check(!prior.has("node_id")&&!prior.has("observation_id")&&!prior.has("success")&&!prior.has("allowed_tools"),"model intention cannot reissue a historical action or authority");
                     check(!model.grammars.get(step-1).actions.contains("click")&&!model.grammars.get(step-1).actions.contains("type"),"retained model permission claim cannot widen actual next grammar");
                 }
