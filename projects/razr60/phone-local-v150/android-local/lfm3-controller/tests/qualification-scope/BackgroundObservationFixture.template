@@ -1,5 +1,6 @@
 package org.trillionnium.hepta.local;
 import android.graphics.Rect;
+import android.os.SystemClock;
 import android.view.Display;
 import android.view.accessibility.*;
 import java.io.File;
@@ -22,7 +23,7 @@ final class BackgroundObservationFixture {
         Graph g=readGraph();
         try{return new PhoneObservation(String.format(Locale.ROOT,"%032x",++sequence),g.packageName,android.os.SystemClock.elapsedRealtime(),
                 1080,2400,g.rotation,g.windowId,g.bounds,new File("synthetic-only.png"),QualificationScopeHostTest.H,g.digest,
-                g.state,g.windowMetadata,g.truncated,g.rows,g.backgroundGeneration,g.backgroundBootstrapPackage,g.backgroundAllowedPackages);}
+                g.state,g.windowMetadata,g.truncated,g.rows,g.backgroundGeneration,g.backgroundBootstrapPackage,g.backgroundAllowedPackages,g.collectionStats);}
         finally{g.close();}
     }
 {{stale_type}}

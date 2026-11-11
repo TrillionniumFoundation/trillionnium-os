@@ -92,7 +92,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private Graph currentGraph;
     private Bitmap currentBitmap;
     private static final long MAX_OBSERVATION_AGE_MS=90000;
-    private static final int MAX_NODES=64, MAX_VISITED=320;
+    // Bounded across the whole selected tree, including structural/nonvisible
+    // nodes. A real browser snapshot had 975 nodes before its deeper controls.
+    // Output remains independently bounded and native exact-token admission is unchanged.
+    private static final int MAX_NODES=128, MAX_VISITED=1536, MAX_CHARACTERS=6144;
     private final Map<String,String> launchable=new java.util.concurrent.ConcurrentHashMap<String,String>();
     private AppCatalogueRanker appDiscovery;
 
@@ -374,7 +377,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     if(!observationActive(request))return;
                     Graph graph=request.captured;
                     PhoneObservation observation=new PhoneObservation(id,graph.packageName,SystemClock.elapsedRealtime(),
-                            bitmap.getWidth(),bitmap.getHeight(),graph.rotation,graph.windowId,graph.bounds,path,digest,graph.digest,graph.state,graph.windowMetadata,graph.truncated,graph.rows,graph.backgroundGeneration,graph.backgroundBootstrapPackage,graph.backgroundAllowedPackages);
+                            bitmap.getWidth(),bitmap.getHeight(),graph.rotation,graph.windowId,graph.bounds,path,digest,graph.digest,graph.state,graph.windowMetadata,graph.truncated,graph.rows,graph.backgroundGeneration,graph.backgroundBootstrapPackage,graph.backgroundAllowedPackages,graph.collectionStats);
                     clearSnapshot();current=observation;currentGraph=graph;currentBitmap=bitmap;
                     request.captured=null;bitmap=null; // Ownership transfers only here. Late callbacks cannot close this snapshot.
                     request.finished=true;request.gate.retire();activeObservation=null;
@@ -905,6 +908,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
     }
     private static final class Graph {
+        PhoneObservation.CollectionStats collectionStats;
         String packageName,digest,backgroundGeneration,backgroundBootstrapPackage;int windowId,rotation,displayId;Rect bounds;boolean truncated;
         List<String> backgroundAllowedPackages=java.util.Collections.emptyList();
         ObservationState state;
@@ -1012,6 +1016,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 ||!background.allows(graph.packageName))){root.recycle();throw new IllegalStateException("后台观察窗口越界");}
         ArrayDeque<AccessibilityNodeInfo> queue=new ArrayDeque<AccessibilityNodeInfo>();queue.add(root);
         StringBuilder signatures=new StringBuilder(),focusStates=new StringBuilder(),scrollStates=new StringBuilder();int visited=0,characters=0;
+        int nodeBudgetOmissions=0,textBudgetOmissions=0;long childSlotsOmitted=0,started=SystemClock.elapsedRealtime();
         try{
             while(!queue.isEmpty()&&visited<MAX_VISITED){
                 AccessibilityNodeInfo node=queue.removeFirst();visited++;
@@ -1027,17 +1032,21 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     boolean useful=visible&&(node.isClickable()||node.isEditable()||node.isScrollable()||!text.isEmpty()||!description.isEmpty());
                     if(useful){
                         ObservedChildText.Result childText=graph.rows.size()<MAX_NODES?observedChildText(node,background!=null):ObservedChildText.notApplicable();
-                        if(graph.rows.size()<MAX_NODES&&characters+text.length()+description.length()+childText.text.length()<2400){
+                        if(graph.rows.size()<MAX_NODES&&characters+text.length()+description.length()+childText.text.length()<MAX_CHARACTERS){
                             String id="n"+graph.rows.size();NodeRef reference=new NodeRef(node,childText,scrollActions,imeEnter,inputHash);graph.refs.put(id,reference);signatures.append(reference.appTreeSignature).append('\n');
                             scrollStates.append(id).append('=').append(scrollActions.fingerprintInput()).append('\n');
                             boolean focused=node.isFocused();focusStates.append(id).append('=').append(focused).append('|').append(imeEnter.fingerprintInput()).append('|').append(inputHash).append('\n');
                             graph.rows.add(new PhoneObservation.Node(id,string(node.getPackageName()),string(node.getClassName()),limited(string(node.getViewIdResourceName()),96),text,description,bounds,node.isClickable(),node.isEditable(),node.isScrollable(),node.isEnabled(),focused,node.isPassword(),childText,scrollActions,imeEnter,inputHash,
                                     node.isEditable()&&focused&&node.isEnabled()&&!node.isPassword()&&imeEnter.queryAllowed()&&submitAvailable(string(node.getPackageName()),inputHash),reference.appTreeSignature));
                             characters+=text.length()+description.length()+childText.text.length();
-                        }else graph.truncated=true;
+                        }else{
+                            graph.truncated=true;
+                            if(graph.rows.size()>=MAX_NODES)nodeBudgetOmissions++;else textBudgetOmissions++;
+                        }
                     }
-                    int children=Math.min(node.getChildCount(),MAX_VISITED-visited-queue.size());
-                    if(children<node.getChildCount())graph.truncated=true;
+                    int actualChildren=node.getChildCount();
+                    int children=Math.min(actualChildren,MAX_VISITED-visited-queue.size());
+                    if(children<actualChildren){graph.truncated=true;childSlotsOmitted+=(long)actualChildren-children;}
                     for(int index=0;index<children;index++){
                         AccessibilityNodeInfo child=node.getChild(index);
                         if(child!=null)queue.add(child);
@@ -1046,6 +1055,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 }finally{node.recycle();}
             }
             if(!queue.isEmpty())graph.truncated=true;
+            graph.collectionStats=new PhoneObservation.CollectionStats(MAX_VISITED,MAX_NODES,MAX_CHARACTERS,
+                    visited,graph.rows.size(),characters,queue.size(),nodeBudgetOmissions,textBudgetOmissions,
+                    childSlotsOmitted,SystemClock.elapsedRealtime()-started);
             String binding=background==null?"":("background="+background.generation+"|display="+graph.displayId+"|");
             String appTree=sha((binding+graph.packageName+"|"+graph.windowId+"|"+graph.rotation+"|"+graph.bounds+"|"+signatures).getBytes(StandardCharsets.UTF_8));
             graph.state=new ObservationState(appTree,readImeVisibility(graph.windowId,graph.displayId));

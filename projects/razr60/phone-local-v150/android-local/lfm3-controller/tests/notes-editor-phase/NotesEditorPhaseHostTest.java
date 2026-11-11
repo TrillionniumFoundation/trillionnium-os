@@ -193,6 +193,7 @@ public final class NotesEditorPhaseHostTest {
         Method clickCheck=built.getClass().getDeclaredMethod("requireTextOnlyClick",ActionDecision.class);clickCheck.setAccessible(true);
         try{clickCheck.invoke(built,action);}
         catch(java.lang.reflect.InvocationTargetException e){if(e.getCause() instanceof Exception)throw (Exception)e.getCause();throw e;}
+        gb.requireCompletionStatus(action);
         domain.requireCurrent(action);
         ((CalculatorTaskInputGuard.Domain)field(built,"calculatorDomain")).requireCurrent(action);
     }
@@ -261,8 +262,11 @@ public final class NotesEditorPhaseHostTest {
                     postparse(built,parsed(payload),authority);checks++;
                 }
                 for(String status:new String[]{"success","partial","failure"}){
-                    String payload=decision(before,"done",null,null,null,status);grammar(prefix+"done-"+status,gb,payload,true);
-                    postparse(built,parsed(payload),authority);check(!g.verified(before),"permitted outcome report is not a completion proof");
+                    String payload=decision(before,"done",null,null,null,status);boolean eligible=!"success".equals(status);
+                    grammar(prefix+"done-"+status,gb,payload,eligible);
+                    if(eligible)postparse(built,parsed(payload),authority);
+                    else denied(()->postparse(built,parsed(payload),authority),"saved-list and reopen evidence are still absent");
+                    check(!g.verified(before),"outcome reporting cannot manufacture completion evidence");
                 }
             }else if(step>=4){
                 check("observation_required".equals(phase.getString("phase"))&&!phase.getBoolean("current_editor_body_matched")&&domain.toolMask==null,

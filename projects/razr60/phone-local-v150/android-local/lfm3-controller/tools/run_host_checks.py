@@ -46,6 +46,8 @@ def main():
         paths.update(p for p in (ROOT/"tests/calculator-completion/fixtures").rglob("*") if p.is_file())
         paths.update(p for p in (ROOT/"tests/calculator-input/fixtures").rglob("*") if p.is_file())
         paths.update(p for p in (ROOT/"tests/notes-editor-phase/fixtures").rglob("*") if p.is_file())
+        paths.update(p for p in (ROOT/"tests/completion-status/fixtures").rglob("*") if p.is_file())
+        paths.update(p for p in (ROOT/"tests/observation-collection/fixtures").rglob("*") if p.is_file())
         if any(p.is_symlink() for p in paths): raise RuntimeError("Host inputs must not be symbolic links")
         return [{"path":str(p.relative_to(ROOT)),"sha256":hashlib.sha256(p.read_bytes()).hexdigest()}
                 for p in sorted(paths)]
@@ -125,6 +127,8 @@ def main():
             "--source",ROOT,"--output",out/"task-completion","--release8"])
         run("calculator-completion-pure",[sys.executable,"-B",ROOT/"tests/calculator-completion/run_host_tests.py",
             "--source",ROOT,"--output",out/"calculator-completion-pure","--release8"])
+        run("observation-collection",[sys.executable,"-B",ROOT/"tests/observation-collection/run_host_tests.py",
+            "--source",ROOT,"--output",out/"observation-collection","--release8"])
         if all_inputs()!=report["source_inputs"]: raise RuntimeError("Source changed during host checks")
         report["all_pass"]=True
     except Exception as error:

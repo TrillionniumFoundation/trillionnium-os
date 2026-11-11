@@ -1,6 +1,52 @@
-# Hepta v49: constrain verified task inputs and preserve failed-action evidence
+# Hepta v50: bind success choices to current proof and expose collection limits
 
-Current candidate: versionCode 49 (`0.49.0-local-task-inputs`), based on frozen
+Current candidate: versionCode 50 (`0.50.0-local-observation`), based on frozen
+v49 commit `06fb07b957c63622628afae90ec52887523b0860`.
+
+The controller now intersects the immutable OWNER permission for success with
+its existing completion predicate for the current observed frame. The exact
+native grammar offers `done.status=success` only when both predicates hold;
+`partial` and `failure` remain available within the existing tool authority.
+The prompt publishes the same `completion.allowed_done_statuses`, and the
+controller checks the same frozen grammar predicate after parsing and again
+before dispatch. A parsed raw model success claim remains in original evidence
+even when rejected at this earlier gate. The final fresh observation, installed
+identity, stable completion and cleanup checks still decide actual completion.
+No navigation or action is selected or dispatched by this status filter.
+
+The selected accessibility tree has independent bounds of 1,536 visited nodes,
+128 retained useful nodes, and fewer than 6,144 retained UTF-16 text units. Every
+new observation records actual visited/retained counts, pending queue entries,
+direct child slots not queued at the traversal limit, useful rows rejected at
+row/text limits, reason codes and elapsed collection time. These counters do
+not estimate the unknown number of unvisited descendants or grant actions.
+Legacy observations keep unknown counters. Per-node package and class facts
+are archived, and collection timing does not enter visible tree identity.
+Prompt `nodes_omitted` counts only dropped observed rows; a separately reported
+truncated tree is not converted into one fictitious missing node. Native exact-token admission
+and profile/context limits remain unchanged.
+
+The original v49 Notes regression preserves both premature native success
+claims and the partial three-step task. A separate original browser XML has
+975 nodes and is explicitly a later independent snapshot, not either selected
+model-bound frame. Host replay compares the exact old and new collection
+methods on that topology with declared synthetic Android IO. XML does not
+supply platform action lists or isVisibleToUser/isEditable facts; no actual
+click, scroll, or query success can be inferred from that replay. Real phone
+collection cost, prompt admission and useful page coverage require new traces.
+
+Notes still requires this task's creation, complete body, unique original list
+provenance, model click on the same item, reopened body and stable final proof.
+Calculator's pure matcher remains outside completion; a WEB query dispatch is
+also not result verification. No new Calculator or WEB completion provider,
+model/profile/runtime/sampler change, or additional tool authority is included.
+Original failed and partial tasks are not reclassified by host regressions.
+Full host release gates, Android compilation/signing and phone acceptance are
+recorded in separate receipts and cannot substitute for one another.
+
+## v49 predecessor: constrain verified task inputs and preserve failed-action evidence
+
+The v49 predecessor is versionCode 49 (`0.49.0-local-task-inputs`), based on frozen
 v48 commit `68cb7d8df097519694c52bf766c3816b09f2d0ea`.
 
 For the supported literal Notes contract, this task's proved creation and its

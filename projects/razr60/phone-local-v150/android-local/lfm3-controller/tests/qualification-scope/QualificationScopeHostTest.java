@@ -95,6 +95,11 @@ public final class QualificationScopeHostTest {
         public Handle generate(String prompt,String system,File image,DecisionGrammar grammar,int n,long timeout,Callback callback){
             calls++;try{
                 String text=env.actionText(action,target);
+                // This fixture exercises scope/lease handling, not a supported
+                // business goal. Respect the real grammar's terminal domain;
+                // deliberately invalid success claims have separate regression cases.
+                if("done".equals(action)&&!grammar.successAllowed)
+                    text=new JSONObject(text).put("status","partial").toString();
                 // In the independent label-first integration, obtain the required
                 // open label from the actual supplied grammar, never a guessed label.
                 if("open".equals(action))try{
@@ -152,12 +157,12 @@ public final class QualificationScopeHostTest {
         }});
         for(String changed:new String[]{QualificationScope.FILE_NAME,"model/runtime-config.json"})test("controller_rechecks_"+changed+"_after_blocking_close",()->{try(Env e=new Env(true)){
             e.closeMutation=()->write(e.dir.resolve(changed),bytes("{}"),0600);LocalTaskController.TaskResult r=e.controller("done",SETTINGS,null);
-            check("failed".equals(r.status)&&r.modelReportedSuccess&&!r.completionVerified&&r.cleanupKnown&&r.steps==2,"post-close mutation must fail while preserving the raw unverified model claim");
+            check("failed".equals(r.status)&&!r.modelReportedSuccess&&!r.completionVerified&&r.cleanupKnown&&r.steps==1,"post-close mutation must fail even after a grammar-conforming partial report");
             JSONObject value=new JSONObject(new String(Files.readAllBytes(r.evidenceDirectory.toPath().resolve("result.json")),StandardCharsets.UTF_8));
             check(value.getJSONObject("qualification_scope").getBoolean("scope_refused"),"post-close refusal recorded");
         }});
         test("controller_valid_done_retains_expected_actual_and_scope_receipt",()->{try(Env e=new Env(true)){
-            LocalTaskController.TaskResult r=e.controller("done",SETTINGS,null);check("partial".equals(r.status)&&r.modelReportedSuccess&&!r.completionVerified&&r.steps==2&&r.cleanupKnown&&e.service.effects()==0,"authorized done preserves scope without manufacturing goal proof");check(e.scopeSha.equals(r.expectedScopeSha256)&&e.scopeSha.equals(r.actualScopeSha256),"result object identity");
+            LocalTaskController.TaskResult r=e.controller("done",SETTINGS,null);check("partial".equals(r.status)&&!r.modelReportedSuccess&&!r.completionVerified&&r.steps==1&&r.cleanupKnown&&e.service.effects()==0,"authorized partial report preserves scope without manufacturing goal proof");check(e.scopeSha.equals(r.expectedScopeSha256)&&e.scopeSha.equals(r.actualScopeSha256),"result object identity");
         }});
     }
     static void apkSplitCases()throws Exception{
@@ -178,7 +183,7 @@ public final class QualificationScopeHostTest {
                 }
                 bound.verifyUnchanged();
                 LocalTaskController.TaskResult result=e.controller("done",SETTINGS,null);
-                check("partial".equals(result.status)&&result.steps==2&&result.modelReportedSuccess&&!result.completionVerified&&result.cleanupKnown,"base-only controller must reach bounded unverified model completion: "+result.summary);
+                check("partial".equals(result.status)&&result.steps==1&&!result.modelReportedSuccess&&!result.completionVerified&&result.cleanupKnown,"base-only controller must retain an honest partial report: "+result.summary);
             }});
         }
         test("installed_nonempty_split_pairs_hash_and_revalidation",()->{try(Env e=new Env(true)){
@@ -222,7 +227,7 @@ public final class QualificationScopeHostTest {
             check(bound.scopePath.equals(e.dir.resolve(QualificationScope.FILE_NAME).toFile()),"scope must retain canonical root plus unchanged child");
             check(bound.runtimeFile.path.equals(e.dir.resolve("model/runtime-config.json").toFile()),"runtime must share captured canonical root");
             LocalTaskController.TaskResult r=e.controller("done",SETTINGS,null);
-            check("partial".equals(r.status)&&r.modelReportedSuccess&&!r.completionVerified&&r.cleanupKnown&&r.steps==2,"scoped controller must reach bounded unverified model completion: "+r.summary);
+            check("partial".equals(r.status)&&!r.modelReportedSuccess&&!r.completionVerified&&r.cleanupKnown&&r.steps==1,"scoped controller must retain an honest partial report: "+r.summary);
             check(e.scopeSha.equals(r.expectedScopeSha256)&&e.scopeSha.equals(r.actualScopeSha256)&&e.service.effects()==0,"scope identity and zero UI effects");
             Path evidence=r.evidenceDirectory.toPath();
             check(Arrays.equals(e.config,Files.readAllBytes(evidence.resolve("qualification-scope.json"))),"scope evidence exact bytes");

@@ -50,6 +50,7 @@ def main():
     files += [source / 'tests/calculator-input/CalculatorInputGuardHostTest.java',
               source / 'tests/calculator-input/FailedActionObservationHostTest.java']
     files += [source / 'tests/notes-editor-phase/NotesEditorPhaseHostTest.java']
+    files += [source / 'tests/completion-status/CompletionStatusHostTest.java']
     pins = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     phase_fixture = source / 'tests/notes-task-phase/fixtures/v45-notes-trace.json'
     phase_recognizer = source / 'tests/notes-task-phase/test_phase_grammar.py'
@@ -58,7 +59,8 @@ def main():
     scope_fixture = source / 'tests/notes-task-phase/fixtures/v47-notes-scope-trace.json'
     calculator_fixture = source / 'tests/calculator-input/fixtures/v47-background-type-failure.json'
     editor_fixture = source / 'tests/notes-editor-phase/fixtures/v48-editor-click-trace.json'
-    for p in (phase_fixture, phase_recognizer, list_fixture, recovery_fixture, scope_fixture, calculator_fixture, editor_fixture):
+    completion_status_fixture = source / 'tests/completion-status/fixtures/v49-premature-success-trace.json'
+    for p in (phase_fixture, phase_recognizer, list_fixture, recovery_fixture, scope_fixture, calculator_fixture, editor_fixture, completion_status_fixture):
         pins[str(p)] = hashlib.sha256(p.read_bytes()).hexdigest()
     classes = out / 'classes'
     classes.mkdir()
@@ -80,6 +82,8 @@ def main():
         ('failed-action-observation', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.FailedActionObservationHostTest', str(out / 'failed-action-observation')]),
         ('notes-editor-phase', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesEditorPhaseHostTest', str(editor_fixture), str(out / 'notes-editor-phase')]),
         ('notes-editor-phase-grammar', [sys.executable, str(phase_recognizer), str(out / 'notes-editor-phase/grammar-cases.json')]),
+        ('completion-status', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.CompletionStatusHostTest', str(completion_status_fixture), str(out / 'completion-status')]),
+        ('completion-status-grammar', [sys.executable, str(phase_recognizer), str(out / 'completion-status/grammar-cases.json')]),
     ]
     report = {'schema': 'hepta.task-completion-host.v1', 'source_inputs': pins, 'extraction': extraction,
               'compiler_contract': 'Java 8 API release' if args.release8 else 'Java 8 syntax/target only; not release8 or Android proof',

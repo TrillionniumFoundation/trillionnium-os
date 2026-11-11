@@ -134,7 +134,7 @@ public final class OwnerAuthorizationWiringHostTest {
             try{
                 String kind="forbidden".equals(mode)?"click":calls==1?"find_app":calls==2?"open":"done";
                 String target="open".equals(kind)?CLOCK:grammar.currentPackage;
-                String text=actionText(grammar.observationId,grammar.currentPackage,kind,target,"时钟",0,"success","测试");
+                String text=actionText(grammar.observationId,grammar.currentPackage,kind,target,"时钟",0,grammar.successAllowed?"success":"partial","测试");
                 callback.onSuccess(text,String.format(Locale.ROOT,"%032x",calls));
             }catch(Exception error){throw new IllegalStateException(error);}
             return ()->{};
@@ -248,15 +248,17 @@ public final class OwnerAuthorizationWiringHostTest {
         }});
         test("controller_real_find_open_observation_done_full_evidence_chain",()->{try(QualificationScopeHostTest.Env e=env()){
             ScriptModel model=new ScriptModel(e,"sequence");e.service.effectHook=()->e.service.prepare(CLOCK);LocalTaskController.TaskResult r=controller(e,model);controllerIdentity(r,model);
-            check("partial".equals(r.status)&&r.modelReportedSuccess&&!r.completionVerified&&r.cleanupKnown&&model.calls==4&&e.service.opens==1&&e.service.effects()==1,"actual controlled sequence closes with one open and two unverified success claims");
+            check("partial".equals(r.status)&&!r.modelReportedSuccess&&!r.completionVerified&&r.cleanupKnown&&model.calls==3&&e.service.opens==1&&e.service.effects()==1,"actual controlled sequence closes with one open and a grammar-conforming partial report");
             Path evidence=r.evidenceDirectory.toPath();TaskAuthorization expected=TaskAuthorization.parse(CLOCK_OWNER);
-            for(int step=1;step<=4;step++){
+            for(int step=1;step<=3;step++){
                 JSONObject a=json(evidence.resolve(String.format(Locale.ROOT,"step-%02d-action.json",step))),m=json(evidence.resolve(String.format(Locale.ROOT,"step-%02d-model-0.json",step)));
                 check(a.getString("model_run_id").equals(m.getString("run_id"))&&expected.sha256.equals(a.getString("task_authorization_sha256")),"action is bound to actual model run and Owner contract");
                 JSONObject auth=a.getJSONObject("task_authorization"),last=auth.getJSONObject("last_check");
                 check(r.taskId.equals(auth.getString("task_id"))&&a.getString("model_run_id").equals(last.getString("model_run_id"))&&last.getBoolean("allowed")&&auth.getBoolean("callback_lease_current")&&!auth.getBoolean("callback_cancelled"),"actual callback evidence closed");
                 JSONObject data=promptData(model.prompts.get(step-1));boolean expectedSuccess=step>=3;
                 check(data.getJSONObject("task_authorization").getBoolean("success_done_allowed")==expectedSuccess,"success gate only opens after real target observation");
+                check(!model.grammars.get(step-1).successAllowed&&!data.getJSONObject("completion").getBoolean("done_success_eligible"),
+                        "method authorization does not manufacture an unsupported goal verifier");
                 if(step<3)check(!data.has("last_model_decision"),"initial frame and read-only find_app do not manufacture dispatched intention");
                 else{
                     JSONObject prior=data.getJSONObject("last_model_decision");
@@ -288,12 +290,12 @@ public final class OwnerAuthorizationWiringHostTest {
                 Thread.sleep(1);
             }
             LocalTaskController.TaskResult r=tasks.lastResult;check(r!=null&&session!=null,"same user-button task reaches actual terminal session write");controllerIdentity(r,model);
-            check(model.calls==4&&e.service.opens==1&&r.cleanupKnown&&r.modelReportedSuccess&&!r.completionVerified&&!session.getBoolean("completion_verified")&&session.getBoolean("cleanup_known")&&!session.getBoolean("pending")&&!session.getBoolean("running"),"single actual controlled chain completed cleanly");
+            check(model.calls==3&&e.service.opens==1&&r.cleanupKnown&&!r.modelReportedSuccess&&!r.completionVerified&&!session.getBoolean("completion_verified")&&session.getBoolean("cleanup_known")&&!session.getBoolean("pending")&&!session.getBoolean("running"),"single actual controlled chain closes with an honest partial report");
             check(r.taskId.equals(session.getString("task_id"))&&"user_button".equals(session.getString("origin"))&&session.isNull("debug_nonce_sha256"),"ordinary source survives without debug nonce");
             check(expected.sha256.equals(session.getString("task_authorization_sha256"))&&expected.instructionSha256.equals(session.getString("instruction_sha256")),"pending and terminal session retain exact same contract/owner");
             Path directory=r.evidenceDirectory.toPath();JSONObject owner=json(directory.resolve("owner.json")),terminal=json(directory.resolve("result.json"));
             check(CLOCK_OWNER.equals(owner.getString("instruction"))&&expected.instructionSha256.equals(owner.getString("instruction_utf8_sha256")),"actual OWNER original UTF-8 bytes preserved");
-            for(int step=1;step<=4;step++){
+            for(int step=1;step<=3;step++){
                 JSONObject action=json(directory.resolve(String.format(Locale.ROOT,"step-%02d-action.json",step))),nativeAnswer=json(directory.resolve(String.format(Locale.ROOT,"step-%02d-model-0.json",step)));
                 JSONObject authorization=action.getJSONObject("task_authorization"),last=authorization.getJSONObject("last_check");String run=nativeAnswer.getString("run_id");
                 check(expected.instructionSha256.equals(nativeAnswer.getString("original_instruction_sha256"))&&run.equals(action.getString("model_run_id"))&&run.equals(last.getString("model_run_id")),"actual model answer/action/check run and owner binding");

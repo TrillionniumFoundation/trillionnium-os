@@ -1,0 +1,57 @@
+    private Graph readGraph(){
+        BackgroundSession background=currentBackground();
+        AccessibilityNodeInfo root=selectedRoot();if(root==null)throw new NoActiveWindow();
+        Graph graph=new Graph();graph.displayId=background==null?Display.DEFAULT_DISPLAY:background.displayId();
+        graph.backgroundGeneration=background==null?null:background.generation;
+        graph.backgroundBootstrapPackage=background==null?null:background.selection.initialPackage;
+        graph.backgroundAllowedPackages=background==null?java.util.Collections.<String>emptyList():background.selection.allowedPackages;
+        graph.packageName=string(root.getPackageName());graph.windowId=root.getWindowId();graph.rotation=rotation(graph.displayId);graph.bounds=new Rect();root.getBoundsInScreen(graph.bounds);
+        if(graph.packageName.isEmpty()||graph.bounds.isEmpty()){root.recycle();throw new IllegalStateException("活动窗口身份不可用");}
+        graph.windowMetadata=readWindowMetadata(root,graph.bounds,graph.windowId,graph.displayId);
+        if(background!=null&&(graph.windowMetadata.displayId==null||graph.windowMetadata.displayId.intValue()!=graph.displayId
+                ||!background.allows(graph.packageName))){root.recycle();throw new IllegalStateException("后台观察窗口越界");}
+        ArrayDeque<AccessibilityNodeInfo> queue=new ArrayDeque<AccessibilityNodeInfo>();queue.add(root);
+        StringBuilder signatures=new StringBuilder(),focusStates=new StringBuilder(),scrollStates=new StringBuilder();int visited=0,characters=0;
+        try{
+            while(!queue.isEmpty()&&visited<MAX_VISITED){
+                AccessibilityNodeInfo node=queue.removeFirst();visited++;
+                try{
+                    // selectedRoot refreshed the root before graph metadata was read.
+                    // Descendants may still be cached; never publish an old body as a new frame.
+                    if(background!=null&&node!=root&&!node.refresh())throw new StaleObservation("后台子节点已不可用，需重新观察");
+                    Rect bounds=new Rect();node.getBoundsInScreen(bounds);boolean visible=node.isVisibleToUser()&&!bounds.isEmpty();
+                    String text=node.isPassword()?"":limited(string(node.getText()),96);
+                    String description=node.isPassword()?"":limited(string(node.getContentDescription()),96);
+                    ObservedScrollActions scrollActions=readScrollActions(node);
+                    ObservedImeEnter imeEnter=readImeEnter(node);String inputHash=inputTextHash(node);
+                    boolean useful=visible&&(node.isClickable()||node.isEditable()||node.isScrollable()||!text.isEmpty()||!description.isEmpty());
+                    if(useful){
+                        ObservedChildText.Result childText=graph.rows.size()<MAX_NODES?observedChildText(node,background!=null):ObservedChildText.notApplicable();
+                        if(graph.rows.size()<MAX_NODES&&characters+text.length()+description.length()+childText.text.length()<2400){
+                            String id="n"+graph.rows.size();NodeRef reference=new NodeRef(node,childText,scrollActions,imeEnter,inputHash);graph.refs.put(id,reference);signatures.append(reference.appTreeSignature).append('\n');
+                            scrollStates.append(id).append('=').append(scrollActions.fingerprintInput()).append('\n');
+                            boolean focused=node.isFocused();focusStates.append(id).append('=').append(focused).append('|').append(imeEnter.fingerprintInput()).append('|').append(inputHash).append('\n');
+                            graph.rows.add(new PhoneObservation.Node(id,string(node.getPackageName()),string(node.getClassName()),limited(string(node.getViewIdResourceName()),96),text,description,bounds,node.isClickable(),node.isEditable(),node.isScrollable(),node.isEnabled(),focused,node.isPassword(),childText,scrollActions,imeEnter,inputHash,
+                                    node.isEditable()&&focused&&node.isEnabled()&&!node.isPassword()&&imeEnter.queryAllowed()&&submitAvailable(string(node.getPackageName()),inputHash),reference.appTreeSignature));
+                            characters+=text.length()+description.length()+childText.text.length();
+                        }else graph.truncated=true;
+                    }
+                    int children=Math.min(node.getChildCount(),MAX_VISITED-visited-queue.size());
+                    if(children<node.getChildCount())graph.truncated=true;
+                    for(int index=0;index<children;index++){
+                        AccessibilityNodeInfo child=node.getChild(index);
+                        if(child!=null)queue.add(child);
+                        else if(background!=null)throw new StaleObservation("后台子树已变化，需重新观察");
+                    }
+                }finally{node.recycle();}
+            }
+            if(!queue.isEmpty())graph.truncated=true;
+            String binding=background==null?"":("background="+background.generation+"|display="+graph.displayId+"|");
+            String appTree=sha((binding+graph.packageName+"|"+graph.windowId+"|"+graph.rotation+"|"+graph.bounds+"|"+signatures).getBytes(StandardCharsets.UTF_8));
+            graph.state=new ObservationState(appTree,readImeVisibility(graph.windowId,graph.displayId));
+            // Focus is newly model-visible evidence, not an expansion of the old progress predicate.
+            graph.digest=sha(graph.windowMetadata.bindFreshness(graph.state.fingerprintInput()+"\nnode_focus="+focusStates+"\nnode_scroll_actions="+scrollStates)
+                    .getBytes(StandardCharsets.UTF_8));return graph;
+        }catch(RuntimeException e){graph.close();throw e;}
+        finally{while(!queue.isEmpty())queue.removeFirst().recycle();}
+    }

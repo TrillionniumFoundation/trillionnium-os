@@ -118,7 +118,10 @@ public final class TaskCompletionGateHostTest {
             calls++;prompts.add(prompt);
             try{
                 check(prompt.endsWith("\nOWNER\n"+owner)&&prompt.contains("\"completion\":"),"owner unchanged; structured completion included in actual model input");
-                check(ActionDecision.FIXED_INTENT_ACTION_SCHEMA.equals(grammar.schema)&&grammar.text.contains("success"),"v6 grammar remains unchanged, completion is controller-only");
+                JSONObject data=new JSONObject(prompt.substring("UNTRUSTED_DATA\n".length(),prompt.lastIndexOf("\nOWNER\n")));
+                check(ActionDecision.FIXED_INTENT_ACTION_SCHEMA.equals(grammar.schema)
+                        &&grammar.successAllowed==data.getJSONObject("completion").getBoolean("done_success_eligible"),
+                        "current completion eligibility and the actual generated grammar agree");
                 String tool="done";
                 if("complete".equals(mode)||mode.startsWith("close_")){tool=calls==2?"notes.create":calls==3?"back":calls==4?"click":"done";}
                 if("detour".equals(mode)){
@@ -131,7 +134,7 @@ public final class TaskCompletionGateHostTest {
                     }
                 }
                 if("draft".equals(mode))tool=calls==1?"notes.create":"done";
-                if("web".equals(mode))tool=calls==2?"web.search":"done";
+                if("web".equals(mode))tool=calls==1?"web.search":"done";
                 if("cancel".equals(mode)&&calls==2)e.controller.stop();
                 JSONObject a=new JSONObject().put("reason","synthetic native IO choice").put("action",tool).put("observation_id",grammar.observationId);
                 if(FixedIntentTools.isTool(tool)){
@@ -142,7 +145,13 @@ public final class TaskCompletionGateHostTest {
                 }else{
                     a.put("package",grammar.currentPackage);
                     if("click".equals(tool))a.put("node_label",ObservedTargetLabels.project(BODY)).put("node_id","n0");
-                    if("done".equals(tool))a.put("status","success").put("summary","模型宣称成功，此原文不能替代验证");
+                    if("done".equals(tool)){
+                        // The first premature success is deliberately outside
+                        // the actual supplied grammar. A following partial is
+                        // an explicit fake-model correction, never a controller action.
+                        String status=(("draft".equals(mode)||"web".equals(mode))&&calls>=3)?"partial":"success";
+                        a.put("status",status).put("summary","模型声明原文不能替代完成证据");
+                    }
                 }
                 callback.onSuccess(a.toString(),id(calls));
             }catch(Exception x){throw new IllegalStateException(x);}return ()->{};
@@ -156,19 +165,32 @@ public final class TaskCompletionGateHostTest {
             check(e.controller.start(owner,null,new LocalTaskController.Listener(){public void onState(String v){}public void onFinished(LocalTaskController.TaskResult r){box[0]=r;done.countDown();}}),"ordinary task starts");check(done.await(10,TimeUnit.SECONDS),"ordinary controller finishes");
             LocalTaskController.TaskResult r=box[0];check(r!=null&&r.cleanupKnown&&r.modelReportedSuccess&&r.completionVerified==verified,"raw model claim and independently checked completion separated: "+mode+" / "+(r==null?"null":r.status+" "+r.summary));
             check(m.calls==expectedCalls&&m.ends==1,"bounded continuation and one retained task worker teardown");
-            check((verified?"model_reported_done":"cancel".equals(mode)?"cancelled":"close_invalid_receipt".equals(mode)?"failed":"partial").equals(r.status),"honest terminal status: "+mode+" / "+r.status);
+            check((verified?"model_reported_done":"cancel".equals(mode)?"cancelled":("close_invalid_receipt".equals(mode)||"readonly".equals(mode))?"failed":"partial").equals(r.status),"honest terminal status: "+mode+" / "+r.status);
             JSONObject result=FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("result.json"));check(result.getBoolean("model_reported_success")&&result.getBoolean("completion_verified")==verified,"terminal keeps original native success claim");
             check(result.getBoolean("goal_independently_verified")==verified,"independent goal field follows actual supported completion evidence");
-            if("complete".equals(mode)){check(e.service.opens==1&&e.service.navigations==1&&e.service.node.actions==1,"one actual fixed Intent then actual back and same-node click");check(Files.exists(r.evidenceDirectory.toPath().resolve("step-01-completion-reobserve.json")),"premature first done led to a new recorded observation");}
+            if("complete".equals(mode)){
+                check(e.service.opens==1&&e.service.navigations==1&&e.service.node.actions==1,"one actual fixed Intent then actual back and same-node click");
+                check(Files.exists(r.evidenceDirectory.toPath().resolve("step-01-budget-1.json"))
+                        &&!Files.exists(r.evidenceDirectory.toPath().resolve("step-01-completion-reobserve.json")),
+                        "off-grammar first success is rejected before service, with one bounded native format correction");
+                JSONObject rejected=new JSONObject(FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("step-01-model-0.json")).getString("raw_text"));
+                check("done".equals(rejected.getString("action"))&&"success".equals(rejected.getString("status")),
+                        "original rejected native output stays archived");
+            }
             if("detour".equals(mode)){
                 check(e.service.opens==2&&e.service.navigations==0&&e.service.node.actions==1,"external window change is reobserved; model opens only Notes then clicks its same item");
                 JSONObject stale=FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("step-02-action.json"));
                 check(stale.getBoolean("stale")&&!stale.getBoolean("dispatched"),"outdated editor navigation never dispatches after external window change");
             }
-            if("readonly".equals(mode)||"cancel".equals(mode))check(e.service.effects()==0,"read-only unknown task was never forced to write or navigate");
+            if("readonly".equals(mode)||"cancel".equals(mode)){
+                check(e.service.effects()==0,"read-only unknown task was never forced to write or navigate");
+                check(!Files.exists(r.evidenceDirectory.toPath().resolve("step-01-action.json")),"invalid success never reaches even a no-effect service done callback");
+                check(result.getJSONObject("completion_evidence").getInt("rejected_success_claims")==0,
+                        "front-end eligibility rejection is distinct from a final provider rejection");
+            }
             if("draft".equals(mode))check(e.service.opens==1&&e.service.navigations==0&&e.service.node.actions==0,"accepted draft alone never becomes saved note; no replay");
             if("web".equals(mode))check(e.service.opens==1&&result.getJSONObject("completion_evidence").getBoolean("web_query_dispatched"),"web method executed exactly once but result proof unavailable");
-            if(mode.startsWith("close_")){check(e.service.opens==1&&e.service.navigations==1&&e.service.node.actions==1,"completed visible chain is not replayed when terminal verification fails");check(FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("step-05-completion-check.json")).getBoolean("accepted_as_completed"),"the sequence verified before actual blocking model close");check(!result.getJSONObject("completion_evidence").getBoolean("terminal_binding_and_cleanup_verified"),"post-close failure removes verified completion without erasing raw model claim");}
+            if(mode.startsWith("close_")){check(e.service.opens==1&&e.service.navigations==1&&e.service.node.actions==1,"completed visible chain is not replayed when terminal verification fails");check(FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("step-04-completion-check.json")).getBoolean("accepted_as_completed"),"the sequence verified before actual blocking model close");check(!result.getJSONObject("completion_evidence").getBoolean("terminal_binding_and_cleanup_verified"),"post-close failure removes verified completion without erasing raw model claim");}
         }
     }
     static void bridgeCase()throws Exception{

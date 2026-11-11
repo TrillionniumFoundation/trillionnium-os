@@ -231,7 +231,10 @@ public final class NotesTaskScopeHostTest {
                 }
                 for(String status:new String[]{"partial","failure","success"}){
                     String done=decision(before,"done",null,null,null,status);domain.requireCurrent(parsed(done));checks++;
-                    grammar(prefix+"done-"+status,gb,done,true);
+                    boolean eligible=!"success".equals(status);
+                    grammar(prefix+"done-"+status,gb,done,eligible);
+                    if(eligible){gb.requireCompletionStatus(parsed(done));checks++;}
+                    else denied(()->gb.requireCompletionStatus(parsed(done)),"current list is not completed same-item reopen evidence");
                 }
                 String wait=decision(before,"wait",null,null,null,null);domain.requireCurrent(parsed(wait));checks++;grammar(prefix+"wait",gb,wait,true);
                 check(!g.verified(before),"done branch never manufactures same-item reopen or success");

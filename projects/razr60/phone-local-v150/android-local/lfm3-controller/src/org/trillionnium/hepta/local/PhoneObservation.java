@@ -11,6 +11,42 @@ import java.util.List;
 
 /** Immutable description of one observed active window and original-size screenshot. */
 public final class PhoneObservation {
+    /** Counters from the real bounded traversal, never inferred from a flat
+     * archived node list. Legacy observations have no counters. These describe
+     * collection limits; they do not supply node actions or business evidence. */
+    public static final class CollectionStats {
+        public static final String SCHEMA="hepta.observation-collection.v1";
+        public final int visitLimit,nodeLimit,textLimit,visited,retained,textUtf16,pending,
+                nodeBudgetOmissions,textBudgetOmissions;
+        public final long childSlotsOmitted,elapsedMs;
+        public final List<String> limitReasons;
+        CollectionStats(int visitLimit,int nodeLimit,int textLimit,int visited,int retained,int textUtf16,
+                        int pending,int nodeBudgetOmissions,int textBudgetOmissions,long childSlotsOmitted,long elapsedMs){
+            if(visitLimit<=0||nodeLimit<=0||textLimit<=0||visited<0||visited>visitLimit
+                    ||retained<0||retained>nodeLimit||textUtf16<0||textUtf16>=textLimit
+                    ||pending<0||pending>visitLimit||nodeBudgetOmissions<0||textBudgetOmissions<0
+                    ||childSlotsOmitted<0||elapsedMs<0)throw new IllegalArgumentException("invalid actual collection counters");
+            this.visitLimit=visitLimit;this.nodeLimit=nodeLimit;this.textLimit=textLimit;
+            this.visited=visited;this.retained=retained;this.textUtf16=textUtf16;this.pending=pending;
+            this.nodeBudgetOmissions=nodeBudgetOmissions;this.textBudgetOmissions=textBudgetOmissions;
+            this.childSlotsOmitted=childSlotsOmitted;this.elapsedMs=elapsedMs;
+            List<String> reasons=new ArrayList<String>();
+            if(childSlotsOmitted>0||pending>0)reasons.add("traversal_limit");
+            if(nodeBudgetOmissions>0)reasons.add("node_limit");
+            if(textBudgetOmissions>0)reasons.add("text_limit");
+            limitReasons=Collections.unmodifiableList(reasons);
+        }
+        public boolean truncated(){return !limitReasons.isEmpty();}
+        JSONObject json()throws JSONException{
+            return new JSONObject().put("schema",SCHEMA).put("source","same_observed_accessibility_traversal")
+                    .put("visit_limit",visitLimit).put("node_limit",nodeLimit).put("text_utf16_exclusive_limit",textLimit)
+                    .put("visited_nodes",visited).put("retained_nodes",retained).put("retained_text_utf16",textUtf16)
+                    .put("pending_nodes_at_stop",pending).put("child_slots_omitted_by_traversal_limit",childSlotsOmitted)
+                    .put("nodes_omitted_by_node_limit",nodeBudgetOmissions).put("nodes_omitted_by_text_limit",textBudgetOmissions)
+                    .put("truncation_reasons",new JSONArray(limitReasons)).put("elapsed_ms",elapsedMs)
+                    .put("unvisited_descendant_count_known",false).put("grants_action_capability",false);
+        }
+    }
     public static final class Node {
         public final String id, packageName, className, viewId, text, description;
         public final ObservedChildText.Result childText;
@@ -59,6 +95,7 @@ public final class PhoneObservation {
         JSONObject json() throws JSONException {
             JSONObject value=new JSONObject();
             value.put("id",id); value.put("bounds",new JSONArray(new int[]{bounds.left,bounds.top,bounds.right,bounds.bottom}));
+            value.put("package",packageName).put("class_name",className);
             if (!text.isEmpty()) value.put("text",text);
             if (!description.isEmpty()) value.put("description",description);
             if (!"not_applicable".equals(childText.status)) {
@@ -92,6 +129,7 @@ public final class PhoneObservation {
     public final long capturedElapsedMillis;
     public final int width, height, rotation, windowId;
     public final boolean nodesTruncated;
+    public final CollectionStats collectionStats;
     public final File screenshot;
     public final List<Node> nodes;
     public final String backgroundGeneration,backgroundBootstrapPackage;
@@ -108,6 +146,16 @@ public final class PhoneObservation {
                      Rect bounds,File screenshot,String screenshotSha256,String treeSha256,
                      ObservationState state,ObservedWindowMetadata windowMetadata,boolean truncated,List<Node> nodes,
                      String backgroundGeneration,String backgroundBootstrapPackage,List<String> backgroundAllowedPackages) {
+        this(id,packageName,at,width,height,rotation,windowId,bounds,screenshot,screenshotSha256,treeSha256,
+                state,windowMetadata,truncated,nodes,backgroundGeneration,backgroundBootstrapPackage,backgroundAllowedPackages,null);
+    }
+    PhoneObservation(String id,String packageName,long at,int width,int height,int rotation,int windowId,
+                     Rect bounds,File screenshot,String screenshotSha256,String treeSha256,
+                     ObservationState state,ObservedWindowMetadata windowMetadata,boolean truncated,List<Node> nodes,
+                     String backgroundGeneration,String backgroundBootstrapPackage,List<String> backgroundAllowedPackages,CollectionStats collectionStats) {
+        if(collectionStats!=null&&(collectionStats.retained!=nodes.size()||collectionStats.truncated()!=truncated))
+            throw new IllegalArgumentException("collection counters differ from actual observed nodes");
+        this.collectionStats=collectionStats;
         this.backgroundGeneration=backgroundGeneration;this.backgroundBootstrapPackage=backgroundBootstrapPackage;
         this.backgroundAllowedPackages=Collections.unmodifiableList(new ArrayList<String>(backgroundAllowedPackages));
         this.id=id;this.packageName=packageName;this.capturedElapsedMillis=at;
@@ -164,6 +212,7 @@ public final class PhoneObservation {
         value.put("ime_visible",state.imeVisibility.value()==null?JSONObject.NULL:state.imeVisibility.value());
         value.put("scroll_actions_schema",ObservedScrollActions.SCHEMA);
         value.put("node_data_is_untrusted",true);value.put("nodes_truncated",nodesTruncated);
+        value.put("collection",collectionStats==null?JSONObject.NULL:collectionStats.json());
         JSONArray array=new JSONArray();for(Node node:nodes) array.put(node.json());value.put("nodes",array);
         return value;
     }
