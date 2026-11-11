@@ -187,8 +187,10 @@ final class QualificationScopeConfig {
             for(Map.Entry<String,Apk> e:value.apks.entrySet())hashes.put(e.getKey(),e.getValue().sha256);
             apkHashes=java.util.Collections.unmodifiableMap(hashes);
         }
-        static CompletionInstalledIdentity captureNotes(Context context)throws Exception{
-            Installed value=Installed.capture(context,"com.motorola.stylus");
+        static CompletionInstalledIdentity captureNotes(Context context)throws Exception{return capture(context,"com.motorola.stylus");}
+        static CompletionInstalledIdentity captureCalculator(Context context)throws Exception{return capture(context,"com.motorola.cn.calculator");}
+        private static CompletionInstalledIdentity capture(Context context,String packageName)throws Exception{
+            Installed value=Installed.capture(context,packageName);
             QualificationScope.require(value.uid>=10000&&value.uid<90000,"completion target must be an ordinary installed app");
             return new CompletionInstalledIdentity(value);
         }

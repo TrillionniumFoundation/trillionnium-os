@@ -1,6 +1,38 @@
-# Hepta v46: protect existing notes and verify observed sources
+# Hepta v47: responsive observations and checked task completion
 
-Current candidate: versionCode 46 (`0.46.0-local-note-phases`), based on frozen
+Current candidate: versionCode 47 (`0.47.0-local-observer-completion`), based on
+v46 commit `59432f43633fc710a4c8843d77803bcdbf613ec6` and the observation worker
+repair from `2dbb3b312748976b58b15a001ef1a02aef86e8bc`.
+
+Blocking accessibility reads, bitmap work and evidence writes now use one
+bounded observation worker. The main-thread owner can retire an expired request
+while that work is blocked. Task, request and background-display identities
+prevent a late result from becoming a new observation. A worker still doing
+heavy work prevents admission of another task. This changes observation work;
+it does not make all Android operations asynchronous.
+
+The narrow Motorola calculator completion contract requires a fresh, local-model
+action chain from the current input to the requested multiplication and its
+observed result. The controller independently computes the expected product;
+existing results, history rows and a model's success statement are insufficient.
+Installed app identity and cleanup still gate completion. The existing Notes
+create, save, list and reopen contract remains in place.
+
+The selected phone profile remains the local LFM3-1.7B QAD Q4_0 NPU candidate,
+8,192 context tokens and four helper threads. Model registration and code checks
+do not qualify model quality or completed phone tasks. See
+[the model deployment review](docs/LOCAL-MODELS-20261110.md) for current primary
+sources, memory limits, alternatives and measured older failure timings.
+
+Strict Java 8 host checks, Android compilation, signing, installation and actual
+phone acceptance are separate results. This source record does not claim those
+stages passed. See [OBSERVATION-WORKER.md](OBSERVATION-WORKER.md) and
+[CALCULATOR-COMPLETION.md](CALCULATOR-COMPLETION.md) for implementation scope and
+the supported completion evidence.
+
+## v46 predecessor: protect existing notes and verify observed sources
+
+The v46 predecessor is versionCode 46 (`0.46.0-local-note-phases`), based on frozen
 v45 commit `c0195c1d7708c76dcd18dbb31083f1b5c1c5123f`.
 
 The supported literal new-note contract now narrows the ordinary controller's

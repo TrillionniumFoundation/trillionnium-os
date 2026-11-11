@@ -1,0 +1,220 @@
+package org.trillionnium.hepta.local;
+
+import java.io.*;
+import java.nio.file.*;
+import java.security.MessageDigest;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+
+/** Production scheduling/ownership methods; Android calls are explicit instrumented fakes. */
+public final class ObserverPipelineHost {
+    interface ObservationCallback {void onObservation(PhoneObservation value);void onError(String error);}
+    interface Cancellation {boolean isCancelled();}
+    interface GraphBudget {void check();}
+    static final class SystemClock {static volatile long now=1000;static long elapsedRealtime(){return now;}}
+    static final class Display {static final int DEFAULT_DISPLAY=0;}
+    static final class Rect {int left=0,top=0,right=1080,bottom=2400;}
+    static final class BackgroundSession {final int display;BackgroundSession(int display){this.display=display;}int displayId(){return display;}}
+    static final class NoActiveWindow extends IllegalStateException {private static final long serialVersionUID=1L;}
+    static final class StaleObservation extends IllegalStateException {private static final long serialVersionUID=1L;}
+    static final class Graph {
+        final int serial;String packageName="fixture.notes",digest="same",backgroundGeneration;
+        int windowId=7,rotation=0,displayId;boolean truncated;final Rect bounds=new Rect();
+        final Object state=new Object(),windowMetadata=new Object(),rows=new Object();
+        final String backgroundBootstrapPackage="fixture.notes";final List<String> backgroundAllowedPackages=Collections.singletonList("fixture.notes");
+        boolean closed;
+        Graph(int serial,int display){this.serial=serial;displayId=display;backgroundGeneration=display==0?null:"generation";}
+        synchronized void close(){expect(!closed,"graph closed twice "+serial);closed=true;}
+    }
+    static final class HardwareBuffer {int closes;synchronized void close(){closes++;expect(closes==1,"buffer closed twice");}}
+    static final class ScreenshotResult {
+        final HardwareBuffer buffer=new HardwareBuffer();HardwareBuffer getHardwareBuffer(){return buffer;}Object getColorSpace(){return null;}
+    }
+    interface TakeScreenshotCallback {void onFailure(int code);void onSuccess(ScreenshotResult result);}
+    static final int ERROR_TAKE_SCREENSHOT_INTERVAL_TIME_SHORT=3;
+    static final class Bitmap {
+        static final List<Bitmap> made=Collections.synchronizedList(new ArrayList<Bitmap>());
+        static volatile Runnable copyHook,encodeHook;
+        boolean recycled;final boolean wrapper;
+        Bitmap(boolean wrapper){this.wrapper=wrapper;made.add(this);}
+        static final class Config {static final Config ARGB_8888=new Config();}
+        static final class CompressFormat {static final CompressFormat PNG=new CompressFormat();}
+        static Bitmap wrapHardwareBuffer(HardwareBuffer ignored,Object color){expect(!isMain(),"hardware copy on main");return new Bitmap(true);}
+        Bitmap copy(Config config,boolean mutable){if(copyHook!=null)copyHook.run();return new Bitmap(false);}
+        int getWidth(){return 1080;}int getHeight(){return 2400;}
+        boolean compress(CompressFormat format,int quality,OutputStream out){
+            expect(!isMain(),"PNG encoding on main");if(encodeHook!=null)encodeHook.run();
+            try{out.write(new byte[]{1,2,3});return true;}catch(IOException error){throw new IllegalStateException(error);}
+        }
+        synchronized void recycle(){expect(!recycled,"bitmap recycled twice");recycled=true;}
+    }
+    static final class PhoneObservation {
+        final String id;final File path;final long capturedElapsedMillis;
+        PhoneObservation(String id,String pkg,long captured,int width,int height,int rotation,int window,Rect bounds,
+            File path,String hash,String digest,Object state,Object metadata,boolean truncated,Object rows,String generation,String initial,List<String> packages){
+            this.id=id;this.path=path;capturedElapsedMillis=captured;
+        }
+    }
+    static final class Handler {
+        static final class Job {final long when;final Runnable task;Job(long when,Runnable task){this.when=when;this.task=task;}}
+        final List<Job> jobs=new ArrayList<Job>();volatile boolean rejectWorkerPosts,throwWorkerPosts;
+        synchronized boolean post(Runnable runnable){return postDelayed(runnable,0);}
+        synchronized boolean postDelayed(Runnable runnable,long delay){
+            if(!isMain()&&throwWorkerPosts)throw new IllegalStateException("fixture post failure");
+            if(!isMain()&&rejectWorkerPosts)return false;
+            jobs.add(new Job(SystemClock.now+delay,runnable));return true;
+        }
+        void drain(){
+            expect(isMain(),"only test main drains callbacks");int count=0;
+            while(true){Job next=null;
+                synchronized(this){for(Job job:jobs)if(job.when<=SystemClock.now&&(next==null||job.when<next.when))next=job;if(next!=null)jobs.remove(next);}
+                if(next==null)return;expect(++count<1000,"unbounded main spin");next.task.run();
+            }
+        }
+        synchronized boolean hasReady(){for(Job job:jobs)if(job.when<=SystemClock.now)return true;return false;}
+    }
+    static final class Worker implements Executor {
+        final ExecutorService executor=Executors.newSingleThreadExecutor(r->{Thread t=new Thread(r,"observer-fixture-io");t.setDaemon(true);return t;});
+        volatile boolean reject;final AtomicInteger active=new AtomicInteger(),uncaught=new AtomicInteger();
+        public void execute(Runnable r){if(reject)throw new RejectedExecutionException("fixture reject");active.incrementAndGet();
+            executor.execute(()->{try{r.run();}catch(Throwable error){uncaught.incrementAndGet();}finally{active.decrementAndGet();}});}
+    }
+    static final Worker observationIo=new Worker();static final AtomicBoolean observationIoBusy=new AtomicBoolean();
+    static Thread mainThread;static ObserverPipelineHost live;String lease="task-one";
+    Object taskScope,taskAuthorization,taskNotesPhase,taskSubmitAttempts,taskFixedIntentAttempts,appDiscovery;Runnable stopListener;
+    final Handler main=new Handler();volatile ObservationRequest activeObservation;
+    long lastScreenshotAt,captureSerial;boolean capturePending;
+    PhoneObservation current;Graph currentGraph;Bitmap currentBitmap;
+    BackgroundSession taskBackground;boolean locked;
+    final AtomicBoolean cancelled=new AtomicBoolean();final AtomicInteger reads=new AtomicInteger();
+    final List<Graph> graphs=Collections.synchronizedList(new ArrayList<Graph>());
+    final List<ScreenshotResult> shots=new ArrayList<ScreenshotResult>();
+    final List<PhoneObservation> delivered=new ArrayList<PhoneObservation>();final List<String> errors=new ArrayList<String>();
+    volatile ReadHook readHook;volatile Runnable hashHook;boolean autoScreenshot=true;TakeScreenshotCallback pendingScreenshot;
+    final File directory;
+    interface ReadHook {void read(Graph graph,int ordinal);}
+    ObserverPipelineHost()throws IOException{directory=Files.createTempDirectory("hepta-observer-host-").toFile();live=this;}
+    private synchronized boolean owns(String id){return live==this&&id.equals(lease);}
+    private synchronized boolean ownsBackground(String id,BackgroundSession background){return owns(id)&&taskBackground==background;}
+    private synchronized BackgroundSession backgroundFor(String id){if(!owns(id))throw new IllegalStateException("retired fixture lease");return taskBackground;}
+    private boolean locked(){return locked;}
+    private Graph readGraph(GraphBudget budget,BackgroundSession background){
+        expect(!isMain(),"observation graph read on main");budget.check();int n=reads.incrementAndGet();
+        Graph graph=new Graph(n,background==null?0:background.displayId());graphs.add(graph);
+        try{if(readHook!=null)readHook.read(graph,n);budget.check();return graph;}catch(RuntimeException error){graph.close();throw error;}
+    }
+    private Executor getMainExecutor(){return r->main.post(r);}
+    private void takeScreenshot(int display,Executor executor,TakeScreenshotCallback callback){
+        expect(isMain(),"screenshot admission state must stay main-owned");expect(display==(taskBackground==null?0:taskBackground.displayId()),"wrong display");
+        pendingScreenshot=callback;if(autoScreenshot)deliverScreenshot();
+    }
+    private void deliverScreenshot(){ScreenshotResult result=new ScreenshotResult();shots.add(result);pendingScreenshot.onSuccess(result);}
+    private String fileSha256(File file)throws Exception{
+        expect(!isMain(),"hash on main");if(hashHook!=null)hashHook.run();MessageDigest digest=MessageDigest.getInstance("SHA-256");
+        digest.update(Files.readAllBytes(file.toPath()));return Arrays.toString(digest.digest());
+    }
+    private static String message(Throwable error){return error.getMessage()==null?error.getClass().getSimpleName():error.getMessage();}
+{{acquire}}
+{{observation}}
+    static boolean isMain(){return Thread.currentThread()==mainThread;}
+    static void expect(boolean okay,String message){if(!okay)throw new AssertionError(message);}
+    static void await(java.util.function.BooleanSupplier condition,String reason)throws Exception{
+        long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(4);
+        while(!condition.getAsBoolean()){if(System.nanoTime()>=end)throw new AssertionError("real wait timed out: "+reason);Thread.sleep(1);}
+    }
+    void begin(){observe(lease,directory,()->cancelled.get(),SystemClock.now+10000,new ObservationCallback(){
+        public void onObservation(PhoneObservation value){expect(isMain(),"publish off main");delivered.add(value);}
+        public void onError(String error){expect(isMain(),"error off main");errors.add(error);}});main.drain();}
+    void awaitSample()throws Exception{await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"sample worker exit");main.drain();}
+    void startCapture()throws Exception{begin();awaitSample();SystemClock.now+=200;main.drain();
+        // drain may already accept the second sample and start the deliberately
+        // blocked screenshot worker. Its admission, not global worker idleness,
+        // is the boundary this helper is waiting for.
+        await(()->pendingScreenshot!=null||(reads.get()>=2&&!observationIoBusy.get()&&observationIo.active.get()==0),"second sample done or capture admitted");
+        main.drain();expect(pendingScreenshot!=null,"stable samples did not admit capture");}
+    void finish()throws Exception{await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"capture worker exit");main.drain();}
+    void retire(){if(activeObservation!=null)failObservation(activeObservation,"fixture cancelled");}
+    void dispose()throws Exception{retire();await(()->observationIo.active.get()==0,"disposal worker exit");main.drain();clearSnapshot();
+        for(Graph g:graphs)expect(g.closed,"graph leaked "+g.serial);
+        for(ScreenshotResult shot:shots)expect(shot.buffer.closes==1,"hardware buffer leaked");
+        for(Bitmap bitmap:Bitmap.made)expect(bitmap.recycled,"bitmap leaked");
+        try(java.util.stream.Stream<Path> paths=Files.walk(directory.toPath())){paths.sorted(Comparator.reverseOrder()).forEach(p->{try{Files.delete(p);}catch(IOException e){throw new UncheckedIOException(e);}});}}
+    static final class Block implements Runnable {
+        final CountDownLatch entered=new CountDownLatch(1),release=new CountDownLatch(1);
+        public void run(){entered.countDown();try{expect(release.await(4,TimeUnit.SECONDS),"fixture not unblocked");}catch(InterruptedException e){Thread.currentThread().interrupt();throw new IllegalStateException(e);}}
+        void entered()throws Exception{expect(entered.await(4,TimeUnit.SECONDS),"work did not enter");}void open(){release.countDown();}
+    }
+    interface Case {void run()throws Exception;}
+    static int passed;
+    static void test(String name,Case body)throws Exception{
+        expect(!observationIoBusy.get()&&observationIo.active.get()==0,"previous worker not drained");
+        SystemClock.now=1000;Bitmap.made.clear();Bitmap.copyHook=null;Bitmap.encodeHook=null;observationIo.reject=false;
+        body.run();passed++;System.out.println("PASS "+name);
+    }
+    public static void main(String[] args)throws Exception{
+        mainThread=Thread.currentThread();
+        test("normal_pipeline_preserves_two_samples_two_rechecks_and_capture_age",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();f.startCapture();await(()->observationIo.active.get()==0,"save complete");
+            long screenshotAt=f.lastScreenshotAt;SystemClock.now+=700;f.main.drain();
+            expect(f.delivered.size()==1&&f.errors.isEmpty()&&f.reads.get()==4,"complete original graph checks");
+            expect(f.current.capturedElapsedMillis==screenshotAt,"queued publication must not refresh screenshot age");f.dispose();});
+        test("main_heartbeat_and_absolute_deadline_while_graph_is_blocked",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();Block b=new Block();f.readHook=(g,n)->b.run();f.begin();b.entered();
+            AtomicBoolean heartbeat=new AtomicBoolean();f.main.post(()->heartbeat.set(true));f.main.drain();expect(heartbeat.get(),"main heartbeat blocked");
+            SystemClock.now+=10000;f.main.drain();expect(f.errors.size()==1&&f.errors.get(0).contains("phase=sample_graph"),"timely phase diagnostic");
+            expect(f.observationReadWorkPending(),"retirement is not worker exit");b.open();f.finish();expect(f.delivered.isEmpty(),"late graph published");f.dispose();});
+        test("cancelled_busy_worker_blocks_new_task_until_actual_exit",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();Block b=new Block();f.readHook=(g,n)->b.run();f.begin();b.entered();
+            f.cancelled.set(true);SystemClock.now+=100;f.main.drain();f.lease=null;
+            expect(!f.acquireTask("new-task",()->{}),"busy cancelled work admitted new task");b.open();f.finish();
+            expect(f.acquireTask("new-task",()->{}),"actual worker exit did not restore admission");expect(f.delivered.isEmpty(),"retired graph published");f.dispose();});
+        test("executor_rejection_cleans_busy_and_reports_stage",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();observationIo.reject=true;f.begin();
+            expect(f.errors.size()==1&&!f.observationReadWorkPending()&&f.reads.get()==0,"rejected execution leaked admission");observationIo.reject=false;f.dispose();});
+        for(boolean throwing:new boolean[]{false,true})test("sample_post_"+(throwing?"throws":"rejects")+"_closes_graph",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();f.main.rejectWorkerPosts=!throwing;f.main.throwWorkerPosts=throwing;f.begin();
+            await(()->observationIo.active.get()==0,"post rejection");expect(f.graphs.size()==1&&f.graphs.get(0).closed,"unposted graph leak");
+            SystemClock.now+=10000;f.main.drain();expect(f.delivered.isEmpty(),"unposted graph published");f.dispose();});
+        test("late_android_screenshot_closes_hardware_buffer_without_copy",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();f.autoScreenshot=false;f.startCapture();f.retire();f.deliverScreenshot();
+            expect(Bitmap.made.isEmpty()&&f.shots.get(0).buffer.closes==1,"late screenshot copied or leaked");f.dispose();});
+        test("screenshot_callback_watchdog_is_independent",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();f.autoScreenshot=false;f.startCapture();SystemClock.now+=5000;f.main.drain();
+            expect(f.errors.size()==1&&f.errors.get(0).contains("系统截图回调超时"),"callback watchdog missed deadline");f.deliverScreenshot();f.dispose();});
+        test("copy_timeout_has_one_buffer_owner_and_no_publication",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();Block b=new Block();Bitmap.copyHook=b;f.startCapture();b.entered();
+            SystemClock.now+=10000;f.main.drain();expect(f.errors.size()==1&&f.errors.get(0).contains("screenshot_copy"),"copy timeout stage missing");
+            b.open();f.finish();expect(f.delivered.isEmpty(),"late copy published");f.dispose();});
+        test("png_timeout_removes_only_unpublished_request_file",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();File sentinel=new File(f.directory,"existing-evidence.png");Files.write(sentinel.toPath(),new byte[]{9});
+            Block b=new Block();Bitmap.encodeHook=b;f.startCapture();b.entered();SystemClock.now+=10000;f.main.drain();
+            expect(f.errors.size()==1&&f.errors.get(0).contains("png_encode"),"encode timeout missing");b.open();f.finish();
+            expect(f.directory.list().length==1&&sentinel.isFile()&&f.delivered.isEmpty(),"late PNG cleanup crossed ownership");f.dispose();});
+        test("hash_timeout_and_cancellation_preserve_deadline_and_cleanup",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();Block b=new Block();f.hashHook=b;f.startCapture();b.entered();f.cancelled.set(true);
+            SystemClock.now+=100;f.main.drain();expect(f.errors.size()==1&&f.errors.get(0).contains("png_hash"),"hash cancellation missing");
+            b.open();f.finish();expect(f.directory.list().length==0&&f.delivered.isEmpty(),"late hash published/leaked");f.dispose();});
+        test("worker_done_then_deadline_before_main_delivery_discards_product",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();f.startCapture();await(()->observationIo.active.get()==0,"product queued");
+            SystemClock.now+=10000;f.main.drain();expect(f.delivered.isEmpty()&&f.directory.list().length==0,"expired queued product published");f.dispose();});
+        test("target_display_event_between_worker_check_and_main_delivery_resamples",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();f.startCapture();await(()->observationIo.active.get()==0,"product queued");
+            f.noteObservationEvent(0);f.main.drain();expect(f.delivered.isEmpty()&&f.directory.list().length==0,"queued stale product published");f.dispose();});
+        test("other_display_events_do_not_invalidate_isolated_display",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();f.taskBackground=new BackgroundSession(6);f.startCapture();await(()->observationIo.active.get()==0,"product queued");
+            f.noteObservationEvent(0);f.main.drain();expect(f.delivered.size()==1,"main-display event spoiled isolated observer");f.dispose();});
+        for(int at:new int[]{3,4})test("graph_change_at_recheck_"+at+"_resamples_and_cleans",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();f.readHook=(g,n)->{if(n==at)g.digest="changed";};f.startCapture();f.finish();
+            expect(f.delivered.isEmpty()&&f.directory.list().length==0,"mismatched graph published or PNG leaked");f.dispose();});
+        test("retired_request_callback_cannot_publish_under_same_task_new_request",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();f.begin();await(()->observationIo.active.get()==0,"old sample queued");
+            f.retire();f.begin();f.awaitSample();expect(f.delivered.isEmpty()&&f.graphs.get(0).closed,"old callback adopted into new request");f.dispose();});
+        for(boolean throwing:new boolean[]{false,true})test("product_post_"+(throwing?"throws":"rejects")+"_cleans_bitmap_and_file",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();Block b=new Block();f.hashHook=b;f.startCapture();b.entered();
+            f.main.rejectWorkerPosts=!throwing;f.main.throwWorkerPosts=throwing;b.open();await(()->observationIo.active.get()==0,"product post failure");
+            expect(f.directory.list().length==0&&f.delivered.isEmpty(),"unposted product leaked");SystemClock.now+=10000;f.main.drain();f.dispose();});
+        System.out.println("RESULT passed="+passed+" phone_operations=false android_runtime=false native_inference=false");
+        observationIo.executor.shutdown();
+    }
+}
