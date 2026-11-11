@@ -17,6 +17,7 @@ def main():
     parser.add_argument('--source', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--release8', action='store_true')
+    parser.add_argument('--notes-recovery-trace', type=Path, help='optional external pinned v46 evidence/task directory; never copied into source')
     args = parser.parse_args()
     source = args.source.resolve()
     out = args.output.resolve()
@@ -46,17 +47,23 @@ def main():
     files += [source / 'tests/completion/CalculatorCompletionHostTest.java']
     files += [source / 'tests/notes-task-phase/NotesTaskPhaseHostTest.java']
     files += [source / 'tests/notes-task-phase/NotesListProvenanceHostTest.java']
+    files += [source / 'tests/notes-task-phase/NotesRecoveryHostTest.java']
     pins = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     phase_fixture = source / 'tests/notes-task-phase/fixtures/v45-notes-trace.json'
     phase_recognizer = source / 'tests/notes-task-phase/test_phase_grammar.py'
     list_fixture = source / 'tests/notes-task-phase/fixtures/manual-notes-list.xml'
-    for p in (phase_fixture, phase_recognizer, list_fixture):
+    recovery_runner = source / 'tests/notes-task-phase/run_recovery_test.py'
+    recovery_pins = source / 'tests/notes-task-phase/fixtures/v46-notes-recovery-pins.json'
+    for p in (phase_fixture, phase_recognizer, list_fixture, recovery_runner, recovery_pins):
         pins[str(p)] = hashlib.sha256(p.read_bytes()).hexdigest()
     classes = out / 'classes'
     classes.mkdir()
     compiler = [shutil.which('javac')] if shutil.which('javac') else ['java', '-m', 'jdk.compiler/com.sun.tools.javac.Main']
     flags = ['--release', '8'] if args.release8 else ['-source', '8', '-target', '8']
     lint = '-Xlint:all' if args.release8 else '-Xlint:all,-options'
+    recovery = [sys.executable, str(recovery_runner), '--source', str(source), '--classes', str(classes), '--output', str(out / 'notes-recovery')]
+    if args.notes_recovery_trace:
+        recovery += ['--trace', str(args.notes_recovery_trace.resolve())]
     commands = [
         ('compile', compiler + flags + ['-encoding', 'UTF-8', lint, '-Werror', '-d', str(classes), *map(str, files)]),
         ('actual-completion', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.TaskCompletionGateHostTest', str(out / 'cases')]),
@@ -64,6 +71,7 @@ def main():
         ('notes-task-phase-grammar', [sys.executable, str(phase_recognizer), str(out / 'notes-task-phase/grammar-cases.json')]),
         ('notes-list-provenance', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesListProvenanceHostTest', str(list_fixture)]),
         ('calculator-completion', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.CalculatorCompletionHostTest', str(out / 'calculator-cases')]),
+        ('notes-recovery', recovery),
     ]
     report = {'schema': 'hepta.task-completion-host.v1', 'source_inputs': pins, 'extraction': extraction,
               'compiler_contract': 'Java 8 API release' if args.release8 else 'Java 8 syntax/target only; not release8 or Android proof',

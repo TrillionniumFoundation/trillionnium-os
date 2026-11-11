@@ -43,11 +43,16 @@ actual task prompts establish that a smaller context preserves the whole task.
 
 ## Model decision
 
-Retain `lfm3-1.7b-qad-q4_0` as the small-model qualification candidate. Its actual
+Retain `lfm3-1.7b-qad-q4_0` as a measured small-model NPU baseline, not an accepted
+business-task winner. Its actual
 registered GGUF is 1,049,615,680 bytes, SHA-256
 `43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452`.
-The existing selected profile is NPU, 8,192 context tokens, and four CPU helper
-threads. The integration does not silently select a different profile.
+The earlier readback and subsequently retained LFM3 task used NPU, 8,192 context
+tokens and four CPU helper threads. A separate active operator later wrote the
+LFM2.5 MoE configuration; its helper reported a post-write accessibility restore
+failure and did not invoke that model. The profile therefore must be read again
+under the next operation owner; neither a configuration write nor this source
+review establishes successful MoE execution.
 
 LFM3 was released on October 27, 2026. Its official model card describes a
 1.73B text model supporting Chinese and structured tool calls. The publisher
@@ -72,16 +77,38 @@ GUI benchmark results merely by selecting its language-model weights.
 No model is declared the best on this phone before matched tests compare task
 success, false completion, latency, memory, thermal behavior and main-screen
 coexistence. In particular, the currently retained Gemma4 E4B Notes failure
-does not establish that LFM3 or Orvena will succeed.
+does not establish that another model will succeed. The newer LFM3 run described
+below also failed the complete Notes workflow.
 
 ## Retained phone timing evidence
+
+The newer v46 LFM3 task contains 20 native requests in one retained HTP0/v79
+worker. All 20 requests completed normally, with exact input token evidence,
+thinking disabled and no automatic CPU fallback. Median native request time
+was 10.3998 s, median SDK time to first token 5.7493 s, median decode rate
+26.509 tokens/s and median prefill rate 955.63 tokens/s. Prompts ranged from
+3,509 to 6,784 tokens; the context limit was not reached. Worker logs report
+25/25 layers offloaded and a 1,006.99 MiB HTP model buffer. That is not a
+measurement of total peak memory or proof that every operator ran on the NPU.
+
+Business completion was false: the first model action created the requested
+note body, followed by 19 opens alternating Hepta and Moto Notes. There was no
+back, list-item click or done. The actual list contained the created body, but
+the phase could not grant a recovery click after the missing editor-to-list
+transition. The task exhausted its 20-step budget. This is the concrete reason
+for the v48 phase-recovery repair; asynchronous observation alone cannot fix it.
+
+The retained local archive supports action, node, token and native checks; some
+original screenshots were not yet present in that local copy. These records do
+not qualify v48 or establish a new visual/phone acceptance result.
 
 The retained v45 Gemma4 E4B failed Notes task has 17 complete native receipts.
 Their median request time is 28.379 s, median time to first token 13.706 s,
 median prompt length 4,741 tokens, and median decode rate 9.435 tokens/s.
 The native records retain one model creation for the task generation and
 subsequent resets. They do not support blaming repeated cold model loading for
-every step. These are older failed-task measurements, not new v47 execution.
+every step. Both sets are failed-task measurements on different controller
+versions, not a controlled model comparison or new v48 execution.
 
 ## Larger MoE
 
@@ -101,6 +128,14 @@ offloading and lower-bit quantization trade memory for latency, energy, or
 quality. Large MoE should therefore remain an explicit experiment rather than
 the default persistent background controller.
 
+Qualcomm's September 2026 architecture article also describes 30B/3B-active
+MoE, flash-to-memory expert caching, INT2 precision and expanded on-chip memory.
+The article explicitly concerns its next-generation mobile architecture. Those
+claims are useful directions for experiments, but do not establish that this
+SM8750/v79 device has that new memory subsystem, Element Accelerator or a ready
+30B runtime. Expert caching reduces the resident set by fetching weights; its
+storage latency, cache hit rate and effect on foreground use need measurement.
+
 ## Runtime and background follow-through
 
 MNN 3.6.2 adds relevant Hexagon fused decoding, Qwen3.5 gated-delta and LFM2
@@ -108,6 +143,18 @@ convolution work. LiteRT-LM and Qualcomm's compiled QNN/GenieX packages are
 additional backend candidates. Their model formats, supported SoCs and native
 libraries are not interchangeable with the frozen GGUF runtime. Compare them
 under the same task and evidence contract before adoption.
+
+The November 4 MNN-Pocket-0.3B release is another small Chinese/English
+candidate: the publisher lists a 173 MB INT4 QAT MNN build and 32K context.
+Its 350 tokens/s example is on iPhone 18 Pro, not Snapdragon. It is worth testing
+for bounded intent or tool tasks, but there is no Razr task result here and an
+MNN artifact is not interchangeable with the currently selected GGUF runtime.
+
+Liquid's October 27 family also includes LFM3-VL-2B and decision variants.
+These are relevant to a future visual tool path. The ordinary Hepta controller
+currently supplies text observations; merely selecting a visual model does not
+pass screenshots through its encoder or establish correct screen grounding.
+Unlabeled icons remain a practical capability gap in that text-only path.
 
 For arbitrary third-party apps, the current route remains a permissioned
 trusted virtual display plus exact-display accessibility nodes. A normal APK
@@ -145,6 +192,7 @@ invisible operation across all apps is not an established Android capability.
 - [Qualcomm Snapdragon 8 Elite platform](https://www.qualcomm.com/smartphones/products/8-series/snapdragon-8-elite-mobile-platform)
 - [LFM3 release](https://www.liquid.ai/blog/lfm3)
 - [LFM3 model card](https://huggingface.co/LiquidAI/LFM3-1.7B)
+- [LFM3 multimodal family release](https://huggingface.co/blog/LiquidAI/lfm3)
 - [Qualcomm LFM3 preview](https://aihub.qualcomm.com/mobile/models/lfm3_1_7b)
 - [Orvena release and benchmark](https://orvena.app/blog/orvena-4b-on-device-model/)
 - [Nanbeige model card](https://huggingface.co/Nanbeige/Nanbeige4.2-3B)
@@ -153,6 +201,8 @@ invisible operation across all apps is not an established Android capability.
 - [Official LFM2.5 GGUF files](https://huggingface.co/LiquidAI/LFM2.5-8B-A1B-GGUF/tree/main)
 - [llama.cpp Snapdragon backend](https://github.com/ggml-org/llama.cpp/blob/master/docs/backend/snapdragon/README.md)
 - [MNN releases](https://github.com/alibaba/MNN/releases)
+- [MNN-Pocket release announcement](https://github.com/alibaba/MNN)
+- [Qualcomm next-generation agentic architecture](https://www.qualcomm.com/news/onq/2026/09/hexagon-npu-agentic-ai-architecture)
 - [LiteRT-LM](https://github.com/google-ai-edge/LiteRT-LM)
 - [Android AccessibilityService](https://developer.android.com/reference/android/accessibilityservice/AccessibilityService)
 - [Android AppFunctions](https://developer.android.com/ai/appfunctions)

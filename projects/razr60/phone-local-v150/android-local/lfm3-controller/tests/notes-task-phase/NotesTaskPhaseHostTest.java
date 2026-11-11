@@ -86,7 +86,7 @@ public final class NotesTaskPhaseHostTest {
                 before.windowId,before.displayId,before.backgroundGeneration,targets().get("notes.create"),action.text));g.entering(a);return g.finished(a,true);
     }
     private static NotesTaskPhaseGuard.Domain bind(NotesTaskPhaseGuard guard,NotesTaskPhaseGuard.Projection p){
-        NotesTaskPhaseGuard.Domain d=p.bind(p.clicks(set("n0","n1","n11","n15")),p.edits(set("n11","n15")),p.submits(Collections.singletonMap("n11",Boolean.TRUE)).keySet(),p.fixedTargets(targets()));guard.publish(d);return d;
+        NotesTaskPhaseGuard.Domain d=p.bind(p.clicks(set("n0","n1","n11","n15")),p.edits(set("n11","n15")),p.submits(Collections.singletonMap("n11",Boolean.TRUE)).keySet(),p.fixedTargets(targets()),p.openPackages(set(P)));guard.publish(d);return d;
     }
     private static Object field(Object object,String name)throws Exception{Field f=object.getClass().getDeclaredField(name);f.setAccessible(true);return f.get(object);}
     private static void field(Object object,String name,Object value)throws Exception{Field f=object.getClass().getDeclaredField(name);f.setAccessible(true);f.set(object,value);}
@@ -170,7 +170,7 @@ public final class NotesTaskPhaseHostTest {
         g.invalidateInstalled("host replacement");check(guard.prepare(g,reopened).clicks(set("n0")).isEmpty(),"installed identity invalidation narrows immediately");
         String unknown="只读当前页面，不要点击或输入。";TaskAuthorization readOnly=TaskAuthorization.parse(unknown);NotesTaskPhaseGuard un=new NotesTaskPhaseGuard(TASK,readOnly);
         NotesTaskPhaseGuard.Projection u=un.prepare(null,before);check(!un.supported()&&"unrestricted".equals(u.phase),"unknown contract acquires no Notes workflow");
-        denied(()->u.bind(set("n0"),Collections.<String>emptySet(),Collections.<String>emptySet(),Collections.<String,FixedIntentTarget>emptyMap()),"phase cannot widen banned click");
+        denied(()->u.bind(set("n0"),Collections.<String>emptySet(),Collections.<String>emptySet(),Collections.<String,FixedIntentTarget>emptyMap(),Collections.<String>emptySet()),"phase cannot widen banned click");
         String denyCreate=TaskCompletionGateHostTest.owner("原文。禁止notes.create。样本");TaskAuthorization deniedAuth=TaskAuthorization.parse(denyCreate);
         check(!deniedAuth.allowedTools.contains("notes.create"),"explicit parser denial exists for adversarial literal clause");
         NotesTaskPhaseGuard deniedGuard=new NotesTaskPhaseGuard(TASK,deniedAuth);TaskCompletionGate deniedCompletion=completion(TASK,denyCreate,deniedAuth,before);

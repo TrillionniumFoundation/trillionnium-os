@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.notes-recovery-external-pins.v1",
+  "fixture_mode": "external_actual_trace",
+  "task_id": "3ac1287814414567b655b42030d9911b",
+  "files": {
+    "owner.json": "b4d1192861e3969f620dde01e6addb0dca79d78c67b8b51925da93195d38639b",
+    "completion-installed-identity.json": "11fbcb9bc3dfe0d84c0e5e98cc6c769411ca6234f0b587c2297d0d6428043417",
+    "step-01-before.json": "de7a68af2a6a4a5083d5d9dca065bc0f2f55874baff9fbd012c4c25fc47b8f77",
+    "step-01-after.json": "85b8f22fb75ef476a8d5c825d0e66b147e9741f2c040a3680765c7eed43d15da",
+    "step-01-action.json": "a682f6de0a0ca5d613245649518f99fa3e6cd336dbbb7df0aaf9ad6e09323681",
+    "step-02-before.json": "85b8f22fb75ef476a8d5c825d0e66b147e9741f2c040a3680765c7eed43d15da",
+    "step-02-after.json": "86b7540c82ce1c5351045210900f053f001376b4aba75007042fa77a75b2ad30",
+    "step-02-action.json": "134fafc160be25f837dc648c4bf260d74bbb218d54cbee634e1d9d76eb3327a6",
+    "step-03-before.json": "86b7540c82ce1c5351045210900f053f001376b4aba75007042fa77a75b2ad30",
+    "step-03-after.json": "f8a5f6a926beb6cc4fde6ff714d163641e53c06c5ea2440b5b84c0bed86a2b9f",
+    "step-03-action.json": "e13a267e8e76996ed93e7d8965277d5c60c9a1726b30498420a0302853e1af12",
+    "result.json": "0954bfa4cfd121742254fc0572f6fb6f8fa56d9c07e54baaf53074f897d6b24f"
+  },
+  "private_raw_files_in_repository": false,
+  "continuation_is_synthetic": true
+}

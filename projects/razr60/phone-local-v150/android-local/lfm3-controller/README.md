@@ -1,6 +1,34 @@
-# Hepta v47: responsive observations and checked task completion
+# Hepta v48: recover the created note without relaxing completion
 
-Current candidate: versionCode 47 (`0.47.0-local-observer-completion`), based on
+Current candidate: versionCode 48 (`0.48.0-local-notes-recovery`), based on frozen
+v47 source `4b96f6d7513a336028a79367f33f38babe19a41b`.
+
+A newly retained v46 LFM3 phone run created the requested note body, then spent
+19 actions switching between Hepta and Moto Notes. The list contained the body,
+but its unproven save transition left the phase without a permitted item click.
+The run exhausted its 20-step budget. Native NPU inference completed normally;
+the task did not complete.
+
+This candidate restricts unrelated app opens after this task's created body has
+been observed. A unique, provenance-bound matching list item can restore that
+editor after a deviation. Recovery still requires model-selected tools and fresh
+observations; it does not establish a save, a completed reopen chain or success.
+The existing completion predicates continue to require the full original chain.
+Unknown tasks retain their original tool rules.
+
+The v47 strict host gate, Android compilation and original-signature assembly
+passed on their exact source. Acquiring a new operator owner stopped at the busy
+lock, so installation was not attempted. Those results do not qualify this
+changed v48 source. New host, Android and actual phone results remain separate.
+
+LFM3 now has a retained 20-request NPU execution baseline on this phone, but the
+failed Notes workflow does not establish the best task model. See
+[the model deployment review](docs/LOCAL-MODELS-20261110.md) for the measured
+scope, model alternatives and MoE memory limits.
+
+## v47 predecessor: responsive observations and checked task completion
+
+The v47 predecessor is versionCode 47 (`0.47.0-local-observer-completion`), based on
 v46 commit `59432f43633fc710a4c8843d77803bcdbf613ec6` and the observation worker
 repair from `2dbb3b312748976b58b15a001ef1a02aef86e8bc`.
 

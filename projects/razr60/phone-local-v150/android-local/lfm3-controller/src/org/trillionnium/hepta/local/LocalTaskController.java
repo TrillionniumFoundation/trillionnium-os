@@ -752,6 +752,7 @@ public final class LocalTaskController implements AutoCloseable {
             packages.remove(observation.packageName);packages.remove("android");
             packages=authorization.openPackages(packages);
             if(scope!=null){java.util.Iterator<String> permitted=packages.iterator();while(permitted.hasNext())if(!scope.allows(permitted.next()))permitted.remove();}
+            packages=taskPhase.openPackages(packages);
             JSONObject appSearch=searchMetadata(catalogue,appCount,historyRows);
             JSONObject data=new JSONObject().put("action_schema",fixedTargets==null?ActionDecision.IME_ACTION_SCHEMA:ActionDecision.FIXED_INTENT_ACTION_SCHEMA).put("apps",apps)
                     .put("open_allowed_packages",new JSONArray(new java.util.TreeSet<String>(packages)))
@@ -806,7 +807,7 @@ public final class LocalTaskController implements AutoCloseable {
                         clicks,edits,scrolls,submits,targets,appLabels,authorization,observation.backgroundGeneration!=null)
                         :DecisionGrammar.createFixedIntentAuthorized(observation.id,observation.packageName,packages,
                         clicks,edits,scrolls,submits,targets,appLabels,authorization,observation.backgroundGeneration!=null,fixedTargets,taskPhase.exactPayloads(fixedTargets));
-                NotesTaskPhaseGuard.Domain phaseDomain=taskPhase.bind(clicks,edits,submits.keySet(),fixedTargets);phaseGuard.publish(phaseDomain);
+                NotesTaskPhaseGuard.Domain phaseDomain=taskPhase.bind(clicks,edits,submits.keySet(),fixedTargets,packages);phaseGuard.publish(phaseDomain);
                 return new PromptFrame(text,ids,packages,budget,grammar,nodeCount,observation.nodes.size(),appCount,history.length(),catalogue,
                         editableFields.size(),editableFieldsObserved,visibleText.size(),visibleTextObserved,events,historyBytes,appSearch,requiredIds.size(),clicks,phaseDomain);
             }
