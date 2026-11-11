@@ -74,9 +74,11 @@ public final class NotesTaskPhaseGuard {
             this.owner=owner;this.phase=phase;observationId=frame.observationId;packageName=frame.packageName;
             displayId=frame.displayId;backgroundGeneration=frame.backgroundGeneration;createAllowed=create;listItem=item;currentFacts=facts;
         }
-        /** Null retains the existing generic tool set. A proved current list
-         * narrows this task only; no action or target is added to the input. */
+        /** Null retains the existing generic tool set. A proved current editor
+         * or list narrows this task only; no action or target is added. */
         public Set<String> toolMask(){
+            if("leave_created_editor".equals(phase))return Collections.unmodifiableSet(new TreeSet<String>(
+                    java.util.Arrays.asList("back","wait","done")));
             return "reopen_saved_item".equals(phase)?Collections.unmodifiableSet(new TreeSet<String>(
                     java.util.Arrays.asList("click","wait","done"))):null;
         }
@@ -91,7 +93,7 @@ public final class NotesTaskPhaseGuard {
         }
         public Set<String> clicks(Set<String> supplied){
             Set<String> out=new TreeSet<String>(supplied);
-            if(!owner.supported()||"leave_created_editor".equals(phase))return out;
+            if(!owner.supported())return out;
             if("reopen_saved_item".equals(phase))out.retainAll(Collections.singleton(listItem));else out.clear();
             return out;
         }
@@ -134,7 +136,7 @@ public final class NotesTaskPhaseGuard {
             require(clicks(clicks).equals(clicks)&&edits(edits).equals(edits),"domain includes removed node capability");
             require(!owner.supported()||submits.isEmpty(),"new-note domain includes submit");
             require(openPackages(packages).equals(packages),"domain includes unrelated launcher target");
-            require(toolMask()==null||directions.isEmpty(),"verified list domain includes scroll");
+            require(toolMask()==null||directions.isEmpty(),"verified phase domain includes scroll");
             require(fixed==null||fixedTargets(fixed).keySet().equals(fixed.keySet()),"domain includes removed fixed tool");
             return new Domain(this,clicks,edits,submits,fixed,packages,directions);
         }
@@ -179,7 +181,7 @@ public final class NotesTaskPhaseGuard {
         }
         public void requireAction(ActionDecision action){
             require(action!=null&&projection.observationId.equals(action.observationId),"action belongs to another observation");
-            require(toolMask==null||toolMask.contains(action.action),"tool absent from verified current-list domain");
+            require(toolMask==null||toolMask.contains(action.action),"tool absent from verified current-phase domain");
             if("click".equals(action.action))require(action.nodeId!=null&&clickIds.contains(action.nodeId),"click absent from current permitted domain");
             if("type".equals(action.action))require(action.nodeId!=null&&editIds.contains(action.nodeId),"type absent from current permitted domain");
             if("submit".equals(action.action))require(action.nodeId!=null&&submitIds.contains(action.nodeId),"submit absent from current permitted domain");

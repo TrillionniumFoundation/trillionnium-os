@@ -47,13 +47,18 @@ def main():
     files += [source / 'tests/notes-task-phase/NotesListProvenanceHostTest.java']
     files += [source / 'tests/notes-task-phase/NotesRecoveryHostTest.java']
     files += [source / 'tests/notes-task-phase/NotesTaskScopeHostTest.java']
+    files += [source / 'tests/calculator-input/CalculatorInputGuardHostTest.java',
+              source / 'tests/calculator-input/FailedActionObservationHostTest.java']
+    files += [source / 'tests/notes-editor-phase/NotesEditorPhaseHostTest.java']
     pins = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     phase_fixture = source / 'tests/notes-task-phase/fixtures/v45-notes-trace.json'
     phase_recognizer = source / 'tests/notes-task-phase/test_phase_grammar.py'
     list_fixture = source / 'tests/notes-task-phase/fixtures/manual-notes-list.xml'
     recovery_fixture = source / 'tests/notes-task-phase/fixtures/v46-notes-recovery-trace.json'
     scope_fixture = source / 'tests/notes-task-phase/fixtures/v47-notes-scope-trace.json'
-    for p in (phase_fixture, phase_recognizer, list_fixture, recovery_fixture, scope_fixture):
+    calculator_fixture = source / 'tests/calculator-input/fixtures/v47-background-type-failure.json'
+    editor_fixture = source / 'tests/notes-editor-phase/fixtures/v48-editor-click-trace.json'
+    for p in (phase_fixture, phase_recognizer, list_fixture, recovery_fixture, scope_fixture, calculator_fixture, editor_fixture):
         pins[str(p)] = hashlib.sha256(p.read_bytes()).hexdigest()
     classes = out / 'classes'
     classes.mkdir()
@@ -70,6 +75,11 @@ def main():
         ('notes-recovery-grammar', [sys.executable, str(phase_recognizer), str(out / 'notes-recovery/grammar-cases.json')]),
         ('notes-task-scope', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesTaskScopeHostTest', str(scope_fixture), str(out / 'notes-task-scope')]),
         ('notes-task-scope-grammar', [sys.executable, str(phase_recognizer), str(out / 'notes-task-scope/grammar-cases.json')]),
+        ('calculator-input', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.CalculatorInputGuardHostTest', str(calculator_fixture), str(out / 'calculator-input')]),
+        ('calculator-input-grammar', [sys.executable, str(phase_recognizer), str(out / 'calculator-input/grammar-cases.json')]),
+        ('failed-action-observation', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.FailedActionObservationHostTest', str(out / 'failed-action-observation')]),
+        ('notes-editor-phase', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesEditorPhaseHostTest', str(editor_fixture), str(out / 'notes-editor-phase')]),
+        ('notes-editor-phase-grammar', [sys.executable, str(phase_recognizer), str(out / 'notes-editor-phase/grammar-cases.json')]),
     ]
     report = {'schema': 'hepta.task-completion-host.v1', 'source_inputs': pins, 'extraction': extraction,
               'compiler_contract': 'Java 8 API release' if args.release8 else 'Java 8 syntax/target only; not release8 or Android proof',

@@ -150,6 +150,7 @@ public final class LocalTaskController implements AutoCloseable {
         String lastModelDoneStatus=null,lastModelDoneSummary=null;
         TaskCompletionGate completion=new TaskCompletionGate(taskId,instruction,authorization.authorization);
         NotesTaskPhaseGuard notesPhase=null;
+        CalculatorTaskInputGuard calculatorInput=null;
         QualificationScopeConfig.CompletionInstalledIdentity completionInstalled=null;
         long deadline=SystemClock.elapsedRealtime()+MAX_TASK_MS;
         JSONArray history=new JSONArray();RepeatActionGuard repeatGuard=new RepeatActionGuard();
@@ -158,6 +159,7 @@ public final class LocalTaskController implements AutoCloseable {
         LastModelDecisionProjection lastModelDecision=null;
         try{
             notesPhase=service.notesTaskPhaseFor(taskId,authorization);
+            calculatorInput=service.calculatorInputFor(taskId,authorization);
             QualificationScopeConfig.FilesRoot filesRoot=new QualificationScopeConfig.FilesRoot(service);
             File root=MobiMindPrivateFiles.directory(new File(filesRoot.path,"control-tasks"),false);
             evidence=MobiMindPrivateFiles.directory(new File(root,taskId),true);filesRoot.unchanged(service);
@@ -171,6 +173,7 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha256))
                     .put("actual_scope_sha256",JSONObject.NULL).put("qualification_scope",JSONObject.NULL);
             if(backgroundSelection!=null)owner.put("background_request",backgroundSelection.json());
+            if(calculatorInput.supported())owner.put("calculator_input_contract",new JSONObject(calculatorInput.goal.evidence()));
             final LocalRuntimeConfig config;
             try{config=inference.configuration();}
             catch(Exception invalidRuntime){record(evidence,"owner.json",owner);throw invalidRuntime;}
@@ -211,6 +214,14 @@ public final class LocalTaskController implements AutoCloseable {
                 }
                 checkActive(deadline);
             }
+            if(calculatorInput.supported()){
+                checkActive(deadline);
+                final QualificationScopeConfig.CompletionInstalledIdentity target=QualificationScopeConfig.CompletionInstalledIdentity.captureCalculator(service);
+                calculatorInput.bindInstalled(new NotesCompletionEvidence.Installed(target.packageName,target.uid,target.apkHashes),
+                        new CalculatorTaskInputGuard.InstalledVerifier(){public void verify()throws Exception{target.verify(service);}});
+                record(evidence,"calculator-installed-identity.json",new JSONObject(target.evidence()));
+                checkActive(deadline);
+            }
             if(backgroundSelection!=null){
                 QualificationScope.require(!scope.restricted(),"qualification scope 已启用，后台任务拒绝；原测试范围保持不变");
                 checkActive(deadline);
@@ -234,7 +245,7 @@ public final class LocalTaskController implements AutoCloseable {
                 // Observation evidence can advance a stage; it never replays an action.
                 completion.observed(completionFrame(before));
                 record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-before.json",steps),before.toJson());
-                PromptFrame frame=prompt(instruction,apps,before,history,lastTransition,lastModelDecision,null,config,repeatGuard,noEffectGuard,authorization.frame(),scope.config,service.fixedIntentTargets(taskId,authorization.frame()),completion,notesPhase);
+                PromptFrame frame=prompt(instruction,apps,before,history,lastTransition,lastModelDecision,null,config,repeatGuard,noEffectGuard,authorization.frame(),scope.config,service.fixedIntentTargets(taskId,authorization.frame()),completion,notesPhase,calculatorInput);
                 String prompt=frame.text;
                 ActionDecision action=null;String decisionRunId=null;
                 for(int attempt=0;attempt<2;attempt++){
@@ -250,6 +261,7 @@ public final class LocalTaskController implements AutoCloseable {
                         ActionPolicy.validateAuthorizedDecision(action,before.packageName,frame.appPackages,frame.targets,frame.grammar.appLabels,authorization,frame.grammar.authorization,frame.grammar.fixedIntentTargets);
                         frame.requireTextOnlyClick(action);
                         frame.phaseDomain.requireCurrent(action);
+                        frame.calculatorDomain.requireCurrent(action);
                         if("submit".equals(action.action)&&!frame.grammar.allowsSubmit(action.nodeId))
                             throw new ActionDecision.InvalidActionException("submit node was not supplied by this observation");
                         if("scroll".equals(action.action)&&!frame.grammar.allowsScroll(action.nodeId,action.direction))
@@ -268,7 +280,7 @@ public final class LocalTaskController implements AutoCloseable {
                                 .put("validator_error",HeptaAccessibilityService.limited(error.getMessage(),96))
                                 .put("rejected_output",HeptaAccessibilityService.limited(answer.text,220))
                                 .put("excerpt",answer.text.length()>220);
-                        frame=prompt(instruction,apps,before,history,lastTransition,lastModelDecision,correction,config,repeatGuard,noEffectGuard,authorization.frame(),scope.config,service.fixedIntentTargets(taskId,authorization.frame()),completion,notesPhase);
+                        frame=prompt(instruction,apps,before,history,lastTransition,lastModelDecision,correction,config,repeatGuard,noEffectGuard,authorization.frame(),scope.config,service.fixedIntentTargets(taskId,authorization.frame()),completion,notesPhase,calculatorInput);
                         prompt=frame.text;
                     }
                 }
@@ -288,6 +300,7 @@ public final class LocalTaskController implements AutoCloseable {
                     throw new IllegalStateException("上次操作后画面没有可确认变化，停止重复执行同一动作");
                 frame.requireTextOnlyClick(action);
                 frame.phaseDomain.requireCurrent(action);
+                frame.calculatorDomain.requireCurrent(action);
                 emit("正在执行第 "+steps+" 步："+chineseAction(action.action));
                 HeptaAccessibilityService.ActionOutcome outcome=awaitAction(taskId,before,action,frame.targets,frame.grammar.fixedIntentTargets.get(action.action),authorization,decisionRunId,deadline);
                 JSONObject actionReceipt=new JSONObject().put("action",new JSONObject(answerJson(action))).put("accepted",outcome.accepted)
@@ -300,6 +313,7 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("ime_submit",outcome.imeSubmit==null?JSONObject.NULL:outcome.imeSubmit)
                         .put("fixed_intent",outcome.fixedIntent==null?JSONObject.NULL:outcome.fixedIntent);
                 if(ActionPolicy.isReadOnlyDiscovery(action))actionReceipt.put("read_only",true).put("effect","launcher_catalogue_read");
+                if(calculatorInput.supported())actionReceipt.put("calculator_input",new JSONObject(frame.calculatorDomain.evidence()));
                 record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-action.json",steps),actionReceipt);
                 TaskAuthorization.require(outcome.taskAuthorization!=null,"动作回执缺少任务授权");
                 if(outcome.stale&&!outcome.dispatched){
@@ -312,7 +326,10 @@ public final class LocalTaskController implements AutoCloseable {
                     emit("画面发生变化，正在重新观察…");observation=awaitObservation(taskId,evidence,authorization,deadline);
                     lastTransition=observedTransition(steps,before,observation);continue;
                 }
-                if(!outcome.accepted)throw new IllegalStateException(outcome.detail);
+                if(!outcome.accepted){
+                    if(outcome.dispatched)observeFailedActionOnce(taskId,evidence,authorization,deadline,steps,before,action,decisionRunId,outcome);
+                    throw new IllegalStateException(outcome.detail);
+                }
                 if(ActionPolicy.isReadOnlyDiscovery(action)){
                     if(outcome.dispatched||outcome.appCatalogue==null)throw new IllegalStateException("本机应用查询回执不完整");
                     apps=outcome.appCatalogue;
@@ -546,6 +563,31 @@ public final class LocalTaskController implements AutoCloseable {
             return result;
         }finally{abandoned.set(true);}
     }
+    /** Read-only diagnosis after an uncertain dispatched effect. It never
+     * retries that effect, promotes acceptance, advances completion or replaces
+     * the task's authoritative before/final observation. Original failure wins. */
+    private void observeFailedActionOnce(String task,File directory,TaskAuthorization.Gate auth,long deadline,int step,
+                                        PhoneObservation before,ActionDecision action,String run,HeptaAccessibilityService.ActionOutcome outcome){
+        if(cancelled.get()||SystemClock.elapsedRealtime()>=deadline)return;
+        JSONObject diagnostic=new JSONObject();
+        try{
+            diagnostic.put("schema","hepta.failed-action-readonly-observation.v1").put("task_id",task).put("step",step)
+                    .put("model_run_id",run).put("before_observation_id",before.id).put("action",action.action)
+                    .put("original_accepted",outcome.accepted).put("original_dispatched",outcome.dispatched).put("original_detail",outcome.detail)
+                    .put("effect_retried",false).put("completion_advanced",false).put("observation_attempts",1).put("observed",false);
+            PhoneObservation after=awaitObservation(task,directory,auth,Math.min(deadline,SystemClock.elapsedRealtime()+3500));
+            JSONObject raw=after.toJson();String name=String.format(java.util.Locale.ROOT,"step-%02d-failed-after.json",step);
+            record(directory,name,raw);
+            diagnostic.put("observed",true).put("observation_id",after.id).put("observation_file",name)
+                    .put("observation_sha256",HeptaAccessibilityService.sha(raw.toString(2).getBytes(StandardCharsets.UTF_8)));
+        }catch(Exception unavailable){
+            try{diagnostic.put("observation_error",HeptaAccessibilityService.limited(HeptaAccessibilityService.message(unavailable),160));}
+            catch(Exception ignored){/* Preserve the original action failure. */}
+        }finally{
+            try{record(directory,String.format(java.util.Locale.ROOT,"step-%02d-failed-after-diagnostic.json",step),diagnostic);}
+            catch(Exception ignored){/* No new action, success or retry on diagnostic IO failure. */}
+        }
+    }
     private HeptaAccessibilityService.ActionOutcome awaitAction(String id,PhoneObservation observed,ActionDecision action,ObservedTargetLabels targets,org.trillionnium.hepta.background.FixedIntentTarget fixedTarget,TaskAuthorization.Gate authorization,String modelRunId,long deadline)throws Exception{
         checkActive(deadline);final CountDownLatch ready=new CountDownLatch(1);final AtomicReference<HeptaAccessibilityService.ActionOutcome> value=new AtomicReference<HeptaAccessibilityService.ActionOutcome>();
         service.perform(id,observed,action,targets,fixedTarget,authorization,modelRunId,new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}},
@@ -560,14 +602,16 @@ public final class LocalTaskController implements AutoCloseable {
         final String text;final java.util.Set<String> nodeIds,appPackages,clickNodeIds;final ConservativeTokenBudget budget;
         final DecisionGrammar grammar;
         final NotesTaskPhaseGuard.Domain phaseDomain;
+        final CalculatorTaskInputGuard.Domain calculatorDomain;
         final ObservedTargetLabels targets;
         final AppCatalogueRanker.Page catalogue;
         final int nodesShown,nodesObserved,appsShown,historyShown;
         final int editableFieldsShown,editableFieldsObserved,visibleTextShown,visibleTextObserved,historyProjectionBytes,requiredNodes;
         final RecentActionProjection.ReadableEvents eventHistory;final JSONObject appSearch;
         PromptFrame(String text,java.util.Set<String> ids,java.util.Set<String> packages,ConservativeTokenBudget budget,DecisionGrammar grammar,int shown,int observed,int apps,int history,AppCatalogueRanker.Page catalogue,
-                    int editableFieldsShown,int editableFieldsObserved,int visibleTextShown,int visibleTextObserved,RecentActionProjection.ReadableEvents eventHistory,int historyProjectionBytes,JSONObject appSearch,int requiredNodes,java.util.Set<String> clicks,NotesTaskPhaseGuard.Domain phaseDomain){
+                    int editableFieldsShown,int editableFieldsObserved,int visibleTextShown,int visibleTextObserved,RecentActionProjection.ReadableEvents eventHistory,int historyProjectionBytes,JSONObject appSearch,int requiredNodes,java.util.Set<String> clicks,NotesTaskPhaseGuard.Domain phaseDomain,CalculatorTaskInputGuard.Domain calculatorDomain){
             this.phaseDomain=phaseDomain;
+            this.calculatorDomain=calculatorDomain;
             this.text=text;nodeIds=java.util.Collections.unmodifiableSet(new java.util.HashSet<String>(ids));
             clickNodeIds=java.util.Collections.unmodifiableSet(new java.util.HashSet<String>(clicks));
             appPackages=java.util.Collections.unmodifiableSet(new java.util.HashSet<String>(packages));
@@ -627,11 +671,18 @@ public final class LocalTaskController implements AutoCloseable {
                 authorization,scope,fixedTargets,completion,new NotesTaskPhaseGuard(authorization.taskId,authorization.authorization));
     }
     private static PromptFrame prompt(final String owner,AppCatalogueRanker.Page catalogue,PhoneObservation observation,JSONArray history,ObservedTransitionProjection.Transition lastTransition,LastModelDecisionProjection lastModelDecision,JSONObject repair,LocalRuntimeConfig config,RepeatActionGuard repeatGuard,SameStateNoEffectGuard noEffectGuard,TaskAuthorization.Frame authorization,QualificationScope.Config scope,java.util.Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,TaskCompletionGate completion,NotesTaskPhaseGuard phaseGuard)throws Exception{
+        return prompt(owner,catalogue,observation,history,lastTransition,lastModelDecision,repair,config,repeatGuard,noEffectGuard,
+                authorization,scope,fixedTargets,completion,phaseGuard,new CalculatorTaskInputGuard(authorization.taskId,authorization.authorization));
+    }
+    private static PromptFrame prompt(final String owner,AppCatalogueRanker.Page catalogue,PhoneObservation observation,JSONArray history,ObservedTransitionProjection.Transition lastTransition,LastModelDecisionProjection lastModelDecision,JSONObject repair,LocalRuntimeConfig config,RepeatActionGuard repeatGuard,SameStateNoEffectGuard noEffectGuard,TaskAuthorization.Frame authorization,QualificationScope.Config scope,java.util.Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,TaskCompletionGate completion,NotesTaskPhaseGuard phaseGuard,CalculatorTaskInputGuard calculatorGuard)throws Exception{
         TaskAuthorization.require(authorization!=null,"提示缺少任务授权");authorization.authorization.requireOwner(owner);
         TaskAuthorization.require(phaseGuard!=null&&authorization.taskId.equals(phaseGuard.taskId)
                 &&authorization.authorization==phaseGuard.authorization,"提示阶段约束不属于当前任务授权");
         final NotesTaskPhaseGuard.Projection taskPhase=phaseGuard.prepare(completion,completionFrame(observation));
-        fixedTargets=taskPhase.fixedTargets(fixedTargets);
+        TaskAuthorization.require(calculatorGuard!=null&&authorization.taskId.equals(calculatorGuard.taskId)
+                &&authorization.authorization==calculatorGuard.authorization,"计算器输入约束不属于当前任务授权");
+        final CalculatorTaskInputGuard.Projection calculator=calculatorGuard.prepare(completionFrame(observation));
+        fixedTargets=calculator.fixedTargets(taskPhase.fixedTargets(fixedTargets));
         java.util.List<AppCatalogueRanker.Entry> allApps=catalogue.apps;
         java.util.List<PhoneObservation.Node> nodes=new java.util.ArrayList<PhoneObservation.Node>(observation.nodes);
         final java.util.Set<String> requiredIds=new java.util.HashSet<String>();
@@ -698,7 +749,7 @@ public final class LocalTaskController implements AutoCloseable {
                 PhoneObservation.Node node=nodes.get(i);
                 if(!PromptActionDomain.textOnlyClickLabel(node.text,node.description,node.childText))clicks.remove(node.id);
             }
-            clicks=taskPhase.clicks(clicks);edits=taskPhase.edits(edits);submits=taskPhase.submits(submits);scrolls=taskPhase.scrolls(scrolls);
+            clicks=calculator.clicks(taskPhase.clicks(clicks));edits=calculator.edits(taskPhase.edits(edits));submits=calculator.submits(taskPhase.submits(submits));scrolls=taskPhase.scrolls(scrolls);
             JSONObject scrollActionsJson=new JSONObject(),submitActionsJson=new JSONObject();
             JSONArray controlHints=new JSONArray();int controlHintsObserved=0;
             for(int i=0;i<nodeCount;i++){
@@ -746,13 +797,14 @@ public final class LocalTaskController implements AutoCloseable {
             packages.remove(observation.packageName);packages.remove("android");
             packages=authorization.openPackages(packages);
             if(scope!=null){java.util.Iterator<String> permitted=packages.iterator();while(permitted.hasNext())if(!scope.allows(permitted.next()))permitted.remove();}
-            packages=taskPhase.openPackages(packages);
+            packages=calculator.openPackages(taskPhase.openPackages(packages));
             JSONObject appSearch=searchMetadata(catalogue,appCount,historyRows);
             JSONObject data=new JSONObject().put("action_schema",fixedTargets==null?ActionDecision.IME_ACTION_SCHEMA:ActionDecision.FIXED_INTENT_ACTION_SCHEMA).put("apps",apps)
                     .put("open_allowed_packages",new JSONArray(new java.util.TreeSet<String>(packages)))
                     .put("apps_omitted",catalogue.matchingApps-appCount).put("app_search",appSearch);
             data.put("task_authorization",new JSONObject(authorization.evidence()));
             if(phaseGuard.supported())data.put("task_phase",new JSONObject(taskPhase.evidence()));
+            if(calculatorGuard.supported())data.put("calculator_input",new JSONObject(calculator.evidence(clicks)));
             if(completion!=null)data.put("completion",new JSONObject(completion.prompt(completionFrame(observation))));
             if(fixedTargets!=null){
                 JSONArray tools=new JSONArray();
@@ -802,8 +854,9 @@ public final class LocalTaskController implements AutoCloseable {
                         :DecisionGrammar.createFixedIntentAuthorized(observation.id,observation.packageName,packages,
                         clicks,edits,scrolls,submits,targets,appLabels,authorization,observation.backgroundGeneration!=null,fixedTargets,taskPhase.exactPayloads(fixedTargets),taskPhase.toolMask());
                 NotesTaskPhaseGuard.Domain phaseDomain=taskPhase.bind(clicks,edits,submits.keySet(),fixedTargets,packages,scrolls);phaseGuard.publish(phaseDomain);
+                CalculatorTaskInputGuard.Domain calculatorDomain=calculator.bind(clicks,edits,submits.keySet(),fixedTargets,packages,scrolls);calculatorGuard.publish(calculatorDomain);
                 return new PromptFrame(text,ids,packages,budget,grammar,nodeCount,observation.nodes.size(),appCount,history.length(),catalogue,
-                        editableFields.size(),editableFieldsObserved,visibleText.size(),visibleTextObserved,events,historyBytes,appSearch,requiredIds.size(),clicks,phaseDomain);
+                        editableFields.size(),editableFieldsObserved,visibleText.size(),visibleTextObserved,events,historyBytes,appSearch,requiredIds.size(),clicks,phaseDomain,calculatorDomain);
             }
             // Only profiles with a proved upper bound reach optional reductions.
             // Keep the complete readable action trace, including labels and typed text.
@@ -817,9 +870,9 @@ public final class LocalTaskController implements AutoCloseable {
         StringBuilder out=new StringBuilder("{\n");int included=0;
         String[] sections=data.has("task_phase")
                 ?new String[]{"action_schema","task_authorization","background_session","fixed_intent_tools","apps","open_allowed_packages","apps_omitted","app_search",
-                    "blocked_action","blocked","format_correction","events","last_model_decision","last_transition","screen","completion","task_phase"}
+                    "blocked_action","blocked","format_correction","events","last_model_decision","last_transition","screen","completion","task_phase","calculator_input"}
                 :new String[]{"action_schema","task_authorization","task_phase","completion","background_session","fixed_intent_tools","apps","open_allowed_packages","apps_omitted","app_search",
-                    "blocked_action","blocked","format_correction","events","last_model_decision","last_transition","screen"};
+                    "blocked_action","blocked","format_correction","events","last_model_decision","last_transition","screen","calculator_input"};
         for(String key:sections){
             if(!data.has(key))continue;
             if(included++>0)out.append(",\n");

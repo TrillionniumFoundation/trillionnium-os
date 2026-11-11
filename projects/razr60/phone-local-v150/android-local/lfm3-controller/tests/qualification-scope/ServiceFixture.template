@@ -16,7 +16,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
     static HeptaAccessibilityService live;
     static final int GLOBAL_ACTION_BACK=1,GLOBAL_ACTION_HOME=2;
     final Handler main=new Handler(Looper.getMainLooper());
-    String lease;Runnable stopListener;QualificationScopeConfig.Bound taskScope;TaskAuthorization.Gate taskAuthorization;NotesTaskPhaseGuard taskNotesPhase;BackgroundSession taskBackground;SubmitAttemptGuard taskSubmitAttempts;FixedIntentAttemptGuard taskFixedIntentAttempts;
+    String lease;Runnable stopListener;QualificationScopeConfig.Bound taskScope;TaskAuthorization.Gate taskAuthorization;NotesTaskPhaseGuard taskNotesPhase;CalculatorTaskInputGuard taskCalculatorInput;BackgroundSession taskBackground;SubmitAttemptGuard taskSubmitAttempts;FixedIntentAttemptGuard taskFixedIntentAttempts;
     final java.util.concurrent.Executor backgroundIo=Runnable::run;
     LocalTaskController ownedController;LocalInference testInference;
     PhoneObservation current;Graph currentGraph;AppCatalogueRanker appDiscovery;

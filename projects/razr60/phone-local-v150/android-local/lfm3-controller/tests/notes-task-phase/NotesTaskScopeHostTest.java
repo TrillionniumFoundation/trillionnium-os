@@ -236,7 +236,8 @@ public final class NotesTaskScopeHostTest {
                 String wait=decision(before,"wait",null,null,null,null);domain.requireCurrent(parsed(wait));checks++;grammar(prefix+"wait",gb,wait,true);
                 check(!g.verified(before),"done branch never manufactures same-item reopen or success");
             }else if("leave_created_editor".equals(domain.projection.phase)){
-                check(domain.toolMask==null&&gb.actions.contains("back"),"legitimate editor-to-list navigation remains selectable");
+                check(set("back","wait","done").equals(domain.toolMask)&&set("back","wait","done").equals(new TreeSet<String>(gb.actions))
+                        &&domain.clickIds.isEmpty(),"verified created editor narrows to model-chosen back/wait/done without body/title clicks");
             }
             if(step==12){
                 JSONObject old=raw(prefix+"action.json");check("web.search".equals(action(old).action),"original unrelated browser action retained as regression");

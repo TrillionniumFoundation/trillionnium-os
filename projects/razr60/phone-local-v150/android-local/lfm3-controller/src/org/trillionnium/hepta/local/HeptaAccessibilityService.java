@@ -77,6 +77,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private QualificationScopeConfig.Bound taskScope;
     private TaskAuthorization.Gate taskAuthorization;
     private NotesTaskPhaseGuard taskNotesPhase;
+    private CalculatorTaskInputGuard taskCalculatorInput;
     private BackgroundSession taskBackground;
     private SubmitAttemptGuard taskSubmitAttempts;
     private FixedIntentAttemptGuard taskFixedIntentAttempts;
@@ -135,17 +136,19 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(expected!=null){expected.setListener(null);expected.close();}
         if(taskAuthorization!=null)taskAuthorization.retire();taskAuthorization=null;
         if(taskNotesPhase!=null)taskNotesPhase.retire();taskNotesPhase=null;
+        if(taskCalculatorInput!=null)taskCalculatorInput.retire();taskCalculatorInput=null;
         if(taskSubmitAttempts!=null)taskSubmitAttempts.retire();taskSubmitAttempts=null;
         if(taskFixedIntentAttempts!=null)taskFixedIntentAttempts.retire();taskFixedIntentAttempts=null;
         ownedController=null;lease=null;stopListener=null;appDiscovery=null;taskScope=null;taskBackground=null;clearSnapshot();
     }
     private void requestStop() { Runnable value; synchronized(this){value=stopListener;} if(value!=null)value.run(); }
     public synchronized boolean acquireTask(String taskId,Runnable onStop) {
-        if(lease!=null || live!=this)return false;lease=taskId;stopListener=onStop;appDiscovery=null;taskScope=null;taskAuthorization=null;taskNotesPhase=null;taskBackground=null;taskSubmitAttempts=null;taskFixedIntentAttempts=null;return true;
+        if(lease!=null || live!=this)return false;lease=taskId;stopListener=onStop;appDiscovery=null;taskScope=null;taskAuthorization=null;taskNotesPhase=null;taskCalculatorInput=null;taskBackground=null;taskSubmitAttempts=null;taskFixedIntentAttempts=null;return true;
     }
     public synchronized void releaseTask(String taskId) { if(taskId.equals(lease)){
         if(taskBackground!=null&&!taskBackground.released())throw new IllegalStateException("后台空间未核验释放，不能释放任务租约");
         if(taskNotesPhase!=null)taskNotesPhase.retire();taskNotesPhase=null;
+        if(taskCalculatorInput!=null)taskCalculatorInput.retire();taskCalculatorInput=null;
         if(taskAuthorization!=null)taskAuthorization.retire();if(taskSubmitAttempts!=null)taskSubmitAttempts.retire();taskSubmitAttempts=null;if(taskFixedIntentAttempts!=null)taskFixedIntentAttempts.retire();taskFixedIntentAttempts=null;taskAuthorization=null;lease=null;stopListener=null;appDiscovery=null;taskScope=null;taskBackground=null;} }
     synchronized void bindSubmitAttempts(String taskId,SubmitAttemptGuard attempts){
         if(!owns(taskId)||taskScope==null||taskAuthorization==null||taskSubmitAttempts!=null||attempts==null||!taskId.equals(attempts.taskId))
@@ -398,11 +401,16 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     synchronized TaskAuthorization.Gate bindTaskAuthorization(String taskId,TaskAuthorization authorization){
         TaskAuthorization.require(owns(taskId)&&taskAuthorization==null&&authorization!=null,"任务授权缺失、重复或租约不一致");
-        taskAuthorization=authorization.bind(taskId);taskNotesPhase=new NotesTaskPhaseGuard(taskId,authorization);return taskAuthorization;
+        taskAuthorization=authorization.bind(taskId);taskNotesPhase=new NotesTaskPhaseGuard(taskId,authorization);
+        taskCalculatorInput=new CalculatorTaskInputGuard(taskId,authorization);return taskAuthorization;
     }
     synchronized NotesTaskPhaseGuard notesTaskPhaseFor(String id,TaskAuthorization.Gate auth){
         TaskAuthorization.require(ownsAuthorization(id,auth)&&taskNotesPhase!=null&&id.equals(taskNotesPhase.taskId)
                 &&taskNotesPhase.authorization==auth.authorization,"任务阶段约束未绑定或已退休");return taskNotesPhase;
+    }
+    synchronized CalculatorTaskInputGuard calculatorInputFor(String id,TaskAuthorization.Gate auth){
+        TaskAuthorization.require(ownsAuthorization(id,auth)&&taskCalculatorInput!=null&&id.equals(taskCalculatorInput.taskId)
+                &&taskCalculatorInput.authorization==auth.authorization,"计算器输入约束未绑定或已退休");return taskCalculatorInput;
     }
     private synchronized TaskAuthorization.Gate authorizationFor(String taskId){
         TaskAuthorization.require(owns(taskId)&&taskAuthorization!=null&&taskId.equals(taskAuthorization.taskId),"任务授权未绑定");return taskAuthorization;
@@ -418,6 +426,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private void authorizationBeforeDispatch(String id,TaskAuthorization.Gate auth,ActionDecision action,String run){
         TaskAuthorization.require(ownsAuthorization(id,auth),"派发任务授权已退休或被替换");auth.check(action,run);
         notesTaskPhaseFor(id,auth).requireCurrent(action);
+        calculatorInputFor(id,auth).requireCurrent(action);
     }
     private JSONObject callbackAuthorizationEvidence(TaskAuthorization.Gate auth,boolean current,boolean stopped){
         if(auth==null)return null;

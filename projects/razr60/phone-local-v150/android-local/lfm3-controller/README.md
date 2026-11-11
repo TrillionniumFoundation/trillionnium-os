@@ -1,6 +1,52 @@
-# Hepta v48: keep supported Notes tasks within their current goal
+# Hepta v49: constrain verified task inputs and preserve failed-action evidence
 
-Current candidate: versionCode 48 (`0.48.0-local-notes-domain`), based on frozen
+Current candidate: versionCode 49 (`0.49.0-local-task-inputs`), based on frozen
+v48 commit `68cb7d8df097519694c52bf766c3816b09f2d0ea`.
+
+For the supported literal Notes contract, this task's proved creation and its
+currently verified complete editor body now restrict the `leave_created_editor`
+phase to `back`, `wait`, and `done`, intersected with existing owner authority.
+Body, title and category clicks are unavailable in that phase. The existing
+verified-list phase retains its matching-item `click`, `wait`, and `done` domain.
+The model chooses each action; returning is never dispatched automatically and
+does not establish saving. Real list provenance, a later model click on the same
+item, reopened complete body and stable completion remain required.
+
+A complete, bounded integer arithmetic request for Moto Calculator can now
+establish a separate task input domain after the installed application identity
+is bound. Its expression is parsed from the immutable owner request with full
+consumption and bounded `BigInteger` arithmetic for addition, subtraction and
+multiplication. Eligible clicks come from fresh, unique, observed noneditable
+calculator buttons, with their actual resource IDs and labels. Editable result
+fields, history, ambiguous buttons and direct text/submit input are excluded;
+launcher choices intersect the already authorized Calculator target. No digit,
+operator, expression, answer or button sequence is dispatched by the guard.
+Prompt, grammar, postparse and service dispatch use the same frozen domain.
+
+The Calculator expression/result matcher has pure host regressions but remains
+outside the task completion gate. A current correct pair alone cannot prove
+this task calculated it. Calculator and unknown WEB goals therefore retain
+partial completion when task-bound effect evidence is unavailable. The real
+background type failure in the regression archive still has no verified after
+frame, and its exact-readback failure has not been reinterpreted as success.
+
+After a dispatched action fails verification, the controller may collect one
+read-only diagnostic observation under the same live task, authorization,
+display and deadline. It records that observation separately, keeps the
+original failed action and error, performs no retry, and adds no completion
+proof. Existing cancellation and cleanup rules remain in force.
+
+Original v48 Notes frames and actions reproduce the body/title click detour and
+partial terminal result. Actual Java 8 host tests separately exercise the new
+editor domain, authorization intersections, grammar, service refusals, native
+Calculator button domains and failed-action diagnostics using explicit host IO
+fixtures. Full host release checks, Android compilation/signing and phone
+acceptance require their own receipts. Runtime, model/profile/sampler pins,
+Notes completion rules and unknown-task tool authority remain unchanged.
+
+## v48 predecessor: keep supported Notes tasks within their current goal
+
+The v48 predecessor is versionCode 48 (`0.48.0-local-notes-domain`), based on frozen
 v47 commit `30811a345cf836f6d48123bb9fdbdf6ca9793162`.
 
 For the already supported literal new-note/save/list/reopen contract, launcher
