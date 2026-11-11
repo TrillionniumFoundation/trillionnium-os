@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public final class TaskCompletionGate {
     public static final String SCHEMA="hepta.task-completion.v1";
     public static final int MAX_REJECTED_SUCCESS=2;
-    public static final String NOTES="notes_save_list_reopen", WEB="web_search_results", UNKNOWN="unverified_goal";
+    public static final String NOTES="notes_save_list_reopen", WEB="web_search_results", CALCULATOR="calculator_current_product", UNKNOWN="unverified_goal";
     private static final String NOTE_PREFIX="(?:打开\\s*Moto\\s*笔记(?:（com\\.motorola\\.stylus）|\\(com\\.motorola\\.stylus\\))?[，,]\\s*)?新建(?:一条|一个)?(?:笔记|备忘录)[，,]\\s*";
     private static final String NOTE_TAIL="保存这条新笔记[，,]然后回到笔记列表[，,]重新打开它并停留在正文完整可见的页面[。.]";
     private static final String NOTE_LIMITS="(?:不要修改或删除已有笔记[，,]不分享或发送[。.]?)?";
@@ -24,7 +24,10 @@ public final class TaskCompletionGate {
     private static final Pattern NOTE_QUOTED=Pattern.compile("^\\s*(?:请)?"+NOTE_PREFIX+"正文为[：:]?[“]([^“”\\r\\n]+)[”][，, ]*"+NOTE_TAIL+NOTE_LIMITS+"\\s*$");
     public static final class Contract {
         public final String kind,ownerSha256,contractSha256,body,bodySha256,recognition;
-        private Contract(String owner,String kind,String body,String recognition){
+        public final CalculatorCompletionEvidence.Goal calculator;
+        private Contract(String owner,String kind,String body,String recognition){this(owner,kind,body,recognition,null);}
+        private Contract(String owner,String kind,String body,String recognition,CalculatorCompletionEvidence.Goal calculator){
+            this.calculator=calculator;
             this.kind=kind;this.body=body;this.recognition=recognition;ownerSha256=hash(owner);
             bodySha256=body==null?null:hash(body);
             contractSha256=hash(SCHEMA+"\n"+ownerSha256+"\n"+kind+"\n"+(bodySha256==null?"":bodySha256)+"\n"+recognition);
@@ -41,6 +44,8 @@ public final class TaskCompletionGate {
                 catch(IllegalArgumentException invalid){return new Contract(owner,UNKNOWN,null,"unsupported_literal_body");}
                 return new Contract(owner,NOTES,body,form);
             }
+            CalculatorCompletionEvidence.Goal calculation=CalculatorCompletionEvidence.Goal.parse(owner);
+            if(calculation!=null)return new Contract(owner,CALCULATOR,null,"exact_owner_current_integer_product.v1",calculation);
             // A method hint never grants success: no web-result provider exists.
             // Only unquoted OWNER text is considered, never screen or model data.
             String plain=unquoted(owner);
@@ -52,6 +57,7 @@ public final class TaskCompletionGate {
             Map<String,Object> o=new LinkedHashMap<String,Object>();o.put("schema",SCHEMA);o.put("kind",kind);
             o.put("owner_sha256",ownerSha256);o.put("contract_sha256",contractSha256);o.put("recognition",recognition);
             o.put("expected_body_sha256",bodySha256);o.put("source","immutable_owner_contract");
+            if(calculator!=null)o.put("calculator_contract",calculator.contract());
             o.put("model_may_change_goal",false);o.put("grants_tool_authority",false);return o;
         }
     }
@@ -61,24 +67,27 @@ public final class TaskCompletionGate {
     }
     public final String taskId;public final Contract contract;
     private NotesCompletionEvidence.Installed installed;
+    private final CalculatorCompletionEvidence.State calculator;
     private boolean domainBound,identityInvalid,launchProved,editorObserved,listObserved,reopened,webDispatched;
     private int displayId=-1,rejectedSuccess;private String generation,identityFailure;
     private final List<Map<String,Object>> proofs=new ArrayList<Map<String,Object>>();
     private final List<Map<String,Object>> claims=new ArrayList<Map<String,Object>>();
     public TaskCompletionGate(String task,String owner,TaskAuthorization authorization){
         require(id(task),"task identity required");taskId=task;contract=Contract.parse(owner,authorization);
+        calculator=contract.calculator==null?null:new CalculatorCompletionEvidence.State(contract.calculator,authorization);
     }
     public void bindInstalled(NotesCompletionEvidence.Installed value){
         require(installed==null&&!launchProved,"installed completion identity already bound");installed=value;
     }
     public void invalidateInstalled(String reason){identityInvalid=true;identityFailure=reason==null?"installed_identity_unavailable":reason;}
     public void observed(NotesCompletionEvidence.Frame frame){
-        if(!domainShape(frame))return;
+        if(!domainShape(frame)){if(calculator!=null)calculator.observed(frame,installed);return;}
         if(!domainBound){displayId=frame.displayId;generation=frame.backgroundGeneration;domainBound=true;}
         if(!sameDomain(frame)){identityInvalid=true;identityFailure="observation_display_generation_changed";return;}
         if(NOTES.equals(contract.kind)&&launchProved&&!editorObserved&&body(frame).matched){
             editorObserved=true;proofs.add(proof("editor_body_observed",0,null,frame,frame));
         }
+        if(calculator!=null)calculator.observed(frame,installed);
     }
     public void action(int step,String run,ActionDecision action,boolean accepted,boolean dispatched,boolean stale,
                        NotesCompletionEvidence.Frame before,NotesCompletionEvidence.Frame after,Map<String,Object> fixed){
@@ -91,6 +100,7 @@ public final class TaskCompletionGate {
         if("web.search".equals(action.action)&&fixedMatches(action,run,before,fixed,false)){
             webDispatched=true;proofs.add(proof("web_query_dispatch_only",step,run,before,after));
         }
+        if(calculator!=null){calculator.action(step,run,action,accepted,dispatched,stale,before,after,installed);observed(after);return;}
         if(!NOTES.equals(contract.kind)){observed(after);return;}
         NotesCompletionEvidence.BodyEvidence beforeBody=body(before),afterBody=body(after);
         NotesCompletionEvidence.ListEvidence beforeList=NotesCompletionEvidence.list(before,contract.body),afterList=NotesCompletionEvidence.list(after,contract.body);
@@ -124,6 +134,7 @@ public final class TaskCompletionGate {
         return new Check(verified,!verified&&rejectedSuccess<MAX_REJECTED_SUCCESS,value);
     }
     public boolean verified(NotesCompletionEvidence.Frame current){
+        if(calculator!=null)return domainBound&&!identityInvalid&&sameDomain(current)&&calculator.verified(current,installed);
         return NOTES.equals(contract.kind)&&domainBound&&!identityInvalid&&installed!=null
                 &&launchProved&&editorObserved&&listObserved&&reopened&&sameDomain(current)&&body(current).matched;
     }
@@ -153,6 +164,7 @@ public final class TaskCompletionGate {
             o.put("notes_launch_observed",launchProved);o.put("editor_body_observed",editorObserved);o.put("list_observed",listObserved);
             o.put("same_list_item_reopened",reopened);
         }else if(WEB.equals(contract.kind))o.put("web_query_dispatched",webDispatched);
+        else if(calculator!=null)o.put("calculator",calculator.prompt(current,installed));
         o.put("writes_required_for_unknown_or_read_only_goal",false);o.put("grants_tool_authority",false);return o;
     }
     public Map<String,Object> evidence(NotesCompletionEvidence.Frame current){
@@ -163,10 +175,15 @@ public final class TaskCompletionGate {
         if(NOTES.equals(contract.kind)){NotesCompletionEvidence.BodyEvidence v=body(current);o.put("current_editor_raw_exact",v.rawExact);o.put("current_body_evidence",bodyEvidence(v));
             NotesCompletionEvidence.ListEvidence list=NotesCompletionEvidence.list(current,contract.body);o.put("current_list_match",list.matched);o.put("current_list_missing",list.missing);
             o.put("current_list_evidence",list.evidence());}
+        if(calculator!=null)o.put("calculator",calculator.evidence(current,installed));
         return o;
     }
-    public String completionSummary(){return "已核验本次正文进入笔记编辑器、返回列表并点击同一可访问正文条目重新打开；列表视觉裁切与存储原始字节未核验。";}
+    public String completionSummary(){
+        if(calculator!=null)return "已核验本任务模型输入目标算式后，计算器当前公式与当前结果字段同时匹配本机确定性乘法计算；未使用历史结果或模型自述作为证明。";
+        return "已核验本次正文进入笔记编辑器、返回列表并点击同一可访问正文条目重新打开；列表视觉裁切与存储原始字节未核验。";
+    }
     public String incompleteSummary(){
+        if(calculator!=null)return "未完成验证：缺少本任务模型计算输入、同一窗口当前公式或确定性结果的完整证据。";
         if(NOTES.equals(contract.kind))return "未完成验证：缺少本次笔记保存、列表或同一条目重新打开的完整证据。";
         if(WEB.equals(contract.kind))return webDispatched?"已发起网页查询，但尚无实际结果证明，任务部分完成。":"未确认网页查询及结果，任务未验证完成。";
         return "模型提出结束，但本次目标没有可用的完成验证，任务部分完成；请核对实际状态。";
@@ -181,6 +198,7 @@ public final class TaskCompletionGate {
             if(!listObserved)out.add("save_then_real_list_with_unique_body_item_missing");
             if(!reopened)out.add("model_click_same_list_item_then_reopened_body_missing");
             if(!body(current).matched)out.add("current_editor_body_missing");
+        }else if(calculator!=null){out.addAll(calculator.missing(current,installed));
         }else if(WEB.equals(contract.kind)){
             if(!webDispatched)out.add("model_bound_web_query_dispatch_missing");out.add("web_results_provider_unavailable");
         }else out.add("complete_owner_goal_verifier_unavailable");

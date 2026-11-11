@@ -198,14 +198,16 @@ public final class LocalTaskController implements AutoCloseable {
             if(scope.buildBytes!=null)MobiMindPrivateFiles.writeNew(new File(evidence,"build-identity.json"),scope.buildBytes);
             if(scope.runtimeFile!=null)MobiMindPrivateFiles.writeNew(new File(evidence,"scope-runtime-config.json"),scope.runtimeFile.bytes);
             record(evidence,"scope-binding.json",scope.evidence());scope.requireReady();
-            if(TaskCompletionGate.NOTES.equals(completion.contract.kind)){
+            if(TaskCompletionGate.NOTES.equals(completion.contract.kind)||TaskCompletionGate.CALCULATOR.equals(completion.contract.kind)){
                 checkActive(deadline);
                 try{
-                    completionInstalled=QualificationScopeConfig.CompletionInstalledIdentity.captureNotes(service);
+                    completionInstalled=TaskCompletionGate.CALCULATOR.equals(completion.contract.kind)
+                            ?QualificationScopeConfig.CompletionInstalledIdentity.captureCalculator(service)
+                            :QualificationScopeConfig.CompletionInstalledIdentity.captureNotes(service);
                     completion.bindInstalled(new NotesCompletionEvidence.Installed(completionInstalled.packageName,completionInstalled.uid,completionInstalled.apkHashes));
                     record(evidence,"completion-installed-identity.json",new JSONObject(completionInstalled.evidence()));
                 }catch(Exception unavailable){
-                    completion.invalidateInstalled("installed_notes_identity_unavailable");
+                    completion.invalidateInstalled("installed_completion_identity_unavailable");
                     record(evidence,"completion-installed-identity.json",new JSONObject().put("available",false)
                             .put("reason",HeptaAccessibilityService.limited(HeptaAccessibilityService.message(unavailable),160)));
                 }
@@ -354,7 +356,7 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("find_returned",outcome.appCatalogue.apps.size()).put("find_matches",outcome.appCatalogue.matchingApps)
                         .put("find_catalogue_sha256",outcome.appCatalogue.catalogueSha256);
                 history.put(row);record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-after.json",steps),observation.toJson());
-                if(completionInstalled!=null)try{completionInstalled.verify(service);}catch(Exception changed){completion.invalidateInstalled("installed_notes_identity_changed");}
+                if(completionInstalled!=null)try{completionInstalled.verify(service);}catch(Exception changed){completion.invalidateInstalled("installed_completion_identity_changed");}
                 completion.action(steps,decisionRunId,action,outcome.accepted,outcome.dispatched,outcome.stale,
                         completionFrame(before),completionFrame(observation),completionFixed(outcome.fixedIntent));
                 LastModelDecisionProjection dispatchedDecision=LastModelDecisionProjection.fromOutcome(taskId,steps,decisionRunId,before.id,action,
@@ -418,8 +420,14 @@ public final class LocalTaskController implements AutoCloseable {
             // scope/authorization check fails. Keep that later reason without weakening status.
             if(!cleanup){blocked=true;finalStatus="blocked";modelSuccess=false;}
             if(completionInstalled!=null)try{completionInstalled.verify(service);}catch(Exception changed){
-                completion.invalidateInstalled("installed_notes_identity_changed_after_cleanup");
+                completion.invalidateInstalled("installed_completion_identity_changed_after_cleanup");
                 if(modelSuccess){modelSuccess=false;finalStatus="partial";summary="笔记应用身份在完成核验后发生变化，未确认本次目标。";}
+            }
+            // Installed identity IO can block after the earlier Stop check. Observe
+            // cancellation again before terminal completion; unresolved cleanup keeps
+            // its admission-blocking status rather than being relabeled cancelled.
+            if(cleanup&&cancelled.get()){
+                finalStatus="cancelled";modelSuccess=false;summary="已停止；已经发生的操作不会自动重做";
             }
             boolean completionVerified=modelSuccess&&cleanup&&modelCleanup.receiptValid&&completion.verified(completionFrame(observation));
             java.util.Map<String,Object> completionEvidence=completion.evidence(completionFrame(observation));
@@ -431,6 +439,7 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("model_done_summary",lastModelDoneSummary==null?JSONObject.NULL:lastModelDoneSummary)
                     .put("completion_verified",completionVerified).put("completion_evidence",new JSONObject(completionEvidence))
                     .put("final_observation_id",observation==null?JSONObject.NULL:observation.id).put("cleanup_known",cleanup)
+                    .put("observation_read_worker_pending_at_terminal",service.observationReadWorkPending())
                     .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha256))
                     .put("actual_scope_sha256",scope==null?JSONObject.NULL:QualificationScopeConfig.nullable(scope.actualSha256))
                     .put("qualification_scope",scope==null?JSONObject.NULL:scope.evidence())
@@ -530,10 +539,10 @@ public final class LocalTaskController implements AutoCloseable {
                     });
             while(!ready.await(100,TimeUnit.MILLISECONDS)){
                 checkActive(deadline);
-                if(SystemClock.elapsedRealtime()>=observationDeadline)throw new IllegalStateException("系统屏幕观察超时");
+                if(SystemClock.elapsedRealtime()>=observationDeadline)throw new IllegalStateException(error.get()!=null?error.get():service.observationTimeoutMessage(id));
             }
             checkActive(deadline);
-            if(SystemClock.elapsedRealtime()>=observationDeadline)throw new IllegalStateException("系统屏幕观察超时");
+            if(SystemClock.elapsedRealtime()>=observationDeadline)throw new IllegalStateException(error.get()!=null?error.get():service.observationTimeoutMessage(id));
             if(error.get()!=null)throw new IllegalStateException(error.get());
             PhoneObservation result=value.get();if(result==null)throw new IllegalStateException("没有取得屏幕观察");
             try{service.requireTaskAuthorization(id,authorization);service.requireScopeObservation(id,result);service.requireBackgroundObservation(id,result);service.requireAuthorizationObservation(id,authorization,result);}
