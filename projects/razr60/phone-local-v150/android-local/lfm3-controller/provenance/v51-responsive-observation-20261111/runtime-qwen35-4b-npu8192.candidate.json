@@ -1,0 +1,7 @@
+{
+  "schema": "hepta.local-runtime.v2",
+  "model_profile": "qwen3.5-4b-q4_0",
+  "compute": "npu",
+  "context_tokens": 8192,
+  "threads": 4
+}
