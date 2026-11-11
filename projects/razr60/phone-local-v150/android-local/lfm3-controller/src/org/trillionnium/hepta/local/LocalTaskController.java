@@ -426,6 +426,7 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("model_done_summary",lastModelDoneSummary==null?JSONObject.NULL:lastModelDoneSummary)
                     .put("completion_verified",completionVerified).put("completion_evidence",new JSONObject(completionEvidence))
                     .put("final_observation_id",observation==null?JSONObject.NULL:observation.id).put("cleanup_known",cleanup)
+                    .put("observation_read_worker_pending_at_terminal",service.observationReadWorkPending())
                     .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha256))
                     .put("actual_scope_sha256",scope==null?JSONObject.NULL:QualificationScopeConfig.nullable(scope.actualSha256))
                     .put("qualification_scope",scope==null?JSONObject.NULL:scope.evidence())
@@ -525,10 +526,10 @@ public final class LocalTaskController implements AutoCloseable {
                     });
             while(!ready.await(100,TimeUnit.MILLISECONDS)){
                 checkActive(deadline);
-                if(SystemClock.elapsedRealtime()>=observationDeadline)throw new IllegalStateException("系统屏幕观察超时");
+                if(SystemClock.elapsedRealtime()>=observationDeadline)throw new IllegalStateException(error.get()!=null?error.get():service.observationTimeoutMessage(id));
             }
             checkActive(deadline);
-            if(SystemClock.elapsedRealtime()>=observationDeadline)throw new IllegalStateException("系统屏幕观察超时");
+            if(SystemClock.elapsedRealtime()>=observationDeadline)throw new IllegalStateException(error.get()!=null?error.get():service.observationTimeoutMessage(id));
             if(error.get()!=null)throw new IllegalStateException(error.get());
             PhoneObservation result=value.get();if(result==null)throw new IllegalStateException("没有取得屏幕观察");
             try{service.requireTaskAuthorization(id,authorization);service.requireScopeObservation(id,result);service.requireBackgroundObservation(id,result);service.requireAuthorizationObservation(id,authorization,result);}
