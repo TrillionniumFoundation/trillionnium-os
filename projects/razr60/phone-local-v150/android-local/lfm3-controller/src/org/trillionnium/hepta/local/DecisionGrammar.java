@@ -75,6 +75,15 @@ public final class DecisionGrammar {
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
             Map<String,ObservedImeEnter> submitActions,ObservedTargetLabels targets,ObservedAppLabels appLabels,
             TaskAuthorization.Frame authorization,boolean background){
+        return createImeAuthorized(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
+                submitActions,targets,appLabels,authorization,background,null);
+    }
+    /** A task filter removes branches from the already observed/authorized
+     * domain. Node, launcher and fixed-tool sets must be narrowed consistently. */
+    public static DecisionGrammar createImeAuthorized(String observationId,String currentPackage,Set<String> shownApps,
+            Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
+            Map<String,ObservedImeEnter> submitActions,ObservedTargetLabels targets,ObservedAppLabels appLabels,
+            TaskAuthorization.Frame authorization,boolean background,Set<String> taskTools){
         TaskAuthorization.require(authorization!=null,"IME 动作语法缺少用户授权");
         if(appLabels==null||targets==null||submitActions==null||submitActions.size()>200)
             throw new IllegalArgumentException("observed query action projection required");
@@ -82,7 +91,7 @@ public final class DecisionGrammar {
         for(String id:submits)if(!targets.labels.containsKey(id)||submitActions.get(id)==null||!submitActions.get(id).queryAllowed())
             throw new IllegalArgumentException("submit is not a supplied query-labelled action");
         return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
-                targets,appLabels,authorization,background,submits,true,null);
+                targets,appLabels,authorization,background,submits,true,null,Collections.<String,String>emptyMap(),taskTools);
     }
 
     /** Explicit v6: supplied installed targets are separate from launcher-open pairs. */
@@ -100,9 +109,17 @@ public final class DecisionGrammar {
             Map<String,ObservedImeEnter> submitActions,ObservedTargetLabels targets,ObservedAppLabels appLabels,
             TaskAuthorization.Frame authorization,boolean background,Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,
             Map<String,String> exactPayloads){
+        return createFixedIntentAuthorized(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
+                submitActions,targets,appLabels,authorization,background,fixedTargets,exactPayloads,null);
+    }
+    public static DecisionGrammar createFixedIntentAuthorized(String observationId,String currentPackage,Set<String> shownApps,
+            Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
+            Map<String,ObservedImeEnter> submitActions,ObservedTargetLabels targets,ObservedAppLabels appLabels,
+            TaskAuthorization.Frame authorization,boolean background,Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,
+            Map<String,String> exactPayloads,Set<String> taskTools){
         // Reuse the exact v5 validation for the existing node/action domain.
         DecisionGrammar checked=createImeAuthorized(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
-                submitActions,targets,appLabels,authorization,background);
+                submitActions,targets,appLabels,authorization,background,taskTools);
         if(fixedTargets==null||fixedTargets.size()>2)throw new IllegalArgumentException("installed fixed targets required");
         Map<String,org.trillionnium.hepta.background.FixedIntentTarget> permitted=new TreeMap<String,org.trillionnium.hepta.background.FixedIntentTarget>();
         for(Map.Entry<String,org.trillionnium.hepta.background.FixedIntentTarget> entry:fixedTargets.entrySet()){
@@ -118,7 +135,7 @@ public final class DecisionGrammar {
         for(Map.Entry<String,String> payload:exactPayloads.entrySet())
             org.trillionnium.hepta.background.FixedIntentTools.forAction(payload.getKey()).validatePayload(payload.getValue());
         return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
-                targets,appLabels,authorization,background,checked.submitNodes,true,permitted,exactPayloads);
+                targets,appLabels,authorization,background,checked.submitNodes,true,permitted,exactPayloads,taskTools);
     }
 
     private static DecisionGrammar createInternal(String observationId,String currentPackage,Set<String> shownApps,
@@ -131,6 +148,14 @@ public final class DecisionGrammar {
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
             ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization,boolean background,Set<String> submitNodes,boolean imeProtocol,
             Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,Map<String,String> exactPayloads){
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
+                targets,appLabels,authorization,background,submitNodes,imeProtocol,fixedTargets,exactPayloads,null);
+    }
+    private static DecisionGrammar createInternal(String observationId,String currentPackage,Set<String> shownApps,
+            Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
+            ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization,boolean background,Set<String> submitNodes,boolean imeProtocol,
+            Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,Map<String,String> exactPayloads,Set<String> taskTools){
+        taskTools=checkedTaskTools(taskTools);
         if(observationId==null||!observationId.matches("[0-9a-f]{32}"))throw new IllegalArgumentException("invalid observed id");
         checkPackage(currentPackage);
         if(targets==null||!observationId.equals(targets.observationId)||!currentPackage.equals(targets.packageName))
@@ -149,8 +174,13 @@ public final class DecisionGrammar {
             if(!authorization.allows("submit"))submits.clear();
             if(!authorization.allows("scroll"))scrolls.clear();
         }
+        if((!permitted(taskTools,"open")&&!apps.isEmpty())||(!permitted(taskTools,"click")&&!clicks.isEmpty())
+                ||(!permitted(taskTools,"type")&&!edits.isEmpty())||(!permitted(taskTools,"submit")&&!submits.isEmpty())
+                ||(!permitted(taskTools,"scroll")&&!scrolls.isEmpty())
+                ||(fixedTargets!=null&&taskTools!=null&&!taskTools.containsAll(fixedTargets.keySet())))
+            throw new IllegalArgumentException("task tool filter differs from the supplied capability domain");
         StringBuilder rules=new StringBuilder();List<String> branches=new ArrayList<String>();
-        if(authorization==null||authorization.allows("find_app")){
+        if(permitted(taskTools,"find_app")&&(authorization==null||authorization.allows("find_app"))){
             branches.add("find_app");
             String queryRule=authorization!=null&&authorization.authorization.requireFindAppBeforeOpen?jsonValue(authorization.authorization.findQuery):"query-string";
             rule(rules,"find-app",prefix("find_app",observationId)+field("package",jsonValue(currentPackage))+comma()+field("query",queryRule)+comma()+field("offset","app-offset")+ending());
@@ -191,11 +221,12 @@ public final class DecisionGrammar {
             rule(rules,"scroll-target",scrollPairs(scrolls,targets));
         }
         for(String name:new String[]{"back","home"}){
+            if(!permitted(taskTools,name))continue;
             if(background&&"home".equals(name))continue;
             if(authorization!=null&&!authorization.allows(name))continue;
             branches.add(name);rule(rules,name,prefix(name,observationId)+field("package",jsonValue(currentPackage))+ending());
         }
-        if(authorization==null||authorization.allows("wait")){branches.add("wait");rule(rules,"wait",prefix("wait",observationId)+field("package",jsonValue(currentPackage))+comma()+field("duration_ms","duration")+ending());}
+        if(permitted(taskTools,"wait")&&(authorization==null||authorization.allows("wait"))){branches.add("wait");rule(rules,"wait",prefix("wait",observationId)+field("package",jsonValue(currentPackage))+comma()+field("duration_ms","duration")+ending());}
         branches.add("done");rule(rules,"done",prefix("done",observationId)+field("package",jsonValue(currentPackage))+comma()+field("status","status")+comma()+field("summary","summary-string")+ending());
         // A brief state assessment precedes action selection in the generated JSON.
         rule(rules,"status",alternatives(new TreeSet<String>(java.util.Arrays.asList(authorization==null||authorization.successAllowed()?new String[]{"success","partial","failure"}:new String[]{"partial","failure"}))));
@@ -218,6 +249,15 @@ public final class DecisionGrammar {
     /** A direction cannot migrate to another node that has a different action list. */
     public boolean allowsScroll(String nodeId,String direction){
         List<String> allowed=scrollDirections.get(nodeId);return allowed!=null&&allowed.contains(direction);
+    }
+    private static boolean permitted(Set<String> taskTools,String action){return taskTools==null||taskTools.contains(action);}
+    private static Set<String> checkedTaskTools(Set<String> values){
+        if(values==null)return null;
+        Set<String> known=new TreeSet<String>(java.util.Arrays.asList("find_app","open","notes.create","web.search",
+                "click","type","submit","scroll","back","home","wait","done"));
+        if(!values.contains("done")||!known.containsAll(values))
+            throw new IllegalArgumentException("task tool filter must retain terminal reporting and known tools only");
+        return Collections.unmodifiableSet(new TreeSet<String>(values));
     }
     private static Map<String,List<String>> checkedScrollActions(Map<String,ObservedScrollActions> values,ObservedTargetLabels targets){
         if(values==null||values.size()>200)throw new IllegalArgumentException("invalid scroll action projection");

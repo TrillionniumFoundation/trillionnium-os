@@ -93,8 +93,7 @@ public final class TaskCompletionGateHostTest {
             if("detour".equals(mode)){
                 e.service.effectHook=()->{
                     if(e.service.opens==1&&phase==0){phase=1;e.service.root.pkg=P;e.service.node.pkg=P;e.service.node.text=BODY;e.service.node.editable=true;}
-                    else if(e.service.opens==2&&phase==1){phase=2;e.service.root.pkg="org.trillionnium.hepta.local";e.service.node.pkg=e.service.root.pkg;e.service.node.editable=false;}
-                    else if(e.service.opens==3&&phase==2){phase=3;e.service.root.pkg=P;e.service.node.pkg=P;e.service.node.editable=false;}
+                    else if(e.service.opens==2&&phase==2){phase=3;e.service.root.pkg=P;e.service.node.pkg=P;e.service.node.editable=false;}
                     else if(e.service.node.actions==1&&phase==3){phase=4;e.service.node.editable=true;}
                 };
                 e.service.observationRows=()->{
@@ -122,7 +121,15 @@ public final class TaskCompletionGateHostTest {
                 check(ActionDecision.FIXED_INTENT_ACTION_SCHEMA.equals(grammar.schema)&&grammar.text.contains("success"),"v6 grammar remains unchanged, completion is controller-only");
                 String tool="done";
                 if("complete".equals(mode)||mode.startsWith("close_")){tool=calls==2?"notes.create":calls==3?"back":calls==4?"click":"done";}
-                if("detour".equals(mode))tool=calls==1?"notes.create":calls==2||calls==3?"open":calls==4?"click":"done";
+                if("detour".equals(mode)){
+                    tool=calls==1?"notes.create":calls==2?"back":calls==3?"open":calls==4?"click":"done";
+                    if(calls==2){
+                        // Explicit Android IO race: the user/system leaves Notes
+                        // after this prompt. No model self-app open is authorized.
+                        phase=2;e.service.root.pkg="org.trillionnium.hepta.local";
+                        e.service.node.pkg=e.service.root.pkg;e.service.node.editable=false;
+                    }
+                }
                 if("draft".equals(mode))tool=calls==1?"notes.create":"done";
                 if("web".equals(mode))tool=calls==2?"web.search":"done";
                 if("cancel".equals(mode)&&calls==2)e.controller.stop();
@@ -153,7 +160,11 @@ public final class TaskCompletionGateHostTest {
             JSONObject result=FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("result.json"));check(result.getBoolean("model_reported_success")&&result.getBoolean("completion_verified")==verified,"terminal keeps original native success claim");
             check(result.getBoolean("goal_independently_verified")==verified,"independent goal field follows actual supported completion evidence");
             if("complete".equals(mode)){check(e.service.opens==1&&e.service.navigations==1&&e.service.node.actions==1,"one actual fixed Intent then actual back and same-node click");check(Files.exists(r.evidenceDirectory.toPath().resolve("step-01-completion-reobserve.json")),"premature first done led to a new recorded observation");}
-            if("detour".equals(mode))check(e.service.opens==3&&e.service.navigations==0&&e.service.node.actions==1,"create plus model-selected app detour/list reopen completes with no forced back or automatic replay");
+            if("detour".equals(mode)){
+                check(e.service.opens==2&&e.service.navigations==0&&e.service.node.actions==1,"external window change is reobserved; model opens only Notes then clicks its same item");
+                JSONObject stale=FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("step-02-action.json"));
+                check(stale.getBoolean("stale")&&!stale.getBoolean("dispatched"),"outdated editor navigation never dispatches after external window change");
+            }
             if("readonly".equals(mode)||"cancel".equals(mode))check(e.service.effects()==0,"read-only unknown task was never forced to write or navigate");
             if("draft".equals(mode))check(e.service.opens==1&&e.service.navigations==0&&e.service.node.actions==0,"accepted draft alone never becomes saved note; no replay");
             if("web".equals(mode))check(e.service.opens==1&&result.getJSONObject("completion_evidence").getBoolean("web_query_dispatched"),"web method executed exactly once but result proof unavailable");
@@ -173,7 +184,7 @@ public final class TaskCompletionGateHostTest {
         output=Paths.get(args[0]);Files.createDirectories(output);QualificationScopeHostTest.output=output;
         pureCases();test("bridge_clears_whitespace_masked_truncated_child",()->bridgeCase());
         test("actual_controller_first_done_recovers_and_real_note_chain_completes",()->controllerCase("complete",OWNER,true,5));
-        test("actual_controller_open_detour_recovers_only_after_same_item_click",()->controllerCase("detour",OWNER,true,5));
+        test("actual_controller_external_window_detour_recovers_only_after_same_item_click",()->controllerCase("detour",OWNER,true,5));
         test("actual_controller_draft_only_done_remains_partial_once",()->controllerCase("draft",OWNER,false,3));
         test("actual_controller_web_effect_without_results_is_partial",()->controllerCase("web",WEB,false,3));
         test("actual_controller_unknown_readonly_two_claims_zero_effects",()->controllerCase("readonly","读出当前页面的标题，不要点击或输入。",false,2));

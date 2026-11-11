@@ -42,7 +42,7 @@ public final class NotesTaskPhaseGuard {
                 else if(!facts.listObserved&&facts.currentBody)phase="leave_created_editor";
             }
         }
-        return new Projection(this,frame,phase,create,item);
+        return new Projection(this,frame,phase,create,item,facts);
     }
     /** Only the final budgeted action domain is published. A repair replaces it;
      * a late decision cannot borrow an older or another task's domain. */
@@ -68,9 +68,26 @@ public final class NotesTaskPhaseGuard {
         public final int displayId;
         private final boolean createAllowed;
         private final String listItem;
-        private Projection(NotesTaskPhaseGuard owner,NotesCompletionEvidence.Frame frame,String phase,boolean create,String item){
+        private final TaskCompletionGate.NotesPhase currentFacts;
+        private Projection(NotesTaskPhaseGuard owner,NotesCompletionEvidence.Frame frame,String phase,boolean create,String item,
+                           TaskCompletionGate.NotesPhase facts){
             this.owner=owner;this.phase=phase;observationId=frame.observationId;packageName=frame.packageName;
-            displayId=frame.displayId;backgroundGeneration=frame.backgroundGeneration;createAllowed=create;listItem=item;
+            displayId=frame.displayId;backgroundGeneration=frame.backgroundGeneration;createAllowed=create;listItem=item;currentFacts=facts;
+        }
+        /** Null retains the existing generic tool set. A proved current list
+         * narrows this task only; no action or target is added to the input. */
+        public Set<String> toolMask(){
+            return "reopen_saved_item".equals(phase)?Collections.unmodifiableSet(new TreeSet<String>(
+                    java.util.Arrays.asList("click","wait","done"))):null;
+        }
+        public Set<String> openPackages(Set<String> supplied){
+            Set<String> out=new TreeSet<String>(supplied);
+            if(owner.supported())out.retainAll(Collections.singleton(NotesCompletionEvidence.NOTES));
+            if(toolMask()!=null)out.clear();
+            return out;
+        }
+        public Map<String,ObservedScrollActions> scrolls(Map<String,ObservedScrollActions> supplied){
+            return toolMask()==null?new TreeMap<String,ObservedScrollActions>(supplied):new TreeMap<String,ObservedScrollActions>();
         }
         public Set<String> clicks(Set<String> supplied){
             Set<String> out=new TreeSet<String>(supplied);
@@ -86,7 +103,11 @@ public final class NotesTaskPhaseGuard {
             if(supplied==null)return null;
             Map<String,FixedIntentTarget> out=new TreeMap<String,FixedIntentTarget>(supplied);
             out.keySet().retainAll(owner.authorization.allowedTools);
-            if(owner.supported()&&!createAllowed)out.remove("notes.create");return out;
+            if(owner.supported()){
+                out.remove("web.search");
+                if(!createAllowed)out.remove("notes.create");
+            }
+            return out;
         }
         public Map<String,String> exactPayloads(Map<String,FixedIntentTarget> supplied){
             Map<String,String> out=new TreeMap<String,String>();
@@ -94,14 +115,28 @@ public final class NotesTaskPhaseGuard {
             return Collections.unmodifiableMap(out);
         }
         public Domain bind(Set<String> clicks,Set<String> edits,Set<String> submits,Map<String,FixedIntentTarget> fixed){
+            // Legacy callers never acquire unobserved launcher or scroll targets.
+            return bind(clicks,edits,submits,fixed,Collections.<String>emptySet(),Collections.<String,ObservedScrollActions>emptyMap());
+        }
+        public Domain bind(Set<String> clicks,Set<String> edits,Set<String> submits,Map<String,FixedIntentTarget> fixed,
+                           Set<String> packages,Map<String,ObservedScrollActions> scrolls){
+            Map<String,java.util.List<String>> directions=new TreeMap<String,java.util.List<String>>();
+            for(Map.Entry<String,ObservedScrollActions> entry:scrolls.entrySet()){
+                require(entry.getValue()!=null,"missing observed scroll capability");
+                if(entry.getValue().hasAny())directions.put(entry.getKey(),entry.getValue().directions);
+            }
             require((clicks.isEmpty()||owner.authorization.allowedTools.contains("click"))
                     &&(edits.isEmpty()||owner.authorization.allowedTools.contains("type"))
                     &&(submits.isEmpty()||owner.authorization.allowedTools.contains("submit"))
+                    &&(packages.isEmpty()||owner.authorization.allowedTools.contains("open"))
+                    &&(directions.isEmpty()||owner.authorization.allowedTools.contains("scroll"))
                     &&(fixed==null||owner.authorization.allowedTools.containsAll(fixed.keySet())),"domain exceeds immutable tool authorization");
             require(clicks(clicks).equals(clicks)&&edits(edits).equals(edits),"domain includes removed node capability");
             require(!owner.supported()||submits.isEmpty(),"new-note domain includes submit");
-            require(!owner.supported()||createAllowed||fixed==null||!fixed.containsKey("notes.create"),"unavailable create included");
-            return new Domain(this,clicks,edits,submits,fixed);
+            require(openPackages(packages).equals(packages),"domain includes unrelated launcher target");
+            require(toolMask()==null||directions.isEmpty(),"verified list domain includes scroll");
+            require(fixed==null||fixedTargets(fixed).keySet().equals(fixed.keySet()),"domain includes removed fixed tool");
+            return new Domain(this,clicks,edits,submits,fixed,packages,directions);
         }
         public Map<String,Object> evidence(){
             Map<String,Object> o=new LinkedHashMap<String,Object>();o.put("schema",SCHEMA);o.put("task_id",owner.taskId);
@@ -111,6 +146,10 @@ public final class NotesTaskPhaseGuard {
             o.put("automatic_dispatch",false);
             if(owner.supported()){
                 o.put("expected_body_sha256",owner.contract.bodySha256);
+                o.put("current_surface",currentFacts==null?"unverified":currentFacts.currentSurface());
+                o.put("current_list_item_node_id",currentFacts==null?null:currentFacts.currentListItem);
+                o.put("current_editor_body_matched",currentFacts!=null&&currentFacts.currentBody);
+                o.put("task_tool_filter",toolMask());
                 o.put("direct_text_replacement_allowed",false);o.put("notes_create_expected_text",createAllowed?owner.contract.body:null);
                 o.put("next_goal",nextGoal());
             }
@@ -122,21 +161,37 @@ public final class NotesTaskPhaseGuard {
             if("leave_created_editor".equals(phase))return "本次正文已观察。下一目标是离开编辑器并观察真实笔记列表；可选择 back，可能先关闭输入法，须复查。正文、标题或分类不是保存按钮；back 被接受不等于保存。";
             if("reopen_saved_item".equals(phase))return "由模型点击当前列表中已核验的同一正文条目，随后重新观察完整正文。";
             if("verify_reopened_editor".equals(phase))return "已观察同一条目重新打开；核对当前完整正文后由模型选择 done。";
+            if(currentFacts!=null&&currentFacts.currentBody&&currentFacts.listObserved&&!currentFacts.reopened)
+                return "当前正文完整可见，但尚缺由模型从已核验列表点击同一条目后的重开证据；正文可见不等于已完成该核验。";
             return "当前没有足以允许笔记编辑的本任务证据；复查观察，无法确认时报告 partial 或 failure。";
         }
     }
     public static final class Domain {
         public final Projection projection;
-        public final Set<String> clickIds,editIds,submitIds,fixedActions;
-        private Domain(Projection p,Set<String> clicks,Set<String> edits,Set<String> submits,Map<String,FixedIntentTarget> fixed){
+        public final Set<String> clickIds,editIds,submitIds,fixedActions,openPackages,toolMask;
+        public final Map<String,java.util.List<String>> scrollDirections;
+        private Domain(Projection p,Set<String> clicks,Set<String> edits,Set<String> submits,Map<String,FixedIntentTarget> fixed,
+                       Set<String> packages,Map<String,java.util.List<String>> scrolls){
             projection=p;clickIds=immutable(clicks);editIds=immutable(edits);submitIds=immutable(submits);
             fixedActions=immutable(fixed==null?Collections.<String>emptySet():fixed.keySet());
+            openPackages=immutable(packages);toolMask=p.toolMask();
+            scrollDirections=Collections.unmodifiableMap(new TreeMap<String,java.util.List<String>>(scrolls));
         }
         public void requireAction(ActionDecision action){
             require(action!=null&&projection.observationId.equals(action.observationId),"action belongs to another observation");
+            require(toolMask==null||toolMask.contains(action.action),"tool absent from verified current-list domain");
             if("click".equals(action.action))require(action.nodeId!=null&&clickIds.contains(action.nodeId),"click absent from current permitted domain");
             if("type".equals(action.action))require(action.nodeId!=null&&editIds.contains(action.nodeId),"type absent from current permitted domain");
             if("submit".equals(action.action))require(action.nodeId!=null&&submitIds.contains(action.nodeId),"submit absent from current permitted domain");
+            if(projection.owner.supported()){
+                if("open".equals(action.action))require(openPackages.contains(action.packageName),"open absent from current task domain");
+                if("scroll".equals(action.action)){
+                    java.util.List<String> directions=scrollDirections.get(action.nodeId);
+                    require(directions!=null&&directions.contains(action.direction),"scroll absent from current observed domain");
+                }
+                if(org.trillionnium.hepta.background.FixedIntentTools.isTool(action.action))
+                    require(fixedActions.contains(action.action),"fixed tool absent from current task domain");
+            }
             if(projection.owner.supported()&&"notes.create".equals(action.action)){
                 require(projection.createAllowed&&fixedActions.contains("notes.create"),"new-note entry unavailable in current phase");
                 require(projection.owner.contract.body.equals(action.text),"new-note payload differs from immutable OWNER body");

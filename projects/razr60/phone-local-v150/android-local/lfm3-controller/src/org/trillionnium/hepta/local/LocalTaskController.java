@@ -698,7 +698,7 @@ public final class LocalTaskController implements AutoCloseable {
                 PhoneObservation.Node node=nodes.get(i);
                 if(!PromptActionDomain.textOnlyClickLabel(node.text,node.description,node.childText))clicks.remove(node.id);
             }
-            clicks=taskPhase.clicks(clicks);edits=taskPhase.edits(edits);submits=taskPhase.submits(submits);
+            clicks=taskPhase.clicks(clicks);edits=taskPhase.edits(edits);submits=taskPhase.submits(submits);scrolls=taskPhase.scrolls(scrolls);
             JSONObject scrollActionsJson=new JSONObject(),submitActionsJson=new JSONObject();
             JSONArray controlHints=new JSONArray();int controlHintsObserved=0;
             for(int i=0;i<nodeCount;i++){
@@ -746,6 +746,7 @@ public final class LocalTaskController implements AutoCloseable {
             packages.remove(observation.packageName);packages.remove("android");
             packages=authorization.openPackages(packages);
             if(scope!=null){java.util.Iterator<String> permitted=packages.iterator();while(permitted.hasNext())if(!scope.allows(permitted.next()))permitted.remove();}
+            packages=taskPhase.openPackages(packages);
             JSONObject appSearch=searchMetadata(catalogue,appCount,historyRows);
             JSONObject data=new JSONObject().put("action_schema",fixedTargets==null?ActionDecision.IME_ACTION_SCHEMA:ActionDecision.FIXED_INTENT_ACTION_SCHEMA).put("apps",apps)
                     .put("open_allowed_packages",new JSONArray(new java.util.TreeSet<String>(packages)))
@@ -797,10 +798,10 @@ public final class LocalTaskController implements AutoCloseable {
                 for(String packageName:packages)allowedAppLabels.put(packageName,shownAppLabels.get(packageName));
                 ObservedAppLabels appLabels=ObservedAppLabels.create(ObservedAppLabels.SCHEMA,observation.id,observation.packageName,allowedAppLabels);
                 DecisionGrammar grammar=fixedTargets==null?DecisionGrammar.createImeAuthorized(observation.id,observation.packageName,packages,
-                        clicks,edits,scrolls,submits,targets,appLabels,authorization,observation.backgroundGeneration!=null)
+                        clicks,edits,scrolls,submits,targets,appLabels,authorization,observation.backgroundGeneration!=null,taskPhase.toolMask())
                         :DecisionGrammar.createFixedIntentAuthorized(observation.id,observation.packageName,packages,
-                        clicks,edits,scrolls,submits,targets,appLabels,authorization,observation.backgroundGeneration!=null,fixedTargets,taskPhase.exactPayloads(fixedTargets));
-                NotesTaskPhaseGuard.Domain phaseDomain=taskPhase.bind(clicks,edits,submits.keySet(),fixedTargets);phaseGuard.publish(phaseDomain);
+                        clicks,edits,scrolls,submits,targets,appLabels,authorization,observation.backgroundGeneration!=null,fixedTargets,taskPhase.exactPayloads(fixedTargets),taskPhase.toolMask());
+                NotesTaskPhaseGuard.Domain phaseDomain=taskPhase.bind(clicks,edits,submits.keySet(),fixedTargets,packages,scrolls);phaseGuard.publish(phaseDomain);
                 return new PromptFrame(text,ids,packages,budget,grammar,nodeCount,observation.nodes.size(),appCount,history.length(),catalogue,
                         editableFields.size(),editableFieldsObserved,visibleText.size(),visibleTextObserved,events,historyBytes,appSearch,requiredIds.size(),clicks,phaseDomain);
             }
@@ -811,11 +812,15 @@ public final class LocalTaskController implements AutoCloseable {
             throw new IllegalStateException("完整任务事实与当前可操作目标超过本地上下文上限，请拆分任务");
         }
     }
-    /** One JSON object with readable top-level boundaries; the current screen is last. */
+    /** Keep current screen and its task evidence together after the full history. */
     private static String promptSections(JSONObject data)throws Exception{
         StringBuilder out=new StringBuilder("{\n");int included=0;
-        for(String key:new String[]{"action_schema","task_authorization","task_phase","completion","background_session","fixed_intent_tools","apps","open_allowed_packages","apps_omitted","app_search",
-                "blocked_action","blocked","format_correction","events","last_model_decision","last_transition","screen"}){
+        String[] sections=data.has("task_phase")
+                ?new String[]{"action_schema","task_authorization","background_session","fixed_intent_tools","apps","open_allowed_packages","apps_omitted","app_search",
+                    "blocked_action","blocked","format_correction","events","last_model_decision","last_transition","screen","completion","task_phase"}
+                :new String[]{"action_schema","task_authorization","task_phase","completion","background_session","fixed_intent_tools","apps","open_allowed_packages","apps_omitted","app_search",
+                    "blocked_action","blocked","format_correction","events","last_model_decision","last_transition","screen"};
+        for(String key:sections){
             if(!data.has(key))continue;
             if(included++>0)out.append(",\n");
             String section=new JSONObject().put(key,data.get(key)).toString();

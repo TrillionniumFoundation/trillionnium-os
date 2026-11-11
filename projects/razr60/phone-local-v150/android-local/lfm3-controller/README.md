@@ -1,6 +1,45 @@
-# Hepta v47: recover observed note progress after app switching
+# Hepta v48: keep supported Notes tasks within their current goal
 
-Current candidate: versionCode 47 (`0.47.0-local-note-recovery`), based on frozen
+Current candidate: versionCode 48 (`0.48.0-local-notes-domain`), based on frozen
+v47 commit `30811a345cf836f6d48123bb9fdbdf6ca9793162`.
+
+For the already supported literal new-note/save/list/reopen contract, launcher
+choices are the intersection of existing authorization, qualification scope,
+repeat/no-effect checks and Moto Notes. Unrelated `web.search` is excluded. Once
+this task has its verified create/body/list evidence and a current unique saved
+item, its tool filter is `click`, `wait`, `done`; only the actual matching item
+retains click capability. A capability removed by another guard is not restored.
+The model still chooses every action. No navigation, click or next step is
+executed automatically, and partial/failure reporting remains available.
+
+The same final node, open-package, fixed-tool and scroll domain is bound to the
+prompt and grammar, checked after parsing, and checked again by the existing
+service dispatch gate. Leaving the created editor retains its existing valid
+navigation choices. Unknown and WEB contracts retain their existing domain and
+prompt layout. All Notes completion/source/identity/same-item-reopen/stability
+checks, authorization rules, native runtime, profiles and sampler are unchanged.
+
+Supported Notes prompts now distinguish cumulative task evidence from the
+current provider-verified surface. `current_surface`, the current unique list
+item ID and current editor-body match come from this same observation. The
+complete original event history remains, followed by the screen and adjacent
+completion/task-phase facts. A body reached by back without the required model
+click is still not verified same-item reopen; its current body is reported
+truthfully without advancing completion.
+
+The new regression fixture contains 88 exact archived v47 files, including all
+20 original before/action/after frames and model prompts. It preserves the failed
+phone task. Host replay checks the five real target-list frames, suppressed
+capabilities, service refusal, generic-task behavior and full history. Original
+completion cases continue to require real model-selected effects in explicit
+host IO fixtures. Full release8 host checks, Android compilation/signing and
+real phone acceptance have separate receipts; this document does not claim a
+successful phone task. Calculator input and completion changes are deferred to
+an independent candidate and are not included in this Notes-only release.
+
+## v47 predecessor: recover observed note progress after app switching
+
+The v47 predecessor is versionCode 47 (`0.47.0-local-note-recovery`), based on frozen
 v46 commit `59432f43633fc710a4c8843d77803bcdbf613ec6`.
 
 After this task's verified `notes.create` receipt and complete editor body, an

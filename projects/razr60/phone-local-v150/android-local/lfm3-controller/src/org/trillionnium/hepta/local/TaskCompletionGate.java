@@ -151,6 +151,13 @@ public final class TaskCompletionGate {
             domainValid=valid;launchProved=launch;editorObserved=editor;listObserved=list;
             this.reopened=reopened;this.currentBody=currentBody;currentListItem=item;
         }
+        /** Current provider facts, independent of the cumulative task phase. */
+        public String currentSurface(){
+            if(!domainValid)return "unverified";
+            if(currentBody&&currentListItem==null)return "verified_note_editor";
+            if(!currentBody&&currentListItem!=null)return "verified_note_list";
+            return "unverified";
+        }
     }
     public NotesPhase notesPhase(NotesCompletionEvidence.Frame current){
         boolean valid=NOTES.equals(contract.kind)&&domainBound&&!identityInvalid&&installed!=null&&sameDomain(current);
@@ -166,6 +173,10 @@ public final class TaskCompletionGate {
         if(NOTES.equals(contract.kind)){
             o.put("notes_launch_observed",launchProved);o.put("editor_body_observed",editorObserved);o.put("list_observed",listObserved);
             o.put("same_list_item_reopened",reopened);
+            o.put("progress_scope","cumulative_task_evidence_not_current_screen");
+            NotesPhase facts=notesPhase(current);
+            o.put("current_surface",facts.currentSurface());o.put("current_list_item_node_id",facts.currentListItem);
+            o.put("current_editor_body_matched",facts.currentBody);
         }else if(WEB.equals(contract.kind))o.put("web_query_dispatched",webDispatched);
         o.put("writes_required_for_unknown_or_read_only_goal",false);o.put("grants_tool_authority",false);return o;
     }
