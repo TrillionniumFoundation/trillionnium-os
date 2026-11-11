@@ -3,9 +3,10 @@ package org.trillionnium.hepta.local;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Upper bound for the pinned LFM3 byte-level BPE tokenizer, not an exact count.
- * It has no normalizer or added prefix space. Native code repeats the bound on
- * the actually rendered chat template before generation.
+ * Java sizing projection, not an exact token count or generation authorization.
+ * All current profiles, including LFM3, require native admission of the rendered
+ * prompt and the same counted input IDs passed directly to the SDK. Legacy byte
+ * bound metadata remains distinguishable; it cannot authorize an exact profile.
  */
 public final class ConservativeTokenBudget {
     public static final String TOKENIZER_REFERENCE_SHA256="7e226e34bface23ccf6e495d157bf77186c1c30a7659880e1a8994db528c3701";

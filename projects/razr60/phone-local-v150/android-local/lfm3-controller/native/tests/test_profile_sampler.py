@@ -81,6 +81,9 @@ def harness(existing):
     }
     fprintf(stderr,"HOST_SAMPLER_CONFIG {\"temperature\":%.17g,\"top_p\":%.17g,\"top_k\":%d,\"min_p\":%.17g,\"repetition_penalty\":%.17g,\"presence_penalty\":%.17g,\"frequency_penalty\":%.17g,\"seed\":%d}\n",
         (double)s->temperature,(double)s->top_p,s->top_k,(double)s->min_p,(double)s->repetition_penalty,(double)s->presence_penalty,(double)s->frequency_penalty,s->seed);
+    fputs("HOST_INPUT_IDS [",stderr);
+    for(int32_t i=0;i<in->input_ids_count;i++){if(i)fputc(',',stderr);fprintf(stderr,"%" PRId32,in->input_ids[i]);}
+    fputs("]\n",stderr);
     assert(in->on_token("x",in->user_data));''')
     code = change_once(code, 'out->profile_data.prompt_tokens=in->input_ids_count;',
                         'out->profile_data.prompt_tokens=test_profile.exact_tokens?in->input_ids_count:(int32_t)strlen(in->prompt_utf8)+1;')
@@ -154,12 +157,14 @@ def exercise(binary, root, profile, mode, existing, axis='npu', explicit_grammar
         expected_code = 70 if mode in ('overflow', 'warm_overflow', 'bad_model') else 0
         assert code == expected_code, f'exit {code}, expected {expected_code}: {stderr.decode(errors="replace")}'
         captures = [json.loads(line.removeprefix('HOST_SAMPLER_CONFIG ')) for line in stderr.decode().splitlines() if line.startswith('HOST_SAMPLER_CONFIG ')]
+        input_captures = [json.loads(line.removeprefix('HOST_INPUT_IDS ')) for line in stderr.decode().splitlines() if line.startswith('HOST_INPUT_IDS ')]
         expected_count = 0 if mode in ('overflow', 'bad_model') else 1 if mode in ('once', 'warm_overflow') else 2
         assert len(captures) == expected_count, 'actual SDK generate call count differs'
+        assert len(input_captures) == expected_count, 'actual SDK input IDs capture count differs'
         wanted = expected_sampler(profile)
         for capture in captures:
             assert capture == dict(wanted, min_p=wanted.get('min_p', 0), presence_penalty=0, frequency_penalty=0)
-        for request in ((A, B) if warm else (A,)):
+        for index, request in enumerate((A, B) if warm else (A,)):
             raw = (root / 'runs' / request / 'native-result.json').read_bytes()
             receipt = json.loads(raw)
             assert receipt['sampler_requested'] == wanted, 'receipt differs from actual submitted numeric policy'
@@ -170,6 +175,22 @@ def exercise(binary, root, profile, mode, existing, axis='npu', explicit_grammar
                 assert receipt['prompt_budget']['admitted'] is False
             if mode == 'bad_model':
                 assert receipt['error'] == 'pinned_model_identity_failed' and receipt['generate_attempt_count'] == 0
+            if receipt['generation_complete']:
+                # Independent Python encoding/hash checks the actual fake SDK
+                # argument capture against both published IDs and the receipt.
+                # The token values still come from the declared fake tokenizer.
+                submitted=input_captures[index]
+                encoded=b''.join(struct.pack('<I',token) for token in submitted)
+                directory=root/'runs'/request
+                formatted=(directory/'formatted-prompt.txt').read_bytes()
+                assert submitted==[1]+[byte+2 for byte in formatted]
+                assert (directory/'formatted-input-ids.le32').read_bytes()==encoded
+                evidence=json.loads((directory/'prompt-evidence.json').read_bytes())
+                budget=receipt['prompt_budget']
+                assert budget['method']=='llama_tokenize_exact_same_input_ids' and budget['is_exact_token_count'] is True
+                assert budget['input_ids_passed_directly'] is True and evidence['input_ids_will_be_passed_directly'] is True
+                assert len(submitted)==budget['prompt_tokens_exact']==budget['input_ids_count']==receipt['profile']['prompt_tokens']==evidence['input_ids_count']
+                assert hashlib.sha256(encoded).hexdigest()==budget['input_ids_sha256']==evidence['input_ids_sha256']
         if warm:
             terminal = json.loads((root / 'runs' / G / 'native-session-result.json').read_bytes())
             assert terminal['requests_received'] == 2 and terminal['requests_completed'] == (1 if mode == 'warm_overflow' else 2)
@@ -230,6 +251,12 @@ def main():
             except Exception as error:
                 report['cases'].append(dict(profile=ORVENA, mode=mode, compute=axis, explicit_grammar=explicit, passed=False,
                                            error=type(error).__name__ + ': ' + str(error)))
+        lfm3='lfm3-1.7b-qad-q4_0'
+        for label,mode in [('lfm3-overflow','overflow'),('lfm3-warm-overflow','warm_overflow')]:
+            try:
+                report['cases'].append(exercise(binary,output/label,lfm3,mode,existing))
+            except Exception as error:
+                report['cases'].append(dict(profile=lfm3,mode=mode,passed=False,error=type(error).__name__+': '+str(error)))
         report['all_pass'] = bool(report['cases']) and all(case['passed'] for case in report['cases'])
     report['finished_utc'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
     (output / 'RESULT.json').write_text(json.dumps(report, indent=2, sort_keys=True) + '\n')

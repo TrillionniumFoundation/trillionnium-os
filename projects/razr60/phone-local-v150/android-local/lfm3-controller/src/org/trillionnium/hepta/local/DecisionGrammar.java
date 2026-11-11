@@ -90,6 +90,16 @@ public final class DecisionGrammar {
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
             Map<String,ObservedImeEnter> submitActions,ObservedTargetLabels targets,ObservedAppLabels appLabels,
             TaskAuthorization.Frame authorization,boolean background,Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets){
+        return createFixedIntentAuthorized(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
+                submitActions,targets,appLabels,authorization,background,fixedTargets,Collections.<String,String>emptyMap());
+    }
+    /** A caller may narrow a fixed tool to an immutable task payload; it cannot
+     * supply another tool, grant authority or change the installed target. */
+    public static DecisionGrammar createFixedIntentAuthorized(String observationId,String currentPackage,Set<String> shownApps,
+            Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
+            Map<String,ObservedImeEnter> submitActions,ObservedTargetLabels targets,ObservedAppLabels appLabels,
+            TaskAuthorization.Frame authorization,boolean background,Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,
+            Map<String,String> exactPayloads){
         // Reuse the exact v5 validation for the existing node/action domain.
         DecisionGrammar checked=createImeAuthorized(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
                 submitActions,targets,appLabels,authorization,background);
@@ -103,13 +113,24 @@ public final class DecisionGrammar {
             TaskAuthorization.require(authorization.allows(target.action),"fixed intent exceeds owner tool authorization");
             permitted.put(target.action,target);
         }
+        if(exactPayloads==null||!permitted.keySet().containsAll(exactPayloads.keySet()))
+            throw new IllegalArgumentException("exact payload must belong to an already permitted fixed tool");
+        for(Map.Entry<String,String> payload:exactPayloads.entrySet())
+            org.trillionnium.hepta.background.FixedIntentTools.forAction(payload.getKey()).validatePayload(payload.getValue());
         return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
-                targets,appLabels,authorization,background,checked.submitNodes,true,permitted);
+                targets,appLabels,authorization,background,checked.submitNodes,true,permitted,exactPayloads);
     }
 
     private static DecisionGrammar createInternal(String observationId,String currentPackage,Set<String> shownApps,
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
             ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization,boolean background,Set<String> submitNodes,boolean imeProtocol,Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets){
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
+                targets,appLabels,authorization,background,submitNodes,imeProtocol,fixedTargets,Collections.<String,String>emptyMap());
+    }
+    private static DecisionGrammar createInternal(String observationId,String currentPackage,Set<String> shownApps,
+            Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
+            ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization,boolean background,Set<String> submitNodes,boolean imeProtocol,
+            Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,Map<String,String> exactPayloads){
         if(observationId==null||!observationId.matches("[0-9a-f]{32}"))throw new IllegalArgumentException("invalid observed id");
         checkPackage(currentPackage);
         if(targets==null||!observationId.equals(targets.observationId)||!currentPackage.equals(targets.packageName))
@@ -149,7 +170,8 @@ public final class DecisionGrammar {
             rule(rules,target.action.replace('.','-'),prefix(target.action,observationId)
                     +field("app_label",jsonValue(ObservedAppLabels.project(target.appLabel)))+comma()
                     +field("package",jsonValue(target.packageName))+comma()
-                    +field("notes.create".equals(target.action)?"text":"query","fixed-payload-string")+ending());
+                    +field("notes.create".equals(target.action)?"text":"query",exactPayloads.containsKey(target.action)
+                            ?jsonValue(exactPayloads.get(target.action)):"fixed-payload-string")+ending());
         }
         if(!clicks.isEmpty()){
             branches.add("click");rule(rules,"click",prefix("click",observationId)+field("package",jsonValue(currentPackage))+comma()+"click-target"+ending());

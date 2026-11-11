@@ -58,8 +58,10 @@ public final class TaskAuthorization {
     public final Set<String> allowedTools;
     public final boolean requireFindAppBeforeOpen;
     private final List<String> rules;
+    private final String immutableOwner;
 
     private TaskAuthorization(String owner,Set<String> allowed,boolean first,String query,List<String> rules){
+        immutableOwner=owner;
         instructionSha256=hash(owner.getBytes(StandardCharsets.UTF_8));
         allowedTools=Collections.unmodifiableSet(new TreeSet<String>(allowed));
         requireFindAppBeforeOpen=first;findQuery=query;
@@ -69,6 +71,8 @@ public final class TaskAuthorization {
         for(String tool:allowedTools)field(identity,tool);field(identity,first?"true":"false");field(identity,query==null?"":query);
         sha256=hash(identity.toString().getBytes(StandardCharsets.UTF_8));
     }
+    /** The service compiles its task phase from the same OWNER; never model or screen text. */
+    String immutableOwner(){return immutableOwner;}
     public static TaskAuthorization parse(String owner){
         validOwner(owner);
         String unquoted=withoutQuotedData(owner);

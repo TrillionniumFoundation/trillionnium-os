@@ -24,6 +24,7 @@ public final class ModelProfileHostTest {
     public static void main(String[] args){
         check(LocalRuntimeConfig.defaults().profile==ModelProfile.LFM3,"default remains LFM3");
         check(LocalRuntimeConfig.MODEL_SHA256.equals(ModelProfile.LFM3.sha256)&&LocalRuntimeConfig.MODEL_BYTES==ModelProfile.LFM3.bytes,"original LFM3 pin unchanged");
+        check(ModelProfile.LFM3.exactTokenizationRequired,"LFM3 requires exact same-input-ID native proof");
         LocalRuntimeConfig chosen=LocalRuntimeConfig.fromFields(config());
         check(chosen.profile==ModelProfile.MINICPM5&&chosen.matchesResolvedDevice("HTP0",false,-1),"explicit MiniCPM NPU profile");
         check(ModelProfile.named(ModelProfile.SPARK.id)==ModelProfile.SPARK,"Spark closed allowlist entry");

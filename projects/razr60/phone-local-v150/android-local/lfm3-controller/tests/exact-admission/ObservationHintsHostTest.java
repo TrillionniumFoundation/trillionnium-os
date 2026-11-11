@@ -117,8 +117,8 @@ public final class ObservationHintsHostTest {
         for(int i=0;i<oldNodes.size();i++){
             List<?> before=list(oldNodes.get(i)),after=list(newNodes.get(i));
             check(before.subList(0,3).equals(after.subList(0,3)),"real captured node order, labels and coordinates stay identical");
-            String oldFlags=(String)before.get(3),expected="".equals(before.get(1))?oldFlags.replace("c",""):oldFlags;
-            check(expected.equals(after.get(3)),"v45 only removes unlabeled text-only click flags from the captured prompt");
+            String oldFlags=(String)before.get(3),expected=oldFlags.replace("c","").replace("t","");
+            check(expected.equals(after.get(3)),"supported new-note contract removes pre-create mutation capabilities while preserving observed facts");
         }
         Map<?,?> fab=hint(frame,"n5");check(fab!=null&&"com.motorola.stylus:id/fab".equals(fab.get("view_id")),"actual unlabeled resource ID reaches full prompt");
         check(!fab.containsKey("class_name")&&!fab.containsKey("node_label")&&!fab.containsKey("action")&&!fab.containsKey("role"),"unknown class and inferred function/authority are not invented");

@@ -100,12 +100,14 @@ public final class TaskCompletionGate {
             p.put("attempt_id",fixed.get("attempt_id"));p.put("payload_sha256",contract.bodySha256);proofs.add(p);
         }else if(editorObserved&&!listObserved&&("back".equals(action.action)||"click".equals(action.action))
                 &&NotesCompletionEvidence.NOTES.equals(action.packageName)&&beforeBody.matched&&afterList.matched){
-            listObserved=true;proofs.add(proof("editor_to_observed_list",step,run,before,after));
+            listObserved=true;Map<String,Object> p=proof("editor_to_observed_list",step,run,before,after);
+            p.put("list_body_evidence",afterList.evidence());proofs.add(p);
         }else if(listObserved&&!reopened&&"click".equals(action.action)&&NotesCompletionEvidence.NOTES.equals(action.packageName)
                 &&beforeList.matched&&Objects.equals(beforeList.item.nodeId,action.nodeId)
                 &&Objects.equals(beforeList.item.label,action.nodeLabel)&&afterBody.matched){
             reopened=true;Map<String,Object> p=proof("same_observed_list_item_reopened",step,run,before,after);
-            p.put("node_id",action.nodeId);p.put("node_label",action.nodeLabel);p.put("body_raw_exact",afterBody.rawExact);proofs.add(p);
+            p.put("node_id",action.nodeId);p.put("node_label",action.nodeLabel);p.put("body_raw_exact",afterBody.rawExact);
+            p.put("list_body_evidence",beforeList.evidence());proofs.add(p);
         }
         observed(after);
     }
@@ -125,6 +127,23 @@ public final class TaskCompletionGate {
         return NOTES.equals(contract.kind)&&domainBound&&!identityInvalid&&installed!=null
                 &&launchProved&&editorObserved&&listObserved&&reopened&&sameDomain(current)&&body(current).matched;
     }
+    /** Read-only existing evidence for an execution restriction. This grants no action
+     * and does not alter any completion transition or provider predicate. */
+    public static final class NotesPhase {
+        public final boolean domainValid,launchProved,editorObserved,listObserved,reopened,currentBody;
+        public final String currentListItem;
+        private NotesPhase(boolean valid,boolean launch,boolean editor,boolean list,boolean reopened,
+                           boolean currentBody,String item){
+            domainValid=valid;launchProved=launch;editorObserved=editor;listObserved=list;
+            this.reopened=reopened;this.currentBody=currentBody;currentListItem=item;
+        }
+    }
+    public NotesPhase notesPhase(NotesCompletionEvidence.Frame current){
+        boolean valid=NOTES.equals(contract.kind)&&domainBound&&!identityInvalid&&installed!=null&&sameDomain(current);
+        NotesCompletionEvidence.ListEvidence list=valid?NotesCompletionEvidence.list(current,contract.body):null;
+        return new NotesPhase(valid,launchProved,editorObserved,listObserved,reopened,
+                valid&&body(current).matched,list!=null&&list.matched?list.item.nodeId:null);
+    }
     public Map<String,Object> prompt(NotesCompletionEvidence.Frame current){
         Map<String,Object> o=new LinkedHashMap<String,Object>();o.put("schema",SCHEMA);o.put("kind",contract.kind);
         o.put("owner_sha256",contract.ownerSha256);o.put("contract_sha256",contract.contractSha256);
@@ -142,10 +161,11 @@ public final class TaskCompletionGate {
         o.put("identity_failure",identityFailure);o.put("display_id",domainBound?displayId:null);o.put("background_generation",generation);
         o.put("persistent_storage_bytes_verified",false);o.put("new_database_item_identity_verified",false);
         if(NOTES.equals(contract.kind)){NotesCompletionEvidence.BodyEvidence v=body(current);o.put("current_editor_raw_exact",v.rawExact);o.put("current_body_evidence",bodyEvidence(v));
-            NotesCompletionEvidence.ListEvidence list=NotesCompletionEvidence.list(current,contract.body);o.put("current_list_match",list.matched);o.put("current_list_missing",list.missing);}
+            NotesCompletionEvidence.ListEvidence list=NotesCompletionEvidence.list(current,contract.body);o.put("current_list_match",list.matched);o.put("current_list_missing",list.missing);
+            o.put("current_list_evidence",list.evidence());}
         return o;
     }
-    public String completionSummary(){return "已核验本次正文进入笔记编辑器、返回列表并点击同一可见条目重新打开；存储原始字节未核验。";}
+    public String completionSummary(){return "已核验本次正文进入笔记编辑器、返回列表并点击同一可访问正文条目重新打开；列表视觉裁切与存储原始字节未核验。";}
     public String incompleteSummary(){
         if(NOTES.equals(contract.kind))return "未完成验证：缺少本次笔记保存、列表或同一条目重新打开的完整证据。";
         if(WEB.equals(contract.kind))return webDispatched?"已发起网页查询，但尚无实际结果证明，任务部分完成。":"未确认网页查询及结果，任务未验证完成。";

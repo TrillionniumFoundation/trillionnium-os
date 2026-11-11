@@ -33,6 +33,32 @@ class ProfileTests(unittest.TestCase):
         for field in ("model_profile","model_sha256_verified","model_architecture","model_metadata_unchanged","chat_template_enable_thinking"):
             broken=copy.deepcopy(value);broken.pop(field)
             self.assertFalse(acceptance.native_budget_valid(broken,4096,value["model_profile"]),field)
+    def test_lfm3_requires_exact_ids_without_changing_artifact_or_context(self):
+        name=profiles.DEFAULT_PROFILE; p=profiles.profile(name)
+        self.assertTrue(p["exact"])
+        self.assertEqual(p["bytes"],1049615680)
+        self.assertEqual(p["sha256"],"43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452")
+        for context in (4096,8192):
+            count=context-512; value=self.native()
+            value.update(model_profile=name,model_sha256_verified=p["sha256"],model_architecture=p["architecture"],model_bytes_verified=p["bytes"])
+            value["profile"]["prompt_tokens"]=count
+            value["prompt_budget"].update(model_contract_sha256=p["sha256"],context_tokens=context,
+                prompt_tokens_exact=count,input_ids_count=count,total_context_tokens=context)
+            self.assertTrue(acceptance.native_budget_valid(value,context,name))
+            for field,bad in (("input_ids_count",count-1),("input_ids_sha256",""),
+                    ("input_ids_passed_directly",False),("admitted",False),
+                    ("method","lfm3_rendered_utf8_bytes_upper_bound"),("is_exact_token_count",False)):
+                broken=copy.deepcopy(value);broken["prompt_budget"][field]=bad
+                self.assertFalse(acceptance.native_budget_valid(broken,context,name),field)
+            overflow=copy.deepcopy(value);overflow["prompt_budget"].update(prompt_tokens_exact=count+1,input_ids_count=count+1,total_context_tokens=context+1)
+            overflow["profile"]["prompt_tokens"]=count+1
+            self.assertFalse(acceptance.native_budget_valid(overflow,context,name))
+            mismatch=copy.deepcopy(value);mismatch["profile"]["prompt_tokens"]=count-1
+            self.assertFalse(acceptance.native_budget_valid(mismatch,context,name))
+            legacy=copy.deepcopy(value)
+            legacy["prompt_budget"].update(method="lfm3_rendered_utf8_bytes_upper_bound",is_exact_token_count=False,
+                formatted_utf8_bytes=100,bos_eos_upper=2,total_context_upper=614)
+            self.assertFalse(acceptance.native_budget_valid(legacy,context,name))
     def test_java_native_allowlist_pins_agree(self):
         root=Path(__file__).resolve().parents[1]
         java=(root/"src/org/trillionnium/hepta/local/ModelProfile.java").read_text()

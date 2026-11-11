@@ -11,30 +11,33 @@ import java.util.TreeSet;
 /**
  * Additional task-local evidence, never action authority or a progress claim.
  * Keep one instance inside one owner task. Only confirmed unchanged open/node
- * click outcomes accumulate; the original RepeatActionGuard remains independent.
+ * click outcomes accumulate. Returning to an observed state retains its facts;
+ * the original RepeatActionGuard remains independent. No record is shared across
+ * tasks, packages, app-tree identities (including background binding), or known
+ * unequal IME states. Unknown IME never erases a confirmed refusal.
  */
 public final class SameStateNoEffectGuard {
     public static final String SCHEMA="hepta.same-state-no-effect.v1";
     public static final int MAX_RECORDS=20;
-    private String packageName;
-    private ObservationState boundState;
-    private final Set<String> opens=new TreeSet<String>();
-    private final Set<String> clicks=new TreeSet<String>();
-
-    /** Bind only to observed state. Unknown IME is never positive change evidence. */
-    private void align(String currentPackage,ObservationState current) {
+    private final List<Record> records=new ArrayList<Record>();
+    private int recordCount;
+    private static final class Record {
+        final String packageName;final ObservationState state;
+        final Set<String> opens=new TreeSet<String>(),clicks=new TreeSet<String>();
+        Record(String packageName,ObservationState state){this.packageName=packageName;this.state=state;}
+    }
+    private static void requireState(String currentPackage,ObservationState current) {
         if(currentPackage==null||currentPackage.isEmpty()||current==null)
             throw new IllegalArgumentException("observed package and state required");
-        if(boundState==null||!currentPackage.equals(packageName)
-                ||Boolean.TRUE.equals(current.changedFrom(boundState))) {
-            opens.clear();clicks.clear();packageName=currentPackage;boundState=current;
-        } else if(opens.isEmpty()&&clicks.isEmpty()) {
-            boundState=current;
-        }
     }
 
     public Snapshot snapshot(String currentPackage,ObservationState current) {
-        align(currentPackage,current);
+        requireState(currentPackage,current);
+        Set<String> opens=new TreeSet<String>(),clicks=new TreeSet<String>();
+        for(Record record:records)if(currentPackage.equals(record.packageName)
+                &&!Boolean.TRUE.equals(current.changedFrom(record.state))){
+            opens.addAll(record.opens);clicks.addAll(record.clicks);
+        }
         return new Snapshot(currentPackage,opens,clicks);
     }
 
@@ -56,25 +59,31 @@ public final class SameStateNoEffectGuard {
             String afterPackage,ObservationState after,boolean accepted,boolean dispatched,boolean stale) {
         if(action==null||before==null||after==null||beforePackage==null||afterPackage==null)
             throw new IllegalArgumentException("complete observed outcome required");
+        requireState(beforePackage,before);requireState(afterPackage,after);
         if(!accepted||stale)return;
-        align(afterPackage,after);
         if(!dispatched||!beforePackage.equals(afterPackage)
                 ||!Boolean.FALSE.equals(after.changedFrom(before)))return;
         if("open".equals(action.action)) {
-            add(opens,action.packageName);
+            add(afterPackage,after,true,action.packageName);
         } else if("click".equals(action.action)&&action.nodeId!=null) {
             if(!beforePackage.equals(action.packageName))
                 throw new IllegalArgumentException("click package differs from observed window");
-            add(clicks,action.nodeId);
+            add(afterPackage,after,false,action.nodeId);
         }
         // No type-text, scroll-direction, back/home, wait, or done generalization.
     }
 
-    private void add(Set<String> destination,String target) {
-        if(destination.contains(target))return;
-        if(opens.size()+clicks.size()>=MAX_RECORDS)
+    private void add(String packageName,ObservationState state,boolean open,String target) {
+        Record selected=null;
+        for(Record record:records)if(packageName.equals(record.packageName)
+                &&Boolean.FALSE.equals(state.changedFrom(record.state))){selected=record;break;}
+        Set<String> destination=selected==null?null:open?selected.opens:selected.clicks;
+        if(destination!=null&&destination.contains(target))return;
+        if(recordCount>=MAX_RECORDS)
             throw new IllegalStateException("confirmed no-effect records exceed bounded task capacity");
+        if(selected==null){selected=new Record(packageName,state);records.add(selected);destination=open?selected.opens:selected.clicks;}
         destination.add(target);
+        recordCount++;
     }
 
     /** Immutable domain subtraction, tied to this frame's observed package. */

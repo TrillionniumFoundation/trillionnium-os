@@ -85,8 +85,14 @@ public final class TextOnlyClickHostTest {
         PhoneObservation observed=ObservationHintsHostTest.recorded(MobiMindContract.jsonObject(raw));
         PhoneObservation.Node blank=node(observed,"n10");
         check(blank.clickable&&blank.label().isEmpty()&&blank.viewId.isEmpty()&&blank.className.isEmpty(),"real n10 has no observed semantic label or structural name");
-        String owner="打开 Moto 笔记（com.motorola.stylus），新建一条笔记，正文完整写入以下一行："+node(observed,"n11").text
+        String noteOwner="打开 Moto 笔记（com.motorola.stylus），新建一条笔记，正文完整写入以下一行："+node(observed,"n11").text
                 +" 保存这条新笔记，然后回到笔记列表，重新打开它并停留在正文完整可见的页面。不要修改或删除已有笔记，不分享或发送。";
+        PromptAdmissionFixture.Result preCreate=build(noteOwner,observed);
+        check(preCreate.clickIds.isEmpty()&&!preCreate.grammar.actions.contains("type"),"supported new-note task cannot mutate a prior editor before creation proof");
+        check(preCreate.text.endsWith("\nOWNER\n"+noteOwner),"new-note owner is unchanged by phase restrictions");
+        // Independently retain the generic text-only capability contract. An
+        // unknown editing goal does not acquire the Notes workflow restrictions.
+        String owner="根据当前观察选择有标签的控件；可以编辑字段和提交查询。";
         final PromptAdmissionFixture.Result frame=build(owner,observed);
         check(frame.ids.contains("n10")&&"".equals(frame.grammar.targets.labels.get("n10")),"raw blank node and exact label remain in target facts");
         check(!frame.clickIds.contains("n10")&&!((String)projectedNode(frame,"n10").get(3)).contains("c"),"real blank n10 has no click capability");

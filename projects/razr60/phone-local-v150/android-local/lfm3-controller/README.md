@@ -1,6 +1,39 @@
-# Hepta v45: observed labels for text-only clicks
+# Hepta v46: protect existing notes and verify observed sources
 
-Current candidate: versionCode 45 (`0.45.0-local-observed-clicks`), based on frozen
+Current candidate: versionCode 46 (`0.46.0-local-note-phases`), based on frozen
+v45 commit `c0195c1d7708c76dcd18dbb31083f1b5c1c5123f`.
+
+The supported literal new-note contract now narrows the ordinary controller's
+node actions until this task has a model-bound `notes.create` receipt and actual
+body observation. The same immutable domain is used by the prompt, grammar,
+postparse check and final service dispatch. Its complete literal body is passed
+once through the existing local entry; direct text replacement and submit are
+not part of this supported workflow. Leaving the editor and reopening the same
+list item still require model-selected tools and actual subsequent observations.
+Unknown tasks retain their existing authorization and action rules.
+
+Confirmed no-effect clicks and launches are retained in a bounded task-local
+memory for their observed package, app tree and IME state. Returning to the same
+state no longer erases those refusals. This does not invent progress or claim to
+detect every cycle of state-changing actions.
+
+Moto Notes list verification now accepts a complete, parent-bound accessibility
+`note_summary` text source inside the actually clicked `note_item_content` card.
+It does not split a composed label or infer ancestry from screen coordinates.
+A manual list XML fixture establishes the observed topology, not agent success.
+The reopened editor must still pass the original complete body checks.
+
+LFM3 now uses native exact-token admission on the exact `input_ids` passed to the
+SDK. Java byte counts are advisory for this profile; model/runtime/sampler pins,
+context limits and the same-input-ID native budget guard are preserved.
+
+Full release8 host checks, Android compilation, signing and phone acceptance
+are separate build/run receipts. This source document does not claim those
+stages passed. See [CODE46-NOTE-PHASES.md](CODE46-NOTE-PHASES.md).
+
+## v45 predecessor: observed labels for text-only clicks
+
+The v45 predecessor is versionCode 45 (`0.45.0-local-observed-clicks`), based on frozen
 v44 commit `180a7ab55f5a479c14c202fdbe33a1a4734cecfd`.
 
 The ordinary controller receives text observations without image input. It now

@@ -17,6 +17,8 @@ public final class PhoneObservation {
         public final ObservedScrollActions scrollActions;
         public final ObservedImeEnter imeEnter;
         public final String inputTextSha256;
+        /** Actual NodeRef signature, never reconstructed from serialized labels. */
+        public final String observedAppTreeSignature;
         public final boolean submitAvailable;
         public final Rect bounds;
         public final boolean clickable, editable, scrollable, enabled, focused, password;
@@ -31,9 +33,19 @@ public final class PhoneObservation {
              String description, Rect bounds, boolean clickable, boolean editable,
              boolean scrollable, boolean enabled, boolean focused, boolean password,ObservedChildText.Result childText,
              ObservedScrollActions scrollActions,ObservedImeEnter imeEnter,String inputTextSha256,boolean submitAvailable) {
+            this(id,packageName,className,viewId,text,description,bounds,clickable,editable,scrollable,enabled,focused,password,
+                    childText,scrollActions,imeEnter,inputTextSha256,submitAvailable,null);
+        }
+        Node(String id, String packageName, String className, String viewId, String text,
+             String description, Rect bounds, boolean clickable, boolean editable,
+             boolean scrollable, boolean enabled, boolean focused, boolean password,ObservedChildText.Result childText,
+             ObservedScrollActions scrollActions,ObservedImeEnter imeEnter,String inputTextSha256,boolean submitAvailable,String observedAppTreeSignature) {
             this.id=id; this.packageName=packageName; this.className=className; this.viewId=viewId;
             this.text=text; this.description=description; this.bounds=new Rect(bounds);
             this.childText=childText;
+            if(observedAppTreeSignature!=null&&!ObservedImeEnter.isSha(observedAppTreeSignature))
+                throw new IllegalArgumentException("actual node signature must be a SHA-256 value");
+            this.observedAppTreeSignature=observedAppTreeSignature;
             if(scrollActions==null)throw new IllegalArgumentException("observed scroll action state required");
             this.scrollActions=scrollActions;
             if(imeEnter==null)throw new IllegalArgumentException("observed IME action state required");
@@ -50,16 +62,19 @@ public final class PhoneObservation {
             if (!text.isEmpty()) value.put("text",text);
             if (!description.isEmpty()) value.put("description",description);
             if (!"not_applicable".equals(childText.status)) {
-                value.put("child_text_status",childText.status).put("child_text_truncated",childText.truncated);
+                value.put("child_text_status",childText.status).put("child_text_truncated",childText.truncated)
+                        .put("child_text_sources_complete",childText.sourcesComplete).put("child_text_visited",childText.visited);
                 if(!childText.text.isEmpty()) {
-                    value.put("child_text",childText.text).put("child_text_source",ObservedChildText.SOURCE);
+                    value.put("child_text",childText.text).put("child_text_source",ObservedChildText.SOURCE)
+                            .put("child_text_root_signature",childText.rootSignature);
                     JSONArray sources=new JSONArray();for(ObservedChildText.Source source:childText.sources)
                         sources.put(new JSONObject().put("descendant_path",source.descendantPath).put("property",source.property)
-                                .put("text_sha256",source.textSha256).put("node_signature",source.nodeSignature));
+                                .put("text_sha256",source.textSha256).put("node_signature",source.nodeSignature).put("view_id",source.viewId));
                     value.put("child_text_sources",sources);
                 }
             }
             if (!viewId.isEmpty()) value.put("view_id",viewId);
+            if(observedAppTreeSignature!=null)value.put("node_app_tree_sha256",observedAppTreeSignature);
             if (clickable) value.put("clickable",true);
             if (editable) value.put("editable",true);
             if (scrollable) value.put("scrollable",true); // Platform isScrollable, not a direction grant.

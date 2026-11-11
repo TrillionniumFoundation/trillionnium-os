@@ -17,7 +17,7 @@ int main(void){
         assert(!strcmp(hepta_profiles[i].id,legacy[i]));
         assert(hepta_find_profile(legacy[i])==&hepta_profiles[i]);
     }
-    assert(profile==&hepta_profiles[7]&&!hepta_profiles[0].exact_tokens);
+    assert(profile==&hepta_profiles[7]&&hepta_profiles[0].exact_tokens);
     assert(!hepta_find_profile("qwen35")&&!hepta_find_profile("qwen3.5-14b-q4_0"));
     assert(!hepta_find_profile("../Qwen3.5-4B-Q4_0.gguf"));
     char *args[]={"runner","--model-profile","qwen3.5-4b-q4_0","--compute","npu",NULL};int argc=5;

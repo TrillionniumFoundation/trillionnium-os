@@ -43,7 +43,14 @@ def main():
     files += [process, os_fake]
     extraction['ordinary_android_uid_io_fake'] = {'uid': 10481, 'host_uid_mapped': os.getuid(), 'not_android_permission_proof': True}
     files += [source / 'tests/fixed-intent-tools/FixedIntentIntegrationHostTest.java', source / 'tests/completion/TaskCompletionGateHostTest.java']
+    files += [source / 'tests/notes-task-phase/NotesTaskPhaseHostTest.java']
+    files += [source / 'tests/notes-task-phase/NotesListProvenanceHostTest.java']
     pins = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
+    phase_fixture = source / 'tests/notes-task-phase/fixtures/v45-notes-trace.json'
+    phase_recognizer = source / 'tests/notes-task-phase/test_phase_grammar.py'
+    list_fixture = source / 'tests/notes-task-phase/fixtures/manual-notes-list.xml'
+    for p in (phase_fixture, phase_recognizer, list_fixture):
+        pins[str(p)] = hashlib.sha256(p.read_bytes()).hexdigest()
     classes = out / 'classes'
     classes.mkdir()
     compiler = [shutil.which('javac')] if shutil.which('javac') else ['java', '-m', 'jdk.compiler/com.sun.tools.javac.Main']
@@ -52,6 +59,9 @@ def main():
     commands = [
         ('compile', compiler + flags + ['-encoding', 'UTF-8', lint, '-Werror', '-d', str(classes), *map(str, files)]),
         ('actual-completion', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.TaskCompletionGateHostTest', str(out / 'cases')]),
+        ('notes-task-phase', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesTaskPhaseHostTest', str(phase_fixture), str(out / 'notes-task-phase')]),
+        ('notes-task-phase-grammar', [sys.executable, str(phase_recognizer), str(out / 'notes-task-phase/grammar-cases.json')]),
+        ('notes-list-provenance', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesListProvenanceHostTest', str(list_fixture)]),
     ]
     report = {'schema': 'hepta.task-completion-host.v1', 'source_inputs': pins, 'extraction': extraction,
               'compiler_contract': 'Java 8 API release' if args.release8 else 'Java 8 syntax/target only; not release8 or Android proof',

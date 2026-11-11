@@ -10,17 +10,20 @@ public final class BudgetHostTest {
         check(ConservativeTokenBudget.bytesUpper("\u0344")==2,"no normalization is applied for pinned LFM3");
         check(ConservativeTokenBudget.bytesUpper("\ud83d\ude00")==4,"standard UTF-8 emoji not modified UTF-8");
         for(int context:new int[]{4096,8192}){
-            int textLimit=context-256-256-512-2;
-            ConservativeTokenBudget exact=ConservativeTokenBudget.estimate("sys",repeated('a',textLimit-3),context);
-            check(exact.totalContextUpper==context&&exact.admitted,"exact boundary");
-            check(!ConservativeTokenBudget.estimate("sys",repeated('a',textLimit-2),context).admitted,"one-byte overflow");
-            check(!ConservativeTokenBudget.estimate("sys",repeated('中',textLimit),context).admitted,"multibyte cannot use char count");
+            int textLimit=2*(context-256-256-512-2);
+            ConservativeTokenBudget projected=ConservativeTokenBudget.estimate("sys",repeated('a',textLimit-3),context);
+            check(projected.totalContextUpper==context&&projected.admitted,"diagnostic projection boundary");
+            check(!projected.provenUpperBound&&projected.mayAttemptNative(),"LFM3 projection never replaces native exact admission");
+            ConservativeTokenBudget over=ConservativeTokenBudget.estimate("sys",repeated('a',textLimit-2),context);
+            check(!over.admitted&&over.mayAttemptNative(),"one-byte projection overflow still requires native check");
+            ConservativeTokenBudget cjk=ConservativeTokenBudget.estimate("sys",repeated('中',textLimit),context);
+            check(!cjk.admitted&&cjk.mayAttemptNative(),"multibyte projection preserves native exact authority");
         }
         check(ConservativeTokenBudget.estimate("system","<|im_start|>user\n中文<think></think>",4096).admitted,"literal template bytes are counted");
         for(String s:new String[]{"\ud800","\udc00","x\u0000y","\ud800x"}){
             boolean rejected=false;try{ConservativeTokenBudget.bytesUpper(s);}catch(IllegalArgumentException expected){rejected=true;}
             check(rejected,"invalid Unicode/NUL rejected");
         }
-        System.out.println("PASS "+assertions+" LFM3 byte-budget assertions; exact_token_count=false; phone_tested=false");
+        System.out.println("PASS "+assertions+" UTF-8 projection assertions; native_exact_required=true; tokenizer_executed=false; phone_tested=false");
     }
 }
