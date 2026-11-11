@@ -24,8 +24,13 @@ public final class TaskCompletionGate {
     private static final Pattern NOTE_QUOTED=Pattern.compile("^\\s*(?:请)?"+NOTE_PREFIX+"正文为[：:]?[“]([^“”\\r\\n]+)[”][，, ]*"+NOTE_TAIL+NOTE_LIMITS+"\\s*$");
     public static final class Contract {
         public final String kind,ownerSha256,contractSha256,body,bodySha256,recognition;
+        public final int bodyStartUtf16,bodyEndUtf16;
         private Contract(String owner,String kind,String body,String recognition){
+            this(owner,kind,body,recognition,-1,-1);
+        }
+        private Contract(String owner,String kind,String body,String recognition,int start,int end){
             this.kind=kind;this.body=body;this.recognition=recognition;ownerSha256=hash(owner);
+            bodyStartUtf16=start;bodyEndUtf16=end;
             bodySha256=body==null?null:hash(body);
             contractSha256=hash(SCHEMA+"\n"+ownerSha256+"\n"+kind+"\n"+(bodySha256==null?"":bodySha256)+"\n"+recognition);
         }
@@ -41,6 +46,10 @@ public final class TaskCompletionGate {
                 catch(IllegalArgumentException invalid){return new Contract(owner,UNKNOWN,null,"unsupported_literal_body");}
                 return new Contract(owner,NOTES,body,form);
             }
+            NotesOwnerIntent.Result note=NotesOwnerIntent.parse(owner);
+            if(note.supported&&note.saveAndReopenRequested&&!note.draftOnly)
+                return new Contract(owner,NOTES,note.body,NotesOwnerIntent.SCHEMA+"/"+note.recognition,
+                        note.bodyStartUtf16,note.bodyEndUtf16);
             // A method hint never grants success: no web-result provider exists.
             // Only unquoted OWNER text is considered, never screen or model data.
             String plain=unquoted(owner);
@@ -52,6 +61,8 @@ public final class TaskCompletionGate {
             Map<String,Object> o=new LinkedHashMap<String,Object>();o.put("schema",SCHEMA);o.put("kind",kind);
             o.put("owner_sha256",ownerSha256);o.put("contract_sha256",contractSha256);o.put("recognition",recognition);
             o.put("expected_body_sha256",bodySha256);o.put("source","immutable_owner_contract");
+            if(bodyStartUtf16>=0){o.put("body_source_start_utf16",bodyStartUtf16);o.put("body_source_end_utf16",bodyEndUtf16);
+                o.put("note_persistence_verification_policy","save_list_reopen");o.put("body_rewritten",false);}
             o.put("model_may_change_goal",false);o.put("grants_tool_authority",false);return o;
         }
     }
@@ -60,13 +71,20 @@ public final class TaskCompletionGate {
         private Check(boolean verified,boolean retry,Map<String,Object> evidence){this.verified=verified;retryAllowed=retry;this.evidence=Collections.unmodifiableMap(evidence);}
     }
     public final String taskId;public final Contract contract;
+    private final TaskAuthorization authorization;
     private NotesCompletionEvidence.Installed installed;
-    private boolean domainBound,identityInvalid,launchProved,editorObserved,listObserved,reopened,webDispatched;
+    private boolean domainBound,identityInvalid,launchProved,editorObserved,listObserved,reopened,webDispatched,priorVisibleBodyCollision;
     private int displayId=-1,rejectedSuccess;private String generation,identityFailure,editorObservationId;
     private final List<Map<String,Object>> proofs=new ArrayList<Map<String,Object>>();
     private final List<Map<String,Object>> claims=new ArrayList<Map<String,Object>>();
+    private int parentCreateStep;
+    private String parentCreateRun,parentCreateAttempt,parentCreateBefore,parentCreateAfter,reopenActor;
+    private NotesCreateWorkflow.Grant workflowGrant;
+    private boolean workflowProofConsumed,workflowCompletionAccepted;
+    private String workflowVerifiedObservationId;
+    private Map<String,Object> workflowEvidence;
     public TaskCompletionGate(String task,String owner,TaskAuthorization authorization){
-        require(id(task),"task identity required");taskId=task;contract=Contract.parse(owner,authorization);
+        require(id(task),"task identity required");taskId=task;contract=Contract.parse(owner,authorization);this.authorization=authorization;
     }
     public void bindInstalled(NotesCompletionEvidence.Installed value){
         require(installed==null&&!launchProved,"installed completion identity already bound");installed=value;
@@ -97,6 +115,7 @@ public final class TaskCompletionGate {
     public void action(int step,String run,ActionDecision action,boolean accepted,boolean dispatched,boolean stale,
                        NotesCompletionEvidence.Frame before,NotesCompletionEvidence.Frame after,Map<String,Object> fixed){
         require(step>0&&step<=20&&id(run)&&action!=null&&before!=null&&after!=null,"actual bounded model/action observations required");
+        require(action.toolChildOrigin==null,"tool children require their separate parent-bound proof path");
         require(action.observationId.equals(before.observationId),"action must bind its actual before observation");
         observed(before);
         if(!domainShape(before)||!domainShape(after)){observed(after);return;}
@@ -108,10 +127,23 @@ public final class TaskCompletionGate {
         if(!NOTES.equals(contract.kind)){observed(after);return;}
         NotesCompletionEvidence.BodyEvidence beforeBody=body(before),afterBody=body(after);
         NotesCompletionEvidence.ListEvidence beforeList=NotesCompletionEvidence.list(before,contract.body),afterList=NotesCompletionEvidence.list(after,contract.body);
+        // A pre-existing full body in the actual before editor/list cannot prove
+        // that the new draft, rather than an old identical item, was persisted.
+        // The nonunique result comes only after the provider has validated the
+        // real list scope and found multiple complete executable body matches.
+        boolean beforeListBody=beforeList.matched||"complete_body_list_item_is_not_unique".equals(beforeList.missing);
         if("notes.create".equals(action.action)&&contract.body.equals(action.text)&&!launchProved
-                &&fixedMatches(action,run,before,fixed,true)&&!beforeBody.matched){
+                &&fixedMatches(action,run,before,fixed,true)&&(beforeBody.matched||beforeListBody)){
+            priorVisibleBodyCollision=true;Map<String,Object> p=proof("prior_visible_body_collision",step,run,before,after);
+            p.put("before_editor_body_matched",beforeBody.matched);p.put("before_list_body_evidence",beforeList.evidence());
+            p.put("unobserved_prior_notes_known",false);proofs.add(p);
+        }
+        if("notes.create".equals(action.action)&&contract.body.equals(action.text)&&!launchProved
+                &&fixedMatches(action,run,before,fixed,true)&&!beforeBody.matched&&!beforeListBody&&!priorVisibleBodyCollision){
             launchProved=true;Map<String,Object> p=proof("model_bound_notes_launch",step,run,before,after);
             p.put("attempt_id",fixed.get("attempt_id"));p.put("payload_sha256",contract.bodySha256);proofs.add(p);
+            parentCreateStep=step;parentCreateRun=run;parentCreateAttempt=(String)fixed.get("attempt_id");
+            parentCreateBefore=before.observationId;parentCreateAfter=after.observationId;
         }else if(editorObserved&&!listObserved&&("back".equals(action.action)||"click".equals(action.action))
                 &&NotesCompletionEvidence.NOTES.equals(action.packageName)&&beforeBody.matched&&afterList.matched){
             listObserved=true;Map<String,Object> p=proof("editor_to_observed_list",step,run,before,after);
@@ -119,12 +151,57 @@ public final class TaskCompletionGate {
         }else if(listObserved&&!reopened&&"click".equals(action.action)&&NotesCompletionEvidence.NOTES.equals(action.packageName)
                 &&beforeList.matched&&Objects.equals(beforeList.item.nodeId,action.nodeId)
                 &&Objects.equals(beforeList.item.label,action.nodeLabel)&&afterBody.matched){
-            reopened=true;Map<String,Object> p=proof("same_observed_list_item_reopened",step,run,before,after);
+            reopened=true;reopenActor="model";Map<String,Object> p=proof("same_observed_list_item_reopened",step,run,before,after);
             p.put("node_id",action.nodeId);p.put("node_label",action.nodeLabel);p.put("body_raw_exact",afterBody.rawExact);
             p.put("list_body_evidence",beforeList.evidence());proofs.add(p);
         }
         observed(after);
     }
+    /** Declares the supported high-level mode; it adds no authority. Draft-only,
+     * unknown goals and insufficient primitive permissions retain draft behavior. */
+    public boolean notesCreateWorkflowRequested(TaskAuthorization.Frame frame){
+        return frame!=null&&frame.authorization==authorization&&taskId.equals(frame.taskId)
+                &&NOTES.equals(contract.kind)&&contract.body!=null&&contract.body.length()<95
+                &&frame.allows("notes.create")&&frame.allows("back")&&frame.allows("click");
+    }
+    public NotesCreateWorkflow.Grant notesCreateWorkflow(int step,String run,ActionDecision parent,
+            NotesCreateWorkflow.Observation created,TaskAuthorization.Frame frame){
+        if(!notesCreateWorkflowRequested(frame)||workflowGrant!=null||parent==null||parent.toolChildOrigin!=null
+                ||!"notes.create".equals(parent.action)||step!=parentCreateStep||!Objects.equals(run,parentCreateRun)
+                ||!Objects.equals(parent.observationId,parentCreateBefore)||!contract.body.equals(parent.text)
+                ||created==null||!Objects.equals(created.frame.observationId,parentCreateAfter)
+                ||!launchProved||!editorObserved||identityInvalid||priorVisibleBodyCollision||installed==null||!sameDomain(created.frame)
+                ||!body(created.frame).matched)return null;
+        workflowGrant=new NotesCreateWorkflow.Grant(taskId,step,run,parentCreateBefore,parentCreateAfter,parentCreateAttempt,
+                contract,authorization,installed,displayId,generation);
+        return workflowGrant;
+    }
+    /** Consumes a real in-process child chain separately from model-click proof.
+     * Serialized workflow_verified/model text can never call this path. */
+    public boolean notesCreateWorkflowCompleted(NotesCreateWorkflow.Result result,NotesCompletionEvidence.Frame current){
+        require(result!=null&&workflowGrant!=null&&result.grant==workflowGrant&&!workflowProofConsumed,
+                "workflow result belongs to another or consumed parent");
+        workflowProofConsumed=true;workflowEvidence=result.evidence();observed(current);
+        boolean good=NOTES.equals(contract.kind)&&!identityInvalid&&installed==workflowGrant.installed
+                &&launchProved&&editorObserved&&sameDomain(current)&&body(current).matched
+                &&result.stableReadback!=null&&current.observationId.equals(result.stableReadback.frame.observationId)
+                &&result.completeFor(workflowGrant);
+        workflowCompletionAccepted=good;if(!good)return false;
+        workflowVerifiedObservationId=current.observationId;
+        listObserved=true;reopened=true;reopenActor="tool_child";
+        Map<String,Object> p=proof("tool_child_same_observed_list_item_reopened",workflowGrant.parentStep,
+                workflowGrant.parentRunId,result.initial.frame,result.stableReadback.frame);
+        p.put("actor_kind","tool_child");p.put("model_issued",false);p.put("workflow_id",workflowGrant.workflowId);
+        p.put("parent_fixed_intent_attempt_id",workflowGrant.attemptId);p.put("workflow_evidence",workflowEvidence);proofs.add(p);
+        return true;
+    }
+    /** Controller-owned completion is available only for this consumed parent
+     * workflow and its actual stable readback. It is not a model success claim. */
+    public boolean controllerWorkflowReady(NotesCompletionEvidence.Frame current){
+        return workflowCompletionAccepted&&workflowProofConsumed&&workflowGrant!=null
+                &&current!=null&&Objects.equals(workflowVerifiedObservationId,current.observationId)&&verified(current);
+    }
+    public String controllerCompletionSummary(){return "已保存并重新打开这条笔记，正文核对一致。";}
     public Check successClaim(int step,String run,NotesCompletionEvidence.Frame current){return successClaim(step,run,current,true);}
     public Check successClaim(int step,String run,NotesCompletionEvidence.Frame current,boolean finalObservationStable){
         require(step>0&&step<=20&&id(run),"completion claim native identity required");observed(current);
@@ -172,7 +249,11 @@ public final class TaskCompletionGate {
         o.put("missing",missing(current));o.put("rejected_success_claims",rejectedSuccess);o.put("max_rejected_success_claims",MAX_REJECTED_SUCCESS);
         if(NOTES.equals(contract.kind)){
             o.put("notes_launch_observed",launchProved);o.put("editor_body_observed",editorObserved);o.put("list_observed",listObserved);
+            o.put("prior_visible_body_collision",priorVisibleBodyCollision);o.put("unobserved_prior_notes_known",false);
             o.put("same_list_item_reopened",reopened);
+            if(reopenActor!=null)o.put("reopen_actor_kind",reopenActor);
+            if(workflowEvidence!=null){o.put("notes_create_workflow_verified",workflowCompletionAccepted);
+                o.put("notes_create_workflow_stop_reason",workflowEvidence.get("stop_reason"));}
             o.put("progress_scope","cumulative_task_evidence_not_current_screen");
             NotesPhase facts=notesPhase(current);
             o.put("current_surface",facts.currentSurface());o.put("current_list_item_node_id",facts.currentListItem);
@@ -184,6 +265,7 @@ public final class TaskCompletionGate {
         Map<String,Object> o=prompt(current);o.put("task_id",taskId);o.put("contract",contract.evidence());
         o.put("proofs",new ArrayList<Map<String,Object>>(proofs));o.put("model_success_claims",new ArrayList<Map<String,Object>>(claims));
         o.put("identity_failure",identityFailure);o.put("display_id",domainBound?displayId:null);o.put("background_generation",generation);
+        if(workflowEvidence!=null)o.put("notes_create_workflow",workflowEvidence);
         o.put("persistent_storage_bytes_verified",false);o.put("new_database_item_identity_verified",false);
         if(NOTES.equals(contract.kind)){NotesCompletionEvidence.BodyEvidence v=body(current);o.put("current_editor_raw_exact",v.rawExact);o.put("current_body_evidence",bodyEvidence(v));
             NotesCompletionEvidence.ListEvidence list=NotesCompletionEvidence.list(current,contract.body);o.put("current_list_match",list.matched);o.put("current_list_missing",list.missing);
@@ -201,6 +283,7 @@ public final class TaskCompletionGate {
         if(identityInvalid)out.add("observation_or_installed_identity_invalid");
         if(NOTES.equals(contract.kind)){
             if(installed==null)out.add("installed_notes_identity_unavailable");
+            if(priorVisibleBodyCollision)out.add("preexisting_visible_body_cannot_prove_new_note_saved");
             if(!launchProved)out.add("model_bound_notes_create_with_owner_body_missing");
             if(!editorObserved)out.add("actual_editor_body_missing");
             if(!listObserved)out.add("save_then_real_list_with_unique_body_item_missing");

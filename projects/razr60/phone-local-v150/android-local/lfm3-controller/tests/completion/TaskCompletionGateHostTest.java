@@ -27,7 +27,7 @@ import org.trillionnium.hepta.local.NotesCompletionEvidence.Node;
 public final class TaskCompletionGateHostTest {
     static final String TASK="11111111111111111111111111111111",P=NotesCompletionEvidence.NOTES;
     static final String BODY="明天下午三点取快递。",H="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-    static final String OWNER=owner(BODY),WEB="通过 web.search 网页查询商品信息，只允许网页查询、滚动、等待和结束。";
+    static final String OWNER=owner(BODY),DRAFT_OWNER="新建笔记，正文为“"+BODY+"”，不要保存。",WEB="通过 web.search 网页查询商品信息，只允许网页查询、滚动、等待和结束。";
     static final List<String> passed=new ArrayList<String>();static Path output;static int observations;
     interface Case{void run()throws Exception;}
     static void test(String name,Case run)throws Exception{run.run();passed.add(name);System.out.println("PASS "+name);}
@@ -78,7 +78,7 @@ public final class TaskCompletionGateHostTest {
     }
     static PhoneObservation.Node row(String id,String pkg,String text,String view,Rect bounds,boolean editable,boolean click,boolean scroll){return new PhoneObservation.Node(id,pkg,"TextView",view,text,"",bounds,click,editable,scroll,true,true,false,ObservedChildText.notApplicable(),ObservedScrollActions.observed(Collections.<String>emptyList()),ObservedImeEnter.UNKNOWN,editable?ObservedImeEnter.hash(text):null,false);}
     static final class Model implements LocalInference {
-        final QualificationScopeHostTest.Env e;final String mode,owner;int calls,phase,ends;String task;final List<String> prompts=new ArrayList<String>();
+        final QualificationScopeHostTest.Env e;final String mode,owner;int calls,phase,ends,createdReads;String task;final List<String> prompts=new ArrayList<String>();
         Model(QualificationScopeHostTest.Env e,String mode,String owner){this.e=e;this.mode=mode;this.owner=owner;}
         public LocalRuntimeConfig configuration(){return e.runtime;}
         public void beginTask(String id){task=id;}
@@ -98,6 +98,11 @@ public final class TaskCompletionGateHostTest {
                 };
                 e.service.observationRows=()->{
                     if(phase==0||phase==2)return Collections.singletonList(row("n0",e.service.root.pkg,"synthetic unrelated screen","",new Rect(10,10,500,150),false,false,false));
+                    // Explicit Android IO: the immediate create-after contains
+                    // the full body, but the next fresh read is an incomplete
+                    // transient editor. The workflow must stop before a child;
+                    // the later model Back then races an external window change.
+                    if(phase==1&&++createdReads==2)return Collections.singletonList(row("n0",P,"synthetic pending editor view","",new Rect(10,10,500,150),false,false,false));
                     if(phase==1||phase==4)return Arrays.asList(row("n0",P,BODY,"",new Rect(10,10,500,150),true,true,false),row("n1",P,"NoteEditor","",new Rect(0,0,1080,2400),false,false,true));
                     return Arrays.asList(row("n0",P,BODY,"",new Rect(10,10,500,150),false,true,false),row("n1",P,"",P+":id/view_pager2",new Rect(0,0,1080,2400),false,false,true),row("n2",P,"所有笔记",P+":id/title_text",new Rect(0,0,100,30),false,false,false));
                 };
@@ -127,6 +132,15 @@ public final class TaskCompletionGateHostTest {
                 if("detour".equals(mode)){
                     tool=calls==1?"notes.create":calls==2?"back":calls==3?"open":calls==4?"click":"done";
                     if(calls==2){
+                        JSONObject parentEvent=data.getJSONArray("events").getJSONObject(0);
+                        check(!parentEvent.has("tool_workflow")&&"notes.create".equals(parentEvent.getString("action"))
+                                &&parentEvent.getBoolean("model_issued"),"fallback preserves the actual model parent without nested history data");
+                        check("tool_workflow".equals(parentEvent.getString("tool_workflow_actor_kind"))
+                                &&!parentEvent.getBoolean("tool_workflow_model_issued")&&!parentEvent.getBoolean("tool_workflow_verified"),
+                                "incomplete tool workflow remains separate scalar evidence, never a model action or success");
+                        check(parentEvent.getString("tool_workflow_id").length()==64
+                                &&"step-01-notes-workflow-result.json".equals(parentEvent.getString("tool_workflow_receipt_file")),
+                                "flat history retains the exact workflow identity and complete receipt reference");
                         // Explicit Android IO race: the user/system leaves Notes
                         // after this prompt. No model self-app open is authorized.
                         phase=2;e.service.root.pkg="org.trillionnium.hepta.local";
@@ -165,7 +179,7 @@ public final class TaskCompletionGateHostTest {
             check(e.controller.start(owner,null,new LocalTaskController.Listener(){public void onState(String v){}public void onFinished(LocalTaskController.TaskResult r){box[0]=r;done.countDown();}}),"ordinary task starts");check(done.await(10,TimeUnit.SECONDS),"ordinary controller finishes");
             LocalTaskController.TaskResult r=box[0];check(r!=null&&r.cleanupKnown&&r.modelReportedSuccess&&r.completionVerified==verified,"raw model claim and independently checked completion separated: "+mode+" / "+(r==null?"null":r.status+" "+r.summary));
             check(m.calls==expectedCalls&&m.ends==1,"bounded continuation and one retained task worker teardown");
-            check((verified?"model_reported_done":"cancel".equals(mode)?"cancelled":("close_invalid_receipt".equals(mode)||"readonly".equals(mode))?"failed":"partial").equals(r.status),"honest terminal status: "+mode+" / "+r.status);
+            check((verified?("complete".equals(mode)?"controller_verified_done":"model_reported_done"):"cancel".equals(mode)?"cancelled":("close_invalid_receipt".equals(mode)||"readonly".equals(mode))?"failed":"partial").equals(r.status),"honest terminal status: "+mode+" / "+r.status);
             JSONObject result=FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("result.json"));check(result.getBoolean("model_reported_success")&&result.getBoolean("completion_verified")==verified,"terminal keeps original native success claim");
             check(result.getBoolean("goal_independently_verified")==verified,"independent goal field follows actual supported completion evidence");
             if("complete".equals(mode)){
@@ -176,11 +190,19 @@ public final class TaskCompletionGateHostTest {
                 JSONObject rejected=new JSONObject(FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("step-01-model-0.json")).getString("raw_text"));
                 check("done".equals(rejected.getString("action"))&&"success".equals(rejected.getString("status")),
                         "original rejected native output stays archived");
+                check("controller/tool_workflow".equals(result.getString("completion_actor"))&&!result.getBoolean("model_done_synthesized")
+                        &&Files.exists(r.evidenceDirectory.toPath().resolve("step-01-tool-child-01-action.json"))
+                        &&!Files.exists(r.evidenceDirectory.toPath().resolve("step-02-model-0.json")),
+                        "independent workflow completion preserves the earlier raw claim without inventing later model actions");
             }
             if("detour".equals(mode)){
                 check(e.service.opens==2&&e.service.navigations==0&&e.service.node.actions==1,"external window change is reobserved; model opens only Notes then clicks its same item");
                 JSONObject stale=FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("step-02-action.json"));
                 check(stale.getBoolean("stale")&&!stale.getBoolean("dispatched"),"outdated editor navigation never dispatches after external window change");
+                JSONObject workflow=FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("step-01-notes-workflow-result.json"));
+                check(!workflow.getBoolean("workflow_verified")&&"fresh_created_body_or_unique_list_unavailable".equals(workflow.getString("stop_reason"))
+                        &&!Files.exists(r.evidenceDirectory.toPath().resolve("step-01-tool-child-01-action.json")),
+                        "incomplete fresh editor stops the workflow with zero children; only later real model navigation can recover");
             }
             if("readonly".equals(mode)||"cancel".equals(mode)){
                 check(e.service.effects()==0,"read-only unknown task was never forced to write or navigate");
@@ -188,9 +210,12 @@ public final class TaskCompletionGateHostTest {
                 check(result.getJSONObject("completion_evidence").getInt("rejected_success_claims")==0,
                         "front-end eligibility rejection is distinct from a final provider rejection");
             }
-            if("draft".equals(mode))check(e.service.opens==1&&e.service.navigations==0&&e.service.node.actions==0,"accepted draft alone never becomes saved note; no replay");
+            if("draft".equals(mode))check(e.service.opens==1&&e.service.navigations==0&&e.service.node.actions==0
+                    &&!Files.exists(r.evidenceDirectory.toPath().resolve("step-01-notes-workflow-grant-consumed.json")),
+                    "an explicit no-save OWNER keeps draft-only behavior with no workflow or replay");
             if("web".equals(mode))check(e.service.opens==1&&result.getJSONObject("completion_evidence").getBoolean("web_query_dispatched"),"web method executed exactly once but result proof unavailable");
-            if(mode.startsWith("close_")){check(e.service.opens==1&&e.service.navigations==1&&e.service.node.actions==1,"completed visible chain is not replayed when terminal verification fails");check(FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("step-04-completion-check.json")).getBoolean("accepted_as_completed"),"the sequence verified before actual blocking model close");check(!result.getJSONObject("completion_evidence").getBoolean("terminal_binding_and_cleanup_verified"),"post-close failure removes verified completion without erasing raw model claim");}
+            if(mode.startsWith("close_")){check(e.service.opens==1&&e.service.navigations==1&&e.service.node.actions==1,"completed visible chain is not replayed when terminal verification fails");check(FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("step-01-notes-workflow-result.json")).getBoolean("accepted_as_completion_proof")
+                    &&Files.exists(r.evidenceDirectory.toPath().resolve("controller-completion-candidate.json")),"the actual child chain verified before blocking model close");check(!result.getJSONObject("completion_evidence").getBoolean("terminal_binding_and_cleanup_verified"),"post-close failure removes verified completion without erasing raw model claim");}
         }
     }
     static void bridgeCase()throws Exception{
@@ -205,14 +230,14 @@ public final class TaskCompletionGateHostTest {
     public static void main(String[] args)throws Exception{
         output=Paths.get(args[0]);Files.createDirectories(output);QualificationScopeHostTest.output=output;
         pureCases();test("bridge_clears_whitespace_masked_truncated_child",()->bridgeCase());
-        test("actual_controller_first_done_recovers_and_real_note_chain_completes",()->controllerCase("complete",OWNER,true,5));
+        test("actual_controller_first_done_recovers_and_real_note_chain_completes",()->controllerCase("complete",OWNER,true,2));
         test("actual_controller_external_window_detour_recovers_only_after_same_item_click",()->controllerCase("detour",OWNER,true,5));
-        test("actual_controller_draft_only_done_remains_partial_once",()->controllerCase("draft",OWNER,false,3));
+        test("actual_controller_draft_only_done_remains_partial_once",()->controllerCase("draft",DRAFT_OWNER,false,3));
         test("actual_controller_web_effect_without_results_is_partial",()->controllerCase("web",WEB,false,3));
         test("actual_controller_unknown_readonly_two_claims_zero_effects",()->controllerCase("readonly","读出当前页面的标题，不要点击或输入。",false,2));
         test("actual_controller_cancel_after_rejection_stops_without_effect",()->controllerCase("cancel","读出当前页面的标题。",false,2));
-        test("actual_controller_installed_identity_rechecked_after_close",()->controllerCase("close_identity_changed",OWNER,false,5));
-        test("actual_controller_bad_native_close_receipt_cannot_complete",()->controllerCase("close_invalid_receipt",OWNER,false,5));
+        test("actual_controller_installed_identity_rechecked_after_close",()->controllerCase("close_identity_changed",OWNER,false,2));
+        test("actual_controller_bad_native_close_receipt_cannot_complete",()->controllerCase("close_invalid_receipt",OWNER,false,2));
         Files.write(output.resolve("TEST-RESULTS.json"),new JSONObject().put("all_pass",true).put("cases",passed).put("checks",passed.size()).put("actual_controller",true).put("android_and_model_io_are_fakes",true).put("phone_tested",false).toString(2).getBytes(StandardCharsets.UTF_8));
     }
 }

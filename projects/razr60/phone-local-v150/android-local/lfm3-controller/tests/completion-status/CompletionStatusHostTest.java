@@ -290,7 +290,7 @@ public final class CompletionStatusHostTest {
     private static final class OutcomeModel implements LocalInference{
         final QualificationScopeHostTest.Env env;final String status;final TaskCompletionGateHostTest.Model io;
         int calls,ends;String task;
-        OutcomeModel(QualificationScopeHostTest.Env env,String status){this.env=env;this.status=status;io=new TaskCompletionGateHostTest.Model(env,"draft",TaskCompletionGateHostTest.OWNER);io.setup();}
+        OutcomeModel(QualificationScopeHostTest.Env env,String status){this.env=env;this.status=status;io=new TaskCompletionGateHostTest.Model(env,"draft",TaskCompletionGateHostTest.DRAFT_OWNER);io.setup();}
         public LocalRuntimeConfig configuration(){return env.runtime;}
         public void beginTask(String id){task=id;}
         public TaskCleanup endTask(){ends++;return new TaskCleanup(true,true,true,0,TaskCompletionGateHostTest.id(7999),task,true,TaskCompletionGateHostTest.H);}
@@ -320,7 +320,10 @@ public final class CompletionStatusHostTest {
                 TaskCompletionGateHostTest.installPackage(env,"notes.create");TaskCompletionGateHostTest.installPackage(env,"web.search");
                 OutcomeModel model=new OutcomeModel(env,status);env.controller=new LocalTaskController(env.service,model);
                 CountDownLatch finished=new CountDownLatch(1);LocalTaskController.TaskResult[] result={null};
-                check(env.controller.start(TaskCompletionGateHostTest.OWNER,null,new LocalTaskController.Listener(){
+                // This explicit no-save contract has no workflow authority.
+                // Full save/list/reopen contracts have their own actual
+                // controller/tool-child integration tests in v51.
+                check(env.controller.start(TaskCompletionGateHostTest.DRAFT_OWNER,null,new LocalTaskController.Listener(){
                     public void onState(String state){}
                     public void onFinished(LocalTaskController.TaskResult value){result[0]=value;finished.countDown();}
                 }),"actual controller starts explicit synthetic IO task");

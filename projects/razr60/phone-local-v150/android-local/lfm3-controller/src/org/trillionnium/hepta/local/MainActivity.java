@@ -58,7 +58,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         page.addView(text("用手机本地模型理解指令并操作应用",15));
         modelInfo=text("",12);modelInfo.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);page.addView(modelInfo);
         taskInput=new EditText(this);taskInput.setHint("你想让手机完成什么？");
-        taskInput.setText("打开计算器，计算 37 加 58，然后结束任务。");taskInput.setMinLines(3);page.addView(taskInput);
+        taskInput.setText("记一下：“明天下午3点看牙，带上检查资料。”");taskInput.setMinLines(3);page.addView(taskInput);
         taskAuthorizationInfo=text("",12);page.addView(taskAuthorizationInfo);
         taskInput.addTextChangedListener(new android.text.TextWatcher(){
             public void beforeTextChanged(CharSequence s,int start,int count,int after){}
@@ -67,11 +67,20 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         });
         previewTaskAuthorization();
         backgroundMode=new CheckBox(this);backgroundMode.setText("在后台空间操作");page.addView(backgroundMode);
-        page.addView(text("后台操作需要本机 root 权限。Magisk 31.1 及以上不再弹出授权请求：请在管理器的「超级用户」页点「+」，添加并允许 Hepta（org.trillionnium.hepta.local，UID "+android.os.Process.myUid()+"），然后返回核验。其它版本请按管理器界面操作。",12));
-        openRootManager=button("打开 Magisk 管理器");page.addView(openRootManager);
-        openRootManager.setOnClickListener(v -> openRootManagerFromOwnerButton());
-        prepareBackgroundPermission=button("核验后台执行权限");page.addView(prepareBackgroundPermission);
         backgroundPermissionState=text("",12);page.addView(backgroundPermissionState);
+        Button showBackgroundPermission=button("后台权限与高级设置（展开）");page.addView(showBackgroundPermission);
+        final LinearLayout backgroundPermissionDetails=new LinearLayout(this);
+        backgroundPermissionDetails.setOrientation(LinearLayout.VERTICAL);
+        backgroundPermissionDetails.setVisibility(View.GONE);page.addView(backgroundPermissionDetails);
+        showBackgroundPermission.setOnClickListener(v -> {
+            boolean expanded=backgroundPermissionDetails.getVisibility()!=View.VISIBLE;
+            backgroundPermissionDetails.setVisibility(expanded?View.VISIBLE:View.GONE);
+            showBackgroundPermission.setText(expanded?"后台权限与高级设置（收起）":"后台权限与高级设置（展开）");
+        });
+        backgroundPermissionDetails.addView(text("后台操作需要本机 root 权限。Magisk 31.1 及以上不再弹出授权请求：请在管理器的「超级用户」页点「+」，添加并允许 Hepta（org.trillionnium.hepta.local，UID "+android.os.Process.myUid()+"），然后返回核验。其它版本请按管理器界面操作。",12));
+        openRootManager=button("打开 Magisk 管理器");backgroundPermissionDetails.addView(openRootManager);
+        openRootManager.setOnClickListener(v -> openRootManagerFromOwnerButton());
+        prepareBackgroundPermission=button("核验后台执行权限");backgroundPermissionDetails.addView(prepareBackgroundPermission);
         prepareBackgroundPermission.setOnClickListener(v -> {
             if(!hasWindowFocus()||isFinishing()||isDestroyed())return;
             try{app.prepareBackgroundPermissionFromOwnerButton();refresh();}
@@ -82,12 +91,13 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         pickBackgroundApps.setOnClickListener(v -> chooseBackgroundApps());
         initialBackgroundApp=new Spinner(this);page.addView(text("后台起始应用",12));page.addView(initialBackgroundApp);
         reloadBackgroundApps();updateBackgroundSelection(null);
-        cleanupBackground=button("清理上一次后台空间");page.addView(cleanupBackground);
+        cleanupBackground=button("清理上一次后台空间");
         cleanupBackground.setOnClickListener(v -> {try{tasks.reconcileBackgroundFromOwnerButton();}catch(Exception error){taskState.setText("清理未开始："+HeptaAccessibilityService.message(error));}refresh();});
         LinearLayout actions=new LinearLayout(this);page.addView(actions);
         startTask=button("开始任务");actions.addView(startTask);
         stopTask=button("停止");actions.addView(stopTask);
         Button accessibility=button("启用无障碍");actions.addView(accessibility);
+        page.addView(cleanupBackground);
         startTask.setOnClickListener(v -> beginTask(taskInput.getText().toString(),"user_button",null));
         stopTask.setOnClickListener(v -> {tasks.stop();engine.cancelActive();
             // Explicitly ends this UI prefill only; the running task retains its immutable scope.

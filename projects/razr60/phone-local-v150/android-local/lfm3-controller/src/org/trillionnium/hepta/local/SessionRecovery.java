@@ -8,7 +8,7 @@ import java.util.Set;
 /** Pure recovery policy. A previous process can never resume or replay a task. */
 public final class SessionRecovery {
     private static final Set<String> CLEAN_TERMINAL = new HashSet<String>(Arrays.asList(
-            "not_started", "cancelled_before_start", "model_reported_done", "partial", "failed", "cancelled"));
+            "not_started", "cancelled_before_start", "model_reported_done", "controller_verified_done", "partial", "failed", "cancelled"));
     private static final Set<String> NOT_STARTED = new HashSet<String>(Arrays.asList(
             "not_started", "cancelled_before_start"));
 

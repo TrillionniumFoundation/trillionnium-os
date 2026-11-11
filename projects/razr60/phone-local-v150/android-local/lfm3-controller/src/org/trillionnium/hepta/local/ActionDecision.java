@@ -16,6 +16,13 @@ import java.util.regex.Pattern;
 public final class ActionDecision {
     public static final String IME_ACTION_SCHEMA="hepta.observed-action-gbnf.v5-ime-enter";
     public static final String FIXED_INTENT_ACTION_SCHEMA="hepta.observed-action-gbnf.v6-fixed-intents";
+    /** Internal typed requests never enter the model JSON parser or its grammar. */
+    static final String TOOL_CHILD_SCHEMA="hepta.internal-tool-child.v1";
+    interface ToolChildOrigin {
+        void enterService(String task,String authorizationSha,String run,String observation);
+        void requireDispatch(String task,String authorizationSha,String run,ActionDecision action);
+        Map<String,Object> evidence();
+    }
     private static final int MAX_JSON_UTF8_BYTES = 16384;
     private static final int MAX_TEXT_UTF8_BYTES = 4096;
     private static final Pattern OBSERVATION_ID = Pattern.compile("[0-9a-fA-F]{32}");
@@ -38,10 +45,17 @@ public final class ActionDecision {
     public final int y;
     public final int durationMs;
     public final int offset;
+    final ToolChildOrigin toolChildOrigin;
 
     private ActionDecision(String action, String observationId, String packageName, String appLabel, String actionSchema,
                            String nodeId, String nodeLabel, String text, String direction, String status,
                            String summary, String reason, int x, int y, int durationMs, String query, int offset) {
+        this(action,observationId,packageName,appLabel,actionSchema,nodeId,nodeLabel,text,direction,status,
+                summary,reason,x,y,durationMs,query,offset,null);
+    }
+    private ActionDecision(String action,String observationId,String packageName,String appLabel,String actionSchema,
+                           String nodeId,String nodeLabel,String text,String direction,String status,
+                           String summary,String reason,int x,int y,int durationMs,String query,int offset,ToolChildOrigin origin) {
         this.action = action;
         this.observationId = observationId;
         this.packageName = packageName;
@@ -59,6 +73,20 @@ public final class ActionDecision {
         this.durationMs = durationMs;
         this.query = query;
         this.offset = offset;
+        this.toolChildOrigin=origin;
+    }
+
+    /** A capability supplied by the controller's already-authorized parent tool,
+     * never by JSON, screen text or a manufactured model response. */
+    static ActionDecision toolChild(ToolChildOrigin origin,String action,String observation,String pkg,String node,String label){
+        if(origin==null||!("back".equals(action)||"click".equals(action))||observation==null
+                ||!OBSERVATION_ID.matcher(observation).matches()||!"com.motorola.stylus".equals(pkg))
+            throw new IllegalArgumentException("invalid internal Notes child");
+        if("click".equals(action)&&(node==null||!NODE_ID.matcher(node).matches()||label==null||label.isEmpty()))
+            throw new IllegalArgumentException("internal click requires an observed node/label");
+        if("back".equals(action)&&(node!=null||label!=null))throw new IllegalArgumentException("internal Back has no target node");
+        return new ActionDecision(action,observation,pkg,null,TOOL_CHILD_SCHEMA,node,label,null,null,null,null,
+                "Authorized Notes tool child; not a model decision",-1,-1,0,null,0,origin);
     }
 
     public static final class InvalidActionException extends Exception {

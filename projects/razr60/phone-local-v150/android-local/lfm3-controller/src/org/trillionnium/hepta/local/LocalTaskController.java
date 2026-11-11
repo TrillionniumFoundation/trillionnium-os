@@ -62,7 +62,7 @@ public final class LocalTaskController implements AutoCloseable {
             "last_transition是对应step前后实际观察的字段、窗口标题和输入法状态；执行或拒绝状态见events，不证明因果或完成。before是过去，after对应末尾screen。判断当前输入以screen.editable_fields.text为准，不能把历史项或OWNER文字当作已输入。\n" +
             "app_search.source=model_find_app且model_issued=true表示已执行该查询，step是来源，returned是实际返回数；本轮apps是其当前结果页，能打开的目标以open_allowed_packages为准。初始目录不等于已经调用find_app。blocked_action和blocked中的click_ids/open_packages禁选，后者只引用当前frame。\n" +
             "工具：open打开应用，不能重开当前应用；click(node_label,node_id)点击；type(node_label,node_id,text)替换完整文字，不提交或发按键，回读相同不保证业务接受；submit(node_label,node_id)仅调用screen.submit_actions列出的当前聚焦字段查询动作，真实标签必须明确为查询，不接受通用Enter、付款、下单或发送；已尝试的同包同输入不得再次submit，accepted不证明搜索完成；scroll(node_label,node_id,direction)只选screen.scroll_actions该节点已列方向，空/null不可滚动；back返回；home到桌面；wait(duration_ms)仅在加载时等100..2000毫秒；find_app(query,offset)只读查本机应用，空query浏览，首次offset=0，续页用app_search.next_offset；done(status,summary)结束。\n" +
-            "fixed_intent_tools仅列本轮实际可用的固定本地入口：notes.create(text)一次把你根据OWNER撰写的完整正文交给笔记编辑器，不能传title；web.search(query)一次把查询词交给浏览器。每工具本任务仅一次，工具从列表消失后不可重试。launch_accepted仅请求已接受；draft_opened/search_opened是待观察目标，不是保存或找到结果。笔记须继续观察正文、保存并重新打开核对，查询须读取实际结果。\n" +
+            "fixed_intent_tools仅列本轮实际可用的固定本地入口：notes.create(text)一次把OWNER要求的完整正文交给笔记编辑器，不能传title；web.search(query)一次把查询词交给浏览器。每工具本任务仅一次，工具从列表消失后不可重试。launch_accepted仅请求已接受；draft_opened/search_opened是待观察目标，不是保存或找到结果。notes.create的owner_bound_execution_mode若为create_then_bounded_save_list_reopen_tool_children，控制器会在该父调用后按原授权有限保存、查找唯一正文条目并重开核对；这些是tool_child，不是你另行输出的动作。未取得完整证据时不会宣称完成。其它模式仍须继续观察；查询须读取实际结果。\n" +
             "task_phase是固定OWNER与真实执行证据产生的动作限制，不会扩大task_authorization。新建笔记不能替换当前旧笔记；只有本任务notes.create及其正文观察成立后才进入离开编辑器阶段。该入口已携带完整正文，不再type/submit覆盖字段。next_goal是待满足目标，仍须由你选择每个工具，不能把阶段名称或back接受当成保存证明。\n" +
             "页面内搜索词或搜索结果与目标同名，不表示已进入目标页；任务要求进入时，点击对应结果后重新观察。\n" +
             "启动应用可能恢复子页，用可见返回键/back回到目标页，勿为重试打开无关应用。全部目标按原顺序实现且历史动作和当前可见结果支持才done且status=success；不能完成用partial或failure。done.status只能选completion.allowed_done_statuses；task_authorization中的success_done_allowed只表示权限，不证明目标完成。done须同时含status和summary；wait不表示完成/停留。禁止其它字段、输入密码或执行代码/网络命令。\n";
@@ -147,6 +147,7 @@ public final class LocalTaskController implements AutoCloseable {
         SubmitAttemptGuard submitAttempts=null;FixedIntentAttemptGuard fixedIntentAttempts=null;
         File evidence=null;PhoneObservation observation=null;int steps=0,repairs=0,staleRounds=0;
         String finalStatus="failed",summary="任务未完成";boolean modelSuccess=false,cleanup=true,rawModelSuccessClaimed=false;
+        boolean controllerSuccess=false,controllerCompletionRequested=false;
         String lastModelDoneStatus=null,lastModelDoneSummary=null;
         TaskCompletionGate completion=new TaskCompletionGate(taskId,instruction,authorization.authorization);
         NotesTaskPhaseGuard notesPhase=null;
@@ -386,6 +387,35 @@ public final class LocalTaskController implements AutoCloseable {
                         outcome.accepted,outcome.dispatched,outcome.stale);
                 if(dispatchedDecision!=null)lastModelDecision=dispatchedDecision;
                 lastTransition=observedTransition(steps,before,observation);
+                NotesCreateWorkflow.Grant workflowGrant=scope.config==null&&"notes.create".equals(action.action)
+                        ?completion.notesCreateWorkflow(steps,decisionRunId,action,workflowObservation(observation),authorization.frame()):null;
+                if(workflowGrant!=null){
+                    emit("本次新建笔记正在按已授权工具流程保存并重新打开…");
+                    NotesWorkflowOutcome workflow=runNotesCreateWorkflow(taskId,evidence,instruction,config,apps,history,
+                            lastModelDecision,repeatGuard,noEffectGuard,authorization,scope.config,completion,
+                            notesPhase,calculatorInput,completionInstalled,workflowGrant,observation,deadline);
+                    observation=workflow.observation;
+                    if(workflow.error!=null)throw workflow.error;
+                    // History keeps named scalar facts; the complete typed workflow stays in its receipt.
+                    row.put("tool_workflow_id",workflowGrant.workflowId)
+                            .put("tool_workflow_actor_kind","tool_workflow").put("tool_workflow_model_issued",false)
+                            .put("tool_workflow_verified",workflow.verified).put("tool_workflow_receipt_file",workflow.receiptFile);
+                    lastTransition=observedTransition(steps,before,observation);
+                    if(workflow.verified&&authorization.frame().successAllowed()&&completion.controllerWorkflowReady(completionFrame(observation))){
+                        // No model done is synthesized. This candidate still has
+                        // to pass the original installed identity/lease/native
+                        // teardown gates before a terminal is published below.
+                        controllerSuccess=true;controllerCompletionRequested=true;
+                        finalStatus="controller_verified_done";summary=completion.controllerCompletionSummary();
+                        record(evidence,"controller-completion-candidate.json",new JSONObject()
+                                .put("schema","hepta.controller-workflow-completion.v1").put("task_id",taskId)
+                                .put("completion_actor","controller/tool_workflow").put("model_done_synthesized",false)
+                                .put("workflow_id",workflowGrant.workflowId).put("parent_model_run_id",workflowGrant.parentRunId)
+                                .put("parent_fixed_intent_attempt_id",workflowGrant.attemptId)
+                                .put("observation_id",observation.id).put("terminal_pending_native_identity_and_cleanup",true));
+                        break;
+                    }
+                }
                 if("done".equals(action.action)){
                     boolean stable=before.packageName.equals(observation.packageName)&&before.windowId==observation.windowId
                             &&before.rotation==observation.rotation&&before.treeSha256.equals(observation.treeSha256);
@@ -409,16 +439,16 @@ public final class LocalTaskController implements AutoCloseable {
                         outcome.accepted,outcome.dispatched,outcome.stale);
             }
             if(steps>=MAX_STEPS&&"failed".equals(finalStatus)&&"任务未完成".equals(summary))summary="已达到本次任务的步骤上限，停止继续操作";
-        }catch(Stopped error){finalStatus="cancelled";summary="已停止；已经发生的操作不会自动重做";}
-        catch(CleanupUnknown error){blocked=true;cleanup=false;finalStatus="blocked";summary=error.getMessage();}
-        catch(Exception error){finalStatus=cancelled.get()?"cancelled":"failed";summary=HeptaAccessibilityService.message(error);}
+        }catch(Stopped error){controllerSuccess=false;finalStatus="cancelled";summary="已停止；已经发生的操作不会自动重做";}
+        catch(CleanupUnknown error){controllerSuccess=false;blocked=true;cleanup=false;finalStatus="blocked";summary=error.getMessage();}
+        catch(Exception error){controllerSuccess=false;finalStatus=cancelled.get()?"cancelled":"failed";summary=HeptaAccessibilityService.message(error);}
         finally{
             synchronized(handleLock){activeInference=null;}
             // Release the display before waiting for model teardown; neither part can prove the other.
             if(background!=null){
                 backgroundCleanup=background.close();
                 if(evidence!=null)try{record(evidence,"background-cleanup.json",backgroundCleanup.evidence);}catch(Exception ignored){}
-                if(!backgroundCleanup.known){cleanup=false;blocked=true;finalStatus="blocked";modelSuccess=false;summary="后台屏幕释放尚未确认，已停止接受新任务";}
+                if(!backgroundCleanup.known){cleanup=false;blocked=true;finalStatus="blocked";modelSuccess=false;controllerSuccess=false;summary="后台屏幕释放尚未确认，已停止接受新任务";}
             }
             LocalInference.TaskCleanup modelCleanup;
             try{modelCleanup=inference.endTask();}
@@ -426,35 +456,53 @@ public final class LocalTaskController implements AutoCloseable {
             // endTask can block. Recheck the same immutable scope after it returns,
             // before publishing completion; old pre-close identity is insufficient.
             if(scope!=null)try{scope.verifyUnchanged();}catch(Exception refusal){
-                finalStatus="failed";modelSuccess=false;summary=HeptaAccessibilityService.message(refusal);
+                finalStatus="failed";modelSuccess=false;controllerSuccess=false;summary=HeptaAccessibilityService.message(refusal);
             }
-            try{authorization.ready();}catch(Exception refusal){finalStatus="failed";modelSuccess=false;summary=HeptaAccessibilityService.message(refusal);}
-            if(!modelCleanup.cleanupKnown){cleanup=false;blocked=true;finalStatus="blocked";modelSuccess=false;summary="任务模型进程退出尚未确认，已停止接受新任务";}
+            boolean controllerOwnerCompletionAllowed=false;
+            try{authorization.ready();if(controllerSuccess)controllerOwnerCompletionAllowed=authorization.frame().successAllowed();}
+            catch(Exception refusal){finalStatus="failed";modelSuccess=false;controllerSuccess=false;summary=HeptaAccessibilityService.message(refusal);}
+            if(!modelCleanup.cleanupKnown){cleanup=false;blocked=true;finalStatus="blocked";modelSuccess=false;controllerSuccess=false;summary="任务模型进程退出尚未确认，已停止接受新任务";}
             // Stop can arrive while endTask waits for the retained worker to exit.
             // Preserve an unresolved action/cleanup block before classifying cancellation.
             else if(cleanup&&cancelled.get()){
-                finalStatus="cancelled";modelSuccess=false;summary="已停止；已经发生的操作不会自动重做";
+                finalStatus="cancelled";modelSuccess=false;controllerSuccess=false;summary="已停止；已经发生的操作不会自动重做";
             }
             else if(modelCleanup.processStarted&&!modelCleanup.receiptValid
-                    &&("model_reported_done".equals(finalStatus)||"partial".equals(finalStatus))){
-                finalStatus="failed";modelSuccess=false;summary="任务模型清理已完成，但运行回执未通过验证，请核对已经发生的操作";
+                    &&("model_reported_done".equals(finalStatus)||"controller_verified_done".equals(finalStatus)||"partial".equals(finalStatus))){
+                finalStatus="failed";modelSuccess=false;controllerSuccess=false;summary="任务模型清理已完成，但运行回执未通过验证，请核对已经发生的操作";
             }
             // An unresolved action/display cleanup remains an admission block even if a later
             // scope/authorization check fails. Keep that later reason without weakening status.
-            if(!cleanup){blocked=true;finalStatus="blocked";modelSuccess=false;}
+            if(!cleanup){blocked=true;finalStatus="blocked";modelSuccess=false;controllerSuccess=false;}
             if(completionInstalled!=null)try{completionInstalled.verify(service);}catch(Exception changed){
                 completion.invalidateInstalled("installed_notes_identity_changed_after_cleanup");
-                if(modelSuccess){modelSuccess=false;finalStatus="partial";summary="笔记应用身份在完成核验后发生变化，未确认本次目标。";}
+                if(modelSuccess||controllerSuccess){modelSuccess=false;controllerSuccess=false;finalStatus="partial";summary="笔记应用身份在完成核验后发生变化，未确认本次目标。";}
             }
-            boolean completionVerified=modelSuccess&&cleanup&&modelCleanup.receiptValid&&completion.verified(completionFrame(observation));
+            // LocalInference.onSuccess seals the parent's exact request/grammar/
+            // output binding. Unlike the legacy no-worker test default, this new
+            // controller terminal additionally requires its real task session.
+            boolean controllerNativeBound=modelCleanup.processStarted&&modelCleanup.processExitObserved
+                    &&Integer.valueOf(0).equals(modelCleanup.exitCode)&&modelCleanup.receiptValid
+                    &&taskId.equals(modelCleanup.taskId)&&modelCleanup.generation!=null&&modelCleanup.generation.matches("[0-9a-f]{32}")
+                    &&modelCleanup.receiptSha256!=null&&modelCleanup.receiptSha256.matches("[0-9a-f]{64}");
+            if(controllerSuccess&&(!controllerNativeBound||!controllerOwnerCompletionAllowed||!completion.controllerWorkflowReady(completionFrame(observation)))){
+                controllerSuccess=false;finalStatus="partial";summary="笔记操作已结束，但本次完整核验尚未通过，请核对实际内容。";
+            }
+            boolean completionVerified=(modelSuccess||controllerSuccess)&&cleanup&&modelCleanup.receiptValid&&completion.verified(completionFrame(observation));
+            String completionActor=completionVerified?(controllerSuccess?"controller/tool_workflow":"model_done_verified"):null;
             java.util.Map<String,Object> completionEvidence=completion.evidence(completionFrame(observation));
             completionEvidence.put("observation_chain_verified",completion.verified(completionFrame(observation)));
             completionEvidence.put("terminal_binding_and_cleanup_verified",completionVerified);
+            completionEvidence.put("completion_actor",completionActor);completionEvidence.put("model_done_synthesized",false);
+            completionEvidence.put("controller_completion_requested",controllerCompletionRequested);
+            completionEvidence.put("controller_native_parent_session_bound",controllerCompletionRequested?Boolean.valueOf(controllerNativeBound):null);
             if(evidence!=null){try{record(evidence,"result.json",new JSONObject().put("task_id",taskId).put("status",finalStatus)
                     .put("summary",summary).put("steps",steps).put("model_reported_success",rawModelSuccessClaimed)
                     .put("model_done_status",lastModelDoneStatus==null?JSONObject.NULL:lastModelDoneStatus)
                     .put("model_done_summary",lastModelDoneSummary==null?JSONObject.NULL:lastModelDoneSummary)
                     .put("completion_verified",completionVerified).put("completion_evidence",new JSONObject(completionEvidence))
+                    .put("completion_actor",completionActor==null?JSONObject.NULL:completionActor)
+                    .put("controller_completion_requested",controllerCompletionRequested).put("model_done_synthesized",false)
                     .put("final_observation_id",observation==null?JSONObject.NULL:observation.id).put("cleanup_known",cleanup)
                     .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha256))
                     .put("actual_scope_sha256",scope==null?JSONObject.NULL:QualificationScopeConfig.nullable(scope.actualSha256))
@@ -493,6 +541,107 @@ public final class LocalTaskController implements AutoCloseable {
         }
         return new NotesCompletionEvidence.Frame(o.id,o.packageName,o.windowId,o.windowMetadata.displayId==null?-1:o.windowMetadata.displayId,
                 o.backgroundGeneration,o.windowMetadata.type==null?-1:o.windowMetadata.type,"observed".equals(o.windowMetadata.status),o.nodesTruncated,nodes);
+    }
+    private static NotesCreateWorkflow.Observation workflowObservation(PhoneObservation o){
+        return new NotesCreateWorkflow.Observation(completionFrame(o),o.treeSha256,o.rotation);
+    }
+    private static final class NotesWorkflowOutcome {
+        final PhoneObservation observation;final boolean verified;final String receiptFile;final Exception error;
+        NotesWorkflowOutcome(PhoneObservation observation,boolean verified,String receiptFile,Exception error){
+            this.observation=observation;this.verified=verified;this.receiptFile=receiptFile;this.error=error;
+        }
+    }
+    /** Runs only children of the actual model-issued create. The immediate
+     * model step-after and fixed-intent receipt remain unchanged on disk. */
+    private NotesWorkflowOutcome runNotesCreateWorkflow(final String task,final File directory,final String owner,
+            final LocalRuntimeConfig config,final AppCatalogueRanker.Page apps,final JSONArray history,
+            final LastModelDecisionProjection lastDecision,
+            final RepeatActionGuard repeat,final SameStateNoEffectGuard noEffect,final TaskAuthorization.Gate auth,
+            final QualificationScope.Config scope,final TaskCompletionGate completion,final NotesTaskPhaseGuard phase,
+            final CalculatorTaskInputGuard calculator,final QualificationScopeConfig.CompletionInstalledIdentity installed,
+            final NotesCreateWorkflow.Grant grant,final PhoneObservation initial,long taskDeadline){
+        final long deadline=Math.min(taskDeadline,SystemClock.elapsedRealtime()+NotesCreateWorkflow.MAX_WORKFLOW_MS);
+        final PhoneObservation[] latest={initial};final NotesCreateWorkflow.Observation[] latestFrame={workflowObservation(initial)};
+        final int[] observations={0};
+        final String prefix=String.format(java.util.Locale.ROOT,"step-%02d-notes-workflow",grant.parentStep);
+        final String resultName=prefix+"-result.json";
+        final java.util.Map<String,PhoneObservation> childBefore=new java.util.HashMap<String,PhoneObservation>();
+        try{
+            if(scope!=null||installed==null)throw new IllegalStateException("Notes workflow requires its installed ordinary-task binding");
+            NotesCreateWorkflow.Result result=NotesCreateWorkflow.run(grant,latestFrame[0],new NotesCreateWorkflow.IO(){
+                public NotesCreateWorkflow.Observation observe()throws Exception{
+                    checkActive(deadline);installed.verify(service);
+                    PhoneObservation current=awaitObservation(task,directory,auth,deadline);
+                    latest[0]=current;latestFrame[0]=workflowObservation(current);completion.observed(latestFrame[0].frame);
+                    if(++observations[0]>5)throw new IllegalStateException("Notes workflow read bound exceeded");
+                    record(directory,prefix+"-observation-"+observations[0]+".json",current.toJson());return latestFrame[0];
+                }
+                public void checkpoint(String name,java.util.Map<String,Object> evidence)throws Exception{
+                    checkActive(deadline);service.requireTaskAuthorization(task,auth);
+                    record(directory,prefix+"-"+name+".json",new JSONObject(evidence));
+                }
+                public NotesCreateWorkflow.Dispatch dispatch(NotesCreateWorkflow.ChildCall child,NotesCreateWorkflow.Observation expected)throws Exception{
+                    checkActive(deadline);installed.verify(service);service.requireTaskAuthorization(task,auth);
+                    if(expected!=latestFrame[0]||!expected.frame.observationId.equals(latest[0].id))
+                        throw new IllegalStateException("Notes child observation was replaced");
+                    final PhoneObservation before=latest[0];final ActionDecision decision=child.decision();
+                    // This internal prompt computes only the fresh child action domain.
+                    // The parent's older model transition does not describe this new frame;
+                    // actual parent/child before-and-after observations remain separately archived.
+                    PromptFrame domain=prompt(owner,apps,before,history,null,lastDecision,null,config,repeat,noEffect,
+                            auth.frame(),scope,service.fixedIntentTargets(task,auth.frame()),completion,phase,calculator);
+                    ActionPolicy.validateAuthorizedDecision(decision,before.packageName,domain.appPackages,domain.targets,
+                            domain.grammar.appLabels,auth,auth.frame(),domain.grammar.fixedIntentTargets);
+                    if(!domain.grammar.actions.contains(decision.action))throw new IllegalStateException("Notes child absent from current tool domain");
+                    if(repeat.rejects(decision,before.state)||noEffect.rejects(decision,before.packageName,before.state))
+                        throw new IllegalStateException("Notes child repeats an unchanged effect");
+                    domain.requireTextOnlyClick(decision);domain.phaseDomain.requireCurrent(decision);domain.calculatorDomain.requireCurrent(decision);
+                    String childPrefix=String.format(java.util.Locale.ROOT,"step-%02d-tool-child-%02d",grant.parentStep,child.ordinal);
+                    record(directory,childPrefix+"-before.json",before.toJson());childBefore.put(child.id,before);
+                    HeptaAccessibilityService.ActionOutcome outcome=awaitAction(task,before,decision,domain.targets,null,auth,grant.parentRunId,deadline);
+                    JSONObject raw=new JSONObject().put("schema",NotesCreateWorkflow.CHILD_SCHEMA).put("actor_kind","tool_child").put("model_issued",false)
+                            .put("parent_model_run_id",grant.parentRunId).put("parent_fixed_intent_attempt_id",grant.attemptId)
+                            .put("workflow_id",grant.workflowId).put("child_id",child.id).put("child_ordinal",child.ordinal)
+                            .put("action_schema",decision.actionSchema).put("action",new JSONObject(answerJson(decision)))
+                            .put("accepted",outcome.accepted).put("dispatched",outcome.dispatched).put("stale",outcome.stale).put("detail",outcome.detail)
+                            .put("task_phase",new JSONObject(domain.phaseDomain.projection.evidence()))
+                            .put("task_authorization",outcome.taskAuthorization==null?JSONObject.NULL:outcome.taskAuthorization)
+                            .put("qualification_scope",outcome.qualificationScope==null?JSONObject.NULL:outcome.qualificationScope)
+                            .put("background_session",outcome.backgroundSession==null?JSONObject.NULL:outcome.backgroundSession)
+                            .put("tool_child",outcome.toolChild==null?JSONObject.NULL:outcome.toolChild);
+                    record(directory,childPrefix+"-action.json",raw);
+                    boolean live=outcome.taskAuthorization!=null&&outcome.taskAuthorization.optBoolean("callback_lease_current",false)
+                            &&!outcome.taskAuthorization.optBoolean("callback_cancelled",true);
+                    if(!outcome.accepted&&outcome.dispatched)
+                        throw new IllegalStateException("Notes child dispatched without verified acknowledgement; no retry: "+outcome.detail);
+                    return new NotesCreateWorkflow.Dispatch(outcome.accepted,outcome.dispatched,outcome.stale,outcome.detail,live,
+                            completionFixed(outcome.toolChild));
+                }
+                public void recorded(NotesCreateWorkflow.ChildRecord child)throws Exception{
+                    String childPrefix=String.format(java.util.Locale.ROOT,"step-%02d-tool-child-%02d",grant.parentStep,child.call.ordinal);
+                    if(child.after!=null){
+                        if(child.after!=latestFrame[0])throw new IllegalStateException("Notes child after observation was replaced");
+                        record(directory,childPrefix+"-after.json",latest[0].toJson());
+                        PhoneObservation before=childBefore.get(child.call.id);if(before==null)throw new IllegalStateException("Notes child before missing");
+                        ActionDecision decision=child.call.decision();repeat.observed(decision,before.state,latest[0].state);
+                        noEffect.observed(decision,before.packageName,before.state,latest[0].packageName,latest[0].state,
+                                child.dispatch.accepted,child.dispatch.dispatched,child.dispatch.stale);
+                    }
+                    record(directory,childPrefix+"-proof.json",new JSONObject(child.evidence()));
+                }
+            });
+            installed.verify(service);
+            boolean verified=completion.notesCreateWorkflowCompleted(result,completionFrame(latest[0]));
+            JSONObject receipt=new JSONObject(result.evidence()).put("accepted_as_completion_proof",verified)
+                    .put("final_observation_id",latest[0].id).put("native_model_done_synthesized",false);
+            record(directory,resultName,receipt);return new NotesWorkflowOutcome(latest[0],verified,resultName,null);
+        }catch(Exception error){
+            try{record(directory,prefix+"-aborted.json",new JSONObject(grant.evidence()).put("actor_kind","tool_workflow")
+                    .put("model_issued",false).put("workflow_verified",false).put("model_done_synthesized",false)
+                    .put("last_observation_id",latest[0].id).put("error",HeptaAccessibilityService.message(error)).put("automatic_retry_allowed",false));}
+            catch(Exception logging){error.addSuppressed(logging);}
+            return new NotesWorkflowOutcome(latest[0],false,null,error);
+        }
     }
     private static java.util.Map<String,Object> completionFixed(JSONObject object)throws Exception{
         if(object==null)return null;java.util.Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();
@@ -833,6 +982,8 @@ public final class LocalTaskController implements AutoCloseable {
                     tools.put(new JSONObject().put("action",target.action).put("app_label",ObservedAppLabels.project(target.appLabel))
                             .put("package",target.packageName).put("parameter","notes.create".equals(target.action)?"text":"query")
                             .put("source","installed_fixed_intent_adapter").put("requested_outcome",profile.outcome)
+                            .put("owner_bound_execution_mode",scope==null&&"notes.create".equals(target.action)&&completion!=null&&completion.notesCreateWorkflowRequested(authorization)
+                                    ?"create_then_bounded_save_list_reopen_tool_children":"fixed_entry_only")
                             .put("max_code_points",profile.maxCodePoints).put("max_utf8_bytes",profile.maxUtf8Bytes));
                 }
                 data.put("fixed_intent_tools",tools);

@@ -27,7 +27,7 @@ def prepare(source, output):
         "system": section(controller, "    private static final String SYSTEM=", "    public LocalTaskController("),
         "prompt_builder": section(controller, "    private static final class PromptFrame {",
                                   "    private static JSONObject catalogueJson("),
-        "completion_observation_bridge": section(controller, "    private static NotesCompletionEvidence.Frame completionFrame(", "    private static java.util.Map<String,Object> completionFixed("),
+        "completion_observation_bridge": section(controller, "    private static NotesCompletionEvidence.Frame completionFrame(", "    private static NotesCreateWorkflow.Observation workflowObservation("),
         "await_guard": await_guard,
         "text_limit": section(engine, "    private static void validateText(", "    private static void privateDirectory("),
         "label_limit": limited,

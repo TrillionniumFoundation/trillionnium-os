@@ -55,6 +55,7 @@ public final class TaskAuthorization {
             +"|(?:查找|搜索)(?:手机上|本机|手机中)?(?:已安装的|安装的)"
             +"|(?:查找|搜索)[^，,。；;\\n]{0,96}?(?:应用|APP|App)(?=[，,。；;\\s]|$|并|再|然后)");
     public final String instructionSha256,sha256,findQuery;
+    private final String parserVersion;
     public final Set<String> allowedTools;
     public final boolean requireFindAppBeforeOpen;
     private final List<String> rules;
@@ -66,8 +67,9 @@ public final class TaskAuthorization {
         allowedTools=Collections.unmodifiableSet(new TreeSet<String>(allowed));
         requireFindAppBeforeOpen=first;findQuery=query;
         this.rules=Collections.unmodifiableList(new ArrayList<String>(rules));
+        parserVersion=rules.contains("notes_literal_owner_span.v1")?PARSER+"+notes-literal-span.v1":PARSER;
         // Length-delimited fields bind exact UTF-8, including the optional query.
-        StringBuilder identity=new StringBuilder();field(identity,SCHEMA);field(identity,PARSER);field(identity,instructionSha256);
+        StringBuilder identity=new StringBuilder();field(identity,SCHEMA);field(identity,parserVersion);field(identity,instructionSha256);
         for(String tool:allowedTools)field(identity,tool);field(identity,first?"true":"false");field(identity,query==null?"":query);
         sha256=hash(identity.toString().getBytes(StandardCharsets.UTF_8));
     }
@@ -75,9 +77,11 @@ public final class TaskAuthorization {
     String immutableOwner(){return immutableOwner;}
     public static TaskAuthorization parse(String owner){
         validOwner(owner);
-        String unquoted=withoutQuotedData(owner);
+        NotesOwnerIntent.Result note=NotesOwnerIntent.parse(owner);
+        String unquoted=withoutQuotedData(note.supported?note.maskedOwnerForAuthority(owner):owner);
         Set<String> allowed=new TreeSet<String>(TOOLS),denied=new TreeSet<String>(),granted=new TreeSet<String>();
         List<String> rules=new ArrayList<String>();boolean onlySeen=false;
+        if(note.supported)rules.add("notes_literal_owner_span.v1");
         for(String original:unquoted.split("[，,。；;！!？?\\r\\n]")){
             String clause=original.trim();if(clause.isEmpty())continue;
             Matcher only=ONLY.matcher(clause),deny=DENY.matcher(clause),grant=GRANT.matcher(clause);
@@ -184,7 +188,7 @@ public final class TaskAuthorization {
     public boolean allows(String tool){return allowedTools.contains(tool);}
     public void requireOwner(String owner){validOwner(owner);require(instructionSha256.equals(hash(owner.getBytes(StandardCharsets.UTF_8))),"用户任务与授权合同不一致");}
     public Map<String,Object> evidence(){
-        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("schema",SCHEMA);out.put("parser",PARSER);
+        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("schema",SCHEMA);out.put("parser",parserVersion);
         out.put("instruction_sha256",instructionSha256);out.put("authorization_sha256",sha256);
         out.put("allowed_tools",new ArrayList<String>(allowedTools));out.put("require_find_app_before_open",requireFindAppBeforeOpen);
         out.put("find_query",findQuery);out.put("recognized_rules",new ArrayList<String>(rules));
@@ -259,6 +263,8 @@ public final class TaskAuthorization {
             Map<String,Object> proof=new LinkedHashMap<String,Object>();proof.put("schema","hepta.owner-action-check.v1");
             proof.put("task_id",taskId);proof.put("authorization_sha256",authorization.sha256);proof.put("model_run_id",modelRunId);
             proof.put("action",action==null?null:action.action);proof.put("target_package",action==null?null:action.packageName);
+            if(action!=null&&action.toolChildOrigin!=null){proof.put("actor_kind","tool_child");proof.put("model_issued",false);
+                proof.put("parent_model_run_id",modelRunId);}
             try{ready();require(modelRunId!=null&&modelRunId.matches("[0-9a-f]{32}"),"模型运行身份缺失");new Frame(this).requireDecision(action);proof.put("allowed",true);}
             catch(Violation error){refusal=error.getMessage();proof.put("allowed",false);proof.put("reason",refusal);throw error;}
             finally{lastCheck=Collections.unmodifiableMap(proof);}

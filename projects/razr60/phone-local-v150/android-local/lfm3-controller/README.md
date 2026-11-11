@@ -1,6 +1,69 @@
-# Hepta v50: bind success choices to current proof and expose collection limits
+# Hepta v51: complete authorized note creation with an observed tool workflow
 
-Current candidate: versionCode 50 (`0.50.0-local-observation`), based on frozen
+Current candidate: versionCode 51 (`0.51.0-local-notes-workflow`), based on frozen
+v50 commit `9ecf87f313ef08cfd2f963671a19eb2358cebbfe`.
+
+For an already recognized new-note/save/list/reopen request, the actual
+model-issued `notes.create` may now own a bounded save/readback workflow.
+The fixed Intent and its once-only ledger still report only `draft_opened`.
+After that parent request and its complete body are independently observed,
+the controller may consume a single-use grant for at most two fresh-body Back
+actions and one click on the unique complete-body list item. Every child uses
+the live task, immutable OWNER permission, installed Notes UID/APK identity,
+current observation, display/generation and the same existing action domain.
+A Back acknowledgement is never proof of saving. An unexpected editor, missing
+or duplicate list item, stale callback, cancellation or uncertain effect stops
+the workflow without retry.
+
+Child records are explicitly `actor_kind=tool_child`, `model_issued=false`
+and bind the real parent model run, fixed-entry attempt and before/after frames.
+They do not appear as additional model decisions. The completion gate has a
+separate child-proof branch; the existing model-click proof branch remains.
+A complete exact-body collision already visible in the parent-before editor
+or list prevents this parent from establishing a newly created note. This is
+a bounded UI evidence claim, not a proof that no hidden or offscreen old note
+exists and not a database item-identity guarantee.
+
+After the workflow proves save/list/same-item reopen and a stable complete
+readback, the controller may publish `controller_verified_done` with
+`completion_actor=controller/tool_workflow`. Original model success/partial
+claims stay unchanged in the raw evidence. No model `done` is synthesized.
+The original success authority, fresh installed identity, actual parent worker
+receipt and known native/background cleanup must still pass before the
+terminal result is accepted. The recovery code recognizes only this exact new
+terminal name and retains its existing task/UID/cleanup checks.
+
+A small natural-note recognizer also accepts fully consumed, unambiguous
+requests such as “明天三点看牙记一下” and “新建笔记：牛奶”. Its body is one exact
+UTF-16 span of immutable OWNER, without trimming, markers or date rewriting.
+The current complete-list proof limits that body to fewer than 95 UTF-16 units.
+Ambiguous multiple goals, reminders and explicit draft/no-save requests do not
+receive workflow authority. Unknown tasks and requests lacking either Back or
+click permission keep their existing behavior.
+
+The background broker conditionally requests a fresh document task only when
+two actual PackageManager reads agree on the same explicit component, UID,
+enabled/exported state and standard/document-none launch modes, and the
+existing fresh-task flags are present. Unsupported cases retain their original
+flags. Outbound intent metadata is recorded separately; this change alone
+does not claim framework-effective flags, owned task identity or Recent-task
+cleanup. No remove-task API, process kill or global policy is introduced.
+
+Permission state stays visible in the main screen. The existing background
+permission explanation and two preparation buttons are in a user-controlled,
+initially collapsed section; their original listeners and start/recovery
+controls are unchanged.
+
+Host tests use explicit Android and native IO fakes. The archived real v50
+LFM3 parent create/body evidence remains its original partial task and contains
+no fabricated child success. Full host API-release checks, Android compilation,
+signed source binding and real phone acceptance require separate receipts.
+Native libraries, model profiles, sampling and fixed-entry payload semantics
+are unchanged. Calculator and WEB completion providers are not added here.
+
+## v50 predecessor: bind success choices to current proof and expose collection limits
+
+The v50 predecessor is versionCode 50 (`0.50.0-local-observation`), based on frozen
 v49 commit `06fb07b957c63622628afae90ec52887523b0860`.
 
 The controller now intersects the immutable OWNER permission for success with
