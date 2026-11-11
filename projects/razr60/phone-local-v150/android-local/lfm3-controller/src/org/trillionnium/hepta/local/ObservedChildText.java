@@ -44,14 +44,40 @@ public final class ObservedChildText {
         public final boolean truncated;
         public final int visited;
         public final List<Source> sources;
+        private final List<int[]> observedSpans;
         Result(String text,String status,boolean truncated,int visited,List<Source> sources){
+            this(text,status,truncated,visited,sources,Collections.<int[]>emptyList());
+        }
+        private Result(String text,String status,boolean truncated,int visited,List<Source> sources,List<int[]> spans){
             this.text=text;this.status=status;this.truncated=truncated;this.visited=visited;
             this.sources=Collections.unmodifiableList(new ArrayList<Source>(sources));
+            observedSpans=new ArrayList<int[]>();int previous=0;
+            for(int[] span:spans){
+                if(span==null||span.length!=2||span[0]<previous||span[1]<span[0]||span[1]>text.length())
+                    throw new IllegalArgumentException("invalid observed child text span");
+                observedSpans.add(new int[]{span[0],span[1]});previous=span[1];
+            }
             StringBuilder value=new StringBuilder(field(SOURCE)+field(status)+field(text)+field(Boolean.toString(truncated)));
             for(Source source:sources)value.append(source.fingerprint());fingerprint=hash(value.toString());
         }
         /** The original node signature remains part of target and whole-graph identity. */
         public String bind(String originalNodeSignature){return hash(field(originalNodeSignature)+field(fingerprint));}
+        /** Only original descendant characters within the visible label prefix.
+         * Separators and truncation ellipses inserted by this collector are not
+         * observed text. No retained spans means that provenance is unavailable.
+         * This does not change the label, source hashes or observation identity.
+         */
+        public String observedPrefix(int limit){
+            if(limit<0)throw new IllegalArgumentException("negative child text prefix");
+            int end=Math.min(limit,text.length());
+            if(end>0&&end<text.length()&&Character.isHighSurrogate(text.charAt(end-1)))end--;
+            StringBuilder value=new StringBuilder();
+            for(int[] span:observedSpans){
+                if(span[0]>=end)break;
+                value.append(text,span[0],Math.min(span[1],end));
+            }
+            return value.toString();
+        }
     }
     private static final class Pending<T> {
         final T node;final String path;final int depth;
@@ -68,7 +94,7 @@ public final class ObservedChildText {
     public static <T> Result collect(T root,Reader<T> reader){
         ArrayDeque<Pending<T>> pending=new ArrayDeque<Pending<T>>();
         List<Source> sources=new ArrayList<Source>();Set<String> seen=new HashSet<String>();
-        StringBuilder label=new StringBuilder();Budget budget=new Budget();int visited=0;
+        StringBuilder label=new StringBuilder();List<int[]> observedSpans=new ArrayList<int[]>();Budget budget=new Budget();int visited=0;
         try{
             Metadata owner=reader.metadata(root);
             // Input/password bodies are not requested, even for a clickable root.
@@ -89,7 +115,9 @@ public final class ObservedChildText {
                     if(!value.isEmpty()&&seen.add(value)){
                         String separator=label.length()==0?"":" · ";int available=MAX_CHARACTERS-label.length()-separator.length();
                         if(available<=0||sources.size()>=MAX_PARTS){budget.truncated=true;break;}
-                        String part=limited(value,available);label.append(separator).append(part);
+                        String part=limited(value,available);label.append(separator);
+                        int start=label.length();label.append(part);
+                        observedSpans.add(new int[]{start,start+part.length()-(part.length()<value.length()?1:0)});
                         sources.add(new Source(current.path,property,raw,reader.identity(current.node)));
                         if(part.length()<value.length())budget.truncated=true;
                     }
@@ -100,7 +128,7 @@ public final class ObservedChildText {
                     enqueue(current.node,current.path,current.depth,reader,pending,budget);
                 }finally{reader.release(current.node);}
             }
-            return new Result(label.toString(),label.length()==0?"empty":"derived",budget.truncated,visited,sources);
+            return new Result(label.toString(),label.length()==0?"empty":"derived",budget.truncated,visited,sources,observedSpans);
         }catch(RuntimeException unavailable){
             // Stale/inaccessible children do not produce a partially asserted label.
             return none("unavailable");

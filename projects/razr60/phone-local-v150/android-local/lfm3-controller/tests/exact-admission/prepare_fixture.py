@@ -32,6 +32,14 @@ def prepare(source, output):
         "text_limit": section(engine, "    private static void validateText(", "    private static void privateDirectory("),
         "label_limit": limited,
     }
+    postparse = section(controller, "                        action=ActionDecision.parse(answer.text,frame.grammar.schema);",
+                        '                        if("submit".equals(action.action)')
+    before_dispatch = section(controller, "                if(repeatGuard.rejects(action,before.state)",
+                              '                emit("正在执行第 "+steps+')
+    if postparse.count("frame.requireTextOnlyClick(action);") != 1 or before_dispatch.count("frame.requireTextOnlyClick(action);") != 1:
+        raise RuntimeError("actual postparse and pre-dispatch click guards must both use the frozen frame domain")
+    parts["postparse_click_guard"] = postparse
+    parts["predispatch_click_guard"] = before_dispatch
     text_limit = re.findall(r"private static final int TEXT_LIMIT\s*=\s*(\d+);", engine)
     if len(text_limit) != 1:
         raise RuntimeError("one production text byte limit required")
@@ -47,14 +55,20 @@ public final class PromptAdmissionFixture {
         public final DecisionGrammar grammar;
         public final ConservativeTokenBudget budget;
         public final java.util.Set<String> ids;
+        public final java.util.Set<String> clickIds;
+        private final PromptFrame frame;
         public final int nodes,required,visibleText,history;
         public final RecentActionProjection.ReadableEvents events;
         public final JSONObject budgetReceipt;
         Result(PromptFrame frame)throws Exception{
+            this.frame=frame;clickIds=frame.clickNodeIds;
             text=frame.text;grammar=frame.grammar;budget=frame.budget;ids=frame.nodeIds;
             nodes=frame.nodesShown;required=frame.requiredNodes;
             visibleText=frame.visibleTextShown;history=frame.historyShown;
             events=frame.eventHistory;budgetReceipt=frame.budgetJson();
+        }
+        public void requireTextOnlyClick(ActionDecision action)throws ActionDecision.InvalidActionException{
+            frame.requireTextOnlyClick(action);
         }
     }
     public static Result build(String owner,AppCatalogueRanker.Page apps,PhoneObservation observation,
@@ -101,7 +115,7 @@ public final class PromptAdmissionFixture {
         "not_android_runtime": True,
         "not_model_inference": True,
         "not_phone_test": True,
-        "synthetic_observation_only": True,
+        "observation_scope": "explicit host boundary observations and hash-pinned saved phone failure observations; no live phone run",
     }
     (output / "EXTRACTION.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
     return files, record

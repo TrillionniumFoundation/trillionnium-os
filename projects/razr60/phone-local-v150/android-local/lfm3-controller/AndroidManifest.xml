@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.trillionnium.hepta.local" android:versionCode="44" android:versionName="0.44.0-local-completion-evidence">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.trillionnium.hepta.local" android:versionCode="45" android:versionName="0.45.0-local-observed-clicks">
     <uses-sdk android:minSdkVersion="30" android:targetSdkVersion="35" />
     <queries>
         <package android:name="com.android.settings" />

@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -42,6 +43,17 @@ class ExactAdmissionTest(unittest.TestCase):
             self.assertEqual(hints.returncode, 0, hints.stdout + hints.stderr)
             self.assertIn("ObservationHintsHostTest checks=", hints.stdout)
             print(hints.stdout, end="")
+            replay = output / "text-only-click"
+            click = subprocess.run([java, "-cp", str(classes), "org.trillionnium.hepta.local.TextOnlyClickHostTest",
+                                    str(root / "tests/text-only-click/fixtures/v43-note-step05-before.json"), str(replay)],
+                                   capture_output=True, text=True, timeout=30)
+            self.assertEqual(click.returncode, 0, click.stdout + click.stderr)
+            self.assertIn("TextOnlyClickHostTest checks=", click.stdout)
+            print(click.stdout, end="")
+            grammar = subprocess.run([sys.executable, str(root / "tests/text-only-click/test_grammar.py"), str(replay)],
+                                     capture_output=True, text=True, timeout=30)
+            self.assertEqual(grammar.returncode, 0, grammar.stdout + grammar.stderr)
+            print(grammar.stdout, end="")
 
 
 if __name__ == "__main__":

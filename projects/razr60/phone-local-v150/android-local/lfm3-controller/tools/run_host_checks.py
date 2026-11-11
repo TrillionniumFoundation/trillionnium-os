@@ -41,6 +41,7 @@ def main():
                                       ("native",("*.c","*.h","*.inc","*.py")),("tools",("*.py",))):
             for extension in extensions: paths.update((ROOT/directory).rglob(extension))
         paths.update(p for p in (ROOT/"tests/completion/fixtures").rglob("*") if p.is_file())
+        paths.update(p for p in (ROOT/"tests/text-only-click/fixtures").rglob("*") if p.is_file())
         if any(p.is_symlink() for p in paths): raise RuntimeError("Host inputs must not be symbolic links")
         return [{"path":str(p.relative_to(ROOT)),"sha256":hashlib.sha256(p.read_bytes()).hexdigest()}
                 for p in sorted(paths)]

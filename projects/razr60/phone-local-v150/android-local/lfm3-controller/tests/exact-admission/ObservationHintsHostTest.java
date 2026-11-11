@@ -26,14 +26,32 @@ public final class ObservationHintsHostTest {
     }
     private static int[] bounds(Object value){List<?> row=list(value);return new int[]{integer(row.get(0)),integer(row.get(1)),integer(row.get(2)),integer(row.get(3))};}
     private static Rect rect(Object value){int[] b=bounds(value);return new Rect(b[0],b[1],b[2],b[3]);}
-    private static PhoneObservation recorded(Map<?,?> source){
+    private static ObservedChildText.Result recordedChild(final Map<?,?> row)throws Exception{
+        if(!row.containsKey("child_text_status"))return ObservedChildText.notApplicable();
+        ObservedChildText.Result unknown=new ObservedChildText.Result(str(row,"child_text"),str(row,"child_text_status"),yes(row,"child_text_truncated"),0,Collections.<ObservedChildText.Source>emptyList());
+        // The real saved fixture has one non-truncated descendant whose full
+        // raw-text hash equals the saved label. Replay exactly those recorded
+        // source facts through the collector; never invent missing fragments.
+        if(!"derived".equals(str(row,"child_text_status"))||yes(row,"child_text_truncated")
+                ||!(row.get("child_text_sources") instanceof List<?>)||list(row.get("child_text_sources")).size()!=1)return unknown;
+        final Map<?,?> source=map(list(row.get("child_text_sources")).get(0));
+        if(!"0".equals(str(source,"descendant_path"))||!Arrays.asList("text","description").contains(str(source,"property"))
+                ||!hash(str(row,"child_text").getBytes(StandardCharsets.UTF_8)).equals(str(source,"text_sha256")))return unknown;
+        return ObservedChildText.collect(Integer.valueOf(0),new ObservedChildText.Reader<Integer>(){
+            public ObservedChildText.Metadata metadata(Integer n){boolean root=n.intValue()==0;return new ObservedChildText.Metadata(true,true,root,root,false,false,false);}
+            public String text(Integer n){return n.intValue()==1&&"text".equals(str(source,"property"))?str(row,"child_text"):"";}
+            public String description(Integer n){return n.intValue()==1&&"description".equals(str(source,"property"))?str(row,"child_text"):"";}
+            public String identity(Integer n){return n.intValue()==1?str(source,"node_signature"):"recorded-parent";}
+            public int childCount(Integer n){return n.intValue()==0?1:0;}public Integer child(Integer n,int index){return Integer.valueOf(1);}
+            public void release(Integer n){}
+        });
+    }
+    static PhoneObservation recorded(Map<?,?> source)throws Exception{
         String pkg=str(source,"package");List<PhoneObservation.Node> nodes=new ArrayList<PhoneObservation.Node>();
         for(Object item:list(source.get("nodes"))){
             Map<?,?> row=map(item);List<String> directions=new ArrayList<String>();
             if(row.get("scroll_directions") instanceof List<?>)for(Object direction:list(row.get("scroll_directions")))directions.add((String)direction);
-            ObservedChildText.Result child=row.containsKey("child_text_status")
-                    ?new ObservedChildText.Result(str(row,"child_text"),str(row,"child_text_status"),yes(row,"child_text_truncated"),0,Collections.<ObservedChildText.Source>emptyList())
-                    :ObservedChildText.notApplicable();
+            ObservedChildText.Result child=recordedChild(row);
             Map<?,?> ime=map(row.get("ime_enter"));ObservedImeEnter enter=!yes(ime,"observed")?ObservedImeEnter.UNKNOWN:
                     yes(ime,"present")?ObservedImeEnter.present(str(ime,"action_label")):ObservedImeEnter.ABSENT;
             // The saved v41 JSON omits className. Do not invent a native class.
@@ -94,10 +112,18 @@ public final class ObservationHintsHostTest {
         }
         AppCatalogueRanker.Page apps=apps(owner,old);
         PromptAdmissionFixture.Result frame=build(owner,apps,observation,history),without=build(owner,apps,strippedHints(observation),history);
-        check(screen(frame).get("nodes").equals(map(old.get("screen")).get("nodes")),"real captured node ordering, labels, coordinates and action flags stay identical");
+        List<?> oldNodes=list(map(old.get("screen")).get("nodes")),newNodes=list(screen(frame).get("nodes"));
+        check(oldNodes.size()==newNodes.size(),"real captured node count stays identical");
+        for(int i=0;i<oldNodes.size();i++){
+            List<?> before=list(oldNodes.get(i)),after=list(newNodes.get(i));
+            check(before.subList(0,3).equals(after.subList(0,3)),"real captured node order, labels and coordinates stay identical");
+            String oldFlags=(String)before.get(3),expected="".equals(before.get(1))?oldFlags.replace("c",""):oldFlags;
+            check(expected.equals(after.get(3)),"v45 only removes unlabeled text-only click flags from the captured prompt");
+        }
         Map<?,?> fab=hint(frame,"n5");check(fab!=null&&"com.motorola.stylus:id/fab".equals(fab.get("view_id")),"actual unlabeled resource ID reaches full prompt");
         check(!fab.containsKey("class_name")&&!fab.containsKey("node_label")&&!fab.containsKey("action")&&!fab.containsKey("role"),"unknown class and inferred function/authority are not invented");
         check("".equals(frame.grammar.targets.labels.get("n5")),"empty observed label is never replaced by resource ID");
+        check(!frame.clickIds.contains("n5"),"a real unlabeled FAB keeps metadata without a click grant");
         Map<?,?> metadata=map(screen(frame).get("unlabeled_controls"));
         check(ObservedTextProjection.CONTROL_HINT_SCHEMA.equals(metadata.get("schema"))&&ObservedTextProjection.CONTROL_HINT_SOURCE.equals(metadata.get("source")),"transparent observed-only provenance");
         check(!map(old.get("screen")).containsKey("unlabeled_controls"),"old real prompt reproduces missing metadata defect");

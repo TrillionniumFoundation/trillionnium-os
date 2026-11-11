@@ -1,6 +1,27 @@
-# Hepta v44: completion evidence for local tool tasks
+# Hepta v45: observed labels for text-only clicks
 
-Current candidate: versionCode 44 (`0.44.0-local-completion-evidence`), based on
+Current candidate: versionCode 45 (`0.45.0-local-observed-clicks`), based on frozen
+v44 commit `180a7ab55f5a479c14c202fdbe33a1a4734cecfd`.
+
+The ordinary controller receives text observations without image input. It now
+offers click only for targets whose current supplied label contains actual
+visible text or symbols. Empty labels, invisible-only labels, structural IDs,
+and collector-added punctuation cannot identify an icon's function. The final
+click domain is checked independently after parsing and again before dispatch.
+Observed nodes, labels, coordinates and metadata remain intact. Empty editable
+fields retain type and observed query submit; scroll and system back retain
+their existing rules. Calculator symbols and actual labeled list cards remain
+eligible when their other existing gates permit them.
+
+This change addresses a saved Notes failure where the model clicked unlabeled
+node `n10` while reasoning about saving; that action did not establish a saved
+note. It does not add a Notes success fixture or change completion evidence,
+runtime/model configuration, background execution or permissions. See
+[CODE45-OBSERVED-CLICKS.md](CODE45-OBSERVED-CLICKS.md) for the exact scope and tests.
+
+## v44 predecessor: completion evidence for local tool tasks
+
+The v44 predecessor is versionCode 44 (`0.44.0-local-completion-evidence`), based on
 frozen v43 commit `c76be7243b70e2142c6c87733c292c6df0d88652`.
 
 A model's success statement is now checked separately from tool authorization
@@ -12,7 +33,7 @@ followed by reopened body evidence. Search requests and unsupported goals remain
 partial when actual result proof is unavailable. No write is required merely to
 complete a read-only task.
 
-The v6 tool grammar, SYSTEM text, runtime/model/sampler, existing permissions,
+In v44 the v6 tool grammar, SYSTEM text, runtime/model/sampler, existing permissions,
 background broker and one-shot dispatch ledgers are unchanged. Raw model claims
 and verified completion are recorded independently. Strict host/Android gates
 and real phone business acceptance are separate evidence; source status does not
