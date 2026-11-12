@@ -1,0 +1,162 @@
+{
+  "schema": "hepta.web54-automatic-ui-focused-stage.v1",
+  "all_pass": true,
+  "error": null,
+  "source_candidate_sha256": "481c609cbf8a9eb346e5a2c1d8707293164722d3fdf14d3cd5f8348242c03f6b",
+  "original_28_5_8_reexecuted": false,
+  "phone_commands_executed": 0,
+  "model_invoked": false,
+  "business_verified": false,
+  "actual_flight_ui_observed": false,
+  "started_wall_s": 1794482062.0393965,
+  "steps": [
+    {
+      "name": "focused-python",
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/test_automatic_web_preparation_r6.py",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/ORIGINAL-NOTES-PREPARATION.json",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/PYTHON-RESULT.json"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.1677920909714885,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/focused-python.stdout",
+        "bytes": 6047,
+        "sha256": "9fa9724ad32361752d75092ad2c200491eb126a48af3f50890eb7a1e84967c86"
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/focused-python.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "actual-java-compile",
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+        "--release",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-d",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/java-classes",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/java-source/src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/java-source/src/org/trillionnium/hepta/background/FixedIntentTools.java",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/java-source/src/org/trillionnium/hepta/local/ActionDecision.java",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/java-source/src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/java-source/src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/java-source/src/org/trillionnium/hepta/local/DecisionGrammar.java",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/java-source/src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/java-source/src/org/trillionnium/hepta/local/ObservedAppLabels.java",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/java-source/src/org/trillionnium/hepta/local/ObservedImeEnter.java",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/java-source/src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/java-source/src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/java-source/src/org/trillionnium/hepta/local/TaskAuthorization.java",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/java-source/src/org/trillionnium/hepta/local/web/WebFlightGoal.java",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/java-source/src/org/trillionnium/hepta/local/web/WebShoppingGoal.java",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/WebAutomaticTargetHostTest.java"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 2.6328594920341857,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/actual-java-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/actual-java-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "actual-target-resolution",
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "-cp",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/java-classes",
+        "org.trillionnium.hepta.local.WebAutomaticTargetHostTest"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.36472182400757447,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/actual-target-resolution.stdout",
+        "bytes": 212,
+        "sha256": "c7f1784be55d3951da99000cf01304ad0cf9f821f5b1e35a825ee3f30421d333"
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/actual-target-resolution.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "source": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/stage.py",
+    "bytes": 12953,
+    "sha256": "47994da9bd1e7f2a6dfdddb62e76b0726f396b9636e0487027e3c43a7e5be668"
+  },
+  "input": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/INPUT.json",
+    "bytes": 169339,
+    "sha256": "dd57fa7bbe58a309a1e36246a75f9f4f7d9e3c32493ef99c0d993eb7fe8755ae"
+  },
+  "candidate": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/CANDIDATE.json",
+    "bytes": 146861,
+    "sha256": "481c609cbf8a9eb346e5a2c1d8707293164722d3fdf14d3cd5f8348242c03f6b"
+  },
+  "release": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/RELEASE.json",
+    "bytes": 1723,
+    "sha256": "acfbdf07f671facf65f6919142f8e4646952ec2a55524f313b4a4a5c9bcad3c3"
+  },
+  "runtime_files": [
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/web_entry_support.py",
+      "bytes": 56351,
+      "sha256": "0cbd89917178d41c6a2e4e5b53ff2d15c3915e01c821e90a2ea67c1f5ef492c5"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/prepare_background_web_v54_r1.py",
+      "bytes": 27463,
+      "sha256": "136503e201844f4ab0481f1db8877a16f6693e161f533ccb9a944d585e0d9181"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/run_background_web_v54_r1.py",
+      "bytes": 33645,
+      "sha256": "eaab1e9d3e41876705a992cd7ba52a26ebaf046c031e9c83a688e7bd15b25e83"
+    }
+  ],
+  "python_checks": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/PYTHON-RESULT.json",
+    "bytes": 1964,
+    "sha256": "837e4d3bb4b34a1de82ad65f72ec4753a594607203d0cd811c461901248e8370",
+    "case_count": 12,
+    "assertion_count": 47
+  },
+  "java_checks": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/JAVA-RESULT.json",
+    "bytes": 212,
+    "sha256": "c7f1784be55d3951da99000cf01304ad0cf9f821f5b1e35a825ee3f30421d333"
+  },
+  "java_case_count": 5,
+  "java_assertion_count": 25,
+  "original_8_case_result": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r5/STAGE-RESULT.json",
+    "bytes": 7105,
+    "sha256": "b1c77387c8d8cda397f115b227baf73fbd7cfba1c18a58f858e3baa460d91840"
+  },
+  "original_589_production_sources_modified": false,
+  "release_manifest_unchanged": true,
+  "original_inputs_unchanged": true,
+  "staged_sources_unchanged": true,
+  "finished_wall_s": 1794482065.3006806
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.source-review.v1",
+  "reviewed_payload": {
+    "git_blob": "cde2d97ded1c733698633538dbccb56faad56cc1",
+    "bytes": 130203,
+    "sha256": "de4e36059846c4e14b3b22e326fb24da0be95c2a3c4a29be4ac278dc16a0eb5d"
+  },
+  "reviewed_source": {
+    "git_blob": "4b1f12227ded37847b9ba8393caa626583670767",
+    "bytes": 24225,
+    "sha256": "1898829c3c70865ed955a1f9294bb6947de917e631e6c8ea3f3446a729466319"
+  },
+  "scope": "Exact 21-patch source review of v54 archived Notes replay and the two explicitly derived observation projection verifier copies.",
+  "conclusion": "No concrete source-level blocker found within the reviewed delta.",
+  "checks": [
+    "Full source raw bytes/SHA256/Git blob SHA independently recomputed; every ordered replacement reversed to exact 15,987-byte b8ad72 actual v53 replay baseline.",
+    "Derived workflow only replaces the observation window comparison with the exact nine original signed-v54 PhoneObservation background fields; exact keyset is enforced through typed equality. It preserves the observed legacy bootstrap_source and absent owner_task_selection without modifying or supplementing any frame.",
+    "Full original OWNER/task bootstrap/action/cleanup Selection checks remain intact; the added ninth domain independently binds 653-byte saved UI preferences, exact dual-app original choice, actual Notes singleton derivation, and actual task/cleanup scope.",
+    "Both derived verifier originals reconstruct exactly; fresh files go only under a new output directory, never overwrite deployed runtime sources.",
+    "Exclusive first output mkdir remains outside handler, original phone tree/runtime and derived tree are checked before/after, command replay calls original system parsers with archived five-command triplets and does not issue ADB.",
+    "Native sessions/LE32/actual typed chain, original eight main coexistence domains, display ownership/release and full original PNG checks remain in the unchanged baseline.",
+    "Original collector qualified=false and machine_checks_passed=false remain immutable; new posthoc verdict is separately scoped and qualified stays false."
+  ],
+  "derivative_checks": [
+    {
+      "name": "workflow",
+      "derived_bytes": 53705,
+      "derived_sha256": "1188e4ad4666614cfce38d0f74b60819dd2c0e32ebf9cac6cdbd74bcf649791e",
+      "restored_original_bytes": 52865,
+      "restored_original_sha256": "405ed06f6302623e36dc39803ebe7781bb349b396851d0bfe6fa46f2ce6b6350"
+    },
+    {
+      "name": "idle",
+      "derived_bytes": 28672,
+      "derived_sha256": "285f6575f5dc1eaaaff61b591cd8e0171e250ea0799a196ba298bd1cad6478db",
+      "restored_original_bytes": 28672,
+      "restored_original_sha256": "8ef4e544b5ac6f62f17ff37715de7a4be5d051f2312802580d404f15512b7240"
+    }
+  ],
+  "execution": {
+    "host_calls": 0,
+    "phone_actions": 0,
+    "tests_run": 0,
+    "actual_replay_pass_observed": false
+  },
+  "limitations": [
+    "Actual v54 RESULT and current runtime file existence/hashes must still be checked by this runner; this source review does not substitute for that run.",
+    "Main55 production provenance propagation is separate and cannot retroactively change v54 raw frames."
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.root-main54-install-review.v1",
+  "actual_result": {
+    "git_blob": "81a481c9fe5ff2ba0487437e5fc44d8ce4acd537",
+    "bytes": 17431,
+    "sha256": "aa0723177a6ec2d95089e463e52b2f3802ba953eae595ab9d460c6f9be250a98"
+  },
+  "owner_command": {
+    "tag": "main54-upgrade-r1",
+    "request_id": "007f-owner15-main54-upgrade-r1",
+    "exit_code": 0,
+    "finished_utc": "2026-11-12T09:59:52Z"
+  },
+  "verified": {
+    "installed_version_code": 54,
+    "uid": 10481,
+    "apk_sha256": "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a",
+    "same_actual_signer": true,
+    "normal_main_launch": true,
+    "real_accessibility_binder_bound": true,
+    "full_model_preserved": true,
+    "model_cache_inventory_preserved": true,
+    "runtime_config_preserved": true,
+    "original_ui_preferences_preserved": true,
+    "historical_task_journals_preserved": true,
+    "helper_diagnostics_preserved": 36,
+    "no_new_model_or_task_runs": true
+  },
+  "scope": {
+    "installation_only": true,
+    "main54_notes_business_pass": false,
+    "main54_flight_business_pass": false,
+    "main54_shopping_business_pass": false
+  },
+  "source_release": {
+    "commit": "42d3a0f447807659c0f78c8273edee01dd1b734f",
+    "signed_receipt_git": "5beaeec08daffb26bc253e1d05073096c6aa8c1c"
+  }
+}

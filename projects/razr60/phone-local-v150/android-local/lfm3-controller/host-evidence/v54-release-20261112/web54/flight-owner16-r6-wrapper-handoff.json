@@ -1,0 +1,83 @@
+{
+  "schema": "hepta.web54-flight-owner16-r6-wrapper-mechanical-handoff.v1",
+  "base": {
+    "git_blob": "5cfd112644a4efafae0aee792ab74c4cb378105e",
+    "bytes": 2833,
+    "sha256": "95a5f9fac2bcfed3c4188ef9fe9bd3aa526f77c8aa62f034e2309d39db512440",
+    "executed": false
+  },
+  "source": {
+    "git_blob": "92ecaed23ba3ae5ca09a7b300629082712ee0ea7",
+    "path": "/home/alex/hepta-local-007f-20261111/ROOT-WEB54-FLIGHT-PREPARE-owner16-r6.py",
+    "bytes": 2833,
+    "sha256": "f7aa359fe84e6ac0185feb42234e1c0ef0dce94942ecb45a0785956dbe4e8455",
+    "raw_utf8": "#!/usr/bin/env python3\n\"\"\"Root-only ordinary Flight54 preparation after actual Notes terminal; never taps Start.\"\"\"\nimport hashlib,os,re,stat,sys\nfrom pathlib import Path\n# Seal only these four values from the NEXT actual cooperative owner.\n# None rejects before loading preparation code or invoking any device tool.\nOWNER_ROOT=\"/home/alex/hepta-local-007f-20261111/owner-16\"\nOWNER_PID=\"169031\"\nOWNER_START_TICKS=\"26909819\"\nOWNER_BOOT_ID=\"97d9600f-e081-465c-9e6e-62651e09806b\"\nassert isinstance(OWNER_ROOT,str) and re.fullmatch(r\"/home/alex/hepta-local-007f-20261111/owner-[1-9][0-9]*\",OWNER_ROOT)\nassert isinstance(OWNER_PID,str) and re.fullmatch(r\"[1-9][0-9]*\",OWNER_PID)\nassert isinstance(OWNER_START_TICKS,str) and re.fullmatch(r\"[1-9][0-9]*\",OWNER_START_TICKS)\nassert isinstance(OWNER_BOOT_ID,str) and re.fullmatch(r\"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\",OWNER_BOOT_ID)\np=Path(\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/prepare_background_web_v54_r1.py\")\nassert all(not q.is_symlink() for q in (p,*p.parents))\nwith p.open(\"rb\") as f:\n    a=os.fstat(f.fileno());raw=f.read(27464);b=os.fstat(f.fileno())\nident=lambda s:(s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\nassert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==27463 and ident(a)==ident(b)==ident(p.stat())\nassert len(raw)==27463 and hashlib.sha256(raw).hexdigest()==\"136503e201844f4ab0481f1db8877a16f6693e161f533ccb9a944d585e0d9181\"\nsys.dont_write_bytecode=True\nsys.argv=[str(p)]+[\"--test-mode\",\"background_only\",\"--case\",\"flight\",\"--ui-helper\",\"/home/alex/hepta-local-007f-20261111/phone-adapters-v46/moto_note_v46_r1.py\",\"--background-driver\",\"/home/alex/hepta-local-007f-20261111/phone-adapters-v46/background_r12_v46.py\",\"--r7-driver\",\"/home/alex/hepta-local-007f-20261111/phone-adapters-v46/background_helpers_r7_v46.py\",\"--source-tools\",\"/home/alex/hepta-local-007f-20261111/v54-main-host-r4/source/tools\",\"--owner-root\",OWNER_ROOT,\"--runtime-config\",\"/home/alex/hepta-local-007f-20261111/profile-lfm3-v51-r1/runtime-config.after.json\",\"--release-manifest\",\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/RELEASE.json\",\"--out\",\"/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-prepare-r1\",\"--owner-start-ticks\",OWNER_START_TICKS,\"--owner-boot-id\",OWNER_BOOT_ID,\"--adb\",\"/usr/bin/adb\",\"--adb-host\",\"127.0.0.1\",\"--serial\",\"ZY22LS7WZT\",\"--apk-sha256\",\"0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a\",\"--main-physical-display-id\",\"4630947043778501779\",\"--release-manifest-sha256\",\"acfbdf07f671facf65f6919142f8e4646952ec2a55524f313b4a4a5c9bcad3c3\",\"--owner-pid\",OWNER_PID,\"--adb-port\",\"5037\",\"--expected-uid\",\"10481\",\"--command-timeout\",\"12\"]\nexec(compile(raw,str(p),\"exec\",dont_inherit=True),{\"__name__\":\"__main__\",\"__file__\":str(p)})\n"
+  },
+  "changes": [
+    {
+      "before": "/background-web-adapters-v54-r5/prepare_background_web_v54_r1.py",
+      "after": "/background-web-adapters-v54-r6/prepare_background_web_v54_r1.py",
+      "count": 1
+    },
+    {
+      "before": "raw=f.read(25183)",
+      "after": "raw=f.read(27464)",
+      "count": 1
+    },
+    {
+      "before": "a.st_size==25182",
+      "after": "a.st_size==27463",
+      "count": 1
+    },
+    {
+      "before": "len(raw)==25182",
+      "after": "len(raw)==27463",
+      "count": 1
+    },
+    {
+      "before": "c60936bb7104252be29c6608170f56d573106c2c3ec506c3dc3a4f0164e91603",
+      "after": "136503e201844f4ab0481f1db8877a16f6693e161f533ccb9a944d585e0d9181",
+      "count": 1
+    },
+    {
+      "before": "/background-web-adapters-v54-r5/RELEASE.json",
+      "after": "/background-web-adapters-v54-r6/RELEASE.json",
+      "count": 1
+    }
+  ],
+  "actual_host_gate": {
+    "bytes": 8205,
+    "sha256": "ccaa6c5b5b6d6e4186dc4a5aaba627526b49578880f8f247214faa172bcaea7f",
+    "git_sha": "a930bbb91816e1d9b8511472d7ee05a1cf316efc",
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/STAGE-RESULT.json",
+    "python_cases": 12,
+    "python_assertions": 47,
+    "java_cases": 5,
+    "java_assertions": 25
+  },
+  "owner_facts": {
+    "root": "/home/alex/hepta-local-007f-20261111/owner-16",
+    "pid": 169031,
+    "start_ticks": 26909819,
+    "boot_id": "97d9600f-e081-465c-9e6e-62651e09806b",
+    "lock_inode": 58890228,
+    "pty_id": "dpty-dcc520780e7ad93e639adbf73e8c37228fa8cb08fcb1d5a0af41dbf3e2a34868"
+  },
+  "checks": {
+    "forward_six_count_one_replacements": true,
+    "reverse_bytes_equal_base": true,
+    "argv_only_release_manifest_path_changed": true,
+    "all_four_actual_owner_values_unchanged": true,
+    "ordinary_start_not_submitted": true,
+    "read_only_source_verification_unchanged": true,
+    "output_case_unchanged": true,
+    "release_manifest_bytes_and_sha256_unchanged": true
+  },
+  "scope": {
+    "host_source_prepared": true,
+    "wrapper_deployed": false,
+    "wrapper_executed": false,
+    "phone_tested": false,
+    "business_verified": false
+  }
+}

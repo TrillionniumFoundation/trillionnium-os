@@ -1,5 +1,5 @@
 {
-  "schema": "hepta.v54-reachable-release-evidence-index.v2",
+  "schema": "hepta.v54-reachable-release-evidence-index.v3",
   "repository": "trillionniumFoundation/trillionnium-os",
   "source_prefix": "projects/razr60/phone-local-v150/android-local/lfm3-controller/",
   "evidence_prefix": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v54-release-20261112/",
@@ -34,7 +34,7 @@
   "current_limits": {
     "main54_signed_receipt_in_this_index": true,
     "helper5_signed_receipt_in_this_index": true,
-    "main54_phone_tested": false,
+    "main54_phone_tested": true,
     "flight_query_phone_verified": false,
     "flight_results_provider_complete": false,
     "shopping_public_price_phone_verified": false,
@@ -42,7 +42,16 @@
     "manual_diagnostics_are_formal_task_evidence": false,
     "normal_sdk_close_implied_by_cancel_exit_143": false,
     "helper5_install_completed": true,
-    "helper5_install_is_business_verification": false
+    "helper5_install_is_business_verification": false,
+    "main54_phone_scope": "Actual installation and Notes create/save/list/reopen are recorded. Formal Flight/Shopping completion remains unverified.",
+    "notes54_original_collector_qualified": false,
+    "notes54_whole_main_scroll_case_qualified": false,
+    "notes54_scoped_create_save_list_reopen_verified": true,
+    "helper5_manual_capture_success_count": 0,
+    "helper5_manual_instability_pair_count": 1,
+    "helper5_manual_retirement_is_formal_task_cleanup": false,
+    "web54_r6_automatic_ui_host_passed": true,
+    "web54_r6_flight_phone_result_in_this_index": false
   },
   "deferred_originals": [
     {
@@ -62,6 +71,18 @@
       "bytes": 92623,
       "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-web-helper-code5-build-r1/source.tar.gz",
       "sha256": "efeda404b4f68d2d0fe4646d34e75c395b9995791fc6361d8244aa7ba2012824"
+    },
+    {
+      "reason": "Original failed manual DOM pair remains on the host and is full-SHA-bound by the actual host analysis. This tree includes the analysis, complete difference and ancestor/card projection, not these full two diagnostic JSON payloads.",
+      "path": "/home/alex/hepta-local-007f-20261111/helper5-current53-mi-capture-r1/diagnostics/diagnostic-bfdc6653be17b14c965ea9d236f2e3b0d8a3c14723a332381eacc7261376752a.json",
+      "bytes": 963232,
+      "sha256": "1b0305a9002f64ddbe41dc197aafff8b0ace70f668f2b608d3b76b6feb7b2dda"
+    },
+    {
+      "reason": "Second original failed manual DOM diagnostic; exact full raw bytes are not claimed reachable by this index.",
+      "path": "/home/alex/hepta-local-007f-20261111/helper5-current53-mi-capture-r1/diagnostics/diagnostic-c4017cc82c05814c36b2515ca5cbb22f12d5331bf96cd43389460ec937bbffe8.json",
+      "bytes": 963233,
+      "sha256": "0d2e76e387ac5e82ee5adaa0c2a17d75a9aea9e7700d707ac86ae6506b61e840"
     }
   ],
   "files": [
@@ -157,6 +178,111 @@
       "scope": "Actual final bundle decode from exact three part bodies, complete unchanged encoded and compressed bytes; no phone."
     },
     {
+      "path": "helper5-manual-host13-actual.json",
+      "bytes": 2993,
+      "sha256": "319df1e8bd4fe9986ed275886bec44366f271cb461951a1e6bbfe6436cc01c0e",
+      "git_blob": "8e15a1e8cfcd073262ec23c748481a57a7fdec82",
+      "scope": "Actual 13 manual adapter host checks; no Mi business validation."
+    },
+    {
+      "path": "helper5-mi/ancestor-card-projection-actual.json",
+      "bytes": 20016,
+      "sha256": "e49ee449e3fb4d075b6ad6b484178c59ce76ae6cf42e21e4dab07a09d569641f",
+      "git_blob": "c9891f264a7364a3842fe0196d8719bfe15374bd",
+      "scope": "Actual read-only ancestor/card projection; clipping proof and provider readiness remain false."
+    },
+    {
+      "path": "helper5-mi/capture-actual.json",
+      "bytes": 47812,
+      "sha256": "cf8ac41e266fa7f8797411f29a3a079c238cd527ed4780a8bf5a85e634e0e8cc",
+      "git_blob": "a84a035ebcd56e5abb091aa6bb32ec6ad35ca6ab",
+      "scope": "One manual capture, success0, one two-record instability pair, total35; not provider-ready."
+    },
+    {
+      "path": "helper5-mi/capture-native-ax-original.xml",
+      "bytes": 211683,
+      "sha256": "83696c2a0838d4821e5bcedc3034c0f473adfcdc0443cc078ef58bcf8edac0c7",
+      "git_blob": "0efcb13855e21ade34c8897fada23aa180cdded9",
+      "scope": "Full original AX for the selected failed capture; exact83696 hash, not v4 success or actionable lease evidence."
+    },
+    {
+      "path": "helper5-mi/capture-root-review.json",
+      "bytes": 1311,
+      "sha256": "424f4c2071bb97afe374fe51c30d1d90c46686257c588cfd4c8e27011190f01d",
+      "git_blob": "f13974b2382188e625cd4eefad2210282f4dfd01",
+      "scope": "Root authorization/review for this one read-only capture."
+    },
+    {
+      "path": "helper5-mi/capture-root-wrapper.py",
+      "bytes": 3486,
+      "sha256": "ddbd625d6d0d18b4b88f455edd8c0969976dff9b4974b6898cc02db0d7937b42",
+      "git_blob": "0bb42df5e2894085462b7c3a92d2105d3a2183ac",
+      "scope": "Root-only one capture wrapper; execution evidence is the separate original result."
+    },
+    {
+      "path": "helper5-mi/failed-dom-analysis-actual.json",
+      "bytes": 55920,
+      "sha256": "257e6fd42479f791ca300b44ef97ba03430a4418c151a6fbbde95c88287f9543",
+      "git_blob": "a96f08c03f481318110cd98150b58c311ffe94f9",
+      "scope": "Actual pure host full-SHA analysis of two failed DOM originals; no promotion to successful capture."
+    },
+    {
+      "path": "helper5-mi/failed-dom-exact-diff.json",
+      "bytes": 2471,
+      "sha256": "1cc6b315933d53e6acff5b806bf46fde1488250f3bd08d8ca004c348f92610e4",
+      "git_blob": "d38499e97af8980a33dad6f5908fdf7fb9e3ebb2",
+      "scope": "Exact JSON-path differences of the two failed full DOM originals; original scope preserved."
+    },
+    {
+      "path": "helper5-mi/open-actual.json",
+      "bytes": 40643,
+      "sha256": "0bbf3b48acbf93dd1d8e8f3757c9a7b2eadc8dca709d94cc3cc7577ea11e86bd",
+      "git_blob": "70c7611066b91dfd8acc6b01f969bce2b3508121",
+      "scope": "Actual manual open, scale-change failure, zero new captures/pairs; not model business."
+    },
+    {
+      "path": "helper5-mi/open-root-visual-review.json",
+      "bytes": 2562,
+      "sha256": "3dcfe1a82a5e8fceced0ebac068c40e3686e26423936f558b2c77ce6b6917569",
+      "git_blob": "e3320f5a5926e0a3ef8ce9363d855e8a1da1f27e",
+      "scope": "Root full lossy preview review; original PNG not fully retrieved and AX prefix only, as stated."
+    },
+    {
+      "path": "helper5-mi/retire-actual.json",
+      "bytes": 53986,
+      "sha256": "49e0ad83947ad6eeb2fb0c12f8129f9a9b071632b7d0169409cdb060c88d8d92",
+      "git_blob": "374e8c484129c4c1701f2ab4d7b81b94449d0e03",
+      "scope": "Actual ordinary Back retirement, total36; success0 remains, only one new close."
+    },
+    {
+      "path": "helper5-mi/retire-close-raw.json",
+      "bytes": 1708,
+      "sha256": "bd72d3481e48521bcd1736d46ee25446bffa916aab118a3273ffb83ead241967",
+      "git_blob": "8904bc8f0ce42d39f059e3639adfb2a29d53f5fa",
+      "scope": "Raw exact new diagnostic-close record for the observed manual profile."
+    },
+    {
+      "path": "helper5-mi/retire-root-review.json",
+      "bytes": 1019,
+      "sha256": "15e7110a594810a47d558b0b01fb83c929dfdadbca0e88be5705d7925eb58afa",
+      "git_blob": "1f7b08ab0365bf4e950b94b9fe2e6bb9f618bdbb",
+      "scope": "Root retirement review; manual cleanup scope only."
+    },
+    {
+      "path": "helper5-mi/retire-root-visual-review.json",
+      "bytes": 2002,
+      "sha256": "f662eb6177e4e00b4613fd65d7d914428788acf1d2a81634cf20d116820a9c2d",
+      "git_blob": "74d3d6be3f5d5e5f3dbeb39ff3cfc216579a41d8",
+      "scope": "Root full preview visual review; no original PNG publication or business inference."
+    },
+    {
+      "path": "helper5-mi/retire-root-wrapper.py",
+      "bytes": 3571,
+      "sha256": "b74ada22df208fd9a39278596bdddbc7274d1ea611b4bfaa5cc7713fe2c99637",
+      "git_blob": "13711c9fcd5388808464052c9ee81cabae08cd49",
+      "scope": "Root-only retirement wrapper; actual outcome is separate."
+    },
+    {
       "path": "helper5-signed-actual.json",
       "bytes": 183755,
       "sha256": "ad9fe0cb5ea808e6d563b398b45e79286a1158fc3db43ea2226f4fd0edd29580",
@@ -204,6 +330,34 @@
       "sha256": "e195da919e53c6aa36c31f8b0f0a96f23ef67d895f2860b61fb72e73bd29cf6e",
       "git_blob": "27cec65a7bf9326dab67431bcd9e17b4992460d8",
       "scope": "Exact final source payload; 570 base rows plus 48 raw overlays yields 589 sources."
+    },
+    {
+      "path": "main54-install-actual.json",
+      "bytes": 17431,
+      "sha256": "aa0723177a6ec2d95089e463e52b2f3802ba953eae595ab9d460c6f9be250a98",
+      "git_blob": "81a481c9fe5ff2ba0487437e5fc44d8ce4acd537",
+      "scope": "Actual installed main54 and preserved state; installation is not task completion."
+    },
+    {
+      "path": "main54-install-root-review.json",
+      "bytes": 1301,
+      "sha256": "2600f0955f64072d20a3af5f8d1f4a862edb5e6725c714315f153e238daaea69",
+      "git_blob": "23a5e5131b74587f2215c5c48653b9a003181fa8",
+      "scope": "Root full actual install review; no Notes/Flight/Shopping success asserted by installation."
+    },
+    {
+      "path": "main54-install-root-wrapper.py",
+      "bytes": 3028,
+      "sha256": "4bd7500117060bf63799bc62d02348de26ace422d99d8e5faf196ca0c4715fcc",
+      "git_blob": "f093b0689b90030af8cd969eac65560141783503",
+      "scope": "Root-only installation wrapper; actual installation outcome is the separate original result."
+    },
+    {
+      "path": "main54-installer-host8-actual.json",
+      "bytes": 12870,
+      "sha256": "3b98658eb98f152f4e6573c36305eff8c37d7fc4648ea3f0311b9f3f827035c6",
+      "git_blob": "6eb5607cc14be217e29ca9b391747dcced367989",
+      "scope": "Actual 8 focused host checks and staged installer; no phone execution by this host gate."
     },
     {
       "path": "main54-p4-canonical-fixture-root-review.json",
@@ -269,6 +423,13 @@
       "scope": "actual pre-code5 query/Android gates; superseded by r6 code5 literal update"
     },
     {
+      "path": "main54-sign-terminal-proof.json",
+      "bytes": 7699,
+      "sha256": "0b78997daa8a9bae357a823bd37e314e6d282bd25c884a8abfbcf6774f731593",
+      "git_blob": "d8d61f9493ab54931bfef466284ed49e5e82810c",
+      "scope": "Actual sign process exited0; original record explicitly states only a stdout prefix was retrieved."
+    },
+    {
       "path": "main54-signed-actual.json",
       "bytes": 15659,
       "sha256": "eadc9dbb63b411015571a488377be6a8704c9f78415169a5164c8f13571f0f72",
@@ -295,6 +456,146 @@
       "sha256": "dd7e67e4af45bdbe53bf5d64e91a8881fdd968a20ef0e1a1e365a6bca4da90a5",
       "git_blob": "5815962f9da8128fa15c354c4ac7d2566588bcff",
       "scope": "Actual pre/post PR/ref CAS and original repository blob preservation; source commit is not rewritten by a later evidence commit."
+    },
+    {
+      "path": "notes54/actual-independent-replay-result.json",
+      "bytes": 37761,
+      "sha256": "eef5e79feb21965a52c4bdc35892842af3d5e74c578792deb4f4cdec73f12db2",
+      "git_blob": "160fe428870dea6568aa80fcd75994bcf057f2b8",
+      "scope": "Original scoped Notes54 evidence role: actual_independent_replay_result. Original false/limited flags are not rewritten."
+    },
+    {
+      "path": "notes54/actual-native-request-result.json",
+      "bytes": 4840,
+      "sha256": "ec0c1319ec782bed213986e64e22f38df3c1378fa0e8a4ce3a2d9a5a6b3e674d",
+      "git_blob": "245396128a3c0f5f8b89c3e0525989e5f292dab9",
+      "scope": "Original scoped Notes54 evidence role: actual_native_request_result. Original false/limited flags are not rewritten."
+    },
+    {
+      "path": "notes54/exact-short-start-request.json",
+      "bytes": 1200,
+      "sha256": "042526302713672f83b0db2f94f957d7c08daedae16055589a17e8218e9376e2",
+      "git_blob": "f58610bbb010d1b3c415e5389e626ac8cdd6452b",
+      "scope": "Original scoped Notes54 evidence role: exact_short_start_request. Original false/limited flags are not rewritten."
+    },
+    {
+      "path": "notes54/executed-independent-replay-source.py",
+      "bytes": 26403,
+      "sha256": "585f6d2b0e3d0a092b0b5b7ad884dc20d7328dfc0552d5cd6cdf749c7cf67b22",
+      "git_blob": "3b9e3e775bcb6ca2442608dbf642eb918dd150c8",
+      "scope": "Original scoped Notes54 evidence role: executed_independent_replay_source. Original false/limited flags are not rewritten."
+    },
+    {
+      "path": "notes54/full-context-successor-independent-review.json",
+      "bytes": 2007,
+      "sha256": "b88ae3d30033095efb32eb56bbea79e443a7cf0187ccd69d68af453e2715305f",
+      "git_blob": "f50eee03c684ab05b0a48526221250cc0a8289e9",
+      "scope": "Original scoped Notes54 evidence role: full_context_successor_independent_review. Original false/limited flags are not rewritten."
+    },
+    {
+      "path": "notes54/host16-actual.json",
+      "bytes": 11701,
+      "sha256": "e22bffc6018d7c9b76f5a8b77f513cb26fe22b3524f2d143dbbc9b74a8292e44",
+      "git_blob": "ce92b6729004cf80209a6526197f2554e7cf415c",
+      "scope": "Actual16 host checks,14 staged files; phone/business flags remain false."
+    },
+    {
+      "path": "notes54/independent-scoped-evidence-index.json",
+      "bytes": 11435,
+      "sha256": "bdac730e70b17cfa01c3fa8f06cdeb03206a400cd008acb42184ce1fe53c6db3",
+      "git_blob": "b14373ffdc082146c3f5fe0cb4478d1492afe710",
+      "scope": "Independent actual9-domain replay plus machine main8; original exit2/qualified=false and visual-scroll=false retained."
+    },
+    {
+      "path": "notes54/initial-source-write-unknown-preserved.json",
+      "bytes": 1149,
+      "sha256": "3eecb99a1715a2140b7d7b56abd61ca68b18b6c4f321d66f613c95340b7686d1",
+      "git_blob": "fa43fd2a79b70c7539cdd9f0c97216dc74499348",
+      "scope": "Original scoped Notes54 evidence role: initial_source_write_unknown_preserved. Original false/limited flags are not rewritten."
+    },
+    {
+      "path": "notes54/original-phone-collector-result.json",
+      "bytes": 258543,
+      "sha256": "2d85991282f6a02834fcb492e8470ec7561a47fb9f524b750e319f7b1a3fae7d",
+      "git_blob": "3385b93ddff946d3451141450cb04e14cd3b93d8",
+      "scope": "Original scoped Notes54 evidence role: original_phone_collector_result. Original false/limited flags are not rewritten."
+    },
+    {
+      "path": "notes54/owner15-normal-close-actual.json",
+      "bytes": 2160,
+      "sha256": "5e05ec46c197b0e95355ed56321509441aecf294824e4c40cc52cd32d93cf5fc",
+      "git_blob": "50be04a9d76140da5e343d4c6b28c43ec3b3621f",
+      "scope": "Actual owner15 normal close/exit0 before independent Notes RUN."
+    },
+    {
+      "path": "notes54/prepare-actual.json",
+      "bytes": 49143,
+      "sha256": "0b15a45a5149651f542add385bb2cb3a90120ae117d4d7e190ad56010e90dda0",
+      "git_blob": "0d83b3405aadfa32fdb247ab24cf9c179948f222",
+      "scope": "Actual ordinary Notes preparation, dual preferences and automatic Notes selection; no Start by preparation."
+    },
+    {
+      "path": "notes54/prepare-native-ax-original.xml",
+      "bytes": 7823,
+      "sha256": "952d67a0b21d5a9d1c996fb6c0f837f49c4b60db399963019c7306a6a6a6fc0e",
+      "git_blob": "88139b9db03444a9ce413e7bb17f4a9f2614433b",
+      "scope": "Selected actual preparation AX; preserved original widgets and automatic Notes target."
+    },
+    {
+      "path": "notes54/prepare-root-visual-review.json",
+      "bytes": 2706,
+      "sha256": "009230d35952b924d49b60e97e857dc10b609ef6d4f9b4c0570efa26299fe59f",
+      "git_blob": "ac8928e986eb32250490e983f1c7bc6ce1e3c7cc",
+      "scope": "Root's exact preparation visual scope, without republishing image bytes."
+    },
+    {
+      "path": "notes54/prepare-root-wrapper.py",
+      "bytes": 2547,
+      "sha256": "43141af8da877e995124cbe15b648d8562f7bf712b9d3516b007c95b182c3fd5",
+      "git_blob": "c19ac127f69e83bd605b0ed47c4e8f0bd95ed371",
+      "scope": "Root ordinary prepare wrapper; execution is shown only by separate actual prepare result."
+    },
+    {
+      "path": "notes54/prepare-summary.json",
+      "bytes": 9623,
+      "sha256": "7daaec96faff31d9b77207f1cdbe428e6d4cbfba940cd0c4f7835539492e5580",
+      "git_blob": "bc1ab693a932242cca87ca3053adfb565e78da2b",
+      "scope": "Original preparation summary, subordinate to full original result."
+    },
+    {
+      "path": "notes54/projection-source-independent-review.json",
+      "bytes": 3192,
+      "sha256": "1b77ae57caae1fb4b91a167b48188c69a2e4cd772ef41108321ed305f06292a2",
+      "git_blob": "f0363664f09d8bf0d572aff629bb85bdcfd20c07",
+      "scope": "Original scoped Notes54 evidence role: projection_source_independent_review. Original false/limited flags are not rewritten."
+    },
+    {
+      "path": "notes54/replay-successor-and-complete-derivation.json",
+      "bytes": 69244,
+      "sha256": "1a7f8f2bb7c43965723ab51cb189a9b7db933d72bf81f07fe03697c15af25893",
+      "git_blob": "5947e181ba088dc1ddbe30c913f9450f5923d224",
+      "scope": "Original scoped Notes54 evidence role: replay_successor_and_complete_derivation. Original false/limited flags are not rewritten."
+    },
+    {
+      "path": "notes54/root-full-final-image-and-scoped-review.json",
+      "bytes": 3560,
+      "sha256": "89f5fb731de334318a832220d74eff0f48e69bb54543e34c4840491fa174f90d",
+      "git_blob": "61337aade4ebea6d801a6a39bd72369175c2cdd9",
+      "scope": "Original scoped Notes54 evidence role: root_full_final_image_and_scoped_review. Original false/limited flags are not rewritten."
+    },
+    {
+      "path": "notes54/run-root-wrapper.py",
+      "bytes": 3248,
+      "sha256": "df8dd6deb219f5db6ee471fc830ea0fff8275738e62bc06bdd0ad4833a4a1a68",
+      "git_blob": "951e798c13ba6709bada8409b7132e084dd0d2d4",
+      "scope": "Root unique ordinary Start wrapper; separate raw phone collector still qualified=false."
+    },
+    {
+      "path": "notes54/run-wrapper-independent-review.json",
+      "bytes": 5233,
+      "sha256": "08a61ed04732de4fac760e79432b4fb75fbbff25131b8654e5cc683bf69ecc2b",
+      "git_blob": "94cd7e8113697212c4df7e087fd496b5591f108b",
+      "scope": "Source/actual-preparation review of unique RUN wrapper, not a phone rerun."
     },
     {
       "path": "root-reachable-evidence-handoff.json",
@@ -358,6 +659,69 @@
       "sha256": "5e2dd4f031e0258b0115a3f234296a2ad0154cb33e206dad1e60b8231bc07ab2",
       "git_blob": "b5ae04ac0175d84d1ad34e716a4667609d97db32",
       "scope": "scoped recovery interpretation; original report preserved"
+    },
+    {
+      "path": "web54/admission-r4-prior-path-failure.txt",
+      "bytes": 1130,
+      "sha256": "2922f5f638b9164f4a89c5974a630daf5ee4f400bfcdaf0b0b39d6667bc69468",
+      "git_blob": "7f3339c56770a6ba22182b072324cead22e42a2b",
+      "scope": "Original missing prior receipt path failure, unmodified; later r5 fixes transport prerequisite."
+    },
+    {
+      "path": "web54/admission-r5-host8-actual.json",
+      "bytes": 7105,
+      "sha256": "b1c77387c8d8cda397f115b227baf73fbd7cfba1c18a58f858e3baa460d91840",
+      "git_blob": "f5113901628180cc55b5398d3c629a4884333bf6",
+      "scope": "Actual8 final main54/helper5 release-admission checks; no phone; old28+5 not rerun."
+    },
+    {
+      "path": "web54/automatic-ui-r6-candidate.json",
+      "bytes": 146861,
+      "sha256": "481c609cbf8a9eb346e5a2c1d8707293164722d3fdf14d3cd5f8348242c03f6b",
+      "git_blob": "0d60935d2b05f40271f1d53107ee77566d8d8f43",
+      "scope": "Exact source successor replaces hidden Spinner assumption with actual automatic target UI and immutable preferences."
+    },
+    {
+      "path": "web54/automatic-ui-r6-hostgate-review.json",
+      "bytes": 3048,
+      "sha256": "75693d6b642ce66b894ab4e2c5ad321fc55a00fbba1fe03878bcd0b1d3ec7afe",
+      "git_blob": "748fc5e0f51401d03a382f10b68e77184ab634ed",
+      "scope": "Independent focused gate source review; actual execution separately recorded."
+    },
+    {
+      "path": "web54/automatic-ui-r6-source-review.json",
+      "bytes": 3063,
+      "sha256": "7403986334e768a18e46ebcda843188ef89c7d5d786f2eff54d1208cbfd04cfb",
+      "git_blob": "b4c52f17146b64f4903488354fee900f2492afa3",
+      "scope": "Independent full source and17 reversible patch review; not phone evidence."
+    },
+    {
+      "path": "web54/automatic-ui-r6-stage-actual.json",
+      "bytes": 8205,
+      "sha256": "ccaa6c5b5b6d6e4186dc4a5aaba627526b49578880f8f247214faa172bcaea7f",
+      "git_blob": "a930bbb91816e1d9b8511472d7ee05a1cf316efc",
+      "scope": "Actual12/47 Python and5/25 real14Java focused checks; three exit0 steps, original/staged byte preservation, phone0."
+    },
+    {
+      "path": "web54/flight-owner16-r6-wrapper-handoff.json",
+      "bytes": 5675,
+      "sha256": "c63efa397cc1b3a19c9dc0505c4b9d0ff4c6198dedfb2166b34fe2a6ee525a52",
+      "git_blob": "d48d0c14131a5208880a9d43bfa421e7acd0c4a7",
+      "scope": "Exact6 replacements and reverse base equality; original business argv preserved."
+    },
+    {
+      "path": "web54/flight-owner16-r6-wrapper.py",
+      "bytes": 2833,
+      "sha256": "f7aa359fe84e6ac0185feb42234e1c0ef0dce94942ecb45a0785956dbe4e8455",
+      "git_blob": "92ecaed23ba3ae5ca09a7b300629082712ee0ea7",
+      "scope": "Sealed actual owner16, only r6 path/hash loader changes; phone execution not established by this source."
+    },
+    {
+      "path": "web54/frozen-release-manifest.json",
+      "bytes": 1723,
+      "sha256": "acfbdf07f671facf65f6919142f8e4646952ec2a55524f313b4a4a5c9bcad3c3",
+      "git_blob": "c98ca8d620298f7fff38156a79d44a4fff795489",
+      "scope": "Exact main54/helper5 signed artifact manifest used by actual admission gates."
     }
   ],
   "source_tree": "fb355f7e25c2fe2639906bccffa25f54e538a1a8",
@@ -392,5 +756,66 @@
     "capture_button_tapped": false,
     "model_invoked": false,
     "business_verified": false
+  },
+  "evidence_parent_commit": "653abc27a7bd3d3998952363625fc0e79c350838",
+  "actual_main54_install": {
+    "git_blob": "81a481c9fe5ff2ba0487437e5fc44d8ce4acd537",
+    "bytes": 17431,
+    "sha256": "aa0723177a6ec2d95089e463e52b2f3802ba953eae595ab9d460c6f9be250a98",
+    "uid": 10481,
+    "apk_sha256": "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a",
+    "new_model_or_task_runs_by_install": false,
+    "helper_diagnostic_count_preserved": 36
+  },
+  "actual_notes54": {
+    "original_result_git": "3385b93ddff946d3451141450cb04e14cd3b93d8",
+    "original_result_sha256": "2d85991282f6a02834fcb492e8470ec7561a47fb9f524b750e319f7b1a3fae7d",
+    "original_collector_exit_code": 2,
+    "original_qualified": false,
+    "scoped_replay_git": "160fe428870dea6568aa80fcd75994bcf057f2b8",
+    "scoped_review_git": "b14373ffdc082146c3f5fe0cb4478d1492afe710",
+    "scope_results": {
+      "notes_local_model_create_save_list_reopen_verified": true,
+      "original_dual_ui_preferences_preserved": true,
+      "actual_task_scope_notes_only_verified": true,
+      "main_settings_launch_observed_by_root": true,
+      "actual_swipe_request_and_causal_work_bound_by_machine": true,
+      "main_settings_content_scroll_visually_verified": false,
+      "whole_main_scroll_case_qualified": false,
+      "whole_original_case_qualified": false,
+      "all_requested_hepta_business_tasks_completed": false
+    },
+    "originals_preserved": 875,
+    "operation_lock": {
+      "acquired": true,
+      "released": true,
+      "continuity_verified": true,
+      "continuity_checks": 225,
+      "reacquisition_attempted": false
+    }
+  },
+  "actual_web54_r6": {
+    "git_blob": "a930bbb91816e1d9b8511472d7ee05a1cf316efc",
+    "bytes": 8205,
+    "sha256": "ccaa6c5b5b6d6e4186dc4a5aaba627526b49578880f8f247214faa172bcaea7f",
+    "python_cases": 12,
+    "python_assertions": 47,
+    "actual_java_sources": 14,
+    "java_cases": 5,
+    "java_assertions": 25,
+    "original_28_5_8_reexecuted": false,
+    "phone_commands_executed": 0
+  },
+  "actual_helper5_mi": {
+    "open_result_git": "70c7611066b91dfd8acc6b01f969bce2b3508121",
+    "capture_result_git": "a84a035ebcd56e5abb091aa6bb32ec6ad35ca6ab",
+    "retire_result_git": "374e8c484129c4c1701f2ab4d7b81b94449d0e03",
+    "raw_close_git": "8904bc8f0ce42d39f059e3639adfb2a29d53f5fa",
+    "manual_success_capture_count": 0,
+    "manual_instability_pair_count": 1,
+    "final_diagnostic_count": 36,
+    "failed_samples_promoted_to_provider_success": false,
+    "model_business_verified": false,
+    "full_native_ax_git": "0efcb13855e21ade34c8897fada23aa180cdded9"
   }
 }

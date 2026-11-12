@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File [35m"<string>"[0m, line [35m25[0m, in [35m<module>[0m
+    [31mexec[0m[1;31m(compile(source,ns["__file__"],"exec",dont_inherit=True),ns)[0m
+    [31m~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r4/stage.py"[0m, line [35m90[0m, in [35m<module>[0m
+  File [35m"/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r4/stage.py"[0m, line [35m48[0m, in [35mread_ref[0m
+  File [35m"/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r4/stage.py"[0m, line [35m30[0m, in [35mexact[0m
+  File [35m"/usr/lib/python3.14/pathlib/__init__.py"[0m, line [35m772[0m, in [35mopen[0m
+    return [31mio.open[0m[1;31m(self, mode, buffering, encoding, errors, newline)[0m
+           [31m~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mFileNotFoundError[0m: [35m[Errno 2] No such file or directory: '/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r3/STAGE-RESULT.json'[0m

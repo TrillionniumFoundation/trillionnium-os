@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.v54-web-entry-release.v1",
+  "status": "sealed",
+  "controller": {
+    "package": "org.trillionnium.hepta.local",
+    "uid": 10481,
+    "version_code": 54,
+    "version_name": "0.54.0-natural-official-web",
+    "apk": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/out/hepta-local-0.54.0.apk",
+      "bytes": 20985685,
+      "sha256": "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a"
+    },
+    "signed_result": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/assembly-r1/RESULT.json",
+      "bytes": 15659,
+      "sha256": "eadc9dbb63b411015571a488377be6a8704c9f78415169a5164c8f13571f0f72"
+    },
+    "source_inventory_sha256": "8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d",
+    "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5"
+  },
+  "helper": {
+    "package": "org.trillionnium.hepta.webhelper",
+    "uid": 10484,
+    "version_code": 5,
+    "version_name": "0.5.0-web-evidence-v3",
+    "apk": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/out/hepta-web-helper-0.5.0-v3.apk",
+      "bytes": 1381371,
+      "sha256": "b5e56ce0c2967489b55150c157f8289fdd82ad5b89caacc8b106013a7caeaf4f"
+    },
+    "signed_result": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/out/RESULT.json",
+      "bytes": 183755,
+      "sha256": "ad9fe0cb5ea808e6d563b398b45e79286a1158fc3db43ea2226f4fd0edd29580"
+    },
+    "source_inventory_sha256": "0cb6c955bb3c816aa10ae81c063a599d7ce4c9ce4ede5c166af5e480235751dc",
+    "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5"
+  }
+}

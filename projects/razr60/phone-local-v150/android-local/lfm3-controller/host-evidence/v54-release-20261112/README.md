@@ -1,28 +1,40 @@
-# Hepta v54 source and evidence snapshot
+# v54 release and scoped device evidence
 
-This directory makes the release's source, host, Android, signed artifact, and selected device records reachable from Git. The APK source commit is `42d3a0f447807659c0f78c8273edee01dd1b734f`; this evidence-only successor preserves all 589 source blobs. The original JSON and text bytes are preserved. Files here are outside the 589-file build inventory. [EVIDENCE-INDEX.json](EVIDENCE-INDEX.json) lists the exact size, SHA-256, Git blob, and scope of every retained item.
+The main54 APK remains bound to source commit `42d3a0f447807659c0f78c8273edee01dd1b734f`. Later evidence commits preserve all 589 source blobs and add original receipts, reviews, adapter inputs, and explicit scope records. They do not rebuild or re-sign that APK.
 
-## What the records establish
+[EVIDENCE-INDEX.json](EVIDENCE-INDEX.json) records the exact bytes, SHA-256, and Git blob for every included original. Evidence files are excluded from the 589-source inventory. Raw false flags and failed attempts are retained.
 
-| Area | Evidence and scope |
-| --- | --- |
-| Main source | Final 589-file closure from the actual v53 base `7dee83d838b2c76b3abe3a3e61d7837316f40853`: 29 existing files changed and 19 files added, represented by 48 overlays. |
-| Complete host gate | The actual P4 r4 stage passed 101 checks over 413 inputs, with 18 nested completion stages. The original command, Java 8 API-release contract, source map, and unchanged-source checks are retained. |
-| Android and native | Actual r6 built 109 Java files and 403 classes from 211 compiler inputs. The final source differs only in five Python host-fixture entry files; the preservation sidecar reverses each change to the compiled source bytes. Android was not rebuilt for those Python-only fixes. |
-| Helper5 | The unsigned Android build contains 38 source files, 36 Java files, 7 generated files, 154 classes, and 372 compiled APK members. The new bounded capture-attempt gate passed 33 cases and 175 assertions. The prior four pure-contract groups are referenced by their original hashes, not represented as rerun. |
-| Signed main54 | The actual signing and artifact closure passed for `0.54.0-natural-official-web`, APK SHA-256 `0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a`. Its receipt binds source commit `42d3a0f447807659c0f78c8273edee01dd1b734f`. Its only declared permission is the helper evidence binding permission. The receipt retains phone, flight-query and flight-result verification as false. |
-| Signed and installed helper5 | The actual signed `0.5.0-web-evidence-v3` APK is SHA-256 `b5e56ce0c2967489b55150c157f8289fdd82ad5b89caacc8b106013a7caeaf4f`. A separate original installation receipt confirms UID 10484 and preservation of all 33 prior diagnostics. That installation performed no site open, capture or model task, and reports no business verification. |
-| Existing device evidence | v53 Notes, cancellation, and recovery originals retain their actual status fields. Independent reviews state their narrower conclusions without rewriting the original `qualified=false` or native receipt flags. |
-| Manual helper4 evidence | Two Mi capture attempts failed to produce a successful DOM record. Normal retirement later produced one new close record after one ordinary Back. These records do not establish a formal task lease or a shopping result. |
+## Actual release and installation
 
-## Preserved failures and limits
+The original main54 and helper5 signing receipts are included. Main54 installation was verified with UID 10481 and APK SHA-256 `0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a`. The installation preserved the local model, runtime configuration, saved application choices, historical task journals and 36 helper diagnostics. It started no model task. See [the installation result](main54-install-actual.json) and [Root's scoped review](main54-install-root-review.json).
 
-The r3 P4 failure and r3/r4 query-test failures remain separate original records. The final host fixes copy the same Java fixture bytes under their proper compiler basename and add the missing pure Goal dependencies; they do not relax Java warnings, change the production Java/native source, or remove assertions.
+The original P4 host stage reports 101 checks, 413 inputs and 18 nested completion stages. Its complete stage receipt is included; the larger full host and nested-result payloads remain explicitly listed as pending retrieval. The Android build used 211 compiler inputs. Five exact Python test-entry changes made after that build are separately documented; they did not alter those compiler inputs.
 
-The helper5 change permits at most three read-only attempts under the same absolute deadline, only after a full-DOM mismatch. Successful capture still requires exact full-DOM equality and all four geometry observations. A retained instability pair carries no action or business authority. The candidate payload in this directory is a source delta plus test fixtures; the complete 38-source archive is separately pinned by the actual unsigned BUILD.
+## Notes54: preserve the original failure and the independently verified scopes
 
-Main54 has a guarded single-query flight path, but its flight results provider remains incomplete until implemented against real result-page evidence. A query dispatch cannot establish a completed flight search. Shopping is limited to the recognized Xiaomi AX3000T public-price goal; it does not implement a cart, order, payment, or a general purchasing completion contract. Generic UI primitives do not by themselves prove a completed purchase.
+[The original phone collector result](notes54/original-phone-collector-result.json) remains unchanged, including `qualified=false` and collector exit 2. The signed main54 observation used its old nine-field background projection; the complete Selection separately carried the newer OWNER/application provenance. An output-only independent replay compares the actual projection and separately validates the complete original Selection. It does not invent missing frame fields or modify any phone evidence.
 
-Original full `HOST-CHECKS.json` and nested completion JSON are pinned by the verified P4 stage; their full bytes are not yet included in this snapshot. This limitation is explicit in the index. The signed main54 and helper5 receipts, helper5 installation receipt, and original source publication map and receipt are now included. Their original bytes and historical status fields are unchanged. Later device evidence may be appended separately; the APK remains bound to source commit `42d3a0f447807659c0f78c8273edee01dd1b734f`, even when the branch advances through evidence-only commits.
+[The actual independent replay](notes54/actual-independent-replay-result.json) passed nine scoped domains and eight machine checks for main-screen coexistence while preserving 875 originals. [The scoped evidence index](notes54/independent-scoped-evidence-index.json) and [Root's visual review](notes54/root-full-final-image-and-scoped-review.json) distinguish the outcomes:
 
-No screenshots or unrelated device dumps are published here. No phone action was performed by this publication.
+- Local-model Notes creation, save, list and reopening were verified for this task.
+- The saved Notes/helper application range remained byte-identical, and the actual task used Notes only.
+- Settings launch and an actual swipe request were observed. Visible content displacement was not established by the before/after views.
+- Whole-scroll-case qualification, whole original-case qualification and completion of all requested business tasks remain false.
+
+The replay source, its exact derivation, both source reviews, actual native request and original transport-unknown record are included under `notes54/`. There was no second phone run.
+
+## Helper5 manual Mi observations
+
+The manual open and later manual capture both failed to produce a successful capture. The second attempt preserved one pair of failed DOM records. [The original capture result](helper5-mi/capture-actual.json), [full-SHA host analysis](helper5-mi/failed-dom-analysis-actual.json), [exact differences](helper5-mi/failed-dom-exact-diff.json), [ancestor/card projection](helper5-mi/ancestor-card-projection-actual.json) and [complete native AX original](helper5-mi/capture-native-ax-original.xml) remain separate evidence.
+
+The two full diagnostic JSON payloads are still host originals; their exact paths, lengths and hashes are listed as deferred in the index. This tree does not claim those payloads are included merely because the analysis is included.
+
+[Normal manual retirement](helper5-mi/retire-actual.json) preserved the failed pair and added one close record, giving 36 diagnostics. [The raw close](helper5-mi/retire-close-raw.json) concerns that manual profile. It is not formal task-lease cleanup, a successful product capture, or model-driven shopping completion. No screenshot bytes or unrelated device dumps are added here.
+
+## Web54 r6 preparation
+
+The new ordinary preparation follows the installed main54 UI: explicit Notes/helper choices stay saved, while a recognized natural Flight OWNER selects the helper automatically. It does not try to operate the hidden initial-app Spinner.
+
+[The actual focused host result](web54/automatic-ui-r6-stage-actual.json) records 12 Python cases/47 assertions and 5 cases/25 assertions compiled with the 14 actual Java authorization/goal classes. The older 28+5+8 gates were not rerun. These are host checks, not a Flight phone result.
+
+The r6 source, independent source/gate reviews and owner16 wrapper are included. A wrapper or review file by itself does not establish execution. Formal Flight query, flight-result extraction and model-driven public-price shopping remain unverified in this index. General ordering/payment is not supported by this narrow public-query flow.

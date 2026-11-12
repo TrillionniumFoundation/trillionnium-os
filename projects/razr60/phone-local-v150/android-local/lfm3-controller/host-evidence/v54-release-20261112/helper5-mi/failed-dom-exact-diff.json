@@ -1,0 +1,98 @@
+{
+  "all_paths_complete": true,
+  "business_verified": false,
+  "capture_succeeded": false,
+  "changed_nodes": [
+    {
+      "after": {
+        "aria_checked": "",
+        "aria_disabled": null,
+        "aria_hidden": "",
+        "aria_label": "",
+        "aria_modal": "",
+        "aria_pressed": "",
+        "aria_selected": "",
+        "disabled": false,
+        "hidden_attr": false,
+        "href_raw": null,
+        "href_resolved": null,
+        "id": "",
+        "iframe_contents_read": false,
+        "inert_attr": false,
+        "item_prop": "",
+        "item_scope": false,
+        "item_type": "",
+        "link_target": null,
+        "name": "",
+        "parent_path": "0/1/0/0/0/1/0/1/1/0/0",
+        "path": "0/1/0/0/0/1/0/1/1/0/0/0",
+        "rect_css_pixels": [
+          1066,
+          82.87367248535156,
+          1070,
+          97.12633800506592
+        ],
+        "role": "",
+        "tag": "div",
+        "text": "",
+        "value": null,
+        "visible_in_viewport": true
+      },
+      "array_index": 392,
+      "before": {
+        "aria_checked": "",
+        "aria_disabled": null,
+        "aria_hidden": "",
+        "aria_label": "",
+        "aria_modal": "",
+        "aria_pressed": "",
+        "aria_selected": "",
+        "disabled": false,
+        "hidden_attr": false,
+        "href_raw": null,
+        "href_resolved": null,
+        "id": "",
+        "iframe_contents_read": false,
+        "inert_attr": false,
+        "item_prop": "",
+        "item_scope": false,
+        "item_type": "",
+        "link_target": null,
+        "name": "",
+        "parent_path": "0/1/0/0/0/1/0/1/1/0/0",
+        "path": "0/1/0/0/0/1/0/1/1/0/0/0",
+        "rect_css_pixels": [
+          1066,
+          80.83193969726562,
+          1070,
+          99.16807556152344
+        ],
+        "role": "",
+        "tag": "div",
+        "text": "",
+        "value": null,
+        "visible_in_viewport": true
+      }
+    }
+  ],
+  "difference_count": 2,
+  "differences": [
+    {
+      "after": 82.87367248535156,
+      "after_present": true,
+      "before": 80.83193969726562,
+      "before_present": true,
+      "path": "/nodes/392/rect_css_pixels/1"
+    },
+    {
+      "after": 97.12633800506592,
+      "after_present": true,
+      "before": 99.16807556152344,
+      "before_present": true,
+      "path": "/nodes/392/rect_css_pixels/3"
+    }
+  ],
+  "json_structurally_equal": false,
+  "raw_dom_equal": false,
+  "schema": "hepta.raw-json-pointer-difference.v1"
+}

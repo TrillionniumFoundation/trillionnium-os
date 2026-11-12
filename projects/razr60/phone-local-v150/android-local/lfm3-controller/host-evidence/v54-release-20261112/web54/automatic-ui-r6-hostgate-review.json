@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.source-review.v1",
+  "subject": "Web54 r6 focused UI/consumer and actual pure Target gate with short file loader",
+  "candidate": {
+    "git_blob": "3f2111f2f56e16c3c7dea1f31d7806aef8f23723",
+    "bytes": 117756,
+    "sha256": "97ee084136c5a1b376f1ba02832078696a26643aed5a22cd53bc86d9bfa77ee2"
+  },
+  "reviewer": "android_code_audit",
+  "result": "no_source_level_blocker_in_reviewed_stage_test_transport",
+  "verified": {
+    "stage": {
+      "bytes": 12953,
+      "sha256": "47994da9bd1e7f2a6dfdddb62e76b0726f396b9636e0487027e3c43a7e5be668"
+    },
+    "gzip": "c93a4ae6ced9df87bd286616077bd6b6c5b6b2514c61e968f310f7707063268f",
+    "gzip_bytes": 50280,
+    "decoded_bytes": 169339,
+    "decoded_sha256": "dd57fa7bbe58a309a1e36246a75f9f4f7d9e3c32493ef99c0d993eb7fe8755ae",
+    "full_gzip_crc_footer_and_original_input_verified": true,
+    "decoded_candidate_equals_reviewed_0d609": true,
+    "two_test_raw_pins_verified": true,
+    "actual_14_java_rows_match_released_589_map": true,
+    "source_write_expected_absent": true,
+    "input_write_expected_absent": true,
+    "loader_compiles_same_full_sha_checked_raw_and_passes_same_sys_argv1": true
+  },
+  "findings": [
+    "Existing r5 8-case result, released three runtime files, original Notes preparation and exact saved XML, release manifest, fourteen actual production Java files, actual MainActivity and original JDK tools are read and bound before the exclusive new-root claim. Late same-root entry cannot overwrite the winner's result.",
+    "The stage performs forward and reverse reconstruction of all seventeen reviewed source patches before writing only the independent new root. Retained original and new staged source byte/identity checks run again at the end.",
+    "The Python child blocks external subprocess and os command APIs before importing the three exact modules. Twelve focused cases separate actual saved preferences from synthetic widgets, check failed preparation/type/OWNER/legacy Spinner rejection, and exercise actual CLI help without entering device helpers.",
+    "Five small Java cases execute the actual released pure BackgroundTaskTarget/Goal closure for both saved initial choices, fixed natural OWNERs, missing explicit helper scope and an unrecognized owner. They do not use Android/UI/model/Binder substitutions or assert a runtime lease.",
+    "Only the Python child and owned Javac/Java processes are launched. A timeout/TERM/KILL cannot pass. The old 28/5/8 gates are referenced without rerunning; phone/model/business/actual-flight-UI facts remain false."
+  ],
+  "boundaries": {
+    "source_only": true,
+    "host_stage_executed": false,
+    "python_or_java_cases_executed_by_reviewer": false,
+    "phone_commands": 0,
+    "production_modified": false
+  },
+  "notes": [
+    "This does not certify ordinary device preparation or a flight query. Root retains sole phone ownership.",
+    "The archived Notes preference XML is an actual input for format and byte preservation; no Notes business result is reused as Web authority."
+  ]
+}

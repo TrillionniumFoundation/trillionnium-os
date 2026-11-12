@@ -1,0 +1,17 @@
+{
+  "schema": "hepta.root-helper5-failed-manual-retirement-review.v1",
+  "source_result_sha256": "cf8ac41e266fa7f8797411f29a3a079c238cd527ed4780a8bf5a85e634e0e8cc",
+  "observer_apk_sha256": "b5e56ce0c2967489b55150c157f8289fdd82ad5b89caacc8b106013a7caeaf4f",
+  "source_png_sha256": "f81ec719c27f0cef9970ca9776371a36408570878cb38ae79060c1215dcba39e",
+  "source_xml_sha256": "83696c2a0838d4821e5bcedc3034c0f473adfcdc0443cc078ef58bcf8edac0c7",
+  "root_visual_review_sha256": "f662eb6177e4e00b4613fd65d7d914428788acf1d2a81634cf20d116820a9c2d",
+  "native_failure_text": "只读采集未完成：DOM changed across visual callback",
+  "actual_whole_frame_visual_review_completed": true,
+  "keyboard_or_modal_overlay": false,
+  "profile_known_before_back": true,
+  "profile_name": "hepta_v2_0ed2d6440b6839e90b5a33c4255694c62e79058a5056b8fb3efdc371b1142d51",
+  "successful_capture_available": false,
+  "business_verified": false,
+  "phone_action_issued_by_review": false,
+  "purpose": "ordinary_back_retire_uncaptured_manual"
+}

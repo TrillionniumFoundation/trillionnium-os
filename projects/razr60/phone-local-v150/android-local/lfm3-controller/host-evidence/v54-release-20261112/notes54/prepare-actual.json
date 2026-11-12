@@ -1,0 +1,1006 @@
+{
+  "schema": "hepta.ordinary-background-notes-ui-preparation.v1",
+  "driver_revision": "notes-v54-dual-ui-comma-plan-r1",
+  "test_mode": "main_user_coexistence",
+  "prepared": true,
+  "task_started": false,
+  "start_tapped": false,
+  "target_app_operated": false,
+  "existing_tasks_removed": false,
+  "direct_broker_client_used": false,
+  "permissions_changed": false,
+  "r12_operation_lock_acquired_or_bypassed": false,
+  "expected_apk_sha256": "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a",
+  "expected_uid": 10481,
+  "started_wall_s": 1794478656.3785932,
+  "plan": {
+    "schema": "hepta.moto-note-plan.v54-comma-prefix-r1",
+    "target_package": "com.motorola.stylus",
+    "marker": "Hepta-v54r1-35b8e5db22fa",
+    "body": "Hepta-v54r1-35b8e5db22fa 明天下午3点看牙，带上检查资料。",
+    "instruction": "记一下，Hepta-v54r1-35b8e5db22fa 明天下午3点看牙，带上检查资料。",
+    "instruction_sha256": "4b0372268b965098e7a40955ea9a69971a5767930152a70ddfaf217843b4fc62",
+    "phone_tested": false,
+    "body_span_utf16": [
+      4,
+      45
+    ],
+    "body_sha256": "6e906761fc6c9874b5581e7814b129537ac9ba206d88fceaae75156de95fa9c9"
+  },
+  "plan_sha256": "46a375026c4de1f29bdd428de36c5141a4eb1ccf0afdea00538b4aaf95ec319b",
+  "target_package": "com.motorola.stylus",
+  "instruction": "记一下，Hepta-v54r1-35b8e5db22fa 明天下午3点看牙，带上检查资料。",
+  "instruction_sha256": "4b0372268b965098e7a40955ea9a69971a5767930152a70ddfaf217843b4fc62",
+  "ui_helper_sha256": "b5483ad51dc3639a734d07169a7ad928f0ddf7ad2f5a46da4b3461abe8170c98",
+  "background_driver_sha256": "d5a2caec2ad96b524d89651c0b4fbb63107678745dd4ccfa33368999fc0f817c",
+  "runtime_config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+  "runtime_config": {
+    "schema": "hepta.local-runtime.v2",
+    "model_profile": "lfm3-1.7b-qad-q4_0",
+    "compute": "npu",
+    "context_tokens": 8192,
+    "threads": 4
+  },
+  "helper_pins": {
+    "v35_identity": "a4a751cf03956783e551f54b16dd37769f00d5b7cd2a0225b667becbc6e6d003",
+    "warm_receipts": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5",
+    "model_profiles": "ee26ed1f2f2b2ffd5f14fbd526c6d3cbf05d7ed8d65c422df5e60a72fa0cfa3a",
+    "phone_acceptance": "411da90ca9ef83441fa0a199a25d71361ab582db5b54ac08bd39e5e8597e6302",
+    "phone_suite": "2681e21ae0ead263b9313a6e49b4faf8951f3e87ab6b5c669c41fe34dbe5267a"
+  },
+  "installed_identity_before": {
+    "hepta": {
+      "package": "org.trillionnium.hepta.local",
+      "uid": 10481,
+      "apks": [
+        {
+          "path": "/data/app/~~hQX6r7v5s_gKn7o8ImvScQ==/org.trillionnium.hepta.local-PNZseE9N9jPiez75ykUSRA==/base.apk",
+          "sha256": "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a"
+        }
+      ]
+    },
+    "notes": {
+      "package": "com.motorola.stylus",
+      "uid": 10382,
+      "apks": [
+        {
+          "path": "/product/preinstall/MotoStylus/MotoStylus.apk",
+          "sha256": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+        }
+      ]
+    }
+  },
+  "baseline_session": {
+    "schema": "hepta.local-session.v1",
+    "status": "controller_verified_done",
+    "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+    "origin": "user_button",
+    "instruction_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+    "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+    "task_authorization": {
+      "schema": "hepta.owner-task-authorization.v1",
+      "parser": "hepta.owner-tool-clauses.zh.v4-fixed-intents",
+      "instruction_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+      "authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+      "allowed_tools": [
+        "back",
+        "click",
+        "done",
+        "find_app",
+        "home",
+        "notes.create",
+        "open",
+        "scroll",
+        "submit",
+        "type",
+        "wait",
+        "web.search"
+      ],
+      "require_find_app_before_open": false,
+      "find_query": null,
+      "recognized_rules": [],
+      "arbitrary_semantic_constraints_verified": false
+    },
+    "background_request": {
+      "mode": "background",
+      "allowed_packages": [
+        "com.motorola.stylus"
+      ],
+      "bootstrap_package": "com.motorola.stylus",
+      "bootstrap_source": "owner_selected_initial_app",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false
+    },
+    "background_lease_unreleased": false,
+    "web_helper_lease_unreleased": false,
+    "debug_nonce_sha256": null,
+    "expected_scope_sha256": null,
+    "actual_scope_sha256": null,
+    "state": "已保存并重新打开这条笔记，正文核对一致。",
+    "pending": false,
+    "running": false,
+    "blocked": false,
+    "cleanup_known": true,
+    "app_uid": 10481,
+    "updated_wall_ms": 1794460141599,
+    "external_model": false,
+    "automatic_resume": false,
+    "goal_independently_verified": true,
+    "evidence_directory": "/data/data/org.trillionnium.hepta.local/files/control-tasks/4320372daa4f4a2bba4f1fcf1297c352",
+    "model_reported_success": false,
+    "steps": 1,
+    "completion_verified": true,
+    "completion_evidence": {
+      "schema": "hepta.task-completion.v1",
+      "kind": "notes_save_list_reopen",
+      "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+      "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+      "source": "controller_observation_checks_not_model_claims",
+      "completion_verified": true,
+      "missing": [],
+      "rejected_success_claims": 0,
+      "max_rejected_success_claims": 2,
+      "notes_launch_observed": true,
+      "editor_body_observed": true,
+      "list_observed": true,
+      "prior_visible_body_collision": false,
+      "unobserved_prior_notes_known": false,
+      "same_list_item_reopened": true,
+      "reopen_actor_kind": "tool_child",
+      "notes_create_workflow_verified": true,
+      "notes_create_workflow_stop_reason": null,
+      "progress_scope": "cumulative_task_evidence_not_current_screen",
+      "current_surface": "verified_note_editor",
+      "current_list_item_node_id": null,
+      "current_editor_body_matched": true,
+      "writes_required_for_unknown_or_read_only_goal": false,
+      "grants_tool_authority": false,
+      "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+      "contract": {
+        "schema": "hepta.task-completion.v1",
+        "kind": "notes_save_list_reopen",
+        "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+        "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+        "recognition": "hepta.notes-owner-intent.v1/natural_note_comma_prefix.v1",
+        "expected_body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+        "source": "immutable_owner_contract",
+        "body_source_start_utf16": 4,
+        "body_source_end_utf16": 45,
+        "note_persistence_verification_policy": "save_list_reopen",
+        "body_rewritten": false,
+        "model_may_change_goal": false,
+        "grants_tool_authority": false
+      },
+      "proofs": [
+        {
+          "kind": "model_bound_notes_launch",
+          "step": 1,
+          "model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+          "before_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+          "after_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+          "attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+          "payload_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2"
+        },
+        {
+          "kind": "editor_body_observed",
+          "step": 0,
+          "model_run_id": null,
+          "before_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+          "after_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc"
+        },
+        {
+          "kind": "post_create_observed_list",
+          "step": 0,
+          "model_run_id": null,
+          "before_observation_id": null,
+          "after_observation_id": "577663b1679c470c8163f6888fef642d",
+          "editor_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+          "list_body_evidence": {
+            "matched": true,
+            "missing": null,
+            "match_rule": "bound_note_summary_accessibility_text",
+            "node_id": "n12",
+            "source_path": "2",
+            "source_view_id": "com.motorola.stylus:id/note_summary",
+            "source_text_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+            "node_app_tree_sha256": "fca1e9a228fe8ce69a31e223660f437a061fea72ede0c413659e3aba31451c70",
+            "text_scope": "Complete accessibility text source; visual clipping and persistent storage bytes are unverified.",
+            "persistent_bytes_verified": false
+          }
+        },
+        {
+          "kind": "tool_child_same_observed_list_item_reopened",
+          "step": 1,
+          "model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+          "before_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+          "after_observation_id": "99aaf49bce494ba599086009ff2a7ac8",
+          "actor_kind": "tool_child",
+          "model_issued": false,
+          "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+          "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+          "workflow_evidence": {
+            "schema": "hepta.notes-create-workflow.v1",
+            "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+            "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+            "parent_step": 1,
+            "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+            "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+            "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+            "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+            "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+            "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+            "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+            "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+            "target_package": "com.motorola.stylus",
+            "target_uid": 10382,
+            "target_apk_sha256": {
+              "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+            },
+            "display_id": 20,
+            "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+            "grant_consumed": true,
+            "grant_retired": true,
+            "grants_tool_authority": false,
+            "actor_kind": "tool_workflow",
+            "model_issued": false,
+            "fixed_intent_outcome_unchanged": "draft_opened",
+            "workflow_verified": true,
+            "stop_reason": null,
+            "initial": {
+              "observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+              "package": "com.motorola.stylus",
+              "window_id": 3571,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "5606c5ddde421d3ab3248949b88a796284c3bb7a348a96259a27d5cb80310134",
+              "rotation": 0
+            },
+            "current": {
+              "observation_id": "8b1c2ac37091494bb7aee3000929bf12",
+              "package": "com.motorola.stylus",
+              "window_id": 3572,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+              "rotation": 0
+            },
+            "stable_readback": {
+              "observation_id": "99aaf49bce494ba599086009ff2a7ac8",
+              "package": "com.motorola.stylus",
+              "window_id": 3572,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+              "rotation": 0
+            },
+            "children": [
+              {
+                "child": {
+                  "schema": "hepta.tool-child.v1",
+                  "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+                  "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+                  "parent_step": 1,
+                  "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+                  "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+                  "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+                  "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+                  "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+                  "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+                  "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+                  "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+                  "target_package": "com.motorola.stylus",
+                  "target_uid": 10382,
+                  "target_apk_sha256": {
+                    "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+                  },
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "grant_consumed": true,
+                  "grant_retired": true,
+                  "grants_tool_authority": false,
+                  "child_id": "b6b2c1e1288b4a9d0fc78ef87df41621d109e37e082f906c3a7a13974d3b45e3",
+                  "child_ordinal": 1,
+                  "actor_kind": "tool_child",
+                  "model_issued": false,
+                  "action": "back",
+                  "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+                  "node_id": null,
+                  "node_label": null,
+                  "service_entered": true,
+                  "automatic_retry_allowed": false
+                },
+                "before": {
+                  "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+                  "package": "com.motorola.stylus",
+                  "window_id": 3571,
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "tree_sha256": "5606c5ddde421d3ab3248949b88a796284c3bb7a348a96259a27d5cb80310134",
+                  "rotation": 0
+                },
+                "after": {
+                  "observation_id": "577663b1679c470c8163f6888fef642d",
+                  "package": "com.motorola.stylus",
+                  "window_id": 3569,
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "tree_sha256": "a868bafca93a75cfecb916dfaa0de15b81c093d665c07a0ba08c90042c9c12f7",
+                  "rotation": 0
+                },
+                "accepted": true,
+                "dispatched": true,
+                "stale": false,
+                "detail": "后台工具已定向派发；下一步重新观察",
+                "live_lease_verified": true,
+                "service_child_receipt": {
+                  "schema": "hepta.tool-child.v1",
+                  "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+                  "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+                  "parent_step": 1,
+                  "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+                  "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+                  "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+                  "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+                  "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+                  "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+                  "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+                  "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+                  "target_package": "com.motorola.stylus",
+                  "target_uid": 10382,
+                  "target_apk_sha256": {
+                    "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+                  },
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "grant_consumed": true,
+                  "grant_retired": false,
+                  "grants_tool_authority": false,
+                  "child_id": "b6b2c1e1288b4a9d0fc78ef87df41621d109e37e082f906c3a7a13974d3b45e3",
+                  "child_ordinal": 1,
+                  "actor_kind": "tool_child",
+                  "model_issued": false,
+                  "action": "back",
+                  "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+                  "node_id": null,
+                  "node_label": null,
+                  "service_entered": true,
+                  "automatic_retry_allowed": false
+                }
+              },
+              {
+                "child": {
+                  "schema": "hepta.tool-child.v1",
+                  "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+                  "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+                  "parent_step": 1,
+                  "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+                  "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+                  "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+                  "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+                  "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+                  "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+                  "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+                  "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+                  "target_package": "com.motorola.stylus",
+                  "target_uid": 10382,
+                  "target_apk_sha256": {
+                    "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+                  },
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "grant_consumed": true,
+                  "grant_retired": true,
+                  "grants_tool_authority": false,
+                  "child_id": "2a848edb1c2be717a9236783619a6876b2f73aae13a581cfa85175112921b335",
+                  "child_ordinal": 2,
+                  "actor_kind": "tool_child",
+                  "model_issued": false,
+                  "action": "click",
+                  "observation_id": "577663b1679c470c8163f6888fef642d",
+                  "node_id": "n12",
+                  "node_label": "文字笔记 · 今天 · Hepta-v53r1-bb0c238aac48…",
+                  "service_entered": true,
+                  "automatic_retry_allowed": false
+                },
+                "before": {
+                  "observation_id": "577663b1679c470c8163f6888fef642d",
+                  "package": "com.motorola.stylus",
+                  "window_id": 3569,
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "tree_sha256": "a868bafca93a75cfecb916dfaa0de15b81c093d665c07a0ba08c90042c9c12f7",
+                  "rotation": 0
+                },
+                "after": {
+                  "observation_id": "8b1c2ac37091494bb7aee3000929bf12",
+                  "package": "com.motorola.stylus",
+                  "window_id": 3572,
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+                  "rotation": 0
+                },
+                "accepted": true,
+                "dispatched": true,
+                "stale": false,
+                "detail": "节点点击已接受",
+                "live_lease_verified": true,
+                "service_child_receipt": {
+                  "schema": "hepta.tool-child.v1",
+                  "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+                  "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+                  "parent_step": 1,
+                  "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+                  "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+                  "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+                  "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+                  "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+                  "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+                  "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+                  "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+                  "target_package": "com.motorola.stylus",
+                  "target_uid": 10382,
+                  "target_apk_sha256": {
+                    "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+                  },
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "grant_consumed": true,
+                  "grant_retired": false,
+                  "grants_tool_authority": false,
+                  "child_id": "2a848edb1c2be717a9236783619a6876b2f73aae13a581cfa85175112921b335",
+                  "child_ordinal": 2,
+                  "actor_kind": "tool_child",
+                  "model_issued": false,
+                  "action": "click",
+                  "observation_id": "577663b1679c470c8163f6888fef642d",
+                  "node_id": "n12",
+                  "node_label": "文字笔记 · 今天 · Hepta-v53r1-bb0c238aac48…",
+                  "service_entered": true,
+                  "automatic_retry_allowed": false
+                }
+              }
+            ],
+            "model_done_synthesized": false,
+            "persistent_storage_bytes_verified": false
+          }
+        }
+      ],
+      "model_success_claims": [],
+      "identity_failure": null,
+      "display_id": 20,
+      "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+      "notes_create_workflow": {
+        "schema": "hepta.notes-create-workflow.v1",
+        "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+        "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+        "parent_step": 1,
+        "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+        "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+        "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+        "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+        "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+        "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+        "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+        "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+        "target_package": "com.motorola.stylus",
+        "target_uid": 10382,
+        "target_apk_sha256": {
+          "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+        },
+        "display_id": 20,
+        "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+        "grant_consumed": true,
+        "grant_retired": true,
+        "grants_tool_authority": false,
+        "actor_kind": "tool_workflow",
+        "model_issued": false,
+        "fixed_intent_outcome_unchanged": "draft_opened",
+        "workflow_verified": true,
+        "stop_reason": null,
+        "initial": {
+          "observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+          "package": "com.motorola.stylus",
+          "window_id": 3571,
+          "display_id": 20,
+          "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+          "tree_sha256": "5606c5ddde421d3ab3248949b88a796284c3bb7a348a96259a27d5cb80310134",
+          "rotation": 0
+        },
+        "current": {
+          "observation_id": "8b1c2ac37091494bb7aee3000929bf12",
+          "package": "com.motorola.stylus",
+          "window_id": 3572,
+          "display_id": 20,
+          "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+          "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+          "rotation": 0
+        },
+        "stable_readback": {
+          "observation_id": "99aaf49bce494ba599086009ff2a7ac8",
+          "package": "com.motorola.stylus",
+          "window_id": 3572,
+          "display_id": 20,
+          "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+          "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+          "rotation": 0
+        },
+        "children": [
+          {
+            "child": {
+              "schema": "hepta.tool-child.v1",
+              "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+              "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+              "parent_step": 1,
+              "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+              "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+              "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+              "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+              "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+              "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+              "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+              "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+              "target_package": "com.motorola.stylus",
+              "target_uid": 10382,
+              "target_apk_sha256": {
+                "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+              },
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "grant_consumed": true,
+              "grant_retired": true,
+              "grants_tool_authority": false,
+              "child_id": "b6b2c1e1288b4a9d0fc78ef87df41621d109e37e082f906c3a7a13974d3b45e3",
+              "child_ordinal": 1,
+              "actor_kind": "tool_child",
+              "model_issued": false,
+              "action": "back",
+              "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+              "node_id": null,
+              "node_label": null,
+              "service_entered": true,
+              "automatic_retry_allowed": false
+            },
+            "before": {
+              "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+              "package": "com.motorola.stylus",
+              "window_id": 3571,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "5606c5ddde421d3ab3248949b88a796284c3bb7a348a96259a27d5cb80310134",
+              "rotation": 0
+            },
+            "after": {
+              "observation_id": "577663b1679c470c8163f6888fef642d",
+              "package": "com.motorola.stylus",
+              "window_id": 3569,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "a868bafca93a75cfecb916dfaa0de15b81c093d665c07a0ba08c90042c9c12f7",
+              "rotation": 0
+            },
+            "accepted": true,
+            "dispatched": true,
+            "stale": false,
+            "detail": "后台工具已定向派发；下一步重新观察",
+            "live_lease_verified": true,
+            "service_child_receipt": {
+              "schema": "hepta.tool-child.v1",
+              "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+              "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+              "parent_step": 1,
+              "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+              "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+              "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+              "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+              "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+              "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+              "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+              "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+              "target_package": "com.motorola.stylus",
+              "target_uid": 10382,
+              "target_apk_sha256": {
+                "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+              },
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "grant_consumed": true,
+              "grant_retired": false,
+              "grants_tool_authority": false,
+              "child_id": "b6b2c1e1288b4a9d0fc78ef87df41621d109e37e082f906c3a7a13974d3b45e3",
+              "child_ordinal": 1,
+              "actor_kind": "tool_child",
+              "model_issued": false,
+              "action": "back",
+              "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+              "node_id": null,
+              "node_label": null,
+              "service_entered": true,
+              "automatic_retry_allowed": false
+            }
+          },
+          {
+            "child": {
+              "schema": "hepta.tool-child.v1",
+              "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+              "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+              "parent_step": 1,
+              "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+              "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+              "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+              "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+              "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+              "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+              "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+              "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+              "target_package": "com.motorola.stylus",
+              "target_uid": 10382,
+              "target_apk_sha256": {
+                "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+              },
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "grant_consumed": true,
+              "grant_retired": true,
+              "grants_tool_authority": false,
+              "child_id": "2a848edb1c2be717a9236783619a6876b2f73aae13a581cfa85175112921b335",
+              "child_ordinal": 2,
+              "actor_kind": "tool_child",
+              "model_issued": false,
+              "action": "click",
+              "observation_id": "577663b1679c470c8163f6888fef642d",
+              "node_id": "n12",
+              "node_label": "文字笔记 · 今天 · Hepta-v53r1-bb0c238aac48…",
+              "service_entered": true,
+              "automatic_retry_allowed": false
+            },
+            "before": {
+              "observation_id": "577663b1679c470c8163f6888fef642d",
+              "package": "com.motorola.stylus",
+              "window_id": 3569,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "a868bafca93a75cfecb916dfaa0de15b81c093d665c07a0ba08c90042c9c12f7",
+              "rotation": 0
+            },
+            "after": {
+              "observation_id": "8b1c2ac37091494bb7aee3000929bf12",
+              "package": "com.motorola.stylus",
+              "window_id": 3572,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+              "rotation": 0
+            },
+            "accepted": true,
+            "dispatched": true,
+            "stale": false,
+            "detail": "节点点击已接受",
+            "live_lease_verified": true,
+            "service_child_receipt": {
+              "schema": "hepta.tool-child.v1",
+              "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+              "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+              "parent_step": 1,
+              "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+              "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+              "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+              "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+              "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+              "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+              "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+              "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+              "target_package": "com.motorola.stylus",
+              "target_uid": 10382,
+              "target_apk_sha256": {
+                "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+              },
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "grant_consumed": true,
+              "grant_retired": false,
+              "grants_tool_authority": false,
+              "child_id": "2a848edb1c2be717a9236783619a6876b2f73aae13a581cfa85175112921b335",
+              "child_ordinal": 2,
+              "actor_kind": "tool_child",
+              "model_issued": false,
+              "action": "click",
+              "observation_id": "577663b1679c470c8163f6888fef642d",
+              "node_id": "n12",
+              "node_label": "文字笔记 · 今天 · Hepta-v53r1-bb0c238aac48…",
+              "service_entered": true,
+              "automatic_retry_allowed": false
+            }
+          }
+        ],
+        "model_done_synthesized": false,
+        "persistent_storage_bytes_verified": false
+      },
+      "persistent_storage_bytes_verified": false,
+      "new_database_item_identity_verified": false,
+      "current_editor_raw_exact": false,
+      "current_body_evidence": {
+        "matched": true,
+        "raw_exact": false,
+        "persistent_bytes_verified": false,
+        "node_id": "n10",
+        "action_label": "Hepta-v53r1-bb0c238aac48 明天下午3点看牙，带上…",
+        "raw_text_sha256": "9363e3b7c0ba5483a21feeda8e1773ce9def5016944cffa90584e1bd45846549",
+        "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+        "trailing_lf_count": 40,
+        "match_rule": "body_plus_observed_40_lf",
+        "missing": null
+      },
+      "current_list_match": false,
+      "current_list_missing": "editor_present_not_note_list",
+      "current_list_evidence": {
+        "matched": false,
+        "missing": "editor_present_not_note_list",
+        "match_rule": null,
+        "node_id": null,
+        "source_path": null,
+        "source_view_id": null,
+        "source_text_sha256": null,
+        "node_app_tree_sha256": null,
+        "text_scope": "Complete accessibility text source; visual clipping and persistent storage bytes are unverified.",
+        "persistent_bytes_verified": false
+      },
+      "observation_chain_verified": true,
+      "terminal_binding_and_cleanup_verified": true,
+      "completion_actor": "controller/tool_workflow",
+      "model_done_synthesized": false,
+      "controller_completion_requested": true,
+      "controller_native_parent_session_bound": true
+    }
+  },
+  "target_task_inventory": {
+    "schema": "hepta.actual-task-display-enumeration.v1",
+    "target_package": "com.motorola.stylus",
+    "display_ids": [
+      0,
+      1
+    ],
+    "target_task_displays": [],
+    "target_tasks": [],
+    "enumerated_task_count": 11,
+    "enumerated_activity_count": 6,
+    "activity_dump_sha256": "7a19a63f9792f10c15e900b8bb9e2e54472d0175e5ee7ecc603705381737c478",
+    "claim_scope": "actual Task headers and enclosed Hist records before each display's Resumed activities boundary; orientation/supervisor references do not create tasks"
+  },
+  "target_recents": {
+    "schema": "hepta.background-preparation-recents.v1",
+    "dump_sha256": "d1fc1c9e638b1b6c95f5e6b93a220ec7a6de76ea631e2d6c08769a095da556a3",
+    "recognized_header": true,
+    "target_references": [],
+    "target_reference_present": false,
+    "task_removal_attempted": false,
+    "scope": "exact-package references in the complete observed recents dump; any match blocks readiness"
+  },
+  "displays_before": {
+    "0": {
+      "name": "内置屏幕",
+      "description": "DisplayInfo{\"内置屏幕\", displayId 0, displayGroupId 0, FLAG_SECURE, FLAG_SUPPORTS_PROTECTED_BUFFERS, FLAG_TRUSTED, real 1224 x 2992, largest app 2992 x 2992, smallest app 1224 x 1224, appVsyncOff 1000000, presDeadline 16111111, mode 3, renderFrameRate 90.0, hasArrSupport false, frameRateCategoryRate FrameRateCategoryRate {normal=60.0, high=90.0}, supportedRefreshRates [120.00001, 165.0, 90.0, 60.000004, 30.000002, 24.000002], defaultMode 1, userPreferredModeId -1, supportedModes [{id=1, width=1224, height=2992, fps=120.00001, vsync=120.00001, synthetic=false, alternativeRefreshRates=[24.000002, 30.000002, 60.000004], supportedHdrTypes=[1, 2, 3, 4]}, {id=2, width=1224, height=2992, fps=165.0, vsync=165.0, synthetic=false, alternativeRefreshRates=[], supportedHdrTypes=[1, 2, 3, 4]}, {id=3, width=1224, height=2992, fps=90.0, vsync=90.0, synthetic=false, alternativeRefreshRates=[], supportedHdrTypes=[1, 2, 3, 4]}, {id=4, width=1224, height=2992, fps=60.000004, vsync=60.000004, synthetic=false, alternativeRefreshRates=[24.000002, 30.000002, 120.00001], supportedHdrTypes=[1, 2, 3, 4]}, {id=5, width=1224, height=2992, fps=30.000002, vsync=30.000002, synthetic=false, alternativeRefreshRates=[24.000002, 60.000004, 120.00001], supportedHdrTypes=[1, 2, 3, 4]}, {id=6, width=1224, height=2992, fps=24.000002, vsync=24.000002, synthetic=false, alternativeRefreshRates=[30.000002, 60.000004, 120.00001], supportedHdrTypes=[1, 2, 3, 4]}], appsSupportedModes [{id=1, width=1224, height=2992, fps=120.00001, vsync=120.00001, synthetic=false, alternativeRefreshRates=[24.000002, 30.000002, 60.000004], supportedHdrTypes=[1, 2, 3, 4]}, {id=2, width=1224, height=2992, fps=165.0, vsync=165.0, synthetic=false, alternativeRefreshRates=[], supportedHdrTypes=[1, 2, 3, 4]}, {id=3, width=1224, height=2992, fps=90.0, vsync=90.0, synthetic=false, alternativeRefreshRates=[], supportedHdrTypes=[1, 2, 3, 4]}, {id=4, width=1224, height=2992, fps=60.000004, vsync=60.000004, synthetic=false, alternativeRefreshRates=[24.000002, 30.000002, 120.00001], supportedHdrTypes=[1, 2, 3, 4]}, {id=5, width=1224, height=2992, fps=30.000002, vsync=30.000002, synthetic=false, alternativeRefreshRates=[24.000002, 60.000004, 120.00001], supportedHdrTypes=[1, 2, 3, 4]}, {id=6, width=1224, height=2992, fps=24.000002, vsync=24.000002, synthetic=false, alternativeRefreshRates=[30.000002, 60.000004, 120.00001], supportedHdrTypes=[1, 2, 3, 4]}], readyfor modes [], hdrCapabilities HdrCapabilities{mSupportedHdrTypes=[1, 2, 3, 4], mMaxLuminance=2000.0, mMaxAverageLuminance=2000.0, mMinLuminance=1.0E-4}, isForceSdr false, userDisabledHdrTypes [], minimalPostProcessingSupported false, rotation 0, state ON, committedState ON, type INTERNAL, uniqueId \"local:4630947043778501779\", app 1224 x 2992, density 480 (464.02386 x 463.3951) dpi, layerStack 0, colorMode 0, supportedColorModes [0, 7, 9], address {port=147, model=0x40446dccee101c}, deviceProductInfo DeviceProductInfo{name=, manufacturerPnpId=QCM, productId=1, modelYear=null, manufactureDate=ManufactureDate{week=27, year=2006}, connectionToSinkType=1}, removeMode 0, refreshRateOverride 90.0, brightnessMinimum 0.0, brightnessMaximum 1.0, brightnessDefault 0.38188976, brightnessDim 0.026506964, installOrientation ROTATION_0, layoutLimitedRefreshRate null, hdrSdrRatio 1.0, thermalRefreshRateThrottling {}, thermalBrightnessThrottlingDataId default, canHostTasks true}, DisplayMetrics{density=3.0, width=1224, height=2992, scaledDensity=3.0, xdpi=464.02386, ydpi=463.3951}, isValid=true, SkipDeskVcWaCheck=false, HintUseDeskVcWa=false, UseDeskVcWa=false, DeskVcWaPackageFound=false, DeskVcWaLastRot=0"
+    }
+  },
+  "blockers": [],
+  "ui_actions": [
+    {
+      "action": "open-background-app-choices",
+      "text": "后台范围：1 个应用（更改）",
+      "bounds": [
+        48,
+        816,
+        1176,
+        960
+      ],
+      "point": [
+        612,
+        888
+      ]
+    },
+    {
+      "action": "scroll-background-app-choices",
+      "observed_bounds": [
+        79,
+        334,
+        1145,
+        2686
+      ],
+      "coordinates": [
+        612,
+        2098,
+        612,
+        1118
+      ]
+    },
+    {
+      "action": "scroll-background-app-choices",
+      "observed_bounds": [
+        79,
+        334,
+        1145,
+        2686
+      ],
+      "coordinates": [
+        612,
+        2098,
+        612,
+        1118
+      ]
+    },
+    {
+      "action": "scroll-background-app-choices",
+      "observed_bounds": [
+        79,
+        334,
+        1145,
+        2686
+      ],
+      "coordinates": [
+        612,
+        2098,
+        612,
+        1118
+      ]
+    },
+    {
+      "action": "scroll-background-app-choices",
+      "observed_bounds": [
+        79,
+        334,
+        1145,
+        2686
+      ],
+      "coordinates": [
+        612,
+        2098,
+        612,
+        1118
+      ]
+    },
+    {
+      "action": "select-explicit-default-background-app",
+      "text": "Hepta 网页 · org.trillionnium.hepta.webhelper",
+      "bounds": [
+        79,
+        2254,
+        1145,
+        2398
+      ],
+      "point": [
+        612,
+        2326
+      ]
+    },
+    {
+      "action": "confirm-notes-and-helper-background-apps",
+      "text": "使用所选应用",
+      "bounds": [
+        785,
+        2698,
+        1109,
+        2860
+      ],
+      "point": [
+        947,
+        2779
+      ]
+    }
+  ],
+  "owner_and_mode_verified_before_scroll": true,
+  "ui_preferences_original": {
+    "file": "background-ui-choice-original.xml",
+    "bytes": 653,
+    "sha256": "c9364dde8c0b52e7890835d720967987f708e972b397fcc3f76d9d76a667137f",
+    "raw_utf8": "<?xml version='1.0' encoding='utf-8' standalone='yes' ?>\n<map>\n    <string name=\"selection\">{&quot;schema&quot;:&quot;hepta.background-ui-choice.v1&quot;,&quot;initial&quot;:&quot;com.motorola.stylus&quot;,&quot;packages&quot;:[{&quot;package&quot;:&quot;com.motorola.stylus&quot;,&quot;uid&quot;:10382,&quot;signers&quot;:[&quot;be8804a55e9045a580d204979f6efb15c058731aa1021b78c046feab8ae76a26&quot;]},{&quot;package&quot;:&quot;org.trillionnium.hepta.webhelper&quot;,&quot;uid&quot;:10484,&quot;signers&quot;:[&quot;202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5&quot;]}]}</string>\n    <boolean name=\"enabled\" value=\"true\" />\n</map>\n"
+  },
+  "background_selection": {
+    "allowed_packages": [
+      "com.motorola.stylus",
+      "org.trillionnium.hepta.webhelper"
+    ],
+    "bootstrap_package": "com.motorola.stylus",
+    "scope_count": 2,
+    "automatic_target_text": "本次将自动使用：Moto 笔记。已保存的应用范围保持不变。",
+    "initial_spinner_hidden": true,
+    "selection_source": "ordinary_visible_multi_choice_and_persisted_initial"
+  },
+  "start_point": [
+    180,
+    1114
+  ],
+  "start_bounds": [
+    48,
+    1042,
+    312,
+    1186
+  ],
+  "final_ui_label": "start-viewport-00",
+  "formal_service_binding": {
+    "verified": true,
+    "component": "org.trillionnium.hepta.local/org.trillionnium.hepta.local.HeptaAccessibilityService",
+    "app_pid": 31544,
+    "app_uid": 10481,
+    "client_pid": 3622,
+    "client_uid": 1000,
+    "binder_received": true,
+    "has_bound": true,
+    "connection_ids": [
+      "a679b2d"
+    ],
+    "service_dump_sha256": "46e0bdd2c2fb59a19a971523c711850a95f94378db2b385fb5839d527b738ae4",
+    "identity_scope": "exact active AMS ServiceRecord and live system-client binding; label-only AccessibilityManager rows are not component attestation"
+  },
+  "main_display_mapping": {
+    "verified": true,
+    "logical_display_id": 0,
+    "physical_display_id": "4630947043778501779",
+    "hwc_display_id": 0,
+    "port": 147,
+    "screen_size": [
+      1224,
+      2992
+    ],
+    "rotation": 0,
+    "display_dump_sha256": "e2459450291324181cb5646ec8c3939b303f1efc92fbb49d427c0675f6a5808e",
+    "surfaceflinger_dump_sha256": "d01416390f86be91be5202135332b4e587e1528c3e3f97191fc1057b5035c6e2",
+    "claim_scope": "fresh sequential system logical-0 primary/base/override and SurfaceFlinger physical-ID match; HWC ID is not assumed logical"
+  },
+  "prepared_geometry": {
+    "display_id": 0,
+    "screen_size": [
+      1224,
+      2992
+    ],
+    "content_rect": [
+      0,
+      130,
+      1224,
+      2920
+    ],
+    "main_focus": "Window{9dbf25a u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+    "system_bars": [
+      {
+        "type": "statusBars",
+        "source_id": "73500000",
+        "frame": [
+          0,
+          0,
+          1224,
+          130
+        ],
+        "visible": true
+      },
+      {
+        "type": "navigationBars",
+        "source_id": "d17c0001",
+        "frame": [
+          0,
+          2920,
+          1224,
+          2992
+        ],
+        "visible": true
+      }
+    ],
+    "geometry_source": "display0.WindowInsetsStateController.InsetsState"
+  },
+  "prepared_screen_sha256": "70403b827c822eaf38cdd63b3d7e4fd3b73ace755b58382972c5220095c28dc4",
+  "prepared_window_sha256": "cb88e18226e823f3158cffba8b454aa3c5dca99cc35761a9f57307bda9657cf5",
+  "background_notes_reviewed_start_arguments": {
+    "test_mode": "main_user_coexistence",
+    "target_package": "com.motorola.stylus",
+    "start_tap": [
+      180,
+      1114
+    ],
+    "prepared_screen": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-prepare-r1/prepared-main.png",
+    "prepared_screen_sha256": "70403b827c822eaf38cdd63b3d7e4fd3b73ace755b58382972c5220095c28dc4",
+    "prepared_window_dump": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-prepare-r1/prepared-window.txt",
+    "prepared_window_dump_sha256": "cb88e18226e823f3158cffba8b454aa3c5dca99cc35761a9f57307bda9657cf5"
+  },
+  "ordinary_owner_lock_handoff_required": true,
+  "handoff": "Normally close the existing owner before the independent background Notes runner acquires the original operation_lock",
+  "ended_wall_s": 1794478695.5320222
+}

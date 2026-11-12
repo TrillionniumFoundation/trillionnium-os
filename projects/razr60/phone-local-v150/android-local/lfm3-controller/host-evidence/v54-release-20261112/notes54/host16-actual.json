@@ -1,0 +1,308 @@
+{
+  "actual_default_dual_ui_experience_verified": false,
+  "actual_main54_build_sha256": "eadc9dbb63b411015571a488377be6a8704c9f78415169a5164c8f13571f0f72",
+  "all_pass": true,
+  "blocked_external": [],
+  "deployed_files": [
+    {
+      "bytes": 13460,
+      "path": "background_notes_plan.py",
+      "sha256": "df4aa09037d41709dbfa0efae522776f023fc1481859f22a0e078a22f015daff"
+    },
+    {
+      "bytes": 32749,
+      "path": "fixed_intent_v6_acceptance.py",
+      "sha256": "9b858dd02d34558ab6c898209378a2de3d34b38b6f1aa2a099da788273b3f2ba"
+    },
+    {
+      "bytes": 52865,
+      "path": "controller_workflow_evidence.py",
+      "sha256": "405ed06f6302623e36dc39803ebe7781bb349b396851d0bfe6fa46f2ce6b6350"
+    },
+    {
+      "bytes": 28672,
+      "path": "controller_idle_evidence.py",
+      "sha256": "8ef4e544b5ac6f62f17ff37715de7a4be5d051f2312802580d404f15512b7240"
+    },
+    {
+      "bytes": 26922,
+      "path": "prepare_background_notes_v54_r1.py",
+      "sha256": "5e1db9854154042f3124afc1a2890c567a3fa32dedc41f80f237b0bd260e4d90"
+    },
+    {
+      "bytes": 110570,
+      "path": "run_background_notes_v54_r1.py",
+      "sha256": "2fa7d0670786dcc3933974056acc03026e7ffd091f9f4b3218936ae60646df39"
+    },
+    {
+      "bytes": 25220,
+      "path": "live_inflight_window.py",
+      "sha256": "3f3faa3b692257710f48651d48f1a39405f0fb511fd94658af2617ded9443671"
+    },
+    {
+      "bytes": 26325,
+      "path": "main_user_inflight.py",
+      "sha256": "79450f5c07b48958821d388a729223890fcd7f2cd0c085e85e15c48aadee167d"
+    },
+    {
+      "bytes": 26193,
+      "path": "moto_note_body_evidence_v51.py",
+      "sha256": "091bcb7a633c9fec1e668b637fb3619de712c441db99f2164c47c4b3ba629e94"
+    },
+    {
+      "bytes": 30758,
+      "path": "export_v54_case_r1.py",
+      "sha256": "deb9b0b927be4ed87d386ade5db0a712ab0e98cab2596f7e4e5e43814ef5a77f"
+    },
+    {
+      "bytes": 9570,
+      "path": "run_one_v54_helper_then_export_r1.py",
+      "sha256": "ac061e23bdd0c6705b88808273de456b8f4d3a736fda90cb571ca20722781fe4"
+    },
+    {
+      "bytes": 575,
+      "path": "notes-plan-normal-r1.json",
+      "sha256": "46a375026c4de1f29bdd428de36c5141a4eb1ccf0afdea00538b4aaf95ec319b"
+    },
+    {
+      "bytes": 575,
+      "path": "notes-plan-cancel-r1.json",
+      "sha256": "dda4c05334931f2c0cb27a5b5a9d149cb2e9f9603544a43fbe655b75ae4d1a28"
+    },
+    {
+      "bytes": 575,
+      "path": "notes-plan-recovery-r1.json",
+      "sha256": "e0fa8df14e87a82040a437d3e3b2d550c1502bf41fe43c3fe4e88273a0ddef93"
+    }
+  ],
+  "finished_wall_s": 1794476002.977348,
+  "gate_checks": [
+    {
+      "name": "all_11_sources_compile_and_reverse_to_reviewed_pending_exactly",
+      "passed": true
+    },
+    {
+      "name": "actual_signed_release_native17_and_seven_selection_sources_match",
+      "passed": true
+    },
+    {
+      "name": "only_four_help_subprocesses_returned_zero_without_phone",
+      "passed": true
+    }
+  ],
+  "helps": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v54-hostgate-r1/candidate/prepare_background_notes_v54_r1.py",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "0e03fd80d254fe1bdc7d53e126e54e6275e5610f359e8f062d3caf91216e799d",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v54-hostgate-r1/candidate/run_background_notes_v54_r1.py",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "b15773f4621d7363fc9cde8b7691755b1d72101c76ff38333e13bb922673760c",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v54-hostgate-r1/candidate/export_v54_case_r1.py",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "cb757416bc00be685380965cfbce178b4fdf69251d62bbc551cd2ccfdda78ff1",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v54-hostgate-r1/candidate/run_one_v54_helper_then_export_r1.py",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ec119d2aeaf2d2f1e755d5201306a13732d069fb7ea6035e59016afde211d97f",
+      "timed_out": false
+    }
+  ],
+  "historical_behavior_note": "Any inherited pending-identity prose in the source envelope is historical; all final source assignments are bound to the actual eadc9 signed release.",
+  "old_53_suites_rerun": false,
+  "original_inputs": {
+    "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v53-r1/background_notes_plan.py": {
+      "bytes": 6041,
+      "sha256": "28837006b601bb288fb6f9a1fb95a554be052a53c2ae1efc541db8e09473ff7e"
+    },
+    "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v53-r1/controller_idle_evidence.py": {
+      "bytes": 27456,
+      "sha256": "377e67268d359162b1924d1a355f1eb6b3dae894d6e14b139663964b9836371f"
+    },
+    "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v53-r1/controller_workflow_evidence.py": {
+      "bytes": 51945,
+      "sha256": "952bf3cea944c54e220d6dd8134625522ee10d3aa486b9514007f32f3e61cf80"
+    },
+    "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v53-r1/fixed_intent_v6_acceptance.py": {
+      "bytes": 31615,
+      "sha256": "42e7db7a50bc7c7d24b5c9380427050bf6127b0395c674326932645b30e5464b"
+    },
+    "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v53-r1/live_inflight_window.py": {
+      "bytes": 24382,
+      "sha256": "a8855f358ac61684fc435defe7450602ddd8b926d0dd48b72b31b0c370b53973"
+    },
+    "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v53-r1/main_user_inflight.py": {
+      "bytes": 26325,
+      "sha256": "79450f5c07b48958821d388a729223890fcd7f2cd0c085e85e15c48aadee167d"
+    },
+    "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v53-r1/moto_note_body_evidence_v51.py": {
+      "bytes": 26193,
+      "sha256": "091bcb7a633c9fec1e668b637fb3619de712c441db99f2164c47c4b3ba629e94"
+    },
+    "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v53-r1/prepare_background_notes_v53_r1.py": {
+      "bytes": 22720,
+      "sha256": "3779eb4fc02dfd5aa5468e2ed4209631bab00fe9079950a5c875bfe96462f4f3"
+    },
+    "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v53-r1/run_background_notes_v53_r1.py": {
+      "bytes": 106553,
+      "sha256": "0d1aa533221550cbc3b1568fd58f815c138fdaab6863281e71767629d492cfa4"
+    },
+    "/home/alex/hepta-local-007f-20261111/v53-main-host-r2/assembly-r1/RESULT.json": {
+      "bytes": 14697,
+      "sha256": "484b2be823f751ce12c643ac66cd54d4ecd4262ab939b080dd2d0378365ecccc"
+    },
+    "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/SOURCE-INVENTORY.json": {
+      "bytes": 102673,
+      "sha256": "8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d"
+    },
+    "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/assembly-r1/RESULT.json": {
+      "bytes": 15659,
+      "sha256": "eadc9dbb63b411015571a488377be6a8704c9f78415169a5164c8f13571f0f72"
+    },
+    "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/source/src/org/trillionnium/hepta/local/BackgroundSession.java": {
+      "bytes": 38388,
+      "sha256": "0045e81d6578a071de8dbdedd3c589afeb6025cf52d6c76fceb0e30e11e3dec6"
+    },
+    "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/source/src/org/trillionnium/hepta/local/BackgroundTaskTarget.java": {
+      "bytes": 2816,
+      "sha256": "e18294b0b18938636ed4112c0a5e82b2b70d76c5fb854a7fe25a876518fc73b7"
+    },
+    "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/source/src/org/trillionnium/hepta/local/BackgroundUiPreferences.java": {
+      "bytes": 10015,
+      "sha256": "a8bd7da61e46905e2e25dd064e6d04be73c26ba4b496b73fe4d8ef985ef29031"
+    },
+    "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/source/src/org/trillionnium/hepta/local/LocalTaskController.java": {
+      "bytes": 112730,
+      "sha256": "ee0430dcfc6709232387e77dc4f3843b0b2c25e84ebcff97a1b22d79a3c58919"
+    },
+    "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/source/src/org/trillionnium/hepta/local/MainActivity.java": {
+      "bytes": 49287,
+      "sha256": "22e03ae02378cd05981faab93f70c2686de633b6bb7d35ab640ef358150c2aa5"
+    },
+    "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/source/src/org/trillionnium/hepta/local/NotesOwnerIntent.java": {
+      "bytes": 12329,
+      "sha256": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f"
+    },
+    "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/source/src/org/trillionnium/hepta/local/TaskAuthorization.java": {
+      "bytes": 23598,
+      "sha256": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8"
+    }
+  },
+  "originals_unchanged": true,
+  "phone_actions": 0,
+  "phone_main_invoked": false,
+  "prepared_or_started_task": false,
+  "regression": {
+    "bytes": 2032,
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v54-hostgate-r1/REGRESSION.json",
+    "sha256": "dcdd3307bf00b760ee82f810bb02b6c0acbe2f22efafc8330a35bd6028d63a6e"
+  },
+  "runtime_directory": "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v54-r1",
+  "schema": "hepta.notes54-dual-ui-adapter-hoststage.v1",
+  "source_commit": "42d3a0f447807659c0f78c8273edee01dd1b734f",
+  "source_inventory_sha256": "8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d",
+  "started_wall_s": 1794476002.1290572,
+  "targeted_check_count": 16,
+  "targeted_checks": [
+    {
+      "name": "three_exact_comma_plans_keep_full_owner_without_authority_grant",
+      "passed": true
+    },
+    {
+      "name": "dual_ui_original_bytes_and_two_apps_preserved_effective_notes_only",
+      "passed": true
+    },
+    {
+      "name": "metamorphic_saved_helper_initial_kept_while_effective_target_stays_notes",
+      "passed": true
+    },
+    {
+      "name": "notes_only_saved_selection_cannot_fake_dual_ui_regression",
+      "passed": true
+    },
+    {
+      "name": "boolean_uid_is_not_an_integer_identity",
+      "passed": true
+    },
+    {
+      "name": "duplicate_saved_initial_key_rejected",
+      "passed": true
+    },
+    {
+      "name": "preference_xml_doctype_rejected",
+      "passed": true
+    },
+    {
+      "name": "boolean_scope_count_does_not_equal_two",
+      "passed": true
+    },
+    {
+      "name": "visible_initial_spinner_cannot_fake_owner_autoselection",
+      "passed": true
+    },
+    {
+      "name": "widened_original_ui_set_rejected",
+      "passed": true
+    },
+    {
+      "name": "changed_original_preference_bytes_rejected",
+      "passed": true
+    },
+    {
+      "name": "owner_cannot_change_after_ordinary_preparation",
+      "passed": true
+    },
+    {
+      "name": "prepared_true_with_error_is_not_admission",
+      "passed": true
+    },
+    {
+      "name": "actual_signed_release_and_seven_sources_bound_with_explicit_synthetic_task_identity",
+      "passed": true
+    },
+    {
+      "name": "wrong_installed_apk_rejected_by_real_source_binding",
+      "passed": true
+    },
+    {
+      "name": "all_inter_module_source_pins_and_entry_apk_pins_closed",
+      "passed": true
+    }
+  ]
+}
