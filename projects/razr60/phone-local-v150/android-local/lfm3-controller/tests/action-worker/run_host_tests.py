@@ -75,6 +75,7 @@ def main():
     background = source / 'local/BackgroundSession.java'
     engine = source / 'local/LocalModelEngine.java'
     activity = source / 'local/MainActivity.java'
+    flight_stability = source / 'local/WebFlightNativeStability.java'
     template = Path(__file__).with_name('ActionWorkerHost.template')
     replacements = {
         '/*__STOP__*/': (controller, 'public void stop(){'),
@@ -88,6 +89,8 @@ def main():
         '/*__CLAIM_PROCESS__*/': (engine, 'private static void claimProcess(RunHandle handle,AtomicReference<RunHandle> local){'),
         '/*__CANCEL_ACTIVE__*/': (engine, 'public void cancelActive() {'),
         '/*__ACTION_GRAPH__*/': (service, 'private static final class Graph {'),
+        '/*__GRAPH_BUDGET__*/': (service, 'private interface GraphBudget {'),
+        '/*__CHECK_READ_BUDGET__*/': (service, 'private static void checkReadBudget(GraphBudget budget){'),
         '/*__NODE_REFERENCE_COPY__*/': (service, 'private NodeRef(NodeRef original){'),
         '/*__REGION_CHILD__*/': (service, 'private AccessibilityNodeInfo regionChild(ActionWork work,AccessibilityNodeInfo parent,int index,List<AccessibilityNodeInfo> temporary){'),
         '/*__REGION_PARENT__*/': (service, 'private AccessibilityNodeInfo regionParent(ActionWork work,AccessibilityNodeInfo child,List<AccessibilityNodeInfo> temporary){'),
@@ -102,6 +105,15 @@ def main():
         fixture = fixture.replace(marker, method)
         extracted.append({'path': str(path.relative_to(root)), 'signature': signature,
                           'body_sha256': hashlib.sha256(method.encode()).hexdigest()})
+    limit_signature = 'static final int MAX_NATIVE_NODES='
+    flight_raw = flight_stability.read_text()
+    if flight_raw.count(limit_signature) != 1 or fixture.count('/*__FLIGHT_NATIVE_LIMIT__*/') != 1:
+        raise ValueError('exact Flight collection limit marker changed')
+    limit_start = flight_raw.index(limit_signature)
+    limit = flight_raw[limit_start:flight_raw.index(';', limit_start) + 1]
+    fixture = fixture.replace('/*__FLIGHT_NATIVE_LIMIT__*/', limit)
+    extracted.append({'path': str(flight_stability.relative_to(root)), 'signature': limit_signature,
+                      'body_sha256': hashlib.sha256(limit.encode()).hexdigest()})
     button_signature = 'stopTask.setOnClickListener(v -> {'
     button = body(activity.read_text(), button_signature)
     if fixture.count('/*__STOP_BUTTON_BODY__*/') != 1:
@@ -114,8 +126,10 @@ def main():
     relative = ['local/ActionExecutionState.java', 'local/TaskCancellationQueue.java',
                 'local/FixedIntentAttemptGuard.java', 'local/ObservedImeEnter.java',
                 'background/FixedIntentTarget.java', 'background/FixedIntentTools.java',
-                'background/BrokerProtocol.java', 'local/OwnedWorkerCancellation.java']
+                'background/BrokerProtocol.java', 'local/OwnedWorkerCancellation.java',
+                'webprotocol/WebDomCanonical.java']
     sources = [source / name for name in relative]
+    sources += sorted((root / 'tests/qualification-scope/fixtures/org/json').glob('*.java'))
     java = os.environ.get('JAVA', shutil.which('java') or '')
     javac = os.environ.get('JAVAC') or shutil.which('javac')
     if not java:
@@ -127,13 +141,14 @@ def main():
     compile_result = subprocess.run(compile_command, text=True, capture_output=True, timeout=60)
     (output / 'compile.stdout').write_text(compile_result.stdout)
     (output / 'compile.stderr').write_text(compile_result.stderr)
-    inputs = [identity(p, root) for p in sources + [controller, service, background, engine, activity, template, Path(__file__).resolve()]]
+    inputs = [identity(p, root) for p in sources + [controller, service, background, engine, activity, flight_stability, template, Path(__file__).resolve()]]
     report = {'schema': 'hepta.action-worker-host-run.v1', 'source_inputs': inputs, 'extracted_methods': extracted,
               'compile_command': compile_command, 'compiler_returncode': compile_result.returncode,
               'java8_bytecode_target': True, 'java8_api_cross_compile': False,
               'android_compilation': False, 'phone_operations': 0, 'device_qualification': False}
     report['graph_lifetime_boundary'] = ('Exact production Graph, NodeRef copy constructor and region ownership helpers execute against '
-                                        'instrumented node/geometry/bridge carriers; no Android Binder, Web ARM or native region authority is created.')
+                                        'instrumented node/geometry/bridge carriers, with the actual production WebDomCanonical and '
+                                        'Flight collection limit. No Android Binder, Web ARM or native region authority is created.')
     if compile_result.returncode == 0:
         run_command = [java, '-cp', str(output / 'classes'), 'org.trillionnium.hepta.local.ActionWorkerHost']
         run_result = subprocess.run(run_command, text=True, capture_output=True, timeout=45)

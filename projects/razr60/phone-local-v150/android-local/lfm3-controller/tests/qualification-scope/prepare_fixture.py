@@ -46,7 +46,7 @@ def prepare(source, output):
         'graph_limits': section(s, '    private static final int MAX_NODES=', '\n    private final Map<String,String> launchable='),
         'node_graph': pieces['node_graph'],
         'window_metadata': section(s, '    /** Read only the selected root\'s window metadata;', '    private List<AccessibilityWindowInfo> windowsForDisplay('),
-        'snapshot': section(s, '    /** A background root comes only', '    private static String nodeSignature('),
+        'snapshot': section(s, '    /** A background root comes only', '    private FlightNativeCheck requireLiveFlightNativeStability('),
         'node_identity': pieces['node_identity'],
         'strings': pieces['strings'],
     }
@@ -67,6 +67,10 @@ def prepare(source, output):
     (output/'WebEvidenceBinding.java').write_text("package org.trillionnium.hepta.webprotocol;\nimport org.json.JSONArray;\nimport org.json.JSONObject;\nimport java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.Iterator;\n/** Exact production canonical comparison only; no binding, helper or lease construction. */\npublic final class WebEvidenceBinding {\n    private WebEvidenceBinding(){throw new AssertionError(\"comparison-only fixture\");}\n" + comparison_parts['binding_canonical'] + '\n}\n')
     (output/'WebEvidenceReceipt.java').write_text("package org.trillionnium.hepta.local;\nimport org.trillionnium.hepta.webprotocol.WebEvidenceBinding;\n/** Exact production comparison only; no receipt or helper authority. */\nfinal class WebEvidenceReceipt {\n    private WebEvidenceReceipt(){throw new AssertionError(\"comparison-only fixture\");}\n" + comparison_parts['receipt_same'] + '}\n')
     (output/'WebRegionNativeBridge.java').write_text("package org.trillionnium.hepta.local;\n/** Type-only legacy non-Web boundary. No native region evidence or role snapshot can be created. */\nfinal class WebRegionNativeBridge {\n    final PhoneObservation.Node anchor=null;\n    final String nativeWebViewId=null;\n    static final class Role {\n        final String nodeId=null;\n        private Role(){throw new AssertionError(\"legacy fixture has no native role capability\");}\n    }\n    java.util.List<Role> roles(){throw new AssertionError(\"legacy fixture cannot expose native roles\");}\n    private WebRegionNativeBridge(){throw new AssertionError(\"legacy fixture has no Web native-region capability\");}\n}\n")
+    flight_stability_path=pkg/'WebFlightNativeStability.java'
+    flight_stability_raw=flight_stability_path.read_text()
+    flight_limit=section(flight_stability_raw, '    static final int MAX_NATIVE_NODES=', '    private WebFlightNativeStability()')
+    (output/'WebFlightNativeStability.java').write_text("package org.trillionnium.hepta.local;\n/** Type-only legacy boundary: exact production collection limit, no Flight permit construction. */\nfinal class WebFlightNativeStability {\n"+flight_limit+"    static final class Permit {\n        private Permit(){throw new AssertionError(\"legacy fixture has no Flight stability permit\");}\n    }\n    private WebFlightNativeStability(){throw new AssertionError(\"legacy fixture has no Flight capability\");}\n}\n")
     session = (pkg / 'LocalTaskSession.java').read_text()
     session_parts = {
         'schedule': section(session, '    public boolean schedule(final String owner,String source,String testNonceSha,long delayMillis)', '    /** The only caller is the positive button'),
@@ -101,7 +105,8 @@ def prepare(source, output):
     web_fixture_compile.write_bytes(web_fixture_raw)
     if web_fixture_compile.read_bytes()!=web_fixture_raw or web_fixture_source.read_bytes()!=web_fixture_raw:
         raise RuntimeError('Exact Web type-boundary compiler copy required')
-    files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java',web_protocol]
+    web_dom_canonical=source/'src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java'
+    files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java',web_protocol,web_dom_canonical]
     files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','FixedIntentDispatch','BrokerProtocol')]
     files += sorted(output.glob('*.java'))
     files += sorted((Path(__file__).parent/'fixtures').rglob('*.java'))
@@ -114,6 +119,9 @@ def prepare(source, output):
         'background_fixture_boundary':'Explicit synthetic OWNER and seven-field owner_selected_initial_app Selection pass through the full actual PhoneObservation projection; the six-argument derived-owner constructor still throws',
         'comparison_source_files':{str(p.relative_to(source)):hashlib.sha256(p.read_bytes()).hexdigest() for p in (binding_path,receipt_path,web_protocol)},
         'web_native_fixture_boundary':'The original complete dispatch branch is retained; WebRegionNativeBridge, NativeRegionCheck and both WebSession native-region endpoints are throwing type-only boundaries',
+        'flight_native_fixture_boundary':'The complete production validate branch remains; all Flight permit/live-check endpoints throw, and the graph freezer uses the actual production WebDomCanonical with the exact production Flight node limit',
+        'flight_source_files':{str(p.relative_to(source)):hashlib.sha256(p.read_bytes()).hexdigest() for p in (flight_stability_path,web_dom_canonical)},
+        'flight_collection_limit':{'bytes':len(flight_limit.encode()),'sha256':hashlib.sha256(flight_limit.encode()).hexdigest()},
         'web_fixture_compiler_copy':{'source_path':str(web_fixture_source.relative_to(source)),
             'compiler_path':str(web_fixture_compile),'bytes':len(web_fixture_raw),
             'sha256':hashlib.sha256(web_fixture_raw).hexdigest(),'byte_identical':True},

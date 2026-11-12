@@ -1,31 +1,60 @@
-# Scoped Web and asynchronous control integration contract
+# Flight stability and asynchronous control integration contract
 
-This unqualified v57 candidate integrates the action/Stop/session work from
-`0b9e0031d2e137d6823668946d48e8154b339787` with the installed scoped Web source
-`dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e`. The actual common ancestor is
-`42d3a0f447807659c0f78c8273edee01dd1b734f`. File selection follows that ancestor;
-version numbers and file sizes are not used to choose behavior.
+This unqualified v58 candidate forward-integrates published candidate
+`23f3d1d739e6f34de189850961d9976f381b00a3` with the exact production bytes
+identified by installed build asset
+`7ebcc34c252b1fed0f110f84480ed10aaeb49057362b0ec140dea66f722fe692`.
+The installed asset lists 217 production inputs. Its source bytes were verified
+against that asset; a phone Git commit and Git merge-base are not asserted.
 
-The integration retains the original candidate's existing files, brings in the
-29 fresh source/test paths and resolves the eight overlapping paths. Additional
-necessary fixture adaptations preserve their original semantic assertions.
-The 164 fresh historical host-evidence paths stay at their original immutable
-source; they are not newly copied into this component. The complete regenerated
-SOURCE-MANIFEST.json binds every actual file in this integrated component.
+The integration preserves the installed native flight stability policy,
+WebFlightSession lifecycle, typed TaskCompletionGate Web completion and public
+shopping geometry representation. It combines their service/controller wiring
+with the preceding candidate's owned off-main action work, cancellation queue,
+observation worker, ordered session persistence and helper identity checks.
+The 164 historical host-evidence paths excluded by the preceding integration
+remain at their original immutable source; no private phone evidence is copied
+into this component. SOURCE-MANIFEST.json binds the complete integrated tree.
 
-Android version 57 / `0.57.0-off-main-action-stop-candidate` identifies this
+Android version 58 / `0.58.0-flight-action-stop-candidate` identifies this
 candidate. It does not establish an APK, original signature, installation,
 phone acceptance or production release. Model/native/sampler pins remain fixed.
 
-## Validation boundaries
+## Current validation boundaries
 
-The original 112-source compilation and prior targeted receipts are historical
-evidence for the preceding implementation. This integration has 117 Java sources
-and must pass a new complete Android/native/resource/APK build and canonical host
-regression against its exact 219 production inputs. Host fixture boundaries are
-explicit; they do not establish Android Binder/fsync behavior or phone operation.
-The unchanged 105-check runner is retained with the fresh Web query and other
-source/test extensions. Actual result counts belong to source-bound receipts.
+The current integration has 118 Java sources and 220 production inputs.
+Qualification requires the original 105-check runner on this complete source,
+separate current Web 80/44/query40/retirement36 gates, the new synthetic flight
+policy36 gate, and a complete source-bound Android build and original signing.
+Any native reuse must be explicit, backed by unchanged input and payload hashes,
+and reported separately from new native compilation. Local JDK21 Java8
+source/target results do not constitute a Java8 API-release or Android gate.
+Host fixtures do not establish Android Binder behavior or phone business success.
+
+The new flight policy unit tests use declared synthetic DOM/native/retained-node
+data. They exercise the pure comparison policy, not Permit.prepare, live task
+leases, Android Binder or service dispatch. The existing query40 assertions and
+counts remain separate. Web composition now has 44 cases: the obsolete
+nonempty bridge-view-id positive fixture was explicitly migrated to the current
+protocol and an old-shape rejection case was added; helper-version and product
+URL fixtures use current production contracts. These fixture migrations must
+not be presented as unchanged old-protocol semantics.
+
+Graph construction freezes bounded complete native and retained evidence on its
+observation worker. The action handoff copies immutable strings in constant time
+and clones the nodes it owns. The action worker parses and checks only its own
+captured graph; cancellation and the original deadline fence every live native
+read. The narrow carousel exception cannot waive stable DOM membership, target
+identity, parent chain, window/display binding, center coverage or exact overlap.
+This policy does not add a flight-result provider or make arbitrary Web actions
+eligible for native input.
+
+A terminal Web result must be captured at accepted model completion, bound to
+the exact task/run/frame and read-only scope, consumed once by ordinary typed
+close, and verified after actual model native exit and helper/background release.
+Terminal decision and Stop ordering are sealed under the existing short lock;
+no native cancellation or disk persistence moves under that lock. Historical
+completion and phone receipts remain historical until this candidate runs.
 
 The selected action node, the bounded scoped-Web role nodes and WebView node use
 owned copies for worker-side validation. Original task, observation, authorization,

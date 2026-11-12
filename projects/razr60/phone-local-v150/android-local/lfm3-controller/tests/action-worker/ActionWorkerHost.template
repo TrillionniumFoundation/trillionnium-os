@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.UUID;
+import org.json.JSONArray;
 import org.trillionnium.hepta.background.FixedIntentTarget;
 
 /** JVM concurrency cases. No Android device, SDK process, UI or physical fsync-stall claim. */
@@ -90,9 +91,16 @@ public final class ActionWorkerHost {
         private static final class ObservationState {}
         private static final class ObservedWindowMetadata {}
         private static final class PhoneObservation {
-            private static final class CollectionStats {}
-            private static final class Node {final String id;Node(String id){this.id=id;}}
+            private static final class CollectionStats {int visited,retained;}
+            private static final class Node {
+                final String id;int jsonReads;
+                Node(String id){this.id=id;}
+                org.json.JSONObject json()throws org.json.JSONException{jsonReads++;return new org.json.JSONObject().put("id",id);}
+            }
         }
+        private static final class WebFlightNativeStability { /*__FLIGHT_NATIVE_LIMIT__*/ }
+        /*__GRAPH_BUDGET__*/
+        /*__CHECK_READ_BUDGET__*/
         private static final class WebRegionNativeBridge {
             final PhoneObservation.Node anchor=new PhoneObservation.Node("n0");final String nativeWebViewId="web";
             final List<Role> values;
@@ -158,7 +166,7 @@ public final class ActionWorkerHost {
         final Object handleLock=new Object();
         final AtomicBoolean cancelled=new AtomicBoolean();
         final AtomicLong stopRequestedElapsed=new AtomicLong(-1);
-        volatile boolean running=true;
+        volatile boolean running=true;boolean terminalDecisionSealed;
         volatile String currentTaskId=TASK;
         volatile TaskCancellationQueue.Ticket taskCancellation;
         LocalInference.Handle activeInference;
@@ -443,6 +451,41 @@ public final class ActionWorkerHost {
             try{refused(()->fixture.regionParent(work,child,owned));check(owned.size()==1&&owned.get(0)==returned&&returned.recycles==0,"cancelled parent return lost cleanup ownership");}
             finally{for(GraphCloneFixture.AccessibilityNodeInfo node:owned)node.recycle();}
             check(returned.recycles==1&&child.recycles==0&&work.state.retired(),"parent cleanup crossed owner or failed to retire");child.recycle();
+        }});
+        run("frozen_flight_snapshots_cross_handoff_without_reserializing_or_borrowing_rows",new Case(){public void run()throws Exception{
+            final GraphCloneFixture.Graph original=GraphCloneFixture.graph();
+            final GraphCloneFixture.PhoneObservation.Node row=new GraphCloneFixture.PhoneObservation.Node("n0");original.rows.add(row);
+            final org.json.JSONObject stamp=new org.json.JSONObject().put("path","0").put("text","original");
+            original.flightNativeSnapshot=new JSONArray().put(stamp);original.flightNativeSnapshotComplete=true;
+            original.collectionStats.visited=1;original.collectionStats.retained=1;
+            final Thread mainThread=Thread.currentThread();ExecutorService reader=Executors.newSingleThreadExecutor();
+            try{join(reader.submit(()->original.freezeFlightSnapshots(()->check(Thread.currentThread()!=mainThread,"snapshot serialized on main handoff"))));}
+            finally{shutdown(reader);}
+            check(original.flightNativeSnapshot==null&&original.flightNativeSnapshotComplete&&row.jsonReads==1,"worker did not freeze/release its mutable builders");
+            String nativeRaw=original.flightNativeSnapshotRaw,retainedRaw=original.flightRetainedSnapshotRaw;
+            GraphCloneFixture.Graph copy=original.copyForAction("n0",null);
+            check(copy.flightNativeSnapshotRaw==nativeRaw&&copy.flightRetainedSnapshotRaw==retainedRaw&&row.jsonReads==1,"handoff serialized or replaced frozen strings");
+            check(copy.rows.isEmpty()&&copy.flightNativeSnapshot==null,"action borrowed mutable evidence builders");
+            stamp.put("text","changed-after-freeze");original.rows.clear();original.close();
+            check(copy.flightNativeSnapshotRaw.contains("original")&&!copy.flightNativeSnapshotRaw.contains("changed-after-freeze")
+                    &&copy.flightRetainedSnapshotRaw.equals(retainedRaw)&&copy.refs.get("n0").node.recycles==0,"main mutation or close invalidated owned evidence");
+            copy.close();GraphCloneFixture.allClonesClosed();
+        }});
+        run("incomplete_or_cancelled_flight_snapshot_never_becomes_frozen_authority",new Case(){public void run()throws Exception{
+            GraphCloneFixture.Graph mismatch=GraphCloneFixture.graph();mismatch.flightNativeSnapshot=new JSONArray().put(new org.json.JSONObject());
+            mismatch.flightNativeSnapshotComplete=true;mismatch.collectionStats.visited=2;mismatch.freezeFlightSnapshots(null);
+            check(!mismatch.flightNativeSnapshotComplete&&mismatch.flightNativeSnapshotRaw==null&&mismatch.flightRetainedSnapshotRaw==null&&mismatch.flightNativeSnapshot==null,"incomplete traversal was frozen as complete");mismatch.close();
+            GraphCloneFixture.Graph cancelled=GraphCloneFixture.graph();cancelled.flightNativeSnapshot=new JSONArray().put(new org.json.JSONObject());
+            cancelled.flightNativeSnapshotComplete=true;cancelled.collectionStats.visited=1;
+            cancelled.freezeFlightSnapshots(()->{throw new IllegalStateException("actual budget cancelled");});
+            check(!cancelled.flightNativeSnapshotComplete&&cancelled.flightNativeSnapshotRaw==null&&cancelled.flightRetainedSnapshotRaw==null&&cancelled.flightNativeSnapshot==null,"cancelled freezer retained usable evidence");cancelled.close();
+        }});
+        run("sealed_terminal_result_cannot_enqueue_late_stop_or_captured_journal_cancel",new Case(){public void run(){
+            Deferred executor=new Deferred();TaskCancellationQueue queue=new TaskCancellationQueue(executor);Inference inference=new Inference(false);
+            StopFixture fixture=new StopFixture(new Service(queue),inference);fixture.terminalDecisionSealed=true;
+            fixture.stop();check(!fixture.stopIfTask(TASK),"sealed terminal accepted a journal stop");
+            check(!fixture.cancelled.get()&&fixture.stopRequestedElapsed.get()==-1&&executor.work==null
+                    &&inference.calls.get()==0&&fixture.lastMessageTask==null,"late Stop changed sealed task state or signalled native work");
         }});
         StringBuilder json=new StringBuilder("{\"schema\":\"hepta.action-worker-host.v1\",\"cases\":").append(passed.size()).append(",\"all_pass\":true,\"phone_operations\":0,\"android_test\":false,\"physical_fsync_stall_test\":false,\"passed\":[");
         for(int i=0;i<passed.size();i++){if(i>0)json.append(',');json.append('\"').append(passed.get(i)).append('\"');}System.out.println(json.append("]}"));

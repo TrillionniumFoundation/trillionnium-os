@@ -7,6 +7,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 /** Exact production root selection, graph traversal and identities; Android IO is explicit fake input. */
 final class BackgroundObservationFixture {

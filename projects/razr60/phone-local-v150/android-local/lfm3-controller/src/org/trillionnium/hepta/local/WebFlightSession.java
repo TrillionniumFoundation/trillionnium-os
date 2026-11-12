@@ -50,6 +50,11 @@ final class WebFlightSession {
     private final java.util.concurrent.atomic.AtomicBoolean nativeQueryEntered=new java.util.concurrent.atomic.AtomicBoolean();
     private PendingNavigation pendingNavigation;
     private volatile ShoppingDispatch shoppingDispatch;
+    private volatile WebEvidenceReceipt currentCapture;
+    private volatile WebFlightNativeStability.Permit flightNativePermit;
+    private volatile HeptaAccessibilityService.FlightNativeCheck flightNativeCheck;
+    private final java.util.concurrent.atomic.AtomicBoolean flightNativeEntered=new java.util.concurrent.atomic.AtomicBoolean();
+    private final java.util.Set<String> flightNativeAttemptedRuns=java.util.Collections.synchronizedSet(new java.util.HashSet<String>());
     private static final class ShoppingDispatch {
         final WebRegionNativeBridge bridge;final String run,actionKey,armRaw,armNonce;
         final long armedAt,expiresAt;
@@ -209,7 +214,8 @@ final class WebFlightSession {
                 .put("last_capture_dom_stability_sha256",WebDomCanonical.sha256(last.stability().evidence()))
                 .put("same_native_geometry_bracket",firstGeometry!=null)
                 .put("native_geometry_sha256",lastGeometry==null?JSONObject.NULL:lastGeometry.fingerprint));
-        current=after;domain=observed;completion.bindWebDomain(observed);
+        current=after;currentCapture=last;domain=observed;completion.bindWebDomain(observed);
+        flightNativePermit=null;flightNativeCheck=null;
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;
         return after;
         }
@@ -255,7 +261,8 @@ final class WebFlightSession {
         record("web-frame-"+frame.id+".json",new JSONObject(waiting.evidence()).put("reason",reason)
                 .put("capture_metadata_only",true).put("ax_dom_capture_is_atomic",false)
                 .put("same_lease_epoch_and_equal_dom_bracket",false));
-        current=frame;domain=waiting;completion.bindWebDomain(waiting);
+        current=frame;currentCapture=null;domain=waiting;completion.bindWebDomain(waiting);
+        flightNativePermit=null;flightNativeCheck=null;
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;return frame;
     }
     void beforeModelAction(ActionDecision action,String run,long deadline)throws Exception{
@@ -266,6 +273,7 @@ final class WebFlightSession {
         original.requireCurrent(action);service.requireTaskAuthorization(taskId,authorization);background.requireActive();
         dispatchSource=null;dispatchSourceRun=null;dispatchSourceAction=null;
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;shoppingDispatch=null;
+        flightNativePermit=null;flightNativeCheck=null;flightNativeEntered.set(false);
         if("wait".equals(action.action)||"done".equals(action.action)&&!"success".equals(action.status)){
             // These choices do not manipulate a page. A missing capture never
             // becomes click/type/success authority and never clears the journal.
@@ -284,6 +292,9 @@ final class WebFlightSession {
                 &&original.pageKey.equals(rechecked.pageKey)&&original.clickIds.equals(rechecked.clickIds)
                 &&original.editValues.equals(rechecked.editValues),"page target changed since model observation");
         rechecked.requireCurrent(action);
+        flightNativePermit=WebFlightNativeStability.prepare(rechecked,frame,action,run,currentCapture,fresh);
+        if(flightNativePermit!=null)need(!flightNativeAttemptedRuns.contains(run)&&flightNativeAttemptedRuns.size()<64,
+                "booking invocation for this model run is already consumed or its bounded attempt budget is full");
         if(rechecked.shopping!=null&&"click".equals(action.action)){
             need(pendingNavigation==null,"a prior product navigation is still unknown; no new click or ARM");
             WebRegionNativeBridge bridge=WebRegionNativeBridge.bind(frame,fresh);
@@ -320,6 +331,7 @@ final class WebFlightSession {
                 .put("original_dom_sha256",original.evidence().get("dom_sha256"))
                 .put("fresh_capture_request_nonce",fresh.callback().getString("request_nonce"))
                 .put("unchanged_semantic_region",true).put("whole_dom_equality_claimed",false)
+                .put("flight_home_native_stability_scope",flightNativePermit==null?JSONObject.NULL:flightNativePermit.domEvidence())
                 .put("dispatched",false).put("source","pre_dispatch_read_only_check_not_action_outcome"));
         prepared=true;
         }finally{
@@ -328,6 +340,7 @@ final class WebFlightSession {
             if(!prepared){
                 dispatchSource=null;dispatchSourceRun=null;dispatchSourceAction=null;
                 dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;shoppingDispatch=null;
+                flightNativePermit=null;flightNativeCheck=null;
             }
         }
     }
@@ -337,6 +350,23 @@ final class WebFlightSession {
                 &&SystemClock.elapsedRealtime()>=dispatchCheckedAt&&SystemClock.elapsedRealtime()-dispatchCheckedAt<=1500,
                 "fresh exact web/model action evidence expired");
         d.requireCurrent(action);
+    }
+    WebFlightNativeStability.Permit flightNativePermitForDispatch(ActionDecision action,PhoneObservation frame){
+        WebFlightNativeStability.Permit permit=flightNativePermit;
+        if(permit==null)return null;
+        requireDispatch(action,dispatchCheckedRun);
+        need(!cancellation.isCancelled()&&permit.matches(frame,action,dispatchCheckedRun)
+                &&frame==current&&!flightNativeEntered.get(),"exact unconsumed homepage booking dispatch required");
+        return permit;
+    }
+    void acceptFlightNativeCheck(ActionDecision action,PhoneObservation frame,HeptaAccessibilityService.FlightNativeCheck check)throws Exception{
+        WebFlightNativeStability.Permit permit=flightNativePermitForDispatch(action,frame);
+        need(permit!=null&&check!=null&&check.matches(frame,permit)&&flightNativeCheck==null,
+                "one actual native homepage check required");
+        // Preserve the complete actual source/fresh snapshots and their exact
+        // differences before the platform call. This record grants no input API.
+        record("web-flight-native-stability-"+permit.run+".json",check.evidence());
+        flightNativeCheck=check;
     }
     WebRegionNativeBridge nativeRegionForDispatch(ActionDecision action,String run,PhoneObservation frame){
         WebTaskDomain value=domain;
@@ -368,6 +398,15 @@ final class WebFlightSession {
      * after the service's repeated authority/window/signature checks. No I/O. */
     void beforeNativeClickInvocation(ActionDecision action,String run){
         WebTaskDomain source=dispatchSource,currentDomain=domain;
+        WebFlightNativeStability.Permit permit=flightNativePermit;
+        if(permit!=null){
+            requireDispatch(action,run);
+            HeptaAccessibilityService.FlightNativeCheck check=flightNativeCheck;long now=SystemClock.elapsedRealtime();
+            need(permit.matches(current,action,run)&&check!=null&&check.matches(current,permit)
+                    &&check.checkedAt<=now&&now-check.checkedAt<=250
+                    &&flightNativeEntered.compareAndSet(false,true)&&flightNativeAttemptedRuns.add(run),
+                    "booking native check expired, mismatched or already consumed");
+        }
         if(purpose.shopping!=null&&"click".equals(action.action)){
             ShoppingDispatch actual=requireShoppingDispatch(action,run);
             HeptaAccessibilityService.NativeRegionCheck live=actual.liveNative;
@@ -433,6 +472,7 @@ final class WebFlightSession {
         }finally{
             dispatchSource=null;dispatchSourceRun=null;dispatchSourceAction=null;
             dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;shoppingDispatch=null;
+            flightNativePermit=null;flightNativeCheck=null;
         }
     }
     private WebTaskDomain applyNavigation(WebTaskDomain value)throws Exception{
@@ -460,10 +500,12 @@ final class WebFlightSession {
                 &&!hasUnreleased(service),"helper retirement proof does not match this original task");
         cleanupKnown=true;
     }
-    void serviceRetired(){retired=true;domain=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
+    void serviceRetired(){retired=true;domain=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;client.close();}
     Cleanup close(String reason){
-        retired=true;domain=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
+        TaskCompletionGate.WebCloseAttempt completionClose=completion.beginWebClose(this,domain,taskId,journal.bindingSha,reason);
+        boolean closeReturnedNormally=false;
+        retired=true;domain=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;completion.clearWebDomain();
         try{
             if(!journal.attachWasPrepared()){
@@ -473,13 +515,23 @@ final class WebFlightSession {
             }
             WebEvidenceReceipt proof=client.closeLease(reason,SystemClock.elapsedRealtime()+10000);
             journal.closeKnown(proof);cleanupKnown=true;
-            return new Cleanup(true,new JSONObject().put("cleanup_known",true).put("helper",proof.callback())
+            JSONObject actualCallback=proof.callback();
+            Cleanup known=new Cleanup(true,new JSONObject().put("cleanup_known",true).put("helper",actualCallback)
                     .put("task_id",taskId).put("binding_sha256",journal.bindingSha).put("business_verified",false));
+            if(proof.cleanupKnown&&!proof.recovered&&!proof.unstarted)
+                completion.webCloseKnown(completionClose,this,actualCallback.getString("task_id"),proof.bindingSha,
+                        proof.status,proof.instance,proof.epoch,proof.displayId,proof.windowId,
+                        WebEvidenceJson.sha(WebDomCanonical.canonical(actualCallback)));
+            else completion.abortWebClose(completionClose);
+            closeReturnedNormally=true;return known;
         }catch(Exception unknown){
             try{return new Cleanup(false,new JSONObject().put("cleanup_known",false).put("task_id",taskId)
                     .put("binding_sha256",journal.bindingSha).put("error",HeptaAccessibilityService.limited(HeptaAccessibilityService.message(unknown),512))
                     .put("automatic_retry",false));}catch(Exception impossible){throw new IllegalStateException(impossible);}
-        }finally{client.close();}
+        }finally{
+            if(!closeReturnedNormally)completion.abortWebClose(completionClose);
+            client.close();
+        }
     }
     static Cleanup reconcile(Context context)throws Exception{
         if(!hasUnreleased(context))return new Cleanup(true,new JSONObject().put("cleanup_known",true).put("no_web_lease",true));

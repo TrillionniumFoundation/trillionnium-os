@@ -1,22 +1,49 @@
-# Hepta v57 candidate: scoped Web and asynchronous control
+# Hepta v58 candidate: flight stability and asynchronous background control
 
-This candidate combines the existing action/Stop/session repair with the scoped
-Web code that matches the freshly observed 216-input installed build. The source
-refs are `0b9e0031d2e137d6823668946d48e8154b339787` and
-`dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e`; their real common ancestor is
-`42d3a0f447807659c0f78c8273edee01dd1b734f`.
+This candidate preserves the installed flight-stability implementation while
+retaining the reviewed action, Stop, observation and session repairs from
+published candidate `23f3d1d739e6f34de189850961d9976f381b00a3`. The installed
+implementation is identified by its complete 217-input build asset
+`7ebcc34c252b1fed0f110f84480ed10aaeb49057362b0ec140dea66f722fe692`.
+Its source bytes were matched to that asset; no unverified Git commit or Git
+merge-base is asserted for that installation.
 
-The current complete code contains 117 Java sources and 219 production inputs.
-Read [ACTION-EXECUTION-CONTRACT.md](ACTION-EXECUTION-CONTRACT.md) for ownership,
-ordering, deadlines, recovery and qualification boundaries. Source membership is
-bound by the regenerated SOURCE-MANIFEST.json. All current validation must use
-this exact source; prior 112-source compilation, v56 results and earlier v57
-fixture results do not qualify the integrated build.
+The complete integrated production source contains 118 Java sources and 220
+production inputs. Android version 58 / `0.58.0-flight-action-stop-candidate`
+identifies this candidate. Read [ACTION-EXECUTION-CONTRACT.md](ACTION-EXECUTION-CONTRACT.md)
+for ownership, deadlines, cancellation and completion boundaries. The regenerated
+SOURCE-MANIFEST.json covers every component file. Local targeted test results,
+the preceding candidate build and historical phone sessions do not establish
+qualification of this candidate.
 
-Android version 57 / `0.57.0-off-main-action-stop-candidate` distinguishes the
-candidate. Model/native/sampler pins are unchanged. Build, original-key signing,
-installation and real phone acceptance remain separate gates. Existing historical
-sections below retain their original source/version boundaries.
+The narrow official-flight-home policy recognizes only the reviewed eight-image
+horizontal carousel while requiring the rest of the DOM and complete native
+tree to remain stable. The action worker owns immutable observation snapshots
+and cloned native node references. Changed button content, changed overlap,
+covered center, missing nodes and stale task/window/display identity remain
+rejections. The policy does not provide a flight-result parser or permission
+to generalize native input to arbitrary pages.
+
+The installed typed Web terminal-completion checks are preserved. A read-only
+result must be captured under the actual task/model/observation identity before
+the ordinary typed close, consumed once, and checked after native and display
+cleanup. Shopping or flight success still needs actual domain evidence; page
+loading and a model's done response alone do not establish success.
+
+Validation requires the unchanged complete 105-check runner against this source,
+plus separately reported current Web evidence, composition, query, retirement
+and synthetic flight-stability gates. New full Android Java/resources/DEX and
+native compilation, original-key signing, in-place installation and real phone
+acceptance are separate gates. The model, native library and sampler pins are
+unchanged. The current candidate has not yet been qualified on the phone.
+
+## Historical source foundations
+
+The preceding v57 integration combined the asynchronous-control source
+`0b9e0031d2e137d6823668946d48e8154b339787` and scoped Web source
+`dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e`, with verified common ancestor
+`42d3a0f447807659c0f78c8273edee01dd1b734f`. The historical sections below retain
+their original version, model and result boundaries.
 
 ## Frozen v56 foundation: natural Web tasks and responsive observation
 

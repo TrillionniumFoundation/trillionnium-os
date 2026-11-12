@@ -17,6 +17,13 @@ public final class HeptaAccessibilityService extends android.content.Context {
     static final class NativeRegionCheck {
         private NativeRegionCheck(){throw new AssertionError("legacy fixture has no Web native-region evidence");}
     }
+    static final class FlightNativeCheck {
+        private FlightNativeCheck(){throw new AssertionError("legacy fixture has no Flight native evidence");}
+    }
+    private FlightNativeCheck requireLiveFlightNativeStability(String taskId,PhoneObservation frame,ActionDecision action,
+            WebFlightNativeStability.Permit permit,Graph now,Cancellation cancel,ActionWork work)throws Exception{
+        throw new AssertionError("legacy fixture cannot execute a Flight native stability recheck");
+    }
     private NativeRegionCheck requireLiveNativeRegion(String taskId,PhoneObservation frame,AccessibilityNodeInfo clicked,
             WebRegionNativeBridge bridge,Cancellation cancel,ActionWork work)throws Exception{
         throw new AssertionError("legacy fixture cannot execute a Web native-region recheck");
