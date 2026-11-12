@@ -478,6 +478,12 @@ public final class LocalTaskController implements AutoCloseable {
                 completion.invalidateInstalled("installed_notes_identity_changed_after_cleanup");
                 if(modelSuccess||controllerSuccess){modelSuccess=false;controllerSuccess=false;finalStatus="partial";summary="笔记应用身份在完成核验后发生变化，未确认本次目标。";}
             }
+            // Installed identity IO may outlive the earlier Stop check. Both
+            // model-done and controller-workflow completion must be revoked.
+            // Unknown cleanup remains blocked instead of being relabeled cancelled.
+            if(cleanup&&cancelled.get()){
+                finalStatus="cancelled";modelSuccess=false;controllerSuccess=false;summary="已停止；已经发生的操作不会自动重做";
+            }
             // LocalInference.onSuccess seals the parent's exact request/grammar/
             // output binding. Unlike the legacy no-worker test default, this new
             // controller terminal additionally requires its real task session.
@@ -504,6 +510,7 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("completion_actor",completionActor==null?JSONObject.NULL:completionActor)
                     .put("controller_completion_requested",controllerCompletionRequested).put("model_done_synthesized",false)
                     .put("final_observation_id",observation==null?JSONObject.NULL:observation.id).put("cleanup_known",cleanup)
+                    .put("observation_read_worker_pending_at_terminal",service.observationReadWorkPending())
                     .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha256))
                     .put("actual_scope_sha256",scope==null?JSONObject.NULL:QualificationScopeConfig.nullable(scope.actualSha256))
                     .put("qualification_scope",scope==null?JSONObject.NULL:scope.evidence())
@@ -704,10 +711,10 @@ public final class LocalTaskController implements AutoCloseable {
                     });
             while(!ready.await(100,TimeUnit.MILLISECONDS)){
                 checkActive(deadline);
-                if(SystemClock.elapsedRealtime()>=observationDeadline)throw new IllegalStateException("系统屏幕观察超时");
+                if(SystemClock.elapsedRealtime()>=observationDeadline)throw new IllegalStateException(error.get()!=null?error.get():service.observationTimeoutMessage(id));
             }
             checkActive(deadline);
-            if(SystemClock.elapsedRealtime()>=observationDeadline)throw new IllegalStateException("系统屏幕观察超时");
+            if(SystemClock.elapsedRealtime()>=observationDeadline)throw new IllegalStateException(error.get()!=null?error.get():service.observationTimeoutMessage(id));
             if(error.get()!=null)throw new IllegalStateException(error.get());
             PhoneObservation result=value.get();if(result==null)throw new IllegalStateException("没有取得屏幕观察");
             try{service.requireTaskAuthorization(id,authorization);service.requireScopeObservation(id,result);service.requireBackgroundObservation(id,result);service.requireAuthorizationObservation(id,authorization,result);}

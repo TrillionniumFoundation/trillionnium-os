@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.independent-review.v1",
+  "scope": "Python acceptance tools only; no Android build or physical phone claim",
+  "base": "b4ff6d2c0b09208d341cacf8fc1cac18489c9cfd",
+  "source_files": [
+    {
+      "path": "tools/phone_acceptance.py",
+      "sha256": "673a017689bff6d8a1972f6d3e64ff20803c0f00926265e2d0abc2cbe80371b9"
+    },
+    {
+      "path": "tools/phone_suite.py",
+      "sha256": "a513114211897bb620ecbbab38aadcce3a9137c58071df269cca7f828034118e"
+    },
+    {
+      "path": "tools/test_ime_submit_binding.py",
+      "sha256": "a119c06221221c87d3233740cb7314dc3714bd9d072a1fb2a0173ee342bbcb8f"
+    },
+    {
+      "path": "tools/test_fixed_intent_binding.py",
+      "sha256": "81c74b17bfdcdacca668a83f9dd6e6f34b33eb57dd4830f5b109c6ac585e77f4"
+    },
+    {
+      "path": "tools/PHONE-ACCEPTANCE.md",
+      "sha256": "bc1a2d53739dd0942587a2f591eb3d7be73036295bf39d3c03ed759415a5b5dd"
+    },
+    {
+      "path": "tools/PHONE-SUITE.md",
+      "sha256": "2cd4a16f5f33be72a03b803143c42f4929f898a2bfb9917e417eb79eab9e77a5"
+    }
+  ],
+  "issue_found": "Missing ordinal 1 while ordinal 2 exists could pass the consumption-journal verification.",
+  "resolution": "Require complete consecutive ordinals 1..N and retain exact per-entry identity, file-name, tool and attempt-ID checks.",
+  "review_outcome": "No remaining material source blocker found after the fix.",
+  "boundaries_preserved": [
+    "fixed-intent and launcher domains remain separate",
+    "original prompt/grammar/model output and owner bindings remain required",
+    "exact target package/component/label/UID/payload retained",
+    "background display/generation/caller broker binding retained",
+    "launch_accepted does not prove saved note or verified search results"
+  ],
+  "host_report": "HOST-CHECKS-V6-ACCEPTANCE.json",
+  "physical_phone_tested": false
+}

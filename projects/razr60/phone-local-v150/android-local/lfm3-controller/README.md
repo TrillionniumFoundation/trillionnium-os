@@ -1,6 +1,43 @@
-# Hepta v52: remember explicit background UI choices
+# Hepta v54: unify responsive observation with the current Notes workflow
 
-Current candidate: versionCode 52 (`0.52.0-local-background-preferences`), based on
+Current source candidate: versionCode 54 (`0.54.0-local-unified-observation`).
+It starts from v52 commit `9414df636f5a20e3b5a5ee7582af9d81beb17aac` and
+integrates the observation and v6 acceptance changes from PR 143 at
+`5bc3b7c5a0bd80318438ee4303bda8a62b5bfd3a`. The v51 Notes child workflow,
+controller completion proof and v52 explicit background UI preferences remain.
+
+Observation traversal, screenshot copy, PNG encoding, fsync, hashing and graph
+rechecks now use one process-wide read worker. The service main looper keeps
+deadline, cancellation and publication ownership. Event and display-generation
+fences reject retired results; a still-busy read blocks new admission even after
+service replacement. Blocking Android calls cannot be forcibly interrupted,
+and action-side synchronous validation remains outside this change.
+
+The final Stop check after installed-package identity IO revokes both model-done
+and controller-workflow success. Unknown cleanup remains blocked. The terminal
+records pending observation work separately from native/action/display cleanup.
+The launcher also shows the actual local configuration error and disables task
+Start and text inference until that configuration is valid; Stop and recovery
+controls retain their existing behavior.
+
+The Python acceptance tools verify the production v6 fixed-intent grammar,
+target-label domain and one-use consumption journal. Launch acceptance still
+does not prove saving a note, obtaining flight results or completing a purchase.
+No model weights, runtime pins, grammar, tool authority or network permission
+change. Existing runtime configuration is preserved; the Qwen configuration in
+the imported v51 provenance is historical and is not an instruction to replace
+the phone's current model.
+
+Source closure, strict Java 8 API host gates, Android build, same-signer package
+verification and physical-phone acceptance remain separate. Historical v51 host
+receipts are retained under their original names and do not qualify this v54
+source. See [unified candidate scope](docs/UNIFIED-V54.md), the
+[observation contract](docs/RESPONSIVE-OBSERVATION.md) and
+[public build instructions](PUBLIC-BUILD.md).
+
+## v52 predecessor: remember explicit background UI choices
+
+The v52 predecessor is versionCode 52 (`0.52.0-local-background-preferences`), based on
 frozen v51 commit `ed98f11db804f191a65254c378b195b1fb5f13be`.
 
 The normal Hepta launcher now remembers the user's explicit background-mode

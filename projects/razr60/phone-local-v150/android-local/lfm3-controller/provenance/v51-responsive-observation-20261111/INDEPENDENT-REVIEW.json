@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.observer-independent-source-review.v1",
+  "reviewer": "runtime_access",
+  "reviewed_utc": "2026-11-11T14:00:25.717504+00:00",
+  "base_commit": "9ecf87f313ef08cfd2f963671a19eb2358cebbfe",
+  "files": {
+    "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java": "c4d2c5a6f7311b92e84691249dbd98ddea470984c0bfc09f725738e2d946e55a",
+    "src/org/trillionnium/hepta/local/LocalTaskController.java": "f7b76d5759a9aaa60521011d37c223cccf0eb274618dbf9d6bbce7a7cefcb1e6",
+    "tests/observation-pipeline/ObserverPipelineHost.template": "b6b3615ccf35fbf13985ef80bfd4fd0328de5abb319d7f79f2bae30e9278a7be",
+    "tests/observation-pipeline/run_host_tests.py": "2495c8401897ec056c151473f01a39ed802a0081981dac91486463ca854a1dea",
+    "docs/RESPONSIVE-OBSERVATION.md": "ae475343c969181d9e694df6529345530811a6e30ef6f32db9ba6b84c7b370b6"
+  },
+  "scope": "Read-only review of working tree production observer port, resource ownership, deadlines, generation/display/task fencing, and preservation of v50 collection metadata. No production edits or independent host/Android/device test executed by this reviewer.",
+  "finding_resolved": "Screenshot event epoch was formerly sampled only before final graph read, forgetting earlier target-display events. It is now captured in immutable CaptureIdentity before takeScreenshot and copied unchanged to ObservationProduct; publication requires equality. Eight focused test additions cover target/other-display events during callback, copy, encode, hash with unchanged graph identities.",
+  "remaining_material_findings": [],
+  "review_result": "No remaining material source-review blocker found. Requires actual strict host gate, Android build, exact build identity, and phone qualification; review does not establish those results.",
+  "preserved_boundaries": [
+    "No phone ownership acquisition or interaction by reviewer",
+    "No fixture success treated as physical phone success",
+    "Action-side synchronous validation remains outside observer change",
+    "Blocked Binder or fsync cannot be forcibly interrupted; process-wide busy admission remains required"
+  ],
+  "retained_test_results_independently_read_back": {
+    "pre_fix_negative": {
+      "path": "/tmp/hepta-observer-prefence-negative-20261111/RESULT.json",
+      "result_sha256": "f524870f671e25703b7dfdd0952f737ab10d6b65aad49cc72f8f830ff5bf12ce",
+      "status": "failed",
+      "production_sha256": "8f675aeb2c805a5bce2739e19a5fbb188597bc475c676d0b3620c792b041d55f",
+      "template_sha256": "b6b3615ccf35fbf13985ef80bfd4fd0328de5abb319d7f79f2bae30e9278a7be",
+      "stages": [
+        {
+          "name": "compile",
+          "exit_code": 0,
+          "elapsed_s": 2.7510692639998524
+        },
+        {
+          "name": "tests",
+          "exit_code": 1,
+          "elapsed_s": 0.37433136599975114
+        }
+      ]
+    },
+    "fixed_positive": {
+      "path": "/tmp/hepta-observer-fence-pipeline-20261111/RESULT.json",
+      "result_sha256": "f7b59765012b21521c8c41a3ac3472f988d9b8934c4d78dbf45e104948e343eb",
+      "status": "passed",
+      "production_sha256": "c4d2c5a6f7311b92e84691249dbd98ddea470984c0bfc09f725738e2d946e55a",
+      "template_sha256": "b6b3615ccf35fbf13985ef80bfd4fd0328de5abb319d7f79f2bae30e9278a7be",
+      "stages": [
+        {
+          "name": "compile",
+          "exit_code": 0,
+          "elapsed_s": 2.811677606999183
+        },
+        {
+          "name": "tests",
+          "exit_code": 0,
+          "elapsed_s": 0.7792621309999959
+        }
+      ],
+      "passed_cases": 28,
+      "compiler_contract": "Java 8 API release"
+    }
+  },
+  "negative_control_failure": "AssertionError: capture admission event fence was reset during screenshot_callback",
+  "test_scope": "Author/implementation-agent executions read back by independent reviewer. No redundant rerun performed; both execute extracted real production methods with explicitly fake Android IO."
+}

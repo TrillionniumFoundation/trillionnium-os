@@ -24,7 +24,7 @@ from warm_receipts import APP_REQUEST, NATIVE_REQUEST, request_contract, session
 SCHEMA = "hepta.phone-suite.v1"
 SHA = re.compile(r"[0-9a-f]{64}\Z")
 PKG = re.compile(r"[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+\Z")
-EFFECTS = {"open", "click", "type", "scroll", "back", "home", "submit"}
+EFFECTS = {"open", "click", "type", "scroll", "back", "home", "submit", *acceptance.FIXED_INTENT_PROFILES}
 UNASSESSED = ["all_installed_apps", "vision", "locked_or_screen_off", "offline_device",
               "cancellation_and_timeout", "process_restart_no_replay", "sustained_thermal_and_power"]
 INTERRUPTED_LATCH_PROBE = (
@@ -221,11 +221,11 @@ def _ime_submit_action_binding(directory, run_directory, run_id, receipt, before
         raise acceptance.DriverError("submit native input evidence is a symlink")
     prompt, grammar = [path.read_bytes() for path in input_files]
     observation, package = before.get("observation_id"), before.get("package")
-    if (app.get("run_id") != run_id or app.get("grammar_schema") != acceptance.IME_SUBMIT_ACTION_SCHEMA
+    if (app.get("run_id") != run_id or app.get("grammar_schema") not in acceptance.IME_ACTION_SCHEMAS
             or not acceptance.prompt_binding(prompt.decode("utf-8"), owner["instruction"], {observation})
             or not acceptance.controller_grammar_binding_valid(app, native, grammar,
                 {observation: {package}}, prompt, raw)):
-        raise acceptance.DriverError("submit lacks the exact v5 native prompt/grammar/target binding")
+        raise acceptance.DriverError("submit lacks the exact v5/v6 native prompt/grammar/target binding")
     data = acceptance.strict_json(prompt[len(b"UNTRUSTED_DATA\n"):].split(b"\nOWNER\n", 1)[0])
     capability = acceptance.ime_submit_prompt_capability(data, action)
     if capability is None:
@@ -313,6 +313,184 @@ def _ime_submit_action_binding(directory, run_directory, run_id, receipt, before
     return {"ime_submit_binding_valid": True, "ime_submit_attempt_id": result["attempt_id"],
         "ime_submit_attempt_ordinal": result["attempt_ordinal"], "ime_submit_api_accepted": True,
         "ime_submit_goal_independently_verified": False}
+
+
+FIXED_INTENT_IDENTITY = frozenset({"task_id", "model_run_id", "observation_id", "source_package",
+    "source_window_id", "display_id", "background_generation", "target", "action", "payload_sha256",
+    "attempt_id", "attempt_ordinal"})
+FIXED_INTENT_ATTEMPT_FLAGS = frozenset({"attempt_consumed", "automatic_retry_allowed"})
+
+
+def _project_app_label(label):
+    """The production 48-UTF16-unit projection, without splitting a scalar."""
+    label.encode("utf-8", "strict")
+    if len(label.encode("utf-16-be")) // 2 <= 48:
+        return label
+    units, result = 0, []
+    for ch in label:
+        units += 2 if ord(ch) > 0xffff else 1
+        if units > 48:
+            break
+        result.append(ch)
+    return "".join(result) + "…"
+
+
+def _fixed_target_valid(target, action):
+    profile = acceptance.FIXED_INTENT_PROFILES.get(action)
+    keys = {"source", "action", "package", "component", "target_uid", "app_label", "exported",
+        "activity_enabled", "application_enabled", "declared_intent_filter_matched",
+        "required_permission", "ordinary_caller_permission_checked"}
+    if (profile is None or not isinstance(target, dict) or set(target) != keys
+            or target.get("source") != "installed_package_manager" or target.get("action") != action
+            or any(target.get(key) != profile[key] for key in ("package", "component"))
+            or type(target.get("target_uid")) is not int or not 10000 <= target["target_uid"] < 90000
+            or not isinstance(target.get("app_label"), str) or "\0" in target["app_label"]
+            or len(target["app_label"].encode("utf-16-be")) // 2 > 512
+            or not (target.get("required_permission") is None
+                or isinstance(target["required_permission"], str) and bool(target["required_permission"]))
+            or any(target.get(key) is not True for key in ("exported", "activity_enabled", "application_enabled",
+                "declared_intent_filter_matched", "ordinary_caller_permission_checked"))):
+        return False
+    target["app_label"].encode("utf-8", "strict")
+    return True
+
+
+def _fixed_intent_journal_identity(value, task_id):
+    keys = FIXED_INTENT_IDENTITY | FIXED_INTENT_ATTEMPT_FLAGS | {"schema", "stage"}
+    if (not isinstance(value, dict) or set(value) != keys
+            or value.get("schema") != "hepta.fixed-intent-attempt.v1"
+            or value.get("task_id") != task_id or value.get("stage") != "consumed_before_call"
+            or value.get("attempt_consumed") is not True or value.get("automatic_retry_allowed") is not False):
+        raise acceptance.DriverError("fixed intent requires its exact durable before-call journal")
+    for key in ("task_id", "model_run_id", "observation_id"):
+        if not isinstance(value.get(key), str) or not acceptance.HEX32.fullmatch(value[key]):
+            raise acceptance.DriverError("fixed intent journal identity is malformed")
+    source, generation = value.get("source_package"), value.get("background_generation")
+    if (not isinstance(source, str) or not (source == "android" or PKG.fullmatch(source))
+            or type(value.get("source_window_id")) is not int or value["source_window_id"] < 0
+            or type(value.get("display_id")) is not int or value["display_id"] < 0
+            or not ((value["display_id"] == 0 and generation is None)
+                or value["display_id"] > 0 and isinstance(generation, str) and BACKGROUND_GENERATION.fullmatch(generation))
+            or type(value.get("attempt_ordinal")) is not int or not 1 <= value["attempt_ordinal"] <= 2
+            or not isinstance(value.get("action"), str) or not _fixed_target_valid(value.get("target"), value["action"])
+            or not isinstance(value.get("payload_sha256"), str) or not SHA.fullmatch(value["payload_sha256"])):
+        raise acceptance.DriverError("fixed intent journal target/domain is malformed")
+    expected_id = acceptance.digest((task_id + "|" + str(value["attempt_ordinal"]) + "|"
+        + value["action"] + "|" + value["payload_sha256"]).encode("utf-8"))
+    if value.get("attempt_id") != expected_id:
+        raise acceptance.DriverError("fixed intent attempt ID does not bind task/ordinal/tool/payload")
+    return {key: value[key] for key in FIXED_INTENT_IDENTITY}
+
+
+def _fixed_intent_action_binding(directory, run_directory, run_id, receipt, before, owner, native, raw):
+    """A v6 fixed launch is an API effect, never evidence of saved content/results."""
+    action, task_id = receipt["action"], owner.get("task_id")
+    if not isinstance(task_id, str) or not acceptance.HEX32.fullmatch(task_id):
+        raise acceptance.DriverError("fixed intent lacks an exact owner task")
+    app = _evidence_object(run_directory / "app-receipt.json")
+    input_files = [run_directory / "prompt.txt", run_directory / "grammar.gbnf"]
+    if any(path.is_symlink() for path in input_files):
+        raise acceptance.DriverError("fixed intent input evidence is a symlink")
+    prompt, grammar = [path.read_bytes() for path in input_files]
+    observation, package = before.get("observation_id"), before.get("package")
+    if (app.get("run_id") != run_id or app.get("grammar_schema") != acceptance.FIXED_INTENT_ACTION_SCHEMA
+            or not acceptance.prompt_binding(prompt.decode("utf-8"), owner["instruction"], {observation})
+            or not acceptance.controller_grammar_binding_valid(app, native, grammar,
+                {observation: {package}}, prompt, raw)):
+        raise acceptance.DriverError("fixed intent lacks exact v6 native prompt/grammar/app-label binding")
+    data = acceptance.strict_json(prompt[len(b"UNTRUSTED_DATA\n"):].split(b"\nOWNER\n", 1)[0])
+    capability = acceptance.fixed_intent_prompt_capability(data, action)
+    if capability is None:
+        raise acceptance.DriverError("fixed intent capability was not supplied to this model request")
+    value = receipt.get("fixed_intent")
+    required = FIXED_INTENT_IDENTITY | FIXED_INTENT_ATTEMPT_FLAGS | {"schema", "dispatch_attempted",
+        "api_accepted", "result", "requested_outcome", "goal_independently_verified", "saved_or_search_results_verified"}
+    if (not isinstance(value, dict) or not required <= set(value) or set(value) - required - {"broker_response"}
+            or value.get("schema") != "hepta.fixed-intent-result.v1"
+            or any(value.get(key) is not True for key in ("attempt_consumed", "dispatch_attempted", "api_accepted"))
+            or value.get("result") != "launch_accepted" or value.get("automatic_retry_allowed") is not False
+            or type(value.get("attempt_ordinal")) is not int or not 1 <= value["attempt_ordinal"] <= 2
+            or not isinstance(value.get("attempt_id"), str) or not SHA.fullmatch(value["attempt_id"])
+            or value.get("goal_independently_verified") is not False or value.get("saved_or_search_results_verified") is not False
+            or receipt.get("accepted") is not True or receipt.get("dispatched") is not True or receipt.get("stale") is not False
+            or not _fixed_target_valid(value.get("target"), action["action"])
+            or _project_app_label(value["target"]["app_label"]) != capability["app_label"]):
+        raise acceptance.DriverError("fixed intent is not a bound installed-target launch acceptance")
+    expected = {"task_id": task_id, "model_run_id": run_id, "observation_id": observation,
+        "source_package": package, "action": action["action"],
+        "payload_sha256": acceptance.digest(action[capability["parameter"]].encode("utf-8")),
+        "requested_outcome": capability["requested_outcome"]}
+    if any(value.get(key) != content for key, content in expected.items()):
+        raise acceptance.DriverError("fixed intent result differs from task/native decision/payload")
+    window = before.get("window")
+    if (not isinstance(window, dict) or window.get("metadata_status") != "observed"
+            or type(before.get("window_id")) is not int or before["window_id"] < 0
+            or type(window.get("window_id")) is not int or window["window_id"] != before["window_id"]
+            or type(window.get("type")) is not int or window["type"] != 1
+            or type(window.get("display_id")) is not int or window["display_id"] < 0
+            or type(value.get("source_window_id")) is not int or value["source_window_id"] != before["window_id"]
+            or type(value.get("display_id")) is not int or value["display_id"] != window["display_id"]):
+        raise acceptance.DriverError("fixed intent source window/display differs from before observation")
+    background = before.get("background_session")
+    if background is None:
+        if (window["display_id"] != 0 or value.get("background_generation") is not None
+                or data.get("background_session") is not None or receipt.get("background_session") is not None
+                or "broker_response" in value):
+            raise acceptance.DriverError("foreground fixed intent cannot borrow a background receipt")
+    else:
+        action_background, broker = receipt.get("background_session"), value.get("broker_response")
+        if (not isinstance(background, dict) or background.get("mode") != "background"
+                or data.get("background_session") != background or window["display_id"] == 0
+                or not isinstance(background.get("generation"), str) or not BACKGROUND_GENERATION.fullmatch(background["generation"])
+                or value.get("background_generation") != background["generation"]
+                or type(background.get("display_id")) is not int or background["display_id"] != window["display_id"]
+                or background.get("home_allowed") is not False or background.get("main_display_fallback") is not False
+                or not isinstance(background.get("allowed_packages"), list)
+                or action["package"] not in background["allowed_packages"]
+                or not isinstance(action_background, dict) or action_background.get("task_id") != task_id
+                or action_background.get("generation") != background["generation"]
+                or type(action_background.get("display_id")) is not int or action_background["display_id"] != window["display_id"]
+                or not isinstance(broker, dict) or broker.get("ok") is not True or broker.get("dispatched") is not True
+                or type(broker.get("version")) is not int or broker["version"] != 1 or broker.get("state") != "ACTIVE"
+                or broker.get("operation") != action["action"] or broker.get("generation") != background["generation"]
+                or type(broker.get("display_id")) is not int or broker["display_id"] != window["display_id"]
+                or broker.get("display_name") != "hepta-bg-" + background["generation"]
+                or not isinstance(broker.get("request_id"), str) or not BACKGROUND_GENERATION.fullmatch(broker["request_id"])):
+            raise acceptance.DriverError("background fixed intent lacks its owned domain/broker launch")
+        proof = broker.get("fixed_intent")
+        caller = app.get("app_uid")
+        if (not isinstance(proof, dict) or proof.get("schema") != "hepta.background-fixed-intent.v1"
+                or type(caller) is not int or not 10000 <= caller < 90000
+                or type(action_background.get("app_uid")) is not int or action_background["app_uid"] != caller
+                or type(proof.get("ordinary_caller_uid")) is not int or proof["ordinary_caller_uid"] != caller
+                or proof.get("request_id") != broker["request_id"] or proof.get("generation") != background["generation"]
+                or type(proof.get("display_id")) is not int or proof["display_id"] != window["display_id"]
+                or not _fixed_target_valid(proof.get("target"), action["action"])
+                or any(proof.get(key) != value[key] for key in ("action", "attempt_id", "payload_sha256", "target"))
+                or proof.get("attempt_consumed") is not True or proof.get("goal_independently_verified") is not False
+                or "resolved_type" not in proof or proof["resolved_type"] != ("text/plain" if action["action"] == "notes.create" else None)):
+            raise acceptance.DriverError("background fixed intent proof differs from app target/payload/caller")
+    journals = sorted((directory / "task").glob("fixed-intent-*-attempt.json"))
+    if not 1 <= len(journals) <= 2:
+        raise acceptance.DriverError("fixed intent requires its bounded consumed-attempt journal")
+    seen_actions, seen_ids, seen_ordinals, matching = set(), set(), set(), []
+    for path in journals:
+        identity = _fixed_intent_journal_identity(_evidence_object(path), task_id)
+        if (path.name != "fixed-intent-%02d-attempt.json" % identity["attempt_ordinal"]
+                or identity["action"] in seen_actions or identity["attempt_id"] in seen_ids
+                or identity["attempt_ordinal"] in seen_ordinals):
+            raise acceptance.DriverError("fixed intent repeats a consumed tool/attempt or mismatches its filename")
+        seen_actions.add(identity["action"]); seen_ids.add(identity["attempt_id"])
+        seen_ordinals.add(identity["attempt_ordinal"])
+        if identity["attempt_id"] == value.get("attempt_id"):
+            matching.append(identity)
+    if seen_ordinals != set(range(1, len(journals) + 1)):
+        raise acceptance.DriverError("fixed intent consumed journals must cover contiguous ordinals starting at one")
+    if len(matching) != 1 or matching[0] != {key: value[key] for key in FIXED_INTENT_IDENTITY}:
+        raise acceptance.DriverError("fixed intent result has no exact matching before-call attempt")
+    return {"fixed_intent_binding_valid": True, "fixed_intent_attempt_id": value["attempt_id"],
+        "fixed_intent_api_accepted": True, "fixed_intent_requested_outcome": value["requested_outcome"],
+        "fixed_intent_goal_independently_verified": False, "fixed_intent_saved_or_search_results_verified": False}
 
 
 def _collected_bytes(directory, relative, entries):
@@ -465,6 +643,8 @@ def model_action_binding(directory, path, receipt, before, instruction_sha256=No
             raise acceptance.DriverError("dispatched action differs from the model's exact decoded decision")
         if generated_action.get("action") == "submit":
             result.update(_ime_submit_action_binding(directory, run_directory, run_id, receipt, before, owner, native, raw))
+        if generated_action.get("action") in acceptance.FIXED_INTENT_PROFILES:
+            result.update(_fixed_intent_action_binding(directory, run_directory, run_id, receipt, before, owner, native, raw))
         result.update(verified=True, step_model_receipt=str(model_path.relative_to(directory)),
                       native_raw_output=str(raw_path.relative_to(directory)),
                       native_result=str(native_path.relative_to(directory)), raw_text_sha256=raw_sha)

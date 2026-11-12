@@ -1,12 +1,16 @@
 # Build the independent local controller
 
-The source is an ordinary Android app candidate, versionCode **25**, versionName
-**0.25.0-local-gpu-cache-verified-navigation**. A successful build is not device acceptance or adoption into
+The source is an ordinary Android app candidate, versionCode **54**, versionName
+**0.54.0-local-unified-observation**. A successful build is not device acceptance or adoption into
 the protected owner-open implementation. Read `CONTROL-INTEGRATION.md` first.
 
-Code25 adds a private OpenCL kernel-cache path for explicit GPU requests and a
-general search-result navigation instruction. Real cache hits and phone-task
-completion remain pending device verification; see `docs/CODE25-QUALIFICATION.md`.
+Version 54 integrates the observation worker and v6 fixed-intent acceptance
+verifier with v51's authorized Notes workflow and v52's explicit background UI
+preferences. It preserves screenshot event epochs, revokes both completion paths
+on a late Stop, and gates Start/text inference on valid local configuration.
+See `docs/RESPONSIVE-OBSERVATION.md` and `docs/UNIFIED-V54.md` for the current
+scope and separate physical-phone gates. Historical receipts remain evidence
+for their exact old sources; they are not current candidate qualification.
 
 ## Source and host verification
 
@@ -75,8 +79,8 @@ python3 -B assemble_pocket4.py
 The assembler refuses stale build inputs, changed artifacts, mismatched actual
 APK identity/version, missing runtime libraries and unexpected dependencies.
 It checks the manifest, service guard, ABI, signature, resource alignment and
-packaged library hashes. It outputs `hepta-local-0.25.0.apk` under the build output
-and `control-v25-static/STATIC-ACCEPTANCE.json` as its static packaging receipt.
+packaged library hashes. It outputs `hepta-local-0.54.0.apk` under the build output
+and `control-v54-static/STATIC-ACCEPTANCE.json` as its static packaging receipt.
 
 The separate `MOBIMIND_ANDROID_RUNTIME_DIR` must contain the unchanged r4
 `hepta-mobimind-probe`, `libMNN.so`, `libc++_shared.so` and their original
@@ -95,7 +99,7 @@ rebuild sources, not their binary payloads or a public binary download endpoint.
 The worker's retained README describes the fixed MNN checkout and two-stage
 NDK build. A new build must be checked for byte identity; if it differs, its new
 pins require a new candidate and fresh qualification rather than an override.
-A CI job without these verified runtime inputs cannot claim full code20 APK
+A CI job without these verified runtime inputs cannot claim full current APK
 assembly merely from a successful Java/native compilation stage.
 
 A fresh development checkout may omit both signing variables to create a local
