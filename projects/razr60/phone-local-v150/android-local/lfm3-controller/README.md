@@ -1,4 +1,22 @@
-# Hepta v56: integrate current natural Web tasks with responsive observation
+# Hepta local controller: action and Stop follow-up candidate
+
+This is a nonrelease source follow-up to frozen v56 commit
+`5da3c83fe46edb2617934a92c06a10608accb68e`. It changes six existing Java classes
+and adds three classes for action-worker ownership, captured cancellation and
+ordered session persistence. All 112 Java sources are present. Model/native pins
+and the inherited Android version metadata remain unchanged; no new release
+version or installable follow-up APK is assigned here.
+
+Read [ACTION-EXECUTION-CONTRACT.md](ACTION-EXECUTION-CONTRACT.md) for threading,
+ordering, resource limits, uncertainty, recovery and qualification boundaries.
+SOURCE-MANIFEST.json binds this complete component. Full strict host regression
+must use the current tree; v56's 105-check result does not transfer to this source.
+Targeted JVM and Java/D8 receipts are separate from native/APK/phone acceptance.
+
+The sections below describe the frozen v56 foundation. Their historical counts,
+receipts and version claims are not qualification of this changed component.
+
+## Frozen v56 foundation: natural Web tasks and responsive observation
 
 This standalone Android candidate forward-integrates the business v54 source
 42d3a0f447807659c0f78c8273edee01dd1b734f with the v55 observation, cleanup and

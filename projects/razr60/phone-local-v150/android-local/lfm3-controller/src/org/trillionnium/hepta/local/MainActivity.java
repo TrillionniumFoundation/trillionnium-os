@@ -30,6 +30,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     private TextView modelInfo, taskState, taskLog, taskResult, probeOutput;
     private TextView taskAuthorizationInfo;
     private boolean accessibilityUiStarted;
+    private boolean cachedModelFilePresent;
     private final Runnable accessibilityConnectionChanged=new Runnable(){
         @Override public void run(){
             if(accessibilityUiStarted&&!isFinishing()&&!isDestroyed())refresh();
@@ -122,9 +123,11 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         Button accessibility=button("启用无障碍");actions.addView(accessibility);
         page.addView(cleanupBackground);
         startTask.setOnClickListener(v -> beginTask(taskInput.getText().toString(),"user_button",null));
-        stopTask.setOnClickListener(v -> {tasks.stop();engine.cancelActive();
+        stopTask.setOnClickListener(v -> {
+            // Controlled tasks cancel their captured task/handle. A diagnostic cancels one captured engine run.
+            boolean controlled=tasks.isRunning();tasks.stop();if(!controlled)engine.cancelActive();
             // Explicitly ends this UI prefill only; the running task retains its immutable scope.
-            scopeLaunch=QualificationScope.Launch.normal();scopeLaunchError=null;refresh();});
+            scopeLaunch=QualificationScope.Launch.normal();scopeLaunchError=null;refresh(false);});
         accessibility.setOnClickListener(v -> startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
         acknowledgeInterruption=button("确认中断并开始新会话");page.addView(acknowledgeInterruption);
         acknowledgeInterruption.setOnClickListener(v -> new AlertDialog.Builder(this)
@@ -521,9 +524,10 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             +"\n推理完整完成："+result.inferenceCompleted+"\n退出与回执已确认："+result.cleanupKnown
             +"\n\n"+raw+"\n\n凭据："+result.runDirectory+"\n"+receipt);
     }
-    @Override public void onSessionChanged(){refresh();}
+    @Override public void onSessionChanged(){refresh(false);}
     @Override public void onPermissionPreparationChanged(){refresh();}
-    private void refresh(){
+    private void refresh(){refresh(true);}
+    private void refresh(boolean inspectModelFile){
         if(modelInfo==null)return;
         boolean available=HeptaAccessibilityService.connected()!=null;
         String device,modelName="本地模型",modelState;
@@ -531,7 +535,8 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         try {
             LocalRuntimeConfig configuration=engine.configuration();
             device="npu".equals(configuration.compute)?"Hexagon NPU":"Adreno GPU";modelName=configuration.profile.displayName;
-            modelState=engine.modelFile().isFile()?"本地模型已导入":"本地模型待导入";
+            if(inspectModelFile)cachedModelFilePresent=engine.modelFile().isFile();
+            modelState=cachedModelFilePresent?"本地模型已导入":"本地模型待导入";
             configurationReady=true;
         }catch(Exception error) {
             device="运行参数待修正";modelState="本地配置错误："+HeptaAccessibilityService.message(error);

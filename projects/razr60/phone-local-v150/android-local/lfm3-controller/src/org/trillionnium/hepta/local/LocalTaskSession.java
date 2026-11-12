@@ -43,9 +43,15 @@ public final class LocalTaskSession {
     private LocalTaskController.TaskResult lastResult;
     private String expectedScopeSha,actualScopeSha;
     private volatile boolean pending, blocked, recovering;
+    // UI display only. Every task/recovery admission still checks current private journals on its worker.
+    private volatile boolean cachedLeaseUnreleased=true;
     private volatile long generation;
     private long recoveryIgnoredGeneration=-1;
     private final ExecutorService recoveryWorker=Executors.newSingleThreadExecutor();
+    // One serial writer also orders ordinary records before recovery transactions.
+    private final SessionJournalQueue journalQueue=new SessionJournalQueue(recoveryWorker,new Executor(){
+        public void execute(Runnable runnable){if(!main.post(runnable))throw new RejectedExecutionException("session main handler unavailable");}
+    });
     private RecoveryJournalTransaction.Proof acknowledgedSession;
     private static final int SESSION_LIMIT = 65536;
     private static final String INTERRUPTION_LATCH = "control-session.interrupted.json";
@@ -54,15 +60,16 @@ public final class LocalTaskSession {
     LocalTaskSession(Context context, LocalModelEngine engine) {
         this.context=context.getApplicationContext(); this.engine=engine;
         recoverPreviousSession();
+        readLeaseState();
     }
     public void bind(Listener listener) { ui = new WeakReference<>(listener); publish(); }
     public void unbind(Listener listener) { if (ui.get()==listener) ui.clear(); }
     public boolean isRunning() { return pending || (controller!=null && controller.isRunning()); }
-    public boolean isBlocked() { return blocked||hasBackgroundLease(); }
-    public boolean hasBackgroundLease(){return BackgroundSession.hasUnreleased(context)||WebFlightSession.hasUnreleased(context);}
+    public boolean isBlocked() { return blocked||journalQueue.pending()||journalQueue.failed()||hasBackgroundLease(); }
+    public boolean hasBackgroundLease(){return cachedLeaseUnreleased;}
     public boolean isRecovering() { return recovering; }
     public boolean canAcknowledgeInterruption(){
-        return !recovering&&!isRunning()&&!hasBackgroundLease()&&((LocalProbeApplication)context).canAcknowledgeControlRecovery();
+        return !recovering&&!isRunning()&&!journalQueue.pending()&&!hasBackgroundLease()&&((LocalProbeApplication)context).canAcknowledgeControlRecovery();
     }
     public String state() { return state; }
     public String log() { return log; }
@@ -93,11 +100,12 @@ public final class LocalTaskSession {
         taskAuthorization=authorization;backgroundSelection=selection;
         expectedScopeSha=expectedScopeSha256;actualScopeSha=null;
         taskId=null;lastResult=null;log="";pending=true;setState((selection==null?"任务已准备，正在等待前台画面稳定…":"任务已准备，正在建立后台空间…")+"\n"+authorization.summary());
-        // A durable non-terminal reservation must precede any controller or model start.
-        if(!persist("pending",true)){pending=false;blocked=true;publish();return false;}
         pendingStart=new Runnable(){public void run(){
             pendingStart=null;
-            if(!pending)return;
+            if(epoch!=generation||!pending)return;
+            if(journalQueue.pending()||journalQueue.failed()){
+                pending=false;blocked=true;setState("会话写入尚未完成，任务未启动");return;
+            }
             pending=false;
             if(HeptaAccessibilityService.connected()!=service){setState("无障碍服务已断开，任务未启动");persist("not_started",true);return;}
             try{
@@ -110,7 +118,6 @@ public final class LocalTaskSession {
                             blocked=true;pending=false;generation++;
                             if(pendingStart!=null)main.removeCallbacks(pendingStart);pendingStart=null;
                             if(controller!=null&&controller.isRunning())controller.stop();
-                            engine.cancelActive();
                             setState("上一次任务退出状态未知，已停止接受新任务");persist("blocked",false);
                         }
                     }
@@ -120,7 +127,29 @@ public final class LocalTaskSession {
             }catch(Exception error){setState("无法启动："+HeptaAccessibilityService.message(error));persist("not_started",true);}
             publish();
         }};
-        main.postDelayed(pendingStart,Math.max(350,delayMillis));
+        // A real durable non-terminal reservation still precedes every controller/model start.
+        // Cancelling while the write blocks only retires this captured epoch; it never waits for IO.
+        final Runnable startAfterReservation=pendingStart;
+        final SessionJournalQueue.Failure reservationFailure=journalFailureHook();
+        final byte[] reservation;
+        try{reservation=snapshotSession("pending",true);}
+        catch(Exception error){reservationFailure.failed(error);failSessionWrite(epoch,error);return false;}
+        boolean submitted=journalQueue.submit(new SessionJournalQueue.Write(){public void run()throws Exception{
+            LeaseState leases=readLeaseState();
+            if(leases.unreleased())throw new IOException("existing background/helper lease prevents task reservation");
+            writeSessionSnapshot(reservation,leases);
+        }},new SessionJournalQueue.Completion(){public void finished(SessionJournalQueue.Result result){
+            if(!result.success||journalQueue.failed()){failSessionWrite(epoch,result.error);return;}
+            if(epoch!=generation||!pending||pendingStart!=startAfterReservation){publish();return;}
+            if(HeptaAccessibilityService.connected()!=service){
+                pending=false;pendingStart=null;setState("无障碍服务已断开，任务未启动");persist("not_started",true);return;
+            }
+            if(!main.postDelayed(startAfterReservation,Math.max(350,delayMillis))){
+                failSessionWrite(epoch,new IOException("pending start callback unavailable"));return;
+            }
+            publish();
+        }},reservationFailure);
+        if(!submitted){failSessionWrite(epoch,new IOException("session reservation submission unconfirmed"));return false;}
         return true;
     }
     public void stop() {
@@ -130,7 +159,7 @@ public final class LocalTaskSession {
     }
     private void receiveState(String value) { setState(value); persist("running",true); }
     private void receiveFinished(LocalTaskController.TaskResult result) {
-        lastResult=result;taskId=result.taskId;pending=false;blocked=!result.cleanupKnown;
+        lastResult=result;taskId=result.taskId;pending=false;blocked=!result.cleanupKnown||journalQueue.failed();
         expectedScopeSha=result.expectedScopeSha256;actualScopeSha=result.actualScopeSha256;
         setState(result.summary);persist(result.status,result.cleanupKnown);
     }
@@ -169,7 +198,8 @@ public final class LocalTaskSession {
                                 ||reservation[0]==null||reservation[0].isCancellationRequested())
                             throw new IOException("recovery owner or shared reservation changed");
                     }};
-                    check.check();RecoveryJournalStore store=new RecoveryJournalStore(context);
+                    check.check();if(readLeaseState().unreleased())throw new IOException("background/helper lease still requires reconciliation");
+                    RecoveryJournalStore store=new RecoveryJournalStore(context);
                     try(RecoveryJournalStore.Lock held=store.lock()){
                         List<RecoveryQuiescence.Sample> samples=RecoveryProcessInventory.awaitInitial(context);check.check();
                         RecoveryJournalTransaction.Proof proof=RecoveryJournalTransaction.acknowledge(store,android.os.Process.myUid(),android.os.Process.myPid(),
@@ -225,6 +255,7 @@ public final class LocalTaskSession {
                 if(service!=null)service.retireControllerAfterAcknowledgement(oldController,current);
                 acknowledgedSession=current;controller=null;controllerService=null;pending=false;pendingStart=null;
                 taskId=null;origin=null;instructionSha=null;nonceSha=null;taskAuthorization=null;backgroundSelection=null;lastResult=null;startupRecovery=null;expectedScopeSha=null;actualScopeSha=null;
+                journalQueue.acknowledgedAfterVerifiedRecovery();
                 blocked=false;state="已建立新的空闲会话，可开始新任务。旧任务仍记为中断，原进程退出与清理状态仍未知。";
                 log=log+state+"\n没有自动启动、恢复或重放任何任务。\n";
                 if(log.length()>16000)log=log.substring(log.length()-16000);
@@ -349,7 +380,7 @@ public final class LocalTaskSession {
                 return;
             }
             startupRecovery.put("preserved_records",archivePriorRecords(records));
-            persist("interrupted",false);
+            persistStartupRecord("interrupted",false);
         }catch(Exception error){
             // Keep the original evidence unchanged when it cannot be preserved safely. Stay blocked in memory.
             log=log+"旧会话记录无法完整保存；仍保持阻塞，不会据此认定退出完成。\n";
@@ -427,7 +458,7 @@ public final class LocalTaskSession {
     public void reconcileBackgroundFromOwnerButton(){
         LocalProbeApplication.requirePermissionPreparationIdle(context);
         if(Looper.myLooper()!=Looper.getMainLooper())throw new IllegalStateException("background cleanup must begin on main thread");
-        if(isRunning()||recovering)throw new IllegalStateException("请先停止正在运行的任务");
+        if(isRunning()||recovering||journalQueue.pending())throw new IllegalStateException("请先停止任务并等待会话记录真实退出");
         final long epoch=++generation;final HeptaAccessibilityService service=HeptaAccessibilityService.connected();
         recovering=true;setState("正在核验并释放上一次后台空间；不会恢复或重做任务…");
         recoveryWorker.execute(new Runnable(){public void run(){
@@ -438,6 +469,7 @@ public final class LocalTaskSession {
                 result=BackgroundSession.reconcile(context);
                 if(result!=null&&result.known)webResult=WebFlightSession.reconcile(context);
             }catch(Exception error){failure=error;}
+            readLeaseState();
             final BackgroundSession.Cleanup observed=result;final WebFlightSession.Cleanup observedWeb=webResult;final Exception error=failure;
             main.post(new Runnable(){public void run(){
                 if(generation!=epoch)return;
@@ -453,19 +485,48 @@ public final class LocalTaskSession {
         }});
     }
 
-    private boolean persist(String status,boolean cleanupKnown) {
+    /** Ordinary UI callbacks capture values only; the serial writer owns all disk operations. */
+    private void persist(String status,boolean cleanupKnown) {
+        final long epoch=generation;
+        final SessionJournalQueue.Failure failure=journalFailureHook();
+        final byte[] snapshot;
+        try{snapshot=snapshotSession(status,cleanupKnown);}
+        catch(Exception error){failure.failed(error);failSessionWrite(epoch,error);return;}
+        boolean submitted=journalQueue.submit(new SessionJournalQueue.Write(){public void run()throws Exception{
+            writeSessionSnapshot(snapshot);
+        }},new SessionJournalQueue.Completion(){public void finished(SessionJournalQueue.Result result){
+            if(!result.success||journalQueue.failed())failSessionWrite(epoch,result.error);else publish();
+        }},failure);
+        if(!submitted)failSessionWrite(epoch,new IOException("session write submission unconfirmed"));
+    }
+    private SessionJournalQueue.Failure journalFailureHook(){
+        final LocalTaskController selected=controller;
+        final String capturedTask=selected==null?null:selected.currentTaskId();
+        return new SessionJournalQueue.Failure(){public void failed(Exception error){
+            blocked=true;
+            if(selected!=null&&capturedTask!=null)selected.stopIfTask(capturedTask);
+        }};
+    }
+    private void failSessionWrite(long expectedEpoch,Exception error){
+        blocked=true;
+        if(expectedEpoch==generation){
+            pending=false;generation++;
+            if(pendingStart!=null)main.removeCallbacks(pendingStart);pendingStart=null;
+        }
+        // Only the job's captured failure hook can cancel a task. Never look up
+        // a replacement controller in this potentially late UI callback.
+        state="会话记录保存未确认；已请求停止任务，暂不接受新任务。";
+        log=log+state+"\n";if(log.length()>16000)log=log.substring(log.length()-16000);
+        publish();
+    }
+    private byte[] snapshotSession(String status,boolean cleanupKnown)throws Exception {
         if(taskId!=null&&controller!=null&&taskId.equals(controller.currentTaskId()))actualScopeSha=controller.currentActualScopeSha256();
-        AtomicFile destination=new AtomicFile(new File(context.getFilesDir(),"control-session.json"));
-        FileOutputStream out=null;
-        try{
             JSONObject value=new JSONObject().put("schema","hepta.local-session.v1").put("status",status)
                 .put("task_id",taskId==null?JSONObject.NULL:taskId).put("origin",origin==null?JSONObject.NULL:origin)
                 .put("instruction_sha256",instructionSha==null?JSONObject.NULL:instructionSha)
                     .put("task_authorization_sha256",taskAuthorization==null?JSONObject.NULL:taskAuthorization.sha256)
                     .put("task_authorization",taskAuthorization==null?JSONObject.NULL:new JSONObject(taskAuthorization.evidence()))
                     .put("background_request",backgroundSelection==null?JSONObject.NULL:backgroundSelection.json())
-                    .put("background_lease_unreleased",BackgroundSession.hasUnreleased(context))
-                    .put("web_helper_lease_unreleased",WebFlightSession.hasUnreleased(context))
                 .put("debug_nonce_sha256",nonceSha==null?JSONObject.NULL:nonceSha)
                 .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha))
                 .put("actual_scope_sha256",QualificationScopeConfig.nullable(actualScopeSha))
@@ -484,9 +545,52 @@ public final class LocalTaskSession {
                 .put("model_reported_success",lastResult.modelReportedSuccess).put("steps",lastResult.steps)
                 .put("completion_verified",lastResult.completionVerified).put("completion_evidence",new JSONObject(lastResult.completionEvidence))
                 .put("goal_independently_verified",lastResult.completionVerified);
-            out=destination.startWrite();out.write(value.toString(2).getBytes(StandardCharsets.UTF_8));destination.finishWrite(out);out=null;
-            android.system.Os.chmod(destination.getBaseFile().getPath(),0600);
-            return true;
-        }catch(Exception error){if(out!=null)destination.failWrite(out);blocked=true;state=state+"（会话记录保存失败，已暂停新任务）";publish();return false;}
+            return value.toString(2).getBytes(StandardCharsets.UTF_8);
+    }
+    private static final class LeaseState {
+        final boolean background,web;
+        LeaseState(boolean background,boolean web){this.background=background;this.web=web;}
+        boolean unreleased(){return background||web;}
+    }
+    private LeaseState readLeaseState(){
+        LeaseState leases=new LeaseState(BackgroundSession.hasUnreleased(context),WebFlightSession.hasUnreleased(context));
+        cachedLeaseUnreleased=leases.unreleased();return leases;
+    }
+    private void writeSessionSnapshot(byte[] snapshot)throws Exception {writeSessionSnapshot(snapshot,readLeaseState());}
+    private void writeSessionSnapshot(byte[] snapshot,LeaseState leases)throws Exception {
+        // This private copy cannot acquire newer task/authorization fields after queueing.
+        JSONObject value=parseSessionJson(snapshot);
+        value.put("background_lease_unreleased",leases.background).put("web_helper_lease_unreleased",leases.web);
+        if(journalQueue.failed())value.put("blocked",true).put("cleanup_known",false)
+                .put("session_journal_failure_observed",true);
+        AtomicFile destination=new AtomicFile(new File(context.getFilesDir(),"control-session.json"));
+        FileOutputStream out=null;
+        try{
+            byte[] written=value.toString(2).getBytes(StandardCharsets.UTF_8);
+            if(written.length>SESSION_LIMIT)throw new IOException("session record exceeds bounded size");
+            out=destination.startWrite();android.system.Os.fchmod(out.getFD(),0600);
+            out.write(written);out.flush();out.getFD().sync();
+            // Android AtomicFile may log a sync/rename failure without throwing.
+            // Explicit sync and byte/sidecar checks must precede the pending-start permission.
+            destination.finishWrite(out);out=null;
+            File base=destination.getBaseFile();android.system.Os.chmod(base.getPath(),0600);
+            if(recordExists(new File(base.getPath()+".new"))||recordExists(new File(base.getPath()+".bak"))
+                    ||!java.util.Arrays.equals(written,readSessionRecord(base)))
+                throw new IOException("session commit readback or sidecar check failed");
+            File parent=base.getParentFile().getCanonicalFile();
+            FileDescriptor directory=android.system.Os.open(parent.getPath(),android.system.OsConstants.O_RDONLY
+                    |android.system.OsConstants.O_NOFOLLOW|android.system.OsConstants.O_CLOEXEC,0);
+            try{
+                android.system.StructStat info=android.system.Os.fstat(directory);
+                if(!android.system.OsConstants.S_ISDIR(info.st_mode)||info.st_uid!=android.os.Process.myUid())
+                    throw new IOException("session commit parent identity differs");
+                android.system.Os.fsync(directory);
+            }finally{android.system.Os.close(directory);}
+        }catch(Exception error){if(out!=null)destination.failWrite(out);throw error;}
+    }
+    /** Startup currently runs before any task or queue admission; its existing recovery boundary is retained. */
+    private void persistStartupRecord(String status,boolean cleanupKnown){
+        try{writeSessionSnapshot(snapshotSession(status,cleanupKnown));}
+        catch(Exception error){blocked=true;state=state+"（会话记录保存失败，已暂停新任务）";publish();}
     }
 }

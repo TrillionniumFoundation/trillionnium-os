@@ -1,0 +1,339 @@
+package org.trillionnium.hepta.local;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.io.DataInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.UUID;
+import org.trillionnium.hepta.background.FixedIntentTarget;
+
+/** JVM concurrency cases. No Android device, SDK process, UI or physical fsync-stall claim. */
+public final class ActionWorkerHost {
+    private static final String TASK="11111111111111111111111111111111";
+    private static final String RUN="22222222222222222222222222222222";
+    private static final String OBS="33333333333333333333333333333333";
+    private static final String OP="44444444444444444444444444444444";
+    private static final String AUTH="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    private static final String GENERATION="12345678-1234-1234-1234-123456789abc";
+    private static final List<String> passed=new ArrayList<String>();
+    private interface Case {void run()throws Exception;}
+    private static void check(boolean condition,String why){if(!condition)throw new AssertionError(why);}
+    private static void refused(Runnable action){boolean rejected=false;try{action.run();}catch(IllegalStateException expected){rejected=true;}check(rejected,"operation unexpectedly accepted");}
+    private static void run(String name,Case body)throws Exception{body.run();passed.add(name);}
+    private static void await(CountDownLatch latch)throws InterruptedException{check(latch.await(2,TimeUnit.SECONDS),"bounded host latch not reached");}
+    private static void join(Future<?> value)throws Exception{value.get(2,TimeUnit.SECONDS);}
+    private static void shutdown(ExecutorService value)throws InterruptedException{value.shutdownNow();check(value.awaitTermination(2,TimeUnit.SECONDS),"host worker leaked");}
+    private static boolean flag(Map<String,Object> evidence,String key){return Boolean.TRUE.equals(evidence.get(key));}
+    private static final class Clock implements ActionExecutionState.Clock {
+        long value=100;
+        public synchronized long elapsedRealtime(){return value;}
+        synchronized void set(long next){value=next;}
+    }
+    private static ActionExecutionState state(Clock clock){return new ActionExecutionState(OP,TASK,RUN,OBS,AUTH,12,3,GENERATION,100,1000,clock);}
+    private static final class Deferred implements Executor {
+        Runnable work;
+        public synchronized void execute(Runnable value){check(work==null,"unexpected second queued command");work=value;}
+        void executeQueued(){Runnable value;synchronized(this){value=work;work=null;}check(value!=null,"no queued command");value.run();}
+    }
+    private static final class SystemClock {
+        static final AtomicLong override=new AtomicLong(-1);
+        static long elapsedRealtime(){long value=override.get();return value<0?System.nanoTime()/1000000L:value;}
+    }
+    private static final class HeptaAccessibilityService {interface Cancellation {boolean isCancelled();}}
+    private static final class JSONObject {
+        final long deadline;JSONObject(long deadline){this.deadline=deadline;}
+        long getLong(String key){check("deadline_elapsed_ms".equals(key),"unexpected fixture JSON lookup");return deadline;}
+    }
+    private static final class LocalSocket {
+        final List<Integer> timeouts=new ArrayList<Integer>();
+        void setSoTimeout(int value){check(value>0,"zero becomes unbounded socket timeout");timeouts.add(Integer.valueOf(value));}
+    }
+    private static final class Transport {
+        /*__REMAINING_TIMEOUT__*/
+        /*__READ_RESPONSE__*/
+    }
+    private interface LocalInference {interface Handle {void cancel();}}
+    private static final class Inference {
+        final AtomicInteger calls=new AtomicInteger();
+        final CountDownLatch entered=new CountDownLatch(1),release;
+        Inference(boolean block){release=new CountDownLatch(block?1:0);}
+        void cancelTask(){calls.incrementAndGet();entered.countDown();try{await(release);}catch(InterruptedException error){Thread.currentThread().interrupt();throw new IllegalStateException(error);}}
+    }
+    private static final class ActionWork {final ActionExecutionState state;ActionWork(ActionExecutionState state){this.state=state;}}
+    private static final class WebFlightSession {static boolean hasUnreleased(Service service){return service.unreleased;}}
+    private static final class Service {
+        static Service live;
+        final TaskCancellationQueue nativeCancellationQueue;
+        volatile String lease=TASK;
+        volatile ActionWork activeAction;
+        boolean unreleased;
+        Object taskWeb,appDiscovery,taskScope,taskAuthorization,taskNotesPhase,taskCalculatorInput,taskBackground,taskSubmitAttempts,taskFixedIntentAttempts;
+        Runnable stopListener;
+        Service(TaskCancellationQueue queue){nativeCancellationQueue=queue;live=this;}
+        boolean observationReadWorkPending(){return false;}
+        boolean actionWorkPending(){return activeAction!=null&&!activeAction.state.isDrained();}
+        boolean nativeCancellationWorkPending(){return nativeCancellationQueue.pending();}
+        /*__REQUEST_NATIVE__*/
+        /*__RETIRE_ACTION__*/
+        /*__ACQUIRE_TASK__*/
+    }
+    private static final class StopFixture {
+        final Service service;
+        final Inference inference;
+        final Object handleLock=new Object();
+        final AtomicBoolean cancelled=new AtomicBoolean();
+        final AtomicLong stopRequestedElapsed=new AtomicLong(-1);
+        volatile boolean running=true;
+        volatile String currentTaskId=TASK;
+        volatile TaskCancellationQueue.Ticket taskCancellation;
+        LocalInference.Handle activeInference;
+        volatile String lastMessageTask;
+        StopFixture(Service service,Inference inference){this.service=service;this.inference=inference;taskCancellation=new TaskCancellationQueue.Ticket(service,TASK);}
+        void emitForTask(String task,String value){lastMessageTask=task;}
+        /*__STOP__*/
+        /*__STOP_IF_TASK__*/
+    }
+    private static final class EngineFixture {
+        static TaskCancellationQueue ACTIVE_CANCELLATION;
+        static Object PROCESS_ADMISSION;
+        static final AtomicReference<RunHandle> PROCESS_ACTIVE=new AtomicReference<RunHandle>();
+        final AtomicReference<RunHandle> active=new AtomicReference<RunHandle>();
+        volatile TaskCancellationQueue.Ticket lastCancellation;
+        static void reset(Executor executor){PROCESS_ACTIVE.set(null);ACTIVE_CANCELLATION=new TaskCancellationQueue(executor);PROCESS_ADMISSION=ACTIVE_CANCELLATION.admissionMonitor();}
+        /*__RUN_HANDLE__*/
+        /*__CLAIM_PROCESS__*/
+        /*__CANCEL_ACTIVE__*/
+    }
+    private static final class BlockingProcess extends Process {
+        final CountDownLatch entered=new CountDownLatch(1),release=new CountDownLatch(1);
+        final AtomicInteger destroys=new AtomicInteger();
+        volatile boolean alive=true;
+        public java.io.OutputStream getOutputStream(){return new java.io.ByteArrayOutputStream();}
+        public java.io.InputStream getInputStream(){return new ByteArrayInputStream(new byte[0]);}
+        public java.io.InputStream getErrorStream(){return new ByteArrayInputStream(new byte[0]);}
+        public int waitFor()throws InterruptedException{await(release);return 0;}
+        public int exitValue(){if(alive)throw new IllegalThreadStateException("host process live");return 0;}
+        @Override public boolean isAlive(){return alive;}
+        public void destroy(){destroys.incrementAndGet();alive=false;entered.countDown();try{await(release);}catch(InterruptedException error){Thread.currentThread().interrupt();throw new IllegalStateException(error);}}
+    }
+    private static final class QualificationScope {static final class Launch {static Launch normal(){return new Launch();}}}
+    private static final class TaskUi {
+        boolean running;int stops;Runnable afterStop;
+        boolean isRunning(){return running;}
+        void stop(){stops++;running=false;if(afterStop!=null)afterStop.run();}
+    }
+    private static final class StopButtonFixture {
+        final TaskUi tasks;final EngineFixture engine;
+        QualificationScope.Launch scopeLaunch;String scopeLaunchError;
+        StopButtonFixture(TaskUi tasks,EngineFixture engine){this.tasks=tasks;this.engine=engine;}
+        void refresh(boolean inspectModelFile){check(!inspectModelFile,"Stop requested filesystem dashboard refresh");}
+        void click(){/*__STOP_BUTTON_BODY__*/}
+    }
+
+    public static void main(String[] args)throws Exception{
+        run("clock_regression_does_not_half_mutate_lifecycle",new Case(){public void run(){
+            final Clock clock=new Clock();final ActionExecutionState a=state(clock);
+            clock.set(110);a.phase("worker_started");clock.set(109);
+            refused(new Runnable(){public void run(){a.enterEffect(false,true);}});check(!a.effectEntered(),"bad clock entered effect");
+            clock.set(120);a.enterEffect(false,true);clock.set(119);
+            refused(new Runnable(){public void run(){a.effectReturned(Boolean.TRUE);}});check(!flag(a.evidence(),"effect_returned"),"bad clock committed return");
+            refused(new Runnable(){public void run(){a.drained();}});check(!a.isDrained(),"bad clock drained worker");
+            refused(new Runnable(){public void run(){a.retire("cancelled");}});check(!a.retired(),"bad clock retired state");
+            clock.set(130);a.effectReturned(null);a.drained();
+        }});
+        run("once_entered_unknown_effect_cannot_rearm",new Case(){public void run(){
+            final Clock clock=new Clock();final ActionExecutionState a=state(clock);a.enterEffect(false,true);
+            clock.set(120);a.retire("cancelled");a.effectReturned(null);
+            refused(new Runnable(){public void run(){a.enterEffect(false,true);}});
+            check(flag(a.evidence(),"effect_returned")&&a.evidence().get("api_accepted")==null,"late real return not retained as unknown");
+            check(!flag(a.evidence(),"automatic_redispatch"),"retry authority appeared");a.drained();check(!a.publish(false,true),"retired unknown published as current");
+        }});
+        run("slot_stays_occupied_until_real_worker_finally",new Case(){public void run()throws Exception{
+            final ActionExecutionState.Slot slot=new ActionExecutionState.Slot();final Clock clock=new Clock();final ActionExecutionState a=state(clock);
+            final CountDownLatch entered=new CountDownLatch(1),release=new CountDownLatch(1);ExecutorService worker=Executors.newSingleThreadExecutor();
+            try{check(slot.acquire(a),"initial acquisition refused");Future<?> f=worker.submit(new Runnable(){public void run(){try{a.phase("worker_started");entered.countDown();await(release);}catch(InterruptedException error){throw new IllegalStateException(error);}finally{a.drained();slot.release(a);}}});
+                await(entered);a.retire("cancelled");check(slot.pending(),"retirement freed running work");
+                refused(new Runnable(){public void run(){slot.release(a);}});check(!slot.acquire(state(new Clock())),"second task admitted while worker blocked");
+                release.countDown();join(f);check(!slot.pending(),"real finally did not release slot");
+            }finally{release.countDown();shutdown(worker);}
+        }});
+        run("cancel_before_enqueue_and_absolute_deadline_refuse_admission",new Case(){public void run(){
+            ActionExecutionState.Slot slot=new ActionExecutionState.Slot();Clock clock=new Clock();ActionExecutionState a=state(clock);a.retire("cancelled");check(!slot.acquire(a),"retired object admitted");
+            Clock expiredClock=new Clock();ActionExecutionState expired=state(expiredClock);expiredClock.set(1000);check(!slot.acquire(expired),"deadline-inclusive object admitted");
+            check(expired.retired()&&!slot.pending(),"expired admission changed capacity");
+        }});
+        run("publication_fence_rejects_unpublished_stop_but_freezes_accepted_receipt",new Case(){public void run(){
+            Clock clock=new Clock();ActionExecutionState before=state(clock);before.drained();before.retire("cancelled");check(!before.publish(false,true),"prepublication cancellation ignored");
+            ActionExecutionState accepted=state(new Clock());accepted.drained();check(accepted.publish(false,true),"current drained receipt refused");accepted.retire("cancelled");
+            check(!accepted.retired()&&flag(accepted.evidence(),"callback_authority_current"),"late Stop rewrote accepted old receipt");
+        }});
+        run("diagnostic_vocabulary_and_truncation_never_claim_complete_coverage",new Case(){public void run(){
+            final ActionExecutionState a=state(new Clock());refused(new Runnable(){public void run(){a.phase("page or owner body");}});
+            for(int i=0;i<100;i++)a.phase("node_refresh");a.drained();a.publish(false,true);
+            Map<String,Object> proof=a.evidence();check(((List<?>)proof.get("phases")).size()==64&&flag(proof,"phases_truncated"),"unbounded phase rows");
+            check(!flag(proof,"complete_phase_coverage")&&!proof.containsKey("payload")&&!proof.containsKey("page"),"diagnostic overclaim");
+        }});
+        run("production_stop_returns_while_native_cancel_really_blocks",new Case(){public void run()throws Exception{
+            ExecutorService nativeWorker=Executors.newSingleThreadExecutor(),ui=Executors.newSingleThreadExecutor();TaskCancellationQueue queue=new TaskCancellationQueue(nativeWorker);
+            final Inference inference=new Inference(true);final StopFixture fixture=new StopFixture(new Service(queue),inference);final AtomicInteger oldHandle=new AtomicInteger(),newHandle=new AtomicInteger();
+            fixture.activeInference=new LocalInference.Handle(){public void cancel(){oldHandle.incrementAndGet();}};
+            try{Future<?> stop=ui.submit(new Runnable(){public void run(){fixture.stop();}});join(stop);await(inference.entered);
+                check(queue.pending()&&fixture.cancelled.get()&&fixture.stopRequestedElapsed.get()>=0,"Stop did not retain pending cancellation");
+                synchronized(fixture.handleLock){fixture.activeInference=new LocalInference.Handle(){public void cancel(){newHandle.incrementAndGet();}};}
+                fixture.stop();check(inference.calls.get()==1&&oldHandle.get()==0,"duplicate or premature captured handle call");
+                Map<String,Object> pending=fixture.taskCancellation.evidence();check(flag(pending,"signal_entered")&&!flag(pending,"signal_returned")&&!flag(pending,"worker_drained"),"cancel ack became drain proof");
+                inference.release.countDown();check(fixture.taskCancellation.awaitDrain(2000),"cancel worker did not drain");
+                check(!queue.pending()&&oldHandle.get()==1&&newHandle.get()==0,"later task handle was cancelled");
+                fixture.stop();check(inference.calls.get()==1,"repeated Stop requeued after drain");
+            }finally{inference.release.countDown();shutdown(ui);shutdown(nativeWorker);}
+        }});
+        run("captured_lease_retirement_prevents_old_cancel_reaching_new_task",new Case(){public void run(){
+            Deferred executor=new Deferred();TaskCancellationQueue queue=new TaskCancellationQueue(executor);Service service=new Service(queue);Inference inference=new Inference(false);StopFixture fixture=new StopFixture(service,inference);
+            fixture.stop();service.lease="99999999999999999999999999999999";executor.executeQueued();
+            check(inference.calls.get()==0&&flag(fixture.taskCancellation.evidence(),"skipped_after_lease_retired")&&!queue.pending(),"retired lease signalled new task");
+        }});
+        run("replacement_service_is_not_looked_up_by_old_cancel",new Case(){public void run(){
+            Deferred executor=new Deferred();TaskCancellationQueue queue=new TaskCancellationQueue(executor);Service oldService=new Service(queue),replacement=new Service(queue);
+            replacement.lease="99999999999999999999999999999999";Inference oldInference=new Inference(false),newInference=new Inference(false);
+            StopFixture oldFixture=new StopFixture(oldService,oldInference);new StopFixture(replacement,newInference);
+            oldFixture.stop();executor.executeQueued();check(oldInference.calls.get()==1&&newInference.calls.get()==0,"replacement live service was selected");
+        }});
+        run("actual_cleanup_before_stop_prevents_queue_reservation",new Case(){public void run(){
+            Deferred executor=new Deferred();TaskCancellationQueue queue=new TaskCancellationQueue(executor);Inference inference=new Inference(false);StopFixture fixture=new StopFixture(new Service(queue),inference);
+            fixture.taskCancellation.observeNativeCleanup(true);fixture.stop();check(executor.work==null&&!queue.pending()&&inference.calls.get()==0,"known-clean task queued native cancellation");
+        }});
+        run("cleanup_between_reservation_and_worker_entry_skips_signal",new Case(){public void run(){
+            Deferred executor=new Deferred();TaskCancellationQueue queue=new TaskCancellationQueue(executor);Inference inference=new Inference(false);StopFixture fixture=new StopFixture(new Service(queue),inference);
+            fixture.stop();check(queue.pending(),"reservation failed");fixture.taskCancellation.observeNativeCleanup(true);executor.executeQueued();
+            check(inference.calls.get()==0&&flag(fixture.taskCancellation.evidence(),"skipped_after_cleanup")&&!queue.pending(),"cleanup race sent late signal");
+        }});
+        run("native_cleanup_proof_cannot_erase_already_entered_cancel_worker",new Case(){public void run()throws Exception{
+            ExecutorService executor=Executors.newSingleThreadExecutor();TaskCancellationQueue queue=new TaskCancellationQueue(executor);Inference inference=new Inference(true);StopFixture fixture=new StopFixture(new Service(queue),inference);
+            try{fixture.stop();await(inference.entered);fixture.taskCancellation.observeNativeCleanup(true);
+                check(queue.pending()&&!fixture.taskCancellation.awaitDrain(0),"native cleanup pretended blocked signal had returned");
+                inference.release.countDown();check(fixture.taskCancellation.awaitDrain(2000)&&!queue.pending(),"actual signal return did not unblock");
+            }finally{inference.release.countDown();shutdown(executor);}
+        }});
+        run("stop_does_not_wait_for_real_attempt_guard_blocked_journal",new Case(){public void run()throws Exception{
+            final CountDownLatch journalEntered=new CountDownLatch(1),journalRelease=new CountDownLatch(1);
+            final FixedIntentAttemptGuard guard=new FixedIntentAttemptGuard(TASK,new FixedIntentAttemptGuard.Journal(){public void write(FixedIntentAttemptGuard.Attempt value)throws Exception{journalEntered.countDown();await(journalRelease);}});
+            final FixedIntentAttemptGuard.Binding binding=new FixedIntentAttemptGuard.Binding(TASK,RUN,OBS,"host.fixture",12,3,GENERATION,new FixedIntentTarget("notes.create","Host fixture",10001,null),"host-only-body");
+            final ActionExecutionState action=state(new Clock());ExecutorService worker=Executors.newSingleThreadExecutor(),cancelWorker=Executors.newSingleThreadExecutor(),ui=Executors.newSingleThreadExecutor();
+            TaskCancellationQueue queue=new TaskCancellationQueue(cancelWorker);Service service=new Service(queue);service.activeAction=new ActionWork(action);final StopFixture fixture=new StopFixture(service,new Inference(false));
+            try{Future<?> actionCall=worker.submit(new Runnable(){public void run(){try{guard.consume(binding);refused(new Runnable(){public void run(){action.enterEffect(false,true);}});}catch(Exception error){throw new IllegalStateException(error);}finally{action.drained();}}});
+                await(journalEntered);join(ui.submit(new Runnable(){public void run(){fixture.stop();}}));check(action.retired(),"Stop waited for journal/guard lock");
+                journalRelease.countDown();join(actionCall);check(!guard.available("notes.create"),"blocked journal cancellation rearmed durable attempt");
+                Map<String,Object> attempt=guard.snapshot().get(0);check(!flag(attempt,"dispatch_attempted")&&"not_dispatched".equals(attempt.get("result")),"journal stall fabricated effect");
+            }finally{journalRelease.countDown();shutdown(ui);shutdown(worker);shutdown(cancelWorker);}
+        }});
+        run("definitive_executor_rejection_drains_unstarted_work_without_retry",new Case(){public void run(){
+            TaskCancellationQueue queue=new TaskCancellationQueue(new Executor(){public void execute(Runnable value){throw new RejectedExecutionException("host rejection");}});
+            Service service=new Service(queue);Inference inference=new Inference(false);StopFixture fixture=new StopFixture(service,inference);fixture.stop();fixture.stop();
+            Map<String,Object> proof=fixture.taskCancellation.evidence();check(!queue.pending()&&flag(proof,"queue_rejected")&&flag(proof,"worker_drained")&&!flag(proof,"worker_started")&&inference.calls.get()==0,"rejected worker reported real execution");
+        }});
+        run("unexpected_submission_failure_does_not_throw_through_stop_or_release_unknown_slot",new Case(){public void run(){
+            final AtomicInteger submits=new AtomicInteger();
+            TaskCancellationQueue queue=new TaskCancellationQueue(new Executor(){public void execute(Runnable value){submits.incrementAndGet();throw new IllegalStateException("host ambiguous submission");}});
+            Inference inference=new Inference(false);StopFixture fixture=new StopFixture(new Service(queue),inference);fixture.stop();fixture.stop();
+            Map<String,Object> proof=fixture.taskCancellation.evidence();check(submits.get()==1&&queue.pending()&&flag(proof,"submission_unknown")&&!flag(proof,"worker_drained")&&!flag(proof,"queue_rejected")&&inference.calls.get()==0,"unknown submission was retried or treated as rejection/drain");
+        }});
+        run("submitted_then_exception_waits_for_real_cancel_worker_finally",new Case(){public void run()throws Exception{
+            final ExecutorService worker=Executors.newSingleThreadExecutor();TaskCancellationQueue queue=new TaskCancellationQueue(new Executor(){public void execute(Runnable value){worker.execute(value);throw new IllegalStateException("host post-submit ambiguity");}});
+            Inference inference=new Inference(true);StopFixture fixture=new StopFixture(new Service(queue),inference);
+            try{fixture.stop();await(inference.entered);check(queue.pending()&&flag(fixture.taskCancellation.evidence(),"submission_unknown"),"ambiguous submission freed live worker");
+                inference.release.countDown();check(fixture.taskCancellation.awaitDrain(2000)&&!queue.pending(),"actual worker finally did not clear ambiguous work");
+            }finally{inference.release.countDown();shutdown(worker);}
+        }});
+        run("action_read_timeout_uses_remaining_original_deadline_legacy_budget_unchanged",new Case(){public void run()throws Exception{
+            SystemClock.override.set(100);
+            try{JSONObject request=new JSONObject(109);HeptaAccessibilityService.Cancellation live=new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return false;}};
+                check(Transport.remainingActionTimeout(request,4500,live)==9,"action read retained fixed timeout");
+                check(Transport.remainingActionTimeout(request,4500,null)==4500,"legacy budget changed");
+                SystemClock.override.set(109);boolean rejected=false;try{Transport.remainingActionTimeout(request,4500,live);}catch(java.net.SocketTimeoutException expected){rejected=true;}check(rejected,"zero remaining accepted as infinite timeout");
+            }finally{SystemClock.override.set(-1);}
+        }});
+        run("fragmented_reads_cannot_restart_original_deadline",new Case(){public void run()throws Exception{
+            SystemClock.override.set(100);final AtomicInteger reads=new AtomicInteger();LocalSocket socket=new LocalSocket();
+            ByteArrayInputStream stream=new ByteArrayInputStream(new byte[]{1,2,3,4}){
+                @Override public synchronized int read(byte[] target,int offset,int length){reads.incrementAndGet();SystemClock.override.addAndGet(4);return super.read(target,offset,Math.min(1,length));}
+            };
+            try{boolean expired=false;try{Transport.readResponseBytes(socket,new DataInputStream(stream),new byte[4],new JSONObject(110),4500,new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return false;}});}catch(java.net.SocketTimeoutException expected){expired=true;}
+                check(expired&&reads.get()==3&&socket.timeouts.equals(java.util.Arrays.asList(Integer.valueOf(10),Integer.valueOf(6),Integer.valueOf(2))),"fragmented response granted a fresh read budget");
+            }finally{SystemClock.override.set(-1);}
+        }});
+        run("cancel_between_response_fragments_prevents_next_read",new Case(){public void run()throws Exception{
+            SystemClock.override.set(100);final AtomicBoolean cancelled=new AtomicBoolean();final AtomicInteger reads=new AtomicInteger();
+            ByteArrayInputStream stream=new ByteArrayInputStream(new byte[]{1,2}){
+                @Override public synchronized int read(byte[] target,int offset,int length){reads.incrementAndGet();cancelled.set(true);return super.read(target,offset,1);}
+            };
+            try{boolean stopped=false;try{Transport.readResponseBytes(new LocalSocket(),new DataInputStream(stream),new byte[2],new JSONObject(110),4500,new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}});}catch(IOException expected){stopped=true;}
+                check(stopped&&reads.get()==1,"cancelled response reader attempted more reads");
+            }finally{SystemClock.override.set(-1);}
+        }});
+        run("diagnostic_cancel_returns_with_exact_handle_and_blocks_process_admission_until_drain",new Case(){public void run()throws Exception{
+            ExecutorService cancel=Executors.newSingleThreadExecutor(),ui=Executors.newSingleThreadExecutor();EngineFixture.reset(cancel);
+            final EngineFixture engine=new EngineFixture();final EngineFixture.RunHandle old=new EngineFixture.RunHandle();final BlockingProcess process=new BlockingProcess();old.child.set(process);
+            EngineFixture.claimProcess(old,engine.active);
+            try{join(ui.submit(new Runnable(){public void run(){engine.cancelActive();}}));await(process.entered);
+                check(old.isCancellationRequested()&&EngineFixture.ACTIVE_CANCELLATION.pending(),"diagnostic Stop did not request before async signal");
+                // Host Process reports an actual exit while destroy() itself remains blocked; cleanup clears the old model slot.
+                check(!process.isAlive(),"host exit not reached");engine.active.compareAndSet(old,null);EngineFixture.PROCESS_ACTIVE.compareAndSet(old,null);
+                refused(new Runnable(){public void run(){EngineFixture.claimProcess(new EngineFixture.RunHandle(),engine.active);}});
+                check("run".equals(engine.lastCancellation.evidence().get("identity_kind"))&&engine.lastCancellation.evidence().get("task_id")==null
+                        &&old.runId.equals(engine.lastCancellation.evidence().get("run_id")),"diagnostic run was mislabelled as owner task");
+                process.release.countDown();check(engine.lastCancellation.awaitDrain(2000),"diagnostic cancel did not drain");
+                EngineFixture.RunHandle next=new EngineFixture.RunHandle();EngineFixture.claimProcess(next,engine.active);check(engine.active.get()==next&&process.destroys.get()==1,"admission failed after real drain or old signal repeated");
+            }finally{process.release.countDown();shutdown(ui);shutdown(cancel);EngineFixture.PROCESS_ACTIVE.set(null);}
+        }});
+        run("old_handle_reservation_and_new_process_admission_share_atomic_gate",new Case(){public void run()throws Exception{
+            final CountDownLatch submitted=new CountDownLatch(1),allowSubmitReturn=new CountDownLatch(1),newAdmissionAttempted=new CountDownLatch(1);
+            final AtomicReference<Runnable> queued=new AtomicReference<Runnable>();
+            EngineFixture.reset(new Executor(){public void execute(Runnable value){queued.set(value);submitted.countDown();try{await(allowSubmitReturn);}catch(InterruptedException error){throw new IllegalStateException(error);}}});
+            final EngineFixture engine=new EngineFixture();final EngineFixture.RunHandle old=new EngineFixture.RunHandle();EngineFixture.claimProcess(old,engine.active);
+            ExecutorService workers=Executors.newFixedThreadPool(3);
+            try{Future<?> cancellation=workers.submit(new Runnable(){public void run(){engine.cancelActive();}});await(submitted);
+                // No child was attached to this old host run. Completion clears exactly its two slots while submission is paused.
+                check(old.child.get()==null,"unexpected host child");engine.active.compareAndSet(old,null);EngineFixture.PROCESS_ACTIVE.compareAndSet(old,null);
+                Future<?> admission=workers.submit(new Runnable(){public void run(){newAdmissionAttempted.countDown();refused(new Runnable(){public void run(){EngineFixture.claimProcess(new EngineFixture.RunHandle(),engine.active);}});}});
+                final Service replacement=new Service(EngineFixture.ACTIVE_CANCELLATION);replacement.lease=null;
+                Future<?> taskAdmission=workers.submit(new Runnable(){public void run(){check(!replacement.acquireTask("99999999999999999999999999999999",new Runnable(){public void run(){}}),"replacement service admitted task during old cancel reservation");}});
+                await(newAdmissionAttempted);allowSubmitReturn.countDown();join(cancellation);join(admission);join(taskAdmission);
+                check(engine.active.get()==null&&EngineFixture.ACTIVE_CANCELLATION.pending(),"new run crossed capture/reservation gate");
+                check(replacement.lease==null,"refused replacement task acquired a lease");
+                queued.get().run();check(!EngineFixture.ACTIVE_CANCELLATION.pending()&&flag(engine.lastCancellation.evidence(),"skipped_after_lease_retired"),"retired old no-child lease was signalled");
+            }finally{allowSubmitReturn.countDown();shutdown(workers);EngineFixture.PROCESS_ACTIVE.set(null);}
+        }});
+        run("ordinary_stop_button_never_looks_up_new_engine_handle_after_task_stop",new Case(){public void run(){
+            Deferred executor=new Deferred();EngineFixture.reset(executor);final EngineFixture engine=new EngineFixture();final EngineFixture.RunHandle newer=new EngineFixture.RunHandle();
+            TaskUi tasks=new TaskUi();tasks.running=true;tasks.afterStop=new Runnable(){public void run(){EngineFixture.claimProcess(newer,engine.active);}};
+            new StopButtonFixture(tasks,engine).click();check(tasks.stops==1&&!newer.isCancellationRequested()&&executor.work==null,"ordinary Stop reached a later engine handle");EngineFixture.PROCESS_ACTIVE.set(null);
+        }});
+        run("ordinary_stop_button_preserves_independent_diagnostic_cancellation",new Case(){public void run(){
+            Deferred executor=new Deferred();EngineFixture.reset(executor);EngineFixture engine=new EngineFixture();EngineFixture.RunHandle diagnostic=new EngineFixture.RunHandle();EngineFixture.claimProcess(diagnostic,engine.active);
+            TaskUi tasks=new TaskUi();new StopButtonFixture(tasks,engine).click();check(diagnostic.isCancellationRequested()&&executor.work!=null,"diagnostic Stop capability lost");executor.executeQueued();
+            check(!EngineFixture.ACTIVE_CANCELLATION.pending()&&flag(engine.lastCancellation.evidence(),"signal_returned"),"captured diagnostic cancellation incomplete");EngineFixture.PROCESS_ACTIVE.set(null);
+        }});
+        run("old_journal_failure_cannot_stop_a_new_controller_task",new Case(){public void run(){
+            Deferred executor=new Deferred();TaskCancellationQueue queue=new TaskCancellationQueue(executor);Inference inference=new Inference(false);StopFixture fixture=new StopFixture(new Service(queue),inference);
+            String next="99999999999999999999999999999999";fixture.currentTaskId=next;fixture.service.lease=next;fixture.taskCancellation=new TaskCancellationQueue.Ticket(fixture.service,next);
+            check(!fixture.stopIfTask(TASK)&&!fixture.cancelled.get()&&executor.work==null,"old failure stopped newer task");
+            boolean nullRejected=false;try{fixture.stopIfTask(null);}catch(IllegalArgumentException expected){nullRejected=true;}check(nullRejected,"null became wildcard cancellation");
+            check(fixture.stopIfTask(next)&&fixture.cancelled.get(),"exact current task refusal");executor.executeQueued();check(inference.calls.get()==1,"captured task cancellation was not dispatched once");
+        }});
+        StringBuilder json=new StringBuilder("{\"schema\":\"hepta.action-worker-host.v1\",\"cases\":").append(passed.size()).append(",\"all_pass\":true,\"phone_operations\":0,\"android_test\":false,\"physical_fsync_stall_test\":false,\"passed\":[");
+        for(int i=0;i<passed.size();i++){if(i>0)json.append(',');json.append('\"').append(passed.get(i)).append('\"');}System.out.println(json.append("]}"));
+    }
+}

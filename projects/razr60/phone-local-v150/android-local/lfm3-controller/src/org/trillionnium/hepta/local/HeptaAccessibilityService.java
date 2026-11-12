@@ -51,6 +51,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         public final JSONObject imeSubmit;
         public final JSONObject fixedIntent;
         public final JSONObject toolChild;
+        public final JSONObject actionExecution;
         ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail) {
             this(accepted,dispatched,stale,detail,null);
         }
@@ -64,17 +65,21 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             this(accepted,dispatched,stale,detail,appCatalogue,scope,authorization,background,imeSubmit,fixedIntent,null);
         }
         private ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail,AppCatalogueRanker.Page appCatalogue,JSONObject scope,JSONObject authorization,JSONObject background,JSONObject imeSubmit,JSONObject fixedIntent,JSONObject toolChild){
+            this(accepted,dispatched,stale,detail,appCatalogue,scope,authorization,background,imeSubmit,fixedIntent,toolChild,null);
+        }
+        private ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String detail,AppCatalogueRanker.Page appCatalogue,JSONObject scope,JSONObject authorization,JSONObject background,JSONObject imeSubmit,JSONObject fixedIntent,JSONObject toolChild,JSONObject actionExecution){
             this.accepted=accepted;this.dispatched=dispatched;this.stale=stale;this.detail=detail;
             this.appCatalogue=appCatalogue;this.qualificationScope=scope;this.taskAuthorization=authorization;this.backgroundSession=background;this.imeSubmit=imeSubmit;this.fixedIntent=fixedIntent;
-            this.toolChild=toolChild;
+            this.toolChild=toolChild;this.actionExecution=actionExecution;
         }
-        ActionOutcome withScope(JSONObject scope){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,scope,taskAuthorization,backgroundSession,imeSubmit,fixedIntent,toolChild);
+        ActionOutcome withScope(JSONObject scope){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,scope,taskAuthorization,backgroundSession,imeSubmit,fixedIntent,toolChild,actionExecution);
         }
-        ActionOutcome withAuthorization(JSONObject authorization){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,authorization,backgroundSession,imeSubmit,fixedIntent,toolChild);}
-        ActionOutcome withBackground(JSONObject background){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,background,imeSubmit,fixedIntent,toolChild);}
-        ActionOutcome withSubmit(JSONObject value){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,backgroundSession,value,fixedIntent,toolChild);}
-        ActionOutcome withFixedIntent(JSONObject value){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,backgroundSession,imeSubmit,value,toolChild);}
-        ActionOutcome withToolChild(JSONObject value){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,backgroundSession,imeSubmit,fixedIntent,value);}
+        ActionOutcome withAuthorization(JSONObject authorization){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,authorization,backgroundSession,imeSubmit,fixedIntent,toolChild,actionExecution);}
+        ActionOutcome withBackground(JSONObject background){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,background,imeSubmit,fixedIntent,toolChild,actionExecution);}
+        ActionOutcome withSubmit(JSONObject value){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,backgroundSession,value,fixedIntent,toolChild,actionExecution);}
+        ActionOutcome withFixedIntent(JSONObject value){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,backgroundSession,imeSubmit,value,toolChild,actionExecution);}
+        ActionOutcome withToolChild(JSONObject value){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,backgroundSession,imeSubmit,fixedIntent,value,actionExecution);}
+        ActionOutcome withActionExecution(JSONObject value){return new ActionOutcome(accepted,dispatched,stale,detail,appCatalogue,qualificationScope,taskAuthorization,backgroundSession,imeSubmit,fixedIntent,toolChild,value);}
     }
     private static volatile HeptaAccessibilityService live;
     public static HeptaAccessibilityService connected() { return live; }
@@ -84,7 +89,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     static void removeConnectionListener(Runnable listener){connectionListeners.remove(listener);}
     private void publishConnectionChange(){for(Runnable listener:connectionListeners)main.post(listener);}
     private final Handler main=new Handler(Looper.getMainLooper());
-    private String lease;
+    private volatile String lease;
     private QualificationScopeConfig.Bound taskScope;
     private TaskAuthorization.Gate taskAuthorization;
     private NotesTaskPhaseGuard taskNotesPhase;
@@ -98,13 +103,19 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     // This queue is separate from the broker queue so a slow Android read cannot delay cleanup.
     private static final java.util.concurrent.ExecutorService observationIo=java.util.concurrent.Executors.newSingleThreadExecutor();
     private static final java.util.concurrent.atomic.AtomicBoolean observationIoBusy=new java.util.concurrent.atomic.AtomicBoolean();
+    // Separate, process-wide capacity: timeout retires authority, never frees a blocked action.
+    private static final java.util.concurrent.ExecutorService actionIo=java.util.concurrent.Executors.newSingleThreadExecutor();
+    private static final ActionExecutionState.Slot actionSlot=new ActionExecutionState.Slot();
+    private volatile ActionWork activeAction;
+    private volatile ActionExecutionState lastActionExecution;
+    private static final TaskCancellationQueue nativeCancellationQueue=TaskCancellationQueue.processQueue();
     private Runnable stopListener;
     private LocalTaskController ownedController;
     private long lastScreenshotAt;
     private boolean capturePending;
     private long captureSerial;
     private volatile ObservationRequest activeObservation;
-    private PhoneObservation current;
+    private volatile PhoneObservation current;
     private Graph currentGraph;
     private Bitmap currentBitmap;
     private static final long MAX_OBSERVATION_AGE_MS=90000;
@@ -133,6 +144,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(activeObservation!=null)failObservation(activeObservation,"无障碍服务已中断");
     }
     @Override public void onDestroy() {
+        ActionWork action=activeAction;if(action!=null)action.state.retire("service_destroyed");
         LocalTaskController controller; synchronized(this){controller=ownedController;}
         if(controller!=null)controller.close();
         if(taskWeb!=null)taskWeb.serviceRetired();
@@ -154,7 +166,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     synchronized boolean recoveryControllerIdle(LocalTaskController expected){
         if(Looper.myLooper()!=Looper.getMainLooper())throw new IllegalStateException("recovery service check must run on main thread");
         return live==this&&ownedController==expected&&(expected==null||!expected.isRunning())
-                &&activeObservation==null&&!capturePending&&!observationReadWorkPending()
+                &&activeObservation==null&&!capturePending&&!observationReadWorkPending()&&!actionWorkPending()&&!nativeCancellationWorkPending()
                 &&(taskBackground==null||taskBackground.released())&&(taskWeb==null||taskWeb.released())
                 &&(lease==null||(expected!=null&&lease.equals(expected.currentTaskId())));
     }
@@ -171,9 +183,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private void requestStop() { Runnable value; synchronized(this){value=stopListener;} if(value!=null)value.run(); }
     public synchronized boolean acquireTask(String taskId,Runnable onStop) {
-        if(lease!=null || live!=this||observationReadWorkPending()||WebFlightSession.hasUnreleased(this))return false;taskWeb=null;lease=taskId;stopListener=onStop;appDiscovery=null;taskScope=null;taskAuthorization=null;taskNotesPhase=null;taskCalculatorInput=null;taskBackground=null;taskSubmitAttempts=null;taskFixedIntentAttempts=null;return true;
+        if(WebFlightSession.hasUnreleased(this))return false;
+        synchronized(nativeCancellationQueue.admissionMonitor()){
+            if(lease!=null || live!=this||observationReadWorkPending()||actionWorkPending()||nativeCancellationWorkPending())return false;taskWeb=null;lease=taskId;stopListener=onStop;appDiscovery=null;taskScope=null;taskAuthorization=null;taskNotesPhase=null;taskCalculatorInput=null;taskBackground=null;taskSubmitAttempts=null;taskFixedIntentAttempts=null;return true;
+        }
     }
     public synchronized void releaseTask(String taskId) { if(taskId.equals(lease)){
+        if(actionWorkPending()||nativeCancellationWorkPending())throw new IllegalStateException("动作或取消工作尚未真实退出，不能释放任务租约");
         if(taskBackground!=null&&!taskBackground.released())throw new IllegalStateException("后台空间未核验释放，不能释放任务租约");
         if(taskWeb!=null&&!taskWeb.released())throw new IllegalStateException("网页工具未核验释放，不能释放任务租约");
         taskWeb=null;
@@ -622,14 +638,15 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         private static final long serialVersionUID=1L;
         StaleObservation(String detail){super("stale:"+detail);}
     }
-    /** Runs on the service thread immediately before each actual tool dispatch. */
-    private void scopeBeforeDispatch(String taskId,QualificationScopeConfig.Bound dispatchScope,PhoneObservation expected,ActionDecision action,AccessibilityNodeInfo node,boolean nodeRequired){
+    /** Rechecks the complete original scope immediately before dispatch, on the selected action thread. */
+    private void scopeBeforeDispatch(String taskId,QualificationScopeConfig.Bound dispatchScope,PhoneObservation expected,ActionDecision action,AccessibilityNodeInfo node,boolean nodeRequired,ActionWork work){
+        actionPhase(work,"scope_read");actionCheck(work);
         QualificationScopeConfig.Bound scope=scopeFor(taskId);
         QualificationScope.require(scope==dispatchScope,"dispatch scope was retired");
         AccessibilityNodeInfo root=null;AccessibilityWindowInfo window=null;
         try{
             scope.verifyUnchanged();
-            backgroundBeforeDispatch(taskId,expected,action,node,nodeRequired);
+            backgroundBeforeDispatch(taskId,expected,action,node,nodeRequired,work);
             if(scope.config==null){
                 scope.gate.check(action.action,action.packageName,null,null,null,false);
                 QualificationScope.require(ownsScope(taskId,scope),"scope lease retired before dispatch");return;
@@ -642,13 +659,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 frame=new QualificationScope.Window(string(root.getPackageName()),root.getWindowId(),window.getType(),window.getDisplayId(),
                         window.isActive(),root.isVisibleToUser()&&!bounds.isEmpty());
             }
-            boolean refreshed=!nodeRequired||(node!=null&&node.refresh());
+            boolean refreshed=!nodeRequired||(node!=null&&refreshActionNode(work,node));
             String operation="click".equals(action.action)&&action.nodeId==null?"coordinate_click":action.action;
             scope.gate.check(operation,action.packageName,frame,!refreshed||node==null?null:string(node.getPackageName()),!refreshed||node==null?null:Integer.valueOf(node.getWindowId()),nodeRequired);
             if(nodeRequired){
-                NodeRef ref=currentGraph==null?null:currentGraph.refs.get(action.nodeId);
+                Graph selected=graphForAction(work);NodeRef ref=selected==null?null:selected.refs.get(action.nodeId);
                 QualificationScope.require(ref!=null&&ref.node==node&&node.isVisibleToUser()&&node.isEnabled()
-                        &&ref.signature.equals(nodeSignature(node,observedChildText(node))),"scope node changed before dispatch");
+                        &&ref.signature.equals(nodeSignature(node,observedChildText(node,false,work==null?null:work.budget()))),"scope node changed before dispatch");
             }
             QualificationScope.require(frame!=null&&expected!=null&&frame.packageName.equals(expected.packageName)&&frame.windowId==expected.windowId,
                     "fresh scope window differs from bound observation");
@@ -657,7 +674,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         catch(Exception error){scope.refuse(message(error));throw new QualificationScope.Violation(message(error));}
         finally{if(window!=null)window.recycle();if(root!=null)root.recycle();}
     }
-    private void backgroundBeforeDispatch(String taskId,PhoneObservation expected,ActionDecision action,AccessibilityNodeInfo node,boolean nodeRequired){
+    private void backgroundBeforeDispatch(String taskId,PhoneObservation expected,ActionDecision action,AccessibilityNodeInfo node,boolean nodeRequired,ActionWork work){
         BackgroundSession background=backgroundFor(taskId);if(background==null)return;
         requireBackgroundObservation(taskId,expected);
         if("home".equals(action.action))throw new IllegalArgumentException("后台任务不提供 HOME，也不会回退到主屏导航");
@@ -665,20 +682,20 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(!background.allows(action.packageName))throw new IllegalArgumentException("动作应用超出本次后台范围");
         AccessibilityNodeInfo root=null;AccessibilityWindowInfo window=null;
         try{
-            root=selectedRoot();window=root==null?null:root.getWindow();
+            root=selectedRoot(background,work==null?null:work.budget());window=root==null?null:root.getWindow();
             if(root==null||window==null||window.getDisplayId()!=background.displayId()
                     ||window.getType()!=AccessibilityWindowInfo.TYPE_APPLICATION||root.getWindowId()!=expected.windowId
                     ||!expected.packageName.equals(string(root.getPackageName()))||!root.isVisibleToUser())
                 throw new IllegalStateException("后台目标窗口已变化");
             if(nodeRequired){
-                NodeRef ref=currentGraph==null?null:currentGraph.refs.get(action.nodeId);
+                Graph selected=graphForAction(work);NodeRef ref=selected==null?null:selected.refs.get(action.nodeId);
                 if(node==null||ref==null||ref.node!=node)throw new IllegalStateException("后台节点不属于本次观察");
-                boolean refreshed=node.refresh();background.requireActive();
+                boolean refreshed=refreshActionNode(work,node);background.requireActive();
                 if(!refreshed)throw new StaleObservation("后台节点已不可用，需重新观察");
                 // Identity failures stay terminal, even when the same refresh also changes text.
                 requireBackgroundNodeWindow(background,expected,node);
                 if(!node.isVisibleToUser()||!node.isEnabled()
-                        ||!ref.signature.equals(nodeSignature(node,observedChildText(node,true))))
+                        ||!ref.signature.equals(nodeSignature(node,observedChildText(node,true,work==null?null:work.budget()))))
                     throw new StaleObservation("后台节点内容已变化，需重新观察");
             }
             if(!ownsBackground(taskId,background))throw new IllegalStateException("后台任务租约已退休");
@@ -713,29 +730,183 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         final ObservedTargetLabels targets,final org.trillionnium.hepta.background.FixedIntentTarget fixedTarget,
                         final TaskAuthorization.Gate expectedAuthorization,final String modelRunId,
                         final Cancellation cancel,final ActionCallback callback){
-        // Capture this task's source once. A late callback must never look up a
-        // retired lease or borrow a newly started task's scope.
+        perform(taskId,expected,decision,targets,fixedTarget,expectedAuthorization,modelRunId,
+                SystemClock.elapsedRealtime()+8000,cancel,callback);
+    }
+    public void perform(final String taskId,final PhoneObservation expected,final ActionDecision decision,
+                        final ObservedTargetLabels targets,final org.trillionnium.hepta.background.FixedIntentTarget fixedTarget,
+                        final TaskAuthorization.Gate expectedAuthorization,final String modelRunId,final long deadline,
+                        final Cancellation cancel,final ActionCallback callback){
+        final long queued=SystemClock.elapsedRealtime();
+        // A late callback keeps the original task sources, never a newly admitted lease.
         final QualificationScopeConfig.Bound captured;final TaskAuthorization.Gate capturedAuthorization;final BackgroundSession capturedBackground;
         synchronized(this){captured=owns(taskId)?taskScope:null;capturedAuthorization=owns(taskId)?taskAuthorization:null;capturedBackground=owns(taskId)?taskBackground:null;}
         final ActionCallback boundCallback=new ActionCallback(){public void onResult(ActionOutcome result){
-            boolean currentLease=ownsScope(taskId,captured)&&ownsAuthorization(taskId,capturedAuthorization)&&capturedAuthorization==expectedAuthorization&&ownsBackground(taskId,capturedBackground),stopped=cancel.isCancelled();
-            ActionOutcome delivered=currentLease&&!stopped?result:new ActionOutcome(false,result.dispatched,false,
-                    "任务已停止或租约已退休；保留已发生的派发，不接受迟到回执",result.appCatalogue).withSubmit(result.imeSubmit).withFixedIntent(result.fixedIntent);
-            callback.onResult(delivered.withScope(callbackScopeEvidence(taskId,captured,currentLease,stopped))
-                    .withAuthorization(callbackAuthorizationEvidence(capturedAuthorization,currentLease,stopped))
-                    .withBackground(capturedBackground==null?null:capturedBackground.evidence())
-                    .withToolChild(decision.toolChildOrigin==null?null:new JSONObject(decision.toolChildOrigin.evidence())));
+            callback.onResult(bindActionOutcome(taskId,decision,expectedAuthorization,cancel,captured,capturedAuthorization,capturedBackground,result));
         }};
         main.post(new Runnable(){public void run(){
-            if(!ownsScope(taskId,captured)||!ownsAuthorization(taskId,capturedAuthorization)||capturedAuthorization!=expectedAuthorization||!ownsBackground(taskId,capturedBackground)||cancel.isCancelled()){
-                boundCallback.onResult(new ActionOutcome(false,false,false,"任务已停止或作用范围未绑定"));return;
+            if(!ownsScope(taskId,captured)||!ownsAuthorization(taskId,capturedAuthorization)||capturedAuthorization!=expectedAuthorization
+                    ||!ownsBackground(taskId,capturedBackground)||cancel.isCancelled()||SystemClock.elapsedRealtime()>=deadline){
+                boundCallback.onResult(new ActionOutcome(false,false,false,"任务已停止、到期或作用范围未绑定"));return;
             }
             if(decision.toolChildOrigin!=null)try{
                 decision.toolChildOrigin.enterService(taskId,capturedAuthorization.authorization.sha256,modelRunId,expected.id);
             }catch(Exception refused){boundCallback.onResult(new ActionOutcome(false,false,false,message(refused)));return;}
-            performOnMain(taskId,expected,decision,targets,fixedTarget,cancel,boundCallback,captured,capturedAuthorization,modelRunId);
+            // Preserve legacy foreground coordinates and unknown-window frames without inventing an ID.
+            // Neither path is claimed as repaired by this worker; background never falls back to the main display.
+            boolean legacyUnknownWindow=capturedBackground==null&&captured.config==null&&expected==current
+                    &&currentGraph!=null&&currentGraph.windowId<0;
+            if(("click".equals(decision.action)&&decision.nodeId==null)||legacyUnknownWindow){
+                performOnAction(taskId,expected,decision,targets,fixedTarget,cancel,boundCallback,captured,capturedAuthorization,modelRunId,null);return;
+            }
+            Graph snapshot=null;
+            try{
+                if(expected!=current||currentGraph==null)throw new StaleObservation("观察标识已失效");
+                snapshot=currentGraph.copyForAction(decision.nodeId);
+                final ActionWork work=new ActionWork(taskId,expected,modelRunId,captured,capturedAuthorization,capturedBackground,cancel,snapshot,queued,deadline);
+                if(!actionSlot.acquire(work.state))throw new IllegalStateException("已有动作工作尚未真实退出");
+                activeAction=work;lastActionExecution=work.state;snapshot=null;
+                try{actionIo.execute(new Runnable(){public void run(){
+                    ActionOutcome result=null;
+                    final java.util.concurrent.atomic.AtomicReference<ActionOutcome> outcome=new java.util.concurrent.atomic.AtomicReference<ActionOutcome>();
+                    try{
+                        work.phase("worker_started");work.check();
+                        performOnAction(taskId,expected,decision,targets,fixedTarget,cancel,new ActionCallback(){public void onResult(ActionOutcome value){
+                            if(!outcome.compareAndSet(null,value))throw new IllegalStateException("动作产生重复回执");
+                        }},captured,capturedAuthorization,modelRunId,work);
+                        result=outcome.get();
+                        if(result==null)throw new IllegalStateException("动作没有同步完成回执");
+                        if(cancel.isCancelled()||SystemClock.elapsedRealtime()>=deadline||work.state.retired())
+                            result=new ActionOutcome(false,result.dispatched,false,"动作已停止或到期；保留已经发生的派发，不重试",result.appCatalogue)
+                                    .withSubmit(result.imeSubmit).withFixedIntent(result.fixedIntent);
+                        result=bindActionOutcome(taskId,decision,expectedAuthorization,cancel,captured,capturedAuthorization,capturedBackground,result);
+                    }catch(Exception failure){
+                        result=new ActionOutcome(false,work.state.effectEntered(),false,"动作未得到完整确认；不重试："+message(failure));
+                        try{result=bindActionOutcome(taskId,decision,expectedAuthorization,cancel,captured,capturedAuthorization,capturedBackground,result);}
+                        catch(Exception unavailable){/* Missing scope evidence remains a hard consumer failure. */}
+                    }finally{
+                        // No shared currentGraph node is owned here. Never free capacity on logical cancellation.
+                        work.graph.close();work.logMarker(work.state.drained());
+                        if(activeAction==work)activeAction=null;actionSlot.release(work.state);
+                    }
+                    final ActionOutcome computed=result;
+                    main.post(new Runnable(){public void run(){
+                        // Delivery may be delayed by unrelated UI work. Recheck only captured identities and atomic flags.
+                        boolean currentLease=work.currentLease(),stopped=cancel.isCancelled();
+                        boolean allowed=work.state.publish(stopped,currentLease);
+                        ActionOutcome delivered=allowed?computed:new ActionOutcome(false,computed.dispatched,false,
+                                "任务已停止、到期或租约已退休；拒绝迟到回执，不重试",computed.appCatalogue)
+                                .withScope(callbackFlags(computed.qualificationScope,currentLease,stopped))
+                                .withAuthorization(callbackFlags(computed.taskAuthorization,currentLease,stopped))
+                                .withBackground(computed.backgroundSession).withSubmit(computed.imeSubmit)
+                                .withFixedIntent(computed.fixedIntent).withToolChild(computed.toolChild);
+                        callback.onResult(delivered.withActionExecution(new JSONObject(work.state.evidence())));
+                    }});
+                }});}catch(java.util.concurrent.RejectedExecutionException rejected){
+                    // execute() rejected before running: no worker, node read or effect is in flight.
+                    work.state.retire("queue_rejected");work.graph.close();work.state.drained();
+                    if(activeAction==work)activeAction=null;actionSlot.release(work.state);
+                    work.state.publish(cancel.isCancelled(),work.currentLease());
+                    boundCallback.onResult(new ActionOutcome(false,false,false,"动作队列未接受请求").withActionExecution(new JSONObject(work.state.evidence())));
+                }catch(RuntimeException uncertainSubmission){
+                    // Only definitive rejection proves no work started. An unexpected submit failure
+                    // keeps the owned graph and process-wide slot fenced until a real worker finally.
+                    work.state.retire("controller_abandoned");
+                }
+            }catch(Exception unavailable){
+                if(snapshot!=null)snapshot.close();
+                boundCallback.onResult(new ActionOutcome(false,false,unavailable instanceof StaleObservation,message(unavailable)));
+            }
         }});
     }
+    private ActionOutcome bindActionOutcome(String taskId,ActionDecision decision,TaskAuthorization.Gate expectedAuthorization,
+            Cancellation cancel,QualificationScopeConfig.Bound captured,TaskAuthorization.Gate capturedAuthorization,
+            BackgroundSession capturedBackground,ActionOutcome result){
+        boolean currentLease=ownsScope(taskId,captured)&&ownsAuthorization(taskId,capturedAuthorization)
+                &&capturedAuthorization==expectedAuthorization&&ownsBackground(taskId,capturedBackground),stopped=cancel.isCancelled();
+        ActionOutcome delivered=currentLease&&!stopped?result:new ActionOutcome(false,result.dispatched,false,
+                "任务已停止或租约已退休；保留已发生的派发，不接受迟到回执",result.appCatalogue)
+                .withSubmit(result.imeSubmit).withFixedIntent(result.fixedIntent).withActionExecution(result.actionExecution);
+        return delivered.withScope(callbackScopeEvidence(taskId,captured,currentLease,stopped))
+                .withAuthorization(callbackAuthorizationEvidence(capturedAuthorization,currentLease,stopped))
+                .withBackground(capturedBackground==null?null:capturedBackground.evidence())
+                .withToolChild(decision.toolChildOrigin==null?null:new JSONObject(decision.toolChildOrigin.evidence()));
+    }
+    private static JSONObject callbackFlags(JSONObject captured,boolean currentLease,boolean stopped){
+        if(captured==null)return null;
+        try{return new JSONObject(captured.toString()).put("callback_lease_current",currentLease).put("callback_cancelled",stopped);}
+        catch(Exception invalid){throw new IllegalStateException("captured callback evidence unavailable",invalid);}
+    }
+    boolean nativeCancellationWorkPending(){return nativeCancellationQueue.pending();}
+    boolean requestNativeCancellation(TaskCancellationQueue.Ticket ticket,Runnable signal){
+        if(ticket==null||ticket.taskId==null||!ticket.ownedBy(this))return false;
+        return nativeCancellationQueue.request(ticket,new TaskCancellationQueue.Lease(){public boolean current(String taskId){
+            // A retired service may cancel only its captured old lease. Never look up a replacement live service.
+            return taskId.equals(lease);
+        }},signal);
+    }
+    boolean actionWorkPending(){return actionSlot.pending();}
+    void retireActionWork(String taskId,String reason){
+        ActionWork work=activeAction;if(work!=null&&work.state.taskId.equals(taskId))work.state.retire(reason);
+    }
+    JSONObject actionExecutionEvidence(String taskId){
+        ActionExecutionState value=lastActionExecution;
+        return value==null||!value.taskId.equals(taskId)?null:new JSONObject(value.evidence());
+    }
+    private final class ActionWork {
+        final ActionExecutionState state;final PhoneObservation expected;final Graph graph;final Cancellation cancel;
+        final QualificationScopeConfig.Bound scope;final TaskAuthorization.Gate authorization;final BackgroundSession background;
+        ActionWork(String task,PhoneObservation expected,String run,QualificationScopeConfig.Bound scope,
+                TaskAuthorization.Gate authorization,BackgroundSession background,Cancellation cancel,Graph graph,long queued,long deadline){
+            this.expected=expected;this.scope=scope;this.authorization=authorization;this.background=background;
+            this.cancel=cancel;this.graph=graph;
+            state=new ActionExecutionState(UUID.randomUUID().toString().replace("-",""),task,run,expected.id,
+                    authorization.authorization.sha256,graph.windowId,graph.displayId,graph.backgroundGeneration,queued,deadline,
+                    new ActionExecutionState.Clock(){public long elapsedRealtime(){return SystemClock.elapsedRealtime();}});
+            state.phase("snapshot_cloned");
+        }
+        boolean currentLease(){
+            return expected==current&&ownsScope(state.taskId,scope)&&ownsAuthorization(state.taskId,authorization)
+                    &&ownsBackground(state.taskId,background)
+                    &&(background==null?state.displayId==Display.DEFAULT_DISPLAY&&state.backgroundGeneration==null:
+                    state.displayId==background.displayId()&&background.generation.equals(state.backgroundGeneration));
+        }
+        void check(){state.check(cancel.isCancelled(),currentLease());}
+        GraphBudget budget(){return new GraphBudget(){public void check(){ActionWork.this.check();}};}
+        void phase(String phase){check();logMarker(state.phase(phase));}
+        void logMarker(Map<String,Object> marker){
+            // Fixed phase/identity fields sampled inside the state lock. Log failure grants no authority.
+            try{android.util.Log.i("HeptaAction",new JSONObject(marker).toString());}catch(RuntimeException unavailable){}
+        }
+        void enterEffect(){logMarker(state.enterEffect(cancel.isCancelled(),currentLease()));check();}
+        void effectReturned(Boolean accepted){logMarker(state.effectReturned(accepted));}
+    }
+    private Cancellation actionCancellation(final ActionWork work,final Cancellation original){
+        if(work==null)return original;
+        return new Cancellation(){public boolean isCancelled(){
+            try{work.check();return false;}catch(IllegalStateException unavailable){return true;}
+        }};
+    }
+    private Graph graphForAction(ActionWork work){return work==null?currentGraph:work.graph;}
+    private static void actionCheck(ActionWork work){if(work!=null)work.check();}
+    private static void actionPhase(ActionWork work,String phase){if(work!=null)work.phase(phase);}
+    private static void enterActionEffect(ActionWork work){if(work!=null)work.enterEffect();}
+    private static void actionEffectReturned(ActionWork work,Boolean accepted){if(work!=null)work.effectReturned(accepted);}
+    private boolean refreshActionNode(ActionWork work,AccessibilityNodeInfo node){
+        actionPhase(work,"node_refresh");actionCheck(work);boolean refreshed=node.refresh();actionCheck(work);return refreshed;
+    }
+    private void afterActionDelay(final ActionWork work,Runnable completion,long delay){
+        if(work==null){main.postDelayed(completion,delay);return;}
+        long until=Math.min(work.state.deadlineElapsed,SystemClock.elapsedRealtime()+delay);
+        try{
+            work.phase("settle");
+            while(SystemClock.elapsedRealtime()<until){work.check();SystemClock.sleep(Math.max(0,Math.min(50,until-SystemClock.elapsedRealtime())));}
+            work.check();
+        }catch(IllegalStateException retired){/* Deliver the original effect truth without reading retired nodes. */}
+        completion.run();
+    }
+    private void executeActionIo(ActionWork work,Runnable action){if(work==null)backgroundIo.execute(action);else action.run();}
+    private void deliverActionCallback(ActionWork work,Runnable callback){if(work==null)main.post(callback);else callback.run();}
     private static String targetBindingError(PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets){
         // The label/id pair is the immutable prompt projection, never a live-tree substitution.
         if(expected==null||targets==null||!expected.id.equals(targets.observationId)||!expected.packageName.equals(targets.packageName))
@@ -744,20 +915,22 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             return "节点文字与标识不是本次观察提供的原始配对";
         return null;
     }
-    private String validate(String taskId,PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets,Cancellation cancel){
+    private String validate(String taskId,PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets,Cancellation cancel,ActionWork work){
+        Graph graph=graphForAction(work);
         if(cancel.isCancelled()||!owns(taskId))return "任务已停止";
         if(locked())return "手机已锁定";
         try{requireBackgroundObservation(taskId,expected);}catch(Exception mismatch){return "后台观察无效："+message(mismatch);}
-        if(expected!=current||currentGraph==null||!expected.id.equals(action.observationId))return "stale:观察标识已失效";
+        if(expected!=current||graph==null||!expected.id.equals(action.observationId))return "stale:观察标识已失效";
         String bindingError=targetBindingError(expected,action,targets);if(bindingError!=null)return bindingError;
         long age=SystemClock.elapsedRealtime()-expected.capturedElapsedMillis;
         if(age<0||age>MAX_OBSERVATION_AGE_MS)return "stale:观察已过期";
         if(!"open".equals(action.action)&&!org.trillionnium.hepta.background.FixedIntentTools.isTool(action.action)&&!expected.packageName.equals(action.packageName))return "stale:动作应用与观察不一致";
         Graph now=null;
         try{
-            now=readGraph();
-            if(!currentGraph.sameWindow(now))return "stale:目标窗口已变化";
-            if(ActionPolicy.requiresStableTree(action)&&!currentGraph.digest.equals(now.digest))
+            actionPhase(work,"graph_read");
+            now=readGraph(work==null?null:work.budget(),work==null?currentBackground():work.background);
+            if(!graph.sameWindow(now))return "stale:目标窗口已变化";
+            if(ActionPolicy.requiresStableTree(action)&&!graph.digest.equals(now.digest))
                 return "stale:目标窗口内容已变化";
         }
         catch(StaleObservation changed){return message(changed);}
@@ -765,27 +938,28 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         finally{if(now!=null)now.close();}
         return null;
     }
-    private void performOnMain(final String taskId,final PhoneObservation expected,final ActionDecision action,
+    private void performOnAction(final String taskId,final PhoneObservation expected,final ActionDecision action,
                                final ObservedTargetLabels targets,final org.trillionnium.hepta.background.FixedIntentTarget fixedTarget,final Cancellation cancel,final ActionCallback callback,
-                               final QualificationScopeConfig.Bound dispatchScope,final TaskAuthorization.Gate authorization,final String modelRunId){
+                               final QualificationScopeConfig.Bound dispatchScope,final TaskAuthorization.Gate authorization,final String modelRunId,final ActionWork work){
+        final Graph graph=graphForAction(work);
         try{
             authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
             if(backgroundFor(taskId)!=null){
                 String bindingError=targetBindingError(expected,action,targets);
                 if(bindingError!=null)throw new IllegalArgumentException(bindingError);
             }
-            scopeBeforeDispatch(taskId,dispatchScope,expected,action,null,false);
+            scopeBeforeDispatch(taskId,dispatchScope,expected,action,null,false,work);
             if((scopeFor(taskId).config!=null||backgroundFor(taskId)!=null)&&("click".equals(action.action)||"type".equals(action.action)||"submit".equals(action.action)||"scroll".equals(action.action))){
-                NodeRef ref=currentGraph==null?null:currentGraph.refs.get(action.nodeId);
-                scopeBeforeDispatch(taskId,dispatchScope,expected,action,ref==null?null:ref.node,true);
+                NodeRef ref=graph==null?null:graph.refs.get(action.nodeId);
+                scopeBeforeDispatch(taskId,dispatchScope,expected,action,ref==null?null:ref.node,true,work);
             }
         }
         catch(Exception error){callback.onResult(new ActionOutcome(false,false,error instanceof StaleObservation,message(error)));return;}
-        String invalid=validate(taskId,expected,action,targets,cancel);
+        String invalid=validate(taskId,expected,action,targets,cancel,work);
         if(invalid!=null){callback.onResult(new ActionOutcome(false,false,invalid.startsWith("stale:"),invalid));return;}
         try{
             if("wait".equals(action.action)){
-                main.postDelayed(new Runnable(){public void run(){callback.onResult(new ActionOutcome(!cancel.isCancelled(),false,false,cancel.isCancelled()?"等待已停止":"等待结束"));}},action.durationMs);return;
+                afterActionDelay(work,new Runnable(){public void run(){callback.onResult(new ActionOutcome(!cancel.isCancelled(),false,false,cancel.isCancelled()?"等待已停止":"等待结束"));}},action.durationMs);return;
             }
             if("done".equals(action.action)){callback.onResult(new ActionOutcome(true,false,false,"模型请求结束；仍需最终观察"));return;}
             if(ActionPolicy.isReadOnlyDiscovery(action)){
@@ -800,43 +974,45 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 callback.onResult(new ActionOutcome(true,false,false,"已只读查询本机应用目录",page));return;
             }
             if(org.trillionnium.hepta.background.FixedIntentTools.isTool(action.action)){
-                dispatchFixedIntent(taskId,expected,action,targets,fixedTarget,authorization,modelRunId,cancel,callback,dispatchScope);return;
+                dispatchFixedIntent(taskId,expected,action,targets,fixedTarget,authorization,modelRunId,cancel,callback,dispatchScope,work);return;
             }
             if("open".equals(action.action)){
-                if(backgroundFor(taskId)!=null){dispatchBackgroundNavigation(taskId,expected,action,authorization,modelRunId,cancel,callback);return;}
+                if(backgroundFor(taskId)!=null){dispatchBackgroundNavigation(taskId,expected,action,authorization,modelRunId,cancel,callback,work);return;}
                 refreshApps();if(!launchable.containsKey(action.packageName))throw new IllegalArgumentException("目标不是已列出的可启动应用");
                 Intent launch=getPackageManager().getLaunchIntentForPackage(action.packageName);
                 if(launch==null)throw new IllegalArgumentException("找不到应用启动入口");
                 launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 if(cancel.isCancelled()){callback.onResult(new ActionOutcome(false,false,false,"任务已停止"));return;}
                 scopeOpenIntent(taskId,dispatchScope,action.packageName,launch);
-                scopeBeforeDispatch(taskId,dispatchScope,expected,action,null,false);
+                scopeBeforeDispatch(taskId,dispatchScope,expected,action,null,false,work);
                 authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
-                startActivity(launch);
+                enterActionEffect(work);startActivity(launch);actionEffectReturned(work,Boolean.TRUE);
                 try{authorization.opened(action,modelRunId);}catch(Exception retiredAfterOpen){
                     callback.onResult(new ActionOutcome(false,true,false,"应用打开已派发，但授权回执未完成："+message(retiredAfterOpen)));return;
                 }
-                finishAfter(700,true,"已请求打开应用，下一步将重新观察",callback);return;
+                finishAfter(700,true,"已请求打开应用，下一步将重新观察",callback,work);return;
             }
             if("back".equals(action.action)||"home".equals(action.action)){
-                if(backgroundFor(taskId)!=null){dispatchBackgroundNavigation(taskId,expected,action,authorization,modelRunId,cancel,callback);return;}
+                if(backgroundFor(taskId)!=null){dispatchBackgroundNavigation(taskId,expected,action,authorization,modelRunId,cancel,callback,work);return;}
                 if(cancel.isCancelled()){callback.onResult(new ActionOutcome(false,false,false,"任务已停止"));return;}
-                scopeBeforeDispatch(taskId,dispatchScope,expected,action,null,false);
+                scopeBeforeDispatch(taskId,dispatchScope,expected,action,null,false,work);
                 authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
+                enterActionEffect(work);
                 boolean accepted=performGlobalAction("back".equals(action.action)?GLOBAL_ACTION_BACK:GLOBAL_ACTION_HOME);
-                finishAfter(350,accepted,accepted?"系统导航已接受":"系统导航未接受",callback);return;
+                actionEffectReturned(work,Boolean.valueOf(accepted));
+                finishAfter(350,accepted,accepted?"系统导航已接受":"系统导航未接受",callback,work);return;
             }
             if("click".equals(action.action)&&action.nodeId==null){coordinateClick(taskId,expected,action,targets,authorization,modelRunId,cancel,callback);return;}
-            NodeRef reference=currentGraph.refs.get(action.nodeId);
+            NodeRef reference=graph.refs.get(action.nodeId);
             if(reference==null)throw new IllegalArgumentException("节点不属于这次观察");
             AccessibilityNodeInfo node=reference.node;
-            boolean refreshed=node.refresh();
+            boolean refreshed=refreshActionNode(work,node);
             if(scopeFor(taskId).config!=null){
                 if(!refreshed){scopeFor(taskId).refuse("scope node refresh failed");throw new QualificationScope.Violation("scope node refresh failed");}
             }
             BackgroundSession background=backgroundFor(taskId);
             if(refreshed&&background!=null)requireBackgroundNodeWindow(background,expected,node);
-            ObservedChildText.Result freshChildText=refreshed?observedChildText(node,background!=null):ObservedChildText.notApplicable();
+            ObservedChildText.Result freshChildText=refreshed?observedChildText(node,background!=null,work==null?null:work.budget()):ObservedChildText.notApplicable();
             if(!refreshed||!reference.signature.equals(nodeSignature(node,freshChildText))||!node.isVisibleToUser()||!node.isEnabled()){
                 callback.onResult(new ActionOutcome(false,false,true,"stale:目标节点已变化"));return;
             }
@@ -854,24 +1030,25 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 if(!policy.allowed){
                     callback.onResult(new ActionOutcome(false,false,false,policy.reasonCode+": "+policy.detail));return;
                 }
-                scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true);
+                scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true,work);
                 authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
                 WebFlightSession web=taskWeb;if(web!=null)web.beforeNativeClickInvocation(action,modelRunId);
-                accepted=node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                finishAfter(350,accepted,accepted?"节点点击已接受":"节点点击未接受",callback);
+                enterActionEffect(work);accepted=node.performAction(AccessibilityNodeInfo.ACTION_CLICK);actionEffectReturned(work,Boolean.valueOf(accepted));
+                finishAfter(350,accepted,accepted?"节点点击已接受":"节点点击未接受",callback,work);
             }else if("type".equals(action.action)){
                 if(!node.isEditable()||!hasAction(node,AccessibilityNodeInfo.ACTION_SET_TEXT))throw new IllegalArgumentException("目标不是可写文本节点");
                 Bundle args=new Bundle();args.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,action.text);
-                scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true);
+                scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true,work);
                 authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
-                accepted=node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT,args);
+                enterActionEffect(work);accepted=node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT,args);actionEffectReturned(work,Boolean.valueOf(accepted));
                 if(!accepted){callback.onResult(new ActionOutcome(false,false,false,"文本写入未被接受"));return;}
-                main.postDelayed(new Runnable(){public void run(){
+                afterActionDelay(work,new Runnable(){public void run(){
                     if(cancel.isCancelled()||!ownsScope(taskId,dispatchScope)||!ownsAuthorization(taskId,authorization)){
                         callback.onResult(new ActionOutcome(false,true,false,"文本已派发，任务已停止；不读取退休节点"));return;
                     }
                     try{
-                        boolean verified=reference.node.refresh()&&action.text.equals(string(reference.node.getText()));
+                        actionPhase(work,"readback");actionCheck(work);
+                        boolean verified=reference.node.refresh()&&action.text.equals(string(reference.node.getText()));actionCheck(work);
                         callback.onResult(new ActionOutcome(verified,true,false,verified?"文本已按原文回读验证":"文本操作已发送，但原文回读未通过；不重试"));
                     }catch(RuntimeException retiredNode){
                         callback.onResult(new ActionOutcome(false,true,false,"文本已派发，但节点回读不可用；不重试"));
@@ -881,31 +1058,33 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 if(!(ActionDecision.IME_ACTION_SCHEMA.equals(action.actionSchema)||ActionDecision.FIXED_INTENT_ACTION_SCHEMA.equals(action.actionSchema))||!reference.imeEnter.queryAllowed()
                         ||!node.isEditable()||!node.isFocused()||!ObservedImeEnter.isSha(reference.inputTextSha256))
                     throw new IllegalArgumentException("当前字段没有已观察且语义明确的查询提交动作");
-                scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true);
+                scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true,work);
                 authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
                 final SubmitAttemptGuard guard=submitFor(taskId);
-                requireSubmitWindow(node,expected.windowId,currentGraph.displayId);
+                requireSubmitWindow(node,expected.windowId,graph.displayId);
+                actionPhase(work,"attempt_journal");
                 final SubmitAttemptGuard.Attempt attempt=guard.consume(new SubmitAttemptGuard.Binding(taskId,modelRunId,
-                        expected.id,expected.packageName,action.nodeId,expected.windowId,currentGraph.displayId,
+                        expected.id,expected.packageName,action.nodeId,expected.windowId,graph.displayId,
                         expected.backgroundGeneration,reference.inputTextSha256,reference.imeEnter));
                 try{
                     // The durable journal can take time. Revalidate before consuming the platform call.
-                    String changed=validate(taskId,expected,action,targets,cancel);
+                    String changed=validate(taskId,expected,action,targets,cancel,work);
                     if(changed!=null)throw new IllegalStateException(changed);
-                    scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true);
+                    scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true,work);
                     authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
-                    if(cancel.isCancelled()||!node.refresh()||!node.isEditable()||!node.isFocused()||!node.isVisibleToUser()
+                    if(cancel.isCancelled()||!refreshActionNode(work,node)||!node.isEditable()||!node.isFocused()||!node.isVisibleToUser()
                             ||!node.isEnabled()||node.isPassword()||node.getWindowId()!=expected.windowId
                             ||!expected.packageName.equals(string(node.getPackageName()))
-                            ||!reference.signature.equals(nodeSignature(node,observedChildText(node,background!=null))))
+                            ||!reference.signature.equals(nodeSignature(node,observedChildText(node,background!=null,work==null?null:work.budget()))))
                         throw new IllegalStateException("提交记录已消费，但字段或任务已变化；未调用编辑器，不重试");
-                    requireSubmitWindow(node,expected.windowId,currentGraph.displayId);
-                    guard.entering(attempt);
+                    requireSubmitWindow(node,expected.windowId,graph.displayId);
+                    guard.entering(attempt);enterActionEffect(work);
                     boolean apiAccepted=node.performAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_IME_ENTER.getId());
+                    actionEffectReturned(work,Boolean.valueOf(apiAccepted));
                     final JSONObject proof=new JSONObject(guard.finished(attempt,Boolean.valueOf(apiAccepted)));
                     final ActionOutcome result=new ActionOutcome(apiAccepted,true,false,apiAccepted
                             ?"查询编辑器动作已接受；业务结果仍需重新观察，不重试相同输入":"查询编辑器动作未接受；已记录尝试，不重试").withSubmit(proof);
-                    main.postDelayed(new Runnable(){public void run(){callback.onResult(result);}},350);
+                    afterActionDelay(work,new Runnable(){public void run(){callback.onResult(result);}},350);
                 }catch(Exception uncertain){
                     Map<String,Object> proof=guard.evidence(attempt);
                     boolean entered=Boolean.TRUE.equals(proof.get("dispatch_attempted"));
@@ -915,17 +1094,17 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             }else if("scroll".equals(action.action)){
                 int operation=scrollAction(action.direction);
                 if(!hasAction(node,operation))throw new IllegalArgumentException("这个节点未提供所选滚动方向");
-                scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true);
+                scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true,work);
                 authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
-                accepted=node.performAction(operation);finishAfter(450,accepted,accepted?"滚动已接受":"滚动未接受",callback);
+                enterActionEffect(work);accepted=node.performAction(operation);actionEffectReturned(work,Boolean.valueOf(accepted));finishAfter(450,accepted,accepted?"滚动已接受":"滚动未接受",callback,work);
             }else throw new IllegalArgumentException("不支持的动作");
-        }catch(Exception e){callback.onResult(new ActionOutcome(false,false,e instanceof StaleObservation,message(e)));}
+        }catch(Exception e){callback.onResult(new ActionOutcome(false,work!=null&&work.state.effectEntered(),e instanceof StaleObservation,message(e)));}
     }
     /** IPC runs off the service/main thread. A missing reply is a possible dispatch, never a retry. */
     private void dispatchFixedIntent(final String taskId,final PhoneObservation expected,final ActionDecision action,
             final ObservedTargetLabels labels,final org.trillionnium.hepta.background.FixedIntentTarget target,
             final TaskAuthorization.Gate authorization,final String run,final Cancellation cancel,final ActionCallback callback,
-            final QualificationScopeConfig.Bound scope)throws Exception{
+            final QualificationScopeConfig.Bound scope,final ActionWork work)throws Exception{
         if(!ActionDecision.FIXED_INTENT_ACTION_SCHEMA.equals(action.actionSchema)||target==null||!target.action.equals(action.action)
                 ||!target.packageName.equals(action.packageName)||!ObservedAppLabels.project(target.appLabel).equals(action.appLabel))
             throw new IllegalStateException("fixed intent target not bound to native decision frame");
@@ -937,67 +1116,79 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final int display=background==null?Display.DEFAULT_DISPLAY:background.displayId();
         final FixedIntentAttemptGuard ledger=fixedIntentsFor(taskId);
         // Consume and fsync before either ordinary Android or broker call. A failed journal cannot dispatch.
+        actionPhase(work,"attempt_journal");
         final FixedIntentAttemptGuard.Attempt attempt=ledger.consume(new FixedIntentAttemptGuard.Binding(taskId,run,expected.id,
                 expected.packageName,expected.windowId,display,background==null?null:background.generation,target,payload));
         try{
             if(cancel.isCancelled())throw new IllegalStateException("task cancelled before fixed intent");
-            String invalid=validate(taskId,expected,action,labels,cancel);if(invalid!=null)throw new IllegalStateException(invalid);
-            scopeBeforeDispatch(taskId,scope,expected,action,null,false);authorizationBeforeDispatch(taskId,authorization,action,run);
+            String invalid=validate(taskId,expected,action,labels,cancel,work);if(invalid!=null)throw new IllegalStateException(invalid);
+            scopeBeforeDispatch(taskId,scope,expected,action,null,false,work);authorizationBeforeDispatch(taskId,authorization,action,run);
             org.trillionnium.hepta.background.FixedIntentDispatch.recheck(this,caller,target);
             if(background==null){
                 Intent intent=org.trillionnium.hepta.background.FixedIntentDispatch.intent(target,payload);
-                ledger.entering(attempt);
-                try{startActivity(intent);ledger.finished(attempt,Boolean.TRUE);}
+                ledger.entering(attempt);enterActionEffect(work);
+                try{startActivity(intent);actionEffectReturned(work,Boolean.TRUE);ledger.finished(attempt,Boolean.TRUE);}
                 catch(Exception unknown){ledger.finished(attempt,null);callback.onResult(new ActionOutcome(false,true,false,"固定本地入口派发结果未知，不自动重试："+message(unknown)).withFixedIntent(new JSONObject(ledger.evidence(attempt))));return;}
-                main.postDelayed(new Runnable(){public void run(){callback.onResult(new ActionOutcome(true,true,false,
+                afterActionDelay(work,new Runnable(){public void run(){callback.onResult(new ActionOutcome(true,true,false,
                         "固定本地入口请求已接受；须重新观察编辑器/搜索页，尚未证明保存或查询结果").withFixedIntent(new JSONObject(ledger.evidence(attempt))));}},700);
                 return;
             }
-            backgroundIo.execute(new Runnable(){public void run(){
+            executeActionIo(work,new Runnable(){public void run(){
                 boolean entered=false;
                 try{
                     if(cancel.isCancelled()||!ownsBackground(taskId,background))throw new IllegalStateException("background task retired");
                     scope.verifyUnchanged();authorizationBeforeDispatch(taskId,authorization,action,run);background.requireActive();
                     org.trillionnium.hepta.background.FixedIntentDispatch.recheck(HeptaAccessibilityService.this,caller,target);
-                    ledger.entering(attempt);entered=true;
-                    JSONObject response=background.fixedIntent(target,payload,attempt.id,cancel);
+                    ledger.entering(attempt);entered=true;enterActionEffect(work);
+                    JSONObject response=background.fixedIntent(target,payload,attempt.id,actionCancellation(work,cancel),work==null?Long.MAX_VALUE:work.state.deadlineElapsed);
+                    actionEffectReturned(work,Boolean.TRUE);
                     ledger.finished(attempt,Boolean.TRUE);
                     final JSONObject proof=new JSONObject(ledger.evidence(attempt)).put("broker_response",response);
-                    main.postDelayed(new Runnable(){public void run(){callback.onResult(new ActionOutcome(true,true,false,
+                    afterActionDelay(work,new Runnable(){public void run(){callback.onResult(new ActionOutcome(true,true,false,
                             "后台固定本地入口已派发；须重新观察，尚未证明保存或查询结果").withFixedIntent(proof));}},350);
                 }catch(final Exception failure){
                     if(entered)ledger.finished(attempt,null);
                     final JSONObject proof=new JSONObject(ledger.evidence(attempt));final boolean dispatched=entered;
-                    main.post(new Runnable(){public void run(){callback.onResult(new ActionOutcome(false,dispatched,false,
+                    deliverActionCallback(work,new Runnable(){public void run(){callback.onResult(new ActionOutcome(false,dispatched,false,
                             "后台固定本地入口未得到完整确认，不自动重试："+message(failure)).withFixedIntent(proof));}});
                 }
             }});
-        }catch(Exception beforeCall){callback.onResult(new ActionOutcome(false,false,false,"固定本地入口未派发，尝试已消费："+message(beforeCall)).withFixedIntent(new JSONObject(ledger.evidence(attempt))));}
+        }catch(Exception beforeCall){
+            Map<String,Object> proof=ledger.evidence(attempt);
+            boolean entered=Boolean.TRUE.equals(proof.get("dispatch_attempted"))||(work!=null&&work.state.effectEntered());
+            callback.onResult(new ActionOutcome(false,entered,false,(entered?"固定本地入口派发状态未知，不重试：":"固定本地入口未派发，尝试已消费：")
+                    +message(beforeCall)).withFixedIntent(new JSONObject(proof)));
+        }
     }
 
     private void dispatchBackgroundNavigation(final String id,final PhoneObservation expected,final ActionDecision action,
-            final TaskAuthorization.Gate authorization,final String modelRunId,final Cancellation cancel,final ActionCallback callback){
+            final TaskAuthorization.Gate authorization,final String modelRunId,final Cancellation cancel,final ActionCallback callback,final ActionWork work){
         final BackgroundSession background=backgroundFor(id);
         if(background==null||"home".equals(action.action)){callback.onResult(new ActionOutcome(false,false,false,"后台 HOME 不可用"));return;}
-        try{backgroundIo.execute(new Runnable(){public void run(){
+        try{executeActionIo(work,new Runnable(){public void run(){
             boolean sent=false;
             try{
                 if(cancel.isCancelled()||!ownsBackground(id,background))throw new IllegalStateException("后台任务已停止");
                 scopeFor(id).verifyUnchanged();authorizationBeforeDispatch(id,authorization,action,modelRunId);
-                background.requireActive();sent=true;
-                JSONObject receipt=background.action("open".equals(action.action)?"launch":"back",action.packageName,cancel);
+                background.requireActive();enterActionEffect(work);sent=true;
+                JSONObject receipt=background.action("open".equals(action.action)?"launch":"back",action.packageName,actionCancellation(work,cancel),work==null?Long.MAX_VALUE:work.state.deadlineElapsed);
+                actionEffectReturned(work,Boolean.TRUE);
                 final boolean dispatched=receipt.optBoolean("dispatched",true);
                 if("open".equals(action.action)&&dispatched)authorization.opened(action,modelRunId);
                 final ActionOutcome result=new ActionOutcome(true,dispatched,false,"后台工具已定向派发；下一步重新观察");
-                main.postDelayed(new Runnable(){public void run(){callback.onResult(result);}},350);
+                afterActionDelay(work,new Runnable(){public void run(){callback.onResult(result);}},350);
             }catch(Exception error){
-                final ActionOutcome result=new ActionOutcome(false,sent,false,"后台工具未完成："+message(error)+(sent?"；可能已有派发，不重试":""));
-                main.post(new Runnable(){public void run(){callback.onResult(result);}});
+                boolean attempted=sent||(work!=null&&work.state.effectEntered());
+                final ActionOutcome result=new ActionOutcome(false,attempted,false,"后台工具未完成："+message(error)+(attempted?"；可能已有派发，不重试":""));
+                deliverActionCallback(work,new Runnable(){public void run(){callback.onResult(result);}});
             }
         }});}catch(RuntimeException unavailable){callback.onResult(new ActionOutcome(false,false,false,"后台执行队列已关闭"));}
     }
     private void finishAfter(long delay,final boolean accepted,final String detail,final ActionCallback callback){
-        main.postDelayed(new Runnable(){public void run(){callback.onResult(new ActionOutcome(accepted,accepted,false,detail));}},delay);
+        finishAfter(delay,accepted,detail,callback,null);
+    }
+    private void finishAfter(long delay,final boolean accepted,final String detail,final ActionCallback callback,ActionWork work){
+        afterActionDelay(work,new Runnable(){public void run(){callback.onResult(new ActionOutcome(accepted,accepted,false,detail));}},delay);
     }
     private void coordinateClick(final String taskId,final PhoneObservation expected,final ActionDecision action,
                                  final ObservedTargetLabels targets,final TaskAuthorization.Gate authorization,final String modelRunId,
@@ -1019,7 +1210,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 if(captureSerial!=token){result.getHardwareBuffer().close();return;}
                 capturePending=false;captureSerial++;Bitmap fresh=null;
                 try{
-                    fresh=copyScreenshot(result);String invalid=validate(taskId,expected,action,targets,cancel);
+                    fresh=copyScreenshot(result);String invalid=validate(taskId,expected,action,targets,cancel,null);
                     if(invalid!=null){callback.onResult(new ActionOutcome(false,false,invalid.startsWith("stale:"),invalid));return;}
                     if(fresh.getWidth()!=expected.width||fresh.getHeight()!=expected.height||!samePatch(currentBitmap,fresh,x,y)){
                         callback.onResult(new ActionOutcome(false,false,true,"stale:点击目标像素已变化"));return;
@@ -1059,6 +1250,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private static final class NodeRef {
         final AccessibilityNodeInfo node;final String signature,appTreeSignature;
         final ObservedImeEnter imeEnter;final String inputTextSha256;
+        private NodeRef(NodeRef original){
+            node=AccessibilityNodeInfo.obtain(original.node);signature=original.signature;appTreeSignature=original.appTreeSignature;
+            imeEnter=original.imeEnter;inputTextSha256=original.inputTextSha256;
+        }
         NodeRef(AccessibilityNodeInfo node,ObservedChildText.Result childText,ObservedScrollActions scrollActions){
             this(node,childText,scrollActions,readImeEnter(node),inputTextHash(node));
         }
@@ -1079,6 +1274,16 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         boolean sameWindow(Graph other){return windowId==other.windowId&&rotation==other.rotation&&displayId==other.displayId
                 &&java.util.Objects.equals(backgroundGeneration,other.backgroundGeneration)&&packageName.equals(other.packageName)&&bounds.equals(other.bounds);}
         boolean sameWindowAndTree(Graph other){return sameWindow(other)&&digest.equals(other.digest);}
+        Graph copyForAction(String nodeId){
+            // Main-looper handoff copies metadata and only the selected local node object; no refresh/IPC.
+            Graph copy=new Graph();copy.packageName=packageName;copy.digest=digest;copy.backgroundGeneration=backgroundGeneration;
+            copy.backgroundBootstrapPackage=backgroundBootstrapPackage;copy.windowId=windowId;copy.rotation=rotation;
+            copy.displayId=displayId;copy.bounds=new Rect(bounds);copy.truncated=truncated;
+            copy.backgroundAllowedPackages=java.util.Collections.unmodifiableList(new ArrayList<String>(backgroundAllowedPackages));
+            copy.state=state;copy.windowMetadata=windowMetadata;copy.collectionStats=collectionStats;
+            NodeRef selected=nodeId==null?null:refs.get(nodeId);if(selected!=null)copy.refs.put(nodeId,new NodeRef(selected));
+            return copy;
+        }
         void close(){for(NodeRef n:refs.values())n.node.recycle();refs.clear();}
     }
     private interface GraphBudget { void check(); }
