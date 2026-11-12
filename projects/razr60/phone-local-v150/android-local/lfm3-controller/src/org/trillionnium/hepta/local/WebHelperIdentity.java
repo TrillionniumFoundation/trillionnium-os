@@ -43,7 +43,7 @@ final class WebHelperIdentity {
                 "controller/helper current signatures differ");
         PackageInfo installed=info(pm,helper.packageName);
         WebEvidenceJson.need(helper.version==WebEvidenceProtocol.HELPER_VERSION_CODE
-                &&WebEvidenceProtocol.HELPER_VERSION_NAME.equals(installed.versionName),"v2 helper release required");
+                &&WebEvidenceProtocol.HELPER_VERSION_NAME.equals(installed.versionName),"current formal helper release required");
         android.content.pm.ServiceInfo service=pm.getServiceInfo(
                 new android.content.ComponentName(WebEvidenceProtocol.HELPER_PACKAGE,WebEvidenceProtocol.SERVICE_CLASS),0);
         WebEvidenceJson.need(service.exported&&service.enabled&&service.applicationInfo.enabled
@@ -96,7 +96,7 @@ final class WebHelperIdentity {
         TreeMap<String,String> out=new TreeMap<String,String>();WebEvidenceJson.need(info.sourceDir!=null,"base APK path missing");out.put("base",info.sourceDir);
         String[] splits=info.splitSourceDirs,names=info.splitNames;
         WebEvidenceJson.need((splits==null||splits.length==0)==(names==null||names.length==0),"split identity missing");
-        if(splits!=null){WebEvidenceJson.need(names!=null&&splits.length==names.length&&splits.length<=32,"split identity count");
+        if(splits!=null&&splits.length>0){WebEvidenceJson.need(names!=null&&splits.length==names.length&&splits.length<=32,"split identity count");
             for(int i=0;i<splits.length;i++){WebEvidenceJson.need(names[i]!=null&&names[i].matches("[A-Za-z0-9_.-]{1,120}")&&splits[i]!=null,"split identity invalid");
                 WebEvidenceJson.need(out.put("split:"+names[i],splits[i])==null,"duplicate split identity");}}
         return out;

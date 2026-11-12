@@ -1,0 +1,5 @@
+Exception in thread "main" java.lang.AssertionError: unsupported launch must return a stable capability refusal
+	at org.trillionnium.hepta.background.BackgroundLaunchIsolationHostTest.check(BackgroundLaunchIsolationHostTest.java:6)
+	at org.trillionnium.hepta.background.BackgroundLaunchIsolationHostTest.rejected(BackgroundLaunchIsolationHostTest.java:16)
+	at org.trillionnium.hepta.background.BackgroundLaunchIsolationHostTest.main(BackgroundLaunchIsolationHostTest.java:35)
+

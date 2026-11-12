@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.owned-worker-cancellation-host.v1",
+  "passed": true,
+  "compiler_contract": "Java 8 API release, Xlint:all, Werror",
+  "source_inputs": {
+    "src/org/trillionnium/hepta/local/OwnedWorkerCancellation.java": "eaa708351cfcac921e4e607a1789f6cb45dc4db61adb610029954c195fda2ec9",
+    "src/org/trillionnium/hepta/local/WarmProcessSession.java": "b179a624d475cbf787964bfc17d628ed122d4ae14a08239ac0cb1ece5c58598a",
+    "tests/owned-worker-cancellation/OwnedWorkerCancellationHostTest.java": "513bddfc4bca54e0124652cb136061fdabacc77f51fbfeac926554dafdc6e06f",
+    "tests/owned-worker-cancellation/NativeCancellationPipeHostTest.java": "2e7036faa69a6310d416c6beca3eae4dfaf403965fde2246557daa09c6a5b2b7"
+  },
+  "phone_tested": false,
+  "android_runtime": false,
+  "proprietary_sdk_executed": false,
+  "stages": [
+    {
+      "name": "compile",
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+        "--release",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:all",
+        "-Werror",
+        "-d",
+        "/home/alex/hepta-v55-01c5-20261112/host-r1/owned-worker-cancellation/classes",
+        "/home/alex/hepta-v55-01c5-20261112/source/src/org/trillionnium/hepta/local/OwnedWorkerCancellation.java",
+        "/home/alex/hepta-v55-01c5-20261112/source/src/org/trillionnium/hepta/local/WarmProcessSession.java",
+        "/home/alex/hepta-v55-01c5-20261112/source/tests/owned-worker-cancellation/OwnedWorkerCancellationHostTest.java",
+        "/home/alex/hepta-v55-01c5-20261112/source/tests/owned-worker-cancellation/NativeCancellationPipeHostTest.java"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 2.860361353988992
+    },
+    {
+      "name": "tests",
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "-cp",
+        "/home/alex/hepta-v55-01c5-20261112/host-r1/owned-worker-cancellation/classes",
+        "org.trillionnium.hepta.local.OwnedWorkerCancellationHostTest"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 4.587483276001876
+    }
+  ],
+  "source_unchanged": true
+}

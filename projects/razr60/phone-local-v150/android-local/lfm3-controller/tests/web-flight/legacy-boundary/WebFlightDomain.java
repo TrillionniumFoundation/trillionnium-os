@@ -4,16 +4,19 @@ import java.util.Map;
 import java.util.Set;
 
 /** Type-only boundary for legacy non-Web gates.
- * The separate Web gate compiles the actual WebFlightDomain and receipt/geometry classes.
+ * The separate Web gate compiles the actual WebTaskDomain and receipt/geometry classes.
  * No instance or method here may be used to mint a Web capability.
  */
-final class WebFlightDomain {
+final class WebTaskDomain {
     final String taskId,ownerSha,authorizationSha,observationId,generation;
     final int displayId,windowId;
-    private WebFlightDomain(){throw unavailable();}
+    private WebTaskDomain(){throw unavailable();}
     private static AssertionError unavailable(){
-        return new AssertionError("legacy non-Web fixture cannot execute WebFlightDomain");
+        return new AssertionError("legacy non-Web fixture cannot execute WebTaskDomain");
     }
+    boolean queryDispatched(){throw unavailable();}
+    boolean resultReady(){throw unavailable();}
+    Map<String,Object> resultRecord(){throw unavailable();}
     Map<String,Object> evidence(){throw unavailable();}
     Set<String> clicks(Set<String> original){throw unavailable();}
     Set<String> edits(Set<String> original){throw unavailable();}

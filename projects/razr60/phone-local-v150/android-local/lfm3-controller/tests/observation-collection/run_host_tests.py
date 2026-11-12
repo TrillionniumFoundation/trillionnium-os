@@ -84,6 +84,15 @@ def main():
         raise RuntimeError('actual traversal extraction ambiguous')
     i, j = actual.index(start), actual.index(end)
     legacy = actual[:i] + old + '\n' + actual[j:]
+    # The frozen v49 collector predates request budgets. Remove only the new
+    # fixture entry point that calls that overload; leave its exact old method
+    # and the snapshot path exercised by this comparison unchanged.
+    budget_start = '    PhoneObservation budgetedSnapshot(final Runnable check){'
+    budget_end = '    private PhoneObservation publishFixture(Graph g){'
+    if legacy.count(budget_start) != 1 or legacy.count(budget_end) != 1:
+        raise RuntimeError('budgeted fixture entry point ambiguous')
+    i, j = legacy.index(budget_start), legacy.index(budget_end)
+    legacy = legacy[:i] + legacy[j:]
     limits = 'private static final int MAX_NODES=128, MAX_VISITED=1536, MAX_CHARACTERS=6144;'
     if legacy.count(limits) != 1 or legacy.count('final class BackgroundObservationFixture') != 1:
         raise RuntimeError('bounded collector fixture identity changed')

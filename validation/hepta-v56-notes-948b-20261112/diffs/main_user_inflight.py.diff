@@ -1,0 +1,88 @@
+--- original/main_user_inflight.py
++++ v56/main_user_inflight.py
+@@ -254,7 +254,29 @@
+     return seen_launch and seen_settings
+ 
+ 
+-def verdict(h,live,args,report,samples,actions,by_file,child_proof):
++def nondecorative_content_change(h, before_raw, after_raw, content_rect):
++    """Necessary pixel gate only; semantic scroll still requires original-image review."""
++    need(type(content_rect) is list and len(content_rect)==4
++         and all(type(x) is int for x in content_rect),'integer observed content geometry required')
++    with h.png_rgba(before_raw) as left, h.png_rgba(after_raw) as right:
++        need(left.size==right.size,'main original image dimensions changed')
++        x0,y0,x1,y1=content_rect
++        need(0<=x0<x1<=left.width and 0<=y0<y1<=left.height
++             and x1-x0>=200 and y1-y0>=400,'observed content geometry outside main image')
++        gutter=max(16,(x1-x0+49)//50)
++        interior=[x0+gutter,y0,x1-gutter,y1]
++        with left.crop(interior) as a,right.crop(interior) as b:
++            a_raw,b_raw=a.tobytes(),b.tobytes()
++        return {'schema':'hepta.main-interior-content-change.v1',
++            'before_png_sha256':h.digest(before_raw),'after_png_sha256':h.digest(after_raw),
++            'content_rect':content_rect,'interior_rect':interior,'fixed_side_gutter_px':gutter,
++            'before_interior_rgba_sha256':h.digest(a_raw),'after_interior_rgba_sha256':h.digest(b_raw),
++            'interior_content_changed':a_raw!=b_raw,
++            'semantic_scroll_verified':False,'independent_semantic_review_required':True}
++
++
++def verdict(h,live,args,report,samples,actions,by_file,child_proof,*,
++            expected_background_selection,preparation_original_sha256):
+     record=report.get('main_user') or {};candidate=record.get('trigger_candidate') or {}
+     spec=candidate.get('spec') or {};context=candidate.get('context') or {}
+     fences=[];bound_fences={};fence_refs={};raw_binding=False;actual_input_refs=[];live_command_refs=[];missing=[]
+@@ -263,10 +285,15 @@
+         expected=live.first_worker(sample,report['task_id'],args.expected_uid,report['model_profile'],
+             context=spec['context_tokens'],threads=spec['threads'],app_pid=report['prestart_formal_service_binding']['app_pid'])
+         need(expected==spec,'live worker spec differs from actual indexed system sample')
+-        need(context=={'owner':report['instruction'],'config_sha256':report['runtime_config_sha256'],
++        # Both added context values come from independently rehashed preparation and OWNER recomputation.
++        # The full nine-field context is compared; no extra field is discarded or self-attested.
++        need(same_value(context,{'owner':report['instruction'],'config_sha256':report['runtime_config_sha256'],
+             'display_id':candidate['display_id'],'background_generation':candidate['generation'],
+             'model_sha256':report['expected_model_sha256'],'body':report['plan']['body'],
+-            'notes_identity':report['installed_identity_before']['notes']},'live context differs from original runtime/task')
++            'notes_identity':report['installed_identity_before']['notes'],
++            'expected_background_selection':expected_background_selection,
++            'preparation_original_sha256':preparation_original_sha256}),
++            'live context differs from original runtime/task/preparation')
+         path_map=dict((name,path) for name,mode,path in live.paths(spec))
+         for tag,key in [('launch-before','launch_before_fence'),('launch-after','launch_after_fence'),
+                         ('swipe-before','swipe_before_fence'),('swipe-after','swipe_after_fence')]:
+@@ -341,7 +368,7 @@
+             bound=row.get('model_binding_valid') is True and row.get('accepted') is True and row.get('dispatched') is True and row.get('stale') is False
+         if absent.get('task_id')==report.get('task_id') and absent.get('absent') is True and changed and bound:
+             later.append({'before_file':name,'action_file':action_name,'actor_kind':absent['actor_kind'],'state_changed':True})
+-    host=record.get('host_actions') or [];input_refs=[];input_commands_bound=False;pixels_bound=False
++    host=record.get('host_actions') or [];input_refs=[];input_commands_bound=False;pixels_bound=False;interior_bound=False;interior_proof=None
+     try:
+         need(clock_ok and raw_binding,'actual live/clock chain required before input-command acceptance')
+         before_surface=original_settings_surface(h,args,'settings-before-swipe',record.get('before_swipe_surface'))
+@@ -368,15 +395,26 @@
+         pixels_bound=(before_surface['geometry']['content_rect']==after_surface['geometry']['content_rect']
+             and before_surface['content_rgba_sha256']!=after_surface['content_rgba_sha256']
+             and record.get('application_pixels_changed') is True)
++        interior_proof=nondecorative_content_change(h,
++            h.checked_file(args.out/'main-user'/'settings-before-swipe.png',16<<20),
++            h.checked_file(args.out/'main-user'/'settings-after-swipe.png',16<<20),
++            before_surface['geometry']['content_rect'])
++        need(interior_proof['before_png_sha256']==before_surface['png_sha256']
++             and interior_proof['after_png_sha256']==after_surface['png_sha256'],
++             'interior evidence is not bound to the original command-bound images')
++        interior_bound=pixels_bound and interior_proof['interior_content_changed'] is True
+     except (RuntimeError,ValueError,KeyError,TypeError,OSError,UnicodeError) as error:missing.append(str(error))
+     checks={'same_task_work_replayed_at_both_main_action_boundaries':raw_binding,
+         'same_boot_device_elapsed_order':bool(clock_ok),'post_swipe_absence_from_original_stream':absence_bound,
+         'later_causal_actual_model_or_tool_child_effect':bool(later),
+         'sampled_hepta_then_bounded_launch_then_settings_focus':phases(samples,record),
+         'two_actual_host_inputs_bound_to_original_commands_and_clocks':input_commands_bound,
+-        'main_user_actions_completed':record.get('completed') is True,'settings_application_pixels_changed':pixels_bound}
++        'main_user_actions_completed':record.get('completed') is True,'settings_application_pixels_changed':pixels_bound,
++        'settings_non_decorative_content_changed':interior_bound}
+     return {'schema':'hepta.active-work-main-user-coexistence.v1','protocol':PROTOCOL,'checks':checks,
+         'machine_checks_passed':all(checks.values()),'qualified':False,'visual_scroll_reviewed':False,
++        'interior_content_proof':interior_proof,'effective_list_scroll_verified':False,
++        'continuous_interactivity_verified':False,'semantic_anchor_review_required':True,
+         'main_scroll_visual_review_required':True,'continuous_npu_busy_verified':False,
+         'live_phases':[p['phase'] for p in fences],'later_effects':later,'live_to_terminal_input_refs':actual_input_refs,
+         'actual_live_command_refs':live_command_refs,'actual_clock_command_refs':clock_refs,'actual_input_command_refs':input_refs,

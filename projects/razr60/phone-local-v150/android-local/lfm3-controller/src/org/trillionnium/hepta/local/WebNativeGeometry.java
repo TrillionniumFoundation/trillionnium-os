@@ -96,7 +96,8 @@ final class WebNativeGeometry {
             String current=stable.toString();
             if(firstStable==null)firstStable=current;else need(firstStable.equals(current),"native geometry changed across JS samples");
         }
-        need("hepta.fixed-top-document-dom.v2".equals(string(dom,"schema"))
+        need(("hepta.fixed-top-document-dom.v2".equals(string(dom,"schema"))
+                ||"hepta.fixed-top-document-dom.v3".equals(string(dom,"schema")))
                 &&Boolean.FALSE.equals(dom.get("geometry_semantics_verified")),"actual viewport observer schema");
         JSONObject vv=dom.getJSONObject("visual_viewport");
         keys(vv,"width","height","offset_left","offset_top","page_left","page_top","scale");

@@ -1,0 +1,170 @@
+--- original/run_background_notes_v54_r1.py
++++ v56/run_background_notes_v56_r1.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""v54 background Notes collector with explicitly separate model/tool-child evidence.
++"""v56 background Notes collector with explicitly separate model/tool-child evidence.
+ 
+ The original reviewed lock, installed-identity, root authorization, Start pixels,
+ numeric display policy and teardown gates remain. Model actions and typed tool
+@@ -36,29 +36,17 @@
+ LIVE_INFLIGHT = None
+ MAIN_INFLIGHT = None
+ WORKFLOW_EVIDENCE = None
+-EXPECTED_V54_SOURCE_COMMIT = "42d3a0f447807659c0f78c8273edee01dd1b734f"
+-EXPECTED_V54_SOURCE_INVENTORY = "8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d"
+-EXPECTED_V54_BUILD_COUNTS = {"source_file_count": 589, "actual_compiler_source_inputs": 211, "host_check_records": 101, "host_input_count": 413, "packaged_library_count": 17}
+-EXPECTED_V54_BUILD_SHA = "eadc9dbb63b411015571a488377be6a8704c9f78415169a5164c8f13571f0f72"
+-EXPECTED_V54_APK_SHA = "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a"
+-TERMINAL_V54 = frozenset(("model_reported_done", "partial", "failed", "cancelled", "blocked", "controller_verified_done"))
++EXPECTED_V56_SOURCE_COMMIT = None
++EXPECTED_V56_SOURCE_INVENTORY = None
++EXPECTED_V56_BUILD_COUNTS = None
++EXPECTED_V56_BUILD_SHA = None
++EXPECTED_V56_APK_SHA = None
++TERMINAL_V56 = frozenset(("model_reported_done", "partial", "failed", "cancelled", "blocked", "controller_verified_done"))
+ HEX64 = re.compile(r"[0-9a-f]{64}\Z")
+ HEX32 = re.compile(r"[0-9a-f]{32}\Z")
+ UUID = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\Z")
+ START_CAPTURE_MAX_AGE_SECONDS = 10.0
+-PINS = {
+-    "v35_identity": "a4a751cf03956783e551f54b16dd37769f00d5b7cd2a0225b667becbc6e6d003",
+-    "warm_receipts": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5",
+-    "model_profiles": "ee26ed1f2f2b2ffd5f14fbd526c6d3cbf05d7ed8d65c422df5e60a72fa0cfa3a",
+-    "phone_acceptance": "411da90ca9ef83441fa0a199a25d71361ab582db5b54ac08bd39e5e8597e6302",
+-    "phone_suite": "2681e21ae0ead263b9313a6e49b4faf8951f3e87ab6b5c669c41fe34dbe5267a",
+-    "fixed_intent_v6_acceptance": "9b858dd02d34558ab6c898209378a2de3d34b38b6f1aa2a099da788273b3f2ba",
+-    "background_notes_plan": "df4aa09037d41709dbfa0efae522776f023fc1481859f22a0e078a22f015daff",
+-    "prepare_background_notes_v54_r1": "5e1db9854154042f3124afc1a2890c567a3fa32dedc41f80f237b0bd260e4d90",
+-    "live_inflight_window": "3f3faa3b692257710f48651d48f1a39405f0fb511fd94658af2617ded9443671",
+-    "main_user_inflight": "79450f5c07b48958821d388a729223890fcd7f2cd0c085e85e15c48aadee167d",
+-    "controller_workflow_evidence": "405ed06f6302623e36dc39803ebe7781bb349b396851d0bfe6fa46f2ce6b6350",
+-}
++PINS = {'v35_identity': 'a4a751cf03956783e551f54b16dd37769f00d5b7cd2a0225b667becbc6e6d003', 'warm_receipts': 'd5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5', 'model_profiles': 'ee26ed1f2f2b2ffd5f14fbd526c6d3cbf05d7ed8d65c422df5e60a72fa0cfa3a', 'phone_acceptance': '411da90ca9ef83441fa0a199a25d71361ab582db5b54ac08bd39e5e8597e6302', 'phone_suite': '2681e21ae0ead263b9313a6e49b4faf8951f3e87ab6b5c669c41fe34dbe5267a', 'fixed_intent_v6_acceptance': 'f2be125014236dee4662bc3597e85c3e723e8a9dce1681921dbcef132e6d79cb', 'background_notes_plan': '4bf77a52d012b4d5fe2fcfdcfea59649058c74d94202afcaacf0cb92e81c7bad', 'prepare_background_notes_v56_r1': '99d1a1f7b91ec4ae4caaa85998de41d67e15de89e6b96131fac27261b350329d', 'live_inflight_window': '3f3faa3b692257710f48651d48f1a39405f0fb511fd94658af2617ded9443671', 'main_user_inflight': 'ac8d0b871e783b0ce64416aecce707e910bcb151eadb2552fb1c71b0854cd6fd', 'controller_workflow_evidence': '73bb00cde5cba186f7c62e3d9042829a688faa69571b5db0e8a3c49ed8109000'}
+ 
+ 
+ def need(condition, message):
+@@ -851,8 +839,17 @@
+ 
+ 
+ def coexistence_verdict(args, report, samples, actions, by_file):
++    preparation_raw = checked_file(args.out / "PREPARATION-ORIGINAL.json", 2 << 20)
++    need(digest(preparation_raw) == args.preparation_sha256
++         and preparation_raw == checked_file(args.preparation, 2 << 20),
++         "actual preparation changed before independent main context binding")
++    plan_helper = sys.modules.get("background_notes_plan")
++    need(plan_helper is not None and digest(checked_file(Path(plan_helper.__file__))) == PINS["background_notes_plan"],
++         "exact plan helper required for main context binding")
++    expected_selection = plan_helper.background_selection_from_preparation(NOTES_PLAN, strict(preparation_raw))
+     return MAIN_INFLIGHT.verdict(sys.modules[__name__], LIVE_INFLIGHT, args, report, samples, actions, by_file,
+-        report.get("controller_workflow_proof") or {})
++        report.get("controller_workflow_proof") or {},
++        expected_background_selection=expected_selection, preparation_original_sha256=digest(preparation_raw))
+ 
+ 
+ DISPLAY_REQUIRED_FLAGS = frozenset(("FLAG_TRUSTED", "FLAG_OWN_FOCUS", "FLAG_STEAL_TOP_FOCUS_DISABLED"))
+@@ -984,8 +981,8 @@
+     extension = sys.modules.get("fixed_intent_v6_acceptance")
+     need(extension is not None and digest(checked_file(Path(extension.__file__))) == PINS["fixed_intent_v6_acceptance"],
+          "exact loaded source-aware fixed-intent extension required")
+-    report["fixed_intent_source_context"] = extension.bind_v54_source_context(acceptance,
+-        args.build_receipt, args.source_tools.parent / "src/org/trillionnium/hepta/local/LocalTaskController.java",
++    report["fixed_intent_source_context"] = extension.bind_v56_source_context(acceptance,
++        args.build_receipt, args.controller_source,
+         report["installed_identity_before"]["hepta"], task)
+     collection = acceptance.collect_evidence(adb, args.out / "evidence", task, INSTRUCTION,
+         baseline_runs, True, uid, config["compute"], config["context_tokens"], config["model_profile"])
+@@ -1203,7 +1200,7 @@
+         "required": ["one actual same-task native notes.create/full literal body with broker and durable ledger",
+             "later real unique full-body list then independently bound model or typed-tool-child click and full editor reopen",
+             "stable controller terminal and final owned-display screenshot before cleanup",
+-            "explicit v54 in-flight main-user protocol and independent Settings/Notes image review"],
++            "explicit v56 in-flight main-user protocol and independent Settings/Notes image review"],
+         "unsupported_or_failed_effects": invalid_actions + unsupported_actions + report["unverified_tool_child_files"],
+         "all_dispatched_effects_have_matching_after": effect_evidence_complete,
+         "final_owned_display_screenshot_hash_bound": screen_bound and final_domain_bound,
+@@ -1271,8 +1268,8 @@
+         # Preserve original operator-reviewed input bytes, never a re-encoded crop.
+         write_new(args.out / "reviewed-main.png", reviewed_png, binary=True)
+         write_new(args.out / "reviewed-window-displays.txt", reviewed_windows_raw, binary=True)
+-    preparation_reader = load_pinned("prepare_background_notes_v54_r1",
+-        Path(__file__).absolute().with_name("prepare_background_notes_v54_r1.py"))
++    preparation_reader = load_pinned("prepare_background_notes_v56_r1",
++        Path(__file__).absolute().with_name("prepare_background_notes_v56_r1.py"))
+     preference_original = checked_file(args.out / "PREPARATION-UI-CHOICE-ORIGINAL.xml", 65536)
+     report["ui_preferences_original_sha256"] = digest(preference_original)
+     report["ui_preferences_unchanged"] = False
+@@ -1383,7 +1380,7 @@
+                 report["task_id"] = task
+             if task:
+                 need(candidate == task, "task identity changed; no retry permitted")
+-                if not active(latest) and latest.get("status") in TERMINAL_V54:
++                if not active(latest) and latest.get("status") in TERMINAL_V56:
+                     break
+                 if args.test_mode == "main_user_coexistence" and active(latest) and not report["main_user"]["attempted"]:
+                     try:
+@@ -1431,19 +1428,19 @@
+         and build.get("signer_proof_sha256") == "97e3aba44ec7a303a935965c1d608692ac06007a33bb859fec481486c1a239fe"
+         and build.get("matches_previously_recorded_signer") is True and build.get("source_files_unchanged") is True
+         and build.get("actual_compiler_inputs_bound_to_signed_asset") is True, "reviewed signed APK/source binding differs")
+-    need(EXPECTED_V54_SOURCE_COMMIT is not None and EXPECTED_V54_SOURCE_INVENTORY is not None
+-        and isinstance(EXPECTED_V54_BUILD_COUNTS, dict), "v54 signed release pins pending; no phone execution")
+-    need(args.build_receipt_sha256 == EXPECTED_V54_BUILD_SHA
+-        and args.apk_sha256 == EXPECTED_V54_APK_SHA
+-        and build.get("schema") == "hepta.isolated-v54-assembly.v1"
+-        and type(build.get("version_code")) is int and build.get("version_code") == 54 and args.source_commit == EXPECTED_V54_SOURCE_COMMIT
+-        and build.get("source_inventory_sha256") == EXPECTED_V54_SOURCE_INVENTORY
+-        and all(type(build.get(key)) is int and build[key] == value for key, value in EXPECTED_V54_BUILD_COUNTS.items()),
+-        "actual signed v54 release identity/counts differ")
++    need(EXPECTED_V56_SOURCE_COMMIT is not None and EXPECTED_V56_SOURCE_INVENTORY is not None
++        and isinstance(EXPECTED_V56_BUILD_COUNTS, dict), "v56 signed release pins pending; no phone execution")
++    need(args.build_receipt_sha256 == EXPECTED_V56_BUILD_SHA
++        and args.apk_sha256 == EXPECTED_V56_APK_SHA
++        and build.get("schema") == None
++        and type(build.get("version_code")) is int and build.get("version_code") == 56 and args.source_commit == EXPECTED_V56_SOURCE_COMMIT
++        and build.get("source_inventory_sha256") == EXPECTED_V56_SOURCE_INVENTORY
++        and all(type(build.get(key)) is int and build[key] == value for key, value in EXPECTED_V56_BUILD_COUNTS.items()),
++        "actual signed v56 release identity/counts differ")
+     config_raw = checked_file(args.runtime_config, 4096)
+     need(preparation.get("schema") == "hepta.ordinary-background-notes-ui-preparation.v1"
+         and preparation.get("prepared") is True and preparation.get("error") is None
+-        and preparation.get("driver_revision") == "notes-v54-dual-ui-comma-plan-r1"
++        and preparation.get("driver_revision") == "notes-v56-dual-ui-comma-plan-r1"
+         and preparation.get("start_tapped") is False
+         and preparation.get("task_started") is False and preparation.get("target_app_operated") is False
+         and preparation.get("existing_tasks_removed") is False and preparation.get("permissions_changed") is False
+@@ -1479,7 +1476,10 @@
+     p.add_argument("--test-mode", choices=tuple(TEST_MODES), required=True,
+         help="explicit Notes-only background or main-user coexistence; no automatic retry")
+     p.add_argument("--identity-helper", type=Path, required=True)
+-    p.add_argument("--source-tools", type=Path, required=True)
++    p.add_argument("--source-tools", type=Path, required=True,
++        help="exact bundled compatibility tools, separate from production source")
++    p.add_argument("--controller-source", type=Path, required=True,
++        help="actual frozen v56 LocalTaskController.java with all source-bound siblings")
+     p.add_argument("--adb", required=True)
+     p.add_argument("--adb-host", required=True)
+     p.add_argument("--adb-port", type=int, required=True)
+@@ -1512,6 +1512,13 @@
+ def main():
+     global INSTRUCTION, NOTES_PLAN, LIVE_INFLIGHT, MAIN_INFLIGHT, WORKFLOW_EVIDENCE
+     args = parser().parse_args()
++    need(args.expected_uid == None, "same frozen candidate UID required")
++    need(args.main_physical_display_id == None, "same frozen physical display required")
++    need(digest(checked_file(args.runtime_config, 4096)) == None, "same frozen runtime config required")
++    need(args.plan == Path(__file__).absolute().with_name("notes-plan-v56-r1.json")
++         and args.plan_sha256 == '159a6b02daf6365ec6c55df82af0bd403493749c8c2c97cddc73e588bb05bef0', "exact new v56 case plan required")
++    need(digest(checked_file(Path(__file__).absolute().with_name("RELEASE-CANDIDATE.json"), 65536))
++         == 'fc060d3fda5d2b71667f80c4d01e4f0f1392a8e811e90ab4a36398bf98fd58db', "sealed candidate bytes changed")
+     plan_helper = load_pinned("background_notes_plan", Path(__file__).absolute().with_name("background_notes_plan.py"))
+     NOTES_PLAN, plan_raw = plan_helper.load_plan(args.plan, args.plan_sha256)
+     INSTRUCTION = NOTES_PLAN["instruction"]
+@@ -1536,7 +1543,7 @@
+     need(args.out.is_absolute() and not args.out.exists() and all(not p.is_symlink() for p in args.out.parents), "new absolute output directory required")
+     args.out.mkdir(parents=False, mode=0o700)
+     report = {"schema": "hepta.background-notes-acceptance.v1", "qualified": False,
+-        "driver_revision": "notes-background-v54-dual-ui-actual-signed-comma-r1", "test_mode": args.test_mode, "start_pixel_algorithm": "exact_decoded_RGBA_pixels_outside_system_bars_v1",
++        "driver_revision": "notes-background-v56-dual-ui-actual-signed-comma-r1", "test_mode": args.test_mode, "start_pixel_algorithm": "exact_decoded_RGBA_pixels_outside_system_bars_v1",
+         "instruction": INSTRUCTION, "instruction_sha256": digest(INSTRUCTION.encode()),
+         "plan": NOTES_PLAN, "plan_sha256": digest(plan_raw), "actual_build_binding": bound_build,
+         "preparation_sha256": args.preparation_sha256, "business_verdict_assigned_by_collector": False,

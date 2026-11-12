@@ -1,0 +1,3163 @@
+{
+  "schema": "hepta.background-notes-acceptance.v1",
+  "qualified": false,
+  "driver_revision": "notes-background-v53-actual-signed-comma-r1",
+  "test_mode": "background_only",
+  "start_pixel_algorithm": "exact_decoded_RGBA_pixels_outside_system_bars_v1",
+  "instruction": "记一下，Hepta-v53r1-bb0c238aac48 明天下午3点看牙，带上检查资料。",
+  "instruction_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+  "plan": {
+    "schema": "hepta.moto-note-plan.v53-comma-prefix-r1",
+    "target_package": "com.motorola.stylus",
+    "marker": "Hepta-v53r1-bb0c238aac48",
+    "body": "Hepta-v53r1-bb0c238aac48 明天下午3点看牙，带上检查资料。",
+    "instruction": "记一下，Hepta-v53r1-bb0c238aac48 明天下午3点看牙，带上检查资料。",
+    "instruction_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+    "phone_tested": false,
+    "body_span_utf16": [
+      4,
+      45
+    ],
+    "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2"
+  },
+  "plan_sha256": "355286779823a6261cca2448d535d1da768d1a05f79da94f2015110f1f7cdb2f",
+  "actual_build_binding": {
+    "build_receipt_sha256": "484b2be823f751ce12c643ac66cd54d4ecd4262ab939b080dd2d0378365ecccc",
+    "source_commit": "7dee83d838b2c76b3abe3a3e61d7837316f40853",
+    "source_inventory_sha256": "f880e49f504d05d32eb3ba76127b14f30ee5434ca745b9929815deabc4bbf92f",
+    "version_code": 53,
+    "apk_sha256": "b906b5e091aa0bd567128745d7f757c19609fc320348345a562ff8229817cc7e",
+    "same_signer_verified_by_actual_receipt": true
+  },
+  "preparation_sha256": "94edfe38041bab46564c09b56dc7daeb49e62aa12821a4a414bb52d05ecb8e9f",
+  "business_verdict_assigned_by_collector": false,
+  "expected_apk_sha256": "b906b5e091aa0bd567128745d7f757c19609fc320348345a562ff8229817cc7e",
+  "expected_app_uid": 10481,
+  "expected_main_physical_display_id": "4630947043778501779",
+  "target_package": "com.motorola.stylus",
+  "existing_su_authorization_operator_attested": true,
+  "magisk_policy_modified": false,
+  "qualification_scope_modified": false,
+  "external_model_invoked_by_driver": false,
+  "direct_broker_client_used": false,
+  "shell_notes_actions": false,
+  "private_nonce_trigger_used": false,
+  "host_main_user_settings_actions_planned": false,
+  "main_scroll_visual_review_required": false,
+  "uiautomator_or_UiAutomation_used": false,
+  "started_wall_s": 1794460119.6028085,
+  "evidence_extension": {
+    "schema": "hepta.v53-owner-bound-mode-evidence.r1",
+    "file": "fixed_intent_v6_acceptance.py",
+    "sha256": "42e7db7a50bc7c7d24b5c9380427050bf6127b0395c674326932645b30e5464b"
+  },
+  "runtime_config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+  "model_profile": "lfm3-1.7b-qad-q4_0",
+  "expected_model_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452",
+  "compute": "npu",
+  "helper_pins": {
+    "v35_identity": "a4a751cf03956783e551f54b16dd37769f00d5b7cd2a0225b667becbc6e6d003",
+    "warm_receipts": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5",
+    "model_profiles": "ee26ed1f2f2b2ffd5f14fbd526c6d3cbf05d7ed8d65c422df5e60a72fa0cfa3a",
+    "phone_acceptance": "411da90ca9ef83441fa0a199a25d71361ab582db5b54ac08bd39e5e8597e6302",
+    "phone_suite": "2681e21ae0ead263b9313a6e49b4faf8951f3e87ab6b5c669c41fe34dbe5267a",
+    "fixed_intent_v6_acceptance": "42e7db7a50bc7c7d24b5c9380427050bf6127b0395c674326932645b30e5464b",
+    "background_notes_plan": "28837006b601bb288fb6f9a1fb95a554be052a53c2ae1efc541db8e09473ff7e",
+    "live_inflight_window": "a8855f358ac61684fc435defe7450602ddd8b926d0dd48b72b31b0c370b53973",
+    "main_user_inflight": "79450f5c07b48958821d388a729223890fcd7f2cd0c085e85e15c48aadee167d",
+    "controller_workflow_evidence": "952bf3cea944c54e220d6dd8134625522ee10d3aa486b9514007f32f3e61cf80"
+  },
+  "operation_lock": {
+    "schema": "hepta.cooperative-operation-lock.v1",
+    "path": "/home/alex/.local/state/hepta/razr-operation.lock",
+    "cooperative_advisory_only": true,
+    "nonblocking": true,
+    "created": false,
+    "truncated": false,
+    "reacquisition_attempted": false,
+    "acquired": true,
+    "released": true,
+    "continuity_verified": true,
+    "continuity_checks": 204,
+    "boundary": "participating host processes only; already submitted commands cannot be revoked",
+    "held_device": 66306,
+    "held_inode": 58890228,
+    "owner_uid": 1000,
+    "last_check": "execute_exit"
+  },
+  "installed_identity_before": {
+    "hepta": {
+      "package": "org.trillionnium.hepta.local",
+      "uid": 10481,
+      "apks": [
+        {
+          "path": "/data/app/~~wERt4qHNJbnNZ27czp0djQ==/org.trillionnium.hepta.local-1e49NK2Aaa9G7LTCNNITYg==/base.apk",
+          "sha256": "b906b5e091aa0bd567128745d7f757c19609fc320348345a562ff8229817cc7e"
+        }
+      ]
+    },
+    "notes": {
+      "package": "com.motorola.stylus",
+      "uid": 10382,
+      "apks": [
+        {
+          "path": "/product/preinstall/MotoStylus/MotoStylus.apk",
+          "sha256": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+        }
+      ]
+    }
+  },
+  "qualification_scope_present": false,
+  "formal_hepta_accessibility_enabled": true,
+  "formal_service_binding": {
+    "verified": true,
+    "component": "org.trillionnium.hepta.local/org.trillionnium.hepta.local.HeptaAccessibilityService",
+    "app_pid": 30185,
+    "app_uid": 10481,
+    "client_pid": 3622,
+    "client_uid": 1000,
+    "binder_received": true,
+    "has_bound": true,
+    "connection_ids": [
+      "9be6e71"
+    ],
+    "service_dump_sha256": "ba83c8135d7e333ef498d9ed8814d8aed1e232925a955f4fb6ad9c82c0d6f5fd",
+    "identity_scope": "exact active AMS ServiceRecord and live system-client binding; label-only AccessibilityManager rows are not component attestation"
+  },
+  "component_named_in_accessibility_bound_table": false,
+  "formal_hepta_accessibility_bound": true,
+  "baseline_session": {
+    "schema": "hepta.local-session.v1",
+    "status": "cancelled",
+    "task_id": "a1e8dcf1a7d8469b9a6d7984bd117f2e",
+    "origin": "user_button",
+    "instruction_sha256": "dcf45582ba69bc777abea0bd0babe33b82abea99124e41a73e6cb24983875c35",
+    "task_authorization_sha256": "de0ece2a698a77307aa9148581834c7ed84ab47d749ff1a6ba3396563fe3609d",
+    "task_authorization": {
+      "schema": "hepta.owner-task-authorization.v1",
+      "parser": "hepta.owner-tool-clauses.zh.v4-fixed-intents",
+      "instruction_sha256": "dcf45582ba69bc777abea0bd0babe33b82abea99124e41a73e6cb24983875c35",
+      "authorization_sha256": "de0ece2a698a77307aa9148581834c7ed84ab47d749ff1a6ba3396563fe3609d",
+      "allowed_tools": [
+        "back",
+        "click",
+        "done",
+        "find_app",
+        "home",
+        "notes.create",
+        "open",
+        "scroll",
+        "submit",
+        "type",
+        "wait",
+        "web.search"
+      ],
+      "require_find_app_before_open": false,
+      "find_query": null,
+      "recognized_rules": [],
+      "arbitrary_semantic_constraints_verified": false
+    },
+    "background_request": {
+      "mode": "background",
+      "allowed_packages": [
+        "com.motorola.stylus"
+      ],
+      "bootstrap_package": "com.motorola.stylus",
+      "bootstrap_source": "owner_selected_initial_app",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false
+    },
+    "background_lease_unreleased": false,
+    "web_helper_lease_unreleased": false,
+    "debug_nonce_sha256": null,
+    "expected_scope_sha256": null,
+    "actual_scope_sha256": null,
+    "state": "已停止；已经发生的操作不会自动重做",
+    "pending": false,
+    "running": false,
+    "blocked": false,
+    "cleanup_known": true,
+    "app_uid": 10481,
+    "updated_wall_ms": 1794459421918,
+    "external_model": false,
+    "automatic_resume": false,
+    "goal_independently_verified": false,
+    "evidence_directory": "/data/data/org.trillionnium.hepta.local/files/control-tasks/a1e8dcf1a7d8469b9a6d7984bd117f2e",
+    "model_reported_success": false,
+    "steps": 1,
+    "completion_verified": false,
+    "completion_evidence": {
+      "schema": "hepta.task-completion.v1",
+      "kind": "notes_save_list_reopen",
+      "owner_sha256": "dcf45582ba69bc777abea0bd0babe33b82abea99124e41a73e6cb24983875c35",
+      "contract_sha256": "c24f49c87d535971ff60509a8837d6e4899361cc3a9de3f86fb0f45606ab080f",
+      "source": "controller_observation_checks_not_model_claims",
+      "completion_verified": false,
+      "missing": [
+        "model_bound_notes_create_with_owner_body_missing",
+        "actual_editor_body_missing",
+        "save_then_real_list_with_unique_body_item_missing",
+        "model_click_same_list_item_then_reopened_body_missing",
+        "current_editor_body_missing"
+      ],
+      "rejected_success_claims": 0,
+      "max_rejected_success_claims": 2,
+      "notes_launch_observed": false,
+      "editor_body_observed": false,
+      "list_observed": false,
+      "prior_visible_body_collision": false,
+      "unobserved_prior_notes_known": false,
+      "same_list_item_reopened": false,
+      "progress_scope": "cumulative_task_evidence_not_current_screen",
+      "current_surface": "unverified",
+      "current_list_item_node_id": null,
+      "current_editor_body_matched": false,
+      "writes_required_for_unknown_or_read_only_goal": false,
+      "grants_tool_authority": false,
+      "task_id": "a1e8dcf1a7d8469b9a6d7984bd117f2e",
+      "contract": {
+        "schema": "hepta.task-completion.v1",
+        "kind": "notes_save_list_reopen",
+        "owner_sha256": "dcf45582ba69bc777abea0bd0babe33b82abea99124e41a73e6cb24983875c35",
+        "contract_sha256": "c24f49c87d535971ff60509a8837d6e4899361cc3a9de3f86fb0f45606ab080f",
+        "recognition": "hepta.notes-owner-intent.v1/natural_note_comma_prefix.v1",
+        "expected_body_sha256": "bd1ce86e1191426d73e684043f73db990e82b2e1d585fd8836e1429420c56058",
+        "source": "immutable_owner_contract",
+        "body_source_start_utf16": 4,
+        "body_source_end_utf16": 45,
+        "note_persistence_verification_policy": "save_list_reopen",
+        "body_rewritten": false,
+        "model_may_change_goal": false,
+        "grants_tool_authority": false
+      },
+      "proofs": [],
+      "model_success_claims": [],
+      "identity_failure": null,
+      "display_id": 19,
+      "background_generation": "e2a6c659-f7e1-44f0-b6b1-0f08645003c5",
+      "persistent_storage_bytes_verified": false,
+      "new_database_item_identity_verified": false,
+      "current_editor_raw_exact": false,
+      "current_body_evidence": {
+        "matched": false,
+        "raw_exact": false,
+        "persistent_bytes_verified": false,
+        "node_id": null,
+        "action_label": null,
+        "raw_text_sha256": null,
+        "body_sha256": "bd1ce86e1191426d73e684043f73db990e82b2e1d585fd8836e1429420c56058",
+        "trailing_lf_count": -1,
+        "match_rule": "unavailable",
+        "missing": "unique_observed_NoteEditor_context_required"
+      },
+      "current_list_match": false,
+      "current_list_missing": "complete_body_on_one_executable_list_item_missing",
+      "current_list_evidence": {
+        "matched": false,
+        "missing": "complete_body_on_one_executable_list_item_missing",
+        "match_rule": null,
+        "node_id": null,
+        "source_path": null,
+        "source_view_id": null,
+        "source_text_sha256": null,
+        "node_app_tree_sha256": null,
+        "text_scope": "Complete accessibility text source; visual clipping and persistent storage bytes are unverified.",
+        "persistent_bytes_verified": false
+      },
+      "observation_chain_verified": false,
+      "terminal_binding_and_cleanup_verified": false,
+      "completion_actor": null,
+      "model_done_synthesized": false,
+      "controller_completion_requested": false,
+      "controller_native_parent_session_bound": null
+    }
+  },
+  "main_physical_display_mapping": {
+    "verified": true,
+    "logical_display_id": 0,
+    "physical_display_id": "4630947043778501779",
+    "hwc_display_id": 0,
+    "port": 147,
+    "screen_size": [
+      1224,
+      2992
+    ],
+    "rotation": 0,
+    "display_dump_sha256": "2d98e8db5de7720108e476fdad9ec3bd1ae228c1f240696edaf5db12cf32faba",
+    "surfaceflinger_dump_sha256": "d01416390f86be91be5202135332b4e587e1528c3e3f97191fc1057b5035c6e2",
+    "claim_scope": "fresh sequential system logical-0 primary/base/override and SurfaceFlinger physical-ID match; HWC ID is not assumed logical"
+  },
+  "prestart_formal_service_binding": {
+    "verified": true,
+    "component": "org.trillionnium.hepta.local/org.trillionnium.hepta.local.HeptaAccessibilityService",
+    "app_pid": 30185,
+    "app_uid": 10481,
+    "client_pid": 3622,
+    "client_uid": 1000,
+    "binder_received": true,
+    "has_bound": true,
+    "connection_ids": [
+      "9be6e71"
+    ],
+    "service_dump_sha256": "a39940da8d0acc23ed723e843121c1e10cecec1f2e174b493e4903d18d98bc00",
+    "identity_scope": "exact active AMS ServiceRecord and live system-client binding; label-only AccessibilityManager rows are not component attestation"
+  },
+  "component_named_in_prestart_accessibility_bound_table": false,
+  "formal_hepta_accessibility_bound_before_start": true,
+  "prepared_screen_sha256": "78b063ab8cd10ecb3564246f000365ad6aba0068339f7cfc4ba01866895f5ce7",
+  "start_pixel_proof": {
+    "algorithm": "exact_decoded_RGBA_pixels_outside_system_bars_v1",
+    "pixels_equal": true,
+    "reviewed_content_rgba_sha256": "a81a2186bbdf71b7a150fc888613ee85f4bb6daea1519a1f515295d68c6fc02d",
+    "current_content_rgba_sha256": "a81a2186bbdf71b7a150fc888613ee85f4bb6daea1519a1f515295d68c6fc02d",
+    "reviewed_png_sha256": "240c8c04219d119f65370b2fa52e0e212688f8590de66bbc0b019cd266fb2b34",
+    "current_png_sha256": "78b063ab8cd10ecb3564246f000365ad6aba0068339f7cfc4ba01866895f5ce7",
+    "reviewed_window_dump_sha256": "65513ae5feb772a98c8724748c39ef44457f44ac270be8c7c5fc926f4ed1b92a",
+    "current_window_dump_sha256": "65513ae5feb772a98c8724748c39ef44457f44ac270be8c7c5fc926f4ed1b92a",
+    "reviewed_geometry": {
+      "display_id": 0,
+      "screen_size": [
+        1224,
+        2992
+      ],
+      "content_rect": [
+        0,
+        130,
+        1224,
+        2920
+      ],
+      "main_focus": "Window{27cd0bf u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+      "system_bars": [
+        {
+          "type": "statusBars",
+          "source_id": "73500000",
+          "frame": [
+            0,
+            0,
+            1224,
+            130
+          ],
+          "visible": true
+        },
+        {
+          "type": "navigationBars",
+          "source_id": "d17c0001",
+          "frame": [
+            0,
+            2920,
+            1224,
+            2992
+          ],
+          "visible": true
+        }
+      ],
+      "geometry_source": "display0.WindowInsetsStateController.InsetsState"
+    },
+    "current_geometry": {
+      "display_id": 0,
+      "screen_size": [
+        1224,
+        2992
+      ],
+      "content_rect": [
+        0,
+        130,
+        1224,
+        2920
+      ],
+      "main_focus": "Window{27cd0bf u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+      "system_bars": [
+        {
+          "type": "statusBars",
+          "source_id": "73500000",
+          "frame": [
+            0,
+            0,
+            1224,
+            130
+          ],
+          "visible": true
+        },
+        {
+          "type": "navigationBars",
+          "source_id": "d17c0001",
+          "frame": [
+            0,
+            2920,
+            1224,
+            2992
+          ],
+          "visible": true
+        }
+      ],
+      "geometry_source": "display0.WindowInsetsStateController.InsetsState"
+    },
+    "coordinates": [
+      180,
+      1936
+    ],
+    "pixel_tolerance": 0,
+    "resized": false,
+    "button_only_crop_used": false,
+    "claim_scope": "operator-reviewed reference plus fresh exact app-content pixels; pre-tap observations are sequential, not atomic",
+    "capture_started_monotonic_s": 248618.210089943,
+    "capture_ended_monotonic_s": 248618.665071603,
+    "maximum_capture_start_to_tap_seconds": 10.0,
+    "capture_start_to_tap_seconds": 1.1133003850118257
+  },
+  "trigger": {
+    "kind": "one_exact_application_content_bound_start_tap",
+    "coordinates": [
+      180,
+      1936
+    ],
+    "auto_task": false
+  },
+  "main_user": {
+    "phase": "hepta",
+    "attempted": false,
+    "host_actions": [],
+    "actor": "host_simulated_main_user",
+    "model_issued": false,
+    "task_action": false
+  },
+  "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+  "last_session": {
+    "schema": "hepta.local-session.v1",
+    "status": "controller_verified_done",
+    "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+    "origin": "user_button",
+    "instruction_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+    "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+    "task_authorization": {
+      "schema": "hepta.owner-task-authorization.v1",
+      "parser": "hepta.owner-tool-clauses.zh.v4-fixed-intents",
+      "instruction_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+      "authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+      "allowed_tools": [
+        "back",
+        "click",
+        "done",
+        "find_app",
+        "home",
+        "notes.create",
+        "open",
+        "scroll",
+        "submit",
+        "type",
+        "wait",
+        "web.search"
+      ],
+      "require_find_app_before_open": false,
+      "find_query": null,
+      "recognized_rules": [],
+      "arbitrary_semantic_constraints_verified": false
+    },
+    "background_request": {
+      "mode": "background",
+      "allowed_packages": [
+        "com.motorola.stylus"
+      ],
+      "bootstrap_package": "com.motorola.stylus",
+      "bootstrap_source": "owner_selected_initial_app",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false
+    },
+    "background_lease_unreleased": false,
+    "web_helper_lease_unreleased": false,
+    "debug_nonce_sha256": null,
+    "expected_scope_sha256": null,
+    "actual_scope_sha256": null,
+    "state": "已保存并重新打开这条笔记，正文核对一致。",
+    "pending": false,
+    "running": false,
+    "blocked": false,
+    "cleanup_known": true,
+    "app_uid": 10481,
+    "updated_wall_ms": 1794460141599,
+    "external_model": false,
+    "automatic_resume": false,
+    "goal_independently_verified": true,
+    "evidence_directory": "/data/data/org.trillionnium.hepta.local/files/control-tasks/4320372daa4f4a2bba4f1fcf1297c352",
+    "model_reported_success": false,
+    "steps": 1,
+    "completion_verified": true,
+    "completion_evidence": {
+      "schema": "hepta.task-completion.v1",
+      "kind": "notes_save_list_reopen",
+      "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+      "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+      "source": "controller_observation_checks_not_model_claims",
+      "completion_verified": true,
+      "missing": [],
+      "rejected_success_claims": 0,
+      "max_rejected_success_claims": 2,
+      "notes_launch_observed": true,
+      "editor_body_observed": true,
+      "list_observed": true,
+      "prior_visible_body_collision": false,
+      "unobserved_prior_notes_known": false,
+      "same_list_item_reopened": true,
+      "reopen_actor_kind": "tool_child",
+      "notes_create_workflow_verified": true,
+      "notes_create_workflow_stop_reason": null,
+      "progress_scope": "cumulative_task_evidence_not_current_screen",
+      "current_surface": "verified_note_editor",
+      "current_list_item_node_id": null,
+      "current_editor_body_matched": true,
+      "writes_required_for_unknown_or_read_only_goal": false,
+      "grants_tool_authority": false,
+      "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+      "contract": {
+        "schema": "hepta.task-completion.v1",
+        "kind": "notes_save_list_reopen",
+        "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+        "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+        "recognition": "hepta.notes-owner-intent.v1/natural_note_comma_prefix.v1",
+        "expected_body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+        "source": "immutable_owner_contract",
+        "body_source_start_utf16": 4,
+        "body_source_end_utf16": 45,
+        "note_persistence_verification_policy": "save_list_reopen",
+        "body_rewritten": false,
+        "model_may_change_goal": false,
+        "grants_tool_authority": false
+      },
+      "proofs": [
+        {
+          "kind": "model_bound_notes_launch",
+          "step": 1,
+          "model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+          "before_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+          "after_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+          "attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+          "payload_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2"
+        },
+        {
+          "kind": "editor_body_observed",
+          "step": 0,
+          "model_run_id": null,
+          "before_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+          "after_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc"
+        },
+        {
+          "kind": "post_create_observed_list",
+          "step": 0,
+          "model_run_id": null,
+          "before_observation_id": null,
+          "after_observation_id": "577663b1679c470c8163f6888fef642d",
+          "editor_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+          "list_body_evidence": {
+            "matched": true,
+            "missing": null,
+            "match_rule": "bound_note_summary_accessibility_text",
+            "node_id": "n12",
+            "source_path": "2",
+            "source_view_id": "com.motorola.stylus:id/note_summary",
+            "source_text_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+            "node_app_tree_sha256": "fca1e9a228fe8ce69a31e223660f437a061fea72ede0c413659e3aba31451c70",
+            "text_scope": "Complete accessibility text source; visual clipping and persistent storage bytes are unverified.",
+            "persistent_bytes_verified": false
+          }
+        },
+        {
+          "kind": "tool_child_same_observed_list_item_reopened",
+          "step": 1,
+          "model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+          "before_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+          "after_observation_id": "99aaf49bce494ba599086009ff2a7ac8",
+          "actor_kind": "tool_child",
+          "model_issued": false,
+          "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+          "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+          "workflow_evidence": {
+            "schema": "hepta.notes-create-workflow.v1",
+            "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+            "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+            "parent_step": 1,
+            "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+            "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+            "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+            "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+            "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+            "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+            "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+            "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+            "target_package": "com.motorola.stylus",
+            "target_uid": 10382,
+            "target_apk_sha256": {
+              "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+            },
+            "display_id": 20,
+            "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+            "grant_consumed": true,
+            "grant_retired": true,
+            "grants_tool_authority": false,
+            "actor_kind": "tool_workflow",
+            "model_issued": false,
+            "fixed_intent_outcome_unchanged": "draft_opened",
+            "workflow_verified": true,
+            "stop_reason": null,
+            "initial": {
+              "observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+              "package": "com.motorola.stylus",
+              "window_id": 3571,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "5606c5ddde421d3ab3248949b88a796284c3bb7a348a96259a27d5cb80310134",
+              "rotation": 0
+            },
+            "current": {
+              "observation_id": "8b1c2ac37091494bb7aee3000929bf12",
+              "package": "com.motorola.stylus",
+              "window_id": 3572,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+              "rotation": 0
+            },
+            "stable_readback": {
+              "observation_id": "99aaf49bce494ba599086009ff2a7ac8",
+              "package": "com.motorola.stylus",
+              "window_id": 3572,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+              "rotation": 0
+            },
+            "children": [
+              {
+                "child": {
+                  "schema": "hepta.tool-child.v1",
+                  "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+                  "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+                  "parent_step": 1,
+                  "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+                  "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+                  "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+                  "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+                  "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+                  "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+                  "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+                  "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+                  "target_package": "com.motorola.stylus",
+                  "target_uid": 10382,
+                  "target_apk_sha256": {
+                    "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+                  },
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "grant_consumed": true,
+                  "grant_retired": true,
+                  "grants_tool_authority": false,
+                  "child_id": "b6b2c1e1288b4a9d0fc78ef87df41621d109e37e082f906c3a7a13974d3b45e3",
+                  "child_ordinal": 1,
+                  "actor_kind": "tool_child",
+                  "model_issued": false,
+                  "action": "back",
+                  "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+                  "node_id": null,
+                  "node_label": null,
+                  "service_entered": true,
+                  "automatic_retry_allowed": false
+                },
+                "before": {
+                  "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+                  "package": "com.motorola.stylus",
+                  "window_id": 3571,
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "tree_sha256": "5606c5ddde421d3ab3248949b88a796284c3bb7a348a96259a27d5cb80310134",
+                  "rotation": 0
+                },
+                "after": {
+                  "observation_id": "577663b1679c470c8163f6888fef642d",
+                  "package": "com.motorola.stylus",
+                  "window_id": 3569,
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "tree_sha256": "a868bafca93a75cfecb916dfaa0de15b81c093d665c07a0ba08c90042c9c12f7",
+                  "rotation": 0
+                },
+                "accepted": true,
+                "dispatched": true,
+                "stale": false,
+                "detail": "后台工具已定向派发；下一步重新观察",
+                "live_lease_verified": true,
+                "service_child_receipt": {
+                  "schema": "hepta.tool-child.v1",
+                  "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+                  "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+                  "parent_step": 1,
+                  "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+                  "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+                  "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+                  "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+                  "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+                  "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+                  "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+                  "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+                  "target_package": "com.motorola.stylus",
+                  "target_uid": 10382,
+                  "target_apk_sha256": {
+                    "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+                  },
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "grant_consumed": true,
+                  "grant_retired": false,
+                  "grants_tool_authority": false,
+                  "child_id": "b6b2c1e1288b4a9d0fc78ef87df41621d109e37e082f906c3a7a13974d3b45e3",
+                  "child_ordinal": 1,
+                  "actor_kind": "tool_child",
+                  "model_issued": false,
+                  "action": "back",
+                  "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+                  "node_id": null,
+                  "node_label": null,
+                  "service_entered": true,
+                  "automatic_retry_allowed": false
+                }
+              },
+              {
+                "child": {
+                  "schema": "hepta.tool-child.v1",
+                  "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+                  "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+                  "parent_step": 1,
+                  "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+                  "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+                  "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+                  "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+                  "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+                  "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+                  "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+                  "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+                  "target_package": "com.motorola.stylus",
+                  "target_uid": 10382,
+                  "target_apk_sha256": {
+                    "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+                  },
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "grant_consumed": true,
+                  "grant_retired": true,
+                  "grants_tool_authority": false,
+                  "child_id": "2a848edb1c2be717a9236783619a6876b2f73aae13a581cfa85175112921b335",
+                  "child_ordinal": 2,
+                  "actor_kind": "tool_child",
+                  "model_issued": false,
+                  "action": "click",
+                  "observation_id": "577663b1679c470c8163f6888fef642d",
+                  "node_id": "n12",
+                  "node_label": "文字笔记 · 今天 · Hepta-v53r1-bb0c238aac48…",
+                  "service_entered": true,
+                  "automatic_retry_allowed": false
+                },
+                "before": {
+                  "observation_id": "577663b1679c470c8163f6888fef642d",
+                  "package": "com.motorola.stylus",
+                  "window_id": 3569,
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "tree_sha256": "a868bafca93a75cfecb916dfaa0de15b81c093d665c07a0ba08c90042c9c12f7",
+                  "rotation": 0
+                },
+                "after": {
+                  "observation_id": "8b1c2ac37091494bb7aee3000929bf12",
+                  "package": "com.motorola.stylus",
+                  "window_id": 3572,
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+                  "rotation": 0
+                },
+                "accepted": true,
+                "dispatched": true,
+                "stale": false,
+                "detail": "节点点击已接受",
+                "live_lease_verified": true,
+                "service_child_receipt": {
+                  "schema": "hepta.tool-child.v1",
+                  "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+                  "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+                  "parent_step": 1,
+                  "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+                  "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+                  "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+                  "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+                  "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+                  "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+                  "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+                  "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+                  "target_package": "com.motorola.stylus",
+                  "target_uid": 10382,
+                  "target_apk_sha256": {
+                    "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+                  },
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "grant_consumed": true,
+                  "grant_retired": false,
+                  "grants_tool_authority": false,
+                  "child_id": "2a848edb1c2be717a9236783619a6876b2f73aae13a581cfa85175112921b335",
+                  "child_ordinal": 2,
+                  "actor_kind": "tool_child",
+                  "model_issued": false,
+                  "action": "click",
+                  "observation_id": "577663b1679c470c8163f6888fef642d",
+                  "node_id": "n12",
+                  "node_label": "文字笔记 · 今天 · Hepta-v53r1-bb0c238aac48…",
+                  "service_entered": true,
+                  "automatic_retry_allowed": false
+                }
+              }
+            ],
+            "model_done_synthesized": false,
+            "persistent_storage_bytes_verified": false
+          }
+        }
+      ],
+      "model_success_claims": [],
+      "identity_failure": null,
+      "display_id": 20,
+      "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+      "notes_create_workflow": {
+        "schema": "hepta.notes-create-workflow.v1",
+        "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+        "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+        "parent_step": 1,
+        "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+        "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+        "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+        "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+        "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+        "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+        "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+        "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+        "target_package": "com.motorola.stylus",
+        "target_uid": 10382,
+        "target_apk_sha256": {
+          "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+        },
+        "display_id": 20,
+        "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+        "grant_consumed": true,
+        "grant_retired": true,
+        "grants_tool_authority": false,
+        "actor_kind": "tool_workflow",
+        "model_issued": false,
+        "fixed_intent_outcome_unchanged": "draft_opened",
+        "workflow_verified": true,
+        "stop_reason": null,
+        "initial": {
+          "observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+          "package": "com.motorola.stylus",
+          "window_id": 3571,
+          "display_id": 20,
+          "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+          "tree_sha256": "5606c5ddde421d3ab3248949b88a796284c3bb7a348a96259a27d5cb80310134",
+          "rotation": 0
+        },
+        "current": {
+          "observation_id": "8b1c2ac37091494bb7aee3000929bf12",
+          "package": "com.motorola.stylus",
+          "window_id": 3572,
+          "display_id": 20,
+          "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+          "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+          "rotation": 0
+        },
+        "stable_readback": {
+          "observation_id": "99aaf49bce494ba599086009ff2a7ac8",
+          "package": "com.motorola.stylus",
+          "window_id": 3572,
+          "display_id": 20,
+          "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+          "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+          "rotation": 0
+        },
+        "children": [
+          {
+            "child": {
+              "schema": "hepta.tool-child.v1",
+              "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+              "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+              "parent_step": 1,
+              "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+              "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+              "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+              "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+              "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+              "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+              "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+              "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+              "target_package": "com.motorola.stylus",
+              "target_uid": 10382,
+              "target_apk_sha256": {
+                "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+              },
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "grant_consumed": true,
+              "grant_retired": true,
+              "grants_tool_authority": false,
+              "child_id": "b6b2c1e1288b4a9d0fc78ef87df41621d109e37e082f906c3a7a13974d3b45e3",
+              "child_ordinal": 1,
+              "actor_kind": "tool_child",
+              "model_issued": false,
+              "action": "back",
+              "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+              "node_id": null,
+              "node_label": null,
+              "service_entered": true,
+              "automatic_retry_allowed": false
+            },
+            "before": {
+              "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+              "package": "com.motorola.stylus",
+              "window_id": 3571,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "5606c5ddde421d3ab3248949b88a796284c3bb7a348a96259a27d5cb80310134",
+              "rotation": 0
+            },
+            "after": {
+              "observation_id": "577663b1679c470c8163f6888fef642d",
+              "package": "com.motorola.stylus",
+              "window_id": 3569,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "a868bafca93a75cfecb916dfaa0de15b81c093d665c07a0ba08c90042c9c12f7",
+              "rotation": 0
+            },
+            "accepted": true,
+            "dispatched": true,
+            "stale": false,
+            "detail": "后台工具已定向派发；下一步重新观察",
+            "live_lease_verified": true,
+            "service_child_receipt": {
+              "schema": "hepta.tool-child.v1",
+              "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+              "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+              "parent_step": 1,
+              "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+              "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+              "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+              "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+              "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+              "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+              "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+              "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+              "target_package": "com.motorola.stylus",
+              "target_uid": 10382,
+              "target_apk_sha256": {
+                "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+              },
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "grant_consumed": true,
+              "grant_retired": false,
+              "grants_tool_authority": false,
+              "child_id": "b6b2c1e1288b4a9d0fc78ef87df41621d109e37e082f906c3a7a13974d3b45e3",
+              "child_ordinal": 1,
+              "actor_kind": "tool_child",
+              "model_issued": false,
+              "action": "back",
+              "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+              "node_id": null,
+              "node_label": null,
+              "service_entered": true,
+              "automatic_retry_allowed": false
+            }
+          },
+          {
+            "child": {
+              "schema": "hepta.tool-child.v1",
+              "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+              "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+              "parent_step": 1,
+              "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+              "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+              "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+              "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+              "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+              "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+              "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+              "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+              "target_package": "com.motorola.stylus",
+              "target_uid": 10382,
+              "target_apk_sha256": {
+                "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+              },
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "grant_consumed": true,
+              "grant_retired": true,
+              "grants_tool_authority": false,
+              "child_id": "2a848edb1c2be717a9236783619a6876b2f73aae13a581cfa85175112921b335",
+              "child_ordinal": 2,
+              "actor_kind": "tool_child",
+              "model_issued": false,
+              "action": "click",
+              "observation_id": "577663b1679c470c8163f6888fef642d",
+              "node_id": "n12",
+              "node_label": "文字笔记 · 今天 · Hepta-v53r1-bb0c238aac48…",
+              "service_entered": true,
+              "automatic_retry_allowed": false
+            },
+            "before": {
+              "observation_id": "577663b1679c470c8163f6888fef642d",
+              "package": "com.motorola.stylus",
+              "window_id": 3569,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "a868bafca93a75cfecb916dfaa0de15b81c093d665c07a0ba08c90042c9c12f7",
+              "rotation": 0
+            },
+            "after": {
+              "observation_id": "8b1c2ac37091494bb7aee3000929bf12",
+              "package": "com.motorola.stylus",
+              "window_id": 3572,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+              "rotation": 0
+            },
+            "accepted": true,
+            "dispatched": true,
+            "stale": false,
+            "detail": "节点点击已接受",
+            "live_lease_verified": true,
+            "service_child_receipt": {
+              "schema": "hepta.tool-child.v1",
+              "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+              "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+              "parent_step": 1,
+              "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+              "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+              "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+              "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+              "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+              "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+              "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+              "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+              "target_package": "com.motorola.stylus",
+              "target_uid": 10382,
+              "target_apk_sha256": {
+                "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+              },
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "grant_consumed": true,
+              "grant_retired": false,
+              "grants_tool_authority": false,
+              "child_id": "2a848edb1c2be717a9236783619a6876b2f73aae13a581cfa85175112921b335",
+              "child_ordinal": 2,
+              "actor_kind": "tool_child",
+              "model_issued": false,
+              "action": "click",
+              "observation_id": "577663b1679c470c8163f6888fef642d",
+              "node_id": "n12",
+              "node_label": "文字笔记 · 今天 · Hepta-v53r1-bb0c238aac48…",
+              "service_entered": true,
+              "automatic_retry_allowed": false
+            }
+          }
+        ],
+        "model_done_synthesized": false,
+        "persistent_storage_bytes_verified": false
+      },
+      "persistent_storage_bytes_verified": false,
+      "new_database_item_identity_verified": false,
+      "current_editor_raw_exact": false,
+      "current_body_evidence": {
+        "matched": true,
+        "raw_exact": false,
+        "persistent_bytes_verified": false,
+        "node_id": "n10",
+        "action_label": "Hepta-v53r1-bb0c238aac48 明天下午3点看牙，带上…",
+        "raw_text_sha256": "9363e3b7c0ba5483a21feeda8e1773ce9def5016944cffa90584e1bd45846549",
+        "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+        "trailing_lf_count": 40,
+        "match_rule": "body_plus_observed_40_lf",
+        "missing": null
+      },
+      "current_list_match": false,
+      "current_list_missing": "editor_present_not_note_list",
+      "current_list_evidence": {
+        "matched": false,
+        "missing": "editor_present_not_note_list",
+        "match_rule": null,
+        "node_id": null,
+        "source_path": null,
+        "source_view_id": null,
+        "source_text_sha256": null,
+        "node_app_tree_sha256": null,
+        "text_scope": "Complete accessibility text source; visual clipping and persistent storage bytes are unverified.",
+        "persistent_bytes_verified": false
+      },
+      "observation_chain_verified": true,
+      "terminal_binding_and_cleanup_verified": true,
+      "completion_actor": "controller/tool_workflow",
+      "model_done_synthesized": false,
+      "controller_completion_requested": true,
+      "controller_native_parent_session_bound": true
+    }
+  },
+  "installed_identity_after": {
+    "hepta": {
+      "package": "org.trillionnium.hepta.local",
+      "uid": 10481,
+      "apks": [
+        {
+          "path": "/data/app/~~wERt4qHNJbnNZ27czp0djQ==/org.trillionnium.hepta.local-1e49NK2Aaa9G7LTCNNITYg==/base.apk",
+          "sha256": "b906b5e091aa0bd567128745d7f757c19609fc320348345a562ff8229817cc7e"
+        }
+      ]
+    },
+    "notes": {
+      "package": "com.motorola.stylus",
+      "uid": 10382,
+      "apks": [
+        {
+          "path": "/product/preinstall/MotoStylus/MotoStylus.apk",
+          "sha256": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+        }
+      ]
+    }
+  },
+  "fixed_intent_source_context": {
+    "schema": "hepta.v53-fixed-prompt-source-binding.v1",
+    "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+    "build_receipt_sha256": "484b2be823f751ce12c643ac66cd54d4ecd4262ab939b080dd2d0378365ecccc",
+    "controller_source_sha256": "a41bb18ea9b3b217e0b27268bf20035d416ab460436edba1cc629c7ad29256e2",
+    "source_commit": "7dee83d838b2c76b3abe3a3e61d7837316f40853",
+    "source_inventory_sha256": "f880e49f504d05d32eb3ba76127b14f30ee5434ca745b9929815deabc4bbf92f",
+    "installed_identity": {
+      "package": "org.trillionnium.hepta.local",
+      "uid": 10481,
+      "apks": [
+        {
+          "path": "/data/app/~~wERt4qHNJbnNZ27czp0djQ==/org.trillionnium.hepta.local-1e49NK2Aaa9G7LTCNNITYg==/base.apk",
+          "sha256": "b906b5e091aa0bd567128745d7f757c19609fc320348345a562ff8229817cc7e"
+        }
+      ]
+    },
+    "grants_tool_authority": false,
+    "business_verified": false
+  },
+  "collection": {
+    "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+    "associated_runs": [
+      {
+        "run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+        "association": "step_model_run_id",
+        "files": [
+          {
+            "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/app-receipt.json",
+            "bytes": 13385,
+            "sha256": "ff0fad349bc0cabb5a3d8941e9b2e0bcd99b64bba3efe5d785796a282b21ee75"
+          },
+          {
+            "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/formatted-prompt.txt",
+            "bytes": 13632,
+            "sha256": "b87f609680bed97a98a5e2ec13ab284f1e9702abde84e6b4e45be88dc5016f88"
+          },
+          {
+            "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/grammar.gbnf",
+            "bytes": 2874,
+            "sha256": "df69cce3dfc190e9c831243f3b8ebdf66ed32e9f21c8cd130c06e706112d0840"
+          },
+          {
+            "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/native-result.json",
+            "bytes": 4840,
+            "sha256": "dfdabdaf5e737905524dbb601f4d2ff494f5483830e5e5cfd10f8507c5f73adb"
+          },
+          {
+            "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/prompt-evidence.json",
+            "bytes": 1346,
+            "sha256": "ddcca27bcc5bf107ec9ff7e3300a60d84744c71cd84f94004d1b5435114f2561"
+          },
+          {
+            "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/prompt.txt",
+            "bytes": 7642,
+            "sha256": "de9acb8ca3e5f29200cd31d04543d2dc179c1b58257697961fcd1d21cc99273d"
+          },
+          {
+            "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/raw-text.txt",
+            "bytes": 370,
+            "sha256": "05a8e4e916ba95772cb0ec88f6e0c04e3bb024092bfa90da6a46e111137483ec"
+          },
+          {
+            "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/system.txt",
+            "bytes": 5880,
+            "sha256": "df90ce3e2ea5a37ca0e930add3a0e042fa8f8d58ecb45c0f14d32c3dcffdd32b"
+          }
+        ],
+        "app_receipt_available": true,
+        "run_id_binding_valid": true,
+        "app_receipt_schema": "hepta.local-model.task-request.v1",
+        "process_exit_observed": false,
+        "exit_code": null,
+        "inference_completed": true,
+        "status": "request_completed",
+        "app_identity_and_runtime_valid": true,
+        "app_uid": 10481,
+        "package_name": "org.trillionnium.hepta.local",
+        "native_output_binding_valid": true,
+        "accelerator_runtime_valid": true,
+        "accelerator_offload_observed": true,
+        "controller_grammar_binding_valid": true,
+        "accelerator_log_evidence": {
+          "accelerator_offload_observed": true,
+          "device": "HTP0",
+          "model_buffer_device": "HTP0",
+          "offloaded_layers_observed": 25,
+          "model_buffer_lines": [
+            "\u001b[34m[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] load_tensors:         HTP0 model buffer size =  1006.99 MiB\u001b[0m"
+          ],
+          "fallback_lines": [],
+          "full_operator_coverage_proven": false
+        },
+        "runtime_evidence": {
+          "mode": "llm",
+          "runtime": "llama_cpp",
+          "compute_requested": "npu",
+          "device_resolved": "HTP0",
+          "device_warning": null,
+          "n_ctx_create": 8192,
+          "n_gpu_layers_create": -1,
+          "prompt_budget": {
+            "method": "llama_tokenize_exact_same_input_ids",
+            "is_exact_token_count": true,
+            "model_contract_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452",
+            "tokenizer_source_commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+            "checked": true,
+            "admitted": true,
+            "formatted_utf8_bytes": 13632,
+            "add_special": true,
+            "parse_special": true,
+            "input_ids_passed_directly": true,
+            "prompt_tokens_exact": 4103,
+            "input_ids_count": 4103,
+            "input_ids_sha256": "b704e726bfafce77792a89f6ebc19516d645e90f202106c8a26fe6dc859bd017",
+            "generation_tokens": 256,
+            "reserved_tokens": 256,
+            "total_context_tokens": 4615,
+            "context_tokens": 8192
+          },
+          "profile": {
+            "ttft_us": 4201030,
+            "media_time_us": 0,
+            "prompt_time_us": 4200354,
+            "decode_time_us": 4173377,
+            "prompt_tokens": 4103,
+            "generated_tokens": 131,
+            "draft_n_total": 0,
+            "draft_n_accepted": 0,
+            "prefill_tokens_per_second": 976.8224297285419,
+            "decode_tokens_per_second": 31.389447921910726
+          }
+        },
+        "worker_generation": "5ca399d93a914f63b88b6332ad5e2b3f",
+        "request_sequence": 1,
+        "task_request_binding_valid": true,
+        "accelerator_log_scope": "same_owned_task_generation"
+      }
+    ],
+    "omitted_screenshots": [],
+    "errors": [],
+    "files": [
+      {
+        "path": "task/14a960277c7f4c02adc593232d4ad39b.png",
+        "bytes": 103355,
+        "sha256": "05e43e454f990907955a218db1cbfb1e848a5642c0f4547be62d85ce36b2133a"
+      },
+      {
+        "path": "task/2acce59d4775492b8f6b1db5fcb97cdc.png",
+        "bytes": 29379,
+        "sha256": "b5f71cd680a683605170e5e1048a6008593311e53f22d2deff105609f23406a1"
+      },
+      {
+        "path": "task/577663b1679c470c8163f6888fef642d.png",
+        "bytes": 103843,
+        "sha256": "d40b19bebd49d7ce7ec80bcde65d86598024c5924fbaf41178fa1b790aa26b4a"
+      },
+      {
+        "path": "task/7fc82b43d9b1489f96d009073b75e0a1.png",
+        "bytes": 29405,
+        "sha256": "51a8ecf5bc670ace296dcca985d024f78b682ee14816ea1a552a52da515b27bd"
+      },
+      {
+        "path": "task/8b1c2ac37091494bb7aee3000929bf12.png",
+        "bytes": 29379,
+        "sha256": "b5f71cd680a683605170e5e1048a6008593311e53f22d2deff105609f23406a1"
+      },
+      {
+        "path": "task/99aaf49bce494ba599086009ff2a7ac8.png",
+        "bytes": 29395,
+        "sha256": "ba864db9de40022b91afd35938824a51f85814f5f9884305a572144b195a8982"
+      },
+      {
+        "path": "task/background-binding.json",
+        "bytes": 1108,
+        "sha256": "520bfab561fb0b6f93f26fda37517b69baafa7134c63df582c108c0e8f58df47"
+      },
+      {
+        "path": "task/background-bootstrap.json",
+        "bytes": 5611,
+        "sha256": "a7948059a822d85434dc660ec0c018d831cb93cf30f95b136820cd1035e89df8"
+      },
+      {
+        "path": "task/background-broker-82a60b9e-5a71-4742-94f6-9ee7ec623f7d.json",
+        "bytes": 853,
+        "sha256": "41c4cf50a67f6d7a269cb089ae12730b35fca1fc21f04e68e0f53a575ec08dc3"
+      },
+      {
+        "path": "task/background-cleanup.json",
+        "bytes": 4329,
+        "sha256": "3f1dc10d93107754ce4efac6c59cac9e65c784aafa55993285ccf05833beb3a5"
+      },
+      {
+        "path": "task/completion-installed-identity.json",
+        "bytes": 331,
+        "sha256": "11fbcb9bc3dfe0d84c0e5e98cc6c769411ca6234f0b587c2297d0d6428043417"
+      },
+      {
+        "path": "task/controller-completion-candidate.json",
+        "bytes": 554,
+        "sha256": "4eff1057dc92e6861e869c8ea6cb9b90e5ad4cdc29fcbe88a416a9ec0d5df9e2"
+      },
+      {
+        "path": "task/fixed-intent-01-attempt.json",
+        "bytes": 1171,
+        "sha256": "b90705f5fa9deb18544db3330720944ed95e8608395829b414310436b97e61a7"
+      },
+      {
+        "path": "task/initial-app-catalogue.json",
+        "bytes": 444,
+        "sha256": "c9b120bbd0e8776f850b032092a455517c322bf8544d89e89e66c0ab3dd5bd50"
+      },
+      {
+        "path": "task/owner.json",
+        "bytes": 3546,
+        "sha256": "7c6b16044109ab61f0a8a6cee5abe2f27fdbf12e1bf8aaaad120317e9c617319"
+      },
+      {
+        "path": "task/result.json",
+        "bytes": 46882,
+        "sha256": "d9d26f205dd7cfad312dcfafe75e37144f9b5f4d33e67656068f4086177a1222"
+      },
+      {
+        "path": "task/scope-binding.json",
+        "bytes": 1203,
+        "sha256": "feeac38df931442eca7911a45563d81f9937120975fa2b383da7a30626fb0931"
+      },
+      {
+        "path": "task/scope-observation-14a960277c7f4c02adc593232d4ad39b.json",
+        "bytes": 45008,
+        "sha256": "022691d7485fbe50ed99c137a10740ef11e3c4808f9e2eadd24c499b7bd8a9fc"
+      },
+      {
+        "path": "task/scope-observation-2acce59d4775492b8f6b1db5fcb97cdc.json",
+        "bytes": 20057,
+        "sha256": "cdd15f6612d7262c4cc7ad019873d823c9e3487eb2b446203dfcd4646711df07"
+      },
+      {
+        "path": "task/scope-observation-577663b1679c470c8163f6888fef642d.json",
+        "bytes": 46000,
+        "sha256": "0fe9c1fa61a7fd1f0d75930e5c766ae1a55fd03a682f350aed57c588327ada7f"
+      },
+      {
+        "path": "task/scope-observation-7fc82b43d9b1489f96d009073b75e0a1.json",
+        "bytes": 20056,
+        "sha256": "ff8d1204c9824cc45d89215e4c53b37b7808cc8958752a5e50b6a46bcb085ba9"
+      },
+      {
+        "path": "task/scope-observation-8b1c2ac37091494bb7aee3000929bf12.json",
+        "bytes": 20171,
+        "sha256": "0f1aa219eedf22816a08a96a000a9c2d0fda631ae31a3da5aad02d82ca591744"
+      },
+      {
+        "path": "task/scope-observation-99aaf49bce494ba599086009ff2a7ac8.json",
+        "bytes": 20171,
+        "sha256": "7f7cf1e0fc19ca85ffbd214530d6c6b3d7e36917e6c0070680ceb5fb49a15720"
+      },
+      {
+        "path": "task/step-01-action.json",
+        "bytes": 18189,
+        "sha256": "cdaefc44f405464b9d37b5e40f235307b58e9a22b74fbbf27d966dc76d8aa73c"
+      },
+      {
+        "path": "task/step-01-after.json",
+        "bytes": 11462,
+        "sha256": "530c47a5bcda6abb285c0a4035b3a6c35eea81d607fe7e43ad9faee7a76fd442"
+      },
+      {
+        "path": "task/step-01-before.json",
+        "bytes": 35851,
+        "sha256": "83d7b9f2d81331147ef4d9961f27cd544b73aa2e822e8d08e5510eda15897bda"
+      },
+      {
+        "path": "task/step-01-budget-0.json",
+        "bytes": 2801,
+        "sha256": "c46e1315e323ff92d5f153b24d6d6ce6008ca0aafb4971c08815dc43662e8bf0"
+      },
+      {
+        "path": "task/step-01-model-0.json",
+        "bytes": 626,
+        "sha256": "8f6db6b32e3f7a0e717c406555c7ee1bcbf446e3a877aa995f4cb43588497d68"
+      },
+      {
+        "path": "task/step-01-notes-workflow-child-1-planned.json",
+        "bytes": 1530,
+        "sha256": "a5eec51065635a30fdfcaef602c6dff7fb55515d46627207f0e3aab572ae6d55"
+      },
+      {
+        "path": "task/step-01-notes-workflow-child-2-planned.json",
+        "bytes": 1583,
+        "sha256": "f200d5a7f182acf7fc2ae88dd09e0b555b24305e7d339480e80c2ce6ade67588"
+      },
+      {
+        "path": "task/step-01-notes-workflow-grant-consumed.json",
+        "bytes": 1201,
+        "sha256": "bcdc97fe5591d6ac04f2b5856522c2ad0d17aa60f0cef5f53510e1a9923379f0"
+      },
+      {
+        "path": "task/step-01-notes-workflow-observation-1.json",
+        "bytes": 11461,
+        "sha256": "0490fed79f7dd5345a1c12506f57ada9bd24ff5bf59f679204602cd34e5b2817"
+      },
+      {
+        "path": "task/step-01-notes-workflow-observation-2.json",
+        "bytes": 35855,
+        "sha256": "6064781913eb5d3fcfe26198083ab2009ce259d204eae61d82170766a82109f1"
+      },
+      {
+        "path": "task/step-01-notes-workflow-observation-3.json",
+        "bytes": 11462,
+        "sha256": "7205840c8dd46a3a5af6ced7cac9c41e672a8479a343c17f35cbd1657b836173"
+      },
+      {
+        "path": "task/step-01-notes-workflow-observation-4.json",
+        "bytes": 11462,
+        "sha256": "62e1c7807660bd98ec3fa8acff3f9f70122037338cfbde1dbce03648a8b55e2e"
+      },
+      {
+        "path": "task/step-01-notes-workflow-result.json",
+        "bytes": 11560,
+        "sha256": "a49369dd16713b79fe80524000c0741d6ddfd2d52a77a97ecb8bf035f0970cee"
+      },
+      {
+        "path": "task/step-01-tool-child-01-action.json",
+        "bytes": 11713,
+        "sha256": "ef84779a2325bd874e58732ed15744aecb498d412e5ece91a8473480a79e2f22"
+      },
+      {
+        "path": "task/step-01-tool-child-01-after.json",
+        "bytes": 35855,
+        "sha256": "6064781913eb5d3fcfe26198083ab2009ce259d204eae61d82170766a82109f1"
+      },
+      {
+        "path": "task/step-01-tool-child-01-before.json",
+        "bytes": 11461,
+        "sha256": "0490fed79f7dd5345a1c12506f57ada9bd24ff5bf59f679204602cd34e5b2817"
+      },
+      {
+        "path": "task/step-01-tool-child-01-proof.json",
+        "bytes": 4059,
+        "sha256": "be8ac1db0a049e143d786499fbbc86329e7054edbd20e833e787ff4f5120ece9"
+      },
+      {
+        "path": "task/step-01-tool-child-02-action.json",
+        "bytes": 11715,
+        "sha256": "d341d847369c0b6ff5990c017c7af9c4891a10f770326d121cf24948aec5c2e8"
+      },
+      {
+        "path": "task/step-01-tool-child-02-after.json",
+        "bytes": 11462,
+        "sha256": "7205840c8dd46a3a5af6ced7cac9c41e672a8479a343c17f35cbd1657b836173"
+      },
+      {
+        "path": "task/step-01-tool-child-02-before.json",
+        "bytes": 35855,
+        "sha256": "6064781913eb5d3fcfe26198083ab2009ce259d204eae61d82170766a82109f1"
+      },
+      {
+        "path": "task/step-01-tool-child-02-proof.json",
+        "bytes": 4135,
+        "sha256": "4486bf6e9da30f82616013796e5ddff547fcfefdc495a37f4603647acc5e3e03"
+      }
+    ],
+    "app_uid_expected": 10481,
+    "compute_expected": "npu",
+    "context_expected": 8192,
+    "model_profile_expected": "lfm3-1.7b-qad-q4_0",
+    "task_model_sessions": [
+      {
+        "worker_generation": "5ca399d93a914f63b88b6332ad5e2b3f",
+        "binding_valid": true,
+        "files": [
+          {
+            "path": "runs/5ca399d93a914f63b88b6332ad5e2b3f/app-session-receipt.json",
+            "bytes": 2105,
+            "sha256": "a6d48e8fdb6658b9821e34847fc202028fa68c68294cd9bb6ff13a5cfd989b28"
+          },
+          {
+            "path": "runs/5ca399d93a914f63b88b6332ad5e2b3f/native-session-result.json",
+            "bytes": 678,
+            "sha256": "244c20b8ac15466da82330efe628167a513547b15f76611f1576bcdea0583739"
+          },
+          {
+            "path": "runs/5ca399d93a914f63b88b6332ad5e2b3f/stdout.log",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "path": "runs/5ca399d93a914f63b88b6332ad5e2b3f/stderr.log",
+            "bytes": 45889,
+            "sha256": "65e997343d0f96453ca2f2d77ce5b9af2e1f8d5e24b5c535999a0e08277bc1d4"
+          }
+        ],
+        "process_exit_observed": true,
+        "exit_code": 0,
+        "requests_received": 1,
+        "model_create_count": 1,
+        "model_reset_count": 1
+      }
+    ],
+    "task_model_sessions_valid": true
+  },
+  "input_ids_evidence": {
+    "schema": "hepta.input-ids-binary-collection.v1",
+    "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+    "original_collection_sha256": "bb2b7d3c1511bd07a3d33528bb50241bfa676a02d2fba3b51a8aaede074d9a55",
+    "diagnostic_only": true,
+    "business_verdict_unchanged": true,
+    "original_collection_unchanged": true,
+    "fixed_filename": "formatted-input-ids.le32",
+    "runs": [
+      {
+        "run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+        "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/formatted-input-ids.le32",
+        "available": true,
+        "bytes": 16412,
+        "sha256": "b704e726bfafce77792a89f6ebc19516d645e90f202106c8a26fe6dc859bd017",
+        "encoding": "uint32-little-endian",
+        "decoded_count": 4103,
+        "checks": {
+          "nonempty_aligned_le32": true,
+          "native_request_id": true,
+          "metadata_request_id": true,
+          "metadata_encoding": true,
+          "actual_sha_matches_native_budget": true,
+          "actual_sha_matches_prompt_evidence": true,
+          "actual_bytes_match_prompt_evidence": true,
+          "actual_count_matches_native_budget": true,
+          "actual_count_matches_prompt_evidence": true,
+          "actual_count_matches_sdk_prompt_tokens": true,
+          "exact_same_ids_contract": true
+        },
+        "actual_bytes_verified_against_native_receipt": true,
+        "native-result.json": {
+          "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/native-result.json",
+          "bytes": 4840,
+          "sha256": "dfdabdaf5e737905524dbb601f4d2ff494f5483830e5e5cfd10f8507c5f73adb"
+        },
+        "prompt-evidence.json": {
+          "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/prompt-evidence.json",
+          "bytes": 1346,
+          "sha256": "ddcca27bcc5bf107ec9ff7e3300a60d84744c71cd84f94004d1b5435114f2561"
+        },
+        "native_budget_fields": {
+          "method": "llama_tokenize_exact_same_input_ids",
+          "is_exact_token_count": true,
+          "model_contract_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452",
+          "input_ids_count": 4103,
+          "prompt_tokens_exact": 4103,
+          "input_ids_sha256": "b704e726bfafce77792a89f6ebc19516d645e90f202106c8a26fe6dc859bd017",
+          "input_ids_passed_directly": true
+        },
+        "prompt_evidence_fields": {
+          "schema": "hepta.private-prompt-evidence.v1",
+          "request_id": "9f241e1ffdad4f878bbdea387cdb4018",
+          "model_profile": "lfm3-1.7b-qad-q4_0",
+          "model_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452",
+          "input_ids_count": 4103,
+          "input_ids_bytes": 16412,
+          "input_ids_encoding": "uint32-little-endian",
+          "input_ids_sha256": "b704e726bfafce77792a89f6ebc19516d645e90f202106c8a26fe6dc859bd017",
+          "input_ids_will_be_passed_directly": true
+        },
+        "sdk_prompt_tokens": 4103
+      }
+    ],
+    "all_associated_ids_bytes_verified": true,
+    "scope": "Actual binary bytes compared with the collected native and prompt-evidence receipts; not a new model run, retokenization proof or business success."
+  },
+  "controller_workflow_proof": {
+    "schema": "hepta.background-controller-workflow-proof.v1",
+    "verified": true,
+    "qualified": false,
+    "lineage": "New v53 offline module; body/list/window functions reused from independently reviewed 2cf183 source.",
+    "reused_proof_source_sha256": "2cf183368b8c9534fb75bc91f0b14408d806741a36ac67514f743ea4e4d9671a",
+    "body_source_sha256": "091bcb7a633c9fec1e668b637fb3619de712c441db99f2164c47c4b3ba629e94",
+    "terminal_claim_recognized": true,
+    "visual_reviewed": false,
+    "main_screen_settings_coexistence_verified": false,
+    "persistent_storage_bytes_verified": false,
+    "new_database_item_identity_verified": false,
+    "full_native_accelerator_and_le32_qualification_assigned_here": false,
+    "phone_or_source_test_claimed": false,
+    "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+    "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+    "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+    "independent_owner_contract": {
+      "recognition": "natural_note_comma_prefix.v1",
+      "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+      "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+      "body_span_utf16": [
+        4,
+        45
+      ],
+      "body": "Hepta-v53r1-bb0c238aac48 明天下午3点看牙，带上检查资料。",
+      "quoted_body": false,
+      "natural_owner": true,
+      "authority_text": "记一下，Hepta-v53r1-bb0c238aac48 明天下午3点看牙，带上检查资料。",
+      "authority_body_masked": false,
+      "fully_consumed_owner": true,
+      "source": "independently_reparsed_immutable_plan_owner",
+      "grants_tool_authority": false,
+      "phone_tested": false
+    },
+    "plan_helper_sha256": "28837006b601bb288fb6f9a1fb95a554be052a53c2ae1efc541db8e09473ff7e",
+    "production_owner_parser_source_sha256": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f",
+    "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+    "display_id": 20,
+    "generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+    "target_uid": 10382,
+    "target_apk_sha256": {
+      "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+    },
+    "parent": {
+      "verified": true,
+      "launch_is_not_save_proof": true,
+      "attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+      "journal": "task/fixed-intent-01-attempt.json",
+      "body": {
+        "matched": true,
+        "rule_source": "NotesCompletionEvidence.editor",
+        "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+        "observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+        "node_id": "n10",
+        "body_form": {
+          "rule": "exact_body_or_same_body_plus_exactly_40_lf_on_observed_moto_apk.v1",
+          "matched": true,
+          "raw_exact": false,
+          "form": "body_plus_observed_40_lf",
+          "persistent_lf_semantics_verified": false,
+          "persistence_limit": "Unknown whether trailing LF characters are stored content, rendering behavior or accessibility behavior; no DOM/database proof is supplied.",
+          "observed_notes_apk_match": true,
+          "raw_text_sha256": "9363e3b7c0ba5483a21feeda8e1773ce9def5016944cffa90584e1bd45846549",
+          "expected_body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+          "raw_utf8_bytes": 111,
+          "expected_utf8_bytes": 71,
+          "raw_code_points": 81,
+          "expected_code_points": 41,
+          "trailing_lf_count": 40,
+          "raw_equals_expected_plus_40_lf": true,
+          "difference": "exactly 40 LF after original body"
+        }
+      },
+      "parent_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+      "target_uid": 10382
+    },
+    "parent_model_binding": {
+      "verified": true,
+      "action_receipt": "task/step-01-action.json",
+      "model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+      "task_session_binding_valid": true,
+      "worker_generation": "5ca399d93a914f63b88b6332ad5e2b3f",
+      "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+      "worker_pid": 3032,
+      "app_uid": 10481,
+      "app_session_receipt_sha256": "a6d48e8fdb6658b9821e34847fc202028fa68c68294cd9bb6ff13a5cfd989b28",
+      "step_model_receipt": "task/step-01-model-0.json",
+      "native_raw_output": "runs/9f241e1ffdad4f878bbdea387cdb4018/raw-text.txt",
+      "native_result": "runs/9f241e1ffdad4f878bbdea387cdb4018/native-result.json",
+      "raw_text_sha256": "05a8e4e916ba95772cb0ec88f6e0c04e3bb024092bfa90da6a46e111137483ec"
+    },
+    "actual_model_bindings": [
+      {
+        "verified": true,
+        "action_receipt": "task/step-01-action.json",
+        "model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+        "task_session_binding_valid": true,
+        "worker_generation": "5ca399d93a914f63b88b6332ad5e2b3f",
+        "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+        "worker_pid": 3032,
+        "app_uid": 10481,
+        "app_session_receipt_sha256": "a6d48e8fdb6658b9821e34847fc202028fa68c68294cd9bb6ff13a5cfd989b28",
+        "step_model_receipt": "task/step-01-model-0.json",
+        "native_raw_output": "runs/9f241e1ffdad4f878bbdea387cdb4018/raw-text.txt",
+        "native_result": "runs/9f241e1ffdad4f878bbdea387cdb4018/native-result.json",
+        "raw_text_sha256": "05a8e4e916ba95772cb0ec88f6e0c04e3bb024092bfa90da6a46e111137483ec"
+      }
+    ],
+    "actual_parent_is_last_native_request": true,
+    "native_worker_session_cleanup_bound": true,
+    "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+    "backs": 1,
+    "clicks": 1,
+    "children": [
+      {
+        "ordinal": 1,
+        "child_id": "b6b2c1e1288b4a9d0fc78ef87df41621d109e37e082f906c3a7a13974d3b45e3",
+        "action": "back",
+        "action_file": "task/step-01-tool-child-01-action.json",
+        "before_observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+        "after_observation_id": "577663b1679c470c8163f6888fef642d",
+        "actual_full_body_before": true,
+        "actual_full_body_after": false,
+        "actual_unique_list_before": false,
+        "same_native_parent_and_owned_display": true
+      },
+      {
+        "ordinal": 2,
+        "child_id": "2a848edb1c2be717a9236783619a6876b2f73aae13a581cfa85175112921b335",
+        "action": "click",
+        "action_file": "task/step-01-tool-child-02-action.json",
+        "before_observation_id": "577663b1679c470c8163f6888fef642d",
+        "after_observation_id": "8b1c2ac37091494bb7aee3000929bf12",
+        "actual_full_body_before": false,
+        "actual_full_body_after": true,
+        "actual_unique_list_before": true,
+        "same_native_parent_and_owned_display": true
+      }
+    ],
+    "final_observation_id": "99aaf49bce494ba599086009ff2a7ac8",
+    "final_screen_sha256": "ba864db9de40022b91afd35938824a51f85814f5f9884305a572144b195a8982",
+    "actual_stable_readback_verified": true,
+    "list_ast_adaptation": {
+      "source_sha256": "091bcb7a633c9fec1e668b637fb3619de712c441db99f2164c47c4b3ba629e94",
+      "original_function": "note_list",
+      "original_ast_sha256": "bdc7710d9c45889dd6475449ff0aa06b1667991be143c4f576ac4e83335d8ceb",
+      "adapted_ast_sha256": "4de2fa1ff379eb4151de9c0d7cc9dcbb3f5411267a9c82730699afd21233a07f",
+      "changes": [
+        "function renamed background_note_list",
+        "single ordinary_window call replaced by explicit same-task nonzero background domain"
+      ],
+      "raw_observations_mutated": false,
+      "node_or_source_predicates_removed": false
+    },
+    "original_model_reported_success": false,
+    "original_model_done_status": null,
+    "original_model_done_summary": null,
+    "model_done_synthesized": false,
+    "collection_sha256": "bb2b7d3c1511bd07a3d33528bb50241bfa676a02d2fba3b51a8aaede074d9a55",
+    "original_bytes_unchanged": true,
+    "scope": "One exact fully consumed structured or quoted-prefix OWNER and one native create parent with bounded actual tool-child save/list/reopen; no general NL/App, pixel, database or Settings qualification.",
+    "input_inventory": [
+      {
+        "path": "runs/5ca399d93a914f63b88b6332ad5e2b3f/app-session-receipt.json",
+        "bytes": 2105,
+        "sha256": "a6d48e8fdb6658b9821e34847fc202028fa68c68294cd9bb6ff13a5cfd989b28"
+      },
+      {
+        "path": "runs/5ca399d93a914f63b88b6332ad5e2b3f/native-session-result.json",
+        "bytes": 678,
+        "sha256": "244c20b8ac15466da82330efe628167a513547b15f76611f1576bcdea0583739"
+      },
+      {
+        "path": "runs/5ca399d93a914f63b88b6332ad5e2b3f/stderr.log",
+        "bytes": 45889,
+        "sha256": "65e997343d0f96453ca2f2d77ce5b9af2e1f8d5e24b5c535999a0e08277bc1d4"
+      },
+      {
+        "path": "runs/5ca399d93a914f63b88b6332ad5e2b3f/stdout.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/app-receipt.json",
+        "bytes": 13385,
+        "sha256": "ff0fad349bc0cabb5a3d8941e9b2e0bcd99b64bba3efe5d785796a282b21ee75"
+      },
+      {
+        "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/formatted-prompt.txt",
+        "bytes": 13632,
+        "sha256": "b87f609680bed97a98a5e2ec13ab284f1e9702abde84e6b4e45be88dc5016f88"
+      },
+      {
+        "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/grammar.gbnf",
+        "bytes": 2874,
+        "sha256": "df69cce3dfc190e9c831243f3b8ebdf66ed32e9f21c8cd130c06e706112d0840"
+      },
+      {
+        "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/native-result.json",
+        "bytes": 4840,
+        "sha256": "dfdabdaf5e737905524dbb601f4d2ff494f5483830e5e5cfd10f8507c5f73adb"
+      },
+      {
+        "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/prompt-evidence.json",
+        "bytes": 1346,
+        "sha256": "ddcca27bcc5bf107ec9ff7e3300a60d84744c71cd84f94004d1b5435114f2561"
+      },
+      {
+        "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/prompt.txt",
+        "bytes": 7642,
+        "sha256": "de9acb8ca3e5f29200cd31d04543d2dc179c1b58257697961fcd1d21cc99273d"
+      },
+      {
+        "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/raw-text.txt",
+        "bytes": 370,
+        "sha256": "05a8e4e916ba95772cb0ec88f6e0c04e3bb024092bfa90da6a46e111137483ec"
+      },
+      {
+        "path": "runs/9f241e1ffdad4f878bbdea387cdb4018/system.txt",
+        "bytes": 5880,
+        "sha256": "df90ce3e2ea5a37ca0e930add3a0e042fa8f8d58ecb45c0f14d32c3dcffdd32b"
+      },
+      {
+        "path": "task/background-binding.json",
+        "bytes": 1108,
+        "sha256": "520bfab561fb0b6f93f26fda37517b69baafa7134c63df582c108c0e8f58df47"
+      },
+      {
+        "path": "task/background-bootstrap.json",
+        "bytes": 5611,
+        "sha256": "a7948059a822d85434dc660ec0c018d831cb93cf30f95b136820cd1035e89df8"
+      },
+      {
+        "path": "task/background-broker-82a60b9e-5a71-4742-94f6-9ee7ec623f7d.json",
+        "bytes": 853,
+        "sha256": "41c4cf50a67f6d7a269cb089ae12730b35fca1fc21f04e68e0f53a575ec08dc3"
+      },
+      {
+        "path": "task/background-cleanup.json",
+        "bytes": 4329,
+        "sha256": "3f1dc10d93107754ce4efac6c59cac9e65c784aafa55993285ccf05833beb3a5"
+      },
+      {
+        "path": "task/completion-installed-identity.json",
+        "bytes": 331,
+        "sha256": "11fbcb9bc3dfe0d84c0e5e98cc6c769411ca6234f0b587c2297d0d6428043417"
+      },
+      {
+        "path": "task/controller-completion-candidate.json",
+        "bytes": 554,
+        "sha256": "4eff1057dc92e6861e869c8ea6cb9b90e5ad4cdc29fcbe88a416a9ec0d5df9e2"
+      },
+      {
+        "path": "task/fixed-intent-01-attempt.json",
+        "bytes": 1171,
+        "sha256": "b90705f5fa9deb18544db3330720944ed95e8608395829b414310436b97e61a7"
+      },
+      {
+        "path": "task/initial-app-catalogue.json",
+        "bytes": 444,
+        "sha256": "c9b120bbd0e8776f850b032092a455517c322bf8544d89e89e66c0ab3dd5bd50"
+      },
+      {
+        "path": "task/owner.json",
+        "bytes": 3546,
+        "sha256": "7c6b16044109ab61f0a8a6cee5abe2f27fdbf12e1bf8aaaad120317e9c617319"
+      },
+      {
+        "path": "task/result.json",
+        "bytes": 46882,
+        "sha256": "d9d26f205dd7cfad312dcfafe75e37144f9b5f4d33e67656068f4086177a1222"
+      },
+      {
+        "path": "task/scope-binding.json",
+        "bytes": 1203,
+        "sha256": "feeac38df931442eca7911a45563d81f9937120975fa2b383da7a30626fb0931"
+      },
+      {
+        "path": "task/scope-observation-14a960277c7f4c02adc593232d4ad39b.json",
+        "bytes": 45008,
+        "sha256": "022691d7485fbe50ed99c137a10740ef11e3c4808f9e2eadd24c499b7bd8a9fc"
+      },
+      {
+        "path": "task/scope-observation-2acce59d4775492b8f6b1db5fcb97cdc.json",
+        "bytes": 20057,
+        "sha256": "cdd15f6612d7262c4cc7ad019873d823c9e3487eb2b446203dfcd4646711df07"
+      },
+      {
+        "path": "task/scope-observation-577663b1679c470c8163f6888fef642d.json",
+        "bytes": 46000,
+        "sha256": "0fe9c1fa61a7fd1f0d75930e5c766ae1a55fd03a682f350aed57c588327ada7f"
+      },
+      {
+        "path": "task/scope-observation-7fc82b43d9b1489f96d009073b75e0a1.json",
+        "bytes": 20056,
+        "sha256": "ff8d1204c9824cc45d89215e4c53b37b7808cc8958752a5e50b6a46bcb085ba9"
+      },
+      {
+        "path": "task/scope-observation-8b1c2ac37091494bb7aee3000929bf12.json",
+        "bytes": 20171,
+        "sha256": "0f1aa219eedf22816a08a96a000a9c2d0fda631ae31a3da5aad02d82ca591744"
+      },
+      {
+        "path": "task/scope-observation-99aaf49bce494ba599086009ff2a7ac8.json",
+        "bytes": 20171,
+        "sha256": "7f7cf1e0fc19ca85ffbd214530d6c6b3d7e36917e6c0070680ceb5fb49a15720"
+      },
+      {
+        "path": "task/step-01-action.json",
+        "bytes": 18189,
+        "sha256": "cdaefc44f405464b9d37b5e40f235307b58e9a22b74fbbf27d966dc76d8aa73c"
+      },
+      {
+        "path": "task/step-01-after.json",
+        "bytes": 11462,
+        "sha256": "530c47a5bcda6abb285c0a4035b3a6c35eea81d607fe7e43ad9faee7a76fd442"
+      },
+      {
+        "path": "task/step-01-before.json",
+        "bytes": 35851,
+        "sha256": "83d7b9f2d81331147ef4d9961f27cd544b73aa2e822e8d08e5510eda15897bda"
+      },
+      {
+        "path": "task/step-01-budget-0.json",
+        "bytes": 2801,
+        "sha256": "c46e1315e323ff92d5f153b24d6d6ce6008ca0aafb4971c08815dc43662e8bf0"
+      },
+      {
+        "path": "task/step-01-model-0.json",
+        "bytes": 626,
+        "sha256": "8f6db6b32e3f7a0e717c406555c7ee1bcbf446e3a877aa995f4cb43588497d68"
+      },
+      {
+        "path": "task/step-01-notes-workflow-child-1-planned.json",
+        "bytes": 1530,
+        "sha256": "a5eec51065635a30fdfcaef602c6dff7fb55515d46627207f0e3aab572ae6d55"
+      },
+      {
+        "path": "task/step-01-notes-workflow-child-2-planned.json",
+        "bytes": 1583,
+        "sha256": "f200d5a7f182acf7fc2ae88dd09e0b555b24305e7d339480e80c2ce6ade67588"
+      },
+      {
+        "path": "task/step-01-notes-workflow-grant-consumed.json",
+        "bytes": 1201,
+        "sha256": "bcdc97fe5591d6ac04f2b5856522c2ad0d17aa60f0cef5f53510e1a9923379f0"
+      },
+      {
+        "path": "task/step-01-notes-workflow-observation-1.json",
+        "bytes": 11461,
+        "sha256": "0490fed79f7dd5345a1c12506f57ada9bd24ff5bf59f679204602cd34e5b2817"
+      },
+      {
+        "path": "task/step-01-notes-workflow-observation-2.json",
+        "bytes": 35855,
+        "sha256": "6064781913eb5d3fcfe26198083ab2009ce259d204eae61d82170766a82109f1"
+      },
+      {
+        "path": "task/step-01-notes-workflow-observation-3.json",
+        "bytes": 11462,
+        "sha256": "7205840c8dd46a3a5af6ced7cac9c41e672a8479a343c17f35cbd1657b836173"
+      },
+      {
+        "path": "task/step-01-notes-workflow-observation-4.json",
+        "bytes": 11462,
+        "sha256": "62e1c7807660bd98ec3fa8acff3f9f70122037338cfbde1dbce03648a8b55e2e"
+      },
+      {
+        "path": "task/step-01-notes-workflow-result.json",
+        "bytes": 11560,
+        "sha256": "a49369dd16713b79fe80524000c0741d6ddfd2d52a77a97ecb8bf035f0970cee"
+      },
+      {
+        "path": "task/step-01-tool-child-01-action.json",
+        "bytes": 11713,
+        "sha256": "ef84779a2325bd874e58732ed15744aecb498d412e5ece91a8473480a79e2f22"
+      },
+      {
+        "path": "task/step-01-tool-child-01-after.json",
+        "bytes": 35855,
+        "sha256": "6064781913eb5d3fcfe26198083ab2009ce259d204eae61d82170766a82109f1"
+      },
+      {
+        "path": "task/step-01-tool-child-01-before.json",
+        "bytes": 11461,
+        "sha256": "0490fed79f7dd5345a1c12506f57ada9bd24ff5bf59f679204602cd34e5b2817"
+      },
+      {
+        "path": "task/step-01-tool-child-01-proof.json",
+        "bytes": 4059,
+        "sha256": "be8ac1db0a049e143d786499fbbc86329e7054edbd20e833e787ff4f5120ece9"
+      },
+      {
+        "path": "task/step-01-tool-child-02-action.json",
+        "bytes": 11715,
+        "sha256": "d341d847369c0b6ff5990c017c7af9c4891a10f770326d121cf24948aec5c2e8"
+      },
+      {
+        "path": "task/step-01-tool-child-02-after.json",
+        "bytes": 11462,
+        "sha256": "7205840c8dd46a3a5af6ced7cac9c41e672a8479a343c17f35cbd1657b836173"
+      },
+      {
+        "path": "task/step-01-tool-child-02-before.json",
+        "bytes": 35855,
+        "sha256": "6064781913eb5d3fcfe26198083ab2009ce259d204eae61d82170766a82109f1"
+      },
+      {
+        "path": "task/step-01-tool-child-02-proof.json",
+        "bytes": 4135,
+        "sha256": "4486bf6e9da30f82616013796e5ddff547fcfefdc495a37f4603647acc5e3e03"
+      }
+    ]
+  },
+  "typed_tool_child_actions": [
+    {
+      "file": "step-01-tool-child-01-action.json",
+      "actor_kind": "tool_child",
+      "model_issued": false,
+      "decision": {
+        "action": "back",
+        "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+        "package": "com.motorola.stylus",
+        "duration_ms": 0,
+        "offset": 0,
+        "reason": "Authorized Notes tool child; not a model decision"
+      },
+      "accepted": true,
+      "dispatched": true,
+      "stale": false,
+      "tool_child_binding_valid": true
+    },
+    {
+      "file": "step-01-tool-child-02-action.json",
+      "actor_kind": "tool_child",
+      "model_issued": false,
+      "decision": {
+        "action": "click",
+        "observation_id": "577663b1679c470c8163f6888fef642d",
+        "package": "com.motorola.stylus",
+        "node_label": "文字笔记 · 今天 · Hepta-v53r1-bb0c238aac48…",
+        "node_id": "n12",
+        "duration_ms": 0,
+        "offset": 0,
+        "reason": "Authorized Notes tool child; not a model decision"
+      },
+      "accepted": true,
+      "dispatched": true,
+      "stale": false,
+      "tool_child_binding_valid": true
+    }
+  ],
+  "unverified_tool_child_files": [],
+  "coexistence": {
+    "mode": "not_exercised",
+    "main_scroll_visual_review_required": false,
+    "machine_checks_passed": true
+  },
+  "display_policy": {
+    "schema": "hepta.independent-display-policy-assessment.v1",
+    "verified": true,
+    "all_broker_and_ordinary_app_numeric_readbacks_valid": true,
+    "runtime_constant_mapping_unchanged": true,
+    "bootstrap_launch_response_valid": true,
+    "system_display_identity_type_geometry_valid": true,
+    "numeric_records": [
+      {
+        "file": "background-bootstrap.json",
+        "verified": true,
+        "flags": 6272,
+        "flag_constants": {
+          "FLAG_TRUSTED": 128,
+          "FLAG_OWN_FOCUS": 2048,
+          "FLAG_STEAL_TOP_FOCUS_DISABLED": 4096,
+          "FLAG_SECURE": 2,
+          "FLAG_ALWAYS_UNLOCKED": 512
+        },
+        "required_mask": 6272,
+        "forbidden_mask": 514,
+        "ime_actual": 2,
+        "ime_hide_value": 2,
+        "app_uid": 10481,
+        "app_pid": 30185,
+        "broker_request_id": "34370495-f932-4855-b2f8-62a707d22b6f",
+        "display_id": 20,
+        "generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+        "readback_elapsed_ms": [
+          802377681,
+          802377681,
+          802377683,
+          802377683
+        ],
+        "independent_app_check_scope": "public Display flags and identity; IME is broker framework readback"
+      },
+      {
+        "file": "step-01-action.json",
+        "verified": true,
+        "flags": 6272,
+        "flag_constants": {
+          "FLAG_TRUSTED": 128,
+          "FLAG_OWN_FOCUS": 2048,
+          "FLAG_STEAL_TOP_FOCUS_DISABLED": 4096,
+          "FLAG_SECURE": 2,
+          "FLAG_ALWAYS_UNLOCKED": 512
+        },
+        "required_mask": 6272,
+        "forbidden_mask": 514,
+        "ime_actual": 2,
+        "ime_hide_value": 2,
+        "app_uid": 10481,
+        "app_pid": 30185,
+        "broker_request_id": "51ba2128-280d-4248-9113-24a9e62b6bb1",
+        "display_id": 20,
+        "generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+        "readback_elapsed_ms": [
+          802390062,
+          802390062,
+          802390064,
+          802390064
+        ],
+        "independent_app_check_scope": "public Display flags and identity; IME is broker framework readback"
+      },
+      {
+        "file": "step-01-tool-child-01-action.json",
+        "verified": true,
+        "flags": 6272,
+        "flag_constants": {
+          "FLAG_TRUSTED": 128,
+          "FLAG_OWN_FOCUS": 2048,
+          "FLAG_STEAL_TOP_FOCUS_DISABLED": 4096,
+          "FLAG_SECURE": 2,
+          "FLAG_ALWAYS_UNLOCKED": 512
+        },
+        "required_mask": 6272,
+        "forbidden_mask": 514,
+        "ime_actual": 2,
+        "ime_hide_value": 2,
+        "app_uid": 10481,
+        "app_pid": 30185,
+        "broker_request_id": "2ef36f61-79e6-4d8b-a080-e0759f39e967",
+        "display_id": 20,
+        "generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+        "readback_elapsed_ms": [
+          802391640,
+          802391640,
+          802391641,
+          802391641
+        ],
+        "independent_app_check_scope": "public Display flags and identity; IME is broker framework readback"
+      },
+      {
+        "file": "step-01-tool-child-02-action.json",
+        "verified": true,
+        "flags": 6272,
+        "flag_constants": {
+          "FLAG_TRUSTED": 128,
+          "FLAG_OWN_FOCUS": 2048,
+          "FLAG_STEAL_TOP_FOCUS_DISABLED": 4096,
+          "FLAG_SECURE": 2,
+          "FLAG_ALWAYS_UNLOCKED": 512
+        },
+        "required_mask": 6272,
+        "forbidden_mask": 514,
+        "ime_actual": 2,
+        "ime_hide_value": 2,
+        "app_uid": 10481,
+        "app_pid": 30185,
+        "broker_request_id": "e53c8d7b-e5f0-46d7-bf94-9c3fbe49fac4",
+        "display_id": 20,
+        "generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+        "readback_elapsed_ms": [
+          802391996,
+          802391997,
+          802393051,
+          802393051
+        ],
+        "independent_app_check_scope": "public Display flags and identity; IME is broker framework readback"
+      }
+    ],
+    "system_samples": [
+      {
+        "index": 2,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "a42855eddb13f2b16c0511a51a8b5247c3a55bae0802a5584a52937ffbd1bda7"
+      },
+      {
+        "index": 3,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "a42855eddb13f2b16c0511a51a8b5247c3a55bae0802a5584a52937ffbd1bda7"
+      },
+      {
+        "index": 4,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "a42855eddb13f2b16c0511a51a8b5247c3a55bae0802a5584a52937ffbd1bda7"
+      },
+      {
+        "index": 5,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "a42855eddb13f2b16c0511a51a8b5247c3a55bae0802a5584a52937ffbd1bda7"
+      },
+      {
+        "index": 6,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "a42855eddb13f2b16c0511a51a8b5247c3a55bae0802a5584a52937ffbd1bda7"
+      },
+      {
+        "index": 7,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "a42855eddb13f2b16c0511a51a8b5247c3a55bae0802a5584a52937ffbd1bda7"
+      },
+      {
+        "index": 8,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "a42855eddb13f2b16c0511a51a8b5247c3a55bae0802a5584a52937ffbd1bda7"
+      },
+      {
+        "index": 9,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "a42855eddb13f2b16c0511a51a8b5247c3a55bae0802a5584a52937ffbd1bda7"
+      },
+      {
+        "index": 10,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "a42855eddb13f2b16c0511a51a8b5247c3a55bae0802a5584a52937ffbd1bda7"
+      },
+      {
+        "index": 11,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "a42855eddb13f2b16c0511a51a8b5247c3a55bae0802a5584a52937ffbd1bda7"
+      },
+      {
+        "index": 12,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "a42855eddb13f2b16c0511a51a8b5247c3a55bae0802a5584a52937ffbd1bda7"
+      },
+      {
+        "index": 13,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "a42855eddb13f2b16c0511a51a8b5247c3a55bae0802a5584a52937ffbd1bda7"
+      },
+      {
+        "index": 14,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "a42855eddb13f2b16c0511a51a8b5247c3a55bae0802a5584a52937ffbd1bda7"
+      }
+    ],
+    "raw_description_prints_all_required_names": false,
+    "text_representation_rule": "Own-focus policy requires actual numeric bits from broker and ordinary UID readback; missing display debug labels do not waive either source.",
+    "independent_app_check_scope": "flags and display identity; actual IME policy is read and validated by the broker"
+  },
+  "acceptance": {
+    "owner_and_visible_button_bound": true,
+    "owner_selected_bootstrap_bound": true,
+    "bootstrap_model_issued": false,
+    "model_issued_effect_count": 0,
+    "model_issued_open_count": 0,
+    "model_issued_app_discovery_qualified": false,
+    "actions": [
+      {
+        "file": "step-01-action.json",
+        "action": "notes.create",
+        "run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+        "decision": {
+          "action": "notes.create",
+          "observation_id": "14a960277c7f4c02adc593232d4ad39b",
+          "app_label": "Moto 笔记",
+          "package": "com.motorola.stylus",
+          "text": "Hepta-v53r1-bb0c238aac48 明天下午3点看牙，带上检查资料。",
+          "reason": "当前屏幕未观察到已接受的笔记创建正文，需通过 notes.create 输入 OWNER 指定文本并保存。"
+        },
+        "accepted": true,
+        "dispatched": true,
+        "stale": false,
+        "detail": "后台固定本地入口已派发；须重新观察，尚未证明保存或查询结果",
+        "model_binding_valid": true,
+        "model_binding": {
+          "verified": true,
+          "action_receipt": "task/step-01-action.json",
+          "model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+          "task_session_binding_valid": true,
+          "worker_generation": "5ca399d93a914f63b88b6332ad5e2b3f",
+          "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+          "worker_pid": 3032,
+          "app_uid": 10481,
+          "app_session_receipt_sha256": "a6d48e8fdb6658b9821e34847fc202028fa68c68294cd9bb6ff13a5cfd989b28",
+          "step_model_receipt": "task/step-01-model-0.json",
+          "native_raw_output": "runs/9f241e1ffdad4f878bbdea387cdb4018/raw-text.txt",
+          "native_result": "runs/9f241e1ffdad4f878bbdea387cdb4018/native-result.json",
+          "raw_text_sha256": "05a8e4e916ba95772cb0ec88f6e0c04e3bb024092bfa90da6a46e111137483ec"
+        },
+        "after_observation_available": true,
+        "effect_evidence_complete": true,
+        "unsupported_notes_action": false,
+        "notes_fixed_intent": {
+          "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+          "model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+          "observation_id": "14a960277c7f4c02adc593232d4ad39b",
+          "source_package": "com.motorola.stylus",
+          "source_window_id": 3569,
+          "display_id": 20,
+          "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+          "target": {
+            "source": "installed_package_manager",
+            "action": "notes.create",
+            "package": "com.motorola.stylus",
+            "component": "com.motorola.stylus/com.motorola.stylus.note.text.TextNoteActivity",
+            "target_uid": 10382,
+            "app_label": "Moto 笔记",
+            "exported": true,
+            "activity_enabled": true,
+            "application_enabled": true,
+            "declared_intent_filter_matched": true,
+            "required_permission": null,
+            "ordinary_caller_permission_checked": true
+          },
+          "action": "notes.create",
+          "payload_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+          "attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+          "attempt_ordinal": 1,
+          "attempt_consumed": true,
+          "automatic_retry_allowed": false,
+          "schema": "hepta.fixed-intent-result.v1",
+          "dispatch_attempted": true,
+          "api_accepted": true,
+          "result": "launch_accepted",
+          "requested_outcome": "draft_opened",
+          "goal_independently_verified": false,
+          "saved_or_search_results_verified": false,
+          "broker_response": {
+            "version": 1,
+            "request_id": "51ba2128-280d-4248-9113-24a9e62b6bb1",
+            "generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+            "ok": true,
+            "state": "ACTIVE",
+            "display_id": 20,
+            "flags": 6272,
+            "width": 720,
+            "height": 1280,
+            "density": 240,
+            "dispatched": true,
+            "display_name": "hepta-bg-82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+            "expires_elapsed_ms": 802917262,
+            "capture_secure": false,
+            "always_unlocked": false,
+            "ime_policy": "hide",
+            "display_policy_readback": {
+              "flag_namespace": "android.view.Display",
+              "flags_source": "android.view.Display.getFlags",
+              "flags": 6272,
+              "flag_constants": {
+                "FLAG_TRUSTED": 128,
+                "FLAG_OWN_FOCUS": 2048,
+                "FLAG_STEAL_TOP_FOCUS_DISABLED": 4096,
+                "FLAG_SECURE": 2,
+                "FLAG_ALWAYS_UNLOCKED": 512
+              },
+              "required_mask": 6272,
+              "forbidden_mask": 514,
+              "ime_source": "android.view.IWindowManager.getDisplayImePolicy",
+              "ime_actual": 2,
+              "ime_hide_constant": "android.view.WindowManager.DISPLAY_IME_POLICY_HIDE",
+              "ime_hide_value": 2,
+              "schema": "hepta.background-display-policy.v1",
+              "source": "broker_framework_readback",
+              "generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "display_id": 20,
+              "display_name": "hepta-bg-82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "observed_started_elapsed_ms": 802390062,
+              "observed_ended_elapsed_ms": 802390062
+            },
+            "operation": "notes.create",
+            "fixed_intent": {
+              "schema": "hepta.background-fixed-intent.v1",
+              "request_id": "51ba2128-280d-4248-9113-24a9e62b6bb1",
+              "generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "display_id": 20,
+              "action": "notes.create",
+              "attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+              "payload_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+              "target": {
+                "source": "installed_package_manager",
+                "action": "notes.create",
+                "package": "com.motorola.stylus",
+                "component": "com.motorola.stylus/com.motorola.stylus.note.text.TextNoteActivity",
+                "target_uid": 10382,
+                "app_label": "Moto 笔记",
+                "exported": true,
+                "activity_enabled": true,
+                "application_enabled": true,
+                "declared_intent_filter_matched": true,
+                "required_permission": null,
+                "ordinary_caller_permission_checked": true
+              },
+              "ordinary_caller_uid": 10481,
+              "resolved_type": "text/plain",
+              "attempt_consumed": true,
+              "goal_independently_verified": false
+            },
+            "task_launch_policy": {
+              "schema": "hepta.background-task-launch-policy.v1",
+              "request_id": "51ba2128-280d-4248-9113-24a9e62b6bb1",
+              "generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "display_id": 20,
+              "package": "com.motorola.stylus",
+              "component": "com.motorola.stylus/com.motorola.stylus.note.text.TextNoteActivity",
+              "target_uid": 10382,
+              "activity_info_source": "PackageManager.getActivityInfo",
+              "activity_info_rechecked_before_dispatch": true,
+              "actual_launch_mode": 0,
+              "actual_document_launch_mode": 0,
+              "actual_activity_info_flags": 3211776,
+              "actual_activity_enabled": true,
+              "actual_application_enabled": true,
+              "actual_exported": true,
+              "actual_target_activity": null,
+              "actual_required_permission": null,
+              "actual_source_dir": "/product/preinstall/MotoStylus/MotoStylus.apk",
+              "original_intent_flags": 402653184,
+              "outbound_intent_flags": 403177472,
+              "policy_eligible": true,
+              "policy_reason": "standard_document_none_new_task_request",
+              "new_document_requested": true,
+              "retain_in_recents_requested": false,
+              "framework_adjusted_flags_verified": false,
+              "new_owned_task_identity_verified": false,
+              "recents_cleanup_verified": false,
+              "scope": "Outbound new-task Intent only; no task removal or global policy change; not a cleanup proof."
+            }
+          }
+        },
+        "same_owned_display_after": true
+      }
+    ],
+    "invalid_action_bindings": [],
+    "unsupported_actions": [],
+    "submit_effect_qualification_supported": false,
+    "all_dispatched_effects_have_matching_after": true,
+    "observation_identity_conflicts": [],
+    "local_accelerator_inference_verified": true,
+    "all_model_owner_prompts_bound": true,
+    "ordinary_uid_model_process_observed": true,
+    "root_or_shell_broker_process_observed": true,
+    "broker_process_identity": {
+      "verified": true,
+      "pids": [
+        2578
+      ],
+      "matched_sample_count": 13,
+      "identities": [
+        {
+          "pid": 2578,
+          "uid": 0,
+          "argv0": "app_process"
+        }
+      ],
+      "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+    },
+    "notes_business_independently_verified": false,
+    "model_issued_notes_create_count": 1,
+    "final_notes_owned_display_bound": true,
+    "result_observation_id": "99aaf49bce494ba599086009ff2a7ac8",
+    "controller_completion_verified_claim": true,
+    "controller_completion_evidence": {
+      "schema": "hepta.task-completion.v1",
+      "kind": "notes_save_list_reopen",
+      "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+      "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+      "source": "controller_observation_checks_not_model_claims",
+      "completion_verified": true,
+      "missing": [],
+      "rejected_success_claims": 0,
+      "max_rejected_success_claims": 2,
+      "notes_launch_observed": true,
+      "editor_body_observed": true,
+      "list_observed": true,
+      "prior_visible_body_collision": false,
+      "unobserved_prior_notes_known": false,
+      "same_list_item_reopened": true,
+      "reopen_actor_kind": "tool_child",
+      "notes_create_workflow_verified": true,
+      "notes_create_workflow_stop_reason": null,
+      "progress_scope": "cumulative_task_evidence_not_current_screen",
+      "current_surface": "verified_note_editor",
+      "current_list_item_node_id": null,
+      "current_editor_body_matched": true,
+      "writes_required_for_unknown_or_read_only_goal": false,
+      "grants_tool_authority": false,
+      "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+      "contract": {
+        "schema": "hepta.task-completion.v1",
+        "kind": "notes_save_list_reopen",
+        "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+        "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+        "recognition": "hepta.notes-owner-intent.v1/natural_note_comma_prefix.v1",
+        "expected_body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+        "source": "immutable_owner_contract",
+        "body_source_start_utf16": 4,
+        "body_source_end_utf16": 45,
+        "note_persistence_verification_policy": "save_list_reopen",
+        "body_rewritten": false,
+        "model_may_change_goal": false,
+        "grants_tool_authority": false
+      },
+      "proofs": [
+        {
+          "kind": "model_bound_notes_launch",
+          "step": 1,
+          "model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+          "before_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+          "after_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+          "attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+          "payload_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2"
+        },
+        {
+          "kind": "editor_body_observed",
+          "step": 0,
+          "model_run_id": null,
+          "before_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+          "after_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc"
+        },
+        {
+          "kind": "post_create_observed_list",
+          "step": 0,
+          "model_run_id": null,
+          "before_observation_id": null,
+          "after_observation_id": "577663b1679c470c8163f6888fef642d",
+          "editor_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+          "list_body_evidence": {
+            "matched": true,
+            "missing": null,
+            "match_rule": "bound_note_summary_accessibility_text",
+            "node_id": "n12",
+            "source_path": "2",
+            "source_view_id": "com.motorola.stylus:id/note_summary",
+            "source_text_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+            "node_app_tree_sha256": "fca1e9a228fe8ce69a31e223660f437a061fea72ede0c413659e3aba31451c70",
+            "text_scope": "Complete accessibility text source; visual clipping and persistent storage bytes are unverified.",
+            "persistent_bytes_verified": false
+          }
+        },
+        {
+          "kind": "tool_child_same_observed_list_item_reopened",
+          "step": 1,
+          "model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+          "before_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+          "after_observation_id": "99aaf49bce494ba599086009ff2a7ac8",
+          "actor_kind": "tool_child",
+          "model_issued": false,
+          "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+          "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+          "workflow_evidence": {
+            "schema": "hepta.notes-create-workflow.v1",
+            "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+            "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+            "parent_step": 1,
+            "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+            "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+            "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+            "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+            "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+            "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+            "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+            "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+            "target_package": "com.motorola.stylus",
+            "target_uid": 10382,
+            "target_apk_sha256": {
+              "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+            },
+            "display_id": 20,
+            "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+            "grant_consumed": true,
+            "grant_retired": true,
+            "grants_tool_authority": false,
+            "actor_kind": "tool_workflow",
+            "model_issued": false,
+            "fixed_intent_outcome_unchanged": "draft_opened",
+            "workflow_verified": true,
+            "stop_reason": null,
+            "initial": {
+              "observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+              "package": "com.motorola.stylus",
+              "window_id": 3571,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "5606c5ddde421d3ab3248949b88a796284c3bb7a348a96259a27d5cb80310134",
+              "rotation": 0
+            },
+            "current": {
+              "observation_id": "8b1c2ac37091494bb7aee3000929bf12",
+              "package": "com.motorola.stylus",
+              "window_id": 3572,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+              "rotation": 0
+            },
+            "stable_readback": {
+              "observation_id": "99aaf49bce494ba599086009ff2a7ac8",
+              "package": "com.motorola.stylus",
+              "window_id": 3572,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+              "rotation": 0
+            },
+            "children": [
+              {
+                "child": {
+                  "schema": "hepta.tool-child.v1",
+                  "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+                  "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+                  "parent_step": 1,
+                  "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+                  "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+                  "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+                  "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+                  "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+                  "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+                  "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+                  "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+                  "target_package": "com.motorola.stylus",
+                  "target_uid": 10382,
+                  "target_apk_sha256": {
+                    "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+                  },
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "grant_consumed": true,
+                  "grant_retired": true,
+                  "grants_tool_authority": false,
+                  "child_id": "b6b2c1e1288b4a9d0fc78ef87df41621d109e37e082f906c3a7a13974d3b45e3",
+                  "child_ordinal": 1,
+                  "actor_kind": "tool_child",
+                  "model_issued": false,
+                  "action": "back",
+                  "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+                  "node_id": null,
+                  "node_label": null,
+                  "service_entered": true,
+                  "automatic_retry_allowed": false
+                },
+                "before": {
+                  "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+                  "package": "com.motorola.stylus",
+                  "window_id": 3571,
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "tree_sha256": "5606c5ddde421d3ab3248949b88a796284c3bb7a348a96259a27d5cb80310134",
+                  "rotation": 0
+                },
+                "after": {
+                  "observation_id": "577663b1679c470c8163f6888fef642d",
+                  "package": "com.motorola.stylus",
+                  "window_id": 3569,
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "tree_sha256": "a868bafca93a75cfecb916dfaa0de15b81c093d665c07a0ba08c90042c9c12f7",
+                  "rotation": 0
+                },
+                "accepted": true,
+                "dispatched": true,
+                "stale": false,
+                "detail": "后台工具已定向派发；下一步重新观察",
+                "live_lease_verified": true,
+                "service_child_receipt": {
+                  "schema": "hepta.tool-child.v1",
+                  "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+                  "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+                  "parent_step": 1,
+                  "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+                  "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+                  "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+                  "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+                  "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+                  "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+                  "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+                  "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+                  "target_package": "com.motorola.stylus",
+                  "target_uid": 10382,
+                  "target_apk_sha256": {
+                    "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+                  },
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "grant_consumed": true,
+                  "grant_retired": false,
+                  "grants_tool_authority": false,
+                  "child_id": "b6b2c1e1288b4a9d0fc78ef87df41621d109e37e082f906c3a7a13974d3b45e3",
+                  "child_ordinal": 1,
+                  "actor_kind": "tool_child",
+                  "model_issued": false,
+                  "action": "back",
+                  "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+                  "node_id": null,
+                  "node_label": null,
+                  "service_entered": true,
+                  "automatic_retry_allowed": false
+                }
+              },
+              {
+                "child": {
+                  "schema": "hepta.tool-child.v1",
+                  "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+                  "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+                  "parent_step": 1,
+                  "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+                  "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+                  "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+                  "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+                  "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+                  "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+                  "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+                  "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+                  "target_package": "com.motorola.stylus",
+                  "target_uid": 10382,
+                  "target_apk_sha256": {
+                    "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+                  },
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "grant_consumed": true,
+                  "grant_retired": true,
+                  "grants_tool_authority": false,
+                  "child_id": "2a848edb1c2be717a9236783619a6876b2f73aae13a581cfa85175112921b335",
+                  "child_ordinal": 2,
+                  "actor_kind": "tool_child",
+                  "model_issued": false,
+                  "action": "click",
+                  "observation_id": "577663b1679c470c8163f6888fef642d",
+                  "node_id": "n12",
+                  "node_label": "文字笔记 · 今天 · Hepta-v53r1-bb0c238aac48…",
+                  "service_entered": true,
+                  "automatic_retry_allowed": false
+                },
+                "before": {
+                  "observation_id": "577663b1679c470c8163f6888fef642d",
+                  "package": "com.motorola.stylus",
+                  "window_id": 3569,
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "tree_sha256": "a868bafca93a75cfecb916dfaa0de15b81c093d665c07a0ba08c90042c9c12f7",
+                  "rotation": 0
+                },
+                "after": {
+                  "observation_id": "8b1c2ac37091494bb7aee3000929bf12",
+                  "package": "com.motorola.stylus",
+                  "window_id": 3572,
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+                  "rotation": 0
+                },
+                "accepted": true,
+                "dispatched": true,
+                "stale": false,
+                "detail": "节点点击已接受",
+                "live_lease_verified": true,
+                "service_child_receipt": {
+                  "schema": "hepta.tool-child.v1",
+                  "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+                  "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+                  "parent_step": 1,
+                  "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+                  "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+                  "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+                  "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+                  "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+                  "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+                  "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+                  "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+                  "target_package": "com.motorola.stylus",
+                  "target_uid": 10382,
+                  "target_apk_sha256": {
+                    "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+                  },
+                  "display_id": 20,
+                  "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+                  "grant_consumed": true,
+                  "grant_retired": false,
+                  "grants_tool_authority": false,
+                  "child_id": "2a848edb1c2be717a9236783619a6876b2f73aae13a581cfa85175112921b335",
+                  "child_ordinal": 2,
+                  "actor_kind": "tool_child",
+                  "model_issued": false,
+                  "action": "click",
+                  "observation_id": "577663b1679c470c8163f6888fef642d",
+                  "node_id": "n12",
+                  "node_label": "文字笔记 · 今天 · Hepta-v53r1-bb0c238aac48…",
+                  "service_entered": true,
+                  "automatic_retry_allowed": false
+                }
+              }
+            ],
+            "model_done_synthesized": false,
+            "persistent_storage_bytes_verified": false
+          }
+        }
+      ],
+      "model_success_claims": [],
+      "identity_failure": null,
+      "display_id": 20,
+      "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+      "notes_create_workflow": {
+        "schema": "hepta.notes-create-workflow.v1",
+        "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+        "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+        "parent_step": 1,
+        "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+        "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+        "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+        "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+        "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+        "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+        "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+        "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+        "target_package": "com.motorola.stylus",
+        "target_uid": 10382,
+        "target_apk_sha256": {
+          "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+        },
+        "display_id": 20,
+        "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+        "grant_consumed": true,
+        "grant_retired": true,
+        "grants_tool_authority": false,
+        "actor_kind": "tool_workflow",
+        "model_issued": false,
+        "fixed_intent_outcome_unchanged": "draft_opened",
+        "workflow_verified": true,
+        "stop_reason": null,
+        "initial": {
+          "observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+          "package": "com.motorola.stylus",
+          "window_id": 3571,
+          "display_id": 20,
+          "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+          "tree_sha256": "5606c5ddde421d3ab3248949b88a796284c3bb7a348a96259a27d5cb80310134",
+          "rotation": 0
+        },
+        "current": {
+          "observation_id": "8b1c2ac37091494bb7aee3000929bf12",
+          "package": "com.motorola.stylus",
+          "window_id": 3572,
+          "display_id": 20,
+          "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+          "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+          "rotation": 0
+        },
+        "stable_readback": {
+          "observation_id": "99aaf49bce494ba599086009ff2a7ac8",
+          "package": "com.motorola.stylus",
+          "window_id": 3572,
+          "display_id": 20,
+          "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+          "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+          "rotation": 0
+        },
+        "children": [
+          {
+            "child": {
+              "schema": "hepta.tool-child.v1",
+              "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+              "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+              "parent_step": 1,
+              "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+              "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+              "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+              "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+              "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+              "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+              "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+              "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+              "target_package": "com.motorola.stylus",
+              "target_uid": 10382,
+              "target_apk_sha256": {
+                "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+              },
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "grant_consumed": true,
+              "grant_retired": true,
+              "grants_tool_authority": false,
+              "child_id": "b6b2c1e1288b4a9d0fc78ef87df41621d109e37e082f906c3a7a13974d3b45e3",
+              "child_ordinal": 1,
+              "actor_kind": "tool_child",
+              "model_issued": false,
+              "action": "back",
+              "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+              "node_id": null,
+              "node_label": null,
+              "service_entered": true,
+              "automatic_retry_allowed": false
+            },
+            "before": {
+              "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+              "package": "com.motorola.stylus",
+              "window_id": 3571,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "5606c5ddde421d3ab3248949b88a796284c3bb7a348a96259a27d5cb80310134",
+              "rotation": 0
+            },
+            "after": {
+              "observation_id": "577663b1679c470c8163f6888fef642d",
+              "package": "com.motorola.stylus",
+              "window_id": 3569,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "a868bafca93a75cfecb916dfaa0de15b81c093d665c07a0ba08c90042c9c12f7",
+              "rotation": 0
+            },
+            "accepted": true,
+            "dispatched": true,
+            "stale": false,
+            "detail": "后台工具已定向派发；下一步重新观察",
+            "live_lease_verified": true,
+            "service_child_receipt": {
+              "schema": "hepta.tool-child.v1",
+              "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+              "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+              "parent_step": 1,
+              "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+              "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+              "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+              "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+              "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+              "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+              "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+              "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+              "target_package": "com.motorola.stylus",
+              "target_uid": 10382,
+              "target_apk_sha256": {
+                "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+              },
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "grant_consumed": true,
+              "grant_retired": false,
+              "grants_tool_authority": false,
+              "child_id": "b6b2c1e1288b4a9d0fc78ef87df41621d109e37e082f906c3a7a13974d3b45e3",
+              "child_ordinal": 1,
+              "actor_kind": "tool_child",
+              "model_issued": false,
+              "action": "back",
+              "observation_id": "7fc82b43d9b1489f96d009073b75e0a1",
+              "node_id": null,
+              "node_label": null,
+              "service_entered": true,
+              "automatic_retry_allowed": false
+            }
+          },
+          {
+            "child": {
+              "schema": "hepta.tool-child.v1",
+              "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+              "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+              "parent_step": 1,
+              "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+              "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+              "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+              "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+              "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+              "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+              "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+              "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+              "target_package": "com.motorola.stylus",
+              "target_uid": 10382,
+              "target_apk_sha256": {
+                "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+              },
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "grant_consumed": true,
+              "grant_retired": true,
+              "grants_tool_authority": false,
+              "child_id": "2a848edb1c2be717a9236783619a6876b2f73aae13a581cfa85175112921b335",
+              "child_ordinal": 2,
+              "actor_kind": "tool_child",
+              "model_issued": false,
+              "action": "click",
+              "observation_id": "577663b1679c470c8163f6888fef642d",
+              "node_id": "n12",
+              "node_label": "文字笔记 · 今天 · Hepta-v53r1-bb0c238aac48…",
+              "service_entered": true,
+              "automatic_retry_allowed": false
+            },
+            "before": {
+              "observation_id": "577663b1679c470c8163f6888fef642d",
+              "package": "com.motorola.stylus",
+              "window_id": 3569,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "a868bafca93a75cfecb916dfaa0de15b81c093d665c07a0ba08c90042c9c12f7",
+              "rotation": 0
+            },
+            "after": {
+              "observation_id": "8b1c2ac37091494bb7aee3000929bf12",
+              "package": "com.motorola.stylus",
+              "window_id": 3572,
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "tree_sha256": "9be4a7e53d86d2555c2d253c924850df2898d9a0593787a0d951a59241b0cbd6",
+              "rotation": 0
+            },
+            "accepted": true,
+            "dispatched": true,
+            "stale": false,
+            "detail": "节点点击已接受",
+            "live_lease_verified": true,
+            "service_child_receipt": {
+              "schema": "hepta.tool-child.v1",
+              "workflow_id": "a242431940397a65ddc328a4cb725c6e610949fa57998a5a80d24e11a2f75618",
+              "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+              "parent_step": 1,
+              "parent_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+              "parent_observation_id": "14a960277c7f4c02adc593232d4ad39b",
+              "created_observation_id": "2acce59d4775492b8f6b1db5fcb97cdc",
+              "parent_fixed_intent_attempt_id": "1d9120191d85ef685c52ac05d2cc1c5bec0eb5c473c2cada7c26f1619789315d",
+              "owner_sha256": "bee8b984af2870ee6b05ff1a67be654d58c91a4bf36bd9a52dff3ed1eb1c9001",
+              "contract_sha256": "51e71573045d06db4894f76755688060064cea7d47335d0f8066bb6583fce85f",
+              "task_authorization_sha256": "7adda7e719df71a3d4c70c727fa046fd1208a2752cfde40845dad926dc054cbe",
+              "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+              "target_package": "com.motorola.stylus",
+              "target_uid": 10382,
+              "target_apk_sha256": {
+                "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+              },
+              "display_id": 20,
+              "background_generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+              "grant_consumed": true,
+              "grant_retired": false,
+              "grants_tool_authority": false,
+              "child_id": "2a848edb1c2be717a9236783619a6876b2f73aae13a581cfa85175112921b335",
+              "child_ordinal": 2,
+              "actor_kind": "tool_child",
+              "model_issued": false,
+              "action": "click",
+              "observation_id": "577663b1679c470c8163f6888fef642d",
+              "node_id": "n12",
+              "node_label": "文字笔记 · 今天 · Hepta-v53r1-bb0c238aac48…",
+              "service_entered": true,
+              "automatic_retry_allowed": false
+            }
+          }
+        ],
+        "model_done_synthesized": false,
+        "persistent_storage_bytes_verified": false
+      },
+      "persistent_storage_bytes_verified": false,
+      "new_database_item_identity_verified": false,
+      "current_editor_raw_exact": false,
+      "current_body_evidence": {
+        "matched": true,
+        "raw_exact": false,
+        "persistent_bytes_verified": false,
+        "node_id": "n10",
+        "action_label": "Hepta-v53r1-bb0c238aac48 明天下午3点看牙，带上…",
+        "raw_text_sha256": "9363e3b7c0ba5483a21feeda8e1773ce9def5016944cffa90584e1bd45846549",
+        "body_sha256": "3989861bdc8bab689284ec5d929c3e8505140113bea091e3f024fa99329e85f2",
+        "trailing_lf_count": 40,
+        "match_rule": "body_plus_observed_40_lf",
+        "missing": null
+      },
+      "current_list_match": false,
+      "current_list_missing": "editor_present_not_note_list",
+      "current_list_evidence": {
+        "matched": false,
+        "missing": "editor_present_not_note_list",
+        "match_rule": null,
+        "node_id": null,
+        "source_path": null,
+        "source_view_id": null,
+        "source_text_sha256": null,
+        "node_app_tree_sha256": null,
+        "text_scope": "Complete accessibility text source; visual clipping and persistent storage bytes are unverified.",
+        "persistent_bytes_verified": false
+      },
+      "observation_chain_verified": true,
+      "terminal_binding_and_cleanup_verified": true,
+      "completion_actor": "controller/tool_workflow",
+      "model_done_synthesized": false,
+      "controller_completion_requested": true,
+      "controller_native_parent_session_bound": true
+    },
+    "result_screenshot_hash_verified": true,
+    "visual_screenshot_reviewed": false,
+    "sampled_main_focus_matches_explicit_user_phases": true,
+    "target_task_only_on_owned_display": true,
+    "display_policy_readback_verified": true,
+    "broker_display_flags": 6272,
+    "cleanup_confirmed_by_app_broker_and_system": true,
+    "journal_absent": true,
+    "broker_process_exit_observed": true,
+    "broker_process_exit_code": 0,
+    "generation": "82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+    "display_id": 20,
+    "display_name": "hepta-bg-82a60b9e-5a71-4742-94f6-9ee7ec623f7d",
+    "sample_count": 18,
+    "active_display_samples": 13,
+    "maximum_sample_start_gap_s": 1.772724232985638,
+    "maximum_sample_duration_s": 0.3229847280017566,
+    "focus_claim_scope": "sampled points only; sequential dumps are not atomic and do not prove zero transient interference",
+    "controller_status": "controller_verified_done",
+    "controller_model_reported_success": false
+  },
+  "infrastructure_checks_passed": true,
+  "notes_validation_pending": {
+    "actual_raw_bytes_collected": true,
+    "business_verdict": "pending_independent_background_notes_evidence_and_visual_review",
+    "required": [
+      "one actual same-task native notes.create/full literal body with broker and durable ledger",
+      "later real unique full-body list then independently bound model or typed-tool-child click and full editor reopen",
+      "stable controller terminal and final owned-display screenshot before cleanup",
+      "explicit v53 in-flight main-user protocol and independent Settings/Notes image review"
+    ],
+    "unsupported_or_failed_effects": [],
+    "all_dispatched_effects_have_matching_after": true,
+    "final_owned_display_screenshot_hash_bound": true,
+    "partial_is_not_pass": true
+  },
+  "machine_checks_passed": false,
+  "ended_wall_s": 1794460149.1102188
+}

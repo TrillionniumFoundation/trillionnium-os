@@ -44,18 +44,47 @@ final class BackgroundSession {
     static final class Selection {
         final String initialPackage;
         final List<String> allowedPackages;
-        Selection(String initial,Set<String> allowed){
+        private final Map<String,Object> ownerSelection;
+        Selection(String initial,Set<String> allowed){this(initial,allowed,null,null,null,null);}
+        Selection(String initial,Set<String> allowed,String uiInitial,Set<String> uiAllowed,
+                  String ownerSha,String recognition){
             if(allowed==null||allowed.isEmpty()||allowed.size()>6)throw new IllegalArgumentException("请选择 1 至 6 个后台任务应用");
             TreeSet<String> copy=new TreeSet<String>();
             for(String value:allowed){checkPackage(value);copy.add(value);}
             checkPackage(initial);
             if(!copy.contains(initial))throw new IllegalArgumentException("起始应用必须属于本次后台范围");
             initialPackage=initial;allowedPackages=Collections.unmodifiableList(new ArrayList<String>(copy));
+            if(ownerSha==null){
+                if(uiInitial!=null||uiAllowed!=null||recognition!=null)throw new IllegalArgumentException("任务范围来源不完整");
+                ownerSelection=null;
+            }else{
+                if(!ownerSha.matches("[0-9a-f]{64}")||recognition==null||!recognition.matches("[A-Za-z0-9_.]{1,96}")
+                        ||uiAllowed==null||uiAllowed.isEmpty()||uiAllowed.size()>6||copy.size()!=1)
+                    throw new IllegalArgumentException("原始指令与应用范围来源不完整");
+                TreeSet<String> original=new TreeSet<String>();
+                for(String value:uiAllowed){checkPackage(value);original.add(value);}
+                checkPackage(uiInitial);
+                if(!original.contains(uiInitial)||!original.containsAll(copy))throw new IllegalArgumentException("任务应用超出已选范围");
+                Map<String,Object> proof=new LinkedHashMap<String,Object>();
+                proof.put("schema","hepta.owner-task-app-selection.v1");proof.put("owner_sha256",ownerSha);
+                proof.put("recognition",recognition);proof.put("original_ui_initial_package",uiInitial);
+                proof.put("original_ui_allowed_packages",Collections.unmodifiableList(new ArrayList<String>(original)));
+                proof.put("effective_initial_package",initialPackage);proof.put("effective_allowed_packages",allowedPackages);
+                proof.put("effective_scope_within_selected_apps",true);
+                proof.put("effective_scope_strictly_smaller",copy.size()<original.size());
+                proof.put("initial_app_changed",!initialPackage.equals(uiInitial));proof.put("package_from_model_or_screen",false);
+                proof.put("grants_tool_authority",false);proof.put("changes_saved_preferences",false);
+                ownerSelection=Collections.unmodifiableMap(proof);
+            }
         }
-        JSONObject json()throws Exception{return new JSONObject().put("mode","background")
+        JSONObject json()throws Exception{
+            JSONObject value=new JSONObject().put("mode","background")
                 .put("allowed_packages",new JSONArray(allowedPackages)).put("bootstrap_package",initialPackage)
-                .put("bootstrap_source","owner_selected_initial_app").put("bootstrap_model_issued",false)
-                .put("main_display_fallback",false).put("home_allowed",false);}
+                .put("bootstrap_source",ownerSelection==null?"owner_selected_initial_app":"owner_intent_within_explicit_ui_selection").put("bootstrap_model_issued",false)
+                .put("main_display_fallback",false).put("home_allowed",false);
+            if(ownerSelection!=null)value.put("owner_task_selection",new JSONObject(ownerSelection));
+            return value;
+        }
     }
     static final class Cleanup {
         final boolean known;final JSONObject evidence;

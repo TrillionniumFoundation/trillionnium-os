@@ -31,16 +31,16 @@ def main():
             "external_model_used":False,"started_host_wall_ms":int(time.time()*1000),"checks":[]}
     source_dir=ROOT/"src/org/trillionnium/hepta/local"
     sources=[source_dir/(name+".java") for name in PURE_CLASSES]
-    sources += [source_dir/"web/WebFlightGoal.java",
+    sources += [source_dir/"web/WebFlightGoal.java",source_dir/"web/WebShoppingGoal.java",
                 ROOT/"tests/web-flight/legacy-boundary/WebFlightDomain.java"]
-    report["web_fixture_boundary"]="Legacy non-Web tests use a type-only WebFlightDomain whose methods throw; actual Web classes have an independent gate"
+    report["web_fixture_boundary"]="Legacy non-Web tests use a type-only WebTaskDomain whose methods throw; actual Web classes have an independent gate"
     sources += [ROOT/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","BackgroundOwnedTaskPolicy")]
     tests=sorted((ROOT/"tests").glob("*HostTest.java"))+[
         ROOT/"tests/action-parser/ActionDecisionHostTest.java",
         ROOT/"tests/action-grammar/DecisionGrammarHostTest.java"]
     def all_inputs():
         paths=set(ROOT.glob("*.py"))
-        for directory, extensions in (("src",("*.java",)),("tests",("*.java","*.py")),
+        for directory, extensions in (("src",("*.java",)),("tests",("*.java","*.py","*.template")),
                                       ("native",("*.c","*.h","*.inc","*.py")),("tools",("*.py",))):
             for extension in extensions: paths.update((ROOT/directory).rglob(extension))
         paths.update(p for p in (ROOT/"tests/completion/fixtures").rglob("*") if p.is_file())
@@ -72,7 +72,22 @@ def main():
     try:
         classes=out/"classes"; classes.mkdir()
         fixtures=out/"grammar"; fixtures.mkdir()
-        run("java-compile",compiler+["--release","8","-encoding","UTF-8","-Xlint:all","-Werror","-d",classes,*sources,*tests])
+        web_fixture_source=ROOT/"tests/web-flight/legacy-boundary/WebFlightDomain.java"
+        web_fixture_raw=web_fixture_source.read_bytes()
+        web_fixture_compile=out/"WebTaskDomain.java"
+        if sources.count(web_fixture_source)!=1 or hashlib.sha256(web_fixture_raw).hexdigest()!=next(
+                r["sha256"] for r in report["source_inputs"] if r["path"]==str(web_fixture_source.relative_to(ROOT))):
+            raise RuntimeError("Exact original Web type-boundary source required")
+        web_fixture_compile.write_bytes(web_fixture_raw)
+        if web_fixture_compile.read_bytes()!=web_fixture_raw:
+            raise RuntimeError("Web type-boundary compiler copy changed")
+        compile_sources=[web_fixture_compile if p==web_fixture_source else p for p in sources]
+        report["web_fixture_compiler_copy"]={"source_path":str(web_fixture_source.relative_to(ROOT)),
+            "compiler_path":str(web_fixture_compile),"bytes":len(web_fixture_raw),
+            "sha256":hashlib.sha256(web_fixture_raw).hexdigest(),"byte_identical":True}
+        run("java-compile",compiler+["--release","8","-encoding","UTF-8","-Xlint:all","-Werror","-d",classes,*compile_sources,*tests])
+        if web_fixture_compile.read_bytes()!=web_fixture_raw:
+            raise RuntimeError("Web type-boundary compiler copy changed during javac")
         for test in tests:
             name=test.stem
             command=[java,"-cp",classes,name]
@@ -86,8 +101,12 @@ def main():
         run("same-state-no-effect-grammar",[sys.executable,ROOT/"tests/action-grammar/test_same_state_no_effect_grammar.py",fixtures])
         run("background-client",[sys.executable,"-B",ROOT/"tests/background-session/run_host_tests.py",
             "--source",ROOT,"--output",out/"background-client","--release8"])
+        run("background-launch-isolation",[sys.executable,"-B",ROOT/"tests/background-launch-isolation/run_host_tests.py",
+            "--source",ROOT,"--output",out/"background-launch-isolation","--release8"])
         run("qualification-scope",[sys.executable,ROOT/"tests/qualification-scope/run_host_tests.py",
             "--source",ROOT,"--output",out/"qualification-scope","--release8"])
+        run("observation-pipeline",[sys.executable,"-B",ROOT/"tests/observation-pipeline/run_host_tests.py",
+            "--source",ROOT,"--output",out/"observation-pipeline","--release8"])
         run("owner-authorization",[sys.executable,"-B",ROOT/"tests/owner-authorization/run_host_tests.py",
             "--source",ROOT,"--output",out/"owner-authorization","--release8"])
         run("owner-grammar",[sys.executable,"-B",ROOT/"tests/owner-grammar/run_host_tests.py",
@@ -102,6 +121,8 @@ def main():
             "--source",ROOT,"--output",out/"background-permission","--release8"])
         run("background-permission-session",[sys.executable,"-B",ROOT/"tests/background-permission/run_session_tests.py",
             "--source",ROOT,"--output",out/"background-permission-session","--release8"])
+        run("runtime-config-ui",[sys.executable,"-B",ROOT/"tests/runtime-config-ui/run_host_tests.py",
+            "--source",ROOT,"--output",out/"runtime-config-ui","--release8"])
         run("background-broker",[sys.executable,"-B",ROOT/"tests/background-broker/run_host_checks.py",
             "--java",java,"--javac",shutil.which("javac"),"--out",out/"background-broker"])
         run("python-tools",[sys.executable,"-m","unittest","discover","-s","tools","-p","test_*.py","-v"])
@@ -135,6 +156,8 @@ def main():
             "--source",ROOT,"--output",out/"observation-collection","--release8"])
         run("notes-owner-intent",[sys.executable,"-B",ROOT/"tests/notes-owner-intent/run_host_tests.py",
             "--source",ROOT,"--output",out/"notes-owner-intent","--release8"])
+        run("owned-worker-cancellation",[sys.executable,"-B",ROOT/"tests/owned-worker-cancellation/run_host_tests.py",
+            "--source",ROOT,"--output",out/"owned-worker-cancellation"])
         run("background-owned-task-policy",[sys.executable,"-B",ROOT/"tests/background-owned-task/run_host_tests.py",
             "--out",out/"background-owned-task-policy","--java",java])
         if all_inputs()!=report["source_inputs"]: raise RuntimeError("Source changed during host checks")

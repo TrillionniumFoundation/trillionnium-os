@@ -1,0 +1,51 @@
+--- r2/preflight_v56.py
++++ r3/preflight_v56.py
+@@ -21,6 +21,7 @@
+                   "signer_certificate_sha256", "signer_proof_sha256", "build_counts",
+                   "runtime_config_sha256", "runtime", "device"}
+ RUNTIME_KEYS = {"compute", "context_tokens", "threads", "model_profile", "model_sha256"}
++RUNTIME_CONFIG_KEYS = {"schema", "model_profile", "compute", "context_tokens", "threads"}
+ DEVICE_KEYS = {"expected_uid", "target_package", "main_physical_display_id"}
+ 
+ 
+@@ -45,7 +46,7 @@
+     need(runtime["compute"] in ("npu", "gpu"), "phone GPU/NPU profile required")
+     need(type(runtime["context_tokens"]) is int and runtime["context_tokens"] in (4096, 8192),
+          "reviewed bounded context required")
+-    need(type(runtime["threads"]) is int and 1 <= runtime["threads"] <= 32, "explicit bounded threads required")
++    need(type(runtime["threads"]) is int and 1 <= runtime["threads"] <= 8, "explicit canonical 1..8 threads required")
+     need(type(runtime["model_profile"]) is str and 1 <= len(runtime["model_profile"]) <= 128,
+          "model profile required")
+     require_sha(runtime["model_sha256"], "model hash")
+@@ -58,6 +59,22 @@
+     need(type(physical) is str and physical.isascii() and physical.isdigit()
+          and str(int(physical)) == physical and 0 < int(physical) < 1 << 64,
+          "observed canonical main physical display ID required")
++
++
++def validate_runtime_config(config):
++    """Explicit-profile v2 case contract from canonical LocalRuntimeConfig.java.
++
++    Production also reads a four-field legacy v1 config. This v56 qualification
++    deliberately requires the actual five-field v2 profile; it never infers one.
++    """
++    exact_keys(config, RUNTIME_CONFIG_KEYS, "runtime config")
++    need(config["schema"] == "hepta.local-runtime.v2", "explicit runtime v2 schema required")
++    need(type(config["model_profile"]) is str and 1 <= len(config["model_profile"]) <= 128,
++         "explicit runtime model profile required")
++    need(config["compute"] in ("npu", "gpu"), "runtime compute differs")
++    need(type(config["context_tokens"]) is int and config["context_tokens"] in (4096, 8192),
++         "runtime context differs")
++    need(type(config["threads"]) is int and 1 <= config["threads"] <= 8, "runtime threads must be 1..8")
+ 
+ 
+ def bind_artifacts(candidate, receipt, config):
+@@ -74,7 +91,7 @@
+     need(receipt.get("schema") == candidate["build_receipt_schema"], "signed receipt schema differs")
+     for key, expected in candidate["build_counts"].items():
+         need(type(receipt.get(key)) is int and receipt[key] == expected, "signed build count differs: " + key)
+-    need(type(config) is dict, "runtime config object required")
++    validate_runtime_config(config)
+     for key in ("compute", "context_tokens", "threads", "model_profile"):
+         need(type(config.get(key)) is type(candidate["runtime"][key]) and config[key] == candidate["runtime"][key],
+              "runtime configuration differs: " + key)

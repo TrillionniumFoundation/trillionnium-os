@@ -20,9 +20,11 @@ public final class WebRecoveryPolicy {
                 .put("business_verified",false);
         try{
             String schema=text(prior,"schema");
-            need(schema.equals("hepta.web-helper.lease-journal.v1")||schema.equals("hepta.web-helper.lease-journal.v2"),"unsupported prior journal");
+            need(schema.equals("hepta.web-helper.lease-journal.v1")||schema.equals("hepta.web-helper.lease-journal.v2")
+                    ||schema.equals(WebEvidenceProtocol.JOURNAL_SCHEMA),"unsupported prior journal");
             need(text(prior,"state").equals("active")||text(prior,"state").equals("unknown"),"prior state is not an unresolved lease");
             JSONObject binding=prior.getJSONObject("binding");
+            if(WebEvidenceProtocol.JOURNAL_SCHEMA.equals(schema))WebTaskPurpose.requireBinding(binding);
             need(WebEvidenceBinding.sha256(binding).equals(text(prior,"binding_sha256")),"prior binding hash differs");
             JSONObject bg=binding.getJSONObject("background"),helper=binding.getJSONObject("helper_identity");
             int oldBoot=integer(bg,"boot_count"),oldDisplay=integer(bg,"display_id"),oldPid=integer(prior,"helper_pid");
@@ -125,12 +127,15 @@ public final class WebRecoveryPolicy {
             need(digest(requestRaw.getBytes(java.nio.charset.StandardCharsets.UTF_8)).equals(text(record,"request_sha256")),"request hash differs");
             JSONObject prior=new JSONObject(priorRaw),request=new JSONObject(requestRaw);
             exact(request,"schema","request_nonce","task_id","controller_session_nonce","deadline_elapsed_ms","reason");
-            need("hepta.web-helper.close.v2".equals(text(request,"schema"))
+            String expectedCloseSchema=WebEvidenceProtocol.BINDING_SCHEMA.equals(text(prior.getJSONObject("binding"),"schema"))
+                    ?WebEvidenceProtocol.requestSchema(WebEvidenceProtocol.CLOSE):"hepta.web-helper.close.v2";
+            need(expectedCloseSchema.equals(text(request,"schema"))
                     &&text(request,"request_nonce").matches("[0-9a-f]{64}")
                     &&text(request,"task_id").matches("[0-9a-f]{32}")
                     &&text(request,"controller_session_nonce").matches("[0-9a-f]{64}")
                     &&Arrays.asList("normal","cancelled","error").contains(text(request,"reason")),"fresh close request shape differs");
             JSONObject binding=record.getJSONObject("binding");
+            if(WebEvidenceProtocol.BINDING_SCHEMA.equals(text(binding,"schema")))WebTaskPurpose.requireBinding(binding);
             String bindingHash=WebEvidenceBinding.sha256(binding);
             need(bindingHash.equals(text(record,"binding_sha256"))&&bindingHash.equals(text(prior,"binding_sha256"))
                     &&bindingHash.equals(WebEvidenceBinding.sha256(prior.getJSONObject("binding")))
@@ -254,6 +259,7 @@ public final class WebRecoveryPolicy {
                 &&Boolean.FALSE.equals(record.get("old_cleanup_methods_verified"))
                 &&Boolean.FALSE.equals(record.get("business_verified")),"initial unstarted scope differs");
         JSONObject binding=record.getJSONObject("binding"),bg=binding.getJSONObject("background");
+        WebTaskPurpose.requireBinding(binding);
         String bindingHash=WebEvidenceBinding.sha256(binding);
         need(bindingHash.equals(text(record,"binding_sha256")),"unstarted binding hash differs");
         JSONObject attach=boundedObject(record,"attach_request_json_utf8","attach_request_sha256",WebEvidenceProtocol.MAX_REQUEST_BYTES);

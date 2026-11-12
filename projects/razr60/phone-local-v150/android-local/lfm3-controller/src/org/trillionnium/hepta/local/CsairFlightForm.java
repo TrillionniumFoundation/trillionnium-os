@@ -43,6 +43,7 @@ final class CsairFlightForm {
     final String formPath,queryBoxPath,tabContentPath,singlePanelPath,singleTabPath;
     final Control departure,arrival,departureDate,query;
     final boolean departurePlaceholder,arrivalPlaceholder,returnDateHidden,multiPanelHidden;
+    final String departureCityLiteral,arrivalCityLiteral;
     final Integer displayedMonth,displayedDay;
     final String displayedWeekday;
     final int adults,children,infants;
@@ -62,6 +63,8 @@ final class CsairFlightForm {
                 "actual field labels are missing or ambiguous");
         departurePlaceholder=only(departure.visibleTexts,"出发城市");
         arrivalPlaceholder=only(arrival.visibleTexts,"到达城市");
+        departureCityLiteral=selectedCity(departure);
+        arrivalCityLiteral=selectedCity(arrival);
         returnDateHidden=returnHidden;multiPanelHidden=multiHidden;
         Integer month=null,day=null;String weekday=null;
         for(String value:departureDate.visibleTexts){
@@ -123,7 +126,8 @@ final class CsairFlightForm {
         out.put("arrival_control",arrival.evidence());out.put("departure_date_control",departureDate.evidence());
         out.put("query_control",query.evidence());out.put("departure_is_placeholder",departurePlaceholder);
         out.put("arrival_is_placeholder",arrivalPlaceholder);out.put("selected_departure_city",null);
-        out.put("selected_arrival_city",null);out.put("displayed_month",displayedMonth);
+        out.put("selected_arrival_city",null);out.put("observed_departure_city_literal",departureCityLiteral);
+        out.put("observed_arrival_city_literal",arrivalCityLiteral);out.put("displayed_month",displayedMonth);
         out.put("displayed_day",displayedDay);out.put("displayed_weekday",displayedWeekday);
         out.put("displayed_year",null);out.put("complete_departure_date_verified",false);
         out.put("adults",adults);out.put("children",children);out.put("infants",infants);
@@ -136,7 +140,8 @@ final class CsairFlightForm {
         final Map<String,JSONObject> nodes=new LinkedHashMap<String,JSONObject>();
         Index(JSONObject dom)throws Exception{
             String schema=text(dom,"schema");
-            need("hepta.fixed-top-document-dom.v1".equals(schema)||"hepta.fixed-top-document-dom.v2".equals(schema),
+            need("hepta.fixed-top-document-dom.v1".equals(schema)||"hepta.fixed-top-document-dom.v2".equals(schema)
+                    ||"hepta.fixed-top-document-dom.v3".equals(schema),
                     "actual fixed observer DOM schema required");
             need(Boolean.FALSE.equals(dom.get("truncated"))&&dom.getJSONArray("truncation_reasons").length()==0,
                     "complete bounded DOM required");
@@ -211,6 +216,17 @@ final class CsairFlightForm {
             String value=text(numbers.get(0),"text");need(value.matches("[0-9]"),"bounded actual passenger count");
             return Integer.parseInt(value);
         }
+    }
+    /** Only a separately visible literal city is data. Airports/codes/combined
+     * strings remain unsupported rather than being translated into OWNER cities. */
+    private static String selectedCity(Control control){
+        String city=null;
+        for(String value:control.visibleTexts){
+            if(control.requiredLabel.equals(value))continue;
+            need(value.matches("[\\p{IsHan}]{2,12}"),"unreviewed selected-city display");
+            need(city==null,"multiple selected-city labels");city=value;
+        }
+        return city;
     }
     private static boolean only(List<String> values,String label){return values.size()==1&&label.equals(values.get(0));}
     private static String text(JSONObject value,String key)throws Exception{

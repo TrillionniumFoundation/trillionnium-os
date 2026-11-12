@@ -51,7 +51,10 @@ public final class TaskCompletionGate {
                 return new Contract(owner,NOTES,note.body,NotesOwnerIntent.SCHEMA+"/"+note.recognition,
                         note.bodyStartUtf16,note.bodyEndUtf16);
             org.trillionnium.hepta.local.web.WebFlightGoal flight=org.trillionnium.hepta.local.web.WebFlightGoal.parse(owner);
-            if(flight!=null)return new Contract(owner,WEB,null,"official_csair_flight_owner.v1");
+            if(flight!=null)return new Contract(owner,WEB,null,flight.naturalReadOnlyIntent?
+                    "natural_csair_flight_owner.v1":"official_csair_flight_owner.v1");
+            org.trillionnium.hepta.local.web.WebShoppingGoal shopping=org.trillionnium.hepta.local.web.WebShoppingGoal.parse(owner);
+            if(shopping!=null)return new Contract(owner,WEB,null,"official_mi_product_owner.v1");
             // A method hint never grants success: no web-result provider exists.
             // Only unquoted OWNER text is considered, never screen or model data.
             String plain=unquoted(owner);
@@ -85,16 +88,18 @@ public final class TaskCompletionGate {
     private boolean workflowProofConsumed,workflowCompletionAccepted;
     private String workflowVerifiedObservationId;
     private Map<String,Object> workflowEvidence;
-    private WebFlightDomain webDomain;
-    void bindWebDomain(WebFlightDomain value){
+    private WebTaskDomain webDomain;
+    void bindWebDomain(WebTaskDomain value){
         require(value!=null&&WEB.equals(contract.kind)&&taskId.equals(value.taskId)
                 &&contract.ownerSha256.equals(value.ownerSha)&&authorization.sha256.equals(value.authorizationSha),
                 "web observation does not belong to the current immutable authorization");
         webDomain=value;
     }
     void clearWebDomain(){webDomain=null;}
-    WebFlightDomain webDomainFor(NotesCompletionEvidence.Frame frame){
-        if(!"official_csair_flight_owner.v1".equals(contract.recognition))return null;
+    WebTaskDomain webDomainFor(NotesCompletionEvidence.Frame frame){
+        if(!"official_csair_flight_owner.v1".equals(contract.recognition)
+                &&!"natural_csair_flight_owner.v1".equals(contract.recognition)
+                &&!"official_mi_product_owner.v1".equals(contract.recognition))return null;
         require(webDomain!=null&&frame!=null&&webDomain.observationId.equals(frame.observationId)
                 &&webDomain.generation.equals(frame.backgroundGeneration)&&webDomain.displayId==frame.displayId
                 &&webDomain.windowId==frame.windowId,"current official page evidence is unavailable");
@@ -232,6 +237,10 @@ public final class TaskCompletionGate {
         return new Check(verified,!verified&&rejectedSuccess<MAX_REJECTED_SUCCESS,value);
     }
     public boolean verified(NotesCompletionEvidence.Frame current){
+        if(WEB.equals(contract.kind))return domainBound&&!identityInvalid&&sameDomain(current)&&webDomain!=null
+                &&webDomain.observationId.equals(current.observationId)
+                &&webDomain.generation.equals(current.backgroundGeneration)&&webDomain.displayId==current.displayId
+                &&webDomain.windowId==current.windowId&&webDomain.resultReady();
         return NOTES.equals(contract.kind)&&domainBound&&!identityInvalid&&installed!=null
                 &&launchProved&&editorObserved&&listObserved&&reopened&&sameDomain(current)&&body(current).matched;
     }
@@ -276,7 +285,7 @@ public final class TaskCompletionGate {
             o.put("current_surface",facts.currentSurface());o.put("current_list_item_node_id",facts.currentListItem);
             o.put("current_editor_body_matched",facts.currentBody);
         }else if(WEB.equals(contract.kind)){
-            o.put("web_query_dispatched",webDispatched);
+            o.put("web_query_dispatched",webDispatched||webDomain!=null&&webDomain.queryDispatched());
             if(webDomain!=null)o.put("official_page",webDomain.evidence());
         }
         o.put("writes_required_for_unknown_or_read_only_goal",false);o.put("grants_tool_authority",false);return o;
@@ -287,15 +296,26 @@ public final class TaskCompletionGate {
         o.put("identity_failure",identityFailure);o.put("display_id",domainBound?displayId:null);o.put("background_generation",generation);
         if(workflowEvidence!=null)o.put("notes_create_workflow",workflowEvidence);
         o.put("persistent_storage_bytes_verified",false);o.put("new_database_item_identity_verified",false);
+        if(WEB.equals(contract.kind)&&webDomain!=null&&webDomain.resultReady()){
+            Map<String,Object> result=new LinkedHashMap<String,Object>(webDomain.resultRecord());
+            result.put("completion_gate_accepted",verified(current));o.put("public_web_result",result);
+        }
         if(NOTES.equals(contract.kind)){NotesCompletionEvidence.BodyEvidence v=body(current);o.put("current_editor_raw_exact",v.rawExact);o.put("current_body_evidence",bodyEvidence(v));
             NotesCompletionEvidence.ListEvidence list=NotesCompletionEvidence.list(current,contract.body);o.put("current_list_match",list.matched);o.put("current_list_missing",list.missing);
             o.put("current_list_evidence",list.evidence());}
         return o;
     }
-    public String completionSummary(){return "已核验本次正文进入笔记编辑器、返回列表并点击同一可访问正文条目重新打开；列表视觉裁切与存储原始字节未核验。";}
+    public String completionSummary(){
+        if(WEB.equals(contract.kind)&&webDomain!=null&&webDomain.resultReady()){
+            Map<String,Object> value=webDomain.resultRecord();
+            return "已核对小米官网的 "+value.get("model_raw")+" 页面展示价：人民币 "+value.get("amount_decimal")+" 元。";
+        }
+        return "已核验本次正文进入笔记编辑器、返回列表并点击同一可访问正文条目重新打开；列表视觉裁切与存储原始字节未核验。";
+    }
     public String incompleteSummary(){
         if(NOTES.equals(contract.kind))return "未完成验证：缺少本次笔记保存、列表或同一条目重新打开的完整证据。";
-        if(WEB.equals(contract.kind))return webDispatched?"已发起网页查询，但尚无实际结果证明，任务部分完成。":"未确认网页查询及结果，任务未验证完成。";
+        if("official_mi_product_owner.v1".equals(contract.recognition))return "尚未取得同一商品详情页、公开价和原生模型导航的完整证据，商品查询未验证完成。";
+        if(WEB.equals(contract.kind))return webDispatched||webDomain!=null&&webDomain.queryDispatched()?"已发起网页查询，但尚无实际结果证明，任务部分完成。":"未确认网页查询及结果，任务未验证完成。";
         return "模型提出结束，但本次目标没有可用的完成验证，任务部分完成；请核对实际状态。";
     }
     private List<String> missing(NotesCompletionEvidence.Frame current){
@@ -310,7 +330,15 @@ public final class TaskCompletionGate {
             if(!reopened)out.add("model_click_same_list_item_then_reopened_body_missing");
             if(!body(current).matched)out.add("current_editor_body_missing");
         }else if(WEB.equals(contract.kind)){
-            if(!webDispatched)out.add("model_bound_web_query_dispatch_missing");out.add("web_results_provider_unavailable");
+            if("official_mi_product_owner.v1".equals(contract.recognition)){
+                if(webDomain==null)out.add("current_bound_product_page_missing");
+                else if(!verified(current))out.add("same_product_native_result_and_actual_model_navigation_missing");
+            }else{
+                if(!webDispatched&&(webDomain==null||!webDomain.queryDispatched()))out.add("model_bound_web_query_dispatch_missing");
+                if("natural_csair_flight_owner.v1".equals(contract.recognition)||"official_csair_flight_owner.v1".equals(contract.recognition))
+                    out.add("actual_same_record_flight_results_not_yet_verified");
+                else out.add("web_results_provider_unavailable");
+            }
         }else out.add("complete_owner_goal_verifier_unavailable");
         return Collections.unmodifiableList(out);
     }

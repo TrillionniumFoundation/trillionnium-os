@@ -52,7 +52,8 @@ public final class WebStorageEvidence {
                 &&load<=deadline&&deadline-start<=CLEAR_BUDGET_MS&&deadline>start
                 &&load<=captureStarted&&captureStarted<=captureEnded&&captureEnded<=expires,
                 "profile/clear/load/capture/lease order differs");
-        need(WebEvidenceProtocol.INITIAL_URL.equals(text(facts,"first_url"))
+        WebTaskPurpose purpose=WebTaskPurpose.requireBinding(binding);
+        need(purpose.initialUrl.equals(text(facts,"first_url"))
                 &&facts.get("retirement_clear")==JSONObject.NULL,"capture occurred after retirement or on a different first URL");
     }
 

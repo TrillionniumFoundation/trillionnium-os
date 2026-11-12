@@ -1,0 +1,122 @@
+{
+  "schema": "hepta.v56.business-gate-correction.v1",
+  "source_manifest_sha256": "36e2af3984d6d76b31a6b909dd9753152d0ddbb01d995c3212587c9c4ed236bc",
+  "prior_report": {
+    "path": "/home/alex/hepta-razr-948b-integration-20261112/evidence/business-r1/RESULT.json",
+    "sha256": "72fe3c87f176a096b2863bb2abc0febac9d1805adedd7a075ee37c37098c2ba1",
+    "original_all_pass": false,
+    "all_original_failures_retained": true
+  },
+  "corrected_invocation": {
+    "original_fqcn": "org.trillionnium.hepta.local.WebUnstartedRetirementHostTest",
+    "actual_fqcn": "org.trillionnium.hepta.webprotocol.WebUnstartedRetirementHostTest",
+    "original_failure": "ClassNotFoundException before any test assertions"
+  },
+  "actual_business_class_count": 146,
+  "strict_and_executed_classes_byte_identical": true,
+  "city_original": {
+    "path": "/home/alex/hepta-local-007f-20261111/v54-city-natural-owner-host-r2/actual-manual-city-diagnostic.json",
+    "bytes": 308728,
+    "sha256": "9218dc03267ace444073fffb4f24db6f5ea6994e510643cd558557e4b6c2d7b8"
+  },
+  "steps": [
+    {
+      "name": "unstarted-retirement",
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "-cp",
+        "/home/alex/hepta-razr-948b-integration-20261112/evidence/business-r1/query-host/classes:/home/alex/hepta-razr-948b-integration-20261112/fixtures/json-20240303.jar",
+        "org.trillionnium.hepta.webprotocol.WebUnstartedRetirementHostTest"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 0.672,
+      "stdout_sha256": "bc7b5c15b48c72629621a65bf081a2da5a237a83304611885122869c4dc18440",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result": {
+        "schema": "hepta.web-helper-unstarted-retirement-host-checks.v1",
+        "synthetic_fixtures": true,
+        "cases": 36,
+        "android_api_callbacks_executed": false,
+        "passed": true,
+        "business_verified": false,
+        "phone_tested": false
+      }
+    },
+    {
+      "name": "city-picker",
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "-cp",
+        "/home/alex/hepta-razr-948b-integration-20261112/evidence/business-r1/query-host/classes:/home/alex/hepta-razr-948b-integration-20261112/fixtures/json-20240303.jar",
+        "org.trillionnium.hepta.local.CsairCityPickerHostTest",
+        "/home/alex/hepta-razr-948b-integration-20261112/fixtures/actual-manual-city-diagnostic.json",
+        "9218dc03267ace444073fffb4f24db6f5ea6994e510643cd558557e4b6c2d7b8",
+        "/home/alex/hepta-razr-948b-integration-20261112/evidence/business-r2/CITY-PICKER-RESULT.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 1.677,
+      "stdout_sha256": "50ece2074c253bc31c7aa9056724370b73269245f33e66cc43e26675336d6745",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "phone_operations": false,
+  "model_inference": false,
+  "business_verified": false,
+  "city_result": {
+    "schema": "hepta.csair-city-picker-host.v1",
+    "actual_dom_sha256": "0b9651aa4ce631cfac705ab194b901ca073b6b73384a62bc28f221e75287e17d",
+    "city_action_executed": false,
+    "all_pass": true,
+    "cases": 36,
+    "case_names": [
+      "actual_795_nodes_complete_departure_picker",
+      "unknown_schema",
+      "truncated",
+      "truncation_reason",
+      "loading_document",
+      "foreign_origin",
+      "wrong_same_site_route",
+      "userinfo",
+      "http",
+      "bad_port",
+      "duplicate_path",
+      "wrong_parent",
+      "missing_ancestor",
+      "root_parent",
+      "string_visibility",
+      "string_disabled",
+      "wrong_aria_type",
+      "duplicate_title",
+      "duplicate_hot_label",
+      "wrong_query_box",
+      "wrong_picker_identity",
+      "two_hot_lists",
+      "non_li_direct_child",
+      "unreviewed_city_id",
+      "unreviewed_city_role",
+      "unreviewed_city_aria_label",
+      "compound_city_label",
+      "city_descendant_added",
+      "duplicate_requested_city",
+      "disabled_duplicate_still_ambiguous",
+      "hidden_city_has_no_match",
+      "disabled_city_retained_no_match",
+      "aria_disabled_city",
+      "no_visible_title",
+      "hidden_picker_ancestor",
+      "unit_mutated_arrival_title_not_phone_evidence"
+    ],
+    "mutated_inputs_are_unit_tests": true,
+    "query_executed": false,
+    "task_bound_evidence": false,
+    "actual_dom_nodes": 795,
+    "actual_external_manual_diagnostic_sha256": "9218dc03267ace444073fffb4f24db6f5ea6994e510643cd558557e4b6c2d7b8",
+    "phone_commands_executed": 0,
+    "assertions": 137,
+    "business_verified": false
+  },
+  "source_inputs_unchanged": true,
+  "city_original_unchanged": true,
+  "required_prior_steps_pass": true,
+  "all_required_business_gates_pass": true
+}

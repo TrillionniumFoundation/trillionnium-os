@@ -79,6 +79,8 @@ public final class TaskCompletionGateHostTest {
     static PhoneObservation.Node row(String id,String pkg,String text,String view,Rect bounds,boolean editable,boolean click,boolean scroll){return new PhoneObservation.Node(id,pkg,"TextView",view,text,"",bounds,click,editable,scroll,true,true,false,ObservedChildText.notApplicable(),ObservedScrollActions.observed(Collections.<String>emptyList()),ObservedImeEnter.UNKNOWN,editable?ObservedImeEnter.hash(text):null,false);}
     static final class Model implements LocalInference {
         final QualificationScopeHostTest.Env e;final String mode,owner;int calls,phase,ends,createdReads;String task;final List<String> prompts=new ArrayList<String>();
+        final CountDownLatch finalVerifyEntered=new CountDownLatch(1),releaseFinalVerify=new CountDownLatch(1);
+        boolean finalVerifyStackObserved;
         Model(QualificationScopeHostTest.Env e,String mode,String owner){this.e=e;this.mode=mode;this.owner=owner;}
         public LocalRuntimeConfig configuration(){return e.runtime;}
         public void beginTask(String id){task=id;}
@@ -87,10 +89,19 @@ public final class TaskCompletionGateHostTest {
             if("close_identity_changed".equals(mode))try{
                 QualificationScopeHostTest.write(Paths.get(e.pm.packages.get(P).applicationInfo.sourceDir),"changed installed bytes after completion".getBytes(StandardCharsets.UTF_8),0644);
             }catch(Exception changed){throw new IllegalStateException(changed);}
+            if(mode.contains("stop_final_verify"))e.service.packageManagerReadHook=()->{
+                for(StackTraceElement frame:Thread.currentThread().getStackTrace())
+                    if(frame.getClassName().equals("org.trillionnium.hepta.local.QualificationScopeConfig$CompletionInstalledIdentity")&&"verify".equals(frame.getMethodName()))finalVerifyStackObserved=true;
+                if(!finalVerifyStackObserved)throw new AssertionError("IO hook must execute inside actual completion-installed verify");
+                e.service.packageManagerReadHook=null;finalVerifyEntered.countDown();
+                try{if(!releaseFinalVerify.await(5,TimeUnit.SECONDS))throw new AssertionError("host must release final identity verification");}
+                catch(InterruptedException error){Thread.currentThread().interrupt();throw new IllegalStateException(error);}
+            };
+            if("close_stop_final_verify_unknown_cleanup".equals(mode))return new TaskCleanup(false,true,false,null,id(77),task,false,null);
             return new TaskCleanup(true,true,true,0,id(77),task,!"close_invalid_receipt".equals(mode),H);
         }
         void setup(){
-            if("detour".equals(mode)){
+            if(mode.startsWith("detour")){
                 e.service.effectHook=()->{
                     if(e.service.opens==1&&phase==0){phase=1;e.service.root.pkg=P;e.service.node.pkg=P;e.service.node.text=BODY;e.service.node.editable=true;}
                     else if(e.service.opens==2&&phase==2){phase=3;e.service.root.pkg=P;e.service.node.pkg=P;e.service.node.editable=false;}
@@ -129,7 +140,7 @@ public final class TaskCompletionGateHostTest {
                         "current completion eligibility and the actual generated grammar agree");
                 String tool="done";
                 if("complete".equals(mode)||mode.startsWith("close_")){tool=calls==2?"notes.create":calls==3?"back":calls==4?"click":"done";}
-                if("detour".equals(mode)){
+                if(mode.startsWith("detour")){
                     tool=calls==1?"notes.create":calls==2?"back":calls==3?"open":calls==4?"click":"done";
                     if(calls==2){
                         JSONObject parentEvent=data.getJSONArray("events").getJSONObject(0);
@@ -174,13 +185,24 @@ public final class TaskCompletionGateHostTest {
     static void controllerCase(String mode,String owner,boolean verified,int expectedCalls)throws Exception{
         try(QualificationScopeHostTest.Env e=new QualificationScopeHostTest.Env(false)){
             installPackage(e,"notes.create");installPackage(e,"web.search");Model m=new Model(e,mode,owner);if(!"web".equals(mode))m.setup();
-            if("detour".equals(mode)){e.service.launchable.clear();e.service.launchable.put(P,P);e.service.launchable.put("org.trillionnium.hepta.local","Hepta");}
+            if(mode.startsWith("detour")){e.service.launchable.clear();e.service.launchable.put(P,P);e.service.launchable.put("org.trillionnium.hepta.local","Hepta");}
             e.controller=new LocalTaskController(e.service,m);CountDownLatch done=new CountDownLatch(1);LocalTaskController.TaskResult[] box=new LocalTaskController.TaskResult[1];
-            check(e.controller.start(owner,null,new LocalTaskController.Listener(){public void onState(String v){}public void onFinished(LocalTaskController.TaskResult r){box[0]=r;done.countDown();}}),"ordinary task starts");check(done.await(10,TimeUnit.SECONDS),"ordinary controller finishes");
-            LocalTaskController.TaskResult r=box[0];check(r!=null&&r.cleanupKnown&&r.modelReportedSuccess&&r.completionVerified==verified,"raw model claim and independently checked completion separated: "+mode+" / "+(r==null?"null":r.status+" "+r.summary));
+            check(e.controller.start(owner,null,new LocalTaskController.Listener(){public void onState(String v){}public void onFinished(LocalTaskController.TaskResult r){box[0]=r;done.countDown();}}),"ordinary task starts");
+            if(mode.contains("stop_final_verify")){
+                try{check(m.finalVerifyEntered.await(10,TimeUnit.SECONDS),"actual final identity verification reaches Android IO boundary");e.controller.stop();}
+                finally{m.releaseFinalVerify.countDown();}
+            }
+            check(done.await(10,TimeUnit.SECONDS),"ordinary controller finishes");
+            boolean cleanupExpected=!"close_stop_final_verify_unknown_cleanup".equals(mode);
+            LocalTaskController.TaskResult r=box[0];check(r!=null&&r.cleanupKnown==cleanupExpected&&r.modelReportedSuccess&&r.completionVerified==verified,"raw model claim and independently checked completion separated: "+mode+" / "+(r==null?"null":r.status+" "+r.summary));
             check(m.calls==expectedCalls&&m.ends==1,"bounded continuation and one retained task worker teardown");
-            check((verified?("complete".equals(mode)?"controller_verified_done":"model_reported_done"):"cancel".equals(mode)?"cancelled":("close_invalid_receipt".equals(mode)||"readonly".equals(mode))?"failed":"partial").equals(r.status),"honest terminal status: "+mode+" / "+r.status);
+            String expectedStatus=!cleanupExpected?"blocked":mode.contains("stop_final_verify")?"cancelled":verified?("complete".equals(mode)?"controller_verified_done":"model_reported_done"):"cancel".equals(mode)?"cancelled":("close_invalid_receipt".equals(mode)||"readonly".equals(mode))?"failed":"partial";
+            check(expectedStatus.equals(r.status),"honest terminal status: "+mode+" / "+r.status);
+            if(mode.contains("stop_final_verify"))check(m.finalVerifyStackObserved,"Stop occurred while real installed identity verifier was active");
             JSONObject result=FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("result.json"));check(result.getBoolean("model_reported_success")&&result.getBoolean("completion_verified")==verified,"terminal keeps original native success claim");
+            check(result.getString("status").equals(r.status)&&result.getBoolean("cleanup_known")==cleanupExpected,"terminal status and cleanup evidence agree with published result");
+            if(mode.startsWith("close_stop_final_verify"))check(result.getBoolean("controller_completion_requested")&&result.isNull("completion_actor"),"late Stop revokes verified controller workflow completion without losing its actual request");
+            if("detour_stop_final_verify".equals(mode))check(!result.getBoolean("controller_completion_requested")&&result.isNull("completion_actor"),"late Stop revokes the ordinary model-done completion path");
             check(result.getBoolean("goal_independently_verified")==verified,"independent goal field follows actual supported completion evidence");
             if("complete".equals(mode)){
                 check(e.service.opens==1&&e.service.navigations==1&&e.service.node.actions==1,"one actual fixed Intent then actual back and same-node click");
@@ -195,7 +217,7 @@ public final class TaskCompletionGateHostTest {
                         &&!Files.exists(r.evidenceDirectory.toPath().resolve("step-02-model-0.json")),
                         "independent workflow completion preserves the earlier raw claim without inventing later model actions");
             }
-            if("detour".equals(mode)){
+            if(mode.startsWith("detour")){
                 check(e.service.opens==2&&e.service.navigations==0&&e.service.node.actions==1,"external window change is reobserved; model opens only Notes then clicks its same item");
                 JSONObject stale=FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("step-02-action.json"));
                 check(stale.getBoolean("stale")&&!stale.getBoolean("dispatched"),"outdated editor navigation never dispatches after external window change");
@@ -238,6 +260,9 @@ public final class TaskCompletionGateHostTest {
         test("actual_controller_cancel_after_rejection_stops_without_effect",()->controllerCase("cancel","读出当前页面的标题。",false,2));
         test("actual_controller_installed_identity_rechecked_after_close",()->controllerCase("close_identity_changed",OWNER,false,2));
         test("actual_controller_bad_native_close_receipt_cannot_complete",()->controllerCase("close_invalid_receipt",OWNER,false,2));
+        test("actual_controller_stop_during_final_identity_verify_cancels_workflow",()->controllerCase("close_stop_final_verify",OWNER,false,2));
+        test("actual_controller_stop_during_final_identity_verify_cancels_model_done",()->controllerCase("detour_stop_final_verify",OWNER,false,5));
+        test("actual_controller_stop_during_final_identity_verify_preserves_unknown_cleanup_block",()->controllerCase("close_stop_final_verify_unknown_cleanup",OWNER,false,2));
         Files.write(output.resolve("TEST-RESULTS.json"),new JSONObject().put("all_pass",true).put("cases",passed).put("checks",passed.size()).put("actual_controller",true).put("android_and_model_io_are_fakes",true).put("phone_tested",false).toString(2).getBytes(StandardCharsets.UTF_8));
     }
 }

@@ -1,0 +1,168 @@
+--- original/fixed_intent_v6_acceptance.py
++++ v56/fixed_intent_v6_acceptance.py
+@@ -11,7 +11,7 @@
+ from types import FunctionType, SimpleNamespace
+ 
+ SCHEMA = "hepta.observed-action-gbnf.v6-fixed-intents"
+-REVISION = "hepta.v54-owner-bound-mode-evidence.r1"
++REVISION = "hepta.v56-owner-bound-mode-evidence.r1"
+ NOTES = "com.motorola.stylus"
+ PROFILES = {
+     "notes.create": (NOTES, "com.motorola.stylus.note.text.TextNoteActivity", "text", "draft_opened"),
+@@ -29,21 +29,15 @@
+                           "saved_or_search_results_verified"}
+ 
+ 
+-V54_BUILD_SHA = "eadc9dbb63b411015571a488377be6a8704c9f78415169a5164c8f13571f0f72"
+-V54_LTC_SHA = "ee0430dcfc6709232387e77dc4f3843b0b2c25e84ebcff97a1b22d79a3c58919"
+-V54_COMMIT = "42d3a0f447807659c0f78c8273edee01dd1b734f"
+-V54_INVENTORY = "8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d"
+-V54_APK_SHA = "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a"
+-V54_NOTES_OWNER_SHA = "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f"
+-V54_SELECTION_SOURCES = {
+-    "BackgroundSession.java": "0045e81d6578a071de8dbdedd3c589afeb6025cf52d6c76fceb0e30e11e3dec6",
+-    "BackgroundTaskTarget.java": "e18294b0b18938636ed4112c0a5e82b2b70d76c5fb854a7fe25a876518fc73b7",
+-    "BackgroundUiPreferences.java": "a8bd7da61e46905e2e25dd064e6d04be73c26ba4b496b73fe4d8ef985ef29031",
+-    "MainActivity.java": "22e03ae02378cd05981faab93f70c2686de633b6bb7d35ab640ef358150c2aa5",
+-    "TaskAuthorization.java": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8"
+-}
+-
+-V54_MODES = frozenset(("fixed_entry_only", "create_then_bounded_save_list_reopen_tool_children"))
++V56_BUILD_SHA = None
++V56_LTC_SHA = 'c7639c1e0dbc3f476a280f16c3c8c835f78ea03bba254266de12b000e7fdd641'
++V56_COMMIT = None
++V56_INVENTORY = None
++V56_APK_SHA = None
++V56_NOTES_OWNER_SHA = 'c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f'
++V56_SELECTION_SOURCES = {'PhoneObservation.java': '9aeda02ab6fc541e9a8e04841093355c6055b590042f334b47fb55595ce5ca95', 'BackgroundSession.java': '0045e81d6578a071de8dbdedd3c589afeb6025cf52d6c76fceb0e30e11e3dec6', 'BackgroundTaskTarget.java': 'e18294b0b18938636ed4112c0a5e82b2b70d76c5fb854a7fe25a876518fc73b7', 'BackgroundUiPreferences.java': 'a8bd7da61e46905e2e25dd064e6d04be73c26ba4b496b73fe4d8ef985ef29031', 'MainActivity.java': '5bcc0da0a5cb73fa85062a450055eb3a9a9d31a467abf949e5d9335eb0d0e3f7', 'TaskAuthorization.java': '9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8', 'HeptaAccessibilityService.java': 'd5841f9a29a6a0218f765aa10ef4aef099ebb263bfe1e03bda1637e1e5f6a332'}
++
++V56_MODES = frozenset(("fixed_entry_only", "create_then_bounded_save_list_reopen_tool_children"))
+ 
+ 
+ def _pinned_bytes(path, expected, maximum):
+@@ -55,11 +49,11 @@
+     after = path.stat()
+     ident = lambda s: (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns, s.st_mode)
+     require(ident(before) == ident(after) and len(raw) == before.st_size
+-            and hashlib.sha256(raw).hexdigest() == expected, "actual v54 source/build bytes differ")
++            and hashlib.sha256(raw).hexdigest() == expected, "actual v56 source/build bytes differ")
+     return raw
+ 
+ 
+-class _V54SourceContext:
++class _V56SourceContext:
+     """Known signed code plus the caller's actual installed/task boundary.
+ 
+     This proves which prompt-field vocabulary is understood. It neither grants
+@@ -68,33 +62,33 @@
+     """
+     def __init__(self, pa, build_receipt_path, controller_source_path, installed_identity, task_id):
+         require(all(isinstance(x, str) and re.fullmatch(r"[0-9a-f]{64}", x) for x in
+-                    (V54_BUILD_SHA, V54_INVENTORY, V54_APK_SHA))
+-                and isinstance(V54_COMMIT, str) and re.fullmatch(r"[0-9a-f]{40}", V54_COMMIT),
+-                "actual final v54 signed identity is not sealed")
++                    (V56_BUILD_SHA, V56_INVENTORY, V56_APK_SHA))
++                and isinstance(V56_COMMIT, str) and re.fullmatch(r"[0-9a-f]{40}", V56_COMMIT),
++                "actual final v56 signed identity is not sealed")
+         self.build_path = Path(build_receipt_path)
+         self.source_path = Path(controller_source_path)
+-        build = pa.strict_json(_pinned_bytes(self.build_path, V54_BUILD_SHA, 65536))
+-        _pinned_bytes(self.source_path, V54_LTC_SHA, 262144)
+-        _pinned_bytes(self.source_path.with_name('NotesOwnerIntent.java'), V54_NOTES_OWNER_SHA, 65536)
+-        for name, pin in V54_SELECTION_SOURCES.items():
++        build = pa.strict_json(_pinned_bytes(self.build_path, V56_BUILD_SHA, 65536))
++        _pinned_bytes(self.source_path, V56_LTC_SHA, 262144)
++        _pinned_bytes(self.source_path.with_name('NotesOwnerIntent.java'), V56_NOTES_OWNER_SHA, 65536)
++        for name, pin in V56_SELECTION_SOURCES.items():
+             _pinned_bytes(self.source_path.with_name(name), pin, 262144)
+-        require(build.get("schema") == "hepta.isolated-v54-assembly.v1"
++        require(build.get("schema") == None
+                 and build.get("all_pass") is True and build.get("exit_code") == 0
+-                and type(build.get("version_code")) is int and build.get("version_code") == 54 and build.get("source_commit") == V54_COMMIT
+-                and build.get("source_inventory_sha256") == V54_INVENTORY
+-                and build.get("apk_sha256") == V54_APK_SHA
++                and type(build.get("version_code")) is int and build.get("version_code") == 56 and build.get("source_commit") == V56_COMMIT
++                and build.get("source_inventory_sha256") == V56_INVENTORY
++                and build.get("apk_sha256") == V56_APK_SHA
+                 and build.get("source_files_unchanged") is True
+                 and build.get("actual_compiler_inputs_bound_to_signed_asset") is True
+                 and build.get("source_commit_bound_after_exact_host_run") is True,
+-                "signed v54 code identity required")
++                "signed v56 code identity required")
+         require(isinstance(installed_identity, dict) and set(installed_identity) == {"package", "uid", "apks"}
+                 and installed_identity["package"] == "org.trillionnium.hepta.local"
+-                and type(installed_identity["uid"]) is int and 10000 <= installed_identity["uid"] < 90000,
++                and type(installed_identity["uid"]) is int and installed_identity["uid"] == None and 10000 <= installed_identity["uid"] < 90000,
+                 "actual ordinary installed Hepta identity required")
+         apks = installed_identity["apks"]
+         require(isinstance(apks, list) and len(apks) == 1 and isinstance(apks[0], dict)
+-                and set(apks[0]) == {"path", "sha256"} and apks[0]["sha256"] == V54_APK_SHA,
+-                "actual v54 installed APK set required")
++                and set(apks[0]) == {"path", "sha256"} and apks[0]["sha256"] == V56_APK_SHA,
++                "actual v56 installed APK set required")
+         apk = Path(apks[0]["path"])
+         require(apk.is_absolute() and apk.name == "base.apk" and apk.parts[:3] == ("/", "data", "app")
+                 and ".." not in apk.parts and isinstance(task_id, str) and re.fullmatch(r"[0-9a-f]{32}", task_id),
+@@ -105,24 +99,24 @@
+         self.installed = json.loads(json.dumps(installed_identity))
+ 
+     def require_app(self, receipt):
+-        _pinned_bytes(self.build_path, V54_BUILD_SHA, 65536)
+-        _pinned_bytes(self.source_path, V54_LTC_SHA, 262144)
+-        _pinned_bytes(self.source_path.with_name('NotesOwnerIntent.java'), V54_NOTES_OWNER_SHA, 65536)
+-        for name, pin in V54_SELECTION_SOURCES.items():
++        _pinned_bytes(self.build_path, V56_BUILD_SHA, 65536)
++        _pinned_bytes(self.source_path, V56_LTC_SHA, 262144)
++        _pinned_bytes(self.source_path.with_name('NotesOwnerIntent.java'), V56_NOTES_OWNER_SHA, 65536)
++        for name, pin in V56_SELECTION_SOURCES.items():
+             _pinned_bytes(self.source_path.with_name(name), pin, 262144)
+         require(receipt.get("task_id") == self.task and receipt.get("app_uid") == self.uid
+                 and receipt.get("package_name") == "org.trillionnium.hepta.local"
+                 and receipt.get("native_library_directory") == self.native_directory,
+-                "v54 prompt context differs from current installed/task boundary")
+-
+-
+-def bind_v54_source_context(pa, build_receipt_path, controller_source_path, installed_identity, task_id):
+-    require(not hasattr(pa, "v54_fixed_source_context"), "v54 evidence source context already bound")
+-    context = _V54SourceContext(pa, build_receipt_path, controller_source_path, installed_identity, task_id)
+-    pa.v54_fixed_source_context = context
+-    return {"schema": "hepta.v54-fixed-prompt-source-binding.v1", "task_id": task_id,
+-            "build_receipt_sha256": V54_BUILD_SHA, "controller_source_sha256": V54_LTC_SHA,
+-            "source_commit": V54_COMMIT, "source_inventory_sha256": V54_INVENTORY,
++                "v56 prompt context differs from current installed/task boundary")
++
++
++def bind_v56_source_context(pa, build_receipt_path, controller_source_path, installed_identity, task_id):
++    require(not hasattr(pa, "v56_fixed_source_context"), "v56 evidence source context already bound")
++    context = _V56SourceContext(pa, build_receipt_path, controller_source_path, installed_identity, task_id)
++    pa.v56_fixed_source_context = context
++    return {"schema": "hepta.v56-fixed-prompt-source-binding.v1", "task_id": task_id,
++            "build_receipt_sha256": V56_BUILD_SHA, "controller_source_sha256": V56_LTC_SHA,
++            "source_commit": V56_COMMIT, "source_inventory_sha256": V56_INVENTORY,
+             "installed_identity": context.installed, "grants_tool_authority": False,
+             "business_verified": False}
+ 
+@@ -214,11 +208,11 @@
+         tools = {}
+         fields = {"action", "app_label", "package", "parameter", "source", "requested_outcome", "max_code_points", "max_utf8_bytes"}
+         # Old eight-field v6 evidence remains on the identical legacy path.
+-        # The new field is informational, accepted only for this actual v54 code.
++        # The new field is informational, accepted only for this actual v56 code.
+         with_mode = any(isinstance(tool, dict) and "owner_bound_execution_mode" in tool for tool in fixed)
+         if with_mode:
+-            context = getattr(pa, "v54_fixed_source_context", None)
+-            require(type(context) is _V54SourceContext, "explicit actual v54 source context required")
++            context = getattr(pa, "v56_fixed_source_context", None)
++            require(type(context) is _V56SourceContext, "explicit actual v56 source context required")
+             context.require_app(receipt)
+             fields = fields | {"owner_bound_execution_mode"}
+         authorization = data.get("task_authorization")
+@@ -236,7 +230,7 @@
+                     and tool["action"] in authorization["allowed_tools"], "fixed target/capability differs")
+             if with_mode:
+                 mode = tool["owner_bound_execution_mode"]
+-                require(isinstance(mode, str) and mode in V54_MODES, "unknown v54 fixed-entry execution mode")
++                require(isinstance(mode, str) and mode in V56_MODES, "unknown v56 fixed-entry execution mode")
+                 require(tool["action"] == "notes.create" or mode == "fixed_entry_only", "workflow mode on non-Notes target")
+                 if mode == "create_then_bounded_save_list_reopen_tool_children":
+                     completion = data.get("completion")

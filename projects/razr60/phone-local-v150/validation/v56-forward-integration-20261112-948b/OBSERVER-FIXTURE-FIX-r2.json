@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.v56.observer-fixture-ordering-fix.v1",
+  "fixture": "/home/alex/hepta-razr-948b-integration-20261112/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller/tests/observation-pipeline/ObserverPipelineHost.template",
+  "before_sha256": "dd456a6e0f8326cc4a6a43cbd33780f9c7ae920c69741c761e2633255bd40324",
+  "after_sha256": "e0915c5bb401591b1e9ccbde3554373483839ddd57babbc336f066f8e2bf31f6",
+  "patch": "/home/alex/hepta-razr-948b-integration-20261112/inspection/OBSERVER-FIXTURE-r2.patch",
+  "production_service_sha256": "d5841f9a29a6a0218f765aa10ef4aef099ebb263bfe1e03bda1637e1e5f6a332",
+  "previous_manifest_sha256": "6bf93b31d0b94cc107cb5e24a41818f36ba33c454e36eae2afafa5800816ef48",
+  "source_manifest_sha256": "36e2af3984d6d76b31a6b909dd9753152d0ddbb01d995c3212587c9c4ed236bc",
+  "original_failure_retained": "/home/alex/hepta-razr-948b-integration-20261112/evidence/strict-host-r1",
+  "steps": [
+    {
+      "name": "source-closure-r2",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "tools/verify_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 0.315
+    },
+    {
+      "name": "observation-pipeline-r2",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "tests/observation-pipeline/run_host_tests.py",
+        "--source",
+        "/home/alex/hepta-razr-948b-integration-20261112/repo/projects/razr60/phone-local-v150/android-local/lfm3-controller",
+        "--output",
+        "/home/alex/hepta-razr-948b-integration-20261112/evidence/observation-pipeline-r2",
+        "--release8"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 2.276
+    },
+    {
+      "name": "strict-host-r2",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "tools/run_host_checks.py",
+        "--out",
+        "/home/alex/hepta-razr-948b-integration-20261112/evidence/strict-host-r2"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 171.053
+    }
+  ],
+  "phone_operations": false,
+  "gate": {
+    "exit_code": 0,
+    "all_pass": true,
+    "check_count": 105,
+    "error": null,
+    "receipt": "/home/alex/hepta-razr-948b-integration-20261112/evidence/strict-host-r2/HOST-CHECKS.json",
+    "sha256": "e5b68323da8f321df69f7e359ed58120c2e5a27090c172e086601f4c9a73ea84"
+  },
+  "source_manifest_unchanged": true,
+  "all_pass": true
+}

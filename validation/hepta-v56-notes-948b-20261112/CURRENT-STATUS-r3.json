@@ -1,0 +1,159 @@
+{
+  "schema": "hepta.notes-v56-current-offline-preparation.v3",
+  "date_utc": "2026-11-12",
+  "canonical_public_commit": "5da3c83fe46edb2617934a92c06a10608accb68e",
+  "local_frozen_commit": "c2807a8093d064d2e158471788da9e98d4c4df94",
+  "repository_tree": "e11aae799ecd27c7ccba0d1bfb65ee977c2e541e",
+  "component_tree": "24e8d82d4befdab6f4f32ef7efeba7faad345a04",
+  "canonical_source_manifest_sha256": "a0835cd66f81f3c4c770b92256742b90188b0664c6a274c29086bae03d1c39ec",
+  "tree_equivalence_authority": "root directly verified; receipt source_commit must still use actual build value",
+  "original_collector_replay_closure": {
+    "obtained": 14,
+    "required": 14,
+    "hash_checked": 14
+  },
+  "actual_production_sources_locally_read_and_hash_checked": 10,
+  "missing_original_collector_replay_files": [],
+  "actual_compiler_commit": null,
+  "apk_sha256": null,
+  "signed_build_receipt_sha256": null,
+  "build_receipt_schema": null,
+  "fresh_actual_package_uid": null,
+  "fresh_main_physical_display_id": null,
+  "device_preflight_authority": "root after normal owner release and cooperative lock; no reuse of historical device values",
+  "current_template": "v56-template-source-r2",
+  "release_sealed": false,
+  "phone_execution_ready": false,
+  "phone_tested": false,
+  "h_calls_in_this_offline_stage": 0,
+  "phone_actions": 0,
+  "critical_predicates": {
+    "unchanged_function_bodies_after_version_labels": 112,
+    "reviewed_changed_function_bodies": 10,
+    "deleted_function_bodies": 0,
+    "old_main_protocol_checks_unchanged": 8,
+    "new_main_checks_total": 9,
+    "entry_point_rejection_probes_passed": 4,
+    "transport_or_lock_attempts": 0,
+    "historical_context_negative_controls_retained": 19,
+    "earlier_separate_host_negative_controls_retained": 14,
+    "original_negative_png_rejected_by_actual_new_gate": true,
+    "full_native_workflow_replay_executed_here": false,
+    "runtime_config_negative_controls_rejected": 16
+  },
+  "remaining": [
+    "Actual signed build/receipt/APK bytes and complete source inventory, independently reviewed with exact source_commit and counts",
+    "Root fresh cooperative-lock preflight for UID, physical display and runtime/model configuration before final candidate",
+    "Final exact V2 candidate without the template-only release_sealed key; no null fields or historical defaults",
+    "Review unchanged ordinary preparation external UI/R12/r7 helpers at their exact pins before root launches preparation",
+    "Normal owner handoff, same-candidate installation and fresh ordinary UI prepare/Start run",
+    "Fresh native/session/workflow save-list-reopen and cleanup independent replay",
+    "Fresh main task-bound protocol plus actual scrollable start/semantic anchor displacement; continuous interactivity is separate untested scope"
+  ],
+  "artifacts": [
+    {
+      "file": "ORIGINAL-SIX.tar.gz",
+      "bytes": 45890,
+      "sha256": "9cc92a87c9e1c0c64c77e0ef396d4d57b372b295f2130be4e26fcc36212b0f4b"
+    },
+    {
+      "file": "retrieved-six-r1/INGEST-RESULT.json",
+      "bytes": 2159,
+      "sha256": "019ce878421050810c34ed5970b34c5aecb44301d9c58498a9dabe904545918f"
+    },
+    {
+      "file": "source-stage-v56-r1/SOURCE-STAGE-RESULT.json",
+      "bytes": 3711,
+      "sha256": "5953f74931279890c5eea7aa7ff5d720cfac658e414e5d0d8b5f789b6646d5cb"
+    },
+    {
+      "file": "seal_v56_notes.py",
+      "bytes": 23050,
+      "sha256": "226fe4d8f077a918599acafe4d8732600c0a859abf9861925cbe071b7c6402f8"
+    },
+    {
+      "file": "audit_v56_template.py",
+      "bytes": 17661,
+      "sha256": "90f0148d348d3e31dabc744237ccd513cc36421a6d33ad32f725502fe001aad2"
+    },
+    {
+      "file": "v56-template-source-r2/ADAPTATION-RESULT.json",
+      "bytes": 7625,
+      "sha256": "2e97b08c71d792e1bb137fa2cf57a14a912e6c4cebcfd8c07f5c52731391c1e8"
+    },
+    {
+      "file": "TEMPLATE-AUDIT-r2.json",
+      "bytes": 4822,
+      "sha256": "57e969b343a58e7377ad8929594287c563c14df0adf2f9cd42fb4fc0a9f44dc3"
+    },
+    {
+      "file": "CONTEXT-NEGATIVE-CONTROLS.json",
+      "bytes": 2162,
+      "sha256": "4f17b6caaf54f928e9713a46a3d47f9c7237951fa80f9ccc3ed6cd37761af81e"
+    },
+    {
+      "file": "NEGATIVE-CONTROLS-r2.json",
+      "bytes": 3458,
+      "sha256": "4d3c14848b9b98efec1cab8557c9e6b9c5791b6877f2caab80da34d76982e3c5"
+    },
+    {
+      "file": "CANDIDATE-TEMPLATE-background-r1.json",
+      "bytes": 1374,
+      "sha256": "fc060d3fda5d2b71667f80c4d01e4f0f1392a8e811e90ab4a36398bf98fd58db"
+    },
+    {
+      "file": "semantic_scroll_gate.py",
+      "bytes": 13262,
+      "sha256": "2a9205a3f8102188e21557e1c0cf19c1fcaf06dbce271b4046d9798e495fdc4c"
+    },
+    {
+      "file": "README.md",
+      "bytes": 12750,
+      "sha256": "2826d96ca73c7b791c912e4304cdebee34ef03db6660a7b62a82a2a28e12a0ad"
+    },
+    {
+      "file": "preflight_v56.py",
+      "bytes": 8433,
+      "sha256": "8d08b62696faa68b4f733dddd5cf692f9418e624d35bf9896807eef5b9965c4b"
+    },
+    {
+      "file": "test_runtime_config_rejections.py",
+      "bytes": 4656,
+      "sha256": "0cb17475c8cdc5dcbfbd592d614001ac830b2f41a5da71822aa3f0dcd6053f4d"
+    },
+    {
+      "file": "RUNTIME-CONFIG-NEGATIVE-CONTROLS-r3.json",
+      "bytes": 3330,
+      "sha256": "a1c1e75d35fff0d4fdf87dc083d8b0e8e49b0df0c8561f5d6ad35ae48828cad3"
+    },
+    {
+      "file": "preflight-runtime-contract-r3.diff",
+      "bytes": 2996,
+      "sha256": "3af74f79b026fd6d296ae52c301a437eb8e8c607fe4fc994028ce2d0fceb61cb"
+    }
+  ],
+  "historical_pending_files_preserved": [
+    "BASELINE-CLOSURE.json",
+    "SOURCE-IDENTITY-PENDING.json",
+    "README-early-checkpoint-r1.md",
+    "v56-template-source-r1/ADAPTATION-RESULT.json"
+  ],
+  "canonical_runtime_config_source_additionally_reviewed": true,
+  "runtime_contract": {
+    "schema": "hepta.local-runtime.v2",
+    "exact_keys": [
+      "schema",
+      "model_profile",
+      "compute",
+      "context_tokens",
+      "threads"
+    ],
+    "threads_range": [
+      1,
+      8
+    ],
+    "negative_rejections": 16,
+    "private_actual_device_config_received": false,
+    "source_sha256": "81447620dbc2a789bba8c22d561c768144f4d5619859b202d07cd83660a05dce"
+  }
+}

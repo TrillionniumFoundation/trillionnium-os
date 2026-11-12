@@ -102,8 +102,13 @@ public final class PromptAdmissionFixture {
     if len(values) != 1:
         raise RuntimeError("one production pure-class list required")
     files += [package / (name + ".java") for name in values[0]] + [package / "PhoneObservation.java"]
-    files += [package / "web/WebFlightGoal.java",
-              source / "tests/web-flight/legacy-boundary/WebFlightDomain.java"]
+    web_fixture_source=source/"tests/web-flight/legacy-boundary/WebFlightDomain.java"
+    web_fixture_raw=web_fixture_source.read_bytes()
+    web_fixture_compile=output/"WebTaskDomain.java"
+    web_fixture_compile.write_bytes(web_fixture_raw)
+    if web_fixture_compile.read_bytes()!=web_fixture_raw or web_fixture_source.read_bytes()!=web_fixture_raw:
+        raise RuntimeError("Exact Web type-boundary compiler copy required")
+    files += [package / "web/WebFlightGoal.java",package / "web/WebShoppingGoal.java",web_fixture_compile]
     files += [source/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol")]
     digest = lambda value: hashlib.sha256(value).hexdigest()
     record = {
@@ -114,7 +119,10 @@ public final class PromptAdmissionFixture {
         "extracted_parts": {name: {"bytes": len(value.encode()), "sha256": digest(value.encode())}
                             for name, value in parts.items()},
         "text_byte_limit": int(text_limit[0]),
-        "web_fixture_boundary": "Type-only WebFlightDomain; every Web capability method throws",
+        "web_fixture_boundary": "Type-only WebTaskDomain; every Web capability method throws",
+        "web_fixture_compiler_copy": {"source_path":str(web_fixture_source.relative_to(source)),
+            "compiler_path":str(web_fixture_compile),"bytes":len(web_fixture_raw),
+            "sha256":hashlib.sha256(web_fixture_raw).hexdigest(),"byte_identical":True},
         "not_android_runtime": True,
         "not_model_inference": True,
         "not_phone_test": True,

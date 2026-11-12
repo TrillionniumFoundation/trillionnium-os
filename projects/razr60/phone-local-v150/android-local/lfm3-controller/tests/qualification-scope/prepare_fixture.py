@@ -67,7 +67,7 @@ def prepare(source, output):
     fixture = (Path(__file__).parent / 'UiFixture.template').read_text()
     for name,code in ui_parts.items():fixture=fixture.replace('{{'+name+'}}',code)
     (output / 'ScopeUiFixture.java').write_text(fixture)
-    pure=['NotesCreateWorkflow','NotesOwnerIntent','CalculatorTaskInputGuard','CalculatorGoalContract','CalculatorCompletionEvidence','NotesTaskPhaseGuard','TaskCompletionGate','NotesCompletionEvidence','FixedIntentAttemptGuard','LastModelDecisionProjection','TaskAuthorization','ActionDecision','ActionPolicy','ObservedTargetLabels','ObservedScrollActions','ObservedImeEnter','SubmitAttemptGuard','RecentActionProjection',
+    pure=['BackgroundTaskTarget','NotesCreateWorkflow','NotesOwnerIntent','CalculatorTaskInputGuard','CalculatorGoalContract','CalculatorCompletionEvidence','NotesTaskPhaseGuard','TaskCompletionGate','NotesCompletionEvidence','FixedIntentAttemptGuard','LastModelDecisionProjection','TaskAuthorization','ActionDecision','ActionPolicy','ObservedTargetLabels','ObservedScrollActions','ObservedImeEnter','SubmitAttemptGuard','RecentActionProjection',
           'PersistentActionPolicy','ImeVisibility','ObservationState','ObservedWindowMetadata','ObservedChildText',
           'RepeatActionGuard','SameStateNoEffectGuard','DecisionGrammar','ModelProfile','LocalRuntimeConfig',
           'ConservativeTokenBudget','AppCatalogueRanker','ObservedTextProjection','ObservedTransitionProjection',
@@ -75,7 +75,13 @@ def prepare(source, output):
           'QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','LocalTaskController','LocalInference','PhoneObservation']
     if (pkg/'ObservedAppLabels.java').is_file():pure.append('ObservedAppLabels')
     files=[pkg/(name+'.java') for name in dict.fromkeys(pure)]
-    files += [pkg/'web/WebFlightGoal.java', source/'tests/web-flight/legacy-boundary/WebFlightDomain.java']
+    web_fixture_source=source/'tests/web-flight/legacy-boundary/WebFlightDomain.java'
+    web_fixture_raw=web_fixture_source.read_bytes()
+    web_fixture_compile=output/'WebTaskDomain.java'
+    web_fixture_compile.write_bytes(web_fixture_raw)
+    if web_fixture_compile.read_bytes()!=web_fixture_raw or web_fixture_source.read_bytes()!=web_fixture_raw:
+        raise RuntimeError('Exact Web type-boundary compiler copy required')
+    files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java']
     files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','FixedIntentDispatch','BrokerProtocol')]
     files += sorted(output.glob('*.java'))
     files += sorted((Path(__file__).parent/'fixtures').rglob('*.java'))
@@ -85,6 +91,9 @@ def prepare(source, output):
         'full_actual_classes':['TaskCompletionGate','NotesCompletionEvidence','LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles'],
         'boundary':'Android IO and effect endpoints are fakes; production admission/dispatch and controller code is executed',
         'web_fixture_boundary':'Explicit empty Web journal only; real Web OWNER/selection and every helper action/cleanup throw AssertionError; actual Web classes have their separate gate',
+        'web_fixture_compiler_copy':{'source_path':str(web_fixture_source.relative_to(source)),
+            'compiler_path':str(web_fixture_compile),'bytes':len(web_fixture_raw),
+            'sha256':hashlib.sha256(web_fixture_raw).hexdigest(),'byte_identical':True},
         'phone_operations':False,'native_inference':False}
     (output/'EXTRACTION.json').write_text(json.dumps(record,indent=2)+'\n')
     return files, record

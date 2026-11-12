@@ -15,14 +15,17 @@ public final class WebEvidenceBinding {
     private static final String[] FIELDS={"task_id","controller_session_nonce","owner","owner_sha256",
             "contract_sha256","authorization","background","controller_identity","helper_identity"};
     public static JSONObject fromAttach(JSONObject attach) throws Exception {
-        JSONObject out=new JSONObject().put("schema",SCHEMA).put("initial_url",WebEvidenceProtocol.INITIAL_URL);
+        WebTaskPurpose purpose=WebTaskPurpose.fromAttach(attach);
+        JSONObject out=new JSONObject().put("schema",SCHEMA).put("initial_url",purpose.initialUrl)
+                .put("goal_kind",purpose.kind).put("site_policy_id",purpose.sitePolicyId)
+                .put("site_policy_sha256",purpose.sitePolicySha256);
         for(String key:FIELDS)out.put(key,attach.get(key));
         Object nonce=attach.get("controller_session_nonce");
         if(!(nonce instanceof String))throw new IllegalArgumentException("controller session nonce must be a string");
         out.put("storage_profile_name",WebStorageEvidence.profileFor((String)nonce));
         // The parse is a defensive deep copy. Per-request nonce/deadline are
         // deliberately not part of the stable lease identity.
-        return new JSONObject(canonical(out));
+        JSONObject copied=new JSONObject(canonical(out));WebTaskPurpose.requireBinding(copied);return copied;
     }
     public static String sha256(JSONObject binding) throws Exception {
         byte[] digest=MessageDigest.getInstance("SHA-256").digest(canonical(binding).getBytes(StandardCharsets.UTF_8));

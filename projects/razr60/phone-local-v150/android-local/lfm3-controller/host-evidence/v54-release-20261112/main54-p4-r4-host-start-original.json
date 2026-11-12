@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.original-host-start.v1",
+  "command": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/source/tools/run_host_checks.py",
+    "--out",
+    "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/host-checks"
+  ],
+  "cwd": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/source",
+  "java_home": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64",
+  "source_inventory_sha256": "8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d",
+  "source_file_count": 589,
+  "source_commit": null,
+  "publication_pending": true,
+  "started_epoch": 1794469386.8677218,
+  "phone_commands_executed": 0
+}

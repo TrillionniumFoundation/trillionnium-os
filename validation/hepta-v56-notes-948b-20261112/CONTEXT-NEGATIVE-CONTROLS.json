@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.notes-v56-preparation-historical-context-controls.v1",
+  "source_sha256": "4aa6e0f8db9229e1764d9ee79220ed8fa3eb7ddc3bd5526a857fd179870afe30",
+  "original_collector_sha256": "2d85991282f6a02834fcb492e8470ec7561a47fb9f524b750e319f7b1a3fae7d",
+  "historical_replay_sha256": "eef5e79feb21965a52c4bdc35892842af3d5e74c578792deb4f4cdec73f12db2",
+  "retained_real_nine_field_context_matches": true,
+  "source_predicate_exact_nine_fields_confirmed": true,
+  "negative_controls_rejected": 19,
+  "negative_controls_total": 19,
+  "controls": [
+    {
+      "name": "missing_background_generation",
+      "rejected": true
+    },
+    {
+      "name": "missing_body",
+      "rejected": true
+    },
+    {
+      "name": "missing_config_sha256",
+      "rejected": true
+    },
+    {
+      "name": "missing_display_id",
+      "rejected": true
+    },
+    {
+      "name": "missing_expected_background_selection",
+      "rejected": true
+    },
+    {
+      "name": "missing_model_sha256",
+      "rejected": true
+    },
+    {
+      "name": "missing_notes_identity",
+      "rejected": true
+    },
+    {
+      "name": "missing_owner",
+      "rejected": true
+    },
+    {
+      "name": "missing_preparation_original_sha256",
+      "rejected": true
+    },
+    {
+      "name": "extra_context_field",
+      "rejected": true
+    },
+    {
+      "name": "logical_display_zero",
+      "rejected": true
+    },
+    {
+      "name": "boolean_display_id",
+      "rejected": true
+    },
+    {
+      "name": "wrong_generation",
+      "rejected": true
+    },
+    {
+      "name": "widened_selection",
+      "rejected": true
+    },
+    {
+      "name": "wrong_preparation_sha",
+      "rejected": true
+    },
+    {
+      "name": "wrong_model_sha",
+      "rejected": true
+    },
+    {
+      "name": "changed_owner_instruction",
+      "rejected": true
+    },
+    {
+      "name": "changed_notes_body",
+      "rejected": true
+    },
+    {
+      "name": "wrong_notes_uid",
+      "rejected": true
+    }
+  ],
+  "phone_actions": 0,
+  "originals_modified": false,
+  "entire_native_workflow_replay_reexecuted": false,
+  "historical_machine_counts_reassigned": false,
+  "v56_phone_qualified": false
+}

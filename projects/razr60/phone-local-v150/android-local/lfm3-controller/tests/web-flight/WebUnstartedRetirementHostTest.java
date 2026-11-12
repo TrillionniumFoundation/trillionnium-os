@@ -67,14 +67,15 @@ public final class WebUnstartedRetirementHostTest {
     private static boolean pass(JSONObject record)throws Exception{return WebRecoveryPolicy.evaluateUnstartedRecord(record).getBoolean("retirement_verified");}
     private static void yes(boolean condition,String name){cases++;if(!condition)throw new AssertionError(name);}
     private static JSONObject initial(int helperVersion)throws Exception{
-        String owner="synthetic complete owner";JSONObject controller=identity(WebEvidenceProtocol.CONTROLLER_PACKAGE,10481,53),helper=identity(WebEvidenceProtocol.HELPER_PACKAGE,10484,helperVersion);
+        String owner="查一下2026年11月17日北京到上海的单程机票，1名成人";JSONObject controller=identity(WebEvidenceProtocol.CONTROLLER_PACKAGE,10481,53),helper=identity(WebEvidenceProtocol.HELPER_PACKAGE,10484,helperVersion);
         JSONObject bg=new JSONObject().put("generation",GENERATION).put("display_id",15).put("display_name","hepta-bg-"+GENERATION)
                 .put("boot_count",7).put("created_elapsed_ms",1000L).put("expires_elapsed_ms",10000L)
                 .put("selected_packages",new JSONArray().put(WebEvidenceProtocol.HELPER_PACKAGE));
-        JSONObject auth=new JSONObject().put("schema","synthetic contract fixture").put("allowed_tools",new JSONArray());
+        JSONObject auth=new JSONObject(org.trillionnium.hepta.local.TaskAuthorization.parse(owner).evidence());
+        String goalHash=org.trillionnium.hepta.local.web.WebFlightGoal.parse(owner).contractSha256;
         JSONObject attach=new JSONObject().put("schema",WebEvidenceProtocol.requestSchema(WebEvidenceProtocol.ATTACH))
                 .put("request_nonce",ATTACH).put("task_id",TASK).put("controller_session_nonce",SESSION).put("deadline_elapsed_ms",3000L)
-                .put("owner",owner).put("owner_sha256",digest(owner)).put("contract_sha256",repeat("1",64))
+                .put("owner",owner).put("owner_sha256",digest(owner)).put("contract_sha256",goalHash)
                 .put("authorization",auth).put("background",bg).put("controller_identity",controller).put("helper_identity",helper);
         String attachRaw=attach.toString();JSONObject binding=WebEvidenceBinding.fromAttach(attach);String bindingSha=WebEvidenceBinding.sha256(binding);
         JSONObject cleanup=new JSONObject().put("captures_retired",false).put("stop_loading_called",false)

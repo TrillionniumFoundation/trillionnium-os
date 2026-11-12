@@ -1,0 +1,161 @@
+{
+  "schema": "hepta.notes-v56-offline-template-audit.v1",
+  "all_scoped_checks_passed": true,
+  "template_result_sha256": "2e97b08c71d792e1bb137fa2cf57a14a912e6c4cebcfd8c07f5c52731391c1e8",
+  "source_stage_sha256": "5953f74931279890c5eea7aa7ff5d720cfac658e414e5d0d8b5f789b6646d5cb",
+  "original_collector_replay_files_rehashed": 14,
+  "reviewed_v54_sources_rehashed": 3,
+  "derived_template_files_rehashed": 16,
+  "canonical_production_sources_rehashed": 9,
+  "function_review": [
+    {
+      "file": "fixed_intent_v6_acceptance.py",
+      "unchanged_after_version_label_rename": 13,
+      "changed": [
+        "_V56SourceContext.__init__"
+      ],
+      "added": [],
+      "removed": []
+    },
+    {
+      "file": "controller_workflow_evidence.py",
+      "unchanged_after_version_label_rename": 25,
+      "changed": [
+        "BoundDomain.__init__"
+      ],
+      "added": [],
+      "removed": []
+    },
+    {
+      "file": "controller_idle_evidence.py",
+      "unchanged_after_version_label_rename": 15,
+      "changed": [
+        "verify"
+      ],
+      "added": [],
+      "removed": []
+    },
+    {
+      "file": "main_user_inflight.py",
+      "unchanged_after_version_label_rename": 15,
+      "changed": [
+        "verdict"
+      ],
+      "added": [
+        "nondecorative_content_change"
+      ],
+      "removed": []
+    },
+    {
+      "file": "prepare_background_notes_v56_r1.py",
+      "unchanged_after_version_label_rename": 9,
+      "changed": [
+        "main"
+      ],
+      "added": [
+        "candidate_file"
+      ],
+      "removed": []
+    },
+    {
+      "file": "run_background_notes_v56_r1.py",
+      "unchanged_after_version_label_rename": 35,
+      "changed": [
+        "bind_local_inputs",
+        "coexistence_verdict",
+        "collect_and_assess",
+        "main",
+        "parser"
+      ],
+      "added": [],
+      "removed": []
+    }
+  ],
+  "unchanged_function_bodies_after_version_labels": 112,
+  "reviewed_changed_function_bodies": 10,
+  "old_main_check_predicates_unchanged": 8,
+  "new_main_check_count": 9,
+  "full_context_fields": [
+    "background_generation",
+    "body",
+    "config_sha256",
+    "display_id",
+    "expected_background_selection",
+    "model_sha256",
+    "notes_identity",
+    "owner",
+    "preparation_original_sha256"
+  ],
+  "background_projection_fields": [
+    "allowed_packages",
+    "bootstrap_model_issued",
+    "bootstrap_package",
+    "bootstrap_source",
+    "display_id",
+    "generation",
+    "home_allowed",
+    "main_display_fallback",
+    "mode"
+  ],
+  "fixed_native_keysets_unchanged": true,
+  "warm_request_and_session_helper_byte_identical": true,
+  "actual_scrollbar_only_original_pair_rejected": true,
+  "actual_negative_pixel_result": {
+    "schema": "hepta.main-interior-content-change.v1",
+    "before_png_sha256": "89ec9ce9e68ea59ecce3ac13dd93c1efe3c1721fb3b1e8f3fa5c97339cc5cded",
+    "after_png_sha256": "64a9c5c2de0787ca9e8b118b7f5c47373434feb646ab108e5bea76c6955ae50f",
+    "content_rect": [
+      0,
+      130,
+      1224,
+      2920
+    ],
+    "interior_rect": [
+      25,
+      130,
+      1199,
+      2920
+    ],
+    "fixed_side_gutter_px": 25,
+    "before_interior_rgba_sha256": "dd5986465eedcd59a6ed911f79500f610579254322202d3a23cacc4ba64a306a",
+    "after_interior_rgba_sha256": "dd5986465eedcd59a6ed911f79500f610579254322202d3a23cacc4ba64a306a",
+    "interior_content_changed": false,
+    "semantic_scroll_verified": false,
+    "independent_semantic_review_required": true
+  },
+  "rejecting_entry_point_probes": [
+    {
+      "name": "unsealed_collector_refuses_historical_uid_before_any_file_or_transport",
+      "rejected": true,
+      "reason": "same frozen candidate UID required"
+    },
+    {
+      "name": "unsealed_preparation_refuses_historical_apk_before_transport",
+      "rejected": true,
+      "reason": "actual final v56 APK identity is not sealed; no phone execution"
+    },
+    {
+      "name": "normal_seal_refuses_missing_actual_receipt_apk_inventory_runtime",
+      "rejected": true,
+      "reason": "actual receipt, APK, inventory and runtime config are mandatory to seal"
+    },
+    {
+      "name": "unsealed_fixed_source_context_refuses_before_source_reads",
+      "rejected": true,
+      "reason": "actual final v56 signed identity is not sealed"
+    }
+  ],
+  "rejecting_entry_point_probes_passed": 4,
+  "transport_or_lock_attempts_observed": [],
+  "negative_probe_output_directories_created": 0,
+  "new_phone_actions": 0,
+  "full_native_workflow_replay_executed": false,
+  "source_inventory_members_rehashed": false,
+  "v56_phone_tested": false,
+  "release_sealed": false,
+  "phone_execution_ready": false,
+  "positive_scroll_case_created": false,
+  "effective_list_scroll_verified": false,
+  "continuous_interactivity_verified": false,
+  "actual_apk_receipt_and_fresh_uid_physical_display_preflight_pending": true
+}

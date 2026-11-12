@@ -44,7 +44,7 @@ public final class WebFlightEvidenceHostTest {
     private static JSONObject copy(JSONObject value)throws Exception{return new JSONObject(value.toString());}
 
     private static JSONObject dom()throws Exception{
-        return new JSONObject().put("schema","hepta.fixed-top-document-dom.v2").put("geometry_semantics_verified",false)
+        return new JSONObject().put("schema","hepta.fixed-top-document-dom.v3").put("geometry_semantics_verified",false)
                 .put("visual_viewport",new JSONObject().put("width",400).put("height",800).put("offset_left",0)
                         .put("offset_top",0).put("page_left",0).put("page_top",0).put("scale",1))
                 .put("viewport_css_pixels",new JSONArray(new int[]{400,800}))
@@ -127,11 +127,19 @@ public final class WebFlightEvidenceHostTest {
     }
 
     private static JSONObject binding()throws Exception{
-        // Synthetic identity is confined to this pure verifier test. Production
-        // builds this object from PM, TaskAuthorization and the owned VD lease.
-        return new JSONObject().put("schema",WebEvidenceProtocol.BINDING_SCHEMA).put("task_id",TASK)
-                .put("controller_session_nonce",SESSION).put("helper_identity",new JSONObject().put("uid",10484).put("version_code",WebEvidenceProtocol.HELPER_VERSION_CODE))
-                .put("background",new JSONObject().put("display_id",7));
+        // Synthetic PM/VD values only. The actual production OWNER compiler and
+        // current Binding factory derive every v3 purpose/auth field.
+        String owner="网页查询测试：在南航官方网站查询2026年11月13日北京到上海的单程航班，1名成人。"+WebFlightGoal.BACKGROUND_TAIL;
+        WebFlightGoal goal=WebFlightGoal.parse(owner);
+        JSONObject bg=new JSONObject().put("generation",GENERATION).put("display_id",7)
+                .put("display_name","hepta-bg-"+GENERATION).put("boot_count",1)
+                .put("created_elapsed_ms",500).put("expires_elapsed_ms",10000)
+                .put("selected_packages",new JSONArray().put(PACKAGE));
+        return WebEvidenceBinding.fromAttach(new JSONObject().put("task_id",TASK).put("controller_session_nonce",SESSION)
+                .put("owner",owner).put("owner_sha256",goal.ownerSha256).put("contract_sha256",goal.contractSha256)
+                .put("authorization",new JSONObject(TaskAuthorization.parse(owner).evidence())).put("background",bg)
+                .put("controller_identity",new JSONObject().put("uid",10481))
+                .put("helper_identity",new JSONObject().put("uid",10484).put("version_code",WebEvidenceProtocol.HELPER_VERSION_CODE)));
     }
     private static JSONObject request()throws Exception{
         return new JSONObject().put("schema",WebEvidenceProtocol.requestSchema(WebEvidenceProtocol.CAPTURE))
@@ -380,7 +388,7 @@ public final class WebFlightEvidenceHostTest {
             check(Boolean.FALSE.equals(d.evidence().get("cleanup_known"))&&Boolean.FALSE.equals(d.evidence().get("business_verified")),"pending remains pending");
         });
 
-        test("code3_capture_crosses_real_receipt_geometry_storage_parsers",()->{
+        test("code4_capture_crosses_real_receipt_geometry_storage_parsers",()->{
             WebEvidenceReceipt r=capturedReceipt(captured());
             check(r.capture()!=null&&r.dom()!=null&&!r.cleanupKnown&&!r.recovered&&!r.unstarted,"capture is not completion");
             check(WebNativeGeometry.read(r.capture(),r.dom(),7,19)!=null,"actual parser consumes finite native scale samples");

@@ -1,0 +1,192 @@
+{
+  "schema": "hepta.notes-v56-source-adaptation-seal.v2",
+  "release_sealed": false,
+  "template_only": true,
+  "candidate_sha256": "fc060d3fda5d2b71667f80c4d01e4f0f1392a8e811e90ab4a36398bf98fd58db",
+  "canonical_public_commit": "5da3c83fe46edb2617934a92c06a10608accb68e",
+  "actual_compiler_commit": null,
+  "production_source_reads": [
+    {
+      "file": "src/org/trillionnium/hepta/local/PhoneObservation.java",
+      "bytes": 18273,
+      "sha256": "9aeda02ab6fc541e9a8e04841093355c6055b590042f334b47fb55595ce5ca95"
+    },
+    {
+      "file": "src/org/trillionnium/hepta/local/BackgroundSession.java",
+      "bytes": 38388,
+      "sha256": "0045e81d6578a071de8dbdedd3c589afeb6025cf52d6c76fceb0e30e11e3dec6"
+    },
+    {
+      "file": "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
+      "bytes": 2816,
+      "sha256": "e18294b0b18938636ed4112c0a5e82b2b70d76c5fb854a7fe25a876518fc73b7"
+    },
+    {
+      "file": "src/org/trillionnium/hepta/local/BackgroundUiPreferences.java",
+      "bytes": 10015,
+      "sha256": "a8bd7da61e46905e2e25dd064e6d04be73c26ba4b496b73fe4d8ef985ef29031"
+    },
+    {
+      "file": "src/org/trillionnium/hepta/local/MainActivity.java",
+      "bytes": 49595,
+      "sha256": "5bcc0da0a5cb73fa85062a450055eb3a9a9d31a467abf949e5d9335eb0d0e3f7"
+    },
+    {
+      "file": "src/org/trillionnium/hepta/local/TaskAuthorization.java",
+      "bytes": 23598,
+      "sha256": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8"
+    },
+    {
+      "file": "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+      "bytes": 12329,
+      "sha256": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f"
+    },
+    {
+      "file": "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "bytes": 113364,
+      "sha256": "c7639c1e0dbc3f476a280f16c3c8c835f78ea03bba254266de12b000e7fdd641"
+    },
+    {
+      "file": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "bytes": 110015,
+      "sha256": "d5841f9a29a6a0218f765aa10ef4aef099ebb263bfe1e03bda1637e1e5f6a332"
+    }
+  ],
+  "files": [
+    {
+      "file": "RELEASE-CANDIDATE.json",
+      "bytes": 1374,
+      "sha256": "fc060d3fda5d2b71667f80c4d01e4f0f1392a8e811e90ab4a36398bf98fd58db"
+    },
+    {
+      "file": "background_notes_plan.py",
+      "bytes": 13460,
+      "sha256": "4bf77a52d012b4d5fe2fcfdcfea59649058c74d94202afcaacf0cb92e81c7bad"
+    },
+    {
+      "file": "compat-tools/model_profiles.py",
+      "bytes": 2930,
+      "sha256": "ee26ed1f2f2b2ffd5f14fbd526c6d3cbf05d7ed8d65c422df5e60a72fa0cfa3a"
+    },
+    {
+      "file": "compat-tools/phone_acceptance.py",
+      "bytes": 60278,
+      "sha256": "411da90ca9ef83441fa0a199a25d71361ab582db5b54ac08bd39e5e8597e6302"
+    },
+    {
+      "file": "compat-tools/phone_suite.py",
+      "bytes": 44804,
+      "sha256": "2681e21ae0ead263b9313a6e49b4faf8951f3e87ab6b5c669c41fe34dbe5267a"
+    },
+    {
+      "file": "compat-tools/warm_receipts.py",
+      "bytes": 7410,
+      "sha256": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5"
+    },
+    {
+      "file": "controller_idle_evidence.py",
+      "bytes": 28519,
+      "sha256": "72255bb6a9c724f0f97a300c6aed86dad3851dd4ecdc6bba1a35a54c62b66f15"
+    },
+    {
+      "file": "controller_workflow_evidence.py",
+      "bytes": 53704,
+      "sha256": "73bb00cde5cba186f7c62e3d9042829a688faa69571b5db0e8a3c49ed8109000"
+    },
+    {
+      "file": "fixed_intent_v6_acceptance.py",
+      "bytes": 32708,
+      "sha256": "f2be125014236dee4662bc3597e85c3e723e8a9dce1681921dbcef132e6d79cb"
+    },
+    {
+      "file": "live_inflight_window.py",
+      "bytes": 25220,
+      "sha256": "3f3faa3b692257710f48651d48f1a39405f0fb511fd94658af2617ded9443671"
+    },
+    {
+      "file": "main_user_inflight.py",
+      "bytes": 29045,
+      "sha256": "ac8d0b871e783b0ce64416aecce707e910bcb151eadb2552fb1c71b0854cd6fd"
+    },
+    {
+      "file": "moto_note_body_evidence_v51.py",
+      "bytes": 26193,
+      "sha256": "091bcb7a633c9fec1e668b637fb3619de712c441db99f2164c47c4b3ba629e94"
+    },
+    {
+      "file": "notes-plan-v56-r1.json",
+      "bytes": 575,
+      "sha256": "159a6b02daf6365ec6c55df82af0bd403493749c8c2c97cddc73e588bb05bef0"
+    },
+    {
+      "file": "prepare_background_notes_v56_r1.py",
+      "bytes": 27753,
+      "sha256": "99d1a1f7b91ec4ae4caaa85998de41d67e15de89e6b96131fac27261b350329d"
+    },
+    {
+      "file": "run_background_notes_v56_r1.py",
+      "bytes": 111771,
+      "sha256": "8d38aeeeeb029ce394f9f8945accd468ab8c3f54656ddf657028ed03c85c6583"
+    },
+    {
+      "file": "v35_identity.py",
+      "bytes": 34830,
+      "sha256": "a4a751cf03956783e551f54b16dd37769f00d5b7cd2a0225b667becbc6e6d003"
+    }
+  ],
+  "diffs": [
+    {
+      "file": "background_notes_plan.py",
+      "original_sha256": "df4aa09037d41709dbfa0efae522776f023fc1481859f22a0e078a22f015daff",
+      "derived_sha256": "4bf77a52d012b4d5fe2fcfdcfea59649058c74d94202afcaacf0cb92e81c7bad",
+      "diff_sha256": "b4890adefcfd02ab475f66ebd3fe90ffb21036fa3cdf361a6f2f897a4f60888a"
+    },
+    {
+      "file": "controller_idle_evidence.py",
+      "original_sha256": "8ef4e544b5ac6f62f17ff37715de7a4be5d051f2312802580d404f15512b7240",
+      "derived_sha256": "72255bb6a9c724f0f97a300c6aed86dad3851dd4ecdc6bba1a35a54c62b66f15",
+      "diff_sha256": "31f3b6f1c088e9594aba8002de1649212d2f2b91450d68b7202187bfac96ace8"
+    },
+    {
+      "file": "controller_workflow_evidence.py",
+      "original_sha256": "405ed06f6302623e36dc39803ebe7781bb349b396851d0bfe6fa46f2ce6b6350",
+      "derived_sha256": "73bb00cde5cba186f7c62e3d9042829a688faa69571b5db0e8a3c49ed8109000",
+      "diff_sha256": "94cd48139b030881b26345bce93a7809e7988bba75acb7434350da54790ce65a"
+    },
+    {
+      "file": "fixed_intent_v6_acceptance.py",
+      "original_sha256": "9b858dd02d34558ab6c898209378a2de3d34b38b6f1aa2a099da788273b3f2ba",
+      "derived_sha256": "f2be125014236dee4662bc3597e85c3e723e8a9dce1681921dbcef132e6d79cb",
+      "diff_sha256": "794aa103a71eba55786b809d043e4bbf519640b9dbf4d256aa635e09150c02e9"
+    },
+    {
+      "file": "main_user_inflight.py",
+      "original_sha256": "79450f5c07b48958821d388a729223890fcd7f2cd0c085e85e15c48aadee167d",
+      "derived_sha256": "ac8d0b871e783b0ce64416aecce707e910bcb151eadb2552fb1c71b0854cd6fd",
+      "diff_sha256": "8dcd725c4a2287c3110bf2c108487b7199dd8f1f0f0a044a87bb886046431c33"
+    },
+    {
+      "file": "prepare_background_notes_v56_r1.py",
+      "original_sha256": "5e1db9854154042f3124afc1a2890c567a3fa32dedc41f80f237b0bd260e4d90",
+      "derived_sha256": "99d1a1f7b91ec4ae4caaa85998de41d67e15de89e6b96131fac27261b350329d",
+      "diff_sha256": "b8f464a317f0459994af217e7aaef8aebdeb0ebe42473454c0cf73249e3c29b7"
+    },
+    {
+      "file": "run_background_notes_v56_r1.py",
+      "original_sha256": "2fa7d0670786dcc3933974056acc03026e7ffd091f9f4b3218936ae60646df39",
+      "derived_sha256": "8d38aeeeeb029ce394f9f8945accd468ab8c3f54656ddf657028ed03c85c6583",
+      "diff_sha256": "899531586578b8391b00fba91881631eb2085f85af942d7fce8c699366f2e96b"
+    }
+  ],
+  "actual_apk_byte_binding": null,
+  "complete_source_inventory_members_rehashed_here": false,
+  "verification_tools_are_separate_from_production_tools": true,
+  "original_native_auth_lease_workflow_checks_preserved": true,
+  "additional_main_content_gate": true,
+  "independent_semantic_review_required": true,
+  "ordinary_prepare_external_prerequisites_still_required": true,
+  "phone_actions": 0,
+  "phone_tested": false,
+  "phone_execution_ready": false,
+  "next_gate": "Independent source/host-negative review, then root-controlled installation/preparation/Start under normal ownership"
+}

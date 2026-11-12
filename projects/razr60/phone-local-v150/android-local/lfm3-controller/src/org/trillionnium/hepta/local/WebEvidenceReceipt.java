@@ -6,6 +6,8 @@ import org.trillionnium.hepta.webprotocol.WebEvidenceBinding;
 import org.trillionnium.hepta.webprotocol.WebEvidenceProtocol;
 import org.trillionnium.hepta.webprotocol.WebRecoveryPolicy;
 import org.trillionnium.hepta.webprotocol.WebStorageEvidence;
+import org.trillionnium.hepta.webprotocol.WebTaskPurpose;
+import org.trillionnium.hepta.webprotocol.WebSitePolicy;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.CodingErrorAction;
@@ -16,7 +18,7 @@ import java.util.Set;
 
 /** Pure replay of the authenticated helper reply. No reply is a business success. */
 final class WebEvidenceReceipt {
-    static final String OBSERVER_SHA="280d7958a3e9c8449162b3d33c40ff81b6120d50aba7c4f1ab57eb90a097861e";
+    static final String OBSERVER_SHA="0d1b412d2e81e3f447ef36977bb27c321c136c207d64cca433a810f22ca5c983";
     final String status,bindingSha,instance,url,domSha;
     final long epoch,started,ended;
     final int displayId,windowId;
@@ -41,6 +43,7 @@ final class WebEvidenceReceipt {
 
     static WebEvidenceReceipt verify(int code,String requestRaw,JSONObject binding,String callbackRaw,byte[] raw,
                                       int authenticatedHelperUid,long sentElapsed,long receivedElapsed)throws Exception{
+        WebTaskPurpose purpose=WebTaskPurpose.requireBinding(binding);
         JSONObject request=WebEvidenceJson.parse(requestRaw,WebEvidenceProtocol.MAX_REQUEST_BYTES);
         WebEvidenceJson.keys(request,WebEvidenceProtocol.requestKeys(code));
         need(WebEvidenceProtocol.requestSchema(code).equals(text(request,"schema")),"request schema differs");
@@ -193,7 +196,8 @@ final class WebEvidenceReceipt {
         need("android.webkit.WebView.getUrl".equals(text(capture,"native_url_source"))
                 &&"android.webkit.WebViewClient.onPageCommitVisible".equals(text(capture,"commit_source"))
                 &&OBSERVER_SHA.equals(text(capture,"observer_script_sha256")),"native URL/fixed observer provenance differs");
-        String url=text(capture,"current_native_url");officialOrigin(url);officialOrigin(text(capture,"committed_main_frame_url"));
+        String url=text(capture,"current_native_url");String origin=purposeOrigin(purpose,url);
+        need(origin.equals(purposeOrigin(purpose,text(capture,"committed_main_frame_url"))),"current and committed per-lease origins differ");
         for(String key:Arrays.asList("business_verified","pixel_equality_claimed","all_visible_semantics_verified","truncated"))
             need(Boolean.FALSE.equals(capture.get(key)),"capture scope/truncation differs: "+key);
         JSONArray box=capture.getJSONArray("webview_bounds_screen_pixels");
@@ -202,8 +206,8 @@ final class WebEvidenceReceipt {
         need(0<=r[0]&&0<=r[1]&&r[0]<r[2]&&r[1]<r[3]&&r[2]<=32768&&r[3]<=32768,"native WebView bounds invalid");
         String domRaw=text(capture,"dom_raw_utf8");need(WebEvidenceJson.sha(domRaw).equals(text(capture,"dom_sha256")),"exact DOM bytes/hash differ");
         JSONObject dom=WebEvidenceJson.parseDom(domRaw);
-        need("hepta.fixed-top-document-dom.v2".equals(text(dom,"schema"))&&url.equals(text(dom,"href"))
-                &&officialOrigin(url).equals(text(dom,"origin"))&&"complete".equals(text(dom,"ready_state"))
+        need("hepta.fixed-top-document-dom.v3".equals(text(dom,"schema"))&&url.equals(text(dom,"href"))
+                &&origin.equals(text(dom,"origin"))&&"complete".equals(text(dom,"ready_state"))
                 &&Boolean.FALSE.equals(dom.get("truncated")),"DOM/current native origin/ready/truncation differs");
         need(dom.getJSONArray("nodes").length()<=1024&&number(dom,"visited")>=dom.getJSONArray("nodes").length(),"DOM node budget");
         need(WebNativeGeometry.read(capture,dom,WebEvidenceJson.integer(callback,"actual_display_id"),
@@ -212,6 +216,14 @@ final class WebEvidenceReceipt {
         return new WebEvidenceReceipt(callback,original,capture.toString(),domRaw,false,false);
     }
 
+    private static String purposeOrigin(WebTaskPurpose purpose,String value)throws Exception{
+        need(purpose!=null,"original recognized page purpose required");
+        if(purpose.flight!=null)return officialOrigin(value);
+        WebSitePolicy policy=WebSitePolicy.forShopping(purpose.shopping);
+        need(policy.sha256.equals(purpose.sitePolicySha256)&&policy.allowsMainFrame(value),
+                "URL is outside this lease's compiled public-product route");
+        return policy.origin;
+    }
     static String officialOrigin(String value)throws Exception{
         need(value!=null&&value.length()<=4096,"URL budget");URI uri=new URI(value);
         need("https".equals(uri.getScheme())&&"m.csair.com".equals(uri.getHost())&&uri.getRawUserInfo()==null

@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.notes-v56-root-offline-review.v1",
+  "reviewed_at_utc": "2026-11-12T14:20:36.879606+00:00",
+  "reviewer": "assistant-root",
+  "manifest_sha256": "04f3e112f8e209e873bf03a05512d4caca8606ebb6800769a32e7e79bdc79411",
+  "archive_sha256": "18f775fb564e47ace2e3feda8342cddb601993679c038a0db4713461aedcc78c",
+  "files_rehashed": 28,
+  "tar_members_verified": 29,
+  "source_reviewed": [
+    "seal_v56_notes.py",
+    "preflight_v56.py",
+    "semantic_scroll_gate.py",
+    "run_background_notes_v56_r1.py.diff",
+    "preflight-runtime-contract-r3.diff"
+  ],
+  "runtime_contract_independently_read_from_canonical_git_blob": "eace1ef538bb6b491ce7c13aeb26567829367477",
+  "exact_five_field_v2_schema_and_threads_1_to_8_verified": true,
+  "required_actual_apk_bytes_and_receipt_before_normal_seal_verified": true,
+  "runtime_uid_physical_display_pins_before_phone_actions_verified": true,
+  "original_eight_main_checks_plus_necessary_ninth_content_gate_verified": true,
+  "independent_semantic_scroll_review_remains_required": true,
+  "publication_of_reviewed_source_allowed": true,
+  "production_component_changes_authorized": false,
+  "new_phone_actions": 0,
+  "v56_phone_qualified": false,
+  "release_sealed": false,
+  "remaining": "actual signed build, fresh phone identity under normal ownership, ordinary preparation/Start and independent new-task evidence"
+}

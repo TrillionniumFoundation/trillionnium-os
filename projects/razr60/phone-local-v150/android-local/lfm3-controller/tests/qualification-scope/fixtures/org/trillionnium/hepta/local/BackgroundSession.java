@@ -6,6 +6,9 @@ final class BackgroundSession {
     static final class Selection {
         final String initialPackage;final java.util.List<String> allowedPackages;
         Selection(String initial,java.util.Set<String> packages){initialPackage=initial;allowedPackages=new java.util.ArrayList<String>(packages);}
+        Selection(String initial,java.util.Set<String> packages,String uiInitial,java.util.Set<String> uiAllowed,String ownerSha,String recognition){
+            throw new AssertionError("owner-derived background selection is outside this legacy scope fixture");
+        }
         JSONObject json(){return new JSONObject();}
     }
     static final class Cleanup {final boolean known;final JSONObject evidence=new JSONObject();Cleanup(boolean value){known=value;}}

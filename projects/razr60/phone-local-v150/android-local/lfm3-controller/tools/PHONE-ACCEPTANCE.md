@@ -76,3 +76,27 @@ phone and supplies no model-quality or device-qualification evidence.
 The independent package is org.trillionnium.hepta.local. Use --expected-compute npu|gpu and --expected-context 4096|8192 to match the fixed private runtime configuration. The driver requires the official model SHA, text-only llama_cpp mode, matching app/native model paths, no fallback warning, nonzero layer-offload request and the native actual-template budget. Positive layer-offload and selected-accelerator model-buffer log evidence are also required; resolved-device metadata alone cannot pass. This demonstrates tensor offload, not 100% operator coverage or power efficiency.
 
 Revision 2 additionally collects grammar.gbnf and requires its actual SHA to match the app receipt, native input_sha256.grammar and the associated observation. Plain diagnostic inference cannot qualify as a control-model step.
+
+## Production v6 compatibility
+
+The collector accepts the explicit `hepta.observed-action-gbnf.v6-fixed-intents`
+schema while preserving the older v4 app-pair and v5 query-submit checks. The
+schema in the app receipt must match the actual native-hashed prompt; changing
+only a receipt discriminator does not upgrade an older request. An explicitly
+empty `fixed_intent_tools` list is valid and grants no fixed tool.
+
+`notes.create` and `web.search` use their own closed prompt projection, not the
+launcher `open_allowed_packages` list. Their exact app label, package, parameter,
+payload limits and requested outcome are checked against the production fixed
+profiles. The complete native prompt SHA binds this projection; the open-app
+label digest does not pretend to cover it. No arbitrary component, URI, title,
+extra parameter, omitted tool or crossed app label can qualify. v6 `submit`
+retains the same focused-node/query-label/input-digest checks as v5.
+
+This remains a native-input/output verifier. Use the suite's action binding to
+verify a dispatched fixed intent against its installed-target receipt and
+durable before-call journal. Neither an accepted launch nor a valid model
+receipt proves a saved note or an actual search result. `run-task` still uses
+the existing debug nonce/Intent entry and is not an ordinary-UI background-task
+driver; `collect-status` remains read-only and works for a separately selected
+ordinary-UI task ID. The archived background r2 helper pins are unchanged.

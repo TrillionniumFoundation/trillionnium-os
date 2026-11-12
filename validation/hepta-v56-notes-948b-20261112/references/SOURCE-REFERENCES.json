@@ -1,0 +1,213 @@
+{
+  "schema": "hepta.notes-v56-validation-public-source-references.v1",
+  "canonical_production_sources": [
+    {
+      "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/5da3c83fe46edb2617934a92c06a10608accb68e/projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/PhoneObservation.java",
+      "bytes": 18273,
+      "sha256": "9aeda02ab6fc541e9a8e04841093355c6055b590042f334b47fb55595ce5ca95",
+      "git_blob": "fbc8a42b3270aab6b666e7e489f618384d05239d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/5da3c83fe46edb2617934a92c06a10608accb68e/projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/BackgroundSession.java",
+      "bytes": 38388,
+      "sha256": "0045e81d6578a071de8dbdedd3c589afeb6025cf52d6c76fceb0e30e11e3dec6",
+      "git_blob": "e38f35e5f17a7f482e7964a3ee93351f780c496c"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/5da3c83fe46edb2617934a92c06a10608accb68e/projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
+      "bytes": 2816,
+      "sha256": "e18294b0b18938636ed4112c0a5e82b2b70d76c5fb854a7fe25a876518fc73b7",
+      "git_blob": "2028bd06c37fcf1a49228bd5055f99f34c690840"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/BackgroundUiPreferences.java",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/5da3c83fe46edb2617934a92c06a10608accb68e/projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/BackgroundUiPreferences.java",
+      "bytes": 10015,
+      "sha256": "a8bd7da61e46905e2e25dd064e6d04be73c26ba4b496b73fe4d8ef985ef29031",
+      "git_blob": "9a48554d1a078f2c639448922f3f5dc473ce1680"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MainActivity.java",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/5da3c83fe46edb2617934a92c06a10608accb68e/projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/MainActivity.java",
+      "bytes": 49595,
+      "sha256": "5bcc0da0a5cb73fa85062a450055eb3a9a9d31a467abf949e5d9335eb0d0e3f7",
+      "git_blob": "b00203d7c3288c93317883e5c5f50f838473ff17"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/TaskAuthorization.java",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/5da3c83fe46edb2617934a92c06a10608accb68e/projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/TaskAuthorization.java",
+      "bytes": 23598,
+      "sha256": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8",
+      "git_blob": "346e1790710fa4f0d62a59053328733773c9fe61"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/5da3c83fe46edb2617934a92c06a10608accb68e/projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+      "bytes": 12329,
+      "sha256": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f",
+      "git_blob": "1caf398a16da3c2544a9a93db7707e68f08d269f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/5da3c83fe46edb2617934a92c06a10608accb68e/projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "bytes": 113364,
+      "sha256": "c7639c1e0dbc3f476a280f16c3c8c835f78ea03bba254266de12b000e7fdd641",
+      "git_blob": "8358f1bca6df0a907f7793c873614a3aae9e9a7a"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/5da3c83fe46edb2617934a92c06a10608accb68e/projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "bytes": 110015,
+      "sha256": "d5841f9a29a6a0218f765aa10ef4aef099ebb263bfe1e03bda1637e1e5f6a332",
+      "git_blob": "574890278fbecb3ba4e364cc5e388774fe5836fe"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/5da3c83fe46edb2617934a92c06a10608accb68e/projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
+      "bytes": 3352,
+      "sha256": "81447620dbc2a789bba8c22d561c768144f4d5619859b202d07cd83660a05dce",
+      "git_blob": "eace1ef538bb6b491ce7c13aeb26567829367477"
+    }
+  ],
+  "published_historical_evidence_references": [
+    {
+      "path": "notes54/executed-independent-replay-source.py",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/121e05160fb8e56b8c10e439767006327643b27d/projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v54-release-20261112/notes54/executed-independent-replay-source.py",
+      "bytes": 26403,
+      "sha256": "585f6d2b0e3d0a092b0b5b7ad884dc20d7328dfc0552d5cd6cdf749c7cf67b22",
+      "git_blob": "3b9e3e775bcb6ca2442608dbf642eb918dd150c8"
+    },
+    {
+      "path": "notes54/projection-source-independent-review.json",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/121e05160fb8e56b8c10e439767006327643b27d/projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v54-release-20261112/notes54/projection-source-independent-review.json",
+      "bytes": 3192,
+      "sha256": "1b77ae57caae1fb4b91a167b48188c69a2e4cd772ef41108321ed305f06292a2",
+      "git_blob": "f0363664f09d8bf0d572aff629bb85bdcfd20c07"
+    },
+    {
+      "path": "notes54/full-context-successor-independent-review.json",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/121e05160fb8e56b8c10e439767006327643b27d/projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v54-release-20261112/notes54/full-context-successor-independent-review.json",
+      "bytes": 2007,
+      "sha256": "b88ae3d30033095efb32eb56bbea79e443a7cf0187ccd69d68af453e2715305f",
+      "git_blob": "f50eee03c684ab05b0a48526221250cc0a8289e9"
+    },
+    {
+      "path": "notes54/replay-successor-and-complete-derivation.json",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/121e05160fb8e56b8c10e439767006327643b27d/projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v54-release-20261112/notes54/replay-successor-and-complete-derivation.json",
+      "bytes": 69244,
+      "sha256": "1a7f8f2bb7c43965723ab51cb189a9b7db933d72bf81f07fe03697c15af25893",
+      "git_blob": "5947e181ba088dc1ddbe30c913f9450f5923d224"
+    },
+    {
+      "path": "notes54/actual-independent-replay-result.json",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/121e05160fb8e56b8c10e439767006327643b27d/projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v54-release-20261112/notes54/actual-independent-replay-result.json",
+      "bytes": 37761,
+      "sha256": "eef5e79feb21965a52c4bdc35892842af3d5e74c578792deb4f4cdec73f12db2",
+      "git_blob": "160fe428870dea6568aa80fcd75994bcf057f2b8"
+    },
+    {
+      "path": "notes54/original-phone-collector-result.json",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/121e05160fb8e56b8c10e439767006327643b27d/projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v54-release-20261112/notes54/original-phone-collector-result.json",
+      "bytes": 258543,
+      "sha256": "2d85991282f6a02834fcb492e8470ec7561a47fb9f524b750e319f7b1a3fae7d",
+      "git_blob": "3385b93ddff946d3451141450cb04e14cd3b93d8"
+    }
+  ],
+  "original_collector_replay_inputs": [
+    {
+      "file": "background_notes_plan.py",
+      "bytes": 13460,
+      "sha256": "df4aa09037d41709dbfa0efae522776f023fc1481859f22a0e078a22f015daff"
+    },
+    {
+      "file": "controller_idle_evidence.py",
+      "bytes": 28672,
+      "sha256": "8ef4e544b5ac6f62f17ff37715de7a4be5d051f2312802580d404f15512b7240"
+    },
+    {
+      "file": "controller_workflow_evidence.py",
+      "bytes": 52865,
+      "sha256": "405ed06f6302623e36dc39803ebe7781bb349b396851d0bfe6fa46f2ce6b6350"
+    },
+    {
+      "file": "fixed_intent_v6_acceptance.py",
+      "bytes": 32749,
+      "sha256": "9b858dd02d34558ab6c898209378a2de3d34b38b6f1aa2a099da788273b3f2ba"
+    },
+    {
+      "file": "live_inflight_window.py",
+      "bytes": 25220,
+      "sha256": "3f3faa3b692257710f48651d48f1a39405f0fb511fd94658af2617ded9443671"
+    },
+    {
+      "file": "main_user_inflight.py",
+      "bytes": 26325,
+      "sha256": "79450f5c07b48958821d388a729223890fcd7f2cd0c085e85e15c48aadee167d"
+    },
+    {
+      "file": "moto_note_body_evidence_v51.py",
+      "bytes": 26193,
+      "sha256": "091bcb7a633c9fec1e668b637fb3619de712c441db99f2164c47c4b3ba629e94"
+    },
+    {
+      "file": "prepare_background_notes_v54_r1.py",
+      "bytes": 26922,
+      "sha256": "5e1db9854154042f3124afc1a2890c567a3fa32dedc41f80f237b0bd260e4d90"
+    },
+    {
+      "file": "run_background_notes_v54_r1.py",
+      "bytes": 110570,
+      "sha256": "2fa7d0670786dcc3933974056acc03026e7ffd091f9f4b3218936ae60646df39"
+    },
+    {
+      "file": "tools/model_profiles.py",
+      "bytes": 2930,
+      "sha256": "ee26ed1f2f2b2ffd5f14fbd526c6d3cbf05d7ed8d65c422df5e60a72fa0cfa3a"
+    },
+    {
+      "file": "tools/phone_acceptance.py",
+      "bytes": 60278,
+      "sha256": "411da90ca9ef83441fa0a199a25d71361ab582db5b54ac08bd39e5e8597e6302"
+    },
+    {
+      "file": "tools/phone_suite.py",
+      "bytes": 44804,
+      "sha256": "2681e21ae0ead263b9313a6e49b4faf8951f3e87ab6b5c669c41fe34dbe5267a"
+    },
+    {
+      "file": "tools/warm_receipts.py",
+      "bytes": 7410,
+      "sha256": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5"
+    },
+    {
+      "file": "v35_identity.py",
+      "bytes": 34830,
+      "sha256": "a4a751cf03956783e551f54b16dd37769f00d5b7cd2a0225b667becbc6e6d003"
+    }
+  ],
+  "reviewed_historical_replay_inputs": [
+    {
+      "file": "controller_idle_evidence.py",
+      "bytes": 28672,
+      "sha256": "285f6575f5dc1eaaaff61b591cd8e0171e250ea0799a196ba298bd1cad6478db"
+    },
+    {
+      "file": "controller_workflow_evidence.py",
+      "bytes": 53705,
+      "sha256": "1188e4ad4666614cfce38d0f74b60819dd2c0e32ebf9cac6cdbd74bcf649791e"
+    },
+    {
+      "file": "main_user_inflight.py",
+      "bytes": 26783,
+      "sha256": "4aa6e0f8db9229e1764d9ee79220ed8fa3eb7ddc3bd5526a857fd179870afe30"
+    }
+  ],
+  "original_inputs_in_this_delivery": false,
+  "original_input_byte_availability": "14 exact original files remain in the private reviewed cache. Public references supply hash/provenance/derivation context; no claim that every URL embeds every original file.",
+  "private_cache_required_for_full_source_reproduction": true,
+  "original_png_or_screenshot_bytes_in_this_delivery": false,
+  "runtime_device_identity_or_signed_apk_defaults_provided": false
+}

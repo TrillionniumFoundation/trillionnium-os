@@ -1,0 +1,76 @@
+--- original/controller_workflow_evidence.py
++++ v56/controller_workflow_evidence.py
+@@ -1,10 +1,10 @@
+-"""Pure evidence replay for v54 controller-owned Notes tool children.
++"""Pure evidence replay for v56 controller-owned Notes tool children.
+ 
+ This new module is not a signed build, native qualification, visual review, or
+ main-screen coexistence verdict. It verifies immutable collected bytes and calls
+-the pinned original model/session binder. Missing actual v54 files fail closed.
++the pinned original model/session binder. Missing actual v56 files fail closed.
+ Only independently reparsed exact plans are supported, including the narrow
+-v54 comma form. Comma OWNER authority remains fully unmasked.
++v56 comma form. Comma OWNER authority remains fully unmasked.
+ """
+ import __future__
+ import ast
+@@ -16,11 +16,11 @@
+ import types
+ 
+ BODY_SHA = '091bcb7a633c9fec1e668b637fb3619de712c441db99f2164c47c4b3ba629e94'
+-FIXED_SHA = '9b858dd02d34558ab6c898209378a2de3d34b38b6f1aa2a099da788273b3f2ba'
++FIXED_SHA = 'f2be125014236dee4662bc3597e85c3e723e8a9dce1681921dbcef132e6d79cb'
+ ACCEPTANCE_SHA = '411da90ca9ef83441fa0a199a25d71361ab582db5b54ac08bd39e5e8597e6302'
+ RECEIPTS_SHA = 'd5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5'
+ SUITE_SHA = '2681e21ae0ead263b9313a6e49b4faf8951f3e87ab6b5c669c41fe34dbe5267a'
+-PLAN_SHA = 'df4aa09037d41709dbfa0efae522776f023fc1481859f22a0e078a22f015daff'
++PLAN_SHA = '4bf77a52d012b4d5fe2fcfdcfea59649058c74d94202afcaacf0cb92e81c7bad'
+ OWNER_PARSER_SHA = 'c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f'
+ REUSED_PROOF_SOURCE_SHA = '2cf183368b8c9534fb75bc91f0b14408d806741a36ac67514f743ea4e4d9671a'
+ WORKFLOW = 'hepta.notes-create-workflow.v1'
+@@ -199,7 +199,7 @@
+              and self.owner.get('instruction_utf8_sha256') == plan.get('instruction_sha256') == self.owner_sha
+              and _equal(self.owner.get('background_request'), self.selection)
+              and _equal(self.bootstrap.get('selection'), self.selection)
+-             and self.bootstrap.get('owner_sha256') == self.owner_sha and self.bootstrap.get('app_uid') == 10481,
++             and self.bootstrap.get('owner_sha256') == self.owner_sha and self.bootstrap.get('app_uid') == None,
+              'immutable task/OWNER/background selection differs')
+         need(type(self.display) is int and self.display > 0 and isinstance(self.generation, str) and UUID.fullmatch(self.generation)
+              and self.owner.get('external_model') is False and self.owner.get('expected_scope_sha256') is None
+@@ -229,7 +229,17 @@
+                 and type(window.get('display_id')) is int and window['display_id'] == self.display
+                 and type(bg.get('display_id')) is int and bg['display_id'] == self.display
+                 and bg.get('generation') == self.generation
+-                and _equal({k: bg.get(k) for k in self.selection}, self.selection))
++                # Exact nine-field projection emitted by signed v56 PhoneObservation.backgroundJson().
++                # Full OWNER-derived Selection is independently bound in __init__, action and cleanup.
++                # This compares original bytes; it never adds the absent owner_task_selection to a frame.
++                and _equal(bg, {
++                    'mode': self.selection['mode'], 'generation': self.generation, 'display_id': self.display,
++                    'allowed_packages': self.selection['allowed_packages'],
++                    'bootstrap_package': self.selection['bootstrap_package'],
++                    'bootstrap_source': 'owner_selected_initial_app',
++                    'bootstrap_model_issued': self.selection['bootstrap_model_issued'],
++                    'home_allowed': self.selection['home_allowed'],
++                    'main_display_fallback': self.selection['main_display_fallback']}))
+ 
+     def action(self, row):
+             bg = row.get('background_session')
+@@ -458,7 +468,7 @@
+     A caller-supplied verified boolean is neither requested nor accepted here.
+     """
+     proof = {'schema': 'hepta.background-controller-workflow-proof.v1', 'verified': False, 'qualified': False,
+-        'lineage': 'New v54 offline module; body/list/window functions reused from independently reviewed 2cf183 source.',
++        'lineage': 'New v56 offline module; body/list/window functions reused from independently reviewed 2cf183 source.',
+         'reused_proof_source_sha256': REUSED_PROOF_SOURCE_SHA, 'body_source_sha256': BODY_SHA,
+         'terminal_claim_recognized': terminal_claim_recognized(task_result, current_session),
+         'visual_reviewed': False, 'main_screen_settings_coexistence_verified': False,
+@@ -467,7 +477,7 @@
+         'phone_or_source_test_claimed': False}
+     archive = None
+     try:
+-        need(proof['terminal_claim_recognized'], 'actual v54 controller terminal claim missing; no child-chain qualification')
++        need(proof['terminal_claim_recognized'], 'actual v56 controller terminal claim missing; no child-chain qualification')
+         _verify_binder(binder, acceptance, receipts)
+         directory = _path(directory)
+         archive = Collected(directory, collection, acceptance)
