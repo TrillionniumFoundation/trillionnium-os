@@ -6174,8 +6174,8 @@
     },
     {
       "path": "tests/calculator-input/CalculatorInputGuardHostTest.java",
-      "bytes": 32077,
-      "sha256": "106d8f52c9efa2f8d79e0ef7db4f708e755dd04110994febd594c77310bf3f60"
+      "bytes": 32382,
+      "sha256": "c811909e69656225e243d48ef7994c3b2a9a244ea3e4a9bc197691e9592cd536"
     },
     {
       "path": "tests/calculator-input/FailedActionObservationHostTest.java",
@@ -6284,8 +6284,8 @@
     },
     {
       "path": "tests/fixed-intent-tools/FixedIntentIntegrationHostTest.java",
-      "bytes": 18992,
-      "sha256": "fb38bef1b3622619fb46bc60f50a6befb803656ef251d167d0fe66e591fd0543"
+      "bytes": 19762,
+      "sha256": "3246d9af7c7b0b17a7fe28194081e4e451f0fd22e2a870d7ccf43603257618c2"
     },
     {
       "path": "tests/fixed-intent-tools/FixedIntentToolsHostTest.java",
@@ -6314,8 +6314,8 @@
     },
     {
       "path": "tests/ime-submit/ImeSubmitWiringHostTest.java",
-      "bytes": 23635,
-      "sha256": "0a54bae97a3a09a41ac25fedb24104e73de7de847b0ec200aced3f2cc78ae360"
+      "bytes": 29166,
+      "sha256": "25ff2ecd9bad0535b26486129c398e25015bd172ece493af0de00c33ce6f07f1"
     },
     {
       "path": "tests/ime-submit/run_host_tests.py",
@@ -6359,8 +6359,8 @@
     },
     {
       "path": "tests/notes-editor-phase/NotesEditorPhaseHostTest.java",
-      "bytes": 38431,
-      "sha256": "8805c539d58b8c12f601787652c5f556f8f2564efd664e7325f00c868d3ad07a"
+      "bytes": 39703,
+      "sha256": "83c841099c9e02e9777287b8789099c622bc069960ff1f27554180f06b91d15e"
     },
     {
       "path": "tests/notes-editor-phase/fixtures/v48-editor-click-trace.json",
@@ -6394,13 +6394,13 @@
     },
     {
       "path": "tests/notes-task-phase/NotesTaskPhaseHostTest.java",
-      "bytes": 24299,
-      "sha256": "765bdb4358dc7ef385cbd8a9191ca9ea596a77a58f89c1feb4f464fbfb1dfd87"
+      "bytes": 24869,
+      "sha256": "86fc314b06ee332e12daf528d703f9ca4ddda1ed6a42c853d2acc6639accd8db"
     },
     {
       "path": "tests/notes-task-phase/NotesTaskScopeHostTest.java",
-      "bytes": 34398,
-      "sha256": "5d679a9954680584eadda0ab4a8e240f1719f9bb600c4fe077061b37a882555a"
+      "bytes": 34977,
+      "sha256": "f6ad45e8f4dcfc45cf8cf4bf4baf5a69bbe0727c89069bb59e4a68b231d74d21"
     },
     {
       "path": "tests/notes-task-phase/fixtures/manual-notes-list.xml",
@@ -6534,8 +6534,8 @@
     },
     {
       "path": "tests/owner-authorization/OwnerAuthorizationWiringHostTest.java",
-      "bytes": 36308,
-      "sha256": "030aa28b00b4eb46ac261ee56aed9ad21f1709cafcb9d89e1e3f39b5c02d13d2"
+      "bytes": 42109,
+      "sha256": "aa0d34f233fb1e46bf5606379f593ea7001bb6b07f4ffe7f32de077785eed8e3"
     },
     {
       "path": "tests/owner-authorization/run_host_tests.py",

@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.trillionnium.hepta.background.FixedIntentTarget;
@@ -367,21 +369,32 @@ public final class NotesEditorPhaseHostTest {
                 String n=("click".equals(tool)||"type".equals(tool)||"submit".equals(tool))?"n11":"scroll".equals(tool)?"n5":null;
                 String label="n5".equals(n)?"NoteEditor":n==null?null:ObservedTargetLabels.project(BODY+"\n");
                 final HeptaAccessibilityService.ActionOutcome[] result={null};
-                e.service.perform(e.task,e.service.current,parsed(decision(current,tool,n,label,P,null)),gb.targets,targets().get(tool),authority,id(),()->false,r->result[0]=r);
+                final CountDownLatch resultDone=new CountDownLatch(1);
+                e.service.perform(e.task,e.service.current,parsed(decision(current,tool,n,label,P,null)),gb.targets,targets().get(tool),authority,id(),()->false,r->{result[0]=r;resultDone.countDown();});
+                if(!resultDone.await(10,TimeUnit.SECONDS))throw new AssertionError("actual service callback did not finish for this request");
                 check(result[0]!=null&&!result[0].accepted&&!result[0].dispatched&&!result[0].stale&&result[0].detail.contains("notes_task_phase")&&e.service.effects()==0,"actual service denies removed editor action before all effects: "+tool);
             }
             final HeptaAccessibilityService.ActionOutcome[] title={null};
-            e.service.perform(e.task,e.service.current,parsed(decision(current,"click","n1","标题",null,null)),gb.targets,null,authority,id(),()->false,r->title[0]=r);
+            final CountDownLatch titleDone=new CountDownLatch(1);
+            e.service.perform(e.task,e.service.current,parsed(decision(current,"click","n1","标题",null,null)),gb.targets,null,authority,id(),()->false,r->{title[0]=r;titleDone.countDown();});
+            if(!titleDone.await(10,TimeUnit.SECONDS))throw new AssertionError("actual service callback did not finish for this request");
             check(title[0]!=null&&!title[0].accepted&&!title[0].dispatched&&title[0].detail.contains("notes_task_phase")&&e.service.effects()==0,"service independently denies actual titled button, even with a valid label pair");
             for(String status:new String[]{"partial","failure"}){
-                final HeptaAccessibilityService.ActionOutcome[] result={null};e.service.perform(e.task,e.service.current,parsed(decision(current,"done",null,null,null,status)),gb.targets,null,authority,id(),()->false,r->result[0]=r);
+                final HeptaAccessibilityService.ActionOutcome[] result={null};
+                final CountDownLatch resultDone=new CountDownLatch(1);
+                e.service.perform(e.task,e.service.current,parsed(decision(current,"done",null,null,null,status)),gb.targets,null,authority,id(),()->false,r->{result[0]=r;resultDone.countDown();});
+                if(!resultDone.await(10,TimeUnit.SECONDS))throw new AssertionError("actual service callback did not finish for this request");
                 check(result[0]!=null&&result[0].accepted&&!result[0].dispatched&&e.service.effects()==0&&!g.verified(current),"partial/failure reporting remains possible without claiming saved evidence");
             }
             final HeptaAccessibilityService.ActionOutcome[] waited={null};
-            e.service.perform(e.task,e.service.current,parsed(decision(current,"wait",null,null,null,null)),gb.targets,null,authority,id(),()->false,r->waited[0]=r);
+            final CountDownLatch waitedDone=new CountDownLatch(1);
+            e.service.perform(e.task,e.service.current,parsed(decision(current,"wait",null,null,null,null)),gb.targets,null,authority,id(),()->false,r->{waited[0]=r;waitedDone.countDown();});
+            if(!waitedDone.await(10,TimeUnit.SECONDS))throw new AssertionError("actual service callback did not finish for this request");
             check(waited[0]!=null&&waited[0].accepted&&!waited[0].dispatched&&e.service.effects()==0,"ordinary wait remains available without automatic navigation");
             final HeptaAccessibilityService.ActionOutcome[] backed={null};
-            e.service.perform(e.task,e.service.current,parsed(decision(current,"back",null,null,null,null)),gb.targets,null,authority,id(),()->false,r->backed[0]=r);
+            final CountDownLatch backedDone=new CountDownLatch(1);
+            e.service.perform(e.task,e.service.current,parsed(decision(current,"back",null,null,null,null)),gb.targets,null,authority,id(),()->false,r->{backed[0]=r;backedDone.countDown();});
+            if(!backedDone.await(10,TimeUnit.SECONDS))throw new AssertionError("actual service callback did not finish for this request");
             check(backed[0]!=null&&backed[0].accepted&&backed[0].dispatched&&e.service.effects()==1&&e.service.navigations==1&&!g.verified(current),"only an explicit model back dispatches one synthetic navigation; it is not save proof");
         }
     }

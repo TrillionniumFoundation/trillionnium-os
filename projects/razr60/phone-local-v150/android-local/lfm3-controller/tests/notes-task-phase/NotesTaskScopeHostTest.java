@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.trillionnium.hepta.background.FixedIntentTarget;
@@ -316,11 +318,16 @@ public final class NotesTaskScopeHostTest {
             for(String tool:new String[]{"find_app","back","home","open","scroll","web.search"}){
                 String payload=decision(current,tool,"scroll".equals(tool)?"n0":null,"scroll".equals(tool)?ObservedTargetLabels.project(BODY):null,SELF,null);
                 final HeptaAccessibilityService.ActionOutcome[] result={null};
-                e.service.perform(e.task,e.service.current,parsed(payload),gb.targets,targets().get(tool),a,id(),()->false,r->result[0]=r);
+                final CountDownLatch resultDone=new CountDownLatch(1);
+                e.service.perform(e.task,e.service.current,parsed(payload),gb.targets,targets().get(tool),a,id(),()->false,r->{result[0]=r;resultDone.countDown();});
+                if(!resultDone.await(10,TimeUnit.SECONDS))throw new AssertionError("actual service callback did not finish for this request");
                 check(result[0]!=null&&!result[0].accepted&&!result[0].dispatched&&result[0].detail.contains("notes_task_phase")&&e.service.effects()==0,"actual service refuses removed tool before any effect: "+tool);
             }
             for(String status:new String[]{"partial","failure"}){
-                final HeptaAccessibilityService.ActionOutcome[] result={null};e.service.perform(e.task,e.service.current,parsed(decision(current,"done",null,null,null,status)),gb.targets,null,a,id(),()->false,r->result[0]=r);
+                final HeptaAccessibilityService.ActionOutcome[] result={null};
+                final CountDownLatch resultDone=new CountDownLatch(1);
+                e.service.perform(e.task,e.service.current,parsed(decision(current,"done",null,null,null,status)),gb.targets,null,a,id(),()->false,r->{result[0]=r;resultDone.countDown();});
+                if(!resultDone.await(10,TimeUnit.SECONDS))throw new AssertionError("actual service callback did not finish for this request");
                 check(result[0]!=null&&result[0].accepted&&!result[0].dispatched&&e.service.effects()==0&&!g.verified(current),"failure/partial reports remain possible without business success or an action");
             }
             e.service.releaseTask(e.task);
