@@ -4,9 +4,10 @@ This packet records strict host checks and unsigned Android compilation for the 
 `baa8fc181f3fe28063bb1e7bbc8e836c745c7eec`. The source manifest SHA256 is
 `1caa51fbbbced802cdea93be8395433a29839743fd16b1c2204ba9bf3f1d711d`.
 It is not an assembled/signed APK, installation or phone qualification. Separate
-Android compilation passed for this exact source. Original-signer assembly was
-still in progress when this packet was published; the phone had not been deployed
-with this source. The original host-test receipts retain their host-only scope.
+Android compilation and original-signer assembly passed for this exact source.
+The phone has not been deployed with this source and its current installed
+identity has not been freshly observed. The original host-test receipts retain
+their host-only scope.
 
 ## Inputs
 
@@ -80,9 +81,34 @@ No dependencies were downloaded by this build.
 
 The compiler receipt SHA256 is
 `c0345e6bb9997baa0d73490d4f06ef175a3ac74c77c5ef94a1c68d42198d7402`.
-These outputs still require complete runtime packaging and original-signer
-assembly. Compilation does not demonstrate model/SDK execution, acceleration,
-healthy cancellation or phone effects.
+These compiler outputs were subsequently packaged and signed as recorded below.
+Compilation does not demonstrate model/SDK execution, acceleration, healthy
+cancellation or phone effects.
+
+## Original-signer assembly
+
+`ASSEMBLY-RESULT.json`, `STATIC-ACCEPTANCE.json`, `apk-signature.txt`,
+`apk-badging.txt` and `apk-permissions.txt` are exact host assembly originals.
+Assembly completed with exit 0 in 7.994 seconds. Source closure passed before
+and after. No new signing key was created; all 17 packaged runtime libraries
+remain bound to their independent pins. The final signed APK DEX was read back
+and matched the freshly compiled DEX.
+
+The signed versionCode 55 APK is 20,944,723 bytes, SHA256
+`774e41c6a4f328c89c8ef3aed1901e3b456a377919a33587f05c074c2a88c3fd`.
+Its certificate SHA256 is
+`202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5`.
+This matches the retained historical v53 signer evidence. It is expressly **not
+a fresh read of the phone's current installed signer or APK**. The assembly
+receipt preserves `current_phone_identity_observed=false`, `installed=false`
+and `business_qualified=false`.
+
+Static receipt SHA256:
+`b4138a7be609ffcefbe19f5e0302038620e101bc3f783e4d293fd0a97cdf29e8`.
+Actual build-identity asset SHA256:
+`ed3ca79d4970fdd501c195d5d842f60c1311183c539c73cdda24dab5a3ebed61`.
+No APK, signing key, runtime binaries or private phone originals are included
+in this evidence directory.
 
 ## Reproduction and remaining acceptance
 
@@ -94,8 +120,8 @@ verification and negative mutation; it is environment-specific execution evidenc
 not a deployment tool.
 
 The old installer, current installed-APK pins, ownership lock and private phone
-state were not modified. Same-signer assembly and the ordinary operation owner
-lease remain required before any phone upgrade.
+state were not modified. A fresh installed-identity check and the ordinary
+operation owner lease remain required before any phone upgrade.
 
 Phone acceptance remains open for this exact source: Notes completion,
 accelerator placement, SDK/native and Web cleanup, interruption/display loss,
