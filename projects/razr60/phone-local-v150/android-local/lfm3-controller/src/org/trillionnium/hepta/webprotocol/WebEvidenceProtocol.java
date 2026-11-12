@@ -13,20 +13,21 @@ public final class WebEvidenceProtocol {
     public static final String SERVICE_CLASS=HELPER_PACKAGE+".EvidenceService";
     public static final String ACTIVITY_CLASS=HELPER_PACKAGE+".PageActivity";
     public static final String PERMISSION=HELPER_PACKAGE+".permission.BIND_EVIDENCE";
-    public static final String DESCRIPTOR=HELPER_PACKAGE+".IWebEvidence.v2";
-    public static final String CALLBACK_DESCRIPTOR=HELPER_PACKAGE+".IWebEvidenceCallback.v2";
-    public static final String CALLBACK_SCHEMA="hepta.web-helper.callback.v2";
-    public static final String RAW_SCHEMA="hepta.web-helper.raw-evidence.v2";
-    public static final String BINDING_SCHEMA="hepta.web-helper.binding.v2";
-    public static final String JOURNAL_SCHEMA="hepta.web-helper.lease-journal.v2";
+    public static final String DESCRIPTOR=HELPER_PACKAGE+".IWebEvidence.v3";
+    public static final String CALLBACK_DESCRIPTOR=HELPER_PACKAGE+".IWebEvidenceCallback.v3";
+    public static final String CALLBACK_SCHEMA="hepta.web-helper.callback.v3";
+    public static final String RAW_SCHEMA="hepta.web-helper.raw-evidence.v3";
+    public static final String BINDING_SCHEMA="hepta.web-helper.binding.v3";
+    public static final String JOURNAL_SCHEMA="hepta.web-helper.lease-journal.v3";
     public static final String RECOVERY_SCHEMA="hepta.web-helper.recovered-retirement.v1";
     public static final String UNSTARTED_SCHEMA="hepta.web-helper.unstarted-retirement.v1";
     public static final String UNSTARTED_CONFIRMATION_SCHEMA="hepta.web-helper.unstarted-retirement-confirmation.v1";
     public static final String UNSTARTED_FENCE_SCHEMA="hepta.web-helper.unstarted-resource-fence.v1";
     public static final int MAX_UNSTARTED_RECORD_BYTES=65536;
-    public static final int HELPER_VERSION_CODE=3;
-    public static final String HELPER_VERSION_NAME="0.3.0-web-evidence-v2";
+    public static final int HELPER_VERSION_CODE=5;
+    public static final String HELPER_VERSION_NAME="0.5.0-web-evidence-v3";
     public static final String SIGNER_SHA256="202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5";
+    /** Legacy flight constant; each new lease derives its own compiled initial URL from WebTaskPurpose. */
     public static final String INITIAL_URL="https://m.csair.com/";
     public static final int ATTACH=1,CAPTURE=2,CLOSE=3,CALLBACK_RESULT=1;
     public static final int MAX_REQUEST_BYTES=16384,MAX_CALLBACK_BYTES=16384,MAX_EVIDENCE_BYTES=2*1024*1024;
@@ -50,9 +51,9 @@ public final class WebEvidenceProtocol {
         throw new IllegalArgumentException("unknown evidence method");
     }
     public static String requestSchema(int code) {
-        if(code==ATTACH)return "hepta.web-helper.attach.v2";
-        if(code==CAPTURE)return "hepta.web-helper.capture.v2";
-        if(code==CLOSE)return "hepta.web-helper.close.v2";
+        if(code==ATTACH)return "hepta.web-helper.attach.v3";
+        if(code==CAPTURE)return "hepta.web-helper.capture.v3";
+        if(code==CLOSE)return "hepta.web-helper.close.v3";
         throw new IllegalArgumentException("unknown evidence method");
     }
     public static Set<String> requestKeys(int code) {

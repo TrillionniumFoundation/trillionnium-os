@@ -13,12 +13,17 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.trillionnium.hepta.local.web.WebFlightGoal;
+import org.trillionnium.hepta.local.web.WebShoppingGoal;
 
 /** A bounded OWNER compiler and task-local executor contract, never a model proposal.
  * This enforces documented tool/method clauses, not arbitrary business semantics. */
 public final class TaskAuthorization {
     public static final String SCHEMA="hepta.owner-task-authorization.v1";
     public static final String PARSER="hepta.owner-tool-clauses.zh.v4-fixed-intents";
+    public static final String NATURAL_FLIGHT_RULE="natural_public_flight_tool_ceiling.v1";
+    public static final String NATURAL_SHOPPING_RULE="natural_public_product_tool_ceiling.v1";
+    public static final String EXPLICIT_SHOPPING_RULE="explicit_public_product_tool_ceiling.v1";
     public static final Set<String> TOOLS=Collections.unmodifiableSet(new TreeSet<String>(Arrays.asList(
             "find_app","open","click","type","submit","scroll","back","home","wait","done","notes.create","web.search")));
     public static final class Violation extends IllegalStateException {
@@ -67,7 +72,11 @@ public final class TaskAuthorization {
         allowedTools=Collections.unmodifiableSet(new TreeSet<String>(allowed));
         requireFindAppBeforeOpen=first;findQuery=query;
         this.rules=Collections.unmodifiableList(new ArrayList<String>(rules));
-        parserVersion=rules.contains("notes_literal_owner_span.v1")?PARSER+"+notes-literal-span.v1":PARSER;
+        String parser=rules.contains("notes_literal_owner_span.v1")?PARSER+"+notes-literal-span.v1":PARSER;
+        if(rules.contains(NATURAL_FLIGHT_RULE))parser+="+natural-flight-ceiling.v1";
+        if(rules.contains(NATURAL_SHOPPING_RULE))parser+="+natural-product-ceiling.v1";
+        if(rules.contains(EXPLICIT_SHOPPING_RULE))parser+="+explicit-product-ceiling.v1";
+        parserVersion=parser;
         // Length-delimited fields bind exact UTF-8, including the optional query.
         StringBuilder identity=new StringBuilder();field(identity,SCHEMA);field(identity,parserVersion);field(identity,instructionSha256);
         for(String tool:allowedTools)field(identity,tool);field(identity,first?"true":"false");field(identity,query==null?"":query);
@@ -124,6 +133,18 @@ public final class TaskAuthorization {
         if(!first&&unquoted.contains("先")&&explicitAppLookup(unquoted)
                 &&(unquoted.contains("打开")||unquoted.contains("open")))
             throw new Violation("查找与打开顺序不在已支持的明确先后语法内");
+        // Every original OWNER clause, error and prerequisite above remains in force.
+        // Recognized public-page purposes only narrow that result. They never mask,
+        // expand or rewrite OWNER, and selected-helper admission is checked separately.
+        WebFlightGoal flight=WebFlightGoal.parse(owner);
+        WebShoppingGoal shopping=WebShoppingGoal.parse(owner);
+        require(flight==null||shopping==null,"公开网页目标不能同时属于两个站点");
+        if(flight!=null&&flight.naturalReadOnlyIntent){
+            allowed.retainAll(flight.toolCeiling());rules.add(NATURAL_FLIGHT_RULE);
+        }else if(shopping!=null){
+            allowed.retainAll(shopping.toolCeiling());
+            rules.add(shopping.naturalReadOnlyIntent?NATURAL_SHOPPING_RULE:EXPLICIT_SHOPPING_RULE);
+        }
         if(first)require(allowed.contains("find_app")&&allowed.contains("open"),"查找前置与工具限制冲突");
         return new TaskAuthorization(owner,allowed,first,query,rules);
     }

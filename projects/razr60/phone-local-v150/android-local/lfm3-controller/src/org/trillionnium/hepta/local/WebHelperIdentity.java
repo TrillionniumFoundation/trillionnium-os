@@ -43,7 +43,7 @@ final class WebHelperIdentity {
                 "controller/helper current signatures differ");
         PackageInfo installed=info(pm,helper.packageName);
         WebEvidenceJson.need(helper.version==WebEvidenceProtocol.HELPER_VERSION_CODE
-                &&WebEvidenceProtocol.HELPER_VERSION_NAME.equals(installed.versionName),"v2 helper release required");
+                &&WebEvidenceProtocol.HELPER_VERSION_NAME.equals(installed.versionName),"current formal helper release required");
         android.content.pm.ServiceInfo service=pm.getServiceInfo(
                 new android.content.ComponentName(WebEvidenceProtocol.HELPER_PACKAGE,WebEvidenceProtocol.SERVICE_CLASS),0);
         WebEvidenceJson.need(service.exported&&service.enabled&&service.applicationInfo.enabled

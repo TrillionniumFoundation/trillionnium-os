@@ -316,7 +316,10 @@ public final class LocalTaskController implements AutoCloseable {
                 frame.calculatorDomain.requireCurrent(action);
                 emit("正在执行第 "+steps+" 步："+chineseAction(action.action));
                 if(activeWebTask!=null)activeWebTask.beforeModelAction(action,decisionRunId,deadline);
+                long webDispatchStarted=activeWebTask==null?-1:SystemClock.elapsedRealtime();
                 HeptaAccessibilityService.ActionOutcome outcome=awaitAction(taskId,before,action,frame.targets,frame.grammar.fixedIntentTargets.get(action.action),authorization,decisionRunId,deadline);
+                long webDispatchEnded=activeWebTask==null?-1:SystemClock.elapsedRealtime();
+                if(activeWebTask!=null)activeWebTask.modelActionOutcome(action,decisionRunId,outcome,webDispatchStarted,webDispatchEnded);
                 JSONObject actionReceipt=new JSONObject().put("action",new JSONObject(answerJson(action))).put("accepted",outcome.accepted)
                         .put("done_success_eligible",frame.grammar.successAllowed)
                         .put("dispatched",outcome.dispatched).put("stale",outcome.stale).put("detail",outcome.detail)
@@ -860,7 +863,7 @@ public final class LocalTaskController implements AutoCloseable {
                 "完成证据不属于当前任务及原始指令");
         // This is a current immutable-frame predicate, not a new completion rule.
         // The final observed frame, installed identity and cleanup are still checked.
-        final WebFlightDomain web=completion==null?null:completion.webDomainFor(completionFrame(observation));
+        final WebTaskDomain web=completion==null?null:completion.webDomainFor(completionFrame(observation));
         final boolean successEligible=completion!=null&&completion.verified(completionFrame(observation));
         final boolean successAllowed=successEligible&&authorization.successAllowed();
         final NotesTaskPhaseGuard.Projection taskPhase=phaseGuard.prepare(completion,completionFrame(observation));

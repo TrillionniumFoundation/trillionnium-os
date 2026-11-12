@@ -78,6 +78,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private static volatile HeptaAccessibilityService live;
     public static HeptaAccessibilityService connected() { return live; }
+    // UI observers only. Task admission always reads the current service again.
+    private static final java.util.Set<Runnable> connectionListeners=new java.util.concurrent.CopyOnWriteArraySet<Runnable>();
+    static void addConnectionListener(Runnable listener){if(listener==null)throw new NullPointerException("listener");connectionListeners.add(listener);}
+    static void removeConnectionListener(Runnable listener){connectionListeners.remove(listener);}
+    private void publishConnectionChange(){for(Runnable listener:connectionListeners)main.post(listener);}
     private final Handler main=new Handler(Looper.getMainLooper());
     private String lease;
     private QualificationScopeConfig.Bound taskScope;
@@ -113,7 +118,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 |AccessibilityEvent.TYPE_VIEW_SCROLLED|AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED|AccessibilityEvent.TYPE_VIEW_FOCUSED;
         info.feedbackType=AccessibilityServiceInfo.FEEDBACK_GENERIC;
         info.flags|=AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS|AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
-        info.notificationTimeout=80;setServiceInfo(info);refreshApps();live=this;
+        info.notificationTimeout=80;setServiceInfo(info);refreshApps();live=this;publishConnectionChange();
     }
     @Override public void onAccessibilityEvent(AccessibilityEvent event) { /* Read again at every decision and effect. */ }
     @Override public void onInterrupt() { requestStop(); }
@@ -123,7 +128,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(taskWeb!=null)taskWeb.serviceRetired();
         requestStop();
         if(activeObservation!=null)failObservation(activeObservation,"无障碍服务已断开");
-        if(live==this)live=null;clearSnapshot();backgroundIo.shutdown();super.onDestroy();
+        if(live==this){live=null;publishConnectionChange();}clearSnapshot();backgroundIo.shutdown();super.onDestroy();
     }
     /** Service-owned session survives Activity recreation. The controller stays injectable. */
     public synchronized LocalTaskController taskController(LocalInference inference){
@@ -721,6 +726,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 }
                 scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true);
                 authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
+                WebFlightSession web=taskWeb;if(web!=null)web.beforeNativeClickInvocation(action,modelRunId);
                 accepted=node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
                 finishAfter(350,accepted,accepted?"节点点击已接受":"节点点击未接受",callback);
             }else if("type".equals(action.action)){
@@ -1040,11 +1046,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(background!=null&&(graph.windowMetadata.displayId==null||graph.windowMetadata.displayId.intValue()!=graph.displayId
                 ||!background.allows(graph.packageName))){root.recycle();throw new IllegalStateException("后台观察窗口越界");}
         ArrayDeque<AccessibilityNodeInfo> queue=new ArrayDeque<AccessibilityNodeInfo>();queue.add(root);
+        ArrayDeque<String> nativePaths=new ArrayDeque<String>(),nativeParents=new ArrayDeque<String>();
+        nativePaths.add("0");nativeParents.add("");
         StringBuilder signatures=new StringBuilder(),focusStates=new StringBuilder(),scrollStates=new StringBuilder();int visited=0,characters=0;
         int nodeBudgetOmissions=0,textBudgetOmissions=0;long childSlotsOmitted=0,started=SystemClock.elapsedRealtime();
         try{
             while(!queue.isEmpty()&&visited<MAX_VISITED){
                 AccessibilityNodeInfo node=queue.removeFirst();visited++;
+                String nativePath=nativePaths.removeFirst(),nativeParentClass=nativeParents.removeFirst();
                 try{
                     // selectedRoot refreshed the root before graph metadata was read.
                     // Descendants may still be cached; never publish an old body as a new frame.
@@ -1058,11 +1067,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     if(useful){
                         ObservedChildText.Result childText=graph.rows.size()<MAX_NODES?observedChildText(node,background!=null):ObservedChildText.notApplicable();
                         if(graph.rows.size()<MAX_NODES&&characters+text.length()+description.length()+childText.text.length()<MAX_CHARACTERS){
-                            String id="n"+graph.rows.size();NodeRef reference=new NodeRef(node,childText,scrollActions,imeEnter,inputHash);graph.refs.put(id,reference);signatures.append(reference.appTreeSignature).append('\n');
+                            String id="n"+graph.rows.size();NodeRef reference=new NodeRef(node,childText,scrollActions,imeEnter,inputHash);graph.refs.put(id,reference);signatures.append(reference.appTreeSignature).append('|')
+                                    .append(nativePath).append('|').append(nativeParentClass).append('\n');
                             scrollStates.append(id).append('=').append(scrollActions.fingerprintInput()).append('\n');
                             boolean focused=node.isFocused();focusStates.append(id).append('=').append(focused).append('|').append(imeEnter.fingerprintInput()).append('|').append(inputHash).append('\n');
                             graph.rows.add(new PhoneObservation.Node(id,string(node.getPackageName()),string(node.getClassName()),limited(string(node.getViewIdResourceName()),96),text,description,bounds,node.isClickable(),node.isEditable(),node.isScrollable(),node.isEnabled(),focused,node.isPassword(),childText,scrollActions,imeEnter,inputHash,
-                                    node.isEditable()&&focused&&node.isEnabled()&&!node.isPassword()&&imeEnter.queryAllowed()&&submitAvailable(string(node.getPackageName()),inputHash),reference.appTreeSignature));
+                                    node.isEditable()&&focused&&node.isEnabled()&&!node.isPassword()&&imeEnter.queryAllowed()&&submitAvailable(string(node.getPackageName()),inputHash),reference.appTreeSignature,
+                                    nativePath.isEmpty()?null:nativePath,nativePath.isEmpty()?null:nativeParentClass));
                             characters+=text.length()+description.length()+childText.text.length();
                         }else{
                             graph.truncated=true;
@@ -1074,8 +1085,12 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     if(children<actualChildren){graph.truncated=true;childSlotsOmitted+=(long)actualChildren-children;}
                     for(int index=0;index<children;index++){
                         AccessibilityNodeInfo child=node.getChild(index);
-                        if(child!=null)queue.add(child);
-                        else if(background!=null)throw new StaleObservation("后台子树已变化，需重新观察");
+                        if(child!=null){
+                            queue.add(child);
+                            // Beyond this small position budget retain the node, but publish no hierarchy claim.
+                            nativePaths.add(nativePath.isEmpty()||nativePath.length()>=240?"":nativePath+"/"+index);
+                            nativeParents.add(limited(string(node.getClassName()),96));
+                        }else if(background!=null)throw new StaleObservation("后台子树已变化，需重新观察");
                     }
                 }finally{node.recycle();}
             }

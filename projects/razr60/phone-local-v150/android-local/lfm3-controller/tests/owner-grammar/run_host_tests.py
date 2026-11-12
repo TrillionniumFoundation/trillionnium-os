@@ -21,6 +21,7 @@ def main():
            'ObservedAppLabels','ObservedScrollActions','ObservedImeEnter','AppCatalogueRanker')
     inputs=[source/'src/org/trillionnium/hepta/local'/(name+'.java') for name in names]
     inputs += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget')]
+    inputs += [source/'src/org/trillionnium/hepta/local/web'/(name+'.java') for name in ('WebFlightGoal','WebShoppingGoal')]
     inputs.append(source/'tests/owner-grammar/OwnerGrammarHostTest.java')
     pins={str(p.relative_to(source)):hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs}
     for p in (source/'tests/owner-grammar/test_owner_grammar.py',source/'tests/action-grammar/gbnf_recognizer.py'):

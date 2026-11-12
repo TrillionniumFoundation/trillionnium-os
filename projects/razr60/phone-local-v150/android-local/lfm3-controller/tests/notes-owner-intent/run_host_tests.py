@@ -27,6 +27,8 @@ def main():
     files = [source / 'src/org/trillionnium/hepta/local' / (name + '.java') for name in names]
     files += [source / 'src/org/trillionnium/hepta/background' / (name + '.java')
               for name in ('FixedIntentTools', 'FixedIntentTarget')]
+    files += [source / 'src/org/trillionnium/hepta/local/web' / (name + '.java')
+              for name in ('WebFlightGoal', 'WebShoppingGoal')]
     files.append(source / 'tests/notes-owner-intent/NotesOwnerIntentHostTest.java')
     pins = {str(p.relative_to(source)): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     classes = out / 'classes'
