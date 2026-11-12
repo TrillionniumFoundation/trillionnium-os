@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.observer-blocked-io-negative-control.v1",
+  "android_io": "synthetic",
+  "phone_tested": false,
+  "native_inference": false,
+  "production_scheduling_unmodified": true,
+  "baseline_commit": "9ecf87f",
+  "records": [
+    {
+      "version": "v50",
+      "production_sha256": "66d92fe0bacd5c9b01dc8d980c3072e164aee67a5c692bcefa3edab318f1429a",
+      "fixture_sha256": "8175e57d73ed9686f30cc846b2c9d1a54b08b5e4804634bcaa49029823bd90de",
+      "stages": [
+        {
+          "name": "compile",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "name": "regression",
+          "exit_code": 1,
+          "stdout": "heartbeat_during_block=false deadline_during_block=false graph_io_thread_is_main=true\n",
+          "stderr": "Exception in thread \"main\" java.lang.AssertionError: main heartbeat blocked while graph IO is pending\n\tat org.trillionnium.hepta.local.ObserverPipelineHost.expect(ObserverPipelineHost.java:271)\n\tat org.trillionnium.hepta.local.ObserverPipelineHost.main(ObserverPipelineHost.java:295)\n"
+        }
+      ]
+    },
+    {
+      "version": "ported",
+      "production_sha256": "8f675aeb2c805a5bce2739e19a5fbb188597bc475c676d0b3620c792b041d55f",
+      "fixture_sha256": "bc4687a61d2df662399de8adeda2c7c0aaf8a87caada7b952f00318c93fe873b",
+      "stages": [
+        {
+          "name": "compile",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "name": "regression",
+          "exit_code": 0,
+          "stdout": "heartbeat_during_block=true deadline_during_block=true graph_io_thread_is_main=false\n",
+          "stderr": ""
+        }
+      ]
+    }
+  ]
+}
