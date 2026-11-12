@@ -1,5 +1,22 @@
 # Standalone local Android controller contract
 
+## Current entry point: v55 candidate
+
+The current source is versionCode 55, `0.55.0-local-unified-web-observation`.
+Read [UNIFIED-V55](docs/UNIFIED-V55.md) for its exact input commits, observation
+and Web-session lifecycle, background launch restrictions and unverified phone
+requirements, and [PUBLIC-BUILD](PUBLIC-BUILD.md) for its current build contract.
+The v55 build default remains the v53 LFM3/HTP profile with context 8192; explicit
+runtime configuration and profile pins control the effective task configuration.
+No current Android, inference or phone qualification follows from these defaults.
+
+## Historical v13 contract
+
+The following records the older v13 foreground-only boundary and 4096 default.
+It is retained as historical design context. Current behavior and qualification
+requirements are the v55 contract above; the historical version and resource
+values below are not current build settings.
+
 This subtree is a source-only candidate for `org.trillionnium.hepta.local`,
 versionCode 13 / 0.13.0-local-gemma4. It is outside the active Cargo/G1 delivery graph.
 It changes no owner-open protocol, protected package, ingress, claims, SELinux

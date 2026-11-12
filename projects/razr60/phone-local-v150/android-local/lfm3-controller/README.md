@@ -1,6 +1,39 @@
-# Hepta v52: remember explicit background UI choices
+# Hepta v55: preserve current Web and cancellation paths with responsive observation
 
-Current candidate: versionCode 52 (`0.52.0-local-background-preferences`), based on
+This standalone Android candidate integrates the complete v53 source at
+`7dee83d838b2c76b3abe3a3e61d7837316f40853`, the one-line split-identity correction
+from PR #145 (`78c464e27133c07d7b74392d18773581e6f182ae`), and PR #144's v54
+observation/configuration/completion changes at
+`7079f2eb499368c302aac00ca38099239a89519e`. The earlier v54 APK predates v53's
+Web helper and owned-worker cancellation; it is not an upgrade artifact for
+this integrated source. VersionCode is 55 (`0.55.0-local-unified-web-observation`).
+
+The process-wide observation worker and pending-read admission fence now coexist
+with the existing unreleased-Web-session fence. Recovery requires the observer,
+background display and Web session all to be idle or released. Late Stop still
+revokes both model and Notes-workflow completion after final installed-identity
+IO. Actual production admission/recovery methods are exercised together in the
+observer fixture, with explicit Android/Web state fakes. The strict host gate
+also executes the existing owned-worker cancellation test, including a real
+host child process with a delayed shutdown.
+
+The current v53 native cancellation source, model profiles, sampler, Web helper
+identity/receipt/domain logic and ordinary UID remain. The controller has no
+INTERNET permission; its sole uses-permission is the existing same-signer Web
+helper binding. Screenshots still are not image input to the ordinary text
+controller. Official-page observations do not establish completed flight search;
+flight results and shopping completion remain unimplemented in TaskCompletionGate.
+Background launches outside the existing standard/NONE fresh-task policy now
+refuse before dispatch: root-task metadata can omit buried activities and cannot
+justify a framework task-reuse mode. This deliberately narrows app compatibility.
+Action-side synchronous graph/identity checks can still delay the main looper.
+See [current integration contract](docs/UNIFIED-V55.md) for limits and deployment
+requirements. This source does not establish an Android build, signed APK,
+installation, GPU/NPU inference, simultaneous main-screen use or phone-task pass.
+
+## v52 predecessor: remember explicit background UI choices
+
+The v52 predecessor: versionCode 52 (`0.52.0-local-background-preferences`), based on
 frozen v51 commit `ed98f11db804f191a65254c378b195b1fb5f13be`.
 
 The normal Hepta launcher now remembers the user's explicit background-mode

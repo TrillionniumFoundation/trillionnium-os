@@ -39,6 +39,10 @@ final class BackgroundFreshnessHostTest {
         try{action.run();throw new AssertionError("expected snapshot identity refusal");}
         catch(IllegalStateException changed){check(!changed.getMessage().startsWith("stale:"),"identity must stay terminal");}
     }
+    static void budgetFailure(Runnable action){
+        try{action.run();throw new AssertionError("expected read budget refusal");}
+        catch(IllegalStateException stopped){check("synthetic read deadline".equals(stopped.getMessage()),"deadline must not be swallowed as a missing label/frame");}
+    }
     static void snapshots()throws Exception{
         test("background_snapshot_refreshes_root_before_metadata_and_children_before_text",()->{
             GraphSetup s=new GraphSetup();s.root.onRefresh=()->s.root.className="FreshRoot";s.child.onRefresh=()->s.child.text="fresh";
@@ -94,6 +98,29 @@ final class BackgroundFreshnessHostTest {
         test("foreground_snapshot_retains_existing_refresh_behavior",()->{
             GraphSetup s=new GraphSetup();s.fixture.background=null;s.fixture.foreground=s.root;s.root.window.display=0;s.child.window.display=0;s.capture();
             check(s.fixture.foregroundReads==1&&s.root.refreshes==0&&s.child.refreshes==0,"background fix does not change foreground sampler");
+        });
+        test("observation_budget_after_root_acquisition_releases_root",()->{
+            GraphSetup s=new GraphSetup();final boolean[] acquired={false};final int[] checks={0};
+            s.root.onRefresh=()->acquired[0]=true;
+            budgetFailure(()->s.fixture.budgetedSnapshot(()->{if(acquired[0]&&++checks[0]==2)throw new IllegalStateException("synthetic read deadline");}));
+            check(s.root.recycles==1&&s.child.refreshes==0,"root acquired before graph metadata is still released on budget expiry");
+        });
+        test("observation_budget_during_child_refresh_releases_partial_graph",()->{
+            GraphSetup s=new GraphSetup();final boolean[] expired={false};s.child.onRefresh=()->expired[0]=true;
+            budgetFailure(()->s.fixture.budgetedSnapshot(()->{if(expired[0])throw new IllegalStateException("synthetic read deadline");}));
+            check(s.root.recycles>=2&&s.child.recycles==1,"cancelled traversal releases captured root and child ownership");
+        });
+        test("observation_budget_in_label_collector_is_not_suppressed",()->{
+            GraphSetup s=new GraphSetup();s.root.text="";s.root.clickable=true;
+            s.child.editable=false;s.child.clickable=false;s.child.actionOverride=Collections.emptyList();
+            final boolean[] expired={false};s.child.onRefresh=()->expired[0]=true;
+            budgetFailure(()->s.fixture.budgetedSnapshot(()->{if(expired[0])throw new IllegalStateException("synthetic read deadline");}));
+            check(s.child.recycles==1&&s.fixture.foregroundReads==0,"label helper cannot turn cancelled background work into an empty fresh label");
+        });
+        test("foreground_observation_budget_after_root_acquisition_releases_root",()->{
+            GraphSetup s=new GraphSetup();s.fixture.background=null;s.fixture.foreground=s.root;s.root.window.display=0;
+            final int[] checks={0};budgetFailure(()->s.fixture.budgetedSnapshot(()->{if(++checks[0]==3)throw new IllegalStateException("synthetic read deadline");}));
+            check(s.root.recycles==1&&s.root.refreshes==0,"foreground root remains owned even when expiry precedes metadata");
         });
     }
     static final class DispatchSetup implements AutoCloseable {
