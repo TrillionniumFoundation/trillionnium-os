@@ -1,0 +1,100 @@
+# Host evidence only. The full runtime and Android workflow remains unchanged.
+name: Hepta local strict host contracts
+
+on:
+  pull_request:
+    paths:
+      - 'projects/razr60/phone-local-v150/android-local/lfm3-controller/**'
+      - 'projects/razr60/phone-local-v150/android-local/validation/**'
+      - '.github/workflows/hepta-local-host.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  host-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      HEPTA_SOURCE: projects/razr60/phone-local-v150/android-local/lfm3-controller
+      PYTHONDONTWRITEBYTECODE: '1'
+      SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out the exact candidate source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Assert exact candidate checkout
+        run: test "$(git rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Set up Java
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Verify complete source closure
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: python -B tools/verify_source.py
+      - name: Run host contracts
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: python -B tools/run_host_checks.py --out "$RUNNER_TEMP/hepta-host-checks"
+      - name: Run independent core acceptance regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/core-phone-suite
+        run: python -B -m unittest -v test_core_assertions.py
+      - name: Run independent GPU evidence regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/gpu-runtime
+        run: python -B -m unittest -v test_gpu_log_validation.py
+      - name: Run independent lifecycle guard regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/lifecycle
+        run: python -B -m unittest -v test_lifecycle_guards.py
+      - name: Run compatible base-driver regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/compat-drivers-v1
+        run: python -B -m unittest -v test_phone_acceptance test_phone_suite test_phone_inventory
+      - name: Run core-v2 goal and ordering regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/core-phone-suite-v2
+        env:
+          HEPTA_CORE_TEST_DRIVERS: ../compat-drivers-v1
+        run: python -B -m unittest -v test_core_assertions.py
+      - name: Run lifecycle path-binding regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/lifecycle-v2
+        run: python -B -m unittest -v test_lifecycle_guards.py
+      - name: Run offline-transaction restoration regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/offline-network-v1
+        run: python -B -m unittest -v test_offline_transaction.py
+      - name: Run display-scoped lifecycle regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/lifecycle-v3
+        run: python -B -m unittest -v test_lifecycle_guards.py
+      - name: Run qualified-data-key offline regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/offline-network-v2
+        run: python -B -m unittest -v test_offline_transaction.py
+      - name: Run exact-pixel lifecycle regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/lifecycle-v4
+        run: python -B -m unittest -v test_lifecycle_guards.py
+      - name: Run physical-directory and live Stop guard regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/lifecycle-v5
+        run: python -B -m unittest -v test_lifecycle_guards.py
+      - name: Run current offline-restoration transaction regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/offline-network-v3-public
+        run: python -B -m unittest -v test_offline_transaction.py
+      - name: Test fixed-release transport adapter
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/geniex-ci-transport-v1
+        run: python -B -m unittest -v test_fetch_verified_runtime.py
+      - name: Preserve strict host reports and logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-strict-host-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/hepta-host-checks/HOST-CHECKS.json
+            ${{ runner.temp }}/hepta-host-checks/**/*.json
+            ${{ runner.temp }}/hepta-host-checks/**/*.stdout
+            ${{ runner.temp }}/hepta-host-checks/**/*.stderr
