@@ -68,7 +68,7 @@ public final class BackgroundSessionHostTest {
     static final class Env implements AutoCloseable {
         final Path directory;final Context context;final BackgroundSession session;
         Env()throws Exception{this(null);}
-        Env(String extra)throws Exception{directory=Files.createTempDirectory("hepta-background-client-");context=new Context(directory.toFile());Set<String> allowed=new TreeSet<String>(Arrays.asList(PKG,OTHER));if(extra!=null)allowed.add(extra);session=new BackgroundSession(context,TASK,"写备忘录",new BackgroundSession.Selection(PKG,allowed),new QualificationScopeConfig.FilesRoot(context));}
+        Env(String extra)throws Exception{directory=Files.createTempDirectory("hepta-background-client-").toRealPath();context=new Context(directory.toFile());Set<String> allowed=new TreeSet<String>(Arrays.asList(PKG,OTHER));if(extra!=null)allowed.add(extra);session=new BackgroundSession(context,TASK,"写备忘录",new BackgroundSession.Selection(PKG,allowed),new QualificationScopeConfig.FilesRoot(context));}
         void active()throws Exception{context.displays.displays.put(7,new Display(7,session.displayName));
             JSONObject receipt=decode(response(frame(request(session.generation,"state").toString().getBytes(StandardCharsets.UTF_8)),"ACTIVE",7,true,false));
             invoke(session,"accept",new Class<?>[]{JSONObject.class,boolean.class},receipt,true);

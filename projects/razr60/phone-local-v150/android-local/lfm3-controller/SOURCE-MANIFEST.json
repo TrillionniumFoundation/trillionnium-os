@@ -6099,8 +6099,8 @@
     },
     {
       "path": "tests/background-session/BackgroundSessionHostTest.java",
-      "bytes": 31060,
-      "sha256": "36d99ae364c928657a93d8d94f51ab1dba3e54d7e540a1f5e8e8135fce1e22a0"
+      "bytes": 31073,
+      "sha256": "97761e57bb423d9c57bf1049798551d5368befae44ce167fcd76670974b150d2"
     },
     {
       "path": "tests/background-session/BackgroundTaskTargetHostTest.java",
