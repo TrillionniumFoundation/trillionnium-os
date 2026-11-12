@@ -1,0 +1,145 @@
+{
+  "schema": "hepta.notes56-runtime-publisher-independent-source-review.v1",
+  "status": "source_review_completed_no_new_blocker_in_reviewed_scope",
+  "reviewer": "android_background",
+  "reviewed_handoff": {
+    "git_blob_sha": "0b460d7e368b7e99027b1f05770f93975e509b6f",
+    "bytes": 28419,
+    "sha256": "18a736c8761f61dab6d7fd1a51d58c771891fe476cb625e00826a843ffdbc973"
+  },
+  "baseline": {
+    "git_blob_sha": "090440bf0ccd9db20514836e2f9107d8c6a115b3",
+    "bytes": 9626,
+    "sha256": "0d7822a9a10ffb4ed7d1f5e39c718bd328c725abe39e1324bdfdbfb01c5c8f35",
+    "actual_root_publication_checkpoint": "be992de088a1df49e0def606c8129181053a5ff8"
+  },
+  "source": {
+    "git_blob_sha": "fecf7d45146eb88217d65d340ddba8769f65e858",
+    "bytes": 12856,
+    "sha256": "9da2bb884245f86b6e6919a63421456f0f5dac885f898166ff3f04c9e2e31859"
+  },
+  "request": {
+    "bytes": 177537,
+    "sha256": "359c15c952881ea00e57faf37c94506688cc0527e74e0620bf842099eb102570",
+    "git_blob_sha": "367d7574a2453066bcbd7f6156ae65eeea38c64c"
+  },
+  "candidate": {
+    "bytes": 429474,
+    "sha256": "f12491cf49bae005a4e24f35130fa9bba51fc4ae043720f08450c1817625374a",
+    "git_blob_sha": "d7fae9ab2144159efb367bad19a71ccd2bac6980"
+  },
+  "mechanical_review": {
+    "ordered_replacements": 16,
+    "forward_exact": true,
+    "reverse_exact": true,
+    "unchanged_helpers": [
+      "need",
+      "sha",
+      "file_id",
+      "dir_id",
+      "pairs",
+      "no_constant",
+      "directories",
+      "read_exact",
+      "remove_own_temp"
+    ],
+    "fixed_path_guard": "background-notes-adapters-v56-r1",
+    "fixed_target_count": 14,
+    "python_source_count": 11,
+    "immutable_json_plan_count": 3,
+    "no_generic_path_parameter": true,
+    "full_payload_validation_before_any_filesystem_mutation": true,
+    "existing_samebytes_reuse_and_refusal_to_overwrite_unchanged": true,
+    "atomicity": "Each final file is separately published with a create-only hard link after full owned temporary readback; the multi-file batch is not a transaction. Partial successes remain recorded and unchanged.",
+    "failure_cleanup": "Only temporary files whose device/inode identity belongs to this invocation are removed. Published final files and pre-existing files are not deleted.",
+    "directory_chain_and_stable_regular_single_link_readback_unchanged": true
+  },
+  "transport_review": {
+    "host": "pocket4",
+    "executable": "/usr/bin/python3",
+    "prefix": [
+      "-I",
+      "-B",
+      "-c"
+    ],
+    "same_verified_source_raw": true,
+    "argument_bytes": [
+      2,
+      2,
+      2,
+      12856,
+      65536,
+      65536,
+      32668
+    ],
+    "fragments": [
+      {
+        "index": 0,
+        "bytes": 65536,
+        "sha256": "9b0d0abfa92f690ff443c3008f8164b8ac2729df0e276a6a5e63663d66de1bc5"
+      },
+      {
+        "index": 1,
+        "bytes": 65536,
+        "sha256": "8120d14b2e5dd7590815e824778a85c574a0888910929ebb4ad470e7da11ff56"
+      },
+      {
+        "index": 2,
+        "bytes": 32668,
+        "sha256": "02337e780d6049c58fb14acd8f91049ff173df81b3a83f2dd8a1531f123d9978"
+      }
+    ],
+    "payload": {
+      "bytes": 387384,
+      "sha256": "129cf27db90ae945b886ec2fda094f99f33f4ce7983cc7bc9edf2506b4c8104b",
+      "gzip_bytes": 122803,
+      "gzip_sha256": "e66be4a859ae361a24facf3a2f2500a8127a1a2545d1d3e8e6cff9323a53257f",
+      "base64_argument_bytes": 163740,
+      "base64_argument_sha256": "e98d01de766c00819836ae17775e5f9b1671b9918e10e9bbcb1a3033ac305cd8",
+      "fragments": [
+        {
+          "index": 0,
+          "bytes": 65536,
+          "sha256": "9b0d0abfa92f690ff443c3008f8164b8ac2729df0e276a6a5e63663d66de1bc5"
+        },
+        {
+          "index": 1,
+          "bytes": 65536,
+          "sha256": "8120d14b2e5dd7590815e824778a85c574a0888910929ebb4ad470e7da11ff56"
+        },
+        {
+          "index": 2,
+          "bytes": 32668,
+          "sha256": "02337e780d6049c58fb14acd8f91049ff173df81b3a83f2dd8a1531f123d9978"
+        }
+      ]
+    },
+    "canonical_base64": true,
+    "gzip_crc_and_complete_decompressed_sha256_verified": true,
+    "all_fourteen_payloads_exact_candidate_raw": true,
+    "exact_full_framing": true
+  },
+  "plan_review": {
+    "strict_utf8": true,
+    "duplicate_json_keys_rejected_by_existing_pairs": true,
+    "nonfinite_json_constants_rejected": true,
+    "required_schema": "hepta.moto-note-plan.v56-comma-prefix-r1",
+    "target_package": "com.motorola.stylus",
+    "phone_tested_required_false": true,
+    "raw_plan_hashes_equal_previously_reviewed_d7fa_candidate": true,
+    "plan_scope_not_extended": true
+  },
+  "limits": {
+    "source_only": true,
+    "python_syntax_execution_performed_here": false,
+    "host_calls": 0,
+    "phone_actions": 0,
+    "new_test_suite": false,
+    "runtime_sources_not_imported_or_executed": true,
+    "entry_wrappers_not_in_payload": true,
+    "actual_installed_identity_not_sealed_by_this_review": true,
+    "no_claim_of_actual_publication_or_phone_acceptance": true,
+    "unrelated_original_runtime_algorithms_not_reaudited": true
+  },
+  "outcome": "No concrete source or transport blocker found in the 16 scoped changes. Execution remains the parent's separately authorized operation."
+}

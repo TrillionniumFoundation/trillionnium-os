@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.root-notes56-normal-start-visual-review.v1",
+  "preparation": {
+    "git_blob": "c7d1df12dc029c5db8339a2a10c0f37aad3d2155",
+    "bytes": 20158,
+    "sha256": "61a7aa90efb1fffb14e4f21cdec6c389b4ecb1bf644a559c95f8d9e747cc743a",
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-prepare-r1/RESULT.json"
+  },
+  "whole_original_png_sha256": "b4dfc3dbe96dc1cab4f9149eb26eeb4789bf098a124ec74a9461e0cda756db8b",
+  "whole_original_png_bytes": 200620,
+  "whole_original_png_dimensions": [
+    1224,
+    2992
+  ],
+  "root_full_frame_visually_reviewed": true,
+  "exact_instruction_visible": "记一下，Hepta-v56r1-fa843f7020b3 明天下午3点看牙，带上检查资料。",
+  "instruction_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+  "automatic_target_visible": "Moto 笔记",
+  "background_checked": true,
+  "saved_app_count": 2,
+  "start_point": [
+    180,
+    1114
+  ],
+  "start_bounds": [
+    48,
+    1042,
+    312,
+    1186
+  ],
+  "start_enabled": true,
+  "stop_disabled": true,
+  "keyboard_or_overlay": false,
+  "prior_failed_flight_status_visible": true,
+  "one_ordinary_start_authorized": true,
+  "phone_action_issued_by_review": false,
+  "sealed_run": {
+    "git_blob": "db66b1fe6fb700d3e1d308f47f0d49bf8f62c1b3",
+    "path": "/home/alex/hepta-local-007f-20261111/ROOT-NOTES56-NORMAL-RUN-r1.py",
+    "bytes": 3365,
+    "sha256": "af5fbdcb95a876f8354bf64191f4ecd8823ee3c05a1cd1dc6efdb2712a1acb27"
+  },
+  "base": {
+    "git_blob": "1780904a6ac6832ec46e6d3e4dc3f46c69968fa1",
+    "sha256": "7280c79c5fe7c6f5e4a0a0dd94633328418bbda8146de01f4ed6bffad1c6ae53",
+    "bytes": 3173
+  },
+  "six_values_five_replacement_groups": [
+    {
+      "before": "\"--expected-uid\",None",
+      "after": "\"--expected-uid\",\"10481\""
+    },
+    {
+      "before": "\"--preparation-sha256\",None",
+      "after": "\"--preparation-sha256\",\"61a7aa90efb1fffb14e4f21cdec6c389b4ecb1bf644a559c95f8d9e747cc743a\""
+    },
+    {
+      "before": "\"--start-tap\",None,None",
+      "after": "\"--start-tap\",\"180\",\"1114\""
+    },
+    {
+      "before": "\"--prepared-screen-sha256\",None",
+      "after": "\"--prepared-screen-sha256\",\"b4dfc3dbe96dc1cab4f9149eb26eeb4789bf098a124ec74a9461e0cda756db8b\""
+    },
+    {
+      "before": "\"--prepared-window-dump-sha256\",None",
+      "after": "\"--prepared-window-dump-sha256\",\"91852b540875fc1807441c4d34a75b45e614b7b8e6357a2aa8ccdd2d7d564121\""
+    }
+  ]
+}

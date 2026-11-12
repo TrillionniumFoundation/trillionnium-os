@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.flight56-runtime-publisher-r2-minimal-fix.v1",
+  "status": "source-only-not-executed",
+  "original_failure": {
+    "git_blob_sha": "2c8efa16ec8b804e84dd547419d9211e27a95222",
+    "bytes": 6718,
+    "sha256": "2462b99de34902c88666344feb207aceecfc1f4311d899a18e2a8abbfeb7b9cd",
+    "exit_code": 1,
+    "published": [],
+    "phone_contacted": false,
+    "runtime_imported": false,
+    "runtime_executed": false
+  },
+  "base_source": {
+    "git_blob_sha": "bbc4f1ffd31068d82522cf0f9d15bab500ed54bd",
+    "bytes": 9626,
+    "sha256": "6fd65bb6d47cc2f33fc81fd110bc117b502ea339bc189fa05f6d09aa269c02ed"
+  },
+  "source": {
+    "git_blob_sha": "090440bf0ccd9db20514836e2f9107d8c6a115b3",
+    "bytes": 9626,
+    "sha256": "0d7822a9a10ffb4ed7d1f5e39c718bd328c725abe39e1324bdfdbfb01c5c8f35"
+  },
+  "source_replacements": [
+    {
+      "before": "component==\"background-web-adapters-v55-r1\"",
+      "after": "component==\"background-web-adapters-v56-r1\"",
+      "count": 1
+    },
+    {
+      "before": "TRANSPORT_KEY=\"007f-web56-runtime-three-source-publish-r1\"",
+      "after": "TRANSPORT_KEY=\"007f-web56-runtime-three-source-publish-r2\"",
+      "count": 1
+    }
+  ],
+  "ordered_forward_and_reverse_exact": true,
+  "base_request": {
+    "git_blob_sha": "5122f53d26ffb238f3e9d03a88ca263b69912e6f",
+    "bytes": 62957,
+    "sha256": "d9d32277d0b10c2681f5b91dbfcf23989a72973ca2607f6b599fc532d9f7b1e2"
+  },
+  "request": {
+    "git_blob_sha": "da7c612e516e2ba1e641a8b332291a60c6e07a5d",
+    "bytes": 62957,
+    "sha256": "07cf0cc74e6d2fe9c6662c4ba3d422dd48e161fbdd23faaba55784b839a308d4"
+  },
+  "request_changes": [
+    "args[3] contains only the two exact source replacements above",
+    "idempotency_key becomes 007f-web56-runtime-three-source-publish-r2"
+  ],
+  "other_request_fields_byte_identical": true,
+  "fixed_destination_directory": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v56-r1",
+  "runtime_payload_unchanged": {
+    "base64_bytes": 52584,
+    "base64_sha256": "5fa5f34fb08bd7c2b3497610a47c4b2b29d7aa9cf23da16f553bf34d95442038",
+    "gzip_bytes": 39436,
+    "gzip_sha256": "4aa5958f2130c77ada05ea4d64a5e46bc16d1ae4ac97f896b87b7095a76fdd76",
+    "raw_bytes": 131787,
+    "raw_sha256": "bff9bf4a9486a4840f7441e9e0eb8f53226d0ed12dff98692233b9a7661f0a8a",
+    "all_three_runtime_sources_and_pins_unchanged": true
+  },
+  "remaining_version55_literals": [],
+  "other_digit55_occurrences": [
+    {
+      "line": 8,
+      "kind": "hexadecimal substring within unchanged ARGV_SHA"
+    },
+    {
+      "line": 71,
+      "kind": "65536 read chunk limit; not a version or path guard"
+    }
+  ],
+  "unchanged_scope": "Compile-only fixed three-file atomic publication; no runtime import or execution, no phone. Original failed attempt preserved. Actual new publication remains pending Root execution.",
+  "h_operations_performed_here": 0
+}

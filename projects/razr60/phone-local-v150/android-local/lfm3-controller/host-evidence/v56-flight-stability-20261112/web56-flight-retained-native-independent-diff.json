@@ -1,0 +1,454 @@
+{
+  "schema": "hepta.flight56-retained-native-ad-diff.v1",
+  "status": "independent read-only comparison of actual originals; no production edit or new host gate",
+  "input_envelope": {
+    "git_blob_sha": "deb73e79d18eb3fe408ff2dded8cc8e14342800a",
+    "bytes": 1757497,
+    "sha256": "41df2d70db7f42465ba5306cb139fe9a85b28f5e63d0c6a737cbee51b68dba2f",
+    "text_members": 58,
+    "all_included_member_bytes_sha256_verified": true
+  },
+  "task_id": "11f5735392b2402495a19e1ed5474d13",
+  "exact_originals": [
+    {
+      "relative_path": "evidence/task/scope-observation-6436293de5f04fb99821393e03e4566c.json",
+      "bytes": 71804,
+      "sha256": "2a6176bb64d415eb1a81c9330bf52721589a966c749ddc75f4eb79cdfa0a124d",
+      "git_blob_sha": "6bef9ae4789c97e7f5dfdafc9e350dd9901c5e64"
+    },
+    {
+      "relative_path": "evidence/task/scope-observation-c6fc903caded4a2cacaa6bf9291c5a80.json",
+      "bytes": 71804,
+      "sha256": "df5d1451477b382917e5fa9e6a23baf3506ac5fc153c4ee80a7159d6283089b7",
+      "git_blob_sha": "12b6acf80230dd033947314f6d6dc83d45ddd2c2"
+    }
+  ],
+  "comparison": {
+    "algorithm": "Exact recursive equality over parsed object keys and ordered arrays; no field normalization. Nanosecond envelope identities are not reserialized as originals.",
+    "scope_leaf_differences": 41,
+    "node_leaf_differences": 30,
+    "changed_retained_node_indices": [
+      35,
+      36,
+      37,
+      46,
+      47,
+      48
+    ],
+    "retained_nodes": [
+      49,
+      49
+    ],
+    "visited_nodes": [
+      89,
+      89
+    ],
+    "non_ad_records_unchanged": true,
+    "non_ad_record_count": 43,
+    "slider_root": {
+      "id": "n25",
+      "native_path": "0/2/0/6/0",
+      "view_id": "slider4",
+      "complete_object_equal": true
+    },
+    "all_changed_retained_native_records_inside_slider_descendants": true
+  },
+  "identity_unchanged": {
+    "window": true,
+    "observation_background_session": true,
+    "lease_selection": true,
+    "qualification_scope": true,
+    "task_authorization": true,
+    "package_rotation_dimensions": true,
+    "ime_visible": false,
+    "ime_visible_equal": true,
+    "nodes_truncated": [
+      false,
+      false
+    ]
+  },
+  "window_original": {
+    "scope": "active_root_only",
+    "metadata_status": "observed",
+    "window_id": 3598,
+    "root_bounds": [
+      0,
+      0,
+      720,
+      1280
+    ],
+    "root_class": "android.widget.FrameLayout",
+    "root_class_truncated": false,
+    "type": 1,
+    "display_id": 24,
+    "bounds": [
+      0,
+      0,
+      720,
+      1280
+    ],
+    "title": "Hepta 网页",
+    "title_truncated": false
+  },
+  "complete_background_selection": {
+    "mode": "background",
+    "allowed_packages": [
+      "org.trillionnium.hepta.webhelper"
+    ],
+    "bootstrap_package": "org.trillionnium.hepta.webhelper",
+    "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+    "bootstrap_model_issued": false,
+    "main_display_fallback": false,
+    "home_allowed": false,
+    "owner_task_selection": {
+      "schema": "hepta.owner-task-app-selection.v1",
+      "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+      "recognition": "natural_explicit_date_single_adult_flight_query.v1",
+      "original_ui_initial_package": "com.motorola.stylus",
+      "original_ui_allowed_packages": [
+        "com.motorola.stylus",
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "effective_initial_package": "org.trillionnium.hepta.webhelper",
+      "effective_allowed_packages": [
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "effective_scope_within_selected_apps": true,
+      "effective_scope_strictly_smaller": true,
+      "initial_app_changed": true,
+      "package_from_model_or_screen": false,
+      "grants_tool_authority": false,
+      "changes_saved_preferences": false
+    },
+    "generation": "2598e051-6b5a-4126-8263-7c132605bc3d",
+    "display_id": 24
+  },
+  "booking_record": {
+    "id": "n38",
+    "bounds": [
+      162,
+      568,
+      360,
+      706
+    ],
+    "package": "org.trillionnium.hepta.webhelper",
+    "class_name": "android.widget.Button",
+    "text": "机票预订按钮，点按两次即可激活",
+    "node_app_tree_sha256": "9c6347cee303a42ebc5283e7415608088cece81caba8b3b5932f1ccf9b5cfdbf",
+    "native_tree_position": {
+      "schema": "hepta.native-tree-position.v1",
+      "path": "0/2/0/7/1/0",
+      "parent_class": "android.view.View",
+      "source": "same_bounded_accessibility_traversal",
+      "grants_action_capability": false
+    },
+    "clickable": true,
+    "scroll_actions_observed": true,
+    "scroll_directions": [],
+    "input_text_sha256": null,
+    "ime_enter": {
+      "schema": "hepta.observed-ime-enter.v1",
+      "observed": true,
+      "present": false,
+      "action_label": null,
+      "action_label_sha256": null,
+      "query_allowed": false,
+      "reason_code": "ime_action_unavailable"
+    },
+    "submit_available": false
+  },
+  "booking_record_equal": true,
+  "banner_and_booking_bounds": {
+    "banner": [
+      0,
+      313,
+      720,
+      571
+    ],
+    "booking": [
+      162,
+      568,
+      360,
+      706
+    ],
+    "intersection": [
+      162,
+      568,
+      360,
+      571
+    ],
+    "existing_overlap_px_height": 3,
+    "whole_card_visibility_claimed": false,
+    "rectangle_intersection_is_not_platform_hit_test": true
+  },
+  "traversal": {
+    "before": {
+      "schema": "hepta.observation-collection.v1",
+      "source": "same_observed_accessibility_traversal",
+      "visit_limit": 1536,
+      "node_limit": 512,
+      "text_utf16_exclusive_limit": 32768,
+      "visited_nodes": 89,
+      "retained_nodes": 49,
+      "retained_text_utf16": 660,
+      "pending_nodes_at_stop": 0,
+      "child_slots_omitted_by_traversal_limit": 0,
+      "nodes_omitted_by_node_limit": 0,
+      "nodes_omitted_by_text_limit": 0,
+      "truncation_reasons": [],
+      "elapsed_ms": 93,
+      "unvisited_descendant_count_known": false,
+      "grants_action_capability": false
+    },
+    "after": {
+      "schema": "hepta.observation-collection.v1",
+      "source": "same_observed_accessibility_traversal",
+      "visit_limit": 1536,
+      "node_limit": 512,
+      "text_utf16_exclusive_limit": 32768,
+      "visited_nodes": 89,
+      "retained_nodes": 49,
+      "retained_text_utf16": 660,
+      "pending_nodes_at_stop": 0,
+      "child_slots_omitted_by_traversal_limit": 0,
+      "nodes_omitted_by_node_limit": 0,
+      "nodes_omitted_by_text_limit": 0,
+      "truncation_reasons": [],
+      "elapsed_ms": 86,
+      "unvisited_descendant_count_known": false,
+      "grants_action_capability": false
+    },
+    "unretained_40_node_contents_not_serialized_in_these_originals": true
+  },
+  "original_frame_order": {
+    "basis": "recorded app_display_readback device elapsed time",
+    "before_observation_id": "6436293de5f04fb99821393e03e4566c",
+    "before_app_readback": [
+      862349210,
+      862349210
+    ],
+    "after_observation_id": "c6fc903caded4a2cacaa6bf9291c5a80",
+    "after_app_readback": [
+      862350960,
+      862350961
+    ]
+  },
+  "exact_leaf_differences": [
+    {
+      "path": "/observation/observation_id",
+      "a": "6436293de5f04fb99821393e03e4566c",
+      "b": "c6fc903caded4a2cacaa6bf9291c5a80"
+    },
+    {
+      "path": "/observation/screen_sha256",
+      "a": "3e0e4393ee9bf9485f353d89c7dcf4a3f8d53de746e9d86d4c068fe4cb9479bf",
+      "b": "5ba5291872eb3766cba5fc2dbb8344a19f992a5a40ae3aaa156ce9e13038788b"
+    },
+    {
+      "path": "/observation/app_tree_sha256",
+      "a": "32f55f3f7acb7894fd1a9068ede0a9827211428407b0835921ec3ae01a8b113b",
+      "b": "25d2492949975c69c97ce7ede9b8efb8763d53e13385470d3d7f3000e1384cb5"
+    },
+    {
+      "path": "/observation/observation_state_sha256",
+      "a": "560e7c57dc5889ffa08e3133eea4e3704b8f3bd5cdc4dee7321e2eaeaa7c85c3",
+      "b": "a9f88ea05b5040e0744b59d450cc777fd23ca7ff44a1d00f2c8cd963298dc828"
+    },
+    {
+      "path": "/observation/collection/elapsed_ms",
+      "a": 93,
+      "b": 86
+    },
+    {
+      "path": "/observation/nodes/35/child_text",
+      "a": "a13da43e5c8c457fa7c1392f7aebeaed",
+      "b": "c63a71c015aa4b51a29e101d2f4c518b"
+    },
+    {
+      "path": "/observation/nodes/35/child_text_root_signature",
+      "a": "9e87518e486a0d3d4531493a6f795c6a9d0d154e4225cddc2645f42b6ea9dae0",
+      "b": "01394d6f3ecac501c86aff1f306fe82a854aba5345154a361e65231ac6285569"
+    },
+    {
+      "path": "/observation/nodes/35/child_text_sources/0/text_sha256",
+      "a": "efa1fa9b8c9f35e8f617f4cf58b53d38558208ad86f596a0fd8bd040dce51a1d",
+      "b": "d86c9f7a5ae82785d905ffa906e0b0dcfc3c4dc380a33123248d850b8c97e3d4"
+    },
+    {
+      "path": "/observation/nodes/35/child_text_sources/0/node_signature",
+      "a": "877342da5130bbcddbd91e2b0864c30498557e7c8bdff5060bbd2905a8f08312",
+      "b": "cd2f13f7d2f744afacf8f7a252d47aa59c0c7e5789b88cbea670a2c643ea0974"
+    },
+    {
+      "path": "/observation/nodes/35/view_id",
+      "a": "advertising3",
+      "b": "advertising2"
+    },
+    {
+      "path": "/observation/nodes/35/node_app_tree_sha256",
+      "a": "a2e37c6590e0927fddced53019e95b9967d4e6e82f51fc790a6e9bf5033d402e",
+      "b": "5439957090643f1ba512d89951358e8a6481932b9d668fbc9832f020cd74e9d7"
+    },
+    {
+      "path": "/observation/nodes/35/native_tree_position/path",
+      "a": "0/2/0/6/0/3",
+      "b": "0/2/0/6/0/4"
+    },
+    {
+      "path": "/observation/nodes/36/child_text",
+      "a": "c63a71c015aa4b51a29e101d2f4c518b",
+      "b": "4273a6ba219449e1997003ee4dbd4392"
+    },
+    {
+      "path": "/observation/nodes/36/child_text_root_signature",
+      "a": "ac928fa0c2180d12dc86e036e97118b72d9584986d9548dff0a891541d7581e6",
+      "b": "c2f1d9cb92b548df1b951a320d98847bbfc64b092c1ddd8b3bd875ccfff58a16"
+    },
+    {
+      "path": "/observation/nodes/36/child_text_sources/0/text_sha256",
+      "a": "d86c9f7a5ae82785d905ffa906e0b0dcfc3c4dc380a33123248d850b8c97e3d4",
+      "b": "f3aa6d1f9471cb6f2f002be81f9abdf327551637e1265b1e0592a71ab0354a92"
+    },
+    {
+      "path": "/observation/nodes/36/child_text_sources/0/node_signature",
+      "a": "853f9cf5367ac41d87d54f56e4bc5e6d0c7d7da962d15979eab41da0ac9837c7",
+      "b": "5459636dd1b1a8159578749c4317171790b5172148e6e6735af02b7046d2f195"
+    },
+    {
+      "path": "/observation/nodes/36/view_id",
+      "a": "advertising2",
+      "b": "advertising1"
+    },
+    {
+      "path": "/observation/nodes/36/node_app_tree_sha256",
+      "a": "d9a851a450863e7fe654c24f9e91d1789f19ae319a5af0ed5bfbd6a87a1e8457",
+      "b": "825e00c51e0f7d71542099b0a8a347b834cc6aaa4cee56c30392a547336e337f"
+    },
+    {
+      "path": "/observation/nodes/36/native_tree_position/path",
+      "a": "0/2/0/6/0/4",
+      "b": "0/2/0/6/0/5"
+    },
+    {
+      "path": "/observation/nodes/37/child_text",
+      "a": "4273a6ba219449e1997003ee4dbd4392",
+      "b": "1d903d702ae74d3aaed486ea5b4794e1"
+    },
+    {
+      "path": "/observation/nodes/37/child_text_root_signature",
+      "a": "40f8ae983a061f48ea8fdbc3650c56bd25235dbddfb1c64a81205e0efea37df9",
+      "b": "669907e8e3c7f0cb4ae866b1b019b0d68140a13ae90559480740c3af1077b82b"
+    },
+    {
+      "path": "/observation/nodes/37/child_text_sources/0/text_sha256",
+      "a": "f3aa6d1f9471cb6f2f002be81f9abdf327551637e1265b1e0592a71ab0354a92",
+      "b": "5a00ff8a8988a85dfdbddfa3d7c00ddaed0c3462459b7c421b38f42a535711c7"
+    },
+    {
+      "path": "/observation/nodes/37/child_text_sources/0/node_signature",
+      "a": "9326ab611724e7913d4bee1d0bdfed3339d9b240b98395426de86531a6bf590f",
+      "b": "db9fcc6c0b78b8926bb3cf356f8db903fe0af83df47151d8d2b6fc3189c56675"
+    },
+    {
+      "path": "/observation/nodes/37/view_id",
+      "a": "advertising1",
+      "b": "advertising0"
+    },
+    {
+      "path": "/observation/nodes/37/node_app_tree_sha256",
+      "a": "de7ee2390340808e96a794a0ac8012fb37c95cf5733a02450e460db257801539",
+      "b": "3f944fd58c233041790760d36b5d4fed9a9df017f0a56702808bca6266da8b37"
+    },
+    {
+      "path": "/observation/nodes/37/native_tree_position/path",
+      "a": "0/2/0/6/0/5",
+      "b": "0/2/0/6/0/6"
+    },
+    {
+      "path": "/observation/nodes/46/text",
+      "a": "a13da43e5c8c457fa7c1392f7aebeaed",
+      "b": "c63a71c015aa4b51a29e101d2f4c518b"
+    },
+    {
+      "path": "/observation/nodes/46/node_app_tree_sha256",
+      "a": "23eb765141e5f5e1d31f8bd7b47f9a8bb4208ae501496a2c91078bd06f55619c",
+      "b": "1af5e1018e15bdfd96b8477be5f79904ddfffb4a0cd6048bf2860fa440fd0762"
+    },
+    {
+      "path": "/observation/nodes/46/native_tree_position/path",
+      "a": "0/2/0/6/0/3/0",
+      "b": "0/2/0/6/0/4/0"
+    },
+    {
+      "path": "/observation/nodes/47/text",
+      "a": "c63a71c015aa4b51a29e101d2f4c518b",
+      "b": "4273a6ba219449e1997003ee4dbd4392"
+    },
+    {
+      "path": "/observation/nodes/47/node_app_tree_sha256",
+      "a": "2aa0037ec6c8a9b23ea51a7865dd7a31fe306fd7b2c07b0c4183a08fb19f2559",
+      "b": "77a65f96311d89b3668622b74c2cd93e97a3f9f02a682a24dd8e7b2590e2dbd1"
+    },
+    {
+      "path": "/observation/nodes/47/native_tree_position/path",
+      "a": "0/2/0/6/0/4/0",
+      "b": "0/2/0/6/0/5/0"
+    },
+    {
+      "path": "/observation/nodes/48/text",
+      "a": "4273a6ba219449e1997003ee4dbd4392",
+      "b": "1d903d702ae74d3aaed486ea5b4794e1"
+    },
+    {
+      "path": "/observation/nodes/48/node_app_tree_sha256",
+      "a": "4b85e147aea449bb3dc6e971cadb524957c5a5df1738a3e29b61b0cc5672e814",
+      "b": "5b39efa5c8d042faa5825030f981150bb0d0cf2791c7e18f2050dc6f304aca20"
+    },
+    {
+      "path": "/observation/nodes/48/native_tree_position/path",
+      "a": "0/2/0/6/0/5/0",
+      "b": "0/2/0/6/0/6/0"
+    },
+    {
+      "path": "/background_session/app_display_readback/broker_request_id",
+      "a": "e3aa7fb8-1211-4fc7-8d10-a127bd62e1d4",
+      "b": "04116952-84bc-4068-ab15-b9060aedf68d"
+    },
+    {
+      "path": "/background_session/app_display_readback/observed_started_elapsed_ms",
+      "a": 862349210,
+      "b": 862350960
+    },
+    {
+      "path": "/background_session/app_display_readback/observed_ended_elapsed_ms",
+      "a": 862349210,
+      "b": 862350961
+    },
+    {
+      "path": "/background_session/last_broker_response/request_id",
+      "a": "e3aa7fb8-1211-4fc7-8d10-a127bd62e1d4",
+      "b": "04116952-84bc-4068-ab15-b9060aedf68d"
+    },
+    {
+      "path": "/background_session/last_broker_response/display_policy_readback/observed_started_elapsed_ms",
+      "a": 862348425,
+      "b": 862350104
+    },
+    {
+      "path": "/background_session/last_broker_response/display_policy_readback/observed_ended_elapsed_ms",
+      "a": 862348425,
+      "b": 862350105
+    }
+  ],
+  "limitations": [
+    "Only these two persisted retained-node AX objects are compared. This does not reconstruct any unrecorded live Service graph.",
+    "window.scope is active_root_only; these objects do not enumerate every external overlay.",
+    "Native node IDs are traversal ordinals. Equal n38 is descriptive here and must not substitute a different native NodeRef in dispatch.",
+    "No new claim of whole-page or whole-card visibility is made from bounds.",
+    "No action, build, test suite, or phone run was executed by this analysis. Actual Flight56 failure remains unchanged."
+  ],
+  "host_operations": 0,
+  "phone_actions": 0,
+  "production_source_modified": false,
+  "originals_modified": false
+}

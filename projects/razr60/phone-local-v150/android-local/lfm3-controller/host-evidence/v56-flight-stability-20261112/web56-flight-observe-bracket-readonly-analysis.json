@@ -1,0 +1,304 @@
+{
+  "schema": "hepta.flight56-actual-ax-dom-bracket-failure-location.v1",
+  "status": "exact production predicate located; determining failing native field awaits original AX/capture bundle",
+  "scope": {
+    "host_calls": 0,
+    "phone_actions": 0,
+    "production_changes": 0,
+    "test_runs": 0,
+    "strict_checks_relaxed": false
+  },
+  "actual": {
+    "result": {
+      "bytes": 32719,
+      "sha256": "392f239be032c6c45d048222bc0d3cc7003ed03dc7d193a07e3c504f3fb0da52",
+      "git_blob_sha": "693ca3511c98040b1e99e6506ec5ac1d64c34bb3"
+    },
+    "collection": {
+      "bytes": 56496,
+      "sha256": "5a1c0bf3906b5432288471d7750fdf934df18f4829de62a269d6dbb02d9e5d44",
+      "git_blob_sha": "cac8fc285249e8d977d651e79f9a80fdf3dae431"
+    },
+    "capture_index": {
+      "bytes": 4221,
+      "sha256": "0a83307e1d5ac266b3553f28c1583c498b7a89a017039260f34538480293c9a3",
+      "git_blob_sha": "80de68e04defcafede0b21cdc99e45c7033fc9d1"
+    },
+    "task_id": "11f5735392b2402495a19e1ed5474d13",
+    "status": "failed",
+    "state": "AX/DOM bracket changed; no current page capability published",
+    "steps": 1,
+    "model_reported_success": false,
+    "query_dispatched": false
+  },
+  "source": {
+    "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+    "bytes": 42734,
+    "sha256": "7f3c7fd872e9901026ad7471dfc9a3e68d2c987eb1931896f80ea0f2acd6f4e1",
+    "git_blob_sha": "8283d4e83b7cf13c9deb7e55c6d26f26053e11cc"
+  },
+  "predicate": {
+    "method": "PhoneObservation observe(PhoneObservation initial, Observer observer, long deadline)",
+    "lines": [
+      183,
+      199
+    ],
+    "exact_block": "                \"read-only loading retry changed the original instance, URL or navigation epoch\");\n        WebDomStability.Result domBracket=null;\n        try{\n            domBracket=WebDomStability.evaluate(first.domRaw(),last.beforeDomRaw(),purpose.sitePolicyId);\n        }catch(Exception incompleteBracket){\n            // A changing bracket supplies no action. Existing loading retries\n            // remain bounded and read-only; no preceding click is repeated.\n        }\n        boolean stable=sameFrame(before,after)&&first.instance.equals(last.instance)&&first.epoch==last.epoch\n                &&first.url.equals(last.url)&&domBracket!=null;\n        if(retryLoadingDocument(first,last,after,stable,deadline)){\n            loadingAttemptKey=actualLoadingKey;\n            captureDeadline=Math.min(deadline,loadingDocumentStarted+6000);\n            before=observer.observe();service.requireBackgroundObservation(taskId,before);\n            continue;\n        }\n        need(stable,\"AX/DOM bracket changed; no current page capability published\");",
+    "same_frame_lines": [
+      561,
+      565
+    ],
+    "exact_same_frame": "    private static boolean sameFrame(PhoneObservation a,PhoneObservation b){\n        return a.packageName.equals(b.packageName)&&a.windowId==b.windowId&&a.rotation==b.rotation\n                &&a.treeSha256.equals(b.treeSha256)&&a.state.appTreeSha256.equals(b.state.appTreeSha256)\n                &&a.backgroundGeneration!=null&&a.backgroundGeneration.equals(b.backgroundGeneration)\n                &&a.windowMetadata.displayId!=null&&a.windowMetadata.displayId.equals(b.windowMetadata.displayId);",
+    "terms": [
+      "packageName equality",
+      "windowId equality",
+      "rotation equality",
+      "treeSha256 equality",
+      "state.appTreeSha256 equality",
+      "non-null same backgroundGeneration",
+      "non-null same windowMetadata.displayId",
+      "first/last WebView instance equality",
+      "first/last navigation epoch equality",
+      "first/last native URL equality",
+      "non-null independent cross-capture DOM stability replay"
+    ],
+    "failure_before": [
+      "native geometry fingerprint comparison at lines200..203",
+      "WebTaskDomain.observed/applyNavigation at line204",
+      "publishing current action capability at line217"
+    ],
+    "distinction_from_flight55": "This is the observation admission bracket, not the later native action target stale predicate. Main56's bounded Flight native action check has not been reached by this failed observation.",
+    "loading_retry": "The existing bounded read-only retries recognize calendar/body/query-pending cases. They are not an unconditional retry for a changing homepage. No retry policy is changed here."
+  },
+  "current_recorded_capture_facts": [
+    {
+      "nonce": "c57b83ee6f8446efb5b80b6d7a6e4043ce026faa78414c5ba2e58128a621c03b",
+      "raw_file": "task/web-helper/raw-c57b83ee6f8446efb5b80b6d7a6e4043ce026faa78414c5ba2e58128a621c03b.json",
+      "bytes": 229669,
+      "sha256": "4febbd991dc1510b0c81e153c9a2b95f6f272eb8f441a461a3a5f14ae773c2bb",
+      "capture_started_elapsed_ms": 862349271,
+      "capture_ended_elapsed_ms": 862349787,
+      "instance": "bbd7bfce-c620-4dfa-901b-3fc9af6fefff",
+      "epoch": 2,
+      "window_id": 3598,
+      "display_id": 24,
+      "current_url": "https://m.csair.com/",
+      "before_dom_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+      "after_dom_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+      "full_raw_equal": true,
+      "dom_utf8_bytes": 91023,
+      "node_count": 169
+    },
+    {
+      "nonce": "95e2b067dfe243fd86d5a6771057e5b2429f777826b34bb298e5652ea17754eb",
+      "raw_file": "task/web-helper/raw-95e2b067dfe243fd86d5a6771057e5b2429f777826b34bb298e5652ea17754eb.json",
+      "bytes": 229669,
+      "sha256": "4fb3af54391fe051ab3883016ca65225c1268366920d90a0554ef9cce443f0b1",
+      "capture_started_elapsed_ms": 862351014,
+      "capture_ended_elapsed_ms": 862351133,
+      "instance": "bbd7bfce-c620-4dfa-901b-3fc9af6fefff",
+      "epoch": 2,
+      "window_id": 3598,
+      "display_id": 24,
+      "current_url": "https://m.csair.com/",
+      "before_dom_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+      "after_dom_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+      "full_raw_equal": true,
+      "dom_utf8_bytes": 91023,
+      "node_count": 169
+    }
+  ],
+  "evidence_status": {
+    "result_collection_and_index_full_read_and_hash_verified": true,
+    "original_capture_FD_bytes_independently_read_in_this_note": false,
+    "original_native_AX_fields_independently_read_in_this_note": false,
+    "inference": "Recorded current captures share URL, instance, epoch, window and the same full DOM hash. This narrows the next investigation to native sameFrame equality or an independent cross-capture replay exception. Actual full AX/raw bytes must identify the failing term before a production fix.",
+    "carousel_cause_claimed": false,
+    "model_or_results_provider_failure_inferred": false,
+    "final_task_failure_preserved": true
+  },
+  "needed_existing_originals": {
+    "task_evidence_root": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task",
+    "reason": "Use all four recorded native scope observations to identify initial waiting and the two homepage samples; exact capture requests/replies and timestamps select the real before/after pair. Step1 and web action/dispatch identify when observation was invoked.",
+    "rows": [
+      {
+        "relative_path": "background-binding.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/background-binding.json",
+        "bytes": 2007,
+        "sha256": "f416f62fa2a36c607b01a0536375d3bd0b9c3e7fc201ffeb9125eec725f9c809"
+      },
+      {
+        "relative_path": "result.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/result.json",
+        "bytes": 18597,
+        "sha256": "821b67811eb7a7f4cae632d05bc844b40360d525344ed10e6c72634f288a83d6"
+      },
+      {
+        "relative_path": "scope-binding.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/scope-binding.json",
+        "bytes": 1203,
+        "sha256": "c7ab37e63e0a049da925e911afcd97f3728f703ae00d17ba52291f1abe568d04"
+      },
+      {
+        "relative_path": "scope-observation-2da1b063f29345ce85e13e10d1c2323d.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/scope-observation-2da1b063f29345ce85e13e10d1c2323d.json",
+        "bytes": 14476,
+        "sha256": "249b6f5549377b200a44fed6431c216044af3cb32080727c64d3bea1998dc7e8"
+      },
+      {
+        "relative_path": "scope-observation-6436293de5f04fb99821393e03e4566c.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/scope-observation-6436293de5f04fb99821393e03e4566c.json",
+        "bytes": 71804,
+        "sha256": "2a6176bb64d415eb1a81c9330bf52721589a966c749ddc75f4eb79cdfa0a124d"
+      },
+      {
+        "relative_path": "scope-observation-7f1613ecacf5429589ff0854d481c575.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/scope-observation-7f1613ecacf5429589ff0854d481c575.json",
+        "bytes": 13233,
+        "sha256": "94f96b62fa253229ad4c329a57fe7038fd7a9b10f769088af333c4122b118352"
+      },
+      {
+        "relative_path": "scope-observation-c6fc903caded4a2cacaa6bf9291c5a80.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/scope-observation-c6fc903caded4a2cacaa6bf9291c5a80.json",
+        "bytes": 71804,
+        "sha256": "df5d1451477b382917e5fa9e6a23baf3506ac5fc153c4ee80a7159d6283089b7"
+      },
+      {
+        "relative_path": "step-01-action.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/step-01-action.json",
+        "bytes": 10127,
+        "sha256": "0c97088226cebe93aa3ee055ed1eb025bea0f9a62e45c2c9239e57b5321727dc"
+      },
+      {
+        "relative_path": "step-01-before.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/step-01-before.json",
+        "bytes": 5042,
+        "sha256": "7b5ea9cfcb3c1ae85a38b590fb91999e822fb37e8b305d6a6d0a0797457beb61"
+      },
+      {
+        "relative_path": "step-01-model-0.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/step-01-model-0.json",
+        "bytes": 554,
+        "sha256": "4aed45a38eb727645617766cdbd06ef3ffb30e25753d254c19840b98f8b004ca"
+      },
+      {
+        "relative_path": "web-action-b5c52bd3c04044f28108aa9001772e9f.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-action-b5c52bd3c04044f28108aa9001772e9f.json",
+        "bytes": 4150,
+        "sha256": "5322c0648c0e3c33c86bf7d5fe67aaafd598201a07ecfd389b22f0e903dbe9a6"
+      },
+      {
+        "relative_path": "web-dispatch-b5c52bd3c04044f28108aa9001772e9f.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-dispatch-b5c52bd3c04044f28108aa9001772e9f.json",
+        "bytes": 4031,
+        "sha256": "d2460cd0775f6c2857baa9d38c4cfd5422c03f463dc8b98e13faef7162e732ff"
+      },
+      {
+        "relative_path": "web-flight-owner.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-flight-owner.json",
+        "bytes": 2138,
+        "sha256": "fe696129f2e9405bc753b4bec02a88e420ef1d13012d3419708e28a8950bbc5d"
+      },
+      {
+        "relative_path": "web-frame-7f1613ecacf5429589ff0854d481c575.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-frame-7f1613ecacf5429589ff0854d481c575.json",
+        "bytes": 4000,
+        "sha256": "988e022a83bf3cbff9e178a58199a1a983f505c2b8d7aa8b192ba8dc3fb24331"
+      },
+      {
+        "relative_path": "web-helper-attached.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-helper-attached.json",
+        "bytes": 709,
+        "sha256": "f3197d47550804c071b3103bbb9afaf7f11e48c636d599a304b3f7630e88f8a8"
+      },
+      {
+        "relative_path": "web-helper/BINDING.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-helper/BINDING.json",
+        "bytes": 2274,
+        "sha256": "427b3e7743e044dc06643468e976ba0fd47c27b28b21203473fd31738937dc53"
+      },
+      {
+        "relative_path": "web-helper/raw-95e2b067dfe243fd86d5a6771057e5b2429f777826b34bb298e5652ea17754eb.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-helper/raw-95e2b067dfe243fd86d5a6771057e5b2429f777826b34bb298e5652ea17754eb.json",
+        "bytes": 229669,
+        "sha256": "4fb3af54391fe051ab3883016ca65225c1268366920d90a0554ef9cce443f0b1"
+      },
+      {
+        "relative_path": "web-helper/raw-c57b83ee6f8446efb5b80b6d7a6e4043ce026faa78414c5ba2e58128a621c03b.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-helper/raw-c57b83ee6f8446efb5b80b6d7a6e4043ce026faa78414c5ba2e58128a621c03b.json",
+        "bytes": 229669,
+        "sha256": "4febbd991dc1510b0c81e153c9a2b95f6f272eb8f441a461a3a5f14ae773c2bb"
+      },
+      {
+        "relative_path": "web-helper/reply-1a746c4381d9458785523da395d66a254d231b8e05544550ba35047b2b47d435.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-helper/reply-1a746c4381d9458785523da395d66a254d231b8e05544550ba35047b2b47d435.json",
+        "bytes": 1217,
+        "sha256": "3e6f42b081696f68c14e002926e16e1022918a73623b62709f8f5838726e6d26"
+      },
+      {
+        "relative_path": "web-helper/reply-492a4cee91bb4c6f9e530c29bd34950399ef4351db624fa389225c978a4f85db.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-helper/reply-492a4cee91bb4c6f9e530c29bd34950399ef4351db624fa389225c978a4f85db.json",
+        "bytes": 1188,
+        "sha256": "a57d1b5f66512a8e6c9a143c1f70b7c2f3d8feac72e9a5007eaf09313aeeeb21"
+      },
+      {
+        "relative_path": "web-helper/reply-95e2b067dfe243fd86d5a6771057e5b2429f777826b34bb298e5652ea17754eb.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-helper/reply-95e2b067dfe243fd86d5a6771057e5b2429f777826b34bb298e5652ea17754eb.json",
+        "bytes": 1403,
+        "sha256": "9239150377b0d39fa3b08fad103915d4a5b22eba3a3f03ee2c1baf2700018e07"
+      },
+      {
+        "relative_path": "web-helper/reply-99d32e2e6fc9461fb01bcca074a5209786dd6cb97ab343fcbeb9de0f52d0a8e7.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-helper/reply-99d32e2e6fc9461fb01bcca074a5209786dd6cb97ab343fcbeb9de0f52d0a8e7.json",
+        "bytes": 1370,
+        "sha256": "84f392fa95ebecbc96f160e7032387d9deda3b90c39c7b478f47f912886fa86c"
+      },
+      {
+        "relative_path": "web-helper/reply-c57b83ee6f8446efb5b80b6d7a6e4043ce026faa78414c5ba2e58128a621c03b.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-helper/reply-c57b83ee6f8446efb5b80b6d7a6e4043ce026faa78414c5ba2e58128a621c03b.json",
+        "bytes": 1403,
+        "sha256": "27dd26e9bfa99dc4c3efd1bf55145f83af956dab753c3837e9750f3e0d7de273"
+      },
+      {
+        "relative_path": "web-helper/request-1a746c4381d9458785523da395d66a254d231b8e05544550ba35047b2b47d435.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-helper/request-1a746c4381d9458785523da395d66a254d231b8e05544550ba35047b2b47d435.json",
+        "bytes": 708,
+        "sha256": "a8968c48a52ce6ca6919dedccef7db7f10a49e9f19788459870e632b128753da"
+      },
+      {
+        "relative_path": "web-helper/request-492a4cee91bb4c6f9e530c29bd34950399ef4351db624fa389225c978a4f85db.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-helper/request-492a4cee91bb4c6f9e530c29bd34950399ef4351db624fa389225c978a4f85db.json",
+        "bytes": 2556,
+        "sha256": "604dbe0220e786fe864c5882c71ec1ff27f3390593c30c057938ada1c7ca9ff3"
+      },
+      {
+        "relative_path": "web-helper/request-95e2b067dfe243fd86d5a6771057e5b2429f777826b34bb298e5652ea17754eb.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-helper/request-95e2b067dfe243fd86d5a6771057e5b2429f777826b34bb298e5652ea17754eb.json",
+        "bytes": 741,
+        "sha256": "ecebfbf2f8804df5b6ec507d5954af2bff4ec8a1c56040b4a227873cb372f3a6"
+      },
+      {
+        "relative_path": "web-helper/request-99d32e2e6fc9461fb01bcca074a5209786dd6cb97ab343fcbeb9de0f52d0a8e7.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-helper/request-99d32e2e6fc9461fb01bcca074a5209786dd6cb97ab343fcbeb9de0f52d0a8e7.json",
+        "bytes": 652,
+        "sha256": "9d869a142fa551e02ce6c812c8542a87bcda97ac393bafa9a5f38ea4289a9a03"
+      },
+      {
+        "relative_path": "web-helper/request-c57b83ee6f8446efb5b80b6d7a6e4043ce026faa78414c5ba2e58128a621c03b.json",
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v56-lfm3-flight-r1/evidence/task/web-helper/request-c57b83ee6f8446efb5b80b6d7a6e4043ce026faa78414c5ba2e58128a621c03b.json",
+        "bytes": 741,
+        "sha256": "7c4819ac462da9f998e5110d1fa4df9b5fa1806c295f4d4fe2538c9bd1211b86"
+      }
+    ],
+    "extra_phone_action_needed": false,
+    "older_helper_diagnostics_needed_for_this_predicate": false,
+    "new_reader_framework_needed": false
+  },
+  "next_read_only_comparison": [
+    "Associate both current captures and native scope observations by their original elapsed timestamps and observation IDs; INDEX name order is not chronological.",
+    "Compare every sameFrame term independently, then inspect actual node/ancestor differences if either native digest differs.",
+    "Preserve node, target, window, display, owner, generation, geometry and occlusion facts; do not assume the known old carousel accounts for this new observation.",
+    "Recheck exact current raw pair and policy for cross-capture replay; this try/catch currently folds any replay exception into domBracket=null.",
+    "Only after the actual failing term is established, derive the smallest successor and extend the relevant existing observation path test. Do not alter frozen56 or fabricate results."
+  ]
+}

@@ -1,0 +1,218 @@
+{
+  "schema": "hepta.notes56-cancel-publication-pending-entry-narrow-review.v1",
+  "conclusion": "no_new_source_blocker_in_reviewed_transport_and_pending_literal_changes",
+  "reviewed": {
+    "source_packet": {
+      "git": "64e82ecd2e21f0051f988786eeeea6a8e4be3902",
+      "bytes": 268473,
+      "sha256": "1a6a5cd2a85536a8f6c9dc08a530f770768aedeb78d73b0baa4b3fdf3b13f909"
+    },
+    "body_review": {
+      "git_blob_sha": "fa7d4bf739c5b5e59a5a013656ca4adb5c5f6460",
+      "bytes": 9022,
+      "sha256": "31d205b7a72957b87461df322f88dde1458368750bafb6bd339b07da6611481e"
+    },
+    "handoff": {
+      "git_blob_sha": "3034320e7c2391f5892e8d0a9bed66c5317e03d4",
+      "bytes": 36414,
+      "sha256": "2791d276037d510ab96014e690117906fabd51b9bbcaf8a5d5b771ed790d0bcd"
+    },
+    "publisher": {
+      "git_blob_sha": "5bfe329e513f03348d01e5d23b2cb815ab009fd5",
+      "bytes": 13757,
+      "sha256": "bfcac04eea521633b6461c11c8de2e2b02b0d9083793e6d8e0d9f1ae5b0e6bad"
+    },
+    "base_publisher": {
+      "bytes": 12856,
+      "sha256": "9da2bb884245f86b6e6919a63421456f0f5dac885f898166ff3f04c9e2e31859",
+      "git_blob_sha": "fecf7d45146eb88217d65d340ddba8769f65e858"
+    },
+    "exact_request": {
+      "bytes": 106429,
+      "sha256": "6b484ebd69210f4cf8f4d1fee58b1959502faacf42aba7381108d289ff494552",
+      "git_blob_sha": "fd76767c84a6d1ef62f042d3e4ac370a3f0adb58"
+    },
+    "pending_packet": {
+      "git_blob_sha": "a249389b160d955981f62ff64b6a3b33cc1ee973",
+      "bytes": 27382,
+      "sha256": "cefe7410bd9ea62aff9d02a00169d038c545e4a591896380cc317c169c45684f"
+    }
+  },
+  "independent_checks": {
+    "publisher_17_ordered_patches_forward_reverse_exact_actual_base": true,
+    "pending_4_prepare_and_9_run": [
+      {
+        "path": "root_notes56_cancel_prepare_pending.py",
+        "patches": 4,
+        "forward_reverse": true,
+        "base": {
+          "bytes": 2647,
+          "sha256": "6b2d5527eb362ef8ca1a4f7071678e709e25b0470244c29990d114858daf6612",
+          "git_blob_sha": "1a70178b7184c12469f62593c8dfe5498a562f87"
+        },
+        "current": {
+          "bytes": 2631,
+          "sha256": "c332d3f552ff262217f5aa992a8cff2b8d754719e94599da33e669528f50af96",
+          "git_blob_sha": "58c5260f423c314dc7b6d42519048179a98ddc21"
+        },
+        "missing_values": 5
+      },
+      {
+        "path": "root_notes56_cancel_run_pending.py",
+        "patches": 9,
+        "forward_reverse": true,
+        "base": {
+          "bytes": 3183,
+          "sha256": "7a60de789e3adf8d1acd802ee706197927c5b13c907e14954981006d6d01e4c2",
+          "git_blob_sha": "1e4f8cff14bb422fda541d77cad7eb1fbd4a78d1"
+        },
+        "current": {
+          "bytes": 3517,
+          "sha256": "773e89fcdecea6fd71feebe45723399089c9eb10045d8bc398f57f3cb638a61a",
+          "git_blob_sha": "0f871349b222745ff1a9360143e85f3031d0dae7"
+        },
+        "missing_values": 10
+      }
+    ],
+    "transport": {
+      "source_literal_matches": true,
+      "canonical_base64": true,
+      "gzip_crc_and_length": true,
+      "whole_payload_byte_exact": true,
+      "argv": {
+        "bytes": 91704,
+        "sha256": "43e58ba96569d5c3bbbd34b6cbabef7c886c9f50715f1aee854f6ea4f0f65619"
+      },
+      "gzip": {
+        "bytes": 68777,
+        "sha256": "4a818e5196618ba4b2cc06d1eed174654c7aa6940ca45f31458171b0cee74639"
+      },
+      "payload": {
+        "bytes": 213942,
+        "sha256": "53c5abfdc51820d1f98a002f3fe787a55db7fa32bdc134cb323e59d4e6fbdf90"
+      },
+      "members": [
+        {
+          "path": "run_background_cancel_v56_r1.py",
+          "bytes": 115515,
+          "sha256": "4744eb6f6f4987f750bc517328b61f4597c17b59e6f0996de7faf66aa8c51696",
+          "exact": true
+        },
+        {
+          "path": "visible_stop_cancel_v56_r1.py",
+          "bytes": 39293,
+          "sha256": "dd347e652bb2cd0e4eaa9f398c933f4b31e5c2b38c72e51095d42d51628fc817",
+          "exact": true
+        },
+        {
+          "path": "export_v56_cancel_case_r1.py",
+          "bytes": 30636,
+          "sha256": "6f6eef01820d62c50471784183e230ae1b2a068580b2cac283799ac86be0715d",
+          "exact": true
+        },
+        {
+          "path": "run_one_v56_cancel_then_export_r1.py",
+          "bytes": 9534,
+          "sha256": "67907e3f43ee0bbabe4b6a1d329a31dd144d7287cc4cdce376a34b08142a51db",
+          "exact": true
+        },
+        {
+          "path": "owned_cancellation_receipts_v53_r2.py",
+          "bytes": 11388,
+          "sha256": "f3b4fc04c4834712ba5722e8f31dc396311d2a334cd0f21e0980f57f26011a61",
+          "exact": true
+        },
+        {
+          "path": "android-errno-binding-v53-original.json",
+          "bytes": 7576,
+          "sha256": "5907334b97da50bb66b6343898dacc1ddfa7f15aa942925d3586eacf2b003ee7",
+          "exact": true
+        }
+      ],
+      "preserved": [
+        {
+          "path": "background_notes_plan.py",
+          "exact": true
+        },
+        {
+          "path": "fixed_intent_v6_acceptance.py",
+          "exact": true
+        },
+        {
+          "path": "controller_workflow_evidence.py",
+          "exact": true
+        },
+        {
+          "path": "controller_idle_evidence.py",
+          "exact": true
+        },
+        {
+          "path": "prepare_background_notes_v56_r1.py",
+          "exact": true
+        },
+        {
+          "path": "run_background_notes_v56_r1.py",
+          "exact": true
+        },
+        {
+          "path": "live_inflight_window.py",
+          "exact": true
+        },
+        {
+          "path": "main_user_inflight.py",
+          "exact": true
+        },
+        {
+          "path": "moto_note_body_evidence_v51.py",
+          "exact": true
+        },
+        {
+          "path": "export_v56_case_r1.py",
+          "exact": true
+        },
+        {
+          "path": "run_one_v56_helper_then_export_r1.py",
+          "exact": true
+        },
+        {
+          "path": "notes-plan-normal-r1.json",
+          "exact": true
+        },
+        {
+          "path": "notes-plan-cancel-r1.json",
+          "exact": true
+        },
+        {
+          "path": "notes-plan-recovery-r1.json",
+          "exact": true
+        }
+      ],
+      "new_six_names_disjoint_from_normal14": true
+    },
+    "source_boundaries": [
+      "Five Python raw sources are compile-checked and the unchanged errno JSON is duplicate-key/nonfinite rejecting parsed before any host filesystem mutation.",
+      "All target paths are the six fixed direct leaves of the already-existing normal56 runtime directory; no directory creation remains.",
+      "All fourteen normal runtime/plan files are exact-read with stable FD metadata before publication and compared with complete bytes plus identities at successful completion.",
+      "New leaves and retained fourteen leaves are disjoint. Existing destinations must be exact-byte regular single-link files; conflicting bytes and symlink paths fail.",
+      "Existing FD-chain checks, bounded nofollow reads, owned exclusive temp creation, fsync, link without overwrite, owned inode removal, and full end readback remain byte-exact from the reviewed base.",
+      "Publication is atomic per file only. A later failure may leave earlier published identical files; failure reports published rows and never claims the whole publication completed.",
+      "No helper import, runtime execution, subprocess, phone action, new suite, release manifest, PREP wrapper, or RUN occurs in this publication request."
+    ],
+    "pending_boundaries": [
+      "PREP points to the original normal56 preparation/helper wrapper and the exact new cancel plan; five actual owner/UID strings remain None and reject before source load.",
+      "RUN uses the reviewed cancel-only wrapper and kind=cancel, including the original required errno proof options; ten actual UID/preparation/Start/Stop/XML values remain None.",
+      "Helper argv values are required nonempty NUL-free strings before loading any wrapper. Start and Stop coordinates are not inferred.",
+      "Each pending entry was reversed and forward-applied with full bytes/SHA/Git hashes. The two standalone base fetches did not return raw here; base content was recovered exactly from the ordered reverse patches and checked against all three declared immutable identifiers."
+    ]
+  },
+  "scope": {
+    "host_calls": 0,
+    "phone_actions": 0,
+    "python_execution": 0,
+    "pending_values_sealed": 0,
+    "source_modifications": 0,
+    "new_tests": 0,
+    "runtime_success_claim": false
+  },
+  "runtime_ownership": "Only Root decides when to execute the already-authorized publication and later actual PREP/RUN; this source review adds no execution or approval gate."
+}

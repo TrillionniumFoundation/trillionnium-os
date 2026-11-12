@@ -1,0 +1,619 @@
+{
+  "actual_owner_task_selection": {
+    "actual_owner_bootstrap_cleanup_bound": true,
+    "actual_task_scope_observed": true,
+    "complete_actual_selection_plus_generation_display_checked": true,
+    "expected_selection": {
+      "allowed_packages": [
+        "com.motorola.stylus"
+      ],
+      "bootstrap_model_issued": false,
+      "bootstrap_package": "com.motorola.stylus",
+      "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+      "home_allowed": false,
+      "main_display_fallback": false,
+      "mode": "background",
+      "owner_task_selection": {
+        "changes_saved_preferences": false,
+        "effective_allowed_packages": [
+          "com.motorola.stylus"
+        ],
+        "effective_initial_package": "com.motorola.stylus",
+        "effective_scope_strictly_smaller": true,
+        "effective_scope_within_selected_apps": true,
+        "grants_tool_authority": false,
+        "initial_app_changed": false,
+        "original_ui_allowed_packages": [
+          "com.motorola.stylus",
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "original_ui_initial_package": "com.motorola.stylus",
+        "owner_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+        "package_from_model_or_screen": false,
+        "recognition": "natural_note_comma_prefix.v1",
+        "schema": "hepta.owner-task-app-selection.v1"
+      }
+    },
+    "observation_owner_task_selection_is_absent": false,
+    "observation_source_literal_is_legacy_projection": false,
+    "original_preference_bytes": 653,
+    "original_preference_sha256": "c9364dde8c0b52e7890835d720967987f708e972b397fcc3f76d9d76a667137f",
+    "original_ui_selection": {
+      "allowed_packages": [
+        "com.motorola.stylus",
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "automatic_target_text": "本次将自动使用：Moto 笔记。已保存的应用范围保持不变。",
+      "bootstrap_package": "com.motorola.stylus",
+      "initial_spinner_hidden": true,
+      "scope_count": 2,
+      "selection_source": "ordinary_visible_multi_choice_and_persisted_initial"
+    },
+    "preparation_sha256": "61a7aa90efb1fffb14e4f21cdec6c389b4ecb1bf644a559c95f8d9e747cc743a"
+  },
+  "all_scoped_checks_passed": true,
+  "body_sha256": "d7922a7d4d40341fd0d8350d926803a7b556c5c652fabbda85cb8e37663aedab",
+  "checks": {
+    "actual_dual_ui_preferences_preserved_and_effective_notes_only": true,
+    "actual_native_parent_and_typed_save_list_reopen": true,
+    "actual_numeric_owned_display_policy": true,
+    "eight_original_main_coexistence_checks": true,
+    "last_two_system_samples_release": true,
+    "native_original_collection_and_le32_replayed": true,
+    "original_final_owned_display_png": true,
+    "original_tree_and_runtime_sources_unchanged": true,
+    "system_samples_recomputed_from_raw_commands": true
+  },
+  "current_device_state_observed": false,
+  "current_verifier_binding": {
+    "complete_actual_selection_plus_generation_display_checked": true,
+    "current_verifier_pins": {
+      "background_notes_plan.py": "4bf77a52d012b4d5fe2fcfdcfea59649058c74d94202afcaacf0cb92e81c7bad",
+      "controller_idle_evidence.py": "0bfd580463b8fb8cfd7fec5f76d70bfc8893da23c4c91a3426b38ce5b5a5894d",
+      "controller_workflow_evidence.py": "419ae165511e42a017bf079ebd0b984e5b0b9ddfe04b4731cfd692e072dd8795",
+      "fixed_intent_v6_acceptance.py": "f090a85780318ffefbad82a51d740a0965acb7369a12390698f8300031271652",
+      "live_inflight_window.py": "3f3faa3b692257710f48651d48f1a39405f0fb511fd94658af2617ded9443671",
+      "main_user_inflight.py": "cb2aa959ec91e5aa7b680526d8add656f5a91e085321ce833701368beba367a0",
+      "moto_note_body_evidence_v51.py": "091bcb7a633c9fec1e668b637fb3619de712c441db99f2164c47c4b3ba629e94",
+      "prepare_background_notes_v56_r1.py": "e841c36ed2e4489b82cb3a0f5e08e484e00ac018c7575bd7e892cfc1f1aeb6ee",
+      "run_background_notes_v56_r1.py": "8c58648825dd27035cd3271bfc5e57f912bfa9121dfbd39406da750e8a648834"
+    },
+    "legacy_projection_adapter_used": false,
+    "missing_fields_synthesized": false,
+    "original_frames_modified": false,
+    "production_sources": {
+      "src/org/trillionnium/hepta/local/BackgroundSession.java": "0045e81d6578a071de8dbdedd3c589afeb6025cf52d6c76fceb0e30e11e3dec6",
+      "src/org/trillionnium/hepta/local/PhoneObservation.java": "9dc1033ffc989b2a957e0999bb40d5c48d97117d89150a173141ae7cc7eff8d0"
+    },
+    "source_inventory_sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+    "verifier_sources_modified": false
+  },
+  "display_id": 25,
+  "final_png_original": {
+    "bytes": 29711,
+    "dimensions": [
+      720,
+      1280
+    ],
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/evidence/task/39df2e75af7343c3b7eecd3a4ee5817a.png",
+    "sha256": "8c6e49d2a34f8cab23b9886bbc9f4259088153d5f034ac362c724d0149331b57"
+  },
+  "final_png_sha256": "8c6e49d2a34f8cab23b9886bbc9f4259088153d5f034ac362c724d0149331b57",
+  "generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+  "main_checks": {
+    "later_causal_actual_model_or_tool_child_effect": true,
+    "main_user_actions_completed": true,
+    "post_swipe_absence_from_original_stream": true,
+    "same_boot_device_elapsed_order": true,
+    "same_task_work_replayed_at_both_main_action_boundaries": true,
+    "sampled_hepta_then_bounded_launch_then_settings_focus": true,
+    "settings_application_pixels_changed": true,
+    "two_actual_host_inputs_bound_to_original_commands_and_clocks": true
+  },
+  "main_missing": [],
+  "native_input_ids": {
+    "all_actual_input_ids_verified": true,
+    "retokenization_claimed": false,
+    "runs": [
+      {
+        "bytes": 17240,
+        "count": 4310,
+        "run_id": "e393bd2e3b7641e7a15a9d458b78823d",
+        "sha256": "cff17374689444428191e4bc8922c300739e673646bbdea4a73c46c0bed6b9e8"
+      }
+    ],
+    "sidecar_sha256": "d700c88f699f63a2d60a2c1a782d5ae94cb1630c2d2f5527215e617c349c3ffc"
+  },
+  "native_original_record_count": 4,
+  "original_coexistence_report": {
+    "checks": {
+      "later_causal_actual_model_or_tool_child_effect": true,
+      "main_user_actions_completed": true,
+      "post_swipe_absence_from_original_stream": true,
+      "same_boot_device_elapsed_order": true,
+      "same_task_work_replayed_at_both_main_action_boundaries": true,
+      "sampled_hepta_then_bounded_launch_then_settings_focus": true,
+      "settings_application_pixels_changed": true,
+      "two_actual_host_inputs_bound_to_original_commands_and_clocks": true
+    },
+    "missing": [],
+    "original_result_unchanged": true,
+    "raw_object_sha256": "c5ccaec25460d52041daa0dc4318dd6a70916b8e5cd741b221746d3a2ced6097"
+  },
+  "original_collector_changed": false,
+  "original_qualified": false,
+  "original_result_sha256": "8e4f37def7612d81bf96c9ccd96ea5b0858bdf9849683f5112953469671e1601",
+  "original_tree_files": 875,
+  "original_workflow_report": {
+    "missing_or_invalid": null,
+    "original_result_unchanged": true,
+    "raw_object_sha256": "48a01657b378f29bf1ff2e3f3dc41b2d2638732b27f5c3e0d36aadce90c49ddc",
+    "verified": true
+  },
+  "phone_actions": 0,
+  "qualified": false,
+  "root_visual_review_required": true,
+  "sample_count": 17,
+  "schema": "hepta.v56-normal-independent-replay.v1",
+  "scope": "Native raw-byte/IDs/owned workflow and sampled main coexistence replay; root visual review remains independent. No new device observation.",
+  "source_context": {
+    "build_receipt_sha256": "e27e74e94b0668c1c07b04863c9aaabf1b3235f9ff2d0d0d8bd9a346e46b2c6b",
+    "business_verified": false,
+    "controller_source_sha256": "68185b0bd3cf17adfb94f62b32a764ce692512ea20b438bbcdca766cff49d167",
+    "grants_tool_authority": false,
+    "installed_identity": {
+      "apks": [
+        {
+          "path": "/data/app/~~kjtm2QzruYL9-aUBXFIlQw==/org.trillionnium.hepta.local-UnoGsU3bLEhG5iG5r16jHA==/base.apk",
+          "sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62"
+        }
+      ],
+      "package": "org.trillionnium.hepta.local",
+      "uid": 10481
+    },
+    "schema": "hepta.v56-fixed-prompt-source-binding.v1",
+    "source_commit": "9f4168616546233033edd4b254b4236ae987ea7e",
+    "source_inventory_sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+    "task_id": "b5b05eb09df64032ab4aeb1d5707b85b"
+  },
+  "source_pins": {
+    "background_notes_plan.py": "4bf77a52d012b4d5fe2fcfdcfea59649058c74d94202afcaacf0cb92e81c7bad",
+    "controller_idle_evidence.py": "0bfd580463b8fb8cfd7fec5f76d70bfc8893da23c4c91a3426b38ce5b5a5894d",
+    "controller_workflow_evidence.py": "419ae165511e42a017bf079ebd0b984e5b0b9ddfe04b4731cfd692e072dd8795",
+    "fixed_intent_v6_acceptance.py": "f090a85780318ffefbad82a51d740a0965acb7369a12390698f8300031271652",
+    "live_inflight_window.py": "3f3faa3b692257710f48651d48f1a39405f0fb511fd94658af2617ded9443671",
+    "main_user_inflight.py": "cb2aa959ec91e5aa7b680526d8add656f5a91e085321ce833701368beba367a0",
+    "moto_note_body_evidence_v51.py": "091bcb7a633c9fec1e668b637fb3619de712c441db99f2164c47c4b3ba629e94",
+    "prepare_background_notes_v56_r1.py": "e841c36ed2e4489b82cb3a0f5e08e484e00ac018c7575bd7e892cfc1f1aeb6ee",
+    "run_background_notes_v56_r1.py": "8c58648825dd27035cd3271bfc5e57f912bfa9121dfbd39406da750e8a648834"
+  },
+  "system_original_command_refs": [
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00024-displays.json",
+      "metadata_sha256": "4e12f79d198ad605870bd02912d0f0889ba7ba6fd6b8cd7713bc347a3ccd1834",
+      "stdout_sha256": "2b300745692cb81c88a944c725313a39a0beb16d87670002efe1a1332e826e4a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00025-window-displays.json",
+      "metadata_sha256": "c58993b3ed587c8fca45306daf78c0315a430b7011b23dfe71a062660ca2dcfe",
+      "stdout_sha256": "91852b540875fc1807441c4d34a75b45e614b7b8e6357a2aa8ccdd2d7d564121"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00026-input-dispatcher.json",
+      "metadata_sha256": "9f4d7810ef0890fa749c78b97c23390b9d4697a34fbb574d2b78faaeac1ad811",
+      "stdout_sha256": "1902b61acf7ccec68f1f04d1151e30c3b65760f9245f8bf9657ea9ae745d37bd"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00027-activity-displays.json",
+      "metadata_sha256": "fafad47007fa4bf44934d6d6d6d7e59811844b5fb71584558c87a92ba41574ac",
+      "stdout_sha256": "f2f2feed0bf326e3a217f0967f5984fe2fa3036ffcd7348ece7921aae85d6ebf"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00028-process-uid.json",
+      "metadata_sha256": "c8ce143ea75fc60e5ac337288c647ffa8f89c9ebd97becc9096232ca94ef710e",
+      "stdout_sha256": "a8f80e6d78f5304d5a255e439f3bd8ddf181423b15e6d5afbd98fd743b381ca8"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00036-displays.json",
+      "metadata_sha256": "51edeb718f1d59e7edeb3be486dfb4f574c25dabf2bfbb2f0c066e319a9a46ab",
+      "stdout_sha256": "2b300745692cb81c88a944c725313a39a0beb16d87670002efe1a1332e826e4a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00037-window-displays.json",
+      "metadata_sha256": "a7428b0595f6f92afff20b2fa47a2c9b0f6165f486e8a0436382273ec6d91878",
+      "stdout_sha256": "a01884ed5144606e174a46c68e8c2485a96fd3eb14a344816fcf71add16ab190"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00038-input-dispatcher.json",
+      "metadata_sha256": "f19797cb2d3ae44edf143b4a8db0eb7e6b250a708cbc8e0db6fae953e189f526",
+      "stdout_sha256": "aff66ae7bab429461485c9763e4a42cf9f04759cbead35b96c42f36ead3018db"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00039-activity-displays.json",
+      "metadata_sha256": "6220650edca20e8bdca9a83d5c83f52333934a559ab12d9cbab7a4450a0fe598",
+      "stdout_sha256": "e9b7d17bb9daaa3ef20d324dd0d63b03c2839d097c56c9c6a5d839748ba74820"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00040-process-uid.json",
+      "metadata_sha256": "17a4e88695f01acc505d3b17f7cbc788907d93f81c8385f1aced024d9c3cd264",
+      "stdout_sha256": "f7f073d9b448de454efa9ecad8d5f1d12ba5add4fcc6b916b20c8c53b25310c2"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00042-displays.json",
+      "metadata_sha256": "016ef17d1bb96effe4405d486152996f7cd6eaf2238bf71ceaeedbefd53450eb",
+      "stdout_sha256": "22eac43e172e15fc85c4cac9bca204e5812fe0947e552a335f28d3e13c7c502a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00043-window-displays.json",
+      "metadata_sha256": "b89c94beb3b934e6957a8ef6b262a78fc1872d8242ea16b0e1a39cf4b4d9b703",
+      "stdout_sha256": "4c3d9990e44f1145c8489962421e060a4acb1f03f4c90c04c37aadf6aac77f08"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00044-input-dispatcher.json",
+      "metadata_sha256": "fb5460ecfe2779f4116d95bb2c638f8f863b0a86c381ac9583fecfd5bc0bf9d8",
+      "stdout_sha256": "066ac377738be05ab43b4eeac2c11a8d602e561fbbb90ac6f040dba7310d5ac1"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00045-activity-displays.json",
+      "metadata_sha256": "70fd6793267fe104bb314c3250dafa11d6465d8ca5640c9579a7ca0b936c09d3",
+      "stdout_sha256": "a8e5cc1e8968a26ae82904f2858664515874a6c26a0aba65cd34ab0fa4872c39"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00046-process-uid.json",
+      "metadata_sha256": "053c7605d9206c22d226c05500e3eb4402d43fc7f4bac34a62fd740126d3a775",
+      "stdout_sha256": "cb8cb1299768ad26b0ad7f8d4d60b8749129d655c44141e6b19471b23389c9ed"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00048-displays.json",
+      "metadata_sha256": "bbfb69ef48902f68d0724312a9a3e6a8663828455ef854997808ecb87b1f693b",
+      "stdout_sha256": "22eac43e172e15fc85c4cac9bca204e5812fe0947e552a335f28d3e13c7c502a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00049-window-displays.json",
+      "metadata_sha256": "a678373f3ef4704f2e768f216ceb2701429152883a6b3e9f5623085815216964",
+      "stdout_sha256": "6bf624bfbc89252f4d5c8ceed2aa2a1945c8fc2631c07efabe38e388159fa2e8"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00050-input-dispatcher.json",
+      "metadata_sha256": "3ff016c1dffb6977037a4b5d644dadf6f8637b7b72ee9e4c46f3fdda949489e7",
+      "stdout_sha256": "cc7dde4ce806c0dd47c49e6ffd47221f8bf09b20afa15b1040c440d284e7238c"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00051-activity-displays.json",
+      "metadata_sha256": "8c6a5aa39537c23234294a1148d708d4028d6d8a81ff30017e7bc24a8db9e25c",
+      "stdout_sha256": "ef6799d8d5b30d3f4708e328f50600e348001b395243eec30d40fe95dee79b10"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00052-process-uid.json",
+      "metadata_sha256": "7aac45e990f95101ccbf5076c23096ad41fa526edf10e65faa16106e161ffdfc",
+      "stdout_sha256": "7e59f92e56ad8dec4774c7706351278b7410c59b996c01fa6dbd1248b17ee46a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00055-displays.json",
+      "metadata_sha256": "2f2f01b602bbe2e3d45f8a307030c212865577fc7897f55c7a58088bc4c38382",
+      "stdout_sha256": "22eac43e172e15fc85c4cac9bca204e5812fe0947e552a335f28d3e13c7c502a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00056-window-displays.json",
+      "metadata_sha256": "f3f80bc5db86193dc7964043be5981328e95c7c965fac15d1af324907474f3f7",
+      "stdout_sha256": "6bf624bfbc89252f4d5c8ceed2aa2a1945c8fc2631c07efabe38e388159fa2e8"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00057-input-dispatcher.json",
+      "metadata_sha256": "c405fb67e721a171b6472be42f9dc4fdfa3759193b3e6c9bfb388e398e292a8b",
+      "stdout_sha256": "71bd2cb059eb49fd3a622d908d1cd69408c24da37ec76a75a79c6ff2233f4fa9"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00058-activity-displays.json",
+      "metadata_sha256": "daf1304e8a11f5277c55d8056358027583a05173904ecf6d1c0ee7e55ce88946",
+      "stdout_sha256": "441ebe858fcc6cf016cd16b323b3e557267af7e110b598f3b103191aff48b910"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00059-process-uid.json",
+      "metadata_sha256": "0aa73737d477d1c8808cbc4e7d66b92ee6805e5a4e5e89121c463614ca19b5d0",
+      "stdout_sha256": "96dfc01484a672189f0e9abf2d05d0a260194428ecab110f706f8bfadf862e0a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00070-displays.json",
+      "metadata_sha256": "2679cfb21f7d94f5f6764ac08a38901670550705a30981cd31cd5b7e96d01a83",
+      "stdout_sha256": "22eac43e172e15fc85c4cac9bca204e5812fe0947e552a335f28d3e13c7c502a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00071-window-displays.json",
+      "metadata_sha256": "1fdd4928e11a3e292f55d10654279530e4f56cf1ecac07ad2ecc405a1b083564",
+      "stdout_sha256": "b5ba70c4589162853f5b276b63abc2de2a730e80e08039b19b30e73fa4568515"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00072-input-dispatcher.json",
+      "metadata_sha256": "e6893e151796ec6036ccdf9c19d2f2a45dc8bef35ee0c305fa1796c242131807",
+      "stdout_sha256": "140a4a05a12a61e807b516964815f7f49d8fca088c9513790391ca41fcfe4bfe"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00073-activity-displays.json",
+      "metadata_sha256": "6fde8152c8d6bedcf4bf79f6a2c8fa1ae0eb22e4848ae06b40e855d7febfaefc",
+      "stdout_sha256": "1f24baafb100e1ed18865a1c13276d74cbb8a2c4a4cebdf0695d71ff5b27b594"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00074-process-uid.json",
+      "metadata_sha256": "5252a5ae3c2c9f86d26ffb4ae1ee2b9cb60493af88569be71f08717ecc7b4c5e",
+      "stdout_sha256": "e0101f725a4c5202af001861dddb78bfa0f8b603d16dfb4b0955d296a2ced8df"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00086-displays.json",
+      "metadata_sha256": "71d3a570277d37791c8431caff2d9e6f7964ec1acc3320cc372a45a4bdade630",
+      "stdout_sha256": "22eac43e172e15fc85c4cac9bca204e5812fe0947e552a335f28d3e13c7c502a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00087-window-displays.json",
+      "metadata_sha256": "30f38a181cf122abfbf3c7371734bdf23e64675a77fa1f2b015136b843811b59",
+      "stdout_sha256": "157d78dc499105329522065228976165d9fe7913bdb1ce906a5cea0d67cfd34e"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00088-input-dispatcher.json",
+      "metadata_sha256": "6e680414530c794d779a5af133ed2ac949b583097aecce888cb06eb2fa9a3923",
+      "stdout_sha256": "91ed4f4a4c4fa6d45b86c05c0aa66a1474b7ba8edb7417dfaed724cd647f5afb"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00089-activity-displays.json",
+      "metadata_sha256": "bb5ef90e78f8dc43382e9451ad838a95072a514170341f4bfe5aed64f08773c8",
+      "stdout_sha256": "aa6e29a6f401dd7143fd28d47eca608cca8ce3e20fcffbdfbd2b18ef1e38c441"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00090-process-uid.json",
+      "metadata_sha256": "fa548c7851d37938e1337498d5089310fd14be825859d000b7d6d045e57af93f",
+      "stdout_sha256": "bdd7321d010b93c4d51cd4bcb902fcf564499d126b61f502ab85573cf116f612"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00091-displays.json",
+      "metadata_sha256": "de4198328b882f950a9a7feb2b55ab925e8de2115e591e546f8c9d24ae3a3a4f",
+      "stdout_sha256": "22eac43e172e15fc85c4cac9bca204e5812fe0947e552a335f28d3e13c7c502a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00092-window-displays.json",
+      "metadata_sha256": "be8878d28d796227f663c02ce62e1ee403fe3ece9b2415086d8d44576668e506",
+      "stdout_sha256": "157d78dc499105329522065228976165d9fe7913bdb1ce906a5cea0d67cfd34e"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00093-input-dispatcher.json",
+      "metadata_sha256": "53dff029ff0364c10aa59727ef61cbc4da75a127af033fb81f7ecd9724dda0bd",
+      "stdout_sha256": "fbb4f5f0b0ac334d67f13a7378a0a7a565c2edcc8bd0be1849f66ca6bb30d25b"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00094-activity-displays.json",
+      "metadata_sha256": "37b88f5203d06513f731cf530c6791d1bee56b94139cee4237e61fa99e20577a",
+      "stdout_sha256": "001f4f41e7cc2fc552cd06f1a4cc8e546c02e13990e17fd95cd8d7943cc868a7"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00095-process-uid.json",
+      "metadata_sha256": "aac2356db94c0db8fcfbb0665275ecfee3bae07b87d91f626f468a11679429df",
+      "stdout_sha256": "8025206299ec315dfbf4d05d6d49f25f7a49b4a4e49d60b9e348a96aab32cb75"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00097-displays.json",
+      "metadata_sha256": "44795e55831d2e026f8fbeea4f8cbcb944b605463a83283beea1ba42a9a69a8a",
+      "stdout_sha256": "22eac43e172e15fc85c4cac9bca204e5812fe0947e552a335f28d3e13c7c502a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00098-window-displays.json",
+      "metadata_sha256": "09a7af9b8688157a3c26c414212bbff5405e5b87e6c57bf6ae8aa9c91562fac2",
+      "stdout_sha256": "157d78dc499105329522065228976165d9fe7913bdb1ce906a5cea0d67cfd34e"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00099-input-dispatcher.json",
+      "metadata_sha256": "9c012455eb0591b81c4dad9ef43910eba2ede18b166192ded01964b11ffc1c61",
+      "stdout_sha256": "d3e08c047225526b4428a9e8406ee604c15ef767391950e6bdc0a967c527dbe3"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00100-activity-displays.json",
+      "metadata_sha256": "e773acf0f9ffbec6df4fa960cc41210f0ae05ab20f8a99ddbeea0ce096506223",
+      "stdout_sha256": "408031709ebae24a2e3a82bc6fa4fa141f965d482674600aee45e47eb535162d"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00101-process-uid.json",
+      "metadata_sha256": "7e8272cf4b1674f55f2c560a872bf4cc63cae48933c0045dcaf0e7ebaa1ec567",
+      "stdout_sha256": "161c3bccd614747acc568972f0b76b06e5b0c870241ad99ce12c562ffa05cb4a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00103-displays.json",
+      "metadata_sha256": "2f6cd04cc7c42a9c7800bc932b4a0b9020904f45f8d8782568ed6410d6c70b5c",
+      "stdout_sha256": "22eac43e172e15fc85c4cac9bca204e5812fe0947e552a335f28d3e13c7c502a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00104-window-displays.json",
+      "metadata_sha256": "6d7e6face0f7973aabe0225cf6d8d5be0a9d44691850dbce333ef352d92aa4e8",
+      "stdout_sha256": "dc97e39d0abc650ced12f2c6c0b6742c015c7a5c7240ef0aad34826f2248dea5"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00105-input-dispatcher.json",
+      "metadata_sha256": "115b59de345f362d6a213194c875a7b2c3f19f4b64c794e15d31e07ec8d0c590",
+      "stdout_sha256": "cb4c45a3375ccb1a94f4167b88735282e718ecc9352a643913d11dafeebfebad"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00106-activity-displays.json",
+      "metadata_sha256": "00457252d1c0ea402f29064ba371aa9a5ce7526f3063aa7947285d0522cb31d7",
+      "stdout_sha256": "1a5ca2998196825bdd74ac236dbdcb1590f53b1f0f69c0e706807bfe280969a3"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00107-process-uid.json",
+      "metadata_sha256": "e8b760e4d436923d99ad1a6eb4af9c56940b1404659e8dbf1c27b328e252a299",
+      "stdout_sha256": "9b8ec29de2b3266783d1319b2709d8330f85f8cb3e8a42aafc8a728eda4010c8"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00109-displays.json",
+      "metadata_sha256": "4f9ad806fabf6f8bfddeb74729018164372cc837981caa84af9f23d11701fe24",
+      "stdout_sha256": "22eac43e172e15fc85c4cac9bca204e5812fe0947e552a335f28d3e13c7c502a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00110-window-displays.json",
+      "metadata_sha256": "8c6d6c1c75dc2d99f9c803a75817425ff52e9ef8cfc0b2d41c34c4873f699b8a",
+      "stdout_sha256": "52085627bde7f0a2c4a086383a4e406445675595f92b7d545a27b60119bdabc3"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00111-input-dispatcher.json",
+      "metadata_sha256": "a06fda78afaf0e7f3672740eafe158bb22a97a7949a91dadb64402009f314c98",
+      "stdout_sha256": "037a27a9304a97a53381456d98859b8937c7ed6aaf01eb6cd9b7ecdd58ed8c89"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00112-activity-displays.json",
+      "metadata_sha256": "a4dcc2da3c59437ff6716572730f02d602828f7c0ecc5f5358ec7ef591ba79ce",
+      "stdout_sha256": "aea7ef1d7b9b61cb8acbc21138e01fd6c060d23bbb71fbbc83b9d42df38d4970"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00113-process-uid.json",
+      "metadata_sha256": "7cd4496001b4e9885c4f167fdb2c134c218c42ed0a3840f762b06873e21deaa9",
+      "stdout_sha256": "fe4f24ae36f57b7555e75c5a1964d3677e1535c3c6f941284ead556617c92cb7"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00115-displays.json",
+      "metadata_sha256": "3ef4baba2a42a74997e3d1029e148ce84461faf891dd4c60d9e2a575d16838f7",
+      "stdout_sha256": "22eac43e172e15fc85c4cac9bca204e5812fe0947e552a335f28d3e13c7c502a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00116-window-displays.json",
+      "metadata_sha256": "ca43025099e0ee5f4ed47dd82037f36890d72d96a297728b207d1f6d188adde0",
+      "stdout_sha256": "584c530ba754f98b4a03fd3b85775900cc94e72d26104c8cc9e6502789cb99af"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00117-input-dispatcher.json",
+      "metadata_sha256": "b6e4a289e38084a4340b4c4369dbc993fb6ec000439ee3b190a1dd88bbacca65",
+      "stdout_sha256": "bbd978b6dfff716627e0f053168625ab8dd6dfc70b5835e4a5061c2e3f10b86e"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00118-activity-displays.json",
+      "metadata_sha256": "2e0b44dc778173c061dffc3c529a300d5db1a332b8ebb7483e80448de23e3f32",
+      "stdout_sha256": "cd77c9f979fb8f19f2cef015c592cd34168f915d68b982ab16cdd27aedf854f3"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00119-process-uid.json",
+      "metadata_sha256": "6c38f3d49363bfdc5eaf1a604aafc14e0f6d3286238470ac2c9d529942c39585",
+      "stdout_sha256": "0c1b4a84e998ffc28f6c2026797d6abdff2b26dd77a9f9289569fdf92310e73b"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00121-displays.json",
+      "metadata_sha256": "aad1c0e20d274f2a2ac684b470c820f0f101d77e3bf78ea0234304ae261ba6b5",
+      "stdout_sha256": "22eac43e172e15fc85c4cac9bca204e5812fe0947e552a335f28d3e13c7c502a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00122-window-displays.json",
+      "metadata_sha256": "ea2d1f848b458f5e84f93edc4cfa93bd015752502f7192806012c335c5379f2b",
+      "stdout_sha256": "aaa88c8ca446be766ea26f45df8479e6a5f00d62b9bd6801c7dc79e02fb6072f"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00123-input-dispatcher.json",
+      "metadata_sha256": "95a0177d95bfb33deda77ab2e5c3899f43c1cb72c270f81330a63e4864ec9b96",
+      "stdout_sha256": "b0f068ce5fd8d4fd71f350c7fd5981397eb0b7a68db924c2768b587239ebaa4d"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00124-activity-displays.json",
+      "metadata_sha256": "b5bf887be5260ed31b3b4bf465c12df1e45dd15271a903c70d209264e1b72e5c",
+      "stdout_sha256": "4ccb992728753d594adc77f2ea3b8b22c6a3ef19576cb07d53509b9346b68675"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00125-process-uid.json",
+      "metadata_sha256": "7db45953c78a0935dcb30922fbb0f4b283a451a167f3d9d84d65ab21bed6aeca",
+      "stdout_sha256": "ff07b4be7146bfdb4537bfd63cc9917b9d7d6b82717189e8caf67ff22a4fb142"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00127-displays.json",
+      "metadata_sha256": "02fd7e6a2ea41852285c41e30be65cd8a85eb64901695f5827b105317420fc62",
+      "stdout_sha256": "2b300745692cb81c88a944c725313a39a0beb16d87670002efe1a1332e826e4a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00128-window-displays.json",
+      "metadata_sha256": "1384dcc2a180d47380c8e607f5cb51b17cddbb7c1c0494f32a5642f51cbf1f84",
+      "stdout_sha256": "185c6b1033f275f98e9a93b094d2136a2156362021a401f5f0cbbc540fe6c166"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00129-input-dispatcher.json",
+      "metadata_sha256": "e2d456c1ffd5ae93ef4bf96bdcde6b42ecefaaef0ac1747e932d1341286cf1ec",
+      "stdout_sha256": "2b6ea73d1534b5860527664ffe5e675146f1d387371f21321b7a17e6beeef3c6"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00130-activity-displays.json",
+      "metadata_sha256": "421521f2d919bb1b4532ed4b98b1b6c6227d2b01237076dc16f18d2cb0f1ee1d",
+      "stdout_sha256": "2da55af4404dcecfd94c96984a80cffc69bb316a14303fe20f039b1781ffa069"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00131-process-uid.json",
+      "metadata_sha256": "238b3cc8fcd962fd638eeddc31c6be022f3a8270abb8933f59fa6e3b315b57fd",
+      "stdout_sha256": "d7b17e5f69b99402412c314ff708d9c0078f34436c555035b864cef996f0e73d"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00133-displays.json",
+      "metadata_sha256": "d2059a27e883248a2b1ed18a16377ec1e09829bc2c9a37244a24d030b0166e53",
+      "stdout_sha256": "2b300745692cb81c88a944c725313a39a0beb16d87670002efe1a1332e826e4a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00134-window-displays.json",
+      "metadata_sha256": "10e43d9c823fb877f4b7ec83dd0e4d656b8a251ec0720a8cd36e102ef6332966",
+      "stdout_sha256": "185c6b1033f275f98e9a93b094d2136a2156362021a401f5f0cbbc540fe6c166"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00135-input-dispatcher.json",
+      "metadata_sha256": "7cf303350ebcd274dce1c1b2a436cc0818b245562d59a097dc0b9b1676dd9cc9",
+      "stdout_sha256": "c42d16938ec7620c2a6af5973ea326be4f3ca6a03fe8dd144774643338afe7d8"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00136-activity-displays.json",
+      "metadata_sha256": "f2a3eb27a83e5f9f7e3b7e93bbd663d8ab7c630145d42b155d1456258634b5b5",
+      "stdout_sha256": "026fe973a4e155097e9c4621f782c474ed331bfaae4ea24b5c43f2a7a0b65f70"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00137-process-uid.json",
+      "metadata_sha256": "a97db92fe827c7734e694b5bbdc87d480ce04eeadccec1b2bf6f7eb281976f95",
+      "stdout_sha256": "2561bf67701241d8a652c7b9e16c802a55f1d5b5c8846bbe0534b24c167d63e2"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00139-displays.json",
+      "metadata_sha256": "6ae567d305c5ddc29443138373893966cb45ee514eef0dc1c7f22867a47d7b32",
+      "stdout_sha256": "2b300745692cb81c88a944c725313a39a0beb16d87670002efe1a1332e826e4a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00140-window-displays.json",
+      "metadata_sha256": "532028f4c9b06aec93b93e34861b7f993c3a9c68ac0fd949b6140afd2fdab333",
+      "stdout_sha256": "185c6b1033f275f98e9a93b094d2136a2156362021a401f5f0cbbc540fe6c166"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00141-input-dispatcher.json",
+      "metadata_sha256": "841d9b795df466cf8a54392553d9345989d79dd5b2519592c27cc29ca6532d31",
+      "stdout_sha256": "5465bf3ab348cfeafc2e5bedc76da3100ecbabf6b15fac9c1ce88be40a17d46f"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00142-activity-displays.json",
+      "metadata_sha256": "c47580f091785655048473db737ed59a56f7fb1f58777c802c2f71ee6e88461a",
+      "stdout_sha256": "3089203aafed224dab354184ef65252445bf2b860c3694b2b1d226af6e1d300f"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00143-process-uid.json",
+      "metadata_sha256": "daf1ac54ce4d5d2b4385f489a20befcb4c7db17d7db8168f06f4ae2920c86cb0",
+      "stdout_sha256": "eaccc2f195afc0cde6fdc32c41b98104eacdaad9478b054e1bdf7620d4b34f26"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00144-displays.json",
+      "metadata_sha256": "b60bd14603298984f56a96a98edf34c96567c6fc211030d6bc1baf4b343f0a5b",
+      "stdout_sha256": "2b300745692cb81c88a944c725313a39a0beb16d87670002efe1a1332e826e4a"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00145-window-displays.json",
+      "metadata_sha256": "50bdeb3e07b2d41a453e8fa51606f699feccee6f1b1f5766f77c624301b02391",
+      "stdout_sha256": "185c6b1033f275f98e9a93b094d2136a2156362021a401f5f0cbbc540fe6c166"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00146-input-dispatcher.json",
+      "metadata_sha256": "e43f3da328b3facba2f6dede9fcfb4db2234cd87d2906b6374f730309472c6fa",
+      "stdout_sha256": "18c0b6ec94195eb194dead20c74f537556a3e563542be53efc489cf472f835ee"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00147-activity-displays.json",
+      "metadata_sha256": "7a755e4eb57e406167fb915dc08bdab494e29b415748dbca681d42001ee672fc",
+      "stdout_sha256": "797cc0d089b6bea6749c4a34e2fffb3563a64ba320713f81a834c6e93f7ced5b"
+    },
+    {
+      "metadata": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/commands/00148-process-uid.json",
+      "metadata_sha256": "7d0772619b3878a600e1ba9c832e0173227330d5ade4c26d19f663c7763e49a1",
+      "stdout_sha256": "5f1d78ca9c826fcc270f3c274bcde3feebf8db5600326a104c9616aa06e8a642"
+    }
+  ],
+  "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+  "workflow_id": "978567f8b2524e9b3eb3a2555c75ba1fc31119a1fd2edf0c97110b5179c39ac0"
+}

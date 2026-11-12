@@ -1,0 +1,482 @@
+{
+  "schema": "hepta.v56-post-install-evidence-index.v1",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "draft_pr": 139,
+  "branch": "codex/hepta-v45-semantic-click-20261111-007f",
+  "expected_prior_head": "9f4168616546233033edd4b254b4236ae987ea7e",
+  "evidence_prefix": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/",
+  "publication_kind": "append_only_evidence",
+  "previous_source_and_evidence_index": {
+    "path": "INDEX.json",
+    "git_blob": "0dc36792bba49d286701c88d490cfbed55b9b493",
+    "bytes": 33907,
+    "sha256": "9b5c670d1159a3e1793f3818bf993b8f2997f561537f909285065310fad46a61",
+    "rewritten": false
+  },
+  "original_source_binding": {
+    "source_commit": "9f4168616546233033edd4b254b4236ae987ea7e",
+    "source_tree": "69fce7a2ec9467f0594d6d031fa0aab0cc9c636f",
+    "source_file_count": 595,
+    "source_inventory_sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+    "source_aggregate": {
+      "bytes": 1427055,
+      "sha256": "c1cc7cc16eef4c3a34131ee719101a69db080b76e72c98f03248036fc6fd628f",
+      "git_blob_sha": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c"
+    },
+    "source_map": {
+      "path": "main56-source-publication-map.json",
+      "git_blob": "efec1eb69f84635c38477f43a323bca87e5851fc",
+      "bytes": 289218,
+      "sha256": "b8b436f7e6bdbc5b319cd6ebcd3ac42bf5eb81638ba21aea9532f753b65c4f98"
+    },
+    "publication": {
+      "path": "main56-source-publication-receipt.json",
+      "git_blob": "d922531be2f9b16f0d6f23001b5c378ad41f6601",
+      "bytes": 6679,
+      "sha256": "5a71f5570743cfee38fbfadedf39a19609dccd111dfcd5e8a4e15c70be3e87b1"
+    },
+    "source_files_changed": false,
+    "original_publication_rewritten": false
+  },
+  "actual_execution": {
+    "signed56": {
+      "all_pass": true,
+      "exit_code": 0,
+      "apk_bytes": 21030740,
+      "apk_sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62",
+      "version_code": 56,
+      "version_name": "0.56.0-flight-stability",
+      "native_recompiled_here": false
+    },
+    "installed56": {
+      "completed": true,
+      "installed_verified": true,
+      "install_success_returned": true,
+      "expected_uid": 10481,
+      "configuration_model_preferences_history_helper_preservation_verified": true,
+      "no_new_task_by_install": true
+    },
+    "flight56": {
+      "task_id": "11f5735392b2402495a19e1ed5474d13",
+      "status": "failed",
+      "steps": 1,
+      "summary": "AX/DOM bracket changed; no current page capability published",
+      "completion_verified": false,
+      "business_verified": false,
+      "collection_complete": true,
+      "cleanup_known": true,
+      "ready_for_next_lease": true,
+      "original_outer_sdk_teardown_verified": false,
+      "original_failure_rewritten": false
+    },
+    "notes56_normal_original": {
+      "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+      "collector_exit_code": 2,
+      "qualified": false,
+      "machine_checks_passed": false,
+      "infrastructure_checks_passed": true,
+      "status": "controller_verified_done",
+      "steps": 1,
+      "completion_verified": true,
+      "cleanup_known": true,
+      "original_values_unchanged": true
+    },
+    "notes56_normal_independent_replay": {
+      "exit_code": 0,
+      "scoped_checks_passed": 9,
+      "scoped_checks_total": 9,
+      "all_scoped_checks_passed": true,
+      "qualified": false,
+      "original_files_preserved": 875,
+      "original_main_coexistence_checks_passed": 8,
+      "complete_selection10_current_verifiers": true,
+      "legacy9_patch_used": false,
+      "phone_actions": 0
+    },
+    "notes56_normal_root_visual_scope": {
+      "record": "notes56-normal-root-scoped-visual-review.json",
+      "notes_create_save_list_reopen_verified": true,
+      "meaningful_main_settings_scroll_verified": true,
+      "whole_normal_case_qualified": true,
+      "original_collector_false_retained": true,
+      "final_note_original_png_fully_read_and_viewed": true,
+      "main_settings_complete_lossy_previews_viewed": 2,
+      "main_original_pngs_fully_read": false,
+      "main_before_settings_launch_preview_viewed": false
+    },
+    "notes56_cancel": {
+      "six_host_files_published": true,
+      "normal_fourteen_originals_preserved": true,
+      "phone_execution_result_in_this_batch": false,
+      "cancellation_success_claimed": false,
+      "recovery_success_claimed": false
+    }
+  },
+  "limits": {
+    "actual_flight_results_provider_ready": false,
+    "all_requested_hepta_business_tasks_completed": false,
+    "continuous_npu_busy_verified": false,
+    "zero_transient_main_screen_disturbance_proven": false,
+    "native_peak_rss_verified": false,
+    "all_875_notes_original_files_embedded_in_repository": false,
+    "flight_transport_includes_58_original_text_native_members": true,
+    "flight_four_original_png_bodies_omitted_from_transport": true,
+    "scope_qualification_is_separate_from_original_collector": true
+  },
+  "original_failed_receipts_changed": false,
+  "previous_branch_files_changed": false,
+  "new_host_or_phone_execution_by_publication": false,
+  "files": [
+    {
+      "path": "main56-signed-RESULT.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/main56-signed-RESULT.json",
+      "git_blob": "bbad4c1163a6cf92e829a376d7f1d6cc0002f523",
+      "bytes": 32758,
+      "sha256": "e27e74e94b0668c1c07b04863c9aaabf1b3235f9ff2d0d0d8bd9a346e46b2c6b",
+      "scope": "Actual signed Main56: all six tools normal exit zero; signature and APK evidence, not phone task success.",
+      "kind": "original"
+    },
+    {
+      "path": "main56-phone-install-RESULT.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/main56-phone-install-RESULT.json",
+      "git_blob": "91f6bba4ad1d7fc1e6579db5a3dfce5f8aa286e5",
+      "bytes": 120757,
+      "sha256": "8425e9788a927e3c646f0630482c7fbd9cc5ef00990a73a625ee9c0b0cd87db6",
+      "scope": "Actual install verified; preserved existing state, no task or model run started by install.",
+      "kind": "original"
+    },
+    {
+      "path": "main56-source-publication-map.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/main56-source-publication-map.json",
+      "git_blob": "efec1eb69f84635c38477f43a323bca87e5851fc",
+      "bytes": 289218,
+      "sha256": "b8b436f7e6bdbc5b319cd6ebcd3ac42bf5eb81638ba21aea9532f753b65c4f98",
+      "scope": "Exact preexisting source publication map; source commit 9f416 and all 595 entries unchanged.",
+      "kind": "original"
+    },
+    {
+      "path": "main56-source-publication-receipt.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/main56-source-publication-receipt.json",
+      "git_blob": "d922531be2f9b16f0d6f23001b5c378ad41f6601",
+      "bytes": 6679,
+      "sha256": "5a71f5570743cfee38fbfadedf39a19609dccd111dfcd5e8a4e15c70be3e87b1",
+      "scope": "Exact original source publication receipt. This evidence append does not rewrite or rebind it.",
+      "kind": "original"
+    },
+    {
+      "path": "main56-final-signing-handoff.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/main56-final-signing-handoff.json",
+      "git_blob": "858b8851ae0ce07010ec41334bb8a80360b566a4",
+      "bytes": 21788,
+      "sha256": "1765470fe2a49f4155f9de55dad781ec925443c4f3f8ff721279ff1f850d5d5d",
+      "scope": "Sealed signing source and transport provenance; execution evidence remains the signed RESULT.",
+      "kind": "source_or_transport"
+    },
+    {
+      "path": "main56-final-signer.py",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/main56-final-signer.py",
+      "git_blob": "580f96228a44cff2351dd47bd86f6c2b2e931421",
+      "bytes": 93580,
+      "sha256": "c86560957ba70e64f1aace0b72fc1ed557e3e0ccfc616c3c50c8c99db4c7163f",
+      "scope": "Exact source used for the recorded signing; not executed by this publication.",
+      "kind": "source_or_transport"
+    },
+    {
+      "path": "main56-final-publication-stager.py",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/main56-final-publication-stager.py",
+      "git_blob": "5dae3502253bd061bea343fdd5c6b182fea5fe6d",
+      "bytes": 18036,
+      "sha256": "61977406a10ae5949256aa3881a0c32491343eba1087a6dd2f584c908d6d28b3",
+      "scope": "Exact source-publication staging implementation; no new staging performed here.",
+      "kind": "source_or_transport"
+    },
+    {
+      "path": "web56-runtime-publish-r1-original-failure.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/web56-runtime-publish-r1-original-failure.json",
+      "git_blob": "2c8efa16ec8b804e84dd547419d9211e27a95222",
+      "bytes": 6718,
+      "sha256": "2462b99de34902c88666344feb207aceecfc1f4311d899a18e2a8abbfeb7b9cd",
+      "scope": "Original failed host publisher, with published=[]; retained unchanged.",
+      "kind": "original"
+    },
+    {
+      "path": "web56-runtime-publish-r2-checkpoint.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/web56-runtime-publish-r2-checkpoint.json",
+      "git_blob": "be992de088a1df49e0def606c8129181053a5ff8",
+      "bytes": 7756,
+      "sha256": "a01b1fa7992656b00235b765893eb06fd925c53e627bb63ef6d12e13498ef806",
+      "scope": "Actual successful host publication of three Web56 runtime sources; not phone task success.",
+      "kind": "original"
+    },
+    {
+      "path": "web56-runtime-publish-r2-delta.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/web56-runtime-publish-r2-delta.json",
+      "git_blob": "af748703fbbce7be6cbf2c86ba99f81decc82c7f",
+      "bytes": 2870,
+      "sha256": "0c5f104acf69869d2594976d9dd973cb852f752a562ac345ddb207cadeb79853",
+      "scope": "Narrow publisher guard/key repair; original failed receipt retained.",
+      "kind": "source_or_transport"
+    },
+    {
+      "path": "web56-flight-observe-bracket-readonly-analysis.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/web56-flight-observe-bracket-readonly-analysis.json",
+      "git_blob": "cf12cf8191a818d9313e5dcbcd9fdb0749a8944c",
+      "bytes": 18650,
+      "sha256": "e6f74f1a70f43aeeaac84cbf1d2feaf6eab00d3efbe0f0716e34a5af48c1320a",
+      "scope": "Read-only source/capture analysis of the failed observation bracket; no production change.",
+      "kind": "independent_analysis"
+    },
+    {
+      "path": "web56-flight-text-native-originals.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/web56-flight-text-native-originals.json",
+      "git_blob": "deb73e79d18eb3fe408ff2dded8cc8e14342800a",
+      "bytes": 1757497,
+      "sha256": "41df2d70db7f42465ba5306cb139fe9a85b28f5e63d0c6a737cbee51b68dba2f",
+      "scope": "Exact 58-file text/native transport envelope. Four PNG bodies excluded here remain individually pinned in the full host envelope.",
+      "kind": "original"
+    },
+    {
+      "path": "web56-flight-retained-native-independent-diff.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/web56-flight-retained-native-independent-diff.json",
+      "git_blob": "5a3e2430e71dda6d9098a236bd84202b0e4afefa",
+      "bytes": 15283,
+      "sha256": "b9f0143e807c8a25fcdfbf321eed74f21f1fd0de680464fa6d07e385b1ade1d3",
+      "scope": "Exact two-observation retained-node comparison; active-root-only overlay limitation and original failure preserved.",
+      "kind": "independent_analysis"
+    },
+    {
+      "path": "web56-flight-original-RESULT.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/web56-flight-original-RESULT.json",
+      "git_blob": "693ca3511c98040b1e99e6506ec5ac1d64c34bb3",
+      "bytes": 32719,
+      "sha256": "392f239be032c6c45d048222bc0d3cc7003ed03dc7d193a07e3c504f3fb0da52",
+      "scope": "Original Flight56 failure; no query or results success inferred.",
+      "kind": "original"
+    },
+    {
+      "path": "web56-flight-COLLECTION.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/web56-flight-COLLECTION.json",
+      "git_blob": "cac8fc285249e8d977d651e79f9a80fdf3dae431",
+      "bytes": 56496,
+      "sha256": "5a1c0bf3906b5432288471d7750fdf934df18f4829de62a269d6dbb02d9e5d44",
+      "scope": "Original collection and every original file pin; collection is not a business verdict.",
+      "kind": "original"
+    },
+    {
+      "path": "web56-flight-CAPTURE-RAW-INDEX.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/web56-flight-CAPTURE-RAW-INDEX.json",
+      "git_blob": "80de68e04defcafede0b21cdc99e45c7033fc9d1",
+      "bytes": 4221,
+      "sha256": "0a83307e1d5ac266b3553f28c1583c498b7a89a017039260f34538480293c9a3",
+      "scope": "Two actual typed raw-FD index records; preserves business_verified=false.",
+      "kind": "original"
+    },
+    {
+      "path": "web56-flight-task-original-result.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/web56-flight-task-original-result.json",
+      "git_blob": "f2023d0c2925e64dc685e31486fb4a5e0c487133",
+      "bytes": 18597,
+      "sha256": "821b67811eb7a7f4cae632d05bc844b40360d525344ed10e6c72634f288a83d6",
+      "scope": "Actual failed task result and cleanup evidence.",
+      "kind": "original"
+    },
+    {
+      "path": "web56-flight-native-scope-643629.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/web56-flight-native-scope-643629.json",
+      "git_blob": "6bef9ae4789c97e7f5dfdafc9e350dd9901c5e64",
+      "bytes": 71804,
+      "sha256": "2a6176bb64d415eb1a81c9330bf52721589a966c749ddc75f4eb79cdfa0a124d",
+      "scope": "Complete actual 71,804-byte original scope observation.",
+      "kind": "original"
+    },
+    {
+      "path": "web56-flight-native-scope-c6fc90.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/web56-flight-native-scope-c6fc90.json",
+      "git_blob": "12b6acf80230dd033947314f6d6dc83d45ddd2c2",
+      "bytes": 71804,
+      "sha256": "df5d1451477b382917e5fa9e6a23baf3506ac5fc153c4ee80a7159d6283089b7",
+      "scope": "Complete actual 71,804-byte original scope observation.",
+      "kind": "original"
+    },
+    {
+      "path": "notes56-runtime-source-and-plans.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-runtime-source-and-plans.json",
+      "git_blob": "d7fae9ab2144159efb367bad19a71ccd2bac6980",
+      "bytes": 429474,
+      "sha256": "f12491cf49bae005a4e24f35130fa9bba51fc4ae043720f08450c1817625374a",
+      "scope": "Exact eleven normal runtime sources and three distinct plans; original source scope and pending fields preserved.",
+      "kind": "source_or_transport"
+    },
+    {
+      "path": "notes56-runtime-independent-review.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-runtime-independent-review.json",
+      "git_blob": "f05cd749e5d95a312d900bf26dad4d0f4f39da2d",
+      "bytes": 5505,
+      "sha256": "406c804efafa4c5f5ff4261e9f043a1d39380f9bcc6ada437fe5ee15865597b7",
+      "scope": "Independent source-only review of the Notes56 adaptation.",
+      "kind": "independent_analysis"
+    },
+    {
+      "path": "notes56-runtime-publisher-independent-review.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-runtime-publisher-independent-review.json",
+      "git_blob": "0266790bede87cd015912946fe327d99181bcf8e",
+      "bytes": 5180,
+      "sha256": "5bf3bf9f909885c989d0eb478602fcc544090909ba3688236af1690200a5fa92",
+      "scope": "Independent review of the fourteen-file host publisher; not a phone execution receipt.",
+      "kind": "independent_analysis"
+    },
+    {
+      "path": "notes56-normal-prepare-RESULT.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-normal-prepare-RESULT.json",
+      "git_blob": "c7d1df12dc029c5db8339a2a10c0f37aad3d2155",
+      "bytes": 20158,
+      "sha256": "61a7aa90efb1fffb14e4f21cdec6c389b4ecb1bf644a559c95f8d9e747cc743a",
+      "scope": "Actual prepared ordinary Notes task; no task Start by preparation.",
+      "kind": "original"
+    },
+    {
+      "path": "notes56-normal-prepare-root-visual-review.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-normal-prepare-root-visual-review.json",
+      "git_blob": "dd57757645163c269769fa610e1293dcbdcf4ad8",
+      "bytes": 2469,
+      "sha256": "71cfb286b1745f881451581150e296f880ffff18e0e0854c7ff6a41414203bb0",
+      "scope": "Root's whole-original preparation image review and selected ordinary Start.",
+      "kind": "original"
+    },
+    {
+      "path": "notes56-normal-owner-close-and-start-request.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-normal-owner-close-and-start-request.json",
+      "git_blob": "06a66cf498d81f4123f86b5e12bb9bcf9056015d",
+      "bytes": 2091,
+      "sha256": "66dff400158793f70e5567a2b0acde774568fb0aac23d2d2ee1695e4d5045f6d",
+      "scope": "Actual normal owner close and unique independent normal-run request.",
+      "kind": "original"
+    },
+    {
+      "path": "notes56-normal-run-wrapper.py",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-normal-run-wrapper.py",
+      "git_blob": "db66b1fe6fb700d3e1d308f47f0d49bf8f62c1b3",
+      "bytes": 3365,
+      "sha256": "af5fbdcb95a876f8354bf64191f4ecd8823ee3c05a1cd1dc6efdb2712a1acb27",
+      "scope": "Exact late-sealed wrapper selected for the actual normal run.",
+      "kind": "source_or_transport"
+    },
+    {
+      "path": "notes56-normal-original-RESULT.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-normal-original-RESULT.json",
+      "git_blob": "171689d2c4e769cad8e1025fd22874fb91962d5c",
+      "bytes": 250421,
+      "sha256": "8e4f37def7612d81bf96c9ccd96ea5b0858bdf9849683f5112953469671e1601",
+      "scope": "Exact original normal collector: exit2/qualifiedfalse retained; infrastructure and typed workflow facts separate.",
+      "kind": "original"
+    },
+    {
+      "path": "notes56-normal-original-SUMMARY.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-normal-original-SUMMARY.json",
+      "git_blob": "5516d11cf2a5ba5afca3ebf16357d7fe87b316e0",
+      "bytes": 20378,
+      "sha256": "c73e39d8693b0ceddf7138d7c7149ef86c756598727f87801f3ef75d22620603",
+      "scope": "Exact original normal summary, with original false values unchanged.",
+      "kind": "original"
+    },
+    {
+      "path": "notes56-normal-independent-replay-RESULT.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-normal-independent-replay-RESULT.json",
+      "git_blob": "d05b3c9147607002af6587d7223eb21f69df5db5",
+      "bytes": 37037,
+      "sha256": "521031a93afd3e4ab5b579423c3d8a856b742813ad72f47b80db69adab3e4a70",
+      "scope": "Actual host-only nine-domain replay: 9/9 true, 875 originals preserved, qualifiedfalse pending separate visual scope.",
+      "kind": "original"
+    },
+    {
+      "path": "notes56-normal-native-original-receipts.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-normal-native-original-receipts.json",
+      "git_blob": "e93c0de9e84b942a3f46216fcc5ac4cb6d1dea10",
+      "bytes": 26737,
+      "sha256": "c2b7569d891b5b9fc11fe317a4dea1c3b63b035e14502f80fd69a14eb0d268e5",
+      "scope": "Four original native/app receipt objects and their exact pins; units preserved, not continuous NPU or peak RSS proof.",
+      "kind": "original"
+    },
+    {
+      "path": "notes56-normal-independent-replay.py",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-normal-independent-replay.py",
+      "git_blob": "e309145f897515263572c788f80eb1f03c127544",
+      "bytes": 22204,
+      "sha256": "bca507c491ee9290afed268808284094d2111a3d7cb5f5b9266dcf0d7b604f37",
+      "scope": "Executed read-only verifier source; current Selection10, no legacy9 repair.",
+      "kind": "source_or_transport"
+    },
+    {
+      "path": "notes56-normal-independent-replay-request.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-normal-independent-replay-request.json",
+      "git_blob": "ccc235af525952902ee807dcb4c5c90cec13c9bb",
+      "bytes": 23242,
+      "sha256": "a1c833fdd5a01235b3d252c8d4f97e0b0d03cf8d1036d3f04bfa6a451208b43c",
+      "scope": "Unique exact host replay request.",
+      "kind": "source_or_transport"
+    },
+    {
+      "path": "notes56-normal-independent-replay-source-delta.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-normal-independent-replay-source-delta.json",
+      "git_blob": "07ed6536295de4ccbbf245e3ade44b2d3dc46d04",
+      "bytes": 40840,
+      "sha256": "495b3f20f9e7048d5caebfec38f78f2d3c1252a098bacb425901b4f6d898dcbc",
+      "scope": "Twenty-six reversible source changes from the existing nine-domain framework.",
+      "kind": "source_or_transport"
+    },
+    {
+      "path": "notes56-normal-root-scoped-visual-review.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-normal-root-scoped-visual-review.json",
+      "git_blob": "1b6990c179408aa1341d4d07bff69aeae0ca2c29",
+      "bytes": 4088,
+      "sha256": "21e4277b7d78b04b1be137a7301d5b82efd0267bf28cd66aaf91ddb62c8e4300",
+      "scope": "Separate Root visual qualification for this normal Notes + meaningful Settings-scroll case; original collector false remains.",
+      "kind": "original"
+    },
+    {
+      "path": "notes56-cancel-source-packet.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-cancel-source-packet.json",
+      "git_blob": "64e82ecd2e21f0051f988786eeeea6a8e4be3902",
+      "bytes": 268473,
+      "sha256": "1a6a5cd2a85536a8f6c9dc08a530f770768aedeb78d73b0baa4b3fdf3b13f909",
+      "scope": "Six-file cancellation adaptation source; not a cancellation phone result.",
+      "kind": "source_or_transport"
+    },
+    {
+      "path": "notes56-cancel-source-independent-review.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-cancel-source-independent-review.json",
+      "git_blob": "fa7d4bf739c5b5e59a5a013656ca4adb5c5f6460",
+      "bytes": 9022,
+      "sha256": "31d205b7a72957b87461df322f88dde1458368750bafb6bd339b07da6611481e",
+      "scope": "Sole independent source review of the cancellation adaptation.",
+      "kind": "independent_analysis"
+    },
+    {
+      "path": "notes56-cancel-transport-independent-review.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-cancel-transport-independent-review.json",
+      "git_blob": "51358b459435dc4adb15018350640c4b9b369879",
+      "bytes": 8626,
+      "sha256": "d9e7ef83bf8a50a6791cf54ed69a45062179e126c73cc6112545817e0836b839",
+      "scope": "Independent six-file publisher and pending-entry review.",
+      "kind": "independent_analysis"
+    },
+    {
+      "path": "notes56-cancel-host-publish-request.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-cancel-host-publish-request.json",
+      "git_blob": "fd76767c84a6d1ef62f042d3e4ac370a3f0adb58",
+      "bytes": 106429,
+      "sha256": "6b484ebd69210f4cf8f4d1fee58b1959502faacf42aba7381108d289ff494552",
+      "scope": "Unique host publication request; contains no phone task Start.",
+      "kind": "source_or_transport"
+    },
+    {
+      "path": "notes56-cancel-host-publish-stdout.json",
+      "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/notes56-cancel-host-publish-stdout.json",
+      "git_blob": "9817f0786a216fe9da85662873449e10a83422d0",
+      "bytes": 3147,
+      "sha256": "302f4b0b9ef81eb08b7adbb4612ece91687b89621b663d56d4323c70642570dc",
+      "scope": "Actual six-file host publisher success; normal fourteen originals preserved. Cancellation phone execution not established.",
+      "kind": "original"
+    }
+  ]
+}
