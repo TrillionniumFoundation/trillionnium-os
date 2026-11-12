@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.background-launch-isolation-host.v1",
+  "status": "passed",
+  "stages": [
+    {
+      "name": "compile",
+      "exit_code": 0
+    },
+    {
+      "name": "counterexample-and-guard",
+      "exit_code": 0
+    }
+  ],
+  "source_sha256": {
+    "BackgroundDisplayBroker.java": "f1f773a4a5a6cf2e6df0dae74df6043e25e8a9747e96701f406517f86d069cc1",
+    "BackgroundOwnedTaskPolicy.java": "68f8a0a263eeac17e815750b0c1526d7d272e2620cd9933d764e3b468cb55c75"
+  },
+  "extracted_sha256": {
+    "admission": "26c77ff107fdc652e399f7bbaf78a3d9857cc09ddfa2e9a64a17a1fe84a73624",
+    "guard": "d561148c4c1e7c060da521ca34585d0a85ba7ccc1b2dcb2d4d3342c3ea9b66d9",
+    "snapshot": "d3b695aeae7c7d678af1ca7ca17f4fc3706f2619a1d9ec48bffe405cb42d9732"
+  },
+  "compiler_contract": "Java 8 API release gate",
+  "phone_operations": false,
+  "android_runtime": false,
+  "task_migration_reproduced": false,
+  "boundary": "Actual production broker admission/snapshot/guard and full task policy. Android task metadata, evidence serialization and launch endpoint are IO fakes. A metadata gap is demonstrated; rejected plans reach zero fake launches."
+}
