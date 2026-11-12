@@ -1,0 +1,281 @@
+{
+  "schema": "hepta.flight54-r1-independent-original-review.v1",
+  "reviewer": "android_background",
+  "outcome": "consistent_pre_model_failure_after_background_bootstrap_with_background_release",
+  "actual_task_id": "3c90bb05c4974a8980655fd254fc933e",
+  "actual_task_status": "failed",
+  "actual_failure_text": "regular immutable APK required",
+  "root_phone_only": true,
+  "host_calls": 0,
+  "phone_calls": 0,
+  "originals_modified": false,
+  "new_gate_or_runner_created": false,
+  "original_result": {
+    "git": "1a9762b0deb0dee336e91a0708c84292d9ac6b14",
+    "bytes": 56378,
+    "sha256": "6881749bc9429b4ce1332353ecd67fe2d524ae19b14349a1208a08b9b41195d7"
+  },
+  "original_collection": {
+    "git": "efb1ae57da8b517173a49ef1b71a988d2ceb1500",
+    "bytes": 25668,
+    "sha256": "642b7136d7d1ba94701c004615ef1024a0ae87eb0d701505df87deca87f502f0"
+  },
+  "original_preparation": {
+    "git": "529d258e4707fbe34badecb4356fb3cca941cf63",
+    "bytes": 53470,
+    "sha256": "32cf88080e1ece1ff4bc9b4012b930b77e26d3a6f6257ea7ec24385e5aae4334"
+  },
+  "independently_read_small_originals": [
+    {
+      "key": "owner",
+      "git": "6cd41627817085b799cd81583e4b19ba4dcd9f68",
+      "bytes": 4180,
+      "sha256": "0bf4ebde88b229c7913da452f3d68df2371263f4ffd4dde00e116427b98da95c",
+      "relative_path": "owner.json"
+    },
+    {
+      "key": "background-bootstrap",
+      "git": "c1ebaa55904e94f9cebee86c0dcbfc6145585199",
+      "bytes": 6591,
+      "sha256": "3739f30a871ff5a0498ea320c4a4bb1cbe2397b730ed2ffcb4c7527c25db19eb",
+      "relative_path": "background-bootstrap.json"
+    },
+    {
+      "key": "background-cleanup",
+      "git": "750de12e86aa6e4f018d0bbe734281231edbd7be",
+      "bytes": 5226,
+      "sha256": "fdd2b22d6988952fdf3976f825812fe3f7a40e2e10444d91461b2a67f32a147d",
+      "relative_path": "background-cleanup.json"
+    },
+    {
+      "key": "background-binding",
+      "git": "13538924081ba7aca8314a8f230169e1e788b96f",
+      "bytes": 2007,
+      "sha256": "b5da077af167cdf1a5bbb7287f69cea9f46cca8c0e54810f19b5a2779a06d37d",
+      "relative_path": "background-binding.json"
+    },
+    {
+      "key": "task-result",
+      "git": "e358f17c811fac8f65e8d6c202206f48fb115fa4",
+      "bytes": 16136,
+      "sha256": "4144b8b44cbb478c54c1db8e9a01bd80f5aa7e7e4fddc8bb3a7473ef22422302",
+      "relative_path": "result.json"
+    },
+    {
+      "key": "scope-binding",
+      "git": "f6a4080bf1cf159990c24467eb42591840224d01",
+      "bytes": 1203,
+      "sha256": "6a1effab5ff10d293f5a3d4c1726276c84960374f64d3496e89dce04d7583cc4",
+      "relative_path": "scope-binding.json"
+    },
+    {
+      "key": "helper-unstarted",
+      "git": "157871de1287c18124ddf430cbe797987d5f4cd3",
+      "bytes": 260,
+      "sha256": "3f1b4bcec3bec8e7d1a04cff0204bfb002edc0ab15464537743acabb8ada0b85",
+      "relative_path": "diagnostic-unstarted-fd01c43b-ccf1-4ebd-8579-92ed09924fe2.json"
+    }
+  ],
+  "source_checklist": {
+    "git": "a6408d30ea2573247341714c812277e6acb06583",
+    "bytes": 8296,
+    "sha256": "0a7f8df3098a9bf3212e2f7a6d5700daefa64e4a4d8ac27fbc338d09e15e4452"
+  },
+  "review_method": "Complete Git-returned raw bytes/SHA checked; supplied small originals matched exact COLLECTION entries. In-memory V8 reconstruction and strict boolean/string/array/object comparison of the fixed OWNER's Selection; no Python, Java, host, ADB or UI execution.",
+  "selection": {
+    "independently_recomputed": true,
+    "inputs": "Frozen r7 natural Flight OWNER and the actual 653-byte XML preference original embedded in the exact successful prepare-r3 RESULT. No expected object was copied from runtime background_request.",
+    "original_preferences": {
+      "bytes": 653,
+      "sha256": "c9364dde8c0b52e7890835d720967987f708e972b397fcc3f76d9d76a667137f"
+    },
+    "original_preference_choice": {
+      "schema": "hepta.background-ui-choice.v1",
+      "initial": "com.motorola.stylus",
+      "packages": [
+        {
+          "package": "com.motorola.stylus",
+          "uid": 10382,
+          "signers": [
+            "be8804a55e9045a580d204979f6efb15c058731aa1021b78c046feab8ae76a26"
+          ]
+        },
+        {
+          "package": "org.trillionnium.hepta.webhelper",
+          "uid": 10484,
+          "signers": [
+            "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5"
+          ]
+        }
+      ]
+    },
+    "run_before_sha256": "c9364dde8c0b52e7890835d720967987f708e972b397fcc3f76d9d76a667137f",
+    "run_after_sha256": "c9364dde8c0b52e7890835d720967987f708e972b397fcc3f76d9d76a667137f",
+    "runner_original_byte_equality_reported": true,
+    "expected_complete_selection": {
+      "mode": "background",
+      "allowed_packages": [
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "bootstrap_package": "org.trillionnium.hepta.webhelper",
+      "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false,
+      "owner_task_selection": {
+        "schema": "hepta.owner-task-app-selection.v1",
+        "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+        "recognition": "natural_explicit_date_single_adult_flight_query.v1",
+        "original_ui_initial_package": "com.motorola.stylus",
+        "original_ui_allowed_packages": [
+          "com.motorola.stylus",
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_initial_package": "org.trillionnium.hepta.webhelper",
+        "effective_allowed_packages": [
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_scope_within_selected_apps": true,
+        "effective_scope_strictly_smaller": true,
+        "initial_app_changed": true,
+        "package_from_model_or_screen": false,
+        "grants_tool_authority": false,
+        "changes_saved_preferences": false
+      }
+    },
+    "strict_full_equal_at": [
+      "owner",
+      "last_session",
+      "initial",
+      "active",
+      "released",
+      "task_background",
+      "task_cleanup"
+    ],
+    "conclusion": "The actual full Selection records correctly narrow the original Notes+helper UI set to helper-only and preserve the original initial=Notes provenance. Saved UI preferences remain dual-selection by the raw preparation and recorded equal before/after hashes. This proves the recorded Selection branch, not a completed formal Web helper lease."
+  },
+  "background_lifecycle": {
+    "id": 22,
+    "generation": "06f4fb29-94fc-4f1c-b481-3f7188e21bba",
+    "states": [
+      "INITIAL",
+      "ACTIVE",
+      "RELEASED"
+    ],
+    "helper_launch_dispatched": true,
+    "broker_exit_observed": true,
+    "broker_exit_code": 0,
+    "created_elapsed_ms": 830820824,
+    "expires_elapsed_ms": 831360824,
+    "app_uid": 10481,
+    "helper_uid": 10484,
+    "app_pid": 31544,
+    "launch_operation": "launch",
+    "launch_component": "org.trillionnium.hepta.webhelper/org.trillionnium.hepta.webhelper.PageActivity",
+    "original_cleanup_known": true,
+    "original_cleanup_error": null,
+    "terminal_operation": "close",
+    "terminal_reason": "client_close",
+    "raw_cleanup_equals_task_result_background_cleanup": true,
+    "terminal_background_session_equals_cleanup_without_cleanup_known_error": true,
+    "conclusion": "VD22 and the helper activity bootstrap really occurred. The same generation subsequently reached RELEASED and the app recorded observed broker exit 0. Do not rewrite this as 'no VD/helper activity was started'."
+  },
+  "model_and_failure_stage": {
+    "steps": 0,
+    "process_started": false,
+    "new_run_directories": 0,
+    "request_response_originals": 0,
+    "final_observation_id": null,
+    "submit_attempts": 0,
+    "fixed_intent_attempts": 0,
+    "model_session_original": {
+      "worker_generation": null,
+      "task_id": null,
+      "process_started": false,
+      "process_exit_observed": false,
+      "exit_code": null,
+      "receipt_valid": true,
+      "app_receipt_sha256": null
+    },
+    "no_step_files_in_actual_collection": true,
+    "query_dispatched": false,
+    "source_order": "Actual54 LocalTaskController writes OWNER/scope, starts BackgroundSession and records bootstrap, then constructs/attaches WebFlightSession, and only after that calls inference.beginTask and enters observation/model steps.",
+    "conclusion": "The actual failure is before local model task startup and before formal helper binding/capture. No model request/response, model action or query execution is evidenced. The provider/result-completion limitation was not reached.",
+    "precise_apk_stat_cause": "Not inferred here. Audit separately located the immutable-APK source guard; actual mode/link/owner metadata is required to identify which precondition failed."
+  },
+  "formal_helper_scope": {
+    "original_Binding_present": false,
+    "helper_journal_after_sha256": null,
+    "bound_capture_present": false,
+    "ordinary_close_verified": false,
+    "ready_for_next_lease": false,
+    "new_unstarted_original": {
+      "schema": "hepta.web-helper.diagnostic-unstarted.v1",
+      "cleanup": {
+        "captures_retired": false,
+        "stop_loading_called": false,
+        "webview_destroyed": false,
+        "active_view_absent": true,
+        "storage_clear_completed": false
+      },
+      "resources_never_started": true,
+      "business_verified": false
+    },
+    "conclusion": "The helper diagnostic explicitly says resources_never_started=true, with only active_view_absent=true and four other cleanup flags false. It is not an ordinary formal close, storage-clear success, capture or business proof."
+  },
+  "collection_scope": {
+    "task_files": 8,
+    "helper_files": 37,
+    "model_run_files": 0,
+    "total_files": 45,
+    "raw_bytes": 10003690,
+    "small_raw_members_independently_read": 7,
+    "historical_helper_payload_bytes_not_redownloaded": true,
+    "broker_bin_and_broker_json_index_pins_present_but_raw_not_independently_read_in_this_review": true,
+    "collection_is_business_verdict": false,
+    "snapshot_boundary": "Original collection is sequential, not an atomic device snapshot."
+  },
+  "final_report_consistency": {
+    "system_resources_absent_reported": true,
+    "all_five_markers_reported_absent": true,
+    "running": false,
+    "pending": false,
+    "blocked": false,
+    "background_lease_unreleased": false,
+    "web_helper_lease_unreleased": false,
+    "cleanup_known": true,
+    "operation_lock_acquired": true,
+    "operation_lock_released": true,
+    "operation_lock_continuity_verified": true,
+    "operation_lock_continuity_checks": 140,
+    "reacquisition_attempted": false,
+    "operation_lock_device": 66306,
+    "operation_lock_inode": 58890228,
+    "independently_replayed_system_dumps": false,
+    "note": "Collector terminal/system/lock fields were checked for consistency; this review did not re-run or separately parse its complete system-command transcript."
+  },
+  "old_phone_observation_projection": {
+    "applicable": false,
+    "reason": "This task never reached the initial PhoneObservation/model loop; no step before/after frames exist. The actual54 nine-field projection is neither synthesized nor falsely passed."
+  },
+  "original_verdicts_preserved": {
+    "qualified": false,
+    "business_verified": false,
+    "sdk_teardown_verified": false,
+    "ready_for_next_lease": false,
+    "completion_verified": false,
+    "goal_independently_verified": false,
+    "model_reported_success": false,
+    "controller_completion_requested": false,
+    "model_done_synthesized": false
+  },
+  "independent_conclusion": {
+    "recorded_full_selection_consistent": true,
+    "actual_background_bootstrap_and_release_supported": true,
+    "local_model_run_occurred": false,
+    "query_occurred": false,
+    "formal_helper_ordinary_close_verified": false,
+    "flight_business_success": false,
+    "whole_test_pass": false
+  }
+}

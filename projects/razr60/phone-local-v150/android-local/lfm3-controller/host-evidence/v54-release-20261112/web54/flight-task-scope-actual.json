@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.qualification-task-scope.v1",
+  "task_id": "3c90bb05c4974a8980655fd254fc933e",
+  "expected_scope_sha256": null,
+  "actual_scope_sha256": null,
+  "restricted": false,
+  "scope_loaded": false,
+  "qualification_id": null,
+  "build_identity_sha256": null,
+  "runtime_config_sha256": null,
+  "scope_refused": false,
+  "refusal": null,
+  "private_path_diagnostics": {
+    "schema": "hepta.private-path-diagnostics.v1",
+    "metadata_only": true,
+    "framework_files_absolute": "\/data\/user\/0\/org.trillionnium.hepta.local\/files",
+    "framework_files_canonical": "\/data\/data\/org.trillionnium.hepta.local\/files",
+    "framework_scope_absolute": "\/data\/user\/0\/org.trillionnium.hepta.local\/files\/qualification-scope.json",
+    "framework_scope_canonical": "\/data\/data\/org.trillionnium.hepta.local\/files\/qualification-scope.json",
+    "framework_runtime_absolute": "\/data\/user\/0\/org.trillionnium.hepta.local\/files\/model\/runtime-config.json",
+    "framework_runtime_canonical": "\/data\/data\/org.trillionnium.hepta.local\/files\/model\/runtime-config.json",
+    "captured_files_absolute": "\/data\/data\/org.trillionnium.hepta.local\/files"
+  },
+  "last_check": {}
+}

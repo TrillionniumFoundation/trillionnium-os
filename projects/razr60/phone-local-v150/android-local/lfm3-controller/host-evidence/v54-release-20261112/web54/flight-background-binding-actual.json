@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.background-session.v1",
+  "task_id": "3c90bb05c4974a8980655fd254fc933e",
+  "app_uid": 10481,
+  "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+  "generation": "06f4fb29-94fc-4f1c-b481-3f7188e21bba",
+  "socket": "hepta-bg-06f4fb29-94fc-4f1c-b481-3f7188e21bba",
+  "display_name": "hepta-bg-06f4fb29-94fc-4f1c-b481-3f7188e21bba",
+  "display_id": -1,
+  "state": "INITIAL",
+  "created_elapsed_ms": 830820824,
+  "expires_elapsed_ms": 831360824,
+  "boot_count": 82,
+  "selection": {
+    "mode": "background",
+    "allowed_packages": [
+      "org.trillionnium.hepta.webhelper"
+    ],
+    "bootstrap_package": "org.trillionnium.hepta.webhelper",
+    "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+    "bootstrap_model_issued": false,
+    "main_display_fallback": false,
+    "home_allowed": false,
+    "owner_task_selection": {
+      "schema": "hepta.owner-task-app-selection.v1",
+      "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+      "recognition": "natural_explicit_date_single_adult_flight_query.v1",
+      "original_ui_initial_package": "com.motorola.stylus",
+      "original_ui_allowed_packages": [
+        "com.motorola.stylus",
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "effective_initial_package": "org.trillionnium.hepta.webhelper",
+      "effective_allowed_packages": [
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "effective_scope_within_selected_apps": true,
+      "effective_scope_strictly_smaller": true,
+      "initial_app_changed": true,
+      "package_from_model_or_screen": false,
+      "grants_tool_authority": false,
+      "changes_saved_preferences": false
+    }
+  },
+  "retired": false,
+  "spawn_attempted": false,
+  "bootstrap_dispatched": false,
+  "bootstrap_model_issued": false,
+  "broker_process_exit_observed": false,
+  "broker_process_exit_code": null,
+  "broker_output": null,
+  "app_display_readback": null,
+  "last_broker_response": null
+}

@@ -1,0 +1,373 @@
+{
+  "schema": "hepta.original-web-task-file-index.v1",
+  "task_id": "3c90bb05c4974a8980655fd254fc933e",
+  "task_files": [
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/task/background-binding.json",
+      "bytes": 2007,
+      "sha256": "b5da077af167cdf1a5bbb7287f69cea9f46cca8c0e54810f19b5a2779a06d37d",
+      "package": "org.trillionnium.hepta.local",
+      "device_path": "files/control-tasks/3c90bb05c4974a8980655fd254fc933e/background-binding.json",
+      "relative_path": "background-binding.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/task/background-bootstrap.json",
+      "bytes": 6591,
+      "sha256": "3739f30a871ff5a0498ea320c4a4bb1cbe2397b730ed2ffcb4c7527c25db19eb",
+      "package": "org.trillionnium.hepta.local",
+      "device_path": "files/control-tasks/3c90bb05c4974a8980655fd254fc933e/background-bootstrap.json",
+      "relative_path": "background-bootstrap.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/task/background-broker-06f4fb29-94fc-4f1c-b481-3f7188e21bba.bin",
+      "bytes": 185,
+      "sha256": "d6082b22ee81acccb2764c34dcae743c9dd20daf12bff12c7a3ddf353759e6d4",
+      "package": "org.trillionnium.hepta.local",
+      "device_path": "files/control-tasks/3c90bb05c4974a8980655fd254fc933e/background-broker-06f4fb29-94fc-4f1c-b481-3f7188e21bba.bin",
+      "relative_path": "background-broker-06f4fb29-94fc-4f1c-b481-3f7188e21bba.bin"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/task/background-broker-06f4fb29-94fc-4f1c-b481-3f7188e21bba.json",
+      "bytes": 851,
+      "sha256": "ca922d34cab447a463327a2d72d8d612e0b55f58298d755f1a538b8370fd17e9",
+      "package": "org.trillionnium.hepta.local",
+      "device_path": "files/control-tasks/3c90bb05c4974a8980655fd254fc933e/background-broker-06f4fb29-94fc-4f1c-b481-3f7188e21bba.json",
+      "relative_path": "background-broker-06f4fb29-94fc-4f1c-b481-3f7188e21bba.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/task/background-cleanup.json",
+      "bytes": 5226,
+      "sha256": "fdd2b22d6988952fdf3976f825812fe3f7a40e2e10444d91461b2a67f32a147d",
+      "package": "org.trillionnium.hepta.local",
+      "device_path": "files/control-tasks/3c90bb05c4974a8980655fd254fc933e/background-cleanup.json",
+      "relative_path": "background-cleanup.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/task/owner.json",
+      "bytes": 4180,
+      "sha256": "0bf4ebde88b229c7913da452f3d68df2371263f4ffd4dde00e116427b98da95c",
+      "package": "org.trillionnium.hepta.local",
+      "device_path": "files/control-tasks/3c90bb05c4974a8980655fd254fc933e/owner.json",
+      "relative_path": "owner.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/task/result.json",
+      "bytes": 16136,
+      "sha256": "4144b8b44cbb478c54c1db8e9a01bd80f5aa7e7e4fddc8bb3a7473ef22422302",
+      "package": "org.trillionnium.hepta.local",
+      "device_path": "files/control-tasks/3c90bb05c4974a8980655fd254fc933e/result.json",
+      "relative_path": "result.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/task/scope-binding.json",
+      "bytes": 1203,
+      "sha256": "6a1effab5ff10d293f5a3d4c1726276c84960374f64d3496e89dce04d7583cc4",
+      "package": "org.trillionnium.hepta.local",
+      "device_path": "files/control-tasks/3c90bb05c4974a8980655fd254fc933e/scope-binding.json",
+      "relative_path": "scope-binding.json"
+    }
+  ],
+  "model_run_files": [],
+  "helper_files": [
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-020c1d13a67d132eed6874ba43cf0d6f35cd473c095e94f890ac6bc2e6b2667f.json",
+      "bytes": 30993,
+      "sha256": "386f86ef76923ce994574893bc05eec906f3ef839f32d8a77a68092e0115d986",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-020c1d13a67d132eed6874ba43cf0d6f35cd473c095e94f890ac6bc2e6b2667f.json",
+      "relative_path": "diagnostic-020c1d13a67d132eed6874ba43cf0d6f35cd473c095e94f890ac6bc2e6b2667f.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-0e8377e803ac9a467c4a5cb52e5937a15a6a93b43f7934bcaebeedba84b689fc.json",
+      "bytes": 308739,
+      "sha256": "96aecf073ee65951c988a5710fea394713e64af161f0513e36ee2d539991ebc3",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-0e8377e803ac9a467c4a5cb52e5937a15a6a93b43f7934bcaebeedba84b689fc.json",
+      "relative_path": "diagnostic-0e8377e803ac9a467c4a5cb52e5937a15a6a93b43f7934bcaebeedba84b689fc.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-200d1eb4031744b38d899525241af8f89643659ed769590d5cf4614cc0f376c5.json",
+      "bytes": 305357,
+      "sha256": "ffe2b5a4cf79e12098abafdc63a006583f9eaddb7f786671bcf1d03bc03e4f83",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-200d1eb4031744b38d899525241af8f89643659ed769590d5cf4614cc0f376c5.json",
+      "relative_path": "diagnostic-200d1eb4031744b38d899525241af8f89643659ed769590d5cf4614cc0f376c5.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-2185104639ec2e909a3eb0241b33d7f2714925010d63223c7e6509f4ec8c660b.json",
+      "bytes": 305381,
+      "sha256": "4d41342931181e4a208439b0dab4766d25d9d0b2e0bd08d5a24c420cae99f969",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-2185104639ec2e909a3eb0241b33d7f2714925010d63223c7e6509f4ec8c660b.json",
+      "relative_path": "diagnostic-2185104639ec2e909a3eb0241b33d7f2714925010d63223c7e6509f4ec8c660b.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-260f603251c34639addc7c70fea84f3bcf676e12d373bdaa69f43d6c9fbe3f46.json",
+      "bytes": 305386,
+      "sha256": "f716aaac6fd44a1015a1f6f1d61b4a0fb2efdda433b3fddcce684840fe103ea9",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-260f603251c34639addc7c70fea84f3bcf676e12d373bdaa69f43d6c9fbe3f46.json",
+      "relative_path": "diagnostic-260f603251c34639addc7c70fea84f3bcf676e12d373bdaa69f43d6c9fbe3f46.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-292f3f81694870ce87b987a04046ccb48e0b3cd6b11813b24f014a5f6a5cccea.json",
+      "bytes": 308752,
+      "sha256": "b5d351b711eac0b70c7458bc0c1f3f52c4e5d4f9e8e0a3b35a9e2529585adf22",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-292f3f81694870ce87b987a04046ccb48e0b3cd6b11813b24f014a5f6a5cccea.json",
+      "relative_path": "diagnostic-292f3f81694870ce87b987a04046ccb48e0b3cd6b11813b24f014a5f6a5cccea.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-342e51e1e6c5fac683309de2758c0586b1bff94816565a36c127ae276cade8fb.json",
+      "bytes": 61927,
+      "sha256": "5a34609ecb6965fac2e2525673583ac9f5bcc38652f674d81b8090f5dc17cf57",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-342e51e1e6c5fac683309de2758c0586b1bff94816565a36c127ae276cade8fb.json",
+      "relative_path": "diagnostic-342e51e1e6c5fac683309de2758c0586b1bff94816565a36c127ae276cade8fb.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-3534609dabda0ed5ee97004cdf586290d34aacb8a51857e109007dfbc0911500.json",
+      "bytes": 305381,
+      "sha256": "27b9eddd923d7efb44e3eabebe87b503e63869c84a8074ba4ecce53a553db806",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-3534609dabda0ed5ee97004cdf586290d34aacb8a51857e109007dfbc0911500.json",
+      "relative_path": "diagnostic-3534609dabda0ed5ee97004cdf586290d34aacb8a51857e109007dfbc0911500.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-361c2e19f1f7b8b606ada953ce8764a08d3c97b859d1d5d56a2cbab4cd113b55.json",
+      "bytes": 305381,
+      "sha256": "17ffb325c0ae0ebfd4186c21e1d07ce0ae6110bd6c7392a477cd983622831fc8",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-361c2e19f1f7b8b606ada953ce8764a08d3c97b859d1d5d56a2cbab4cd113b55.json",
+      "relative_path": "diagnostic-361c2e19f1f7b8b606ada953ce8764a08d3c97b859d1d5d56a2cbab4cd113b55.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-3c8fb015d9749da98ed615aab0a6d0d6315b45b9836b92b6ca4d40bb1cf35e16.json",
+      "bytes": 309230,
+      "sha256": "383622b7853d7e39d870c08522ed7287760de6d9b18cdc8ae08230a23c8afbb3",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-3c8fb015d9749da98ed615aab0a6d0d6315b45b9836b92b6ca4d40bb1cf35e16.json",
+      "relative_path": "diagnostic-3c8fb015d9749da98ed615aab0a6d0d6315b45b9836b92b6ca4d40bb1cf35e16.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-4d769f772d5eaf8fa7128b3c7f3a7e5ccc978c535a185e602b9747a81adcdea5.json",
+      "bytes": 308216,
+      "sha256": "cc2e3cdef57f3adcd4e64779e6ff827c1586e9e0b2d15737db808441856dffc9",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-4d769f772d5eaf8fa7128b3c7f3a7e5ccc978c535a185e602b9747a81adcdea5.json",
+      "relative_path": "diagnostic-4d769f772d5eaf8fa7128b3c7f3a7e5ccc978c535a185e602b9747a81adcdea5.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-4edc3ac8e659e5438cd1ff507c370b6f34a899e0ce8391af67809996e66e6547.json",
+      "bytes": 63083,
+      "sha256": "737a08eef8ccca27b42b11900daa5182cf27b538bafd275dad9fcbd23530d416",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-4edc3ac8e659e5438cd1ff507c370b6f34a899e0ce8391af67809996e66e6547.json",
+      "relative_path": "diagnostic-4edc3ac8e659e5438cd1ff507c370b6f34a899e0ce8391af67809996e66e6547.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-53ddffb0458add0e7c1faf8fe6a090a5640a9ef3db51904199d2d9fa946d45b3.json",
+      "bytes": 308752,
+      "sha256": "0861ac8b133b636478364f3957eed71391dd63e79e4b29530538fbaaafb31136",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-53ddffb0458add0e7c1faf8fe6a090a5640a9ef3db51904199d2d9fa946d45b3.json",
+      "relative_path": "diagnostic-53ddffb0458add0e7c1faf8fe6a090a5640a9ef3db51904199d2d9fa946d45b3.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-5988650db5f7f527be3c7e4e8ea17b3fa7d9d6158e020178f218bfd2da0a0019.json",
+      "bytes": 305381,
+      "sha256": "74bac5bde381e25e4af3978e9184c3d2f70331a7c2ad943c7845b62511a532f3",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-5988650db5f7f527be3c7e4e8ea17b3fa7d9d6158e020178f218bfd2da0a0019.json",
+      "relative_path": "diagnostic-5988650db5f7f527be3c7e4e8ea17b3fa7d9d6158e020178f218bfd2da0a0019.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-5d1be4c0d35bdebf71644cde85a6e5284c11933ab08286070abb99ce332620e4.json",
+      "bytes": 305699,
+      "sha256": "6535ad2d33943cb0e55fba533fca0c172a6f27b1a18e255d783f2fb02c34598a",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-5d1be4c0d35bdebf71644cde85a6e5284c11933ab08286070abb99ce332620e4.json",
+      "relative_path": "diagnostic-5d1be4c0d35bdebf71644cde85a6e5284c11933ab08286070abb99ce332620e4.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-612297bc8413908925c112255fcbda05a294ca746122db1fc9b50c7e05999c88.json",
+      "bytes": 305381,
+      "sha256": "05c2064dc1fce4c42c516d3d0e2c4a76f86e69b1e2fbe31149d0b99505c24bfc",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-612297bc8413908925c112255fcbda05a294ca746122db1fc9b50c7e05999c88.json",
+      "relative_path": "diagnostic-612297bc8413908925c112255fcbda05a294ca746122db1fc9b50c7e05999c88.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-6926d45f605fe7e01b4060920f868da64534095f0601bc5ea648da9de669d20b.json",
+      "bytes": 309579,
+      "sha256": "60d2c114cf1dd29dc77bace83afff6f991e9423bf01e5e93298ba5f4a7601328",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-6926d45f605fe7e01b4060920f868da64534095f0601bc5ea648da9de669d20b.json",
+      "relative_path": "diagnostic-6926d45f605fe7e01b4060920f868da64534095f0601bc5ea648da9de669d20b.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-6f948b0dfff7afd85b17de1f34cbe3a4efafd7d77c1339788cd570cc192ba2bf.json",
+      "bytes": 305381,
+      "sha256": "5e2b305ed6681abec482db258269a839c3de4bbbf9a8d9509541701fbb516fbc",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-6f948b0dfff7afd85b17de1f34cbe3a4efafd7d77c1339788cd570cc192ba2bf.json",
+      "relative_path": "diagnostic-6f948b0dfff7afd85b17de1f34cbe3a4efafd7d77c1339788cd570cc192ba2bf.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-774161b299dfb95da9b6d80f2a60c1ca38e7a4b1fa9540698fc5b11d22e24677.json",
+      "bytes": 16983,
+      "sha256": "e717bcbf4def54057def6b90ce5a52f86ca2270c7d14f097fa501a216c3cddd0",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-774161b299dfb95da9b6d80f2a60c1ca38e7a4b1fa9540698fc5b11d22e24677.json",
+      "relative_path": "diagnostic-774161b299dfb95da9b6d80f2a60c1ca38e7a4b1fa9540698fc5b11d22e24677.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-80c8614b93cffb391969fe3f3ebab1a433dd5ecb102ab573feee469e5b4a5e82.json",
+      "bytes": 305381,
+      "sha256": "3bc2c24b558df3c5bd248c93172b1b18027464b6506b6aa90fcae466f442d718",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-80c8614b93cffb391969fe3f3ebab1a433dd5ecb102ab573feee469e5b4a5e82.json",
+      "relative_path": "diagnostic-80c8614b93cffb391969fe3f3ebab1a433dd5ecb102ab573feee469e5b4a5e82.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-839c1cc1b1d1c76a695c6a855c6323be0cda6a1f67d8e7f575028fffb3a7e78f.json",
+      "bytes": 305381,
+      "sha256": "e57bacfe2d127e9805a352cb02c1ce959fe17ed01dd9663a2fc5d3083c501cc0",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-839c1cc1b1d1c76a695c6a855c6323be0cda6a1f67d8e7f575028fffb3a7e78f.json",
+      "relative_path": "diagnostic-839c1cc1b1d1c76a695c6a855c6323be0cda6a1f67d8e7f575028fffb3a7e78f.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-84b334a0ca431d9387e45114fe4121919bb79efae43eaafef1ecc09fd3eb656d.json",
+      "bytes": 305381,
+      "sha256": "41bc9473e7803d1d1374a78d840dc17d2c84d14dc3e7fb090475f670ce61dd70",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-84b334a0ca431d9387e45114fe4121919bb79efae43eaafef1ecc09fd3eb656d.json",
+      "relative_path": "diagnostic-84b334a0ca431d9387e45114fe4121919bb79efae43eaafef1ecc09fd3eb656d.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-963551623468fb947925862e7eb1e6b5fda0c53ba5ed9fb2b1e474f04a6e9d86.json",
+      "bytes": 308728,
+      "sha256": "9218dc03267ace444073fffb4f24db6f5ea6994e510643cd558557e4b6c2d7b8",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-963551623468fb947925862e7eb1e6b5fda0c53ba5ed9fb2b1e474f04a6e9d86.json",
+      "relative_path": "diagnostic-963551623468fb947925862e7eb1e6b5fda0c53ba5ed9fb2b1e474f04a6e9d86.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-9aad2bf65e8bc7aa21e2aee5638694040fd88a1b47e1b9a061d726032bbb653c.json",
+      "bytes": 305381,
+      "sha256": "455e1c6e287badf5b717877ab6792e87b4ac91bff9d1cf2836474225e86b6560",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-9aad2bf65e8bc7aa21e2aee5638694040fd88a1b47e1b9a061d726032bbb653c.json",
+      "relative_path": "diagnostic-9aad2bf65e8bc7aa21e2aee5638694040fd88a1b47e1b9a061d726032bbb653c.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-bb8cf70a120986c87db41ac296f7a471441e142eca1f95a45451415c2e6d1452.json",
+      "bytes": 305381,
+      "sha256": "b1d93f8d8710f22455b6ab7dfdc17f316ac0fb4a23ff62bd9f88ba5cabf7a494",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-bb8cf70a120986c87db41ac296f7a471441e142eca1f95a45451415c2e6d1452.json",
+      "relative_path": "diagnostic-bb8cf70a120986c87db41ac296f7a471441e142eca1f95a45451415c2e6d1452.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-bfdc6653be17b14c965ea9d236f2e3b0d8a3c14723a332381eacc7261376752a.json",
+      "bytes": 963232,
+      "sha256": "1b0305a9002f64ddbe41dc197aafff8b0ace70f668f2b608d3b76b6feb7b2dda",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-bfdc6653be17b14c965ea9d236f2e3b0d8a3c14723a332381eacc7261376752a.json",
+      "relative_path": "diagnostic-bfdc6653be17b14c965ea9d236f2e3b0d8a3c14723a332381eacc7261376752a.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-c3e5c2949009203895f588c088fe97373396c5672e72c89d5284723735fab2ae.json",
+      "bytes": 63091,
+      "sha256": "c4c74dda1e632fce53fbef0688583b8c28cedfa6d0462ca149cdd0ebf3628da8",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-c3e5c2949009203895f588c088fe97373396c5672e72c89d5284723735fab2ae.json",
+      "relative_path": "diagnostic-c3e5c2949009203895f588c088fe97373396c5672e72c89d5284723735fab2ae.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-c4017cc82c05814c36b2515ca5cbb22f12d5331bf96cd43389460ec937bbffe8.json",
+      "bytes": 963233,
+      "sha256": "0d2e76e387ac5e82ee5adaa0c2a17d75a9aea9e7700d707ac86ae6506b61e840",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-c4017cc82c05814c36b2515ca5cbb22f12d5331bf96cd43389460ec937bbffe8.json",
+      "relative_path": "diagnostic-c4017cc82c05814c36b2515ca5cbb22f12d5331bf96cd43389460ec937bbffe8.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-close-1dfe5600-0db0-49a9-a145-b697ec617956.json",
+      "bytes": 1529,
+      "sha256": "f4b9ce45808da1904b58d19e07f9c87cb1860bbc7315aef6a7ad89e0fe641060",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-close-1dfe5600-0db0-49a9-a145-b697ec617956.json",
+      "relative_path": "diagnostic-close-1dfe5600-0db0-49a9-a145-b697ec617956.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-close-972509d1-f0d8-4f8b-ac09-38783d062331.json",
+      "bytes": 1708,
+      "sha256": "bd72d3481e48521bcd1736d46ee25446bffa916aab118a3273ffb83ead241967",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-close-972509d1-f0d8-4f8b-ac09-38783d062331.json",
+      "relative_path": "diagnostic-close-972509d1-f0d8-4f8b-ac09-38783d062331.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-close-c681b5ba-d88b-441c-b1ee-5dad210718cc.json",
+      "bytes": 1632,
+      "sha256": "d10cedcc236d4d93114f3c3cae3515ef7dac658dca34f565f9802e86bcda4c0e",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-close-c681b5ba-d88b-441c-b1ee-5dad210718cc.json",
+      "relative_path": "diagnostic-close-c681b5ba-d88b-441c-b1ee-5dad210718cc.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-d12138c40d118cddb742ebaa38b93944b10ecccede48565fad27f9a4e462dffa.json",
+      "bytes": 305381,
+      "sha256": "0136ddd29c328a8a2866853e765337f3b50f03bddb3bb47619f2a1f0e12e5679",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-d12138c40d118cddb742ebaa38b93944b10ecccede48565fad27f9a4e462dffa.json",
+      "relative_path": "diagnostic-d12138c40d118cddb742ebaa38b93944b10ecccede48565fad27f9a4e462dffa.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-e34366c697facacb44049015744abeecab23f84982963f95e4369c0f2b5cf931.json",
+      "bytes": 305381,
+      "sha256": "21fe48d7cc2b7b86dafd9f0cd359f0b4eeb4f4962690b0b1cd53e2add25ec8f0",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-e34366c697facacb44049015744abeecab23f84982963f95e4369c0f2b5cf931.json",
+      "relative_path": "diagnostic-e34366c697facacb44049015744abeecab23f84982963f95e4369c0f2b5cf931.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-e413cb069e3c5196bf59f929590c16f979d73703ca7194a1c3fc87373df96c49.json",
+      "bytes": 59144,
+      "sha256": "3a5be3816a291ab75bef4997ce04226e9a252a8e26c1a7fcc7056c1b6c3eb009",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-e413cb069e3c5196bf59f929590c16f979d73703ca7194a1c3fc87373df96c49.json",
+      "relative_path": "diagnostic-e413cb069e3c5196bf59f929590c16f979d73703ca7194a1c3fc87373df96c49.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-e94b76746ba64e1c54e2799d62814b2e3f0c3bc0185dd8a74e2496a5d29c231f.json",
+      "bytes": 305381,
+      "sha256": "af3aeb11c295b62c1a47c6c5bd04993bd545a91dc7689e79ee89d7a40c17472e",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-e94b76746ba64e1c54e2799d62814b2e3f0c3bc0185dd8a74e2496a5d29c231f.json",
+      "relative_path": "diagnostic-e94b76746ba64e1c54e2799d62814b2e3f0c3bc0185dd8a74e2496a5d29c231f.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-f596b99af486f258e6e100b38bc48bb35864243dcf4335bdd4fde73258053e27.json",
+      "bytes": 386724,
+      "sha256": "f61fd86cb24b212c3434bb5eda1a4e29b65c06c22d3fc4238366f31a324dd7fa",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-f596b99af486f258e6e100b38bc48bb35864243dcf4335bdd4fde73258053e27.json",
+      "relative_path": "diagnostic-f596b99af486f258e6e100b38bc48bb35864243dcf4335bdd4fde73258053e27.json"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-r1/evidence/helper/diagnostic-unstarted-fd01c43b-ccf1-4ebd-8579-92ed09924fe2.json",
+      "bytes": 260,
+      "sha256": "3f1b4bcec3bec8e7d1a04cff0204bfb002edc0ab15464537743acabb8ada0b85",
+      "package": "org.trillionnium.hepta.webhelper",
+      "device_path": "files/web-evidence-v1/diagnostic-unstarted-fd01c43b-ccf1-4ebd-8579-92ed09924fe2.json",
+      "relative_path": "diagnostic-unstarted-fd01c43b-ccf1-4ebd-8579-92ed09924fe2.json"
+    }
+  ],
+  "raw_bytes": 10003690,
+  "file_count": 45,
+  "collection_is_business_verdict": false,
+  "claim_scope": "Original task/model runs plus helper FD/profile journals; sequential file reads, not an atomic device snapshot."
+}

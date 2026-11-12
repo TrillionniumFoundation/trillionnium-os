@@ -1,0 +1,873 @@
+{
+  "adb_executed": false,
+  "build_executed": false,
+  "candidate": {
+    "bytes": 733346,
+    "cases": [
+      23,
+      36,
+      18
+    ],
+    "focused_java": 55,
+    "git": "65401752c7c3bbe8cfbcf755a6cb33bf8534c9c7",
+    "runtime_java": 41,
+    "sha256": "0ad3bb424013b522f8812eaa11531780ac832c6d4064191017885d387b20d49a",
+    "source_files": 43
+  },
+  "changed_read_files": [],
+  "completed": false,
+  "discovered": [
+    {
+      "bytes": 18048,
+      "identity": {
+        "st_ctime_ns": 1794449008631281457,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 54955646,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794449008631281457,
+        "st_nlink": 1,
+        "st_size": 18048,
+        "st_uid": 1000
+      },
+      "kind": "jar",
+      "path": "/home/alex/hepta-local-007f-20261111/v53-semantic-city-outer-r6-hostgate-r1/wrong-jar/semantic-city.jar",
+      "prefix_hex": "514b030414000000",
+      "scan_root": "/home/alex/hepta-local-007f-20261111",
+      "sha256": "a2b17092102da6fa87864c25a8672a1cf1dc7ab79e30602ad413d89eae27525f",
+      "status": "read"
+    },
+    {
+      "bytes": 18048,
+      "identity": {
+        "st_ctime_ns": 1794448697193317041,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 53779658,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794448697193317041,
+        "st_nlink": 1,
+        "st_size": 18048,
+        "st_uid": 1000
+      },
+      "kind": "jar",
+      "path": "/home/alex/hepta-local-007f-20261111/v53-semantic-city-probe-r2/semantic-city.jar",
+      "prefix_hex": "504b030414000000",
+      "scan_root": "/home/alex/hepta-local-007f-20261111",
+      "sha256": "1f1ce10e9851516b63dcf5d4f72f8d7f64d5c79d3c087d625047b05cbf7568be",
+      "status": "read"
+    },
+    {
+      "bytes": 18096,
+      "identity": {
+        "st_ctime_ns": 1794450547146989947,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 59024653,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794450547146989947,
+        "st_nlink": 1,
+        "st_size": 18096,
+        "st_uid": 1000
+      },
+      "kind": "jar",
+      "path": "/home/alex/hepta-local-007f-20261111/v53-semantic-city-probe-r3/semantic-city.jar",
+      "prefix_hex": "504b030414000000",
+      "scan_root": "/home/alex/hepta-local-007f-20261111",
+      "sha256": "47e1581ee6573836db97a31a32cca72751e1d22b105bf424985740bf5af03d88",
+      "status": "read"
+    }
+  ],
+  "downloaded": false,
+  "elapsed_seconds": 5.699379,
+  "error": "InventoryLimit: directory entry budget reached",
+  "exit_code": 2,
+  "finished_epoch": 1794488643.707908,
+  "hashed_bytes": 4116872,
+  "inventory_complete": false,
+  "known": [
+    {
+      "bytes": 129146,
+      "expected_bytes": 129146,
+      "expected_sha256": "cce5d75af6af48fb00b72b96475d686b61b89538c60cbd424fd99e79c58396a8",
+      "identity": {
+        "st_ctime_ns": 1794471289498245651,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 42381688,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794471289498245651,
+        "st_nlink": 1,
+        "st_size": 129146,
+        "st_uid": 1000
+      },
+      "matches_expected": true,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/BUILD-RESULT.json",
+      "prefix_hex": "7b0a202022616374",
+      "role": "actual_helper5_input",
+      "sha256": "cce5d75af6af48fb00b72b96475d686b61b89538c60cbd424fd99e79c58396a8",
+      "status": "read"
+    },
+    {
+      "bytes": 7313,
+      "expected_bytes": 7313,
+      "expected_sha256": "0cb6c955bb3c816aa10ae81c063a599d7ce4c9ce4ede5c166af5e480235751dc",
+      "identity": {
+        "st_ctime_ns": 1794471289501411270,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 42381689,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794471289501411270,
+        "st_nlink": 1,
+        "st_size": 7313,
+        "st_uid": 1000
+      },
+      "matches_expected": true,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/SOURCE-INVENTORY.json",
+      "prefix_hex": "7b0a20202266696c",
+      "role": "actual_helper5_input",
+      "sha256": "0cb6c955bb3c816aa10ae81c063a599d7ce4c9ce4ede5c166af5e480235751dc",
+      "status": "read"
+    },
+    {
+      "bytes": 1340480,
+      "expected_bytes": 1340480,
+      "expected_sha256": "fd697439cc78e14ae5428b48a4e1d8479a13f31ce1c357269c5365217aa57142",
+      "identity": {
+        "st_ctime_ns": 1794471289502265627,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 42381690,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794471289502265627,
+        "st_nlink": 1,
+        "st_size": 1340480,
+        "st_uid": 1000
+      },
+      "matches_expected": true,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/helper-unsigned.apk",
+      "prefix_hex": "504b030414000000",
+      "role": "actual_helper5_input",
+      "sha256": "fd697439cc78e14ae5428b48a4e1d8479a13f31ce1c357269c5365217aa57142",
+      "status": "read"
+    },
+    {
+      "bytes": 128049,
+      "expected_bytes": 128049,
+      "expected_sha256": "021815261d930ce2e21de877a149a560908a74371dc08e169a1b2a116ef9fdec",
+      "identity": {
+        "st_ctime_ns": 1794471289513373292,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 43414396,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794471289513373292,
+        "st_nlink": 1,
+        "st_size": 128049,
+        "st_uid": 1000
+      },
+      "matches_expected": true,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/BASE-BUILD-RESULT.json",
+      "prefix_hex": "7b0a202022616374",
+      "role": "actual_helper5_input",
+      "sha256": "021815261d930ce2e21de877a149a560908a74371dc08e169a1b2a116ef9fdec",
+      "status": "read"
+    },
+    {
+      "bytes": 14006,
+      "expected_bytes": 14006,
+      "expected_sha256": "3f8a2ec3587789ee37fef0294cec2203bf95911eefc307b78e68105bf95f1490",
+      "identity": {
+        "st_ctime_ns": 1794471289517426550,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 43414397,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794471289517426550,
+        "st_nlink": 1,
+        "st_size": 14006,
+        "st_uid": 1000
+      },
+      "matches_expected": true,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/BASE-CONTRACT-RESULT.json",
+      "prefix_hex": "7b0a202022616c6c",
+      "role": "actual_helper5_input",
+      "sha256": "3f8a2ec3587789ee37fef0294cec2203bf95911eefc307b78e68105bf95f1490",
+      "status": "read"
+    },
+    {
+      "bytes": 22167,
+      "expected_bytes": 22167,
+      "expected_sha256": "dd67a66b15544e450a891cd0f5ded302faf9bf017255173777b92efaef170e26",
+      "identity": {
+        "st_ctime_ns": 1794471289520261574,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 43414398,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794471289520261574,
+        "st_nlink": 1,
+        "st_size": 22167,
+        "st_uid": 1000
+      },
+      "matches_expected": true,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/BUILD.py",
+      "prefix_hex": "23212f7573722f62",
+      "role": "actual_helper5_input",
+      "sha256": "dd67a66b15544e450a891cd0f5ded302faf9bf017255173777b92efaef170e26",
+      "status": "read"
+    },
+    {
+      "bytes": 155587,
+      "expected_bytes": 155587,
+      "expected_sha256": "7e59fcd9dcc4d15cce60e35973151cf6320aec175e8f528217887fc4866a2056",
+      "identity": {
+        "st_ctime_ns": 1794471289523251851,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 43414399,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794471289523251851,
+        "st_nlink": 1,
+        "st_size": 155587,
+        "st_uid": 1000
+      },
+      "matches_expected": true,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/CANDIDATE.json",
+      "prefix_hex": "7b0a202022736368",
+      "role": "actual_helper5_input",
+      "sha256": "7e59fcd9dcc4d15cce60e35973151cf6320aec175e8f528217887fc4866a2056",
+      "status": "read"
+    },
+    {
+      "bytes": 13787,
+      "expected_bytes": 13787,
+      "expected_sha256": "0894411f12d42722d58debbd18908867b6e58440bc43eb04a1de1cbc6a5e1a43",
+      "identity": {
+        "st_ctime_ns": 1794471289526405277,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 43414400,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794471289526405277,
+        "st_nlink": 1,
+        "st_size": 13787,
+        "st_uid": 1000
+      },
+      "matches_expected": true,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/CONTRACT-RESULT.json",
+      "prefix_hex": "7b0a202022616374",
+      "role": "actual_helper5_input",
+      "sha256": "0894411f12d42722d58debbd18908867b6e58440bc43eb04a1de1cbc6a5e1a43",
+      "status": "read"
+    },
+    {
+      "bytes": 486209,
+      "expected_bytes": 486209,
+      "expected_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "identity": {
+        "st_ctime_ns": 1794471289529274396,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 43414401,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794471289529274396,
+        "st_nlink": 1,
+        "st_size": 486209,
+        "st_uid": 1000
+      },
+      "matches_expected": true,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "prefix_hex": "7b0a202022616374",
+      "role": "actual_helper5_input",
+      "sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "status": "read"
+    },
+    {
+      "bytes": 8620,
+      "expected_bytes": 8620,
+      "expected_sha256": "d4aa66ea4105c13ba8b6e1c2540a3aeb74d3a3f70ddcf128818d4aad08ac5eeb",
+      "identity": {
+        "st_ctime_ns": 1794471289532729813,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 43414402,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794471289532729813,
+        "st_nlink": 1,
+        "st_size": 8620,
+        "st_uid": 1000
+      },
+      "matches_expected": true,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/R8-RESULT.json",
+      "prefix_hex": "7b0a202022736368",
+      "role": "actual_helper5_input",
+      "sha256": "d4aa66ea4105c13ba8b6e1c2540a3aeb74d3a3f70ddcf128818d4aad08ac5eeb",
+      "status": "read"
+    },
+    {
+      "bytes": 6574,
+      "expected_bytes": 6574,
+      "expected_sha256": "33b74075c27c9b99c2bd1ea00be8e68c42464b6b41b413e6652a687497c223d1",
+      "identity": {
+        "st_ctime_ns": 1794471289535248077,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 43414403,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794471289535248077,
+        "st_nlink": 1,
+        "st_size": 6574,
+        "st_uid": 1000
+      },
+      "matches_expected": true,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/RUNTIME-SELECTION.json",
+      "prefix_hex": "7b0a202022736368",
+      "role": "actual_helper5_input",
+      "sha256": "33b74075c27c9b99c2bd1ea00be8e68c42464b6b41b413e6652a687497c223d1",
+      "status": "read"
+    },
+    {
+      "bytes": 92623,
+      "expected_bytes": 92623,
+      "expected_sha256": "efeda404b4f68d2d0fe4646d34e75c395b9995791fc6361d8244aa7ba2012824",
+      "identity": {
+        "st_ctime_ns": 1794471289539339128,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 42381691,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794471289539339128,
+        "st_nlink": 1,
+        "st_size": 92623,
+        "st_uid": 1000
+      },
+      "matches_expected": true,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/source.tar.gz",
+      "prefix_hex": "1f8b080000000000",
+      "role": "actual_helper5_input",
+      "sha256": "efeda404b4f68d2d0fe4646d34e75c395b9995791fc6361d8244aa7ba2012824",
+      "status": "read"
+    },
+    {
+      "bytes": 1571517,
+      "expected_bytes": 1571517,
+      "expected_sha256": "75671c2f81e2a9f9f31ccc58ed78fe12503a955b75f05b70d7e3e7e5aae0d1a7",
+      "identity": {
+        "st_ctime_ns": 1794471014991266837,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 41071150,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794471014991266837,
+        "st_nlink": 1,
+        "st_size": 1571517,
+        "st_uid": 1000
+      },
+      "matches_expected": true,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-inputs-r1.tar.gz",
+      "prefix_hex": "1f8b080000000000",
+      "role": "actual_helper5_bundle",
+      "sha256": "75671c2f81e2a9f9f31ccc58ed78fe12503a955b75f05b70d7e3e7e5aae0d1a7",
+      "status": "read"
+    },
+    {
+      "bytes": 2954,
+      "expected_bytes": null,
+      "expected_sha256": "349939390c8b19e8cea03e28ce6c5bc2c1d010dd06d3a435b7f1517221f0dd1c",
+      "identity": {
+        "st_ctime_ns": 1794294972494530689,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 59769629,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794294972494530689,
+        "st_nlink": 1,
+        "st_size": 2954,
+        "st_uid": 1000
+      },
+      "matches_expected": true,
+      "path": "/home/alex/hepta-v31-nanbeige42-e59-r1/toolchains/old-jdk17-revalidation-r1/RESULT.json",
+      "prefix_hex": "7b0a202022636f6d",
+      "role": "prior_jdk_revalidation_receipt",
+      "sha256": "349939390c8b19e8cea03e28ce6c5bc2c1d010dd06d3a435b7f1517221f0dd1c",
+      "status": "read"
+    },
+    {
+      "bytes": 14544,
+      "expected_bytes": 14544,
+      "expected_sha256": "bb70208200cb6538b877d80478141194a716edb591f4910ec106589291e99196",
+      "identity": {
+        "st_ctime_ns": 1794274474910109494,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 34879305,
+        "st_mode": 33261,
+        "st_mtime_ns": 1793283530000000000,
+        "st_nlink": 1,
+        "st_size": 14544,
+        "st_uid": 1000
+      },
+      "matches_expected": true,
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+      "prefix_hex": "7f454c4602010100",
+      "role": "qualified_java",
+      "sha256": "bb70208200cb6538b877d80478141194a716edb591f4910ec106589291e99196",
+      "status": "read"
+    },
+    {
+      "bytes": 14592,
+      "expected_bytes": 14592,
+      "expected_sha256": "2aaf03d13aeb80b8269696f2dcd9f4937d7366bbc68f91fdc703cf157e8f39c4",
+      "identity": {
+        "st_ctime_ns": 1794274474788105274,
+        "st_dev": 66306,
+        "st_gid": 1000,
+        "st_ino": 34879135,
+        "st_mode": 33261,
+        "st_mtime_ns": 1793283530000000000,
+        "st_nlink": 1,
+        "st_size": 14592,
+        "st_uid": 1000
+      },
+      "matches_expected": true,
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+      "prefix_hex": "7f454c4602010100",
+      "role": "qualified_javac",
+      "sha256": "2aaf03d13aeb80b8269696f2dcd9f4937d7366bbc68f91fdc703cf157e8f39c4",
+      "status": "read"
+    }
+  ],
+  "known_pins_all_match": true,
+  "mac_operation": {
+    "key": "007f-v55-web-helper-code6-build-r1",
+    "preserved": true,
+    "root": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v55-web-helper-code6-build-r1",
+    "status": "unknown"
+  },
+  "next_step_requires": [
+    "Review actual local JAR/resource matches and fresh Linux tool identities.",
+    "Revalidate the complete JDK closure and freeze a concrete Linux build input map.",
+    "Verify missing inputs' official original URLs and full hashes before any download.",
+    "Do not sign or install any artifact from the still-unknown Mac operation."
+  ],
+  "phone_contacted": false,
+  "prior_pinned_build_fields": {
+    "all_pass": true,
+    "compiled_member_count": 372,
+    "generated_java_count": 7,
+    "runtime_java_input_count": 36,
+    "source_file_count": 38,
+    "source_inventory_sha256": "0cb6c955bb3c816aa10ae81c063a599d7ce4c9ce4ede5c166af5e480235751dc",
+    "unchanged_compiled_payload_count": 370,
+    "version_code": 5,
+    "version_name": "0.5.0-web-evidence-v3"
+  },
+  "production_imported": false,
+  "read_files_final_identities_unchanged": true,
+  "read_files_final_identity_count": 20,
+  "ready_for_build": false,
+  "receipt_url_observations": [
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/0/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/webkit/webkit/1.13.0/webkit-1.13.0.aar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/1/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/annotation/annotation-experimental/1.4.1/annotation-experimental-1.4.1.aar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/2/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/3/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/core/core/1.1.0/core-1.1.0.aar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/4/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/annotation/annotation/1.8.1/annotation-1.8.1.jar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/5/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.7.10/kotlin-stdlib-1.7.10.jar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/6/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/annotation/annotation/1.1.0/annotation-1.1.0.jar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/7/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-runtime/2.0.0/lifecycle-runtime-2.0.0.aar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/8/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/versionedparcelable/versionedparcelable/1.1.0/versionedparcelable-1.1.0.aar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/9/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/collection/collection/1.0.0/collection-1.0.0.jar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/10/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/annotation/annotation-jvm/1.8.1/annotation-jvm-1.8.1.jar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/11/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.7.10/kotlin-stdlib-common-1.7.10.jar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/12/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/annotations/13.0/annotations-13.0.jar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/13/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-common/2.0.0/lifecycle-common-2.0.0.jar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/14/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/arch/core/core-common/2.0.0/core-common-2.0.0.jar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/15/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/annotation/annotation/1.0.0/annotation-1.0.0.jar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/artifacts/16/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/network_attempts/1/argv/20",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/network_attempts/3/argv/20",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/core/core/1.1.0/core-1.1.0.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/network_attempts/5/argv/20",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/annotation/annotation/1.8.1/annotation-1.8.1.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/network_attempts/7/argv/20",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.7.10/kotlin-stdlib-1.7.10.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/network_attempts/9/argv/20",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/annotation/annotation/1.1.0/annotation-1.1.0.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/network_attempts/11/argv/20",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-runtime/2.0.0/lifecycle-runtime-2.0.0.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/network_attempts/13/argv/20",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/versionedparcelable/versionedparcelable/1.1.0/versionedparcelable-1.1.0.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/network_attempts/15/argv/20",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/collection/collection/1.0.0/collection-1.0.0.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/network_attempts/17/argv/20",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/annotation/annotation-jvm/1.8.1/annotation-jvm-1.8.1.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/network_attempts/19/argv/20",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.7.10/kotlin-stdlib-common-1.7.10.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/network_attempts/21/argv/20",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/annotations/13.0/annotations-13.0.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/network_attempts/23/argv/20",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-common/2.0.0/lifecycle-common-2.0.0.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/network_attempts/25/argv/20",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/arch/core/core-common/2.0.0/core-common-2.0.0.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/network_attempts/27/argv/20",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/annotation/annotation/1.0.0/annotation-1.0.0.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/network_attempts/29/argv/20",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/pom_records/0/raw/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/webkit/webkit/1.13.0/webkit-1.13.0.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/pom_records/1/raw/final_url",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "receipt_sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/annotation/annotation-experimental/1.4.1/annotation-experimental-1.4.1.pom"
+    },
+    {
+      "downloaded": false,
+      "json_pointer": "/steps/3/argv/26",
+      "official_origin_verified": false,
+      "receipt_path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/R8-RESULT.json",
+      "receipt_sha256": "d4aa66ea4105c13ba8b6e1c2540a3aeb74d3a3f70ddcf128818d4aad08ac5eeb",
+      "url": "https://dl.google.com/dl/android/maven2/com/android/tools/r8/8.13.17/r8-8.13.17.jar"
+    }
+  ],
+  "required_jars": [],
+  "scan": {
+    "candidates": 3,
+    "complete": true,
+    "directories": 33713,
+    "entries": 240001,
+    "errors": [],
+    "excluded_git_directories": 0,
+    "special_files_skipped": 0,
+    "symlinks_skipped": 100
+  },
+  "scan_roots": [
+    {
+      "completed": false,
+      "entries_after": 240001,
+      "entries_before": 0,
+      "path": "/home/alex/hepta-local-007f-20261111"
+    }
+  ],
+  "schema": "hepta.helper6-pocket4-readonly-inventory.v1",
+  "scope": {
+    "current_full_jdk_tree_revalidated": false,
+    "filenames": [
+      "*.jar",
+      "compiled-res.zip"
+    ],
+    "follow_scan_symlinks": false,
+    "hashes_are_file_availability_not_execution_proof": true,
+    "limits": {
+      "candidates": 1024,
+      "depth": 24,
+      "entries": 240000,
+      "json_bytes": 8388608,
+      "per_file_bytes": 67108864,
+      "receipt_urls": 256,
+      "seconds": 45,
+      "total_hash_bytes": 536870912
+    },
+    "official_urls_not_inferred_or_fetched": true,
+    "originals_check": "stable descriptor while reading plus final path identity",
+    "regular_files_only": true,
+    "roots": [
+      "/home/alex/hepta-local-007f-20261111",
+      "/home/alex/razr-local-ai-20261109-82d1243e"
+    ],
+    "skip_directory_basename": ".git"
+  },
+  "signed": false,
+  "source": {
+    "bytes": 25642,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-inventory-r1/SOURCE.py",
+    "sha256": "fe08a4c12c0ac90ae5b402f0966a1dd27feaecd831505923f9003ac9f7d30f40"
+  },
+  "started_epoch": 1794488638.0085335,
+  "tool_locations": [
+    {
+      "bytes": 54512,
+      "executed": false,
+      "identity": {
+        "st_ctime_ns": 1791415705179294996,
+        "st_dev": 66306,
+        "st_gid": 0,
+        "st_ino": 108138273,
+        "st_mode": 33261,
+        "st_mtime_ns": 1757926427000000000,
+        "st_nlink": 1,
+        "st_size": 54512,
+        "st_uid": 0
+      },
+      "name": "aapt2",
+      "path": "/usr/lib/android-sdk/build-tools/debian/aapt2",
+      "prefix_hex": "7f454c4602010100",
+      "requested_is_symlink_or_has_symlink_parent": true,
+      "requested_path": "/usr/bin/aapt2",
+      "resolved_path": "/usr/lib/android-sdk/build-tools/debian/aapt2",
+      "sha256": "0e9ff92342040acdfd03e8708512f4e02353e3ca0a2b85ea2950da659110b009",
+      "status": "read"
+    },
+    {
+      "executed": false,
+      "name": "d8",
+      "requested_path": null,
+      "status": "not_in_PATH"
+    },
+    {
+      "executed": false,
+      "name": "zipalign",
+      "requested_path": null,
+      "status": "not_in_PATH"
+    },
+    {
+      "executed": false,
+      "name": "javac",
+      "requested_path": null,
+      "status": "not_in_PATH"
+    },
+    {
+      "bytes": 54512,
+      "executed": false,
+      "identity": {
+        "st_ctime_ns": 1791415705179294996,
+        "st_dev": 66306,
+        "st_gid": 0,
+        "st_ino": 108138273,
+        "st_mode": 33261,
+        "st_mtime_ns": 1757926427000000000,
+        "st_nlink": 1,
+        "st_size": 54512,
+        "st_uid": 0
+      },
+      "name": "prior_actual_aapt2",
+      "path": "/usr/lib/android-sdk/build-tools/debian/aapt2",
+      "prefix_hex": "7f454c4602010100",
+      "requested_is_symlink_or_has_symlink_parent": true,
+      "requested_path": "/usr/bin/aapt2",
+      "resolved_path": "/usr/lib/android-sdk/build-tools/debian/aapt2",
+      "sha256": "0e9ff92342040acdfd03e8708512f4e02353e3ca0a2b85ea2950da659110b009",
+      "status": "read"
+    }
+  ]
+}

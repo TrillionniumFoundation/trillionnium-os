@@ -1,0 +1,259 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/adb",
+        "-H",
+        "127.0.0.1",
+        "-P",
+        "5037",
+        "-s",
+        "ZY22LS7WZT",
+        "shell",
+        "pm path org.trillionnium.hepta.local"
+      ],
+      "label": "before-pm-local",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/root-apk-stat-owner17-r1/before-pm-local.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "text": ""
+      },
+      "stdout": {
+        "bytes": 108,
+        "path": "/home/alex/hepta-local-007f-20261111/root-apk-stat-owner17-r1/before-pm-local.stdout",
+        "sha256": "b86b2e8c48015b0b9305a400824bb747f2a180fc5de20ef4cee674988bd025eb",
+        "text": "package:/data/app/~~hQX6r7v5s_gKn7o8ImvScQ==/org.trillionnium.hepta.local-PNZseE9N9jPiez75ykUSRA==/base.apk\n"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/adb",
+        "-H",
+        "127.0.0.1",
+        "-P",
+        "5037",
+        "-s",
+        "ZY22LS7WZT",
+        "shell",
+        "pm path org.trillionnium.hepta.webhelper"
+      ],
+      "label": "before-pm-webhelper",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/root-apk-stat-owner17-r1/before-pm-webhelper.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "text": ""
+      },
+      "stdout": {
+        "bytes": 112,
+        "path": "/home/alex/hepta-local-007f-20261111/root-apk-stat-owner17-r1/before-pm-webhelper.stdout",
+        "sha256": "4e9d06c800095e8c813b9c90b3e6cf166d79618cdf3749958dd29673431c34bc",
+        "text": "package:/data/app/~~7tm-0viTiSPtMXQrKQNE5A==/org.trillionnium.hepta.webhelper-FzFUV5CCtZ60uGZ1qVOzWg==/base.apk\n"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/adb",
+        "-H",
+        "127.0.0.1",
+        "-P",
+        "5037",
+        "-s",
+        "ZY22LS7WZT",
+        "shell",
+        "run-as org.trillionnium.hepta.local /system/bin/stat -c 'mode_hex=%f|nlink=%h|dev=%d|ino=%i|uid=%u|gid=%g|size=%s|mtime=%Y|ctime=%Z|path=%n' -- '/data/app/~~hQX6r7v5s_gKn7o8ImvScQ==/org.trillionnium.hepta.local-PNZseE9N9jPiez75ykUSRA==/base.apk' '/data/app/~~7tm-0viTiSPtMXQrKQNE5A==/org.trillionnium.hepta.webhelper-FzFUV5CCtZ60uGZ1qVOzWg==/base.apk'"
+      ],
+      "label": "apk-lstat-before",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/root-apk-stat-owner17-r1/apk-lstat-before.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "text": ""
+      },
+      "stdout": {
+        "bytes": 433,
+        "path": "/home/alex/hepta-local-007f-20261111/root-apk-stat-owner17-r1/apk-lstat-before.stdout",
+        "sha256": "6c1dc85d204e0d806425069fc20ada3a0f5795ee2ffc3b0bf4218f5ed37f8c04",
+        "text": "mode_hex=816d|nlink=3|dev=2097236|ino=238439|uid=1000|gid=1000|size=20985685|mtime=1794477565|ctime=1794477565|path=/data/app/~~hQX6r7v5s_gKn7o8ImvScQ==/org.trillionnium.hepta.local-PNZseE9N9jPiez75ykUSRA==/base.apk\nmode_hex=81a4|nlink=1|dev=65086|ino=236950|uid=1000|gid=1000|size=1381371|mtime=1794471819|ctime=1794471819|path=/data/app/~~7tm-0viTiSPtMXQrKQNE5A==/org.trillionnium.hepta.webhelper-FzFUV5CCtZ60uGZ1qVOzWg==/base.apk\n"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/adb",
+        "-H",
+        "127.0.0.1",
+        "-P",
+        "5037",
+        "-s",
+        "ZY22LS7WZT",
+        "shell",
+        "run-as org.trillionnium.hepta.local /system/bin/readlink -f '/data/app/~~hQX6r7v5s_gKn7o8ImvScQ==/org.trillionnium.hepta.local-PNZseE9N9jPiez75ykUSRA==/base.apk' '/data/app/~~7tm-0viTiSPtMXQrKQNE5A==/org.trillionnium.hepta.webhelper-FzFUV5CCtZ60uGZ1qVOzWg==/base.apk'"
+      ],
+      "label": "apk-canonical",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/root-apk-stat-owner17-r1/apk-canonical.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "text": ""
+      },
+      "stdout": {
+        "bytes": 204,
+        "path": "/home/alex/hepta-local-007f-20261111/root-apk-stat-owner17-r1/apk-canonical.stdout",
+        "sha256": "2cc4cb87220f592f0172f03fd6148a61d8eaa2c93701f123320c059023f79942",
+        "text": "/data/app/~~hQX6r7v5s_gKn7o8ImvScQ==/org.trillionnium.hepta.local-PNZseE9N9jPiez75ykUSRA==/base.apk\n/data/app/~~7tm-0viTiSPtMXQrKQNE5A==/org.trillionnium.hepta.webhelper-FzFUV5CCtZ60uGZ1qVOzWg==/base.apk\n"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/adb",
+        "-H",
+        "127.0.0.1",
+        "-P",
+        "5037",
+        "-s",
+        "ZY22LS7WZT",
+        "shell",
+        "run-as org.trillionnium.hepta.local /system/bin/sha256sum '/data/app/~~hQX6r7v5s_gKn7o8ImvScQ==/org.trillionnium.hepta.local-PNZseE9N9jPiez75ykUSRA==/base.apk' '/data/app/~~7tm-0viTiSPtMXQrKQNE5A==/org.trillionnium.hepta.webhelper-FzFUV5CCtZ60uGZ1qVOzWg==/base.apk'"
+      ],
+      "label": "apk-sha256",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/root-apk-stat-owner17-r1/apk-sha256.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "text": ""
+      },
+      "stdout": {
+        "bytes": 336,
+        "path": "/home/alex/hepta-local-007f-20261111/root-apk-stat-owner17-r1/apk-sha256.stdout",
+        "sha256": "9a19f113fffdfe2368a32ba07e43e26acb6e5b7cf0488e1d00df9e8c42349c37",
+        "text": "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a  /data/app/~~hQX6r7v5s_gKn7o8ImvScQ==/org.trillionnium.hepta.local-PNZseE9N9jPiez75ykUSRA==/base.apk\nb5e56ce0c2967489b55150c157f8289fdd82ad5b89caacc8b106013a7caeaf4f  /data/app/~~7tm-0viTiSPtMXQrKQNE5A==/org.trillionnium.hepta.webhelper-FzFUV5CCtZ60uGZ1qVOzWg==/base.apk\n"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/adb",
+        "-H",
+        "127.0.0.1",
+        "-P",
+        "5037",
+        "-s",
+        "ZY22LS7WZT",
+        "shell",
+        "run-as org.trillionnium.hepta.local /system/bin/stat -c 'mode_hex=%f|nlink=%h|dev=%d|ino=%i|uid=%u|gid=%g|size=%s|mtime=%Y|ctime=%Z|path=%n' -- '/data/app/~~hQX6r7v5s_gKn7o8ImvScQ==/org.trillionnium.hepta.local-PNZseE9N9jPiez75ykUSRA==/base.apk' '/data/app/~~7tm-0viTiSPtMXQrKQNE5A==/org.trillionnium.hepta.webhelper-FzFUV5CCtZ60uGZ1qVOzWg==/base.apk'"
+      ],
+      "label": "apk-lstat-after",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/root-apk-stat-owner17-r1/apk-lstat-after.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "text": ""
+      },
+      "stdout": {
+        "bytes": 433,
+        "path": "/home/alex/hepta-local-007f-20261111/root-apk-stat-owner17-r1/apk-lstat-after.stdout",
+        "sha256": "6c1dc85d204e0d806425069fc20ada3a0f5795ee2ffc3b0bf4218f5ed37f8c04",
+        "text": "mode_hex=816d|nlink=3|dev=2097236|ino=238439|uid=1000|gid=1000|size=20985685|mtime=1794477565|ctime=1794477565|path=/data/app/~~hQX6r7v5s_gKn7o8ImvScQ==/org.trillionnium.hepta.local-PNZseE9N9jPiez75ykUSRA==/base.apk\nmode_hex=81a4|nlink=1|dev=65086|ino=236950|uid=1000|gid=1000|size=1381371|mtime=1794471819|ctime=1794471819|path=/data/app/~~7tm-0viTiSPtMXQrKQNE5A==/org.trillionnium.hepta.webhelper-FzFUV5CCtZ60uGZ1qVOzWg==/base.apk\n"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/adb",
+        "-H",
+        "127.0.0.1",
+        "-P",
+        "5037",
+        "-s",
+        "ZY22LS7WZT",
+        "shell",
+        "pm path org.trillionnium.hepta.local"
+      ],
+      "label": "after-pm-local",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/root-apk-stat-owner17-r1/after-pm-local.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "text": ""
+      },
+      "stdout": {
+        "bytes": 108,
+        "path": "/home/alex/hepta-local-007f-20261111/root-apk-stat-owner17-r1/after-pm-local.stdout",
+        "sha256": "b86b2e8c48015b0b9305a400824bb747f2a180fc5de20ef4cee674988bd025eb",
+        "text": "package:/data/app/~~hQX6r7v5s_gKn7o8ImvScQ==/org.trillionnium.hepta.local-PNZseE9N9jPiez75ykUSRA==/base.apk\n"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/adb",
+        "-H",
+        "127.0.0.1",
+        "-P",
+        "5037",
+        "-s",
+        "ZY22LS7WZT",
+        "shell",
+        "pm path org.trillionnium.hepta.webhelper"
+      ],
+      "label": "after-pm-webhelper",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/root-apk-stat-owner17-r1/after-pm-webhelper.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "text": ""
+      },
+      "stdout": {
+        "bytes": 112,
+        "path": "/home/alex/hepta-local-007f-20261111/root-apk-stat-owner17-r1/after-pm-webhelper.stdout",
+        "sha256": "4e9d06c800095e8c813b9c90b3e6cf166d79618cdf3749958dd29673431c34bc",
+        "text": "package:/data/app/~~7tm-0viTiSPtMXQrKQNE5A==/org.trillionnium.hepta.webhelper-FzFUV5CCtZ60uGZ1qVOzWg==/base.apk\n"
+      }
+    }
+  ],
+  "ended": 1794489428.8600924,
+  "error": null,
+  "expected_installed_identities": {
+    "helper": {
+      "apks": [
+        {
+          "path": "/data/app/~~7tm-0viTiSPtMXQrKQNE5A==/org.trillionnium.hepta.webhelper-FzFUV5CCtZ60uGZ1qVOzWg==/base.apk",
+          "sha256": "b5e56ce0c2967489b55150c157f8289fdd82ad5b89caacc8b106013a7caeaf4f"
+        }
+      ],
+      "package": "org.trillionnium.hepta.webhelper",
+      "uid": 10484
+    },
+    "hepta": {
+      "apks": [
+        {
+          "path": "/data/app/~~hQX6r7v5s_gKn7o8ImvScQ==/org.trillionnium.hepta.local-PNZseE9N9jPiez75ykUSRA==/base.apk",
+          "sha256": "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a"
+        }
+      ],
+      "package": "org.trillionnium.hepta.local",
+      "uid": 10481
+    }
+  },
+  "owner": {
+    "boot_id": "97d9600f-e081-465c-9e6e-62651e09806b",
+    "lock": "/home/alex/.local/state/hepta/razr-operation.lock",
+    "lock_inode": 58890228,
+    "pid": 776983,
+    "root": "/home/alex/hepta-local-007f-20261111/owner-17",
+    "session_id": "dpty-ea9d64beaf56af1ea94c21a8dfdd9173a566d51b3df319678efd3355fd025c5e",
+    "start_ticks": "27769450",
+    "started_utc": "2026-11-12T13:13:17Z"
+  },
+  "phone_mutation": false,
+  "read_consistency_verified": true,
+  "schema": "hepta.actual-installed-apk-stat.v1",
+  "started": 1794489428.4726398,
+  "ui_input_issued": false
+}

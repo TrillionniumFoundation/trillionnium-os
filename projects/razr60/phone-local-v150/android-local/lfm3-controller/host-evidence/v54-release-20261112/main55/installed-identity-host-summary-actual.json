@@ -1,0 +1,12 @@
+{
+  "all_pass": true,
+  "cases": 10,
+  "error": null,
+  "exit_code": 0,
+  "result": {
+    "bytes": 5727,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-installed-apk-identity-host-r1/RESULT.json",
+    "sha256": "52762ada64c63bc58749d62e9bd183b586c40349f0e10082ded1c308d82df4f7"
+  },
+  "schema": "hepta.main55-installed-apk-identity-host-stage.v1"
+}

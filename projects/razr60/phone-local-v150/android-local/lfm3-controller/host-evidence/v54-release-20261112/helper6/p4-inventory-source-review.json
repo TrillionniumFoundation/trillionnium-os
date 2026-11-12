@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.helper6-pocket4-inventory-independent-source-review.v1",
+  "reviewer": "android_background",
+  "source_only": true,
+  "status": "no_source_blocker_under_roots_explicitly_clarified_scope",
+  "source": {
+    "git": "3978a5a10505b4565326e8f0e25e3e896f083d3b",
+    "bytes": 25642,
+    "sha256": "fe08a4c12c0ac90ae5b402f0966a1dd27feaecd831505923f9003ac9f7d30f40"
+  },
+  "host_calls": 0,
+  "phone_calls": 0,
+  "syntax_executed": false,
+  "source_executed": false,
+  "source_modified": false,
+  "authorization_clarification": {
+    "recursive_scan_roots_only": [
+      "/home/alex/hepta-local-007f-20261111",
+      "/home/alex/razr-local-ai-20261109-82d1243e"
+    ],
+    "fixed_known_files_authorized_separately": true,
+    "fixed_known_outside_recursive_roots": [
+      {
+        "path": "/home/alex/hepta-v31-nanbeige42-e59-r1/toolchains/old-jdk17-revalidation-r1/RESULT.json",
+        "bytes": null,
+        "sha256": "349939390c8b19e8cea03e28ce6c5bc2c1d010dd06d3a435b7f1517221f0dd1c",
+        "role": "prior_jdk_revalidation_receipt"
+      }
+    ],
+    "explicit_system_tool_resolution_exception": "Root explicitly authorized resolving the four standard which tool paths and the fixed /usr/bin/aapt2 path for file location/hash only. This is not a recursive scan exception or tool execution permission.",
+    "no_successor_required_by_review": true
+  },
+  "reviewed_boundaries": [
+    {
+      "area": "recursive_scan",
+      "detail": "Only the two configured task roots are traversed. Directory/file symlinks are skipped; .git, this new output root, and special files are excluded. Only *.jar and compiled-res.zip regular files are hashed. No receipt path supplies another recursive root."
+    },
+    {
+      "area": "known_originals",
+      "detail": "Sixteen fixed known files are read as bounded regular stable files, including the separately authorized prior JDK revalidation receipt outside the two scan roots. No wildcard search is performed in that third task root. Archive/APK inputs are hashed; no extraction or execution occurs."
+    },
+    {
+      "area": "tool_locations",
+      "detail": "shutil.which only locates aapt2/d8/zipalign/javac. The explicitly authorized tool_location path may resolve a symlink to hash its actual ordinary target, recording requested/resolved paths and symlink status. Neither tool version commands nor any subprocess is invoked. This does not attest a complete JDK tree."
+    },
+    {
+      "area": "stable_io",
+      "detail": "Reads are size/aggregate-budget bounded; O_NOFOLLOW, O_NONBLOCK and descriptor/path identities protect regular-file reads. Files are SHA256-hashed, cached only under matching full identity, and all tracked path identities are checked again before completion. No source/archive import, download, ADB, phone command, lock manipulation, signing key read or build is present."
+    },
+    {
+      "area": "dependency_metadata",
+      "detail": "URLs are projected only from the two explicitly pinned DEPENDENCY/R8 receipt originals after exact hash match; URLs are neither fetched nor treated as verified official origins."
+    },
+    {
+      "area": "firstclaim_output",
+      "detail": "Fresh ROOT.mkdir is outside the handler, after process-local umask. SOURCE.py, RESULT.json and SUMMARY.json are create-only, fsynced files under the new output root; duplicate claim cannot rewrite an existing winner. Same-raw stable-FD loader review is assigned separately to android_code_audit."
+    },
+    {
+      "area": "limits_and_claims",
+      "detail": "45 seconds, 240000 entries, depth24, 1024 candidates, per-file64MiB and total512MiB hash limits are explicit. Exhaustion/unavailable scan evidence is retained as incomplete/error. inventory_complete reports scan/identity completion, not that every required dependency exists. known_pins_all_match and all_17_known_jars_found are separate observations. ready_for_build/build_executed/signed/downloaded/phone_contacted stay false."
+    }
+  ],
+  "current_no_follow_description": "No recursive scan symlink is followed. Fixed system-tool location resolution is a separately authorized, explicitly disclosed exception.",
+  "pending": [
+    "Actual single invocation and immutable output receipt",
+    "Independent loader/entry exact bytes review",
+    "Later concrete Linux build map/JDK closure if inventory supplies useful artifacts"
+  ]
+}

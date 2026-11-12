@@ -1,0 +1,407 @@
+{
+  "all_pinned_downloads_verified": false,
+  "artifacts": [
+    {
+      "bytes": 78332,
+      "content_length": "78332",
+      "etag": "\"99aae5de9871d158cdb970f17be4c8da\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/host-json/json-20240303.jar",
+      "redirects_followed": 0,
+      "sha256": "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed",
+      "tls_verification": true,
+      "url": "https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "bytes": 212088,
+      "content_length": "212088",
+      "etag": "\"4019441\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/00-webkit-1.13.0.aar",
+      "redirects_followed": 0,
+      "sha256": "001c836ea612e835991288a7a66877f25288e4cf5ec89729ee7ae066e3491a35",
+      "tls_verification": true,
+      "url": "https://dl.google.com/dl/android/maven2/androidx/webkit/webkit/1.13.0/webkit-1.13.0.aar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "bytes": 39841,
+      "content_length": "39841",
+      "etag": "\"269be6b\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/01-annotation-experimental-1.4.1.aar",
+      "redirects_followed": 0,
+      "sha256": "6bd4c7c7476f8260cd3bdbb81183583e93fc9f790c27dea7dc314181cbf87aa0",
+      "tls_verification": true,
+      "url": "https://dl.google.com/dl/android/maven2/androidx/annotation/annotation-experimental/1.4.1/annotation-experimental-1.4.1.aar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "bytes": 3819,
+      "content_length": "3819",
+      "etag": "\"9133aba420d0ca3b001dbb6ae9992cf6\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/02-jspecify-1.0.0.jar",
+      "redirects_followed": 0,
+      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+      "tls_verification": true,
+      "url": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "bytes": 680824,
+      "content_length": "680824",
+      "etag": "\"44d019\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/03-core-1.1.0.aar",
+      "redirects_followed": 0,
+      "sha256": "76c7cfbe596fe3c09a6983bf1c89e889299c08ac9a3b52ce5182a088d056647e",
+      "tls_verification": true,
+      "url": "https://dl.google.com/dl/android/maven2/androidx/core/core/1.1.0/core-1.1.0.aar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "bytes": 8290,
+      "content_length": "8290",
+      "etag": "\"2e2e526\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/04-annotation-1.8.1.jar",
+      "redirects_followed": 0,
+      "sha256": "fa5e67ffcc52a0413f4b39c2737b43c1ba6c6975b4bd4a4ea8627549e766285b",
+      "tls_verification": true,
+      "url": "https://dl.google.com/dl/android/maven2/androidx/annotation/annotation/1.8.1/annotation-1.8.1.jar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "bytes": 1524620,
+      "content_length": "1524620",
+      "etag": "\"c0d54ffa8ca9eeb13d6e81639ff87096\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/05-kotlin-stdlib-1.7.10.jar",
+      "redirects_followed": 0,
+      "sha256": "e771fe74250a943e8f6346713201ff1d8cb95c3a5d1a91a22b65a9e04f6a8901",
+      "tls_verification": true,
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.7.10/kotlin-stdlib-1.7.10.jar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "bytes": 28478,
+      "content_length": "28478",
+      "etag": "\"3e0b0c\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/06-annotation-1.1.0.jar",
+      "redirects_followed": 0,
+      "sha256": "d38d63edb30f1467818d50aaf05f8a692dea8b31392a049bfa991b159ad5b692",
+      "tls_verification": true,
+      "url": "https://dl.google.com/dl/android/maven2/androidx/annotation/annotation/1.1.0/annotation-1.1.0.jar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "bytes": 9164,
+      "content_length": "9164",
+      "etag": "\"2bbb7b\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/07-lifecycle-runtime-2.0.0.aar",
+      "redirects_followed": 0,
+      "sha256": "e4afc9e636183f6f3e0edf1cf46121a492ffd2c673075bb07f55c7a99dd43cfb",
+      "tls_verification": true,
+      "url": "https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-runtime/2.0.0/lifecycle-runtime-2.0.0.aar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "bytes": 31062,
+      "content_length": "31062",
+      "etag": "\"42a6ba\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/08-versionedparcelable-1.1.0.aar",
+      "redirects_followed": 0,
+      "sha256": "9a1d77140ac222b7866b5054ee7d159bc1800987ed2d46dd6afdd145abb710c1",
+      "tls_verification": true,
+      "url": "https://dl.google.com/dl/android/maven2/androidx/versionedparcelable/versionedparcelable/1.1.0/versionedparcelable-1.1.0.aar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "bytes": 41692,
+      "content_length": "41692",
+      "etag": "\"2bbb56\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/09-collection-1.0.0.jar",
+      "redirects_followed": 0,
+      "sha256": "9c8d117b5c2bc120a1cdfeb857e05b495b16c36013570372a708f7827e3ac9f9",
+      "tls_verification": true,
+      "url": "https://dl.google.com/dl/android/maven2/androidx/collection/collection/1.0.0/collection-1.0.0.jar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "bytes": 56126,
+      "content_length": "56126",
+      "etag": "\"2e2e452\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/10-annotation-jvm-1.8.1.jar",
+      "redirects_followed": 0,
+      "sha256": "9aab326d9492800991854360ac248f493ce7f7c3183519309b78ace9e240f6f6",
+      "tls_verification": true,
+      "url": "https://dl.google.com/dl/android/maven2/androidx/annotation/annotation-jvm/1.8.1/annotation-jvm-1.8.1.jar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "bytes": 198936,
+      "content_length": "198936",
+      "etag": "\"e2fbf05c93d846bbe26655d6d6d2e137\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/11-kotlin-stdlib-common-1.7.10.jar",
+      "redirects_followed": 0,
+      "sha256": "19f102efe9629f8eabc63853ad15c533e47c47f91fca09285c5bde86e59f91d4",
+      "tls_verification": true,
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.7.10/kotlin-stdlib-common-1.7.10.jar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "bytes": 17536,
+      "content_length": "17536",
+      "etag": "\"f4fb462172517b46b6cd90003508515a\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/12-annotations-13.0.jar",
+      "redirects_followed": 0,
+      "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
+      "tls_verification": true,
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/annotations/13.0/annotations-13.0.jar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "bytes": 20306,
+      "content_length": "20306",
+      "etag": "\"2bbb84\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/13-lifecycle-common-2.0.0.jar",
+      "redirects_followed": 0,
+      "sha256": "7bad7a188804adea6fa1f35d5ef99b705f20bd93ecadde484760ff86b535fefc",
+      "tls_verification": true,
+      "url": "https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-common/2.0.0/lifecycle-common-2.0.0.jar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "bytes": 11249,
+      "content_length": "11249",
+      "etag": "\"2bbba7\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/14-core-common-2.0.0.jar",
+      "redirects_followed": 0,
+      "sha256": "4b80b337779b526e64b0ee0ca9e0df43b808344d145f8e9b1c42a134dac57ad8",
+      "tls_verification": true,
+      "url": "https://dl.google.com/dl/android/maven2/androidx/arch/core/core-common/2.0.0/core-common-2.0.0.jar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "bytes": 25378,
+      "content_length": "25378",
+      "etag": "\"2bbb66\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/15-annotation-1.0.0.jar",
+      "redirects_followed": 0,
+      "sha256": "0baae9755f7caf52aa80cd04324b91ba93af55d4d1d17dcc9a7b53d99ef7c016",
+      "tls_verification": true,
+      "url": "https://dl.google.com/dl/android/maven2/androidx/annotation/annotation/1.0.0/annotation-1.0.0.jar",
+      "verification_kind": "exact_expected_sha256",
+      "verified": true
+    },
+    {
+      "content_length": "18279079",
+      "etag": "\"517000e\"",
+      "http_status": 200,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/tools/r8-8.13.17.jar",
+      "redirects_followed": 0,
+      "tls_verification": true,
+      "url": "https://dl.google.com/dl/android/maven2/com/android/tools/r8/8.13.17/r8-8.13.17.jar",
+      "verified": false
+    }
+  ],
+  "build_executed": false,
+  "completed": false,
+  "config": {
+    "bytes": 14545,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/CONFIG.json",
+    "sha256": "fcb613a61670d5ceace8e595ae24cf93380cc160c27e07fa483c2d3ffa424a2a"
+  },
+  "elapsed_seconds": 139.91387536301045,
+  "error": "TimeoutError: The read operation timed out",
+  "exit_code": 1,
+  "mac_operation_status": "unknown",
+  "operation_lock_accessed": false,
+  "orgjson_ready": true,
+  "orgjson_ready_receipt": {
+    "bytes": 1289,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/ORGJSON-READY.json",
+    "sha256": "37f3b1790fce237f6339cab159015da7937e6517cc4a97f4dc16443c74e01d7b"
+  },
+  "originals": [
+    {
+      "bytes": 486209,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "role": "dependency_receipt",
+      "sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0"
+    },
+    {
+      "bytes": 8620,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/R8-RESULT.json",
+      "role": "r8_receipt",
+      "sha256": "d4aa66ea4105c13ba8b6e1c2540a3aeb74d3a3f70ddcf128818d4aad08ac5eeb"
+    },
+    {
+      "bytes": 129146,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/BUILD-RESULT.json",
+      "role": "helper5_build",
+      "sha256": "cce5d75af6af48fb00b72b96475d686b61b89538c60cbd424fd99e79c58396a8"
+    }
+  ],
+  "originals_unchanged": true,
+  "phone_contacted": false,
+  "remaining_build_requirements": [
+    "Three exact compiled-resource ZIP inputs and their new readback pins",
+    "Actual Linux aapt2/JDK/D8 execution",
+    "Seven generated Java hashes and369 preserved resource payload checks",
+    "Helper6 focused gates and Android compile",
+    "No automatic signing or installation"
+  ],
+  "runtime_jars": [
+    {
+      "bytes": 6304,
+      "index": 0,
+      "member": "classes.jar",
+      "outer_artifact_index": 1,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/00/classes.jar",
+      "sha256": "f97daae3e5fa12312593041412661117b7d82fa70ff2a1db45bb7092f1ce19ee"
+    },
+    {
+      "bytes": 56126,
+      "index": 1,
+      "member": null,
+      "outer_artifact_index": 10,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/01/classes.jar",
+      "sha256": "9aab326d9492800991854360ac248f493ce7f7c3183519309b78ace9e240f6f6"
+    },
+    {
+      "bytes": 8290,
+      "index": 2,
+      "member": null,
+      "outer_artifact_index": 4,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/02/classes.jar",
+      "sha256": "fa5e67ffcc52a0413f4b39c2737b43c1ba6c6975b4bd4a4ea8627549e766285b"
+    },
+    {
+      "bytes": 11249,
+      "index": 3,
+      "member": null,
+      "outer_artifact_index": 14,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/03/classes.jar",
+      "sha256": "4b80b337779b526e64b0ee0ca9e0df43b808344d145f8e9b1c42a134dac57ad8"
+    },
+    {
+      "bytes": 41692,
+      "index": 4,
+      "member": null,
+      "outer_artifact_index": 9,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/04/classes.jar",
+      "sha256": "9c8d117b5c2bc120a1cdfeb857e05b495b16c36013570372a708f7827e3ac9f9"
+    },
+    {
+      "bytes": 675389,
+      "index": 5,
+      "member": "classes.jar",
+      "outer_artifact_index": 3,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/05/classes.jar",
+      "sha256": "6dad2c3643d2e11e8ccf63c9af57d3e36ed4cfa5caa1930f44f4f90f2990fd50"
+    },
+    {
+      "bytes": 20306,
+      "index": 6,
+      "member": null,
+      "outer_artifact_index": 13,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/06/classes.jar",
+      "sha256": "7bad7a188804adea6fa1f35d5ef99b705f20bd93ecadde484760ff86b535fefc"
+    },
+    {
+      "bytes": 9055,
+      "index": 7,
+      "member": "classes.jar",
+      "outer_artifact_index": 7,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/07/classes.jar",
+      "sha256": "14ec31f2b5f8d3eb1db1fb664035e3ee44b7f8f3fa91c072b6ccc41cd478b1df"
+    },
+    {
+      "bytes": 31906,
+      "index": 8,
+      "member": "classes.jar",
+      "outer_artifact_index": 8,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/08/classes.jar",
+      "sha256": "23ab2138b5cce78bf6e93f941197ec150eba39c8ab143b1164ecbbf796157ac6"
+    },
+    {
+      "bytes": 229240,
+      "index": 9,
+      "member": "classes.jar",
+      "outer_artifact_index": 0,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/09/classes.jar",
+      "sha256": "ea0593af13e18e9678c9017b1af3977011708676b8234ba28c5d3fc82c536fbf"
+    },
+    {
+      "bytes": 198936,
+      "index": 10,
+      "member": null,
+      "outer_artifact_index": 11,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/10/classes.jar",
+      "sha256": "19f102efe9629f8eabc63853ad15c533e47c47f91fca09285c5bde86e59f91d4"
+    },
+    {
+      "bytes": 1524620,
+      "index": 11,
+      "member": null,
+      "outer_artifact_index": 5,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/11/classes.jar",
+      "sha256": "e771fe74250a943e8f6346713201ff1d8cb95c3a5d1a91a22b65a9e04f6a8901"
+    },
+    {
+      "bytes": 17536,
+      "index": 12,
+      "member": null,
+      "outer_artifact_index": 12,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/12/classes.jar",
+      "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478"
+    },
+    {
+      "bytes": 3819,
+      "index": 13,
+      "member": null,
+      "outer_artifact_index": 2,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/13/classes.jar",
+      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+    }
+  ],
+  "runtime_jars_verified": true,
+  "schema": "hepta.helper6-pocket4-fixed-public-inputs.v1",
+  "sdk_dual_hash_verified": false,
+  "signed": false,
+  "source": {
+    "bytes": 26148,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/SOURCE.py",
+    "sha256": "a8dbef392ef2edbe87e271513421dbc5a8b2b374ec9d4f303361f0e2b9772131"
+  },
+  "traceback": "Traceback (most recent call last):\n  File \"/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1.py\", line 166, in <module>\n    RESULT[\"r8\"]=download(CONFIG[\"r8\"][\"url\"],CONFIG[\"r8\"][\"relative_path\"],CONFIG[\"r8\"][\"bytes\"],CONFIG[\"r8\"][\"sha256\"])\n                 ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1.py\", line 95, in download\n    chunk=response.read(min(65536,maximum-count+1))\n  File \"/usr/lib/python3.14/http/client.py\", line 484, in read\n    s = self.fp.read(amt)\n  File \"/usr/lib/python3.14/socket.py\", line 725, in readinto\n    return self._sock.recv_into(b)\n           ~~~~~~~~~~~~~~~~~~~~^^^\n  File \"/usr/lib/python3.14/ssl.py\", line 1304, in recv_into\n    return self.read(nbytes, buffer)\n           ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.14/ssl.py\", line 1138, in read\n    return self._sslobj.read(len, buffer)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^\nTimeoutError: The read operation timed out\n"
+}

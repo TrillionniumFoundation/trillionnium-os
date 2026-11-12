@@ -1,0 +1,78 @@
+{
+  "schema": "hepta.helper6-p4-migration-small-mac-inputs.v1",
+  "original_build": {
+    "bytes": 129146,
+    "sha256": "cce5d75af6af48fb00b72b96475d686b61b89538c60cbd424fd99e79c58396a8"
+  },
+  "scope": "Fixed prior successful helper5 build artifacts only; no access to unknown helper6 Mac operation.",
+  "resource_archives": [
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-web-helper-code5-build-r1/resources/00/compiled-res.zip",
+      "original_receipt_evidence": "Actual successful aapt2-link argv",
+      "bytes": null,
+      "sha256": null,
+      "pin_status": "The BUILD receipt does not record standalone archive byte count or SHA256; read-only metadata and full bytes must establish them before any use."
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-web-helper-code5-build-r1/resources/05/compiled-res.zip",
+      "original_receipt_evidence": "Actual successful aapt2-link argv",
+      "bytes": null,
+      "sha256": null,
+      "pin_status": "The BUILD receipt does not record standalone archive byte count or SHA256; read-only metadata and full bytes must establish them before any use."
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-web-helper-code5-build-r1/resources/09/compiled-res.zip",
+      "original_receipt_evidence": "Actual successful aapt2-link argv",
+      "bytes": null,
+      "sha256": null,
+      "pin_status": "The BUILD receipt does not record standalone archive byte count or SHA256; read-only metadata and full bytes must establish them before any use."
+    }
+  ],
+  "generated_sources": [
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-web-helper-code5-build-r1/generated/androidx/annotation/experimental/R.java",
+      "bytes": 41102,
+      "sha256": "7751a0a5b7e3264b16f4846f89057bcb505306d9ffd4dcaa1cb26a1382707658",
+      "original_receipt_evidence": "Actual generated_source_inputs exact full SHA256"
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-web-helper-code5-build-r1/generated/androidx/core/R.java",
+      "bytes": 41083,
+      "sha256": "4c3bf651c64b3e722764de1d240ad3431876918447dcc754be9cea8a797a30a7",
+      "original_receipt_evidence": "Actual generated_source_inputs exact full SHA256"
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-web-helper-code5-build-r1/generated/androidx/lifecycle/R.java",
+      "bytes": 41088,
+      "sha256": "c73435b292885a19088c68d5682fadcadff23c68df4c2dd2105d9bb5e8223ed4",
+      "original_receipt_evidence": "Actual generated_source_inputs exact full SHA256"
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-web-helper-code5-build-r1/generated/androidx/versionedparcelable/R.java",
+      "bytes": 41098,
+      "sha256": "a24dd782a5125effbfdc1f86b6cef673b1c8f5798ec5ea95927c2a3fe7553796",
+      "original_receipt_evidence": "Actual generated_source_inputs exact full SHA256"
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-web-helper-code5-build-r1/generated/androidx/webkit/R.java",
+      "bytes": 41085,
+      "sha256": "7279776edb41dfad650932af0a57df6e8e5266f6ad9d9c88d5ed911870fceb39",
+      "original_receipt_evidence": "Actual generated_source_inputs exact full SHA256"
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-web-helper-code5-build-r1/generated/org/trillionnium/hepta/webhelper/Manifest.java",
+      "bytes": 406,
+      "sha256": "34ea501ad6a0a4590c09aa5f02e50773487a2cb2400ab0665581cef3850c184a",
+      "original_receipt_evidence": "Actual generated_source_inputs exact full SHA256"
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-web-helper-code5-build-r1/generated/org/trillionnium/hepta/webhelper/R.java",
+      "bytes": 41102,
+      "sha256": "8c67050131b87bf13bb0f79dd3617c12ba2debfeedd6d628d3cf1aa646dc679c",
+      "original_receipt_evidence": "Actual generated_source_inputs exact full SHA256"
+    }
+  ],
+  "generated_bytes": 246964,
+  "observed_read_or_download_this_plan": false,
+  "ready_for_build": false
+}

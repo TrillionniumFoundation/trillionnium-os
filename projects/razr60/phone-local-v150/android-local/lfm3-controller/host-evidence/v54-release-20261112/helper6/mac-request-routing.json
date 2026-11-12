@@ -1,0 +1,155 @@
+{
+  "schema": "hepta.helper6-original-host-routing.v1",
+  "source_transport": {
+    "git": "ca683439b3a836af24834311f2b2bfd14d808681",
+    "bytes": 300845,
+    "sha256": "40b2eda23ec01f9a064c17eccf7236e4619b510d5c8912f96d11237362f9d67c"
+  },
+  "source_write": {
+    "request": {
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/helper6-wire4-build-r1.py",
+      "expected_version": "absent"
+    },
+    "bytes": 27617,
+    "sha256": "1597652a5f7a34f215e01f39595a3c55310cd602a41c6cc89dda516433596919",
+    "actual_ack": true
+  },
+  "input_chunks": [
+    {
+      "request": {
+        "action": "chunk",
+        "host": "mac",
+        "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/helper6-wire4-build-r1.input.json.gz",
+        "upload_id": "007f-v55-helper6-wire4-input-r1",
+        "expected_version": "absent",
+        "offset": 0
+      },
+      "bytes": 49152,
+      "sha256": "ed33f17e469e72e75f866226916d39e895d834a8fba2d6f3c7189bdadc3f1eac",
+      "actual_ack": true
+    },
+    {
+      "request": {
+        "action": "chunk",
+        "host": "mac",
+        "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/helper6-wire4-build-r1.input.json.gz",
+        "upload_id": "007f-v55-helper6-wire4-input-r1",
+        "expected_version": "absent",
+        "offset": 49152
+      },
+      "bytes": 49152,
+      "sha256": "a155a4181cf7878f8746ea14e525b6aa142e2f5e957f1731d48e23a01ec3fe30",
+      "actual_ack": true
+    },
+    {
+      "request": {
+        "action": "chunk",
+        "host": "mac",
+        "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/helper6-wire4-build-r1.input.json.gz",
+        "upload_id": "007f-v55-helper6-wire4-input-r1",
+        "expected_version": "absent",
+        "offset": 98304
+      },
+      "bytes": 49152,
+      "sha256": "dee1735f7d41e18b0eb190671731377dad9c075e1609bb55b28a2f8cc3109c10",
+      "actual_ack": true
+    },
+    {
+      "request": {
+        "action": "chunk",
+        "host": "mac",
+        "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/helper6-wire4-build-r1.input.json.gz",
+        "upload_id": "007f-v55-helper6-wire4-input-r1",
+        "expected_version": "absent",
+        "offset": 147456
+      },
+      "bytes": 46471,
+      "sha256": "ee2e4143f70fbaf772b6277235d6b5c97a00d1f67548fd0acb69d8e22b5a641c",
+      "actual_ack": true
+    }
+  ],
+  "input_commit": {
+    "request": {
+      "action": "commit",
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/helper6-wire4-build-r1.input.json.gz",
+      "upload_id": "007f-v55-helper6-wire4-input-r1",
+      "expected_version": "absent",
+      "size": 193927,
+      "sha256": "fd301ded2455febff45bdf2c6be7909a7dea0bf2ac2d5c2d4a04da59e872c631"
+    },
+    "actual_committed": true
+  },
+  "original_start": {
+    "host": "mac",
+    "executable": "/usr/bin/python3",
+    "cwd": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f",
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "idempotency_key": "007f-v55-web-helper-code6-build-r1",
+    "args_prefix": [
+      "-I",
+      "-B",
+      "-c"
+    ],
+    "loader": {
+      "bytes": 1398,
+      "sha256": "a3ba1be1339d31788a0acd1702b4d878e7ab09a961bf918ae7fa265585a791f9"
+    },
+    "full_request_available_in_transport": true
+  },
+  "same_key_reconciliation": {
+    "host": "mac",
+    "executable": "/usr/bin/python3",
+    "cwd": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f",
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "idempotency_key": "007f-v55-web-helper-code6-build-r1",
+    "args_prefix": [
+      "-I",
+      "-B",
+      "-c"
+    ],
+    "loader": {
+      "bytes": 1398,
+      "sha256": "a3ba1be1339d31788a0acd1702b4d878e7ab09a961bf918ae7fa265585a791f9"
+    },
+    "full_request_available_in_transport": true
+  },
+  "direct_summary_read": {
+    "host": "mac",
+    "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v55-web-helper-code6-build-r1/SUMMARY.json",
+    "offset": 0,
+    "limit": 65536
+  },
+  "native_summary_read": {
+    "idempotency_key": "007f-v55-helper6-summary-native-read-r1",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "mac",
+        "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v55-web-helper-code6-build-r1/SUMMARY.json",
+        "offset": 0,
+        "limit": 8192
+      }
+    }
+  },
+  "builder": {
+    "git": "974a1beeedfa11dff96eba729e22f3ec31c91305",
+    "local_variable_B": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f",
+    "base": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-web-helper-code5-build-r1",
+    "base_result_bytes": 129146,
+    "base_result_sha256": "cce5d75af6af48fb00b72b96475d686b61b89538c60cbd424fd99e79c58396a8",
+    "output_root": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v55-web-helper-code6-build-r1"
+  },
+  "all_actual_requests_in_this_chain_host": "mac",
+  "actual_native_error_host": "hepta-mac-local",
+  "pocket4_request_in_this_build_chain": false,
+  "host_changed_after_unknown": false,
+  "start_status": "unknown",
+  "native_summary_read_original_git": "91b0ebf65db809b9d32d310ab77aa74127336c98",
+  "signing_or_phone_actions": 0
+}

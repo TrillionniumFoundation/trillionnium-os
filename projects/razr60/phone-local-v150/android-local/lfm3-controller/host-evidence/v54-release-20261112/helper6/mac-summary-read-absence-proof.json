@@ -1,0 +1,74 @@
+{
+  "schema": "hepta.helper6-native-read-reconciliation.v1",
+  "purpose": "Read the fixed existing build SUMMARY without dispatching or replaying a build.",
+  "request": {
+    "idempotency_key": "007f-v55-helper6-summary-native-read-r1",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "mac",
+        "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v55-web-helper-code6-build-r1/SUMMARY.json",
+        "offset": 0,
+        "limit": 8192
+      }
+    }
+  },
+  "admission": {
+    "admission_is_not_dispatch_completion": true,
+    "async_state": "queued",
+    "authenticated_chatgpt_caller_isolation": false,
+    "automatic_retry": false,
+    "credential_metadata_resume": true,
+    "cross_session_resume": true,
+    "delivery_proven": false,
+    "execution_resume_after_restart": false,
+    "idempotency_binding_retained": true,
+    "operation_id": "6240f8675fd9a9b0e06d4635b3a45431bec24cbe68480bf9d04e7edc44e3dfb3",
+    "ownership_scope": "authenticated_private_operator_credential",
+    "reused": false,
+    "session_scope": "authenticated_private_operator_credential",
+    "tool_name": "binary_read"
+  },
+  "status": {
+    "async_state": "failed",
+    "audit_metadata_available": true,
+    "authenticated_chatgpt_caller_isolation": false,
+    "automatic_retry": false,
+    "cancellation_does_not_prove_remote_effect_stopped": true,
+    "credential_metadata_resume": true,
+    "cross_session_resume": true,
+    "delivery_proven": false,
+    "early_return_async_start_supported": true,
+    "execution_resume_after_restart": false,
+    "operation_id": "6240f8675fd9a9b0e06d4635b3a45431bec24cbe68480bf9d04e7edc44e3dfb3",
+    "original_payload_is_not_transport_delivery_proof": true,
+    "owned_future_active": false,
+    "ownership_scope": "authenticated_private_operator_credential",
+    "payload_available": true,
+    "remote_termination_confirmed": false,
+    "result_state": "stored_observed",
+    "retention_max_original_bytes": 1048576,
+    "session_scope": "authenticated_private_operator_credential",
+    "tool_name": "binary_read"
+  },
+  "native_original": {
+    "git_blob": "91b0ebf65db809b9d32d310ab77aa74127336c98",
+    "bytes": 233,
+    "sha256": "abc9c99b5c521f391d05a3e2427c1fdd8590452ea0eb2dbe156f3da70339689c",
+    "format": "serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization",
+    "full_bytes_verified": true
+  },
+  "observed_error": "remote helper on hepta-mac-local failed with 1\nstdout:\n\nstderr:\nFileNotFoundError: [Errno 2] No such file or directory: 'v55-web-helper-code6-build-r1'",
+  "prior_build_submission_proofs": [
+    "8f7b7f95cce8f237ec19179a020800f79b39076f",
+    "ecd20f020144363007c8fd3eba167d0c51b35858"
+  ],
+  "result": "The native read observed the fixed build output parent directory absent. The prior build Start remains unknown.",
+  "build_start_dispatched_by_this_operation": false,
+  "prior_start_reclassified_as_not_executed": false,
+  "prior_start_reclassified_as_build_failure": false,
+  "new_build_key_or_output_root": false,
+  "uploads": 0,
+  "phone_actions": 0,
+  "signing": 0
+}

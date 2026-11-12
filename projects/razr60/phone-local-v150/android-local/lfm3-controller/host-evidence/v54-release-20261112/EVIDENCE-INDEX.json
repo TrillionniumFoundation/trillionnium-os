@@ -43,7 +43,7 @@
     "normal_sdk_close_implied_by_cancel_exit_143": false,
     "helper5_install_completed": true,
     "helper5_install_is_business_verification": false,
-    "main54_phone_scope": "Actual installation and Notes create/save/list/reopen are recorded. Formal Flight/Shopping completion remains unverified.",
+    "main54_phone_scope": "Actual installation and scoped Notes create/save/list/reopen, followed by one ordinary-Start Flight run that failed on the APK identity precondition before any model process or step. No Flight query/results or Shopping completion.",
     "notes54_original_collector_qualified": false,
     "notes54_whole_main_scroll_case_qualified": false,
     "notes54_scoped_create_save_list_reopen_verified": true,
@@ -53,8 +53,13 @@
     "web54_r6_automatic_ui_host_passed": true,
     "web54_r6_flight_phone_result_in_this_index": true,
     "web54_r7_pinned_import_host_passed": true,
-    "web54_successful_flight_preparation_recorded": false,
-    "web54_flight_task_started": false
+    "web54_successful_flight_preparation_recorded": true,
+    "web54_flight_task_started": true,
+    "web54_flight_model_process_started": false,
+    "web54_flight_completed": false,
+    "helper6_mac_build_status": "unknown",
+    "helper6_pocket4_inventory_complete": false,
+    "helper6_pocket4_build_completed": false
   },
   "deferred_originals": [
     {
@@ -314,6 +319,216 @@
       "scope": "Actual helper5 install and ordinary MAIN; 33 prior diagnostics preserved; no site, capture, model, or business result."
     },
     {
+      "path": "helper6/compiled-resources-current-originals.json",
+      "bytes": 146213,
+      "sha256": "a01966f37778d02ef016189218bef9a61450c66c43e16af6beb20e6833b63819",
+      "git_blob": "6539c09bc289a22f3dbd8aa981fde34a126e89bf",
+      "scope": "Three complete current Mac compiled-resource ZIP originals, stable version/length/SHA reads. These are newly observed standalone hashes, not historical hash fields in the old BUILD."
+    },
+    {
+      "path": "helper6/fixed-small-mac-inputs.json",
+      "bytes": 4229,
+      "sha256": "bd6fff00cea612d2af801e8436d2064b79399550c6f31978b910fd77955fcbb3",
+      "git_blob": "9302dd88473a89cb5d8e174036908f526450e7c4",
+      "scope": "Seven exact generated Java pins plus three exact resource ZIP paths; ZIP byte/hash pins are explicitly unknown pending reads."
+    },
+    {
+      "path": "helper6/helper5-installed-identity-original.java",
+      "bytes": 7567,
+      "sha256": "15c9d44cde2d93f823372ab6e0baf6214d4cb80835907694df1212be4d3edf73",
+      "git_blob": "e17215c97aefb6b70b528151ba718012126aaa78",
+      "scope": "Exact original InstalledIdentity recovered from the pinned actual5 archive; single-link precondition observed."
+    },
+    {
+      "path": "helper6/helper6-installed-identity-candidate.java",
+      "bytes": 7692,
+      "sha256": "0743b10aff01040b52235d5c57691cc1d864acd6fcef1aa626317585894cc39c",
+      "git_blob": "4a22a057282357b48dfaee0a94c885fac138fc5b",
+      "scope": "Unbuilt helper6 candidate; positive stable links and stable UID/GID replace single-link assumption. Does not modify installed5 or the589 main54 sources."
+    },
+    {
+      "path": "helper6/helper6-installed-identity-derivation.json",
+      "bytes": 10186,
+      "sha256": "6b46185ce4496e4d44911b5d3a42953d9a650f134151ecfa7abd2aedc9e2f7a0",
+      "git_blob": "1c6a5faeecfc037e1dee4a0eb9a3ad7122ccbbed",
+      "scope": "Four exact source hunks with byte-reversible original; candidate only."
+    },
+    {
+      "path": "helper6/helper6-installed-identity-host-input-review.json",
+      "bytes": 2431,
+      "sha256": "4e2757152c28941d1177f1f90f92af3679e2cd1f57304d1573a722caf1cc7c71",
+      "git_blob": "d4cec8bb9fb218a15853df167f0ab67bc18b97a0",
+      "scope": "Independent review of helper test projection; main10 pass does not prove helper10 execution."
+    },
+    {
+      "path": "helper6/helper6-installed-identity-host-input.json",
+      "bytes": 32136,
+      "sha256": "36cf1f1e428ad5b7a830631b87cc7e3161d8ac7ef34c1e0b9385b9a9930ad794",
+      "git_blob": "22dfc2f7b352e8d365cd5e84a304fcd0a75ee5c0",
+      "scope": "Ten-case helper-specific actual-method projection input; synthetic syscall doubles, not yet executed."
+    },
+    {
+      "path": "helper6/helper6-installed-identity-review.json",
+      "bytes": 4769,
+      "sha256": "528fae557460577495bf9149e03baaa9caed54d4a421524d63eca046c1d5d604",
+      "git_blob": "6805867fa11fc1c5c6ce41ebf1d47b3bccffb086",
+      "scope": "Independent source review; not runtime/Android/phone verification."
+    },
+    {
+      "path": "helper6/mac-original-submission-unknown.json",
+      "bytes": 3400,
+      "sha256": "74f3065d102eefdf710c37cc6ee683927caff4d31b8f8b02a9e275872826e448",
+      "git_blob": "8f7b7f95cce8f237ec19179a020800f79b39076f",
+      "scope": "Original Mac helper6 build submission remained without ACK; no execution success inferred."
+    },
+    {
+      "path": "helper6/mac-pty-list-unassociated.json",
+      "bytes": 904,
+      "sha256": "73f6d42b2bc6a69a161e9b16610b2da47f5ab019dd47cdc049845aff65acec06",
+      "git_blob": "41045f3f06dee1aa0bb9d355a439504fcf46d88d",
+      "scope": "PTY list lacked correlating metadata; unrelated sessions and private ledgers were not inspected."
+    },
+    {
+      "path": "helper6/mac-request-routing.json",
+      "bytes": 5276,
+      "sha256": "2791cb31e8fff47f5a29fe8c8ddecbf2959c74a60a23f97826e9577a26d260c9",
+      "git_blob": "f025ef6845c5a366fac7409e4afc3c48ff73c0c9",
+      "scope": "Actual Mac unsigned-build request routing; no Pocket4 phone or signing action by these requests."
+    },
+    {
+      "path": "helper6/mac-same-key-reconciliation-unknown.json",
+      "bytes": 3358,
+      "sha256": "53aa6387995cd402a7afb01fcede1fb84735744b6127eb4b1aac820dfc0db00d",
+      "git_blob": "ecd20f020144363007c8fd3eba167d0c51b35858",
+      "scope": "One exact same-key Mac reconciliation timed out; original operation remains unknown."
+    },
+    {
+      "path": "helper6/mac-summary-read-absence-proof.json",
+      "bytes": 3126,
+      "sha256": "d2ef2ed07b5793b0d0e3ec9694b95817ac8b0014c6227c072c9b39c27f3993af",
+      "git_blob": "257c37bc9dee976bd275150ea258d3bdfffbad51",
+      "scope": "Actual read found no Mac build root at that read time; this does not prove the unknown Start did not execute."
+    },
+    {
+      "path": "helper6/official-sdk34-source-discovery.json",
+      "bytes": 3113,
+      "sha256": "96256af2a36deb1cee13ea255dde6f781d0ad3e1f5d60b2174ecdd661bbc4669",
+      "git_blob": "e4e78d9b04d073801fec2cf5318b7fdc278ad41a",
+      "scope": "Official immutable Gitiles metadata and raw URL; full SDK binary not downloaded or hash-verified by this discovery."
+    },
+    {
+      "path": "helper6/orgjson-ready-original.json",
+      "bytes": 1289,
+      "sha256": "37f3b1790fce237f6339cab159015da7937e6517cc4a97f4dc16443c74e01d7b",
+      "git_blob": "be047ff3399e5b72309dbe5869162bd0540129d5",
+      "scope": "Full exact org.json ready receipt; isolated78,332-byte JAR success, not full dependency/build readiness."
+    },
+    {
+      "path": "helper6/p4-fixed-metadata-extraction-review.json",
+      "bytes": 2130,
+      "sha256": "c23fe8c3b4d3f54c1a272979c9f11ae4000850e5665fab5f108b3daf6326594f",
+      "git_blob": "b0099c128f842c85aeab5704e38028f134068729",
+      "scope": "Source-only review of fixed three-original stdout projection; no build or phone."
+    },
+    {
+      "path": "helper6/p4-fixed-metadata-r1-failure-proof.json",
+      "bytes": 3313,
+      "sha256": "b8a704711363fd191c4538ac557dc1cc6a4be4491491416c0230dc691e2de5d0",
+      "git_blob": "4cd1a03f76e9aa6e1763c18b12bc8c7bb7289a76",
+      "scope": "Actual exit1/outputcomplete at output budget check; no InstalledIdentity source text emitted."
+    },
+    {
+      "path": "helper6/p4-fixed-metadata-r1-pty-original.txt",
+      "bytes": 484,
+      "sha256": "24302a7279ca1e1cb23433561f2afddd1bd4b3a8cef91c4aa3a81b0f34c74493",
+      "git_blob": "3d65db17effcb9a392496843a0ad9cc695b96b26",
+      "scope": "Full 484-byte raw PTY including ANSI/CRLF; original assertion failure unchanged."
+    },
+    {
+      "path": "helper6/p4-fixed-metadata-r1-source.py",
+      "bytes": 2660,
+      "sha256": "2e4bc16553b8080e8ce2a3fdef30fc0afef007cc1e1987b3007304382afb4ae2",
+      "git_blob": "fd514a997e3b531dc938b30007c0abe165f925f3",
+      "scope": "Original metadata extraction source; its output-size guard failed before JSON emission."
+    },
+    {
+      "path": "helper6/p4-fixed-metadata-r2-pty-original.txt",
+      "bytes": 32618,
+      "sha256": "1e4bbbbfb6830e530613e639e1abd1f9f2832f06f69f4e12203dbbe624d04fbe",
+      "git_blob": "b84977d82fb208acbe6da0a026d7207450b7055e",
+      "scope": "Complete actual exit0 PTY stdout including original CRLF representation; source/archive checks and InstalledIdentity text received. No build or phone."
+    },
+    {
+      "path": "helper6/p4-fixed-metadata-r2-source.py",
+      "bytes": 3883,
+      "sha256": "0d29cbd3376160976957c56217da2ce1a01e699b87fde29991b401a5e9d42c2b",
+      "git_blob": "62d708bff1988d64a804fdc6485375dba563c0aa",
+      "scope": "Fixed three-input metadata projection; source-only here, actual execution represented by separate raw PTY."
+    },
+    {
+      "path": "helper6/p4-fixed-public-download-failure-original.json",
+      "bytes": 18213,
+      "sha256": "3ce37751fc824816475e624123a787f5e00bd011c11beb9d583835df453b18ad",
+      "git_blob": "6616146b360639708d4b55ffceef6a9c3b860ea6",
+      "scope": "Original exit1:17 outer downloads and14 runtime JARs verified, R8 body timeout, SDK not started; no whole closure pass."
+    },
+    {
+      "path": "helper6/p4-fixed-public-download-pty-original.txt",
+      "bytes": 1171,
+      "sha256": "b5bb6071d78d7a5e15c022a6910ecf785edf45e74b5d3fa89401a34a41afb2ba",
+      "git_blob": "2d1cd0dedefeb00e3cd48a518275b141c4bfc696",
+      "scope": "Complete original1171-byte PTY stream including READY notice and failing summary; actual exit1."
+    },
+    {
+      "path": "helper6/p4-fixed-public-download-review.json",
+      "bytes": 6628,
+      "sha256": "6446b4e97b6a960f8c71f63e23935dd3c155e31a1cb71a5daa623ae940425fa2",
+      "git_blob": "fd3d75490399796099eed9e7e2e046dbcc6af89c",
+      "scope": "Independent original source and full failure review; scoped successes and negative final result retained."
+    },
+    {
+      "path": "helper6/p4-fixed-public-download-source.py",
+      "bytes": 26148,
+      "sha256": "a8dbef392ef2edbe87e271513421dbc5a8b2b374ec9d4f303361f0e2b9772131",
+      "git_blob": "f214bffe7f804559e43a61e97a9bae9603a845b8",
+      "scope": "Exact executed original download source; no build, signing or phone."
+    },
+    {
+      "path": "helper6/p4-inventory-loader-review.json",
+      "bytes": 2346,
+      "sha256": "6b0f434afc4d091bf61c147f7be445eb35ec7a04b523b720392f58f71302d6c0",
+      "git_blob": "9e1bf48efb2380627e3e38b0a5ca2ce648ed36a4",
+      "scope": "Source-only exact stable-FD loader and transport review; not actual inventory pass."
+    },
+    {
+      "path": "helper6/p4-inventory-partial-original.json",
+      "bytes": 36357,
+      "sha256": "9a0a6cbc9d4982c285196a478d1d4b447d642ba18c09d5043804c521bde4e926",
+      "git_blob": "c5051587730493364b650f1234ea3f75973f790f",
+      "scope": "Actual inventory exit2 on entry budget, inventory_complete false; 16 fixed pins match and read originals preserved, no JAR absence conclusion."
+    },
+    {
+      "path": "helper6/p4-inventory-source-review.json",
+      "bytes": 4374,
+      "sha256": "e288c91bd108ed4cc0174672722d136049c171f6a7c7627933474a55ac667c5f",
+      "git_blob": "d74bdeef9d569d3314c5de30c584a8746444d236",
+      "scope": "Source-only review under explicit two-root scan plus fixed-receipt and standard-tool-location exceptions."
+    },
+    {
+      "path": "helper6/p4-inventory-source.py",
+      "bytes": 25642,
+      "sha256": "fe08a4c12c0ac90ae5b402f0966a1dd27feaecd831505923f9003ac9f7d30f40",
+      "git_blob": "3978a5a10505b4565326e8f0e25e3e896f083d3b",
+      "scope": "Actual read-only inventory source; two-root scan and authorized fixed tool/receipt exceptions."
+    },
+    {
+      "path": "helper6/p4-inventory-summary-original.json",
+      "bytes": 605,
+      "sha256": "93094e27161a180c69d61e1f4d9571d3107f6ff05a87bb3004b596311accf005",
+      "git_blob": "7f16a9e04495662650ee5ff003f0ca4449bbaad7",
+      "scope": "Original summary of partial inventory; no build readiness."
+    },
+    {
       "path": "main54-code5-r6-android-actual.json",
       "bytes": 28841,
       "sha256": "a037b49f05ea48caccb2902b95bbb2314a5f767e230138dd14ae3a16851ee4b2",
@@ -468,6 +683,27 @@
       "scope": "Actual pre/post PR/ref CAS and original repository blob preservation; source commit is not rewritten by a later evidence commit."
     },
     {
+      "path": "main55/installed-identity-candidate.java",
+      "bytes": 9255,
+      "sha256": "e3ca49ba910ff1bb26f50452e1f718313dbce51df9d77c8b107867351178e1d9",
+      "git_blob": "8320ab92f85733db76fa15eac82083540f6e1fa0",
+      "scope": "Candidate main55 identity fix only; unchanged main54 APK and source commit remain installed bindings at this snapshot."
+    },
+    {
+      "path": "main55/installed-identity-host-result-actual.json",
+      "bytes": 5727,
+      "sha256": "52762ada64c63bc58749d62e9bd183b586c40349f0e10082ded1c308d82df4f7",
+      "git_blob": "afd48c30b38dc4ec49a662180b1d6d175be64e47",
+      "scope": "Actual10 cases/218 assertions using exact main methods and syscall doubles; actual stat values replayed, no Android PM/certificate/file access or phone."
+    },
+    {
+      "path": "main55/installed-identity-host-summary-actual.json",
+      "bytes": 356,
+      "sha256": "f134055de7a57b7c8ac37c0ac3ff67c4ff5d5a39338681ca73cc03e5dc80eaa7",
+      "git_blob": "84f0f68dc72da826901c3d185ebd88531fe8fe04",
+      "scope": "Original small summary of the main55 identity10 host gate; no helper gate or phone claim."
+    },
+    {
       "path": "notes54/actual-independent-replay-result.json",
       "bytes": 37761,
       "sha256": "eef5e79feb21965a52c4bdc35892842af3d5e74c578792deb4f4cdec73f12db2",
@@ -615,6 +851,13 @@
       "scope": "Source/actual-preparation review of unique RUN wrapper, not a phone rerun."
     },
     {
+      "path": "publications/evidence-121e051-publication.json",
+      "bytes": 1938,
+      "sha256": "ee7e8c49f52fd1117ecb51b49240f3d243bcf2532add61683912d64289accce2",
+      "git_blob": "9b4ef23a54df374c18059205a82baa0ee0a0d4af",
+      "scope": "Prior evidence-only CAS proof; 589 installed application source blobs remain bound to42d3."
+    },
+    {
       "path": "publications/evidence-661deec-publication.json",
       "bytes": 1413,
       "sha256": "f5026d83ce2e669e4982761f28e20cd1a1948b5525bd1abefa83992d2d84c220",
@@ -727,6 +970,48 @@
       "scope": "Actual12/47 Python and5/25 real14Java focused checks; three exit0 steps, original/staged byte preservation, phone0."
     },
     {
+      "path": "web54/flight-background-binding-actual.json",
+      "bytes": 2007,
+      "sha256": "b5da077af167cdf1a5bbb7287f69cea9f46cca8c0e54810f19b5a2779a06d37d",
+      "git_blob": "13538924081ba7aca8314a8f230169e1e788b96f",
+      "scope": "Exact new original from the Flight run; partial failure and scope retained."
+    },
+    {
+      "path": "web54/flight-background-bootstrap-actual.json",
+      "bytes": 6591,
+      "sha256": "3739f30a871ff5a0498ea320c4a4bb1cbe2397b730ed2ffcb4c7527c25db19eb",
+      "git_blob": "c1ebaa55904e94f9cebee86c0dcbfc6145585199",
+      "scope": "Exact new original from the Flight run; partial failure and scope retained."
+    },
+    {
+      "path": "web54/flight-background-cleanup-actual.json",
+      "bytes": 5226,
+      "sha256": "fdd2b22d6988952fdf3976f825812fe3f7a40e2e10444d91461b2a67f32a147d",
+      "git_blob": "750de12e86aa6e4f018d0bbe734281231edbd7be",
+      "scope": "Exact new original from the Flight run; partial failure and scope retained."
+    },
+    {
+      "path": "web54/flight-helper-unstarted-actual.json",
+      "bytes": 260,
+      "sha256": "3f1b4bcec3bec8e7d1a04cff0204bfb002edc0ab15464537743acabb8ada0b85",
+      "git_blob": "157871de1287c18124ddf430cbe797987d5f4cd3",
+      "scope": "Raw helper unstarted record: only active_view_absent true, four other cleanup flags false; not formal lease close."
+    },
+    {
+      "path": "web54/flight-independent-run-root-wrapper.py",
+      "bytes": 3442,
+      "sha256": "56a2ec6ce5fe7b2558838afc89eb33354829b5c167c66f82f8c45e2ad2a6a252",
+      "git_blob": "d6cb2bd37cff69efb61205d5c707fdf2f3f54ac0",
+      "scope": "Sealed independent RUN wrapper; original owner16 was normally closed before the separately recorded invocation."
+    },
+    {
+      "path": "web54/flight-owner-actual.json",
+      "bytes": 4180,
+      "sha256": "0bf4ebde88b229c7913da452f3d68df2371263f4ffd4dde00e116427b98da95c",
+      "git_blob": "6cd41627817085b799cd81583e4b19ba4dcd9f68",
+      "scope": "Exact new original from the Flight run; partial failure and scope retained."
+    },
+    {
       "path": "web54/flight-owner16-r6-wrapper-handoff.json",
       "bytes": 5675,
       "sha256": "c63efa397cc1b3a19c9dc0505c4b9d0ff4c6198dedfb2166b34fe2a6ee525a52",
@@ -755,11 +1040,74 @@
       "scope": "Actual r7 preparation rejected an existing helper Recents card before Start; no guard was relaxed and no successful preparation claimed."
     },
     {
+      "path": "web54/flight-prepare-r3-actual.json",
+      "bytes": 53470,
+      "sha256": "32cf88080e1ece1ff4bc9b4012b930b77e26d3a6f6257ea7ec24385e5aae4334",
+      "git_blob": "529d258e4707fbe34badecb4356fb3cca941cf63",
+      "scope": "Actual successful ordinary preparation with original dual preferences preserved; Start not tapped by preparation."
+    },
+    {
+      "path": "web54/flight-r1-collection-original.json",
+      "bytes": 25668,
+      "sha256": "642b7136d7d1ba94701c004615ef1024a0ae87eb0d701505df87deca87f502f0",
+      "git_blob": "efb1ae57da8b517173a49ef1b71a988d2ceb1500",
+      "scope": "Original collector index with exact copied-original pins; only the selected seven small fresh originals are included, not the 10 MB historical helper collection."
+    },
+    {
+      "path": "web54/flight-r1-independent-review.json",
+      "bytes": 11857,
+      "sha256": "a717aeec7c42b4f6c79eb2cb4d35f8ce95ef21069f0a39b63d5729ba83b7dc54",
+      "git_blob": "21feec429759cf313e71ee70ad5853683f8565d7",
+      "scope": "Independent review of exact original task/selection/VD release; no model, query, business or five-flag helper close."
+    },
+    {
+      "path": "web54/flight-r1-result-actual.json",
+      "bytes": 56378,
+      "sha256": "6881749bc9429b4ce1332353ecd67fe2d524ae19b14349a1208a08b9b41195d7",
+      "git_blob": "1a9762b0deb0dee336e91a0708c84292d9ac6b14",
+      "scope": "Actual one-Start Flight run failed before model process/steps on regular immutable APK guard; original qualified/business/ready false retained."
+    },
+    {
+      "path": "web54/flight-start-root-review.json",
+      "bytes": 885,
+      "sha256": "bd1df7ed15115632ea24f083adced523dc92c831f0b8b7a896bbea4fd6f32ff8",
+      "git_blob": "546514510dd4dec4fd4fbb0a689a13d919d33028",
+      "scope": "Root actual full-frame review and exact 13-key authorization for one ordinary Start."
+    },
+    {
+      "path": "web54/flight-task-result-actual.json",
+      "bytes": 16136,
+      "sha256": "4144b8b44cbb478c54c1db8e9a01bd80f5aa7e7e4fddc8bb3a7473ef22422302",
+      "git_blob": "e358f17c811fac8f65e8d6c202206f48fb115fa4",
+      "scope": "Exact new original from the Flight run; partial failure and scope retained."
+    },
+    {
+      "path": "web54/flight-task-scope-actual.json",
+      "bytes": 1203,
+      "sha256": "6a1effab5ff10d293f5a3d4c1726276c84960374f64d3496e89dce04d7583cc4",
+      "git_blob": "f6a4080bf1cf159990c24467eb42591840224d01",
+      "scope": "Exact new original from the Flight run; partial failure and scope retained."
+    },
+    {
       "path": "web54/frozen-release-manifest.json",
       "bytes": 1723,
       "sha256": "acfbdf07f671facf65f6919142f8e4646952ec2a55524f313b4a4a5c9bcad3c3",
       "git_blob": "c98ca8d620298f7fff38156a79d44a4fff795489",
       "scope": "Exact main54/helper5 signed artifact manifest used by actual admission gates."
+    },
+    {
+      "path": "web54/installed-apk-stat-actual.json",
+      "bytes": 10724,
+      "sha256": "221fc909eb5c23f20b29f85ce0c19db971e2f12a565760e2a14550cf0705efcd",
+      "git_blob": "4f360ef1c40e8b59919fb9b95721e7a89d271a0d",
+      "scope": "Actual read-only APK stat: main54 regular0555 with nlink3 and helper5 regular0644 with nlink1; stable PM APK full hashes."
+    },
+    {
+      "path": "web54/owner16-normal-close-actual.json",
+      "bytes": 9860,
+      "sha256": "2b0903abdac9309359fe55254cb065d5e6051ea3536b3fcc74b25ae88a0abd33",
+      "git_blob": "ba4cf18b1c4937f52f5da65fb8974e118704c5b3",
+      "scope": "Actual owner16 normal close and exit0; not task completion."
     },
     {
       "path": "web54/pinned-import-r7-bad-transport-retained.json",
@@ -879,7 +1227,7 @@
     "model_invoked": false,
     "business_verified": false
   },
-  "evidence_parent_commit": "661deecb55985ec939a2c7426043c13cac40ce72",
+  "evidence_parent_commit": "121e05160fb8e56b8c10e439767006327643b27d",
   "actual_main54_install": {
     "git_blob": "81a481c9fe5ff2ba0487437e5fc44d8ce4acd537",
     "bytes": 17431,
@@ -995,12 +1343,25 @@
         "task_started": false,
         "start_tapped": false,
         "target_app_operated": false
+      },
+      {
+        "git_blob": "529d258e4707fbe34badecb4356fb3cca941cf63",
+        "bytes": 53470,
+        "sha256": "32cf88080e1ece1ff4bc9b4012b930b77e26d3a6f6257ea7ec24385e5aae4334",
+        "revision": "r7",
+        "out": "background-web-v54-lfm3-flight-prepare-r3",
+        "error": null,
+        "prepared": true,
+        "task_started": false,
+        "start_tapped": false,
+        "target_app_operated": false,
+        "original_ui_preferences_sha256": "c9364dde8c0b52e7890835d720967987f708e972b397fcc3f76d9d76a667137f"
       }
     ],
-    "independent_run_template_pending": true,
+    "independent_run_template_pending": false,
     "review_contract_keys": 13,
     "independent_run_late_bindings": 5,
-    "phone_run_executed": false,
+    "phone_run_executed": true,
     "flight_business_verified": false,
     "modified_589_application_sources": false,
     "rejected_bad_base64_submitted_to_host": false,
@@ -1011,7 +1372,10 @@
       "flight_preparation_verified_by_this_record": false,
       "screenshot_bytes_included": false,
       "partial_wms_bytes_claimed_complete": false
-    }
+    },
+    "sealed_independent_run_wrapper_git": "d6cb2bd37cff69efb61205d5c707fdf2f3f54ac0",
+    "owner16_normal_close_git": "ba4cf18b1c4937f52f5da65fb8974e118704c5b3",
+    "actual_one_start_review_git": "546514510dd4dec4fd4fbb0a689a13d919d33028"
   },
   "actual_helper5_badging": {
     "git_blob": "83e58eab87b60d06c64e597fc36f1130526dcf32",
@@ -1019,5 +1383,202 @@
     "sha256": "6869ca9dfa4041c55ec202af807dd85e67c458dcd1ea05fe3f0bb63c27064c83",
     "application_label": "Hepta 网页",
     "launchable_activity": "org.trillionnium.hepta.webhelper.PageActivity"
+  },
+  "revision": "actual-flight-identity-blocker-and-fixed-input-preparation-r4",
+  "actual_flight54_r1": {
+    "original_result": {
+      "git_blob": "1a9762b0deb0dee336e91a0708c84292d9ac6b14",
+      "bytes": 56378,
+      "sha256": "6881749bc9429b4ce1332353ecd67fe2d524ae19b14349a1208a08b9b41195d7"
+    },
+    "collection_git": "efb1ae57da8b517173a49ef1b71a988d2ceb1500",
+    "independent_review_git": "21feec429759cf313e71ee70ad5853683f8565d7",
+    "task_id": "3c90bb05c4974a8980655fd254fc933e",
+    "instruction": "查一下2026年11月17日北京到上海的单程机票，1名成人",
+    "instruction_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+    "status": "failed",
+    "summary": "regular immutable APK required",
+    "steps": 0,
+    "model_process_started": false,
+    "new_model_runs": [],
+    "start_attempted": true,
+    "input_outcome_unknown": false,
+    "qualified": false,
+    "business_verified": false,
+    "sdk_teardown_verified": false,
+    "collection_complete": true,
+    "ready_for_next_lease": false,
+    "web_lifecycle": {
+      "schema": "hepta.v54-original-web-lifecycle-links.v1",
+      "task_id": "3c90bb05c4974a8980655fd254fc933e",
+      "bound_capture_present": false,
+      "ordinary_close_verified": false,
+      "business_verified": false,
+      "sdk_teardown_verified": false,
+      "missing": [
+        "original_Binding_missing"
+      ]
+    },
+    "operation_lock": {
+      "schema": "hepta.cooperative-operation-lock.v1",
+      "path": "/home/alex/.local/state/hepta/razr-operation.lock",
+      "cooperative_advisory_only": true,
+      "nonblocking": true,
+      "created": false,
+      "truncated": false,
+      "reacquisition_attempted": false,
+      "acquired": true,
+      "released": true,
+      "continuity_verified": true,
+      "continuity_checks": 140,
+      "boundary": "participating host processes only; already submitted commands cannot be revoked",
+      "held_device": 66306,
+      "held_inode": 58890228,
+      "owner_uid": 1000,
+      "last_check": "execute_exit"
+    },
+    "system_resources_absent": true,
+    "original_ui_preferences_preserved": true,
+    "original_release_artifacts_preserved": true,
+    "actual_runtime_selection": "Owner-derived helper singleton within the saved Notes+helper UI range; bound by the original full Selection in task/background originals.",
+    "virtual_display_scope": "Actual VD22 ACTIVE and bootstrap launch followed by RELEASED/client_close and broker exit0. This does not imply formal helper capture/close or model completion.",
+    "helper_unstarted_original": {
+      "schema": "hepta.web-helper.diagnostic-unstarted.v1",
+      "cleanup": {
+        "captures_retired": false,
+        "stop_loading_called": false,
+        "webview_destroyed": false,
+        "active_view_absent": true,
+        "storage_clear_completed": false
+      },
+      "resources_never_started": true,
+      "business_verified": false
+    },
+    "historical_collection_scope": "Original collection index retained. The approximately10MB historical helper collection is not copied into this evidence tree; seven selected new small originals are included."
+  },
+  "actual_installed_apk_stat": {
+    "git_blob": "4f360ef1c40e8b59919fb9b95721e7a89d271a0d",
+    "bytes": 10724,
+    "sha256": "221fc909eb5c23f20b29f85ce0c19db971e2f12a565760e2a14550cf0705efcd",
+    "main54": {
+      "regular": true,
+      "mode_octal": "0555",
+      "nlink": 3,
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 20985685,
+      "sha256": "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a"
+    },
+    "helper5": {
+      "regular": true,
+      "mode_octal": "0644",
+      "nlink": 1,
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 1381371,
+      "sha256": "b5e56ce0c2967489b55150c157f8289fdd82ad5b89caacc8b106013a7caeaf4f"
+    },
+    "canonical_pm_paths_and_before_after_identity_consistent": true,
+    "apk_permissions_or_links_modified": false,
+    "phone_ui_input_issued": false,
+    "interpretation": "The installed main54 regular APK has three links, contradicting the WebHelperIdentity nlink==1 assumption before model startup. This is not a model choice or inference failure. Helper-side source predicate is not inferred from these stat facts."
+  },
+  "actual_helper6_host_preparation": {
+    "original_mac_operation_status": "unknown",
+    "unknown_mac_operation_promoted_to_success": false,
+    "independent_p4_build_started": false,
+    "inventory": {
+      "git_blob": "c5051587730493364b650f1234ea3f75973f790f",
+      "bytes": 36357,
+      "sha256": "9a0a6cbc9d4982c285196a478d1d4b447d642ba18c09d5043804c521bde4e926",
+      "exit_code": 2,
+      "completed": false,
+      "inventory_complete": false,
+      "error": "InventoryLimit: directory entry budget reached",
+      "known_pins_all_match": true,
+      "original_read_files_unchanged": true,
+      "read_files_final_identity_count": 20,
+      "scope": "Partial directory scan stopped at240000-entry budget. Fixed known input checks completed; unmatched JAR list does not establish that required JARs are absent.",
+      "downloaded": false,
+      "build_executed": false,
+      "phone_contacted": false
+    },
+    "metadata_r1": {
+      "raw_pty_git": "3d65db17effcb9a392496843a0ad9cc695b96b26",
+      "proof_git": "4cd1a03f76e9aa6e1763c18b12bc8c7bb7289a76",
+      "exit_code": 1,
+      "output_complete": true,
+      "capture_error": null,
+      "failure": "Output-size assertion at source line42 before JSON stdout; no InstalledIdentity source text received.",
+      "source_predicate_observed": false
+    },
+    "official_sdk34_source": {
+      "git_blob": "e4e78d9b04d073801fec2cf5318b7fdc278ad41a",
+      "downloaded": false,
+      "full_binary_sha256_verified": false
+    },
+    "fixed_small_mac_inputs": {
+      "git_blob": "9302dd88473a89cb5d8e174036908f526450e7c4",
+      "generated_java_count": 7,
+      "generated_java_bytes": 246964,
+      "compiled_resource_archive_count": 3,
+      "resource_archive_standalone_hashes_known": false
+    },
+    "metadata_r2": {
+      "raw_pty_git": "b84977d82fb208acbe6da0a026d7207450b7055e",
+      "bytes": 32618,
+      "sha256": "1e4bbbbfb6830e530613e639e1abd1f9f2832f06f69f4e12203dbbe624d04fbe",
+      "exit_code": 0,
+      "output_complete": true,
+      "capture_error": null,
+      "source_predicate_observed": true,
+      "source_git": "e17215c97aefb6b70b528151ba718012126aaa78",
+      "pty_crlf_preserved": true,
+      "pre_pty_json_sha_claimed": false,
+      "build_executed": false,
+      "phone_contacted": false
+    },
+    "compiled_resource_reads": {
+      "git_blob": "6539c09bc289a22f3dbd8aa981fde34a126e89bf",
+      "bytes": 146213,
+      "sha256": "a01966f37778d02ef016189218bef9a61450c66c43e16af6beb20e6833b63819",
+      "actual_current_files": 3,
+      "full_original_bytes_in_tree": true,
+      "historical_build_receipt_standalone_hashes_claimed": false,
+      "generated_java_relink_not_yet_executed": true
+    },
+    "public_download_r1": {
+      "git_blob": "6616146b360639708d4b55ffceef6a9c3b860ea6",
+      "bytes": 18213,
+      "sha256": "3ce37751fc824816475e624123a787f5e00bd011c11beb9d583835df453b18ad",
+      "exit_code": 1,
+      "completed": false,
+      "orgjson_ready": true,
+      "verified_outer_artifacts": 17,
+      "verified_runtime_jars": 14,
+      "r8_verified": false,
+      "r8_state": "HTTP200 header received; socket timeout while reading body; no full SHA verification",
+      "sdk_state": "Not reached",
+      "sdk_dual_hash_verified": false,
+      "originals_unchanged": true,
+      "original_mac_status": "unknown",
+      "phone_contacted": false,
+      "signed": false,
+      "build_executed": false
+    }
+  },
+  "actual_main55_identity_host": {
+    "git_blob": "afd48c30b38dc4ec49a662180b1d6d175be64e47",
+    "bytes": 5727,
+    "sha256": "52762ada64c63bc58749d62e9bd183b586c40349f0e10082ded1c308d82df4f7",
+    "all_pass": true,
+    "cases": 10,
+    "assertions": 218,
+    "android_syscalls_doubled": true,
+    "actual_android_file_access_executed": false,
+    "actual_stat_values_replayed": true,
+    "package_manager_or_certificate_executed": false,
+    "phone_actions": 0,
+    "helper_identity10_executed": false
   }
 }

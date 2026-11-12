@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.helper6-sdk34-official-source-discovery.v1",
+  "scope": "Official web metadata only; no host download, decoded JAR hash verification, compilation or tool execution.",
+  "observed_at_utc_date": "2026-11-12",
+  "repository": "https://android.googlesource.com/platform/prebuilts/fullsdk/platforms/",
+  "commit": "f40140c79226b1a491c5c76c12c532a3e688418e",
+  "sdk_directory_tree": "91c721711ba129ffe33e068e541053d06156a92b",
+  "official_file_page": "https://android.googlesource.com/platform/prebuilts/fullsdk/platforms/%2B/f40140c79226b1a491c5c76c12c532a3e688418e/android-34/android.jar",
+  "official_raw_link_observed_by_click": "https://android.googlesource.com/platform/prebuilts/fullsdk/platforms/%2B/f40140c79226b1a491c5c76c12c532a3e688418e/android-34/android.jar?format=TEXT",
+  "raw_response_representation": "Gitiles TEXT (base64); not raw ZIP bytes.",
+  "observed_official_blob": "923bafccf73aef996495c559e919ad8be3cabd58",
+  "observed_official_binary_bytes": 26361808,
+  "observed_package": {
+    "api_level": 34,
+    "revision": 3,
+    "extension_level": 7,
+    "base_sdk": true
+  },
+  "properties_page": "https://android.googlesource.com/platform/prebuilts/fullsdk/platforms/%2B/f40140c79226b1a491c5c76c12c532a3e688418e/android-34/source.properties",
+  "properties_git_blob": "aed7efc8cfd590d4058ba27b5d13f70e7ba4833a",
+  "actual_existing_mac_requirement": {
+    "path": "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar",
+    "bytes": 26361808,
+    "sha256": "6cea1df3efb77103ac3e2beb9bf4718964b0e0869ab16d39d29d5cbae1c147ad",
+    "provenance": "actual helper5 BUILD129146/cce5d75af6af48fb00b72b96475d686b61b89538c60cbd424fd99e79c58396a8",
+    "bytes_equal_official_metadata": true,
+    "downloaded_bytes_sha256_match_verified": false
+  },
+  "search_fetch_limit": {
+    "raw_link_status": "Failed to fetch due search tool 4 MiB content limit",
+    "exact_message": "(400) Content length is too large: 4194305+",
+    "not_a_not_found_or_hash_failure": true
+  },
+  "original_repository_xml_lookup": {
+    "urls": [
+      "https://dl.google.com/android/repository/repository2-1.xml",
+      "https://dl.google.com/android/repository/repository2-3.xml"
+    ],
+    "tool_status": "not accessible via this tool",
+    "claimed_xml_contents": false
+  },
+  "eventual_download_requirements": [
+    "Use only the observed immutable Google Gitiles raw link; retain TLS verification and reject unrelated redirect origins.",
+    "Bound the encoded response, decode strict canonical base64 with at most the observed optional trailing LF.",
+    "Require exactly 26,361,808 decoded bytes, original full SHA256 6cea1d..., and Git blob SHA1 923baf... before publishing the file.",
+    "Publish only a new create-only Pocket4 toolchain path; mismatch is failure, no alternate SDK version is silently accepted.",
+    "Record this as an independent P4 input download, not completion of the unknown Mac helper6 build."
+  ],
+  "web_refs": [
+    "turn223view0",
+    "turn224view0",
+    "turn224view1",
+    "turn225view0"
+  ],
+  "host_download_executed": false,
+  "ready_for_build": false
+}

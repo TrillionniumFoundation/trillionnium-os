@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File [35m"<string>"[0m, line [35m4[0m, in [35m<module>[0m
+    [31mexec[0m[1;31m(compile(raw,'fixed-helper6-input-metadata-r1.py','exec',dont_inherit=True),{'__name__':'__main__'})[0m
+    [31m~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"fixed-helper6-input-metadata-r1.py"[0m, line [35m42[0m, in [35m<module>[0m
+[1;35mAssertionError[0m

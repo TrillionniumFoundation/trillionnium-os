@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.helper6-identity10-template-delta-review.v1",
+  "reviewer": "android_code_audit",
+  "status": "source-only review; no blocker in the four template substitutions and exact helper projections",
+  "input": {
+    "git": "22dfc2f7b352e8d365cd5e84a304fcd0a75ee5c0",
+    "bytes": 32136,
+    "sha256": "36cf1f1e428ad5b7a830631b87cc7e3161d8ac7ef34c1e0b9385b9a9930ad794"
+  },
+  "checks": {
+    "four_template_groups_forward_and_reverse_exact": true,
+    "original_test_case_names_and_logic_unchanged": true,
+    "helper_actual_file_sha_method_exact": {
+      "bytes": 898,
+      "sha256": "1b9fecb34bde6eb8d51bc68c7a5a869adaec6a32daa5553159e0fd4ec42147a3",
+      "git": "3c0123296d0272b160ce9f452bb62528f3b80936"
+    },
+    "helper_actual_stamp_exact": {
+      "bytes": 702,
+      "sha256": "79e72ca0079bde616a32b4e40d5960756abede8fe43c5325e3502e98f71eeff0",
+      "git": "618dc4ea3b9cdeb8bb62994b46b313920ac07089"
+    },
+    "generated_source": {
+      "bytes": 13958,
+      "sha256": "e3214559da39d358b585fa481e855d47483ece95404e2ec855bbcd7d4b123502",
+      "git": "3b65d14d30468d9f6422d00de7b0e34bcb0467a3"
+    },
+    "actual_stat_bytes": {
+      "bytes": 433,
+      "sha256": "6c1dc85d204e0d806425069fc20ada3a0f5795ee2ffc3b0bf4218f5ed37f8c04",
+      "git": "165ab6241ca754c6afd6bcc4f251158da9748ba0"
+    },
+    "base_main_template": {
+      "bytes": 12376,
+      "sha256": "ab453bf79444fd0f82bc7136cfaaa696e2706ec089f8eb78a8c264b1424819ea",
+      "git": "8d768906e8d75e116a6f78a0b414e6da67a29559"
+    }
+  },
+  "boundary": {
+    "android_syscalls_are_explicit_doubles": true,
+    "host_hash_payload_synthetic": true,
+    "main10_actual_pass_does_not_prove_helper10_execution": true,
+    "helper10_executed": false,
+    "android_compiled": false,
+    "phone_actions": 0
+  },
+  "notes": [
+    "Only the two test class references, the dependency stub name, the tested owner-field names and the result schema changed in the template.",
+    "The entire helper fileSha and Stamp blocks are extracted verbatim from the independently reviewed7692-byte production source, with all nine identity fields still compared.",
+    "The transport need() class is explicitly a test double; no PackageManager, certificate validation or Android-file access is exercised by this test.",
+    "The two actual stat lines remain the original433 bytes from the root-reviewed10724-byte receipt; no file-size/mode/link value is invented."
+  ]
+}

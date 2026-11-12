@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.helper6-installed-apk-stamp-minimal-fix.v1",
+  "actual_base": {
+    "git": "e17215c97aefb6b70b528151ba718012126aaa78",
+    "bytes": 7567,
+    "sha256": "15c9d44cde2d93f823372ab6e0baf6214d4cb80835907694df1212be4d3edf73"
+  },
+  "actual_trigger": {
+    "stat_git": "4f360ef1c40e8b59919fb9b95721e7a89d271a0d",
+    "flight_failure_git": "1a9762b0deb0dee336e91a0708c84292d9ac6b14",
+    "main_apk_regular": true,
+    "main_apk_mode_octal": "0555",
+    "main_apk_nlink": 3,
+    "helper_apk_mode_octal": "0644",
+    "helper_apk_nlink": 1
+  },
+  "changes": [
+    {
+      "old": "final long dev,ino,size,mtime,ctime;final int mode;final long links;",
+      "new": "final long dev,ino,size,mtime,ctime;final int mode,ownerUid,ownerGid;final long links;"
+    },
+    {
+      "old": "mode=s.st_mode;links=s.st_nlink;",
+      "new": "mode=s.st_mode;ownerUid=s.st_uid;ownerGid=s.st_gid;links=s.st_nlink;"
+    },
+    {
+      "old": "OsConstants.S_ISREG(s.mode)&&s.links==1,\"regular immutable APK required\"",
+      "new": "OsConstants.S_ISREG(s.mode)&&s.size>0&&s.links>0&&(s.mode&0022)==0,\"regular immutable APK required\""
+    },
+    {
+      "old": "&&mode==s.mode&&links==s.links;",
+      "new": "&&mode==s.mode&&ownerUid==s.ownerUid&&ownerGid==s.ownerGid&&links==s.links;"
+    }
+  ],
+  "source": {
+    "path": "src/org/trillionnium/hepta/webhelper/InstalledIdentity.java",
+    "raw_utf8": "package org.trillionnium.hepta.webhelper;\n\nimport android.content.Context;\nimport android.content.pm.ApplicationInfo;\nimport android.content.pm.PackageInfo;\nimport android.content.pm.PackageManager;\nimport android.content.pm.Signature;\nimport android.os.Process;\nimport android.system.Os;\nimport android.system.OsConstants;\nimport android.system.StructStat;\nimport org.json.JSONObject;\nimport org.trillionnium.hepta.webprotocol.WebEvidenceBinding;\nimport org.trillionnium.hepta.webprotocol.WebEvidenceProtocol;\nimport java.io.FileDescriptor;\nimport java.io.FileInputStream;\nimport java.security.MessageDigest;\nimport java.util.Map;\nimport java.util.TreeMap;\n\n/** Actual ordinary installed package identity. Never trusts a caller-supplied UID. */\nfinal class InstalledIdentity {\n    private static final long MAX_APK=256L*1024*1024,MAX_SET=512L*1024*1024;\n    final String packageName;\n    final int uid;\n    final long version;\n    final String signer;\n    final TreeMap<String,String> paths;\n    final TreeMap<String,Stamp> stamps;\n    final JSONObject evidence;\n    private InstalledIdentity(String name,int uid,long version,String signer,TreeMap<String,String> paths,\n            TreeMap<String,Stamp> stamps,JSONObject evidence){\n        this.packageName=name;this.uid=uid;this.version=version;this.signer=signer;\n        this.paths=paths;this.stamps=stamps;this.evidence=evidence;\n    }\n    static int requireControllerCaller(Context context,int callerUid)throws Exception{\n        PackageManager pm=context.getPackageManager();\n        PackageInfo controller=info(pm,WebEvidenceProtocol.CONTROLLER_PACKAGE);\n        PackageInfo helper=info(pm,WebEvidenceProtocol.HELPER_PACKAGE);\n        Jsons.need(controller.applicationInfo.uid>=10000&&controller.applicationInfo.uid==callerUid,\"actual controller UID required\");\n        Jsons.need(helper.applicationInfo.uid==Process.myUid(),\"actual helper UID differs\");\n        Jsons.need(WebEvidenceProtocol.SIGNER_SHA256.equals(signer(controller))\n                &&WebEvidenceProtocol.SIGNER_SHA256.equals(signer(helper)),\"approved current signer required\");\n        Jsons.need(pm.checkSignatures(controller.applicationInfo.uid,helper.applicationInfo.uid)==PackageManager.SIGNATURE_MATCH,\"controller/helper signatures differ\");\n        return callerUid;\n    }\n    static InstalledIdentity read(Context context,String name)throws Exception{\n        Jsons.need(name.equals(WebEvidenceProtocol.CONTROLLER_PACKAGE)||name.equals(WebEvidenceProtocol.HELPER_PACKAGE),\"fixed package only\");\n        PackageManager pm=context.getPackageManager();PackageInfo info=info(pm,name);int uid=info.applicationInfo.uid;\n        Jsons.need(uid>=10000,\"ordinary application UID required\");String signer=signer(info);\n        Jsons.need(WebEvidenceProtocol.SIGNER_SHA256.equals(signer),\"approved signer required\");\n        TreeMap<String,String> paths=paths(info.applicationInfo);TreeMap<String,Stamp> stamps=new TreeMap<String,Stamp>();\n        JSONObject hashes=new JSONObject();long total=0;\n        for(Map.Entry<String,String> entry:paths.entrySet()){\n            Stamp before=Stamp.read(entry.getValue());total+=before.size;\n            Jsons.need(before.size>0&&before.size<=MAX_APK&&total<=MAX_SET,\"APK byte budget\");\n            hashes.put(entry.getKey(),fileSha(entry.getValue(),before));stamps.put(entry.getKey(),before);\n        }\n        StringBuilder set=new StringBuilder();for(String logical:paths.keySet())set.append(logical).append('\\t').append(hashes.getString(logical)).append('\\n');\n        JSONObject evidence=new JSONObject().put(\"package\",name).put(\"uid\",uid).put(\"version_code\",info.getLongVersionCode())\n                .put(\"apk_hashes\",hashes).put(\"apk_set_sha256\",Jsons.sha(set.toString())).put(\"signer_sha256\",signer);\n        InstalledIdentity out=new InstalledIdentity(name,uid,info.getLongVersionCode(),signer,paths,stamps,evidence);\n        out.requireUnchanged(context);return out;\n    }\n    void requireRequest(JSONObject claimed)throws Exception{\n        Jsons.keys(claimed,WebEvidenceProtocol.IDENTITY_KEYS);\n        Jsons.need(WebEvidenceBinding.canonical(claimed).equals(WebEvidenceBinding.canonical(evidence)),\"installed identity differs\");\n    }\n    void requireUnchanged(Context context)throws Exception{\n        PackageInfo now=info(context.getPackageManager(),packageName);\n        Jsons.need(now.applicationInfo.uid==uid&&now.getLongVersionCode()==version&&signer.equals(signer(now))\n                &&paths.equals(paths(now.applicationInfo)),\"installed identity changed\");\n        for(String key:paths.keySet())Jsons.need(stamps.get(key).same(Stamp.read(paths.get(key))),\"installed APK changed\");\n    }\n    private static PackageInfo info(PackageManager pm,String name)throws Exception{\n        return pm.getPackageInfo(name,PackageManager.GET_SIGNING_CERTIFICATES);\n    }\n    private static String signer(PackageInfo info)throws Exception{\n        Jsons.need(info.signingInfo!=null&&!info.signingInfo.hasMultipleSigners(),\"one current signer required\");\n        Signature[] certificates=info.signingInfo.getApkContentsSigners();\n        Jsons.need(certificates!=null&&certificates.length==1,\"one actual certificate required\");return Jsons.sha(certificates[0].toByteArray());\n    }\n    private static TreeMap<String,String> paths(ApplicationInfo info)throws Exception{\n        TreeMap<String,String> out=new TreeMap<String,String>();Jsons.need(info.sourceDir!=null,\"base APK path missing\");out.put(\"base\",info.sourceDir);\n        String[] splits=info.splitSourceDirs,names=info.splitNames;\n        Jsons.need((splits==null||splits.length==0)==(names==null||names.length==0),\"split identity missing\");\n        if(splits!=null){Jsons.need(names!=null&&splits.length==names.length&&splits.length<=32,\"split identity count\");\n            for(int i=0;i<splits.length;i++){Jsons.need(names[i]!=null&&names[i].matches(\"[A-Za-z0-9_.-]{1,120}\")&&splits[i]!=null,\"split identity invalid\");\n                Jsons.need(out.put(\"split:\"+names[i],splits[i])==null,\"duplicate split identity\");}}\n        return out;\n    }\n    private static String fileSha(String path,Stamp expected)throws Exception{\n        FileDescriptor fd=Os.open(path,OsConstants.O_RDONLY|OsConstants.O_CLOEXEC|OsConstants.O_NOFOLLOW,0);\n        try(FileInputStream in=new FileInputStream(fd)){\n            Jsons.need(expected.same(new Stamp(Os.fstat(fd))),\"opened APK differs\");MessageDigest digest=MessageDigest.getInstance(\"SHA-256\");\n            byte[] buffer=new byte[65536];long bytes=0;int n;while((n=in.read(buffer))!=-1){bytes+=n;Jsons.need(bytes<=expected.size,\"APK grew\");digest.update(buffer,0,n);}\n            Jsons.need(bytes==expected.size&&expected.same(new Stamp(Os.fstat(fd)))&&expected.same(Stamp.read(path)),\"APK changed while hashing\");\n            byte[] sha=digest.digest();StringBuilder hex=new StringBuilder(64);for(byte b:sha)hex.append(String.format(java.util.Locale.ROOT,\"%02x\",b&255));return hex.toString();\n        }\n    }\n    private static final class Stamp {\n        final long dev,ino,size,mtime,ctime;final int mode,ownerUid,ownerGid;final long links;\n        Stamp(StructStat s){dev=s.st_dev;ino=s.st_ino;size=s.st_size;mtime=s.st_mtime;ctime=s.st_ctime;mode=s.st_mode;ownerUid=s.st_uid;ownerGid=s.st_gid;links=s.st_nlink;}\n        static Stamp read(String path)throws Exception{Stamp s=new Stamp(Os.lstat(path));Jsons.need(OsConstants.S_ISREG(s.mode)&&s.size>0&&s.links>0&&(s.mode&0022)==0,\"regular immutable APK required\");return s;}\n        boolean same(Stamp s){return dev==s.dev&&ino==s.ino&&size==s.size&&mtime==s.mtime&&ctime==s.ctime&&mode==s.mode&&ownerUid==s.ownerUid&&ownerGid==s.ownerGid&&links==s.links;}\n    }\n}\n",
+    "bytes": 7692,
+    "sha256": "0743b10aff01040b52235d5c57691cc1d864acd6fcef1aa626317585894cc39c",
+    "base_sha256": "15c9d44cde2d93f823372ab6e0baf6214d4cb80835907694df1212be4d3edf73",
+    "git_sha": "4a22a057282357b48dfaee0a94c885fac138fc5b"
+  },
+  "preserved": [
+    "requireControllerCaller",
+    "read",
+    "requireRequest",
+    "requireUnchanged",
+    "info",
+    "signer",
+    "paths",
+    "fileSha"
+  ],
+  "scope": {
+    "original_package_manager_and_signer_checks_unchanged": true,
+    "original_NOFOLLOW_and_same_fd_and_path_hashing_unchanged": true,
+    "original_byte_budgets_unchanged": true,
+    "uid_gid_now_part_of_full_stable_stamp": true,
+    "apk_permissions_or_links_modified": false,
+    "original_helper5_source_and_signed_artifacts_unchanged": true,
+    "mac_unknown_operation_unchanged": true,
+    "host_gate_executed": false,
+    "android_compiled": false,
+    "phone_tested": false
+  }
+}
