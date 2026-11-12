@@ -1,5 +1,5 @@
 {
-  "schema": "hepta.v54-reachable-release-evidence-index.v1",
+  "schema": "hepta.v54-reachable-release-evidence-index.v2",
   "repository": "trillionniumFoundation/trillionnium-os",
   "source_prefix": "projects/razr60/phone-local-v150/android-local/lfm3-controller/",
   "evidence_prefix": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v54-release-20261112/",
@@ -12,7 +12,7 @@
   "source_new_count": 19,
   "evidence_is_part_of_source_inventory": false,
   "raw_evidence_rewritten": false,
-  "source_commit_binding": "Containing source commit; post-CAS publication receipt is separate to avoid a self-reference cycle.",
+  "source_commit_binding": "42d3a0f447807659c0f78c8273edee01dd1b734f",
   "actual_host": {
     "stage_git_blob": "67410ba0d97168fb4030ec3ac622c54a7b6dfaed",
     "stage_sha256": "21ffbb2aad0b7b5657d58f6581cce751863ecd13852417a6f88efbc57fee594e",
@@ -32,15 +32,17 @@
     "post_compile_changes": "Five exact Python host-fixture entry files only; unchanged Java/native compiler inputs."
   },
   "current_limits": {
-    "main54_signed_receipt_in_this_index": false,
-    "helper5_signed_receipt_in_this_index": false,
+    "main54_signed_receipt_in_this_index": true,
+    "helper5_signed_receipt_in_this_index": true,
     "main54_phone_tested": false,
     "flight_query_phone_verified": false,
     "flight_results_provider_complete": false,
     "shopping_public_price_phone_verified": false,
     "shopping_order_supported": false,
     "manual_diagnostics_are_formal_task_evidence": false,
-    "normal_sdk_close_implied_by_cancel_exit_143": false
+    "normal_sdk_close_implied_by_cancel_exit_143": false,
+    "helper5_install_completed": true,
+    "helper5_install_is_business_verification": false
   },
   "deferred_originals": [
     {
@@ -148,11 +150,32 @@
       "scope": "actual 33/175 and Android38 build; not signed/installed"
     },
     {
+      "path": "helper5-crosshost-decoded-actual.json",
+      "bytes": 2108,
+      "sha256": "7e509628c69fa72da833d0c5903b4799aa4b13997d295ec4b75254075b05c5aa",
+      "git_blob": "3a7e5c36fd37d9df449ff950dbf5a0740bac51ed",
+      "scope": "Actual final bundle decode from exact three part bodies, complete unchanged encoded and compressed bytes; no phone."
+    },
+    {
+      "path": "helper5-signed-actual.json",
+      "bytes": 183755,
+      "sha256": "ad9fe0cb5ea808e6d563b398b45e79286a1158fc3db43ea2226f4fd0edd29580",
+      "git_blob": "79ebd664cde74d573e95301d72a0edec33b5bd40",
+      "scope": "Actual sole helper5 signature and artifact closure; phone/business false preserved."
+    },
+    {
       "path": "helper5-source-delta-and-host-fixtures.json",
       "bytes": 155587,
       "sha256": "7e59fcd9dcc4d15cce60e35973151cf6320aec175e8f528217887fc4866a2056",
       "git_blob": "66e8487d948b5a18099f0b3c3a404829bc35fe7d",
       "scope": "Source delta and targeted host fixture inputs against pinned actual helper4; not a standalone full 38-file source archive."
+    },
+    {
+      "path": "helper5-upgrade-actual.json",
+      "bytes": 77001,
+      "sha256": "d9ccc86a8704742e9f12b1bda56f6241a888ce9c087c6fcec6764ac42cb0ffce",
+      "git_blob": "c22b0f8797e1c457ea52db8109eb1e5667884fbe",
+      "scope": "Actual helper5 install and ordinary MAIN; 33 prior diagnostics preserved; no site, capture, model, or business result."
     },
     {
       "path": "main54-code5-r6-android-actual.json",
@@ -246,11 +269,32 @@
       "scope": "actual pre-code5 query/Android gates; superseded by r6 code5 literal update"
     },
     {
+      "path": "main54-signed-actual.json",
+      "bytes": 15659,
+      "sha256": "eadc9dbb63b411015571a488377be6a8704c9f78415169a5164c8f13571f0f72",
+      "git_blob": "5beaeec08daffb26bc253e1d05073096c6aa8c1c",
+      "scope": "Actual main54 signed artifact/source/host closure, APK bound to source commit 42d3a0f447807659c0f78c8273edee01dd1b734f; phone/query/results false retained."
+    },
+    {
       "path": "main54-source-inventory.json",
       "bytes": 102673,
       "sha256": "8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d",
       "git_blob": "c06bebed2e15bcfc52ae249b1f120049c0a78fe2",
       "scope": "589 build-closure inventory; evidence files are not members."
+    },
+    {
+      "path": "main54-source-publication-map.json",
+      "bytes": 286165,
+      "sha256": "ec39593abc0814018049c5d3669d202f290348a710365de3da4ff856ac1bc009",
+      "git_blob": "100a17758891979efb8bd0a7a27e550d9003280a",
+      "scope": "Post-CAS actual map of all589 source blobs in source commit42d3a0f447807659c0f78c8273edee01dd1b734f."
+    },
+    {
+      "path": "main54-source-publication-receipt.json",
+      "bytes": 2161,
+      "sha256": "dd7e67e4af45bdbe53bf5d64e91a8881fdd968a20ef0e1a1e365a6bca4da90a5",
+      "git_blob": "5815962f9da8128fa15c354c4ac7d2566588bcff",
+      "scope": "Actual pre/post PR/ref CAS and original repository blob preservation; source commit is not rewritten by a later evidence commit."
     },
     {
       "path": "root-reachable-evidence-handoff.json",
@@ -315,5 +359,38 @@
       "git_blob": "b5ae04ac0175d84d1ad34e716a4667609d97db32",
       "scope": "scoped recovery interpretation; original report preserved"
     }
-  ]
+  ],
+  "source_tree": "fb355f7e25c2fe2639906bccffa25f54e538a1a8",
+  "evidence_only_successor": true,
+  "apk_source_commit_unchanged": true,
+  "actual_signed": {
+    "main54": {
+      "git_blob": "5beaeec08daffb26bc253e1d05073096c6aa8c1c",
+      "sha256": "eadc9dbb63b411015571a488377be6a8704c9f78415169a5164c8f13571f0f72",
+      "bytes": 15659,
+      "apk_sha256": "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a",
+      "apk_bytes": 20985685,
+      "version_code": 54,
+      "source_commit": "42d3a0f447807659c0f78c8273edee01dd1b734f"
+    },
+    "helper5": {
+      "git_blob": "79ebd664cde74d573e95301d72a0edec33b5bd40",
+      "sha256": "ad9fe0cb5ea808e6d563b398b45e79286a1158fc3db43ea2226f4fd0edd29580",
+      "bytes": 183755,
+      "apk_sha256": "b5e56ce0c2967489b55150c157f8289fdd82ad5b89caacc8b106013a7caeaf4f",
+      "apk_bytes": 1381371,
+      "version_code": 5
+    }
+  },
+  "actual_helper5_install": {
+    "git_blob": "c22b0f8797e1c457ea52db8109eb1e5667884fbe",
+    "sha256": "d9ccc86a8704742e9f12b1bda56f6241a888ce9c087c6fcec6764ac42cb0ffce",
+    "bytes": 77001,
+    "uid": 10484,
+    "preserved_prior_diagnostic_count": 33,
+    "site_button_tapped": false,
+    "capture_button_tapped": false,
+    "model_invoked": false,
+    "business_verified": false
+  }
 }
