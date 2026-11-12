@@ -1,0 +1,42 @@
+--- original/background_notes_plan.py
++++ v56/background_notes_plan.py
+@@ -1,4 +1,4 @@
+-"""Exact immutable Notes plans, with a narrow v54 comma branch; no authority grant.
++"""Exact immutable Notes plans, with a narrow v56 comma branch; no authority grant.
+ 
+ The comparison plan preserves the prior fully stated save/list/reopen OWNER.
+ The separate natural plan supports only the exact quoted-prefix spelling below,
+@@ -34,20 +34,20 @@
+     return len(text.encode('utf-16-le', 'strict')) // 2
+ 
+ 
+-COMMA_SCHEMA = 'hepta.moto-note-plan.v54-comma-prefix-r1'
++COMMA_SCHEMA = 'hepta.moto-note-plan.v56-comma-prefix-r1'
+ COMMA_PREFIX = '记一下，'
+ COMMA_BODY_SUFFIX = ' 明天下午3点看牙，带上检查资料。'
+ 
+ 
+ def comma_owner_contract(plan):
+-    """One exact new v54 spelling; preserve the entire OWNER for authority."""
++    """One exact new v56 spelling; preserve the entire OWNER for authority."""
+     need(set(plan) == BASE_KEYS | {'body_span_utf16','body_sha256'}, 'exact comma plan fields required')
+     body,marker,owner = (plan.get(k) for k in ('body','marker','instruction'))
+     need(plan.get('schema') == COMMA_SCHEMA and plan.get('target_package') == TARGET
+          and plan.get('phone_tested') is False and isinstance(marker,str)
+-         and re.fullmatch(r'Hepta-v54r1-[0-9a-f]{12}',marker)
++         and re.fullmatch(r'Hepta-v56r1-[0-9a-f]{12}',marker)
+          and body == marker + COMMA_BODY_SUFFIX and 0 < utf16(body) < 56,
+-         'exact fresh v54 marker and reviewed comma body required')
++         'exact fresh v56 marker and reviewed comma body required')
+     need(owner == COMMA_PREFIX + body and plan.get('instruction_sha256') == sha(owner),
+          'complete immutable comma OWNER differs')
+     span = [utf16(COMMA_PREFIX),utf16(COMMA_PREFIX)+utf16(body)]
+@@ -139,7 +139,7 @@
+     contract = comma_owner_contract(plan)
+     need(isinstance(preparation, dict)
+          and preparation.get('schema') == 'hepta.ordinary-background-notes-ui-preparation.v1'
+-         and preparation.get('driver_revision') == 'notes-v54-dual-ui-comma-plan-r1'
++         and preparation.get('driver_revision') == 'notes-v56-dual-ui-comma-plan-r1'
+          and preparation.get('prepared') is True and preparation.get('error') is None
+          and preparation.get('start_tapped') is False and preparation.get('task_started') is False
+          and preparation.get('target_app_operated') is False

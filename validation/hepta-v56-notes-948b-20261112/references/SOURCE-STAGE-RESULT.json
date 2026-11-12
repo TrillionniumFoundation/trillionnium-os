@@ -1,0 +1,111 @@
+{
+  "schema": "hepta.notes-v56-identity-independent-source-preparation.v1",
+  "original_collector_replay_file_count": 14,
+  "ordinary_prepare_external_prerequisites": "unchanged exact UI_SHA/R12_SHA/r7 prerequisites are still mandatory at actual prepare",
+  "originals": [
+    {
+      "file": "background_notes_plan.py",
+      "bytes": 13460,
+      "sha256": "df4aa09037d41709dbfa0efae522776f023fc1481859f22a0e078a22f015daff"
+    },
+    {
+      "file": "controller_idle_evidence.py",
+      "bytes": 28672,
+      "sha256": "8ef4e544b5ac6f62f17ff37715de7a4be5d051f2312802580d404f15512b7240"
+    },
+    {
+      "file": "controller_workflow_evidence.py",
+      "bytes": 52865,
+      "sha256": "405ed06f6302623e36dc39803ebe7781bb349b396851d0bfe6fa46f2ce6b6350"
+    },
+    {
+      "file": "fixed_intent_v6_acceptance.py",
+      "bytes": 32749,
+      "sha256": "9b858dd02d34558ab6c898209378a2de3d34b38b6f1aa2a099da788273b3f2ba"
+    },
+    {
+      "file": "live_inflight_window.py",
+      "bytes": 25220,
+      "sha256": "3f3faa3b692257710f48651d48f1a39405f0fb511fd94658af2617ded9443671"
+    },
+    {
+      "file": "main_user_inflight.py",
+      "bytes": 26325,
+      "sha256": "79450f5c07b48958821d388a729223890fcd7f2cd0c085e85e15c48aadee167d"
+    },
+    {
+      "file": "moto_note_body_evidence_v51.py",
+      "bytes": 26193,
+      "sha256": "091bcb7a633c9fec1e668b637fb3619de712c441db99f2164c47c4b3ba629e94"
+    },
+    {
+      "file": "prepare_background_notes_v54_r1.py",
+      "bytes": 26922,
+      "sha256": "5e1db9854154042f3124afc1a2890c567a3fa32dedc41f80f237b0bd260e4d90"
+    },
+    {
+      "file": "run_background_notes_v54_r1.py",
+      "bytes": 110570,
+      "sha256": "2fa7d0670786dcc3933974056acc03026e7ffd091f9f4b3218936ae60646df39"
+    },
+    {
+      "file": "tools/model_profiles.py",
+      "bytes": 2930,
+      "sha256": "ee26ed1f2f2b2ffd5f14fbd526c6d3cbf05d7ed8d65c422df5e60a72fa0cfa3a"
+    },
+    {
+      "file": "tools/phone_acceptance.py",
+      "bytes": 60278,
+      "sha256": "411da90ca9ef83441fa0a199a25d71361ab582db5b54ac08bd39e5e8597e6302"
+    },
+    {
+      "file": "tools/phone_suite.py",
+      "bytes": 44804,
+      "sha256": "2681e21ae0ead263b9313a6e49b4faf8951f3e87ab6b5c669c41fe34dbe5267a"
+    },
+    {
+      "file": "tools/warm_receipts.py",
+      "bytes": 7410,
+      "sha256": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5"
+    },
+    {
+      "file": "v35_identity.py",
+      "bytes": 34830,
+      "sha256": "a4a751cf03956783e551f54b16dd37769f00d5b7cd2a0225b667becbc6e6d003"
+    }
+  ],
+  "reviewed_replay_sources": [
+    {
+      "file": "controller_idle_evidence.py",
+      "bytes": 28672,
+      "sha256": "285f6575f5dc1eaaaff61b591cd8e0171e250ea0799a196ba298bd1cad6478db"
+    },
+    {
+      "file": "controller_workflow_evidence.py",
+      "bytes": 53705,
+      "sha256": "1188e4ad4666614cfce38d0f74b60819dd2c0e32ebf9cac6cdbd74bcf649791e"
+    },
+    {
+      "file": "main_user_inflight.py",
+      "bytes": 26783,
+      "sha256": "4aa6e0f8db9229e1764d9ee79220ed8fa3eb7ddc3bd5526a857fd179870afe30"
+    }
+  ],
+  "changes": [
+    {
+      "file": "background_notes_plan.py",
+      "before_sha256": "df4aa09037d41709dbfa0efae522776f023fc1481859f22a0e078a22f015daff",
+      "after_sha256": "4bf77a52d012b4d5fe2fcfdcfea59649058c74d94202afcaacf0cb92e81c7bad",
+      "bytes": 13460
+    },
+    {
+      "file": "main_user_inflight.py",
+      "before_sha256": "4aa6e0f8db9229e1764d9ee79220ed8fa3eb7ddc3bd5526a857fd179870afe30",
+      "after_sha256": "ac8d0b871e783b0ce64416aecce707e910bcb151eadb2552fb1c71b0854cd6fd",
+      "bytes": 29045
+    }
+  ],
+  "phone_actions": 0,
+  "phone_entry_point_generated": false,
+  "requires_final_candidate_and_actual_signed_receipt": true
+}

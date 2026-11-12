@@ -1,0 +1,106 @@
+--- original/controller_idle_evidence.py
++++ v56/controller_idle_evidence.py
+@@ -1,4 +1,4 @@
+-"""Read-only compatibility for an actual, independently replayed v54 terminal.
++"""Read-only compatibility for an actual, independently replayed v56 terminal.
+ 
+ This helper neither broadens the four legacy terminal states nor supplies live
+ idle/resource checks. The caller must retain its original APK/config, owner,
+@@ -15,9 +15,9 @@
+ import stat
+ import types
+ 
+-EXPECTED_V54_BUILD_SHA = "eadc9dbb63b411015571a488377be6a8704c9f78415169a5164c8f13571f0f72"
+-EXPECTED_V54_APK_SHA = "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a"
+-WORKFLOW_SHA = '405ed06f6302623e36dc39803ebe7781bb349b396851d0bfe6fa46f2ce6b6350'
++EXPECTED_V56_BUILD_SHA = None
++EXPECTED_V56_APK_SHA = None
++WORKFLOW_SHA = '73bb00cde5cba186f7c62e3d9042829a688faa69571b5db0e8a3c49ed8109000'
+ SIGNER_SHA = '202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5'
+ SIGNER_PROOF_SHA = '97e3aba44ec7a303a935965c1d608692ac06007a33bb859fec481486c1a239fe'
+ HEX32 = re.compile(r'[0-9a-f]{32}\Z')
+@@ -135,7 +135,7 @@
+     import model_profiles
+     need(sha(reader.raw(Path(model_profiles.__file__), 1 << 20)) == MODEL_PROFILES_SHA,
+          'canonical model profiles source differs')
+-    private = types.ModuleType('controller_idle_private_acceptance_v54_r2')
++    private = types.ModuleType('controller_idle_private_acceptance_v56_r2')
+     private.__file__ = acceptance.__file__
+     exec(compile(acceptance_raw, acceptance.__file__, 'exec', dont_inherit=True), private.__dict__)
+     # The closed archive adapter below has no process, transport, or Adb method.
+@@ -159,11 +159,11 @@
+     fixed_path = Path(__file__).resolve().with_name('fixed_intent_v6_acceptance.py')
+     fixed_raw = reader.raw(fixed_path, 128 << 10)
+     need(sha(fixed_raw) == workflow.FIXED_SHA, 'new fixed-intent evidence source differs')
+-    fixed = types.ModuleType('controller_idle_fixed_v54_r2')
++    fixed = types.ModuleType('controller_idle_fixed_v56_r2')
+     fixed.__file__ = str(fixed_path)
+     exec(compile(fixed_raw, str(fixed_path), 'exec', dont_inherit=True), fixed.__dict__)
+     new_binder = fixed.install(private, new_base)
+-    source_binding = fixed.bind_v54_source_context(private, build_path, source_path,
++    source_binding = fixed.bind_v56_source_context(private, build_path, source_path,
+                                                   installed_identity, task)
+     workflow._verify_binder(new_binder, private, receipts)
+     return private, new_binder, source_binding, pin
+@@ -200,7 +200,7 @@
+ 
+ 
+ def collection_comparison(original, replay):
+-    """New v54 collections must match every original nonimage gate and byte."""
++    """New v56 collections must match every original nonimage gate and byte."""
+     def normalized(value):
+         value = strict(json.dumps(value, ensure_ascii=False, allow_nan=False).encode())
+         value.pop('omitted_screenshots', None)
+@@ -218,8 +218,8 @@
+          'unique matching actual original/recomputed runs required')
+     need(all(old_rows[r].get('controller_grammar_binding_valid') is True
+              and new_rows[r].get('controller_grammar_binding_valid') is True for r in old_rows),
+-         'original and recomputed v54 grammar gates must both be valid')
+-    need(same(old, new), 'new v54 native collection must match all original nonimage gates and bytes')
++         'original and recomputed v56 grammar gates must both be valid')
++    need(same(old, new), 'new v56 native collection must match all original nonimage gates and bytes')
+     return {'same_existing_gate_results':True,'changes':[],
+         'original_collection_mutated':False,'screenshots_not_recollected':True,
+         'complete_nonimage_membership_and_bytes_equal':True}
+@@ -293,13 +293,13 @@
+         need(isinstance(terminal_raw, bytes) and 0 < len(terminal_raw) <= 2 << 20,
+              'fresh exact terminal bytes required')
+         need(isinstance(expected_task, str) and HEX32.fullmatch(expected_task)
+-             and type(expected_uid) is int and expected_uid == 10481
++             and type(expected_uid) is int and expected_uid == None
+              and all(isinstance(x, str) and HEX64.fullmatch(x) for x in
+                      (result_sha, expected_apk, expected_config, actual_build_receipt_sha256)),
+              'actual task/UID/full identity pins required')
+-        need(actual_build_receipt_sha256 == EXPECTED_V54_BUILD_SHA
+-             and expected_apk == EXPECTED_V54_APK_SHA,
+-             'new v54 history requires its own actual signed APK/build; all v51/v53 history stays separate')
++        need(actual_build_receipt_sha256 == EXPECTED_V56_BUILD_SHA
++             and expected_apk == EXPECTED_V56_APK_SHA,
++             'new v56 history requires its own actual signed APK/build; all v51/v53 history stays separate')
+         directory = Path(directory)
+         need(directory.is_absolute() and directory.is_dir() and '..' not in directory.parts
+              and all(not p.is_symlink() for p in (directory, *directory.parents)),
+@@ -326,8 +326,8 @@
+         build_raw = reader.raw(Path(actual_build_receipt_path), 1 << 20)
+         need(sha(build_raw) == actual_build_receipt_sha256, 'actual signed-build receipt SHA differs')
+         build = strict(build_raw)
+-        need(isinstance(build, dict) and build.get('schema') == 'hepta.isolated-v54-assembly.v1'
+-             and type(build.get('version_code')) is int and build['version_code'] == 54
++        need(isinstance(build, dict) and build.get('schema') == None
++             and type(build.get('version_code')) is int and build['version_code'] == 56
+              and build.get('all_pass') is True and type(build.get('exit_code')) is int and build['exit_code'] == 0
+              and build.get('apk_sha256') == expected_apk and type(build.get('apk_bytes')) is int and build['apk_bytes'] > 0
+              and build.get('matches_previously_recorded_signer') is True
+@@ -340,10 +340,10 @@
+              and isinstance(build.get('source_inventory_sha256'), str) and HEX64.fullmatch(build['source_inventory_sha256'])
+              and all(type(build.get(k)) is int and build[k] > 0 for k in
+                      ('source_file_count', 'host_check_records', 'host_input_count', 'actual_compiler_source_inputs')),
+-             'actual signed v54 assembly identity/old signer gates missing')
++             'actual signed v56 assembly identity/old signer gates missing')
+         binding = {'build_receipt_sha256': actual_build_receipt_sha256,
+             'source_commit': build['source_commit'], 'source_inventory_sha256': build['source_inventory_sha256'],
+-            'version_code': 54, 'apk_sha256': expected_apk, 'same_signer_verified_by_actual_receipt': True}
++            'version_code': 56, 'apk_sha256': expected_apk, 'same_signer_verified_by_actual_receipt': True}
+         need(same(collected.get('actual_build_binding'), binding),
+              'collector build metadata does not match the actual signed receipt bytes')
+ 

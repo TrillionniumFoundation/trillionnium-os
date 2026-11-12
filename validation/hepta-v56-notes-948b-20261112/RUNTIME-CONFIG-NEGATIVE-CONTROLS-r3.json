@@ -1,0 +1,113 @@
+{
+  "schema": "hepta.notes-v56-runtime-contract-negative-controls.v1",
+  "canonical_source": {
+    "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/5da3c83fe46edb2617934a92c06a10608accb68e/projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
+    "bytes": 3352,
+    "sha256": "81447620dbc2a789bba8c22d561c768144f4d5619859b202d07cd83660a05dce",
+    "git_blob": "eace1ef538bb6b491ce7c13aeb26567829367477"
+  },
+  "preflight_source_sha256": "8d08b62696faa68b4f733dddd5cf692f9418e624d35bf9896807eef5b9965c4b",
+  "seal_source_sha256": "226fe4d8f077a918599acafe4d8732600c0a859abf9861925cbe071b7c6402f8",
+  "exact_runtime_config_keys": [
+    "compute",
+    "context_tokens",
+    "model_profile",
+    "schema",
+    "threads"
+  ],
+  "required_schema": "hepta.local-runtime.v2",
+  "actual_constructor_threads_range": [
+    1,
+    8
+  ],
+  "artifact_binder_and_normal_seal_call_strict_contract": true,
+  "negative_controls_rejected": 16,
+  "negative_controls_total": 16,
+  "controls": [
+    {
+      "name": "missing_compute",
+      "rejected": true,
+      "reason": "runtime config: exact object fields required"
+    },
+    {
+      "name": "missing_context_tokens",
+      "rejected": true,
+      "reason": "runtime config: exact object fields required"
+    },
+    {
+      "name": "missing_model_profile",
+      "rejected": true,
+      "reason": "runtime config: exact object fields required"
+    },
+    {
+      "name": "missing_schema",
+      "rejected": true,
+      "reason": "runtime config: exact object fields required"
+    },
+    {
+      "name": "missing_threads",
+      "rejected": true,
+      "reason": "runtime config: exact object fields required"
+    },
+    {
+      "name": "extra_field",
+      "rejected": true,
+      "reason": "runtime config: exact object fields required"
+    },
+    {
+      "name": "wrong_schema",
+      "rejected": true,
+      "reason": "explicit runtime v2 schema required"
+    },
+    {
+      "name": "legacy_schema_with_v2_fields",
+      "rejected": true,
+      "reason": "explicit runtime v2 schema required"
+    },
+    {
+      "name": "threads_above_actual_constructor_limit",
+      "rejected": true,
+      "reason": "runtime threads must be 1..8"
+    },
+    {
+      "name": "threads_zero",
+      "rejected": true,
+      "reason": "runtime threads must be 1..8"
+    },
+    {
+      "name": "threads_boolean",
+      "rejected": true,
+      "reason": "runtime threads must be 1..8"
+    },
+    {
+      "name": "context_boolean",
+      "rejected": true,
+      "reason": "runtime context differs"
+    },
+    {
+      "name": "context_unreviewed",
+      "rejected": true,
+      "reason": "runtime context differs"
+    },
+    {
+      "name": "profile_not_string",
+      "rejected": true,
+      "reason": "explicit runtime model profile required"
+    },
+    {
+      "name": "compute_cpu_fallback",
+      "rejected": true,
+      "reason": "runtime compute differs"
+    },
+    {
+      "name": "legacy_four_field_config_not_inferred_as_v2",
+      "rejected": true,
+      "reason": "runtime config: exact object fields required"
+    }
+  ],
+  "actual_fresh_device_runtime_received": false,
+  "successful_runtime_or_phone_case_synthesized": false,
+  "phone_actions": 0,
+  "release_sealed": false,
+  "phone_execution_ready": false
+}

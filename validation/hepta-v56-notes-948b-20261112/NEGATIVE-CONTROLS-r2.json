@@ -1,0 +1,120 @@
+{
+  "schema": "hepta.notes-v56-host-preparation-negative-controls.v1",
+  "negative_controls_rejected": 14,
+  "negative_controls_total": 14,
+  "controls": [
+    {
+      "name": "actual_historical_scrollbar_only_original_png_pair",
+      "rejected": true,
+      "original_capture_bytes_used": true,
+      "source_commit": "42d3a0f447807659c0f78c8273edee01dd1b734f",
+      "task_id": "9b07550f62414bb5a9ccc16cc2db60e2",
+      "before_sha256": "89ec9ce9e68ea59ecce3ac13dd93c1efe3c1721fb3b1e8f3fa5c97339cc5cded",
+      "after_sha256": "64a9c5c2de0787ca9e8b118b7f5c47373434feb646ab108e5bea76c6955ae50f",
+      "pixels": {
+        "dimensions": [
+          1224,
+          2992
+        ],
+        "content_rect": [
+          0,
+          130,
+          1224,
+          2920
+        ],
+        "core_rect": [
+          25,
+          130,
+          1199,
+          2920
+        ],
+        "fixed_side_gutter_px": 25,
+        "full_difference_bbox": [
+          1212,
+          2072,
+          1224,
+          2920
+        ],
+        "changed_pixel_count": 10176,
+        "app_changed_pixel_count": 10176,
+        "interior_changed_pixel_count": 0,
+        "interior_difference_bbox": null,
+        "interior_content_changed": false,
+        "side_gutter_only_change": true
+      }
+    },
+    {
+      "name": "duplicate_json_key",
+      "rejected": true,
+      "reason": "duplicate JSON key: task_id"
+    },
+    {
+      "name": "nonfinite_json",
+      "rejected": true,
+      "reason": "nonfinite JSON: NaN"
+    },
+    {
+      "name": "unknown_candidate_not_defaulted",
+      "rejected": true,
+      "reason": "candidate: exact object fields required"
+    },
+    {
+      "name": "candidate_null_not_defaulted",
+      "rejected": true,
+      "reason": "candidate: exact object fields required"
+    },
+    {
+      "name": "missing_task_and_display_identity",
+      "rejected": true,
+      "reason": "scroll identity: exact object fields required"
+    },
+    {
+      "name": "boolean_identity_not_object",
+      "rejected": true,
+      "reason": "scroll identity: exact object fields required"
+    },
+    {
+      "name": "unknown_extra_context_field",
+      "rejected": true,
+      "reason": "context: exact object fields required"
+    },
+    {
+      "name": "wrong_original_before_hash",
+      "rejected": true,
+      "reason": "input SHA-256 mismatch: /workspace/scratch/948b09e30f83/private-review/settings-before-swipe.png"
+    },
+    {
+      "name": "wrong_original_after_hash",
+      "rejected": true,
+      "reason": "input SHA-256 mismatch: /workspace/scratch/948b09e30f83/private-review/settings-after-swipe.png"
+    },
+    {
+      "name": "noncanonical_hash",
+      "rejected": true,
+      "reason": "input hash: exact SHA-256 required"
+    },
+    {
+      "name": "oversized_or_wrong_image_bound",
+      "rejected": true,
+      "reason": "input size/type refused"
+    },
+    {
+      "name": "invalid_content_rectangle",
+      "rejected": true,
+      "reason": "content: rectangle outside observed content"
+    },
+    {
+      "name": "boolean_content_coordinate",
+      "rejected": true,
+      "reason": "content: integer rectangle required"
+    }
+  ],
+  "synthetic_positive_cases_created": 0,
+  "positive_main_scroll_case_tested": false,
+  "v56_phone_tested": false,
+  "phone_actions": 0,
+  "phone_execution_ready": false,
+  "full_phone_qualification": false,
+  "old_evidence_modified": false,
+  "historical_machine_9_of_9_or_8_of_8_results_rewritten": false
+}

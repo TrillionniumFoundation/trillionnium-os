@@ -1,0 +1,72 @@
+--- original/prepare_background_notes_v54_r1.py
++++ v56/prepare_background_notes_v56_r1.py
+@@ -19,11 +19,11 @@
+ PKG = "org.trillionnium.hepta.local"
+ TARGET = "com.motorola.stylus"
+ UI_PACKAGES = frozenset((TARGET, "org.trillionnium.hepta.webhelper"))
+-EXPECTED_V54_APK_SHA = "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a"
++EXPECTED_V56_APK_SHA = None
+ UI_SHA = 'b5483ad51dc3639a734d07169a7ad928f0ddf7ad2f5a46da4b3461abe8170c98'
+ R12_SHA = 'd5a2caec2ad96b524d89651c0b4fbb63107678745dd4ccfa33368999fc0f817c'
+ MODE = "main_user_coexistence"
+-PLAN_HELPER_SHA = "df4aa09037d41709dbfa0efae522776f023fc1481859f22a0e078a22f015daff"
++PLAN_HELPER_SHA = '4bf77a52d012b4d5fe2fcfdcfea59649058c74d94202afcaacf0cb92e81c7bad'
+ 
+ 
+ def need(ok, message):
+@@ -376,6 +376,21 @@
+         os.close(owner_fd)
+ 
+ 
++def candidate_file(path, maximum=8 << 20):
++    path = Path(path)
++    need(path.is_absolute() and all(not p.is_symlink() for p in (path, *path.parents)),
++         "absolute non-symlink input required: " + str(path))
++    with path.open("rb") as stream:
++        before = os.fstat(stream.fileno())
++        need(stat.S_ISREG(before.st_mode) and 0 < before.st_size <= maximum, "invalid input size/type")
++        raw = stream.read(maximum + 1)
++        after = os.fstat(stream.fileno())
++    def key(s):
++        return (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns)
++    need(len(raw) == before.st_size and key(before) == key(after) == key(path.stat()), "input changed while read")
++    return raw
++
++
+ def main():
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument("--test-mode", choices=[MODE, "background_only"], required=True)
+@@ -387,20 +402,23 @@
+         parser.add_argument("--" + name, type=int, required=True)
+     parser.add_argument("--command-timeout", type=int, default=12)
+     args = parser.parse_args()
+-    need(isinstance(EXPECTED_V54_APK_SHA, str)
+-         and re.fullmatch(r"[0-9a-f]{64}", EXPECTED_V54_APK_SHA)
+-         and args.apk_sha256 == EXPECTED_V54_APK_SHA,
+-         "actual final v54 APK identity is not sealed; no phone execution")
+-    if args.test_mode == "background_only":
+-        need((str(args.plan), args.plan_sha256) in {
+-            ("/home/alex/hepta-local-007f-20261111/background-notes-adapters-v54-r1/notes-plan-cancel-r1.json", "dda4c05334931f2c0cb27a5b5a9d149cb2e9f9603544a43fbe655b75ae4d1a28"),
+-            ("/home/alex/hepta-local-007f-20261111/background-notes-adapters-v54-r1/notes-plan-recovery-r1.json", "e0fa8df14e87a82040a437d3e3b2d550c1502bf41fe43c3fe4e88273a0ddef93"),
+-        }, "background-only preparation requires exact reviewed cancel or recovery plan")
++    need(isinstance(EXPECTED_V56_APK_SHA, str)
++         and re.fullmatch(r"[0-9a-f]{64}", EXPECTED_V56_APK_SHA)
++         and args.apk_sha256 == EXPECTED_V56_APK_SHA,
++         "actual final v56 APK identity is not sealed; no phone execution")
++    need(args.plan == Path(__file__).absolute().with_name("notes-plan-v56-r1.json")
++         and args.plan_sha256 == '159a6b02daf6365ec6c55df82af0bd403493749c8c2c97cddc73e588bb05bef0',
++         "exact bundled v56 case plan required; no historical plan reuse")
++    need(args.expected_uid == None, "same frozen candidate UID required")
++    need(args.main_physical_display_id == None, "same frozen physical display required")
++    need(sha(candidate_file(args.runtime_config, 4096)) == None, "same frozen runtime config required")
++    need(sha(candidate_file(Path(__file__).absolute().with_name("RELEASE-CANDIDATE.json"), 65536))
++         == 'fc060d3fda5d2b71667f80c4d01e4f0f1392a8e811e90ab4a36398bf98fd58db', "sealed candidate bytes changed")
+     need(re.fullmatch(r"[0-9a-f]{64}", args.apk_sha256) and 10000 <= args.expected_uid < 90000
+          and 1 <= args.adb_port <= 65535 and 1 <= args.command_timeout <= 30, "exact bounded device arguments required")
+     need(args.out.is_absolute() and not args.out.exists() and all(not p.is_symlink() for p in args.out.parents), "new absolute output directory required")
+     args.out.mkdir(parents=True, mode=0o700)
+-    report = {"schema": "hepta.ordinary-background-notes-ui-preparation.v1", "driver_revision": "notes-v54-dual-ui-comma-plan-r1",
++    report = {"schema": "hepta.ordinary-background-notes-ui-preparation.v1", "driver_revision": "notes-v56-dual-ui-comma-plan-r1",
+         "test_mode": args.test_mode, "prepared": False, "task_started": False, "start_tapped": False,
+         "target_app_operated": False, "existing_tasks_removed": False, "direct_broker_client_used": False,
+         "permissions_changed": False, "r12_operation_lock_acquired_or_bypassed": False,
