@@ -1,0 +1,84 @@
+{
+  "schema": "hepta.web-helper-split-identity.strict-pair.v1",
+  "all_pass": true,
+  "base_commit": "7dee83d838b2c76b3abe3a3e61d7837316f40853",
+  "phone_commands_executed": 0,
+  "android_runtime_tested": false,
+  "apk_built": false,
+  "source_closure_verified": false,
+  "results": {
+    "baseline": {
+      "exit_code": 1,
+      "result": {
+        "schema": "hepta.web-helper-split-identity.host.v1",
+        "source_file": "/home/alex/hepta-web-helper-identity-fix-20261112-android-background-r1/baseline/WebHelperIdentity.java",
+        "source_sha256": "b4d89c39e44eb60c565cb25de07fef2041def56cabd318c86ab650adc513f776",
+        "source_git_blob_sha1": "698dabac7acb63006a338c3bd25bd278fb96e0c8",
+        "actual_extracted_method_sha256": "eaadbe2b09f3a9cc15f4d6e26acac2814deb8e08075ee9c7abe5089aeefd03e6",
+        "compiler_contract": "release8_Xlint_all_Werror",
+        "full_production_method_extracted": true,
+        "android_io": "explicit ApplicationInfo field stub",
+        "phone_contacted": false,
+        "android_runtime_tested": false,
+        "apk_built": false,
+        "full_source_closure_verified": false,
+        "tests_passed": false,
+        "compiler_argv": [
+          "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+          "--release",
+          "8",
+          "-encoding",
+          "UTF-8",
+          "-Xlint:all",
+          "-Werror",
+          "-d",
+          "/tmp/web-helper-paths-iosvtygw",
+          "/tmp/web-helper-paths-iosvtygw/PathsProbe.java"
+        ],
+        "compiler_exit_code": 0,
+        "test_exit_code": 1,
+        "case_count": 25,
+        "failed_cases": [
+          "FAIL no_splits_empty_null IllegalArgumentException: split identity count"
+        ],
+        "source_unchanged_after_test": true
+      }
+    },
+    "candidate": {
+      "exit_code": 0,
+      "result": {
+        "schema": "hepta.web-helper-split-identity.host.v1",
+        "source_file": "/home/alex/hepta-web-helper-identity-fix-20261112-android-background-r1/candidate/WebHelperIdentity.java",
+        "source_sha256": "c092b36b0ab63e6acdb0c1c7a038bb98fb8d940437bd768d7bfe3369c715c637",
+        "source_git_blob_sha1": "438572f6ec9819a1e024035376a538c2194088c7",
+        "actual_extracted_method_sha256": "3db6545044c3af57ba41c95e294e275a345dde0570fc71a8bad292021619b569",
+        "compiler_contract": "release8_Xlint_all_Werror",
+        "full_production_method_extracted": true,
+        "android_io": "explicit ApplicationInfo field stub",
+        "phone_contacted": false,
+        "android_runtime_tested": false,
+        "apk_built": false,
+        "full_source_closure_verified": false,
+        "tests_passed": true,
+        "compiler_argv": [
+          "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+          "--release",
+          "8",
+          "-encoding",
+          "UTF-8",
+          "-Xlint:all",
+          "-Werror",
+          "-d",
+          "/tmp/web-helper-paths-a_huoxdo",
+          "/tmp/web-helper-paths-a_huoxdo/PathsProbe.java"
+        ],
+        "compiler_exit_code": 0,
+        "test_exit_code": 0,
+        "case_count": 25,
+        "failed_cases": [],
+        "source_unchanged_after_test": true
+      }
+    }
+  },
+  "java_home": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64"
+}

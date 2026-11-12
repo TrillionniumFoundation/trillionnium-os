@@ -1,0 +1,26 @@
+PASS no_splits_null_null
+PASS no_splits_null_empty
+FAIL no_splits_empty_null IllegalArgumentException: split identity count
+PASS no_splits_empty_empty
+PASS one_split_exact_mapping
+PASS 32_splits_exact_mapping
+PASS unordered_split_mapping_preserved
+PASS 120_character_split_name
+PASS missing_base_path
+PASS null_paths_nonempty_names
+PASS empty_paths_nonempty_names
+PASS nonempty_paths_null_names
+PASS nonempty_paths_empty_names
+PASS more_paths_than_names
+PASS more_names_than_paths
+PASS 33_splits_refused
+PASS null_split_path
+PASS null_split_name
+PASS empty_split_name
+PASS slash_split_name
+PASS colon_split_name
+PASS whitespace_split_name
+PASS unicode_split_name
+PASS 121_character_split_name
+PASS duplicate_split_name
+COUNTS 25 1
