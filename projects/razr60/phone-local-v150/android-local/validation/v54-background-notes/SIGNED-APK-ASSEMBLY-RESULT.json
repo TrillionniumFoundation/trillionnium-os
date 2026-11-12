@@ -1,0 +1,102 @@
+{
+  "actual_build_identity_sha256": "91fe9eabe899c1d747b5334edca273c35a1a8338a2310ce973da2ec00a809626",
+  "actual_compiler_inputs_bound_to_signed_asset": true,
+  "actual_compiler_source_inputs": 186,
+  "all_pass": true,
+  "android_compiled_on_mac": true,
+  "android_runtime_tested": false,
+  "apk": "/home/alex/hepta-v54-a356-20261111-r1/out/hepta-local-0.54.0.apk",
+  "apk_bytes": 20879187,
+  "apk_sha256": "d16f1aae63152497288729547f7ef81a66b9ba7cfde8e5203c82d293aaae6b7c",
+  "assembler_exit_code": 0,
+  "cached_runtime_pins_unchanged": true,
+  "candidate_source_commit": "79266ea9ac54e184b69088489f89b5e40fbc95da",
+  "candidate_source_tree": "ad7c0d73899cdaeced03df91bbed524d925fd547",
+  "dependencies_downloaded": false,
+  "existing_key_bytes_and_metadata_unchanged": true,
+  "finished_utc": "2026-11-12T01:19:13Z",
+  "fresh_phone_signer_inspected": false,
+  "host_report_sha256": "eefafbe096237a70b215fd31b2c6a9b446a0373ebeb62db6d9c3144194e9c9c6",
+  "host_result_sha256": "65d619bf04be7d5bac4a14f8804c3f04971d366fba4238a12e9d71667e86ccee",
+  "installed_on_phone": false,
+  "library_pins": {
+    "libMNN.so": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d",
+    "libc++_shared.so": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754",
+    "libgeniex.so": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56",
+    "libgeniex_plugin_llama_cpp.so": "cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a",
+    "libggml-base.so": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40",
+    "libggml-cpu.so": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b",
+    "libggml-hexagon.so": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f",
+    "libggml-htp-v79.so": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5",
+    "libggml-opencl.so": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875",
+    "libggml.so": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149",
+    "libhepta_local_runner.so": "8277ee0432eb219c7c837ed7300410f45c51c773acd31134bbe036424d230772",
+    "libhepta_mobimind_runner.so": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020",
+    "libhepta_ui_venus_runner.so": "5fa2dcae05fb649157d96481c5890c157301c76dab3522fcabcbe01b9b0d8551",
+    "libllama-common.so": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122",
+    "libllama.so": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835",
+    "libmtmd.so": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d",
+    "libomp.so": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76"
+  },
+  "mac_archive": "/home/alex/hepta-v54-a356-20261111-r1/mac-artifacts.tar.gz",
+  "mac_archive_bytes": 457077,
+  "mac_archive_sha256": "f7654e8e9ff8373bc681d5843f6b36710a868c40bf6f48b572da5e1b1aa5fab8",
+  "mac_build_receipt_sha256": "aabf68541b151a01463274add55d4c91d986f4d22ae153979e279217546eb9da",
+  "manifest_explicit_queries": {
+    "intents": [
+      [
+        [
+          "action",
+          "android.intent.action.MAIN"
+        ],
+        [
+          "category",
+          "android.intent.category.HOME"
+        ]
+      ],
+      [
+        [
+          "action",
+          "android.intent.action.MAIN"
+        ],
+        [
+          "category",
+          "android.intent.category.LAUNCHER"
+        ]
+      ]
+    ],
+    "packages": [
+      "com.android.settings",
+      "com.android.settings.intelligence",
+      "com.motorola.cn.calculator",
+      "com.motorola.launcher3",
+      "com.motorola.stylus",
+      "com.topjohnwu.magisk",
+      "com.zui.browser"
+    ]
+  },
+  "matches_previously_recorded_signer": true,
+  "native_baseline_signed_receipt_sha256": "e96ba5683322ef8d113cb14fde7580d42441e360da2c0547c813d302dadc3d01",
+  "native_libraries_identical_to_formal_v51": true,
+  "new_key_created": false,
+  "ordinary_app_uid_accelerator_qualified": false,
+  "packaged_library_count": 17,
+  "phone_contacted": false,
+  "phone_tested": false,
+  "runner_sha256": "bb7cff1de735f0161fa91104e43a7a44287fa5d1d9cbf77801b75de617951268",
+  "schema": "hepta.isolated-v54-assembly.v1",
+  "signature_verified": true,
+  "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "signer_proof_sha256": "97e3aba44ec7a303a935965c1d608692ac06007a33bb859fec481486c1a239fe",
+  "source_commit": "824d73ed2e9dc57bc9ecfc6eff340b45cf1d81bd",
+  "source_files_unchanged": true,
+  "source_head": "824d73ed2e9dc57bc9ecfc6eff340b45cf1d81bd",
+  "source_manifest_sha256": "312140bc0cfd2bc617b32bc7821eaf49a24a4f524c5326c25e955081d4b8bd4f",
+  "source_members": 1362,
+  "started_utc": "2026-11-12T01:19:00Z",
+  "static_acceptance_sha256": "fb61c814242a1a407f40c5e1d237c1c263f316d6c1019ebaa253f026aa420bdc",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "f51a995f3a87e705b54ac9be751362f7fe1aba3a191cb1d8ecf9cb878b2c6b68",
+  "version_code": 54,
+  "version_name": "0.54.0-local-unified-observation"
+}
