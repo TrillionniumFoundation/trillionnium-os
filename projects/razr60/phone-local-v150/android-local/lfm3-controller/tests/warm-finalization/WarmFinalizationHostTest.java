@@ -55,7 +55,7 @@ public final class WarmFinalizationHostTest {
             catch(Throwable error){failure.set(error);}
         }},"controlled-finalizer");
         finalizer.start();
-        try{check(close.entered.await(2,TimeUnit.SECONDS),"endTask must be in progress");controller.stop();}
+        try{check(close.entered.await(2,TimeUnit.SECONDS),"endTask must be in progress");controller.stop();controller.awaitCancellation();}
         finally{close.release.countDown();}
         finalizer.join(3000);
         check(!finalizer.isAlive(),"Stop during close must not deadlock");

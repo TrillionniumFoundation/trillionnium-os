@@ -139,7 +139,7 @@ public final class BackgroundSessionHostTest {
         test("exchange_connects_then_configures_and_authenticates_before_bytes",()->{
             LocalSocket.responder=req->response(req,"ACTIVE",7,true,false);
             exchange(request(UUID.randomUUID().toString(),"state"));
-            check(LocalSocket.events.equals(Arrays.asList("connect","timeout","peer","output","input","close")),"socket lifecycle or UID-before-bytes ordering changed");
+            check(LocalSocket.events.equals(Arrays.asList("connect","timeout","peer","output","timeout","input","close")),"socket lifecycle, UID-before-bytes or pre-write timeout ordering changed");
         });
         test("absent_socket_is_typed_before_timeout_or_request",()->{
             LocalSocket.missing=true;
@@ -226,7 +226,7 @@ public final class BackgroundSessionHostTest {
             };
             ControllerFinalizationFixture controller=new ControllerFinalizationFixture(model);
             controller.setScopeCheck(()->{throw new IllegalStateException("scope changed during model teardown");});
-            if(stop)controller.stop();
+            if(stop){controller.stop();controller.awaitCancellation();}
             ControllerFinalizationFixture.Outcome result=controller.finish("blocked","background display release unknown",false,false,true);
             check("blocked".equals(result.status)&&!result.cleanupKnown&&result.blocked&&!result.modelSuccess,
                     "late scope refusal or Stop erased unresolved cleanup status");

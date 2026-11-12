@@ -30,6 +30,8 @@ final class BackgroundSession {
     void requireActive(){if(testClosed)throw new IllegalStateException("fixture display closed");}
     void start(HeptaAccessibilityService.Cancellation c){if(controllerDisplay<1||c.isCancelled())throw new UnsupportedOperationException();}
     JSONObject action(String op,String pkg,HeptaAccessibilityService.Cancellation c){throw new UnsupportedOperationException();}
+    JSONObject action(String op,String pkg,HeptaAccessibilityService.Cancellation c,long deadline){throw new UnsupportedOperationException();}
     Cleanup close(){testClosed=true;return new Cleanup(true);}
 JSONObject fixedIntent(org.trillionnium.hepta.background.FixedIntentTarget target,String payload,String attemptId,HeptaAccessibilityService.Cancellation cancel)throws Exception{throw new IllegalStateException("fixed intent transport not enabled in legacy scope IO fake");}
+JSONObject fixedIntent(org.trillionnium.hepta.background.FixedIntentTarget target,String payload,String attemptId,HeptaAccessibilityService.Cancellation cancel,long deadline)throws Exception{throw new IllegalStateException("fixed intent transport not enabled in legacy scope IO fake");}
 }

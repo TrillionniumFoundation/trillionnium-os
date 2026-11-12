@@ -7,9 +7,9 @@ source membership is bound by this component's regenerated SOURCE-MANIFEST.json.
 The original build-input method must independently compute 214 production inputs
 on the complete staged component; a source-map prediction is not that execution.
 
-The inherited Android version metadata remains 56 only to keep this source
-review separate from a future release decision. No new release version, APK,
-signature, installation or phone qualification is established by this contract.
+Android version 57 / `0.57.0-off-main-action-stop-candidate` identifies this
+unqualified follow-up candidate. Version assignment does not establish an APK,
+signature, installation, phone qualification or production release approval.
 The model, native runtime, sampler and dependency pins remain those of the frozen
 base. Source-bound evidence is recorded separately; an earlier v56 green run
 cannot qualify this changed component.
@@ -83,7 +83,7 @@ These sources justify the implementation design, not Motorola runtime response o
 
 ## Remaining required gates
 
-The complete canonical strict host suite must run against this exact component. Its legacy qualification fixture assumes synchronous callbacks and needs a truthful asynchronous fixture boundary; warm-finalization extraction also needs the cancellation-ticket dependency. Preserve the first actual failures and all product assertions. The targeted 24-case action suite, 16-case session suite and 112-source Java/D8 build are separate evidence levels. They do not replace the full regression gate. Native/resource/packaging/signing qualification and actual upgrade/cold-start/disconnect/restoration remain pending for this follow-up.
+The complete canonical strict host suite must run against this exact component. Legacy fixtures must represent asynchronous callbacks and captured cancellation faithfully, using the actual production queue and extracted methods where those boundaries are exercised. Preserve the first actual failures and all product assertions. The background-client and warm-finalization fixtures include the captured task/ticket and a bounded wait for actual cancellation-worker drain; the socket lifecycle assertion includes the pre-write deadline update. The qualification fixture uses actual action/cancellation/session helpers with explicit host IO boundaries and waits for real worker completion before its original semantic assertions. Test barriers do not make production Stop synchronous or release production slots artificially. The targeted 24-case action suite, 16-case session suite and 112-source Java/D8 build are separate evidence levels. They do not replace the full regression gate. Native/resource/packaging/signing qualification and actual upgrade/cold-start/disconnect/restoration remain pending for this follow-up.
 
 No phone task may start without normal cooperative ownership, actual APK/receipt/inventory/config bytes and fresh UID/physical-display identity. Notes task A preserves all existing native/authorization/9-field context/save/list/same-item reopen gates and adds one semantically effective foreground gesture. Task B separately collects at least three effective foreground interactions across real model/action intervals plus ordinary Stop and actual drain. A cancelled B cannot count as successful Notes A.
 

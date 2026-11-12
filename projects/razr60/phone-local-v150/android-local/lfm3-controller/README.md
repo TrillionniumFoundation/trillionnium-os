@@ -1,11 +1,12 @@
-# Hepta local controller: action and Stop follow-up candidate
+# Hepta v57 candidate: action and Stop follow-up
 
 This is a nonrelease source follow-up to frozen v56 commit
 `5da3c83fe46edb2617934a92c06a10608accb68e`. It changes six existing Java classes
 and adds three classes for action-worker ownership, captured cancellation and
 ordered session persistence. All 112 Java sources are present. Model/native pins
-and the inherited Android version metadata remain unchanged; no new release
-version or installable follow-up APK is assigned here.
+remain unchanged. Android version 57 / `0.57.0-off-main-action-stop-candidate`
+identifies this candidate. Source and version assignment alone do not establish
+an APK, original signature, installation, phone acceptance or production release.
 
 Read [ACTION-EXECUTION-CONTRACT.md](ACTION-EXECUTION-CONTRACT.md) for threading,
 ordering, resource limits, uncertainty, recovery and qualification boundaries.

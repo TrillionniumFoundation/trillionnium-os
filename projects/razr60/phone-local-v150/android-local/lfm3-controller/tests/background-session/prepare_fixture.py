@@ -56,7 +56,7 @@ public final class LocalSocket implements Closeable {
  warm_spec=importlib.util.spec_from_file_location('background_terminal_fixture',warm_helper)
  warm=importlib.util.module_from_spec(warm_spec);warm_spec.loader.exec_module(warm)
  terminal_files,terminal_record=warm.prepare(source,output/'terminal')
- files += [p for p in terminal_files if p.name in ('LocalInference.java','ControllerFinalizationFixture.java')]
+ files += [p for p in terminal_files if p.name in ('LocalInference.java','ControllerFinalizationFixture.java','TaskCancellationQueue.java')]
 
  records={'schema':'hepta.background-client-host-extraction.v1','actual_full_classes':['BackgroundSession','MobiMindPrivateFiles','QualificationScope','BrokerProtocol'],'actual_files_root_sha256':hashlib.sha256(part.encode()).hexdigest(),'boundary':'Android LocalSocket/DisplayManager/Keyguard/clock IO are explicit fakes; no broker process, Android runtime, root, model or phone actions','source_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in files if p.parent==pkg},'controller_finalization':terminal_record}
  (output/'EXTRACTION.json').write_text(json.dumps(records,indent=2)+'\n')

@@ -39,7 +39,7 @@ def prepare(source, output):
         raise RuntimeError('unfilled service fixture template')
     (output / 'HeptaAccessibilityService.java').write_text(fixture)
     snapshot_parts = {
-        'stale_type': section(s, '    /** Only freshness failures before an effect', '    /** Runs on the service thread'),
+        'stale_type': section(s, '    /** Only freshness failures before an effect', '    /** Rechecks the complete original scope'),
         'graph_limits': section(s, '    private static final int MAX_NODES=', '\n    private final Map<String,String> launchable='),
         'node_graph': pieces['node_graph'],
         'window_metadata': section(s, '    /** Read only the selected root\'s window metadata;', '    private List<AccessibilityWindowInfo> windowsForDisplay('),
@@ -54,7 +54,10 @@ def prepare(source, output):
     session = (pkg / 'LocalTaskSession.java').read_text()
     session_parts = {
         'schedule': section(session, '    public boolean schedule(final String owner,String source,String testNonceSha,long delayMillis)', '    /** The only caller is the positive button'),
-        'persist': section(session, '    private boolean persist(', '\n}'),
+        'persist': section(session, '    private void persist(', '\n}'),
+        'parse_record': section(session, '    private static JSONObject parseSessionJson(', '    private static Map<String,Object> fieldsOf('),
+        'record_exists': section(session, '    private static boolean recordExists(', '    /** Create once; never unlink'),
+        'read_record': section(session, '    private static byte[] readSessionRecord(', '    private JSONArray archivePriorRecords('),
     }
     fixture = (Path(__file__).parent / 'SessionFixture.template').read_text()
     for name, code in session_parts.items():fixture=fixture.replace('{{'+name+'}}',code)
@@ -72,7 +75,8 @@ def prepare(source, output):
           'RepeatActionGuard','SameStateNoEffectGuard','DecisionGrammar','ModelProfile','LocalRuntimeConfig',
           'ConservativeTokenBudget','AppCatalogueRanker','ObservedTextProjection','ObservedTransitionProjection',
           'CompactTaskHistory','PromptActionDomain','RecoveryQuiescence','RecoveryJournalTransaction',
-          'QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','LocalTaskController','LocalInference','PhoneObservation']
+          'QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','LocalTaskController','LocalInference','PhoneObservation',
+          'ActionExecutionState','TaskCancellationQueue','SessionJournalQueue']
     if (pkg/'ObservedAppLabels.java').is_file():pure.append('ObservedAppLabels')
     files=[pkg/(name+'.java') for name in dict.fromkeys(pure)]
     web_fixture_source=source/'tests/web-flight/legacy-boundary/WebFlightDomain.java'

@@ -16,10 +16,16 @@ public final class HeptaAccessibilityService extends android.content.Context {
     static HeptaAccessibilityService live;
     static final int GLOBAL_ACTION_BACK=1,GLOBAL_ACTION_HOME=2;
     final Handler main=new Handler(Looper.getMainLooper());
-    String lease;Runnable stopListener;QualificationScopeConfig.Bound taskScope;TaskAuthorization.Gate taskAuthorization;NotesTaskPhaseGuard taskNotesPhase;CalculatorTaskInputGuard taskCalculatorInput;BackgroundSession taskBackground;WebFlightSession taskWeb;SubmitAttemptGuard taskSubmitAttempts;FixedIntentAttemptGuard taskFixedIntentAttempts;
+    volatile String lease;Runnable stopListener;QualificationScopeConfig.Bound taskScope;TaskAuthorization.Gate taskAuthorization;NotesTaskPhaseGuard taskNotesPhase;CalculatorTaskInputGuard taskCalculatorInput;BackgroundSession taskBackground;WebFlightSession taskWeb;SubmitAttemptGuard taskSubmitAttempts;FixedIntentAttemptGuard taskFixedIntentAttempts;
     final java.util.concurrent.Executor backgroundIo=Runnable::run;
+    private static java.util.concurrent.ExecutorService worker(String name){return java.util.concurrent.Executors.newSingleThreadExecutor(r->{Thread t=new Thread(r,name);t.setDaemon(true);return t;});}
+    private static final java.util.concurrent.ExecutorService actionIo=worker("scope-action-fixture");
+    private static final ActionExecutionState.Slot actionSlot=new ActionExecutionState.Slot();
+    private volatile ActionWork activeAction;
+    private volatile ActionExecutionState lastActionExecution;
+    private static final TaskCancellationQueue nativeCancellationQueue=new TaskCancellationQueue(worker("scope-cancel-fixture"));
     LocalTaskController ownedController;LocalInference testInference;
-    PhoneObservation current;Graph currentGraph;AppCatalogueRanker appDiscovery;
+    volatile PhoneObservation current;Graph currentGraph;AppCatalogueRanker appDiscovery;
     final Map<String,String> launchable=new LinkedHashMap<String,String>();
     static final long MAX_OBSERVATION_AGE_MS=90000;
     public AccessibilityNodeInfo root,node;
@@ -39,6 +45,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
 {{background_binding}}
 {{app_catalogue}}
     private AccessibilityNodeInfo selectedRoot(){return getRootInActiveWindow();}
+    private AccessibilityNodeInfo selectedRoot(BackgroundSession background,GraphBudget budget){checkReadBudget(budget);AccessibilityNodeInfo value=selectedRoot();checkReadBudget(budget);return value;}
     public AccessibilityNodeInfo getRootInActiveWindow(){rootsRead++;if(rootsRead==mutateOnRoot&&root!=null)root.pkg=mutateRootPackage;return root;}
     public void startActivity(Intent intent){lastStartedIntent=intent;opens++;if(effectHook!=null)effectHook.run();}
     public boolean performGlobalAction(int action){navigations++;if(effectHook!=null)effectHook.run();return true;}
@@ -47,6 +54,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
         if(root==null)throw new IllegalStateException("no root");
         Graph g=new Graph();g.packageName=root.pkg;g.windowId=root.windowId;g.displayId=root.window.display;g.backgroundGeneration=taskBackground==null?null:taskBackground.generation;g.rotation=0;g.bounds=new Rect(0,0,1080,2400);g.digest="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";return g;
     }
+    private Graph readGraph(GraphBudget budget,BackgroundSession background){checkReadBudget(budget);Graph value=readGraph();checkReadBudget(budget);return value;}
     public void prepare(String pkg){
         root=new AccessibilityNodeInfo(pkg,7);node=new AccessibilityNodeInfo(pkg,7);node.text="测试";node.editable=true;node.scrollable=true;
         node.onAction=()->{if(effectHook!=null)effectHook.run();};
@@ -68,12 +76,23 @@ public final class HeptaAccessibilityService extends android.content.Context {
         current=observation();currentGraph=readGraph();if(node!=null)currentGraph.refs.put("n0",new NodeRef(node,observedChildText(node),readScrollActions(node)));callback.onObservation(current);
     }
     public ActionOutcome execute(ActionDecision action)throws Exception{
+        final java.util.concurrent.CountDownLatch completed=new java.util.concurrent.CountDownLatch(1);
         final ActionOutcome[] box=new ActionOutcome[1];ObservedTargetLabels labels=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,current.id,current.packageName,java.util.Collections.singletonMap("n0",node==null?"":node.text));
-        perform(lease,current,action,labels,taskAuthorization,"dddddddddddddddddddddddddddddddd",()->false,value->box[0]=value);return box[0];
+        perform(lease,current,action,labels,taskAuthorization,"dddddddddddddddddddddddddddddddd",()->false,value->{box[0]=value;completed.countDown();});
+        if(!completed.await(10,java.util.concurrent.TimeUnit.SECONDS))throw new AssertionError("production action callback did not arrive");return box[0];
     }
     public void enqueue(ActionDecision action,Cancellation cancel,ActionCallback callback){
         ObservedTargetLabels labels=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,current.id,current.packageName,java.util.Collections.singletonMap("n0",node==null?"":node.text));
         perform(lease,current,action,labels,taskAuthorization,"dddddddddddddddddddddddddddddddd",cancel,callback);
+        awaitWorkers();
+    }
+    /** Test scheduling barrier: real worker completion, never a synthetic release of the production slot. */
+    void awaitWorkers(){
+        try{actionIo.submit(()->{}).get(10,java.util.concurrent.TimeUnit.SECONDS);
+            long end=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(2);
+            while(nativeCancellationWorkPending()&&System.nanoTime()<end)Thread.sleep(1);
+            if(actionWorkPending()||nativeCancellationWorkPending())throw new AssertionError("actual action/cancellation worker did not drain");
+        }catch(Exception error){throw new AssertionError("worker fixture barrier failed",error);}
     }
     public int effects(){return opens+navigations+gestures+(node==null?0:node.actions);}
 {{scope_validate_dispatch}}

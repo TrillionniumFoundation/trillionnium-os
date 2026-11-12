@@ -136,7 +136,8 @@ final class BackgroundFreshnessHostTest {
             PhoneObservation observed=service.current;ObservedTargetLabels targets=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,observed.id,observed.packageName,
                     Collections.singletonMap("n0",ObservedTargetLabels.project(observed.nodes.get(0).label())));
             final HeptaAccessibilityService.ActionOutcome[] reply={null};service.perform(env.task,observed,action,targets,service.taskAuthorization,RUN,()->false,value->reply[0]=value);
-            check(reply[0]!=null,"synchronous fake result");return reply[0];
+            service.awaitWorkers();
+            check(reply[0]!=null,"bounded actual worker result");return reply[0];
         }
         public void close(){background.close();env.close();}
     }

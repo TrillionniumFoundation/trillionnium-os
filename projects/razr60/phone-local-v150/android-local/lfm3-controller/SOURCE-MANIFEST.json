@@ -1,10 +1,10 @@
 {
   "schema": "hepta.local-source.v3",
-  "version_code": 56,
-  "version_name": "0.56.0-natural-web-responsive-observation",
+  "version_code": 57,
+  "version_name": "0.57.0-off-main-action-stop-candidate",
   "functional_scope": "Separate action graph/Binder/journal/readback work, captured native cancellation and ordered session persistence from ordinary UI Stop while retaining original effect fences.",
-  "candidate_status": "unreleased_action_stop_followup_source",
-  "android_build": "A 112-source Java/D8-only receipt does not establish a full native/resource/APK build, original-signer assembly or phone qualification.",
+  "candidate_status": "unqualified_v57_action_stop_candidate",
+  "android_build": "The unchanged112Java map retains its original Java/D8-only evidence. Full native/resource/APK build and original-signer assembly must run against this exact v57 source; phone qualification remains separate.",
   "android_qualified": false,
   "phone_qualified": false,
   "production_build_inputs_count": 214,
@@ -24,8 +24,8 @@
     },
     {
       "path": "ACTION-EXECUTION-CONTRACT.md",
-      "bytes": 11960,
-      "sha256": "0a612534aceda23a96efe8ff886df6d7d262fc95cc61abbbdcd222d888247964"
+      "bytes": 12451,
+      "sha256": "931cdcc8b075622757b8e7ffeb899325df7adfcdef0023568530108595953d02"
     },
     {
       "path": "APP-DISCOVERY.md",
@@ -34,8 +34,8 @@
     },
     {
       "path": "AndroidManifest.xml",
-      "bytes": 2600,
-      "sha256": "fb30f7df7f7dcc31ccf397a13e6c1bc1d88d924453357c5eb5ad9c9931455d1f"
+      "bytes": 2596,
+      "sha256": "23719974d6de9b186a6ac25af35a41a95fa55d88630f84635f86f20ca83cba1b"
     },
     {
       "path": "BACKGROUND-BROKER.md",
@@ -194,8 +194,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 38160,
-      "sha256": "d225ad0e4d44c2ea54ffe62b1124d0c007321fb97aed42a487e3170dbf3a3e26"
+      "bytes": 38257,
+      "sha256": "054af2eb5d1b014e0ee56bde61bb90f2f654a56dbe6fd9aa3b59a9dab22e2b89"
     },
     {
       "path": "SESSION-RECOVERY.md",
@@ -6099,8 +6099,8 @@
     },
     {
       "path": "tests/background-session/BackgroundSessionHostTest.java",
-      "bytes": 30998,
-      "sha256": "9d413de77f5cab551a401cda83894e7d1d8f7f074bb5d946187a131c10eb17d6"
+      "bytes": 31060,
+      "sha256": "36d99ae364c928657a93d8d94f51ab1dba3e54d7e540a1f5e8e8135fce1e22a0"
     },
     {
       "path": "tests/background-session/BackgroundTaskTargetHostTest.java",
@@ -6109,8 +6109,8 @@
     },
     {
       "path": "tests/background-session/prepare_fixture.py",
-      "bytes": 9166,
-      "sha256": "625939694ca0363a6b969efc2e66cce87943f74ea668e4514cb138357e398951"
+      "bytes": 9195,
+      "sha256": "658cc893113308fe682e27b409834ef88ad99bab4f858855a10a95f211b1836c"
     },
     {
       "path": "tests/background-session/run_host_tests.py",
@@ -6534,8 +6534,8 @@
     },
     {
       "path": "tests/qualification-scope/BackgroundFreshnessHostTest.java",
-      "bytes": 21945,
-      "sha256": "ef89c919dd78336479c694bd9b5db01bc8a61b2f43d85dbbe509f31ab624a9f7"
+      "bytes": 21986,
+      "sha256": "6a59d4c3156dc98938c480330b02a0942e88272d06f290a9e931e55510bcf9c8"
     },
     {
       "path": "tests/qualification-scope/BackgroundObservationFixture.template",
@@ -6544,18 +6544,18 @@
     },
     {
       "path": "tests/qualification-scope/QualificationScopeHostTest.java",
-      "bytes": 46258,
-      "sha256": "26d1357f1b1d78ff868ce7a47f080eb3a34e1a9765f36fec041c53dca3be5737"
+      "bytes": 46504,
+      "sha256": "5e246111edfc6e90abbddd2417d03c0985e58e07d2e2546f5d5b4d32682a13c9"
     },
     {
       "path": "tests/qualification-scope/ServiceFixture.template",
-      "bytes": 7167,
-      "sha256": "81822790951c13560c5153ab50ff730131adc0373decb4a286bc91cf616735cb"
+      "bytes": 9130,
+      "sha256": "e6c89c19118cc681deacd4f8997a0a0169d6ab08a7456c0a1c87d515f48feded"
     },
     {
       "path": "tests/qualification-scope/SessionFixture.template",
-      "bytes": 1384,
-      "sha256": "9fff6bced790fa404b81053e48aba02daf7a6fc2ce0515a0bfef5e50617ef15b"
+      "bytes": 2158,
+      "sha256": "26a9dda638d8646cb48cd4c9d1c4d26f085893d97d665f63e82d5d80f5248051"
     },
     {
       "path": "tests/qualification-scope/UiFixture.template",
@@ -6624,8 +6624,8 @@
     },
     {
       "path": "tests/qualification-scope/fixtures/android/os/Handler.java",
-      "bytes": 555,
-      "sha256": "236f0b1729f0a0e819bd1d58d4f5324813da20bc66d13a849d92ca63a9c8157c"
+      "bytes": 768,
+      "sha256": "e7631b65d4dab4c25340e2fb33d1ddee6ef8ed25200ec31b5b74a2fd401b6e4c"
     },
     {
       "path": "tests/qualification-scope/fixtures/android/os/Looper.java",
@@ -6639,8 +6639,8 @@
     },
     {
       "path": "tests/qualification-scope/fixtures/android/os/SystemClock.java",
-      "bytes": 149,
-      "sha256": "0599b8e9b6b7672fdfd3b142f191dcdbcc8b45f5ba5abe45115258ccf86c0f82"
+      "bytes": 290,
+      "sha256": "37e661429987d5752b3639fd6c3691db828c058bce77b2f8a203aa5d7eeeacb2"
     },
     {
       "path": "tests/qualification-scope/fixtures/android/system/ErrnoException.java",
@@ -6649,8 +6649,8 @@
     },
     {
       "path": "tests/qualification-scope/fixtures/android/system/Os.java",
-      "bytes": 2742,
-      "sha256": "b46599dd8a55cd626150d6618dec11af2129c6800b6ebc9df6d9239bc8c4b389"
+      "bytes": 3120,
+      "sha256": "2c3660e0ee8893ce01540b7d1c31ca9a48f86ab604591ec1654ab3a8d58e821d"
     },
     {
       "path": "tests/qualification-scope/fixtures/android/system/OsConstants.java",
@@ -6664,8 +6664,13 @@
     },
     {
       "path": "tests/qualification-scope/fixtures/android/util/AtomicFile.java",
-      "bytes": 427,
-      "sha256": "518b9081da78cc0a64921cc7eb719fa6e2316cf1979dea31a20ca78a6deb90b1"
+      "bytes": 598,
+      "sha256": "2cc7f633b0b67ec002e11473e86bdfcdca9d5510cc6c4f3c66ef4b3877fc963d"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/util/Log.java",
+      "bytes": 204,
+      "sha256": "c6886335b39e83a683a0d5dd4616f645d7f72c571d5ba2f28d18ab3f208d79ae"
     },
     {
       "path": "tests/qualification-scope/fixtures/android/view/Display.java",
@@ -6708,9 +6713,14 @@
       "sha256": "11f5ec289e22cd69b740cdd1725a4f6170749571ce5fede476e64b57af026e5f"
     },
     {
+      "path": "tests/qualification-scope/fixtures/org/json/JSONTokener.java",
+      "bytes": 336,
+      "sha256": "ae5e4e1d99275442ecec64f63658d180af540ee73ddee6aa360d8bb9e22c1d62"
+    },
+    {
       "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/BackgroundSession.java",
-      "bytes": 3085,
-      "sha256": "2af68a1504533147dde2433ac957f7a1352a058e998c68c352deff54c687a710"
+      "bytes": 3515,
+      "sha256": "8431bb18c656db7904cac2d0bba56c0409297996cf4242dfe02e3f952fd7704e"
     },
     {
       "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/LocalModelEngine.java",
@@ -6734,8 +6744,8 @@
     },
     {
       "path": "tests/qualification-scope/prepare_fixture.py",
-      "bytes": 7902,
-      "sha256": "e034dff81b6392ddcf9d5ffcaa4225d4fc0d6967dfd510978234db0f9619da60"
+      "bytes": 8392,
+      "sha256": "989c8e8d20947ee7df1fe3f9583648defbb00f1189da15f3cb61d7e33c4997e0"
     },
     {
       "path": "tests/qualification-scope/run_host_tests.py",
@@ -6929,13 +6939,13 @@
     },
     {
       "path": "tests/warm-finalization/WarmFinalizationHostTest.java",
-      "bytes": 6647,
-      "sha256": "42d37b5677c469db401aacf2ca21f93e512f2cb67ac8f68cd3abffc2c36071e7"
+      "bytes": 6678,
+      "sha256": "87b747a2f5301761d53df4b3b8630455a0f4a47783765f1a9a17669b478a935e"
     },
     {
       "path": "tests/warm-finalization/prepare_fixture.py",
-      "bytes": 5713,
-      "sha256": "ae5bccaf044adfb755de0555fdff7d511254a399fb904dc5f103b5a8a36f5bb9"
+      "bytes": 8403,
+      "sha256": "89dafdb03398c0e23cf09a9e703dfcd34883720b90fa3b3e3083119025add236"
     },
     {
       "path": "tests/web-flight/CsairCalendarHostTest.java",
@@ -7238,5 +7248,29 @@
     "component_tree": "24e8d82d4befdab6f4f32ef7efeba7faad345a04"
   },
   "release_version_assigned": false,
-  "version_metadata_policy": "Inherited v56 metadata is unchanged; this source candidate is not a newly assigned release or APK."
+  "version_metadata_policy": "Android version57/name identifies this unqualified candidate; APK/signing, phone acceptance and production release are separate source-bound gates.",
+  "candidate_version_assigned": true,
+  "legacy_fixture_adaptation": {
+    "scope": "Legacy extracted fixture dependencies and asynchronous action/cancellation/session scheduling; production Java unchanged.",
+    "changed_files": [
+      "tests/background-session/BackgroundSessionHostTest.java",
+      "tests/background-session/prepare_fixture.py",
+      "tests/qualification-scope/BackgroundFreshnessHostTest.java",
+      "tests/qualification-scope/QualificationScopeHostTest.java",
+      "tests/qualification-scope/ServiceFixture.template",
+      "tests/qualification-scope/SessionFixture.template",
+      "tests/qualification-scope/fixtures/android/os/Handler.java",
+      "tests/qualification-scope/fixtures/android/os/SystemClock.java",
+      "tests/qualification-scope/fixtures/android/system/Os.java",
+      "tests/qualification-scope/fixtures/android/util/AtomicFile.java",
+      "tests/qualification-scope/fixtures/android/util/Log.java",
+      "tests/qualification-scope/fixtures/org/json/JSONTokener.java",
+      "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/BackgroundSession.java",
+      "tests/qualification-scope/prepare_fixture.py",
+      "tests/warm-finalization/WarmFinalizationHostTest.java",
+      "tests/warm-finalization/prepare_fixture.py"
+    ],
+    "assertion_policy": "Preserve original assertions; explicitly require the additional pre-write timeout event, inject readback failure at the actual effect endpoint, and wait for actual worker/queue drain before deterministic semantic and finalization assertions.",
+    "canonical_strict_gate": "Required on this exact complete tree; actual receipts are stored outside the component."
+  }
 }
