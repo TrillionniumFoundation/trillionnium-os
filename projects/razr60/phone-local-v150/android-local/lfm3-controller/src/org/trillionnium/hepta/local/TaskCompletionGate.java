@@ -50,6 +50,8 @@ public final class TaskCompletionGate {
             if(note.supported&&note.saveAndReopenRequested&&!note.draftOnly)
                 return new Contract(owner,NOTES,note.body,NotesOwnerIntent.SCHEMA+"/"+note.recognition,
                         note.bodyStartUtf16,note.bodyEndUtf16);
+            org.trillionnium.hepta.local.web.WebFlightGoal flight=org.trillionnium.hepta.local.web.WebFlightGoal.parse(owner);
+            if(flight!=null)return new Contract(owner,WEB,null,"official_csair_flight_owner.v1");
             // A method hint never grants success: no web-result provider exists.
             // Only unquoted OWNER text is considered, never screen or model data.
             String plain=unquoted(owner);
@@ -83,6 +85,21 @@ public final class TaskCompletionGate {
     private boolean workflowProofConsumed,workflowCompletionAccepted;
     private String workflowVerifiedObservationId;
     private Map<String,Object> workflowEvidence;
+    private WebFlightDomain webDomain;
+    void bindWebDomain(WebFlightDomain value){
+        require(value!=null&&WEB.equals(contract.kind)&&taskId.equals(value.taskId)
+                &&contract.ownerSha256.equals(value.ownerSha)&&authorization.sha256.equals(value.authorizationSha),
+                "web observation does not belong to the current immutable authorization");
+        webDomain=value;
+    }
+    void clearWebDomain(){webDomain=null;}
+    WebFlightDomain webDomainFor(NotesCompletionEvidence.Frame frame){
+        if(!"official_csair_flight_owner.v1".equals(contract.recognition))return null;
+        require(webDomain!=null&&frame!=null&&webDomain.observationId.equals(frame.observationId)
+                &&webDomain.generation.equals(frame.backgroundGeneration)&&webDomain.displayId==frame.displayId
+                &&webDomain.windowId==frame.windowId,"current official page evidence is unavailable");
+        return webDomain;
+    }
     public TaskCompletionGate(String task,String owner,TaskAuthorization authorization){
         require(id(task),"task identity required");taskId=task;contract=Contract.parse(owner,authorization);this.authorization=authorization;
     }
@@ -258,7 +275,10 @@ public final class TaskCompletionGate {
             NotesPhase facts=notesPhase(current);
             o.put("current_surface",facts.currentSurface());o.put("current_list_item_node_id",facts.currentListItem);
             o.put("current_editor_body_matched",facts.currentBody);
-        }else if(WEB.equals(contract.kind))o.put("web_query_dispatched",webDispatched);
+        }else if(WEB.equals(contract.kind)){
+            o.put("web_query_dispatched",webDispatched);
+            if(webDomain!=null)o.put("official_page",webDomain.evidence());
+        }
         o.put("writes_required_for_unknown_or_read_only_goal",false);o.put("grants_tool_authority",false);return o;
     }
     public Map<String,Object> evidence(NotesCompletionEvidence.Frame current){

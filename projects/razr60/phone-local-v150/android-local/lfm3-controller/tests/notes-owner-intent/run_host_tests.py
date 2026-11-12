@@ -20,9 +20,14 @@ def main():
     if out.is_relative_to(source):
         raise ValueError('test output must be outside immutable source')
     out.mkdir(parents=True, exist_ok=False)
-    files = [source / 'src/org/trillionnium/hepta/local/NotesOwnerIntent.java',
-             source / 'src/org/trillionnium/hepta/background/FixedIntentTools.java',
-             source / 'tests/notes-owner-intent/NotesOwnerIntentHostTest.java']
+    # The unchanged actual Owner grammar closure supplies the real authority compiler.
+    names = ('NotesOwnerIntent', 'TaskAuthorization', 'ActionDecision', 'DecisionGrammar',
+             'ObservedTargetLabels', 'ObservedAppLabels', 'ObservedScrollActions',
+             'ObservedImeEnter', 'AppCatalogueRanker')
+    files = [source / 'src/org/trillionnium/hepta/local' / (name + '.java') for name in names]
+    files += [source / 'src/org/trillionnium/hepta/background' / (name + '.java')
+              for name in ('FixedIntentTools', 'FixedIntentTarget')]
+    files.append(source / 'tests/notes-owner-intent/NotesOwnerIntentHostTest.java')
     pins = {str(p.relative_to(source)): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     classes = out / 'classes'
     classes.mkdir()

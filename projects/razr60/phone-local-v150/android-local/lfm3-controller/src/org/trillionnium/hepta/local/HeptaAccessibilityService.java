@@ -85,6 +85,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private NotesTaskPhaseGuard taskNotesPhase;
     private CalculatorTaskInputGuard taskCalculatorInput;
     private BackgroundSession taskBackground;
+    private WebFlightSession taskWeb;
     private SubmitAttemptGuard taskSubmitAttempts;
     private FixedIntentAttemptGuard taskFixedIntentAttempts;
     private final java.util.concurrent.ExecutorService backgroundIo=java.util.concurrent.Executors.newSingleThreadExecutor();
@@ -119,6 +120,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     @Override public void onDestroy() {
         LocalTaskController controller; synchronized(this){controller=ownedController;}
         if(controller!=null)controller.close();
+        if(taskWeb!=null)taskWeb.serviceRetired();
         requestStop();
         if(activeObservation!=null)failObservation(activeObservation,"无障碍服务已断开");
         if(live==this)live=null;clearSnapshot();backgroundIo.shutdown();super.onDestroy();
@@ -136,7 +138,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(Looper.myLooper()!=Looper.getMainLooper())throw new IllegalStateException("recovery service check must run on main thread");
         return live==this&&ownedController==expected&&(expected==null||!expected.isRunning())
                 &&activeObservation==null&&!capturePending
-                &&(taskBackground==null||taskBackground.released())
+                &&(taskBackground==null||taskBackground.released())&&(taskWeb==null||taskWeb.released())
                 &&(lease==null||(expected!=null&&lease.equals(expected.currentTaskId())));
     }
     synchronized void retireControllerAfterAcknowledgement(LocalTaskController expected,
@@ -148,14 +150,16 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(taskCalculatorInput!=null)taskCalculatorInput.retire();taskCalculatorInput=null;
         if(taskSubmitAttempts!=null)taskSubmitAttempts.retire();taskSubmitAttempts=null;
         if(taskFixedIntentAttempts!=null)taskFixedIntentAttempts.retire();taskFixedIntentAttempts=null;
-        ownedController=null;lease=null;stopListener=null;appDiscovery=null;taskScope=null;taskBackground=null;clearSnapshot();
+        ownedController=null;lease=null;stopListener=null;appDiscovery=null;taskScope=null;taskBackground=null;taskWeb=null;clearSnapshot();
     }
     private void requestStop() { Runnable value; synchronized(this){value=stopListener;} if(value!=null)value.run(); }
     public synchronized boolean acquireTask(String taskId,Runnable onStop) {
-        if(lease!=null || live!=this)return false;lease=taskId;stopListener=onStop;appDiscovery=null;taskScope=null;taskAuthorization=null;taskNotesPhase=null;taskCalculatorInput=null;taskBackground=null;taskSubmitAttempts=null;taskFixedIntentAttempts=null;return true;
+        if(lease!=null || live!=this||WebFlightSession.hasUnreleased(this))return false;taskWeb=null;lease=taskId;stopListener=onStop;appDiscovery=null;taskScope=null;taskAuthorization=null;taskNotesPhase=null;taskCalculatorInput=null;taskBackground=null;taskSubmitAttempts=null;taskFixedIntentAttempts=null;return true;
     }
     public synchronized void releaseTask(String taskId) { if(taskId.equals(lease)){
         if(taskBackground!=null&&!taskBackground.released())throw new IllegalStateException("后台空间未核验释放，不能释放任务租约");
+        if(taskWeb!=null&&!taskWeb.released())throw new IllegalStateException("网页工具未核验释放，不能释放任务租约");
+        taskWeb=null;
         if(taskNotesPhase!=null)taskNotesPhase.retire();taskNotesPhase=null;
         if(taskCalculatorInput!=null)taskCalculatorInput.retire();taskCalculatorInput=null;
         if(taskAuthorization!=null)taskAuthorization.retire();if(taskSubmitAttempts!=null)taskSubmitAttempts.retire();taskSubmitAttempts=null;if(taskFixedIntentAttempts!=null)taskFixedIntentAttempts.retire();taskFixedIntentAttempts=null;taskAuthorization=null;lease=null;stopListener=null;appDiscovery=null;taskScope=null;taskBackground=null;} }
@@ -204,6 +208,15 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         DisplayManager manager=(DisplayManager)getSystemService(DISPLAY_SERVICE);
         Display display=manager==null?null:manager.getDisplay(displayId);
         if(display==null||!display.isValid())throw new IllegalStateException("目标屏幕已不可用");return display.getRotation();
+    }
+    synchronized void bindWebFlightSession(String taskId,TaskAuthorization.Gate auth,WebFlightSession web){
+        TaskAuthorization.require(ownsAuthorization(taskId,auth)&&taskBackground!=null&&taskWeb==null
+                &&web!=null&&taskId.equals(web.taskId)&&web.authorization==auth,"web session does not belong to current task/background authority");
+        taskWeb=web;
+    }
+    synchronized void acceptWebReconciliation(WebFlightSession.Cleanup proof)throws Exception{
+        if(ownedController!=null&&ownedController.isRunning())throw new IllegalStateException("控制器尚未停止");
+        if(taskWeb!=null)taskWeb.acceptReconciliation(proof);
     }
     synchronized void bindBackgroundSession(String taskId,BackgroundSession background){
         QualificationScope.require(owns(taskId)&&taskScope!=null&&!taskScope.restricted()&&taskBackground==null
@@ -437,6 +450,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(action.toolChildOrigin!=null)action.toolChildOrigin.requireDispatch(id,auth.authorization.sha256,run,action);
         notesTaskPhaseFor(id,auth).requireCurrent(action);
         calculatorInputFor(id,auth).requireCurrent(action);
+        WebFlightSession web=taskWeb;if(web!=null)web.requireDispatch(action,run);
     }
     private JSONObject callbackAuthorizationEvidence(TaskAuthorization.Gate auth,boolean current,boolean stopped){
         if(auth==null)return null;

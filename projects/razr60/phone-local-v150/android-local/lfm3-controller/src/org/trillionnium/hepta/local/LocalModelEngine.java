@@ -90,9 +90,12 @@ public final class LocalModelEngine implements AutoCloseable {
         private final RunHandle taskOwner;
         private final AtomicBoolean cancelRequested = new AtomicBoolean(false);
         private final AtomicReference<Process> child = new AtomicReference<>();
+        private volatile OwnedWorkerCancellation ownedCancellation;
         public void cancel() {
             cancelRequested.set(true);
-            if(taskOwner!=null)taskOwner.cancel();
+            if(taskOwner!=null){taskOwner.cancel();return;}
+            OwnedWorkerCancellation owned=ownedCancellation;
+            if(owned!=null){owned.cancel();return;}
             Process p = child.get();
             if (p != null && p.isAlive()) p.destroy();
         }
@@ -103,13 +106,17 @@ public final class LocalModelEngine implements AutoCloseable {
     public final class WarmTask {
         public final String taskId;
         private final RunHandle owner=new RunHandle();
+        private final OwnedWorkerCancellation cancellation;
         private final AtomicReference<RunHandle> request=new AtomicReference<>();
         private final AtomicBoolean ending=new AtomicBoolean();
         private volatile WarmProcessSession session;
         private volatile LocalInference.TaskCleanup cleanup;
         private Future<LocalInference.TaskCleanup> finisher;
         private int acceptedRequests;
-        private WarmTask(String taskId){this.taskId=taskId;}
+        private WarmTask(String taskId){
+            this.taskId=taskId;cancellation=new OwnedWorkerCancellation(owner.runId,taskId);
+            owner.ownedCancellation=cancellation; // Fixed before either task or Process can be published.
+        }
         public String generation(){return owner.runId;}
         private File directory()throws IOException{return new File(new File(files,"runs"),generation()).getCanonicalFile();}
     }
@@ -148,7 +155,7 @@ public final class LocalModelEngine implements AutoCloseable {
                 if(task.finisher==null)task.finisher=executor.submit(()->finishWarmOwned(task));
                 finishing=task.finisher;
             }
-            return finishing.get(16000,TimeUnit.MILLISECONDS);
+            return finishing.get(OwnedWorkerCancellation.FINISH_FUTURE_MILLIS,TimeUnit.MILLISECONDS);
         }
         catch(Exception failure){
             if(failure instanceof InterruptedException)Thread.currentThread().interrupt();
@@ -159,13 +166,14 @@ public final class LocalModelEngine implements AutoCloseable {
     private LocalInference.TaskCleanup finishWarmOwned(WarmTask task){
         if(task.cleanup!=null)return task.cleanup;
         Process process=task.owner.child.get();boolean observed=false,force=false,valid=false,persisted=false;
-        Integer exit=null;String receiptHash=null;JSONObject nativeClose=new JSONObject();
+        Integer exit=null;String receiptHash=null;JSONObject nativeClose=new JSONObject();boolean cancelledSdkCleanup=false;
         JSONObject receipt=new JSONObject();
         try{
             if(task.session!=null){WarmProcessSession.Cleanup result=task.session.finish();observed=result.exitObserved;exit=result.exitCode;force=result.forceSent;}
             else if(process!=null){
-                process.destroy();if(!process.waitFor(2000,TimeUnit.MILLISECONDS)){process.destroyForcibly();force=true;}
-                if(process.waitFor(8000,TimeUnit.MILLISECONDS)){observed=true;exit=process.exitValue();}
+                task.cancellation.attach(process,task.generation(),task.taskId);
+                OwnedWorkerCancellation.Exit stopped=task.cancellation.awaitCancellation();
+                observed=stopped.observed;exit=stopped.code;force=stopped.forceSent;
             }
             privateDirectory(files.getCanonicalFile());privateDirectory(new File(files,"runs"));
             File directory=task.directory();privateDirectory(directory);
@@ -185,6 +193,9 @@ public final class LocalModelEngine implements AutoCloseable {
                     &&nativeClose.optInt("signal_observed",-1)==0&&nativeClose.optInt("last_request_status",-1)==0
                     &&nativeClose.optBoolean("sdk_destroy_attempted",false)&&nativeClose.optInt("sdk_destroy_rc",-1)==0
                     &&nativeClose.optBoolean("sdk_deinit_attempted",false)&&nativeClose.optInt("sdk_deinit_rc",-1)==0);
+            cancelledSdkCleanup=task.session!=null&&cancelledSdkCleanupBound(nativeClose,task.generation(),task.taskId,
+                    task.session.workerPid(),task.session.requestsSent(),task.acceptedRequests,
+                    task.owner.isCancellationRequested(),observed,exit,force,android.system.OsConstants.EPIPE);
             put(receipt,"schema","hepta.local-model.task-session.v1");put(receipt,"worker_generation",task.generation());put(receipt,"task_id",task.taskId);
             put(receipt,"app_uid",android.os.Process.myUid());put(receipt,"app_pid",android.os.Process.myPid());
             put(receipt,"process_started",process!=null);put(receipt,"process_exit_observed",observed);
@@ -192,7 +203,14 @@ public final class LocalModelEngine implements AutoCloseable {
             put(receipt,"requests_sent",task.session==null?0:task.session.requestsSent());put(receipt,"requests_accepted",task.acceptedRequests);
             put(receipt,"cleanup_known",process==null||observed);put(receipt,"native_session_binding_valid",valid);
             put(receipt,"native_session_receipt",nativeClose);put(receipt,"cancel_requested",task.owner.isCancellationRequested());
+            put(receipt,"cancellation_sdk_cleanup_binding_valid",cancelledSdkCleanup);
+            put(receipt,"cleanup_classification",process==null?"not_started":!observed?"exit_unobserved":
+                    cancelledSdkCleanup?"expected_cancelled_exit_143_with_observed_sdk_cleanup":
+                    valid?"normal_close_with_observed_sdk_cleanup":
+                    exit!=null&&exit==143?"cancelled_exit_143_sdk_cleanup_unverified":
+                    force&&exit!=null&&exit==137?"forced_exit_137":"other_exit_sdk_cleanup_unverified");
             put(receipt,"automatic_restart",false);put(receipt,"cross_task_reuse",false);
+            recordCancellation(receipt,task.cancellation);
             File appReceipt=new File(directory,"app-session-receipt.json");
             MobiMindPrivateFiles.writeNew(appReceipt,receipt.toString(2).getBytes(StandardCharsets.UTF_8));
             receiptHash=sha256(MobiMindPrivateFiles.read(appReceipt,OUTPUT_LIMIT,true).bytes);persisted=true;
@@ -201,6 +219,46 @@ public final class LocalModelEngine implements AutoCloseable {
         LocalInference.TaskCleanup result=new LocalInference.TaskCleanup(cleanup,process!=null,observed,exit,task.generation(),task.taskId,valid,receiptHash);
         if(cleanup){task.owner.child.set(null);active.compareAndSet(task.owner,null);PROCESS_ACTIVE.compareAndSet(task.owner,null);warmActive.compareAndSet(task,null);}
         task.cleanup=result;return result;
+    }
+
+    /** Cancellation cleanup is a separate proof; it never fabricates CLOSE or normal success. */
+    private static boolean cancelledSdkCleanupBound(JSONObject n,String generation,String taskId,long pid,int sent,int accepted,
+            boolean cancellationRequested,boolean observed,Integer exit,boolean force,int brokenPipeErrno){
+        if(!cancellationRequested||!observed||exit==null||exit.intValue()!=143||force||pid<=0
+                ||sent<1||sent>64||accepted<0||accepted>sent||brokenPipeErrno<=0)return false;
+        if(!"hepta.geniex-task-session.result.v1".equals(n.optString("schema"))
+                ||!generation.equals(n.optString("worker_generation"))||!taskId.equals(n.optString("task_id")))return false;
+        String[] truths={"model_metadata_unchanged_before_close","sdk_destroy_attempted","sdk_deinit_attempted"};
+        for(String key:truths)if(n.opt(key)!=Boolean.TRUE)return false;
+        if(n.opt("process_exit_observed")!=Boolean.FALSE||n.opt("close_requested")!=Boolean.FALSE)return false;
+        String[] keys={"pid","requests_received","model_hash_count","model_create_count","sdk_init_count","model_reset_count",
+                "signal_observed","last_request_status","sdk_destroy_rc","sdk_deinit_rc","control_done_attempts"};
+        long[] expected={pid,sent,1,1,1,sent,15,143,0,0,sent};
+        for(int i=0;i<keys.length;i++)if(exactReceiptInteger(n,keys[i])!=expected[i])return false;
+        long completed=exactReceiptInteger(n,"requests_completed"),requestStatus=exactReceiptInteger(n,"last_request_return_status");
+        if(completed<accepted||completed>sent||!(requestStatus==143&&completed==sent-1||requestStatus==0&&completed==sent))return false;
+        long delivered=exactReceiptInteger(n,"control_done_delivered"),error=exactReceiptInteger(n,"control_channel_last_errno");
+        Object failed=n.opt("control_channel_write_failed");
+        return failed==Boolean.FALSE&&error==0&&delivered==sent
+                ||failed==Boolean.TRUE&&error==brokenPipeErrno&&delivered==sent-1;
+    }
+    private static long exactReceiptInteger(JSONObject value,String key){
+        Object raw=value.opt(key);
+        return raw instanceof Integer||raw instanceof Long?((Number)raw).longValue():Long.MIN_VALUE;
+    }
+
+    /** API invocation evidence does not assert delivery, SDK health or successful generation. */
+    private static void recordCancellation(JSONObject receipt,OwnedWorkerCancellation cancellation){
+        OwnedWorkerCancellation.Snapshot s=cancellation.snapshot();JSONObject evidence=new JSONObject();
+        put(evidence,"schema","hepta.owned-worker-cancellation.v1");put(evidence,"worker_generation",s.generation);put(evidence,"task_id",s.taskId);
+        put(evidence,"requested",s.requested);put(evidence,"process_bound",s.processBound);put(evidence,"termination_started",s.terminationStarted);
+        put(evidence,"cooperative_grace_ms",OwnedWorkerCancellation.COOPERATIVE_GRACE_MILLIS);
+        put(evidence,"force_observation_ms",OwnedWorkerCancellation.FORCE_OBSERVATION_MILLIS);
+        put(evidence,"term_destroy_attempts",s.termAttempts);put(evidence,"term_destroy_returned",s.termReturned);
+        put(evidence,"force_destroy_attempts",s.forceAttempts);put(evidence,"force_destroy_returned",s.forceReturned);
+        put(evidence,"signal_error",s.signalError==null?JSONObject.NULL:s.signalError);
+        put(evidence,"process_exit_observed",s.exitObserved);put(evidence,"exit_code",s.exitCode==null?JSONObject.NULL:s.exitCode);
+        put(evidence,"sdk_cleanup_proven_by_this_object",false);put(receipt,"owned_worker_cancellation",evidence);
     }
 
     /** Shares the existing single-model slot and visible Stop with a model-only native worker.
@@ -537,7 +595,8 @@ public final class LocalModelEngine implements AutoCloseable {
             if(task!=null){
                 if(task.session==null){
                     process=builder.start();task.owner.child.set(process);
-                    task.session=new WarmProcessSession(process,task.generation(),task.taskId);
+                    task.cancellation.attach(process,task.generation(),task.taskId);
+                    task.session=new WarmProcessSession(process,task.generation(),task.taskId,task.cancellation);
                 }else process=task.owner.child.get();
                 h.child.set(process);
                 if(h.isCancellationRequested()||task.ending.get())task.session.cancel();
@@ -632,7 +691,12 @@ public final class LocalModelEngine implements AutoCloseable {
             if(e instanceof WarmProcessSession.Failure){WarmProcessSession.Failure failure=(WarmProcessSession.Failure)e;
                 timedOut=failure.timedOut;observed=failure.cleanup.exitObserved;exit=failure.cleanup.exitCode;forceSent=failure.cleanup.forceSent;}
             error = e.getClass().getSimpleName() + ": " + String.valueOf(e.getMessage());
-            if (process != null && process.isAlive()) {
+            if(task!=null&&process!=null){
+                task.cancellation.attach(process,task.generation(),task.taskId);
+                task.owner.cancel();
+                OwnedWorkerCancellation.Exit stopped=task.cancellation.awaitCancellation();
+                observed=stopped.observed;exit=stopped.code;forceSent|=stopped.forceSent;
+            }else if (process != null && process.isAlive()) {
                 process.destroy();
                 try {
                     if (!process.waitFor(2000, TimeUnit.MILLISECONDS)) { process.destroyForcibly(); forceSent = true; }
@@ -665,6 +729,7 @@ public final class LocalModelEngine implements AutoCloseable {
             put(receipt, "cancel_requested", h.isCancellationRequested());
             put(receipt, "timeout_observed", timedOut);
             put(receipt, "force_destroy_sent", forceSent);
+            if(task!=null)recordCancellation(receipt,task.cancellation);
             put(receipt, "elapsed_ms", SystemClock.elapsedRealtime() - start);
             put(receipt, "native_receipt", nativeResult);
             put(receipt, "raw_text_file", new File(run, "raw-text.txt").getPath());

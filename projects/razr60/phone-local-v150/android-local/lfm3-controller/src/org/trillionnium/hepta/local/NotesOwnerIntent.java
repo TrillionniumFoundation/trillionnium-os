@@ -37,6 +37,22 @@ public final class NotesOwnerIntent {
             + "|提醒|闹钟|报警|定时|日历"
             + "|记一下|记录一下|记到(?:备忘录|笔记)|记在(?:备忘录|笔记)"
             + "|(?:^|。)(?:只允许|仅允许|禁止|不得|不允许)");
+    // A complete comma-led note request owns the exact remainder as one body.
+    // Commas inside that body are data; additional actions or authority clauses
+    // still require explicit quotation instead of being silently masked.
+    private static final Pattern UNQUOTED_COMMA_PREFIX =
+            full(SPACE + POLITE + "(?:记一下|记录一下)[，,](.+)");
+    private static final Pattern AMBIGUOUS_COMMA_BODY = Pattern.compile(
+            "[；;！!？?]|然后|随后|并且|同时|顺便|另外|接着|还要|再帮我|并帮我"
+            + "|提醒|闹钟|报警|定时|日历"
+            + "|记一下|记录一下|记到(?:备忘录|笔记)|记在(?:备忘录|笔记)"
+            + "|只允许|仅允许|禁止|不得|不允许"
+            + "|删除|清空|擦除|下单|付款|支付|转账|发送|发微信|发邮件|拨打|打电话"
+            + "|打开|启动|关闭|退出|点击|返回|回到|滑动|滚动|输入|搜索|查询|查机票"
+            + "|创建|新建|添加|截图|截屏"
+            + "|\\b(?:then|also|remind|alarm|delete|erase|remove|open|launch|close|click|tap|scroll|swipe|send|call|pay|purchase|order|transfer|checkout)\\b"
+            + "|\\bonly[ \\t]+allow\\b|\\bdo[ \\t]+not[ \\t]+save\\b",
+            Pattern.CASE_INSENSITIVE);
     private static final Pattern DRAFT_ONLY = Pattern.compile(
             "(?:只|仅|先)(?:新建|打开|写)?(?:一个|一条)?(?:笔记)?草稿"
             + "|(?:新建|打开|写)(?:一个|一条)?(?:笔记)?草稿"
@@ -72,15 +88,23 @@ public final class NotesOwnerIntent {
             reason = why;
         }
 
-        /** Only this parser's completely consumed exact OWNER can be masked.
-         * Tool clauses outside the body remain byte-for-byte/offset-for-offset.
-         * The caller must still run its original tool authorization compiler.
+        /** Older literal forms mask only their exact body span. The new unquoted
+         * comma form must preserve the entire OWNER for every authority rule.
+         * This choice is data flow, not a second copy of the authority grammar.
+         */
+        public boolean masksOwnerBodyForAuthority() {
+            return supported && !"natural_note_comma_prefix.v1".equals(recognition);
+        }
+
+        /** Return authority text only for this parser's exact immutable OWNER.
+         * A comma-form body remains fully visible to the original compiler.
          */
         public String maskedOwnerForAuthority(String owner) {
             if (!supported || immutableOwner == null || !immutableOwner.equals(owner)
                     || !body.equals(owner.substring(bodyStartUtf16, bodyEndUtf16))) {
                 throw new IllegalArgumentException("EXACT_SUPPORTED_NOTES_OWNER_REQUIRED");
             }
+            if (!masksOwnerBodyForAuthority()) return owner;
             char[] chars = owner.toCharArray();
             for (int i = bodyStartUtf16; i < bodyEndUtf16; i++) chars[i] = ' ';
             return new String(chars);
@@ -107,6 +131,10 @@ public final class NotesOwnerIntent {
                 if (match.matches()) return candidate(owner, match, forms[i], true);
             }
         }
+        Matcher commaPrefix = UNQUOTED_COMMA_PREFIX.matcher(owner);
+        if (commaPrefix.matches()) {
+            return candidate(owner, commaPrefix, "natural_note_comma_prefix.v1", false, true);
+        }
         Pattern[] patterns = {UNQUOTED_PREFIX, UNQUOTED_DESTINATION, UNQUOTED_SUFFIX};
         String[] forms = {"natural_note_prefix.v1", "natural_note_destination.v1", "natural_note_suffix.v1"};
         for (int i = 0; i < patterns.length; i++) {
@@ -118,6 +146,11 @@ public final class NotesOwnerIntent {
     }
 
     private static Result candidate(String owner, Matcher match, String form, boolean quoted) {
+        return candidate(owner, match, form, quoted, false);
+    }
+
+    private static Result candidate(String owner, Matcher match, String form, boolean quoted,
+                                    boolean commaPrefix) {
         int start = match.start(1), end = match.end(1);
         String body = owner.substring(start, end); // Never trim/normalize/rewrite the source span.
         if (body.length() > MAX_BODY_UTF16) return refused(owner, false, "body_exceeds_complete_list_limit");
@@ -130,7 +163,8 @@ public final class NotesOwnerIntent {
             // Multiple unquoted clauses can also be authority or extra goals.
             // Require explicit quotation for such literal content instead of
             // swallowing it into an allegedly authorized body.
-            if (hasQuote(body) || AMBIGUOUS_UNQUOTED.matcher(body).find()
+            Pattern ambiguity = commaPrefix ? AMBIGUOUS_COMMA_BODY : AMBIGUOUS_UNQUOTED;
+            if (hasQuote(body) || ambiguity.matcher(body).find()
                     || body.indexOf('。') >= 0 && body.indexOf('。') != body.length() - 1
                     || body.endsWith("帮我")) {
                 return refused(owner, DRAFT_ONLY.matcher(body).find(), "ambiguous_unquoted_body_or_additional_goal");

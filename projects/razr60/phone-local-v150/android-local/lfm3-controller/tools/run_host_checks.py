@@ -14,7 +14,7 @@ import sys
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
-PURE_CLASSES=['NotesCreateWorkflow', 'NotesOwnerIntent', 'CalculatorTaskInputGuard', 'CalculatorGoalContract', 'CalculatorCompletionEvidence', 'NotesTaskPhaseGuard', 'TaskCompletionGate', 'NotesCompletionEvidence', 'FixedIntentAttemptGuard', 'LastModelDecisionProjection', 'BackgroundPermissionPreparation', 'TaskAuthorization', 'QualificationScope', 'ActionDecision', 'ActionPolicy', 'ObservedTargetLabels', 'ObservedAppLabels', 'ObservedScrollActions', 'ObservedImeEnter', 'SubmitAttemptGuard', 'ObservationStabilityGate', 'RecentActionProjection', 'PersistentActionPolicy', 'ImeVisibility', 'ObservationState', 'ObservedWindowMetadata', 'ObservedChildText', 'RepeatActionGuard', 'SameStateNoEffectGuard', 'DecisionGrammar', 'ModelProfile', 'NativeBudgetVerifier', 'LocalRuntimeConfig', 'ModelFileVerifier', 'ConservativeTokenBudget', 'MemoryAvailability', 'AppCatalogueRanker', 'SessionRecovery', 'MobiMindPins', 'MobiMindContract', 'MobiMindSessionContract', 'UiVenusPins', 'UiVenusInputContract', 'UiVenusRequestContract', 'UiVenusContract', 'UiVenusProcessContract', 'UiVenusSessionContract', 'DiagnosticStartupGate', 'ObservedTextProjection', 'ObservedTransitionProjection', 'CompactTaskHistory', 'PromptActionDomain', 'RecoveryQuiescence', 'RecoveryDispatch', 'RecoveryJournalTransaction', 'RecoverySlotHandoff', 'WarmProcessSession']
+PURE_CLASSES=['NotesCreateWorkflow', 'NotesOwnerIntent', 'CalculatorTaskInputGuard', 'CalculatorGoalContract', 'CalculatorCompletionEvidence', 'NotesTaskPhaseGuard', 'TaskCompletionGate', 'NotesCompletionEvidence', 'FixedIntentAttemptGuard', 'LastModelDecisionProjection', 'BackgroundPermissionPreparation', 'TaskAuthorization', 'QualificationScope', 'ActionDecision', 'ActionPolicy', 'ObservedTargetLabels', 'ObservedAppLabels', 'ObservedScrollActions', 'ObservedImeEnter', 'SubmitAttemptGuard', 'ObservationStabilityGate', 'RecentActionProjection', 'PersistentActionPolicy', 'ImeVisibility', 'ObservationState', 'ObservedWindowMetadata', 'ObservedChildText', 'RepeatActionGuard', 'SameStateNoEffectGuard', 'DecisionGrammar', 'ModelProfile', 'NativeBudgetVerifier', 'LocalRuntimeConfig', 'ModelFileVerifier', 'ConservativeTokenBudget', 'MemoryAvailability', 'AppCatalogueRanker', 'SessionRecovery', 'MobiMindPins', 'MobiMindContract', 'MobiMindSessionContract', 'UiVenusPins', 'UiVenusInputContract', 'UiVenusRequestContract', 'UiVenusContract', 'UiVenusProcessContract', 'UiVenusSessionContract', 'DiagnosticStartupGate', 'ObservedTextProjection', 'ObservedTransitionProjection', 'CompactTaskHistory', 'PromptActionDomain', 'RecoveryQuiescence', 'RecoveryDispatch', 'RecoveryJournalTransaction', 'RecoverySlotHandoff', 'WarmProcessSession', 'OwnedWorkerCancellation']
 
 
 def main():
@@ -31,6 +31,9 @@ def main():
             "external_model_used":False,"started_host_wall_ms":int(time.time()*1000),"checks":[]}
     source_dir=ROOT/"src/org/trillionnium/hepta/local"
     sources=[source_dir/(name+".java") for name in PURE_CLASSES]
+    sources += [source_dir/"web/WebFlightGoal.java",
+                ROOT/"tests/web-flight/legacy-boundary/WebFlightDomain.java"]
+    report["web_fixture_boundary"]="Legacy non-Web tests use a type-only WebFlightDomain whose methods throw; actual Web classes have an independent gate"
     sources += [ROOT/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","BackgroundOwnedTaskPolicy")]
     tests=sorted((ROOT/"tests").glob("*HostTest.java"))+[
         ROOT/"tests/action-parser/ActionDecisionHostTest.java",

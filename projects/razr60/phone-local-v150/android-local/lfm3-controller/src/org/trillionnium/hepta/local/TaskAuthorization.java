@@ -78,10 +78,11 @@ public final class TaskAuthorization {
     public static TaskAuthorization parse(String owner){
         validOwner(owner);
         NotesOwnerIntent.Result note=NotesOwnerIntent.parse(owner);
-        String unquoted=withoutQuotedData(note.supported?note.maskedOwnerForAuthority(owner):owner);
+        boolean maskBody=note.masksOwnerBodyForAuthority();
+        String unquoted=withoutQuotedData(maskBody?note.maskedOwnerForAuthority(owner):owner);
         Set<String> allowed=new TreeSet<String>(TOOLS),denied=new TreeSet<String>(),granted=new TreeSet<String>();
         List<String> rules=new ArrayList<String>();boolean onlySeen=false;
-        if(note.supported)rules.add("notes_literal_owner_span.v1");
+        if(maskBody)rules.add("notes_literal_owner_span.v1");
         for(String original:unquoted.split("[，,。；;！!？?\\r\\n]")){
             String clause=original.trim();if(clause.isEmpty())continue;
             Matcher only=ONLY.matcher(clause),deny=DENY.matcher(clause),grant=GRANT.matcher(clause);

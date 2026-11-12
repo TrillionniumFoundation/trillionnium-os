@@ -102,6 +102,8 @@ public final class PromptAdmissionFixture {
     if len(values) != 1:
         raise RuntimeError("one production pure-class list required")
     files += [package / (name + ".java") for name in values[0]] + [package / "PhoneObservation.java"]
+    files += [package / "web/WebFlightGoal.java",
+              source / "tests/web-flight/legacy-boundary/WebFlightDomain.java"]
     files += [source/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol")]
     digest = lambda value: hashlib.sha256(value).hexdigest()
     record = {
@@ -112,6 +114,7 @@ public final class PromptAdmissionFixture {
         "extracted_parts": {name: {"bytes": len(value.encode()), "sha256": digest(value.encode())}
                             for name, value in parts.items()},
         "text_byte_limit": int(text_limit[0]),
+        "web_fixture_boundary": "Type-only WebFlightDomain; every Web capability method throws",
         "not_android_runtime": True,
         "not_model_inference": True,
         "not_phone_test": True,

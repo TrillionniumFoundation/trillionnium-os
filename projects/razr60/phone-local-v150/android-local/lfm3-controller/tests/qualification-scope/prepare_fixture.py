@@ -23,6 +23,7 @@ def prepare(source, output):
     s = (pkg / 'HeptaAccessibilityService.java').read_text()
     pieces = {
         'service_interfaces_outcome': section(s, '    public interface ObservationCallback', '    private static volatile HeptaAccessibilityService live;'),
+        'web_binding': section(s, '    synchronized void bindWebFlightSession(', '    synchronized void bindBackgroundSession('),
         'background_binding': section(s, '    synchronized void bindBackgroundSession(', '    private void refreshApps()'),
         'app_catalogue': section(s, '    public AppCatalogueRanker.Page appCatalogue(', '    /** Each observation owns'),
         'lease': section(s, '    public synchronized boolean acquireTask(', '    private boolean locked()'),
@@ -74,6 +75,7 @@ def prepare(source, output):
           'QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','LocalTaskController','LocalInference','PhoneObservation']
     if (pkg/'ObservedAppLabels.java').is_file():pure.append('ObservedAppLabels')
     files=[pkg/(name+'.java') for name in dict.fromkeys(pure)]
+    files += [pkg/'web/WebFlightGoal.java', source/'tests/web-flight/legacy-boundary/WebFlightDomain.java']
     files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','FixedIntentDispatch','BrokerProtocol')]
     files += sorted(output.glob('*.java'))
     files += sorted((Path(__file__).parent/'fixtures').rglob('*.java'))
@@ -82,6 +84,7 @@ def prepare(source, output):
         'extracted':{n:{'bytes':len(v.encode()),'sha256':hashlib.sha256(v.encode()).hexdigest()} for n,v in {**pieces,**session_parts,**ui_parts,**{'background_'+n:v for n,v in snapshot_parts.items()}}.items()},
         'full_actual_classes':['TaskCompletionGate','NotesCompletionEvidence','LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles'],
         'boundary':'Android IO and effect endpoints are fakes; production admission/dispatch and controller code is executed',
+        'web_fixture_boundary':'Explicit empty Web journal only; real Web OWNER/selection and every helper action/cleanup throw AssertionError; actual Web classes have their separate gate',
         'phone_operations':False,'native_inference':False}
     (output/'EXTRACTION.json').write_text(json.dumps(record,indent=2)+'\n')
     return files, record

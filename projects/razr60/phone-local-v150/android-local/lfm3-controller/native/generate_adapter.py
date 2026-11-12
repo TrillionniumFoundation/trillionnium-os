@@ -28,7 +28,7 @@ def generate(root, out):
     last=adapted.index('static bool utf8(',first)
     adapted=adapted[:first]+'#include "sha256-dispatch.h"\n\n'+adapted[last:]
     old='if(n<=0)return false;p+=n;size-=(size_t)n;'
-    new='if(n<=0){int saved=errno;fprintf(stderr,"HEPTA_APPUID_PUBLISH stage=write_all fd=%d errno=%d error=%s\\n",fd,saved,strerror(saved));return false;}p+=n;size-=(size_t)n;'
+    new='if(n<=0){int saved=errno;fprintf(stderr,"HEPTA_APPUID_PUBLISH stage=write_all fd=%d errno=%d error=%s\\n",fd,saved,strerror(saved));errno=saved;return false;}p+=n;size-=(size_t)n;'
     assert adapted.count(old)==1
     adapted=adapted.replace(old,new)
     marker='    if(!parse(argc,argv,&o)){usage();return 64;}\n'
@@ -125,6 +125,23 @@ def generate(root, out):
     adapted=''.join(lines)
     adapted=add_prompt_evidence(adapted)
     adapted=add_warm_runtime(adapted)
+    # App-owned warm cancellation policy; the pinned upstream file stays exact.
+    # One-shot calls pass false and keep their original signal behavior.
+    replace_once('#include <signal.h>\n', '#include <signal.h>\n#include <poll.h>\n')
+    replace_once('static bool install_signals(void) {', 'static bool install_signals(bool owned_warm) {')
+    replace_once('    struct sigaction a;memset(&a,0,sizeof(a));a.sa_handler=on_signal;sigemptyset(&a.sa_mask);',
+                 '''    struct sigaction a;memset(&a,0,sizeof(a));a.sa_handler=on_signal;sigemptyset(&a.sa_mask);
+    if(owned_warm){
+        /* Eligible syscalls may restart; actual FastRPC behavior remains unproven. */
+        a.sa_flags=SA_RESTART;
+        /* Process.destroy may close the parent's control pipe. EPIPE must reach
+         * the warm owner so SDK cleanup runs; it is never a successful CLOSE. */
+        struct sigaction pipe_action;memset(&pipe_action,0,sizeof(pipe_action));
+        pipe_action.sa_handler=SIG_IGN;sigemptyset(&pipe_action.sa_mask);
+        if(sigaction(SIGPIPE,&pipe_action,NULL)!=0)return false;
+    }''')
+    replace_once('    if(!install_signals())return 74;',
+                 '    if(!install_signals(hepta_warm_enabled))return 74;')
     (out/'worker-appuid.c').write_text(adapted)
     difference=''.join(difflib.unified_diff(source.splitlines(True),adapted.splitlines(True),fromfile='frozen/worker-upstream.c',tofile='generated/worker-appuid.c'))
     (out/'worker-adapter.diff').write_text(difference)
@@ -137,6 +154,8 @@ def generate(root, out):
         'model_verification':'native full SHA256, exact filename/size/architecture, held descriptor, unchanged metadata',
         'sha256_dispatch':'runtime HWCAP_SHA2; target(sha2) function; exact upstream portable compression fallback',
         'model_digest_cache':False,'full_model_read_every_one_shot_request':True,
+        'warm_cancellation_policy':{'eligible_syscalls_restart':True,'sigpipe_ignored_only_in_warm_process':True,
+            'control_epipe_does_not_skip_sdk_cleanup':True,'sdk_or_phone_healthy_cancellation_verified':False},
         'task_worker_mode':{'schema':'hepta.geniex-task-request.result.v1','hash_scope':'one_full_read_per_owned_generation',
             'reuse_scope':'one_task','reset_every_request':True,'one_shot_contract_unchanged':True},
         'private_prompt_evidence':'create-only formatted bytes and actual direct input IDs; same private request directory',

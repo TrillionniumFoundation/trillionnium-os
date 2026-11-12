@@ -58,11 +58,11 @@ public final class LocalTaskSession {
     public void bind(Listener listener) { ui = new WeakReference<>(listener); publish(); }
     public void unbind(Listener listener) { if (ui.get()==listener) ui.clear(); }
     public boolean isRunning() { return pending || (controller!=null && controller.isRunning()); }
-    public boolean isBlocked() { return blocked||BackgroundSession.hasUnreleased(context); }
-    public boolean hasBackgroundLease(){return BackgroundSession.hasUnreleased(context);}
+    public boolean isBlocked() { return blocked||hasBackgroundLease(); }
+    public boolean hasBackgroundLease(){return BackgroundSession.hasUnreleased(context)||WebFlightSession.hasUnreleased(context);}
     public boolean isRecovering() { return recovering; }
     public boolean canAcknowledgeInterruption(){
-        return !recovering&&!isRunning()&&!BackgroundSession.hasUnreleased(context)&&((LocalProbeApplication)context).canAcknowledgeControlRecovery();
+        return !recovering&&!isRunning()&&!hasBackgroundLease()&&((LocalProbeApplication)context).canAcknowledgeControlRecovery();
     }
     public String state() { return state; }
     public String log() { return log; }
@@ -83,6 +83,7 @@ public final class LocalTaskSession {
         TaskAuthorization.require(authorization!=null,"任务授权合同缺失");authorization.requireOwner(owner);
         if (Looper.myLooper()!=Looper.getMainLooper()) throw new IllegalStateException("schedule must run on main thread");
         if (isRunning() || engine.isBusy() || isBlocked() || recovering) return false;
+        WebFlightSession.validateSelection(owner,selection);
         final HeptaAccessibilityService service=HeptaAccessibilityService.connected();
         if (service==null) throw new IllegalStateException("请先启用 Hepta 本地操作无障碍服务");
         if (owner==null || owner.trim().isEmpty()) throw new IllegalArgumentException("请先输入要完成的手机任务");
@@ -430,15 +431,22 @@ public final class LocalTaskSession {
         final long epoch=++generation;final HeptaAccessibilityService service=HeptaAccessibilityService.connected();
         recovering=true;setState("正在核验并释放上一次后台空间；不会恢复或重做任务…");
         recoveryWorker.execute(new Runnable(){public void run(){
-            BackgroundSession.Cleanup result=null;Exception failure=null;
-            try{result=BackgroundSession.reconcile(context);}catch(Exception error){failure=error;}
-            final BackgroundSession.Cleanup observed=result;final Exception error=failure;
+            BackgroundSession.Cleanup result=null;WebFlightSession.Cleanup webResult=null;Exception failure=null;
+            try{
+                // Recovery may need actual VD absence after a dead helper process.
+                // Each side retains its own proof; releasing the VD never proves helper retirement.
+                result=BackgroundSession.reconcile(context);
+                if(result!=null&&result.known)webResult=WebFlightSession.reconcile(context);
+            }catch(Exception error){failure=error;}
+            final BackgroundSession.Cleanup observed=result;final WebFlightSession.Cleanup observedWeb=webResult;final Exception error=failure;
             main.post(new Runnable(){public void run(){
                 if(generation!=epoch)return;
                 recovering=false;
                 if(error!=null){setState("后台空间清理未确认："+HeptaAccessibilityService.message(error));return;}
-                if(observed==null||!observed.known){setState("后台空间仍未确认释放，继续暂停新任务；请稍后再次清理");return;}
-                try{if(service!=null&&service==HeptaAccessibilityService.connected())service.acceptBackgroundReconciliation(observed.evidence);}
+                if(observed==null||!observed.known||observedWeb==null||!observedWeb.known){setState("后台空间或网页工具仍未确认释放，继续暂停新任务；请稍后再次清理");return;}
+                try{if(service!=null&&service==HeptaAccessibilityService.connected()){
+                    service.acceptBackgroundReconciliation(observed.evidence);service.acceptWebReconciliation(observedWeb);
+                }}
                 catch(Exception mismatch){blocked=true;setState("后台释放凭据未匹配原会话："+HeptaAccessibilityService.message(mismatch));return;}
                 setState("后台空间已确认释放。旧任务不会恢复；若会话仍中断，请确认中断后建立新会话。");
             }});
@@ -457,6 +465,7 @@ public final class LocalTaskSession {
                     .put("task_authorization",taskAuthorization==null?JSONObject.NULL:new JSONObject(taskAuthorization.evidence()))
                     .put("background_request",backgroundSelection==null?JSONObject.NULL:backgroundSelection.json())
                     .put("background_lease_unreleased",BackgroundSession.hasUnreleased(context))
+                    .put("web_helper_lease_unreleased",WebFlightSession.hasUnreleased(context))
                 .put("debug_nonce_sha256",nonceSha==null?JSONObject.NULL:nonceSha)
                 .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha))
                 .put("actual_scope_sha256",QualificationScopeConfig.nullable(actualScopeSha))
