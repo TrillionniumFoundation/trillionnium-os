@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.independent-source-review.v1",
+  "subject": "Web54 r7 explicit pinned warm_receipts import dependency",
+  "candidate": {
+    "git": "029ec420948d4a7228ae0dc82492cee096cd07b5",
+    "bytes": 130289,
+    "sha256": "cb011c384d64189c28a702ef9ea57d2f376b6bcee2429c26024b4bf3c6d2f2f1"
+  },
+  "base": {
+    "git": "0d60935d2b05f40271f1d53107ee77566d8d8f43",
+    "bytes": 146861,
+    "sha256": "481c609cbf8a9eb346e5a2c1d8707293164722d3fdf14d3cd5f8348242c03f6b"
+  },
+  "result": "No source-level blocker found in this eight-replacement dependency correction.",
+  "checks": [
+    "All three complete candidate source byte lengths/SHA256 values were independently recomputed. All eight ordered replacements reconstruct the new three files from the prior r6 files and reverse exactly to their actual r6 raw bytes.",
+    "Independently read the actual phone_acceptance.py 60278/411da source: its module scope imports warm_receipts and model_profiles. warm_receipts.py 7410/d5ab was fully hash-verified; it defines only the offline evidence helper and standard re dependency.",
+    "Independently read and fully hash-verified original frozen normal53 runner 106553/0d1 from Git51612. Its PINS includes actual warm_receipts/model_profiles/phone_acceptance. Its existing load_pinned rejects preloaded module names, reads and hashes the full approved raw source, registers the same named module, then compiles that exact source.",
+    "RUN now follows the original approved warm_receipts then model_profiles then phone_acceptance load order and includes warm_receipts in its reported PINS subset. Prepare inserts that same dependency through its unchanged, previously approved pinned r7 loader before the two existing imports.",
+    "The remaining edits are only explicit successor revisions and the new support SHA. No broad sys.path insertion, fabricated import module, UI action, lock rule, signed release, 13 review key, once-Start rule or existing result/cleanup interpretation was changed."
+  ],
+  "original_failure_preserved": {
+    "git": "d11fd51399edbc4739641d76a3a6027c94b6cfaf",
+    "bytes": 3804,
+    "sha256": "b7edac0f932df637ed03a08719c7a414ce6b2dcb5539372e62bd9743ee8ad704"
+  },
+  "boundaries": {
+    "source_review_only": true,
+    "new_import_gate_executed": false,
+    "old_ui_or_java_gates_rerun": false,
+    "host_calls": 0,
+    "phone_actions": 0,
+    "business_verified": false
+  }
+}

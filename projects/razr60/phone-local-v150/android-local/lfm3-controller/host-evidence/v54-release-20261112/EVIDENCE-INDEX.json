@@ -51,7 +51,10 @@
     "helper5_manual_instability_pair_count": 1,
     "helper5_manual_retirement_is_formal_task_cleanup": false,
     "web54_r6_automatic_ui_host_passed": true,
-    "web54_r6_flight_phone_result_in_this_index": false
+    "web54_r6_flight_phone_result_in_this_index": true,
+    "web54_r7_pinned_import_host_passed": true,
+    "web54_successful_flight_preparation_recorded": false,
+    "web54_flight_task_started": false
   },
   "deferred_originals": [
     {
@@ -162,6 +165,13 @@
       "sha256": "dd67a66b15544e450a891cd0f5ded302faf9bf017255173777b92efaef170e26",
       "git_blob": "e7791690bbe5dfb0d9fd13f5a217bee03c4c129c",
       "scope": "Exact actual helper5 build coordinator; no signing or phone."
+    },
+    {
+      "path": "helper5-badging-actual.txt",
+      "bytes": 4379,
+      "sha256": "6869ca9dfa4041c55ec202af807dd85e67c458dcd1ea05fe3f0bb63c27064c83",
+      "git_blob": "83e58eab87b60d06c64e597fc36f1130526dcf32",
+      "scope": "Actual signed helper5 aapt badging stdout; application label Hepta 网页 and launchable PageActivity."
     },
     {
       "path": "helper5-build-actual-unsigned.json",
@@ -472,6 +482,13 @@
       "scope": "Original scoped Notes54 evidence role: actual_native_request_result. Original false/limited flags are not rewritten."
     },
     {
+      "path": "notes54/app-receipt-actual.json",
+      "bytes": 13386,
+      "sha256": "702eeef282239d3ed857d2534e5ab58cbc316e2995345200239d5f70c66e5889",
+      "git_blob": "5362ea658969589297671d40ac123a76363d2113",
+      "scope": "Original Notes54 app receipt; preserve native/controller fields and original collector/whole-case limits."
+    },
+    {
       "path": "notes54/exact-short-start-request.json",
       "bytes": 1200,
       "sha256": "042526302713672f83b0db2f94f957d7c08daedae16055589a17e8218e9376e2",
@@ -598,6 +615,13 @@
       "scope": "Source/actual-preparation review of unique RUN wrapper, not a phone rerun."
     },
     {
+      "path": "publications/evidence-661deec-publication.json",
+      "bytes": 1413,
+      "sha256": "f5026d83ce2e669e4982761f28e20cd1a1948b5525bd1abefa83992d2d84c220",
+      "git_blob": "b657e958b992b94c81396f21b96faec55bd72a6d",
+      "scope": "Prior evidence-only CAS proof; source commit 42d3 and all 589 source blobs remain unchanged."
+    },
+    {
       "path": "root-reachable-evidence-handoff.json",
       "bytes": 6469,
       "sha256": "6af2f6a8e2af2aa79a3a73c9172258e4f8c722ea354a43e6b2091930c74036e8",
@@ -717,11 +741,109 @@
       "scope": "Sealed actual owner16, only r6 path/hash loader changes; phone execution not established by this source."
     },
     {
+      "path": "web54/flight-prepare-r1-import-failure-actual.json",
+      "bytes": 3804,
+      "sha256": "b7edac0f932df637ed03a08719c7a414ce6b2dcb5539372e62bd9743ee8ad704",
+      "git_blob": "d11fd51399edbc4739641d76a3a6027c94b6cfaf",
+      "scope": "Actual r6 ordinary preparation failed on missing warm_receipts before any task Start; original exit and false flags unchanged."
+    },
+    {
+      "path": "web54/flight-prepare-r2-recents-failure-actual.json",
+      "bytes": 47562,
+      "sha256": "2e25141eae4a2b145bff9446ac3c68bfdb429c9851844b84a62054d06f0a765d",
+      "git_blob": "883ef4f440e621dac461dad9b99a042f324cf600",
+      "scope": "Actual r7 preparation rejected an existing helper Recents card before Start; no guard was relaxed and no successful preparation claimed."
+    },
+    {
       "path": "web54/frozen-release-manifest.json",
       "bytes": 1723,
       "sha256": "acfbdf07f671facf65f6919142f8e4646952ec2a55524f313b4a4a5c9bcad3c3",
       "git_blob": "c98ca8d620298f7fff38156a79d44a4fff795489",
       "scope": "Exact main54/helper5 signed artifact manifest used by actual admission gates."
+    },
+    {
+      "path": "web54/pinned-import-r7-bad-transport-retained.json",
+      "bytes": 100750,
+      "sha256": "a08ad76d6c602cd665e3754590bece582b4f1b65bd7fb52c1009ee5acc4e56d7",
+      "git_blob": "a211f4b3db272f55d6fa12f93dbd8f3a0daf79b7",
+      "scope": "Rejected before host submission: binary-string base64 encoding corrupted two transport representations. Intended source/input unchanged; not executed."
+    },
+    {
+      "path": "web54/pinned-import-r7-candidate.json",
+      "bytes": 130289,
+      "sha256": "cb011c384d64189c28a702ef9ea57d2f376b6bcee2429c26024b4bf3c6d2f2f1",
+      "git_blob": "029ec420948d4a7228ae0dc82492cee096cd07b5",
+      "scope": "Eight exact runtime adapter replacements preserve r6; actual source modules loaded in their original warm/profiles/acceptance order."
+    },
+    {
+      "path": "web54/pinned-import-r7-correct-transport.json",
+      "bytes": 101375,
+      "sha256": "7485157cf3a0954219d370042e1b0e77910449d6b3798d838b5506fbd8241bfe",
+      "git_blob": "e36eff6d77292c93469693e104cd3792e474bbff",
+      "scope": "Exact corrected base64 for original source and gzip input; independently decoded before the unique actual host gate."
+    },
+    {
+      "path": "web54/pinned-import-r7-gate-review.json",
+      "bytes": 2709,
+      "sha256": "c5ad125eee04650f732c62a075f7d0e5162bbd6c0af8aedac46ab151662529fb",
+      "git_blob": "0b31a1f1f1ef22042158d71090dd9b9243b523da",
+      "scope": "Independent stage/test/loader and corrected base64 review; no phone action."
+    },
+    {
+      "path": "web54/pinned-import-r7-host-actual.json",
+      "bytes": 5827,
+      "sha256": "4130b2cf02983f3cb3508ac05590f379bc2ddaac72d734d1273a723c5cf81e60",
+      "git_blob": "fb8ad88e1de0e62a22a8fe2176634b818ebe8ecf",
+      "scope": "Actual six-case/130-assertion dependency import gate, exit 0; old import failures reproduced, new order succeeds and preloaded names rejected. No UI or phone."
+    },
+    {
+      "path": "web54/pinned-import-r7-root-admission.json",
+      "bytes": 960,
+      "sha256": "1f8db6de4aa1c0de826c97367016c585ccca7ad7c19da54c476fd7d51cacad87",
+      "git_blob": "d32ec9728e898f9e0dc8dc41c0a5da0761327361",
+      "scope": "Root admission of the exact pure-host import gate; phone preparation remains a separate action."
+    },
+    {
+      "path": "web54/pinned-import-r7-source-review.json",
+      "bytes": 2411,
+      "sha256": "b61e7237717b0070fa35bb887ccf0e11bae7bd2c98e715208593501bebf990f8",
+      "git_blob": "0b2732b482dd436a8c85ef43ff2a7b198b463670",
+      "scope": "Independent source-only review; not an execution receipt."
+    },
+    {
+      "path": "web54/r7-flight-root-prepare-wrapper.py",
+      "bytes": 2833,
+      "sha256": "19cb85357e784a6b6339cd11f307fecc6ccf90a0b2fc25936986d689122d26cc",
+      "git_blob": "592c517e6932b9c92b947618c16cba51a892a566",
+      "scope": "Root-only r7 preparation wrapper using actual owner16 identity; execution outcome is separate and did not pass preparation."
+    },
+    {
+      "path": "web54/r7-flight-root-run-pending.py",
+      "bytes": 3188,
+      "sha256": "d90976048776cba5a3ed787c695e86a9e0ec2a6384aaabf9cc8d34084b2a2190",
+      "git_blob": "f972b6798c5ae7ce68a1e7f3eaa0287819e8d574",
+      "scope": "Independent RUN template with five None late bindings; not an executed task or permission to run."
+    },
+    {
+      "path": "web54/r7-flight-root-wrapper-review.json",
+      "bytes": 4303,
+      "sha256": "319836f2eded3a35e63faf6eff72a8cf3ca169c73d949b94fcf684452b2a2d42",
+      "git_blob": "e4ae02aa35e95a37cc2be9170cd91bc550bd4c65",
+      "scope": "Independent mechanical wrapper review; original inputs and five pending bindings preserved."
+    },
+    {
+      "path": "web54/recents-inspection-native-ax-original.xml",
+      "bytes": 9858,
+      "sha256": "e9f1ba83f1715dfbc214043c2a7559b9378cabd8ba7644f41bedc53f39331271",
+      "git_blob": "f8dea88641751da0250d7ea380b90077b35a5b78",
+      "scope": "Complete native XML from the Root Recents inspection; no screenshot bytes or partial WMS range included."
+    },
+    {
+      "path": "web54/recents-inspection-root-actual.json",
+      "bytes": 8028,
+      "sha256": "fdd47d036c8cbfdee50ed08eb434f70395252904277067b445a05f3e801936c6",
+      "git_blob": "5dda2f6ec90287fcdd299b08c8737d7294400375",
+      "scope": "Root's ordinary Recents inspection result; no helper dismissal or successful Flight preparation claimed."
     }
   ],
   "source_tree": "fb355f7e25c2fe2639906bccffa25f54e538a1a8",
@@ -757,7 +879,7 @@
     "model_invoked": false,
     "business_verified": false
   },
-  "evidence_parent_commit": "653abc27a7bd3d3998952363625fc0e79c350838",
+  "evidence_parent_commit": "661deecb55985ec939a2c7426043c13cac40ce72",
   "actual_main54_install": {
     "git_blob": "81a481c9fe5ff2ba0487437e5fc44d8ce4acd537",
     "bytes": 17431,
@@ -792,6 +914,13 @@
       "continuity_verified": true,
       "continuity_checks": 225,
       "reacquisition_attempted": false
+    },
+    "app_receipt": {
+      "git_blob": "5362ea658969589297671d40ac123a76363d2113",
+      "bytes": 13386,
+      "sha256": "702eeef282239d3ed857d2534e5ab58cbc316e2995345200239d5f70c66e5889",
+      "elapsed_ms": 12915,
+      "scope": "App request elapsed time; not a collector duration, decode throughput, peak memory, or whole-case qualification."
     }
   },
   "actual_web54_r6": {
@@ -817,5 +946,78 @@
     "failed_samples_promoted_to_provider_success": false,
     "model_business_verified": false,
     "full_native_ax_git": "0efcb13855e21ade34c8897fada23aa180cdded9"
+  },
+  "actual_web54_r7": {
+    "candidate": {
+      "git_blob": "029ec420948d4a7228ae0dc82492cee096cd07b5",
+      "bytes": 130289,
+      "sha256": "cb011c384d64189c28a702ef9ea57d2f376b6bcee2429c26024b4bf3c6d2f2f1"
+    },
+    "import_stage": {
+      "git_blob": "fb8ad88e1de0e62a22a8fe2176634b818ebe8ecf",
+      "bytes": 5827,
+      "sha256": "4130b2cf02983f3cb3508ac05590f379bc2ddaac72d734d1273a723c5cf81e60",
+      "all_pass": true,
+      "cases": 6,
+      "assertions": 130,
+      "preloaded_name_checks": 6,
+      "phone_commands_executed": 0,
+      "old_gates_reexecuted": false
+    },
+    "raw_import_result": {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r7/IMPORT-RESULT.json",
+      "bytes": 2643,
+      "sha256": "592a97188329cef62d993375932b6cf5f711c2ec6dadf1754ae529c80acc9e06",
+      "full_original_bytes_retrieved": false,
+      "independently_full_sha_bound_by_stage": true
+    },
+    "preparation_attempts": [
+      {
+        "git_blob": "d11fd51399edbc4739641d76a3a6027c94b6cfaf",
+        "bytes": 3804,
+        "sha256": "b7edac0f932df637ed03a08719c7a414ce6b2dcb5539372e62bd9743ee8ad704",
+        "revision": "r6",
+        "out": "background-web-v54-lfm3-flight-prepare-r1",
+        "error": "ModuleNotFoundError: No module named 'warm_receipts'",
+        "prepared": false,
+        "task_started": false,
+        "start_tapped": false,
+        "target_app_operated": false
+      },
+      {
+        "git_blob": "883ef4f440e621dac461dad9b99a042f324cf600",
+        "bytes": 47562,
+        "sha256": "2e25141eae4a2b145bff9446ac3c68bfdb429c9851844b84a62054d06f0a765d",
+        "revision": "r7",
+        "out": "background-web-v54-lfm3-flight-prepare-r2",
+        "error": "RuntimeError: official Web helper appears in Recents; handle it through ordinary UI",
+        "prepared": false,
+        "task_started": false,
+        "start_tapped": false,
+        "target_app_operated": false
+      }
+    ],
+    "independent_run_template_pending": true,
+    "review_contract_keys": 13,
+    "independent_run_late_bindings": 5,
+    "phone_run_executed": false,
+    "flight_business_verified": false,
+    "modified_589_application_sources": false,
+    "rejected_bad_base64_submitted_to_host": false,
+    "recents_inspection": {
+      "result_git": "5dda2f6ec90287fcdd299b08c8737d7294400375",
+      "native_xml_git": "f8dea88641751da0250d7ea380b90077b35a5b78",
+      "helper_card_dismissal_verified_by_this_record": false,
+      "flight_preparation_verified_by_this_record": false,
+      "screenshot_bytes_included": false,
+      "partial_wms_bytes_claimed_complete": false
+    }
+  },
+  "actual_helper5_badging": {
+    "git_blob": "83e58eab87b60d06c64e597fc36f1130526dcf32",
+    "bytes": 4379,
+    "sha256": "6869ca9dfa4041c55ec202af807dd85e67c458dcd1ea05fe3f0bb63c27064c83",
+    "application_label": "Hepta 网页",
+    "launchable_activity": "org.trillionnium.hepta.webhelper.PageActivity"
   }
 }

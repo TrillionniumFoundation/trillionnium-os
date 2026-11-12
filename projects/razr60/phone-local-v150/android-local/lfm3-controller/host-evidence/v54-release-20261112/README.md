@@ -38,3 +38,17 @@ The new ordinary preparation follows the installed main54 UI: explicit Notes/hel
 [The actual focused host result](web54/automatic-ui-r6-stage-actual.json) records 12 Python cases/47 assertions and 5 cases/25 assertions compiled with the 14 actual Java authorization/goal classes. The older 28+5+8 gates were not rerun. These are host checks, not a Flight phone result.
 
 The r6 source, independent source/gate reviews and owner16 wrapper are included. A wrapper or review file by itself does not establish execution. Formal Flight query, flight-result extraction and model-driven public-price shopping remain unverified in this index. General ordering/payment is not supported by this narrow public-query flow.
+
+## Web54 r7: actual import fix and retained preparation failures
+
+The first ordinary Flight preparation failed before any task Start because the adapter loaded `phone_acceptance` before its actual `warm_receipts` dependency. [The original failure](web54/flight-prepare-r1-import-failure-actual.json) remains unchanged. The r7 adapter adds the pinned dependency in the same order used by the verified Notes loader; it does not add a substitute module or change the application's 589 sources.
+
+[The complete actual import-stage receipt](web54/pinned-import-r7-host-actual.json) reports six cases and 130 assertions. It reproduces both old import failures, verifies both new dependency sequences, and rejects preloaded module names. Its test executes the real loader and dependency statements without running either phone entry point. Older UI and release gates were not rerun. The smaller original `IMPORT-RESULT.json` is identified by its host path and full SHA in the stage; this tree does not claim that file's full bytes have been retrieved.
+
+The first transport representation was rejected before any host submission because two base64 strings decoded incorrectly. [That original candidate](web54/pinned-import-r7-bad-transport-retained.json) and [the corrected representation](web54/pinned-import-r7-correct-transport.json) are both retained. The intended source, test, gzip input and execution arguments were unchanged.
+
+[The subsequent r7 phone preparation](web54/flight-prepare-r2-recents-failure-actual.json) reached the ordinary idle checks and rejected an existing helper card in Recents. It still records `prepared=false`, `task_started=false`, `start_tapped=false` and `target_app_operated=false`. The guard was preserved. Root's RUN file remains a template with five pending evidence bindings; neither the host pass nor the template is a Flight business result.
+
+The [original Notes54 app receipt](notes54/app-receipt-actual.json) is also included. Its `elapsed_ms=12915` is an application-request measurement; it does not change the original collector failure or the separately qualified Notes scopes above.
+
+The [actual helper5 badging output](helper5-badging-actual.txt) identifies the launcher label as **Hepta 网页** and the launchable activity as `PageActivity`. Root's [ordinary Recents inspection](web54/recents-inspection-root-actual.json) and its [complete native XML](web54/recents-inspection-native-ax-original.xml) are retained separately. These records do not establish that the residual helper card was dismissed or that Flight preparation subsequently passed.
