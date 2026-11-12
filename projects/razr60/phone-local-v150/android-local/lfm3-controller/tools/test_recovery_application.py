@@ -17,7 +17,7 @@ class RecoveryApplicationTest(unittest.TestCase):
             output=Path(temporary);classes=output/"classes";classes.mkdir()
             sources=module.prepare(source,output/"fixture")
             compile_result=subprocess.run(
-                [javac,"--release","8","-Xlint:all","-Werror","-d",str(classes)]+[str(p) for p in sources],
+                [javac,"--release","8","-encoding","UTF-8","-Xlint:all","-Werror","-d",str(classes)]+[str(p) for p in sources],
                 stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,timeout=90)
             self.assertEqual(compile_result.returncode,0,compile_result.stdout)
             result=subprocess.run([java,"-cp",str(classes),

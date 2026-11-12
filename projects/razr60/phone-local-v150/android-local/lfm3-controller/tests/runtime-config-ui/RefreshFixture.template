@@ -69,6 +69,7 @@ public final class RuntimeConfigUiHostTest {
     private String backgroundModePreferenceError,backgroundSelectionPreferenceError;
     private String lastShownProbeId,lastShownVisualProbeId,lastShownUiVenusProbeId;
     private int renderCalls;
+    private boolean cachedModelFilePresent;
     // Android target-choice IO is a fixture boundary; the separate target gate executes its production policy.
     private void refreshBackgroundTaskTarget(){}
     private RuntimeConfigUiHostTest(File files){engine=new LocalModelEngine(files);}
@@ -78,6 +79,7 @@ public final class RuntimeConfigUiHostTest {
 {{navigation_idle}}
 {{choice_error}}
 {{refresh}}
+{{refresh_impl}}
 
     public static void main(String[] args)throws Exception {
         File files=new File(args[0]);File model=new File(files,"model/model.bin");
@@ -126,6 +128,6 @@ public final class RuntimeConfigUiHostTest {
         check(missing.modelInfo.text.contains("本地模型待导入"),"valid configuration without weights retains missing-model status");
         check(missing.startTask.enabled&&missing.runText.enabled,"this repair must preserve existing missing-weight entry behavior");
         check(invalid.renderCalls==0&&background.renderCalls==0&&valid.renderCalls==0&&missing.renderCalls==0,"refresh must not launch inference or synthesize results");
-        System.out.println("{\"passed\":"+checks+",\"failed\":0,\"production_methods_executed\":6}");
+        System.out.println("{\"passed\":"+checks+",\"failed\":0,\"production_methods_executed\":7}");
     }
 }

@@ -45,9 +45,11 @@ final class LocalProbeApplication {
     pieces = {
         "run_handle": section(engine, "    public static final class RunHandle {", "    /** Retains the existing process-wide slot"),
         "external_lease": section(engine, "    /** Shares the existing single-model slot", "    /** An aggregate startup barrier"),
+        "process_admission": section(engine, "    private static void claimProcess(", "    public Result lastResult()"),
+        "captured_cancellation": section(engine, "    public void cancelActive() {", "    JSONObject cancellationEvidence()"),
     }
     declarations = []
-    for prefix in ("    private static final AtomicReference<RunHandle> PROCESS_ACTIVE", "    private final AtomicReference<RunHandle> active", "    private final AtomicBoolean closed", "    public boolean isBusy()", "    public void cancelActive()"):
+    for prefix in ("    private static final AtomicReference<RunHandle> PROCESS_ACTIVE", "    private static final TaskCancellationQueue ACTIVE_CANCELLATION", "    private static final Object PROCESS_ADMISSION", "    private final AtomicReference<RunHandle> active", "    private final AtomicBoolean closed", "    private volatile TaskCancellationQueue.Ticket lastCancellation"):
         matches = [line for line in engine.splitlines() if line.startswith(prefix)]
         if len(matches) != 1:
             raise RuntimeError("nonunique declaration: " + prefix)
@@ -58,15 +60,22 @@ final class LocalModelEngine implements AutoCloseable {
  private final android.content.Context context;
  LocalModelEngine(android.content.Context context){this.context=context;}
 ''' + "\n".join(declarations) + "\n" + "\n".join(pieces.values()) + '''
- static void fixtureReset(){PROCESS_ACTIVE.set(null);}
+ static void fixtureReset(){if(ACTIVE_CANCELLATION.pending())throw new AssertionError("real cancellation worker still active");PROCESS_ACTIVE.set(null);}
  public void close(){closed.set(true);cancelActive();}
 }
 '''
     generated = output / "org/trillionnium/hepta/local/LocalModelEngine.java"
     generated.write_text(rendered)
     files += [generated, *[package / (name + ".java") for name in ("BackgroundPermissionPreparation", "BackgroundPermissionSession", "MobiMindContract", "MobiMindPins", "OwnedWorkerCancellation")]]
+    cancellation = package / "TaskCancellationQueue.java"
+    if cancellation not in files:
+        files.append(cancellation)
     record = {"schema": "hepta.permission-session-host-extraction.v1", "actual_classes": ["BackgroundPermissionSession", "BackgroundPermissionPreparation", "MobiMindPrivateFiles"],
               "actual_engine_parts": {name: hashlib.sha256(value.encode()).hexdigest() for name, value in pieces.items()},
+              "production_engine_sha256": hashlib.sha256(engine.encode()).hexdigest(),
+              "production_declaration_sha256": hashlib.sha256(("\n".join(declarations) + "\n").encode()).hexdigest(),
+              "task_cancellation_queue_sha256": hashlib.sha256(cancellation.read_bytes()).hexdigest(),
+              "cancellation_boundary": "Unchanged process-wide TaskCancellationQueue with exact Engine admission and captured cancellation; host tests await real ticket drain before resetting their process fixture",
               "android_io_fake": True, "process_launch_fake": True, "phone_tested": False, "real_fsync_or_magisk_tested": False}
     (output / "PERMISSION-EXTRACTION.json").write_text(json.dumps(record, indent=2) + "\n")
     return files, record

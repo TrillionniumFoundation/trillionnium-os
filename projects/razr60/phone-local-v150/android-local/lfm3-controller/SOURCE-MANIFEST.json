@@ -6104,13 +6104,13 @@
     },
     {
       "path": "tests/background-permission/BackgroundPermissionSessionHostTest.java",
-      "bytes": 11013,
-      "sha256": "c722a01190da4c632e2c98ebc3417a76a44dd4c336b360d3507cb019e1e21ee9"
+      "bytes": 13025,
+      "sha256": "46ec9e4458781bf1bda1f2f39f9e818de861b877388ed4a325ca1ad4dd3014a0"
     },
     {
       "path": "tests/background-permission/prepare_session_fixture.py",
-      "bytes": 4954,
-      "sha256": "d9bb8c33aa4c9167e6adb8789156470fb33abdfeaf04823e27c26a5ac944d4d0"
+      "bytes": 6080,
+      "sha256": "04b2ed5add1fb4518d70733b1f809e5f89105f024b9a3abaff70221441617327"
     },
     {
       "path": "tests/background-permission/run_host_tests.py",
@@ -6279,8 +6279,8 @@
     },
     {
       "path": "tests/exact-admission/prepare_fixture.py",
-      "bytes": 8422,
-      "sha256": "4aeac49605ac0b38b14a15745da5b977b25f0932757b327b7e35dd6972a05a52"
+      "bytes": 8465,
+      "sha256": "0a481be01da7fe1d1d536d95e242b43af3593f6cd644ae10a6643e8e2949cbc6"
     },
     {
       "path": "tests/fixed-intent-tools/FixedIntentIntegrationHostTest.java",
@@ -6509,8 +6509,8 @@
     },
     {
       "path": "tests/observation-pipeline/run_host_tests.py",
-      "bytes": 4809,
-      "sha256": "5ab626eebbd4f919757f8a72aa9ab3d0cbd0eb11feeeff222aef2b9d4c80373a"
+      "bytes": 4829,
+      "sha256": "5707201d16d5076d46da2742421463e46e2e0edc7c482e18c6d2cd9bdab6ea8e"
     },
     {
       "path": "tests/owned-worker-cancellation/NativeCancellationPipeHostTest.java",
@@ -6784,8 +6784,8 @@
     },
     {
       "path": "tests/recovery-application/RecoveryApplicationHostTest.java",
-      "bytes": 25083,
-      "sha256": "0b2e13aeeb195c4fc3147402c4fa24ac8d41da8194b870ca04c897e30b630114"
+      "bytes": 26949,
+      "sha256": "1f0778a4ea0b01f8a932cff4accab1dfd836e917cc28c4cc0ddc4c974370349c"
     },
     {
       "path": "tests/recovery-application/android/app/Application.java",
@@ -6839,8 +6839,8 @@
     },
     {
       "path": "tests/recovery-application/prepare_engine_fixture.py",
-      "bytes": 3787,
-      "sha256": "ba2b685fe6cab059fdf46b54ef7a45f8ac507544f2ae13153d69c1ab57d40a02"
+      "bytes": 4499,
+      "sha256": "75b914d6a850eee322d2d10840633a8ebd630d03141a03a2e49d8b34ea5ef49b"
     },
     {
       "path": "tests/recovery-application/run_host_tests.py",
@@ -6904,13 +6904,13 @@
     },
     {
       "path": "tests/runtime-config-ui/RefreshFixture.template",
-      "bytes": 10093,
-      "sha256": "13a7f296d930d63d59640cff94febdd809680c6e9045f18cf3ea31eebbd7a6bd"
+      "bytes": 10154,
+      "sha256": "a613fdde078c1c1d1ef26884306a1dec46782626c5e6fb907a6861985fc2154b"
     },
     {
       "path": "tests/runtime-config-ui/run_host_tests.py",
-      "bytes": 5273,
-      "sha256": "ee9defb40c4341fac07bc3de612979272dcb27780e0f75fcd2b92b46a8f4dc39"
+      "bytes": 5359,
+      "sha256": "525084ef9a84fd2c5e3905cd25b879fbf947fe37130d195d94703cdfd37837bf"
     },
     {
       "path": "tests/session-journal/SessionJournalHost.template",
@@ -7194,8 +7194,8 @@
     },
     {
       "path": "tools/test_recovery_application.py",
-      "bytes": 1657,
-      "sha256": "a9f77b19b9d23d43333b9a0d4ce7f527bde47cb2bd79b67938a91d995d219481"
+      "bytes": 1677,
+      "sha256": "95fcb62f19544215f007a7b0aa38e575075237b06338dda9cf1fc9cf0356e773"
     },
     {
       "path": "tools/test_recovery_inventory.py",

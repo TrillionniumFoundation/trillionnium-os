@@ -17,15 +17,18 @@ def prepare(source,output):
         "RunHandle":_section(engine,"    public static final class RunHandle {","    /** Retains the existing process-wide slot"),
         "external_path":_section(engine,"    /** Shares the existing single-model slot","    /** An aggregate startup barrier"),
         "recovery_path":_section(engine,"    /** An aggregate startup barrier","    public RunHandle start("),
+        "process_admission":_section(engine,"    private static void claimProcess(","    public Result lastResult()"),
+        "captured_cancellation":_section(engine,"    public void cancelActive() {","    JSONObject cancellationEvidence()"),
     }
     declarations=[]
     for prefix in (
         "    private static final AtomicReference<RunHandle> PROCESS_ACTIVE",
+        "    private static final TaskCancellationQueue ACTIVE_CANCELLATION",
+        "    private static final Object PROCESS_ADMISSION",
         "    private final AtomicReference<RunHandle> active",
         "    private final AtomicBoolean closed",
+        "    private volatile TaskCancellationQueue.Ticket lastCancellation",
         "    private final Context context;",
-        "    public boolean isBusy()",
-        "    public void cancelActive()",
     ):
         matches=[line for line in engine.splitlines() if line.startswith(prefix)]
         if len(matches)!=1:
@@ -40,11 +43,13 @@ def prepare(source,output):
         +"\n".join(declarations)+"\n"
         +"public LocalModelEngine(Context context){this.context=context.getApplicationContext();}\n"
         +parts["RunHandle"]+parts["external_path"]+parts["recovery_path"]
+        +parts["process_admission"]+parts["captured_cancellation"]
         +"@Override public void close(){closed.set(true);cancelActive();}\n}\n"
     )
     engine_file=output/"LocalModelEngine.java";engine_file.write_text(rendered,encoding="utf-8")
     names=["LocalProbeApplication.java","RecoverySlotHandoff.java","RecoveryDispatch.java",
-           "RecoveryQuiescence.java","RecoveryJournalTransaction.java","DiagnosticStartupGate.java","OwnedWorkerCancellation.java"]
+           "RecoveryQuiescence.java","RecoveryJournalTransaction.java","DiagnosticStartupGate.java","OwnedWorkerCancellation.java",
+           "TaskCancellationQueue.java"]
     actual=[package/name for name in names]
     fixtures=sorted((source/"tests/recovery-application").rglob("*.java"))
     if len(fixtures)!=11:
@@ -54,6 +59,7 @@ def prepare(source,output):
     record={
         "scope":"actual Application and exact Engine external/recovery members; Android/normal IO/Session/permission Session/diagnostic fixtures",
         "production_engine_sha256":digest(engine.encode()),
+        "cancellation_boundary":"Unchanged process-wide TaskCancellationQueue, captured cancelActive, process admission and recovery ownership; host tests drain the exact ticket and close the host executor after all cases",
         "extracted_parts":{name:{"bytes":len(value.encode()),"sha256":digest(value.encode())}
                            for name,value in parts.items()},
         "production_declaration_sha256":digest(("\n".join(declarations)+"\n").encode()),

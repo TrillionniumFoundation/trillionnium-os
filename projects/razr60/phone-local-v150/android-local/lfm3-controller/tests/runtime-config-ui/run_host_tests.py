@@ -49,6 +49,7 @@ def main():
     ui, engine = main_file.read_text(), engine_file.read_text()
     methods = {
         "refresh": method(ui, "private void refresh()"),
+        "refresh_impl": method(ui, "private void refresh(boolean inspectModelFile)"),
         "navigation_idle": method(ui, "private boolean rootManagerNavigationIdle()"),
         "choice_error": method(ui, "private String backgroundChoiceError()"),
         "model_directory": method(engine, "public File modelDirectory()"),

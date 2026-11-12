@@ -35,7 +35,7 @@ record={'schema':'hepta.observation-pipeline-host.v1','production_sha256':hashli
 compiler=[shutil.which('javac')] if shutil.which('javac') else ['java','-m','jdk.compiler/com.sun.tools.javac.Main']
 flags=['--release','8'] if a.release8 else ['-source','8','-target','8']
 classes=out/'classes';classes.mkdir()
-commands=[('compile',compiler+flags+['-Xlint:all' if a.release8 else '-Xlint:all,-options','-Werror','-d',str(classes),str(root/'src/org/trillionnium/hepta/local/ObservationStabilityGate.java'),str(root/'src/org/trillionnium/hepta/local/ActionExecutionState.java'),str(root/'src/org/trillionnium/hepta/local/TaskCancellationQueue.java'),str(fixture)]),('tests',['java','-cp',str(classes),'org.trillionnium.hepta.local.ObserverPipelineHost'])]
+commands=[('compile',compiler+flags+['-encoding','UTF-8','-Xlint:all' if a.release8 else '-Xlint:all,-options','-Werror','-d',str(classes),str(root/'src/org/trillionnium/hepta/local/ObservationStabilityGate.java'),str(root/'src/org/trillionnium/hepta/local/ActionExecutionState.java'),str(root/'src/org/trillionnium/hepta/local/TaskCancellationQueue.java'),str(fixture)]),('tests',['java','-cp',str(classes),'org.trillionnium.hepta.local.ObserverPipelineHost'])]
 record['stages']=[]
 for name,command in commands:
     begin=time.monotonic();result=subprocess.run(command,text=True,capture_output=True,timeout=60)
