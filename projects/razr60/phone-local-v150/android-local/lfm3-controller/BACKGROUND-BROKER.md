@@ -117,8 +117,14 @@ to blindly repeat it.
 - `launch` accepts only the exact captured package scope and a real exported,
   enabled launcher component. The privileged whole-root task query must work.
   If that package already has a task on display 0 or another display, launch is
-  refused. The launch intent has NEW_TASK and MULTIPLE_TASK with the owned
-  display in ActivityOptions. The launch uses the existing shell/root Binder
+  refused. Root-task metadata does not enumerate every buried activity; absence
+  in that query is not proof that a framework task-reuse launch is safe. The
+  broker therefore requires the existing standard/NONE fresh-task policy to be
+  eligible and otherwise returns `BACKGROUND_LAUNCH_CAPABILITY_UNAVAILABLE`
+  before changing Intent flags or dispatching launch. The policy evidence is
+  retained on refusal. An eligible launch additionally requests NEW_DOCUMENT,
+  keeps NEW_TASK and MULTIPLE_TASK, and clears RETAIN_IN_RECENTS. The owned
+  display is selected through ActivityOptions. The launch uses the existing shell/root Binder
   identity through `IActivityTaskManager.startActivityAsUser`, a null app caller,
   the fixed shell package and Android user 0. It does not use `Context.startActivity`:
   `ActivityThread.systemMain()` supplies a Context but does not register the
@@ -188,6 +194,13 @@ framing and replay table. There are 43 adversarial and successful cases. It
 does not instantiate Android classes or execute a device operation. The optional
 `--development-platform-only` is expressly a current-JDK development check and
 cannot satisfy the Java 8/Android release gate.
+
+The component-wide `tools/run_host_checks.py` also executes the actual launch
+admission callsite, policy and task-snapshot parser with explicit Android IO
+fakes. A buried-activity metadata counterexample is retained. Unsupported plans
+must refuse before Intent mutation or the fake launch endpoint; standard/NONE
+fresh-task plans remain admitted. This is a host logic check, not proof of
+Android task isolation or absence of main-screen effects.
 
 Full APK compilation and phone acceptance remain necessary: exact source/APK
 identity, current permissions, create/state, collision refusal, model-driven

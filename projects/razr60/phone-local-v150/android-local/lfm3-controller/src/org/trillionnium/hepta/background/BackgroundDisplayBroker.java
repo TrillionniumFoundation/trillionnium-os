@@ -317,8 +317,9 @@ public final class BackgroundDisplayBroker {
                     guard(r, true);
                     BackgroundOwnedTaskPolicy.Plan taskPolicy = BackgroundOwnedTaskPolicy.choose(
                         config.generation, displayId, r.packageName, currentActivity, intent.getFlags());
-                    intent.setFlags(taskPolicy.outboundFlags);
                     taskLaunchPolicies.put(r.requestId, taskLaunchPolicyEvidence(r, currentActivity, taskPolicy));
+                    requireIsolatedTaskLaunch(taskPolicy);
+                    intent.setFlags(taskPolicy.outboundFlags);
                     if(fixedTarget!=null){
                         if(!fixedToolsConsumed.add(r.operation))throw new BrokerProtocol.Refusal("FIXED_TOOL_ALREADY_CONSUMED");
                         fixedIntentProofs.put(r.requestId,new JSONObject().put("schema","hepta.background-fixed-intent.v1")
@@ -461,6 +462,17 @@ public final class BackgroundDisplayBroker {
         } catch (IllegalArgumentException invalid) {
             throw new BrokerProtocol.Refusal("LAUNCH_ACTIVITY_IDENTITY_INVALID");
         }
+    }
+
+    /**
+     * RootTaskInfo exposes task names plus top/base activities, not every buried activity.
+     * A missing package in that metadata cannot authorize a framework task-reuse mode.
+     * Keep only the supported standard/NONE fresh-task path; never migrate or clear a user task.
+     */
+    private static void requireIsolatedTaskLaunch(BackgroundOwnedTaskPolicy.Plan plan)
+            throws BrokerProtocol.Refusal {
+        if (plan == null || !plan.eligible)
+            throw new BrokerProtocol.Refusal("BACKGROUND_LAUNCH_CAPABILITY_UNAVAILABLE");
     }
 
     private JSONObject taskLaunchPolicyEvidence(BrokerProtocol.Request request,

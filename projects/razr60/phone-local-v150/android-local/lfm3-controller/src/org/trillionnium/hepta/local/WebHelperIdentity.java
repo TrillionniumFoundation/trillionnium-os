@@ -96,7 +96,7 @@ final class WebHelperIdentity {
         TreeMap<String,String> out=new TreeMap<String,String>();WebEvidenceJson.need(info.sourceDir!=null,"base APK path missing");out.put("base",info.sourceDir);
         String[] splits=info.splitSourceDirs,names=info.splitNames;
         WebEvidenceJson.need((splits==null||splits.length==0)==(names==null||names.length==0),"split identity missing");
-        if(splits!=null){WebEvidenceJson.need(names!=null&&splits.length==names.length&&splits.length<=32,"split identity count");
+        if(splits!=null&&splits.length>0){WebEvidenceJson.need(names!=null&&splits.length==names.length&&splits.length<=32,"split identity count");
             for(int i=0;i<splits.length;i++){WebEvidenceJson.need(names[i]!=null&&names[i].matches("[A-Za-z0-9_.-]{1,120}")&&splits[i]!=null,"split identity invalid");
                 WebEvidenceJson.need(out.put("split:"+names[i],splits[i])==null,"duplicate split identity");}}
         return out;

@@ -1,5 +1,23 @@
 # Standalone local Android controller contract
 
+## Current entry point: v56 candidate
+
+The current source is versionCode 56, 0.56.0-natural-web-responsive-observation.
+Read [INTEGRATED-V56](docs/INTEGRATED-V56.md) for its two frozen source inputs,
+preserved Web/native-calendar business logic, observation and cleanup fences,
+background-launch restrictions and remaining qualification gaps. Read
+[PUBLIC-BUILD](PUBLIC-BUILD.md) for the build contract and helper5/v3 dependency.
+The build default remains the existing LFM3/HTP profile with context 8192;
+explicit runtime configuration and unchanged profile pins determine task inputs.
+No Android, inference or phone qualification follows from these defaults.
+
+## Historical v13 contract
+
+The following records the older v13 foreground-only boundary and 4096 default.
+It is retained as historical design context. Current behavior and qualification
+requirements are the v56 contract above; the historical version and resource
+values below are not current build settings.
+
 This subtree is a source-only candidate for `org.trillionnium.hepta.local`,
 versionCode 13 / 0.13.0-local-gemma4. It is outside the active Cargo/G1 delivery graph.
 It changes no owner-open protocol, protected package, ingress, claims, SELinux

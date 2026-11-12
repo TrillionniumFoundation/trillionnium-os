@@ -1,55 +1,25 @@
 {
   "schema": "hepta.local-source.v3",
-  "version_code": 30,
-  "version_name": "0.30.0-local-exact-admission",
-  "derived_from_code16_source_manifest_sha256": "c75ab9b8aa01705e7dd0805baa45dfc41650837874ff8618e28442b73d77454f",
-  "android_build": "separate actual build receipt; source and host results do not establish Android or phone qualification",
+  "version_code": 56,
+  "version_name": "0.56.0-natural-web-responsive-observation",
+  "functional_scope": "Forward-integrate current natural Web city/date/query, native calendar and public-product business source with process-wide responsive observation, cleanup and launch repairs.",
+  "candidate_status": "source_integrated_separate_exact_validation_receipts_required",
+  "android_build": "Source closure and host results do not establish an Android build, same-signer assembly or phone qualification.",
+  "android_qualified": false,
   "phone_qualified": false,
-  "functional_scope": "Separate Java sizing projection from native exact-token admission while preserving complete bounded observation and action facts; retain task-owned worker, Stop finalization, native limits and independent goal gates.",
-  "ui_venus_native_host_build_receipt_sha256": "3dac4c0e91bd9c088e7330394953f6df74596feff04c7e815672ee8d3392e705",
-  "ui_venus_phone_action_dispatch_connected": false,
-  "ui_venus_ordinary_app_runtime_qualified": false,
-  "default_text_configuration_changed": false,
-  "visual_planner_merged": false,
-  "native_tool_protocol_merged": false,
-  "thinking_protocol_merged": false,
-  "wake_permission_added": false,
-  "execution_freshness_relaxed": false,
-  "mobimind_phone_action_dispatch_connected": false,
-  "candidate_status": "host_candidate_phone_pending",
-  "merge_parents": {
-    "frozen_code20_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
-    "history_guard_source_inputs_sha256": "a42e176bb279aee8d398efcf36f532a7d92e48d86bb31aa7b18a505abca7dc74",
-    "recovery_source_inputs_sha256": "7170999df0b8e6ba434eb9574bf28f4ce3a456c659e95ecee00f8eaffe46a214",
-    "retained_code20_ancestry": {
-      "actual_external19": {
-        "source_manifest_sha256": "9817f2af3937a402b52176565233c763869495d203080deffd7e279f9f621b69",
-        "git_head": "fdb7eca8d3a434c515da547365fcc47bb2f510d3"
-      },
-      "our_frozen19": {
-        "source_manifest_sha256": "1e5b5c409ac5d730ffab739b04a131fac269740c52701f644fd92dfd6700649a"
-      },
-      "retained_prior_merges": {
-        "actual_external18": {
-          "source_manifest_sha256": "2b32fd6c47cabd3c6fe778c3ebe18cb04933c19c4bd7f8289b9569e8c61a3954",
-          "git_head": "bd4abff7d1867dcb796bee1da9a194a0da152496"
-        },
-        "our_frozen18": {
-          "source_manifest_sha256": "0f57435b236a647b7ebad4bb7796ad28fabe7d1e7302c8978eef0dc9ffe14adb"
-        },
-        "common_observation17": {
-          "source_manifest_sha256": "3f7602f4c9ff73adfaabfdcf93496c043c10b59e6b5b75304bc13c473d3a2074"
-        }
-      }
-    }
+  "integration_sources": {
+    "common_base": "7dee83d838b2c76b3abe3a3e61d7837316f40853",
+    "business_v54": "42d3a0f447807659c0f78c8273edee01dd1b734f",
+    "repair_v55": "b949261f8caaf821c7a4618d0bab09a718238802"
   },
-  "fresh_default_preserved_from_actual_external18": true,
-  "git_ancestry_parent": "4aba44f42d734d2636bf24205fef8df49f7c9855",
-  "derived_from_code20_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
-  "recovery_process_inventory_scope": "app_visible_procfs_same_uid",
-  "old_native_cleanup_claim": "unknown",
-  "recovery_ui_phone_qualified": false,
-  "native_source_unchanged_from_code20": false,
+  "production_build_inputs_count": 211,
+  "qualification_policy": "Current qualification is external evidence bound to this exact source and actual build inputs; historical reports in this repository are not current qualification.",
+  "current_validation": {
+    "strict_host_gate": "Required: complete JDK supporting javac --release 8, Xlint:all and Werror; retain the exact input map and external receipt.",
+    "android_compiled": false,
+    "phone_tested": false,
+    "external_model_used": false
+  },
   "files": [
     {
       "path": ".gitignore",
@@ -63,8 +33,18 @@
     },
     {
       "path": "AndroidManifest.xml",
-      "bytes": 1867,
-      "sha256": "1042f5e6fa3288e3dfc17bf319459146ba381aa204c144d7b55c43393be09d2c"
+      "bytes": 2600,
+      "sha256": "fb30f7df7f7dcc31ccf397a13e6c1bc1d88d924453357c5eb5ad9c9931455d1f"
+    },
+    {
+      "path": "BACKGROUND-BROKER.md",
+      "bytes": 12777,
+      "sha256": "5ac0d79f5d66f403ec30b3bd8ec2b033b4f39d447bd1cdc30d3d1f1b1c48d7e4"
+    },
+    {
+      "path": "BACKGROUND-CONTROL.md",
+      "bytes": 4077,
+      "sha256": "ab7d94b8670a5cf33853512a5de7464ded0c1d47d3f22f37f00f3edf5dd23a69"
     },
     {
       "path": "CODE10-LABELS.md",
@@ -97,6 +77,61 @@
       "sha256": "b5cede8f6464c4ebbd8a65cebd171418e5399f4d24277acba8c9ab44fe58e044"
     },
     {
+      "path": "CODE37-TASK-AUTHORIZATION.md",
+      "bytes": 2471,
+      "sha256": "1052dc18484282efec05117efaca486536f61f1e8a11919632f67a6e3f8f1bb5"
+    },
+    {
+      "path": "CODE38-IME-SUBMIT.md",
+      "bytes": 6933,
+      "sha256": "7e65eeb4987d2e75011b7196a4e185de70a5c8202eb4b96510c83720b95b9391"
+    },
+    {
+      "path": "CODE39-BACKGROUND-SETUP.md",
+      "bytes": 6357,
+      "sha256": "e49efe6c95fa3efecad343edee44aa3318766752adc7e4ab5a66a286437311d0"
+    },
+    {
+      "path": "CODE40-PROGRESS-GUIDANCE.md",
+      "bytes": 6554,
+      "sha256": "e86ecc9e4b02654ed39afe02d706f589aaa5fcd9e6b78b83beaf6f957662fd2a"
+    },
+    {
+      "path": "CODE41-BACKGROUND-REPAIR.md",
+      "bytes": 6953,
+      "sha256": "ba27ff60b51bc313541da0496b569299af478be097d6826383c9418ecd82da69"
+    },
+    {
+      "path": "CODE42-OBSERVATION-REPAIR.md",
+      "bytes": 6721,
+      "sha256": "3d2b996f7400d84e1895a30e1ee855640394d436f41f97c70553397b9a29f6b4"
+    },
+    {
+      "path": "CODE43-FIXED-INTENT-TOOLS.md",
+      "bytes": 8342,
+      "sha256": "1d0040c08ebf062b8ed43aaa5434b5485e06d1f7d756ea3044045213d5424875"
+    },
+    {
+      "path": "CODE44-COMPLETION-EVIDENCE.md",
+      "bytes": 7397,
+      "sha256": "0534d3136bfc5a486473d99d75e67090f90ace6bfade48ee8d89c649ef67cdcf"
+    },
+    {
+      "path": "CODE45-OBSERVED-CLICKS.md",
+      "bytes": 4845,
+      "sha256": "ec0b27d67e1c592bb9df5d95f228fc4b39d2f429488bb001a99ce720db5397d2"
+    },
+    {
+      "path": "CODE46-NOTE-PHASES.md",
+      "bytes": 8900,
+      "sha256": "281e12bc9e0e6ca32406529ea3c26cf75bfb7013d1746eead622c52940aafe50"
+    },
+    {
+      "path": "CODE47-NOTE-RECOVERY.md",
+      "bytes": 5727,
+      "sha256": "978e8eb930fcc1aff2cd22895d2df671f2633d04603bd80a73bd64b73409ba54"
+    },
+    {
       "path": "CODE5-PROGRESS.md",
       "bytes": 3893,
       "sha256": "9020e4874527803b9d1173ec785009c65e7a228f719184cf5348014dd36f2acd"
@@ -123,8 +158,8 @@
     },
     {
       "path": "CONTROL-INTEGRATION.md",
-      "bytes": 6585,
-      "sha256": "fe768f6d1da537c843484793f15c2b78053631582833f7ee8827aa9971f56c5e"
+      "bytes": 7556,
+      "sha256": "c9e95744520bd2b8f72428386e12a9574982f9e93f763d4c1bd99516f71e4614"
     },
     {
       "path": "HOST-CHECKS.json",
@@ -133,23 +168,33 @@
     },
     {
       "path": "LOCAL-CONTROL.md",
-      "bytes": 6990,
-      "sha256": "88cf6bae07a7c2648b24b44580d817e5bb5cd89af00867786fd2c1e5ca99a6b7"
+      "bytes": 7481,
+      "sha256": "c4efb7ae2a95f95710e1604412e22fc03df008db1aec7d15fe2c82326f818673"
     },
     {
       "path": "MODEL-PROFILES.md",
-      "bytes": 10488,
-      "sha256": "fa3d2f77ba00a8ae4a43e6be672ad9c8efac4f93abb05a26087926930b3eb25e"
+      "bytes": 11944,
+      "sha256": "b2d3321ff598a654fd4de0780abb66ad12e301ca2282daea2859de771c1fd16f"
+    },
+    {
+      "path": "OWNER-AUTHORIZATION.md",
+      "bytes": 7730,
+      "sha256": "9d496c5d908a1177b2b7792a7d244b6c4765e1b891ad5339c98f5f9fc5daf501"
     },
     {
       "path": "PUBLIC-BUILD.md",
-      "bytes": 7710,
-      "sha256": "9528e1e1c5f80a63b22b2d445ec14b622b1b12cdab33aee8d350e3123e20934d"
+      "bytes": 7982,
+      "sha256": "a255ee98650865e10122ad042c49c67c74e49333c2dcb2e66ae0c1850c2cd691"
+    },
+    {
+      "path": "QUALIFICATION-SCOPE.md",
+      "bytes": 11903,
+      "sha256": "ebe41cf6de0cc441f0d848149825a46aadd747553a32ef5fadd11d6ba5827434"
     },
     {
       "path": "README.md",
-      "bytes": 9644,
-      "sha256": "52985c6e8fb0075636e2bb160b9128610112304f3a383d43ff55dec2ac401a05"
+      "bytes": 37108,
+      "sha256": "de1ffc203fe94a883def9dfd25cba0357d09b7acd4488f1c2aa73bef779f94e2"
     },
     {
       "path": "SESSION-RECOVERY.md",
@@ -168,8 +213,8 @@
     },
     {
       "path": "assemble_pocket4.py",
-      "bytes": 17830,
-      "sha256": "1e90fd239610ae2c0e0ae042307998590d0234c4b519799c19971b629a2c9156"
+      "bytes": 19580,
+      "sha256": "5905861e913097b906262ae1b0deee7f97738bc25b9b7670e8e744710c35b378"
     },
     {
       "path": "build_mac.py",
@@ -235,6 +280,21 @@
       "path": "docs/CODE9-OBSERVED-CHILD-LABELS.md",
       "bytes": 4563,
       "sha256": "5c04459babc6a99d86d53fc0f460dcf8e48243526c29dbeef25bc6c1bda41ab4"
+    },
+    {
+      "path": "docs/INTEGRATED-V56.md",
+      "bytes": 5752,
+      "sha256": "c856876b5a82a9f869537fd5b42dd9aefe3436efcf9bce1fbf5af0334474b6e4"
+    },
+    {
+      "path": "docs/RESPONSIVE-OBSERVATION.md",
+      "bytes": 3756,
+      "sha256": "e7c8dfb86fa68ff0787e743a05db5bde6e98383423f4b1b89ac2652d095ba062"
+    },
+    {
+      "path": "docs/UNIFIED-V55.md",
+      "bytes": 5444,
+      "sha256": "dd4e8890514e7b1406cc26413b267ba048770f0889dfb404fc96817acd3db0b6"
     },
     {
       "path": "host-evidence/code10-final-r2/ActionDecisionHostTest.stderr",
@@ -4052,9 +4112,199 @@
       "sha256": "e438dc73a410464c9a9b2df3e0446111ebd40c0f7865dc86cedce5758b5d3613"
     },
     {
+      "path": "host-evidence/v54-release-20261112/EVIDENCE-INDEX.json",
+      "bytes": 14593,
+      "sha256": "20d02ecdb0d177b23c09d3a8d88e3617786683ed2032be864922bf7d6a2b7068"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/README.md",
+      "bytes": 3735,
+      "sha256": "7de3780f7d71a87f0707d5047f03ab26de95e2ed01475c5adeb0e361d5bf8434"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/helper4-mi-capture-failure-actual.json",
+      "bytes": 31641,
+      "sha256": "d568beb210462b361987c596c167e8eaa8bef78a8b3055e262dba9e35cdf6a0c"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/helper4-mi-open-actual.json",
+      "bytes": 31713,
+      "sha256": "fcd46aadac04edafcad6d5537860d13ca05d29787a4615ef7cc2c2a5ae9e9427"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/helper4-mi-retire-r1-failure-actual.json",
+      "bytes": 9706,
+      "sha256": "47a0a1954fe6803450fb840bf3c520a4b88ac3e2b8abf069093f2c4c5f04276c"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/helper4-mi-retire-r1-owner.json",
+      "bytes": 341,
+      "sha256": "75678b1896d820bcbddcdf7cf3c6b7e146b0822bffea736cddd8c9d30b297f43"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/helper4-mi-retire-r2-actual.json",
+      "bytes": 36034,
+      "sha256": "9bc5b680c09613f04f7662c225eacdf025340879bf3f6c0702bc8e6730f6cf3f"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/helper4-mi-retire-r2-bg-review.json",
+      "bytes": 5525,
+      "sha256": "c71216f61e4d908056e10d6ffd5ba0ab07d4a7a79e909fec4ee2ff6663fb5800"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/helper4-mi-retire-r2-close-raw.json",
+      "bytes": 1632,
+      "sha256": "d10cedcc236d4d93114f3c3cae3515ef7dac658dca34f565f9802e86bcda4c0e"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/helper4-mi-retire-r2-owner.json",
+      "bytes": 341,
+      "sha256": "83f31eaae00db3ee366f686e3204f980952b86cce66f22600c60bb1a780d16ed"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/helper4-mi-retire-r2-root-review.json",
+      "bytes": 2839,
+      "sha256": "75913f2e4063786254b12d70ea803f886cc204548edf9522add72f0bd4ea5c9b"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/helper4-upgrade-actual.json",
+      "bytes": 74275,
+      "sha256": "3e449e0aba6af4d143810157a7ef0aba7e39e2d5ad74ffedd9b7935fe225aa90"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/helper5-android-build-entry.py",
+      "bytes": 22167,
+      "sha256": "dd67a66b15544e450a891cd0f5ded302faf9bf017255173777b92efaef170e26"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/helper5-build-actual-unsigned.json",
+      "bytes": 129146,
+      "sha256": "cce5d75af6af48fb00b72b96475d686b61b89538c60cbd424fd99e79c58396a8"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/helper5-source-delta-and-host-fixtures.json",
+      "bytes": 155587,
+      "sha256": "7e59fcd9dcc4d15cce60e35973151cf6320aec175e8f528217887fc4866a2056"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/main54-code5-r6-android-actual.json",
+      "bytes": 28841,
+      "sha256": "a037b49f05ea48caccb2902b95bbb2314a5f767e230138dd14ae3a16851ee4b2"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/main54-compiler-preservation-delta.json",
+      "bytes": 7327,
+      "sha256": "bbabd9429b8b0345c61ab4e0fd59dcd90feb97f32ddedd0465bf10c57d083aed"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/main54-final-p4-entry.py",
+      "bytes": 25413,
+      "sha256": "6035e351d469773ea7d9ac44892c5f4dbe75ad4300d3961d1f46429440aeb3cb"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/main54-final-source-input.json",
+      "bytes": 1139016,
+      "sha256": "e195da919e53c6aa36c31f8b0f0a96f23ef67d895f2860b61fb72e73bd29cf6e"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/main54-p4-canonical-fixture-root-review.json",
+      "bytes": 2028,
+      "sha256": "6f258e87d1b801253cb59ba8cc01fcf9cac65621217596fdd29f100279265af9"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/main54-p4-r3-failure-actual.json",
+      "bytes": 7674,
+      "sha256": "895145f1b2316dea01b1fc23658d030d75cd7645848c4271af3cfe4d284e6b87"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/main54-p4-r4-host-start-original.json",
+      "bytes": 720,
+      "sha256": "33ce27616f1db3dc52fd8e070cfdc20fa888a7920ebc7bc84716fa30ccb3ff83"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/main54-p4-r4-pty-original-proof.json",
+      "bytes": 1046,
+      "sha256": "6acaed06f7ef579419a88338a0780a7d850909fa29d5f514a4cd40287923c860"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/main54-p4-r4-source-blob-map.json",
+      "bytes": 147796,
+      "sha256": "679997d2f987a656b2e705c55664cc37ad65043d0cbcb80acfeeaace600f79c1"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/main54-p4-r4-stage-original.json",
+      "bytes": 15314,
+      "sha256": "21ffbb2aad0b7b5657d58f6581cce751863ecd13852417a6f88efbc57fee594e"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/main54-query-r3-javac-failure.txt",
+      "bytes": 1601,
+      "sha256": "28317931459ccd332f80ee44c0652431704e2f58938065106e45fdf229411fb6"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/main54-query-r4-failure-actual.json",
+      "bytes": 24346,
+      "sha256": "3ed6f5de2cbfcf435d319e46f5a96025e7386a44638d79d90621d008570228e2"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/main54-query-r5-android-actual.json",
+      "bytes": 28581,
+      "sha256": "e7d296a159fd7620aa2d1146c0c6dd0e5dd4a0601d28b7d95f35032e7203ab84"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/main54-source-inventory.json",
+      "bytes": 102673,
+      "sha256": "8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/root-reachable-evidence-handoff.json",
+      "bytes": 6469,
+      "sha256": "6af2f6a8e2af2aa79a3a73c9172258e4f8c722ea354a43e6b2091930c74036e8"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/v53-cancel-actual.json",
+      "bytes": 137745,
+      "sha256": "b5e8191c952456fad910aad500fca060d65808648842f4cc83f2fcbead0877a2"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/v53-cancel-independent-review.json",
+      "bytes": 10605,
+      "sha256": "a91d60051ba2c545e0923e769170f146ec806ca9fb0364909c6c63453fd48f23"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/v53-normal-independent-replay-r2.json",
+      "bytes": 31865,
+      "sha256": "a2a4e73a3bf46e6256810bdc702228b9f375ca9459baff1207e4327172f5d3f9"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/v53-normal-notes-actual.json",
+      "bytes": 273739,
+      "sha256": "0edd6666e19c2e37469fe4a8e4aefa3edcbb2a3cb747aecc6e060dd91fe7c8c5"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/v53-recovery-actual.json",
+      "bytes": 141943,
+      "sha256": "274323579331a407ddc697b2101bda360240713427be24eb727649071eccfbce"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/v53-recovery-independent-replay.json",
+      "bytes": 35308,
+      "sha256": "4c2a847f2ddb8cc1995cafd8758e1f85fe12d4c4e40db507bf707f8a612407dc"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/v53-recovery-npu-facts.json",
+      "bytes": 1804,
+      "sha256": "ad4cf8a2b43d4e966025e250178e87df885455aa7cc73c2a4291cf33344fdf48"
+    },
+    {
+      "path": "host-evidence/v54-release-20261112/v53-recovery-scoped-root-review.json",
+      "bytes": 2160,
+      "sha256": "5e2dd4f031e0258b0115a3f234296a2ad0154cb33e206dad1e60b8231bc07ab2"
+    },
+    {
       "path": "native/generate_adapter.py",
-      "bytes": 10585,
-      "sha256": "d5bc2ec3c5d11e9e55a7323e07868c36fcfe1492883559ed0c9e7a27df958daf"
+      "bytes": 13420,
+      "sha256": "986fe422f33b370e553feee605964bab0e6f496ae49fee1f0471bc178b4455e7"
     },
     {
       "path": "native/mobimind-runtime-pins.json",
@@ -4063,8 +4313,8 @@
     },
     {
       "path": "native/model-profile.h",
-      "bytes": 2899,
-      "sha256": "ebd6af35cb207475348224757cfb23ba08ebe94fb31441f669b899c8129eca49"
+      "bytes": 3071,
+      "sha256": "09922c38d2398cc01ea8a0079244f492b2e451c0cf8a6d30566c7d7c0e429112"
     },
     {
       "path": "native/model-runtime.inc",
@@ -4107,14 +4357,19 @@
       "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
     },
     {
+      "path": "native/sampler-profile.inc",
+      "bytes": 1918,
+      "sha256": "ded53bf62e861a365a9c41e10bb914efe81844d2d9b2e936fe2b69ee5b211169"
+    },
+    {
       "path": "native/sha256-dispatch.h",
       "bytes": 7208,
       "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
     },
     {
       "path": "native/tests/lfm25_profile_contract.c",
-      "bytes": 1434,
-      "sha256": "abafcecc5d7d2a87a8d579f39831d38c09c2f85bc498269bff9301765ca15821"
+      "bytes": 1433,
+      "sha256": "5cde7d0dd61e1dc3752ff3d122128a48e7ea3a207be6f2e502e8f0fc58dd8427"
     },
     {
       "path": "native/tests/mobile_agent_profiles_contract.c",
@@ -4123,8 +4378,13 @@
     },
     {
       "path": "native/tests/model_profile_contract.c",
-      "bytes": 1669,
-      "sha256": "c045929ef885803050275d3f206d25552121bd13a059dd4a7b2005105f7f1229"
+      "bytes": 2153,
+      "sha256": "8d37685f165c120da7611ffb377c09e89d7b3c950acfe7ee0186d72652e64e22"
+    },
+    {
+      "path": "native/tests/nanbeige42_profile_contract.c",
+      "bytes": 1398,
+      "sha256": "107a4f842c1dd564efe63c7ca6c914fa292849bfdbd8bdc0b21501cbfd88579c"
     },
     {
       "path": "native/tests/parent_death_contract.c",
@@ -4148,8 +4408,8 @@
     },
     {
       "path": "native/tests/qwen35_profile_contract.c",
-      "bytes": 2418,
-      "sha256": "5d699490eaa673baebd8db28fd03c95ccde1690996511da3605dbe6c03249b63"
+      "bytes": 2417,
+      "sha256": "aa112ff49b852004cff9faf76a4f6751d1bdebed248f1287d057ac891bddf6e6"
     },
     {
       "path": "native/tests/sha256_probe.c",
@@ -4157,9 +4417,14 @@
       "sha256": "4a88ff711def3aa8a9b0697830664e6d42488869be7d128441feb8d194ee9fb2"
     },
     {
+      "path": "native/tests/test_profile_sampler.py",
+      "bytes": 17565,
+      "sha256": "0030b33307fea8a6e3e7353623a3f93e57ac28e56eb524d2dcde3052c64f750d"
+    },
+    {
       "path": "native/tests/test_prompt_evidence.py",
-      "bytes": 6059,
-      "sha256": "89796beae2e41301a0e55650fb454b7dddae553d4d8ac756414ca2e3aa8fc713"
+      "bytes": 6563,
+      "sha256": "e32248746246be65274e8958165ff0a2f9d46f2f5199931e19de25662ede9ff2"
     },
     {
       "path": "native/tests/test_sha256.py",
@@ -4243,8 +4508,8 @@
     },
     {
       "path": "native/warm-protocol.inc",
-      "bytes": 8760,
-      "sha256": "5766de2194fd35cce08c6061db369420234acb2c993d7cf91c058c3ca593a86b"
+      "bytes": 10493,
+      "sha256": "fc6314b10d3d5542832eeca02184a42ab6fd97c118d9d89c6e55dfed83770268"
     },
     {
       "path": "native/warm-state.inc",
@@ -4260,6 +4525,101 @@
       "path": "native/worker-upstream.c",
       "bytes": 30066,
       "sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/CONTINUATION.md",
+      "bytes": 4115,
+      "sha256": "902357ee81f6243fe931c1e1d4dc686690a6b895ee883d996ee158acbb549cd1"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/RESULTS.md",
+      "bytes": 12674,
+      "sha256": "676c3c0cc20d7ef93be475ce3914ce34987099ef568f596c8f8feeb65db07290"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/VALIDATION.json",
+      "bytes": 2803,
+      "sha256": "a058e8a930d71d2c9d5363e9e8801f3cf10183a8ed6c4d1332ac2d375c417f5d"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/build-receipts/background-broker-RESULT.json",
+      "bytes": 3082,
+      "sha256": "b24e8e74c080c13d3450d102d06a3d4b771fd81b91ca478225e05ab91b5a2306"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/build-receipts/background-client-VALIDATION.json",
+      "bytes": 8718,
+      "sha256": "3a7eab8b78f42315c100a68b6f9af83910f376d403e1172476700819abcaa4a1"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/build-receipts/mac-STAGE-RESULT.json",
+      "bytes": 1186,
+      "sha256": "d6dbb486e2b6badce1cd909241e95702a1268a3c268702f39b64d6685b7b3819"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/build-receipts/pocket4-STAGE-RESULT.json",
+      "bytes": 1098,
+      "sha256": "b920fd240ff33888c549fdf3b68a926b122dc940dccfa8fc416650b457325833"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/build-runners/v36_assembly.py",
+      "bytes": 25971,
+      "sha256": "872f1189057ab71cd440094359ce335f89eeb3cedea2774ca73cd9b475d1df2d"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/build-runners/v36_stage.py",
+      "bytes": 10140,
+      "sha256": "59f71c7e566c221bdd976849652e35b40205d726aa11edb7f10fdae4a1f82f01"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/model-audit/PERFORMANCE-NOTES.md",
+      "bytes": 7712,
+      "sha256": "d95d4184c88a6c45d30182349b03d954f179c66acefed455fed9de06364bab43"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/model-audit/retained-model-timing-audit.json",
+      "bytes": 21188,
+      "sha256": "fc472d72d344e885f7d1f5773786b0600d4a5481e3ee576d5869efc652d88073"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/phone-tests/helpers/v35_identity.py",
+      "bytes": 34830,
+      "sha256": "a4a751cf03956783e551f54b16dd37769f00d5b7cd2a0225b667becbc6e6d003"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/phone-tests/r2/PREPARATION.json",
+      "bytes": 22166,
+      "sha256": "1545adc885e0946c0a986705bd42e768c01808a2f3984d11fa3fdaa2d986ae0f"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/phone-tests/r2/README.md",
+      "bytes": 15516,
+      "sha256": "ca77773076628b7dbdb3928ea55ba58a76c5158b869c0367cc81933a4c2e94b8"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/phone-tests/r2/background_calculator_acceptance.py",
+      "bytes": 38237,
+      "sha256": "533c27c1d1ae400862b4322ff269aeb9557a1f113c539c253f8c7f9f091ff7af"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/phone-tests/r2/test_process_identity.py",
+      "bytes": 6678,
+      "sha256": "83064bbba65bb64032e792a57dbf82655f54122bc44b5ee3d52fb46f50894ba0"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/runtime-nanbeige-npu4096.candidate.json",
+      "bytes": 147,
+      "sha256": "2a059b7eed2688ecaebe34f0f2c5963205fa199b5ff05fa20b7c9d1e55f668f9"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/runtime-orvena-npu8192.candidate.json",
+      "bytes": 142,
+      "sha256": "ef082acdf4e894e720c4ff301866f2b4b27e652ab09ad79b0c1148168b299935"
+    },
+    {
+      "path": "provenance/background-v36-bff66-20261110/source-inventory.json",
+      "bytes": 74593,
+      "sha256": "0c0a493f424168860535f4585585633af2556f7b56a91ac10b88319df2de3f7b"
     },
     {
       "path": "provenance/bolt-e4b-header-qualification.json",
@@ -4797,19 +5157,89 @@
       "sha256": "1e0a313b943d12352bd740cc30dd9834b86225a9c52b27117319f44810f9f409"
     },
     {
+      "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
+      "bytes": 43460,
+      "sha256": "f1f773a4a5a6cf2e6df0dae74df6043e25e8a9747e96701f406517f86d069cc1"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/BackgroundOwnedTaskPolicy.java",
+      "bytes": 6083,
+      "sha256": "68f8a0a263eeac17e815750b0c1526d7d272e2620cd9933d764e3b468cb55c75"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/BrokerProtocol.java",
+      "bytes": 17039,
+      "sha256": "34c282a961d7209028c337f4b97401b92711a5c86e07bde9c82c0f9ab372c93e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/FixedIntentDispatch.java",
+      "bytes": 3503,
+      "sha256": "5a441f84cdda25b3a50901d4bd9abbcc406eb15e4317df083c24cbee733cc7a4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+      "bytes": 2730,
+      "sha256": "f5f3936a8185185cf5f036a74665ee6edfbd5c1f617299dd9cd6edd4bf7b23e2"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/FixedIntentTools.java",
+      "bytes": 4137,
+      "sha256": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947"
+    },
+    {
       "path": "src/org/trillionnium/hepta/local/ActionDecision.java",
-      "bytes": 19703,
-      "sha256": "0f45bfca078c11c958782ac231ef922a78e80a55f216c59c127d780d9314f9dd"
+      "bytes": 25712,
+      "sha256": "ee2a0481bb1ad0d2a3dd95b501c101d1955f4f1142adfe150ba3f9643fa88b20"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ActionPolicy.java",
-      "bytes": 2556,
-      "sha256": "a8fb1e712e2e9e7fc6b00986c2f74ca6c28786bd10b23fd03c41a10fb3909ad7"
+      "bytes": 7210,
+      "sha256": "1bbd65135de1178c98191dbd6ba94dd5309904326ec38d05f2102631eb50dc7a"
     },
     {
       "path": "src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
       "bytes": 9217,
       "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/BackgroundPermissionPreparation.java",
+      "bytes": 14507,
+      "sha256": "676add9d7d7251560883a243abf59ab5e4c18cd0fa4c6813048fbaec13e2dd80"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/BackgroundPermissionSession.java",
+      "bytes": 14397,
+      "sha256": "f344fbdd76154a086f4103868231203746056f2133331a54c48dac5e251d559e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
+      "bytes": 38388,
+      "sha256": "0045e81d6578a071de8dbdedd3c589afeb6025cf52d6c76fceb0e30e11e3dec6"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
+      "bytes": 2816,
+      "sha256": "e18294b0b18938636ed4112c0a5e82b2b70d76c5fb854a7fe25a876518fc73b7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/BackgroundUiPreferences.java",
+      "bytes": 10015,
+      "sha256": "a8bd7da61e46905e2e25dd064e6d04be73c26ba4b496b73fe4d8ef985ef29031"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CalculatorCompletionEvidence.java",
+      "bytes": 10425,
+      "sha256": "7fb6f7c09888479b2be16900555cc6b097ffcc96d7363a32c1df84156abe2433"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CalculatorGoalContract.java",
+      "bytes": 7664,
+      "sha256": "3a910c59b997c9baf48009e81b56aaf5bd2bf060ce7d11e5d122fc67843ef24f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CalculatorTaskInputGuard.java",
+      "bytes": 12804,
+      "sha256": "41b770b785cb15d67c2fb83e68ed373e3ff0b87ef64ea6b857e89dbb067837f4"
     },
     {
       "path": "src/org/trillionnium/hepta/local/CompactTaskHistory.java",
@@ -4818,13 +5248,28 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ConservativeTokenBudget.java",
-      "bytes": 3755,
-      "sha256": "63430401d14d944a03f00c23aad7373e95997c0f409f5837e191f6d169b140ea"
+      "bytes": 3861,
+      "sha256": "e4aa0a5e36c3676b0b2ee9912f5aaaa036ce7088a83645715800766f762cee14"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CsairCalendar.java",
+      "bytes": 20840,
+      "sha256": "b18c650a866ef7acc65582e5a4c2b4c3d60d71139472ab340abc720618f2719d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CsairCityPicker.java",
+      "bytes": 10313,
+      "sha256": "7a6765c1312e7219d0421cae5441f80c7db9f37623b764397b6c4659546d48d5"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CsairFlightForm.java",
+      "bytes": 15820,
+      "sha256": "431f820a07cc4dbd6309bb74b17cff659334df21be8a6bdee71994133c90d43b"
     },
     {
       "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
-      "bytes": 10712,
-      "sha256": "e620c88e4f92fcd40d85fed30e95f2f0314bf9b8edfb8a7dcb0c0978b627040a"
+      "bytes": 30605,
+      "sha256": "236d22187abfe777705d337241e310dd617b1c4c21ae39df4f52d960a1e106ca"
     },
     {
       "path": "src/org/trillionnium/hepta/local/DiagnosticStartupGate.java",
@@ -4837,14 +5282,24 @@
       "sha256": "a631cfef0d02237960788631cdf25024c65179adde901f838d3337fb2a02f35c"
     },
     {
+      "path": "src/org/trillionnium/hepta/local/FixedIntentAttemptGuard.java",
+      "bytes": 5928,
+      "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
+    },
+    {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 46727,
-      "sha256": "ba11f1b753762d9640b8a603555d09fa04e903ef39abc7d693283b9fd3f29747"
+      "bytes": 110015,
+      "sha256": "d5841f9a29a6a0218f765aa10ef4aef099ebb263bfe1e03bda1637e1e5f6a332"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
       "bytes": 711,
       "sha256": "4e7fdaf10d6d502e77642fb043296e8da5d94fbfc78d884826f60dafed8f6e36"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LastModelDecisionProjection.java",
+      "bytes": 4059,
+      "sha256": "e2d7cd763683831ced97fcd9bc5e08c2d134e4543dd55c079e5451265d60d0ae"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalInference.java",
@@ -4853,13 +5308,13 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalModelEngine.java",
-      "bytes": 51791,
-      "sha256": "8c1605a56eb9d5fb9cb0101cc2f5493bb33f5c10b8fcb1d74277e1b7dc2df6d2"
+      "bytes": 58342,
+      "sha256": "0b91b202be78b6ca9ff90335b7ac2620a5583b102babbeacc24a37d529076fe8"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalProbeApplication.java",
-      "bytes": 7894,
-      "sha256": "ddd0e8c8802e1c48bb73b2b2da039d507cc028d50a9c8d3c679a055e42d3a4b9"
+      "bytes": 9571,
+      "sha256": "5f727d8ebab4f326ada821600a4d01e69ac7fdaeb551abfc19a623ee96399441"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
@@ -4868,23 +5323,28 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 53500,
-      "sha256": "da3455080e441e18c9e4ed8f96d77891feff35b3faea0bf55664cd434ec387a9"
+      "bytes": 113364,
+      "sha256": "c7639c1e0dbc3f476a280f16c3c8c835f78ea03bba254266de12b000e7fdd641"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
-      "bytes": 30621,
-      "sha256": "95ec12dbfe21926c31d868c10e3050d89c71c36f8c8df106226021a2d01f7848"
+      "bytes": 36267,
+      "sha256": "4d2a74bc49a8f12faeea50aed8cc006b5e0f0d4c5259a6b5494e6fb7dac714d0"
     },
     {
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "bytes": 23308,
-      "sha256": "da87217316db9493b665d35c332a53be7f7b3a9399fed90d8e97bc1307c1b1f3"
+      "bytes": 49595,
+      "sha256": "5bcc0da0a5cb73fa85062a450055eb3a9a9d31a467abf949e5d9335eb0d0e3f7"
     },
     {
       "path": "src/org/trillionnium/hepta/local/MemoryAvailability.java",
       "bytes": 4417,
       "sha256": "bce1c5e23aba1febec3fab53794cf80c16d713df4bedf4a4d404d05e3c833003"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MiPublicProductPage.java",
+      "bytes": 17572,
+      "sha256": "a34a3216b36b77f8c3c7c0adaec66f3624afb217697b655e49f194809d85d3be"
     },
     {
       "path": "src/org/trillionnium/hepta/local/MobiMindContract.java",
@@ -4918,13 +5378,33 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ModelProfile.java",
-      "bytes": 6213,
-      "sha256": "05b6470bbeffec320432ba8ac7d323fda08c7823eee8fe303201a0bdde6c7795"
+      "bytes": 6803,
+      "sha256": "8ef4facf78773e58b479552ed8c47403847c18eb7970089e043f34c6ff620ef3"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeBudgetVerifier.java",
       "bytes": 2562,
-      "sha256": "1a03857c440ea1349fd35f875395c66a58f12aaa9daa6e59d72eafa6cb30c13d"
+      "sha256": "45c2675af31e3609a85befd921e5f9b3a82d9ecad78b003d7e642cd38b258087"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
+      "bytes": 18644,
+      "sha256": "1ce2e8dfc588ae51545f88a0eccb2002cfd91f647db0225fd95398ff04157f7d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NotesCreateWorkflow.java",
+      "bytes": 21099,
+      "sha256": "0995cd9a7f5897d2dab5827a432eaa13cc7d8d6363ffda415baa6d566d80d80d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+      "bytes": 12329,
+      "sha256": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NotesTaskPhaseGuard.java",
+      "bytes": 15214,
+      "sha256": "4b8250ae93625489ba86a3d00a4f51953ce080af4f76a03a67713d8c2c2b3a73"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ObservationStabilityGate.java",
@@ -4937,9 +5417,19 @@
       "sha256": "a2a664a3567995de8665e66d7667cfc089277fdd16175aa9dab837f7919dd257"
     },
     {
+      "path": "src/org/trillionnium/hepta/local/ObservedAppLabels.java",
+      "bytes": 4889,
+      "sha256": "0276171bb8aaebee880a6d36fea5cbfdb157b09d2728a07148e4ce85d5ffbb9e"
+    },
+    {
       "path": "src/org/trillionnium/hepta/local/ObservedChildText.java",
-      "bytes": 8289,
-      "sha256": "0de6647a787e033db5e5ab93a2f97d6c5c22ae92a4a244e772268e819269afe2"
+      "bytes": 10858,
+      "sha256": "56433b62f9c4c895edac441160fcdc4aaee7365586daa4b86863448dc4dd54d5"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedImeEnter.java",
+      "bytes": 4665,
+      "sha256": "e449d61e928dca5a72730b5394fa8f95a7db4dd4006440a95f839818e165acf1"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ObservedScrollActions.java",
@@ -4953,8 +5443,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ObservedTextProjection.java",
-      "bytes": 2738,
-      "sha256": "1331624c4ea4144b31b8015e356d8840e6b2a330f18ca113ed265be3ebe4417d"
+      "bytes": 4426,
+      "sha256": "6fa92103e2984452a0ea16f1fb87187b0bea66c58e87a54f81399284ad5fff50"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ObservedTransitionProjection.java",
@@ -4967,14 +5457,19 @@
       "sha256": "73948e97e6a164ef27753ba0536d0cfadac2ee670179aa2e5b4bb2af0e9e66c5"
     },
     {
+      "path": "src/org/trillionnium/hepta/local/OwnedWorkerCancellation.java",
+      "bytes": 7207,
+      "sha256": "eaa708351cfcac921e4e607a1789f6cb45dc4db61adb610029954c195fda2ec9"
+    },
+    {
       "path": "src/org/trillionnium/hepta/local/PersistentActionPolicy.java",
       "bytes": 5670,
       "sha256": "0e498e9d58792be305b334bb12dc8d1f060e005c90555e04aa09b8f860f82db0"
     },
     {
       "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
-      "bytes": 7747,
-      "sha256": "2813b9a5d14834cdfb3ef6a2b1a8252e94fa877a767d617223f3385c38982eff"
+      "bytes": 18273,
+      "sha256": "9aeda02ab6fc541e9a8e04841093355c6055b590042f334b47fb55595ce5ca95"
     },
     {
       "path": "src/org/trillionnium/hepta/local/PrivateDebugTask.java",
@@ -4993,13 +5488,23 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/PromptActionDomain.java",
-      "bytes": 2078,
-      "sha256": "6fd0be8a70763a8681412c0bd610907bb9c4166025b149454aeccad0a0b8b210"
+      "bytes": 5598,
+      "sha256": "7fc0549f7fccf5516386b6b5c0f2dac1fcaf7b3effa419cb3c88b594fe49d688"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/QualificationScope.java",
+      "bytes": 14462,
+      "sha256": "1879d69f1f344e3f4f7d2f8afd12a78a2747ca183d8895ac9e5e2b6f4f0e3a5d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/QualificationScopeConfig.java",
+      "bytes": 19799,
+      "sha256": "17aeae9941cf4023d4447a5b7449b2f739f05d2b2d952d2cb49a74179f9d1024"
     },
     {
       "path": "src/org/trillionnium/hepta/local/RecentActionProjection.java",
-      "bytes": 20418,
-      "sha256": "326ca2e0f75abbe929c09bc2fb4d2725352522e71d9f19254b153924ed4933b5"
+      "bytes": 21282,
+      "sha256": "100b8c9b036e9b2032f2a05ba0fffddaf50507d9752619d01c28858f6729d678"
     },
     {
       "path": "src/org/trillionnium/hepta/local/RecoveryDispatch.java",
@@ -5038,13 +5543,28 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/SameStateNoEffectGuard.java",
-      "bytes": 7529,
-      "sha256": "3f6fb02f485f27e081e3741f157e4fad267e66501dcff8527583bcfd6eeae8c5"
+      "bytes": 8446,
+      "sha256": "c4de5fc3d60876eeeba8f11801e47d99965e943962d0e203d8404268dd7ddeb1"
     },
     {
       "path": "src/org/trillionnium/hepta/local/SessionRecovery.java",
-      "bytes": 6516,
-      "sha256": "9139579bedd6ce965baa00813f94378ac638e6ba3b79503b2f3029c6261afcf3"
+      "bytes": 6544,
+      "sha256": "f9c79691e3f0e1cb0a2c5f3d7fd8828e3fc8556eef213b9e17ea3e3831546e40"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/SubmitAttemptGuard.java",
+      "bytes": 6875,
+      "sha256": "a6fd24ca70899afb80e00a8b13132d71348240ed0c193739861333ddc7a01c71"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/TaskAuthorization.java",
+      "bytes": 23598,
+      "sha256": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+      "bytes": 32841,
+      "sha256": "68052883f8fa072cf772b587690e94606970579ce74430bcff27fc8e39c246d2"
     },
     {
       "path": "src/org/trillionnium/hepta/local/UiVenusContract.java",
@@ -5083,8 +5603,103 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/WarmProcessSession.java",
-      "bytes": 9268,
-      "sha256": "2fb586da3b13924a67f9f5afb21c121c31356aef2df9a8305051acadb283b7cb"
+      "bytes": 9150,
+      "sha256": "b179a624d475cbf787964bfc17d628ed122d4ae14a08239ac0cb1ece5c58598a"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebEvidenceClient.java",
+      "bytes": 17137,
+      "sha256": "a414489c3852c0a69f7d9b8ed3d52a190f7bbf999671315d5835b39f4dcfabfa"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebEvidenceJournal.java",
+      "bytes": 14692,
+      "sha256": "2cc638a5326e934e3394ee82a7fb091b24b8f975c0f1729112b05aea1d7142d4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebEvidenceJson.java",
+      "bytes": 7253,
+      "sha256": "4f9c66cc527948d498f941543240d2bb304610b388735f3bc7264b9ccefa4e1e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebEvidenceReceipt.java",
+      "bytes": 22392,
+      "sha256": "06665e3b63fd72852a1369729f8b006b281ec7c5604768ede59a794832f295f9"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightDomain.java",
+      "bytes": 43169,
+      "sha256": "35fa95ec4b78c36aab6c46f09190a8c1633443a9c0a4737b217b9088b6f2a4b1"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightProgress.java",
+      "bytes": 16832,
+      "sha256": "47630c3e36b56470ebdb8353b24c68f94bf6274d7fefc08133cd7a78946a0691"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "bytes": 29912,
+      "sha256": "05d675db442aeb2195a7df087ef2005db2153047a051385fdfc6b73fc6cc3fa0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebHelperIdentity.java",
+      "bytes": 8934,
+      "sha256": "de5d613401ac52d7e0cab40633e2a75ac69359e97b6caac341ecd209b471ffcc"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebNativeGeometry.java",
+      "bytes": 12169,
+      "sha256": "39dfab09bd0ddbc4c57904089f07ac12ffb454fe0a0fa03adfa60d3d8ab0988c"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebShoppingDomain.java",
+      "bytes": 25838,
+      "sha256": "f3564aa43c040f02b42b6cb1dbc3b23be7bb847579fea6218f1f625fe5d3c487"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebTaskDomain.java",
+      "bytes": 6533,
+      "sha256": "dc0193f0d41ffeddb8bc31b3ca925ffec81cfb458a994941f751bd61b668bc3f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/web/WebFlightGoal.java",
+      "bytes": 9611,
+      "sha256": "02f260915f2b64894b8cd1ed4223392ace9964920d9b77e6765548252d9624ac"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/web/WebShoppingGoal.java",
+      "bytes": 10767,
+      "sha256": "106fd6dbb66582991c522c306891458587514133867a458a96f6a7e06aa8a0f4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java",
+      "bytes": 4089,
+      "sha256": "90a414863297c1ff173fd14a7b31dce62bb5fbb561e7625f1fe3eb0dace47af7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+      "bytes": 5507,
+      "sha256": "1e08a7af60dbab6ce1ff53095e2039696d1de886b0fef3434b44a9f40122f02c"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebRecoveryPolicy.java",
+      "bytes": 35981,
+      "sha256": "c3b5ddc20d2f4e01f7cc80df5be04af318c18cbc6cc1b3a43cdcc68710cc1f35"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java",
+      "bytes": 4995,
+      "sha256": "704f3de1bea1e0471d5daeb5cfc8255fd30b002c20eafc49c21fef2eb5ecc7a4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebStorageEvidence.java",
+      "bytes": 8539,
+      "sha256": "9e8df742ad0fdaac0fbc051c99772a52fbb40aae49f0a43589e252e71acc7fc0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebTaskPurpose.java",
+      "bytes": 6731,
+      "sha256": "92303867e09343ebcbb3620b9a5850bce683c1d94988d1e534dd272dcaea8647"
     },
     {
       "path": "tests/ActionFreshnessHostTest.java",
@@ -5098,8 +5713,8 @@
     },
     {
       "path": "tests/BudgetHostTest.java",
-      "bytes": 2039,
-      "sha256": "053c6c3a1c9eff1d5055c425a6b97b6c323bbea72864abe3f6a391b45534d737"
+      "bytes": 2436,
+      "sha256": "ac830f4c6b3264326bf1393ee962e964f9853e81b36da674bf2723a7119e9317"
     },
     {
       "path": "tests/CompactEvidenceHostTest.java",
@@ -5137,9 +5752,19 @@
       "sha256": "03d9442b184d772976dbf0a482f8576509112203fe4700abe4cfb20e67f7cdca"
     },
     {
+      "path": "tests/LastModelDecisionProjectionHostTest.java",
+      "bytes": 11090,
+      "sha256": "86d7fdf28627b5eb7e0d032d2b395763f7fafdda2faed111e91f32ece4a02317"
+    },
+    {
       "path": "tests/Lfm25MoeProfileHostTest.java",
       "bytes": 6204,
       "sha256": "7686a04d009c62483707f202e9d8d4ca2a594d5373dd156e888aec17d4e3420c"
+    },
+    {
+      "path": "tests/Lfm3ExactTokenHostTest.java",
+      "bytes": 6097,
+      "sha256": "8f555004bcf995cbe8415f1f40e588042704c7ad74095859539cb56b7fdc4676"
     },
     {
       "path": "tests/LocalPolicyHostTest.java",
@@ -5168,13 +5793,23 @@
     },
     {
       "path": "tests/ModelProfileHostTest.java",
-      "bytes": 5917,
-      "sha256": "7c52ceb208efbda8edacf6b132bccfdf7874c7b900e09afa2f5a56e6d75c7382"
+      "bytes": 6026,
+      "sha256": "b549fd5fdedd4ced18daff1d26069f8f145273435a2c8f5f9b457746672a23f6"
+    },
+    {
+      "path": "tests/Nanbeige42ProfileHostTest.java",
+      "bytes": 7012,
+      "sha256": "97482f715d03465736fee47f8f1b996c12bf3e8213e3cf44a5626beb2dec610f"
     },
     {
       "path": "tests/ObservationStabilityHostTest.java",
       "bytes": 8731,
       "sha256": "28b07236e1e4483f7850e9a86b04ff4d25014eac7f9a430a606ec503b603080e"
+    },
+    {
+      "path": "tests/ObservedAppLabelsHostTest.java",
+      "bytes": 9255,
+      "sha256": "70f34e0add026d03e6f8f33265f908a0a4dfeef24b775d43321a8ca42132daa2"
     },
     {
       "path": "tests/ObservedChildTextHostTest.java",
@@ -5263,8 +5898,8 @@
     },
     {
       "path": "tests/SameStateNoEffectGuardHostTest.java",
-      "bytes": 9936,
-      "sha256": "27db3ea93ad3b9528b1eed69811e0a85b10c05cc506c01745340e56efbb9f227"
+      "bytes": 11112,
+      "sha256": "d5b583e35e4fe28a79da07d655a6d4eae14aab1af86f34c788b5e8a19d60470c"
     },
     {
       "path": "tests/ScrollGrammarHostTest.java",
@@ -5273,8 +5908,13 @@
     },
     {
       "path": "tests/SessionRecoveryHostTest.java",
-      "bytes": 7304,
-      "sha256": "0baa30e51254e8886cad11978f178efe91330a673415f46349f27175bb68c802"
+      "bytes": 7893,
+      "sha256": "a94ead82a808e19d22dc12115e93e97cef89ca494ded709abfc597f0815697af"
+    },
+    {
+      "path": "tests/TaskAuthorizationDomainHostTest.java",
+      "bytes": 4829,
+      "sha256": "fb868cee66da6108553fc2329366b35a379fa9381a27ca279bb82e5ea0814ec3"
     },
     {
       "path": "tests/UiVenusContractHostTest.java",
@@ -5317,9 +5957,14 @@
       "sha256": "a9317c9eb2e7461e9b4656a8541791e7f13ca9b60e9c0296d2d4ac94970ab1c3"
     },
     {
+      "path": "tests/action-grammar/test_app_label_grammar.py",
+      "bytes": 3234,
+      "sha256": "7b08cc03343bff4434db8b47e90631a21e36046d1e25220ae469ec75574646da"
+    },
+    {
       "path": "tests/action-grammar/test_completion_protocol.py",
-      "bytes": 2607,
-      "sha256": "9c1d7d8fb7fbd70af311d284ceca4e247576c95f71bfb38c4c86e11b67da7d14"
+      "bytes": 2611,
+      "sha256": "f350684c3cafd934f75e78790ec122a3522a85cd1b863b8e61a2617d1a7f86ea"
     },
     {
       "path": "tests/action-grammar/test_decision_grammar.py",
@@ -5328,8 +5973,8 @@
     },
     {
       "path": "tests/action-grammar/test_same_state_no_effect_grammar.py",
-      "bytes": 2839,
-      "sha256": "db1b5e1011b7e6dbd4cd2d51c9a6b1d45964dfd3b92e1e9ded6470ebb5ab6068"
+      "bytes": 3057,
+      "sha256": "36d19d167dd251fa42b4330e0fb85bf18cc3969e8f2a4014c51aa9b4f0f8e35d"
     },
     {
       "path": "tests/action-grammar/test_scroll_grammar.py",
@@ -5348,13 +5993,213 @@
     },
     {
       "path": "tests/action-parser/run_host_tests.py",
-      "bytes": 3758,
-      "sha256": "968c4be22dc5608e9571a48e8af43f58f5ba6a7533d11014d868b2a007962170"
+      "bytes": 4099,
+      "sha256": "b6904d0213c8f9b6599f9241a5a9222d8106e5984308e472ed9d28f12cb9436d"
+    },
+    {
+      "path": "tests/app-label/AppLabelControllerHostTest.java",
+      "bytes": 5399,
+      "sha256": "a8ff9333321283bd9774eed5736bec6bd17bf1c578571a36437a18c5ad5fdcb6"
+    },
+    {
+      "path": "tests/app-label/prepare_fixture.py",
+      "bytes": 3740,
+      "sha256": "dc68e3be877385cdae79493a5af018753207e8c2ed0ac1b5a72f6aa12e0863cb"
+    },
+    {
+      "path": "tests/background-broker/BrokerProtocolHostTest.java",
+      "bytes": 16222,
+      "sha256": "a78199b1744c56d69478c00f6753b6e551dbbb618977fcf16bc07ffaccf9a565"
+    },
+    {
+      "path": "tests/background-broker/BrokerTaskSnapshotHostTest.java",
+      "bytes": 4855,
+      "sha256": "cface15a05531c3f068351281d0733de5fd84e9e81edf51e5d5ca8a710be2c56"
+    },
+    {
+      "path": "tests/background-broker/run_host_checks.py",
+      "bytes": 5644,
+      "sha256": "c3dfbd5b8e647628d59987a295b6a60127b4049628e3e919b8e89ea9d47794b5"
+    },
+    {
+      "path": "tests/background-launch-isolation/BackgroundLaunchIsolationHostTest.java",
+      "bytes": 3268,
+      "sha256": "b26f2a710df71ccd994b2a00e5dc16a4ff9b89cfc785f01ab3ba5196415e71ff"
+    },
+    {
+      "path": "tests/background-launch-isolation/run_host_tests.py",
+      "bytes": 8285,
+      "sha256": "8fef24cdd68924a3c3088adf1e2112ed1e2f3bbef7fd6053cbbd1c6a9495676a"
+    },
+    {
+      "path": "tests/background-owned-task/BackgroundOwnedTaskPolicyHostTest.java",
+      "bytes": 7733,
+      "sha256": "a49ccb434acbb83ad860534298e074d051349b14d0bc4f21d289f5ae54b0caa1"
+    },
+    {
+      "path": "tests/background-owned-task/run_host_tests.py",
+      "bytes": 1461,
+      "sha256": "77c37607c72f385ae0100e6f422c091f95ea7936a235afbc6b3264e7ee01dec0"
+    },
+    {
+      "path": "tests/background-permission/BackgroundPermissionPreparationHostTest.java",
+      "bytes": 24044,
+      "sha256": "4502dcb15b2c6e25f051687354ab3f2acbef8e44827de6bb0d9779db8e7270a3"
+    },
+    {
+      "path": "tests/background-permission/BackgroundPermissionSessionHostTest.java",
+      "bytes": 11013,
+      "sha256": "c722a01190da4c632e2c98ebc3417a76a44dd4c336b360d3507cb019e1e21ee9"
+    },
+    {
+      "path": "tests/background-permission/prepare_session_fixture.py",
+      "bytes": 4954,
+      "sha256": "d9bb8c33aa4c9167e6adb8789156470fb33abdfeaf04823e27c26a5ac944d4d0"
+    },
+    {
+      "path": "tests/background-permission/run_host_tests.py",
+      "bytes": 3593,
+      "sha256": "6760b0870a761334c9dd8ca79f757bfa96c0abd45fea700866453e9d23a40e3c"
+    },
+    {
+      "path": "tests/background-permission/run_session_tests.py",
+      "bytes": 3007,
+      "sha256": "19342c87ed194d786de7c9c4fc467c154ba042753ec2202ad3580d4dfb4d359e"
+    },
+    {
+      "path": "tests/background-session/BackgroundSessionHostTest.java",
+      "bytes": 30998,
+      "sha256": "9d413de77f5cab551a401cda83894e7d1d8f7f074bb5d946187a131c10eb17d6"
+    },
+    {
+      "path": "tests/background-session/BackgroundTaskTargetHostTest.java",
+      "bytes": 8825,
+      "sha256": "7506f5479c1af59b05919976a9ffca1ba1f62cd5458dd9ec6884a7819bdf2fc3"
+    },
+    {
+      "path": "tests/background-session/prepare_fixture.py",
+      "bytes": 9166,
+      "sha256": "625939694ca0363a6b969efc2e66cce87943f74ea668e4514cb138357e398951"
+    },
+    {
+      "path": "tests/background-session/run_host_tests.py",
+      "bytes": 2775,
+      "sha256": "7318253ed195ef71699f010d6185d2f131cd12a7abc020c67d10a1e383a3fd62"
+    },
+    {
+      "path": "tests/background-session/run_target_host_tests.py",
+      "bytes": 3238,
+      "sha256": "b62aa7b46dfca858315f7d1cc5947748dc0cdffebcbc0896a3665ed463ff4ce2"
+    },
+    {
+      "path": "tests/calculator-completion/CalculatorCompletionHostTest.java",
+      "bytes": 20286,
+      "sha256": "93a06f0ed525b97584e811d30744998d11f22fffafb6496aa5427e1f28ee582d"
+    },
+    {
+      "path": "tests/calculator-completion/fixtures/MANIFEST.json",
+      "bytes": 893,
+      "sha256": "52429839dc0061e955a6baa0fce7e1e0213442dab0ed4706ec9c4bee8c795e8c"
+    },
+    {
+      "path": "tests/calculator-completion/fixtures/foreground-nanbeige-step05-after.json",
+      "bytes": 8336,
+      "sha256": "df1978596e1d84e77b488a21459f1d7ef96636027ec0968b5ff14ae2fe9ff21c"
+    },
+    {
+      "path": "tests/calculator-completion/fixtures/foreground-qwen35-step01-before.json",
+      "bytes": 8312,
+      "sha256": "e43e983ecf8c2144e2aae2593264938b208882d9539f4503a5094af15038a052"
+    },
+    {
+      "path": "tests/calculator-completion/run_host_tests.py",
+      "bytes": 3786,
+      "sha256": "13d3d0d36e18bc194c41b667fa7d686a0ac36b3e281fb9414b6d0f5c25b674ff"
+    },
+    {
+      "path": "tests/calculator-input/CalculatorInputGuardHostTest.java",
+      "bytes": 31129,
+      "sha256": "ad0af5d7fcd2af3a115ce7feeb35296fa1b0dc27d0250b683584c208c0042680"
+    },
+    {
+      "path": "tests/calculator-input/FailedActionObservationHostTest.java",
+      "bytes": 13074,
+      "sha256": "327dd99130c583594b88bb2cdca5be1bf62f223859706907cc803fcb50be80a8"
+    },
+    {
+      "path": "tests/calculator-input/fixtures/v47-background-type-failure.json",
+      "bytes": 89639,
+      "sha256": "44bc7ee0c74dff2a8772be64b54ef2d2ba1cf9574c6f144320e94582e24e5542"
+    },
+    {
+      "path": "tests/completion/TaskCompletionGateHostTest.java",
+      "bytes": 31545,
+      "sha256": "01782d73c23f935f438ec0fc6805740384dfe64f711097ccc51cb939ebc14d1c"
+    },
+    {
+      "path": "tests/completion/fixtures/RESULT.json",
+      "bytes": 18274,
+      "sha256": "1fddf3c7cae42bf27acc36ef73e2425432deb037a25b44b5682faccac70d93a4"
+    },
+    {
+      "path": "tests/completion/fixtures/evidence/task/step-01-after.json",
+      "bytes": 7541,
+      "sha256": "b8bef9319b298ac8c70dae0dd46d1e1e845712e0166e0f8cb9baf870b6e6fc9d"
+    },
+    {
+      "path": "tests/completion/fixtures/evidence/task/step-02-after.json",
+      "bytes": 16917,
+      "sha256": "9f0d410acdee804e5611d6d68dcc948df2ba0852eb85a8ca533ba46f0d5fc013"
+    },
+    {
+      "path": "tests/completion/fixtures/evidence/task/step-03-after.json",
+      "bytes": 8604,
+      "sha256": "9701f8e6de02f3b65e4c5e7dc68bc252532f7976b18df901961a588d183fbd0b"
+    },
+    {
+      "path": "tests/completion/fixtures/evidence/task/step-04-after.json",
+      "bytes": 8604,
+      "sha256": "cd969e06025ae0a7d7ae5e76c22b7b3f7265808a79afb67c17f9af7d3755dba9"
+    },
+    {
+      "path": "tests/completion/fixtures/final-current-notes.xml",
+      "bytes": 18658,
+      "sha256": "8dab056051467bf29fd37f42a0793450cd631d7ac965c49a2c83d435d34249f2"
+    },
+    {
+      "path": "tests/completion/run_host_tests.py",
+      "bytes": 8806,
+      "sha256": "096cb510efb16e24b26a002e43c3ebce265c7b37388a464740f77c0c4e969e42"
+    },
+    {
+      "path": "tests/completion/test_notes_completion.py",
+      "bytes": 22278,
+      "sha256": "db6066aa0ee987eecb66ba2ba88bef191ab49dfdc37527ac4eea5701d3b4678a"
+    },
+    {
+      "path": "tests/completion-status/CompletionStatusHostTest.java",
+      "bytes": 29532,
+      "sha256": "f25f48a5f04f0cebd5dcf84c64a26be6055cdb7d79bb0879a7f5f5a9241001b2"
+    },
+    {
+      "path": "tests/completion-status/fixtures/v49-premature-success-trace.json",
+      "bytes": 148856,
+      "sha256": "1e07f76bfff89c2038d2f0eaa3b6108fadd9e6e8efbd2dd9cc43d1fac1e3c12c"
+    },
+    {
+      "path": "tests/exact-admission/ObservationHintsHostTest.java",
+      "bytes": 18220,
+      "sha256": "692227e199d6963fd68a3f185a000331d7901838e3f699aa8c160f9b5d4f57ab"
     },
     {
       "path": "tests/exact-admission/PromptAdmissionHostTest.java",
-      "bytes": 10394,
-      "sha256": "0e89e26bb316de00c18170718262a7dbec91156e933fe45265c424ba9b95df43"
+      "bytes": 13226,
+      "sha256": "0f8171c9986511e07f2584aafedf5650126ba4c557661de71b4f96b075b39096"
+    },
+    {
+      "path": "tests/exact-admission/TextOnlyClickHostTest.java",
+      "bytes": 15284,
+      "sha256": "022406616cf2531c188676e0e882d98b4ca7133ec2db432d53d2e3248c0c3060"
     },
     {
       "path": "tests/exact-admission/android/graphics/Rect.java",
@@ -5378,18 +6223,503 @@
     },
     {
       "path": "tests/exact-admission/prepare_fixture.py",
-      "bytes": 5500,
-      "sha256": "c1b81bbb507454eb6db9f995303f69fca1d2fb3f970d9ace36d03097af022219"
+      "bytes": 8422,
+      "sha256": "4aeac49605ac0b38b14a15745da5b977b25f0932757b327b7e35dd6972a05a52"
+    },
+    {
+      "path": "tests/fixed-intent-tools/FixedIntentIntegrationHostTest.java",
+      "bytes": 18992,
+      "sha256": "fb38bef1b3622619fb46bc60f50a6befb803656ef251d167d0fe66e591fd0543"
+    },
+    {
+      "path": "tests/fixed-intent-tools/FixedIntentToolsHostTest.java",
+      "bytes": 5813,
+      "sha256": "45edbe91478a9c3e6d63a4a6e0dd6d39594def7c22418929e6e5f1f2b6e697fa"
+    },
+    {
+      "path": "tests/fixed-intent-tools/run_host_tests.py",
+      "bytes": 3363,
+      "sha256": "c7751b86220f26428df0703f21c7a49e2091d092a0f3fcea9ff99f341ca099cb"
+    },
+    {
+      "path": "tests/fixed-intent-tools/run_integration_tests.py",
+      "bytes": 4496,
+      "sha256": "0cf98eae825da8435c145ebdccd6d264d021821b2ec0e26e4facb7cd0205e6bb"
+    },
+    {
+      "path": "tests/fixed-intent-tools/test_fixed_grammar.py",
+      "bytes": 2446,
+      "sha256": "ab1238f424d554fb752124bf7be67a74078f7e88c2501a15571113a449dfbe55"
+    },
+    {
+      "path": "tests/ime-submit/ImeSubmitHostTest.java",
+      "bytes": 9927,
+      "sha256": "af2ebe05e2164e6ff10f7c8b7321581ea42a867aa8f61b146fa1180d56a45af0"
+    },
+    {
+      "path": "tests/ime-submit/ImeSubmitWiringHostTest.java",
+      "bytes": 23635,
+      "sha256": "0a54bae97a3a09a41ac25fedb24104e73de7de847b0ec200aced3f2cc78ae360"
+    },
+    {
+      "path": "tests/ime-submit/run_host_tests.py",
+      "bytes": 3341,
+      "sha256": "c03a95d2a6708d1646d71a321230f7db42c6155a11acd2bc78ad133a34f3dbe4"
+    },
+    {
+      "path": "tests/ime-submit/test_submit_grammar.py",
+      "bytes": 1429,
+      "sha256": "9dd37cf8768688d3d1d1299d6d16acf6d896f7e697160eb716cb9c59fe339fdf"
+    },
+    {
+      "path": "tests/last-model-decision/PROVENANCE.json",
+      "bytes": 786,
+      "sha256": "16d39248780611d8a15acb025e2f4a49e5180b42fafca77c8a93184c362dac10"
+    },
+    {
+      "path": "tests/last-model-decision/step-03-model-output.txt",
+      "bytes": 319,
+      "sha256": "302c7c73ee8e738a70fe40d27d1144c48f6a1afc8aa142eaea8e39f30b6b57a5"
+    },
+    {
+      "path": "tests/last-model-decision/step-04-prompt.txt",
+      "bytes": 5587,
+      "sha256": "23397c1ba00ab85ed9bfdaadadc0eb96985ea3813a8939262f63aa02757015dd"
+    },
+    {
+      "path": "tests/nanbeige42/run_host_profile_checks.py",
+      "bytes": 8876,
+      "sha256": "2c2f4e14ea38e16fe3a8d50e2ca96dcacd5417250c63f1c99949b59c905b2b1c"
+    },
+    {
+      "path": "tests/notes-create-workflow/NotesCreateWorkflowHostTest.java",
+      "bytes": 31958,
+      "sha256": "34e8505202329a9e599f262e228a3bf52836e1cc491d4e1ea18b97327f39969b"
+    },
+    {
+      "path": "tests/notes-create-workflow/fixtures/v50-background-parent-create-partial.json",
+      "bytes": 106993,
+      "sha256": "6ed45e19b8a6f62746c9b7feb79eeba1293f468d17fdc57d46c9b92259da57b6"
+    },
+    {
+      "path": "tests/notes-editor-phase/NotesEditorPhaseHostTest.java",
+      "bytes": 38431,
+      "sha256": "8805c539d58b8c12f601787652c5f556f8f2564efd664e7325f00c868d3ad07a"
+    },
+    {
+      "path": "tests/notes-editor-phase/fixtures/v48-editor-click-trace.json",
+      "bytes": 258564,
+      "sha256": "24d3361fb5f5e30f999dc9781636484211d81db2d16f5626430bc8573bcbe70b"
+    },
+    {
+      "path": "tests/notes-owner-intent/NotesOwnerIntentHostTest.java",
+      "bytes": 15279,
+      "sha256": "617eb96a0273bd391c45d442d4e4ec50c6cd9eb4f1039b93d015fd814e6ad44e"
+    },
+    {
+      "path": "tests/notes-owner-intent/README.md",
+      "bytes": 2150,
+      "sha256": "5edd2f10e0bb8692d4de9d1c07f5e101ac5be496ebe638ad63b8e87c68eabafa"
+    },
+    {
+      "path": "tests/notes-owner-intent/run_host_tests.py",
+      "bytes": 4088,
+      "sha256": "e28b3ea291eeb8198768a94e3c4ae03fb7cce37dd9b800246eeca5dfb2362303"
+    },
+    {
+      "path": "tests/notes-task-phase/NotesListProvenanceHostTest.java",
+      "bytes": 13820,
+      "sha256": "4bb6e1c6e79fbb9e2214521c15ad45be16e1e6b4310825650fdd7e074c954101"
+    },
+    {
+      "path": "tests/notes-task-phase/NotesRecoveryHostTest.java",
+      "bytes": 25408,
+      "sha256": "fe1df24f678fee13da4f424b378b80c9cb7d9a1ea767bbad8ff262f66a2286a7"
+    },
+    {
+      "path": "tests/notes-task-phase/NotesTaskPhaseHostTest.java",
+      "bytes": 24299,
+      "sha256": "765bdb4358dc7ef385cbd8a9191ca9ea596a77a58f89c1feb4f464fbfb1dfd87"
+    },
+    {
+      "path": "tests/notes-task-phase/NotesTaskScopeHostTest.java",
+      "bytes": 34398,
+      "sha256": "5d679a9954680584eadda0ab4a8e240f1719f9bb600c4fe077061b37a882555a"
+    },
+    {
+      "path": "tests/notes-task-phase/fixtures/manual-notes-list.xml",
+      "bytes": 20426,
+      "sha256": "56b5f62e246a9945c1c4c0e9eea1273eb44152014d3d272cd8769776185cb7db"
+    },
+    {
+      "path": "tests/notes-task-phase/fixtures/v45-notes-trace.json",
+      "bytes": 196834,
+      "sha256": "963f320837ff09709ce10416bcd974d61a94b33d79bcf18b72ae6635becf5696"
+    },
+    {
+      "path": "tests/notes-task-phase/fixtures/v46-notes-recovery-trace.json",
+      "bytes": 191579,
+      "sha256": "c253146ad4556d8448df87905f0529846b9fa80b489bdf59c94840afb137ad01"
+    },
+    {
+      "path": "tests/notes-task-phase/fixtures/v47-notes-scope-trace.json",
+      "bytes": 1285481,
+      "sha256": "160346f0506ccac079efc1b86c5f1ec957a7d01cbfa24a83e365ae5787cf5669"
+    },
+    {
+      "path": "tests/notes-task-phase/test_phase_grammar.py",
+      "bytes": 541,
+      "sha256": "849a1017c0407f1597c0f21d0d172f83c366d81c9e97e881e8f4cb82d37b4a28"
+    },
+    {
+      "path": "tests/notes-workflow-controller/NotesWorkflowControllerHostTest.java",
+      "bytes": 14780,
+      "sha256": "99ebbfb3af5b8c635b18184bdcfd7c3f5354fccbb64d5cbd71690ebf09a5bf26"
+    },
+    {
+      "path": "tests/observation-collection/ObservationCollectionHostTest.java",
+      "bytes": 12471,
+      "sha256": "8d0450b8fde745a573b76d66c2eba06b27599cccd5c44bf7236596dc1e7db551"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/00785-final-current-browser-dump.json",
+      "bytes": 396,
+      "sha256": "c39ececfcb3bd6bdcbae88ed34f7813b85a58ec9f31cf9c722eb88cba41e2acf"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/00786-final-current-browser-read.json",
+      "bytes": 384,
+      "sha256": "f7055593a9fb4e791f3b51fd6c2a7f0402081123133ae44b3bebef69aaf8a07e"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/00787-final-current-browser-focus.json",
+      "bytes": 337,
+      "sha256": "f1c4596d08696c98316cfc46cda89ae5a842f30aa3a3a58cddb0ba73de085b13"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/00790-final-screen.json",
+      "bytes": 349,
+      "sha256": "ec8c6e7f420912afe1b4d95acdd91b17278c007b11dd2afdbefbb47152cb30fe"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/SOURCE.json",
+      "bytes": 2944,
+      "sha256": "25bd9f521eda75e010eebc4f464746291347c5bfb59673b71af613cb2f1c0a03"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/final-current-browser.xml",
+      "bytes": 366281,
+      "sha256": "019d38ed44e7c0fa118bb9e596703053c594427d46a8b04e74409d9cf880c598"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/step-02-before.json",
+      "bytes": 20770,
+      "sha256": "eaa8c759ee468336814c60859ec2455d63ee7ea14fc916b0ae9bda2155e6b31a"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/step-05-before.json",
+      "bytes": 20770,
+      "sha256": "6d7c4c01baa90ac73036aa9736b2d1b5c26529a38dfb3cf6f4502cfd9727fab6"
+    },
+    {
+      "path": "tests/observation-collection/fixtures/v49-readGraph.txt",
+      "bytes": 5806,
+      "sha256": "1e71cdf254fb2613173d215a2271cbaf34bf1773b75ae9a3b832039ffbada6bb"
+    },
+    {
+      "path": "tests/observation-collection/run_host_tests.py",
+      "bytes": 8640,
+      "sha256": "ed5b0f826ec44c06e2f477b7c6f8a36fd661af174632974e0e1a9dfee75912eb"
+    },
+    {
+      "path": "tests/observation-hints/PROVENANCE.json",
+      "bytes": 1190,
+      "sha256": "3ee954864673b660ee6897938c9756b9927fe4f9e46a6411748c89ac31e0e416"
+    },
+    {
+      "path": "tests/observation-hints/step-04-before.json",
+      "bytes": 7541,
+      "sha256": "bdced6a589e6ec723fcbff543aac3843cec4531b0e042b5a4781c9251004199c"
+    },
+    {
+      "path": "tests/observation-hints/step-04-prompt.txt",
+      "bytes": 5103,
+      "sha256": "69dfa87658899c2c01fced6810066d2a146f9634dc31604e36ef6858b5981c53"
+    },
+    {
+      "path": "tests/observation-pipeline/ObserverPipelineHost.template",
+      "bytes": 26446,
+      "sha256": "e0915c5bb401591b1e9ccbde3554373483839ddd57babbc336f066f8e2bf31f6"
+    },
+    {
+      "path": "tests/observation-pipeline/run_host_tests.py",
+      "bytes": 4153,
+      "sha256": "6d8c89def31cb3f606657d8ad135ab700b2b4f1782129820a237da12ef2f87b7"
+    },
+    {
+      "path": "tests/owned-worker-cancellation/NativeCancellationPipeHostTest.java",
+      "bytes": 7754,
+      "sha256": "2e7036faa69a6310d416c6beca3eae4dfaf403965fde2246557daa09c6a5b2b7"
+    },
+    {
+      "path": "tests/owned-worker-cancellation/OwnedWorkerCancellationHostTest.java",
+      "bytes": 14547,
+      "sha256": "513bddfc4bca54e0124652cb136061fdabacc77f51fbfeac926554dafdc6e06f"
+    },
+    {
+      "path": "tests/owned-worker-cancellation/native_cancellation_contract.py",
+      "bytes": 22410,
+      "sha256": "05204cfbef20c3ca231281e242bfab83ac76c566e089970bcfa38329cf18b424"
+    },
+    {
+      "path": "tests/owned-worker-cancellation/run_host_tests.py",
+      "bytes": 3175,
+      "sha256": "8829049e8e2ac71dc03873df4dc5619e93cd13ccf4dd19c0370fe7982ed39583"
+    },
+    {
+      "path": "tests/owner-authorization/OwnerAuthorizationWiringHostTest.java",
+      "bytes": 36308,
+      "sha256": "030aa28b00b4eb46ac261ee56aed9ad21f1709cafcb9d89e1e3f39b5c02d13d2"
+    },
+    {
+      "path": "tests/owner-authorization/run_host_tests.py",
+      "bytes": 5005,
+      "sha256": "5abc2c55e7f4cc507fdfb8f86aacf32da43469bf1348fbec9dbe9b31adb9126c"
+    },
+    {
+      "path": "tests/owner-grammar/OwnerGrammarHostTest.java",
+      "bytes": 4202,
+      "sha256": "7d85fcbf85888bdaa54831aa72fea33f8a2948c91b4c29cd77391fbdb575af8c"
+    },
+    {
+      "path": "tests/owner-grammar/run_host_tests.py",
+      "bytes": 3560,
+      "sha256": "0d3ebcfeb3e9628765028d87679915e2b1180703a5268830feeb7da8afc163e2"
+    },
+    {
+      "path": "tests/owner-grammar/test_owner_grammar.py",
+      "bytes": 3979,
+      "sha256": "3890710fd3859fb9d8a76280d3ce023c446185f62c350a6e9ab9c7e5be7c92f7"
+    },
+    {
+      "path": "tests/qualification-scope/BackgroundFreshnessHostTest.java",
+      "bytes": 21945,
+      "sha256": "ef89c919dd78336479c694bd9b5db01bc8a61b2f43d85dbbe509f31ab624a9f7"
+    },
+    {
+      "path": "tests/qualification-scope/BackgroundObservationFixture.template",
+      "bytes": 2162,
+      "sha256": "f98d496cd550b79fbfe315c04e79cccb19fa8d18d3ac6677d199664931fb8ad0"
+    },
+    {
+      "path": "tests/qualification-scope/QualificationScopeHostTest.java",
+      "bytes": 46258,
+      "sha256": "26d1357f1b1d78ff868ce7a47f080eb3a34e1a9765f36fec041c53dca3be5737"
+    },
+    {
+      "path": "tests/qualification-scope/ServiceFixture.template",
+      "bytes": 7167,
+      "sha256": "81822790951c13560c5153ab50ff730131adc0373decb4a286bc91cf616735cb"
+    },
+    {
+      "path": "tests/qualification-scope/SessionFixture.template",
+      "bytes": 1384,
+      "sha256": "9fff6bced790fa404b81053e48aba02daf7a6fc2ce0515a0bfef5e50617ef15b"
+    },
+    {
+      "path": "tests/qualification-scope/UiFixture.template",
+      "bytes": 2381,
+      "sha256": "939b1fb8ed93b772ee77cda50a0848d991cb6a27a26ed1339c8b732ad945e5c3"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/app/Activity.java",
+      "bytes": 430,
+      "sha256": "3078cddd818699488bb30a0da62a9190372a2862694893ac6265fb711b43face"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/ComponentName.java",
+      "bytes": 233,
+      "sha256": "9260a59ec2cf461b461090d25f603bdd836d737d3c1cb999ec779c2a7605af66"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/Context.java",
+      "bytes": 741,
+      "sha256": "9566fdf96b9d71c0f51f215aae97b2bbcc8ab9979430192b0fb2ece484d12c31"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/Intent.java",
+      "bytes": 1769,
+      "sha256": "f9fa230debe434e655bd15f043548376db7782d55000d282466767e1621aa1fe"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/pm/ActivityInfo.java",
+      "bytes": 185,
+      "sha256": "e389e3dd9949478bbe4fa340ae32279b5a939af93f2e7e209f7933c0c38a87cc"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/pm/ApplicationInfo.java",
+      "bytes": 176,
+      "sha256": "0aea7ad33689355df5adc080a7e10149889028b66c3260278be85f5390f7e44a"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/pm/PackageInfo.java",
+      "bytes": 224,
+      "sha256": "4206abab1110623c41271bed6e6eae04ff1ea800977f2d649f890d26550333f7"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/pm/PackageManager.java",
+      "bytes": 1895,
+      "sha256": "f68315f3805165e71e456eb870ae21318edee695d743e6a369be84aaa7d17a65"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/pm/ResolveInfo.java",
+      "bytes": 94,
+      "sha256": "29f512b9e365852b2f45c1b8be6b46dead33e7f02da8807d5082a6a4914a9fe7"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/content/res/AssetManager.java",
+      "bytes": 267,
+      "sha256": "8b89b0d554e0b59f5fbdd8c179b836642f97ea50829dcfc34113e84439662909"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/graphics/Rect.java",
+      "bytes": 796,
+      "sha256": "6d3a2cbd8addc45df561f48779486fd31a3f3ef10a3d7ae22b686783e06bb6be"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/os/Bundle.java",
+      "bytes": 621,
+      "sha256": "b2991bd300de208fda2eea0d3e271a4eb349aa803cba475a1a7907a932d10673"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/os/Handler.java",
+      "bytes": 555,
+      "sha256": "236f0b1729f0a0e819bd1d58d4f5324813da20bc66d13a849d92ca63a9c8157c"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/os/Looper.java",
+      "bytes": 181,
+      "sha256": "4482d82f17e7b24ee8d624d1ac443b7b1312a02bd939d17889b9b47e8c2a56e9"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/os/Process.java",
+      "bytes": 296,
+      "sha256": "d4c90787159e9ad4b0be102181cda2cee3aee8533ac30253cd2a727b9ff71e0d"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/os/SystemClock.java",
+      "bytes": 149,
+      "sha256": "0599b8e9b6b7672fdfd3b142f191dcdbcc8b45f5ba5abe45115258ccf86c0f82"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/system/ErrnoException.java",
+      "bytes": 232,
+      "sha256": "82862a73196a107b7dc457f853c0462b93d6d158429779a69fe22ccc3fe12ee6"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/system/Os.java",
+      "bytes": 2742,
+      "sha256": "b46599dd8a55cd626150d6618dec11af2129c6800b6ebc9df6d9239bc8c4b389"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/system/OsConstants.java",
+      "bytes": 308,
+      "sha256": "5bcaf8b3285e9f21b3521db7e624b03f30b77a8b4be5245f6364c6e5641246de"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/system/StructStat.java",
+      "bytes": 143,
+      "sha256": "7bda01d378b4343f2afdd150647db95fb5f0f70c0a249c64742780e85e0c6fa5"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/util/AtomicFile.java",
+      "bytes": 427,
+      "sha256": "518b9081da78cc0a64921cc7eb719fa6e2316cf1979dea31a20ca78a6deb90b1"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/view/Display.java",
+      "bytes": 93,
+      "sha256": "797c98ecd9819d6815d4e4bc36c8f15a6a0717f2af00b14f5d126d20f7374dfc"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/view/accessibility/AccessibilityNodeInfo.java",
+      "bytes": 4021,
+      "sha256": "dc4980df4cbd400cfabd34f2860fd9d474f60fa19a5ed4d9dd519b39a510a8f4"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/view/accessibility/AccessibilityWindowInfo.java",
+      "bytes": 872,
+      "sha256": "ae2a2aef58c1b7a3473f340f6834d3c0b79f5c9c611e8d3c99d4b6a6b7c233ef"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/android/view/inputmethod/InputMethodManager.java",
+      "bytes": 135,
+      "sha256": "71af0b48e066b63e32f1d1fc3664cc129f2c48e6fba05765500cdd6e08c6aaa9"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/json/FixtureJson.java",
+      "bytes": 2325,
+      "sha256": "2a6ccd4425c29366cfcb0b147e6d2580118cf68260ba52e22a4b60d63f27d38b"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/json/JSONArray.java",
+      "bytes": 1293,
+      "sha256": "ad6d26d77bbe345e88e226d9ce41c33d7fa97e7758ad0e428209dd9746f6fe75"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/json/JSONException.java",
+      "bytes": 182,
+      "sha256": "0970084f500c6be873496ca16394e90d0c15f9866da256736925263dae1f1f0a"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/json/JSONObject.java",
+      "bytes": 4642,
+      "sha256": "11f5ec289e22cd69b740cdd1725a4f6170749571ce5fede476e64b57af026e5f"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/BackgroundSession.java",
+      "bytes": 3085,
+      "sha256": "2af68a1504533147dde2433ac957f7a1352a058e998c68c352deff54c687a710"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/LocalModelEngine.java",
+      "bytes": 379,
+      "sha256": "79f117b06dbeef4baef7e5ad1c6f8d5d3fb9e8743f196b73770741508ebeda38"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/LocalProbeApplication.java",
+      "bytes": 371,
+      "sha256": "c166191abe27bb2fbb7f17468a1d0b0aba692033ac6d9e150bb244287f171b6c"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/PrivateDebugTask.java",
+      "bytes": 515,
+      "sha256": "a50e1bf377d1ae6016db5ad4aa81ef813c8f43d6779b35edfd06514642ee58ea"
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/WebFlightSession.java",
+      "bytes": 3084,
+      "sha256": "fbb0487305b2c3161beb10307f7ee3f4ed6455ab56064154e3205234e5fddcbb"
+    },
+    {
+      "path": "tests/qualification-scope/prepare_fixture.py",
+      "bytes": 7902,
+      "sha256": "e034dff81b6392ddcf9d5ffcaa4225d4fc0d6967dfd510978234db0f9619da60"
+    },
+    {
+      "path": "tests/qualification-scope/run_host_tests.py",
+      "bytes": 2997,
+      "sha256": "73211a5a2608003bcf8f47425d373fb8badd669421943ee5bc1074a8485326a0"
     },
     {
       "path": "tests/recovery-application/README.md",
-      "bytes": 1158,
-      "sha256": "516acf4097d916af553fd7b1e525cfd24c7318d4b02f0d2e1dd22a85ee493632"
+      "bytes": 2202,
+      "sha256": "485a338067ebe71c87faa1d8d70404e4e1758d5437d9174dad5222d039dc0d04"
     },
     {
       "path": "tests/recovery-application/RecoveryApplicationHostTest.java",
-      "bytes": 15606,
-      "sha256": "561dcdb61cca4abeb3457802fd5b6501809d5da94cbb992c767ca9f4b3cf85a2"
+      "bytes": 25083,
+      "sha256": "0b2e13aeeb195c4fc3147402c4fa24ac8d41da8194b870ca04c897e30b630114"
     },
     {
       "path": "tests/recovery-application/android/app/Application.java",
@@ -5422,9 +6752,14 @@
       "sha256": "0afcc3ee62acb6c15f6fc789d541d4dabdd1fe65aeff775faed938afc68bf58c"
     },
     {
+      "path": "tests/recovery-application/org/trillionnium/hepta/local/BackgroundPermissionSession.java",
+      "bytes": 1296,
+      "sha256": "596fcb5aafc3c2befd90938d5c99e85054d12d92bc87b43aed0b3b7e00f4c8e7"
+    },
+    {
       "path": "tests/recovery-application/org/trillionnium/hepta/local/LocalTaskSession.java",
-      "bytes": 650,
-      "sha256": "30eaa216585ebefc95bb5cc50209f5b08224259991b2cc506e3ec18a46268874"
+      "bytes": 796,
+      "sha256": "f34639f44ff58922c0c294ea300faee5bfcf990c507b85783f76e398d57acf90"
     },
     {
       "path": "tests/recovery-application/org/trillionnium/hepta/local/MobiMindModelEngine.java",
@@ -5438,8 +6773,13 @@
     },
     {
       "path": "tests/recovery-application/prepare_engine_fixture.py",
-      "bytes": 3468,
-      "sha256": "0c4dcdf940d9423fb8f85d2a1643df37439cfa4126cef07221f158683c1dfcc6"
+      "bytes": 3787,
+      "sha256": "ba2b685fe6cab059fdf46b54ef7a45f8ac507544f2ae13153d69c1ab57d40a02"
+    },
+    {
+      "path": "tests/recovery-application/run_host_tests.py",
+      "bytes": 4565,
+      "sha256": "b1f220734077bc60e5467cc7a66a04ab7ace036977785ac78f8cd4dbc0978ed5"
     },
     {
       "path": "tests/recovery-inventory/README.md",
@@ -5497,9 +6837,29 @@
       "sha256": "cf6846193c3242e6fefaba9fd8321b274eb8ca98e73cf793ca04ca29d9864089"
     },
     {
+      "path": "tests/runtime-config-ui/RefreshFixture.template",
+      "bytes": 10093,
+      "sha256": "13a7f296d930d63d59640cff94febdd809680c6e9045f18cf3ea31eebbd7a6bd"
+    },
+    {
+      "path": "tests/runtime-config-ui/run_host_tests.py",
+      "bytes": 5273,
+      "sha256": "ee9defb40c4341fac07bc3de612979272dcb27780e0f75fcd2b92b46a8f4dc39"
+    },
+    {
       "path": "tests/test_ui_venus_q4_0_runtime.py",
       "bytes": 4938,
       "sha256": "9ec137a870aed4d02cf3c089119cbb07c508394f6f0758813e5e586aa21d58ac"
+    },
+    {
+      "path": "tests/text-only-click/fixtures/v43-note-step05-before.json",
+      "bytes": 8573,
+      "sha256": "a9e83eb50aabfd71ec967ba74b98ebe60176002700380e68b81775cccc076d75"
+    },
+    {
+      "path": "tests/text-only-click/test_grammar.py",
+      "bytes": 1061,
+      "sha256": "5258ddda9f690fa3528930d127eaaf07bc8c18be83164bab4884b9b5a66b135c"
     },
     {
       "path": "tests/ui-venus/FIXTURE.json",
@@ -5533,23 +6893,78 @@
     },
     {
       "path": "tests/warm-finalization/prepare_fixture.py",
-      "bytes": 4060,
-      "sha256": "f66bff1702ec9d40f967a69509b9e78472886d822f25e0bacfe4bee17322a3a3"
+      "bytes": 5713,
+      "sha256": "ae5bccaf044adfb755de0555fdff7d511254a399fb904dc5f103b5a8a36f5bb9"
+    },
+    {
+      "path": "tests/web-flight/CsairCalendarHostTest.java",
+      "bytes": 11235,
+      "sha256": "8036a21854b736f781fe41b87e3a45a7a34f45eecf1d85ca078530c51ff9cfee"
+    },
+    {
+      "path": "tests/web-flight/CsairCityPickerHostTest.java",
+      "bytes": 11000,
+      "sha256": "fd36b0f202ad4e2dc9486949e8ed0f75be0d4689852ce4d61ecb840035399323"
+    },
+    {
+      "path": "tests/web-flight/CsairFlightFormHostTest.java",
+      "bytes": 11209,
+      "sha256": "e41938b6e4774d0123c9c743126a96166ddae8490e339f7e62905b7d14db4da0"
+    },
+    {
+      "path": "tests/web-flight/WebCalendarNativeHostTest.java",
+      "bytes": 13972,
+      "sha256": "edab00a839c30c9865867ccb550fbdc1440f3da4aecd7f4c63af89702e12ebfb"
+    },
+    {
+      "path": "tests/web-flight/WebFlightEvidenceHostTest.java",
+      "bytes": 37110,
+      "sha256": "cb6f785dec795a0d820c4b325dd3caedb958a03001bf9ff8031c89b3cfdde1b7"
+    },
+    {
+      "path": "tests/web-flight/WebFlightQueryHostTest.java",
+      "bytes": 28643,
+      "sha256": "31917261ab88435247c5247f90c964f83f8003ff5e3b19d00635bb35e3238b5b"
+    },
+    {
+      "path": "tests/web-flight/WebNaturalOwnerHostTest.java",
+      "bytes": 17335,
+      "sha256": "c511f6f89b5b98f06166734f879cfd307793a8eb83bdef3caa8751c73594211b"
+    },
+    {
+      "path": "tests/web-flight/WebTaskCompositionHostTest.java",
+      "bytes": 27007,
+      "sha256": "20cced373201cabd5b5255393ca48b9c7f537f774b812d2b5db2d6f9604899d7"
+    },
+    {
+      "path": "tests/web-flight/WebUnstartedRetirementHostTest.java",
+      "bytes": 14323,
+      "sha256": "fb12aa3d1d67f098eab14ce75b25dfb10b27c33e86f2e6a5d449bf7c0856c938"
+    },
+    {
+      "path": "tests/web-flight/legacy-boundary/WebFlightDomain.java",
+      "bytes": 1202,
+      "sha256": "a0cc6b669a82baeb87aac5602f3ea5cce140e489a437c1961614a975107c9f9d"
+    },
+    {
+      "path": "tests/web-flight/run_query_host_tests.py",
+      "bytes": 15699,
+      "sha256": "d70d5e2a06eda5a2142906d908662a5cf2a7329289588157031eed84e5e0df46"
     },
     {
       "path": "tools/PHONE-ACCEPTANCE.md",
-      "bytes": 8828,
-      "sha256": "4bd6613e923e4224b5e49aa3627956dbcc20c0f7955fe6b79f869e22f37e382b"
+      "bytes": 10326,
+      "sha256": "bc1a2d53739dd0942587a2f591eb3d7be73036295bf39d3c03ed759415a5b5dd"
     },
     {
       "path": "tools/PHONE-SUITE.md",
-      "bytes": 6231,
-      "sha256": "560f528590245fba6dffd4721ccceb5fb206a03c4c09a67108375a172ecf11f5"
+      "bytes": 7191,
+      "sha256": "2cd4a16f5f33be72a03b803143c42f4929f898a2bfb9917e417eb79eab9e77a5"
     },
     {
       "path": "tools/build_identity.py",
-      "bytes": 1530,
-      "sha256": "ef875c4c07c9896077cad8f44b58543cd02cfb6a43eb3259820658c623fab100"
+      "bytes": 2970,
+      "sha256": "7d5ad2641e9a3635fd04aa47ce3ea50a1a4f16b883a98b2ab407878eef36f6e6"
     },
     {
       "path": "tools/create_debug_task.py",
@@ -5583,13 +6998,13 @@
     },
     {
       "path": "tools/model_profiles.py",
-      "bytes": 2702,
-      "sha256": "f5c296c5f57ec770e6a46a111c27fc72dbf09972041655556d1123397e497b9e"
+      "bytes": 2930,
+      "sha256": "ee26ed1f2f2b2ffd5f14fbd526c6d3cbf05d7ed8d65c422df5e60a72fa0cfa3a"
     },
     {
       "path": "tools/phone_acceptance.py",
-      "bytes": 49078,
-      "sha256": "c5398a4cba3379b0618eae2c7021a66d23a4da35fa7343cf5dcfa84b612ffe76"
+      "bytes": 65521,
+      "sha256": "673a017689bff6d8a1972f6d3e64ff20803c0f00926265e2d0abc2cbe80371b9"
     },
     {
       "path": "tools/phone_inventory.py",
@@ -5598,18 +7013,28 @@
     },
     {
       "path": "tools/phone_suite.py",
-      "bytes": 33257,
-      "sha256": "9be00e301c1fd5986e2f64c7ccf4033ca608d9a1874d42663b5d708990fd2f79"
+      "bytes": 58983,
+      "sha256": "a513114211897bb620ecbbab38aadcce3a9137c58071df269cca7f828034118e"
     },
     {
       "path": "tools/run_host_checks.py",
-      "bytes": 6980,
-      "sha256": "180ec580056c0e735e72cf58ed42e119a2bf6350e75289b536de3f04ebe22e09"
+      "bytes": 14324,
+      "sha256": "1231b8b879facaba5b998d255cd039da0a8415334dbcdda2e9e5aecf0557ceab"
     },
     {
       "path": "tools/suite-navigation-draft.json",
       "bytes": 1243,
       "sha256": "414b3aa19ad61b9287e44173bedda07a46cd8e4afd6e3d609aba49e54c43f376"
+    },
+    {
+      "path": "tools/test_app_label_binding.py",
+      "bytes": 10090,
+      "sha256": "9d9d2a87ee830ed0e7bb363f647f30219b6fb4911620026ff4b83b6f1080c6bf"
+    },
+    {
+      "path": "tools/test_app_label_controller.py",
+      "bytes": 2997,
+      "sha256": "44ce4102fd07bf4c38029cece5ca618a19c5d760a8e7c6620c66d4da3d52dd9c"
     },
     {
       "path": "tools/test_build_identity.py",
@@ -5618,13 +7043,23 @@
     },
     {
       "path": "tools/test_exact_admission.py",
-      "bytes": 2258,
-      "sha256": "51df38468b87e209e405f441ca3107803203b771e0c29c5eb915d33d509eacc6"
+      "bytes": 3593,
+      "sha256": "9623c0115d1fff495310490b5d38b655512045910860cefed29aa03cc4be7248"
+    },
+    {
+      "path": "tools/test_fixed_intent_binding.py",
+      "bytes": 22025,
+      "sha256": "b73ac38ef25cdc9643c4fc3107834d350f58fb1322b4377315fb5796b25f5e7e"
     },
     {
       "path": "tools/test_fixed_response_retry.py",
       "bytes": 6154,
       "sha256": "e9e1b2800c4397fc05922a47984b256b140d5a113567dab1788c3b4d5524f48f"
+    },
+    {
+      "path": "tools/test_ime_submit_binding.py",
+      "bytes": 21944,
+      "sha256": "a119c06221221c87d3233740cb7314dc3714bd9d072a1fb2a0173ee342bbcb8f"
     },
     {
       "path": "tools/test_labeled_target_binding.py",
@@ -5638,18 +7073,23 @@
     },
     {
       "path": "tools/test_mobile_agent_profiles.py",
-      "bytes": 2984,
-      "sha256": "a9654a499bee006b361a27f1b785edab7a2b6ed4007fba062b10c116c12d7e29"
+      "bytes": 2986,
+      "sha256": "ee7785b4083f016cffd21471fa8e1782d01f5cda5476115b7761ef3731caa796"
     },
     {
       "path": "tools/test_model_profiles.py",
-      "bytes": 3293,
-      "sha256": "99411bf66d49bc5a7679df7324efbfe3f8e33d726f2665ff7e29d7b5a50eaea5"
+      "bytes": 5413,
+      "sha256": "b1971623964802bd714007f46d85414e263206e5c22462e49b9f69fa68e56885"
+    },
+    {
+      "path": "tools/test_nanbeige42_profile.py",
+      "bytes": 7655,
+      "sha256": "1595732ce20ab5c5522f0dd987a52cfe93263b7460bbabb7a02f2fc7856c3afe"
     },
     {
       "path": "tools/test_phone_acceptance.py",
-      "bytes": 25183,
-      "sha256": "6fbeb39692e7d48f5ae9c67f9d62564661271341839bb1018577d539b99af2d3"
+      "bytes": 25801,
+      "sha256": "366e32660aa47203384363d948617f576f2f912fe6a3a2d1fab0e32a90587871"
     },
     {
       "path": "tools/test_phone_inventory.py",
@@ -5658,13 +7098,18 @@
     },
     {
       "path": "tools/test_phone_suite.py",
-      "bytes": 25678,
-      "sha256": "790549d00157e8cade573acea4ac62e5ae5d875684a8c1473855c07f03184506"
+      "bytes": 26383,
+      "sha256": "50acdd9b4c6ca3acc8bc347f5b0fbf280bf806862739f892046d01694b5d79f1"
     },
     {
       "path": "tools/test_profile_registry_consumers.py",
       "bytes": 6076,
       "sha256": "f72e54d54bd557c9bfbce44954296359ee595e6dfe87c237e70f9f4221b54b5a"
+    },
+    {
+      "path": "tools/test_qualification_scope_build.py",
+      "bytes": 6559,
+      "sha256": "b1deb1c85964b525632ece5d63e5cc952cbaa7a7a6e99f2c8ae6b4dfb1d0c93a"
     },
     {
       "path": "tools/test_qwen35_profile.py",
@@ -5746,196 +7191,5 @@
       "bytes": 7410,
       "sha256": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5"
     }
-  ],
-  "derived_from_code21_initial_source_manifest_sha256": "f8bd05396037a7751857adec30e2128577995940f05000ac985b3e74e5266c20",
-  "sdk_api_compatibility_fix": "Use the public Android Os.remove API after the unchanged canonical allowlist, regular-file and byte-equality checks; retain fsync and readback.",
-  "retained_code21_publication_derivation": {
-    "private_original_source_manifest_sha256": "883821726a8ed90ea8f8d928017a371942ed238dff3796bce89ab0dfa712f310",
-    "retained_device_apk_sha256": "c95378452e2754261825bbbdaa18115a52e11924851c4c59867f2af738fc960f",
-    "public_source_is_retained_device_build_source": false,
-    "compiled_java_and_native_code_bytes_unchanged": true,
-    "cleartext_identifier_guard_replaced_by_length_and_sha256": true,
-    "historical_original_manifest_preserved": true,
-    "changed_members_excluding_outer_manifest": [
-      "UI-VENUS-APP-PROBE.md",
-      "native/ui-venus-runtime-pins.json",
-      "provenance/ui-venus-app-r1/native-worker/DRAFT-MANIFEST.json",
-      "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-verify_source_boundary.py"
-    ]
-  },
-  "derived_from_public_code21_manifest_sha256": "f4af9855da4e62a2eeaa1cc8d734082c6c31d17f95d001b58b412dbd7604978a",
-  "native_production_changes_from_code21": [
-    "native/model-profile.h"
-  ],
-  "host_checks_embedded_status": "retained historical receipts; no qualification of the new source is implied",
-  "profile_import": {
-    "source_manifest_sha256": "90be733a3eec1f76dcb4febe1eb9b19ce2add841c9811eb50265c306ff046e9c",
-    "source_manifest_recorded_version_code": 22,
-    "paths": [
-      "native/model-profile.h",
-      "src/org/trillionnium/hepta/local/ModelProfile.java",
-      "tools/model_profiles.py",
-      "native/tests/lfm25_profile_contract.c",
-      "native/tests/qwen35_profile_contract.c",
-      "tests/Lfm25MoeProfileHostTest.java",
-      "tests/Qwen35ProfileHostTest.java",
-      "tools/test_lfm25_profile.py",
-      "tools/test_qwen35_profile.py"
-    ],
-    "default_model_changed": false,
-    "phone_qualified": false
-  },
-  "publication_derivation": {
-    "public_code21_base_manifest_sha256": "f4af9855da4e62a2eeaa1cc8d734082c6c31d17f95d001b58b412dbd7604978a",
-    "compiled_java_and_native_code_bytes_unchanged": false,
-    "cleartext_identifier_guard_preserved": true,
-    "retained_phone_evidence_reused_as_new_qualification": false,
-    "public_code24_parent_manifest_sha256": "0d751e4fa5d207168c98526c76ce5bca812ed62fbb87d3eda6d70fa80458ff13"
-  },
-  "derived_from_public_profile_manifest_sha256": "2b3a358de4655b8fa73dc97b4fda64eaf9e0c8fc4957c0a569008fc72645cc03",
-  "code24_change_inputs_sha256": "41149f60f085b31b8ec1dda9749e0c5b001268e506e297c0ea518df7577b1f00",
-  "host_qualified": false,
-  "android_qualified": false,
-  "code24_qualification": {
-    "host": "pending_exact_source_run",
-    "android": "pending_exact_source_build",
-    "phone": "pending_exact_installed_apk_run",
-    "historical_host_receipts_preserved": true,
-    "independent_goal_assertions_relaxed": false
-  },
-  "derived_from_public_code24_manifest_sha256": "0d751e4fa5d207168c98526c76ce5bca812ed62fbb87d3eda6d70fa80458ff13",
-  "code25_change_patch_sha256": "d57664792da0782e703f844a90d1ca0913840a365133c975c045242c2eb9b6a7",
-  "native_source_unchanged_from_code24": false,
-  "retained_code24_external_outcome": {
-    "source_manifest_sha256": "0d751e4fa5d207168c98526c76ce5bca812ed62fbb87d3eda6d70fa80458ff13",
-    "host": "70_checks_passed",
-    "android": "compilation_completed",
-    "phone": "not_installed_not_qualified",
-    "qualifies_code25": false
-  },
-  "code25_qualification": {
-    "host": "pending_exact_source_run",
-    "android": "pending_exact_source_build",
-    "phone": "pending_exact_installed_apk_run",
-    "gpu_cache_hit": "pending_second_real_gpu_request",
-    "cache_speedup_claimed": false,
-    "historical_host_receipts_preserved": true,
-    "independent_goal_assertions_relaxed": false
-  },
-  "derived_from_public_code25_manifest_sha256": "3c199ac5813b11c62ca1a755feaf57b5a3db78e2c3878ff0772ecafb00a09101",
-  "validation_derivation": {
-    "schema": "hepta.validation-source-derivation.v1",
-    "base_public_git_head": "663959ff7dfa655cc6985b80a1d2749de612b028",
-    "base_public_source_manifest_sha256": "3c199ac5813b11c62ca1a755feaf57b5a3db78e2c3878ff0772ecafb00a09101",
-    "reviewed_patch_sha256": "de8ad1cbc3e5060464333e88b339069ba9491965ef708888c21fb89192fbe36f",
-    "modified_existing_members": [
-      "tools/phone_acceptance.py",
-      "tools/test_phone_acceptance.py"
-    ],
-    "added_fixture_members": [
-      "tools/fixtures/accelerator-logs/bolt-apps-v25.json",
-      "tools/fixtures/accelerator-logs/bolt-calculator-v25.json",
-      "tools/fixtures/accelerator-logs/bolt-gpu-historical.json",
-      "tools/fixtures/accelerator-logs/bolt-npu-historical.json"
-    ],
-    "application_version_unchanged": true,
-    "java_native_resources_android_manifest_bytes_unchanged": true,
-    "original_runner_and_existing_functional_assertions_unchanged": true,
-    "native_requested_resolved_device_gates_unchanged": true,
-    "apk_rebuilt": false,
-    "public_worktree_modified": false,
-    "commit_created_at_freeze": false,
-    "phone_actions": false,
-    "host_status_at_freeze": "pending_full_unchanged_runner",
-    "scope": "Correct pinned OpenCL model-buffer log identity while retaining positive layer/buffer evidence and all surrounding native and goal gates; bounded provenance fixtures only.",
-    "phone_task_success_claimed": false
-  },
-  "derived_from_public_code25_validation_manifest_sha256": "a7c7e646db867e77a9551ff488212597f2fade1670e42d48ccc09ec89057771b",
-  "code26_change_inputs": {
-    "transition_patch_sha256": "f4778ebd31d586957cc0a12da2543ad8e3b94393273e574d84028a772622b250",
-    "qwen9b_profile_patch_sha256": "d89e18e9017038e1ada485b8af815b1f86c523b53861ce6dff3077c3f1e489dd",
-    "native_change": "closed exact model artifact registry only; ABI/runtime/sampler unchanged",
-    "independent_goal_assertions_relaxed": false,
-    "complete_history_retained": true,
-    "default_model_changed": false
-  },
-  "code26_qualification": {
-    "host": "pending_exact_source_run",
-    "android": "pending_exact_source_build",
-    "phone": "pending_exact_installed_apk_run",
-    "new_model_phone_qualified": false,
-    "historical_evidence_relabelled": false
-  },
-  "derived_from_public_code26_manifest_sha256": "ff5929cff3e63ed4877934576d5f4985a789c7dc721549c68d804fc5c24a8237",
-  "code27_qualification": {
-    "scope": "reason_system_span_only_plus_version",
-    "system_sha256": "bea4a05506f5e110bb746cf25f202ef6206393d310ac90614674675f3f00bc3c",
-    "source_system_delta_sha256": "4bbd5fc58c9b241e805fbad3beedfc0726bdd0198079051f1a7afffbdf2c9535",
-    "reason_prompt_fixture": "v26_step03_reason and v26_step10_reason",
-    "host_checks": "pending external report",
-    "android_build": "not_run",
-    "phone_task_qualification": "not_run",
-    "default_model_changed": false,
-    "native_source_changed": false,
-    "owner_format_changed": false,
-    "plan_memory_added": false,
-    "new_permissions": false,
-    "production_ready": false
-  },
-  "derived_from_code27_source_manifest_sha256": "43fc6394d564683eee7d1e5b1874527e7f4f52e71e6baf04c7125ceec928772d",
-  "derived_from_code27_git_head": "de197700828dbddef9d1077dfe3d457a5cbe9295",
-  "model_profiles_changed": true,
-  "validation_note": "Historical v27/v28 and warm-only v29 records are retained for their exact sources. This integrated source requires new exact host/Android receipts; phone qualification and real GenieX reset/close remain pending.",
-  "model_profiles_equal_to_code28": true,
-  "warm_runtime_changes_model_registry": false,
-  "code29_source_parents": {
-    "warm_only_commit": "587e477cb2d8312138f6a2aa44c4fb64a948b97b",
-    "warm_only_manifest_sha256": "e8cbb349747d6e21fe6961889d4859ca52d182ac480e4a45c71b662687826ff7",
-    "profile_manifest_sha256": "4a36a88646d95c2f21ac75c189abb81876a58e50fde0522d45d6554ec0b1c618",
-    "profile_cli_commit": "99332dc7a94b837d2d2c000f85da47abbe675826"
-  },
-  "code29_suite_binding_derivation": {
-    "frozen_integrated_parent_manifest_sha256": "b3c7dd556fe3bb5ecc31decb27aa1739bed795f7b3f733159e1bcab17da8ff2b",
-    "parent_git_head": "e885821c9a26099c446fafc2cb88bf3cd587a6b9",
-    "changed_members_excluding_manifest": [
-      "CODE29-TASK-WORKER.md",
-      "tools/phone_acceptance.py",
-      "tools/phone_suite.py",
-      "tools/test_warm_suite.py"
-    ],
-    "scope": "Revalidate actual collected warm requests and task-session terminal before qualifying each model-issued effect; bind task, app UID and parent, generation, sequence, current run and exact raw output; preserve one-shot behavior.",
-    "android_runtime_sources_changed": false,
-    "independent_goal_assertions_relaxed": false,
-    "host_qualification": "pending_exact_r4_gate",
-    "android_build": "pending_exact_r4_build",
-    "phone_qualification": "not_run"
-  },
-  "code29_stop_finalization_derivation": {
-    "parent_git_head": "d5ff017ae550432a8ddd0f478fcc4c523c6970ca",
-    "parent_source_manifest_sha256": "340a5390337f829cd94bd7511208d62c59bc752ca6bd89c7f32369434b6db5d6",
-    "baseline_controller_sha256": "729158a4d9194ae2f9c1d4d1ca850ea1a33ba4208063d90b04ecbe184b539641",
-    "patched_controller_sha256": "cdf2368963b6a3cb4c0432e86e04e7c38ad498fc4ab7197f3dd0483885c7b1c4",
-    "scope": "Reclassify a Stop received during owned endTask after terminal cleanup; preserve unresolved blocks, clear stale model success and reject partial outcomes without valid terminal receipt.",
-    "application_version_unchanged": true,
-    "model_profiles_unchanged": true,
-    "engine_lifecycle_implementation_preserved": true,
-    "host_tests": "requires exact source host receipt",
-    "android_build": "requires exact source build receipt",
-    "phone_qualification": "not_run"
-  },
-  "code30_exact_admission_derivation": {
-    "parent_git_head": "dd6217e19f4c947e3bc287d7e1e676264ec7f594",
-    "parent_source_manifest_sha256": "e49de8bdaf84d35c8b5acc2ba40be2a5bf5287daf39cff470adf00c0f6fdc445",
-    "scope": "Two Java admission callers use the exact-profile-only native-attempt decision; retain native guard, proved LFM3 upper bound and 65536-byte engine input limit.",
-    "system_instruction_unchanged": true,
-    "complete_action_facts_retained": true,
-    "native_source_unchanged": true,
-    "model_profiles_unchanged": true,
-    "default_model_changed": false,
-    "independent_goal_assertions_relaxed": false,
-    "auto_replay_added": false,
-    "phone_qualification": "not_run",
-    "host_tests": "requires exact source host receipt",
-    "android_build": "requires exact source build receipt"
-  }
+  ]
 }

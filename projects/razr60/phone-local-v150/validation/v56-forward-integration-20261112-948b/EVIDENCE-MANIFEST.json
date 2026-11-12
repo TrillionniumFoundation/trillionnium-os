@@ -1,0 +1,99 @@
+{
+  "schema": "hepta.v56.host-evidence-manifest.v1",
+  "frozen_parents": [
+    "42d3a0f447807659c0f78c8273edee01dd1b734f",
+    "b949261f8caaf821c7a4618d0bab09a718238802"
+  ],
+  "merge_base": "7dee83d838b2c76b3abe3a3e61d7837316f40853",
+  "component": "projects/razr60/phone-local-v150/android-local/lfm3-controller",
+  "source_manifest_sha256": "a0835cd66f81f3c4c770b92256742b90188b0664c6a274c29086bae03d1c39ec",
+  "version_code": 56,
+  "version_name": "0.56.0-natural-web-responsive-observation",
+  "production_build_inputs": 211,
+  "strict_host_final": {
+    "checks": 105,
+    "all_pass": true
+  },
+  "android_compiled": false,
+  "phone_tested": false,
+  "business_verified": false,
+  "files": [
+    {
+      "path": "STRICT-HOST-r1.json",
+      "bytes": 88352,
+      "sha256": "3deb64bc0a53052ed16901eedc0adea96091dd7f8a8b2385020d5a96e408ebed",
+      "original": "/home/alex/hepta-razr-948b-integration-20261112/evidence/strict-host-r1/HOST-CHECKS.json",
+      "role": "original strict failure; retained"
+    },
+    {
+      "path": "STRICT-HOST-r2.json",
+      "bytes": 103674,
+      "sha256": "e5b68323da8f321df69f7e359ed58120c2e5a27090c172e086601f4c9a73ea84",
+      "original": "/home/alex/hepta-razr-948b-integration-20261112/evidence/strict-host-r2/HOST-CHECKS.json",
+      "role": "strict 105 checks after fixture ordering repair"
+    },
+    {
+      "path": "STRICT-HOST-r3.json",
+      "bytes": 103684,
+      "sha256": "a4722219c552142abc26132bedb90aaf32d00051979ca910062bbf68bcda4fb8",
+      "original": "/home/alex/hepta-razr-948b-integration-20261112/evidence/strict-host-r3/HOST-CHECKS.json",
+      "role": "final manifest strict 105 checks"
+    },
+    {
+      "path": "BUSINESS-r1.json",
+      "bytes": 35455,
+      "sha256": "72fe3c87f176a096b2863bb2abc0febac9d1805adedd7a075ee37c37098c2ba1",
+      "original": "/home/alex/hepta-razr-948b-integration-20261112/evidence/business-r1/RESULT.json",
+      "role": "original wrong-FQCN invocation retained alongside actual passed gates"
+    },
+    {
+      "path": "BUSINESS-r2.json",
+      "bytes": 4876,
+      "sha256": "d05c0d852d887167c067163a0f54ecddfca0ca993fbec10db61801067d4009af",
+      "original": "/home/alex/hepta-razr-948b-integration-20261112/evidence/business-r2/RESULT.json",
+      "role": "corrected retirement and original city tests; all required gates pass"
+    },
+    {
+      "path": "FINAL-HOST-r3.json",
+      "bytes": 37038,
+      "sha256": "4b2b4baf546e16ad8b7719fe43f66fe71e69cc69292fda67338977673766f99d",
+      "original": "/home/alex/hepta-razr-948b-integration-20261112/evidence/FINAL-HOST-r3.json",
+      "role": "final documentation delta and unchanged production/fixture byte binding"
+    },
+    {
+      "path": "OBSERVER-FIXTURE-FIX-r2.json",
+      "bytes": 2309,
+      "sha256": "7b978625712fcb83d90084781070ab351fa78f92e2fbf3ba71c759a1dfcfa3ca",
+      "original": "/home/alex/hepta-razr-948b-integration-20261112/evidence/FIXTURE-FIX-r2.json",
+      "role": "real callback ordering fixture repair; first failure preserved"
+    },
+    {
+      "path": "V53-BASELINE.json",
+      "bytes": 60874,
+      "sha256": "2df8aa8cf671e4977521ad90d5705e368f4c8739a6ba41f97d2230791030d8f1",
+      "original": "/home/alex/hepta-razr-948b-integration-20261112/evidence/business-r1/V53-BASELINE.json",
+      "role": "actual independently retained v53 comparator source/compile identity"
+    },
+    {
+      "path": "CITY-PICKER-RESULT.json",
+      "bytes": 1516,
+      "sha256": "372c9b55b1a81a6258a925d27642961653dd845f90b81bb5ab0844bf18961d30",
+      "original": "/home/alex/hepta-razr-948b-integration-20261112/evidence/business-r2/CITY-PICKER-RESULT.json",
+      "role": "original external city diagnostic hash and 36 cases / 137 assertions"
+    },
+    {
+      "path": "SOURCE-PREPARATION.json",
+      "bytes": 557,
+      "sha256": "3d81f27f85d0f7800b1f093ef741b7844c82da7584693ca80a48ac4547e699b8",
+      "original": "/home/alex/hepta-razr-948b-integration-20261112/SOURCE-PREPARATION.json",
+      "role": "original runtime-config fixture compile failure recorded"
+    },
+    {
+      "path": "FREEZE-FIRST-FAILURE.json",
+      "bytes": 7785,
+      "sha256": "44110bf879d870842dcab1e684547a1b667d98f495541a681a860653750c9bef",
+      "original": "/home/alex/hepta-razr-948b-integration-20261112/FREEZE.json",
+      "role": "inherited raw stderr whitespace check failure; original bytes retained"
+    }
+  ]
+}

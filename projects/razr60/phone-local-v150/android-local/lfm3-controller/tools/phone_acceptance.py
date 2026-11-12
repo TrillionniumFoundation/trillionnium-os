@@ -37,6 +37,7 @@ CONTROLLER_GRAMMAR_SCHEMAS = frozenset({
     "hepta.observed-action-gbnf.v3-label-first",
     "hepta.observed-action-gbnf.v4-app-label-first",
     "hepta.observed-action-gbnf.v5-ime-enter",
+    "hepta.observed-action-gbnf.v6-fixed-intents",
 })
 LABEL_ACTION_SCHEMA = "hepta.observed-action-gbnf.v3-label-first"
 LABEL_SCHEMA = "hepta.observed-target-labels.v1"
@@ -45,6 +46,20 @@ APP_LABEL_ACTION_SCHEMA = "hepta.observed-action-gbnf.v4-app-label-first"
 APP_LABEL_SCHEMA = "hepta.observed-app-labels.v1"
 APP_LABEL_ENCODING = "utf8-length-prefixed-be32-sorted-package.v1"
 IME_SUBMIT_ACTION_SCHEMA = "hepta.observed-action-gbnf.v5-ime-enter"
+FIXED_INTENT_ACTION_SCHEMA = "hepta.observed-action-gbnf.v6-fixed-intents"
+IME_ACTION_SCHEMAS = frozenset({IME_SUBMIT_ACTION_SCHEMA, FIXED_INTENT_ACTION_SCHEMA})
+APP_LABEL_ACTION_SCHEMAS = frozenset({APP_LABEL_ACTION_SCHEMA, *IME_ACTION_SCHEMAS})
+# Exact production FixedIntentTools profiles; never infer a component from a label.
+FIXED_INTENT_PROFILES = {
+    "notes.create": {"package": "com.motorola.stylus",
+        "component": "com.motorola.stylus/com.motorola.stylus.note.text.TextNoteActivity",
+        "parameter": "text", "requested_outcome": "draft_opened"},
+    "web.search": {"package": "com.zui.browser",
+        "component": "com.zui.browser/com.lenovo.browser.BrowserActivity",
+        "parameter": "query", "requested_outcome": "search_opened"},
+}
+V6_ACTIONS = frozenset({"find_app", "open", "click", "type", "submit", "scroll", "back", "home",
+    "wait", "done", *FIXED_INTENT_PROFILES})
 IME_ENTER_SCHEMA = "hepta.observed-ime-enter.v1"
 IME_QUERY_LABELS = frozenset({"搜索", "搜尋", "查询", "查詢", "查找", "search", "query", "find"})
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
@@ -366,15 +381,87 @@ def ime_query_label_allowed(label):
     return normalized in IME_QUERY_LABELS
 
 
+def fixed_intent_prompt_targets(data):
+    """Read the closed v6 projection, including an explicitly empty tool domain.
+
+    These labels are separate from the open-app label digest: they are bound by
+    the complete native prompt SHA. Installed target/dispatch proof is checked
+    separately against the actual attempt journal and action receipt.
+    """
+    try:
+        if not isinstance(data, dict) or data.get("action_schema") != FIXED_INTENT_ACTION_SCHEMA:
+            return None
+        rows = data.get("fixed_intent_tools")
+        if not isinstance(rows, list) or len(rows) > len(FIXED_INTENT_PROFILES):
+            return None
+        expected_keys = {"action", "app_label", "package", "parameter", "source",
+            "requested_outcome", "max_code_points", "max_utf8_bytes"}
+        targets = {}
+        for row in rows:
+            if not isinstance(row, dict) or set(row) != expected_keys:
+                return None
+            name = row.get("action")
+            profile = FIXED_INTENT_PROFILES.get(name) if isinstance(name, str) else None
+            label = row.get("app_label")
+            if (profile is None or name in targets
+                    or any(row.get(key) != profile[key] for key in ("package", "parameter", "requested_outcome"))
+                    or row.get("source") != "installed_fixed_intent_adapter"
+                    or type(row.get("max_code_points")) is not int or row["max_code_points"] != 1024
+                    or type(row.get("max_utf8_bytes")) is not int or row["max_utf8_bytes"] != 4096
+                    or not isinstance(label, str) or "\0" in label
+                    or len(label.encode("utf-16-be")) // 2 > 49):
+                return None
+            label.encode("utf-8", "strict")
+            targets[name] = dict(row)
+        return targets
+    except (ValueError, TypeError, KeyError, UnicodeError):
+        return None
+
+
+def fixed_intent_prompt_capability(data, action):
+    """Bind a v6 decision to its own fixed tool, exact app pair and literal payload."""
+    try:
+        targets = fixed_intent_prompt_targets(data)
+        if targets is None or not isinstance(action, dict):
+            return None
+        target = targets.get(action.get("action"))
+        if target is None:
+            return None
+        parameter = target["parameter"]
+        required = {"action", "observation_id", "app_label", "package", parameter}
+        screen = data.get("screen")
+        if (not required <= set(action) or set(action) - required - {"reason"}
+                or any(not isinstance(value, str) for value in action.values())
+                or list(action).index("app_label") > list(action).index("package")
+                or len(action.get("reason", "")) > 256
+                or not isinstance(screen, dict) or action["observation_id"] != screen.get("observation_id")
+                or action["package"] != target["package"] or action["app_label"] != target["app_label"]):
+            return None
+        payload = action[parameter]
+        for value in action.values():
+            value.encode("utf-8", "strict")
+        # Match Java isWhitespace OR isSpaceChar, without normalizing user data.
+        blank = all(unicodedata.category(ch) in ("Zs", "Zl", "Zp")
+            or 9 <= ord(ch) <= 13 or 28 <= ord(ch) <= 31 for ch in payload)
+        if (not 1 <= len(payload) <= target["max_code_points"] or "\0" in payload or blank
+                or len(payload.encode("utf-8", "strict")) > target["max_utf8_bytes"]):
+            return None
+        return dict(target)
+    except (ValueError, TypeError, KeyError, UnicodeError):
+        return None
+
+
 def ime_submit_prompt_capability(data, action):
-    """Return a validated v5 capability from the exact native prompt, or None.
+    """Return a validated v5/v6 capability from the exact native prompt, or None.
 
     This proves the model was supplied the capability, not that Android executed
     it or that a business goal succeeded. Those require separate action evidence.
     """
     try:
-        if (not isinstance(data, dict) or data.get("action_schema") != IME_SUBMIT_ACTION_SCHEMA
+        if (not isinstance(data, dict) or data.get("action_schema") not in IME_ACTION_SCHEMAS
                 or not isinstance(action, dict) or action.get("action") != "submit"):
+            return None
+        if data.get("action_schema") == FIXED_INTENT_ACTION_SCHEMA and fixed_intent_prompt_targets(data) is None:
             return None
         required = {"action", "observation_id", "package", "node_label", "node_id"}
         if (not required <= set(action) or set(action) - required - {"reason"}
@@ -490,7 +577,7 @@ def target_label_binding_valid(receipt, native, prompt_bytes, raw_bytes):
                     and labels[node_id] == label and action.get("observation_id") == observation
                     and action.get("package") == package and keys.index("node_label") < keys.index("node_id"))
             if action.get("action") == "submit":
-                return (bound and receipt.get("grammar_schema") == IME_SUBMIT_ACTION_SCHEMA
+                return (bound and receipt.get("grammar_schema") in IME_ACTION_SCHEMAS
                         and ime_submit_prompt_capability(data, action) is not None)
             return bound
         return "node_id" not in action and "node_label" not in action
@@ -499,7 +586,7 @@ def target_label_binding_valid(receipt, native, prompt_bytes, raw_bytes):
 
 
 def app_label_binding_valid(receipt, native, prompt_bytes, raw_bytes):
-    """V4/v5 pairs derive from the exact same protocol in the native prompt."""
+    """V4/v5/v6 open pairs and v6 fixed-tool pairs retain their separate domains."""
     if not isinstance(prompt_bytes, bytes) or not isinstance(raw_bytes, bytes):
         return False
     try:
@@ -511,8 +598,10 @@ def app_label_binding_valid(receipt, native, prompt_bytes, raw_bytes):
         if not text.startswith("UNTRUSTED_DATA\n") or "\nOWNER\n" not in text:
             return False
         data = strict_json(text[len("UNTRUSTED_DATA\n"):].split("\nOWNER\n", 1)[0].encode("utf-8"))
-        if (receipt.get("grammar_schema") not in (APP_LABEL_ACTION_SCHEMA, IME_SUBMIT_ACTION_SCHEMA)
+        if (receipt.get("grammar_schema") not in APP_LABEL_ACTION_SCHEMAS
                 or data.get("action_schema") != receipt.get("grammar_schema")):
+            return False
+        if data.get("action_schema") == FIXED_INTENT_ACTION_SCHEMA and fixed_intent_prompt_targets(data) is None:
             return False
         screen, rows, allowed = data.get("screen"), data.get("apps"), data.get("open_allowed_packages")
         if (not isinstance(screen, dict) or not isinstance(rows, list) or len(rows) > 40
@@ -560,7 +649,11 @@ def app_label_binding_valid(receipt, native, prompt_bytes, raw_bytes):
         action = strict_json(raw_bytes)
         if not isinstance(action, dict) or action.get("observation_id") != observation:
             return False
-        if action.get("action") == "submit" and data.get("action_schema") != IME_SUBMIT_ACTION_SCHEMA:
+        if data.get("action_schema") == FIXED_INTENT_ACTION_SCHEMA and action.get("action") not in V6_ACTIONS:
+            return False
+        if action.get("action") in FIXED_INTENT_PROFILES:
+            return fixed_intent_prompt_capability(data, action) is not None
+        if action.get("action") == "submit" and data.get("action_schema") not in IME_ACTION_SCHEMAS:
             return False
         if action.get("action") != "open":
             return "app_label" not in action and action.get("package") == current
@@ -602,11 +695,13 @@ def controller_grammar_binding_valid(receipt, native, grammar_bytes, observation
     if isinstance(raw_bytes, bytes):
         try:
             raw_action = strict_json(raw_bytes)
-            if isinstance(raw_action, dict) and raw_action.get("action") == "submit" and schema != IME_SUBMIT_ACTION_SCHEMA:
+            if isinstance(raw_action, dict) and raw_action.get("action") == "submit" and schema not in IME_ACTION_SCHEMAS:
+                return False
+            if isinstance(raw_action, dict) and raw_action.get("action") in FIXED_INTENT_PROFILES and schema != FIXED_INTENT_ACTION_SCHEMA:
                 return False
         except (ValueError, TypeError, UnicodeError, DriverError):
             return False
-    if schema in (APP_LABEL_ACTION_SCHEMA, IME_SUBMIT_ACTION_SCHEMA):
+    if schema in APP_LABEL_ACTION_SCHEMAS:
         return (target_label_binding_valid(receipt, native, prompt_bytes, raw_bytes)
                 and app_label_binding_valid(receipt, native, prompt_bytes, raw_bytes))
     # A labeled request cannot qualify by changing only the mutable app-side schema.

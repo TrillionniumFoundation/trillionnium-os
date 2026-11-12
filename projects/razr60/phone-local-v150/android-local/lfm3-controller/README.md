@@ -1,6 +1,39 @@
-# Hepta v52: remember explicit background UI choices
+# Hepta v56: integrate current natural Web tasks with responsive observation
 
-Current candidate: versionCode 52 (`0.52.0-local-background-preferences`), based on
+This standalone Android candidate forward-integrates the business v54 source
+42d3a0f447807659c0f78c8273edee01dd1b734f with the v55 observation, cleanup and
+launch repairs at b949261f8caaf821c7a4618d0bab09a718238802. Their common source
+is 7dee83d838b2c76b3abe3a3e61d7837316f40853. VersionCode is 56,
+0.56.0-natural-web-responsive-observation. Neither earlier APK represents
+this merged candidate.
+
+The current city/date confirmation and single native flight-query attempt,
+native calendar hierarchy, public-product evidence/completion path, natural
+owner constraints, automatic in-range background target selection and concise
+UI remain. The process-wide observation worker, original deadlines, screenshot
+event fences, unreleased-Web admission/recovery fence, late-Stop completion
+revocation and unsupported task-reuse launch refusal are retained. Invalid
+runtime configuration disables new inference while Stop and cleanup stay
+available. Model/backend details remain in the diagnostic section.
+
+Flight results still cannot satisfy the completion gate. Public-product query
+completion has a source implementation requiring matching detail/price evidence
+and accepted native model navigation; this does not establish phone qualification
+or shopping-order completion. The helper contract remains code 5 / protocol v3.
+The controller has no INTERNET permission and makes no external-model request.
+Ordinary text control still does not send screenshots to the model.
+
+Action-side synchronous graph/identity checks can still delay the main looper.
+No model weights, sampler, native runtime pins or saved owner application range
+are changed by this integration. Read the [current v56 contract](docs/INTEGRATED-V56.md)
+and [build contract](PUBLIC-BUILD.md) for the source and separate Android/phone
+gates. Historical failures and receipts remain bound to their original versions.
+This source alone proves no Android build, signed APK, installed upgrade,
+GPU/NPU inference, simultaneous main-screen use or completed phone task.
+
+## v52 predecessor: remember explicit background UI choices
+
+The v52 predecessor: versionCode 52 (`0.52.0-local-background-preferences`), based on
 frozen v51 commit `ed98f11db804f191a65254c378b195b1fb5f13be`.
 
 The normal Hepta launcher now remembers the user's explicit background-mode

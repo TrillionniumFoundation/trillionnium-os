@@ -526,11 +526,17 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     private void refresh(){
         if(modelInfo==null)return;
         boolean available=HeptaAccessibilityService.connected()!=null;
-        String device,modelName="本地模型";
-        try { device="npu".equals(engine.configuration().compute)?"Hexagon NPU":"Adreno GPU";modelName=engine.configuration().profile.displayName; }
-        catch(Exception error) { device="运行参数待修正"; }
-        modelInfo.setText((engine.modelFile().isFile()?"本地模型已就绪":"本地模型待导入")
-            +" · "+(available?"无障碍已启用":"请启用无障碍"));
+        String device,modelName="本地模型",modelState;
+        boolean configurationReady=false;
+        try {
+            LocalRuntimeConfig configuration=engine.configuration();
+            device="npu".equals(configuration.compute)?"Hexagon NPU":"Adreno GPU";modelName=configuration.profile.displayName;
+            modelState=engine.modelFile().isFile()?"本地模型已导入":"本地模型待导入";
+            configurationReady=true;
+        }catch(Exception error) {
+            device="运行参数待修正";modelState="本地配置错误："+HeptaAccessibilityService.message(error);
+        }
+        modelInfo.setText(modelState+" · "+(available?"无障碍已启用":"请启用无障碍"));
         modelDiagnostics.setText(modelName+" · "+device+" · 无外部模型");
         taskState.setText(tasks.state());taskLog.setText(tasks.log());
         boolean busy=tasks.isRunning()||engine.isBusy();
@@ -552,8 +558,8 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         pickBackgroundApps.setText(backgroundError==null
                 ?(backgroundPackages.isEmpty()?"选择后台应用范围":"后台范围："+backgroundPackages.size()+" 个应用（更改）")
                 :"后台应用范围（需重新确认）");
-        startTask.setEnabled(!busy&&!tasks.isBlocked()&&(!backgroundMode.isChecked()||backgroundError==null));stopTask.setEnabled(busy);
-        runText.setEnabled(!busy&&!tasks.isBlocked());
+        startTask.setEnabled(configurationReady&&!busy&&!tasks.isBlocked()&&(!backgroundMode.isChecked()||backgroundError==null));stopTask.setEnabled(busy);
+        runText.setEnabled(configurationReady&&!busy&&!tasks.isBlocked());
         LocalTaskController.TaskResult result=tasks.lastResult();
         if(result!=null){
             taskResult.setText(result.summary);

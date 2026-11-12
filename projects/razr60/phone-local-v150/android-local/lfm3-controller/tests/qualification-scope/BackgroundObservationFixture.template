@@ -21,6 +21,13 @@ final class BackgroundObservationFixture {
     private boolean submitAvailable(String pkg,String text){return false;}
     PhoneObservation snapshot(){
         Graph g=readGraph();
+        return publishFixture(g);
+    }
+    PhoneObservation budgetedSnapshot(final Runnable check){
+        Graph g=readGraph(new GraphBudget(){public void check(){check.run();}},background);
+        return publishFixture(g);
+    }
+    private PhoneObservation publishFixture(Graph g){
         try{return new PhoneObservation(String.format(Locale.ROOT,"%032x",++sequence),g.packageName,android.os.SystemClock.elapsedRealtime(),
                 1080,2400,g.rotation,g.windowId,g.bounds,new File("synthetic-only.png"),QualificationScopeHostTest.H,g.digest,
                 g.state,g.windowMetadata,g.truncated,g.rows,g.backgroundGeneration,g.backgroundBootstrapPackage,g.backgroundAllowedPackages,g.collectionStats);}
