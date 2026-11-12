@@ -1,35 +1,44 @@
-# Action, cancellation and session journal contract
+# Scoped Web and asynchronous control integration contract
 
-This nonrelease source candidate follows the frozen v56 component at
-`5da3c83fe46edb2617934a92c06a10608accb68e`. Its nine production changes are six
-modified Java classes and three new classes, yielding 112 Java sources. The full
-source membership is bound by this component's regenerated SOURCE-MANIFEST.json.
-The original build-input method must independently compute 214 production inputs
-on the complete staged component; a source-map prediction is not that execution.
+This unqualified v57 candidate integrates the action/Stop/session work from
+`0b9e0031d2e137d6823668946d48e8154b339787` with the installed scoped Web source
+`dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e`. The actual common ancestor is
+`42d3a0f447807659c0f78c8273edee01dd1b734f`. File selection follows that ancestor;
+version numbers and file sizes are not used to choose behavior.
+
+The integration retains the original candidate's existing files, brings in the
+29 fresh source/test paths and resolves the eight overlapping paths. Additional
+necessary fixture adaptations preserve their original semantic assertions.
+The 164 fresh historical host-evidence paths stay at their original immutable
+source; they are not newly copied into this component. The complete regenerated
+SOURCE-MANIFEST.json binds every actual file in this integrated component.
 
 Android version 57 / `0.57.0-off-main-action-stop-candidate` identifies this
-unqualified follow-up candidate. Version assignment does not establish an APK,
-signature, installation, phone qualification or production release approval.
-The model, native runtime, sampler and dependency pins remain those of the frozen
-base. Source-bound evidence is recorded separately; an earlier v56 green run
-cannot qualify this changed component.
+candidate. It does not establish an APK, original signature, installation,
+phone acceptance or production release. Model/native/sampler pins remain fixed.
 
 ## Validation boundaries
 
-The targeted action/cancellation and session journal suites use real new pure
-classes and exact extracted production methods, with explicit Android, Binder,
-native and filesystem fixtures. They do not execute the Android durable writer
-or prove a physical Binder/fsync stall. The Java/D8 runner binds all 112 sources,
-its own bytes and four previously observed SDK/JDK files, then records actual
-class and DEX output. It does not build or sign an APK. The full canonical strict
-host gate and affected fixture regressions remain mandatory on the current tree.
+The original 112-source compilation and prior targeted receipts are historical
+evidence for the preceding implementation. This integration has 117 Java sources
+and must pass a new complete Android/native/resource/APK build and canonical host
+regression against its exact 219 production inputs. Host fixture boundaries are
+explicit; they do not establish Android Binder/fsync behavior or phone operation.
+The unchanged 105-check runner is retained with the fresh Web query and other
+source/test extensions. Actual result counts belong to source-bound receipts.
 
-Flight-result completion and purchase completion are unchanged and unqualified.
-Calendar/form fixtures do not supply a real flight-result provider.
+The selected action node, the bounded scoped-Web role nodes and WebView node use
+owned copies for worker-side validation. Original task, observation, authorization,
+display-generation and absolute action-deadline checks remain before the effect.
+Worker code must not borrow the mutable current observation graph.
+
+Flight result completion and purchase completion remain unqualified. The current
+scoped flight source still lacks actual same-record flight-result completion;
+public product price evidence is not order/payment completion.
 
 ## Thread and node ownership
 
-The main looper retains service lifecycle callbacks, its current graph/observation ownership, short clone handoff and callback publication. The action worker receives copied graph metadata and an owned `AccessibilityNodeInfo.obtain(original)` for the selected node. It never borrows a live currentGraph.refs node. Full readGraph/refresh/children traversal, scope/package checks, attempt-journal write and fsync, action invocation, settling and readback run on one process-wide serial action worker. Its owned graph is closed in actual finally.
+The main looper retains service lifecycle callbacks, its current graph/observation ownership, short clone handoff and callback publication. The action worker receives copied graph metadata and an owned `AccessibilityNodeInfo.obtain(original)` for the selected node. Scoped Web native-region validation also receives bounded independently owned copies of the required role nodes and WebView node. The handoff never borrows live currentGraph.refs nodes. Worker-side refresh, parent/child reads and validation keep the original absolute deadline. Full readGraph/refresh/children traversal, scope/package checks, attempt-journal write and fsync, action invocation, settling and readback run on one process-wide serial action worker. Its owned graph is closed in actual finally.
 
 Target app View work still uses that app's own main thread. A caller-side worker does not guarantee target app or Binder latency. Existing foreground coordinate/gesture and unrestricted negative-window paths retain their legacy behavior and are not claimed as repaired; background paths cannot fall back through those exceptions. Initial background creation remains on the existing controller worker.
 
@@ -83,7 +92,7 @@ These sources justify the implementation design, not Motorola runtime response o
 
 ## Remaining required gates
 
-The complete canonical strict host suite must run against this exact component. Legacy fixtures must represent asynchronous callbacks and captured cancellation faithfully, using the actual production queue and extracted methods where those boundaries are exercised. Preserve the first actual failures and all product assertions. The background-client and warm-finalization fixtures include the captured task/ticket and a bounded wait for actual cancellation-worker drain; the socket lifecycle assertion includes the pre-write deadline update. The qualification fixture uses actual action/cancellation/session helpers with explicit host IO boundaries and waits for real worker completion before its original semantic assertions. Test barriers do not make production Stop synchronous or release production slots artificially. The targeted 24-case action suite, 16-case session suite and 112-source Java/D8 build are separate evidence levels. They do not replace the full regression gate. Native/resource/packaging/signing qualification and actual upgrade/cold-start/disconnect/restoration remain pending for this follow-up.
+The complete canonical strict host suite must run against this exact component. Legacy fixtures must represent asynchronous callbacks and captured cancellation faithfully, using the actual production queue and extracted methods where those boundaries are exercised. Preserve the first actual failures and all product assertions. The background-client and warm-finalization fixtures include the captured task/ticket and a bounded wait for actual cancellation-worker drain; the socket lifecycle assertion includes the pre-write deadline update. The qualification fixture uses actual action/cancellation/session helpers with explicit host IO boundaries and waits for real worker completion before its original semantic assertions. Test barriers do not make production Stop synchronous or release production slots artificially. The original 24-case action suite, its six added scoped-Web ownership cases, the 16-case session suite and complete Android build are separate evidence levels. The earlier 112-source Java/D8 receipt is historical; this integration requires a new 117-source build. These targeted levels do not replace the full regression gate. Native/resource/packaging/signing qualification and actual upgrade/cold-start/disconnect/restoration remain pending for this follow-up.
 
 No phone task may start without normal cooperative ownership, actual APK/receipt/inventory/config bytes and fresh UID/physical-display identity. Notes task A preserves all existing native/authorization/9-field context/save/list/same-item reopen gates and adds one semantically effective foreground gesture. Task B separately collects at least three effective foreground interactions across real model/action intervals plus ordinary Stop and actual drain. A cancelled B cannot count as successful Notes A.
 

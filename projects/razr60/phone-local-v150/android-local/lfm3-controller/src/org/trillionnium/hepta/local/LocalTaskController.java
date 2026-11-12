@@ -951,10 +951,22 @@ public final class LocalTaskController implements AutoCloseable {
         if(web!=null&&fixedTargets!=null)fixedTargets=java.util.Collections.emptyMap();
         java.util.List<AppCatalogueRanker.Entry> allApps=catalogue.apps;
         java.util.List<PhoneObservation.Node> nodes=new java.util.ArrayList<PhoneObservation.Node>(observation.nodes);
+        if(web!=null){
+            // The complete bounded AX tree is already retained as private evidence.
+            // An exact-token model does not need hundreds of ungranted footer/cart
+            // controls: only this verified domain's real current target IDs enter
+            // its actionable screen view. Omission counts remain explicit.
+            java.util.Set<String> permitted=new java.util.HashSet<String>(web.clickIds);
+            permitted.addAll(web.editValues.keySet());
+            java.util.List<PhoneObservation.Node> selected=new java.util.ArrayList<PhoneObservation.Node>();
+            for(PhoneObservation.Node node:nodes)if(permitted.contains(node.id))selected.add(node);
+            nodes=selected;
+        }
         final java.util.Set<String> requiredIds=new java.util.HashSet<String>();
         for(PhoneObservation.Node node:nodes)
-            if(PromptActionDomain.requiresRetention(observation.packageName,node.packageName,node.enabled,node.password,
-                    node.clickable,node.editable,node.scrollActions))requiredIds.add(node.id);
+            if(web==null?PromptActionDomain.requiresRetention(observation.packageName,node.packageName,node.enabled,node.password,
+                    node.clickable,node.editable,node.scrollActions):
+                    web.clickIds.contains(node.id)||web.editValues.containsKey(node.id))requiredIds.add(node.id);
         java.util.Collections.sort(nodes,new java.util.Comparator<PhoneObservation.Node>(){
             public int compare(PhoneObservation.Node a,PhoneObservation.Node b){
                 boolean ar=requiredIds.contains(a.id),br=requiredIds.contains(b.id);
@@ -991,6 +1003,9 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("size",new JSONArray(new int[]{observation.width,observation.height}))
                     .put("ime_visible",observation.state.imeVisibility.value()==null?JSONObject.NULL:observation.state.imeVisibility.value());
             screen.put("window",observation.windowPromptJson());
+            if(web!=null)screen.put("node_projection_scope","current_verified_web_domain_targets")
+                    .put("whole_scene_included",false).put("private_full_native_node_count",observation.nodes.size())
+                    .put("domain_filtered_nodes",observation.nodes.size()-nodes.size());
             JSONArray projectedNodes=new JSONArray();java.util.Set<String> ids=new java.util.HashSet<String>();
             java.util.Map<String,String> projectedLabels=new java.util.HashMap<String,String>();
             java.util.Set<String> clicks=new java.util.HashSet<String>(),edits=new java.util.HashSet<String>();

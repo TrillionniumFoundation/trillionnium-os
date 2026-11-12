@@ -1,21 +1,22 @@
-# Hepta v57 candidate: action and Stop follow-up
+# Hepta v57 candidate: scoped Web and asynchronous control
 
-This is a nonrelease source follow-up to frozen v56 commit
-`5da3c83fe46edb2617934a92c06a10608accb68e`. It changes six existing Java classes
-and adds three classes for action-worker ownership, captured cancellation and
-ordered session persistence. All 112 Java sources are present. Model/native pins
-remain unchanged. Android version 57 / `0.57.0-off-main-action-stop-candidate`
-identifies this candidate. Source and version assignment alone do not establish
-an APK, original signature, installation, phone acceptance or production release.
+This candidate combines the existing action/Stop/session repair with the scoped
+Web code that matches the freshly observed 216-input installed build. The source
+refs are `0b9e0031d2e137d6823668946d48e8154b339787` and
+`dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e`; their real common ancestor is
+`42d3a0f447807659c0f78c8273edee01dd1b734f`.
 
-Read [ACTION-EXECUTION-CONTRACT.md](ACTION-EXECUTION-CONTRACT.md) for threading,
-ordering, resource limits, uncertainty, recovery and qualification boundaries.
-SOURCE-MANIFEST.json binds this complete component. Full strict host regression
-must use the current tree; v56's 105-check result does not transfer to this source.
-Targeted JVM and Java/D8 receipts are separate from native/APK/phone acceptance.
+The current complete code contains 117 Java sources and 219 production inputs.
+Read [ACTION-EXECUTION-CONTRACT.md](ACTION-EXECUTION-CONTRACT.md) for ownership,
+ordering, deadlines, recovery and qualification boundaries. Source membership is
+bound by the regenerated SOURCE-MANIFEST.json. All current validation must use
+this exact source; prior 112-source compilation, v56 results and earlier v57
+fixture results do not qualify the integrated build.
 
-The sections below describe the frozen v56 foundation. Their historical counts,
-receipts and version claims are not qualification of this changed component.
+Android version 57 / `0.57.0-off-main-action-stop-candidate` distinguishes the
+candidate. Model/native/sampler pins are unchanged. Build, original-key signing,
+installation and real phone acceptance remain separate gates. Existing historical
+sections below retain their original source/version boundaries.
 
 ## Frozen v56 foundation: natural Web tasks and responsive observation
 

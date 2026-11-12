@@ -3,6 +3,7 @@ package org.trillionnium.hepta.local;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.io.DataInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -64,6 +65,67 @@ public final class ActionWorkerHost {
     private static final class Transport {
         /*__REMAINING_TIMEOUT__*/
         /*__READ_RESPONSE__*/
+    }
+    /** Ownership-only carriers. Real Android/Binder nodes and Web authority are not created by this fixture. */
+    private static final class GraphCloneFixture {
+        private static final class Rect {
+            final int left,top,right,bottom;
+            Rect(int l,int t,int r,int b){left=l;top=t;right=r;bottom=b;}
+            Rect(Rect source){this(source.left,source.top,source.right,source.bottom);}
+            @Override public boolean equals(Object value){if(!(value instanceof Rect))return false;Rect r=(Rect)value;return left==r.left&&top==r.top&&right==r.right&&bottom==r.bottom;}
+            @Override public int hashCode(){return left+31*top+961*right+29791*bottom;}
+        }
+        private static final class AccessibilityNodeInfo {
+            static final List<AccessibilityNodeInfo> clones=new ArrayList<AccessibilityNodeInfo>();
+            final String identity;int recycles,lookups;AccessibilityNodeInfo child,parent;Runnable lookupHook;
+            AccessibilityNodeInfo(String value){identity=value;}
+            static AccessibilityNodeInfo obtain(AccessibilityNodeInfo source){
+                check(source.recycles==0,"copy borrowed a recycled original");AccessibilityNodeInfo copy=new AccessibilityNodeInfo(source.identity);clones.add(copy);return copy;
+            }
+            void recycle(){recycles++;check(recycles==1,"node reference recycled twice");}
+            AccessibilityNodeInfo getChild(int index){check(index==0,"unexpected child index");lookups++;if(lookupHook!=null)lookupHook.run();return child;}
+            AccessibilityNodeInfo getParent(){lookups++;if(lookupHook!=null)lookupHook.run();return parent;}
+        }
+        private static final class ObservedImeEnter {}
+        private static final class ObservationState {}
+        private static final class ObservedWindowMetadata {}
+        private static final class PhoneObservation {
+            private static final class CollectionStats {}
+            private static final class Node {final String id;Node(String id){this.id=id;}}
+        }
+        private static final class WebRegionNativeBridge {
+            final PhoneObservation.Node anchor=new PhoneObservation.Node("n0");final String nativeWebViewId="web";
+            final List<Role> values;
+            private static final class Role {final String nodeId;Role(String id){nodeId=id;}}
+            WebRegionNativeBridge(String... ids){List<Role> roles=new ArrayList<Role>();for(String id:ids)roles.add(new Role(id));values=java.util.Collections.unmodifiableList(roles);}
+            List<Role> roles(){return values;}
+        }
+        private static final class NodeRef {
+            final AccessibilityNodeInfo node;final String signature,appTreeSignature,inputTextSha256;final ObservedImeEnter imeEnter;
+            NodeRef(AccessibilityNodeInfo source){node=source;signature="signature:"+source.identity;appTreeSignature="app:"+source.identity;inputTextSha256=null;imeEnter=new ObservedImeEnter();}
+            /*__NODE_REFERENCE_COPY__*/
+        }
+        private static final class StaleObservation extends IllegalStateException {
+            private static final long serialVersionUID=1L;StaleObservation(String message){super(message);}
+        }
+        /*__ACTION_GRAPH__*/
+        private static final class ActionWork {
+            final ActionExecutionState state=state(new Clock());boolean cancelled;
+            void check(){state.check(cancelled,true);}
+        }
+        /*__ACTION_CHECK__*/
+        /*__REGION_CHILD__*/
+        /*__REGION_PARENT__*/
+        static Graph graph(){
+            AccessibilityNodeInfo.clones.clear();Graph g=new Graph();g.packageName="fixture.web";g.digest="digest";g.backgroundGeneration=GENERATION;
+            g.backgroundBootstrapPackage="fixture.web";g.windowId=12;g.displayId=3;g.rotation=0;g.bounds=new Rect(0,0,1080,2400);
+            g.backgroundAllowedPackages=java.util.Collections.singletonList("fixture.web");g.backgroundSelectionRaw="fixture-selection";g.backgroundOwnerSha=AUTH;
+            g.state=new ObservationState();g.windowMetadata=new ObservedWindowMetadata();g.collectionStats=new PhoneObservation.CollectionStats();
+            for(String id:new String[]{"n0","n1","n2","n3","web","other"})g.refs.put(id,new NodeRef(new AccessibilityNodeInfo(id)));
+            return g;
+        }
+        static WebRegionNativeBridge region(){return new WebRegionNativeBridge("n0","n1","n2","n3");}
+        static void allClonesClosed(){for(AccessibilityNodeInfo n:AccessibilityNodeInfo.clones)check(n.recycles==1,"failed handoff leaked a clone");}
     }
     private interface LocalInference {interface Handle {void cancel();}}
     private static final class Inference {
@@ -332,6 +394,55 @@ public final class ActionWorkerHost {
             check(!fixture.stopIfTask(TASK)&&!fixture.cancelled.get()&&executor.work==null,"old failure stopped newer task");
             boolean nullRejected=false;try{fixture.stopIfTask(null);}catch(IllegalArgumentException expected){nullRejected=true;}check(nullRejected,"null became wildcard cancellation");
             check(fixture.stopIfTask(next)&&fixture.cancelled.get(),"exact current task refusal");executor.executeQueued();check(inference.calls.get()==1,"captured task cancellation was not dispatched once");
+        }});
+        run("single_node_handoff_remains_owned_after_main_snapshot_closes",new Case(){public void run(){
+            GraphCloneFixture.Graph original=GraphCloneFixture.graph();GraphCloneFixture.NodeRef selected=original.refs.get("n0");
+            GraphCloneFixture.Graph copy=original.copyForAction("n0",null);
+            check(copy.refs.size()==1&&copy.refs.get("n0").node!=selected.node,"single-node action borrowed main ownership or copied unrelated nodes");
+            check(copy.sameWindow(original)&&copy.bounds!=original.bounds,"handoff lost bound selection/owner or shared mutable bounds");
+            original.close();check(selected.node.recycles==1&&copy.refs.get("n0").node.recycles==0,"main graph close invalidated owned action node");
+            copy.close();GraphCloneFixture.allClonesClosed();
+        }});
+        run("product_handoff_owns_four_roles_and_webview_without_main_traversal",new Case(){public void run(){
+            GraphCloneFixture.Graph original=GraphCloneFixture.graph();Map<String,GraphCloneFixture.NodeRef> old=new HashMap<String,GraphCloneFixture.NodeRef>(original.refs);
+            GraphCloneFixture.Graph copy=original.copyForAction("n0",GraphCloneFixture.region());
+            check(copy.refs.size()==5&&!copy.refs.containsKey("other"),"product handoff did not retain exactly its five references");
+            for(String id:new String[]{"n0","n1","n2","n3","web"}){
+                check(copy.refs.get(id).node!=old.get(id).node&&copy.refs.get(id).node.identity.equals(old.get(id).node.identity),"product handoff changed identity or borrowed a reference");
+                check(old.get(id).node.lookups==0,"main handoff queried a live parent/child");
+            }
+            check(copy.sameWindow(original)&&copy.state==original.state&&copy.collectionStats==original.collectionStats,"copied frame metadata differs");
+            original.close();for(GraphCloneFixture.NodeRef ref:copy.refs.values())check(ref.node.recycles==0,"main close recycled a worker role");
+            copy.close();GraphCloneFixture.allClonesClosed();
+        }});
+        run("missing_product_role_closes_partial_handoff_without_recycling_main_nodes",new Case(){public void run(){
+            final GraphCloneFixture.Graph original=GraphCloneFixture.graph();original.refs.remove("n2").node.recycle();
+            refused(new Runnable(){public void run(){original.copyForAction("n0",GraphCloneFixture.region());}});
+            check(!GraphCloneFixture.AccessibilityNodeInfo.clones.isEmpty(),"negative case never entered partial handoff");GraphCloneFixture.allClonesClosed();
+            for(GraphCloneFixture.NodeRef ref:original.refs.values())check(ref.node.recycles==0,"failed handoff recycled a main-owned role");original.close();
+        }});
+        run("duplicate_product_role_cannot_reduce_the_independent_role_set",new Case(){public void run(){
+            final GraphCloneFixture.Graph original=GraphCloneFixture.graph();
+            refused(new Runnable(){public void run(){original.copyForAction("n0",new GraphCloneFixture.WebRegionNativeBridge("n0","n1","n1","n3"));}});
+            GraphCloneFixture.allClonesClosed();for(GraphCloneFixture.NodeRef ref:original.refs.values())check(ref.node.recycles==0,"duplicate role failure crossed main ownership");original.close();
+        }});
+        run("cancel_during_region_child_lookup_retains_returned_reference_for_finally",new Case(){public void run(){
+            GraphCloneFixture fixture=new GraphCloneFixture();final GraphCloneFixture.ActionWork work=new GraphCloneFixture.ActionWork();
+            GraphCloneFixture.AccessibilityNodeInfo parent=new GraphCloneFixture.AccessibilityNodeInfo("parent"),returned=new GraphCloneFixture.AccessibilityNodeInfo("child");
+            parent.child=returned;parent.lookupHook=new Runnable(){public void run(){work.cancelled=true;}};
+            List<GraphCloneFixture.AccessibilityNodeInfo> owned=new ArrayList<GraphCloneFixture.AccessibilityNodeInfo>();
+            try{refused(()->fixture.regionChild(work,parent,0,owned));check(owned.size()==1&&owned.get(0)==returned&&returned.recycles==0,"cancelled child return lost cleanup ownership");}
+            finally{for(GraphCloneFixture.AccessibilityNodeInfo node:owned)node.recycle();}
+            check(returned.recycles==1&&parent.recycles==0&&work.state.retired(),"child cleanup crossed owner or failed to retire");parent.recycle();
+        }});
+        run("cancel_during_region_parent_lookup_retains_returned_reference_for_finally",new Case(){public void run(){
+            GraphCloneFixture fixture=new GraphCloneFixture();final GraphCloneFixture.ActionWork work=new GraphCloneFixture.ActionWork();
+            GraphCloneFixture.AccessibilityNodeInfo child=new GraphCloneFixture.AccessibilityNodeInfo("child"),returned=new GraphCloneFixture.AccessibilityNodeInfo("parent");
+            child.parent=returned;child.lookupHook=new Runnable(){public void run(){work.cancelled=true;}};
+            List<GraphCloneFixture.AccessibilityNodeInfo> owned=new ArrayList<GraphCloneFixture.AccessibilityNodeInfo>();
+            try{refused(()->fixture.regionParent(work,child,owned));check(owned.size()==1&&owned.get(0)==returned&&returned.recycles==0,"cancelled parent return lost cleanup ownership");}
+            finally{for(GraphCloneFixture.AccessibilityNodeInfo node:owned)node.recycle();}
+            check(returned.recycles==1&&child.recycles==0&&work.state.retired(),"parent cleanup crossed owner or failed to retire");child.recycle();
         }});
         StringBuilder json=new StringBuilder("{\"schema\":\"hepta.action-worker-host.v1\",\"cases\":").append(passed.size()).append(",\"all_pass\":true,\"phone_operations\":0,\"android_test\":false,\"physical_fsync_stall_test\":false,\"passed\":[");
         for(int i=0;i<passed.size();i++){if(i>0)json.append(',');json.append('\"').append(passed.get(i)).append('\"');}System.out.println(json.append("]}"));

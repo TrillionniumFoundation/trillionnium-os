@@ -38,6 +38,37 @@ import java.util.UUID;
 
 /** Standard Android accessibility service. All effects pass an observed-target gate. */
 public final class HeptaAccessibilityService extends AccessibilityService {
+    /** Only this service can construct a live native recheck token. It is not
+     * reconstructed from a callback, serialized proof, or caller-supplied flag. */
+    static final class NativeRegionCheck {
+        private final PhoneObservation observedFrame;private final WebRegionNativeBridge observedBridge;
+        final long checkedAt;private final String raw;
+        private NativeRegionCheck(PhoneObservation frame,WebRegionNativeBridge bridge,long started,long ended,
+                                  JSONObject windows)throws Exception{
+            observedFrame=frame;observedBridge=bridge;checkedAt=ended;
+            JSONObject value=new JSONObject().put("schema","hepta.live-native-region-recheck.v1")
+                    .put("source","actual_accessibility_refresh_ancestry_and_interactive_windows")
+                    .put("observation_id",frame.id).put("observation_state_sha256",frame.treeSha256)
+                    .put("app_tree_sha256",frame.state.appTreeSha256).put("bridge_sha256",bridge.semanticFingerprint)
+                    .put("binding_sha256",bridge.bindingSha).put("background_generation",bridge.generation)
+                    .put("display_id",bridge.displayId).put("window_id",bridge.windowId)
+                    .put("started_elapsed_ms",started).put("checked_elapsed_ms",ended)
+                    .put("four_roles_refreshed_before_and_after",true)
+                    .put("actual_parent_child_node_identity_verified",true)
+                    .put("actual_native_webview_ancestor_verified",true)
+                    .put("interactive_windows",windows).put("two_window_metadata_reads_equal",true)
+                    .put("coordinates_used_for_input",false).put("fully_unoccluded_claimed",false)
+                    .put("unreported_windows_excluded",false).put("native_invocation_entered",false)
+                    .put("business_verified",false);
+            raw=org.trillionnium.hepta.webprotocol.WebDomCanonical.canonical(value);
+        }
+        boolean matches(PhoneObservation frame,WebRegionNativeBridge bridge){
+            return observedFrame==frame&&observedBridge==bridge&&frame!=null&&bridge!=null
+                    &&frame.windowId==bridge.windowId&&frame.backgroundGeneration!=null
+                    &&frame.backgroundGeneration.equals(bridge.generation);
+        }
+        JSONObject evidence()throws Exception{return new JSONObject(raw);}
+    }
     public interface ObservationCallback { void onObservation(PhoneObservation value); void onError(String error); }
     public interface Cancellation { boolean isCancelled(); }
     public interface ActionCallback { void onResult(ActionOutcome result); }
@@ -123,6 +154,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     // nodes. A real browser snapshot had 975 nodes before its deeper controls.
     // Output remains independently bounded and native exact-token admission is unchanged.
     private static final int MAX_NODES=128, MAX_VISITED=1536, MAX_CHARACTERS=6144;
+    // Complete bounded evidence for an already bound helper lease. This does not
+    // enlarge generic app actions or the model's permitted target set.
+    private static final int WEB_MAX_NODES=512, WEB_MAX_CHARACTERS=32768;
     private final Map<String,String> launchable=new java.util.concurrent.ConcurrentHashMap<String,String>();
     private AppCatalogueRanker appDiscovery;
 
@@ -274,6 +308,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(!background.generation.equals(observed.backgroundGeneration)||observed.windowMetadata.displayId==null
                 ||background.displayId()!=observed.windowMetadata.displayId.intValue()||!background.allows(observed.packageName))
             throw new IllegalStateException("观察不属于本次后台屏幕与应用范围");
+        try{
+            JSONObject selected=observed.backgroundSelectionEvidence();
+            if(selected==null||!WebEvidenceReceipt.same(selected,background.selection.json())
+                    ||!background.selection.initialPackage.equals(observed.backgroundBootstrapPackage)
+                    ||!background.selection.allowedPackages.equals(observed.backgroundAllowedPackages))
+                throw new IllegalStateException("观察中的原始应用选择与当前后台租约不同");
+        }catch(Exception invalid){throw new IllegalStateException("后台选择来源无法复核",invalid);}
     }
 
 
@@ -549,7 +590,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 throw new IllegalStateException("观察结果所有权不完整");
             if(!observationActive(request))return;
             PhoneObservation observation=new PhoneObservation(product.id,graph.packageName,product.capturedAt,
-                    product.bitmap.getWidth(),product.bitmap.getHeight(),graph.rotation,graph.windowId,graph.bounds,product.path,product.digest,graph.digest,graph.state,graph.windowMetadata,graph.truncated,graph.rows,graph.backgroundGeneration,graph.backgroundBootstrapPackage,graph.backgroundAllowedPackages,graph.collectionStats);
+                    product.bitmap.getWidth(),product.bitmap.getHeight(),graph.rotation,graph.windowId,graph.bounds,product.path,product.digest,graph.digest,graph.state,graph.windowMetadata,graph.truncated,graph.rows,graph.backgroundGeneration,graph.backgroundBootstrapPackage,graph.backgroundAllowedPackages,graph.collectionStats,
+                    graph.backgroundSelectionRaw==null?null:new JSONObject(graph.backgroundSelectionRaw),graph.backgroundOwnerSha);
             clearSnapshot();current=observation;currentGraph=graph;currentBitmap=product.bitmap;
             request.captured=null;product.bitmap=null;product.published=true;
             request.finished=true;request.gate.retire();activeObservation=null;
@@ -762,8 +804,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             Graph snapshot=null;
             try{
                 if(expected!=current||currentGraph==null)throw new StaleObservation("观察标识已失效");
-                snapshot=currentGraph.copyForAction(decision.nodeId);
-                final ActionWork work=new ActionWork(taskId,expected,modelRunId,captured,capturedAuthorization,capturedBackground,cancel,snapshot,queued,deadline);
+                // This lookup validates immutable in-memory evidence only; node refresh and live window reads stay on actionIo.
+                WebFlightSession web=taskWeb;
+                WebRegionNativeBridge region=web==null?null:web.nativeRegionForDispatch(decision,modelRunId,expected);
+                snapshot=currentGraph.copyForAction(decision.nodeId,region);
+                final ActionWork work=new ActionWork(taskId,expected,modelRunId,captured,capturedAuthorization,capturedBackground,cancel,snapshot,region,queued,deadline);
                 if(!actionSlot.acquire(work.state))throw new IllegalStateException("已有动作工作尚未真实退出");
                 activeAction=work;lastActionExecution=work.state;snapshot=null;
                 try{actionIo.execute(new Runnable(){public void run(){
@@ -856,10 +901,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private final class ActionWork {
         final ActionExecutionState state;final PhoneObservation expected;final Graph graph;final Cancellation cancel;
         final QualificationScopeConfig.Bound scope;final TaskAuthorization.Gate authorization;final BackgroundSession background;
+        final WebRegionNativeBridge nativeRegion;
         ActionWork(String task,PhoneObservation expected,String run,QualificationScopeConfig.Bound scope,
-                TaskAuthorization.Gate authorization,BackgroundSession background,Cancellation cancel,Graph graph,long queued,long deadline){
+                TaskAuthorization.Gate authorization,BackgroundSession background,Cancellation cancel,Graph graph,WebRegionNativeBridge nativeRegion,long queued,long deadline){
             this.expected=expected;this.scope=scope;this.authorization=authorization;this.background=background;
-            this.cancel=cancel;this.graph=graph;
+            this.cancel=cancel;this.graph=graph;this.nativeRegion=nativeRegion;
             state=new ActionExecutionState(UUID.randomUUID().toString().replace("-",""),task,run,expected.id,
                     authorization.authorization.sha256,graph.windowId,graph.displayId,graph.backgroundGeneration,queued,deadline,
                     new ActionExecutionState.Clock(){public long elapsedRealtime(){return SystemClock.elapsedRealtime();}});
@@ -1032,7 +1078,18 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 }
                 scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true,work);
                 authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
-                WebFlightSession web=taskWeb;if(web!=null)web.beforeNativeClickInvocation(action,modelRunId);
+                WebFlightSession web=taskWeb;
+                if(web!=null){
+                    WebRegionNativeBridge region=web.nativeRegionForDispatch(action,modelRunId,expected);
+                    if(work!=null&&region!=work.nativeRegion)throw new StaleObservation("商品原生授权已在动作交接后变化");
+                    if(region!=null){
+                        web.acceptNativeRegionCheck(action,modelRunId,
+                                requireLiveNativeRegion(taskId,expected,node,region,cancel,work));
+                        scopeBeforeDispatch(taskId,dispatchScope,expected,action,node,true,work);
+                        authorizationBeforeDispatch(taskId,authorization,action,modelRunId);
+                    }
+                    web.beforeNativeClickInvocation(action,modelRunId);
+                }
                 enterActionEffect(work);accepted=node.performAction(AccessibilityNodeInfo.ACTION_CLICK);actionEffectReturned(work,Boolean.valueOf(accepted));
                 finishAfter(350,accepted,accepted?"节点点击已接受":"节点点击未接受",callback,work);
             }else if("type".equals(action.action)){
@@ -1267,22 +1324,43 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         PhoneObservation.CollectionStats collectionStats;
         String packageName,digest,backgroundGeneration,backgroundBootstrapPackage;int windowId,rotation,displayId;Rect bounds;boolean truncated;
         List<String> backgroundAllowedPackages=java.util.Collections.emptyList();
+        String backgroundSelectionRaw,backgroundOwnerSha;
         ObservationState state;
         ObservedWindowMetadata windowMetadata;
         final List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();
         final Map<String,NodeRef> refs=new HashMap<String,NodeRef>();
         boolean sameWindow(Graph other){return windowId==other.windowId&&rotation==other.rotation&&displayId==other.displayId
-                &&java.util.Objects.equals(backgroundGeneration,other.backgroundGeneration)&&packageName.equals(other.packageName)&&bounds.equals(other.bounds);}
+                &&java.util.Objects.equals(backgroundGeneration,other.backgroundGeneration)
+                &&java.util.Objects.equals(backgroundSelectionRaw,other.backgroundSelectionRaw)
+                &&java.util.Objects.equals(backgroundOwnerSha,other.backgroundOwnerSha)
+                &&packageName.equals(other.packageName)&&bounds.equals(other.bounds);}
         boolean sameWindowAndTree(Graph other){return sameWindow(other)&&digest.equals(other.digest);}
-        Graph copyForAction(String nodeId){
-            // Main-looper handoff copies metadata and only the selected local node object; no refresh/IPC.
+        Graph copyForAction(String nodeId,WebRegionNativeBridge region){
+            // Main-looper handoff clones local references only: one selected node, or exactly four product roles plus their WebView.
+            // No refresh, traversal, live-window query, or other IPC occurs during this bounded handoff.
             Graph copy=new Graph();copy.packageName=packageName;copy.digest=digest;copy.backgroundGeneration=backgroundGeneration;
             copy.backgroundBootstrapPackage=backgroundBootstrapPackage;copy.windowId=windowId;copy.rotation=rotation;
             copy.displayId=displayId;copy.bounds=new Rect(bounds);copy.truncated=truncated;
             copy.backgroundAllowedPackages=java.util.Collections.unmodifiableList(new ArrayList<String>(backgroundAllowedPackages));
+            copy.backgroundSelectionRaw=backgroundSelectionRaw;copy.backgroundOwnerSha=backgroundOwnerSha;
             copy.state=state;copy.windowMetadata=windowMetadata;copy.collectionStats=collectionStats;
-            NodeRef selected=nodeId==null?null:refs.get(nodeId);if(selected!=null)copy.refs.put(nodeId,new NodeRef(selected));
-            return copy;
+            try{
+                NodeRef selected=nodeId==null?null:refs.get(nodeId);if(selected!=null)copy.refs.put(nodeId,new NodeRef(selected));
+                if(region!=null){
+                    if(selected==null||!region.anchor.id.equals(nodeId)||region.roles().size()!=4)
+                        throw new StaleObservation("商品动作缺少原始四角色快照");
+                    for(WebRegionNativeBridge.Role role:region.roles()){
+                        NodeRef original=refs.get(role.nodeId);
+                        if(original==null)throw new StaleObservation("商品动作缺少原始角色引用");
+                        if(!copy.refs.containsKey(role.nodeId))copy.refs.put(role.nodeId,new NodeRef(original));
+                    }
+                    NodeRef web=refs.get(region.nativeWebViewId);
+                    if(web==null||copy.refs.containsKey(region.nativeWebViewId))throw new StaleObservation("商品动作缺少独立 WebView 引用");
+                    copy.refs.put(region.nativeWebViewId,new NodeRef(web));
+                    if(copy.refs.size()!=5)throw new StaleObservation("商品原生角色快照并非四个独立角色");
+                }
+                return copy;
+            }catch(RuntimeException failure){copy.close();throw failure;}
         }
         void close(){for(NodeRef n:refs.values())n.node.recycle();refs.clear();}
     }
@@ -1376,14 +1454,26 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private Graph readGraph(){return readGraph(null,currentBackground());}
     private Graph readGraph(GraphBudget budget,BackgroundSession background){
         checkReadBudget(budget);
+        String actualSelectionRaw=null,actualOwnerSha=null;
+        if(background!=null)try{
+            background.requireActive();actualSelectionRaw=background.selection.json().toString();actualOwnerSha=background.ownerSha256;
+        }catch(Exception missingSelection){throw new IllegalStateException("无法记录当前后台应用选择来源",missingSelection);}
+        checkReadBudget(budget);
         AccessibilityNodeInfo root=selectedRoot(background,budget);if(root==null)throw new NoActiveWindow();
         Graph graph=new Graph();
         ArrayDeque<AccessibilityNodeInfo> queue=new ArrayDeque<AccessibilityNodeInfo>();queue.add(root);
         try{
-        checkReadBudget(budget);graph.displayId=background==null?Display.DEFAULT_DISPLAY:background.displayId();
+        checkReadBudget(budget);
+        WebFlightSession activeWeb=taskWeb;
+        boolean webEvidence=activeWeb!=null&&background!=null&&activeWeb.taskId.equals(background.taskId)
+                &&background.selection.allowedPackages.equals(java.util.Collections.singletonList(
+                        org.trillionnium.hepta.webprotocol.WebEvidenceProtocol.HELPER_PACKAGE));
+        int retainedLimit=webEvidence?WEB_MAX_NODES:MAX_NODES,textLimit=webEvidence?WEB_MAX_CHARACTERS:MAX_CHARACTERS;
+        graph.displayId=background==null?Display.DEFAULT_DISPLAY:background.displayId();
         graph.backgroundGeneration=background==null?null:background.generation;
         graph.backgroundBootstrapPackage=background==null?null:background.selection.initialPackage;
         graph.backgroundAllowedPackages=background==null?java.util.Collections.<String>emptyList():background.selection.allowedPackages;
+        graph.backgroundSelectionRaw=actualSelectionRaw;graph.backgroundOwnerSha=actualOwnerSha;
         graph.packageName=string(root.getPackageName());graph.windowId=root.getWindowId();graph.rotation=rotation(graph.displayId);graph.bounds=new Rect();root.getBoundsInScreen(graph.bounds);
         if(graph.packageName.isEmpty()||graph.bounds.isEmpty())throw new IllegalStateException("活动窗口身份不可用");
         graph.windowMetadata=readWindowMetadata(root,graph.bounds,graph.windowId,graph.displayId);
@@ -1408,8 +1498,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     ObservedImeEnter imeEnter=readImeEnter(node);String inputHash=inputTextHash(node);
                     boolean useful=visible&&(node.isClickable()||node.isEditable()||node.isScrollable()||!text.isEmpty()||!description.isEmpty());
                     if(useful){
-                        ObservedChildText.Result childText=graph.rows.size()<MAX_NODES?observedChildText(node,background!=null,budget):ObservedChildText.notApplicable();
-                        if(graph.rows.size()<MAX_NODES&&characters+text.length()+description.length()+childText.text.length()<MAX_CHARACTERS){
+                        ObservedChildText.Result childText=graph.rows.size()<retainedLimit?observedChildText(node,background!=null,budget):ObservedChildText.notApplicable();
+                        if(graph.rows.size()<retainedLimit&&characters+text.length()+description.length()+childText.text.length()<textLimit){
                             String id="n"+graph.rows.size();NodeRef reference=new NodeRef(node,childText,scrollActions,imeEnter,inputHash);graph.refs.put(id,reference);signatures.append(reference.appTreeSignature).append('|')
                                     .append(nativePath).append('|').append(nativeParentClass).append('\n');
                             scrollStates.append(id).append('=').append(scrollActions.fingerprintInput()).append('\n');
@@ -1420,7 +1510,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                             characters+=text.length()+description.length()+childText.text.length();
                         }else{
                             graph.truncated=true;
-                            if(graph.rows.size()>=MAX_NODES)nodeBudgetOmissions++;else textBudgetOmissions++;
+                            if(graph.rows.size()>=retainedLimit)nodeBudgetOmissions++;else textBudgetOmissions++;
                         }
                     }
                     int actualChildren=node.getChildCount();
@@ -1438,10 +1528,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 }finally{node.recycle();}
             }
             checkReadBudget(budget);if(!queue.isEmpty())graph.truncated=true;
-            graph.collectionStats=new PhoneObservation.CollectionStats(MAX_VISITED,MAX_NODES,MAX_CHARACTERS,
+            graph.collectionStats=new PhoneObservation.CollectionStats(MAX_VISITED,retainedLimit,textLimit,
                     visited,graph.rows.size(),characters,queue.size(),nodeBudgetOmissions,textBudgetOmissions,
                     childSlotsOmitted,SystemClock.elapsedRealtime()-started);
-            String binding=background==null?"":("background="+background.generation+"|display="+graph.displayId+"|");
+            String binding=background==null?"":("background="+background.generation+"|display="+graph.displayId+"|owner="+graph.backgroundOwnerSha
+                    +"|selection="+sha(graph.backgroundSelectionRaw.getBytes(StandardCharsets.UTF_8))+"|");
             String appTree=sha((binding+graph.packageName+"|"+graph.windowId+"|"+graph.rotation+"|"+graph.bounds+"|"+signatures).getBytes(StandardCharsets.UTF_8));
             graph.state=new ObservationState(appTree,readImeVisibility(graph.windowId,graph.displayId));
             // Focus is newly model-visible evidence, not an expansion of the old progress predicate.
@@ -1458,6 +1549,163 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(!node.isEditable()||node.isPassword())return null;
         CharSequence text=node.getText();
         return ObservedImeEnter.completeTextHash(text==null?null:text.toString());
+    }
+    /** A final read-only recheck of actual native references. No coordinate input,
+     * new window, page script, permission change, or additional ARM is issued. */
+    private NativeRegionCheck requireLiveNativeRegion(String taskId,PhoneObservation frame,AccessibilityNodeInfo clicked,
+            WebRegionNativeBridge bridge,Cancellation cancel,ActionWork work)throws Exception{
+        actionPhase(work,"graph_read");actionCheck(work);Graph graph=graphForAction(work);
+        long started=SystemClock.elapsedRealtime();BackgroundSession background=backgroundFor(taskId);
+        if(background==null||cancel.isCancelled()||!owns(taskId)||frame!=current||graph==null
+                ||work!=null&&work.nativeRegion!=bridge)
+            throw new StaleObservation("商品原生复核的任务或观察已失效");
+        requireBackgroundObservation(taskId,frame);background.requireActive();bridge.requireFrame(frame);
+        actionCheck(work);
+        if(graph.windowId!=bridge.windowId||graph.displayId!=bridge.displayId
+                ||!bridge.generation.equals(graph.backgroundGeneration))
+            throw new StaleObservation("商品原生复核的屏幕或窗口已变化");
+        NodeRef anchorRef=graph.refs.get(bridge.anchor.id),webRef=graph.refs.get(bridge.nativeWebViewId);
+        if(anchorRef==null||anchorRef.node!=clicked||webRef==null)
+            throw new StaleObservation("商品点击没有原始原生节点引用");
+        for(WebRegionNativeBridge.Role role:bridge.roles())refreshRegionRole(background,frame,role,work);
+        if(!refreshActionNode(work,webRef.node)||!webRef.node.isVisibleToUser()||!webRef.node.isEnabled()
+                ||!bridge.nativeWebViewSignature.equals(observedChildText(webRef.node,true,work==null?null:work.budget()).bind(baseNodeSignature(webRef.node))))
+            throw new StaleObservation("原生 WebView 祖先已变化");
+        actionCheck(work);requireBackgroundNodeWindow(background,frame,webRef.node);actionCheck(work);
+        List<AccessibilityNodeInfo> temporary=new ArrayList<AccessibilityNodeInfo>();
+        try{
+            // These child positions are independently observed native relations,
+            // never DOM paths or a screen-coordinate mapping.
+            if(clicked.getChildCount()!=5)throw new StaleObservation("商品原生子树结构不再匹配实际样本");
+            AccessibilityNodeInfo model=regionChild(work,clicked,1,temporary);
+            AccessibilityNodeInfo prices=regionChild(work,clicked,2,temporary);
+            if(model==null||prices==null||!refreshActionNode(work,model)||!refreshActionNode(work,prices)||prices.getChildCount()!=2
+                    ||!"android.view.View".equals(string(prices.getClassName())))
+                throw new StaleObservation("商品名称或同组价格容器已变化");
+            AccessibilityNodeInfo currentPrice=regionChild(work,prices,0,temporary);
+            AccessibilityNodeInfo comparisonPrice=regionChild(work,prices,1,temporary);
+            List<WebRegionNativeBridge.Role> roles=bridge.roles();
+            if(currentPrice==null||comparisonPrice==null||!refreshActionNode(work,currentPrice)||!refreshActionNode(work,comparisonPrice)
+                    ||!model.equals(graph.refs.get(roles.get(1).nodeId).node)
+                    ||!currentPrice.equals(graph.refs.get(roles.get(2).nodeId).node)
+                    ||!comparisonPrice.equals(graph.refs.get(roles.get(3).nodeId).node))
+                throw new StaleObservation("同组商品四角色的原生节点身份不再一致");
+            AccessibilityNodeInfo modelParent=regionParent(work,model,temporary);
+            AccessibilityNodeInfo pricesParent=regionParent(work,prices,temporary);
+            AccessibilityNodeInfo currentParent=regionParent(work,currentPrice,temporary);
+            AccessibilityNodeInfo comparisonParent=regionParent(work,comparisonPrice,temporary);
+            if(modelParent==null||pricesParent==null||currentParent==null||comparisonParent==null
+                    ||!refreshActionNode(work,modelParent)||!refreshActionNode(work,pricesParent)
+                    ||!refreshActionNode(work,currentParent)||!refreshActionNode(work,comparisonParent)
+                    ||!modelParent.equals(clicked)||!pricesParent.equals(clicked)
+                    ||!currentParent.equals(prices)||!comparisonParent.equals(prices))
+                throw new StaleObservation("商品原生父子关系已变化");
+            int distance=bridge.anchor.nativeTreePath.split("/").length-bridge.nativeWebViewPath.split("/").length;
+            if(distance<1||distance>64)throw new StaleObservation("商品到原生 WebView 的祖先关系不可证明");
+            AccessibilityNodeInfo cursor=clicked;
+            Rect anchorBounds=new Rect();clicked.getBoundsInScreen(anchorBounds);
+            for(int depth=1;depth<=distance;depth++){
+                AccessibilityNodeInfo parent=regionParent(work,cursor,temporary);
+                if(parent==null||!refreshActionNode(work,parent)||!parent.isVisibleToUser()||!parent.isEnabled()||parent.isPassword()
+                        ||!frame.packageName.equals(string(parent.getPackageName()))||parent.getWindowId()!=frame.windowId)
+                    throw new StaleObservation("商品原生祖先不可用或越出绑定窗口");
+                actionCheck(work);requireBackgroundNodeWindow(background,frame,parent);actionCheck(work);
+                Rect bounds=new Rect();parent.getBoundsInScreen(bounds);
+                if(bounds.isEmpty()||!bounds.contains(anchorBounds)
+                        ||depth==1&&!bridge.anchor.nativeParentClass.equals(string(parent.getClassName())))
+                    throw new StaleObservation("商品原生祖先范围或类型已变化");
+                boolean isWebView="android.webkit.WebView".equals(string(parent.getClassName()));
+                if(depth<distance&&isWebView||depth==distance&&(!isWebView||!parent.equals(webRef.node)))
+                    throw new StaleObservation("商品不再位于同一实际 WebView 祖先");
+                cursor=parent;
+            }
+        }finally{
+            for(AccessibilityNodeInfo node:temporary)if(node!=null)node.recycle();
+        }
+        JSONObject windowsBefore=readRegionWindows(frame,bridge,work);
+        for(WebRegionNativeBridge.Role role:bridge.roles())refreshRegionRole(background,frame,role,work);
+        JSONObject windowsAfter=readRegionWindows(frame,bridge,work);
+        if(!org.trillionnium.hepta.webprotocol.WebDomCanonical.same(windowsBefore,windowsAfter))
+            throw new StaleObservation("商品点击前的原生窗口覆盖关系已变化");
+        background.requireActive();actionCheck(work);
+        if(cancel.isCancelled()||!owns(taskId)||frame!=current)throw new StaleObservation("商品任务已退休");
+        return new NativeRegionCheck(frame,bridge,started,SystemClock.elapsedRealtime(),windowsAfter);
+    }
+    private AccessibilityNodeInfo regionChild(ActionWork work,AccessibilityNodeInfo parent,int index,List<AccessibilityNodeInfo> temporary){
+        actionCheck(work);AccessibilityNodeInfo child=parent.getChild(index);
+        if(child!=null)temporary.add(child);actionCheck(work);return child;
+    }
+    private AccessibilityNodeInfo regionParent(ActionWork work,AccessibilityNodeInfo child,List<AccessibilityNodeInfo> temporary){
+        actionCheck(work);AccessibilityNodeInfo parent=child.getParent();
+        if(parent!=null)temporary.add(parent);actionCheck(work);return parent;
+    }
+    private void refreshRegionRole(BackgroundSession background,PhoneObservation frame,WebRegionNativeBridge.Role role,ActionWork work){
+        actionCheck(work);Graph graph=graphForAction(work);NodeRef ref=graph==null?null:graph.refs.get(role.nodeId);
+        if(ref==null||!role.nodeSignature.equals(ref.appTreeSignature)||!refreshActionNode(work,ref.node))
+            throw new StaleObservation("商品原生角色引用已变化："+role.role);
+        AccessibilityNodeInfo node=ref.node;ObservedChildText.Result child=observedChildText(node,true,work==null?null:work.budget());
+        Rect bounds=new Rect();node.getBoundsInScreen(bounds);int[] expected=role.bounds();
+        if(!ref.signature.equals(nodeSignature(node,child))||!node.isVisibleToUser()||!node.isEnabled()
+                ||!role.packageName.equals(string(node.getPackageName()))||!role.className.equals(string(node.getClassName()))
+                ||!role.viewId.equals(string(node.getViewIdResourceName()))||!role.text.equals(string(node.getText()))
+                ||!role.description.equals(string(node.getContentDescription()))||node.isClickable()!=role.clickable
+                ||node.isEditable()!=role.editable||node.isScrollable()!=role.scrollable||node.isFocused()!=role.focused
+                ||node.isPassword()!=role.password||bounds.left!=expected[0]||bounds.top!=expected[1]
+                ||bounds.right!=expected[2]||bounds.bottom!=expected[3])
+            throw new StaleObservation("商品原生角色内容或几何已变化："+role.role);
+        actionCheck(work);requireBackgroundNodeWindow(background,frame,node);actionCheck(work);
+    }
+    /** Metadata-only; no root or text is read from any other application/window. */
+    private JSONObject readRegionWindows(PhoneObservation frame,WebRegionNativeBridge bridge,ActionWork work)throws Exception{
+        actionPhase(work,"scope_read");actionCheck(work);AccessibilityServiceInfo info=getServiceInfo();actionCheck(work);
+        if(info==null||(info.flags&AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS)==0
+                ||(info.getCapabilities()&AccessibilityServiceInfo.CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT)==0)
+            throw new StaleObservation("原生窗口覆盖元数据不可用");
+        List<AccessibilityWindowInfo> windows=windowsForDisplay(bridge.displayId);
+        if(windows==null)throw new StaleObservation("原生窗口集合不可用");
+        try{
+            actionCheck(work);
+            if(windows.isEmpty()||windows.size()>64)throw new StaleObservation("原生窗口集合不可用");
+            java.util.TreeMap<Integer,JSONObject> rows=new java.util.TreeMap<Integer,JSONObject>();
+            int targetLayer=-1;Rect targetBounds=null;
+            for(AccessibilityWindowInfo window:windows){
+                actionCheck(work);
+                if(window==null||window.getDisplayId()!=bridge.displayId||window.getId()<0
+                        ||window.getType()<=0||window.getLayer()<0)
+                    throw new StaleObservation("原生窗口身份缺失");
+                Rect bounds=new Rect();window.getBoundsInScreen(bounds);
+                if(bounds.isEmpty())throw new StaleObservation("原生窗口范围未知");
+                JSONObject row=new JSONObject().put("window_id",window.getId()).put("display_id",window.getDisplayId())
+                        .put("type",window.getType()).put("layer",window.getLayer())
+                        .put("bounds",new JSONArray(new int[]{bounds.left,bounds.top,bounds.right,bounds.bottom}))
+                        .put("focused",window.isFocused()).put("active",window.isActive());
+                if(rows.put(window.getId(),row)!=null)throw new StaleObservation("原生窗口身份重复");
+                if(window.getId()==bridge.windowId){
+                    if(window.getType()!=AccessibilityWindowInfo.TYPE_APPLICATION)
+                        throw new StaleObservation("目标已不是原应用窗口");
+                    targetLayer=window.getLayer();targetBounds=new Rect(bounds);
+                }
+                if(window.getType()==AccessibilityWindowInfo.TYPE_INPUT_METHOD)
+                    throw new StaleObservation("商品只读点击时出现输入法窗口");
+            }
+            int[] expected=frame.windowMetadata.windowBounds(),region=bridge.anchorBounds();
+            Rect anchorBounds=new Rect(region[0],region[1],region[2],region[3]);
+            if(targetLayer<0||targetBounds==null||expected==null||expected.length!=4
+                    ||targetBounds.left!=expected[0]||targetBounds.top!=expected[1]
+                    ||targetBounds.right!=expected[2]||targetBounds.bottom!=expected[3]||!targetBounds.contains(anchorBounds))
+                throw new StaleObservation("目标原生窗口或卡片范围已变化");
+            for(AccessibilityWindowInfo window:windows)if(window.getId()!=bridge.windowId&&window.getLayer()>=targetLayer){
+                actionCheck(work);
+                Rect bounds=new Rect();window.getBoundsInScreen(bounds);
+                if(Rect.intersects(bounds,anchorBounds))throw new StaleObservation("原生商品区域被其它交互窗口覆盖");
+            }
+            JSONArray ordered=new JSONArray();for(JSONObject row:rows.values())ordered.put(row);actionCheck(work);
+            return new JSONObject().put("source","getWindowsOnAllDisplays_selected_display_metadata")
+                    .put("display_id",bridge.displayId).put("target_window_id",bridge.windowId).put("target_layer",targetLayer)
+                    .put("target_native_bounds",new JSONArray(region)).put("windows",ordered)
+                    .put("observed_upper_or_same_layer_overlap",false).put("ime_window_observed",false)
+                    .put("other_window_roots_traversed",false).put("unreported_windows_excluded",false);
+        }finally{for(AccessibilityWindowInfo window:windows)if(window!=null)window.recycle();}
     }
     private static void requireSubmitWindow(AccessibilityNodeInfo node,int windowId,int displayId){
         AccessibilityWindowInfo window=node.getWindow();

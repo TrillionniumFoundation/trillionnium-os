@@ -111,9 +111,16 @@ final class WebHelperIdentity {
         }
     }
     private static final class Stamp {
-        final long dev,ino,size,mtime,ctime;final int mode;final long links;
-        Stamp(StructStat s){dev=s.st_dev;ino=s.st_ino;size=s.st_size;mtime=s.st_mtime;ctime=s.st_ctime;mode=s.st_mode;links=s.st_nlink;}
-        static Stamp read(String path)throws Exception{Stamp s=new Stamp(Os.lstat(path));WebEvidenceJson.need(OsConstants.S_ISREG(s.mode)&&s.links==1,"regular immutable APK required");return s;}
-        boolean same(Stamp s){return dev==s.dev&&ino==s.ino&&size==s.size&&mtime==s.mtime&&ctime==s.ctime&&mode==s.mode&&links==s.links;}
+        final long dev,ino,size,mtime,ctime;final int mode,uid,gid;final long links;
+        Stamp(StructStat s){dev=s.st_dev;ino=s.st_ino;size=s.st_size;mtime=s.st_mtime;ctime=s.st_ctime;mode=s.st_mode;uid=s.st_uid;gid=s.st_gid;links=s.st_nlink;}
+        static Stamp read(String path)throws Exception{
+            Stamp s=new Stamp(Os.lstat(path));
+            // PackageManager installations can have multiple hard links. The observed
+            // positive link count remains part of every path/FD stability comparison.
+            WebEvidenceJson.need(OsConstants.S_ISREG(s.mode)&&s.size>0&&s.links>0&&(s.mode&0022)==0,
+                    "read-only regular installed APK required");
+            return s;
+        }
+        boolean same(Stamp s){return dev==s.dev&&ino==s.ino&&size==s.size&&mtime==s.mtime&&ctime==s.ctime&&mode==s.mode&&uid==s.uid&&gid==s.gid&&links==s.links;}
     }
 }

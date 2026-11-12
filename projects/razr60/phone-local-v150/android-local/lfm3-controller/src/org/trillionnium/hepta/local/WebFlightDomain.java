@@ -147,7 +147,10 @@ final class WebFlightDomain {
                 &&frame.windowMetadata.displayId==receipt.displayId&&frame.windowId==receipt.windowId
                 &&frame.backgroundGeneration!=null&&bindingSha.equals(receipt.bindingSha),"same current AX/DOM application window required");
         JSONObject dom=receipt.dom(),capture=receipt.capture();need(dom!=null&&capture!=null,"bound DOM capture required");
-        JSONArray entries=dom.getJSONArray("nodes");need(entries.length()>0&&entries.length()<=1024,"bounded actual DOM nodes required");
+        need(receipt.stability()!=null&&receipt.stability().rawEqual
+                &&org.trillionnium.hepta.webprotocol.WebDomStability.FULL_SCOPE.equals(receipt.stability().comparisonScope),
+                "flight requires the independently replayed complete original DOM equality scope");
+        JSONArray entries=dom.getJSONArray("nodes");need(entries.length()>0&&entries.length()<=1536,"bounded actual DOM nodes required");
         Set<String> paths=new HashSet<String>();Map<String,JSONObject> byPath=new LinkedHashMap<String,JSONObject>();
         for(int i=0;i<entries.length();i++){
             JSONObject node=entries.getJSONObject(i);String path=node.getString("path");
@@ -172,7 +175,7 @@ final class WebFlightDomain {
         List<Map<String,Object>> capabilities=new ArrayList<Map<String,Object>>();
         CsairFlightForm observedForm=null;Map<String,Map<String,Object>> readbacks=new LinkedHashMap<String,Map<String,Object>>();
         Map<String,Object> query=null;
-        WebNativeGeometry geometry=WebNativeGeometry.read(capture,dom,receipt.displayId,receipt.windowId);
+        WebNativeGeometry geometry=WebNativeGeometry.read(capture,dom,receipt.displayId,receipt.windowId,receipt.stability());
         evidence.put("native_geometry",geometry==null?null:geometry.evidence());
         evidence.put("css_to_screen_mapping_verified",false);
         evidence.put("css_to_screen_mapping_used",false);

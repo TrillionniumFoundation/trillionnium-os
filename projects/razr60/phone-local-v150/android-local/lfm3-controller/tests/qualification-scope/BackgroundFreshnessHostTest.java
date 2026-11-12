@@ -119,7 +119,7 @@ final class BackgroundFreshnessHostTest {
         });
         test("foreground_observation_budget_after_root_acquisition_releases_root",()->{
             GraphSetup s=new GraphSetup();s.fixture.background=null;s.fixture.foreground=s.root;s.root.window.display=0;
-            final int[] checks={0};budgetFailure(()->s.fixture.budgetedSnapshot(()->{if(++checks[0]==3)throw new IllegalStateException("synthetic read deadline");}));
+            budgetFailure(()->s.fixture.budgetedSnapshot(()->{if(s.fixture.foregroundReads>0)throw new IllegalStateException("synthetic read deadline");}));
             check(s.root.recycles==1&&s.root.refreshes==0,"foreground root remains owned even when expiry precedes metadata");
         });
     }

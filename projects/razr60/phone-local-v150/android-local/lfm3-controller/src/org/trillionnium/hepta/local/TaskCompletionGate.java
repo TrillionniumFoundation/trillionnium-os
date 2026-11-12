@@ -286,12 +286,13 @@ public final class TaskCompletionGate {
             o.put("current_editor_body_matched",facts.currentBody);
         }else if(WEB.equals(contract.kind)){
             o.put("web_query_dispatched",webDispatched||webDomain!=null&&webDomain.queryDispatched());
-            if(webDomain!=null)o.put("official_page",webDomain.evidence());
+            if(webDomain!=null)o.put("official_page",webDomain.promptEvidence());
         }
         o.put("writes_required_for_unknown_or_read_only_goal",false);o.put("grants_tool_authority",false);return o;
     }
     public Map<String,Object> evidence(NotesCompletionEvidence.Frame current){
         Map<String,Object> o=prompt(current);o.put("task_id",taskId);o.put("contract",contract.evidence());
+        if(WEB.equals(contract.kind)&&webDomain!=null)o.put("official_page",webDomain.evidence());
         o.put("proofs",new ArrayList<Map<String,Object>>(proofs));o.put("model_success_claims",new ArrayList<Map<String,Object>>(claims));
         o.put("identity_failure",identityFailure);o.put("display_id",domainBound?displayId:null);o.put("background_generation",generation);
         if(workflowEvidence!=null)o.put("notes_create_workflow",workflowEvidence);

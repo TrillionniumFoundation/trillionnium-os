@@ -87,6 +87,11 @@ def main():
         '/*__RUN_HANDLE__*/': (engine, 'public static final class RunHandle {'),
         '/*__CLAIM_PROCESS__*/': (engine, 'private static void claimProcess(RunHandle handle,AtomicReference<RunHandle> local){'),
         '/*__CANCEL_ACTIVE__*/': (engine, 'public void cancelActive() {'),
+        '/*__ACTION_GRAPH__*/': (service, 'private static final class Graph {'),
+        '/*__NODE_REFERENCE_COPY__*/': (service, 'private NodeRef(NodeRef original){'),
+        '/*__REGION_CHILD__*/': (service, 'private AccessibilityNodeInfo regionChild(ActionWork work,AccessibilityNodeInfo parent,int index,List<AccessibilityNodeInfo> temporary){'),
+        '/*__REGION_PARENT__*/': (service, 'private AccessibilityNodeInfo regionParent(ActionWork work,AccessibilityNodeInfo child,List<AccessibilityNodeInfo> temporary){'),
+        '/*__ACTION_CHECK__*/': (service, 'private static void actionCheck(ActionWork work){'),
     }
     fixture = template.read_text()
     extracted = []
@@ -127,6 +132,8 @@ def main():
               'compile_command': compile_command, 'compiler_returncode': compile_result.returncode,
               'java8_bytecode_target': True, 'java8_api_cross_compile': False,
               'android_compilation': False, 'phone_operations': 0, 'device_qualification': False}
+    report['graph_lifetime_boundary'] = ('Exact production Graph, NodeRef copy constructor and region ownership helpers execute against '
+                                        'instrumented node/geometry/bridge carriers; no Android Binder, Web ARM or native region authority is created.')
     if compile_result.returncode == 0:
         run_command = [java, '-cp', str(output / 'classes'), 'org.trillionnium.hepta.local.ActionWorkerHost']
         run_result = subprocess.run(run_command, text=True, capture_output=True, timeout=45)
