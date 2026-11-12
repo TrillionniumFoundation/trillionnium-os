@@ -8,6 +8,9 @@ import org.trillionnium.hepta.local.web.WebShoppingGoal;
 import org.trillionnium.hepta.webprotocol.WebTaskPurpose;
 import org.trillionnium.hepta.webprotocol.WebEvidenceBinding;
 import org.trillionnium.hepta.webprotocol.WebEvidenceProtocol;
+import org.trillionnium.hepta.webprotocol.WebDomStability;
+import org.trillionnium.hepta.webprotocol.WebDomCanonical;
+import org.trillionnium.hepta.webprotocol.WebObservedNavigation;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -46,6 +49,23 @@ final class WebFlightSession {
     private WebFlightProgress flightProgress;
     private final java.util.concurrent.atomic.AtomicBoolean nativeQueryEntered=new java.util.concurrent.atomic.AtomicBoolean();
     private PendingNavigation pendingNavigation;
+    private volatile ShoppingDispatch shoppingDispatch;
+    private static final class ShoppingDispatch {
+        final WebRegionNativeBridge bridge;final String run,actionKey,armRaw,armNonce;
+        final long armedAt,expiresAt;
+        final java.util.concurrent.atomic.AtomicBoolean entered=new java.util.concurrent.atomic.AtomicBoolean();
+        volatile long enteredAt=-1;
+        volatile HeptaAccessibilityService.NativeRegionCheck liveNative;
+        ShoppingDispatch(WebRegionNativeBridge bridge,String run,String actionKey,JSONObject arm)throws Exception{
+            this.bridge=bridge;this.run=run;this.actionKey=actionKey;armRaw=WebDomCanonical.canonical(arm);
+            armNonce=WebEvidenceJson.text(arm,"request_nonce");armedAt=WebEvidenceJson.number(arm,"armed_elapsed_ms");
+            expiresAt=WebEvidenceJson.number(arm,"expires_elapsed_ms");
+            need(run.equals(arm.get("model_run_id"))&&bridge.anchorDomPath.equals(arm.get("anchor_dom_path"))
+                    &&bridge.bindingSha.equals(arm.get("binding_sha256"))&&bridge.instance.equals(arm.get("webview_instance"))
+                    &&bridge.epoch==WebEvidenceJson.number(arm,"navigation_epoch")&&armedAt<expiresAt,
+                    "actual ARM is not for the exact native bridge/model run");
+        }
+    }
     private String loadingDocumentKey;
     private long loadingDocumentStarted;
     private int loadingDocumentReadRetries;
@@ -156,8 +176,15 @@ final class WebFlightSession {
         String actualLoadingKey=last.instance+"\n"+last.epoch+"\n"+last.url;
         need(loadingAttemptKey==null||loadingAttemptKey.equals(actualLoadingKey),
                 "read-only loading retry changed the original instance, URL or navigation epoch");
+        WebDomStability.Result domBracket=null;
+        try{
+            domBracket=WebDomStability.evaluate(first.domRaw(),last.beforeDomRaw(),purpose.sitePolicyId);
+        }catch(Exception incompleteBracket){
+            // A changing bracket supplies no action. Existing loading retries
+            // remain bounded and read-only; no preceding click is repeated.
+        }
         boolean stable=sameFrame(before,after)&&first.instance.equals(last.instance)&&first.epoch==last.epoch
-                &&first.url.equals(last.url)&&first.domRaw().equals(last.domRaw());
+                &&first.url.equals(last.url)&&domBracket!=null;
         if(retryLoadingDocument(first,last,after,stable,deadline)){
             loadingAttemptKey=actualLoadingKey;
             captureDeadline=Math.min(deadline,loadingDocumentStarted+6000);
@@ -165,8 +192,8 @@ final class WebFlightSession {
             continue;
         }
         need(stable,"AX/DOM bracket changed; no current page capability published");
-        WebNativeGeometry firstGeometry=WebNativeGeometry.read(first.capture(),first.dom(),first.displayId,first.windowId);
-        WebNativeGeometry lastGeometry=WebNativeGeometry.read(last.capture(),last.dom(),last.displayId,last.windowId);
+        WebNativeGeometry firstGeometry=WebNativeGeometry.read(first.capture(),first.dom(),first.displayId,first.windowId,first.stability());
+        WebNativeGeometry lastGeometry=WebNativeGeometry.read(last.capture(),last.dom(),last.displayId,last.windowId,last.stability());
         need(firstGeometry==null&&lastGeometry==null||firstGeometry!=null&&firstGeometry.same(lastGeometry),
                 "native WebView geometry changed across the AX/DOM bracket");
         WebTaskDomain observed=applyNavigation(WebTaskDomain.observed(taskId,purpose,authorization,after,last,immutableBinding));
@@ -174,7 +201,12 @@ final class WebFlightSession {
                 .put("first_capture_request_nonce",first.callback().getString("request_nonce"))
                 .put("last_capture_request_nonce",last.callback().getString("request_nonce"))
                 .put("first_ax_observation_id",before.id).put("last_ax_observation_id",after.id)
-                .put("ax_dom_capture_is_atomic",false).put("same_lease_epoch_and_equal_dom_bracket",true)
+                .put("ax_dom_capture_is_atomic",false)
+                .put("same_lease_epoch_and_equal_dom_bracket",first.stability().rawEqual&&domBracket.rawEqual&&last.stability().rawEqual)
+                .put("same_lease_epoch_and_stable_dom_scope_bracket",true)
+                .put("between_captures_dom_stability",domBracket.evidence())
+                .put("first_capture_dom_stability_sha256",WebDomCanonical.sha256(first.stability().evidence()))
+                .put("last_capture_dom_stability_sha256",WebDomCanonical.sha256(last.stability().evidence()))
                 .put("same_native_geometry_bracket",firstGeometry!=null)
                 .put("native_geometry_sha256",lastGeometry==null?JSONObject.NULL:lastGeometry.fingerprint));
         current=after;domain=observed;completion.bindWebDomain(observed);
@@ -227,10 +259,13 @@ final class WebFlightSession {
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;return frame;
     }
     void beforeModelAction(ActionDecision action,String run,long deadline)throws Exception{
+        boolean prepared=false;
+        try{
         WebTaskDomain original=domain;PhoneObservation frame=current;
         need(original!=null&&frame!=null&&run!=null&&run.matches("[0-9a-f]{32}"),"current model-bound web action required");
         original.requireCurrent(action);service.requireTaskAuthorization(taskId,authorization);background.requireActive();
         dispatchSource=null;dispatchSourceRun=null;dispatchSourceAction=null;
+        dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;shoppingDispatch=null;
         if("wait".equals(action.action)||"done".equals(action.action)&&!"success".equals(action.status)){
             // These choices do not manipulate a page. A missing capture never
             // becomes click/type/success authority and never clears the journal.
@@ -240,7 +275,7 @@ final class WebFlightSession {
             record("web-dispatch-"+run+".json",new JSONObject(original.evidence()).put("model_run_id",run)
                     .put("model_issued",true).put("action",action.action).put("no_page_effect",true)
                     .put("dispatched",false).put("source","current_restricted_model_choice"));
-            return;
+            prepared=true;return;
         }
         WebEvidenceReceipt fresh=client.capture(deadline);
         need("captured".equals(fresh.status),"document changed before action");
@@ -249,6 +284,27 @@ final class WebFlightSession {
                 &&original.pageKey.equals(rechecked.pageKey)&&original.clickIds.equals(rechecked.clickIds)
                 &&original.editValues.equals(rechecked.editValues),"page target changed since model observation");
         rechecked.requireCurrent(action);
+        if(rechecked.shopping!=null&&"click".equals(action.action)){
+            need(pendingNavigation==null,"a prior product navigation is still unknown; no new click or ARM");
+            WebRegionNativeBridge bridge=WebRegionNativeBridge.bind(frame,fresh);
+            need(bridge!=null&&bridge.anchor.id.equals(action.nodeId)
+                    &&bridge.anchorDomPath.equals(rechecked.shopping.observedLinkAnchorPath(action)),
+                    "fresh same-frame native product region changed");
+            bridge.requireFrame(frame);
+            WebEvidenceReceipt armed=client.armObservedLink(fresh,bridge.anchorDomPath,run,deadline);
+            JSONObject actualArm=armed.arm();
+            rechecked=rechecked.withObservedLinkArm(actualArm);
+            ShoppingDispatch pending=new ShoppingDispatch(bridge,run,actionKey(action),actualArm);
+            record("web-observed-link-arm-"+run+".json",new JSONObject().put("schema","hepta.controller-observed-link-arm.v1")
+                    .put("task_id",taskId).put("binding_sha256",journal.bindingSha).put("model_run_id",run)
+                    .put("source_capture_request_nonce",fresh.callback().getString("request_nonce"))
+                    .put("actual_arm",actualArm).put("actual_callback",armed.callback())
+                    .put("native_region_bridge",bridge.evidence()).put("native_invocation_entered",false)
+                    .put("automatic_retry",false).put("business_verified",false));
+            // Only the exact successful ARM is retained. Both Client and helper
+            // keep attempt fences across later captures, failures and timeouts.
+            shoppingDispatch=pending;
+        }
         if(rechecked.flight!=null&&WebFlightProgress.QUERY.equals(rechecked.flight.purpose(action.nodeId))){
             need(flightProgress!=null&&!nativeQueryEntered.get(),"one query attempt per original lease");
             flightProgress=flightProgress.reserveQuery(rechecked.flight,action,run);
@@ -265,6 +321,15 @@ final class WebFlightSession {
                 .put("fresh_capture_request_nonce",fresh.callback().getString("request_nonce"))
                 .put("unchanged_semantic_region",true).put("whole_dom_equality_claimed",false)
                 .put("dispatched",false).put("source","pre_dispatch_read_only_check_not_action_outcome"));
+        prepared=true;
+        }finally{
+            // A failed guard, fresh read, ARM or durable record never leaves a
+            // dispatch capability. The Client/helper attempt fences remain consumed.
+            if(!prepared){
+                dispatchSource=null;dispatchSourceRun=null;dispatchSourceAction=null;
+                dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;shoppingDispatch=null;
+            }
+        }
     }
     void requireDispatch(ActionDecision action,String run){
         WebTaskDomain d=domain;need(!retired&&d!=null&&run!=null&&run.equals(dispatchCheckedRun)
@@ -273,10 +338,46 @@ final class WebFlightSession {
                 "fresh exact web/model action evidence expired");
         d.requireCurrent(action);
     }
+    WebRegionNativeBridge nativeRegionForDispatch(ActionDecision action,String run,PhoneObservation frame){
+        WebTaskDomain value=domain;
+        if(value==null||value.shopping==null||!"click".equals(action.action))return null;
+        requireDispatch(action,run);
+        ShoppingDispatch actual=requireShoppingDispatch(action,run);
+        need(frame==current,"native region must use the controller's exact current frame");
+        actual.bridge.requireFrame(frame);return actual.bridge;
+    }
+    void acceptNativeRegionCheck(ActionDecision action,String run,HeptaAccessibilityService.NativeRegionCheck actual){
+        ShoppingDispatch attempt=requireShoppingDispatch(action,run);
+        need(actual!=null&&actual.matches(current,attempt.bridge)
+                &&actual.checkedAt>=attempt.armedAt&&actual.checkedAt<attempt.expiresAt
+                &&attempt.liveNative==null&&!attempt.entered.get(),
+                "live native region check is absent, duplicated or belongs to another ARM");
+        attempt.liveNative=actual;
+    }
+    private ShoppingDispatch requireShoppingDispatch(ActionDecision action,String run){
+        ShoppingDispatch actual=shoppingDispatch;WebTaskDomain source=dispatchSource;
+        long now=SystemClock.elapsedRealtime();
+        need(!retired&&!cancellation.isCancelled()&&source!=null&&source.shopping!=null&&actual!=null
+                &&run!=null&&run.equals(dispatchSourceRun)&&run.equals(actual.run)
+                &&actionKey(action).equals(dispatchSourceAction)&&actionKey(action).equals(actual.actionKey)
+                &&actual.bridge.anchor.id.equals(action.nodeId)&&actual.armedAt<=now&&now<actual.expiresAt,
+                "fresh exact one-shot product ARM is missing or expired");
+        return actual;
+    }
     /** Called once immediately before the original ACTION_CLICK platform call,
      * after the service's repeated authority/window/signature checks. No I/O. */
     void beforeNativeClickInvocation(ActionDecision action,String run){
         WebTaskDomain source=dispatchSource,currentDomain=domain;
+        if(purpose.shopping!=null&&"click".equals(action.action)){
+            ShoppingDispatch actual=requireShoppingDispatch(action,run);
+            HeptaAccessibilityService.NativeRegionCheck live=actual.liveNative;
+            actual.bridge.requireFrame(current);
+            long now=SystemClock.elapsedRealtime();
+            need(live!=null&&live.matches(current,actual.bridge)&&live.checkedAt<=now&&now-live.checkedAt<=250
+                    &&actual.entered.compareAndSet(false,true),
+                    "product native invocation lacks its actual fresh region/window check or was already entered");
+            actual.enteredAt=now;return;
+        }
         boolean queryTarget=currentDomain!=null&&currentDomain.flight!=null
                 &&WebFlightProgress.QUERY.equals(currentDomain.flight.purpose(action.nodeId));
         boolean reserved=flightProgress!=null&&flightProgress.isQueryAction(action,run);
@@ -309,13 +410,29 @@ final class WebFlightSession {
             record("web-flight-progress-"+run+".json",new JSONObject(flightProgress.evidence(before.flight))
                     .put("source","actual_controller_executor_outcome"));
         }
-        if(before.shopping!=null&&"click".equals(action.action)&&outcome.accepted&&outcome.dispatched&&!outcome.stale){
-            need(pendingNavigation==null,"a prior actual product navigation is still unconfirmed");
-            pendingNavigation=new PendingNavigation(before.shopping,action,run,outcome,dispatchStarted,dispatchEnded);
+        if(before.shopping!=null&&"click".equals(action.action)){
+            ShoppingDispatch actual=shoppingDispatch;
+            need(actual!=null&&actual.run.equals(run)&&actual.actionKey.equals(actionKey(action)),
+                    "actual product ARM dispatch record missing");
+            record("web-observed-link-native-"+run+".json",new JSONObject().put("schema","hepta.controller-observed-link-native.v1")
+                    .put("task_id",taskId).put("binding_sha256",journal.bindingSha).put("model_run_id",run)
+                    .put("actual_arm",new JSONObject(actual.armRaw)).put("native_invocation_entered",actual.entered.get())
+                    .put("native_entered_elapsed_ms",actual.enteredAt<0?JSONObject.NULL:actual.enteredAt)
+                    .put("native_region_check",actual.liveNative==null?JSONObject.NULL:actual.liveNative.evidence())
+                    .put("dispatch_before_elapsed_ms",dispatchStarted).put("dispatch_after_elapsed_ms",dispatchEnded)
+                    .put("accepted",outcome.accepted).put("dispatched",outcome.dispatched).put("stale",outcome.stale)
+                    .put("automatic_retry",false).put("business_verified",false));
+            if(outcome.accepted&&outcome.dispatched&&!outcome.stale){
+                need(actual.entered.get()&&actual.liveNative!=null
+                        &&dispatchStarted<=actual.enteredAt&&actual.enteredAt<=dispatchEnded
+                        &&actual.enteredAt<actual.expiresAt,"native product click was not observed within its ARM");
+                need(pendingNavigation==null,"a prior actual product navigation is still unconfirmed");
+                pendingNavigation=new PendingNavigation(before.shopping,action,run,outcome,dispatchStarted,dispatchEnded);
+            }
         }
         }finally{
             dispatchSource=null;dispatchSourceRun=null;dispatchSourceAction=null;
-            dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;
+            dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;shoppingDispatch=null;
         }
     }
     private WebTaskDomain applyNavigation(WebTaskDomain value)throws Exception{
@@ -343,9 +460,11 @@ final class WebFlightSession {
                 &&!hasUnreleased(service),"helper retirement proof does not match this original task");
         cleanupKnown=true;
     }
-    void serviceRetired(){retired=true;domain=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;client.close();}
+    void serviceRetired(){retired=true;domain=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
+        dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;client.close();}
     Cleanup close(String reason){
-        retired=true;domain=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;completion.clearWebDomain();
+        retired=true;domain=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
+        dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;completion.clearWebDomain();
         try{
             if(!journal.attachWasPrepared()){
                 journal.closeNeverAttached();cleanupKnown=true;

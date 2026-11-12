@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.helper6-legacy4-mi-successor-independent-review.v1",
+  "result": "no_new_source_blocker_in_the_reviewed_mechanical_successor",
+  "source_only": true,
+  "executed": false,
+  "h_calls": 0,
+  "artifacts": {
+    "coordinator": {
+      "git": "0ad55cc4174ab2fb956910917e9205825561b585",
+      "bytes": 21728,
+      "sha256": "ff636787ee58a6033db333a76501a9ef7c12c1f388d754d67b05d6c1577c306c"
+    },
+    "fixture": {
+      "git": "d3a24f24d41dc9f0bdc27d6528d1ab25808abdcf",
+      "bytes": 111759,
+      "sha256": "d95422fc38bee399566caaebf5d413369cc2224c17bada267dcd4700c559f450"
+    },
+    "prior_review_git": "fb5815fe65deeb4db6447a1d4879bb0018b5cdbd",
+    "mi_source": {
+      "git": "4d38f27e602302f71ecbf1c4e2e4fcb367fa9fe0",
+      "bytes": 17440,
+      "sha256": "aaddee9837555083ec1d796b67a2cfc37a280b023b12b2dbd4e474d47586ac8b"
+    }
+  },
+  "mechanical": {
+    "coordinator_outside_CONFIG_byte_identical": true,
+    "only_config_keys": [
+      "helper_root",
+      "helper_candidate_sha256",
+      "fixture_git",
+      "fixture_bytes",
+      "fixture_sha256",
+      "main_page"
+    ],
+    "fixture_only_changed_key": "production_extra_main_source",
+    "complete_fixture_reconstructed": true,
+    "mi_raw_byte_identical_to_reviewed_actual_candidate": true,
+    "all_old_test_and_runner_bytes_unchanged_in_this_delta": true,
+    "all23_helper_source_pins_unchanged": true,
+    "two_actual_build_pins_remain_null_before_firstclaim": true
+  },
+  "scope": [
+    "This delta does not change the previously reviewed original16/40/36 tests or the explicitly adapted shopping64 successor; it does not reinterpret the prior11 shopping fixture mappings as unchanged original semantics.",
+    "The helper build admission uses the new02ad candidate SHA and the future actualr2 build RESULT. It must not execute with the two actual BUILD pins missing.",
+    "The production Mi source retains the newly restored bounded transaction-label rejection; no helper runtime source is changed by this fixture package.",
+    "No existing gates, Java processes, Android build, signing or phone operations were executed."
+  ],
+  "metadata_note": {
+    "field": "fixture.exact_current_helper_candidate_git",
+    "value": "ad20280c57b1c26c31f596e5f2d9e195ab1339ad",
+    "interpretation": "retained predecessor metadata; current executable coordinator binds the new candidate SHA02ad instead",
+    "executable_blocker": false
+  },
+  "limits": [
+    "This is a narrow new source/CONFIG/metadata review only, not a rerun or new substantive review of the four original groups.",
+    "The supplied gzip transport representation was not independently loaded in this review; its publisher/loader can be checked at final sealing."
+  ]
+}

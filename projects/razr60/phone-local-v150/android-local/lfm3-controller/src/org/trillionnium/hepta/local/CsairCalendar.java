@@ -212,7 +212,7 @@ final class CsairCalendar {
         final Map<String,JSONObject> nodes=new LinkedHashMap<String,JSONObject>();
         Index(JSONObject dom)throws Exception{
             String schema=text(dom,"schema");
-            need("hepta.fixed-top-document-dom.v2".equals(schema)||"hepta.fixed-top-document-dom.v3".equals(schema),
+            need("hepta.fixed-top-document-dom.v2".equals(schema)||"hepta.fixed-top-document-dom.v3".equals(schema)||"hepta.fixed-top-document-dom.v4".equals(schema),
                     "actual fixed observer v2/v3 DOM required");
             need(!flag(dom,"truncated")&&dom.getJSONArray("truncation_reasons").length()==0,"complete DOM required");
             JSONArray rows=dom.getJSONArray("nodes");need(rows.length()>0&&rows.length()<=1024,"bounded DOM nodes");

@@ -1,0 +1,96 @@
+{
+  "schema": "hepta.main55-calculator-fixture-independent-source-review.v1",
+  "reviewer": "android_code_audit",
+  "status": "no_source_blocker_in_reviewed_two_hunk_test_delta",
+  "candidate_review": {
+    "git": "d9e952370169b3875410c735c1ffbedfad9092ac",
+    "bytes": 43973,
+    "sha256": "0fd26afc76940fa32a240f6a73fac43ee2865cef84faaa3cce83b77301de064d"
+  },
+  "verified": {
+    "status": "source_only_no_blocker_in_reviewed_two_hunk_delta",
+    "base": {
+      "bytes": 31129,
+      "sha256": "ad0af5d7fcd2af3a115ce7feeb35296fa1b0dc27d0250b683584c208c0042680",
+      "git": "bc15d8021431bca31eccf56e69e9472e4102faf8"
+    },
+    "candidate": {
+      "bytes": 32077,
+      "sha256": "106d8f52c9efa2f8d79e0ef7db4f708e755dd04110994febd594c77310bf3f60",
+      "git": "1ee543756fb0ab2be5f55391dfe81ef44eea84ff"
+    },
+    "phone_factory_only": true,
+    "all_original_assertions_and_main_byte_identical": true,
+    "five_original_raw_members": {
+      "step-01-before.json": {
+        "bytes": 19868,
+        "sha256": "fbac0d7cd5d1ce450db232cee694d2ade110d17736f240e007a9e37874303443",
+        "git": "ee621ed2a9ffbaa22b51de4f2f7d5ba04ea1fd98"
+      },
+      "step-01-action.json": {
+        "bytes": 9195,
+        "sha256": "2f4a5f18f68c6c545ea8a26f7312157b718a6976e8dac68e9ed01b8460d26dae",
+        "git": "d7305363c5ce891d55f731831f984ad28b3cef0e"
+      },
+      "background-bootstrap.json": {
+        "bytes": 4212,
+        "sha256": "92da4dc552be3773427706b611b56fe58c99e995113aaf2c235bc30c598f8e1c",
+        "git": "ee06204db1d6c5dd2d11fb9741c504e945993224"
+      },
+      "background-cleanup.json": {
+        "bytes": 4343,
+        "sha256": "ddfa1d02dd63dabd4b5281545b198f0d2d0ac8538310a37e1e2522bb98cea1a9",
+        "git": "7305db2325c75e0360491d96a833505fd675463e"
+      },
+      "driver-RESULT.json": {
+        "bytes": 43289,
+        "sha256": "e2d373370aa5855a3f13eafc192848237a409b06cd4866f29e3352f5f580c383",
+        "git": "c4f9c35fd08d7113566dbc70bf4b940389b795f1"
+      }
+    },
+    "original_selection": {
+      "mode": "background",
+      "allowed_packages": [
+        "com.motorola.cn.calculator"
+      ],
+      "bootstrap_package": "com.motorola.cn.calculator",
+      "bootstrap_source": "owner_selected_initial_app",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false
+    },
+    "owner_sha256": "6f5d3425c7bb011868c53256db71361d6e201af6d37d611bb3685ac062b6271a",
+    "production": {
+      "bytes": 24711,
+      "sha256": "9dc1033ffc989b2a957e0999bb40d5c48d97117d89150a173141ae7cc7eff8d0",
+      "git": "1655e8d918e689368938560475c0c62ca94bd04d"
+    },
+    "java_run": false,
+    "phone_run": false
+  },
+  "findings": [
+    "Independently applied both ordered replacements to the complete original bc15 source, reconstructed candidate 1ee543, and reversed them byte-for-byte. Everything before and after phone() is unchanged, including main(), all existing checks and failure assertions.",
+    "Independently rehashed the original 89,639-byte archive and all five embedded raw members. The original bootstrap Selection has exactly the seven legacy explicit-UI keys. Each Selection value matches the original frame, with matching generation, display, task and SHA-256 of the original driver instruction.",
+    "The new factory reads that already-verified original bootstrap, rather than a newly invented Selection. It validates task, generation, display and OWNER hash without changing the existing check counter, then calls the real current PhoneObservation overload with null CollectionStats and the actual historical Selection and owner.",
+    "The real production constructor and checkedSelection accept precisely this original seven-field owner_selected_initial_app shape and independently compare its scope to the frame's packages/bootstrap. The new owner-intent proof is neither added nor synthesized.",
+    "Foreground factory inputs remain null for Selection/owner. Actual production, the original failed trace, frozen focused39 inputs, the original101 order and nested18 assertions are not changed.",
+    "This review does not claim successful Python/JVM execution, a new live observation, Android behavior or business completion. The original core and nested failure remain evidence. The new core coordinator still needs actual execution."
+  ],
+  "signing_boundary": {
+    "only_allowed_post_compile_path": "tests/calculator-input/CalculatorInputGuardHostTest.java",
+    "base": {
+      "bytes": 31129,
+      "sha256": "ad0af5d7fcd2af3a115ce7feeb35296fa1b0dc27d0250b683584c208c0042680",
+      "git": "bc15d8021431bca31eccf56e69e9472e4102faf8"
+    },
+    "final": {
+      "bytes": 32077,
+      "sha256": "106d8f52c9efa2f8d79e0ef7db4f708e755dd04110994febd594c77310bf3f60",
+      "git": "1ee543756fb0ab2be5f55391dfe81ef44eea84ff"
+    },
+    "compiler_input_count_unchanged": 216,
+    "production_file_changes_authorized_by_this_review": false
+  },
+  "phone_actions": 0,
+  "remote_host_actions": 0
+}

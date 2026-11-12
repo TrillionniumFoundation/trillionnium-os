@@ -1,0 +1,129 @@
+{
+  "schema": "hepta.web55-root-wrapper-independent-source-review.v1",
+  "reviewer": "android_background",
+  "result": "no_source_level_blocker_in_the_requested_wrapper_manifest_and_source_pin_chain",
+  "candidate": {
+    "git": "f58681a2842aa70e4b06ef0dfdcdb6c8c74c667e",
+    "bytes": 187499,
+    "sha256": "a660a7f1f8b7754822a960d9b55becd745a13c845de29e76350019267fa61ed2"
+  },
+  "scope": "Only the Root preparation/RUN loaders, CLI literals, pending release manifest, and mechanical source hash linkage. The new v4 raw-DOM/stability/ARM consumer semantics remain the other reviewer's scope.",
+  "wrappers": [
+    {
+      "path": "ROOT-WEB55-FLIGHT-PREPARE-pending.py",
+      "git": "501a836dae8aeebdce73dacaf0c1413a2a46590c",
+      "bytes": 2905,
+      "sha256": "ba8dcfbb701cb241f54120ff7a5663c20137d2ff70a0a984cea419c6665c57e2",
+      "base": {
+        "blob": "592c517e6932b9c92b947618c16cba51a892a566",
+        "bytes": 2833,
+        "sha256": "19cb85357e784a6b6339cd11f307fecc6ccf90a0b2fc25936986d689122d26cc"
+      },
+      "late_values": [
+        "OWNER_ROOT",
+        "OWNER_PID",
+        "OWNER_START_TICKS",
+        "OWNER_BOOT_ID",
+        "APK_SHA256",
+        "EXPECTED_UID",
+        "RELEASE_MANIFEST_SHA256"
+      ],
+      "ordered_hunk_count": 17
+    },
+    {
+      "path": "ROOT-WEB55-FLIGHT-RUN-pending.py",
+      "git": "6aadc4019cdaba891535d46eafd20c8a7685a96a",
+      "bytes": 3216,
+      "sha256": "c844afa429e850ab41e67aaae2c413c29692f6f22730b5d743012a781144708e",
+      "base": {
+        "blob": "f972b6798c5ae7ce68a1e7f3eaa0287819e8d574",
+        "bytes": 3188,
+        "sha256": "d90976048776cba5a3ed787c695e86a9e0ec2a6384aaabf9cc8d34084b2a2190"
+      },
+      "late_values": [
+        "PREPARATION_SHA256",
+        "REVIEW_SHA256",
+        "PREPARED_SCREEN_SHA256",
+        "PREPARED_WINDOW_SHA256",
+        "START_TAP",
+        "RELEASE_MANIFEST_SHA256"
+      ],
+      "ordered_hunk_count": 14
+    }
+  ],
+  "mechanical": [
+    {
+      "wrapper": "ROOT-WEB55-FLIGHT-PREPARE-pending.py",
+      "patches": 17,
+      "reverse_exact": true,
+      "runtime": "prepare_background_web_v55_r1.py",
+      "bytes": 27543,
+      "sha256": "ec5bd19bbbf18ebb3427a814881c4850e48ac07b6f6e8fc60aa63f686d8b4602",
+      "late_fields": 7
+    },
+    {
+      "wrapper": "ROOT-WEB55-FLIGHT-RUN-pending.py",
+      "patches": 14,
+      "reverse_exact": true,
+      "runtime": "run_background_web_v55_r1.py",
+      "bytes": 34153,
+      "sha256": "8effacd14e7a4fef765bae638f2858014dfc4f61b16e5d987aab3cf1c13b6167",
+      "late_fields": 6
+    }
+  ],
+  "runtime_chain": [
+    {
+      "path": "web_entry_support.py",
+      "git": "f334b90f2ccddd338c6347eba51bb5e45c8b1c03",
+      "bytes": 69967,
+      "sha256": "de0b5c77c5be90f70fe15ec6f5e3ce1bc974b1fa494819bae1b060e9f159f2d3"
+    },
+    {
+      "path": "prepare_background_web_v55_r1.py",
+      "git": "ef44f816287509d0a05b01b09f97275a452f7c4b",
+      "bytes": 27543,
+      "sha256": "ec5bd19bbbf18ebb3427a814881c4850e48ac07b6f6e8fc60aa63f686d8b4602"
+    },
+    {
+      "path": "run_background_web_v55_r1.py",
+      "git": "c858d645dc74c9cfa09649cc9a52fc652bfe1351",
+      "bytes": 34153,
+      "sha256": "8effacd14e7a4fef765bae638f2858014dfc4f61b16e5d987aab3cf1c13b6167"
+    }
+  ],
+  "manifest": {
+    "candidate_path": "RELEASE.pending.json",
+    "bytes": 1010,
+    "sha256": "c51d2f647d52c967eaaf6cb0fd1b5b632546da1f4c3e6d61ef213db7c443cdcc",
+    "status": "pending",
+    "schema": "hepta.v55-web-entry-release.v1",
+    "controller_version": 55,
+    "controller_version_name": "0.55.0-scoped-official-web",
+    "helper_version": 6,
+    "helper_version_name": "0.6.0-web-evidence-v4",
+    "actual_apks_uids_signed_receipts_inventory_sha256_all_null": true,
+    "final_runtime_path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v55-r1/RELEASE.json",
+    "final_manifest_requires_new_actual_hash_after_sealing": true
+  },
+  "checks": [
+    "Fetched both original r7 Root wrappers and both new wrappers independently; full UTF-8 size/SHA matches the candidate.",
+    "All 17 preparation and 14 RUN ordered replacements reproduce the exact candidate and reverse to the original r7 bytes.",
+    "All three complete runtime source bytes/SHA verified; both SUPPORT_SHA literals exactly bind current support de0b5c77; each wrapper's read bound, size and SHA bind its current runtime.",
+    "Preparation's four cooperative-owner facts plus APK SHA, installed UID and release SHA remain None and reject before source loading or device work.",
+    "RUN's five preparation/review facts plus release SHA remain None and reject before source loading; it carries no cooperative-owner identity.",
+    "Only the reviewed paths/version/pins and explicit late-binding fields changed; ADB host/port/serial, main physical display, frozen source-tools, runtime config, ordinary UI flow, start-window90 and timeout560 remain inherited.",
+    "The original 69-byte Flight OWNER and SHA remain exact; Main55 manifest version/name matches actual current source aggregate.",
+    "The release draft remains pending, with both installed identities, APKs, signed results and inventory hashes unknown. Final RELEASE.json must be sealed from actual artifacts; the draft1010-byte hash is not an executable release pin.",
+    "The preserved regular/single-link/identity/hash loader guards and same-raw compile/exec remain byte-identical outside the listed substitutions."
+  ],
+  "not_claimed": {
+    "new_v4_consumer_semantics_reviewed_here": false,
+    "python_syntax_executed": false,
+    "host_tests_run": false,
+    "android_compiled_here": false,
+    "installed55_or_helper6": false,
+    "phone_operations": false,
+    "business_verified": false
+  },
+  "remaining": "Mobile owns final actual build/sign/install sealing. Rehash support after its two actual constants, propagate both runtime pins and wrapper pins, then fill the actual Root owner/prepare/review values. No new test gate was requested or run."
+}

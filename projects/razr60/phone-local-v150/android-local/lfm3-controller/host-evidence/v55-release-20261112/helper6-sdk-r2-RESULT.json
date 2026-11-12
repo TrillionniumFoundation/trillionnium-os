@@ -1,0 +1,1526 @@
+{
+  "build_executed": false,
+  "completed": true,
+  "elapsed_seconds": 836.8662003399804,
+  "error": null,
+  "exit_code": 0,
+  "gitiles_full_body_redownloaded_here": false,
+  "gitiles_range_retried_here": false,
+  "mac_operation_status": "unknown",
+  "official_archive_metadata": {
+    "all_same_path_entries": [
+      {
+        "api_level": "34",
+        "base_extension": "true",
+        "channel": "channel-0",
+        "extension_level": "7",
+        "obsolete": null,
+        "path": "platforms;android-34",
+        "revision_major": "3"
+      },
+      {
+        "api_level": "34",
+        "base_extension": "true",
+        "channel": "channel-0",
+        "extension_level": "7",
+        "obsolete": "true",
+        "path": "platforms;android-34",
+        "revision_major": "2"
+      }
+    ],
+    "api_level": "34",
+    "archive_bytes": 63180081,
+    "archive_sha1": "1f2e9478d6a7601425ceaa553311dc43191f103d",
+    "archive_url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+    "archive_url_and_checksum_independently_observed_from_official_metadata": true,
+    "base_extension": true,
+    "channel": "channel-0",
+    "extension_level": "7",
+    "independent_original_projection": {
+      "bytes": 9936,
+      "git_blob": "e492fff637e82d24bfc540d6c7bde7db77ab7707",
+      "sha256": "5bdc3bb681be9c9946b6581ddcf3436d37cfb6d381ab1f9a5fd8b2069178b2f4"
+    },
+    "path_entry_count": 2,
+    "predecessor_result": {
+      "bytes": 19882,
+      "git_blob": "3e00d012ac2a761a6297827c1a2186124990c467",
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r1/RESULT.json",
+      "sha256": "e38d1133bf0c43fc5c5f575c3206a89fb215d8a33972348a09a7888c84e693a5"
+    },
+    "remote_package": "platforms;android-34",
+    "repository_body": {
+      "bytes": 432488,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r1/repository/attempt-01.xml",
+      "sha256": "d670de8bce15cc4ecf5d1a135f2168137ccbb8402111dfc8efcf9cb6f3b2f28f"
+    },
+    "repository_requested_here": false,
+    "repository_reused_from_failed_predecessor": true,
+    "repository_url": "https://dl.google.com/android/repository/repository2-3.xml",
+    "revision_major": "3",
+    "selected_attributes": {
+      "path": "platforms;android-34"
+    },
+    "selected_entry_count": 1
+  },
+  "operation_lock_accessed": false,
+  "orgjson_ready": true,
+  "orgjson_ready_receipt": {
+    "bytes": 1289,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/ORGJSON-READY.json",
+    "sha256": "37f3b1790fce237f6339cab159015da7937e6517cc4a97f4dc16443c74e01d7b"
+  },
+  "originals": [
+    {
+      "bytes": 19345,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1.py",
+      "sha256": "35060e2cb0e0d61b76da6df7de646dcdb4ccccf8e650640d75b80b2304c1a7ec"
+    },
+    {
+      "bytes": 25490,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/RESULT.json",
+      "sha256": "7b1a1a625a78fe58d80cba88136a971581b314216663ea346fdcd856bb82f097"
+    },
+    {
+      "bytes": 18213,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/RESULT.json",
+      "sha256": "3ce37751fc824816475e624123a787f5e00bd011c11beb9d583835df453b18ad"
+    },
+    {
+      "bytes": 26148,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1.py",
+      "sha256": "a8dbef392ef2edbe87e271513421dbc5a8b2b374ec9d4f303361f0e2b9772131"
+    },
+    {
+      "bytes": 18213,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/RESULT.json",
+      "sha256": "3ce37751fc824816475e624123a787f5e00bd011c11beb9d583835df453b18ad"
+    },
+    {
+      "bytes": 14545,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/CONFIG.json",
+      "sha256": "fcb613a61670d5ceace8e595ae24cf93380cc160c27e07fa483c2d3ffa424a2a"
+    },
+    {
+      "bytes": 1289,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/ORGJSON-READY.json",
+      "sha256": "37f3b1790fce237f6339cab159015da7937e6517cc4a97f4dc16443c74e01d7b"
+    },
+    {
+      "bytes": 486209,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+      "sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0"
+    },
+    {
+      "bytes": 8620,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/R8-RESULT.json",
+      "sha256": "d4aa66ea4105c13ba8b6e1c2540a3aeb74d3a3f70ddcf128818d4aad08ac5eeb"
+    },
+    {
+      "bytes": 129146,
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/BUILD-RESULT.json",
+      "sha256": "cce5d75af6af48fb00b72b96475d686b61b89538c60cbd424fd99e79c58396a8"
+    },
+    {
+      "bytes": 212088,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/00-webkit-1.13.0.aar",
+      "sha256": "001c836ea612e835991288a7a66877f25288e4cf5ec89729ee7ae066e3491a35"
+    },
+    {
+      "bytes": 39841,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/01-annotation-experimental-1.4.1.aar",
+      "sha256": "6bd4c7c7476f8260cd3bdbb81183583e93fc9f790c27dea7dc314181cbf87aa0"
+    },
+    {
+      "bytes": 3819,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/02-jspecify-1.0.0.jar",
+      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+    },
+    {
+      "bytes": 680824,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/03-core-1.1.0.aar",
+      "sha256": "76c7cfbe596fe3c09a6983bf1c89e889299c08ac9a3b52ce5182a088d056647e"
+    },
+    {
+      "bytes": 8290,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/04-annotation-1.8.1.jar",
+      "sha256": "fa5e67ffcc52a0413f4b39c2737b43c1ba6c6975b4bd4a4ea8627549e766285b"
+    },
+    {
+      "bytes": 1524620,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/05-kotlin-stdlib-1.7.10.jar",
+      "sha256": "e771fe74250a943e8f6346713201ff1d8cb95c3a5d1a91a22b65a9e04f6a8901"
+    },
+    {
+      "bytes": 28478,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/06-annotation-1.1.0.jar",
+      "sha256": "d38d63edb30f1467818d50aaf05f8a692dea8b31392a049bfa991b159ad5b692"
+    },
+    {
+      "bytes": 9164,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/07-lifecycle-runtime-2.0.0.aar",
+      "sha256": "e4afc9e636183f6f3e0edf1cf46121a492ffd2c673075bb07f55c7a99dd43cfb"
+    },
+    {
+      "bytes": 31062,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/08-versionedparcelable-1.1.0.aar",
+      "sha256": "9a1d77140ac222b7866b5054ee7d159bc1800987ed2d46dd6afdd145abb710c1"
+    },
+    {
+      "bytes": 41692,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/09-collection-1.0.0.jar",
+      "sha256": "9c8d117b5c2bc120a1cdfeb857e05b495b16c36013570372a708f7827e3ac9f9"
+    },
+    {
+      "bytes": 56126,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/10-annotation-jvm-1.8.1.jar",
+      "sha256": "9aab326d9492800991854360ac248f493ce7f7c3183519309b78ace9e240f6f6"
+    },
+    {
+      "bytes": 198936,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/11-kotlin-stdlib-common-1.7.10.jar",
+      "sha256": "19f102efe9629f8eabc63853ad15c533e47c47f91fca09285c5bde86e59f91d4"
+    },
+    {
+      "bytes": 17536,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/12-annotations-13.0.jar",
+      "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478"
+    },
+    {
+      "bytes": 20306,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/13-lifecycle-common-2.0.0.jar",
+      "sha256": "7bad7a188804adea6fa1f35d5ef99b705f20bd93ecadde484760ff86b535fefc"
+    },
+    {
+      "bytes": 11249,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/14-core-common-2.0.0.jar",
+      "sha256": "4b80b337779b526e64b0ee0ca9e0df43b808344d145f8e9b1c42a134dac57ad8"
+    },
+    {
+      "bytes": 25378,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/downloads/15-annotation-1.0.0.jar",
+      "sha256": "0baae9755f7caf52aa80cd04324b91ba93af55d4d1d17dcc9a7b53d99ef7c016"
+    },
+    {
+      "bytes": 78332,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/host-json/json-20240303.jar",
+      "sha256": "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"
+    },
+    {
+      "bytes": 6304,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/00/classes.jar",
+      "sha256": "f97daae3e5fa12312593041412661117b7d82fa70ff2a1db45bb7092f1ce19ee"
+    },
+    {
+      "bytes": 56126,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/01/classes.jar",
+      "sha256": "9aab326d9492800991854360ac248f493ce7f7c3183519309b78ace9e240f6f6"
+    },
+    {
+      "bytes": 8290,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/02/classes.jar",
+      "sha256": "fa5e67ffcc52a0413f4b39c2737b43c1ba6c6975b4bd4a4ea8627549e766285b"
+    },
+    {
+      "bytes": 11249,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/03/classes.jar",
+      "sha256": "4b80b337779b526e64b0ee0ca9e0df43b808344d145f8e9b1c42a134dac57ad8"
+    },
+    {
+      "bytes": 41692,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/04/classes.jar",
+      "sha256": "9c8d117b5c2bc120a1cdfeb857e05b495b16c36013570372a708f7827e3ac9f9"
+    },
+    {
+      "bytes": 675389,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/05/classes.jar",
+      "sha256": "6dad2c3643d2e11e8ccf63c9af57d3e36ed4cfa5caa1930f44f4f90f2990fd50"
+    },
+    {
+      "bytes": 20306,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/06/classes.jar",
+      "sha256": "7bad7a188804adea6fa1f35d5ef99b705f20bd93ecadde484760ff86b535fefc"
+    },
+    {
+      "bytes": 9055,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/07/classes.jar",
+      "sha256": "14ec31f2b5f8d3eb1db1fb664035e3ee44b7f8f3fa91c072b6ccc41cd478b1df"
+    },
+    {
+      "bytes": 31906,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/08/classes.jar",
+      "sha256": "23ab2138b5cce78bf6e93f941197ec150eba39c8ab143b1164ecbbf796157ac6"
+    },
+    {
+      "bytes": 229240,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/09/classes.jar",
+      "sha256": "ea0593af13e18e9678c9017b1af3977011708676b8234ba28c5d3fc82c536fbf"
+    },
+    {
+      "bytes": 198936,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/10/classes.jar",
+      "sha256": "19f102efe9629f8eabc63853ad15c533e47c47f91fca09285c5bde86e59f91d4"
+    },
+    {
+      "bytes": 1524620,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/11/classes.jar",
+      "sha256": "e771fe74250a943e8f6346713201ff1d8cb95c3a5d1a91a22b65a9e04f6a8901"
+    },
+    {
+      "bytes": 17536,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/12/classes.jar",
+      "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478"
+    },
+    {
+      "bytes": 3819,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/13/classes.jar",
+      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+    },
+    {
+      "bytes": 14545,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/CONFIG.json",
+      "sha256": "fcb613a61670d5ceace8e595ae24cf93380cc160c27e07fa483c2d3ffa424a2a"
+    },
+    {
+      "bytes": 18279079,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/tools/r8-8.13.17.jar",
+      "sha256": "d31fd0dc751d48740009cdd9a485126acb1d0d14c59b9f05579479940f4adf74"
+    },
+    {
+      "bytes": 26775522,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/sdk/android-34/response-attempt-01.base64",
+      "sha256": "05463b58608ee8c443d661245266c3049cd63ef2c0e667072cb1ebda37ad6fe4"
+    },
+    {
+      "bytes": 30572544,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/sdk/android-34/response-attempt-02.base64",
+      "sha256": "9bcdef3f1fe0fe3362b639d12edbb2a4bef5a574bcb8510e29226f5e0e6ed6e4"
+    },
+    {
+      "bytes": 19882,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r1/RESULT.json",
+      "sha256": "e38d1133bf0c43fc5c5f575c3206a89fb215d8a33972348a09a7888c84e693a5"
+    },
+    {
+      "bytes": 26574,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r1.py",
+      "sha256": "73ba0049e625fe8a88ea21ff3ce89fd9526d8191e8dfc7da1728759dc1e42464"
+    },
+    {
+      "bytes": 432488,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r1/repository/attempt-01.xml",
+      "sha256": "d670de8bce15cc4ecf5d1a135f2168137ccbb8402111dfc8efcf9cb6f3b2f28f"
+    },
+    {
+      "bytes": 432488,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r1/repository/attempt-01.xml",
+      "sha256": "d670de8bce15cc4ecf5d1a135f2168137ccbb8402111dfc8efcf9cb6f3b2f28f"
+    }
+  ],
+  "originals_unchanged": true,
+  "phone_contacted": false,
+  "prior_large_result": {
+    "bytes": 25490,
+    "git_blob": "3ccfb4fabea33761742ba39d84b4e05695286691",
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/RESULT.json",
+    "sha256": "7b1a1a625a78fe58d80cba88136a971581b314216663ea346fdcd856bb82f097"
+  },
+  "prior_result": {
+    "bytes": 18213,
+    "git_blob": "6616146b360639708d4b55ffceef6a9c3b860ea6",
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/RESULT.json",
+    "sha256": "3ce37751fc824816475e624123a787f5e00bd011c11beb9d583835df453b18ad"
+  },
+  "prior_sdk_failure_flags_preserved": true,
+  "prior_sdk_result": {
+    "bytes": 19882,
+    "git_blob": "3e00d012ac2a761a6297827c1a2186124990c467",
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r1/RESULT.json",
+    "sha256": "e38d1133bf0c43fc5c5f575c3206a89fb215d8a33972348a09a7888c84e693a5"
+  },
+  "prior_verified_inputs_count": 31,
+  "prior_verified_inputs_reused": true,
+  "r8": {
+    "bytes": 18279079,
+    "parts": [
+      {
+        "bytes": 2097152,
+        "end": 2097151,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/r8-parts/part-00-attempt-01.bin",
+        "sha256": "a3dc8f80b1d0ea0884b5dd2ff691277b3e58680bcbc95159e0c6722f8b871ca7",
+        "start": 0
+      },
+      {
+        "bytes": 2097152,
+        "end": 4194303,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/r8-parts/part-01-attempt-01.bin",
+        "sha256": "bf0b70daabb6b8e7f9ee731ad2fdbc4b760748f4d803841d7b890b8a6dc11d80",
+        "start": 2097152
+      },
+      {
+        "bytes": 2097152,
+        "end": 6291455,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/r8-parts/part-02-attempt-01.bin",
+        "sha256": "6fe37ba71382c59260c7199b1eaf96af53bd32ccca652a33a62a2c83d98366b3",
+        "start": 4194304
+      },
+      {
+        "bytes": 2097152,
+        "end": 8388607,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/r8-parts/part-03-attempt-01.bin",
+        "sha256": "8d914ca4f820ffea9e7034d3b2bdb1dbab30ef723eb25c574d8987683b52267f",
+        "start": 6291456
+      },
+      {
+        "bytes": 2097152,
+        "end": 10485759,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/r8-parts/part-04-attempt-01.bin",
+        "sha256": "9115651de26e93aaead94b1b860d042a202ba7590e498a7fc31acbb2b4ade02b",
+        "start": 8388608
+      },
+      {
+        "bytes": 2097152,
+        "end": 12582911,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/r8-parts/part-05-attempt-01.bin",
+        "sha256": "0ea7f3774fccc13ece371066d127845a2f759c71dc336149fd4cc3a17ae70741",
+        "start": 10485760
+      },
+      {
+        "bytes": 2097152,
+        "end": 14680063,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/r8-parts/part-06-attempt-01.bin",
+        "sha256": "f825f4b44988dd31824618916fdce8adcab38156db786a95775a3cc9a4192292",
+        "start": 12582912
+      },
+      {
+        "bytes": 2097152,
+        "end": 16777215,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/r8-parts/part-07-attempt-01.bin",
+        "sha256": "7fe680642a7b7729c383b31858813baa07ca79498deee65383fc5a41a56dab19",
+        "start": 14680064
+      },
+      {
+        "bytes": 1501863,
+        "end": 18279078,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/r8-parts/part-08-attempt-01.bin",
+        "sha256": "3509a0b25b176fd4da613b9b1775a6a5d2e9730a7f3bb6b6e9636c0f7576e1e1",
+        "start": 16777216
+      }
+    ],
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/tools/r8-8.13.17.jar",
+    "redirects_followed": 0,
+    "sha256": "d31fd0dc751d48740009cdd9a485126acb1d0d14c59b9f05579479940f4adf74",
+    "tls_verification": true,
+    "url": "https://dl.google.com/dl/android/maven2/com/android/tools/r8/8.13.17/r8-8.13.17.jar",
+    "verification_kind": "exact_expected_sha256",
+    "verified": true
+  },
+  "r8_downloaded_here": false,
+  "r8_verified": true,
+  "range_requests": [
+    {
+      "attempt": 1,
+      "bytes_written": 1441792,
+      "complete_http_body": false,
+      "content_length": "2097152",
+      "content_range": "bytes 0-2097151/63180081",
+      "end": 2097151,
+      "error": "ConnectionResetError: [Errno 104] Connection reset by peer",
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "observed_partial_sha256": "8709783fd30b3a334b74f5a31b47a447accf0046eaf6f138152344bcd0af3989",
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-00-attempt-01.bin",
+      "range_unavailable": false,
+      "redirects_followed": 0,
+      "requested_range": "bytes=0-2097151",
+      "retryable": true,
+      "start": 0,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verified": false
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 2,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 0-2097151/63180081",
+      "end": 2097151,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-00-attempt-02.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=0-2097151",
+      "sha256": "ffe539c72a37f4f8a3de84f6d072aad42de61b1678a2e61e052737e17d13727e",
+      "start": 0,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 2097152-4194303/63180081",
+      "end": 4194303,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-01-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=2097152-4194303",
+      "sha256": "a0cbad0af72320c44a65e1cd9cdc8a0b6d85b391c73dc27a35c9e2698a380f08",
+      "start": 2097152,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 4194304-6291455/63180081",
+      "end": 6291455,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-02-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=4194304-6291455",
+      "sha256": "d39cf83537da7d7194d7d16e1dbf6862a13c00594ab1b5fbf23857bef9adb817",
+      "start": 4194304,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 6291456-8388607/63180081",
+      "end": 8388607,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-03-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=6291456-8388607",
+      "sha256": "1367c127d3745fb6e408e11c0dfe6983683114c91ea4f4dd909660db8f692787",
+      "start": 6291456,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 8388608-10485759/63180081",
+      "end": 10485759,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-04-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=8388608-10485759",
+      "sha256": "ffa8211a0b759445625e6d5895618abf45c92c0b31e81a9c159cdbba25547f3e",
+      "start": 8388608,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "attempt": 1,
+      "bytes_written": 1589168,
+      "complete_http_body": false,
+      "content_length": "2097152",
+      "content_range": "bytes 10485760-12582911/63180081",
+      "end": 12582911,
+      "error": "TimeoutError: The read operation timed out",
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "observed_partial_sha256": "f0f67ca1749e298015cc4c1934bbfccc6c94104f94e7d4d76281091c52138e66",
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-05-attempt-01.bin",
+      "range_unavailable": false,
+      "redirects_followed": 0,
+      "requested_range": "bytes=10485760-12582911",
+      "retryable": true,
+      "start": 10485760,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verified": false
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 2,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 10485760-12582911/63180081",
+      "end": 12582911,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-05-attempt-02.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=10485760-12582911",
+      "sha256": "a45bb711b6f6736bd48ecf56cff6715e08baaf91abc2d19897105aa58cea5711",
+      "start": 10485760,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 12582912-14680063/63180081",
+      "end": 14680063,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-06-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=12582912-14680063",
+      "sha256": "9b5343d56ee92d393c5332db3633f2fbc964b5d5ffe46930d523e6ec00e22cac",
+      "start": 12582912,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 14680064-16777215/63180081",
+      "end": 16777215,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-07-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=14680064-16777215",
+      "sha256": "2b4b0c4e66fcdc783e68854fd969624f7cc9c55161ec310f59690e952871860a",
+      "start": 14680064,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 16777216-18874367/63180081",
+      "end": 18874367,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-08-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=16777216-18874367",
+      "sha256": "96572fcaa244af46f4ad8d14253b7453790a6b370b14808694b495e8547d9bcf",
+      "start": 16777216,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 18874368-20971519/63180081",
+      "end": 20971519,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-09-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=18874368-20971519",
+      "sha256": "5e17b082a9a698db3aec632d36dc04da181a7e3c6f343e0e2c3aafc6d1f1c94b",
+      "start": 18874368,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 20971520-23068671/63180081",
+      "end": 23068671,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-10-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=20971520-23068671",
+      "sha256": "9a5e7816edbebae803f5dbb22556d626dfef6875262ae1a8942201a0a0e2b7ae",
+      "start": 20971520,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "attempt": 1,
+      "bytes_written": 2031440,
+      "complete_http_body": false,
+      "content_length": "2097152",
+      "content_range": "bytes 23068672-25165823/63180081",
+      "end": 25165823,
+      "error": "TimeoutError: The read operation timed out",
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "observed_partial_sha256": "fa8921f276346ba80b5e4d4cd7babd309bc850dc36059f9d9c86387fd5497ec5",
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-11-attempt-01.bin",
+      "range_unavailable": false,
+      "redirects_followed": 0,
+      "requested_range": "bytes=23068672-25165823",
+      "retryable": true,
+      "start": 23068672,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verified": false
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 2,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 23068672-25165823/63180081",
+      "end": 25165823,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-11-attempt-02.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=23068672-25165823",
+      "sha256": "4f8cf56730a99149fe2c3bffa80504ee06262333b5a066a7a05078f483027369",
+      "start": 23068672,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 25165824-27262975/63180081",
+      "end": 27262975,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-12-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=25165824-27262975",
+      "sha256": "2ed71bafae8bc880a91fba3f04aa2124a603fc946d38c32af12f7b4e03c196d9",
+      "start": 25165824,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 27262976-29360127/63180081",
+      "end": 29360127,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-13-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=27262976-29360127",
+      "sha256": "485919fd314afb268dc600ce26e6b0d2b8ed81e403af66605c61085712815f95",
+      "start": 27262976,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 29360128-31457279/63180081",
+      "end": 31457279,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-14-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=29360128-31457279",
+      "sha256": "a701d1ce34de643e2be254fb64acb0549e04bb48e8fc6bc037ca4fb22d328d1a",
+      "start": 29360128,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 31457280-33554431/63180081",
+      "end": 33554431,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-15-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=31457280-33554431",
+      "sha256": "edc5f049ad7de0999bd2675f384abc6b266f4a4b254fbf1b1421ce197ad74c8d",
+      "start": 31457280,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 33554432-35651583/63180081",
+      "end": 35651583,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-16-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=33554432-35651583",
+      "sha256": "66e5f989e1c7058a773167530d05fb675ea8f58702c325efc8befa74397d8460",
+      "start": 33554432,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 35651584-37748735/63180081",
+      "end": 37748735,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-17-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=35651584-37748735",
+      "sha256": "f96d978799148f074aad9ee25820a25bc47ccf514dec0cada2bfc39e745aaade",
+      "start": 35651584,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 37748736-39845887/63180081",
+      "end": 39845887,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-18-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=37748736-39845887",
+      "sha256": "06cb7f66e2198ca55ccd9a4c8e6e72d1fa82e6d25b5f3c56baec3f2db1cf2d5c",
+      "start": 37748736,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 39845888-41943039/63180081",
+      "end": 41943039,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-19-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=39845888-41943039",
+      "sha256": "cc1fb8c8fc82b75265233b782d24c63f6c7624f4003e976216a73cb4706468bc",
+      "start": 39845888,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 41943040-44040191/63180081",
+      "end": 44040191,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-20-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=41943040-44040191",
+      "sha256": "db64e7c0a9f2c94f1a12d7018ab81fd449c59a6f7805340f1306098f6e1d5139",
+      "start": 41943040,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 44040192-46137343/63180081",
+      "end": 46137343,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-21-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=44040192-46137343",
+      "sha256": "8370c3848f3e952cdb2a354151251d12160c470efbda238cf1b5e8686de5d97a",
+      "start": 44040192,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 46137344-48234495/63180081",
+      "end": 48234495,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-22-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=46137344-48234495",
+      "sha256": "170e58d0d9e93866bb70e4d2c5253901ceeaaa57ae3a0a0538c48f2a0c1f15c6",
+      "start": 46137344,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 48234496-50331647/63180081",
+      "end": 50331647,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-23-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=48234496-50331647",
+      "sha256": "a807fb358af3dfc9fa3131cd9aec17b0c105c83f993936bf963869b02e5cb8eb",
+      "start": 48234496,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 50331648-52428799/63180081",
+      "end": 52428799,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-24-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=50331648-52428799",
+      "sha256": "8114e70eefa1232253bce12dd958f290ad2a5fdd23fa896da14cf03df074efb0",
+      "start": 50331648,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "attempt": 1,
+      "bytes_written": 1556080,
+      "complete_http_body": false,
+      "content_length": "2097152",
+      "content_range": "bytes 52428800-54525951/63180081",
+      "end": 54525951,
+      "error": "ConnectionResetError: [Errno 104] Connection reset by peer",
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "observed_partial_sha256": "3cb6903c651e5ef2c38af47f7c7bc2a88d80bf6c6ac13774fb440d013d1a5adc",
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-25-attempt-01.bin",
+      "range_unavailable": false,
+      "redirects_followed": 0,
+      "requested_range": "bytes=52428800-54525951",
+      "retryable": true,
+      "start": 52428800,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verified": false
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 2,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 52428800-54525951/63180081",
+      "end": 54525951,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-25-attempt-02.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=52428800-54525951",
+      "sha256": "b4b14c9f2e785d331c38ab0b01ea376d0c5ee1dd7e97ceb106784cba9dfec592",
+      "start": 52428800,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 54525952-56623103/63180081",
+      "end": 56623103,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-26-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=54525952-56623103",
+      "sha256": "4acd9906aec406d5942172eeb7dcef4b59585654afb200cd931fdffc19847389",
+      "start": 54525952,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 56623104-58720255/63180081",
+      "end": 58720255,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-27-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=56623104-58720255",
+      "sha256": "1a2e4b1e0b67def82e5a3925927965c9a35d978beeeddf6e034c99a19cdc08a1",
+      "start": 56623104,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 58720256-60817407/63180081",
+      "end": 60817407,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-28-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=58720256-60817407",
+      "sha256": "80e2b6a2e9bcfb0eab14ae39ed6976ef3f4f4e6b5d9de30677873b53117e45dc",
+      "start": 58720256,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 2097152,
+      "bytes_written": 2097152,
+      "complete_http_body": true,
+      "content_length": "2097152",
+      "content_range": "bytes 60817408-62914559/63180081",
+      "end": 62914559,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-29-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=60817408-62914559",
+      "sha256": "88a400fda2d2ede4183f5bd90e69eb938282a2bd993cc7f37472981fb92d99c5",
+      "start": 60817408,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    },
+    {
+      "actual_total": 63180081,
+      "attempt": 1,
+      "bytes": 265521,
+      "bytes_written": 265521,
+      "complete_http_body": true,
+      "content_length": "265521",
+      "content_range": "bytes 62914560-63180080/63180081",
+      "end": 63180080,
+      "etag": "\"23bcd05\"",
+      "expected_total": 63180081,
+      "http_status": 206,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-30-attempt-01.bin",
+      "redirects_followed": 0,
+      "requested_range": "bytes=62914560-63180080",
+      "sha256": "7d1cb90529de3f0751a90483582a02ad991043286a826612886b83fa6f569080",
+      "start": 62914560,
+      "tls_verification": true,
+      "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+      "verification_kind": "exact_http_range_length_only_not_whole_artifact",
+      "verified": true
+    }
+  ],
+  "repository_attempts": [],
+  "repository_downloaded_here": false,
+  "revision": "official-archive-only-r2",
+  "runtime_jars_verified": true,
+  "schema": "hepta.helper6-pocket4-sdk-public-input.v1",
+  "sdk": {
+    "bytes": 26361808,
+    "official_commit": "f40140c79226b1a491c5c76c12c532a3e688418e",
+    "official_git_blob": "923bafccf73aef996495c559e919ad8be3cabd58",
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/sdk/android-34/android.jar",
+    "provenance": {
+      "all_responses_actual_206": true,
+      "archive": {
+        "bytes": 63180081,
+        "official_repository_metadata": {
+          "all_same_path_entries": [
+            {
+              "api_level": "34",
+              "base_extension": "true",
+              "channel": "channel-0",
+              "extension_level": "7",
+              "obsolete": null,
+              "path": "platforms;android-34",
+              "revision_major": "3"
+            },
+            {
+              "api_level": "34",
+              "base_extension": "true",
+              "channel": "channel-0",
+              "extension_level": "7",
+              "obsolete": "true",
+              "path": "platforms;android-34",
+              "revision_major": "2"
+            }
+          ],
+          "api_level": "34",
+          "archive_bytes": 63180081,
+          "archive_sha1": "1f2e9478d6a7601425ceaa553311dc43191f103d",
+          "archive_url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip",
+          "archive_url_and_checksum_independently_observed_from_official_metadata": true,
+          "base_extension": true,
+          "channel": "channel-0",
+          "extension_level": "7",
+          "independent_original_projection": {
+            "bytes": 9936,
+            "git_blob": "e492fff637e82d24bfc540d6c7bde7db77ab7707",
+            "sha256": "5bdc3bb681be9c9946b6581ddcf3436d37cfb6d381ab1f9a5fd8b2069178b2f4"
+          },
+          "path_entry_count": 2,
+          "predecessor_result": {
+            "bytes": 19882,
+            "git_blob": "3e00d012ac2a761a6297827c1a2186124990c467",
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r1/RESULT.json",
+            "sha256": "e38d1133bf0c43fc5c5f575c3206a89fb215d8a33972348a09a7888c84e693a5"
+          },
+          "remote_package": "platforms;android-34",
+          "repository_body": {
+            "bytes": 432488,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r1/repository/attempt-01.xml",
+            "sha256": "d670de8bce15cc4ecf5d1a135f2168137ccbb8402111dfc8efcf9cb6f3b2f28f"
+          },
+          "repository_requested_here": false,
+          "repository_reused_from_failed_predecessor": true,
+          "repository_url": "https://dl.google.com/android/repository/repository2-3.xml",
+          "revision_major": "3",
+          "selected_attributes": {
+            "path": "platforms;android-34"
+          },
+          "selected_entry_count": 1
+        },
+        "parts": [
+          {
+            "bytes": 2097152,
+            "end": 2097151,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-00-attempt-02.bin",
+            "sha256": "ffe539c72a37f4f8a3de84f6d072aad42de61b1678a2e61e052737e17d13727e",
+            "start": 0
+          },
+          {
+            "bytes": 2097152,
+            "end": 4194303,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-01-attempt-01.bin",
+            "sha256": "a0cbad0af72320c44a65e1cd9cdc8a0b6d85b391c73dc27a35c9e2698a380f08",
+            "start": 2097152
+          },
+          {
+            "bytes": 2097152,
+            "end": 6291455,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-02-attempt-01.bin",
+            "sha256": "d39cf83537da7d7194d7d16e1dbf6862a13c00594ab1b5fbf23857bef9adb817",
+            "start": 4194304
+          },
+          {
+            "bytes": 2097152,
+            "end": 8388607,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-03-attempt-01.bin",
+            "sha256": "1367c127d3745fb6e408e11c0dfe6983683114c91ea4f4dd909660db8f692787",
+            "start": 6291456
+          },
+          {
+            "bytes": 2097152,
+            "end": 10485759,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-04-attempt-01.bin",
+            "sha256": "ffa8211a0b759445625e6d5895618abf45c92c0b31e81a9c159cdbba25547f3e",
+            "start": 8388608
+          },
+          {
+            "bytes": 2097152,
+            "end": 12582911,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-05-attempt-02.bin",
+            "sha256": "a45bb711b6f6736bd48ecf56cff6715e08baaf91abc2d19897105aa58cea5711",
+            "start": 10485760
+          },
+          {
+            "bytes": 2097152,
+            "end": 14680063,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-06-attempt-01.bin",
+            "sha256": "9b5343d56ee92d393c5332db3633f2fbc964b5d5ffe46930d523e6ec00e22cac",
+            "start": 12582912
+          },
+          {
+            "bytes": 2097152,
+            "end": 16777215,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-07-attempt-01.bin",
+            "sha256": "2b4b0c4e66fcdc783e68854fd969624f7cc9c55161ec310f59690e952871860a",
+            "start": 14680064
+          },
+          {
+            "bytes": 2097152,
+            "end": 18874367,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-08-attempt-01.bin",
+            "sha256": "96572fcaa244af46f4ad8d14253b7453790a6b370b14808694b495e8547d9bcf",
+            "start": 16777216
+          },
+          {
+            "bytes": 2097152,
+            "end": 20971519,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-09-attempt-01.bin",
+            "sha256": "5e17b082a9a698db3aec632d36dc04da181a7e3c6f343e0e2c3aafc6d1f1c94b",
+            "start": 18874368
+          },
+          {
+            "bytes": 2097152,
+            "end": 23068671,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-10-attempt-01.bin",
+            "sha256": "9a5e7816edbebae803f5dbb22556d626dfef6875262ae1a8942201a0a0e2b7ae",
+            "start": 20971520
+          },
+          {
+            "bytes": 2097152,
+            "end": 25165823,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-11-attempt-02.bin",
+            "sha256": "4f8cf56730a99149fe2c3bffa80504ee06262333b5a066a7a05078f483027369",
+            "start": 23068672
+          },
+          {
+            "bytes": 2097152,
+            "end": 27262975,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-12-attempt-01.bin",
+            "sha256": "2ed71bafae8bc880a91fba3f04aa2124a603fc946d38c32af12f7b4e03c196d9",
+            "start": 25165824
+          },
+          {
+            "bytes": 2097152,
+            "end": 29360127,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-13-attempt-01.bin",
+            "sha256": "485919fd314afb268dc600ce26e6b0d2b8ed81e403af66605c61085712815f95",
+            "start": 27262976
+          },
+          {
+            "bytes": 2097152,
+            "end": 31457279,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-14-attempt-01.bin",
+            "sha256": "a701d1ce34de643e2be254fb64acb0549e04bb48e8fc6bc037ca4fb22d328d1a",
+            "start": 29360128
+          },
+          {
+            "bytes": 2097152,
+            "end": 33554431,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-15-attempt-01.bin",
+            "sha256": "edc5f049ad7de0999bd2675f384abc6b266f4a4b254fbf1b1421ce197ad74c8d",
+            "start": 31457280
+          },
+          {
+            "bytes": 2097152,
+            "end": 35651583,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-16-attempt-01.bin",
+            "sha256": "66e5f989e1c7058a773167530d05fb675ea8f58702c325efc8befa74397d8460",
+            "start": 33554432
+          },
+          {
+            "bytes": 2097152,
+            "end": 37748735,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-17-attempt-01.bin",
+            "sha256": "f96d978799148f074aad9ee25820a25bc47ccf514dec0cada2bfc39e745aaade",
+            "start": 35651584
+          },
+          {
+            "bytes": 2097152,
+            "end": 39845887,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-18-attempt-01.bin",
+            "sha256": "06cb7f66e2198ca55ccd9a4c8e6e72d1fa82e6d25b5f3c56baec3f2db1cf2d5c",
+            "start": 37748736
+          },
+          {
+            "bytes": 2097152,
+            "end": 41943039,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-19-attempt-01.bin",
+            "sha256": "cc1fb8c8fc82b75265233b782d24c63f6c7624f4003e976216a73cb4706468bc",
+            "start": 39845888
+          },
+          {
+            "bytes": 2097152,
+            "end": 44040191,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-20-attempt-01.bin",
+            "sha256": "db64e7c0a9f2c94f1a12d7018ab81fd449c59a6f7805340f1306098f6e1d5139",
+            "start": 41943040
+          },
+          {
+            "bytes": 2097152,
+            "end": 46137343,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-21-attempt-01.bin",
+            "sha256": "8370c3848f3e952cdb2a354151251d12160c470efbda238cf1b5e8686de5d97a",
+            "start": 44040192
+          },
+          {
+            "bytes": 2097152,
+            "end": 48234495,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-22-attempt-01.bin",
+            "sha256": "170e58d0d9e93866bb70e4d2c5253901ceeaaa57ae3a0a0538c48f2a0c1f15c6",
+            "start": 46137344
+          },
+          {
+            "bytes": 2097152,
+            "end": 50331647,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-23-attempt-01.bin",
+            "sha256": "a807fb358af3dfc9fa3131cd9aec17b0c105c83f993936bf963869b02e5cb8eb",
+            "start": 48234496
+          },
+          {
+            "bytes": 2097152,
+            "end": 52428799,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-24-attempt-01.bin",
+            "sha256": "8114e70eefa1232253bce12dd958f290ad2a5fdd23fa896da14cf03df074efb0",
+            "start": 50331648
+          },
+          {
+            "bytes": 2097152,
+            "end": 54525951,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-25-attempt-02.bin",
+            "sha256": "b4b14c9f2e785d331c38ab0b01ea376d0c5ee1dd7e97ceb106784cba9dfec592",
+            "start": 52428800
+          },
+          {
+            "bytes": 2097152,
+            "end": 56623103,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-26-attempt-01.bin",
+            "sha256": "4acd9906aec406d5942172eeb7dcef4b59585654afb200cd931fdffc19847389",
+            "start": 54525952
+          },
+          {
+            "bytes": 2097152,
+            "end": 58720255,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-27-attempt-01.bin",
+            "sha256": "1a2e4b1e0b67def82e5a3925927965c9a35d978beeeddf6e034c99a19cdc08a1",
+            "start": 56623104
+          },
+          {
+            "bytes": 2097152,
+            "end": 60817407,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-28-attempt-01.bin",
+            "sha256": "80e2b6a2e9bcfb0eab14ae39ed6976ef3f4f4e6b5d9de30677873b53117e45dc",
+            "start": 58720256
+          },
+          {
+            "bytes": 2097152,
+            "end": 62914559,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-29-attempt-01.bin",
+            "sha256": "88a400fda2d2ede4183f5bd90e69eb938282a2bd993cc7f37472981fb92d99c5",
+            "start": 60817408
+          },
+          {
+            "bytes": 265521,
+            "end": 63180080,
+            "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/part-30-attempt-01.bin",
+            "sha256": "7d1cb90529de3f0751a90483582a02ad991043286a826612886b83fa6f569080",
+            "start": 62914560
+          }
+        ],
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/archive/platform-34-ext7_r03.zip",
+        "sha1": "1f2e9478d6a7601425ceaa553311dc43191f103d",
+        "sha256": "16fdb74c55e59ae3ef52def135aec713508467bd56d7dabcd8c9be31fa8b20f3",
+        "verified_against_official_complete_archive_checksum": true
+      },
+      "mode": "official_repository_verified_platform_archive_actual_206_ranges",
+      "old_gitiles_partials_not_used_by_archive_branch": true,
+      "redirects_followed": 0,
+      "selected_member": {
+        "bytes": 26361808,
+        "compressed_bytes": 24120596,
+        "compression_method": 8,
+        "crc32": 1326130330,
+        "filesystem_extraction": false,
+        "header_offset": 69,
+        "name": "android-34/android.jar"
+      },
+      "tls_verification": true
+    },
+    "sha256": "6cea1df3efb77103ac3e2beb9bf4718964b0e0869ab16d39d29d5cbae1c147ad",
+    "verification_kind": "original_sha256_and_official_git_blob",
+    "verified": true
+  },
+  "sdk_dual_hash_verified": true,
+  "sdk_prior_partials": [
+    {
+      "attempt": 1,
+      "bytes": 26775522,
+      "original_flags_preserved": true,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/sdk/android-34/response-attempt-01.base64",
+      "sha256": "05463b58608ee8c443d661245266c3049cd63ef2c0e667072cb1ebda37ad6fe4",
+      "url": "https://android.googlesource.com/platform/prebuilts/fullsdk/platforms/%2B/f40140c79226b1a491c5c76c12c532a3e688418e/android-34/android.jar?format=TEXT",
+      "verified_complete": false
+    },
+    {
+      "attempt": 2,
+      "bytes": 30572544,
+      "original_flags_preserved": true,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/sdk/android-34/response-attempt-02.base64",
+      "sha256": "9bcdef3f1fe0fe3362b639d12edbb2a4bef5a574bcb8510e29226f5e0e6ed6e4",
+      "url": "https://android.googlesource.com/platform/prebuilts/fullsdk/platforms/%2B/f40140c79226b1a491c5c76c12c532a3e688418e/android-34/android.jar?format=TEXT",
+      "verified_complete": false
+    }
+  ],
+  "signed": false
+}

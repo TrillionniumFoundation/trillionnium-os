@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.main55-same-source-signer-delta-independent-review.v1",
+  "status": "no_source_blocker_in_nine_hunk_successor",
+  "reviewer": "mobile_models",
+  "source": {
+    "git": "72b04e2cc11d2456152221e549b126994538e7b8",
+    "bytes": 76109,
+    "sha256": "9a2f3b4431cca0ec39fc68fd127d37cf571bee8b8ee663029d9f5c6f971009b6"
+  },
+  "base": {
+    "git": "151e1e55dfe16aa28412d508b90551c55b55c737",
+    "bytes": 77894,
+    "sha256": "9e4ccd95a90646dbfca5624f5f82d938df56c3221a176d196d5d7c7d6a228e6f"
+  },
+  "review_packet": {
+    "git": "23d291d6e6ec4d19aeb979df1415ebade4aa72df",
+    "bytes": 108989,
+    "sha256": "61b7a7bd8802131655c6084432c5a7357bd12245c7f1ccfca2cfb349d4b2cd1d"
+  },
+  "nine_patches_forward_and_reverse_exact": true,
+  "changed_behavior": [
+    "37 complete overlays bind final d3bf59 candidate.",
+    "Compiled and final complete594 raw source maps, inventories and aggregates must be byte-identical; prior calculator test exception is deleted.",
+    "Both raw216 compiler maps must match cf954; only Mi changes one compiler input relative to original r1.",
+    "New Main2 receipt must preserve original r1 c641 and bind Core3 materialization; class count comes from actual new receipt.",
+    "Existing IO, run cleanup, APK/ZIP/native/sign command code remains unchanged through exact nine-patch proof; explicit sidecar report fields are null."
+  ],
+  "independent_reconstructions": {
+    "source_inventory": {
+      "bytes": 103607,
+      "sha256": "65bf7934d82692f45c10aedb947613043453b30bc7d55c4dc8b7e44e4ca0bed1"
+    },
+    "source_blob_map": {
+      "bytes": 141623,
+      "sha256": "721de738139fcaa54e7277cbaa5cc522d2a7bf7b00b89d60d3a254058839d574"
+    },
+    "compiler_map": {
+      "bytes": 34208,
+      "sha256": "cf9549832cfdf97be65866600fb0021fb53ab11851c4b490ea07b80ff9265db9",
+      "rows": 216,
+      "changed_compiler_paths": [
+        "src/org/trillionnium/hepta/local/MiPublicProductPage.java"
+      ]
+    }
+  },
+  "remaining_null_fields": [
+    "build_result",
+    "core_result",
+    "web_result",
+    "web_stage",
+    "web_packet",
+    "git_source_map",
+    "publication",
+    "source_commit",
+    "source_tree",
+    "expected_prior_head"
+  ],
+  "limits": [
+    "Review is source-only. Root's Main2/Core3 actual completion report does not substitute for full original receipts; those are to be independently read and sealed before signing.",
+    "Web2 source/fixture and all actual release/Git pins remain pending in this candidate; no side effect may pass those guards.",
+    "This review neither executes old signer context nor reads key material. No signing or phone validation is claimed."
+  ],
+  "h_calls": 0,
+  "executed": false,
+  "python_syntax_checked": false,
+  "signed": false,
+  "phone_actions": 0
+}

@@ -1,0 +1,1191 @@
+{
+  "actual_mi_dom_seen": false,
+  "all43_runtime_sources_preserved_from_failed_r1": true,
+  "all_pass": false,
+  "application_class_count": 166,
+  "base_contract_result": {
+    "bytes": 14006,
+    "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/BASE-CONTRACT-RESULT.json",
+    "sha256": "3f8a2ec3587789ee37fef0294cec2203bf95911eefc307b78e68105bf95f1490"
+  },
+  "base_contracts_rerun": false,
+  "base_helper_build_sha256": "cce5d75af6af48fb00b72b96475d686b61b89538c60cbd424fd99e79c58396a8",
+  "build_input_sha256": "e171d32569902d27655e1d90b555f89d6a17156bef7f43d0bced2d5e67f258ce",
+  "build_tools": [
+    {
+      "bytes": 14544,
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+      "sha256": "bb70208200cb6538b877d80478141194a716edb591f4910ec106589291e99196"
+    },
+    {
+      "bytes": 14592,
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+      "sha256": "2aaf03d13aeb80b8269696f2dcd9f4937d7366bbc68f91fdc703cf157e8f39c4"
+    },
+    {
+      "bytes": 54512,
+      "path": "/usr/lib/android-sdk/build-tools/debian/aapt2",
+      "sha256": "0e9ff92342040acdfd03e8708512f4e02353e3ca0a2b85ea2950da659110b009"
+    },
+    {
+      "bytes": 18279079,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/tools/r8-8.13.17.jar",
+      "sha256": "d31fd0dc751d48740009cdd9a485126acb1d0d14c59b9f05579479940f4adf74"
+    },
+    {
+      "bytes": 26361808,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/sdk/android-34/android.jar",
+      "sha256": "6cea1df3efb77103ac3e2beb9bf4718964b0e0869ab16d39d29d5cbae1c147ad"
+    }
+  ],
+  "business_verified": false,
+  "candidate_payload_sha256": "02ad1cbe0b930708c079e66b8d7c3a88ce4b78bcba9bfbc0e58db35c0ce3a7e7",
+  "compile_sdk": 34,
+  "contract_checks": {
+    "capture_retry_assertions": 191,
+    "capture_retry_cases": 36,
+    "installed_identity_assertions": 218,
+    "installed_identity_cases": 10,
+    "scoped_navigation_assertions": 99,
+    "scoped_navigation_cases": 23,
+    "typed_callback_assertions": 246,
+    "typed_callback_cases": 18
+  },
+  "contract_result": {
+    "bytes": 1835,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/CONTRACT-RESULT.json",
+    "sha256": "d8ee4cec432ff8329f799e60a0215a86d87b84662ac87cc7d533b8e0f2ecbabf"
+  },
+  "download_result": {
+    "bytes": 64222,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/RESULT.json",
+    "sha256": "5300257b246f73bc410028d8e1e61f18381e6f9b4a4406661d00b7d3d128eab6"
+  },
+  "elapsed_seconds": 25.320601224899292,
+  "error": "RuntimeError: resource payload changed without a source change",
+  "execution_host": "pocket4",
+  "exit_code": 1,
+  "external_zipalign_used": false,
+  "finished_epoch": 1794500703.1192985,
+  "fixture_only_compile_api_repair": "WebView.stopLoading recording test double; all original assertions unchanged",
+  "focused_host_java_inputs": 55,
+  "generated_java_count": 7,
+  "generated_source_inputs": [
+    {
+      "bytes": 41102,
+      "path": "androidx/annotation/experimental/R.java",
+      "sha256": "7751a0a5b7e3264b16f4846f89057bcb505306d9ffd4dcaa1cb26a1382707658"
+    },
+    {
+      "bytes": 41083,
+      "path": "androidx/core/R.java",
+      "sha256": "4c3bf651c64b3e722764de1d240ad3431876918447dcc754be9cea8a797a30a7"
+    },
+    {
+      "bytes": 41088,
+      "path": "androidx/lifecycle/R.java",
+      "sha256": "c73435b292885a19088c68d5682fadcadff23c68df4c2dd2105d9bb5e8223ed4"
+    },
+    {
+      "bytes": 41098,
+      "path": "androidx/versionedparcelable/R.java",
+      "sha256": "a24dd782a5125effbfdc1f86b6cef673b1c8f5798ec5ea95927c2a3fe7553796"
+    },
+    {
+      "bytes": 41085,
+      "path": "androidx/webkit/R.java",
+      "sha256": "7279776edb41dfad650932af0a57df6e8e5266f6ad9d9c88d5ed911870fceb39"
+    },
+    {
+      "bytes": 406,
+      "path": "org/trillionnium/hepta/webhelper/Manifest.java",
+      "sha256": "34ea501ad6a0a4590c09aa5f02e50773487a2cb2400ab0665581cef3850c184a"
+    },
+    {
+      "bytes": 41102,
+      "path": "org/trillionnium/hepta/webhelper/R.java",
+      "sha256": "8c67050131b87bf13bb0f79dd3617c12ba2debfeedd6d628d3cf1aa646dc679c"
+    }
+  ],
+  "installed": false,
+  "installed_identity_contract_result": {
+    "bytes": 938,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/INSTALLED-IDENTITY-RESULT.json",
+    "sha256": "808c0f05b5036b3520437344662cc3bf02ba2907298823b22b545f2ef32e0637"
+  },
+  "installed_identity_method_projections": [
+    {
+      "bytes": 898,
+      "git_sha": "3c0123296d0272b160ce9f452bb62528f3b80936",
+      "name": "fileSha",
+      "sha256": "1b9fecb34bde6eb8d51bc68c7a5a869adaec6a32daa5553159e0fd4ec42147a3"
+    },
+    {
+      "bytes": 702,
+      "git_sha": "618dc4ea3b9cdeb8bb62994b46b313920ac07089",
+      "name": "Stamp",
+      "sha256": "79e72ca0079bde616a32b4e40d5960756abede8fe43c5325e3502e98f71eeff0"
+    }
+  ],
+  "java_release": 8,
+  "jdk_prior_receipt": {
+    "bytes": 2954,
+    "path": "/home/alex/hepta-v31-nanbeige42-e59-r1/toolchains/old-jdk17-revalidation-r1/RESULT.json",
+    "sha256": "349939390c8b19e8cea03e28ce6c5bc2c1d010dd06d3a435b7f1517221f0dd1c"
+  },
+  "known_limitations": [
+    "Raw snapshots and all differences are retained; the explicit Mi action-region scope does not claim whole-document byte equality or full-pixel unoccluded visibility.",
+    "Top-document hit/rectangle checks are observed evidence with the documented DOM/paint limits; native AX/window binding and one-shot ARM require the main55 client.",
+    "Pure host tests use explicit synthetic v4 style/hit/geometry fixtures and Android/Binder/FD doubles. They are not real WebView callbacks, parcel transport, FD IO, phone or a successful Mi detail navigation.",
+    "The actual Mi search card was observed on code5, but no successful code6 capture or product-detail price result is claimed.",
+    "Old code4 authority/recovery groups are retained as historical evidence, not rerun here. The prior 33 callback cases remain within the newly run 36-case suite.",
+    "Signing, installation, actual popup navigation, storage retirement and flight/business completion remain separate stages."
+  ],
+  "main_app_changed": false,
+  "min_sdk": 30,
+  "old_resource_payloads_preserved": false,
+  "origin_runtime_verified": false,
+  "original_code5_changed": false,
+  "original_mac_operation_status": "unknown",
+  "originals_unchanged": true,
+  "orphan_recovery_runtime_verified": false,
+  "phone_tested": false,
+  "prior_callback_cases_preserved_and_rerun": 33,
+  "prior_capture_retry_result": {
+    "bytes": 13787,
+    "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/CONTRACT-RESULT.json",
+    "sha256": "0894411f12d42722d58debbd18908867b6e58440bc43eb04a1de1cbc6a5e1a43"
+  },
+  "prior_download_failure": {
+    "bytes": 18213,
+    "original_exit_code": 1,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/RESULT.json",
+    "sha256": "3ce37751fc824816475e624123a787f5e00bd011c11beb9d583835df453b18ad"
+  },
+  "prior_failed_build": {
+    "bytes": 29695,
+    "original_all_pass": false,
+    "original_exit_code": 1,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r1/RESULT.json",
+    "sha256": "77c20162ef85dd332e503c8e69fc3fb98c87a33f4460e35c236a6b9d48b88fa0"
+  },
+  "prior_large_download_failure": {
+    "bytes": 25490,
+    "original_exit_code": 1,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/RESULT.json",
+    "r8_verified": true,
+    "sdk_dual_hash_verified": false,
+    "sha256": "7b1a1a625a78fe58d80cba88136a971581b314216663ea346fdcd856bb82f097"
+  },
+  "prior_sdk_download_failure": {
+    "bytes": 19882,
+    "original_exit_code": 1,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r1/RESULT.json",
+    "r8_verified": true,
+    "sdk_dual_hash_verified": false,
+    "sha256": "e38d1133bf0c43fc5c5f575c3206a89fb215d8a33972348a09a7888c84e693a5"
+  },
+  "resource_archive_historical_hashes_claimed": false,
+  "resource_archive_reads_current": [
+    {
+      "bytes": 256,
+      "historical_sha_in_prior_build_receipt": false,
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-web-helper-code5-build-r1/resources/00/compiled-res.zip",
+      "sha256": "70f2f5c25be926ea951c91197e0ed782233f2f2dc3dbffcf9e555f663ba99a01",
+      "source": "full current original file, pinned version; old build only recorded this input path",
+      "version": "16777233:602283233:256:1794466581234137286:1794466581234137286"
+    },
+    {
+      "bytes": 107644,
+      "historical_sha_in_prior_build_receipt": false,
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-web-helper-code5-build-r1/resources/05/compiled-res.zip",
+      "sha256": "ec1008aab3ff45fe62029d1ea981a95d316b3c2de82b2e3ef0d1db539c61d8c8",
+      "source": "full current original file, pinned version; old build only recorded this input path",
+      "version": "16777233:602283235:107644:1794466581234402075:1794466581234402075"
+    },
+    {
+      "bytes": 256,
+      "historical_sha_in_prior_build_receipt": false,
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-web-helper-code5-build-r1/resources/09/compiled-res.zip",
+      "sha256": "70f2f5c25be926ea951c91197e0ed782233f2f2dc3dbffcf9e555f663ba99a01",
+      "source": "full current original file, pinned version; old build only recorded this input path",
+      "version": "16777233:602283237:256:1794466581234747153:1794466581234747153"
+    }
+  ],
+  "runtime_java_input_count": 41,
+  "runtime_library_jars": [
+    {
+      "bytes": 6304,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/00/classes.jar",
+      "sha256": "f97daae3e5fa12312593041412661117b7d82fa70ff2a1db45bb7092f1ce19ee"
+    },
+    {
+      "bytes": 56126,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/01/classes.jar",
+      "sha256": "9aab326d9492800991854360ac248f493ce7f7c3183519309b78ace9e240f6f6"
+    },
+    {
+      "bytes": 8290,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/02/classes.jar",
+      "sha256": "fa5e67ffcc52a0413f4b39c2737b43c1ba6c6975b4bd4a4ea8627549e766285b"
+    },
+    {
+      "bytes": 11249,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/03/classes.jar",
+      "sha256": "4b80b337779b526e64b0ee0ca9e0df43b808344d145f8e9b1c42a134dac57ad8"
+    },
+    {
+      "bytes": 41692,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/04/classes.jar",
+      "sha256": "9c8d117b5c2bc120a1cdfeb857e05b495b16c36013570372a708f7827e3ac9f9"
+    },
+    {
+      "bytes": 675389,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/05/classes.jar",
+      "sha256": "6dad2c3643d2e11e8ccf63c9af57d3e36ed4cfa5caa1930f44f4f90f2990fd50"
+    },
+    {
+      "bytes": 20306,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/06/classes.jar",
+      "sha256": "7bad7a188804adea6fa1f35d5ef99b705f20bd93ecadde484760ff86b535fefc"
+    },
+    {
+      "bytes": 9055,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/07/classes.jar",
+      "sha256": "14ec31f2b5f8d3eb1db1fb664035e3ee44b7f8f3fa91c072b6ccc41cd478b1df"
+    },
+    {
+      "bytes": 31906,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/08/classes.jar",
+      "sha256": "23ab2138b5cce78bf6e93f941197ec150eba39c8ab143b1164ecbbf796157ac6"
+    },
+    {
+      "bytes": 229240,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/09/classes.jar",
+      "sha256": "ea0593af13e18e9678c9017b1af3977011708676b8234ba28c5d3fc82c536fbf"
+    },
+    {
+      "bytes": 198936,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/10/classes.jar",
+      "sha256": "19f102efe9629f8eabc63853ad15c533e47c47f91fca09285c5bde86e59f91d4"
+    },
+    {
+      "bytes": 1524620,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/11/classes.jar",
+      "sha256": "e771fe74250a943e8f6346713201ff1d8cb95c3a5d1a91a22b65a9e04f6a8901"
+    },
+    {
+      "bytes": 17536,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/12/classes.jar",
+      "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478"
+    },
+    {
+      "bytes": 3819,
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/13/classes.jar",
+      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+    }
+  ],
+  "schema": "hepta.web-helper-code6-android-build.v1",
+  "signed": false,
+  "source_file_count": 43,
+  "source_inputs": [
+    {
+      "bytes": 1497,
+      "path": "AndroidManifest.xml",
+      "sha256": "df746304aabbb2223355937ff08e16196b3cf2a4e642c240491a8859a59e4a95"
+    },
+    {
+      "bytes": 14579,
+      "path": "assets/readonly_dom.js",
+      "sha256": "05bb7c1e4e1929b961c42af1e5c0e01918bf6ff64f153132ca11c7d85873e705"
+    },
+    {
+      "bytes": 2730,
+      "path": "src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+      "sha256": "f5f3936a8185185cf5f036a74665ee6edfbd5c1f617299dd9cd6edd4bf7b23e2"
+    },
+    {
+      "bytes": 4137,
+      "path": "src/org/trillionnium/hepta/background/FixedIntentTools.java",
+      "sha256": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947"
+    },
+    {
+      "bytes": 25712,
+      "path": "src/org/trillionnium/hepta/local/ActionDecision.java",
+      "sha256": "ee2a0481bb1ad0d2a3dd95b501c101d1955f4f1142adfe150ba3f9643fa88b20"
+    },
+    {
+      "bytes": 9217,
+      "path": "src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+      "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075"
+    },
+    {
+      "bytes": 30605,
+      "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
+      "sha256": "236d22187abfe777705d337241e310dd617b1c4c21ae39df4f52d960a1e106ca"
+    },
+    {
+      "bytes": 12329,
+      "path": "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+      "sha256": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f"
+    },
+    {
+      "bytes": 4889,
+      "path": "src/org/trillionnium/hepta/local/ObservedAppLabels.java",
+      "sha256": "0276171bb8aaebee880a6d36fea5cbfdb157b09d2728a07148e4ce85d5ffbb9e"
+    },
+    {
+      "bytes": 4665,
+      "path": "src/org/trillionnium/hepta/local/ObservedImeEnter.java",
+      "sha256": "e449d61e928dca5a72730b5394fa8f95a7db4dd4006440a95f839818e165acf1"
+    },
+    {
+      "bytes": 2303,
+      "path": "src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+      "sha256": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188"
+    },
+    {
+      "bytes": 4685,
+      "path": "src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+      "sha256": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba"
+    },
+    {
+      "bytes": 23598,
+      "path": "src/org/trillionnium/hepta/local/TaskAuthorization.java",
+      "sha256": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8"
+    },
+    {
+      "bytes": 9611,
+      "path": "src/org/trillionnium/hepta/local/web/WebFlightGoal.java",
+      "sha256": "02f260915f2b64894b8cd1ed4223392ace9964920d9b77e6765548252d9624ac"
+    },
+    {
+      "bytes": 10767,
+      "path": "src/org/trillionnium/hepta/local/web/WebShoppingGoal.java",
+      "sha256": "b8eb72eddb99842758dc39b347d2679d247714b97e0a0afe6df217bf2e8cd8c8"
+    },
+    {
+      "bytes": 2367,
+      "path": "src/org/trillionnium/hepta/webhelper/CaptureReadBudget.java",
+      "sha256": "d1b616cf263a01a1298c992ba1d009d0adf4aa420971b1e27dc95368ecc455cb"
+    },
+    {
+      "bytes": 5245,
+      "path": "src/org/trillionnium/hepta/webhelper/DomInstabilityEvidence.java",
+      "sha256": "1bf49e47f467ab36ef2dd30696cc442e146999a55b9682dbd6b929ca9dc4d766"
+    },
+    {
+      "bytes": 7983,
+      "path": "src/org/trillionnium/hepta/webhelper/EvidenceFiles.java",
+      "sha256": "b84d1671f956afd67744be0a7f300921e660dbbcda557bf3ae3dc7fdb881aee0"
+    },
+    {
+      "bytes": 3454,
+      "path": "src/org/trillionnium/hepta/webhelper/EvidenceService.java",
+      "sha256": "53ba16926f5b4618a752c3a7dd312e8f340ce6d588377f629a010b95b911a94f"
+    },
+    {
+      "bytes": 58411,
+      "path": "src/org/trillionnium/hepta/webhelper/EvidenceSession.java",
+      "sha256": "ab896e73d99a614ea396907f739d99c0177b8e1cdb64c1bf725da753355d01bf"
+    },
+    {
+      "bytes": 7692,
+      "path": "src/org/trillionnium/hepta/webhelper/InstalledIdentity.java",
+      "sha256": "0743b10aff01040b52235d5c57691cc1d864acd6fcef1aa626317585894cc39c"
+    },
+    {
+      "bytes": 5732,
+      "path": "src/org/trillionnium/hepta/webhelper/Jsons.java",
+      "sha256": "484c6daa3a95a9e1849a70e4ceffb3666e23dd148851d2ae356361c2a6693ee5"
+    },
+    {
+      "bytes": 6157,
+      "path": "src/org/trillionnium/hepta/webhelper/NativeRetirementProbe.java",
+      "sha256": "fd9124579a5528b5a12e55145dd49f7db1f1fbe3e41049eba7da4823ff391642"
+    },
+    {
+      "bytes": 5951,
+      "path": "src/org/trillionnium/hepta/webhelper/ObservedLinkPermit.java",
+      "sha256": "003ddc4af2695dd31bf26c5afaeffd591d948233d1e0741f93b6aaee8d0efe2a"
+    },
+    {
+      "bytes": 1420,
+      "path": "src/org/trillionnium/hepta/webhelper/OfficialOrigin.java",
+      "sha256": "7a127a62aa8918be1224b886f90f939bf31146a6522dd2f8a0af0244a57749eb"
+    },
+    {
+      "bytes": 26324,
+      "path": "src/org/trillionnium/hepta/webhelper/OfficialPageCapture.java",
+      "sha256": "ebb05c09a0fc5b01aa3a058ffba4f9104a9c7a4a4edbe6160b8ba9bccdc6dfc0"
+    },
+    {
+      "bytes": 33018,
+      "path": "src/org/trillionnium/hepta/webhelper/PageActivity.java",
+      "sha256": "21ff5a73e84c472f3e91620e21bd8ef6869ad05e87a1cc92c894e155c74d34f9"
+    },
+    {
+      "bytes": 2699,
+      "path": "src/org/trillionnium/hepta/webhelper/PageSitePolicy.java",
+      "sha256": "0a3f1e93eb2205a45e5fd6ec88c43b538ddb0e9976500ae160374399f93c483c"
+    },
+    {
+      "bytes": 2793,
+      "path": "src/org/trillionnium/hepta/webhelper/ProcessIdentity.java",
+      "sha256": "ed77fb207e67547a40a4356ca789fa666748ed2040fef1c7b0a8cc8d25e274b2"
+    },
+    {
+      "bytes": 15370,
+      "path": "src/org/trillionnium/hepta/webhelper/ProfileIsolation.java",
+      "sha256": "ad6dd2b678e231fa0bf881df847d9a008612bfbeae23fc867e7b2bcda10ee36c"
+    },
+    {
+      "bytes": 5433,
+      "path": "src/org/trillionnium/hepta/webhelper/RemoteReply.java",
+      "sha256": "bb0c441bd6ddb5ae46d9124c471050077a61571aa0d121f8a0cdffaa74d816b4"
+    },
+    {
+      "bytes": 6019,
+      "path": "src/org/trillionnium/hepta/webhelper/RetiredProfileClear.java",
+      "sha256": "09cb1dddfa469cda8e4c6c5d12221b36538548c6f08c9ae2234c66d2fa23c597"
+    },
+    {
+      "bytes": 5396,
+      "path": "src/org/trillionnium/hepta/webhelper/TaskBinding.java",
+      "sha256": "09a29ec16bc81db78b01fd3ad7120c4a3fb3b9e607c8f93ef039effbb6fca212"
+    },
+    {
+      "bytes": 4424,
+      "path": "src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java",
+      "sha256": "55209ef608fad0d8794d439aab2baf69bd7c8b043289c80ca7b25acaad1ff3d7"
+    },
+    {
+      "bytes": 16055,
+      "path": "src/org/trillionnium/hepta/webprotocol/WebDomStability.java",
+      "sha256": "f7e432c1191008afa25a134147cd6fd133f975e102aa4cab722da3dc82a4ea53"
+    },
+    {
+      "bytes": 4089,
+      "path": "src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java",
+      "sha256": "90a414863297c1ff173fd14a7b31dce62bb5fbb561e7625f1fe3eb0dace47af7"
+    },
+    {
+      "bytes": 5933,
+      "path": "src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+      "sha256": "3966bbe1122f6a6e13bf211291332aa63f755a891800d04169016958946f8f0e"
+    },
+    {
+      "bytes": 20795,
+      "path": "src/org/trillionnium/hepta/webprotocol/WebMiActionRegion.java",
+      "sha256": "027de25550bac1e58d835c1a0582f5f14aff144b76a2f4889f9d48b4f1abcd04"
+    },
+    {
+      "bytes": 23060,
+      "path": "src/org/trillionnium/hepta/webprotocol/WebObservedNavigation.java",
+      "sha256": "e524d91f50ec8d911692e371fed000d65e1be2f703f3efe36497ae64fd358132"
+    },
+    {
+      "bytes": 36054,
+      "path": "src/org/trillionnium/hepta/webprotocol/WebRecoveryPolicy.java",
+      "sha256": "e5bba55512b5b71f084282170d2708461d8b62f536f03ba4f3b074a4a0502ce0"
+    },
+    {
+      "bytes": 5255,
+      "path": "src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java",
+      "sha256": "d74bf8292782fc7a9e48f3460b8961eecd009d038c8b4e94431b94ecdd04043a"
+    },
+    {
+      "bytes": 8539,
+      "path": "src/org/trillionnium/hepta/webprotocol/WebStorageEvidence.java",
+      "sha256": "9e8df742ad0fdaac0fbc051c99772a52fbb40aae49f0a43589e252e71acc7fc0"
+    },
+    {
+      "bytes": 6731,
+      "path": "src/org/trillionnium/hepta/webprotocol/WebTaskPurpose.java",
+      "sha256": "92303867e09343ebcbb3620b9a5850bce683c1d94988d1e534dd272dcaea8647"
+    }
+  ],
+  "source_inventory_sha256": "3a9cb424a258adfe71b821dadf6b6319bd228a3bf2d0bf190c9d6b139f6b1c8e",
+  "started_epoch": 1794500677.7986972,
+  "steps": [
+    {
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+        "--release",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-proc:none",
+        "-cp",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/host-json/json-20240303.jar",
+        "-d",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-classes",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/background/FixedIntentTools.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/local/ActionDecision.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/local/DecisionGrammar.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/local/ObservedAppLabels.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/local/ObservedImeEnter.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/local/TaskAuthorization.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/local/web/WebFlightGoal.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/local/web/WebShoppingGoal.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/webhelper/CaptureReadBudget.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/webhelper/DomInstabilityEvidence.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/webhelper/Jsons.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/webhelper/ObservedLinkPermit.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/webhelper/OfficialPageCapture.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/webhelper/RemoteReply.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/webprotocol/WebDomStability.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/webprotocol/WebMiActionRegion.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/webprotocol/WebObservedNavigation.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/webprotocol/WebStorageEvidence.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/src/org/trillionnium/hepta/webprotocol/WebTaskPurpose.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/CaptureRetryHostTest.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/content/Context.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/content/res/AssetManager.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/graphics/Bitmap.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/graphics/Rect.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/net/Uri.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/net/http/SslError.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/os/Looper.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/os/Process.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/os/SystemClock.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/view/Display.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/view/accessibility/AccessibilityNodeInfo.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/webkit/SslErrorHandler.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/webkit/ValueCallback.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/webkit/WebResourceError.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/webkit/WebResourceRequest.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/webkit/WebSettings.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/webkit/WebView.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/android/webkit/WebViewClient.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/capture-retry/stubs/org/trillionnium/hepta/webhelper/PageSitePolicy.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/scoped-navigation/WebScopedNavigationHostTest.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/typed-callback/RemoteReplyHostTest.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/typed-callback/stubs/android/os/IBinder.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/typed-callback/stubs/android/os/Parcel.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/typed-callback/stubs/android/os/ParcelFileDescriptor.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/typed-callback/stubs/org/trillionnium/hepta/webhelper/EvidenceFiles.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-source/tests/typed-callback/stubs/org/trillionnium/hepta/webhelper/InstalledIdentity.java"
+      ],
+      "elapsed_seconds": 3.5529519010451622,
+      "exit_code": 0,
+      "exit_observed": true,
+      "forced": false,
+      "name": "focused-javac",
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_attempted": false,
+      "owned_group_cleanup_error": null,
+      "pid": 1542334,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-javac.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-javac.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "wait_exception": null
+    },
+    {
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "-cp",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-classes:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/host-json/json-20240303.jar",
+        "org.trillionnium.hepta.webhelper.WebScopedNavigationHostTest",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/SCOPED-NAVIGATION-RESULT.json"
+      ],
+      "elapsed_seconds": 1.3287996239960194,
+      "exit_code": 0,
+      "exit_observed": true,
+      "forced": false,
+      "name": "scoped-navigation",
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_attempted": false,
+      "owned_group_cleanup_error": null,
+      "pid": 1542582,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/scoped-navigation.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1557,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/scoped-navigation.stdout",
+        "sha256": "7aca70717f30901dcfbfe30b9e37195c0b553fd27ea0d2b45d76432158d88393"
+      },
+      "timed_out": false,
+      "wait_exception": null
+    },
+    {
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "-cp",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-classes:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/host-json/json-20240303.jar",
+        "org.trillionnium.hepta.webhelper.CaptureRetryHostTest",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/assets/readonly_dom.js",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/CAPTURE-RETRY-RESULT.json"
+      ],
+      "elapsed_seconds": 0.6715679600019939,
+      "exit_code": 0,
+      "exit_observed": true,
+      "forced": false,
+      "name": "capture-retry",
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_attempted": false,
+      "owned_group_cleanup_error": null,
+      "pid": 1542690,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/capture-retry.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1819,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/capture-retry.stdout",
+        "sha256": "a5bc3ce61384fb187d869b7d6b273c1d9e262fcfa6e1257139c2adcd6d26483e"
+      },
+      "timed_out": false,
+      "wait_exception": null
+    },
+    {
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "-cp",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/focused-classes:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/host-json/json-20240303.jar",
+        "org.trillionnium.hepta.webhelper.RemoteReplyHostTest"
+      ],
+      "elapsed_seconds": 0.26588381797773764,
+      "exit_code": 0,
+      "exit_observed": true,
+      "forced": false,
+      "name": "typed-callback",
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_attempted": false,
+      "owned_group_cleanup_error": null,
+      "pid": 1542790,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/typed-callback.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1067,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/typed-callback.stdout",
+        "sha256": "a5ee8daceac1e80312d38cd547f46d548a117db589a0867903ae4a9180a067f1"
+      },
+      "timed_out": false,
+      "wait_exception": null
+    },
+    {
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+        "--release",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-proc:none",
+        "-d",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/identity-classes",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/identity-source/HelperInstalledApkIdentityHostTest.java"
+      ],
+      "elapsed_seconds": 1.4316862779669464,
+      "exit_code": 0,
+      "exit_observed": true,
+      "forced": false,
+      "name": "installed-identity-javac",
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_attempted": false,
+      "owned_group_cleanup_error": null,
+      "pid": 1542814,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/installed-identity-javac.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/installed-identity-javac.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "wait_exception": null
+    },
+    {
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "-cp",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/identity-classes",
+        "HelperInstalledApkIdentityHostTest",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/identity-source/actual-apk-stat.txt",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/identity-io",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/INSTALLED-IDENTITY-RESULT.json"
+      ],
+      "elapsed_seconds": 0.11433239601319656,
+      "exit_code": 0,
+      "exit_observed": true,
+      "forced": false,
+      "name": "installed-identity-cases",
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_attempted": false,
+      "owned_group_cleanup_error": null,
+      "pid": 1542951,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/installed-identity-cases.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 59,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/installed-identity-cases.stdout",
+        "sha256": "8b9b874c13a0132aa7eba0d494d5fe4985cf0b373e63e242de6c4af42fd2d065"
+      },
+      "timed_out": false,
+      "wait_exception": null
+    },
+    {
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "-version"
+      ],
+      "elapsed_seconds": 0.06675600295420736,
+      "exit_code": 0,
+      "exit_observed": true,
+      "forced": false,
+      "name": "java-version",
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_attempted": false,
+      "owned_group_cleanup_error": null,
+      "pid": 1542974,
+      "stderr": {
+        "bytes": 193,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/java-version.stderr",
+        "sha256": "680e82e302e393c0238a1589199efb9d2d31288b68b761a83a87b589df104802"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/java-version.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "wait_exception": null
+    },
+    {
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+        "-version"
+      ],
+      "elapsed_seconds": 0.21854847198119387,
+      "exit_code": 0,
+      "exit_observed": true,
+      "forced": false,
+      "name": "javac-version",
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_attempted": false,
+      "owned_group_cleanup_error": null,
+      "pid": 1542993,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/javac-version.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 18,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/javac-version.stdout",
+        "sha256": "e1afbe1e3cf37b9ac274f484dc4549b2e2cf9960574681ba39b00277a32e948b"
+      },
+      "timed_out": false,
+      "wait_exception": null
+    },
+    {
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "-cp",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/tools/r8-8.13.17.jar",
+        "com.android.tools.r8.D8",
+        "--version"
+      ],
+      "elapsed_seconds": 0.266633001039736,
+      "exit_code": 0,
+      "exit_observed": true,
+      "forced": false,
+      "name": "d8-version",
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_attempted": false,
+      "owned_group_cleanup_error": null,
+      "pid": 1543077,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/d8-version.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 109,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/d8-version.stdout",
+        "sha256": "1cebcfaa83b1eb0a04581ec87f14303a418ac8af09278905cf337cdee33a9492"
+      },
+      "timed_out": false,
+      "wait_exception": null
+    },
+    {
+      "argv": [
+        "/usr/lib/android-sdk/build-tools/debian/aapt2",
+        "link",
+        "-I",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/sdk/android-34/android.jar",
+        "--manifest",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/AndroidManifest.xml",
+        "--java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/generated",
+        "--output-text-symbols",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/R.txt",
+        "-o",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/base.apk",
+        "--extra-packages",
+        "androidx.annotation.experimental:androidx.core:androidx.lifecycle:androidx.versionedparcelable:androidx.webkit",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/resources/00/compiled-res.zip",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/resources/05/compiled-res.zip",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/resources/09/compiled-res.zip"
+      ],
+      "elapsed_seconds": 0.16640216094674543,
+      "exit_code": 0,
+      "exit_observed": true,
+      "forced": false,
+      "name": "aapt2-link",
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_attempted": false,
+      "owned_group_cleanup_error": null,
+      "pid": 1543098,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/aapt2-link.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/aapt2-link.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "wait_exception": null
+    },
+    {
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+        "--release",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-proc:none",
+        "-classpath",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/sdk/android-34/android.jar:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/00/classes.jar:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/01/classes.jar:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/02/classes.jar:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/03/classes.jar:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/04/classes.jar:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/05/classes.jar:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/06/classes.jar:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/07/classes.jar:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/08/classes.jar:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/09/classes.jar:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/10/classes.jar:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/11/classes.jar:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/12/classes.jar:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/13/classes.jar",
+        "-d",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/background/FixedIntentTools.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/local/ActionDecision.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/local/DecisionGrammar.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/local/ObservedAppLabels.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/local/ObservedImeEnter.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/local/TaskAuthorization.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/local/web/WebFlightGoal.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/local/web/WebShoppingGoal.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/CaptureReadBudget.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/DomInstabilityEvidence.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/EvidenceFiles.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/EvidenceService.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/EvidenceSession.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/InstalledIdentity.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/Jsons.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/NativeRetirementProbe.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/ObservedLinkPermit.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/OfficialOrigin.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/OfficialPageCapture.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/PageActivity.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/PageSitePolicy.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/ProcessIdentity.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/ProfileIsolation.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/RemoteReply.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/RetiredProfileClear.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webhelper/TaskBinding.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webprotocol/WebDomStability.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webprotocol/WebMiActionRegion.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webprotocol/WebObservedNavigation.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webprotocol/WebRecoveryPolicy.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webprotocol/WebStorageEvidence.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/source/src/org/trillionnium/hepta/webprotocol/WebTaskPurpose.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/generated/androidx/annotation/experimental/R.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/generated/androidx/core/R.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/generated/androidx/lifecycle/R.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/generated/androidx/versionedparcelable/R.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/generated/androidx/webkit/R.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/generated/org/trillionnium/hepta/webhelper/Manifest.java",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/generated/org/trillionnium/hepta/webhelper/R.java"
+      ],
+      "elapsed_seconds": 4.257191466982476,
+      "exit_code": 0,
+      "exit_observed": true,
+      "forced": false,
+      "name": "javac",
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_attempted": false,
+      "owned_group_cleanup_error": null,
+      "pid": 1543105,
+      "stderr": {
+        "bytes": 110,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/javac.stderr",
+        "sha256": "dece862a32d4e989fd23df958ea691a7e58fa3157857498e3049c7e8b6c37239"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/javac.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "wait_exception": null
+    },
+    {
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "-cp",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/tools/r8-8.13.17.jar",
+        "com.android.tools.r8.D8",
+        "--lib",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/sdk/android-34/android.jar",
+        "--min-api",
+        "30",
+        "--output",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/dex",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/annotation/experimental/R$attr.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/annotation/experimental/R$color.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/annotation/experimental/R$dimen.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/annotation/experimental/R$drawable.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/annotation/experimental/R$id.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/annotation/experimental/R$integer.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/annotation/experimental/R$layout.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/annotation/experimental/R$string.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/annotation/experimental/R$style.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/annotation/experimental/R$styleable.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/annotation/experimental/R.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/core/R$attr.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/core/R$color.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/core/R$dimen.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/core/R$drawable.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/core/R$id.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/core/R$integer.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/core/R$layout.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/core/R$string.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/core/R$style.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/core/R$styleable.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/core/R.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/lifecycle/R$attr.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/lifecycle/R$color.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/lifecycle/R$dimen.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/lifecycle/R$drawable.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/lifecycle/R$id.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/lifecycle/R$integer.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/lifecycle/R$layout.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/lifecycle/R$string.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/lifecycle/R$style.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/lifecycle/R$styleable.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/lifecycle/R.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/versionedparcelable/R$attr.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/versionedparcelable/R$color.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/versionedparcelable/R$dimen.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/versionedparcelable/R$drawable.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/versionedparcelable/R$id.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/versionedparcelable/R$integer.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/versionedparcelable/R$layout.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/versionedparcelable/R$string.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/versionedparcelable/R$style.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/versionedparcelable/R$styleable.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/versionedparcelable/R.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/webkit/R$attr.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/webkit/R$color.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/webkit/R$dimen.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/webkit/R$drawable.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/webkit/R$id.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/webkit/R$integer.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/webkit/R$layout.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/webkit/R$string.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/webkit/R$style.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/webkit/R$styleable.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/androidx/webkit/R.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/background/FixedIntentTarget.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/background/FixedIntentTools$1.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/background/FixedIntentTools$Profile.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/background/FixedIntentTools.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/ActionDecision$InvalidActionException.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/ActionDecision$JsonParser.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/ActionDecision$ToolChildOrigin.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/ActionDecision.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/AppCatalogueRanker$1.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/AppCatalogueRanker$2.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/AppCatalogueRanker$3.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/AppCatalogueRanker$Entry.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/AppCatalogueRanker$Page.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/AppCatalogueRanker.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/DecisionGrammar.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/NotesOwnerIntent$1.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/NotesOwnerIntent$Result.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/NotesOwnerIntent.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/ObservedAppLabels.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/ObservedImeEnter.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/ObservedScrollActions.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/ObservedTargetLabels.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/TaskAuthorization$1.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/TaskAuthorization$Frame.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/TaskAuthorization$Gate.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/TaskAuthorization$Violation.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/TaskAuthorization.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/web/WebFlightGoal.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/local/web/WebShoppingGoal.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/CaptureReadBudget$1.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/CaptureReadBudget$Attempt.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/CaptureReadBudget.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/DomInstabilityEvidence$Pair.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/DomInstabilityEvidence.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/EvidenceFiles$Record.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/EvidenceFiles.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/EvidenceService$1.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/EvidenceService.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/EvidenceSession$1.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/EvidenceSession$2.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/EvidenceSession$3.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/EvidenceSession$4.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/EvidenceSession.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/InstalledIdentity$Stamp.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/InstalledIdentity.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/Jsons$Parser.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/Jsons.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/Manifest$permission.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/Manifest.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/NativeRetirementProbe$OwnedState.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/NativeRetirementProbe.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/ObservedLinkPermit.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/OfficialOrigin.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/OfficialPageCapture$1.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/OfficialPageCapture$2.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/OfficialPageCapture$Callback.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/OfficialPageCapture$LeaseGuard.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/OfficialPageCapture$Listener.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/OfficialPageCapture$NavigationGate.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/OfficialPageCapture$ReadAttempt.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/OfficialPageCapture$Ticket.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/OfficialPageCapture.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/PageActivity$1.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/PageActivity$2.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/PageActivity$3.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/PageActivity$4.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/PageActivity$5.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/PageActivity$6.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/PageActivity$Loaded.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/PageActivity.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/PageSitePolicy.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/ProcessIdentity.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/ProfileIsolation$1.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/ProfileIsolation$2$1.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/ProfileIsolation$2.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/ProfileIsolation$3.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/ProfileIsolation$4$1.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/ProfileIsolation$4.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/ProfileIsolation$Result.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/ProfileIsolation.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/R$attr.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/R$color.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/R$dimen.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/R$drawable.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/R$id.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/R$integer.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/R$layout.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/R$string.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/R$style.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/R$styleable.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/R.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/RemoteReply.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/RetiredProfileClear$1.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/RetiredProfileClear$2$1.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/RetiredProfileClear$2.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/RetiredProfileClear$Result.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/RetiredProfileClear.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webhelper/TaskBinding.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webprotocol/WebDomCanonical.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webprotocol/WebDomStability$1.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webprotocol/WebDomStability$Result.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webprotocol/WebDomStability.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webprotocol/WebMiActionRegion.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webprotocol/WebObservedNavigation.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webprotocol/WebRecoveryPolicy.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webprotocol/WebSitePolicy$Route.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webprotocol/WebSitePolicy.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webprotocol/WebStorageEvidence.class",
+        "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/classes/org/trillionnium/hepta/webprotocol/WebTaskPurpose.class",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/00/classes.jar",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/01/classes.jar",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/02/classes.jar",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/03/classes.jar",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/04/classes.jar",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/05/classes.jar",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/06/classes.jar",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/07/classes.jar",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/08/classes.jar",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/09/classes.jar",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/10/classes.jar",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/11/classes.jar",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/12/classes.jar",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/runtime/13/classes.jar"
+      ],
+      "elapsed_seconds": 12.537511795992032,
+      "exit_code": 0,
+      "exit_observed": true,
+      "forced": false,
+      "name": "d8",
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_attempted": false,
+      "owned_group_cleanup_error": null,
+      "pid": 1543416,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/d8.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/d8.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "wait_exception": null
+    }
+  ],
+  "storage_isolation_runtime_verified": false,
+  "target_sdk": 35,
+  "traceback": "Traceback (most recent call last):\n  File \"/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2.py\", line 623, in main\n    if n!=\"AndroidManifest.xml\":need(data==old_payload[n],\"resource payload changed without a source change\")\n                                ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2.py\", line 68, in need\n    if not v: raise RuntimeError(m)\n              ^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: resource payload changed without a source change\n",
+  "version_code": 6,
+  "version_name": "0.6.0-web-evidence-v4",
+  "wire_version": 4
+}

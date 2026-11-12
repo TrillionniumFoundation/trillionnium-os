@@ -69,15 +69,24 @@ public final class CalculatorInputGuardHostTest {
         }
         JSONObject w=raw.getJSONObject("window");
         ObservedWindowMetadata metadata=ObservedWindowMetadata.observed(bounds(w.getJSONArray("root_bounds")),w.getString("root_class"),w.getInt("type"),w.getInt("display_id"),bounds(w.getJSONArray("bounds")),w.getString("title"));
-        String generation=null,initial=null;List<String> packages=new ArrayList<String>();
+        String generation=null,initial=null,selectionOwner=null;JSONObject selection=null;List<String> packages=new ArrayList<String>();
         if(raw.has("background_session")&&!raw.isNull("background_session")){
             JSONObject b=raw.getJSONObject("background_session");generation=b.getString("generation");initial=b.getString("bootstrap_package");
             JSONArray a=b.getJSONArray("allowed_packages");for(int i=0;i<a.length();i++)packages.add((String)a.get(i));
+            // main() already checks the complete frozen archive and all five raw members.
+            // Carry its original seven-field explicit-UI Selection; do not invent
+            // the later owner_intent_within_explicit_ui_selection provenance.
+            JSONObject bootstrap=new JSONObject(saved.getJSONObject("background-bootstrap.json").getString("raw_utf8"));
+            selection=bootstrap.getJSONObject("selection");selectionOwner=bootstrap.getString("owner_sha256");
+            if(!TASK.equals(bootstrap.getString("task_id"))||!generation.equals(bootstrap.getString("generation"))
+                    ||w.getInt("display_id")!=bootstrap.getInt("display_id")
+                    ||!ObservedImeEnter.hash(owner).equals(selectionOwner))
+                throw new IllegalArgumentException("original v47 bootstrap identity differs from its frame or OWNER");
         }
         return new PhoneObservation(raw.getString("observation_id"),pkg,1,raw.getInt("screen_width"),raw.getInt("screen_height"),raw.getInt("rotation"),raw.getInt("window_id"),rect(bounds(w.getJSONArray("bounds"))),
                 new File("original-v47-calculator-frame-not-live-android-io"),raw.getString("screen_sha256"),raw.getString("observation_state_sha256"),
                 new ObservationState(raw.getString("app_tree_sha256"),raw.isNull("ime_visible")?ImeVisibility.UNKNOWN:raw.getBoolean("ime_visible")?ImeVisibility.VISIBLE:ImeVisibility.HIDDEN),metadata,
-                raw.getBoolean("nodes_truncated"),nodes,generation,initial,packages);
+                raw.getBoolean("nodes_truncated"),nodes,generation,initial,packages,null,selection,selectionOwner);
     }
     private static Frame frame(PhoneObservation phone)throws Exception{
         Method m=LocalTaskController.class.getDeclaredMethod("completionFrame",PhoneObservation.class);m.setAccessible(true);return (Frame)m.invoke(null,phone);

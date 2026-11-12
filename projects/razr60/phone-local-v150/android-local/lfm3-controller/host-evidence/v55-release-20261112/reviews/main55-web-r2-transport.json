@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.main55-web-r2-atomic-transport-review.v1",
+  "status": "source-only-no-new-blocker",
+  "reviewer": "android_code_audit",
+  "handoff": {
+    "git": "36240096f1e8dfc4a53c348789252b27b305c9c4",
+    "bytes": 12404,
+    "sha256": "2afd103235b230da80eca60c2f432accdc89cf7fc6f03e287a7316dbdb95abaf"
+  },
+  "request": {
+    "git": "4c5d012a95454f96570db062e3f81c6c011b043f",
+    "bytes": 29515,
+    "sha256": "e8f9bef3eccd88b3b6f95e3b1c5b097a41afc030ea5a86726be347ad410457a6",
+    "tool": "h_pty_start",
+    "idempotency_key": "007f-v55-main-existing-web-regression-host-r2-mi-guard"
+  },
+  "publisher": {
+    "git": "b448102a204e6783558fae2d8db23044d78ec1b5",
+    "bytes": 10541,
+    "sha256": "475a5bfa039ee2997cece853e921283cbceec68b7203d987d942f94a19dab9d3"
+  },
+  "source": {
+    "git": "f2bf0e695199c53c2d4b959153b47e78b7396aaf",
+    "bytes": 38346,
+    "sha256": "ede9eb863619a67f9c17187360ea38e39472fd96eb4bc53c8928d75303cf3c71",
+    "path": "/home/alex/hepta-local-007f-20261111/v55-main-web-regression-host-r2.py"
+  },
+  "loader": {
+    "git": "55995fd59dbaa7d75b361b8cf0f93b06e63efe6b",
+    "bytes": 931,
+    "sha256": "99974950d3cedc9d27112ff2bcbdce134f737dd9609897a82bc929e146fbc28a",
+    "raw_byte_identical_to_reviewed_931": true
+  },
+  "supervisor": {
+    "git": "55681a80e4bb16966fea62b6e95e6a36058999bc",
+    "bytes": 1788,
+    "sha256": "ce08bbeca3e6935033f1d808df039aebc3aab314bbce5a443d6a5332109b630d"
+  },
+  "mechanical": {
+    "all13_publisher_substitutions_forward_and_reverse_exact": true,
+    "all_directory_fd_no_follow_link_no_overwrite_temp_identity_cleanup_logic_unchanged": true,
+    "canonical_base64_exact": true,
+    "complete_gzip_crc_and_output_raw_verified": true,
+    "decoded_source_exact_reviewed38346": true,
+    "supervisor_only_three_literal_groups": true,
+    "loader_exact_reviewed931": true
+  },
+  "findings": [
+    "The exact request is the existing atomic single-source publisher with fixed Web source pins and the original reviewed931-byte loader. Canonical base64, complete compressed SHA/length, gzip CRC and all38346 output bytes independently match.",
+    "All thirteen ordered substitutions reverse to the actual Core3 publisher. Its fixed destination, nofollow ancestor directory handles, temporary O_EXCL file, fsync, inode-bound cleanup, atomic no-overwrite link, exact-existing-file-only acceptance and exec sequence are unchanged.",
+    "The supervisor differs only in loader length/hash and diagnostic schema. The original1200-second wait and10/10-second child termination path are unchanged; it is a bounded launcher, while the coordinator retains its separately reviewed child-group failure handling.",
+    "The reviewed coordinator root claim remains outside its result-writing handler. The old41889-byte input is read unchanged, and the original Web failure tree is preserved by the stage. No old root or request is overwritten."
+  ],
+  "limits": {
+    "host_calls": 0,
+    "python_executed": false,
+    "java_executed": false,
+    "web_r2_pass_claimed": false,
+    "phone_actions": 0,
+    "arbitrary_descendant_cleanup_claimed": false
+  }
+}

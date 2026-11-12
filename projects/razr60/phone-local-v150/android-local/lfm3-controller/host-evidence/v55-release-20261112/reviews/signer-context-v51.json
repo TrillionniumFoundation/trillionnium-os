@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.qualified-original-signer-source-read-review.v1",
+  "scope": "fixed source read and static inspection only",
+  "source": {
+    "path": "/home/alex/hepta-local-007f-20261111/v51-build-r2/v51_assembly_filled.py",
+    "git": "e53a6f8f7d868c05f73ec37fe826f2b96a91b1c0",
+    "bytes": 50092,
+    "sha256": "3bfad635fb8fdd6d971c60fb8b998a56e63fefaee75ae7a6140b4403cfbca53b",
+    "version": "66306:60337017:50092:1794415200376473168:1794415200380490568"
+  },
+  "metadata": {
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "link_count": 1
+  },
+  "full_raw_sha_verified": true,
+  "all_chunks_contiguous": true,
+  "utf8_roundtrip_verified": true,
+  "source_git_readback_verified": true,
+  "credential_scan": {
+    "complete_source": true,
+    "pem_private_key": false,
+    "known_token_prefixes": false,
+    "sensitive_term_exact_hits": [],
+    "classification": "no actual credential value literal observed; signer location comes from fixed public receipt and only lstat metadata is compared"
+  },
+  "top_level": [
+    "standard Python imports",
+    "sys.dont_write_bytecode=True",
+    "literal constants, pathlib.Path constructors and HOST_NAMES string split",
+    "function definitions",
+    "only main invocation is guarded by if __name__ == '__main__' at source lines642-643"
+  ],
+  "non_main_run_name_enters_original_assembly": false,
+  "existing_signer_and_jdk": {
+    "source_lines": "359-387",
+    "public_proof_and_jdk_receipts_full_hash_required": true,
+    "key_path_comes_from_public_proof": true,
+    "key_content_read": false,
+    "key_check": "Path symlinks rejected; regular(key) uses lstat; size/device/inode/mode/mtime_ns/uid compared to existing receipt",
+    "no_key_or_password_file_read_in_this_review": true
+  },
+  "raw_source_published_only_after_credential_inspection": true,
+  "executed": false,
+  "runpy_or_import_performed": false,
+  "phone_actions": 0
+}

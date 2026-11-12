@@ -1,0 +1,12 @@
+Exception in thread "main" java.lang.reflect.InvocationTargetException
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at org.trillionnium.hepta.local.CalculatorInputGuardHostTest.prompt(CalculatorInputGuardHostTest.java:98)
+	at org.trillionnium.hepta.local.CalculatorInputGuardHostTest.actualFrameDomain(CalculatorInputGuardHostTest.java:150)
+	at org.trillionnium.hepta.local.CalculatorInputGuardHostTest.main(CalculatorInputGuardHostTest.java:298)
+Caused by: java.lang.IllegalStateException: actual background Selection provenance is missing
+	at org.trillionnium.hepta.local.PhoneObservation.backgroundJson(PhoneObservation.java:241)
+	at org.trillionnium.hepta.local.LocalTaskController.prompt(LocalTaskController.java:1035)
+	... 7 more

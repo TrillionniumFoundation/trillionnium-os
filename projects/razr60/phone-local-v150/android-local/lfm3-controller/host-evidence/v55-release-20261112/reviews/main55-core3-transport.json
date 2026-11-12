@@ -1,0 +1,100 @@
+{
+  "schema": "hepta.core101-r3-fixed-gzip-argv-independent-review.v1",
+  "status": "source_only_no_new_transport_blocker",
+  "reviewed": {
+    "source": {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r3.py",
+      "bytes": 54123,
+      "sha256": "2c02f930ce9e785efc849a1a72cc70a6900fa9d406fb29750e5c2723059ed44e",
+      "git": "cd7a3a0e54c52deca060f97e5724913a7af15bbe"
+    },
+    "publisher": {
+      "git": "017933ef03e8243e77c1f3351491a2ec1fef18d4",
+      "bytes": 10454,
+      "sha256": "675ff3db8910a9dce4d190790f70dfef6d2e2b5ecfe371b24766bf87946732c1",
+      "raw_utf8": "import base64,gzip,hashlib,json,os,secrets,stat,sys\nBASE=\"/home/alex/hepta-local-007f-20261111\"\nPINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r3.py\",\"bytes\":54123,\"sha256\":\"2c02f930ce9e785efc849a1a72cc70a6900fa9d406fb29750e5c2723059ed44e\"}]\nARGV_BYTES=23748\nARGV_SHA=\"8047ad3aa2e6b9c6017eff8cc92e2005df05eb2315a371edcd45f1cd2e4330c2\"\nGZIP_BYTES=17811\nGZIP_SHA=\"f9289307b972cc90eb335b217b5fef9503b0d1064d41b46e2051fb1b644ae085\"\nLOADER=\"import hashlib,os,pathlib,stat,sys\\np=pathlib.Path(\\\"/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r3.py\\\")\\nassert all(not q.is_symlink() for q in (p,*p.parents))\\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\ntry:\\n a=os.fstat(fd)\\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==54123\\n with os.fdopen(os.dup(fd),\\\"rb\\\") as f:raw=f.read(54123+1)\\n assert len(raw)==54123 and hashlib.sha256(raw).hexdigest()==\\\"2c02f930ce9e785efc849a1a72cc70a6900fa9d406fb29750e5c2723059ed44e\\\"\\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\\nfinally:os.close(fd)\\nsys.argv=[str(p)]\\nexec(compile(raw,str(p),\\\"exec\\\",dont_inherit=True),{\\\"__name__\\\":\\\"__main__\\\",\\\"__file__\\\":str(p),\\\"__stage_source__\\\":raw})\\n\"\nLOADER_SHA=\"101d039ebc66b78bd0ffcb3f4daa45baa40cb46b70908dab206b9c1f0a208636\"\nSUPERVISOR=\"import hashlib,json,os,signal,subprocess,sys,time\\nloader=sys.argv[1]\\nassert len(loader.encode(\\\"utf-8\\\"))==878 and hashlib.sha256(loader.encode(\\\"utf-8\\\")).hexdigest()==\\\"101d039ebc66b78bd0ffcb3f4daa45baa40cb46b70908dab206b9c1f0a208636\\\"\\nassert os.getcwd()==\\\"/home/alex/hepta-local-007f-20261111\\\"\\nstarted=time.monotonic()\\np=subprocess.Popen([\\\"/usr/bin/python3\\\",\\\"-I\\\",\\\"-B\\\",\\\"-c\\\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.core101-r3-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"started\\\",\\\"child_pid\\\":p.pid,\\\"timeout_seconds\\\":1200,\\\"loader_sha256\\\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\\ncode=None;timed_out=False;forced=False;error=None\\ntry:\\n    code=p.wait(timeout=1200)\\nexcept BaseException as failure:\\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\\n    error=type(failure).__name__+\\\": \\\"+str(failure)\\n    if p.poll() is None:\\n        try:os.killpg(p.pid,signal.SIGTERM)\\n        except ProcessLookupError:pass\\n        try:code=p.wait(timeout=10)\\n        except subprocess.TimeoutExpired:\\n            forced=True\\n            try:os.killpg(p.pid,signal.SIGKILL)\\n            except ProcessLookupError:pass\\n            try:code=p.wait(timeout=10)\\n            except subprocess.TimeoutExpired:error+=\\\"; owned child exit not observed\\\"\\nexit_observed=p.poll() is not None\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.core101-r3-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"finished\\\",\\\"child_pid\\\":p.pid,\\\"child_returncode\\\":code,\\\"exit_observed\\\":exit_observed,\\\"timed_out\\\":timed_out,\\\"forced_kill\\\":forced,\\\"error\\\":error,\\\"elapsed_seconds\\\":time.monotonic()-started}),flush=True)\\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\\nraise SystemExit(code if code>=0 else 128-code)\\n\"\nSUPERVISOR_SHA=\"d02a2976bcdf6519a4480cc3674b423f8098e79f2289f6b6dba56bf3955f14de\"\nTRANSPORT_KEY=\"007f-v55-main-core101-materialized-host-r3\"\ndef need(ok,why):\n    if not ok:raise RuntimeError(why)\ndef sha(raw):return hashlib.sha256(raw).hexdigest()\ndef file_id(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\ndef dir_id(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_uid,s.st_gid)\ndef pairs(items):\n    result={}\n    for key,value in items:\n        need(key not in result,\"duplicate stdin key\");result[key]=value\n    return result\ndef no_constant(value):raise ValueError(\"nonfinite stdin number\")\nneed(len(sys.argv)==2,\"one complete compressed source argument\")\nargument=sys.argv[1].encode(\"ascii\",\"strict\")\nneed(len(argument)==ARGV_BYTES and sha(argument)==ARGV_SHA and ARGV_BYTES<=1<<20,\n     \"exact bounded source argument\")\npacked=base64.b64decode(argument,validate=True)\nneed(base64.b64encode(packed)==argument and len(packed)==GZIP_BYTES and sha(packed)==GZIP_SHA,\n     \"canonical full compressed source identity\")\nneed(len(PINS)==1 and 0<PINS[0][\"bytes\"]<=1<<20,\"one fixed bounded source destination\")\ndata=gzip.decompress(packed)\nneed(len(data)==PINS[0][\"bytes\"] and sha(data)==PINS[0][\"sha256\"],\n     \"full gzip CRC and complete source identity before any mutation\")\nneed(os.path.dirname(PINS[0][\"path\"])==BASE\n     and os.path.basename(PINS[0][\"path\"]) not in (\"\",\".\",\"..\"),\"fixed direct source child\")\npayloads=[data]\nneed(len(LOADER.encode(\"utf-8\"))==878 and sha(LOADER.encode(\"utf-8\"))==LOADER_SHA,\n     \"original loader bytes\")\nneed(len(SUPERVISOR.encode(\"utf-8\"))==1774\n     and sha(SUPERVISOR.encode(\"utf-8\"))==SUPERVISOR_SHA,\"reviewed bounded supervisor bytes\")\ncompile(data,PINS[0][\"path\"],\"exec\",dont_inherit=True)\ncompile(LOADER,\"<original-core101-loader>\",\"exec\",dont_inherit=True)\ncompile(SUPERVISOR,\"<reviewed-bounded-supervisor>\",\"exec\",dont_inherit=True)\nneed(os.getcwd()==BASE,\"fixed working directory\")\nfds=[];chain=[];temps={};published=[]\ndef directories():\n    for parent,name,fd,before in chain:\n        current=os.fstat(fd)\n        need(stat.S_ISDIR(current.st_mode) and dir_id(current)==before,\"opened directory identity\")\n        if parent is not None:\n            named=os.stat(name,dir_fd=parent,follow_symlinks=False)\n            need(stat.S_ISDIR(named.st_mode) and dir_id(named)==before,\"ordinary named directory identity\")\ndef read_exact(name,pin):\n    before=os.stat(name,dir_fd=bfd,follow_symlinks=False)\n    need(stat.S_ISREG(before.st_mode) and before.st_nlink==1 and before.st_size==pin[\"bytes\"],\"regular single-link exact-sized file\")\n    fd=os.open(name,os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=bfd)\n    try:\n        need(file_id(os.fstat(fd))==file_id(before),\"file replaced before open\")\n        chunks=[];total=0\n        while total<=pin[\"bytes\"]:\n            chunk=os.read(fd,min(65536,pin[\"bytes\"]+1-total))\n            if not chunk:break\n            chunks.append(chunk);total+=len(chunk)\n        data=b\"\".join(chunks)\n        need(len(data)==pin[\"bytes\"] and sha(data)==pin[\"sha256\"],\"full readback bytes and digest\")\n        need(file_id(os.fstat(fd))==file_id(before)==file_id(os.stat(name,dir_fd=bfd,follow_symlinks=False)),\"file stable across read\")\n        return data,{\"path\":pin[\"path\"],\"bytes\":len(data),\"sha256\":sha(data),\"identity\":file_id(before)}\n    finally:os.close(fd)\ndef remove_own_temp(name):\n    identity=temps[name]\n    try:current=os.stat(name,dir_fd=bfd,follow_symlinks=False)\n    except FileNotFoundError:\n        del temps[name];return\n    need(stat.S_ISREG(current.st_mode) and (current.st_dev,current.st_ino)==identity,\"only this process temporary inode may be removed\")\n    os.unlink(name,dir_fd=bfd);del temps[name]\ntry:\n    fd=os.open(\"/\",os.O_RDONLY|os.O_DIRECTORY|os.O_CLOEXEC|os.O_NOFOLLOW)\n    fds.append(fd);chain.append((None,None,fd,dir_id(os.fstat(fd))))\n    for component in BASE.strip(\"/\").split(\"/\"):\n        parent=fd\n        fd=os.open(component,os.O_RDONLY|os.O_DIRECTORY|os.O_CLOEXEC|os.O_NOFOLLOW,dir_fd=parent)\n        fds.append(fd);chain.append((parent,component,fd,dir_id(os.fstat(fd))))\n    bfd=fd;directories()\n    # Check the fixed destination before creating any temporary or final file.\n    for pin,data in zip(PINS,payloads):\n        name=os.path.basename(pin[\"path\"])\n        try:existing,_=read_exact(name,pin)\n        except FileNotFoundError:continue\n        need(existing==data,\"existing destination must be identical\")\n    for i,(pin,data) in enumerate(zip(PINS,payloads)):\n        directories();name=os.path.basename(pin[\"path\"]);created=False\n        try:existing,facts=read_exact(name,pin)\n        except FileNotFoundError:\n            tmp=\".hepta-fixed-source-gzip-\"+str(os.getpid())+\"-\"+secrets.token_hex(8)+\"-\"+str(i)+\".tmp\"\n            tfd=os.open(tmp,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_CLOEXEC|os.O_NOFOLLOW,0o600,dir_fd=bfd)\n            st=os.fstat(tfd);temps[tmp]=(st.st_dev,st.st_ino)\n            try:\n                need(stat.S_ISREG(st.st_mode) and st.st_nlink==1,\"new owned regular temporary\")\n                at=0\n                while at<len(data):\n                    count=os.write(tfd,data[at:]);need(count>0,\"temporary write progress\");at+=count\n                os.fsync(tfd)\n            finally:os.close(tfd)\n            check,_=read_exact(tmp,pin);need(check==data,\"full temporary readback\")\n            directories()\n            try:\n                os.link(tmp,name,src_dir_fd=bfd,dst_dir_fd=bfd,follow_symlinks=False)\n                created=True\n            except FileExistsError:\n                existing,_=read_exact(name,pin);need(existing==data,\"concurrent exact destination only\")\n            finally:remove_own_temp(tmp)\n            os.fsync(bfd)\n            existing,facts=read_exact(name,pin)\n        need(existing==data,\"published original bytes\")\n        published.append(dict(facts,created_here=created,reused_identical=not created))\n    directories()\n    for pin,data in zip(PINS,payloads):\n        actual,_=read_exact(os.path.basename(pin[\"path\"]),pin);need(actual==data,\"fixed source exact before execution\")\nexcept BaseException as failure:\n    print(json.dumps({\"schema\":\"hepta.fixed-source-gzip-argv-transport-receipt.v1\",\"transport_completed\":False,\"transport_key\":TRANSPORT_KEY,\"published\":published,\"error\":type(failure).__name__+\": \"+str(failure),\"coordinator_started\":False},sort_keys=True),flush=True)\n    raise\nfinally:\n    try:\n        for name in list(temps):remove_own_temp(name)\n    finally:\n        for fd in reversed(fds):os.close(fd)\nprint(json.dumps({\"schema\":\"hepta.fixed-source-gzip-argv-transport-receipt.v1\",\"transport_completed\":True,\"transport_key\":TRANSPORT_KEY,\"argv_bytes\":ARGV_BYTES,\"argv_sha256\":ARGV_SHA,\"gzip_bytes\":GZIP_BYTES,\"gzip_sha256\":GZIP_SHA,\"published\":published,\"original_loader_sha256\":LOADER_SHA,\"bounded_supervisor_sha256\":SUPERVISOR_SHA,\"coordinator_started\":False,\"next_action\":\"exec_reviewed_supervisor_then_original_loader\"},sort_keys=True),flush=True)\nos.execv(\"/usr/bin/python3\",[\"/usr/bin/python3\",\"-I\",\"-B\",\"-c\",SUPERVISOR,LOADER])\n"
+    },
+    "exact_request": {
+      "git": "152607835e58bd6667023e4280828400d9a322b4",
+      "bytes": 35075,
+      "sha256": "211eeaf7ddb75243af8c52281a54150fe3fa6c108e4ccb159b435389dc9282b0",
+      "compact_json_bytes": 34998,
+      "compact_json_sha256": "55a4232016016e4944b532380227c30d0f3b1bf806c7029e6654639f96ee5aba",
+      "tool": "h_pty_start",
+      "host": "pocket4",
+      "idempotency_key": "007f-v55-main-core101-materialized-host-r3",
+      "executable": "/usr/bin/python3",
+      "cwd": "/home/alex/hepta-local-007f-20261111",
+      "max_argv_bytes": 23748,
+      "request_shape": "args = ['-I','-B','-c',publisher_raw,base64_fixed_gzip_source]; no stdin and no separate binary_write"
+    },
+    "loader": {
+      "git": "60ca9b26754b75794f253ee9c375c664dafadde1",
+      "bytes": 878,
+      "sha256": "101d039ebc66b78bd0ffcb3f4daa45baa40cb46b70908dab206b9c1f0a208636",
+      "raw_utf8": "import hashlib,os,pathlib,stat,sys\np=pathlib.Path(\"/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r3.py\")\nassert all(not q.is_symlink() for q in (p,*p.parents))\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\ntry:\n a=os.fstat(fd)\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==54123\n with os.fdopen(os.dup(fd),\"rb\") as f:raw=f.read(54123+1)\n assert len(raw)==54123 and hashlib.sha256(raw).hexdigest()==\"2c02f930ce9e785efc849a1a72cc70a6900fa9d406fb29750e5c2723059ed44e\"\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\nfinally:os.close(fd)\nsys.argv=[str(p)]\nexec(compile(raw,str(p),\"exec\",dont_inherit=True),{\"__name__\":\"__main__\",\"__file__\":str(p),\"__stage_source__\":raw})\n",
+      "ordered_replacements": [
+        [
+          "/v55-main-core101-materialized-host-r2.py",
+          "/v55-main-core101-materialized-host-r3.py",
+          1
+        ],
+        [
+          "44671",
+          "54123",
+          3
+        ],
+        [
+          "d2a7949d28b8f731bb8b0662001b94f6a652a4d384325c42dfe5cb12cd1ba980",
+          "2c02f930ce9e785efc849a1a72cc70a6900fa9d406fb29750e5c2723059ed44e",
+          1
+        ]
+      ],
+      "predecessor": "the878-byte reviewed core r2 stable-FD loader"
+    },
+    "supervisor": {
+      "git": "428738e0d10af4c9d2a9c4d2c656a53e0b072e65",
+      "bytes": 1774,
+      "sha256": "d02a2976bcdf6519a4480cc3674b423f8098e79f2289f6b6dba56bf3955f14de",
+      "raw_utf8": "import hashlib,json,os,signal,subprocess,sys,time\nloader=sys.argv[1]\nassert len(loader.encode(\"utf-8\"))==878 and hashlib.sha256(loader.encode(\"utf-8\")).hexdigest()==\"101d039ebc66b78bd0ffcb3f4daa45baa40cb46b70908dab206b9c1f0a208636\"\nassert os.getcwd()==\"/home/alex/hepta-local-007f-20261111\"\nstarted=time.monotonic()\np=subprocess.Popen([\"/usr/bin/python3\",\"-I\",\"-B\",\"-c\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\nprint(json.dumps({\"schema\":\"hepta.core101-r3-pty-bounded-launch.v1\",\"event\":\"started\",\"child_pid\":p.pid,\"timeout_seconds\":1200,\"loader_sha256\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\ncode=None;timed_out=False;forced=False;error=None\ntry:\n    code=p.wait(timeout=1200)\nexcept BaseException as failure:\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\n    error=type(failure).__name__+\": \"+str(failure)\n    if p.poll() is None:\n        try:os.killpg(p.pid,signal.SIGTERM)\n        except ProcessLookupError:pass\n        try:code=p.wait(timeout=10)\n        except subprocess.TimeoutExpired:\n            forced=True\n            try:os.killpg(p.pid,signal.SIGKILL)\n            except ProcessLookupError:pass\n            try:code=p.wait(timeout=10)\n            except subprocess.TimeoutExpired:error+=\"; owned child exit not observed\"\nexit_observed=p.poll() is not None\nprint(json.dumps({\"schema\":\"hepta.core101-r3-pty-bounded-launch.v1\",\"event\":\"finished\",\"child_pid\":p.pid,\"child_returncode\":code,\"exit_observed\":exit_observed,\"timed_out\":timed_out,\"forced_kill\":forced,\"error\":error,\"elapsed_seconds\":time.monotonic()-started}),flush=True)\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\nraise SystemExit(code if code>=0 else 128-code)\n",
+      "ordered_replacements": [
+        [
+          "==863",
+          "==878",
+          1
+        ],
+        [
+          "2a4054a725fc3059b3008e347662123fcbd9c7d2ed432e5f5cdf75f724a08212",
+          "101d039ebc66b78bd0ffcb3f4daa45baa40cb46b70908dab206b9c1f0a208636",
+          1
+        ],
+        [
+          "hepta.main55-pty-bounded-launch.v1",
+          "hepta.core101-r3-pty-bounded-launch.v1",
+          2
+        ]
+      ]
+    },
+    "original_publisher": {
+      "git": "8337f507643daeba485b04c451e4a73d279bbb5f",
+      "bytes": 8611,
+      "sha256": "8757974e3d01ed5e82775b624bb97f2aab403736ba6ef4aa2a614b9161f119d5",
+      "independent_review_git": "a3cb8dc3813e0c6f007a42f591de9fc51bdc96e2"
+    }
+  },
+  "findings": [
+    "All five raw blobs were independently fetched and checked by complete bytes, SHA256 and Git blob hash. The eight declared patches exactly reconstruct the10454-byte publisher and reverse to the8611-byte previously reviewed publisher.",
+    "The exact request is34998 bytes compact JSON with maximum argument23748 bytes. Its publisher argument is byte-identical to the reviewed raw; its canonical base64 decodes to17811 bytes/f928, whose gzip CRC and length decompress to all54123 bytes/2c02 of the reviewed Core r3 stage.",
+    "The loader and supervisor strings embedded in the publisher equal their independently fetched raw blobs. The loader opens the fixed source with NOFOLLOW, checks regular/single-link/size/full SHA and unchanged FD/path identity, then compiles and injects those same bytes.",
+    "Before first publication the publisher checks full argv/gzip/source digests and compiles stage, loader and supervisor. It accepts only one fixed source path, opens and retains ancestor directory FDs, and requires any existing destination to have exactly matching stable single-link bytes.",
+    "Only its own private O_EXCL temporary inode can be unlinked. Complete write, fsync, readback and hard-link non-overwrite publication precede final byte verification; conflicts never overwrite a differing destination. Atomic stage mkdir remains the separate one-winner execution claim.",
+    "The successor changes transport to one bounded gzip argument and invokes the same reviewed bounded supervisor after publication. Its1200/10/10 limits and child argv are preserved; exceptions/timeout/forced exit cannot be reported as a successful normal launch.",
+    "The original r1 gzip is read only by the stage; the unknown r2 source path is not touched. This review does not execute or authorize any new H request and does not claim actual core101 success."
+  ],
+  "limits": [
+    "The supervisor is reviewed as the unchanged outer child launcher; the full coordinator owns and cleans its own subprocess groups. No new guarantee about arbitrary descendant processes is inferred.",
+    "Python compile checks described here are future publisher behavior; this reviewer performed no Python, Java, H or phone execution."
+  ],
+  "h_calls": 0,
+  "executed": false
+}

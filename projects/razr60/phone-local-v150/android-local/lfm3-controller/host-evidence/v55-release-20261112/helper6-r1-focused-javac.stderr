@@ -1,0 +1,6 @@
+/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r1/focused-source/src/org/trillionnium/hepta/webhelper/OfficialPageCapture.java:96: error: cannot find symbol
+                    invalidReason="main_frame_navigation_without_observed_link_permit";v.stopLoading();
+                                                                                        ^
+  symbol:   method stopLoading()
+  location: variable v of type WebView
+1 error

@@ -13,6 +13,14 @@ import java.util.*;
 /** Only acquisition/observation/Android effects are IO fakes; extracted sections are production. */
 public final class HeptaAccessibilityService extends android.content.Context {
 {{service_interfaces_outcome}}
+    /** Type-only legacy boundary; never a successful native-region recheck. */
+    static final class NativeRegionCheck {
+        private NativeRegionCheck(){throw new AssertionError("legacy fixture has no Web native-region evidence");}
+    }
+    private NativeRegionCheck requireLiveNativeRegion(String taskId,PhoneObservation frame,AccessibilityNodeInfo clicked,
+            WebRegionNativeBridge bridge,Cancellation cancel)throws Exception{
+        throw new AssertionError("legacy fixture cannot execute a Web native-region recheck");
+    }
     static HeptaAccessibilityService live;
     static final int GLOBAL_ACTION_BACK=1,GLOBAL_ACTION_HOME=2;
     final Handler main=new Handler(Looper.getMainLooper());
@@ -43,7 +51,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
     private void coordinateClick(String task,PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets,TaskAuthorization.Gate authorization,String modelRunId,Cancellation cancel,ActionCallback callback){gestures++;callback.onResult(new ActionOutcome(true,true,false,"fake gesture"));}
     private Graph readGraph(){
         if(root==null)throw new IllegalStateException("no root");
-        Graph g=new Graph();g.packageName=root.pkg;g.windowId=root.windowId;g.displayId=root.window.display;g.backgroundGeneration=taskBackground==null?null:taskBackground.generation;g.rotation=0;g.bounds=new Rect(0,0,1080,2400);g.digest="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";return g;
+        Graph g=new Graph();g.packageName=root.pkg;g.windowId=root.windowId;g.displayId=root.window.display;g.backgroundGeneration=taskBackground==null?null:taskBackground.generation;g.backgroundSelectionRaw=taskBackground==null?null:taskBackground.selection.json().toString();g.backgroundOwnerSha=taskBackground==null?null:taskBackground.ownerSha256;g.rotation=0;g.bounds=new Rect(0,0,1080,2400);g.digest="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";return g;
     }
     public void prepare(String pkg){
         root=new AccessibilityNodeInfo(pkg,7);node=new AccessibilityNodeInfo(pkg,7);node.text="测试";node.editable=true;node.scrollable=true;
@@ -58,7 +66,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
         List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();
         if(node!=null)rows.add(new PhoneObservation.Node("n0",node.pkg,"TextView","synthetic:id/entry",node.text,"",new Rect(10,10,500,150),node.clickable,node.editable,node.scrollable,node.enabled,node.focused,node.password,observedChildText(node),readScrollActions(node),readImeEnter(node),inputTextHash(node),node.editable&&node.focused&&node.enabled&&!node.password&&readImeEnter(node).queryAllowed()&&submitAvailable(node.pkg,inputTextHash(node))));
         if(observationRows!=null)rows=observationRows.get();
-        return new PhoneObservation(id,pkg,SystemClock.elapsedRealtime(),1080,2400,0,window,new Rect(0,0,1080,2400),new File(getFilesDir(),"synthetic.png"),"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",new ObservationState("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",ImeVisibility.HIDDEN),metadata,false,rows,taskBackground==null?null:taskBackground.generation,taskBackground==null?null:taskBackground.selection.initialPackage,taskBackground==null?Collections.<String>emptyList():taskBackground.selection.allowedPackages);
+        return new PhoneObservation(id,pkg,SystemClock.elapsedRealtime(),1080,2400,0,window,new Rect(0,0,1080,2400),new File(getFilesDir(),"synthetic.png"),"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",new ObservationState("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",ImeVisibility.HIDDEN),metadata,false,rows,taskBackground==null?null:taskBackground.generation,taskBackground==null?null:taskBackground.selection.initialPackage,taskBackground==null?Collections.<String>emptyList():taskBackground.selection.allowedPackages,null,taskBackground==null?null:taskBackground.selection.json(),taskBackground==null?null:taskBackground.ownerSha256);
     }
     public void observe(String task,File directory,Cancellation cancel,long deadline,ObservationCallback callback){
         current=observation();currentGraph=readGraph();if(node!=null)currentGraph.refs.put("n0",new NodeRef(node,observedChildText(node),readScrollActions(node)));callback.onObservation(current);
