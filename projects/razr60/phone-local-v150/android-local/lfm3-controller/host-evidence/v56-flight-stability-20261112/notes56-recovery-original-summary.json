@@ -1,0 +1,205 @@
+{
+  "schema": "hepta.v56-one-helper-host-export-summary.v1",
+  "exporter_revision": "r2-typed-frames-main-subdirectory-bounded-previews",
+  "export_has_phone_actions": false,
+  "original_helper_exit_code": 2,
+  "helper_sha256": "8c58648825dd27035cd3271bfc5e57f912bfa9121dfbd39406da750e8a648834",
+  "source_result": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-recovery-r1/RESULT.json",
+    "bytes": 147387,
+    "sha256": "4f321b5d1ac7265cdff90e090d255076b7cfcd598ada5909eaf2c953619d3a38"
+  },
+  "actual_signed_build_receipt_sha256": "e27e74e94b0668c1c07b04863c9aaabf1b3235f9ff2d0d0d8bd9a346e46b2c6b",
+  "apk_sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62",
+  "runtime_config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+  "plan": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v56-r1/notes-plan-recovery-r1.json",
+    "bytes": 575,
+    "sha256": "ac7f258399e5738baff01d9aa067433879355be33b7bec8926e87f61d13584e9"
+  },
+  "case_identity_fields_missing_in_failed_original": [],
+  "reported_original_fields_not_independent_qualification": {
+    "prepared": null,
+    "task_id": "bb16d934fabe4dc7818289d55be113ac",
+    "model_profile": "lfm3-1.7b-qad-q4_0",
+    "compute": "npu",
+    "qualified": false,
+    "machine_checks_passed": false,
+    "cancel_machine_checks_passed": null,
+    "error": null,
+    "started_wall_s": 1794523872.2275567,
+    "ended_wall_s": 1794523903.420205,
+    "last_session": {
+      "task_id": "bb16d934fabe4dc7818289d55be113ac",
+      "status": "controller_verified_done",
+      "steps": 1,
+      "cleanup_known": true,
+      "running": false,
+      "blocked": false,
+      "background_lease_unreleased": false
+    }
+  },
+  "visual_selection": {
+    "business_qualification_assigned": false,
+    "original_task_result": {
+      "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-recovery-r1/evidence/task/result.json",
+      "bytes": 48614,
+      "sha256": "7d9b6a2149336c488eee85f2273ce24a90c22d686aa138f86321c93447fe134c"
+    },
+    "reported_task": {
+      "task_id": "bb16d934fabe4dc7818289d55be113ac",
+      "status": "controller_verified_done",
+      "steps": 1,
+      "summary": "已保存并重新打开这条笔记，正文核对一致。",
+      "completion_verified": true,
+      "final_observation_id": "647f7afe9196445d9f5f667a52d31c80",
+      "cleanup_known": true,
+      "completion_actor": "controller/tool_workflow"
+    },
+    "original_ui_selection": {
+      "allowed_packages": [
+        "com.motorola.stylus",
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "bootstrap_package": "com.motorola.stylus",
+      "scope_count": 2,
+      "automatic_target_text": "本次将自动使用：Moto 笔记。已保存的应用范围保持不变。",
+      "initial_spinner_hidden": true,
+      "selection_source": "ordinary_visible_multi_choice_and_persisted_initial"
+    },
+    "recomputed_effective_background_request": {
+      "mode": "background",
+      "allowed_packages": [
+        "com.motorola.stylus"
+      ],
+      "bootstrap_package": "com.motorola.stylus",
+      "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false,
+      "owner_task_selection": {
+        "schema": "hepta.owner-task-app-selection.v1",
+        "owner_sha256": "dddf5b7a31b6e27dc08b116c7d36b6494dadcf7eb8f8937629377e8f551aa03d",
+        "recognition": "natural_note_comma_prefix.v1",
+        "original_ui_initial_package": "com.motorola.stylus",
+        "original_ui_allowed_packages": [
+          "com.motorola.stylus",
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_initial_package": "com.motorola.stylus",
+        "effective_allowed_packages": [
+          "com.motorola.stylus"
+        ],
+        "effective_scope_within_selected_apps": true,
+        "effective_scope_strictly_smaller": true,
+        "initial_app_changed": false,
+        "package_from_model_or_screen": false,
+        "grants_tool_authority": false,
+        "changes_saved_preferences": false
+      }
+    },
+    "final_owned_display_frame": {
+      "available": true,
+      "observation_id": "647f7afe9196445d9f5f667a52d31c80",
+      "frame_refs": [
+        {
+          "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-recovery-r1/evidence/task/step-01-notes-workflow-observation-4.json",
+          "bytes": 15374,
+          "sha256": "a0353c95c239034644e2657f68b9c8888fce966f764390d938ef53677815bf66",
+          "observation_id": "647f7afe9196445d9f5f667a52d31c80",
+          "display_id": 27,
+          "generation": "f97f9157-fc0e-4b98-baff-bcb9d082f7cd",
+          "frame_selection": "source-defined observation filename and complete raw frame; completion metadata excluded"
+        }
+      ]
+    },
+    "reported_main_user": {
+      "attempted": false,
+      "completed": null,
+      "phase": "hepta",
+      "error": null,
+      "host_actions": []
+    },
+    "reported_cancel_probe": {
+      "attempted": null,
+      "tap_requested": null,
+      "tap_command_returned": null,
+      "error": null,
+      "visible_stop_binding": null,
+      "input_retry_forbidden": null
+    },
+    "reported_cancellation_acceptance": null
+  },
+  "visuals": [
+    {
+      "role": "final_owned_display",
+      "relative_png": "evidence/task/647f7afe9196445d9f5f667a52d31c80.png",
+      "sha256": "ca0dcccfca0a3ef4b5194199caf579f8c13837dcfbfc6c10aa5a6a79d029ce7b",
+      "bytes": 29541,
+      "binding": "original task final_observation_id and same-domain raw frame",
+      "frame_refs": [
+        {
+          "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-recovery-r1/evidence/task/step-01-notes-workflow-observation-4.json",
+          "bytes": 15374,
+          "sha256": "a0353c95c239034644e2657f68b9c8888fce966f764390d938ef53677815bf66",
+          "observation_id": "647f7afe9196445d9f5f667a52d31c80",
+          "display_id": 27,
+          "generation": "f97f9157-fc0e-4b98-baff-bcb9d082f7cd",
+          "frame_selection": "source-defined observation filename and complete raw frame; completion metadata excluded"
+        }
+      ],
+      "original_png": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-recovery-r1/evidence/task/647f7afe9196445d9f5f667a52d31c80.png",
+        "bytes": 29541,
+        "sha256": "ca0dcccfca0a3ef4b5194199caf579f8c13837dcfbfc6c10aa5a6a79d029ce7b",
+        "dimensions": [
+          720,
+          1280
+        ],
+        "rgba8_sha256": "1ae028687bbf2f6670311d1b31fb9ae24befd38f61c2c4992d960ac4c3c35f8e",
+        "base64_file": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-recovery-r1-host-review-r1/final_owned_display-ORIGINAL-PNG-BASE64.json"
+      },
+      "preview": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-recovery-r1-host-review-r1/final_owned_display-preview.webp",
+        "bytes": 4596,
+        "sha256": "47e9e4c15527ee4e0072a7cc03f1057c96eef30fe9339bd260a02230960173a9",
+        "dimensions": [
+          480,
+          853
+        ],
+        "quality": 60,
+        "encoding": "WebP",
+        "resample": "LANCZOS",
+        "attempts": [
+          {
+            "width": 480,
+            "height": 853,
+            "quality": 60,
+            "bytes": 4596
+          }
+        ],
+        "lossy": true,
+        "pixel_equality_claimed": false,
+        "base64_file": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-recovery-r1-host-review-r1/final_owned_display-PREVIEW-BASE64.json"
+      }
+    }
+  ],
+  "archive": {
+    "ok": true,
+    "archive": {
+      "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-recovery-r1-host-review-r1/original-records.tar.xz",
+      "bytes": 183836,
+      "sha256": "4cd29c16c110f535fec42c1d6771577f476637af5da8ac0334e1a545adde01d8",
+      "internal_manifest_sha256": "937f7f312f722303cd7a8d1c158d79157cf9c1ccb356d6cf5c26e48b3ca9b25b"
+    },
+    "manifest": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-recovery-r1-host-review-r1/ORIGINAL-MANIFEST.json",
+    "manifest_sha256": "1541395a9893e259c60d9a19cc333fe4cf4854ed9fc5a7c3edc7fd609872b66a",
+    "included_files": 719,
+    "excluded_images": 15,
+    "source_unchanged": true
+  },
+  "export_errors": [],
+  "business_qualification_assigned": false,
+  "root_visual_review_pending": true,
+  "original_full_PNG_remains_runner_guard_input": true
+}

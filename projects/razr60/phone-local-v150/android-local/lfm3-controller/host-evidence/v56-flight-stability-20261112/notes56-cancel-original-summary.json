@@ -1,0 +1,649 @@
+{
+  "schema": "hepta.v56-one-helper-host-export-summary.v1",
+  "exporter_revision": "r2-typed-frames-main-subdirectory-bounded-previews",
+  "export_has_phone_actions": false,
+  "original_helper_exit_code": 2,
+  "helper_sha256": "4744eb6f6f4987f750bc517328b61f4597c17b59e6f0996de7faf66aa8c51696",
+  "source_result": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-cancel-r1/RESULT.json",
+    "bytes": 143345,
+    "sha256": "109cd0810e253f001d39ad16a39b5e6ccf10795bbb6a2b146676dcc19340a69b"
+  },
+  "actual_signed_build_receipt_sha256": "e27e74e94b0668c1c07b04863c9aaabf1b3235f9ff2d0d0d8bd9a346e46b2c6b",
+  "apk_sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62",
+  "runtime_config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+  "plan": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v56-r1/notes-plan-cancel-r1.json",
+    "bytes": 575,
+    "sha256": "ff3888e69651a7fc0f10740e10b49766c2234cf3cfd6056a617af838745ac292"
+  },
+  "case_identity_fields_missing_in_failed_original": [],
+  "reported_original_fields_not_independent_qualification": {
+    "prepared": null,
+    "task_id": "b415cf087c91485599352b39a78b6085",
+    "model_profile": "lfm3-1.7b-qad-q4_0",
+    "compute": "npu",
+    "qualified": false,
+    "machine_checks_passed": false,
+    "cancel_machine_checks_passed": true,
+    "error": null,
+    "started_wall_s": 1794523194.025678,
+    "ended_wall_s": 1794523214.4870887,
+    "last_session": {
+      "task_id": "b415cf087c91485599352b39a78b6085",
+      "status": "cancelled",
+      "steps": 1,
+      "cleanup_known": true,
+      "running": false,
+      "blocked": false,
+      "background_lease_unreleased": false
+    }
+  },
+  "visual_selection": {
+    "business_qualification_assigned": false,
+    "original_task_result": {
+      "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-cancel-r1/evidence/task/result.json",
+      "bytes": 18095,
+      "sha256": "f7fcf00ecf29805c0acea426e68c4b6ace4532e39064d9fedce8619cb90be250"
+    },
+    "reported_task": {
+      "task_id": "b415cf087c91485599352b39a78b6085",
+      "status": "cancelled",
+      "steps": 1,
+      "summary": "已停止；已经发生的操作不会自动重做",
+      "completion_verified": false,
+      "final_observation_id": "a8a8711427584126bd208ba929504c28",
+      "cleanup_known": true,
+      "completion_actor": null
+    },
+    "original_ui_selection": {
+      "allowed_packages": [
+        "com.motorola.stylus",
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "bootstrap_package": "com.motorola.stylus",
+      "scope_count": 2,
+      "automatic_target_text": "本次将自动使用：Moto 笔记。已保存的应用范围保持不变。",
+      "initial_spinner_hidden": true,
+      "selection_source": "ordinary_visible_multi_choice_and_persisted_initial"
+    },
+    "recomputed_effective_background_request": {
+      "mode": "background",
+      "allowed_packages": [
+        "com.motorola.stylus"
+      ],
+      "bootstrap_package": "com.motorola.stylus",
+      "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false,
+      "owner_task_selection": {
+        "schema": "hepta.owner-task-app-selection.v1",
+        "owner_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+        "recognition": "natural_note_comma_prefix.v1",
+        "original_ui_initial_package": "com.motorola.stylus",
+        "original_ui_allowed_packages": [
+          "com.motorola.stylus",
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_initial_package": "com.motorola.stylus",
+        "effective_allowed_packages": [
+          "com.motorola.stylus"
+        ],
+        "effective_scope_within_selected_apps": true,
+        "effective_scope_strictly_smaller": true,
+        "initial_app_changed": false,
+        "package_from_model_or_screen": false,
+        "grants_tool_authority": false,
+        "changes_saved_preferences": false
+      }
+    },
+    "final_owned_display_frame": {
+      "available": true,
+      "observation_id": "a8a8711427584126bd208ba929504c28",
+      "frame_refs": [
+        {
+          "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-cancel-r1/evidence/task/step-01-before.json",
+          "bytes": 45849,
+          "sha256": "67e20bb0762f0b3e59d16cf2c4e6f9db1b912c1b87600069848a30cbc33f23ad",
+          "observation_id": "a8a8711427584126bd208ba929504c28",
+          "display_id": 26,
+          "generation": "71d60345-4458-4046-9cef-7054e9bf8d57",
+          "frame_selection": "source-defined observation filename and complete raw frame; completion metadata excluded"
+        }
+      ]
+    },
+    "reported_main_user": {
+      "attempted": false,
+      "completed": null,
+      "phase": "hepta",
+      "error": null,
+      "host_actions": []
+    },
+    "reported_cancel_probe": {
+      "attempted": true,
+      "tap_requested": true,
+      "tap_command_returned": true,
+      "error": null,
+      "visible_stop_binding": {
+        "main_focus": {
+          "display_id": 0,
+          "main_focus": "Window{fa1b72f u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+          "main_focused_app": "ActivityRecord{246305928 u0 org.trillionnium.hepta.local/.MainActivity t1028}",
+          "input_focused_display": 0,
+          "input_window_display0": "fa1b72f org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity",
+          "awake_and_fully_on": true,
+          "settings_splash_observed": false,
+          "source": "actual same system sample window-displays and input stdout; sequential not atomic"
+        },
+        "geometry": {
+          "display_id": 0,
+          "screen_size": [
+            1224,
+            2992
+          ],
+          "content_rect": [
+            0,
+            130,
+            1224,
+            2920
+          ],
+          "main_focus": "Window{fa1b72f u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+          "system_bars": [
+            {
+              "type": "statusBars",
+              "source_id": "73500000",
+              "frame": [
+                0,
+                0,
+                1224,
+                130
+              ],
+              "visible": true
+            },
+            {
+              "type": "navigationBars",
+              "source_id": "d17c0001",
+              "frame": [
+                0,
+                2920,
+                1224,
+                2992
+              ],
+              "visible": true
+            }
+          ],
+          "geometry_source": "display0.WindowInsetsStateController.InsetsState"
+        },
+        "neighbor_rgba_sha256": "db081d7e70ed4eb5cb524ce8df8d23f50212b8d691b6fcfd1697b523e7115680",
+        "stop_shape": {
+          "algorithm": "fixed_positions_contrast_masks_RGBA_v2",
+          "glyph_roi_in_button": [
+            33,
+            36,
+            231,
+            108
+          ],
+          "thresholds": [
+            0.1,
+            0.25,
+            0.5,
+            0.75
+          ],
+          "prepared": {
+            "background_rgba": [
+              240,
+              241,
+              241,
+              255
+            ],
+            "foreground_rgba": [
+              178,
+              179,
+              179,
+              255
+            ],
+            "contrast": 62.0,
+            "distinct_rgba": 57,
+            "glyph_bbox_in_button": [
+              91,
+              54,
+              172,
+              92
+            ],
+            "mask_counts": [
+              1261,
+              1073,
+              816,
+              742
+            ],
+            "mask_sha256": [
+              "d97b5532de948f178fa12d058a5906dadcee00c18bdd5221c46565168c236134",
+              "badd6d205c4a149805e07783d4c2b8dc5b96063306893b2a1c0ba671313d921a",
+              "ac168344eb36dca46ff9559a4472463eb9efed4382e4e936e74920f9f3b52173",
+              "bd6fca3cd4a9b09bd6d3251944ab401b327379f1c44d20909fcc66b2ee171ae1"
+            ]
+          },
+          "busy": {
+            "background_rgba": [
+              214,
+              215,
+              215,
+              255
+            ],
+            "foreground_rgba": [
+              28,
+              28,
+              28,
+              255
+            ],
+            "contrast": 186.66666666666666,
+            "distinct_rgba": 106,
+            "glyph_bbox_in_button": [
+              91,
+              54,
+              172,
+              92
+            ],
+            "mask_counts": [
+              1261,
+              1073,
+              816,
+              742
+            ],
+            "mask_sha256": [
+              "d97b5532de948f178fa12d058a5906dadcee00c18bdd5221c46565168c236134",
+              "badd6d205c4a149805e07783d4c2b8dc5b96063306893b2a1c0ba671313d921a",
+              "ac168344eb36dca46ff9559a4472463eb9efed4382e4e936e74920f9f3b52173",
+              "bd6fca3cd4a9b09bd6d3251944ab401b327379f1c44d20909fcc66b2ee171ae1"
+            ]
+          },
+          "normalized_coverage_tolerance": 0.021779439032286546,
+          "maximum_normalized_coverage_difference": 0.016532258064516123,
+          "recolouring_observed": true,
+          "spatial_search_or_coordinate_shift": false,
+          "android_enabled_attribute_proven": false,
+          "prepared_rgba_sha256": "89e47a0aa1d3dccc6bf6da852d6671b0c17fae4e49d33f0354936f9c716f1609",
+          "busy_rgba_sha256": "2f9cb03d34e7dfa31bebfdda0f1b7f452acbbe1888c8f113a4624ee8fa8f2a47"
+        },
+        "stop_point": [
+          444,
+          1114
+        ],
+        "source_png_sha256": "d454db505725cfc1321b7b93df1694696f8964f77446c4576714d0ca314e5b31",
+        "window_sha256": "46971f4fcdceb66f943e30473bd7fde51f1bfd2ce9193d4c87599b2bf8b99294",
+        "input_dump_sha256": "ca42bdd54e734f6d5f143d77150f59b10d0820704ff0867294364995139cf0f4",
+        "root_busy_image_review_pending": true
+      },
+      "input_retry_forbidden": null
+    },
+    "reported_cancellation_acceptance": {
+      "schema": "hepta.visible-stop-cancellation-evidence.v1",
+      "machine_checks_passed": true,
+      "qualified": false,
+      "native_inference_completion_required": false,
+      "native_exit_zero_required": false,
+      "business_acceptance": false,
+      "root_busy_image_review_pending": true,
+      "continuous_npu_busy_verified": false,
+      "observed_worker_exit_code": 143,
+      "app_reports_cleanup_known": true,
+      "argv_identity": {
+        "actual_full_argv0": "/data/app/~~kjtm2QzruYL9-aUBXFIlQw==/org.trillionnium.hepta.local-UnoGsU3bLEhG5iG5r16jHA==/lib/arm64/libhepta_local_runner.so",
+        "observed_argv0": "libhepta_local_runner.so",
+        "following_argv_exact": true,
+        "native_worker_sha256": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+        "actual_signed_apk_sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62",
+        "uid": 10481,
+        "worker_pid": 5903,
+        "app_pid": 25673
+      },
+      "typed_cancellation_receipts": {
+        "schema": "hepta.v53-owned-cancellation-receipt-proof.v1",
+        "qualified": false,
+        "release_identity_verified_here": false,
+        "platform_errno_verified_here": false,
+        "stop_or_no_later_effects_verified_here": false,
+        "system_cleanup_verified_here": false,
+        "normal_native_success_claim": false,
+        "all_checks_passed": true,
+        "checks": {
+          "source_and_record_bytes": true,
+          "app_session_identity": true,
+          "first_request_not_accepted": true,
+          "observed_exit_and_durable_cleanup": true,
+          "native_sdk_cleanup_contract": true,
+          "separate_cancel_claim": true,
+          "single_owned_termination": true,
+          "task_terminal_original_receipt": true
+        },
+        "task_id": "b415cf087c91485599352b39a78b6085",
+        "worker_generation": "37d4fe0f2143418b826b2812f2fb3675",
+        "worker_pid": 5903,
+        "original_sha256": {
+          "app_session": "7fd0831c93e39c327ae1c78abbe23c24aab42650ebf740a66a62a01b33338d76",
+          "native_session": "bd00787faf0b3e134d74a3c02fcf2e5433a438acd9f7e140ee0c520043fda156",
+          "task_result": "f7fcf00ecf29805c0acea426e68c4b6ace4532e39064d9fedce8619cb90be250"
+        },
+        "source_pins": {
+          "src/org/trillionnium/hepta/local/LocalModelEngine.java": "0b91b202be78b6ca9ff90335b7ac2620a5583b102babbeacc24a37d529076fe8",
+          "src/org/trillionnium/hepta/local/OwnedWorkerCancellation.java": "eaa708351cfcac921e4e607a1789f6cb45dc4db61adb610029954c195fda2ec9",
+          "src/org/trillionnium/hepta/local/WarmProcessSession.java": "b179a624d475cbf787964bfc17d628ed122d4ae14a08239ac0cb1ece5c58598a",
+          "native/generate_adapter.py": "986fe422f33b370e553feee605964bab0e6f496ae49fee1f0471bc178b4455e7",
+          "native/warm-protocol.inc": "fc6314b10d3d5542832eeca02184a42ab6fd97c118d9d89c6e55dfed83770268"
+        },
+        "platform_broken_pipe_errno": 32,
+        "done_delivery": "epipe_or_invalid"
+      },
+      "android_target_errno_binding_sha256": "5907334b97da50bb66b6343898dacc1ddfa7f15aa942925d3586eacf2b003ee7",
+      "task_id": "b415cf087c91485599352b39a78b6085",
+      "first_run_id": "ac4e1af0dab648f8b9d6f022410d63b0",
+      "worker_generation": "37d4fe0f2143418b826b2812f2fb3675",
+      "interrupted_worker_exit_code": 143,
+      "actual_input_ids_bytes": 17332,
+      "actual_input_ids_sha256": "c9ba3f19592339ac7b7f5f6a725a2b0d49773e1be77320066592452ccafcc38c",
+      "known_cancelled_terminal": true,
+      "no_dispatched_model_or_tool_child_actions": true,
+      "cleanup_confirmed": true,
+      "observed_sdk_cleanup_verified": true,
+      "normal_native_success_claim": false,
+      "native_exit_143_required": true,
+      "live_command": {
+        "path": "commands/00065-live-work-cancel-before.json",
+        "command_index": 65,
+        "metadata_sha256": "66e446cf57fd7a74c3a0d4bb8528cdacdcb259c08211e440575912e3298bf1ec",
+        "stdout_sha256": "d6fd65000af7317397f13fa92e7da0fbdb6b79ae29c6994048f5309dc6f901bc",
+        "stdout_bytes": 162045,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stop_command": {
+        "path": "commands/00069-ordinary-visible-hepta-stop-once.json",
+        "command_index": 69,
+        "metadata_sha256": "51fa655e7f8f883afd39790d1845f19cb13ec0e4a907b3fa6af8676e08dafb75",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "clock_commands": [
+        {
+          "path": "commands/00068-cancel-tap-before-clock.json",
+          "command_index": 68,
+          "metadata_sha256": "9d65f05e8a441c9877586fd3edd2442241bb54fd58624613bc42f672e21a8be9",
+          "stdout_sha256": "f701e5e079581bbaf2b0bb841121374d55a2237fde24433c98cad4786d329fb9",
+          "stdout_bytes": 58,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "commands/00070-cancel-tap-after-clock.json",
+          "command_index": 70,
+          "metadata_sha256": "476081633e91aa798f9a667aeacce73ba7163ced40ea5b412db9746056adcc03",
+          "stdout_sha256": "9da41eec67b215c053c70f77adfe3666f1352fc6a389e722fba010f9828ea216",
+          "stdout_bytes": 58,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "original_collection_sha256": "9f5faac0aba9fd919a885002e0dd9a4012ca22fa90e62aed1a0a5e2d2b2f7055"
+    }
+  },
+  "visuals": [
+    {
+      "role": "final_owned_display",
+      "relative_png": "evidence/task/a8a8711427584126bd208ba929504c28.png",
+      "sha256": "d5e42f94bae2c1912ffde897f6f87f1cddf59bcd5a67143baa4c9d57cde34215",
+      "bytes": 100384,
+      "binding": "original task final_observation_id and same-domain raw frame",
+      "frame_refs": [
+        {
+          "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-cancel-r1/evidence/task/step-01-before.json",
+          "bytes": 45849,
+          "sha256": "67e20bb0762f0b3e59d16cf2c4e6f9db1b912c1b87600069848a30cbc33f23ad",
+          "observation_id": "a8a8711427584126bd208ba929504c28",
+          "display_id": 26,
+          "generation": "71d60345-4458-4046-9cef-7054e9bf8d57",
+          "frame_selection": "source-defined observation filename and complete raw frame; completion metadata excluded"
+        }
+      ],
+      "original_png": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-cancel-r1/evidence/task/a8a8711427584126bd208ba929504c28.png",
+        "bytes": 100384,
+        "sha256": "d5e42f94bae2c1912ffde897f6f87f1cddf59bcd5a67143baa4c9d57cde34215",
+        "dimensions": [
+          720,
+          1280
+        ],
+        "rgba8_sha256": "b745437a1662ac6de14b217e60504c3e7f6c14adbea4ffe1b0f2d88576d3fed0"
+      },
+      "preview": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-cancel-r1-host-review-r1/final_owned_display-preview.webp",
+        "bytes": 14626,
+        "sha256": "09d4ded2f62d0a0a6cb8df898cc6bd7484ee443b3244830de7e0e4194fe6ee4f",
+        "dimensions": [
+          480,
+          853
+        ],
+        "quality": 60,
+        "encoding": "WebP",
+        "resample": "LANCZOS",
+        "attempts": [
+          {
+            "width": 480,
+            "height": 853,
+            "quality": 60,
+            "bytes": 14626
+          }
+        ],
+        "lossy": true,
+        "pixel_equality_claimed": false,
+        "base64_file": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-cancel-r1-host-review-r1/final_owned_display-PREVIEW-BASE64.json"
+      }
+    },
+    {
+      "role": "busy_stop_before_tap",
+      "relative_png": "cancel/before-stop.png",
+      "sha256": "d454db505725cfc1321b7b93df1694696f8964f77446c4576714d0ca314e5b31",
+      "bytes": 181838,
+      "binding": "original cancellation probe physical screenshot; enabled state and cancellation outcome require separate evidence",
+      "visible_stop_record": {
+        "main_focus": {
+          "display_id": 0,
+          "main_focus": "Window{fa1b72f u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+          "main_focused_app": "ActivityRecord{246305928 u0 org.trillionnium.hepta.local/.MainActivity t1028}",
+          "input_focused_display": 0,
+          "input_window_display0": "fa1b72f org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity",
+          "awake_and_fully_on": true,
+          "settings_splash_observed": false,
+          "source": "actual same system sample window-displays and input stdout; sequential not atomic"
+        },
+        "geometry": {
+          "display_id": 0,
+          "screen_size": [
+            1224,
+            2992
+          ],
+          "content_rect": [
+            0,
+            130,
+            1224,
+            2920
+          ],
+          "main_focus": "Window{fa1b72f u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+          "system_bars": [
+            {
+              "type": "statusBars",
+              "source_id": "73500000",
+              "frame": [
+                0,
+                0,
+                1224,
+                130
+              ],
+              "visible": true
+            },
+            {
+              "type": "navigationBars",
+              "source_id": "d17c0001",
+              "frame": [
+                0,
+                2920,
+                1224,
+                2992
+              ],
+              "visible": true
+            }
+          ],
+          "geometry_source": "display0.WindowInsetsStateController.InsetsState"
+        },
+        "neighbor_rgba_sha256": "db081d7e70ed4eb5cb524ce8df8d23f50212b8d691b6fcfd1697b523e7115680",
+        "stop_shape": {
+          "algorithm": "fixed_positions_contrast_masks_RGBA_v2",
+          "glyph_roi_in_button": [
+            33,
+            36,
+            231,
+            108
+          ],
+          "thresholds": [
+            0.1,
+            0.25,
+            0.5,
+            0.75
+          ],
+          "prepared": {
+            "background_rgba": [
+              240,
+              241,
+              241,
+              255
+            ],
+            "foreground_rgba": [
+              178,
+              179,
+              179,
+              255
+            ],
+            "contrast": 62.0,
+            "distinct_rgba": 57,
+            "glyph_bbox_in_button": [
+              91,
+              54,
+              172,
+              92
+            ],
+            "mask_counts": [
+              1261,
+              1073,
+              816,
+              742
+            ],
+            "mask_sha256": [
+              "d97b5532de948f178fa12d058a5906dadcee00c18bdd5221c46565168c236134",
+              "badd6d205c4a149805e07783d4c2b8dc5b96063306893b2a1c0ba671313d921a",
+              "ac168344eb36dca46ff9559a4472463eb9efed4382e4e936e74920f9f3b52173",
+              "bd6fca3cd4a9b09bd6d3251944ab401b327379f1c44d20909fcc66b2ee171ae1"
+            ]
+          },
+          "busy": {
+            "background_rgba": [
+              214,
+              215,
+              215,
+              255
+            ],
+            "foreground_rgba": [
+              28,
+              28,
+              28,
+              255
+            ],
+            "contrast": 186.66666666666666,
+            "distinct_rgba": 106,
+            "glyph_bbox_in_button": [
+              91,
+              54,
+              172,
+              92
+            ],
+            "mask_counts": [
+              1261,
+              1073,
+              816,
+              742
+            ],
+            "mask_sha256": [
+              "d97b5532de948f178fa12d058a5906dadcee00c18bdd5221c46565168c236134",
+              "badd6d205c4a149805e07783d4c2b8dc5b96063306893b2a1c0ba671313d921a",
+              "ac168344eb36dca46ff9559a4472463eb9efed4382e4e936e74920f9f3b52173",
+              "bd6fca3cd4a9b09bd6d3251944ab401b327379f1c44d20909fcc66b2ee171ae1"
+            ]
+          },
+          "normalized_coverage_tolerance": 0.021779439032286546,
+          "maximum_normalized_coverage_difference": 0.016532258064516123,
+          "recolouring_observed": true,
+          "spatial_search_or_coordinate_shift": false,
+          "android_enabled_attribute_proven": false,
+          "prepared_rgba_sha256": "89e47a0aa1d3dccc6bf6da852d6671b0c17fae4e49d33f0354936f9c716f1609",
+          "busy_rgba_sha256": "2f9cb03d34e7dfa31bebfdda0f1b7f452acbbe1888c8f113a4624ee8fa8f2a47"
+        },
+        "stop_point": [
+          444,
+          1114
+        ],
+        "source_png_sha256": "d454db505725cfc1321b7b93df1694696f8964f77446c4576714d0ca314e5b31",
+        "window_sha256": "46971f4fcdceb66f943e30473bd7fde51f1bfd2ce9193d4c87599b2bf8b99294",
+        "input_dump_sha256": "ca42bdd54e734f6d5f143d77150f59b10d0820704ff0867294364995139cf0f4",
+        "root_busy_image_review_pending": true
+      },
+      "original_png": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-cancel-r1/cancel/before-stop.png",
+        "bytes": 181838,
+        "sha256": "d454db505725cfc1321b7b93df1694696f8964f77446c4576714d0ca314e5b31",
+        "dimensions": [
+          1224,
+          2992
+        ],
+        "rgba8_sha256": "47bb6eab5d04a4c461dfbdd409e433888a4c928d31411513c48e047cb5f6f886"
+      },
+      "preview": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-cancel-r1-host-review-r1/busy_stop_before_tap-preview.webp",
+        "bytes": 15458,
+        "sha256": "cf162af40a81e473f2b763d4a898fb5e4ec984e7cc189b62a39c004f5acec948",
+        "dimensions": [
+          480,
+          1173
+        ],
+        "quality": 60,
+        "encoding": "WebP",
+        "resample": "LANCZOS",
+        "attempts": [
+          {
+            "width": 480,
+            "height": 1173,
+            "quality": 60,
+            "bytes": 15458
+          }
+        ],
+        "lossy": true,
+        "pixel_equality_claimed": false,
+        "base64_file": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-cancel-r1-host-review-r1/busy_stop_before_tap-PREVIEW-BASE64.json"
+      }
+    }
+  ],
+  "archive": {
+    "ok": true,
+    "archive": {
+      "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-cancel-r1-host-review-r1/original-records.tar.xz",
+      "bytes": 172924,
+      "sha256": "7dac13d100e3b34b9bcdf581e6fc53f11a225e6125da1b4b7a764f6f528d2433",
+      "internal_manifest_sha256": "976b357c71b3d4d2c29b6052fcb417478112ae2ce0cfeb98762d20a37f94bf13"
+    },
+    "manifest": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-cancel-r1-host-review-r1/ORIGINAL-MANIFEST.json",
+    "manifest_sha256": "db3a83ddd7694861d4abd85902b8a3228d9eb045a2f9429662a59752f694c476",
+    "included_files": 570,
+    "excluded_images": 7,
+    "source_unchanged": true
+  },
+  "export_errors": [],
+  "business_qualification_assigned": false,
+  "root_visual_review_pending": true,
+  "original_full_PNG_remains_runner_guard_input": true
+}

@@ -1,0 +1,114 @@
+{
+  "schema": "hepta.notes56-recovery-root-scoped-visual-review.v1",
+  "reviewer": "root",
+  "reviewed_on": "2026-11-12",
+  "scope": "Actual Main56 background-only Notes recovery after the bound cancelled task; this scoped judgment combines the independent nine-domain original replay and Root's full original final PNG inspection.",
+  "qualified_for_this_background_only_recovery_case": true,
+  "all_requested_business_tasks_completed": false,
+  "actual_release": {
+    "version_code": 56,
+    "version_name": "0.56.0-flight-stability",
+    "apk_sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62",
+    "uid": 10481,
+    "source_commit": "9f4168616546233033edd4b254b4236ae987ea7e"
+  },
+  "original_result": {
+    "git_blob_sha": "befef19c9139f4631ab614d1d9c556f1ed977ad7",
+    "bytes": 147387,
+    "sha256": "4f321b5d1ac7265cdff90e090d255076b7cfcd598ada5909eaf2c953619d3a38",
+    "qualified": false,
+    "machine_checks_passed": false,
+    "collector_exit_code": 2,
+    "original_unchanged": true
+  },
+  "independent_replay": {
+    "git_blob_sha": "c5daeaa16689d355d45387d69c1e6dfd45362214",
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-recovery-independent-replay-r1/RESULT.json",
+    "bytes": 41640,
+    "sha256": "58c4ca521d24efe72520c976fea35698b79b29123c4e75271967e14561a4d28e",
+    "exit_code": 0,
+    "all_scoped_checks_passed": true,
+    "check_count": 9,
+    "original_files_unchanged": 734,
+    "original_system_samples_recomputed": 19,
+    "qualified_field_still_false": true
+  },
+  "native_original_export": {
+    "git_blob_sha": "0dd3da09eb0fab62443d3c1dc8c07668df844bae",
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-recovery-independent-replay-r1/NATIVE-ORIGINAL-RECEIPTS.json",
+    "bytes": 26735,
+    "sha256": "711b426ba2232b33d45d547e1258605ac442146f61238c7976b98581b2cdbad7",
+    "records": 4
+  },
+  "task": {
+    "task_id": "bb16d934fabe4dc7818289d55be113ac",
+    "model_run_id": "2d30769b2d9249aea0629794e88aabb1",
+    "worker_generation": "1c4181b08b9048ce96e955e2310fa94f",
+    "display_id": 27,
+    "display_generation": "f97f9157-fc0e-4b98-baff-bcb9d082f7cd",
+    "status": "controller_verified_done",
+    "one_notes_create_parent": true,
+    "save_list_lookup_and_reopen_verified": true
+  },
+  "prior_cancellation": {
+    "task_id": "b415cf087c91485599352b39a78b6085",
+    "run_id": "ac4e1af0dab648f8b9d6f022410d63b0",
+    "worker_generation": "37d4fe0f2143418b826b2812f2fb3675",
+    "independent_22_review_git": "4aba0615272d8c3391530c19a2b29a0b93a20513",
+    "new_task_run_worker_generation_are_distinct": true
+  },
+  "final_original_png": {
+    "bytes": 29541,
+    "dimensions": [
+      720,
+      1280
+    ],
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-recovery-r1/evidence/task/647f7afe9196445d9f5f667a52d31c80.png",
+    "sha256": "ca0dcccfca0a3ef4b5194199caf579f8c13837dcfbfc6c10aa5a6a79d029ce7b",
+    "root_full_original_bytes_sha256_verified": true,
+    "root_whole_image_viewed": true,
+    "cropped_or_thumbnail_only": false,
+    "visible_body_exact": "Hepta-v56r1-3f5d947a84d8 明天下午3点看牙，带上检查资料。",
+    "body_sha256": "ee30c1684b76cd319e418f6c1c55fd624c3705b64274f45cdce89d102ceef8ca",
+    "instruction_prefix_not_written": true,
+    "title_field_empty": true,
+    "full_body_legible": true
+  },
+  "cleanup": {
+    "java_parent_exit_observed": true,
+    "java_parent_exit_code": 0,
+    "normal_close_requested": true,
+    "requests_completed": 1,
+    "sdk_destroy_rc": 0,
+    "sdk_deinit_rc": 0,
+    "force_destroy_attempts": 0,
+    "leases_released": true,
+    "broker_exit_code": 0,
+    "operation_lock_continuity_checks": 218,
+    "operation_lock_released": true,
+    "request_receipt_did_not_claim_process_exit": true,
+    "native_session_did_not_self_claim_process_exit": true
+  },
+  "main_user_scope": {
+    "mode": "background_only",
+    "settings_open_or_scroll_exercised": false,
+    "main_user_coexistence_qualified_here": false
+  },
+  "model_observation": {
+    "model": "LFM3-1.7B-QAD-Q4_0",
+    "device_resolved": "HTP0",
+    "context_tokens": 8192,
+    "prompt_tokens": 4327,
+    "generated_tokens": 140,
+    "ttft_us": 4462911,
+    "prefill_tokens_per_second": 969.6808344947318,
+    "decode_tokens_per_second": 30.270224455876498,
+    "app_request_elapsed_ms": 11528,
+    "hardware_execution_independently_verified": false
+  },
+  "boundaries": [
+    "Original false qualification fields and collector exit2 remain unchanged; this is a separate scoped judgment.",
+    "This records one successful recovery case, not continuous NPU profiling, prolonged stability, physical unplugging or reboot independence.",
+    "Flight results and shopping remain unverified; no purchase or payment was made."
+  ]
+}

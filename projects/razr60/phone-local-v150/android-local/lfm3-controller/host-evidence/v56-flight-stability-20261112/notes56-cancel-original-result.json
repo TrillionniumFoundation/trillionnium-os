@@ -1,0 +1,3581 @@
+{
+  "schema": "hepta.background-native-cancellation.v1",
+  "qualified": false,
+  "intentional_cancel_case": true,
+  "normal_native_completion_required": false,
+  "native_worker_zero_exit_required": false,
+  "cancel_machine_checks_passed": true,
+  "owned_native_sdk_cleanup_required": true,
+  "native_worker_expected_exit_code": 143,
+  "driver_revision": "v56-owned-first-native-visible-stop-r1",
+  "test_mode": "background_only",
+  "start_pixel_algorithm": "exact_decoded_RGBA_pixels_outside_system_bars_v1",
+  "instruction": "记一下，Hepta-v56r1-c022ac662c8d 明天下午3点看牙，带上检查资料。",
+  "instruction_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+  "plan": {
+    "schema": "hepta.moto-note-plan.v56-comma-prefix-r1",
+    "target_package": "com.motorola.stylus",
+    "marker": "Hepta-v56r1-c022ac662c8d",
+    "body": "Hepta-v56r1-c022ac662c8d 明天下午3点看牙，带上检查资料。",
+    "instruction": "记一下，Hepta-v56r1-c022ac662c8d 明天下午3点看牙，带上检查资料。",
+    "instruction_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+    "phone_tested": false,
+    "body_span_utf16": [
+      4,
+      45
+    ],
+    "body_sha256": "828ffbafd25d19999a78ff2066780c9414c56aefe565a7cc70a19b643e7e6eb4"
+  },
+  "plan_sha256": "ff3888e69651a7fc0f10740e10b49766c2234cf3cfd6056a617af838745ac292",
+  "actual_build_binding": {
+    "build_receipt_sha256": "e27e74e94b0668c1c07b04863c9aaabf1b3235f9ff2d0d0d8bd9a346e46b2c6b",
+    "source_commit": "9f4168616546233033edd4b254b4236ae987ea7e",
+    "source_inventory_sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+    "version_code": 56,
+    "apk_sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62",
+    "same_signer_verified_by_actual_receipt": true
+  },
+  "preparation_sha256": "74034c14f0986273e187179aed78a600f760932e388f7dd0e411c2db3e4cc283",
+  "business_verdict_assigned_by_collector": false,
+  "expected_apk_sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62",
+  "expected_app_uid": 10481,
+  "expected_main_physical_display_id": "4630947043778501779",
+  "target_package": "com.motorola.stylus",
+  "existing_su_authorization_operator_attested": true,
+  "magisk_policy_modified": false,
+  "qualification_scope_modified": false,
+  "external_model_invoked_by_driver": false,
+  "direct_broker_client_used": false,
+  "shell_notes_actions": false,
+  "private_nonce_trigger_used": false,
+  "host_main_user_settings_actions_planned": false,
+  "main_scroll_visual_review_required": false,
+  "uiautomator_or_UiAutomation_used": false,
+  "started_wall_s": 1794523194.025678,
+  "preparation_original": {
+    "file": "PREPARATION-ORIGINAL.json",
+    "bytes": 49729,
+    "sha256": "74034c14f0986273e187179aed78a600f760932e388f7dd0e411c2db3e4cc283"
+  },
+  "evidence_extension": {
+    "schema": "hepta.v56-owner-bound-mode-evidence.r1",
+    "file": "fixed_intent_v6_acceptance.py",
+    "sha256": "f090a85780318ffefbad82a51d740a0965acb7369a12390698f8300031271652"
+  },
+  "runtime_config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+  "model_profile": "lfm3-1.7b-qad-q4_0",
+  "expected_model_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452",
+  "compute": "npu",
+  "helper_pins": {
+    "v35_identity": "a4a751cf03956783e551f54b16dd37769f00d5b7cd2a0225b667becbc6e6d003",
+    "warm_receipts": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5",
+    "model_profiles": "ee26ed1f2f2b2ffd5f14fbd526c6d3cbf05d7ed8d65c422df5e60a72fa0cfa3a",
+    "phone_acceptance": "411da90ca9ef83441fa0a199a25d71361ab582db5b54ac08bd39e5e8597e6302",
+    "phone_suite": "2681e21ae0ead263b9313a6e49b4faf8951f3e87ab6b5c669c41fe34dbe5267a",
+    "fixed_intent_v6_acceptance": "f090a85780318ffefbad82a51d740a0965acb7369a12390698f8300031271652",
+    "background_notes_plan": "4bf77a52d012b4d5fe2fcfdcfea59649058c74d94202afcaacf0cb92e81c7bad",
+    "prepare_background_notes_v56_r1": "e841c36ed2e4489b82cb3a0f5e08e484e00ac018c7575bd7e892cfc1f1aeb6ee",
+    "live_inflight_window": "3f3faa3b692257710f48651d48f1a39405f0fb511fd94658af2617ded9443671",
+    "main_user_inflight": "cb2aa959ec91e5aa7b680526d8add656f5a91e085321ce833701368beba367a0",
+    "visible_stop_cancel": "dd347e652bb2cd0e4eaa9f398c933f4b31e5c2b38c72e51095d42d51628fc817",
+    "owned_cancellation_receipts": "f3b4fc04c4834712ba5722e8f31dc396311d2a334cd0f21e0980f57f26011a61",
+    "controller_workflow_evidence": "419ae165511e42a017bf079ebd0b984e5b0b9ddfe04b4731cfd692e072dd8795"
+  },
+  "ui_preferences_original_sha256": "c9364dde8c0b52e7890835d720967987f708e972b397fcc3f76d9d76a667137f",
+  "ui_preferences_unchanged": true,
+  "operation_lock": {
+    "schema": "hepta.cooperative-operation-lock.v1",
+    "path": "/home/alex/.local/state/hepta/razr-operation.lock",
+    "cooperative_advisory_only": true,
+    "nonblocking": true,
+    "created": false,
+    "truncated": false,
+    "reacquisition_attempted": false,
+    "acquired": true,
+    "released": true,
+    "continuity_verified": true,
+    "continuity_checks": 159,
+    "boundary": "participating host processes only; already submitted commands cannot be revoked",
+    "held_device": 66306,
+    "held_inode": 58890228,
+    "owner_uid": 1000,
+    "last_check": "execute_exit"
+  },
+  "installed_identity_before": {
+    "hepta": {
+      "package": "org.trillionnium.hepta.local",
+      "uid": 10481,
+      "apks": [
+        {
+          "path": "/data/app/~~kjtm2QzruYL9-aUBXFIlQw==/org.trillionnium.hepta.local-UnoGsU3bLEhG5iG5r16jHA==/base.apk",
+          "sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62"
+        }
+      ]
+    },
+    "notes": {
+      "package": "com.motorola.stylus",
+      "uid": 10382,
+      "apks": [
+        {
+          "path": "/product/preinstall/MotoStylus/MotoStylus.apk",
+          "sha256": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+        }
+      ]
+    }
+  },
+  "qualification_scope_present": false,
+  "formal_hepta_accessibility_enabled": true,
+  "formal_service_binding": {
+    "verified": true,
+    "component": "org.trillionnium.hepta.local/org.trillionnium.hepta.local.HeptaAccessibilityService",
+    "app_pid": 25673,
+    "app_uid": 10481,
+    "client_pid": 3622,
+    "client_uid": 1000,
+    "binder_received": true,
+    "has_bound": true,
+    "connection_ids": [
+      "ce72db8"
+    ],
+    "service_dump_sha256": "ca6176a99d06b0f05a9e32f687f18c34b774e9df6b6211da9616b8c32ddbf737",
+    "identity_scope": "exact active AMS ServiceRecord and live system-client binding; label-only AccessibilityManager rows are not component attestation"
+  },
+  "component_named_in_accessibility_bound_table": false,
+  "formal_hepta_accessibility_bound": true,
+  "baseline_session": {
+    "schema": "hepta.local-session.v1",
+    "status": "controller_verified_done",
+    "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+    "origin": "user_button",
+    "instruction_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+    "task_authorization_sha256": "571278aecfaa1eef87bb55244b56989d602781f48e47ab7084a64495d913dcbe",
+    "task_authorization": {
+      "schema": "hepta.owner-task-authorization.v1",
+      "parser": "hepta.owner-tool-clauses.zh.v4-fixed-intents",
+      "instruction_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+      "authorization_sha256": "571278aecfaa1eef87bb55244b56989d602781f48e47ab7084a64495d913dcbe",
+      "allowed_tools": [
+        "back",
+        "click",
+        "done",
+        "find_app",
+        "home",
+        "notes.create",
+        "open",
+        "scroll",
+        "submit",
+        "type",
+        "wait",
+        "web.search"
+      ],
+      "require_find_app_before_open": false,
+      "find_query": null,
+      "recognized_rules": [],
+      "arbitrary_semantic_constraints_verified": false
+    },
+    "background_request": {
+      "mode": "background",
+      "allowed_packages": [
+        "com.motorola.stylus"
+      ],
+      "bootstrap_package": "com.motorola.stylus",
+      "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false,
+      "owner_task_selection": {
+        "schema": "hepta.owner-task-app-selection.v1",
+        "owner_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+        "recognition": "natural_note_comma_prefix.v1",
+        "original_ui_initial_package": "com.motorola.stylus",
+        "original_ui_allowed_packages": [
+          "com.motorola.stylus",
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_initial_package": "com.motorola.stylus",
+        "effective_allowed_packages": [
+          "com.motorola.stylus"
+        ],
+        "effective_scope_within_selected_apps": true,
+        "effective_scope_strictly_smaller": true,
+        "initial_app_changed": false,
+        "package_from_model_or_screen": false,
+        "grants_tool_authority": false,
+        "changes_saved_preferences": false
+      }
+    },
+    "background_lease_unreleased": false,
+    "web_helper_lease_unreleased": false,
+    "debug_nonce_sha256": null,
+    "expected_scope_sha256": null,
+    "actual_scope_sha256": null,
+    "state": "已保存并重新打开这条笔记，正文核对一致。",
+    "pending": false,
+    "running": false,
+    "blocked": false,
+    "cleanup_known": true,
+    "app_uid": 10481,
+    "updated_wall_ms": 1794520754331,
+    "external_model": false,
+    "automatic_resume": false,
+    "goal_independently_verified": true,
+    "evidence_directory": "/data/data/org.trillionnium.hepta.local/files/control-tasks/b5b05eb09df64032ab4aeb1d5707b85b",
+    "model_reported_success": false,
+    "steps": 1,
+    "completion_verified": true,
+    "completion_evidence": {
+      "schema": "hepta.task-completion.v1",
+      "kind": "notes_save_list_reopen",
+      "owner_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+      "contract_sha256": "da41d09cb55601029deebca298133083ad5cc68cda3a9b25c60b9df8faf7d58a",
+      "source": "controller_observation_checks_not_model_claims",
+      "completion_verified": true,
+      "missing": [],
+      "rejected_success_claims": 0,
+      "max_rejected_success_claims": 2,
+      "notes_launch_observed": true,
+      "editor_body_observed": true,
+      "list_observed": true,
+      "prior_visible_body_collision": false,
+      "unobserved_prior_notes_known": false,
+      "same_list_item_reopened": true,
+      "reopen_actor_kind": "tool_child",
+      "notes_create_workflow_verified": true,
+      "notes_create_workflow_stop_reason": null,
+      "progress_scope": "cumulative_task_evidence_not_current_screen",
+      "current_surface": "verified_note_editor",
+      "current_list_item_node_id": null,
+      "current_editor_body_matched": true,
+      "writes_required_for_unknown_or_read_only_goal": false,
+      "grants_tool_authority": false,
+      "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+      "contract": {
+        "schema": "hepta.task-completion.v1",
+        "kind": "notes_save_list_reopen",
+        "owner_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+        "contract_sha256": "da41d09cb55601029deebca298133083ad5cc68cda3a9b25c60b9df8faf7d58a",
+        "recognition": "hepta.notes-owner-intent.v1/natural_note_comma_prefix.v1",
+        "expected_body_sha256": "d7922a7d4d40341fd0d8350d926803a7b556c5c652fabbda85cb8e37663aedab",
+        "source": "immutable_owner_contract",
+        "body_source_start_utf16": 4,
+        "body_source_end_utf16": 45,
+        "note_persistence_verification_policy": "save_list_reopen",
+        "body_rewritten": false,
+        "model_may_change_goal": false,
+        "grants_tool_authority": false
+      },
+      "proofs": [
+        {
+          "kind": "model_bound_notes_launch",
+          "step": 1,
+          "model_run_id": "e393bd2e3b7641e7a15a9d458b78823d",
+          "before_observation_id": "32a4c5368e4041af9ecd192d815a4805",
+          "after_observation_id": "0d438ec49de74042bce4e1f58f39828b",
+          "attempt_id": "1ef57c1084e701477139f8db0a8f2affb65dda07b0e27130d9b0287e89016878",
+          "payload_sha256": "d7922a7d4d40341fd0d8350d926803a7b556c5c652fabbda85cb8e37663aedab"
+        },
+        {
+          "kind": "editor_body_observed",
+          "step": 0,
+          "model_run_id": null,
+          "before_observation_id": "0d438ec49de74042bce4e1f58f39828b",
+          "after_observation_id": "0d438ec49de74042bce4e1f58f39828b"
+        },
+        {
+          "kind": "post_create_observed_list",
+          "step": 0,
+          "model_run_id": null,
+          "before_observation_id": null,
+          "after_observation_id": "c30c5913fb444eeabdb4a2ab3f7ba0f3",
+          "editor_observation_id": "0d438ec49de74042bce4e1f58f39828b",
+          "list_body_evidence": {
+            "matched": true,
+            "missing": null,
+            "match_rule": "bound_note_summary_accessibility_text",
+            "node_id": "n12",
+            "source_path": "2",
+            "source_view_id": "com.motorola.stylus:id/note_summary",
+            "source_text_sha256": "d7922a7d4d40341fd0d8350d926803a7b556c5c652fabbda85cb8e37663aedab",
+            "node_app_tree_sha256": "3b59eec32af1b99da15328cf55a4a6969fc85b245dbd78d6b69e1e34ae2361f0",
+            "text_scope": "Complete accessibility text source; visual clipping and persistent storage bytes are unverified.",
+            "persistent_bytes_verified": false
+          }
+        },
+        {
+          "kind": "tool_child_same_observed_list_item_reopened",
+          "step": 1,
+          "model_run_id": "e393bd2e3b7641e7a15a9d458b78823d",
+          "before_observation_id": "0d438ec49de74042bce4e1f58f39828b",
+          "after_observation_id": "39df2e75af7343c3b7eecd3a4ee5817a",
+          "actor_kind": "tool_child",
+          "model_issued": false,
+          "workflow_id": "978567f8b2524e9b3eb3a2555c75ba1fc31119a1fd2edf0c97110b5179c39ac0",
+          "parent_fixed_intent_attempt_id": "1ef57c1084e701477139f8db0a8f2affb65dda07b0e27130d9b0287e89016878",
+          "workflow_evidence": {
+            "schema": "hepta.notes-create-workflow.v1",
+            "workflow_id": "978567f8b2524e9b3eb3a2555c75ba1fc31119a1fd2edf0c97110b5179c39ac0",
+            "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+            "parent_step": 1,
+            "parent_model_run_id": "e393bd2e3b7641e7a15a9d458b78823d",
+            "parent_observation_id": "32a4c5368e4041af9ecd192d815a4805",
+            "created_observation_id": "0d438ec49de74042bce4e1f58f39828b",
+            "parent_fixed_intent_attempt_id": "1ef57c1084e701477139f8db0a8f2affb65dda07b0e27130d9b0287e89016878",
+            "owner_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+            "contract_sha256": "da41d09cb55601029deebca298133083ad5cc68cda3a9b25c60b9df8faf7d58a",
+            "task_authorization_sha256": "571278aecfaa1eef87bb55244b56989d602781f48e47ab7084a64495d913dcbe",
+            "body_sha256": "d7922a7d4d40341fd0d8350d926803a7b556c5c652fabbda85cb8e37663aedab",
+            "target_package": "com.motorola.stylus",
+            "target_uid": 10382,
+            "target_apk_sha256": {
+              "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+            },
+            "display_id": 25,
+            "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+            "grant_consumed": true,
+            "grant_retired": true,
+            "grants_tool_authority": false,
+            "actor_kind": "tool_workflow",
+            "model_issued": false,
+            "fixed_intent_outcome_unchanged": "draft_opened",
+            "workflow_verified": true,
+            "stop_reason": null,
+            "initial": {
+              "observation_id": "0d438ec49de74042bce4e1f58f39828b",
+              "package": "com.motorola.stylus",
+              "window_id": 3604,
+              "display_id": 25,
+              "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+              "tree_sha256": "2c4ab2423d191874ed04c70b94325176dc225cd6ed638f83aeb8b94ac793289e",
+              "rotation": 0
+            },
+            "current": {
+              "observation_id": "f9df90c106604410b4bd5ec2ba7fe9a6",
+              "package": "com.motorola.stylus",
+              "window_id": 3605,
+              "display_id": 25,
+              "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+              "tree_sha256": "ebe57eca12e550e2bcb004cc77d8fa6b0f259e7aaaef57bc8d40044606e55f5f",
+              "rotation": 0
+            },
+            "stable_readback": {
+              "observation_id": "39df2e75af7343c3b7eecd3a4ee5817a",
+              "package": "com.motorola.stylus",
+              "window_id": 3605,
+              "display_id": 25,
+              "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+              "tree_sha256": "ebe57eca12e550e2bcb004cc77d8fa6b0f259e7aaaef57bc8d40044606e55f5f",
+              "rotation": 0
+            },
+            "children": [
+              {
+                "child": {
+                  "schema": "hepta.tool-child.v1",
+                  "workflow_id": "978567f8b2524e9b3eb3a2555c75ba1fc31119a1fd2edf0c97110b5179c39ac0",
+                  "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+                  "parent_step": 1,
+                  "parent_model_run_id": "e393bd2e3b7641e7a15a9d458b78823d",
+                  "parent_observation_id": "32a4c5368e4041af9ecd192d815a4805",
+                  "created_observation_id": "0d438ec49de74042bce4e1f58f39828b",
+                  "parent_fixed_intent_attempt_id": "1ef57c1084e701477139f8db0a8f2affb65dda07b0e27130d9b0287e89016878",
+                  "owner_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+                  "contract_sha256": "da41d09cb55601029deebca298133083ad5cc68cda3a9b25c60b9df8faf7d58a",
+                  "task_authorization_sha256": "571278aecfaa1eef87bb55244b56989d602781f48e47ab7084a64495d913dcbe",
+                  "body_sha256": "d7922a7d4d40341fd0d8350d926803a7b556c5c652fabbda85cb8e37663aedab",
+                  "target_package": "com.motorola.stylus",
+                  "target_uid": 10382,
+                  "target_apk_sha256": {
+                    "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+                  },
+                  "display_id": 25,
+                  "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+                  "grant_consumed": true,
+                  "grant_retired": true,
+                  "grants_tool_authority": false,
+                  "child_id": "4dd1f13d9b5cca947efe60461c48ffcb542489a842c92db783eafd646a6e58ae",
+                  "child_ordinal": 1,
+                  "actor_kind": "tool_child",
+                  "model_issued": false,
+                  "action": "back",
+                  "observation_id": "64461b7c2c2e422986bba0b7bb98f95c",
+                  "node_id": null,
+                  "node_label": null,
+                  "service_entered": true,
+                  "automatic_retry_allowed": false
+                },
+                "before": {
+                  "observation_id": "64461b7c2c2e422986bba0b7bb98f95c",
+                  "package": "com.motorola.stylus",
+                  "window_id": 3604,
+                  "display_id": 25,
+                  "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+                  "tree_sha256": "2c4ab2423d191874ed04c70b94325176dc225cd6ed638f83aeb8b94ac793289e",
+                  "rotation": 0
+                },
+                "after": {
+                  "observation_id": "c30c5913fb444eeabdb4a2ab3f7ba0f3",
+                  "package": "com.motorola.stylus",
+                  "window_id": 3601,
+                  "display_id": 25,
+                  "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+                  "tree_sha256": "e6942944444cd03e7fcff7429dae37f743f1c64a3faeebee12ef8046584b8efc",
+                  "rotation": 0
+                },
+                "accepted": true,
+                "dispatched": true,
+                "stale": false,
+                "detail": "后台工具已定向派发；下一步重新观察",
+                "live_lease_verified": true,
+                "service_child_receipt": {
+                  "schema": "hepta.tool-child.v1",
+                  "workflow_id": "978567f8b2524e9b3eb3a2555c75ba1fc31119a1fd2edf0c97110b5179c39ac0",
+                  "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+                  "parent_step": 1,
+                  "parent_model_run_id": "e393bd2e3b7641e7a15a9d458b78823d",
+                  "parent_observation_id": "32a4c5368e4041af9ecd192d815a4805",
+                  "created_observation_id": "0d438ec49de74042bce4e1f58f39828b",
+                  "parent_fixed_intent_attempt_id": "1ef57c1084e701477139f8db0a8f2affb65dda07b0e27130d9b0287e89016878",
+                  "owner_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+                  "contract_sha256": "da41d09cb55601029deebca298133083ad5cc68cda3a9b25c60b9df8faf7d58a",
+                  "task_authorization_sha256": "571278aecfaa1eef87bb55244b56989d602781f48e47ab7084a64495d913dcbe",
+                  "body_sha256": "d7922a7d4d40341fd0d8350d926803a7b556c5c652fabbda85cb8e37663aedab",
+                  "target_package": "com.motorola.stylus",
+                  "target_uid": 10382,
+                  "target_apk_sha256": {
+                    "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+                  },
+                  "display_id": 25,
+                  "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+                  "grant_consumed": true,
+                  "grant_retired": false,
+                  "grants_tool_authority": false,
+                  "child_id": "4dd1f13d9b5cca947efe60461c48ffcb542489a842c92db783eafd646a6e58ae",
+                  "child_ordinal": 1,
+                  "actor_kind": "tool_child",
+                  "model_issued": false,
+                  "action": "back",
+                  "observation_id": "64461b7c2c2e422986bba0b7bb98f95c",
+                  "node_id": null,
+                  "node_label": null,
+                  "service_entered": true,
+                  "automatic_retry_allowed": false
+                }
+              },
+              {
+                "child": {
+                  "schema": "hepta.tool-child.v1",
+                  "workflow_id": "978567f8b2524e9b3eb3a2555c75ba1fc31119a1fd2edf0c97110b5179c39ac0",
+                  "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+                  "parent_step": 1,
+                  "parent_model_run_id": "e393bd2e3b7641e7a15a9d458b78823d",
+                  "parent_observation_id": "32a4c5368e4041af9ecd192d815a4805",
+                  "created_observation_id": "0d438ec49de74042bce4e1f58f39828b",
+                  "parent_fixed_intent_attempt_id": "1ef57c1084e701477139f8db0a8f2affb65dda07b0e27130d9b0287e89016878",
+                  "owner_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+                  "contract_sha256": "da41d09cb55601029deebca298133083ad5cc68cda3a9b25c60b9df8faf7d58a",
+                  "task_authorization_sha256": "571278aecfaa1eef87bb55244b56989d602781f48e47ab7084a64495d913dcbe",
+                  "body_sha256": "d7922a7d4d40341fd0d8350d926803a7b556c5c652fabbda85cb8e37663aedab",
+                  "target_package": "com.motorola.stylus",
+                  "target_uid": 10382,
+                  "target_apk_sha256": {
+                    "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+                  },
+                  "display_id": 25,
+                  "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+                  "grant_consumed": true,
+                  "grant_retired": true,
+                  "grants_tool_authority": false,
+                  "child_id": "1119abb09f2d7b164fb301d87e69211bb8be8ea9a8475cdb0ceb1265e872aa55",
+                  "child_ordinal": 2,
+                  "actor_kind": "tool_child",
+                  "model_issued": false,
+                  "action": "click",
+                  "observation_id": "c30c5913fb444eeabdb4a2ab3f7ba0f3",
+                  "node_id": "n12",
+                  "node_label": "文字笔记 · 今天 · Hepta-v56r1-fa843f7020b3…",
+                  "service_entered": true,
+                  "automatic_retry_allowed": false
+                },
+                "before": {
+                  "observation_id": "c30c5913fb444eeabdb4a2ab3f7ba0f3",
+                  "package": "com.motorola.stylus",
+                  "window_id": 3601,
+                  "display_id": 25,
+                  "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+                  "tree_sha256": "e6942944444cd03e7fcff7429dae37f743f1c64a3faeebee12ef8046584b8efc",
+                  "rotation": 0
+                },
+                "after": {
+                  "observation_id": "f9df90c106604410b4bd5ec2ba7fe9a6",
+                  "package": "com.motorola.stylus",
+                  "window_id": 3605,
+                  "display_id": 25,
+                  "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+                  "tree_sha256": "ebe57eca12e550e2bcb004cc77d8fa6b0f259e7aaaef57bc8d40044606e55f5f",
+                  "rotation": 0
+                },
+                "accepted": true,
+                "dispatched": true,
+                "stale": false,
+                "detail": "节点点击已接受",
+                "live_lease_verified": true,
+                "service_child_receipt": {
+                  "schema": "hepta.tool-child.v1",
+                  "workflow_id": "978567f8b2524e9b3eb3a2555c75ba1fc31119a1fd2edf0c97110b5179c39ac0",
+                  "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+                  "parent_step": 1,
+                  "parent_model_run_id": "e393bd2e3b7641e7a15a9d458b78823d",
+                  "parent_observation_id": "32a4c5368e4041af9ecd192d815a4805",
+                  "created_observation_id": "0d438ec49de74042bce4e1f58f39828b",
+                  "parent_fixed_intent_attempt_id": "1ef57c1084e701477139f8db0a8f2affb65dda07b0e27130d9b0287e89016878",
+                  "owner_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+                  "contract_sha256": "da41d09cb55601029deebca298133083ad5cc68cda3a9b25c60b9df8faf7d58a",
+                  "task_authorization_sha256": "571278aecfaa1eef87bb55244b56989d602781f48e47ab7084a64495d913dcbe",
+                  "body_sha256": "d7922a7d4d40341fd0d8350d926803a7b556c5c652fabbda85cb8e37663aedab",
+                  "target_package": "com.motorola.stylus",
+                  "target_uid": 10382,
+                  "target_apk_sha256": {
+                    "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+                  },
+                  "display_id": 25,
+                  "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+                  "grant_consumed": true,
+                  "grant_retired": false,
+                  "grants_tool_authority": false,
+                  "child_id": "1119abb09f2d7b164fb301d87e69211bb8be8ea9a8475cdb0ceb1265e872aa55",
+                  "child_ordinal": 2,
+                  "actor_kind": "tool_child",
+                  "model_issued": false,
+                  "action": "click",
+                  "observation_id": "c30c5913fb444eeabdb4a2ab3f7ba0f3",
+                  "node_id": "n12",
+                  "node_label": "文字笔记 · 今天 · Hepta-v56r1-fa843f7020b3…",
+                  "service_entered": true,
+                  "automatic_retry_allowed": false
+                }
+              }
+            ],
+            "model_done_synthesized": false,
+            "persistent_storage_bytes_verified": false
+          }
+        }
+      ],
+      "model_success_claims": [],
+      "identity_failure": null,
+      "display_id": 25,
+      "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+      "notes_create_workflow": {
+        "schema": "hepta.notes-create-workflow.v1",
+        "workflow_id": "978567f8b2524e9b3eb3a2555c75ba1fc31119a1fd2edf0c97110b5179c39ac0",
+        "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+        "parent_step": 1,
+        "parent_model_run_id": "e393bd2e3b7641e7a15a9d458b78823d",
+        "parent_observation_id": "32a4c5368e4041af9ecd192d815a4805",
+        "created_observation_id": "0d438ec49de74042bce4e1f58f39828b",
+        "parent_fixed_intent_attempt_id": "1ef57c1084e701477139f8db0a8f2affb65dda07b0e27130d9b0287e89016878",
+        "owner_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+        "contract_sha256": "da41d09cb55601029deebca298133083ad5cc68cda3a9b25c60b9df8faf7d58a",
+        "task_authorization_sha256": "571278aecfaa1eef87bb55244b56989d602781f48e47ab7084a64495d913dcbe",
+        "body_sha256": "d7922a7d4d40341fd0d8350d926803a7b556c5c652fabbda85cb8e37663aedab",
+        "target_package": "com.motorola.stylus",
+        "target_uid": 10382,
+        "target_apk_sha256": {
+          "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+        },
+        "display_id": 25,
+        "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+        "grant_consumed": true,
+        "grant_retired": true,
+        "grants_tool_authority": false,
+        "actor_kind": "tool_workflow",
+        "model_issued": false,
+        "fixed_intent_outcome_unchanged": "draft_opened",
+        "workflow_verified": true,
+        "stop_reason": null,
+        "initial": {
+          "observation_id": "0d438ec49de74042bce4e1f58f39828b",
+          "package": "com.motorola.stylus",
+          "window_id": 3604,
+          "display_id": 25,
+          "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+          "tree_sha256": "2c4ab2423d191874ed04c70b94325176dc225cd6ed638f83aeb8b94ac793289e",
+          "rotation": 0
+        },
+        "current": {
+          "observation_id": "f9df90c106604410b4bd5ec2ba7fe9a6",
+          "package": "com.motorola.stylus",
+          "window_id": 3605,
+          "display_id": 25,
+          "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+          "tree_sha256": "ebe57eca12e550e2bcb004cc77d8fa6b0f259e7aaaef57bc8d40044606e55f5f",
+          "rotation": 0
+        },
+        "stable_readback": {
+          "observation_id": "39df2e75af7343c3b7eecd3a4ee5817a",
+          "package": "com.motorola.stylus",
+          "window_id": 3605,
+          "display_id": 25,
+          "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+          "tree_sha256": "ebe57eca12e550e2bcb004cc77d8fa6b0f259e7aaaef57bc8d40044606e55f5f",
+          "rotation": 0
+        },
+        "children": [
+          {
+            "child": {
+              "schema": "hepta.tool-child.v1",
+              "workflow_id": "978567f8b2524e9b3eb3a2555c75ba1fc31119a1fd2edf0c97110b5179c39ac0",
+              "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+              "parent_step": 1,
+              "parent_model_run_id": "e393bd2e3b7641e7a15a9d458b78823d",
+              "parent_observation_id": "32a4c5368e4041af9ecd192d815a4805",
+              "created_observation_id": "0d438ec49de74042bce4e1f58f39828b",
+              "parent_fixed_intent_attempt_id": "1ef57c1084e701477139f8db0a8f2affb65dda07b0e27130d9b0287e89016878",
+              "owner_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+              "contract_sha256": "da41d09cb55601029deebca298133083ad5cc68cda3a9b25c60b9df8faf7d58a",
+              "task_authorization_sha256": "571278aecfaa1eef87bb55244b56989d602781f48e47ab7084a64495d913dcbe",
+              "body_sha256": "d7922a7d4d40341fd0d8350d926803a7b556c5c652fabbda85cb8e37663aedab",
+              "target_package": "com.motorola.stylus",
+              "target_uid": 10382,
+              "target_apk_sha256": {
+                "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+              },
+              "display_id": 25,
+              "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+              "grant_consumed": true,
+              "grant_retired": true,
+              "grants_tool_authority": false,
+              "child_id": "4dd1f13d9b5cca947efe60461c48ffcb542489a842c92db783eafd646a6e58ae",
+              "child_ordinal": 1,
+              "actor_kind": "tool_child",
+              "model_issued": false,
+              "action": "back",
+              "observation_id": "64461b7c2c2e422986bba0b7bb98f95c",
+              "node_id": null,
+              "node_label": null,
+              "service_entered": true,
+              "automatic_retry_allowed": false
+            },
+            "before": {
+              "observation_id": "64461b7c2c2e422986bba0b7bb98f95c",
+              "package": "com.motorola.stylus",
+              "window_id": 3604,
+              "display_id": 25,
+              "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+              "tree_sha256": "2c4ab2423d191874ed04c70b94325176dc225cd6ed638f83aeb8b94ac793289e",
+              "rotation": 0
+            },
+            "after": {
+              "observation_id": "c30c5913fb444eeabdb4a2ab3f7ba0f3",
+              "package": "com.motorola.stylus",
+              "window_id": 3601,
+              "display_id": 25,
+              "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+              "tree_sha256": "e6942944444cd03e7fcff7429dae37f743f1c64a3faeebee12ef8046584b8efc",
+              "rotation": 0
+            },
+            "accepted": true,
+            "dispatched": true,
+            "stale": false,
+            "detail": "后台工具已定向派发；下一步重新观察",
+            "live_lease_verified": true,
+            "service_child_receipt": {
+              "schema": "hepta.tool-child.v1",
+              "workflow_id": "978567f8b2524e9b3eb3a2555c75ba1fc31119a1fd2edf0c97110b5179c39ac0",
+              "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+              "parent_step": 1,
+              "parent_model_run_id": "e393bd2e3b7641e7a15a9d458b78823d",
+              "parent_observation_id": "32a4c5368e4041af9ecd192d815a4805",
+              "created_observation_id": "0d438ec49de74042bce4e1f58f39828b",
+              "parent_fixed_intent_attempt_id": "1ef57c1084e701477139f8db0a8f2affb65dda07b0e27130d9b0287e89016878",
+              "owner_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+              "contract_sha256": "da41d09cb55601029deebca298133083ad5cc68cda3a9b25c60b9df8faf7d58a",
+              "task_authorization_sha256": "571278aecfaa1eef87bb55244b56989d602781f48e47ab7084a64495d913dcbe",
+              "body_sha256": "d7922a7d4d40341fd0d8350d926803a7b556c5c652fabbda85cb8e37663aedab",
+              "target_package": "com.motorola.stylus",
+              "target_uid": 10382,
+              "target_apk_sha256": {
+                "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+              },
+              "display_id": 25,
+              "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+              "grant_consumed": true,
+              "grant_retired": false,
+              "grants_tool_authority": false,
+              "child_id": "4dd1f13d9b5cca947efe60461c48ffcb542489a842c92db783eafd646a6e58ae",
+              "child_ordinal": 1,
+              "actor_kind": "tool_child",
+              "model_issued": false,
+              "action": "back",
+              "observation_id": "64461b7c2c2e422986bba0b7bb98f95c",
+              "node_id": null,
+              "node_label": null,
+              "service_entered": true,
+              "automatic_retry_allowed": false
+            }
+          },
+          {
+            "child": {
+              "schema": "hepta.tool-child.v1",
+              "workflow_id": "978567f8b2524e9b3eb3a2555c75ba1fc31119a1fd2edf0c97110b5179c39ac0",
+              "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+              "parent_step": 1,
+              "parent_model_run_id": "e393bd2e3b7641e7a15a9d458b78823d",
+              "parent_observation_id": "32a4c5368e4041af9ecd192d815a4805",
+              "created_observation_id": "0d438ec49de74042bce4e1f58f39828b",
+              "parent_fixed_intent_attempt_id": "1ef57c1084e701477139f8db0a8f2affb65dda07b0e27130d9b0287e89016878",
+              "owner_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+              "contract_sha256": "da41d09cb55601029deebca298133083ad5cc68cda3a9b25c60b9df8faf7d58a",
+              "task_authorization_sha256": "571278aecfaa1eef87bb55244b56989d602781f48e47ab7084a64495d913dcbe",
+              "body_sha256": "d7922a7d4d40341fd0d8350d926803a7b556c5c652fabbda85cb8e37663aedab",
+              "target_package": "com.motorola.stylus",
+              "target_uid": 10382,
+              "target_apk_sha256": {
+                "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+              },
+              "display_id": 25,
+              "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+              "grant_consumed": true,
+              "grant_retired": true,
+              "grants_tool_authority": false,
+              "child_id": "1119abb09f2d7b164fb301d87e69211bb8be8ea9a8475cdb0ceb1265e872aa55",
+              "child_ordinal": 2,
+              "actor_kind": "tool_child",
+              "model_issued": false,
+              "action": "click",
+              "observation_id": "c30c5913fb444eeabdb4a2ab3f7ba0f3",
+              "node_id": "n12",
+              "node_label": "文字笔记 · 今天 · Hepta-v56r1-fa843f7020b3…",
+              "service_entered": true,
+              "automatic_retry_allowed": false
+            },
+            "before": {
+              "observation_id": "c30c5913fb444eeabdb4a2ab3f7ba0f3",
+              "package": "com.motorola.stylus",
+              "window_id": 3601,
+              "display_id": 25,
+              "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+              "tree_sha256": "e6942944444cd03e7fcff7429dae37f743f1c64a3faeebee12ef8046584b8efc",
+              "rotation": 0
+            },
+            "after": {
+              "observation_id": "f9df90c106604410b4bd5ec2ba7fe9a6",
+              "package": "com.motorola.stylus",
+              "window_id": 3605,
+              "display_id": 25,
+              "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+              "tree_sha256": "ebe57eca12e550e2bcb004cc77d8fa6b0f259e7aaaef57bc8d40044606e55f5f",
+              "rotation": 0
+            },
+            "accepted": true,
+            "dispatched": true,
+            "stale": false,
+            "detail": "节点点击已接受",
+            "live_lease_verified": true,
+            "service_child_receipt": {
+              "schema": "hepta.tool-child.v1",
+              "workflow_id": "978567f8b2524e9b3eb3a2555c75ba1fc31119a1fd2edf0c97110b5179c39ac0",
+              "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+              "parent_step": 1,
+              "parent_model_run_id": "e393bd2e3b7641e7a15a9d458b78823d",
+              "parent_observation_id": "32a4c5368e4041af9ecd192d815a4805",
+              "created_observation_id": "0d438ec49de74042bce4e1f58f39828b",
+              "parent_fixed_intent_attempt_id": "1ef57c1084e701477139f8db0a8f2affb65dda07b0e27130d9b0287e89016878",
+              "owner_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+              "contract_sha256": "da41d09cb55601029deebca298133083ad5cc68cda3a9b25c60b9df8faf7d58a",
+              "task_authorization_sha256": "571278aecfaa1eef87bb55244b56989d602781f48e47ab7084a64495d913dcbe",
+              "body_sha256": "d7922a7d4d40341fd0d8350d926803a7b556c5c652fabbda85cb8e37663aedab",
+              "target_package": "com.motorola.stylus",
+              "target_uid": 10382,
+              "target_apk_sha256": {
+                "base": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+              },
+              "display_id": 25,
+              "background_generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+              "grant_consumed": true,
+              "grant_retired": false,
+              "grants_tool_authority": false,
+              "child_id": "1119abb09f2d7b164fb301d87e69211bb8be8ea9a8475cdb0ceb1265e872aa55",
+              "child_ordinal": 2,
+              "actor_kind": "tool_child",
+              "model_issued": false,
+              "action": "click",
+              "observation_id": "c30c5913fb444eeabdb4a2ab3f7ba0f3",
+              "node_id": "n12",
+              "node_label": "文字笔记 · 今天 · Hepta-v56r1-fa843f7020b3…",
+              "service_entered": true,
+              "automatic_retry_allowed": false
+            }
+          }
+        ],
+        "model_done_synthesized": false,
+        "persistent_storage_bytes_verified": false
+      },
+      "persistent_storage_bytes_verified": false,
+      "new_database_item_identity_verified": false,
+      "current_editor_raw_exact": false,
+      "current_body_evidence": {
+        "matched": true,
+        "raw_exact": false,
+        "persistent_bytes_verified": false,
+        "node_id": "n10",
+        "action_label": "Hepta-v56r1-fa843f7020b3 明天下午3点看牙，带上…",
+        "raw_text_sha256": "53c96714a8c4a9d029a2c3b9ff4c1ac9983abf7b075b1761a0d502f706c856e8",
+        "body_sha256": "d7922a7d4d40341fd0d8350d926803a7b556c5c652fabbda85cb8e37663aedab",
+        "trailing_lf_count": 40,
+        "match_rule": "body_plus_observed_40_lf",
+        "missing": null
+      },
+      "current_list_match": false,
+      "current_list_missing": "editor_present_not_note_list",
+      "current_list_evidence": {
+        "matched": false,
+        "missing": "editor_present_not_note_list",
+        "match_rule": null,
+        "node_id": null,
+        "source_path": null,
+        "source_view_id": null,
+        "source_text_sha256": null,
+        "node_app_tree_sha256": null,
+        "text_scope": "Complete accessibility text source; visual clipping and persistent storage bytes are unverified.",
+        "persistent_bytes_verified": false
+      },
+      "observation_chain_verified": true,
+      "terminal_binding_and_cleanup_verified": true,
+      "completion_actor": "controller/tool_workflow",
+      "model_done_synthesized": false,
+      "controller_completion_requested": true,
+      "controller_native_parent_session_bound": true
+    }
+  },
+  "main_physical_display_mapping": {
+    "verified": true,
+    "logical_display_id": 0,
+    "physical_display_id": "4630947043778501779",
+    "hwc_display_id": 0,
+    "port": 147,
+    "screen_size": [
+      1224,
+      2992
+    ],
+    "rotation": 0,
+    "display_dump_sha256": "fc2df95b1d94d553eeb2440e2bb5d9a4ed30599b909d69e41c47116bafe7628d",
+    "surfaceflinger_dump_sha256": "d01416390f86be91be5202135332b4e587e1528c3e3f97191fc1057b5035c6e2",
+    "claim_scope": "fresh sequential system logical-0 primary/base/override and SurfaceFlinger physical-ID match; HWC ID is not assumed logical"
+  },
+  "prestart_formal_service_binding": {
+    "verified": true,
+    "component": "org.trillionnium.hepta.local/org.trillionnium.hepta.local.HeptaAccessibilityService",
+    "app_pid": 25673,
+    "app_uid": 10481,
+    "client_pid": 3622,
+    "client_uid": 1000,
+    "binder_received": true,
+    "has_bound": true,
+    "connection_ids": [
+      "ce72db8"
+    ],
+    "service_dump_sha256": "b4e68949b6a30903955b6647fb356639e9968cd5bd030246b0594c2d35ab1ac1",
+    "identity_scope": "exact active AMS ServiceRecord and live system-client binding; label-only AccessibilityManager rows are not component attestation"
+  },
+  "component_named_in_prestart_accessibility_bound_table": false,
+  "formal_hepta_accessibility_bound_before_start": true,
+  "prepared_screen_sha256": "227ad1c4779d155996de305d95dc155cdf311fb7e21cf43dbd9010c6fb92c8a1",
+  "start_pixel_proof": {
+    "algorithm": "exact_decoded_RGBA_pixels_outside_system_bars_v1",
+    "pixels_equal": true,
+    "reviewed_content_rgba_sha256": "a347b4c68592907f0c4ba14e39a809031228e7b90dca11d917e6033c23ffe518",
+    "current_content_rgba_sha256": "a347b4c68592907f0c4ba14e39a809031228e7b90dca11d917e6033c23ffe518",
+    "reviewed_png_sha256": "8eb8ffd23dbf09a08075512707be3c2cb1158b385535013b91bd65d1bfa0e234",
+    "current_png_sha256": "227ad1c4779d155996de305d95dc155cdf311fb7e21cf43dbd9010c6fb92c8a1",
+    "reviewed_window_dump_sha256": "d2e4ae28165af7994e3e98551f17a39527a382a6f585683d638313602b19d813",
+    "current_window_dump_sha256": "d2e4ae28165af7994e3e98551f17a39527a382a6f585683d638313602b19d813",
+    "reviewed_geometry": {
+      "display_id": 0,
+      "screen_size": [
+        1224,
+        2992
+      ],
+      "content_rect": [
+        0,
+        130,
+        1224,
+        2920
+      ],
+      "main_focus": "Window{fa1b72f u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+      "system_bars": [
+        {
+          "type": "statusBars",
+          "source_id": "73500000",
+          "frame": [
+            0,
+            0,
+            1224,
+            130
+          ],
+          "visible": true
+        },
+        {
+          "type": "navigationBars",
+          "source_id": "d17c0001",
+          "frame": [
+            0,
+            2920,
+            1224,
+            2992
+          ],
+          "visible": true
+        }
+      ],
+      "geometry_source": "display0.WindowInsetsStateController.InsetsState"
+    },
+    "current_geometry": {
+      "display_id": 0,
+      "screen_size": [
+        1224,
+        2992
+      ],
+      "content_rect": [
+        0,
+        130,
+        1224,
+        2920
+      ],
+      "main_focus": "Window{fa1b72f u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+      "system_bars": [
+        {
+          "type": "statusBars",
+          "source_id": "73500000",
+          "frame": [
+            0,
+            0,
+            1224,
+            130
+          ],
+          "visible": true
+        },
+        {
+          "type": "navigationBars",
+          "source_id": "d17c0001",
+          "frame": [
+            0,
+            2920,
+            1224,
+            2992
+          ],
+          "visible": true
+        }
+      ],
+      "geometry_source": "display0.WindowInsetsStateController.InsetsState"
+    },
+    "coordinates": [
+      180,
+      1114
+    ],
+    "pixel_tolerance": 0,
+    "resized": false,
+    "button_only_crop_used": false,
+    "claim_scope": "operator-reviewed reference plus fresh exact app-content pixels; pre-tap observations are sequential, not atomic",
+    "capture_started_monotonic_s": 311692.931058799,
+    "capture_ended_monotonic_s": 311693.350040647,
+    "maximum_capture_start_to_tap_seconds": 10.0,
+    "capture_start_to_tap_seconds": 0.7712133230525069
+  },
+  "trigger": {
+    "kind": "one_exact_application_content_bound_start_tap",
+    "coordinates": [
+      180,
+      1114
+    ],
+    "auto_task": false
+  },
+  "cancel_probe": {
+    "protocol": "one_ordinary_visible_stop_first_native_request.v1",
+    "attempted": true,
+    "tap_requested": true,
+    "prepared_controls": {
+      "protocol": "one_ordinary_visible_stop_first_native_request.v1",
+      "xml_sha256": "7affc19dd7b3313305e265dc1e734329b71df0921dfc8f723ce4a0cc341f5d07",
+      "png_sha256": "8eb8ffd23dbf09a08075512707be3c2cb1158b385535013b91bd65d1bfa0e234",
+      "main_activity_source_sha256": "22e03ae02378cd05981faab93f70c2686de633b6bb7d35ab640ef358150c2aa5",
+      "start_bounds": [
+        48,
+        1042,
+        312,
+        1186
+      ],
+      "stop_bounds": [
+        312,
+        1042,
+        576,
+        1186
+      ],
+      "unchanged_accessibility_neighbor_bounds": [
+        576,
+        1042,
+        858,
+        1186
+      ],
+      "stop_point": [
+        444,
+        1114
+      ],
+      "prepared_geometry": {
+        "display_id": 0,
+        "screen_size": [
+          1224,
+          2992
+        ],
+        "content_rect": [
+          0,
+          130,
+          1224,
+          2920
+        ],
+        "main_focus": "Window{fa1b72f u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+        "system_bars": [
+          {
+            "type": "statusBars",
+            "source_id": "73500000",
+            "frame": [
+              0,
+              0,
+              1224,
+              130
+            ],
+            "visible": true
+          },
+          {
+            "type": "navigationBars",
+            "source_id": "d17c0001",
+            "frame": [
+              0,
+              2920,
+              1224,
+              2992
+            ],
+            "visible": true
+          }
+        ],
+        "geometry_source": "display0.WindowInsetsStateController.InsetsState"
+      },
+      "initial_stop_enabled": false,
+      "runtime_enabled_attribute_not_read_by_UiAutomation": true,
+      "v53_owned_cancellation_contract": {
+        "actual_signed_build_sha256": "e27e74e94b0668c1c07b04863c9aaabf1b3235f9ff2d0d0d8bd9a346e46b2c6b",
+        "actual_native_worker_sha256": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+        "native_compiler_receipt_sha256": "89af42d0a61ea12ea06df6f6d2c35f368ae494b77cc0a8badc3f25cb105d48c0",
+        "historical_signed_build_sha256": "484b2be823f751ce12c643ac66cd54d4ecd4262ab939b080dd2d0378365ecccc",
+        "current_java_native_reuse_receipt_sha256": "2c8626102e21841327cd22692021238fed124b1ec7fd580d536dea353725767b",
+        "native_worker_byte_identical_to_historical_proof": true,
+        "native_recompiled_for_this_release": false,
+        "android_target_proof_reexecuted_here": false,
+        "android_target_errno_binding_sha256": "5907334b97da50bb66b6343898dacc1ddfa7f15aa942925d3586eacf2b003ee7",
+        "android_target_epipe": 32,
+        "source_pins": {
+          "src/org/trillionnium/hepta/local/LocalModelEngine.java": "0b91b202be78b6ca9ff90335b7ac2620a5583b102babbeacc24a37d529076fe8",
+          "src/org/trillionnium/hepta/local/OwnedWorkerCancellation.java": "eaa708351cfcac921e4e607a1789f6cb45dc4db61adb610029954c195fda2ec9",
+          "src/org/trillionnium/hepta/local/WarmProcessSession.java": "b179a624d475cbf787964bfc17d628ed122d4ae14a08239ac0cb1ece5c58598a",
+          "native/generate_adapter.py": "986fe422f33b370e553feee605964bab0e6f496ae49fee1f0471bc178b4455e7",
+          "native/warm-protocol.inc": "fc6314b10d3d5542832eeca02184a42ab6fd97c118d9d89c6e55dfed83770268"
+        }
+      }
+    },
+    "root_busy_image_review_pending": true,
+    "trigger_candidate": {
+      "spec": {
+        "task_id": "b415cf087c91485599352b39a78b6085",
+        "run_id": "ac4e1af0dab648f8b9d6f022410d63b0",
+        "worker_generation": "37d4fe0f2143418b826b2812f2fb3675",
+        "worker_pid": 5903,
+        "app_pid": 25673,
+        "uid": 10481,
+        "profile": "lfm3-1.7b-qad-q4_0",
+        "context_tokens": 8192,
+        "threads": 4,
+        "process": {
+          "uid": 10481,
+          "pid": 5903,
+          "ppid": 25673,
+          "args": "libhepta_local_runner.so --expected-parent-pid 25673 --model-profile lfm3-1.7b-qad-q4_0 --request-id ac4e1af0dab648f8b9d6f022410d63b0 --mode llm --runtime llama_cpp --compute npu --model /data/data/org.trillionnium.hepta.local/files/model/LFM3-1.7B-QAD-Q4_0.gguf --prompt-file /data/data/org.trillionnium.hepta.local/files/runs/ac4e1af0dab648f8b9d6f022410d63b0/prompt.txt --result-file /data/data/org.trillionnium.hepta.local/files/runs/ac4e1af0dab648f8b9d6f022410d63b0/native-result.json --text-file /data/data/org.trillionnium.hepta.local/files/runs/ac4e1af0dab648f8b9d6f022410d63b0/raw-text.txt --ctx-size 8192 --max-tokens 256 --threads 4 --timeout-ms 55000 --log-level debug --system-file /data/data/org.trillionnium.hepta.local/files/runs/ac4e1af0dab648f8b9d6f022410d63b0/system.txt --grammar-file /data/data/org.trillionnium.hepta.local/files/runs/ac4e1af0dab648f8b9d6f022410d63b0/grammar.gbnf --warm-generation 37d4fe0f2143418b826b2812f2fb3675 --warm-task-id b415cf087c91485599352b39a78b6085 --warm-session-dir /data/data/org.trillionnium.hepta.local/files/runs/37d4fe0f2143418b826b2812f2fb3675"
+        }
+      },
+      "context": {
+        "owner": "记一下，Hepta-v56r1-c022ac662c8d 明天下午3点看牙，带上检查资料。",
+        "config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+        "display_id": 26,
+        "background_generation": "71d60345-4458-4046-9cef-7054e9bf8d57",
+        "model_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452",
+        "body": "Hepta-v56r1-c022ac662c8d 明天下午3点看牙，带上检查资料。",
+        "notes_identity": {
+          "package": "com.motorola.stylus",
+          "uid": 10382,
+          "apks": [
+            {
+              "path": "/product/preinstall/MotoStylus/MotoStylus.apk",
+              "sha256": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+            }
+          ]
+        },
+        "expected_background_selection": {
+          "mode": "background",
+          "allowed_packages": [
+            "com.motorola.stylus"
+          ],
+          "bootstrap_package": "com.motorola.stylus",
+          "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+          "bootstrap_model_issued": false,
+          "main_display_fallback": false,
+          "home_allowed": false,
+          "owner_task_selection": {
+            "schema": "hepta.owner-task-app-selection.v1",
+            "owner_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+            "recognition": "natural_note_comma_prefix.v1",
+            "original_ui_initial_package": "com.motorola.stylus",
+            "original_ui_allowed_packages": [
+              "com.motorola.stylus",
+              "org.trillionnium.hepta.webhelper"
+            ],
+            "effective_initial_package": "com.motorola.stylus",
+            "effective_allowed_packages": [
+              "com.motorola.stylus"
+            ],
+            "effective_scope_within_selected_apps": true,
+            "effective_scope_strictly_smaller": true,
+            "initial_app_changed": false,
+            "package_from_model_or_screen": false,
+            "grants_tool_authority": false,
+            "changes_saved_preferences": false
+          }
+        },
+        "preparation_original_sha256": "74034c14f0986273e187179aed78a600f760932e388f7dd0e411c2db3e4cc283"
+      },
+      "initial_fence": {
+        "schema": "hepta.active-work-fence.v1",
+        "eligible": true,
+        "phase": "native_request_entered_generate",
+        "qualified": false,
+        "task_id": "b415cf087c91485599352b39a78b6085",
+        "parent_model_run_id": "ac4e1af0dab648f8b9d6f022410d63b0",
+        "worker_generation": "37d4fe0f2143418b826b2812f2fb3675",
+        "display_id": 26,
+        "background_generation": "71d60345-4458-4046-9cef-7054e9bf8d57",
+        "continuous_npu_busy_verified": false,
+        "business_verified": false,
+        "final_native_and_child_replay_required": true,
+        "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+        "before_clock": {
+          "elapsed_ms_lower": 865456160,
+          "elapsed_ms_upper": 865456170,
+          "raw_sha256": "0a914198ce5e739bf82825a1f0119627f7947f18408a9784faeb5751f645693a"
+        },
+        "after_clock": {
+          "elapsed_ms_lower": 865456620,
+          "elapsed_ms_upper": 865456630,
+          "raw_sha256": "85bcaee5854aecd7dd770f2de506e6a97b6323647f2a967cd66f3d18ed2ebd5c"
+        },
+        "read_span_upper_ms": 470,
+        "future_before_absence": [
+          {
+            "file": "step-01-tool-child-01-before.json",
+            "task_id": "b415cf087c91485599352b39a78b6085",
+            "actor_kind": "tool_child",
+            "absent": true
+          },
+          {
+            "file": "step-01-tool-child-02-before.json",
+            "task_id": "b415cf087c91485599352b39a78b6085",
+            "actor_kind": "tool_child",
+            "absent": true
+          },
+          {
+            "file": "step-01-tool-child-03-before.json",
+            "task_id": "b415cf087c91485599352b39a78b6085",
+            "actor_kind": "tool_child",
+            "absent": true
+          },
+          {
+            "file": "step-02-before.json",
+            "task_id": "b415cf087c91485599352b39a78b6085",
+            "actor_kind": "model",
+            "absent": true
+          }
+        ],
+        "input_identity": {
+          "meta_sha256": "dd80cf4d878bcb723566a34ecd7ea932d0ca83094657b2701183f47def347c1a",
+          "ids_sha256": "c9ba3f19592339ac7b7f5f6a725a2b0d49773e1be77320066592452ccafcc38c",
+          "ids_bytes": 17332,
+          "input_count": 4333,
+          "prompt_sha256": "9eae8c9cfe739ae93bb1753ee3bb051ba7761c99ebfe2aefd860387bf58625f3"
+        },
+        "sdk_generate_event": "[plugins/llama_cpp/src/llm.cpp:326:generate] prefix match: past_prompt_tokens size: 0, prompt_len: 4333, match_len: 0",
+        "sdk_log_segment_sha256": "62059bf2953293f340d4433036ae885d73623f2c3754459008b188877149c20f",
+        "sdk_log_segment_offset": 29176,
+        "sdk_log_observed_bytes": 45560,
+        "reason": "same task work in flight; final receipts/effect proof still required",
+        "stream_sha256": "627d13e227f5f8d00211b9263d9bcae9f83529e55ff5fc1e752c6cc808225c91",
+        "stream_bytes": 162050,
+        "records": [
+          {
+            "mode": "F",
+            "total_bytes": 37,
+            "offset": 0,
+            "bytes": 37,
+            "name": "boot_before",
+            "sha256": "c5b41d51c21ee3db4a83087697a2df7187821dede985024e34ac14639bf9f830"
+          },
+          {
+            "mode": "F",
+            "total_bytes": 21,
+            "offset": 0,
+            "bytes": 21,
+            "name": "uptime_before",
+            "sha256": "0a914198ce5e739bf82825a1f0119627f7947f18408a9784faeb5751f645693a"
+          },
+          {
+            "mode": "F",
+            "total_bytes": 2646,
+            "offset": 0,
+            "bytes": 2646,
+            "name": "session_before",
+            "sha256": "89d44fd1592d6691758f4d7def915b599293957c02589fb4f6c6d19eb891a23f"
+          },
+          {
+            "mode": "F",
+            "total_bytes": 144,
+            "offset": 0,
+            "bytes": 144,
+            "name": "config",
+            "sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2"
+          },
+          {
+            "mode": "F",
+            "total_bytes": 4372,
+            "offset": 0,
+            "bytes": 4372,
+            "name": "owner",
+            "sha256": "95ba334f73f8623ca35a628c52d15a31d2e56c0e1a755bc57d40d825c74e5299"
+          },
+          {
+            "mode": "F",
+            "total_bytes": 6436,
+            "offset": 0,
+            "bytes": 6436,
+            "name": "bootstrap",
+            "sha256": "29676c0a0100ca047bfe9cb113177e2c5c808e85c0cd9fcb601bac6faaa5b03c"
+          },
+          {
+            "mode": "F",
+            "total_bytes": 45849,
+            "offset": 0,
+            "bytes": 45849,
+            "name": "model_before",
+            "sha256": "67e20bb0762f0b3e59d16cf2c4e6f9db1b912c1b87600069848a30cbc33f23ad"
+          },
+          {
+            "mode": "F",
+            "total_bytes": 8302,
+            "offset": 0,
+            "bytes": 8302,
+            "name": "prompt",
+            "sha256": "9eae8c9cfe739ae93bb1753ee3bb051ba7761c99ebfe2aefd860387bf58625f3"
+          },
+          {
+            "mode": "F",
+            "total_bytes": 5880,
+            "offset": 0,
+            "bytes": 5880,
+            "name": "system",
+            "sha256": "df90ce3e2ea5a37ca0e930add3a0e042fa8f8d58ecb45c0f14d32c3dcffdd32b"
+          },
+          {
+            "mode": "F",
+            "total_bytes": 2874,
+            "offset": 0,
+            "bytes": 2874,
+            "name": "grammar",
+            "sha256": "615b2a38c946796b2c25fe4204347385b0b2f4d9bdc30a48897afa9079e41050"
+          },
+          {
+            "mode": "F",
+            "total_bytes": 1346,
+            "offset": 0,
+            "bytes": 1346,
+            "name": "input_meta",
+            "sha256": "dd80cf4d878bcb723566a34ecd7ea932d0ca83094657b2701183f47def347c1a"
+          },
+          {
+            "mode": "F",
+            "total_bytes": 17332,
+            "offset": 0,
+            "bytes": 17332,
+            "name": "input_ids",
+            "sha256": "c9ba3f19592339ac7b7f5f6a725a2b0d49773e1be77320066592452ccafcc38c"
+          },
+          {
+            "mode": "F",
+            "total_bytes": 45560,
+            "offset": 29176,
+            "bytes": 16384,
+            "name": "sdk_log",
+            "sha256": "62059bf2953293f340d4433036ae885d73623f2c3754459008b188877149c20f"
+          },
+          {
+            "mode": "M",
+            "total_bytes": 0,
+            "offset": 0,
+            "bytes": 0,
+            "name": "native_text",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "mode": "M",
+            "total_bytes": 0,
+            "offset": 0,
+            "bytes": 0,
+            "name": "native_result",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "mode": "M",
+            "total_bytes": 0,
+            "offset": 0,
+            "bytes": 0,
+            "name": "app_result",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "mode": "M",
+            "total_bytes": 0,
+            "offset": 0,
+            "bytes": 0,
+            "name": "parent_action",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "mode": "M",
+            "total_bytes": 0,
+            "offset": 0,
+            "bytes": 0,
+            "name": "parent_after",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "mode": "M",
+            "total_bytes": 0,
+            "offset": 0,
+            "bytes": 0,
+            "name": "workflow_grant",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "mode": "M",
+            "total_bytes": 0,
+            "offset": 0,
+            "bytes": 0,
+            "name": "workflow_result",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "mode": "M",
+            "total_bytes": 0,
+            "offset": 0,
+            "bytes": 0,
+            "name": "workflow_abort",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "mode": "M",
+            "total_bytes": 0,
+            "offset": 0,
+            "bytes": 0,
+            "name": "controller_candidate",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "mode": "M",
+            "total_bytes": 0,
+            "offset": 0,
+            "bytes": 0,
+            "name": "task_result",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "mode": "M",
+            "total_bytes": 0,
+            "offset": 0,
+            "bytes": 0,
+            "name": "background_cleanup",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "mode": "M",
+            "total_bytes": 0,
+            "offset": 0,
+            "bytes": 0,
+            "name": "future_child_1_before",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "mode": "M",
+            "total_bytes": 0,
+            "offset": 0,
+            "bytes": 0,
+            "name": "future_child_2_before",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "mode": "M",
+            "total_bytes": 0,
+            "offset": 0,
+            "bytes": 0,
+            "name": "future_child_3_before",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "mode": "M",
+            "total_bytes": 0,
+            "offset": 0,
+            "bytes": 0,
+            "name": "future_model_2_before",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "mode": "F",
+            "total_bytes": 2646,
+            "offset": 0,
+            "bytes": 2646,
+            "name": "session_after",
+            "sha256": "89d44fd1592d6691758f4d7def915b599293957c02589fb4f6c6d19eb891a23f"
+          },
+          {
+            "mode": "F",
+            "total_bytes": 46886,
+            "offset": 0,
+            "bytes": 46886,
+            "name": "processes",
+            "sha256": "e6d37e67a4de858f0229509f3de5fa81121a2a8c3b00d2cf106fd2126ae1005c"
+          },
+          {
+            "mode": "F",
+            "total_bytes": 37,
+            "offset": 0,
+            "bytes": 37,
+            "name": "boot_after",
+            "sha256": "c5b41d51c21ee3db4a83087697a2df7187821dede985024e34ac14639bf9f830"
+          },
+          {
+            "mode": "F",
+            "total_bytes": 21,
+            "offset": 0,
+            "bytes": 21,
+            "name": "uptime_after",
+            "sha256": "85bcaee5854aecd7dd770f2de506e6a97b6323647f2a967cd66f3d18ed2ebd5c"
+          }
+        ],
+        "script_sha256": "ae91b1ba295fe9cd12239082eb656dc623a373142f182c63800d1157234eea6f",
+        "relative_capture": "main-user/live-work/probe-0004",
+        "host_read_started_monotonic_s": 311698.641479298,
+        "host_read_returned_monotonic_s": 311699.216083042
+      },
+      "system_sample_index": 4,
+      "display_id": 26,
+      "generation": "71d60345-4458-4046-9cef-7054e9bf8d57",
+      "protocol": "same_task_native_or_tool_workflow_inflight.v1"
+    },
+    "continuous_npu_busy_verified": false,
+    "screen_started_monotonic_s": 311699.389235325,
+    "visible_stop_binding": {
+      "main_focus": {
+        "display_id": 0,
+        "main_focus": "Window{fa1b72f u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+        "main_focused_app": "ActivityRecord{246305928 u0 org.trillionnium.hepta.local/.MainActivity t1028}",
+        "input_focused_display": 0,
+        "input_window_display0": "fa1b72f org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity",
+        "awake_and_fully_on": true,
+        "settings_splash_observed": false,
+        "source": "actual same system sample window-displays and input stdout; sequential not atomic"
+      },
+      "geometry": {
+        "display_id": 0,
+        "screen_size": [
+          1224,
+          2992
+        ],
+        "content_rect": [
+          0,
+          130,
+          1224,
+          2920
+        ],
+        "main_focus": "Window{fa1b72f u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+        "system_bars": [
+          {
+            "type": "statusBars",
+            "source_id": "73500000",
+            "frame": [
+              0,
+              0,
+              1224,
+              130
+            ],
+            "visible": true
+          },
+          {
+            "type": "navigationBars",
+            "source_id": "d17c0001",
+            "frame": [
+              0,
+              2920,
+              1224,
+              2992
+            ],
+            "visible": true
+          }
+        ],
+        "geometry_source": "display0.WindowInsetsStateController.InsetsState"
+      },
+      "neighbor_rgba_sha256": "db081d7e70ed4eb5cb524ce8df8d23f50212b8d691b6fcfd1697b523e7115680",
+      "stop_shape": {
+        "algorithm": "fixed_positions_contrast_masks_RGBA_v2",
+        "glyph_roi_in_button": [
+          33,
+          36,
+          231,
+          108
+        ],
+        "thresholds": [
+          0.1,
+          0.25,
+          0.5,
+          0.75
+        ],
+        "prepared": {
+          "background_rgba": [
+            240,
+            241,
+            241,
+            255
+          ],
+          "foreground_rgba": [
+            178,
+            179,
+            179,
+            255
+          ],
+          "contrast": 62.0,
+          "distinct_rgba": 57,
+          "glyph_bbox_in_button": [
+            91,
+            54,
+            172,
+            92
+          ],
+          "mask_counts": [
+            1261,
+            1073,
+            816,
+            742
+          ],
+          "mask_sha256": [
+            "d97b5532de948f178fa12d058a5906dadcee00c18bdd5221c46565168c236134",
+            "badd6d205c4a149805e07783d4c2b8dc5b96063306893b2a1c0ba671313d921a",
+            "ac168344eb36dca46ff9559a4472463eb9efed4382e4e936e74920f9f3b52173",
+            "bd6fca3cd4a9b09bd6d3251944ab401b327379f1c44d20909fcc66b2ee171ae1"
+          ]
+        },
+        "busy": {
+          "background_rgba": [
+            214,
+            215,
+            215,
+            255
+          ],
+          "foreground_rgba": [
+            28,
+            28,
+            28,
+            255
+          ],
+          "contrast": 186.66666666666666,
+          "distinct_rgba": 106,
+          "glyph_bbox_in_button": [
+            91,
+            54,
+            172,
+            92
+          ],
+          "mask_counts": [
+            1261,
+            1073,
+            816,
+            742
+          ],
+          "mask_sha256": [
+            "d97b5532de948f178fa12d058a5906dadcee00c18bdd5221c46565168c236134",
+            "badd6d205c4a149805e07783d4c2b8dc5b96063306893b2a1c0ba671313d921a",
+            "ac168344eb36dca46ff9559a4472463eb9efed4382e4e936e74920f9f3b52173",
+            "bd6fca3cd4a9b09bd6d3251944ab401b327379f1c44d20909fcc66b2ee171ae1"
+          ]
+        },
+        "normalized_coverage_tolerance": 0.021779439032286546,
+        "maximum_normalized_coverage_difference": 0.016532258064516123,
+        "recolouring_observed": true,
+        "spatial_search_or_coordinate_shift": false,
+        "android_enabled_attribute_proven": false,
+        "prepared_rgba_sha256": "89e47a0aa1d3dccc6bf6da852d6671b0c17fae4e49d33f0354936f9c716f1609",
+        "busy_rgba_sha256": "2f9cb03d34e7dfa31bebfdda0f1b7f452acbbe1888c8f113a4624ee8fa8f2a47"
+      },
+      "stop_point": [
+        444,
+        1114
+      ],
+      "source_png_sha256": "d454db505725cfc1321b7b93df1694696f8964f77446c4576714d0ca314e5b31",
+      "window_sha256": "46971f4fcdceb66f943e30473bd7fde51f1bfd2ce9193d4c87599b2bf8b99294",
+      "input_dump_sha256": "ca42bdd54e734f6d5f143d77150f59b10d0820704ff0867294364995139cf0f4",
+      "root_busy_image_review_pending": true
+    },
+    "before_fence": {
+      "schema": "hepta.active-work-fence.v1",
+      "eligible": true,
+      "phase": "native_request_entered_generate",
+      "qualified": false,
+      "task_id": "b415cf087c91485599352b39a78b6085",
+      "parent_model_run_id": "ac4e1af0dab648f8b9d6f022410d63b0",
+      "worker_generation": "37d4fe0f2143418b826b2812f2fb3675",
+      "display_id": 26,
+      "background_generation": "71d60345-4458-4046-9cef-7054e9bf8d57",
+      "continuous_npu_busy_verified": false,
+      "business_verified": false,
+      "final_native_and_child_replay_required": true,
+      "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+      "before_clock": {
+        "elapsed_ms_lower": 865457470,
+        "elapsed_ms_upper": 865457480,
+        "raw_sha256": "fe35b3ff47d08dfecede6dec2ab9752f43a463d222785239ad48e38cfbd5fc72"
+      },
+      "after_clock": {
+        "elapsed_ms_lower": 865458010,
+        "elapsed_ms_upper": 865458020,
+        "raw_sha256": "1203f3e3534a74b9e32361eec8a1cf7ef0f01365f314b058ec8aa8a55a02360c"
+      },
+      "read_span_upper_ms": 550,
+      "future_before_absence": [
+        {
+          "file": "step-01-tool-child-01-before.json",
+          "task_id": "b415cf087c91485599352b39a78b6085",
+          "actor_kind": "tool_child",
+          "absent": true
+        },
+        {
+          "file": "step-01-tool-child-02-before.json",
+          "task_id": "b415cf087c91485599352b39a78b6085",
+          "actor_kind": "tool_child",
+          "absent": true
+        },
+        {
+          "file": "step-01-tool-child-03-before.json",
+          "task_id": "b415cf087c91485599352b39a78b6085",
+          "actor_kind": "tool_child",
+          "absent": true
+        },
+        {
+          "file": "step-02-before.json",
+          "task_id": "b415cf087c91485599352b39a78b6085",
+          "actor_kind": "model",
+          "absent": true
+        }
+      ],
+      "input_identity": {
+        "meta_sha256": "dd80cf4d878bcb723566a34ecd7ea932d0ca83094657b2701183f47def347c1a",
+        "ids_sha256": "c9ba3f19592339ac7b7f5f6a725a2b0d49773e1be77320066592452ccafcc38c",
+        "ids_bytes": 17332,
+        "input_count": 4333,
+        "prompt_sha256": "9eae8c9cfe739ae93bb1753ee3bb051ba7761c99ebfe2aefd860387bf58625f3"
+      },
+      "sdk_generate_event": "[plugins/llama_cpp/src/llm.cpp:326:generate] prefix match: past_prompt_tokens size: 0, prompt_len: 4333, match_len: 0",
+      "sdk_log_segment_sha256": "62059bf2953293f340d4433036ae885d73623f2c3754459008b188877149c20f",
+      "sdk_log_segment_offset": 29176,
+      "sdk_log_observed_bytes": 45560,
+      "reason": "same task work in flight; final receipts/effect proof still required",
+      "stream_sha256": "d6fd65000af7317397f13fa92e7da0fbdb6b79ae29c6994048f5309dc6f901bc",
+      "stream_bytes": 162045,
+      "records": [
+        {
+          "mode": "F",
+          "total_bytes": 37,
+          "offset": 0,
+          "bytes": 37,
+          "name": "boot_before",
+          "sha256": "c5b41d51c21ee3db4a83087697a2df7187821dede985024e34ac14639bf9f830"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 21,
+          "offset": 0,
+          "bytes": 21,
+          "name": "uptime_before",
+          "sha256": "fe35b3ff47d08dfecede6dec2ab9752f43a463d222785239ad48e38cfbd5fc72"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 2646,
+          "offset": 0,
+          "bytes": 2646,
+          "name": "session_before",
+          "sha256": "89d44fd1592d6691758f4d7def915b599293957c02589fb4f6c6d19eb891a23f"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 144,
+          "offset": 0,
+          "bytes": 144,
+          "name": "config",
+          "sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 4372,
+          "offset": 0,
+          "bytes": 4372,
+          "name": "owner",
+          "sha256": "95ba334f73f8623ca35a628c52d15a31d2e56c0e1a755bc57d40d825c74e5299"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 6436,
+          "offset": 0,
+          "bytes": 6436,
+          "name": "bootstrap",
+          "sha256": "29676c0a0100ca047bfe9cb113177e2c5c808e85c0cd9fcb601bac6faaa5b03c"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 45849,
+          "offset": 0,
+          "bytes": 45849,
+          "name": "model_before",
+          "sha256": "67e20bb0762f0b3e59d16cf2c4e6f9db1b912c1b87600069848a30cbc33f23ad"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 8302,
+          "offset": 0,
+          "bytes": 8302,
+          "name": "prompt",
+          "sha256": "9eae8c9cfe739ae93bb1753ee3bb051ba7761c99ebfe2aefd860387bf58625f3"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 5880,
+          "offset": 0,
+          "bytes": 5880,
+          "name": "system",
+          "sha256": "df90ce3e2ea5a37ca0e930add3a0e042fa8f8d58ecb45c0f14d32c3dcffdd32b"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 2874,
+          "offset": 0,
+          "bytes": 2874,
+          "name": "grammar",
+          "sha256": "615b2a38c946796b2c25fe4204347385b0b2f4d9bdc30a48897afa9079e41050"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 1346,
+          "offset": 0,
+          "bytes": 1346,
+          "name": "input_meta",
+          "sha256": "dd80cf4d878bcb723566a34ecd7ea932d0ca83094657b2701183f47def347c1a"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 17332,
+          "offset": 0,
+          "bytes": 17332,
+          "name": "input_ids",
+          "sha256": "c9ba3f19592339ac7b7f5f6a725a2b0d49773e1be77320066592452ccafcc38c"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 45560,
+          "offset": 29176,
+          "bytes": 16384,
+          "name": "sdk_log",
+          "sha256": "62059bf2953293f340d4433036ae885d73623f2c3754459008b188877149c20f"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "native_text",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "native_result",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "app_result",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "parent_action",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "parent_after",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "workflow_grant",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "workflow_result",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "workflow_abort",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "controller_candidate",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "task_result",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "background_cleanup",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "future_child_1_before",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "future_child_2_before",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "future_child_3_before",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "future_model_2_before",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 2646,
+          "offset": 0,
+          "bytes": 2646,
+          "name": "session_after",
+          "sha256": "89d44fd1592d6691758f4d7def915b599293957c02589fb4f6c6d19eb891a23f"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 46881,
+          "offset": 0,
+          "bytes": 46881,
+          "name": "processes",
+          "sha256": "001ab68368b321cddfb5ea81dece8a56d78546bca1c353235f9f2d0e7d76888b"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 37,
+          "offset": 0,
+          "bytes": 37,
+          "name": "boot_after",
+          "sha256": "c5b41d51c21ee3db4a83087697a2df7187821dede985024e34ac14639bf9f830"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 21,
+          "offset": 0,
+          "bytes": 21,
+          "name": "uptime_after",
+          "sha256": "1203f3e3534a74b9e32361eec8a1cf7ef0f01365f314b058ec8aa8a55a02360c"
+        }
+      ],
+      "script_sha256": "ae91b1ba295fe9cd12239082eb656dc623a373142f182c63800d1157234eea6f",
+      "relative_capture": "main-user/live-work/cancel-before",
+      "host_read_started_monotonic_s": 311699.966508875,
+      "host_read_returned_monotonic_s": 311700.60309841
+    },
+    "immediate_window_sha256": "46971f4fcdceb66f943e30473bd7fde51f1bfd2ce9193d4c87599b2bf8b99294",
+    "immediate_input_sha256": "2a603e0d467ca75ac7de8ee21d68a720a9f925d25ca5c91df154f8372596a09b",
+    "tap_before_clock": {
+      "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+      "elapsed_ms_lower": 865458310,
+      "elapsed_ms_upper": 865458320,
+      "source": "/proc/uptime first field; 10 ms quantization",
+      "raw_sha256": "f701e5e079581bbaf2b0bb841121374d55a2237fde24433c98cad4786d329fb9"
+    },
+    "screenshot_start_to_tap_s": 1.5008693260024302,
+    "action": {
+      "actor": "operator_cancel_probe",
+      "model_issued": false,
+      "kind": "ordinary_visible_hepta_stop",
+      "display_id": 0,
+      "argv": [
+        "input",
+        "-d",
+        "0",
+        "tap",
+        "444",
+        "1114"
+      ]
+    },
+    "tap_command_returned": true,
+    "tap_after_clock": {
+      "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+      "elapsed_ms_lower": 865458390,
+      "elapsed_ms_upper": 865458400,
+      "source": "/proc/uptime first field; 10 ms quantization",
+      "raw_sha256": "9da41eec67b215c053c70f77adfe3666f1352fc6a389e722fba010f9828ea216"
+    }
+  },
+  "main_user": {
+    "phase": "hepta",
+    "attempted": false,
+    "host_actions": [],
+    "actor": "host_simulated_main_user",
+    "model_issued": false,
+    "task_action": false
+  },
+  "task_id": "b415cf087c91485599352b39a78b6085",
+  "live_window_probes": [
+    {
+      "schema": "hepta.active-work-fence.v1",
+      "eligible": false,
+      "phase": "unknown",
+      "qualified": false,
+      "task_id": "b415cf087c91485599352b39a78b6085",
+      "parent_model_run_id": "ac4e1af0dab648f8b9d6f022410d63b0",
+      "worker_generation": "37d4fe0f2143418b826b2812f2fb3675",
+      "display_id": 26,
+      "background_generation": "71d60345-4458-4046-9cef-7054e9bf8d57",
+      "continuous_npu_busy_verified": false,
+      "business_verified": false,
+      "final_native_and_child_replay_required": true,
+      "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+      "before_clock": {
+        "elapsed_ms_lower": 865454170,
+        "elapsed_ms_upper": 865454180,
+        "raw_sha256": "8504b5b868b5254741df5836c660008b2d633d39bfaca08e902ef05a9661429e"
+      },
+      "after_clock": {
+        "elapsed_ms_lower": 865454660,
+        "elapsed_ms_upper": 865454670,
+        "raw_sha256": "d0d21aa9158ba7d2384dafaabc1029b038233e457a0217e0c36ff464d227abd4"
+      },
+      "read_span_upper_ms": 500,
+      "future_before_absence": [
+        {
+          "file": "step-01-tool-child-01-before.json",
+          "task_id": "b415cf087c91485599352b39a78b6085",
+          "actor_kind": "tool_child",
+          "absent": true
+        },
+        {
+          "file": "step-01-tool-child-02-before.json",
+          "task_id": "b415cf087c91485599352b39a78b6085",
+          "actor_kind": "tool_child",
+          "absent": true
+        },
+        {
+          "file": "step-01-tool-child-03-before.json",
+          "task_id": "b415cf087c91485599352b39a78b6085",
+          "actor_kind": "tool_child",
+          "absent": true
+        },
+        {
+          "file": "step-02-before.json",
+          "task_id": "b415cf087c91485599352b39a78b6085",
+          "actor_kind": "model",
+          "absent": true
+        }
+      ],
+      "missing": "required live file missing: input_meta",
+      "stream_sha256": "a5c98ad84dd7931e03e5540df9bb189b5e2474c192fcbf84e2d7816539af6c3c",
+      "stream_bytes": 127696,
+      "records": [
+        {
+          "mode": "F",
+          "total_bytes": 37,
+          "offset": 0,
+          "bytes": 37,
+          "name": "boot_before",
+          "sha256": "c5b41d51c21ee3db4a83087697a2df7187821dede985024e34ac14639bf9f830"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 21,
+          "offset": 0,
+          "bytes": 21,
+          "name": "uptime_before",
+          "sha256": "8504b5b868b5254741df5836c660008b2d633d39bfaca08e902ef05a9661429e"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 2646,
+          "offset": 0,
+          "bytes": 2646,
+          "name": "session_before",
+          "sha256": "89d44fd1592d6691758f4d7def915b599293957c02589fb4f6c6d19eb891a23f"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 144,
+          "offset": 0,
+          "bytes": 144,
+          "name": "config",
+          "sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 4372,
+          "offset": 0,
+          "bytes": 4372,
+          "name": "owner",
+          "sha256": "95ba334f73f8623ca35a628c52d15a31d2e56c0e1a755bc57d40d825c74e5299"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 6436,
+          "offset": 0,
+          "bytes": 6436,
+          "name": "bootstrap",
+          "sha256": "29676c0a0100ca047bfe9cb113177e2c5c808e85c0cd9fcb601bac6faaa5b03c"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 45849,
+          "offset": 0,
+          "bytes": 45849,
+          "name": "model_before",
+          "sha256": "67e20bb0762f0b3e59d16cf2c4e6f9db1b912c1b87600069848a30cbc33f23ad"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 8302,
+          "offset": 0,
+          "bytes": 8302,
+          "name": "prompt",
+          "sha256": "9eae8c9cfe739ae93bb1753ee3bb051ba7761c99ebfe2aefd860387bf58625f3"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 5880,
+          "offset": 0,
+          "bytes": 5880,
+          "name": "system",
+          "sha256": "df90ce3e2ea5a37ca0e930add3a0e042fa8f8d58ecb45c0f14d32c3dcffdd32b"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 2874,
+          "offset": 0,
+          "bytes": 2874,
+          "name": "grammar",
+          "sha256": "615b2a38c946796b2c25fe4204347385b0b2f4d9bdc30a48897afa9079e41050"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "input_meta",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "input_ids",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 704,
+          "offset": 0,
+          "bytes": 704,
+          "name": "sdk_log",
+          "sha256": "103131008fb00189614bf3a07804cdaed54be6200c13e902a0d0107efa53090a"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "native_text",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "native_result",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "app_result",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "parent_action",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "parent_after",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "workflow_grant",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "workflow_result",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "workflow_abort",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "controller_candidate",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "task_result",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "background_cleanup",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "future_child_1_before",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "future_child_2_before",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "future_child_3_before",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "future_model_2_before",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 2646,
+          "offset": 0,
+          "bytes": 2646,
+          "name": "session_after",
+          "sha256": "89d44fd1592d6691758f4d7def915b599293957c02589fb4f6c6d19eb891a23f"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 46912,
+          "offset": 0,
+          "bytes": 46912,
+          "name": "processes",
+          "sha256": "a69a9a6b771129eef9227097a1d979242e3334b68c450e33c36fca2fd754fded"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 37,
+          "offset": 0,
+          "bytes": 37,
+          "name": "boot_after",
+          "sha256": "c5b41d51c21ee3db4a83087697a2df7187821dede985024e34ac14639bf9f830"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 21,
+          "offset": 0,
+          "bytes": 21,
+          "name": "uptime_after",
+          "sha256": "d0d21aa9158ba7d2384dafaabc1029b038233e457a0217e0c36ff464d227abd4"
+        }
+      ],
+      "script_sha256": "ae91b1ba295fe9cd12239082eb656dc623a373142f182c63800d1157234eea6f",
+      "relative_capture": "main-user/live-work/probe-0003",
+      "host_read_started_monotonic_s": 311696.678272995,
+      "host_read_returned_monotonic_s": 311697.261111969
+    },
+    {
+      "schema": "hepta.active-work-fence.v1",
+      "eligible": true,
+      "phase": "native_request_entered_generate",
+      "qualified": false,
+      "task_id": "b415cf087c91485599352b39a78b6085",
+      "parent_model_run_id": "ac4e1af0dab648f8b9d6f022410d63b0",
+      "worker_generation": "37d4fe0f2143418b826b2812f2fb3675",
+      "display_id": 26,
+      "background_generation": "71d60345-4458-4046-9cef-7054e9bf8d57",
+      "continuous_npu_busy_verified": false,
+      "business_verified": false,
+      "final_native_and_child_replay_required": true,
+      "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+      "before_clock": {
+        "elapsed_ms_lower": 865456160,
+        "elapsed_ms_upper": 865456170,
+        "raw_sha256": "0a914198ce5e739bf82825a1f0119627f7947f18408a9784faeb5751f645693a"
+      },
+      "after_clock": {
+        "elapsed_ms_lower": 865456620,
+        "elapsed_ms_upper": 865456630,
+        "raw_sha256": "85bcaee5854aecd7dd770f2de506e6a97b6323647f2a967cd66f3d18ed2ebd5c"
+      },
+      "read_span_upper_ms": 470,
+      "future_before_absence": [
+        {
+          "file": "step-01-tool-child-01-before.json",
+          "task_id": "b415cf087c91485599352b39a78b6085",
+          "actor_kind": "tool_child",
+          "absent": true
+        },
+        {
+          "file": "step-01-tool-child-02-before.json",
+          "task_id": "b415cf087c91485599352b39a78b6085",
+          "actor_kind": "tool_child",
+          "absent": true
+        },
+        {
+          "file": "step-01-tool-child-03-before.json",
+          "task_id": "b415cf087c91485599352b39a78b6085",
+          "actor_kind": "tool_child",
+          "absent": true
+        },
+        {
+          "file": "step-02-before.json",
+          "task_id": "b415cf087c91485599352b39a78b6085",
+          "actor_kind": "model",
+          "absent": true
+        }
+      ],
+      "input_identity": {
+        "meta_sha256": "dd80cf4d878bcb723566a34ecd7ea932d0ca83094657b2701183f47def347c1a",
+        "ids_sha256": "c9ba3f19592339ac7b7f5f6a725a2b0d49773e1be77320066592452ccafcc38c",
+        "ids_bytes": 17332,
+        "input_count": 4333,
+        "prompt_sha256": "9eae8c9cfe739ae93bb1753ee3bb051ba7761c99ebfe2aefd860387bf58625f3"
+      },
+      "sdk_generate_event": "[plugins/llama_cpp/src/llm.cpp:326:generate] prefix match: past_prompt_tokens size: 0, prompt_len: 4333, match_len: 0",
+      "sdk_log_segment_sha256": "62059bf2953293f340d4433036ae885d73623f2c3754459008b188877149c20f",
+      "sdk_log_segment_offset": 29176,
+      "sdk_log_observed_bytes": 45560,
+      "reason": "same task work in flight; final receipts/effect proof still required",
+      "stream_sha256": "627d13e227f5f8d00211b9263d9bcae9f83529e55ff5fc1e752c6cc808225c91",
+      "stream_bytes": 162050,
+      "records": [
+        {
+          "mode": "F",
+          "total_bytes": 37,
+          "offset": 0,
+          "bytes": 37,
+          "name": "boot_before",
+          "sha256": "c5b41d51c21ee3db4a83087697a2df7187821dede985024e34ac14639bf9f830"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 21,
+          "offset": 0,
+          "bytes": 21,
+          "name": "uptime_before",
+          "sha256": "0a914198ce5e739bf82825a1f0119627f7947f18408a9784faeb5751f645693a"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 2646,
+          "offset": 0,
+          "bytes": 2646,
+          "name": "session_before",
+          "sha256": "89d44fd1592d6691758f4d7def915b599293957c02589fb4f6c6d19eb891a23f"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 144,
+          "offset": 0,
+          "bytes": 144,
+          "name": "config",
+          "sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 4372,
+          "offset": 0,
+          "bytes": 4372,
+          "name": "owner",
+          "sha256": "95ba334f73f8623ca35a628c52d15a31d2e56c0e1a755bc57d40d825c74e5299"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 6436,
+          "offset": 0,
+          "bytes": 6436,
+          "name": "bootstrap",
+          "sha256": "29676c0a0100ca047bfe9cb113177e2c5c808e85c0cd9fcb601bac6faaa5b03c"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 45849,
+          "offset": 0,
+          "bytes": 45849,
+          "name": "model_before",
+          "sha256": "67e20bb0762f0b3e59d16cf2c4e6f9db1b912c1b87600069848a30cbc33f23ad"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 8302,
+          "offset": 0,
+          "bytes": 8302,
+          "name": "prompt",
+          "sha256": "9eae8c9cfe739ae93bb1753ee3bb051ba7761c99ebfe2aefd860387bf58625f3"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 5880,
+          "offset": 0,
+          "bytes": 5880,
+          "name": "system",
+          "sha256": "df90ce3e2ea5a37ca0e930add3a0e042fa8f8d58ecb45c0f14d32c3dcffdd32b"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 2874,
+          "offset": 0,
+          "bytes": 2874,
+          "name": "grammar",
+          "sha256": "615b2a38c946796b2c25fe4204347385b0b2f4d9bdc30a48897afa9079e41050"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 1346,
+          "offset": 0,
+          "bytes": 1346,
+          "name": "input_meta",
+          "sha256": "dd80cf4d878bcb723566a34ecd7ea932d0ca83094657b2701183f47def347c1a"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 17332,
+          "offset": 0,
+          "bytes": 17332,
+          "name": "input_ids",
+          "sha256": "c9ba3f19592339ac7b7f5f6a725a2b0d49773e1be77320066592452ccafcc38c"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 45560,
+          "offset": 29176,
+          "bytes": 16384,
+          "name": "sdk_log",
+          "sha256": "62059bf2953293f340d4433036ae885d73623f2c3754459008b188877149c20f"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "native_text",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "native_result",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "app_result",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "parent_action",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "parent_after",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "workflow_grant",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "workflow_result",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "workflow_abort",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "controller_candidate",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "task_result",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "background_cleanup",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "future_child_1_before",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "future_child_2_before",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "future_child_3_before",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "M",
+          "total_bytes": 0,
+          "offset": 0,
+          "bytes": 0,
+          "name": "future_model_2_before",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 2646,
+          "offset": 0,
+          "bytes": 2646,
+          "name": "session_after",
+          "sha256": "89d44fd1592d6691758f4d7def915b599293957c02589fb4f6c6d19eb891a23f"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 46886,
+          "offset": 0,
+          "bytes": 46886,
+          "name": "processes",
+          "sha256": "e6d37e67a4de858f0229509f3de5fa81121a2a8c3b00d2cf106fd2126ae1005c"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 37,
+          "offset": 0,
+          "bytes": 37,
+          "name": "boot_after",
+          "sha256": "c5b41d51c21ee3db4a83087697a2df7187821dede985024e34ac14639bf9f830"
+        },
+        {
+          "mode": "F",
+          "total_bytes": 21,
+          "offset": 0,
+          "bytes": 21,
+          "name": "uptime_after",
+          "sha256": "85bcaee5854aecd7dd770f2de506e6a97b6323647f2a967cd66f3d18ed2ebd5c"
+        }
+      ],
+      "script_sha256": "ae91b1ba295fe9cd12239082eb656dc623a373142f182c63800d1157234eea6f",
+      "relative_capture": "main-user/live-work/probe-0004",
+      "host_read_started_monotonic_s": 311698.641479298,
+      "host_read_returned_monotonic_s": 311699.216083042
+    }
+  ],
+  "last_session": {
+    "schema": "hepta.local-session.v1",
+    "status": "cancelled",
+    "task_id": "b415cf087c91485599352b39a78b6085",
+    "origin": "user_button",
+    "instruction_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+    "task_authorization_sha256": "6927c31a8606f02ae955d2afe554f02aab265df96c58d1bcd1afb1d39455ad59",
+    "task_authorization": {
+      "schema": "hepta.owner-task-authorization.v1",
+      "parser": "hepta.owner-tool-clauses.zh.v4-fixed-intents",
+      "instruction_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+      "authorization_sha256": "6927c31a8606f02ae955d2afe554f02aab265df96c58d1bcd1afb1d39455ad59",
+      "allowed_tools": [
+        "back",
+        "click",
+        "done",
+        "find_app",
+        "home",
+        "notes.create",
+        "open",
+        "scroll",
+        "submit",
+        "type",
+        "wait",
+        "web.search"
+      ],
+      "require_find_app_before_open": false,
+      "find_query": null,
+      "recognized_rules": [],
+      "arbitrary_semantic_constraints_verified": false
+    },
+    "background_request": {
+      "mode": "background",
+      "allowed_packages": [
+        "com.motorola.stylus"
+      ],
+      "bootstrap_package": "com.motorola.stylus",
+      "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false,
+      "owner_task_selection": {
+        "schema": "hepta.owner-task-app-selection.v1",
+        "owner_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+        "recognition": "natural_note_comma_prefix.v1",
+        "original_ui_initial_package": "com.motorola.stylus",
+        "original_ui_allowed_packages": [
+          "com.motorola.stylus",
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_initial_package": "com.motorola.stylus",
+        "effective_allowed_packages": [
+          "com.motorola.stylus"
+        ],
+        "effective_scope_within_selected_apps": true,
+        "effective_scope_strictly_smaller": true,
+        "initial_app_changed": false,
+        "package_from_model_or_screen": false,
+        "grants_tool_authority": false,
+        "changes_saved_preferences": false
+      }
+    },
+    "background_lease_unreleased": false,
+    "web_helper_lease_unreleased": false,
+    "debug_nonce_sha256": null,
+    "expected_scope_sha256": null,
+    "actual_scope_sha256": null,
+    "state": "已停止；已经发生的操作不会自动重做",
+    "pending": false,
+    "running": false,
+    "blocked": false,
+    "cleanup_known": true,
+    "app_uid": 10481,
+    "updated_wall_ms": 1794523207713,
+    "external_model": false,
+    "automatic_resume": false,
+    "goal_independently_verified": false,
+    "evidence_directory": "/data/data/org.trillionnium.hepta.local/files/control-tasks/b415cf087c91485599352b39a78b6085",
+    "model_reported_success": false,
+    "steps": 1,
+    "completion_verified": false,
+    "completion_evidence": {
+      "schema": "hepta.task-completion.v1",
+      "kind": "notes_save_list_reopen",
+      "owner_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+      "contract_sha256": "5b13e127ea4fa8ad30b02976f2a975491f25f94780411fa4369e9d085fb20d61",
+      "source": "controller_observation_checks_not_model_claims",
+      "completion_verified": false,
+      "missing": [
+        "model_bound_notes_create_with_owner_body_missing",
+        "actual_editor_body_missing",
+        "save_then_real_list_with_unique_body_item_missing",
+        "model_click_same_list_item_then_reopened_body_missing",
+        "current_editor_body_missing"
+      ],
+      "rejected_success_claims": 0,
+      "max_rejected_success_claims": 2,
+      "notes_launch_observed": false,
+      "editor_body_observed": false,
+      "list_observed": false,
+      "prior_visible_body_collision": false,
+      "unobserved_prior_notes_known": false,
+      "same_list_item_reopened": false,
+      "progress_scope": "cumulative_task_evidence_not_current_screen",
+      "current_surface": "unverified",
+      "current_list_item_node_id": null,
+      "current_editor_body_matched": false,
+      "writes_required_for_unknown_or_read_only_goal": false,
+      "grants_tool_authority": false,
+      "task_id": "b415cf087c91485599352b39a78b6085",
+      "contract": {
+        "schema": "hepta.task-completion.v1",
+        "kind": "notes_save_list_reopen",
+        "owner_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+        "contract_sha256": "5b13e127ea4fa8ad30b02976f2a975491f25f94780411fa4369e9d085fb20d61",
+        "recognition": "hepta.notes-owner-intent.v1/natural_note_comma_prefix.v1",
+        "expected_body_sha256": "828ffbafd25d19999a78ff2066780c9414c56aefe565a7cc70a19b643e7e6eb4",
+        "source": "immutable_owner_contract",
+        "body_source_start_utf16": 4,
+        "body_source_end_utf16": 45,
+        "note_persistence_verification_policy": "save_list_reopen",
+        "body_rewritten": false,
+        "model_may_change_goal": false,
+        "grants_tool_authority": false
+      },
+      "proofs": [],
+      "model_success_claims": [],
+      "identity_failure": null,
+      "display_id": 26,
+      "background_generation": "71d60345-4458-4046-9cef-7054e9bf8d57",
+      "persistent_storage_bytes_verified": false,
+      "new_database_item_identity_verified": false,
+      "current_editor_raw_exact": false,
+      "current_body_evidence": {
+        "matched": false,
+        "raw_exact": false,
+        "persistent_bytes_verified": false,
+        "node_id": null,
+        "action_label": null,
+        "raw_text_sha256": null,
+        "body_sha256": "828ffbafd25d19999a78ff2066780c9414c56aefe565a7cc70a19b643e7e6eb4",
+        "trailing_lf_count": -1,
+        "match_rule": "unavailable",
+        "missing": "unique_observed_NoteEditor_context_required"
+      },
+      "current_list_match": false,
+      "current_list_missing": "complete_body_on_one_executable_list_item_missing",
+      "current_list_evidence": {
+        "matched": false,
+        "missing": "complete_body_on_one_executable_list_item_missing",
+        "match_rule": null,
+        "node_id": null,
+        "source_path": null,
+        "source_view_id": null,
+        "source_text_sha256": null,
+        "node_app_tree_sha256": null,
+        "text_scope": "Complete accessibility text source; visual clipping and persistent storage bytes are unverified.",
+        "persistent_bytes_verified": false
+      },
+      "observation_chain_verified": false,
+      "terminal_binding_and_cleanup_verified": false,
+      "completion_actor": null,
+      "model_done_synthesized": false,
+      "controller_completion_requested": false,
+      "controller_native_parent_session_bound": null
+    }
+  },
+  "installed_identity_after": {
+    "hepta": {
+      "package": "org.trillionnium.hepta.local",
+      "uid": 10481,
+      "apks": [
+        {
+          "path": "/data/app/~~kjtm2QzruYL9-aUBXFIlQw==/org.trillionnium.hepta.local-UnoGsU3bLEhG5iG5r16jHA==/base.apk",
+          "sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62"
+        }
+      ]
+    },
+    "notes": {
+      "package": "com.motorola.stylus",
+      "uid": 10382,
+      "apks": [
+        {
+          "path": "/product/preinstall/MotoStylus/MotoStylus.apk",
+          "sha256": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+        }
+      ]
+    }
+  },
+  "fixed_intent_source_context": {
+    "schema": "hepta.v56-fixed-prompt-source-binding.v1",
+    "task_id": "b415cf087c91485599352b39a78b6085",
+    "build_receipt_sha256": "e27e74e94b0668c1c07b04863c9aaabf1b3235f9ff2d0d0d8bd9a346e46b2c6b",
+    "controller_source_sha256": "68185b0bd3cf17adfb94f62b32a764ce692512ea20b438bbcdca766cff49d167",
+    "source_commit": "9f4168616546233033edd4b254b4236ae987ea7e",
+    "source_inventory_sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+    "installed_identity": {
+      "package": "org.trillionnium.hepta.local",
+      "uid": 10481,
+      "apks": [
+        {
+          "path": "/data/app/~~kjtm2QzruYL9-aUBXFIlQw==/org.trillionnium.hepta.local-UnoGsU3bLEhG5iG5r16jHA==/base.apk",
+          "sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62"
+        }
+      ]
+    },
+    "grants_tool_authority": false,
+    "business_verified": false
+  },
+  "collection": {
+    "task_id": "b415cf087c91485599352b39a78b6085",
+    "associated_runs": [
+      {
+        "run_id": "ac4e1af0dab648f8b9d6f022410d63b0",
+        "association": "exact_owner_and_observation_id",
+        "files": [
+          {
+            "path": "runs/ac4e1af0dab648f8b9d6f022410d63b0/app-receipt.json",
+            "bytes": 6954,
+            "sha256": "fb3f643116c0487d6efe7ecafd2c8c404e39aa23abd0b6a1b27da1656eeead10"
+          },
+          {
+            "path": "runs/ac4e1af0dab648f8b9d6f022410d63b0/formatted-prompt.txt",
+            "bytes": 14292,
+            "sha256": "0772791c1efd5fafd206a75f623edd6afdae842d3e41d262c466ca4bc10b7691"
+          },
+          {
+            "path": "runs/ac4e1af0dab648f8b9d6f022410d63b0/grammar.gbnf",
+            "bytes": 2874,
+            "sha256": "615b2a38c946796b2c25fe4204347385b0b2f4d9bdc30a48897afa9079e41050"
+          },
+          {
+            "path": "runs/ac4e1af0dab648f8b9d6f022410d63b0/native-result.json",
+            "bytes": 4836,
+            "sha256": "32b384f4931754da281d2b37e996fe4a8722cd30e3da56986b512d6e4986397d"
+          },
+          {
+            "path": "runs/ac4e1af0dab648f8b9d6f022410d63b0/prompt-evidence.json",
+            "bytes": 1346,
+            "sha256": "dd80cf4d878bcb723566a34ecd7ea932d0ca83094657b2701183f47def347c1a"
+          },
+          {
+            "path": "runs/ac4e1af0dab648f8b9d6f022410d63b0/prompt.txt",
+            "bytes": 8302,
+            "sha256": "9eae8c9cfe739ae93bb1753ee3bb051ba7761c99ebfe2aefd860387bf58625f3"
+          },
+          {
+            "path": "runs/ac4e1af0dab648f8b9d6f022410d63b0/raw-text.txt",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "path": "runs/ac4e1af0dab648f8b9d6f022410d63b0/system.txt",
+            "bytes": 5880,
+            "sha256": "df90ce3e2ea5a37ca0e930add3a0e042fa8f8d58ecb45c0f14d32c3dcffdd32b"
+          }
+        ],
+        "app_receipt_available": true,
+        "run_id_binding_valid": true,
+        "app_receipt_schema": "hepta.local-model.task-request.v1",
+        "process_exit_observed": true,
+        "exit_code": 143,
+        "inference_completed": false,
+        "status": "cancelled",
+        "app_identity_and_runtime_valid": false,
+        "app_uid": 10481,
+        "package_name": "org.trillionnium.hepta.local",
+        "native_output_binding_valid": false,
+        "accelerator_runtime_valid": true,
+        "accelerator_offload_observed": true,
+        "controller_grammar_binding_valid": false,
+        "accelerator_log_evidence": {
+          "accelerator_offload_observed": true,
+          "device": "HTP0",
+          "model_buffer_device": "HTP0",
+          "offloaded_layers_observed": 25,
+          "model_buffer_lines": [
+            "\u001b[34m[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] load_tensors:         HTP0 model buffer size =  1006.99 MiB\u001b[0m"
+          ],
+          "fallback_lines": [],
+          "full_operator_coverage_proven": false
+        },
+        "runtime_evidence": {
+          "mode": "llm",
+          "runtime": "llama_cpp",
+          "compute_requested": "npu",
+          "device_resolved": "HTP0",
+          "device_warning": null,
+          "n_ctx_create": 8192,
+          "n_gpu_layers_create": -1,
+          "prompt_budget": {
+            "method": "llama_tokenize_exact_same_input_ids",
+            "is_exact_token_count": true,
+            "model_contract_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452",
+            "tokenizer_source_commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+            "checked": true,
+            "admitted": true,
+            "formatted_utf8_bytes": 14292,
+            "add_special": true,
+            "parse_special": true,
+            "input_ids_passed_directly": true,
+            "prompt_tokens_exact": 4333,
+            "input_ids_count": 4333,
+            "input_ids_sha256": "c9ba3f19592339ac7b7f5f6a725a2b0d49773e1be77320066592452ccafcc38c",
+            "generation_tokens": 256,
+            "reserved_tokens": 256,
+            "total_context_tokens": 4845,
+            "context_tokens": 8192
+          },
+          "profile": {
+            "ttft_us": 4541043,
+            "media_time_us": 0,
+            "prompt_time_us": 4540416,
+            "decode_time_us": 665,
+            "prompt_tokens": 4333,
+            "generated_tokens": 1,
+            "draft_n_total": 0,
+            "draft_n_accepted": 0,
+            "prefill_tokens_per_second": 954.3178422417683,
+            "decode_tokens_per_second": 1503.7593984962407
+          }
+        },
+        "worker_generation": "37d4fe0f2143418b826b2812f2fb3675",
+        "request_sequence": null,
+        "task_request_binding_valid": false,
+        "accelerator_log_scope": "same_owned_task_generation"
+      }
+    ],
+    "omitted_screenshots": [],
+    "errors": [],
+    "files": [
+      {
+        "path": "task/a8a8711427584126bd208ba929504c28.png",
+        "bytes": 100384,
+        "sha256": "d5e42f94bae2c1912ffde897f6f87f1cddf59bcd5a67143baa4c9d57cde34215"
+      },
+      {
+        "path": "task/background-binding.json",
+        "bytes": 1934,
+        "sha256": "47a7f66bdc8478878c9f4b094f9977502fe0f59622dda4268eb90ca6448beee9"
+      },
+      {
+        "path": "task/background-bootstrap.json",
+        "bytes": 6436,
+        "sha256": "29676c0a0100ca047bfe9cb113177e2c5c808e85c0cd9fcb601bac6faaa5b03c"
+      },
+      {
+        "path": "task/background-broker-71d60345-4458-4046-9cef-7054e9bf8d57.json",
+        "bytes": 852,
+        "sha256": "5d7d1a465fde235276f4e21d942478910483fcd50053581ebb5020a1c97bcc45"
+      },
+      {
+        "path": "task/background-cleanup.json",
+        "bytes": 5154,
+        "sha256": "7b0630444bccbcc565b10a1eeb3c58c909037d5ed5bbdfe184bc1802c8ae52d1"
+      },
+      {
+        "path": "task/completion-installed-identity.json",
+        "bytes": 331,
+        "sha256": "11fbcb9bc3dfe0d84c0e5e98cc6c769411ca6234f0b587c2297d0d6428043417"
+      },
+      {
+        "path": "task/initial-app-catalogue.json",
+        "bytes": 444,
+        "sha256": "c9b120bbd0e8776f850b032092a455517c322bf8544d89e89e66c0ab3dd5bd50"
+      },
+      {
+        "path": "task/owner.json",
+        "bytes": 4372,
+        "sha256": "95ba334f73f8623ca35a628c52d15a31d2e56c0e1a755bc57d40d825c74e5299"
+      },
+      {
+        "path": "task/result.json",
+        "bytes": 18095,
+        "sha256": "f7fcf00ecf29805c0acea426e68c4b6ace4532e39064d9fedce8619cb90be250"
+      },
+      {
+        "path": "task/scope-binding.json",
+        "bytes": 1203,
+        "sha256": "8ce73ba75f5d5b3169fb9cbb617a828ba034aff98b1271fb3f5491b534c69098"
+      },
+      {
+        "path": "task/scope-observation-a8a8711427584126bd208ba929504c28.json",
+        "bytes": 56359,
+        "sha256": "d24bf8c77c832b3c6160793dd51ca7a74be6d07e2b3f9c6f315435f6b4dcbb4e"
+      },
+      {
+        "path": "task/step-01-before.json",
+        "bytes": 45849,
+        "sha256": "67e20bb0762f0b3e59d16cf2c4e6f9db1b912c1b87600069848a30cbc33f23ad"
+      },
+      {
+        "path": "task/step-01-budget-0.json",
+        "bytes": 2801,
+        "sha256": "2dfc8e97a0676320a9490b88b7cf2f175cd5b429e392f71ffc43591c6195322a"
+      }
+    ],
+    "app_uid_expected": 10481,
+    "compute_expected": "npu",
+    "context_expected": 8192,
+    "model_profile_expected": "lfm3-1.7b-qad-q4_0",
+    "task_model_sessions": [
+      {
+        "worker_generation": "37d4fe0f2143418b826b2812f2fb3675",
+        "binding_valid": false,
+        "files": [
+          {
+            "path": "runs/37d4fe0f2143418b826b2812f2fb3675/app-session-receipt.json",
+            "bytes": 2126,
+            "sha256": "7fd0831c93e39c327ae1c78abbe23c24aab42650ebf740a66a62a01b33338d76"
+          },
+          {
+            "path": "runs/37d4fe0f2143418b826b2812f2fb3675/native-session-result.json",
+            "bytes": 684,
+            "sha256": "bd00787faf0b3e134d74a3c02fcf2e5433a438acd9f7e140ee0c520043fda156"
+          },
+          {
+            "path": "runs/37d4fe0f2143418b826b2812f2fb3675/stdout.log",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "path": "runs/37d4fe0f2143418b826b2812f2fb3675/stderr.log",
+            "bytes": 46075,
+            "sha256": "7d25f65d59721397edf1a3571ab2e6a6f750cf18905171d2c57cce2c26672e2b"
+          }
+        ],
+        "process_exit_observed": true,
+        "exit_code": 143,
+        "requests_received": 1,
+        "model_create_count": 1,
+        "model_reset_count": 1
+      }
+    ],
+    "task_model_sessions_valid": false
+  },
+  "input_ids_evidence": {
+    "schema": "hepta.input-ids-binary-collection.v1",
+    "task_id": "b415cf087c91485599352b39a78b6085",
+    "original_collection_sha256": "9f5faac0aba9fd919a885002e0dd9a4012ca22fa90e62aed1a0a5e2d2b2f7055",
+    "diagnostic_only": true,
+    "business_verdict_unchanged": true,
+    "original_collection_unchanged": true,
+    "fixed_filename": "formatted-input-ids.le32",
+    "runs": [
+      {
+        "run_id": "ac4e1af0dab648f8b9d6f022410d63b0",
+        "path": "runs/ac4e1af0dab648f8b9d6f022410d63b0/formatted-input-ids.le32",
+        "available": true,
+        "bytes": 17332,
+        "sha256": "c9ba3f19592339ac7b7f5f6a725a2b0d49773e1be77320066592452ccafcc38c",
+        "encoding": "uint32-little-endian",
+        "decoded_count": 4333,
+        "checks": {
+          "nonempty_aligned_le32": true,
+          "native_request_id": true,
+          "metadata_request_id": true,
+          "metadata_encoding": true,
+          "actual_sha_matches_native_budget": true,
+          "actual_sha_matches_prompt_evidence": true,
+          "actual_bytes_match_prompt_evidence": true,
+          "actual_count_matches_native_budget": true,
+          "actual_count_matches_prompt_evidence": true,
+          "actual_count_matches_sdk_prompt_tokens": true,
+          "exact_same_ids_contract": true
+        },
+        "actual_bytes_verified_against_native_receipt": true,
+        "native-result.json": {
+          "path": "runs/ac4e1af0dab648f8b9d6f022410d63b0/native-result.json",
+          "bytes": 4836,
+          "sha256": "32b384f4931754da281d2b37e996fe4a8722cd30e3da56986b512d6e4986397d"
+        },
+        "prompt-evidence.json": {
+          "path": "runs/ac4e1af0dab648f8b9d6f022410d63b0/prompt-evidence.json",
+          "bytes": 1346,
+          "sha256": "dd80cf4d878bcb723566a34ecd7ea932d0ca83094657b2701183f47def347c1a"
+        },
+        "native_budget_fields": {
+          "method": "llama_tokenize_exact_same_input_ids",
+          "is_exact_token_count": true,
+          "model_contract_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452",
+          "input_ids_count": 4333,
+          "prompt_tokens_exact": 4333,
+          "input_ids_sha256": "c9ba3f19592339ac7b7f5f6a725a2b0d49773e1be77320066592452ccafcc38c",
+          "input_ids_passed_directly": true
+        },
+        "prompt_evidence_fields": {
+          "schema": "hepta.private-prompt-evidence.v1",
+          "request_id": "ac4e1af0dab648f8b9d6f022410d63b0",
+          "model_profile": "lfm3-1.7b-qad-q4_0",
+          "model_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452",
+          "input_ids_count": 4333,
+          "input_ids_bytes": 17332,
+          "input_ids_encoding": "uint32-little-endian",
+          "input_ids_sha256": "c9ba3f19592339ac7b7f5f6a725a2b0d49773e1be77320066592452ccafcc38c",
+          "input_ids_will_be_passed_directly": true
+        },
+        "sdk_prompt_tokens": 4333
+      }
+    ],
+    "all_associated_ids_bytes_verified": true,
+    "scope": "Actual binary bytes compared with the collected native and prompt-evidence receipts; not a new model run, retokenization proof or business success."
+  },
+  "original_ui_selection": {
+    "allowed_packages": [
+      "com.motorola.stylus",
+      "org.trillionnium.hepta.webhelper"
+    ],
+    "bootstrap_package": "com.motorola.stylus",
+    "scope_count": 2,
+    "automatic_target_text": "本次将自动使用：Moto 笔记。已保存的应用范围保持不变。",
+    "initial_spinner_hidden": true,
+    "selection_source": "ordinary_visible_multi_choice_and_persisted_initial"
+  },
+  "recomputed_effective_background_request": {
+    "mode": "background",
+    "allowed_packages": [
+      "com.motorola.stylus"
+    ],
+    "bootstrap_package": "com.motorola.stylus",
+    "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+    "bootstrap_model_issued": false,
+    "main_display_fallback": false,
+    "home_allowed": false,
+    "owner_task_selection": {
+      "schema": "hepta.owner-task-app-selection.v1",
+      "owner_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+      "recognition": "natural_note_comma_prefix.v1",
+      "original_ui_initial_package": "com.motorola.stylus",
+      "original_ui_allowed_packages": [
+        "com.motorola.stylus",
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "effective_initial_package": "com.motorola.stylus",
+      "effective_allowed_packages": [
+        "com.motorola.stylus"
+      ],
+      "effective_scope_within_selected_apps": true,
+      "effective_scope_strictly_smaller": true,
+      "initial_app_changed": false,
+      "package_from_model_or_screen": false,
+      "grants_tool_authority": false,
+      "changes_saved_preferences": false
+    }
+  },
+  "controller_workflow_proof": {
+    "schema": "hepta.background-controller-workflow-proof.v1",
+    "verified": false,
+    "qualified": false,
+    "lineage": "New v56 offline module; body/list/window functions reused from independently reviewed 2cf183 source.",
+    "reused_proof_source_sha256": "2cf183368b8c9534fb75bc91f0b14408d806741a36ac67514f743ea4e4d9671a",
+    "body_source_sha256": "091bcb7a633c9fec1e668b637fb3619de712c441db99f2164c47c4b3ba629e94",
+    "terminal_claim_recognized": false,
+    "visual_reviewed": false,
+    "main_screen_settings_coexistence_verified": false,
+    "persistent_storage_bytes_verified": false,
+    "new_database_item_identity_verified": false,
+    "full_native_accelerator_and_le32_qualification_assigned_here": false,
+    "phone_or_source_test_claimed": false,
+    "missing_or_invalid": "ValueError: actual v56 controller terminal claim missing; no child-chain qualification"
+  },
+  "typed_tool_child_actions": [],
+  "unverified_tool_child_files": [],
+  "coexistence": {
+    "mode": "not_exercised",
+    "main_scroll_visual_review_required": false,
+    "machine_checks_passed": true
+  },
+  "display_policy": {
+    "schema": "hepta.independent-display-policy-assessment.v1",
+    "verified": true,
+    "all_broker_and_ordinary_app_numeric_readbacks_valid": true,
+    "runtime_constant_mapping_unchanged": true,
+    "bootstrap_launch_response_valid": true,
+    "system_display_identity_type_geometry_valid": true,
+    "numeric_records": [
+      {
+        "file": "background-bootstrap.json",
+        "verified": true,
+        "flags": 6272,
+        "flag_constants": {
+          "FLAG_TRUSTED": 128,
+          "FLAG_OWN_FOCUS": 2048,
+          "FLAG_STEAL_TOP_FOCUS_DISABLED": 4096,
+          "FLAG_SECURE": 2,
+          "FLAG_ALWAYS_UNLOCKED": 512
+        },
+        "required_mask": 6272,
+        "forbidden_mask": 514,
+        "ime_actual": 2,
+        "ime_hide_value": 2,
+        "app_uid": 10481,
+        "app_pid": 25673,
+        "broker_request_id": "b63aae83-5664-41fb-a1a9-1786425e8d0b",
+        "display_id": 26,
+        "generation": "71d60345-4458-4046-9cef-7054e9bf8d57",
+        "readback_elapsed_ms": [
+          865452296,
+          865452297,
+          865452298,
+          865452298
+        ],
+        "independent_app_check_scope": "public Display flags and identity; IME is broker framework readback"
+      }
+    ],
+    "system_samples": [
+      {
+        "index": 2,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "64176a5c48cb4cfcdc977d4b8dc495f0bf95678e992b7b5febbe0c5bb47e3354"
+      },
+      {
+        "index": 3,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "64176a5c48cb4cfcdc977d4b8dc495f0bf95678e992b7b5febbe0c5bb47e3354"
+      },
+      {
+        "index": 4,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "64176a5c48cb4cfcdc977d4b8dc495f0bf95678e992b7b5febbe0c5bb47e3354"
+      },
+      {
+        "index": 5,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "64176a5c48cb4cfcdc977d4b8dc495f0bf95678e992b7b5febbe0c5bb47e3354"
+      },
+      {
+        "index": 6,
+        "identity_type_geometry_valid": true,
+        "printed_required_names": [
+          "FLAG_TRUSTED"
+        ],
+        "description_sha256": "64176a5c48cb4cfcdc977d4b8dc495f0bf95678e992b7b5febbe0c5bb47e3354"
+      }
+    ],
+    "raw_description_prints_all_required_names": false,
+    "text_representation_rule": "Own-focus policy requires actual numeric bits from broker and ordinary UID readback; missing display debug labels do not waive either source.",
+    "independent_app_check_scope": "flags and display identity; actual IME policy is read and validated by the broker"
+  },
+  "acceptance": {
+    "owner_and_visible_button_bound": true,
+    "owner_selected_bootstrap_bound": true,
+    "bootstrap_model_issued": false,
+    "model_issued_effect_count": 0,
+    "model_issued_open_count": 0,
+    "model_issued_app_discovery_qualified": false,
+    "actions": [],
+    "invalid_action_bindings": [],
+    "unsupported_actions": [],
+    "submit_effect_qualification_supported": false,
+    "all_dispatched_effects_have_matching_after": true,
+    "observation_identity_conflicts": [],
+    "local_accelerator_inference_verified": false,
+    "all_model_owner_prompts_bound": true,
+    "ordinary_uid_model_process_observed": false,
+    "root_or_shell_broker_process_observed": true,
+    "broker_process_identity": {
+      "verified": true,
+      "pids": [
+        5843
+      ],
+      "matched_sample_count": 5,
+      "identities": [
+        {
+          "pid": 5843,
+          "uid": 0,
+          "argv0": "app_process"
+        }
+      ],
+      "identity_scope": "system ps UID/PID and exact argv0/class/flag-value tokens; not an executable-byte attestation"
+    },
+    "notes_business_independently_verified": false,
+    "model_issued_notes_create_count": 0,
+    "final_notes_owned_display_bound": true,
+    "result_observation_id": "a8a8711427584126bd208ba929504c28",
+    "controller_completion_verified_claim": false,
+    "controller_completion_evidence": {
+      "schema": "hepta.task-completion.v1",
+      "kind": "notes_save_list_reopen",
+      "owner_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+      "contract_sha256": "5b13e127ea4fa8ad30b02976f2a975491f25f94780411fa4369e9d085fb20d61",
+      "source": "controller_observation_checks_not_model_claims",
+      "completion_verified": false,
+      "missing": [
+        "model_bound_notes_create_with_owner_body_missing",
+        "actual_editor_body_missing",
+        "save_then_real_list_with_unique_body_item_missing",
+        "model_click_same_list_item_then_reopened_body_missing",
+        "current_editor_body_missing"
+      ],
+      "rejected_success_claims": 0,
+      "max_rejected_success_claims": 2,
+      "notes_launch_observed": false,
+      "editor_body_observed": false,
+      "list_observed": false,
+      "prior_visible_body_collision": false,
+      "unobserved_prior_notes_known": false,
+      "same_list_item_reopened": false,
+      "progress_scope": "cumulative_task_evidence_not_current_screen",
+      "current_surface": "unverified",
+      "current_list_item_node_id": null,
+      "current_editor_body_matched": false,
+      "writes_required_for_unknown_or_read_only_goal": false,
+      "grants_tool_authority": false,
+      "task_id": "b415cf087c91485599352b39a78b6085",
+      "contract": {
+        "schema": "hepta.task-completion.v1",
+        "kind": "notes_save_list_reopen",
+        "owner_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+        "contract_sha256": "5b13e127ea4fa8ad30b02976f2a975491f25f94780411fa4369e9d085fb20d61",
+        "recognition": "hepta.notes-owner-intent.v1/natural_note_comma_prefix.v1",
+        "expected_body_sha256": "828ffbafd25d19999a78ff2066780c9414c56aefe565a7cc70a19b643e7e6eb4",
+        "source": "immutable_owner_contract",
+        "body_source_start_utf16": 4,
+        "body_source_end_utf16": 45,
+        "note_persistence_verification_policy": "save_list_reopen",
+        "body_rewritten": false,
+        "model_may_change_goal": false,
+        "grants_tool_authority": false
+      },
+      "proofs": [],
+      "model_success_claims": [],
+      "identity_failure": null,
+      "display_id": 26,
+      "background_generation": "71d60345-4458-4046-9cef-7054e9bf8d57",
+      "persistent_storage_bytes_verified": false,
+      "new_database_item_identity_verified": false,
+      "current_editor_raw_exact": false,
+      "current_body_evidence": {
+        "matched": false,
+        "raw_exact": false,
+        "persistent_bytes_verified": false,
+        "node_id": null,
+        "action_label": null,
+        "raw_text_sha256": null,
+        "body_sha256": "828ffbafd25d19999a78ff2066780c9414c56aefe565a7cc70a19b643e7e6eb4",
+        "trailing_lf_count": -1,
+        "match_rule": "unavailable",
+        "missing": "unique_observed_NoteEditor_context_required"
+      },
+      "current_list_match": false,
+      "current_list_missing": "complete_body_on_one_executable_list_item_missing",
+      "current_list_evidence": {
+        "matched": false,
+        "missing": "complete_body_on_one_executable_list_item_missing",
+        "match_rule": null,
+        "node_id": null,
+        "source_path": null,
+        "source_view_id": null,
+        "source_text_sha256": null,
+        "node_app_tree_sha256": null,
+        "text_scope": "Complete accessibility text source; visual clipping and persistent storage bytes are unverified.",
+        "persistent_bytes_verified": false
+      },
+      "observation_chain_verified": false,
+      "terminal_binding_and_cleanup_verified": false,
+      "completion_actor": null,
+      "model_done_synthesized": false,
+      "controller_completion_requested": false,
+      "controller_native_parent_session_bound": null
+    },
+    "result_screenshot_hash_verified": true,
+    "visual_screenshot_reviewed": false,
+    "sampled_main_focus_matches_explicit_user_phases": true,
+    "target_task_only_on_owned_display": true,
+    "display_policy_readback_verified": true,
+    "broker_display_flags": 6272,
+    "cleanup_confirmed_by_app_broker_and_system": true,
+    "journal_absent": true,
+    "broker_process_exit_observed": true,
+    "broker_process_exit_code": 0,
+    "generation": "71d60345-4458-4046-9cef-7054e9bf8d57",
+    "display_id": 26,
+    "display_name": "hepta-bg-71d60345-4458-4046-9cef-7054e9bf8d57",
+    "sample_count": 10,
+    "active_display_samples": 5,
+    "maximum_sample_start_gap_s": 3.6560821519815363,
+    "maximum_sample_duration_s": 0.3091799449757673,
+    "focus_claim_scope": "sampled points only; sequential dumps are not atomic and do not prove zero transient interference",
+    "controller_status": "cancelled",
+    "controller_model_reported_success": false
+  },
+  "infrastructure_checks_passed": false,
+  "notes_validation_pending": {
+    "not_applicable": "intentional first-request cancellation case",
+    "business_verdict": "not_tested_by_this_probe",
+    "normal_inference_completion_expected": false
+  },
+  "machine_checks_passed": false,
+  "cancel_final_snapshot": {
+    "task_json_bytes_equal_collection": true,
+    "session_equals_terminal": true,
+    "actual_task_json_sha256": {
+      "background-binding.json": "47a7f66bdc8478878c9f4b094f9977502fe0f59622dda4268eb90ca6448beee9",
+      "background-bootstrap.json": "29676c0a0100ca047bfe9cb113177e2c5c808e85c0cd9fcb601bac6faaa5b03c",
+      "background-broker-71d60345-4458-4046-9cef-7054e9bf8d57.json": "5d7d1a465fde235276f4e21d942478910483fcd50053581ebb5020a1c97bcc45",
+      "background-cleanup.json": "7b0630444bccbcc565b10a1eeb3c58c909037d5ed5bbdfe184bc1802c8ae52d1",
+      "completion-installed-identity.json": "11fbcb9bc3dfe0d84c0e5e98cc6c769411ca6234f0b587c2297d0d6428043417",
+      "initial-app-catalogue.json": "c9b120bbd0e8776f850b032092a455517c322bf8544d89e89e66c0ab3dd5bd50",
+      "owner.json": "95ba334f73f8623ca35a628c52d15a31d2e56c0e1a755bc57d40d825c74e5299",
+      "result.json": "f7fcf00ecf29805c0acea426e68c4b6ace4532e39064d9fedce8619cb90be250",
+      "scope-binding.json": "8ce73ba75f5d5b3169fb9cbb617a828ba034aff98b1271fb3f5491b534c69098",
+      "scope-observation-a8a8711427584126bd208ba929504c28.json": "d24bf8c77c832b3c6160793dd51ca7a74be6d07e2b3f9c6f315435f6b4dcbb4e",
+      "step-01-before.json": "67e20bb0762f0b3e59d16cf2c4e6f9db1b912c1b87600069848a30cbc33f23ad",
+      "step-01-budget-0.json": "2dfc8e97a0676320a9490b88b7cf2f175cd5b429e392f71ffc43591c6195322a"
+    },
+    "observation_scope": "final read after two post-terminal system samples and collection; not an indefinite claim"
+  },
+  "cancellation_acceptance": {
+    "schema": "hepta.visible-stop-cancellation-evidence.v1",
+    "machine_checks_passed": true,
+    "qualified": false,
+    "native_inference_completion_required": false,
+    "native_exit_zero_required": false,
+    "business_acceptance": false,
+    "root_busy_image_review_pending": true,
+    "continuous_npu_busy_verified": false,
+    "observed_worker_exit_code": 143,
+    "app_reports_cleanup_known": true,
+    "argv_identity": {
+      "actual_full_argv0": "/data/app/~~kjtm2QzruYL9-aUBXFIlQw==/org.trillionnium.hepta.local-UnoGsU3bLEhG5iG5r16jHA==/lib/arm64/libhepta_local_runner.so",
+      "observed_argv0": "libhepta_local_runner.so",
+      "following_argv_exact": true,
+      "native_worker_sha256": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+      "actual_signed_apk_sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62",
+      "uid": 10481,
+      "worker_pid": 5903,
+      "app_pid": 25673
+    },
+    "typed_cancellation_receipts": {
+      "schema": "hepta.v53-owned-cancellation-receipt-proof.v1",
+      "qualified": false,
+      "release_identity_verified_here": false,
+      "platform_errno_verified_here": false,
+      "stop_or_no_later_effects_verified_here": false,
+      "system_cleanup_verified_here": false,
+      "normal_native_success_claim": false,
+      "all_checks_passed": true,
+      "checks": {
+        "source_and_record_bytes": true,
+        "app_session_identity": true,
+        "first_request_not_accepted": true,
+        "observed_exit_and_durable_cleanup": true,
+        "native_sdk_cleanup_contract": true,
+        "separate_cancel_claim": true,
+        "single_owned_termination": true,
+        "task_terminal_original_receipt": true
+      },
+      "task_id": "b415cf087c91485599352b39a78b6085",
+      "worker_generation": "37d4fe0f2143418b826b2812f2fb3675",
+      "worker_pid": 5903,
+      "original_sha256": {
+        "app_session": "7fd0831c93e39c327ae1c78abbe23c24aab42650ebf740a66a62a01b33338d76",
+        "native_session": "bd00787faf0b3e134d74a3c02fcf2e5433a438acd9f7e140ee0c520043fda156",
+        "task_result": "f7fcf00ecf29805c0acea426e68c4b6ace4532e39064d9fedce8619cb90be250"
+      },
+      "source_pins": {
+        "src/org/trillionnium/hepta/local/LocalModelEngine.java": "0b91b202be78b6ca9ff90335b7ac2620a5583b102babbeacc24a37d529076fe8",
+        "src/org/trillionnium/hepta/local/OwnedWorkerCancellation.java": "eaa708351cfcac921e4e607a1789f6cb45dc4db61adb610029954c195fda2ec9",
+        "src/org/trillionnium/hepta/local/WarmProcessSession.java": "b179a624d475cbf787964bfc17d628ed122d4ae14a08239ac0cb1ece5c58598a",
+        "native/generate_adapter.py": "986fe422f33b370e553feee605964bab0e6f496ae49fee1f0471bc178b4455e7",
+        "native/warm-protocol.inc": "fc6314b10d3d5542832eeca02184a42ab6fd97c118d9d89c6e55dfed83770268"
+      },
+      "platform_broken_pipe_errno": 32,
+      "done_delivery": "epipe_or_invalid"
+    },
+    "android_target_errno_binding_sha256": "5907334b97da50bb66b6343898dacc1ddfa7f15aa942925d3586eacf2b003ee7",
+    "task_id": "b415cf087c91485599352b39a78b6085",
+    "first_run_id": "ac4e1af0dab648f8b9d6f022410d63b0",
+    "worker_generation": "37d4fe0f2143418b826b2812f2fb3675",
+    "interrupted_worker_exit_code": 143,
+    "actual_input_ids_bytes": 17332,
+    "actual_input_ids_sha256": "c9ba3f19592339ac7b7f5f6a725a2b0d49773e1be77320066592452ccafcc38c",
+    "known_cancelled_terminal": true,
+    "no_dispatched_model_or_tool_child_actions": true,
+    "cleanup_confirmed": true,
+    "observed_sdk_cleanup_verified": true,
+    "normal_native_success_claim": false,
+    "native_exit_143_required": true,
+    "live_command": {
+      "path": "commands/00065-live-work-cancel-before.json",
+      "command_index": 65,
+      "metadata_sha256": "66e446cf57fd7a74c3a0d4bb8528cdacdcb259c08211e440575912e3298bf1ec",
+      "stdout_sha256": "d6fd65000af7317397f13fa92e7da0fbdb6b79ae29c6994048f5309dc6f901bc",
+      "stdout_bytes": 162045,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stop_command": {
+      "path": "commands/00069-ordinary-visible-hepta-stop-once.json",
+      "command_index": 69,
+      "metadata_sha256": "51fa655e7f8f883afd39790d1845f19cb13ec0e4a907b3fa6af8676e08dafb75",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "clock_commands": [
+      {
+        "path": "commands/00068-cancel-tap-before-clock.json",
+        "command_index": 68,
+        "metadata_sha256": "9d65f05e8a441c9877586fd3edd2442241bb54fd58624613bc42f672e21a8be9",
+        "stdout_sha256": "f701e5e079581bbaf2b0bb841121374d55a2237fde24433c98cad4786d329fb9",
+        "stdout_bytes": 58,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "commands/00070-cancel-tap-after-clock.json",
+        "command_index": 70,
+        "metadata_sha256": "476081633e91aa798f9a667aeacce73ba7163ced40ea5b412db9746056adcc03",
+        "stdout_sha256": "9da41eec67b215c053c70f77adfe3666f1352fc6a389e722fba010f9828ea216",
+        "stdout_bytes": 58,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "original_collection_sha256": "9f5faac0aba9fd919a885002e0dd9a4012ca22fa90e62aed1a0a5e2d2b2f7055"
+  },
+  "ended_wall_s": 1794523214.4870887
+}
