@@ -1,0 +1,78 @@
+{
+  "schema": "hepta.main57-host-null-fixture-independent-source-review.v1",
+  "reviewer": "mobile_models",
+  "status": "no source-level blocker found in this explicit test-only platform representation adapter",
+  "source_packet": {
+    "git_blob_sha": "16ad80bd40b1753a65837680698a71e516ecfd73",
+    "bytes": 12303,
+    "sha256": "ea7cb1288b9e108efe1ef6d11b97480c60ae5ce5ab53f01381fcf1022ffb25eb"
+  },
+  "old_helper": {
+    "bytes": 148415,
+    "sha256": "9d0641663811526ebfacef8f8695727ea95c73825abfd422b5123ab64bcf9067",
+    "git_blob_sha": "0ca8e273164ea7dac5447cb1677d06af0bbe8dc3"
+  },
+  "new_helper": {
+    "bytes": 154154,
+    "sha256": "e0cc2a474545623cd8e79aaa73afb130f5dc8733efc43f521ad909df0ec384a2",
+    "git_blob_sha": "348d62b28b8930b05d3f401c06557692e7c3081e"
+  },
+  "mechanical": {
+    "ordered_replacements": 5,
+    "each_intermediate_sha256_verified": true,
+    "complete_forward_equal": true,
+    "complete_reverse_equal": true,
+    "production_595_changed": false
+  },
+  "primary_constructor_evidence": {
+    "repository": "stleary/JSON-java",
+    "ref": "20240303",
+    "git_blob_sha": "6494f93499226eb99a96a41a7671094e3dd6f7a8",
+    "bytes": 107707,
+    "sha256": "e7ff98437abfc67e18765f4e810247ce9a908328b39dfe999d61a8eb17dca49c",
+    "directly_fetched_and_whole_hashed": true,
+    "finding": "The Map constructor inserts an entry only when its Java value is non-null."
+  },
+  "archived_inputs": {
+    "git_blob_sha": "801c7145092578641b083c5e9b367b65ce5f512d",
+    "bytes": 879788,
+    "sha256": "56a2da5e560e38fbbcabd25214ff343503e6fc75cfbc4a5458bd897be155e5f0",
+    "original_full_raw_files": 4,
+    "all4_bytes_and_hashes_verified": true,
+    "all4_dom_strings_unchanged": true
+  },
+  "verified": [
+    "Both original capture binding authorization objects explicitly contain find_query with JSON null; neither original is modified.",
+    "hostObservationCapture first recompiles the complete immutable OWNER authorization, requires Java-null in the compiled map, restores explicit JSONObject.NULL to the desktop map representation and compares the complete original authorization canonically.",
+    "Only the one explicit find_query key is removed from a deep copy. Restoring it must recover the complete original capture; absent or non-null original values are rejected.",
+    "The two archived original binding hashes independently recompute to 427b3e7743e044dc06643468e976ba0fd47c27b28b21203473fd31738937dc53. The one-key host copies independently recompute to b56264d8894c3c3946437e9aab857c3ccf8453170396acfbff5e556411da1e69.",
+    "Both exact binding hashes are runtime fixture preconditions; production WebTaskPurpose.requireBinding remains unchanged and is still invoked on the host copy.",
+    "The existing positive case adds four assertions for archived-vs-derived distinction, proof hash binding, missing-key rejection and non-null rejection. Old case names and order are preserved.",
+    "Report provenance explicitly identifies derived host captures as copies rather than original FD records. Unarchived complete 89-node traversal remains synthetic.",
+    "The existing compareObservationBracket production method is called unchanged; no source inventory, protocol, authority or phone path is relaxed."
+  ],
+  "actual_failure_preserved": {
+    "bytes": 30361,
+    "sha256": "d66b4dcaf0eed2b650df9e88928a32ab5145608f600b868864c3925011d72532",
+    "git_blob_sha": "4f436784332e6a1bf7200cbaf105c28e17a55b29",
+    "path": "/home/alex/hepta-local-007f-20261111/v57-main-web-regression-host-r1/RESULT.json"
+  },
+  "scope": {
+    "old_79_case_order_unchanged": true,
+    "additional_assertions": 4,
+    "expected_cases": 79,
+    "expected_assertions": 215,
+    "actual_cases_from_this_review": null,
+    "actual_assertions_from_this_review": null,
+    "new_test_suite": false,
+    "python_or_java_executed_here": false,
+    "host_or_phone_actions_here": 0,
+    "actual_business_verified": false
+  },
+  "limits": [
+    "Source and exact-data review only; actual host execution remains Root-owned.",
+    "This record does not turn the earlier OWNER evidence failure into a pass.",
+    "No claim that synthetic complete native arrays or derived captures are original Android records.",
+    "No Main57 source change or CAS was performed."
+  ]
+}

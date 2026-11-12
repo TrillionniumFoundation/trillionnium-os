@@ -1,0 +1,12 @@
+Exception in thread "main" java.lang.IllegalArgumentException: actual original OWNER compiler evidence differs
+	at org.trillionnium.hepta.webprotocol.WebTaskPurpose.require(WebTaskPurpose.java:101)
+	at org.trillionnium.hepta.webprotocol.WebTaskPurpose.fromAttach(WebTaskPurpose.java:79)
+	at org.trillionnium.hepta.webprotocol.WebTaskPurpose.requireBinding(WebTaskPurpose.java:88)
+	at org.trillionnium.hepta.local.WebNativeGeometry.read(WebNativeGeometry.java:37)
+	at org.trillionnium.hepta.local.WebFlightNativeStability.compareObservationBracket(WebFlightNativeStability.java:141)
+	at org.trillionnium.hepta.local.WebFlightNativeStabilityHostCases.observationProof(WebFlightNativeStabilityHostCases.java:223)
+	at org.trillionnium.hepta.local.WebFlightNativeStabilityHostCases.lambda$runObservationBracketCases$37(WebFlightNativeStabilityHostCases.java:252)
+	at org.trillionnium.hepta.local.WebFlightNativeStabilityHostCases.test(WebFlightNativeStabilityHostCases.java:48)
+	at org.trillionnium.hepta.local.WebFlightNativeStabilityHostCases.runObservationBracketCases(WebFlightNativeStabilityHostCases.java:251)
+	at org.trillionnium.hepta.local.WebFlightNativeStabilityHostCases.run(WebFlightNativeStabilityHostCases.java:185)
+	at org.trillionnium.hepta.local.WebTaskCompositionHostTest.main(WebTaskCompositionHostTest.java:637)

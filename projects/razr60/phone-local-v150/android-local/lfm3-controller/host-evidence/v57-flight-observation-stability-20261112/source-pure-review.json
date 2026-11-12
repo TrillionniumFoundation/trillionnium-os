@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.main57-flight-observation-pure-source-review.v1",
+  "scope": "Independent source-only review of compareObservationBracket and requireCompleteObservation; no producer rewrite or new execution gate.",
+  "reviewer_role": "mobile_models",
+  "status": "no_source_blocker_in_reviewed_scope",
+  "inputs": {
+    "candidate": {
+      "git_blob_sha": "274f79413a35af7e40cf3e93fc33bc7109f15f36",
+      "bytes": 303152,
+      "sha256": "783620ee36cca8b22119c2f04f9595bdcee01f19ceb0fbf3189f7fe4c5f16225"
+    },
+    "source": {
+      "git_blob_sha": "4c375bd41f0a2442e6789f947e15cb119d78266e",
+      "bytes": 32168,
+      "sha256": "badc1a68903a126d549e56d202ed01a01fc17c99556b5b50dc88b8729d4e397a"
+    },
+    "actual56_base": {
+      "git_blob_sha": "5d41e41c7e6c447f4dba598a12f21673c168603b",
+      "bytes": 23349,
+      "sha256": "503078f251696fb542912e5270efca13439ebcece4db8b3473e7fcb543b4fc2d"
+    },
+    "typed_receipt": {
+      "git_blob_sha": "ba05c6869d365f2c3a2d1d8b3036614d3a92f121",
+      "bytes": 29292,
+      "sha256": "85bd14c7dc45aee8fbc1c290299cd2b123c848f9d5c08634b4b2b66daeeb5cda"
+    },
+    "actual56_bundle": {
+      "git_blob_sha": "deb73e79d18eb3fe408ff2dded8cc8e14342800a",
+      "bytes": 1757497,
+      "sha256": "41df2d70db7f42465ba5306cb139fe9a85b28f5e63d0c6a737cbee51b68dba2f"
+    },
+    "independent_retained_diff": {
+      "git_blob_sha": "5a3e2430e71dda6d9098a236bd84202b0e4afefa",
+      "bytes": 15283,
+      "sha256": "b9f0143e807c8a25fcdfbf321eed74f21f1fd0de680464fa6d07e385b1ade1d3"
+    }
+  },
+  "mechanical": {
+    "ordered_patches": 1,
+    "each_before_and_after_occurs_once": true,
+    "forward_reconstruction_equals_full_source": true,
+    "reverse_reconstruction_equals_actual_base": true,
+    "inherited_prepare_action_permit_and_dom_native_retained_predicates_unchanged": true
+  },
+  "findings": [
+    "The new methods admit only a read-only observation. They do not construct an action Permit or rebind the model's original NodeRef; proof flags explicitly deny action, input coordinates, pixel equality, fully unoccluded status and business completion.",
+    "The two frames are compared in full except observation_id, screen_sha256, app_tree_sha256, observation_state_sha256, nodes and collection. Nodes are separately compared; all collection fields except elapsed_ms must be identical. Full Selection, IME, geometry-related frame metadata and unknown additional frame fields therefore remain equality constraints.",
+    "Each frame must belong to the helper-only background Selection, observed application window, hidden IME and untruncated same-traversal collection. Native row count must equal visited_nodes, retained count must equal retained_nodes, omissions and pending work must be zero. The inherited nativeNodes method verifies bounded full membership, every declared child and parent class, one native window and the root.",
+    "Capture task/binding/goal/policy/initial URL, actual display/window/helper package, instance, epoch, helper UID/PID, commit time and observer hash remain constrained. Independent captures must be ordered; both homepage URLs are exact, navigation evidence absent and capture truncation false. The typed Receipt API returns the validated nested capture carrying binding; this matches the actual two capture records.",
+    "All four complete DOM strings must be byte-for-byte equal. The inherited homepage comparator is additionally invoked on the parsed DOM to reject unexpected carousel/booking semantics or visible dialog/embedded surfaces. Both WebNativeGeometry records are independently replayed and compared, and the original target's actual WebView ancestor must match that geometry.",
+    "Complete native snapshots use the existing strict native-path predicate. Only bounds/visibility of the fixed eight ad Views and eight Images may vary; target, ancestors and all other full nodes remain exact. Retained non-carousel records remain exact apart from explicit ordinal IDs. Existing target-overlap union must remain equal and the target interior cannot be covered; this is not a whole-card occlusion claim."
+  ],
+  "actual_field_correspondence": {
+    "first_scope": {
+      "git_blob_sha": "6bef9ae4789c97e7f5dfdafc9e350dd9901c5e64",
+      "bytes": 71804,
+      "sha256": "2a6176bb64d415eb1a81c9330bf52721589a966c749ddc75f4eb79cdfa0a124d"
+    },
+    "last_scope": {
+      "git_blob_sha": "12b6acf80230dd033947314f6d6dc83d45ddd2c2",
+      "bytes": 71804,
+      "sha256": "df5d1451477b382917e5fa9e6a23baf3506ac5fc153c4ee80a7159d6283089b7"
+    },
+    "other_frame_metadata_equal": true,
+    "collection_equal_except_elapsed": true,
+    "visited_nodes": 89,
+    "retained_nodes": 49,
+    "all_four_dom_raws_equal_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14"
+  },
+  "boundaries": [
+    "Actual Flight56 evidence contains 49 retained rows with traversal counters of 89, not all 89 full native snapshot rows. This review does not claim the new complete-native admission was replayed successfully against historical actual data.",
+    "JSON alone is not authority. The private Service snapshot, actual NodeRef identity, window enumeration, cancellation/deadline and producer thread/lifecycle checks remain the caller's obligations; BG reviews that producer. Only the exact call shape and typed Receipt connection were inspected here.",
+    "No Java compilation, new test execution, host process, Android dispatch or phone task was performed by this review. Main56 original failure remains unchanged; Main57 actual tests and phone behavior are pending."
+  ]
+}

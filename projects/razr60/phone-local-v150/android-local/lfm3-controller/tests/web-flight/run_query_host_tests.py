@@ -89,7 +89,7 @@ def main():
     for spec in FACTORY_SPECS:
         generated,record=factory_projection(bound(args.source/spec["path"]),spec)
         generated_factories.append((spec["generated"]["path"],generated));factory_records.append(record)
-    need(len(PURE_PATHS)==45 and len(generated_factories)==3,"fixed 43 production plus 2 retained plus 3 factory inputs")
+    need(len(PURE_PATHS)==46 and len(generated_factories)==3,"fixed 44 production plus 2 retained plus 3 factory inputs")
     session=bound(args.source/"src/org/trillionnium/hepta/local/WebFlightSession.java")
     service=bound(args.source/"src/org/trillionnium/hepta/local/HeptaAccessibilityService.java")
     fixture=bound(args.calendar_dom);xml=bound(args.calendar_ax);jar=bound(args.json_jar)

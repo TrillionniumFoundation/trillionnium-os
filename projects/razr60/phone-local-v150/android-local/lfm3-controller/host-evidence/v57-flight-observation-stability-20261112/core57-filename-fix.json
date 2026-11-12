@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.main57-core101-prestart-historical-filename-correction.v1",
+  "scope": "One literal correction before any Core57 source publication or Start; same fixed root, source path and stable key.",
+  "base_source": {
+    "bytes": 561811,
+    "sha256": "81e31044b9d145c79a5620a0aef0e4d3337f79cb10d0346f924803db2ac877ba",
+    "git_blob_sha": "b54a5aa6f332d6692c880fce425b068369fd3f78"
+  },
+  "corrected_source": {
+    "bytes": 561799,
+    "sha256": "4596b0dca391311a53334f594df620e166e3225df6bbaf20ae8c8fccce674b04",
+    "git_blob_sha": "04f4e3f574fc9b19f47d4b568cb376b673d0506f"
+  },
+  "ordered_source_replacements": [
+    {
+      "before": "\"FAILED_CORE_CONFIG.json\"",
+      "after": "\"CONFIG.json\"",
+      "count": 1
+    }
+  ],
+  "exact_reverse_to_complete_base": true,
+  "reason": "Historical CONFIG variable renaming accidentally changed the original filename CONFIG.json. Actual Core56r1 wrote CONFIG.json, and actual Core56r2 fba510 reads that same name.",
+  "actual_source_reference": {
+    "git_blob_sha": "fba5101e3faf859d182712424bcb60519928ef8e",
+    "bytes": 108035,
+    "sha256": "1e10c0265b946636651c852e7d8d0aaefc8b1611c25000f2f6e119a0c701a3d3"
+  },
+  "all_18_original_helpers_and_owned_run_exact": {
+    "bytes": 10119,
+    "sha256": "32d1801c9ee27a29143b4b538315fcfbb561e95715e4c97e4698db9df4797085",
+    "git_blob_sha": "6686516681065f9faf2634f880b43016f6d68ba5"
+  },
+  "corrected_request": {
+    "bytes": 232151,
+    "sha256": "c7098025a59c534533a3cbadb93c21a7b6a3b736b37fd0d868b922f39f7512c2",
+    "git_blob_sha": "a839fcf167792dbffd71f29b9a580efdb5fa5c97"
+  },
+  "prior_never_submitted_request": {
+    "git_blob_sha": "c0a552e7adca03e6504f17a3107ebd7596c9f797",
+    "bytes": 232155,
+    "sha256": "681d88ff5b50a5f12b10bf1a7b91cb2347459f280462c62850434c8978f2f982"
+  },
+  "publisher": {
+    "bytes": 10551,
+    "sha256": "f9f2a85db16552f16f01752a7549c1057c80b5bb06b76120e3a97ff303bc0589",
+    "git_blob_sha": "63f332adf1e9e00191ad330f02ef262fe31a39d5"
+  },
+  "loader": {
+    "bytes": 881,
+    "sha256": "37d3b61b8510a5d1d6d47bd6443b4f626121e266000f382496af24f49898226e",
+    "git_blob_sha": "9bbd0db8aa3a1f3e2b22d13e7ee69c83124fc1d7"
+  },
+  "supervisor": {
+    "bytes": 1782,
+    "sha256": "6aa9f7cfed0eb1d5aad1ba2bcbd61da091aa5bcb6bc02b0f9cddaa75b46bc0d6",
+    "git_blob_sha": "45a85be54945aa3736457098e157cb77fb963e5c"
+  },
+  "gzip": {
+    "bytes": 165523,
+    "sha256": "0343ffad1c6e21e1b8c950c3b0f0d5c91d1b843fc7648e6dc111c5eb933a7aa0"
+  },
+  "base64": {
+    "bytes": 220700,
+    "sha256": "caf9b396c7f42d40c0c02d2b68737338b555a9e0a92a51b59a8f350b0cb5ca45",
+    "fragment_lengths": [
+      65536,
+      65536,
+      65536,
+      24092
+    ]
+  },
+  "whole_gzip_CRC_and_source_bytes_roundtrip": true,
+  "Git_full_readbacks_exact": true,
+  "root": "/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1",
+  "source_path": "/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1.py",
+  "stable_key": "007f-v57-main-core101-materialized-host-r1",
+  "transport_changes": "Only the source/transport pins and derived loader/supervisor digests plus final base64 fragment length; atomic FD/link/temp and child execution code remain unchanged.",
+  "source_inventory": {
+    "count": 595,
+    "sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6"
+  },
+  "compiler_inputs": {
+    "count": 217,
+    "java_count": 115,
+    "sha256": "54e95d6949154c631302241f76ca3518650ac297166210056f7e2f7740fc4370"
+  },
+  "original_core101_and_nested18_unchanged": true,
+  "host_input_count": 419,
+  "host_execution_by_BG": false,
+  "phone_actions_by_BG": 0
+}

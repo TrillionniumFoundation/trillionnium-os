@@ -1,0 +1,171 @@
+{
+  "schema": "hepta.main57-web-host-json-null-delta.v1",
+  "base": {
+    "bytes": 357185,
+    "sha256": "ba0832568ca64be933ba31acd3646d0c63550f6202abeecf49dd12cecb52f110",
+    "git_blob_sha": "cd1d6fe815602cfd0909e7e6cf771a0c46bd2529"
+  },
+  "result": {
+    "bytes": 364848,
+    "sha256": "8ac71189842cde32a349e39a89da909fd7d759b29d6b14eba66120a5b65babca",
+    "git_blob_sha": "037096bebe3cf4776d588a2198fa2376b21453a7"
+  },
+  "helper": {
+    "path": "tests/web-flight/WebFlightNativeStabilityHostCases.java",
+    "before": {
+      "bytes": 148415,
+      "sha256": "9d0641663811526ebfacef8f8695727ea95c73825abfd422b5123ab64bcf9067",
+      "git_blob_sha": "0ca8e273164ea7dac5447cb1677d06af0bbe8dc3"
+    },
+    "after": {
+      "bytes": 154154,
+      "sha256": "e0cc2a474545623cd8e79aaa73afb130f5dc8733efc43f521ad909df0ec384a2",
+      "git_blob_sha": "348d62b28b8930b05d3f401c06557692e7c3081e"
+    },
+    "origin_before": "new test-only methods called by the existing Composition main; actual DOM/retained AX with explicit synthetic full-traversal extension; Main57 appends nine read-only observation-bracket cases with four complete actual raw originals and explicit synthetic full-native arrays",
+    "origin_after": "new test-only methods called by the existing Composition main; actual DOM/retained AX with explicit synthetic full-traversal extension; Main57 appends nine read-only observation-bracket cases with four complete actual raw originals and explicit synthetic full-native arrays; explicit desktop JSON-java null-only derived capture compatibility, original four archives unchanged",
+    "ordered_replacements": [
+      {
+        "before": "    private static JSONObject observationProof(JSONObject input,JSONObject before,JSONArray beforeNative,\n",
+        "after": "    /** Desktop-only JSON-java Map constructor compatibility for these archived captures.\n     * Android wraps a Java-null Map value as JSONObject.NULL; the pinned desktop\n     * 20240303 constructor omits that key. Validate the complete original OWNER\n     * compiler evidence first, then derive a copy with only that representation\n     * changed. This never changes archived bytes or production binding admission. */\n    private static JSONObject hostObservationCapture(JSONObject original)throws Exception{\n        JSONObject binding=original.getJSONObject(\"binding\"),authorization=binding.getJSONObject(\"authorization\");\n        Map<String,Object> compiled=TaskAuthorization.parse(binding.getString(\"owner\")).evidence();\n        if(!compiled.containsKey(\"find_query\")||compiled.get(\"find_query\")!=null\n                ||!authorization.has(\"find_query\")||authorization.get(\"find_query\")!=JSONObject.NULL)\n            throw new IllegalArgumentException(\"exact archived explicit-null find_query required\");\n        JSONObject hostAuthorization=new JSONObject(compiled);\n        if(hostAuthorization.has(\"find_query\"))\n            throw new IllegalArgumentException(\"pinned desktop Map-null constructor semantics changed\");\n        JSONObject androidAuthorization=new JSONObject(hostAuthorization.toString()).put(\"find_query\",JSONObject.NULL);\n        if(!org.trillionnium.hepta.webprotocol.WebEvidenceBinding.canonical(androidAuthorization).equals(\n                org.trillionnium.hepta.webprotocol.WebEvidenceBinding.canonical(authorization)))\n            throw new IllegalArgumentException(\"complete archived original OWNER compiler evidence differs\");\n        JSONObject result=copy(original);\n        result.getJSONObject(\"binding\").getJSONObject(\"authorization\").remove(\"find_query\");\n        JSONObject restored=copy(result);\n        restored.getJSONObject(\"binding\").getJSONObject(\"authorization\").put(\"find_query\",JSONObject.NULL);\n        if(!org.trillionnium.hepta.webprotocol.WebDomCanonical.same(restored,original))\n            throw new IllegalArgumentException(\"host copy changed more than the one null representation\");\n        org.trillionnium.hepta.webprotocol.WebTaskPurpose.requireBinding(result.getJSONObject(\"binding\"));\n        return result;\n    }\n    private static boolean hostObservationCaptureRejects(JSONObject original)throws Exception{\n        try{hostObservationCapture(original);return false;}\n        catch(IllegalArgumentException|org.json.JSONException expected){return true;}\n    }\n    private static JSONObject observationProof(JSONObject input,JSONObject before,JSONArray beforeNative,\n",
+        "before_sha256": "9d0641663811526ebfacef8f8695727ea95c73825abfd422b5123ab64bcf9067",
+        "after_sha256": "d161717b383ea05264b7e3ca6bdb6bcc954753db3a27749e6639b920f2ffa675",
+        "count": 1
+      },
+      {
+        "before": "        final JSONObject first=new JSONObject(originals.getJSONObject(2).getString(\"raw_utf8\")).getJSONObject(\"capture\");\n        final JSONObject last=new JSONObject(originals.getJSONObject(3).getString(\"raw_utf8\")).getJSONObject(\"capture\");",
+        "after": "        final JSONObject originalFirst=new JSONObject(originals.getJSONObject(2).getString(\"raw_utf8\")).getJSONObject(\"capture\");\n        final JSONObject originalLast=new JSONObject(originals.getJSONObject(3).getString(\"raw_utf8\")).getJSONObject(\"capture\");\n        final JSONObject first=hostObservationCapture(originalFirst),last=hostObservationCapture(originalLast);",
+        "before_sha256": "d161717b383ea05264b7e3ca6bdb6bcc954753db3a27749e6639b920f2ffa675",
+        "after_sha256": "851b00f84d7afa3b822d124db383c70a3063df977aa8a58258a433a08eae4117",
+        "count": 1
+      },
+      {
+        "before": "            check(input.getBoolean(\"full_native_fixture_is_synthetic\"),\"positive full traversal is explicitly synthetic\");\n        });",
+        "after": "            check(input.getBoolean(\"full_native_fixture_is_synthetic\"),\"positive full traversal is explicitly synthetic\");\n            check(originalFirst.getJSONObject(\"binding\").getJSONObject(\"authorization\").has(\"find_query\")\n                    &&originalFirst.getJSONObject(\"binding\").getJSONObject(\"authorization\").get(\"find_query\")==JSONObject.NULL\n                    &&!first.getJSONObject(\"binding\").getJSONObject(\"authorization\").has(\"find_query\"),\n                    \"archived Android explicit-null remains; only the host copy uses omitted Java-null\");\n            String originalBinding=org.trillionnium.hepta.webprotocol.WebDomCanonical.sha256(originalFirst.getJSONObject(\"binding\"));\n            String hostBinding=org.trillionnium.hepta.webprotocol.WebDomCanonical.sha256(first.getJSONObject(\"binding\"));\n            check(!originalBinding.equals(hostBinding)&&hostBinding.equals(proof.getString(\"binding_sha256\")),\n                    \"derived proof binds the derived host capture, never the original FD binding hash\");\n            JSONObject missing=copy(originalFirst);missing.getJSONObject(\"binding\").getJSONObject(\"authorization\").remove(\"find_query\");\n            check(hostObservationCaptureRejects(missing),\"original missing null field is not accepted as an Android archive\");\n            JSONObject nonnull=copy(originalFirst);nonnull.getJSONObject(\"binding\").getJSONObject(\"authorization\").put(\"find_query\",\"unexpected\");\n            check(hostObservationCaptureRejects(nonnull),\"non-null original compiler field is never normalized away\");\n        });",
+        "before_sha256": "851b00f84d7afa3b822d124db383c70a3063df977aa8a58258a433a08eae4117",
+        "after_sha256": "821a7b165cd46a6ad5783392cc494e6a559d8718e85d374423c9598c2f7e3b9e",
+        "count": 1
+      },
+      {
+        "before": "                .put(\"existing_action_permit_tests_changed\",false).put(\"phone_query_or_business_verified\",false);\n    }\n    /** Desktop-only JSON-java",
+        "after": "                .put(\"existing_action_permit_tests_changed\",false).put(\"phone_query_or_business_verified\",false)\n                .put(\"host_json_map_null_compatibility\",new JSONObject()\n                    .put(\"schema\",\"hepta.host-json-map-null-compatibility.v1\")\n                    .put(\"desktop_json_version\",\"20240303\")\n                    .put(\"changed_path\",\"capture.binding.authorization.find_query\")\n                    .put(\"archived_value\",\"present explicit JSON null\")\n                    .put(\"derived_host_value\",\"key omitted by desktop JSONObject(Map)\")\n                    .put(\"complete_original_authorization_recompiled\",true)\n                    .put(\"restore_single_null_field_recovers_complete_original_capture\",true)\n                    .put(\"original_capture_fd_bytes_unchanged\",true)\n                    .put(\"all_four_complete_dom_raw_values_unchanged\",true)\n                    .put(\"production_require_binding_changed\",false)\n                    .put(\"original_binding_sha256\",\"427b3e7743e044dc06643468e976ba0fd47c27b28b21203473fd31738937dc53\")\n                    .put(\"derived_host_binding_sha256\",\"b56264d8894c3c3946437e9aab857c3ccf8453170396acfbff5e556411da1e69\")\n                    .put(\"derived_captures_are_original_fd_records\",false));\n    }\n    /** Desktop-only JSON-java",
+        "before_sha256": "821a7b165cd46a6ad5783392cc494e6a559d8718e85d374423c9598c2f7e3b9e",
+        "after_sha256": "69d41da9a0e67d63170c74f39e0c7d3d3e79e831c254ce8e811201c3428ac842",
+        "count": 1
+      },
+      {
+        "before": "        org.trillionnium.hepta.webprotocol.WebTaskPurpose.requireBinding(result.getJSONObject(\"binding\"));\n        return result;",
+        "after": "        if(!\"427b3e7743e044dc06643468e976ba0fd47c27b28b21203473fd31738937dc53\".equals(\n                org.trillionnium.hepta.webprotocol.WebEvidenceBinding.sha256(binding))\n                ||!\"b56264d8894c3c3946437e9aab857c3ccf8453170396acfbff5e556411da1e69\".equals(\n                org.trillionnium.hepta.webprotocol.WebEvidenceBinding.sha256(result.getJSONObject(\"binding\"))))\n            throw new IllegalArgumentException(\"exact original and derived host binding hashes required\");\n        org.trillionnium.hepta.webprotocol.WebTaskPurpose.requireBinding(result.getJSONObject(\"binding\"));\n        return result;",
+        "before_sha256": "69d41da9a0e67d63170c74f39e0c7d3d3e79e831c254ce8e811201c3428ac842",
+        "after_sha256": "e0cc2a474545623cd8e79aaa73afb130f5dc8733efc43f521ad909df0ec384a2",
+        "count": 1
+      }
+    ]
+  },
+  "main57_metadata_before": {
+    "predecessor_packet": {
+      "bytes": 260128,
+      "sha256": "3687b09656e60a808ebdce1430951e04741581e9ddd0d2faa7f5c36220ed24b7",
+      "git_blob_sha": "1153d7e55c4051ecf6e4c018defe43d26ff51fd2"
+    },
+    "source_candidate_git": "274f79413a35af7e40cf3e93fc33bc7109f15f36",
+    "test_candidate_git": "0e91169c9e836071c87494e70f3e93db27ffb80f",
+    "added_observation_case_names": [
+      "flight_observation_actual56_old_digest_failure_reproduced",
+      "flight_observation_actual_retained_rows_cannot_replace_complete_native",
+      "flight_observation_actual_raws_with_explicit_synthetic_complete_native",
+      "flight_observation_window_selection_ime_and_root_changes_rejected",
+      "flight_observation_target_unretained_and_retained_semantics_rejected",
+      "flight_observation_truncated_or_incomplete_native_rejected",
+      "flight_observation_four_raw_equality_and_homepage_scope_required",
+      "flight_observation_capture_epoch_binding_and_order_rejected",
+      "flight_observation_geometry_and_actual_native_ancestor_must_match"
+    ],
+    "expected_composition_cases": 79,
+    "expected_composition_assertions": 211,
+    "expected_counts_are_source_derived_not_actual_results": true,
+    "actual_cases": null,
+    "actual_assertions": null,
+    "original_70_cases_and_assertions_unchanged": true,
+    "original_17_stability_case_bodies_unchanged": true,
+    "actual_original_scope_files": 2,
+    "actual_original_capture_fd_files": 2,
+    "actual_retained_rows_per_frame": 49,
+    "full_native_traversal_synthetic": true,
+    "android_node_ref_or_window_api_executed": false,
+    "action_permit_granted": false,
+    "actual_flight_results_provider_ready": false,
+    "phone_query_or_business_verified": false
+  },
+  "main57_metadata_after": {
+    "predecessor_packet": {
+      "bytes": 260128,
+      "sha256": "3687b09656e60a808ebdce1430951e04741581e9ddd0d2faa7f5c36220ed24b7",
+      "git_blob_sha": "1153d7e55c4051ecf6e4c018defe43d26ff51fd2"
+    },
+    "source_candidate_git": "274f79413a35af7e40cf3e93fc33bc7109f15f36",
+    "test_candidate_git": "0e91169c9e836071c87494e70f3e93db27ffb80f",
+    "added_observation_case_names": [
+      "flight_observation_actual56_old_digest_failure_reproduced",
+      "flight_observation_actual_retained_rows_cannot_replace_complete_native",
+      "flight_observation_actual_raws_with_explicit_synthetic_complete_native",
+      "flight_observation_window_selection_ime_and_root_changes_rejected",
+      "flight_observation_target_unretained_and_retained_semantics_rejected",
+      "flight_observation_truncated_or_incomplete_native_rejected",
+      "flight_observation_four_raw_equality_and_homepage_scope_required",
+      "flight_observation_capture_epoch_binding_and_order_rejected",
+      "flight_observation_geometry_and_actual_native_ancestor_must_match"
+    ],
+    "expected_composition_cases": 79,
+    "expected_composition_assertions": 215,
+    "expected_counts_are_source_derived_not_actual_results": true,
+    "actual_cases": null,
+    "actual_assertions": null,
+    "original_70_cases_and_assertions_unchanged": true,
+    "original_17_stability_case_bodies_unchanged": true,
+    "actual_original_scope_files": 2,
+    "actual_original_capture_fd_files": 2,
+    "actual_retained_rows_per_frame": 49,
+    "full_native_traversal_synthetic": true,
+    "android_node_ref_or_window_api_executed": false,
+    "action_permit_granted": false,
+    "actual_flight_results_provider_ready": false,
+    "phone_query_or_business_verified": false
+  },
+  "added_metadata": {
+    "predecessor_packet": {
+      "bytes": 357185,
+      "sha256": "ba0832568ca64be933ba31acd3646d0c63550f6202abeecf49dd12cecb52f110",
+      "git_blob_sha": "cd1d6fe815602cfd0909e7e6cf771a0c46bd2529"
+    },
+    "repair_review": {
+      "bytes": 12303,
+      "sha256": "ea7cb1288b9e108efe1ef6d11b97480c60ae5ce5ab53f01381fcf1022ffb25eb",
+      "git_blob_sha": "16ad80bd40b1753a65837680698a71e516ecfd73"
+    },
+    "original_failed_result": {
+      "bytes": 30361,
+      "sha256": "d66b4dcaf0eed2b650df9e88928a32ab5145608f600b868864c3925011d72532",
+      "git_blob_sha": "4f436784332e6a1bf7200cbaf105c28e17a55b29"
+    },
+    "production_sources_changed": false,
+    "original_4_raw_bytes_changed": false,
+    "all_4_dom_raw_values_changed": false,
+    "original_79_case_order_unchanged": true,
+    "original_211_assertions_unchanged": true,
+    "additional_assertions_in_existing_positive_case": 4,
+    "derived_capture_path": "capture.binding.authorization.find_query",
+    "archived_value": "present explicit JSON null",
+    "derived_host_value": "key omitted by desktop JSONObject(Map)",
+    "original_authorization_fully_recompiled": true,
+    "restoring_single_null_field_recovers_complete_capture": true,
+    "original_binding_sha256": "427b3e7743e044dc06643468e976ba0fd47c27b28b21203473fd31738937dc53",
+    "derived_host_binding_sha256": "b56264d8894c3c3946437e9aab857c3ccf8453170396acfbff5e556411da1e69",
+    "derived_captures_are_original_fd_records": false,
+    "expected_cases": 79,
+    "expected_assertions": 215,
+    "actual_cases": null,
+    "actual_assertions": null
+  },
+  "changed_production_inputs": []
+}

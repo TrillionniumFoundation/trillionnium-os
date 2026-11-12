@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.main57-host-transport-length-fix.v1",
+  "actual_failed_web_request_git": "a446da38646a913791c01f4ef6339374b7853ffa",
+  "actual_failure": {
+    "git_blob_sha": "74630c09146d4cb895fdf1f6adf0dd1f376b8b85",
+    "bytes": 633,
+    "sha256": "8722f20e658b2d73d76c5b5271f86fe6ad1f542518a5f7676a3318311ef87aa1",
+    "session_id": "dpty-29cfca3f133c0e4a756725d53d993cb3b997d4eecfd62c935d8ca9772ba2ecaa",
+    "exit_code": 1,
+    "output_complete": true
+  },
+  "failure_before_source_publication_from_reviewed_control_flow": true,
+  "coordinator_not_started": true,
+  "old_failure_retained": true,
+  "corrections": [
+    {
+      "label": "web",
+      "request": {
+        "git_blob_sha": "5b44222b65e2e123909f4cee5e58c6cd1aac4847",
+        "bytes": 131080,
+        "sha256": "3d6870517cd1ab1886a219ab4d13a62e2f50e7af34150d94b6eb87bf03b75343"
+      },
+      "key": "007f-v57-main-existing-web-regression-transport-r2",
+      "patches": [
+        {
+          "before": "need(len(LOADER.encode(\"utf-8\"))==878",
+          "after": "need(len(LOADER.encode(\"utf-8\"))==875",
+          "count": 1
+        },
+        {
+          "before": "TRANSPORT_KEY=\"007f-v57-main-existing-web-regression-host-r1\"",
+          "after": "TRANSPORT_KEY=\"007f-v57-main-existing-web-regression-transport-r2\"",
+          "count": 1
+        }
+      ],
+      "source_payload_unchanged": true,
+      "actualLoaderBytes": 875,
+      "actualSupervisorBytes": 1774
+    },
+    {
+      "label": "focused",
+      "request": {
+        "git_blob_sha": "2d75d7e064149b65347ec099f96427cc4a626994",
+        "bytes": 43947,
+        "sha256": "ef5e37ae3757a6846800e17ad353154f0afb457f6a6d94e21babcc01a3524377"
+      },
+      "key": "007f-v57-main-wire4-host-p4-r1",
+      "patches": [
+        {
+          "before": "need(len(LOADER.encode(\"utf-8\"))==878",
+          "after": "need(len(LOADER.encode(\"utf-8\"))==866",
+          "count": 1
+        },
+        {
+          "before": "need(len(SUPERVISOR.encode(\"utf-8\"))==1774",
+          "after": "need(len(SUPERVISOR.encode(\"utf-8\"))==1786",
+          "count": 1
+        }
+      ],
+      "source_payload_unchanged": true,
+      "actualLoaderBytes": 866,
+      "actualSupervisorBytes": 1786
+    }
+  ],
+  "focused_old_request_submitted": false,
+  "source_test_assertions_or_product_changes": false
+}

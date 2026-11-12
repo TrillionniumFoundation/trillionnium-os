@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.notes56-cancel-recovery-evidence-cas-proof.v1",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "branch": "codex/hepta-v45-semantic-click-20261111-007f",
+  "pr": 139,
+  "previous_head": "a64a43e48e7068719e7a0c0d9b54c16d58bb599d",
+  "commit": "c28266b18703bbb6287d2a3d7809384921214d01",
+  "tree": "9ae0fc90f5d09cc3c0fb382c5eb1cdf93a9a9a05",
+  "update": {
+    "expected_sha": "a64a43e48e7068719e7a0c0d9b54c16d58bb599d",
+    "sha": "c28266b18703bbb6287d2a3d7809384921214d01",
+    "force": false,
+    "tool_reported_success": true,
+    "mutation_calls": 1
+  },
+  "observed_ref": "c28266b18703bbb6287d2a3d7809384921214d01",
+  "observed_pr": {
+    "head": "c28266b18703bbb6287d2a3d7809384921214d01",
+    "state": "open",
+    "draft": true
+  },
+  "compare": {
+    "ahead_by": 1,
+    "behind_by": 0,
+    "total_commits": 1,
+    "added_files": 23,
+    "modified_files": 0,
+    "removed_files": 0,
+    "all_added_file_paths_and_blob_ids_exact": true
+  },
+  "source": {
+    "commit": "9f4168616546233033edd4b254b4236ae987ea7e",
+    "aggregate": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c",
+    "source_count": 595,
+    "source_changed": false,
+    "old_publication_changed": false,
+    "old_indexes_changed": false
+  },
+  "index": {
+    "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/CANCEL-RECOVERY56-INDEX.json",
+    "git_blob_sha": "4bf70c840950b6675367c9d222bec3beb963d497",
+    "bytes": 8260,
+    "sha256": "8c21a21bd50be5265248f6d02095c0554e8f1eca885f97f48b4318e3f970e0d4"
+  },
+  "report": {
+    "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/CANCEL-RECOVERY56-REPORT.md",
+    "git_blob_sha": "4b0052457a26812c44fbb969207d7971e724577f",
+    "bytes": 6009,
+    "sha256": "8c6dd97e442a836ab078aa0e5ff34e95862e814b5ef64c1070ee68d936704e49"
+  },
+  "claims": {
+    "cancellation_independent22_passed": true,
+    "recovery_independent9_passed": true,
+    "recovery_background_only": true,
+    "original_exit2_false_fields_preserved": true,
+    "main57_phone_or_business_implied": false,
+    "phone_actions_here": 0
+  },
+  "readback_note": "The first combined branch/PR check did not yet satisfy both equality checks. One read-only follow-up confirmed the exact ref and draft PR head; no second update was issued.",
+  "proof_self_reference": "This proof is created after the ref update and is not asserted to be contained in that same commit."
+}

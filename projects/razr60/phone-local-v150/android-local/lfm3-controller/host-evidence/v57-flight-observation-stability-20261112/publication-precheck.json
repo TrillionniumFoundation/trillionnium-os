@@ -1,0 +1,138 @@
+{
+  "schema": "hepta.main57-source-publication-precheck.v1",
+  "status": "actual branch source verified; no Main57 ref move before current gates",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "branch": "codex/hepta-v45-semantic-click-20261111-007f",
+  "expected_prior_head": "c28266b18703bbb6287d2a3d7809384921214d01",
+  "parent_repository_tree": "9ae0fc90f5d09cc3c0fb382c5eb1cdf93a9a9a05",
+  "parent_source_directory_tree": "551ef8923ac1489c62af95aec07f48a3269199e5",
+  "source_prefix": "projects/razr60/phone-local-v150/android-local/lfm3-controller/",
+  "base_source_commit": "9f4168616546233033edd4b254b4236ae987ea7e",
+  "aggregate": {
+    "git_blob_sha": "517e61599073eb264c5e52871570d49e7af2d798",
+    "bytes": 1459826,
+    "sha256": "b98bb0f97ad5b25423387c4e3f8734aec7d4f8c2d1044335af039e0dd1c57cc3"
+  },
+  "inventory": {
+    "git_blob_sha": "c2938fd1a1eedba6abaa597c35985e6ab318993f",
+    "bytes": 103795,
+    "sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6"
+  },
+  "bare_blob_map": {
+    "git_blob_sha": "0fe03df924d061e04f58c9174eeaacbd2cd4ad7b",
+    "bytes": 141875,
+    "sha256": "2ebce60579704b0545cd9880e6a3fa0b7f5cad6149439aa1419db8fb2c16d539"
+  },
+  "compiler_input_map": {
+    "git_blob_sha": "68cf69a87409dd4c887131687794930cf72097dc",
+    "bytes": 34376,
+    "sha256": "54e95d6949154c631302241f76ca3518650ac297166210056f7e2f7740fc4370"
+  },
+  "actual_predecessor_tree_checks": {
+    "all_595_source_blob_ids_types_and_modes_match_published_Main56": true,
+    "recursive_source_directories_read": [
+      "native",
+      "provenance",
+      "res",
+      "src",
+      "tests",
+      "tools"
+    ],
+    "all_directory_responses_nontruncated": true,
+    "changed_existing_paths": 5,
+    "new_source_paths": 0,
+    "unchanged_source_paths": 590,
+    "expected_source_count": 595
+  },
+  "source_changes": [
+    {
+      "path": "AndroidManifest.xml",
+      "before": {
+        "bytes": 2582,
+        "sha256": "c372aebecde61283232394ea687045992c68b689ab954ad523bc5569f96389bc",
+        "git_blob_sha": "24d84378527e48f8090129609da7f8e66f362b45"
+      },
+      "after": {
+        "bytes": 2594,
+        "sha256": "71aca282ccdd9fb1eb4bb611296418f7f80502bcb7a3b9bcdef98460cae13c73",
+        "git_blob_sha": "92012a454023ca82eaaa0b63384208fb86efb5d4"
+      }
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "before": {
+        "bytes": 129287,
+        "sha256": "53dc2765f2f0504a4ea16618a2e0b44c0d443dceeb3834f030098ae2cea26fba",
+        "git_blob_sha": "6200e5325ec1397abd73e9bfa99235c7b063935d"
+      },
+      "after": {
+        "bytes": 144883,
+        "sha256": "f9704060dba7a6fa4604b8e26d9f4eed956ae684a1221b3980714ac6d1a53afb",
+        "git_blob_sha": "8f969cb0c75f8c942099271181762b38d9ba3160"
+      }
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
+      "before": {
+        "bytes": 23349,
+        "sha256": "503078f251696fb542912e5270efca13439ebcece4db8b3473e7fcb543b4fc2d",
+        "git_blob_sha": "5d41e41c7e6c447f4dba598a12f21673c168603b"
+      },
+      "after": {
+        "bytes": 32168,
+        "sha256": "badc1a68903a126d549e56d202ed01a01fc17c99556b5b50dc88b8729d4e397a",
+        "git_blob_sha": "4c375bd41f0a2442e6789f947e15cb119d78266e"
+      }
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "before": {
+        "bytes": 42734,
+        "sha256": "7f3c7fd872e9901026ad7471dfc9a3e68d2c987eb1931896f80ea0f2acd6f4e1",
+        "git_blob_sha": "8283d4e83b7cf13c9deb7e55c6d26f26053e11cc"
+      },
+      "after": {
+        "bytes": 44197,
+        "sha256": "07509c1345b1bacdfcbf504943f375869c274e245c6aafb5819581b4c8395408",
+        "git_blob_sha": "87b2bd6a8758fb6c46659270412bf9d630673591"
+      }
+    },
+    {
+      "path": "tests/web-flight/run_query_host_tests.py",
+      "before": {
+        "bytes": 41005,
+        "sha256": "0f4d983138ed8bcf5f0b622ee4d4063048e83413eafe3586595521f5e1b7eb45",
+        "git_blob_sha": "7b7a23db9302bc63b71f51a4d74d06c34183059d"
+      },
+      "after": {
+        "bytes": 41005,
+        "sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10",
+        "git_blob_sha": "c21109afe049ccaf2d664937bd24fb0e5abce4a2"
+      }
+    }
+  ],
+  "actual_gates_currently_sealed": {
+    "core101": {
+      "git_blob_sha": "b2f4bc7cfc88d4ac83588678cb2559c16c687517",
+      "bytes": 11178,
+      "sha256": "239e2639e7ba426f5068ae1e8620edf8bd5a1c564181fdfc8048f588a87b8aab",
+      "groups": 101,
+      "nested18_within101": true,
+      "host_inputs": 419
+    },
+    "web": null,
+    "focused": null,
+    "android": null
+  },
+  "publication_pending": true,
+  "phone_tested_on_Main57": false,
+  "actual_flight_results_provider_ready": false,
+  "notes56_evidence_commit": "c28266b18703bbb6287d2a3d7809384921214d01",
+  "notes56_evidence_remains_Main56": true,
+  "required_final_steps": [
+    "Bind complete original current Web/Focused/Android receipts; do not infer success from source review.",
+    "Refresh exact expected branch head; preserve all existing repository entries except the five declared source paths.",
+    "Build tree/commit, verify exact diff and all595 mapped source blobs, then perform one compare-and-swap.",
+    "Create actual MAP/PUBLICATION for signer only from verified final tree/ref facts."
+  ]
+}

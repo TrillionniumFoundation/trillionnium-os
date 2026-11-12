@@ -160,11 +160,17 @@ final class WebFlightSession {
         need(!retired&&!cancellation.isCancelled(),"web task retired");
         PhoneObservation before=initial;long captureDeadline=deadline;String loadingAttemptKey=null;
         while(true){
+        HeptaAccessibilityService.FlightObservationSnapshot nativeSource=null;
+        try{
         service.requireBackgroundObservation(taskId,before);
+        if(goal!=null)nativeSource=service.retainFlightObservation(this,before,cancellation,captureDeadline);
         WebEvidenceReceipt first=client.capture(captureDeadline);
         if("state_changed".equals(first.status)){
             // At most one read-only retry, after a fresh AX window observation; never repeat an action.
-            before=observer.observe();service.requireBackgroundObservation(taskId,before);first=client.capture(captureDeadline);
+            if(nativeSource!=null){nativeSource.close();nativeSource=null;}
+            before=observer.observe();service.requireBackgroundObservation(taskId,before);
+            if(goal!=null)nativeSource=service.retainFlightObservation(this,before,cancellation,captureDeadline);
+            first=client.capture(captureDeadline);
             need("captured".equals(first.status)||"unavailable".equals(first.status)||"state_changed".equals(first.status),
                     "unknown reply after the single evidence retry");
         }
@@ -188,13 +194,24 @@ final class WebFlightSession {
             // A changing bracket supplies no action. Existing loading retries
             // remain bounded and read-only; no preceding click is repeated.
         }
-        boolean stable=sameFrame(before,after)&&first.instance.equals(last.instance)&&first.epoch==last.epoch
+        boolean sameOriginalFrame=sameFrame(before,after);
+        boolean sameCaptureDomain=first.instance.equals(last.instance)&&first.epoch==last.epoch
                 &&first.url.equals(last.url)&&domBracket!=null;
+        boolean stable=sameOriginalFrame&&sameCaptureDomain;
+        JSONObject nativeObservationBracket=null;
         if(retryLoadingDocument(first,last,after,stable,deadline)){
             loadingAttemptKey=actualLoadingKey;
             captureDeadline=Math.min(deadline,loadingDocumentStarted+6000);
             before=observer.observe();service.requireBackgroundObservation(taskId,before);
             continue;
+        }
+        if(!stable&&!sameOriginalFrame&&sameCaptureDomain&&goal!=null&&nativeSource!=null
+                &&first.stability().rawEqual&&domBracket.rawEqual&&last.stability().rawEqual){
+            // This service-created proof only admits the new read-only frame.
+            // A later action still needs its own original model target and live Permit checks.
+            nativeObservationBracket=service.verifyFlightObservationBracket(this,nativeSource,after,first,last,
+                    cancellation,captureDeadline);
+            stable=true;
         }
         need(stable,"AX/DOM bracket changed; no current page capability published");
         WebNativeGeometry firstGeometry=WebNativeGeometry.read(first.capture(),first.dom(),first.displayId,first.windowId,first.stability());
@@ -207,6 +224,9 @@ final class WebFlightSession {
                 .put("last_capture_request_nonce",last.callback().getString("request_nonce"))
                 .put("first_ax_observation_id",before.id).put("last_ax_observation_id",after.id)
                 .put("ax_dom_capture_is_atomic",false)
+                .put("original_same_frame_predicate",sameOriginalFrame)
+                .put("readonly_native_observation_bracket",nativeObservationBracket==null?JSONObject.NULL:nativeObservationBracket)
+                .put("readonly_native_observation_proof_grants_action",false)
                 .put("same_lease_epoch_and_equal_dom_bracket",first.stability().rawEqual&&domBracket.rawEqual&&last.stability().rawEqual)
                 .put("same_lease_epoch_and_stable_dom_scope_bracket",true)
                 .put("between_captures_dom_stability",domBracket.evidence())
@@ -218,6 +238,7 @@ final class WebFlightSession {
         flightNativePermit=null;flightNativeCheck=null;
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;
         return after;
+        }finally{if(nativeSource!=null)nativeSource.close();}
         }
     }
     /** Extra observations are bounded and read-only; an entry click is never replayed. */
