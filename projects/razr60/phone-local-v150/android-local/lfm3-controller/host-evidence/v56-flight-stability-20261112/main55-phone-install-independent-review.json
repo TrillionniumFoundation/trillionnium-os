@@ -1,0 +1,86 @@
+{
+  "schema": "hepta.actual-main55-installation-independent-receipt-review.v1",
+  "reviewer": "android_background",
+  "original_result": {
+    "git": "a3f4a47cf6c67f1e771f66dd73ae392ed169ef91",
+    "path": "/home/alex/hepta-local-007f-20261111/phone-install-v55-r1/RESULT.json",
+    "bytes": 29456,
+    "sha256": "5ef0b5523a84d6e5e17a3527ea5bbe8f7b8df01ee11102d54b27019784b1555d"
+  },
+  "actual_executed_source": {
+    "git": "d46e2dfee94a121e0b9a4a7f2400ad696181fca1",
+    "path": "/home/alex/hepta-local-007f-20261111/install_v55_idle_r1.py",
+    "bytes": 144014,
+    "sha256": "52c4a4bea94e63b39171d5d3fc5cc5197985dd58e756df3dec439756df05eceb"
+  },
+  "reviewed_reconciliation": {
+    "git": "f63da472879dc86576dbef7aa5f06318fea25d82",
+    "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-reconcile-r1/RESULT.json",
+    "bytes": 71263,
+    "sha256": "463d04f9af87bce27c55fc4ea46aea4f1f6a547928d5a5873ecc60a3021aa901"
+  },
+  "original_failed_helper_install": {
+    "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-upgrade-r1/RESULT.json",
+    "git": "aeb85e0cbda85deea51a26fbe44725c10c174743",
+    "bytes": 33072,
+    "sha256": "d6afb1f04481f969b88ea641abbdd69541e72bbde6bd770038912caf533d1ad2"
+  },
+  "raw_full_sha_verified": true,
+  "scope": "Independent H0 review of complete immutable actual installation receipts; no additional phone probe or execution.",
+  "checks": {
+    "all_expected17_positive_flags": true,
+    "all_expected16_negative_flags": true,
+    "main54_to55_same_uid10481": true,
+    "installed_apk_matches_signed55": true,
+    "helper6_uid10484_exact_observer_and_same37_records": true,
+    "old_helper_failure_false_and_reconciliation_true_preserved_separately": true,
+    "current_failed_Flight3c90_stays_failed_with_zero_model_runs": true,
+    "selected_model_before_after_full_sha_same": true,
+    "current_config_and_dual_ui_preferences_preserved": true,
+    "normal_main_launch_and_real_formal_binding_verified_by_actual_installer": true
+  },
+  "installed_identity_after": {
+    "package": "org.trillionnium.hepta.local",
+    "uid": 10481,
+    "apks": [
+      {
+        "path": "/data/app/~~ydmcznFzr59wjiXBKk_ZDQ==/org.trillionnium.hepta.local-PHrugxpSPRrvNXFBFIs7Cg==/base.apk",
+        "sha256": "ea485e6d28544d75a9010e441aae8df348d1b64884f9ff7a50cb909a3f8ea45e"
+      }
+    ],
+    "version_code": 55
+  },
+  "helper_identity": {
+    "package": "org.trillionnium.hepta.webhelper",
+    "uid": 10484,
+    "apks": [
+      {
+        "path": "/data/app/~~iuCpyfrLdnn2FSYG4ZOcYQ==/org.trillionnium.hepta.webhelper-LMxwSbN_9UdoiNCifY0iXw==/base.apk",
+        "sha256": "02360c24c471dcd4be0cbc7c7fdb316a7918d656edd1407d765540b5a3f2f5ff"
+      }
+    ]
+  },
+  "formal_binding_after": {
+    "verified": true,
+    "component": "org.trillionnium.hepta.local/org.trillionnium.hepta.local.HeptaAccessibilityService",
+    "app_pid": 28261,
+    "app_uid": 10481,
+    "client_pid": 3622,
+    "client_uid": 1000,
+    "binder_received": true,
+    "has_bound": true,
+    "connection_ids": [
+      "d531cad"
+    ],
+    "service_dump_sha256": "d467041badcf59966b57be0723916782e099b47df8a774bcba64527aa4f87982",
+    "identity_scope": "exact active AMS ServiceRecord and live system-client binding; label-only AccessibilityManager rows are not component attestation"
+  },
+  "outcome": {
+    "installation_verified": true,
+    "task_or_model_executed": false,
+    "new_business_success_claimed": false,
+    "qualified": false,
+    "final_business_acceptance": false
+  },
+  "next_scope": "Flight55 is a separate upcoming actual task. No Flight55 result, helper diagnostic delta or Main56 installed/release/owner value is inferred from this installation."
+}

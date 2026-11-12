@@ -46,7 +46,7 @@ def prepare(source, output):
         'graph_limits': section(s, '    private static final int MAX_NODES=', '\n    private final Map<String,String> launchable='),
         'node_graph': pieces['node_graph'],
         'window_metadata': section(s, '    /** Read only the selected root\'s window metadata;', '    private List<AccessibilityWindowInfo> windowsForDisplay('),
-        'snapshot': section(s, '    /** A background root comes only', '    private static String nodeSignature('),
+        'snapshot': section(s, '    /** A background root comes only', '    private FlightNativeCheck requireLiveFlightNativeStability('),
         'node_identity': pieces['node_identity'],
         'strings': pieces['strings'],
     }
@@ -67,6 +67,7 @@ def prepare(source, output):
     (output/'WebEvidenceBinding.java').write_text("package org.trillionnium.hepta.webprotocol;\nimport org.json.JSONArray;\nimport org.json.JSONObject;\nimport java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.Iterator;\n/** Exact production canonical comparison only; no binding, helper or lease construction. */\npublic final class WebEvidenceBinding {\n    private WebEvidenceBinding(){throw new AssertionError(\"comparison-only fixture\");}\n" + comparison_parts['binding_canonical'] + '\n}\n')
     (output/'WebEvidenceReceipt.java').write_text("package org.trillionnium.hepta.local;\nimport org.trillionnium.hepta.webprotocol.WebEvidenceBinding;\n/** Exact production comparison only; no receipt or helper authority. */\nfinal class WebEvidenceReceipt {\n    private WebEvidenceReceipt(){throw new AssertionError(\"comparison-only fixture\");}\n" + comparison_parts['receipt_same'] + '}\n')
     (output/'WebRegionNativeBridge.java').write_text("package org.trillionnium.hepta.local;\n/** Type-only legacy non-Web boundary. No native region evidence can be created. */\nfinal class WebRegionNativeBridge {\n    private WebRegionNativeBridge(){throw new AssertionError(\"legacy fixture has no Web native-region capability\");}\n}\n")
+    (output/'WebFlightNativeStability.java').write_text("package org.trillionnium.hepta.local;\n/** Type-only legacy non-Web boundary. No Flight stability permit can be created. */\nfinal class WebFlightNativeStability {\n    static final int MAX_NATIVE_NODES=512;\n    private WebFlightNativeStability(){throw new AssertionError(\"legacy fixture has no Flight native-stability capability\");}\n    static final class Permit {\n        private Permit(){throw new AssertionError(\"legacy fixture has no Flight native-stability permit\");}\n    }\n}\n")
     session = (pkg / 'LocalTaskSession.java').read_text()
     session_parts = {
         'schedule': section(session, '    public boolean schedule(final String owner,String source,String testNonceSha,long delayMillis)', '    /** The only caller is the positive button'),
@@ -109,7 +110,7 @@ def prepare(source, output):
         'web_fixture_boundary':'Explicit empty Web journal only; real Web OWNER/selection and every helper action/cleanup throw AssertionError; actual Web classes have their separate gate',
         'background_fixture_boundary':'Explicit synthetic OWNER and seven-field owner_selected_initial_app Selection pass through the full actual PhoneObservation projection; the six-argument derived-owner constructor still throws',
         'comparison_source_files':{str(p.relative_to(source)):hashlib.sha256(p.read_bytes()).hexdigest() for p in (binding_path,receipt_path,web_protocol)},
-        'web_native_fixture_boundary':'The original complete dispatch branch is retained; WebRegionNativeBridge, NativeRegionCheck and both WebSession native-region endpoints are throwing type-only boundaries',
+        'web_native_fixture_boundary':'The original complete dispatch branch is retained; WebRegionNativeBridge, NativeRegionCheck, FlightNativeCheck, WebFlightNativeStability.Permit and the WebSession native-region/Flight endpoints are throwing type-only boundaries',
         'web_fixture_compiler_copy':{'source_path':str(web_fixture_source.relative_to(source)),
             'compiler_path':str(web_fixture_compile),'bytes':len(web_fixture_raw),
             'sha256':hashlib.sha256(web_fixture_raw).hexdigest(),'byte_identical':True},

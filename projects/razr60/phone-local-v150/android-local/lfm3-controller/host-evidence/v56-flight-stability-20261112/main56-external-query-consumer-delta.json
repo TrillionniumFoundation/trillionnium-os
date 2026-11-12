@@ -1,0 +1,210 @@
+{
+  "schema": "hepta.main56-external-query-runner-count-only-successor.v1",
+  "status": "source_and_consumer_ready_not_executed",
+  "decision": "Keep the complete tested0803 source595 unchanged. Correct the incompatible runner admission count outside that tree, execute the original40/187 cases, and retain both scripts and the limitation as explicit evidence.",
+  "aggregate": {
+    "bytes": 1427055,
+    "sha256": "c1cc7cc16eef4c3a34131ee719101a69db080b76e72c98f03248036fc6fd628f",
+    "git_blob_sha": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c"
+  },
+  "inventory": {
+    "bytes": 103795,
+    "sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+    "git_blob_sha": "c43a4be934ca00942ceeed086e16fc4b81d3a519"
+  },
+  "compiler_inputs": {
+    "bytes": 34376,
+    "sha256": "2b9e1d971a60d09df7303f050cef40d4b254b016a6f68c272035ec11ef854071",
+    "git_blob_sha": "b5d627b7d692732689d337007816b8635b961933"
+  },
+  "runner": {
+    "base": {
+      "bytes": 41005,
+      "sha256": "0f4d983138ed8bcf5f0b622ee4d4063048e83413eafe3586595521f5e1b7eb45",
+      "git_blob_sha": "7b7a23db9302bc63b71f51a4d74d06c34183059d"
+    },
+    "candidate": {
+      "bytes": 41005,
+      "sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10",
+      "git_blob_sha": "c21109afe049ccaf2d664937bd24fb0e5abce4a2"
+    },
+    "repository_path": "tests/web-flight/run_query_host_tests.py",
+    "ordered_replacements": [
+      {
+        "before": "    need(len(PURE_PATHS)==45 and len(generated_factories)==3,\"fixed 43 production plus 2 retained plus 3 factory inputs\")",
+        "after": "    need(len(PURE_PATHS)==46 and len(generated_factories)==3,\"fixed 44 production plus 2 retained plus 3 factory inputs\")",
+        "count": 1
+      }
+    ],
+    "pure_path_count": 46,
+    "actual_production_paths": 44,
+    "retained_auxiliary_paths": 2,
+    "factory_count": 3,
+    "projection_count": 1,
+    "total_compiled_java": 50,
+    "case_count": 40,
+    "assertion_count": 187
+  },
+  "builder": {
+    "base": {
+      "bytes": 204203,
+      "sha256": "0ccad6720c0653c3ac94a3822ebd29010a7496291c7811d6122fb3edbac0a6ba",
+      "git_blob_sha": "bd3d77b8af5ce7ec0b9c5847d91b5d0db30d13f7"
+    },
+    "candidate": {
+      "bytes": 206118,
+      "sha256": "85e530eebbc859dcea83955cd2f62153b2ab0414da8d7632dd7027eee45091f2",
+      "git_blob_sha": "c4881a3645078736df30645c9cb0040837faee94"
+    },
+    "ordered_replacements": [
+      {
+        "index": 0,
+        "label": "explicit external runner pin and exact one-hunk adaptation",
+        "kind": "CONFIG_only",
+        "before": {
+          "bytes": 135746,
+          "sha256": "36a50c430a8cc1b31202a424e4483a1080810ce9f5300831ff9fb60270f2bb1d",
+          "git_blob_sha": "bca2bbf91603f41f718b37fba5d63fe673597f71"
+        },
+        "after": {
+          "bytes": 136200,
+          "sha256": "539e0858439df05848f815c1552ac6bc802becb95161eb1fd14034da0f1b49a9",
+          "git_blob_sha": "0a8e405cf2ffa81b4e45923e8402911418e3f66c"
+        },
+        "fields": [
+          "query_runner",
+          "query_runner_original",
+          "query_runner_count_adapter"
+        ]
+      },
+      {
+        "before": "    path=SOURCE/\"tests/web-flight/run_query_host_tests.py\"\n",
+        "after": "    path=ROOT/\"query40-runner.py\"\n",
+        "count": 1,
+        "label": "execute the corrected external file, preserve repository source"
+      },
+      {
+        "before": "            \"runner_sha256\":sha(raw),\"executed_in_process\":True,\"owned_child_groups_managed_by_original_runner\":True}",
+        "after": "            \"runner_sha256\":sha(raw),\"runner_path\":str(path),\n            \"runner_original_source_path\":\"tests/web-flight/run_query_host_tests.py\",\n            \"runner_original_sha256\":sha(query_runner_original_raw),\n            \"runner_count_adapter\":CONFIG[\"query_runner_count_adapter\"],\n            \"runner_corrected_outside_source_tree\":True,\"repository_runner_count_guard_known_incompatible\":True,\n            \"executed_in_process\":True,\"owned_child_groups_managed_by_original_runner\":True}",
+        "count": 1,
+        "label": "report both immutable original and actual executed runner without hiding mismatch"
+      },
+      {
+        "before": "for name in (\"aggregate\",\"decoded_input\",\"compiler_inputs\",\"query_runner\"):",
+        "after": "for name in (\"aggregate\",\"decoded_input\",\"compiler_inputs\",\"query_runner\",\"query_runner_original\"):",
+        "count": 1,
+        "label": "both script pins must be sealed"
+      },
+      {
+        "before": "checked(target[\"tests/web-flight/run_query_host_tests.py\"], CONFIG[\"query_runner\"], \"reviewed query40 migration\")",
+        "after": "query_runner_original_raw=checked(target[\"tests/web-flight/run_query_host_tests.py\"],\n    CONFIG[\"query_runner_original\"],\"unchanged repository query runner\")\nquery_adapter=CONFIG[\"query_runner_count_adapter\"]\nneed(type(query_adapter) is dict and set(query_adapter)=={\"before\",\"after\",\"count\"}\n     and type(query_adapter[\"count\"]) is int and query_adapter[\"count\"]==1\n     and type(query_adapter[\"before\"]) is str and type(query_adapter[\"after\"]) is str,\n     \"one sealed external count-only query runner adaptation\")\nquery_before=query_adapter[\"before\"].encode(\"utf-8\");query_after=query_adapter[\"after\"].encode(\"utf-8\")\nneed(query_before and query_after and query_runner_original_raw.count(query_before)==1,\n     \"one exact original query admission count\")\nquery_runner_raw=checked(query_runner_original_raw.replace(query_before,query_after,1),\n    CONFIG[\"query_runner\"],\"exact external corrected query runner\")\nneed(query_runner_raw.count(query_after)==1\n     and query_runner_raw.replace(query_after,query_before,1)==query_runner_original_raw,\n     \"external runner reverses to the full unchanged repository original\")",
+        "count": 1,
+        "label": "preclaim exact bounded one-hunk derivation, no source-tree rewrite"
+      },
+      {
+        "before": "    written.append(write_new(ROOT/\"INPUT.json\",input_raw))",
+        "after": "    written.append(write_new(ROOT/\"INPUT.json\",input_raw))\n    written.append(write_new(ROOT/\"query40-runner.py\",query_runner_raw))",
+        "count": 1,
+        "label": "create-only external runner after root claim"
+      }
+    ],
+    "focused_actual_seal": {
+      "before": "\\\"focused_result\\\":null",
+      "after": "\\\"focused_result\\\":{\\\"bytes\\\":44408,\\\"sha256\\\":\\\"036e4f7b185a127e457712fcd23b6745d8aac18a04cf64da4035764329efee43\\\"}",
+      "count": 1
+    }
+  },
+  "signer": {
+    "base": {
+      "bytes": 90362,
+      "sha256": "8ea1a6ff0d4d646d23d605eb5180e437fd2af01263ac6ce2f9327f6708a91e91",
+      "git_blob_sha": "f3bcaf1d12f4e511a1cf5acf9b45e3f86ffe8bf8"
+    },
+    "candidate": {
+      "bytes": 92620,
+      "sha256": "a98b1d97d961e211646ee064e5a3bef4a76f374164484a580dc37e40548c988c",
+      "git_blob_sha": "da49e667ca49827f29ae4500ab5664276a51ee7c"
+    },
+    "ordered_replacements": [
+      {
+        "index": 0,
+        "label": "explicit external runner pin and exact one-hunk adaptation",
+        "kind": "CONFIG_only",
+        "before": {
+          "bytes": 13621,
+          "sha256": "c46829ee43801cfc661726faa0989e95b1fb0a1968ff2c1ec4b66336bca506c2",
+          "git_blob_sha": "16968825bbf573a69099bee59cbf1f2568da0314"
+        },
+        "after": {
+          "bytes": 14075,
+          "sha256": "0248eb4b496e0b12482e3e1fbf1ddc8ab3aa2924e80fd6fdd3a14a6d84d0a147",
+          "git_blob_sha": "a8f6152b0bc14c0b56ce6ec23a09cc425c04ca83"
+        },
+        "fields": [
+          "query_runner",
+          "query_runner_original",
+          "query_runner_count_adapter"
+        ]
+      },
+      {
+        "before": "    query=build[\"query40\"];raw=artifact(BUILD/\"query40/RESULT.json\",query[\"original\"])\n",
+        "after": "    query=build[\"query40\"];raw=artifact(BUILD/\"query40/RESULT.json\",query[\"original\"])\n    original=take(BUILD/\"source/tests/web-flight/run_query_host_tests.py\",CONFIG[\"query_runner_original\"])\n    executed=take(BUILD/\"query40-runner.py\",CONFIG[\"query_runner\"])\n    adapter=CONFIG[\"query_runner_count_adapter\"]\n    need(type(adapter) is dict and set(adapter)=={\"before\",\"after\",\"count\"}\n         and type(adapter[\"count\"]) is int and adapter[\"count\"]==1\n         and type(adapter[\"before\"]) is str and type(adapter[\"after\"]) is str,\n         \"one sealed external query count-only adaptation\")\n    before=adapter[\"before\"].encode(\"utf-8\");after=adapter[\"after\"].encode(\"utf-8\")\n    need(before and after and original.count(before)==1 and executed.count(after)==1\n         and original.replace(before,after,1)==executed and executed.replace(after,before,1)==original,\n         \"actual external query runner is exactly the reviewed one-hunk successor\")\n    need(query[\"runner_path\"]==str(BUILD/\"query40-runner.py\")\n         and query[\"runner_original_source_path\"]==\"tests/web-flight/run_query_host_tests.py\"\n         and query[\"runner_original_sha256\"]==sha(original)\n         and same(query[\"runner_count_adapter\"],adapter)\n         and query[\"runner_corrected_outside_source_tree\"] is True\n         and query[\"repository_runner_count_guard_known_incompatible\"] is True,\n         \"actual executed runner and the preserved incompatible repository count are explicit\")\n",
+        "count": 1,
+        "label": "independent same-byte external runner verification"
+      },
+      {
+        "before": "sealed(CONFIG[\"query_runner\"],\"query_runner\")",
+        "after": "sealed(CONFIG[\"query_runner\"],\"query_runner\")\nsealed(CONFIG[\"query_runner_original\"],\"query_runner_original\")",
+        "count": 1,
+        "label": "seal both runner identities"
+      },
+      {
+        "before": "    \"query_host_result_sha256\":sha(query_raw),\"query_exact_current_dispatch_methods_bound\":True,",
+        "after": "    \"query_host_result_sha256\":sha(query_raw),\"query_exact_current_dispatch_methods_bound\":True,\n    \"external_query_runner\":{\"path\":str(BUILD/\"query40-runner.py\"),**CONFIG[\"query_runner\"],\n        \"repository_original\":CONFIG[\"query_runner_original\"],\"count_only_patch\":CONFIG[\"query_runner_count_adapter\"],\n        \"source_inventory_modified\":False,\"test_case_assertions_modified\":False,\n        \"repository_original_count_guard_known_incompatible\":True},",
+        "count": 1,
+        "label": "retain transparent external runner evidence in signed result"
+      }
+    ]
+  },
+  "config_exact_values": {
+    "query_runner": {
+      "bytes": 41005,
+      "sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10"
+    },
+    "query_runner_original": {
+      "bytes": 41005,
+      "sha256": "0f4d983138ed8bcf5f0b622ee4d4063048e83413eafe3586595521f5e1b7eb45"
+    },
+    "query_runner_count_adapter": {
+      "before": "    need(len(PURE_PATHS)==45 and len(generated_factories)==3,\"fixed 43 production plus 2 retained plus 3 factory inputs\")",
+      "after": "    need(len(PURE_PATHS)==46 and len(generated_factories)==3,\"fixed 44 production plus 2 retained plus 3 factory inputs\")",
+      "count": 1
+    }
+  },
+  "mechanical": {
+    "all_source_hunks_forward_reverse_exact": true,
+    "both_config_fields_other_than_three_new_runner_values_unchanged": true,
+    "repository_runner_bytes_unchanged": true,
+    "pure_paths_and_all_existing40_assertions_unchanged": true,
+    "three_factory_and_projection_methods_unchanged": true,
+    "child_argv_and_timeouts_unchanged": true,
+    "complete595_and217_maps_unchanged": true,
+    "original_core101_web_and_focused39_receipts_unchanged": true
+  },
+  "scope": {
+    "repository_original_known_count_guard_mismatch_retained": true,
+    "external_runner_created_only_after_new_root_claim": true,
+    "original_and_external_whole_sha_both_required": true,
+    "signer_replays_exact_hunk_and_actual_report": true,
+    "no_new_suite": true,
+    "no_earlier_pass_claim_changed": true,
+    "host_calls": 0,
+    "executed": false
+  },
+  "superseded_unexecuted_android_request": "1076581c290031b7b55ad4ba981fcf785380ebfc",
+  "future": {
+    "query_actual_success_unknown": true,
+    "android_build_actual_success_unknown": true,
+    "signer_receipts_still_late_bound": true
+  }
+}

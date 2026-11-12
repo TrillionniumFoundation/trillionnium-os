@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.main56-android-actual-start.v1",
+  "request_git": "3c9913370c36b26e2bb9a060a4e0be4b6fedb34c",
+  "review_git": "2910f7bb587444342c5bcb51a2a73680dc5f2dad",
+  "first_tool_result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.pty_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "same_request_reconciliation_ack": {
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "host": "pocket4",
+    "persistent_across_runtime_restart": true,
+    "reused": false,
+    "session_id": "dpty-d60f6f95d7dc4a51a8bac36260fc88ff56b4e19cbe95cd8145f0bb35804c8729",
+    "status": {
+      "boot": "97d9600f-e081-465c-9e6e-62651e09806b",
+      "bytes_seen": 0,
+      "bytes_stored": 0,
+      "capture_error": null,
+      "created_unix_ms": 1794516824905,
+      "output_complete": false,
+      "owner_pid": 2639065,
+      "pid": 2639066,
+      "state": "running"
+    }
+  },
+  "actual_build_result_unknown": true
+}

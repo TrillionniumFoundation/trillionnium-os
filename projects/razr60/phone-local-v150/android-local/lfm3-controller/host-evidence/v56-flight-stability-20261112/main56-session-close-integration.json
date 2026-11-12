@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.main56-session-close-stability-integration.v1",
+  "base": {
+    "git": "74a8db87e601cd5e3427dc614bd197184201837e",
+    "bytes": 41909,
+    "sha256": "647bea5db228059ae71f284cfb5e8d4cc38208df7ca5658a1027833f521f343d"
+  },
+  "actual_lifecycle_checkpoint": "d3e32ffa60a9754c48fa254bb0fa93da7113a98a",
+  "result": {
+    "git": "8283d4e83b7cf13c9deb7e55c6d26f26053e11cc",
+    "bytes": 42734,
+    "sha256": "7f3c7fd872e9901026ad7471dfc9a3e68d2c987eb1931896f80ea0f2acd6f4e1"
+  },
+  "patches": [
+    {
+      "old": "    Cleanup close(String reason){\n        retired=true;domain=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;\n        dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;completion.clearWebDomain();\n        try{\n            if(!journal.attachWasPrepared()){\n                journal.closeNeverAttached();cleanupKnown=true;\n                return new Cleanup(true,new JSONObject().put(\"cleanup_known\",true).put(\"no_attach_request_prepared\",true)\n                        .put(\"task_id\",taskId).put(\"binding_sha256\",journal.bindingSha));\n            }\n            WebEvidenceReceipt proof=client.closeLease(reason,SystemClock.elapsedRealtime()+10000);\n            journal.closeKnown(proof);cleanupKnown=true;\n            return new Cleanup(true,new JSONObject().put(\"cleanup_known\",true).put(\"helper\",proof.callback())\n                    .put(\"task_id\",taskId).put(\"binding_sha256\",journal.bindingSha).put(\"business_verified\",false));\n        }catch(Exception unknown){\n            try{return new Cleanup(false,new JSONObject().put(\"cleanup_known\",false).put(\"task_id\",taskId)\n                    .put(\"binding_sha256\",journal.bindingSha).put(\"error\",HeptaAccessibilityService.limited(HeptaAccessibilityService.message(unknown),512))\n                    .put(\"automatic_retry\",false));}catch(Exception impossible){throw new IllegalStateException(impossible);}\n        }finally{client.close();}\n    }\n",
+      "new": "    Cleanup close(String reason){\n        TaskCompletionGate.WebCloseAttempt completionClose=completion.beginWebClose(this,domain,taskId,journal.bindingSha,reason);\n        boolean closeReturnedNormally=false;\n        retired=true;domain=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;\n        dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;completion.clearWebDomain();\n        try{\n            if(!journal.attachWasPrepared()){\n                journal.closeNeverAttached();cleanupKnown=true;\n                return new Cleanup(true,new JSONObject().put(\"cleanup_known\",true).put(\"no_attach_request_prepared\",true)\n                        .put(\"task_id\",taskId).put(\"binding_sha256\",journal.bindingSha));\n            }\n            WebEvidenceReceipt proof=client.closeLease(reason,SystemClock.elapsedRealtime()+10000);\n            journal.closeKnown(proof);cleanupKnown=true;\n            JSONObject actualCallback=proof.callback();\n            Cleanup known=new Cleanup(true,new JSONObject().put(\"cleanup_known\",true).put(\"helper\",actualCallback)\n                    .put(\"task_id\",taskId).put(\"binding_sha256\",journal.bindingSha).put(\"business_verified\",false));\n            if(proof.cleanupKnown&&!proof.recovered&&!proof.unstarted)\n                completion.webCloseKnown(completionClose,this,actualCallback.getString(\"task_id\"),proof.bindingSha,\n                        proof.status,proof.instance,proof.epoch,proof.displayId,proof.windowId,\n                        WebEvidenceJson.sha(WebDomCanonical.canonical(actualCallback)));\n            else completion.abortWebClose(completionClose);\n            closeReturnedNormally=true;return known;\n        }catch(Exception unknown){\n            try{return new Cleanup(false,new JSONObject().put(\"cleanup_known\",false).put(\"task_id\",taskId)\n                    .put(\"binding_sha256\",journal.bindingSha).put(\"error\",HeptaAccessibilityService.limited(HeptaAccessibilityService.message(unknown),512))\n                    .put(\"automatic_retry\",false));}catch(Exception impossible){throw new IllegalStateException(impossible);}\n        }finally{\n            if(!closeReturnedNormally)completion.abortWebClose(completionClose);\n            client.close();\n        }\n    }\n"
+    }
+  ],
+  "only_difference_from_audit_exact_close": "Both before/after retain the already-reviewed three Flight private capture/permit/check clear assignments.",
+  "live_domain_clear_preserved": true,
+  "no_attach_unknown_recovery_no_completion": true,
+  "compiled": false
+}

@@ -1,0 +1,127 @@
+{
+  "schema": "hepta.main56-focused39-final-seal-independent-review.v1",
+  "reviewer": "mobile_models",
+  "status": "source_review_no_new_blocker",
+  "scope": "Final focused39 CONFIG/CURRENT_DELTA seal and atomic source transport only. Inherits the prior current-session method/fixture closure review; no host call, compilation or phone action.",
+  "predecessor_review": {
+    "git_blob_sha": "c17c54ae6476919f0db8ce941fa7f60daf386645",
+    "bytes": 4045,
+    "sha256": "01bb7393d2aef9559321956b12a719bcfcaf3cca03488120ede867d44055f027"
+  },
+  "candidate_review": {
+    "git_blob_sha": "36b2c8f2ece5be163bec09bb8dfcaf2540dad26f",
+    "bytes": 87191,
+    "sha256": "de24aedaaf3851bc35d69305ab82744946946e1243e4c58bc5059849b40f0b0a"
+  },
+  "source": {
+    "bytes": 69343,
+    "sha256": "eaf4de0485e4990ec56751e55b1efdca4492f7b75b9507e2ca409db87fcbb9bd",
+    "git_blob_sha": "ba87e56e966d7aa9f8b648a3eb358a8a75491ef7"
+  },
+  "request": {
+    "bytes": 42181,
+    "sha256": "59ee45eb2e9ed4de713f84c4cc7b284ac3ca09fca5b477dc83495252ed6008be",
+    "git_blob_sha": "6a6dd4d552da982cc06e77d2ebac50e56961eb1c"
+  },
+  "input": {
+    "bytes": 1283344,
+    "sha256": "25b80314fb000cf4e48a56ad4e198d6b2fb0917802e1f687c5d041f17e04a13b",
+    "git_blob_sha": "baf4bf959ce91b7510694cf393866f056a65cf51"
+  },
+  "delta": {
+    "git_blob_sha": "68ac0a3be3f226c40f77cf951860472539cdd0c1",
+    "bytes": 25866,
+    "sha256": "efbfce51da0412ebf84843a7cd04e736fd72ce6a4110e485c66fe56b5626e1a1"
+  },
+  "final_aggregate": {
+    "bytes": 1427055,
+    "sha256": "c1cc7cc16eef4c3a34131ee719101a69db080b76e72c98f03248036fc6fd628f",
+    "git_blob_sha": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c"
+  },
+  "source_inventory": {
+    "bytes": 103795,
+    "sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+    "git_blob_sha": "c43a4be934ca00942ceeed086e16fc4b81d3a519"
+  },
+  "checks": {
+    "stage_patch_groups": 2,
+    "stage_forward_and_reverse_whole_bytes_match": true,
+    "stage_other_bytes_unchanged": true,
+    "config_changes": [
+      "current.source_root and materialized_root point to final Core56 r2",
+      "current.aggregate pins bind 0803dec4b6acc359b810bb79ca6fdd01ada69a8c",
+      "current.inventory binds 103795/ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+      "current.derived binds exact 1283344-byte input"
+    ],
+    "input_whole_reconstructed_from_previous_input": true,
+    "compiler_row_change": {
+      "path": "src/org/trillionnium/hepta/local/WebShoppingDomain.java",
+      "before": "geometry==null?null:geometry.evidence()",
+      "after": "geometry==null?null:jsonMap(geometry.evidence())",
+      "new_source": "78c1c4d616a815dbf31b214f0fb74754745c967c"
+    },
+    "input_other_changes": "Only final aggregate/inventory/derived source metadata and the corresponding Shopping row pins.",
+    "all_44_pure_raw_files_match_final_595_inventory": true,
+    "overlay_raw_bytes_match_final_aggregate": true,
+    "compile_java_count": 51,
+    "projected_method_count": 15,
+    "all_projection_methods_and_three_original_sources_unchanged_from_predecessor": true,
+    "all_fixture_factory_actual_ax_expected_objects_unchanged": true,
+    "original_consumer_and_arm_case_counts": [
+      20,
+      19
+    ],
+    "assertions_changed": false,
+    "first_root_mkdir_outside_handler": true,
+    "prior_actual55_success_and_two_failures_unchanged": true,
+    "publisher_patch_groups": 12,
+    "publisher_forward_reverse_whole_bytes_match": true,
+    "publisher_base": {
+      "bytes": 10454,
+      "sha256": "675ff3db8910a9dce4d190790f70dfef6d2e2b5ecfe371b24766bf87946732c1",
+      "git_blob_sha": "017933ef03e8243e77c1f3351491a2ec1fef18d4"
+    },
+    "canonical_base64": true,
+    "argument": {
+      "bytes": 30860,
+      "sha256": "04c1f18e2145c65c522c2cb5c46dfa936c2fa2d02a5a2cf855aaf4e72e02ba28",
+      "git_blob_sha": "48e344060cc96aca390971b0f044e4293f74a0a8"
+    },
+    "gzip": {
+      "bytes": 23145,
+      "sha256": "b353657b586d726fe96affb0a90c67d1a9c9bb3a4eb325c2a9ed6a01a10cbb7b"
+    },
+    "gzip_crc_and_complete_uncompressed_source_equal": true,
+    "loader": {
+      "bytes": 866,
+      "sha256": "538878b175b6da3fab0790c0e4157b908a3483501898250a278e5c19dcd81a09",
+      "git_blob_sha": "c897b7058eff3a7b545c081ed7b6ef4359f8a494"
+    },
+    "supervisor": {
+      "bytes": 1784,
+      "sha256": "42db350b79a90a6f66c4934a63099ec5af38f841657389801df0ddf3239e988b",
+      "git_blob_sha": "fc5e90657831fff822935aaf4af6bcfeb9467a29"
+    },
+    "exact_loader_supervisor_embedded_in_publisher": true,
+    "request_host": "pocket4",
+    "request_key": "007f-v56-main-wire4-host-p4-r1-current-session",
+    "request_executable": "/usr/bin/python3",
+    "request_argv_shape": "-I -B -c <same reviewed atomic publisher> <canonical source gzip base64>",
+    "loader_scope": "Stable regular single-link no-follow FD, complete size/SHA, same FD/path identity, compile exact raw with __stage_source__.",
+    "transport_scope": "Only the exact original source leaf is atomically published, then the inherited bounded owned supervisor runs the same loader. Original temp/link/FD/cleanup algorithms remain unchanged.",
+    "execution_history_scope": "Parent confirmed the superseded 660335 focused39 candidate was never published or started. This review does not claim an observed Start or result for the final request."
+  },
+  "limitations": [
+    "This is source and byte-level transport review, not Python/Java execution.",
+    "Current 51-source compilation and original 20+19 cases still require their actual receipt.",
+    "The test-only Flight type surface cannot construct a live permit; actual Flight native dispatch, Android Binder and phone business are not proved by this gate.",
+    "No source CAS, host mutation, task Start, phone or model action was performed in this review."
+  ],
+  "result": {
+    "source_blocker": null,
+    "host_executed": false,
+    "actual_focused39_pass": null,
+    "phone_actions": 0,
+    "flight_results_provider_ready": false
+  }
+}

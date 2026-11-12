@@ -79,7 +79,7 @@ final class WebShoppingDomain {
         List<Map<String,Object>> capabilities=new ArrayList<Map<String,Object>>();
         Map<String,Object> proof=base(task,goal,auth,frame,receipt,binding);
         proof.put("page",page.evidence());proof.put("site_policy",jsonMap(policy.evidence()));
-        proof.put("site_policy_sha256",policy.sha256);proof.put("native_geometry",geometry==null?null:geometry.evidence());
+        proof.put("site_policy_sha256",policy.sha256);proof.put("native_geometry",geometry==null?null:jsonMap(geometry.evidence()));
         if(geometry!=null&&!page.modalPresent&&page.productLinks.size()==1
                 &&"official_public_search".equals(page.phase)){
             MiPublicProductPage.Link link=page.productLinks.get(0);

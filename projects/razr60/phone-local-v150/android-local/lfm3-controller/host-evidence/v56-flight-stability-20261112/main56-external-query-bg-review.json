@@ -1,0 +1,85 @@
+{
+  "schema": "hepta.main56-external-query-runner-independent-source-review.v1",
+  "status": "source_review_complete_no_additional_blocker_in_reviewed_scope",
+  "reviewer": "android_background",
+  "scope": "Only the one-line external runner correction and the builder/signer consumer changes in e8bf. No execution, new gate, source-tree admission bridge, or re-review of the unchanged Android/native pipeline.",
+  "decision": "Keep tested aggregate0803 and all595 source files byte-identical. Run the corrected script as a separately pinned external build artifact; preserve the repository runner limitation explicitly.",
+  "reviewed_delta": {
+    "git_blob_sha": "e8bf96943a8a5934964301fb133d19f2588ca1e3",
+    "bytes": 12349,
+    "sha256": "7dc242a57144e663fb1551556e6f67aa067c521aebfe0e6c88ea004818a3620e"
+  },
+  "prior_review": {
+    "git_blob_sha": "eda230b83883fd71137a9413f6092543d97abedd",
+    "bytes": 9441,
+    "sha256": "b2d9f825853141a190ca74d1588c47bfdad1f116fa2ef7e8174659de44865874",
+    "scope": "Retains the previously observed unfixed45 guard; this review closes only that remaining blocker."
+  },
+  "mechanical": {
+    "runner": {
+      "git_blob_sha": "c21109afe049ccaf2d664937bd24fb0e5abce4a2",
+      "bytes": 41005,
+      "sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10"
+    },
+    "builder_base": {
+      "git_blob_sha": "bd3d77b8af5ce7ec0b9c5847d91b5d0db30d13f7",
+      "bytes": 204203,
+      "sha256": "0ccad6720c0653c3ac94a3822ebd29010a7496291c7811d6122fb3edbac0a6ba"
+    },
+    "runner_exact_one_hunk": true,
+    "profiles": {
+      "builder": {
+        "forward_reverse_exact": true,
+        "only_three_config_fields_changed": true,
+        "body_hunks": 5,
+        "candidate": {
+          "git_blob_sha": "c4881a3645078736df30645c9cb0040837faee94",
+          "bytes": 206118,
+          "sha256": "85e530eebbc859dcea83955cd2f62153b2ab0414da8d7632dd7027eee45091f2"
+        }
+      },
+      "signer": {
+        "forward_reverse_exact": true,
+        "only_three_config_fields_changed": true,
+        "body_hunks": 3,
+        "candidate": {
+          "git_blob_sha": "da49e667ca49827f29ae4500ab5664276a51ee7c",
+          "bytes": 92620,
+          "sha256": "a98b1d97d961e211646ee064e5a3bef4a76f374164484a580dc37e40548c988c"
+        }
+      }
+    }
+  },
+  "findings": [
+    "The original41005-byte repository runner and corrected41005-byte external runner differ in exactly one line: PURE_PATHS45 becomes46 and its description43 production becomes44. All46 paths, original40 Java cases/187 assertions, three factory projections, exact production dispatch blocks, child arguments and timeouts remain byte-identical.",
+    "The builder's base is the previously reviewed4ddc plus only the actualfocused_result seal44408/036e. Its five body replacements and three CONFIG field changes reconstruct c488 forward and reverse exactly. The signer f3bc to da49 similarly has only three body replacements and the same three CONFIG field changes.",
+    "The exact original runner is loaded from the immutable target source map. A typed one-hunk adapter, complete original/candidate SHA and exact reverse reconstruction are checked before ROOT.mkdir. The new ROOT/query40-runner.py is create-only after root claim and joins written-file preservation checks.",
+    "current_query40 reads and executes that exact external raw. It still passes explicit --source to the immutable595 tree and explicit output/JDK/JSON/calendar arguments. The runner resolves source paths through args.source and does not depend on __file__ parent placement.",
+    "The actual query result must still contain the existing40/187 expectation and50 Java inputs, normal javac/query-chain exits, complete log SHA checks, no forced cleanup or exception, and explicit false phone/business result claims.",
+    "The signer independently reads and pins both BUILD/source/tests/web-flight/run_query_host_tests.py and BUILD/query40-runner.py; it repeats typed exact forward/reverse derivation and binds the actual runner path/SHA/adapter to the actual query report.",
+    "The signed-result external_query_runner record explicitly states source_inventory_modified=false, test_case_assertions_modified=false and repository_original_count_guard_known_incompatible=true. No consumer changes the tested595 source map or217 compiler map, or labels Core/Web/focused receipts as testing a modified repository tree.",
+    "Builder first ROOT claim remains outside its handler (line808 versus839); signer first ROOT claim remains outside its handler (line930 versus1023). Original owned-child and final source/compiled-input/written-artifact preservation paths are unchanged."
+  ],
+  "actual_focused_original_independently_read": {
+    "git_blob_sha": "94faa212af37300fa4eee3384cdf382b034aad7e",
+    "bytes": 44408,
+    "sha256": "036e4f7b185a127e457712fcd23b6745d8aac18a04cf64da4035764329efee43",
+    "all_pass": true,
+    "java_sources": 51,
+    "pure_production_sources": 44,
+    "exact_method_projection_count": 15,
+    "prior_preservation_file_count": 103,
+    "prior_successful_run_preserved": true
+  },
+  "limits": {
+    "query40_new_execution_not_observed_here": true,
+    "android_build_not_executed_here": true,
+    "signature_not_executed_here": true,
+    "transport_not_re_reviewed": true,
+    "phone_calls": 0,
+    "host_calls": 0,
+    "python_or_jvm_execution": 0,
+    "original_repo_runner_count_mismatch_remains_explicit": true
+  },
+  "blocking_findings": []
+}

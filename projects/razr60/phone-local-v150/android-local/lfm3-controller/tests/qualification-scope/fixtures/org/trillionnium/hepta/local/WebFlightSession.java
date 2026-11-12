@@ -20,6 +20,7 @@ final class WebFlightSession {
         private Cleanup(){throw unavailable();}
     }
     final String taskId;
+    final WebFlightGoal goal;
     final TaskAuthorization.Gate authorization;
     WebFlightSession(HeptaAccessibilityService service,String task,String owner,
             TaskAuthorization.Gate auth,BackgroundSession background,
@@ -46,6 +47,8 @@ final class WebFlightSession {
     PhoneObservation observe(PhoneObservation initial,Observer observer,long deadline){throw unavailable();}
     void beforeModelAction(ActionDecision action,String run,long deadline){throw unavailable();}
     void requireDispatch(ActionDecision action,String run){throw unavailable();}
+    WebFlightNativeStability.Permit flightNativePermitForDispatch(ActionDecision action,PhoneObservation frame){throw unavailable();}
+    void acceptFlightNativeCheck(ActionDecision action,PhoneObservation frame,HeptaAccessibilityService.FlightNativeCheck check)throws Exception{throw unavailable();}
     WebRegionNativeBridge nativeRegionForDispatch(ActionDecision action,String run,PhoneObservation frame){throw unavailable();}
     void acceptNativeRegionCheck(ActionDecision action,String run,HeptaAccessibilityService.NativeRegionCheck actual){throw unavailable();}
     void beforeNativeClickInvocation(ActionDecision action,String run){throw unavailable();}

@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.main56-publication-stager-independent-delta-review.v1",
+  "reviewer": "mobile_models",
+  "status": "source_review_no_new_blocker",
+  "scope": "16 ordered literal/CONFIG groups against the actually used Main55 stager; public MAP/CAS and final-signing producer interface only.",
+  "base_actual_source": {
+    "git_blob_sha": "46f7759ee82fd41626f5800c5844e678420cc114",
+    "bytes": 18038,
+    "sha256": "358267e69fdd9a2e3fd9d8418ecafa55f0e367f8a2b1c87d474ac899c4b57094"
+  },
+  "candidate": {
+    "git_blob_sha": "735486dc79b7e80f2baaceaac4f95346b34e3c21",
+    "bytes": 17357,
+    "sha256": "989d46c6289b1cafca7bb0418ae6b1db341f417cbae3fa1cfbdce8f1b7edbce4"
+  },
+  "delta": {
+    "git_blob_sha": "ce4f1be8a8c75bb74971c1e9163e69cca80a1e4f",
+    "bytes": 7677,
+    "sha256": "b959e396cb6ba6ecd9fff01317625d44198f902875124c39288da5eef8a45603"
+  },
+  "checks": {
+    "all_16_groups_exact_forward_reverse": true,
+    "io_ast_hash_map_reconstruction_and_write_functions_unchanged": true,
+    "first_root_claim_still_outside_handler": true,
+    "nine_actual_fields_still_null": [
+      "core_result",
+      "core_map",
+      "input",
+      "publication",
+      "git_source_map",
+      "signer",
+      "source_commit",
+      "source_tree",
+      "expected_prior_head"
+    ],
+    "all_nulls_rejected_before_any_write": true,
+    "base_source_commit": "dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e",
+    "source_inventory_sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+    "source_count": 595,
+    "host_input_count_expectation": 419,
+    "core101_count": 101,
+    "nested18_within_core101": true,
+    "core_preserved_field": "prior_core_evidence_unchanged",
+    "host_map_is_bare_array_of_595_path_ordered_rows": true,
+    "public_map_schema": "hepta.git-source-blob-map.v2",
+    "public_map_header_and_row_order_unchanged": true,
+    "public_map_full_bytes_sha_must_match_actual_CAS_map": true,
+    "publication_schema": "hepta.v56-git-publication.v1",
+    "publication_actual_commit_tree_expected_prior_and_core_fullpins_required": true,
+    "signer_ast_config_only_no_execution": true,
+    "signer_consumer_roots_match_final_Core2_Web2_Android1": true,
+    "signed_and_phone_flags_remain_false": true
+  },
+  "limitations": [
+    "595/419/101/18 are sealed producer expectations; actual current Core2 completion is not inferred.",
+    "Nine actual pins require final full receipts and source CAS before this pending script can execute.",
+    "Source review only: no host, gate, repository ref mutation, signing or phone action."
+  ]
+}

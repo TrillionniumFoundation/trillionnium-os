@@ -21,6 +21,14 @@ public final class HeptaAccessibilityService extends android.content.Context {
             WebRegionNativeBridge bridge,Cancellation cancel)throws Exception{
         throw new AssertionError("legacy fixture cannot execute a Web native-region recheck");
     }
+    /** Type-only legacy boundary; never a successful Flight native-stability recheck. */
+    static final class FlightNativeCheck {
+        private FlightNativeCheck(){throw new AssertionError("legacy fixture has no Flight native-stability evidence");}
+    }
+    private FlightNativeCheck requireLiveFlightNativeStability(String taskId,PhoneObservation frame,ActionDecision action,
+            WebFlightNativeStability.Permit permit,Graph now,Cancellation cancel)throws Exception{
+        throw new AssertionError("legacy fixture cannot execute a Flight native-stability recheck");
+    }
     static HeptaAccessibilityService live;
     static final int GLOBAL_ACTION_BACK=1,GLOBAL_ACTION_HOME=2;
     final Handler main=new Handler(Looper.getMainLooper());

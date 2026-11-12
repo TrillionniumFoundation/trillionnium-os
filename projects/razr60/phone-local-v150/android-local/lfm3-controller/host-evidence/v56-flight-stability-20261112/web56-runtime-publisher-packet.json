@@ -1,0 +1,125 @@
+{
+  "schema": "hepta.web56-runtime-three-source-publisher-handoff.v1",
+  "status": "sealed source-only host publication; no runtime execution",
+  "runtime_handoff": {
+    "git_blob_sha": "7c4f6ed7b5fee1e4363b02f2300c1595087ae677",
+    "bytes": 163802,
+    "sha256": "fd5f586a1b9282a271e54047cf003c97b4bce48c31dbee8b8fc1817efc56dc41"
+  },
+  "base_publisher": {
+    "git_blob_sha": "ca07932af0830c515dcc412d03a71e28265f8692",
+    "bytes": 9626,
+    "sha256": "65e71ea81d2b71bdbad2f666269551e3366ccdaa57d9f97f9b049695c8b8f44d"
+  },
+  "source": {
+    "raw_utf8": "import base64,gzip,hashlib,json,os,secrets,stat,sys\nTASK_BASE=\"/home/alex/hepta-local-007f-20261111\"\nBASE=TASK_BASE+\"/background-web-adapters-v56-r1\"\nPINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v56-r1/web_entry_support.py\",\"bytes\":70091,\"sha256\":\"40bd9c3d4d6b600396cabc15635688c53c520fc3cec2f9aff19abecdc4af8cde\"},{\"path\":\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v56-r1/prepare_background_web_v56_r1.py\",\"bytes\":27543,\"sha256\":\"acbb9427786c8843fcb97607149fc07460f2ef293e179aee7131e8239b54c6f3\"},{\"path\":\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v56-r1/run_background_web_v56_r1.py\",\"bytes\":34153,\"sha256\":\"2a971e3c7c8b2237a7e3bb9e9e233487f22e66f5fa961d909636fe609313689b\"}]\nPAYLOAD_BYTES=131787\nPAYLOAD_SHA=\"bff9bf4a9486a4840f7441e9e0eb8f53226d0ed12dff98692233b9a7661f0a8a\"\nARGV_BYTES=52584\nARGV_SHA=\"5fa5f34fb08bd7c2b3497610a47c4b2b29d7aa9cf23da16f553bf34d95442038\"\nGZIP_BYTES=39436\nGZIP_SHA=\"4aa5958f2130c77ada05ea4d64a5e46bc16d1ae4ac97f896b87b7095a76fdd76\"\nTRANSPORT_KEY=\"007f-web56-runtime-three-source-publish-r1\"\ndef need(ok,why):\n    if not ok:raise RuntimeError(why)\ndef sha(raw):return hashlib.sha256(raw).hexdigest()\ndef file_id(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\ndef dir_id(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_uid,s.st_gid)\ndef pairs(items):\n    result={}\n    for key,value in items:\n        need(key not in result,\"duplicate stdin key\");result[key]=value\n    return result\ndef no_constant(value):raise ValueError(\"nonfinite stdin number\")\nneed(len(PINS)==3 and [p[\"path\"] for p in PINS]==[BASE+\"/\"+name for name in\n     (\"web_entry_support.py\",\"prepare_background_web_v56_r1.py\",\"run_background_web_v56_r1.py\")]\n     and all(type(p[\"bytes\"]) is int and 0<p[\"bytes\"]<=131072 for p in PINS)\n     and type(PAYLOAD_BYTES) is int and PAYLOAD_BYTES==sum(p[\"bytes\"] for p in PINS)<=393216,\n     \"three fixed actual runtime sources must be sealed\")\nneed(type(ARGV_BYTES) is int and 0<ARGV_BYTES<=1<<20\n     and type(GZIP_BYTES) is int and 0<GZIP_BYTES<=1<<20,\n     \"actual runtime transport lengths must be sealed\")\nfor digest in [p[\"sha256\"] for p in PINS]+[PAYLOAD_SHA,ARGV_SHA,GZIP_SHA]:\n    need(type(digest) is str and len(digest)==64 and all(c in \"0123456789abcdef\" for c in digest),\n         \"actual runtime transport digests must be sealed\")\nneed(len(sys.argv)==2,\"one complete compressed source argument\")\nargument=sys.argv[1].encode(\"ascii\",\"strict\")\nneed(len(argument)==ARGV_BYTES and sha(argument)==ARGV_SHA and ARGV_BYTES<=1<<20,\n     \"exact bounded source argument\")\npacked=base64.b64decode(argument,validate=True)\nneed(base64.b64encode(packed)==argument and len(packed)==GZIP_BYTES and sha(packed)==GZIP_SHA,\n     \"canonical full compressed source identity\")\ndata=gzip.decompress(packed)\nneed(len(data)==PAYLOAD_BYTES and sha(data)==PAYLOAD_SHA,\n     \"full gzip CRC and complete concatenated source identity before any mutation\")\npayloads=[];at=0\nfor pin in PINS:\n    need(os.path.dirname(pin[\"path\"])==BASE and os.path.basename(pin[\"path\"]) not in (\"\",\".\",\"..\"),\n         \"fixed direct runtime child\")\n    part=data[at:at+pin[\"bytes\"]];at+=pin[\"bytes\"]\n    need(len(part)==pin[\"bytes\"] and sha(part)==pin[\"sha256\"],\"individual complete runtime source identity\")\n    # Compile the same verified bytes for syntax only; do not import or execute them.\n    compile(part,pin[\"path\"],\"exec\",dont_inherit=True)\n    payloads.append(part)\nneed(at==len(data) and len(payloads)==3,\"exact three-source framing\")\nneed(os.getcwd()==TASK_BASE,\"fixed working directory\")\nfds=[];chain=[];temps={};published=[];directory_created_here=False\ndef directories():\n    for parent,name,fd,before in chain:\n        current=os.fstat(fd)\n        need(stat.S_ISDIR(current.st_mode) and dir_id(current)==before,\"opened directory identity\")\n        if parent is not None:\n            named=os.stat(name,dir_fd=parent,follow_symlinks=False)\n            need(stat.S_ISDIR(named.st_mode) and dir_id(named)==before,\"ordinary named directory identity\")\ndef read_exact(name,pin):\n    before=os.stat(name,dir_fd=bfd,follow_symlinks=False)\n    need(stat.S_ISREG(before.st_mode) and before.st_nlink==1 and before.st_size==pin[\"bytes\"],\"regular single-link exact-sized file\")\n    fd=os.open(name,os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=bfd)\n    try:\n        need(file_id(os.fstat(fd))==file_id(before),\"file replaced before open\")\n        chunks=[];total=0\n        while total<=pin[\"bytes\"]:\n            chunk=os.read(fd,min(65536,pin[\"bytes\"]+1-total))\n            if not chunk:break\n            chunks.append(chunk);total+=len(chunk)\n        data=b\"\".join(chunks)\n        need(len(data)==pin[\"bytes\"] and sha(data)==pin[\"sha256\"],\"full readback bytes and digest\")\n        need(file_id(os.fstat(fd))==file_id(before)==file_id(os.stat(name,dir_fd=bfd,follow_symlinks=False)),\"file stable across read\")\n        return data,{\"path\":pin[\"path\"],\"bytes\":len(data),\"sha256\":sha(data),\"identity\":file_id(before)}\n    finally:os.close(fd)\ndef remove_own_temp(name):\n    identity=temps[name]\n    try:current=os.stat(name,dir_fd=bfd,follow_symlinks=False)\n    except FileNotFoundError:\n        del temps[name];return\n    need(stat.S_ISREG(current.st_mode) and (current.st_dev,current.st_ino)==identity,\"only this process temporary inode may be removed\")\n    os.unlink(name,dir_fd=bfd);del temps[name]\ntry:\n    fd=os.open(\"/\",os.O_RDONLY|os.O_DIRECTORY|os.O_CLOEXEC|os.O_NOFOLLOW)\n    fds.append(fd);chain.append((None,None,fd,dir_id(os.fstat(fd))))\n    components=BASE.strip(\"/\").split(\"/\")\n    for index,component in enumerate(components):\n        parent=fd\n        try:\n            fd=os.open(component,os.O_RDONLY|os.O_DIRECTORY|os.O_CLOEXEC|os.O_NOFOLLOW,dir_fd=parent)\n        except FileNotFoundError:\n            need(index==len(components)-1 and component==\"background-web-adapters-v55-r1\",\n                 \"only the fixed final runtime directory may be created\")\n            directories()\n            try:\n                os.mkdir(component,0o700,dir_fd=parent);directory_created_here=True;os.fsync(parent)\n            except FileExistsError:pass\n            fd=os.open(component,os.O_RDONLY|os.O_DIRECTORY|os.O_CLOEXEC|os.O_NOFOLLOW,dir_fd=parent)\n        fds.append(fd);chain.append((parent,component,fd,dir_id(os.fstat(fd))))\n    bfd=fd;directories()\n    # Check the fixed destination before creating any temporary or final file.\n    for pin,data in zip(PINS,payloads):\n        name=os.path.basename(pin[\"path\"])\n        try:existing,_=read_exact(name,pin)\n        except FileNotFoundError:continue\n        need(existing==data,\"existing destination must be identical\")\n    for i,(pin,data) in enumerate(zip(PINS,payloads)):\n        directories();name=os.path.basename(pin[\"path\"]);created=False\n        try:existing,facts=read_exact(name,pin)\n        except FileNotFoundError:\n            tmp=\".hepta-fixed-source-gzip-\"+str(os.getpid())+\"-\"+secrets.token_hex(8)+\"-\"+str(i)+\".tmp\"\n            tfd=os.open(tmp,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_CLOEXEC|os.O_NOFOLLOW,0o600,dir_fd=bfd)\n            st=os.fstat(tfd);temps[tmp]=(st.st_dev,st.st_ino)\n            try:\n                need(stat.S_ISREG(st.st_mode) and st.st_nlink==1,\"new owned regular temporary\")\n                at=0\n                while at<len(data):\n                    count=os.write(tfd,data[at:]);need(count>0,\"temporary write progress\");at+=count\n                os.fsync(tfd)\n            finally:os.close(tfd)\n            check,_=read_exact(tmp,pin);need(check==data,\"full temporary readback\")\n            directories()\n            try:\n                os.link(tmp,name,src_dir_fd=bfd,dst_dir_fd=bfd,follow_symlinks=False)\n                created=True\n            except FileExistsError:\n                existing,_=read_exact(name,pin);need(existing==data,\"concurrent exact destination only\")\n            finally:remove_own_temp(tmp)\n            os.fsync(bfd)\n            existing,facts=read_exact(name,pin)\n        need(existing==data,\"published original bytes\")\n        published.append(dict(facts,created_here=created,reused_identical=not created))\n    directories()\n    for pin,data in zip(PINS,payloads):\n        actual,_=read_exact(os.path.basename(pin[\"path\"]),pin);need(actual==data,\"fixed runtime sources exact at publication end\")\nexcept BaseException as failure:\n    print(json.dumps({\"schema\":\"hepta.fixed-source-gzip-argv-transport-receipt.v1\",\"transport_completed\":False,\"transport_key\":TRANSPORT_KEY,\"published\":published,\"error\":type(failure).__name__+\": \"+str(failure),\"runtime_imported\":False,\"runtime_executed\":False,\"phone_contacted\":False},sort_keys=True),flush=True)\n    raise\nfinally:\n    try:\n        for name in list(temps):remove_own_temp(name)\n    finally:\n        for fd in reversed(fds):os.close(fd)\nprint(json.dumps({\"schema\":\"hepta.fixed-source-gzip-argv-transport-receipt.v1\",\"transport_completed\":True,\"transport_key\":TRANSPORT_KEY,\"argv_bytes\":ARGV_BYTES,\"argv_sha256\":ARGV_SHA,\"gzip_bytes\":GZIP_BYTES,\"gzip_sha256\":GZIP_SHA,\"payload_bytes\":PAYLOAD_BYTES,\"payload_sha256\":PAYLOAD_SHA,\"published\":published,\"source_count\":3,\"source_syntax_compiled\":True,\"directory_created_here\":directory_created_here,\"runtime_imported\":False,\"runtime_executed\":False,\"release_manifest_published\":False,\"prepare_wrapper_published\":False,\"host_tests_executed\":False,\"phone_contacted\":False,\"next_action\":\"await_actual_installations_and_root_sealed_release_and_prepare\"},sort_keys=True),flush=True)\n# Publication ends here. No runtime module, host test or phone action is executed.\n",
+    "git_blob_sha": "bbc4f1ffd31068d82522cf0f9d15bab500ed54bd",
+    "bytes": 9626,
+    "sha256": "6fd65bb6d47cc2f33fc81fd110bc117b502ea339bc189fa05f6d09aa269c02ed"
+  },
+  "request": {
+    "git_blob_sha": "5122f53d26ffb238f3e9d03a88ca263b69912e6f",
+    "bytes": 62957,
+    "sha256": "d9d32277d0b10c2681f5b91dbfcf23989a72973ca2607f6b599fc532d9f7b1e2"
+  },
+  "tool": "h_pty_start",
+  "idempotency_key": "007f-web56-runtime-three-source-publish-r1",
+  "root": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v56-r1",
+  "files": [
+    {
+      "role": "support",
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v56-r1/web_entry_support.py",
+      "bytes": 70091,
+      "sha256": "40bd9c3d4d6b600396cabc15635688c53c520fc3cec2f9aff19abecdc4af8cde",
+      "git_blob_sha": "52900043c603758dfb4a25765d7c82349fa9d725"
+    },
+    {
+      "role": "prepare",
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v56-r1/prepare_background_web_v56_r1.py",
+      "bytes": 27543,
+      "sha256": "acbb9427786c8843fcb97607149fc07460f2ef293e179aee7131e8239b54c6f3",
+      "git_blob_sha": "194d4413d87004c68e78949d98e0a2205d139288"
+    },
+    {
+      "role": "run",
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v56-r1/run_background_web_v56_r1.py",
+      "bytes": 34153,
+      "sha256": "2a971e3c7c8b2237a7e3bb9e9e233487f22e66f5fa961d909636fe609313689b",
+      "git_blob_sha": "0cef345ebc6a070d5b970a5e8f30fde7b729e2f9"
+    }
+  ],
+  "payload": {
+    "bytes": 131787,
+    "sha256": "bff9bf4a9486a4840f7441e9e0eb8f53226d0ed12dff98692233b9a7661f0a8a",
+    "gzip_bytes": 39436,
+    "gzip_sha256": "4aa5958f2130c77ada05ea4d64a5e46bc16d1ae4ac97f896b87b7095a76fdd76",
+    "base64_argument_bytes": 52584,
+    "base64_argument_sha256": "5fa5f34fb08bd7c2b3497610a47c4b2b29d7aa9cf23da16f553bf34d95442038"
+  },
+  "ordered_replacements": [
+    {
+      "before": "BASE=TASK_BASE+\"/background-web-adapters-v55-r1\"",
+      "after": "BASE=TASK_BASE+\"/background-web-adapters-v56-r1\"",
+      "count": 1
+    },
+    {
+      "before": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v55-r1/web_entry_support.py\",\"bytes\":70091,\"sha256\":\"e5bbc07cd151bfb10c8b331706ef7158fd0a73b08d457f5c13f2c33ff2d90d21\"},{\"path\":\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v55-r1/prepare_background_web_v55_r1.py\",\"bytes\":27543,\"sha256\":\"a7ba8978f45ef6315ebcff3f61e7f4696adae373bf66a069936b4d3daaf588a6\"},{\"path\":\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v55-r1/run_background_web_v55_r1.py\",\"bytes\":34153,\"sha256\":\"a2f8e34d9ad4cf7771c91d24caa99fd464eda75f641c4b82316292ec8a1cacb3\"}]",
+      "after": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v56-r1/web_entry_support.py\",\"bytes\":70091,\"sha256\":\"40bd9c3d4d6b600396cabc15635688c53c520fc3cec2f9aff19abecdc4af8cde\"},{\"path\":\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v56-r1/prepare_background_web_v56_r1.py\",\"bytes\":27543,\"sha256\":\"acbb9427786c8843fcb97607149fc07460f2ef293e179aee7131e8239b54c6f3\"},{\"path\":\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v56-r1/run_background_web_v56_r1.py\",\"bytes\":34153,\"sha256\":\"2a971e3c7c8b2237a7e3bb9e9e233487f22e66f5fa961d909636fe609313689b\"}]",
+      "count": 1
+    },
+    {
+      "before": "PAYLOAD_SHA=\"858ec440e694bdbc659e763a5ec356998359b39bb5735ae77e8fe7f60214589d\"",
+      "after": "PAYLOAD_SHA=\"bff9bf4a9486a4840f7441e9e0eb8f53226d0ed12dff98692233b9a7661f0a8a\"",
+      "count": 1
+    },
+    {
+      "before": "ARGV_BYTES=52584",
+      "after": "ARGV_BYTES=52584",
+      "count": 1
+    },
+    {
+      "before": "ARGV_SHA=\"7b1abd09ff98ac32678af570f5f3662b342182c9241911627ab2f1ffc866279c\"",
+      "after": "ARGV_SHA=\"5fa5f34fb08bd7c2b3497610a47c4b2b29d7aa9cf23da16f553bf34d95442038\"",
+      "count": 1
+    },
+    {
+      "before": "GZIP_BYTES=39438",
+      "after": "GZIP_BYTES=39436",
+      "count": 1
+    },
+    {
+      "before": "GZIP_SHA=\"26fb727526018619e5c00953106df12f3af454d0f6a5e2a4963b608f99990521\"",
+      "after": "GZIP_SHA=\"4aa5958f2130c77ada05ea4d64a5e46bc16d1ae4ac97f896b87b7095a76fdd76\"",
+      "count": 1
+    },
+    {
+      "before": "TRANSPORT_KEY=\"007f-web55-runtime-three-source-publish-r1\"",
+      "after": "TRANSPORT_KEY=\"007f-web56-runtime-three-source-publish-r1\"",
+      "count": 1
+    },
+    {
+      "before": "(\"web_entry_support.py\",\"prepare_background_web_v55_r1.py\",\"run_background_web_v55_r1.py\")",
+      "after": "(\"web_entry_support.py\",\"prepare_background_web_v56_r1.py\",\"run_background_web_v56_r1.py\")",
+      "count": 1
+    }
+  ],
+  "preservation": {
+    "nine_literal_replacements_forward_reverse_exact": true,
+    "original_directory_FD_ownership_and_no_follow_helpers_byte_identical": true,
+    "original_atomic_file_link_no_overwrite_and_partial_publication_semantics_unchanged": true,
+    "individual_compile_only_and_allthree_full_readback_unchanged": true,
+    "full_concatenation_and_gzip_CRC_roundtrip": true
+  },
+  "scope": {
+    "source_syntax_compiled_here": false,
+    "runtime_imported": false,
+    "runtime_executed": false,
+    "phone_contacted": false,
+    "child_processes": false,
+    "host_tests_executed": false,
+    "release_manifest_included": false,
+    "prepare_wrapper_included": false,
+    "main_or_helper_apk_modified": false,
+    "host_calls": 0
+  }
+}

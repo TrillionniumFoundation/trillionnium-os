@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.root-main56-two-observed-failure-fixes-source-review.v1",
+  "reviewer": "root",
+  "status": "source_review_no_new_blocker",
+  "actual_failures": {
+    "core": {
+      "result_git": "3274c9f9254450635364967eb3701ad30056910c",
+      "stdout_git": "7367b41bc7fe35f428fe40698c21da30b0c50284",
+      "all_pass": false
+    },
+    "web": {
+      "result_git": "30962e2f30d7b0309aaacd44d67e795e436752ee",
+      "stderr_git": "b437fd9854666141f78911df0a7b53c9de376165",
+      "all_pass": false
+    }
+  },
+  "fixes": [
+    {
+      "path": "src/org/trillionnium/hepta/local/WebShoppingDomain.java",
+      "git": "78c1c4d616a815dbf31b214f0fb74754745c967c",
+      "bytes": 31717,
+      "sha256": "bbf256e37eb5cc3a1619371e9c29dc5f7af3139eeb4f602f602cf0f05551bf92",
+      "hunks": 1
+    },
+    {
+      "path": "tests/warm-finalization/prepare_fixture.py",
+      "git": "b55a5e693c29035d94e1140c77b299f8fce56d1c",
+      "bytes": 6220,
+      "sha256": "e4ee5ea79e689a2e89d64f5c8092a523e77ab5a337c5965c34a32974d06092e1",
+      "hunks": 2
+    }
+  ],
+  "mechanics": {
+    "all_final_and_reversed_base_full_bytes_sha_verified": true,
+    "all_three_hunks_forward_reverse_exact": true
+  },
+  "findings": [
+    "The actual Shopping producer put a JSONObject native_geometry inside its Map proof. Its one-line successor reuses the existing depth32 jsonMap/jsonValue converter, preserving typed numbers, booleans, strings and null with Map/List structure.",
+    "The TCG immutable copier remains byte-identical, pure Java, bounded and rejecting unsupported objects or nonfinite values; no generic stringification or new JSON/Android dependency is introduced.",
+    "The old finalization fixture now declares the four types/fields required by its exact extracted production code. Its explicit UNKNOWN/non-Web contract and throwing authorization frame cannot manufacture a successful Web completion; old Java assertions and production extraction remain unchanged."
+  ],
+  "limits": {
+    "executed": false,
+    "actual_successor_results": null,
+    "phone_actions": 0,
+    "flight_results_provider_ready": false,
+    "requires_final_combined595_validation": true
+  }
+}

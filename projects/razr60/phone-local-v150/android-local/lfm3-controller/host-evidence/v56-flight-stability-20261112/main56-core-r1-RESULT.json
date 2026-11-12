@@ -1,0 +1,231 @@
+{
+  "schema": "hepta.main56-original-core101-host-stage.v1",
+  "revision": "actual55-exact-source-successor-r1",
+  "all_pass": false,
+  "exit_code": 1,
+  "source_root": "/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r1/source",
+  "source_file_count": 595,
+  "source_inventory_sha256": "4581b1c7cfe27caf4e3d24562072baa511705f3e13205fc8720021bba9cc4512",
+  "source_candidate_git": "660335b7f19f519af4cfd168ebee186f1a4693b9",
+  "actual_unsigned_result": null,
+  "unsigned_build_prerequisite_required": false,
+  "source_materialized_here": true,
+  "source_commit": null,
+  "publication_pending": true,
+  "base_source_commit": "dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e",
+  "base_source_file_count": 594,
+  "host_check_count": 58,
+  "host_input_count": 419,
+  "nested_completion_stage_count": 0,
+  "nested18_are_within_core101": true,
+  "focused39_rerun": false,
+  "identity10_rerun": false,
+  "query40_rerun": false,
+  "separate_web_80_43_13_rerun": false,
+  "original_runner_sha256": "dc64aa551a0eddd6429ad3340db5445e9c00403a2110b48e1c05662f5d46ec3a",
+  "tools": {
+    "java": {
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+      "bytes": 14544,
+      "sha256": "bb70208200cb6538b877d80478141194a716edb591f4910ec106589291e99196",
+      "identity": [
+        66306,
+        34879305,
+        33261,
+        1,
+        14544,
+        1793283530000000000,
+        1794274474910109494
+      ]
+    },
+    "javac": {
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+      "bytes": 14592,
+      "sha256": "2aaf03d13aeb80b8269696f2dcd9f4937d7366bbc68f91fdc703cf157e8f39c4",
+      "identity": [
+        66306,
+        34879135,
+        33261,
+        1,
+        14592,
+        1793283530000000000,
+        1794274474788105274
+      ]
+    },
+    "cc": {
+      "path": "/usr/bin/x86_64-linux-gnu-gcc-15",
+      "bytes": 1305304,
+      "sha256": "b5f1b773a7c733738352000c92a077dc5852a1a2fc6d836b1e411be1e9ec5f88",
+      "identity": [
+        66306,
+        108008578,
+        33261,
+        1,
+        1305304,
+        1774174097000000000,
+        1791083705251606151
+      ],
+      "requested_path": "/usr/bin/cc"
+    },
+    "python": {
+      "path": "/usr/bin/python3.14",
+      "bytes": 7477160,
+      "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41",
+      "identity": [
+        66306,
+        108009763,
+        33261,
+        1,
+        7477160,
+        1787222518000000000,
+        1791083390422846841
+      ]
+    }
+  },
+  "steps": [
+    {
+      "name": "original-host-checks",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r1/source/tools/run_host_checks.py",
+        "--out",
+        "/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r1/host-checks"
+      ],
+      "cwd": "/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r1/source",
+      "pid": 2413783,
+      "exit_code": 1,
+      "timed_out": false,
+      "forced_kill": false,
+      "exit_observed": true,
+      "elapsed_seconds": 30.21759600698715,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r1/original-host-checks.stdout",
+        "bytes": 131,
+        "sha256": "9640e7e9469075e073a590ff8f8ed2bd0b9caf47f7e9394b5083b1c08e658a70",
+        "identity": [
+          66306,
+          55066530,
+          33152,
+          1,
+          131,
+          1794513691509510133,
+          1794513691509510133
+        ]
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r1/original-host-checks.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "identity": [
+          66306,
+          55066531,
+          33152,
+          1,
+          0,
+          1794513661363851523,
+          1794513661363851523
+        ]
+      },
+      "owned_group_cleanup_attempted": true,
+      "owned_group_absent_observed_after_failure": true,
+      "owned_group_cleanup_error": null
+    }
+  ],
+  "android_compiled_here": false,
+  "android_native_runtime_recompiled_here": false,
+  "original_host_native_contracts_executed": false,
+  "signed": false,
+  "published": false,
+  "phone_actions": 0,
+  "business_verified": false,
+  "actual_flight_results_provider_ready": false,
+  "started_epoch": 1794513659.7843366,
+  "error": "RuntimeError: original core101 parent must exit normally",
+  "originals_unchanged": true,
+  "prior_core_result": {
+    "path": "/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r3/RESULT.json",
+    "git_blob_sha": "d681c4eb40fefda49f0244e0ee7cee31b5ea2c25",
+    "bytes": 9186,
+    "sha256": "1b8f623bd5f5b428f25b7320adbd329ab6b39abf24c4b2daf3b7a7c4b26d52c4"
+  },
+  "prior_source_aggregate": {
+    "path": "/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r3/AGGREGATE.json",
+    "git_blob_sha": "d3bf59d91e5681fd5991c4bfef8587ba9a7b2a2d",
+    "bytes": 1320157,
+    "sha256": "66ac069a14b64db51d9f2d09bf52acc6a8d9dc93484f8c21e3c3276ac31c2f06"
+  },
+  "exact_changed_existing_paths": [
+    "AndroidManifest.xml",
+    "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+    "src/org/trillionnium/hepta/local/LocalTaskController.java",
+    "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+    "src/org/trillionnium/hepta/local/WebFlightSession.java",
+    "tests/completion/TaskCompletionGateHostTest.java",
+    "tests/qualification-scope/BackgroundObservationFixture.template",
+    "tests/qualification-scope/ServiceFixture.template",
+    "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/WebFlightSession.java",
+    "tests/qualification-scope/prepare_fixture.py",
+    "tests/web-flight/run_query_host_tests.py"
+  ],
+  "exact_new_paths": [
+    "src/org/trillionnium/hepta/local/WebFlightNativeStability.java"
+  ],
+  "prior_core_evidence_unchanged": true,
+  "prior_failed_runs_are_preserved_history": true,
+  "compiler_source_equivalent_to_predecessor": false,
+  "compiler_source_matches_current_final_inventory": true,
+  "compiler_input_changed_paths": [
+    "AndroidManifest.xml",
+    "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+    "src/org/trillionnium/hepta/local/LocalTaskController.java",
+    "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+    "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
+    "src/org/trillionnium/hepta/local/WebFlightSession.java"
+  ],
+  "original_unsigned_source_map_does_not_match_successor": true,
+  "new_same_source_android_build_required": true,
+  "source_map_difference_requires_signer_sidecar": false,
+  "source_blob_map": {
+    "path": "/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r1/SOURCE-BLOB-MAP.json",
+    "bytes": 141875,
+    "sha256": "78c2a62a2ec78e83c3e634cf102f1971e14035078b378bf9c1d38da2a8cea6ab",
+    "identity": [
+      66306,
+      55066524,
+      33152,
+      1,
+      141875,
+      1794513661330398562,
+      1794513661331850681
+    ]
+  },
+  "compiler_input_count": 217,
+  "java_source_count": 115,
+  "host_checks": {
+    "path": "/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r1/host-checks/HOST-CHECKS.json",
+    "bytes": 86558,
+    "sha256": "4c1a27164202fc8a1dc1326aafa6891c3967964a0f97f1cc7c8476f9680ddf21",
+    "identity": [
+      66306,
+      55751302,
+      33152,
+      1,
+      86558,
+      1794513691509510133,
+      1794513691509510133
+    ]
+  },
+  "actual_host_all_pass": false,
+  "actual_host_error": "background-client failed: ",
+  "prior_core_guarded_file_count": 368,
+  "prior_source_unchanged": true,
+  "source_unchanged": true,
+  "base_source_unchanged": true,
+  "written_files_unchanged": true,
+  "finished_epoch": 1794513691.9408147,
+  "elapsed_seconds": 32.1564781665802,
+  "stage_sha256": "613022769d3492365f138de2858501174bf77b2f3b9b60e907058ff2b4794756",
+  "original_guard_count": 967,
+  "written_guard_count": 608
+}

@@ -1,0 +1,147 @@
+{
+  "schema": "hepta.main56-web-r2-failure-repair-wiring-independent-review.v1",
+  "scope": "H0 narrow review of seven coordinator changes, final44-source packet, and original failure preservation; no execution",
+  "inputs": {
+    "web56r2Review": {
+      "git_blob_sha": "65b59c12321fcec1d6d025b8e1fea315e26d7852",
+      "bytes": 212951,
+      "sha256": "9eb55948a75889617979245cd83b79f41ab908b10502558152ebb43798a42493"
+    },
+    "web56r2Source": {
+      "git_blob_sha": "447b3ca01169ed691440ca866896d07f0c7b665f",
+      "bytes": 131893,
+      "sha256": "814e327adb50509d35a03a89f96ab085c3b4249c526d3b041ef3885e59e35391"
+    },
+    "web56r2Packet": {
+      "git_blob_sha": "1153d7e55c4051ecf6e4c018defe43d26ff51fd2",
+      "bytes": 260128,
+      "sha256": "3687b09656e60a808ebdce1430951e04741581e9ddd0d2faa7f5c36220ed24b7"
+    },
+    "web56r1Failure": {
+      "git_blob_sha": "30962e2f30d7b0309aaacd44d67e795e436752ee",
+      "bytes": 29724,
+      "sha256": "f9bf137d294e385c6cd85987a10ba682fdb9bb8415fa51a005e5ff871914eec4"
+    },
+    "web56r1Stderr": {
+      "git_blob_sha": "b437fd9854666141f78911df0a7b53c9de376165",
+      "bytes": 1012,
+      "sha256": "242466b11bebf08dc48246b949fb506dc8bde71bba0c7be798c0fa98d6b0ef75"
+    },
+    "compositionRepair": {
+      "git_blob_sha": "d1052b460b32020a5e7bfb061623d9447a13e597",
+      "bytes": 53410,
+      "sha256": "35c0702df7ff94e261dadbc219bc4afe7ddba8f72cc2cd5ec23f8acb0771f68e"
+    },
+    "compositionRepairDelta": {
+      "git_blob_sha": "646892f142a8ada4657fcf9613c3f2c8e560fc4e",
+      "bytes": 58894,
+      "sha256": "cd861f247da01c21423e45e77195558e1700a4a2d72efda44ca210cc48cc1b92"
+    }
+  },
+  "final_aggregate": {
+    "bytes": 1427055,
+    "sha256": "c1cc7cc16eef4c3a34131ee719101a69db080b76e72c98f03248036fc6fd628f",
+    "git_blob_sha": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c"
+  },
+  "physical_inventory": {
+    "bytes": 103795,
+    "sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+    "git_blob_sha": "c43a4be934ca00942ceeed086e16fc4b81d3a519"
+  },
+  "mechanical": {
+    "stage7hunks_forward_reverse": true,
+    "production44_current": true,
+    "fixture_rows_comparison": [
+      {
+        "i": 0,
+        "path": "tests/web-flight/WebFlightEvidenceHostTest.java",
+        "unchanged": true
+      },
+      {
+        "i": 1,
+        "path": "tests/web-flight/WebTaskCompositionHostTest.java",
+        "unchanged": false
+      },
+      {
+        "i": 2,
+        "path": "tests/web-flight/WebCalendarNativeHostTest.java",
+        "unchanged": true
+      },
+      {
+        "i": 3,
+        "path": "tests/web-flight/WebV4RegressionFixtures.java",
+        "unchanged": true
+      },
+      {
+        "i": 4,
+        "path": "tests/web-flight/WebWire4SyntheticFactory.java",
+        "unchanged": true
+      },
+      {
+        "i": 5,
+        "path": "tests/web-flight/WebFlightNativeStabilityHostCases.java",
+        "unchanged": true
+      }
+    ],
+    "diff_leaf_paths": [
+      "/current_aggregate/git",
+      "/current_aggregate/bytes",
+      "/current_aggregate/sha256",
+      "/current_aggregate/inventory_sha256",
+      "/files/1/bytes",
+      "/files/1/sha256",
+      "/files/1/git_blob_sha",
+      "/files/1/raw_utf8",
+      "/files/1/ordered_replacements/27",
+      "/files/1/proof/geometry_structural_map_freeze_assertions_added",
+      "/production_inputs/26/bytes",
+      "/production_inputs/26/sha256",
+      "/production_inputs/26/git_blob_sha",
+      "/main56_successor/expected_composition_assertions",
+      "/main56_successor/native_geometry_map_fix",
+      "/main56_successor/geometry_deep_freeze_assertions_added"
+    ]
+  },
+  "checks": {
+    "entire_stage_forward_reverse_to_original_r1": true,
+    "only_Shopping_production_row_changes_from_r1": true,
+    "all44_real_production_rows_equal_final595": true,
+    "all_five_noncomposition_fixture_objects_byte_equal": true,
+    "composition_exact_one_append_hunk": true,
+    "original43_and_added10_and17_case_order_preserved": true,
+    "added_geometry_assertions": 4,
+    "no_new_case_or_suite": true,
+    "actual_r1_compile_and_evidence80_pass_composition_fail_pins_verified": true,
+    "full_actual_r1_tree_and_logs_are_read_and_kept_before_after": true,
+    "first_claim_and_original_four_owned_processes_unchanged": true,
+    "immutable_geo_nested_list_test_and_provider_mutation_before_after_close_test_are_explicit": true,
+    "shared_fixture_mutations_restored_in_finally": true,
+    "no_actual_core_pass_fabricated_as_prerequisite": true
+  },
+  "expected_not_actual": [
+    {
+      "name": "evidence80",
+      "cases": 80,
+      "assertions": 92
+    },
+    {
+      "name": "composition43",
+      "cases": 70,
+      "assertions": 178
+    },
+    {
+      "name": "calendar13",
+      "cases": 13,
+      "assertions": 1001
+    }
+  ],
+  "finding": {
+    "source_blocker": null,
+    "prior_actual_failed_result_remains_false": true,
+    "actual_javac_or_new_java_execution": false,
+    "actual_android_or_phone": false,
+    "actual_results_provider_ready": false,
+    "host_calls": 0,
+    "phone_actions": 0
+  }
+}

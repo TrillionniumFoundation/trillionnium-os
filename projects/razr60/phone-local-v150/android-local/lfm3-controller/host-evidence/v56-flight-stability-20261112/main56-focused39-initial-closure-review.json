@@ -1,0 +1,101 @@
+{
+  "schema": "hepta.main56-focused39-current-source-independent-review.v1",
+  "scope": "H0 source-only review of current source and projection closure; no compilation or execution",
+  "reviewer": "mobile_models",
+  "inputs": {
+    "focus56Review": {
+      "git_blob_sha": "20e51d43aeb2d875bcd263f63d1d4b7a548c5f7c",
+      "bytes": 61674,
+      "sha256": "73c4eae28015b7957c7fb37f96da5df9a7a0998e4c15887552f8442f1cbbbbab"
+    },
+    "focus56Input": {
+      "git_blob_sha": "24747625cda81c77563583ed893fdbaad100e48c",
+      "bytes": 1283335,
+      "sha256": "05925e9ae70f64cdfdf279b11fd6f3a83ee8aab7e925895bb4061ddc1c2a9b54"
+    },
+    "focus56Delta": {
+      "git_blob_sha": "43f03cf58ef3a2e14694ca06d3bd54d28f8a7cfa",
+      "bytes": 25866,
+      "sha256": "22c6c8dce565c6a1ad827ef2249b3e3784f7a2849e747b92ebb87b5570d1f4fc"
+    },
+    "focus56Stage": {
+      "git_blob_sha": "3458340f8a4fed9a0814dfc28fd2a0245529d0be",
+      "bytes": 69343,
+      "sha256": "d8233ca6c1ddd1b5d3e41e7a290a6ddd22055510359d127f23ce0cb4ce21476f"
+    },
+    "focus55Input": {
+      "git_blob_sha": "d3390ca0395e8f925f7c3b93cf502f967ab6a72f",
+      "bytes": 935559,
+      "sha256": "f9577768563f5fbf88bf77b0d484038c7ccd87b07d0ae5a79fb55ef92c987d4e"
+    },
+    "focus55Stage": {
+      "git_blob_sha": "70bb0e8d7497b9b2ee0c10a0834d034af14a704a",
+      "bytes": 34555,
+      "sha256": "07248b15132f712b25f4b2cdf13166c34c23094df738553bb7a667aba8b80af5"
+    }
+  },
+  "mechanical": {
+    "stage16_hunks_forward_reverse": true,
+    "full_input_1283335_exact_derivation": true,
+    "compiled_pure_sources": 44,
+    "methods15_actual_extracted": true,
+    "unchanged_methods": 12,
+    "changed_methods": [
+      "    void beforeNativeClickInvocation(",
+      "    void modelActionOutcome(",
+      "    void beforeModelAction("
+    ],
+    "type_only_replacements": 3,
+    "old_fixture_raw_identical": [
+      "tests/main55-wire4/WebWire4SyntheticFactory.java",
+      "tests/main55-wire4/WebWire4ConsumerHostTest.java",
+      "tests/main55-wire4/WebEvidenceClientArmProjection.java",
+      "tests/main55-wire4/WebArmDispatchHostTest.java",
+      "tests/main55-wire4/android/graphics/Rect.java",
+      "tests/main55-wire4/android/os/SystemClock.java"
+    ],
+    "changed_fixture_only": [
+      "tests/main55-wire4/WebFlightSessionArmProjection.java"
+    ],
+    "old_factory_and_actual_ax_exact": true,
+    "producer_expected": {
+      "java_source_count": 51,
+      "consumer_cases": 20,
+      "arm_cases": 19
+    }
+  },
+  "inspection": {
+    "all44_real_pure_sources_match_current595_full_inventory": true,
+    "three_projection_originals_match_current595_full_bytes": true,
+    "nested_flight_surface_is_test_only_and_does_not_replace_compiled_top_level_class": true,
+    "shopping_prepare_null_branch_matches_actual_policy": true,
+    "flight_permit_and_native_check_constructors_private_and_throw": true,
+    "flight_nonnull_branch_throws_in_unchanged_shopping_test_projection": true,
+    "original_source_IO_and_three_child_commands_preserved": true,
+    "all_original_method_blocks_are_copied_verbatim": true,
+    "first_ROOT_mkdir_line": 457,
+    "result_handler_try_line": 526,
+    "current595_before_after_membership_and_full_SHA_required": true,
+    "actual55_prior_success_and_two_prior_failures_preserved": true,
+    "case_counts_and_names_must_equal_actual55_original_reports": true
+  },
+  "finding": {
+    "new_source_blocker": null,
+    "expected_existing_cases": {
+      "consumer": 20,
+      "arm": 19
+    },
+    "current_compile_units": 51,
+    "real_pure_sources": 44,
+    "actual_android_binder_or_native_dispatch_verified": false,
+    "flight_physical_cases_claimed_here": false,
+    "phone_actions": 0
+  },
+  "pending_final_source": {
+    "aggregate_reviewed": "660335b7f19f519af4cfd168ebee186f1a4693b9",
+    "root_reported_core_r1_and_web_r1_failed": true,
+    "TCG_immutable_value_repair_and_finalization_fixture_successor_pending": true,
+    "requires_explicit_current_input_and_pin_successor_for_new_aggregate": true,
+    "not_a_pass_receipt": true
+  }
+}

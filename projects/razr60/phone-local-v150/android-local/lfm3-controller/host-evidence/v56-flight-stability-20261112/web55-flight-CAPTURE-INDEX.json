@@ -1,0 +1,239 @@
+{
+  "schema": "hepta.v55-original-capture-fd-index.v1",
+  "task_id": "6dfcaf6cbb3f4252b472f9cf6f80b5cc",
+  "files": [
+    {
+      "relative_path": "task/web-helper/raw-5a26fffdc6ac42a79ec5279d82e4abb5764689dc95424b37931a2e408a3293dd.json",
+      "bytes": 229571,
+      "sha256": "7e4f98211577e9162788968e69d75980839b74fe4388b3d6f1228628fefc52a6",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "5a26fffdc6ac42a79ec5279d82e4abb5764689dc95424b37931a2e408a3293dd",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "693445092b224d13c10a024d799ea3aceaacb8aff1980a3e4457c3204da0dad8",
+      "reply_record_sha256": "b0cb5fc2549fe2a766b1cc98ef7354fc7292def7747770603d56931ef1654594",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "5a26fffdc6ac42a79ec5279d82e4abb5764689dc95424b37931a2e408a3293dd",
+      "current_native_url_as_recorded": "https://m.csair.com/",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "4601e2cc-4ca4-4c6f-b109-4019b6292394",
+      "navigation_epoch_as_recorded": 2,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 91012,
+          "sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "declared_sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 91012,
+          "sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "declared_sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-5e3cbc7e753640e0a04800414709507e69d51a30bc8143f992b0c211bb836eb8.json",
+      "bytes": 229571,
+      "sha256": "6bfdbe57a4ee67147041428e2a0d86c60c049a65ca83a49e178d44529532a09b",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "5e3cbc7e753640e0a04800414709507e69d51a30bc8143f992b0c211bb836eb8",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "b0177a023a0eb5c59afa7c81a9cf253f4b0a8995806e516f1a2090e0ccbcacc2",
+      "reply_record_sha256": "e382217fc82169094290f35965718e13cfa07cf38bd0487762db18c79d0871c1",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "5e3cbc7e753640e0a04800414709507e69d51a30bc8143f992b0c211bb836eb8",
+      "current_native_url_as_recorded": "https://m.csair.com/",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "4601e2cc-4ca4-4c6f-b109-4019b6292394",
+      "navigation_epoch_as_recorded": 2,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 91012,
+          "sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "declared_sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 91012,
+          "sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "declared_sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-626cbed43019410e901b0d68d516a51e7df789fff6794d5bba39041d760a9cf2.json",
+      "bytes": 229593,
+      "sha256": "06fb6ec13ceea5399009607ebf602efbf5c40b84123a63116083fc84194971f7",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "626cbed43019410e901b0d68d516a51e7df789fff6794d5bba39041d760a9cf2",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "97573b5f4a9f10b90473eb6da6d205ec74d18841cc9039bed2beae2c8d56beeb",
+      "reply_record_sha256": "3c3d8dcad80e6b4b97d1d20e57ed2f2e7683a9c59594e41ec511f35893559f09",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "626cbed43019410e901b0d68d516a51e7df789fff6794d5bba39041d760a9cf2",
+      "current_native_url_as_recorded": "https://m.csair.com/",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "4601e2cc-4ca4-4c6f-b109-4019b6292394",
+      "navigation_epoch_as_recorded": 2,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 91023,
+          "sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 91023,
+          "sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-6ec921bc5f764229a177da8acaee9353287437479ae64305807c8717c9e2b57d.json",
+      "bytes": 229571,
+      "sha256": "f58b0ad1b84dad4707dcb696398ef6ecb9d2fab6622851f5ebe9815cae1e08f7",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "6ec921bc5f764229a177da8acaee9353287437479ae64305807c8717c9e2b57d",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "338bc02dc5ad6ab4a4d7d69c95540e9615fbf6af8a4e4c1707d7464d6a796ca0",
+      "reply_record_sha256": "6d7e6856e874e826d559d4982c6aab0aa395f9b89077260696d162dea1dc5b0b",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "6ec921bc5f764229a177da8acaee9353287437479ae64305807c8717c9e2b57d",
+      "current_native_url_as_recorded": "https://m.csair.com/",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "4601e2cc-4ca4-4c6f-b109-4019b6292394",
+      "navigation_epoch_as_recorded": 2,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 91012,
+          "sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "declared_sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 91012,
+          "sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "declared_sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-8e83b31ce2fd43b79d7df3d170db1c88fd0dd09f8b4b4d539be27d6526454ac9.json",
+      "bytes": 229593,
+      "sha256": "40e1f4819b89ba5ceb478088216737ba1c910739614c71009f4c970dcfe8509f",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "8e83b31ce2fd43b79d7df3d170db1c88fd0dd09f8b4b4d539be27d6526454ac9",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "0cdfc5cf88dc5701233694f94f8117b76c9e8b96098308ca2e6f5b111ab32f6e",
+      "reply_record_sha256": "4309029206d474a72d2e1b539f65ff98dd760a485afd7892a3bc0341d8731a51",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "8e83b31ce2fd43b79d7df3d170db1c88fd0dd09f8b4b4d539be27d6526454ac9",
+      "current_native_url_as_recorded": "https://m.csair.com/",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "4601e2cc-4ca4-4c6f-b109-4019b6292394",
+      "navigation_epoch_as_recorded": 2,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 91023,
+          "sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 91023,
+          "sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-b4e19734a7d544df93e0d22bbffb266ea720947f797b46de9dc7e00500ec9383.json",
+      "bytes": 229593,
+      "sha256": "c1b0caa35353c1ebdbaf5d5af6695366640639573ef6d6d2d4f644d2dfa21cea",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "b4e19734a7d544df93e0d22bbffb266ea720947f797b46de9dc7e00500ec9383",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "e0a25a5fc4be29925ae72065fdba11127b6c8483f9581ddde216a15a2c3e021f",
+      "reply_record_sha256": "8e772697f72b2aeaf9ea493167f527c6e66ac8a34a7c113cb752dcaedbd995b2",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "b4e19734a7d544df93e0d22bbffb266ea720947f797b46de9dc7e00500ec9383",
+      "current_native_url_as_recorded": "https://m.csair.com/",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "4601e2cc-4ca4-4c6f-b109-4019b6292394",
+      "navigation_epoch_as_recorded": 2,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 91023,
+          "sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 91023,
+          "sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_hash_matches": true
+        }
+      ]
+    }
+  ],
+  "index_is_capture_or_business_verdict": false,
+  "business_verified": false,
+  "web_journal_present": true,
+  "raw_fd_file_count": 6,
+  "capture_method_file_count": 6
+}

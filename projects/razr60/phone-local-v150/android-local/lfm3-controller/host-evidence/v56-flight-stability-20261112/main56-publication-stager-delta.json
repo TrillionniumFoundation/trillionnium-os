@@ -1,0 +1,156 @@
+{
+  "schema": "hepta.main56-publication-stager-source-successor.v1",
+  "status": "pending_actual_results_and_publication",
+  "base_actual_source": {
+    "bytes": 18038,
+    "sha256": "358267e69fdd9a2e3fd9d8418ecafa55f0e367f8a2b1c87d474ac899c4b57094",
+    "git_blob_sha": "46f7759ee82fd41626f5800c5844e678420cc114"
+  },
+  "candidate": {
+    "bytes": 17357,
+    "sha256": "989d46c6289b1cafca7bb0418ae6b1db341f417cbae3fa1cfbdce8f1b7edbce4",
+    "git_blob_sha": "735486dc79b7e80f2baaceaac4f95346b34e3c21"
+  },
+  "ordered_replacements": [
+    {
+      "before": "CONFIG=json.loads(\"{\\\"schema\\\":\\\"hepta.main55-publication-staging-config.v1\\\",\\\"root\\\":\\\"/home/alex/hepta-local-007f-20261111/v55-main-release-publication-r1\\\",\\\"core_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r3\\\",\\\"core_result\\\":{\\\"bytes\\\":9186,\\\"sha256\\\":\\\"1b8f623bd5f5b428f25b7320adbd329ab6b39abf24c4b2daf3b7a7c4b26d52c4\\\"},\\\"core_map\\\":{\\\"bytes\\\":141623,\\\"sha256\\\":\\\"721de738139fcaa54e7277cbaa5cc522d2a7bf7b00b89d60d3a254058839d574\\\"},\\\"inventory_sha256\\\":\\\"65bf7934d82692f45c10aedb947613043453b30bc7d55c4dc8b7e44e4ca0bed1\\\",\\\"input\\\":{\\\"bytes\\\":86323,\\\"sha256\\\":\\\"05cc2ffd7db6810d82a716a7c6de46e443aaead51f24b17055c9c9bc6967084c\\\"},\\\"publication\\\":{\\\"bytes\\\":3309,\\\"sha256\\\":\\\"3169725be35fb1a2b0834a5b80a438fe8cf745008d14b892b14525a50e703b31\\\"},\\\"git_source_map\\\":{\\\"bytes\\\":288707,\\\"sha256\\\":\\\"51b3a03722e54dcfbd8667a1c0e2a77cdf451e3b2b1e2915377589275d35c3ef\\\"},\\\"signer\\\":{\\\"bytes\\\":76881,\\\"sha256\\\":\\\"e29009163b8ac2bc38dce148fef39ee3d98cfcafb81f9a3d003724e5a685ea46\\\"},\\\"source_commit\\\":\\\"dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e\\\",\\\"source_tree\\\":\\\"0e22f3f97292894860d03ed5b5d455ff0e4e296d\\\",\\\"expected_prior_head\\\":\\\"25954146d86a0ddf051c3ecfa73ad2ce1126b161\\\",\\\"base_source_commit\\\":\\\"42d3a0f447807659c0f78c8273edee01dd1b734f\\\",\\\"repository\\\":\\\"trillionniumFoundation/trillionnium-os\\\",\\\"branch\\\":\\\"codex/hepta-v45-semantic-click-20261111-007f\\\",\\\"source_prefix\\\":\\\"projects/razr60/phone-local-v150/android-local/lfm3-controller/\\\"}\")",
+      "after": "CONFIG=json.loads(\"{\\\"schema\\\":\\\"hepta.main56-publication-staging-config.v1\\\",\\\"root\\\":\\\"/home/alex/hepta-local-007f-20261111/v56-main-release-publication-r1\\\",\\\"core_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r2\\\",\\\"core_result\\\":null,\\\"core_map\\\":null,\\\"inventory_sha256\\\":\\\"ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e\\\",\\\"input\\\":null,\\\"publication\\\":null,\\\"git_source_map\\\":null,\\\"signer\\\":null,\\\"source_commit\\\":null,\\\"source_tree\\\":null,\\\"expected_prior_head\\\":null,\\\"base_source_commit\\\":\\\"dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e\\\",\\\"repository\\\":\\\"trillionniumFoundation/trillionnium-os\\\",\\\"branch\\\":\\\"codex/hepta-v45-semantic-click-20261111-007f\\\",\\\"source_prefix\\\":\\\"projects/razr60/phone-local-v150/android-local/lfm3-controller/\\\"}\")",
+      "count": 1,
+      "label": "pending CONFIG with actual receipts/CAS left null"
+    },
+    {
+      "before": "ROOT==B/\"v55-main-release-publication-r1\" and CORE==B/\"v55-main-core101-materialized-host-r3\"",
+      "after": "ROOT==B/\"v56-main-release-publication-r1\" and CORE==B/\"v56-main-core101-materialized-host-r2\"",
+      "count": 1,
+      "label": "independent56 roots"
+    },
+    {
+      "before": "hepta.main55-publication-staging-input.v1",
+      "after": "hepta.main56-publication-staging-input.v1",
+      "count": 1,
+      "label": "input schema"
+    },
+    {
+      "before": "hepta.main55-original-core101-host-stage.v1",
+      "after": "hepta.main56-original-core101-host-stage.v1",
+      "count": 1,
+      "label": "actual56 core schema"
+    },
+    {
+      "before": "\"prior_failure_evidence_unchanged\"",
+      "after": "\"prior_core_evidence_unchanged\"",
+      "count": 1,
+      "label": "actual56 core predecessor guard"
+    },
+    {
+      "before": "==594",
+      "after": "==595",
+      "count": 5,
+      "label": "same595 source count"
+    },
+    {
+      "before": "==418",
+      "after": "==419",
+      "count": 2,
+      "label": "current419 host count"
+    },
+    {
+      "before": "hepta.v55-git-publication.v1",
+      "after": "hepta.v56-git-publication.v1",
+      "count": 1,
+      "label": "publication schema"
+    },
+    {
+      "before": "main55_signer.py",
+      "after": "main56_signer.py",
+      "count": 3,
+      "label": "staged signer filename"
+    },
+    {
+      "before": "hepta.main55-same-host-sign-config.v1",
+      "after": "hepta.main56-same-host-sign-config.v1",
+      "count": 1,
+      "label": "signer CONFIG schema"
+    },
+    {
+      "before": "B/\"v55-main-sign-r1\"",
+      "after": "B/\"v56-main-sign-r1\"",
+      "count": 1,
+      "label": "signer root"
+    },
+    {
+      "before": "B/\"v55-main-p4-android-r2\"",
+      "after": "B/\"v56-main-p4-android-r1\"",
+      "count": 1,
+      "label": "Android root"
+    },
+    {
+      "before": "B/\"v55-main-web-regression-host-r2\"",
+      "after": "B/\"v56-main-web-regression-host-r2\"",
+      "count": 1,
+      "label": "Web root"
+    },
+    {
+      "before": "hepta.main55-publication-staging-result.v1",
+      "after": "hepta.main56-publication-staging-result.v1",
+      "count": 1,
+      "label": "staging result schema"
+    },
+    {
+      "before": "\"source_count\":594",
+      "after": "\"source_count\":595",
+      "count": 2,
+      "label": "observed source count output"
+    },
+    {
+      "before": "hepta.main55-publication-staging-summary.v1",
+      "after": "hepta.main56-publication-staging-summary.v1",
+      "count": 1,
+      "label": "staging summary schema"
+    }
+  ],
+  "verification": {
+    "forward_reverse_whole_bytes_exact": true,
+    "metadata_core_input_and_ast_only_design_unchanged": true,
+    "io_helpers_firstclaim_and_postchecks_unchanged": true,
+    "no_signer_execution_in_stager": true,
+    "whole_v2_map_rebuilt_from_original_Path_ordered_bare_array": true
+  },
+  "producer_contract": {
+    "core_schema": "hepta.main56-original-core101-host-stage.v1",
+    "core_root": "/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r2",
+    "core_prior_preserved_field": "prior_core_evidence_unchanged",
+    "source_count": 595,
+    "host_input_count": 419,
+    "original_core_top_level_count": 101,
+    "nested_stages": 18,
+    "publication_base_source_commit": "dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e",
+    "inventory_sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+    "version_name": "0.56.0-flight-stability",
+    "flight_results_provider_ready": false
+  },
+  "pending_actual_config_fields": [
+    "core_result",
+    "core_map",
+    "input",
+    "publication",
+    "git_source_map",
+    "signer",
+    "source_commit",
+    "source_tree",
+    "expected_prior_head"
+  ],
+  "boundaries": {
+    "host_calls": 0,
+    "executed": false,
+    "new_test_suite": false,
+    "android_or_signing_run": false,
+    "repository_mutation_by_stager": false,
+    "phone_actions": 0
+  },
+  "notes": [
+    "The expected source and host counts derive from the exact final0803 source map, and the actual Core receipt must match them before first mutation.",
+    "Only fixed version/root/schema/count strings and the actual56 Core predecessor-preservation field change. Actual receipts and CAS fields remain null.",
+    "The importer only parses the literal signer CONFIG and compiles its source; actual signing is a separate unique Root request."
+  ]
+}

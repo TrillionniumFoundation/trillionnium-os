@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.root-main56-terminal-completion-source-review.v1",
+  "reviewer": "root",
+  "status": "source_review_complete_no_new_blocker",
+  "input": {
+    "git": "d3e32ffa60a9754c48fa254bb0fa93da7113a98a",
+    "bytes": 215812,
+    "sha256": "e97ce4c7daab5927b87c741adbb6010de5f948e3b466d6bbd81df1e7cb18d1b2"
+  },
+  "final_sources": [
+    {
+      "path": "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+      "git": "48323262aaf10962f0a481cafc18c56bc82e936b",
+      "bytes": 49971,
+      "sha256": "ad417d98fbd7b12bf4373270a1206c11984682c9f35b7b4a5179bb9fbff7ba98"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "git": "9c54638c63c9bdc7a885c633d2de5d702dc1175b",
+      "bytes": 116846,
+      "sha256": "68185b0bd3cf17adfb94f62b32a764ce692512ea20b438bbcdca766cff49d167"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "git": "8283d4e83b7cf13c9deb7e55c6d26f26053e11cc",
+      "bytes": 42734,
+      "sha256": "7f3c7fd872e9901026ad7471dfc9a3e68d2c987eb1931896f80ea0f2acd6f4e1"
+    }
+  ],
+  "independent_review": {
+    "git": "a4be28db3b78686bff6be2ecceffe2b9ca518e9c",
+    "bytes": 4796,
+    "sha256": "01d5e5ea1dc7c728a242046cfff99c0e298246a0008e0e420c75322c2a53c7c2"
+  },
+  "mechanics": {
+    "source_full_bytes_sha_verified": true,
+    "checkpoint_tcg_11_ltc_9_hunks_forward_and_reverse_exact_actual55": true,
+    "final_tcg_only_missing_reason_preservation_hunk_exact": true,
+    "integrated_session_close_read_preserves_flight_native_ephemeral_clear_and_attempt_fence": true
+  },
+  "findings": [
+    "The live Web action domain is still cleared and cannot be rebound after close. A separate private immutable result can only originate from an actually verified stable success claim.",
+    "The prepared close binds the current gate/domain object, task, binding and exactly one clear. Only the actual ordinary typed CLOSE plus persisted closeKnown can seal the matching instance, epoch, display and window.",
+    "The terminal attempt consumes the private proof once, checks the complete retained final Frame fingerprint, step/model run, original owner/contract/authorization, released Helper and background lease, scope, cancellation and the actual native worker task/generation/exit/receipt.",
+    "The controller stop and terminal decision share the same monitor, so a cancellation before terminal sealing cannot be promoted by a later normal close or worker receipt.",
+    "The current provider's original failure reasons remain in missing before the terminal gap is appended. No Flight result provider, fabricated result or successful business claim is added."
+  ],
+  "limits": {
+    "source_only": true,
+    "host_checks_executed": false,
+    "android_built": false,
+    "phone_actions": 0,
+    "flight_results_provider_ready": false,
+    "actual_business_verified": false
+  }
+}

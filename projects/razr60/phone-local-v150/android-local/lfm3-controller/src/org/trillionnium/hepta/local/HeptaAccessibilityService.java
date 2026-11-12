@@ -69,6 +69,31 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
         JSONObject evidence()throws Exception{return new JSONObject(raw);}
     }
+    /** Only the service may construct this token from a live graph and original NodeRef. */
+    static final class FlightNativeCheck {
+        private final PhoneObservation frame;private final WebFlightNativeStability.Permit permit;
+        final long checkedAt;private final String raw;
+        private FlightNativeCheck(PhoneObservation frame,WebFlightNativeStability.Permit permit,
+                                  long started,long ended,JSONObject nativeProof,JSONObject windows,
+                                  boolean originalDigestEqual)throws Exception{
+            this.frame=frame;this.permit=permit;checkedAt=ended;
+            raw=org.trillionnium.hepta.webprotocol.WebDomCanonical.canonical(new JSONObject()
+                    .put("schema","hepta.flight-home-live-native-stability.v1").put("task_id",permit.taskId)
+                    .put("model_run_id",permit.run).put("observation_id",frame.id)
+                    .put("original_observation_state_sha256",frame.treeSha256)
+                    .put("binding_sha256",permit.bindingSha).put("webview_instance",permit.instance)
+                    .put("navigation_epoch",permit.epoch).put("display_id",permit.displayId).put("window_id",permit.windowId)
+                    .put("started_elapsed_ms",started).put("checked_elapsed_ms",ended)
+                    .put("original_global_digest_equal",originalDigestEqual).put("scope_is_compiled_home_booking_only",true)
+                    .put("dom",permit.domEvidence()).put("native",nativeProof).put("interactive_windows",windows)
+                    .put("original_node_ref_identity_preserved",true).put("actual_ancestor_chain_refreshed",true)
+                    .put("two_interactive_window_reads_equal",true).put("ime_hidden",true)
+                    .put("coordinates_used_for_input",false).put("fully_unoccluded_claimed",false)
+                    .put("native_invocation_entered",false).put("business_verified",false));
+        }
+        boolean matches(PhoneObservation frame,WebFlightNativeStability.Permit permit){return this.frame==frame&&this.permit==permit;}
+        JSONObject evidence()throws Exception{return new JSONObject(raw);}
+    }
     public interface ObservationCallback { void onObservation(PhoneObservation value); void onError(String error); }
     public interface Cancellation { boolean isCancelled(); }
     public interface ActionCallback { void onResult(ActionOutcome result); }
@@ -669,8 +694,15 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         try{
             now=readGraph();
             if(!currentGraph.sameWindow(now))return "stale:目标窗口已变化";
-            if(ActionPolicy.requiresStableTree(action)&&!currentGraph.digest.equals(now.digest))
-                return "stale:目标窗口内容已变化";
+            if(ActionPolicy.requiresStableTree(action)){
+                WebFlightSession web=taskWeb;
+                WebFlightNativeStability.Permit permit=web==null?null:web.flightNativePermitForDispatch(action,expected);
+                if(permit!=null){
+                    try{web.acceptFlightNativeCheck(action,expected,
+                            requireLiveFlightNativeStability(taskId,expected,action,permit,now,cancel));}
+                    catch(Exception mismatch){throw new StaleObservation("stale:首页目标局部复核失败："+message(mismatch));}
+                }else if(!currentGraph.digest.equals(now.digest))return "stale:目标窗口内容已变化";
+            }
         }
         catch(StaleObservation changed){return message(changed);}
         catch(Exception e){return backgroundFor(taskId)==null?"stale:无法复核当前窗口":"后台窗口复核失败："+message(e);}
@@ -999,6 +1031,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         ObservedWindowMetadata windowMetadata;
         final List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();
         final Map<String,NodeRef> refs=new HashMap<String,NodeRef>();
+        JSONArray flightNativeSnapshot;boolean flightNativeSnapshotComplete;int flightNativeSnapshotText;
         boolean sameWindow(Graph other){return windowId==other.windowId&&rotation==other.rotation&&displayId==other.displayId
                 &&java.util.Objects.equals(backgroundGeneration,other.backgroundGeneration)
                 &&java.util.Objects.equals(backgroundSelectionRaw,other.backgroundSelectionRaw)
@@ -1102,6 +1135,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         org.trillionnium.hepta.webprotocol.WebEvidenceProtocol.HELPER_PACKAGE));
         int retainedLimit=webEvidence?WEB_MAX_NODES:MAX_NODES,textLimit=webEvidence?WEB_MAX_CHARACTERS:MAX_CHARACTERS;
         Graph graph=new Graph();graph.displayId=background==null?Display.DEFAULT_DISPLAY:background.displayId();
+        if(webEvidence&&activeWeb.goal!=null){graph.flightNativeSnapshot=new JSONArray();graph.flightNativeSnapshotComplete=true;}
         graph.backgroundGeneration=background==null?null:background.generation;
         graph.backgroundBootstrapPackage=background==null?null:background.selection.initialPackage;
         graph.backgroundAllowedPackages=background==null?java.util.Collections.<String>emptyList():background.selection.allowedPackages;
@@ -1147,6 +1181,17 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         }
                     }
                     int actualChildren=node.getChildCount();
+                    if(graph.flightNativeSnapshot!=null&&graph.flightNativeSnapshotComplete){
+                        try{
+                            if(graph.flightNativeSnapshot.length()>=WebFlightNativeStability.MAX_NATIVE_NODES)
+                                throw new IllegalStateException("bounded full Flight snapshot exceeded");
+                            JSONObject stamp=snapshotFlightNode(node,nativePath,nativeParentClass);
+                            int chars=stamp.getString("text").length()+stamp.getString("description").length();
+                            if(graph.flightNativeSnapshotText+chars>32768)
+                                throw new IllegalStateException("bounded full Flight snapshot text exceeded");
+                            graph.flightNativeSnapshotText+=chars;graph.flightNativeSnapshot.put(stamp);
+                        }catch(Exception unavailable){graph.flightNativeSnapshotComplete=false;}
+                    }
                     int children=Math.min(actualChildren,MAX_VISITED-visited-queue.size());
                     if(children<actualChildren){graph.truncated=true;childSlotsOmitted+=(long)actualChildren-children;}
                     for(int index=0;index<children;index++){
@@ -1173,6 +1218,95 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     .getBytes(StandardCharsets.UTF_8));return graph;
         }catch(RuntimeException e){graph.close();throw e;}
         finally{while(!queue.isEmpty())queue.removeFirst().recycle();}
+    }
+    private static JSONObject snapshotFlightNode(AccessibilityNodeInfo node,String path,String parentClass)throws Exception{
+        String text=node.isPassword()?"":string(node.getText()),description=node.isPassword()?"":string(node.getContentDescription());
+        if(path==null||path.isEmpty()||path.length()>240||text.length()>1024||description.length()>1024
+                ||string(node.getViewIdResourceName()).length()>256||string(node.getClassName()).length()>128)
+            throw new IllegalStateException("complete bounded Flight node fields unavailable");
+        Rect r=new Rect();node.getBoundsInScreen(r);
+        return new JSONObject().put("path",path).put("parent_class",parentClass)
+                .put("package",string(node.getPackageName())).put("window_id",node.getWindowId())
+                .put("class",string(node.getClassName())).put("view_id",string(node.getViewIdResourceName()))
+                .put("text",text).put("description",description)
+                .put("bounds",new JSONArray(new int[]{r.left,r.top,r.right,r.bottom}))
+                .put("visible",node.isVisibleToUser()&&!r.isEmpty()).put("enabled",node.isEnabled())
+                .put("clickable",node.isClickable()).put("editable",node.isEditable()).put("scrollable",node.isScrollable())
+                .put("focused",node.isFocused()).put("password",node.isPassword()).put("children",node.getChildCount())
+                .put("scroll_actions",readScrollActions(node).fingerprintInput())
+                .put("ime_enter",readImeEnter(node).fingerprintInput())
+                .put("input_sha256",inputTextHash(node)==null?JSONObject.NULL:inputTextHash(node));
+    }
+    private FlightNativeCheck requireLiveFlightNativeStability(String taskId,PhoneObservation frame,ActionDecision action,
+            WebFlightNativeStability.Permit permit,Graph now,Cancellation cancel)throws Exception{
+        long started=SystemClock.elapsedRealtime();BackgroundSession background=backgroundFor(taskId);Graph before=currentGraph;
+        if(background==null||before==null||frame!=current||cancel.isCancelled()||!owns(taskId)
+                ||!taskId.equals(permit.taskId)||permit.frame!=frame||permit.windowId!=before.windowId
+                ||permit.displayId!=before.displayId||!before.sameWindow(now)
+                ||before.truncated||now.truncated||before.collectionStats==null||now.collectionStats==null
+                ||before.collectionStats.truncated()||now.collectionStats.truncated()
+                ||!before.flightNativeSnapshotComplete||!now.flightNativeSnapshotComplete
+                ||before.flightNativeSnapshot==null||now.flightNativeSnapshot==null
+                ||before.flightNativeSnapshot.length()!=before.collectionStats.visited
+                ||now.flightNativeSnapshot.length()!=now.collectionStats.visited
+                ||before.state.imeVisibility!=ImeVisibility.HIDDEN||now.state.imeVisibility!=ImeVisibility.HIDDEN
+                ||!before.windowMetadata.bindFreshness("").equals(now.windowMetadata.bindFreshness("")))
+            throw new StaleObservation("完整原生树、输入法或窗口元数据不可证明");
+        background.requireActive();
+        NodeRef original=before.refs.get(action.nodeId),fresh=null;
+        for(PhoneObservation.Node row:now.rows)if(permit.targetPath.equals(row.nativeTreePath)){
+            if(fresh!=null)throw new StaleObservation("原生目标路径不唯一");fresh=now.refs.get(row.id);
+        }
+        if(original==null||fresh==null||!original.node.equals(fresh.node)||!original.signature.equals(fresh.signature))
+            throw new StaleObservation("原始节点引用与同路径新目标不相同");
+        JSONObject proof=WebFlightNativeStability.compareNative(before.flightNativeSnapshot,now.flightNativeSnapshot,permit.targetPath);
+        JSONArray oldRetained=new JSONArray(),newRetained=new JSONArray();
+        for(PhoneObservation.Node row:before.rows)oldRetained.put(row.json());
+        for(PhoneObservation.Node row:now.rows)newRetained.put(row.json());
+        proof.put("retained_node_pairing",WebFlightNativeStability.compareRetained(oldRetained,newRetained,
+                proof.getString("native_slider_path")));
+        JSONObject windowsBefore=readRegionWindows(frame,permit.displayId,permit.windowId,permit.bounds());
+        refreshFlightTargetChain(background,frame,original,permit.targetPath,before.flightNativeSnapshot);
+        if(!original.signature.equals(nodeSignature(original.node,observedChildText(original.node,true))))
+            throw new StaleObservation("原始目标最后签名已变化");
+        JSONObject windowsAfter=readRegionWindows(frame,permit.displayId,permit.windowId,permit.bounds());
+        if(!org.trillionnium.hepta.webprotocol.WebDomCanonical.same(windowsBefore,windowsAfter))
+            throw new StaleObservation("首页点击前窗口覆盖关系已变化");
+        background.requireActive();
+        if(cancel.isCancelled()||!owns(taskId)||frame!=current)throw new StaleObservation("首页任务已退休");
+        return new FlightNativeCheck(frame,permit,started,SystemClock.elapsedRealtime(),proof,windowsAfter,before.digest.equals(now.digest));
+    }
+    private void refreshFlightTargetChain(BackgroundSession background,PhoneObservation frame,NodeRef original,
+                                         String targetPath,JSONArray snapshot)throws Exception{
+        java.util.Map<String,JSONObject> records=new java.util.HashMap<String,JSONObject>();
+        for(int i=0;i<snapshot.length();i++){JSONObject row=snapshot.getJSONObject(i);records.put(row.getString("path"),row);}
+        java.util.List<AccessibilityNodeInfo> owned=new java.util.ArrayList<AccessibilityNodeInfo>();
+        AccessibilityNodeInfo cursor=original.node;String path=targetPath;
+        Rect target=new Rect();cursor.getBoundsInScreen(target);
+        try{
+            for(int depth=0;depth<64;depth++){
+                JSONObject expected=records.get(path);
+                if(expected==null||!cursor.refresh()||!cursor.isVisibleToUser()||!cursor.isEnabled()||cursor.isPassword())
+                    throw new StaleObservation("首页目标祖先不可用");
+                requireBackgroundNodeWindow(background,frame,cursor);
+                Rect actual=new Rect();cursor.getBoundsInScreen(actual);
+                if(!actual.contains(target)||!org.trillionnium.hepta.webprotocol.WebDomCanonical.same(expected,
+                        snapshotFlightNode(cursor,path,expected.getString("parent_class"))))
+                    throw new StaleObservation("首页目标祖先或原生几何已变化");
+                AccessibilityNodeInfo parent=cursor.getParent();if(parent!=null)owned.add(parent);
+                if("0".equals(path)){
+                    if(parent!=null)throw new StaleObservation("首页原生根边界变化");return;
+                }
+                int slash=path.lastIndexOf('/'),index=Integer.parseInt(path.substring(slash+1));
+                if(parent==null||!parent.refresh()||index>=parent.getChildCount()
+                        ||!expected.getString("parent_class").equals(string(parent.getClassName())))
+                    throw new StaleObservation("首页目标父节点关系变化");
+                AccessibilityNodeInfo child=parent.getChild(index);if(child!=null)owned.add(child);
+                if(child==null||!child.refresh()||!child.equals(cursor))throw new StaleObservation("首页目标父子身份变化");
+                cursor=parent;path=path.substring(0,slash);
+            }
+            throw new StaleObservation("首页原生祖先预算不足");
+        }finally{for(AccessibilityNodeInfo node:owned)node.recycle();}
     }
     private static String nodeSignature(AccessibilityNodeInfo node,ObservedChildText.Result childText){
         // Capture and target refresh both supply the same bounded subtree observation.
@@ -1278,18 +1412,21 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     /** Metadata-only; no root or text is read from any other application/window. */
     private JSONObject readRegionWindows(PhoneObservation frame,WebRegionNativeBridge bridge)throws Exception{
+        return readRegionWindows(frame,bridge.displayId,bridge.windowId,bridge.anchorBounds());
+    }
+    private JSONObject readRegionWindows(PhoneObservation frame,int displayId,int windowId,int[] region)throws Exception{
         AccessibilityServiceInfo info=getServiceInfo();
         if(info==null||(info.flags&AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS)==0
                 ||(info.getCapabilities()&AccessibilityServiceInfo.CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT)==0)
             throw new StaleObservation("原生窗口覆盖元数据不可用");
-        List<AccessibilityWindowInfo> windows=windowsForDisplay(bridge.displayId);
+        List<AccessibilityWindowInfo> windows=windowsForDisplay(displayId);
         if(windows==null)throw new StaleObservation("原生窗口集合不可用");
         try{
             if(windows.isEmpty()||windows.size()>64)throw new StaleObservation("原生窗口集合不可用");
             java.util.TreeMap<Integer,JSONObject> rows=new java.util.TreeMap<Integer,JSONObject>();
             int targetLayer=-1;Rect targetBounds=null;
             for(AccessibilityWindowInfo window:windows){
-                if(window==null||window.getDisplayId()!=bridge.displayId||window.getId()<0
+                if(window==null||window.getDisplayId()!=displayId||window.getId()<0
                         ||window.getType()<=0||window.getLayer()<0)
                     throw new StaleObservation("原生窗口身份缺失");
                 Rect bounds=new Rect();window.getBoundsInScreen(bounds);
@@ -1299,7 +1436,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         .put("bounds",new JSONArray(new int[]{bounds.left,bounds.top,bounds.right,bounds.bottom}))
                         .put("focused",window.isFocused()).put("active",window.isActive());
                 if(rows.put(window.getId(),row)!=null)throw new StaleObservation("原生窗口身份重复");
-                if(window.getId()==bridge.windowId){
+                if(window.getId()==windowId){
                     if(window.getType()!=AccessibilityWindowInfo.TYPE_APPLICATION)
                         throw new StaleObservation("目标已不是原应用窗口");
                     targetLayer=window.getLayer();targetBounds=new Rect(bounds);
@@ -1307,19 +1444,19 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 if(window.getType()==AccessibilityWindowInfo.TYPE_INPUT_METHOD)
                     throw new StaleObservation("商品只读点击时出现输入法窗口");
             }
-            int[] expected=frame.windowMetadata.windowBounds(),region=bridge.anchorBounds();
+            int[] expected=frame.windowMetadata.windowBounds();
             Rect anchorBounds=new Rect(region[0],region[1],region[2],region[3]);
             if(targetLayer<0||targetBounds==null||expected==null||expected.length!=4
                     ||targetBounds.left!=expected[0]||targetBounds.top!=expected[1]
                     ||targetBounds.right!=expected[2]||targetBounds.bottom!=expected[3]||!targetBounds.contains(anchorBounds))
                 throw new StaleObservation("目标原生窗口或卡片范围已变化");
-            for(AccessibilityWindowInfo window:windows)if(window.getId()!=bridge.windowId&&window.getLayer()>=targetLayer){
+            for(AccessibilityWindowInfo window:windows)if(window.getId()!=windowId&&window.getLayer()>=targetLayer){
                 Rect bounds=new Rect();window.getBoundsInScreen(bounds);
                 if(Rect.intersects(bounds,anchorBounds))throw new StaleObservation("原生商品区域被其它交互窗口覆盖");
             }
             JSONArray ordered=new JSONArray();for(JSONObject row:rows.values())ordered.put(row);
             return new JSONObject().put("source","getWindowsOnAllDisplays_selected_display_metadata")
-                    .put("display_id",bridge.displayId).put("target_window_id",bridge.windowId).put("target_layer",targetLayer)
+                    .put("display_id",displayId).put("target_window_id",windowId).put("target_layer",targetLayer)
                     .put("target_native_bounds",new JSONArray(region)).put("windows",ordered)
                     .put("observed_upper_or_same_layer_overlap",false).put("ime_window_observed",false)
                     .put("other_window_roots_traversed",false).put("unreported_windows_excluded",false);

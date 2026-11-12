@@ -48,6 +48,8 @@ public final class LocalTaskController implements AutoCloseable {
     private final AtomicBoolean cancelled=new AtomicBoolean();
     private final Object handleLock=new Object();
     private volatile boolean running,blocked,closed;
+    // stop() and the final read-only result decision share one terminal boundary.
+    private boolean terminalDecisionSealed;
     private volatile String currentTaskId,currentActualScopeSha256;
     private volatile Listener listener;
     private volatile TaskResult lastResult;
@@ -122,13 +124,14 @@ public final class LocalTaskController implements AutoCloseable {
         final TaskAuthorization.Gate authorization;
         try{authorization=service.bindTaskAuthorization(id,ownerAuthorization);}
         catch(RuntimeException error){service.releaseTask(id);throw error;}
-        listener=callback;currentTaskId=id;currentActualScopeSha256=null;lastResult=null;cancelled.set(false);running=true;
+        listener=callback;currentTaskId=id;currentActualScopeSha256=null;lastResult=null;cancelled.set(false);terminalDecisionSealed=false;running=true;
         try{worker.execute(new Runnable(){public void run(){runTask(id,instruction,expectedScopeSha256,authorization,backgroundSelection);}});}
         catch(RuntimeException error){running=false;service.releaseTask(id);throw error;}
         return true;
     }
     public void stop(){
-        if(!running)return;cancelled.set(true);emit("正在停止本地任务，等待当前推理退出…");
+        synchronized(this){if(!running||terminalDecisionSealed)return;cancelled.set(true);}
+        emit("正在停止本地任务，等待当前推理退出…");
         inference.cancelTask();
         synchronized(handleLock){if(activeInference!=null)activeInference.cancel();}
     }
@@ -150,7 +153,7 @@ public final class LocalTaskController implements AutoCloseable {
         File evidence=null;PhoneObservation observation=null;int steps=0,repairs=0,staleRounds=0;
         String finalStatus="failed",summary="任务未完成";boolean modelSuccess=false,cleanup=true,rawModelSuccessClaimed=false;
         boolean controllerSuccess=false,controllerCompletionRequested=false;
-        String lastModelDoneStatus=null,lastModelDoneSummary=null;
+        String lastModelDoneStatus=null,lastModelDoneSummary=null,acceptedCompletionModelRunId=null;
         TaskCompletionGate completion=new TaskCompletionGate(taskId,instruction,authorization.authorization);
         NotesTaskPhaseGuard notesPhase=null;
         CalculatorTaskInputGuard calculatorInput=null;
@@ -434,7 +437,7 @@ public final class LocalTaskController implements AutoCloseable {
                     if("success".equals(action.status)){
                         TaskCompletionGate.Check check=completion.successClaim(steps,decisionRunId,completionFrame(observation),stable);
                         record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-completion-check.json",steps),new JSONObject(check.evidence));
-                        if(check.verified){finalStatus="model_reported_done";summary=completion.completionSummary();modelSuccess=true;break;}
+                        if(check.verified){finalStatus="model_reported_done";summary=completion.completionSummary();modelSuccess=true;acceptedCompletionModelRunId=decisionRunId;break;}
                         summary=completion.incompleteSummary();
                         if(!check.retryAllowed||steps>=MAX_STEPS){finalStatus="partial";break;}
                         emit("完成证据尚不完整，正在重新观察并继续原任务…");
@@ -456,8 +459,9 @@ public final class LocalTaskController implements AutoCloseable {
         catch(Exception error){controllerSuccess=false;finalStatus=cancelled.get()?"cancelled":"failed";summary=HeptaAccessibilityService.message(error);}
         finally{
             synchronized(handleLock){activeInference=null;}
+            WebFlightSession.Cleanup webCleanup=null;
             if(activeWebTask!=null){
-                WebFlightSession.Cleanup webCleanup=activeWebTask.close(cancelled.get()?"cancelled":"failed".equals(finalStatus)?"error":"normal");
+                webCleanup=activeWebTask.close(cancelled.get()?"cancelled":"failed".equals(finalStatus)?"error":"normal");
                 if(evidence!=null)try{record(evidence,"web-helper-cleanup.json",webCleanup.evidence);}catch(Exception ignored){}
                 if(!webCleanup.known){cleanup=false;blocked=true;modelSuccess=false;controllerSuccess=false;finalStatus="blocked";summary="网页工具清理尚未确认，请使用清理后台空间后再开始任务";}
             }
@@ -472,11 +476,13 @@ public final class LocalTaskController implements AutoCloseable {
             catch(Exception closeError){modelCleanup=new LocalInference.TaskCleanup(false,true,false,null,null,taskId,false,null);}
             // endTask can block. Recheck the same immutable scope after it returns,
             // before publishing completion; old pre-close identity is insufficient.
-            if(scope!=null)try{scope.verifyUnchanged();}catch(Exception refusal){
+            boolean terminalScopeRechecked=false;
+            if(scope!=null)try{scope.verifyUnchanged();terminalScopeRechecked=true;}catch(Exception refusal){
                 finalStatus="failed";modelSuccess=false;controllerSuccess=false;summary=HeptaAccessibilityService.message(refusal);
             }
-            boolean controllerOwnerCompletionAllowed=false;
-            try{authorization.ready();if(controllerSuccess)controllerOwnerCompletionAllowed=authorization.frame().successAllowed();}
+            boolean controllerOwnerCompletionAllowed=false;TaskAuthorization.Frame terminalOwnerFrame=null;
+            try{authorization.ready();if(controllerSuccess)controllerOwnerCompletionAllowed=authorization.frame().successAllowed();
+                if(TaskCompletionGate.WEB.equals(completion.contract.kind))terminalOwnerFrame=authorization.frame();}
             catch(Exception refusal){finalStatus="failed";modelSuccess=false;controllerSuccess=false;summary=HeptaAccessibilityService.message(refusal);}
             if(!modelCleanup.cleanupKnown){cleanup=false;blocked=true;finalStatus="blocked";modelSuccess=false;controllerSuccess=false;summary="任务模型进程退出尚未确认，已停止接受新任务";}
             // Stop can arrive while endTask waits for the retained worker to exit.
@@ -505,11 +511,41 @@ public final class LocalTaskController implements AutoCloseable {
             if(controllerSuccess&&(!controllerNativeBound||!controllerOwnerCompletionAllowed||!completion.controllerWorkflowReady(completionFrame(observation)))){
                 controllerSuccess=false;finalStatus="partial";summary="笔记操作已结束，但本次完整核验尚未通过，请核对实际内容。";
             }
-            boolean completionVerified=(modelSuccess||controllerSuccess)&&cleanup&&modelCleanup.receiptValid&&completion.verified(completionFrame(observation));
-            String completionActor=completionVerified?(controllerSuccess?"controller/tool_workflow":"model_done_verified"):null;
-            java.util.Map<String,Object> completionEvidence=completion.evidence(completionFrame(observation));
-            completionEvidence.put("observation_chain_verified",completion.verified(completionFrame(observation)));
-            completionEvidence.put("terminal_binding_and_cleanup_verified",completionVerified);
+            boolean completionVerified;String completionActor;java.util.Map<String,Object> completionEvidence;
+            // All resource teardown and worker receipt checks have finished. A
+            // cancellation that wins this lock cannot be promoted by a late CLOSE.
+            synchronized(this){
+                if(cleanup&&cancelled.get()){
+                    finalStatus="cancelled";modelSuccess=false;controllerSuccess=false;summary="已停止；已经发生的操作不会自动重做";
+                }
+                NotesCompletionEvidence.Frame finalFrame=completionFrame(observation);
+                if(TaskCompletionGate.WEB.equals(completion.contract.kind)){
+                    boolean helperReleased=webCleanup!=null&&webCleanup.known&&activeWebTask!=null
+                            &&taskId.equals(activeWebTask.taskId)&&activeWebTask.released();
+                    boolean backgroundReleased=background!=null&&backgroundCleanup!=null&&backgroundCleanup.known
+                            &&background.released()&&taskId.equals(background.taskId)
+                            &&authorization.authorization.instructionSha256.equals(background.ownerSha256)
+                            &&finalFrame!=null&&background.generation.equals(finalFrame.backgroundGeneration)
+                            &&background.displayId()==finalFrame.displayId;
+                    TaskCompletionGate.Check terminal=completion.terminalWebCheck(activeWebTask,finalFrame,terminalOwnerFrame,
+                            steps,acceptedCompletionModelRunId,modelSuccess&&"model_reported_done".equals(finalStatus),
+                            cleanup,helperReleased,backgroundReleased,terminalScopeRechecked,cancelled.get(),
+                            modelCleanup.processStarted,modelCleanup.processExitObserved,modelCleanup.exitCode,modelCleanup.receiptValid,
+                            modelCleanup.taskId,modelCleanup.generation,modelCleanup.receiptSha256);
+                    completionVerified=terminal.verified;
+                    completionEvidence=new java.util.LinkedHashMap<String,Object>(terminal.evidence);
+                    if(modelSuccess&&!completionVerified){
+                        modelSuccess=false;finalStatus="partial";summary="网页结果曾被观察，但终态身份或清理证明未通过，未确认任务完成。";
+                    }
+                }else{
+                    completionVerified=(modelSuccess||controllerSuccess)&&cleanup&&modelCleanup.receiptValid&&completion.verified(finalFrame);
+                    completionEvidence=completion.evidence(finalFrame);
+                    completionEvidence.put("observation_chain_verified",completion.verified(finalFrame));
+                }
+                completionActor=completionVerified?(controllerSuccess?"controller/tool_workflow":"model_done_verified"):null;
+                completionEvidence.put("terminal_binding_and_cleanup_verified",completionVerified);
+                terminalDecisionSealed=true;
+            }
             completionEvidence.put("completion_actor",completionActor);completionEvidence.put("model_done_synthesized",false);
             completionEvidence.put("controller_completion_requested",controllerCompletionRequested);
             completionEvidence.put("controller_native_parent_session_bound",controllerCompletionRequested?Boolean.valueOf(controllerNativeBound):null);

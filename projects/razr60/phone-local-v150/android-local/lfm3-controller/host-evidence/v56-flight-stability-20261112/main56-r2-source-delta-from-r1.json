@@ -1,0 +1,424 @@
+{
+  "schema": "hepta.main56-r1-failure-repair-aggregate-exact-delta.v1",
+  "status": "source-only; exact successor to actually materialized Core56 r1 source",
+  "base_aggregate": {
+    "bytes": 1416544,
+    "sha256": "38baa995ee76520e1a9ff7a14baf51afdbd4f1af53f747ce7a0d114ef4809c90",
+    "git_blob_sha": "660335b7f19f519af4cfd168ebee186f1a4693b9"
+  },
+  "result_aggregate": {
+    "bytes": 1427055,
+    "sha256": "c1cc7cc16eef4c3a34131ee719101a69db080b76e72c98f03248036fc6fd628f",
+    "git_blob_sha": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c"
+  },
+  "files": [
+    {
+      "path": "src/org/trillionnium/hepta/local/WebShoppingDomain.java",
+      "base_actual_source": {
+        "bytes": 31708,
+        "sha256": "c1c564118915d230d2b5c9ff275c05263b9253e3c876d03db7b63a5a76248aa0",
+        "git_blob_sha": "da3880029d43376cd271df68517675615c2800bd"
+      },
+      "base_overlay_present": true,
+      "base_raw_utf8": "package org.trillionnium.hepta.local;\n\nimport org.json.JSONObject;\nimport org.trillionnium.hepta.local.web.WebShoppingGoal;\nimport org.trillionnium.hepta.webprotocol.WebEvidenceProtocol;\nimport org.trillionnium.hepta.webprotocol.WebEvidenceBinding;\nimport org.trillionnium.hepta.webprotocol.WebSitePolicy;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Collections;\nimport java.util.HashSet;\nimport java.util.LinkedHashMap;\nimport java.util.List;\nimport java.util.Map;\nimport java.util.Set;\n\n/**\n * A same-frame official-shopping capability restriction. It does not dispatch.\n * Targets are real native AX IDs with the actual card text/ancestry/geometry bridge.\n * Full before/after raw hashes bind ARM; stable region semantics bind the model action page key.\n * Source/currency/price data never originate in a model answer or search snippet.\n */\nfinal class WebShoppingDomain {\n    static final String SCHEMA=\"hepta.mi-current-action-domain.v2\";\n    final String taskId,ownerSha,contractSha,authorizationSha,observationId,stateSha,generation,bindingSha;\n    final String instance,url,phase,pageKey;\n    final int displayId,windowId;\n    final long epoch,captureStarted,captureEnded;\n    final Set<String> clickIds;\n    private final Map<String,MiPublicProductPage.Link> links;\n    private final Map<String,Object> proof;\n    private final MiPublicProductPage page;\n    private final boolean localPriceVerified;\n    private final Navigation navigation;\n    private final String sourceCaptureRaw,observedArmRaw;\n    private final WebRegionNativeBridge regionBridge;\n\n    private WebShoppingDomain(String task,WebShoppingGoal goal,TaskAuthorization.Gate auth,PhoneObservation frame,\n            WebEvidenceReceipt receipt,String binding,String phase,String key,\n            Map<String,MiPublicProductPage.Link> links,MiPublicProductPage page,boolean priceVerified,\n            Navigation navigation,Map<String,Object> proof,String sourceCaptureRaw,WebRegionNativeBridge regionBridge){\n        taskId=task;ownerSha=goal.ownerSha256;contractSha=goal.contractSha256;authorizationSha=auth.authorization.sha256;\n        observationId=frame.id;stateSha=frame.treeSha256;generation=frame.backgroundGeneration;bindingSha=binding;\n        instance=receipt.instance;url=receipt.url;epoch=receipt.epoch;displayId=receipt.displayId;windowId=receipt.windowId;\n        captureStarted=receipt.started;captureEnded=receipt.ended;this.phase=phase;pageKey=key;\n        this.links=Collections.unmodifiableMap(new LinkedHashMap<String,MiPublicProductPage.Link>(links));\n        clickIds=Collections.unmodifiableSet(new HashSet<String>(links.keySet()));this.page=page;\n        localPriceVerified=priceVerified;this.navigation=navigation;this.sourceCaptureRaw=sourceCaptureRaw;\n        this.regionBridge=regionBridge;this.observedArmRaw=null;\n        this.proof=Collections.unmodifiableMap(new LinkedHashMap<String,Object>(proof));\n    }\n    private WebShoppingDomain(WebShoppingDomain original,Navigation navigation){\n        this(original,navigation,original.observedArmRaw);\n    }\n    private WebShoppingDomain(WebShoppingDomain original,Navigation navigation,String armRaw){\n        taskId=original.taskId;ownerSha=original.ownerSha;contractSha=original.contractSha;authorizationSha=original.authorizationSha;\n        observationId=original.observationId;stateSha=original.stateSha;generation=original.generation;bindingSha=original.bindingSha;\n        instance=original.instance;url=original.url;epoch=original.epoch;displayId=original.displayId;windowId=original.windowId;\n        captureStarted=original.captureStarted;captureEnded=original.captureEnded;phase=original.phase;pageKey=original.pageKey;\n        links=original.links;clickIds=original.clickIds;page=original.page;localPriceVerified=original.localPriceVerified;\n        sourceCaptureRaw=original.sourceCaptureRaw;regionBridge=original.regionBridge;observedArmRaw=armRaw;\n        this.navigation=navigation;Map<String,Object> out=new LinkedHashMap<String,Object>(original.proof);\n        if(navigation!=null){\n            out.put(\"model_navigation\",navigation.evidence());out.put(\"model_navigation_confirmed\",true);\n            out.put(\"result_ready_for_completion_gate\",localPriceVerified);\n        }\n        if(armRaw!=null){out.put(\"observed_link_arm_json_utf8\",armRaw);out.put(\"observed_link_armed\",true);}\n        proof=Collections.unmodifiableMap(out);\n    }\n    static WebShoppingDomain observed(String task,WebShoppingGoal goal,TaskAuthorization.Gate auth,PhoneObservation frame,\n                                      WebEvidenceReceipt receipt,JSONObject immutableBinding)throws Exception{\n        String binding=common(task,goal,auth,frame,receipt,immutableBinding);\n        need(\"captured\".equals(receipt.status),\"actual captured page required\");\n        JSONObject dom=receipt.dom(),capture=receipt.capture();WebSitePolicy policy=WebSitePolicy.forShopping(goal);\n        MiPublicProductPage page=MiPublicProductPage.read(goal,policy,receipt.url,dom);\n        WebNativeGeometry geometry=WebNativeGeometry.read(capture,dom,receipt.displayId,receipt.windowId,receipt.stability());\n        WebRegionNativeBridge nativeBridge=null;\n        Map<String,MiPublicProductPage.Link> targets=new LinkedHashMap<String,MiPublicProductPage.Link>();\n        List<Map<String,Object>> capabilities=new ArrayList<Map<String,Object>>();\n        Map<String,Object> proof=base(task,goal,auth,frame,receipt,binding);\n        proof.put(\"page\",page.evidence());proof.put(\"site_policy\",jsonMap(policy.evidence()));\n        proof.put(\"site_policy_sha256\",policy.sha256);proof.put(\"native_geometry\",geometry==null?null:geometry.evidence());\n        if(geometry!=null&&!page.modalPresent&&page.productLinks.size()==1\n                &&\"official_public_search\".equals(page.phase)){\n            MiPublicProductPage.Link link=page.productLinks.get(0);\n            nativeBridge=WebRegionNativeBridge.bind(frame,receipt);\n            if(nativeBridge!=null&&receipt.stability()!=null&&receipt.stability().region!=null\n                    &&nativeBridge.anchorDomPath.equals(link.path)\n                    &&nativeBridge.regionRoot.equals(receipt.stability().region.rootPath)\n                    &&receipt.stability().permitsActionTargetPath(link.path)){\n                PhoneObservation.Node node=nativeBridge.anchor;\n                targets.put(node.id,link);Map<String,Object> cap=nodeEvidence(node);\n                cap.put(\"purpose\",\"open_observed_official_product_detail\");cap.put(\"observed_link\",link.evidence());\n                cap.put(\"target_source\",\"same_frame_native_accessibility_node_id\");\n                cap.put(\"native_region_bridge\",jsonMap(nativeBridge.evidence()));\n                cap.put(\"css_rect_used_as_target\",false);capabilities.add(cap);\n            }else nativeBridge=null;\n        }\n        boolean localPrice=false;\n        Map<String,Object> visible=new LinkedHashMap<String,Object>();\n        if(geometry!=null&&!page.modalPresent&&page.detail!=null&&page.detail.exactPublicPrice\n                &&!goal.singleUnitRequested&&!goal.specificationsRequested){\n            MiPublicProductPage.Detail detail=page.detail;\n            PhoneObservation.Node model=uniqueReadable(frame,geometry,detail.modelLabel);\n            PhoneObservation.Node amount=uniqueReadable(frame,geometry,detail.priceRaw);\n            PhoneObservation.Node currency=uniqueReadable(frame,geometry,detail.currencyRaw);\n            if(model!=null&&amount!=null&&currency!=null&&model!=amount&&model!=currency&&amount!=currency){\n                localPrice=true;visible.put(\"model\",nodeEvidence(model));visible.put(\"price\",nodeEvidence(amount));\n                visible.put(\"currency\",nodeEvidence(currency));\n            }\n        }\n        proof.put(\"phase\",page.phase);proof.put(\"native_ax_capabilities\",capabilities);\n        proof.put(\"allowed_click_ids\",new ArrayList<String>(targets.keySet()));\n        proof.put(\"actual_product_native_readback\",visible);proof.put(\"same_frame_public_price_observed\",localPrice);\n        proof.put(\"model_navigation_confirmed\",false);proof.put(\"model_navigation\",null);\n        proof.put(\"observed_link_armed\",false);proof.put(\"observed_link_arm_json_utf8\",null);\n        proof.put(\"result_ready_for_completion_gate\",false);\n        proof.put(\"missing\",new ArrayList<String>(page.missing));\n        proof.put(\"next_goal\",!targets.isEmpty()?\"打开同帧实际 AX3000T 官方商品链接；不要点击购买、登录、领券或购物车。\":\n                localPrice?\"已观察到商品公开价；仍须同任务原生模型导航因果链及最终清理门。\":\n                \"当前页面缺少可验证的公开商品控件或价格；只能等待或报告未完成，不能猜测SKU、价格、币种。\");\n        JSONObject semantic=new JSONObject().put(\"native_url\",receipt.url).put(\"instance\",receipt.instance)\n                .put(\"epoch\",receipt.epoch).put(\"policy_sha256\",policy.sha256)\n                .put(\"native_geometry_sha256\",geometry==null?JSONObject.NULL:geometry.fingerprint)\n                .put(\"allowed_click_ids\",new org.json.JSONArray(targets.keySet()))\n                .put(\"native_region_semantic_sha256\",nativeBridge==null?JSONObject.NULL:nativeBridge.semanticFingerprint)\n                .put(\"selected_region_sha256\",receipt.stability()==null||receipt.stability().region==null?JSONObject.NULL:receipt.stability().region.fullRegionSha256)\n                .put(\"selected_region_ancestor_sha256\",receipt.stability()==null||receipt.stability().region==null?JSONObject.NULL:receipt.stability().region.ancestorSha256)\n                .put(\"page\",new JSONObject(page.evidence()));\n        return new WebShoppingDomain(task,goal,auth,frame,receipt,binding,page.phase,WebEvidenceJson.sha(semantic.toString()),\n                targets,page,localPrice,null,proof,capture.toString(),nativeBridge);\n    }\n    static WebShoppingDomain waiting(String task,WebShoppingGoal goal,TaskAuthorization.Gate auth,PhoneObservation frame,\n                                    WebEvidenceReceipt receipt,JSONObject immutableBinding)throws Exception{\n        String binding=common(task,goal,auth,frame,receipt,immutableBinding);\n        need((\"unavailable\".equals(receipt.status)||\"state_changed\".equals(receipt.status))&&!receipt.cleanupKnown,\n                \"only authenticated metadata-only capture wait\");\n        Map<String,Object> proof=base(task,goal,auth,frame,receipt,binding);proof.put(\"phase\",\"official_page_capture_pending\");\n        proof.put(\"capture_callback\",jsonMap(receipt.callback()));proof.put(\"allowed_click_ids\",Collections.emptyList());\n        proof.put(\"native_ax_capabilities\",Collections.emptyList());proof.put(\"same_frame_public_price_observed\",false);\n        proof.put(\"model_navigation_confirmed\",false);proof.put(\"result_ready_for_completion_gate\",false);\n        proof.put(\"next_goal\",\"网页原始证据尚未稳定；只能等待或报告未完成。\");\n        return new WebShoppingDomain(task,goal,auth,frame,receipt,binding,\"official_page_capture_pending\",\n                WebEvidenceJson.sha(receipt.callback().toString()+\"\\n\"+frame.id),\n                Collections.<String,MiPublicProductPage.Link>emptyMap(),null,false,null,proof,null,null);\n    }\n    private static String common(String task,WebShoppingGoal goal,TaskAuthorization.Gate auth,PhoneObservation frame,\n                               WebEvidenceReceipt receipt,JSONObject immutableBinding)throws Exception{\n        need(goal!=null&&auth!=null&&receipt!=null&&task.equals(auth.taskId)&&goal.ownerSha256.equals(auth.authorization.instructionSha256)\n                &&WebShoppingGoal.TOOL_CEILING.containsAll(auth.authorization.allowedTools),\"same original bounded shopping authorization\");\n        need(WebEvidenceProtocol.HELPER_VERSION_CODE==6\n                &&\"hepta.web-helper.binding.v4\".equals(WebEvidenceProtocol.BINDING_SCHEMA)\n                &&\"org.trillionnium.hepta.webhelper.IWebEvidence.v4\".equals(WebEvidenceProtocol.DESCRIPTOR),\n                \"shopping requires explicit code6/v4 peer and independently replayed scoped capture\");\n        WebSitePolicy policy=WebSitePolicy.forShopping(goal);\n        need(immutableBinding!=null&&WebEvidenceProtocol.BINDING_SCHEMA.equals(immutableBinding.get(\"schema\"))\n                &&task.equals(immutableBinding.get(\"task_id\"))&&goal.owner.equals(immutableBinding.get(\"owner\"))\n                &&goal.ownerSha256.equals(immutableBinding.get(\"owner_sha256\"))&&goal.contractSha256.equals(immutableBinding.get(\"contract_sha256\"))\n                &&WebShoppingGoal.KIND.equals(immutableBinding.get(\"goal_kind\"))\n                &&policy.id.equals(immutableBinding.get(\"site_policy_id\"))&&policy.sha256.equals(immutableBinding.get(\"site_policy_sha256\"))\n                &&policy.initialUrl.equals(immutableBinding.get(\"initial_url\"))\n                &&auth.authorization.sha256.equals(immutableBinding.getJSONObject(\"authorization\").get(\"authorization_sha256\"))\n                &&WebEvidenceJson.number(immutableBinding.getJSONObject(\"helper_identity\"),\"version_code\")==6,\n                \"exact per-lease shopping contract/site/authority binding required\");\n        String binding=WebEvidenceBinding.sha256(immutableBinding);\n        need(frame!=null&&!frame.nodesTruncated&&WebEvidenceProtocol.HELPER_PACKAGE.equals(frame.packageName)\n                &&frame.windowMetadata!=null&&\"observed\".equals(frame.windowMetadata.status)\n                &&Integer.valueOf(1).equals(frame.windowMetadata.type)&&frame.windowMetadata.displayId!=null\n                &&frame.windowMetadata.displayId==receipt.displayId&&frame.windowId==receipt.windowId\n                &&receipt.displayId>0&&frame.backgroundGeneration!=null&&binding.equals(receipt.bindingSha)\n                &&WebEvidenceJson.number(immutableBinding.getJSONObject(\"background\"),\"display_id\")==receipt.displayId\n                &&frame.backgroundGeneration.equals(immutableBinding.getJSONObject(\"background\").get(\"generation\")),\n                \"same current owned AX/DOM application window required\");\n        return binding;\n    }\n    private static Map<String,Object> base(String task,WebShoppingGoal goal,TaskAuthorization.Gate auth,PhoneObservation frame,\n                                           WebEvidenceReceipt receipt,String binding){\n        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put(\"schema\",SCHEMA);out.put(\"task_id\",task);\n        out.put(\"owner_sha256\",goal.ownerSha256);out.put(\"contract_sha256\",goal.contractSha256);out.put(\"authorization_sha256\",auth.authorization.sha256);\n        out.put(\"observation_id\",frame.id);out.put(\"observation_state_sha256\",frame.treeSha256);out.put(\"app_tree_sha256\",frame.state.appTreeSha256);\n        out.put(\"binding_sha256\",binding);out.put(\"webview_instance\",receipt.instance);out.put(\"navigation_epoch\",receipt.epoch);\n        out.put(\"display_id\",receipt.displayId);out.put(\"window_id\",receipt.windowId);out.put(\"background_generation\",frame.backgroundGeneration);\n        out.put(\"current_native_url\",receipt.url);out.put(\"dom_sha256\",receipt.domSha);out.put(\"business_verified\",false);\n        out.put(\"grants_tool_authority\",false);out.put(\"bootstrap_search_is_model_query\",false);\n        out.put(\"css_to_screen_mapping_used\",false);out.put(\"dom_layout_visibility_is_screen_proof\",false);\n        out.put(\"final_native_and_cleanup_gates_verified\",false);return out;\n    }\n    String observedLinkAnchorPath(ActionDecision action){\n        requireCurrent(action);need(\"click\".equals(action.action)&&links.containsKey(action.nodeId),\"current product click required\");\n        return links.get(action.nodeId).path;\n    }\n    WebShoppingDomain withObservedLinkArm(JSONObject actualArm)throws Exception{\n        need(observedArmRaw==null&&sourceCaptureRaw!=null&&regionBridge!=null&&clickIds.size()==1,\n                \"single actual fresh product region can accept one ARM\");\n        JSONObject source=new JSONObject(sourceCaptureRaw);\n        org.trillionnium.hepta.webprotocol.WebDomStability.Result stable=\n                org.trillionnium.hepta.webprotocol.WebDomStability.verify(source.getString(\"before_dom_raw_utf8\"),\n                        source.getString(\"dom_raw_utf8\"),WebSitePolicy.ID,source.getJSONObject(\"dom_stability\"));\n        need(org.trillionnium.hepta.webprotocol.WebObservedNavigation.ARM_SCHEMA.equals(actualArm.get(\"schema\"))\n                &&taskId.equals(actualArm.get(\"task_id\"))&&bindingSha.equals(actualArm.get(\"binding_sha256\"))\n                &&instance.equals(actualArm.get(\"webview_instance\"))&&epoch==WebEvidenceJson.number(actualArm,\"navigation_epoch\")\n                &&displayId==WebEvidenceJson.number(actualArm,\"display_id\")&&windowId==WebEvidenceJson.number(actualArm,\"actual_window_id\")\n                &&source.get(\"challenge\").equals(actualArm.get(\"source_capture_challenge\"))\n                &&source.get(\"dom_sha256\").equals(actualArm.get(\"source_dom_sha256\"))\n                &&source.get(\"before_dom_sha256\").equals(actualArm.get(\"source_before_dom_sha256\"))\n                &&source.get(\"dom_stability_sha256\").equals(actualArm.get(\"source_stability_sha256\"))\n                &&stable.region!=null&&regionBridge.anchorDomPath.equals(actualArm.get(\"anchor_dom_path\"))\n                &&stable.region.fullRegionSha256.equals(actualArm.get(\"region_sha256\"))\n                &&stable.region.hrefResolved.equals(actualArm.get(\"observed_href_resolved\"))\n                &&Boolean.FALSE.equals(actualArm.get(\"native_click_observed\"))\n                &&Boolean.FALSE.equals(actualArm.get(\"navigation_dispatched\"))\n                &&Boolean.FALSE.equals(actualArm.get(\"transaction_authority\"))\n                &&Boolean.FALSE.equals(actualArm.get(\"business_verified\")),\n                \"ARM must describe this exact last successful capture and unique native target\");\n        // The Client has already replayed the original request with verifyArm.\n        // This setter preserves its exact typed record; it creates no request or outcome.\n        return new WebShoppingDomain(this,navigation,org.trillionnium.hepta.webprotocol.WebDomCanonical.canonical(actualArm));\n    }\n    WebShoppingDomain withNavigation(Navigation proof){\n        need(proof!=null&&proof.matches(this),\"navigation belongs to another task/product/page\");\n        return new WebShoppingDomain(this,proof);\n    }\n    boolean resultReady(){return localPriceVerified&&navigation!=null&&navigation.matches(this);}\n    Map<String,Object> resultRecord(){\n        need(resultReady()&&page!=null&&page.detail!=null,\"actual same-product result and navigation missing\");\n        Map<String,Object> out=new LinkedHashMap<String,Object>(page.detail.evidence());\n        out.put(\"committed_url\",url);out.put(\"task_id\",taskId);out.put(\"owner_sha256\",ownerSha);out.put(\"contract_sha256\",contractSha);\n        out.put(\"observation_id\",observationId);out.put(\"observation_state_sha256\",stateSha);out.put(\"binding_sha256\",bindingSha);\n        out.put(\"webview_instance\",instance);out.put(\"navigation_epoch\",epoch);out.put(\"display_id\",displayId);out.put(\"window_id\",windowId);\n        out.put(\"model_navigation\",navigation.evidence());out.put(\"same_frame_native_labels_verified\",true);\n        out.put(\"exact_configuration_verified\",false);out.put(\"price_scope\",\"displayed_public_product_page_price\");\n        out.put(\"business_verified\",false);out.put(\"final_native_and_cleanup_gates_verified\",false);return out;\n    }\n    Map<String,Object> evidence(){return new LinkedHashMap<String,Object>(proof);}\n    Set<String> clicks(Set<String> original){Set<String> out=new HashSet<String>(original);out.retainAll(clickIds);return out;}\n    Set<String> edits(Set<String> original){return Collections.emptySet();}\n    Set<String> openPackages(Set<String> original){return Collections.emptySet();}\n    <T> Map<String,T> noNodeActions(Map<String,T> original){return Collections.emptyMap();}\n    Set<String> toolMask(Set<String> original){\n        Set<String> out=new HashSet<String>(Arrays.asList(\"wait\",\"done\"));if(!clickIds.isEmpty())out.add(\"click\");\n        if(original!=null)out.retainAll(original);return out;\n    }\n    void requireCurrent(ActionDecision action){\n        need(action!=null&&observationId.equals(action.observationId)&&WebEvidenceProtocol.HELPER_PACKAGE.equals(action.packageName),\n                \"shopping action belongs to another current frame\");\n        if(\"wait\".equals(action.action))return;\n        if(\"done\".equals(action.action)){need(!\"success\".equals(action.status)||resultReady(),\"actual product result not yet independently ready\");return;}\n        if(\"click\".equals(action.action)){need(action.nodeId!=null&&clickIds.contains(action.nodeId),\"only current exact official product link is allowed\");return;}\n        throw new IllegalArgumentException(\"该商品页面没有已证明的只读操作；禁止购物、输入、提交或跨站操作\");\n    }\n    static final class Navigation {\n        private final String task,owner,contract,authorization,binding,generation,instance,url,run,beforeObservation,afterObservation;\n        private final int display,window;private final long targetEpoch,dispatchBefore,dispatchAfter;\n        private final Map<String,Object> evidence;\n        private Navigation(WebShoppingDomain before,WebShoppingDomain after,String modelRun,long start,long end,ActionDecision action,Map<String,Object> helperNavigation){\n            task=before.taskId;owner=before.ownerSha;contract=before.contractSha;authorization=before.authorizationSha;\n            binding=before.bindingSha;generation=before.generation;instance=before.instance;url=after.url;\n            display=before.displayId;window=before.windowId;targetEpoch=after.epoch;run=modelRun;\n            beforeObservation=before.observationId;afterObservation=after.observationId;dispatchBefore=start;dispatchAfter=end;\n            Map<String,Object> out=new LinkedHashMap<String,Object>();out.put(\"schema\",\"hepta.mi-model-navigation.v1\");\n            out.put(\"task_id\",task);out.put(\"owner_sha256\",owner);out.put(\"contract_sha256\",contract);out.put(\"authorization_sha256\",authorization);\n            out.put(\"binding_sha256\",binding);out.put(\"background_generation\",generation);out.put(\"webview_instance\",instance);\n            out.put(\"display_id\",display);out.put(\"window_id\",window);out.put(\"model_run_id\",run);out.put(\"action\",\"click\");out.put(\"node_id\",action.nodeId);\n            out.put(\"before_observation_id\",beforeObservation);out.put(\"after_observation_id\",afterObservation);\n            out.put(\"source_url\",before.url);out.put(\"target_url\",url);out.put(\"source_epoch\",before.epoch);out.put(\"target_epoch\",targetEpoch);\n            out.put(\"dispatch_before_elapsed_ms\",start);out.put(\"dispatch_after_elapsed_ms\",end);\n            out.put(\"actual_source_link\",before.links.get(action.nodeId).evidence());out.put(\"accepted\",true);out.put(\"dispatched\",true);out.put(\"stale\",false);\n            out.put(\"model_issued\",true);out.put(\"observed_link_arm_json_utf8\",before.observedArmRaw);\n            out.put(\"helper_navigation_verdict\",helperNavigation);out.put(\"business_verified\",false);evidence=Collections.unmodifiableMap(out);\n        }\n        /**\n         * Called only from the real controller's accepted native-model action +\n         * actual executor Outcome. The clocks bracket that original dispatch.\n         * Planned/unknown/stale clicks and operator navigation cannot mint this object.\n         */\n        static Navigation confirm(WebShoppingDomain before,WebShoppingDomain after,ActionDecision action,String nativeModelRunId,\n                                  boolean accepted,boolean dispatched,boolean stale,long dispatchBefore,long dispatchAfter){\n            need(before!=null&&after!=null&&action!=null&&accepted&&dispatched&&!stale\n                    &&nativeModelRunId!=null&&nativeModelRunId.matches(\"[0-9a-f]{32}\"),\"actual accepted model dispatch required\");\n            before.requireCurrent(action);need(\"click\".equals(action.action)&&before.links.containsKey(action.nodeId),\"real product link click required\");\n            need(\"official_public_search\".equals(before.phase)&&\"official_product_detail\".equals(after.phase)\n                    &&before.taskId.equals(after.taskId)&&before.ownerSha.equals(after.ownerSha)&&before.contractSha.equals(after.contractSha)\n                    &&before.authorizationSha.equals(after.authorizationSha)&&before.bindingSha.equals(after.bindingSha)\n                    &&before.generation.equals(after.generation)&&before.instance.equals(after.instance)\n                    &&before.displayId==after.displayId&&before.windowId==after.windowId\n                    &&before.links.get(action.nodeId).hrefResolved.equals(after.url)&&after.epoch>before.epoch,\n                    \"actual same-lease detail navigation does not match the observed source link\");\n            need(before.captureEnded>=0&&before.captureEnded<=dispatchBefore&&dispatchBefore<=dispatchAfter\n                    &&dispatchAfter<=after.captureStarted,\"actual monotonic dispatch/capture order required\");\n            try{\n                need(before.observedArmRaw!=null&&after.sourceCaptureRaw!=null,\"actual ARM and destination capture required\");\n                JSONObject arm=new JSONObject(before.observedArmRaw),destination=new JSONObject(after.sourceCaptureRaw);\n                need(nativeModelRunId.equals(arm.get(\"model_run_id\"))\n                        &&before.links.get(action.nodeId).path.equals(arm.get(\"anchor_dom_path\")),\"ARM belongs to another actual model action\");\n                Object rawNavigation=destination.get(\"observed_link_navigation\");\n                need(rawNavigation instanceof JSONObject,\"actual helper navigation event absent or incomplete\");\n                JSONObject verdict=org.trillionnium.hepta.webprotocol.WebObservedNavigation.verifyNavigation(\n                        arm,(JSONObject)rawNavigation,destination,dispatchBefore,dispatchAfter);\n                return new Navigation(before,after,nativeModelRunId,dispatchBefore,dispatchAfter,action,jsonMap(verdict));\n            }catch(Exception invalid){\n                throw new IllegalArgumentException(\"actual typed same-lease link navigation not verified\",invalid);\n            }\n        }\n        boolean matches(WebShoppingDomain now){\n            return now!=null&&task.equals(now.taskId)&&owner.equals(now.ownerSha)&&contract.equals(now.contractSha)\n                    &&authorization.equals(now.authorizationSha)&&binding.equals(now.bindingSha)&&generation.equals(now.generation)\n                    &&instance.equals(now.instance)&&url.equals(now.url)&&display==now.displayId&&window==now.windowId&&now.epoch>=targetEpoch;\n        }\n        Map<String,Object> evidence(){return new LinkedHashMap<String,Object>(evidence);}\n    }\n    private static PhoneObservation.Node uniqueClick(PhoneObservation frame,WebNativeGeometry geometry,MiPublicProductPage.Link link)throws Exception{\n        List<PhoneObservation.Node> matches=new ArrayList<PhoneObservation.Node>();\n        for(PhoneObservation.Node node:frame.nodes)if(link.id.equals(node.viewId))matches.add(node);\n        if(matches.size()!=1)return null;PhoneObservation.Node node=matches.get(0);\n        if(!nativeVisible(frame,geometry,node)||!node.clickable||node.editable||node.password||node.scrollable)return null;\n        String own=node.text.isEmpty()?node.description:node.text;\n        if(!own.isEmpty())return link.label.equals(own)?node:null;\n        ObservedChildText.Result child=node.childText;\n        if(!\"derived\".equals(child.status)||child.truncated||!child.sourcesComplete||child.sources.isEmpty()\n                ||!child.rootSignature.matches(\"[0-9a-f]{64}\")||!child.bind(child.rootSignature).equals(node.observedAppTreeSignature))return null;\n        Set<String> hashes=new HashSet<String>();for(String text:link.visibleTexts)hashes.add(WebEvidenceJson.sha(text));\n        boolean model=false;for(ObservedChildText.Source source:child.sources){\n            if(!source.descendantPath.matches(\"[0-9]+(?:/[0-9]+){0,3}\")\n                    ||!(\"text\".equals(source.property)||\"description\".equals(source.property))\n                    ||source.nodeSignature==null||!source.nodeSignature.matches(\"[0-9a-f]{64}\")||!hashes.contains(source.textSha256))return null;\n            if(WebEvidenceJson.sha(link.label).equals(source.textSha256))model=true;\n        }\n        return model?node:null;\n    }\n    private static PhoneObservation.Node uniqueReadable(PhoneObservation frame,WebNativeGeometry geometry,String label){\n        List<PhoneObservation.Node> matches=new ArrayList<PhoneObservation.Node>();\n        for(PhoneObservation.Node node:frame.nodes)if(label.equals(node.text.isEmpty()?node.description:node.text))matches.add(node);\n        if(matches.size()!=1)return null;PhoneObservation.Node node=matches.get(0);\n        return nativeVisible(frame,geometry,node)&&!node.password&&!node.editable?node:null;\n    }\n    private static boolean nativeVisible(PhoneObservation frame,WebNativeGeometry geometry,PhoneObservation.Node node){\n        return WebEvidenceProtocol.HELPER_PACKAGE.equals(node.packageName)&&node.enabled\n                &&node.observedAppTreeSignature!=null&&node.observedAppTreeSignature.matches(\"[0-9a-f]{64}\")\n                &&geometry.contains(node.bounds.left,node.bounds.top,node.bounds.right,node.bounds.bottom)\n                &&inside(frame.windowMetadata.rootBounds(),node)&&inside(frame.windowMetadata.windowBounds(),node)\n                &&node.bounds.left>=0&&node.bounds.top>=0&&node.bounds.right<=frame.width&&node.bounds.bottom<=frame.height;\n    }\n    private static boolean inside(int[] r,PhoneObservation.Node node){\n        return r!=null&&r.length==4&&r[0]<=node.bounds.left&&r[1]<=node.bounds.top&&node.bounds.right<=r[2]&&node.bounds.bottom<=r[3];\n    }\n    private static Map<String,Object> nodeEvidence(PhoneObservation.Node node){\n        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put(\"node_id\",node.id);out.put(\"native_view_id\",node.viewId);\n        out.put(\"native_class\",node.className);out.put(\"native_label\",node.label());out.put(\"node_app_tree_sha256\",node.observedAppTreeSignature);\n        out.put(\"native_bounds\",Arrays.asList(node.bounds.left,node.bounds.top,node.bounds.right,node.bounds.bottom));return out;\n    }\n    private static Map<String,Object> jsonMap(JSONObject value)throws Exception{\n        Map<String,Object> out=new LinkedHashMap<String,Object>();java.util.Iterator<String> keys=value.keys();\n        while(keys.hasNext()){String key=keys.next();out.put(key,jsonValue(value.get(key),0));}return out;\n    }\n    private static Object jsonValue(Object value,int depth)throws Exception{\n        need(depth<=32,\"bounded JSON evidence nesting\");\n        if(value==JSONObject.NULL)return null;\n        if(value instanceof JSONObject){\n            Map<String,Object> out=new LinkedHashMap<String,Object>();java.util.Iterator<String> keys=((JSONObject)value).keys();\n            while(keys.hasNext()){String key=keys.next();out.put(key,jsonValue(((JSONObject)value).get(key),depth+1));}return out;\n        }\n        if(value instanceof org.json.JSONArray){\n            List<Object> out=new ArrayList<Object>();org.json.JSONArray a=(org.json.JSONArray)value;\n            for(int i=0;i<a.length();i++)out.add(jsonValue(a.get(i),depth+1));return out;\n        }\n        need(value instanceof String||value instanceof Boolean||value instanceof Number,\"JSON scalar evidence required\");return value;\n    }\n    private static void need(boolean ok,String message){if(!ok)throw new IllegalArgumentException(message);}\n}\n",
+      "ordered_replacements": [
+        {
+          "before": "proof.put(\"native_geometry\",geometry==null?null:geometry.evidence());",
+          "after": "proof.put(\"native_geometry\",geometry==null?null:jsonMap(geometry.evidence()));",
+          "count": 1
+        }
+      ],
+      "final": {
+        "bytes": 31717,
+        "sha256": "bbf256e37eb5cc3a1619371e9c29dc5f7af3139eeb4f602f602cf0f05551bf92",
+        "git_blob_sha": "78c1c4d616a815dbf31b214f0fb74754745c967c"
+      },
+      "final_overlay_entry": {
+        "path": "src/org/trillionnium/hepta/local/WebShoppingDomain.java",
+        "bytes": 31717,
+        "sha256": "bbf256e37eb5cc3a1619371e9c29dc5f7af3139eeb4f602f602cf0f05551bf92",
+        "git_blob_sha": "78c1c4d616a815dbf31b214f0fb74754745c967c",
+        "base": {
+          "bytes": 25838,
+          "sha256": "f3564aa43c040f02b42b6cb1dbc3b23be7bb847579fea6218f1f625fe5d3c487",
+          "git_blob_sha": "857099ae7de70dbb6cdd1bcb967a0129168d5e0b"
+        },
+        "raw_utf8": null,
+        "provenance": [
+          {
+            "kind": "shopping_final_source",
+            "checkpoint_git": "9573e144e957893006ef89ce1c3ad6d559d718af"
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/warm-finalization/prepare_fixture.py",
+      "base_actual_source": {
+        "git_blob_sha": "07785c82038007af91ba6612d410df5e96d143b2",
+        "bytes": 5713,
+        "sha256": "ae5bccaf044adfb755de0555fdff7d511254a399fb904dc5f103b5a8a36f5bb9"
+      },
+      "base_overlay_present": false,
+      "base_raw_utf8": "\"\"\"Compile exact production Stop and close-result decisions with explicit IO fixtures.\"\"\"\nimport hashlib\nimport json\nfrom pathlib import Path\n\n\ndef section(text, start, end):\n    if text.count(start) != 1 or text.count(end) != 1:\n        raise RuntimeError(\"production finalization anchors are not unique\")\n    first = text.index(start)\n    return text[first:text.index(end, first)]\n\n\ndef prepare(source, output):\n    source = Path(source)\n    output = Path(output)\n    output.mkdir(parents=True, exist_ok=True)\n    package = source / \"src/org/trillionnium/hepta/local\"\n    controller = (package / \"LocalTaskController.java\").read_text(encoding=\"utf-8\")\n    inference = (package / \"LocalInference.java\").read_text(encoding=\"utf-8\")\n    service = (package / \"HeptaAccessibilityService.java\").read_text(encoding=\"utf-8\")\n    parts = {\n        \"stop\": section(controller, \"    public void stop(){\", \"    @Override public synchronized void close()\"),\n        \"close_result\": section(controller, \"            LocalInference.TaskCleanup modelCleanup;\", \"            if(completionInstalled!=null)try{completionInstalled.verify(service);}catch(Exception changed){\\n\"),\n        \"cleanup_contract\": section(inference, \"    final class TaskCleanup {\", \"    interface Handle {\"),\n        \"message_helpers\": section(service, \"    static String limited(\", \"\\n}\"),\n    }\n    local_inference = (\n        \"package org.trillionnium.hepta.local;\\n\"\n        \"public interface LocalInference {\\n\"\n        + parts[\"cleanup_contract\"]\n        + \"void cancelTask();\\nTaskCleanup endTask();\\n}\\n\"\n    )\n    fixture = \"\"\"package org.trillionnium.hepta.local;\nimport java.util.concurrent.atomic.AtomicBoolean;\npublic final class ControllerFinalizationFixture {\n    private final LocalInference inference;\n    private final AtomicBoolean cancelled=new AtomicBoolean();\n    private final Object handleLock=new Object();\n    private volatile boolean running=true,blocked;\n    private Handle activeInference;\n    /** Scope/config IO seam; default absent preserves all original 13 cases. */\n    public interface ScopeCheck { void verifyUnchanged() throws Exception; }\n    private ScopeCheck scope;\n    /** Admitted/live Owner authorization seam; actual admission runs in the controller harness. */\n    private interface AuthorizationFrame { boolean successAllowed(); }\n    private interface AuthorizationCheck { void ready(); AuthorizationFrame frame(); }\n    private final AuthorizationCheck authorization=new AuthorizationCheck(){\n        public void ready(){}\n        public AuthorizationFrame frame(){throw new AssertionError(\"legacy fixture has no controller-workflow candidate\");}\n    };\n    public void setScopeCheck(ScopeCheck check){scope=check;}\n    private interface Handle { void cancel(); }\n    private void emit(String value) { /* Android listener fixture; no IO. */ }\n    public ControllerFinalizationFixture(LocalInference inference){this.inference=inference;}\n    public static final class Outcome {\n        public final String status,summary;\n        public final boolean modelSuccess,cleanupKnown,blocked;\n        Outcome(String status,String summary,boolean success,boolean cleanup,boolean blocked){\n            this.status=status;this.summary=summary;this.modelSuccess=success;\n            this.cleanupKnown=cleanup;this.blocked=blocked;\n        }\n    }\n\"\"\" + parts[\"stop\"] + \"\"\"\n    public Outcome finish(String previousStatus,String previousSummary,boolean previousSuccess,\n                          boolean previousCleanup,boolean previouslyBlocked){\n        String taskId=\"33333333333333333333333333333333\";\n        String finalStatus=previousStatus,summary=previousSummary;\n        boolean modelSuccess=previousSuccess,cleanup=previousCleanup,controllerSuccess=false;\n        blocked=previouslyBlocked;\n\"\"\" + parts[\"close_result\"] + \"\"\"\n        running=false;\n        return new Outcome(finalStatus,summary,modelSuccess,cleanup,blocked);\n    }\n}\n\"\"\"\n    service_fixture=\"package org.trillionnium.hepta.local;\\nfinal class HeptaAccessibilityService {\\n\"+parts[\"message_helpers\"]+\"\\n}\\n\"\n    files = []\n    for name, value in ((\"LocalInference.java\", local_inference),\n                        (\"ControllerFinalizationFixture.java\", fixture),\n                        (\"HeptaAccessibilityService.java\", service_fixture)):\n        path = output / name\n        path.write_text(value, encoding=\"utf-8\")\n        files.append(path)\n    digest = lambda value: hashlib.sha256(value).hexdigest()\n    record = {\n        \"scope\": \"Exact production Stop method, endTask/exception handling, post-close scope check, terminal decisions and TaskCleanup; Android UI, model and scope/config IO are fixtures\",\n        \"completion_boundary\": \"Exact production cleanup/status block; controller-workflow candidate is false in this legacy fixture, while the derived terminal and completion identity execute in the full-controller harness\",\n        \"scope_io_default\": \"absent; all original 13 cases retained; configured production checks also run in qualification-scope full-controller harness\",\n        \"controller_sha256\": digest(controller.encode()),\n        \"inference_sha256\": digest(inference.encode()),\n        \"service_sha256\": digest(service.encode()),\n        \"extracted_parts\": {name: {\"bytes\": len(value.encode()), \"sha256\": digest(value.encode())}\n                            for name, value in parts.items()},\n        \"generated_files\": {path.name: digest(path.read_bytes()) for path in files},\n        \"not_android_runtime\": True,\n        \"not_model_inference\": True,\n        \"not_phone_test\": True,\n    }\n    (output / \"EXTRACTION.json\").write_text(json.dumps(record, indent=2) + \"\\n\", encoding=\"utf-8\")\n    return files, record\n",
+      "ordered_replacements": [
+        {
+          "before": "    private volatile boolean running=true,blocked;",
+          "after": "    private volatile boolean running=true,blocked,terminalDecisionSealed;",
+          "count": 1
+        },
+        {
+          "before": "    /** Admitted/live Owner authorization seam; actual admission runs in the controller harness. */\n    private interface AuthorizationFrame { boolean successAllowed(); }\n    private interface AuthorizationCheck { void ready(); AuthorizationFrame frame(); }\n    private final AuthorizationCheck authorization=new AuthorizationCheck(){\n        public void ready(){}\n        public AuthorizationFrame frame(){throw new AssertionError(\"legacy fixture has no controller-workflow candidate\");}\n    };",
+          "after": "    /** Type-only Owner boundary; this legacy fixture cannot create an authorized Frame. */\n    private static final class TaskAuthorization {\n        private interface Frame { boolean successAllowed(); }\n    }\n    private interface AuthorizationCheck { void ready(); TaskAuthorization.Frame frame(); }\n    private final AuthorizationCheck authorization=new AuthorizationCheck(){\n        public void ready(){}\n        public TaskAuthorization.Frame frame(){throw new AssertionError(\"legacy fixture has no controller-workflow candidate\");}\n    };\n    /** Explicit non-Web contract; no helper close proof or Web completion is provided. */\n    private static final class TaskCompletionGate {\n        private static final String WEB=\"web_search_results\";\n        private static final class Contract { private final String kind=\"unverified_goal\"; }\n        private final Contract contract=new Contract();\n    }\n    private final TaskCompletionGate completion=new TaskCompletionGate();",
+          "count": 1
+        }
+      ],
+      "final": {
+        "bytes": 6220,
+        "sha256": "e4ee5ea79e689a2e89d64f5c8092a523e77ab5a337c5965c34a32974d06092e1",
+        "git_blob_sha": "b55a5e693c29035d94e1140c77b299f8fce56d1c"
+      },
+      "final_overlay_entry": {
+        "path": "tests/warm-finalization/prepare_fixture.py",
+        "bytes": 6220,
+        "sha256": "e4ee5ea79e689a2e89d64f5c8092a523e77ab5a337c5965c34a32974d06092e1",
+        "git_blob_sha": "b55a5e693c29035d94e1140c77b299f8fce56d1c",
+        "base": {
+          "git_blob_sha": "07785c82038007af91ba6612d410df5e96d143b2",
+          "bytes": 5713,
+          "sha256": "ae5bccaf044adfb755de0555fdff7d511254a399fb904dc5f103b5a8a36f5bb9"
+        },
+        "raw_utf8": null,
+        "provenance": "Main56 actual Core r1 fixture type completion; original production extraction and Java assertions unchanged."
+      }
+    }
+  ],
+  "final_overlay_order": [
+    "AndroidManifest.xml",
+    "src/org/trillionnium/hepta/local/CsairCalendar.java",
+    "src/org/trillionnium/hepta/local/CsairCityPicker.java",
+    "src/org/trillionnium/hepta/local/CsairFlightForm.java",
+    "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+    "src/org/trillionnium/hepta/local/LocalTaskController.java",
+    "src/org/trillionnium/hepta/local/MiPublicProductPage.java",
+    "src/org/trillionnium/hepta/local/PhoneObservation.java",
+    "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+    "src/org/trillionnium/hepta/local/WebEvidenceClient.java",
+    "src/org/trillionnium/hepta/local/WebEvidenceReceipt.java",
+    "src/org/trillionnium/hepta/local/WebFlightDomain.java",
+    "src/org/trillionnium/hepta/local/WebFlightSession.java",
+    "src/org/trillionnium/hepta/local/WebHelperIdentity.java",
+    "src/org/trillionnium/hepta/local/WebNativeGeometry.java",
+    "src/org/trillionnium/hepta/local/WebRegionNativeBridge.java",
+    "src/org/trillionnium/hepta/local/WebShoppingDomain.java",
+    "src/org/trillionnium/hepta/local/WebTaskDomain.java",
+    "src/org/trillionnium/hepta/local/web/WebShoppingGoal.java",
+    "src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java",
+    "src/org/trillionnium/hepta/webprotocol/WebDomStability.java",
+    "src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+    "src/org/trillionnium/hepta/webprotocol/WebMiActionRegion.java",
+    "src/org/trillionnium/hepta/webprotocol/WebObservedNavigation.java",
+    "src/org/trillionnium/hepta/webprotocol/WebRecoveryPolicy.java",
+    "src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java",
+    "tests/exact-admission/org/json/JSONArray.java",
+    "tests/exact-admission/org/json/JSONObject.java",
+    "tests/qualification-scope/BackgroundObservationFixture.template",
+    "tests/qualification-scope/ServiceFixture.template",
+    "tests/qualification-scope/fixtures/org/json/JSONObject.java",
+    "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/BackgroundSession.java",
+    "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/WebFlightSession.java",
+    "tests/qualification-scope/prepare_fixture.py",
+    "tests/web-flight/legacy-boundary/WebFlightDomain.java",
+    "tests/web-flight/run_query_host_tests.py",
+    "tests/calculator-input/CalculatorInputGuardHostTest.java",
+    "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
+    "tests/completion/TaskCompletionGateHostTest.java",
+    "tests/warm-finalization/prepare_fixture.py"
+  ],
+  "top_level_replacements": [
+    {
+      "key": "status",
+      "before_present": true,
+      "before": "source-only complete Main56 Flight homepage stability and immutable terminal-proof successor; same595 source required for actual Core/Web/Android gates; not compiled, signed, published or installed",
+      "after": "Source-only same595 successor to actual Core56 r1 and Web56 r1 failures: two fixture type hunks and one Shopping evidence-boundary hunk; no successor build/sign/phone pass claimed."
+    },
+    {
+      "key": "overlay_file_count",
+      "before_present": true,
+      "before": 39,
+      "after": 40
+    },
+    {
+      "key": "base_rows_replaced_in_candidate",
+      "before_present": true,
+      "before": 33,
+      "after": 34
+    },
+    {
+      "key": "base_rows_retained_byte_identically",
+      "before_present": true,
+      "before": 556,
+      "after": 555
+    },
+    {
+      "key": "main56_current_successor",
+      "before_present": true,
+      "before": {
+        "schema": "hepta.main56-bounded-flight-stability-source-successor.v1",
+        "actual55_source_commit": "dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e",
+        "reconstruction_base_source_commit": "42d3a0f447807659c0f78c8273edee01dd1b734f",
+        "predecessor_nested_successor_and_frozen_input_fields_are_historical": true,
+        "changed_existing_paths": [
+          "AndroidManifest.xml",
+          "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+          "src/org/trillionnium/hepta/local/LocalTaskController.java",
+          "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+          "src/org/trillionnium/hepta/local/WebFlightSession.java",
+          "tests/completion/TaskCompletionGateHostTest.java",
+          "tests/qualification-scope/BackgroundObservationFixture.template",
+          "tests/qualification-scope/ServiceFixture.template",
+          "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/WebFlightSession.java",
+          "tests/qualification-scope/prepare_fixture.py",
+          "tests/web-flight/run_query_host_tests.py"
+        ],
+        "new_paths": [
+          "src/org/trillionnium/hepta/local/WebFlightNativeStability.java"
+        ],
+        "ordered_hunks_on_existing_paths": 61,
+        "unchanged_actual55_source_rows": 583,
+        "all_other_actual55_source_rows_byte_identical": true,
+        "version_code": 56,
+        "version_name": "0.56.0-flight-stability",
+        "final_source_inventory": {
+          "schema": "bare-array-path-bytes-sha256",
+          "bytes": 103795,
+          "sha256": "4581b1c7cfe27caf4e3d24562072baa511705f3e13205fc8720021bba9cc4512",
+          "git_blob_sha": "89e9aaec004f6b07a7b60b24d9e1fba397e924cc"
+        },
+        "full_inventory": {
+          "bytes": 163370,
+          "sha256": "71ad8ef4ea1023850c950282d57bcae3e73877e5e6a7ad582b58951e1ba7001e",
+          "git_blob_sha": "31cc40c2c8a97aa1b1e01b15805da240a543e052"
+        },
+        "external_web_fixtures": {
+          "composition": {
+            "git": "c27618f05e5d6aaf0af5f38ac7f8dbb261366d5a",
+            "bytes": 51438,
+            "sha256": "a6cbef2e5a4be11aa38a8e5b20f49f65e6b1deaef51fe20ba3153ae0e49c54a1"
+          },
+          "native_stability_cases": {
+            "git": "71c9626ef7ddeafdc4fbd6dd7bc12fc9b1dee443",
+            "bytes": 53708,
+            "sha256": "c787261dd3953bb933560cd19b7ccc6fa0c34c56c122cf018664ce9b12afc2ca"
+          },
+          "source_tree_legacy_composition_unchanged": true
+        },
+        "current_focused39_production_changed": true,
+        "old_focused39_is_not_current_execution_proof": true,
+        "actual_flight_results_provider_ready": false,
+        "actual_business_verified": false,
+        "source_reviews": [
+          "98173deeb9f2b85f9e4ae5e8544607f60b084fe6",
+          "16f4ec635d4ee845b4c120f3ed13a83600a5d46c",
+          "a4be28db3b78686bff6be2ecceffe2b9ca518e9c",
+          "0c35f07f5efb823eaeff503d06cfe810edc96fed"
+        ],
+        "actual_compiled": false,
+        "actual_host_checks_executed": false
+      },
+      "after": {
+        "schema": "hepta.main56-bounded-flight-stability-source-successor.v1",
+        "actual55_source_commit": "dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e",
+        "reconstruction_base_source_commit": "42d3a0f447807659c0f78c8273edee01dd1b734f",
+        "predecessor_nested_successor_and_frozen_input_fields_are_historical": true,
+        "changed_existing_paths": [
+          "AndroidManifest.xml",
+          "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+          "src/org/trillionnium/hepta/local/LocalTaskController.java",
+          "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+          "src/org/trillionnium/hepta/local/WebFlightSession.java",
+          "src/org/trillionnium/hepta/local/WebShoppingDomain.java",
+          "tests/completion/TaskCompletionGateHostTest.java",
+          "tests/qualification-scope/BackgroundObservationFixture.template",
+          "tests/qualification-scope/ServiceFixture.template",
+          "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/WebFlightSession.java",
+          "tests/qualification-scope/prepare_fixture.py",
+          "tests/warm-finalization/prepare_fixture.py",
+          "tests/web-flight/run_query_host_tests.py"
+        ],
+        "new_paths": [
+          "src/org/trillionnium/hepta/local/WebFlightNativeStability.java"
+        ],
+        "ordered_hunks_on_existing_paths": 64,
+        "unchanged_actual55_source_rows": 581,
+        "all_other_actual55_source_rows_byte_identical": true,
+        "version_code": 56,
+        "version_name": "0.56.0-flight-stability",
+        "final_source_inventory": {
+          "schema": "bare-array-path-bytes-sha256",
+          "bytes": 103795,
+          "sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+          "git_blob_sha": "c43a4be934ca00942ceeed086e16fc4b81d3a519"
+        },
+        "full_inventory": {
+          "bytes": 163370,
+          "sha256": "d87173f40a5f2793e077408674f2f8a24b8152d74f5fd01cdcdf5fd403ebd386",
+          "git_blob_sha": "0a548d1541ad07fb4965d7e2d411c16fdff422db"
+        },
+        "external_web_fixtures": {
+          "composition": {
+            "git": "d1052b460b32020a5e7bfb061623d9447a13e597",
+            "bytes": 53410,
+            "sha256": "35c0702df7ff94e261dadbc219bc4afe7ddba8f72cc2cd5ec23f8acb0771f68e"
+          },
+          "native_stability_cases": {
+            "git": "71c9626ef7ddeafdc4fbd6dd7bc12fc9b1dee443",
+            "bytes": 53708,
+            "sha256": "c787261dd3953bb933560cd19b7ccc6fa0c34c56c122cf018664ce9b12afc2ca"
+          },
+          "source_tree_legacy_composition_unchanged": true
+        },
+        "current_focused39_production_changed": true,
+        "old_focused39_is_not_current_execution_proof": true,
+        "actual_flight_results_provider_ready": false,
+        "actual_business_verified": false,
+        "source_reviews": [
+          "98173deeb9f2b85f9e4ae5e8544607f60b084fe6",
+          "16f4ec635d4ee845b4c120f3ed13a83600a5d46c",
+          "a4be28db3b78686bff6be2ecceffe2b9ca518e9c",
+          "0c35f07f5efb823eaeff503d06cfe810edc96fed",
+          "d4636cd0a6b0d2b588d3d29eb208c09eb6bbc7b4",
+          "26e458e65ef259e0fd26c68adbaac558d51cc6dd"
+        ],
+        "actual_compiled": false,
+        "actual_host_checks_executed": false
+      }
+    },
+    {
+      "key": "main56_r1_failure_repair",
+      "before_present": false,
+      "before": null,
+      "after": {
+        "schema": "hepta.main56-observed-core-and-web-failure-repair.v1",
+        "predecessor": {
+          "bytes": 1416544,
+          "sha256": "38baa995ee76520e1a9ff7a14baf51afdbd4f1af53f747ce7a0d114ef4809c90",
+          "git_blob_sha": "660335b7f19f519af4cfd168ebee186f1a4693b9"
+        },
+        "actual_core_r1_failure": {
+          "git_blob_sha": "3274c9f9254450635364967eb3701ad30056910c",
+          "bytes": 8174,
+          "sha256": "df5c72a750e8ffc51fcb798565849157a9fbdfd2386314c305782cf7c96d2dc5"
+        },
+        "actual_core_r1_javac_log": {
+          "git_blob_sha": "7367b41bc7fe35f428fe40698c21da30b0c50284",
+          "bytes": 1567,
+          "sha256": "0fc8f7fb1d2ef48d95903068d5da303dc80d37f9f07c7f4999acc3f314d2ee67"
+        },
+        "actual_web_r1_failure": {
+          "git_blob_sha": "30962e2f30d7b0309aaacd44d67e795e436752ee",
+          "bytes": 29724,
+          "sha256": "f9bf137d294e385c6cd85987a10ba682fdb9bb8415fa51a005e5ff871914eec4"
+        },
+        "actual_web_r1_stderr": {
+          "git_blob_sha": "b437fd9854666141f78911df0a7b53c9de376165",
+          "bytes": 1012,
+          "sha256": "242466b11bebf08dc48246b949fb506dc8bde71bba0c7be798c0fa98d6b0ef75"
+        },
+        "changed_paths": [
+          "src/org/trillionnium/hepta/local/WebShoppingDomain.java",
+          "tests/warm-finalization/prepare_fixture.py"
+        ],
+        "production_changed_paths": [
+          "src/org/trillionnium/hepta/local/WebShoppingDomain.java"
+        ],
+        "test_only_changed_paths": [
+          "tests/warm-finalization/prepare_fixture.py"
+        ],
+        "ordered_hunks": 3,
+        "old_other593_rows_byte_identical": true,
+        "tcg_and_ltc_unchanged": true,
+        "existing_jsonMap_converter_reused": true,
+        "original_unknown_type_and_bounded_deep_freeze_guards_unchanged": true,
+        "old_Java_assertions_unchanged": true,
+        "external_composition_added_assertions": 4,
+        "external_composition_added_cases": 0,
+        "actual_android_compiler_map_changed_paths": [
+          "src/org/trillionnium/hepta/local/WebShoppingDomain.java"
+        ],
+        "actual_compilation_of_successor": false,
+        "all_gate_inputs_must_bind_this_same_source": true,
+        "no_fixture_only_intermediate_run": true,
+        "original_failures_preserved": true,
+        "source_delta_refs": [
+          {
+            "git_blob_sha": "4853e37309edf1c796775007e004fa461f72b0ac",
+            "bytes": 34913,
+            "sha256": "7de95422ab7907e8e5714fb9c910e3af66082dbd03e04098ae1a232408206654"
+          },
+          {
+            "git_blob_sha": "0efa5aec1a01576aa7edb6872e5d4635671321ed",
+            "bytes": 10765,
+            "sha256": "d078f08fafa777736dbe422874180185d7b692b32025baa8c280044bd8a172b0"
+          }
+        ],
+        "external_composition_delta": {
+          "git_blob_sha": "646892f142a8ada4657fcf9613c3f2c8e560fc4e",
+          "bytes": 58894,
+          "sha256": "cd861f247da01c21423e45e77195558e1700a4a2d72efda44ca210cc48cc1b92"
+        },
+        "source_review": {
+          "git_blob_sha": "d4636cd0a6b0d2b588d3d29eb208c09eb6bbc7b4",
+          "bytes": 2163,
+          "sha256": "ee16415eb0cee6c339c7d7880f7c1508ee208977d34edaa5d10dff345a741b82"
+        },
+        "execution": {
+          "host_checks": false,
+          "compiled": false,
+          "signed": false,
+          "published": false,
+          "phone_actions": 0,
+          "actual_results_provider_ready": false,
+          "business_verified": false
+        }
+      }
+    }
+  ],
+  "inventory": {
+    "schema": "hepta.main56-source-candidate-inventory.v1",
+    "expected_file_count": 595,
+    "full_inventory": {
+      "bytes": 163370,
+      "sha256": "d87173f40a5f2793e077408674f2f8a24b8152d74f5fd01cdcdf5fd403ebd386",
+      "git_blob_sha": "0a548d1541ad07fb4965d7e2d411c16fdff422db"
+    },
+    "physical_inventory": {
+      "bytes": 103795,
+      "sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+      "git_blob_sha": "c43a4be934ca00942ceeed086e16fc4b81d3a519"
+    },
+    "full_inventory_order": "lexicographic path code-point",
+    "physical_inventory_order": "Python pathlib.Path lexicographic POSIX-component tuples",
+    "row_keys": [
+      "path",
+      "bytes",
+      "sha256",
+      "git_blob_sha",
+      "mode"
+    ]
+  },
+  "mechanical_checks": {
+    "three_ordered_hunks_forward_reverse_exact": true,
+    "changed_source_rows": 2,
+    "production_rows": 1,
+    "fixture_rows": 1,
+    "other593_rows_byte_identical": true,
+    "aggregate_json_reconstruction": true
+  },
+  "execution": {
+    "host_checks": false,
+    "java_compiled": false,
+    "android_build": false,
+    "phone_actions": 0
+  }
+}

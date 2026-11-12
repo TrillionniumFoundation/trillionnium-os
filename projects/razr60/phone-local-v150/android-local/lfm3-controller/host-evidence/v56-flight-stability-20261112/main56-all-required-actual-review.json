@@ -1,0 +1,258 @@
+{
+  "schema": "hepta.main56-final-source-prepublication-actual-review.v1",
+  "status": "all_required_actual_host_groups_verified_source_CAS_ready",
+  "reviewer": "mobile_models",
+  "source_aggregate": {
+    "bytes": 1427055,
+    "sha256": "c1cc7cc16eef4c3a34131ee719101a69db080b76e72c98f03248036fc6fd628f",
+    "git_blob_sha": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c"
+  },
+  "source_inventory": {
+    "bytes": 103795,
+    "sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+    "git_blob_sha": "c43a4be934ca00942ceeed086e16fc4b81d3a519"
+  },
+  "source_file_count": 595,
+  "expected_prior_head": "dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e",
+  "actual_receipts": {
+    "core101": {
+      "git_blob_sha": "5cb49be79cbf60bb9cfdc34eb24ea6a1a16aace1",
+      "bytes": 9732,
+      "sha256": "778fbfeac89fa330d123207c43e485818b530f77e978247c61f67d9d23ce9a39"
+    },
+    "existing_web": {
+      "git_blob_sha": "a444cbac9951180a7dde73bee2984fdf063ee30a",
+      "bytes": 47337,
+      "sha256": "220ccb705ba17797d7403c26c1a9bcb438f46c8ea83e017c617a343d27232f7c"
+    },
+    "focused39": {
+      "git_blob_sha": "94faa212af37300fa4eee3384cdf382b034aad7e",
+      "bytes": 44408,
+      "sha256": "036e4f7b185a127e457712fcd23b6745d8aac18a04cf64da4035764329efee43"
+    },
+    "android_query40": {
+      "git_blob_sha": "1df64b678e912e1d4b1b0331918f4868eea750d0",
+      "bytes": 203372,
+      "sha256": "b557a981d07fb5a65c39da4abbf0474559035a875831bec820c6b4a55fcc7ece"
+    }
+  },
+  "verification": {
+    "all_four_complete_originals_verified_by_length_sha256_git_blob_sha1": true,
+    "original_raw_json_never_reserialized": true,
+    "all_four_bound_to_same_complete0803_source595_ca246_inventory": true,
+    "core": {
+      "cases": 101,
+      "nested_cases": 18,
+      "host_inputs": 419,
+      "nested_are_within_core": true,
+      "compiler_inputs": 217,
+      "java_sources": 115
+    },
+    "web": {
+      "evidence": {
+        "cases": 80,
+        "assertions": 92
+      },
+      "composition": {
+        "cases": 70,
+        "assertions": 178
+      },
+      "calendar": {
+        "cases": 13,
+        "assertions": 1001
+      },
+      "all70_names_exact": true,
+      "production_sources": 44,
+      "compile_units": 52,
+      "fixtures": 6
+    },
+    "focused": {
+      "java_sources": 51,
+      "pure_sources": 44,
+      "projected_methods": 15,
+      "consumer": {
+        "cases": 20,
+        "assertions": 60
+      },
+      "arm": {
+        "cases": 19,
+        "assertions": 98
+      },
+      "derived_input_verified": true
+    },
+    "android": {
+      "raw_git": "1df64b678e912e1d4b1b0331918f4868eea750d0",
+      "bytes": 203372,
+      "sha256": "b557a981d07fb5a65c39da4abbf0474559035a875831bec820c6b4a55fcc7ece",
+      "source_aggregate": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c",
+      "source_inventory_sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+      "source_count": 595,
+      "compiler_inputs": 217,
+      "java_sources": 115,
+      "classes": 420,
+      "query": {
+        "cases": 40,
+        "assertions": 187,
+        "case_names": [
+          "literal_city_data_is_not_a_verified_route",
+          "matching_form_without_model_actions_cannot_query",
+          "real_class_selection_chain_enables_exact_query_once",
+          "accepted_picker_click_waits_for_native_form_readback",
+          "false_city_outcome_never_confirms",
+          "stale_city_outcome_never_confirms",
+          "date_before_two_city_confirmations_withheld",
+          "wrong_after_city_literal_stays_pending",
+          "dom_city_without_same_native_value_stays_pending",
+          "foreign_native_city_descendant_rejected",
+          "two_cities_without_full_calendar_date_cannot_query",
+          "wrong_after_month_day_stays_pending",
+          "wrong_after_weekday_stays_pending",
+          "date_before_dispatch_end_cannot_confirm",
+          "later_route_change_invalidates_current_query",
+          "later_date_change_invalidates_year_confirmation",
+          "native_field_disappears_query_withheld",
+          "two_adults_are_not_one_adult_query",
+          "disabled_dom_query_cannot_mint_target",
+          "duplicate_native_query_even_disabled_refuses",
+          "another_binding_cannot_import_selection_chain",
+          "navigation_epoch_regression_cannot_import_progress",
+          "query_reservation_is_not_a_dispatch",
+          "second_query_reservation_refused",
+          "actual_query_outcome_and_after_capture_remain_not_results",
+          "false_query_outcome_consumes_attempt",
+          "accepted_query_without_platform_entry_refused",
+          "query_outcome_before_capture_refused",
+          "query_outcome_wrong_model_run_refused",
+          "query_outcome_twice_refused",
+          "unknown_booking_body_is_read_only_pending",
+          "city_airport_combination_not_silently_normalized",
+          "actual_session_dispatch_methods_0",
+          "actual_session_dispatch_methods_1",
+          "actual_session_dispatch_methods_2",
+          "actual_session_dispatch_methods_3",
+          "actual_session_dispatch_methods_4",
+          "actual_session_dispatch_methods_5",
+          "actual_session_dispatch_methods_6",
+          "actual_session_dispatch_methods_7"
+        ],
+        "java_sources": 50,
+        "raw_result": {
+          "path": "/home/alex/hepta-local-007f-20261111/v56-main-p4-android-r1/query40/RESULT.json",
+          "bytes": 36220,
+          "sha256": "e0209a7697bf19342e896cdf97c07c53da9c798a9b0181a901b949f28a28bf0d"
+        }
+      },
+      "external_query_runner": {
+        "repository_path": "tests/web-flight/run_query_host_tests.py",
+        "original": {
+          "bytes": 41005,
+          "sha256": "0f4d983138ed8bcf5f0b622ee4d4063048e83413eafe3586595521f5e1b7eb45",
+          "git_blob_sha": "7b7a23db9302bc63b71f51a4d74d06c34183059d"
+        },
+        "corrected": {
+          "bytes": 41005,
+          "sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10",
+          "git_blob_sha": "c21109afe049ccaf2d664937bd24fb0e5abce4a2"
+        },
+        "count_only_patch": {
+          "before": "    need(len(PURE_PATHS)==45 and len(generated_factories)==3,\"fixed 43 production plus 2 retained plus 3 factory inputs\")",
+          "after": "    need(len(PURE_PATHS)==46 and len(generated_factories)==3,\"fixed 44 production plus 2 retained plus 3 factory inputs\")",
+          "count": 1
+        },
+        "actual_pure_path_count": 46,
+        "actual_production_paths": 44,
+        "total_compiled_java": 50,
+        "source_inventory_modified": false,
+        "test_case_assertions_modified": false,
+        "repository_runner_count_guard_known_incompatible": true,
+        "external_execution_pending_actual_android": false
+      },
+      "tool_steps": 8,
+      "all_steps_normal_zero": true,
+      "source_and_originals_preserved": true,
+      "compiler_map": {
+        "bytes": 34376,
+        "sha256": "2b9e1d971a60d09df7303f050cef40d4b254b016a6f68c272035ec11ef854071",
+        "git_blob_sha": "b5d627b7d692732689d337007816b8635b961933"
+      },
+      "unsigned_apk": {
+        "path": "/home/alex/hepta-local-007f-20261111/v56-main-p4-android-r1/out/hepta-local-0.56.0-unsigned.apk",
+        "bytes": 21020693,
+        "sha256": "d9d6450d27b6b5c33653d8e74e67b25fb7b00c1de77030596980a06959e58a87"
+      },
+      "native_recompiled_here": false,
+      "byte_identical_native_payloads": 17,
+      "parent_elapsed_seconds": 33.112765621975996,
+      "published": false,
+      "signed": false,
+      "phone_tested": false,
+      "actual_flight_results_provider_ready": false
+    },
+    "actual_core_map": {
+      "git_blob_sha": "07cc1ccced2c41df1fcb06e5195650362b3676c0",
+      "bytes": 141875,
+      "sha256": "8d8cf9767861029b1cd4c6bb1143e07ee92296a475a44ae1979db79756233926",
+      "source": "Independently reconstructed complete raw bytes equal the actual Core receipt's whole map pin."
+    },
+    "same_source_byte_identity_not_inferred_from_counts": true,
+    "prior_failed_receipts_and_evidence_unchanged": true,
+    "original_source_trees_unchanged": true,
+    "root_all_four_parent_pty_finished_normal_zero": true,
+    "source_changes_from_actual55": {
+      "modified_existing": 13,
+      "new": 1,
+      "unchanged": 581
+    },
+    "full_previous_repo_tree_read_not_truncated": true
+  },
+  "scope": {
+    "production_flight_results_provider_ready": false,
+    "phone_business_verified": false,
+    "Main56_signed": false,
+    "Main56_installed": false,
+    "Main56_phone_tested": false,
+    "native_recompiled_here": false,
+    "native_libraries_byte_identical_to_signed54": 17,
+    "synthetic_query_or_native_case_pass_not_phone_evidence": true
+  },
+  "external_query_runner": {
+    "repository_path": "tests/web-flight/run_query_host_tests.py",
+    "original": {
+      "bytes": 41005,
+      "sha256": "0f4d983138ed8bcf5f0b622ee4d4063048e83413eafe3586595521f5e1b7eb45",
+      "git_blob_sha": "7b7a23db9302bc63b71f51a4d74d06c34183059d"
+    },
+    "corrected": {
+      "bytes": 41005,
+      "sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10",
+      "git_blob_sha": "c21109afe049ccaf2d664937bd24fb0e5abce4a2"
+    },
+    "count_only_patch": {
+      "before": "    need(len(PURE_PATHS)==45 and len(generated_factories)==3,\"fixed 43 production plus 2 retained plus 3 factory inputs\")",
+      "after": "    need(len(PURE_PATHS)==46 and len(generated_factories)==3,\"fixed 44 production plus 2 retained plus 3 factory inputs\")",
+      "count": 1
+    },
+    "actual_pure_path_count": 46,
+    "actual_production_paths": 44,
+    "total_compiled_java": 50,
+    "source_inventory_modified": false,
+    "test_case_assertions_modified": false,
+    "repository_runner_count_guard_known_incompatible": true,
+    "external_execution_pending_actual_android": false,
+    "actual_result": {
+      "path": "/home/alex/hepta-local-007f-20261111/v56-main-p4-android-r1/query40/RESULT.json",
+      "bytes": 36220,
+      "sha256": "e0209a7697bf19342e896cdf97c07c53da9c798a9b0181a901b949f28a28bf0d"
+    },
+    "actual_cases": 40,
+    "actual_assertions": 187,
+    "repository_test_runner_original_not_claimed_directly_runnable": true,
+    "statement": "The tested repository source remains0803/595. The external corrected runner changes only the one count/description guard, runs the original query40 cases, and is separately retained. No source inventory or original assertion was changed."
+  },
+  "mutation_boundary": {
+    "source_CAS_not_performed_when_this_record_created": true,
+    "host_requests_by_reviewer": 0,
+    "phone_actions_by_reviewer": 0,
+    "publication_MAP_will_record_actual_commit_tree_and_expected_prior_head_after_CAS": true
+  }
+}

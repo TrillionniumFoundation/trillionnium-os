@@ -84,6 +84,7 @@ public final class TaskCompletionGateHostTest {
         public void beginTask(String id){task=id;}
         public TaskCleanup endTask(){
             ends++;
+            if("close_cancelled".equals(mode))e.controller.stop();
             if("close_identity_changed".equals(mode))try{
                 QualificationScopeHostTest.write(Paths.get(e.pm.packages.get(P).applicationInfo.sourceDir),"changed installed bytes after completion".getBytes(StandardCharsets.UTF_8),0644);
             }catch(Exception changed){throw new IllegalStateException(changed);}
@@ -179,7 +180,7 @@ public final class TaskCompletionGateHostTest {
             check(e.controller.start(owner,null,new LocalTaskController.Listener(){public void onState(String v){}public void onFinished(LocalTaskController.TaskResult r){box[0]=r;done.countDown();}}),"ordinary task starts");check(done.await(10,TimeUnit.SECONDS),"ordinary controller finishes");
             LocalTaskController.TaskResult r=box[0];check(r!=null&&r.cleanupKnown&&r.modelReportedSuccess&&r.completionVerified==verified,"raw model claim and independently checked completion separated: "+mode+" / "+(r==null?"null":r.status+" "+r.summary));
             check(m.calls==expectedCalls&&m.ends==1,"bounded continuation and one retained task worker teardown");
-            check((verified?("complete".equals(mode)?"controller_verified_done":"model_reported_done"):"cancel".equals(mode)?"cancelled":("close_invalid_receipt".equals(mode)||"readonly".equals(mode))?"failed":"partial").equals(r.status),"honest terminal status: "+mode+" / "+r.status);
+            check((verified?("complete".equals(mode)?"controller_verified_done":"model_reported_done"):("cancel".equals(mode)||"close_cancelled".equals(mode))?"cancelled":("close_invalid_receipt".equals(mode)||"readonly".equals(mode))?"failed":"partial").equals(r.status),"honest terminal status: "+mode+" / "+r.status);
             JSONObject result=FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("result.json"));check(result.getBoolean("model_reported_success")&&result.getBoolean("completion_verified")==verified,"terminal keeps original native success claim");
             check(result.getBoolean("goal_independently_verified")==verified,"independent goal field follows actual supported completion evidence");
             if("complete".equals(mode)){
@@ -238,6 +239,7 @@ public final class TaskCompletionGateHostTest {
         test("actual_controller_cancel_after_rejection_stops_without_effect",()->controllerCase("cancel","读出当前页面的标题。",false,2));
         test("actual_controller_installed_identity_rechecked_after_close",()->controllerCase("close_identity_changed",OWNER,false,2));
         test("actual_controller_bad_native_close_receipt_cannot_complete",()->controllerCase("close_invalid_receipt",OWNER,false,2));
+        test("actual_controller_cancel_during_worker_teardown_cannot_complete",()->controllerCase("close_cancelled",OWNER,false,2));
         Files.write(output.resolve("TEST-RESULTS.json"),new JSONObject().put("all_pass",true).put("cases",passed).put("checks",passed.size()).put("actual_controller",true).put("android_and_model_io_are_fakes",true).put("phone_tested",false).toString(2).getBytes(StandardCharsets.UTF_8));
     }
 }

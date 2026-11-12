@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.main56-terminal-completion-independent-source-review.v1",
+  "reviewer": "android_background",
+  "status": "no_source_blocker_found_in_scoped_patch_review",
+  "checkpoint": {
+    "git_blob_sha": "d3e32ffa60a9754c48fa254bb0fa93da7113a98a",
+    "bytes": 215812,
+    "sha256": "e97ce4c7daab5927b87c741adbb6010de5f948e3b466d6bbd81df1e7cb18d1b2"
+  },
+  "files": [
+    {
+      "path": "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+      "bytes": 49858,
+      "sha256": "d3d48836bff92e02b8b124caf36ed6a86618da37123429d8f9db3be6e5d819cd",
+      "git_blob_sha": "487960bf567270547407da7b0624f157e5e35464",
+      "ordered_hunks": 11
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "bytes": 116846,
+      "sha256": "68185b0bd3cf17adfb94f62b32a764ce692512ea20b438bbcdca766cff49d167",
+      "git_blob_sha": "9c54638c63c9bdc7a885c633d2de5d702dc1175b",
+      "ordered_hunks": 9
+    }
+  ],
+  "mechanical": {
+    "actual55_base": "d3bf59d91e5681fd5991c4bfef8587ba9a7b2a2d",
+    "ordered_forward_and_reverse_full_bytes_equal": true,
+    "source_sha_and_git_verified": true,
+    "unchanged_regions_exact": true
+  },
+  "findings": [
+    "Only successClaim after finalObservationStable && verified(current) creates the immutable candidate. Existing provider resultReady, same display/generation/observation, OWNER and authorization remain prerequisites. The recursive bounded copy rejects mutable/unsupported or nonfinite values.",
+    "The candidate hashes the actual NotesCompletionEvidence.Frame identity, window/display/generation/metadata and ordered node values. Actual original Frame/Node APIs were read; childText fingerprint binds its text/status/source metadata and visited is separately included. This is the completion Frame projection, not every screenshot/PhoneObservation field.",
+    "beginWebClose requires the same live and claimed WebTaskDomain object, normal reason, lease/task/binding and exact frozen provider evidence. Candidate is consumed before original Session clear. One expected clear-sequence increment is required. Repeated begin/clear, rebind, changed/late observation and later action invalidate it.",
+    "The supplied Session hunk seals the private close proof only after existing typed client.closeLease and persisted journal.closeKnown. Recovered/unstarted/unknown closes cannot seal it. The attempt binds gate/lease/task/binding/closed status/instance/epoch/display/window and records actual callback canonical SHA; failure/finally abort consumes it.",
+    "Live domain is still nulled. verified and webDomainFor reject after retirement starts. Closed proof retains immutable read-only result evidence and does not provide tool/helper/reattach authority.",
+    "LTC uses actual helper and background Cleanup/released facts, same task/OWNER/display/generation, actual endTask process and receipt fields, and rechecks scope/authorization after endTask. It binds accepted native modelRun/step and frozen final Frame. Failed terminal verification demotes provisional Web success.",
+    "stop cancellation and terminal decision share the controller monitor. Cancellation winning first prevents success; a late stop after terminalDecisionSealed does not restart cleanup. Only new admission resets it. No inference or tool action path is added.",
+    "terminalWebCheck consumes closed proof and terminal opportunity even on refusal. Repeated/wrong lease/OWNER/task/frame/native evidence remains unverified and live_observation_verified stays false after close.",
+    "Actual55 WebTaskDomain and existing legacy boundary already expose resultRecord/evidence/promptEvidence; Session and Background terminal reads use existing taskId/released/owner/generation/display APIs. No extra fixture success endpoint is needed."
+  ],
+  "session_integration": {
+    "base_git": "965f8477f109408cef48df5017da2ec48b95b267",
+    "latest_mobile_git": "74a8db87e601cd5e3427dc614bd197184201837e",
+    "scope": "Provided close hunk reviewed; final merged Session raw not yet reviewed here.",
+    "required_retention": "Mobile must preserve latest currentCapture/flightNativePermit/flightNativeCheck cleanup and must not reset permanent per-run attempted set. Do not overwrite current Session with the old-base after block."
+  },
+  "scope_limits": [
+    "No new results provider is implemented by this checkpoint; actual Flight resultReady still depends on separate provider work.",
+    "Source-only review, no javac/host/Android/phone acceptance.",
+    "No original Flight55, failed installation, reconciliation or collector evidence is changed."
+  ],
+  "execution": {
+    "host_calls": 0,
+    "phone_actions": 0,
+    "python_or_javac_executed": false,
+    "tests_rerun": false,
+    "source_modified_by_reviewer": false
+  }
+}

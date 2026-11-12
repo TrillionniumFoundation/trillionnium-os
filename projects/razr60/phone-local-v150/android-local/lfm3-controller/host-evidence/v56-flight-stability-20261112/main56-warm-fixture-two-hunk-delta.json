@@ -1,0 +1,78 @@
+{
+  "schema": "hepta.main56-original-finalization-fixture-closure-delta.v1",
+  "status": "source-only response to actual Core56 r1 javac failure; no execution",
+  "path": "tests/warm-finalization/prepare_fixture.py",
+  "base": {
+    "git_blob_sha": "07785c82038007af91ba6612d410df5e96d143b2",
+    "bytes": 5713,
+    "sha256": "ae5bccaf044adfb755de0555fdff7d511254a399fb904dc5f103b5a8a36f5bb9"
+  },
+  "candidate": {
+    "git_blob_sha": "b55a5e693c29035d94e1140c77b299f8fce56d1c",
+    "bytes": 6220,
+    "sha256": "e4ee5ea79e689a2e89d64f5c8092a523e77ab5a337c5965c34a32974d06092e1",
+    "raw_utf8": "\"\"\"Compile exact production Stop and close-result decisions with explicit IO fixtures.\"\"\"\nimport hashlib\nimport json\nfrom pathlib import Path\n\n\ndef section(text, start, end):\n    if text.count(start) != 1 or text.count(end) != 1:\n        raise RuntimeError(\"production finalization anchors are not unique\")\n    first = text.index(start)\n    return text[first:text.index(end, first)]\n\n\ndef prepare(source, output):\n    source = Path(source)\n    output = Path(output)\n    output.mkdir(parents=True, exist_ok=True)\n    package = source / \"src/org/trillionnium/hepta/local\"\n    controller = (package / \"LocalTaskController.java\").read_text(encoding=\"utf-8\")\n    inference = (package / \"LocalInference.java\").read_text(encoding=\"utf-8\")\n    service = (package / \"HeptaAccessibilityService.java\").read_text(encoding=\"utf-8\")\n    parts = {\n        \"stop\": section(controller, \"    public void stop(){\", \"    @Override public synchronized void close()\"),\n        \"close_result\": section(controller, \"            LocalInference.TaskCleanup modelCleanup;\", \"            if(completionInstalled!=null)try{completionInstalled.verify(service);}catch(Exception changed){\\n\"),\n        \"cleanup_contract\": section(inference, \"    final class TaskCleanup {\", \"    interface Handle {\"),\n        \"message_helpers\": section(service, \"    static String limited(\", \"\\n}\"),\n    }\n    local_inference = (\n        \"package org.trillionnium.hepta.local;\\n\"\n        \"public interface LocalInference {\\n\"\n        + parts[\"cleanup_contract\"]\n        + \"void cancelTask();\\nTaskCleanup endTask();\\n}\\n\"\n    )\n    fixture = \"\"\"package org.trillionnium.hepta.local;\nimport java.util.concurrent.atomic.AtomicBoolean;\npublic final class ControllerFinalizationFixture {\n    private final LocalInference inference;\n    private final AtomicBoolean cancelled=new AtomicBoolean();\n    private final Object handleLock=new Object();\n    private volatile boolean running=true,blocked,terminalDecisionSealed;\n    private Handle activeInference;\n    /** Scope/config IO seam; default absent preserves all original 13 cases. */\n    public interface ScopeCheck { void verifyUnchanged() throws Exception; }\n    private ScopeCheck scope;\n    /** Type-only Owner boundary; this legacy fixture cannot create an authorized Frame. */\n    private static final class TaskAuthorization {\n        private interface Frame { boolean successAllowed(); }\n    }\n    private interface AuthorizationCheck { void ready(); TaskAuthorization.Frame frame(); }\n    private final AuthorizationCheck authorization=new AuthorizationCheck(){\n        public void ready(){}\n        public TaskAuthorization.Frame frame(){throw new AssertionError(\"legacy fixture has no controller-workflow candidate\");}\n    };\n    /** Explicit non-Web contract; no helper close proof or Web completion is provided. */\n    private static final class TaskCompletionGate {\n        private static final String WEB=\"web_search_results\";\n        private static final class Contract { private final String kind=\"unverified_goal\"; }\n        private final Contract contract=new Contract();\n    }\n    private final TaskCompletionGate completion=new TaskCompletionGate();\n    public void setScopeCheck(ScopeCheck check){scope=check;}\n    private interface Handle { void cancel(); }\n    private void emit(String value) { /* Android listener fixture; no IO. */ }\n    public ControllerFinalizationFixture(LocalInference inference){this.inference=inference;}\n    public static final class Outcome {\n        public final String status,summary;\n        public final boolean modelSuccess,cleanupKnown,blocked;\n        Outcome(String status,String summary,boolean success,boolean cleanup,boolean blocked){\n            this.status=status;this.summary=summary;this.modelSuccess=success;\n            this.cleanupKnown=cleanup;this.blocked=blocked;\n        }\n    }\n\"\"\" + parts[\"stop\"] + \"\"\"\n    public Outcome finish(String previousStatus,String previousSummary,boolean previousSuccess,\n                          boolean previousCleanup,boolean previouslyBlocked){\n        String taskId=\"33333333333333333333333333333333\";\n        String finalStatus=previousStatus,summary=previousSummary;\n        boolean modelSuccess=previousSuccess,cleanup=previousCleanup,controllerSuccess=false;\n        blocked=previouslyBlocked;\n\"\"\" + parts[\"close_result\"] + \"\"\"\n        running=false;\n        return new Outcome(finalStatus,summary,modelSuccess,cleanup,blocked);\n    }\n}\n\"\"\"\n    service_fixture=\"package org.trillionnium.hepta.local;\\nfinal class HeptaAccessibilityService {\\n\"+parts[\"message_helpers\"]+\"\\n}\\n\"\n    files = []\n    for name, value in ((\"LocalInference.java\", local_inference),\n                        (\"ControllerFinalizationFixture.java\", fixture),\n                        (\"HeptaAccessibilityService.java\", service_fixture)):\n        path = output / name\n        path.write_text(value, encoding=\"utf-8\")\n        files.append(path)\n    digest = lambda value: hashlib.sha256(value).hexdigest()\n    record = {\n        \"scope\": \"Exact production Stop method, endTask/exception handling, post-close scope check, terminal decisions and TaskCleanup; Android UI, model and scope/config IO are fixtures\",\n        \"completion_boundary\": \"Exact production cleanup/status block; controller-workflow candidate is false in this legacy fixture, while the derived terminal and completion identity execute in the full-controller harness\",\n        \"scope_io_default\": \"absent; all original 13 cases retained; configured production checks also run in qualification-scope full-controller harness\",\n        \"controller_sha256\": digest(controller.encode()),\n        \"inference_sha256\": digest(inference.encode()),\n        \"service_sha256\": digest(service.encode()),\n        \"extracted_parts\": {name: {\"bytes\": len(value.encode()), \"sha256\": digest(value.encode())}\n                            for name, value in parts.items()},\n        \"generated_files\": {path.name: digest(path.read_bytes()) for path in files},\n        \"not_android_runtime\": True,\n        \"not_model_inference\": True,\n        \"not_phone_test\": True,\n    }\n    (output / \"EXTRACTION.json\").write_text(json.dumps(record, indent=2) + \"\\n\", encoding=\"utf-8\")\n    return files, record\n"
+  },
+  "ordered_replacements": [
+    {
+      "before": "    private volatile boolean running=true,blocked;",
+      "after": "    private volatile boolean running=true,blocked,terminalDecisionSealed;",
+      "count": 1
+    },
+    {
+      "before": "    /** Admitted/live Owner authorization seam; actual admission runs in the controller harness. */\n    private interface AuthorizationFrame { boolean successAllowed(); }\n    private interface AuthorizationCheck { void ready(); AuthorizationFrame frame(); }\n    private final AuthorizationCheck authorization=new AuthorizationCheck(){\n        public void ready(){}\n        public AuthorizationFrame frame(){throw new AssertionError(\"legacy fixture has no controller-workflow candidate\");}\n    };",
+      "after": "    /** Type-only Owner boundary; this legacy fixture cannot create an authorized Frame. */\n    private static final class TaskAuthorization {\n        private interface Frame { boolean successAllowed(); }\n    }\n    private interface AuthorizationCheck { void ready(); TaskAuthorization.Frame frame(); }\n    private final AuthorizationCheck authorization=new AuthorizationCheck(){\n        public void ready(){}\n        public TaskAuthorization.Frame frame(){throw new AssertionError(\"legacy fixture has no controller-workflow candidate\");}\n    };\n    /** Explicit non-Web contract; no helper close proof or Web completion is provided. */\n    private static final class TaskCompletionGate {\n        private static final String WEB=\"web_search_results\";\n        private static final class Contract { private final String kind=\"unverified_goal\"; }\n        private final Contract contract=new Contract();\n    }\n    private final TaskCompletionGate completion=new TaskCompletionGate();",
+      "count": 1
+    }
+  ],
+  "actual_failure": {
+    "result": {
+      "git_blob_sha": "3274c9f9254450635364967eb3701ad30056910c",
+      "bytes": 8174,
+      "sha256": "df5c72a750e8ffc51fcb798565849157a9fbdfd2386314c305782cf7c96d2dc5"
+    },
+    "stdout": {
+      "git_blob_sha": "7367b41bc7fe35f428fe40698c21da30b0c50284",
+      "bytes": 1567,
+      "sha256": "0fc8f7fb1d2ef48d95903068d5da303dc80d37f9f07c7f4999acc3f314d2ee67"
+    },
+    "check": "background-client",
+    "original_parent_record_count": 58,
+    "compiler_errors": [
+      "terminalDecisionSealed",
+      "TaskAuthorization.Frame",
+      "completion.contract.kind",
+      "TaskCompletionGate.WEB"
+    ]
+  },
+  "scope": {
+    "original_production_stop_and_close_result_extraction_unchanged": true,
+    "all_existing_Java_test_assertions_unmodified": true,
+    "original_nested_and_parent_runner_unmodified": true,
+    "terminalDecisionSealed_default_false": true,
+    "legacy_controllerSuccess_remains_false": true,
+    "authorization_frame_throws": true,
+    "no_authorized_frame_factory": true,
+    "non_web_contract_kind": "unverified_goal",
+    "WEB_constant_exact_actual_production": "web_search_results",
+    "non_web_contract_needed_because_actual56_kind_check_is_unconditional_inside_authorization_try": true,
+    "web_completion_or_close_proof_not_simulated": true,
+    "actual_full_Web_lifecycle_coverage_not_claimed": true,
+    "generated_type_seams_only": true,
+    "source_file_count_unchanged": 595,
+    "Android_compiler_inputs_unchanged": true,
+    "Java_source_inputs_unchanged": true,
+    "extra_suite_added": false
+  },
+  "mechanical": {
+    "two_hunks_forward_reverse_exact": true,
+    "all_original_extraction_anchors_and_parts_byte_identical": true,
+    "affected_existing_test_file_only": true
+  },
+  "execution": {
+    "host_calls": 0,
+    "python_executed": false,
+    "javac_executed": false,
+    "phone_actions": 0
+  }
+}

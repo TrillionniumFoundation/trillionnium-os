@@ -1,0 +1,127 @@
+{
+  "schema": "hepta.web56-adapter-and-publish-literal-independent-review.v1",
+  "scope": "H0 narrow source/transport review; no host execution, no runtime algorithm re-review, no phone action",
+  "inputs": {
+    "adapter_packet": {
+      "git_blob_sha": "7c4f6ed7b5fee1e4363b02f2300c1595087ae677",
+      "bytes": 163802,
+      "sha256": "fd5f586a1b9282a271e54047cf003c97b4bce48c31dbee8b8fc1817efc56dc41"
+    },
+    "publisher_packet": {
+      "git_blob_sha": "c04ab358890259a25b7521e449c6feca44986292",
+      "bytes": 16061,
+      "sha256": "965829eb48aa24e5512a47990d326eb36d3092bdc63b6e0995ce038a16280afa"
+    },
+    "exact_request": {
+      "git_blob_sha": "5122f53d26ffb238f3e9d03a88ca263b69912e6f",
+      "bytes": 62957,
+      "sha256": "d9d32277d0b10c2681f5b91dbfcf23989a72973ca2607f6b599fc532d9f7b1e2"
+    },
+    "actual55_selected_run_checkpoint": {
+      "git_blob_sha": "8317ddf611718b505895a2563032904ace41fec9",
+      "bytes": 18122,
+      "sha256": "1ec5b51dd5eb8280cc687a71d3e4e53263583fc3556a3b8e9868875fe89730c8"
+    },
+    "actual55_runtime_publisher": {
+      "git_blob_sha": "ca07932af0830c515dcc412d03a71e28265f8692",
+      "bytes": 9626,
+      "sha256": "65e71ea81d2b71bdbad2f666269551e3366ccdaa57d9f97f9b049695c8b8f44d"
+    }
+  },
+  "mechanical": {
+    "runtime_ordered_groups": {
+      "support": 13,
+      "prepare": 4,
+      "run": 4,
+      "prepare_wrapper": 13,
+      "run_wrapper": 13
+    },
+    "publisher9_literal_forward_reverse": true,
+    "all_hashes_and_Git_verified": true,
+    "full_gzip_crc_and_canonical_base64": true,
+    "payload_bytes": 131787,
+    "three_runtime_concat_exact": true,
+    "actual55_run_wrapper_exact_root_selected3532": true,
+    "prepare7Unknown_and_run6Unknown_retained": true,
+    "manifest_main_unknown_helper6_actual_retained": true
+  },
+  "runtime": [
+    {
+      "role": "support",
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v56-r1/web_entry_support.py",
+      "bytes": 70091,
+      "sha256": "40bd9c3d4d6b600396cabc15635688c53c520fc3cec2f9aff19abecdc4af8cde",
+      "git_blob_sha": "52900043c603758dfb4a25765d7c82349fa9d725",
+      "ordered_groups": 13
+    },
+    {
+      "role": "prepare",
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v56-r1/prepare_background_web_v56_r1.py",
+      "bytes": 27543,
+      "sha256": "acbb9427786c8843fcb97607149fc07460f2ef293e179aee7131e8239b54c6f3",
+      "git_blob_sha": "194d4413d87004c68e78949d98e0a2205d139288",
+      "ordered_groups": 4
+    },
+    {
+      "role": "run",
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v56-r1/run_background_web_v56_r1.py",
+      "bytes": 34153,
+      "sha256": "2a971e3c7c8b2237a7e3bb9e9e233487f22e66f5fa961d909636fe609313689b",
+      "git_blob_sha": "0cef345ebc6a070d5b970a5e8f30fde7b729e2f9",
+      "ordered_groups": 4
+    }
+  ],
+  "preserved": {
+    "only_version_schema_identity_pin_and_output_paths_change": true,
+    "original69_byte_owner_and_business_dates_and_cities_unchanged": true,
+    "ordinary_prepare_fresh_fullframe_review_normal_owner_close_independent_RUN_required": true,
+    "existing_lock_current_selection_identity_and_no_retry_checks_unchanged": true,
+    "collector_whole_task_tree_function_unchanged": true,
+    "new_web_flight_native_stability_records_in_existing_whole_task_collection": true,
+    "source_publisher_IO_temp_link_and_readback_algorithm_unchanged": true,
+    "publication_is_per_file_atomic_partial_failure_possible": true,
+    "RELEASE_and_wrappers_not_in_runtime_publish_payload": true,
+    "no_import_or_child_or_phone_in_publisher": true
+  },
+  "late_bindings": {
+    "manifest_controller": [
+      "uid",
+      "version_name",
+      "apk.path",
+      "apk.bytes",
+      "apk.sha256",
+      "signed_result.path",
+      "signed_result.bytes",
+      "signed_result.sha256",
+      "source_inventory_sha256"
+    ],
+    "manifest_status": "sealed only after actual signed and installed identities are bound",
+    "prepare": [
+      "OWNER_ROOT",
+      "OWNER_PID",
+      "OWNER_START_TICKS",
+      "OWNER_BOOT_ID",
+      "APK_SHA256",
+      "EXPECTED_UID",
+      "RELEASE_MANIFEST_SHA256"
+    ],
+    "run": [
+      "PREPARATION_SHA256",
+      "REVIEW_SHA256",
+      "PREPARED_SCREEN_SHA256",
+      "PREPARED_WINDOW_SHA256",
+      "START_TAP",
+      "RELEASE_MANIFEST_SHA256"
+    ]
+  },
+  "finding": {
+    "source_blocker": null,
+    "Main56_signed_and_installed_facts_still_unknown": true,
+    "Root_visual_and_normal_owner_close_not_inferred": true,
+    "actual_business_verified": false,
+    "actual_results_provider_ready": false,
+    "host_calls": 0,
+    "python_compiled": false,
+    "phone_actions": 0
+  }
+}

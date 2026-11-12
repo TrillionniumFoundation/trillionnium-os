@@ -1,0 +1,144 @@
+{
+  "schema": "hepta.root-flight55-runtime-hardware-observation.v1",
+  "task_id": "6dfcaf6cbb3f4252b472f9cf6f80b5cc",
+  "original_bundle_git": "c7002d09283cfe166dfa76fcdee0f98c1bb0d584",
+  "original_stderr": {
+    "path": "runs/c84accb2d1b54d89a13fffbd32317cd3/stderr.log",
+    "bytes": 48897,
+    "sha256": "213cc0115859e83b80ba9708160d23b0bd7e6cf163f64b759338c592e47c0de6",
+    "encoding": "Original full bytes are base64 preserved because the whole stderr contains an invalid UTF8 sequence."
+  },
+  "display_transform": "Selected original lines with ANSI SGR color sequences removed for readability only; no original bytes changed.",
+  "lines": [
+    {
+      "line_number": 215,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] ggml-hex: Hexagon backend (experimental) : allocating new registry : ndev 2"
+    },
+    {
+      "line_number": 216,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] ggml-hex: Hexagon Arch version v79, DMA64 disabled"
+    },
+    {
+      "line_number": 217,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] ggml-hex: device 0: HTP0 (phys=0, virt=0, domain=cdsp:3)"
+    },
+    {
+      "line_number": 218,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] ggml-hex: device 1: HTP1 (phys=0, virt=1, domain=cdsp:3)"
+    },
+    {
+      "line_number": 224,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] ggml-hex: HTP0 hwinfo: threads 6, hvx 6, hmx 1, vtcm 8 MB"
+    },
+    {
+      "line_number": 225,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] ggml-hex: HTP0 new session : session-id 0 domain-id 3 uri file:///libggml-htp-v79.so?htp_iface_skel_handle_invoke&_modver=1.0&_dom=cdsp&_session=0 handle 0xb4000079c3da8690"
+    },
+    {
+      "line_number": 226,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] ggml-hex: HTP0 op batching: n-bufs 64 n-tensors 8206 n-ops 2048 vmem 3347161088"
+    },
+    {
+      "line_number": 227,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] ggml-hex: HTP0 power mode: sustained_high_performance"
+    },
+    {
+      "line_number": 228,
+      "display_text": "[ INFO] [plugins/llama_cpp/src/params.cpp:397:resolve_devices] Found device: HTP0"
+    },
+    {
+      "line_number": 229,
+      "display_text": "[ INFO] [plugins/llama_cpp/src/params.cpp:405:resolve_devices] Using 1 device(s): HTP0"
+    },
+    {
+      "line_number": 284,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] llama_prepare_model_devices: using device HTP0 (Hexagon) (unknown id) - 0 MiB free"
+    },
+    {
+      "line_number": 354,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] load_tensors: offloaded 25/25 layers to GPU"
+    },
+    {
+      "line_number": 355,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] load_tensors:          CPU model buffer size =   205.08 MiB"
+    },
+    {
+      "line_number": 356,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] load_tensors:         HTP0 model buffer size =  1006.99 MiB"
+    },
+    {
+      "line_number": 357,
+      "display_text": "[ INFO] [plugins/llama_cpp/src/params.cpp:147:build_context_params] [Optimise] context params: n_ctx=8192, n_batch=2048, n_ubatch=1024, n_seq_max=1, n_threads=4, n_threads_batch=4, flash_attn_type=1, swa_full=false, kv_unified=false, no_perf=false, n_rs_seq=0, n_outputs_max=0, n_outputs_max_per_seq=1"
+    },
+    {
+      "line_number": 362,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] llama_context: n_batch               = 2048"
+    },
+    {
+      "line_number": 363,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] llama_context: n_ubatch              = 1024"
+    },
+    {
+      "line_number": 373,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] llama_context:        CPU  output buffer size =     0.49 MiB"
+    },
+    {
+      "line_number": 375,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] llama_kv_cache:       HTP0 KV buffer size =    96.00 MiB"
+    },
+    {
+      "line_number": 380,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] llama_kv_cache:       HTP0 KV buffer size =    12.50 MiB"
+    },
+    {
+      "line_number": 384,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] llama_memory_recurrent:       HTP0 RS buffer size =     0.61 MiB"
+    },
+    {
+      "line_number": 391,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] sched_reserve:       HTP0 compute buffer size =   640.59 MiB"
+    },
+    {
+      "line_number": 392,
+      "display_text": "[DEBUG] [plugins/llama_cpp/src/plugin.cpp:52:ggml_to_geniex_log] sched_reserve:        CPU compute buffer size =    50.55 MiB"
+    }
+  ],
+  "interpretation": {
+    "reported_hexagon_arch": "v79",
+    "dma64_enabled": false,
+    "selected_backend": "HTP0",
+    "reported_runtime_threads": 6,
+    "reported_hvx_threads": 6,
+    "reported_hmx_units": 1,
+    "reported_vtcm_mb": 8,
+    "enumerated_session_mapping": [
+      {
+        "backend": "HTP0",
+        "phys": 0,
+        "virt": 0
+      },
+      {
+        "backend": "HTP1",
+        "phys": 0,
+        "virt": 1
+      }
+    ],
+    "logged_offload_layers": 25,
+    "logged_gpu_word_identifies_hexagon_backend_here": true,
+    "adreno_execution_proven": false,
+    "all_operators_on_npu_proven": false,
+    "hardware_profiler_run": false,
+    "power_or_thermal_measurement": false,
+    "cpu_model_buffer_mib": 205.08,
+    "htp_model_buffer_mib": 1006.99,
+    "htp_kv_buffer_mib": [
+      96,
+      12.5
+    ],
+    "htp_recurrent_buffer_mib": 0.61,
+    "htp_compute_buffer_mib": 640.59,
+    "cpu_compute_buffer_mib": 50.55,
+    "buffer_sum_is_process_peak_rss": false
+  },
+  "phone_actions": 0
+}
