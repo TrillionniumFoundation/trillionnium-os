@@ -26,6 +26,7 @@ jobs:
     env:
       HEPTA_SOURCE: projects/razr60/phone-local-v150/android-local/lfm3-controller
       HEPTA_RUNTIME_SOURCE: hepta-runtime-producer/projects/razr60/phone-local-v150/android-local/lfm3-controller
+      HEPTA_SDK_FETCH_SOURCE: hepta-sdk-fetch-source/projects/razr60/phone-local-v150/android-local/lfm3-controller
       PYTHONDONTWRITEBYTECODE: '1'
       SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     defaults:
@@ -42,6 +43,12 @@ jobs:
         with:
           ref: cc4a7035760383a126e4510002139d88667e0b97
           path: hepta-runtime-producer
+          persist-credentials: false
+      - name: Check out the original fixed SDK fetcher independently
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 815e203fda5edb1cc5b6ef799cfc7559c288025a
+          path: hepta-sdk-fetch-source
           persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
@@ -64,6 +71,19 @@ jobs:
             --consumer-root "$GITHUB_WORKSPACE" --producer-root "$GITHUB_WORKSPACE/hepta-runtime-producer" \
             --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
             > "$RUNNER_TEMP/hepta-runtime-source-pair.json"
+      - name: Verify the unchanged SDK transport and its fixed source
+        run: |
+          python -B - <<'PY'
+          import os
+          from pathlib import Path
+          import runpy
+          root = Path(os.environ["GITHUB_WORKSPACE"])
+          helper = root / "projects/razr60/phone-local-v150/android-local/validation/geniex-ci-transport-v1/fetch_verified_runtime.py"
+          api = runpy.run_path(str(helper), run_name="hepta_sdk_transport_preflight")
+          api["verify_helper_closure"](helper.parent)
+          api["load_frozen_source"](root / os.environ["HEPTA_SDK_FETCH_SOURCE"])
+          print("Original SDK transport closure and fixed fetch source admitted.")
+          PY
       - name: Install and identify the original macOS NDK compiler
         run: |
           hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"
@@ -110,10 +130,13 @@ jobs:
       - name: Test fixed UI-Venus source and transfer binding contracts
         working-directory: hepta-runtime-producer/projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v1
         run: python -B -m unittest -v test_rebuild_and_verify.py
+      - name: Test the unchanged fixed-release transport adapter
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/geniex-ci-transport-v1
+        run: python -B -m unittest -v test_fetch_verified_runtime.py
       - name: Fetch and verify the fixed SDK for the independent UI-Venus build
         run: |
           python -B projects/razr60/phone-local-v150/android-local/validation/geniex-ci-transport-v1/fetch_verified_runtime.py \
-            --source "$GITHUB_WORKSPACE/$HEPTA_RUNTIME_SOURCE" \
+            --source "$GITHUB_WORKSPACE/$HEPTA_SDK_FETCH_SOURCE" \
             --destination "$RUNNER_TEMP/hepta-ui-venus-geniex" \
             --receipt "$RUNNER_TEMP/hepta-ui-venus-geniex-transport.json"
       - name: Rebuild and bind the exact ordinary-App UI-Venus worker on macOS
@@ -174,6 +197,7 @@ jobs:
     env:
       HEPTA_SOURCE: projects/razr60/phone-local-v150/android-local/lfm3-controller
       HEPTA_RUNTIME_SOURCE: hepta-runtime-producer/projects/razr60/phone-local-v150/android-local/lfm3-controller
+      HEPTA_SDK_FETCH_SOURCE: hepta-sdk-fetch-source/projects/razr60/phone-local-v150/android-local/lfm3-controller
       PYTHONDONTWRITEBYTECODE: '1'
       SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     defaults:
@@ -190,6 +214,12 @@ jobs:
         with:
           ref: cc4a7035760383a126e4510002139d88667e0b97
           path: hepta-runtime-producer
+          persist-credentials: false
+      - name: Check out the original fixed SDK fetcher independently
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 815e203fda5edb1cc5b6ef799cfc7559c288025a
+          path: hepta-sdk-fetch-source
           persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
@@ -212,6 +242,19 @@ jobs:
             --consumer-root "$GITHUB_WORKSPACE" --producer-root "$GITHUB_WORKSPACE/hepta-runtime-producer" \
             --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
             > "$RUNNER_TEMP/hepta-runtime-source-pair.json"
+      - name: Verify the unchanged SDK transport and its fixed source
+        run: |
+          python -B - <<'PY'
+          import os
+          from pathlib import Path
+          import runpy
+          root = Path(os.environ["GITHUB_WORKSPACE"])
+          helper = root / "projects/razr60/phone-local-v150/android-local/validation/geniex-ci-transport-v1/fetch_verified_runtime.py"
+          api = runpy.run_path(str(helper), run_name="hepta_sdk_transport_preflight")
+          api["verify_helper_closure"](helper.parent)
+          api["load_frozen_source"](root / os.environ["HEPTA_SDK_FETCH_SOURCE"])
+          print("Original SDK transport closure and fixed fetch source admitted.")
+          PY
       - name: Run host contracts
         working-directory: ${{ env.HEPTA_SOURCE }}
         run: python -B tools/run_host_checks.py --out "$RUNNER_TEMP/hepta-host-checks"
@@ -264,7 +307,7 @@ jobs:
       - name: Verify and extract pinned GenieX runtime
         working-directory: ${{ env.HEPTA_SOURCE }}
         run: |
-          python -B "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/geniex-ci-transport-v1/fetch_verified_runtime.py" --source . --destination "$RUNNER_TEMP/hepta-geniex" --receipt "$RUNNER_TEMP/hepta-geniex-transport.json"
+          python -B "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/geniex-ci-transport-v1/fetch_verified_runtime.py" --source "$GITHUB_WORKSPACE/$HEPTA_SDK_FETCH_SOURCE" --destination "$RUNNER_TEMP/hepta-geniex" --receipt "$RUNNER_TEMP/hepta-geniex-transport.json"
           printf '%s\n' "GENIEX_ANDROID_LIB_DIR=$RUNNER_TEMP/hepta-geniex/lib" >> "$GITHUB_ENV"
       - name: Compile Android Java and arm64 runner
         working-directory: ${{ env.HEPTA_SOURCE }}

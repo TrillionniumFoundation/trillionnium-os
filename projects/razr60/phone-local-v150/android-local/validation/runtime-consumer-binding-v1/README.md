@@ -79,3 +79,25 @@ not changed by this patch. A draft consolidation PR may include the current
 App ancestry; it must report that inherited scope and obtain fresh exact-head
 and prospective-merge checks. Neither a historical green run nor this source
 adapter authorizes merging, Android installation or release.
+
+## Original SDK transport source
+
+The first real run of this adapter rebuilt and bound the original MNN runtime
+successfully, then the unchanged GenieX transport correctly rejected its fetch
+module's source hash. Commit cc4a703 preserves the SDK archive and core-library
+pins but adds a response-retry implementation to fetch_pinned_runtime.py.
+The older transport intentionally admits the original 3fd70e3fbe4e5f617a2cbab08bd703dd4795137c9d9562936cf996a9fe77f05c module.
+
+Both jobs therefore check out the exact public source
+815e203fda5edb1cc5b6ef799cfc7559c288025a separately for this one fixed fetcher.
+The original transport, its four-file helper closure, source hash check, bounded
+official endpoints, full archive/core verification and extractor remain unchanged.
+An early offline admission check catches a wrong source before native rebuilding.
+The original transport regressions also run on macOS.
+
+This third checkout supplies only the authenticated SDK download/extraction
+operation; it is neither the current App nor the MNN/UI-Venus producer. SDK
+version 0.10.0, the 98,545,327-byte archive, archive SHA-256 248b49c83bc74238babc0d9ebf46f0c8b6d2e9b6de3ffb90c2a5a2042523831f
+and core-library SHA-256 99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56
+are identical to the current consumer and fixed runtime producer. The original
+UI builder and current App assembler independently verify the actual libraries.
