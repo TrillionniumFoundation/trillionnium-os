@@ -8100,9 +8100,9 @@
       "sha256": "6e9ed02fe558da807c9a0b0c2388134d69d959c6dddaa443d9037fafb2ec3697"
     },
     {
-      "bytes": 8544,
+      "bytes": 8601,
       "path": "tests/web-flight/WebFatalCaptureHostTest.java.template",
-      "sha256": "f5cee815833f567b62f6fcf0212daaf0ec160b2d588413e2ed617ff3b7ab010a"
+      "sha256": "bd24848dc42c5afd6c27f1df10d1320b3c8dbafdb76f3e033b54aac0fe99af20"
     },
     {
       "bytes": 20606,

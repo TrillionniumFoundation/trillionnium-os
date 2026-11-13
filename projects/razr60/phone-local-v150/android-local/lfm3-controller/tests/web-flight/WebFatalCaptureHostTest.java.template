@@ -47,6 +47,7 @@ public final class WebFatalCaptureHostTest {
         PhoneObservation current=new PhoneObservation("previous");
         Object currentCapture=new Object(),flightNativePermit=new Object(),flightNativeCheck=new Object();
         WebTaskDomain domain=new WebTaskDomain();
+        WebShoppingQuote.Pending shoppingReadCompletion;
         String dispatchCheckedRun="previous-run",dispatchCheckedAction="previous-action";
         long dispatchCheckedAt=123;
         boolean failRecord;
