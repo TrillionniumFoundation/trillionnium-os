@@ -1,0 +1,203 @@
+package org.trillionnium.hepta.local;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import org.json.*;
+import org.trillionnium.hepta.webprotocol.*;
+
+/** Exact production observe/sameFrame bodies with explicit service/client/publisher boundaries.
+ * Original DOM/capture geometry is replayed; no live NodeRef/native token is reconstructed. */
+public final class FlightObservationSessionHost {
+    private boolean retired,failRecord;
+    private final Cancellation cancellation=new Cancellation();
+    private final String taskId="b350fd8665b640608093602b1e6a9f14";
+    private Object goal=new Object(),authorization=new Object();
+    private final Purpose purpose=new Purpose();
+    private final HeptaAccessibilityService service=new HeptaAccessibilityService();
+    private Client client;
+    private final Completion completion=new Completion();
+    private JSONObject immutableBinding,lastRecord;
+    private long loadingDocumentStarted,dispatchCheckedAt;
+    private PhoneObservation current;
+    private WebEvidenceReceipt currentCapture;
+    private WebTaskDomain domain;
+    private Object flightNativePermit=new Object(),flightNativeCheck=new Object();
+    private String dispatchCheckedRun="old-run",dispatchCheckedAction="old-action";
+    private PhoneObservation before,after;
+    private static final class Purpose {String sitePolicyId=WebTaskPurpose.FLIGHT_POLICY_ID;}
+    private static final class Cancellation {boolean cancelled;boolean isCancelled(){return cancelled;}}
+    interface Observer {PhoneObservation observe()throws Exception;}
+    private static final class State {String appTreeSha256;State(String tree){appTreeSha256=tree;}}
+    private static final class WindowMetadata {Integer displayId;WindowMetadata(int id){displayId=id;}}
+    private static final class PhoneObservation {
+        String id,packageName,treeSha256,backgroundGeneration;int windowId,rotation;State state;WindowMetadata windowMetadata;
+        PhoneObservation(String id,JSONObject capture,String tree)throws Exception{
+            this.id=id;packageName=WebEvidenceProtocol.HELPER_PACKAGE;windowId=capture.getInt("actual_window_id");rotation=0;
+            treeSha256=tree;state=new State(tree);windowMetadata=new WindowMetadata(capture.getInt("display_id"));
+            backgroundGeneration=capture.getJSONObject("binding").getJSONObject("background").getString("generation");
+        }
+    }
+    private static final class WebEvidenceReceipt {
+        final JSONObject original;final String status="captured",bindingSha,instance,url,domSha;
+        final long epoch;final int displayId,windowId;
+        WebEvidenceReceipt(JSONObject capture)throws Exception{
+            original=new JSONObject(capture.toString());bindingSha=WebDomCanonical.sha256(original.getJSONObject("binding"));
+            instance=original.getString("webview_instance");epoch=original.getLong("navigation_epoch");
+            url=original.getString("current_native_url");displayId=original.getInt("display_id");windowId=original.getInt("actual_window_id");
+            domSha=original.getString("dom_sha256");
+        }
+        String domRaw(){return original.getString("dom_raw_utf8");}
+        String beforeDomRaw(){return original.getString("before_dom_raw_utf8");}
+        JSONObject dom()throws Exception{return WebEvidenceJson.parseDom(domRaw());}
+        JSONObject capture(){return new JSONObject(original.toString());}
+        JSONObject callback(){return new JSONObject().put("request_nonce",original.getString("challenge"));}
+        WebDomStability.Result stability()throws Exception{
+            return WebDomStability.verify(beforeDomRaw(),domRaw(),WebTaskPurpose.FLIGHT_POLICY_ID,original.getJSONObject("dom_stability"));
+        }
+    }
+    private static final class Client {
+        final WebEvidenceReceipt first,last;int calls;
+        Client(JSONObject a,JSONObject b)throws Exception{first=new WebEvidenceReceipt(a);last=new WebEvidenceReceipt(b);}
+        WebEvidenceReceipt capture(long deadline){if(++calls>2)throw new AssertionError("unbounded capture retry");return calls==1?first:last;}
+    }
+    private static final class WebTaskDomain {
+        static WebTaskDomain observed(String task,Purpose purpose,Object authorization,PhoneObservation frame,
+                WebEvidenceReceipt capture,JSONObject binding){return new WebTaskDomain();}
+        String evidence(){return "{}";}
+    }
+    private static final class Completion {int bound;void bindWebDomain(WebTaskDomain d){bound++;}}
+    private static final class HeptaAccessibilityService {
+        boolean sourcePresent=true,rejectNative;int verifies,retains;
+        FlightObservationSnapshot lastSource;
+        static final class FlightObservationSnapshot {boolean closed;void close(){closed=true;}}
+        void requireBackgroundObservation(String task,PhoneObservation frame){if(frame==null)throw new IllegalStateException("missing frame");}
+        FlightObservationSnapshot retainFlightObservation(FlightObservationSessionHost web,PhoneObservation frame,
+                Cancellation cancel,long deadline){retains++;return lastSource=sourcePresent?new FlightObservationSnapshot():null;}
+        JSONObject verifyFlightObservationBracket(FlightObservationSessionHost web,FlightObservationSnapshot source,
+                PhoneObservation after,WebEvidenceReceipt first,WebEvidenceReceipt last,Cancellation cancel,long deadline)throws Exception{
+            verifies++;
+            if(rejectNative)throw new IllegalStateException("instrumented native authority rejection");
+            // The real service's native traversal is deliberately not fabricated in this harness.
+            // Only the original pure DOM/geometry part executes here; lifecycle/native guards have separate tests.
+            JSONObject domProof=WebFlightNativeStability.compareDom(first.dom(),last.dom());
+            WebNativeGeometry a=WebNativeGeometry.read(first.capture(),first.dom(),first.displayId,first.windowId,first.stability());
+            WebNativeGeometry b=WebNativeGeometry.read(last.capture(),last.dom(),last.displayId,last.windowId,last.stability());
+            need(a!=null&&b!=null&&a.same(b),"actual capture geometry differs");
+            return new JSONObject().put("schema","test.instrumented-native-read-boundary")
+                    .put("purpose","readonly_current_page_observation").put("dom",domProof)
+                    .put("action_permit_created",false).put("business_verified",false);
+        }
+    }
+    private boolean retryLoadingDocument(WebEvidenceReceipt first,WebEvidenceReceipt last,PhoneObservation frame,
+            boolean stable,long deadline){return false;}
+    private PhoneObservation publishWaiting(PhoneObservation frame,WebEvidenceReceipt receipt,String reason){throw new AssertionError("unexercised waiting boundary");}
+    private WebTaskDomain applyNavigation(WebTaskDomain d){return d;}
+    private void record(String name,JSONObject value)throws Exception{
+        if(failRecord)throw new java.io.IOException("instrumented record failure");lastRecord=new JSONObject(value.toString());
+    }
+    private static void need(boolean condition,String reason){WebEvidenceJson.need(condition,reason);}
+
+    /* EXACT_PRODUCTION_METHODS */
+
+    static int cases,assertions;static final JSONArray names=new JSONArray();
+    interface Work{void run()throws Exception;}
+    static void check(boolean yes,String why){assertions++;if(!yes)throw new AssertionError(why);}
+    static void test(String name,Work work)throws Exception{work.run();cases++;names.put(name);}
+    static void denied(Work work)throws Exception{
+        boolean refused=false;try{work.run();}catch(IllegalArgumentException|IllegalStateException|JSONException|java.io.IOException expected){refused=true;}
+        check(refused,"invalid observation published");
+    }
+    static FlightObservationSessionHost fixture(JSONObject first,JSONObject last,boolean same)throws Exception{
+        FlightObservationSessionHost f=new FlightObservationSessionHost();f.client=new Client(first,last);
+        f.immutableBinding=first.getJSONObject("binding");f.before=new PhoneObservation("before",first,"native-first");
+        f.after=new PhoneObservation("after",last,same?"native-first":"native-last");return f;
+    }
+    PhoneObservation run()throws Exception{return observe(before,()->after,Long.MAX_VALUE);}
+    static JSONObject alteredDom(JSONObject source,String path,String key,Object value)throws Exception{
+        JSONObject dom=new JSONObject(source.toString());JSONArray nodes=dom.getJSONArray("nodes");
+        for(int i=0;i<nodes.length();i++)if(path.equals(nodes.getJSONObject(i).getString("path"))){nodes.getJSONObject(i).put(key,value);return dom;}
+        throw new AssertionError("missing actual fixture path");
+    }
+    static JSONObject read(Path path)throws Exception{return new JSONObject(new String(Files.readAllBytes(path),StandardCharsets.UTF_8));}
+    public static void main(String[] args)throws Exception{
+        Path fixtureDir=Paths.get(args[0]);JSONObject index=read(fixtureDir.resolve("PROVENANCE.json"));JSONArray files=index.getJSONArray("files");
+        JSONObject first=read(fixtureDir.resolve(files.getJSONObject(0).getString("path"))).getJSONObject("capture");
+        JSONObject last=read(fixtureDir.resolve(files.getJSONObject(1).getString("path"))).getJSONObject("capture");
+        JSONObject firstDom=WebEvidenceJson.parseDom(first.getString("dom_raw_utf8")),lastDom=WebEvidenceJson.parseDom(last.getString("dom_raw_utf8"));
+        test("actual_captures_each_remain_full_raw_stable_and_geometry_equal",()->{
+            WebEvidenceReceipt a=new WebEvidenceReceipt(first),b=new WebEvidenceReceipt(last);
+            check(a.stability().rawEqual&&b.stability().rawEqual,"actual per-capture instability");
+            check(!a.domRaw().equals(b.domRaw()),"original failure fixture changed");
+            // Same checked-result overload used by production Session. The host
+            // JSON-java Map constructor drops Java-null entries, unlike Android's
+            // JSONObject; this test therefore does not claim authenticated binding replay.
+            WebNativeGeometry x=WebNativeGeometry.read(a.capture(),a.dom(),a.displayId,a.windowId,a.stability());
+            WebNativeGeometry y=WebNativeGeometry.read(b.capture(),b.dom(),b.displayId,b.windowId,b.stability());
+            check(x!=null&&y!=null&&x.same(y),"actual geometry replay failed");
+        });
+        test("old_generic_failure_preserved_and_existing_flight_scope_accepts_originals",()->{
+            denied(()->WebDomStability.evaluate(first.getString("dom_raw_utf8"),last.getString("before_dom_raw_utf8"),WebTaskPurpose.FLIGHT_POLICY_ID));
+            JSONObject proof=WebFlightNativeStability.compareDom(firstDom,lastDom);
+            check(proof.getDouble("horizontal_translation_css_pixels")==-400&&proof.getJSONArray("changes").length()==17,"unexpected actual DOM scope");
+            check(proof.getBoolean("all_other_dom_records_equal")&&!proof.getBoolean("business_verified"),"scope overclaimed");
+        });
+        test("actual_changed_ax_and_dom_execute_strong_readonly_branch_and_publish",()->{
+            FlightObservationSessionHost f=fixture(first,last,false);check(f.run()==f.after,"wrong published frame");
+            check(f.service.verifies==1&&f.completion.bound==1&&f.service.lastSource.closed,"native proof skipped or source leaked");
+            check(f.lastRecord.isNull("between_captures_dom_stability")&&!f.lastRecord.getBoolean("same_lease_epoch_and_equal_dom_bracket"),"generic/equality proof invented");
+            check(!f.lastRecord.getBoolean("readonly_native_observation_proof_grants_action")&&f.flightNativePermit==null&&f.flightNativeCheck==null,"observation minted action authority");
+            check(f.dispatchCheckedRun==null&&f.dispatchCheckedAction==null&&f.dispatchCheckedAt==0,"prior dispatch authority carried forward");
+        });
+        test("same_ax_frame_with_actual_slider_dom_change_still_requires_strong_service_read",()->{
+            FlightObservationSessionHost f=fixture(first,last,true);f.run();check(f.service.verifies==1&&f.completion.bound==1,"same-frame shortcut bypassed native proof");
+        });
+        test("native_authority_rejection_cannot_publish",()->{
+            FlightObservationSessionHost f=fixture(first,last,false);f.service.rejectNative=true;denied(f::run);
+            check(f.service.verifies==1&&f.completion.bound==0&&f.currentCapture==null&&f.service.lastSource.closed,"native rejection ignored or source leaked");
+        });
+        test("missing_private_source_cannot_publish",()->{
+            FlightObservationSessionHost f=fixture(first,last,false);f.service.sourcePresent=false;denied(f::run);
+            check(f.service.verifies==0&&f.completion.bound==0,"missing native source accepted");
+        });
+        for(String key:new String[]{"webview_instance","navigation_epoch","current_native_url","display_id","actual_window_id"}){
+            test("changed_capture_identity_rejected_"+key,()->{
+                JSONObject changed=new JSONObject(last.toString());Object original=changed.get(key);
+                changed.put(key,original instanceof Number?((Number)original).longValue()+1:"changed:"+original);
+                FlightObservationSessionHost f=fixture(first,changed,false);denied(f::run);
+                check(f.service.verifies==0&&f.completion.bound==0&&f.service.lastSource.closed,"foreign capture entered proof/publisher");
+            });
+        }
+        test("changed_capture_binding_rejected_before_proof",()->{
+            JSONObject changed=new JSONObject(last.toString());changed.getJSONObject("binding").put("task_id","ffffffffffffffffffffffffffffffff");
+            FlightObservationSessionHost f=fixture(first,changed,false);denied(f::run);check(f.service.verifies==0&&f.completion.bound==0,"foreign task bracket accepted");
+        });
+        test("equal_dom_and_equal_ax_preserve_generic_path",()->{
+            FlightObservationSessionHost f=fixture(first,first,true);f.run();check(f.service.verifies==0&&f.completion.bound==1,"unchanged path regressed");
+            check(f.lastRecord.getBoolean("same_lease_epoch_and_equal_dom_bracket")&&!f.lastRecord.isNull("between_captures_dom_stability"),"equal DOM proof omitted");
+        });
+        test("evidence_writer_failure_does_not_publish",()->{
+            FlightObservationSessionHost f=fixture(first,last,false);f.failRecord=true;denied(f::run);
+            check(f.completion.bound==0&&f.current==null&&f.service.lastSource.closed,"failed evidence published capability");
+        });
+        test("actual_non_slider_date_route_price_and_form_values_are_not_ignored",()->{
+            String path="0/1/1/2/0/0/1/0/0";
+            for(String value:new String[]{"2026-12-01","SHA-HGH","CNY 1","changed form value"}){
+                JSONObject changed=alteredDom(lastDom,path,"value",value);denied(()->WebFlightNativeStability.compareDom(firstDom,changed));
+            }
+            JSONObject label=alteredDom(lastDom,path,"aria_label","支付");denied(()->WebFlightNativeStability.compareDom(firstDom,label));
+        });
+        test("actual_slider_semantics_and_nonhorizontal_geometry_remain_rejected",()->{
+            JSONObject changed=alteredDom(lastDom,"0/1/1/1/0/0","href_resolved","https://example.invalid/");
+            denied(()->WebFlightNativeStability.compareDom(firstDom,changed));
+            JSONObject vertical=alteredDom(lastDom,"0/1/1/1/0/0","rect_css_pixels",new JSONArray(new double[]{-1960,150, -1560,320}));
+            denied(()->WebFlightNativeStability.compareDom(firstDom,vertical));
+        });
+        JSONObject result=new JSONObject().put("schema","hepta.flight-observation-session-original-dom-host.v1")
+                .put("cases",cases).put("assertions",assertions).put("case_names",names).put("all_pass",true)
+                .put("original_actual_capture_dom_and_geometry_replayed",true).put("production_observe_body_executed",true)
+                .put("service_native_io_authority_client_and_publisher_instrumented",true)
+                .put("full_native_snapshot_reconstructed_from_retained_rows",false).put("phone_operations",0).put("business_verified",false);
+        Files.write(Paths.get(args[1]),(result.toString(2)+"\n").getBytes(StandardCharsets.UTF_8),StandardOpenOption.CREATE_NEW);
+        System.out.println(result.toString());
+    }
+}
