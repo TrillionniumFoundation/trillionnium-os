@@ -1,69 +1,86 @@
-# Flight stability and asynchronous control integration contract
+# Flight observation and asynchronous control integration contract
 
-This unqualified v58 candidate forward-integrates published candidate
-`23f3d1d739e6f34de189850961d9976f381b00a3` with the exact production bytes
-identified by installed build asset
-`7ebcc34c252b1fed0f110f84480ed10aaeb49057362b0ec140dea66f722fe692`.
-The installed asset lists 217 production inputs. Its source bytes were verified
-against that asset; a phone Git commit and Git merge-base are not asserted.
+This unqualified v59 candidate forward-integrates frozen v58 source
+`f519f2081b11dbbe851c2fb6528d32fffbc20c62` with current-v57 source bytes.
+The retained source receipt declares identity
+`313685edc580a750aea6301d8ff3cfd617d6fab6`; its existence as a published Git
+commit has not been independently verified. The donor's 217 production inputs
+match the installed APK's build asset byte-for-byte
+`d24295e13e82de20a6afee815f853803a0eec8a71c98f48bca17f3e68d4a3e85`.
+No private phone journals or images are included in this component.
 
-The integration preserves the installed native flight stability policy,
-WebFlightSession lifecycle, typed TaskCompletionGate Web completion and public
-shopping geometry representation. It combines their service/controller wiring
-with the preceding candidate's owned off-main action work, cancellation queue,
-observation worker, ordered session persistence and helper identity checks.
-The 164 historical host-evidence paths excluded by the preceding integration
-remain at their original immutable source; no private phone evidence is copied
-into this component. SOURCE-MANIFEST.json binds the complete integrated tree.
-
-Android version 58 / `0.58.0-flight-action-stop-candidate` identifies this
-candidate. It does not establish an APK, original signature, installation,
-phone acceptance or production release. Model/native/sampler pins remain fixed.
+The integration preserves the donor's stricter flight observation comparison
+and Session protocol while retaining all frozen v58 asynchronous action,
+cancellation, bounded observation, typed Web close and terminal-decision repairs.
+The new service implementation moves complete observation proof work off the
+main looper and makes snapshot borrowing explicit. SOURCE-MANIFEST.json binds
+the complete integrated tree. Android version 59 /
+`0.59.0-flight-observation-action-stop-candidate` identifies the candidate;
+it does not establish a new APK, installed upgrade or phone qualification.
+Model, native-library and sampler inputs remain unchanged.
 
 ## Current validation boundaries
 
-The current integration has 118 Java sources and 220 production inputs.
-Qualification requires the original 105-check runner on this complete source,
-separate current Web 80/44/query40/retirement36 gates, the new synthetic flight
-policy36 gate, and a complete source-bound Android build and original signing.
-Any native reuse must be explicit, backed by unchanged input and payload hashes,
-and reported separately from new native compilation. Local JDK21 Java8
-source/target results do not constitute a Java8 API-release or Android gate.
-Host fixtures do not establish Android Binder behavior or phone business success.
+The integration has 118 Java sources and 220 production inputs. Qualification
+requires the original complete 105-check runner, separate current Web
+80/44/query40/retirement36 and flight-policy36 gates, plus new synthetic
+observation-policy24, worker-lifecycle12 and city-retry24 gates. The query40
+main and its 187 assertions remain unchanged; its projection now includes the
+exact new retry type and actual outcome method needed by the current Session.
+A complete source-bound Android build and original signing remain required.
+Local JDK21 Java8 source/target results do not establish Java8 API-release or
+Android compatibility. Host fixtures do not establish phone business success.
 
-The new flight policy unit tests use declared synthetic DOM/native/retained-node
-data. They exercise the pure comparison policy, not Permit.prepare, live task
-leases, Android Binder or service dispatch. The existing query40 assertions and
-counts remain separate. Web composition now has 44 cases: the obsolete
-nonempty bridge-view-id positive fixture was explicitly migrated to the current
-protocol and an old-shape rejection case was added; helper-version and product
-URL fixtures use current production contracts. These fixture migrations must
-not be presented as unchanged old-protocol semantics.
+The observation and carousel tests use declared synthetic DOM/native/retained
+node data and the actual pure production comparison code. The lifecycle test
+extracts the real borrowing and worker-exit code with explicit fake Android IO.
+The city test extracts the actual retry predicate and budget method, exercises
+the actual projected outcome method, and uses synthetic outcomes, pages and
+clocks. These scopes remain separate from live Binder, lease and dispatch proof.
+Web composition retains its explicit 44-case protocol migration; it must not be
+presented as unchanged old-protocol semantics.
 
-Graph construction freezes bounded complete native and retained evidence on its
-observation worker. The action handoff copies immutable strings in constant time
-and clones the nodes it owns. The action worker parses and checks only its own
-captured graph; cancellation and the original deadline fence every live native
-read. The narrow carousel exception cannot waive stable DOM membership, target
-identity, parent chain, window/display binding, center coverage or exact overlap.
-This policy does not add a flight-result provider or make arbitrary Web actions
-eligible for native input.
+## Read-only flight observation ownership
 
-A terminal Web result must be captured at accepted model completion, bound to
-the exact task/run/frame and read-only scope, consumed once by ordinary typed
-close, and verified after actual model native exit and helper/background release.
-Terminal decision and Stop ordering are sealed under the existing short lock;
-no native cancellation or disk persistence moves under that lock. Historical
-completion and phone receipts remain historical until this candidate runs.
+The main looper performs only short current-identity checks, current-graph
+pointer handoff and independent node copying. Canonical JSON, full graph and
+window reads, native refresh/ancestor checks, package scope and background lease
+validation run on the existing bounded observation worker under the original
+deadline and cancellation fences. The worker uses its own graph and immutable
+snapshot strings; it never borrows mutable current-graph rows or node ownership.
 
-The selected action node, the bounded scoped-Web role nodes and WebView node use
-owned copies for worker-side validation. Original task, observation, authorization,
-display-generation and absolute action-deadline checks remain before the effect.
-Worker code must not borrow the mutable current observation graph.
+Closing a FlightObservationSnapshot retires authority immediately. A worker
+borrow acquired before submission defers recycling until the final reader
+releases it. Queued abandonment, caller timeout, cancellation and late results
+must close their owned values without freeing an active reader's nodes. The
+observation slot is returned only from actual worker finally, or from definitive
+unstarted executor rejection. Neither signal return nor caller timeout proves
+worker exit. Observation proof does not issue an action Permit; later input
+still requires the independent original action checks.
 
-Flight result completion and purchase completion remain unqualified. The current
-scoped flight source still lacks actual same-record flight-result completion;
-public product price evidence is not order/payment completion.
+## Bounded city-picker transition observation
+
+One private retry credential can be created only by the actual accepted,
+dispatched, non-stale click outcome for a recognized departure or arrival city
+control. It binds the original model run, task, owner, authorization, background
+lease, source page, instance/window, epoch and actual dispatch clocks. Observe
+consumes it once; a new action, service retirement or close clears it.
+
+Each use requires a corresponding recognized city picker, complete AX counts,
+the same bound identities, capture timing after dispatch, and four identical
+DOM raws. A changed native bracket can request only another whole read-only
+observation. It cannot publish a changed frame, replay a click, retry a query,
+borrow an unrelated loading-key continuation or add a date-picker exception.
+The existing maximum of two read retries, six-second budget, sleep and original
+task deadline remain. A published frame must still pass all strict final
+native/DOM comparisons and identity checks.
+
+The narrow home-carousel policy still cannot waive target identity, parent
+chain, window/display binding, center coverage or exact overlap. Typed terminal
+Web completion remains bound to accepted model completion and the exact
+read-only task/run/frame, consumed once by ordinary close, then checked after
+actual model native exit and helper/background release. This change adds no
+flight-result provider or purchase/payment completion.
 
 ## Thread and node ownership
 

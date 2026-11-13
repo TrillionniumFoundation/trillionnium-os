@@ -94,6 +94,41 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         boolean matches(PhoneObservation frame,WebFlightNativeStability.Permit permit){return this.frame==frame&&this.permit==permit;}
         JSONObject evidence()throws Exception{return new JSONObject(raw);}
     }
+    /**
+     * Service-created read-only source. The graph owns one independently obtained
+     * target and immutable worker-frozen evidence, never the published graph's refs.
+     * Closing retires authority immediately; an in-flight reader keeps its borrowed
+     * reference until its real finally, including after cancellation or timeout.
+     */
+    static final class FlightObservationSnapshot implements AutoCloseable {
+        private final HeptaAccessibilityService service;private final WebFlightSession web;
+        private final BackgroundSession background;private final QualificationScopeConfig.Bound scope;
+        private final TaskAuthorization.Gate authorization;private final PhoneObservation frame;
+        private final Graph graph,publishedGraph;private final NodeRef original;
+        private final String targetPath,frameRaw,nativeRaw,ownerSha,selectionRaw;
+        private final long retainedAt;private volatile boolean closed;
+        private int readers;private boolean recycled;
+        private FlightObservationSnapshot(HeptaAccessibilityService service,WebFlightSession web,
+                BackgroundSession background,QualificationScopeConfig.Bound scope,TaskAuthorization.Gate authorization,
+                PhoneObservation frame,Graph graph,Graph publishedGraph,String nodeId,String targetPath,String frameRaw,long at){
+            this.service=service;this.web=web;this.background=background;this.scope=scope;this.authorization=authorization;
+            this.frame=frame;this.graph=graph;this.publishedGraph=publishedGraph;original=graph.refs.get(nodeId);
+            this.targetPath=targetPath;this.frameRaw=frameRaw;nativeRaw=graph.flightNativeSnapshotRaw;
+            ownerSha=graph.backgroundOwnerSha;selectionRaw=graph.backgroundSelectionRaw;retainedAt=at;
+        }
+        private synchronized void borrow(){
+            if(closed||recycled)throw new IllegalStateException("readonly Flight snapshot retired");
+            readers++;
+        }
+        private synchronized void releaseBorrow(){
+            if(readers<=0)throw new IllegalStateException("readonly Flight snapshot borrow underflow");
+            readers--;recycleIfDrained();
+        }
+        private void recycleIfDrained(){
+            if(closed&&readers==0&&!recycled){recycled=true;graph.close();}
+        }
+        @Override public synchronized void close(){closed=true;recycleIfDrained();}
+    }
     public interface ObservationCallback { void onObservation(PhoneObservation value); void onError(String error); }
     public interface Cancellation { boolean isCancelled(); }
     public interface ActionCallback { void onResult(ActionOutcome result); }
@@ -1709,6 +1744,340 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             }
             throw new StaleObservation("首页原生祖先预算不足");
         }finally{for(AccessibilityNodeInfo node:owned)node.recycle();}
+    }
+    /** A bounded wait; only a real worker finally releases read capacity or borrowed nodes. */
+    private final class FlightObservationRead<T> implements Runnable {
+        private final java.util.concurrent.Callable<T> read;private final Cancellation cancel;private final long deadline;
+        private final boolean worker;private final FlightObservationSnapshot borrowed;
+        private boolean done,abandoned;private T value;private Throwable error;
+        FlightObservationRead(java.util.concurrent.Callable<T> read,Cancellation cancel,long deadline,
+                boolean worker,FlightObservationSnapshot borrowed){
+            this.read=read;this.cancel=cancel;this.deadline=deadline;this.worker=worker;this.borrowed=borrowed;
+        }
+        private void requireOpen(){
+            if(cancel.isCancelled()||SystemClock.elapsedRealtime()>=deadline)
+                throw new IllegalStateException("readonly Flight observation cancelled or expired");
+        }
+        @Override public void run(){
+            T actual=null;Throwable failure=null;
+            try{
+                synchronized(this){if(abandoned)return;}
+                requireOpen();actual=read.call();requireOpen();
+            }catch(Throwable refused){failure=refused;}
+            finally{
+                synchronized(this){
+                    try{if(abandoned||failure!=null)releaseValue(actual);else value=actual;}
+                    catch(Throwable releaseFailure){if(failure==null)failure=releaseFailure;else failure.addSuppressed(releaseFailure);}
+                    try{if(borrowed!=null)borrowed.releaseBorrow();}
+                    catch(Throwable releaseFailure){if(failure==null)failure=releaseFailure;else failure.addSuppressed(releaseFailure);}
+                    if(failure!=null&&value!=null){
+                        try{releaseValue(value);}catch(Throwable releaseFailure){failure.addSuppressed(releaseFailure);}value=null;
+                    }
+                    // Cancellation never reaches this flag: blocked IPC continues to fence admission.
+                    if(worker)observationIoBusy.set(false);
+                    error=failure;done=true;notifyAll();
+                }
+            }
+        }
+        private void releaseValue(Object result){
+            if(result instanceof FlightObservationSnapshot)((FlightObservationSnapshot)result).close();
+        }
+        void rejectedBeforeRun(){
+            try{if(borrowed!=null)borrowed.releaseBorrow();}
+            finally{if(worker)observationIoBusy.set(false);}
+        }
+        T await()throws Exception{
+            boolean claimed=false;
+            try{
+                synchronized(this){
+                    while(!done){requireOpen();wait(Math.min(50,Math.max(1,deadline-SystemClock.elapsedRealtime())));}
+                    requireOpen();
+                    if(error instanceof Exception)throw (Exception)error;
+                    if(error instanceof Error)throw (Error)error;
+                    T result=value;value=null;claimed=true;return result;
+                }
+            }finally{
+                if(!claimed)synchronized(this){abandoned=true;releaseValue(value);value=null;}
+            }
+        }
+    }
+    private <T>T readFlightObservationOnMain(java.util.concurrent.Callable<T> read,Cancellation cancel,long deadline)throws Exception{
+        if(Looper.myLooper()==Looper.getMainLooper())throw new IllegalStateException("Flight observation waits only on its worker");
+        FlightObservationRead<T> call=new FlightObservationRead<T>(read,cancel,deadline,false,null);
+        if(!main.post(call))throw new IllegalStateException("readonly Flight observation main looper unavailable");
+        return call.await();
+    }
+    private <T>T readFlightObservationOnWorker(java.util.concurrent.Callable<T> read,Cancellation cancel,long deadline,
+            FlightObservationSnapshot borrowed)throws Exception{
+        if(Looper.myLooper()==Looper.getMainLooper())throw new IllegalStateException("Flight observation waits only off main");
+        if(cancel.isCancelled()||SystemClock.elapsedRealtime()>=deadline)
+            throw new IllegalStateException("readonly Flight observation cancelled or expired");
+        if(!observationIoBusy.compareAndSet(false,true))throw new IllegalStateException("先前屏幕读取尚未真实退出");
+        try{if(borrowed!=null)borrowed.borrow();}
+        catch(RuntimeException refused){observationIoBusy.set(false);throw refused;}
+        FlightObservationRead<T> call=new FlightObservationRead<T>(read,cancel,deadline,true,borrowed);
+        try{observationIo.execute(call);}
+        catch(java.util.concurrent.RejectedExecutionException refused){call.rejectedBeforeRun();throw refused;}
+        // An unexpected submit failure cannot prove that the worker never started.
+        // Keep capacity and any borrowed source fenced until its real worker finally.
+        return call.await();
+    }
+    /** Pointer-only authority check. No package, lease-file, window or node IPC. */
+    private synchronized boolean flightObservationIdentityCurrent(WebFlightSession web,PhoneObservation frame,
+            QualificationScopeConfig.Bound scope,TaskAuthorization.Gate authorization,BackgroundSession background){
+        return web!=null&&web.goal!=null&&taskWeb==web&&frame!=null&&current==frame&&owns(web.taskId)
+                &&scope!=null&&taskScope==scope&&authorization!=null&&taskAuthorization==authorization
+                &&authorization==web.authorization&&background!=null&&taskBackground==background;
+    }
+    private GraphBudget flightObservationBudget(final WebFlightSession web,final PhoneObservation frame,
+            final FlightObservationSnapshot authority,final FlightObservationSnapshot source,
+            final Cancellation cancel,final long deadline){
+        return new GraphBudget(){public void check(){
+            if(Looper.myLooper()==Looper.getMainLooper()||authority==null||authority.closed
+                    ||source!=null&&source.closed||cancel.isCancelled()||SystemClock.elapsedRealtime()>=deadline
+                    ||!flightObservationIdentityCurrent(web,frame,authority.scope,authority.authorization,authority.background))
+                throw new StaleObservation("Flight只读观察已退休、到期或绑定身份变化");
+        }};
+    }
+    /** All possibly blocking scope/background/lock checks run under the worker budget. */
+    private void requireFlightObservationCurrent(WebFlightSession web,PhoneObservation frame,
+            FlightObservationSnapshot authority,GraphBudget budget)throws Exception{
+        checkReadBudget(budget);
+        if(locked())throw new StaleObservation("Flight只读观察手机已锁定");
+        checkReadBudget(budget);authority.scope.verifyUnchanged();checkReadBudget(budget);
+        authority.scope.requireReady();checkReadBudget(budget);authority.authorization.ready();checkReadBudget(budget);
+        requireBackgroundObservation(web.taskId,frame);checkReadBudget(budget);
+        authority.background.requireActive();checkReadBudget(budget);
+    }
+    private static boolean completeFlightGraph(Graph graph)throws Exception{
+        if(graph==null||graph.truncated||graph.collectionStats==null||graph.collectionStats.truncated()
+                ||graph.collectionStats.pending!=0||graph.collectionStats.childSlotsOmitted!=0
+                ||!graph.flightNativeSnapshotComplete||graph.flightNativeSnapshotRaw==null||graph.flightRetainedSnapshotRaw==null
+                ||graph.state.imeVisibility!=ImeVisibility.HIDDEN)return false;
+        return new JSONArray(graph.flightNativeSnapshotRaw).length()==graph.collectionStats.visited
+                &&new JSONArray(graph.flightRetainedSnapshotRaw).length()==graph.collectionStats.retained;
+    }
+    private FlightObservationSnapshot retainFlightObservationOnWorker(final WebFlightSession web,final PhoneObservation frame,
+            final Cancellation cancel,final long deadline)throws Exception{
+        if(Looper.myLooper()==Looper.getMainLooper())throw new IllegalStateException("Flight snapshot serialization belongs to its worker");
+        if(web==null||web.goal==null||frame==null||cancel.isCancelled()||SystemClock.elapsedRealtime()>=deadline)
+            throw new StaleObservation("Flight只读观察已退休或到期");
+        PhoneObservation.Node found=null;
+        for(PhoneObservation.Node row:frame.nodes){
+            if(cancel.isCancelled()||SystemClock.elapsedRealtime()>=deadline)throw new StaleObservation("Flight只读观察已停止");
+            if("android.widget.Button".equals(row.className)&&WebFlightNativeStability.LABEL.equals(row.label())&&row.nativeTreePath!=null){
+                if(found!=null)return null;found=row;
+            }
+        }
+        if(found==null)return null;
+        final PhoneObservation.Node target=found;
+        final String frameRaw=org.trillionnium.hepta.webprotocol.WebDomCanonical.canonical(frame.toJson());
+        FlightObservationSnapshot source=readFlightObservationOnMain(new java.util.concurrent.Callable<FlightObservationSnapshot>(){
+            public FlightObservationSnapshot call(){
+                synchronized(HeptaAccessibilityService.this){
+                    if(!flightObservationIdentityCurrent(web,frame,taskScope,taskAuthorization,taskBackground)
+                            ||currentGraph==null||cancel.isCancelled()||SystemClock.elapsedRealtime()>=deadline)
+                        throw new StaleObservation("Flight只读观察不是当前主线程图");
+                    Graph published=currentGraph,owned=published.copyForAction(target.id,null);
+                    if(owned.refs.get(target.id)==null){owned.close();return null;}
+                    return new FlightObservationSnapshot(HeptaAccessibilityService.this,web,taskBackground,taskScope,
+                            taskAuthorization,frame,owned,published,target.id,target.nativeTreePath,frameRaw,SystemClock.elapsedRealtime());
+                }
+            }
+        },cancel,deadline);
+        if(source==null)return null;
+        boolean claimed=false;
+        try{
+            GraphBudget budget=flightObservationBudget(web,frame,source,null,cancel,deadline);
+            requireFlightObservationCurrent(web,frame,source,budget);
+            if(!completeFlightGraph(source.graph))return null;
+            checkReadBudget(budget);claimed=true;return source;
+        }finally{if(!claimed)source.close();}
+    }
+    FlightObservationSnapshot retainFlightObservation(final WebFlightSession web,final PhoneObservation frame,
+            final Cancellation cancel,final long deadline)throws Exception{
+        return readFlightObservationOnWorker(new java.util.concurrent.Callable<FlightObservationSnapshot>(){
+            public FlightObservationSnapshot call()throws Exception{return retainFlightObservationOnWorker(web,frame,cancel,deadline);}
+        },cancel,deadline,null);
+    }
+    JSONObject verifyFlightObservationBracket(final WebFlightSession web,final FlightObservationSnapshot source,
+            final PhoneObservation after,final WebEvidenceReceipt first,final WebEvidenceReceipt last,
+            final Cancellation cancel,final long deadline)throws Exception{
+        if(source==null||source.service!=this||source.web!=web)throw new StaleObservation("Flight只读观察来源不同");
+        return readFlightObservationOnWorker(new java.util.concurrent.Callable<JSONObject>(){
+            public JSONObject call()throws Exception{
+                long started=SystemClock.elapsedRealtime();
+                FlightObservationSnapshot observed=null;Graph liveGraph=null;
+                try{
+                    observed=retainFlightObservationOnWorker(web,after,cancel,deadline);
+                    if(observed==null||source.closed||source.background!=observed.background||source.scope!=observed.scope
+                            ||source.authorization!=observed.authorization||!source.targetPath.equals(observed.targetPath)
+                            ||!java.util.Objects.equals(source.ownerSha,observed.ownerSha)
+                            ||!java.util.Objects.equals(source.selectionRaw,observed.selectionRaw))
+                        throw new StaleObservation("Flight只读观察来源不属于当前任务或完整原生图");
+                    final FlightObservationSnapshot actual=observed;
+                    GraphBudget budget=flightObservationBudget(web,after,observed,source,cancel,deadline);
+                    requireFlightObservationCurrent(web,after,observed,budget);
+                    if(!"captured".equals(first.status)||!"captured".equals(last.status)
+                            ||!first.bindingSha.equals(last.bindingSha)||source.frame.capturedElapsedMillis>source.retainedAt
+                            ||source.retainedAt>first.started||first.ended>after.capturedElapsedMillis
+                            ||after.capturedElapsedMillis>last.started||last.ended>started)
+                        throw new StaleObservation("Flight只读观察与真实capture时序不同");
+                    JSONObject firstCapture=first.capture(),lastCapture=last.capture(),binding=firstCapture.getJSONObject("binding");
+                    if(!web.taskId.equals(binding.getString("task_id"))||!source.ownerSha.equals(binding.getString("owner_sha256"))
+                            ||!source.authorization.authorization.sha256.equals(binding.getJSONObject("authorization").getString("authorization_sha256")))
+                        throw new StaleObservation("Flight只读capture的任务或OWNER来源不同");
+                    JSONArray beforeNative=new JSONArray(source.nativeRaw),observedNative=new JSONArray(observed.nativeRaw);
+                    JSONObject proof=WebFlightNativeStability.compareObservationBracket(web.taskId,new JSONObject(source.frameRaw),
+                            beforeNative,new JSONObject(observed.frameRaw),observedNative,firstCapture,lastCapture,source.targetPath);
+                    checkReadBudget(budget);liveGraph=readGraph(budget,observed.background);checkReadBudget(budget);
+                    if(!completeFlightGraph(liveGraph)||!observed.graph.sameWindow(liveGraph)
+                            ||!observed.graph.windowMetadata.bindFreshness("").equals(liveGraph.windowMetadata.bindFreshness("")))
+                        throw new StaleObservation("Flight只读观察最后完整图或窗口已变化");
+                    JSONObject liveProof=WebFlightNativeStability.compareNative(observedNative,
+                            new JSONArray(liveGraph.flightNativeSnapshotRaw),source.targetPath);
+                    liveProof.put("retained_node_pairing",WebFlightNativeStability.compareRetained(
+                            new JSONArray(observed.graph.flightRetainedSnapshotRaw),new JSONArray(liveGraph.flightRetainedSnapshotRaw),
+                            liveProof.getString("native_slider_path")));
+                    NodeRef liveTarget=null;
+                    for(PhoneObservation.Node row:liveGraph.rows){
+                        checkReadBudget(budget);
+                        if(source.targetPath.equals(row.nativeTreePath)){
+                            if(liveTarget!=null)throw new StaleObservation("Flight最后目标不唯一");liveTarget=liveGraph.refs.get(row.id);
+                        }
+                    }
+                    if(liveTarget==null||!source.original.node.equals(observed.original.node)||!source.original.node.equals(liveTarget.node)
+                            ||!source.original.signature.equals(observed.original.signature)||!source.original.signature.equals(liveTarget.signature))
+                        throw new StaleObservation("Flight原始目标身份或签名已变化");
+                    checkReadBudget(budget);Rect box=new Rect();source.original.node.getBoundsInScreen(box);checkReadBudget(budget);
+                    int[] region={box.left,box.top,box.right,box.bottom};
+                    JSONObject windowsBefore=readFlightObservationWindows(after,first.displayId,first.windowId,region,budget);
+                    refreshFlightObservationTargetChain(source.background,after,source.original,source.targetPath,beforeNative,budget);
+                    if(!source.original.signature.equals(nodeSignature(source.original.node,observedChildText(source.original.node,true,budget))))
+                        throw new StaleObservation("Flight观察目标最后刷新签名已变化");
+                    checkReadBudget(budget);
+                    JSONObject windowsAfter=readFlightObservationWindows(after,first.displayId,first.windowId,region,budget);
+                    if(!org.trillionnium.hepta.webprotocol.WebDomCanonical.same(windowsBefore,windowsAfter))
+                        throw new StaleObservation("Flight观察期间交互窗口覆盖元数据变化");
+                    requireFlightObservationCurrent(web,after,observed,budget);
+                    readFlightObservationOnMain(new java.util.concurrent.Callable<Boolean>(){public Boolean call(){
+                        if(!flightObservationIdentityCurrent(web,after,actual.scope,actual.authorization,actual.background)
+                                ||currentGraph!=actual.publishedGraph||source.closed||actual.closed
+                                ||cancel.isCancelled()||SystemClock.elapsedRealtime()>=deadline)
+                            throw new StaleObservation("Flight观察已过期或退休");
+                        return Boolean.TRUE;
+                    }},cancel,deadline);
+                    checkReadBudget(budget);
+                    return proof.put("source","private_service_snapshot_and_live_complete_native_traversal")
+                            .put("original_target_obtained_before_graph_recycling",true)
+                            .put("original_node_ref_identity_preserved",true).put("actual_ancestor_chain_refreshed",true)
+                            .put("source_retained_elapsed_ms",source.retainedAt)
+                            .put("first_ax_captured_elapsed_ms",source.frame.capturedElapsedMillis)
+                            .put("last_ax_captured_elapsed_ms",after.capturedElapsedMillis)
+                            .put("started_elapsed_ms",started).put("checked_elapsed_ms",SystemClock.elapsedRealtime())
+                            .put("live_native_recheck",liveProof).put("interactive_windows_before",windowsBefore)
+                            .put("interactive_windows_after",windowsAfter).put("two_interactive_window_reads_equal",true)
+                            .put("native_invocation_entered",false);
+                }finally{
+                    if(liveGraph!=null)liveGraph.close();if(observed!=null)observed.close();
+                }
+            }
+        },cancel,deadline,source);
+    }
+    private boolean refreshFlightObservationNode(AccessibilityNodeInfo node,GraphBudget budget){
+        checkReadBudget(budget);boolean refreshed=node.refresh();checkReadBudget(budget);return refreshed;
+    }
+    private AccessibilityNodeInfo flightObservationParent(AccessibilityNodeInfo child,List<AccessibilityNodeInfo> owned,GraphBudget budget){
+        checkReadBudget(budget);AccessibilityNodeInfo parent=child.getParent();
+        if(parent!=null)owned.add(parent);checkReadBudget(budget);return parent;
+    }
+    private AccessibilityNodeInfo flightObservationChild(AccessibilityNodeInfo parent,int index,List<AccessibilityNodeInfo> owned,GraphBudget budget){
+        checkReadBudget(budget);AccessibilityNodeInfo child=parent.getChild(index);
+        if(child!=null)owned.add(child);checkReadBudget(budget);return child;
+    }
+    private void refreshFlightObservationTargetChain(BackgroundSession background,PhoneObservation frame,NodeRef original,
+            String targetPath,JSONArray snapshot,GraphBudget budget)throws Exception{
+        checkReadBudget(budget);
+        java.util.Map<String,JSONObject> records=new java.util.HashMap<String,JSONObject>();
+        for(int i=0;i<snapshot.length();i++){checkReadBudget(budget);JSONObject row=snapshot.getJSONObject(i);records.put(row.getString("path"),row);}
+        java.util.List<AccessibilityNodeInfo> owned=new java.util.ArrayList<AccessibilityNodeInfo>();
+        AccessibilityNodeInfo cursor=original.node;String path=targetPath;
+        Rect target=new Rect();cursor.getBoundsInScreen(target);checkReadBudget(budget);
+        try{
+            for(int depth=0;depth<64;depth++){
+                checkReadBudget(budget);JSONObject expected=records.get(path);
+                if(expected==null||!refreshFlightObservationNode(cursor,budget)||!cursor.isVisibleToUser()||!cursor.isEnabled()||cursor.isPassword())
+                    throw new StaleObservation("首页目标祖先不可用");
+                checkReadBudget(budget);requireBackgroundNodeWindow(background,frame,cursor);checkReadBudget(budget);
+                Rect actual=new Rect();cursor.getBoundsInScreen(actual);checkReadBudget(budget);
+                if(!actual.contains(target)||!org.trillionnium.hepta.webprotocol.WebDomCanonical.same(expected,
+                        snapshotFlightNode(cursor,path,expected.getString("parent_class"))))
+                    throw new StaleObservation("首页目标祖先或原生几何已变化");
+                checkReadBudget(budget);AccessibilityNodeInfo parent=flightObservationParent(cursor,owned,budget);
+                if("0".equals(path)){
+                    if(parent!=null)throw new StaleObservation("首页原生根边界变化");return;
+                }
+                int slash=path.lastIndexOf('/'),index=Integer.parseInt(path.substring(slash+1));
+                if(parent==null||!refreshFlightObservationNode(parent,budget)||index>=parent.getChildCount()
+                        ||!expected.getString("parent_class").equals(string(parent.getClassName())))
+                    throw new StaleObservation("首页目标父节点关系变化");
+                AccessibilityNodeInfo child=flightObservationChild(parent,index,owned,budget);
+                if(child==null||!refreshFlightObservationNode(child,budget)||!child.equals(cursor))throw new StaleObservation("首页目标父子身份变化");
+                cursor=parent;path=path.substring(0,slash);
+            }
+            throw new StaleObservation("首页原生祖先预算不足");
+        }finally{for(AccessibilityNodeInfo node:owned)node.recycle();}
+    }
+    private JSONObject readFlightObservationWindows(PhoneObservation frame,int displayId,int windowId,int[] region,GraphBudget budget)throws Exception{
+        checkReadBudget(budget);AccessibilityServiceInfo info=getServiceInfo();checkReadBudget(budget);
+        if(info==null||(info.flags&AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS)==0
+                ||(info.getCapabilities()&AccessibilityServiceInfo.CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT)==0)
+            throw new StaleObservation("原生窗口覆盖元数据不可用");
+        List<AccessibilityWindowInfo> windows=windowsForDisplay(displayId);
+        if(windows==null)throw new StaleObservation("原生窗口集合不可用");
+        try{
+            checkReadBudget(budget);
+            if(windows.isEmpty()||windows.size()>64)throw new StaleObservation("原生窗口集合不可用");
+            java.util.TreeMap<Integer,JSONObject> rows=new java.util.TreeMap<Integer,JSONObject>();
+            int targetLayer=-1;Rect targetBounds=null;
+            for(AccessibilityWindowInfo window:windows){
+                checkReadBudget(budget);
+                if(window==null||window.getDisplayId()!=displayId||window.getId()<0
+                        ||window.getType()<=0||window.getLayer()<0)
+                    throw new StaleObservation("原生窗口身份缺失");
+                Rect bounds=new Rect();window.getBoundsInScreen(bounds);
+                if(bounds.isEmpty())throw new StaleObservation("原生窗口范围未知");
+                JSONObject row=new JSONObject().put("window_id",window.getId()).put("display_id",window.getDisplayId())
+                        .put("type",window.getType()).put("layer",window.getLayer())
+                        .put("bounds",new JSONArray(new int[]{bounds.left,bounds.top,bounds.right,bounds.bottom}))
+                        .put("focused",window.isFocused()).put("active",window.isActive());
+                if(rows.put(window.getId(),row)!=null)throw new StaleObservation("原生窗口身份重复");
+                if(window.getId()==windowId){
+                    if(window.getType()!=AccessibilityWindowInfo.TYPE_APPLICATION)
+                        throw new StaleObservation("目标已不是原应用窗口");
+                    targetLayer=window.getLayer();targetBounds=new Rect(bounds);
+                }
+                if(window.getType()==AccessibilityWindowInfo.TYPE_INPUT_METHOD)
+                    throw new StaleObservation("商品只读点击时出现输入法窗口");
+            }
+            int[] expected=frame.windowMetadata.windowBounds();
+            Rect anchorBounds=new Rect(region[0],region[1],region[2],region[3]);
+            if(targetLayer<0||targetBounds==null||expected==null||expected.length!=4
+                    ||targetBounds.left!=expected[0]||targetBounds.top!=expected[1]
+                    ||targetBounds.right!=expected[2]||targetBounds.bottom!=expected[3]||!targetBounds.contains(anchorBounds))
+                throw new StaleObservation("目标原生窗口或卡片范围已变化");
+            for(AccessibilityWindowInfo window:windows)if(window.getId()!=windowId&&window.getLayer()>=targetLayer){
+                checkReadBudget(budget);
+                Rect bounds=new Rect();window.getBoundsInScreen(bounds);
+                if(Rect.intersects(bounds,anchorBounds))throw new StaleObservation("原生商品区域被其它交互窗口覆盖");
+            }
+            JSONArray ordered=new JSONArray();for(JSONObject row:rows.values())ordered.put(row);checkReadBudget(budget);
+            return new JSONObject().put("source","getWindowsOnAllDisplays_selected_display_metadata")
+                    .put("display_id",displayId).put("target_window_id",windowId).put("target_layer",targetLayer)
+                    .put("target_native_bounds",new JSONArray(region)).put("windows",ordered)
+                    .put("observed_upper_or_same_layer_overlap",false).put("ime_window_observed",false)
+                    .put("other_window_roots_traversed",false).put("unreported_windows_excluded",false);
+        }finally{for(AccessibilityWindowInfo window:windows)if(window!=null)window.recycle();}
     }
     private static String nodeSignature(AccessibilityNodeInfo node,ObservedChildText.Result childText){
         // Capture and target refresh both supply the same bounded subtree observation.

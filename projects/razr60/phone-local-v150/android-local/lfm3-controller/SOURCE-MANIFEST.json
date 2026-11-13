@@ -1,16 +1,16 @@
 {
   "schema": "hepta.local-source.v3",
-  "version_code": 58,
-  "version_name": "0.58.0-flight-action-stop-candidate",
-  "functional_scope": "Preserve installed flight native stability and typed Web completion while retaining owned background action work, bounded observation, captured cancellation and ordered persistence.",
-  "candidate_status": "v58_flight_async_control_forward_integration_unqualified",
+  "version_code": 59,
+  "version_name": "0.59.0-flight-observation-action-stop-candidate",
+  "functional_scope": "Preserve current57 strict flight observation comparison and all frozen58 asynchronous action, cancellation and typed completion behavior; add owned observation snapshot borrowing and actual city-open outcome-bound read-only re-observation within the original budget.",
+  "candidate_status": "v59_flight_observation_action_stop_forward_integration_unqualified",
   "android_build": "Requires new complete 118-Java/resources/DEX compilation and original-key APK assembly against these exact 220 production inputs. Native source and payload reuse must be explicit and hash-bound; earlier candidate results remain historical.",
   "android_qualified": false,
   "phone_qualified": false,
   "production_build_inputs_count": 220,
   "qualification_policy": "Current qualification is external evidence bound to this exact source and actual build inputs; historical reports in this repository are not current qualification.",
   "current_validation": {
-    "strict_host_gate": "Run unchanged complete 105-check runner against this source, then separately execute current Web 80/44/query40/retirement36 and new synthetic flight policy36 gates with original failures preserved.",
+    "strict_host_gate": "Run unchanged complete 105-check runner against this source, then separately execute current Web80/composition44/query40/retirement36/flight-policy36 and new observation-policy24/worker-lifecycle12/city-retry24 gates with their synthetic boundaries and original failures preserved.",
     "full_android_build": false,
     "phone_tested": false,
     "external_model_used": false,
@@ -24,8 +24,8 @@
     },
     {
       "path": "ACTION-EXECUTION-CONTRACT.md",
-      "bytes": 15324,
-      "sha256": "03a265de6cff5d6c32ca3beec706092cb09b975dc57007b7c971856d6b215b84"
+      "bytes": 16283,
+      "sha256": "a3b3d47b3d3fee2bba8d056be66d086a4ad7ef8baf0420cbbbc35fac10283f98"
     },
     {
       "path": "APP-DISCOVERY.md",
@@ -34,8 +34,8 @@
     },
     {
       "path": "AndroidManifest.xml",
-      "bytes": 2594,
-      "sha256": "6358f0272f263bc47d27f505c99bb23305aeed676092d7312c197df1748aa856"
+      "bytes": 2606,
+      "sha256": "dc06926d00841a2f7a00caa804e66892eb96137c4363f8deb296825682a073fb"
     },
     {
       "path": "BACKGROUND-BROKER.md",
@@ -194,8 +194,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 39927,
-      "sha256": "7a0a323e9713540ac24d2452f157073e4193db3da530f021062c5ce362041661"
+      "bytes": 40701,
+      "sha256": "fa4c180ad2db715f7188630d88e794b22c9be52e587fb54e971e67f3b72c3b24"
     },
     {
       "path": "SESSION-RECOVERY.md",
@@ -5294,8 +5294,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 163443,
-      "sha256": "28c623203e2e9de88f32ba19b32781b25665dddb2aa48e0dce17bfc8036e350f"
+      "bytes": 192460,
+      "sha256": "7cb5ba3ffee0470c02551e0a59b0338ee47f0419b1d39d6b4efe6123a24aa8c4"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
@@ -5649,8 +5649,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
-      "bytes": 23349,
-      "sha256": "503078f251696fb542912e5270efca13439ebcece4db8b3473e7fcb543b4fc2d"
+      "bytes": 32168,
+      "sha256": "badc1a68903a126d549e56d202ed01a01fc17c99556b5b50dc88b8729d4e397a"
     },
     {
       "path": "src/org/trillionnium/hepta/local/WebFlightProgress.java",
@@ -5659,8 +5659,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
-      "bytes": 42734,
-      "sha256": "7f3c7fd872e9901026ad7471dfc9a3e68d2c987eb1931896f80ea0f2acd6f4e1"
+      "bytes": 51210,
+      "sha256": "6e32dc17a318127626d46e935389a953b28e87a3a4be610ef9944843373c6b3d"
     },
     {
       "path": "src/org/trillionnium/hepta/local/WebHelperIdentity.java",
@@ -6311,6 +6311,16 @@
       "path": "tests/fixed-intent-tools/test_fixed_grammar.py",
       "bytes": 2446,
       "sha256": "ab1238f424d554fb752124bf7be67a74078f7e88c2501a15571113a449dfbe55"
+    },
+    {
+      "path": "tests/flight-observation-worker/FlightObservationWorkerHostTest.java",
+      "bytes": 12869,
+      "sha256": "d6b2823df88367188127c7c112d2d8f8d9f29fa066aaf3b13cb8a04e8452427b"
+    },
+    {
+      "path": "tests/flight-observation-worker/run_host_tests.py",
+      "bytes": 8806,
+      "sha256": "adb5a9d46659b27d928334b3cea5b1557a0c82abe7309f819b412160ba457db3"
     },
     {
       "path": "tests/ime-submit/ImeSubmitHostTest.java",
@@ -6998,6 +7008,11 @@
       "sha256": "edab00a839c30c9865867ccb550fbdc1440f3da4aecd7f4c63af89702e12ebfb"
     },
     {
+      "path": "tests/web-flight/WebCityObservationRetryHostTest.java",
+      "bytes": 14909,
+      "sha256": "7774653b558a058207bdf227ef0b27a2468320706ccd1f5d590611ece9e73622"
+    },
+    {
       "path": "tests/web-flight/WebFlightEvidenceHostTest.java",
       "bytes": 39445,
       "sha256": "dc51549dbdb160de1f47ddc6c2cc8872ab29c7121fbb3b4553bfc6ab23fbaf4e"
@@ -7006,6 +7021,11 @@
       "path": "tests/web-flight/WebFlightNativeStabilityHostTest.java",
       "bytes": 15936,
       "sha256": "f3590d3acb48f111f733ec751fe68bae00234bde758d4de062b04c85e4a3fd7a"
+    },
+    {
+      "path": "tests/web-flight/WebFlightObservationStabilityHostTest.java",
+      "bytes": 13074,
+      "sha256": "e9f572417f18b1122feebe3d66d7a29fa9c709088d2f214fbcf32ede84ff6ce3"
     },
     {
       "path": "tests/web-flight/WebFlightQueryHostTest.java",
@@ -7033,9 +7053,14 @@
       "sha256": "0fc1e74e147d9d679f1c4dec59328095ef2635e72248ba541eabd72e6984d654"
     },
     {
+      "path": "tests/web-flight/run_city_observation_retry_tests.py",
+      "bytes": 8973,
+      "sha256": "68620fe27d44d95d255347f2a34495cf6784d8e7621647907c653c1cfa5c7ada"
+    },
+    {
       "path": "tests/web-flight/run_query_host_tests.py",
-      "bytes": 41363,
-      "sha256": "6fc5f8e65c7b20efff7b121a1fb4baa3f3514db776caa4744f16fed0824d0fb7"
+      "bytes": 41849,
+      "sha256": "f751345fe0a0b9ce6daf9fc3d82ca9f21dd6e51adf760b036b6578f95d6a52e7"
     },
     {
       "path": "tools/PHONE-ACCEPTANCE.md",
@@ -7283,14 +7308,15 @@
     "component_tree": "24e8d82d4befdab6f4f32ef7efeba7faad345a04"
   },
   "release_version_assigned": false,
-  "version_metadata_policy": "Android version58/name identifies this unqualified candidate; original signing, installation, phone acceptance and production release are separate source-bound gates.",
+  "version_metadata_policy": "Android version59/name identifies this unqualified candidate; original signing, installation, phone acceptance and production release are separate source-bound gates.",
   "candidate_version_assigned": true,
   "integration_sources": {
-    "preceding_published_candidate": "23f3d1d739e6f34de189850961d9976f381b00a3",
-    "installed_build_identity_sha256": "7ebcc34c252b1fed0f110f84480ed10aaeb49057362b0ec140dea66f722fe692",
+    "preceding_published_candidate": "f519f2081b11dbbe851c2fb6528d32fffbc20c62",
+    "installed_build_identity_sha256": "d24295e13e82de20a6afee815f853803a0eec8a71c98f48bca17f3e68d4a3e85",
     "installed_production_input_count": 217,
-    "installed_source_commit": null,
-    "content_comparison_base": "Actual dd2 v55 bytes; no phone Git merge-base asserted."
+    "installed_source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+    "installed_source_commit_basis": "receipt_declared_not_independently_verified_published_git_commit",
+    "content_comparison_base": "Complete frozen f519 v58 source plus exact current57 donor files matched to the installed APK asset, with verified old56 donor bytes used for the three-way service merge. The donor commit is only source-receipt-declared, not independently verified as a published Git commit; no signed-receipt or unverified Git merge-base assertion."
   },
   "source_preservation_scope": "Keep all preceding candidate files; integrate fresh src/tests and reviewed conflicts. The 164 additional historical host-evidence files remain at their original source and are not copied here."
 }

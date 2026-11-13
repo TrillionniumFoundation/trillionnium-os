@@ -1,41 +1,52 @@
-# Hepta v58 candidate: flight stability and asynchronous background control
+# Hepta v59 candidate: flight observation and asynchronous background control
 
-This candidate preserves the installed flight-stability implementation while
-retaining the reviewed action, Stop, observation and session repairs from
-published candidate `23f3d1d739e6f34de189850961d9976f381b00a3`. The installed
-implementation is identified by its complete 217-input build asset
-`7ebcc34c252b1fed0f110f84480ed10aaeb49057362b0ec140dea66f722fe692`.
-Its source bytes were matched to that asset; no unverified Git commit or Git
-merge-base is asserted for that installation.
+This candidate forward-integrates frozen v58 source
+`f519f2081b11dbbe851c2fb6528d32fffbc20c62` with the observation-stability
+source used by the subsequently observed v57 installation. The retained source
+receipt declares `313685edc580a750aea6301d8ff3cfd617d6fab6` as its source
+identity; this has not been independently verified as a published Git commit.
+The donor's 217 production inputs were matched byte-for-byte to the installed
+APK's build asset
+`d24295e13e82de20a6afee815f853803a0eec8a71c98f48bca17f3e68d4a3e85`.
+The donor source identity does not qualify this merged candidate.
 
 The complete integrated production source contains 118 Java sources and 220
-production inputs. Android version 58 / `0.58.0-flight-action-stop-candidate`
-identifies this candidate. Read [ACTION-EXECUTION-CONTRACT.md](ACTION-EXECUTION-CONTRACT.md)
-for ownership, deadlines, cancellation and completion boundaries. The regenerated
-SOURCE-MANIFEST.json covers every component file. Local targeted test results,
-the preceding candidate build and historical phone sessions do not establish
-qualification of this candidate.
+production inputs. Android version 59 /
+`0.59.0-flight-observation-action-stop-candidate` identifies this candidate.
+Read [ACTION-EXECUTION-CONTRACT.md](ACTION-EXECUTION-CONTRACT.md) for ownership,
+deadlines, cancellation and completion boundaries. SOURCE-MANIFEST.json covers
+every component file. Prior builds and phone sessions remain bound to their
+original source; this candidate requires new formal build and phone gates.
 
-The narrow official-flight-home policy recognizes only the reviewed eight-image
-horizontal carousel while requiring the rest of the DOM and complete native
-tree to remain stable. The action worker owns immutable observation snapshots
-and cloned native node references. Changed button content, changed overlap,
-covered center, missing nodes and stale task/window/display identity remain
-rejections. The policy does not provide a flight-result parser or permission
-to generalize native input to arbitrary pages.
+Flight observation verification uses the existing bounded observation worker.
+The main looper hands off short identity checks and independently owned node
+copies. Full graph, window, scope and lease checks run on the worker. Closing a
+snapshot retires it immediately, but a worker borrow keeps its nodes alive until
+that worker actually exits. Timeouts and cancellation never release a busy
+worker or recycle a node still in use. The read-only proof grants no action permit.
 
-The installed typed Web terminal-completion checks are preserved. A read-only
-result must be captured under the actual task/model/observation identity before
-the ordinary typed close, consumed once, and checked after native and display
-cleanup. Shopping or flight success still needs actual domain evidence; page
-loading and a model's done response alone do not establish success.
+An accepted, dispatched and non-stale native city-picker open can authorize
+read-only re-observation of its corresponding departure or arrival picker.
+Every retry requires the same task, owner, authorization, lease and page identity,
+complete AX evidence and four identical DOM captures after the actual action.
+The original maximum of two retries within six seconds and the original task
+deadline remain. Each retry collects a whole new bracket; publication still
+requires the strict final stability checks. No action or query is replayed, and
+this rule does not extend to date pickers or arbitrary page transitions.
 
-Validation requires the unchanged complete 105-check runner against this source,
-plus separately reported current Web evidence, composition, query, retirement
-and synthetic flight-stability gates. New full Android Java/resources/DEX and
-native compilation, original-key signing, in-place installation and real phone
-acceptance are separate gates. The model, native library and sampler pins are
-unchanged. The current candidate has not yet been qualified on the phone.
+The narrow official-flight-home policy and typed Web terminal-completion checks
+remain. A read-only result must be captured under the actual task/model/frame
+identity, consumed once by ordinary typed close and checked after native and
+display cleanup. Flight-result parsing and purchase completion are still absent;
+page loading or a model's done response cannot establish business success.
+
+Validation requires the unchanged complete 105-check runner, separate current
+Web 80/44/query40/retirement36 and flight-policy36 gates, plus the new observation
+policy24, worker-lifecycle12 and city-retry24 gates. Their synthetic host scopes
+remain separate from live Android Binder and phone behavior. New full Android
+Java/resources/DEX/native compilation, original-key signing, in-place installation
+and real phone acceptance are separate gates. Model, native-library and sampler
+pins are unchanged. This source preview has not been qualified on the phone.
 
 ## Historical source foundations
 
