@@ -34,6 +34,11 @@ typedef struct {
 typedef struct {
     int fd; long pid,ppid,pgid; unsigned long uid;
     uint64_t start; char state;
+#ifdef HEPTA_OWNED_GENERATION_HOST_TRACE
+    bool trace_stat_valid,trace_uid_parsed,trace_uid_equal;
+    bool trace_read_seen[4],trace_read_failed[4];
+    int trace_read_errno[4];unsigned long trace_uids[4];
+#endif
 } HgProcess;
 typedef struct {
     long pid; uint64_t start; int term_error,kill_error;
@@ -47,6 +52,100 @@ typedef struct {
     HgProcess members[HG_LIMIT];size_t count;
     int unknown,escaped,older_unrelated;bool complete;
 } HgScan;
+
+
+/* Host-fixture diagnostics only. Production/phone builds do not define this
+ * macro; all HG_TRACE_* statements then preprocess to nothing. No signal,
+ * process read, guard, deadline or return value is supplied by this logger. */
+#ifdef HEPTA_OWNED_GENERATION_HOST_TRACE
+enum { HG_TRACE_STAT=0, HG_TRACE_UID=1, HG_TRACE_ENV=2, HG_TRACE_ARGV=3 };
+#define HG_TRACE_BEGIN_STAT(p) do { \
+    (p)->trace_stat_valid=false;(p)->trace_uid_parsed=false;(p)->trace_uid_equal=false; \
+    memset((p)->trace_read_seen,0,sizeof((p)->trace_read_seen)); \
+    memset((p)->trace_read_failed,0,sizeof((p)->trace_read_failed)); \
+    memset((p)->trace_read_errno,0,sizeof((p)->trace_read_errno)); \
+    memset((p)->trace_uids,0,sizeof((p)->trace_uids)); \
+} while(0);
+#define HG_TRACE_STAT_PARSED(p) do { (p)->trace_stat_valid=true; } while(0);
+#define HG_TRACE_UID_TUPLE(p,v,parsed) do { \
+    (p)->trace_uid_parsed=(parsed); \
+    if(parsed){memcpy((p)->trace_uids,(v),sizeof((p)->trace_uids)); \
+        (p)->trace_uid_equal=(v)[0]==(v)[1]&&(v)[0]==(v)[2]&&(v)[0]==(v)[3];} \
+} while(0);
+static int hg_trace_read_result(HgProcess *p,int field,int result) {
+    int saved=errno;
+    p->trace_read_seen[field]=true;p->trace_read_failed[field]=result!=0;p->trace_read_errno[field]=result==0?0:saved;
+    errno=saved;return result;
+}
+#define HG_TRACE_READ(p,field,expression) hg_trace_read_result((p),(field),(expression))
+static void hg_trace_unknown(const HgProcess *p,const char *reason,
+        const char *stage,const char *kind,int failure_errno) {
+    int saved=errno;
+    static unsigned records=0,bytes=0;static bool capped=false;
+    char row[640],identity[192],uid[192];
+    if(p&&p->trace_stat_valid)
+        snprintf(identity,sizeof(identity),"\"pid\":%ld,\"stat_valid\":true,\"start_ticks\":%" PRIu64 ",\"pgid\":%ld",
+                 p->pid,p->start,p->pgid);
+    else if(p)snprintf(identity,sizeof(identity),"\"pid\":%ld,\"stat_valid\":false,\"start_ticks\":null,\"pgid\":null",p->pid);
+    else snprintf(identity,sizeof(identity),"\"pid\":null,\"stat_valid\":false,\"start_ticks\":null,\"pgid\":null");
+    if(p&&p->trace_uid_parsed)
+        snprintf(uid,sizeof(uid),"\"uid_parse_valid\":true,\"uid_values\":[%lu,%lu,%lu,%lu],\"uid_all_equal\":%s",
+                 p->trace_uids[0],p->trace_uids[1],p->trace_uids[2],p->trace_uids[3],p->trace_uid_equal?"true":"false");
+    else snprintf(uid,sizeof(uid),"\"uid_parse_valid\":false,\"uid_values\":null,\"uid_all_equal\":null");
+    int n=snprintf(row,sizeof(row),"HEPTA_HOST_PROC_REJECTION {\"reason\":\"%s\",\"stage\":\"%s\",\"kind\":\"%s\",\"errno\":%d,%s,%s}\n",
+                   reason,stage,kind,failure_errno,identity,uid);
+    if(n<0||(size_t)n>=sizeof(row)){errno=saved;return;}
+    /* Reserve space for one explicit truncation marker. Counts include every
+     * attempted output byte, even if the host capture stream itself fails. */
+    if(records>=64||bytes+(unsigned)n>16256){
+        if(!capped){
+            static const char marker[]="HEPTA_HOST_PROC_REJECTION {\"trace_truncated\":true,\"record_limit\":64,\"byte_limit\":16384}\n";
+            capped=true;
+            if(bytes+sizeof(marker)-1<=16384){fwrite(marker,1,sizeof(marker)-1,stderr);bytes+=(unsigned)sizeof(marker)-1;}
+        }
+        errno=saved;return;
+    }
+    records++;bytes+=(unsigned)n;fwrite(row,1,(size_t)n,stderr);errno=saved;
+}
+static void hg_trace_proc_failure(HgProcess *p,const char *reason,int field) {
+    int saved=errno;
+    const char *stage=field==HG_TRACE_STAT?"proc_stat":field==HG_TRACE_UID?"proc_status_uid":
+                       field==HG_TRACE_ENV?"proc_environ":"proc_cmdline";
+    const char *kind=p->trace_read_seen[field]&&p->trace_read_failed[field]?"read_error":"parse_error";
+    int error=p->trace_read_seen[field]?p->trace_read_errno[field]:0;
+    if(field==HG_TRACE_UID&&p->trace_uid_parsed&&!p->trace_uid_equal){kind="uid_values_differ";error=0;}
+    hg_trace_unknown(p,reason,stage,kind,error);errno=saved;
+}
+static void hg_trace_recheck_failure(HgProcess *p) {
+    int saved=errno;
+    if(!p->trace_stat_valid)hg_trace_proc_failure(p,"older_identity_recheck",HG_TRACE_STAT);
+    else if(!p->trace_uid_parsed||!p->trace_uid_equal||p->trace_read_failed[HG_TRACE_UID])
+        hg_trace_proc_failure(p,"older_identity_recheck",HG_TRACE_UID);
+    else hg_trace_unknown(p,"older_identity_changed","scope_check","policy_refusal",0);
+    errno=saved;
+}
+#define HG_TRACE_RECHECK_FAILURE(p) hg_trace_recheck_failure((p));
+#define HG_TRACE_OPEN_FAILURE(p,error) hg_trace_unknown((p),"process_open","proc_directory","read_error",(error));
+#define HG_TRACE_DIRECTORY_FAILURE(stage,error) hg_trace_unknown(NULL,"proc_enumeration",(stage),"read_error",(error));
+#define HG_TRACE_PROC_FAILURE(p,reason,field) hg_trace_proc_failure((p),(reason),(field));
+#define HG_TRACE_POLICY(p,reason) hg_trace_unknown((p),(reason),"scope_check","policy_refusal",0);
+#define HG_TRACE_SCOPE_FAILURE(p,env_ok,argv_ok) do { \
+    if(!(env_ok))hg_trace_proc_failure((p),"scope_visibility",HG_TRACE_ENV); \
+    else if(!(argv_ok))hg_trace_proc_failure((p),"scope_visibility",HG_TRACE_ARGV); \
+    else hg_trace_unknown((p),"same_group_scope_mismatch","scope_check","policy_refusal",0); \
+} while(0);
+#else
+#define HG_TRACE_RECHECK_FAILURE(p)
+#define HG_TRACE_BEGIN_STAT(p)
+#define HG_TRACE_STAT_PARSED(p)
+#define HG_TRACE_UID_TUPLE(p,v,parsed)
+#define HG_TRACE_READ(p,field,expression) expression
+#define HG_TRACE_OPEN_FAILURE(p,error)
+#define HG_TRACE_DIRECTORY_FAILURE(stage,error)
+#define HG_TRACE_PROC_FAILURE(p,reason,field)
+#define HG_TRACE_POLICY(p,reason)
+#define HG_TRACE_SCOPE_FAILURE(p,env_ok,argv_ok)
+#endif
 
 static uint64_t hg_now(void) {
     struct timespec t;
@@ -96,8 +195,9 @@ static bool hg_boot(char out[37]) {
     memcpy(out,b,37);return true;
 }
 static bool hg_proc_stat(HgProcess *p) {
+    HG_TRACE_BEGIN_STAT(p)
     unsigned char b[8193];size_t n=0;
-    if(hg_read_at(p->fd,"stat",b,8192,&n)!=0||!n||memchr(b,0,n))return false;
+    if(HG_TRACE_READ(p,HG_TRACE_STAT,hg_read_at(p->fd,"stat",b,8192,&n))!=0||!n||memchr(b,0,n))return false;
     char *end=strrchr((char*)b,')'),*first=strchr((char*)b,' ');
     if(!end||!first||first>=end||end[1]!=' ')return false;
     *first=0;uint64_t pid;
@@ -112,11 +212,13 @@ static bool hg_proc_stat(HgProcess *p) {
         index++;part=strtok_r(NULL," \n",&save);
     }
     if(index!=20)return false;
-    p->ppid=(long)pp;p->pgid=(long)pg;p->start=start;p->state=state;return true;
+    p->ppid=(long)pp;p->pgid=(long)pg;p->start=start;p->state=state;
+    HG_TRACE_STAT_PARSED(p)
+    return true;
 }
 static bool hg_proc_uid(HgProcess *p) {
     unsigned char b[16385];size_t n=0;
-    if(hg_read_at(p->fd,"status",b,16384,&n)!=0||!n||memchr(b,0,n))return false;
+    if(HG_TRACE_READ(p,HG_TRACE_UID,hg_read_at(p->fd,"status",b,16384,&n))!=0||!n||memchr(b,0,n))return false;
     char *line=(char*)b;int count=0;unsigned long values[4]={0};
     while(line&&*line){
         char *next=strchr(line,'\n');if(next)*next++=0;
@@ -127,6 +229,7 @@ static bool hg_proc_uid(HgProcess *p) {
         }
         line=next;
     }
+    HG_TRACE_UID_TUPLE(p,values,count==1)
     if(count!=1||values[0]!=values[1]||values[0]!=values[2]||values[0]!=values[3])return false;
     p->uid=values[0];return true;
 }
@@ -249,7 +352,7 @@ static int hg_env_value(const unsigned char *b,size_t n,const char *key,const ch
 }
 static bool hg_environment(HgProcess *p,const HgIdentity *id,bool *exact,bool *tagged) {
     unsigned char b[HG_ENV_LIMIT+1];size_t n=0;*exact=false;*tagged=false;
-    if(hg_read_at(p->fd,"environ",b,HG_ENV_LIMIT,&n)!=0)return false;
+    if(HG_TRACE_READ(p,HG_TRACE_ENV,hg_read_at(p->fd,"environ",b,HG_ENV_LIMIT,&n))!=0)return false;
     char start[32];snprintf(start,sizeof(start),"%" PRIu64,id->app_start);
     const char *values[]={"v1",id->task,id->generation,id->token,start,id->boot};
     bool all=true;
@@ -262,7 +365,7 @@ static bool hg_environment(HgProcess *p,const HgIdentity *id,bool *exact,bool *t
 }
 static bool hg_argv_generation(HgProcess *p,const HgIdentity *id,bool *tagged) {
     unsigned char b[HG_ENV_LIMIT+1];size_t n=0;*tagged=false;
-    if(hg_read_at(p->fd,"cmdline",b,HG_ENV_LIMIT,&n)!=0)return false;
+    if(HG_TRACE_READ(p,HG_TRACE_ARGV,hg_read_at(p->fd,"cmdline",b,HG_ENV_LIMIT,&n))!=0)return false;
     size_t at=0;bool next=false;
     while(at<n){
         const unsigned char *end=memchr(b+at,0,n-at);if(!end)return false;
@@ -279,29 +382,30 @@ static void hg_scan_close(HgScan *s) {
 }
 static HgScan hg_scan(const HgIdentity *id,uint64_t deadline) {
     HgScan scan={.complete=false};DIR *directory=opendir("/proc");
-    if(!directory){scan.unknown++;return scan;}
+    if(!directory){HG_TRACE_DIRECTORY_FAILURE("opendir_proc",errno) scan.unknown++;return scan;}
     struct dirent *entry;unsigned visited=0;bool enumerated=false;
     for(;;){
         errno=0;entry=readdir(directory);
-        if(!entry){if(errno)scan.unknown++;else enumerated=true;break;}
+        if(!entry){if(errno){HG_TRACE_DIRECTORY_FAILURE("readdir_proc",errno) scan.unknown++;}else enumerated=true;break;}
         uint64_t number;
         if(!hg_decimal(entry->d_name,INT_MAX,&number)||number<=1)continue;
-        if(++visited>HG_PROC_LIMIT||!hg_now()||hg_now()>=deadline){scan.unknown++;break;}
+        if(++visited>HG_PROC_LIMIT||!hg_now()||hg_now()>=deadline){HG_TRACE_POLICY(NULL,"enumeration_bound") scan.unknown++;break;}
         HgProcess p;
         if(hg_open_process((long)number,&p)!=0){
             /* Even ENOENT after readdir is unresolved in this round. Directory
              * owner is never a real-UID proof: non-dumpable tasks appear root. */
+            HG_TRACE_OPEN_FAILURE(&p,errno)
             scan.unknown++;continue;
         }
         bool stat_ok=hg_proc_stat(&p),uid_ok=hg_proc_uid(&p);
-        if(!uid_ok){scan.unknown++;close(p.fd);continue;}
+        if(!uid_ok){HG_TRACE_PROC_FAILURE(&p,"uid_unresolved",HG_TRACE_UID) scan.unknown++;close(p.fd);continue;}
         if(p.uid!=id->uid){
-            if(stat_ok&&p.pgid==id->pgid)scan.unknown++;
+            if(stat_ok&&p.pgid==id->pgid){HG_TRACE_POLICY(&p,"different_uid_same_group") scan.unknown++;}
             close(p.fd);continue;
         }
-        if(!stat_ok){scan.unknown++;close(p.fd);continue;}
+        if(!stat_ok){HG_TRACE_PROC_FAILURE(&p,"stat_unresolved",HG_TRACE_STAT) scan.unknown++;close(p.fd);continue;}
         bool same_group=p.pgid==id->pgid;
-        if(p.pid==id->leader_pid){scan.unknown++;close(p.fd);continue;}
+        if(p.pid==id->leader_pid){HG_TRACE_POLICY(&p,"leader_still_present") scan.unknown++;close(p.fd);continue;}
         /* The exact current App and this helper are independently bound above.
          * They are outside the protected worker group and carry no worker scope. */
         if(!same_group&&((p.pid==id->app_pid&&p.start==id->app_start)
@@ -314,22 +418,23 @@ static HgScan hg_scan(const HgIdentity *id,uint64_t deadline) {
             if(hg_proc_stat(&again)&&hg_proc_uid(&again)&&again.pid==p.pid
                     &&again.start==p.start&&again.uid==p.uid&&again.pgid==p.pgid
                     &&again.ppid==p.ppid)scan.older_unrelated++;
-            else scan.unknown++;
+            else {HG_TRACE_RECHECK_FAILURE(&again) scan.unknown++;}
             close(p.fd);continue;
         }
         bool exact=false,env_tag=false,arg_tag=false;
         bool env_ok=hg_environment(&p,id,&exact,&env_tag),argv_ok=hg_argv_generation(&p,id,&arg_tag);
         if(!same_group){
-            if(!env_ok||!argv_ok)scan.unknown++;
+            if(!env_ok||!argv_ok){HG_TRACE_SCOPE_FAILURE(&p,env_ok,argv_ok) scan.unknown++;}
             else if(env_tag||arg_tag)scan.escaped++;
             close(p.fd);continue;
         }
         if(p.state=='Z'||p.state=='X'){
             /* Exited but not yet reaped is not full group absence. No signal. */
+            HG_TRACE_POLICY(&p,"same_group_exited_not_reaped")
             scan.unknown++;close(p.fd);continue;
         }
         if(!env_ok||!argv_ok||!exact||p.start<id->leader_start||p.pid==id->app_pid
-            ||p.pid==(long)getpid()||scan.count>=HG_LIMIT){scan.unknown++;close(p.fd);continue;}
+            ||p.pid==(long)getpid()||scan.count>=HG_LIMIT){HG_TRACE_SCOPE_FAILURE(&p,env_ok,argv_ok) scan.unknown++;close(p.fd);continue;}
         scan.members[scan.count++]=p;
     }
     /* readdir errno is sampled independently of the process-file operations. */

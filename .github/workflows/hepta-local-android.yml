@@ -20,6 +20,62 @@ permissions:
   contents: read
 
 jobs:
+  owned-generation-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      HEPTA_SOURCE: projects/razr60/phone-local-v150/android-local/lfm3-controller
+      PYTHONDONTWRITEBYTECODE: '1'
+      SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out the exact candidate source for independent process visibility evidence
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Set up Java
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Verify complete source closure
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: python -B tools/verify_source.py
+      - name: Fetch and verify the pinned host JSON dependency
+        run: |
+          set -euo pipefail
+          hepta_json_jar="$RUNNER_TEMP/hepta-json-20240303.jar"
+          curl --fail --location --proto '=https' --tlsv1.2 --connect-timeout 15 --max-time 60 \
+            --output "$hepta_json_jar" \
+            'https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar'
+          printf '%s  %s\n' \
+            '3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed' "$hepta_json_jar" \
+            | sha256sum --check --strict
+      - name: Run the unchanged complete generation gate with host-only visibility tracing
+        run: |
+          set -euo pipefail
+          python -B "$GITHUB_WORKSPACE/$HEPTA_SOURCE/tests/owned-generation-cleanup/run_host.py" \
+            --source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
+            --output "$RUNNER_TEMP/hepta-owned-generation-diagnostic" \
+            --java-home "$JAVA_HOME" \
+            --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar" \
+            --python "$(command -v python)" --cc "$(command -v cc)"
+      - name: Preserve independent generation diagnostics even when the original gate rejects
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-owned-generation-diagnostic-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: ${{ runner.temp }}/hepta-owned-generation-diagnostic/**
+
   mnn-runtime:
     runs-on: macos-15-intel
     timeout-minutes: 45

@@ -8,6 +8,26 @@
   },
   "candidate_status": "reviewed_source_integration_pending_fresh_full_host_android_and_phone_qualification",
   "candidate_version_assigned": true,
+  "ci_visibility_diagnostic": {
+    "installed_b2ca_apk_is_not_this_source_commit": true,
+    "new_head_ci_and_full_gates_required": true,
+    "parent_commit": "ddc01631d0d376322a0e1d14627daeec6016bd3d",
+    "parent_component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
+    "parent_source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3",
+    "phone_reinstallation_required_for_diagnostics": false,
+    "prior_head_success_adopted": false,
+    "repository_workflow": {
+      "git_blob": "107afa319ea37cce145f1be2a8fc91c9bb7dc0b4",
+      "path": ".github/workflows/hepta-local-android.yml",
+      "sha256": "8cc9ca284116796ca06f3eb65a8e9019808a5d29c452d02d487ffe28c4c91598"
+    },
+    "scope": "Host diagnostics only; macro disabled Android behavior is unchanged by the reviewed trace implementation.",
+    "source_delta_paths": [
+      "native/owned-generation.inc",
+      "tests/owned-generation-cleanup/native_cases.py"
+    ],
+    "source_overlay_sha256": "5c5b66cf9db19f2f831fc903bd3b991924cbaf75a39a023b50a1c774e13f9ced"
+  },
   "complete_source_files": 1725,
   "current_validation": {
     "actual_flight_result_provider_implemented": false,
@@ -4978,9 +4998,9 @@
       "sha256": "2e8c514c30b0689e3527e9687b6fdc5bae81583a7deb23a313ddc33e7a91ffab"
     },
     {
-      "bytes": 28300,
+      "bytes": 34975,
       "path": "native/owned-generation.inc",
-      "sha256": "d063e8b3ce58e14a78d9ed9669c6702848a6dcbe1add7b1020a867adc3960aeb"
+      "sha256": "76e7af242c5025c788d80c793a3e1b47ecfb08ad6933398706676f696408be12"
     },
     {
       "bytes": 2096,
@@ -7303,9 +7323,9 @@
       "sha256": "dde60155fb4124151ff636e25145631d0dc7b1ec91fc7969e7552042dedeeeb2"
     },
     {
-      "bytes": 16637,
+      "bytes": 16677,
       "path": "tests/owned-generation-cleanup/native_cases.py",
-      "sha256": "097328e1abaa17790cb131b260ca846d3d7a5257dc09e5b763f890313b726d81"
+      "sha256": "99344181791cbf43e50c7104fc245aedfcd91567bf6477a50cc20ae571a6863e"
     },
     {
       "bytes": 10698,
@@ -8686,7 +8706,7 @@
   "qualification_policy": "Qualification is separate external evidence bound to this exact full source and actual Git/build inputs. Source review, isolated targeted tests and historical receipts do not qualify the integrated candidate.",
   "release_version_assigned": false,
   "schema": "hepta.local-source.v3",
-  "source_preservation_scope": "Every c4 path is retained. Only the two exact reviewed version-independent packets, canonical108 wiring, Android candidate version and this complete source manifest change. The separate approved CI dependency patch is outside this component. All historical fixtures, SDK/model/runtime assets and the helper7 closure retain their original bytes.",
+  "source_preservation_scope": "Preserve every original v64 source path. This CI-only revision changes the two reviewed host visibility trace files and their complete manifest pins; Android version, all Java sources, original gate assertions and production guard/deadline semantics remain unchanged. Existing base_source and integration_sources are retained as historical v64 provenance. The separately reviewed diagnostic workflow remains outside this component.",
   "version_code": 64,
   "version_metadata_policy": "Version64 identifies this source candidate. Publication, fresh original build/signature and ordinary phone acceptance are distinct gates.",
   "version_name": "0.64.0-owned-worker-runtime"

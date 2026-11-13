@@ -66,7 +66,7 @@ def compile_fixture(source,out,cc):
         h.write_text(code)
         obj=out/(variant+".o");binary=out/variant
         command([cc,"-std=c11","-Wall","-Wextra","-Werror","-O1","-fexceptions",
-                 "-DHEPTA_SDK_EXCEPTION_BOUNDARY=1",*inc,"-c",str(h),"-o",str(obj)],variant+"-c")
+                 "-DHEPTA_SDK_EXCEPTION_BOUNDARY=1","-DHEPTA_OWNED_GENERATION_HOST_TRACE=1",*inc,"-c",str(h),"-o",str(obj)],variant+"-c")
         command([cxx,str(obj),str(boundary),"-o",str(binary)],variant+"-link")
         binaries[variant]=binary
     (out/"COMPILE.json").write_text(json.dumps(rows,indent=2)+"\n")
