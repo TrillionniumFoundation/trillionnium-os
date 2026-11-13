@@ -202,6 +202,7 @@ class FullFlowTests(unittest.TestCase):
             return w.run(self.args,self.out)
 
     def test_functional_failure_and_radio_restoration_are_separate(self):
+        self.args.restore_seconds=2.0
         phone=FakePhone(self.args,self.out)
         self.assertEqual(self.run_fake(phone),3)
         report=g.strict_json((self.out/"offline-result.json").read_bytes())
