@@ -111,6 +111,52 @@ final class WebEvidenceJournal implements WebEvidenceClient.Journal {
                 .put("raw_bytes",raw==null?0:raw.length).put("raw_sha256",raw==null?JSONObject.NULL:WebEvidenceJson.sha(raw))
                 .put("recorded_elapsed_ms",SystemClock.elapsedRealtime()).put("business_verified",false).toString().getBytes(StandardCharsets.UTF_8));
     }
+    @Override public synchronized JSONObject captureAcknowledgement(String nonce,WebEvidenceReceipt expected)throws Exception{
+        current();need(WebEvidenceProtocol.hex64(nonce)&&expected!=null&&"captured".equals(expected.status)
+                &&bindingSha.equals(expected.bindingSha)&&expected.evidenceRaw()!=null,
+                "only an actual verified capture may prepare durable acknowledgement");
+        MobiMindPrivateFiles.Read requestRead=MobiMindPrivateFiles.read(new File(directory,"request-"+nonce+".json"),65536,true);
+        MobiMindPrivateFiles.Read replyRead=MobiMindPrivateFiles.read(new File(directory,"reply-"+nonce+".json"),65536,true);
+        MobiMindPrivateFiles.Read rawRead=MobiMindPrivateFiles.read(new File(directory,"raw-"+nonce+".json"),WebEvidenceProtocol.MAX_EVIDENCE_BYTES,true);
+        JSONObject original=WebEvidenceJson.parseEvidence(WebEvidenceReceipt.decode(requestRead.bytes),65536);
+        WebEvidenceReceipt.exact(original,"schema","method","request_json_utf8","request_sha256","binding_sha256","before_remote_submission","recorded_elapsed_ms");
+        String requestRaw=original.getString("request_json_utf8");
+        JSONObject request=WebEvidenceJson.parse(requestRaw,WebEvidenceProtocol.MAX_REQUEST_BYTES);
+        WebEvidenceJson.keys(request,WebEvidenceProtocol.requestKeys(WebEvidenceProtocol.CAPTURE));
+        need("hepta.web-controller-request.v1".equals(original.getString("schema"))
+                &&WebEvidenceProtocol.method(WebEvidenceProtocol.CAPTURE).equals(original.getString("method"))
+                &&bindingSha.equals(original.getString("binding_sha256"))&&Boolean.TRUE.equals(original.get("before_remote_submission"))
+                &&WebEvidenceJson.sha(requestRaw).equals(original.getString("request_sha256"))
+                &&WebEvidenceProtocol.requestSchema(WebEvidenceProtocol.CAPTURE).equals(request.getString("schema"))
+                &&nonce.equals(request.getString("request_nonce"))&&taskId.equals(request.getString("task_id"))
+                &&session.equals(request.getString("controller_session_nonce")),"durable original capture request differs");
+        JSONObject reply=WebEvidenceJson.parseEvidence(WebEvidenceReceipt.decode(replyRead.bytes),65536);
+        WebEvidenceReceipt.exact(reply,"schema","method","original_request_record_sha256","callback_json_utf8","callback_sha256",
+                "callback_verification_passed","binding_sha256","raw_file","raw_bytes","raw_sha256","recorded_elapsed_ms","business_verified");
+        String callbackRaw=reply.getString("callback_json_utf8");
+        JSONObject callback=WebEvidenceJson.parse(callbackRaw,WebEvidenceProtocol.MAX_CALLBACK_BYTES);
+        need("hepta.web-controller-reply.v1".equals(reply.getString("schema"))
+                &&WebEvidenceProtocol.method(WebEvidenceProtocol.CAPTURE).equals(reply.getString("method"))
+                &&WebEvidenceJson.sha(requestRead.bytes).equals(reply.getString("original_request_record_sha256"))
+                &&WebEvidenceJson.sha(callbackRaw).equals(reply.getString("callback_sha256"))
+                &&Boolean.TRUE.equals(reply.get("callback_verification_passed"))&&Boolean.FALSE.equals(reply.get("business_verified"))
+                &&bindingSha.equals(reply.getString("binding_sha256"))&&("raw-"+nonce+".json").equals(reply.getString("raw_file"))
+                &&rawRead.bytes.length==WebEvidenceJson.number(reply,"raw_bytes")
+                &&WebEvidenceJson.sha(rawRead.bytes).equals(reply.getString("raw_sha256"))
+                &&WebEvidenceReceipt.same(callback,expected.callback())
+                &&Arrays.equals(rawRead.bytes,expected.evidenceRaw().getBytes(StandardCharsets.UTF_8)),
+                "durable request/raw/verified callback readback differs");
+        JSONObject bound=binding();
+        JSONObject proof=org.trillionnium.hepta.webprotocol.WebCaptureAcknowledgement.proof(bound,nonce,requestRaw,callbackRaw,
+                rawRead.bytes,requestRead.bytes,replyRead.bytes);
+        requestRead.unchangedPath();replyRead.unchangedPath();rawRead.unchangedPath();current();
+        byte[] proofBytes=org.trillionnium.hepta.webprotocol.WebDomCanonical.canonical(proof).getBytes(StandardCharsets.UTF_8);
+        String leaf="transfer-"+nonce+".json";save(leaf,proofBytes);
+        MobiMindPrivateFiles.Read proofRead=MobiMindPrivateFiles.read(new File(directory,leaf),65536,true);
+        need(Arrays.equals(proofBytes,proofRead.bytes),"durable transfer proof readback differs");
+        requestRead.unchangedPath();replyRead.unchangedPath();rawRead.unchangedPath();proofRead.unchangedPath();current();
+        return WebEvidenceJson.parseEvidence(WebEvidenceReceipt.decode(proofRead.bytes),65536);
+    }
     @Override public synchronized void failure(int code,String nonce,String reason)throws Exception{
         current();need(WebEvidenceProtocol.hex64(nonce),"nonce shape");
         save("failure-"+nonce+"-"+UUID.randomUUID().toString()+".json",new JSONObject().put("schema","hepta.web-controller-rpc-failure.v1")

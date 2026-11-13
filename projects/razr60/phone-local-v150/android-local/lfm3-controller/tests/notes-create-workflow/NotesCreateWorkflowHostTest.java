@@ -133,6 +133,7 @@ public final class NotesCreateWorkflowHostTest {
     }
     static void positive(int display,String generation,int backs)throws Exception{
         Parent p=new Parent(display,generation);p.launch();NotesCreateWorkflow.Grant grant=p.mint();check(grant!=null,"exact parent create/body mints supported grant");
+        check(grant.createdObservationId.equals(p.created.observationId)&&grant.workflowInitialObservationId.equals(p.created.observationId),"immediate path preserves identical parent-after and workflow initial identities");
         Frame editor=fresh(p.created),list=p.list(),reopened=p.editor(),stable=fresh(reopened);
         List<NotesCreateWorkflow.Observation> reads=new ArrayList<NotesCreateWorkflow.Observation>();
         reads.add(observed(backs==0?list:editor));if(backs==2)reads.add(observed(fresh(editor)));if(backs>0)reads.add(observed(list));
@@ -176,7 +177,7 @@ public final class NotesCreateWorkflowHostTest {
     }
     static void noAckAndWrongIdentities()throws Exception{
         List<String> negatives=new ArrayList<String>(Arrays.asList("not-accepted","not-dispatched","stale","lease-lost","no-proof","proof-other-child","proof-retired","proof-model"));
-        for(String field:Arrays.asList("parent_observation_id","created_observation_id","parent_step","child_ordinal","owner_sha256",
+        for(String field:Arrays.asList("parent_observation_id","created_observation_id","parent_create_after_observation_id","workflow_initial_observation_id","parent_step","child_ordinal","owner_sha256",
                 "task_authorization_sha256","contract_sha256","body_sha256","target_package","target_uid","target_apk_sha256",
                 "display_id","background_generation","grants_tool_authority","parent_model_run_id","parent_fixed_intent_attempt_id"))negatives.add("proof-field:"+field);
         for(String defect:negatives){
@@ -305,6 +306,112 @@ public final class NotesCreateWorkflowHostTest {
         refused(()->NotesCreateWorkflow.run(grant,created,noPhone),"real fixture replay stops before any child observation/effect");
         check(noPhone.effects==0&&noPhone.observations==0,"no real child positive is fabricated from the old partial run");
     }
+
+    /** Synthetic delayed provider data uses the real completion gate. The
+     * initial after remains the parent source; no successful child is inferred. */
+    static Parent pendingEditor()throws Exception{
+        Parent p=new Parent(11,GENERATION);p.prepare();
+        List<Node> nodes=new ArrayList<Node>();for(Node n:p.created.nodes)if(!n.editable)nodes.add(n);
+        p.created=new Frame(p.created.observationId,P,p.created.windowId,11,GENERATION,1,true,false,nodes);
+        p.completion.action(1,p.run,p.action,true,true,false,p.before,p.created,p.fixed);
+        check(p.completion.notesPhase(p.created).launchProved&&!p.completion.notesPhase(p.created).currentBody,
+                "actual synthetic create is recorded while its first after has no editable body");
+        return p;
+    }
+    static NotesCreateWorkflow.Grant readyGrant(Parent p,List<NotesCreateWorkflow.Observation> reads,long start,long end){
+        if(reads!=null&&!reads.isEmpty())p.completion.observed(reads.get(reads.size()-1).frame);
+        return p.completion.notesCreateWorkflowAfterReadiness(1,p.run,p.action,reads,p.auth.frame(),start,end);
+    }
+    static void delayedEditorPositive()throws Exception{
+        Parent p=pendingEditor();Frame initial=p.created,ready=fresh(p.editor());
+        check(p.mint()==null,"original immediate-after guard still refuses a missing body");
+        List<NotesCreateWorkflow.Observation> reads=Arrays.asList(observed(initial),observed(ready));
+        NotesCreateWorkflow.Grant grant=readyGrant(p,reads,1000,1400);
+        check(grant!=null&&grant.createdObservationId.equals(initial.observationId)&&grant.workflowInitialObservationId.equals(ready.observationId),
+                "original create-after is retained while the distinct later frame consumes readiness");
+        check(initial.observationId.equals(grant.evidence().get("created_observation_id"))
+                &&initial.observationId.equals(grant.evidence().get("parent_create_after_observation_id"))
+                &&ready.observationId.equals(grant.evidence().get("workflow_initial_observation_id")),
+                "serialized grant never relabels the ready frame as original model after");
+        check(p.created==initial&&!p.completion.verified(ready),"first after remains unchanged and ready body alone is not saved/reopened");
+        Frame list=p.list(),reopened=p.editor(),stable=fresh(reopened);
+        FakeIO io=new FakeIO(grant,observed(list),observed(reopened),observed(stable));
+        NotesCreateWorkflow.Result result=NotesCreateWorkflow.run(grant,observed(ready),io);
+        check(p.completion.notesCreateWorkflowCompleted(result,stable)&&p.completion.controllerWorkflowReady(stable),
+                "original list/click/reopen/stable proof remains necessary after delayed readiness");
+        boolean found=false;Object proofRows=p.completion.evidence(stable).get("proofs");
+        for(Object value:(List<?>)proofRows){
+            Map<?,?> proof=(Map<?,?>)value;
+            if("notes_created_editor_readiness".equals(proof.get("kind"))){
+                found=true;check(initial.observationId.equals(proof.get("original_create_after_observation_id"))
+                        &&Boolean.TRUE.equals(proof.get("original_create_after_unchanged"))
+                        &&ready.observationId.equals(proof.get("workflow_initial_observation_id")),"proof distinguishes the original first after and later body");
+            }
+        }
+        check(found,"bounded read evidence is retained separately");
+    }
+    static void delayedEditorBindings()throws Exception{
+        for(String field:Arrays.asList("created_observation_id","parent_create_after_observation_id","workflow_initial_observation_id")){
+            Parent p=pendingEditor();Frame ready=fresh(p.editor());
+            NotesCreateWorkflow.Grant grant=readyGrant(p,Arrays.asList(observed(p.created),observed(ready)),1000,1200);
+            check(grant!=null,"delayed synthetic parent grants before callback corruption");
+            FakeIO io=new FakeIO(grant,observed(fresh(ready)));io.defect="proof-field:"+field;
+            NotesCreateWorkflow.Result result=NotesCreateWorkflow.run(grant,observed(ready),io);
+            assertRejected(p,io,result,"delayed child cannot replace either original-after or workflow-initial identity: "+field);
+            check(io.calls.size()==1&&io.observations==1&&io.records.get(0).after==null,
+                    "actual consumed delayed grant refuses corrupted child receipt before another observation");
+        }
+        for(String defect:Arrays.asList("first-id","first-source","duplicate","window","rotation","display","generation",
+                "package","truncated","body","count-one","count-five","expired","backwards","negative-time","intervening-action","installed")){
+            Parent p=pendingEditor();Frame first=p.created,ready=fresh(p.editor());
+            List<NotesCreateWorkflow.Observation> reads=new ArrayList<NotesCreateWorkflow.Observation>();
+            long start=1000,end=1400;
+            if(defect.equals("first-id"))first=fresh(first);
+            if(defect.equals("first-source"))first=new Frame(first.observationId,P,first.windowId,11,GENERATION,1,true,false,Collections.<Node>emptyList());
+            if(defect.equals("duplicate"))ready=new Frame(first.observationId,P,first.windowId,11,GENERATION,1,true,false,ready.nodes);
+            if(defect.equals("window"))ready=new Frame(ready.observationId,P,99,11,GENERATION,1,true,false,ready.nodes);
+            if(defect.equals("display"))ready=domain(ready,12,GENERATION);
+            if(defect.equals("generation"))ready=domain(ready,11,"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
+            if(defect.equals("package"))ready=new Frame(ready.observationId,"com.android.settings",ready.windowId,11,GENERATION,1,true,false,ready.nodes);
+            if(defect.equals("truncated"))ready=new Frame(ready.observationId,P,ready.windowId,11,GENERATION,1,true,true,ready.nodes);
+            if(defect.equals("body"))ready=anotherBody(ready);
+            reads.add(observed(first));reads.add(new NotesCreateWorkflow.Observation(ready,H,defect.equals("rotation")?1:0));
+            if(defect.equals("count-one"))reads.remove(1);
+            if(defect.equals("count-five"))while(reads.size()<5)reads.add(observed(fresh(ready)));
+            if(defect.equals("expired"))end=start+TaskCompletionGate.NOTES_EDITOR_READINESS_MS+1;
+            if(defect.equals("backwards"))end=start-1;
+            if(defect.equals("negative-time"))start=-1;
+            if(defect.equals("installed"))p.completion.invalidateInstalled("synthetic APK changed");
+            if(defect.equals("intervening-action")){
+                ActionDecision wait=ActionDecision.parse(new JSONObject().put("reason","synthetic actual intervening model wait")
+                        .put("action","wait").put("package",P).put("observation_id",p.created.observationId).put("duration_ms",100).toString(),ActionDecision.FIXED_INTENT_ACTION_SCHEMA);
+                p.completion.action(2,id(),wait,true,true,false,p.created,p.created,null);
+            }
+            check(readyGrant(p,reads,start,end)==null,"delayed readiness rejects "+defect);
+            check(!p.completion.controllerWorkflowReady(ready),"rejected readiness never requests success");
+        }
+        Parent p=pendingEditor();Frame ready=fresh(p.editor());p.completion.observed(ready);
+        List<NotesCreateWorkflow.Observation> reads=Arrays.asList(observed(p.created),observed(ready));
+        check(p.completion.notesCreateWorkflowAfterReadiness(1,id(),p.action,reads,p.auth.frame(),1000,1200)==null,"wrong native run rejected");
+        check(p.completion.notesCreateWorkflowAfterReadiness(2,p.run,p.action,reads,p.auth.frame(),1000,1200)==null,"wrong parent step rejected");
+        check(p.completion.notesCreateWorkflowAfterReadiness(1,p.run,p.action,reads,p.authorization.bind(id()).frame(),1000,1200)==null,"foreign task authorization rejected");
+        NotesCreateWorkflow.Grant grant=readyGrant(p,reads,1000,1200);check(grant!=null,"correct live task can bind once after refusals");
+        check(readyGrant(p,reads,1000,1200)==null,"readiness cannot mint twice");
+        FakeIO io=new FakeIO(grant);
+        refused(()->NotesCreateWorkflow.run(grant,observed(p.created),io),"old first-after credential cannot authorize children on the ready frame");
+        check(io.effects==0&&io.observations==0,"wrong initial frame fails before any child IO");
+    }
+    static void pendingEditorPhase()throws Exception{
+        Parent p=pendingEditor();NotesTaskPhaseGuard guard=new NotesTaskPhaseGuard(p.task,p.authorization);
+        NotesTaskPhaseGuard.Projection phase=guard.prepare(p.completion,p.created);
+        check("await_created_editor".equals(phase.phase)&&phase.toolMask().equals(new java.util.TreeSet<String>(Arrays.asList("wait","done"))),
+                "missing created body exposes only read/wait and honest ending");
+        check(phase.openPackages(Collections.singleton(P)).isEmpty()&&phase.scrolls(Collections.singletonMap("n0",ObservedScrollActions.observed(Arrays.asList("forward")))).isEmpty(),
+                "missing-body phase cannot relaunch or scroll the editor");
+        Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixed=new LinkedHashMap<String,org.trillionnium.hepta.background.FixedIntentTarget>();
+        fixed.put("notes.create",new org.trillionnium.hepta.background.FixedIntentTarget("notes.create","Moto",10382,null));
+        check(phase.fixedTargets(fixed).isEmpty(),"actual recorded create is never reissued while waiting for its body");
+    }
     public static void main(String[] args)throws Exception{
         if(args.length!=2)throw new IllegalArgumentException("fixture path and new output directory required");
         Path fixture=Paths.get(args[0]),out=Paths.get(args[1]);Files.createDirectories(out);
@@ -316,6 +423,9 @@ public final class NotesCreateWorkflowHostTest {
         test("child_noack_stale_callback_and_service_identity",()->noAckAndWrongIdentities());
         test("current_domain_unique_list_navigation_bound_and_stability",()->navigationAndStability());
         test("cancellation_grant_reuse_visible_collision_and_installed_change",()->cancelReuseAndCollision());
+        test("delayed_editor_preserves_first_after_and_requires_original_save_chain",()->delayedEditorPositive());
+        test("delayed_editor_read_source_time_task_window_and_action_fences",()->delayedEditorBindings());
+        test("await_created_editor_readonly_phase_never_recreates",()->pendingEditorPhase());
         JSONObject result=new JSONObject().put("all_pass",true).put("checks",checks).put("cases",cases)
                 .put("actual_parent_fixture_sha256",FIXTURE_SHA).put("all_child_positive_io_synthetic",true)
                 .put("real_parent_terminal_unchanged","partial").put("native_runtime_reverified",false).put("phone_tested",false);

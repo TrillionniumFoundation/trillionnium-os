@@ -422,8 +422,23 @@ public final class LocalTaskController implements AutoCloseable {
                         outcome.accepted,outcome.dispatched,outcome.stale);
                 if(dispatchedDecision!=null)lastModelDecision=dispatchedDecision;
                 lastTransition=observedTransition(steps,before,observation);
+                NotesEditorReadinessOutcome notesReadiness=null;
+                if(scope.config==null&&"notes.create".equals(action.action)&&outcome.dispatched&&!outcome.stale
+                        &&observation.backgroundGeneration!=null&&completion.notesCreateWorkflowRequested(authorization.frame())){
+                    emit("正在核对本次新建笔记的完整正文…");
+                    notesReadiness=awaitNotesCreatedEditor(taskId,evidence,steps,decisionRunId,authorization,completion,
+                            completionInstalled,observation,deadline);
+                    observation=notesReadiness.observation;row.put("notes_readiness_receipt_file",notesReadiness.receiptFile);
+                    lastTransition=observedTransition(steps,before,observation);
+                    if(notesReadiness.error!=null)throw notesReadiness.error;
+                }
                 NotesCreateWorkflow.Grant workflowGrant=scope.config==null&&"notes.create".equals(action.action)
-                        ?completion.notesCreateWorkflow(steps,decisionRunId,action,workflowObservation(observation),authorization.frame()):null;
+                        ?notesReadiness!=null&&notesReadiness.reads.size()>1
+                            ?completion.notesCreateWorkflowAfterReadiness(steps,decisionRunId,action,notesReadiness.reads,
+                                    authorization.frame(),notesReadiness.started,notesReadiness.finished)
+                            :completion.notesCreateWorkflow(steps,decisionRunId,action,workflowObservation(observation),authorization.frame()):null;
+                if(notesReadiness!=null&&workflowGrant==null)
+                    throw new IllegalStateException("本次正文后续就绪证据未能绑定原始新建操作，停止自动导航");
                 if(workflowGrant!=null){
                     emit("本次新建笔记正在按已授权工具流程保存并重新打开…");
                     NotesWorkflowOutcome workflow=runNotesCreateWorkflow(taskId,evidence,instruction,config,apps,history,
@@ -455,7 +470,9 @@ public final class LocalTaskController implements AutoCloseable {
                     boolean stable=before.packageName.equals(observation.packageName)&&before.windowId==observation.windowId
                             &&before.rotation==observation.rotation&&before.treeSha256.equals(observation.treeSha256);
                     if("success".equals(action.status)){
-                        TaskCompletionGate.Check check=completion.successClaim(steps,decisionRunId,completionFrame(observation),stable);
+                        WebShoppingQuote.Completion quoteCompletion=activeWebTask==null?null:
+                                activeWebTask.shoppingCompletion(action,decisionRunId,before,observation,deadline);
+                        TaskCompletionGate.Check check=completion.successClaim(steps,decisionRunId,completionFrame(observation),stable,quoteCompletion);
                         record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-completion-check.json",steps),new JSONObject(check.evidence));
                         if(check.verified){finalStatus="model_reported_done";summary=completion.completionSummary();modelSuccess=true;acceptedCompletionModelRunId=decisionRunId;break;}
                         summary=completion.incompleteSummary();
@@ -647,6 +664,85 @@ public final class LocalTaskController implements AutoCloseable {
     }
     private static NotesCreateWorkflow.Observation workflowObservation(PhoneObservation o){
         return new NotesCreateWorkflow.Observation(completionFrame(o),o.treeSha256,o.rotation);
+    }
+    private static final class NotesEditorReadinessOutcome {
+        final PhoneObservation observation;final java.util.List<NotesCreateWorkflow.Observation> reads;
+        final long started,finished;final String receiptFile;final Exception error;
+        NotesEditorReadinessOutcome(PhoneObservation observation,java.util.List<NotesCreateWorkflow.Observation> reads,
+                long started,long finished,String receiptFile,Exception error){
+            this.observation=observation;this.reads=java.util.Collections.unmodifiableList(new java.util.ArrayList<NotesCreateWorkflow.Observation>(reads));
+            this.started=started;this.finished=finished;this.receiptFile=receiptFile;this.error=error;
+        }
+    }
+    /** This runs after the actual first model action-after has been saved and
+     * consumed as create evidence. It performs no model request or app action. */
+    private NotesEditorReadinessOutcome awaitNotesCreatedEditor(String task,File directory,int step,String run,
+            TaskAuthorization.Gate auth,TaskCompletionGate completion,QualificationScopeConfig.CompletionInstalledIdentity installed,
+            PhoneObservation initial,long taskDeadline){
+        long started=SystemClock.elapsedRealtime(),deadline=Math.min(taskDeadline,started+TaskCompletionGate.NOTES_EDITOR_READINESS_MS);
+        PhoneObservation current=initial;Exception failure=null;boolean bodyReady=false;
+        java.util.List<NotesCreateWorkflow.Observation> reads=new java.util.ArrayList<NotesCreateWorkflow.Observation>();
+        java.util.Set<String> seen=new java.util.HashSet<String>();JSONArray samples=new JSONArray();JSONObject reset=null;
+        String prefix=String.format(java.util.Locale.ROOT,"step-%02d-notes-readiness",step),receiptName=prefix+"-result.json";
+        String lastObservationFile=null;
+        try{
+            if(installed==null||!completion.notesCreateWorkflowRequested(auth.frame()))
+                throw new IllegalStateException("Notes editor readiness requires the existing ordinary parent workflow authority");
+            for(int count=0;count<TaskCompletionGate.NOTES_EDITOR_MAX_OBSERVATIONS;count++){
+                String file=count==0?String.format(java.util.Locale.ROOT,"step-%02d-after.json",step)
+                        :prefix+"-observation-"+(count+1)+".json";
+                // Preserve every returned raw frame before checking whether it
+                // can authorize this workflow; rejected frames remain diagnosable.
+                if(count>0)record(directory,file,current.toJson());
+                lastObservationFile=file;
+                JSONObject sample=new JSONObject().put("observation_id",current.id).put("window_id",current.windowId)
+                        .put("display_id",current.windowMetadata.displayId).put("observation_file",file)
+                        .put("first_model_after",count==0).put("validation_accepted",false)
+                        .put("elapsed_ms",SystemClock.elapsedRealtime()-started);
+                samples.put(sample);
+                checkActive(deadline);installed.verify(service);service.requireTaskAuthorization(task,auth);
+                service.requireBackgroundObservation(task,current);
+                if(current.backgroundGeneration==null||!NotesCompletionEvidence.NOTES.equals(current.packageName)
+                        ||current.windowId!=initial.windowId||current.rotation!=initial.rotation||!seen.add(current.id))throw new IllegalStateException("Notes editor readiness received a foreign, replaced-window or repeated frame");
+                NotesCreateWorkflow.Observation read=workflowObservation(current);reads.add(read);
+                completion.observed(read.frame);TaskCompletionGate.NotesPhase facts=completion.notesPhase(read.frame);
+                sample.put("validation_accepted",true).put("current_body_matched",facts.currentBody)
+                        .put("domain_valid",facts.domainValid);
+                if(!facts.domainValid||!facts.launchProved)throw new IllegalStateException("Notes create or installed observation identity is unproved");
+                if(facts.currentBody){bodyReady=true;break;}
+                if(count+1>=TaskCompletionGate.NOTES_EDITOR_MAX_OBSERVATIONS)break;
+                if(count==0){
+                    // clearCache is a public read-side client operation. Its return
+                    // is recorded, but is never substituted for a real body frame.
+                    reset=service.resetNotesClientCache(task,auth,current);
+                    checkActive(deadline);installed.verify(service);
+                }
+                long pauseUntil=Math.min(deadline,SystemClock.elapsedRealtime()+200);
+                while(SystemClock.elapsedRealtime()<pauseUntil){
+                    checkActive(deadline);Thread.sleep(Math.min(50,Math.max(1,pauseUntil-SystemClock.elapsedRealtime())));
+                }
+                checkActive(deadline);current=awaitObservationRaw(task,directory,auth,deadline);
+            }
+            checkActive(deadline);installed.verify(service);
+            if(!bodyReady)throw new IllegalStateException("本次笔记正文尚未取得完整无障碍证据，有限读取已结束；没有重发新建或借用旧正文");
+        }catch(Exception error){failure=error;}
+        long finished=SystemClock.elapsedRealtime();
+        try{
+            record(directory,receiptName,new JSONObject().put("schema","hepta.notes-created-editor-readiness.v1")
+                    .put("task_id",task).put("model_run_id",run).put("parent_step",step)
+                    .put("first_after_observation_id",initial.id).put("first_after_preserved",true)
+                    .put("first_after_window_id",initial.windowId).put("window_replacement_allowed",false)
+                    .put("last_observation_id",current.id).put("last_observation_file",lastObservationFile==null?JSONObject.NULL:lastObservationFile)
+                    .put("max_observations",TaskCompletionGate.NOTES_EDITOR_MAX_OBSERVATIONS)
+                    .put("max_elapsed_ms",TaskCompletionGate.NOTES_EDITOR_READINESS_MS).put("started_elapsed_ms",started)
+                    .put("finished_elapsed_ms",finished).put("elapsed_ms",finished-started)
+                    .put("body_verified",bodyReady&&failure==null).put("samples",samples)
+                    .put("client_cache_reset",reset==null?JSONObject.NULL:reset)
+                    .put("error",failure==null?JSONObject.NULL:HeptaAccessibilityService.message(failure))
+                    .put("model_requests",0).put("app_actions",0).put("automatic_create_retry",false)
+                    .put("saved_or_reopened_verified",false));
+        }catch(Exception logging){if(failure==null)failure=logging;else failure.addSuppressed(logging);}
+        return new NotesEditorReadinessOutcome(current,reads,started,finished,receiptName,failure);
     }
     private static final class NotesWorkflowOutcome {
         final PhoneObservation observation;final boolean verified;final String receiptFile;final Exception error;

@@ -1,0 +1,1 @@
+package android.system;public final class OsConstants {public static final int ENOENT=2,O_RDONLY=0,O_WRONLY=1,O_CREAT=64,O_EXCL=128,O_NOFOLLOW=256,O_CLOEXEC=1024,F_GETFL=3,O_ACCMODE=3,SEEK_CUR=1;public static boolean S_ISREG(int m){return (m&0170000)==0100000;}public static boolean S_ISDIR(int m){return (m&0170000)==0040000;}}

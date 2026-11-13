@@ -3,6 +3,7 @@ from pathlib import Path
 import hashlib, json, difflib
 from prompt_evidence_adapter import adapt as add_prompt_evidence
 from warm_runtime_adapter import adapt as add_warm_runtime
+from sdk_exception_adapter import adapt as add_sdk_exception_boundary
 
 def generate(root, out):
     source_path=root/'native/worker-upstream.c'
@@ -142,6 +143,7 @@ def generate(root, out):
     }''')
     replace_once('    if(!install_signals())return 74;',
                  '    if(!install_signals(hepta_warm_enabled))return 74;')
+    adapted=add_sdk_exception_boundary(adapted)
     (out/'worker-appuid.c').write_text(adapted)
     difference=''.join(difflib.unified_diff(source.splitlines(True),adapted.splitlines(True),fromfile='frozen/worker-upstream.c',tofile='generated/worker-appuid.c'))
     (out/'worker-adapter.diff').write_text(difference)
@@ -154,6 +156,9 @@ def generate(root, out):
         'model_verification':'native full SHA256, exact filename/size/architecture, held descriptor, unchanged metadata',
         'sha256_dispatch':'runtime HWCAP_SHA2; target(sha2) function; exact upstream portable compression fallback',
         'model_digest_cache':False,'full_model_read_every_one_shot_request':True,
+        'sdk_exception_boundary':{'scope':'serialized_llm_generate_cpp_exceptions','production_cpp_link_required':True,
+            'vendor_sdk_or_abi_changed':False,'automatic_retry':False,'exception_failure_not_normalized_to_signal':True,
+            'actual_sdk_exception_phone_tested':False},
         'warm_cancellation_policy':{'eligible_syscalls_restart':True,'sigpipe_ignored_only_in_warm_process':True,
             'control_epipe_does_not_skip_sdk_cleanup':True,'sdk_or_phone_healthy_cancellation_verified':False},
         'task_worker_mode':{'schema':'hepta.geniex-task-request.result.v1','hash_scope':'one_full_read_per_owned_generation',

@@ -1,0 +1,115 @@
+{
+  "gates": [
+    {
+      "argv": [
+        "--source",
+        "{source}",
+        "--helper-source",
+        "{source}/helper-build/code7/source",
+        "--retained-helper-tests",
+        "{source}/helper-build/code7/tests/retained",
+        "--output",
+        "{output}",
+        "--java-home",
+        "{java_home}",
+        "--json-jar",
+        "{json_jar}"
+      ],
+      "name": "capture_ack39",
+      "required": {
+        "all_pass": true,
+        "cases.all_pass": true,
+        "cases.assertions": 92,
+        "cases.cases": 39,
+        "originals_unchanged": true,
+        "phone_operations": 0
+      },
+      "result": "RESULT.json",
+      "runner_sha256": "8d7bb0c6595f08b53f5b3b60f3d1dd13d071b521537b95afdb22560801373aab",
+      "script": "tests/web-capture-ack/run_ack_host_tests.py"
+    },
+    {
+      "argv": [
+        "--source",
+        "{source}",
+        "--helper-source",
+        "{source}/helper-build/code7/source",
+        "--output",
+        "{output}",
+        "--java-home",
+        "{java_home}",
+        "--json-jar",
+        "{json_jar}"
+      ],
+      "name": "capture_parser27",
+      "required": {
+        "all_pass": true,
+        "cases.all_pass": true,
+        "cases.assertions": 113,
+        "cases.cases": 27,
+        "helper7_authority_granted_from_history": false,
+        "historical_originals_unchanged": true,
+        "inputs_unchanged": true,
+        "phone_actions": 0
+      },
+      "result": "RESULT.json",
+      "runner_sha256": "609259ca3b2299b2da5937ec50e89c5e7a12cb3b465463c35b194dedbbdeeb9a",
+      "script": "tests/web-capture-ack/run_capture_parser_host.py"
+    },
+    {
+      "argv": [
+        "--source",
+        "{source}",
+        "--output",
+        "{output}",
+        "--java-home",
+        "{java_home}",
+        "--json-jar",
+        "{json_jar}"
+      ],
+      "name": "paired_helper_apk8",
+      "required": {
+        "actual_android_package_manager_executed": false,
+        "all_pass": true,
+        "cases.all_pass": true,
+        "cases.assertions": 8,
+        "cases.cases": 8,
+        "production_call_after_real_hash": true,
+        "source_unchanged": true
+      },
+      "result": "RESULT.json",
+      "runner_sha256": "2a853af0087f25562e11b0698944200e4283fdae0023f3b46f6afba018f50f13",
+      "script": "tests/web-capture-ack/run_helper_identity_host.py"
+    },
+    {
+      "argv": [
+        "--helper-source",
+        "{source}/helper-build/code7/source",
+        "--retained-helper-tests",
+        "{source}/helper-build/code7/tests/retained",
+        "--identity-tests",
+        "{source}/helper-build/code7/tests/installed-identity",
+        "--output",
+        "{output}",
+        "--java-home",
+        "{java_home}",
+        "--json-jar",
+        "{json_jar}"
+      ],
+      "name": "helper_retained87",
+      "required": {
+        "actual_android_apk_rehashed": false,
+        "all_pass": true,
+        "assertions": 754,
+        "cases": 87,
+        "original_cases_and_assertions_preserved": true,
+        "phone_operations": 0
+      },
+      "result": "RESULT.json",
+      "runner_sha256": "32078d18231ca5eaced75db52761eb06ed49385e814b0f5f6eca977f872a7bd5",
+      "script": "helper-build/code7/tests/run_retained_host_tests.py"
+    }
+  ],
+  "schema": "hepta.helper7-required-host-gates.v1",
+  "scope": "original host contracts plus new ACK/parser/pairing; physical Android durability and app business acceptance remain separate"
+}

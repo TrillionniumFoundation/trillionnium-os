@@ -32,7 +32,8 @@ def main():
     source_dir=ROOT/"src/org/trillionnium/hepta/local"
     sources=[source_dir/(name+".java") for name in PURE_CLASSES]
     sources += [source_dir/"web/WebFlightGoal.java",source_dir/"web/WebShoppingGoal.java",
-                ROOT/"tests/web-flight/legacy-boundary/WebFlightDomain.java"]
+                ROOT/"tests/web-flight/legacy-boundary/WebFlightDomain.java",
+                ROOT/"tests/web-flight/legacy-boundary/WebShoppingQuote.java"]
     report["web_fixture_boundary"]="Legacy non-Web tests use a type-only WebTaskDomain whose methods throw; actual Web classes have an independent gate"
     sources += [ROOT/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","BackgroundOwnedTaskPolicy")]
     tests=sorted((ROOT/"tests").glob("*HostTest.java"))+[
@@ -41,7 +42,7 @@ def main():
     def all_inputs():
         paths=set(ROOT.glob("*.py"))
         for directory, extensions in (("src",("*.java",)),("tests",("*.java","*.py","*.template")),
-                                      ("native",("*.c","*.h","*.inc","*.py")),("tools",("*.py",))):
+                                      ("native",("*.c","*.cpp","*.h","*.inc","*.py")),("tools",("*.py",))):
             for extension in extensions: paths.update((ROOT/directory).rglob(extension))
         paths.update(p for p in (ROOT/"tests/completion/fixtures").rglob("*") if p.is_file())
         paths.update(p for p in (ROOT/"tests/text-only-click/fixtures").rglob("*") if p.is_file())
@@ -144,6 +145,7 @@ def main():
             "-I"+str(ROOT/"native/vendor"),"-I"+str(ROOT/"native"),"-I"+str(generated),ROOT/"native/probe-worker.c"])
         run("private-prompt-evidence",[sys.executable,ROOT/"native/tests/test_prompt_evidence.py"])
         run("task-worker-native-lifecycle",[sys.executable,ROOT/"native/tests/test_warm_runtime.py"])
+        run("sdk-generate-exception-boundary",[sys.executable,ROOT/"native/tests/test_sdk_exception_boundary.py"])
         run("profile-sampler",[sys.executable,"-B",ROOT/"native/tests/test_profile_sampler.py",
             "--source",ROOT,"--output",out/"profile-sampler"])
         run("notes-completion-evidence",[sys.executable,"-B",ROOT/"tests/completion/test_notes_completion.py",

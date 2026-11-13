@@ -303,7 +303,8 @@ final class WebFlightDomain {
                 if(geometry!=null){
                     Map<String,Object> depRead=nativeFormReadback(frame,geometry,form.departure);
                     Map<String,Object> arrRead=nativeFormReadback(frame,geometry,form.arrival);
-                    Map<String,Object> dateRead=nativeFormReadback(frame,geometry,form.departureDate);
+                    DateFieldProjection dateField=nativeDateField(frame,geometry,form.departureDate,byPath);
+                    Map<String,Object> dateRead=dateField.readback;
                     if(depRead!=null)readbacks.put("departure",depRead);
                     if(arrRead!=null)readbacks.put("arrival",arrRead);
                     if(dateRead!=null)readbacks.put("date",dateRead);
@@ -319,7 +320,11 @@ final class WebFlightDomain {
 
                     addFormControl(frame,geometry,form.departure,"choose_departure_city",clicks,capabilities);
                     addFormControl(frame,geometry,form.arrival,"choose_arrival_city",clicks,capabilities);
-                    addFormControl(frame,geometry,form.departureDate,"choose_departure_date",clicks,capabilities);
+                    if(dateField.target!=null){
+                        addCapability(clicks,capabilities,dateField.target,dateField.domTargetPath,
+                                dateField.target.viewId,dateField.label,"choose_departure_date");
+                        capabilities.get(capabilities.size()-1).put("date_field_target",dateField.evidence);
+                    }
                 }
                 // A current query control is data until the actual model selection
                 // chain confirms both cities and the full calendar date.
@@ -504,6 +509,128 @@ final class WebFlightDomain {
         out.put("observed_literal_texts",control.visibleTexts);out.put("all_dom_field_strings_observed_natively",true);
         out.put("derived_sources_complete",child.sourcesComplete);out.put("dom_rect_used_as_target",false);
         return Collections.unmodifiableMap(out);
+    }
+    private static final class DateFieldProjection {
+        final PhoneObservation.Node target;final String domTargetPath,label;
+        final Map<String,Object> readback,evidence;
+        DateFieldProjection(PhoneObservation.Node target,String path,String label,
+                Map<String,Object> readback,Map<String,Object> evidence){
+            this.target=target;domTargetPath=path;this.label=label;this.readback=readback;this.evidence=evidence;
+        }
+    }
+    /** The actual form exposes a clickable date value inside the clickable
+     * labelled wrapper. A wrapper CLICK acceptance did not open the calendar.
+     * Prefer only the separately observed native value control; never synthesize
+     * a DOM click or assume that dispatch caused a calendar transition. */
+    private static DateFieldProjection nativeDateField(PhoneObservation frame,WebNativeGeometry geometry,
+            CsairFlightForm.Control control,Map<String,JSONObject> dom)throws Exception{
+        DateFieldProjection absent=new DateFieldProjection(null,null,null,null,Collections.<String,Object>emptyMap());
+        if(control.disabled)return absent;
+        PhoneObservation.Node root=uniqueNative(frame,geometry,control.id,"android.view.View",
+                control.requiredLabel,control.visibleTexts,true);
+        if(root==null||root.nativeTreePath==null)return absent;
+        List<PhoneObservation.Node> nested=new ArrayList<PhoneObservation.Node>();
+        for(PhoneObservation.Node node:frame.nodes)if(node.nativeTreePath!=null
+                &&node.nativeTreePath.startsWith(root.nativeTreePath+"/")&&node.clickable)nested.add(node);
+        if(nested.isEmpty()){
+            // Existing flat native fields retain their original exact predicate.
+            // An invalid or disabled nested control never falls back to its parent.
+            Map<String,Object> proof=new LinkedHashMap<String,Object>();
+            proof.put("mapping","original_flat_native_date_field");proof.put("nested_native_click_targets",0);
+            proof.put("calendar_opened_verified",false);proof.put("dom_rect_used_as_target",false);
+            return new DateFieldProjection(root,control.path,control.requiredLabel,
+                    nativeFormReadback(frame,geometry,control),Collections.unmodifiableMap(proof));
+        }
+        if(nested.size()!=1||!"depDate".equals(control.id)||!"出发日期".equals(control.requiredLabel)
+                ||frame.collectionStats==null||frame.collectionStats.truncated()
+                ||!root.childText.sourcesComplete)return absent;
+        String p=control.path;
+        String[] paths={p,p+"/0",p+"/1",p+"/1/0",p+"/1/0/0"};
+        String[] tags={"div","div","div","div","span"};
+        Set<String> exact=new HashSet<String>(java.util.Arrays.asList(paths));int descendants=0;
+        for(String path:dom.keySet())if(path.equals(p)||path.startsWith(p+"/")){
+            if(!exact.contains(path))return absent;descendants++;
+        }
+        if(descendants!=paths.length)return absent;
+        for(int i=0;i<paths.length;i++){
+            JSONObject node=dom.get(paths[i]);
+            if(node==null||!tags[i].equals(node.optString("tag"))
+                    ||!(i==0?"depDate":"").equals(node.optString("id"))||!visibleAncestors(node,dom)
+                    ||Boolean.TRUE.equals(node.opt("disabled"))||"true".equals(node.opt("aria_disabled"))
+                    ||Boolean.TRUE.equals(node.opt("hidden_attr"))||Boolean.TRUE.equals(node.opt("inert_attr"))
+                    ||"true".equals(node.opt("aria_hidden"))||!node.optString("role").isEmpty()
+                    ||!node.optString("aria_label").isEmpty()||!node.isNull("href_raw")
+                    ||!node.isNull("href_resolved")||!node.isNull("link_target"))return absent;
+        }
+        String day=dom.get(p+"/1/0").getString("text"),week=dom.get(p+"/1/0/0").getString("text");
+        if(!dom.get(p).getString("text").isEmpty()||!dom.get(p+"/1").getString("text").isEmpty()
+                ||!"出发日期".equals(dom.get(p+"/0").getString("text"))
+                ||!day.matches("[0-9]{1,2}月[0-9]{1,2}日")||!week.matches("周[一二三四五六日天]")
+                ||!control.visibleTexts.equals(java.util.Arrays.asList("出发日期",day,week)))return absent;
+        String literal=day+week; // Exact observed adjacent strings; no trim, normalization or inferred year.
+        // The same literal also occurs in the noninteractive TextView directly
+        // inside this value control. Count native action targets, retaining
+        // disabled duplicates, then independently require that exact child leaf.
+        PhoneObservation.Node target=nested.get(0);int matchingActions=0;
+        for(PhoneObservation.Node node:frame.nodes)if(node.clickable&&node.viewId.isEmpty()&&literal.equals(node.label()))matchingActions++;
+        if(matchingActions!=1||!dateValueTarget(target,literal,frame,geometry)
+                ||!target.nativeTreePath.equals(root.nativeTreePath+"/1")
+                ||!"android.view.View".equals(target.nativeParentClass)
+                ||!inside(new int[]{root.bounds.left,root.bounds.top,root.bounds.right,root.bounds.bottom},target))return absent;
+        Map<String,PhoneObservation.Node> nativeDescendants=new LinkedHashMap<String,PhoneObservation.Node>();
+        for(PhoneObservation.Node node:frame.nodes)if(node.nativeTreePath!=null&&node.nativeTreePath.startsWith(root.nativeTreePath+"/")){
+            if(nativeDescendants.put(node.nativeTreePath,node)!=null)return absent;
+        }
+        PhoneObservation.Node label=nativeDescendants.get(root.nativeTreePath+"/0");
+        PhoneObservation.Node value=nativeDescendants.get(root.nativeTreePath+"/1/0");
+        if(nativeDescendants.size()!=3||!dateLiteralLeaf(label,"出发日期",root,frame,geometry)
+                ||!dateLiteralLeaf(value,literal,target,frame,geometry))return absent;
+        Map<String,Object> out=new LinkedHashMap<String,Object>();
+        out.put("schema","hepta.csair-native-date-value.v1");out.put("node_id",root.id);
+        out.put("native_view_id",root.viewId);out.put("native_class",root.className);
+        out.put("node_app_tree_sha256",root.observedAppTreeSignature);out.put("native_tree_path",root.nativeTreePath);
+        out.put("native_value_node_id",target.id);out.put("native_value_tree_path",target.nativeTreePath);
+        out.put("native_value_node_app_tree_sha256",target.observedAppTreeSignature);
+        out.put("native_descendant_paths",new ArrayList<String>(nativeDescendants.keySet()));
+        out.put("dom_path",control.path);out.put("dom_value_control_path",p+"/1");
+        out.put("observed_literal_texts",control.visibleTexts);out.put("observed_native_value",literal);
+        out.put("exact_adjacent_dom_value_parts",java.util.Arrays.asList(day,week));
+        out.put("exact_join_without_normalization",true);out.put("all_dom_field_strings_observed_natively",true);
+        out.put("derived_sources_complete",true);out.put("calendar_opened_verified",false);
+        out.put("displayed_year",null);out.put("complete_departure_date_verified",false);
+        out.put("dom_rect_used_as_target",false);out.put("grants_tool_authority",false);
+        Map<String,Object> proof=Collections.unmodifiableMap(out);
+        return new DateFieldProjection(target,p+"/1",literal,proof,proof);
+    }
+    private static boolean dateValueTarget(PhoneObservation.Node node,String literal,PhoneObservation frame,
+            WebNativeGeometry geometry)throws Exception{
+        if(!node.viewId.isEmpty()||!node.text.isEmpty()||!node.description.isEmpty()
+                ||!"android.view.View".equals(node.className)||!WebEvidenceProtocol.HELPER_PACKAGE.equals(node.packageName)
+                ||!node.clickable||!node.enabled||node.editable||node.password||node.scrollable
+                ||!literal.equals(node.label())||node.observedAppTreeSignature==null
+                ||!node.observedAppTreeSignature.matches("[0-9a-f]{64}")
+                ||!geometry.contains(node.bounds.left,node.bounds.top,node.bounds.right,node.bounds.bottom)
+                ||!inside(frame.windowMetadata.rootBounds(),node)||!inside(frame.windowMetadata.windowBounds(),node)
+                ||node.bounds.left<0||node.bounds.top<0||node.bounds.right>frame.width||node.bounds.bottom>frame.height)return false;
+        ObservedChildText.Result child=node.childText;
+        if(!"derived".equals(child.status)||child.truncated||!child.sourcesComplete||child.sources.size()!=1
+                ||!child.rootSignature.matches("[0-9a-f]{64}")
+                ||!child.bind(child.rootSignature).equals(node.observedAppTreeSignature))return false;
+        ObservedChildText.Source source=child.sources.get(0);
+        return "0".equals(source.descendantPath)&&"text".equals(source.property)&&source.viewId.isEmpty()
+                &&WebEvidenceJson.sha(literal).equals(source.textSha256)
+                &&source.nodeSignature!=null&&source.nodeSignature.matches("[0-9a-f]{64}");
+    }
+    private static boolean dateLiteralLeaf(PhoneObservation.Node node,String expected,PhoneObservation.Node parent,
+            PhoneObservation frame,WebNativeGeometry geometry){
+        return node!=null&&expected.equals(node.text)&&node.description.isEmpty()&&node.viewId.isEmpty()
+                &&"android.widget.TextView".equals(node.className)&&WebEvidenceProtocol.HELPER_PACKAGE.equals(node.packageName)
+                &&"android.view.View".equals(node.nativeParentClass)&&node.enabled&&!node.clickable&&!node.editable
+                &&!node.password&&!node.scrollable&&node.observedAppTreeSignature!=null
+                &&node.observedAppTreeSignature.matches("[0-9a-f]{64}")
+                &&geometry.contains(node.bounds.left,node.bounds.top,node.bounds.right,node.bounds.bottom)
+                &&inside(frame.windowMetadata.rootBounds(),node)&&inside(frame.windowMetadata.windowBounds(),node)
+                &&inside(new int[]{parent.bounds.left,parent.bounds.top,parent.bounds.right,parent.bounds.bottom},node);
     }
     private static void addFormControl(PhoneObservation frame,WebNativeGeometry geometry,CsairFlightForm.Control control,
                                        String purpose,Set<String> clicks,List<Map<String,Object>> capabilities)throws Exception{

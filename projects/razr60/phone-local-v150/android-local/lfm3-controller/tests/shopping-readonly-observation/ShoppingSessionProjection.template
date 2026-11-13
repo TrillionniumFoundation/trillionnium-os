@@ -1,0 +1,112 @@
+package org.trillionnium.hepta.local;
+import org.json.JSONObject;
+import org.trillionnium.hepta.webprotocol.WebTaskPurpose;
+import org.trillionnium.hepta.webprotocol.WebDomStability;
+import org.trillionnium.hepta.webprotocol.WebEvidenceProtocol;
+/** Unit projection: the exact production Session methods are inserted below.
+ * Clock/outcome, authority/lease and writer are explicit host boundaries; ARM/native action endpoints always throw. */
+final class WebShoppingSessionProjection {
+    private WebTaskDomain domain,dispatchSource;
+    private WebTaskPurpose purpose;
+    private PhoneObservation current;
+    private String taskId;
+    private ShoppingDispatch shoppingDispatch;
+    private WebFlightNativeStability.Permit flightNativePermit;
+    private HeptaAccessibilityService.FlightNativeCheck flightNativeCheck;
+    private final java.util.concurrent.atomic.AtomicBoolean flightNativeEntered=new java.util.concurrent.atomic.AtomicBoolean();
+    private final java.util.Set<String> flightNativeAttemptedRuns=new java.util.HashSet<String>();
+    private Journal journal;
+    /** Shopping-only type endpoints. These fixtures cannot create an ARM or native token. */
+    private static final class Journal{
+        String bindingSha;
+        private Journal(){throw new UnsupportedOperationException("query-only journal type");}
+    }
+    private static final class ShoppingDispatch{
+        WebRegionNativeBridge bridge;
+        String run,actionKey,armRaw;
+        java.util.concurrent.atomic.AtomicBoolean entered;
+        long enteredAt,expiresAt;
+        HeptaAccessibilityService.NativeRegionCheck liveNative;
+        private ShoppingDispatch(){throw new UnsupportedOperationException("query-only shopping type");}
+    }
+    private ShoppingDispatch requireShoppingDispatch(ActionDecision action,String run){
+        throw new UnsupportedOperationException("shopping dispatch is outside this flight gate");
+    }
+    private String dispatchSourceRun,dispatchSourceAction,dispatchCheckedRun,dispatchCheckedAction;
+    private long dispatchCheckedAt;
+    private boolean retired,failRecord;
+    private WebFlightProgress flightProgress;
+    private final java.util.concurrent.atomic.AtomicBoolean nativeQueryEntered=new java.util.concurrent.atomic.AtomicBoolean();
+    private WebShoppingDomain.Navigation shoppingNavigation;
+    private PendingNavigation pendingNavigation;
+    private CityObservationRetry cityObservationRetry;
+    private WebShoppingQuote.Pending shoppingReadCompletion;
+    private TaskCompletionGate completion;
+    private static final class SystemClock {static long value;static long elapsedRealtime(){return value;}}
+    private static final class HeptaAccessibilityService {
+        void requireTaskAuthorization(String task,TaskAuthorization.Gate auth){need(auth!=null&&task.equals(auth.taskId),"same host task gate");auth.ready();}
+        private static final class FlightNativeCheck {
+            long checkedAt;
+            private FlightNativeCheck(){throw new UnsupportedOperationException("native Flight token cannot be constructed in this query gate");}
+            boolean matches(PhoneObservation frame,WebFlightNativeStability.Permit permit){
+                throw new UnsupportedOperationException("native Flight check is outside this query-only projection");
+            }
+        }
+        private static final class NativeRegionCheck{
+            long checkedAt;
+            private NativeRegionCheck(){throw new UnsupportedOperationException("native token cannot be constructed in this gate");}
+            boolean matches(PhoneObservation frame,WebRegionNativeBridge bridge){
+                throw new UnsupportedOperationException("native check is outside this flight gate");
+            }
+            JSONObject evidence()throws Exception{
+                throw new UnsupportedOperationException("native evidence is outside this flight gate");
+            }
+        }
+        static final class ActionOutcome{
+            final boolean accepted,dispatched,stale;
+            ActionOutcome(boolean a,boolean d,boolean s){accepted=a;dispatched=d;stale=s;}
+        }
+    }
+    private void record(String name,JSONObject evidence)throws Exception{
+        if(failRecord)throw new java.io.IOException("synthetic evidence writer failure");
+        if(name==null||evidence==null)throw new AssertionError("record arguments");
+        if(name.startsWith("web-shopping-final-read-")){
+            if(cancelAfterPersist)cancellation.cancelled=true;
+            if(expireAfterPersist>0)SystemClock.value=expireAfterPersist;
+        }
+    }
+    private static void need(boolean yes,String reason){WebEvidenceJson.need(yes,reason);}
+
+    private final Cancellation cancellation=new Cancellation();
+    private final Background background=new Background();
+    private final HeptaAccessibilityService service=new HeptaAccessibilityService();
+    private TaskAuthorization.Gate authorization;
+    private boolean cancelAfterPersist;private long expireAfterPersist;
+    ActionDecision modelAction;String modelRun;
+    private static final class Cancellation {boolean cancelled;boolean isCancelled(){return cancelled;}}
+    private static final class Background {boolean active=true;void requireActive(){need(active,"synthetic retired lease");}}
+    void initialize(ShoppingQuoteHost.Sample before,TaskCompletionGate gate)throws Exception{
+        domain=before.domain;dispatchSource=domain;current=before.frame;taskId=domain.taskId;purpose=ShoppingQuoteHost.purpose;
+        authorization=ShoppingQuoteHost.authorization.bind(taskId);completion=gate;
+        modelAction=ShoppingQuoteHost.done(before);modelRun=ShoppingQuoteHost.id(22);
+        dispatchSourceRun=modelRun;dispatchSourceAction=actionKey(modelAction);
+        dispatchCheckedRun=modelRun;dispatchCheckedAction=dispatchSourceAction;dispatchCheckedAt=before.receipt.ended+90;
+        SystemClock.value=before.receipt.ended+200;
+    }
+    void outcome(ShoppingQuoteHost.Sample before,boolean accepted,boolean dispatched,boolean stale)throws Exception{
+        modelActionOutcome(modelAction,modelRun,new HeptaAccessibilityService.ActionOutcome(accepted,dispatched,stale),
+            before.receipt.ended+100,before.receipt.ended+101);
+    }
+    void publish(ShoppingQuoteHost.Sample after){
+        domain=after.domain;current=after.frame;SystemClock.value=after.receipt.ended+200;
+        completion.observed(ShoppingQuoteHost.completion(after.frame));completion.bindWebDomain(domain);
+    }
+    boolean hasPending(){return shoppingReadCompletion!=null;}
+    void writerFails(){failRecord=true;}
+    void cancel(){cancellation.cancelled=true;}
+    void afterPersist(boolean cancel,long deadline){cancelAfterPersist=cancel;expireAfterPersist=deadline;}
+    WebShoppingQuote.Completion finish(ShoppingQuoteHost.Sample before,PhoneObservation after,long deadline)throws Exception{
+        return shoppingCompletion(modelAction,modelRun,before.frame,after,deadline);
+    }
+    /* EXACT_SHOPPING_SESSION_METHODS */
+}

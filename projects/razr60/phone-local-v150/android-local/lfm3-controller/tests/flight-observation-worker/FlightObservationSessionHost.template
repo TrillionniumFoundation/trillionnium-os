@@ -26,7 +26,10 @@ public final class FlightObservationSessionHost {
     private Object flightNativePermit=new Object(),flightNativeCheck=new Object();
     private String dispatchCheckedRun="old-run",dispatchCheckedAction="old-action";
     private PhoneObservation before,after;
-    private static final class Purpose {String sitePolicyId=WebTaskPurpose.FLIGHT_POLICY_ID;}
+    private static final class Purpose {String sitePolicyId=WebTaskPurpose.FLIGHT_POLICY_ID;final Object shopping=null;}
+    private static final class WebShoppingObservationStability {
+        static boolean supportsCaptures(JSONObject first,JSONObject last){throw new AssertionError("flight-only harness has no shopping capture authority");}
+    }
     private static final class Cancellation {boolean cancelled;boolean isCancelled(){return cancelled;}}
     interface Observer {PhoneObservation observe()throws Exception;}
     private static final class State {String appTreeSha256;State(String tree){appTreeSha256=tree;}}
@@ -63,8 +66,12 @@ public final class FlightObservationSessionHost {
         WebEvidenceReceipt capture(long deadline){if(++calls>2)throw new AssertionError("unbounded capture retry");return calls==1?first:last;}
     }
     private static final class WebTaskDomain {
+        final Object shopping=null;
         static WebTaskDomain observed(String task,Purpose purpose,Object authorization,PhoneObservation frame,
                 WebEvidenceReceipt capture,JSONObject binding){return new WebTaskDomain();}
+        WebTaskDomain withShoppingReadQuote(Object goal,PhoneObservation frame,WebEvidenceReceipt capture,JSONObject proof){
+            throw new AssertionError("flight-only harness cannot publish a shopping quote");
+        }
         String evidence(){return "{}";}
     }
     private static final class Completion {int bound;void bindWebDomain(WebTaskDomain d){bound++;}}

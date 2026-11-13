@@ -73,6 +73,7 @@ static bool hepta_warm_terminal(const Options *o,bool close_requested,int status
     FILE *f=fdopen(dup(dest.fd),"w");if(!f)goto terminal_close;
     fputs("{\"schema\":\"hepta.geniex-task-session.result.v1\",\"process_exit_observed\":false,\"worker_generation\":",f);
     json_string(f,hepta_warm_generation);fputs(",\"task_id\":",f);json_string(f,hepta_warm_task_id);
+    fputc(',',f);hepta_write_sdk_exception(f);
     fprintf(f,",\"pid\":%ld,\"requests_received\":%d,\"requests_completed\":%d,\"model_hash_count\":%d,"
         "\"sdk_init_count\":%d,\"model_create_count\":%d,\"model_reset_count\":%d,"
         "\"model_metadata_unchanged_before_close\":%s,\"close_requested\":%s,\"signal_observed\":%d,"

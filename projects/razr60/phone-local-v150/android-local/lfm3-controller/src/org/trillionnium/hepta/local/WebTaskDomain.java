@@ -52,9 +52,9 @@ final class WebTaskDomain {
                 &&WebEvidenceBinding.canonical(new JSONObject(auth.authorization.evidence())).equals(
                         WebEvidenceBinding.canonical(binding.getJSONObject("authorization"))),
                 "same original OWNER, actual authority and compiled site purpose required");
-        need(WebEvidenceProtocol.HELPER_VERSION_CODE==6&&"hepta.web-helper.binding.v4".equals(binding.get("schema"))
-                &&WebEvidenceJson.number(binding.getJSONObject("helper_identity"),"version_code")==6,
-                "current code6/v4 helper binding required");
+        need(WebEvidenceProtocol.HELPER_VERSION_CODE==7&&"hepta.web-helper.binding.v4".equals(binding.get("schema"))
+                &&WebEvidenceJson.number(binding.getJSONObject("helper_identity"),"version_code")==7,
+                "current code7/v4 helper binding required");
         JSONObject bg=binding.getJSONObject("background");
         need(bg.getJSONArray("selected_packages").length()==1
                 &&WebEvidenceProtocol.HELPER_PACKAGE.equals(bg.getJSONArray("selected_packages").get(0))
@@ -80,6 +80,15 @@ final class WebTaskDomain {
         need(flight!=null,"flight result belongs only to the current flight provider");
         return new WebTaskDomain(flight.withResult(actualPage));
     }
+    WebTaskDomain withShoppingReadQuote(org.trillionnium.hepta.local.web.WebShoppingGoal goal,PhoneObservation frame,
+            WebEvidenceReceipt receipt,JSONObject proof)throws Exception{
+        need(shopping!=null,"current shopping provider required");
+        return new WebTaskDomain(shopping.withReadOnlyQuote(goal,frame,receipt,proof));
+    }
+    WebTaskDomain withRecheckedShoppingQuote(WebShoppingQuote quote,PhoneObservation frame,WebEvidenceReceipt receipt)throws Exception{
+        need(shopping!=null,"current shopping provider required");
+        return new WebTaskDomain(shopping.withRecheckedQuote(quote,frame,receipt));
+    }
     boolean queryDispatched(){return flight!=null&&flight.queryDispatched();}
     boolean resultReady(){return flight!=null?flight.resultReady():shopping!=null&&shopping.resultReady();}
     Map<String,Object> resultRecord(){
@@ -102,10 +111,11 @@ final class WebTaskDomain {
         out.put("current_controls",controls);
         for(String key:new String[]{"next_goal","query_control_withheld","query_attempted","query_executed",
                 "server_query_completed","displayed_query_result_verified","query_retry_permitted","same_frame_public_price_observed","model_navigation_confirmed",
-                "result_ready_for_completion_gate","missing"})
+                "result_ready_for_completion_gate","same_frame_search_card_quote_observed","missing"})
             if(full.containsKey(key))out.put(key,full.get(key));
         out.put("current_result_ready",resultReady());out.put("whole_scene_included",false);
         if(flight!=null&&flight.resultReady())out.put("current_flight_result",flight.resultModelView());
+        if(shopping!=null&&shopping.searchQuote!=null&&shopping.resultReady())out.put("current_search_card_quote",shopping.searchQuote.modelView());
         out.put("private_full_evidence_retained",true);out.put("grants_tool_authority",false);
         try{out.put("private_full_evidence_sha256",org.trillionnium.hepta.webprotocol.WebDomCanonical.sha256(new JSONObject(full)));}
         catch(Exception malformed){throw new IllegalStateException("current web domain proof cannot be projected",malformed);}

@@ -1,0 +1,1 @@
+package android.content;public final class Intent {public ComponentName component;public Intent setComponent(ComponentName c){component=c;return this;}}

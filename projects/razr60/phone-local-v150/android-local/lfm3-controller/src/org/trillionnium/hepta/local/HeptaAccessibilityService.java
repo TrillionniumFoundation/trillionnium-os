@@ -355,6 +355,29 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(ownedController!=null&&ownedController.isRunning())throw new IllegalStateException("后台控制器尚未停止");
         if(taskBackground!=null)taskBackground.acceptReconciliation(proof);
     }
+    /** Public Android client-cache invalidation only. It neither resets the app's
+     * provider nor grants a fresh body/window proof; the next ordinary observation
+     * must reacquire and validate its own complete graph on the existing worker. */
+    JSONObject resetNotesClientCache(String id,TaskAuthorization.Gate auth,PhoneObservation expected)throws Exception{
+        requireTaskAuthorization(id,auth);requireBackgroundObservation(id,expected);
+        BackgroundSession background=backgroundFor(id);
+        if(background==null||!background.selection.allowedPackages.equals(java.util.Collections.singletonList(NotesCompletionEvidence.NOTES))
+                ||!NotesCompletionEvidence.NOTES.equals(expected.packageName)||!notesTaskPhaseFor(id,auth).supported())
+            throw new IllegalStateException("Notes cache reset requires the current selected Notes task");
+        if(observationReadWorkPending()||actionWorkPending())
+            throw new IllegalStateException("Notes cache reset cannot overlap an unfinished observation or action");
+        background.requireActive();
+        boolean supported=android.os.Build.VERSION.SDK_INT>=33;
+        boolean cleared=supported&&clearCache();
+        requireTaskAuthorization(id,auth);background.requireActive();
+        if(!ownsBackground(id,background))throw new IllegalStateException("Notes background lease changed during cache reset");
+        return new JSONObject().put("schema","hepta.notes-client-cache-reset.v1").put("task_id",id)
+                .put("authorization_sha256",auth.authorization.sha256).put("display_id",background.displayId())
+                .put("background_generation",background.generation).put("prior_observation_id",expected.id)
+                .put("prior_window_id",expected.windowId).put("api33_supported",supported).put("clear_cache_returned",cleared)
+                .put("cache_scope","this_service_android_client_only").put("provider_cache_reset",false)
+                .put("body_verified_by_reset",false).put("action_dispatched",false);
+    }
     void verifyBackgroundRemote(String id)throws Exception{BackgroundSession background=backgroundFor(id);if(background!=null)background.verifyRemote();}
     void requireBackgroundObservation(String id,PhoneObservation observed){
         BackgroundSession background=backgroundFor(id);
@@ -1397,6 +1420,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         // Mutable builders belong only to readGraph's worker. The action handoff
         // carries immutable serialized evidence, never shared rows or a mutable JSONArray.
         JSONArray flightNativeSnapshot;boolean flightNativeSnapshotComplete;int flightNativeSnapshotText;
+        int flightNativeSnapshotLimit=WebFlightNativeStability.MAX_NATIVE_NODES;
         String flightNativeSnapshotRaw,flightRetainedSnapshotRaw;
         void freezeFlightSnapshots(GraphBudget budget){
             if(flightNativeSnapshot==null)return;
@@ -1404,7 +1428,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 checkReadBudget(budget);
                 if(!flightNativeSnapshotComplete||collectionStats==null
                         ||flightNativeSnapshot.length()!=collectionStats.visited
-                        ||rows.size()>WebFlightNativeStability.MAX_NATIVE_NODES)
+                        ||rows.size()>flightNativeSnapshotLimit)
                     throw new IllegalStateException("complete bounded Flight snapshot unavailable");
                 JSONArray retained=new JSONArray();
                 for(PhoneObservation.Node row:rows){checkReadBudget(budget);retained.put(row.json());}
@@ -1431,7 +1455,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             copy.backgroundSelectionRaw=backgroundSelectionRaw;copy.backgroundOwnerSha=backgroundOwnerSha;
             copy.state=state;copy.windowMetadata=windowMetadata;copy.collectionStats=collectionStats;
             // O(1) evidence transfer; complete snapshots were frozen on the read worker.
-            copy.flightNativeSnapshotComplete=flightNativeSnapshotComplete;
+            copy.flightNativeSnapshotComplete=flightNativeSnapshotComplete;copy.flightNativeSnapshotLimit=flightNativeSnapshotLimit;
             copy.flightNativeSnapshotRaw=flightNativeSnapshotRaw;copy.flightRetainedSnapshotRaw=flightRetainedSnapshotRaw;
             try{
                 NodeRef selected=nodeId==null?null:refs.get(nodeId);if(selected!=null)copy.refs.put(nodeId,new NodeRef(selected));
@@ -1559,7 +1583,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         org.trillionnium.hepta.webprotocol.WebEvidenceProtocol.HELPER_PACKAGE));
         int retainedLimit=webEvidence?WEB_MAX_NODES:MAX_NODES,textLimit=webEvidence?WEB_MAX_CHARACTERS:MAX_CHARACTERS;
         graph.displayId=background==null?Display.DEFAULT_DISPLAY:background.displayId();
-        if(webEvidence&&activeWeb.goal!=null){graph.flightNativeSnapshot=new JSONArray();graph.flightNativeSnapshotComplete=true;}
+        if(webEvidence&&(activeWeb.goal!=null||activeWeb.purpose.shopping!=null)){
+            graph.flightNativeSnapshotLimit=activeWeb.goal!=null?WebFlightNativeStability.MAX_NATIVE_NODES:WebShoppingObservationStability.MAX_NATIVE_NODES;
+            graph.flightNativeSnapshot=new JSONArray();graph.flightNativeSnapshotComplete=true;
+        }
         graph.backgroundGeneration=background==null?null:background.generation;
         graph.backgroundBootstrapPackage=background==null?null:background.selection.initialPackage;
         graph.backgroundAllowedPackages=background==null?java.util.Collections.<String>emptyList():background.selection.allowedPackages;
@@ -1582,7 +1609,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     // Descendants may still be cached; never publish an old body as a new frame.
                     if(background!=null&&node!=root&&!node.refresh())throw new StaleObservation("后台子节点已不可用，需重新观察");
                     checkReadBudget(budget);Rect bounds=new Rect();node.getBoundsInScreen(bounds);boolean visible=node.isVisibleToUser()&&!bounds.isEmpty();
-                    String text=node.isPassword()?"":limited(string(node.getText()),96);
+                    // Preserve at most94 owner units plus the exact40-LF provider
+                    // form for the already selected background Notes app. The
+                    // global text budget, raw hash and completion rule stay unchanged.
+                    boolean notesEditorText=background!=null&&node.isEditable()
+                            &&background.selection.allowedPackages.equals(java.util.Collections.singletonList(NotesCompletionEvidence.NOTES))
+                            &&NotesCompletionEvidence.NOTES.equals(string(node.getPackageName()));
+                    String text=node.isPassword()?"":limited(string(node.getText()),notesEditorText?134:96);
                     String description=node.isPassword()?"":limited(string(node.getContentDescription()),96);
                     ObservedScrollActions scrollActions=readScrollActions(node);
                     ObservedImeEnter imeEnter=readImeEnter(node);String inputHash=inputTextHash(node);
@@ -1606,7 +1639,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     int actualChildren=node.getChildCount();
                     if(graph.flightNativeSnapshot!=null&&graph.flightNativeSnapshotComplete){
                         try{
-                            if(graph.flightNativeSnapshot.length()>=WebFlightNativeStability.MAX_NATIVE_NODES)
+                            if(graph.flightNativeSnapshot.length()>=graph.flightNativeSnapshotLimit)
                                 throw new IllegalStateException("bounded full Flight snapshot exceeded");
                             JSONObject stamp=snapshotFlightNode(node,nativePath,nativeParentClass);
                             int chars=stamp.getString("text").length()+stamp.getString("description").length();
@@ -1792,7 +1825,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     /** In-memory admission only. No scope file, live window, node refresh, or graph traversal on main. */
     private Graph requireFlightObservationCurrent(WebFlightSession web,PhoneObservation frame,Cancellation cancel){
-        if(Looper.myLooper()!=Looper.getMainLooper()||web==null||web.goal==null||taskWeb!=web
+        if(Looper.myLooper()!=Looper.getMainLooper()||web==null||(web.goal==null&&web.purpose.shopping==null)||taskWeb!=web
                 ||frame==null||frame!=current||currentGraph==null||cancel.isCancelled()||!owns(web.taskId)
                 ||taskScope==null||taskAuthorization!=web.authorization||taskBackground==null)
             throw new StaleObservation("Flight只读观察已退休或不是当前主线程图");
@@ -1837,8 +1870,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 synchronized(HeptaAccessibilityService.this){
                     Graph graph=requireFlightObservationCurrent(web,frame,cancel);
                     if(!completeFlightGraph(graph))return null;
-                    PhoneObservation.Node target=null;
-                    for(PhoneObservation.Node row:graph.rows)if("android.widget.Button".equals(row.className)
+                    PhoneObservation.Node target=web.purpose.shopping==null?null:WebShoppingObservationStability.target(graph.rows);
+                    if(web.goal!=null)for(PhoneObservation.Node row:graph.rows)if("android.widget.Button".equals(row.className)
                             &&WebFlightNativeStability.LABEL.equals(row.label())&&row.nativeTreePath!=null){
                         if(target!=null)return null;target=row;
                     }
@@ -1918,8 +1951,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             throw new StaleObservation("Flight只读capture的任务或OWNER来源不同");
         JSONArray beforeNative=new JSONArray(source.graph.flightNativeSnapshotRaw);
         JSONArray observedNative=new JSONArray(observed.flightNativeSnapshotRaw);
-        JSONObject proof=WebFlightNativeStability.compareObservationBracket(web.taskId,new JSONObject(source.frameRaw),
-                beforeNative,new JSONObject(observedSource.frameRaw),observedNative,firstCapture,lastCapture,source.targetPath);
+        JSONObject proof=web.purpose.shopping!=null
+                ?WebShoppingObservationStability.compareObservationBracket(web.taskId,new JSONObject(source.frameRaw),
+                        beforeNative,new JSONObject(observedSource.frameRaw),observedNative,firstCapture,lastCapture,source.targetPath)
+                :WebFlightNativeStability.compareObservationBracket(web.taskId,new JSONObject(source.frameRaw),
+                        beforeNative,new JSONObject(observedSource.frameRaw),observedNative,firstCapture,lastCapture,source.targetPath);
         try{
             checkReadBudget(budget);liveGraph=readGraph(budget,source.background);checkReadBudget(budget);
             if(!completeFlightGraph(liveGraph)||!observed.sameWindow(liveGraph)
@@ -1929,9 +1965,16 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             JSONArray observedRows=new JSONArray(observed.flightRetainedSnapshotRaw),liveRows=new JSONArray(liveGraph.flightRetainedSnapshotRaw);
             if(liveNative.length()!=liveGraph.collectionStats.visited||liveRows.length()!=liveGraph.collectionStats.retained)
                 throw new StaleObservation("Flight最后完整树与保留节点计数不匹配");
-            JSONObject liveProof=WebFlightNativeStability.compareNative(observedNative,liveNative,source.targetPath);
-            liveProof.put("retained_node_pairing",WebFlightNativeStability.compareRetained(observedRows,liveRows,
-                    liveProof.getString("native_slider_path")));
+            JSONObject liveProof;
+            if(web.purpose.shopping!=null){
+                liveProof=WebShoppingObservationStability.compareNative(observedNative,liveNative,source.targetPath);
+                liveProof.put("retained_node_pairing",WebShoppingObservationStability.compareRetained(observedRows,liveRows,
+                        liveProof.getString("recommendation_native_path")));
+            }else{
+                liveProof=WebFlightNativeStability.compareNative(observedNative,liveNative,source.targetPath);
+                liveProof.put("retained_node_pairing",WebFlightNativeStability.compareRetained(observedRows,liveRows,
+                        liveProof.getString("native_slider_path")));
+            }
             NodeRef liveTarget=null;
             for(PhoneObservation.Node row:liveGraph.rows)if(source.targetPath.equals(row.nativeTreePath)){
                 if(liveTarget!=null)throw new StaleObservation("Flight最后目标不唯一");liveTarget=liveGraph.refs.get(row.id);

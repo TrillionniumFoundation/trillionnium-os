@@ -1,0 +1,1 @@
+package android.webkit; public final class WebSettings { public boolean wide=true,overview=true; public boolean getUseWideViewPort(){return wide;} public boolean getLoadWithOverviewMode(){return overview;} }

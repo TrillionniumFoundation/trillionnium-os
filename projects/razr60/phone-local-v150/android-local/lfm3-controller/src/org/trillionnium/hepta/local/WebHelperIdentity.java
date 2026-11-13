@@ -20,6 +20,7 @@ import java.util.TreeMap;
 
 /** Actual ordinary installed package identity. Never trusts a caller-supplied UID. */
 final class WebHelperIdentity {
+    private static final String HELPER_APK_SHA256="edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313";
     private static final long MAX_APK=256L*1024*1024,MAX_SET=512L*1024*1024;
     final String packageName;
     final int uid;
@@ -68,11 +69,20 @@ final class WebHelperIdentity {
             WebEvidenceJson.need(before.size>0&&before.size<=MAX_APK&&total<=MAX_SET,"APK byte budget");
             hashes.put(entry.getKey(),fileSha(entry.getValue(),before));stamps.put(entry.getKey(),before);
         }
+        requireApprovedHelperArtifact(name,hashes);
         StringBuilder set=new StringBuilder();for(String logical:paths.keySet())set.append(logical).append('\t').append(hashes.getString(logical)).append('\n');
         JSONObject evidence=new JSONObject().put("package",name).put("uid",uid).put("version_code",info.getLongVersionCode())
                 .put("apk_hashes",hashes).put("apk_set_sha256",WebEvidenceJson.sha(set.toString())).put("signer_sha256",signer);
         WebHelperIdentity out=new WebHelperIdentity(name,uid,info.getLongVersionCode(),signer,paths,stamps,evidence);
         out.requireUnchanged(context);return out;
+    }
+    /** Enforce the paired helper7 build only after hashing the installed files.
+     * The controller's own APK remains the actual dynamic identity; no self-hash cycle. */
+    private static void requireApprovedHelperArtifact(String name,JSONObject hashes)throws Exception{
+        if(!WebEvidenceProtocol.HELPER_PACKAGE.equals(name))return;
+        WebEvidenceJson.need(hashes.length()==1&&hashes.has("base")
+                &&HELPER_APK_SHA256.equals(WebEvidenceJson.text(hashes,"base")),
+                "exact paired helper APK required");
     }
     void requireRequest(JSONObject claimed)throws Exception{
         WebEvidenceJson.keys(claimed,WebEvidenceProtocol.IDENTITY_KEYS);

@@ -309,9 +309,6 @@ jobs:
         run: |
           python -B "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/geniex-ci-transport-v1/fetch_verified_runtime.py" --source "$GITHUB_WORKSPACE/$HEPTA_SDK_FETCH_SOURCE" --destination "$RUNNER_TEMP/hepta-geniex" --receipt "$RUNNER_TEMP/hepta-geniex-transport.json"
           printf '%s\n' "GENIEX_ANDROID_LIB_DIR=$RUNNER_TEMP/hepta-geniex/lib" >> "$GITHUB_ENV"
-      - name: Compile Android Java and arm64 runner
-        working-directory: ${{ env.HEPTA_SOURCE }}
-        run: python -B build_mac.py
       - name: Download the current workflow's exact macOS runtime
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
@@ -325,6 +322,9 @@ jobs:
             --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
             > "$RUNNER_TEMP/hepta-mobimind-consumer-verification.json"
           printf '%s\n' "MOBIMIND_ANDROID_RUNTIME_DIR=$RUNNER_TEMP/hepta-mobimind-from-macos/producer/runtime" >> "$GITHUB_ENV"
+      - name: Compile Android Java and arm64 runner
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: python -B build_mac.py
       - name: Download the current workflow's exact UI-Venus runtime
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:

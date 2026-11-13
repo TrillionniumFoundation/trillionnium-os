@@ -120,7 +120,10 @@ public final class LocalModelEngine implements AutoCloseable {
         private Future<LocalInference.TaskCleanup> finisher;
         private int acceptedRequests;
         private WarmTask(String taskId){
-            this.taskId=taskId;cancellation=new OwnedWorkerCancellation(owner.runId,taskId);
+            this.taskId=taskId;
+            cancellation="npu".equals(configuration.compute)
+                    ?OwnedWorkerCancellation.forWarmNpu(owner.runId,taskId)
+                    :new OwnedWorkerCancellation(owner.runId,taskId);
             owner.ownedCancellation=cancellation; // Fixed before either task or Process can be published.
         }
         public String generation(){return owner.runId;}
@@ -160,7 +163,7 @@ public final class LocalModelEngine implements AutoCloseable {
                 if(task.finisher==null)task.finisher=executor.submit(()->finishWarmOwned(task));
                 finishing=task.finisher;
             }
-            return finishing.get(OwnedWorkerCancellation.FINISH_FUTURE_MILLIS,TimeUnit.MILLISECONDS);
+            return finishing.get(task.cancellation.finishFutureMillis(),TimeUnit.MILLISECONDS);
         }
         catch(Exception failure){
             if(failure instanceof InterruptedException)Thread.currentThread().interrupt();
@@ -257,7 +260,8 @@ public final class LocalModelEngine implements AutoCloseable {
         OwnedWorkerCancellation.Snapshot s=cancellation.snapshot();JSONObject evidence=new JSONObject();
         put(evidence,"schema","hepta.owned-worker-cancellation.v1");put(evidence,"worker_generation",s.generation);put(evidence,"task_id",s.taskId);
         put(evidence,"requested",s.requested);put(evidence,"process_bound",s.processBound);put(evidence,"termination_started",s.terminationStarted);
-        put(evidence,"cooperative_grace_ms",OwnedWorkerCancellation.COOPERATIVE_GRACE_MILLIS);
+        put(evidence,"cooperative_grace_ms",s.cooperativeGraceMillis);
+        put(evidence,"policy",s.policy);put(evidence,"finish_future_ms",s.finishFutureMillis);
         put(evidence,"force_observation_ms",OwnedWorkerCancellation.FORCE_OBSERVATION_MILLIS);
         put(evidence,"term_destroy_attempts",s.termAttempts);put(evidence,"term_destroy_returned",s.termReturned);
         put(evidence,"force_destroy_attempts",s.forceAttempts);put(evidence,"force_destroy_returned",s.forceReturned);

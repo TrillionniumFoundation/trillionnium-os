@@ -82,6 +82,10 @@ public final class TaskCompletionGate {
     private int displayId=-1,rejectedSuccess;private String generation,identityFailure,editorObservationId;
     private final List<Map<String,Object>> proofs=new ArrayList<Map<String,Object>>();
     private final List<Map<String,Object>> claims=new ArrayList<Map<String,Object>>();
+    public static final int NOTES_EDITOR_MAX_OBSERVATIONS=4;
+    public static final long NOTES_EDITOR_READINESS_MS=15000;
+    private int actionOrdinal,parentCreateActionOrdinal;
+    private String parentCreateAfterSourceSha;
     private int parentCreateStep;
     private String parentCreateRun,parentCreateAttempt,parentCreateBefore,parentCreateAfter,reopenActor;
     private NotesCreateWorkflow.Grant workflowGrant;
@@ -267,7 +271,7 @@ public final class TaskCompletionGate {
         }
         throw new IllegalArgumentException("completion: unsupported mutable result evidence type");
     }
-    private static String webFrameSha(NotesCompletionEvidence.Frame frame){
+    static String webFrameSha(NotesCompletionEvidence.Frame frame){
         if(!domainShape(frame)||!id(frame.observationId)||frame.packageName==null||frame.nodesTruncated||frame.nodes==null)return null;
         StringBuilder value=new StringBuilder("hepta.web-final-native-frame.v1");
         webField(value,frame.observationId);webField(value,frame.packageName);webField(value,frame.windowId);
@@ -347,6 +351,7 @@ public final class TaskCompletionGate {
         require(step>0&&step<=20&&id(run)&&action!=null&&before!=null&&after!=null,"actual bounded model/action observations required");
         require(action.toolChildOrigin==null,"tool children require their separate parent-bound proof path");
         require(action.observationId.equals(before.observationId),"action must bind its actual before observation");
+        actionOrdinal++;
         if(WEB.equals(contract.kind)){webCompletionCandidate=null;claimedWebDomain=null;}
         observed(before);
         if(!domainShape(before)||!domainShape(after)){observed(after);return;}
@@ -374,7 +379,7 @@ public final class TaskCompletionGate {
             launchProved=true;Map<String,Object> p=proof("model_bound_notes_launch",step,run,before,after);
             p.put("attempt_id",fixed.get("attempt_id"));p.put("payload_sha256",contract.bodySha256);proofs.add(p);
             parentCreateStep=step;parentCreateRun=run;parentCreateAttempt=(String)fixed.get("attempt_id");
-            parentCreateBefore=before.observationId;parentCreateAfter=after.observationId;
+            parentCreateBefore=before.observationId;parentCreateAfter=after.observationId;parentCreateActionOrdinal=actionOrdinal;parentCreateAfterSourceSha=webFrameSha(after);
         }else if(editorObserved&&!listObserved&&("back".equals(action.action)||"click".equals(action.action))
                 &&NotesCompletionEvidence.NOTES.equals(action.packageName)&&beforeBody.matched&&afterList.matched){
             listObserved=true;Map<String,Object> p=proof("editor_to_observed_list",step,run,before,after);
@@ -407,6 +412,39 @@ public final class TaskCompletionGate {
                 contract,authorization,installed,displayId,generation);
         return workflowGrant;
     }
+    /** A separately recorded bounded read sequence may become ready after the
+     * original create-after. The original action proof/id is never rewritten.
+     * Only the most recent actual parent can acquire this one-use child grant. */
+    public synchronized NotesCreateWorkflow.Grant notesCreateWorkflowAfterReadiness(int step,String run,ActionDecision parent,
+            List<NotesCreateWorkflow.Observation> reads,TaskAuthorization.Frame frame,long started,long finished){
+        if(!notesCreateWorkflowRequested(frame)||workflowGrant!=null||parent==null||parent.toolChildOrigin!=null
+                ||!"notes.create".equals(parent.action)||step!=parentCreateStep||!Objects.equals(run,parentCreateRun)
+                ||!Objects.equals(parent.observationId,parentCreateBefore)||!contract.body.equals(parent.text)
+                ||parentCreateActionOrdinal!=actionOrdinal||reads==null||reads.size()<2||reads.size()>NOTES_EDITOR_MAX_OBSERVATIONS
+                ||started<0||finished<started||finished-started>NOTES_EDITOR_READINESS_MS
+                ||!launchProved||!editorObserved||identityInvalid||priorVisibleBodyCollision||installed==null)return null;
+        NotesCreateWorkflow.Observation first=reads.get(0),ready=reads.get(reads.size()-1);
+        if(first==null||ready==null||!Objects.equals(first.frame.observationId,parentCreateAfter)
+                ||parentCreateAfterSourceSha==null||!parentCreateAfterSourceSha.equals(webFrameSha(first.frame))
+                ||body(first.frame).matched||!body(ready.frame).matched)return null;
+        java.util.Set<String> ids=new java.util.HashSet<String>();List<Map<String,Object>> frames=new ArrayList<Map<String,Object>>();
+        for(NotesCreateWorkflow.Observation read:reads){
+            if(read==null||!domainShape(read.frame)||!sameDomain(read.frame)
+                    ||read.frame.windowId!=first.frame.windowId||read.rotation!=first.rotation
+                    ||!NotesCompletionEvidence.NOTES.equals(read.frame.packageName)||!id(read.frame.observationId)
+                    ||!ids.add(read.frame.observationId))return null;
+            Map<String,Object> f=new LinkedHashMap<String,Object>();f.put("observation_id",read.frame.observationId);
+            f.put("window_id",read.frame.windowId);f.put("app_tree_sha256",read.treeSha256);f.put("rotation",read.rotation);frames.add(f);
+        }
+        workflowGrant=new NotesCreateWorkflow.Grant(taskId,step,run,parentCreateBefore,parentCreateAfter,ready.frame.observationId,parentCreateAttempt,
+                contract,authorization,installed,displayId,generation);
+        Map<String,Object> p=proof("notes_created_editor_readiness",step,run,first.frame,ready.frame);
+        p.put("original_create_after_observation_id",parentCreateAfter);p.put("original_create_after_unchanged",true);
+        p.put("readonly_observations",frames);p.put("observation_count",reads.size());p.put("elapsed_ms",finished-started);
+        p.put("new_effects_dispatched",0);p.put("grants_from_client_cache_reset",false);
+        p.put("workflow_initial_observation_id",ready.frame.observationId);proofs.add(p);
+        return workflowGrant;
+    }
     /** Consumes a real in-process child chain separately from model-click proof.
      * Serialized workflow_verified/model text can never call this path. */
     public boolean notesCreateWorkflowCompleted(NotesCreateWorkflow.Result result,NotesCompletionEvidence.Frame current){
@@ -435,8 +473,18 @@ public final class TaskCompletionGate {
     public String controllerCompletionSummary(){return "已保存并重新打开这条笔记，正文核对一致。";}
     public Check successClaim(int step,String run,NotesCompletionEvidence.Frame current){return successClaim(step,run,current,true);}
     public synchronized Check successClaim(int step,String run,NotesCompletionEvidence.Frame current,boolean finalObservationStable){
+        return successClaim(step,run,current,finalObservationStable,null);
+    }
+    synchronized Check successClaim(int step,String run,NotesCompletionEvidence.Frame current,boolean finalObservationStable,
+            WebShoppingQuote.Completion quoteCompletion){
         require(step>0&&step<=20&&id(run),"completion claim native identity required");observed(current);
-        boolean verified=finalObservationStable&&verified(current);Map<String,Object> claim=proof("native_done_success_claim",step,run,current,current);
+        boolean quoteRequired=WEB.equals(contract.kind)&&webDomain!=null&&webDomain.shopping!=null&&webDomain.shopping.searchQuote!=null;
+        boolean quoteScope=quoteCompletion!=null&&quoteCompletion.consume(this,webDomain,current,run);
+        boolean finalReadAccepted=quoteRequired?quoteScope:finalObservationStable;
+        boolean verified=finalReadAccepted&&verified(current);Map<String,Object> claim=proof("native_done_success_claim",step,run,current,current);
+        claim.put("original_whole_tree_stable",finalObservationStable);claim.put("search_quote_scope_required",quoteRequired);
+        claim.put("search_quote_scope_verified",quoteRequired&&quoteScope);
+        if(quoteRequired&&quoteScope)claim.put("search_quote_completion_scope",quoteCompletion.summary());
         claim.put("completion_verified",verified);claims.add(claim);
         if(WEB.equals(contract.kind)){
             webCompletionCandidate=null;claimedWebDomain=null;
@@ -447,7 +495,9 @@ public final class TaskCompletionGate {
         if(!verified)rejectedSuccess++;
         Map<String,Object> value=evidence(current);value.put("check_step",step);value.put("check_model_run_id",run);
         value.put("model_reported_success",true);value.put("accepted_as_completed",verified);value.put("final_observation_stable",finalObservationStable);
-        if(!finalObservationStable){List<String> absent=new ArrayList<String>(missing(current));absent.add("final_observation_changed_reobserve");value.put("missing",absent);}
+        value.put("search_quote_scope_required",quoteRequired);value.put("search_quote_scope_verified",quoteRequired&&quoteScope);
+        if(!finalReadAccepted){List<String> absent=new ArrayList<String>(missing(current));
+            absent.add(quoteRequired?"typed_search_quote_final_read_missing":"final_observation_changed_reobserve");value.put("missing",absent);}
         value.put("retry_allowed",!verified&&rejectedSuccess<MAX_REJECTED_SUCCESS);
         return new Check(verified,!verified&&rejectedSuccess<MAX_REJECTED_SUCCESS,value);
     }
@@ -527,6 +577,10 @@ public final class TaskCompletionGate {
             if("natural_csair_flight_owner.v1".equals(contract.recognition)||"official_csair_flight_owner.v1".equals(contract.recognition)){
                 require("hepta.csair-displayed-flight-result.v1".equals(value.get("schema"))
                         &&value.get("display_summary") instanceof String,"typed current flight result summary required");
+                return (String)value.get("display_summary");
+            }
+            if(WebShoppingQuote.SCHEMA.equals(value.get("schema"))){
+                require(value.get("display_summary") instanceof String,"typed current search-card quote summary required");
                 return (String)value.get("display_summary");
             }
             return "已核对小米官网的 "+value.get("model_raw")+" 页面展示价：人民币 "+value.get("amount_decimal")+" 元。";

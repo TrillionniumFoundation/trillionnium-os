@@ -107,6 +107,15 @@ final class WebEvidenceReceipt {
                     "unavailable capture changed its exact expected page");
             return new WebEvidenceReceipt(callback,null,null,null,false,false);
         }
+        if(code==WebEvidenceProtocol.ACK_CAPTURE){
+            org.trillionnium.hepta.webprotocol.WebCaptureAcknowledgement.requireRequest(request,binding);
+            need(org.trillionnium.hepta.webprotocol.WebCaptureAcknowledgement.STATUS.equals(status)&&raw==null
+                    &&Boolean.FALSE.equals(callback.get("retired"))&&callback.get("cleanup")==JSONObject.NULL
+                    &&callback.get("recovery")==JSONObject.NULL
+                    &&org.trillionnium.hepta.webprotocol.WebCaptureAcknowledgement.reason(request).equals(reason),
+                    "capture acknowledgement must bind exact durable transfer without page/cleanup authority");
+            domain(callback,binding);return new WebEvidenceReceipt(callback,null,null,null,false,false);
+        }
         if(code==WebEvidenceProtocol.CLOSE){
             need(Boolean.TRUE.equals(callback.get("retired")),"closed reply is not retired");
             if("closed".equals(status)){

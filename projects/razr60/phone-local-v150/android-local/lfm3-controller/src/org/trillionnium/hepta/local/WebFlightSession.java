@@ -49,6 +49,7 @@ final class WebFlightSession {
     private WebFlightProgress flightProgress;
     private final java.util.concurrent.atomic.AtomicBoolean nativeQueryEntered=new java.util.concurrent.atomic.AtomicBoolean();
     private PendingNavigation pendingNavigation;
+    private WebShoppingQuote.Pending shoppingReadCompletion;
     private volatile ShoppingDispatch shoppingDispatch;
     private volatile WebEvidenceReceipt currentCapture;
     private volatile WebFlightNativeStability.Permit flightNativePermit;
@@ -225,13 +226,15 @@ final class WebFlightSession {
         HeptaAccessibilityService.FlightObservationSnapshot nativeSource=null;
         try{
         service.requireBackgroundObservation(taskId,before);
-        if(goal!=null)nativeSource=service.retainFlightObservation(this,before,cancellation,captureDeadline);
+        if(goal!=null||purpose.shopping!=null)nativeSource=service.retainFlightObservation(this,before,cancellation,captureDeadline);
         WebEvidenceReceipt first=client.capture(captureDeadline);
+        if("state_changed".equals(first.status)&&"private evidence storage budget reached".equals(first.callback().opt("reason")))
+            return publishWaiting(before,first,"initial_capture_storage_exhausted");
         if("state_changed".equals(first.status)){
             // At most one read-only retry, after a fresh AX window observation; never repeat an action.
             if(nativeSource!=null){nativeSource.close();nativeSource=null;}
             before=observer.observe();service.requireBackgroundObservation(taskId,before);
-            if(goal!=null)nativeSource=service.retainFlightObservation(this,before,cancellation,captureDeadline);
+            if(goal!=null||purpose.shopping!=null)nativeSource=service.retainFlightObservation(this,before,cancellation,captureDeadline);
             first=client.capture(captureDeadline);
             need("captured".equals(first.status)||"unavailable".equals(first.status)||"state_changed".equals(first.status),
                     "unknown reply after the single evidence retry");
@@ -263,6 +266,14 @@ final class WebFlightSession {
         boolean sameCaptureDomain=sameCaptureIdentity&&domBracket!=null;
         boolean stable=sameOriginalFrame&&sameCaptureDomain;
         JSONObject nativeObservationBracket=null;
+        if(sameCaptureIdentity&&purpose.shopping!=null&&nativeSource!=null
+                &&WebShoppingObservationStability.supportsCaptures(first.capture(),last.capture())){
+            // A private complete native proof admits only this new card observation.
+            // It creates no product ARM; beforeModelAction and native dispatch retain every original gate.
+            nativeObservationBracket=service.verifyFlightObservationBracket(this,nativeSource,after,first,last,
+                    cancellation,captureDeadline);
+            stable=true;
+        }
         if(retryLoadingDocument(first,last,after,stable,domBracket,observationRetry,captureDeadline)){
             loadingAttemptKey=actualLoadingKey;
             captureDeadline=Math.min(captureDeadline,loadingDocumentDeadline);
@@ -285,6 +296,8 @@ final class WebFlightSession {
         need(firstGeometry==null&&lastGeometry==null||firstGeometry!=null&&firstGeometry.same(lastGeometry),
                 "native WebView geometry changed across the AX/DOM bracket");
         WebTaskDomain observed=applyNavigation(WebTaskDomain.observed(taskId,purpose,authorization,after,last,immutableBinding));
+        if(observed.shopping!=null&&nativeObservationBracket!=null)
+            observed=observed.withShoppingReadQuote(purpose.shopping,after,last,nativeObservationBracket);
         record("web-frame-"+after.id+".json",new JSONObject(observed.evidence())
                 .put("first_capture_request_nonce",first.callback().getString("request_nonce"))
                 .put("last_capture_request_nonce",last.callback().getString("request_nonce"))
@@ -336,8 +349,9 @@ final class WebFlightSession {
         if(!key.equals(loadingDocumentKey)){
             loadingDocumentKey=key;loadingDocumentStarted=now;loadingDocumentReadRetries=0;
             // The actual city failure cost about 6.8s per full extra AX/DOM bracket.
+            // Actual MI capture plus verified reply costs about 4.5s; two full extra reads need a 32s phase.
             // Freeze one phase deadline; no retry extends it or the original task deadline.
-            loadingDocumentDeadline=Math.min(deadline,now+(cityPickerTransition?16000:6000));
+            loadingDocumentDeadline=Math.min(deadline,now+(shoppingUnstable?32000:cityPickerTransition?16000:6000));
         }
         if(loadingDocumentReadRetries>=2||now+250>=Math.min(deadline,loadingDocumentDeadline))return false;
         need(!retired&&!cancellation.isCancelled(),"web task retired while waiting for page content");
@@ -365,6 +379,19 @@ final class WebFlightSession {
         return true;
     }
     private PhoneObservation publishWaiting(PhoneObservation frame,WebEvidenceReceipt receipt,String reason)throws Exception{
+        shoppingReadCompletion=null;
+        JSONObject callback=receipt.callback();
+        if(("unavailable".equals(receipt.status)||"state_changed".equals(receipt.status))
+                &&"private evidence storage budget reached".equals(callback.opt("reason"))){
+            // This authenticated helper refusal cannot recover by waiting for the page.
+            // Preserve it and leave through the ordinary task failure/cleanup path.
+            record("web-capture-fatal-"+callback.getString("request_nonce")+".json",new JSONObject()
+                    .put("schema","hepta.web-permanent-capture-failure.v1").put("task_id",taskId)
+                    .put("observation_id",frame.id).put("capture_callback",callback)
+                    .put("reason","private_evidence_storage_exhausted").put("automatic_retry",false)
+                    .put("model_wait_requested",false).put("business_verified",false));
+            throw new IllegalStateException("网页证据存储已达上限，本次任务已停止；证据归档完成后才能继续查询");
+        }
         WebTaskDomain waiting=applyNavigation(WebTaskDomain.waiting(taskId,purpose,authorization,frame,receipt,immutableBinding));
         record("web-frame-"+frame.id+".json",new JSONObject(waiting.evidence()).put("reason",reason)
                 .put("capture_metadata_only",true).put("ax_dom_capture_is_atomic",false)
@@ -374,7 +401,7 @@ final class WebFlightSession {
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;return frame;
     }
     void beforeModelAction(ActionDecision action,String run,long deadline)throws Exception{
-        cityObservationRetry=null;
+        cityObservationRetry=null;shoppingReadCompletion=null;
         boolean prepared=false;
         try{
         WebTaskDomain original=domain;PhoneObservation frame=current;
@@ -397,6 +424,8 @@ final class WebFlightSession {
         WebEvidenceReceipt fresh=client.capture(deadline);
         need("captured".equals(fresh.status),"document changed before action");
         WebTaskDomain rechecked=applyNavigation(WebTaskDomain.observed(taskId,purpose,authorization,frame,fresh,immutableBinding));
+        if(original.shopping!=null&&original.shopping.searchQuote!=null)
+            rechecked=rechecked.withRecheckedShoppingQuote(original.shopping.searchQuote,frame,fresh);
         need(original.instance.equals(rechecked.instance)&&original.epoch==rechecked.epoch
                 &&original.pageKey.equals(rechecked.pageKey)&&original.clickIds.equals(rechecked.clickIds)
                 &&original.editValues.equals(rechecked.editValues),"page target changed since model observation");
@@ -540,7 +569,7 @@ final class WebFlightSession {
     /** Called with the original executor Outcome, immediately after the actual awaited dispatch. */
     void modelActionOutcome(ActionDecision action,String run,HeptaAccessibilityService.ActionOutcome outcome,
                             long dispatchStarted,long dispatchEnded)throws Exception{
-        cityObservationRetry=null;
+        cityObservationRetry=null;shoppingReadCompletion=null;
         WebTaskDomain before=dispatchSource;
         try{
         need(!retired&&before!=null&&outcome!=null&&run!=null&&run.equals(dispatchSourceRun)
@@ -552,6 +581,14 @@ final class WebFlightSession {
                 .put("dispatch_before_elapsed_ms",dispatchStarted).put("dispatch_after_elapsed_ms",dispatchEnded)
                 .put("accepted",outcome.accepted).put("dispatched",outcome.dispatched).put("stale",outcome.stale)
                 .put("source","actual_controller_executor_outcome").put("model_issued",true).put("business_verified",false));
+        if(before.shopping!=null&&"done".equals(action.action)&&"success".equals(action.status)){
+            WebShoppingQuote.Pending pending=WebShoppingQuote.Pending.fromOutcome(completion,before,action,run,
+                    outcome.accepted,outcome.dispatched,outcome.stale,dispatchStarted,dispatchEnded);
+            if(pending!=null){
+                record("web-shopping-read-done-source-"+run+".json",pending.evidence());
+                shoppingReadCompletion=pending;
+            }
+        }
         if(before.flight!=null&&"click".equals(action.action)){
             need(flightProgress!=null,"actual flight progression missing");
             flightProgress=flightProgress.outcome(before.flight,action,run,outcome.accepted,outcome.dispatched,
@@ -590,6 +627,18 @@ final class WebFlightSession {
             flightNativePermit=null;flightNativeCheck=null;
         }
     }
+    WebShoppingQuote.Completion shoppingCompletion(ActionDecision action,String run,PhoneObservation before,PhoneObservation after,long deadline)throws Exception{
+        WebShoppingQuote.Pending pending=shoppingReadCompletion;shoppingReadCompletion=null;
+        if(pending==null)return null;
+        need(!retired&&!cancellation.isCancelled()&&SystemClock.elapsedRealtime()<deadline&&current==after&&domain!=null,"current final read is unavailable");
+        service.requireTaskAuthorization(taskId,authorization);background.requireActive();
+        WebShoppingQuote.Completion proof=pending.complete(completion,domain,action,run,before,after);
+        need(!retired&&!cancellation.isCancelled()&&SystemClock.elapsedRealtime()<deadline&&current==after&&domain!=null,"final quote read retired or timed out");
+        service.requireTaskAuthorization(taskId,authorization);background.requireActive();
+        record("web-shopping-final-read-"+run+".json",proof.evidence());
+        need(!retired&&!cancellation.isCancelled()&&SystemClock.elapsedRealtime()<deadline&&current==after&&domain!=null,"persisted final quote read retired or timed out");
+        service.requireTaskAuthorization(taskId,authorization);background.requireActive();return proof;
+    }
     private WebTaskDomain applyNavigation(WebTaskDomain value)throws Exception{
         if(value.flight!=null){
             if(flightProgress==null)flightProgress=WebFlightProgress.begin(value.flight);
@@ -615,12 +664,12 @@ final class WebFlightSession {
                 &&!hasUnreleased(service),"helper retirement proof does not match this original task");
         cleanupKnown=true;
     }
-    void serviceRetired(){retired=true;cityObservationRetry=null;if(flightProgress!=null)flightProgress.retire();domain=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
+    void serviceRetired(){retired=true;cityObservationRetry=null;shoppingReadCompletion=null;if(flightProgress!=null)flightProgress.retire();domain=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;client.close();}
     Cleanup close(String reason){
         TaskCompletionGate.WebCloseAttempt completionClose=completion.beginWebClose(this,domain,taskId,journal.bindingSha,reason);
         boolean closeReturnedNormally=false;
-        retired=true;cityObservationRetry=null;if(flightProgress!=null)flightProgress.retire();domain=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
+        retired=true;cityObservationRetry=null;shoppingReadCompletion=null;if(flightProgress!=null)flightProgress.retire();domain=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;completion.clearWebDomain();
         try{
             if(!journal.attachWasPrepared()){

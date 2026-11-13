@@ -36,6 +36,9 @@ def main():
     output.mkdir(parents=True, exist_ok=False)
     source = root / 'src/org/trillionnium/hepta/local/WebFlightSession.java'
     legacy = test / 'reference-v59/WebFlightSession.java.reference'
+    previous_budget = test / 'reference-v62/WebFlightSession.java.reference'
+    need(sha(previous_budget.read_bytes()) == '17e9ed2c06d035924fcf02c8eaa5425c8fc32fd9a17e7f566d8446545e2e7f20',
+         'exact published v62 six-second shopping reference changed')
     need(sha(legacy.read_bytes()) == 'd413bd893e3ca01404b1e76a1a188b7c741f3d6699c8d8e97655dcd9590e6a4d',
          'exact c6a1d9 v59 Session reference changed')
     jar = args.json_jar.resolve()
@@ -52,6 +55,52 @@ def main():
         need(len(raw) == row['bytes'] and sha(raw) == row['sha256'], 'original retained bytes differ')
         (fixture / row['name']).write_bytes(raw)
     (fixture / 'PROVENANCE.json').write_bytes((original_fixture / 'PROVENANCE.json').read_bytes())
+    budget_fixture = test / 'fixtures/actual-shopping-v61-budget-r1'
+    budget_provenance = json.loads((budget_fixture / 'PROVENANCE.json').read_text())
+    budget_originals = output / 'budget-originals'
+    budget_originals.mkdir()
+    budget = {}
+    for row in budget_provenance['files']:
+        raw = (budget_fixture / row['file']).read_bytes()
+        need(len(raw) == row['bytes'] and sha(raw) == row['sha256'], 'actual budget original changed')
+        (budget_originals / row['file']).write_bytes(raw)
+        budget[row['role']] = (json.loads(raw), raw)
+    wait = budget['wait'][0]
+    remaining = []
+    for prefix in ('first', 'last'):
+        request, raw = budget[prefix + '_request']
+        reply = budget[prefix + '_reply'][0]
+        r = json.loads(request['request_json_utf8'])
+        c = json.loads(reply['callback_json_utf8'])
+        need(sha(raw) == reply['original_request_record_sha256'] and reply['callback_verification_passed'] is True,
+             'actual successful RPC record chain differs')
+        need(r['request_nonce'] == c['request_nonce'] and r['task_id'] == wait['task_id']
+             and request['binding_sha256'] == reply['binding_sha256'] == wait['binding_sha256'], 'actual same RPC identity differs')
+        cost = reply['recorded_elapsed_ms'] - request['recorded_elapsed_ms']
+        need(cost > 0 and reply['recorded_elapsed_ms'] <= r['deadline_elapsed_ms'], 'actual RPC timing invalid')
+        remaining.append(cost)
+    extra = budget['extra_request'][0]
+    extra_request = json.loads(extra['request_json_utf8'])
+    failure = budget['extra_failure'][0]
+    phase_deadline = wait['deadline_elapsed_ms']
+    need(extra_request['deadline_elapsed_ms'] == phase_deadline == failure['recorded_elapsed_ms']
+         and extra_request['request_nonce'] == failure['request_nonce']
+         and failure['binding_sha256'] == extra['binding_sha256'] == wait['binding_sha256']
+         and failure['reason'] == 'evidence RPC deadline exceeded' and failure['outcome_known'] is False
+         and failure['automatic_retry'] is False and wait['read_only_retry'] == 1 and wait['maximum_extra_reobservations'] == 2,
+         'actual bounded first extra RPC failure differs')
+    available = phase_deadline - extra['recorded_elapsed_ms']
+    overhead = extra['recorded_elapsed_ms'] - (phase_deadline - 6000) - 200
+    need(0 < available < min(remaining) and overhead > 0, 'original budget mismatch not reproduced by actual clocks')
+    budget_timing = {'schema': 'hepta.actual-shopping-budget-timing.v1', 'task_id': wait['task_id'],
+                    'completed_rpc_recorded_ms': remaining, 'maximum_completed_rpc_recorded_ms': max(remaining),
+                    'actual_extra_rpc_remaining_ms': available,
+                    'actual_wait_to_next_request_excluding_sleep_ms': overhead,
+                    'old_common_window_ms': 6000, 'proposed_common_window_ms': 32000,
+                    'phase_start_inferred_from_exact_previous_source': True,
+                    'boundary': 'Recorded request/reply costs replayed on explicit host clock; subsequent stable frames are synthetic.',
+                    'future_stability_proven': False, 'business_verified': False}
+    (fixture / 'ACTUAL-BUDGET-TIMING.json').write_text(json.dumps(budget_timing, indent=2) + '\n')
     spec = importlib.util.spec_from_file_location('method_extractor', root / 'tests/action-worker/run_host_tests.py')
     extractor = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(extractor)
@@ -66,6 +115,7 @@ def main():
     report = {'schema': 'hepta.shopping-retry-host-run.v1', 'all_pass': False,
               'source_sha256': sha(source.read_bytes()), 'reference_v59_sha256': sha(legacy.read_bytes()),
               'template_sha256': sha(template.read_bytes()), 'originals': provenance,
+              'actual_budget_originals': budget_provenance, 'actual_budget_timing': budget_timing,
               'source_inputs': [{'path': str(p), 'sha256': sha(p.read_bytes())} for p in inputs],
               'phone_actions': 0, 'actual_authenticated_ipc_or_native_authority_proven': False,
               'future_stable_sequences_synthetic': True, 'stages': []}
@@ -82,7 +132,7 @@ def main():
         need(run.returncode == 0, 'host command failed: ' + name)
 
     try:
-        for name, original in [('legacy', legacy), ('current', source)]:
+        for name, original in [('legacy', legacy), ('budget_previous', previous_budget), ('current', source)]:
             selected = signatures + ([] if name == 'legacy' else ['private static String loadingKey(WebEvidenceReceipt receipt)'])
             methods = [extractor.body(original.read_text(), sig) for sig in selected]
             destination = output / name
@@ -99,14 +149,14 @@ def main():
                                    'org.trillionnium.hepta.local.ShoppingObservationRetryHost', fixture,
                                    destination / 'CASES.json', name])
             report[name] = json.loads((destination / 'CASES.json').read_text())
-        report['all_pass'] = report['legacy']['all_pass'] and report['current']['all_pass']
+        report['all_pass'] = report['legacy']['all_pass'] and report['budget_previous']['all_pass'] and report['current']['all_pass']
     except Exception as error:
         report['error'] = type(error).__name__ + ': ' + str(error)
     finally:
         (output / 'RESULT.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
     print(json.dumps({'all_pass': report['all_pass'], 'error': report.get('error'),
                       'legacy_cases': report.get('legacy', {}).get('cases'),
-                      'current_cases': report.get('current', {}).get('cases'), 'result': str(output / 'RESULT.json')}))
+                      'current_cases': report.get('current', {}).get('cases'), 'previous_budget_cases': report.get('budget_previous', {}).get('cases'), 'result': str(output / 'RESULT.json')}))
     return 0 if report['all_pass'] else 1
 
 

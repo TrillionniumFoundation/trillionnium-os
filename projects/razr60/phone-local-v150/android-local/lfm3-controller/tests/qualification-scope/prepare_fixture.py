@@ -71,6 +71,11 @@ def prepare(source, output):
     flight_stability_raw=flight_stability_path.read_text()
     flight_limit=section(flight_stability_raw, '    static final int MAX_NATIVE_NODES=', '    private WebFlightNativeStability()')
     (output/'WebFlightNativeStability.java').write_text("package org.trillionnium.hepta.local;\n/** Type-only legacy boundary: exact production collection limit, no Flight permit construction. */\nfinal class WebFlightNativeStability {\n"+flight_limit+"    static final class Permit {\n        private Permit(){throw new AssertionError(\"legacy fixture has no Flight stability permit\");}\n    }\n    private WebFlightNativeStability(){throw new AssertionError(\"legacy fixture has no Flight capability\");}\n}\n")
+    shopping_stability_path=pkg/'WebShoppingObservationStability.java'
+    shopping_raw=shopping_stability_path.read_text()
+    shopping_limit=[line for line in shopping_raw.splitlines(keepends=True) if line.startswith('    static final int MAX_NATIVE_NODES=')]
+    if len(shopping_limit)!=1:raise RuntimeError('one exact production shopping collection bound required')
+    (output/'WebShoppingObservationStability.java').write_text("package org.trillionnium.hepta.local;\n/** Type-only non-Web boundary: exact collection limit, no shopping read or completion authority. */\nfinal class WebShoppingObservationStability {\n"+shopping_limit[0]+"    private WebShoppingObservationStability(){throw new AssertionError(\"legacy fixture has no shopping read capability\");}\n}\n")
     session = (pkg / 'LocalTaskSession.java').read_text()
     session_parts = {
         'schedule': section(session, '    public boolean schedule(final String owner,String source,String testNonceSha,long delayMillis)', '    /** The only caller is the positive button'),
@@ -106,7 +111,8 @@ def prepare(source, output):
     if web_fixture_compile.read_bytes()!=web_fixture_raw or web_fixture_source.read_bytes()!=web_fixture_raw:
         raise RuntimeError('Exact Web type-boundary compiler copy required')
     web_dom_canonical=source/'src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java'
-    files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java',web_protocol,web_dom_canonical]
+    files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java',web_protocol,web_dom_canonical,
+              source/'tests/web-flight/legacy-boundary/WebShoppingQuote.java']
     files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','FixedIntentDispatch','BrokerProtocol')]
     files += sorted(output.glob('*.java'))
     files += sorted((Path(__file__).parent/'fixtures').rglob('*.java'))
@@ -122,6 +128,9 @@ def prepare(source, output):
         'flight_native_fixture_boundary':'The complete production validate branch remains; all Flight permit/live-check endpoints throw, and the graph freezer uses the actual production WebDomCanonical with the exact production Flight node limit',
         'flight_source_files':{str(p.relative_to(source)):hashlib.sha256(p.read_bytes()).hexdigest() for p in (flight_stability_path,web_dom_canonical)},
         'flight_collection_limit':{'bytes':len(flight_limit.encode()),'sha256':hashlib.sha256(flight_limit.encode()).hexdigest()},
+        'shopping_collection_limit':{'source':str(shopping_stability_path.relative_to(source)),
+            'source_sha256':hashlib.sha256(shopping_stability_path.read_bytes()).hexdigest(),
+            'bytes':len(shopping_limit[0].encode()),'sha256':hashlib.sha256(shopping_limit[0].encode()).hexdigest()},
         'web_fixture_compiler_copy':{'source_path':str(web_fixture_source.relative_to(source)),
             'compiler_path':str(web_fixture_compile),'bytes':len(web_fixture_raw),
             'sha256':hashlib.sha256(web_fixture_raw).hexdigest(),'byte_identical':True},

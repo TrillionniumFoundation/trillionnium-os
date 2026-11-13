@@ -1,0 +1,7 @@
+package org.trillionnium.hepta.webhelper;import android.os.*;import android.content.Context;import org.json.JSONObject;import org.trillionnium.hepta.webprotocol.WebEvidenceProtocol;
+public final class HelperPeer extends Binder implements AutoCloseable {public final AckSessionProjection session;
+ public HelperPeer(Context context,JSONObject binding)throws Exception{int old=android.os.Process.myUid();android.os.Process.fixtureUid(10484);try{session=new AckSessionProjection(context,binding);}finally{android.os.Process.fixtureUid(old);}}
+ public String getInterfaceDescriptor(){return WebEvidenceProtocol.DESCRIPTOR;}
+ protected boolean onTransact(int code,Parcel data,Parcel reply,int flags)throws RemoteException{int old=android.os.Process.myUid();Looper loop=Looper.myLooper();android.os.Process.fixtureUid(10484);Looper.fixture(Looper.getMainLooper());try{data.enforceInterface(WebEvidenceProtocol.DESCRIPTOR);String wire=data.readString();IBinder callback=data.readStrongBinder();if(data.dataAvail()!=0)throw new IllegalStateException("trailing host parcel");session.dispatch(code,wire,callback);return true;}catch(Exception e){throw new RemoteException(e.toString());}finally{android.os.Process.fixtureUid(old);Looper.fixture(loop);}}
+ public void clickAndCommit()throws Exception{int old=android.os.Process.myUid();android.os.Process.fixtureUid(10484);try{session.fixtureClickAndCommit();}finally{android.os.Process.fixtureUid(old);}}public void close()throws Exception{session.close();}
+}

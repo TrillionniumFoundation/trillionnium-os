@@ -44,7 +44,7 @@ public final class NotesCreateWorkflow {
     /** Only the task completion gate mints this after its real parent launch/body.
      * A grant is object-bound and single use; serialized hashes are evidence, not capabilities. */
     public static final class Grant {
-        public final String taskId,parentRunId,parentObservationId,createdObservationId,attemptId,workflowId;
+        public final String taskId,parentRunId,parentObservationId,createdObservationId,workflowInitialObservationId,attemptId,workflowId;
         public final String ownerSha256,contractSha256,authorizationSha256,bodySha256;
         public final int parentStep,displayId;
         public final String generation;
@@ -57,16 +57,24 @@ public final class NotesCreateWorkflow {
         Grant(String task,int step,String run,String beforeId,String afterId,String attempt,
               TaskCompletionGate.Contract contract,TaskAuthorization authorization,
               NotesCompletionEvidence.Installed installed,int display,String generation){
-            require(isId(task)&&step>0&&step<=20&&isId(run)&&isId(beforeId)&&isId(afterId)&&isSha(attempt),"parent identity required");
+            this(task,step,run,beforeId,afterId,afterId,attempt,contract,authorization,installed,display,generation);
+        }
+        /** The original model after and the later readiness observation remain
+         * distinct. Only the explicit workflow initial frame can consume this grant. */
+        Grant(String task,int step,String run,String beforeId,String afterId,String initialId,String attempt,
+              TaskCompletionGate.Contract contract,TaskAuthorization authorization,
+              NotesCompletionEvidence.Installed installed,int display,String generation){
+            require(isId(task)&&step>0&&step<=20&&isId(run)&&isId(beforeId)&&isId(afterId)&&isId(initialId)&&isSha(attempt),"parent identity required");
             require(contract!=null&&TaskCompletionGate.NOTES.equals(contract.kind)&&contract.body!=null
                     &&contract.body.length()<95&&authorization!=null&&installed!=null,"supported complete parent contract required");
-            taskId=task;parentStep=step;parentRunId=run;parentObservationId=beforeId;createdObservationId=afterId;attemptId=attempt;
+            taskId=task;parentStep=step;parentRunId=run;parentObservationId=beforeId;createdObservationId=afterId;
+            workflowInitialObservationId=initialId;attemptId=attempt;
             this.authorization=authorization;authorizationSha256=authorization.sha256;ownerSha256=contract.ownerSha256;
             contractSha256=contract.contractSha256;body=contract.body;bodySha256=contract.bodySha256;this.installed=installed;
             displayId=display;this.generation=generation;workflowId=hash(task+"|"+run+"|"+attempt+"|"+contractSha256);
         }
         private synchronized void consume(Observation initial){
-            require(!consumed&&!retired&&createdObservationId.equals(initial.frame.observationId),"workflow grant used or wrong initial frame");
+            require(!consumed&&!retired&&workflowInitialObservationId.equals(initial.frame.observationId),"workflow grant used or wrong initial frame");
             require(authorization.allows("notes.create")&&authorization.allows("back")&&authorization.allows("click"),"workflow child authority missing");
             require(body(initial),"created body required before workflow");consumed=true;
         }
@@ -101,7 +109,8 @@ public final class NotesCreateWorkflow {
         public synchronized Map<String,Object> evidence(){
             Map<String,Object> o=map();o.put("schema",SCHEMA);o.put("workflow_id",workflowId);o.put("task_id",taskId);
             o.put("parent_step",parentStep);o.put("parent_model_run_id",parentRunId);o.put("parent_observation_id",parentObservationId);
-            o.put("created_observation_id",createdObservationId);o.put("parent_fixed_intent_attempt_id",attemptId);
+            o.put("created_observation_id",createdObservationId);o.put("parent_create_after_observation_id",createdObservationId);
+            o.put("workflow_initial_observation_id",workflowInitialObservationId);o.put("parent_fixed_intent_attempt_id",attemptId);
             o.put("owner_sha256",ownerSha256);o.put("contract_sha256",contractSha256);o.put("task_authorization_sha256",authorizationSha256);
             o.put("body_sha256",bodySha256);o.put("target_package",installed.packageName);o.put("target_uid",installed.uid);
             o.put("target_apk_sha256",installed.apkHashes);o.put("display_id",displayId);o.put("background_generation",generation);
@@ -153,6 +162,8 @@ public final class NotesCreateWorkflow {
                     &&id.equals(p.get("child_id"))&&grant.workflowId.equals(p.get("workflow_id"))&&grant.taskId.equals(p.get("task_id"))
                     &&grant.parentRunId.equals(p.get("parent_model_run_id"))&&grant.attemptId.equals(p.get("parent_fixed_intent_attempt_id"))
                     &&grant.parentObservationId.equals(p.get("parent_observation_id"))&&grant.createdObservationId.equals(p.get("created_observation_id"))
+                    &&grant.createdObservationId.equals(p.get("parent_create_after_observation_id"))
+                    &&grant.workflowInitialObservationId.equals(p.get("workflow_initial_observation_id"))
                     &&number(p.get("parent_step"),grant.parentStep)&&number(p.get("child_ordinal"),ordinal)
                     &&grant.ownerSha256.equals(p.get("owner_sha256"))
                     &&grant.authorizationSha256.equals(p.get("task_authorization_sha256"))&&grant.contractSha256.equals(p.get("contract_sha256"))

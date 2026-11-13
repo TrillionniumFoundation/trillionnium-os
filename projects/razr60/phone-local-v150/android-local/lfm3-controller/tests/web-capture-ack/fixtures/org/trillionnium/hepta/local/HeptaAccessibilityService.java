@@ -1,0 +1,1 @@
+package org.trillionnium.hepta.local;final class HeptaAccessibilityService {static String message(Throwable t){return t.getClass().getName()+": "+t.getMessage();}static String limited(String s,int n){return s==null?"unknown":s.length()>n?s.substring(0,n):s;}}

@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.web-read-only-content-wait.v1",
+  "task_id": "4a8a5ac0f67d4faf8045d3b3ace06d13",
+  "binding_sha256": "5c7ea15e4337715f534b155abae50684d0b9985b27a02ec0cbda04c02dc9c5c3",
+  "webview_instance": "23d9d9b7-82df-4fee-96b7-2de4e5e28e44",
+  "navigation_epoch": 2,
+  "native_url": "https:\/\/www.mi.com\/shop\/search?keyword=AX3000T",
+  "observation_id": "fe1cbd75169f4c5d8718a88710a711aa",
+  "first_request_nonce": "48adfb5324fc48f8992fc3b3c089ffb33ca2c44f7a194da483d679be927d255e",
+  "last_request_nonce": "4c5e9553163044a1b871e00404dad91e53aaa64d5d2f4f429b1605b2b9800567",
+  "first_dom_sha256": "af2afc2f5250d9237e2569cf0c7e3b6c00f8bd0414a251aa0371ecb0740e1aba",
+  "last_dom_sha256": "a30774e8a16bb64066478283b0c9c466e4e7461d7585957a05e48a45d8614a71",
+  "recognized_calendar_body_pending": false,
+  "recognized_booking_body_pending": false,
+  "shopping_unstable_readonly_bracket": true,
+  "actual_query_awaiting_results": false,
+  "read_only_retry": 1,
+  "maximum_extra_reobservations": 2,
+  "deadline_elapsed_ms": 892234042,
+  "action_replayed": false,
+  "model_action_dispatched": false,
+  "business_verified": false
+}

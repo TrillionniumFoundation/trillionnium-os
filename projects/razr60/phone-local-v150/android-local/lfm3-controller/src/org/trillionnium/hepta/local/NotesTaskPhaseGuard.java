@@ -77,6 +77,8 @@ public final class NotesTaskPhaseGuard {
         /** Null retains the existing generic tool set. A proved current editor
          * or list narrows this task only; no action or target is added. */
         public Set<String> toolMask(){
+            if("await_created_editor".equals(phase))return Collections.unmodifiableSet(new TreeSet<String>(
+                    java.util.Arrays.asList("wait","done")));
             if("leave_created_editor".equals(phase))return Collections.unmodifiableSet(new TreeSet<String>(
                     java.util.Arrays.asList("back","wait","done")));
             return "reopen_saved_item".equals(phase)?Collections.unmodifiableSet(new TreeSet<String>(

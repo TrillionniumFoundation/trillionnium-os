@@ -31,6 +31,7 @@ final class WebShoppingDomain {
     private final Map<String,Object> proof;
     private final MiPublicProductPage page;
     private final boolean localPriceVerified;
+    final WebShoppingQuote searchQuote;
     private final Navigation navigation;
     private final String sourceCaptureRaw,observedArmRaw;
     private final WebRegionNativeBridge regionBridge;
@@ -45,7 +46,7 @@ final class WebShoppingDomain {
         captureStarted=receipt.started;captureEnded=receipt.ended;this.phase=phase;pageKey=key;
         this.links=Collections.unmodifiableMap(new LinkedHashMap<String,MiPublicProductPage.Link>(links));
         clickIds=Collections.unmodifiableSet(new HashSet<String>(links.keySet()));this.page=page;
-        localPriceVerified=priceVerified;this.navigation=navigation;this.sourceCaptureRaw=sourceCaptureRaw;
+        localPriceVerified=priceVerified;this.searchQuote=null;this.navigation=navigation;this.sourceCaptureRaw=sourceCaptureRaw;
         this.regionBridge=regionBridge;this.observedArmRaw=null;
         this.proof=Collections.unmodifiableMap(new LinkedHashMap<String,Object>(proof));
     }
@@ -53,18 +54,28 @@ final class WebShoppingDomain {
         this(original,navigation,original.observedArmRaw);
     }
     private WebShoppingDomain(WebShoppingDomain original,Navigation navigation,String armRaw){
+        this(original,navigation,armRaw,original.searchQuote);
+    }
+    private WebShoppingDomain(WebShoppingDomain original,Navigation navigation,String armRaw,WebShoppingQuote quote){
         taskId=original.taskId;ownerSha=original.ownerSha;contractSha=original.contractSha;authorizationSha=original.authorizationSha;
         observationId=original.observationId;stateSha=original.stateSha;generation=original.generation;bindingSha=original.bindingSha;
         instance=original.instance;url=original.url;epoch=original.epoch;displayId=original.displayId;windowId=original.windowId;
         captureStarted=original.captureStarted;captureEnded=original.captureEnded;phase=original.phase;pageKey=original.pageKey;
         links=original.links;clickIds=original.clickIds;page=original.page;localPriceVerified=original.localPriceVerified;
         sourceCaptureRaw=original.sourceCaptureRaw;regionBridge=original.regionBridge;observedArmRaw=armRaw;
-        this.navigation=navigation;Map<String,Object> out=new LinkedHashMap<String,Object>(original.proof);
+        this.navigation=navigation;this.searchQuote=quote;Map<String,Object> out=new LinkedHashMap<String,Object>(original.proof);
         if(navigation!=null){
             out.put("model_navigation",navigation.evidence());out.put("model_navigation_confirmed",true);
             out.put("result_ready_for_completion_gate",localPriceVerified);
         }
         if(armRaw!=null){out.put("observed_link_arm_json_utf8",armRaw);out.put("observed_link_armed",true);}
+        if(quote!=null){
+            need(quote.matches(this),"search quote belongs to another current domain");
+            out.put("current_search_card_quote",quote.resultRecord());
+            out.put("same_frame_search_card_quote_observed",true);out.put("result_ready_for_completion_gate",true);
+            out.put("missing",Collections.emptyList());
+            out.put("next_goal","当前官网搜索卡的商品名、展示价、币种和官方链接已核对；可选择 done success，仅按 current_search_card_quote 报告当前展示报价。");
+        }
         proof=Collections.unmodifiableMap(out);
     }
     static WebShoppingDomain observed(String task,WebShoppingGoal goal,TaskAuthorization.Gate auth,PhoneObservation frame,
@@ -148,10 +159,10 @@ final class WebShoppingDomain {
                                WebEvidenceReceipt receipt,JSONObject immutableBinding)throws Exception{
         need(goal!=null&&auth!=null&&receipt!=null&&task.equals(auth.taskId)&&goal.ownerSha256.equals(auth.authorization.instructionSha256)
                 &&WebShoppingGoal.TOOL_CEILING.containsAll(auth.authorization.allowedTools),"same original bounded shopping authorization");
-        need(WebEvidenceProtocol.HELPER_VERSION_CODE==6
+        need(WebEvidenceProtocol.HELPER_VERSION_CODE==7
                 &&"hepta.web-helper.binding.v4".equals(WebEvidenceProtocol.BINDING_SCHEMA)
                 &&"org.trillionnium.hepta.webhelper.IWebEvidence.v4".equals(WebEvidenceProtocol.DESCRIPTOR),
-                "shopping requires explicit code6/v4 peer and independently replayed scoped capture");
+                "shopping requires explicit code7/v4 peer and independently replayed scoped capture");
         WebSitePolicy policy=WebSitePolicy.forShopping(goal);
         need(immutableBinding!=null&&WebEvidenceProtocol.BINDING_SCHEMA.equals(immutableBinding.get("schema"))
                 &&task.equals(immutableBinding.get("task_id"))&&goal.owner.equals(immutableBinding.get("owner"))
@@ -160,7 +171,7 @@ final class WebShoppingDomain {
                 &&policy.id.equals(immutableBinding.get("site_policy_id"))&&policy.sha256.equals(immutableBinding.get("site_policy_sha256"))
                 &&policy.initialUrl.equals(immutableBinding.get("initial_url"))
                 &&auth.authorization.sha256.equals(immutableBinding.getJSONObject("authorization").get("authorization_sha256"))
-                &&WebEvidenceJson.number(immutableBinding.getJSONObject("helper_identity"),"version_code")==6,
+                &&WebEvidenceJson.number(immutableBinding.getJSONObject("helper_identity"),"version_code")==7,
                 "exact per-lease shopping contract/site/authority binding required");
         String binding=WebEvidenceBinding.sha256(immutableBinding);
         need(frame!=null&&!frame.nodesTruncated&&WebEvidenceProtocol.HELPER_PACKAGE.equals(frame.packageName)
@@ -220,8 +231,22 @@ final class WebShoppingDomain {
         need(proof!=null&&proof.matches(this),"navigation belongs to another task/product/page");
         return new WebShoppingDomain(this,proof);
     }
-    boolean resultReady(){return localPriceVerified&&navigation!=null&&navigation.matches(this);}
+    WebShoppingDomain withReadOnlyQuote(WebShoppingGoal goal,PhoneObservation frame,WebEvidenceReceipt receipt,JSONObject proof)throws Exception{
+        if(goal.singleUnitRequested||goal.specificationsRequested||regionBridge==null||!"official_public_search".equals(phase))return this;
+        need(searchQuote==null&&goal.ownerSha256.equals(ownerSha)&&goal.contractSha256.equals(contractSha)
+                &&sourceCaptureRaw!=null&&org.trillionnium.hepta.webprotocol.WebDomCanonical.same(new JSONObject(sourceCaptureRaw),receipt.capture()),
+                "same current price-only goal and original captured page required");
+        return new WebShoppingDomain(this,navigation,observedArmRaw,WebShoppingQuote.fromRead(this,frame,receipt,regionBridge,proof));
+    }
+    WebShoppingDomain withRecheckedQuote(WebShoppingQuote quote,PhoneObservation frame,WebEvidenceReceipt receipt)throws Exception{
+        need(quote!=null&&regionBridge!=null&&sourceCaptureRaw!=null
+                &&org.trillionnium.hepta.webprotocol.WebDomCanonical.same(new JSONObject(sourceCaptureRaw),receipt.capture()),
+                "same fresh captured card required");
+        return new WebShoppingDomain(this,navigation,observedArmRaw,quote.rechecked(this,frame,receipt,regionBridge));
+    }
+    boolean resultReady(){return searchQuote!=null?searchQuote.matches(this):localPriceVerified&&navigation!=null&&navigation.matches(this);}
     Map<String,Object> resultRecord(){
+        if(searchQuote!=null){need(searchQuote.matches(this),"current quote binding changed");return searchQuote.resultRecord();}
         need(resultReady()&&page!=null&&page.detail!=null,"actual same-product result and navigation missing");
         Map<String,Object> out=new LinkedHashMap<String,Object>(page.detail.evidence());
         out.put("committed_url",url);out.put("task_id",taskId);out.put("owner_sha256",ownerSha);out.put("contract_sha256",contractSha);

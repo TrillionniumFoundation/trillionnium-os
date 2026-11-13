@@ -346,7 +346,7 @@ public final class WebTaskCompositionHostTest {
         final WebShoppingDomain.Navigation actualFixtureNavigation=navigate(before,after,true,true,false,1100,1101);
         final WebTaskDomain linked=after.withNavigation(actualFixtureNavigation);
         test("v3_receipt_and_real_composition",()->{
-            check(WebEvidenceProtocol.HELPER_VERSION_CODE==6&&before.shopping!=null&&before.flight==null,"explicit current peer/provider");
+            check(WebEvidenceProtocol.HELPER_VERSION_CODE==7&&before.shopping!=null&&before.flight==null,"explicit current peer/provider");
             check(before.clickIds.equals(Collections.singleton("n1")),"only actual synthetic same-frame AX id");
             check(!before.resultReady()&&!after.resultReady(),"no result before accepted navigation");
             check(linked.resultReady(),"valid typed fixture connects both real providers");

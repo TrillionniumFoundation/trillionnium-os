@@ -37,6 +37,9 @@ final class WebEvidenceClient implements AutoCloseable {
         void request(int method,String nonce,String raw)throws Exception;
         void response(int method,String nonce,String callback,byte[] raw,boolean verified)throws Exception;
         void failure(int method,String nonce,String reason)throws Exception;
+        default JSONObject captureAcknowledgement(String nonce,WebEvidenceReceipt captured)throws Exception{
+            throw new IllegalStateException("durable capture readback journal is required");
+        }
     }
     private final Context context;
     private final WebHelperIdentity controller,helper;
@@ -110,7 +113,22 @@ final class WebEvidenceClient implements AutoCloseable {
         WebEvidenceReceipt result=call(WebEvidenceProtocol.CAPTURE,request);
         need(instance!=null&&instance.equals(result.instance),"helper WebView instance changed");
         need(result.epoch>=epoch,"navigation epoch went backwards");
-        epoch=result.epoch;if("captured".equals(result.status))lastCaptured=result;return result;
+        epoch=result.epoch;
+        if("captured".equals(result.status)){
+            String captureNonce=request.getString("request_nonce");
+            JSONObject proof=journal.captureAcknowledgement(captureNonce,result);
+            JSONObject acknowledgement=common(WebEvidenceProtocol.ACK_CAPTURE,
+                    Math.min(callerDeadline,WebEvidenceJson.number(request,"deadline_elapsed_ms")));
+            acknowledgement.put("capture_request_nonce",captureNonce).put("durable_acknowledgement",proof)
+                    .put("durable_acknowledgement_sha256",WebDomCanonical.sha256(proof));
+            org.trillionnium.hepta.webprotocol.WebCaptureAcknowledgement.requireRequest(
+                    acknowledgement,WebEvidenceJson.parseEvidence(bindingRaw,WebEvidenceProtocol.MAX_REQUEST_BYTES));
+            WebEvidenceReceipt handedOff=call(WebEvidenceProtocol.ACK_CAPTURE,acknowledgement);
+            need(org.trillionnium.hepta.webprotocol.WebCaptureAcknowledgement.STATUS.equals(handedOff.status),
+                    "capture handoff not acknowledged");
+            lastCaptured=result;
+        }
+        return result;
     }
     synchronized WebEvidenceReceipt armObservedLink(WebEvidenceReceipt source,String anchorPath,String modelRun,long callerDeadline)throws Exception{
         guard.requireCurrent(false);need(!guard.cancelled(),"task cancelled before observed-link ARM");

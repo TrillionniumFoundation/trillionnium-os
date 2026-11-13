@@ -8,11 +8,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public final class OwnedWorkerCancellation {
     public static final long COOPERATIVE_GRACE_MILLIS=8000;
+    // The pinned GenieX token callback is first invoked after full prefill. The
+    // actual Qwen NPU cancellation needed an 11.8s prefill before that callback.
+    // This fixed warm-NPU policy allows additional bounded time for prefill to drain;
+    // it does not promise prompt interruption or restart/extend on another Stop.
+    public static final long WARM_NPU_PREFILL_GRACE_MILLIS=30000;
     public static final long FORCE_OBSERVATION_MILLIS=8000;
     public static final long NORMAL_CLOSE_MILLIS=2000;
     public static final long FINISH_FUTURE_MILLIS=22000;
-    private static final long GRACE_NANOS=TimeUnit.MILLISECONDS.toNanos(COOPERATIVE_GRACE_MILLIS);
-    private static final long TOTAL_NANOS=TimeUnit.MILLISECONDS.toNanos(COOPERATIVE_GRACE_MILLIS+FORCE_OBSERVATION_MILLIS);
+    private final long cooperativeGraceMillis,graceNanos,totalNanos;
+    private final String policy;
     private static final long CLOSE_NANOS=TimeUnit.MILLISECONDS.toNanos(NORMAL_CLOSE_MILLIS);
     interface Clock { long nanoTime(); }
     private static final Clock SYSTEM_CLOCK=new Clock(){public long nanoTime(){return System.nanoTime();}};
@@ -31,12 +36,14 @@ public final class OwnedWorkerCancellation {
         private Exit(boolean observed,Integer code,boolean forceSent){this.observed=observed;this.code=code;this.forceSent=forceSent;}
     }
     public static final class Snapshot {
-        public final String generation,taskId,signalError;
+        public final String generation,taskId,signalError,policy;
+        public final long cooperativeGraceMillis,finishFutureMillis;
         public final boolean requested,processBound,terminationStarted,termReturned,forceReturned,exitObserved;
         public final int termAttempts,forceAttempts;
         public final Integer exitCode;
         private Snapshot(OwnedWorkerCancellation value){
             generation=value.generation;taskId=value.taskId;signalError=value.signalError;
+            policy=value.policy;cooperativeGraceMillis=value.cooperativeGraceMillis;finishFutureMillis=value.finishFutureMillis();
             requested=value.requested.get();processBound=value.process!=null;terminationStarted=value.terminationStarted;
             termAttempts=value.termAttempted?1:0;forceAttempts=value.forceAttempted?1:0;
             termReturned=value.termReturned;forceReturned=value.forceReturned;
@@ -44,9 +51,25 @@ public final class OwnedWorkerCancellation {
         }
     }
     public OwnedWorkerCancellation(String generation,String taskId){this(generation,taskId,SYSTEM_CLOCK);}
+    /** Only the immutable ordinary warm NPU configuration selects this policy. */
+    public static OwnedWorkerCancellation forWarmNpu(String generation,String taskId){
+        return forWarmNpu(generation,taskId,SYSTEM_CLOCK);
+    }
+    static OwnedWorkerCancellation forWarmNpu(String generation,String taskId,Clock clock){
+        return new OwnedWorkerCancellation(generation,taskId,clock,WARM_NPU_PREFILL_GRACE_MILLIS,"warm_npu_prefill");
+    }
     OwnedWorkerCancellation(String generation,String taskId,Clock clock){
+        this(generation,taskId,clock,COOPERATIVE_GRACE_MILLIS,"default_owned_worker");
+    }
+    private OwnedWorkerCancellation(String generation,String taskId,Clock clock,long graceMillis,String policy){
         if(!id(generation)||!id(taskId)||clock==null)throw new IllegalArgumentException("exact task, generation and monotonic clock required");
         this.generation=generation;this.taskId=taskId;this.clock=clock;
+        this.cooperativeGraceMillis=graceMillis;this.policy=policy;
+        this.graceNanos=TimeUnit.MILLISECONDS.toNanos(graceMillis);
+        this.totalNanos=TimeUnit.MILLISECONDS.toNanos(graceMillis+FORCE_OBSERVATION_MILLIS);
+    }
+    public long finishFutureMillis(){
+        return FINISH_FUTURE_MILLIS+(cooperativeGraceMillis-COOPERATIVE_GRACE_MILLIS);
     }
     private static boolean id(String value){return value!=null&&value.matches("[0-9a-f]{32}");}
     /** The same Process may be rebound only to this same immutable task/generation. */
@@ -90,7 +113,7 @@ public final class OwnedWorkerCancellation {
         synchronized(this){
             if(process!=actual)throw new IllegalStateException("foreign worker");
             if(observedExit!=null||forceAttempted||!actual.isAlive())return;
-            if(!terminationStarted||elapsed()<GRACE_NANOS)throw new IllegalStateException("force before shared grace deadline");
+            if(!terminationStarted||elapsed()<graceNanos)throw new IllegalStateException("force before shared grace deadline");
             forceAttempted=true;
             try{actual.destroyForcibly();forceReturned=true;}
             catch(RuntimeException error){signalError=error.getClass().getName()+": "+String.valueOf(error.getMessage());}
@@ -101,12 +124,15 @@ public final class OwnedWorkerCancellation {
         cancel();Process actual=owned();
         try{
             if(result().observed)return result();
-            long remaining=GRACE_NANOS-elapsed();
+            long remaining=graceNanos-elapsed();
             if(waitObserved(actual,remaining))return result();
             // A Process implementation returning false early provides no right to shorten grace.
-            if(elapsed()<GRACE_NANOS)return result();
+            if(elapsed()<graceNanos)return result();
+            // Observe an exit already available at the boundary before escalating.
+            // This reduces a race; it is not an atomic signal/exit guarantee.
+            if(waitObserved(actual,0))return result();
             forceOnce(actual);
-            if(waitObserved(actual,TOTAL_NANOS-elapsed()))return result();
+            if(waitObserved(actual,totalNanos-elapsed()))return result();
             return result(); // Actual lack of waitFor completion remains unknown.
         }catch(InterruptedException interrupted){Thread.currentThread().interrupt();return result();}
     }

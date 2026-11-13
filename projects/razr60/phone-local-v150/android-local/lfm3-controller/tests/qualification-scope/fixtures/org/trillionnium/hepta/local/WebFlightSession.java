@@ -21,6 +21,8 @@ final class WebFlightSession {
     }
     final String taskId;
     final WebFlightGoal goal=null;
+    final Purpose purpose=new Purpose();
+    static final class Purpose {final Object shopping=null;}
     final TaskAuthorization.Gate authorization;
     WebFlightSession(HeptaAccessibilityService service,String task,String owner,
             TaskAuthorization.Gate auth,BackgroundSession background,
@@ -54,6 +56,7 @@ final class WebFlightSession {
     void beforeNativeClickInvocation(ActionDecision action,String run){throw unavailable();}
     void modelActionOutcome(ActionDecision action,String run,HeptaAccessibilityService.ActionOutcome outcome,
                             long dispatchStarted,long dispatchEnded){throw unavailable();}
+    WebShoppingQuote.Completion shoppingCompletion(ActionDecision action,String run,PhoneObservation before,PhoneObservation after,long deadline){throw unavailable();}
     boolean released(){throw unavailable();}
     void acceptReconciliation(Cleanup proof){throw unavailable();}
     void serviceRetired(){throw unavailable();}

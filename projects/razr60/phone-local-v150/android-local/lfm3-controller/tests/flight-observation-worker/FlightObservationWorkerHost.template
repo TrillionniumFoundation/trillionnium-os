@@ -68,6 +68,10 @@ public final class FlightObservationWorkerHost {
         }
     }
     static final class WebFlightNativeStability {static final String LABEL="booking";static final int MAX_NATIVE_NODES=1536;}
+    static final class WebShoppingObservationStability {
+        static final int MAX_NATIVE_NODES=1024;
+        static PhoneObservation.Node target(List<PhoneObservation.Node> rows){throw new AssertionError("flight-only host carrier has no shopping target");}
+    }
     static final class QualificationScopeConfig {static final class Bound {
         void verifyUnchanged(){check(Thread.currentThread()!=MAIN,"scope file IO ran on main");}void requireReady(){}
     }}
@@ -81,6 +85,8 @@ public final class FlightObservationWorkerHost {
     }
     static final class WebFlightSession {
         final String taskId=TASK;final Object goal=new Object();final TaskAuthorization.Gate authorization;
+        final Purpose purpose=new Purpose();
+        static final class Purpose {final Object flight=new Object(),shopping=null;}
         WebFlightSession(TaskAuthorization.Gate a){authorization=a;}
     }
     static final class WebEvidenceReceipt {}

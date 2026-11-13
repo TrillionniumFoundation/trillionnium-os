@@ -11,7 +11,7 @@ def source_inputs(root):
              root / "provenance/mobimind-worker-r4/SOURCE-MANIFEST.json"}
     paths.update((root / "src").rglob("*.java"))
     paths.update((root / "res").rglob("*.xml"))
-    for extension in ("*.c", "*.h", "*.inc", "*.py", "*.json"):
+    for extension in ("*.c", "*.cpp", "*.h", "*.inc", "*.py", "*.json"):
         paths.update((root / "native").rglob(extension))
     for extension in ("*.c", "*.h", "*.inc", "*.py", "*.json", "*.txt", "*.jinja"):
         paths.update((root / "provenance/ui-venus-app-r1").rglob(extension))

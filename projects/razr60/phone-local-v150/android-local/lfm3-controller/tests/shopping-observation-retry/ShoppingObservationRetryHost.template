@@ -28,7 +28,7 @@ public final class ShoppingObservationRetryHost {
     private final List<JSONObject> records=new ArrayList<JSONObject>();
     private Client client;
     private JSONObject immutableBinding;
-    private long loadingDocumentStarted,loadingDocumentDeadline,dispatchCheckedAt,recordDelay;
+    private long loadingDocumentStarted,loadingDocumentDeadline,dispatchCheckedAt,recordDelay,observationCost;
     private CityObservationRetry cityObservationRetry;
     private final java.util.concurrent.atomic.AtomicBoolean nativeQueryEntered=new java.util.concurrent.atomic.AtomicBoolean();
     /** Flight-only endpoint: a shopping fixture must never obtain or use a city credential. */
@@ -90,15 +90,25 @@ public final class ShoppingObservationRetryHost {
         }
     }
     private static final class Client {
-        final WebEvidenceReceipt[] values;int calls;long captureCost;
+        final WebEvidenceReceipt[] values;int calls,attempts;long captureCost;
         Client(JSONObject...captures)throws Exception{values=new WebEvidenceReceipt[captures.length];for(int i=0;i<captures.length;i++)values[i]=new WebEvidenceReceipt(captures[i]);}
         WebEvidenceReceipt capture(long deadline){
+            attempts++;
             if(calls>=values.length)throw new AssertionError("capture sequence exhausted or unbounded retry");
             SystemClock.now+=captureCost;if(SystemClock.now>=deadline)throw new IllegalStateException("instrumented capture deadline");
             return values[calls++];
         }
     }
+    /** This budget-only harness does not have private native snapshots. The new
+     * read-only quote proof is exercised by the separate mandatory real-DOM/typed-completion gate. */
+    private static final class WebShoppingObservationStability {
+        static boolean supportsCaptures(JSONObject first,JSONObject last){return false;}
+    }
     private static final class WebTaskDomain {
+        final Object shopping=null;
+        WebTaskDomain withShoppingReadQuote(Object goal,PhoneObservation frame,WebEvidenceReceipt receipt,JSONObject proof){
+            throw new AssertionError("budget-only harness cannot grant a shopping quote");
+        }
         static WebTaskDomain observed(String task,Purpose purpose,Object authorization,PhoneObservation frame,
                 WebEvidenceReceipt capture,JSONObject binding){return new WebTaskDomain();}
         String evidence(){return "{}";}
@@ -112,7 +122,9 @@ public final class ShoppingObservationRetryHost {
             if(++authChecks==authFailAt)throw new IllegalStateException("instrumented authorization retirement");
         }
         FlightObservationSnapshot retainFlightObservation(ShoppingObservationRetryHost web,PhoneObservation frame,Cancellation cancel,long deadline){
-            throw new AssertionError("shopping cannot use flight observation authority");
+            // The shared retain endpoint is now used for shopping read-only proof as well.
+            // This legacy budget harness supplies no private native token, never a fake proof.
+            return null;
         }
         JSONObject verifyFlightObservationBracket(ShoppingObservationRetryHost web,FlightObservationSnapshot source,
                 PhoneObservation frame,WebEvidenceReceipt first,WebEvidenceReceipt last,Cancellation cancel,long deadline){
@@ -143,7 +155,7 @@ public final class ShoppingObservationRetryHost {
         value.before=before;value.observations=after;return value;
     }
     PhoneObservation run(long deadline)throws Exception{
-        return observe(before,()->{if(observed>=observations.length)throw new AssertionError("unbounded AX observations");return observations[observed++];},deadline);
+        return observe(before,()->{if(observed>=observations.length)throw new AssertionError("unbounded AX observations");SystemClock.now+=observationCost;return observations[observed++];},deadline);
     }
     static JSONObject read(Path p)throws Exception{return new JSONObject(new String(Files.readAllBytes(p),StandardCharsets.UTF_8));}
     static JSONObject changed(JSONObject original,String key){
@@ -162,11 +174,24 @@ public final class ShoppingObservationRetryHost {
             else if(axFirst==null)axFirst=raw;else axLast=raw;
         }
         final JSONObject a=first,b=last;final PhoneObservation x=new PhoneObservation(axFirst),y=new PhoneObservation(axLast);
+        JSONObject actualBudget=read(dir.resolve("ACTUAL-BUDGET-TIMING.json"));
+        final long actualRpcCost=actualBudget.getLong("maximum_completed_rpc_recorded_ms");
+        final long actualObservationCost=actualBudget.getLong("actual_wait_to_next_request_excluding_sleep_ms");
         boolean legacy=args.length==3&&"legacy".equals(args[2]);
+        boolean previousBudget=args.length==3&&"budget_previous".equals(args[2]);
         if(legacy){
             test("exact_v59_original_failure_preserved",()->{
                 ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b},x,y);denied(()->f.run(Long.MAX_VALUE));noPublish(f);
                 check(f.client.calls==2&&f.observed==1&&f.loadingDocumentReadRetries==0,"old code must fail without retries");
+            });
+        }else if(previousBudget){
+            test("actual_verified_rpc_cost_exceeds_previous_six_second_phase",()->{
+                check(actualRpcCost>actualBudget.getLong("actual_extra_rpc_remaining_ms"),"retained extra RPC had sufficient budget");
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b,b,b},x,y,y,y);
+                f.client.captureCost=actualRpcCost;f.observationCost=actualObservationCost;
+                denied(()->f.run(Long.MAX_VALUE));noPublish(f);
+                check(f.loadingDocumentReadRetries==1&&f.client.attempts==3&&f.client.calls==2&&f.observed==2,
+                        "old shared six-second phase must expire during first extra RPC");
             });
         }else{
             test("actual_original_scope_and_native_change_replayed_without_action_authority",()->{
@@ -197,12 +222,29 @@ public final class ShoppingObservationRetryHost {
                 check(f.loadingDocumentReadRetries==0&&f.client.calls==2,"deadline consumed without retry");
             });
             test("retry_window_does_not_expand_when_each_capture_costs_time",()->{
-                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b,a,b,a,b},x,y,x,y,x,y);f.client.captureCost=3000;
-                denied(()->f.run(Long.MAX_VALUE));noPublish(f);check(f.loadingDocumentReadRetries==1&&f.client.calls==3,"six-second retry deadline passed unchanged to IPC");
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b,a,b,a,b},x,y,x,y,x,y);f.client.captureCost=9000;
+                denied(()->f.run(Long.MAX_VALUE));noPublish(f);check(f.loadingDocumentReadRetries==2&&f.client.calls==5,"fixed thirty-two-second retry deadline passed unchanged to IPC");
             });
             test("slow_receipt_and_sleep_cannot_start_read_after_retry_deadline",()->{
-                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b},x,y);f.recordDelay=6500;
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b},x,y);f.recordDelay=32500;
                 denied(()->f.run(Long.MAX_VALUE));noPublish(f);check(f.client.calls==2&&f.observed==1,"expired wait cannot request another AX frame");
+            });
+            test("actual_verified_rpc_cost_fits_one_complete_extra_bracket",()->{
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b,b,b},x,y,y,y);
+                f.client.captureCost=actualRpcCost;f.observationCost=actualObservationCost;
+                check(f.run(Long.MAX_VALUE)==y&&f.client.attempts==4&&f.client.calls==4&&f.observed==3&&f.loadingDocumentReadRetries==1,
+                        "measured RPC/observation costs must permit the complete derived stable bracket");
+                check(f.records.get(0).getLong("deadline_elapsed_ms")==f.loadingDocumentStarted+32000,
+                        "shopping phase budget must be fixed at first retry");
+            });
+            test("actual_verified_rpc_cost_still_stops_at_two_unstable_extra_brackets",()->{
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b,a,b,a,b},x,y,x,y,x,y);
+                f.client.captureCost=actualRpcCost;f.observationCost=actualObservationCost;
+                denied(()->f.run(Long.MAX_VALUE));noPublish(f);
+                check(f.client.attempts==6&&f.client.calls==6&&f.observed==5&&f.loadingDocumentReadRetries==2,
+                        "real cost does not waive stability or permit a third retry");
+                check(f.records.get(0).getLong("deadline_elapsed_ms")==f.records.get(1).getLong("deadline_elapsed_ms"),
+                        "second retry cannot renew the common absolute deadline");
             });
             test("cancellation_before_entry_has_zero_reads",()->{
                 ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b},x,y);f.cancellation.cancelled=true;
@@ -248,6 +290,7 @@ public final class ShoppingObservationRetryHost {
         }
         JSONObject report=new JSONObject().put("schema","hepta.shopping-observation-readonly-retry-host.v1").put("all_pass",true)
                 .put("cases",cases).put("assertions",assertions).put("names",names).put("legacy_original_failure_replay",legacy)
+                .put("previous_six_second_budget_replay",previousBudget).put("actual_budget_timing",actualBudget)
                 .put("original_actual_dom_and_ax_metadata_replayed",true).put("future_stability_sequences_synthetic",true)
                 .put("clock_service_client_and_publisher_instrumented",true).put("production_observe_and_retry_bodies_executed",true)
                 .put("actual_authenticated_ipc_or_native_authority_proven",false).put("phone_actions",0).put("business_verified",false);

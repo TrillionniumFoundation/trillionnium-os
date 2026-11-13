@@ -172,11 +172,111 @@ public final class OwnedWorkerCancellationHostTest {
         System.out.println("REAL_DELAYED_CHILD elapsed_ms="+TimeUnit.NANOSECONDS.toMillis(elapsed)+" exit="+cleanup.exitCode+" term_calls="+p.terms.get()+" force_calls="+p.forces.get()+" sdk_health_verified=false");
         cases++;
     }
+    private static void warmNpuPrefillPolicy(){
+        // Explicit host clock using the retained r7 11.799128s prefill duration
+        // (native-result SHA7955d284...). No SDK/phone execution is claimed.
+        final long retainedPrefill=11799128000L;
+        ManualClock oldClock=new ManualClock();FakeProcess old=new FakeProcess(oldClock);old.termExitDelay=retainedPrefill;
+        OwnedWorkerCancellation oldPolicy=bound(oldClock,old);
+        OwnedWorkerCancellation.Exit early=oldPolicy.awaitCancellation();
+        check(early.observed&&early.code==137&&early.forceSent&&old.forces.get()==1,"default eight-second owner still escalates before this synthetic prefill ends");
+        check(oldClock.nanoTime()==ns(8000),"default owner budget is unchanged");
+        ManualClock clock=new ManualClock();FakeProcess actual=new FakeProcess(clock);actual.termExitDelay=retainedPrefill;
+        OwnedWorkerCancellation c=OwnedWorkerCancellation.forWarmNpu(G,T,clock);c.attach(actual,G,T);
+        OwnedWorkerCancellation.Exit end=c.awaitCancellation();
+        check(end.observed&&end.code==143&&!end.forceSent&&actual.terms.get()==1&&actual.forces.get()==0,"warm NPU gives the callback time to return without force");
+        check(clock.nanoTime()==retainedPrefill,"warm NPU reports actual earlier exit, not all thirty seconds");
+        check(c.snapshot().cooperativeGraceMillis==30000&&"warm_npu_prefill".equals(c.snapshot().policy)&&c.finishFutureMillis()==44000,
+                "immutable scoped policy and finisher cover the full cancellation budget");
+        check(oldPolicy.snapshot().cooperativeGraceMillis==8000&&oldPolicy.finishFutureMillis()==22000,
+                "other owned workers retain their original policy");cases++;
+    }
+    private static void warmNpuSharedDeadlineAndUnknown(){
+        ManualClock clock=new ManualClock();FakeProcess p=new FakeProcess(clock);p.forceWorks=false;
+        OwnedWorkerCancellation c=OwnedWorkerCancellation.forWarmNpu(G,T,clock);c.cancel();
+        clock.advance(ns(5000));c.attach(p,G,T);c.cancel();clock.advance(ns(17000));c.cancel();
+        OwnedWorkerCancellation.Exit end=c.awaitCancellation();
+        check(!end.observed&&end.code==null&&end.forceSent&&p.terms.get()==1&&p.forces.get()==1,
+                "warm NPU still records force and unknown instead of inventing cooperative cleanup");
+        check(clock.nanoTime()==ns(43000),"one thirty-second grace plus eight-second observation from first actual TERM");
+        c.cancel();c.awaitCancellation();
+        check(clock.nanoTime()==ns(43000)&&p.terms.get()==1&&p.forces.get()==1,"duplicate Stop cannot renew warm NPU deadline");cases++;
+    }
+    private static void warmNpuExitNearDeadline(){
+        ManualClock clock=new ManualClock();FakeProcess p=new FakeProcess(clock);p.termExitDelay=ns(29000);
+        OwnedWorkerCancellation c=OwnedWorkerCancellation.forWarmNpu(G,T,clock);c.attach(p,G,T);
+        c.cancel();clock.advance(ns(20000));c.cancel();
+        OwnedWorkerCancellation.Exit end=c.awaitCancellation();
+        check(end.observed&&end.code==143&&!end.forceSent&&p.forces.get()==0&&clock.nanoTime()==ns(29000),"actual exit before fixed grace avoids force");cases++;
+    }
+    private static final class ExitAtBoundaryProcess extends Process {
+        final ManualClock clock;boolean alive=true;int waits,terms,forces;
+        ExitAtBoundaryProcess(ManualClock c){clock=c;}
+        public OutputStream getOutputStream(){return new ByteArrayOutputStream();}
+        public InputStream getInputStream(){return new ByteArrayInputStream(new byte[0]);}
+        public InputStream getErrorStream(){return new ByteArrayInputStream(new byte[0]);}
+        public int waitFor(){throw new AssertionError("unbounded wait forbidden");}
+        public boolean waitFor(long t,TimeUnit unit){
+            waits++;check(t>=0,"boundary wait nonnegative");
+            if(waits==1){clock.advance(unit.toNanos(t));return false;}
+            check(t==0,"final availability probe is nonblocking");alive=false;return true;
+        }
+        public int exitValue(){if(alive)throw new IllegalThreadStateException();return 143;}
+        public void destroy(){terms++;}
+        public Process destroyForcibly(){forces++;return this;}
+        public boolean isAlive(){return alive;}
+    }
+    private static void availableBoundaryExitIsObservedBeforeForce(){
+        ManualClock clock=new ManualClock();ExitAtBoundaryProcess p=new ExitAtBoundaryProcess(clock);
+        OwnedWorkerCancellation c=OwnedWorkerCancellation.forWarmNpu(G,T,clock);c.attach(p,G,T);
+        OwnedWorkerCancellation.Exit end=c.awaitCancellation();
+        check(end.observed&&end.code==143&&!end.forceSent&&p.waits==2&&p.forces==0,
+                "an exit available to a final waitFor(0) is not mislabeled forced");
+        check(clock.nanoTime()==ns(30000)&&c.snapshot().forceAttempts==0,"final exit observation adds no grace or force attempt");cases++;
+    }
+    private static void warmNpuCannotBindForeignWorker(){
+        ManualClock clock=new ManualClock();FakeProcess p=new FakeProcess(clock);
+        OwnedWorkerCancellation c=OwnedWorkerCancellation.forWarmNpu(G,T,clock);c.attach(p,G,T);
+        try{c.attach(new FakeProcess(clock),G,T);throw new AssertionError("foreign Process accepted");}catch(IllegalArgumentException expected){}
+        try{c.attach(p,G,R);throw new AssertionError("foreign task accepted");}catch(IllegalArgumentException expected){}
+        try{c.attach(p,R,T);throw new AssertionError("foreign generation accepted");}catch(IllegalArgumentException expected){}
+        check(!c.isCancellationRequested()&&p.terms.get()==0,"policy selection does not grant signal authority without cancellation");cases++;
+    }
+    private static void prefillChild()throws Exception{
+        Runtime.getRuntime().addShutdownHook(new Thread(()->{try{Thread.sleep(11800);}catch(InterruptedException ignored){Thread.currentThread().interrupt();}}));
+        String pid=ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
+        System.out.println("HEPTA_WARM_READY "+G+" "+T+" "+pid);System.out.flush();
+        BufferedReader reader=new BufferedReader(new InputStreamReader(System.in,"US-ASCII"));
+        String frame=reader.readLine();if(frame==null||!frame.startsWith("RUN "))throw new AssertionError("actual RUN expected");
+        System.err.println("REAL_PREFILL_PEER_ENTERED");System.err.flush();Thread.sleep(50000);
+    }
+    private static void actualLongPrefillPeer()throws Exception{
+        Process real=new ProcessBuilder(System.getProperty("java.home")+"/bin/java","-cp",System.getProperty("java.class.path"),
+                OwnedWorkerCancellationHostTest.class.getName(),"prefill-child").start();
+        CountingProcess p=new CountingProcess(real);OwnedWorkerCancellation authority=OwnedWorkerCancellation.forWarmNpu(G,T);
+        authority.attach(p,G,T);WarmProcessSession session=new WarmProcessSession(p,G,T,authority);
+        AtomicReference<Object> outcome=new AtomicReference<Object>();
+        Thread request=new Thread(()->{try{outcome.set(session.exchange(R,32,30000));}catch(Throwable failure){outcome.set(failure);}});request.start();
+        BufferedReader err=new BufferedReader(new InputStreamReader(real.getErrorStream(),"UTF-8"));
+        check("REAL_PREFILL_PEER_ENTERED".equals(err.readLine()),"actual long-prefill protocol peer entered RUN");
+        long start=System.nanoTime();authority.cancel();session.cancel();authority.cancel();session.cancel();
+        check(authority.isCancellationRequested()&&session.isCancelled(),"request/action cancellation gates latch before physical exit");
+        request.join(35000);
+        check(!request.isAlive()&&outcome.get() instanceof WarmProcessSession.Failure,"long-prefill peer cannot supply accepted cancelled reply");
+        WarmProcessSession.Cleanup cleanup=session.finish();long elapsed=System.nanoTime()-start;
+        check(cleanup.exitObserved&&cleanup.exitCode==143&&!cleanup.forceSent&&!p.isAlive(),"real host child can drain beyond old grace then physically exit143");
+        check(p.terms.get()==1&&p.forces.get()==0&&authority.snapshot().forceAttempts==0,"one actual TERM API and no force API");
+        check(elapsed>=ns(11000)&&elapsed<ns(29000),"real delayed peer exceeded old grace and stayed within immutable NPU grace");
+        System.out.println("REAL_PREFILL_PEER elapsed_ms="+TimeUnit.NANOSECONDS.toMillis(elapsed)+" exit="+cleanup.exitCode+" term_calls="+p.terms.get()+" force_calls="+p.forces.get()+" sdk_health_verified=false");cases++;
+    }
     public static void main(String[] args)throws Exception{
         if(args.length==1&&"child".equals(args[0])){child();return;}
+        if(args.length==1&&"prefill-child".equals(args[0])){prefillChild();return;}
         identityAndPending();duplicateConcurrentSignals();deadlineIsNotRenewed();unknownBounded();
         earlyFalseDoesNotForce();signalFailureNoRetry();forceFailureUnknown();interruptedUnknown();
         normalCloseAndHungClose();abnormalIsNotNormalized();actualDelayedProcess();
+        warmNpuPrefillPolicy();warmNpuSharedDeadlineAndUnknown();warmNpuExitNearDeadline();
+        availableBoundaryExitIsObservedBeforeForce();warmNpuCannotBindForeignWorker();actualLongPrefillPeer();
         System.out.println("OwnedWorkerCancellation PASS cases="+cases+" assertions="+assertions+" native_sdk_executed=false phone_tested=false");
     }
 }

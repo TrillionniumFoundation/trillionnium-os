@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.flight-date-actual-fixture-provenance.v1",
+  "task_id": "81cda99c4edc4df6b9be1db69f7f4ed3",
+  "run_sha256": "1b23a51c69b001d22243e986ad2ae20a6591b7521a0d975be2a8fe14714d143a",
+  "collection_sha256": "81df935443ce1d5aacc9169e15568fb954e739ec83924a2f176386ed02713aba",
+  "original_bytes_unchanged": true,
+  "files": [
+    {
+      "name": "actual-capture.json.gz",
+      "role": "last_verified_pre_date_capture",
+      "source_path": "/home/alex/hepta-resume-261e-r2/flight-v62-qwen-r1/collection/task/web-helper/raw-fa6cf23c7e004f1d9f8a574ec0bf6950011b1e96e62044128fd1bccfab7b9366.json",
+      "source_bytes": 1074110,
+      "source_sha256": "bd4623141cf5fd3339d664fb8617759a097f5bc7909c20f04dd10c563a174004",
+      "bytes": 38548,
+      "sha256": "51518ad2b94db6aeaaa22a65574235be4cbf4bcfcd8e049270da3ecf52c9b427"
+    },
+    {
+      "name": "actual-scope.json.gz",
+      "role": "actual_pre_date_ax_scope",
+      "source_path": "/home/alex/hepta-resume-261e-r2/flight-v62-qwen-r1/collection/task/scope-observation-8224755ff0874515857dc67e4fccd992.json",
+      "source_bytes": 49628,
+      "source_sha256": "948e7c350129d54e755a7fd3fec59fd155dc938ab1e06bfa932d335b376a3a20",
+      "bytes": 7538,
+      "sha256": "bc7fc5670de45ed43eb1fef61ada2e33c754d7022c841224c5aa5685390cfcb5"
+    },
+    {
+      "name": "actual-fatal-frame.json.gz",
+      "role": "first_real_quota_refusal_after_wrapper_click",
+      "source_path": "/home/alex/hepta-resume-261e-r2/flight-v62-qwen-r1/collection/task/web-frame-8adc4c2568c34162adc6f3d243b3bab3.json",
+      "source_bytes": 9400,
+      "source_sha256": "40c153c0b472600119faff0dff5b8664367c76c6f8b5b21a68e2d7d60c2f5324",
+      "bytes": 2863,
+      "sha256": "051c79a8bb0fab19473ebf73a7de08820ba083afb4bdac06e5b99ec9aea4daf0"
+    },
+    {
+      "name": "actual-action.json.gz",
+      "role": "actual_wrapper_click_outcome",
+      "source_path": "/home/alex/hepta-resume-261e-r2/flight-v62-qwen-r1/collection/task/step-07-action.json",
+      "source_bytes": 12542,
+      "source_sha256": "81eaad0332933139c12f09c1842a9796eb7caa32bf749c657486786b9c05fcdc",
+      "bytes": 3241,
+      "sha256": "770d604526a4bf3b0c8ad27e1d1a954f9f71206fd1aa745586cee2ffcd6f2c62"
+    }
+  ],
+  "live_native_authority_reconstructed": false,
+  "authenticated_ipc_replayed": false,
+  "phone_operations": 0,
+  "business_verified": false
+}

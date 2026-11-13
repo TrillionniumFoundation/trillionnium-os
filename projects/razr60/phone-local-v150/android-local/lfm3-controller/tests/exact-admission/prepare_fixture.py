@@ -108,7 +108,8 @@ public final class PromptAdmissionFixture {
     web_fixture_compile.write_bytes(web_fixture_raw)
     if web_fixture_compile.read_bytes()!=web_fixture_raw or web_fixture_source.read_bytes()!=web_fixture_raw:
         raise RuntimeError("Exact Web type-boundary compiler copy required")
-    files += [package / "web/WebFlightGoal.java",package / "web/WebShoppingGoal.java",web_fixture_compile]
+    files += [package / "web/WebFlightGoal.java",package / "web/WebShoppingGoal.java",web_fixture_compile,
+              source/"tests/web-flight/legacy-boundary/WebShoppingQuote.java"]
     files += [source/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol")]
     digest = lambda value: hashlib.sha256(value).hexdigest()
     record = {

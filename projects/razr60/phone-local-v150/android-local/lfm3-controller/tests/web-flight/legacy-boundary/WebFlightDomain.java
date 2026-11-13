@@ -12,6 +12,11 @@ final class WebTaskDomain {
     final int displayId,windowId;
     final Set<String> clickIds;
     final Map<String,String> editValues;
+    final ShoppingDomain shopping=null;
+    static final class ShoppingDomain {
+        final WebShoppingQuote searchQuote=null;
+        private ShoppingDomain(){throw unavailable();}
+    }
     private WebTaskDomain(){throw unavailable();}
     private static AssertionError unavailable(){
         return new AssertionError("legacy non-Web fixture cannot execute WebTaskDomain");

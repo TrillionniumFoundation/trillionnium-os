@@ -47,6 +47,9 @@ public final class HeptaAccessibilityService extends android.content.Context {
     public int rootsRead,opens,navigations,gestures,observations;
     public int mutateOnRoot=-1;public String mutateRootPackage;
     public Runnable effectHook;public Intent lastStartedIntent;
+    /** Explicit Android client-cache IO fake; not provider or phone evidence. */
+    public int cacheClears;public Runnable cacheClearHook;public boolean cacheClearResult=true;
+    public boolean clearCache(){cacheClears++;if(cacheClearHook!=null)cacheClearHook.run();return cacheClearResult;}
     public Runnable packageManagerReadHook;
     public java.util.function.Supplier<List<PhoneObservation.Node>> observationRows;
     public HeptaAccessibilityService(File files,PackageManager pm){super(files,pm);live=this;}

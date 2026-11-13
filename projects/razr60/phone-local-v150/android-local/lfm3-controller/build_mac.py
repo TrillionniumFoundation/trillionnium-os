@@ -6,6 +6,7 @@ import hashlib, json, os, re, subprocess, sys, shutil
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tools'))
 from build_identity import source_inputs
+from verify_mobimind_runtime import load_pins, _verify_payload
 from model_profiles import PROFILES,DEFAULT_PROFILE,LLAMA_COMMIT
 OUT = Path(os.environ.get('HEPTA_BUILD_OUT', str(ROOT / 'out'))).expanduser().resolve()
 def required_path(name, alternate=None):
@@ -27,6 +28,11 @@ OUT.mkdir(parents=True,exist_ok=True)
 sys.path.insert(0,str(ROOT/'native'))
 from generate_adapter import generate
 source_before=source_inputs(ROOT)
+# Compilation needs only this exact already-packaged C++ payload. The assembler
+# still verifies the complete independent Mobi runtime and build provenance.
+CPP_PIN = next(item for item in load_pins(ROOT)['libraries'] if item['apk_name']=='libc++_shared.so')
+CPP_PATH = required_path('MOBIMIND_ANDROID_RUNTIME_DIR')/CPP_PIN['source_name']
+_verify_payload(CPP_PATH,CPP_PIN)
 llama_headers=ROOT/'native/vendor/llama'
 llama_pin=json.loads((llama_headers/'PIN.json').read_text())
 if llama_pin.get('commit')!=LLAMA_COMMIT:raise RuntimeError('llama header source pin differs')
@@ -54,10 +60,28 @@ if (ROOT/'res').is_dir():
     run([BT/'aapt2','compile','--dir',ROOT/'res','-o',OUT/'resources.zip'])
     resources=[OUT/'resources.zip']
 run([BT/'aapt2','link','-I',ANDROID_JAR,'--manifest',ROOT/'AndroidManifest.xml','-o',OUT/'base.apk',*resources])
-run([NDK/'aarch64-linux-android30-clang','-std=c11','-O2','-fPIE','-pie','-Wall','-Wextra',
-    '-I'+str(ROOT/'native/vendor'),'-I'+str(ROOT/'native'),'-I'+str(OUT),ROOT/'native/probe-worker.c',
-    '-L'+str(GENIEX),'-L'+str(GENIEX/'llama_cpp'),'-lgeniex','-lllama','-ldl','-lm',
+worker_object=OUT/'hepta-worker-c.o';boundary_object=OUT/'hepta-sdk-exception.o'
+run([NDK/'aarch64-linux-android30-clang','-std=c11','-O2','-fPIE','-fexceptions','-Wall','-Wextra',
+    '-DHEPTA_SDK_EXCEPTION_BOUNDARY=1','-I'+str(ROOT/'native/vendor'),'-I'+str(ROOT/'native'),'-I'+str(OUT),
+    '-c',ROOT/'native/probe-worker.c','-o',worker_object])
+run([NDK/'aarch64-linux-android30-clang++','-std=c++11','-O2','-fPIC','-fexceptions','-Wall','-Wextra',
+    '-DHEPTA_SDK_EXCEPTION_BOUNDARY=1','-I'+str(ROOT/'native'),
+    '-c',ROOT/'native/sdk-exception-boundary.cpp','-o',boundary_object])
+# This checks the actual production C object, so a missing build define cannot
+# silently use the pure-C test compatibility path.
+undefined=subprocess.check_output([str(NDK/'llvm-nm'),'-u',str(worker_object)],timeout=30).decode()
+(OUT/'native-exception-c-object-symbols.txt').write_text(undefined)
+symbols={line.split()[-1] for line in undefined.splitlines() if line.split()}
+if 'hepta_guarded_llm_generate' not in symbols or 'hepta_sdk_generate_exception' not in symbols or 'geniex_llm_generate' in symbols:
+    raise RuntimeError('Actual Android C object did not use the SDK exception boundary')
+run([NDK/'aarch64-linux-android30-clang++','-fPIE','-pie','-nostdlib++',worker_object,boundary_object,
+    '-L'+str(GENIEX),'-L'+str(GENIEX/'llama_cpp'),'-lgeniex','-lllama',CPP_PATH,'-ldl','-lm',
     '-Wl,-rpath,$ORIGIN','-Wl,-rpath-link,'+str(GENIEX/'llama_cpp'),'-Wl,-z,max-page-size=16384','-o',OUT/'libhepta_local_runner.so'])
+dynamic=subprocess.check_output([str(NDK/'llvm-readelf'),'-d',str(OUT/'libhepta_local_runner.so')],timeout=30).decode()
+(OUT/'native-exception-dynamic.txt').write_text(dynamic)
+if re.findall(r'\(NEEDED\).*?\[([^]]+)\]',dynamic).count('libc++_shared.so')!=1:
+    raise RuntimeError('The actual Android worker must directly need the pinned shared C++ runtime exactly once')
+_verify_payload(CPP_PATH,CPP_PIN)
 # The baseline dispatcher must remain runnable without SHA2. Inspect the actual
 # unstripped Android ELF, not an inferred compiler configuration or host stub.
 disassembly=subprocess.check_output([str(NDK/'llvm-objdump'),'-d','--no-show-raw-insn',str(OUT/'libhepta_local_runner.so')],timeout=30).decode()
@@ -83,6 +107,12 @@ receipt={'schema':'hepta.local-model.mac-build.v2','compile_sdk':34,'target_sdk'
     'compute_default':'npu','context_default':8192,
     'model_profile_default':DEFAULT_PROFILE,'model_profiles':PROFILES,'llama_source_commit':LLAMA_COMMIT,
     'worker_adapter':adapter_receipt,
+    'sdk_exception_boundary':{'production_c_object_verified':True,'cpp_runtime_path':str(CPP_PATH),
+        'cpp_runtime_bytes':CPP_PIN['bytes'],'cpp_runtime_sha256':CPP_PIN['sha256'],
+        'cpp_runtime_provenance':'existing_apk_mobimind_r4_cpp_pin','vendor_sdk_or_abi_changed':False,
+        'c_object_symbols_sha256':hashlib.sha256(undefined.encode()).hexdigest(),
+        'actual_elf_dynamic_sha256':hashlib.sha256(dynamic.encode()).hexdigest(),
+        'phone_or_sdk_exception_health_verified':False},
     'sha256_instruction_gate':{'verified_actual_android_elf':True,'global_crypto_flag':False,
         'runtime_gate':'getauxval(AT_HWCAP) & HWCAP_SHA2','instruction_owners':sha_owners,
         'disassembly_sha256':hashlib.sha256(disassembly.encode()).hexdigest()},
