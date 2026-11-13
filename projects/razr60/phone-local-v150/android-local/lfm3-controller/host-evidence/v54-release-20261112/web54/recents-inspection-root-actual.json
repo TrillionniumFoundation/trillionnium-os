@@ -1,0 +1,262 @@
+{
+  "schema": "hepta.root-recents-inspection.v1",
+  "out": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1",
+  "app_switch_requests": 1,
+  "card_selected": false,
+  "card_removed": false,
+  "model_task_started": false,
+  "phone_app_data_changed_by_driver": false,
+  "started_wall_s": 1794484620.3191886,
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/adb",
+        "-H",
+        "127.0.0.1",
+        "-P",
+        "5037",
+        "-s",
+        "ZY22LS7WZT",
+        "shell",
+        "run-as",
+        "org.trillionnium.hepta.local",
+        "cat",
+        "files/control-session.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.06366318103391677,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/before-session.stdout",
+        "bytes": 34510,
+        "sha256": "b77fa9e054b3e56b63df059c5b85d1bccd8b4af26aa09c2c7b3ba78d9ea07792"
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/before-session.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/adb",
+        "-H",
+        "127.0.0.1",
+        "-P",
+        "5037",
+        "-s",
+        "ZY22LS7WZT",
+        "shell",
+        "dumpsys",
+        "activity",
+        "recents"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.05631797795649618,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/before-recents.stdout",
+        "bytes": 18795,
+        "sha256": "f393a1702694d3f9d344aa49abbf04b55eab8422184316ab9950fd745bfc2fe8"
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/before-recents.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/adb",
+        "-H",
+        "127.0.0.1",
+        "-P",
+        "5037",
+        "-s",
+        "ZY22LS7WZT",
+        "shell",
+        "input",
+        "-d",
+        "0",
+        "keyevent",
+        "KEYCODE_APP_SWITCH"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.07312312797876075,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/ordinary-app-switch.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/ordinary-app-switch.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/adb",
+        "-H",
+        "127.0.0.1",
+        "-P",
+        "5037",
+        "-s",
+        "ZY22LS7WZT",
+        "shell",
+        "uiautomator",
+        "dump",
+        "/data/local/tmp/hepta-root-recents-inspect-r1.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.335914800991304,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/native-ui-dump.stdout",
+        "bytes": 74,
+        "sha256": "4d7916927c53d418dab7a5ace020924d9140742ad0b52b95f6ceb142228f254c"
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/native-ui-dump.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/adb",
+        "-H",
+        "127.0.0.1",
+        "-P",
+        "5037",
+        "-s",
+        "ZY22LS7WZT",
+        "exec-out",
+        "cat",
+        "/data/local/tmp/hepta-root-recents-inspect-r1.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.04599546600366011,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/native-ui.stdout",
+        "bytes": 9858,
+        "sha256": "e9f1ba83f1715dfbc214043c2a7559b9378cabd8ba7644f41bedc53f39331271"
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/native-ui.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/adb",
+        "-H",
+        "127.0.0.1",
+        "-P",
+        "5037",
+        "-s",
+        "ZY22LS7WZT",
+        "shell",
+        "dumpsys",
+        "window",
+        "windows"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.07378424500348046,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/window.stdout",
+        "bytes": 98439,
+        "sha256": "757a2991e5cb777403b56fd13397d736e1e9d9aba40a381baca68e2c73eb4ff8"
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/window.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/adb",
+        "-H",
+        "127.0.0.1",
+        "-P",
+        "5037",
+        "-s",
+        "ZY22LS7WZT",
+        "exec-out",
+        "screencap",
+        "-p",
+        "-d",
+        "4630947043778501779"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.5637141190236434,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/main-png.stdout",
+        "bytes": 607291,
+        "sha256": "dcb7f70afae2278ede2035188744ac31b96755aaeae6e989b5b8e4d158730e76"
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/main-png.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/adb",
+        "-H",
+        "127.0.0.1",
+        "-P",
+        "5037",
+        "-s",
+        "ZY22LS7WZT",
+        "shell",
+        "run-as",
+        "org.trillionnium.hepta.local",
+        "cat",
+        "files/control-session.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.08611245098290965,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/after-session.stdout",
+        "bytes": 34510,
+        "sha256": "b77fa9e054b3e56b63df059c5b85d1bccd8b4af26aa09c2c7b3ba78d9ea07792"
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/after-session.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "error": null,
+  "before": {
+    "task_id": "9b07550f62414bb5a9ccc16cc2db60e2",
+    "status": "controller_verified_done",
+    "cleanup_known": true,
+    "sha256": "b77fa9e054b3e56b63df059c5b85d1bccd8b4af26aa09c2c7b3ba78d9ea07792"
+  },
+  "native_xml": {
+    "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/recents.xml",
+    "bytes": 9858,
+    "sha256": "e9f1ba83f1715dfbc214043c2a7559b9378cabd8ba7644f41bedc53f39331271"
+  },
+  "window": {
+    "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/recents-window.txt",
+    "bytes": 98439,
+    "sha256": "757a2991e5cb777403b56fd13397d736e1e9d9aba40a381baca68e2c73eb4ff8"
+  },
+  "png": {
+    "path": "/home/alex/hepta-local-007f-20261111/root-helper-recents-inspect-r1/recents.png",
+    "bytes": 607291,
+    "sha256": "dcb7f70afae2278ede2035188744ac31b96755aaeae6e989b5b8e4d158730e76"
+  },
+  "after": {
+    "task_id": "9b07550f62414bb5a9ccc16cc2db60e2",
+    "status": "controller_verified_done",
+    "cleanup_known": true,
+    "sha256": "b77fa9e054b3e56b63df059c5b85d1bccd8b4af26aa09c2c7b3ba78d9ea07792"
+  },
+  "capture_complete": true,
+  "ended_wall_s": 1794484623.709675
+}

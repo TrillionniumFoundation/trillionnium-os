@@ -1,0 +1,142 @@
+{
+  "schema": "hepta.main58.readonly-settle-independent-source-review.v1",
+  "status": "source-only-no-host-or-phone-execution",
+  "reviewed_source": {
+    "bytes": 46689,
+    "sha256": "d2e4f073366d3d3046b0f9b90156f87b1fb84c842a3053a5d32f31df5e3bbc9b",
+    "git_blob_sha": "d89ff1a111693bebd445c99fede473fbc968a314"
+  },
+  "reviewed_delta": {
+    "bytes": 12578,
+    "sha256": "93b5cb89d15dbe74d718e97d57c336049f91feefa0e27af281de110141d81439",
+    "git_blob_sha": "b68ad0de5956328f0dfa228d90aa9d8879f753a8"
+  },
+  "base": {
+    "bytes": 44197,
+    "sha256": "07509c1345b1bacdfcbf504943f375869c274e245c6aafb5819581b4c8395408",
+    "git_blob_sha": "87b2bd6a8758fb6c46659270412bf9d630673591"
+  },
+  "ordered_hunks": 7,
+  "forward_exact": true,
+  "reverse_exact": true,
+  "actual_evidence": {
+    "scope_bundle": {
+      "bytes": 275673,
+      "sha256": "842c36e422bf94e983017a12e05d97b0eb65a07d1f8ce4c0d3a6616eb00059e3",
+      "git_blob_sha": "992bcb98b7ed1ff15b9dbe086ab4257f82132c1a"
+    },
+    "five_actions_and_progress": {
+      "bytes": 116084,
+      "sha256": "3f30d1554e0c8e2de5bae4ca8e681ee5cb37844e09cdd62a5d480f3995818be5",
+      "git_blob_sha": "790b315f1ec6edf2da5047a2d0223b3e500a7f95"
+    },
+    "all_inner_raw_bytes_and_sha256_verified": true,
+    "actions": [
+      "wait",
+      "click n38 机票预订",
+      "click n14 出发城市",
+      "click n27 北京",
+      "click n15 到达城市"
+    ],
+    "four_clicks_accepted_and_dispatched_without_stale": true,
+    "reason_wording_not_used_as_authority": true,
+    "first_two_scope_same_frame_fields": true,
+    "last_scope_retained_diff": [
+      {
+        "path": "/observation_id",
+        "before": "98f1efecebfe4a4bb44222877b734958",
+        "after": "86bdeddc70b04aa9abe416029e005276"
+      },
+      {
+        "path": "/app_tree_sha256",
+        "before": "b3b239f6c4843d5535900fa9895d7fa376a8a5d48cbbc6315484c02ce23f62c0",
+        "after": "d0e34081d28a50fec56a22d2e3895b59e5623e29a4430a37990edc01509ba2da"
+      },
+      {
+        "path": "/observation_state_sha256",
+        "before": "3b7b853178b2726cc0d1d1f3f1a8a5dc7837a3276973b308b2f779bc9ded1f89",
+        "after": "a130648c2702cddd769ab52b0a2662969c2d95c4473d4032056297bcc40c9781"
+      },
+      {
+        "path": "/collection/elapsed_ms",
+        "before": 341,
+        "after": 223
+      },
+      {
+        "path": "/nodes/16/bounds/0",
+        "before": 185,
+        "after": 30
+      },
+      {
+        "path": "/nodes/16/bounds/2",
+        "before": 232,
+        "after": 78
+      },
+      {
+        "path": "/nodes/16/node_app_tree_sha256",
+        "before": "25053d610c2d02e22f5b2f43027c4c78a93f641c5661ab32e4a3d4d97c2179e8",
+        "after": "e63767dd7cb557031178ca7a640aa069c138c54e5e209054c57e25758d00621f"
+      },
+      {
+        "path": "/nodes/17/bounds/0",
+        "before": 438,
+        "after": 282
+      },
+      {
+        "path": "/nodes/17/bounds/2",
+        "before": 592,
+        "after": 438
+      },
+      {
+        "path": "/nodes/17/node_app_tree_sha256",
+        "before": "568c1b0050877f2ee65d51d544d7fe3ad5778fa3e1df7395e25db992451afccd",
+        "after": "629a8abbd2e4396cc9de21880c06ca137ebd60f4445ed3454e670b31a647b37c"
+      }
+    ],
+    "retained_node_count": 59,
+    "visited_node_count": 620,
+    "unretained_nodes_proven_unchanged": false,
+    "png_same": true,
+    "results_or_query_success": false
+  },
+  "checks": {
+    "native_snapshot_closed_before_sleep_and_reobserve": true,
+    "outer_finally_covers_early_return_exception_and_retain_verify_failure": true,
+    "scope_or_capture_exceptions_not_retried": true,
+    "original_same_frame_dom_and_geometry_predicates_preserved": true,
+    "old_current_domain_capture_native_permits_dispatch_checks_and_completion_binding_cleared_before_retry": true,
+    "attempted_run_fence_unchanged": true,
+    "maximum_extra_reobservations": 2,
+    "wait_ms": 200,
+    "shared_keyed_budget_ms": 6000,
+    "original_deadline_retained": true,
+    "cancellation_checked_before_and_after_wait": true,
+    "task_authorization_and_background_require_active_rechecked_after_wait": true,
+    "new_frame_and_new_capture_each_retry": true,
+    "instance_epoch_url_change_across_retry_rejected": true,
+    "failed_budget_does_not_publish_domain": true,
+    "homepage_native_readonly_proof_still_requires_actual_service_proof": true,
+    "readonly_proof_does_not_grant_action": true,
+    "prompt_path_unchanged": true
+  },
+  "accepted_action_preservation": {
+    "ltc_source": "9c54638c63c9bdc7a885c633d2de5d702dc1175b",
+    "outcome_before_after_observation": true,
+    "session_original_outcome_finally_already_cleared_dispatch_source": true,
+    "flight_progress_source": {
+      "bytes": 16832,
+      "sha256": "47630c3e36b56470ebdb8353b24c68f94bf6274d7fefc08133cd7a78946a0691",
+      "git_blob_sha": "08e5a189ee8b2f16980f7f1e9dc08ae8454ef02d"
+    },
+    "pending_selection_owns_original_before_action_run_and_dispatch_interval": true,
+    "query_native_entry_and_outcome_owned_by_progress_before_after_observation": true,
+    "retry_does_not_reset_progress_or_native_query_entry": true,
+    "actual_fresh_form_native_readback_still_required": true
+  },
+  "limits": [
+    "Host execution remains pending. No Android or phone success inferred.",
+    "Actual retained AX proves only two retained node positions changed; it does not serialize the other 561 visited nodes.",
+    "Capture/client, Android resources, deadline and cancellation behavior will be exercised through explicit host seams inside the existing composition run; no new suite.",
+    "Flight result provider remains false."
+  ]
+}

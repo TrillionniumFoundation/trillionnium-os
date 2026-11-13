@@ -1,0 +1,92 @@
+{
+  "schema": "hepta.root-notes56-scoped-visual-review.v1",
+  "actual_original_result": {
+    "git_blob": "171689d2c4e769cad8e1025fd22874fb91962d5c",
+    "bytes": 250421,
+    "sha256": "8e4f37def7612d81bf96c9ccd96ea5b0858bdf9849683f5112953469671e1601",
+    "original_qualified": false,
+    "original_collector_exit": 2
+  },
+  "independent_replay": {
+    "git_blob": "d05b3c9147607002af6587d7223eb21f69df5db5",
+    "bytes": 37037,
+    "sha256": "521031a93afd3e4ab5b579423c3d8a856b742813ad72f47b80db69adab3e4a70",
+    "checks_passed": 9,
+    "original_files_preserved": 875,
+    "qualified": false
+  },
+  "native_result": {
+    "container_git_blob": "e93c0de9e84b942a3f46216fcc5ac4cb6d1dea10",
+    "container_bytes": 26737,
+    "container_sha256": "c2b7569d891b5b9fc11fe317a4dea1c3b63b035e14502f80fd69a14eb0d268e5",
+    "relative_path": "runs/e393bd2e3b7641e7a15a9d458b78823d/native-result.json",
+    "bytes": 4841,
+    "sha256": "881be482c74831adf2104ccf0738d4443a2f92ea37a222bb3344ecddb879160e"
+  },
+  "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+  "display_id": 25,
+  "generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+  "root_observed_final_original_png": {
+    "bytes": 29711,
+    "dimensions": [
+      720,
+      1280
+    ],
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/evidence/task/39df2e75af7343c3b7eecd3a4ee5817a.png",
+    "sha256": "8c6e49d2a34f8cab23b9886bbc9f4259088153d5f034ac362c724d0149331b57",
+    "full_original_bytes_read_and_viewed": true,
+    "visible_body": "Hepta-v56r1-fa843f7020b3 明天下午3点看牙，带上检查资料。",
+    "instruction_prefix_not_written": true
+  },
+  "root_observed_main_frames": [
+    {
+      "role": "main_settings_before_swipe",
+      "sha256": "a21a64446f976d64d9163aba3aafb5829fb1ad463c7f782c97f0cd3b66c9f4b9",
+      "bytes": 22976,
+      "dimensions": [
+        480,
+        1173
+      ],
+      "lossy": true,
+      "complete_frame_viewed": true,
+      "original_png_sha256": "f6b4dcb6fea5071c38eccbfcc968c05b6de040c7f684e56df1102803cc778225",
+      "original_png_full_bytes_read_by_root": false
+    },
+    {
+      "role": "main_settings_after_swipe",
+      "sha256": "c1a5812ad15fd9922a72b60acd17bdfbde5ba663dbbf00543259a5355c92f8fa",
+      "bytes": 22644,
+      "dimensions": [
+        480,
+        1173
+      ],
+      "lossy": true,
+      "complete_frame_viewed": true,
+      "original_png_sha256": "84912bf7ab662767539e09dfec55d241db50f6e6aea7329ed4414c71cad036d2",
+      "original_png_full_bytes_read_by_root": false
+    }
+  ],
+  "scope_results": {
+    "notes_local_model_create_save_list_reopen_verified": true,
+    "original_dual_ui_preferences_preserved": true,
+    "actual_task_scope_notes_only_verified": true,
+    "main_settings_launch_observed": true,
+    "main_swipe_request_bound_to_actual_input": true,
+    "main_settings_content_scroll_visually_verified": true,
+    "whole_main_scroll_case_qualified": true,
+    "whole_original_case_qualified": true,
+    "all_requested_hepta_business_tasks_completed": false
+  },
+  "visual_scroll_limitation": "Two complete lossy 480x1173 previews were viewed; main original PNG bytes were not fully read by Root. Before: bottom Settings section beginning with 系统更新, followed by 关于手机 and 账号与同步. After the actual input -d 0 swipe 612 1060 612 2222 450: 便捷操作, MAXE系统引擎, 屏幕使用时间, 存储, 电池 and 系统 became visible above 系统更新, while shared items moved substantially down the frame. This establishes meaningful Settings content displacement for this recorded task, not uninterrupted freedom from all transient focus changes. The separate main_before_settings_launch preview was not viewed by Root.",
+  "mutated_originals": false,
+  "new_phone_actions": 0,
+  "coexistence_limits": {
+    "main_checks_passed": 8,
+    "system_samples": 17,
+    "active_display_samples": 11,
+    "max_sample_start_gap_seconds": 2.9238256,
+    "max_sample_duration_seconds": 0.253638,
+    "continuous_npu_busy_verified": false,
+    "zero_transient_main_screen_disturbance_proven": false
+  }
+}

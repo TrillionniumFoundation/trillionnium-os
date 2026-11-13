@@ -15,7 +15,7 @@ int main(void){
     char *duplicate[]={"runner","--model-profile","nanbeige4.2-3b-q4_k_m","--model-profile","orvena-4b-q4_k_m",NULL};argc=5;
     assert(hepta_take_model_profile(&argc,duplicate)!=0);
     char *missing[]={"runner","--model-profile",NULL};argc=2;assert(hepta_take_model_profile(&argc,missing)!=0);
-    assert(!strcmp(hepta_profiles[0].id,"lfm3-1.7b-qad-q4_0")&&!hepta_profiles[0].exact_tokens);
+    assert(!strcmp(hepta_profiles[0].id,"lfm3-1.7b-qad-q4_0")&&hepta_profiles[0].exact_tokens);
     assert(sizeof(hepta_profiles)/sizeof(hepta_profiles[0])==12);
     return 0;
 }

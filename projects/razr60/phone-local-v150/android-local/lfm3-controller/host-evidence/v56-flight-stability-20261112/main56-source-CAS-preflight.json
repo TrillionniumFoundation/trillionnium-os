@@ -1,0 +1,213 @@
+{
+  "schema": "hepta.main56-cas-persistent-preflight.v1",
+  "status": "Prepared only; no tree/commit/ref mutation performed",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "branch": "codex/hepta-v45-semantic-click-20261111-007f",
+  "pr_number": 139,
+  "expected_prior_head": "dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e",
+  "verified_prior_tree": "0e22f3f97292894860d03ed5b5d455ff0e4e296d",
+  "prior_tree_truncated": false,
+  "source_prefix": "projects/razr60/phone-local-v150/android-local/lfm3-controller/",
+  "source_aggregate": {
+    "bytes": 1427055,
+    "sha256": "c1cc7cc16eef4c3a34131ee719101a69db080b76e72c98f03248036fc6fd628f",
+    "git_blob_sha": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c"
+  },
+  "source_delta_from_actual55": {
+    "bytes": 215824,
+    "sha256": "2811e8aba659f4d8edc5eed35743aebfa246ff7ced1284c4bc87970d2369eb9b",
+    "git_blob_sha": "f5a9e580f7b41a15d6e3318c7b59ea83da4cc555"
+  },
+  "source_delta_from_actual56_r1": {
+    "bytes": 58425,
+    "sha256": "f39e868cc4ec10526a242c26bcade6a7928e501944dfe5ab73e395b1247d87c1",
+    "git_blob_sha": "9150a118ef3bc92b75fdbcef559f801ceafbab1a"
+  },
+  "physical_inventory": {
+    "bytes": 103795,
+    "sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+    "git_blob_sha": "c43a4be934ca00942ceeed086e16fc4b81d3a519"
+  },
+  "full_inventory": {
+    "bytes": 163370,
+    "sha256": "d87173f40a5f2793e077408674f2f8a24b8152d74f5fd01cdcdf5fd403ebd386",
+    "git_blob_sha": "0a548d1541ad07fb4965d7e2d411c16fdff422db"
+  },
+  "source_files": 595,
+  "modified_existing": 13,
+  "new_source_files": 1,
+  "unchanged_actual55_files": 581,
+  "verified_all594_prior_source_blobs_and_modes": true,
+  "all_other_repository_blobs_must_remain_exact": true,
+  "prior_repository_blob_count": 9027,
+  "prior_source_prefix_blob_count": 1591,
+  "source_tree_changes": [
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/AndroidManifest.xml",
+      "old": "d0aa04d57d2e2902f55331156bbb6261fd4b6d59",
+      "new": "24d84378527e48f8090129609da7f8e66f362b45",
+      "mode": "100644",
+      "bytes": 2582,
+      "sha256": "c372aebecde61283232394ea687045992c68b689ab954ad523bc5569f96389bc"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "old": "effb13c0668fcef5499502876fa0277bf99c83c6",
+      "new": "6200e5325ec1397abd73e9bfa99235c7b063935d",
+      "mode": "100644",
+      "bytes": 129287,
+      "sha256": "53dc2765f2f0504a4ea16618a2e0b44c0d443dceeb3834f030098ae2cea26fba"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "old": "e0665e2326d26ca97747b89e46bc8646c49ed4e0",
+      "new": "9c54638c63c9bdc7a885c633d2de5d702dc1175b",
+      "mode": "100644",
+      "bytes": 116846,
+      "sha256": "68185b0bd3cf17adfb94f62b32a764ce692512ea20b438bbcdca766cff49d167"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+      "old": "d8a894c9bd3ece4a7dca922cb5fda8a84447c789",
+      "new": "48323262aaf10962f0a481cafc18c56bc82e936b",
+      "mode": "100644",
+      "bytes": 49971,
+      "sha256": "ad417d98fbd7b12bf4373270a1206c11984682c9f35b7b4a5179bb9fbff7ba98"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
+      "old": null,
+      "new": "5d41e41c7e6c447f4dba598a12f21673c168603b",
+      "mode": "100644",
+      "bytes": 23349,
+      "sha256": "503078f251696fb542912e5270efca13439ebcece4db8b3473e7fcb543b4fc2d"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "old": "965f8477f109408cef48df5017da2ec48b95b267",
+      "new": "8283d4e83b7cf13c9deb7e55c6d26f26053e11cc",
+      "mode": "100644",
+      "bytes": 42734,
+      "sha256": "7f3c7fd872e9901026ad7471dfc9a3e68d2c987eb1931896f80ea0f2acd6f4e1"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/src/org/trillionnium/hepta/local/WebShoppingDomain.java",
+      "old": "da3880029d43376cd271df68517675615c2800bd",
+      "new": "78c1c4d616a815dbf31b214f0fb74754745c967c",
+      "mode": "100644",
+      "bytes": 31717,
+      "sha256": "bbf256e37eb5cc3a1619371e9c29dc5f7af3139eeb4f602f602cf0f05551bf92"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/tests/completion/TaskCompletionGateHostTest.java",
+      "old": "9c363c22ff6d1eb0e80017588af7532e4329f8fc",
+      "new": "56d26ecf8d13f7ce03004e922a5f275ee4083354",
+      "mode": "100644",
+      "bytes": 28781,
+      "sha256": "d86c0ea22722de346ab092a9d479e169fc66febb8daf14dfc0a5ec060c0614d8"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/tests/qualification-scope/BackgroundObservationFixture.template",
+      "old": "f0a7befce4b4c8390b50d6d9a83695a8cc60a5e2",
+      "new": "a739a4ba9c8d3ece8bae07cba6f6582a625598d0",
+      "mode": "100644",
+      "bytes": 2313,
+      "sha256": "f5655ba51cfe217cfe4dcaf759d6bd58e7ec87f4a40dde7d2ba9ada23d62c3a6"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/tests/qualification-scope/ServiceFixture.template",
+      "old": "f547d6c0a4648327917e10dcdbf74960d58abfb1",
+      "new": "ad37011ca74b6c3bcb34687bff3e261a2858e6c0",
+      "mode": "100644",
+      "bytes": 8230,
+      "sha256": "0b6b4d0986691ffc328f89f17b74ab055385f13b437acd562633ad1fca8532d2"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/tests/qualification-scope/fixtures/org/trillionnium/hepta/local/WebFlightSession.java",
+      "old": "612e1da1aa0774d57b891d04fa1ade97a46d529b",
+      "new": "4ef37e5ce29f49632b7e93d4bf32bea293c259bc",
+      "mode": "100644",
+      "bytes": 3684,
+      "sha256": "1bf4db123f478cd2285fcdd146e7cc07d31d64a9343a96766054188e64dc46e5"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/tests/qualification-scope/prepare_fixture.py",
+      "old": "7cf2b077e9e6558d9c2d03fa8e0cdc40b7a333a0",
+      "new": "667293678cd99beeabf82a6ae0965bdc3b137a25",
+      "mode": "100644",
+      "bytes": 11439,
+      "sha256": "3e259c4796752dd955df4a1bc8e9e16587c147c70f2d79f8755af2243140d00c"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/tests/warm-finalization/prepare_fixture.py",
+      "old": "07785c82038007af91ba6612d410df5e96d143b2",
+      "new": "b55a5e693c29035d94e1140c77b299f8fce56d1c",
+      "mode": "100644",
+      "bytes": 6220,
+      "sha256": "e4ee5ea79e689a2e89d64f5c8092a523e77ab5a337c5965c34a32974d06092e1"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/tests/web-flight/run_query_host_tests.py",
+      "old": "6cba08c6e2968107b054c5271065407261cf4016",
+      "new": "7b7a23db9302bc63b71f51a4d74d06c34183059d",
+      "mode": "100644",
+      "bytes": 41005,
+      "sha256": "0f4d983138ed8bcf5f0b622ee4d4063048e83413eafe3586595521f5e1b7eb45"
+    }
+  ],
+  "evidence_staging_index": {
+    "git": "0477793a2b3479c966f0f46b4295507ad8af41d1",
+    "bytes": 21974,
+    "sha256": "684a5df74858668bba4a264f72a6168fd5f695f5dad72b3045d20958e44ad3e1"
+  },
+  "evidence_records_staged": 60,
+  "expected_not_actual_host_bare_map": {
+    "bytes": 141875,
+    "sha256": "8d8cf9767861029b1cd4c6bb1143e07ee92296a475a44ae1979db79756233926",
+    "git_blob_sha": "07cc1ccced2c41df1fcb06e5195650362b3676c0"
+  },
+  "publication_format": {
+    "schema": "hepta.v56-git-publication.v1",
+    "map_schema": "hepta.git-source-blob-map.v2",
+    "base_source_commit": "dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e",
+    "reconstruction_and_native_origin": "42d3a0f447807659c0f78c8273edee01dd1b734f",
+    "map_order": "POSIX Path-component tuple order, as actual Core bare map",
+    "map_header_keys": [
+      "schema",
+      "repository",
+      "source_prefix",
+      "source_commit",
+      "source_tree",
+      "base_source_commit",
+      "source_file_count",
+      "source_inventory_sha256",
+      "host_actual_blob_map_sha256",
+      "host_actual_blob_map_bytes",
+      "precommit_host_result_sha256",
+      "all_source_blobs_match_actual_tree"
+    ],
+    "map_row_keys": [
+      "path",
+      "bytes",
+      "sha256",
+      "git_blob_sha",
+      "remote_blob_sha",
+      "repository_path",
+      "mode"
+    ],
+    "source_commit_is_post_CAS_actual": true
+  },
+  "remaining": [
+    "Root actual Core56 r2 same595 original receipt and source map",
+    "Root actual Web56 r2 original receipt",
+    "Root actual focused39 same595 receipt",
+    "Root actual Android56 same595 build receipt",
+    "Full actual receipt SHA/shape/current-source binding verification",
+    "Refresh PR/ref head and apply non-force expected-head CAS",
+    "Read actual tree and both PR/ref head, then emit full v2 MAP and v56 PUBLICATION"
+  ],
+  "actual_current_successor_compiled": false,
+  "actual_signed_or_installed56": false,
+  "actual_flight_results_provider_ready": false,
+  "phone_business_verified": false
+}

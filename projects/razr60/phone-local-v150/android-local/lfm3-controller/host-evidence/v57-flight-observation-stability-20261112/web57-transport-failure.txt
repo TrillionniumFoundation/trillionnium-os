@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File [35m"<string>"[0m, line [35m38[0m, in [35m<module>[0m
+    [31mneed[0m[1;31m(len(LOADER.encode("utf-8"))==878 and sha(LOADER.encode("utf-8"))==LOADER_SHA,[0m
+    [31m~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+         [1;31m"original loader bytes")[0m
+         [1;31m^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"<string>"[0m, line [35m14[0m, in [35mneed[0m
+    if not ok:[1;31mraise RuntimeError(why)[0m
+              [1;31m^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mRuntimeError[0m: [35moriginal loader bytes[0m

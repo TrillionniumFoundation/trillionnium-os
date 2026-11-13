@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.source-review.helper6-pocket4-inventory-loader.v1",
+  "reviewer": "android_code_audit",
+  "scope": "Only the 991-byte stable-file loader, exact source transport, and original source-byte injection; the inventory scan/read boundary is separately reviewed by android_background.",
+  "handoff": {
+    "git": "7b3fe6a32aebbb8059693540409d6e416e08973e",
+    "bytes": 78545,
+    "sha256": "31345336e851f934bfd60f6885116268a911318ef4de0c7dd2a1f86e64058121"
+  },
+  "source": {
+    "git": "3978a5a10505b4565326e8f0e25e3e896f083d3b",
+    "bytes": 25642,
+    "sha256": "fe08a4c12c0ac90ae5b402f0966a1dd27feaecd831505923f9003ac9f7d30f40",
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-inventory-r1.py"
+  },
+  "loader": {
+    "bytes": 991,
+    "sha256": "62636c045c5c7e1ae699565dd5e31fd932ba0caba5baf6055a2334e7171d88b7"
+  },
+  "checks": [
+    "Read and independently hash-verified the complete handoff and source raw bytes, including Git blob identities.",
+    "Decoded the entire source_write data_base64 and compared every byte to the source raw and independently fetched source; canonical encode/decode roundtrip is equal.",
+    "Exact create-only write has host pocket4, the fixed source path, and expected_version=absent.",
+    "Start argv is exactly -I -B -c plus the reviewed loader; the idempotency key and output root are independent from the unknown Mac build.",
+    "Loader opens a non-symlink regular single-link file, bounds the read, verifies stable FD/path identity and all non-symlink parents before and after, and verifies the complete source length/SHA256.",
+    "compile receives exactly that verified raw bytes object; __source_raw__ is the same object, sys.argv is the fixed source filename, and bytecode is disabled.",
+    "The original source still claims its exclusive output directory before its handler. Duplicate late arrival cannot enter that handler or rewrite its result."
+  ],
+  "authorization_note": "Parent clarified that the two roots constrain recursive scans; fixed known receipt and standard which path resolution/hash exceptions are authorized. This review does not broaden that source boundary.",
+  "source_blocker_found": false,
+  "execution_started": false,
+  "python_syntax_run": false,
+  "inventory_pass_claimed": false,
+  "build_ready_claimed": false,
+  "phone_actions": 0
+}

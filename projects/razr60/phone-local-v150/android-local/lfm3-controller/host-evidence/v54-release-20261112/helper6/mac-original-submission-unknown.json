@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.helper6-build-host-submission-receipts.v1",
+  "transport_git": "ca683439b3a836af24834311f2b2bfd14d808681",
+  "builder_git": "974a1beeedfa11dff96eba729e22f3ec31c91305",
+  "candidate_git": "65401752c7c3bbe8cfbcf755a6cb33bf8534c9c7",
+  "exact_source_published": true,
+  "exact_input_committed": true,
+  "start_idempotency_key": "007f-v55-web-helper-code6-build-r1",
+  "start_status": "unknown_after_original_MCP_timeout",
+  "start_reissued": false,
+  "output_root": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v55-web-helper-code6-build-r1",
+  "host_build_result_observed": false,
+  "phone_actions": 0,
+  "signing_actions": 0,
+  "receipts": [
+    {
+      "store_key": "helper6_code6_source_write_result",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"mode\":384,\"sha256\":\"1597652a5f7a34f215e01f39595a3c55310cd602a41c6cc89dda516433596919\",\"size\":27617,\"version\":\"16777233:602450556:27617:1794484319739880760:1794484319740532014\",\"written\":27617}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "store_key": "helper6_code6_input_chunk_0_result",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":49152,\"upload_id\":\"007f-v55-helper6-wire4-input-r1\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "store_key": "helper6_code6_input_chunk_1_result",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":98304,\"upload_id\":\"007f-v55-helper6-wire4-input-r1\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "store_key": "helper6_code6_input_chunk_2_result",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":147456,\"upload_id\":\"007f-v55-helper6-wire4-input-r1\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "store_key": "helper6_code6_input_chunk_3_result",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":193927,\"upload_id\":\"007f-v55-helper6-wire4-input-r1\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "store_key": "helper6_code6_input_commit_result",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"committed\":true,\"mode\":384,\"reused\":false,\"sha256\":\"fd301ded2455febff45bdf2c6be7909a7dea0bf2ac2d5c2d4a04da59e872c631\",\"size\":193927,\"version\":\"16777233:602450626:193927:1794484401446402132:1794484412301812895\"}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "store_key": "helper6_code6_start_result",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.pty_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    }
+  ]
+}

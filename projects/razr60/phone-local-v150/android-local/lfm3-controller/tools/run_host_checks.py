@@ -14,7 +14,7 @@ import sys
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
-PURE_CLASSES=['TaskCompletionGate', 'NotesCompletionEvidence', 'FixedIntentAttemptGuard', 'LastModelDecisionProjection', 'BackgroundPermissionPreparation', 'TaskAuthorization', 'QualificationScope', 'ActionDecision', 'ActionPolicy', 'ObservedTargetLabels', 'ObservedAppLabels', 'ObservedScrollActions', 'ObservedImeEnter', 'SubmitAttemptGuard', 'ObservationStabilityGate', 'RecentActionProjection', 'PersistentActionPolicy', 'ImeVisibility', 'ObservationState', 'ObservedWindowMetadata', 'ObservedChildText', 'RepeatActionGuard', 'SameStateNoEffectGuard', 'DecisionGrammar', 'ModelProfile', 'NativeBudgetVerifier', 'LocalRuntimeConfig', 'ModelFileVerifier', 'ConservativeTokenBudget', 'MemoryAvailability', 'AppCatalogueRanker', 'SessionRecovery', 'MobiMindPins', 'MobiMindContract', 'MobiMindSessionContract', 'UiVenusPins', 'UiVenusInputContract', 'UiVenusRequestContract', 'UiVenusContract', 'UiVenusProcessContract', 'UiVenusSessionContract', 'DiagnosticStartupGate', 'ObservedTextProjection', 'ObservedTransitionProjection', 'CompactTaskHistory', 'PromptActionDomain', 'RecoveryQuiescence', 'RecoveryDispatch', 'RecoveryJournalTransaction', 'RecoverySlotHandoff', 'WarmProcessSession']
+PURE_CLASSES=['NotesCreateWorkflow', 'NotesOwnerIntent', 'CalculatorTaskInputGuard', 'CalculatorGoalContract', 'CalculatorCompletionEvidence', 'NotesTaskPhaseGuard', 'TaskCompletionGate', 'NotesCompletionEvidence', 'FixedIntentAttemptGuard', 'LastModelDecisionProjection', 'BackgroundPermissionPreparation', 'TaskAuthorization', 'QualificationScope', 'ActionDecision', 'ActionPolicy', 'ObservedTargetLabels', 'ObservedAppLabels', 'ObservedScrollActions', 'ObservedImeEnter', 'SubmitAttemptGuard', 'ObservationStabilityGate', 'RecentActionProjection', 'PersistentActionPolicy', 'ImeVisibility', 'ObservationState', 'ObservedWindowMetadata', 'ObservedChildText', 'RepeatActionGuard', 'SameStateNoEffectGuard', 'DecisionGrammar', 'ModelProfile', 'NativeBudgetVerifier', 'LocalRuntimeConfig', 'ModelFileVerifier', 'ConservativeTokenBudget', 'MemoryAvailability', 'AppCatalogueRanker', 'SessionRecovery', 'MobiMindPins', 'MobiMindContract', 'MobiMindSessionContract', 'UiVenusPins', 'UiVenusInputContract', 'UiVenusRequestContract', 'UiVenusContract', 'UiVenusProcessContract', 'UiVenusSessionContract', 'DiagnosticStartupGate', 'ObservedTextProjection', 'ObservedTransitionProjection', 'CompactTaskHistory', 'PromptActionDomain', 'RecoveryQuiescence', 'RecoveryDispatch', 'RecoveryJournalTransaction', 'RecoverySlotHandoff', 'WarmProcessSession', 'OwnedWorkerCancellation']
 
 
 def main():
@@ -31,7 +31,10 @@ def main():
             "external_model_used":False,"started_host_wall_ms":int(time.time()*1000),"checks":[]}
     source_dir=ROOT/"src/org/trillionnium/hepta/local"
     sources=[source_dir/(name+".java") for name in PURE_CLASSES]
-    sources += [ROOT/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol")]
+    sources += [source_dir/"web/WebFlightGoal.java",source_dir/"web/WebShoppingGoal.java",
+                ROOT/"tests/web-flight/legacy-boundary/WebFlightDomain.java"]
+    report["web_fixture_boundary"]="Legacy non-Web tests use a type-only WebTaskDomain whose methods throw; actual Web classes have an independent gate"
+    sources += [ROOT/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","BackgroundOwnedTaskPolicy")]
     tests=sorted((ROOT/"tests").glob("*HostTest.java"))+[
         ROOT/"tests/action-parser/ActionDecisionHostTest.java",
         ROOT/"tests/action-grammar/DecisionGrammarHostTest.java"]
@@ -41,6 +44,14 @@ def main():
                                       ("native",("*.c","*.h","*.inc","*.py")),("tools",("*.py",))):
             for extension in extensions: paths.update((ROOT/directory).rglob(extension))
         paths.update(p for p in (ROOT/"tests/completion/fixtures").rglob("*") if p.is_file())
+        paths.update(p for p in (ROOT/"tests/text-only-click/fixtures").rglob("*") if p.is_file())
+        paths.update(p for p in (ROOT/"tests/notes-task-phase/fixtures").rglob("*") if p.is_file())
+        paths.update(p for p in (ROOT/"tests/calculator-completion/fixtures").rglob("*") if p.is_file())
+        paths.update(p for p in (ROOT/"tests/calculator-input/fixtures").rglob("*") if p.is_file())
+        paths.update(p for p in (ROOT/"tests/notes-editor-phase/fixtures").rglob("*") if p.is_file())
+        paths.update(p for p in (ROOT/"tests/completion-status/fixtures").rglob("*") if p.is_file())
+        paths.update(p for p in (ROOT/"tests/observation-collection/fixtures").rglob("*") if p.is_file())
+        paths.update(p for p in (ROOT/"tests/notes-create-workflow/fixtures").rglob("*") if p.is_file())
         if any(p.is_symlink() for p in paths): raise RuntimeError("Host inputs must not be symbolic links")
         return [{"path":str(p.relative_to(ROOT)),"sha256":hashlib.sha256(p.read_bytes()).hexdigest()}
                 for p in sorted(paths)]
@@ -61,7 +72,22 @@ def main():
     try:
         classes=out/"classes"; classes.mkdir()
         fixtures=out/"grammar"; fixtures.mkdir()
-        run("java-compile",compiler+["--release","8","-encoding","UTF-8","-Xlint:all","-Werror","-d",classes,*sources,*tests])
+        web_fixture_source=ROOT/"tests/web-flight/legacy-boundary/WebFlightDomain.java"
+        web_fixture_raw=web_fixture_source.read_bytes()
+        web_fixture_compile=out/"WebTaskDomain.java"
+        if sources.count(web_fixture_source)!=1 or hashlib.sha256(web_fixture_raw).hexdigest()!=next(
+                r["sha256"] for r in report["source_inputs"] if r["path"]==str(web_fixture_source.relative_to(ROOT))):
+            raise RuntimeError("Exact original Web type-boundary source required")
+        web_fixture_compile.write_bytes(web_fixture_raw)
+        if web_fixture_compile.read_bytes()!=web_fixture_raw:
+            raise RuntimeError("Web type-boundary compiler copy changed")
+        compile_sources=[web_fixture_compile if p==web_fixture_source else p for p in sources]
+        report["web_fixture_compiler_copy"]={"source_path":str(web_fixture_source.relative_to(ROOT)),
+            "compiler_path":str(web_fixture_compile),"bytes":len(web_fixture_raw),
+            "sha256":hashlib.sha256(web_fixture_raw).hexdigest(),"byte_identical":True}
+        run("java-compile",compiler+["--release","8","-encoding","UTF-8","-Xlint:all","-Werror","-d",classes,*compile_sources,*tests])
+        if web_fixture_compile.read_bytes()!=web_fixture_raw:
+            raise RuntimeError("Web type-boundary compiler copy changed during javac")
         for test in tests:
             name=test.stem
             command=[java,"-cp",classes,name]
@@ -118,6 +144,14 @@ def main():
             "--java",java,"--report",out/"notes-completion-evidence"/"VALIDATION.json","--release8"])
         run("task-completion",[sys.executable,"-B",ROOT/"tests/completion/run_host_tests.py",
             "--source",ROOT,"--output",out/"task-completion","--release8"])
+        run("calculator-completion-pure",[sys.executable,"-B",ROOT/"tests/calculator-completion/run_host_tests.py",
+            "--source",ROOT,"--output",out/"calculator-completion-pure","--release8"])
+        run("observation-collection",[sys.executable,"-B",ROOT/"tests/observation-collection/run_host_tests.py",
+            "--source",ROOT,"--output",out/"observation-collection","--release8"])
+        run("notes-owner-intent",[sys.executable,"-B",ROOT/"tests/notes-owner-intent/run_host_tests.py",
+            "--source",ROOT,"--output",out/"notes-owner-intent","--release8"])
+        run("background-owned-task-policy",[sys.executable,"-B",ROOT/"tests/background-owned-task/run_host_tests.py",
+            "--out",out/"background-owned-task-policy","--java",java])
         if all_inputs()!=report["source_inputs"]: raise RuntimeError("Source changed during host checks")
         report["all_pass"]=True
     except Exception as error:

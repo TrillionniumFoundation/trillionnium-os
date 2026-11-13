@@ -1,0 +1,425 @@
+{
+  "schema": "hepta.main58.offline-recovery-evidence-index.v1",
+  "status": "source-and-transport-pending; host connection unavailable",
+  "source_commit_unchanged": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+  "production_file_count": 595,
+  "source_replaced_by_this_append": false,
+  "prior_evidence_head": "b5dcd3a0032f99ea47950c28951a3510d590fecd",
+  "prior_evidence_tree": "6cb3fe13e94a78ec906e7808df34b2412981852f",
+  "original_57_publication_and_map_unchanged": true,
+  "prior_118_evidence_members_unchanged": true,
+  "actual_installed_main_version": 57,
+  "main58_signed": false,
+  "main58_installed": false,
+  "flight_results_provider_ready": false,
+  "current_flight57": {
+    "business_success": false,
+    "web_query_dispatched": false,
+    "results_ready": false,
+    "steps": 5,
+    "collector_exit_code": 0,
+    "collector_exit_is_business_success": false
+  },
+  "notes_verified_scopes_remain_main56": true,
+  "host_connection": {
+    "first_error": "tunnel_client_not_connected",
+    "latest_error": "tunnel_client_not_seen",
+    "raw_second_error_member": "ROOT-OFFLINE-REVIEW-AND-SECOND-HEALTH.json"
+  },
+  "core58": {
+    "start_ack_observed": true,
+    "session_id": "dpty-2b06b0a65c7104136c17ada20448725cd25c353d94b590495d7de8214a34feb5",
+    "pid": 3934790,
+    "final_result": "unknown",
+    "exit_code": null,
+    "do_not_resubmit_start": true,
+    "resume_first_action": "Read the original session or its existing RESULT; do not issue another Start."
+  },
+  "pending": {
+    "focused": {
+      "request_git_blob_sha": "2991561a005f752e38856c0fea31a11fc15f58f4",
+      "source_git_blob_sha": "0ed1274edd5306cca458941c00eac0722712aec3",
+      "submitted": false,
+      "old_af949_request_withdrawn_without_execution": true
+    },
+    "web": {
+      "request_git_blob_sha": "a983113e8ed328eeff3d13e1ee55cfa586f56086",
+      "submitted": false,
+      "expected_counts_are_not_actual_pass": true
+    },
+    "android": {
+      "request_git_blob_sha": "0000c0684a9576e63aa63639385b1f2cdcaee3e0",
+      "request_must_not_be_submitted": true,
+      "pending_config_fields": [
+        "focused_result"
+      ],
+      "requires_actual_focused_result_and_resealed_source_transport": true,
+      "submitted": false
+    },
+    "signer": {
+      "pending_config_count": 10,
+      "submitted": false
+    },
+    "stager": {
+      "pending_config_count": 8,
+      "submitted": false
+    },
+    "installer": {
+      "pending_release_field_count": 13,
+      "owner_pending": true,
+      "submitted": false
+    },
+    "flight": {
+      "runtime_publication_submitted": false,
+      "prepare_pending_count": 7,
+      "run_pending_count": 6,
+      "dual_publisher_pending_count": 10,
+      "run_publisher_pending_count": 6,
+      "release_pending": true,
+      "owner_or_visual_coordinate_assumed": false,
+      "phone_actions": false
+    }
+  },
+  "member_count": 35,
+  "members": [
+    {
+      "path": "ROOT-OFFLINE-REVIEW-AND-SECOND-HEALTH.json",
+      "role": "Root source-only review and actual second tunnel error; no new Start",
+      "bytes": 2829,
+      "sha256": "3daf2d7f8436530d4b9308eb1d383ea5b0f931c81e34f48802f2eb0199fc3b62",
+      "git_blob_sha": "35260e55d21b4f498ac9a41e32726e0cd8685ff3"
+    },
+    {
+      "path": "BG-PENDING-MEMBER-MANIFEST.json",
+      "role": "Sign, stage, installer and Flight pending member inventory",
+      "bytes": 8341,
+      "sha256": "15f942bed8007490f8c481d9db06acf843acb451e9831bc1cd9a93770309caa2",
+      "git_blob_sha": "1b8067d91efed40c71334503c2d1313de201f49e"
+    },
+    {
+      "path": "AUDIT-PENDING-MEMBER-MANIFEST.json",
+      "role": "Android exact current member inventory and recovery ordering",
+      "bytes": 13064,
+      "sha256": "8408845912b1df67665afbba5127f6d8a6a808a93639f724147cdf34064c0cda",
+      "git_blob_sha": "619bfcef8fc883c4d6395bda22ac34c0bbadbb24"
+    },
+    {
+      "path": "sign-stage-pending-handoff.json",
+      "role": "29 signer and 13 stager reversible derivation; future seals pending",
+      "bytes": 72080,
+      "sha256": "5b20a1a9830d5148a5af7d838be695415a9c52651ff06a4ed7f5f7e788f44b66",
+      "git_blob_sha": "a5017f9685043f25d423e7348924b72e2c7ee437"
+    },
+    {
+      "path": "signer58-pending.py",
+      "role": "Unsealed signer; ten CONFIG fields remain None",
+      "bytes": 97646,
+      "sha256": "49d8d2ba897661d0e3b68891c3fde6fe85dabdf90200de83aed62129b8fde158",
+      "git_blob_sha": "c110570bca19aea7f8f4e1887cf5b6187faba77f"
+    },
+    {
+      "path": "metadata-stager58-pending.py",
+      "role": "Unsealed metadata stager; eight CONFIG fields remain None",
+      "bytes": 17781,
+      "sha256": "bea8829401d1bb00018fe165cf2df79a7dd1331ca8ea2182ef2a3b8da425b14c",
+      "git_blob_sha": "e24b2191d913d39a4ab0138a02c44530bf7b25cc"
+    },
+    {
+      "path": "install58-pending.py",
+      "role": "Unsealed installer; 13 release fields and OWNER remain None",
+      "bytes": 251724,
+      "sha256": "f476688b7c3ff6df4c1ad75d08cc16027d465f0bc54169fb8c053966f85bd379",
+      "git_blob_sha": "ee42680d616aafb10e628d5c2669d51411f6fa91"
+    },
+    {
+      "path": "install58-pending-derivation.json",
+      "role": "13 reversible changes from actual installed57 driver",
+      "bytes": 147409,
+      "sha256": "f0be72c79c0bb78098cc721237fb8d626adb67ecea6c36017c97c65e19604d23",
+      "git_blob_sha": "5436491367bbf47a3f696ed82595fb19b8425d4c"
+    },
+    {
+      "path": "install58-current-consumer-review.json",
+      "role": "Git-only actual Flight57 CURRENT and prior installation interface review",
+      "bytes": 2554,
+      "sha256": "976c9222f6077ef1b01f6f2b81ceaaf4acaf52eb3360e45b764ced3b0d5a8b8b",
+      "git_blob_sha": "d20b084a82fec6bba52b7842fcccad563269f9f9"
+    },
+    {
+      "path": "flight58-pending-handoff.json",
+      "role": "Version and path adaptation, no future release or owner claim",
+      "bytes": 15147,
+      "sha256": "699259b9e4be1ca62a0098ece8d219550776761e889c42984732d031033afb73",
+      "git_blob_sha": "347bcf6a440fc7428ad502b204116b66220daca4"
+    },
+    {
+      "path": "flight58-support.py",
+      "role": "Unexecuted Flight58 support",
+      "bytes": 70091,
+      "sha256": "ffc943520d277e4235f9e07eb6469881e7f0554878e675834318a6d3c86560e1",
+      "git_blob_sha": "8d5b21ce8ec8d08a36c243ce21849f33fccdab2f"
+    },
+    {
+      "path": "flight58-prepare.py",
+      "role": "Unexecuted Flight58 prepare",
+      "bytes": 27543,
+      "sha256": "cee95e2e0601ae14c42776398bd648aa88176bc42679e3546447e71529827d12",
+      "git_blob_sha": "4c5f0f282ddbab2c34afee0b12fde74e84201414"
+    },
+    {
+      "path": "flight58-run.py",
+      "role": "Unexecuted Flight58 run",
+      "bytes": 34153,
+      "sha256": "c8017b1971ab28e22df151bd9c4c4f829958416d78c10348b458d0aec82795da",
+      "git_blob_sha": "17462a68017341d7d4b10a76d78a0962ee56b691"
+    },
+    {
+      "path": "flight58-prepare_wrapper.py",
+      "role": "Unexecuted Flight58 prepare_wrapper",
+      "bytes": 2916,
+      "sha256": "a49850fbe455624b40568f32d88bf955ef17992de2b9ff88ada7a1dec2b2a496",
+      "git_blob_sha": "e01bc1cae20efcafeb0b8fc30a4e22a85d2c2b4a"
+    },
+    {
+      "path": "flight58-run_wrapper.py",
+      "role": "Unexecuted Flight58 run_wrapper",
+      "bytes": 3216,
+      "sha256": "9479b90f7c3a40f0edfeff33c7af6f2c8a22516e0d6864d2873e87869e07fc91",
+      "git_blob_sha": "3b5f31c35d43e330cc7cccaa63b5c1990c9a27b2"
+    },
+    {
+      "path": "flight58-release-pending.json",
+      "role": "Unexecuted Flight58 release",
+      "bytes": 1353,
+      "sha256": "a8ef3e6f31ea5ec777a7a9994f5d4afc747871332cfd746820d8e8dada18f0e0",
+      "git_blob_sha": "682464712c799cc518cb9333a68e14d2432112f2"
+    },
+    {
+      "path": "flight58-publisher.py",
+      "role": "Unexecuted Flight58 publisher",
+      "bytes": 9626,
+      "sha256": "089dab157f3cfac030b73801bd77fa6cf13316db637801e038d76c380f40c8ff",
+      "git_blob_sha": "5191c85a9b1470bf165bb00c142dc55d2192f73f"
+    },
+    {
+      "path": "flight58-dual_publisher.py",
+      "role": "Unexecuted Flight58 dual_publisher",
+      "bytes": 10183,
+      "sha256": "a1f803db76404d231379d4598eaa98ce01e06c1e821fb271cd8bbdd311e4ad36",
+      "git_blob_sha": "5b1be5f161fe04a53f68f9b0dd0c5104e19ec0f7"
+    },
+    {
+      "path": "flight58-run_publisher.py",
+      "role": "Unexecuted Flight58 run_publisher",
+      "bytes": 7607,
+      "sha256": "1be4a13e6730a21fd7371ba909eba36539d8b9a6bf2c39012c1e2edbabed8493",
+      "git_blob_sha": "d0b0a03e30b33232321c8ff96811e04404f522ba"
+    },
+    {
+      "path": "flight58-runtime-publish-only-exact-request.json",
+      "role": "Unsubmitted host-only publication request; does not execute runtime or phone",
+      "bytes": 62961,
+      "sha256": "768d15e4ff6204b7e350fb6bfd52c7c088b05e1f6f5a17dc981535f6a4a8a575",
+      "git_blob_sha": "696b8461a1a0f36484450ceb6456156c10b1fa9d"
+    },
+    {
+      "path": "android58-pending-source.py",
+      "role": "current pending coordinator",
+      "bytes": 90099,
+      "sha256": "a933105576d7012b74386c934a7f1c9184fa9c01e87ebf9c13fc728ce54dfa51",
+      "git_blob_sha": "a8d1193fcdae2fd6262f668eb584d773fe42a9db"
+    },
+    {
+      "path": "android58-pending-exact-request.json",
+      "role": "unsubmitted request; requires actual focused receipt sealing",
+      "bytes": 50051,
+      "sha256": "e9289e61d581aa7ee8dad9ddeb61a5a2185802e02c60bbd53266f9ce3007f083",
+      "git_blob_sha": "0000c0684a9576e63aa63639385b1f2cdcaee3e0"
+    },
+    {
+      "path": "android58-full-input.json",
+      "role": "whole derived input, without future results",
+      "bytes": 1605061,
+      "sha256": "120cc1714b837e19d56acc4138bcb2194124b1100293f6bf2a8f71c32fb0ed33",
+      "git_blob_sha": "003656bcba9f8a9e1212deabcc978116648783e4"
+    },
+    {
+      "path": "android58-compact-handoff.json",
+      "role": "exact source and transport derivation",
+      "bytes": 112016,
+      "sha256": "f2592fbb3423ebd4eaabbd0c761252235c6c564584144a2480e43a02c3e0f8cc",
+      "git_blob_sha": "d1096fce4e27963cad0996a713ca474b89f3b53c"
+    },
+    {
+      "path": "android58-publisher.py",
+      "role": "same publisher raw embedded in exact request",
+      "bytes": 10437,
+      "sha256": "519026dfa10092e78ea71c536da5c3b568165ce15031e2fd5a0c94a1d1cd353d",
+      "git_blob_sha": "1a976bb6c3b38edb268cd4a9fdf29bdb75b6315c"
+    },
+    {
+      "path": "android58-loader.py",
+      "role": "same loader raw embedded in publisher",
+      "bytes": 863,
+      "sha256": "9ad261c38cc7d70868fbde8ca3797965efa48f6e6197e10e1369b59582298eae",
+      "git_blob_sha": "8f9caa0c0ab63cb8f31f57e11a62e551d509fe70"
+    },
+    {
+      "path": "android58-supervisor.py",
+      "role": "same supervisor raw embedded in publisher",
+      "bytes": 1802,
+      "sha256": "8c20204c978ab831a9e709c9dc0600b8b5d36633c087387c1438197d5a242935",
+      "git_blob_sha": "49fe5cc5d25770861c0907a288c9ffb08c977353"
+    },
+    {
+      "path": "web58-independent-preclaim-review.json",
+      "role": "completed Git/source-only verification; no host execution",
+      "bytes": 7258,
+      "sha256": "db042c2ab31ccf544cc11b232f6da3488c3a005d975344b36d75feda94ca8043",
+      "git_blob_sha": "af94bab9278dac05200bf60d32f3052d8eb5b78d"
+    },
+    {
+      "path": "web58-coordinator.py",
+      "role": "Unexecuted Web58 source; existing suite successor",
+      "bytes": 182461,
+      "sha256": "c4e64f533be6c48654bd7449ade390682bca5bc35bbf541c6e6f5596444074f9",
+      "git_blob_sha": "8ce7979d4ad9a21d51baa77331e8f417081324c7"
+    },
+    {
+      "path": "web58-fixture-packet.json",
+      "role": "Unexecuted Web58 fixture_packet; existing suite successor",
+      "bytes": 469284,
+      "sha256": "a680ec7cec8ec37a050c738e78c0b228323b8c1b881d147860faa85f38dad101",
+      "git_blob_sha": "b6cc9d54b3eef32f00e19ae9004f67bc2af42968"
+    },
+    {
+      "path": "web58-observation-settle-helper.java",
+      "role": "Unexecuted Web58 new_test_helper; existing suite successor",
+      "bytes": 96786,
+      "sha256": "75701ea7ed72901847ac3adb6426f020b84a21b442608307ce6052cbc9d14e4b",
+      "git_blob_sha": "137815b055ea31bb31eaee5256ad1ee1f3af3f65"
+    },
+    {
+      "path": "web58-composition.java",
+      "role": "Unexecuted Web58 composition; existing suite successor",
+      "bytes": 53619,
+      "sha256": "a1ec3836667a92f4489c73b6376b56dfd0d4ffd4b7501071e08b60bebd3723a3",
+      "git_blob_sha": "495f135e7d395273ce96e3583f200c3652badc66"
+    },
+    {
+      "path": "web58-test-delta.json",
+      "role": "Unexecuted Web58 test_delta; existing suite successor",
+      "bytes": 20492,
+      "sha256": "f5f02b851437967e5485d166ebc656a1a7841c178ec820d632b090f8996344e9",
+      "git_blob_sha": "515a02c344feb83d5d3a100a23b0e62cd7b3084f"
+    },
+    {
+      "path": "web58-packet-delta.json",
+      "role": "Unexecuted Web58 packet_delta; existing suite successor",
+      "bytes": 122992,
+      "sha256": "f50e65ea3b04735180feff6155c88da5d5522839fbe4c8df4efda0cdce547e79",
+      "git_blob_sha": "4c047ee117397d6e1c433e844c29a27940a6d190"
+    },
+    {
+      "path": "PRIOR-EVIDENCE-CAS-RECEIPT.json",
+      "role": "Actual b5dcd evidence-only CAS receipt; existing source and evidence preserved",
+      "bytes": 22606,
+      "sha256": "b390707b41ed6f8ef198a4822e1d077099950d55af6b591bced6c4ef602a54cf",
+      "git_blob_sha": "adf6332b7fd3ca2b78e695812d1375d56cd93d12"
+    }
+  ],
+  "existing_current_entries_outside_this_append": [
+    {
+      "path": "pending58/core58-source.py",
+      "bytes": 319314,
+      "sha256": "e98c4873da8914d14e33c7c7da093e7d39f89d3ea30295fae1019407d784ddcf",
+      "git_blob_sha": "3149e05eac89cec18f7496865f4edbf32ef65740",
+      "status": "Root observed unique Start ACK; final result unknown after H tunnel disconnected",
+      "path_relative_to_prior_evidence_root": "pending58/core58-source.py"
+    },
+    {
+      "path": "pending58/core58-exact-request.json",
+      "bytes": 151419,
+      "sha256": "920b9e972f6f5a8dcd60b0412b534bc390e980d4148a5763984ee8b8a18bcbb4",
+      "git_blob_sha": "564e981a6ee724128f01a624620dbf4eff6e8447",
+      "status": "unique Start ACK observed by Root; do not replay",
+      "path_relative_to_prior_evidence_root": "pending58/core58-exact-request.json"
+    },
+    {
+      "path": "pending58/core58-handoff.json",
+      "bytes": 75018,
+      "sha256": "fb024d17f3b1dc11835ec14459bbc8b47a7455111cde17424d92b059d970e1c3",
+      "git_blob_sha": "944cf0559691495aef42ed746cf0ee94b1ed26a6",
+      "status": "source-only; not an actual passed result",
+      "path_relative_to_prior_evidence_root": "pending58/core58-handoff.json"
+    },
+    {
+      "path": "pending58/focused58-current-request.json",
+      "bytes": 45359,
+      "sha256": "a57574b958dfa67e1fc4a675f45134e23b5d873cc43857bdce3d1b7be9745fe0",
+      "git_blob_sha": "2991561a005f752e38856c0fea31a11fc15f58f4",
+      "status": "source-only corrected two consumer lines; not submitted",
+      "path_relative_to_prior_evidence_root": "pending58/focused58-current-request.json"
+    },
+    {
+      "path": "pending58/focused58-current-source.py",
+      "bytes": 79802,
+      "sha256": "a7b9a549983ff21f6c62b47ebb60d6c172c22d42d2d092ede5d726996546b2a7",
+      "git_blob_sha": "0ed1274edd5306cca458941c00eac0722712aec3",
+      "status": "source-only corrected two consumer lines; not submitted",
+      "path_relative_to_prior_evidence_root": "pending58/focused58-current-source.py"
+    },
+    {
+      "path": "pending58/focused58-current-proof.json",
+      "bytes": 10712,
+      "sha256": "37be87fcac687a96b2d5daa0f8d33d70e12ef443f02a95e758fde0d711836d15",
+      "git_blob_sha": "756e65b71015e9b505e80bc1b8517b11300fe016",
+      "status": "source-only corrected two consumer lines; not submitted",
+      "path_relative_to_prior_evidence_root": "pending58/focused58-current-proof.json"
+    },
+    {
+      "path": "pending58/web58-exact-request.json",
+      "bytes": 128456,
+      "sha256": "6220edf12aec52a935d50c3243320c5e3fdb59383382489c953a69eb7045a3cf",
+      "git_blob_sha": "a983113e8ed328eeff3d13e1ee55cfa586f56086",
+      "status": "source-ready; not submitted",
+      "path_relative_to_prior_evidence_root": "pending58/web58-exact-request.json"
+    },
+    {
+      "path": "pending58/web58-handoff.json",
+      "bytes": 72195,
+      "sha256": "dc066688f0cc0c396f317fbad744e597ef584455eee37ed37c2b4dd0dd5e2be3",
+      "git_blob_sha": "b84f6d02e8c35365faf4484985c8de8ed055e601",
+      "status": "source-only; not an actual passed result",
+      "path_relative_to_prior_evidence_root": "pending58/web58-handoff.json"
+    },
+    {
+      "path": "pending58/ROOT-BLOCKED-CHECKPOINT.json",
+      "bytes": 8257,
+      "sha256": "6ed3697d368659af95b04715379d24e9abf6f9d5e69f799f0244c39f5fcc0315",
+      "git_blob_sha": "5055078026356a5264a22dcb263575ac0360b762",
+      "path_relative_to_prior_evidence_root": "pending58/ROOT-BLOCKED-CHECKPOINT.json"
+    }
+  ],
+  "preservation": {
+    "append_only": true,
+    "original_bytes_preserved": true,
+    "old_failures_retained": true,
+    "raw_reports_not_reserialized": true,
+    "read_only_source_reviews_are_not_execution_receipts": true,
+    "archive_35mb_not_inflated_here": true
+  },
+  "archive_work_performed": {
+    "host_calls": 0,
+    "phone_actions": 0,
+    "new_suites": 0,
+    "production_edits": 0
+  },
+  "recovery_order": [
+    "Read the original Core58 session/result; preserve unknown or failure honestly.",
+    "Once the expected materialized source tree exists, execute the already prepared Web and corrected focused requests exactly once under Root control.",
+    "After focused actual success, seal the Android focused_result value and regenerate its source and full exact transport pins; then execute once.",
+    "After actual gates and Android result, Mobile alone performs the source CAS; BG seals staging/signing/installation/Flight actual fields.",
+    "Continue the actual Flight form/query; implement a results provider only from real postquery DOM/AX evidence."
+  ]
+}

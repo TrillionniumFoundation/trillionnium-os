@@ -1,0 +1,98 @@
+{
+  "schema": "hepta.main57-installer-recovery-four-native-consumer-review.v1",
+  "scope": "H0 source and four already exported original receipts only; no source edits, new execution or qualification gate",
+  "source": {
+    "git_blob_sha": "e89df10dc64ab6b27bfa800296392148f2da1aaf",
+    "bytes": 217158,
+    "sha256": "1514ba559b730bc9f90ba8099cf1ac5f592ee9bf136705790766ef311e915b48"
+  },
+  "original_recovery_result": {
+    "git_blob_sha": "befef19c9139f4631ab614d1d9c556f1ed977ad7",
+    "bytes": 147387,
+    "sha256": "4f321b5d1ac7265cdff90e090d255076b7cfcd598ada5909eaf2c953619d3a38"
+  },
+  "original_four_receipt_export": {
+    "git_blob_sha": "0dd3da09eb0fab62443d3c1dc8c07668df844bae",
+    "bytes": 26735,
+    "sha256": "711b426ba2232b33d45d547e1258605ac442146f61238c7976b98581b2cdbad7"
+  },
+  "expected_projection_source_method": "verified_current_recovery56",
+  "native_scope_result": {
+    "expected_projection_checks": [
+      {
+        "label": "app parent",
+        "checked": 17,
+        "differences": []
+      },
+      {
+        "label": "native parent",
+        "checked": 23,
+        "differences": []
+      },
+      {
+        "label": "owned cancellation normal close",
+        "checked": 10,
+        "differences": []
+      },
+      {
+        "label": "app request",
+        "checked": 14,
+        "differences": []
+      },
+      {
+        "label": "native request",
+        "checked": 11,
+        "differences": []
+      }
+    ],
+    "nested_request_original_equal": true,
+    "nested_parent_original_equal": true,
+    "inventory_originals": [
+      {
+        "path": "runs/2d30769b2d9249aea0629794e88aabb1/app-receipt.json",
+        "matched": true,
+        "bytes": 13385,
+        "sha256": "742e0349d66ec0837256cd9c028d54ee1564268922462c8f4ee9618bf4582949"
+      },
+      {
+        "path": "runs/2d30769b2d9249aea0629794e88aabb1/native-result.json",
+        "matched": true,
+        "bytes": 4840,
+        "sha256": "89245e63663999cdf34b4f2a3403001d92615f64bd819fee37176f72f8860cff"
+      },
+      {
+        "path": "runs/1c4181b08b9048ce96e955e2310fa94f/app-session-receipt.json",
+        "matched": true,
+        "bytes": 2106,
+        "sha256": "405d79607156018ecc3ea96e3b6b045e99a343e13f27925439875dda97c3d0c2"
+      },
+      {
+        "path": "runs/1c4181b08b9048ce96e955e2310fa94f/native-session-result.json",
+        "matched": true,
+        "bytes": 679,
+        "sha256": "221f7ec8c58c2fd95ca834c95238575a8b661601dcfc86e528779bb626b9576b"
+      }
+    ],
+    "parent_process_exit_observed": true,
+    "native_self_process_exit_observed": false,
+    "request_process_exit_observed": [
+      false,
+      false
+    ],
+    "current_result_qualified_preserved": true
+  },
+  "source_projection_field_count": 75,
+  "observed_installer_failure": {
+    "git_blob_sha": "70210652030aaeaaedd6215e70f2bb93eedf2965",
+    "bytes": 1580,
+    "sha256": "ae755e75e079c6f72c2e6806e4275094c25c8bcede8dedf8a7dd3d4c4dc05e8b",
+    "first_failure": "collection.omitted_screenshots actual [] compared to 0",
+    "before_claim_and_adb": true
+  },
+  "conclusion": "No additional deterministic mismatch in these four native original consumers. BG owns collection/task/Selection/terminal successor and correction.",
+  "parent_app_observed_exit_is_distinct_from_native_self_observation": true,
+  "original_recovery_qualified_false_retained": true,
+  "new_source_written": false,
+  "new_gate_executed": false,
+  "phone_actions": 0
+}

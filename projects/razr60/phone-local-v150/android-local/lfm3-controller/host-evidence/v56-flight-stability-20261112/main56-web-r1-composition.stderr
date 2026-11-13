@@ -1,0 +1,10 @@
+Exception in thread "main" java.lang.IllegalArgumentException: completion: unsupported mutable result evidence type
+	at org.trillionnium.hepta.local.TaskCompletionGate.immutableValue(TaskCompletionGate.java:268)
+	at org.trillionnium.hepta.local.TaskCompletionGate.immutableValue(TaskCompletionGate.java:260)
+	at org.trillionnium.hepta.local.TaskCompletionGate.immutableMap(TaskCompletionGate.java:246)
+	at org.trillionnium.hepta.local.TaskCompletionGate.access$700(TaskCompletionGate.java:14)
+	at org.trillionnium.hepta.local.TaskCompletionGate$WebCompletionSnapshot.<init>(TaskCompletionGate.java:110)
+	at org.trillionnium.hepta.local.TaskCompletionGate.successClaim(TaskCompletionGate.java:444)
+	at org.trillionnium.hepta.local.WebTaskCompositionHostTest.lambda$main$16(WebTaskCompositionHostTest.java:476)
+	at org.trillionnium.hepta.local.WebTaskCompositionHostTest.test(WebTaskCompositionHostTest.java:40)
+	at org.trillionnium.hepta.local.WebTaskCompositionHostTest.main(WebTaskCompositionHostTest.java:471)

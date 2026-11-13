@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.host-replay-transport-unknown.v1",
+  "scope": "host-only immutable original-evidence replay; no phone action",
+  "source_blob": "3b9e3e775bcb6ca2442608dbf642eb918dd150c8",
+  "review_package_blob": "5947e181ba088dc1ddbe30c913f9450f5923d224",
+  "source_path": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-independent-replay-r1.py",
+  "source_bytes": 26403,
+  "source_sha256": "585f6d2b0e3d0a092b0b5b7ad884dc20d7328dfc0552d5cd6cdf749c7cf67b22",
+  "expected_version": "absent",
+  "source_write_attempts": 1,
+  "write_outcome": "unknown after natural MCP timeout",
+  "write_result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.binary_write`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "start_submitted": false,
+  "start_request_blob": "f58610bbb010d1b3c415e5389e626ac8cdd6452b",
+  "idempotency_key": "007f-background-notes-v54-lfm3-normal-independent-replay-r1",
+  "read_reconciliation_attempted": false,
+  "retry_attempted": false,
+  "host_slot_returned_to_root": true
+}

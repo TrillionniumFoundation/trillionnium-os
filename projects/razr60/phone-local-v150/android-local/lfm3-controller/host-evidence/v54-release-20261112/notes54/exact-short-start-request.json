@@ -1,0 +1,19 @@
+{
+  "host": "pocket4",
+  "executable": "/usr/bin/python3",
+  "cwd": "/home/alex/hepta-local-007f-20261111",
+  "args": [
+    "-I",
+    "-B",
+    "-u",
+    "-c",
+    "import hashlib,os,stat,sys\nfrom pathlib import Path\np=Path(\"/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-independent-replay-r1.py\")\nassert all(not q.is_symlink() for q in (p,*p.parents))\nwith p.open(\"rb\") as f:\n    a=os.fstat(f.fileno());raw=f.read(26404);b=os.fstat(f.fileno())\nident=lambda s:(s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\nassert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==26403 and ident(a)==ident(b)==ident(p.stat())\nassert len(raw)==26403 and hashlib.sha256(raw).hexdigest()==\"585f6d2b0e3d0a092b0b5b7ad884dc20d7328dfc0552d5cd6cdf749c7cf67b22\"\nsys.dont_write_bytecode=True\nsys.argv=[str(p),raw.decode(\"utf-8\",\"strict\")]\nexec(compile(raw,str(p),\"exec\",dont_inherit=True),{\"__name__\":\"__main__\",\"__file__\":str(p)})\n"
+  ],
+  "idempotency_key": "007f-background-notes-v54-lfm3-normal-independent-replay-r1",
+  "cols": 160,
+  "rows": 40,
+  "env": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1"
+  }
+}

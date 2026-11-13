@@ -1,0 +1,475 @@
+{
+  "schema": "hepta.ordinary-background-notes-ui-preparation.v1",
+  "driver_revision": "notes-v56-dual-ui-comma-plan-r1",
+  "test_mode": "background_only",
+  "prepared": true,
+  "task_started": false,
+  "start_tapped": false,
+  "target_app_operated": false,
+  "existing_tasks_removed": false,
+  "direct_broker_client_used": false,
+  "permissions_changed": false,
+  "r12_operation_lock_acquired_or_bypassed": false,
+  "expected_apk_sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62",
+  "expected_uid": 10481,
+  "started_wall_s": 1794523584.6478236,
+  "plan": {
+    "schema": "hepta.moto-note-plan.v56-comma-prefix-r1",
+    "target_package": "com.motorola.stylus",
+    "marker": "Hepta-v56r1-3f5d947a84d8",
+    "body": "Hepta-v56r1-3f5d947a84d8 明天下午3点看牙，带上检查资料。",
+    "instruction": "记一下，Hepta-v56r1-3f5d947a84d8 明天下午3点看牙，带上检查资料。",
+    "instruction_sha256": "dddf5b7a31b6e27dc08b116c7d36b6494dadcf7eb8f8937629377e8f551aa03d",
+    "phone_tested": false,
+    "body_span_utf16": [
+      4,
+      45
+    ],
+    "body_sha256": "ee30c1684b76cd319e418f6c1c55fd624c3705b64274f45cdce89d102ceef8ca"
+  },
+  "plan_sha256": "ac7f258399e5738baff01d9aa067433879355be33b7bec8926e87f61d13584e9",
+  "target_package": "com.motorola.stylus",
+  "instruction": "记一下，Hepta-v56r1-3f5d947a84d8 明天下午3点看牙，带上检查资料。",
+  "instruction_sha256": "dddf5b7a31b6e27dc08b116c7d36b6494dadcf7eb8f8937629377e8f551aa03d",
+  "ui_helper_sha256": "b5483ad51dc3639a734d07169a7ad928f0ddf7ad2f5a46da4b3461abe8170c98",
+  "background_driver_sha256": "d5a2caec2ad96b524d89651c0b4fbb63107678745dd4ccfa33368999fc0f817c",
+  "runtime_config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+  "runtime_config": {
+    "schema": "hepta.local-runtime.v2",
+    "model_profile": "lfm3-1.7b-qad-q4_0",
+    "compute": "npu",
+    "context_tokens": 8192,
+    "threads": 4
+  },
+  "helper_pins": {
+    "v35_identity": "a4a751cf03956783e551f54b16dd37769f00d5b7cd2a0225b667becbc6e6d003",
+    "warm_receipts": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5",
+    "model_profiles": "ee26ed1f2f2b2ffd5f14fbd526c6d3cbf05d7ed8d65c422df5e60a72fa0cfa3a",
+    "phone_acceptance": "411da90ca9ef83441fa0a199a25d71361ab582db5b54ac08bd39e5e8597e6302",
+    "phone_suite": "2681e21ae0ead263b9313a6e49b4faf8951f3e87ab6b5c669c41fe34dbe5267a"
+  },
+  "installed_identity_before": {
+    "hepta": {
+      "package": "org.trillionnium.hepta.local",
+      "uid": 10481,
+      "apks": [
+        {
+          "path": "/data/app/~~kjtm2QzruYL9-aUBXFIlQw==/org.trillionnium.hepta.local-UnoGsU3bLEhG5iG5r16jHA==/base.apk",
+          "sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62"
+        }
+      ]
+    },
+    "notes": {
+      "package": "com.motorola.stylus",
+      "uid": 10382,
+      "apks": [
+        {
+          "path": "/product/preinstall/MotoStylus/MotoStylus.apk",
+          "sha256": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+        }
+      ]
+    }
+  },
+  "baseline_session": {
+    "schema": "hepta.local-session.v1",
+    "status": "cancelled",
+    "task_id": "b415cf087c91485599352b39a78b6085",
+    "origin": "user_button",
+    "instruction_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+    "task_authorization_sha256": "6927c31a8606f02ae955d2afe554f02aab265df96c58d1bcd1afb1d39455ad59",
+    "task_authorization": {
+      "schema": "hepta.owner-task-authorization.v1",
+      "parser": "hepta.owner-tool-clauses.zh.v4-fixed-intents",
+      "instruction_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+      "authorization_sha256": "6927c31a8606f02ae955d2afe554f02aab265df96c58d1bcd1afb1d39455ad59",
+      "allowed_tools": [
+        "back",
+        "click",
+        "done",
+        "find_app",
+        "home",
+        "notes.create",
+        "open",
+        "scroll",
+        "submit",
+        "type",
+        "wait",
+        "web.search"
+      ],
+      "require_find_app_before_open": false,
+      "find_query": null,
+      "recognized_rules": [],
+      "arbitrary_semantic_constraints_verified": false
+    },
+    "background_request": {
+      "mode": "background",
+      "allowed_packages": [
+        "com.motorola.stylus"
+      ],
+      "bootstrap_package": "com.motorola.stylus",
+      "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false,
+      "owner_task_selection": {
+        "schema": "hepta.owner-task-app-selection.v1",
+        "owner_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+        "recognition": "natural_note_comma_prefix.v1",
+        "original_ui_initial_package": "com.motorola.stylus",
+        "original_ui_allowed_packages": [
+          "com.motorola.stylus",
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_initial_package": "com.motorola.stylus",
+        "effective_allowed_packages": [
+          "com.motorola.stylus"
+        ],
+        "effective_scope_within_selected_apps": true,
+        "effective_scope_strictly_smaller": true,
+        "initial_app_changed": false,
+        "package_from_model_or_screen": false,
+        "grants_tool_authority": false,
+        "changes_saved_preferences": false
+      }
+    },
+    "background_lease_unreleased": false,
+    "web_helper_lease_unreleased": false,
+    "debug_nonce_sha256": null,
+    "expected_scope_sha256": null,
+    "actual_scope_sha256": null,
+    "state": "已停止；已经发生的操作不会自动重做",
+    "pending": false,
+    "running": false,
+    "blocked": false,
+    "cleanup_known": true,
+    "app_uid": 10481,
+    "updated_wall_ms": 1794523207713,
+    "external_model": false,
+    "automatic_resume": false,
+    "goal_independently_verified": false,
+    "evidence_directory": "/data/data/org.trillionnium.hepta.local/files/control-tasks/b415cf087c91485599352b39a78b6085",
+    "model_reported_success": false,
+    "steps": 1,
+    "completion_verified": false,
+    "completion_evidence": {
+      "schema": "hepta.task-completion.v1",
+      "kind": "notes_save_list_reopen",
+      "owner_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+      "contract_sha256": "5b13e127ea4fa8ad30b02976f2a975491f25f94780411fa4369e9d085fb20d61",
+      "source": "controller_observation_checks_not_model_claims",
+      "completion_verified": false,
+      "missing": [
+        "model_bound_notes_create_with_owner_body_missing",
+        "actual_editor_body_missing",
+        "save_then_real_list_with_unique_body_item_missing",
+        "model_click_same_list_item_then_reopened_body_missing",
+        "current_editor_body_missing"
+      ],
+      "rejected_success_claims": 0,
+      "max_rejected_success_claims": 2,
+      "notes_launch_observed": false,
+      "editor_body_observed": false,
+      "list_observed": false,
+      "prior_visible_body_collision": false,
+      "unobserved_prior_notes_known": false,
+      "same_list_item_reopened": false,
+      "progress_scope": "cumulative_task_evidence_not_current_screen",
+      "current_surface": "unverified",
+      "current_list_item_node_id": null,
+      "current_editor_body_matched": false,
+      "writes_required_for_unknown_or_read_only_goal": false,
+      "grants_tool_authority": false,
+      "task_id": "b415cf087c91485599352b39a78b6085",
+      "contract": {
+        "schema": "hepta.task-completion.v1",
+        "kind": "notes_save_list_reopen",
+        "owner_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+        "contract_sha256": "5b13e127ea4fa8ad30b02976f2a975491f25f94780411fa4369e9d085fb20d61",
+        "recognition": "hepta.notes-owner-intent.v1/natural_note_comma_prefix.v1",
+        "expected_body_sha256": "828ffbafd25d19999a78ff2066780c9414c56aefe565a7cc70a19b643e7e6eb4",
+        "source": "immutable_owner_contract",
+        "body_source_start_utf16": 4,
+        "body_source_end_utf16": 45,
+        "note_persistence_verification_policy": "save_list_reopen",
+        "body_rewritten": false,
+        "model_may_change_goal": false,
+        "grants_tool_authority": false
+      },
+      "proofs": [],
+      "model_success_claims": [],
+      "identity_failure": null,
+      "display_id": 26,
+      "background_generation": "71d60345-4458-4046-9cef-7054e9bf8d57",
+      "persistent_storage_bytes_verified": false,
+      "new_database_item_identity_verified": false,
+      "current_editor_raw_exact": false,
+      "current_body_evidence": {
+        "matched": false,
+        "raw_exact": false,
+        "persistent_bytes_verified": false,
+        "node_id": null,
+        "action_label": null,
+        "raw_text_sha256": null,
+        "body_sha256": "828ffbafd25d19999a78ff2066780c9414c56aefe565a7cc70a19b643e7e6eb4",
+        "trailing_lf_count": -1,
+        "match_rule": "unavailable",
+        "missing": "unique_observed_NoteEditor_context_required"
+      },
+      "current_list_match": false,
+      "current_list_missing": "complete_body_on_one_executable_list_item_missing",
+      "current_list_evidence": {
+        "matched": false,
+        "missing": "complete_body_on_one_executable_list_item_missing",
+        "match_rule": null,
+        "node_id": null,
+        "source_path": null,
+        "source_view_id": null,
+        "source_text_sha256": null,
+        "node_app_tree_sha256": null,
+        "text_scope": "Complete accessibility text source; visual clipping and persistent storage bytes are unverified.",
+        "persistent_bytes_verified": false
+      },
+      "observation_chain_verified": false,
+      "terminal_binding_and_cleanup_verified": false,
+      "completion_actor": null,
+      "model_done_synthesized": false,
+      "controller_completion_requested": false,
+      "controller_native_parent_session_bound": null
+    }
+  },
+  "target_task_inventory": {
+    "schema": "hepta.actual-task-display-enumeration.v1",
+    "target_package": "com.motorola.stylus",
+    "display_ids": [
+      0,
+      1
+    ],
+    "target_task_displays": [],
+    "target_tasks": [],
+    "enumerated_task_count": 10,
+    "enumerated_activity_count": 5,
+    "activity_dump_sha256": "cfbfe9e094f11ed5ef468e75726d15018ae5ad70a8a06446ca5f07b9b88fee9f",
+    "claim_scope": "actual Task headers and enclosed Hist records before each display's Resumed activities boundary; orientation/supervisor references do not create tasks"
+  },
+  "target_recents": {
+    "schema": "hepta.background-preparation-recents.v1",
+    "dump_sha256": "96ef40217a1dc02c11cc0bef5ce3e83bde37809b3d93b512e32f8bbd9835a134",
+    "recognized_header": true,
+    "target_references": [],
+    "target_reference_present": false,
+    "task_removal_attempted": false,
+    "scope": "exact-package references in the complete observed recents dump; any match blocks readiness"
+  },
+  "displays_before": {
+    "0": {
+      "name": "内置屏幕",
+      "description": "DisplayInfo{\"内置屏幕\", displayId 0, displayGroupId 0, FLAG_SECURE, FLAG_SUPPORTS_PROTECTED_BUFFERS, FLAG_TRUSTED, real 1224 x 2992, largest app 2992 x 2992, smallest app 1224 x 1224, appVsyncOff 1000000, presDeadline 16111111, mode 3, renderFrameRate 90.0, hasArrSupport false, frameRateCategoryRate FrameRateCategoryRate {normal=60.0, high=90.0}, supportedRefreshRates [120.00001, 165.0, 90.0, 60.000004, 30.000002, 24.000002], defaultMode 1, userPreferredModeId -1, supportedModes [{id=1, width=1224, height=2992, fps=120.00001, vsync=120.00001, synthetic=false, alternativeRefreshRates=[24.000002, 30.000002, 60.000004], supportedHdrTypes=[1, 2, 3, 4]}, {id=2, width=1224, height=2992, fps=165.0, vsync=165.0, synthetic=false, alternativeRefreshRates=[], supportedHdrTypes=[1, 2, 3, 4]}, {id=3, width=1224, height=2992, fps=90.0, vsync=90.0, synthetic=false, alternativeRefreshRates=[], supportedHdrTypes=[1, 2, 3, 4]}, {id=4, width=1224, height=2992, fps=60.000004, vsync=60.000004, synthetic=false, alternativeRefreshRates=[24.000002, 30.000002, 120.00001], supportedHdrTypes=[1, 2, 3, 4]}, {id=5, width=1224, height=2992, fps=30.000002, vsync=30.000002, synthetic=false, alternativeRefreshRates=[24.000002, 60.000004, 120.00001], supportedHdrTypes=[1, 2, 3, 4]}, {id=6, width=1224, height=2992, fps=24.000002, vsync=24.000002, synthetic=false, alternativeRefreshRates=[30.000002, 60.000004, 120.00001], supportedHdrTypes=[1, 2, 3, 4]}], appsSupportedModes [{id=1, width=1224, height=2992, fps=120.00001, vsync=120.00001, synthetic=false, alternativeRefreshRates=[24.000002, 30.000002, 60.000004], supportedHdrTypes=[1, 2, 3, 4]}, {id=2, width=1224, height=2992, fps=165.0, vsync=165.0, synthetic=false, alternativeRefreshRates=[], supportedHdrTypes=[1, 2, 3, 4]}, {id=3, width=1224, height=2992, fps=90.0, vsync=90.0, synthetic=false, alternativeRefreshRates=[], supportedHdrTypes=[1, 2, 3, 4]}, {id=4, width=1224, height=2992, fps=60.000004, vsync=60.000004, synthetic=false, alternativeRefreshRates=[24.000002, 30.000002, 120.00001], supportedHdrTypes=[1, 2, 3, 4]}, {id=5, width=1224, height=2992, fps=30.000002, vsync=30.000002, synthetic=false, alternativeRefreshRates=[24.000002, 60.000004, 120.00001], supportedHdrTypes=[1, 2, 3, 4]}, {id=6, width=1224, height=2992, fps=24.000002, vsync=24.000002, synthetic=false, alternativeRefreshRates=[30.000002, 60.000004, 120.00001], supportedHdrTypes=[1, 2, 3, 4]}], readyfor modes [], hdrCapabilities HdrCapabilities{mSupportedHdrTypes=[1, 2, 3, 4], mMaxLuminance=2000.0, mMaxAverageLuminance=2000.0, mMinLuminance=1.0E-4}, isForceSdr false, userDisabledHdrTypes [], minimalPostProcessingSupported false, rotation 0, state ON, committedState ON, type INTERNAL, uniqueId \"local:4630947043778501779\", app 1224 x 2992, density 480 (464.02386 x 463.3951) dpi, layerStack 0, colorMode 0, supportedColorModes [0, 7, 9], address {port=147, model=0x40446dccee101c}, deviceProductInfo DeviceProductInfo{name=, manufacturerPnpId=QCM, productId=1, modelYear=null, manufactureDate=ManufactureDate{week=27, year=2006}, connectionToSinkType=1}, removeMode 0, refreshRateOverride 90.0, brightnessMinimum 0.0, brightnessMaximum 1.0, brightnessDefault 0.38188976, brightnessDim 0.026506964, installOrientation ROTATION_0, layoutLimitedRefreshRate null, hdrSdrRatio 1.0, thermalRefreshRateThrottling {}, thermalBrightnessThrottlingDataId default, canHostTasks true}, DisplayMetrics{density=3.0, width=1224, height=2992, scaledDensity=3.0, xdpi=464.02386, ydpi=463.3951}, isValid=true, SkipDeskVcWaCheck=false, HintUseDeskVcWa=false, UseDeskVcWa=false, DeskVcWaPackageFound=false, DeskVcWaLastRot=0"
+    }
+  },
+  "blockers": [],
+  "ui_actions": [
+    {
+      "action": "open-background-app-choices",
+      "text": "后台范围：2 个应用（更改）",
+      "bounds": [
+        48,
+        816,
+        1176,
+        960
+      ],
+      "point": [
+        612,
+        888
+      ]
+    },
+    {
+      "action": "scroll-background-app-choices",
+      "observed_bounds": [
+        79,
+        334,
+        1145,
+        2686
+      ],
+      "coordinates": [
+        612,
+        2098,
+        612,
+        1118
+      ]
+    },
+    {
+      "action": "scroll-background-app-choices",
+      "observed_bounds": [
+        79,
+        334,
+        1145,
+        2686
+      ],
+      "coordinates": [
+        612,
+        2098,
+        612,
+        1118
+      ]
+    },
+    {
+      "action": "scroll-background-app-choices",
+      "observed_bounds": [
+        79,
+        334,
+        1145,
+        2686
+      ],
+      "coordinates": [
+        612,
+        2098,
+        612,
+        1118
+      ]
+    },
+    {
+      "action": "scroll-background-app-choices",
+      "observed_bounds": [
+        79,
+        334,
+        1145,
+        2686
+      ],
+      "coordinates": [
+        612,
+        2098,
+        612,
+        1118
+      ]
+    },
+    {
+      "action": "confirm-notes-and-helper-background-apps",
+      "text": "使用所选应用",
+      "bounds": [
+        785,
+        2698,
+        1109,
+        2860
+      ],
+      "point": [
+        947,
+        2779
+      ]
+    }
+  ],
+  "owner_and_mode_verified_before_scroll": true,
+  "ui_preferences_original": {
+    "file": "background-ui-choice-original.xml",
+    "bytes": 653,
+    "sha256": "c9364dde8c0b52e7890835d720967987f708e972b397fcc3f76d9d76a667137f",
+    "raw_utf8": "<?xml version='1.0' encoding='utf-8' standalone='yes' ?>\n<map>\n    <string name=\"selection\">{&quot;schema&quot;:&quot;hepta.background-ui-choice.v1&quot;,&quot;initial&quot;:&quot;com.motorola.stylus&quot;,&quot;packages&quot;:[{&quot;package&quot;:&quot;com.motorola.stylus&quot;,&quot;uid&quot;:10382,&quot;signers&quot;:[&quot;be8804a55e9045a580d204979f6efb15c058731aa1021b78c046feab8ae76a26&quot;]},{&quot;package&quot;:&quot;org.trillionnium.hepta.webhelper&quot;,&quot;uid&quot;:10484,&quot;signers&quot;:[&quot;202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5&quot;]}]}</string>\n    <boolean name=\"enabled\" value=\"true\" />\n</map>\n"
+  },
+  "background_selection": {
+    "allowed_packages": [
+      "com.motorola.stylus",
+      "org.trillionnium.hepta.webhelper"
+    ],
+    "bootstrap_package": "com.motorola.stylus",
+    "scope_count": 2,
+    "automatic_target_text": "本次将自动使用：Moto 笔记。已保存的应用范围保持不变。",
+    "initial_spinner_hidden": true,
+    "selection_source": "ordinary_visible_multi_choice_and_persisted_initial"
+  },
+  "start_point": [
+    180,
+    1114
+  ],
+  "start_bounds": [
+    48,
+    1042,
+    312,
+    1186
+  ],
+  "final_ui_label": "start-viewport-00",
+  "formal_service_binding": {
+    "verified": true,
+    "component": "org.trillionnium.hepta.local/org.trillionnium.hepta.local.HeptaAccessibilityService",
+    "app_pid": 25673,
+    "app_uid": 10481,
+    "client_pid": 3622,
+    "client_uid": 1000,
+    "binder_received": true,
+    "has_bound": true,
+    "connection_ids": [
+      "4520d6d"
+    ],
+    "service_dump_sha256": "1e284779aa62ce7c0090b29ede70213beaf3b5348f6307e26a83fbb952731fcc",
+    "identity_scope": "exact active AMS ServiceRecord and live system-client binding; label-only AccessibilityManager rows are not component attestation"
+  },
+  "main_display_mapping": {
+    "verified": true,
+    "logical_display_id": 0,
+    "physical_display_id": "4630947043778501779",
+    "hwc_display_id": 0,
+    "port": 147,
+    "screen_size": [
+      1224,
+      2992
+    ],
+    "rotation": 0,
+    "display_dump_sha256": "1a337640bed5b50f9db806b12c930ebf68e8225df7a8cb8f99d975ca39d3d376",
+    "surfaceflinger_dump_sha256": "d01416390f86be91be5202135332b4e587e1528c3e3f97191fc1057b5035c6e2",
+    "claim_scope": "fresh sequential system logical-0 primary/base/override and SurfaceFlinger physical-ID match; HWC ID is not assumed logical"
+  },
+  "prepared_geometry": {
+    "display_id": 0,
+    "screen_size": [
+      1224,
+      2992
+    ],
+    "content_rect": [
+      0,
+      130,
+      1224,
+      2920
+    ],
+    "main_focus": "Window{fa1b72f u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+    "system_bars": [
+      {
+        "type": "statusBars",
+        "source_id": "73500000",
+        "frame": [
+          0,
+          0,
+          1224,
+          130
+        ],
+        "visible": true
+      },
+      {
+        "type": "navigationBars",
+        "source_id": "d17c0001",
+        "frame": [
+          0,
+          2920,
+          1224,
+          2992
+        ],
+        "visible": true
+      }
+    ],
+    "geometry_source": "display0.WindowInsetsStateController.InsetsState"
+  },
+  "prepared_screen_sha256": "b954eb407d208f46878a7eb7f5af1f2aac097522033e78ff40bc84d79d2db72b",
+  "prepared_window_sha256": "2555c74b1e92c728a5b35d05eac60234c2d9ae5c08c7e695e789346cb30287e7",
+  "background_notes_reviewed_start_arguments": {
+    "test_mode": "background_only",
+    "target_package": "com.motorola.stylus",
+    "start_tap": [
+      180,
+      1114
+    ],
+    "prepared_screen": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-recovery-prepare-r1/prepared-main.png",
+    "prepared_screen_sha256": "b954eb407d208f46878a7eb7f5af1f2aac097522033e78ff40bc84d79d2db72b",
+    "prepared_window_dump": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-recovery-prepare-r1/prepared-window.txt",
+    "prepared_window_dump_sha256": "2555c74b1e92c728a5b35d05eac60234c2d9ae5c08c7e695e789346cb30287e7"
+  },
+  "ordinary_owner_lock_handoff_required": true,
+  "handoff": "Normally close the existing owner before the independent background Notes runner acquires the original operation_lock",
+  "ended_wall_s": 1794523620.61577
+}

@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "/usr/bin/adb",
+    "-H",
+    "127.0.0.1",
+    "-P",
+    "5037",
+    "-s",
+    "ZY22LS7WZT",
+    "shell",
+    "-T",
+    "screencap -p -d 4630947043778501779"
+  ],
+  "started_wall_s": 1794382785.9120014,
+  "elapsed_s": 0.40695643424987793,
+  "exit_code": 0,
+  "client_timed_out": false,
+  "stdin_bytes": 0,
+  "stdin_sha256": null
+}

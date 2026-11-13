@@ -1,0 +1,110 @@
+{
+  "schema": "hepta.main58-focused39-ready-source-handoff.v1",
+  "status": "sealed-source-not-executed",
+  "root": "/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1",
+  "exact_request_tool": "h_pty_start",
+  "idempotency_key": "007f-v58-main-wire4-host-p4-r1",
+  "source_path": "/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1.py",
+  "input": {
+    "bytes": 1313265,
+    "sha256": "784c722634848b0b9baac0d8d430ef24e8d2850964c185737f6de547aa6df593",
+    "git_blob_sha": "3cd9b58801247a8a3271fbe7c8d49f71ec14a586"
+  },
+  "delta": {
+    "bytes": 26609,
+    "sha256": "dabd1de913e71abf51cc20a51401e8301ddebe9618b85c3fb329f846a34434ee",
+    "git_blob_sha": "e2c04b79ca8575b596856fc255d5a4ff1c8f235d"
+  },
+  "source": {
+    "bytes": 79802,
+    "sha256": "c1c989e1bb27edede54b9f31fd792e956dfbb358ba2c18dc87ef48d8c71bd909",
+    "git_blob_sha": "49ef1662b71249bfd5cf0ca0dc8ea657279d2142"
+  },
+  "source_proof": {
+    "bytes": 86790,
+    "sha256": "080da8b608a43a62943176d5961ced45949144a417e97b6cfb505295ecccb985",
+    "git_blob_sha": "9b4ce04377d9c4d8a2ccf00e5f669e038aad369f"
+  },
+  "loader": {
+    "bytes": 866,
+    "sha256": "f2348b0419f37c648c1c1a153fcf6362fb281bd9a5856d452fa7f1080a8d9564",
+    "git_blob_sha": "4d0bedc9d465013cf0dad44d11b02eef74bd2fa6"
+  },
+  "supervisor": {
+    "bytes": 1786,
+    "sha256": "e0f013e0fb9c765805c9e4163f222fe05ee3aea95527b2b6f68f45e8c93809b1",
+    "git_blob_sha": "b2b60be417fa244c2c4b5fd570f4c17a19eb6323"
+  },
+  "publisher": {
+    "bytes": 10430,
+    "sha256": "7314a7b7da6a09aaecab5ad067438d57456873007a075b3096928a4090c5dbde",
+    "git_blob_sha": "aa7d5deff2b0c0e0a546895897111abaadad39f2"
+  },
+  "request": {
+    "bytes": 45367,
+    "sha256": "dd8b02904f251fafba30054809615562061f65b39f82f67bb34fd05fd0913c41",
+    "git_blob_sha": "af949bd7407af3300f55fa21cc402dd01e9cb0b2"
+  },
+  "transport_proof": {
+    "bytes": 10712,
+    "sha256": "14dc2cf8f8e306ec072e229620df5d5796697ca43e91c15b63441b90d6639466",
+    "git_blob_sha": "0d40c2b301aebf88ea17e2aa33550c81a998a60c"
+  },
+  "current_aggregate": {
+    "bytes": 1465984,
+    "sha256": "600ff7c4198fc83d4e93399fc6bf039800805f4458406b4182952ddcff89b95b",
+    "git_blob_sha": "94ca147166c4e4c7faa5bd32085c5431eb36f4b1"
+  },
+  "current_source_inventory": {
+    "bytes": 103795,
+    "sha256": "b44d3a9d9083a86d5fff36dfcc0c27958ef047a05df928923ef7c2e204cb23d6"
+  },
+  "actual_predecessor_result": {
+    "bytes": 45584,
+    "sha256": "7e1b16ba42b2fdde52f7e18bc94d72e3efa673160ab2c1896017ee0e8c51bb56",
+    "git_blob_sha": "0299b6a5b89665e23ed9b3937210757287103916"
+  },
+  "actual_predecessor_stage": {
+    "bytes": 74469,
+    "sha256": "c0583de699bdba4d6b9963e8ae57851208362c313a8773909a971b690a683f53",
+    "git_blob_sha": "fa8bf4f1f1e11f93eb098dd051b420c3fc4b9900"
+  },
+  "source_derivation_hunks": 10,
+  "transport_literal_patch_counts": {
+    "loader": 3,
+    "supervisor": 2,
+    "publisher": 10
+  },
+  "all_full_git_readbacks_exact": true,
+  "old_actual57_gzip_payload_roundtrip_exact": true,
+  "current_gzip_crc_and_source_bytes_roundtrip_exact": true,
+  "current_source_gzip_bytes": 25557,
+  "current_source_base64_bytes": 34076,
+  "loader_bytes_derived": 866,
+  "supervisor_bytes_derived": 1786,
+  "prior57_guarded_source_log_report_count": 68,
+  "original190790_input_gzip_reused_without_upload": true,
+  "all51_compiled_source_records_equal_actual57": true,
+  "exact15_projected_methods_equal_actual57": true,
+  "old7_fixtures_and_all39_case_assertions_unchanged": true,
+  "actual_current_execution": false,
+  "expected_cases": {
+    "consumer": 20,
+    "arm": 19
+  },
+  "expected_assertions": {
+    "consumer": 60,
+    "arm": 98
+  },
+  "source_inventory_file_count": 595,
+  "real_pure_java_count": 44,
+  "java_source_count": 51,
+  "readonly_observation_bracket_and_settle_not_exercised_here": true,
+  "prior_reports_parse_with_json_loads_after_full_sha": true,
+  "original55_failures_and55_56_57_success_originals_preserved": true,
+  "historical57_preclaim_parse_failure_retained_as_separate_git_evidence": "85157e03a30f78589c07ca564d1e5028208e7022",
+  "first_output_claim_still_outside_handler": true,
+  "owned_child_run_and_cleanup_unchanged": true,
+  "phone_actions": 0,
+  "branch_ref_updated": false
+}

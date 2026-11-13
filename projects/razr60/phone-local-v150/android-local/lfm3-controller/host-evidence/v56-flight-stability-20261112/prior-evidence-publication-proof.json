@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.evidence-only-cas-publication.v1",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "base": "9f4168616546233033edd4b254b4236ae987ea7e",
+  "commit": "a64a43e48e7068719e7a0c0d9b54c16d58bb599d",
+  "tree": "b2fb4682f814f11c4b69421edf5d8ea68511a019",
+  "added_files": 41,
+  "all_existing_files_unchanged": true,
+  "all_595_source_and_original_pub_unchanged": true,
+  "compare_status": "ahead",
+  "branch": "codex/hepta-v45-semantic-click-20261111-007f",
+  "actual_compare_and_swap_succeeded": true,
+  "force": false,
+  "post_readback": {
+    "number": 139,
+    "url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/139",
+    "head": "a64a43e48e7068719e7a0c0d9b54c16d58bb599d",
+    "branch": "codex/hepta-v45-semantic-click-20261111-007f",
+    "draft": true,
+    "state": "open"
+  },
+  "original_source_commit": "9f4168616546233033edd4b254b4236ae987ea7e",
+  "original_source_aggregate": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c",
+  "original_source_inventory_sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+  "original_source_publication_rewritten": false,
+  "original_failed_receipts_rewritten": false,
+  "notes_collector_original_false_and_exit2_retained": true,
+  "independent_notes_scopes_passed": 9,
+  "root_visual_record_included": true,
+  "all_requested_business_tasks_completed": false,
+  "index": {
+    "path": "POST-INSTALL-NOTES56-INDEX.json",
+    "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/POST-INSTALL-NOTES56-INDEX.json",
+    "git_blob": "ae4c62cf6d9607f9c4f3efbb8ec2c1338c3e25d2",
+    "bytes": 26351,
+    "sha256": "36ef85bfc1c4a4c63ff45403f946b15ef0836215895aeaa509ae9615a93f984c",
+    "scope": "Append-only index of this evidence batch; original INDEX and original source PUB remain unchanged.",
+    "kind": "publication_summary"
+  },
+  "report": {
+    "path": "POST-INSTALL-NOTES56-REPORT.md",
+    "repository_path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/POST-INSTALL-NOTES56-REPORT.md",
+    "git_blob": "15fb2827d5f464f04df458c70ba34e64e5bec947",
+    "bytes": 5012,
+    "sha256": "b8df62af613dbbec4d904ffaec62abe64546aa1405c708956c1e40c56636437f",
+    "scope": "Human-readable scoped outcomes and explicit limits for this evidence batch.",
+    "kind": "publication_summary"
+  }
+}

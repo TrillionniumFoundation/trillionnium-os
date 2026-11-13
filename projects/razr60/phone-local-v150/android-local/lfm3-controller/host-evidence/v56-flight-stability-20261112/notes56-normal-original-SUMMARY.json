@@ -1,0 +1,562 @@
+{
+  "schema": "hepta.v56-one-helper-host-export-summary.v1",
+  "exporter_revision": "r2-typed-frames-main-subdirectory-bounded-previews",
+  "export_has_phone_actions": false,
+  "original_helper_exit_code": 2,
+  "helper_sha256": "8c58648825dd27035cd3271bfc5e57f912bfa9121dfbd39406da750e8a648834",
+  "source_result": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/RESULT.json",
+    "bytes": 250421,
+    "sha256": "8e4f37def7612d81bf96c9ccd96ea5b0858bdf9849683f5112953469671e1601"
+  },
+  "actual_signed_build_receipt_sha256": "e27e74e94b0668c1c07b04863c9aaabf1b3235f9ff2d0d0d8bd9a346e46b2c6b",
+  "apk_sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62",
+  "runtime_config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+  "plan": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v56-r1/notes-plan-normal-r1.json",
+    "bytes": 575,
+    "sha256": "fe089149f2ff8c383eb851a7bee7f6dd5e206fbec2d1e757ff83d113a535d4ea"
+  },
+  "case_identity_fields_missing_in_failed_original": [],
+  "reported_original_fields_not_independent_qualification": {
+    "prepared": null,
+    "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+    "model_profile": "lfm3-1.7b-qad-q4_0",
+    "compute": "npu",
+    "qualified": false,
+    "machine_checks_passed": false,
+    "cancel_machine_checks_passed": null,
+    "error": null,
+    "started_wall_s": 1794520732.424361,
+    "ended_wall_s": 1794520762.0876865,
+    "last_session": {
+      "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+      "status": "controller_verified_done",
+      "steps": 1,
+      "cleanup_known": true,
+      "running": false,
+      "blocked": false,
+      "background_lease_unreleased": false
+    }
+  },
+  "visual_selection": {
+    "business_qualification_assigned": false,
+    "original_task_result": {
+      "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/evidence/task/result.json",
+      "bytes": 48612,
+      "sha256": "79cfda9194231d115d53d6f74a66fd11e412e4f7e180b322282fc2c43acac76a"
+    },
+    "reported_task": {
+      "task_id": "b5b05eb09df64032ab4aeb1d5707b85b",
+      "status": "controller_verified_done",
+      "steps": 1,
+      "summary": "已保存并重新打开这条笔记，正文核对一致。",
+      "completion_verified": true,
+      "final_observation_id": "39df2e75af7343c3b7eecd3a4ee5817a",
+      "cleanup_known": true,
+      "completion_actor": "controller/tool_workflow"
+    },
+    "original_ui_selection": {
+      "allowed_packages": [
+        "com.motorola.stylus",
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "bootstrap_package": "com.motorola.stylus",
+      "scope_count": 2,
+      "automatic_target_text": "本次将自动使用：Moto 笔记。已保存的应用范围保持不变。",
+      "initial_spinner_hidden": true,
+      "selection_source": "ordinary_visible_multi_choice_and_persisted_initial"
+    },
+    "recomputed_effective_background_request": {
+      "mode": "background",
+      "allowed_packages": [
+        "com.motorola.stylus"
+      ],
+      "bootstrap_package": "com.motorola.stylus",
+      "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false,
+      "owner_task_selection": {
+        "schema": "hepta.owner-task-app-selection.v1",
+        "owner_sha256": "e1e34551a365b5e67d0122a83cc50e666311caa8586cc1cd3327289d537e843b",
+        "recognition": "natural_note_comma_prefix.v1",
+        "original_ui_initial_package": "com.motorola.stylus",
+        "original_ui_allowed_packages": [
+          "com.motorola.stylus",
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_initial_package": "com.motorola.stylus",
+        "effective_allowed_packages": [
+          "com.motorola.stylus"
+        ],
+        "effective_scope_within_selected_apps": true,
+        "effective_scope_strictly_smaller": true,
+        "initial_app_changed": false,
+        "package_from_model_or_screen": false,
+        "grants_tool_authority": false,
+        "changes_saved_preferences": false
+      }
+    },
+    "final_owned_display_frame": {
+      "available": true,
+      "observation_id": "39df2e75af7343c3b7eecd3a4ee5817a",
+      "frame_refs": [
+        {
+          "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/evidence/task/step-01-notes-workflow-observation-4.json",
+          "bytes": 15374,
+          "sha256": "56b27e887b5b073be7fa37e5b944c65a8a9cc27ecc2c11df5dbcae1bec9a446f",
+          "observation_id": "39df2e75af7343c3b7eecd3a4ee5817a",
+          "display_id": 25,
+          "generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+          "frame_selection": "source-defined observation filename and complete raw frame; completion metadata excluded"
+        }
+      ]
+    },
+    "reported_main_user": {
+      "attempted": true,
+      "completed": true,
+      "phase": "settings",
+      "error": null,
+      "host_actions": [
+        {
+          "actor": "host_simulated_main_user",
+          "model_issued": false,
+          "task_action": false,
+          "kind": "normal_settings_launch",
+          "argv": [
+            "am",
+            "start",
+            "-W",
+            "--display",
+            "0",
+            "-a",
+            "android.settings.SETTINGS",
+            "-p",
+            "com.android.settings"
+          ],
+          "display_id": 0
+        },
+        {
+          "actor": "host_simulated_main_user",
+          "model_issued": false,
+          "task_action": false,
+          "kind": "normal_list_swipe_request",
+          "argv": [
+            "input",
+            "-d",
+            "0",
+            "swipe",
+            "612",
+            "1060",
+            "612",
+            "2222",
+            "450"
+          ],
+          "display_id": 0,
+          "window_geometry": {
+            "display_id": 0,
+            "screen_size": [
+              1224,
+              2992
+            ],
+            "content_rect": [
+              0,
+              130,
+              1224,
+              2920
+            ],
+            "main_focus": "Window{9a602c6 u0 com.android.settings/com.android.settings.Settings}",
+            "system_bars": [
+              {
+                "type": "statusBars",
+                "source_id": "73500000",
+                "frame": [
+                  0,
+                  0,
+                  1224,
+                  130
+                ],
+                "visible": true
+              },
+              {
+                "type": "navigationBars",
+                "source_id": "d17c0001",
+                "frame": [
+                  0,
+                  2920,
+                  1224,
+                  2992
+                ],
+                "visible": true
+              }
+            ],
+            "geometry_source": "display0.WindowInsetsStateController.InsetsState",
+            "focused_window_frame": [
+              0,
+              0,
+              1224,
+              2992
+            ],
+            "content_source": "focused display-0 Settings window frame intersected with observed system-bar insets"
+          },
+          "settings_item_clicked": false,
+          "settings_value_modified_by_driver": false
+        }
+      ]
+    },
+    "reported_cancel_probe": {
+      "attempted": null,
+      "tap_requested": null,
+      "tap_command_returned": null,
+      "error": null,
+      "visible_stop_binding": null,
+      "input_retry_forbidden": null
+    },
+    "reported_cancellation_acceptance": null
+  },
+  "visuals": [
+    {
+      "role": "final_owned_display",
+      "relative_png": "evidence/task/39df2e75af7343c3b7eecd3a4ee5817a.png",
+      "sha256": "8c6e49d2a34f8cab23b9886bbc9f4259088153d5f034ac362c724d0149331b57",
+      "bytes": 29711,
+      "binding": "original task final_observation_id and same-domain raw frame",
+      "frame_refs": [
+        {
+          "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/evidence/task/step-01-notes-workflow-observation-4.json",
+          "bytes": 15374,
+          "sha256": "56b27e887b5b073be7fa37e5b944c65a8a9cc27ecc2c11df5dbcae1bec9a446f",
+          "observation_id": "39df2e75af7343c3b7eecd3a4ee5817a",
+          "display_id": 25,
+          "generation": "7ef8fddb-183b-4565-962e-cf09d0cfd723",
+          "frame_selection": "source-defined observation filename and complete raw frame; completion metadata excluded"
+        }
+      ],
+      "original_png": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/evidence/task/39df2e75af7343c3b7eecd3a4ee5817a.png",
+        "bytes": 29711,
+        "sha256": "8c6e49d2a34f8cab23b9886bbc9f4259088153d5f034ac362c724d0149331b57",
+        "dimensions": [
+          720,
+          1280
+        ],
+        "rgba8_sha256": "b0480f82c0e045fb98b661fefb26ce2966383aea8d03f642e3a422bc5fa1c636",
+        "base64_file": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1-host-review-r1/final_owned_display-ORIGINAL-PNG-BASE64.json"
+      },
+      "preview": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1-host-review-r1/final_owned_display-preview.webp",
+        "bytes": 4558,
+        "sha256": "178423468caa581ee01155e6837cfe9c2a80b983a66b6d74603fa03b3ee455ca",
+        "dimensions": [
+          480,
+          853
+        ],
+        "quality": 60,
+        "encoding": "WebP",
+        "resample": "LANCZOS",
+        "attempts": [
+          {
+            "width": 480,
+            "height": 853,
+            "quality": 60,
+            "bytes": 4558
+          }
+        ],
+        "lossy": true,
+        "pixel_equality_claimed": false,
+        "base64_file": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1-host-review-r1/final_owned_display-PREVIEW-BASE64.json"
+      }
+    },
+    {
+      "role": "main_before_settings_launch",
+      "relative_png": "main-user/before-settings-launch.png",
+      "sha256": "6e20b747c0b0d8f03fd22fc77870195200e53a64934ba76c7a41e6f17d41aeed",
+      "bytes": 182943,
+      "binding": "exact original main-user PNG/window/content-RGBA records; no business or overlap qualification",
+      "surface_record": {
+        "png": "before-settings-launch.png",
+        "png_sha256": "6e20b747c0b0d8f03fd22fc77870195200e53a64934ba76c7a41e6f17d41aeed",
+        "content_rgba_sha256": "a670082ecaf3fc71d591837aaa9457b597fbd70365e9ac16971b308cb1740d8e",
+        "geometry": {
+          "display_id": 0,
+          "screen_size": [
+            1224,
+            2992
+          ],
+          "content_rect": [
+            0,
+            130,
+            1224,
+            2920
+          ],
+          "main_focus": "Window{fa1b72f u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+          "system_bars": [
+            {
+              "type": "statusBars",
+              "source_id": "73500000",
+              "frame": [
+                0,
+                0,
+                1224,
+                130
+              ],
+              "visible": true
+            },
+            {
+              "type": "navigationBars",
+              "source_id": "d17c0001",
+              "frame": [
+                0,
+                2920,
+                1224,
+                2992
+              ],
+              "visible": true
+            }
+          ],
+          "geometry_source": "display0.WindowInsetsStateController.InsetsState"
+        },
+        "window_displays_sha256": "6bf624bfbc89252f4d5c8ceed2aa2a1945c8fc2631c07efabe38e388159fa2e8",
+        "window_records_sha256": "49a6be8b93432724336304b7f61ee54ef930607aaa2ffe5b3bb1d02d5e57e19b"
+      },
+      "original_png": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/main-user/before-settings-launch.png",
+        "bytes": 182943,
+        "sha256": "6e20b747c0b0d8f03fd22fc77870195200e53a64934ba76c7a41e6f17d41aeed",
+        "dimensions": [
+          1224,
+          2992
+        ],
+        "rgba8_sha256": "a978c973ca5313332d3d5d07b7fb809e22107a9630897e5737f768ccfbf541b9"
+      },
+      "preview": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1-host-review-r1/main_before_settings_launch-preview.webp",
+        "bytes": 15502,
+        "sha256": "d4c3e1e6e87f1ab563337c097a33b7ea85436f90d39a9a98119574d2e1eddca9",
+        "dimensions": [
+          480,
+          1173
+        ],
+        "quality": 60,
+        "encoding": "WebP",
+        "resample": "LANCZOS",
+        "attempts": [
+          {
+            "width": 480,
+            "height": 1173,
+            "quality": 60,
+            "bytes": 15502
+          }
+        ],
+        "lossy": true,
+        "pixel_equality_claimed": false,
+        "base64_file": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1-host-review-r1/main_before_settings_launch-PREVIEW-BASE64.json"
+      }
+    },
+    {
+      "role": "main_settings_before_swipe",
+      "relative_png": "main-user/settings-before-swipe.png",
+      "sha256": "f6b4dcb6fea5071c38eccbfcc968c05b6de040c7f684e56df1102803cc778225",
+      "bytes": 262927,
+      "binding": "exact original main-user PNG/window/content-RGBA records; no business or overlap qualification",
+      "surface_record": {
+        "png": "settings-before-swipe.png",
+        "png_sha256": "f6b4dcb6fea5071c38eccbfcc968c05b6de040c7f684e56df1102803cc778225",
+        "content_rgba_sha256": "3a05982025714c97f925c8e439edc134867c78a23712544352dabe279ce99aa2",
+        "geometry": {
+          "display_id": 0,
+          "screen_size": [
+            1224,
+            2992
+          ],
+          "content_rect": [
+            0,
+            130,
+            1224,
+            2920
+          ],
+          "main_focus": "Window{9a602c6 u0 com.android.settings/com.android.settings.Settings}",
+          "system_bars": [
+            {
+              "type": "statusBars",
+              "source_id": "73500000",
+              "frame": [
+                0,
+                0,
+                1224,
+                130
+              ],
+              "visible": true
+            },
+            {
+              "type": "navigationBars",
+              "source_id": "d17c0001",
+              "frame": [
+                0,
+                2920,
+                1224,
+                2992
+              ],
+              "visible": true
+            }
+          ],
+          "geometry_source": "display0.WindowInsetsStateController.InsetsState",
+          "focused_window_frame": [
+            0,
+            0,
+            1224,
+            2992
+          ],
+          "content_source": "focused display-0 Settings window frame intersected with observed system-bar insets"
+        },
+        "window_displays_sha256": "b5ba70c4589162853f5b276b63abc2de2a730e80e08039b19b30e73fa4568515",
+        "window_records_sha256": "baff25ef69b93df4a0fd577e55328e9e9c7d1ab57a3ed8e55ffb48cb40585828"
+      },
+      "original_png": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/main-user/settings-before-swipe.png",
+        "bytes": 262927,
+        "sha256": "f6b4dcb6fea5071c38eccbfcc968c05b6de040c7f684e56df1102803cc778225",
+        "dimensions": [
+          1224,
+          2992
+        ],
+        "rgba8_sha256": "91378c65cefecafdbf1f33954aafc1bffcbf04466500dd60edab367ded7a8bcb"
+      },
+      "preview": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1-host-review-r1/main_settings_before_swipe-preview.webp",
+        "bytes": 22976,
+        "sha256": "a21a64446f976d64d9163aba3aafb5829fb1ad463c7f782c97f0cd3b66c9f4b9",
+        "dimensions": [
+          480,
+          1173
+        ],
+        "quality": 60,
+        "encoding": "WebP",
+        "resample": "LANCZOS",
+        "attempts": [
+          {
+            "width": 480,
+            "height": 1173,
+            "quality": 60,
+            "bytes": 22976
+          }
+        ],
+        "lossy": true,
+        "pixel_equality_claimed": false,
+        "base64_file": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1-host-review-r1/main_settings_before_swipe-PREVIEW-BASE64.json"
+      }
+    },
+    {
+      "role": "main_settings_after_swipe",
+      "relative_png": "main-user/settings-after-swipe.png",
+      "sha256": "84912bf7ab662767539e09dfec55d241db50f6e6aea7329ed4414c71cad036d2",
+      "bytes": 252002,
+      "binding": "exact original main-user PNG/window/content-RGBA records; no business or overlap qualification",
+      "surface_record": {
+        "png": "settings-after-swipe.png",
+        "png_sha256": "84912bf7ab662767539e09dfec55d241db50f6e6aea7329ed4414c71cad036d2",
+        "content_rgba_sha256": "62ba996dd1c1caadd136662c6586aa3f5596c7ad928aaa27e781692c00b928ff",
+        "geometry": {
+          "display_id": 0,
+          "screen_size": [
+            1224,
+            2992
+          ],
+          "content_rect": [
+            0,
+            130,
+            1224,
+            2920
+          ],
+          "main_focus": "Window{9a602c6 u0 com.android.settings/com.android.settings.Settings}",
+          "system_bars": [
+            {
+              "type": "statusBars",
+              "source_id": "73500000",
+              "frame": [
+                0,
+                0,
+                1224,
+                130
+              ],
+              "visible": true
+            },
+            {
+              "type": "navigationBars",
+              "source_id": "d17c0001",
+              "frame": [
+                0,
+                2920,
+                1224,
+                2992
+              ],
+              "visible": true
+            }
+          ],
+          "geometry_source": "display0.WindowInsetsStateController.InsetsState",
+          "focused_window_frame": [
+            0,
+            0,
+            1224,
+            2992
+          ],
+          "content_source": "focused display-0 Settings window frame intersected with observed system-bar insets"
+        },
+        "window_displays_sha256": "157d78dc499105329522065228976165d9fe7913bdb1ce906a5cea0d67cfd34e",
+        "window_records_sha256": "baff25ef69b93df4a0fd577e55328e9e9c7d1ab57a3ed8e55ffb48cb40585828"
+      },
+      "original_png": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1/main-user/settings-after-swipe.png",
+        "bytes": 252002,
+        "sha256": "84912bf7ab662767539e09dfec55d241db50f6e6aea7329ed4414c71cad036d2",
+        "dimensions": [
+          1224,
+          2992
+        ],
+        "rgba8_sha256": "0879c6cced6bda8a62fb84b53d564a30625c0724c53ed48911364f4dbbe92008"
+      },
+      "preview": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1-host-review-r1/main_settings_after_swipe-preview.webp",
+        "bytes": 22644,
+        "sha256": "c1a5812ad15fd9922a72b60acd17bdfbde5ba663dbbf00543259a5355c92f8fa",
+        "dimensions": [
+          480,
+          1173
+        ],
+        "quality": 60,
+        "encoding": "WebP",
+        "resample": "LANCZOS",
+        "attempts": [
+          {
+            "width": 480,
+            "height": 1173,
+            "quality": 60,
+            "bytes": 22644
+          }
+        ],
+        "lossy": true,
+        "pixel_equality_claimed": false,
+        "base64_file": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1-host-review-r1/main_settings_after_swipe-PREVIEW-BASE64.json"
+      }
+    }
+  ],
+  "archive": {
+    "ok": true,
+    "archive": {
+      "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1-host-review-r1/original-records.tar.xz",
+      "bytes": 224604,
+      "sha256": "cac84a84a9d94d7f93d944257e2504a630a0afdccc13de55a2f723f6311ec783",
+      "internal_manifest_sha256": "7d811079763dac677789d4db393091f6138da8d105ade019e17b43bc0225f290"
+    },
+    "manifest": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1-host-review-r1/ORIGINAL-MANIFEST.json",
+    "manifest_sha256": "1c6dcbe7682c83d1f34dba01810e77b2b9005131ae478a4772ba324f4e0e5d70",
+    "included_files": 854,
+    "excluded_images": 21,
+    "source_unchanged": true
+  },
+  "export_errors": [],
+  "business_qualification_assigned": false,
+  "root_visual_review_pending": true,
+  "original_full_PNG_remains_runner_guard_input": true
+}

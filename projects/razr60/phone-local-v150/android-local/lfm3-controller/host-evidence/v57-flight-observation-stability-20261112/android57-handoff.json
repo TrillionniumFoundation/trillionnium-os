@@ -1,0 +1,193 @@
+{
+  "schema": "hepta.main57-android-actual39-sealed-handoff.v1",
+  "base_source": {
+    "bytes": 113763,
+    "sha256": "0f631fb49f201f9544d433f010db4f139fea2262d471f868f9dff63ebf99bfe4",
+    "git_blob_sha": "80e91b1e08c5e4eacffc698dd773ce46232cc38d"
+  },
+  "source": {
+    "bytes": 113856,
+    "sha256": "ac4b54eb0815bce791a99ae3e01de8077808fe55b5eabc58488fd1eba8126331",
+    "git_blob_sha": "bd30b22cf1a151710318a1e768be63f7a75b6bd8"
+  },
+  "actual_focused_result": {
+    "bytes": 45584,
+    "sha256": "7e1b16ba42b2fdde52f7e18bc94d72e3efa673160ab2c1896017ee0e8c51bb56",
+    "git_blob_sha": "0299b6a5b89665e23ed9b3937210757287103916"
+  },
+  "actual_focused_stage": {
+    "bytes": 74469,
+    "sha256": "c0583de699bdba4d6b9963e8ae57851208362c313a8773909a971b690a683f53",
+    "git_blob_sha": "fa8bf4f1f1e11f93eb098dd051b420c3fc4b9900"
+  },
+  "config_changes": [
+    {
+      "key": "focused_result",
+      "before": null,
+      "after": {
+        "bytes": 45584,
+        "sha256": "7e1b16ba42b2fdde52f7e18bc94d72e3efa673160ab2c1896017ee0e8c51bb56"
+      }
+    },
+    {
+      "key": "focused_stage",
+      "before": {
+        "bytes": 74445,
+        "sha256": "11fee98b6e69b3d887e07a921635c330dc616795f1433ce5d530abf429763634"
+      },
+      "after": {
+        "bytes": 74469,
+        "sha256": "c0583de699bdba4d6b9963e8ae57851208362c313a8773909a971b690a683f53"
+      }
+    }
+  ],
+  "non_config_bytes_unchanged": true,
+  "focused_output_root_unchanged": "/home/alex/hepta-local-007f-20261111/v57-main-wire4-host-p4-r1",
+  "request": {
+    "bytes": 59079,
+    "sha256": "27850a11ccc059475810fbf0254a2c308d3f342db743d6320c9d2e10400ac3e3",
+    "git_blob_sha": "baac2cd917c679c1f00b41ba0fd10c36cb192449"
+  },
+  "publisher": {
+    "bytes": 10441,
+    "sha256": "ff75e82b4d84a84136c98583b07934217a62f4ffed3e3255f6cf4f50e09d94d1",
+    "git_blob_sha": "36cc4f5ea72149b83816490f6026c0975b409f90"
+  },
+  "transport_proof": {
+    "base_request": {
+      "bytes": 35075,
+      "sha256": "211eeaf7ddb75243af8c52281a54150fe3fa6c108e4ccb159b435389dc9282b0",
+      "git_blob_sha": "152607835e58bd6667023e4280828400d9a322b4"
+    },
+    "publisher_patches": [
+      {
+        "before": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r3.py\",\"bytes\":54123,\"sha256\":\"2c02f930ce9e785efc849a1a72cc70a6900fa9d406fb29750e5c2723059ed44e\"}]",
+        "after": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/v57-main-p4-android-r1.py\",\"bytes\":113856,\"sha256\":\"ac4b54eb0815bce791a99ae3e01de8077808fe55b5eabc58488fd1eba8126331\"}]",
+        "count": 1
+      },
+      {
+        "before": "ARGV_BYTES=23748",
+        "after": "ARGV_BYTES=47780",
+        "count": 1
+      },
+      {
+        "before": "ARGV_SHA=\"8047ad3aa2e6b9c6017eff8cc92e2005df05eb2315a371edcd45f1cd2e4330c2\"",
+        "after": "ARGV_SHA=\"76c79051b0be09ddde95625ab8884bf786ad07c813fa7b35494c141427e8eb7a\"",
+        "count": 1
+      },
+      {
+        "before": "GZIP_BYTES=17811",
+        "after": "GZIP_BYTES=35833",
+        "count": 1
+      },
+      {
+        "before": "GZIP_SHA=\"f9289307b972cc90eb335b217b5fef9503b0d1064d41b46e2051fb1b644ae085\"",
+        "after": "GZIP_SHA=\"1dfb7d215bcf64a5d5c1575ffa94e8d8361c3292a57b52f58d0186de529fae84\"",
+        "count": 1
+      },
+      {
+        "before": "LOADER=\"import hashlib,os,pathlib,stat,sys\\np=pathlib.Path(\\\"/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r3.py\\\")\\nassert all(not q.is_symlink() for q in (p,*p.parents))\\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\ntry:\\n a=os.fstat(fd)\\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==54123\\n with os.fdopen(os.dup(fd),\\\"rb\\\") as f:raw=f.read(54123+1)\\n assert len(raw)==54123 and hashlib.sha256(raw).hexdigest()==\\\"2c02f930ce9e785efc849a1a72cc70a6900fa9d406fb29750e5c2723059ed44e\\\"\\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\\nfinally:os.close(fd)\\nsys.argv=[str(p)]\\nexec(compile(raw,str(p),\\\"exec\\\",dont_inherit=True),{\\\"__name__\\\":\\\"__main__\\\",\\\"__file__\\\":str(p),\\\"__stage_source__\\\":raw})\\n\"",
+        "after": "LOADER=\"import hashlib,os,pathlib,stat,sys\\np=pathlib.Path(\\\"/home/alex/hepta-local-007f-20261111/v57-main-p4-android-r1.py\\\")\\nassert all(not q.is_symlink() for q in (p,*p.parents))\\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\ntry:\\n a=os.fstat(fd)\\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==113856\\n with os.fdopen(os.dup(fd),\\\"rb\\\") as f:raw=f.read(113856+1)\\n assert len(raw)==113856 and hashlib.sha256(raw).hexdigest()==\\\"ac4b54eb0815bce791a99ae3e01de8077808fe55b5eabc58488fd1eba8126331\\\"\\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\\nfinally:os.close(fd)\\nsys.argv=[str(p)]\\nexec(compile(raw,str(p),\\\"exec\\\",dont_inherit=True),{\\\"__name__\\\":\\\"__main__\\\",\\\"__file__\\\":str(p),\\\"__stage_source__\\\":raw})\\n\"",
+        "count": 1
+      },
+      {
+        "before": "LOADER_SHA=\"101d039ebc66b78bd0ffcb3f4daa45baa40cb46b70908dab206b9c1f0a208636\"",
+        "after": "LOADER_SHA=\"75ce3c43ccb9cd9a6611b12d94d0dddefa5714e4f49c35102bf1a571ba32c723\"",
+        "count": 1
+      },
+      {
+        "before": "SUPERVISOR=\"import hashlib,json,os,signal,subprocess,sys,time\\nloader=sys.argv[1]\\nassert len(loader.encode(\\\"utf-8\\\"))==878 and hashlib.sha256(loader.encode(\\\"utf-8\\\")).hexdigest()==\\\"101d039ebc66b78bd0ffcb3f4daa45baa40cb46b70908dab206b9c1f0a208636\\\"\\nassert os.getcwd()==\\\"/home/alex/hepta-local-007f-20261111\\\"\\nstarted=time.monotonic()\\np=subprocess.Popen([\\\"/usr/bin/python3\\\",\\\"-I\\\",\\\"-B\\\",\\\"-c\\\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.core101-r3-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"started\\\",\\\"child_pid\\\":p.pid,\\\"timeout_seconds\\\":1200,\\\"loader_sha256\\\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\\ncode=None;timed_out=False;forced=False;error=None\\ntry:\\n    code=p.wait(timeout=1200)\\nexcept BaseException as failure:\\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\\n    error=type(failure).__name__+\\\": \\\"+str(failure)\\n    if p.poll() is None:\\n        try:os.killpg(p.pid,signal.SIGTERM)\\n        except ProcessLookupError:pass\\n        try:code=p.wait(timeout=10)\\n        except subprocess.TimeoutExpired:\\n            forced=True\\n            try:os.killpg(p.pid,signal.SIGKILL)\\n            except ProcessLookupError:pass\\n            try:code=p.wait(timeout=10)\\n            except subprocess.TimeoutExpired:error+=\\\"; owned child exit not observed\\\"\\nexit_observed=p.poll() is not None\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.core101-r3-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"finished\\\",\\\"child_pid\\\":p.pid,\\\"child_returncode\\\":code,\\\"exit_observed\\\":exit_observed,\\\"timed_out\\\":timed_out,\\\"forced_kill\\\":forced,\\\"error\\\":error,\\\"elapsed_seconds\\\":time.monotonic()-started}),flush=True)\\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\\nraise SystemExit(code if code>=0 else 128-code)\\n\"",
+        "after": "SUPERVISOR=\"import hashlib,json,os,signal,subprocess,sys,time\\nloader=sys.argv[1]\\nassert len(loader.encode(\\\"utf-8\\\"))==866 and hashlib.sha256(loader.encode(\\\"utf-8\\\")).hexdigest()==\\\"75ce3c43ccb9cd9a6611b12d94d0dddefa5714e4f49c35102bf1a571ba32c723\\\"\\nassert os.getcwd()==\\\"/home/alex/hepta-local-007f-20261111\\\"\\nstarted=time.monotonic()\\np=subprocess.Popen([\\\"/usr/bin/python3\\\",\\\"-I\\\",\\\"-B\\\",\\\"-c\\\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main57-pocket4-java-native-reuse-pty-launch.v1\\\",\\\"event\\\":\\\"started\\\",\\\"child_pid\\\":p.pid,\\\"timeout_seconds\\\":1200,\\\"loader_sha256\\\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\\ncode=None;timed_out=False;forced=False;error=None\\ntry:\\n    code=p.wait(timeout=1200)\\nexcept BaseException as failure:\\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\\n    error=type(failure).__name__+\\\": \\\"+str(failure)\\n    if p.poll() is None:\\n        try:os.killpg(p.pid,signal.SIGTERM)\\n        except ProcessLookupError:pass\\n        try:code=p.wait(timeout=10)\\n        except subprocess.TimeoutExpired:\\n            forced=True\\n            try:os.killpg(p.pid,signal.SIGKILL)\\n            except ProcessLookupError:pass\\n            try:code=p.wait(timeout=10)\\n            except subprocess.TimeoutExpired:error+=\\\"; owned child exit not observed\\\"\\nexit_observed=p.poll() is not None\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main57-pocket4-java-native-reuse-pty-launch.v1\\\",\\\"event\\\":\\\"finished\\\",\\\"child_pid\\\":p.pid,\\\"child_returncode\\\":code,\\\"exit_observed\\\":exit_observed,\\\"timed_out\\\":timed_out,\\\"forced_kill\\\":forced,\\\"error\\\":error,\\\"elapsed_seconds\\\":time.monotonic()-started}),flush=True)\\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\\nraise SystemExit(code if code>=0 else 128-code)\\n\"",
+        "count": 1
+      },
+      {
+        "before": "SUPERVISOR_SHA=\"d02a2976bcdf6519a4480cc3674b423f8098e79f2289f6b6dba56bf3955f14de\"",
+        "after": "SUPERVISOR_SHA=\"5bfae20cedbce8ebf6435c0ddcaa4f696d1c77dae11165961ae5c02ba5b099d4\"",
+        "count": 1
+      },
+      {
+        "before": "TRANSPORT_KEY=\"007f-v55-main-core101-materialized-host-r3\"",
+        "after": "TRANSPORT_KEY=\"007f-v57-main-p4-android-r1\"",
+        "count": 1
+      },
+      {
+        "before": "need(len(LOADER.encode(\"utf-8\"))==878 and",
+        "after": "need(len(LOADER.encode(\"utf-8\"))==866 and",
+        "count": 1
+      },
+      {
+        "before": "need(len(SUPERVISOR.encode(\"utf-8\"))==1774",
+        "after": "need(len(SUPERVISOR.encode(\"utf-8\"))==1802",
+        "count": 1
+      }
+    ],
+    "loader_patches": [
+      {
+        "before": "/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r3.py",
+        "after": "/home/alex/hepta-local-007f-20261111/v57-main-p4-android-r1.py",
+        "count": 1
+      },
+      {
+        "before": "54123",
+        "after": "113856",
+        "count": 3
+      },
+      {
+        "before": "2c02f930ce9e785efc849a1a72cc70a6900fa9d406fb29750e5c2723059ed44e",
+        "after": "ac4b54eb0815bce791a99ae3e01de8077808fe55b5eabc58488fd1eba8126331",
+        "count": 1
+      }
+    ],
+    "supervisor_patches": [
+      {
+        "before": "878",
+        "after": "866",
+        "count": 1
+      },
+      {
+        "before": "101d039ebc66b78bd0ffcb3f4daa45baa40cb46b70908dab206b9c1f0a208636",
+        "after": "75ce3c43ccb9cd9a6611b12d94d0dddefa5714e4f49c35102bf1a571ba32c723",
+        "count": 1
+      },
+      {
+        "before": "hepta.core101-r3-pty-bounded-launch.v1",
+        "after": "hepta.main57-pocket4-java-native-reuse-pty-launch.v1",
+        "count": 2
+      }
+    ],
+    "loader": {
+      "raw_utf8": "import hashlib,os,pathlib,stat,sys\np=pathlib.Path(\"/home/alex/hepta-local-007f-20261111/v57-main-p4-android-r1.py\")\nassert all(not q.is_symlink() for q in (p,*p.parents))\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\ntry:\n a=os.fstat(fd)\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==113856\n with os.fdopen(os.dup(fd),\"rb\") as f:raw=f.read(113856+1)\n assert len(raw)==113856 and hashlib.sha256(raw).hexdigest()==\"ac4b54eb0815bce791a99ae3e01de8077808fe55b5eabc58488fd1eba8126331\"\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\nfinally:os.close(fd)\nsys.argv=[str(p)]\nexec(compile(raw,str(p),\"exec\",dont_inherit=True),{\"__name__\":\"__main__\",\"__file__\":str(p),\"__stage_source__\":raw})\n",
+      "bytes": 866,
+      "sha256": "75ce3c43ccb9cd9a6611b12d94d0dddefa5714e4f49c35102bf1a571ba32c723",
+      "git_blob_sha": "b390d6182bb48c50fbd5b3dca8bc27df80c2fbbd"
+    },
+    "supervisor": {
+      "raw_utf8": "import hashlib,json,os,signal,subprocess,sys,time\nloader=sys.argv[1]\nassert len(loader.encode(\"utf-8\"))==866 and hashlib.sha256(loader.encode(\"utf-8\")).hexdigest()==\"75ce3c43ccb9cd9a6611b12d94d0dddefa5714e4f49c35102bf1a571ba32c723\"\nassert os.getcwd()==\"/home/alex/hepta-local-007f-20261111\"\nstarted=time.monotonic()\np=subprocess.Popen([\"/usr/bin/python3\",\"-I\",\"-B\",\"-c\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\nprint(json.dumps({\"schema\":\"hepta.main57-pocket4-java-native-reuse-pty-launch.v1\",\"event\":\"started\",\"child_pid\":p.pid,\"timeout_seconds\":1200,\"loader_sha256\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\ncode=None;timed_out=False;forced=False;error=None\ntry:\n    code=p.wait(timeout=1200)\nexcept BaseException as failure:\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\n    error=type(failure).__name__+\": \"+str(failure)\n    if p.poll() is None:\n        try:os.killpg(p.pid,signal.SIGTERM)\n        except ProcessLookupError:pass\n        try:code=p.wait(timeout=10)\n        except subprocess.TimeoutExpired:\n            forced=True\n            try:os.killpg(p.pid,signal.SIGKILL)\n            except ProcessLookupError:pass\n            try:code=p.wait(timeout=10)\n            except subprocess.TimeoutExpired:error+=\"; owned child exit not observed\"\nexit_observed=p.poll() is not None\nprint(json.dumps({\"schema\":\"hepta.main57-pocket4-java-native-reuse-pty-launch.v1\",\"event\":\"finished\",\"child_pid\":p.pid,\"child_returncode\":code,\"exit_observed\":exit_observed,\"timed_out\":timed_out,\"forced_kill\":forced,\"error\":error,\"elapsed_seconds\":time.monotonic()-started}),flush=True)\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\nraise SystemExit(code if code>=0 else 128-code)\n",
+      "bytes": 1802,
+      "sha256": "5bfae20cedbce8ebf6435c0ddcaa4f696d1c77dae11165961ae5c02ba5b099d4",
+      "git_blob_sha": "f907915795ee32cc3caa42dc3652279bfa822aaf"
+    },
+    "gzip": {
+      "bytes": 35833,
+      "sha256": "1dfb7d215bcf64a5d5c1575ffa94e8d8361c3292a57b52f58d0186de529fae84"
+    },
+    "argument": {
+      "bytes": 47780,
+      "sha256": "76c79051b0be09ddde95625ab8884bf786ad07c813fa7b35494c141427e8eb7a"
+    },
+    "full_roundtrip_verified": true
+  },
+  "exact_runtime_length_assertions": {
+    "loader": 866,
+    "supervisor": 1802,
+    "verified": true
+  },
+  "H_calls": 0,
+  "executed": false,
+  "expected_production_source_candidate": "517e61599073eb264c5e52871570d49e7af2d798",
+  "notes": [
+    "Root owns the only host submission.",
+    "The production595 tree and all eight Android commands are unchanged from the reviewed pending body.",
+    "The prior Focused report-parser failure and Web fixture failure remain separate actual failures."
+  ]
+}

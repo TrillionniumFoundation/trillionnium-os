@@ -106,16 +106,19 @@ public final class PromptAdmissionHostTest {
                 PromptAdmissionFixture.awaitAdmission(frame.text,config);exactProfiles++;
             }else upperProfiles++;
         }
-        check(exactProfiles==11&&upperProfiles==1,"all declared profiles covered");
+        check(exactProfiles==12&&upperProfiles==0,"all declared profiles require native exact admission");
         cases++;
 
-        final LocalRuntimeConfig bounded=new LocalRuntimeConfig(ModelProfile.LFM3,"npu",4096,4);
-        rejects(new Throwing(){public void run()throws Exception{PromptAdmissionFixture.build(OWNER,apps,screen,history,bounded);}},
-                IllegalStateException.class,"proven byte upper bound retains mandatory-frame refusal");
-        rejects(new Throwing(){public void run()throws Exception{PromptAdmissionFixture.awaitAdmission(frame.text,bounded);}},
-                IllegalStateException.class,"LFM3 await guard cannot bypass upper bound");
-        ConservativeTokenBudget small=ConservativeTokenBudget.estimate("system","prompt",bounded);
-        check(small.provenUpperBound&&small.admitted&&Boolean.TRUE.equals(attempt.invoke(small)),"valid LFM3 still admitted");
+        final LocalRuntimeConfig lfm3=new LocalRuntimeConfig(ModelProfile.LFM3,"npu",4096,4);
+        PromptAdmissionFixture.Result lfmFrame=PromptAdmissionFixture.build(OWNER,apps,screen,history,lfm3);
+        check(!lfmFrame.budget.admitted&&!lfmFrame.budget.provenUpperBound&&lfmFrame.budget.mayAttemptNative(),
+                "LFM3 large mandatory frame reaches native exact admission");
+        check(lfmFrame.text.equals(frame.text),"LFM3 retains the complete same prompt instead of deleting mandatory facts");
+        PromptAdmissionFixture.awaitAdmission(lfmFrame.text,lfm3);
+        ConservativeTokenBudget small=ConservativeTokenBudget.estimate("system","prompt",lfm3);
+        check(!small.provenUpperBound&&small.admitted&&Boolean.TRUE.equals(attempt.invoke(small)),"small LFM3 projection remains advisory");
+        check(NativeBudgetVerifier.valid(nativeReceipt(lfm3,3584),lfm3,256,3584),"LFM3 exact native boundary admitted");
+        check(!NativeBudgetVerifier.valid(nativeReceipt(lfm3,3585),lfm3,256,3585),"LFM3 exact native overflow still refused");
         cases++;
 
         check(NativeBudgetVerifier.valid(nativeReceipt(exact,3584),exact,256,3584),"native exact boundary accepted");
@@ -154,7 +157,8 @@ public final class PromptAdmissionHostTest {
         Map<String,Object> withData=MobiMindContract.jsonObject(with.text.substring("UNTRUSTED_DATA\n".length(),with.text.indexOf("\nOWNER\n")).getBytes(StandardCharsets.UTF_8));
         Map<String,Object> withoutData=MobiMindContract.jsonObject(without.text.substring("UNTRUSTED_DATA\n".length(),without.text.indexOf("\nOWNER\n")).getBytes(StandardCharsets.UTF_8));
         Map<?,?> memory=(Map<?,?>)withData.remove("last_model_decision");
-        check(memory!=null&&LastModelDecisionProjection.SOURCE.equals(memory.get("source"))&&old.reason.equals(memory.get("reason")),"only bounded actual prior text and explicit model provenance are projected");
+        check(memory!=null&&LastModelDecisionProjection.SOURCE.equals(memory.get("source"))&&old.packageName.equals(memory.get("target_package"))
+                &&Boolean.TRUE.equals(memory.get("dispatched"))&&!memory.containsKey("reason"),"only bound dispatch facts are projected; prior free-form text is not re-fed");
         check(withData.equals(withoutData),"existing observations, history, task authorization and tool domains remain structurally identical");
         check(with.budget.totalContextUpper>without.budget.totalContextUpper,"added model intention remains counted by existing input budget");
         cases++;

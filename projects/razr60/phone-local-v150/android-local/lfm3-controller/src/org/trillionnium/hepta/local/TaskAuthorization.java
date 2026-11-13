@@ -13,12 +13,17 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.trillionnium.hepta.local.web.WebFlightGoal;
+import org.trillionnium.hepta.local.web.WebShoppingGoal;
 
 /** A bounded OWNER compiler and task-local executor contract, never a model proposal.
  * This enforces documented tool/method clauses, not arbitrary business semantics. */
 public final class TaskAuthorization {
     public static final String SCHEMA="hepta.owner-task-authorization.v1";
     public static final String PARSER="hepta.owner-tool-clauses.zh.v4-fixed-intents";
+    public static final String NATURAL_FLIGHT_RULE="natural_public_flight_tool_ceiling.v1";
+    public static final String NATURAL_SHOPPING_RULE="natural_public_product_tool_ceiling.v1";
+    public static final String EXPLICIT_SHOPPING_RULE="explicit_public_product_tool_ceiling.v1";
     public static final Set<String> TOOLS=Collections.unmodifiableSet(new TreeSet<String>(Arrays.asList(
             "find_app","open","click","type","submit","scroll","back","home","wait","done","notes.create","web.search")));
     public static final class Violation extends IllegalStateException {
@@ -55,25 +60,38 @@ public final class TaskAuthorization {
             +"|(?:查找|搜索)(?:手机上|本机|手机中)?(?:已安装的|安装的)"
             +"|(?:查找|搜索)[^，,。；;\\n]{0,96}?(?:应用|APP|App)(?=[，,。；;\\s]|$|并|再|然后)");
     public final String instructionSha256,sha256,findQuery;
+    private final String parserVersion;
     public final Set<String> allowedTools;
     public final boolean requireFindAppBeforeOpen;
     private final List<String> rules;
+    private final String immutableOwner;
 
     private TaskAuthorization(String owner,Set<String> allowed,boolean first,String query,List<String> rules){
+        immutableOwner=owner;
         instructionSha256=hash(owner.getBytes(StandardCharsets.UTF_8));
         allowedTools=Collections.unmodifiableSet(new TreeSet<String>(allowed));
         requireFindAppBeforeOpen=first;findQuery=query;
         this.rules=Collections.unmodifiableList(new ArrayList<String>(rules));
+        String parser=rules.contains("notes_literal_owner_span.v1")?PARSER+"+notes-literal-span.v1":PARSER;
+        if(rules.contains(NATURAL_FLIGHT_RULE))parser+="+natural-flight-ceiling.v1";
+        if(rules.contains(NATURAL_SHOPPING_RULE))parser+="+natural-product-ceiling.v1";
+        if(rules.contains(EXPLICIT_SHOPPING_RULE))parser+="+explicit-product-ceiling.v1";
+        parserVersion=parser;
         // Length-delimited fields bind exact UTF-8, including the optional query.
-        StringBuilder identity=new StringBuilder();field(identity,SCHEMA);field(identity,PARSER);field(identity,instructionSha256);
+        StringBuilder identity=new StringBuilder();field(identity,SCHEMA);field(identity,parserVersion);field(identity,instructionSha256);
         for(String tool:allowedTools)field(identity,tool);field(identity,first?"true":"false");field(identity,query==null?"":query);
         sha256=hash(identity.toString().getBytes(StandardCharsets.UTF_8));
     }
+    /** The service compiles its task phase from the same OWNER; never model or screen text. */
+    String immutableOwner(){return immutableOwner;}
     public static TaskAuthorization parse(String owner){
         validOwner(owner);
-        String unquoted=withoutQuotedData(owner);
+        NotesOwnerIntent.Result note=NotesOwnerIntent.parse(owner);
+        boolean maskBody=note.masksOwnerBodyForAuthority();
+        String unquoted=withoutQuotedData(maskBody?note.maskedOwnerForAuthority(owner):owner);
         Set<String> allowed=new TreeSet<String>(TOOLS),denied=new TreeSet<String>(),granted=new TreeSet<String>();
         List<String> rules=new ArrayList<String>();boolean onlySeen=false;
+        if(maskBody)rules.add("notes_literal_owner_span.v1");
         for(String original:unquoted.split("[，,。；;！!？?\\r\\n]")){
             String clause=original.trim();if(clause.isEmpty())continue;
             Matcher only=ONLY.matcher(clause),deny=DENY.matcher(clause),grant=GRANT.matcher(clause);
@@ -115,6 +133,18 @@ public final class TaskAuthorization {
         if(!first&&unquoted.contains("先")&&explicitAppLookup(unquoted)
                 &&(unquoted.contains("打开")||unquoted.contains("open")))
             throw new Violation("查找与打开顺序不在已支持的明确先后语法内");
+        // Every original OWNER clause, error and prerequisite above remains in force.
+        // Recognized public-page purposes only narrow that result. They never mask,
+        // expand or rewrite OWNER, and selected-helper admission is checked separately.
+        WebFlightGoal flight=WebFlightGoal.parse(owner);
+        WebShoppingGoal shopping=WebShoppingGoal.parse(owner);
+        require(flight==null||shopping==null,"公开网页目标不能同时属于两个站点");
+        if(flight!=null&&flight.naturalReadOnlyIntent){
+            allowed.retainAll(flight.toolCeiling());rules.add(NATURAL_FLIGHT_RULE);
+        }else if(shopping!=null){
+            allowed.retainAll(shopping.toolCeiling());
+            rules.add(shopping.naturalReadOnlyIntent?NATURAL_SHOPPING_RULE:EXPLICIT_SHOPPING_RULE);
+        }
         if(first)require(allowed.contains("find_app")&&allowed.contains("open"),"查找前置与工具限制冲突");
         return new TaskAuthorization(owner,allowed,first,query,rules);
     }
@@ -180,7 +210,7 @@ public final class TaskAuthorization {
     public boolean allows(String tool){return allowedTools.contains(tool);}
     public void requireOwner(String owner){validOwner(owner);require(instructionSha256.equals(hash(owner.getBytes(StandardCharsets.UTF_8))),"用户任务与授权合同不一致");}
     public Map<String,Object> evidence(){
-        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("schema",SCHEMA);out.put("parser",PARSER);
+        Map<String,Object> out=new LinkedHashMap<String,Object>();out.put("schema",SCHEMA);out.put("parser",parserVersion);
         out.put("instruction_sha256",instructionSha256);out.put("authorization_sha256",sha256);
         out.put("allowed_tools",new ArrayList<String>(allowedTools));out.put("require_find_app_before_open",requireFindAppBeforeOpen);
         out.put("find_query",findQuery);out.put("recognized_rules",new ArrayList<String>(rules));
@@ -255,6 +285,8 @@ public final class TaskAuthorization {
             Map<String,Object> proof=new LinkedHashMap<String,Object>();proof.put("schema","hepta.owner-action-check.v1");
             proof.put("task_id",taskId);proof.put("authorization_sha256",authorization.sha256);proof.put("model_run_id",modelRunId);
             proof.put("action",action==null?null:action.action);proof.put("target_package",action==null?null:action.packageName);
+            if(action!=null&&action.toolChildOrigin!=null){proof.put("actor_kind","tool_child");proof.put("model_issued",false);
+                proof.put("parent_model_run_id",modelRunId);}
             try{ready();require(modelRunId!=null&&modelRunId.matches("[0-9a-f]{32}"),"模型运行身份缺失");new Frame(this).requireDecision(action);proof.put("allowed",true);}
             catch(Violation error){refusal=error.getMessage();proof.put("allowed",false);proof.put("reason",refusal);throw error;}
             finally{lastCheck=Collections.unmodifiableMap(proof);}

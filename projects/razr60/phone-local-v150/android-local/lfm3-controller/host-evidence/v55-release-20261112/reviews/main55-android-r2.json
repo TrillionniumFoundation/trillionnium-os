@@ -1,0 +1,134 @@
+{
+  "schema": "hepta.main55-r2-input-and-atomic-transport-independent-source-review.v1",
+  "reviewer": "android_background",
+  "status": "no_source_blocker_in_reviewed_delta",
+  "scope": "Nine reviewed source changes from the actual first unsigned build; thirteen literal publisher changes from the independently reviewed Core r3 transport. No repeated review or execution of original query40 assertions or Android commands.",
+  "artifacts": {
+    "base_stage": {
+      "git": "b32af9f1bffab791a244c6aff326ea6afd2eea32",
+      "bytes": 60146,
+      "sha256": "dd23b86a8920a3fca5c559407059c5e8f6672d8689f98c472dc3873a40cc73e3"
+    },
+    "candidate_stage": {
+      "git": "7433e0f8f636653e245dc5ebd26c23f912c0ec81",
+      "bytes": 74743,
+      "sha256": "caaf8785217656d251d5acd571184925ba41b0da3b250bb22dfa55d1e4470114"
+    },
+    "source_review_package": {
+      "git": "27127c243e6421a900ff1f7fcb6bdb1df0f6d2d6",
+      "bytes": 122646,
+      "sha256": "e0c275df672e65e8086e29dedecb0091e47adb0bb7fee1bab00fd742211c3d2e"
+    },
+    "actual_prior_result": {
+      "git": "f9fcd36fa56edf78be5f55b3b01004bcf854769e",
+      "bytes": 198603,
+      "sha256": "c641d9a0ef439aced5ad7436a165d6f2de9c6df37fe8f1f3c66fdd97337fb880"
+    },
+    "final_aggregate": {
+      "git": "d3bf59d91e5681fd5991c4bfef8587ba9a7b2a2d",
+      "bytes": 1320157,
+      "sha256": "66ac069a14b64db51d9f2d09bf52acc6a8d9dc93484f8c21e3c3276ac31c2f06"
+    },
+    "source_inventory_sha256": "65bf7934d82692f45c10aedb947613043453b30bc7d55c4dc8b7e44e4ca0bed1",
+    "transport_handoff": {
+      "git": "019340d039954b7274e626b393b906e69907eb1a",
+      "bytes": 26345,
+      "sha256": "2a51628279f90212de171278b430c55ed2365021aafc9160bc5a5f492b65f6c6"
+    },
+    "exact_start_request": {
+      "bytes": 45104,
+      "sha256": "7e2a7120685d4b3b2c0b7d081e0b0f8362800bbe9018446c1870d51ad41484e8",
+      "git_blob_sha": "d3d95c28a026a288c56e0c689bc726addf4df527",
+      "tool": "h_pty_start",
+      "host": "pocket4",
+      "idempotency_key": "007f-v55-main-p4-android-r2",
+      "max_argument_bytes": 33840
+    },
+    "publisher": {
+      "git": "3e7248df4df1905ae4eee952e76293a6f9f0f46a",
+      "bytes": 10406,
+      "sha256": "9c2d899b189badc1df7d0497113aa22b736230de8522df016578ecb8bbdeb28e"
+    },
+    "loader": {
+      "git": "6b07bf80c19a0ca59aae68846536337725280280",
+      "bytes": 863,
+      "sha256": "6cb825ae73a15eb37852879648cb5ee5779f4b46d0b014861d568ab8ed1c7b2e"
+    },
+    "supervisor": {
+      "git": "a9b3eb819f3fe7dd0391ccbb0de2d8055ce296ce",
+      "bytes": 1772,
+      "sha256": "135da46503ee597e1d477dcb81c47e0f31e936db0dafdce4aa3c066ce79ddb72"
+    }
+  },
+  "independent_reconstruction": {
+    "original": {
+      "bytes": 1410082,
+      "sha256": "19fda163a408c91171c0245650f0a900d8d52715226e068ae2db89bff8d4a1a6"
+    },
+    "current": {
+      "bytes": 1451937,
+      "sha256": "0e9a2e1a8e485c4cbc5d03e12ee4a405f6b6d3e8db3dff431dc27f9abcc98edb"
+    },
+    "old216": {
+      "bytes": 34208,
+      "sha256": "33bd1ac0145c21d3cb5951be24a5d6f82a4a9f11695d73dcf408a5c549253357"
+    },
+    "new216": {
+      "bytes": 34208,
+      "sha256": "cf9549832cfdf97be65866600fb0021fb53ab11851c4b490ea07b80ff9265db9"
+    },
+    "changed": 1,
+    "expected": {
+      "bytes": 1451937,
+      "sha256": "0e9a2e1a8e485c4cbc5d03e12ee4a405f6b6d3e8db3dff431dc27f9abcc98edb"
+    }
+  },
+  "transport_checks": {
+    "nine_source_patches_bidirectional": true,
+    "thirteen_publisher_patches_bidirectional": true,
+    "publisher_exact_request": true,
+    "loader_exact_three_literals": true,
+    "supervisor_only_length_hash_schema": true,
+    "argument_canonical": true,
+    "gzip_crc_and_full_source": true,
+    "source_bytes": 74743,
+    "source_sha256": "caaf8785217656d251d5acd571184925ba41b0da3b250bb22dfa55d1e4470114",
+    "request_bytes": 45104,
+    "request_sha256": "7e2a7120685d4b3b2c0b7d081e0b0f8362800bbe9018446c1870d51ad41484e8"
+  },
+  "unchanged_original_functions": [
+    "need",
+    "sha",
+    "blob",
+    "encoded",
+    "strict",
+    "identity",
+    "read_regular",
+    "unchanged",
+    "checked",
+    "relative",
+    "rows",
+    "snapshot",
+    "validate_map",
+    "write_new",
+    "load_bound",
+    "run_step",
+    "build_unsigned",
+    "current_query40"
+  ],
+  "conclusions": [
+    "All nine ordered source patches reconstruct the complete candidate and reverse byte-for-byte to the actual 60146-byte predecessor. All eighteen predecessor functions are unchanged, including the ordinary-file read/write guards, owned child cleanup, current query40 and unsigned build.",
+    "The two existing gzip inputs first reconstruct the complete original 1410082-byte input. Only the final aggregate and the Mi compiler row are then replaced; independent V8 reconstruction yields exactly 1451937 bytes and the declared whole-input SHA. Old216 and new216 are separate full pins; the new map differs only in the Mi source row.",
+    "The final source aggregate is exactly the same d3bf 594-file aggregate used by Core r3: Mi production plus the calculator observation factory, with the other592 source files unchanged. The actual Core materialization must exist and match every source byte and the complete inventory; Core101 success is not a precondition.",
+    "The complete actual c641 original build RESULT was read and hashed. Its source, source inputs, eight successful normal tool exits, query40 report, compiler receipt and unsigned APK shape match the new predecessor-admission code. The new code preserves the complete original r1 tree under 4096-file/256MiB bounds, rejects links, and checks bytes, identities and membership again after every handled outcome.",
+    "The first ROOT.mkdir remains line706 outside the try handler beginning line735. Source, predecessor, current Core tree, focused39, identity10, native baseline, tools and SDK admission occur before this claim. A failed preflight does not take ownership of a previous output.",
+    "The eight compiler/tool steps, query40 execution and seventeen signed54 native payload checks are unchanged. This is a new Android build for the changed Mi production source, with native_recompiled_here=false; there is no postcompile source sidecar claim.",
+    "All thirteen publisher patches reconstruct and reverse to the reviewed Core transport. The fixed path, source/gzip/argument hashes, loader, supervisor, key and label are the only changes. The directory-FD, stable-read, atomic no-overwrite link, same-byte reuse and own-temporary-inode cleanup implementation is unchanged.",
+    "The exact 45104-byte request has one canonical base64 argument of33840 bytes. Independent decoding verifies the 25378-byte gzip and CRC and recovers the complete74743-byte candidate. Loader and supervisor raw strings are exactly the pinned ones; the bounded supervisor differs only in loader size/hash and receipt schema.",
+    "No host tool invocation, Python/JVM execution, Android compilation, signing or phone action was performed by this review. Runtime preconditions and actual outcomes remain to be observed. Unknown submission may only be reconciled with the same exact request and key."
+  ],
+  "host_calls": 0,
+  "executable_tests_run": 0,
+  "phone_actions": 0,
+  "edits_to_reviewed_sources": 0
+}

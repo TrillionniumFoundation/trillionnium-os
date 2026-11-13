@@ -1,0 +1,151 @@
+{
+  "schema": "hepta.v56-git-publication.v1",
+  "repository": "trillionniumFoundation/trillionnium-os",
+  "pr_number": 139,
+  "branch": "codex/hepta-v45-semantic-click-20261111-007f",
+  "base_source_commit": "dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e",
+  "source_prefix": "projects/razr60/phone-local-v150/android-local/lfm3-controller/",
+  "source_input_payload_sha256": "c1cc7cc16eef4c3a34131ee719101a69db080b76e72c98f03248036fc6fd628f",
+  "source_input_payload_git_blob": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c",
+  "source_commit": "9f4168616546233033edd4b254b4236ae987ea7e",
+  "source_tree": "69fce7a2ec9467f0594d6d031fa0aab0cc9c636f",
+  "expected_prior_head": "dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e",
+  "actual_pr_head": "9f4168616546233033edd4b254b4236ae987ea7e",
+  "actual_ref_head": "9f4168616546233033edd4b254b4236ae987ea7e",
+  "draft": true,
+  "force": false,
+  "source_file_count": 595,
+  "changed_file_count": 14,
+  "new_file_count": 1,
+  "modified_existing_source_file_count": 13,
+  "all_source_blobs_match_actual_tree": true,
+  "all_other_repository_blobs_preserved": true,
+  "preservation_method": "Full non-truncated recursive Git trees were compared by path. Every prior non-tree entry except13 explicitly modified source files retained its exact Git blob/type/mode. Only1 new source file and92 new evidence files were added.",
+  "preserved_prior_source_prefix_blob_count": 1578,
+  "preserved_other_repository_entry_count": 9014,
+  "source_inventory_sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+  "host_precommit_result_sha256": "778fbfeac89fa330d123207c43e485818b530f77e978247c61f67d9d23ce9a39",
+  "host_record_count": 101,
+  "host_input_count": 419,
+  "nested_completion_stage_count": 18,
+  "nested18_are_within_core101": true,
+  "actual_host_blob_map_sha256": "8d8cf9767861029b1cd4c6bb1143e07ee92296a475a44ae1979db79756233926",
+  "git_source_map_sha256": "b8b436f7e6bdbc5b319cd6ebcd3ac42bf5eb81638ba21aea9532f753b65c4f98",
+  "git_source_map_bytes": 289218,
+  "pr_title_body_modified": false,
+  "phone_tested": false,
+  "evidence_prefix": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/",
+  "new_reachable_evidence_file_count": 92,
+  "evidence_in_source_inventory": false,
+  "reachable_evidence_index_git_blob": "0dc36792bba49d286701c88d490cfbed55b9b493",
+  "reachable_evidence_index_bytes": 33907,
+  "reachable_evidence_index_sha256": "9b5c670d1159a3e1793f3818bf993b8f2997f561537f909285065310fad46a61",
+  "original_evidence_rewritten": false,
+  "main55_signed_receipt_published": true,
+  "main56_signed_receipt_published": false,
+  "helper6_signed_receipt_published": true,
+  "actual_core_host": {
+    "git_blob": "5cb49be79cbf60bb9cfdc34eb24ea6a1a16aace1",
+    "bytes": 9732,
+    "sha256": "778fbfeac89fa330d123207c43e485818b530f77e978247c61f67d9d23ce9a39",
+    "groups": 101,
+    "nested_completion_stages": 18,
+    "host_inputs": 419
+  },
+  "actual_android_build": {
+    "git_blob": "1df64b678e912e1d4b1b0331918f4868eea750d0",
+    "bytes": 203372,
+    "sha256": "b557a981d07fb5a65c39da4abbf0474559035a875831bec820c6b4a55fcc7ece",
+    "compiler_inputs": 217,
+    "java_sources": 115,
+    "compiled_classes": 420,
+    "native_recompiled_here": false,
+    "compiled_source_equals_final_source": true
+  },
+  "actual_web_host": {
+    "git_blob": "a444cbac9951180a7dde73bee2984fdf063ee30a",
+    "bytes": 47337,
+    "sha256": "220ccb705ba17797d7403c26c1a9bcb438f46c8ea83e017c617a343d27232f7c",
+    "groups": [
+      80,
+      70,
+      13
+    ],
+    "assertions": [
+      92,
+      178,
+      1001
+    ]
+  },
+  "actual_focused_host": {
+    "git_blob": "94faa212af37300fa4eee3384cdf382b034aad7e",
+    "bytes": 44408,
+    "sha256": "036e4f7b185a127e457712fcd23b6745d8aac18a04cf64da4035764329efee43",
+    "groups": [
+      20,
+      19
+    ],
+    "assertions": [
+      60,
+      98
+    ],
+    "java_sources": 51,
+    "pure_sources": 44,
+    "exact_method_projections": 15
+  },
+  "actual_query40": {
+    "path": "/home/alex/hepta-local-007f-20261111/v56-main-p4-android-r1/query40/RESULT.json",
+    "bytes": 36220,
+    "sha256": "e0209a7697bf19342e896cdf97c07c53da9c798a9b0181a901b949f28a28bf0d",
+    "cases": 40,
+    "assertions": 187,
+    "java_sources": 50,
+    "actual_phone_query": false,
+    "actual_flight_results": false
+  },
+  "external_query_runner": {
+    "repository_path": "tests/web-flight/run_query_host_tests.py",
+    "original": {
+      "bytes": 41005,
+      "sha256": "0f4d983138ed8bcf5f0b622ee4d4063048e83413eafe3586595521f5e1b7eb45",
+      "git_blob_sha": "7b7a23db9302bc63b71f51a4d74d06c34183059d"
+    },
+    "corrected": {
+      "bytes": 41005,
+      "sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10",
+      "git_blob_sha": "c21109afe049ccaf2d664937bd24fb0e5abce4a2"
+    },
+    "count_only_patch": {
+      "before": "    need(len(PURE_PATHS)==45 and len(generated_factories)==3,\"fixed 43 production plus 2 retained plus 3 factory inputs\")",
+      "after": "    need(len(PURE_PATHS)==46 and len(generated_factories)==3,\"fixed 44 production plus 2 retained plus 3 factory inputs\")",
+      "count": 1
+    },
+    "actual_pure_path_count": 46,
+    "actual_production_paths": 44,
+    "total_compiled_java": 50,
+    "source_inventory_modified": false,
+    "test_case_assertions_modified": false,
+    "repository_runner_count_guard_known_incompatible": true,
+    "external_execution_pending_actual_android": false,
+    "actual_runner_path": "/home/alex/hepta-local-007f-20261111/v56-main-p4-android-r1/query40-runner.py",
+    "actual_case_report": {
+      "path": "/home/alex/hepta-local-007f-20261111/v56-main-p4-android-r1/query40/RESULT.json",
+      "bytes": 36220,
+      "sha256": "e0209a7697bf19342e896cdf97c07c53da9c798a9b0181a901b949f28a28bf0d"
+    },
+    "actual_cases": 40,
+    "actual_assertions": 187,
+    "repository_original_runner_not_claimed_runnable": true,
+    "source_scope_statement": "The final595 source retains the original query runner. Only the separately recorded external one-hunk count/description correction executed the unchanged40 cases. This exception does not modify source inventory or production inputs."
+  },
+  "unsigned_apk": {
+    "path": "/home/alex/hepta-local-007f-20261111/v56-main-p4-android-r1/out/hepta-local-0.56.0-unsigned.apk",
+    "bytes": 21020693,
+    "sha256": "d9d6450d27b6b5c33653d8e74e67b25fb7b00c1de77030596980a06959e58a87"
+  },
+  "native_payloads_reused_from_signed54": 17,
+  "actual_flight_results_provider_ready": false,
+  "shopping_order_or_payment_authorized": false,
+  "full_host_logs_and_helper_archive_retrieval_pending": true,
+  "cas_response_success": true
+}

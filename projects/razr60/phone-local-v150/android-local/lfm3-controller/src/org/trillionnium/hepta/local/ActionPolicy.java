@@ -39,6 +39,12 @@ public final class ActionPolicy {
     private static void validateTextDecision(ActionDecision action,String currentPackage,Set<String> shownApps,
             ObservedTargetLabels targets,ObservedAppLabels apps,java.util.Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets)
             throws ActionDecision.InvalidActionException {
+        if(action.toolChildOrigin!=null){
+            if(!ActionDecision.TOOL_CHILD_SCHEMA.equals(action.actionSchema)
+                    ||!("back".equals(action.action)||"click".equals(action.action)))
+                throw new ActionDecision.InvalidActionException("invalid internal tool child schema/action");
+            validateCommon(action,currentPackage,shownApps,targets);return;
+        }
         if (org.trillionnium.hepta.background.FixedIntentTools.isTool(action.action)){
             org.trillionnium.hepta.background.FixedIntentTarget fixed=fixedTargets==null?null:fixedTargets.get(action.action);
             if(!ActionDecision.FIXED_INTENT_ACTION_SCHEMA.equals(action.actionSchema)||fixed==null

@@ -1,0 +1,157 @@
+{
+  "schema": "hepta.manual-observer-reviewed-action.v1",
+  "revision": "v53-formal4-mi-native-observation-and-uncaptured-retirement-r2",
+  "completed": false,
+  "installed_verified": true,
+  "install_submitted": false,
+  "install_success_returned": false,
+  "target_activity_launch_count": 0,
+  "site_button_tapped": false,
+  "capture_button_tapped": false,
+  "consent_actions": 0,
+  "query_submissions": 0,
+  "text_inputs": 0,
+  "task_started": false,
+  "model_invoked": false,
+  "background_session_created": false,
+  "configuration_changed": false,
+  "business_verified": false,
+  "qualified": false,
+  "model_issued": false,
+  "started_wall_s": 1794465736.6087124,
+  "scope": "one independently reviewed official-page action; no consent, login, order or payment",
+  "owner": {
+    "root": "/home/alex/hepta-local-007f-20261111/owner-15",
+    "pid": 2898006,
+    "start_ticks": "24911394",
+    "boot_id": "97d9600f-e081-465c-9e6e-62651e09806b"
+  },
+  "formal_artifact_proof": {
+    "schema": "hepta.formal-helper-code4-upgrade-artifact-proof.v1",
+    "signed_result_sha256": "616c12d398843f66339fe302b7e63c369f25502e962d8b143bfeea4a73bc898f",
+    "build_result_sha256": "021815261d930ce2e21de877a149a560908a74371dc08e169a1b2a116ef9fdec",
+    "source_archive_sha256": "2d92f0ef83ec04f6c76f768fbc615421381dbe7eabefe5afa5f1065d5b7fad43",
+    "source_inventory_sha256": "265a44242a92a167d35b0c92211da44b1ca37d5bbe905f2c504aac8cbcfe7a5c",
+    "apk_sha256": "b636485ee245e5074b065b5357c5e1cb0734f726eb26300ff7f7b18e77d737e0",
+    "apk_bytes": 1377275,
+    "source_file_count": 36,
+    "runtime_java_count": 34,
+    "compiled_member_count": 372,
+    "signed_zip_member_count": 375,
+    "actual_signed_resource_layout": {
+      "method": 0,
+      "data_offset": 1282224,
+      "data_offset_mod4": 0,
+      "bytes": 20492
+    },
+    "interface_source_sha256": {
+      "AndroidManifest.xml": "4354715a29cb263a161a2a974b0c8a099e68bffa87e027ef5ce862bf053c5e18",
+      "assets/readonly_dom.js": "0d1b412d2e81e3f447ef36977bb27c321c136c207d64cca433a810f22ca5c983",
+      "src/org/trillionnium/hepta/background/FixedIntentTarget.java": "f5f3936a8185185cf5f036a74665ee6edfbd5c1f617299dd9cd6edd4bf7b23e2",
+      "src/org/trillionnium/hepta/background/FixedIntentTools.java": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947",
+      "src/org/trillionnium/hepta/local/ActionDecision.java": "ee2a0481bb1ad0d2a3dd95b501c101d1955f4f1142adfe150ba3f9643fa88b20",
+      "src/org/trillionnium/hepta/local/AppCatalogueRanker.java": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075",
+      "src/org/trillionnium/hepta/local/DecisionGrammar.java": "236d22187abfe777705d337241e310dd617b1c4c21ae39df4f52d960a1e106ca",
+      "src/org/trillionnium/hepta/local/NotesOwnerIntent.java": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f",
+      "src/org/trillionnium/hepta/local/ObservedAppLabels.java": "0276171bb8aaebee880a6d36fea5cbfdb157b09d2728a07148e4ce85d5ffbb9e",
+      "src/org/trillionnium/hepta/local/ObservedImeEnter.java": "e449d61e928dca5a72730b5394fa8f95a7db4dd4006440a95f839818e165acf1",
+      "src/org/trillionnium/hepta/local/ObservedScrollActions.java": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188",
+      "src/org/trillionnium/hepta/local/ObservedTargetLabels.java": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba",
+      "src/org/trillionnium/hepta/local/TaskAuthorization.java": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8",
+      "src/org/trillionnium/hepta/local/web/WebFlightGoal.java": "02f260915f2b64894b8cd1ed4223392ace9964920d9b77e6765548252d9624ac",
+      "src/org/trillionnium/hepta/local/web/WebShoppingGoal.java": "106fd6dbb66582991c522c306891458587514133867a458a96f6a7e06aa8a0f4",
+      "src/org/trillionnium/hepta/webhelper/EvidenceFiles.java": "b84d1671f956afd67744be0a7f300921e660dbbcda557bf3ae3dc7fdb881aee0",
+      "src/org/trillionnium/hepta/webhelper/EvidenceService.java": "e609970e749f66e16cfa245cec1215ed9056035808e5232fe0b611d5dcb16fa4",
+      "src/org/trillionnium/hepta/webhelper/EvidenceSession.java": "79f8277d841eac0b72778d3bc33e0d150fb56aaecdce02340f7edd4097b45d06",
+      "src/org/trillionnium/hepta/webhelper/InstalledIdentity.java": "15c9d44cde2d93f823372ab6e0baf6214d4cb80835907694df1212be4d3edf73",
+      "src/org/trillionnium/hepta/webhelper/Jsons.java": "484c6daa3a95a9e1849a70e4ceffb3666e23dd148851d2ae356361c2a6693ee5",
+      "src/org/trillionnium/hepta/webhelper/NativeRetirementProbe.java": "fd9124579a5528b5a12e55145dd49f7db1f1fbe3e41049eba7da4823ff391642",
+      "src/org/trillionnium/hepta/webhelper/OfficialOrigin.java": "7a127a62aa8918be1224b886f90f939bf31146a6522dd2f8a0af0244a57749eb",
+      "src/org/trillionnium/hepta/webhelper/OfficialPageCapture.java": "dda03fbb4b0333cfe94f0daec428bfba376f837b4408f5828e5f02a3ebc27b11",
+      "src/org/trillionnium/hepta/webhelper/PageActivity.java": "0b11585e7d223d80432146083b0a65012d1d4e5e95d136608421f5a8719202b2",
+      "src/org/trillionnium/hepta/webhelper/PageSitePolicy.java": "eaf5122f57b78575852e063c60d0358c6f5551844139d23c815b2b5d50f4efb7",
+      "src/org/trillionnium/hepta/webhelper/ProcessIdentity.java": "ed77fb207e67547a40a4356ca789fa666748ed2040fef1c7b0a8cc8d25e274b2",
+      "src/org/trillionnium/hepta/webhelper/ProfileIsolation.java": "fd5e4f00947f8ced53a7eca318eeb4a579cc7ed31057b4d1d6e45958ec4d0fbd",
+      "src/org/trillionnium/hepta/webhelper/RemoteReply.java": "8da64fd8d7fbd1438fcc4926d34be3233e42bb29c12fbde3b920ed0f673c617b",
+      "src/org/trillionnium/hepta/webhelper/RetiredProfileClear.java": "09cb1dddfa469cda8e4c6c5d12221b36538548c6f08c9ae2234c66d2fa23c597",
+      "src/org/trillionnium/hepta/webhelper/TaskBinding.java": "f00f197fde76df917b1b470c86e228476ebb9424a624bf1da75ccf6e65189f40",
+      "src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java": "90a414863297c1ff173fd14a7b31dce62bb5fbb561e7625f1fe3eb0dace47af7",
+      "src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java": "66c9488106d0b072e7b5a7337f5cbb2bcd3f0b1ccb65b6cf844b2194bca64bf7",
+      "src/org/trillionnium/hepta/webprotocol/WebRecoveryPolicy.java": "c3b5ddc20d2f4e01f7cc80df5be04af318c18cbc6cc1b3a43cdcc68710cc1f35",
+      "src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java": "704f3de1bea1e0471d5daeb5cfc8255fd30b002c20eafc49c21fef2eb5ecc7a4",
+      "src/org/trillionnium/hepta/webprotocol/WebStorageEvidence.java": "9e8df742ad0fdaac0fbc051c99772a52fbb40aae49f0a43589e252e71acc7fc0",
+      "src/org/trillionnium/hepta/webprotocol/WebTaskPurpose.java": "92303867e09343ebcbb3620b9a5850bce683c1d94988d1e534dd272dcaea8647"
+    },
+    "runtime_qualified": false,
+    "phone_contacted": false,
+    "business_verified": false
+  },
+  "controller_idle_proof_sha256": "9cde9b15efb57757c19473c92059b5f4ce094ae8a07ad6ac3cf1b05d63615e2c",
+  "idle_resources_before": {
+    "processes": [
+      {
+        "uid": 10481,
+        "pid": 30185,
+        "ppid": 1973,
+        "args": "org.trillionnium.hepta.local"
+      }
+    ],
+    "ps_sha256": "80ca1fd1e5c78d56cc3dd84e8e9a8a96aabdf226f3987b1a081d91b07c4ab0a4",
+    "display_sha256": "2b300745692cb81c88a944c725313a39a0beb16d87670002efe1a1332e826e4a",
+    "no_owned_display": true
+  },
+  "formal_before": {
+    "verified": true,
+    "component": "org.trillionnium.hepta.local/org.trillionnium.hepta.local.HeptaAccessibilityService",
+    "app_pid": 30185,
+    "app_uid": 10481,
+    "client_pid": 3622,
+    "client_uid": 1000,
+    "binder_received": true,
+    "has_bound": true,
+    "connection_ids": [
+      "98ad620"
+    ],
+    "service_dump_sha256": "b4d9cc75f2ac3404af716cd204c372e721c10827b9cf438351618c95ea514bd8",
+    "identity_scope": "exact active AMS ServiceRecord and live system-client binding; label-only AccessibilityManager rows are not component attestation"
+  },
+  "ordinary_wake_requested": true,
+  "observer_installed_identity": {
+    "package": "org.trillionnium.hepta.webhelper",
+    "uid": 10484,
+    "apks": [
+      {
+        "path": "/data/app/~~4rPx93iCj8bfSoiX4dhQ2Q==/org.trillionnium.hepta.webhelper-rf1W8BRiuSJG8y7Ehs-grA==/base.apk",
+        "sha256": "b636485ee245e5074b065b5357c5e1cb0734f726eb26300ff7f7b18e77d737e0"
+      }
+    ]
+  },
+  "manual_retirement": {
+    "profile_name": null,
+    "source_diagnostic_sha256": null,
+    "reference_result_sha256": "d568beb210462b361987c596c167e8eaa8bef78a8b3055e262dba9e35cdf6a0c",
+    "review_sha256": "877ae2fff85f67ca747981cebc6ba9433651dd85542d98ef036d537225c802c5",
+    "back_actions": [],
+    "input_outcome_unknown": false,
+    "cleanup_verified": false,
+    "force_stop_used": false,
+    "maximum_back_actions": 8,
+    "profile_known_before_back": false,
+    "source_diagnostic_available": false,
+    "prior_captured_profile_known": false,
+    "lifecycle_source_sha256": {
+      "src/org/trillionnium/hepta/webhelper/EvidenceSession.java": "79f8277d841eac0b72778d3bc33e0d150fb56aaecdce02340f7edd4097b45d06",
+      "src/org/trillionnium/hepta/webhelper/PageActivity.java": "0b11585e7d223d80432146083b0a65012d1d4e5e95d136608421f5a8719202b2",
+      "src/org/trillionnium/hepta/webhelper/ProfileIsolation.java": "fd5e4f00947f8ced53a7eca318eeb4a579cc7ed31057b4d1d6e45958ec4d0fbd"
+    },
+    "formal_lease_cleanup_verified": false,
+    "fresh_native_identity": {
+      "native_initial_url": "https://www.mi.com/shop/search?keyword=AX3000T",
+      "native_capture_failure": "只读采集未完成：DOM changed across visual callback",
+      "profile_observed": false,
+      "no_website_node_used_as_native_identity": true
+    }
+  },
+  "error": "RuntimeError: the actual helper UID/PID/display observed in the failed capture changed",
+  "finished_wall_s": 1794465747.6254041
+}

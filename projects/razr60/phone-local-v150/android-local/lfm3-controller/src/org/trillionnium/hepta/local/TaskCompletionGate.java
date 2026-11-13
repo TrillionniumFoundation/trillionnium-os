@@ -24,8 +24,13 @@ public final class TaskCompletionGate {
     private static final Pattern NOTE_QUOTED=Pattern.compile("^\\s*(?:请)?"+NOTE_PREFIX+"正文为[：:]?[“]([^“”\\r\\n]+)[”][，, ]*"+NOTE_TAIL+NOTE_LIMITS+"\\s*$");
     public static final class Contract {
         public final String kind,ownerSha256,contractSha256,body,bodySha256,recognition;
+        public final int bodyStartUtf16,bodyEndUtf16;
         private Contract(String owner,String kind,String body,String recognition){
+            this(owner,kind,body,recognition,-1,-1);
+        }
+        private Contract(String owner,String kind,String body,String recognition,int start,int end){
             this.kind=kind;this.body=body;this.recognition=recognition;ownerSha256=hash(owner);
+            bodyStartUtf16=start;bodyEndUtf16=end;
             bodySha256=body==null?null:hash(body);
             contractSha256=hash(SCHEMA+"\n"+ownerSha256+"\n"+kind+"\n"+(bodySha256==null?"":bodySha256)+"\n"+recognition);
         }
@@ -41,6 +46,15 @@ public final class TaskCompletionGate {
                 catch(IllegalArgumentException invalid){return new Contract(owner,UNKNOWN,null,"unsupported_literal_body");}
                 return new Contract(owner,NOTES,body,form);
             }
+            NotesOwnerIntent.Result note=NotesOwnerIntent.parse(owner);
+            if(note.supported&&note.saveAndReopenRequested&&!note.draftOnly)
+                return new Contract(owner,NOTES,note.body,NotesOwnerIntent.SCHEMA+"/"+note.recognition,
+                        note.bodyStartUtf16,note.bodyEndUtf16);
+            org.trillionnium.hepta.local.web.WebFlightGoal flight=org.trillionnium.hepta.local.web.WebFlightGoal.parse(owner);
+            if(flight!=null)return new Contract(owner,WEB,null,flight.naturalReadOnlyIntent?
+                    "natural_csair_flight_owner.v1":"official_csair_flight_owner.v1");
+            org.trillionnium.hepta.local.web.WebShoppingGoal shopping=org.trillionnium.hepta.local.web.WebShoppingGoal.parse(owner);
+            if(shopping!=null)return new Contract(owner,WEB,null,"official_mi_product_owner.v1");
             // A method hint never grants success: no web-result provider exists.
             // Only unquoted OWNER text is considered, never screen or model data.
             String plain=unquoted(owner);
@@ -52,6 +66,8 @@ public final class TaskCompletionGate {
             Map<String,Object> o=new LinkedHashMap<String,Object>();o.put("schema",SCHEMA);o.put("kind",kind);
             o.put("owner_sha256",ownerSha256);o.put("contract_sha256",contractSha256);o.put("recognition",recognition);
             o.put("expected_body_sha256",bodySha256);o.put("source","immutable_owner_contract");
+            if(bodyStartUtf16>=0){o.put("body_source_start_utf16",bodyStartUtf16);o.put("body_source_end_utf16",bodyEndUtf16);
+                o.put("note_persistence_verification_policy","save_list_reopen");o.put("body_rewritten",false);}
             o.put("model_may_change_goal",false);o.put("grants_tool_authority",false);return o;
         }
     }
@@ -60,30 +76,278 @@ public final class TaskCompletionGate {
         private Check(boolean verified,boolean retry,Map<String,Object> evidence){this.verified=verified;retryAllowed=retry;this.evidence=Collections.unmodifiableMap(evidence);}
     }
     public final String taskId;public final Contract contract;
+    private final TaskAuthorization authorization;
     private NotesCompletionEvidence.Installed installed;
-    private boolean domainBound,identityInvalid,launchProved,editorObserved,listObserved,reopened,webDispatched;
-    private int displayId=-1,rejectedSuccess;private String generation,identityFailure;
+    private boolean domainBound,identityInvalid,launchProved,editorObserved,listObserved,reopened,webDispatched,priorVisibleBodyCollision;
+    private int displayId=-1,rejectedSuccess;private String generation,identityFailure,editorObservationId;
     private final List<Map<String,Object>> proofs=new ArrayList<Map<String,Object>>();
     private final List<Map<String,Object>> claims=new ArrayList<Map<String,Object>>();
+    private int parentCreateStep;
+    private String parentCreateRun,parentCreateAttempt,parentCreateBefore,parentCreateAfter,reopenActor;
+    private NotesCreateWorkflow.Grant workflowGrant;
+    private boolean workflowProofConsumed,workflowCompletionAccepted;
+    private String workflowVerifiedObservationId;
+    private Map<String,Object> workflowEvidence;
+    private WebTaskDomain webDomain;
+    // Completion is a historical, read-only result, not a retained action domain.
+    // Only successClaim may create a candidate. The real Session consumes it once
+    // before retirement, and only its authenticated ordinary CLOSE may seal it.
+    private WebTaskDomain claimedWebDomain;
+    private WebCompletionSnapshot webCompletionCandidate;
+    private WebCloseAttempt pendingWebClose;
+    private ClosedWebCompletion closedWebCompletion;
+    private boolean webCloseStarted,webTerminalConsumed;
+    private long webClearSequence;
+
+    private static final class WebCompletionSnapshot {
+        final String task,owner,contract,authorization,observation,frameSha,binding,instance,generation,run;
+        final int step,display,window;final long epoch;
+        final Map<String,Object> page,result;
+        WebCompletionSnapshot(TaskCompletionGate gate,WebTaskDomain domain,NotesCompletionEvidence.Frame frame,int step,String run){
+            task=gate.taskId;owner=gate.contract.ownerSha256;contract=gate.contract.contractSha256;
+            authorization=gate.authorization.sha256;observation=frame.observationId;frameSha=webFrameSha(frame);
+            require(frameSha!=null&&frame.displayId>0&&frame.backgroundGeneration!=null,"complete final native observation required");
+            page=immutableMap(domain.evidence());result=immutableMap(domain.resultRecord());
+            binding=requiredText(page,"binding_sha256");instance=requiredText(page,"webview_instance");
+            generation=frame.backgroundGeneration;display=frame.displayId;window=frame.windowId;
+            epoch=requiredInteger(page,"navigation_epoch");this.step=step;this.run=run;
+            require(hex64(binding)&&hex64(requiredText(page,"contract_sha256"))&&epoch>=0
+                    &&task.equals(page.get("task_id"))&&owner.equals(page.get("owner_sha256"))
+                    &&authorization.equals(page.get("authorization_sha256"))
+                    &&observation.equals(page.get("observation_id"))&&generation.equals(page.get("background_generation"))
+                    &&requiredInteger(page,"display_id")==display&&requiredInteger(page,"window_id")==window,
+                    "verified provider identity differs from its native final observation");
+            require(task.equals(result.get("task_id"))&&owner.equals(result.get("owner_sha256"))
+                    &&page.get("contract_sha256").equals(result.get("contract_sha256"))
+                    &&binding.equals(result.get("binding_sha256"))&&instance.equals(result.get("webview_instance"))
+                    &&epoch==requiredInteger(result,"navigation_epoch")
+                    &&observation.equals(result.get("observation_id"))
+                    &&Objects.equals(page.get("observation_state_sha256"),result.get("observation_state_sha256"))
+                    &&requiredInteger(result,"display_id")==display&&requiredInteger(result,"window_id")==window
+                    &&Boolean.FALSE.equals(result.get("business_verified")),
+                    "actual read-only result differs from its verified provider record");
+        }
+    }
+    static final class WebCloseAttempt {
+        private final TaskCompletionGate gate;private final Object lease;
+        private final WebCompletionSnapshot snapshot;private final long expectedClearSequence;
+        private boolean consumed;
+        private WebCloseAttempt(TaskCompletionGate gate,Object lease,WebCompletionSnapshot snapshot,long expectedClearSequence){
+            this.gate=gate;this.lease=lease;this.snapshot=snapshot;this.expectedClearSequence=expectedClearSequence;
+        }
+    }
+    private static final class ClosedWebCompletion {
+        final Object lease;final WebCompletionSnapshot snapshot;final String callbackSha;
+        ClosedWebCompletion(Object lease,WebCompletionSnapshot snapshot,String callbackSha){
+            this.lease=lease;this.snapshot=snapshot;this.callbackSha=callbackSha;
+        }
+    }
+    /** Called once by the live Session immediately before its existing clear.
+     * A missing, changed, errored or cancelled claim retires without a candidate. */
+    synchronized WebCloseAttempt beginWebClose(Object lease,WebTaskDomain current,String actualTask,String binding,String reason){
+        if(webCloseStarted){abortWebClose(pendingWebClose);return null;}
+        webCloseStarted=true;closedWebCompletion=null;
+        WebCompletionSnapshot candidate=webCompletionCandidate;WebTaskDomain claimed=claimedWebDomain;
+        webCompletionCandidate=null;claimedWebDomain=null;
+        if(!WEB.equals(contract.kind)||lease==null||!"normal".equals(reason)||identityInvalid
+                ||webTerminalConsumed||candidate==null||current==null||current!=webDomain||current!=claimed
+                ||!taskId.equals(actualTask)||!candidate.binding.equals(binding))return null;
+        try{
+            if(!candidate.page.equals(immutableMap(current.evidence()))
+                    ||!candidate.result.equals(immutableMap(current.resultRecord())))return null;
+        }catch(RuntimeException invalid){return null;}
+        pendingWebClose=new WebCloseAttempt(this,lease,candidate,webClearSequence+1);
+        return pendingWebClose;
+    }
+    /** The caller has already verified the actual typed CLOSE and persisted
+     * journal.closeKnown. A recovery/unstarted/unknown close is never this proof. */
+    synchronized boolean webCloseKnown(WebCloseAttempt attempt,Object lease,String actualTask,String binding,
+            String status,String instance,long epoch,int display,int window,String callbackSha){
+        boolean good=attempt!=null&&attempt==pendingWebClose&&attempt.gate==this&&!attempt.consumed
+                &&attempt.lease==lease&&webCloseStarted&&!webTerminalConsumed&&webDomain==null
+                &&webClearSequence==attempt.expectedClearSequence&&!identityInvalid
+                &&taskId.equals(actualTask)&&attempt.snapshot.binding.equals(binding)
+                &&"closed".equals(status)&&attempt.snapshot.instance.equals(instance)
+                &&attempt.snapshot.epoch==epoch&&attempt.snapshot.display==display&&attempt.snapshot.window==window
+                &&hex64(callbackSha);
+        if(attempt!=null)attempt.consumed=true;
+        pendingWebClose=null;closedWebCompletion=null;
+        if(!good)return false;
+        closedWebCompletion=new ClosedWebCompletion(lease,attempt.snapshot,callbackSha);return true;
+    }
+    /** Unknown or failed closes consume the candidate permanently, including
+     * callbacks that arrive after cancellation or a later reconciliation. */
+    synchronized void abortWebClose(WebCloseAttempt attempt){
+        if(attempt!=null)attempt.consumed=true;
+        if(pendingWebClose!=null)pendingWebClose.consumed=true;
+        pendingWebClose=null;closedWebCompletion=null;claimedWebDomain=null;webCompletionCandidate=null;
+    }
+    /** The only post-retirement completion path. Inputs come from the actual
+     * controller cleanup objects; model/JSON claims cannot construct the private
+     * closed proof. This consumes the terminal attempt even when a check fails. */
+    synchronized Check terminalWebCheck(Object lease,NotesCompletionEvidence.Frame current,TaskAuthorization.Frame owner,
+            int step,String modelRun,boolean modelSuccess,boolean allCleanupKnown,boolean helperReleased,
+            boolean backgroundReleased,boolean scopeRechecked,boolean cancelled,
+            boolean processStarted,boolean processExitObserved,Integer exitCode,boolean receiptValid,
+            String workerTask,String workerGeneration,String workerReceiptSha){
+        ClosedWebCompletion closed=closedWebCompletion;closedWebCompletion=null;
+        boolean first=!webTerminalConsumed;webTerminalConsumed=true;
+        boolean snapshot=first&&WEB.equals(contract.kind)&&closed!=null&&closed.lease==lease
+                &&pendingWebClose==null&&webCloseStarted&&webDomain==null&&!identityInvalid&&sameDomain(current)
+                &&closed.snapshot.task.equals(taskId)&&closed.snapshot.owner.equals(contract.ownerSha256)
+                &&closed.snapshot.contract.equals(contract.contractSha256)&&closed.snapshot.authorization.equals(authorization.sha256)
+                &&Objects.equals(closed.snapshot.frameSha,webFrameSha(current))
+                &&step==closed.snapshot.step&&Objects.equals(modelRun,closed.snapshot.run);
+        boolean ownerBound=owner!=null&&owner.authorization==authorization&&taskId.equals(owner.taskId)&&owner.successAllowed();
+        boolean nativeBound=processStarted&&processExitObserved&&Integer.valueOf(0).equals(exitCode)&&receiptValid
+                &&taskId.equals(workerTask)&&id(workerGeneration)&&hex64(workerReceiptSha);
+        boolean verified=snapshot&&modelSuccess&&allCleanupKnown&&helperReleased&&backgroundReleased
+                &&scopeRechecked&&ownerBound&&!cancelled&&nativeBound;
+        Map<String,Object> value=evidence(current),terminal=new LinkedHashMap<String,Object>();
+        terminal.put("schema","hepta.web-terminal-completion.v1");terminal.put("task_id",taskId);
+        terminal.put("owner_sha256",contract.ownerSha256);terminal.put("contract_sha256",contract.contractSha256);
+        terminal.put("authorization_sha256",authorization.sha256);terminal.put("one_terminal_attempt",first);
+        terminal.put("closed_result_snapshot_verified",snapshot);terminal.put("live_action_domain_retired",webDomain==null&&webCloseStarted);
+        terminal.put("model_success_claim_verified_before_close",snapshot);terminal.put("all_cleanup_known",allCleanupKnown);
+        terminal.put("helper_released",helperReleased);terminal.put("background_released",backgroundReleased);
+        terminal.put("scope_rechecked_after_worker_exit",scopeRechecked);terminal.put("owner_rechecked_after_worker_exit",ownerBound);
+        terminal.put("cancelled",cancelled);terminal.put("native_parent_session_bound",nativeBound);
+        terminal.put("worker_task_id",workerTask);terminal.put("worker_generation",workerGeneration);
+        terminal.put("worker_receipt_sha256",workerReceiptSha);terminal.put("terminal_verified",verified);
+        terminal.put("grants_tool_authority",false);terminal.put("business_verified",false);
+        if(snapshot){
+            WebCompletionSnapshot result=closed.snapshot;
+            terminal.put("binding_sha256",result.binding);terminal.put("webview_instance",result.instance);
+            terminal.put("navigation_epoch",result.epoch);terminal.put("display_id",result.display);terminal.put("window_id",result.window);
+            terminal.put("background_generation",result.generation);terminal.put("final_observation_id",result.observation);
+            terminal.put("final_observation_sha256",result.frameSha);terminal.put("accepted_model_run_id",result.run);
+            terminal.put("accepted_model_step",result.step);terminal.put("actual_close_callback_canonical_sha256",closed.callbackSha);
+            value.put("official_page",result.page);
+            Map<String,Object> publicResult=new LinkedHashMap<String,Object>(result.result);
+            publicResult.put("completion_gate_accepted",verified);publicResult.put("action_domain_retired",true);
+            value.put("public_web_result",immutableMap(publicResult));
+        }
+        value.put("completion_verified",verified);value.put("live_observation_verified",false);
+        value.put("observation_chain_verified",snapshot);value.put("terminal_binding_and_cleanup_verified",verified);
+        value.put("terminal_web_completion",immutableMap(terminal));
+        List<String> absent=new ArrayList<String>(missing(current));
+        if(!verified)absent.add("closed_web_terminal_binding_or_cleanup_missing");
+        value.put("missing",verified?Collections.<String>emptyList():Collections.unmodifiableList(absent));
+        return new Check(verified,false,immutableMap(value));
+    }
+    private static String requiredText(Map<String,Object> value,String key){
+        Object item=value.get(key);require(item instanceof String&&!((String)item).isEmpty(),"required provider text "+key);return (String)item;
+    }
+    private static long requiredInteger(Map<String,Object> value,String key){
+        Object item=value.get(key);require(item instanceof Integer||item instanceof Long,"required provider integer "+key);return ((Number)item).longValue();
+    }
+    private static boolean hex64(String value){return value!=null&&value.matches("[0-9a-f]{64}");}
+    private static Map<String,Object> immutableMap(Map<String,Object> value){
+        @SuppressWarnings("unchecked") Map<String,Object> copy=(Map<String,Object>)immutableValue(value,0,new int[]{50000});
+        return copy;
+    }
+    private static Object immutableValue(Object value,int depth,int[] budget){
+        require(depth<=64&&--budget[0]>=0,"bounded immutable result evidence required");
+        if(value==null||value instanceof String||value instanceof Boolean
+                ||value instanceof Byte||value instanceof Short||value instanceof Integer||value instanceof Long
+                ||value instanceof java.math.BigInteger||value instanceof java.math.BigDecimal)return value;
+        if(value instanceof Double){require(!Double.isNaN((Double)value)&&!Double.isInfinite((Double)value),"finite result number");return value;}
+        if(value instanceof Float){require(!Float.isNaN((Float)value)&&!Float.isInfinite((Float)value),"finite result number");return value;}
+        if(value instanceof Map){
+            Map<String,Object> copy=new LinkedHashMap<String,Object>();
+            for(Map.Entry<?,?> entry:((Map<?,?>)value).entrySet()){
+                require(entry.getKey() instanceof String,"result evidence keys must be text");
+                copy.put((String)entry.getKey(),immutableValue(entry.getValue(),depth+1,budget));
+            }return Collections.unmodifiableMap(copy);
+        }
+        if(value instanceof List){
+            List<Object> copy=new ArrayList<Object>();
+            for(Object item:(List<?>)value)copy.add(immutableValue(item,depth+1,budget));
+            return Collections.unmodifiableList(copy);
+        }
+        throw new IllegalArgumentException("completion: unsupported mutable result evidence type");
+    }
+    private static String webFrameSha(NotesCompletionEvidence.Frame frame){
+        if(!domainShape(frame)||!id(frame.observationId)||frame.packageName==null||frame.nodesTruncated||frame.nodes==null)return null;
+        StringBuilder value=new StringBuilder("hepta.web-final-native-frame.v1");
+        webField(value,frame.observationId);webField(value,frame.packageName);webField(value,frame.windowId);
+        webField(value,frame.displayId);webField(value,frame.backgroundGeneration);webField(value,frame.windowType);
+        webField(value,frame.metadataObserved);webField(value,frame.nodesTruncated);webField(value,frame.nodes.size());
+        for(NotesCompletionEvidence.Node node:frame.nodes){
+            if(node==null||node.childText==null)return null;
+            webField(value,node.id);webField(value,node.packageName);webField(value,node.text);webField(value,node.label);
+            webField(value,node.viewId);webField(value,node.inputTextSha256);webField(value,node.left);webField(value,node.top);
+            webField(value,node.right);webField(value,node.bottom);webField(value,node.editable);webField(value,node.clickable);
+            webField(value,node.scrollable);webField(value,node.enabled);webField(value,node.password);
+            webField(value,node.observedAppTreeSignature);webField(value,node.childText.fingerprint);webField(value,node.childText.visited);
+        }
+        return hash(value.toString());
+    }
+    private static void webField(StringBuilder out,Object value){
+        if(value==null){out.append("|-1:");return;}String text=String.valueOf(value);out.append('|').append(text.length()).append(':').append(text);
+    }
+    synchronized void bindWebDomain(WebTaskDomain value){
+        if(webCloseStarted){abortWebClose(pendingWebClose);throw new IllegalArgumentException("completion: web action domain is retired");}
+        webCompletionCandidate=null;claimedWebDomain=null;
+        require(value!=null&&WEB.equals(contract.kind)&&taskId.equals(value.taskId)
+                &&contract.ownerSha256.equals(value.ownerSha)&&authorization.sha256.equals(value.authorizationSha),
+                "web observation does not belong to the current immutable authorization");
+        webDomain=value;
+    }
+    synchronized void clearWebDomain(){
+        webDomain=null;claimedWebDomain=null;webCompletionCandidate=null;webClearSequence++;
+        if(pendingWebClose==null)closedWebCompletion=null;
+    }
+    WebTaskDomain webDomainFor(NotesCompletionEvidence.Frame frame){
+        if(!"official_csair_flight_owner.v1".equals(contract.recognition)
+                &&!"natural_csair_flight_owner.v1".equals(contract.recognition)
+                &&!"official_mi_product_owner.v1".equals(contract.recognition))return null;
+        require(!webCloseStarted&&webDomain!=null&&frame!=null&&webDomain.observationId.equals(frame.observationId)
+                &&webDomain.generation.equals(frame.backgroundGeneration)&&webDomain.displayId==frame.displayId
+                &&webDomain.windowId==frame.windowId,"current official page evidence is unavailable");
+        return webDomain;
+    }
     public TaskCompletionGate(String task,String owner,TaskAuthorization authorization){
-        require(id(task),"task identity required");taskId=task;contract=Contract.parse(owner,authorization);
+        require(id(task),"task identity required");taskId=task;contract=Contract.parse(owner,authorization);this.authorization=authorization;
     }
     public void bindInstalled(NotesCompletionEvidence.Installed value){
         require(installed==null&&!launchProved,"installed completion identity already bound");installed=value;
     }
-    public void invalidateInstalled(String reason){identityInvalid=true;identityFailure=reason==null?"installed_identity_unavailable":reason;}
-    public void observed(NotesCompletionEvidence.Frame frame){
+    public synchronized void invalidateInstalled(String reason){identityInvalid=true;identityFailure=reason==null?"installed_identity_unavailable":reason;}
+    public synchronized void observed(NotesCompletionEvidence.Frame frame){
+        if(WEB.equals(contract.kind)){
+            if(webCloseStarted)abortWebClose(pendingWebClose);
+            else if(webCompletionCandidate!=null&&!Objects.equals(webCompletionCandidate.frameSha,webFrameSha(frame))){
+                webCompletionCandidate=null;claimedWebDomain=null;
+            }
+        }
         if(!domainShape(frame))return;
         if(!domainBound){displayId=frame.displayId;generation=frame.backgroundGeneration;domainBound=true;}
         if(!sameDomain(frame)){identityInvalid=true;identityFailure="observation_display_generation_changed";return;}
-        if(NOTES.equals(contract.kind)&&launchProved&&!editorObserved&&body(frame).matched){
-            editorObserved=true;proofs.add(proof("editor_body_observed",0,null,frame,frame));
+        if(!NOTES.equals(contract.kind)||!launchProved||identityInvalid||installed==null)return;
+        if(!editorObserved&&body(frame).matched){
+            editorObserved=true;editorObservationId=frame.observationId;
+            proofs.add(proof("editor_body_observed",0,null,frame,frame));
+        }
+        // Saving may become observable after an app switch or a later reobserve.
+        // The current complete list is evidence; no particular navigation API or
+        // accepted action is itself a save acknowledgement. Prior task-bound
+        // create/body proof and the later model click/reopened body remain required.
+        if(editorObserved&&!listObserved){
+            NotesCompletionEvidence.ListEvidence list=NotesCompletionEvidence.list(frame,contract.body);
+            if(list.matched){
+                listObserved=true;Map<String,Object> p=proof("post_create_observed_list",0,null,null,frame);
+                p.put("editor_observation_id",editorObservationId);p.put("list_body_evidence",list.evidence());
+                proofs.add(p);
+            }
         }
     }
-    public void action(int step,String run,ActionDecision action,boolean accepted,boolean dispatched,boolean stale,
+    public synchronized void action(int step,String run,ActionDecision action,boolean accepted,boolean dispatched,boolean stale,
                        NotesCompletionEvidence.Frame before,NotesCompletionEvidence.Frame after,Map<String,Object> fixed){
         require(step>0&&step<=20&&id(run)&&action!=null&&before!=null&&after!=null,"actual bounded model/action observations required");
+        require(action.toolChildOrigin==null,"tool children require their separate parent-bound proof path");
         require(action.observationId.equals(before.observationId),"action must bind its actual before observation");
+        if(WEB.equals(contract.kind)){webCompletionCandidate=null;claimedWebDomain=null;}
         observed(before);
         if(!domainShape(before)||!domainShape(after)){observed(after);return;}
         if(!sameDomain(before)||!sameDomain(after)){identityInvalid=true;identityFailure="action_display_generation_changed";return;}
@@ -94,26 +358,92 @@ public final class TaskCompletionGate {
         if(!NOTES.equals(contract.kind)){observed(after);return;}
         NotesCompletionEvidence.BodyEvidence beforeBody=body(before),afterBody=body(after);
         NotesCompletionEvidence.ListEvidence beforeList=NotesCompletionEvidence.list(before,contract.body),afterList=NotesCompletionEvidence.list(after,contract.body);
+        // A pre-existing full body in the actual before editor/list cannot prove
+        // that the new draft, rather than an old identical item, was persisted.
+        // The nonunique result comes only after the provider has validated the
+        // real list scope and found multiple complete executable body matches.
+        boolean beforeListBody=beforeList.matched||"complete_body_list_item_is_not_unique".equals(beforeList.missing);
         if("notes.create".equals(action.action)&&contract.body.equals(action.text)&&!launchProved
-                &&fixedMatches(action,run,before,fixed,true)&&!beforeBody.matched){
+                &&fixedMatches(action,run,before,fixed,true)&&(beforeBody.matched||beforeListBody)){
+            priorVisibleBodyCollision=true;Map<String,Object> p=proof("prior_visible_body_collision",step,run,before,after);
+            p.put("before_editor_body_matched",beforeBody.matched);p.put("before_list_body_evidence",beforeList.evidence());
+            p.put("unobserved_prior_notes_known",false);proofs.add(p);
+        }
+        if("notes.create".equals(action.action)&&contract.body.equals(action.text)&&!launchProved
+                &&fixedMatches(action,run,before,fixed,true)&&!beforeBody.matched&&!beforeListBody&&!priorVisibleBodyCollision){
             launchProved=true;Map<String,Object> p=proof("model_bound_notes_launch",step,run,before,after);
             p.put("attempt_id",fixed.get("attempt_id"));p.put("payload_sha256",contract.bodySha256);proofs.add(p);
+            parentCreateStep=step;parentCreateRun=run;parentCreateAttempt=(String)fixed.get("attempt_id");
+            parentCreateBefore=before.observationId;parentCreateAfter=after.observationId;
         }else if(editorObserved&&!listObserved&&("back".equals(action.action)||"click".equals(action.action))
                 &&NotesCompletionEvidence.NOTES.equals(action.packageName)&&beforeBody.matched&&afterList.matched){
-            listObserved=true;proofs.add(proof("editor_to_observed_list",step,run,before,after));
+            listObserved=true;Map<String,Object> p=proof("editor_to_observed_list",step,run,before,after);
+            p.put("list_body_evidence",afterList.evidence());proofs.add(p);
         }else if(listObserved&&!reopened&&"click".equals(action.action)&&NotesCompletionEvidence.NOTES.equals(action.packageName)
                 &&beforeList.matched&&Objects.equals(beforeList.item.nodeId,action.nodeId)
                 &&Objects.equals(beforeList.item.label,action.nodeLabel)&&afterBody.matched){
-            reopened=true;Map<String,Object> p=proof("same_observed_list_item_reopened",step,run,before,after);
-            p.put("node_id",action.nodeId);p.put("node_label",action.nodeLabel);p.put("body_raw_exact",afterBody.rawExact);proofs.add(p);
+            reopened=true;reopenActor="model";Map<String,Object> p=proof("same_observed_list_item_reopened",step,run,before,after);
+            p.put("node_id",action.nodeId);p.put("node_label",action.nodeLabel);p.put("body_raw_exact",afterBody.rawExact);
+            p.put("list_body_evidence",beforeList.evidence());proofs.add(p);
         }
         observed(after);
     }
+    /** Declares the supported high-level mode; it adds no authority. Draft-only,
+     * unknown goals and insufficient primitive permissions retain draft behavior. */
+    public boolean notesCreateWorkflowRequested(TaskAuthorization.Frame frame){
+        return frame!=null&&frame.authorization==authorization&&taskId.equals(frame.taskId)
+                &&NOTES.equals(contract.kind)&&contract.body!=null&&contract.body.length()<95
+                &&frame.allows("notes.create")&&frame.allows("back")&&frame.allows("click");
+    }
+    public NotesCreateWorkflow.Grant notesCreateWorkflow(int step,String run,ActionDecision parent,
+            NotesCreateWorkflow.Observation created,TaskAuthorization.Frame frame){
+        if(!notesCreateWorkflowRequested(frame)||workflowGrant!=null||parent==null||parent.toolChildOrigin!=null
+                ||!"notes.create".equals(parent.action)||step!=parentCreateStep||!Objects.equals(run,parentCreateRun)
+                ||!Objects.equals(parent.observationId,parentCreateBefore)||!contract.body.equals(parent.text)
+                ||created==null||!Objects.equals(created.frame.observationId,parentCreateAfter)
+                ||!launchProved||!editorObserved||identityInvalid||priorVisibleBodyCollision||installed==null||!sameDomain(created.frame)
+                ||!body(created.frame).matched)return null;
+        workflowGrant=new NotesCreateWorkflow.Grant(taskId,step,run,parentCreateBefore,parentCreateAfter,parentCreateAttempt,
+                contract,authorization,installed,displayId,generation);
+        return workflowGrant;
+    }
+    /** Consumes a real in-process child chain separately from model-click proof.
+     * Serialized workflow_verified/model text can never call this path. */
+    public boolean notesCreateWorkflowCompleted(NotesCreateWorkflow.Result result,NotesCompletionEvidence.Frame current){
+        require(result!=null&&workflowGrant!=null&&result.grant==workflowGrant&&!workflowProofConsumed,
+                "workflow result belongs to another or consumed parent");
+        workflowProofConsumed=true;workflowEvidence=result.evidence();observed(current);
+        boolean good=NOTES.equals(contract.kind)&&!identityInvalid&&installed==workflowGrant.installed
+                &&launchProved&&editorObserved&&sameDomain(current)&&body(current).matched
+                &&result.stableReadback!=null&&current.observationId.equals(result.stableReadback.frame.observationId)
+                &&result.completeFor(workflowGrant);
+        workflowCompletionAccepted=good;if(!good)return false;
+        workflowVerifiedObservationId=current.observationId;
+        listObserved=true;reopened=true;reopenActor="tool_child";
+        Map<String,Object> p=proof("tool_child_same_observed_list_item_reopened",workflowGrant.parentStep,
+                workflowGrant.parentRunId,result.initial.frame,result.stableReadback.frame);
+        p.put("actor_kind","tool_child");p.put("model_issued",false);p.put("workflow_id",workflowGrant.workflowId);
+        p.put("parent_fixed_intent_attempt_id",workflowGrant.attemptId);p.put("workflow_evidence",workflowEvidence);proofs.add(p);
+        return true;
+    }
+    /** Controller-owned completion is available only for this consumed parent
+     * workflow and its actual stable readback. It is not a model success claim. */
+    public boolean controllerWorkflowReady(NotesCompletionEvidence.Frame current){
+        return workflowCompletionAccepted&&workflowProofConsumed&&workflowGrant!=null
+                &&current!=null&&Objects.equals(workflowVerifiedObservationId,current.observationId)&&verified(current);
+    }
+    public String controllerCompletionSummary(){return "已保存并重新打开这条笔记，正文核对一致。";}
     public Check successClaim(int step,String run,NotesCompletionEvidence.Frame current){return successClaim(step,run,current,true);}
-    public Check successClaim(int step,String run,NotesCompletionEvidence.Frame current,boolean finalObservationStable){
+    public synchronized Check successClaim(int step,String run,NotesCompletionEvidence.Frame current,boolean finalObservationStable){
         require(step>0&&step<=20&&id(run),"completion claim native identity required");observed(current);
         boolean verified=finalObservationStable&&verified(current);Map<String,Object> claim=proof("native_done_success_claim",step,run,current,current);
         claim.put("completion_verified",verified);claims.add(claim);
+        if(WEB.equals(contract.kind)){
+            webCompletionCandidate=null;claimedWebDomain=null;
+            if(verified&&!webCloseStarted){
+                webCompletionCandidate=new WebCompletionSnapshot(this,webDomain,current,step,run);claimedWebDomain=webDomain;
+            }
+        }
         if(!verified)rejectedSuccess++;
         Map<String,Object> value=evidence(current);value.put("check_step",step);value.put("check_model_run_id",run);
         value.put("model_reported_success",true);value.put("accepted_as_completed",verified);value.put("final_observation_stable",finalObservationStable);
@@ -121,9 +451,37 @@ public final class TaskCompletionGate {
         value.put("retry_allowed",!verified&&rejectedSuccess<MAX_REJECTED_SUCCESS);
         return new Check(verified,!verified&&rejectedSuccess<MAX_REJECTED_SUCCESS,value);
     }
-    public boolean verified(NotesCompletionEvidence.Frame current){
+    public synchronized boolean verified(NotesCompletionEvidence.Frame current){
+        if(WEB.equals(contract.kind))return !webCloseStarted&&domainBound&&!identityInvalid&&sameDomain(current)&&webDomain!=null
+                &&webDomain.observationId.equals(current.observationId)
+                &&webDomain.generation.equals(current.backgroundGeneration)&&webDomain.displayId==current.displayId
+                &&webDomain.windowId==current.windowId&&webDomain.resultReady();
         return NOTES.equals(contract.kind)&&domainBound&&!identityInvalid&&installed!=null
                 &&launchProved&&editorObserved&&listObserved&&reopened&&sameDomain(current)&&body(current).matched;
+    }
+    /** Read-only existing evidence for an execution restriction. This grants no action
+     * and does not alter any completion transition or provider predicate. */
+    public static final class NotesPhase {
+        public final boolean domainValid,launchProved,editorObserved,listObserved,reopened,currentBody;
+        public final String currentListItem;
+        private NotesPhase(boolean valid,boolean launch,boolean editor,boolean list,boolean reopened,
+                           boolean currentBody,String item){
+            domainValid=valid;launchProved=launch;editorObserved=editor;listObserved=list;
+            this.reopened=reopened;this.currentBody=currentBody;currentListItem=item;
+        }
+        /** Current provider facts, independent of the cumulative task phase. */
+        public String currentSurface(){
+            if(!domainValid)return "unverified";
+            if(currentBody&&currentListItem==null)return "verified_note_editor";
+            if(!currentBody&&currentListItem!=null)return "verified_note_list";
+            return "unverified";
+        }
+    }
+    public NotesPhase notesPhase(NotesCompletionEvidence.Frame current){
+        boolean valid=NOTES.equals(contract.kind)&&domainBound&&!identityInvalid&&installed!=null&&sameDomain(current);
+        NotesCompletionEvidence.ListEvidence list=valid?NotesCompletionEvidence.list(current,contract.body):null;
+        return new NotesPhase(valid,launchProved,editorObserved,listObserved,reopened,
+                valid&&body(current).matched,list!=null&&list.matched?list.item.nodeId:null);
     }
     public Map<String,Object> prompt(NotesCompletionEvidence.Frame current){
         Map<String,Object> o=new LinkedHashMap<String,Object>();o.put("schema",SCHEMA);o.put("kind",contract.kind);
@@ -132,23 +490,48 @@ public final class TaskCompletionGate {
         o.put("missing",missing(current));o.put("rejected_success_claims",rejectedSuccess);o.put("max_rejected_success_claims",MAX_REJECTED_SUCCESS);
         if(NOTES.equals(contract.kind)){
             o.put("notes_launch_observed",launchProved);o.put("editor_body_observed",editorObserved);o.put("list_observed",listObserved);
+            o.put("prior_visible_body_collision",priorVisibleBodyCollision);o.put("unobserved_prior_notes_known",false);
             o.put("same_list_item_reopened",reopened);
-        }else if(WEB.equals(contract.kind))o.put("web_query_dispatched",webDispatched);
+            if(reopenActor!=null)o.put("reopen_actor_kind",reopenActor);
+            if(workflowEvidence!=null){o.put("notes_create_workflow_verified",workflowCompletionAccepted);
+                o.put("notes_create_workflow_stop_reason",workflowEvidence.get("stop_reason"));}
+            o.put("progress_scope","cumulative_task_evidence_not_current_screen");
+            NotesPhase facts=notesPhase(current);
+            o.put("current_surface",facts.currentSurface());o.put("current_list_item_node_id",facts.currentListItem);
+            o.put("current_editor_body_matched",facts.currentBody);
+        }else if(WEB.equals(contract.kind)){
+            o.put("web_query_dispatched",webDispatched||webDomain!=null&&webDomain.queryDispatched());
+            if(webDomain!=null)o.put("official_page",webDomain.promptEvidence());
+        }
         o.put("writes_required_for_unknown_or_read_only_goal",false);o.put("grants_tool_authority",false);return o;
     }
     public Map<String,Object> evidence(NotesCompletionEvidence.Frame current){
         Map<String,Object> o=prompt(current);o.put("task_id",taskId);o.put("contract",contract.evidence());
+        if(WEB.equals(contract.kind)&&webDomain!=null)o.put("official_page",webDomain.evidence());
         o.put("proofs",new ArrayList<Map<String,Object>>(proofs));o.put("model_success_claims",new ArrayList<Map<String,Object>>(claims));
         o.put("identity_failure",identityFailure);o.put("display_id",domainBound?displayId:null);o.put("background_generation",generation);
+        if(workflowEvidence!=null)o.put("notes_create_workflow",workflowEvidence);
         o.put("persistent_storage_bytes_verified",false);o.put("new_database_item_identity_verified",false);
+        if(WEB.equals(contract.kind)&&webDomain!=null&&webDomain.resultReady()){
+            Map<String,Object> result=new LinkedHashMap<String,Object>(webDomain.resultRecord());
+            result.put("completion_gate_accepted",verified(current));o.put("public_web_result",result);
+        }
         if(NOTES.equals(contract.kind)){NotesCompletionEvidence.BodyEvidence v=body(current);o.put("current_editor_raw_exact",v.rawExact);o.put("current_body_evidence",bodyEvidence(v));
-            NotesCompletionEvidence.ListEvidence list=NotesCompletionEvidence.list(current,contract.body);o.put("current_list_match",list.matched);o.put("current_list_missing",list.missing);}
+            NotesCompletionEvidence.ListEvidence list=NotesCompletionEvidence.list(current,contract.body);o.put("current_list_match",list.matched);o.put("current_list_missing",list.missing);
+            o.put("current_list_evidence",list.evidence());}
         return o;
     }
-    public String completionSummary(){return "已核验本次正文进入笔记编辑器、返回列表并点击同一可见条目重新打开；存储原始字节未核验。";}
+    public String completionSummary(){
+        if(WEB.equals(contract.kind)&&webDomain!=null&&webDomain.resultReady()){
+            Map<String,Object> value=webDomain.resultRecord();
+            return "已核对小米官网的 "+value.get("model_raw")+" 页面展示价：人民币 "+value.get("amount_decimal")+" 元。";
+        }
+        return "已核验本次正文进入笔记编辑器、返回列表并点击同一可访问正文条目重新打开；列表视觉裁切与存储原始字节未核验。";
+    }
     public String incompleteSummary(){
         if(NOTES.equals(contract.kind))return "未完成验证：缺少本次笔记保存、列表或同一条目重新打开的完整证据。";
-        if(WEB.equals(contract.kind))return webDispatched?"已发起网页查询，但尚无实际结果证明，任务部分完成。":"未确认网页查询及结果，任务未验证完成。";
+        if("official_mi_product_owner.v1".equals(contract.recognition))return "尚未取得同一商品详情页、公开价和原生模型导航的完整证据，商品查询未验证完成。";
+        if(WEB.equals(contract.kind))return webDispatched||webDomain!=null&&webDomain.queryDispatched()?"已发起网页查询，但尚无实际结果证明，任务部分完成。":"未确认网页查询及结果，任务未验证完成。";
         return "模型提出结束，但本次目标没有可用的完成验证，任务部分完成；请核对实际状态。";
     }
     private List<String> missing(NotesCompletionEvidence.Frame current){
@@ -156,13 +539,22 @@ public final class TaskCompletionGate {
         if(identityInvalid)out.add("observation_or_installed_identity_invalid");
         if(NOTES.equals(contract.kind)){
             if(installed==null)out.add("installed_notes_identity_unavailable");
+            if(priorVisibleBodyCollision)out.add("preexisting_visible_body_cannot_prove_new_note_saved");
             if(!launchProved)out.add("model_bound_notes_create_with_owner_body_missing");
             if(!editorObserved)out.add("actual_editor_body_missing");
             if(!listObserved)out.add("save_then_real_list_with_unique_body_item_missing");
             if(!reopened)out.add("model_click_same_list_item_then_reopened_body_missing");
             if(!body(current).matched)out.add("current_editor_body_missing");
         }else if(WEB.equals(contract.kind)){
-            if(!webDispatched)out.add("model_bound_web_query_dispatch_missing");out.add("web_results_provider_unavailable");
+            if("official_mi_product_owner.v1".equals(contract.recognition)){
+                if(webDomain==null)out.add("current_bound_product_page_missing");
+                else if(!verified(current))out.add("same_product_native_result_and_actual_model_navigation_missing");
+            }else{
+                if(!webDispatched&&(webDomain==null||!webDomain.queryDispatched()))out.add("model_bound_web_query_dispatch_missing");
+                if("natural_csair_flight_owner.v1".equals(contract.recognition)||"official_csair_flight_owner.v1".equals(contract.recognition))
+                    out.add("actual_same_record_flight_results_not_yet_verified");
+                else out.add("web_results_provider_unavailable");
+            }
         }else out.add("complete_owner_goal_verifier_unavailable");
         return Collections.unmodifiableList(out);
     }

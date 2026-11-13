@@ -1,0 +1,118 @@
+{
+  "schema": "hepta.main57-host-map-null-fixture-repair.v1",
+  "status": "source_only_not_executed",
+  "base": {
+    "bytes": 148415,
+    "sha256": "9d0641663811526ebfacef8f8695727ea95c73825abfd422b5123ab64bcf9067",
+    "git_blob_sha": "0ca8e273164ea7dac5447cb1677d06af0bbe8dc3"
+  },
+  "successor": {
+    "bytes": 154154,
+    "sha256": "e0cc2a474545623cd8e79aaa73afb130f5dc8733efc43f521ad909df0ec384a2",
+    "git_blob_sha": "348d62b28b8930b05d3f401c06557692e7c3081e"
+  },
+  "ordered_replacements": [
+    {
+      "before": "    private static JSONObject observationProof(JSONObject input,JSONObject before,JSONArray beforeNative,\n",
+      "after": "    /** Desktop-only JSON-java Map constructor compatibility for these archived captures.\n     * Android wraps a Java-null Map value as JSONObject.NULL; the pinned desktop\n     * 20240303 constructor omits that key. Validate the complete original OWNER\n     * compiler evidence first, then derive a copy with only that representation\n     * changed. This never changes archived bytes or production binding admission. */\n    private static JSONObject hostObservationCapture(JSONObject original)throws Exception{\n        JSONObject binding=original.getJSONObject(\"binding\"),authorization=binding.getJSONObject(\"authorization\");\n        Map<String,Object> compiled=TaskAuthorization.parse(binding.getString(\"owner\")).evidence();\n        if(!compiled.containsKey(\"find_query\")||compiled.get(\"find_query\")!=null\n                ||!authorization.has(\"find_query\")||authorization.get(\"find_query\")!=JSONObject.NULL)\n            throw new IllegalArgumentException(\"exact archived explicit-null find_query required\");\n        JSONObject hostAuthorization=new JSONObject(compiled);\n        if(hostAuthorization.has(\"find_query\"))\n            throw new IllegalArgumentException(\"pinned desktop Map-null constructor semantics changed\");\n        JSONObject androidAuthorization=new JSONObject(hostAuthorization.toString()).put(\"find_query\",JSONObject.NULL);\n        if(!org.trillionnium.hepta.webprotocol.WebEvidenceBinding.canonical(androidAuthorization).equals(\n                org.trillionnium.hepta.webprotocol.WebEvidenceBinding.canonical(authorization)))\n            throw new IllegalArgumentException(\"complete archived original OWNER compiler evidence differs\");\n        JSONObject result=copy(original);\n        result.getJSONObject(\"binding\").getJSONObject(\"authorization\").remove(\"find_query\");\n        JSONObject restored=copy(result);\n        restored.getJSONObject(\"binding\").getJSONObject(\"authorization\").put(\"find_query\",JSONObject.NULL);\n        if(!org.trillionnium.hepta.webprotocol.WebDomCanonical.same(restored,original))\n            throw new IllegalArgumentException(\"host copy changed more than the one null representation\");\n        org.trillionnium.hepta.webprotocol.WebTaskPurpose.requireBinding(result.getJSONObject(\"binding\"));\n        return result;\n    }\n    private static boolean hostObservationCaptureRejects(JSONObject original)throws Exception{\n        try{hostObservationCapture(original);return false;}\n        catch(IllegalArgumentException|org.json.JSONException expected){return true;}\n    }\n    private static JSONObject observationProof(JSONObject input,JSONObject before,JSONArray beforeNative,\n",
+      "before_sha256": "9d0641663811526ebfacef8f8695727ea95c73825abfd422b5123ab64bcf9067",
+      "after_sha256": "d161717b383ea05264b7e3ca6bdb6bcc954753db3a27749e6639b920f2ffa675",
+      "count": 1
+    },
+    {
+      "before": "        final JSONObject first=new JSONObject(originals.getJSONObject(2).getString(\"raw_utf8\")).getJSONObject(\"capture\");\n        final JSONObject last=new JSONObject(originals.getJSONObject(3).getString(\"raw_utf8\")).getJSONObject(\"capture\");",
+      "after": "        final JSONObject originalFirst=new JSONObject(originals.getJSONObject(2).getString(\"raw_utf8\")).getJSONObject(\"capture\");\n        final JSONObject originalLast=new JSONObject(originals.getJSONObject(3).getString(\"raw_utf8\")).getJSONObject(\"capture\");\n        final JSONObject first=hostObservationCapture(originalFirst),last=hostObservationCapture(originalLast);",
+      "before_sha256": "d161717b383ea05264b7e3ca6bdb6bcc954753db3a27749e6639b920f2ffa675",
+      "after_sha256": "851b00f84d7afa3b822d124db383c70a3063df977aa8a58258a433a08eae4117",
+      "count": 1
+    },
+    {
+      "before": "            check(input.getBoolean(\"full_native_fixture_is_synthetic\"),\"positive full traversal is explicitly synthetic\");\n        });",
+      "after": "            check(input.getBoolean(\"full_native_fixture_is_synthetic\"),\"positive full traversal is explicitly synthetic\");\n            check(originalFirst.getJSONObject(\"binding\").getJSONObject(\"authorization\").has(\"find_query\")\n                    &&originalFirst.getJSONObject(\"binding\").getJSONObject(\"authorization\").get(\"find_query\")==JSONObject.NULL\n                    &&!first.getJSONObject(\"binding\").getJSONObject(\"authorization\").has(\"find_query\"),\n                    \"archived Android explicit-null remains; only the host copy uses omitted Java-null\");\n            String originalBinding=org.trillionnium.hepta.webprotocol.WebDomCanonical.sha256(originalFirst.getJSONObject(\"binding\"));\n            String hostBinding=org.trillionnium.hepta.webprotocol.WebDomCanonical.sha256(first.getJSONObject(\"binding\"));\n            check(!originalBinding.equals(hostBinding)&&hostBinding.equals(proof.getString(\"binding_sha256\")),\n                    \"derived proof binds the derived host capture, never the original FD binding hash\");\n            JSONObject missing=copy(originalFirst);missing.getJSONObject(\"binding\").getJSONObject(\"authorization\").remove(\"find_query\");\n            check(hostObservationCaptureRejects(missing),\"original missing null field is not accepted as an Android archive\");\n            JSONObject nonnull=copy(originalFirst);nonnull.getJSONObject(\"binding\").getJSONObject(\"authorization\").put(\"find_query\",\"unexpected\");\n            check(hostObservationCaptureRejects(nonnull),\"non-null original compiler field is never normalized away\");\n        });",
+      "before_sha256": "851b00f84d7afa3b822d124db383c70a3063df977aa8a58258a433a08eae4117",
+      "after_sha256": "821a7b165cd46a6ad5783392cc494e6a559d8718e85d374423c9598c2f7e3b9e",
+      "count": 1
+    },
+    {
+      "before": "                .put(\"existing_action_permit_tests_changed\",false).put(\"phone_query_or_business_verified\",false);\n    }\n    /** Desktop-only JSON-java",
+      "after": "                .put(\"existing_action_permit_tests_changed\",false).put(\"phone_query_or_business_verified\",false)\n                .put(\"host_json_map_null_compatibility\",new JSONObject()\n                    .put(\"schema\",\"hepta.host-json-map-null-compatibility.v1\")\n                    .put(\"desktop_json_version\",\"20240303\")\n                    .put(\"changed_path\",\"capture.binding.authorization.find_query\")\n                    .put(\"archived_value\",\"present explicit JSON null\")\n                    .put(\"derived_host_value\",\"key omitted by desktop JSONObject(Map)\")\n                    .put(\"complete_original_authorization_recompiled\",true)\n                    .put(\"restore_single_null_field_recovers_complete_original_capture\",true)\n                    .put(\"original_capture_fd_bytes_unchanged\",true)\n                    .put(\"all_four_complete_dom_raw_values_unchanged\",true)\n                    .put(\"production_require_binding_changed\",false)\n                    .put(\"original_binding_sha256\",\"427b3e7743e044dc06643468e976ba0fd47c27b28b21203473fd31738937dc53\")\n                    .put(\"derived_host_binding_sha256\",\"b56264d8894c3c3946437e9aab857c3ccf8453170396acfbff5e556411da1e69\")\n                    .put(\"derived_captures_are_original_fd_records\",false));\n    }\n    /** Desktop-only JSON-java",
+      "before_sha256": "821a7b165cd46a6ad5783392cc494e6a559d8718e85d374423c9598c2f7e3b9e",
+      "after_sha256": "69d41da9a0e67d63170c74f39e0c7d3d3e79e831c254ce8e811201c3428ac842",
+      "count": 1
+    },
+    {
+      "before": "        org.trillionnium.hepta.webprotocol.WebTaskPurpose.requireBinding(result.getJSONObject(\"binding\"));\n        return result;",
+      "after": "        if(!\"427b3e7743e044dc06643468e976ba0fd47c27b28b21203473fd31738937dc53\".equals(\n                org.trillionnium.hepta.webprotocol.WebEvidenceBinding.sha256(binding))\n                ||!\"b56264d8894c3c3946437e9aab857c3ccf8453170396acfbff5e556411da1e69\".equals(\n                org.trillionnium.hepta.webprotocol.WebEvidenceBinding.sha256(result.getJSONObject(\"binding\"))))\n            throw new IllegalArgumentException(\"exact original and derived host binding hashes required\");\n        org.trillionnium.hepta.webprotocol.WebTaskPurpose.requireBinding(result.getJSONObject(\"binding\"));\n        return result;",
+      "before_sha256": "69d41da9a0e67d63170c74f39e0c7d3d3e79e831c254ce8e811201c3428ac842",
+      "after_sha256": "e0cc2a474545623cd8e79aaa73afb130f5dc8733efc43f521ad909df0ec384a2",
+      "count": 1
+    }
+  ],
+  "original_actual_result": {
+    "bytes": 30361,
+    "sha256": "d66b4dcaf0eed2b650df9e88928a32ab5145608f600b868864c3925011d72532",
+    "git_blob_sha": "4f436784332e6a1bf7200cbaf105c28e17a55b29",
+    "path": "/home/alex/hepta-local-007f-20261111/v57-main-web-regression-host-r1/RESULT.json"
+  },
+  "original_stderr": {
+    "bytes": 1328,
+    "sha256": "7658bf88db3934278dfe73f1795f6ca30b272345c19ab600273fd22d9d6153d2",
+    "git_blob_sha": "b6bab9eabba9dfcc7ffc2435e8f6b7b99c356e10"
+  },
+  "actual_archived_input": {
+    "bytes": 879788,
+    "sha256": "56a2da5e560e38fbbcabd25214ff343503e6fc75cfbc4a5458bd897be155e5f0",
+    "git_blob_sha": "801c7145092578641b083c5e9b367b65ce5f512d"
+  },
+  "json_constructor_source": {
+    "repository": "stleary/JSON-java",
+    "ref": "20240303",
+    "path": "src/main/java/org/json/JSONObject.java",
+    "pin": {
+      "bytes": 107707,
+      "sha256": "e7ff98437abfc67e18765f4e810247ce9a908328b39dfe999d61a8eb17dca49c",
+      "git_blob_sha": "6494f93499226eb99a96a41a7671094e3dd6f7a8"
+    },
+    "behavior": "Map constructor skips entries whose Java value is null; parsed JSON explicit null is retained"
+  },
+  "production_evidence": {
+    "task_authorization": {
+      "bytes": 23598,
+      "sha256": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8",
+      "git_blob_sha": "346e1790710fa4f0d62a59053328733773c9fe61"
+    },
+    "task_purpose": {
+      "bytes": 6731,
+      "sha256": "92303867e09343ebcbb3620b9a5850bce683c1d94988d1e534dd272dcaea8647",
+      "git_blob_sha": "15f4d0cb484af754a00ed10580cd95d56455f434"
+    },
+    "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+    "authorization_sha256_independently_rebuilt": "7362e28a99e174f17c45f4070472c883a033c9bfcb9446f1cc19e2221e1edacc",
+    "binding": {
+      "original": "427b3e7743e044dc06643468e976ba0fd47c27b28b21203473fd31738937dc53",
+      "derived": "b56264d8894c3c3946437e9aab857c3ccf8453170396acfbff5e556411da1e69"
+    }
+  },
+  "scope": {
+    "production_595_modified": false,
+    "original_4_raw_bytes_modified": false,
+    "all_4_dom_raw_values_modified": false,
+    "other_capture_fields_modified": false,
+    "derived_host_captures_are_original_fd_records": false,
+    "require_binding_modified": false,
+    "old_79_cases_order_retained": true,
+    "new_suite": false,
+    "additional_assertions_in_existing_positive_case": 4,
+    "expected_cases": 79,
+    "expected_assertions": 215,
+    "actual_cases": null,
+    "actual_assertions": null
+  },
+  "notes": [
+    "Every original authorization is fully recompiled before adaptation.",
+    "Only an explicitly present find_query JSON null is compatible; missing or non-null original values are rejected.",
+    "The independent copy differs at this one key; restoring it must recover the complete original capture semantically.",
+    "Both original and derived binding hashes are fixed and checked; readonly proof explicitly binds the derived host capture.",
+    "Unarchived full 89-node traversal remains explicitly synthetic."
+  ]
+}

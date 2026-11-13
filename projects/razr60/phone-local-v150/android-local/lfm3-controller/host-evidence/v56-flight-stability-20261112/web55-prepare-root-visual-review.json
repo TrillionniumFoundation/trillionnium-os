@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.root-reviewed-web-start.v1",
+  "preparation_sha256": "5f1775993fbf13902ec1614500e3c497bb8d43ae34facf7fece7ded4a1ed45b9",
+  "case": "flight",
+  "instruction_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+  "release_manifest_sha256": "80fcde26cf76d2227deea1dfe1d6b4da35a4848c8a63c7322806ec17800641b0",
+  "prepared_screen_sha256": "6bffbf5212656e17fad614eaea4f034b9d27a069f335fd02a2cabb3dba6db3b5",
+  "prepared_window_dump_sha256": "c76cda522a90c97e91525ca83bbd2021453648cb7be4a353acac2e0d573999e8",
+  "start_point": [
+    180,
+    1114
+  ],
+  "start_bounds": [
+    48,
+    1042,
+    312,
+    1186
+  ],
+  "selected_packages": [
+    "com.motorola.stylus",
+    "org.trillionnium.hepta.webhelper"
+  ],
+  "actual_whole_frame_visual_review_completed": true,
+  "one_ordinary_start_authorized": true,
+  "phone_action_issued_by_review": false
+}

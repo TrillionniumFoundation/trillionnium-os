@@ -1,0 +1,168 @@
+{
+  "schema": "hepta.main55-original-core101-host-stage.v1",
+  "all_pass": false,
+  "exit_code": 1,
+  "source_root": "/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r1/source",
+  "source_file_count": 594,
+  "source_inventory_sha256": "cca8a99815bdcb17b50a86caca442608400e8637fc95e0841f124638fa8a838f",
+  "source_candidate_git": "012cf1a8457828d9d0d7867bfc8b2951c5d9e3e7",
+  "actual_unsigned_result": null,
+  "unsigned_build_prerequisite_required": false,
+  "source_materialized_here": true,
+  "source_commit": null,
+  "publication_pending": true,
+  "base_source_commit": "42d3a0f447807659c0f78c8273edee01dd1b734f",
+  "base_source_file_count": 589,
+  "host_check_count": 97,
+  "host_input_count": 418,
+  "nested_completion_stage_count": 0,
+  "nested18_are_within_core101": true,
+  "focused39_rerun": false,
+  "identity10_rerun": false,
+  "query40_rerun": false,
+  "separate_web_80_43_13_rerun": false,
+  "original_runner_sha256": "dc64aa551a0eddd6429ad3340db5445e9c00403a2110b48e1c05662f5d46ec3a",
+  "tools": {
+    "java": {
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+      "bytes": 14544,
+      "sha256": "bb70208200cb6538b877d80478141194a716edb591f4910ec106589291e99196",
+      "identity": [
+        66306,
+        34879305,
+        33261,
+        1,
+        14544,
+        1793283530000000000,
+        1794274474910109494
+      ]
+    },
+    "javac": {
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+      "bytes": 14592,
+      "sha256": "2aaf03d13aeb80b8269696f2dcd9f4937d7366bbc68f91fdc703cf157e8f39c4",
+      "identity": [
+        66306,
+        34879135,
+        33261,
+        1,
+        14592,
+        1793283530000000000,
+        1794274474788105274
+      ]
+    },
+    "cc": {
+      "path": "/usr/bin/x86_64-linux-gnu-gcc-15",
+      "bytes": 1305304,
+      "sha256": "b5f1b773a7c733738352000c92a077dc5852a1a2fc6d836b1e411be1e9ec5f88",
+      "identity": [
+        66306,
+        108008578,
+        33261,
+        1,
+        1305304,
+        1774174097000000000,
+        1791083705251606151
+      ],
+      "requested_path": "/usr/bin/cc"
+    },
+    "python": {
+      "path": "/usr/bin/python3.14",
+      "bytes": 7477160,
+      "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41",
+      "identity": [
+        66306,
+        108009763,
+        33261,
+        1,
+        7477160,
+        1787222518000000000,
+        1791083390422846841
+      ]
+    }
+  },
+  "steps": [
+    {
+      "name": "original-host-checks",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r1/source/tools/run_host_checks.py",
+        "--out",
+        "/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r1/host-checks"
+      ],
+      "cwd": "/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r1/source",
+      "pid": 1324746,
+      "exit_code": 1,
+      "timed_out": false,
+      "forced_kill": false,
+      "exit_observed": true,
+      "elapsed_seconds": 86.72962040698621,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r1/original-host-checks.stdout",
+        "bytes": 129,
+        "sha256": "d5466cbb9f173a4234680f14ad7cbf571964a06f0c50b1037ee57549ce9dc445",
+        "identity": [
+          66306,
+          58760394,
+          33152,
+          1,
+          129,
+          1794497495209713465,
+          1794497495209713465
+        ]
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r1/original-host-checks.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "identity": [
+          66306,
+          58760395,
+          33152,
+          1,
+          0,
+          1794497408530444031,
+          1794497408530444031
+        ]
+      },
+      "owned_group_cleanup_attempted": true,
+      "owned_group_absent_observed_after_failure": true,
+      "owned_group_cleanup_error": null
+    }
+  ],
+  "android_compiled_here": false,
+  "android_native_runtime_recompiled_here": false,
+  "original_host_native_contracts_executed": false,
+  "signed": false,
+  "published": false,
+  "phone_actions": 0,
+  "business_verified": false,
+  "started_epoch": 1794497407.934815,
+  "error": "RuntimeError: original core101 parent must exit normally",
+  "originals_unchanged": true,
+  "host_checks": {
+    "path": "/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r1/host-checks/HOST-CHECKS.json",
+    "bytes": 100301,
+    "sha256": "95d9d09a34a4613acdbe84582992020aea226996d0fb572be6b4ed9eac94ce25",
+    "identity": [
+      66306,
+      61754215,
+      33152,
+      1,
+      100301,
+      1794497495209713465,
+      1794497495209713465
+    ]
+  },
+  "actual_host_all_pass": false,
+  "actual_host_error": "task-completion failed: ",
+  "source_unchanged": true,
+  "base_source_unchanged": true,
+  "written_files_unchanged": true,
+  "finished_epoch": 1794497495.4242828,
+  "elapsed_seconds": 87.48946785926819,
+  "stage_sha256": "1b2d96a446312e64ce4a0c35ed82789a5b8f51d4f53385ceb6ed5d2dadab84c9",
+  "original_guard_count": 596,
+  "written_guard_count": 601
+}

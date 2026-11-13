@@ -192,6 +192,11 @@ final class QualificationScopeConfig {
             QualificationScope.require(value.uid>=10000&&value.uid<90000,"completion target must be an ordinary installed app");
             return new CompletionInstalledIdentity(value);
         }
+        static CompletionInstalledIdentity captureCalculator(Context context)throws Exception{
+            Installed value=Installed.capture(context,CalculatorGoalContract.PACKAGE);
+            QualificationScope.require(value.uid>=10000&&value.uid<90000,"Calculator input target must be an ordinary installed app");
+            return new CompletionInstalledIdentity(value);
+        }
         void verify(Context context)throws Exception{installed.verify(context);}
         Map<String,Object> evidence(){
             Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();value.put("source","ordinary_package_manager_and_full_apk_hash");

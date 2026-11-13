@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.root-helper5-failed-manual-whole-frame-review.v1",
+  "source_result_sha256": "cf8ac41e266fa7f8797411f29a3a079c238cd527ed4780a8bf5a85e634e0e8cc",
+  "source_png_sha256": "f81ec719c27f0cef9970ca9776371a36408570878cb38ae79060c1215dcba39e",
+  "source_xml_sha256": "83696c2a0838d4821e5bcedc3034c0f473adfcdc0443cc078ef58bcf8edac0c7",
+  "whole_frame_visual_review_completed": true,
+  "visual_input": {
+    "path": "/home/alex/hepta-local-007f-20261111/helper5-current53-mi-capture-r1-review-r1/after-page-full-frame.webp",
+    "bytes": 30404,
+    "sha256": "731048aad9028fbee06636edd59ac92ff1e49f0bd3360b484f6a54a6eb22a757",
+    "dimensions": [
+      600,
+      1467
+    ],
+    "quality": 70,
+    "whole_frame": true,
+    "lossy": true
+  },
+  "whole_frame_preview_payload_independently_verified": true,
+  "root_original_png_bytes_read": false,
+  "root_original_xml_bytes_read": false,
+  "native_failure_text": "只读采集未完成：DOM changed across visual callback",
+  "keyboard_or_modal_overlay": false,
+  "actual_failure_pair_analysis": {
+    "git_blob": "a96f08c03f481318110cd98150b58c311ffe94f9",
+    "bytes": 55920,
+    "sha256": "257e6fd42479f791ca300b44ef97ba03430a4418c151a6fbbde95c88287f9543",
+    "originals_unchanged": true
+  },
+  "diagnostic_count": 35,
+  "new_record_count": 2,
+  "successful_capture_count": 0,
+  "complete_instability_pair_count": 1,
+  "profile_name": "hepta_v2_0ed2d6440b6839e90b5a33c4255694c62e79058a5056b8fb3efdc371b1142d51",
+  "profile_known_from_actual_failed_records": true,
+  "prior_capture_to_profile_binding": false,
+  "business_verified": false,
+  "formal_lease_verified": false,
+  "phone_action_issued_by_review": false,
+  "scope": "The root actually viewed the complete 600x1467 lossy preview. Original complete PNG/XML remain hash-pinned to the actual result and are replayed by the reviewed retirement driver. The observed native failure text and lack of keyboard/modal justify only normal Back retirement of this failed manual session."
+}

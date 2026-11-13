@@ -1,0 +1,267 @@
+{
+  "schema": "hepta.main56-qualification-fixture-type-boundary-successor.v1",
+  "status": "source_only_pending_existing_core_host_execution",
+  "scope": "Four existing fixture/preparation files only. No production, assertion, core101 order/count or compiler flag change.",
+  "base_aggregate": {
+    "git_blob_sha": "d3bf59d91e5681fd5991c4bfef8587ba9a7b2a2d",
+    "bytes": 1320157,
+    "sha256": "66ac069a14b64db51d9f2d09bf52acc6a8d9dc93484f8c21e3c3276ac31c2f06"
+  },
+  "production_inputs": [
+    {
+      "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "git_blob_sha": "6200e5325ec1397abd73e9bfa99235c7b063935d",
+      "bytes": 129287,
+      "sha256": "53dc2765f2f0504a4ea16618a2e0b44c0d443dceeb3834f030098ae2cea26fba"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "git_blob_sha": "74a8db87e601cd5e3427dc614bd197184201837e",
+      "bytes": 41909,
+      "sha256": "647bea5db228059ae71f284cfb5e8d4cc38208df7ca5658a1027833f521f343d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
+      "git_blob_sha": "5d41e41c7e6c447f4dba598a12f21673c168603b",
+      "bytes": 23349,
+      "sha256": "503078f251696fb542912e5270efca13439ebcece4db8b3473e7fcb543b4fc2d"
+    }
+  ],
+  "files": [
+    {
+      "path": "tests/qualification-scope/prepare_fixture.py",
+      "base": {
+        "bytes": 10806,
+        "sha256": "ea087c1923ed205f5f0a39bfc0bc1e02b63fa2c72ec8fab7e73ebe2bdf628fdf",
+        "git_blob_sha": "7cf2b077e9e6558d9c2d03fa8e0cdc40b7a333a0"
+      },
+      "bytes": 11439,
+      "sha256": "3e259c4796752dd955df4a1bc8e9e16587c147c70f2d79f8755af2243140d00c",
+      "git_blob_sha": "667293678cd99beeabf82a6ae0965bdc3b137a25",
+      "raw_utf8": "\"\"\"Exact production dispatch/controller/config/UI code with explicit Android IO fakes.\n\nNo phone, model inference, Android runtime, OS permission or durable fsync claim.\nThe fake effect APIs count every actual production call; policy is not reimplemented.\n\"\"\"\nimport ast\nimport hashlib\nimport json\nfrom pathlib import Path\n\n\ndef section(text, start, end):\n    if text.count(start) != 1 or text.count(end) != 1:\n        raise RuntimeError(f'nonunique production extraction anchor: {start}')\n    i = text.index(start)\n    return text[i:text.index(end, i)]\n\n\ndef prepare(source, output):\n    source, output = Path(source), Path(output)\n    output.mkdir(parents=True, exist_ok=True)\n    pkg = source / 'src/org/trillionnium/hepta/local'\n    s = (pkg / 'HeptaAccessibilityService.java').read_text()\n    pieces = {\n        'service_interfaces_outcome': section(s, '    public interface ObservationCallback', '    private static volatile HeptaAccessibilityService live;'),\n        'web_binding': section(s, '    synchronized void bindWebFlightSession(', '    synchronized void bindBackgroundSession('),\n        'background_binding': section(s, '    synchronized void bindBackgroundSession(', '    private void refreshApps()'),\n        'app_catalogue': section(s, '    public AppCatalogueRanker.Page appCatalogue(', '    /** Each observation owns'),\n        'lease': section(s, '    public synchronized boolean acquireTask(', '    private boolean locked()'),\n        'scope_validate_dispatch': section(s, '    synchronized void bindQualificationScope(', '    private void coordinateClick('),\n        'node_graph': section(s, '    private static boolean hasAction(', '    /** Inspect window metadata only.'),\n        # Preserve each legacy-tested production method byte-for-byte; the new\n        # helper-only live-region implementation has a throwing type boundary below.\n        'node_identity': (section(s, '    private static String nodeSignature(', '    private NativeRegionCheck requireLiveNativeRegion(')\n                          + section(s, '    private static void requireSubmitWindow(', '    private static String fileSha256(')),\n        'strings': section(s, '    private static String string(', '\\n}'),\n    }\n    fixture = (Path(__file__).parent / 'ServiceFixture.template').read_text()\n    for name, code in pieces.items():\n        fixture = fixture.replace('{{' + name + '}}', code)\n    if '{{' in fixture:\n        raise RuntimeError('unfilled service fixture template')\n    (output / 'HeptaAccessibilityService.java').write_text(fixture)\n    snapshot_parts = {\n        'stale_type': section(s, '    /** Only freshness failures before an effect', '    /** Runs on the service thread'),\n        'graph_limits': section(s, '    private static final int MAX_NODES=', '\\n    private final Map<String,String> launchable='),\n        'node_graph': pieces['node_graph'],\n        'window_metadata': section(s, '    /** Read only the selected root\\'s window metadata;', '    private List<AccessibilityWindowInfo> windowsForDisplay('),\n        'snapshot': section(s, '    /** A background root comes only', '    private FlightNativeCheck requireLiveFlightNativeStability('),\n        'node_identity': pieces['node_identity'],\n        'strings': pieces['strings'],\n    }\n    fixture = (Path(__file__).parent / 'BackgroundObservationFixture.template').read_text()\n    for name, code in snapshot_parts.items():fixture=fixture.replace('{{'+name+'}}',code)\n    if '{{' in fixture:raise RuntimeError('unfilled background snapshot fixture')\n    (output / 'BackgroundObservationFixture.java').write_text(fixture)\n    # The unchanged background guard now uses the production canonical comparator.\n    # Extract its actual two pure methods, not a permissive equality stub.\n    web_protocol = source/'src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java'\n    binding_path = source/'src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java'\n    receipt_path = pkg/'WebEvidenceReceipt.java'\n    binding_raw, receipt_raw = binding_path.read_text(), receipt_path.read_text()\n    comparison_parts = {\n        'binding_canonical': section(binding_raw, '    public static String canonical(', '\\n}'),\n        'receipt_same': section(receipt_raw, '    static boolean same(', '    static String decode('),\n    }\n    (output/'WebEvidenceBinding.java').write_text(\"package org.trillionnium.hepta.webprotocol;\\nimport org.json.JSONArray;\\nimport org.json.JSONObject;\\nimport java.util.ArrayList;\\nimport java.util.Collections;\\nimport java.util.Iterator;\\n/** Exact production canonical comparison only; no binding, helper or lease construction. */\\npublic final class WebEvidenceBinding {\\n    private WebEvidenceBinding(){throw new AssertionError(\\\"comparison-only fixture\\\");}\\n\" + comparison_parts['binding_canonical'] + '\\n}\\n')\n    (output/'WebEvidenceReceipt.java').write_text(\"package org.trillionnium.hepta.local;\\nimport org.trillionnium.hepta.webprotocol.WebEvidenceBinding;\\n/** Exact production comparison only; no receipt or helper authority. */\\nfinal class WebEvidenceReceipt {\\n    private WebEvidenceReceipt(){throw new AssertionError(\\\"comparison-only fixture\\\");}\\n\" + comparison_parts['receipt_same'] + '}\\n')\n    (output/'WebRegionNativeBridge.java').write_text(\"package org.trillionnium.hepta.local;\\n/** Type-only legacy non-Web boundary. No native region evidence can be created. */\\nfinal class WebRegionNativeBridge {\\n    private WebRegionNativeBridge(){throw new AssertionError(\\\"legacy fixture has no Web native-region capability\\\");}\\n}\\n\")\n    (output/'WebFlightNativeStability.java').write_text(\"package org.trillionnium.hepta.local;\\n/** Type-only legacy non-Web boundary. No Flight stability permit can be created. */\\nfinal class WebFlightNativeStability {\\n    static final int MAX_NATIVE_NODES=512;\\n    private WebFlightNativeStability(){throw new AssertionError(\\\"legacy fixture has no Flight native-stability capability\\\");}\\n    static final class Permit {\\n        private Permit(){throw new AssertionError(\\\"legacy fixture has no Flight native-stability permit\\\");}\\n    }\\n}\\n\")\n    session = (pkg / 'LocalTaskSession.java').read_text()\n    session_parts = {\n        'schedule': section(session, '    public boolean schedule(final String owner,String source,String testNonceSha,long delayMillis)', '    /** The only caller is the positive button'),\n        'persist': section(session, '    private boolean persist(', '\\n}'),\n    }\n    fixture = (Path(__file__).parent / 'SessionFixture.template').read_text()\n    for name, code in session_parts.items():fixture=fixture.replace('{{'+name+'}}',code)\n    (output / 'LocalTaskSession.java').write_text(fixture)\n    ui = (pkg / 'MainActivity.java').read_text()\n    ui_parts = {\n        'binding': section(ui, '    @Override protected void onSaveInstanceState(', '    @Override protected void onNewIntent('),\n        'intent_start': section(ui, '    private void handleIntent(', '    private void runProbe('),\n    }\n    fixture = (Path(__file__).parent / 'UiFixture.template').read_text()\n    for name,code in ui_parts.items():fixture=fixture.replace('{{'+name+'}}',code)\n    (output / 'ScopeUiFixture.java').write_text(fixture)\n    pure=['BackgroundTaskTarget','NotesCreateWorkflow','NotesOwnerIntent','CalculatorTaskInputGuard','CalculatorGoalContract','CalculatorCompletionEvidence','NotesTaskPhaseGuard','TaskCompletionGate','NotesCompletionEvidence','FixedIntentAttemptGuard','LastModelDecisionProjection','TaskAuthorization','ActionDecision','ActionPolicy','ObservedTargetLabels','ObservedScrollActions','ObservedImeEnter','SubmitAttemptGuard','RecentActionProjection',\n          'PersistentActionPolicy','ImeVisibility','ObservationState','ObservedWindowMetadata','ObservedChildText',\n          'RepeatActionGuard','SameStateNoEffectGuard','DecisionGrammar','ModelProfile','LocalRuntimeConfig',\n          'ConservativeTokenBudget','AppCatalogueRanker','ObservedTextProjection','ObservedTransitionProjection',\n          'CompactTaskHistory','PromptActionDomain','RecoveryQuiescence','RecoveryJournalTransaction',\n          'QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','LocalTaskController','LocalInference','PhoneObservation']\n    if (pkg/'ObservedAppLabels.java').is_file():pure.append('ObservedAppLabels')\n    files=[pkg/(name+'.java') for name in dict.fromkeys(pure)]\n    web_fixture_source=source/'tests/web-flight/legacy-boundary/WebFlightDomain.java'\n    web_fixture_raw=web_fixture_source.read_bytes()\n    web_fixture_compile=output/'WebTaskDomain.java'\n    web_fixture_compile.write_bytes(web_fixture_raw)\n    if web_fixture_compile.read_bytes()!=web_fixture_raw or web_fixture_source.read_bytes()!=web_fixture_raw:\n        raise RuntimeError('Exact Web type-boundary compiler copy required')\n    files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java',web_protocol]\n    files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','FixedIntentDispatch','BrokerProtocol')]\n    files += sorted(output.glob('*.java'))\n    files += sorted((Path(__file__).parent/'fixtures').rglob('*.java'))\n    files += [Path(__file__).parent/'QualificationScopeHostTest.java',Path(__file__).parent/'BackgroundFreshnessHostTest.java']\n    record={'schema':'hepta.scope-host-extraction.v1','source_files':{n:hashlib.sha256((pkg/n).read_bytes()).hexdigest() for n in ['TaskAuthorization.java','HeptaAccessibilityService.java','LocalTaskSession.java','MainActivity.java','LocalTaskController.java','QualificationScope.java','QualificationScopeConfig.java']},\n        'extracted':{n:{'bytes':len(v.encode()),'sha256':hashlib.sha256(v.encode()).hexdigest()} for n,v in {**pieces,**comparison_parts,**session_parts,**ui_parts,**{'background_'+n:v for n,v in snapshot_parts.items()}}.items()},\n        'full_actual_classes':['TaskCompletionGate','NotesCompletionEvidence','LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles'],\n        'boundary':'Android IO and effect endpoints are fakes; production admission/dispatch and controller code is executed',\n        'web_fixture_boundary':'Explicit empty Web journal only; real Web OWNER/selection and every helper action/cleanup throw AssertionError; actual Web classes have their separate gate',\n        'background_fixture_boundary':'Explicit synthetic OWNER and seven-field owner_selected_initial_app Selection pass through the full actual PhoneObservation projection; the six-argument derived-owner constructor still throws',\n        'comparison_source_files':{str(p.relative_to(source)):hashlib.sha256(p.read_bytes()).hexdigest() for p in (binding_path,receipt_path,web_protocol)},\n        'web_native_fixture_boundary':'The original complete dispatch branch is retained; WebRegionNativeBridge, NativeRegionCheck, FlightNativeCheck, WebFlightNativeStability.Permit and the WebSession native-region/Flight endpoints are throwing type-only boundaries',\n        'web_fixture_compiler_copy':{'source_path':str(web_fixture_source.relative_to(source)),\n            'compiler_path':str(web_fixture_compile),'bytes':len(web_fixture_raw),\n            'sha256':hashlib.sha256(web_fixture_raw).hexdigest(),'byte_identical':True},\n        'phone_operations':False,'native_inference':False}\n    (output/'EXTRACTION.json').write_text(json.dumps(record,indent=2)+'\\n')\n    return files, record\n",
+      "patches": [
+        {
+          "why": "Keep selectedRoot, exact full readGraph and snapshotFlightNode; exclude live Service-only Flight implementation.",
+          "old": "        'snapshot': section(s, '    /** A background root comes only', '    private static String nodeSignature('),",
+          "new": "        'snapshot': section(s, '    /** A background root comes only', '    private FlightNativeCheck requireLiveFlightNativeStability('),"
+        },
+        {
+          "why": "Type-only Flight snapshot bound and unconstructible Permit; no native comparison or token capability.",
+          "old": "    session = (pkg / 'LocalTaskSession.java').read_text()\n",
+          "new": "    (output/'WebFlightNativeStability.java').write_text(\"package org.trillionnium.hepta.local;\\n/** Type-only legacy non-Web boundary. No Flight stability permit can be created. */\\nfinal class WebFlightNativeStability {\\n    static final int MAX_NATIVE_NODES=512;\\n    private WebFlightNativeStability(){throw new AssertionError(\\\"legacy fixture has no Flight native-stability capability\\\");}\\n    static final class Permit {\\n        private Permit(){throw new AssertionError(\\\"legacy fixture has no Flight native-stability permit\\\");}\\n    }\\n}\\n\")\n    session = (pkg / 'LocalTaskSession.java').read_text()\n"
+        },
+        {
+          "why": "Name explicit throwing boundary in extraction evidence without asserting tested Web authority.",
+          "old": "        'web_native_fixture_boundary':'The original complete dispatch branch is retained; WebRegionNativeBridge, NativeRegionCheck and both WebSession native-region endpoints are throwing type-only boundaries',",
+          "new": "        'web_native_fixture_boundary':'The original complete dispatch branch is retained; WebRegionNativeBridge, NativeRegionCheck, FlightNativeCheck, WebFlightNativeStability.Permit and the WebSession native-region/Flight endpoints are throwing type-only boundaries',"
+        }
+      ]
+    },
+    {
+      "path": "tests/qualification-scope/ServiceFixture.template",
+      "base": {
+        "bytes": 7641,
+        "sha256": "1833ce5c0d51445497aebcd578d2c005a8a03ac5c265c5842e8e8738e6dd49ab",
+        "git_blob_sha": "f547d6c0a4648327917e10dcdbf74960d58abfb1"
+      },
+      "bytes": 8230,
+      "sha256": "0b6b4d0986691ffc328f89f17b74ab055385f13b437acd562633ad1fca8532d2",
+      "git_blob_sha": "ad37011ca74b6c3bcb34687bff3e261a2858e6c0",
+      "raw_utf8": "package org.trillionnium.hepta.local;\nimport android.content.*;\nimport android.content.pm.*;\nimport android.graphics.Rect;\nimport android.os.*;\nimport android.view.Display;\nimport android.view.accessibility.*;\nimport org.json.*;\nimport java.io.*;\nimport java.nio.charset.StandardCharsets;\nimport java.security.MessageDigest;\nimport java.util.*;\n/** Only acquisition/observation/Android effects are IO fakes; extracted sections are production. */\npublic final class HeptaAccessibilityService extends android.content.Context {\n{{service_interfaces_outcome}}\n    /** Type-only legacy boundary; never a successful native-region recheck. */\n    static final class NativeRegionCheck {\n        private NativeRegionCheck(){throw new AssertionError(\"legacy fixture has no Web native-region evidence\");}\n    }\n    private NativeRegionCheck requireLiveNativeRegion(String taskId,PhoneObservation frame,AccessibilityNodeInfo clicked,\n            WebRegionNativeBridge bridge,Cancellation cancel)throws Exception{\n        throw new AssertionError(\"legacy fixture cannot execute a Web native-region recheck\");\n    }\n    /** Type-only legacy boundary; never a successful Flight native-stability recheck. */\n    static final class FlightNativeCheck {\n        private FlightNativeCheck(){throw new AssertionError(\"legacy fixture has no Flight native-stability evidence\");}\n    }\n    private FlightNativeCheck requireLiveFlightNativeStability(String taskId,PhoneObservation frame,ActionDecision action,\n            WebFlightNativeStability.Permit permit,Graph now,Cancellation cancel)throws Exception{\n        throw new AssertionError(\"legacy fixture cannot execute a Flight native-stability recheck\");\n    }\n    static HeptaAccessibilityService live;\n    static final int GLOBAL_ACTION_BACK=1,GLOBAL_ACTION_HOME=2;\n    final Handler main=new Handler(Looper.getMainLooper());\n    String lease;Runnable stopListener;QualificationScopeConfig.Bound taskScope;TaskAuthorization.Gate taskAuthorization;NotesTaskPhaseGuard taskNotesPhase;CalculatorTaskInputGuard taskCalculatorInput;BackgroundSession taskBackground;WebFlightSession taskWeb;SubmitAttemptGuard taskSubmitAttempts;FixedIntentAttemptGuard taskFixedIntentAttempts;\n    final java.util.concurrent.Executor backgroundIo=Runnable::run;\n    LocalTaskController ownedController;LocalInference testInference;\n    PhoneObservation current;Graph currentGraph;AppCatalogueRanker appDiscovery;\n    final Map<String,String> launchable=new LinkedHashMap<String,String>();\n    static final long MAX_OBSERVATION_AGE_MS=90000;\n    public AccessibilityNodeInfo root,node;\n    public int rootsRead,opens,navigations,gestures,observations;\n    public int mutateOnRoot=-1;public String mutateRootPackage;\n    public Runnable effectHook;public Intent lastStartedIntent;\n    public java.util.function.Supplier<List<PhoneObservation.Node>> observationRows;\n    public HeptaAccessibilityService(File files,PackageManager pm){super(files,pm);live=this;}\n    public static HeptaAccessibilityService connected(){return live;}\n    public synchronized LocalTaskController taskController(LocalModelEngine engine){if(ownedController==null)ownedController=new LocalTaskController(this,testInference);return ownedController;}\n{{lease}}\n    private boolean locked(){return false;}\n    private void refreshApps(){}\n{{web_binding}}\n{{background_binding}}\n{{app_catalogue}}\n    private AccessibilityNodeInfo selectedRoot(){return getRootInActiveWindow();}\n    public AccessibilityNodeInfo getRootInActiveWindow(){rootsRead++;if(rootsRead==mutateOnRoot&&root!=null)root.pkg=mutateRootPackage;return root;}\n    public void startActivity(Intent intent){lastStartedIntent=intent;opens++;if(effectHook!=null)effectHook.run();}\n    public boolean performGlobalAction(int action){navigations++;if(effectHook!=null)effectHook.run();return true;}\n    private void coordinateClick(String task,PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets,TaskAuthorization.Gate authorization,String modelRunId,Cancellation cancel,ActionCallback callback){gestures++;callback.onResult(new ActionOutcome(true,true,false,\"fake gesture\"));}\n    private Graph readGraph(){\n        if(root==null)throw new IllegalStateException(\"no root\");\n        Graph g=new Graph();g.packageName=root.pkg;g.windowId=root.windowId;g.displayId=root.window.display;g.backgroundGeneration=taskBackground==null?null:taskBackground.generation;g.backgroundSelectionRaw=taskBackground==null?null:taskBackground.selection.json().toString();g.backgroundOwnerSha=taskBackground==null?null:taskBackground.ownerSha256;g.rotation=0;g.bounds=new Rect(0,0,1080,2400);g.digest=\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\";return g;\n    }\n    public void prepare(String pkg){\n        root=new AccessibilityNodeInfo(pkg,7);node=new AccessibilityNodeInfo(pkg,7);node.text=\"测试\";node.editable=true;node.scrollable=true;\n        node.onAction=()->{if(effectHook!=null)effectHook.run();};\n        currentGraph=readGraph();currentGraph.refs.put(\"n0\",new NodeRef(node,observedChildText(node),readScrollActions(node)));\n        current=observation();\n    }\n    private PhoneObservation observation(){\n        String id=String.format(java.util.Locale.ROOT,\"%032x\",++observations);\n        String pkg=root==null?\"\":root.pkg;int window=root==null?-1:root.windowId;\n        ObservedWindowMetadata metadata=ObservedWindowMetadata.observed(new int[]{0,0,1080,2400},\"FrameLayout\",1,root==null?0:root.window.display,new int[]{0,0,1080,2400},\"Settings\");\n        List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();\n        if(node!=null)rows.add(new PhoneObservation.Node(\"n0\",node.pkg,\"TextView\",\"synthetic:id/entry\",node.text,\"\",new Rect(10,10,500,150),node.clickable,node.editable,node.scrollable,node.enabled,node.focused,node.password,observedChildText(node),readScrollActions(node),readImeEnter(node),inputTextHash(node),node.editable&&node.focused&&node.enabled&&!node.password&&readImeEnter(node).queryAllowed()&&submitAvailable(node.pkg,inputTextHash(node))));\n        if(observationRows!=null)rows=observationRows.get();\n        return new PhoneObservation(id,pkg,SystemClock.elapsedRealtime(),1080,2400,0,window,new Rect(0,0,1080,2400),new File(getFilesDir(),\"synthetic.png\"),\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",new ObservationState(\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",ImeVisibility.HIDDEN),metadata,false,rows,taskBackground==null?null:taskBackground.generation,taskBackground==null?null:taskBackground.selection.initialPackage,taskBackground==null?Collections.<String>emptyList():taskBackground.selection.allowedPackages,null,taskBackground==null?null:taskBackground.selection.json(),taskBackground==null?null:taskBackground.ownerSha256);\n    }\n    public void observe(String task,File directory,Cancellation cancel,long deadline,ObservationCallback callback){\n        current=observation();currentGraph=readGraph();if(node!=null)currentGraph.refs.put(\"n0\",new NodeRef(node,observedChildText(node),readScrollActions(node)));callback.onObservation(current);\n    }\n    public ActionOutcome execute(ActionDecision action)throws Exception{\n        final ActionOutcome[] box=new ActionOutcome[1];ObservedTargetLabels labels=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,current.id,current.packageName,java.util.Collections.singletonMap(\"n0\",node==null?\"\":node.text));\n        perform(lease,current,action,labels,taskAuthorization,\"dddddddddddddddddddddddddddddddd\",()->false,value->box[0]=value);return box[0];\n    }\n    public void enqueue(ActionDecision action,Cancellation cancel,ActionCallback callback){\n        ObservedTargetLabels labels=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,current.id,current.packageName,java.util.Collections.singletonMap(\"n0\",node==null?\"\":node.text));\n        perform(lease,current,action,labels,taskAuthorization,\"dddddddddddddddddddddddddddddddd\",cancel,callback);\n    }\n    public int effects(){return opens+navigations+gestures+(node==null?0:node.actions);}\n{{scope_validate_dispatch}}\n{{node_graph}}\n{{node_identity}}\n{{strings}}\n}\n",
+      "patches": [
+        {
+          "why": "Exact current Service signature as throwing non-Web fixture boundary; original dispatch kept.",
+          "old": "    static HeptaAccessibilityService live;\n",
+          "new": "    /** Type-only legacy boundary; never a successful Flight native-stability recheck. */\n    static final class FlightNativeCheck {\n        private FlightNativeCheck(){throw new AssertionError(\"legacy fixture has no Flight native-stability evidence\");}\n    }\n    private FlightNativeCheck requireLiveFlightNativeStability(String taskId,PhoneObservation frame,ActionDecision action,\n            WebFlightNativeStability.Permit permit,Graph now,Cancellation cancel)throws Exception{\n        throw new AssertionError(\"legacy fixture cannot execute a Flight native-stability recheck\");\n    }\n    static HeptaAccessibilityService live;\n"
+        }
+      ]
+    },
+    {
+      "path": "tests/qualification-scope/BackgroundObservationFixture.template",
+      "base": {
+        "bytes": 2286,
+        "sha256": "9a6804870db383738c206db711359dbd852db9632a4d8e82635d34125d6c68ca",
+        "git_blob_sha": "f0a7befce4b4c8390b50d6d9a83695a8cc60a5e2"
+      },
+      "bytes": 2313,
+      "sha256": "f5655ba51cfe217cfe4dcaf759d6bd58e7ec87f4a40dde7d2ba9ada23d62c3a6",
+      "git_blob_sha": "a739a4ba9c8d3ece8bae07cba6f6582a625598d0",
+      "raw_utf8": "package org.trillionnium.hepta.local;\nimport android.graphics.Rect;\nimport android.os.SystemClock;\nimport android.view.Display;\nimport android.view.accessibility.*;\nimport java.io.File;\nimport java.nio.charset.StandardCharsets;\nimport java.security.MessageDigest;\nimport java.util.*;\nimport org.json.JSONObject;\nimport org.json.JSONArray;\n/** Exact production root selection, graph traversal and identities; Android IO is explicit fake input. */\nfinal class BackgroundObservationFixture {\n    BackgroundSession background;\n    // This legacy IO fixture has no bound Web lease; actual Web paths have their own gate.\n    private final WebFlightSession taskWeb=null;\n    final List<AccessibilityWindowInfo> windows=new ArrayList<AccessibilityWindowInfo>();\n    AccessibilityNodeInfo foreground;\n    int foregroundReads,windowReads,sequence;\n    private BackgroundSession currentBackground(){return background;}\n    private AccessibilityNodeInfo getRootInActiveWindow(){foregroundReads++;return foreground;}\n    private List<AccessibilityWindowInfo> windowsForDisplay(int display){windowReads++;if(background!=null&&display!=background.displayId())throw new AssertionError(\"wrong display request\");return windows;}\n    private int rotation(int display){return 0;}\n    private ImeVisibility readImeVisibility(int window,int display){return ImeVisibility.HIDDEN;}\n    private boolean submitAvailable(String pkg,String text){return false;}\n    PhoneObservation snapshot(){\n        Graph g=readGraph();\n        try{return new PhoneObservation(String.format(Locale.ROOT,\"%032x\",++sequence),g.packageName,android.os.SystemClock.elapsedRealtime(),\n                1080,2400,g.rotation,g.windowId,g.bounds,new File(\"synthetic-only.png\"),QualificationScopeHostTest.H,g.digest,\n                g.state,g.windowMetadata,g.truncated,g.rows,g.backgroundGeneration,g.backgroundBootstrapPackage,g.backgroundAllowedPackages,g.collectionStats,\n                g.backgroundSelectionRaw==null?null:new JSONObject(g.backgroundSelectionRaw),g.backgroundOwnerSha);}\n        catch(org.json.JSONException invalid){throw new IllegalStateException(\"synthetic Selection JSON is invalid\",invalid);}\n        finally{g.close();}\n    }\n{{stale_type}}\n{{graph_limits}}\n{{node_graph}}\n{{window_metadata}}\n{{snapshot}}\n{{node_identity}}\n{{strings}}\n}\n",
+      "patches": [
+        {
+          "why": "The exact production Graph and snapshotFlightNode now name JSONArray.",
+          "old": "import org.json.JSONObject;\n",
+          "new": "import org.json.JSONObject;\nimport org.json.JSONArray;\n"
+        }
+      ]
+    },
+    {
+      "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/WebFlightSession.java",
+      "base": {
+        "bytes": 3353,
+        "sha256": "92c20a04bcc578e3154cf11717682e4c4ad46eaff5e72c57fe441f7e4df55615",
+        "git_blob_sha": "612e1da1aa0774d57b891d04fa1ade97a46d529b"
+      },
+      "bytes": 3684,
+      "sha256": "1bf4db123f478cd2285fcdd146e7cc07d31d64a9343a96766054188e64dc46e5",
+      "git_blob_sha": "4ef37e5ce29f49632b7e93d4bf32bea293c259bc",
+      "raw_utf8": "package org.trillionnium.hepta.local;\n\nimport android.content.Context;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.LinkOption;\nimport org.json.JSONObject;\nimport org.trillionnium.hepta.local.web.WebFlightGoal;\nimport org.trillionnium.hepta.local.web.WebShoppingGoal;\n\n/** Explicit empty-Web-journal IO boundary in the legacy Notes/controller harness.\n * A real Web OWNER, selected helper, journal, connection, observation, dispatch or\n * cleanup is unsupported and throws. The real Web classes have their own gate.\n */\nfinal class WebFlightSession {\n    interface Observer { PhoneObservation observe() throws Exception; }\n    static final class Cleanup {\n        final boolean known;\n        final JSONObject evidence;\n        private Cleanup(){throw unavailable();}\n    }\n    final String taskId;\n    final WebFlightGoal goal;\n    final TaskAuthorization.Gate authorization;\n    WebFlightSession(HeptaAccessibilityService service,String task,String owner,\n            TaskAuthorization.Gate auth,BackgroundSession background,\n            QualificationScopeConfig.FilesRoot root,File evidence,TaskCompletionGate completion,\n            HeptaAccessibilityService.Cancellation cancellation){throw unavailable();}\n    private static AssertionError unavailable(){\n        return new AssertionError(\"legacy fixture has no Web helper IO or action implementation\");\n    }\n    static boolean hasUnreleased(Context context){\n        if(context==null||Files.exists(new File(context.getFilesDir(),\"web-helper.active.json\").toPath(),\n                LinkOption.NOFOLLOW_LINKS))throw unavailable();\n        return false; // Explicit empty fixture journal, never a production cleanup claim.\n    }\n    static void validateSelection(String owner,BackgroundSession.Selection selection){\n        if(WebFlightGoal.parse(owner)!=null||WebShoppingGoal.parse(owner)!=null\n                ||selection!=null&&selection.allowedPackages.contains(\"org.trillionnium.hepta.webhelper\"))\n            throw unavailable();\n    }\n    static boolean supported(String owner){\n        if(WebFlightGoal.parse(owner)!=null||WebShoppingGoal.parse(owner)!=null)throw unavailable();\n        return false;\n    }\n    void attach(long deadline){throw unavailable();}\n    PhoneObservation observe(PhoneObservation initial,Observer observer,long deadline){throw unavailable();}\n    void beforeModelAction(ActionDecision action,String run,long deadline){throw unavailable();}\n    void requireDispatch(ActionDecision action,String run){throw unavailable();}\n    WebFlightNativeStability.Permit flightNativePermitForDispatch(ActionDecision action,PhoneObservation frame){throw unavailable();}\n    void acceptFlightNativeCheck(ActionDecision action,PhoneObservation frame,HeptaAccessibilityService.FlightNativeCheck check)throws Exception{throw unavailable();}\n    WebRegionNativeBridge nativeRegionForDispatch(ActionDecision action,String run,PhoneObservation frame){throw unavailable();}\n    void acceptNativeRegionCheck(ActionDecision action,String run,HeptaAccessibilityService.NativeRegionCheck actual){throw unavailable();}\n    void beforeNativeClickInvocation(ActionDecision action,String run){throw unavailable();}\n    void modelActionOutcome(ActionDecision action,String run,HeptaAccessibilityService.ActionOutcome outcome,\n                            long dispatchStarted,long dispatchEnded){throw unavailable();}\n    boolean released(){throw unavailable();}\n    void acceptReconciliation(Cleanup proof){throw unavailable();}\n    void serviceRetired(){throw unavailable();}\n    Cleanup close(String reason){throw unavailable();}\n    static Cleanup reconcile(Context context){throw unavailable();}\n}\n",
+      "patches": [
+        {
+          "why": "Compile exact current readGraph condition; constructor remains throwing.",
+          "old": "    final String taskId;\n",
+          "new": "    final String taskId;\n    final WebFlightGoal goal;\n"
+        },
+        {
+          "why": "Match exact current Service dispatch interfaces with throwing implementations only.",
+          "old": "    WebRegionNativeBridge nativeRegionForDispatch(ActionDecision action,String run,PhoneObservation frame){throw unavailable();}\n",
+          "new": "    WebFlightNativeStability.Permit flightNativePermitForDispatch(ActionDecision action,PhoneObservation frame){throw unavailable();}\n    void acceptFlightNativeCheck(ActionDecision action,PhoneObservation frame,HeptaAccessibilityService.FlightNativeCheck check)throws Exception{throw unavailable();}\n    WebRegionNativeBridge nativeRegionForDispatch(ActionDecision action,String run,PhoneObservation frame){throw unavailable();}\n"
+        }
+      ]
+    }
+  ],
+  "ordered_hunk_count": 7,
+  "mechanical_verification": {
+    "all_four_original_files_full_sha_and_git_verified": true,
+    "ordered_forward_and_reverse_full_bytes_equal": true,
+    "all_four_created_and_full_readback_verified": true,
+    "extraction_reconstruction": {
+      "source_only": true,
+      "python_executed": false,
+      "javac_executed": false,
+      "phone_actions": false,
+      "service_input": {
+        "bytes": 129287,
+        "sha256": "53dc2765f2f0504a4ea16618a2e0b44c0d443dceeb3834f030098ae2cea26fba",
+        "git_blob_sha": "6200e5325ec1397abd73e9bfa99235c7b063935d"
+      },
+      "extraction": {
+        "service_interfaces_outcome": {
+          "bytes": 3717,
+          "sha256": "15a065ccde5e25084c16c6a0f0ea018e4d0af17bbd6638e63a3dbf6b61d6cd46",
+          "git_blob_sha": "3b2e2a23f1dd7d70cd284e84d18068e5f3a7cc58"
+        },
+        "web_binding": {
+          "bytes": 669,
+          "sha256": "312c002f6cf346cd8bfb39be8f8bb3548e116f35ea4dcbf3addd4d5e3fa8330c",
+          "git_blob_sha": "10633ca4e8de4510b4254ca4341490f75509097f"
+        },
+        "background_binding": {
+          "bytes": 2656,
+          "sha256": "9e316de208b39c88c6781796923672cd9550e2921f59828730da4f50011d3a97",
+          "git_blob_sha": "8850874b7a1fded22b007bb612f732984274a5e6"
+        },
+        "app_catalogue": {
+          "bytes": 1212,
+          "sha256": "104c556f6ba3c9c5caa9f8b1fc9a512eba3d0a3a842c0b935d9191082fbd9fed",
+          "git_blob_sha": "0f971de6801f31ca05033cca7c75fee741a3ddd1"
+        },
+        "lease": {
+          "bytes": 4558,
+          "sha256": "0af6e29d5984cd690af50e748e52fbecc5dc7e4d95d7e7bdebaf2035540575f8",
+          "git_blob_sha": "2657cab83f115587d0b9ffc67ee460778cb1295e"
+        },
+        "scope_validate_dispatch": {
+          "bytes": 40608,
+          "sha256": "e82817c5c37b7fe8520fd612321b61e79b1ef5bc265d8c73a5e611e048249d41",
+          "git_blob_sha": "3dc0a9ed712789276cefc586e7487040fc74c6bf"
+        },
+        "node_graph": {
+          "bytes": 3260,
+          "sha256": "43d204d5fe3e054a36ed5f1f8392d701246db42427d9d021ae08053add083f91",
+          "git_blob_sha": "635dfc0890010950ab9ab5fc1907912401345824"
+        },
+        "node_identity": {
+          "bytes": 8133,
+          "sha256": "aa0d674ba6bc4d135e84678e2d358cf240f9a3f9f5f336159690f151d0e472ac",
+          "git_blob_sha": "159304d67c946486f3df9567782c25364c5ce579"
+        },
+        "strings": {
+          "bytes": 421,
+          "sha256": "735b5a843258de6a77898c63952c2ed65ace08bc2b72b09909f3eb905e9d610a",
+          "git_blob_sha": "42fb0c9df6309b98e7e0127a9f555f9ad3c5cc83"
+        },
+        "background_stale_type": {
+          "bytes": 304,
+          "sha256": "a060440493b766295052ebf529dfe259692f6b58e1ff757121c1806b18277376",
+          "git_blob_sha": "c44d5d8868e0f6db1681416d6148be1dbc7498ff"
+        },
+        "background_graph_limits": {
+          "bytes": 310,
+          "sha256": "50043a616af042dd3df583b6df53e37c657026acc89109f89e7c3ae9426473b6",
+          "git_blob_sha": "a69c0e8899707ecf78f03216675b50190c9bdf15"
+        },
+        "background_node_graph": {
+          "bytes": 3260,
+          "sha256": "43d204d5fe3e054a36ed5f1f8392d701246db42427d9d021ae08053add083f91",
+          "git_blob_sha": "635dfc0890010950ab9ab5fc1907912401345824"
+        },
+        "background_window_metadata": {
+          "bytes": 1740,
+          "sha256": "3917379ba4a38a24093ba69f53e91a525fc5858d963711f0538768f36af289a2",
+          "git_blob_sha": "dcbee1733f64c052d67d8449ae25beba29c7625b"
+        },
+        "background_snapshot": {
+          "bytes": 12852,
+          "sha256": "6990870061c4a773e38b56a01951b357005e543fbdc1162ab040e03a2ac92d30",
+          "git_blob_sha": "0362ef079ce472b5b687174049ff2c7adef89cf8"
+        },
+        "background_node_identity": {
+          "bytes": 8133,
+          "sha256": "aa0d674ba6bc4d135e84678e2d358cf240f9a3f9f5f336159690f151d0e472ac",
+          "git_blob_sha": "159304d67c946486f3df9567782c25364c5ce579"
+        },
+        "background_strings": {
+          "bytes": 421,
+          "sha256": "735b5a843258de6a77898c63952c2ed65ace08bc2b72b09909f3eb905e9d610a",
+          "git_blob_sha": "42fb0c9df6309b98e7e0127a9f555f9ad3c5cc83"
+        }
+      },
+      "rendered_service": {
+        "bytes": 73302,
+        "sha256": "b6137c17a37e2de6feb7f8c0d57c17f6383b37b81910f08a8dde5591e7130b9a",
+        "git_blob_sha": "87d67850276fac54af2e931772cfc20a7e482452"
+      },
+      "rendered_background": {
+        "bytes": 29230,
+        "sha256": "e2c913d6bd27f248e7119bd51ee1f1cd6166812150afa5f7eebc5843a09c15ed",
+        "git_blob_sha": "63069a2c86480a758590feebf15b84a87f5e2c6c"
+      },
+      "read_graph": {
+        "bytes": 9504,
+        "sha256": "ef33a1a2cc4ae7676422d9a22eb03726575b5f66a4432cbe8f3cfe4aa20fe7c3",
+        "git_blob_sha": "c355142706a5ab281e4c9e0644a7100a7d85ac7c"
+      },
+      "exact_production_dispatch_retained": true,
+      "exact_production_readGraph_retained": true,
+      "live_flight_methods_excluded": true,
+      "collection_anchors_preserved": true
+    }
+  },
+  "intended_boundary": [
+    "The BackgroundObservation snapshot section ends immediately before requireLiveFlightNativeStability: selectedRoot, the complete actual readGraph, and the complete snapshotFlightNode remain exact production text.",
+    "The private Service-only requireLiveFlightNativeStability and refreshFlightTargetChain are not included in the non-Service snapshot fixture. The ServiceFixture retains the complete actual admission/dispatch branch and supplies only a throwing boundary of its required signature.",
+    "Generated WebFlightNativeStability is explicitly a type-only fixture, containing the bounded MAX_NATIVE_NODES constant and an unconstructible nested Permit. It supplies no prepare, comparison, successful getter, or action capability.",
+    "The legacy WebFlightSession constructor remains throwing. Its new final goal field and two throwing dispatch methods match current signatures without constructing a real Web session.",
+    "The original Notes/background synthetic seven-field explicit-UI Selection, production PhoneObservation projection, real canonical comparator and throwing derived-owner boundary are unchanged.",
+    "Observation-collection readGraph/nodeSignature extraction anchors and the original MAX_NODES=128, MAX_VISITED=1536, MAX_CHARACTERS=6144 literal remain present exactly once.",
+    "No existing test Java assertion file or runner is changed. No new suite or execution gate is added."
+  ],
+  "related_latest_production_review": {
+    "previous_review": "98173deeb9f2b85f9e4ae5e8544607f60b084fe6",
+    "narrow_private_permit_delta": "a7d79c06fbe8796f2d1e0d25e37bce09df146029",
+    "delta_mechanical_full_equal": true,
+    "delta_scope": "Adds exact task/frame/display/window and sameWindow checks to the sole existing private permit constructor path; no weaker fallback or broader action."
+  },
+  "coordination": {
+    "audit_tcg_ltc_fixture_api": "Audit reports new lifecycle code uses existing Session.taskId/released and Background taskId/ownerSha/generation/displayId/released; no additional fixture endpoint required."
+  },
+  "execution": {
+    "python_executed": false,
+    "javac_executed": false,
+    "existing_core_host_rerun": false,
+    "host_calls": 0,
+    "phone_actions": 0,
+    "source_review_is_compile_pass": false
+  }
+}

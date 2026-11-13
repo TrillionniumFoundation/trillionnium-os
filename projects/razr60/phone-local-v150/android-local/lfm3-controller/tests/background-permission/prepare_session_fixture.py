@@ -64,7 +64,7 @@ final class LocalModelEngine implements AutoCloseable {
 '''
     generated = output / "org/trillionnium/hepta/local/LocalModelEngine.java"
     generated.write_text(rendered)
-    files += [generated, *[package / (name + ".java") for name in ("BackgroundPermissionPreparation", "BackgroundPermissionSession", "MobiMindContract", "MobiMindPins")]]
+    files += [generated, *[package / (name + ".java") for name in ("BackgroundPermissionPreparation", "BackgroundPermissionSession", "MobiMindContract", "MobiMindPins", "OwnedWorkerCancellation")]]
     record = {"schema": "hepta.permission-session-host-extraction.v1", "actual_classes": ["BackgroundPermissionSession", "BackgroundPermissionPreparation", "MobiMindPrivateFiles"],
               "actual_engine_parts": {name: hashlib.sha256(value.encode()).hexdigest() for name, value in pieces.items()},
               "android_io_fake": True, "process_launch_fake": True, "phone_tested": False, "real_fsync_or_magisk_tested": False}

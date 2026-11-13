@@ -1,0 +1,18 @@
+{
+  "host": "pocket4",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-u",
+    "-B",
+    "-c",
+    "import base64,hashlib,json,os,stat\nfrom pathlib import Path\nP=Path(\"/home/alex/hepta-local-007f-20261111/flight57-original-evidence-text-r1/TEXT-ENVELOPE.json.gz\")\nO=Path(\"/home/alex/hepta-local-007f-20261111/flight57-gzip-transfer-r1\")\ndef sha(x):return hashlib.sha256(x).hexdigest()\ndef ident(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\nassert all(not p.is_symlink() for p in (P,*P.parents,O,*O.parents))\nfd=os.open(P,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)\nwith os.fdopen(fd,\"rb\") as f:\n a=os.fstat(f.fileno());assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==1726746\n raw=f.read(1726747);assert len(raw)==1726746 and sha(raw)==\"dafce5150fc43b19790ec8340a5d7902baa14a403773e3270632334ef5bd93cf\"\n assert ident(a)==ident(os.fstat(f.fileno()))==ident(P.stat())\nO.mkdir(mode=0o700)\ndef save(name,data):\n p=O/name;fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600)\n with os.fdopen(fd,\"wb\") as f:f.write(data);f.flush();os.fsync(f.fileno())\n assert p.read_bytes()==data\n return str(p)\nrows=[]\nfor offset in range(0,len(raw),48000):\n chunk=raw[offset:offset+48000];data=base64.b64encode(chunk);name=\"chunk-\"+str(offset).zfill(7)+\".base64\"\n path=save(name,data)\n rows.append({\"path\":path,\"offset\":offset,\"bytes\":len(chunk),\"sha256\":sha(chunk),\"base64_bytes\":len(data),\"base64_sha256\":sha(data)})\nassert ident(a)==ident(P.stat())\nm={\"schema\":\"hepta.flight57.gzip-transfer.v1\",\"gzip_path\":str(P),\"gzip_bytes\":len(raw),\"gzip_sha256\":sha(raw),\"chunks\":rows,\"phone_actions\":0,\"original_files_modified\":False}\ndata=(json.dumps(m,sort_keys=True,separators=(\",\",\":\"))+\"\\n\").encode(\"ascii\");save(\"MANIFEST.json\",data)\nprint(data.decode(\"ascii\"),end=\"\",flush=True)\n"
+  ],
+  "cwd": "/home/alex/hepta-local-007f-20261111",
+  "env": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "cols": 160,
+  "rows": 48,
+  "idempotency_key": "007f-flight57-gzip-transfer-r1"
+}

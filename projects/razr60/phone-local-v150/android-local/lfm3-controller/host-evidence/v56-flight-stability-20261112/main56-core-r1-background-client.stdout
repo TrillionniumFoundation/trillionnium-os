@@ -1,0 +1,17 @@
+
+/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r1/host-checks/background-client/fixture/terminal/ControllerFinalizationFixture.java:32: error: cannot find symbol
+        synchronized(this){if(!running||terminalDecisionSealed)return;cancelled.set(true);}
+                                        ^
+  symbol:   variable terminalDecisionSealed
+  location: class ControllerFinalizationFixture
+/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r1/host-checks/background-client/fixture/terminal/ControllerFinalizationFixture.java:53: error: package TaskAuthorization does not exist
+            boolean controllerOwnerCompletionAllowed=false;TaskAuthorization.Frame terminalOwnerFrame=null;
+                                                                            ^
+/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r1/host-checks/background-client/fixture/terminal/ControllerFinalizationFixture.java:55: error: package completion does not exist
+                if(TaskCompletionGate.WEB.equals(completion.contract.kind))terminalOwnerFrame=authorization.frame();}
+                                                           ^
+/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r1/host-checks/background-client/fixture/terminal/ControllerFinalizationFixture.java:55: error: package TaskCompletionGate does not exist
+                if(TaskCompletionGate.WEB.equals(completion.contract.kind))terminalOwnerFrame=authorization.frame();}
+                                     ^
+4 errors
+

@@ -1,0 +1,103 @@
+{
+  "schema": "hepta.main57-flight-observation-bridge-lifecycle-review.v1",
+  "status": "no concrete new source blocker in the scoped main-thread ownership, cancellation and fixture-slicing review",
+  "candidate": {
+    "git_blob_sha": "274f79413a35af7e40cf3e93fc33bc7109f15f36",
+    "bytes": 303152,
+    "sha256": "783620ee36cca8b22119c2f04f9595bdcee01f19ceb0fbf3189f7fe4c5f16225"
+  },
+  "base_aggregate": {
+    "git_blob_sha": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c",
+    "bytes": 1427055,
+    "sha256": "c1cc7cc16eef4c3a34131ee719101a69db080b76e72c98f03248036fc6fd628f"
+  },
+  "reviewed_sources": [
+    {
+      "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "base": {
+        "bytes": 129287,
+        "sha256": "53dc2765f2f0504a4ea16618a2e0b44c0d443dceeb3834f030098ae2cea26fba",
+        "git_blob_sha": "6200e5325ec1397abd73e9bfa99235c7b063935d"
+      },
+      "after": {
+        "bytes": 144883,
+        "sha256": "f9704060dba7a6fa4604b8e26d9f4eed956ae684a1221b3980714ac6d1a53afb",
+        "git_blob_sha": "8f969cb0c75f8c942099271181762b38d9ba3160"
+      },
+      "ordered_patch_groups": 3,
+      "forward_and_reverse_raw_exact": true
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "base": {
+        "bytes": 42734,
+        "sha256": "7f3c7fd872e9901026ad7471dfc9a3e68d2c987eb1931896f80ea0f2acd6f4e1",
+        "git_blob_sha": "8283d4e83b7cf13c9deb7e55c6d26f26053e11cc"
+      },
+      "after": {
+        "bytes": 44197,
+        "sha256": "07509c1345b1bacdfcbf504943f375869c274e245c6aafb5819581b4c8395408",
+        "git_blob_sha": "87b2bd6a8758fb6c46659270412bf9d630673591"
+      },
+      "ordered_patch_groups": 6,
+      "forward_and_reverse_raw_exact": true
+    }
+  ],
+  "mechanical_scope": {
+    "original_Graph_unchanged": true,
+    "readGraph_and_snapshotFlightNode_unchanged": true,
+    "original_NodeRef_constructor_unchanged_copy_constructor_added": true,
+    "existing_action_Permit_and_dispatch_attempt_fence_unchanged": true,
+    "original_Service_observe_graph_publication_recycling_unchanged": true
+  },
+  "main_thread_and_ownership": [
+    "Snapshot retention rejects the main-thread caller, posts a bounded Callable to the Service main Handler, and performs frame==current/task/scope/authorization/background/complete-graph checks there.",
+    "The private snapshot stores canonical immutable frame/native strings, actual owner/Selection, exact authority object identities, and one independent AccessibilityNodeInfo.obtain copy preserving original NodeRef signatures.",
+    "The old Graph can be cleared and recycled by the next ordinary observation without recycling the independently obtained target copy.",
+    "The await operation holds only its own call monitor while waiting; it does not hold the Service monitor across the main callback or helper capture.",
+    "Cancellation before a queued read causes its abandoned branch to skip the read. Cancellation during the read leaves the actual returned snapshot to run-finally disposal. Cancellation after publication but before claiming disposes the stored value.",
+    "Normal close is idempotent and posts the independent node recycle to the same main queue; an in-flight main verification completes or refuses before that queued recycle.",
+    "Live verification checks source.closed and the same Service/Web/background/scope/authorization/current frame both at entry and after final native/window checks. Its temporary live Graph is closed in finally.",
+    "The private read-only proof does not create an action Permit or enter a native action; the original model-run action checks remain separate."
+  ],
+  "session_paths": [
+    "Initial nativeSource acquisition occurs before the first helper capture.",
+    "The state_changed branch closes and nulls the old source before observing and retaining a replacement source.",
+    "Each while-loop iteration has its own finally. The loading-retry continue closes the prior source before the next iteration retains the replacement before frame.",
+    "Both publishWaiting returns, successful publication, native-bracket refusal, capture failure and cancellation leave through the same per-iteration finally.",
+    "Unchanged sameFrame success still follows the old path. The added exception requires changed original frame plus same capture domain, Flight goal, retained private source, and all original full DOM equality flags."
+  ],
+  "actual_type_interfaces_read": {
+    "PhoneObservation": "9dc1033ffc989b2a957e0999bb40d5c48d97117d89150a173141ae7cc7eff8d0",
+    "WebEvidenceReceipt": {
+      "git_blob_sha": "ba05c6869d365f2c3a2d1d8b3036614d3a92f121",
+      "bytes": 29292,
+      "sha256": "85bd14c7dc45aee8fbc1c290299cd2b123c848f9d5c08634b4b2b66daeeb5cda"
+    },
+    "TaskAuthorization": {
+      "git_blob_sha": "346e1790710fa4f0d62a59053328733773c9fe61",
+      "bytes": 23598,
+      "sha256": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8"
+    },
+    "confirmed": "Receipt.started/ended, CollectionStats.pending/visited/childSlotsOmitted/truncated(), Node.label(), capturedElapsedMillis and Gate.ready() exist with compatible types."
+  },
+  "fixture_slicing": {
+    "prepare_fixture_git": "667293678cd99beeabf82a6ae0965bdc3b137a25",
+    "snapshot_slice_exactly_unchanged": true,
+    "new_bridge_after_requireLiveFlightNativeStability_stop_anchor": true,
+    "new_bridge_before_nodeSignature_start_anchor": true,
+    "source_snapshot_type_before_ObservationCallback_excluded_from_legacy_interfaces_slice": true,
+    "NodeRef_copy_constructor_is_in_node_graph_slice_but_uses_existing_same_class_fields_and_obtain_API": true,
+    "observation_collection_original_readGraph_to_nodeSignature_anchors_unchanged": true,
+    "full_89_traversal_not_replaced_by_49_retained_rows": true
+  },
+  "limits": {
+    "full_new_pure_compareObservationBracket_predicate_not_independently_reaudited_here": true,
+    "Android_compilation_or_runtime_not_executed": true,
+    "phone_outcome_not_predicted": true,
+    "no_new_test_gate": true,
+    "source_modified_by_reviewer": false,
+    "host_calls": 0,
+    "phone_actions": 0
+  }
+}

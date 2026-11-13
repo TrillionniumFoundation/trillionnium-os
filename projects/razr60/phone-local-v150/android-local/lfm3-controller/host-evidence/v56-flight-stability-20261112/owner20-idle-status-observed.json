@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.root-owner20-idle-after-first-main56-host-runs.v1",
+  "owner_actual_ready_git": "917532d0c563ec1fa378b3acc8dd079226eb2faf",
+  "request_id": "007f-owner20-status-after-main56-first-host-failures-r1",
+  "actual_write_ack": {
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "bytes_written": 20,
+    "complete": true,
+    "host": "pocket4",
+    "persistent_across_runtime_restart": true,
+    "reused": false,
+    "session_id": "dpty-5294bc73b73ff09a074d276c4348f461d7d6ec913e3794abb8b0c0b993de44bd"
+  },
+  "actual_status_read": {
+    "archive_path": "/home/alex/.local/state/hepta-runtime-mac-worker/terminals/dpty-5294bc73b73ff09a074d276c4348f461d7d6ec913e3794abb8b0c0b993de44bd/output.log",
+    "available_end": 1145,
+    "bytes_hex": "7b226576656e74223a2022737461747573222c20226f776e65725f706964223a20323330383839312c2022616374697665223a206e756c6c7d0d0a",
+    "chunk_sha256": "1cf75e11db2a7a829e3ccd500f20954d957cbc0606cdf9bd1f3e7eea24b75634",
+    "host": "pocket4",
+    "next_offset": 1145,
+    "offset": 1086,
+    "output_complete": false,
+    "persistent_across_runtime_restart": true,
+    "session_id": "dpty-5294bc73b73ff09a074d276c4348f461d7d6ec913e3794abb8b0c0b993de44bd",
+    "status": {
+      "boot": "97d9600f-e081-465c-9e6e-62651e09806b",
+      "bytes_seen": 1145,
+      "bytes_stored": 1145,
+      "capture_error": null,
+      "created_unix_ms": 1794512095247,
+      "output_complete": false,
+      "owner_pid": 2308889,
+      "pid": 2308891,
+      "state": "running"
+    },
+    "storage": "target_archive",
+    "text": "{\"event\": \"status\", \"owner_pid\": 2308891, \"active\": null}\r\n",
+    "text_is_lossy": false,
+    "truncated_before_offset": false,
+    "utf8_pending": false
+  },
+  "phone_actions_by_status_request": 0,
+  "host_core1_and_web1_normally_exited_with_failed_tests": true
+}

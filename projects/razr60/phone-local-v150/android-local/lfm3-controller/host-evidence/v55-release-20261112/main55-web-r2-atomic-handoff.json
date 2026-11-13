@@ -1,0 +1,164 @@
+{
+  "schema": "hepta.main55-web-r2-atomic-gzip-source-handoff.v1",
+  "status": "source_only_not_executed",
+  "source": {
+    "git": "f2bf0e695199c53c2d4b959153b47e78b7396aaf",
+    "bytes": 38346,
+    "sha256": "ede9eb863619a67f9c17187360ea38e39472fd96eb4bc53c8928d75303cf3c71",
+    "path": "/home/alex/hepta-local-007f-20261111/v55-main-web-regression-host-r2.py"
+  },
+  "body_handoff": "5ec9268d36c3177e0bfadd31046b77e398af6ead",
+  "base_publisher": {
+    "git": "017933ef03e8243e77c1f3351491a2ec1fef18d4",
+    "bytes": 10454,
+    "sha256": "675ff3db8910a9dce4d190790f70dfef6d2e2b5ecfe371b24766bf87946732c1"
+  },
+  "base_successful_core_request": "152607835e58bd6667023e4280828400d9a322b4",
+  "publisher": {
+    "git": "b448102a204e6783558fae2d8db23044d78ec1b5",
+    "bytes": 10541,
+    "sha256": "475a5bfa039ee2997cece853e921283cbceec68b7203d987d942f94a19dab9d3"
+  },
+  "ordered_publisher_patches": [
+    {
+      "label": "one exact Web r2 source",
+      "count": 1,
+      "before": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r3.py\",\"bytes\":54123,\"sha256\":\"2c02f930ce9e785efc849a1a72cc70a6900fa9d406fb29750e5c2723059ed44e\"}]",
+      "after": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/v55-main-web-regression-host-r2.py\",\"bytes\":38346,\"sha256\":\"ede9eb863619a67f9c17187360ea38e39472fd96eb4bc53c8928d75303cf3c71\"}]"
+    },
+    {
+      "label": "complete encoded argument bytes",
+      "count": 1,
+      "before": "ARGV_BYTES=23748",
+      "after": "ARGV_BYTES=18080"
+    },
+    {
+      "label": "complete encoded argument SHA",
+      "count": 1,
+      "before": "ARGV_SHA=\"8047ad3aa2e6b9c6017eff8cc92e2005df05eb2315a371edcd45f1cd2e4330c2\"",
+      "after": "ARGV_SHA=\"53346e0c36f583db6818973b98dbbb054762a8d576f34a7fa5ef240da0a6c041\""
+    },
+    {
+      "label": "complete compressed source bytes",
+      "count": 1,
+      "before": "GZIP_BYTES=17811",
+      "after": "GZIP_BYTES=13560"
+    },
+    {
+      "label": "complete compressed source SHA",
+      "count": 1,
+      "before": "GZIP_SHA=\"f9289307b972cc90eb335b217b5fef9503b0d1064d41b46e2051fb1b644ae085\"",
+      "after": "GZIP_SHA=\"b9d978e5076a1b2a7c5064c604e00a4098b4d31158ed9c2cb552511b54e4d260\""
+    },
+    {
+      "label": "original reviewed931 Web loader unchanged",
+      "count": 1,
+      "before": "LOADER=\"import hashlib,os,pathlib,stat,sys\\np=pathlib.Path(\\\"/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r3.py\\\")\\nassert all(not q.is_symlink() for q in (p,*p.parents))\\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\ntry:\\n a=os.fstat(fd)\\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==54123\\n with os.fdopen(os.dup(fd),\\\"rb\\\") as f:raw=f.read(54123+1)\\n assert len(raw)==54123 and hashlib.sha256(raw).hexdigest()==\\\"2c02f930ce9e785efc849a1a72cc70a6900fa9d406fb29750e5c2723059ed44e\\\"\\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\\nfinally:os.close(fd)\\nsys.argv=[str(p)]\\nexec(compile(raw,str(p),\\\"exec\\\",dont_inherit=True),{\\\"__name__\\\":\\\"__main__\\\",\\\"__file__\\\":str(p),\\\"__stage_source__\\\":raw})\\n\"",
+      "after": "LOADER=\"import gzip,hashlib,os,pathlib,stat,sys\\ndef same(s):\\n    return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\ndef read(p,n,h):\\n    p=pathlib.Path(p)\\n    assert p.is_absolute() and \\\"..\\\" not in p.parts\\n    assert all(not q.is_symlink() for q in (p,*p.parents))\\n    fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)\\n    with os.fdopen(fd,\\\"rb\\\") as f:\\n        a=os.fstat(f.fileno())\\n        assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==n\\n        raw=f.read(n+1)\\n        assert same(a)==same(os.fstat(f.fileno()))==same(os.lstat(p))\\n    assert len(raw)==n and hashlib.sha256(raw).hexdigest()==h\\n    return raw\\np=\\\"/home/alex/hepta-local-007f-20261111/v55-main-web-regression-host-r2.py\\\"\\nsource=read(p,38346,\\\"ede9eb863619a67f9c17187360ea38e39472fd96eb4bc53c8928d75303cf3c71\\\")\\nsys.argv=[p]\\nexec(compile(source,p,\\\"exec\\\"),{\\\"__name__\\\":\\\"__main__\\\",\\\"__file__\\\":p,\\\"__stage_source__\\\":source})\\n\""
+    },
+    {
+      "label": "original Web loader SHA",
+      "count": 1,
+      "before": "LOADER_SHA=\"101d039ebc66b78bd0ffcb3f4daa45baa40cb46b70908dab206b9c1f0a208636\"",
+      "after": "LOADER_SHA=\"99974950d3cedc9d27112ff2bcbdce134f737dd9609897a82bc929e146fbc28a\""
+    },
+    {
+      "label": "same bounded supervisor with only loader/schema literals",
+      "count": 1,
+      "before": "SUPERVISOR=\"import hashlib,json,os,signal,subprocess,sys,time\\nloader=sys.argv[1]\\nassert len(loader.encode(\\\"utf-8\\\"))==878 and hashlib.sha256(loader.encode(\\\"utf-8\\\")).hexdigest()==\\\"101d039ebc66b78bd0ffcb3f4daa45baa40cb46b70908dab206b9c1f0a208636\\\"\\nassert os.getcwd()==\\\"/home/alex/hepta-local-007f-20261111\\\"\\nstarted=time.monotonic()\\np=subprocess.Popen([\\\"/usr/bin/python3\\\",\\\"-I\\\",\\\"-B\\\",\\\"-c\\\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.core101-r3-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"started\\\",\\\"child_pid\\\":p.pid,\\\"timeout_seconds\\\":1200,\\\"loader_sha256\\\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\\ncode=None;timed_out=False;forced=False;error=None\\ntry:\\n    code=p.wait(timeout=1200)\\nexcept BaseException as failure:\\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\\n    error=type(failure).__name__+\\\": \\\"+str(failure)\\n    if p.poll() is None:\\n        try:os.killpg(p.pid,signal.SIGTERM)\\n        except ProcessLookupError:pass\\n        try:code=p.wait(timeout=10)\\n        except subprocess.TimeoutExpired:\\n            forced=True\\n            try:os.killpg(p.pid,signal.SIGKILL)\\n            except ProcessLookupError:pass\\n            try:code=p.wait(timeout=10)\\n            except subprocess.TimeoutExpired:error+=\\\"; owned child exit not observed\\\"\\nexit_observed=p.poll() is not None\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.core101-r3-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"finished\\\",\\\"child_pid\\\":p.pid,\\\"child_returncode\\\":code,\\\"exit_observed\\\":exit_observed,\\\"timed_out\\\":timed_out,\\\"forced_kill\\\":forced,\\\"error\\\":error,\\\"elapsed_seconds\\\":time.monotonic()-started}),flush=True)\\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\\nraise SystemExit(code if code>=0 else 128-code)\\n\"",
+      "after": "SUPERVISOR=\"import hashlib,json,os,signal,subprocess,sys,time\\nloader=sys.argv[1]\\nassert len(loader.encode(\\\"utf-8\\\"))==931 and hashlib.sha256(loader.encode(\\\"utf-8\\\")).hexdigest()==\\\"99974950d3cedc9d27112ff2bcbdce134f737dd9609897a82bc929e146fbc28a\\\"\\nassert os.getcwd()==\\\"/home/alex/hepta-local-007f-20261111\\\"\\nstarted=time.monotonic()\\np=subprocess.Popen([\\\"/usr/bin/python3\\\",\\\"-I\\\",\\\"-B\\\",\\\"-c\\\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.web-regression-r2-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"started\\\",\\\"child_pid\\\":p.pid,\\\"timeout_seconds\\\":1200,\\\"loader_sha256\\\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\\ncode=None;timed_out=False;forced=False;error=None\\ntry:\\n    code=p.wait(timeout=1200)\\nexcept BaseException as failure:\\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\\n    error=type(failure).__name__+\\\": \\\"+str(failure)\\n    if p.poll() is None:\\n        try:os.killpg(p.pid,signal.SIGTERM)\\n        except ProcessLookupError:pass\\n        try:code=p.wait(timeout=10)\\n        except subprocess.TimeoutExpired:\\n            forced=True\\n            try:os.killpg(p.pid,signal.SIGKILL)\\n            except ProcessLookupError:pass\\n            try:code=p.wait(timeout=10)\\n            except subprocess.TimeoutExpired:error+=\\\"; owned child exit not observed\\\"\\nexit_observed=p.poll() is not None\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.web-regression-r2-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"finished\\\",\\\"child_pid\\\":p.pid,\\\"child_returncode\\\":code,\\\"exit_observed\\\":exit_observed,\\\"timed_out\\\":timed_out,\\\"forced_kill\\\":forced,\\\"error\\\":error,\\\"elapsed_seconds\\\":time.monotonic()-started}),flush=True)\\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\\nraise SystemExit(code if code>=0 else 128-code)\\n\""
+    },
+    {
+      "label": "exact bounded supervisor SHA",
+      "count": 1,
+      "before": "SUPERVISOR_SHA=\"d02a2976bcdf6519a4480cc3674b423f8098e79f2289f6b6dba56bf3955f14de\"",
+      "after": "SUPERVISOR_SHA=\"ce08bbeca3e6935033f1d808df039aebc3aab314bbce5a443d6a5332109b630d\""
+    },
+    {
+      "label": "unique reviewed Web r2 idempotency key",
+      "count": 1,
+      "before": "TRANSPORT_KEY=\"007f-v55-main-core101-materialized-host-r3\"",
+      "after": "TRANSPORT_KEY=\"007f-v55-main-existing-web-regression-host-r2-mi-guard\""
+    },
+    {
+      "label": "exact931 loader length",
+      "count": 1,
+      "before": "need(len(LOADER.encode(\"utf-8\"))==878",
+      "after": "need(len(LOADER.encode(\"utf-8\"))==931"
+    },
+    {
+      "label": "exact bounded supervisor length",
+      "count": 1,
+      "before": "need(len(SUPERVISOR.encode(\"utf-8\"))==1774",
+      "after": "need(len(SUPERVISOR.encode(\"utf-8\"))==1788"
+    },
+    {
+      "label": "diagnostic label only",
+      "count": 1,
+      "before": "compile(LOADER,\"<original-core101-loader>\"",
+      "after": "compile(LOADER,\"<original-web-regression-loader>\""
+    }
+  ],
+  "loader": {
+    "git": "55995fd59dbaa7d75b361b8cf0f93b06e63efe6b",
+    "bytes": 931,
+    "sha256": "99974950d3cedc9d27112ff2bcbdce134f737dd9609897a82bc929e146fbc28a",
+    "raw_byte_identical_to_reviewed_931": true
+  },
+  "supervisor": {
+    "git": "55681a80e4bb16966fea62b6e95e6a36058999bc",
+    "bytes": 1788,
+    "sha256": "ce08bbeca3e6935033f1d808df039aebc3aab314bbce5a443d6a5332109b630d",
+    "ordered_patches": [
+      {
+        "count": 1,
+        "before": "len(loader.encode(\"utf-8\"))==878",
+        "after": "len(loader.encode(\"utf-8\"))==931"
+      },
+      {
+        "count": 1,
+        "before": "101d039ebc66b78bd0ffcb3f4daa45baa40cb46b70908dab206b9c1f0a208636",
+        "after": "99974950d3cedc9d27112ff2bcbdce134f737dd9609897a82bc929e146fbc28a"
+      },
+      {
+        "count": 2,
+        "before": "hepta.core101-r3-pty-bounded-launch.v1",
+        "after": "hepta.web-regression-r2-pty-bounded-launch.v1"
+      }
+    ],
+    "timeout_seconds": 1200,
+    "only_literal_changes": true
+  },
+  "compressed_source": {
+    "bytes": 13560,
+    "sha256": "b9d978e5076a1b2a7c5064c604e00a4098b4d31158ed9c2cb552511b54e4d260",
+    "gzip_crc_roundtrip": true
+  },
+  "argument": {
+    "bytes": 18080,
+    "sha256": "53346e0c36f583db6818973b98dbbb054762a8d576f34a7fa5ef240da0a6c041",
+    "canonical_base64": true
+  },
+  "exact_request": {
+    "git": "4c5d012a95454f96570db062e3f81c6c011b043f",
+    "bytes": 29515,
+    "sha256": "e8f9bef3eccd88b3b6f95e3b1c5b097a41afc030ea5a86726be347ad410457a6",
+    "tool": "h_pty_start",
+    "idempotency_key": "007f-v55-main-existing-web-regression-host-r2-mi-guard"
+  },
+  "mechanical": {
+    "all13_publisher_changes_reverse_to_exact_actual_core_publisher": true,
+    "all_directory_fd_atomic_link_temp_cleanup_logic_byte_identical": true,
+    "body_five_hunks_and_packet_unchanged": true,
+    "old_input_gzip_reupload": false,
+    "source_write_request_superseded_without_execution": true
+  },
+  "instructions": [
+    "Use this one exact h_pty_start request. Do not separately submit the superseded source_write from5ec926.",
+    "Atomic publisher may only create the one fixed source or accept byte-identical existing source. It then execs the existing bounded supervisor and exact931 loader.",
+    "Use the same exact key/request to reconcile unknown acknowledgement. The coordinator first-claims its new ROOT outside handler."
+  ],
+  "h_calls": 0,
+  "executed": false,
+  "phone_actions": 0
+}

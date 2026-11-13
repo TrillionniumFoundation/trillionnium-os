@@ -1,0 +1,17 @@
+{
+  "schema": "hepta.root-web54-r7-host-admission.v1",
+  "candidate_git": "029ec420948d4a7228ae0dc82492cee096cd07b5",
+  "corrected_transport_git": "e36eff6d77292c93469693e104cd3792e474bbff",
+  "rejected_transport_git": "a211f4b3db272f55d6fa12f93dbd8f3a0daf79b7",
+  "three_sources_exact_reverse_to_actual_r6": true,
+  "dependency_sources_match_actual_589_source_map": true,
+  "stage_and_test_complete_source_reviewed": true,
+  "stage_transport_decoded_sha256": "58970327c400c1a7ae6f440872629fc27b1936ecc27b5223ec579137172206c2",
+  "gzip_transport_decoded_sha256": "70d2912cc222e48fc37bf3d539e011dd16f35e28eb307072bde7fbb5a15e8fd3",
+  "stage_is_create_only": true,
+  "one_focused_host_child": true,
+  "scope": "Actual pinned imports, original failures and preloaded-module refusal; no execute entry, phone command, task or business success.",
+  "authorized_start_key": "007f-v54-web-pinned-import-r7",
+  "actual_host_gate_passed": false,
+  "phone_commands": 0
+}

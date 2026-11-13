@@ -1,0 +1,32 @@
+{
+  "android_compiled": false,
+  "artifact": {
+    "bytes": 78332,
+    "content_length": "78332",
+    "etag": "\"99aae5de9871d158cdb970f17be4c8da\"",
+    "http_status": 200,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/host-json/json-20240303.jar",
+    "redirects_followed": 0,
+    "sha256": "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed",
+    "tls_verification": true,
+    "url": "https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar",
+    "verification_kind": "exact_expected_sha256",
+    "verified": true
+  },
+  "coordinate": "org.json:json:20240303",
+  "full_remaining_dependency_stage_complete": false,
+  "original_receipt": {
+    "bytes": 486209,
+    "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/DEPENDENCY-RESULT.json",
+    "role": "dependency_receipt",
+    "sha256": "08c8c0dbc5677643da0aeb202314a4c26fda76ee2904696cd18aea102715cdc0"
+  },
+  "phone_contacted": false,
+  "schema": "hepta.fixed-host-orgjson-ready.v1",
+  "source": {
+    "bytes": 26148,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/SOURCE.py",
+    "sha256": "a8dbef392ef2edbe87e271513421dbc5a8b2b374ec9d4f303361f0e2b9772131"
+  },
+  "verified": true
+}

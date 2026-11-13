@@ -235,7 +235,7 @@ def main():
         classes.mkdir()
         compile_argv = [args.java, "-m", "jdk.compiler/com.sun.tools.javac.Main", *(["--release", "8"] if args.release8 else ["-source", "8", "-target", "8"]),
                         "-Xlint:all,-options", "-Werror", "-encoding", "UTF-8", "-d", str(classes),
-                        str(SOURCE), str(LABELS), str(harness)]
+                        str(SOURCE), str(LABELS), str(SOURCE.parent / "ObservedChildText.java"), str(harness)]
         compile_result = subprocess.run(compile_argv, text=True, capture_output=True, check=True)
         run_argv = [args.java, "-cp", str(classes), PACKAGE + ".NotesCompletionEvidenceHostTest"]
         run_result = subprocess.run(run_argv, text=True, capture_output=True, check=True)
@@ -247,6 +247,8 @@ def main():
                   "source": {"path": str(SOURCE), "bytes": SOURCE.stat().st_size, "sha256": sha(SOURCE.read_bytes())},
                   "test": {"path": str(Path(__file__).resolve()), "sha256": sha(Path(__file__).read_bytes())},
                   "unchanged_dependency": {"path": str(LABELS), "sha256": sha(LABELS.read_bytes())},
+                  "collector_dependency": {"path": str(SOURCE.parent / "ObservedChildText.java"),
+                                           "sha256": sha((SOURCE.parent / "ObservedChildText.java").read_bytes())},
                   "fixture_root": str(CASE), "fixtures": fixtures,
                   "actual_fixture_assertion": "Historical raw editor matches only the pinned 40LF form; raw_exact false, storage bytes unverified, empty list/popup/editor cannot qualify a saved item.",
                   "synthetic_positive_scope": "The complete-body clickable list item is synthetic; no saved/reopened item exists in this historical task. No native or whole-task verification is simulated by this pure provider test.",

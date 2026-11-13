@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.root-main56-stability-source-review.v1",
+  "reviewer": "root",
+  "status": "source_review_no_new_blocker",
+  "package": {
+    "git": "29cd80c45014efe61156c8e56563944216236aa9",
+    "bytes": 361629,
+    "sha256": "f955cb2a283a155a540aacdcd9965f9cf9f5917eb4171f907635bea8cb9a8198"
+  },
+  "independent_review": {
+    "git": "98173deeb9f2b85f9e4ae5e8544607f60b084fe6",
+    "bytes": 6713,
+    "sha256": "c4c7ea10c2fc425eb9314737bdd87b71bff22a9bc18ae1ae5a51c4eb98f1c0ab"
+  },
+  "final_service_identity_delta": {
+    "git": "a7d79c06fbe8796f2d1e0d25e37bce09df146029",
+    "bytes": 1298,
+    "sha256": "57ef0051297a78de9ee94b50c0510b0089184e6749eb159ae511e6b5d433a098",
+    "result": {
+      "git": "6200e5325ec1397abd73e9bfa99235c7b063935d",
+      "bytes": 129287,
+      "sha256": "53dc2765f2f0504a4ea16618a2e0b44c0d443dceeb3834f030098ae2cea26fba"
+    }
+  },
+  "mechanics": {
+    "six_package_sources_full_bytes_sha_verified": true,
+    "service_nine_hunks_forward_reverse_actual55": true,
+    "session_fifteen_hunks_forward_reverse_actual55": true,
+    "final_service_one_hunk_result_full_bytes_sha_verified": true
+  },
+  "findings": [
+    "The homepage predicate is restricted to the observed official booking target, same complete captures and binding, and the observed horizontal advertisement geometry. The normal whole-tree guard remains for other targets.",
+    "The original model target NodeRef is retained. Complete before/fresh native snapshots and retained rows are paired by unique native path; only ordinal ids may change for retained rows, with no target rebinding.",
+    "The service owns the private live token. It refreshes the actual original target and ancestor chain, verifies node parent-child identity, hidden IME, selected window and unchanged two-read overlay relations, and records evidence before the platform invocation.",
+    "Bounded snapshots apply only to the bound active Flight Helper lease: 512 nodes, per-field limits and cumulative text budget32768. Incomplete snapshots cannot enable the predicate.",
+    "The private token remains tied to the exact task/frame/permit/display/window, expires after250ms, and is consumed once. Model run attempts remain fenced across captures and outcomes.",
+    "The existing original platform-action body was independently confirmed byte-identical by BG. Root read its relevant call sites and found one validate path for the homepage native click; other IME/fixed-intent/screenshot revalidations do not create a second booking invocation.",
+    "The retained query40 Java is unchanged. Its runner adds the new pure source and throw-only native type projection plus two exact method pins; the existing query assertions are not replaced.",
+    "The17 focused cases distinguish actual DOM and retained-row replay from explicit synthetic full-native fixtures. They do not claim to reproduce the unpersisted v55 transient graph or Android API execution."
+  ],
+  "limits": {
+    "source_review_only": true,
+    "host_processes_started": 0,
+    "phone_actions": 0,
+    "compilation_or_tests_proved_here": false,
+    "flight_query_success": false,
+    "flight_results_provider_ready": false,
+    "remaining": "Audit completion lifecycle integration and BG necessary fixture closure, followed by actual existing host/Android/phone tests"
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.v56-original-capture-fd-index.v1",
+  "task_id": "11f5735392b2402495a19e1ed5474d13",
+  "files": [
+    {
+      "relative_path": "task/web-helper/raw-95e2b067dfe243fd86d5a6771057e5b2429f777826b34bb298e5652ea17754eb.json",
+      "bytes": 229669,
+      "sha256": "4fb3af54391fe051ab3883016ca65225c1268366920d90a0554ef9cce443f0b1",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "95e2b067dfe243fd86d5a6771057e5b2429f777826b34bb298e5652ea17754eb",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "ecebfbf2f8804df5b6ec507d5954af2bff4ec8a1c56040b4a227873cb372f3a6",
+      "reply_record_sha256": "9239150377b0d39fa3b08fad103915d4a5b22eba3a3f03ee2c1baf2700018e07",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "95e2b067dfe243fd86d5a6771057e5b2429f777826b34bb298e5652ea17754eb",
+      "current_native_url_as_recorded": "https://m.csair.com/",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "bbd7bfce-c620-4dfa-901b-3fc9af6fefff",
+      "navigation_epoch_as_recorded": 2,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 91023,
+          "sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 91023,
+          "sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-c57b83ee6f8446efb5b80b6d7a6e4043ce026faa78414c5ba2e58128a621c03b.json",
+      "bytes": 229669,
+      "sha256": "4febbd991dc1510b0c81e153c9a2b95f6f272eb8f441a461a3a5f14ae773c2bb",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "c57b83ee6f8446efb5b80b6d7a6e4043ce026faa78414c5ba2e58128a621c03b",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "7c4819ac462da9f998e5110d1fa4df9b5fa1806c295f4d4fe2538c9bd1211b86",
+      "reply_record_sha256": "27dd26e9bfa99dc4c3efd1bf55145f83af956dab753c3837e9750f3e0d7de273",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "c57b83ee6f8446efb5b80b6d7a6e4043ce026faa78414c5ba2e58128a621c03b",
+      "current_native_url_as_recorded": "https://m.csair.com/",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "bbd7bfce-c620-4dfa-901b-3fc9af6fefff",
+      "navigation_epoch_as_recorded": 2,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 91023,
+          "sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 91023,
+          "sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "declared_hash_matches": true
+        }
+      ]
+    }
+  ],
+  "index_is_capture_or_business_verdict": false,
+  "business_verified": false,
+  "web_journal_present": true,
+  "raw_fd_file_count": 2,
+  "capture_method_file_count": 2
+}

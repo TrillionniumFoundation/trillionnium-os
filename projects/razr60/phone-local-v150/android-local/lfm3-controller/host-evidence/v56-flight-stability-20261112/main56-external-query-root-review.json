@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.main56-android-root-external-query-review.v1",
+  "source": {
+    "bytes": 206118,
+    "sha256": "85e530eebbc859dcea83955cd2f62153b2ab0414da8d7632dd7027eee45091f2",
+    "git_blob_sha": "c4881a3645078736df30645c9cb0040837faee94"
+  },
+  "request": {
+    "tool": "h_pty_start",
+    "bytes": 85269,
+    "sha256": "1be3b11cd2cd0d8e39abb4ef67d4efe526069491367874c375e6705c9112da7d",
+    "git_blob_sha": "3c9913370c36b26e2bb9a060a4e0be4b6fedb34c",
+    "host": "pocket4",
+    "cwd": "/home/alex/hepta-local-007f-20261111",
+    "idempotency_key": "007f-v56-main-p4-android-r1",
+    "max_argument_bytes": 73984
+  },
+  "actual_focused": {
+    "bytes": 44408,
+    "sha256": "036e4f7b185a127e457712fcd23b6745d8aac18a04cf64da4035764329efee43",
+    "git_blob_sha": "94faa212af37300fa4eee3384cdf382b034aad7e"
+  },
+  "core": {
+    "bytes": 9732,
+    "sha256": "778fbfeac89fa330d123207c43e485818b530f77e978247c61f67d9d23ce9a39",
+    "git_blob_sha": "5cb49be79cbf60bb9cfdc34eb24ea6a1a16aace1"
+  },
+  "web": {
+    "bytes": 47337,
+    "sha256": "220ccb705ba17797d7403c26c1a9bcb438f46c8ea83e017c617a343d27232f7c",
+    "git_blob_sha": "a444cbac9951180a7dde73bee2984fdf063ee30a"
+  },
+  "external_query_exact_one_hunk_forward_reverse": true,
+  "builder_and_signer_exact_delta_forward_reverse": true,
+  "publisher_twelve_literals_forward_reverse": true,
+  "gzip_crc_full_source_equal": true,
+  "original_595_inventory_unchanged": true,
+  "compiler217_unchanged": true,
+  "original_query_runner_count_guard_incompatible": true,
+  "external_original40_187_execution_pending": true,
+  "actual_android_execution_pending": true
+}

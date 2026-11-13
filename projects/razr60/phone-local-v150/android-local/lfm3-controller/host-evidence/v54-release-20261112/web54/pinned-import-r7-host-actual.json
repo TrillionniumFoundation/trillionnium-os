@@ -1,0 +1,141 @@
+{
+  "schema": "hepta.web54-pinned-import-focused-stage.v1",
+  "all_pass": true,
+  "error": null,
+  "source_candidate_sha256": "cb011c384d64189c28a702ef9ea57d2f376b6bcee2429c26024b4bf3c6d2f2f1",
+  "old_28_5_8_12_5_gates_reexecuted": false,
+  "phone_commands_executed": 0,
+  "preparation_execute_called": false,
+  "runner_execute_called": false,
+  "actual_preparation_succeeded": false,
+  "task_started": false,
+  "business_verified": false,
+  "original_589_application_sources_modified": false,
+  "started_wall_s": 1794483781.4102504,
+  "steps": [
+    {
+      "name": "actual-three-module-imports",
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r7/test_pinned_web_imports_r7.py",
+        "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r7"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.2654540419462137,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r7/import.stdout",
+        "bytes": 76,
+        "sha256": "668471ba9e2086418f0e53d5651dbdbda7c4dd983408f764bc35dfaed8c55225"
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r7/import.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "source": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r7/stage.py",
+    "bytes": 12201,
+    "sha256": "58970327c400c1a7ae6f440872629fc27b1936ecc27b5223ec579137172206c2"
+  },
+  "input": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r7/INPUT.json",
+    "bytes": 142918,
+    "sha256": "c4626ce284dc44cd4765a4c2a7520706928ebf05106154182ff885973cb356c0"
+  },
+  "candidate": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r7/CANDIDATE.json",
+    "bytes": 130289,
+    "sha256": "cb011c384d64189c28a702ef9ea57d2f376b6bcee2429c26024b4bf3c6d2f2f1"
+  },
+  "release": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r7/RELEASE.json",
+    "bytes": 1723,
+    "sha256": "acfbdf07f671facf65f6919142f8e4646952ec2a55524f313b4a4a5c9bcad3c3"
+  },
+  "runtime_files": [
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r7/web_entry_support.py",
+      "bytes": 56351,
+      "sha256": "40fd406476f0dc4175ff9f1bc25f85d7a7f7984816b35d5c07d52147c5876c65"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r7/prepare_background_web_v54_r1.py",
+      "bytes": 27554,
+      "sha256": "fc19f3907be2e2a2a813271ab49111e135f22f7d71de2777272b000350d6aea9"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r7/run_background_web_v54_r1.py",
+      "bytes": 33746,
+      "sha256": "1fd56ea02e6da96ad4150bb05d72f5d219eb40990b02ef8c40e3f2f8579eebd4"
+    }
+  ],
+  "metadata": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r7/IMPORT-METADATA.json",
+    "bytes": 2585,
+    "sha256": "e86516f81b1a335a833fd56f558c438bdd9f80554990ef26b0c3b62b76c04a0c"
+  },
+  "test": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r7/test_pinned_web_imports_r7.py",
+    "bytes": 10729,
+    "sha256": "02c2201f10cb337fda7e09edfb91441455e58135ddfc8a2d736c7383496c0006"
+  },
+  "import_checks": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r7/IMPORT-RESULT.json",
+    "bytes": 2643,
+    "sha256": "592a97188329cef62d993375932b6cf5f711c2ec6dadf1754ae529c80acc9e06",
+    "case_count": 6,
+    "assertion_count": 130,
+    "preloaded_name_checks": 6
+  },
+  "original_r6_failure": {
+    "git_blob": "d11fd51399edbc4739641d76a3a6027c94b6cfaf",
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-prepare-r1/RESULT.json",
+    "bytes": 3804,
+    "sha256": "b7edac0f932df637ed03a08719c7a414ce6b2dcb5539372e62bd9743ee8ad704",
+    "error": "ModuleNotFoundError: No module named 'warm_receipts'",
+    "prepared": false,
+    "task_started": false,
+    "start_tapped": false,
+    "target_app_operated": false
+  },
+  "original_r6_gate": {
+    "git_blob": "a930bbb91816e1d9b8511472d7ee05a1cf316efc",
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r6/STAGE-RESULT.json",
+    "bytes": 8205,
+    "sha256": "ccaa6c5b5b6d6e4186dc4a5aaba627526b49578880f8f247214faa172bcaea7f"
+  },
+  "actual_dependency_sources": [
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/source/tools/model_profiles.py",
+      "bytes": 2930,
+      "sha256": "ee26ed1f2f2b2ffd5f14fbd526c6d3cbf05d7ed8d65c422df5e60a72fa0cfa3a",
+      "git_blob_sha": "84d7144160cced3228c473f0fac9ce60e3be9272"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/source/tools/phone_acceptance.py",
+      "bytes": 60278,
+      "sha256": "411da90ca9ef83441fa0a199a25d71361ab582db5b54ac08bd39e5e8597e6302",
+      "git_blob_sha": "4ca7feee83ede97025c317b4b3cf9176baf3a3cb"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/source/tools/warm_receipts.py",
+      "bytes": 7410,
+      "sha256": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5",
+      "git_blob_sha": "8d4779aa93d8195aa43256efac9c19d083bf815f"
+    }
+  ],
+  "actual_r7_loader": {
+    "path": "/home/alex/hepta-local-007f-20261111/phone-adapters-v46/background_helpers_r7_v46.py",
+    "bytes": 78112,
+    "sha256": "c74edc0d5d1c600f07775720474b3a9634542c1749c3e7c904fc097e1a6cb6b5"
+  },
+  "original_release_unchanged": true,
+  "original_inputs_unchanged": true,
+  "staged_sources_unchanged": true,
+  "finished_wall_s": 1794483781.6955006
+}

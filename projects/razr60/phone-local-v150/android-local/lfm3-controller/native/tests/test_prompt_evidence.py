@@ -73,10 +73,14 @@ int main(int argc,char **argv){
     }else if(!strcmp(argv[2],"prompt_hash")){
         sha[0]=sha[0]=='0'?'1':'0';
         assert(!hepta_capture_prompt_evidence(&o,inputs,prompt,strlen(prompt),sha));assert(!hepta_prompt_evidence_complete);
-    }else if(!strcmp(argv[2],"original_lfm")){
-        hepta_model_profile=&hepta_profiles[0];hepta_input_ids=NULL;hepta_input_count=0;
+    }else if(!strcmp(argv[2],"lfm3_exact")){
+        hepta_model_profile=&hepta_profiles[0];assert(hepta_model_profile->exact_tokens);
+        strcpy(hepta_verified_model_sha,hepta_model_profile->sha256);
         assert(hepta_capture_prompt_evidence(&o,inputs,prompt,strlen(prompt),sha));
-        assert_contents(hepta_prompt_evidence_ids_path,"",0);
+        const char encoded[]={1,0,0,0,42,0,0,0};assert_contents(hepta_prompt_evidence_ids_path,encoded,sizeof encoded);
+    }else if(!strcmp(argv[2],"lfm3_missing_ids")){
+        hepta_model_profile=&hepta_profiles[0];hepta_input_ids=NULL;hepta_input_count=0;
+        assert(!hepta_capture_prompt_evidence(&o,inputs,prompt,strlen(prompt),sha));assert(!hepta_prompt_evidence_complete);
     }else assert(0);
     return 0;
 }
@@ -107,13 +111,14 @@ def main():
         subprocess.run(flags+includes+["-fsyntax-only",str(args.base/"native/probe-worker.c")],check=True)
         binary=root/"contract"
         subprocess.run(flags+includes+[str(root/"test.c"),"-Wl,--gc-sections","-o",str(binary)],check=True)
-        for case in ["normal","symlink","token_hash","prompt_hash","original_lfm"]:
+        for case in ["normal","symlink","token_hash","prompt_hash","lfm3_exact","lfm3_missing_ids"]:
             subprocess.run([str(binary),str(root/case),case],check=True)
         metadata=json.loads((root/"normal/prompt-evidence.json").read_text())
         assert metadata["input_ids_count"]==2 and metadata["input_ids_will_be_passed_directly"] is True
-        old=json.loads((root/"original_lfm/prompt-evidence.json").read_text())
-        assert old["input_ids_count"]==0 and old["input_ids_will_be_passed_directly"] is False
-    print("PASS: full generated C syntax; exact bytes/IDs; no overwrite; symlink rejection; bad prompt/token hashes; original LFM semantics; duplicate adapter rejection")
+        lfm3=json.loads((root/"lfm3_exact/prompt-evidence.json").read_text())
+        assert lfm3["input_ids_count"]==2 and lfm3["input_ids_will_be_passed_directly"] is True
+        assert lfm3["model_profile"]=="lfm3-1.7b-qad-q4_0"
+    print("PASS: full generated C syntax; exact bytes/IDs; no overwrite; symlink rejection; bad prompt/token hashes; LFM3 exact IDs required; duplicate adapter rejection; model_or_tokenizer_executed=false")
 
 
 if __name__=="__main__":

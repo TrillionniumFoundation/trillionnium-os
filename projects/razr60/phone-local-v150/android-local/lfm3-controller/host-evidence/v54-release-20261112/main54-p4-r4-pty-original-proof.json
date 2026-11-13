@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.v54-final-host-r4-pty-exit.v1",
+  "session_id": "dpty-9532d14afae273413b448d201ee612aa5522ee0f102b4b4cf59c5de9fe2c3cd1",
+  "status": {
+    "boot": "97d9600f-e081-465c-9e6e-62651e09806b",
+    "bytes_seen": 392,
+    "bytes_stored": 392,
+    "capture_error": null,
+    "closed": false,
+    "created_unix_ms": 1794469384960,
+    "exit_code": 0,
+    "output_complete": true,
+    "owner_pid": 3576094,
+    "pid": 3576097,
+    "state": "exited"
+  },
+  "output_complete": true,
+  "stdout_bytes": 392,
+  "stdout_sha256": "c64223ba0925ce74489a80b5a610bca8eb804b4998c5c81d9b6c49b80d195bce",
+  "stdout_raw": "{\"result\": {\"path\": \"/home/alex/hepta-local-007f-20261111/v54-main-host-r4/STAGE-RESULT.json\", \"bytes\": 15314, \"sha256\": \"21ffbb2aad0b7b5657d58f6581cce751863ecd13852417a6f88efbc57fee594e\"}, \"all_pass\": true, \"exit_code\": 0, \"error\": null, \"host_error\": null, \"source_file_count\": 589, \"compiler_input_count\": null, \"compiled_archive\": null, \"host_check_count\": 101, \"host_input_count\": 413}\r\n"
+}

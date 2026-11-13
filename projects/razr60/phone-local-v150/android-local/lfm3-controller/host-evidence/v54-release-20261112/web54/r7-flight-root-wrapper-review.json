@@ -1,0 +1,94 @@
+{
+  "schema": "hepta.independent-flight54-root-r7-wrapper-review.v1",
+  "scope": "Root's two immutable wrappers and their narrow r7 dependency successor; source only.",
+  "base_reviews": [
+    "14af10601ad1e643920fcfbe619a6d5131d48c8b",
+    "63f5739b30bd3b7e37ce7c9eb39cc3f9a3868771"
+  ],
+  "inputs": [
+    {
+      "git_blob": "592c517e6932b9c92b947618c16cba51a892a566",
+      "bytes": 2833,
+      "sha256": "19cb85357e784a6b6339cd11f307fecc6ccf90a0b2fc25936986d689122d26cc"
+    },
+    {
+      "git_blob": "f972b6798c5ae7ce68a1e7f3eaa0287819e8d574",
+      "bytes": 3188,
+      "sha256": "d90976048776cba5a3ed787c695e86a9e0ec2a6384aaabf9cc8d34084b2a2190"
+    },
+    {
+      "git_blob": "029ec420948d4a7228ae0dc82492cee096cd07b5",
+      "bytes": 130289,
+      "sha256": "cb011c384d64189c28a702ef9ea57d2f376b6bcee2429c26024b4bf3c6d2f2f1"
+    }
+  ],
+  "wrapper_exact_checks": [
+    {
+      "label": "prepare",
+      "replacements": 7,
+      "forward_exact": true,
+      "reverse_exact": true,
+      "sha256": "19cb85357e784a6b6339cd11f307fecc6ccf90a0b2fc25936986d689122d26cc"
+    },
+    {
+      "label": "run",
+      "replacements": 11,
+      "forward_exact": true,
+      "reverse_exact": true,
+      "sha256": "d90976048776cba5a3ed787c695e86a9e0ec2a6384aaabf9cc8d34084b2a2190"
+    }
+  ],
+  "candidate_exact_checks": [
+    {
+      "path": "web_entry_support.py",
+      "bytes": 56351,
+      "sha256": "40fd406476f0dc4175ff9f1bc25f85d7a7f7984816b35d5c07d52147c5876c65",
+      "reverse_to_actual_r6": true
+    },
+    {
+      "path": "prepare_background_web_v54_r1.py",
+      "bytes": 27554,
+      "sha256": "fc19f3907be2e2a2a813271ab49111e135f22f7d71de2777272b000350d6aea9",
+      "reverse_to_actual_r6": true
+    },
+    {
+      "path": "run_background_web_v54_r1.py",
+      "bytes": 33746,
+      "sha256": "1fd56ea02e6da96ad4150bb05d72f5d219eb40990b02ef8c40e3f2f8579eebd4",
+      "reverse_to_actual_r6": true
+    }
+  ],
+  "facts": [
+    "Prepare's seven unique replacements and RUN's eleven unique replacements reconstruct the new bytes and reverse exactly to the separately reviewed r6 wrappers.",
+    "The new source lengths and full SHA pins agree with all three complete files from candidate 029ec; all eight candidate changes reverse exactly to independently read r6 source bytes.",
+    "The only functional candidate changes preload the existing pinned warm_receipts before phone_acceptance and include that pin in the run evidence list; no sys.path widening or replacement module is introduced.",
+    "Warm receipt 7410/d5ab468b and phone_acceptance 60278/411da90c pins agree with the actual Main54 source inventory; inherited load_pinned executes the hash-checked raw under its registered exact module name.",
+    "Prepare owner16 root/PID/start_ticks/boot, connection arguments, installed APK/UID, release content SHA and ordinary UI semantics are unchanged; output changes to fresh prepare-r2 and preserves failed r6 prepare-r1.",
+    "RUN remains a template with five None facts rejecting before source load. Its argv changes only source/release/review/preparation paths and matching exact source pins, with original parser bounds and original operation_lock unchanged.",
+    "Stable FD, regular/single-link/no-symlink, bounded full read, complete SHA, FD/path identity and same raw compile guards are byte-identical outside the listed source-pin substitutions.",
+    "The r7 actual host import gate and actual new preparation/Root visual review are independent runtime prerequisites, not produced or inferred by this source review."
+  ],
+  "verdict": {
+    "new_source_blocker_found": false,
+    "host_import_pass_claimed": false,
+    "phone_ready_claimed": false
+  },
+  "retained_failure_reference": {
+    "git_blob": "d11fd51399edbc4739641d76a3a6027c94b6cfaf",
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-v54-lfm3-flight-prepare-r1/RESULT.json",
+    "bytes": 3804,
+    "sha256": "b7edac0f932df637ed03a08719c7a414ce6b2dcb5539372e62bd9743ee8ad704",
+    "error": "ModuleNotFoundError: No module named 'warm_receipts'",
+    "prepared": false,
+    "task_started": false,
+    "start_tapped": false,
+    "target_app_operated": false
+  },
+  "limits": {
+    "h_calls": 0,
+    "host_tests": 0,
+    "python_executed": false,
+    "phone_actions": 0,
+    "old_suite_rerun": false
+  }
+}

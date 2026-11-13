@@ -30,6 +30,14 @@ manifest_root=ET.parse(ROOT/'AndroidManifest.xml').getroot()
 version_code=int(manifest_root.get('{http://schemas.android.com/apk/res/android}versionCode'))
 version_name=manifest_root.get('{http://schemas.android.com/apk/res/android}versionName')
 control=manifest_root.find('application/service') is not None
+# The local controller remains offline. Only the same-signer helper binding
+# permission is present from v53 onward; older packages retain an empty set.
+expected_permissions=['org.trillionnium.hepta.webhelper.permission.BIND_EVIDENCE'] if control and version_code>=53 else []
+permission_nodes=[node for node in manifest_root if node.tag.startswith('uses-permission')]
+permission_name='{http://schemas.android.com/apk/res/android}name'
+if (any(node.tag!='uses-permission' or set(node.attrib)!={permission_name} for node in permission_nodes)
+        or sorted(node.get(permission_name) for node in permission_nodes)!=expected_permissions):
+    raise RuntimeError('Source permissions must equal the exact version-bound offline controller set')
 APK=OUT/(('hepta-local-'+version_name.split('-')[0]+'.apk') if control else 'hepta-localprobe-0.1.%d.apk'%(version_code-1))
 UNSIGNED=OUT/('hepta-local-control-unsigned.apk' if control else 'hepta-localprobe-unsigned.apk')
 REPORT=OUT/('control-v%d-static'%version_code) if control else OUT/('probe-v%d-static'%version_code) if version_code>1 else OUT
@@ -160,8 +168,15 @@ verify=run([APKSIGNER,'verify','--verbose','--print-certs',APK])
 badging=run([AAPT2,'dump','badging',APK])
 permissions=run([AAPT2,'dump','permissions',APK])
 manifest=run([AAPT2,'dump','xmltree',APK,'--file','AndroidManifest.xml'])
-if 'uses-permission:' in permissions or 'android.permission.INTERNET' in manifest:
-    raise RuntimeError('probe must declare no Android permissions')
+actual_permissions=[]
+for line in permissions.splitlines():
+    if line.strip().startswith('uses-permission'):
+        entry=re.fullmatch(r"uses-permission: name='([^']+)'",line.strip())
+        if entry is None:raise RuntimeError('Unexpected compiled permission record')
+        actual_permissions.append(entry.group(1))
+actual_permissions.sort()
+if actual_permissions!=expected_permissions or 'android.permission.INTERNET' in manifest:
+    raise RuntimeError('Compiled permissions must equal the exact offline controller set; INTERNET is forbidden')
 if "package: name='org.trillionnium.hepta.local'" not in badging: raise RuntimeError('package mismatch')
 actual_identity=re.search(r"^package: name='([^']+)' versionCode='([^']+)' versionName='([^']*)'",badging,re.MULTILINE)
 if not actual_identity or actual_identity.groups()!=('org.trillionnium.hepta.local',str(version_code),version_name):
@@ -226,7 +241,7 @@ with zipfile.ZipFile(APK) as z:
         lib_receipts.append({'name':name,'bytes':len(payload),'sha256':expected,'source':str(path),'provenance':provenance})
 receipt={'schema':'hepta.local-model.static-acceptance.v3','apk':str(APK),'apk_bytes':APK.stat().st_size,'apk_sha256':sha(APK),
     'new_development_signing_key_created':created_signing_key,'existing_installation_signer_match_proven':False,
-    'package':'org.trillionnium.hepta.local','permissions':[],'abi':['arm64-v8a'],
+    'package':'org.trillionnium.hepta.local','permissions':actual_permissions,'abi':['arm64-v8a'],
     'version_code':version_code, 'version_name':version_name,
     'actual_build_identity_asset':actual_build_asset_name,'actual_build_identity_sha256':hashlib.sha256(actual_build_asset).hexdigest(),
     'debuggable':True,'extract_native_libs':True,'compile_sdk':34,'min_sdk':30,'target_sdk':35,

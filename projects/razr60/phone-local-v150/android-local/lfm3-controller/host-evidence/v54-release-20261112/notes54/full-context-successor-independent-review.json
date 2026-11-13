@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.source-review.v1",
+  "reviewed_payload": {
+    "git_blob": "5947e181ba088dc1ddbe30c913f9450f5923d224",
+    "bytes": 69244,
+    "sha256": "1a7f8f2bb7c43965723ab51cb189a9b7db933d72bf81f07fe03697c15af25893"
+  },
+  "reviewed_source": {
+    "git_blob": "3b9e3e775bcb6ca2442608dbf642eb918dd150c8",
+    "bytes": 26403,
+    "sha256": "585f6d2b0e3d0a092b0b5b7ad884dc20d7328dfc0552d5cd6cdf749c7cf67b22"
+  },
+  "prior_review_git": "f0363664f09d8bf0d572aff629bb85bdcfd20c07",
+  "conclusion": "No source-level blocker in the eight exact replay wiring changes and two exact derived main-context changes.",
+  "verified": [
+    "The complete new source reconstructs and reverses byte-for-byte to the previously reviewed 24,225-byte replay source.",
+    "The derived 26,783-byte main verifier reverses exactly to the pinned 26,325-byte 79450f5 original; only two keyword-only inputs and the complete typed nine-field context comparison changed.",
+    "Expected selection comes from independently pinned preparation plus the original OWNER plan parser, and preparation SHA is fixed and rehashed. Neither extra value is copied from the live-context object under test.",
+    "The whole context is compared with same_value, preserving bool/int distinctions and rejecting unknown keys; no fields are discarded or synthesized.",
+    "Original eight main checks, all fence/system-command/archived image IO and original false collector remain unchanged. New main copy lives only under the exclusive replay output; original source and evidence trees remain guarded.",
+    "The unchanged first output mkdir outside handler gives one winner; subprocess/ADB are disabled during replay. No new phone observation or test suite is introduced."
+  ],
+  "execution": {
+    "host_calls": 0,
+    "phone_actions": 0,
+    "tests_run": 0,
+    "replay_pass_observed": false
+  },
+  "remaining": "Actual execution must still validate all fixed original bytes and independent nine domains; source review is not a posthoc pass."
+}

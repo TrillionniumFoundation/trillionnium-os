@@ -1,0 +1,137 @@
+{
+  "schema": "hepta.main57.flight-independent-run-final-seal.v1",
+  "scope": "Only six actual preparation/review/visual/release values in the original RUN wrapper, and six exact publisher pins. Root executes the independent runner after actual normal owner close.",
+  "preparation": {
+    "git_blob_sha": "05c0367566f546c01b5b32aa8e8aefd67e4afa7a",
+    "bytes": 53737,
+    "sha256": "c527f0ab5b37694db79d5ad89102446523c09b88e74e2bd0edea5a3650a0ba9b"
+  },
+  "root_visual_review": {
+    "git_blob_sha": "172c201d11fff69f353af447c2e076a1f60b2b3a",
+    "bytes": 885,
+    "sha256": "5b82d1fea7677e0133272dcc49ce4f99ce6706d15c4aff96369ff26c1ce4eb73"
+  },
+  "owner_normal_close": {
+    "git_blob_sha": "feb28e2299e613f2a9aff0646879ee292badc8d2",
+    "bytes": 1829,
+    "sha256": "803bf2a4ec1caae1857622b712e2d5734e761dac8c7c6cc727bcc0660b010eae"
+  },
+  "release_sha256": "918b8ee2dfaa5f6f23982d60d0da03e378e55b6c7bcaff7ca0e13476a0d8252c",
+  "run": {
+    "pending": {
+      "git_blob_sha": "bf061f3ed0846f5f59f8fba78b18d0b679e8af63",
+      "bytes": 3216,
+      "sha256": "3402e41ac6c660ad985e65df3471e87eed8ad2de6c662de3a121b5506311ab23"
+    },
+    "final": {
+      "git_blob_sha": "23725e70c775a0445187ab9b0301a89ae1ec01eb",
+      "bytes": 3532,
+      "sha256": "5686cfeed3f312ef031b1c0168942e896e8090b0af831446fb0fabfa78cfc7a8"
+    },
+    "ordered_replacements": [
+      {
+        "before": "PREPARATION_SHA256=None\n",
+        "after": "PREPARATION_SHA256=\"c527f0ab5b37694db79d5ad89102446523c09b88e74e2bd0edea5a3650a0ba9b\"\n",
+        "count": 1
+      },
+      {
+        "before": "REVIEW_SHA256=None\n",
+        "after": "REVIEW_SHA256=\"5b82d1fea7677e0133272dcc49ce4f99ce6706d15c4aff96369ff26c1ce4eb73\"\n",
+        "count": 1
+      },
+      {
+        "before": "PREPARED_SCREEN_SHA256=None\n",
+        "after": "PREPARED_SCREEN_SHA256=\"781e8fda6e6037808f71e13d6fda53b675b82034a6722dfcf6cef8a52232f6d7\"\n",
+        "count": 1
+      },
+      {
+        "before": "PREPARED_WINDOW_SHA256=None\n",
+        "after": "PREPARED_WINDOW_SHA256=\"9ee6830916a5b11fe9e2cb1ba4286028b341d2a6624be65b7e24d0be638596b6\"\n",
+        "count": 1
+      },
+      {
+        "before": "START_TAP=None\n",
+        "after": "START_TAP=[180,1114]\n",
+        "count": 1
+      },
+      {
+        "before": "RELEASE_MANIFEST_SHA256=None\n",
+        "after": "RELEASE_MANIFEST_SHA256=\"918b8ee2dfaa5f6f23982d60d0da03e378e55b6c7bcaff7ca0e13476a0d8252c\"\n",
+        "count": 1
+      }
+    ],
+    "full_inverse_exact": true
+  },
+  "publisher": {
+    "pending": {
+      "git_blob_sha": "53b1c5aac05c3d23172fa310b518f16628b7a677",
+      "bytes": 7607,
+      "sha256": "955d96cd09cf201dd5fe55cdfe08992d8cb719f63c3bd6b37b12ca113d16da05"
+    },
+    "final": {
+      "git_blob_sha": "38785991980606d29e35832ff88a45d009d7a4e6",
+      "bytes": 7793,
+      "sha256": "23d5d381cebef07bcce61981121ff33b99eb36a000fc880c6812feb889dac9a4"
+    },
+    "ordered_replacements": [
+      {
+        "before": "\"bytes\":None,\"sha256\":None",
+        "after": "\"bytes\":3532,\"sha256\":\"5686cfeed3f312ef031b1c0168942e896e8090b0af831446fb0fabfa78cfc7a8\"",
+        "count": 1
+      },
+      {
+        "before": "ARGV_BYTES=None\n",
+        "after": "ARGV_BYTES=2656\n",
+        "count": 1
+      },
+      {
+        "before": "ARGV_SHA=None\n",
+        "after": "ARGV_SHA=\"32802c7b4dd7c4678cc57013a9366d8da80e30a289978d76833a65865ed9eadc\"\n",
+        "count": 1
+      },
+      {
+        "before": "GZIP_BYTES=None\n",
+        "after": "GZIP_BYTES=1991\n",
+        "count": 1
+      },
+      {
+        "before": "GZIP_SHA=None\n",
+        "after": "GZIP_SHA=\"64267673d262870f8b0f322dc69959d38f5f2ac7330309ce0c1de66a8ca33fee\"\n",
+        "count": 1
+      }
+    ],
+    "value_count": 6,
+    "full_inverse_exact": true,
+    "gzip": {
+      "bytes": 1991,
+      "sha256": "64267673d262870f8b0f322dc69959d38f5f2ac7330309ce0c1de66a8ca33fee"
+    },
+    "canonical_base64": {
+      "git_blob_sha": "0ce08a426ab0661bfaa37519f273e6fe4bde2c49",
+      "bytes": 2656,
+      "sha256": "32802c7b4dd7c4678cc57013a9366d8da80e30a289978d76833a65865ed9eadc"
+    },
+    "full_crc_and_exact_source_roundtrip": true,
+    "exact_request": {
+      "git_blob_sha": "7f915ca3dc7a2e13cc06bc6761e976bb32a939bf",
+      "bytes": 11080,
+      "sha256": "16820116a3052d02c66a011b43ad6a36da01dcbe07e2a099b386a39fa53b783c"
+    },
+    "key": "007f-web57-flight-run-publish-r1"
+  },
+  "independent_run": {
+    "exact_request": {
+      "git_blob_sha": "242c7c93ae4cf7912d590a1c0a3f5e1e95c37190",
+      "bytes": 389,
+      "sha256": "b9d8b927c20eb95654d89df7cbdad650f8d5cd703ead5a47e48e48c1575fc1f7"
+    },
+    "raw_utf8": "{\n  \"host\": \"pocket4\",\n  \"executable\": \"/usr/bin/python3\",\n  \"args\": [\n    \"-u\",\n    \"-B\",\n    \"/home/alex/hepta-local-007f-20261111/ROOT-WEB57-FLIGHT-RUN-r1.py\"\n  ],\n  \"cwd\": \"/home/alex/hepta-local-007f-20261111\",\n  \"env\": {\n    \"PYTHONDONTWRITEBYTECODE\": \"1\",\n    \"PYTHONUNBUFFERED\": \"1\"\n  },\n  \"cols\": 160,\n  \"rows\": 48,\n  \"idempotency_key\": \"007f-background-web-v57-lfm3-flight-r1\"\n}\n",
+    "operation_lock": "original nonblocking runner operation_lock; no cooperative owner identity reused",
+    "key": "007f-background-web-v57-lfm3-flight-r1"
+  },
+  "runtime_sources_changed": false,
+  "main57_signed_or_installed_APK_changed": false,
+  "source_bodies_changed": false,
+  "host_or_phone_executed_by_BG": false,
+  "all_created_blobs_full_readback_verified": true
+}

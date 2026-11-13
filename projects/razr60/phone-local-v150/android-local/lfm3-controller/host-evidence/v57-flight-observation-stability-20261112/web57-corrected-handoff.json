@@ -1,0 +1,382 @@
+{
+  "schema": "hepta.main57-web-json-null-r2-executable-handoff.v1",
+  "source": {
+    "bytes": 66923,
+    "sha256": "2e8d995002de046c4f11b78999115e1652cc3274b42a1d9a1ddd850b523263af",
+    "git_blob_sha": "95e8654ba2522f8140ec376d1a26b637160c7f90"
+  },
+  "review": {
+    "bytes": 154341,
+    "sha256": "7623e49d1890d637fea39748e000989d82b4d1838edbbfa65290b6bab21e4359",
+    "git_blob_sha": "c096bb7926f209ff3acffbf5eb369a44d5d16537"
+  },
+  "fixture": {
+    "bytes": 154154,
+    "sha256": "e0cc2a474545623cd8e79aaa73afb130f5dc8733efc43f521ad909df0ec384a2",
+    "git_blob_sha": "348d62b28b8930b05d3f401c06557692e7c3081e"
+  },
+  "fixture_delta_git": "16ad80bd40b1753a65837680698a71e516ecfd73",
+  "fixture_packet": {
+    "bytes": 364848,
+    "sha256": "8ac71189842cde32a349e39a89da909fd7d759b29d6b14eba66120a5b65babca",
+    "git_blob_sha": "037096bebe3cf4776d588a2198fa2376b21453a7"
+  },
+  "packet_delta_git": "ec35b692ad7ad70b4ac1623bbf751cf6be2a56ab",
+  "previous_actual_failure": {
+    "bytes": 30361,
+    "sha256": "d66b4dcaf0eed2b650df9e88928a32ab5145608f600b868864c3925011d72532",
+    "git_blob_sha": "4f436784332e6a1bf7200cbaf105c28e17a55b29"
+  },
+  "source_candidate_git": "517e61599073eb264c5e52871570d49e7af2d798",
+  "production_source_count": 595,
+  "production_sources_changed": false,
+  "expected_composition": {
+    "cases": 79,
+    "assertions": 215,
+    "actual_counts": null
+  },
+  "source_compact_differences": [
+    {
+      "index": 0,
+      "before": {
+        "bytes": 6006,
+        "sha256": "8d4860698962c1e65c40f029ebcfec6615c824ebacdabb82343fed109c754df2",
+        "git_blob_sha": "3e76499957ecf5354c0315428af0af39f48f373e"
+      },
+      "after": {
+        "bytes": 6815,
+        "sha256": "bf8a8cffe96c8e6b7d655affb7693908f92d3438918f9fa0dcff64d7e2aa6d07",
+        "git_blob_sha": "86ae9f7c26a3947b165949bf6bfb589961916e30"
+      },
+      "description": "new independent r2 root, expected215, actual failed57 pins"
+    },
+    {
+      "index": 1,
+      "before": {
+        "bytes": 100832,
+        "sha256": "5081cd7ad79ad3d87c27111a81a682b223063ce3b937380eb4a9a39da02ba9cb",
+        "git_blob_sha": "4c26e1c543a81fd202e36833c4c70500b4722051"
+      },
+      "after": {
+        "bytes": 15334,
+        "sha256": "6e02ed8cbd09d6643f6516a3318c0da023e575fe55719a180bccca7a53cd5c67",
+        "git_blob_sha": "77e7e2bd06996819510387367460fdee8341addc"
+      },
+      "description": "null-only helper delta derived from actual r1 packet"
+    },
+    {
+      "index": 2,
+      "before": "def derive_packet(prior_raw):\n    delta=PACKET_DELTA\n    checked(prior_raw,delta[\"base\"],\"actual56 complete packet\")\n    packet=strict(prior_raw)\n    need(packet[\"schema\"]==delta[\"schema_before\"]\n         and packet[\"current_aggregate\"]==delta[\"current_aggregate_before\"]\n         and \"main57_successor\" not in packet,\"exact actual56 metadata\")\n    matches=[item for item in packet[\"files\"] if item[\"path\"]==delta[\"helper\"][\"path\"]]\n    need(len(matches)==1,\"one existing native-stability helper\")\n    helper=matches[0]\n    need(helper[\"origin\"]==delta[\"helper\"][\"origin_before\"],\"exact helper predecessor provenance\")\n    old_text=helper[\"raw_utf8\"]\n    checked(old_text.encode(\"utf-8\"),delta[\"helper\"][\"before\"],\"actual56 helper\")\n    new_text=old_text\n    need(len(delta[\"helper\"][\"ordered_replacements\"])==3,\"only three reviewed helper replacements\")\n    for change in delta[\"helper\"][\"ordered_replacements\"]:\n        need(change[\"count\"]==1 and new_text.count(change[\"before\"])==1,\"one explicit helper replacement\")\n        new_text=new_text.replace(change[\"before\"],change[\"after\"])\n    exact_changes(old_text.encode(\"utf-8\"),delta[\"helper\"][\"ordered_replacements\"],new_text.encode(\"utf-8\"))\n    checked(new_text.encode(\"utf-8\"),delta[\"helper\"][\"after\"],\"observation-bracket helper successor\")\n    helper.update(delta[\"helper\"][\"after\"]);helper[\"raw_utf8\"]=new_text\n    helper[\"origin\"]=delta[\"helper\"][\"origin_after\"]\n    need(len(delta[\"changed_production_inputs\"])==1,\"only current native-stability pure class changes\")\n    for change in delta[\"changed_production_inputs\"]:\n        matches=[i for i,row in enumerate(packet[\"production_inputs\"]) if row[\"path\"]==change[\"before\"][\"path\"]]\n        need(len(matches)==1 and packet[\"production_inputs\"][matches[0]]==change[\"before\"],\"one exact production successor row\")\n        packet[\"production_inputs\"][matches[0]]=change[\"after\"]\n    packet[\"schema\"]=delta[\"schema_after\"];packet[\"current_aggregate\"]=delta[\"current_aggregate_after\"]\n    packet[\"main57_successor\"]=delta[\"added_metadata\"]\n    raw=encoded(packet)\n    checked(raw,delta[\"result\"],\"complete current packet full pin\")\n    reverse=strict(raw)\n    rh=[item for item in reverse[\"files\"] if item[\"path\"]==delta[\"helper\"][\"path\"]]\n    need(len(rh)==1,\"one helper in complete reverse packet\")\n    rh=rh[0]\n    for change in reversed(delta[\"helper\"][\"ordered_replacements\"]):\n        need(rh[\"raw_utf8\"].count(change[\"after\"])==1,\"unique helper reverse block\")\n        rh[\"raw_utf8\"]=rh[\"raw_utf8\"].replace(change[\"after\"],change[\"before\"])\n    rh.update(delta[\"helper\"][\"before\"]);rh[\"origin\"]=delta[\"helper\"][\"origin_before\"]\n    for change in delta[\"changed_production_inputs\"]:\n        matches=[i for i,row in enumerate(reverse[\"production_inputs\"]) if row[\"path\"]==change[\"after\"][\"path\"]]\n        need(len(matches)==1 and reverse[\"production_inputs\"][matches[0]]==change[\"after\"],\"exact reverse production row\")\n        reverse[\"production_inputs\"][matches[0]]=change[\"before\"]\n    reverse[\"schema\"]=delta[\"schema_before\"];reverse[\"current_aggregate\"]=delta[\"current_aggregate_before\"]\n    del reverse[\"main57_successor\"]\n    need(encoded(reverse)==prior_raw,\"whole actual56 packet remains byte-identical\")\n    return raw,packet\n\n",
+      "after": "def derive_packet(prior_raw):\n    delta=PACKET_DELTA\n    checked(prior_raw,delta[\"base\"],\"actual failed57 complete packet\")\n    packet=strict(prior_raw)\n    need(packet[\"schema\"]==\"hepta.main57-web-regression-fixture-successor.v1\"\n         and packet[\"current_aggregate\"]==CONFIG[\"aggregate\"]\n         and packet[\"main57_successor\"]==delta[\"main57_metadata_before\"]\n         and \"main57_host_json_null_successor\" not in packet,\"exact failed57 packet metadata\")\n    matches=[item for item in packet[\"files\"] if item[\"path\"]==delta[\"helper\"][\"path\"]]\n    need(len(matches)==1,\"one existing native-stability helper\")\n    helper=matches[0]\n    need(helper[\"origin\"]==delta[\"helper\"][\"origin_before\"],\"exact helper predecessor provenance\")\n    old_text=helper[\"raw_utf8\"]\n    checked(old_text.encode(\"utf-8\"),delta[\"helper\"][\"before\"],\"actual failed57 helper\")\n    new_text=old_text\n    need(len(delta[\"helper\"][\"ordered_replacements\"])==5\n         and delta[\"changed_production_inputs\"]==[],\"only five host JSON compatibility replacements\")\n    for change in delta[\"helper\"][\"ordered_replacements\"]:\n        need(change[\"count\"]==1 and new_text.count(change[\"before\"])==1,\"one explicit helper replacement\")\n        new_text=new_text.replace(change[\"before\"],change[\"after\"])\n    exact_changes(old_text.encode(\"utf-8\"),delta[\"helper\"][\"ordered_replacements\"],new_text.encode(\"utf-8\"))\n    checked(new_text.encode(\"utf-8\"),delta[\"helper\"][\"after\"],\"host JSON compatibility helper successor\")\n    helper.update(delta[\"helper\"][\"after\"]);helper[\"raw_utf8\"]=new_text\n    helper[\"origin\"]=delta[\"helper\"][\"origin_after\"]\n    packet[\"main57_successor\"]=delta[\"main57_metadata_after\"]\n    packet[\"main57_host_json_null_successor\"]=delta[\"added_metadata\"]\n    raw=encoded(packet)\n    checked(raw,delta[\"result\"],\"complete current packet full pin\")\n    reverse=strict(raw)\n    rh=[item for item in reverse[\"files\"] if item[\"path\"]==delta[\"helper\"][\"path\"]]\n    need(len(rh)==1,\"one helper in complete reverse packet\")\n    rh=rh[0]\n    for change in reversed(delta[\"helper\"][\"ordered_replacements\"]):\n        need(rh[\"raw_utf8\"].count(change[\"after\"])==1,\"unique helper reverse block\")\n        rh[\"raw_utf8\"]=rh[\"raw_utf8\"].replace(change[\"after\"],change[\"before\"])\n    rh.update(delta[\"helper\"][\"before\"]);rh[\"origin\"]=delta[\"helper\"][\"origin_before\"]\n    reverse[\"main57_successor\"]=delta[\"main57_metadata_before\"]\n    del reverse[\"main57_host_json_null_successor\"]\n    need(encoded(reverse)==prior_raw,\"whole failed57 packet remains byte-identical\")\n    return raw,packet\n\n",
+      "count": 1,
+      "before_sha256": "180a488f134fbd832f9a1c9e212975849764272634465f99aea9f9c1754ca514",
+      "after_sha256": "7f15f80fd1404cca4f21851e68fd6b33adab680cc4caa91fdbb322c4b6a42094"
+    },
+    {
+      "index": 3,
+      "before": "prior_packet_raw=checked(prior_output[\"FIXTURE-PACKET.json\"],CONFIG[\"prior_web\"][\"packet\"],\"actual56 packet\")\npacket_raw,packet=derive_packet(prior_packet_raw)\n",
+      "after": "# Preserve the actual57 OWNER/JSON constructor mismatch and its entire output.\n# No existing raw, generated fixture, class or log is rewritten by this successor.\nFAILED57=Path(CONFIG[\"prior_failed57\"][\"root\"])\nneed(FAILED57.is_absolute() and FAILED57 not in (ROOT,PRIOR,FAILED,MATERIALIZED)\n     and ROOT not in FAILED57.parents and FAILED57 not in ROOT.parents,\"independent failed57 output\")\nfailed57_output,failed57_facts=snapshot(FAILED57)\noriginals.extend(failed57_facts.values())\nfailed57_raw=checked(failed57_output[\"RESULT.json\"],CONFIG[\"prior_failed57\"][\"result\"],\"actual failed57 result\")\nfailed57=strict(failed57_raw)\nchecked(failed57_output[\"stage.py\"],CONFIG[\"prior_failed57\"][\"stage\"],\"actual failed57 coordinator\")\nfailed57_packet=checked(failed57_output[\"FIXTURE-PACKET.json\"],CONFIG[\"prior_failed57\"][\"packet\"],\"actual failed57 packet\")\nchecked(failed57_output[\"composition43.stderr\"],CONFIG[\"prior_failed57\"][\"composition_stderr\"],\"original OWNER mismatch stderr\")\nneed(failed57[\"schema\"]==\"hepta.main57-existing-web-regressions-host-stage.v1\"\n     and failed57[\"all_pass\"] is False and type(failed57[\"exit_code\"]) is int and failed57[\"exit_code\"]==1\n     and failed57[\"root\"]==str(FAILED57)\n     and failed57[\"stage_sha256\"]==CONFIG[\"prior_failed57\"][\"stage\"][\"sha256\"]\n     and failed57[\"source_candidate_git\"]==CONFIG[\"aggregate\"][\"git\"]\n     and failed57[\"source_inventory_sha256\"]==CONFIG[\"inventory\"][\"sha256\"]\n     and all(failed57[k] is True for k in (\"originals_unchanged\",\"written_files_unchanged\",\n        \"source_unchanged\",\"prior_output_preserved\",\"prior_failed56_output_preserved\")),\n     \"actual57 failure and original preservation facts remain failures\")\nneed([s[\"name\"] for s in failed57[\"steps\"]]==[\"compile\",\"evidence80\",\"composition43\"]\n     and [s[\"exit_code\"] for s in failed57[\"steps\"]]==[0,0,1]\n     and all(type(s[\"exit_code\"]) is int and s[\"timed_out\"] is False and s[\"forced_kill\"] is False\n             and s[\"exit_observed\"] is True for s in failed57[\"steps\"]),\"actual57 process sequence\")\nfor step in failed57[\"steps\"]:\n    for stream in (\"stdout\",\"stderr\"):\n        leaf=step[\"name\"]+\".\"+stream\n        need(step[stream][\"path\"]==str(FAILED57/leaf),\"failed57 log stays in original root\")\n        checked(failed57_output[leaf],step[stream],\"actual57 original stream\")\nneed(set(failed57[\"reports\"])=={\"evidence80\"}\n     and failed57[\"reports\"][\"evidence80\"][\"report\"][\"all_pass\"] is True\n     and failed57[\"reports\"][\"evidence80\"][\"report\"][\"cases\"]==80\n     and failed57[\"reports\"][\"evidence80\"][\"report\"][\"assertions\"]==92,\"only failed57 evidence80 subgate passed\")\nprior_packet_raw=checked(prior_output[\"FIXTURE-PACKET.json\"],CONFIG[\"prior_web\"][\"packet\"],\"actual56 packet\")\npacket_raw,packet=derive_packet(failed57_packet)\n",
+      "count": 1,
+      "before_sha256": "7f15f80fd1404cca4f21851e68fd6b33adab680cc4caa91fdbb322c4b6a42094",
+      "after_sha256": "826e5e6f1004804feb4161086fa05e98c0b2e69b575a1e0daa52e97f76b5efe4"
+    },
+    {
+      "index": 4,
+      "before": "        need(report[\"prior_case_count\"]==43 and report[\"legacy_dom_id_bridge_assertions_replaced\"]==2\n",
+      "after": "        compatibility=observation[\"host_json_map_null_compatibility\"]\n        need(compatibility[\"schema\"]==\"hepta.host-json-map-null-compatibility.v1\"\n             and compatibility[\"desktop_json_version\"]==\"20240303\"\n             and compatibility[\"changed_path\"]==\"capture.binding.authorization.find_query\"\n             and compatibility[\"archived_value\"]==\"present explicit JSON null\"\n             and compatibility[\"derived_host_value\"]==\"key omitted by desktop JSONObject(Map)\"\n             and compatibility[\"complete_original_authorization_recompiled\"] is True\n             and compatibility[\"restore_single_null_field_recovers_complete_original_capture\"] is True\n             and compatibility[\"original_capture_fd_bytes_unchanged\"] is True\n             and compatibility[\"all_four_complete_dom_raw_values_unchanged\"] is True\n             and compatibility[\"production_require_binding_changed\"] is False\n             and compatibility[\"original_binding_sha256\"]==\"427b3e7743e044dc06643468e976ba0fd47c27b28b21203473fd31738937dc53\"\n             and compatibility[\"derived_host_binding_sha256\"]==\"b56264d8894c3c3946437e9aab857c3ccf8453170396acfbff5e556411da1e69\"\n             and compatibility[\"derived_captures_are_original_fd_records\"] is False,\n             \"explicit exact JSON constructor compatibility and separate binding hashes\")\n        need(report[\"prior_case_count\"]==43 and report[\"legacy_dom_id_bridge_assertions_replaced\"]==2\n",
+      "count": 1,
+      "before_sha256": "826e5e6f1004804feb4161086fa05e98c0b2e69b575a1e0daa52e97f76b5efe4",
+      "after_sha256": "b32c7d92c16f4ae4684bbf4d3c50a41d0343b7990d0169c70492bc303faf1d2e"
+    },
+    {
+      "index": 5,
+      "before": "\"fixture_packet_derived_from_actual56\":True,\n        \"old_fixture_packet\":CONFIG[\"prior_web\"][\"packet\"],",
+      "after": "\"fixture_packet_derived_from_actual56\":False,\n        \"fixture_packet_derived_from_actual57_failed_run\":True,\n        \"old_fixture_packet\":CONFIG[\"prior_failed57\"][\"packet\"],\n        \"prior_failed57_web_result\":dict(CONFIG[\"prior_failed57\"][\"result\"],path=str(FAILED57/\"RESULT.json\")),\n        \"prior_failed57_output_count\":len(failed57_output),\n        \"prior_failed57_output_inventory_sha256\":sha(encoded(source_rows(failed57_output))),\n        \"prior_failed57_output_preserved\":False,\n        \"host_json_map_null_fixture_compatibility\":packet[\"main57_host_json_null_successor\"],\n        \"additional_host_json_compatibility_assertions\":4,",
+      "count": 1,
+      "before_sha256": "b32c7d92c16f4ae4684bbf4d3c50a41d0343b7990d0169c70492bc303faf1d2e",
+      "after_sha256": "1642367634343c3687fcb9dcb5f8948f15bd7a4dcd320190ac3e8dddc55d814e"
+    },
+    {
+      "index": 6,
+      "before": "    written.append(write_new(ROOT/\"PRIOR-FAILED56-OUTPUT-INVENTORY.json\",encoded(source_rows(failed_output))))\n",
+      "after": "    written.append(write_new(ROOT/\"PRIOR-FAILED56-OUTPUT-INVENTORY.json\",encoded(source_rows(failed_output))))\n    written.append(write_new(ROOT/\"prior-failed57/RESULT.json\",failed57_raw))\n    written.append(write_new(ROOT/\"PRIOR-FAILED57-OUTPUT-INVENTORY.json\",encoded(source_rows(failed57_output))))\n",
+      "count": 1,
+      "before_sha256": "1642367634343c3687fcb9dcb5f8948f15bd7a4dcd320190ac3e8dddc55d814e",
+      "after_sha256": "20da4f422b448b52d1bc386f1816fa8965df6f50692a784b4800a02170e66424"
+    },
+    {
+      "index": 7,
+      "before": "        result[\"prior_failed56_output_preserved\"]=True\n",
+      "after": "        result[\"prior_failed56_output_preserved\"]=True\n        need(snapshot(FAILED57)==(failed57_output,failed57_facts),\n             \"all actual57 failed output bytes and identities unchanged\")\n        result[\"prior_failed57_output_preserved\"]=True\n",
+      "count": 1,
+      "before_sha256": "20da4f422b448b52d1bc386f1816fa8965df6f50692a784b4800a02170e66424",
+      "after_sha256": "7b18b864a8c13e131204f42736b0671f43b4f6cf10e6cec6434488ddc0364ce3"
+    },
+    {
+      "index": 8,
+      "before": "The actual56 80/70/13 assertions are retained; Composition appends only nine\nread-only observation-bracket cases. Actual counts come from child reports.",
+      "after": "The actual56 80/70/13 assertions and the actual57 nine appended cases are retained.\nOnly the host JSON null representation is adapted in explicitly derived capture\ncopies; complete original raw records and production binding checks are unchanged.\nFour direct compatibility assertions join the existing positive case.\nActual counts come from child reports.",
+      "count": 1,
+      "before_sha256": "7b18b864a8c13e131204f42736b0671f43b4f6cf10e6cec6434488ddc0364ce3",
+      "after_sha256": "2e8d995002de046c4f11b78999115e1652cc3274b42a1d9a1ddd850b523263af"
+    }
+  ],
+  "unchanged_function_blocks": [
+    {
+      "name": "def need(",
+      "bytes": 73,
+      "sha256": "2fda2363dc0da741cc1b9452655218696c92b37bdb80dfa5bd617072b2f2e520",
+      "git_blob_sha": "da9741dceb9cff3b9eb42620708964680d5bbedf"
+    },
+    {
+      "name": "def sha(",
+      "bytes": 58,
+      "sha256": "cd3c8cfc66055850200a221aa85c87316a720df83acd24c761183a97206b3ead",
+      "git_blob_sha": "26e721e70984b544bcf6274cdbbc8c7610b8ab0c"
+    },
+    {
+      "name": "def blob(",
+      "bytes": 102,
+      "sha256": "d90d2bddd45aa92b4f47f28f396661da880477ae2798264e33e80e90f32dbc15",
+      "git_blob_sha": "05ff8255725d94c23cd4d102e7bdff3cb5731f51"
+    },
+    {
+      "name": "def encoded(",
+      "bytes": 120,
+      "sha256": "aa489abafd86da87e1dec61514ee9e0becbd43888e055973c2f3be8be0b398be",
+      "git_blob_sha": "28fd20a92e1c757ebc486e65cdd5a728d183f1ee"
+    },
+    {
+      "name": "def strict(",
+      "bytes": 383,
+      "sha256": "5a3ef29310640e12fe316dcb071f26624df6f1268d09062720c27cbf042e1742",
+      "git_blob_sha": "0ef774f09bdf7a86a6563ed853bd36dbc962aabf"
+    },
+    {
+      "name": "def identity(",
+      "bytes": 122,
+      "sha256": "8a5a8439a9565c06eb205e9e52657ed62c0331bb416300967bee99d0acd31772",
+      "git_blob_sha": "134453e535c5b6cf2227143deaa4c9892ff4a06e"
+    },
+    {
+      "name": "def read_regular(",
+      "bytes": 1489,
+      "sha256": "dfcab53ef7ce6087f4a8d74a7ce3408d1c01570a4905ab2d15a7057ab9e0d6fc",
+      "git_blob_sha": "ea5883e2aa68e3bba1c9d167bda283dfd643b5c1"
+    },
+    {
+      "name": "def unchanged(",
+      "bytes": 161,
+      "sha256": "275649d9ef445608a88b5627340651867b909f7cc522ae476073487ee1196acc",
+      "git_blob_sha": "f1b2ffa352df1a483f40ed79e2af595bfa2b28cc"
+    },
+    {
+      "name": "def checked(",
+      "bytes": 282,
+      "sha256": "80729bccf3ce8f9c79107b4f67b3682a8f87bdbc03cc324bccca0a859e16cea1",
+      "git_blob_sha": "b0e5f77597c3ac4af241e9d2b423549b0c4d972e"
+    },
+    {
+      "name": "def relative(",
+      "bytes": 259,
+      "sha256": "ecabba5e18759783fefab3a4b0bab785b4a9fd0f9e4cab6027b40debffa34c47",
+      "git_blob_sha": "c6720af3ca2ec811c947957585ddf8ac2a080950"
+    },
+    {
+      "name": "def rows(",
+      "bytes": 170,
+      "sha256": "ad157595f28148080952af9151a1078fb1ffb7d0052679de0537bae4800f5935",
+      "git_blob_sha": "1afb1d0b755f2b979ad5dae3e38b4c6c8abd02e3"
+    },
+    {
+      "name": "def snapshot(",
+      "bytes": 428,
+      "sha256": "deaf4e77864275fb1740bc51d05e509b650a4dffddad9e0430311086597173ac",
+      "git_blob_sha": "b708f41ad1a4a07fda42bc279df9caaaf2fb1372"
+    },
+    {
+      "name": "def validate_map(",
+      "bytes": 493,
+      "sha256": "ae3fa9f9c0983ee67e9b2526a14afd853652b45e5f3f9dc0a879b2bc0a6e4258",
+      "git_blob_sha": "b4bccd403c7dc4ad3ba4ac6c387d5cf2bf1740be"
+    },
+    {
+      "name": "def write_new(",
+      "bytes": 791,
+      "sha256": "405f58f2aeef38a1d356e9ff984e54d055b0385e8ac3f10d0fa0b53cb746041d",
+      "git_blob_sha": "ec423477f599f97dbfedc16fc213f1f8b2c8aaa7"
+    },
+    {
+      "name": "def load_bound(",
+      "bytes": 134,
+      "sha256": "e0628a2c0f627381affa2519b01a47c2488f6fedbfd0ad143a8d8777e6756bff",
+      "git_blob_sha": "5741320f975476060031d4e4e6340d2cf9f3f6cb"
+    },
+    {
+      "name": "def run_step(",
+      "bytes": 3912,
+      "sha256": "9c24f6b736639172751ae2e2f76f7582fdf4648d946d54b96914bef3392ff124",
+      "git_blob_sha": "a7db6b5c3e84d7931744df3e911faac201d74523"
+    },
+    {
+      "name": "def source_rows(",
+      "bytes": 169,
+      "sha256": "f77e1376b99161c9059e88cccf93cbc70ea595251b10409a7459ccc6906e3737",
+      "git_blob_sha": "b0a3da46757f2c19736b1cb28c95b515db383b2d"
+    },
+    {
+      "name": "def read_bound(",
+      "bytes": 113,
+      "sha256": "0d58ee5a98ad3cac7a355fb705310dc57bf6b2876cc2143a61cc732f87aee367",
+      "git_blob_sha": "68558566caabb092e8aabe250cadb701fffa67a0"
+    },
+    {
+      "name": "def exact_changes(",
+      "bytes": 703,
+      "sha256": "5d322091dcb5ce26cf686d9e3162fca2090f20fc91a50e7807a260c8a7f5e090",
+      "git_blob_sha": "0dae476d6abfede8f66efef27ce7cf0233a5b7d4"
+    }
+  ],
+  "request": {
+    "bytes": 38067,
+    "sha256": "d596239987b4ceca17c43e170f6bd7c39cd194bb3beb704dc7677f236d94e43e",
+    "git_blob_sha": "af99f99c7920544ae3ddf3f0bc0cfa241239ee27"
+  },
+  "transport_proof": {
+    "base_request": {
+      "bytes": 35075,
+      "sha256": "211eeaf7ddb75243af8c52281a54150fe3fa6c108e4ccb159b435389dc9282b0",
+      "git_blob_sha": "152607835e58bd6667023e4280828400d9a322b4"
+    },
+    "publisher_patches": [
+      {
+        "before": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r3.py\",\"bytes\":54123,\"sha256\":\"2c02f930ce9e785efc849a1a72cc70a6900fa9d406fb29750e5c2723059ed44e\"}]",
+        "after": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/v57-main-web-regression-host-r2.py\",\"bytes\":66923,\"sha256\":\"2e8d995002de046c4f11b78999115e1652cc3274b42a1d9a1ddd850b523263af\"}]",
+        "count": 1
+      },
+      {
+        "before": "ARGV_BYTES=23748",
+        "after": "ARGV_BYTES=26716",
+        "count": 1
+      },
+      {
+        "before": "ARGV_SHA=\"8047ad3aa2e6b9c6017eff8cc92e2005df05eb2315a371edcd45f1cd2e4330c2\"",
+        "after": "ARGV_SHA=\"1652458d044bd0da3b2cc8ee7c17b6c7c54ee8126bc58bbaa43c03c98352ac00\"",
+        "count": 1
+      },
+      {
+        "before": "GZIP_BYTES=17811",
+        "after": "GZIP_BYTES=20035",
+        "count": 1
+      },
+      {
+        "before": "GZIP_SHA=\"f9289307b972cc90eb335b217b5fef9503b0d1064d41b46e2051fb1b644ae085\"",
+        "after": "GZIP_SHA=\"609f1c517d81082efc0cfd28820d8693af778243d3d450b184835f5e3b4abbe6\"",
+        "count": 1
+      },
+      {
+        "before": "LOADER=\"import hashlib,os,pathlib,stat,sys\\np=pathlib.Path(\\\"/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r3.py\\\")\\nassert all(not q.is_symlink() for q in (p,*p.parents))\\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\ntry:\\n a=os.fstat(fd)\\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==54123\\n with os.fdopen(os.dup(fd),\\\"rb\\\") as f:raw=f.read(54123+1)\\n assert len(raw)==54123 and hashlib.sha256(raw).hexdigest()==\\\"2c02f930ce9e785efc849a1a72cc70a6900fa9d406fb29750e5c2723059ed44e\\\"\\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\\nfinally:os.close(fd)\\nsys.argv=[str(p)]\\nexec(compile(raw,str(p),\\\"exec\\\",dont_inherit=True),{\\\"__name__\\\":\\\"__main__\\\",\\\"__file__\\\":str(p),\\\"__stage_source__\\\":raw})\\n\"",
+        "after": "LOADER=\"import hashlib,os,pathlib,stat,sys\\np=pathlib.Path(\\\"/home/alex/hepta-local-007f-20261111/v57-main-web-regression-host-r2.py\\\")\\nassert all(not q.is_symlink() for q in (p,*p.parents))\\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\ntry:\\n a=os.fstat(fd)\\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==66923\\n with os.fdopen(os.dup(fd),\\\"rb\\\") as f:raw=f.read(66923+1)\\n assert len(raw)==66923 and hashlib.sha256(raw).hexdigest()==\\\"2e8d995002de046c4f11b78999115e1652cc3274b42a1d9a1ddd850b523263af\\\"\\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\\nfinally:os.close(fd)\\nsys.argv=[str(p)]\\nexec(compile(raw,str(p),\\\"exec\\\",dont_inherit=True),{\\\"__name__\\\":\\\"__main__\\\",\\\"__file__\\\":str(p),\\\"__stage_source__\\\":raw})\\n\"",
+        "count": 1
+      },
+      {
+        "before": "LOADER_SHA=\"101d039ebc66b78bd0ffcb3f4daa45baa40cb46b70908dab206b9c1f0a208636\"",
+        "after": "LOADER_SHA=\"f747008a844534141ffa516d42b6d64e22b0c1ef5a58462109bc16e77650fe17\"",
+        "count": 1
+      },
+      {
+        "before": "SUPERVISOR=\"import hashlib,json,os,signal,subprocess,sys,time\\nloader=sys.argv[1]\\nassert len(loader.encode(\\\"utf-8\\\"))==878 and hashlib.sha256(loader.encode(\\\"utf-8\\\")).hexdigest()==\\\"101d039ebc66b78bd0ffcb3f4daa45baa40cb46b70908dab206b9c1f0a208636\\\"\\nassert os.getcwd()==\\\"/home/alex/hepta-local-007f-20261111\\\"\\nstarted=time.monotonic()\\np=subprocess.Popen([\\\"/usr/bin/python3\\\",\\\"-I\\\",\\\"-B\\\",\\\"-c\\\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.core101-r3-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"started\\\",\\\"child_pid\\\":p.pid,\\\"timeout_seconds\\\":1200,\\\"loader_sha256\\\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\\ncode=None;timed_out=False;forced=False;error=None\\ntry:\\n    code=p.wait(timeout=1200)\\nexcept BaseException as failure:\\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\\n    error=type(failure).__name__+\\\": \\\"+str(failure)\\n    if p.poll() is None:\\n        try:os.killpg(p.pid,signal.SIGTERM)\\n        except ProcessLookupError:pass\\n        try:code=p.wait(timeout=10)\\n        except subprocess.TimeoutExpired:\\n            forced=True\\n            try:os.killpg(p.pid,signal.SIGKILL)\\n            except ProcessLookupError:pass\\n            try:code=p.wait(timeout=10)\\n            except subprocess.TimeoutExpired:error+=\\\"; owned child exit not observed\\\"\\nexit_observed=p.poll() is not None\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.core101-r3-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"finished\\\",\\\"child_pid\\\":p.pid,\\\"child_returncode\\\":code,\\\"exit_observed\\\":exit_observed,\\\"timed_out\\\":timed_out,\\\"forced_kill\\\":forced,\\\"error\\\":error,\\\"elapsed_seconds\\\":time.monotonic()-started}),flush=True)\\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\\nraise SystemExit(code if code>=0 else 128-code)\\n\"",
+        "after": "SUPERVISOR=\"import hashlib,json,os,signal,subprocess,sys,time\\nloader=sys.argv[1]\\nassert len(loader.encode(\\\"utf-8\\\"))==872 and hashlib.sha256(loader.encode(\\\"utf-8\\\")).hexdigest()==\\\"f747008a844534141ffa516d42b6d64e22b0c1ef5a58462109bc16e77650fe17\\\"\\nassert os.getcwd()==\\\"/home/alex/hepta-local-007f-20261111\\\"\\nstarted=time.monotonic()\\np=subprocess.Popen([\\\"/usr/bin/python3\\\",\\\"-I\\\",\\\"-B\\\",\\\"-c\\\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main57-web-r2-json-null-pty-launch.v1\\\",\\\"event\\\":\\\"started\\\",\\\"child_pid\\\":p.pid,\\\"timeout_seconds\\\":1200,\\\"loader_sha256\\\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\\ncode=None;timed_out=False;forced=False;error=None\\ntry:\\n    code=p.wait(timeout=1200)\\nexcept BaseException as failure:\\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\\n    error=type(failure).__name__+\\\": \\\"+str(failure)\\n    if p.poll() is None:\\n        try:os.killpg(p.pid,signal.SIGTERM)\\n        except ProcessLookupError:pass\\n        try:code=p.wait(timeout=10)\\n        except subprocess.TimeoutExpired:\\n            forced=True\\n            try:os.killpg(p.pid,signal.SIGKILL)\\n            except ProcessLookupError:pass\\n            try:code=p.wait(timeout=10)\\n            except subprocess.TimeoutExpired:error+=\\\"; owned child exit not observed\\\"\\nexit_observed=p.poll() is not None\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main57-web-r2-json-null-pty-launch.v1\\\",\\\"event\\\":\\\"finished\\\",\\\"child_pid\\\":p.pid,\\\"child_returncode\\\":code,\\\"exit_observed\\\":exit_observed,\\\"timed_out\\\":timed_out,\\\"forced_kill\\\":forced,\\\"error\\\":error,\\\"elapsed_seconds\\\":time.monotonic()-started}),flush=True)\\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\\nraise SystemExit(code if code>=0 else 128-code)\\n\"",
+        "count": 1
+      },
+      {
+        "before": "SUPERVISOR_SHA=\"d02a2976bcdf6519a4480cc3674b423f8098e79f2289f6b6dba56bf3955f14de\"",
+        "after": "SUPERVISOR_SHA=\"92f2d626a2cbbcf0e20311df7a21968d5bfc0d55fa909b922a45e988611b5047\"",
+        "count": 1
+      },
+      {
+        "before": "TRANSPORT_KEY=\"007f-v55-main-core101-materialized-host-r3\"",
+        "after": "TRANSPORT_KEY=\"007f-v57-main-existing-web-regression-host-r2-json-null\"",
+        "count": 1
+      },
+      {
+        "before": "need(len(LOADER.encode(\"utf-8\"))==878 and",
+        "after": "need(len(LOADER.encode(\"utf-8\"))==872 and",
+        "count": 1
+      },
+      {
+        "before": "need(len(SUPERVISOR.encode(\"utf-8\"))==1774",
+        "after": "need(len(SUPERVISOR.encode(\"utf-8\"))==1784",
+        "count": 1
+      }
+    ],
+    "loader_patches": [
+      {
+        "before": "/home/alex/hepta-local-007f-20261111/v55-main-core101-materialized-host-r3.py",
+        "after": "/home/alex/hepta-local-007f-20261111/v57-main-web-regression-host-r2.py",
+        "count": 1
+      },
+      {
+        "before": "54123",
+        "after": "66923",
+        "count": 3
+      },
+      {
+        "before": "2c02f930ce9e785efc849a1a72cc70a6900fa9d406fb29750e5c2723059ed44e",
+        "after": "2e8d995002de046c4f11b78999115e1652cc3274b42a1d9a1ddd850b523263af",
+        "count": 1
+      }
+    ],
+    "supervisor_patches": [
+      {
+        "before": "878",
+        "after": "872",
+        "count": 1
+      },
+      {
+        "before": "101d039ebc66b78bd0ffcb3f4daa45baa40cb46b70908dab206b9c1f0a208636",
+        "after": "f747008a844534141ffa516d42b6d64e22b0c1ef5a58462109bc16e77650fe17",
+        "count": 1
+      },
+      {
+        "before": "hepta.core101-r3-pty-bounded-launch.v1",
+        "after": "hepta.main57-web-r2-json-null-pty-launch.v1",
+        "count": 2
+      }
+    ],
+    "loader": {
+      "raw_utf8": "import hashlib,os,pathlib,stat,sys\np=pathlib.Path(\"/home/alex/hepta-local-007f-20261111/v57-main-web-regression-host-r2.py\")\nassert all(not q.is_symlink() for q in (p,*p.parents))\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\ntry:\n a=os.fstat(fd)\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==66923\n with os.fdopen(os.dup(fd),\"rb\") as f:raw=f.read(66923+1)\n assert len(raw)==66923 and hashlib.sha256(raw).hexdigest()==\"2e8d995002de046c4f11b78999115e1652cc3274b42a1d9a1ddd850b523263af\"\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\nfinally:os.close(fd)\nsys.argv=[str(p)]\nexec(compile(raw,str(p),\"exec\",dont_inherit=True),{\"__name__\":\"__main__\",\"__file__\":str(p),\"__stage_source__\":raw})\n",
+      "bytes": 872,
+      "sha256": "f747008a844534141ffa516d42b6d64e22b0c1ef5a58462109bc16e77650fe17",
+      "git_blob_sha": "e30191646b956181f122dc9eb12c2d728578322b"
+    },
+    "supervisor": {
+      "raw_utf8": "import hashlib,json,os,signal,subprocess,sys,time\nloader=sys.argv[1]\nassert len(loader.encode(\"utf-8\"))==872 and hashlib.sha256(loader.encode(\"utf-8\")).hexdigest()==\"f747008a844534141ffa516d42b6d64e22b0c1ef5a58462109bc16e77650fe17\"\nassert os.getcwd()==\"/home/alex/hepta-local-007f-20261111\"\nstarted=time.monotonic()\np=subprocess.Popen([\"/usr/bin/python3\",\"-I\",\"-B\",\"-c\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\nprint(json.dumps({\"schema\":\"hepta.main57-web-r2-json-null-pty-launch.v1\",\"event\":\"started\",\"child_pid\":p.pid,\"timeout_seconds\":1200,\"loader_sha256\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\ncode=None;timed_out=False;forced=False;error=None\ntry:\n    code=p.wait(timeout=1200)\nexcept BaseException as failure:\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\n    error=type(failure).__name__+\": \"+str(failure)\n    if p.poll() is None:\n        try:os.killpg(p.pid,signal.SIGTERM)\n        except ProcessLookupError:pass\n        try:code=p.wait(timeout=10)\n        except subprocess.TimeoutExpired:\n            forced=True\n            try:os.killpg(p.pid,signal.SIGKILL)\n            except ProcessLookupError:pass\n            try:code=p.wait(timeout=10)\n            except subprocess.TimeoutExpired:error+=\"; owned child exit not observed\"\nexit_observed=p.poll() is not None\nprint(json.dumps({\"schema\":\"hepta.main57-web-r2-json-null-pty-launch.v1\",\"event\":\"finished\",\"child_pid\":p.pid,\"child_returncode\":code,\"exit_observed\":exit_observed,\"timed_out\":timed_out,\"forced_kill\":forced,\"error\":error,\"elapsed_seconds\":time.monotonic()-started}),flush=True)\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\nraise SystemExit(code if code>=0 else 128-code)\n",
+      "bytes": 1784,
+      "sha256": "92f2d626a2cbbcf0e20311df7a21968d5bfc0d55fa909b922a45e988611b5047",
+      "git_blob_sha": "f3a53c4ff13b091a39ee77e36ea26e72d8823f16"
+    },
+    "gzip": {
+      "bytes": 20035,
+      "sha256": "609f1c517d81082efc0cfd28820d8693af778243d3d450b184835f5e3b4abbe6"
+    },
+    "argument": {
+      "bytes": 26716,
+      "sha256": "1652458d044bd0da3b2cc8ee7c17b6c7c54ee8126bc58bbaa43c03c98352ac00"
+    },
+    "full_roundtrip_verified": true
+  },
+  "runtime_length_assertions": {
+    "loader": 872,
+    "supervisor": 1784,
+    "verified": true
+  },
+  "no_H_submitted": true,
+  "scope": [
+    "Original actual57 failure whole output tree and all historical56 output stay read-only and verified before/after.",
+    "No changes to production, other five fixtures, four child commands, timeouts, or original211 assertions.",
+    "Four compatibility assertions join the existing positive case; no new suite or case names.",
+    "Original four raw FD/AX archives stay byte-identical; host capture copies are explicitly derived.",
+    "Runtime transport size assertions match the actual loader/supervisor bytes."
+  ]
+}

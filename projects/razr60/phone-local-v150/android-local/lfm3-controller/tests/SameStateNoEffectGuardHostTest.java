@@ -62,17 +62,18 @@ public final class SameStateNoEffectGuardHostTest {
         check(immutable,"snapshot cannot mutate guard history");
         ActionDecision newer=ActionDecision.parse("{\"reason\":\"different narrative\",\"action\":\"click\",\"observation_id\":\"00000000000000000000000000000000\",\"package\":\""+PKG+"\",\"node_label\":\"same label\",\"node_id\":\"n1\"}");
         check(g.rejects(newer,PKG,A),"reason and new observation ID do not erase same-effect evidence");
-        check(!g.rejects(one,"com.example.other",A),"different observed package clears rather than carries node IDs");
-        check(!g.rejects(one,PKG,A),"returning package does not revive old epoch");
+        check(!g.rejects(one,"com.example.other",A),"different package never borrows node IDs");
+        check(g.rejects(one,PKG,A),"returning package retains its own exact observed-state evidence");
         record(g,one,A,A);g.snapshot(PKG,B);
-        check(!g.rejects(one,PKG,A),"observed tree change clears permanently even on return");
+        check(g.rejects(one,PKG,A),"returning to the same observed tree retains confirmed refusals");
         record(g,one,A,A);g.snapshot(PKG,VISIBLE);
-        check(!g.rejects(one,PKG,A),"known IME change clears the epoch");
+        check(!g.rejects(one,PKG,VISIBLE)&&g.rejects(one,PKG,A),"known different IME does not borrow, returning IME retains evidence");
         record(g,one,A,A);
         check(g.rejects(one,PKG,UNKNOWN)&&g.rejects(one,PKG,A),"unknown IME is not evidence that known blocked actions became effective");
         SameStateNoEffectGuard uncertain=new SameStateNoEffectGuard();
         record(uncertain,one,UNKNOWN,UNKNOWN);
         check(!uncertain.rejects(one,PKG,A),"unknown outcome is not added as confirmed no-effect");
+        g=new SameStateNoEffectGuard();record(g,one,A,A);
         g.observed(two,PKG,A,PKG,A,false,true,false);
         check(!g.rejects(two,PKG,A),"rejected outcome is not recorded");
         g.observed(two,PKG,A,PKG,A,true,false,false);
@@ -85,7 +86,7 @@ public final class SameStateNoEffectGuardHostTest {
         g.observed(find,PKG,A,PKG,A,true,false,false);
         check(g.rejects(one,PKG,A),"same-state wait/discovery cannot erase confirmed effects");
         g.observed(wait,PKG,A,PKG,B,true,false,false);
-        check(!g.rejects(one,PKG,B),"fresh state change after wait clears");
+        check(!g.rejects(one,PKG,B),"different state after wait has no invented refusal");
         record(g,one,A,B);
         check(!g.rejects(one,PKG,B),"successful changed click is not blacklisted");
         check(!new SameStateNoEffectGuard().rejects(one,PKG,A),"new owner task starts without another task's records");
@@ -108,12 +109,21 @@ public final class SameStateNoEffectGuardHostTest {
         for(int i=0;i<SameStateNoEffectGuard.MAX_RECORDS;i++)record(full,click("n"+i),A,A);
         boolean bounded=false;try{record(full,click("n99"),A,A);}catch(IllegalStateException expected){bounded=true;}
         check(bounded&&full.rejects(click("n0"),PKG,A),"capacity stops without evicting a previously blocked action");
+        SameStateNoEffectGuard manyStates=new SameStateNoEffectGuard();
+        for(int i=0;i<SameStateNoEffectGuard.MAX_RECORDS;i++)record(manyStates,one,
+                new ObservationState("state-"+i,ImeVisibility.HIDDEN),new ObservationState("state-"+i,ImeVisibility.HIDDEN));
+        boolean totalBound=false;try{record(manyStates,two,B,B);}catch(IllegalStateException expected){totalBound=true;}
+        check(totalBound&&manyStates.rejects(one,PKG,new ObservationState("state-0",ImeVisibility.HIDDEN)),"global bound never evicts old state evidence");
+        SameStateNoEffectGuard knownIme=new SameStateNoEffectGuard();record(knownIme,one,A,A);record(knownIme,two,VISIBLE,VISIBLE);
+        check(knownIme.rejects(one,PKG,UNKNOWN)&&knownIme.rejects(two,PKG,UNKNOWN),"unknown current IME unions matching tree refusals conservatively");
+        check(!knownIme.rejects(two,PKG,A)&&!knownIme.rejects(one,PKG,VISIBLE),"known unequal IME states remain separate");
         if(args.length>0) {
             Path out=Paths.get(args[0]);Files.createDirectories(out);
             emit(out,"same-state-before.gbnf",new SameStateNoEffectGuard().snapshot(PKG,A));
             SameStateNoEffectGuard both=new SameStateNoEffectGuard();record(both,one,A,A);record(both,two,A,A);record(both,app1,A,A);record(both,app2,A,A);
             emit(out,"same-state-blocked.gbnf",both.snapshot(PKG,A));
             both.snapshot(PKG,B);emit(out,"same-state-changed.gbnf",both.snapshot(PKG,B));
+            emit(out,"same-state-returned.gbnf",both.snapshot(PKG,A));
         }
         System.out.println("PASS "+count+" cumulative no-effect contracts; android_compiled=false; phone_tested=false");
     }

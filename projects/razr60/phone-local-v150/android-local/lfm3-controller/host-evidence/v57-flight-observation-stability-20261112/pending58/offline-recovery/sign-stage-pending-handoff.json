@@ -1,0 +1,576 @@
+{
+  "schema": "hepta.main58-sign-publication-pending-source-handoff.v1",
+  "scope": "H0 source-only; Root alone stages/signs after actual gates and source CAS",
+  "signer": {
+    "base": {
+      "bytes": 95013,
+      "sha256": "7814550e071c5a4206da4b021dc3d4952a23d1cf11ad1f6f3e1d751b7d5b180f",
+      "git_blob_sha": "04976f96ef3f1d20277a407dfb9348e944cfcef8"
+    },
+    "candidate": {
+      "bytes": 97646,
+      "sha256": "49d8d2ba897661d0e3b68891c3fde6fe85dabdf90200de83aed62129b8fde158",
+      "git_blob_sha": "c110570bca19aea7f8f4e1887cf5b6187faba77f"
+    },
+    "ordered_patch_count": 29,
+    "ordered_replacements": [
+      {
+        "label": "sealed known58 source and pending actual release config",
+        "before": "CONFIG=json.loads(\"{\\\"schema\\\":\\\"hepta.main57-same-host-sign-config.v1\\\",\\\"root\\\":\\\"/home/alex/hepta-local-007f-20261111/v57-main-sign-r1\\\",\\\"build_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v57-main-p4-android-r1\\\",\\\"build_result\\\":{\\\"bytes\\\":244800,\\\"sha256\\\":\\\"5dc739a182bda8065f2bda04c1da7e44c43b74307f76f582ba6cc09c371475f1\\\"},\\\"build_stage\\\":{\\\"bytes\\\":113856,\\\"sha256\\\":\\\"ac4b54eb0815bce791a99ae3e01de8077808fe55b5eabc58488fd1eba8126331\\\"},\\\"build_input\\\":{\\\"bytes\\\":1598487,\\\"sha256\\\":\\\"d7174a964b506448c44f627e250cd662d953a94005790aad9ad7297671f5c13d\\\"},\\\"compiled_aggregate\\\":{\\\"git\\\":\\\"517e61599073eb264c5e52871570d49e7af2d798\\\",\\\"bytes\\\":1459826,\\\"sha256\\\":\\\"b98bb0f97ad5b25423387c4e3f8734aec7d4f8c2d1044335af039e0dd1c57cc3\\\"},\\\"compiled_source_inventory_sha256\\\":\\\"22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6\\\",\\\"core_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1\\\",\\\"core_result\\\":{\\\"bytes\\\":11178,\\\"sha256\\\":\\\"239e2639e7ba426f5068ae1e8620edf8bd5a1c564181fdfc8048f588a87b8aab\\\"},\\\"core_stage\\\":{\\\"bytes\\\":561799,\\\"sha256\\\":\\\"4596b0dca391311a53334f594df620e166e3225df6bbaf20ae8c8fccce674b04\\\"},\\\"final_aggregate\\\":{\\\"git\\\":\\\"517e61599073eb264c5e52871570d49e7af2d798\\\",\\\"bytes\\\":1459826,\\\"sha256\\\":\\\"b98bb0f97ad5b25423387c4e3f8734aec7d4f8c2d1044335af039e0dd1c57cc3\\\"},\\\"final_inventory\\\":{\\\"bytes\\\":103795,\\\"sha256\\\":\\\"22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6\\\"},\\\"core_blob_map\\\":{\\\"bytes\\\":141875,\\\"sha256\\\":\\\"2ebce60579704b0545cd9880e6a3fa0b7f5cad6149439aa1419db8fb2c16d539\\\"},\\\"web_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v57-main-web-regression-host-r2\\\",\\\"web_result\\\":{\\\"bytes\\\":54724,\\\"sha256\\\":\\\"61585af641cf4c1db70a9ae0d6f1e23ea93633fb7ead6b10b3a168d45aa2a3b1\\\"},\\\"web_stage\\\":{\\\"bytes\\\":66923,\\\"sha256\\\":\\\"2e8d995002de046c4f11b78999115e1652cc3274b42a1d9a1ddd850b523263af\\\"},\\\"web_packet\\\":{\\\"bytes\\\":364848,\\\"sha256\\\":\\\"8ac71189842cde32a349e39a89da909fd7d759b29d6b14eba66120a5b65babca\\\"},\\\"publication_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v57-main-release-publication-r1\\\",\\\"git_source_map\\\":{\\\"bytes\\\":289218,\\\"sha256\\\":\\\"5280a107976ccdc734a8ecfe8bffb08bb4b8a569526c0015704b6cdf270ede5f\\\"},\\\"publication\\\":{\\\"bytes\\\":7005,\\\"sha256\\\":\\\"cba1734c8da78e80bbbed51f036e1ebbfbb9d99aa39dffb0d967078c0051d5a0\\\"},\\\"source_commit\\\":\\\"313685edc580a750aea6301d8ff3cfd617d6fab6\\\",\\\"source_tree\\\":\\\"2368b777bad9fd9e2f5dcbcbefc6ea9c27fcb0da\\\",\\\"expected_prior_head\\\":\\\"c28266b18703bbb6287d2a3d7809384921214d01\\\",\\\"source_count\\\":595,\\\"compiler_input_count\\\":217,\\\"java_source_count\\\":115,\\\"host_input_count\\\":419,\\\"host_record_count\\\":101,\\\"base_source_commit\\\":\\\"42d3a0f447807659c0f78c8273edee01dd1b734f\\\",\\\"base_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v54-main-host-r4\\\",\\\"base_signed\\\":{\\\"path\\\":\\\"/home/alex/hepta-local-007f-20261111/v54-main-host-r4/assembly-r1/RESULT.json\\\",\\\"bytes\\\":15659,\\\"sha256\\\":\\\"eadc9dbb63b411015571a488377be6a8704c9f78415169a5164c8f13571f0f72\\\"},\\\"base_apk\\\":{\\\"path\\\":\\\"/home/alex/hepta-local-007f-20261111/v54-main-host-r4/out/hepta-local-0.54.0.apk\\\",\\\"bytes\\\":20985685,\\\"sha256\\\":\\\"0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a\\\"},\\\"base_static\\\":{\\\"path\\\":\\\"/home/alex/hepta-local-007f-20261111/v54-main-host-r4/out/control-v54-static/STATIC-ACCEPTANCE.json\\\",\\\"sha256\\\":\\\"23a4d98257b29f9c2a06d87823c3b9379831d6d88563b63c0768980aee1e85d6\\\"},\\\"base_source_inventory_sha256\\\":\\\"8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d\\\",\\\"base_host_sha256\\\":\\\"6c7f11e31c4fcb2e81c417995282987fcaf5f0fb632885f0f376a5745b9db3d8\\\",\\\"native_pins\\\":{\\\"libMNN.so\\\":\\\"5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d\\\",\\\"libc++_shared.so\\\":\\\"77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754\\\",\\\"libgeniex.so\\\":\\\"99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56\\\",\\\"libgeniex_plugin_llama_cpp.so\\\":\\\"cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a\\\",\\\"libggml-base.so\\\":\\\"bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40\\\",\\\"libggml-cpu.so\\\":\\\"b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b\\\",\\\"libggml-hexagon.so\\\":\\\"67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f\\\",\\\"libggml-htp-v79.so\\\":\\\"110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5\\\",\\\"libggml-opencl.so\\\":\\\"e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875\\\",\\\"libggml.so\\\":\\\"5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149\\\",\\\"libhepta_local_runner.so\\\":\\\"eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5\\\",\\\"libhepta_mobimind_runner.so\\\":\\\"b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020\\\",\\\"libhepta_ui_venus_runner.so\\\":\\\"5fa2dcae05fb649157d96481c5890c157301c76dab3522fcabcbe01b9b0d8551\\\",\\\"libllama-common.so\\\":\\\"8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122\\\",\\\"libllama.so\\\":\\\"4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835\\\",\\\"libmtmd.so\\\":\\\"ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d\\\",\\\"libomp.so\\\":\\\"b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76\\\"},\\\"worker\\\":{\\\"bytes\\\":59952,\\\"sha256\\\":\\\"eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5\\\"},\\\"worker_generated_sha256\\\":\\\"77b914eae46ea000d3c955628c35f6e96a715a4a14da3eb075923d2e6024bbb0\\\",\\\"focused_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v57-main-wire4-host-p4-r1\\\",\\\"focused_result\\\":{\\\"bytes\\\":45584,\\\"sha256\\\":\\\"7e1b16ba42b2fdde52f7e18bc94d72e3efa673160ab2c1896017ee0e8c51bb56\\\"},\\\"identity_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v55-installed-apk-identity-host-r1\\\",\\\"identity_result\\\":{\\\"bytes\\\":5727,\\\"sha256\\\":\\\"52762ada64c63bc58749d62e9bd183b586c40349f0e10082ded1c308d82df4f7\\\"},\\\"sdk_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2\\\",\\\"sdk_result\\\":{\\\"bytes\\\":64222,\\\"sha256\\\":\\\"5300257b246f73bc410028d8e1e61f18381e6f9b4a4406661d00b7d3d128eab6\\\"},\\\"query_runner\\\":{\\\"bytes\\\":41005,\\\"sha256\\\":\\\"5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10\\\"},\\\"build_identity\\\":{\\\"path\\\":\\\"tools/build_identity.py\\\",\\\"bytes\\\":2970,\\\"sha256\\\":\\\"7d5ad2641e9a3635fd04aa47ce3ea50a1a4f16b883a98b2ab407878eef36f6e6\\\",\\\"git_blob_sha\\\":\\\"393b3133c988a422f53a37ecb6052e60d508bf2e\\\"},\\\"old_runner\\\":{\\\"path\\\":\\\"/home/alex/hepta-local-007f-20261111/v51-build-r2/v51_assembly_filled.py\\\",\\\"sha256\\\":\\\"3bfad635fb8fdd6d971c60fb8b998a56e63fefaee75ae7a6140b4403cfbca53b\\\"},\\\"signer_cert\\\":\\\"202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5\\\",\\\"apksigner_executable\\\":\\\"/usr/bin/apksigner\\\",\\\"aapt2\\\":{\\\"path\\\":\\\"/usr/lib/android-sdk/build-tools/debian/aapt2\\\",\\\"bytes\\\":54512,\\\"sha256\\\":\\\"0e9ff92342040acdfd03e8708512f4e02353e3ca0a2b85ea2950da659110b009\\\"},\\\"jdk\\\":\\\"/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64\\\",\\\"permissions\\\":[\\\"org.trillionnium.hepta.webhelper.permission.BIND_EVIDENCE\\\"],\\\"source_prefix\\\":\\\"projects/razr60/phone-local-v150/android-local/lfm3-controller/\\\",\\\"repository\\\":\\\"trillionniumFoundation/trillionnium-os\\\",\\\"branch\\\":\\\"codex/hepta-v45-semantic-click-20261111-007f\\\",\\\"nested_stages\\\":[\\\"compile\\\",\\\"actual-completion\\\",\\\"notes-task-phase\\\",\\\"notes-task-phase-grammar\\\",\\\"notes-list-provenance\\\",\\\"notes-recovery\\\",\\\"notes-recovery-grammar\\\",\\\"notes-task-scope\\\",\\\"notes-task-scope-grammar\\\",\\\"calculator-input\\\",\\\"calculator-input-grammar\\\",\\\"failed-action-observation\\\",\\\"notes-editor-phase\\\",\\\"notes-editor-phase-grammar\\\",\\\"completion-status\\\",\\\"completion-status-grammar\\\",\\\"notes-create-workflow\\\",\\\"notes-workflow-controller\\\"],\\\"build_steps\\\":[\\\"javac\\\",\\\"d8\\\",\\\"aapt2-compile\\\",\\\"aapt2-link\\\",\\\"badging\\\",\\\"permissions\\\",\\\"manifest\\\",\\\"accessibility\\\"],\\\"predecessor_build_result\\\":{\\\"bytes\\\":203372,\\\"sha256\\\":\\\"b557a981d07fb5a65c39da4abbf0474559035a875831bec820c6b4a55fcc7ece\\\"},\\\"compiler_inputs\\\":{\\\"bytes\\\":34376,\\\"sha256\\\":\\\"54e95d6949154c631302241f76ca3518650ac297166210056f7e2f7740fc4370\\\"},\\\"overlay_file_count\\\":40,\\\"query_java_source_count\\\":50,\\\"web_production_java_count\\\":44,\\\"web_compilation_unit_count\\\":52,\\\"predecessor_release\\\":{\\\"path\\\":\\\"/home/alex/hepta-local-007f-20261111/v56-main-sign-r1/RESULT.json\\\",\\\"bytes\\\":32758,\\\"sha256\\\":\\\"e27e74e94b0668c1c07b04863c9aaabf1b3235f9ff2d0d0d8bd9a346e46b2c6b\\\"},\\\"predecessor_apk\\\":{\\\"path\\\":\\\"/home/alex/hepta-local-007f-20261111/v56-main-sign-r1/out/hepta-local-0.56.0.apk\\\",\\\"bytes\\\":21030740,\\\"sha256\\\":\\\"067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62\\\"},\\\"predecessor_aggregate\\\":{\\\"git\\\":\\\"0803dec4b6acc359b810bb79ca6fdd01ada69a8c\\\",\\\"bytes\\\":1427055,\\\"sha256\\\":\\\"c1cc7cc16eef4c3a34131ee719101a69db080b76e72c98f03248036fc6fd628f\\\"},\\\"predecessor_source_inventory_sha256\\\":\\\"ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e\\\",\\\"predecessor_release_source_commit\\\":\\\"9f4168616546233033edd4b254b4236ae987ea7e\\\",\\\"publication_base_source_commit\\\":\\\"9f4168616546233033edd4b254b4236ae987ea7e\\\",\\\"version_code\\\":57,\\\"version_name\\\":\\\"0.57.0-flight-observation-stability\\\",\\\"pending_scope\\\":\\\"read-only native observation bracket for exact unchanged Flight-home DOM; original action authority and terminal proof retained; Flight results provider remains false\\\",\\\"query_case_expectation\\\":{\\\"cases\\\":40,\\\"assertions\\\":187,\\\"case_names\\\":[\\\"literal_city_data_is_not_a_verified_route\\\",\\\"matching_form_without_model_actions_cannot_query\\\",\\\"real_class_selection_chain_enables_exact_query_once\\\",\\\"accepted_picker_click_waits_for_native_form_readback\\\",\\\"false_city_outcome_never_confirms\\\",\\\"stale_city_outcome_never_confirms\\\",\\\"date_before_two_city_confirmations_withheld\\\",\\\"wrong_after_city_literal_stays_pending\\\",\\\"dom_city_without_same_native_value_stays_pending\\\",\\\"foreign_native_city_descendant_rejected\\\",\\\"two_cities_without_full_calendar_date_cannot_query\\\",\\\"wrong_after_month_day_stays_pending\\\",\\\"wrong_after_weekday_stays_pending\\\",\\\"date_before_dispatch_end_cannot_confirm\\\",\\\"later_route_change_invalidates_current_query\\\",\\\"later_date_change_invalidates_year_confirmation\\\",\\\"native_field_disappears_query_withheld\\\",\\\"two_adults_are_not_one_adult_query\\\",\\\"disabled_dom_query_cannot_mint_target\\\",\\\"duplicate_native_query_even_disabled_refuses\\\",\\\"another_binding_cannot_import_selection_chain\\\",\\\"navigation_epoch_regression_cannot_import_progress\\\",\\\"query_reservation_is_not_a_dispatch\\\",\\\"second_query_reservation_refused\\\",\\\"actual_query_outcome_and_after_capture_remain_not_results\\\",\\\"false_query_outcome_consumes_attempt\\\",\\\"accepted_query_without_platform_entry_refused\\\",\\\"query_outcome_before_capture_refused\\\",\\\"query_outcome_wrong_model_run_refused\\\",\\\"query_outcome_twice_refused\\\",\\\"unknown_booking_body_is_read_only_pending\\\",\\\"city_airport_combination_not_silently_normalized\\\",\\\"actual_session_dispatch_methods_0\\\",\\\"actual_session_dispatch_methods_1\\\",\\\"actual_session_dispatch_methods_2\\\",\\\"actual_session_dispatch_methods_3\\\",\\\"actual_session_dispatch_methods_4\\\",\\\"actual_session_dispatch_methods_5\\\",\\\"actual_session_dispatch_methods_6\\\",\\\"actual_session_dispatch_methods_7\\\"]},\\\"composition_case_expectation\\\":{\\\"cases\\\":79,\\\"assertions\\\":215,\\\"case_names\\\":[\\\"v4_receipt_and_real_composition\\\",\\\"price_not_filled_from_goal\\\",\\\"result_record_requires_navigation\\\",\\\"current_tcg_real_provider_path\\\",\\\"tcg_no_navigation_cannot_complete\\\",\\\"tcg_rejects_stale_observation\\\",\\\"tcg_rejects_other_owner\\\",\\\"wait_has_no_action_capability\\\",\\\"flight_wait_uses_original_natural_owner\\\",\\\"original_tool_mask_is_intersection\\\",\\\"missing_accepted_outcome_rejected\\\",\\\"missing_dispatch_outcome_rejected\\\",\\\"stale_native_outcome_rejected\\\",\\\"dispatch_time_order_1009_1101\\\",\\\"dispatch_time_order_1102_1101\\\",\\\"dispatch_time_order_1100_1201\\\",\\\"operator_without_native_run_rejected\\\",\\\"old_source_observation_rejected\\\",\\\"new_epoch_required\\\",\\\"source_link_target_must_match\\\",\\\"navigation_cannot_cross_lease\\\",\\\"code3_binding_rejected\\\",\\\"old_v2_binding_rejected\\\",\\\"foreign_site_policy_rejected\\\",\\\"foreign_compiled_initial_url_rejected\\\",\\\"mutated_authority_evidence_rejected\\\",\\\"extra_selected_app_rejected\\\",\\\"wrong_authenticated_uid_rejected\\\",\\\"raw_controller_identity_mismatch_rejected\\\",\\\"callback_metadata_lost_binding_rejected\\\",\\\"bound_dom_wrong_origin_rejected\\\",\\\"manual_diagnostic_not_task_evidence\\\",\\\"duplicate_native_card_description_blocks_even_disabled\\\",\\\"out_of_screen_native_node_has_no_css_fallback\\\",\\\"different_native_label_blocks_product_link\\\",\\\"ambiguous_observed_region_blocks_product_link\\\",\\\"transaction_anchor_mints_no_capability\\\",\\\"modal_blocks_all_capabilities\\\",\\\"conditional_price_cannot_complete\\\",\\\"starting_price_cannot_complete\\\",\\\"currency_requires_actual_native_label\\\",\\\"native_duplicate_amount_blocks_result\\\",\\\"wrong_dom_currency_cannot_complete\\\",\\\"terminal_verified_snapshot_survives_only_normal_known_close\\\",\\\"terminal_unclaimed_unstable_or_unverified_result_never_freezes\\\",\\\"terminal_final_frame_identity_changes_are_rejected\\\",\\\"terminal_final_native_node_changes_are_rejected\\\",\\\"terminal_closed_callback_identity_is_exact\\\",\\\"terminal_unknown_abort_and_late_close_never_recover_success\\\",\\\"terminal_clear_rebind_and_late_observation_invalidate_proof\\\",\\\"terminal_requires_actual_owner_scope_cleanup_and_native_parent_facts\\\",\\\"terminal_tokens_are_gate_local_and_consumed_once\\\",\\\"terminal_flight_without_results_provider_stays_unverified\\\",\\\"flight_home_actual_two_dom_carousel_only_difference\\\",\\\"flight_home_dom_target_label_change_rejected\\\",\\\"flight_home_dom_non_carousel_geometry_rejected\\\",\\\"flight_home_dom_extra_slider_semantics_rejected\\\",\\\"flight_home_dom_vertical_or_nonuniform_motion_rejected\\\",\\\"flight_home_dom_visible_modal_in_both_reads_rejected\\\",\\\"flight_home_dom_metadata_or_membership_change_rejected\\\",\\\"flight_home_actual_retained_native_ad_only_change\\\",\\\"flight_home_retained_ordinal_shift_preserves_path_binding\\\",\\\"flight_home_retained_target_semantics_change_rejected\\\",\\\"flight_home_synthetic_full_native_same_overlap_accepted\\\",\\\"flight_home_full_native_target_change_rejected\\\",\\\"flight_home_full_native_ancestor_or_focus_change_rejected\\\",\\\"flight_home_full_native_ad_content_change_rejected\\\",\\\"flight_home_full_native_new_overlap_rejected\\\",\\\"flight_home_full_native_missing_ancestor_rejected\\\",\\\"flight_home_full_native_foreign_package_or_target_path_rejected\\\",\\\"flight_observation_actual56_old_digest_failure_reproduced\\\",\\\"flight_observation_actual_retained_rows_cannot_replace_complete_native\\\",\\\"flight_observation_actual_raws_with_explicit_synthetic_complete_native\\\",\\\"flight_observation_window_selection_ime_and_root_changes_rejected\\\",\\\"flight_observation_target_unretained_and_retained_semantics_rejected\\\",\\\"flight_observation_truncated_or_incomplete_native_rejected\\\",\\\"flight_observation_four_raw_equality_and_homepage_scope_required\\\",\\\"flight_observation_capture_epoch_binding_and_order_rejected\\\",\\\"flight_observation_geometry_and_actual_native_ancestor_must_match\\\"]},\\\"predecessor_web_result\\\":{\\\"path\\\":\\\"/home/alex/hepta-local-007f-20261111/v56-main-web-regression-host-r2/RESULT.json\\\",\\\"bytes\\\":47337,\\\"sha256\\\":\\\"220ccb705ba17797d7403c26c1a9bcb438f46c8ea83e017c617a343d27232f7c\\\"}}\")",
+        "after": "CONFIG=json.loads(\"{\\\"schema\\\":\\\"hepta.main58-same-host-sign-config.v1\\\",\\\"root\\\":\\\"/home/alex/hepta-local-007f-20261111/v58-main-sign-r1\\\",\\\"build_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v58-main-p4-android-r1\\\",\\\"build_result\\\":null,\\\"build_stage\\\":null,\\\"build_input\\\":{\\\"bytes\\\":1605061,\\\"sha256\\\":\\\"120cc1714b837e19d56acc4138bcb2194124b1100293f6bf2a8f71c32fb0ed33\\\"},\\\"compiled_aggregate\\\":{\\\"git\\\":\\\"94ca147166c4e4c7faa5bd32085c5431eb36f4b1\\\",\\\"bytes\\\":1465984,\\\"sha256\\\":\\\"600ff7c4198fc83d4e93399fc6bf039800805f4458406b4182952ddcff89b95b\\\"},\\\"compiled_source_inventory_sha256\\\":\\\"b44d3a9d9083a86d5fff36dfcc0c27958ef047a05df928923ef7c2e204cb23d6\\\",\\\"core_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v58-main-core101-materialized-host-r1\\\",\\\"core_result\\\":null,\\\"core_stage\\\":{\\\"bytes\\\":319314,\\\"sha256\\\":\\\"e98c4873da8914d14e33c7c7da093e7d39f89d3ea30295fae1019407d784ddcf\\\"},\\\"final_aggregate\\\":{\\\"git\\\":\\\"94ca147166c4e4c7faa5bd32085c5431eb36f4b1\\\",\\\"bytes\\\":1465984,\\\"sha256\\\":\\\"600ff7c4198fc83d4e93399fc6bf039800805f4458406b4182952ddcff89b95b\\\"},\\\"final_inventory\\\":{\\\"bytes\\\":103795,\\\"sha256\\\":\\\"b44d3a9d9083a86d5fff36dfcc0c27958ef047a05df928923ef7c2e204cb23d6\\\"},\\\"core_blob_map\\\":{\\\"bytes\\\":141875,\\\"sha256\\\":\\\"807e52edb4efda808a1dc1ae490ac13f7e92ff65f3f31c6156d4b8a54e2334e1\\\"},\\\"web_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v58-main-web-regression-host-r1\\\",\\\"web_result\\\":null,\\\"web_stage\\\":{\\\"bytes\\\":182461,\\\"sha256\\\":\\\"c4e64f533be6c48654bd7449ade390682bca5bc35bbf541c6e6f5596444074f9\\\"},\\\"web_packet\\\":{\\\"bytes\\\":469284,\\\"sha256\\\":\\\"a680ec7cec8ec37a050c738e78c0b228323b8c1b881d147860faa85f38dad101\\\"},\\\"publication_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v58-main-release-publication-r1\\\",\\\"git_source_map\\\":null,\\\"publication\\\":null,\\\"source_commit\\\":null,\\\"source_tree\\\":null,\\\"expected_prior_head\\\":null,\\\"source_count\\\":595,\\\"compiler_input_count\\\":217,\\\"java_source_count\\\":115,\\\"host_input_count\\\":419,\\\"host_record_count\\\":101,\\\"base_source_commit\\\":\\\"42d3a0f447807659c0f78c8273edee01dd1b734f\\\",\\\"base_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v54-main-host-r4\\\",\\\"base_signed\\\":{\\\"path\\\":\\\"/home/alex/hepta-local-007f-20261111/v54-main-host-r4/assembly-r1/RESULT.json\\\",\\\"bytes\\\":15659,\\\"sha256\\\":\\\"eadc9dbb63b411015571a488377be6a8704c9f78415169a5164c8f13571f0f72\\\"},\\\"base_apk\\\":{\\\"path\\\":\\\"/home/alex/hepta-local-007f-20261111/v54-main-host-r4/out/hepta-local-0.54.0.apk\\\",\\\"bytes\\\":20985685,\\\"sha256\\\":\\\"0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a\\\"},\\\"base_static\\\":{\\\"path\\\":\\\"/home/alex/hepta-local-007f-20261111/v54-main-host-r4/out/control-v54-static/STATIC-ACCEPTANCE.json\\\",\\\"sha256\\\":\\\"23a4d98257b29f9c2a06d87823c3b9379831d6d88563b63c0768980aee1e85d6\\\"},\\\"base_source_inventory_sha256\\\":\\\"8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d\\\",\\\"base_host_sha256\\\":\\\"6c7f11e31c4fcb2e81c417995282987fcaf5f0fb632885f0f376a5745b9db3d8\\\",\\\"native_pins\\\":{\\\"libMNN.so\\\":\\\"5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d\\\",\\\"libc++_shared.so\\\":\\\"77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754\\\",\\\"libgeniex.so\\\":\\\"99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56\\\",\\\"libgeniex_plugin_llama_cpp.so\\\":\\\"cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a\\\",\\\"libggml-base.so\\\":\\\"bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40\\\",\\\"libggml-cpu.so\\\":\\\"b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b\\\",\\\"libggml-hexagon.so\\\":\\\"67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f\\\",\\\"libggml-htp-v79.so\\\":\\\"110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5\\\",\\\"libggml-opencl.so\\\":\\\"e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875\\\",\\\"libggml.so\\\":\\\"5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149\\\",\\\"libhepta_local_runner.so\\\":\\\"eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5\\\",\\\"libhepta_mobimind_runner.so\\\":\\\"b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020\\\",\\\"libhepta_ui_venus_runner.so\\\":\\\"5fa2dcae05fb649157d96481c5890c157301c76dab3522fcabcbe01b9b0d8551\\\",\\\"libllama-common.so\\\":\\\"8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122\\\",\\\"libllama.so\\\":\\\"4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835\\\",\\\"libmtmd.so\\\":\\\"ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d\\\",\\\"libomp.so\\\":\\\"b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76\\\"},\\\"worker\\\":{\\\"bytes\\\":59952,\\\"sha256\\\":\\\"eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5\\\"},\\\"worker_generated_sha256\\\":\\\"77b914eae46ea000d3c955628c35f6e96a715a4a14da3eb075923d2e6024bbb0\\\",\\\"focused_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1\\\",\\\"focused_result\\\":null,\\\"identity_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v55-installed-apk-identity-host-r1\\\",\\\"identity_result\\\":{\\\"bytes\\\":5727,\\\"sha256\\\":\\\"52762ada64c63bc58749d62e9bd183b586c40349f0e10082ded1c308d82df4f7\\\"},\\\"sdk_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2\\\",\\\"sdk_result\\\":{\\\"bytes\\\":64222,\\\"sha256\\\":\\\"5300257b246f73bc410028d8e1e61f18381e6f9b4a4406661d00b7d3d128eab6\\\"},\\\"query_runner\\\":{\\\"bytes\\\":41005,\\\"sha256\\\":\\\"5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10\\\"},\\\"build_identity\\\":{\\\"path\\\":\\\"tools/build_identity.py\\\",\\\"bytes\\\":2970,\\\"sha256\\\":\\\"7d5ad2641e9a3635fd04aa47ce3ea50a1a4f16b883a98b2ab407878eef36f6e6\\\",\\\"git_blob_sha\\\":\\\"393b3133c988a422f53a37ecb6052e60d508bf2e\\\"},\\\"old_runner\\\":{\\\"path\\\":\\\"/home/alex/hepta-local-007f-20261111/v51-build-r2/v51_assembly_filled.py\\\",\\\"sha256\\\":\\\"3bfad635fb8fdd6d971c60fb8b998a56e63fefaee75ae7a6140b4403cfbca53b\\\"},\\\"signer_cert\\\":\\\"202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5\\\",\\\"apksigner_executable\\\":\\\"/usr/bin/apksigner\\\",\\\"aapt2\\\":{\\\"path\\\":\\\"/usr/lib/android-sdk/build-tools/debian/aapt2\\\",\\\"bytes\\\":54512,\\\"sha256\\\":\\\"0e9ff92342040acdfd03e8708512f4e02353e3ca0a2b85ea2950da659110b009\\\"},\\\"jdk\\\":\\\"/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64\\\",\\\"permissions\\\":[\\\"org.trillionnium.hepta.webhelper.permission.BIND_EVIDENCE\\\"],\\\"source_prefix\\\":\\\"projects/razr60/phone-local-v150/android-local/lfm3-controller/\\\",\\\"repository\\\":\\\"trillionniumFoundation/trillionnium-os\\\",\\\"branch\\\":\\\"codex/hepta-v45-semantic-click-20261111-007f\\\",\\\"nested_stages\\\":[\\\"compile\\\",\\\"actual-completion\\\",\\\"notes-task-phase\\\",\\\"notes-task-phase-grammar\\\",\\\"notes-list-provenance\\\",\\\"notes-recovery\\\",\\\"notes-recovery-grammar\\\",\\\"notes-task-scope\\\",\\\"notes-task-scope-grammar\\\",\\\"calculator-input\\\",\\\"calculator-input-grammar\\\",\\\"failed-action-observation\\\",\\\"notes-editor-phase\\\",\\\"notes-editor-phase-grammar\\\",\\\"completion-status\\\",\\\"completion-status-grammar\\\",\\\"notes-create-workflow\\\",\\\"notes-workflow-controller\\\"],\\\"build_steps\\\":[\\\"javac\\\",\\\"d8\\\",\\\"aapt2-compile\\\",\\\"aapt2-link\\\",\\\"badging\\\",\\\"permissions\\\",\\\"manifest\\\",\\\"accessibility\\\"],\\\"predecessor_build_result\\\":{\\\"bytes\\\":244800,\\\"sha256\\\":\\\"5dc739a182bda8065f2bda04c1da7e44c43b74307f76f582ba6cc09c371475f1\\\"},\\\"compiler_inputs\\\":{\\\"bytes\\\":34376,\\\"sha256\\\":\\\"b64d1a78f41ffa78c80c3d5145b012f0625e842725ceb83abbd8eec5bb63c4c8\\\"},\\\"overlay_file_count\\\":40,\\\"query_java_source_count\\\":50,\\\"web_production_java_count\\\":44,\\\"web_compilation_unit_count\\\":53,\\\"predecessor_release\\\":{\\\"path\\\":\\\"/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/RESULT.json\\\",\\\"bytes\\\":35104,\\\"sha256\\\":\\\"9deb86d5ba6b066bf250a432559bdc1fcee1138596af3f40133943c6259dd60c\\\"},\\\"predecessor_apk\\\":{\\\"path\\\":\\\"/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/out/hepta-local-0.57.0.apk\\\",\\\"bytes\\\":21038933,\\\"sha256\\\":\\\"c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4\\\"},\\\"predecessor_aggregate\\\":{\\\"git\\\":\\\"517e61599073eb264c5e52871570d49e7af2d798\\\",\\\"bytes\\\":1459826,\\\"sha256\\\":\\\"b98bb0f97ad5b25423387c4e3f8734aec7d4f8c2d1044335af039e0dd1c57cc3\\\"},\\\"predecessor_source_inventory_sha256\\\":\\\"22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6\\\",\\\"predecessor_release_source_commit\\\":\\\"313685edc580a750aea6301d8ff3cfd617d6fab6\\\",\\\"publication_base_source_commit\\\":\\\"313685edc580a750aea6301d8ff3cfd617d6fab6\\\",\\\"version_code\\\":58,\\\"version_name\\\":\\\"0.58.0-flight-observation-settle\\\",\\\"pending_scope\\\":\\\"bounded read-only observation settle and reobserve; original strict stability, action authority and terminal proof retained; Flight results provider remains false\\\",\\\"query_case_expectation\\\":{\\\"cases\\\":40,\\\"assertions\\\":187,\\\"case_names\\\":[\\\"literal_city_data_is_not_a_verified_route\\\",\\\"matching_form_without_model_actions_cannot_query\\\",\\\"real_class_selection_chain_enables_exact_query_once\\\",\\\"accepted_picker_click_waits_for_native_form_readback\\\",\\\"false_city_outcome_never_confirms\\\",\\\"stale_city_outcome_never_confirms\\\",\\\"date_before_two_city_confirmations_withheld\\\",\\\"wrong_after_city_literal_stays_pending\\\",\\\"dom_city_without_same_native_value_stays_pending\\\",\\\"foreign_native_city_descendant_rejected\\\",\\\"two_cities_without_full_calendar_date_cannot_query\\\",\\\"wrong_after_month_day_stays_pending\\\",\\\"wrong_after_weekday_stays_pending\\\",\\\"date_before_dispatch_end_cannot_confirm\\\",\\\"later_route_change_invalidates_current_query\\\",\\\"later_date_change_invalidates_year_confirmation\\\",\\\"native_field_disappears_query_withheld\\\",\\\"two_adults_are_not_one_adult_query\\\",\\\"disabled_dom_query_cannot_mint_target\\\",\\\"duplicate_native_query_even_disabled_refuses\\\",\\\"another_binding_cannot_import_selection_chain\\\",\\\"navigation_epoch_regression_cannot_import_progress\\\",\\\"query_reservation_is_not_a_dispatch\\\",\\\"second_query_reservation_refused\\\",\\\"actual_query_outcome_and_after_capture_remain_not_results\\\",\\\"false_query_outcome_consumes_attempt\\\",\\\"accepted_query_without_platform_entry_refused\\\",\\\"query_outcome_before_capture_refused\\\",\\\"query_outcome_wrong_model_run_refused\\\",\\\"query_outcome_twice_refused\\\",\\\"unknown_booking_body_is_read_only_pending\\\",\\\"city_airport_combination_not_silently_normalized\\\",\\\"actual_session_dispatch_methods_0\\\",\\\"actual_session_dispatch_methods_1\\\",\\\"actual_session_dispatch_methods_2\\\",\\\"actual_session_dispatch_methods_3\\\",\\\"actual_session_dispatch_methods_4\\\",\\\"actual_session_dispatch_methods_5\\\",\\\"actual_session_dispatch_methods_6\\\",\\\"actual_session_dispatch_methods_7\\\"]},\\\"composition_case_expectation\\\":{\\\"cases\\\":89,\\\"assertions\\\":275,\\\"case_names\\\":[\\\"v4_receipt_and_real_composition\\\",\\\"price_not_filled_from_goal\\\",\\\"result_record_requires_navigation\\\",\\\"current_tcg_real_provider_path\\\",\\\"tcg_no_navigation_cannot_complete\\\",\\\"tcg_rejects_stale_observation\\\",\\\"tcg_rejects_other_owner\\\",\\\"wait_has_no_action_capability\\\",\\\"flight_wait_uses_original_natural_owner\\\",\\\"original_tool_mask_is_intersection\\\",\\\"missing_accepted_outcome_rejected\\\",\\\"missing_dispatch_outcome_rejected\\\",\\\"stale_native_outcome_rejected\\\",\\\"dispatch_time_order_1009_1101\\\",\\\"dispatch_time_order_1102_1101\\\",\\\"dispatch_time_order_1100_1201\\\",\\\"operator_without_native_run_rejected\\\",\\\"old_source_observation_rejected\\\",\\\"new_epoch_required\\\",\\\"source_link_target_must_match\\\",\\\"navigation_cannot_cross_lease\\\",\\\"code3_binding_rejected\\\",\\\"old_v2_binding_rejected\\\",\\\"foreign_site_policy_rejected\\\",\\\"foreign_compiled_initial_url_rejected\\\",\\\"mutated_authority_evidence_rejected\\\",\\\"extra_selected_app_rejected\\\",\\\"wrong_authenticated_uid_rejected\\\",\\\"raw_controller_identity_mismatch_rejected\\\",\\\"callback_metadata_lost_binding_rejected\\\",\\\"bound_dom_wrong_origin_rejected\\\",\\\"manual_diagnostic_not_task_evidence\\\",\\\"duplicate_native_card_description_blocks_even_disabled\\\",\\\"out_of_screen_native_node_has_no_css_fallback\\\",\\\"different_native_label_blocks_product_link\\\",\\\"ambiguous_observed_region_blocks_product_link\\\",\\\"transaction_anchor_mints_no_capability\\\",\\\"modal_blocks_all_capabilities\\\",\\\"conditional_price_cannot_complete\\\",\\\"starting_price_cannot_complete\\\",\\\"currency_requires_actual_native_label\\\",\\\"native_duplicate_amount_blocks_result\\\",\\\"wrong_dom_currency_cannot_complete\\\",\\\"terminal_verified_snapshot_survives_only_normal_known_close\\\",\\\"terminal_unclaimed_unstable_or_unverified_result_never_freezes\\\",\\\"terminal_final_frame_identity_changes_are_rejected\\\",\\\"terminal_final_native_node_changes_are_rejected\\\",\\\"terminal_closed_callback_identity_is_exact\\\",\\\"terminal_unknown_abort_and_late_close_never_recover_success\\\",\\\"terminal_clear_rebind_and_late_observation_invalidate_proof\\\",\\\"terminal_requires_actual_owner_scope_cleanup_and_native_parent_facts\\\",\\\"terminal_tokens_are_gate_local_and_consumed_once\\\",\\\"terminal_flight_without_results_provider_stays_unverified\\\",\\\"flight_home_actual_two_dom_carousel_only_difference\\\",\\\"flight_home_dom_target_label_change_rejected\\\",\\\"flight_home_dom_non_carousel_geometry_rejected\\\",\\\"flight_home_dom_extra_slider_semantics_rejected\\\",\\\"flight_home_dom_vertical_or_nonuniform_motion_rejected\\\",\\\"flight_home_dom_visible_modal_in_both_reads_rejected\\\",\\\"flight_home_dom_metadata_or_membership_change_rejected\\\",\\\"flight_home_actual_retained_native_ad_only_change\\\",\\\"flight_home_retained_ordinal_shift_preserves_path_binding\\\",\\\"flight_home_retained_target_semantics_change_rejected\\\",\\\"flight_home_synthetic_full_native_same_overlap_accepted\\\",\\\"flight_home_full_native_target_change_rejected\\\",\\\"flight_home_full_native_ancestor_or_focus_change_rejected\\\",\\\"flight_home_full_native_ad_content_change_rejected\\\",\\\"flight_home_full_native_new_overlap_rejected\\\",\\\"flight_home_full_native_missing_ancestor_rejected\\\",\\\"flight_home_full_native_foreign_package_or_target_path_rejected\\\",\\\"flight_observation_actual56_old_digest_failure_reproduced\\\",\\\"flight_observation_actual_retained_rows_cannot_replace_complete_native\\\",\\\"flight_observation_actual_raws_with_explicit_synthetic_complete_native\\\",\\\"flight_observation_window_selection_ime_and_root_changes_rejected\\\",\\\"flight_observation_target_unretained_and_retained_semantics_rejected\\\",\\\"flight_observation_truncated_or_incomplete_native_rejected\\\",\\\"flight_observation_four_raw_equality_and_homepage_scope_required\\\",\\\"flight_observation_capture_epoch_binding_and_order_rejected\\\",\\\"flight_observation_geometry_and_actual_native_ancestor_must_match\\\",\\\"readonly_settle_actual_retained_transition_then_fresh_stable\\\",\\\"readonly_settle_permanent_change_exhausts_two_reobservations\\\",\\\"readonly_settle_snapshot_returned_before_wait_and_capture_exception\\\",\\\"readonly_settle_cancellation_during_wait_stops_after_release\\\",\\\"readonly_settle_deadline_six_seconds_and_reused_budget_fail_closed\\\",\\\"readonly_settle_cross_epoch_window_or_instance_never_retries\\\",\\\"readonly_settle_fresh_retry_cannot_switch_original_epoch\\\",\\\"readonly_settle_capture_and_background_guard_exceptions_are_not_retried\\\",\\\"readonly_settle_record_failure_propagates_after_capability_retirement\\\",\\\"readonly_settle_stable_read_and_original_geometry_check_remain_exact\\\"]},\\\"predecessor_web_result\\\":{\\\"path\\\":\\\"/home/alex/hepta-local-007f-20261111/v57-main-web-regression-host-r2/RESULT.json\\\",\\\"bytes\\\":54724,\\\"sha256\\\":\\\"61585af641cf4c1db70a9ae0d6f1e23ea93633fb7ead6b10b3a168d45aa2a3b1\\\"}}\")",
+        "count": 1
+      },
+      {
+        "label": "query current57 integrated vs historical56 external",
+        "before": "    need(same(query[\"historical_prior_external_runner\"],prior56[\"query40\"])\n         and prior56[\"query40\"][\"runner_corrected_outside_source_tree\"] is True\n         and prior56[\"query40\"][\"repository_runner_count_guard_known_incompatible\"] is True\n         and prior56[\"query40\"][\"runner_sha256\"]==sha(executed),\n         \"previous56 external count repair is preserved history and integrated into current source\")",
+        "after": "    need(same(query[\"historical_prior_external_runner\"],prior57[\"query40\"][\"historical_prior_external_runner\"])\n         and same(query[\"historical_prior_integrated_runner\"],prior57[\"query40\"])\n         and prior57[\"query40\"][\"runner_corrected_outside_source_tree\"] is False\n         and prior57[\"query40\"][\"repository_runner_count_guard_known_incompatible\"] is False\n         and prior57[\"query40\"][\"runner_count_repair_integrated_into_current_source\"] is True\n         and prior57[\"query40\"][\"historical_prior_external_runner\"][\"runner_corrected_outside_source_tree\"] is True\n         and prior57[\"query40\"][\"historical_prior_external_runner\"][\"repository_runner_count_guard_known_incompatible\"] is True\n         and prior57[\"query40\"][\"runner_sha256\"]==sha(executed),\n         \"previous57 integrated runner and separate historical56 external count repair remain exact\")",
+        "count": 1
+      },
+      {
+        "label": "hepta.main57-original-core101-host-stage.v1",
+        "before": "hepta.main57-original-core101-host-stage.v1",
+        "after": "hepta.main58-original-core101-host-stage.v1",
+        "count": 1
+      },
+      {
+        "label": "hepta.main57-existing-web-regressions-host-stage.v1",
+        "before": "hepta.main57-existing-web-regressions-host-stage.v1",
+        "after": "hepta.main58-existing-web-regressions-host-stage.v1",
+        "count": 1
+      },
+      {
+        "label": "web[\"fixture_count\"]==6",
+        "before": "web[\"fixture_count\"]==6",
+        "after": "web[\"fixture_count\"]==7",
+        "count": 1
+      },
+      {
+        "label": "hepta.v57-git-publication.v1",
+        "before": "hepta.v57-git-publication.v1",
+        "after": "hepta.v58-git-publication.v1",
+        "count": 1
+      },
+      {
+        "label": "# The original56 receipts cannot fill them by inference or bypass complete-map comparisons.",
+        "before": "# The original56 receipts cannot fill them by inference or bypass complete-map comparisons.",
+        "after": "# The original57 receipts cannot fill them by inference or bypass complete-map comparisons.",
+        "count": 1
+      },
+      {
+        "label": "CONFIG[\"version_code\"] == 57 and CONFIG[\"version_name\"] == \"0.57.0-flight-observation-stability\"",
+        "before": "CONFIG[\"version_code\"] == 57 and CONFIG[\"version_name\"] == \"0.57.0-flight-observation-stability\"",
+        "after": "CONFIG[\"version_code\"] == 58 and CONFIG[\"version_name\"] == \"0.58.0-flight-observation-settle\"",
+        "count": 1
+      },
+      {
+        "label": "\"explicit reviewed57 manifest identity\"",
+        "before": "\"explicit reviewed57 manifest identity\"",
+        "after": "\"explicit reviewed58 manifest identity\"",
+        "count": 1
+      },
+      {
+        "label": "\"new published57 source commit\"",
+        "before": "\"new published57 source commit\"",
+        "after": "\"new published58 source commit\"",
+        "count": 1
+      },
+      {
+        "label": "r\"/v57-main-core101-materialized-host-r[0-9]+\"",
+        "before": "r\"/v57-main-core101-materialized-host-r[0-9]+\"",
+        "after": "r\"/v58-main-core101-materialized-host-r[0-9]+\"",
+        "count": 1
+      },
+      {
+        "label": "ROOT==B/\"v57-main-sign-r1\"",
+        "before": "ROOT==B/\"v57-main-sign-r1\"",
+        "after": "ROOT==B/\"v58-main-sign-r1\"",
+        "count": 1
+      },
+      {
+        "label": "hepta.main57-pocket4-java-native-reuse-stage.v1",
+        "before": "hepta.main57-pocket4-java-native-reuse-stage.v1",
+        "after": "hepta.main58-pocket4-java-native-reuse-stage.v1",
+        "count": 1
+      },
+      {
+        "label": "\"actual same-source core proof preserves successful56 and separate historical failures\"",
+        "before": "\"actual same-source core proof preserves successful56 and separate historical failures\"",
+        "after": "\"actual same-source core proof preserves successful57 and separate historical56 failures\"",
+        "count": 1
+      },
+      {
+        "label": "hepta.main57-wire4-focused-host-stage.v1",
+        "before": "hepta.main57-wire4-focused-host-stage.v1",
+        "after": "hepta.main58-wire4-focused-host-stage.v1",
+        "count": 1
+      },
+      {
+        "label": "     and focused[\"prior_successful56_artifacts_preserved\"] is True",
+        "before": "     and focused[\"prior_successful56_artifacts_preserved\"] is True",
+        "after": "     and focused[\"prior_successful56_artifacts_preserved\"] is True\n     and focused[\"prior_successful57_artifacts_preserved\"] is True",
+        "count": 1
+      },
+      {
+        "label": "out/hepta-local-0.57.0-unsigned.apk",
+        "before": "out/hepta-local-0.57.0-unsigned.apk",
+        "after": "out/hepta-local-0.58.0-unsigned.apk",
+        "count": 1
+      },
+      {
+        "label": "hepta.v57-published-source-binding.v1",
+        "before": "hepta.v57-published-source-binding.v1",
+        "after": "hepta.v58-published-source-binding.v1",
+        "count": 1
+      },
+      {
+        "label": "hepta.isolated-v57-assembly.v1",
+        "before": "hepta.isolated-v57-assembly.v1",
+        "after": "hepta.isolated-v58-assembly.v1",
+        "count": 1
+      },
+      {
+        "label": "apk=OUT/\"hepta-local-0.57.0.apk\"",
+        "before": "apk=OUT/\"hepta-local-0.57.0.apk\"",
+        "after": "apk=OUT/\"hepta-local-0.58.0.apk\"",
+        "count": 1
+      },
+      {
+        "label": "hepta.main57-formal-sign-summary.v1",
+        "before": "hepta.main57-formal-sign-summary.v1",
+        "after": "hepta.main58-formal-sign-summary.v1",
+        "count": 1
+      },
+      {
+        "label": "actual57 successful build/sign/query/Web predecessor",
+        "before": "need(build[\"revision\"]==\"sealed-source-successor-from-actual-signed56-r1\"\n     and build[\"prior_successful_build_preserved\"] is True\n     and same(build[\"prior_successful_build\"],CONFIG[\"predecessor_build_result\"])\n     and build[\"materialized_source_unchanged\"] is True\n     and build[\"core_materialized_root\"]==str(CORE)\n     and build[\"same_complete_source_as_core_materialization\"] is True\n     and build[\"post_compile_source_sidecar_required\"] is False,\n     \"actual new compilation of the exact successor source with signed56 build preserved\")\nprior56_raw=take(BUILD/\"PRIOR-BUILD-RESULT.json\",CONFIG[\"predecessor_build_result\"])\nprior56_signed_raw=take(BUILD/\"PREDECESSOR-SIGNED-RESULT.json\",CONFIG[\"predecessor_release\"])\nneed(prior56_signed_raw==take(CONFIG[\"predecessor_release\"][\"path\"],CONFIG[\"predecessor_release\"]),\n     \"same original signed56 receipt in the new build and original release\")\nprior56_signed=strict(prior56_signed_raw)\nneed(prior56_signed[\"schema\"]==\"hepta.isolated-v56-assembly.v1\"\n     and prior56_signed[\"all_pass\"] is True and type(prior56_signed[\"exit_code\"]) is int\n     and prior56_signed[\"exit_code\"]==0 and prior56_signed[\"version_code\"]==56\n     and prior56_signed[\"source_commit\"]==CONFIG[\"predecessor_release_source_commit\"]\n     and prior56_signed[\"source_inventory_sha256\"]==CONFIG[\"predecessor_source_inventory_sha256\"]\n     and prior56_signed[\"pocket4_build_result_sha256\"]==CONFIG[\"predecessor_build_result\"][\"sha256\"]\n     and prior56_signed[\"compiled_and_published_source_byte_identical\"] is True\n     and prior56_signed[\"source_files_unchanged\"] is True\n     and prior56_signed[\"signer_certificate_sha256\"]==CERT\n     and same(prior56_signed[\"library_pins\"],CONFIG[\"native_pins\"])\n     and same(build[\"predecessor_signed_release\"],CONFIG[\"predecessor_release\"])\n     and build[\"predecessor_release_source_commit\"]==CONFIG[\"predecessor_release_source_commit\"],\n     \"actual signed56 predecessor and its actual Android build remain distinct from57\")\ntake(CONFIG[\"predecessor_apk\"][\"path\"],CONFIG[\"predecessor_apk\"])\nneed(prior56_signed[\"apk_sha256\"]==CONFIG[\"predecessor_apk\"][\"sha256\"]\n     and prior56_signed[\"apk_bytes\"]==CONFIG[\"predecessor_apk\"][\"bytes\"],\n     \"exact complete signed56 APK predecessor\")\nprior56=strict(prior56_raw)\nneed(prior56[\"schema\"]==\"hepta.main56-pocket4-java-native-reuse-stage.v1\"\n     and prior56[\"all_pass\"] is True and type(prior56[\"exit_code\"]) is int and prior56[\"exit_code\"]==0\n     and prior56[\"query40\"][\"report\"][\"all_pass\"] is True\n     and prior56[\"query40\"][\"report\"][\"cases\"][\"all_pass\"] is True\n     and prior56[\"query40\"][\"report\"][\"cases\"][\"cases\"]==prior56_signed[\"query_host_cases\"]==40\n     and prior56[\"query40\"][\"report\"][\"cases\"][\"assertions\"]==prior56_signed[\"query_host_assertions\"]==187,\n     \"actual signed56 query baseline is a retained predecessor, not a successor pass\")\nrequire_case_successor(CONFIG[\"query_case_expectation\"],prior56[\"query40\"][\"report\"][\"cases\"],\"query successor\")\nprior56_web_raw=take(CONFIG[\"predecessor_web_result\"][\"path\"],CONFIG[\"predecessor_web_result\"])\nprior56_web=strict(prior56_web_raw)\nneed(sha(prior56_web_raw)==prior56_signed[\"existing_web_regression_receipt_sha256\"]\n     and prior56_web[\"schema\"]==\"hepta.main56-existing-web-regressions-host-stage.v1\"\n     and prior56_web[\"all_pass\"] is True and type(prior56_web[\"exit_code\"]) is int and prior56_web[\"exit_code\"]==0\n     and prior56_web[\"source_inventory_sha256\"]==CONFIG[\"predecessor_source_inventory_sha256\"],\n     \"actual signed56 Web baseline remains separately pinned and unchanged\")\nprior56_composition=prior56_web[\"reports\"][\"composition43\"][\"report\"]\nneed(prior56_composition[\"all_pass\"] is True\n     and prior56_composition[\"cases\"]==prior56_signed[\"composition_host_cases\"]==70\n     and prior56_composition[\"assertions\"]==prior56_signed[\"composition_host_assertions\"]==178,\n     \"actual signed56 composition baseline is not reused as a successor pass\")\nrequire_case_successor(CONFIG[\"composition_case_expectation\"],prior56_composition,\"composition successor\")\n",
+        "after": "need(build[\"revision\"]==\"sealed-source-successor-from-actual-signed57-r1\"\n     and build[\"prior_successful_build_preserved\"] is True\n     and same(build[\"prior_successful_build\"],CONFIG[\"predecessor_build_result\"])\n     and build[\"materialized_source_unchanged\"] is True\n     and build[\"core_materialized_root\"]==str(CORE)\n     and build[\"same_complete_source_as_core_materialization\"] is True\n     and build[\"post_compile_source_sidecar_required\"] is False,\n     \"actual new compilation of the exact successor source with signed57 build preserved\")\nprior57_raw=take(BUILD/\"PRIOR-BUILD-RESULT.json\",CONFIG[\"predecessor_build_result\"])\nprior57_signed_raw=take(BUILD/\"PREDECESSOR-SIGNED-RESULT.json\",CONFIG[\"predecessor_release\"])\nneed(prior57_signed_raw==take(CONFIG[\"predecessor_release\"][\"path\"],CONFIG[\"predecessor_release\"]),\n     \"same original signed57 receipt in the new build and original release\")\nprior57_signed=strict(prior57_signed_raw)\nneed(prior57_signed[\"schema\"]==\"hepta.isolated-v57-assembly.v1\"\n     and prior57_signed[\"all_pass\"] is True and type(prior57_signed[\"exit_code\"]) is int\n     and prior57_signed[\"exit_code\"]==0 and prior57_signed[\"version_code\"]==57\n     and prior57_signed[\"source_commit\"]==CONFIG[\"predecessor_release_source_commit\"]\n     and prior57_signed[\"source_inventory_sha256\"]==CONFIG[\"predecessor_source_inventory_sha256\"]\n     and prior57_signed[\"pocket4_build_result_sha256\"]==CONFIG[\"predecessor_build_result\"][\"sha256\"]\n     and prior57_signed[\"compiled_and_published_source_byte_identical\"] is True\n     and prior57_signed[\"source_files_unchanged\"] is True\n     and prior57_signed[\"signer_certificate_sha256\"]==CERT\n     and same(prior57_signed[\"library_pins\"],CONFIG[\"native_pins\"])\n     and same(build[\"predecessor_signed_release\"],CONFIG[\"predecessor_release\"])\n     and build[\"predecessor_release_source_commit\"]==CONFIG[\"predecessor_release_source_commit\"],\n     \"actual signed57 predecessor and its actual Android build remain distinct from58\")\ntake(CONFIG[\"predecessor_apk\"][\"path\"],CONFIG[\"predecessor_apk\"])\nneed(prior57_signed[\"apk_sha256\"]==CONFIG[\"predecessor_apk\"][\"sha256\"]\n     and prior57_signed[\"apk_bytes\"]==CONFIG[\"predecessor_apk\"][\"bytes\"],\n     \"exact complete signed57 APK predecessor\")\nprior57=strict(prior57_raw)\nneed(prior57[\"schema\"]==\"hepta.main57-pocket4-java-native-reuse-stage.v1\"\n     and prior57[\"all_pass\"] is True and type(prior57[\"exit_code\"]) is int and prior57[\"exit_code\"]==0\n     and prior57[\"query40\"][\"report\"][\"all_pass\"] is True\n     and prior57[\"query40\"][\"report\"][\"cases\"][\"all_pass\"] is True\n     and prior57[\"query40\"][\"report\"][\"cases\"][\"cases\"]==prior57_signed[\"query_host_cases\"]==40\n     and prior57[\"query40\"][\"report\"][\"cases\"][\"assertions\"]==prior57_signed[\"query_host_assertions\"]==187,\n     \"actual signed57 query baseline is a retained predecessor, not a successor pass\")\nrequire_case_successor(CONFIG[\"query_case_expectation\"],prior57[\"query40\"][\"report\"][\"cases\"],\"query successor\")\nprior57_web_raw=take(CONFIG[\"predecessor_web_result\"][\"path\"],CONFIG[\"predecessor_web_result\"])\nprior57_web=strict(prior57_web_raw)\nneed(sha(prior57_web_raw)==prior57_signed[\"existing_web_regression_receipt_sha256\"]\n     and prior57_web[\"schema\"]==\"hepta.main57-existing-web-regressions-host-stage.v1\"\n     and prior57_web[\"all_pass\"] is True and type(prior57_web[\"exit_code\"]) is int and prior57_web[\"exit_code\"]==0\n     and prior57_web[\"source_inventory_sha256\"]==CONFIG[\"predecessor_source_inventory_sha256\"],\n     \"actual signed57 Web baseline remains separately pinned and unchanged\")\nprior57_composition=prior57_web[\"reports\"][\"composition43\"][\"report\"]\nneed(prior57_composition[\"all_pass\"] is True\n     and prior57_composition[\"cases\"]==prior57_signed[\"composition_host_cases\"]==79\n     and prior57_composition[\"assertions\"]==prior57_signed[\"composition_host_assertions\"]==215,\n     \"actual signed57 composition baseline is not reused as a successor pass\")\nrequire_case_successor(CONFIG[\"composition_case_expectation\"],prior57_composition,\"composition successor\")\n",
+        "count": 1
+      },
+      {
+        "label": "current predecessor report",
+        "before": "\"prior_main56_unsigned_receipt_sha256\":sha(prior56_raw),\"tests_rerun_by_signer\":False,\n    \"previous_signed56_receipt_sha256\":sha(prior56_signed_raw),\n    \"previous_signed56_source_commit\":CONFIG[\"predecessor_release_source_commit\"],",
+        "after": "\"prior_main57_unsigned_receipt_sha256\":sha(prior57_raw),\"tests_rerun_by_signer\":False,\n    \"previous_signed57_receipt_sha256\":sha(prior57_signed_raw),\n    \"previous_signed57_source_commit\":CONFIG[\"predecessor_release_source_commit\"],",
+        "count": 1
+      },
+      {
+        "label": "query report preserves separately attributed history",
+        "before": "        \"historical56_external_runner_receipt_sha256\":sha(prior56_raw),\n        \"historical56_external_runner\":prior56_signed[\"external_query_runner\"]},",
+        "after": "        \"historical56_external_runner_receipt_sha256\":prior57_signed[\"query_runner_source_binding\"][\"historical56_external_runner_receipt_sha256\"],\n        \"historical56_external_runner\":prior57_signed[\"query_runner_source_binding\"][\"historical56_external_runner\"],\n        \"historical57_integrated_runner_receipt_sha256\":sha(prior57_raw),\n        \"historical57_integrated_runner\":prior57_signed[\"query_runner_source_binding\"]},",
+        "count": 1
+      },
+      {
+        "label": "archived predecessor names",
+        "before": "\"PREDECESSOR56-SIGNED-RESULT.json\":prior56_signed_raw,\"PREDECESSOR56-BUILD-RESULT.json\":prior56_raw,",
+        "after": "\"PREDECESSOR57-SIGNED-RESULT.json\":prior57_signed_raw,\"PREDECESSOR57-BUILD-RESULT.json\":prior57_raw,",
+        "count": 1
+      },
+      {
+        "label": "originals postcheck label",
+        "before": "previous_signed56_source_apk_receipt_unchanged=True",
+        "after": "previous_signed57_source_apk_receipt_unchanged=True",
+        "count": 1
+      },
+      {
+        "label": "actual Web58 producer scope and exact Session methods",
+        "before": "    need(web[\"prior_output_preserved\"] is True and web[\"prior_failed56_output_preserved\"] is True\n         and web[\"prior_failed57_output_preserved\"] is True\n         and web[\"fixture_packet_derived_from_actual56\"] is False\n         and web[\"fixture_packet_derived_from_actual57_failed_run\"] is True\n         and web[\"changed_production_input_paths\"]==[]\n         and type(web[\"additional_host_json_compatibility_assertions\"]) is int\n         and web[\"additional_host_json_compatibility_assertions\"]==4\n         and same(web[\"host_json_map_null_fixture_compatibility\"],packet[\"main57_host_json_null_successor\"]),\n         \"actual Web r2 retains its failed predecessor and explicit host-only JSON-null adaptation\")\n",
+        "after": "    need(web[\"prior_output_preserved\"] is True and web[\"prior_failed56_output_preserved\"] is True\n         and web[\"prior_failed57_output_preserved\"] is True\n         and web[\"historical_successful56_output_preserved\"] is True\n         and web[\"fixture_packet_derived_from_actual56\"] is False\n         and web[\"fixture_packet_derived_from_actual57_failed_run\"] is False\n         and web[\"fixture_packet_derived_from_actual57_successful_run\"] is True\n         and web[\"changed_production_input_paths\"]==[]\n         and type(web[\"additional_host_json_compatibility_assertions\"]) is int\n         and web[\"additional_host_json_compatibility_assertions\"]==0\n         and type(web[\"retained_host_json_compatibility_assertions\"]) is int\n         and web[\"retained_host_json_compatibility_assertions\"]==4\n         and same(web[\"host_json_map_null_fixture_compatibility\"],packet[\"main57_host_json_null_successor\"]),\n         \"actual Web successor preserves original failed/successful history and existing host-only JSON-null adaptation\")\n    need(type(web[\"added_readonly_settle_cases\"]) is int and web[\"added_readonly_settle_cases\"]==10\n         and type(web[\"added_readonly_settle_assertions\"]) is int and web[\"added_readonly_settle_assertions\"]==60\n         and type(web[\"readonly_settle_exact_production_blocks\"]) is int\n         and web[\"readonly_settle_exact_production_blocks\"]==7\n         and same(web[\"readonly_settle_scope\"],packet[\"main58_successor\"])\n         and same(web[\"readonly_settle_session_original\"],packet[\"main58_successor\"][\"exact_session_source\"]),\n         \"existing Composition gate uses exact current Session methods and explicit host observation seams\")\n    session=packet[\"main58_successor\"][\"exact_session_source\"]\n    session_raw=compiled_source[relative(session[\"path\"])]\n    checked(session_raw,session,\"actual read-only settle Session source\")\n    need(blob(session_raw)==session[\"git_blob_sha\"]\n         and session_raw==final_source[session[\"path\"]]\n         and packet[\"main58_successor\"][\"new_suite\"] is False\n         and packet[\"main58_successor\"][\"unretained_native_nodes_replayed\"] is False,\n         \"current production Session is bound without promoting partial native fixtures\")\n",
+        "count": 1
+      },
+      {
+        "label": "source-linked current added cases and explicit retained history",
+        "before": "\"web57_additional_host_json_compatibility_assertions\":web[\"additional_host_json_compatibility_assertions\"],",
+        "after": "\"web57_retained_host_json_compatibility_assertions\":web[\"retained_host_json_compatibility_assertions\"],\n    \"web58_additional_host_json_compatibility_assertions\":web[\"additional_host_json_compatibility_assertions\"],\n    \"web58_readonly_settle_cases\":web[\"added_readonly_settle_cases\"],\n    \"web58_readonly_settle_assertions\":web[\"added_readonly_settle_assertions\"],\n    \"web58_readonly_settle_exact_production_blocks\":web[\"readonly_settle_exact_production_blocks\"],\n    \"web58_readonly_settle_scope\":web[\"readonly_settle_scope\"],",
+        "count": 1
+      },
+      {
+        "label": "current signer documentation",
+        "before": "\"\"\"Sign the sealed Pocket4 main57 APK, bound to its own source CAS and actual applicable host gates.",
+        "after": "\"\"\"Sign the sealed Pocket4 main58 APK, bound to its own source CAS and actual applicable host gates.",
+        "count": 1
+      }
+    ],
+    "verification": {
+      "full_inverse": true,
+      "unchanged_function_count": 31,
+      "unchanged_functions": [
+        {
+          "name": "need",
+          "bytes": 73,
+          "sha256": "2fda2363dc0da741cc1b9452655218696c92b37bdb80dfa5bd617072b2f2e520",
+          "git_blob_sha": "da9741dceb9cff3b9eb42620708964680d5bbedf"
+        },
+        {
+          "name": "case_summary",
+          "bytes": 642,
+          "sha256": "e00b5e8fd313a688b018943efc96e93af1882c283b5e36c00f2e805493e2d1fb",
+          "git_blob_sha": "5b4addc54ce08510425bd21c065c24e67715f5d3"
+        },
+        {
+          "name": "case_expectation",
+          "bytes": 224,
+          "sha256": "ac08a6db5e02a5b40dee50d25a88a4d3b4cded82c2a551459be51cdc1a42e44e",
+          "git_blob_sha": "e762d0e10da2596151abdabe419da45733785bcf"
+        },
+        {
+          "name": "require_case_successor",
+          "bytes": 579,
+          "sha256": "b6f6dc84155c4d11fb913d6f9688e1daa2de7d3b0b6d69bbbfbfd41852c381ac",
+          "git_blob_sha": "c2295cbdc4b7fb6c5f138f73d61dae8965d3be5f"
+        },
+        {
+          "name": "sha",
+          "bytes": 58,
+          "sha256": "cd3c8cfc66055850200a221aa85c87316a720df83acd24c761183a97206b3ead",
+          "git_blob_sha": "26e721e70984b544bcf6274cdbbc8c7610b8ab0c"
+        },
+        {
+          "name": "blob",
+          "bytes": 102,
+          "sha256": "d90d2bddd45aa92b4f47f28f396661da880477ae2798264e33e80e90f32dbc15",
+          "git_blob_sha": "05ff8255725d94c23cd4d102e7bdff3cb5731f51"
+        },
+        {
+          "name": "encoded",
+          "bytes": 120,
+          "sha256": "aa489abafd86da87e1dec61514ee9e0becbd43888e055973c2f3be8be0b398be",
+          "git_blob_sha": "28fd20a92e1c757ebc486e65cdd5a728d183f1ee"
+        },
+        {
+          "name": "strict",
+          "bytes": 383,
+          "sha256": "5a3ef29310640e12fe316dcb071f26624df6f1268d09062720c27cbf042e1742",
+          "git_blob_sha": "0ef774f09bdf7a86a6563ed853bd36dbc962aabf"
+        },
+        {
+          "name": "identity",
+          "bytes": 122,
+          "sha256": "8a5a8439a9565c06eb205e9e52657ed62c0331bb416300967bee99d0acd31772",
+          "git_blob_sha": "134453e535c5b6cf2227143deaa4c9892ff4a06e"
+        },
+        {
+          "name": "read_regular",
+          "bytes": 1489,
+          "sha256": "dfcab53ef7ce6087f4a8d74a7ce3408d1c01570a4905ab2d15a7057ab9e0d6fc",
+          "git_blob_sha": "ea5883e2aa68e3bba1c9d167bda283dfd643b5c1"
+        },
+        {
+          "name": "unchanged",
+          "bytes": 161,
+          "sha256": "275649d9ef445608a88b5627340651867b909f7cc522ae476073487ee1196acc",
+          "git_blob_sha": "f1b2ffa352df1a483f40ed79e2af595bfa2b28cc"
+        },
+        {
+          "name": "checked",
+          "bytes": 282,
+          "sha256": "80729bccf3ce8f9c79107b4f67b3682a8f87bdbc03cc324bccca0a859e16cea1",
+          "git_blob_sha": "b0e5f77597c3ac4af241e9d2b423549b0c4d972e"
+        },
+        {
+          "name": "relative",
+          "bytes": 259,
+          "sha256": "ecabba5e18759783fefab3a4b0bab785b4a9fd0f9e4cab6027b40debffa34c47",
+          "git_blob_sha": "c6720af3ca2ec811c947957585ddf8ac2a080950"
+        },
+        {
+          "name": "rows",
+          "bytes": 170,
+          "sha256": "ad157595f28148080952af9151a1078fb1ffb7d0052679de0537bae4800f5935",
+          "git_blob_sha": "1afb1d0b755f2b979ad5dae3e38b4c6c8abd02e3"
+        },
+        {
+          "name": "snapshot",
+          "bytes": 428,
+          "sha256": "deaf4e77864275fb1740bc51d05e509b650a4dffddad9e0430311086597173ac",
+          "git_blob_sha": "b708f41ad1a4a07fda42bc279df9caaaf2fb1372"
+        },
+        {
+          "name": "validate_map",
+          "bytes": 493,
+          "sha256": "ae3fa9f9c0983ee67e9b2526a14afd853652b45e5f3f9dc0a879b2bc0a6e4258",
+          "git_blob_sha": "b4bccd403c7dc4ad3ba4ac6c387d5cf2bf1740be"
+        },
+        {
+          "name": "write_new",
+          "bytes": 791,
+          "sha256": "405f58f2aeef38a1d356e9ff984e54d055b0385e8ac3f10d0fa0b53cb746041d",
+          "git_blob_sha": "ec423477f599f97dbfedc16fc213f1f8b2c8aaa7"
+        },
+        {
+          "name": "load_bound",
+          "bytes": 134,
+          "sha256": "e0628a2c0f627381affa2519b01a47c2488f6fedbfd0ad143a8d8777e6756bff",
+          "git_blob_sha": "5741320f975476060031d4e4e6340d2cf9f3f6cb"
+        },
+        {
+          "name": "run_step",
+          "bytes": 3900,
+          "sha256": "0fed99d7cda6aa50e9c6d6d720b615521406531bc89d2df1a81c549eb0cc88a4",
+          "git_blob_sha": "71362df5d95c533ba80ebf570dac0ce42ffe7bdc"
+        },
+        {
+          "name": "compiled_visibility",
+          "bytes": 3267,
+          "sha256": "bbd4fc423a70fd37797899baeee3e3d92d8e3270edb953bfb4f7eb6410abdec6",
+          "git_blob_sha": "f48ef637ddb52ff501de3bb7483f03f2d9ad9b4c"
+        },
+        {
+          "name": "same",
+          "bytes": 200,
+          "sha256": "153d96b37f447ab48a7d49fc0cd390e69b0932a470715d635500ea4ea483ad6d",
+          "git_blob_sha": "2625d62dff3747a229244882bbb138048e2a5ed4"
+        },
+        {
+          "name": "sealed",
+          "bytes": 294,
+          "sha256": "4cabc435973f345719742ebe52cfc02bf33e406f4189dc16103f48153c30cded",
+          "git_blob_sha": "3df0a7bf8d269f1288d099081cb471e612c8f502"
+        },
+        {
+          "name": "take",
+          "bytes": 106,
+          "sha256": "363c60d0ef8d389062b40141afdcacd7c964b19dee0356ca31efe7dbb205282d",
+          "git_blob_sha": "edc16de4d85cbdb602645d5a4ca671662568d135"
+        },
+        {
+          "name": "take_sha",
+          "bytes": 125,
+          "sha256": "8eafe3f304bfd93dc0c7b5699bc8055a66d3ed3ca3a2bfe53209cd787b029a17",
+          "git_blob_sha": "1f32cc22c11e77cc3085d5748945cbf31881396f"
+        },
+        {
+          "name": "artifact",
+          "bytes": 364,
+          "sha256": "459c562227127a77e3dd2f8cc2045c7b16f810980b321a20088b68e9489f4664",
+          "git_blob_sha": "8192e36d2814f22cf6788f6ed9277e12ab94a598"
+        },
+        {
+          "name": "exact_patches",
+          "bytes": 645,
+          "sha256": "79508baa7be3de139a7ee847c8db3fca36c25ebb76bac7b460a298a0a3b22c1a",
+          "git_blob_sha": "7de82480a588eb245039f13ed9eae8fb8c183fc3"
+        },
+        {
+          "name": "verify_owned_steps",
+          "bytes": 565,
+          "sha256": "4295029183a90075438c29e475415b2ad362bfa82336d227d55b2c9e25f628fb",
+          "git_blob_sha": "3295852a22576e5399013d38e1e02502750b3ed1"
+        },
+        {
+          "name": "apk_members",
+          "bytes": 648,
+          "sha256": "92778da497608e1226fb31932198bdcf289790c85d5a6e5bd8d518138de5ec25",
+          "git_blob_sha": "b99f3f542bb76caaadc0d83c2e6500b6743b0afe"
+        },
+        {
+          "name": "zip_layout",
+          "bytes": 1376,
+          "sha256": "0baa5801940e9c04262b46fdb5b90c063e09e9da23ef5b3ee4f8aa56e66737eb",
+          "git_blob_sha": "f3bc32fee66d06a2bfca6ad8cf57f22307c52836"
+        },
+        {
+          "name": "resource_summary",
+          "bytes": 284,
+          "sha256": "d2a2c1fc97df19565282571188949272193dbba3e40e30fdfe28f30e7c42aa42",
+          "git_blob_sha": "0a997b3b64f25f020582a8b227535684c44f13ff"
+        },
+        {
+          "name": "host_input_rows",
+          "bytes": 961,
+          "sha256": "b0693ed43217ec92751be51cdfed2d5e311b7728a980de0eb06717941464e4c4",
+          "git_blob_sha": "e1c72464c52cf3eb5aa4131e52afe7f4a2b78ef6"
+        }
+      ],
+      "native_block": {
+        "bytes": 2993,
+        "sha256": "1fc6d79875b9f5893b85c91d564aa731f58c259c87699acdbfba815353283746",
+        "git_blob_sha": "617b3f8c87b09ea3dee5c5e84a2b7656472a187d"
+      },
+      "late": [
+        "build_result",
+        "build_stage",
+        "core_result",
+        "web_result",
+        "git_source_map",
+        "publication",
+        "source_commit",
+        "source_tree",
+        "expected_prior_head",
+        "focused_result"
+      ],
+      "phone_executed": false
+    },
+    "expected_source_schema": "hepta.isolated-v58-assembly.v1",
+    "output_root": "/home/alex/hepta-local-007f-20261111/v58-main-sign-r1",
+    "source_filename": "main58_signer.py",
+    "future_values": [
+      "build_result",
+      "build_stage",
+      "core_result",
+      "web_result",
+      "git_source_map",
+      "publication",
+      "source_commit",
+      "source_tree",
+      "expected_prior_head",
+      "focused_result"
+    ],
+    "known_producer_source": {
+      "android_pending": {
+        "git_blob_sha": "a8d1193fcdae2fd6262f668eb584d773fe42a9db",
+        "bytes": 90099,
+        "sha256": "a933105576d7012b74386c934a7f1c9184fa9c01e87ebf9c13fc728ce54dfa51"
+      },
+      "web": {
+        "bytes": 182461,
+        "sha256": "c4e64f533be6c48654bd7449ade390682bca5bc35bbf541c6e6f5596444074f9"
+      }
+    },
+    "first_mutation_line": 964,
+    "all_missing_values_reject_before_first_mutation": true,
+    "actual_core58_result_known": false
+  },
+  "stager": {
+    "base": {
+      "bytes": 18367,
+      "sha256": "a7395972425dda0e9b11ece7cbc70739667ae968311ce52f2aed1a1de561bc49",
+      "git_blob_sha": "169ad1c74bd7d86c796bd319bc17a188c4660045"
+    },
+    "candidate": {
+      "bytes": 17781,
+      "sha256": "bea8829401d1bb00018fe165cf2df79a7dd1331ca8ea2182ef2a3b8da425b14c",
+      "git_blob_sha": "e24b2191d913d39a4ab0138a02c44530bf7b25cc"
+    },
+    "ordered_patch_count": 13,
+    "ordered_replacements": [
+      {
+        "label": "known58 map plus pending actual Core/CAS/signer",
+        "before": "CONFIG=json.loads(\"{\\\"schema\\\":\\\"hepta.main57-publication-staging-config.v1\\\",\\\"root\\\":\\\"/home/alex/hepta-local-007f-20261111/v57-main-release-publication-r1\\\",\\\"core_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1\\\",\\\"core_result\\\":{\\\"bytes\\\":11178,\\\"sha256\\\":\\\"239e2639e7ba426f5068ae1e8620edf8bd5a1c564181fdfc8048f588a87b8aab\\\"},\\\"core_map\\\":{\\\"bytes\\\":141875,\\\"sha256\\\":\\\"2ebce60579704b0545cd9880e6a3fa0b7f5cad6149439aa1419db8fb2c16d539\\\"},\\\"inventory_sha256\\\":\\\"22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6\\\",\\\"input\\\":{\\\"bytes\\\":109718,\\\"sha256\\\":\\\"6d263f96aa2718e8483c9d38c21d96f01a82aa7f9c9d79a40aaae4fc6c09e4b8\\\"},\\\"publication\\\":{\\\"bytes\\\":7005,\\\"sha256\\\":\\\"cba1734c8da78e80bbbed51f036e1ebbfbb9d99aa39dffb0d967078c0051d5a0\\\"},\\\"git_source_map\\\":{\\\"bytes\\\":289218,\\\"sha256\\\":\\\"5280a107976ccdc734a8ecfe8bffb08bb4b8a569526c0015704b6cdf270ede5f\\\"},\\\"signer\\\":{\\\"bytes\\\":95013,\\\"sha256\\\":\\\"7814550e071c5a4206da4b021dc3d4952a23d1cf11ad1f6f3e1d751b7d5b180f\\\"},\\\"source_commit\\\":\\\"313685edc580a750aea6301d8ff3cfd617d6fab6\\\",\\\"source_tree\\\":\\\"2368b777bad9fd9e2f5dcbcbefc6ea9c27fcb0da\\\",\\\"expected_prior_head\\\":\\\"c28266b18703bbb6287d2a3d7809384921214d01\\\",\\\"base_source_commit\\\":\\\"9f4168616546233033edd4b254b4236ae987ea7e\\\",\\\"repository\\\":\\\"trillionniumFoundation/trillionnium-os\\\",\\\"branch\\\":\\\"codex/hepta-v45-semantic-click-20261111-007f\\\",\\\"source_prefix\\\":\\\"projects/razr60/phone-local-v150/android-local/lfm3-controller/\\\"}\")",
+        "after": "CONFIG=json.loads(\"{\\\"schema\\\":\\\"hepta.main58-publication-staging-config.v1\\\",\\\"root\\\":\\\"/home/alex/hepta-local-007f-20261111/v58-main-release-publication-r1\\\",\\\"core_root\\\":\\\"/home/alex/hepta-local-007f-20261111/v58-main-core101-materialized-host-r1\\\",\\\"core_result\\\":null,\\\"core_map\\\":{\\\"bytes\\\":141875,\\\"sha256\\\":\\\"807e52edb4efda808a1dc1ae490ac13f7e92ff65f3f31c6156d4b8a54e2334e1\\\"},\\\"inventory_sha256\\\":\\\"b44d3a9d9083a86d5fff36dfcc0c27958ef047a05df928923ef7c2e204cb23d6\\\",\\\"input\\\":null,\\\"publication\\\":null,\\\"git_source_map\\\":null,\\\"signer\\\":null,\\\"source_commit\\\":null,\\\"source_tree\\\":null,\\\"expected_prior_head\\\":null,\\\"base_source_commit\\\":\\\"313685edc580a750aea6301d8ff3cfd617d6fab6\\\",\\\"repository\\\":\\\"trillionniumFoundation/trillionnium-os\\\",\\\"branch\\\":\\\"codex/hepta-v45-semantic-click-20261111-007f\\\",\\\"source_prefix\\\":\\\"projects/razr60/phone-local-v150/android-local/lfm3-controller/\\\"}\")",
+        "count": 1
+      },
+      {
+        "label": "ROOT==B/\"v57-main-release-publication-r1\"",
+        "before": "ROOT==B/\"v57-main-release-publication-r1\"",
+        "after": "ROOT==B/\"v58-main-release-publication-r1\"",
+        "count": 1
+      },
+      {
+        "label": "CORE==B/\"v57-main-core101-materialized-host-r1\"",
+        "before": "CORE==B/\"v57-main-core101-materialized-host-r1\"",
+        "after": "CORE==B/\"v58-main-core101-materialized-host-r1\"",
+        "count": 1
+      },
+      {
+        "label": "\"hepta.main57-publication-staging-input.v1\"",
+        "before": "\"hepta.main57-publication-staging-input.v1\"",
+        "after": "\"hepta.main58-publication-staging-input.v1\"",
+        "count": 1
+      },
+      {
+        "label": "\"hepta.main57-original-core101-host-stage.v1\"",
+        "before": "\"hepta.main57-original-core101-host-stage.v1\"",
+        "after": "\"hepta.main58-original-core101-host-stage.v1\"",
+        "count": 1
+      },
+      {
+        "label": "\"hepta.v57-git-publication.v1\"",
+        "before": "\"hepta.v57-git-publication.v1\"",
+        "after": "\"hepta.v58-git-publication.v1\"",
+        "count": 1
+      },
+      {
+        "label": "\"hepta.main57-same-host-sign-config.v1\"",
+        "before": "\"hepta.main57-same-host-sign-config.v1\"",
+        "after": "\"hepta.main58-same-host-sign-config.v1\"",
+        "count": 1
+      },
+      {
+        "label": "str(B/\"v57-main-sign-r1\")",
+        "before": "str(B/\"v57-main-sign-r1\")",
+        "after": "str(B/\"v58-main-sign-r1\")",
+        "count": 1
+      },
+      {
+        "label": "str(B/\"v57-main-p4-android-r1\")",
+        "before": "str(B/\"v57-main-p4-android-r1\")",
+        "after": "str(B/\"v58-main-p4-android-r1\")",
+        "count": 1
+      },
+      {
+        "label": "\"hepta.main57-publication-staging-result.v1\"",
+        "before": "\"hepta.main57-publication-staging-result.v1\"",
+        "after": "\"hepta.main58-publication-staging-result.v1\"",
+        "count": 1
+      },
+      {
+        "label": "\"hepta.main57-publication-staging-summary.v1\"",
+        "before": "\"hepta.main57-publication-staging-summary.v1\"",
+        "after": "\"hepta.main58-publication-staging-summary.v1\"",
+        "count": 1
+      },
+      {
+        "label": "current Web58 new original output",
+        "before": "str(B/\"v57-main-web-regression-host-r2\")",
+        "after": "str(B/\"v58-main-web-regression-host-r1\")",
+        "count": 1
+      },
+      {
+        "label": "fixed same-host signer filename",
+        "before": "main57_signer.py",
+        "after": "main58_signer.py",
+        "count": 3
+      }
+    ],
+    "future_values": [
+      "core_result",
+      "input",
+      "publication",
+      "git_source_map",
+      "signer",
+      "source_commit",
+      "source_tree",
+      "expected_prior_head"
+    ],
+    "first_mutation_line": 259,
+    "all_missing_values_reject_before_input_read_and_first_mutation": true,
+    "header_order_preserved": true,
+    "bare_core_map_array_595": true,
+    "signer_AST_config_only_not_executed": true
+  },
+  "unchanged_scope": {
+    "six_sign_commands": true,
+    "owned_child_cleanup": true,
+    "exact_native17_payloads": true,
+    "no_native_recompilation": true,
+    "existing_key_metadata_only": true,
+    "no_phone": true,
+    "no_new_suite": true
+  },
+  "current_vs_history": {
+    "current_source": "94ca147166c4e4c7faa5bd32085c5431eb36f4b1",
+    "publication_base_source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+    "expected_prior_head": null,
+    "current_repo_query_integrated": true,
+    "prior57_query_integrated": true,
+    "historical56_query_external": true,
+    "composition_source_expectation": {
+      "cases": 89,
+      "assertions": 275,
+      "prior_cases": 79,
+      "prior_assertions": 215,
+      "added_cases": 10,
+      "added_assertions": 60,
+      "actual_result": null
+    },
+    "provider_ready": false
+  },
+  "transport": {
+    "status": "pending actual seals; no request generated from unknown values",
+    "reuse_actual57_requests": {
+      "stager": "d50d422ec93590aff894c24fd28ea30839c51400",
+      "signer": "e5e78292eb337783f267a56c2baa47ea06e76aab",
+      "compact": "3e6c8e55d1bf953e4997950d5395fcd41ba462bd"
+    },
+    "no_H_performed": true
+  }
+}

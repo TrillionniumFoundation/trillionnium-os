@@ -1,0 +1,128 @@
+{
+  "actual_group_results": {
+    "contract_checks": {
+      "android_api_callbacks_executed": false,
+      "cases": 40,
+      "passed": true,
+      "phone_tested": false,
+      "schema": "hepta.web-helper-recovery-host-checks.v1",
+      "synthetic_fixtures": true
+    },
+    "evidence_parser_checks": {
+      "android_api_callbacks_executed": false,
+      "cases": 16,
+      "passed": true,
+      "phone_tested": false,
+      "schema": "hepta.web-helper-evidence-json-boundaries.v1",
+      "synthetic_fixtures": true
+    },
+    "shopping_purpose_checks": {
+      "actual_mi_dom_seen": false,
+      "arm_or_popup_executed_here": false,
+      "business_verified": false,
+      "cases": 64,
+      "network_executed": false,
+      "passed": true,
+      "phone_tested": false,
+      "policy_literal_successor": true,
+      "predecessor_purpose_cases": 64,
+      "schema": "hepta.v55-public-web-purpose-host-checks.v1",
+      "synthetic_contract_fixtures": true,
+      "synthetic_product_success_cards": 0
+    },
+    "unstarted_retirement_checks": {
+      "android_api_callbacks_executed": false,
+      "business_verified": false,
+      "cases": 36,
+      "passed": true,
+      "phone_tested": false,
+      "schema": "hepta.web-helper-unstarted-retirement-host-checks.v1",
+      "synthetic_fixtures": true
+    }
+  },
+  "actual_mi_dom_seen": false,
+  "all_pass": true,
+  "android_recompiled": false,
+  "arm_execution_scope_is_separate23_case_gate": {
+    "bytes": 1835,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r2/CONTRACT-RESULT.json",
+    "sha256": "d8ee4cec432ff8329f799e60a0215a86d87b84662ac87cc7d533b8e0f2ecbabf"
+  },
+  "base_contract_result": {
+    "bytes": 14006,
+    "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/inputs/provenance/BASE-CONTRACT-RESULT.json",
+    "sha256": "3f8a2ec3587789ee37fef0294cec2203bf95911eefc307b78e68105bf95f1490"
+  },
+  "business_verified": false,
+  "compiled_dependency_count": 24,
+  "compiled_java_input_count": 28,
+  "elapsed_seconds": 6.468346834182739,
+  "exit_code": 0,
+  "gate_result": {
+    "bytes": 14480,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-authority-recovery-host-r1/gate/RESULT.json",
+    "sha256": "ccf0e5c1697f798e6a5e5acb8521058cd026dc5e0214b9fe0b4b0e1ec83735d8"
+  },
+  "helper_build": {
+    "bytes": 230541,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r3/RESULT.json",
+    "sha256": "8dad8522b39d9fb017fdb869bfdf9c8081f14d445a314bb4555d84e11e49539d"
+  },
+  "helper_source_file_count": 43,
+  "helper_source_inventory_sha256": "3a9cb424a258adfe71b821dadf6b6319bd228a3bf2d0bf190c9d6b139f6b1c8e",
+  "network_executed": false,
+  "old_authority_recovery_groups_rerun": true,
+  "original_helper_build_rewritten": false,
+  "originals_unchanged": true,
+  "phone_tested": false,
+  "production_changed": false,
+  "real_binder_or_fd_exercised": false,
+  "schema": "hepta.helper6-authority-recovery-host.v1",
+  "shopping64_is_explicit_policy_literal_successor": true,
+  "shopping64_original_assertions_all_byte_identical": false,
+  "shopping64_original_raw_preserved": true,
+  "source_only_fixture_sha256": "36cece5fa6f676c9d46d5dbebadd72b00d0f2d49fc04d86dd4a7aa823e212ba5",
+  "started_epoch": 1794504584.725128,
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-authority-recovery-host-r1/source/tools/run_recovery_host_tests.py",
+        "--source-root",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-authority-recovery-host-r1/source",
+        "--out",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-authority-recovery-host-r1/gate",
+        "--java-home",
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64",
+        "--json-jar",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/host-json/json-20240303.jar",
+        "--expected-json-jar-sha256",
+        "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"
+      ],
+      "elapsed_seconds": 6.433989287004806,
+      "exit_code": 0,
+      "exit_observed": true,
+      "forced": false,
+      "name": "old-authority-recovery-groups",
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_attempted": false,
+      "owned_group_cleanup_error": null,
+      "pid": 1806192,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-authority-recovery-host-r1/old-authority-recovery-groups.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-authority-recovery-host-r1/old-authority-recovery-groups.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "wait_exception": null
+    }
+  ],
+  "three_legacy_java_test_groups_byte_unchanged": true
+}

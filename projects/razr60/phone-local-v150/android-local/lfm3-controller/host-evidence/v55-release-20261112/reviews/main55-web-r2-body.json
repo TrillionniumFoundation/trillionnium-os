@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.main55-web-r2-source-review.v1",
+  "status": "source-only-no-new-blocker",
+  "reviewer": "android_code_audit",
+  "candidate": {
+    "path": "/home/alex/hepta-local-007f-20261111/v55-main-web-regression-host-r2.py",
+    "git": "f2bf0e695199c53c2d4b959153b47e78b7396aaf",
+    "bytes": 38346,
+    "sha256": "ede9eb863619a67f9c17187360ea38e39472fd96eb4bc53c8928d75303cf3c71"
+  },
+  "predecessor": {
+    "git": "d88c3294d34f78a4c7a47023f52b6cb8a0d91214",
+    "bytes": 31909,
+    "sha256": "033cc515c8f02bad19e1b5ddd7de038ba886ab827f9ed7d5ee0cd4a71e67582e"
+  },
+  "packet": {
+    "git": "7c98d42f3ea3babad09e7a47eb5121cec9a1cc7c",
+    "bytes": 161563,
+    "sha256": "6b2c8f192b00e95feae521e657e2bc9552b1cbf251510ef75818f5884c0cf9e3",
+    "changed_json_paths": [
+      "/current_aggregate",
+      "/production_inputs/8"
+    ],
+    "five_fixture_records_byte_identical": true,
+    "all_assertions_unchanged": true,
+    "production_input_count": 43,
+    "unchanged_production_rows": 42,
+    "old_mi": {
+      "path": "src/org/trillionnium/hepta/local/MiPublicProductPage.java",
+      "bytes": 17276,
+      "sha256": "cdc85225d7f938d47a8aeb62b6d7d4ccc439b420c698dd86a10841f543771f50",
+      "git_blob_sha": "31da0b4abaa16116fe504dfe61df9b988f05ec59",
+      "mode": "100644"
+    },
+    "new_mi": {
+      "path": "src/org/trillionnium/hepta/local/MiPublicProductPage.java",
+      "bytes": 17440,
+      "sha256": "aaddee9837555083ec1d796b67a2cfc37a280b023b12b2dbd4e474d47586ac8b",
+      "git_blob_sha": "4d38f27e602302f71ecbf1c4e2e4fcb367fa9fe0",
+      "mode": "100644"
+    }
+  },
+  "prior_actual_result": {
+    "bytes": 28342,
+    "sha256": "2829b933cb305cf2c940bf7d86e6c98479c257b9ad72a85e8f62be196f3d0187",
+    "git_blob_sha": "c3538df42438869158be5f4e34c665e77fb7e603"
+  },
+  "prior_actual_composition_stderr": {
+    "bytes": 487,
+    "sha256": "09aa7132f588bb627caf24a32f5721e38f69fb0fac9e42e8029941240a170d8f",
+    "git_blob_sha": "624cc8b8ed8806d8d467d3a2f940dece2a7bd139"
+  },
+  "mechanical": {
+    "five_ordered_changes_forward_and_reverse_exact": true,
+    "source_write_base64_decodes_exact": true,
+    "loader_request_arg_same_raw": true,
+    "loader_stable_fd_functions_byte_identical_to_helper_r2": true,
+    "old_packet_whole_sha_and_git_sha_verified": true,
+    "new_packet_whole_sha_and_git_sha_verified": true,
+    "only_packet_changes": [
+      "/current_aggregate",
+      "/production_inputs/8"
+    ],
+    "all_five_fixture_records_and_raw_bytes_identical": true,
+    "all_42_other_production_rows_identical": true,
+    "all_43_rows_match_exact_d3bf594_inventory": true
+  },
+  "findings": [
+    "All five source changes reconstruct the complete 38346-byte coordinator and reverse to the actual 31909-byte predecessor. No compile command, original case/assertion, owned child runner, or existing I/O function changes.",
+    "Only current aggregate metadata and the exact MiPublicProductPage row are derived from the already-published 41889-byte gzip. Encoding the reverse substitutions must equal the entire prior packet, retaining all five fixture sources and assertions.",
+    "The preflight binds the full actual prior RESULT and stage, exact compile/evidence80/composition43 exit sequence [0,0,1], six original streams, specific retained no-purchase-path assertion, and real evidence80 report. The failed predecessor is not promoted to pass.",
+    "Before first output mutation the script independently hashes the current materialized 594-file tree, candidate aggregate/plain inventory, production inputs, dependencies, original calendar fixtures and historical regression receipts. It does not depend on Core101 success or Android success.",
+    "ROOT.mkdir is at source line454, outside the result-writing try handler. All input reads and guards precede it. A late competing execution cannot enter the owned result-writing handler when the root already exists.",
+    "The original four child processes and owned-process failure handling are byte-identical. Failure remains failure; partial raw reports are preserved. Final integrity checks add the entire failed output tree bytes and file identities, alongside the complete current source tree.",
+    "The 931-byte loader uses the exact reviewed stable-FD read functions, fixes full source path/size/SHA, and compiles and injects the same verified raw bytes as __stage_source__."
+  ],
+  "prior_actual_scope": {
+    "compile_exit0": true,
+    "evidence80_cases": 80,
+    "evidence80_assertions": 92,
+    "composition_failed": true,
+    "calendar_not_executed": true
+  },
+  "limits": {
+    "python_syntax_executed_here": false,
+    "java_executed_here": false,
+    "new_r2_gate_pass_claimed": false,
+    "phone_actions": 0,
+    "production_modified_by_review": false,
+    "atomic_gzip_argv_publisher_reviewed_here": false
+  },
+  "next_transport_note": "Mobile is preparing a separate atomic single-source gzip-argv publisher using the already reviewed 931-byte loader unchanged; this report covers coordinator and original loader, not that forthcoming publisher."
+}

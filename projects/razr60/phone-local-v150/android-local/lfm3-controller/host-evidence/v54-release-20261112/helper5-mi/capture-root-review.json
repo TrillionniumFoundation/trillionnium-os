@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.root-manual-observer-action-review.v1",
+  "purpose": "native_capture",
+  "source_result_sha256": "0bbf3b48acbf93dd1d8e8f3757c9a7b2eadc8dca709d94cc3cc7577ea11e86bd",
+  "observer_apk_sha256": "b5e56ce0c2967489b55150c157f8289fdd82ad5b89caacc8b106013a7caeaf4f",
+  "actual_whole_frame_visual_review_completed": true,
+  "target_control_unoccluded": true,
+  "keyboard_or_modal_overlay": false,
+  "business_verified": false,
+  "phone_action_issued_by_review": false,
+  "native_control": true,
+  "actual_ax_control": {
+    "index": "2",
+    "text": "记录当前页面（只读）",
+    "resource-id": "",
+    "class": "android.widget.Button",
+    "package": "org.trillionnium.hepta.webhelper",
+    "content-desc": "",
+    "checkable": "false",
+    "checked": "false",
+    "clickable": "true",
+    "enabled": "true",
+    "focusable": "true",
+    "focused": "false",
+    "scrollable": "false",
+    "long-clickable": "false",
+    "password": "false",
+    "selected": "false",
+    "bounds": "[816,287][1224,455]",
+    "drawing-order": "3",
+    "hint": ""
+  },
+  "native_header_text": "https://www.mi.com/shop/search?keyword=AX3000T",
+  "bounds": [
+    816,
+    287,
+    1224,
+    455
+  ],
+  "tap_point": [
+    1020,
+    371
+  ],
+  "pixel_comparison_bounds": [
+    816,
+    287,
+    1224,
+    455
+  ]
+}

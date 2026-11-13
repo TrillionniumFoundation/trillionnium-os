@@ -22,6 +22,8 @@ public final class NotesCompletionEvidence {
             "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017";
     public static final String PERSISTENCE_LIMIT=
             "Observed text only; trailing LF origin and persistent storage bytes are unverified.";
+    public static final String LIST_TEXT_SCOPE=
+            "Complete accessibility text source; visual clipping and persistent storage bytes are unverified.";
     private static final String FORTY_LF=fortyLf();
     private static final int MAX_NODES=200;
     private NotesCompletionEvidence() {}
@@ -44,17 +46,25 @@ public final class NotesCompletionEvidence {
         public final String id,packageName,text,label,viewId,inputTextSha256;
         public final int left,top,right,bottom;
         public final boolean editable,clickable,scrollable,enabled,password;
+        public final ObservedChildText.Result childText;
+        public final String observedAppTreeSignature;
         private final boolean boundsKnown;
         /** label is the complete original display label, before the existing 36-unit projection.
          * For unavailable/truncated derived child text the bridge must supply an empty label. */
         public Node(String id,String packageName,String text,String label,String viewId,String inputTextSha256,
                     int[] bounds,boolean editable,boolean clickable,boolean scrollable,boolean enabled,boolean password){
+            this(id,packageName,text,label,viewId,inputTextSha256,bounds,editable,clickable,scrollable,enabled,password,ObservedChildText.notApplicable(),null);
+        }
+        public Node(String id,String packageName,String text,String label,String viewId,String inputTextSha256,
+                    int[] bounds,boolean editable,boolean clickable,boolean scrollable,boolean enabled,boolean password,
+                    ObservedChildText.Result childText,String observedAppTreeSignature){
             this.id=id;this.packageName=packageName;this.text=text;this.label=label;this.viewId=viewId;
             this.inputTextSha256=inputTextSha256;boundsKnown=bounds!=null&&bounds.length==4;
             left=boundsKnown?bounds[0]:0;top=boundsKnown?bounds[1]:0;
             right=boundsKnown?bounds[2]:0;bottom=boundsKnown?bounds[3]:0;
             this.editable=editable;this.clickable=clickable;this.scrollable=scrollable;
             this.enabled=enabled;this.password=password;
+            this.childText=childText==null?ObservedChildText.notApplicable():childText;this.observedAppTreeSignature=observedAppTreeSignature;
         }
         public int[] bounds(){return new int[]{left,top,right,bottom};}
     }
@@ -94,8 +104,20 @@ public final class NotesCompletionEvidence {
         public final boolean matched;
         public final String missing;
         public final Item item;
+        public final String matchRule,sourcePath,sourceViewId,sourceTextSha256,observedAppTreeSignature;
         private ListEvidence(String missing,Node node){
+            this(missing,node,null,null);
+        }
+        private ListEvidence(String missing,Node node,String rule,ObservedChildText.Source source){
             this.missing=missing;matched=missing==null&&node!=null;item=matched?new Item(node):null;
+            matchRule=rule;sourcePath=source==null?null:source.descendantPath;sourceViewId=source==null?null:source.viewId;
+            sourceTextSha256=source==null?null:source.textSha256;observedAppTreeSignature=node==null?null:node.observedAppTreeSignature;
+        }
+        public Map<String,Object> evidence(){
+            Map<String,Object> o=new LinkedHashMap<String,Object>();o.put("matched",matched);o.put("missing",missing);o.put("match_rule",matchRule);
+            o.put("node_id",item==null?null:item.nodeId);o.put("source_path",sourcePath);o.put("source_view_id",sourceViewId);
+            o.put("source_text_sha256",sourceTextSha256);o.put("node_app_tree_sha256",observedAppTreeSignature);o.put("text_scope",LIST_TEXT_SCOPE);
+            o.put("persistent_bytes_verified",false);return o;
         }
     }
 
@@ -148,7 +170,7 @@ public final class NotesCompletionEvidence {
                     &&node.enabled&&!node.password&&validBounds(node)){pager=node;pagers++;}
         }
         if(titles!=1||pagers!=1)return absentList("unique_all_notes_title_and_scrollable_pager_required");
-        Node item=null;int matches=0;
+        Node item=null;int matches=0;String rule=null;ObservedChildText.Source matchedSource=null;
         for(Node node:frame.nodes){
             if(node==title||node==pager||!NOTES.equals(node.packageName)||!node.clickable
                     ||!node.enabled||node.password||!validBounds(node)||!inside(node,pager))continue;
@@ -156,14 +178,45 @@ public final class NotesCompletionEvidence {
             // happens to request a note whose entire body is the title "所有笔记".
             if((NOTES+":id/clickable_layout").equals(node.viewId))continue;
             boolean ownText=body.equals(node.text)&&node.text.equals(node.label);
-            boolean fullLabel=node.text.isEmpty()&&body.equals(node.label);
-            if(ownText||fullLabel){item=node;matches++;}
+            // A derived label can never fall back to a title/date matching the
+            // body. Its real summary source and parent binding are mandatory.
+            boolean fullLabel=node.text.isEmpty()&&body.equals(node.label)&&!"derived".equals(node.childText.status);
+            ObservedChildText.Source source=summarySource(node,body);
+            if(ownText||fullLabel||source!=null){item=node;matches++;matchedSource=source;
+                rule=source!=null?"bound_note_summary_accessibility_text":ownText?"exact_own_text":"exact_nonderived_label";}
         }
         if(matches==0)return absentList("complete_body_on_one_executable_list_item_missing");
         if(matches!=1)return absentList("complete_body_list_item_is_not_unique");
-        // Bounds establish only on-screen scope, never an inferred ancestor link.
-        // Identity comes from this executable node's own text/full original label.
-        return new ListEvidence(null,item);
+        // Bounds establish only list scope, never an inferred ancestor link.
+        return new ListEvidence(null,item,rule,matchedSource);
+    }
+
+    private static ObservedChildText.Source summarySource(Node node,String body){
+        ObservedChildText.Result child=node.childText;
+        if(!(NOTES+":id/note_item_content").equals(node.viewId)||!node.text.isEmpty()
+                ||!"derived".equals(child.status)||child.truncated||!child.sourcesComplete||!node.label.equals(child.text)
+                ||child.text.isEmpty()||child.text.length()>ObservedChildText.MAX_CHARACTERS
+                ||child.visited<1||child.visited>ObservedChildText.MAX_DESCENDANTS||child.sources.isEmpty()
+                ||child.sources.size()>ObservedChildText.MAX_PARTS||!isSha(child.rootSignature)
+                ||!isSha(node.observedAppTreeSignature)||!child.bind(child.rootSignature).equals(node.observedAppTreeSignature))return null;
+        Set<String> paths=new HashSet<String>();ObservedChildText.Source summary=null;int summaries=0;
+        for(ObservedChildText.Source source:child.sources){
+            if(source==null||!sourcePath(source.descendantPath)||!paths.add(source.descendantPath)
+                    ||!("text".equals(source.property)||"description".equals(source.property))
+                    ||!isSha(source.textSha256)||!isSha(source.nodeSignature)||!unicode(source.viewId))return null;
+            if((NOTES+":id/note_summary").equals(source.viewId)){
+                summaries++;if("text".equals(source.property)&&sha(body).equals(source.textSha256))summary=source;
+            }
+        }
+        return summaries==1?summary:null;
+    }
+    private static boolean sourcePath(String path){
+        if(path==null||!path.matches("[0-9]{1,2}(?:/[0-9]{1,2}){0,3}"))return false;
+        for(String part:path.split("/")){
+            int index=Integer.parseInt(part);
+            if(index>=ObservedChildText.MAX_DESCENDANTS||!Integer.toString(index).equals(part))return false;
+        }
+        return true;
     }
 
     private static String frameError(Frame frame){

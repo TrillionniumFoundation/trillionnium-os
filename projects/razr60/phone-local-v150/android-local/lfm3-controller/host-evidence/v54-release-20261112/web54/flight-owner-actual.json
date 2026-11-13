@@ -1,0 +1,100 @@
+{
+  "schema": "hepta.local-owner.v1",
+  "task_id": "3c90bb05c4974a8980655fd254fc933e",
+  "instruction": "查一下2026年11月17日北京到上海的单程机票，1名成人",
+  "instruction_utf8_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+  "task_authorization_sha256": "7362e28a99e174f17c45f4070472c883a033c9bfcb9446f1cc19e2221e1edacc",
+  "task_authorization": {
+    "schema": "hepta.owner-task-authorization.v1",
+    "parser": "hepta.owner-tool-clauses.zh.v4-fixed-intents+natural-flight-ceiling.v1",
+    "instruction_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+    "authorization_sha256": "7362e28a99e174f17c45f4070472c883a033c9bfcb9446f1cc19e2221e1edacc",
+    "allowed_tools": [
+      "back",
+      "click",
+      "done",
+      "open",
+      "scroll",
+      "submit",
+      "type",
+      "wait"
+    ],
+    "require_find_app_before_open": false,
+    "find_query": null,
+    "recognized_rules": [
+      "natural_public_flight_tool_ceiling.v1"
+    ],
+    "arbitrary_semantic_constraints_verified": false
+  },
+  "completion_contract": {
+    "schema": "hepta.task-completion.v1",
+    "kind": "web_search_results",
+    "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+    "contract_sha256": "8c6d1341ad84a376fd8c87daf7dbb05761a5c1f6b134d601480b1f2f49d418a2",
+    "recognition": "natural_csair_flight_owner.v1",
+    "expected_body_sha256": null,
+    "source": "immutable_owner_contract",
+    "model_may_change_goal": false,
+    "grants_tool_authority": false
+  },
+  "external_model": false,
+  "automatic_resume": false,
+  "expected_scope_sha256": null,
+  "actual_scope_sha256": null,
+  "qualification_scope": {
+    "schema": "hepta.qualification-task-scope.v1",
+    "task_id": "3c90bb05c4974a8980655fd254fc933e",
+    "expected_scope_sha256": null,
+    "actual_scope_sha256": null,
+    "restricted": false,
+    "scope_loaded": false,
+    "qualification_id": null,
+    "build_identity_sha256": null,
+    "runtime_config_sha256": null,
+    "scope_refused": false,
+    "refusal": null,
+    "private_path_diagnostics": {
+      "schema": "hepta.private-path-diagnostics.v1",
+      "metadata_only": true,
+      "framework_files_absolute": "\/data\/user\/0\/org.trillionnium.hepta.local\/files",
+      "framework_files_canonical": "\/data\/data\/org.trillionnium.hepta.local\/files",
+      "framework_scope_absolute": "\/data\/user\/0\/org.trillionnium.hepta.local\/files\/qualification-scope.json",
+      "framework_scope_canonical": "\/data\/data\/org.trillionnium.hepta.local\/files\/qualification-scope.json",
+      "framework_runtime_absolute": "\/data\/user\/0\/org.trillionnium.hepta.local\/files\/model\/runtime-config.json",
+      "framework_runtime_canonical": "\/data\/data\/org.trillionnium.hepta.local\/files\/model\/runtime-config.json",
+      "captured_files_absolute": "\/data\/data\/org.trillionnium.hepta.local\/files"
+    },
+    "last_check": {}
+  },
+  "background_request": {
+    "mode": "background",
+    "allowed_packages": [
+      "org.trillionnium.hepta.webhelper"
+    ],
+    "bootstrap_package": "org.trillionnium.hepta.webhelper",
+    "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+    "bootstrap_model_issued": false,
+    "main_display_fallback": false,
+    "home_allowed": false,
+    "owner_task_selection": {
+      "schema": "hepta.owner-task-app-selection.v1",
+      "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+      "recognition": "natural_explicit_date_single_adult_flight_query.v1",
+      "original_ui_initial_package": "com.motorola.stylus",
+      "original_ui_allowed_packages": [
+        "com.motorola.stylus",
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "effective_initial_package": "org.trillionnium.hepta.webhelper",
+      "effective_allowed_packages": [
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "effective_scope_within_selected_apps": true,
+      "effective_scope_strictly_smaller": true,
+      "initial_app_changed": true,
+      "package_from_model_or_screen": false,
+      "grants_tool_authority": false,
+      "changes_saved_preferences": false
+    }
+  }
+}

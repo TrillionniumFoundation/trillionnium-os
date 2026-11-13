@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+"""Root-only pending Notes56 normal run; actual installed/owner/preparation facts must be sealed before use."""
+import hashlib,json,os,stat,sys
+from pathlib import Path
+HELPER_ARGV=["/usr/bin/python3","-u","/home/alex/hepta-local-007f-20261111/background-notes-adapters-v56-r1/run_background_notes_v56_r1.py","--test-mode","main_user_coexistence","--identity-helper","/home/alex/hepta-local-007f-20261111/background-prerequisites/v35_identity.py","--source-tools","/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r2/source/tools","--adb","/usr/bin/adb","--adb-host","127.0.0.1","--adb-port","5037","--serial","ZY22LS7WZT","--apk-sha256","067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62","--expected-uid","10481","--main-physical-display-id","4630947043778501779","--runtime-config","/home/alex/hepta-local-007f-20261111/profile-lfm3-v51-r1/runtime-config.after.json","--plan","/home/alex/hepta-local-007f-20261111/background-notes-adapters-v56-r1/notes-plan-normal-r1.json","--plan-sha256","fe089149f2ff8c383eb851a7bee7f6dd5e206fbec2d1e757ff83d113a535d4ea","--build-receipt","/home/alex/hepta-local-007f-20261111/v56-main-sign-r1/RESULT.json","--build-receipt-sha256","e27e74e94b0668c1c07b04863c9aaabf1b3235f9ff2d0d0d8bd9a346e46b2c6b","--source-commit","9f4168616546233033edd4b254b4236ae987ea7e","--preparation","/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-prepare-r1/RESULT.json","--preparation-sha256","61a7aa90efb1fffb14e4f21cdec6c389b4ecb1bf644a559c95f8d9e747cc743a","--target-package","com.motorola.stylus","--existing-su-authorized","--start-tap","180","1114","--prepared-screen","/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-prepare-r1/prepared-main.png","--prepared-screen-sha256","b4dfc3dbe96dc1cab4f9149eb26eeb4789bf098a124ec74a9461e0cda756db8b","--prepared-window-dump","/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-prepare-r1/prepared-window.txt","--prepared-window-dump-sha256","91852b540875fc1807441c4d34a75b45e614b7b8e6357a2aa8ccdd2d7d564121","--start-window","90","--timeout","560","--interval","1.0","--command-timeout","8","--out","/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1"]
+assert all(type(v) is str and v and "\x00" not in v for v in HELPER_ARGV), "actual late-bound Notes56 normal run fields pending; no source load or phone action"
+p=Path("/home/alex/hepta-local-007f-20261111/background-notes-adapters-v56-r1/run_one_v56_helper_then_export_r1.py")
+assert all(not q.is_symlink() for q in (p,*p.parents))
+with p.open("rb") as f:
+    a=os.fstat(f.fileno());raw=f.read(9580);b=os.fstat(f.fileno())
+ident=lambda s:(s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)
+assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==9579 and ident(a)==ident(b)==ident(p.stat())
+assert len(raw)==9579 and hashlib.sha256(raw).hexdigest()=="dfa637a063e087c2f06e5bf89b574fda9c75cdf1ce31b025149e4a33946ba3e6"
+sys.dont_write_bytecode=True
+sys.argv=[str(p)]+["--kind","run","--helper-argv-json",json.dumps(HELPER_ARGV,ensure_ascii=False,separators=(",",":")),"--export-out","/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-normal-r1-host-review-r1"]
+exec(compile(raw,str(p),"exec",dont_inherit=True),{"__name__":"__main__","__file__":str(p)})

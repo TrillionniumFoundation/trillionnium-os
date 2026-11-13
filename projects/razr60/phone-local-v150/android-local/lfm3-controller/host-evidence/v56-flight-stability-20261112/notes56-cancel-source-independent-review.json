@@ -1,0 +1,244 @@
+{
+  "schema": "hepta.notes56-cancellation-successor-narrow-source-review.v1",
+  "verdict": "no_new_source_blocker_in_reviewed_43_replacements",
+  "scope": {
+    "host_calls": 0,
+    "phone_actions": 0,
+    "python_or_jvm_execution": 0,
+    "new_suites": 0,
+    "production_changes": 0,
+    "normal_eleven_source_changes": 0,
+    "review_is_not_runtime_cancellation_success": true,
+    "publication_transport": "separate_followup_review"
+  },
+  "reviewed_candidate": {
+    "git_blob_sha": "64e82ecd2e21f0051f988786eeeea6a8e4be3902",
+    "bytes": 268473,
+    "sha256": "1a6a5cd2a85536a8f6c9dc08a530f770768aedeb78d73b0baa4b3fdf3b13f909"
+  },
+  "normal56": {
+    "git_blob_sha": "d7fae9ab2144159efb367bad19a71ccd2bac6980",
+    "bytes": 429474,
+    "sha256": "f12491cf49bae005a4e24f35130fa9bba51fc4ae043720f08450c1817625374a"
+  },
+  "actual_signed56": {
+    "git_blob_sha": "bbad4c1163a6cf92e829a376d7f1d6cc0002f523",
+    "bytes": 32758,
+    "sha256": "e27e74e94b0668c1c07b04863c9aaabf1b3235f9ff2d0d0d8bd9a346e46b2c6b"
+  },
+  "actual595_inventory": {
+    "git_blob_sha": "07cc1ccced2c41df1fcb06e5195650362b3676c0",
+    "bytes": 141875,
+    "sha256": "8d8cf9767861029b1cd4c6bb1143e07ee92296a475a44ae1979db79756233926"
+  },
+  "mechanical": [
+    {
+      "path": "run_background_cancel_v56_r1.py",
+      "groups": 28,
+      "forward_reverse": true,
+      "newpin": {
+        "bytes": 115515,
+        "sha256": "4744eb6f6f4987f750bc517328b61f4597c17b59e6f0996de7faf66aa8c51696",
+        "git_blob_sha": "c5347a0bfab2f694952950b3dad0083af4e86708"
+      }
+    },
+    {
+      "path": "visible_stop_cancel_v56_r1.py",
+      "groups": 10,
+      "forward_reverse": true,
+      "newpin": {
+        "bytes": 39293,
+        "sha256": "dd347e652bb2cd0e4eaa9f398c933f4b31e5c2b38c72e51095d42d51628fc817",
+        "git_blob_sha": "7ec88e7538da495349b13059dbcfbd6881402e92"
+      }
+    },
+    {
+      "path": "export_v56_cancel_case_r1.py",
+      "groups": 1,
+      "forward_reverse": true,
+      "newpin": {
+        "bytes": 30636,
+        "sha256": "6f6eef01820d62c50471784183e230ae1b2a068580b2cac283799ac86be0715d",
+        "git_blob_sha": "a8f03f6f18c24a6ea5155a4beea6ce00764b4fd6"
+      }
+    },
+    {
+      "path": "run_one_v56_cancel_then_export_r1.py",
+      "groups": 4,
+      "forward_reverse": true,
+      "newpin": {
+        "bytes": 9534,
+        "sha256": "67907e3f43ee0bbabe4b6a1d329a31dd144d7287cc4cdce376a34b08142a51db",
+        "git_blob_sha": "7d1ea17bf390fd869eb81e33bbf3c57c0f444a83"
+      }
+    },
+    {
+      "path": "owned_cancellation_receipts_v53_r2.py",
+      "groups": 0,
+      "forward_reverse": true,
+      "newpin": {
+        "bytes": 11388,
+        "sha256": "f3b4fc04c4834712ba5722e8f31dc396311d2a334cd0f21e0980f57f26011a61",
+        "git_blob_sha": "b9f2e4ab6f1df5da8d0f63406ecbcd6eee870fe8"
+      }
+    },
+    {
+      "path": "android-errno-binding-v53-original.json",
+      "groups": 0,
+      "forward_reverse": true,
+      "newpin": {
+        "bytes": 7576,
+        "sha256": "5907334b97da50bb66b6343898dacc1ddfa7f15aa942925d3586eacf2b003ee7",
+        "git_blob_sha": "dd77a3c088c2dd87f0d4772b9a53f905493983d3"
+      }
+    }
+  ],
+  "shared_methods": [
+    {
+      "name": "coexistence_verdict",
+      "equal": true,
+      "pin": {
+        "bytes": 990,
+        "sha256": "248af0325b3e96a699a2d2a7128b8c97ecc88182f9b117360596fdf8b8372274",
+        "git_blob_sha": "04dd21c5df211e1ff91c43a855d5b4d24e2f765c"
+      }
+    },
+    {
+      "name": "live_candidate_window",
+      "equal": true,
+      "pin": {
+        "bytes": 2207,
+        "sha256": "1273f8754104e206f79f455d8363bbfb2793b3473ea56298768e65ec02aa026f",
+        "git_blob_sha": "866e6bcdf8597f28773e00381d7c5c00add65858"
+      }
+    },
+    {
+      "name": "bind_local_inputs",
+      "equal": true,
+      "pin": {
+        "bytes": 4915,
+        "sha256": "8eb5c12a41694434cc655ddd23600853fa0aa66e11c70c0ffd685715dc530ce7",
+        "git_blob_sha": "29fce2a288b4d4e7cc6473fcc81a49e3b7eaf3ae"
+      }
+    },
+    {
+      "name": "collect_and_assess",
+      "equal": true,
+      "pin": {
+        "bytes": 18756,
+        "sha256": "9063593542523c85d4350fc866afd41850fc4e71526e61559dd7e8fbef5c1310",
+        "git_blob_sha": "84d3d662062219d255b935ed953d1f9e72f12f74"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "background_notes_plan.py",
+      "normal_exact": true,
+      "raw_pin_exact": true
+    },
+    {
+      "path": "fixed_intent_v6_acceptance.py",
+      "normal_exact": true,
+      "raw_pin_exact": true
+    },
+    {
+      "path": "controller_workflow_evidence.py",
+      "normal_exact": true,
+      "raw_pin_exact": true
+    },
+    {
+      "path": "prepare_background_notes_v56_r1.py",
+      "normal_exact": true,
+      "raw_pin_exact": true
+    },
+    {
+      "path": "live_inflight_window.py",
+      "normal_exact": true,
+      "raw_pin_exact": true
+    },
+    {
+      "path": "main_user_inflight.py",
+      "normal_exact": true,
+      "raw_pin_exact": true
+    }
+  ],
+  "independent_comparisons": {
+    "preferences": {
+      "three_new_execute_blocks_exact_normal56": true,
+      "immutable_preparation_archive_exact_normal56": true,
+      "raw_before_after_original_comparison_retained": true
+    },
+    "cancel_loop": {
+      "equal": true,
+      "old": {
+        "bytes": 2650,
+        "sha256": "80da6d7dd307b3837c455da310b2c5c53e6e332c73d474d2946a00dcfb365c56",
+        "git_blob_sha": "fd5a4e09fbececb450bfe6d348af56b42dc23828"
+      },
+      "current": {
+        "bytes": 2650,
+        "sha256": "d4d988b35bea483a5f6593c7fcc5f87dcbb468578819cd499a76438fd13adaaa",
+        "git_blob_sha": "bf32372ae0ca070aec5e4aff406d4e510e464915"
+      },
+      "terminal_values_equal": true
+    },
+    "loop_initialization_and_loop": {
+      "old": {
+        "bytes": 3151,
+        "sha256": "d8ceba06543a973b611915abbcd9306df87e8142ad023f5c0e668ad4ce1eee33",
+        "git_blob_sha": "f14dbe5285d9040b2b3e4937fa3315832ff40193"
+      },
+      "current": {
+        "bytes": 3151,
+        "sha256": "1c795e826f036c223b7b1e4d3ccbe9477004e38e07e5fd900fdc338e2d1d68f1",
+        "git_blob_sha": "6a5a94f18a71e3f74d72ad3b2f715978c4d16441"
+      },
+      "equal": true
+    },
+    "source_pin_checks": {
+      "five_owned_cancellation_sources_exact_actual595": true,
+      "main_activity": {
+        "path": "src/org/trillionnium/hepta/local/MainActivity.java",
+        "bytes": 49287,
+        "sha256": "22e03ae02378cd05981faab93f70c2686de633b6bb7d35ab640ef358150c2aa5",
+        "git_blob_sha": "b90952bc21c35127f1a86eb3be38327c81a43794"
+      }
+    },
+    "current_vs_historical": {
+      "current_signed_sha256": "e27e74e94b0668c1c07b04863c9aaabf1b3235f9ff2d0d0d8bd9a346e46b2c6b",
+      "current_apk_sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62",
+      "current_java_native_reuse_receipt_sha256": "2c8626102e21841327cd22692021238fed124b1ec7fd580d536dea353725767b",
+      "worker_sha256": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+      "historical_signed53_sha256": "484b2be823f751ce12c643ac66cd54d4ecd4262ab939b080dd2d0378365ecccc",
+      "historical_native_compiler_sha256": "89af42d0a61ea12ea06df6f6d2c35f368ae494b77cc0a8badc3f25cb105d48c0",
+      "historical_errno_raw_unchanged": true,
+      "historical_owned_parser_raw_unchanged": true,
+      "current_signed56_native_binding_read_in_full": true,
+      "current_ndk_or_errno_execution_claim": false
+    },
+    "selection": {
+      "expected_recomputed_from_hash_checked_preparation_and_exact_plan_helper": true,
+      "uses_preparation_original_and_live_preparation_byte_equality": true,
+      "full_owner_effective_selection_includes_original_saved_dual_choice": true,
+      "context_adds_expected_background_selection_and_preparation_original_sha256": true,
+      "live_evaluate_compares_owner_and_bootstrap_with_same_json_types": true,
+      "expected_is_not_copied_from_claimed_context": true
+    },
+    "wrapper_exporter": {
+      "helper_map_only_cancel": true,
+      "exporter_map_only_cancel": true,
+      "added_errno_options_match_required_original_driver_parser": true,
+      "exact_current_build_helper_exporter_and_plan_pins_enforced": true,
+      "exactly_one_runpy_phone_helper_then_original_host_export": true,
+      "existing_cancel_result_schema_mapping_and_task_visuals_compatible": true,
+      "original_helper_exit_and_failure_evidence_not_promoted_to_pass": true
+    }
+  },
+  "limits": [
+    "Only successor differences and their exact interfaces were reviewed; the unchanged v53 cancellation semantics were not re-audited wholesale.",
+    "The normal56 eleven-file packet was used as an already-reviewed byte-exact baseline; this review did not rerun its prior gates.",
+    "No Python syntax check, host execution, phone action, current native errno proof, new cancellation SDK result, or visual Stop qualification occurred.",
+    "The retained original loop continues to forbid retry, guessed Stop, PID kill, and deadline extension; all final cancellation and visual checks remain for actual execution."
+  ]
+}

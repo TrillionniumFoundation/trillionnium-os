@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.source-review.helper6-fixed-metadata-projection.v1",
+  "reviewer": "android_code_audit",
+  "handoff": {
+    "git": "17ba789d8a329d9aec8cbe2f9eb0292294387fe1",
+    "bytes": 6611,
+    "sha256": "ca672c0a6f59497083843dc14d27efa0ccaf7b69fcbc80a707cd50b56efd6b68"
+  },
+  "source": {
+    "git": "fd514a997e3b531dc938b30007c0abe165f925f3",
+    "bytes": 2660,
+    "sha256": "2e4bc16553b8080e8ce2a3fdef30fc0afef007cc1e1987b3007304382afb4ae2"
+  },
+  "checks": [
+    "Complete source and handoff raw bytes, SHA256 and Git blob hashes independently verified; fixed -I/-B bootstrap recompiles only the same complete hash-verified argv1 source.",
+    "Exactly three fixed reads under the actual helper5 sign inputs directory; no discovery, caller-supplied paths or URL requests.",
+    "Every file uses bounded stable single-link regular FD reads with no-follow, full length/SHA and final path identity checks; all three pins match the previously reviewed fixed inventory inputs.",
+    "The source archive SHA also matches actual helper5 signed receipt; 38 source files plus the inventory correspond to the asserted 39 unique archive members.",
+    "The archive stays in memory. Only the exact regular InstalledIdentity.java member is opened, with exact 7567-byte bound and 15c9d44c... whole hash. No tar member is extracted to the filesystem or executed.",
+    "Only original dependency artifact rows, the original R8 receipt and the fixed Java member are printed; output is bounded to 65536 UTF8 bytes before any stdout write.",
+    "No subprocess, external tool, network, filesystem write, operation lock, APK build/sign or phone API appears. Original Mac build state remains unknown and no automatic successor action is encoded."
+  ],
+  "scope_limits": [
+    "Source-only review; the original InstalledIdentity bytes have not yet been returned by this new projection and its predicate is not inferred.",
+    "A readable metadata projection does not establish an available toolchain, compilation, APK installation or business capability."
+  ],
+  "source_blocker_found": false,
+  "executed": false,
+  "phone_actions": 0
+}

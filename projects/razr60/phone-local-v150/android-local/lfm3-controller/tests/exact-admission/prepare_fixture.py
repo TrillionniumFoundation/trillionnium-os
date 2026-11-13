@@ -27,11 +27,19 @@ def prepare(source, output):
         "system": section(controller, "    private static final String SYSTEM=", "    public LocalTaskController("),
         "prompt_builder": section(controller, "    private static final class PromptFrame {",
                                   "    private static JSONObject catalogueJson("),
-        "completion_observation_bridge": section(controller, "    private static NotesCompletionEvidence.Frame completionFrame(", "    private static java.util.Map<String,Object> completionFixed("),
+        "completion_observation_bridge": section(controller, "    private static NotesCompletionEvidence.Frame completionFrame(", "    private static NotesCreateWorkflow.Observation workflowObservation("),
         "await_guard": await_guard,
         "text_limit": section(engine, "    private static void validateText(", "    private static void privateDirectory("),
         "label_limit": limited,
     }
+    postparse = section(controller, "                        action=ActionDecision.parse(answer.text,frame.grammar.schema);",
+                        '                        if("submit".equals(action.action)')
+    before_dispatch = section(controller, "                if(repeatGuard.rejects(action,before.state)",
+                              '                emit("正在执行第 "+steps+')
+    if postparse.count("frame.requireTextOnlyClick(action);") != 1 or before_dispatch.count("frame.requireTextOnlyClick(action);") != 1:
+        raise RuntimeError("actual postparse and pre-dispatch click guards must both use the frozen frame domain")
+    parts["postparse_click_guard"] = postparse
+    parts["predispatch_click_guard"] = before_dispatch
     text_limit = re.findall(r"private static final int TEXT_LIMIT\s*=\s*(\d+);", engine)
     if len(text_limit) != 1:
         raise RuntimeError("one production text byte limit required")
@@ -47,14 +55,20 @@ public final class PromptAdmissionFixture {
         public final DecisionGrammar grammar;
         public final ConservativeTokenBudget budget;
         public final java.util.Set<String> ids;
+        public final java.util.Set<String> clickIds;
+        private final PromptFrame frame;
         public final int nodes,required,visibleText,history;
         public final RecentActionProjection.ReadableEvents events;
         public final JSONObject budgetReceipt;
         Result(PromptFrame frame)throws Exception{
+            this.frame=frame;clickIds=frame.clickNodeIds;
             text=frame.text;grammar=frame.grammar;budget=frame.budget;ids=frame.nodeIds;
             nodes=frame.nodesShown;required=frame.requiredNodes;
             visibleText=frame.visibleTextShown;history=frame.historyShown;
             events=frame.eventHistory;budgetReceipt=frame.budgetJson();
+        }
+        public void requireTextOnlyClick(ActionDecision action)throws ActionDecision.InvalidActionException{
+            frame.requireTextOnlyClick(action);
         }
     }
     public static Result build(String owner,AppCatalogueRanker.Page apps,PhoneObservation observation,
@@ -88,6 +102,13 @@ public final class PromptAdmissionFixture {
     if len(values) != 1:
         raise RuntimeError("one production pure-class list required")
     files += [package / (name + ".java") for name in values[0]] + [package / "PhoneObservation.java"]
+    web_fixture_source=source/"tests/web-flight/legacy-boundary/WebFlightDomain.java"
+    web_fixture_raw=web_fixture_source.read_bytes()
+    web_fixture_compile=output/"WebTaskDomain.java"
+    web_fixture_compile.write_bytes(web_fixture_raw)
+    if web_fixture_compile.read_bytes()!=web_fixture_raw or web_fixture_source.read_bytes()!=web_fixture_raw:
+        raise RuntimeError("Exact Web type-boundary compiler copy required")
+    files += [package / "web/WebFlightGoal.java",package / "web/WebShoppingGoal.java",web_fixture_compile]
     files += [source/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol")]
     digest = lambda value: hashlib.sha256(value).hexdigest()
     record = {
@@ -98,10 +119,14 @@ public final class PromptAdmissionFixture {
         "extracted_parts": {name: {"bytes": len(value.encode()), "sha256": digest(value.encode())}
                             for name, value in parts.items()},
         "text_byte_limit": int(text_limit[0]),
+        "web_fixture_boundary": "Type-only WebTaskDomain; every Web capability method throws",
+        "web_fixture_compiler_copy": {"source_path":str(web_fixture_source.relative_to(source)),
+            "compiler_path":str(web_fixture_compile),"bytes":len(web_fixture_raw),
+            "sha256":hashlib.sha256(web_fixture_raw).hexdigest(),"byte_identical":True},
         "not_android_runtime": True,
         "not_model_inference": True,
         "not_phone_test": True,
-        "synthetic_observation_only": True,
+        "observation_scope": "explicit host boundary observations and hash-pinned saved phone failure observations; no live phone run",
     }
     (output / "EXTRACTION.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
     return files, record

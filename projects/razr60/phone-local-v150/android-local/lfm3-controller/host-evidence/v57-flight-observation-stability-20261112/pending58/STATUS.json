@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.main58.pending-offline-recovery-status.v1",
+  "scope": "candidate evidence only; not source publication, build success, signed release or installed Main58",
+  "production_source_commit_still": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+  "current_installed_main_version_code": 57,
+  "current_installed_main_apk_sha256": "c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4",
+  "candidate_aggregate": {
+    "bytes": 1465984,
+    "sha256": "600ff7c4198fc83d4e93399fc6bf039800805f4458406b4182952ddcff89b95b",
+    "git_blob_sha": "94ca147166c4e4c7faa5bd32085c5431eb36f4b1"
+  },
+  "candidate_delta": {
+    "bytes": 240110,
+    "sha256": "8a213bae868ffedb519f29685ff086d3feeb2ea940cbe63f4d62d6604fa5e193",
+    "git_blob_sha": "1ceb8788cb5e8c16220be435a378837aebd6f65f"
+  },
+  "candidate_source_count": 595,
+  "changed_source_paths": [
+    "AndroidManifest.xml",
+    "src/org/trillionnium/hepta/local/WebFlightSession.java"
+  ],
+  "other_593_source_bytes_unchanged": true,
+  "candidate_version_name": "0.58.0-flight-observation-settle",
+  "actual_flight_results_provider_ready": false,
+  "core58": {
+    "execution_status_source": "Root's complete original Start ACK and complete H host-health error preserved in ROOT-BLOCKED-CHECKPOINT.json.",
+    "unique_start_ack_observed_by_root": true,
+    "pty_session": "dpty-2b06b0a65c7104136c17ada20448725cd25c353d94b590495d7de8214a34feb5",
+    "pid": 3934790,
+    "created_unix_ms": 1794534061748,
+    "actual_result_received": false,
+    "final_exit_code": null,
+    "final_success": null,
+    "do_not_reissue_start": true,
+    "request": {
+      "bytes": 151419,
+      "sha256": "920b9e972f6f5a8dcd60b0412b534bc390e980d4148a5763984ee8b8a18bcbb4",
+      "git_blob_sha": "564e981a6ee724128f01a624620dbf4eff6e8447"
+    },
+    "original_start_ack": {
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "host": "pocket4",
+      "persistent_across_runtime_restart": true,
+      "reused": false,
+      "session_id": "dpty-2b06b0a65c7104136c17ada20448725cd25c353d94b590495d7de8214a34feb5",
+      "status": {
+        "boot": "97d9600f-e081-465c-9e6e-62651e09806b",
+        "bytes_seen": 0,
+        "bytes_stored": 0,
+        "capture_error": null,
+        "created_unix_ms": 1794534061748,
+        "output_complete": false,
+        "owner_pid": 3934789,
+        "pid": 3934790,
+        "state": "running"
+      }
+    },
+    "last_successful_read_offset": 0
+  },
+  "host_connection": {
+    "reported_observer": "Root",
+    "reported_at_utc_approximately": "2026-11-13 01:47 UTC",
+    "error": "tunnel_client_not_connected",
+    "subsequent_host_actions_by_this_agent": 0,
+    "original_error_checkpoint_git": "5055078026356a5264a22dcb263575ac0360b762",
+    "is_test_failure": false
+  },
+  "focused58": {
+    "submitted": false,
+    "original_unsubmitted_request": "af949bd7407af3300f55fa21cc402dd01e9cb0b2",
+    "original_candidate_withdrawn": true,
+    "reason": "Two prior57 receipt-consumer lines used sha257 keys; actual receipt and original CONFIG use sha256.",
+    "corrected_source": {
+      "bytes": 79802,
+      "sha256": "a7b9a549983ff21f6c62b47ebb60d6c172c22d42d2d092ede5d726996546b2a7",
+      "git_blob_sha": "0ed1274edd5306cca458941c00eac0722712aec3"
+    },
+    "corrected_exact_request": {
+      "bytes": 45359,
+      "sha256": "a57574b958dfa67e1fc4a675f45134e23b5d873cc43857bdce3d1b7be9745fe0",
+      "git_blob_sha": "2991561a005f752e38856c0fea31a11fc15f58f4"
+    },
+    "corrected_handoff": {
+      "bytes": 5709,
+      "sha256": "d4cfb8df884caf43c217a7c2b8600e7c1c51f17bc477a66c07113f3bd0a3de90",
+      "git_blob_sha": "dca3aacae2692ce008d447674bd2d5899e49f012"
+    },
+    "production_input_and_assertions_unchanged": true
+  },
+  "web58": {
+    "submitted": false,
+    "request": {
+      "bytes": 128456,
+      "sha256": "6220edf12aec52a935d50c3243320c5e3fdb59383382489c953a69eb7045a3cf",
+      "git_blob_sha": "a983113e8ed328eeff3d13e1ee55cfa586f56086"
+    }
+  },
+  "android58": {
+    "submitted": false,
+    "actual_result": null
+  },
+  "signing58": {
+    "executed": false
+  },
+  "installation58": {
+    "executed": false
+  },
+  "source_ref_changed_to_main58": false,
+  "main57_publication_original_rewritten": false,
+  "new_test_suite": false,
+  "root_original_blocked_checkpoint": {
+    "bytes": 8257,
+    "sha256": "6ed3697d368659af95b04715379d24e9abf6f9d5e69f799f0244c39f5fcc0315",
+    "git_blob_sha": "5055078026356a5264a22dcb263575ac0360b762"
+  },
+  "resume_first_action": {
+    "scope": "read only",
+    "session": "dpty-2b06b0a65c7104136c17ada20448725cd25c353d94b590495d7de8214a34feb5",
+    "result_path": "/home/alex/hepta-local-007f-20261111/v58-main-core101-materialized-host-r1/RESULT.json",
+    "do_not_start_again": true
+  }
+}

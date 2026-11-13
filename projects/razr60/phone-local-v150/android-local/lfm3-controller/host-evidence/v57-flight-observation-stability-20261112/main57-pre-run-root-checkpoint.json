@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.root-main57-pre-run-checkpoint.v1",
+  "phase": "installed_prepared_whole_frame_reviewed_owner_normally_closed_run_not_started",
+  "phone": {
+    "main_version": 57,
+    "main_uid": 10481,
+    "apk_sha256": "c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4",
+    "source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+    "signed_result_git": "5fcab14b2f4fc52fd04a69a3765620761a216422",
+    "installed_result_git": "f86d8f056c053a98d9d16dc2d0d7c869f4c9e474",
+    "model_profile": "LFM3-1.7B-QAD-Q4_0 / HTP0 / ctx8192",
+    "runtime_config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+    "helper_version": 6,
+    "helper_uid": 10484
+  },
+  "prepared": {
+    "result_git": "05c0367566f546c01b5b32aa8e8aefd67e4afa7a",
+    "bytes": 53737,
+    "sha256": "c527f0ab5b37694db79d5ad89102446523c09b88e74e2bd0edea5a3650a0ba9b",
+    "task_started": false,
+    "root_whole_original_png_seen": true,
+    "png_bytes": 175369,
+    "png_sha256": "781e8fda6e6037808f71e13d6fda53b675b82034a6722dfcf6cef8a52232f6d7",
+    "whole_window_read": true,
+    "window_bytes": 37525,
+    "window_sha256": "9ee6830916a5b11fe9e2cb1ba4286028b341d2a6624be65b7e24d0be638596b6",
+    "review_git": "172c201d11fff69f353af447c2e076a1f60b2b3a",
+    "review_bytes": 885,
+    "review_sha256": "5b82d1fea7677e0133272dcc49ce4f99ce6706d15c4aff96369ff26c1ce4eb73",
+    "review_host_path": "/home/alex/hepta-local-007f-20261111/ROOT-WEB57-FLIGHT-START-REVIEW-r1.json",
+    "review_host_write_verified": true,
+    "start_point": [
+      180,
+      1114
+    ],
+    "start_bounds": [
+      48,
+      1042,
+      312,
+      1186
+    ]
+  },
+  "owner": {
+    "normal_close_git": "feb28e2299e613f2a9aff0646879ee292badc8d2",
+    "session": "dpty-e19743c07ae2819c2bc9c834e1fc044446bb2c359e46f0f25bd4edba137c1af4",
+    "pid": 3386576,
+    "exit_code": 0,
+    "output_complete": true,
+    "last_pty_offset": 1858,
+    "active": false
+  },
+  "pending": {
+    "run_template_git": "bf061f3ed0846f5f59f8fba78b18d0b679e8af63",
+    "bg_is_sealing_original_six_constants": true,
+    "root_only_host_and_phone_operator": true,
+    "max_underlying_H_RPC": 2,
+    "flight_results_provider_ready": false,
+    "shopping_phone_verified": false,
+    "shopping_checkout_implemented": false
+  },
+  "report": {
+    "page": "page_068281e08b308191ae1419bd5edded74",
+    "sequence_observed": 27,
+    "main57_installed_updated": true,
+    "notes56_test_scopes_retained": true
+  },
+  "source_changes_after_actual_gates": false
+}

@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.root-notes56-cancel-busy-stop-visual-review.v1",
+  "actual_result": {
+    "git_blob": "8445122376872c21f3f158f88c7e45d1ae63951b",
+    "bytes": 143345,
+    "sha256": "109cd0810e253f001d39ad16a39b5e6ccf10795bbb6a2b146676dcc19340a69b",
+    "original_qualified": false,
+    "original_collector_exit": 2
+  },
+  "task_id": "b415cf087c91485599352b39a78b6085",
+  "background_display_id": 26,
+  "background_generation": "71d60345-4458-4046-9cef-7054e9bf8d57",
+  "original_busy_png": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-cancel-r1/cancel/before-stop.png",
+    "bytes": 181838,
+    "sha256": "d454db505725cfc1321b7b93df1694696f8964f77446c4576714d0ca314e5b31",
+    "dimensions": [
+      1224,
+      2992
+    ],
+    "rgba8_sha256": "47bb6eab5d04a4c461dfbdd409e433888a4c928d31411513c48e047cb5f6f886",
+    "full_original_bytes_read": true,
+    "full_original_image_viewed": true
+  },
+  "root_observations": {
+    "full_owner_instruction_visible": true,
+    "instruction": "记一下，Hepta-v56r1-c022ac662c8d 明天下午3点看牙，带上检查资料。",
+    "background_running_text_visible": true,
+    "planning_first_step_visible": true,
+    "start_button_greyed": true,
+    "stop_button_visible_and_unobscured": true,
+    "stop_button_text": "停止",
+    "stop_bounds": [
+      312,
+      1042,
+      576,
+      1186
+    ],
+    "stop_point": [
+      444,
+      1114
+    ],
+    "stop_has_dark_text_and_normal_button_contrast": true,
+    "android_enabled_attribute_in_busy_state_read": false,
+    "settings_scroll_not_part_of_this_case": true
+  },
+  "actual_stop_request": {
+    "path": "commands/00069-ordinary-visible-hepta-stop-once.json",
+    "metadata_sha256": "51fa655e7f8f883afd39790d1845f19cb13ec0e4a907b3fa6af8676e08dafb75",
+    "one_visible_stop": true
+  },
+  "native_originals": {
+    "app_session_git": "84e5ff709a4b5b5c5bc3f5b50d6cc83724497c96",
+    "native_session_git": "3c4521465a206542b91c34e8a7977d5b42ff4521",
+    "observed_exit_code": 143,
+    "sdk_destroy_rc": 0,
+    "sdk_deinit_rc": 0,
+    "single_term": true,
+    "force_destroy": false
+  },
+  "scope": "Visual check of original pre-tap screenshot and separately read original app/native cancellation records; independent command replay remains a separate record. No business completion claim.",
+  "new_phone_actions": 0,
+  "originals_mutated": false
+}

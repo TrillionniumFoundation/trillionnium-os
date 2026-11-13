@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.v58-web-entry-release.v1",
+  "status": "pending",
+  "controller": {
+    "package": "org.trillionnium.hepta.local",
+    "uid": null,
+    "version_code": 58,
+    "version_name": null,
+    "apk": {
+      "path": null,
+      "bytes": null,
+      "sha256": null
+    },
+    "signed_result": {
+      "path": null,
+      "bytes": null,
+      "sha256": null
+    },
+    "source_inventory_sha256": null,
+    "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5"
+  },
+  "helper": {
+    "package": "org.trillionnium.hepta.webhelper",
+    "uid": null,
+    "version_code": 6,
+    "version_name": "0.6.0-web-evidence-v4",
+    "apk": {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-sign-r1/out/hepta-web-helper-0.6.0-v4.apk",
+      "bytes": 1410047,
+      "sha256": "02360c24c471dcd4be0cbc7c7fdb316a7918d656edd1407d765540b5a3f2f5ff"
+    },
+    "signed_result": {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-sign-r1/out/RESULT.json",
+      "bytes": 195558,
+      "sha256": "020921fcb9459f3e64773d15e978e1d6e63de535c351873b86baa1965cbc3258"
+    },
+    "source_inventory_sha256": "3a9cb424a258adfe71b821dadf6b6319bd228a3bf2d0bf190c9d6b139f6b1c8e",
+    "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5"
+  }
+}

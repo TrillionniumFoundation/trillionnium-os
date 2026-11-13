@@ -12,6 +12,9 @@ public final class ScopeUiFixture extends Activity {
     Widget backgroundMode=new Widget();
     java.util.Set<String> backgroundPackages=new java.util.TreeSet<String>();
     String selectedBackgroundPackage(){return null;}
+    // Foreground scope tests do not simulate a persisted background choice.
+    // Entering the background branch must fail, never grant synthetic UI authority.
+    void requireCurrentBackgroundChoice(){throw new AssertionError("background preference path is outside this foreground scope fixture");}
     QualificationScope.Launch scopeLaunch=QualificationScope.Launch.normal();String scopeLaunchError;
     static final String SCOPE_INTENT_CONSUMED="hepta_scope_prefill_consumed";
     static final class View{static final int VISIBLE=1;}

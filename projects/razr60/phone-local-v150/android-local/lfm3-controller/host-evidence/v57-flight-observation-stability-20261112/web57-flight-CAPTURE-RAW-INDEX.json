@@ -1,0 +1,543 @@
+{
+  "schema": "hepta.v57-original-capture-fd-index.v1",
+  "task_id": "495b2b1e79a449e99c2fc604da1f452d",
+  "files": [
+    {
+      "relative_path": "task/web-helper/raw-0cd6bc5f706c4837988443c9a14f2e25cb91d1c73c83419fb32e56b7698476d3.json",
+      "bytes": 1070870,
+      "sha256": "3d6c9c4932acbcbbefb458a36f7c9e01c451aa49977bae2372eae3cc29194986",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "0cd6bc5f706c4837988443c9a14f2e25cb91d1c73c83419fb32e56b7698476d3",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "bb3fea9eb2851352db03345d2860ffb769dfe58cf3a220a3177fe8f47dcc8b41",
+      "reply_record_sha256": "62f93f4cc7a9110e8f6626f5af2fc19c995922af91fc1a825e9094b8a1579ddd",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "0cd6bc5f706c4837988443c9a14f2e25cb91d1c73c83419fb32e56b7698476d3",
+      "current_native_url_as_recorded": "https://m.csair.com/booking_new/#/?orderChannel=TSY-JPYD",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "0e3e2a8a-64df-449b-8f45-551d2660fd7b",
+      "navigation_epoch_as_recorded": 7,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 434773,
+          "sha256": "376ef21379982a221bc06718665692743fdf14e47a43ac7d3af51181df12778e",
+          "declared_sha256": "376ef21379982a221bc06718665692743fdf14e47a43ac7d3af51181df12778e",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 434773,
+          "sha256": "376ef21379982a221bc06718665692743fdf14e47a43ac7d3af51181df12778e",
+          "declared_sha256": "376ef21379982a221bc06718665692743fdf14e47a43ac7d3af51181df12778e",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-4d8454d6c87f4a539025e4108c7b19e276af590e84b04509abc60adf4445603c.json",
+      "bytes": 229737,
+      "sha256": "2f1bdb93a31a7d0ded56df5747f75b45553bc2d49ea938dbd32f85f14c0863d6",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "4d8454d6c87f4a539025e4108c7b19e276af590e84b04509abc60adf4445603c",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "23ecb1f290941013cc8d768e72c39f83fb96f0fe23c53e1da4e61919abcc8a07",
+      "reply_record_sha256": "e79d06fb5e96eab3ff28095598f10c35694ef71de7e3af31627bef40efe072cf",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "4d8454d6c87f4a539025e4108c7b19e276af590e84b04509abc60adf4445603c",
+      "current_native_url_as_recorded": "https://m.csair.com/",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "0e3e2a8a-64df-449b-8f45-551d2660fd7b",
+      "navigation_epoch_as_recorded": 2,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 91019,
+          "sha256": "8df506c731549598fbd856dc8c9df2a9f7a51af34fb136ef980945c2974a6eaf",
+          "declared_sha256": "8df506c731549598fbd856dc8c9df2a9f7a51af34fb136ef980945c2974a6eaf",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 91019,
+          "sha256": "8df506c731549598fbd856dc8c9df2a9f7a51af34fb136ef980945c2974a6eaf",
+          "declared_sha256": "8df506c731549598fbd856dc8c9df2a9f7a51af34fb136ef980945c2974a6eaf",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-4ea02db4f9ea420ab550a90ec6cc588edbd58aad0374481e9b9e3a4728a6676b.json",
+      "bytes": 1070240,
+      "sha256": "cad0d3b4a100611fa65bcd836fe8ade68f65ea1267c7fc06210e3de159912c46",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "4ea02db4f9ea420ab550a90ec6cc588edbd58aad0374481e9b9e3a4728a6676b",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "7d678a8abd63cc507d1a9a6e894718a8938694a6013d68e43df845847523a127",
+      "reply_record_sha256": "4554f86b010d3ccd23a2079e8fce33b4a2542d83bd1a4472d1bda58b0c182461",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "4ea02db4f9ea420ab550a90ec6cc588edbd58aad0374481e9b9e3a4728a6676b",
+      "current_native_url_as_recorded": "https://m.csair.com/booking_new/#/?orderChannel=TSY-JPYD",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "0e3e2a8a-64df-449b-8f45-551d2660fd7b",
+      "navigation_epoch_as_recorded": 4,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 434581,
+          "sha256": "b2a8312e54739ee277d290914a763d8426865fd3115960f0e8c74c35f8534143",
+          "declared_sha256": "b2a8312e54739ee277d290914a763d8426865fd3115960f0e8c74c35f8534143",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 434581,
+          "sha256": "b2a8312e54739ee277d290914a763d8426865fd3115960f0e8c74c35f8534143",
+          "declared_sha256": "b2a8312e54739ee277d290914a763d8426865fd3115960f0e8c74c35f8534143",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-6f1d90fb0cf64dc1b087058f71c2f0ebfcf74d6d4400419fb1b41610c61384f4.json",
+      "bytes": 1072408,
+      "sha256": "f06929ea65a8ab6f526a84d32b419b9d69401cfa054a85dd53dbe0587d95d75b",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "6f1d90fb0cf64dc1b087058f71c2f0ebfcf74d6d4400419fb1b41610c61384f4",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "e109424ff0bddd43e7631f951a97722178b664fbfdaa4f35b7bcc652aaabd10b",
+      "reply_record_sha256": "75dec457099c0c42b8b7f48d15a6e218d8ee991a394c4091158ee9ab4ef261be",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "6f1d90fb0cf64dc1b087058f71c2f0ebfcf74d6d4400419fb1b41610c61384f4",
+      "current_native_url_as_recorded": "https://m.csair.com/booking_new/#/?orderChannel=TSY-JPYD",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "0e3e2a8a-64df-449b-8f45-551d2660fd7b",
+      "navigation_epoch_as_recorded": 6,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 435545,
+          "sha256": "3bf19842454544d6bf6f82ec4c663842c8074e65d26841c95e17ced4b0f51c14",
+          "declared_sha256": "3bf19842454544d6bf6f82ec4c663842c8074e65d26841c95e17ced4b0f51c14",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 435545,
+          "sha256": "3bf19842454544d6bf6f82ec4c663842c8074e65d26841c95e17ced4b0f51c14",
+          "declared_sha256": "3bf19842454544d6bf6f82ec4c663842c8074e65d26841c95e17ced4b0f51c14",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-730d512f484643329598a62b7e6bf140ca179c318bc04fd789c1c113275d2f52.json",
+      "bytes": 1072408,
+      "sha256": "dc8c25c17bdbcdaf63a6d0ae3c4b3db98b7ed2158eb664a8717fb402e1cd8f9b",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "730d512f484643329598a62b7e6bf140ca179c318bc04fd789c1c113275d2f52",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "49095f8746c6dc2bd6870a7b48c18588141d56778a8af516d01da9833185978e",
+      "reply_record_sha256": "4f0e6742ba8eae4580c5c52390687a5fe65fc03873998ec236873196c568fe84",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "730d512f484643329598a62b7e6bf140ca179c318bc04fd789c1c113275d2f52",
+      "current_native_url_as_recorded": "https://m.csair.com/booking_new/#/?orderChannel=TSY-JPYD",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "0e3e2a8a-64df-449b-8f45-551d2660fd7b",
+      "navigation_epoch_as_recorded": 6,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 435545,
+          "sha256": "3bf19842454544d6bf6f82ec4c663842c8074e65d26841c95e17ced4b0f51c14",
+          "declared_sha256": "3bf19842454544d6bf6f82ec4c663842c8074e65d26841c95e17ced4b0f51c14",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 435545,
+          "sha256": "3bf19842454544d6bf6f82ec4c663842c8074e65d26841c95e17ced4b0f51c14",
+          "declared_sha256": "3bf19842454544d6bf6f82ec4c663842c8074e65d26841c95e17ced4b0f51c14",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-7d1cb18379414d26b761218c33e139618cf48fd14e9f4bbc8f3367ae4c3b746d.json",
+      "bytes": 229737,
+      "sha256": "a173025f5a717cc8e310cb824cc39dfef673ada02de9e23e9454466068f24012",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "7d1cb18379414d26b761218c33e139618cf48fd14e9f4bbc8f3367ae4c3b746d",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "a3897698c65b3b7129f5d1afc673ef8c177c443727d966e8239ea4c4c1b5455a",
+      "reply_record_sha256": "884b5a45ae2668368f6a54280e8d9845e09c0b41c07cb1f5391d8065b1e8f95b",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "7d1cb18379414d26b761218c33e139618cf48fd14e9f4bbc8f3367ae4c3b746d",
+      "current_native_url_as_recorded": "https://m.csair.com/",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "0e3e2a8a-64df-449b-8f45-551d2660fd7b",
+      "navigation_epoch_as_recorded": 2,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 91019,
+          "sha256": "8df506c731549598fbd856dc8c9df2a9f7a51af34fb136ef980945c2974a6eaf",
+          "declared_sha256": "8df506c731549598fbd856dc8c9df2a9f7a51af34fb136ef980945c2974a6eaf",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 91019,
+          "sha256": "8df506c731549598fbd856dc8c9df2a9f7a51af34fb136ef980945c2974a6eaf",
+          "declared_sha256": "8df506c731549598fbd856dc8c9df2a9f7a51af34fb136ef980945c2974a6eaf",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-823a44c87510414aa225e282aa62bac8269e6d69b5984001b09bac4579f15725.json",
+      "bytes": 1070870,
+      "sha256": "57048a348136d094fe3bf48f2cae513d2585085c276564d9e0ffc15aca6ee9d6",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "823a44c87510414aa225e282aa62bac8269e6d69b5984001b09bac4579f15725",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "66bf3f150477f1b1b3224ac0d032b5156ff691186c757eb48e4692132a86847d",
+      "reply_record_sha256": "47676d75097a812a85c16706f592d3dd387127c176aa4f4fc0e743bf49d32237",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "823a44c87510414aa225e282aa62bac8269e6d69b5984001b09bac4579f15725",
+      "current_native_url_as_recorded": "https://m.csair.com/booking_new/#/?orderChannel=TSY-JPYD",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "0e3e2a8a-64df-449b-8f45-551d2660fd7b",
+      "navigation_epoch_as_recorded": 7,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 434773,
+          "sha256": "376ef21379982a221bc06718665692743fdf14e47a43ac7d3af51181df12778e",
+          "declared_sha256": "376ef21379982a221bc06718665692743fdf14e47a43ac7d3af51181df12778e",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 434773,
+          "sha256": "376ef21379982a221bc06718665692743fdf14e47a43ac7d3af51181df12778e",
+          "declared_sha256": "376ef21379982a221bc06718665692743fdf14e47a43ac7d3af51181df12778e",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-91cad1b8d7674473aafee2a86550fed8501520eaeb5b44b6ba7832f38346a453.json",
+      "bytes": 1070240,
+      "sha256": "1ebe64f23a226f73ac06e6b78e106600e186ac9db126b5fabdc84118a16c77a1",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "91cad1b8d7674473aafee2a86550fed8501520eaeb5b44b6ba7832f38346a453",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "6b59110a4be8f2fcf197237a46242018ecf8766fe2226452b8e55f61e09be81e",
+      "reply_record_sha256": "fdf96a372417bc718b26e9281e795b001c6169cd5dc35249a0bcd211e1225d9a",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "91cad1b8d7674473aafee2a86550fed8501520eaeb5b44b6ba7832f38346a453",
+      "current_native_url_as_recorded": "https://m.csair.com/booking_new/#/?orderChannel=TSY-JPYD",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "0e3e2a8a-64df-449b-8f45-551d2660fd7b",
+      "navigation_epoch_as_recorded": 4,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 434581,
+          "sha256": "b2a8312e54739ee277d290914a763d8426865fd3115960f0e8c74c35f8534143",
+          "declared_sha256": "b2a8312e54739ee277d290914a763d8426865fd3115960f0e8c74c35f8534143",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 434581,
+          "sha256": "b2a8312e54739ee277d290914a763d8426865fd3115960f0e8c74c35f8534143",
+          "declared_sha256": "b2a8312e54739ee277d290914a763d8426865fd3115960f0e8c74c35f8534143",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-9790cf1d9b3b4c00a8529fb2822f7d3d6b82f00d411842829e12f7230ce592e0.json",
+      "bytes": 1068730,
+      "sha256": "926a66d7ae75c0fd86fa292053b01b7689e48f175c65739272e09a4c4104534c",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "9790cf1d9b3b4c00a8529fb2822f7d3d6b82f00d411842829e12f7230ce592e0",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "5abaf6bc6503426982d355a671291b06bd6c984b3ca93ff841939e87e0770f3d",
+      "reply_record_sha256": "7e13fcef80eb81c8c940294f187ee3dd4fb6fd2171debc2115e15c5b1bbc7874",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "9790cf1d9b3b4c00a8529fb2822f7d3d6b82f00d411842829e12f7230ce592e0",
+      "current_native_url_as_recorded": "https://m.csair.com/booking_new/#/?orderChannel=TSY-JPYD",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "0e3e2a8a-64df-449b-8f45-551d2660fd7b",
+      "navigation_epoch_as_recorded": 5,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 433824,
+          "sha256": "d8c0f609200b11fbdc9da4ef1f4633b04bbd27b8cc56500fb5ad1ac118855c88",
+          "declared_sha256": "d8c0f609200b11fbdc9da4ef1f4633b04bbd27b8cc56500fb5ad1ac118855c88",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 433824,
+          "sha256": "d8c0f609200b11fbdc9da4ef1f4633b04bbd27b8cc56500fb5ad1ac118855c88",
+          "declared_sha256": "d8c0f609200b11fbdc9da4ef1f4633b04bbd27b8cc56500fb5ad1ac118855c88",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-9c9c8817b1cd4f7e92877922b4f0db287487305838544a82bdb4e40198b58812.json",
+      "bytes": 1070240,
+      "sha256": "083abf22a0767c9998f7e3fd45bf390d741397a97ef58d8c35ef82f32a142f6a",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "9c9c8817b1cd4f7e92877922b4f0db287487305838544a82bdb4e40198b58812",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "7e4c8cc2800920235889f4c41c1717525419f8cd280c36c65cd68e02928048c6",
+      "reply_record_sha256": "2c23dd7889818180094bc9ffd6256206ca7a47e442ac20b8dcb28935a21a824b",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "9c9c8817b1cd4f7e92877922b4f0db287487305838544a82bdb4e40198b58812",
+      "current_native_url_as_recorded": "https://m.csair.com/booking_new/#/?orderChannel=TSY-JPYD",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "0e3e2a8a-64df-449b-8f45-551d2660fd7b",
+      "navigation_epoch_as_recorded": 4,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 434581,
+          "sha256": "b2a8312e54739ee277d290914a763d8426865fd3115960f0e8c74c35f8534143",
+          "declared_sha256": "b2a8312e54739ee277d290914a763d8426865fd3115960f0e8c74c35f8534143",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 434581,
+          "sha256": "b2a8312e54739ee277d290914a763d8426865fd3115960f0e8c74c35f8534143",
+          "declared_sha256": "b2a8312e54739ee277d290914a763d8426865fd3115960f0e8c74c35f8534143",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-bd20d82bea9d4cb89791d507e186c2b5680c7eb32466487aac2808fa40a3c541.json",
+      "bytes": 1072408,
+      "sha256": "89afc847a62f0d47e60666f59997bfaeffa4aea1b8ab907c5f54a4594f00bee1",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "bd20d82bea9d4cb89791d507e186c2b5680c7eb32466487aac2808fa40a3c541",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "a72c2f14d8dcef685942770f87d4f4882e0c32eeee33688574c4a1ffe5fb2b46",
+      "reply_record_sha256": "5dba9bf59bcae6af6696ffc837532783df379ac42b16a5e01ecab5ab9507f883",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "bd20d82bea9d4cb89791d507e186c2b5680c7eb32466487aac2808fa40a3c541",
+      "current_native_url_as_recorded": "https://m.csair.com/booking_new/#/?orderChannel=TSY-JPYD",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "0e3e2a8a-64df-449b-8f45-551d2660fd7b",
+      "navigation_epoch_as_recorded": 6,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 435545,
+          "sha256": "3bf19842454544d6bf6f82ec4c663842c8074e65d26841c95e17ced4b0f51c14",
+          "declared_sha256": "3bf19842454544d6bf6f82ec4c663842c8074e65d26841c95e17ced4b0f51c14",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 435545,
+          "sha256": "3bf19842454544d6bf6f82ec4c663842c8074e65d26841c95e17ced4b0f51c14",
+          "declared_sha256": "3bf19842454544d6bf6f82ec4c663842c8074e65d26841c95e17ced4b0f51c14",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-c836a20242cf4c62be2a4eee9ab48dc5474a072bdbc842f48c5edb7c194ec6bd.json",
+      "bytes": 1068730,
+      "sha256": "1f032b1a6602f3746fde60d16d13b1cdad2ef866c2f1282d2604d439595f4538",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "c836a20242cf4c62be2a4eee9ab48dc5474a072bdbc842f48c5edb7c194ec6bd",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "8da6de6b48b379fe71242b8c654479169219d6cd3e7ed8193211fe8745ad378d",
+      "reply_record_sha256": "6c6496790ee3f8b1daa96e5484056dfe9e7d013d390450852b00997f2df195f8",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "c836a20242cf4c62be2a4eee9ab48dc5474a072bdbc842f48c5edb7c194ec6bd",
+      "current_native_url_as_recorded": "https://m.csair.com/booking_new/#/?orderChannel=TSY-JPYD",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "0e3e2a8a-64df-449b-8f45-551d2660fd7b",
+      "navigation_epoch_as_recorded": 5,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 433824,
+          "sha256": "d8c0f609200b11fbdc9da4ef1f4633b04bbd27b8cc56500fb5ad1ac118855c88",
+          "declared_sha256": "d8c0f609200b11fbdc9da4ef1f4633b04bbd27b8cc56500fb5ad1ac118855c88",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 433824,
+          "sha256": "d8c0f609200b11fbdc9da4ef1f4633b04bbd27b8cc56500fb5ad1ac118855c88",
+          "declared_sha256": "d8c0f609200b11fbdc9da4ef1f4633b04bbd27b8cc56500fb5ad1ac118855c88",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-cebb968f824147b189a5a9006a9fad46a0f7c8feab394044af010c75d9f63f99.json",
+      "bytes": 229723,
+      "sha256": "4d4dce5b99dcfe4bc8c9bd52ccd7cc67282ced08bee873eae7e009a1b123bc77",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "cebb968f824147b189a5a9006a9fad46a0f7c8feab394044af010c75d9f63f99",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "5a5114edada752fac07ae3d6894aac3b1910817c0dead5b84d061f42b4f5e93e",
+      "reply_record_sha256": "88d48527c8baa27dbb12905aeac90d8053f38661e0e599bac75571dad62b3766",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "cebb968f824147b189a5a9006a9fad46a0f7c8feab394044af010c75d9f63f99",
+      "current_native_url_as_recorded": "https://m.csair.com/",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "0e3e2a8a-64df-449b-8f45-551d2660fd7b",
+      "navigation_epoch_as_recorded": 2,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 91012,
+          "sha256": "3eacbed0ac2a1ffca8cb2553881809d488a70e9f78f6210406f6d7f8d0765908",
+          "declared_sha256": "3eacbed0ac2a1ffca8cb2553881809d488a70e9f78f6210406f6d7f8d0765908",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 91012,
+          "sha256": "3eacbed0ac2a1ffca8cb2553881809d488a70e9f78f6210406f6d7f8d0765908",
+          "declared_sha256": "3eacbed0ac2a1ffca8cb2553881809d488a70e9f78f6210406f6d7f8d0765908",
+          "declared_hash_matches": true
+        }
+      ]
+    },
+    {
+      "relative_path": "task/web-helper/raw-f678e155e0a24d9d945bd06d0cb9a6f6eb40cdb3dbf24cd6afa87e9b50fa305f.json",
+      "bytes": 1068730,
+      "sha256": "e9494953a917d64887b1eb50218508a77f39aa3e8cfeab30cc914d5249dac8f8",
+      "raw_original_retained": true,
+      "independent_capture_validation_by_this_index": false,
+      "business_verified": false,
+      "request_nonce": "f678e155e0a24d9d945bd06d0cb9a6f6eb40cdb3dbf24cd6afa87e9b50fa305f",
+      "method": "captureEvidence",
+      "callback_status": "captured",
+      "callback_verification_passed_as_recorded": true,
+      "request_record_sha256": "1f3916449d8e28901e67ae5491256af50a636a50b0052a17c37214a69bc41d47",
+      "reply_record_sha256": "3af5a89003f99dcd344dcb9cadb4a460a856ffdab3fd0c54b4a4f98cf7e60f89",
+      "raw_schema": "hepta.web-helper.raw-evidence.v4",
+      "capture_schema": "hepta.owned-webview-origin-dom.v2",
+      "challenge_as_recorded": "f678e155e0a24d9d945bd06d0cb9a6f6eb40cdb3dbf24cd6afa87e9b50fa305f",
+      "current_native_url_as_recorded": "https://m.csair.com/booking_new/#/?orderChannel=TSY-JPYD",
+      "comparison_scope_as_recorded": "full_raw_equality",
+      "raw_dom_equal_as_recorded": true,
+      "webview_instance_as_recorded": "0e3e2a8a-64df-449b-8f45-551d2660fd7b",
+      "navigation_epoch_as_recorded": 5,
+      "dom_fields": [
+        {
+          "json_pointer": "/capture/before_dom_raw_utf8",
+          "bytes": 433824,
+          "sha256": "d8c0f609200b11fbdc9da4ef1f4633b04bbd27b8cc56500fb5ad1ac118855c88",
+          "declared_sha256": "d8c0f609200b11fbdc9da4ef1f4633b04bbd27b8cc56500fb5ad1ac118855c88",
+          "declared_hash_matches": true
+        },
+        {
+          "json_pointer": "/capture/dom_raw_utf8",
+          "bytes": 433824,
+          "sha256": "d8c0f609200b11fbdc9da4ef1f4633b04bbd27b8cc56500fb5ad1ac118855c88",
+          "declared_sha256": "d8c0f609200b11fbdc9da4ef1f4633b04bbd27b8cc56500fb5ad1ac118855c88",
+          "declared_hash_matches": true
+        }
+      ]
+    }
+  ],
+  "index_is_capture_or_business_verdict": false,
+  "business_verified": false,
+  "web_journal_present": true,
+  "raw_fd_file_count": 14,
+  "capture_method_file_count": 14
+}

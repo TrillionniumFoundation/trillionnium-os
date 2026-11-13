@@ -19,7 +19,8 @@ public final class WarmProcessSession {
     private final AtomicReference<String> readerFailure = new AtomicReference<String>();
     private final AtomicBoolean cancelled = new AtomicBoolean(), closing = new AtomicBoolean();
     private final AtomicBoolean inFlight = new AtomicBoolean();
-    private final AtomicBoolean forceEver = new AtomicBoolean();
+    private final OwnedWorkerCancellation cancellation;
+    private boolean closeSubmitted;
     private volatile Integer observedExit;
     private volatile long workerPid;
     private volatile int sequence;
@@ -53,9 +54,13 @@ public final class WarmProcessSession {
         Deadline(String message){super(message);}
     }
     public WarmProcessSession(Process process, String generation, String taskId) {
-        if(process==null||!validId(generation)||!validId(taskId))
+        this(process,generation,taskId,new OwnedWorkerCancellation(generation,taskId));
+    }
+    public WarmProcessSession(Process process,String generation,String taskId,OwnedWorkerCancellation cancellation) {
+        if(process==null||!validId(generation)||!validId(taskId)||cancellation==null)
             throw new IllegalArgumentException("owned process and exact task/generation required");
-        this.process=process; this.generation=generation; this.taskId=taskId;
+        cancellation.attach(process,generation,taskId);
+        this.process=process; this.generation=generation; this.taskId=taskId;this.cancellation=cancellation;
         input=process.getOutputStream();
         Thread reader=new Thread(new Runnable(){public void run(){readFrames();}},"hepta-warm-control-reader");
         reader.setDaemon(true); reader.start();
@@ -65,10 +70,10 @@ public final class WarmProcessSession {
     public int requestsSent() { return sequence; }
     public Integer observedExitCode() { return observedExit; }
     public boolean isAlive() { return process.isAlive(); }
-    public boolean isCancelled() { return cancelled.get()||closing.get(); }
+    public boolean isCancelled() { return cancelled.get()||closing.get()||cancellation.isCancellationRequested(); }
     public void cancel() {
         cancelled.set(true);
-        if(process.isAlive())process.destroy();
+        cancellation.cancel();
     }
     private void readFrames() {
         try(InputStream output=process.getInputStream()) {
@@ -94,7 +99,7 @@ public final class WarmProcessSession {
     }
     private String awaitFrame(long deadline) throws IOException, InterruptedException {
         while(true) {
-            if(cancelled.get()||closing.get())throw new IOException("task worker retired");
+            if(isCancelled())throw new IOException("task worker retired");
             if(System.nanoTime()>=deadline)throw new Deadline("task worker request deadline");
             String frame=frames.poll(100,TimeUnit.MILLISECONDS);
             if(frame!=null)return frame;
@@ -140,30 +145,19 @@ public final class WarmProcessSession {
         } finally { inFlight.set(false); }
     }
     /** A task terminal is allowed only after this real Process has returned from waitFor. */
-    public Cleanup finish() {
-        closing.set(true);
-        boolean graceful=!cancelled.get()&&!inFlight.get();
-        if(graceful) {
-            try { send("CLOSE "+generation+" "+taskId+"\n"); input.close(); }
-            catch(IOException error) { graceful=false; cancel(); }
-        } else cancel();
-        return terminate(graceful);
+    public synchronized Cleanup finish() {
+        if(closing.compareAndSet(false,true)) {
+            boolean graceful=!cancelled.get()&&!cancellation.isCancellationRequested()&&!inFlight.get();
+            if(graceful) {
+                try { send("CLOSE "+generation+" "+taskId+"\n");input.close();closeSubmitted=true; }
+                catch(IOException error) { cancel(); }
+            } else cancel();
+        }
+        return terminate(closeSubmitted&&!cancelled.get()&&!cancellation.isCancellationRequested());
     }
     private Cleanup terminate(boolean graceful) {
-        boolean force=false;
-        try {
-            if(observedExit!=null)return new Cleanup(true,observedExit,forceEver.get());
-            if(graceful&&process.waitFor(2000,TimeUnit.MILLISECONDS)) {
-                observedExit=process.exitValue(); return new Cleanup(true,observedExit,forceEver.get());
-            }
-            process.destroy();
-            if(!process.waitFor(2000,TimeUnit.MILLISECONDS)) {
-                process.destroyForcibly(); force=true;forceEver.set(true);
-                if(!process.waitFor(8000,TimeUnit.MILLISECONDS))return new Cleanup(false,null,true);
-            }
-            observedExit=process.exitValue(); return new Cleanup(true,observedExit,forceEver.get());
-        } catch(InterruptedException interrupted) {
-            Thread.currentThread().interrupt(); return new Cleanup(false,null,force||forceEver.get());
-        }
+        OwnedWorkerCancellation.Exit end=graceful?cancellation.awaitGracefulClose():cancellation.awaitCancellation();
+        if(end.observed)observedExit=end.code;
+        return new Cleanup(end.observed,end.code,end.forceSent);
     }
 }

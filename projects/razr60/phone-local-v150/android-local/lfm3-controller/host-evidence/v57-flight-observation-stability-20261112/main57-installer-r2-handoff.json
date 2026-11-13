@@ -1,0 +1,154 @@
+{
+  "schema": "hepta.main57-installer-collector-list-fix-r2.v1",
+  "scope": "One typed collector-consumption correction before any phone operation; previous failed source and stderr preserved. No APK, installation action, source/gate or owner identity changes.",
+  "actual_failure": {
+    "stderr": {
+      "git_blob_sha": "70210652030aaeaaedd6215e70f2bb93eedf2965",
+      "bytes": 1580,
+      "sha256": "ae755e75e079c6f72c2e6806e4275094c25c8bcede8dedf8a7dd3d4c4dc05e8b"
+    },
+    "phase": "main line1600 host prerequisite; before first mutation args.out.mkdir line1639; no phone helper import/ADB/install",
+    "root_reported_no_claim": true
+  },
+  "original_source": {
+    "git": "e89df10dc64ab6b27bfa800296392148f2da1aaf",
+    "bytes": 217158,
+    "sha256": "1514ba559b730bc9f90ba8099cf1ac5f592ee9bf136705790766ef311e915b48"
+  },
+  "current_source": {
+    "bytes": 217159,
+    "sha256": "b175e7d654379970d4b8733f8c0fc03fd610d983e1c661e02b7622ff54a61179",
+    "git_blob_sha": "11e43784cbf8ab1ded4e59bcae562578bca40f17"
+  },
+  "ordered_replacements": [
+    {
+      "before": "and collection.get(\"errors\") == [] and collection.get(\"omitted_screenshots\") == 0",
+      "after": "and collection.get(\"errors\") == [] and collection.get(\"omitted_screenshots\") == []",
+      "count": 1
+    }
+  ],
+  "inverse_full_bytes_equal": true,
+  "actual_recovery": {
+    "git_blob_sha": "befef19c9139f4631ab614d1d9c556f1ed977ad7",
+    "bytes": 147387,
+    "sha256": "4f321b5d1ac7265cdff90e090d255076b7cfcd598ada5909eaf2c953619d3a38",
+    "collection_omitted_screenshots": [],
+    "preserved_raw": true
+  },
+  "current_following_interfaces_checked": {
+    "all_row_shapes": true,
+    "unique_paths": true,
+    "all_relative_paths": true,
+    "total_56": true,
+    "total_bytes": 1051558,
+    "max_file_bytes": 100384,
+    "zero_files": [
+      "runs/1c4181b08b9048ce96e955e2310fa94f/stdout.log"
+    ],
+    "session_status": true,
+    "session_state": true,
+    "session_steps": true,
+    "session_boolean_flags": true,
+    "instruction_sha": true,
+    "actual_selection_exact": true,
+    "original_ui_source": true,
+    "current_owner_proof_sha": true,
+    "current_full_collection_proof": true
+  },
+  "publication": {
+    "base_publisher": {
+      "git": "83c5742663dd050fa98b45ac8d6ed659a003d393",
+      "bytes": 7831,
+      "sha256": "07c6359aeb2e359319d2c563e8c5c99978fde11fcb7ef5ca2efbe5a6d1c864dd"
+    },
+    "publisher": {
+      "bytes": 7831,
+      "sha256": "748be7661a9ec6f5ec0c1c7bfecc63a309e6bcb47991934a7ec6a7f8dcd8ff06",
+      "git_blob_sha": "efe68a934ad319a6b8640434cb823062548441da"
+    },
+    "ordered_replacements": [
+      {
+        "before": "install_v57_idle_r1.py",
+        "after": "install_v57_idle_r2.py",
+        "count": 2
+      },
+      {
+        "before": "007f-main57-installer-publish-r1",
+        "after": "007f-main57-installer-publish-r2",
+        "count": 1
+      },
+      {
+        "before": "\"bytes\":217158,\"sha256\":\"1514ba559b730bc9f90ba8099cf1ac5f592ee9bf136705790766ef311e915b48\"",
+        "after": "\"bytes\":217159,\"sha256\":\"b175e7d654379970d4b8733f8c0fc03fd610d983e1c661e02b7622ff54a61179\"",
+        "count": 1
+      },
+      {
+        "before": "ARGV_BYTES=67400\n",
+        "after": "ARGV_BYTES=67400\n",
+        "count": 1
+      },
+      {
+        "before": "ARGV_SHA=\"f0b3501043502a4c75381830263c95bb20defe066c26b3bcd0604e12ea69004f\"\n",
+        "after": "ARGV_SHA=\"cedbb7d3001e75ab6b09a268a1baf75fd556da96b787d0d37128ea06dad5b7f0\"\n",
+        "count": 1
+      },
+      {
+        "before": "GZIP_BYTES=50548\n",
+        "after": "GZIP_BYTES=50548\n",
+        "count": 1
+      },
+      {
+        "before": "GZIP_SHA=\"ef073dde72fdd04f83b58cccbc7ddede170dabfd2a2e4da48fccecb135dfeb5d\"\n",
+        "after": "GZIP_SHA=\"4d820372599dca1d74ec322466e6a5ef3537e7fce4055a289edf5501f5d104d7\"\n",
+        "count": 1
+      }
+    ],
+    "full_inverse_exact": true,
+    "argument": {
+      "bytes": 67400,
+      "sha256": "cedbb7d3001e75ab6b09a268a1baf75fd556da96b787d0d37128ea06dad5b7f0",
+      "git_blob_sha": "d27841648fcfa2e0d54ba9240d946e7a7dd06213"
+    },
+    "gzip": {
+      "bytes": 50548,
+      "sha256": "4d820372599dca1d74ec322466e6a5ef3537e7fce4055a289edf5501f5d104d7"
+    },
+    "fragment_bytes": [
+      65536,
+      1864
+    ],
+    "gzip_full_crc_roundtrip": true,
+    "exact_request": {
+      "bytes": 75875,
+      "sha256": "9a4bb212f6b68971635b0fcb772e53406cdf5afd3e3c7d0df3b166dc3442f627",
+      "git_blob_sha": "1b56308f56cfdbf3e4ad72c22a252330cb3d1559"
+    },
+    "create_only_destination": "/home/alex/hepta-local-007f-20261111/install_v57_idle_r2.py",
+    "idempotency_key": "007f-main57-installer-publish-r2"
+  },
+  "owner_run": {
+    "original_command": "{\"action\":\"run\",\"tag\":\"main57-upgrade-r1\",\"argv\":[\"/usr/bin/python3\",\"-u\",\"-B\",\"/home/alex/hepta-local-007f-20261111/install_v57_idle_r1.py\",\"--profile-helper\",\"/home/alex/hepta-local-007f-20261111/phone-adapters-v51-r2/configure_local_profile_v51_helper_r2.py\",\"--notes-helper\",\"/home/alex/hepta-local-007f-20261111/phone-adapters-v46/moto_note_legacy_v46_r2.py\",\"--r7-driver\",\"/home/alex/hepta-local-007f-20261111/phone-adapters-v46/background_helpers_r7_v46.py\",\"--source-tools\",\"/home/alex/hepta-local-007f-20261111/v51-build-r2/source/tools\",\"--owner-root\",\"/home/alex/hepta-local-007f-20261111/owner-24\",\"--out\",\"/home/alex/hepta-local-007f-20261111/phone-install-v57-r1\",\"--new-apk\",\"/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/out/hepta-local-0.57.0.apk\",\"--build-receipt\",\"/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/RESULT.json\",\"--java-home\",\"/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64\",\"--apksigner\",\"/usr/bin/apksigner\",\"--owner-start-ticks\",\"31571391\",\"--owner-boot-id\",\"97d9600f-e081-465c-9e6e-62651e09806b\",\"--old-apk-sha256\",\"067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62\",\"--new-apk-sha256\",\"c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4\",\"--expected-config-sha256\",\"b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2\",\"--build-receipt-sha256\",\"9deb86d5ba6b066bf250a432559bdc1fcee1138596af3f40133943c6259dd60c\",\"--expected-terminal-task-id\",\"bb16d934fabe4dc7818289d55be113ac\",\"--adb\",\"/usr/bin/adb\",\"--adb-host\",\"127.0.0.1\",\"--serial\",\"ZY22LS7WZT\",\"--owner-pid\",\"3386576\",\"--expected-uid\",\"10481\",\"--adb-port\",\"5037\",\"--expected-version\",\"57\",\"--command-timeout\",\"12\",\"--historical-build-receipt\",\"/home/alex/hepta-local-007f-20261111/v54-main-host-r4/assembly-r1/RESULT.json\"],\"cwd\":\"/home/alex/hepta-local-007f-20261111\"}\n",
+    "actual_new_command": "{\"action\":\"run\",\"tag\":\"main57-upgrade-r2\",\"argv\":[\"/usr/bin/python3\",\"-u\",\"-B\",\"/home/alex/hepta-local-007f-20261111/install_v57_idle_r2.py\",\"--profile-helper\",\"/home/alex/hepta-local-007f-20261111/phone-adapters-v51-r2/configure_local_profile_v51_helper_r2.py\",\"--notes-helper\",\"/home/alex/hepta-local-007f-20261111/phone-adapters-v46/moto_note_legacy_v46_r2.py\",\"--r7-driver\",\"/home/alex/hepta-local-007f-20261111/phone-adapters-v46/background_helpers_r7_v46.py\",\"--source-tools\",\"/home/alex/hepta-local-007f-20261111/v51-build-r2/source/tools\",\"--owner-root\",\"/home/alex/hepta-local-007f-20261111/owner-24\",\"--out\",\"/home/alex/hepta-local-007f-20261111/phone-install-v57-r1\",\"--new-apk\",\"/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/out/hepta-local-0.57.0.apk\",\"--build-receipt\",\"/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/RESULT.json\",\"--java-home\",\"/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64\",\"--apksigner\",\"/usr/bin/apksigner\",\"--owner-start-ticks\",\"31571391\",\"--owner-boot-id\",\"97d9600f-e081-465c-9e6e-62651e09806b\",\"--old-apk-sha256\",\"067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62\",\"--new-apk-sha256\",\"c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4\",\"--expected-config-sha256\",\"b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2\",\"--build-receipt-sha256\",\"9deb86d5ba6b066bf250a432559bdc1fcee1138596af3f40133943c6259dd60c\",\"--expected-terminal-task-id\",\"bb16d934fabe4dc7818289d55be113ac\",\"--adb\",\"/usr/bin/adb\",\"--adb-host\",\"127.0.0.1\",\"--serial\",\"ZY22LS7WZT\",\"--owner-pid\",\"3386576\",\"--expected-uid\",\"10481\",\"--adb-port\",\"5037\",\"--expected-version\",\"57\",\"--command-timeout\",\"12\",\"--historical-build-receipt\",\"/home/alex/hepta-local-007f-20261111/v54-main-host-r4/assembly-r1/RESULT.json\"],\"cwd\":\"/home/alex/hepta-local-007f-20261111\"}\n",
+    "exact_line": {
+      "bytes": 1869,
+      "sha256": "6a72cf9a6a18a63ed62ded938dd90282580aa80eb883b110d9c9d7d5728feeaa",
+      "git_blob_sha": "6e28a4237e790c1d64672d6131ae36b8457a0625"
+    },
+    "write_idempotency_key": "007f-owner24-main57-upgrade-r2",
+    "argv_changes_only": [
+      {
+        "index": 3,
+        "before": "/home/alex/hepta-local-007f-20261111/install_v57_idle_r1.py",
+        "after": "/home/alex/hepta-local-007f-20261111/install_v57_idle_r2.py"
+      }
+    ],
+    "tag": {
+      "before": "main57-upgrade-r1",
+      "after": "main57-upgrade-r2"
+    },
+    "out_unchanged": "/home/alex/hepta-local-007f-20261111/phone-install-v57-r1"
+  },
+  "signed_apk_and_release_values_unchanged": true,
+  "prior_failed_source_not_overwritten": true,
+  "host_or_phone_executed_by_BG": false
+}

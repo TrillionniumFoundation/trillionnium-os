@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.main58-installer-current57-source-consumer-review.v1",
+  "source": {
+    "bytes": 251724,
+    "sha256": "f476688b7c3ff6df4c1ad75d08cc16027d465f0bc54169fb8c053966f85bd379",
+    "git_blob_sha": "ee42680d616aafb10e628d5c2669d51411f6fa91"
+  },
+  "reviewed_scope": [
+    "verified_current_flight57",
+    "verified_previous_main57",
+    "require_terminal Flight-failed path"
+  ],
+  "base": {
+    "bytes": 217159,
+    "sha256": "b175e7d654379970d4b8733f8c0fc03fd610d983e1c661e02b7622ff54a61179",
+    "git_blob_sha": "11e43784cbf8ab1ded4e59bcae562578bca40f17"
+  },
+  "ordered13_forward_reverse_exact": true,
+  "full_current_source_function": {
+    "bytes": 21116,
+    "sha256": "b072903332ca6af18a479ed420c5ad17fc60b2bb8b0ef460162d9a05b48311f9",
+    "git_blob_sha": "ec20062f72c6d28c657f4e1b5ddad0a9b59a653f"
+  },
+  "full_previous_source_function": {
+    "bytes": 3516,
+    "sha256": "c94a67d245c7a43d4739f2654eedebcec35c25e909793dadc2dcca9505873bb3",
+    "git_blob_sha": "975335de3c566022957a802950e5d2e9997ce828"
+  },
+  "actual_original_refs": {
+    "flight_result": "3d4d46c24c6fec328dca1c9062ebdde76cfeedba",
+    "collection": "3a1a344d572546794e940866aaf610aafdbda035",
+    "native_envelope": "e31fbf1124e9868f332ec135247e5924113f2f38",
+    "previous_installation": "f86d8f056c053a98d9d16dc2d0d7c869f4c9e474"
+  },
+  "findings": {
+    "actual_current_typed_fields_and_identity_match": true,
+    "collection_150_49_66_and_265_complete_shapes_match": true,
+    "full_collection_bytes_41650015_match": true,
+    "largest_original_bytes": 1072408,
+    "largest_original_under_two_mib_reader_limit": true,
+    "sole_empty_original_is_allowed_parent_stdout": true,
+    "five_request_order_and_nested_native_exact": true,
+    "parent_app_exit0_native_self_exit_false_separate": true,
+    "previous57_actual_positive_negative_fields_match": true,
+    "previous57_current_identity_and_model_prefs_match": true,
+    "original_failed_business_and_sdk_false_preserved": true,
+    "helper_lease_journal_allowed_to_advance_while_other49_must_preserve": true,
+    "actual58_release_and_owner_remain_pending": true
+  },
+  "no_new_source_blocker_in_reviewed_interface": true,
+  "limits": {
+    "no_host_or_phone_execution": true,
+    "no_new_suite": true,
+    "no_Python_execution_or_Syntax_pass_claim": true,
+    "individual_task_owner_cleanup_raws_not_independently_unpacked_here": true,
+    "original_web_summary_replay_not_executed_here": true,
+    "entire_installation_body_not_reaudited": true,
+    "full_35mb_archive_not_decompressed": true
+  }
+}

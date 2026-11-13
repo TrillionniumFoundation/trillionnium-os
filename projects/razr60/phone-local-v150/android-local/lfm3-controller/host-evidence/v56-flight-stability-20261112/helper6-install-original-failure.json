@@ -1,0 +1,925 @@
+{
+  "schema": "hepta.helper6.clean-idle-same-signer-upgrade.v1",
+  "revision": "independent-helper6-from-main54-preservation-r1",
+  "source_provenance": "Independent helper upgrade using exact reviewed main54 preservation functions; not the missing helper5 driver.",
+  "completed": false,
+  "installed_verified": false,
+  "install_submitted": true,
+  "install_success_returned": true,
+  "expected_helper_version": 6,
+  "expected_helper_uid": 10484,
+  "expected_main_uid": 10481,
+  "helper_diagnostic_count_expected": 37,
+  "expected_terminal_task_id": "3c90bb05c4974a8980655fd254fc933e",
+  "historical_task_status": "failed",
+  "historical_task_model_runs": 0,
+  "historical_task_business_verified": false,
+  "unstarted_is_five_flag_close": false,
+  "formal_lease_cleanup_verified": false,
+  "site_opened": false,
+  "main_activity_launched": false,
+  "task_started": false,
+  "model_invoked": false,
+  "app_data_cleared": false,
+  "journals_deleted": false,
+  "uninstall_used": false,
+  "automatic_retry": false,
+  "rollback_attempted": false,
+  "permission_authorization_changed": false,
+  "private_key_accessed": false,
+  "business_verified": false,
+  "qualified": false,
+  "profile_helper_sha256": "411f41f5e4836cc6014011d1d26cf1bdcfe5c8573fdf6591c24d7b1a29ca83f1",
+  "notes_helper_sha256": "a84847e2858fa4388c430ef44c9b3c759ac5899da3e6348809ff87055c62b110",
+  "r7_helper_sha256": "c74edc0d5d1c600f07775720474b3a9634542c1749c3e7c904fc097e1a6cb6b5",
+  "helper_pins": {
+    "v35_identity": "a4a751cf03956783e551f54b16dd37769f00d5b7cd2a0225b667becbc6e6d003",
+    "warm_receipts": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5",
+    "model_profiles": "ee26ed1f2f2b2ffd5f14fbd526c6d3cbf05d7ed8d65c422df5e60a72fa0cfa3a",
+    "phone_acceptance": "411da90ca9ef83441fa0a199a25d71361ab582db5b54ac08bd39e5e8597e6302",
+    "phone_suite": "2681e21ae0ead263b9313a6e49b4faf8951f3e87ab6b5c669c41fe34dbe5267a"
+  },
+  "started_wall_s": 1794505331.7767828,
+  "owner_guard": {
+    "pid": 1749218,
+    "start_ticks": "29222837",
+    "boot_id": "97d9600f-e081-465c-9e6e-62651e09806b",
+    "root": "/home/alex/hepta-local-007f-20261111/owner-19"
+  },
+  "model_cache_contract": {
+    "mobi_pin_source_sha256": "2f7117fd3234d514775717eef9bf04a67e347f809a93a1f34623e62a8b7a552e",
+    "mobi_directory": "files/model/mobimind-1.5-2b-w8a8-0717-f02848b6",
+    "mobi_file_count": 11,
+    "inactive_import_residue": {
+      "path": "files/model/.LFM2.5-8B-A1B-Q4_0.gguf.import-code22-20261109-r2-fc8792d2.part",
+      "bytes": 4844678368,
+      "sha256": "48ed1465d761311b2fd57b7fb46cf969a20b3a8281945b04e10f52bd1609e715",
+      "enabled_or_deleted": false
+    },
+    "unknown_large_files_allowed": false,
+    "other_gguf_scope": "pinned size plus complete stat continuity; selected model fully hashed"
+  },
+  "installed_identity_before": {
+    "package": "org.trillionnium.hepta.webhelper",
+    "uid": 10484,
+    "apks": [
+      {
+        "path": "/data/app/~~7tm-0viTiSPtMXQrKQNE5A==/org.trillionnium.hepta.webhelper-FzFUV5CCtZ60uGZ1qVOzWg==/base.apk",
+        "sha256": "b5e56ce0c2967489b55150c157f8289fdd82ad5b89caacc8b106013a7caeaf4f"
+      }
+    ]
+  },
+  "main_identity_before": {
+    "package": "org.trillionnium.hepta.local",
+    "uid": 10481,
+    "apks": [
+      {
+        "path": "/data/app/~~hQX6r7v5s_gKn7o8ImvScQ==/org.trillionnium.hepta.local-PNZseE9N9jPiez75ykUSRA==/base.apk",
+        "sha256": "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a"
+      }
+    ],
+    "version_code": 54
+  },
+  "current_terminal_reference": {
+    "identity": {
+      "package": "org.trillionnium.hepta.webhelper",
+      "uid": 10484,
+      "apks": [
+        {
+          "path": "/data/app/~~7tm-0viTiSPtMXQrKQNE5A==/org.trillionnium.hepta.webhelper-FzFUV5CCtZ60uGZ1qVOzWg==/base.apk",
+          "sha256": "b5e56ce0c2967489b55150c157f8289fdd82ad5b89caacc8b106013a7caeaf4f"
+        }
+      ]
+    },
+    "diagnostics": {
+      "diagnostic-020c1d13a67d132eed6874ba43cf0d6f35cd473c095e94f890ac6bc2e6b2667f.json": {
+        "bytes": 30993,
+        "sha256": "386f86ef76923ce994574893bc05eec906f3ef839f32d8a77a68092e0115d986",
+        "uid": 10484
+      },
+      "diagnostic-0e8377e803ac9a467c4a5cb52e5937a15a6a93b43f7934bcaebeedba84b689fc.json": {
+        "bytes": 308739,
+        "sha256": "96aecf073ee65951c988a5710fea394713e64af161f0513e36ee2d539991ebc3",
+        "uid": 10484
+      },
+      "diagnostic-200d1eb4031744b38d899525241af8f89643659ed769590d5cf4614cc0f376c5.json": {
+        "bytes": 305357,
+        "sha256": "ffe2b5a4cf79e12098abafdc63a006583f9eaddb7f786671bcf1d03bc03e4f83",
+        "uid": 10484
+      },
+      "diagnostic-2185104639ec2e909a3eb0241b33d7f2714925010d63223c7e6509f4ec8c660b.json": {
+        "bytes": 305381,
+        "sha256": "4d41342931181e4a208439b0dab4766d25d9d0b2e0bd08d5a24c420cae99f969",
+        "uid": 10484
+      },
+      "diagnostic-260f603251c34639addc7c70fea84f3bcf676e12d373bdaa69f43d6c9fbe3f46.json": {
+        "bytes": 305386,
+        "sha256": "f716aaac6fd44a1015a1f6f1d61b4a0fb2efdda433b3fddcce684840fe103ea9",
+        "uid": 10484
+      },
+      "diagnostic-292f3f81694870ce87b987a04046ccb48e0b3cd6b11813b24f014a5f6a5cccea.json": {
+        "bytes": 308752,
+        "sha256": "b5d351b711eac0b70c7458bc0c1f3f52c4e5d4f9e8e0a3b35a9e2529585adf22",
+        "uid": 10484
+      },
+      "diagnostic-342e51e1e6c5fac683309de2758c0586b1bff94816565a36c127ae276cade8fb.json": {
+        "bytes": 61927,
+        "sha256": "5a34609ecb6965fac2e2525673583ac9f5bcc38652f674d81b8090f5dc17cf57",
+        "uid": 10484
+      },
+      "diagnostic-3534609dabda0ed5ee97004cdf586290d34aacb8a51857e109007dfbc0911500.json": {
+        "bytes": 305381,
+        "sha256": "27b9eddd923d7efb44e3eabebe87b503e63869c84a8074ba4ecce53a553db806",
+        "uid": 10484
+      },
+      "diagnostic-361c2e19f1f7b8b606ada953ce8764a08d3c97b859d1d5d56a2cbab4cd113b55.json": {
+        "bytes": 305381,
+        "sha256": "17ffb325c0ae0ebfd4186c21e1d07ce0ae6110bd6c7392a477cd983622831fc8",
+        "uid": 10484
+      },
+      "diagnostic-3c8fb015d9749da98ed615aab0a6d0d6315b45b9836b92b6ca4d40bb1cf35e16.json": {
+        "bytes": 309230,
+        "sha256": "383622b7853d7e39d870c08522ed7287760de6d9b18cdc8ae08230a23c8afbb3",
+        "uid": 10484
+      },
+      "diagnostic-4d769f772d5eaf8fa7128b3c7f3a7e5ccc978c535a185e602b9747a81adcdea5.json": {
+        "bytes": 308216,
+        "sha256": "cc2e3cdef57f3adcd4e64779e6ff827c1586e9e0b2d15737db808441856dffc9",
+        "uid": 10484
+      },
+      "diagnostic-4edc3ac8e659e5438cd1ff507c370b6f34a899e0ce8391af67809996e66e6547.json": {
+        "bytes": 63083,
+        "sha256": "737a08eef8ccca27b42b11900daa5182cf27b538bafd275dad9fcbd23530d416",
+        "uid": 10484
+      },
+      "diagnostic-53ddffb0458add0e7c1faf8fe6a090a5640a9ef3db51904199d2d9fa946d45b3.json": {
+        "bytes": 308752,
+        "sha256": "0861ac8b133b636478364f3957eed71391dd63e79e4b29530538fbaaafb31136",
+        "uid": 10484
+      },
+      "diagnostic-5988650db5f7f527be3c7e4e8ea17b3fa7d9d6158e020178f218bfd2da0a0019.json": {
+        "bytes": 305381,
+        "sha256": "74bac5bde381e25e4af3978e9184c3d2f70331a7c2ad943c7845b62511a532f3",
+        "uid": 10484
+      },
+      "diagnostic-5d1be4c0d35bdebf71644cde85a6e5284c11933ab08286070abb99ce332620e4.json": {
+        "bytes": 305699,
+        "sha256": "6535ad2d33943cb0e55fba533fca0c172a6f27b1a18e255d783f2fb02c34598a",
+        "uid": 10484
+      },
+      "diagnostic-612297bc8413908925c112255fcbda05a294ca746122db1fc9b50c7e05999c88.json": {
+        "bytes": 305381,
+        "sha256": "05c2064dc1fce4c42c516d3d0e2c4a76f86e69b1e2fbe31149d0b99505c24bfc",
+        "uid": 10484
+      },
+      "diagnostic-6926d45f605fe7e01b4060920f868da64534095f0601bc5ea648da9de669d20b.json": {
+        "bytes": 309579,
+        "sha256": "60d2c114cf1dd29dc77bace83afff6f991e9423bf01e5e93298ba5f4a7601328",
+        "uid": 10484
+      },
+      "diagnostic-6f948b0dfff7afd85b17de1f34cbe3a4efafd7d77c1339788cd570cc192ba2bf.json": {
+        "bytes": 305381,
+        "sha256": "5e2b305ed6681abec482db258269a839c3de4bbbf9a8d9509541701fbb516fbc",
+        "uid": 10484
+      },
+      "diagnostic-774161b299dfb95da9b6d80f2a60c1ca38e7a4b1fa9540698fc5b11d22e24677.json": {
+        "bytes": 16983,
+        "sha256": "e717bcbf4def54057def6b90ce5a52f86ca2270c7d14f097fa501a216c3cddd0",
+        "uid": 10484
+      },
+      "diagnostic-80c8614b93cffb391969fe3f3ebab1a433dd5ecb102ab573feee469e5b4a5e82.json": {
+        "bytes": 305381,
+        "sha256": "3bc2c24b558df3c5bd248c93172b1b18027464b6506b6aa90fcae466f442d718",
+        "uid": 10484
+      },
+      "diagnostic-839c1cc1b1d1c76a695c6a855c6323be0cda6a1f67d8e7f575028fffb3a7e78f.json": {
+        "bytes": 305381,
+        "sha256": "e57bacfe2d127e9805a352cb02c1ce959fe17ed01dd9663a2fc5d3083c501cc0",
+        "uid": 10484
+      },
+      "diagnostic-84b334a0ca431d9387e45114fe4121919bb79efae43eaafef1ecc09fd3eb656d.json": {
+        "bytes": 305381,
+        "sha256": "41bc9473e7803d1d1374a78d840dc17d2c84d14dc3e7fb090475f670ce61dd70",
+        "uid": 10484
+      },
+      "diagnostic-963551623468fb947925862e7eb1e6b5fda0c53ba5ed9fb2b1e474f04a6e9d86.json": {
+        "bytes": 308728,
+        "sha256": "9218dc03267ace444073fffb4f24db6f5ea6994e510643cd558557e4b6c2d7b8",
+        "uid": 10484
+      },
+      "diagnostic-9aad2bf65e8bc7aa21e2aee5638694040fd88a1b47e1b9a061d726032bbb653c.json": {
+        "bytes": 305381,
+        "sha256": "455e1c6e287badf5b717877ab6792e87b4ac91bff9d1cf2836474225e86b6560",
+        "uid": 10484
+      },
+      "diagnostic-bb8cf70a120986c87db41ac296f7a471441e142eca1f95a45451415c2e6d1452.json": {
+        "bytes": 305381,
+        "sha256": "b1d93f8d8710f22455b6ab7dfdc17f316ac0fb4a23ff62bd9f88ba5cabf7a494",
+        "uid": 10484
+      },
+      "diagnostic-bfdc6653be17b14c965ea9d236f2e3b0d8a3c14723a332381eacc7261376752a.json": {
+        "bytes": 963232,
+        "sha256": "1b0305a9002f64ddbe41dc197aafff8b0ace70f668f2b608d3b76b6feb7b2dda",
+        "uid": 10484
+      },
+      "diagnostic-c3e5c2949009203895f588c088fe97373396c5672e72c89d5284723735fab2ae.json": {
+        "bytes": 63091,
+        "sha256": "c4c74dda1e632fce53fbef0688583b8c28cedfa6d0462ca149cdd0ebf3628da8",
+        "uid": 10484
+      },
+      "diagnostic-c4017cc82c05814c36b2515ca5cbb22f12d5331bf96cd43389460ec937bbffe8.json": {
+        "bytes": 963233,
+        "sha256": "0d2e76e387ac5e82ee5adaa0c2a17d75a9aea9e7700d707ac86ae6506b61e840",
+        "uid": 10484
+      },
+      "diagnostic-close-1dfe5600-0db0-49a9-a145-b697ec617956.json": {
+        "bytes": 1529,
+        "sha256": "f4b9ce45808da1904b58d19e07f9c87cb1860bbc7315aef6a7ad89e0fe641060",
+        "uid": 10484
+      },
+      "diagnostic-close-972509d1-f0d8-4f8b-ac09-38783d062331.json": {
+        "bytes": 1708,
+        "sha256": "bd72d3481e48521bcd1736d46ee25446bffa916aab118a3273ffb83ead241967",
+        "uid": 10484
+      },
+      "diagnostic-close-c681b5ba-d88b-441c-b1ee-5dad210718cc.json": {
+        "bytes": 1632,
+        "sha256": "d10cedcc236d4d93114f3c3cae3515ef7dac658dca34f565f9802e86bcda4c0e",
+        "uid": 10484
+      },
+      "diagnostic-d12138c40d118cddb742ebaa38b93944b10ecccede48565fad27f9a4e462dffa.json": {
+        "bytes": 305381,
+        "sha256": "0136ddd29c328a8a2866853e765337f3b50f03bddb3bb47619f2a1f0e12e5679",
+        "uid": 10484
+      },
+      "diagnostic-e34366c697facacb44049015744abeecab23f84982963f95e4369c0f2b5cf931.json": {
+        "bytes": 305381,
+        "sha256": "21fe48d7cc2b7b86dafd9f0cd359f0b4eeb4f4962690b0b1cd53e2add25ec8f0",
+        "uid": 10484
+      },
+      "diagnostic-e413cb069e3c5196bf59f929590c16f979d73703ca7194a1c3fc87373df96c49.json": {
+        "bytes": 59144,
+        "sha256": "3a5be3816a291ab75bef4997ce04226e9a252a8e26c1a7fcc7056c1b6c3eb009",
+        "uid": 10484
+      },
+      "diagnostic-e94b76746ba64e1c54e2799d62814b2e3f0c3bc0185dd8a74e2496a5d29c231f.json": {
+        "bytes": 305381,
+        "sha256": "af3aeb11c295b62c1a47c6c5bd04993bd545a91dc7689e79ee89d7a40c17472e",
+        "uid": 10484
+      },
+      "diagnostic-f596b99af486f258e6e100b38bc48bb35864243dcf4335bdd4fde73258053e27.json": {
+        "bytes": 386724,
+        "sha256": "f61fd86cb24b212c3434bb5eda1a4e29b65c06c22d3fc4238366f31a324dd7fa",
+        "uid": 10484
+      },
+      "diagnostic-unstarted-fd01c43b-ccf1-4ebd-8579-92ed09924fe2.json": {
+        "bytes": 260,
+        "sha256": "3f1b4bcec3bec8e7d1a04cff0204bfb002edc0ab15464537743acabb8ada0b85",
+        "uid": 10484
+      }
+    },
+    "task_id": "3c90bb05c4974a8980655fd254fc933e",
+    "result_sha256": "6881749bc9429b4ce1332353ecd67fe2d524ae19b14349a1208a08b9b41195d7",
+    "collection_sha256": "642b7136d7d1ba94701c004615ef1024a0ae87eb0d701505df87deca87f502f0",
+    "helper_was_unstarted": true,
+    "formal_lease_cleanup_verified": false,
+    "business_verified": false,
+    "unstarted_original_sha256": "3f1b4bcec3bec8e7d1a04cff0204bfb002edc0ab15464537743acabb8ada0b85"
+  },
+  "formal_artifact_proof": {
+    "signed": {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-sign-r1/out/RESULT.json",
+      "bytes": 195558,
+      "sha256": "020921fcb9459f3e64773d15e978e1d6e63de535c351873b86baa1965cbc3258"
+    },
+    "build": {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-p4-build-r3/RESULT.json",
+      "bytes": 230541,
+      "sha256": "8dad8522b39d9fb017fdb869bfdf9c8081f14d445a314bb4555d84e11e49539d"
+    },
+    "apk": {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-sign-r1/out/hepta-web-helper-0.6.0-v4.apk",
+      "bytes": 1410047,
+      "sha256": "02360c24c471dcd4be0cbc7c7fdb316a7918d656edd1407d765540b5a3f2f5ff"
+    },
+    "source_file_count": 43,
+    "compiled_member_count": 372,
+    "unchanged_compiled_payload_count": 369,
+    "all_signed_members_and_local_headers_recomputed": true,
+    "source_archive_all44_members_recomputed": true,
+    "helper5_signed_receipt_sha256": "ad9fe0cb5ea808e6d563b398b45e79286a1158fc3db43ea2226f4fd0edd29580",
+    "phone_or_business_proof": false
+  },
+  "focus_before": {
+    "display_id": 0,
+    "focus_line": "mCurrentFocus=Window{9dbf25a u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+    "focus_package": "org.trillionnium.hepta.local",
+    "focus_source": "dumpsys window displays: unique display 0 mCurrentFocus"
+  },
+  "diagnostics_before_upgrade": {
+    "diagnostic-020c1d13a67d132eed6874ba43cf0d6f35cd473c095e94f890ac6bc2e6b2667f.json": {
+      "bytes": 30993,
+      "sha256": "386f86ef76923ce994574893bc05eec906f3ef839f32d8a77a68092e0115d986",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 241724,
+        "uid": 10484,
+        "bytes": 30993,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794457866,
+        "ctime_s": 1794457866
+      }
+    },
+    "diagnostic-0e8377e803ac9a467c4a5cb52e5937a15a6a93b43f7934bcaebeedba84b689fc.json": {
+      "bytes": 308739,
+      "sha256": "96aecf073ee65951c988a5710fea394713e64af161f0513e36ee2d539991ebc3",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 240970,
+        "uid": 10484,
+        "bytes": 308739,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794445463,
+        "ctime_s": 1794445463
+      }
+    },
+    "diagnostic-200d1eb4031744b38d899525241af8f89643659ed769590d5cf4614cc0f376c5.json": {
+      "bytes": 305357,
+      "sha256": "ffe2b5a4cf79e12098abafdc63a006583f9eaddb7f786671bcf1d03bc03e4f83",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 232057,
+        "uid": 10484,
+        "bytes": 305357,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794437226,
+        "ctime_s": 1794437226
+      }
+    },
+    "diagnostic-2185104639ec2e909a3eb0241b33d7f2714925010d63223c7e6509f4ec8c660b.json": {
+      "bytes": 305381,
+      "sha256": "4d41342931181e4a208439b0dab4766d25d9d0b2e0bd08d5a24c420cae99f969",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 238033,
+        "uid": 10484,
+        "bytes": 305381,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794440505,
+        "ctime_s": 1794440505
+      }
+    },
+    "diagnostic-260f603251c34639addc7c70fea84f3bcf676e12d373bdaa69f43d6c9fbe3f46.json": {
+      "bytes": 305386,
+      "sha256": "f716aaac6fd44a1015a1f6f1d61b4a0fb2efdda433b3fddcce684840fe103ea9",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 239740,
+        "uid": 10484,
+        "bytes": 305386,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794440612,
+        "ctime_s": 1794440612
+      }
+    },
+    "diagnostic-292f3f81694870ce87b987a04046ccb48e0b3cd6b11813b24f014a5f6a5cccea.json": {
+      "bytes": 308752,
+      "sha256": "b5d351b711eac0b70c7458bc0c1f3f52c4e5d4f9e8e0a3b35a9e2529585adf22",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 241732,
+        "uid": 10484,
+        "bytes": 308752,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794450932,
+        "ctime_s": 1794450932
+      }
+    },
+    "diagnostic-342e51e1e6c5fac683309de2758c0586b1bff94816565a36c127ae276cade8fb.json": {
+      "bytes": 61927,
+      "sha256": "5a34609ecb6965fac2e2525673583ac9f5bcc38652f674d81b8090f5dc17cf57",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 241158,
+        "uid": 10484,
+        "bytes": 61927,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794441841,
+        "ctime_s": 1794441841
+      }
+    },
+    "diagnostic-3534609dabda0ed5ee97004cdf586290d34aacb8a51857e109007dfbc0911500.json": {
+      "bytes": 305381,
+      "sha256": "27b9eddd923d7efb44e3eabebe87b503e63869c84a8074ba4ecce53a553db806",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 239647,
+        "uid": 10484,
+        "bytes": 305381,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794440614,
+        "ctime_s": 1794440614
+      }
+    },
+    "diagnostic-361c2e19f1f7b8b606ada953ce8764a08d3c97b859d1d5d56a2cbab4cd113b55.json": {
+      "bytes": 305381,
+      "sha256": "17ffb325c0ae0ebfd4186c21e1d07ce0ae6110bd6c7392a477cd983622831fc8",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 239985,
+        "uid": 10484,
+        "bytes": 305381,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794440615,
+        "ctime_s": 1794440615
+      }
+    },
+    "diagnostic-3c8fb015d9749da98ed615aab0a6d0d6315b45b9836b92b6ca4d40bb1cf35e16.json": {
+      "bytes": 309230,
+      "sha256": "383622b7853d7e39d870c08522ed7287760de6d9b18cdc8ae08230a23c8afbb3",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 236205,
+        "uid": 10484,
+        "bytes": 309230,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794457699,
+        "ctime_s": 1794457699
+      }
+    },
+    "diagnostic-4d769f772d5eaf8fa7128b3c7f3a7e5ccc978c535a185e602b9747a81adcdea5.json": {
+      "bytes": 308216,
+      "sha256": "cc2e3cdef57f3adcd4e64779e6ff827c1586e9e0b2d15737db808441856dffc9",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 238742,
+        "uid": 10484,
+        "bytes": 308216,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794444293,
+        "ctime_s": 1794444293
+      }
+    },
+    "diagnostic-4edc3ac8e659e5438cd1ff507c370b6f34a899e0ce8391af67809996e66e6547.json": {
+      "bytes": 63083,
+      "sha256": "737a08eef8ccca27b42b11900daa5182cf27b538bafd275dad9fcbd23530d416",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 241945,
+        "uid": 10484,
+        "bytes": 63083,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794457072,
+        "ctime_s": 1794457072
+      }
+    },
+    "diagnostic-53ddffb0458add0e7c1faf8fe6a090a5640a9ef3db51904199d2d9fa946d45b3.json": {
+      "bytes": 308752,
+      "sha256": "0861ac8b133b636478364f3957eed71391dd63e79e4b29530538fbaaafb31136",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 240966,
+        "uid": 10484,
+        "bytes": 308752,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794445463,
+        "ctime_s": 1794445463
+      }
+    },
+    "diagnostic-5988650db5f7f527be3c7e4e8ea17b3fa7d9d6158e020178f218bfd2da0a0019.json": {
+      "bytes": 305381,
+      "sha256": "74bac5bde381e25e4af3978e9184c3d2f70331a7c2ad943c7845b62511a532f3",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 240475,
+        "uid": 10484,
+        "bytes": 305381,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794438908,
+        "ctime_s": 1794438908
+      }
+    },
+    "diagnostic-5d1be4c0d35bdebf71644cde85a6e5284c11933ab08286070abb99ce332620e4.json": {
+      "bytes": 305699,
+      "sha256": "6535ad2d33943cb0e55fba533fca0c172a6f27b1a18e255d783f2fb02c34598a",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 239866,
+        "uid": 10484,
+        "bytes": 305699,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794440616,
+        "ctime_s": 1794440616
+      }
+    },
+    "diagnostic-612297bc8413908925c112255fcbda05a294ca746122db1fc9b50c7e05999c88.json": {
+      "bytes": 305381,
+      "sha256": "05c2064dc1fce4c42c516d3d0e2c4a76f86e69b1e2fbe31149d0b99505c24bfc",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 239878,
+        "uid": 10484,
+        "bytes": 305381,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794440615,
+        "ctime_s": 1794440615
+      }
+    },
+    "diagnostic-6926d45f605fe7e01b4060920f868da64534095f0601bc5ea648da9de669d20b.json": {
+      "bytes": 309579,
+      "sha256": "60d2c114cf1dd29dc77bace83afff6f991e9423bf01e5e93298ba5f4a7601328",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 216193,
+        "uid": 10484,
+        "bytes": 309579,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794458819,
+        "ctime_s": 1794458819
+      }
+    },
+    "diagnostic-6f948b0dfff7afd85b17de1f34cbe3a4efafd7d77c1339788cd570cc192ba2bf.json": {
+      "bytes": 305381,
+      "sha256": "5e2b305ed6681abec482db258269a839c3de4bbbf9a8d9509541701fbb516fbc",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 239440,
+        "uid": 10484,
+        "bytes": 305381,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794440613,
+        "ctime_s": 1794440613
+      }
+    },
+    "diagnostic-774161b299dfb95da9b6d80f2a60c1ca38e7a4b1fa9540698fc5b11d22e24677.json": {
+      "bytes": 16983,
+      "sha256": "e717bcbf4def54057def6b90ce5a52f86ca2270c7d14f097fa501a216c3cddd0",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 238530,
+        "uid": 10484,
+        "bytes": 16983,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794436933,
+        "ctime_s": 1794436933
+      }
+    },
+    "diagnostic-80c8614b93cffb391969fe3f3ebab1a433dd5ecb102ab573feee469e5b4a5e82.json": {
+      "bytes": 305381,
+      "sha256": "3bc2c24b558df3c5bd248c93172b1b18027464b6506b6aa90fcae466f442d718",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 240260,
+        "uid": 10484,
+        "bytes": 305381,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794438907,
+        "ctime_s": 1794438907
+      }
+    },
+    "diagnostic-839c1cc1b1d1c76a695c6a855c6323be0cda6a1f67d8e7f575028fffb3a7e78f.json": {
+      "bytes": 305381,
+      "sha256": "e57bacfe2d127e9805a352cb02c1ce959fe17ed01dd9663a2fc5d3083c501cc0",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 240031,
+        "uid": 10484,
+        "bytes": 305381,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794440618,
+        "ctime_s": 1794440618
+      }
+    },
+    "diagnostic-84b334a0ca431d9387e45114fe4121919bb79efae43eaafef1ecc09fd3eb656d.json": {
+      "bytes": 305381,
+      "sha256": "41bc9473e7803d1d1374a78d840dc17d2c84d14dc3e7fb090475f670ce61dd70",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 238187,
+        "uid": 10484,
+        "bytes": 305381,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794440503,
+        "ctime_s": 1794440503
+      }
+    },
+    "diagnostic-963551623468fb947925862e7eb1e6b5fda0c53ba5ed9fb2b1e474f04a6e9d86.json": {
+      "bytes": 308728,
+      "sha256": "9218dc03267ace444073fffb4f24db6f5ea6994e510643cd558557e4b6c2d7b8",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 239983,
+        "uid": 10484,
+        "bytes": 308728,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794446256,
+        "ctime_s": 1794446256
+      }
+    },
+    "diagnostic-9aad2bf65e8bc7aa21e2aee5638694040fd88a1b47e1b9a061d726032bbb653c.json": {
+      "bytes": 305381,
+      "sha256": "455e1c6e287badf5b717877ab6792e87b4ac91bff9d1cf2836474225e86b6560",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 238341,
+        "uid": 10484,
+        "bytes": 305381,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794440501,
+        "ctime_s": 1794440501
+      }
+    },
+    "diagnostic-bb8cf70a120986c87db41ac296f7a471441e142eca1f95a45451415c2e6d1452.json": {
+      "bytes": 305381,
+      "sha256": "b1d93f8d8710f22455b6ab7dfdc17f316ac0fb4a23ff62bd9f88ba5cabf7a494",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 239974,
+        "uid": 10484,
+        "bytes": 305381,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794440616,
+        "ctime_s": 1794440616
+      }
+    },
+    "diagnostic-bfdc6653be17b14c965ea9d236f2e3b0d8a3c14723a332381eacc7261376752a.json": {
+      "bytes": 963232,
+      "sha256": "1b0305a9002f64ddbe41dc197aafff8b0ace70f668f2b608d3b76b6feb7b2dda",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 240597,
+        "uid": 10484,
+        "bytes": 963232,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794474727,
+        "ctime_s": 1794474727
+      }
+    },
+    "diagnostic-c3e5c2949009203895f588c088fe97373396c5672e72c89d5284723735fab2ae.json": {
+      "bytes": 63091,
+      "sha256": "c4c74dda1e632fce53fbef0688583b8c28cedfa6d0462ca149cdd0ebf3628da8",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 238206,
+        "uid": 10484,
+        "bytes": 63091,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794458825,
+        "ctime_s": 1794458825
+      }
+    },
+    "diagnostic-c4017cc82c05814c36b2515ca5cbb22f12d5331bf96cd43389460ec937bbffe8.json": {
+      "bytes": 963233,
+      "sha256": "0d2e76e387ac5e82ee5adaa0c2a17d75a9aea9e7700d707ac86ae6506b61e840",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 240557,
+        "uid": 10484,
+        "bytes": 963233,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794474727,
+        "ctime_s": 1794474727
+      }
+    },
+    "diagnostic-close-1dfe5600-0db0-49a9-a145-b697ec617956.json": {
+      "bytes": 1529,
+      "sha256": "f4b9ce45808da1904b58d19e07f9c87cb1860bbc7315aef6a7ad89e0fe641060",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 238958,
+        "uid": 10484,
+        "bytes": 1529,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794458831,
+        "ctime_s": 1794458831
+      }
+    },
+    "diagnostic-close-972509d1-f0d8-4f8b-ac09-38783d062331.json": {
+      "bytes": 1708,
+      "sha256": "bd72d3481e48521bcd1736d46ee25446bffa916aab118a3273ffb83ead241967",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 241826,
+        "uid": 10484,
+        "bytes": 1708,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794475894,
+        "ctime_s": 1794475894
+      }
+    },
+    "diagnostic-close-c681b5ba-d88b-441c-b1ee-5dad210718cc.json": {
+      "bytes": 1632,
+      "sha256": "d10cedcc236d4d93114f3c3cae3515ef7dac658dca34f565f9802e86bcda4c0e",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 239478,
+        "uid": 10484,
+        "bytes": 1632,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794467234,
+        "ctime_s": 1794467234
+      }
+    },
+    "diagnostic-d12138c40d118cddb742ebaa38b93944b10ecccede48565fad27f9a4e462dffa.json": {
+      "bytes": 305381,
+      "sha256": "0136ddd29c328a8a2866853e765337f3b50f03bddb3bb47619f2a1f0e12e5679",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 239771,
+        "uid": 10484,
+        "bytes": 305381,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794440607,
+        "ctime_s": 1794440607
+      }
+    },
+    "diagnostic-e34366c697facacb44049015744abeecab23f84982963f95e4369c0f2b5cf931.json": {
+      "bytes": 305381,
+      "sha256": "21fe48d7cc2b7b86dafd9f0cd359f0b4eeb4f4962690b0b1cd53e2add25ec8f0",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 239642,
+        "uid": 10484,
+        "bytes": 305381,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794440614,
+        "ctime_s": 1794440614
+      }
+    },
+    "diagnostic-e413cb069e3c5196bf59f929590c16f979d73703ca7194a1c3fc87373df96c49.json": {
+      "bytes": 59144,
+      "sha256": "3a5be3816a291ab75bef4997ce04226e9a252a8e26c1a7fcc7056c1b6c3eb009",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 241578,
+        "uid": 10484,
+        "bytes": 59144,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794431946,
+        "ctime_s": 1794431946
+      }
+    },
+    "diagnostic-e94b76746ba64e1c54e2799d62814b2e3f0c3bc0185dd8a74e2496a5d29c231f.json": {
+      "bytes": 305381,
+      "sha256": "af3aeb11c295b62c1a47c6c5bd04993bd545a91dc7689e79ee89d7a40c17472e",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 238253,
+        "uid": 10484,
+        "bytes": 305381,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794440503,
+        "ctime_s": 1794440503
+      }
+    },
+    "diagnostic-f596b99af486f258e6e100b38bc48bb35864243dcf4335bdd4fde73258053e27.json": {
+      "bytes": 386724,
+      "sha256": "f61fd86cb24b212c3434bb5eda1a4e29b65c06c22d3fc4238366f31a324dd7fa",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 238688,
+        "uid": 10484,
+        "bytes": 386724,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794458395,
+        "ctime_s": 1794458395
+      }
+    },
+    "diagnostic-unstarted-fd01c43b-ccf1-4ebd-8579-92ed09924fe2.json": {
+      "bytes": 260,
+      "sha256": "3f1b4bcec3bec8e7d1a04cff0204bfb002edc0ab15464537743acabb8ada0b85",
+      "uid": 10484,
+      "stat": {
+        "device": 65086,
+        "inode": 241042,
+        "uid": 10484,
+        "bytes": 260,
+        "links": 1,
+        "mode": 33152,
+        "mtime_s": 1794488567,
+        "ctime_s": 1794488567
+      }
+    }
+  },
+  "selected_model_before": {
+    "path": "files/model/LFM3-1.7B-QAD-Q4_0.gguf",
+    "bytes": 1049615680,
+    "sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
+  },
+  "accessibility_before": {
+    "services": "org.trillionnium.hepta.localprobe/.HeptaAccessibilityService:com.motorola.actioncore/.screenhelper.TalkBackService:org.trillionnium.hepta.local/org.trillionnium.hepta.local.HeptaAccessibilityService",
+    "global": "1"
+  },
+  "formal_binding_before": {
+    "verified": true,
+    "component": "org.trillionnium.hepta.local/org.trillionnium.hepta.local.HeptaAccessibilityService",
+    "app_pid": 31544,
+    "app_uid": 10481,
+    "client_pid": 3622,
+    "client_uid": 1000,
+    "binder_received": true,
+    "has_bound": true,
+    "connection_ids": [
+      "f7fe27c"
+    ],
+    "service_dump_sha256": "9721d5865277d468ad3f6e2fb865f59c9a52d7364f5b513964a5999801a4c6a8",
+    "identity_scope": "exact active AMS ServiceRecord and live system-client binding; label-only AccessibilityManager rows are not component attestation"
+  },
+  "old_actual_signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "new_actual_signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "same_signer_actually_verified": true,
+  "selected_model_after": {
+    "path": "files/model/LFM3-1.7B-QAD-Q4_0.gguf",
+    "bytes": 1049615680,
+    "sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
+  },
+  "formal_binding_after": {
+    "verified": true,
+    "component": "org.trillionnium.hepta.local/org.trillionnium.hepta.local.HeptaAccessibilityService",
+    "app_pid": 31544,
+    "app_uid": 10481,
+    "client_pid": 3622,
+    "client_uid": 1000,
+    "binder_received": true,
+    "has_bound": true,
+    "connection_ids": [
+      "f7fe27c"
+    ],
+    "service_dump_sha256": "f6fe31ee8de4e50404d441fd21776bc418307c3fe45b777784b8a5980320f870",
+    "identity_scope": "exact active AMS ServiceRecord and live system-client binding; label-only AccessibilityManager rows are not component attestation"
+  },
+  "error": "RuntimeError: helper-only upgrade changed the Main accessibility binding",
+  "finished_wall_s": 1794505386.2673297
+}

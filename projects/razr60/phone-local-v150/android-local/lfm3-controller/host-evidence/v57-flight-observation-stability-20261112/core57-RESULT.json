@@ -1,0 +1,361 @@
+{
+  "schema": "hepta.main57-original-core101-host-stage.v1",
+  "revision": "actual56r2-reviewed57-successor-r1",
+  "all_pass": true,
+  "exit_code": 0,
+  "source_root": "/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1/source",
+  "source_file_count": 595,
+  "source_inventory_sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6",
+  "source_candidate_git": "517e61599073eb264c5e52871570d49e7af2d798",
+  "actual_unsigned_result": null,
+  "unsigned_build_prerequisite_required": false,
+  "source_materialized_here": true,
+  "source_commit": null,
+  "publication_pending": true,
+  "base_source_commit": "9f4168616546233033edd4b254b4236ae987ea7e",
+  "base_source_file_count": 595,
+  "prior_materialized_source_file_count": 595,
+  "prior_core_all_pass": true,
+  "prior_core_exit_code": 0,
+  "prior_actual_host_check_count": 101,
+  "historical_failed_core_result": {
+    "path": "/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r1/RESULT.json",
+    "git_blob_sha": "3274c9f9254450635364967eb3701ad30056910c",
+    "bytes": 8174,
+    "sha256": "df5c72a750e8ffc51fcb798565849157a9fbdfd2386314c305782cf7c96d2dc5"
+  },
+  "historical_failed_core_all_pass": false,
+  "historical_failed_core_host_check_count": 58,
+  "historical56_web_receipts": [
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v56-main-web-regression-host-r1/RESULT.json",
+      "bytes": 29724,
+      "sha256": "f9bf137d294e385c6cd85987a10ba682fdb9bb8415fa51a005e5ff871914eec4",
+      "all_pass": false,
+      "exit_code": 1
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v56-main-web-regression-host-r2/RESULT.json",
+      "bytes": 47337,
+      "sha256": "220ccb705ba17797d7403c26c1a9bcb438f46c8ea83e017c617a343d27232f7c",
+      "all_pass": true,
+      "exit_code": 0
+    }
+  ],
+  "host_check_count": 101,
+  "host_input_count": 419,
+  "nested_completion_stage_count": 18,
+  "nested18_are_within_core101": true,
+  "focused39_rerun": false,
+  "identity10_rerun": false,
+  "query40_rerun": false,
+  "separate_web_80_43_13_rerun": false,
+  "original_runner_sha256": "dc64aa551a0eddd6429ad3340db5445e9c00403a2110b48e1c05662f5d46ec3a",
+  "tools": {
+    "java": {
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+      "bytes": 14544,
+      "sha256": "bb70208200cb6538b877d80478141194a716edb591f4910ec106589291e99196",
+      "identity": [
+        66306,
+        34879305,
+        33261,
+        1,
+        14544,
+        1793283530000000000,
+        1794274474910109494
+      ]
+    },
+    "javac": {
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+      "bytes": 14592,
+      "sha256": "2aaf03d13aeb80b8269696f2dcd9f4937d7366bbc68f91fdc703cf157e8f39c4",
+      "identity": [
+        66306,
+        34879135,
+        33261,
+        1,
+        14592,
+        1793283530000000000,
+        1794274474788105274
+      ]
+    },
+    "cc": {
+      "path": "/usr/bin/x86_64-linux-gnu-gcc-15",
+      "bytes": 1305304,
+      "sha256": "b5f1b773a7c733738352000c92a077dc5852a1a2fc6d836b1e411be1e9ec5f88",
+      "identity": [
+        66306,
+        108008578,
+        33261,
+        1,
+        1305304,
+        1774174097000000000,
+        1791083705251606151
+      ],
+      "requested_path": "/usr/bin/cc"
+    },
+    "python": {
+      "path": "/usr/bin/python3.14",
+      "bytes": 7477160,
+      "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41",
+      "identity": [
+        66306,
+        108009763,
+        33261,
+        1,
+        7477160,
+        1787222518000000000,
+        1791083390422846841
+      ]
+    }
+  },
+  "steps": [
+    {
+      "name": "original-host-checks",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1/source/tools/run_host_checks.py",
+        "--out",
+        "/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1/host-checks"
+      ],
+      "cwd": "/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1/source",
+      "pid": 3201323,
+      "exit_code": 0,
+      "timed_out": false,
+      "forced_kill": false,
+      "exit_observed": true,
+      "elapsed_seconds": 165.49560565699358,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1/original-host-checks.stdout",
+        "bytes": 106,
+        "sha256": "a37d234cda9985ce014d461496c7fb0e98ec0c39195e6166829573b1597b8e56",
+        "identity": [
+          66306,
+          53233332,
+          33152,
+          1,
+          106,
+          1794525023876551022,
+          1794525023876551022
+        ]
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1/original-host-checks.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "identity": [
+          66306,
+          53233333,
+          33152,
+          1,
+          0,
+          1794524858415066587,
+          1794524858415066587
+        ]
+      },
+      "owned_group_cleanup_attempted": false,
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_error": null
+    }
+  ],
+  "android_compiled_here": false,
+  "android_native_runtime_recompiled_here": false,
+  "original_host_native_contracts_executed": true,
+  "signed": false,
+  "published": false,
+  "phone_actions": 0,
+  "business_verified": false,
+  "actual_flight_results_provider_ready": false,
+  "started_epoch": 1794524857.539108,
+  "error": null,
+  "originals_unchanged": true,
+  "prior_core_result": {
+    "path": "/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r2/RESULT.json",
+    "bytes": 9732,
+    "sha256": "778fbfeac89fa330d123207c43e485818b530f77e978247c61f67d9d23ce9a39",
+    "git_blob_sha": "5cb49be79cbf60bb9cfdc34eb24ea6a1a16aace1"
+  },
+  "prior_source_aggregate": {
+    "path": "/home/alex/hepta-local-007f-20261111/v56-main-core101-materialized-host-r2/AGGREGATE.json",
+    "bytes": 1427055,
+    "sha256": "c1cc7cc16eef4c3a34131ee719101a69db080b76e72c98f03248036fc6fd628f",
+    "git_blob_sha": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c"
+  },
+  "exact_changed_existing_paths": [
+    "AndroidManifest.xml",
+    "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+    "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
+    "src/org/trillionnium/hepta/local/WebFlightSession.java",
+    "tests/web-flight/run_query_host_tests.py"
+  ],
+  "exact_new_paths": [],
+  "prior_core_evidence_unchanged": true,
+  "prior_failed_runs_are_preserved_history": true,
+  "compiler_source_equivalent_to_predecessor": false,
+  "compiler_source_matches_current_final_inventory": true,
+  "compiler_input_changed_paths": [
+    "AndroidManifest.xml",
+    "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+    "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
+    "src/org/trillionnium/hepta/local/WebFlightSession.java"
+  ],
+  "original_unsigned_source_map_does_not_match_successor": true,
+  "new_same_source_android_build_required": true,
+  "source_map_difference_requires_signer_sidecar": false,
+  "source_blob_map": {
+    "path": "/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1/SOURCE-BLOB-MAP.json",
+    "bytes": 141875,
+    "sha256": "2ebce60579704b0545cd9880e6a3fa0b7f5cad6149439aa1419db8fb2c16d539",
+    "identity": [
+      66306,
+      53233325,
+      33152,
+      1,
+      141875,
+      1794524858395673115,
+      1794524858395673115
+    ]
+  },
+  "compiler_input_count": 217,
+  "java_source_count": 115,
+  "host_checks": {
+    "path": "/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1/host-checks/HOST-CHECKS.json",
+    "bytes": 101592,
+    "sha256": "074b23871cf1c5c7efe5fe36eeac94db38a540a91e7a6c32aec174a4802f7d0b",
+    "identity": [
+      66306,
+      61902954,
+      33152,
+      1,
+      101592,
+      1794525023876551022,
+      1794525023876551022
+    ]
+  },
+  "nested_completion": {
+    "path": "/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1/host-checks/task-completion/RESULT.json",
+    "bytes": 58200,
+    "sha256": "5322369c80176d88ee2d4eb3d1f40a0616cbbc3b4ae59a077c574de9db7a17e8",
+    "identity": [
+      66306,
+      61902224,
+      33152,
+      1,
+      58200,
+      1794525005017429075,
+      1794525005017429075
+    ]
+  },
+  "original_runner_unmodified": true,
+  "original101_names_order_preserved": true,
+  "reviewed_source_and_test_successor_exact": true,
+  "java8_api_release": true,
+  "actual_nested_result": {
+    "path": "/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1/host-checks/task-completion/RESULT.json",
+    "bytes": 58200,
+    "sha256": "5322369c80176d88ee2d4eb3d1f40a0616cbbc3b4ae59a077c574de9db7a17e8",
+    "identity": [
+      66306,
+      61902224,
+      33152,
+      1,
+      58200,
+      1794525005017429075,
+      1794525005017429075
+    ]
+  },
+  "actual_nested_passed": true,
+  "actual_nested_stages": [
+    {
+      "name": "compile",
+      "exit_code": 0
+    },
+    {
+      "name": "actual-completion",
+      "exit_code": 0
+    },
+    {
+      "name": "notes-task-phase",
+      "exit_code": 0
+    },
+    {
+      "name": "notes-task-phase-grammar",
+      "exit_code": 0
+    },
+    {
+      "name": "notes-list-provenance",
+      "exit_code": 0
+    },
+    {
+      "name": "notes-recovery",
+      "exit_code": 0
+    },
+    {
+      "name": "notes-recovery-grammar",
+      "exit_code": 0
+    },
+    {
+      "name": "notes-task-scope",
+      "exit_code": 0
+    },
+    {
+      "name": "notes-task-scope-grammar",
+      "exit_code": 0
+    },
+    {
+      "name": "calculator-input",
+      "exit_code": 0
+    },
+    {
+      "name": "calculator-input-grammar",
+      "exit_code": 0
+    },
+    {
+      "name": "failed-action-observation",
+      "exit_code": 0
+    },
+    {
+      "name": "notes-editor-phase",
+      "exit_code": 0
+    },
+    {
+      "name": "notes-editor-phase-grammar",
+      "exit_code": 0
+    },
+    {
+      "name": "completion-status",
+      "exit_code": 0
+    },
+    {
+      "name": "completion-status-grammar",
+      "exit_code": 0
+    },
+    {
+      "name": "notes-create-workflow",
+      "exit_code": 0
+    },
+    {
+      "name": "notes-workflow-controller",
+      "exit_code": 0
+    }
+  ],
+  "actual_nested_stage_count": 18,
+  "actual_nested_first_failure": null,
+  "actual_host_all_pass": true,
+  "actual_host_error": null,
+  "prior_core_guarded_file_count": 222,
+  "historical_failed_core_evidence_unchanged": true,
+  "historical_failed_core_guarded_file_count": 138,
+  "historical56_web_receipts_unchanged": true,
+  "prior_source_unchanged": true,
+  "source_unchanged": true,
+  "base_source_unchanged": true,
+  "written_files_unchanged": true,
+  "finished_epoch": 1794525024.316579,
+  "elapsed_seconds": 166.77747106552124,
+  "stage_sha256": "4596b0dca391311a53334f594df620e166e3225df6bbaf20ae8c8fccce674b04",
+  "original_guard_count": 1559,
+  "written_guard_count": 814
+}

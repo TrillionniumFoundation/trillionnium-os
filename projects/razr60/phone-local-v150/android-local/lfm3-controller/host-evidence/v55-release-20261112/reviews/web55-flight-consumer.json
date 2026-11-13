@@ -1,0 +1,115 @@
+{
+  "schema": "hepta.source-review.v1",
+  "subject": "Web55 Flight-only wire4 capture consumer and raw FD retention",
+  "candidate": {
+    "git": "f58681a2842aa70e4b06ef0dfdcdb6c8c74c667e",
+    "bytes": 187499,
+    "sha256": "a660a7f1f8b7754822a960d9b55becd745a13c845de29e76350019267fa61ed2"
+  },
+  "source_only": true,
+  "host_commands_executed": 0,
+  "phone_actions": 0,
+  "tests_executed": false,
+  "source_blockers": [],
+  "inspected_scope": [
+    "Complete new require_flight_capture_v4 and original_capture_fd_index functions; original_web_summary call integration and original callback/request/raw binding.",
+    "Complete load_release successor admission and all 51 ordered substitutions reversed to the actual r7 source hashes.",
+    "All six declared producer pins match the current 594-file aggregate; actual WebDomStability full-scope proof construction and path order were read. Client/Receipt/Journal schemas were checked against the original producer sources.",
+    "Both pending root wrappers and runtime source lengths/hashes match their final r2 members; all release/owner facts remain None."
+  ],
+  "conclusions": [
+    "Flight admits only goal csair_public_flight, equal complete <=1MiB dual raw DOM, full_raw_equality, observed_link_navigation=null, exact fixed-observer SHA, v4 DOM schema and bounded complete path membership. It does not admit the Mi region policy.",
+    "The full proof is reconstructed with actual array insertion order, all exact full-scope fields and integer/string/null/boolean canonical encoding. The selected actual path list is metadata only; no collector action authority is produced.",
+    "The r2 parent_path presence check closes the draft get()/null ambiguity for root path 0 and matches Java JSONObject.get. Node strings/flags/scalars, visited count, ancestry and bounded numeric rectangles follow actual full-scope input requirements.",
+    "Geometry checks four named sample phases, original window/display/bounds association and commit/capture/lease timing. The output explicitly says full_native_geometry_replayed_by_this_collector=false; it relies on retained signed-controller verification and does not elevate partial Python checks into native authorization.",
+    "The raw FD index is written immediately after exact task-tree collection, before later lifecycle checks. It retains every raw FD with original byte count/hash, records malformed interpretation independently and labels callback verification as recorded. It never awards capture/business/ARM success.",
+    "The existing normal-close/profile/typed callback chain remains required; verified=false captures remain raw failure evidence. New raw schema consumption does not promote unstarted/recovered retirement into five true normal-close flags.",
+    "Main release admission requires actual source_files_unchanged=true, native_recompiled_here=false, provider_ready=false and actual P4 receipt SHA. Helper admission requires actual6 signed build/source/descriptor/resource evidence. The pending fields prevent any device admission."
+  ],
+  "byte_exact_reverse": [
+    {
+      "path": "web_entry_support.py",
+      "patches": 33,
+      "base_bytes": 56351,
+      "base_sha256": "40fd406476f0dc4175ff9f1bc25f85d7a7f7984816b35d5c07d52147c5876c65",
+      "all_exact": true
+    },
+    {
+      "path": "prepare_background_web_v55_r1.py",
+      "patches": 8,
+      "base_bytes": 27554,
+      "base_sha256": "fc19f3907be2e2a2a813271ab49111e135f22f7d71de2777272b000350d6aea9",
+      "all_exact": true
+    },
+    {
+      "path": "run_background_web_v55_r1.py",
+      "patches": 10,
+      "base_bytes": 33746,
+      "base_sha256": "1fd56ea02e6da96ad4150bb05d72f5d219eb40990b02ef8c40e3f2f8579eebd4",
+      "all_exact": true
+    }
+  ],
+  "producer_pins": [
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+      "bytes": 5933,
+      "sha256": "3966bbe1122f6a6e13bf211291332aa63f755a891800d04169016958946f8f0e",
+      "git_blob": "e333c14a306bfc8a5fb79b636fc9da16d45ae73f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebEvidenceReceipt.java",
+      "bytes": 29292,
+      "sha256": "85bd14c7dc45aee8fbc1c290299cd2b123c848f9d5c08634b4b2b66daeeb5cda",
+      "git_blob": "ba05c6869d365f2c3a2d1d8b3036614d3a92f121"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebEvidenceClient.java",
+      "bytes": 20815,
+      "sha256": "96eb9307241ec3f5ad33dab37e894f9ddbcbf228c0bc48169b53056f42dab943",
+      "git_blob": "80c8ef7b9ac6ecafd1471f6d7ad59b21d3ffbb72"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebDomStability.java",
+      "bytes": 16055,
+      "sha256": "f7e432c1191008afa25a134147cd6fd133f975e102aa4cab722da3dc82a4ea53",
+      "git_blob": "1865fcd42f7655613991fee167f252c1887ce5e1"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebNativeGeometry.java",
+      "bytes": 14220,
+      "sha256": "a61e9601699fd7480c4f09be2c29de9cf755903a222c79efbfc9efbd23afbc49",
+      "git_blob": "65207b0ba2e4f77a7e21f7ae9f24df5315956ec3"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebEvidenceJournal.java",
+      "bytes": 14692,
+      "sha256": "2cc638a5326e934e3394ee82a7fb091b24b8f975c0f1729112b05aea1d7142d4",
+      "git_blob": "c0b60afad05d63950c36221e4db06c951d211a15"
+    }
+  ],
+  "runtime_pins": [
+    {
+      "path": "web_entry_support.py",
+      "bytes": 69967,
+      "sha256": "de0b5c77c5be90f70fe15ec6f5e3ce1bc974b1fa494819bae1b060e9f159f2d3",
+      "git": "f334b90f2ccddd338c6347eba51bb5e45c8b1c03"
+    },
+    {
+      "path": "prepare_background_web_v55_r1.py",
+      "bytes": 27543,
+      "sha256": "ec5bd19bbbf18ebb3427a814881c4850e48ac07b6f6e8fc60aa63f686d8b4602",
+      "git": "ef44f816287509d0a05b01b09f97275a452f7c4b"
+    },
+    {
+      "path": "run_background_web_v55_r1.py",
+      "bytes": 34153,
+      "sha256": "8effacd14e7a4fef765bae638f2858014dfc4f61b16e5d987aab3cf1c13b6167",
+      "git": "c858d645dc74c9cfa09649cc9a52fc652bfe1351"
+    }
+  ],
+  "limitation": [
+    "This review did not run Python, compile Android, replay a Binder/FD or operate a phone.",
+    "No new test gate was added or run. Current release/owner/installed facts are deliberately pending.",
+    "Full proof validation and preservation establish collection consistency only. Flight results and user task completion remain false until actual result provider and live evidence."
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "schema": "hepta.v54-web-helper5-release-admission-stage.v1",
+  "all_pass": true,
+  "error": null,
+  "phone_commands_executed": 0,
+  "model_invoked": false,
+  "business_verified": false,
+  "qualified": false,
+  "runtime_release_manifest_sealed": true,
+  "candidate_sha256": "652a25aa1a4e65fd9fe1debf300bb38b0e3ee4c8f0782fe59b07206e59b0f4e3",
+  "input_sha256": "b3bf4c62da235e7ce9cf810066d846830bb89fe8e5deac28c2a57c7131437036",
+  "source_literal_change_count": 13,
+  "inherited_original_28_and_5_cases": true,
+  "original_28_and_5_cases_reexecuted": false,
+  "prior_originals": [
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r2/STAGE-RESULT.json",
+      "bytes": 4724,
+      "sha256": "fd68471fb52dc128711e5dbdfe9fa67e65499d50bf462aa091c64f654231e524"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r2/host-contract/RESULT.json",
+      "bytes": 3083,
+      "sha256": "1a9bcbd1b565ebd05c38a817e1fbe69881654765ef7ec172b38e361160d033fc"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r3/RESULT.json",
+      "bytes": 2776,
+      "sha256": "2de3c3d77af087627a9fcc87b23b4edd2200972e8081d0eac2ef6d69f0cb85d7"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r3/REGRESSION-RESULT.json",
+      "bytes": 888,
+      "sha256": "a411b861ea2896aa15e87fc4f3ac2a04be2cf567b93b969c9e12322dee898d28"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r3/web_entry_support.py",
+      "bytes": 46629,
+      "sha256": "7d991a77165f2ce41150a2e8d8439984cd69476bf6eb0c973c2cca9f4902f2a2"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r3/prepare_background_web_v54_r1.py",
+      "bytes": 25174,
+      "sha256": "41faaf7c2ff1b328a9013831f0160eb3b16782d83e111668097ed5b27d292693"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r3/run_background_web_v54_r1.py",
+      "bytes": 32486,
+      "sha256": "8f4d100fc49f582b75712bad7252dfb40f1041043eb5074a8cdd74877de3497d"
+    }
+  ],
+  "started_wall_s": 1794476774.466666,
+  "stage_source": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r5/stage.py",
+    "bytes": 12057,
+    "sha256": "2d0632eec182baa63d04c94e106f57be4f9d32318eb03457eb2181dbdbab0c55"
+  },
+  "input": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r5/INPUT.json.gz",
+    "bytes": 38497,
+    "sha256": "9c5edc38709b9f137f063aafe948165f2c270e26d96b41b5fc320307cd2dfc71"
+  },
+  "candidate": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r5/CANDIDATE.json",
+    "bytes": 116276,
+    "sha256": "652a25aa1a4e65fd9fe1debf300bb38b0e3ee4c8f0782fe59b07206e59b0f4e3"
+  },
+  "manifest": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r5/RELEASE.json",
+    "bytes": 1723,
+    "sha256": "acfbdf07f671facf65f6919142f8e4646952ec2a55524f313b4a4a5c9bcad3c3"
+  },
+  "source_files": [
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r5/web_entry_support.py",
+      "bytes": 46629,
+      "sha256": "5cdb9623df1a69c42cc88634d91d9eeb97ad1c2740ee32b3cb3b0d821afcb0bd"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r5/prepare_background_web_v54_r1.py",
+      "bytes": 25182,
+      "sha256": "c60936bb7104252be29c6608170f56d573106c2c3ec506c3dc3a4f0164e91603"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r5/run_background_web_v54_r1.py",
+      "bytes": 32494,
+      "sha256": "1c89bc0faf8e3ad01475cc1eda5eaa7cefa6cc58b9081f22657ff5002a9d2dd7"
+    }
+  ],
+  "test_source": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r5/release_admission_test.py",
+    "bytes": 8442,
+    "sha256": "127806b61acc061fff2b29d448bbe20a13bb108b0ae0fd64ed2de3aafa5d3565"
+  },
+  "execution": {
+    "command": [
+      "/usr/bin/python3",
+      "-I",
+      "-B",
+      "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r5/release_admission_test.py",
+      "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r5",
+      "acfbdf07f671facf65f6919142f8e4646952ec2a55524f313b4a4a5c9bcad3c3"
+    ],
+    "exit_code": 0,
+    "timed_out": false,
+    "elapsed_seconds": 0.25785140600055456,
+    "stdout": {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r5/admission.stdout",
+      "bytes": 245,
+      "sha256": "ef5d1f3b28c2b17222a812d2c72275bd05e5246ef510f005ac80ca50ae174fb4"
+    },
+    "stderr": {
+      "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r5/admission.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "admission_result": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v54-r5/ADMISSION-RESULT.json",
+    "bytes": 3831,
+    "sha256": "cf530e5e3d48b2c5507a250dd90ba388ae22878f9b656dce13b1993b86c121fd"
+  },
+  "release": {
+    "manifest_sha256": "acfbdf07f671facf65f6919142f8e4646952ec2a55524f313b4a4a5c9bcad3c3",
+    "roles": {
+      "controller": {
+        "signed_result": {
+          "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/assembly-r1/RESULT.json",
+          "bytes": 15659,
+          "sha256": "eadc9dbb63b411015571a488377be6a8704c9f78415169a5164c8f13571f0f72"
+        },
+        "apk": {
+          "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/out/hepta-local-0.54.0.apk",
+          "bytes": 20985685,
+          "sha256": "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a"
+        },
+        "uid": 10481,
+        "version_code": 54,
+        "version_name": "0.54.0-natural-official-web",
+        "source_inventory_sha256": "8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d",
+        "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5"
+      },
+      "helper": {
+        "signed_result": {
+          "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/out/RESULT.json",
+          "bytes": 183755,
+          "sha256": "ad9fe0cb5ea808e6d563b398b45e79286a1158fc3db43ea2226f4fd0edd29580"
+        },
+        "apk": {
+          "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-r1/out/hepta-web-helper-0.5.0-v3.apk",
+          "bytes": 1381371,
+          "sha256": "b5e56ce0c2967489b55150c157f8289fdd82ad5b89caacc8b106013a7caeaf4f"
+        },
+        "uid": 10484,
+        "version_code": 5,
+        "version_name": "0.5.0-web-evidence-v3",
+        "source_inventory_sha256": "0cb6c955bb3c816aa10ae81c063a599d7ce4c9ce4ede5c166af5e480235751dc",
+        "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5"
+      }
+    }
+  },
+  "case_count": 8,
+  "original_inputs_unchanged": true,
+  "staged_inputs_unchanged": true,
+  "finished_wall_s": 1794476774.7835064
+}

@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.v53-cancel-followed-by-recovery-root-scoped-finding.v1",
+  "original_result": {
+    "bytes": 141943,
+    "sha256": "274323579331a407ddc697b2101bda360240713427be24eb727649071eccfbce"
+  },
+  "independent_result": {
+    "bytes": 35308,
+    "sha256": "4c2a847f2ddb8cc1995cafd8758e1f85fe12d4c4e40db507bf707f8a612407dc"
+  },
+  "root_visual_review_blob": "15356cdb3d62a10ee23aee611da921016075f140",
+  "task_id": "4320372daa4f4a2bba4f1fcf1297c352",
+  "preceding_cancel_task_id": "a1e8dcf1a7d8469b9a6d7984bd117f2e",
+  "same_installed_apk_sha256": "b906b5e091aa0bd567128745d7f757c19609fc320348345a562ff8229817cc7e",
+  "same_app_pid": 30185,
+  "same_model_configuration_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+  "new_model_worker_generation": "5ca399d93a914f63b88b6332ad5e2b3f",
+  "new_model_worker_pid": 3032,
+  "actual_model_run_id": "9f241e1ffdad4f878bbdea387cdb4018",
+  "local_accelerator": "HTP0",
+  "observed_normal_native_exit": 0,
+  "sdk_destroy_rc": 0,
+  "sdk_deinit_rc": 0,
+  "independent_original_replay_checks": {
+    "actual_native_parent_and_typed_save_list_reopen": true,
+    "actual_numeric_owned_display_policy": true,
+    "background_only_scope_has_no_main_user_actions": true,
+    "last_two_system_samples_release": true,
+    "native_original_collection_and_le32_replayed": true,
+    "new_recovery_worker_and_normal_exit_zero": true,
+    "original_final_owned_display_png": true,
+    "original_tree_and_runtime_sources_unchanged": true,
+    "system_samples_recomputed_from_raw_commands": true
+  },
+  "root_saw_full_original_png": true,
+  "visible_body_matches": true,
+  "typed_save_list_reopen_verified": true,
+  "sampled_system_release_verified": true,
+  "one_recovery_case_passed": true,
+  "original_collector_qualified": false,
+  "original_collector_exit_code": 2,
+  "original_collector_not_modified": true,
+  "main_user_settings_coexistence_applicable": false,
+  "persistent_database_row_identity_verified": false,
+  "continuous_gpu_npu_usage_measured": false,
+  "soak_stability_claimed": false,
+  "all_apps_or_all_business_workflows_verified": false,
+  "phone_actions_in_this_review": 0
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.main56-query-runner-external-fixture-decision.v1",
+  "status": "explicit_parent_decision_before_android",
+  "source_aggregate": {
+    "git_blob_sha": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c",
+    "bytes": 1427055,
+    "sha256": "c1cc7cc16eef4c3a34131ee719101a69db080b76e72c98f03248036fc6fd628f"
+  },
+  "source_count": 595,
+  "source_inventory_sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+  "actual_host_bare_map_sha256": "8d8cf9767861029b1cd4c6bb1143e07ee92296a475a44ae1979db79756233926",
+  "repository_runner": {
+    "path": "tests/web-flight/run_query_host_tests.py",
+    "git_blob_sha": "7b7a23db9302bc63b71f51a4d74d06c34183059d",
+    "bytes": 41005,
+    "sha256": "0f4d983138ed8bcf5f0b622ee4d4063048e83413eafe3586595521f5e1b7eb45",
+    "observed_source_guard": "len(PURE_PATHS)==45",
+    "actual_literal_members": 46,
+    "source_guard_description": "43 production",
+    "actual_production_members": 44,
+    "repository_runner_direct_execution_supported": false
+  },
+  "decision": {
+    "final_aggregate_changed": false,
+    "source_inventory_changed": false,
+    "existing_actual_core_web_focused_receipts_changed": false,
+    "production_217_inputs_changed": false,
+    "external_corrected_query_runner_owner": "android_code_audit",
+    "external_runner_derivation": "Exactly the count and corresponding description in one guard hunk:45 to46 and43 to44. All40 query cases/187 assertions remain original.",
+    "external_runner_actual_result": null,
+    "android_actual_result": null,
+    "repository_fix_deferred_until_later_source_successor": true,
+    "reason": "Core101 hashes but does not call this query runner; Web/focused gates use their own unchanged fixtures. Parent explicitly chose an external corrected test original, following the existing external Web-fixture boundary, to retain the already verified complete source tree."
+  },
+  "publication_requirements": [
+    "Include corrected runner complete raw, original/new pins, one-hunk derivation and actual query40/187 receipt as separately reachable evidence.",
+    "Android builder must execute the explicit corrected runner and signer must independently verify its derivation and result.",
+    "Do not describe the repository runner's original bytes as having passed query40; state the retained count-guard limitation.",
+    "Do not promote synthetic/host query evidence to actual phone Flight results."
+  ]
+}

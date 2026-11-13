@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "/usr/bin/adb",
+    "-H",
+    "127.0.0.1",
+    "-P",
+    "5037",
+    "-s",
+    "ZY22LS7WZT",
+    "shell",
+    "-T",
+    "dumpsys window windows"
+  ],
+  "started_wall_s": 1794382785.7469327,
+  "elapsed_s": 0.053000688552856445,
+  "exit_code": 0,
+  "client_timed_out": false,
+  "stdin_bytes": 0,
+  "stdin_sha256": null
+}

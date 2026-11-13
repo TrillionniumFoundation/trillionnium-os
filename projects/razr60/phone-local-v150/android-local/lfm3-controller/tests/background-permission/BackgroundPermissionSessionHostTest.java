@@ -33,11 +33,16 @@ public final class BackgroundPermissionSessionHostTest {
     }
     static final class Env implements AutoCloseable {
         final Path root;final Context context;final LocalModelEngine model;final AtomicLong clock=new AtomicLong(1000);final AtomicInteger launches=new AtomicInteger();
-        BackgroundPermissionSession session;Child child;boolean delayed,failResultFsync,failResultDirectory;byte[] stdout="0\n".getBytes(StandardCharsets.US_ASCII);
+        ExecutorService executor;BackgroundPermissionSession session;Child child;boolean delayed,failResultFsync,failResultDirectory;byte[] stdout="0\n".getBytes(StandardCharsets.US_ASCII);
         Env()throws Exception{LocalModelEngine.fixtureReset();LocalProbeApplication.permission=null;Os.failFsyncPath=null;android.os.Process.uid=10123;
             root=Files.createTempDirectory("hepta-permission-session-");context=new Context(root.toFile());model=new LocalModelEngine(context);}
-        void make(){session=new BackgroundPermissionSession(context,model,()->{launches.incrementAndGet();child=new Child(clock,delayed,stdout);if(failResultFsync||failResultDirectory){File directory=root.resolve("background-permission-runs").toFile().listFiles()[0];Os.failFsyncPath=failResultFsync?new File(directory,"result.json").getPath():directory.getPath();}return child;},clock::get,Executors.newSingleThreadExecutor());LocalProbeApplication.permission=session;}
+        void make(){executor=Executors.newSingleThreadExecutor();session=new BackgroundPermissionSession(context,model,()->{launches.incrementAndGet();child=new Child(clock,delayed,stdout);if(failResultFsync||failResultDirectory){File directory=root.resolve("background-permission-runs").toFile().listFiles()[0];Os.failFsyncPath=failResultFsync?new File(directory,"result.json").getPath():directory.getPath();}return child;},clock::get,executor);LocalProbeApplication.permission=session;}
         void await(boolean blocked)throws Exception{long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(8);while(System.nanoTime()<end){if(blocked?session.isBlocked():!session.isRunning())return;Thread.sleep(5);}throw new AssertionError("session did not reach expected terminal");}
+        void awaitExecution(boolean blocked)throws Exception{
+            long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(8);await(blocked);
+            long remaining=end-System.nanoTime();check(remaining>0,"original terminal wait bound exceeded");
+            executor.submit(()->{}).get(remaining,TimeUnit.NANOSECONDS);
+        }
         Map<String,Object> marker()throws Exception{return MobiMindContract.jsonObject(Files.readAllBytes(root.resolve("background-permission-session.json")));}
         void write(String name,byte[] value)throws Exception{MobiMindPrivateFiles.writeNew(root.resolve(name).toFile(),value);}
         public void close(){if(child!=null)child.finish();if(session!=null)session.close();model.close();LocalProbeApplication.permission=null;LocalModelEngine.fixtureReset();Os.failFsyncPath=null;android.os.Process.uid=10123;}
@@ -80,7 +85,7 @@ public final class BackgroundPermissionSessionHostTest {
             check(e.launches.get()==0&&e.model.isBusy(),"failure before durable reservation cannot launch or fabricate release");
         }});
         for(boolean directory:new boolean[]{false,true})test("terminal_"+(directory?"directory":"file")+"_fsync_failure_cannot_release_or_claim_permission",()->{try(Env e=new Env()){
-            e.failResultDirectory=directory;e.failResultFsync=!directory;e.make();e.session.startFromOwnerButton();e.await(true);
+            e.failResultDirectory=directory;e.failResultFsync=!directory;e.make();e.session.startFromOwnerButton();e.awaitExecution(true);
             check(e.launches.get()==1&&!e.child.isAlive()&&e.model.isBusy()&&e.session.isBlocked(),"owned exit is known but durable terminal failed, retain lease");
             check(e.session.state().contains("未认定已授权"),"no false success UI");
         }});

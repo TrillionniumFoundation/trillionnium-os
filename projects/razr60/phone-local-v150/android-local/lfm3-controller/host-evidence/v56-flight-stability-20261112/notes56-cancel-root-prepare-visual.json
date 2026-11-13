@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.root-notes56-cancel-preparation-review.v1",
+  "preparation": {
+    "git_blob": "5d351763843203fc36f2b08b98f01567f26661ca",
+    "bytes": 49729,
+    "sha256": "74034c14f0986273e187179aed78a600f760932e388f7dd0e411c2db3e4cc283"
+  },
+  "original_png": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-cancel-prepare-r1/prepared-main.png",
+    "bytes": 200381,
+    "sha256": "8eb8ffd23dbf09a08075512707be3c2cb1158b385535013b91bd65d1bfa0e234",
+    "version": "66306:61893145:200381:1794522998211272190:1794522998211272190",
+    "dimensions": [
+      1224,
+      2992
+    ],
+    "whole_original_image_viewed": true
+  },
+  "xml": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-cancel-prepare-r1/start-viewport-00.xml",
+    "bytes": 7871,
+    "sha256": "7affc19dd7b3313305e265dc1e734329b71df0921dfc8f723ce4a0cc341f5d07"
+  },
+  "window": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v56-lfm3-cancel-prepare-r1/prepared-window.txt",
+    "bytes": 37532,
+    "sha256": "d2e4ae28165af7994e3e98551f17a39527a382a6f585683d638313602b19d813"
+  },
+  "instruction": "记一下，Hepta-v56r1-c022ac662c8d 明天下午3点看牙，带上检查资料。",
+  "instruction_sha256": "60fd3bdf2dcd327e8d3a6a48d89ed0fad88d305c89d05f3e9bd9d2e3d62433a0",
+  "background_mode_checked": true,
+  "saved_scope_count": 2,
+  "automatic_target_visible": "Moto 笔记",
+  "start": {
+    "point": [
+      180,
+      1114
+    ],
+    "bounds": [
+      48,
+      1042,
+      312,
+      1186
+    ],
+    "enabled": true
+  },
+  "stop": {
+    "point": [
+      444,
+      1114
+    ],
+    "bounds": [
+      312,
+      1042,
+      576,
+      1186
+    ],
+    "enabled_during_preparation": false
+  },
+  "baseline_task": "b5b05eb09df64032ab4aeb1d5707b85b",
+  "baseline_idle_and_cleanup_known": true,
+  "formal_service_binding_verified": true,
+  "xml_png_atomic": false,
+  "header_status_note": "Final XML retained 请启用无障碍 while later original PNG showed 无障碍已启用; exact active service binding independently verified. Start and Stop geometry and idle state agree.",
+  "task_started": false,
+  "stop_sent": false
+}

@@ -1,0 +1,1672 @@
+{
+  "schema": "hepta.main58-android-pending-source-handoff.v1",
+  "status": "awaiting_actual_focused58_result_and_host_reconnection",
+  "source": {
+    "bytes": 90099,
+    "sha256": "a933105576d7012b74386c934a7f1c9184fa9c01e87ebf9c13fc728ce54dfa51",
+    "git_blob_sha": "a8d1193fcdae2fd6262f668eb584d773fe42a9db"
+  },
+  "base": {
+    "bytes": 113856,
+    "sha256": "ac4b54eb0815bce791a99ae3e01de8077808fe55b5eabc58488fd1eba8126331",
+    "git_blob_sha": "bd30b22cf1a151710318a1e768be63f7a75b6bd8"
+  },
+  "input": {
+    "bytes": 1605061,
+    "sha256": "120cc1714b837e19d56acc4138bcb2194124b1100293f6bf2a8f71c32fb0ed33",
+    "git_blob_sha": "003656bcba9f8a9e1212deabcc978116648783e4"
+  },
+  "original_input": {
+    "bytes": 1598487,
+    "sha256": "d7174a964b506448c44f627e250cd662d953a94005790aad9ad7297671f5c13d",
+    "git_blob_sha": "e665a7f0cbf860e6e64a2e3c3ff8b1e2eea48fc8"
+  },
+  "input_derivation": {
+    "replace_only": [
+      "schema",
+      "aggregate_raw_utf8",
+      "expected_compiler_inputs"
+    ],
+    "schema": "hepta.main58-pocket4-java-android-input.v1",
+    "aggregate": {
+      "git": "94ca147166c4e4c7faa5bd32085c5431eb36f4b1",
+      "bytes": 1465984,
+      "sha256": "600ff7c4198fc83d4e93399fc6bf039800805f4458406b4182952ddcff89b95b"
+    },
+    "compiler_inputs": {
+      "bytes": 34376,
+      "sha256": "b64d1a78f41ffa78c80c3d5145b012f0625e842725ceb83abbd8eec5bb63c4c8"
+    },
+    "original57_serialization_reproduces_full_pin": true,
+    "whole58_json_full_sha_verified": true
+  },
+  "actual_predecessor_build": {
+    "bytes": 244800,
+    "sha256": "5dc739a182bda8065f2bda04c1da7e44c43b74307f76f582ba6cc09c371475f1",
+    "git_blob_sha": "790f3f21acd920bd1798744d8fa8c152a649fd86"
+  },
+  "actual_predecessor_signed": {
+    "bytes": 35104,
+    "sha256": "9deb86d5ba6b066bf250a432559bdc1fcee1138596af3f40133943c6259dd60c",
+    "git_blob_sha": "5fcab14b2f4fc52fd04a69a3765620761a216422"
+  },
+  "config_before": {
+    "schema": "hepta.main57-pocket4-java-native-reuse-config.v1",
+    "root": "/home/alex/hepta-local-007f-20261111/v57-main-p4-android-r1",
+    "base_root": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4",
+    "aggregate": {
+      "git": "517e61599073eb264c5e52871570d49e7af2d798",
+      "bytes": 1459826,
+      "sha256": "b98bb0f97ad5b25423387c4e3f8734aec7d4f8c2d1044335af039e0dd1c57cc3"
+    },
+    "decoded_input": {
+      "bytes": 1598487,
+      "sha256": "d7174a964b506448c44f627e250cd662d953a94005790aad9ad7297671f5c13d"
+    },
+    "source_file_count": 595,
+    "overlay_file_count": 40,
+    "compiler_input_count": 217,
+    "java_source_count": 115,
+    "source_inventory_sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6",
+    "base_source_commit": "42d3a0f447807659c0f78c8273edee01dd1b734f",
+    "base_source_inventory_sha256": "8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d",
+    "base_signed_result": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/assembly-r1/RESULT.json",
+      "bytes": 15659,
+      "sha256": "eadc9dbb63b411015571a488377be6a8704c9f78415169a5164c8f13571f0f72"
+    },
+    "base_apk": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/out/hepta-local-0.54.0.apk",
+      "bytes": 20985685,
+      "sha256": "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a"
+    },
+    "base_archive": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/mac-artifacts.tar.gz",
+      "bytes": 562137,
+      "sha256": "17da0d3a86bd8505daa07e9895643b7de2d2877768fbaf9c8abd8475f8c6bcc2"
+    },
+    "base_mac_stage": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/release-evidence-r1/MAC-STAGE-ORIGINAL.json",
+      "bytes": 28841,
+      "sha256": "a037b49f05ea48caccb2902b95bbb2314a5f767e230138dd14ae3a16851ee4b2"
+    },
+    "base_compiler": {
+      "bytes": 42341,
+      "sha256": "51265398de2dcc4ccefb5aa0e24ea91770d8c9f3b54248f3d88068e04a4436cc"
+    },
+    "base_build_stdout": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/release-evidence-r1/mac/original-android-native-build.stdout",
+      "bytes": 121423,
+      "sha256": "ce47720cad1c09c685657b0d0c801281552cc69a0d15679cb5ffd24ec992e422"
+    },
+    "worker": {
+      "bytes": 59952,
+      "sha256": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5"
+    },
+    "generated_worker_sha256": "77b914eae46ea000d3c955628c35f6e96a715a4a14da3eb075923d2e6024bbb0",
+    "native_pins": {
+      "libMNN.so": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d",
+      "libc++_shared.so": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754",
+      "libgeniex.so": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56",
+      "libgeniex_plugin_llama_cpp.so": "cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a",
+      "libggml-base.so": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40",
+      "libggml-cpu.so": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b",
+      "libggml-hexagon.so": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f",
+      "libggml-htp-v79.so": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5",
+      "libggml-opencl.so": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875",
+      "libggml.so": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149",
+      "libhepta_local_runner.so": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+      "libhepta_mobimind_runner.so": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020",
+      "libhepta_ui_venus_runner.so": "5fa2dcae05fb649157d96481c5890c157301c76dab3522fcabcbe01b9b0d8551",
+      "libllama-common.so": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122",
+      "libllama.so": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835",
+      "libmtmd.so": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d",
+      "libomp.so": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76"
+    },
+    "identity_root": "/home/alex/hepta-local-007f-20261111/v55-installed-apk-identity-host-r1",
+    "identity_result": {
+      "bytes": 5727,
+      "sha256": "52762ada64c63bc58749d62e9bd183b586c40349f0e10082ded1c308d82df4f7"
+    },
+    "identity_stage": {
+      "bytes": 14247,
+      "sha256": "17f95a5eecf3716c48228c4086e2d428b4e5c2c57c77707116673d92820d9bf8"
+    },
+    "identity_input": {
+      "bytes": 36100,
+      "sha256": "bfcee1680b7e3c4c0933aed26bfce6320b64ae7803347f3ddfc56616067b8176"
+    },
+    "identity_source": {
+      "bytes": 9255,
+      "sha256": "e3ca49ba910ff1bb26f50452e1f718313dbce51df9d77c8b107867351178e1d9"
+    },
+    "identity_generated": {
+      "bytes": 14192,
+      "sha256": "38ec317c6344665e06c73c3c50816cbfa4e96ef3ed69b6a40dd38d525ca26dd7"
+    },
+    "focused_root": "/home/alex/hepta-local-007f-20261111/v57-main-wire4-host-p4-r1",
+    "focused_result": {
+      "bytes": 45584,
+      "sha256": "7e1b16ba42b2fdde52f7e18bc94d72e3efa673160ab2c1896017ee0e8c51bb56"
+    },
+    "focused_input": {
+      "bytes": 1310324,
+      "sha256": "223868f5d8adece424e29002952921342ac68a80d91462ca2fa9244bf5e5a1b5"
+    },
+    "focused_stage": {
+      "bytes": 74469,
+      "sha256": "c0583de699bdba4d6b9963e8ae57851208362c313a8773909a971b690a683f53"
+    },
+    "calendar_dom": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/release-evidence-r1/fixtures/calendar-stable.json",
+      "bytes": 386724,
+      "sha256": "f61fd86cb24b212c3434bb5eda1a4e29b65c06c22d3fc4238366f31a324dd7fa"
+    },
+    "calendar_ax": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/release-evidence-r1/fixtures/calendar-stable.xml",
+      "bytes": 178888,
+      "sha256": "59d753e32edd620eb2e1fb0947c898df89eb7bf8dbc63dc4138a1636272b82ec"
+    },
+    "query_runner": {
+      "bytes": 41005,
+      "sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10"
+    },
+    "jdk": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64",
+    "tools": {
+      "java": {
+        "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "bytes": 14544,
+        "sha256": "bb70208200cb6538b877d80478141194a716edb591f4910ec106589291e99196"
+      },
+      "javac": {
+        "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+        "bytes": 14592,
+        "sha256": "2aaf03d13aeb80b8269696f2dcd9f4937d7366bbc68f91fdc703cf157e8f39c4"
+      },
+      "json": {
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/host-json/json-20240303.jar",
+        "bytes": 78332,
+        "sha256": "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"
+      },
+      "android_jar": {
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/sdk/android-34/android.jar",
+        "bytes": 26361808,
+        "sha256": "6cea1df3efb77103ac3e2beb9bf4718964b0e0869ab16d39d29d5cbae1c147ad"
+      },
+      "r8": {
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/tools/r8-8.13.17.jar",
+        "bytes": 18279079,
+        "sha256": "d31fd0dc751d48740009cdd9a485126acb1d0d14c59b9f05579479940f4adf74"
+      },
+      "aapt2": {
+        "path": "/usr/lib/android-sdk/build-tools/debian/aapt2",
+        "bytes": 54512,
+        "sha256": "0e9ff92342040acdfd03e8708512f4e02353e3ca0a2b85ea2950da659110b009"
+      }
+    },
+    "sdk_download_root": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2",
+    "sdk_download_result": {
+      "bytes": 64222,
+      "sha256": "5300257b246f73bc410028d8e1e61f18381e6f9b4a4406661d00b7d3d128eab6"
+    },
+    "original_aggregate": {
+      "git": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c",
+      "bytes": 1427055,
+      "sha256": "c1cc7cc16eef4c3a34131ee719101a69db080b76e72c98f03248036fc6fd628f"
+    },
+    "original_decoded_input": {
+      "bytes": 1564155,
+      "sha256": "1ef8ac7725aa8ed15ac628e6471b4469a75784f2050fdb442443f065fb132459"
+    },
+    "original_source_inventory_sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+    "materialized_root": "/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1",
+    "prior_build_root": "/home/alex/hepta-local-007f-20261111/v56-main-p4-android-r1",
+    "prior_build_result": {
+      "bytes": 203372,
+      "sha256": "b557a981d07fb5a65c39da4abbf0474559035a875831bec820c6b4a55fcc7ece"
+    },
+    "prior_build_stage": {
+      "bytes": 206118,
+      "sha256": "85e530eebbc859dcea83955cd2f62153b2ab0414da8d7632dd7027eee45091f2",
+      "git_blob_sha": "c4881a3645078736df30645c9cb0040837faee94"
+    },
+    "prior_compiler_inputs": {
+      "bytes": 34376,
+      "sha256": "2b9e1d971a60d09df7303f050cef40d4b254b016a6f68c272035ec11ef854071"
+    },
+    "compiler_inputs": {
+      "bytes": 34376,
+      "sha256": "54e95d6949154c631302241f76ca3518650ac297166210056f7e2f7740fc4370"
+    },
+    "source_deltas": [
+      {
+        "path": "AndroidManifest.xml",
+        "base": {
+          "bytes": 2582,
+          "sha256": "c372aebecde61283232394ea687045992c68b689ab954ad523bc5569f96389bc",
+          "git_blob_sha": "24d84378527e48f8090129609da7f8e66f362b45"
+        },
+        "candidate": {
+          "bytes": 2594,
+          "sha256": "71aca282ccdd9fb1eb4bb611296418f7f80502bcb7a3b9bcdef98460cae13c73",
+          "git_blob_sha": "92012a454023ca82eaaa0b63384208fb86efb5d4"
+        },
+        "ordered_patches": [
+          {
+            "before": "android:versionCode=\"56\"",
+            "after": "android:versionCode=\"57\"",
+            "count": 1
+          },
+          {
+            "before": "android:versionName=\"0.56.0-flight-stability\"",
+            "after": "android:versionName=\"0.57.0-flight-observation-stability\"",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+        "base": {
+          "bytes": 129287,
+          "sha256": "53dc2765f2f0504a4ea16618a2e0b44c0d443dceeb3834f030098ae2cea26fba",
+          "git_blob_sha": "6200e5325ec1397abd73e9bfa99235c7b063935d"
+        },
+        "candidate": {
+          "bytes": 144883,
+          "sha256": "f9704060dba7a6fa4604b8e26d9f4eed956ae684a1221b3980714ac6d1a53afb",
+          "git_blob_sha": "8f969cb0c75f8c942099271181762b38d9ba3160"
+        },
+        "ordered_patches": [
+          {
+            "before": "    public interface ObservationCallback {",
+            "after": "    /**\n     * Service-created, read-only source for one observation bracket. It owns an\n     * independent copy of the original target, never the old Graph or its refs.\n     */\n    static final class FlightObservationSnapshot implements AutoCloseable {\n        private final HeptaAccessibilityService service;private final WebFlightSession web;\n        private final BackgroundSession background;private final QualificationScopeConfig.Bound scope;\n        private final TaskAuthorization.Gate authorization;private final PhoneObservation frame;\n        private final NodeRef original;private final String targetPath,frameRaw,nativeRaw,ownerSha,selectionRaw;\n        private final long retainedAt;private volatile boolean closed;\n        private FlightObservationSnapshot(HeptaAccessibilityService service,WebFlightSession web,\n                BackgroundSession background,QualificationScopeConfig.Bound scope,TaskAuthorization.Gate authorization,\n                PhoneObservation frame,NodeRef original,String targetPath,String frameRaw,String nativeRaw,\n                String ownerSha,String selectionRaw,long at){\n            this.service=service;this.web=web;this.background=background;this.scope=scope;this.authorization=authorization;\n            this.frame=frame;this.original=original;this.targetPath=targetPath;this.frameRaw=frameRaw;this.nativeRaw=nativeRaw;\n            this.ownerSha=ownerSha;this.selectionRaw=selectionRaw;retainedAt=at;\n        }\n        @Override public void close(){\n            synchronized(this){if(closed)return;closed=true;}\n            Runnable release=new Runnable(){public void run(){original.node.recycle();}};\n            if(Looper.myLooper()==Looper.getMainLooper())release.run();\n            else if(!service.main.post(release)){\n                // A stopped main looper cannot use this closed copy again.\n                release.run();throw new IllegalStateException(\"native observation copy release could not be posted\");\n            }\n        }\n    }\n    public interface ObservationCallback {",
+            "count": 1
+          },
+          {
+            "before": "        NodeRef(AccessibilityNodeInfo node,ObservedChildText.Result childText,ObservedScrollActions scrollActions){",
+            "after": "        private NodeRef(NodeRef original){\n            // Preserve the original observed signatures. Never recalculate them\n            // from a later refresh while pretending they were the source frame.\n            signature=original.signature;appTreeSignature=original.appTreeSignature;\n            imeEnter=original.imeEnter;inputTextSha256=original.inputTextSha256;\n            node=AccessibilityNodeInfo.obtain(original.node);\n        }\n        NodeRef(AccessibilityNodeInfo node,ObservedChildText.Result childText,ObservedScrollActions scrollActions){",
+            "count": 1
+          },
+          {
+            "before": "    private static String nodeSignature(AccessibilityNodeInfo node,ObservedChildText.Result childText){",
+            "after": "    /** Worker waits without holding the service monitor; every graph read runs on main. */\n    private final class FlightObservationRead<T> implements Runnable {\n        private final java.util.concurrent.Callable<T> read;private final Cancellation cancel;private final long deadline;\n        private boolean done,abandoned;private T value;private Throwable error;\n        FlightObservationRead(java.util.concurrent.Callable<T> read,Cancellation cancel,long deadline){\n            this.read=read;this.cancel=cancel;this.deadline=deadline;\n        }\n        private void requireOpen(){\n            if(cancel.isCancelled()||SystemClock.elapsedRealtime()>=deadline)\n                throw new IllegalStateException(\"readonly Flight observation cancelled or expired\");\n        }\n        @Override public void run(){\n            synchronized(this){if(abandoned){done=true;notifyAll();return;}}\n            T actual=null;Throwable failure=null;\n            try{requireOpen();actual=read.call();requireOpen();}catch(Throwable refused){failure=refused;}\n            finally{\n                synchronized(this){\n                    try{if(abandoned||failure!=null)releaseValue(actual);else value=actual;}\n                    catch(Throwable releaseFailure){if(failure==null)failure=releaseFailure;else failure.addSuppressed(releaseFailure);}\n                    error=failure;done=true;notifyAll();\n                }\n            }\n        }\n        private void releaseValue(Object result){\n            if(result instanceof FlightObservationSnapshot)((FlightObservationSnapshot)result).close();\n        }\n        T await()throws Exception{\n            boolean claimed=false;\n            try{\n                synchronized(this){\n                    while(!done){requireOpen();wait(Math.min(50,Math.max(1,deadline-SystemClock.elapsedRealtime())));}\n                    requireOpen();\n                    if(error instanceof Exception)throw (Exception)error;\n                    if(error instanceof Error)throw (Error)error;\n                    T result=value;value=null;claimed=true;return result;\n                }\n            }finally{\n                if(!claimed)synchronized(this){abandoned=true;releaseValue(value);value=null;}\n            }\n        }\n    }\n    private <T>T readFlightObservationOnMain(java.util.concurrent.Callable<T> read,Cancellation cancel,long deadline)throws Exception{\n        if(Looper.myLooper()==Looper.getMainLooper())throw new IllegalStateException(\"Flight observation waits only on its worker\");\n        FlightObservationRead<T> call=new FlightObservationRead<T>(read,cancel,deadline);\n        if(!main.post(call))throw new IllegalStateException(\"readonly Flight observation main looper unavailable\");\n        return call.await();\n    }\n    private Graph requireFlightObservationCurrent(WebFlightSession web,PhoneObservation frame,Cancellation cancel)throws Exception{\n        if(Looper.myLooper()!=Looper.getMainLooper()||web==null||web.goal==null||taskWeb!=web\n                ||frame==null||frame!=current||currentGraph==null||cancel.isCancelled()||!owns(web.taskId)||locked())\n            throw new StaleObservation(\"Flight只读观察已退休或不是当前主线程图\");\n        QualificationScopeConfig.Bound scope=scopeFor(web.taskId);scope.verifyUnchanged();scope.requireReady();\n        TaskAuthorization.Gate authorization=authorizationFor(web.taskId);\n        if(authorization!=web.authorization)throw new StaleObservation(\"Flight只读观察授权已被替换\");\n        authorization.ready();requireBackgroundObservation(web.taskId,frame);\n        if(backgroundFor(web.taskId)==null)throw new StaleObservation(\"Flight只读观察没有实际后台租约\");\n        return currentGraph;\n    }\n    private static boolean completeFlightGraph(Graph graph){\n        return graph!=null&&!graph.truncated&&graph.collectionStats!=null&&!graph.collectionStats.truncated()\n                &&graph.collectionStats.pending==0&&graph.collectionStats.childSlotsOmitted==0\n                &&graph.flightNativeSnapshotComplete&&graph.flightNativeSnapshot!=null\n                &&graph.flightNativeSnapshot.length()==graph.collectionStats.visited\n                &&graph.state.imeVisibility==ImeVisibility.HIDDEN;\n    }\n    FlightObservationSnapshot retainFlightObservation(final WebFlightSession web,final PhoneObservation frame,\n            final Cancellation cancel,final long deadline)throws Exception{\n        return readFlightObservationOnMain(new java.util.concurrent.Callable<FlightObservationSnapshot>(){\n            public FlightObservationSnapshot call()throws Exception{\n                Graph graph=requireFlightObservationCurrent(web,frame,cancel);\n                if(!completeFlightGraph(graph))return null;\n                PhoneObservation.Node target=null;\n                for(PhoneObservation.Node row:graph.rows)if(\"android.widget.Button\".equals(row.className)\n                        &&WebFlightNativeStability.LABEL.equals(row.label())&&row.nativeTreePath!=null){\n                    if(target!=null)return null;target=row;\n                }\n                if(target==null)return null;\n                NodeRef ref=graph.refs.get(target.id);if(ref==null)return null;\n                String frameRaw=org.trillionnium.hepta.webprotocol.WebDomCanonical.canonical(frame.toJson());\n                String nativeRaw=org.trillionnium.hepta.webprotocol.WebDomCanonical.canonical(graph.flightNativeSnapshot);\n                BackgroundSession background=backgroundFor(web.taskId);background.requireActive();\n                return new FlightObservationSnapshot(HeptaAccessibilityService.this,web,background,scopeFor(web.taskId),\n                        authorizationFor(web.taskId),frame,new NodeRef(ref),target.nativeTreePath,frameRaw,nativeRaw,\n                        graph.backgroundOwnerSha,graph.backgroundSelectionRaw,SystemClock.elapsedRealtime());\n            }\n        },cancel,deadline);\n    }\n    JSONObject verifyFlightObservationBracket(final WebFlightSession web,final FlightObservationSnapshot source,\n            final PhoneObservation after,final WebEvidenceReceipt first,final WebEvidenceReceipt last,\n            final Cancellation cancel,final long deadline)throws Exception{\n        return readFlightObservationOnMain(new java.util.concurrent.Callable<JSONObject>(){\n            public JSONObject call()throws Exception{\n                long started=SystemClock.elapsedRealtime();Graph observed=requireFlightObservationCurrent(web,after,cancel),liveGraph=null;\n                if(source==null||source.service!=HeptaAccessibilityService.this||source.web!=web||source.closed\n                        ||source.background!=backgroundFor(web.taskId)||source.scope!=scopeFor(web.taskId)\n                        ||source.authorization!=authorizationFor(web.taskId)||!completeFlightGraph(observed)\n                        ||!java.util.Objects.equals(source.ownerSha,observed.backgroundOwnerSha)\n                        ||!java.util.Objects.equals(source.selectionRaw,observed.backgroundSelectionRaw))\n                    throw new StaleObservation(\"Flight只读观察来源不属于当前任务或完整原生图\");\n                if(!\"captured\".equals(first.status)||!\"captured\".equals(last.status)\n                        ||!first.bindingSha.equals(last.bindingSha)||source.frame.capturedElapsedMillis>source.retainedAt\n                        ||source.retainedAt>first.started||first.ended>after.capturedElapsedMillis\n                        ||after.capturedElapsedMillis>last.started||last.ended>started)\n                    throw new StaleObservation(\"Flight只读观察与真实capture时序不同\");\n                JSONObject firstCapture=first.capture(),lastCapture=last.capture(),binding=firstCapture.getJSONObject(\"binding\");\n                if(!web.taskId.equals(binding.getString(\"task_id\"))||!source.ownerSha.equals(binding.getString(\"owner_sha256\"))\n                        ||!source.authorization.authorization.sha256.equals(\n                                binding.getJSONObject(\"authorization\").getString(\"authorization_sha256\")))\n                    throw new StaleObservation(\"Flight只读capture的任务或OWNER来源不同\");\n                JSONArray beforeNative=new JSONArray(source.nativeRaw);\n                JSONObject proof=WebFlightNativeStability.compareObservationBracket(web.taskId,new JSONObject(source.frameRaw),\n                        beforeNative,after.toJson(),observed.flightNativeSnapshot,firstCapture,lastCapture,source.targetPath);\n                try{\n                    liveGraph=readGraph();\n                    if(!completeFlightGraph(liveGraph)||!observed.sameWindow(liveGraph)\n                            ||!observed.windowMetadata.bindFreshness(\"\").equals(liveGraph.windowMetadata.bindFreshness(\"\")))\n                        throw new StaleObservation(\"Flight只读观察最后完整图或窗口已变化\");\n                    JSONObject liveProof=WebFlightNativeStability.compareNative(observed.flightNativeSnapshot,\n                            liveGraph.flightNativeSnapshot,source.targetPath);\n                    JSONArray observedRows=new JSONArray(),liveRows=new JSONArray();\n                    for(PhoneObservation.Node row:observed.rows)observedRows.put(row.json());\n                    for(PhoneObservation.Node row:liveGraph.rows)liveRows.put(row.json());\n                    liveProof.put(\"retained_node_pairing\",WebFlightNativeStability.compareRetained(observedRows,liveRows,\n                            liveProof.getString(\"native_slider_path\")));\n                    NodeRef observedTarget=null,liveTarget=null;\n                    for(PhoneObservation.Node row:observed.rows)if(source.targetPath.equals(row.nativeTreePath)){\n                        if(observedTarget!=null)throw new StaleObservation(\"Flight新观察目标不唯一\");observedTarget=observed.refs.get(row.id);\n                    }\n                    for(PhoneObservation.Node row:liveGraph.rows)if(source.targetPath.equals(row.nativeTreePath)){\n                        if(liveTarget!=null)throw new StaleObservation(\"Flight最后目标不唯一\");liveTarget=liveGraph.refs.get(row.id);\n                    }\n                    if(observedTarget==null||liveTarget==null||!source.original.node.equals(observedTarget.node)\n                            ||!source.original.node.equals(liveTarget.node)\n                            ||!source.original.signature.equals(observedTarget.signature)\n                            ||!source.original.signature.equals(liveTarget.signature))\n                        throw new StaleObservation(\"Flight原始目标身份或签名已变化\");\n                    Rect box=new Rect();source.original.node.getBoundsInScreen(box);\n                    int[] region={box.left,box.top,box.right,box.bottom};\n                    JSONObject windowsBefore=readRegionWindows(after,first.displayId,first.windowId,region);\n                    refreshFlightTargetChain(source.background,after,source.original,source.targetPath,beforeNative);\n                    if(!source.original.signature.equals(nodeSignature(source.original.node,observedChildText(source.original.node,true))))\n                        throw new StaleObservation(\"Flight观察目标最后刷新签名已变化\");\n                    JSONObject windowsAfter=readRegionWindows(after,first.displayId,first.windowId,region);\n                    if(!org.trillionnium.hepta.webprotocol.WebDomCanonical.same(windowsBefore,windowsAfter))\n                        throw new StaleObservation(\"Flight观察期间交互窗口覆盖元数据变化\");\n                    if(requireFlightObservationCurrent(web,after,cancel)!=observed||source.closed\n                            ||source.background!=backgroundFor(web.taskId)||source.scope!=scopeFor(web.taskId)\n                            ||source.authorization!=authorizationFor(web.taskId)||SystemClock.elapsedRealtime()>=deadline)\n                        throw new StaleObservation(\"Flight观察已过期或退休\");\n                    return proof.put(\"source\",\"private_service_snapshot_and_live_complete_native_traversal\")\n                            .put(\"original_target_obtained_before_graph_recycling\",true)\n                            .put(\"original_node_ref_identity_preserved\",true).put(\"actual_ancestor_chain_refreshed\",true)\n                            .put(\"source_retained_elapsed_ms\",source.retainedAt)\n                            .put(\"first_ax_captured_elapsed_ms\",source.frame.capturedElapsedMillis)\n                            .put(\"last_ax_captured_elapsed_ms\",after.capturedElapsedMillis)\n                            .put(\"started_elapsed_ms\",started).put(\"checked_elapsed_ms\",SystemClock.elapsedRealtime())\n                            .put(\"live_native_recheck\",liveProof).put(\"interactive_windows_before\",windowsBefore)\n                            .put(\"interactive_windows_after\",windowsAfter).put(\"two_interactive_window_reads_equal\",true)\n                            .put(\"native_invocation_entered\",false);\n                }finally{if(liveGraph!=null)liveGraph.close();}\n            }\n        },cancel,deadline);\n    }\n    private static String nodeSignature(AccessibilityNodeInfo node,ObservedChildText.Result childText){",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
+        "base": {
+          "bytes": 23349,
+          "sha256": "503078f251696fb542912e5270efca13439ebcece4db8b3473e7fcb543b4fc2d",
+          "git_blob_sha": "5d41e41c7e6c447f4dba598a12f21673c168603b"
+        },
+        "candidate": {
+          "bytes": 32168,
+          "sha256": "badc1a68903a126d549e56d202ed01a01fc17c99556b5b50dc88b8729d4e397a",
+          "git_blob_sha": "4c375bd41f0a2442e6789f947e15cb119d78266e"
+        },
+        "ordered_patches": [
+          {
+            "before": "    /** Complete DOM comparison; only this observed eight-image slider may move. */",
+            "after": "\n    /**\n     * Read-only observation admission for the exact compiled homepage. Callers\n     * must supply complete native traversals from the private service snapshot;\n     * retained rows alone can never satisfy this predicate. This produces no\n     * action Permit, and does not authenticate a caller-supplied JSON record.\n     */\n    static JSONObject compareObservationBracket(String taskId,JSONObject beforeFrame,JSONArray beforeNative,\n            JSONObject afterFrame,JSONArray afterNative,JSONObject first,JSONObject last,String targetPath)throws Exception{\n        need(taskId!=null&&!taskId.isEmpty()&&beforeFrame!=null&&afterFrame!=null,\n                \"actual task and both original frames required\");\n        requireCompleteObservation(beforeFrame,beforeNative);requireCompleteObservation(afterFrame,afterNative);\n        need(WebDomCanonical.same(without(beforeFrame,\"observation_id\",\"screen_sha256\",\"app_tree_sha256\",\n                        \"observation_state_sha256\",\"nodes\",\"collection\"),\n                without(afterFrame,\"observation_id\",\"screen_sha256\",\"app_tree_sha256\",\n                        \"observation_state_sha256\",\"nodes\",\"collection\")),\n                \"observation window, Selection, IME or other frame metadata changed\");\n        need(WebDomCanonical.same(without(beforeFrame.getJSONObject(\"collection\"),\"elapsed_ms\"),\n                        without(afterFrame.getJSONObject(\"collection\"),\"elapsed_ms\")),\n                \"observation traversal counters changed\");\n        JSONObject binding=first.getJSONObject(\"binding\"),bg=binding.getJSONObject(\"background\");\n        need(WebDomCanonical.same(binding,last.getJSONObject(\"binding\"))\n                &&taskId.equals(binding.getString(\"task_id\"))\n                &&\"csair_public_flight\".equals(binding.getString(\"goal_kind\"))\n                &&\"csair_public_flight_v1\".equals(binding.getString(\"site_policy_id\"))\n                &&\"https://m.csair.com/\".equals(binding.getString(\"initial_url\")),\n                \"same actual Flight task binding required\");\n        JSONObject selected=beforeFrame.getJSONObject(\"background_session\");\n        int display=beforeFrame.getJSONObject(\"window\").getInt(\"display_id\"),window=beforeFrame.getInt(\"window_id\");\n        need(display>0&&window>=0&&bg.getInt(\"display_id\")==display\n                &&bg.getString(\"generation\").equals(selected.getString(\"generation\"))\n                &&WebDomCanonical.same(bg.getJSONArray(\"selected_packages\"),selected.getJSONArray(\"allowed_packages\")),\n                \"capture does not belong to the original background Selection\");\n        for(JSONObject capture:new JSONObject[]{first,last}){\n            need(\"https://m.csair.com/\".equals(capture.getString(\"committed_main_frame_url\"))\n                    &&\"https://m.csair.com/\".equals(capture.getString(\"current_native_url\"))\n                    &&capture.getInt(\"display_id\")==display&&capture.getInt(\"actual_window_id\")==window\n                    &&WebEvidenceProtocol.HELPER_PACKAGE.equals(capture.getString(\"helper_package\"))\n                    &&capture.isNull(\"observed_link_navigation\")&&!capture.getBoolean(\"truncated\"),\n                    \"observation exception is only for the unchanged official homepage\");\n        }\n        for(String key:new String[]{\"webview_instance\",\"navigation_epoch\",\"helper_uid\",\"helper_pid\",\n                \"commit_elapsed_ms\",\"observer_script_sha256\"})\n            need(WebDomCanonical.same(first.get(key),last.get(key)),\"capture identity changed: \"+key);\n        need(!first.getString(\"webview_instance\").isEmpty()\n                &&first.getLong(\"ended_elapsed_ms\")<=last.getLong(\"started_elapsed_ms\"),\n                \"ordered independent captures required\");\n        String raw=first.getString(\"before_dom_raw_utf8\");\n        need(raw.equals(first.getString(\"dom_raw_utf8\"))&&raw.equals(last.getString(\"before_dom_raw_utf8\"))\n                &&raw.equals(last.getString(\"dom_raw_utf8\")),\"all four complete homepage DOM raws must be equal\");\n        JSONObject dom=WebEvidenceJson.parseDom(raw);\n        JSONObject domProof=compareDom(dom,dom);\n        WebNativeGeometry a=WebNativeGeometry.read(first,dom,display,window);\n        WebNativeGeometry b=WebNativeGeometry.read(last,dom,display,window);\n        need(a!=null&&b!=null&&a.same(b),\"same independently replayed native WebView geometry required\");\n        Map<String,JSONObject> nativeRows=nativeNodes(beforeNative);\n        String webview=ancestorClass(nativeRows,targetPath,\"android.webkit.WebView\");\n        need(webview!=null&&java.util.Arrays.equals(intRect(nativeRows.get(webview)),a.bounds),\n                \"actual native WebView ancestor differs from capture geometry\");\n        JSONObject nativeProof=compareNative(beforeNative,afterNative,targetPath);\n        nativeProof.put(\"retained_node_pairing\",compareRetained(beforeFrame.getJSONArray(\"nodes\"),\n                afterFrame.getJSONArray(\"nodes\"),nativeProof.getString(\"native_slider_path\")));\n        return new JSONObject().put(\"schema\",\"hepta.csair-home-observation-bracket.v1\")\n                .put(\"purpose\",\"readonly_current_page_observation\")\n                .put(\"task_id\",taskId).put(\"first_observation\",beforeFrame).put(\"last_observation\",afterFrame)\n                .put(\"first_capture_challenge\",first.getString(\"challenge\"))\n                .put(\"last_capture_challenge\",last.getString(\"challenge\"))\n                .put(\"binding_sha256\",WebDomCanonical.sha256(binding))\n                .put(\"webview_instance\",first.get(\"webview_instance\")).put(\"navigation_epoch\",first.get(\"navigation_epoch\"))\n                .put(\"display_id\",display).put(\"window_id\",window)\n                .put(\"all_four_dom_raws_equal\",true).put(\"dom_sha256\",first.getString(\"dom_sha256\"))\n                .put(\"dom_stability_sha256\",first.getString(\"dom_stability_sha256\"))\n                .put(\"native_geometry_sha256\",b.fingerprint).put(\"dom\",domProof).put(\"native\",nativeProof)\n                .put(\"complete_native_snapshot_structure_replayed\",true)\n                .put(\"retained_rows_are_not_the_complete_traversal\",true)\n                .put(\"action_permit_created\",false).put(\"coordinates_used_for_input\",false)\n                .put(\"pixel_equality_claimed\",false).put(\"fully_unoccluded_claimed\",false)\n                .put(\"business_verified\",false);\n    }\n    private static void requireCompleteObservation(JSONObject frame,JSONArray nativeRows)throws Exception{\n        need(WebEvidenceProtocol.HELPER_PACKAGE.equals(frame.get(\"package\"))\n                &&Boolean.FALSE.equals(frame.get(\"nodes_truncated\"))&&Boolean.FALSE.equals(frame.get(\"ime_visible\"))\n                &&frame.getString(\"observation_id\").length()>0,\"complete helper observation with hidden IME required\");\n        JSONObject window=frame.getJSONObject(\"window\"),bg=frame.getJSONObject(\"background_session\");\n        need(\"observed\".equals(window.get(\"metadata_status\"))&&window.getInt(\"window_id\")==frame.getInt(\"window_id\")\n                &&window.getInt(\"display_id\")>0&&window.getInt(\"type\")==1\n                &&Boolean.FALSE.equals(window.get(\"root_class_truncated\"))&&Boolean.FALSE.equals(window.get(\"title_truncated\"))\n                &&\"background\".equals(bg.get(\"mode\"))&&bg.getInt(\"display_id\")==window.getInt(\"display_id\")\n                &&WebEvidenceProtocol.HELPER_PACKAGE.equals(bg.get(\"bootstrap_package\"))\n                &&bg.getJSONArray(\"allowed_packages\").length()==1\n                &&WebEvidenceProtocol.HELPER_PACKAGE.equals(bg.getJSONArray(\"allowed_packages\").get(0)),\n                \"exact observed background window metadata required\");\n        JSONObject collection=frame.getJSONObject(\"collection\");\n        need(\"hepta.observation-collection.v1\".equals(collection.get(\"schema\"))\n                &&\"same_observed_accessibility_traversal\".equals(collection.get(\"source\"))\n                &&nativeRows!=null&&nativeRows.length()==collection.getInt(\"visited_nodes\")\n                &&frame.getJSONArray(\"nodes\").length()==collection.getInt(\"retained_nodes\")\n                &&collection.getJSONArray(\"truncation_reasons\").length()==0,\"complete same-traversal evidence required\");\n        for(String key:new String[]{\"pending_nodes_at_stop\",\"child_slots_omitted_by_traversal_limit\",\n                \"nodes_omitted_by_node_limit\",\"nodes_omitted_by_text_limit\"})\n            need(collection.getLong(key)==0,\"omitted native traversal records\");\n        JSONObject root=nativeNodes(nativeRows).get(\"0\");\n        need(root.getInt(\"window_id\")==frame.getInt(\"window_id\")\n                &&root.getString(\"class\").equals(window.getString(\"root_class\"))\n                &&WebDomCanonical.same(root.getJSONArray(\"bounds\"),window.getJSONArray(\"root_bounds\")),\n                \"actual complete native root differs from the observed window\");\n    }\n\n    /** Complete DOM comparison; only this observed eight-image slider may move. */",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+        "base": {
+          "bytes": 42734,
+          "sha256": "7f3c7fd872e9901026ad7471dfc9a3e68d2c987eb1931896f80ea0f2acd6f4e1",
+          "git_blob_sha": "8283d4e83b7cf13c9deb7e55c6d26f26053e11cc"
+        },
+        "candidate": {
+          "bytes": 44197,
+          "sha256": "07509c1345b1bacdfcbf504943f375869c274e245c6aafb5819581b4c8395408",
+          "git_blob_sha": "87b2bd6a8758fb6c46659270412bf9d630673591"
+        },
+        "ordered_patches": [
+          {
+            "before": "        while(true){\n        service.requireBackgroundObservation(taskId,before);\n        WebEvidenceReceipt first=client.capture(captureDeadline);",
+            "after": "        while(true){\n        HeptaAccessibilityService.FlightObservationSnapshot nativeSource=null;\n        try{\n        service.requireBackgroundObservation(taskId,before);\n        if(goal!=null)nativeSource=service.retainFlightObservation(this,before,cancellation,captureDeadline);\n        WebEvidenceReceipt first=client.capture(captureDeadline);",
+            "count": 1
+          },
+          {
+            "before": "            before=observer.observe();service.requireBackgroundObservation(taskId,before);first=client.capture(captureDeadline);",
+            "after": "            if(nativeSource!=null){nativeSource.close();nativeSource=null;}\n            before=observer.observe();service.requireBackgroundObservation(taskId,before);\n            if(goal!=null)nativeSource=service.retainFlightObservation(this,before,cancellation,captureDeadline);\n            first=client.capture(captureDeadline);",
+            "count": 1
+          },
+          {
+            "before": "        boolean stable=sameFrame(before,after)&&first.instance.equals(last.instance)&&first.epoch==last.epoch\n                &&first.url.equals(last.url)&&domBracket!=null;",
+            "after": "        boolean sameOriginalFrame=sameFrame(before,after);\n        boolean sameCaptureDomain=first.instance.equals(last.instance)&&first.epoch==last.epoch\n                &&first.url.equals(last.url)&&domBracket!=null;\n        boolean stable=sameOriginalFrame&&sameCaptureDomain;\n        JSONObject nativeObservationBracket=null;",
+            "count": 1
+          },
+          {
+            "before": "        need(stable,\"AX/DOM bracket changed; no current page capability published\");",
+            "after": "        if(!stable&&!sameOriginalFrame&&sameCaptureDomain&&goal!=null&&nativeSource!=null\n                &&first.stability().rawEqual&&domBracket.rawEqual&&last.stability().rawEqual){\n            // This service-created proof only admits the new read-only frame.\n            // A later action still needs its own original model target and live Permit checks.\n            nativeObservationBracket=service.verifyFlightObservationBracket(this,nativeSource,after,first,last,\n                    cancellation,captureDeadline);\n            stable=true;\n        }\n        need(stable,\"AX/DOM bracket changed; no current page capability published\");",
+            "count": 1
+          },
+          {
+            "before": "                .put(\"ax_dom_capture_is_atomic\",false)",
+            "after": "                .put(\"ax_dom_capture_is_atomic\",false)\n                .put(\"original_same_frame_predicate\",sameOriginalFrame)\n                .put(\"readonly_native_observation_bracket\",nativeObservationBracket==null?JSONObject.NULL:nativeObservationBracket)\n                .put(\"readonly_native_observation_proof_grants_action\",false)",
+            "count": 1
+          },
+          {
+            "before": "        return after;\n        }\n    }\n    /** Extra observations are bounded and read-only; an entry click is never replayed. */",
+            "after": "        return after;\n        }finally{if(nativeSource!=null)nativeSource.close();}\n        }\n    }\n    /** Extra observations are bounded and read-only; an entry click is never replayed. */",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "path": "tests/web-flight/run_query_host_tests.py",
+        "base": {
+          "bytes": 41005,
+          "sha256": "0f4d983138ed8bcf5f0b622ee4d4063048e83413eafe3586595521f5e1b7eb45",
+          "git_blob_sha": "7b7a23db9302bc63b71f51a4d74d06c34183059d"
+        },
+        "candidate": {
+          "bytes": 41005,
+          "sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10",
+          "git_blob_sha": "c21109afe049ccaf2d664937bd24fb0e5abce4a2"
+        },
+        "ordered_patches": [
+          {
+            "before": "need(len(PURE_PATHS)==45 and len(generated_factories)==3,\"fixed 43 production plus 2 retained plus 3 factory inputs\")",
+            "after": "need(len(PURE_PATHS)==46 and len(generated_factories)==3,\"fixed 44 production plus 2 retained plus 3 factory inputs\")",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "exact_changed_paths": [
+      "AndroidManifest.xml",
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
+      "src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "tests/web-flight/run_query_host_tests.py"
+    ],
+    "source_inventory_bytes": 103795,
+    "query_java_source_count": 50,
+    "predecessor_release": {
+      "path": "/home/alex/hepta-local-007f-20261111/v56-main-sign-r1/RESULT.json",
+      "bytes": 32758,
+      "sha256": "e27e74e94b0668c1c07b04863c9aaabf1b3235f9ff2d0d0d8bd9a346e46b2c6b"
+    },
+    "predecessor_release_source_commit": "9f4168616546233033edd4b254b4236ae987ea7e",
+    "predecessor_apk": {
+      "path": "/home/alex/hepta-local-007f-20261111/v56-main-sign-r1/out/hepta-local-0.56.0.apk",
+      "bytes": 21030740,
+      "sha256": "067ab5a286b100404fa2b00e341964cd70f005907988dc11eb486c9a4b3bab62"
+    },
+    "version_code": 57,
+    "version_name": "0.57.0-flight-observation-stability",
+    "candidate_scope": "read-only native observation bracket for exact unchanged Flight-home DOM; original action authority and terminal proof retained; Flight results provider remains false",
+    "query_case_expectation": {
+      "cases": 40,
+      "assertions": 187,
+      "case_names": [
+        "literal_city_data_is_not_a_verified_route",
+        "matching_form_without_model_actions_cannot_query",
+        "real_class_selection_chain_enables_exact_query_once",
+        "accepted_picker_click_waits_for_native_form_readback",
+        "false_city_outcome_never_confirms",
+        "stale_city_outcome_never_confirms",
+        "date_before_two_city_confirmations_withheld",
+        "wrong_after_city_literal_stays_pending",
+        "dom_city_without_same_native_value_stays_pending",
+        "foreign_native_city_descendant_rejected",
+        "two_cities_without_full_calendar_date_cannot_query",
+        "wrong_after_month_day_stays_pending",
+        "wrong_after_weekday_stays_pending",
+        "date_before_dispatch_end_cannot_confirm",
+        "later_route_change_invalidates_current_query",
+        "later_date_change_invalidates_year_confirmation",
+        "native_field_disappears_query_withheld",
+        "two_adults_are_not_one_adult_query",
+        "disabled_dom_query_cannot_mint_target",
+        "duplicate_native_query_even_disabled_refuses",
+        "another_binding_cannot_import_selection_chain",
+        "navigation_epoch_regression_cannot_import_progress",
+        "query_reservation_is_not_a_dispatch",
+        "second_query_reservation_refused",
+        "actual_query_outcome_and_after_capture_remain_not_results",
+        "false_query_outcome_consumes_attempt",
+        "accepted_query_without_platform_entry_refused",
+        "query_outcome_before_capture_refused",
+        "query_outcome_wrong_model_run_refused",
+        "query_outcome_twice_refused",
+        "unknown_booking_body_is_read_only_pending",
+        "city_airport_combination_not_silently_normalized",
+        "actual_session_dispatch_methods_0",
+        "actual_session_dispatch_methods_1",
+        "actual_session_dispatch_methods_2",
+        "actual_session_dispatch_methods_3",
+        "actual_session_dispatch_methods_4",
+        "actual_session_dispatch_methods_5",
+        "actual_session_dispatch_methods_6",
+        "actual_session_dispatch_methods_7"
+      ]
+    },
+    "query_runner_integrated_into_source": true
+  },
+  "config_after": {
+    "schema": "hepta.main58-pocket4-java-native-reuse-config.v1",
+    "root": "/home/alex/hepta-local-007f-20261111/v58-main-p4-android-r1",
+    "base_root": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4",
+    "aggregate": {
+      "git": "94ca147166c4e4c7faa5bd32085c5431eb36f4b1",
+      "bytes": 1465984,
+      "sha256": "600ff7c4198fc83d4e93399fc6bf039800805f4458406b4182952ddcff89b95b"
+    },
+    "decoded_input": {
+      "bytes": 1605061,
+      "sha256": "120cc1714b837e19d56acc4138bcb2194124b1100293f6bf2a8f71c32fb0ed33"
+    },
+    "source_file_count": 595,
+    "overlay_file_count": 40,
+    "compiler_input_count": 217,
+    "java_source_count": 115,
+    "source_inventory_sha256": "b44d3a9d9083a86d5fff36dfcc0c27958ef047a05df928923ef7c2e204cb23d6",
+    "base_source_commit": "42d3a0f447807659c0f78c8273edee01dd1b734f",
+    "base_source_inventory_sha256": "8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d",
+    "base_signed_result": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/assembly-r1/RESULT.json",
+      "bytes": 15659,
+      "sha256": "eadc9dbb63b411015571a488377be6a8704c9f78415169a5164c8f13571f0f72"
+    },
+    "base_apk": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/out/hepta-local-0.54.0.apk",
+      "bytes": 20985685,
+      "sha256": "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a"
+    },
+    "base_archive": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/mac-artifacts.tar.gz",
+      "bytes": 562137,
+      "sha256": "17da0d3a86bd8505daa07e9895643b7de2d2877768fbaf9c8abd8475f8c6bcc2"
+    },
+    "base_mac_stage": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/release-evidence-r1/MAC-STAGE-ORIGINAL.json",
+      "bytes": 28841,
+      "sha256": "a037b49f05ea48caccb2902b95bbb2314a5f767e230138dd14ae3a16851ee4b2"
+    },
+    "base_compiler": {
+      "bytes": 42341,
+      "sha256": "51265398de2dcc4ccefb5aa0e24ea91770d8c9f3b54248f3d88068e04a4436cc"
+    },
+    "base_build_stdout": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/release-evidence-r1/mac/original-android-native-build.stdout",
+      "bytes": 121423,
+      "sha256": "ce47720cad1c09c685657b0d0c801281552cc69a0d15679cb5ffd24ec992e422"
+    },
+    "worker": {
+      "bytes": 59952,
+      "sha256": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5"
+    },
+    "generated_worker_sha256": "77b914eae46ea000d3c955628c35f6e96a715a4a14da3eb075923d2e6024bbb0",
+    "native_pins": {
+      "libMNN.so": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d",
+      "libc++_shared.so": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754",
+      "libgeniex.so": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56",
+      "libgeniex_plugin_llama_cpp.so": "cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a",
+      "libggml-base.so": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40",
+      "libggml-cpu.so": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b",
+      "libggml-hexagon.so": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f",
+      "libggml-htp-v79.so": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5",
+      "libggml-opencl.so": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875",
+      "libggml.so": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149",
+      "libhepta_local_runner.so": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+      "libhepta_mobimind_runner.so": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020",
+      "libhepta_ui_venus_runner.so": "5fa2dcae05fb649157d96481c5890c157301c76dab3522fcabcbe01b9b0d8551",
+      "libllama-common.so": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122",
+      "libllama.so": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835",
+      "libmtmd.so": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d",
+      "libomp.so": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76"
+    },
+    "identity_root": "/home/alex/hepta-local-007f-20261111/v55-installed-apk-identity-host-r1",
+    "identity_result": {
+      "bytes": 5727,
+      "sha256": "52762ada64c63bc58749d62e9bd183b586c40349f0e10082ded1c308d82df4f7"
+    },
+    "identity_stage": {
+      "bytes": 14247,
+      "sha256": "17f95a5eecf3716c48228c4086e2d428b4e5c2c57c77707116673d92820d9bf8"
+    },
+    "identity_input": {
+      "bytes": 36100,
+      "sha256": "bfcee1680b7e3c4c0933aed26bfce6320b64ae7803347f3ddfc56616067b8176"
+    },
+    "identity_source": {
+      "bytes": 9255,
+      "sha256": "e3ca49ba910ff1bb26f50452e1f718313dbce51df9d77c8b107867351178e1d9"
+    },
+    "identity_generated": {
+      "bytes": 14192,
+      "sha256": "38ec317c6344665e06c73c3c50816cbfa4e96ef3ed69b6a40dd38d525ca26dd7"
+    },
+    "focused_root": "/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1",
+    "focused_result": null,
+    "focused_input": {
+      "bytes": 1313265,
+      "sha256": "784c722634848b0b9baac0d8d430ef24e8d2850964c185737f6de547aa6df593"
+    },
+    "focused_stage": {
+      "bytes": 79802,
+      "sha256": "a7b9a549983ff21f6c62b47ebb60d6c172c22d42d2d092ede5d726996546b2a7"
+    },
+    "calendar_dom": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/release-evidence-r1/fixtures/calendar-stable.json",
+      "bytes": 386724,
+      "sha256": "f61fd86cb24b212c3434bb5eda1a4e29b65c06c22d3fc4238366f31a324dd7fa"
+    },
+    "calendar_ax": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/release-evidence-r1/fixtures/calendar-stable.xml",
+      "bytes": 178888,
+      "sha256": "59d753e32edd620eb2e1fb0947c898df89eb7bf8dbc63dc4138a1636272b82ec"
+    },
+    "query_runner": {
+      "bytes": 41005,
+      "sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10"
+    },
+    "jdk": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64",
+    "tools": {
+      "java": {
+        "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "bytes": 14544,
+        "sha256": "bb70208200cb6538b877d80478141194a716edb591f4910ec106589291e99196"
+      },
+      "javac": {
+        "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+        "bytes": 14592,
+        "sha256": "2aaf03d13aeb80b8269696f2dcd9f4937d7366bbc68f91fdc703cf157e8f39c4"
+      },
+      "json": {
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/host-json/json-20240303.jar",
+        "bytes": 78332,
+        "sha256": "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"
+      },
+      "android_jar": {
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2/sdk/android-34/android.jar",
+        "bytes": 26361808,
+        "sha256": "6cea1df3efb77103ac3e2beb9bf4718964b0e0869ab16d39d29d5cbae1c147ad"
+      },
+      "r8": {
+        "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-large-inputs-r1/tools/r8-8.13.17.jar",
+        "bytes": 18279079,
+        "sha256": "d31fd0dc751d48740009cdd9a485126acb1d0d14c59b9f05579479940f4adf74"
+      },
+      "aapt2": {
+        "path": "/usr/lib/android-sdk/build-tools/debian/aapt2",
+        "bytes": 54512,
+        "sha256": "0e9ff92342040acdfd03e8708512f4e02353e3ca0a2b85ea2950da659110b009"
+      }
+    },
+    "sdk_download_root": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-sdk-input-r2",
+    "sdk_download_result": {
+      "bytes": 64222,
+      "sha256": "5300257b246f73bc410028d8e1e61f18381e6f9b4a4406661d00b7d3d128eab6"
+    },
+    "original_aggregate": {
+      "git": "517e61599073eb264c5e52871570d49e7af2d798",
+      "bytes": 1459826,
+      "sha256": "b98bb0f97ad5b25423387c4e3f8734aec7d4f8c2d1044335af039e0dd1c57cc3"
+    },
+    "original_decoded_input": {
+      "bytes": 1598487,
+      "sha256": "d7174a964b506448c44f627e250cd662d953a94005790aad9ad7297671f5c13d"
+    },
+    "original_source_inventory_sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6",
+    "materialized_root": "/home/alex/hepta-local-007f-20261111/v58-main-core101-materialized-host-r1",
+    "prior_build_root": "/home/alex/hepta-local-007f-20261111/v57-main-p4-android-r1",
+    "prior_build_result": {
+      "bytes": 244800,
+      "sha256": "5dc739a182bda8065f2bda04c1da7e44c43b74307f76f582ba6cc09c371475f1"
+    },
+    "prior_build_stage": {
+      "bytes": 113856,
+      "sha256": "ac4b54eb0815bce791a99ae3e01de8077808fe55b5eabc58488fd1eba8126331",
+      "git_blob_sha": "bd30b22cf1a151710318a1e768be63f7a75b6bd8"
+    },
+    "prior_compiler_inputs": {
+      "bytes": 34376,
+      "sha256": "54e95d6949154c631302241f76ca3518650ac297166210056f7e2f7740fc4370"
+    },
+    "compiler_inputs": {
+      "bytes": 34376,
+      "sha256": "b64d1a78f41ffa78c80c3d5145b012f0625e842725ceb83abbd8eec5bb63c4c8"
+    },
+    "source_deltas": [
+      {
+        "path": "AndroidManifest.xml",
+        "base": {
+          "bytes": 2594,
+          "sha256": "71aca282ccdd9fb1eb4bb611296418f7f80502bcb7a3b9bcdef98460cae13c73",
+          "git_blob_sha": "92012a454023ca82eaaa0b63384208fb86efb5d4"
+        },
+        "candidate": {
+          "bytes": 2591,
+          "sha256": "4818f3632b34a1bb6eb41d35e45f0d1d99ed50275da3d999f4a56608b7725b8e",
+          "git_blob_sha": "10ef60b074dca1cf5d0cf8063054cd9559ca805b"
+        },
+        "ordered_patches": [
+          {
+            "before": "android:versionCode=\"57\"",
+            "after": "android:versionCode=\"58\"",
+            "count": 1
+          },
+          {
+            "before": "android:versionName=\"0.57.0-flight-observation-stability\"",
+            "after": "android:versionName=\"0.58.0-flight-observation-settle\"",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+        "base": {
+          "bytes": 44197,
+          "sha256": "07509c1345b1bacdfcbf504943f375869c274e245c6aafb5819581b4c8395408",
+          "git_blob_sha": "87b2bd6a8758fb6c46659270412bf9d630673591"
+        },
+        "candidate": {
+          "bytes": 46689,
+          "sha256": "d2e4f073366d3d3046b0f9b90156f87b1fb84c842a3053a5d32f31df5e3bbc9b",
+          "git_blob_sha": "d89ff1a111693bebd445c99fede473fbc968a314"
+        },
+        "ordered_patches": [
+          {
+            "before": "        WebDomStability.Result domBracket=null;\n",
+            "after": "        WebDomStability.Result domBracket=null;String domBracketError=null;\n",
+            "count": 1
+          },
+          {
+            "before": "        }catch(Exception incompleteBracket){\n            // A changing bracket supplies no action. Existing loading retries\n            // remain bounded and read-only; no preceding click is repeated.\n        }\n",
+            "after": "        }catch(Exception incompleteBracket){\n            // No action capability is published from a changing bracket.\n            domBracketError=incompleteBracket.getClass().getSimpleName()+\": \"+\n                    HeptaAccessibilityService.limited(HeptaAccessibilityService.message(incompleteBracket),512);\n        }\n",
+            "count": 1
+          },
+          {
+            "before": "        if(retryLoadingDocument(first,last,after,stable,deadline)){\n            loadingAttemptKey=actualLoadingKey;\n            captureDeadline=Math.min(deadline,loadingDocumentStarted+6000);\n            before=observer.observe();service.requireBackgroundObservation(taskId,before);\n            continue;\n        }\n        if(!stable&&!sameOriginalFrame&&sameCaptureDomain&&goal!=null&&nativeSource!=null\n                &&first.stability().rawEqual&&domBracket.rawEqual&&last.stability().rawEqual){\n            // This service-created proof only admits the new read-only frame.\n            // A later action still needs its own original model target and live Permit checks.\n            nativeObservationBracket=service.verifyFlightObservationBracket(this,nativeSource,after,first,last,\n                    cancellation,captureDeadline);\n            stable=true;\n        }\n",
+            "after": "        if(!stable&&!sameOriginalFrame&&sameCaptureDomain&&goal!=null&&nativeSource!=null\n                &&first.stability().rawEqual&&domBracket.rawEqual&&last.stability().rawEqual){\n            // This service-created proof only admits the new read-only frame.\n            // A later action still needs its own original model target and live Permit checks.\n            nativeObservationBracket=service.verifyFlightObservationBracket(this,nativeSource,after,first,last,\n                    cancellation,captureDeadline);\n            stable=true;\n        }\n        // The retained NodeRef belongs only to this completed read bracket.\n        // Release it before a wait or a fresh observation replaces the graph.\n        if(nativeSource!=null){nativeSource.close();nativeSource=null;}\n        if(retryLoadingDocument(first,last,before,after,stable,sameCaptureDomain,domBracketError,deadline)){\n            loadingAttemptKey=actualLoadingKey;\n            captureDeadline=Math.min(deadline,loadingDocumentStarted+6000);\n            before=observer.observe();service.requireBackgroundObservation(taskId,before);\n            continue;\n        }\n",
+            "count": 1
+          },
+          {
+            "before": "    private boolean retryLoadingDocument(WebEvidenceReceipt first,WebEvidenceReceipt last,PhoneObservation frame,\n                                         boolean stable,long deadline)throws Exception{\n",
+            "after": "    private boolean retryLoadingDocument(WebEvidenceReceipt first,WebEvidenceReceipt last,\n                                         PhoneObservation before,PhoneObservation frame,boolean stable,\n                                         boolean sameCaptureDomain,String domBracketError,long deadline)throws Exception{\n",
+            "count": 1
+          },
+          {
+            "before": "        if(!bodyPending&&!bookingPending&&!queryPending&&!(key.equals(loadingDocumentKey)&&!stable))return false;\n",
+            "after": "        if(!bodyPending&&!bookingPending&&!queryPending&&stable)return false;\n",
+            "count": 1
+          },
+          {
+            "before": "        if(loadingDocumentReadRetries>=2||now+250>=Math.min(deadline,loadingDocumentStarted+6000))return false;\n        need(!retired&&!cancellation.isCancelled(),\"web task retired while waiting for page content\");\n        loadingDocumentReadRetries++;\n",
+            "after": "        boolean retry=loadingDocumentReadRetries<2&&now+250<Math.min(deadline,loadingDocumentStarted+6000);\n        if(!retry&&stable)return false;\n        need(!retired&&!cancellation.isCancelled(),\"web task retired while waiting for page content\");\n        // A new read cannot reuse an earlier page, node permit or dispatch check.\n        // Keep model-run attempted fences and the actual flight progress unchanged.\n        domain=null;current=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;\n        dispatchSource=null;dispatchSourceRun=null;dispatchSourceAction=null;\n        dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;shoppingDispatch=null;\n        completion.clearWebDomain();\n        if(retry)loadingDocumentReadRetries++;\n",
+            "count": 1
+          },
+          {
+            "before": "                .put(\"actual_query_awaiting_results\",queryPending).put(\"read_only_retry\",loadingDocumentReadRetries)\n                .put(\"maximum_extra_reobservations\",2).put(\"deadline_elapsed_ms\",Math.min(deadline,loadingDocumentStarted+6000))\n                .put(\"action_replayed\",false).put(\"model_action_dispatched\",false).put(\"business_verified\",false));\n        SystemClock.sleep(200);\n",
+            "after": "                .put(\"actual_query_awaiting_results\",queryPending).put(\"read_only_retry\",loadingDocumentReadRetries)\n                .put(\"maximum_extra_reobservations\",2).put(\"deadline_elapsed_ms\",Math.min(deadline,loadingDocumentStarted+6000))\n                .put(\"reason\",stable?\"recognized_content_pending\":\"unstable_ax_dom_bracket\")\n                .put(\"reobserve_scheduled\",retry).put(\"read_only_budget_exhausted\",!retry)\n                .put(\"first_ax_observation_id\",before.id).put(\"last_ax_observation_id\",frame.id)\n                .put(\"first_ax_tree_sha256\",before.treeSha256).put(\"last_ax_tree_sha256\",frame.treeSha256)\n                .put(\"first_ax_app_tree_sha256\",before.state.appTreeSha256).put(\"last_ax_app_tree_sha256\",frame.state.appTreeSha256)\n                .put(\"first_ax_window_id\",before.windowId).put(\"last_ax_window_id\",frame.windowId)\n                .put(\"first_ax_rotation\",before.rotation).put(\"last_ax_rotation\",frame.rotation)\n                .put(\"first_ax_display_id\",before.windowMetadata.displayId).put(\"last_ax_display_id\",frame.windowMetadata.displayId)\n                .put(\"first_background_generation\",before.backgroundGeneration).put(\"last_background_generation\",frame.backgroundGeneration)\n                .put(\"same_original_frame\",sameFrame(before,frame)).put(\"same_capture_domain\",sameCaptureDomain)\n                .put(\"dom_bracket_error\",domBracketError==null?JSONObject.NULL:domBracketError)\n                .put(\"first_navigation_epoch\",first.epoch).put(\"last_navigation_epoch\",last.epoch)\n                .put(\"first_native_url\",first.url).put(\"last_native_url\",last.url)\n                .put(\"old_action_capabilities_retired\",true)\n                .put(\"action_replayed\",false).put(\"model_action_dispatched\",false).put(\"business_verified\",false));\n        if(!retry)return false;\n        SystemClock.sleep(200);\n",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "exact_changed_paths": [
+      "AndroidManifest.xml",
+      "src/org/trillionnium/hepta/local/WebFlightSession.java"
+    ],
+    "source_inventory_bytes": 103795,
+    "query_java_source_count": 50,
+    "predecessor_release": {
+      "path": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/RESULT.json",
+      "bytes": 35104,
+      "sha256": "9deb86d5ba6b066bf250a432559bdc1fcee1138596af3f40133943c6259dd60c"
+    },
+    "predecessor_release_source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+    "predecessor_apk": {
+      "path": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/out/hepta-local-0.57.0.apk",
+      "bytes": 21038933,
+      "sha256": "c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4"
+    },
+    "version_code": 58,
+    "version_name": "0.58.0-flight-observation-settle",
+    "candidate_scope": "bounded fresh read-only observation settling under unchanged original task/lease/window/epoch/geometry guards; no action replay; Flight results provider remains false",
+    "query_case_expectation": {
+      "cases": 40,
+      "assertions": 187,
+      "case_names": [
+        "literal_city_data_is_not_a_verified_route",
+        "matching_form_without_model_actions_cannot_query",
+        "real_class_selection_chain_enables_exact_query_once",
+        "accepted_picker_click_waits_for_native_form_readback",
+        "false_city_outcome_never_confirms",
+        "stale_city_outcome_never_confirms",
+        "date_before_two_city_confirmations_withheld",
+        "wrong_after_city_literal_stays_pending",
+        "dom_city_without_same_native_value_stays_pending",
+        "foreign_native_city_descendant_rejected",
+        "two_cities_without_full_calendar_date_cannot_query",
+        "wrong_after_month_day_stays_pending",
+        "wrong_after_weekday_stays_pending",
+        "date_before_dispatch_end_cannot_confirm",
+        "later_route_change_invalidates_current_query",
+        "later_date_change_invalidates_year_confirmation",
+        "native_field_disappears_query_withheld",
+        "two_adults_are_not_one_adult_query",
+        "disabled_dom_query_cannot_mint_target",
+        "duplicate_native_query_even_disabled_refuses",
+        "another_binding_cannot_import_selection_chain",
+        "navigation_epoch_regression_cannot_import_progress",
+        "query_reservation_is_not_a_dispatch",
+        "second_query_reservation_refused",
+        "actual_query_outcome_and_after_capture_remain_not_results",
+        "false_query_outcome_consumes_attempt",
+        "accepted_query_without_platform_entry_refused",
+        "query_outcome_before_capture_refused",
+        "query_outcome_wrong_model_run_refused",
+        "query_outcome_twice_refused",
+        "unknown_booking_body_is_read_only_pending",
+        "city_airport_combination_not_silently_normalized",
+        "actual_session_dispatch_methods_0",
+        "actual_session_dispatch_methods_1",
+        "actual_session_dispatch_methods_2",
+        "actual_session_dispatch_methods_3",
+        "actual_session_dispatch_methods_4",
+        "actual_session_dispatch_methods_5",
+        "actual_session_dispatch_methods_6",
+        "actual_session_dispatch_methods_7"
+      ]
+    },
+    "query_runner_integrated_into_source": true
+  },
+  "source_patch_count": 30,
+  "configuration_literal_patches": [
+    {
+      "label": "current58 config and exact two-source delta",
+      "count": 1,
+      "before_file": {
+        "bytes": 113856,
+        "sha256": "ac4b54eb0815bce791a99ae3e01de8077808fe55b5eabc58488fd1eba8126331",
+        "git_blob_sha": "bd30b22cf1a151710318a1e768be63f7a75b6bd8"
+      },
+      "after_file": {
+        "bytes": 88988,
+        "sha256": "aeb535702e4b07f2b9db6158d4de61fd1aab13b921364079121f62a098e71432",
+        "git_blob_sha": "f78803d2da27be0e3af66cdf99276d84c165143d"
+      },
+      "before_literal": {
+        "bytes": 44408,
+        "sha256": "64123e5577a11067d89ef09d7507507fd54481ffee8dda92f61a78afbd2af2ac",
+        "git_blob_sha": "315905fb3182a358fe9430dd2d730c8ab4a99176"
+      },
+      "after_literal": {
+        "bytes": 19540,
+        "sha256": "b52c46ab1e86a0b55c646979ea8a3b76b72230449fbb95b7465b3fe498bef112",
+        "git_blob_sha": "b8f826385a34075074ca6f831e132f8fb4dac01b"
+      }
+    },
+    {
+      "label": "seal corrected focused58 exact stage only",
+      "count": 1,
+      "before_file": {
+        "bytes": 90006,
+        "sha256": "1c8b7c7817c40a5ac4333e5ab81ca95d4b7a64b8568ff84b78b0eb9b2904d203",
+        "git_blob_sha": "a1c2dca7ee97c5f3ace74839376e421151408026"
+      },
+      "after_file": {
+        "bytes": 90099,
+        "sha256": "a933105576d7012b74386c934a7f1c9184fa9c01e87ebf9c13fc728ce54dfa51",
+        "git_blob_sha": "a8d1193fcdae2fd6262f668eb584d773fe42a9db"
+      },
+      "before_literal": {
+        "bytes": 19540,
+        "sha256": "b52c46ab1e86a0b55c646979ea8a3b76b72230449fbb95b7465b3fe498bef112",
+        "git_blob_sha": "b8f826385a34075074ca6f831e132f8fb4dac01b"
+      },
+      "after_literal": {
+        "bytes": 19633,
+        "sha256": "02d2d23073514695459853a4632b84a1699be23dc3b1b8305c00707c1ba75d52",
+        "git_blob_sha": "0035495d4405ce22a3e1b594f67378978fa0d578"
+      }
+    }
+  ],
+  "remaining_exact_patches": [
+    {
+      "label": "current doc version",
+      "count": 1,
+      "before": "Build a sealed main57 source successor",
+      "after": "Build a sealed main58 source successor",
+      "before_file": {
+        "bytes": 88988,
+        "sha256": "aeb535702e4b07f2b9db6158d4de61fd1aab13b921364079121f62a098e71432",
+        "git_blob_sha": "f78803d2da27be0e3af66cdf99276d84c165143d"
+      },
+      "after_file": {
+        "bytes": 88988,
+        "sha256": "6e57811bed98f1d672027e4cd47bc391d0a0d9de62ef7a8480bb014e62ad944b",
+        "git_blob_sha": "95adca43b903a095ac638ef92314f7e5098cc661"
+      }
+    },
+    {
+      "label": "current preclaim artifact name",
+      "count": 1,
+      "before": "sealed main57 candidate artifact required",
+      "after": "sealed main58 candidate artifact required",
+      "before_file": {
+        "bytes": 88988,
+        "sha256": "6e57811bed98f1d672027e4cd47bc391d0a0d9de62ef7a8480bb014e62ad944b",
+        "git_blob_sha": "95adca43b903a095ac638ef92314f7e5098cc661"
+      },
+      "after_file": {
+        "bytes": 88988,
+        "sha256": "b3e87fd8db2b72ff39d46c10e6a7e7c7a04dd820c6eb881f98cfa8a36358533a",
+        "git_blob_sha": "3085828ae1a0bbd59433f81295b2c3c912dd69c9"
+      }
+    },
+    {
+      "label": "current input output schema",
+      "count": 1,
+      "before": "data[\"schema\"] = \"hepta.main57-pocket4-java-android-input.v1\"",
+      "after": "data[\"schema\"] = \"hepta.main58-pocket4-java-android-input.v1\"",
+      "before_file": {
+        "bytes": 88988,
+        "sha256": "b3e87fd8db2b72ff39d46c10e6a7e7c7a04dd820c6eb881f98cfa8a36358533a",
+        "git_blob_sha": "3085828ae1a0bbd59433f81295b2c3c912dd69c9"
+      },
+      "after_file": {
+        "bytes": 88988,
+        "sha256": "061f828db755cee67911df155ba1ab57264b7f57d67ab04acb803e5f1ef680e6",
+        "git_blob_sha": "6f0dfdd08b0f09262afd13325dbee11593a45b1b"
+      }
+    },
+    {
+      "label": "current input admission schema",
+      "count": 1,
+      "before": "need(data[\"schema\"] == \"hepta.main57-pocket4-java-android-input.v1\"",
+      "after": "need(data[\"schema\"] == \"hepta.main58-pocket4-java-android-input.v1\"",
+      "before_file": {
+        "bytes": 88988,
+        "sha256": "061f828db755cee67911df155ba1ab57264b7f57d67ab04acb803e5f1ef680e6",
+        "git_blob_sha": "6f0dfdd08b0f09262afd13325dbee11593a45b1b"
+      },
+      "after_file": {
+        "bytes": 88988,
+        "sha256": "4f0646e65d5e30eba1a35c1bfbd2fe125bcc0c6cd19cebfb2f2d22be388b9474",
+        "git_blob_sha": "a0d921aa2ec9147cade2b36419e13aaddd68ab4d"
+      }
+    },
+    {
+      "label": "prior57 input admission",
+      "count": 1,
+      "before": "need(original_data[\"schema\"] == \"hepta.main56-pocket4-java-android-input.v1\"",
+      "after": "need(original_data[\"schema\"] == \"hepta.main57-pocket4-java-android-input.v1\"",
+      "before_file": {
+        "bytes": 88988,
+        "sha256": "4f0646e65d5e30eba1a35c1bfbd2fe125bcc0c6cd19cebfb2f2d22be388b9474",
+        "git_blob_sha": "a0d921aa2ec9147cade2b36419e13aaddd68ab4d"
+      },
+      "after_file": {
+        "bytes": 88988,
+        "sha256": "ad7b3bf027eb886a62f6f61da1a3c73e625589c70e8a2eb489ed83863db6d531",
+        "git_blob_sha": "885b722f799d5b75f480f836355aa25f6d0d0e12"
+      }
+    },
+    {
+      "label": "prior57 actual build schema",
+      "count": 1,
+      "before": "need(prior_build[\"schema\"] == \"hepta.main56-pocket4-java-native-reuse-stage.v1\"",
+      "after": "need(prior_build[\"schema\"] == \"hepta.main57-pocket4-java-native-reuse-stage.v1\"",
+      "before_file": {
+        "bytes": 88988,
+        "sha256": "ad7b3bf027eb886a62f6f61da1a3c73e625589c70e8a2eb489ed83863db6d531",
+        "git_blob_sha": "885b722f799d5b75f480f836355aa25f6d0d0e12"
+      },
+      "after_file": {
+        "bytes": 88988,
+        "sha256": "42c474a95fbf5a94fc604042816dce7678808a7976e22a2058f3b9766667ba1d",
+        "git_blob_sha": "e33457659727d36ad7f1a40609516090ceb03df8"
+      }
+    },
+    {
+      "label": "prior57 release schema",
+      "count": 1,
+      "before": "need(release[\"schema\"] == \"hepta.isolated-v56-assembly.v1\"",
+      "after": "need(release[\"schema\"] == \"hepta.isolated-v57-assembly.v1\"",
+      "before_file": {
+        "bytes": 88988,
+        "sha256": "42c474a95fbf5a94fc604042816dce7678808a7976e22a2058f3b9766667ba1d",
+        "git_blob_sha": "e33457659727d36ad7f1a40609516090ceb03df8"
+      },
+      "after_file": {
+        "bytes": 88988,
+        "sha256": "e6a8df37e84346276a47a1175aa8b081e8442213e576b38f47fa77d7901fdcbc",
+        "git_blob_sha": "8425e00a9a14eaa57c04d2bd1b6a3c5de9c57192"
+      }
+    },
+    {
+      "label": "prior57 release code",
+      "count": 1,
+      "before": "and release[\"version_code\"] == 56",
+      "after": "and release[\"version_code\"] == 57",
+      "before_file": {
+        "bytes": 88988,
+        "sha256": "e6a8df37e84346276a47a1175aa8b081e8442213e576b38f47fa77d7901fdcbc",
+        "git_blob_sha": "8425e00a9a14eaa57c04d2bd1b6a3c5de9c57192"
+      },
+      "after_file": {
+        "bytes": 88988,
+        "sha256": "bca9ee6f6d921afac48442fc83609f606360ff6e64f35b8c92376feaf02e7ded",
+        "git_blob_sha": "d42c7a957941726dfdd67479d44a90e8ff1ec898"
+      }
+    },
+    {
+      "label": "current focused58 schema",
+      "count": 1,
+      "before": "need(focused[\"schema\"] == \"hepta.main57-wire4-focused-host-stage.v1\"",
+      "after": "need(focused[\"schema\"] == \"hepta.main58-wire4-focused-host-stage.v1\"",
+      "before_file": {
+        "bytes": 88988,
+        "sha256": "bca9ee6f6d921afac48442fc83609f606360ff6e64f35b8c92376feaf02e7ded",
+        "git_blob_sha": "d42c7a957941726dfdd67479d44a90e8ff1ec898"
+      },
+      "after_file": {
+        "bytes": 88988,
+        "sha256": "cfc341accb66e47b07cb6f16c7f6c6773e33fa3e6fcdedcbf3554a67eb6fc634",
+        "git_blob_sha": "fa4a0aef51b92b5b102cc6408c72c95b8d8ccaf3"
+      }
+    },
+    {
+      "label": "current focused preserves prior57 source and all proofs",
+      "count": 1,
+      "before": "     and focused[\"prior_successful56_artifacts_preserved\"] is True",
+      "after": "     and focused[\"prior_successful56_artifacts_preserved\"] is True\n     and focused[\"prior_successful57_artifacts_preserved\"] is True\n     and focused[\"actual57_projected_methods_changed_here\"] == 0\n     and focused[\"actual57_compile_files_changed_here\"] is False\n     and focused[\"source_checkpoint_git\"] == CONFIG[\"aggregate\"][\"git\"]\n     and focused[\"current_source_inventory_sha256\"] == CONFIG[\"source_inventory_sha256\"]",
+      "before_file": {
+        "bytes": 88988,
+        "sha256": "cfc341accb66e47b07cb6f16c7f6c6773e33fa3e6fcdedcbf3554a67eb6fc634",
+        "git_blob_sha": "fa4a0aef51b92b5b102cc6408c72c95b8d8ccaf3"
+      },
+      "after_file": {
+        "bytes": 89346,
+        "sha256": "5281ae62afe282b2dbcdd6ea35003c4622471d8e5cfeb947e8d286b2e00c5311",
+        "git_blob_sha": "06bab23c8636cfbb870ec15db134c17b3170f3b5"
+      }
+    },
+    {
+      "label": "current version message",
+      "count": 1,
+      "before": "explicit current main57 source identity",
+      "after": "explicit current main58 source identity",
+      "before_file": {
+        "bytes": 89346,
+        "sha256": "5281ae62afe282b2dbcdd6ea35003c4622471d8e5cfeb947e8d286b2e00c5311",
+        "git_blob_sha": "06bab23c8636cfbb870ec15db134c17b3170f3b5"
+      },
+      "after_file": {
+        "bytes": 89346,
+        "sha256": "5608c5179c30aedbde36e72d18169552b4df6af186b244fea4452eeae989aa57",
+        "git_blob_sha": "6d6379af1ba253a9a7cb51452fca5df75233091f"
+      }
+    },
+    {
+      "label": "current stage schema",
+      "count": 1,
+      "before": "result = {\"schema\":\"hepta.main57-pocket4-java-native-reuse-stage.v1\"",
+      "after": "result = {\"schema\":\"hepta.main58-pocket4-java-native-reuse-stage.v1\"",
+      "before_file": {
+        "bytes": 89346,
+        "sha256": "5608c5179c30aedbde36e72d18169552b4df6af186b244fea4452eeae989aa57",
+        "git_blob_sha": "6d6379af1ba253a9a7cb51452fca5df75233091f"
+      },
+      "after_file": {
+        "bytes": 89346,
+        "sha256": "386d2e40c2ead083adc420429afba7366944a48024f93df0f93ecd8b9d0ac4de",
+        "git_blob_sha": "4e9f76601a40c547ce97e5780d3ae4eac3ae0737"
+      }
+    },
+    {
+      "label": "current summary schema",
+      "count": 1,
+      "before": "\"schema\":\"hepta.main57-pocket4-java-native-reuse-summary.v1\"",
+      "after": "\"schema\":\"hepta.main58-pocket4-java-native-reuse-summary.v1\"",
+      "before_file": {
+        "bytes": 89346,
+        "sha256": "386d2e40c2ead083adc420429afba7366944a48024f93df0f93ecd8b9d0ac4de",
+        "git_blob_sha": "4e9f76601a40c547ce97e5780d3ae4eac3ae0737"
+      },
+      "after_file": {
+        "bytes": 89346,
+        "sha256": "13963c0a7ad54d860ab01a0423b4e126e114af9ada096ad1e407fc2be408f662",
+        "git_blob_sha": "69f591b2e5ca5d3b53a2f57199a083d134bedcff"
+      }
+    },
+    {
+      "label": "query history separates actual56 external and actual57 integrated",
+      "count": 1,
+      "before": "\"historical_prior_external_runner\":prior_build[\"query40\"],",
+      "after": "\"historical_prior_external_runner\":prior_build[\"query40\"][\"historical_prior_external_runner\"],\n            \"historical_prior_integrated_runner\":prior_build[\"query40\"],",
+      "before_file": {
+        "bytes": 89346,
+        "sha256": "13963c0a7ad54d860ab01a0423b4e126e114af9ada096ad1e407fc2be408f662",
+        "git_blob_sha": "69f591b2e5ca5d3b53a2f57199a083d134bedcff"
+      },
+      "after_file": {
+        "bytes": 89455,
+        "sha256": "ad94044d5e1413ba91e099fb547f632bb6e12d748e6a94f4b04a2ffed7ba6c8b",
+        "git_blob_sha": "0523a1205de2795c2f02d892d1441a24d3e57f3b"
+      }
+    },
+    {
+      "label": "current query follows actual57 repo source",
+      "count": 1,
+      "before": "need(CONFIG[\"query_runner_integrated_into_source\"] is True\n     and prior_build[\"query40\"][\"runner_corrected_outside_source_tree\"] is True\n     and prior_build[\"query40\"][\"repository_runner_count_guard_known_incompatible\"] is True\n     and prior_build[\"query40\"][\"runner_sha256\"]==sha(query_runner_raw),\n     \"current repository includes the exact previously executed external count-only repair\")",
+      "after": "need(CONFIG[\"query_runner_integrated_into_source\"] is True\n     and prior_build[\"query40\"][\"runner_corrected_outside_source_tree\"] is False\n     and prior_build[\"query40\"][\"repository_runner_count_guard_known_incompatible\"] is False\n     and prior_build[\"query40\"][\"runner_count_repair_integrated_into_current_source\"] is True\n     and prior_build[\"query40\"][\"runner_sha256\"]==sha(query_runner_raw)\n     and prior_build[\"query40\"][\"historical_prior_external_runner\"][\"runner_corrected_outside_source_tree\"] is True\n     and prior_build[\"query40\"][\"historical_prior_external_runner\"][\"repository_runner_count_guard_known_incompatible\"] is True\n     and prior_build[\"query40\"][\"historical_prior_external_runner\"][\"runner_sha256\"]==sha(query_runner_raw),\n     \"current repository query source equals actual57 integrated runner; actual56 external history remains distinct\")",
+      "before_file": {
+        "bytes": 89455,
+        "sha256": "ad94044d5e1413ba91e099fb547f632bb6e12d748e6a94f4b04a2ffed7ba6c8b",
+        "git_blob_sha": "0523a1205de2795c2f02d892d1441a24d3e57f3b"
+      },
+      "after_file": {
+        "bytes": 89928,
+        "sha256": "810059ada7ac30e50bd96a3abec87c0d9dafc5ba17bafd9e5d2bf1cb03760935",
+        "git_blob_sha": "cc772b361ee3d1ef9001abd674d7891d87fd3ed8"
+      }
+    },
+    {
+      "label": "all focused receipt and source pins sealed before claim",
+      "count": 1,
+      "before": "need(type(CONFIG[\"focused_result\"]) is dict and type(CONFIG[\"focused_result\"].get(\"bytes\")) is int\n     and re.fullmatch(r\"[0-9a-f]{64}\", CONFIG[\"focused_result\"].get(\"sha256\", \"\")),\n     \"actual Pocket4 focused39 RESULT pins required\")",
+      "after": "for name in (\"focused_result\",\"focused_stage\",\"focused_input\"):\n    need(type(CONFIG[name]) is dict and type(CONFIG[name].get(\"bytes\")) is int and CONFIG[name][\"bytes\"] > 0\n         and re.fullmatch(r\"[0-9a-f]{64}\", CONFIG[name].get(\"sha256\", \"\")),\n         \"actual Pocket4 focused39 complete pin required: \"+name)",
+      "before_file": {
+        "bytes": 89928,
+        "sha256": "810059ada7ac30e50bd96a3abec87c0d9dafc5ba17bafd9e5d2bf1cb03760935",
+        "git_blob_sha": "cc772b361ee3d1ef9001abd674d7891d87fd3ed8"
+      },
+      "after_file": {
+        "bytes": 90006,
+        "sha256": "ca43e7158824d86a8d96d352bcd304945a8c0a263538aafef717bdcdf72e6c65",
+        "git_blob_sha": "e340e6b529f8f1066b83385b83cd5cc702070a3f"
+      }
+    },
+    {
+      "label": "current predecessor input reuse flag",
+      "count": 1,
+      "before": "\"original_full_input_reused_from_signed56_build\":True",
+      "after": "\"original_full_input_reused_from_signed57_build\":True",
+      "before_file": {
+        "bytes": 90006,
+        "sha256": "ca43e7158824d86a8d96d352bcd304945a8c0a263538aafef717bdcdf72e6c65",
+        "git_blob_sha": "e340e6b529f8f1066b83385b83cd5cc702070a3f"
+      },
+      "after_file": {
+        "bytes": 90006,
+        "sha256": "b9d917bead59240a04bd99d250297e8761117598d89a7d646e202d06cf369808",
+        "git_blob_sha": "07851220ece0f8d742fe50f1d553c9f0b6bc7b4d"
+      }
+    },
+    {
+      "label": "current revision from actual57",
+      "count": 1,
+      "before": "\"revision\":\"sealed-source-successor-from-actual-signed56-r1\"",
+      "after": "\"revision\":\"sealed-source-successor-from-actual-signed57-r1\"",
+      "before_file": {
+        "bytes": 90006,
+        "sha256": "b9d917bead59240a04bd99d250297e8761117598d89a7d646e202d06cf369808",
+        "git_blob_sha": "07851220ece0f8d742fe50f1d553c9f0b6bc7b4d"
+      },
+      "after_file": {
+        "bytes": 90006,
+        "sha256": "d27e103b80a0af205ee8dd6a92f83c999cc5eee391752be1ebacb1d51e67f76b",
+        "git_blob_sha": "32311b0a4ecb0aefafaa70c7e6484ae290861203"
+      }
+    },
+    {
+      "label": "predecessor57 diagnostic  signed56 baseline",
+      "count": 1,
+      "before": " signed56 baseline",
+      "after": " signed57 baseline",
+      "before_file": {
+        "bytes": 90006,
+        "sha256": "d27e103b80a0af205ee8dd6a92f83c999cc5eee391752be1ebacb1d51e67f76b",
+        "git_blob_sha": "32311b0a4ecb0aefafaa70c7e6484ae290861203"
+      },
+      "after_file": {
+        "bytes": 90006,
+        "sha256": "342de31c19e526199b8039aa4f800604daed9cdc0408a0d2c6e27ca2dd4e1a5d",
+        "git_blob_sha": "1fc2e4a981d43184679275f0f4f1acf3956f2572"
+      }
+    },
+    {
+      "label": "predecessor57 diagnostic all actual56 case names retained",
+      "count": 1,
+      "before": "all actual56 case names retained",
+      "after": "all actual57 case names retained",
+      "before_file": {
+        "bytes": 90006,
+        "sha256": "342de31c19e526199b8039aa4f800604daed9cdc0408a0d2c6e27ca2dd4e1a5d",
+        "git_blob_sha": "1fc2e4a981d43184679275f0f4f1acf3956f2572"
+      },
+      "after_file": {
+        "bytes": 90006,
+        "sha256": "6f29a480a1328d173704edfdfbab991a95593630e506f1ed8b9c4102e55f1c55",
+        "git_blob_sha": "794a6b3a34d8f84e7ad244e7434560a1a8c5cc82"
+      }
+    },
+    {
+      "label": "predecessor57 diagnostic original signed56 source",
+      "count": 1,
+      "before": "original signed56 source",
+      "after": "original signed57 source",
+      "before_file": {
+        "bytes": 90006,
+        "sha256": "6f29a480a1328d173704edfdfbab991a95593630e506f1ed8b9c4102e55f1c55",
+        "git_blob_sha": "794a6b3a34d8f84e7ad244e7434560a1a8c5cc82"
+      },
+      "after_file": {
+        "bytes": 90006,
+        "sha256": "75bf6ca716cbfe30a405f9a2739fc3cbcfc4b5c8db6d88682f6c8df4c66a1d8f",
+        "git_blob_sha": "a68118aad693a3e3590de3abaad26d5ea7a4ef77"
+      }
+    },
+    {
+      "label": "predecessor57 diagnostic exact inverse signed56 source restoration",
+      "count": 1,
+      "before": "exact inverse signed56 source restoration",
+      "after": "exact inverse signed57 source restoration",
+      "before_file": {
+        "bytes": 90006,
+        "sha256": "75bf6ca716cbfe30a405f9a2739fc3cbcfc4b5c8db6d88682f6c8df4c66a1d8f",
+        "git_blob_sha": "a68118aad693a3e3590de3abaad26d5ea7a4ef77"
+      },
+      "after_file": {
+        "bytes": 90006,
+        "sha256": "fd3f494011a3c562371f27b3cf67d4b710c1f10eac0e876c4ca15614fc65136a",
+        "git_blob_sha": "c98704f297fac28fbcbea19a4a0e65ed804f85a2"
+      }
+    },
+    {
+      "label": "predecessor57 diagnostic actual completed56 full input",
+      "count": 1,
+      "before": "actual completed56 full input",
+      "after": "actual completed57 full input",
+      "before_file": {
+        "bytes": 90006,
+        "sha256": "fd3f494011a3c562371f27b3cf67d4b710c1f10eac0e876c4ca15614fc65136a",
+        "git_blob_sha": "c98704f297fac28fbcbea19a4a0e65ed804f85a2"
+      },
+      "after_file": {
+        "bytes": 90006,
+        "sha256": "4ffae90c52aac60f15cd2610ce762269daface11bac3c5fd61780a5339678565",
+        "git_blob_sha": "38ad3a86871b9be8d9e016230877f8b423672af7"
+      }
+    },
+    {
+      "label": "predecessor57 diagnostic actual signed56 aggregate",
+      "count": 1,
+      "before": "actual signed56 aggregate",
+      "after": "actual signed57 aggregate",
+      "before_file": {
+        "bytes": 90006,
+        "sha256": "4ffae90c52aac60f15cd2610ce762269daface11bac3c5fd61780a5339678565",
+        "git_blob_sha": "38ad3a86871b9be8d9e016230877f8b423672af7"
+      },
+      "after_file": {
+        "bytes": 90006,
+        "sha256": "b6cad24b7a67fae1aedb418dfb8878f3bf2096db2cad0a0812da8f2de2fd34ea",
+        "git_blob_sha": "32dfaeaad033ab449e17020d17925f510e550929"
+      }
+    },
+    {
+      "label": "predecessor57 diagnostic actual56 compiler map",
+      "count": 1,
+      "before": "actual56 compiler map",
+      "after": "actual57 compiler map",
+      "before_file": {
+        "bytes": 90006,
+        "sha256": "b6cad24b7a67fae1aedb418dfb8878f3bf2096db2cad0a0812da8f2de2fd34ea",
+        "git_blob_sha": "32dfaeaad033ab449e17020d17925f510e550929"
+      },
+      "after_file": {
+        "bytes": 90006,
+        "sha256": "23d4fac0705c48118431c46c9735286353c73083c95c20179875716f58e9cabd",
+        "git_blob_sha": "b3ee44c6e71f256de57610842349a15d758f20d0"
+      }
+    },
+    {
+      "label": "predecessor57 diagnostic successor build input from actual56 bytes",
+      "count": 1,
+      "before": "successor build input from actual56 bytes",
+      "after": "successor build input from actual57 bytes",
+      "before_file": {
+        "bytes": 90006,
+        "sha256": "23d4fac0705c48118431c46c9735286353c73083c95c20179875716f58e9cabd",
+        "git_blob_sha": "b3ee44c6e71f256de57610842349a15d758f20d0"
+      },
+      "after_file": {
+        "bytes": 90006,
+        "sha256": "b52d9ade96c742b4e58b03b49da95ef837247398ea7895d0d66eb92a635abce1",
+        "git_blob_sha": "41178c976ca8c8fdefc6468c9ec439b889e913a2"
+      }
+    },
+    {
+      "label": "predecessor57 diagnostic original signed56 Android",
+      "count": 5,
+      "before": "original signed56 Android",
+      "after": "original signed57 Android",
+      "before_file": {
+        "bytes": 90006,
+        "sha256": "b52d9ade96c742b4e58b03b49da95ef837247398ea7895d0d66eb92a635abce1",
+        "git_blob_sha": "41178c976ca8c8fdefc6468c9ec439b889e913a2"
+      },
+      "after_file": {
+        "bytes": 90006,
+        "sha256": "09e226f775967c9e83a361a29c4159f94b6b1c611d48a83d56f127d3a9f15401",
+        "git_blob_sha": "893a85ab3f486914a681ba10a36a64ead5ade9e0"
+      }
+    },
+    {
+      "label": "predecessor57 diagnostic actual signed56 release",
+      "count": 1,
+      "before": "actual signed56 release",
+      "after": "actual signed57 release",
+      "before_file": {
+        "bytes": 90006,
+        "sha256": "09e226f775967c9e83a361a29c4159f94b6b1c611d48a83d56f127d3a9f15401",
+        "git_blob_sha": "893a85ab3f486914a681ba10a36a64ead5ade9e0"
+      },
+      "after_file": {
+        "bytes": 90006,
+        "sha256": "1c8b7c7817c40a5ac4333e5ab81ca95d4b7a64b8568ff84b78b0eb9b2904d203",
+        "git_blob_sha": "a1c2dca7ee97c5f3ace74839376e421151408026"
+      }
+    }
+  ],
+  "unchanged_function_blocks": [
+    {
+      "name": "sha",
+      "bytes": 57,
+      "sha256": "2f1541faf4c4ebe2f74c17d4b666982327a0f1e144708a531c92f08669705d57",
+      "git_blob_sha": "aff70305fedb3e3e0dcba24643fac7dd9d5cfb9b"
+    },
+    {
+      "name": "blob",
+      "bytes": 101,
+      "sha256": "b7656cc33dab9acf3fcbab7449e5438c2aa658b0ab14cb19cc88dbf4bf5ed8d7",
+      "git_blob_sha": "494f5d42b87d897529b8d784e1baaf71c72736c7"
+    },
+    {
+      "name": "encoded",
+      "bytes": 119,
+      "sha256": "44aa7053fda8f3b75a8015c520eca966d93d14c87428116d592595503cc76981",
+      "git_blob_sha": "0acccc4b0b620006072025f7b05110c4e979ceff"
+    },
+    {
+      "name": "strict",
+      "bytes": 382,
+      "sha256": "66e072de71bb6f43912a3ed891de78d54afd6852e9694aabd2b718d6d9a77657",
+      "git_blob_sha": "35439229ad85cf0ba78905b8baa1db20b3d70de2"
+    },
+    {
+      "name": "identity",
+      "bytes": 121,
+      "sha256": "0564a57dac0ed1c8177e6026f0f1b65b6edd179a4f65e0f1746a5c83325f1b0c",
+      "git_blob_sha": "1a12c78bb07b6f5397bad5f26c91665bc0490d58"
+    },
+    {
+      "name": "read_regular",
+      "bytes": 1488,
+      "sha256": "30a468984188a2bb0999289b0fc01d218ab28279ad0054530308a3b84b06f734",
+      "git_blob_sha": "a94d8ba32e544b0557d6df8aef55641eb3bb4522"
+    },
+    {
+      "name": "unchanged",
+      "bytes": 160,
+      "sha256": "73929bef2edd42d809bfbbb48a39095d4fec99f8ee621d5b24416bc448da3612",
+      "git_blob_sha": "beedaeaa563ab4e237c1027950af8c8381485f15"
+    },
+    {
+      "name": "checked",
+      "bytes": 281,
+      "sha256": "2c15de19ed4e32582b52e57952b0369119d63b13cf2a7cc04e84c04fa2f3e8bc",
+      "git_blob_sha": "fcf0cdcab5425b60f5b23fa3c0e1d27afc5d83b4"
+    },
+    {
+      "name": "relative",
+      "bytes": 258,
+      "sha256": "215e4e2e9939539f32e571714bbb3973a99ead7600192d81056a5a782dec5e02",
+      "git_blob_sha": "b332b72dece39f8d232a3a53802af450ef0a2b59"
+    },
+    {
+      "name": "rows",
+      "bytes": 169,
+      "sha256": "54a41a5cd5967ca36bdf6fd768e354803b7a84092627f7bc8e746e3ef9389d41",
+      "git_blob_sha": "afd57389c358026dcfd7c8bf077254eb21ecbf26"
+    },
+    {
+      "name": "snapshot",
+      "bytes": 427,
+      "sha256": "3aab3291d6499ac98eb650671a54f9e1315831764d5fc92ab7e7c41f706f7325",
+      "git_blob_sha": "1f47dfa9e24b25d1eb2959edef22ecb83ab9b730"
+    },
+    {
+      "name": "validate_map",
+      "bytes": 492,
+      "sha256": "2adcfc4c27497ac428bf0c4bc45e8ae74766746649f77584d696dd05fee1c8cb",
+      "git_blob_sha": "93ff6991adb576a6a14bfe1d8893fe9a4cab053b"
+    },
+    {
+      "name": "write_new",
+      "bytes": 790,
+      "sha256": "659bddf3fd69bdd948a1383d2a75cba8179ca5ed5914e7e1b3bd6129382db9cb",
+      "git_blob_sha": "ce2b8db3f9c37eeabcb4758a65df407bd91c9e86"
+    },
+    {
+      "name": "load_bound",
+      "bytes": 133,
+      "sha256": "f11ca85e4f96b1da35ce12c1d089d279469fba6281bf563700112865feafa4c8",
+      "git_blob_sha": "cb463c52db0edf6e7b2245b841ff89a4c96e2725"
+    },
+    {
+      "name": "prior_artifact_paths",
+      "bytes": 435,
+      "sha256": "f145abb2ab67e8f4bcd531bdafc56b7c7f94c69fd495667a892958f95d53dfdb",
+      "git_blob_sha": "d449e232f3b02c7df8b590903590881716ef9e07"
+    },
+    {
+      "name": "preserve_prior_build",
+      "bytes": 336,
+      "sha256": "c347e4cdfe09f733101fd829e7e57f73fc7710aa160708f56112baea603f3dde",
+      "git_blob_sha": "b95de80e335280c0b802d9e1ca98759c2b1ef97d"
+    },
+    {
+      "name": "run_step",
+      "bytes": 3900,
+      "sha256": "0fed99d7cda6aa50e9c6d6d720b615521406531bc89d2df1a81c549eb0cc88a4",
+      "git_blob_sha": "71362df5d95c533ba80ebf570dac0ce42ffe7bdc"
+    },
+    {
+      "name": "build_unsigned",
+      "bytes": 3517,
+      "sha256": "601207763bd4b2f3d1e39614c728c26693fb9c81c6831c150024cab08f671972",
+      "git_blob_sha": "010c862587ea8f1a246da2c8a3c10b119332a903"
+    }
+  ],
+  "all_source_patches_reverse_to_actual57_exact": true,
+  "exact_changed_production_paths": [
+    "AndroidManifest.xml",
+    "src/org/trillionnium/hepta/local/WebFlightSession.java"
+  ],
+  "all_other593_source_rows_byte_identical": true,
+  "compiler_input_count": 217,
+  "java_source_count": 115,
+  "compiler_changed_paths": [
+    "AndroidManifest.xml",
+    "src/org/trillionnium/hepta/local/WebFlightSession.java"
+  ],
+  "current_query": {
+    "runner": {
+      "bytes": 41005,
+      "sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10"
+    },
+    "expected_cases": 40,
+    "expected_assertions": 187,
+    "source_runner_unchanged": true,
+    "historical_prior_external_runner": "actual57.query40.historical_prior_external_runner (actual56)",
+    "historical_prior_integrated_runner": "actual57.query40",
+    "current_runner_is_repo": true
+  },
+  "focused_stage": {
+    "bytes": 79802,
+    "sha256": "a7b9a549983ff21f6c62b47ebb60d6c172c22d42d2d092ede5d726996546b2a7",
+    "git_blob_sha": "0ed1274edd5306cca458941c00eac0722712aec3"
+  },
+  "focused_result": null,
+  "transport": {
+    "base_request": {
+      "bytes": 59079,
+      "sha256": "27850a11ccc059475810fbf0254a2c308d3f342db743d6320c9d2e10400ac3e3",
+      "git_blob_sha": "baac2cd917c679c1f00b41ba0fd10c36cb192449"
+    },
+    "pending_request": {
+      "bytes": 50051,
+      "sha256": "e9289e61d581aa7ee8dad9ddeb61a5a2185802e02c60bbd53266f9ce3007f083",
+      "git_blob_sha": "0000c0684a9576e63aa63639385b1f2cdcaee3e0"
+    },
+    "pending_request_must_not_be_submitted": true,
+    "source_path": "/home/alex/hepta-local-007f-20261111/v58-main-p4-android-r1.py",
+    "loader": {
+      "bytes": 863,
+      "sha256": "9ad261c38cc7d70868fbde8ca3797965efa48f6e6197e10e1369b59582298eae",
+      "git_blob_sha": "8f9caa0c0ab63cb8f31f57e11a62e551d509fe70"
+    },
+    "supervisor": {
+      "bytes": 1802,
+      "sha256": "8c20204c978ab831a9e709c9dc0600b8b5d36633c087387c1438197d5a242935",
+      "git_blob_sha": "49fe5cc5d25770861c0907a288c9ffb08c977353"
+    },
+    "publisher": {
+      "bytes": 10437,
+      "sha256": "519026dfa10092e78ea71c536da5c3b568165ce15031e2fd5a0c94a1d1cd353d",
+      "git_blob_sha": "1a976bb6c3b38edb268cd4a9fdf29bdb75b6315c"
+    },
+    "exact_publisher_patches": [
+      {
+        "label": "current single source pin",
+        "before": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/v57-main-p4-android-r1.py\",\"bytes\":113856,\"sha256\":\"ac4b54eb0815bce791a99ae3e01de8077808fe55b5eabc58488fd1eba8126331\"}]",
+        "after": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/v58-main-p4-android-r1.py\",\"bytes\":90099,\"sha256\":\"a933105576d7012b74386c934a7f1c9184fa9c01e87ebf9c13fc728ce54dfa51\"}]",
+        "count": 1,
+        "before_file": {
+          "bytes": 10441,
+          "sha256": "ff75e82b4d84a84136c98583b07934217a62f4ffed3e3255f6cf4f50e09d94d1",
+          "git_blob_sha": "36cc4f5ea72149b83816490f6026c0975b409f90"
+        },
+        "after_file": {
+          "bytes": 10440,
+          "sha256": "28eab480e2208471e8a42af2689aaee8c138601d91f2998ae25bb1826fcb4720",
+          "git_blob_sha": "c2c0473b6075bda2a4b5fa2e7a50b3831f152154"
+        }
+      },
+      {
+        "label": "argument byte count",
+        "before": "ARGV_BYTES=47780",
+        "after": "ARGV_BYTES=38756",
+        "count": 1,
+        "before_file": {
+          "bytes": 10440,
+          "sha256": "28eab480e2208471e8a42af2689aaee8c138601d91f2998ae25bb1826fcb4720",
+          "git_blob_sha": "c2c0473b6075bda2a4b5fa2e7a50b3831f152154"
+        },
+        "after_file": {
+          "bytes": 10440,
+          "sha256": "b95712d69b0ba7f3d00c4f4f9ed616eecd8f80ce440c3b6d1525b4757e7ab20e",
+          "git_blob_sha": "386d08549853bd1a2fa20e80d9b0f87fd0841cd6"
+        }
+      },
+      {
+        "label": "argument SHA",
+        "before": "ARGV_SHA=\"76c79051b0be09ddde95625ab8884bf786ad07c813fa7b35494c141427e8eb7a\"",
+        "after": "ARGV_SHA=\"039459280e0b432a50f6d57f69292b0b73fa7c4b9821eb1fd5126494924b9e3f\"",
+        "count": 1,
+        "before_file": {
+          "bytes": 10440,
+          "sha256": "b95712d69b0ba7f3d00c4f4f9ed616eecd8f80ce440c3b6d1525b4757e7ab20e",
+          "git_blob_sha": "386d08549853bd1a2fa20e80d9b0f87fd0841cd6"
+        },
+        "after_file": {
+          "bytes": 10440,
+          "sha256": "1c8dbb24d1823d6739d70b374b1b0be80ad5d02f3b1c8140af7fe92553539fa0",
+          "git_blob_sha": "bb2b3142466b694397bec6c5c620dd486cb094ab"
+        }
+      },
+      {
+        "label": "gzip byte count",
+        "before": "GZIP_BYTES=35833",
+        "after": "GZIP_BYTES=29065",
+        "count": 1,
+        "before_file": {
+          "bytes": 10440,
+          "sha256": "1c8dbb24d1823d6739d70b374b1b0be80ad5d02f3b1c8140af7fe92553539fa0",
+          "git_blob_sha": "bb2b3142466b694397bec6c5c620dd486cb094ab"
+        },
+        "after_file": {
+          "bytes": 10440,
+          "sha256": "e5de1613b5495ae6a3fd0b3afc4af6d0fd066e4aabc744c89d61fb15e083cd8c",
+          "git_blob_sha": "562f379942add3ef41b8291e84881dca3b64064a"
+        }
+      },
+      {
+        "label": "gzip SHA",
+        "before": "GZIP_SHA=\"1dfb7d215bcf64a5d5c1575ffa94e8d8361c3292a57b52f58d0186de529fae84\"",
+        "after": "GZIP_SHA=\"340ee744e10e1ba851f2c7cab12a9b7bee4dd210572850ade5b359c68daf3623\"",
+        "count": 1,
+        "before_file": {
+          "bytes": 10440,
+          "sha256": "e5de1613b5495ae6a3fd0b3afc4af6d0fd066e4aabc744c89d61fb15e083cd8c",
+          "git_blob_sha": "562f379942add3ef41b8291e84881dca3b64064a"
+        },
+        "after_file": {
+          "bytes": 10440,
+          "sha256": "64166bcd3b90af437f55ea8a828bc3e1993015c639279d140e474ab142198678",
+          "git_blob_sha": "c8fee0730769e7ca30f613a65a5ecd8fd3632e99"
+        }
+      },
+      {
+        "label": "loader complete literal",
+        "before": "LOADER=\"import hashlib,os,pathlib,stat,sys\\np=pathlib.Path(\\\"/home/alex/hepta-local-007f-20261111/v57-main-p4-android-r1.py\\\")\\nassert all(not q.is_symlink() for q in (p,*p.parents))\\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\ntry:\\n a=os.fstat(fd)\\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==113856\\n with os.fdopen(os.dup(fd),\\\"rb\\\") as f:raw=f.read(113856+1)\\n assert len(raw)==113856 and hashlib.sha256(raw).hexdigest()==\\\"ac4b54eb0815bce791a99ae3e01de8077808fe55b5eabc58488fd1eba8126331\\\"\\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\\nfinally:os.close(fd)\\nsys.argv=[str(p)]\\nexec(compile(raw,str(p),\\\"exec\\\",dont_inherit=True),{\\\"__name__\\\":\\\"__main__\\\",\\\"__file__\\\":str(p),\\\"__stage_source__\\\":raw})\\n\"",
+        "after": "LOADER=\"import hashlib,os,pathlib,stat,sys\\np=pathlib.Path(\\\"/home/alex/hepta-local-007f-20261111/v58-main-p4-android-r1.py\\\")\\nassert all(not q.is_symlink() for q in (p,*p.parents))\\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\ntry:\\n a=os.fstat(fd)\\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==90099\\n with os.fdopen(os.dup(fd),\\\"rb\\\") as f:raw=f.read(90099+1)\\n assert len(raw)==90099 and hashlib.sha256(raw).hexdigest()==\\\"a933105576d7012b74386c934a7f1c9184fa9c01e87ebf9c13fc728ce54dfa51\\\"\\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\\nfinally:os.close(fd)\\nsys.argv=[str(p)]\\nexec(compile(raw,str(p),\\\"exec\\\",dont_inherit=True),{\\\"__name__\\\":\\\"__main__\\\",\\\"__file__\\\":str(p),\\\"__stage_source__\\\":raw})\\n\"",
+        "count": 1,
+        "before_file": {
+          "bytes": 10440,
+          "sha256": "64166bcd3b90af437f55ea8a828bc3e1993015c639279d140e474ab142198678",
+          "git_blob_sha": "c8fee0730769e7ca30f613a65a5ecd8fd3632e99"
+        },
+        "after_file": {
+          "bytes": 10437,
+          "sha256": "c0b752f971ed43902e7eb25dfb04afb9aba97b8d5d2730673733692bee597543",
+          "git_blob_sha": "30771267f2255e0d9bfbb42fd0b0dc330b46eaf5"
+        }
+      },
+      {
+        "label": "loader SHA",
+        "before": "LOADER_SHA=\"75ce3c43ccb9cd9a6611b12d94d0dddefa5714e4f49c35102bf1a571ba32c723\"",
+        "after": "LOADER_SHA=\"9ad261c38cc7d70868fbde8ca3797965efa48f6e6197e10e1369b59582298eae\"",
+        "count": 1,
+        "before_file": {
+          "bytes": 10437,
+          "sha256": "c0b752f971ed43902e7eb25dfb04afb9aba97b8d5d2730673733692bee597543",
+          "git_blob_sha": "30771267f2255e0d9bfbb42fd0b0dc330b46eaf5"
+        },
+        "after_file": {
+          "bytes": 10437,
+          "sha256": "23aa6d1741eb32f7e692c7032c4fc932ecd6b9e16bc33376a7aca8cfa98bdf2c",
+          "git_blob_sha": "023553ce051f2b21345e8b65de416001e8c34c7e"
+        }
+      },
+      {
+        "label": "supervisor complete literal",
+        "before": "SUPERVISOR=\"import hashlib,json,os,signal,subprocess,sys,time\\nloader=sys.argv[1]\\nassert len(loader.encode(\\\"utf-8\\\"))==866 and hashlib.sha256(loader.encode(\\\"utf-8\\\")).hexdigest()==\\\"75ce3c43ccb9cd9a6611b12d94d0dddefa5714e4f49c35102bf1a571ba32c723\\\"\\nassert os.getcwd()==\\\"/home/alex/hepta-local-007f-20261111\\\"\\nstarted=time.monotonic()\\np=subprocess.Popen([\\\"/usr/bin/python3\\\",\\\"-I\\\",\\\"-B\\\",\\\"-c\\\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main57-pocket4-java-native-reuse-pty-launch.v1\\\",\\\"event\\\":\\\"started\\\",\\\"child_pid\\\":p.pid,\\\"timeout_seconds\\\":1200,\\\"loader_sha256\\\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\\ncode=None;timed_out=False;forced=False;error=None\\ntry:\\n    code=p.wait(timeout=1200)\\nexcept BaseException as failure:\\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\\n    error=type(failure).__name__+\\\": \\\"+str(failure)\\n    if p.poll() is None:\\n        try:os.killpg(p.pid,signal.SIGTERM)\\n        except ProcessLookupError:pass\\n        try:code=p.wait(timeout=10)\\n        except subprocess.TimeoutExpired:\\n            forced=True\\n            try:os.killpg(p.pid,signal.SIGKILL)\\n            except ProcessLookupError:pass\\n            try:code=p.wait(timeout=10)\\n            except subprocess.TimeoutExpired:error+=\\\"; owned child exit not observed\\\"\\nexit_observed=p.poll() is not None\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main57-pocket4-java-native-reuse-pty-launch.v1\\\",\\\"event\\\":\\\"finished\\\",\\\"child_pid\\\":p.pid,\\\"child_returncode\\\":code,\\\"exit_observed\\\":exit_observed,\\\"timed_out\\\":timed_out,\\\"forced_kill\\\":forced,\\\"error\\\":error,\\\"elapsed_seconds\\\":time.monotonic()-started}),flush=True)\\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\\nraise SystemExit(code if code>=0 else 128-code)\\n\"",
+        "after": "SUPERVISOR=\"import hashlib,json,os,signal,subprocess,sys,time\\nloader=sys.argv[1]\\nassert len(loader.encode(\\\"utf-8\\\"))==863 and hashlib.sha256(loader.encode(\\\"utf-8\\\")).hexdigest()==\\\"9ad261c38cc7d70868fbde8ca3797965efa48f6e6197e10e1369b59582298eae\\\"\\nassert os.getcwd()==\\\"/home/alex/hepta-local-007f-20261111\\\"\\nstarted=time.monotonic()\\np=subprocess.Popen([\\\"/usr/bin/python3\\\",\\\"-I\\\",\\\"-B\\\",\\\"-c\\\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main58-pocket4-java-native-reuse-pty-launch.v1\\\",\\\"event\\\":\\\"started\\\",\\\"child_pid\\\":p.pid,\\\"timeout_seconds\\\":1200,\\\"loader_sha256\\\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\\ncode=None;timed_out=False;forced=False;error=None\\ntry:\\n    code=p.wait(timeout=1200)\\nexcept BaseException as failure:\\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\\n    error=type(failure).__name__+\\\": \\\"+str(failure)\\n    if p.poll() is None:\\n        try:os.killpg(p.pid,signal.SIGTERM)\\n        except ProcessLookupError:pass\\n        try:code=p.wait(timeout=10)\\n        except subprocess.TimeoutExpired:\\n            forced=True\\n            try:os.killpg(p.pid,signal.SIGKILL)\\n            except ProcessLookupError:pass\\n            try:code=p.wait(timeout=10)\\n            except subprocess.TimeoutExpired:error+=\\\"; owned child exit not observed\\\"\\nexit_observed=p.poll() is not None\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main58-pocket4-java-native-reuse-pty-launch.v1\\\",\\\"event\\\":\\\"finished\\\",\\\"child_pid\\\":p.pid,\\\"child_returncode\\\":code,\\\"exit_observed\\\":exit_observed,\\\"timed_out\\\":timed_out,\\\"forced_kill\\\":forced,\\\"error\\\":error,\\\"elapsed_seconds\\\":time.monotonic()-started}),flush=True)\\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\\nraise SystemExit(code if code>=0 else 128-code)\\n\"",
+        "count": 1,
+        "before_file": {
+          "bytes": 10437,
+          "sha256": "23aa6d1741eb32f7e692c7032c4fc932ecd6b9e16bc33376a7aca8cfa98bdf2c",
+          "git_blob_sha": "023553ce051f2b21345e8b65de416001e8c34c7e"
+        },
+        "after_file": {
+          "bytes": 10437,
+          "sha256": "272a6e895c9871608f99be35cf3f58f2569493d9ff43db78ade340de7fbf6a9a",
+          "git_blob_sha": "5c6a1d6f9805f2bf4a5e7fbaa309106d99cb57a8"
+        }
+      },
+      {
+        "label": "supervisor SHA",
+        "before": "SUPERVISOR_SHA=\"5bfae20cedbce8ebf6435c0ddcaa4f696d1c77dae11165961ae5c02ba5b099d4\"",
+        "after": "SUPERVISOR_SHA=\"8c20204c978ab831a9e709c9dc0600b8b5d36633c087387c1438197d5a242935\"",
+        "count": 1,
+        "before_file": {
+          "bytes": 10437,
+          "sha256": "272a6e895c9871608f99be35cf3f58f2569493d9ff43db78ade340de7fbf6a9a",
+          "git_blob_sha": "5c6a1d6f9805f2bf4a5e7fbaa309106d99cb57a8"
+        },
+        "after_file": {
+          "bytes": 10437,
+          "sha256": "d7c57db06637be7f3c452a379538b36665e58be2ceb499666c01689179a60873",
+          "git_blob_sha": "591b7557978e9dbe7ad7da31037c0d41f36fe67c"
+        }
+      },
+      {
+        "label": "current transport key",
+        "before": "TRANSPORT_KEY=\"007f-v57-main-p4-android-r1\"",
+        "after": "TRANSPORT_KEY=\"007f-v58-main-p4-android-r1\"",
+        "count": 1,
+        "before_file": {
+          "bytes": 10437,
+          "sha256": "d7c57db06637be7f3c452a379538b36665e58be2ceb499666c01689179a60873",
+          "git_blob_sha": "591b7557978e9dbe7ad7da31037c0d41f36fe67c"
+        },
+        "after_file": {
+          "bytes": 10437,
+          "sha256": "07691553fdd347274924d814ddd45bbfb142e70f32112ce3ae1d723d7f660e09",
+          "git_blob_sha": "d8d2159aeaebe180a209ff98f942649c038952df"
+        }
+      },
+      {
+        "label": "runtime loader length",
+        "before": "len(LOADER.encode(\"utf-8\"))==866",
+        "after": "len(LOADER.encode(\"utf-8\"))==863",
+        "count": 1,
+        "before_file": {
+          "bytes": 10437,
+          "sha256": "07691553fdd347274924d814ddd45bbfb142e70f32112ce3ae1d723d7f660e09",
+          "git_blob_sha": "d8d2159aeaebe180a209ff98f942649c038952df"
+        },
+        "after_file": {
+          "bytes": 10437,
+          "sha256": "519026dfa10092e78ea71c536da5c3b568165ce15031e2fd5a0c94a1d1cd353d",
+          "git_blob_sha": "1a976bb6c3b38edb268cd4a9fdf29bdb75b6315c"
+        }
+      }
+    ],
+    "compressed": {
+      "bytes": 29065,
+      "sha256": "340ee744e10e1ba851f2c7cab12a9b7bee4dd210572850ade5b359c68daf3623",
+      "argument_bytes": 38756,
+      "argument_sha256": "039459280e0b432a50f6d57f69292b0b73fa7c4b9821eb1fd5126494924b9e3f"
+    },
+    "loader_runtime_length": 863,
+    "supervisor_runtime_length": 1802,
+    "complete_source_gzip_crc_roundtrip_verified": true
+  },
+  "late_seal": {
+    "field": "CONFIG.focused_result",
+    "expected_actual_path": "/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1/RESULT.json",
+    "expected_schema": "hepta.main58-wire4-focused-host-stage.v1",
+    "required_steps": [
+      "compile",
+      "consumer",
+      "arm"
+    ],
+    "future_success_not_claimed": true,
+    "after_seal_recompute": [
+      "source bytes/SHA/Git",
+      "loader source literal and lengths",
+      "supervisor loader SHA/length",
+      "publisher whole source gzip/pins/length assertions",
+      "exact request"
+    ],
+    "new_hunk_only_one_config_value": true
+  },
+  "scope": {
+    "host_calls": 0,
+    "syntax_run": false,
+    "jvm_or_android_run": false,
+    "compiled": false,
+    "native_recompiled_here": false,
+    "phone_actions": 0,
+    "actual_flight_results_provider_ready": false,
+    "signed": false,
+    "published": false,
+    "host_connection_status_from_root": "tunnel_client_not_connected; Core58 final result unknown"
+  }
+}

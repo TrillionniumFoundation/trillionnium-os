@@ -1,0 +1,913 @@
+{
+  "schema": "hepta.v55-background-web-observation.v1",
+  "driver_revision": "web-helper6-natural-owner-automatic-target-two-lease-r1",
+  "qualified": false,
+  "business_verified": false,
+  "sdk_teardown_verified": false,
+  "case": "flight",
+  "lease_number": 1,
+  "instruction": "查一下2026年11月17日北京到上海的单程机票，1名成人",
+  "instruction_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+  "plan": {
+    "schema": "hepta.v55-public-web-test-plan.v1",
+    "case": "flight",
+    "instruction": "查一下2026年11月17日北京到上海的单程机票，1名成人",
+    "instruction_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+    "goal_kind": "csair_public_flight",
+    "execution_mode": "background_only",
+    "allowed_packages": [
+      "org.trillionnium.hepta.webhelper"
+    ],
+    "explicit_ui_selected_packages": [
+      "com.motorola.stylus",
+      "org.trillionnium.hepta.webhelper"
+    ],
+    "bootstrap_package": "org.trillionnium.hepta.webhelper",
+    "controller_version_code": 55,
+    "helper_version_code": 6,
+    "driver_business_actions": false,
+    "model_required_for_page_actions": true
+  },
+  "plan_sha256": "3f5912fb864407988655eab215a39da86850dd1014eb75ede80f111189b7d329",
+  "release": {
+    "manifest_sha256": "80fcde26cf76d2227deea1dfe1d6b4da35a4848c8a63c7322806ec17800641b0",
+    "roles": {
+      "controller": {
+        "signed_result": {
+          "path": "/home/alex/hepta-local-007f-20261111/v55-main-sign-r1/RESULT.json",
+          "bytes": 31662,
+          "sha256": "3caa0d8ae5252352fb606db1d851fd9e960423c0f7374a76c58b89c688556535"
+        },
+        "apk": {
+          "path": "/home/alex/hepta-local-007f-20261111/v55-main-sign-r1/out/hepta-local-0.55.0.apk",
+          "bytes": 21014354,
+          "sha256": "ea485e6d28544d75a9010e441aae8df348d1b64884f9ff7a50cb909a3f8ea45e"
+        },
+        "uid": 10481,
+        "version_code": 55,
+        "version_name": "0.55.0-scoped-official-web",
+        "source_inventory_sha256": "65bf7934d82692f45c10aedb947613043453b30bc7d55c4dc8b7e44e4ca0bed1",
+        "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5"
+      },
+      "helper": {
+        "signed_result": {
+          "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-sign-r1/out/RESULT.json",
+          "bytes": 195558,
+          "sha256": "020921fcb9459f3e64773d15e978e1d6e63de535c351873b86baa1965cbc3258"
+        },
+        "apk": {
+          "path": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-sign-r1/out/hepta-web-helper-0.6.0-v4.apk",
+          "bytes": 1410047,
+          "sha256": "02360c24c471dcd4be0cbc7c7fdb316a7918d656edd1407d765540b5a3f2f5ff"
+        },
+        "uid": 10484,
+        "version_code": 6,
+        "version_name": "0.6.0-web-evidence-v4",
+        "source_inventory_sha256": "3a9cb424a258adfe71b821dadf6b6319bd228a3bf2d0bf190c9d6b139f6b1c8e",
+        "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5"
+      }
+    }
+  },
+  "preparation_sha256": "5f1775993fbf13902ec1614500e3c497bb8d43ae34facf7fece7ded4a1ed45b9",
+  "review_sha256": "3af8f5652d54ba7126de5195b2a80b145960550b2b254ece8a6e60c31daae040",
+  "source_readers_sha256": "0d1aa533221550cbc3b1568fd58f815c138fdaab6863281e71767629d492cfa4",
+  "support_sha256": "e5bbc07cd151bfb10c8b331706ef7158fd0a73b08d457f5c13f2c33ff2d90d21",
+  "target_package": "org.trillionnium.hepta.webhelper",
+  "existing_su_authorization_operator_attested": true,
+  "direct_broker_client_used": false,
+  "private_nonce_trigger_used": false,
+  "uiautomator_or_UiAutomation_used": false,
+  "driver_webpage_actions": [],
+  "model_required_for_page_actions": true,
+  "automatic_retry": false,
+  "collection_complete": true,
+  "ready_for_next_lease": true,
+  "start_attempted": true,
+  "input_outcome_unknown": false,
+  "started_wall_s": 1794508137.5824594,
+  "runtime_config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+  "model_profile": "lfm3-1.7b-qad-q4_0",
+  "expected_model_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452",
+  "compute": "npu",
+  "helper_pins": {
+    "v35_identity": "a4a751cf03956783e551f54b16dd37769f00d5b7cd2a0225b667becbc6e6d003",
+    "warm_receipts": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5",
+    "model_profiles": "ee26ed1f2f2b2ffd5f14fbd526c6d3cbf05d7ed8d65c422df5e60a72fa0cfa3a",
+    "phone_acceptance": "411da90ca9ef83441fa0a199a25d71361ab582db5b54ac08bd39e5e8597e6302",
+    "main_user_inflight": "79450f5c07b48958821d388a729223890fcd7f2cd0c085e85e15c48aadee167d"
+  },
+  "operation_lock": {
+    "schema": "hepta.cooperative-operation-lock.v1",
+    "path": "/home/alex/.local/state/hepta/razr-operation.lock",
+    "cooperative_advisory_only": true,
+    "nonblocking": true,
+    "created": false,
+    "truncated": false,
+    "reacquisition_attempted": false,
+    "acquired": true,
+    "released": true,
+    "continuity_verified": true,
+    "continuity_checks": 441,
+    "boundary": "participating host processes only; already submitted commands cannot be revoked",
+    "held_device": 66306,
+    "held_inode": 58890228,
+    "owner_uid": 1000,
+    "last_check": "execute_exit"
+  },
+  "installed_identity_before": {
+    "hepta": {
+      "package": "org.trillionnium.hepta.local",
+      "uid": 10481,
+      "apks": [
+        {
+          "path": "/data/app/~~ydmcznFzr59wjiXBKk_ZDQ==/org.trillionnium.hepta.local-PHrugxpSPRrvNXFBFIs7Cg==/base.apk",
+          "sha256": "ea485e6d28544d75a9010e441aae8df348d1b64884f9ff7a50cb909a3f8ea45e"
+        }
+      ]
+    },
+    "helper": {
+      "package": "org.trillionnium.hepta.webhelper",
+      "uid": 10484,
+      "apks": [
+        {
+          "path": "/data/app/~~iuCpyfrLdnn2FSYG4ZOcYQ==/org.trillionnium.hepta.webhelper-LMxwSbN_9UdoiNCifY0iXw==/base.apk",
+          "sha256": "02360c24c471dcd4be0cbc7c7fdb316a7918d656edd1407d765540b5a3f2f5ff"
+        }
+      ]
+    }
+  },
+  "ui_preferences_before_sha256": "c9364dde8c0b52e7890835d720967987f708e972b397fcc3f76d9d76a667137f",
+  "background_selection_from_preparation": {
+    "allowed_packages": [
+      "com.motorola.stylus",
+      "org.trillionnium.hepta.webhelper"
+    ],
+    "bootstrap_package": "com.motorola.stylus",
+    "scope_count": 2,
+    "automatic_target_text": "本次将自动使用：Hepta 网页。已保存的应用范围保持不变。",
+    "initial_spinner_hidden": true,
+    "observed_app_labels": {
+      "com.motorola.stylus": "Moto 笔记",
+      "org.trillionnium.hepta.webhelper": "Hepta 网页"
+    },
+    "selection_source": "ordinary_visible_multi_choice_and_persisted_initial",
+    "expected_effective_lease_packages": [
+      "org.trillionnium.hepta.webhelper"
+    ],
+    "effective_lease_already_verified": false,
+    "expected_owner_task_selection": {
+      "schema": "hepta.owner-task-app-selection.v1",
+      "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+      "recognition": "natural_explicit_date_single_adult_flight_query.v1",
+      "original_ui_initial_package": "com.motorola.stylus",
+      "original_ui_allowed_packages": [
+        "com.motorola.stylus",
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "effective_initial_package": "org.trillionnium.hepta.webhelper",
+      "effective_allowed_packages": [
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "effective_scope_within_selected_apps": true,
+      "effective_scope_strictly_smaller": true,
+      "initial_app_changed": true,
+      "package_from_model_or_screen": false,
+      "grants_tool_authority": false,
+      "changes_saved_preferences": false
+    }
+  },
+  "helper_idle_before": {
+    "journal_present": false,
+    "formal_lease_recorded": false
+  },
+  "qualification_scope_present": false,
+  "formal_hepta_accessibility_enabled": true,
+  "formal_service_binding": {
+    "verified": true,
+    "component": "org.trillionnium.hepta.local/org.trillionnium.hepta.local.HeptaAccessibilityService",
+    "app_pid": 28261,
+    "app_uid": 10481,
+    "client_pid": 3622,
+    "client_uid": 1000,
+    "binder_received": true,
+    "has_bound": true,
+    "connection_ids": [
+      "4d30b5b"
+    ],
+    "service_dump_sha256": "ea356537f92934d411de622232b5d22231cd2dd8202afec3ad867d97df1dda14",
+    "identity_scope": "exact active AMS ServiceRecord and live system-client binding; label-only AccessibilityManager rows are not component attestation"
+  },
+  "component_named_in_accessibility_bound_table": false,
+  "formal_hepta_accessibility_bound": true,
+  "baseline_session": {
+    "schema": "hepta.local-session.v1",
+    "status": "failed",
+    "task_id": "3c90bb05c4974a8980655fd254fc933e",
+    "origin": "user_button",
+    "instruction_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+    "task_authorization_sha256": "7362e28a99e174f17c45f4070472c883a033c9bfcb9446f1cc19e2221e1edacc",
+    "task_authorization": {
+      "schema": "hepta.owner-task-authorization.v1",
+      "parser": "hepta.owner-tool-clauses.zh.v4-fixed-intents+natural-flight-ceiling.v1",
+      "instruction_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+      "authorization_sha256": "7362e28a99e174f17c45f4070472c883a033c9bfcb9446f1cc19e2221e1edacc",
+      "allowed_tools": [
+        "back",
+        "click",
+        "done",
+        "open",
+        "scroll",
+        "submit",
+        "type",
+        "wait"
+      ],
+      "require_find_app_before_open": false,
+      "find_query": null,
+      "recognized_rules": [
+        "natural_public_flight_tool_ceiling.v1"
+      ],
+      "arbitrary_semantic_constraints_verified": false
+    },
+    "background_request": {
+      "mode": "background",
+      "allowed_packages": [
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "bootstrap_package": "org.trillionnium.hepta.webhelper",
+      "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false,
+      "owner_task_selection": {
+        "schema": "hepta.owner-task-app-selection.v1",
+        "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+        "recognition": "natural_explicit_date_single_adult_flight_query.v1",
+        "original_ui_initial_package": "com.motorola.stylus",
+        "original_ui_allowed_packages": [
+          "com.motorola.stylus",
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_initial_package": "org.trillionnium.hepta.webhelper",
+        "effective_allowed_packages": [
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_scope_within_selected_apps": true,
+        "effective_scope_strictly_smaller": true,
+        "initial_app_changed": true,
+        "package_from_model_or_screen": false,
+        "grants_tool_authority": false,
+        "changes_saved_preferences": false
+      }
+    },
+    "background_lease_unreleased": false,
+    "web_helper_lease_unreleased": false,
+    "debug_nonce_sha256": null,
+    "expected_scope_sha256": null,
+    "actual_scope_sha256": null,
+    "state": "regular immutable APK required",
+    "pending": false,
+    "running": false,
+    "blocked": false,
+    "cleanup_known": true,
+    "app_uid": 10481,
+    "updated_wall_ms": 1794488567931,
+    "external_model": false,
+    "automatic_resume": false,
+    "goal_independently_verified": false,
+    "evidence_directory": "/data/data/org.trillionnium.hepta.local/files/control-tasks/3c90bb05c4974a8980655fd254fc933e",
+    "model_reported_success": false,
+    "steps": 0,
+    "completion_verified": false,
+    "completion_evidence": {
+      "schema": "hepta.task-completion.v1",
+      "kind": "web_search_results",
+      "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+      "contract_sha256": "8c6d1341ad84a376fd8c87daf7dbb05761a5c1f6b134d601480b1f2f49d418a2",
+      "source": "controller_observation_checks_not_model_claims",
+      "completion_verified": false,
+      "missing": [
+        "model_bound_web_query_dispatch_missing",
+        "actual_same_record_flight_results_not_yet_verified"
+      ],
+      "rejected_success_claims": 0,
+      "max_rejected_success_claims": 2,
+      "web_query_dispatched": false,
+      "writes_required_for_unknown_or_read_only_goal": false,
+      "grants_tool_authority": false,
+      "task_id": "3c90bb05c4974a8980655fd254fc933e",
+      "contract": {
+        "schema": "hepta.task-completion.v1",
+        "kind": "web_search_results",
+        "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+        "contract_sha256": "8c6d1341ad84a376fd8c87daf7dbb05761a5c1f6b134d601480b1f2f49d418a2",
+        "recognition": "natural_csair_flight_owner.v1",
+        "expected_body_sha256": null,
+        "source": "immutable_owner_contract",
+        "model_may_change_goal": false,
+        "grants_tool_authority": false
+      },
+      "proofs": [],
+      "model_success_claims": [],
+      "identity_failure": null,
+      "display_id": null,
+      "background_generation": null,
+      "persistent_storage_bytes_verified": false,
+      "new_database_item_identity_verified": false,
+      "observation_chain_verified": false,
+      "terminal_binding_and_cleanup_verified": false,
+      "completion_actor": null,
+      "model_done_synthesized": false,
+      "controller_completion_requested": false,
+      "controller_native_parent_session_bound": null
+    }
+  },
+  "main_physical_display_mapping": {
+    "verified": true,
+    "logical_display_id": 0,
+    "physical_display_id": "4630947043778501779",
+    "hwc_display_id": 0,
+    "port": 147,
+    "screen_size": [
+      1224,
+      2992
+    ],
+    "rotation": 0,
+    "display_dump_sha256": "0b2e9cfdc609cf4857aee4882fa310f063220c1521c59377ef2a3fc103dc84f2",
+    "surfaceflinger_dump_sha256": "d01416390f86be91be5202135332b4e587e1528c3e3f97191fc1057b5035c6e2",
+    "claim_scope": "fresh sequential system logical-0 primary/base/override and SurfaceFlinger physical-ID match; HWC ID is not assumed logical"
+  },
+  "prestart_formal_service_binding": {
+    "verified": true,
+    "component": "org.trillionnium.hepta.local/org.trillionnium.hepta.local.HeptaAccessibilityService",
+    "app_pid": 28261,
+    "app_uid": 10481,
+    "client_pid": 3622,
+    "client_uid": 1000,
+    "binder_received": true,
+    "has_bound": true,
+    "connection_ids": [
+      "4d30b5b"
+    ],
+    "service_dump_sha256": "faaa7884c9bc8b29d50d1e0dcb02d0fa187477697ea48ebcffca779db0af79dd",
+    "identity_scope": "exact active AMS ServiceRecord and live system-client binding; label-only AccessibilityManager rows are not component attestation"
+  },
+  "component_named_in_prestart_accessibility_bound_table": false,
+  "formal_hepta_accessibility_bound_before_start": true,
+  "prepared_screen_sha256": "88d24e37ab27efcb609a2eb1f212255a5bec6a2eed79b8dd1a781ee2f691bc24",
+  "start_pixel_proof": {
+    "algorithm": "exact_decoded_RGBA_pixels_outside_system_bars_v1",
+    "pixels_equal": true,
+    "reviewed_content_rgba_sha256": "a69396dfb295d6d0ceb05eafd54a7c097cda901ad334e371a0900d539f06d308",
+    "current_content_rgba_sha256": "a69396dfb295d6d0ceb05eafd54a7c097cda901ad334e371a0900d539f06d308",
+    "reviewed_png_sha256": "6bffbf5212656e17fad614eaea4f034b9d27a069f335fd02a2cabb3dba6db3b5",
+    "current_png_sha256": "88d24e37ab27efcb609a2eb1f212255a5bec6a2eed79b8dd1a781ee2f691bc24",
+    "reviewed_window_dump_sha256": "c76cda522a90c97e91525ca83bbd2021453648cb7be4a353acac2e0d573999e8",
+    "current_window_dump_sha256": "c76cda522a90c97e91525ca83bbd2021453648cb7be4a353acac2e0d573999e8",
+    "reviewed_geometry": {
+      "display_id": 0,
+      "screen_size": [
+        1224,
+        2992
+      ],
+      "content_rect": [
+        0,
+        130,
+        1224,
+        2920
+      ],
+      "main_focus": "Window{fdac278 u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+      "system_bars": [
+        {
+          "type": "statusBars",
+          "source_id": "73500000",
+          "frame": [
+            0,
+            0,
+            1224,
+            130
+          ],
+          "visible": true
+        },
+        {
+          "type": "navigationBars",
+          "source_id": "d17c0001",
+          "frame": [
+            0,
+            2920,
+            1224,
+            2992
+          ],
+          "visible": true
+        }
+      ],
+      "geometry_source": "display0.WindowInsetsStateController.InsetsState"
+    },
+    "current_geometry": {
+      "display_id": 0,
+      "screen_size": [
+        1224,
+        2992
+      ],
+      "content_rect": [
+        0,
+        130,
+        1224,
+        2920
+      ],
+      "main_focus": "Window{fdac278 u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+      "system_bars": [
+        {
+          "type": "statusBars",
+          "source_id": "73500000",
+          "frame": [
+            0,
+            0,
+            1224,
+            130
+          ],
+          "visible": true
+        },
+        {
+          "type": "navigationBars",
+          "source_id": "d17c0001",
+          "frame": [
+            0,
+            2920,
+            1224,
+            2992
+          ],
+          "visible": true
+        }
+      ],
+      "geometry_source": "display0.WindowInsetsStateController.InsetsState"
+    },
+    "coordinates": [
+      180,
+      1114
+    ],
+    "pixel_tolerance": 0,
+    "resized": false,
+    "button_only_crop_used": false,
+    "claim_scope": "operator-reviewed reference plus fresh exact app-content pixels; pre-tap observations are sequential, not atomic",
+    "capture_started_monotonic_s": 296636.178150805,
+    "capture_ended_monotonic_s": 296636.567309059,
+    "maximum_capture_start_to_tap_seconds": 10.0,
+    "capture_start_to_tap_seconds": 0.6025791590218432
+  },
+  "trigger": {
+    "kind": "one_exact_application_content_bound_start_tap",
+    "coordinates": [
+      180,
+      1114
+    ],
+    "auto_task": false,
+    "command_completed": true
+  },
+  "main_user": {
+    "phase": "hepta",
+    "attempted": false,
+    "host_actions": [],
+    "actor": "no_main_user_coexistence_actions_requested",
+    "model_issued": false,
+    "task_action": false
+  },
+  "task_id": "6dfcaf6cbb3f4252b472f9cf6f80b5cc",
+  "last_session": {
+    "schema": "hepta.local-session.v1",
+    "status": "failed",
+    "task_id": "6dfcaf6cbb3f4252b472f9cf6f80b5cc",
+    "origin": "user_button",
+    "instruction_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+    "task_authorization_sha256": "7362e28a99e174f17c45f4070472c883a033c9bfcb9446f1cc19e2221e1edacc",
+    "task_authorization": {
+      "schema": "hepta.owner-task-authorization.v1",
+      "parser": "hepta.owner-tool-clauses.zh.v4-fixed-intents+natural-flight-ceiling.v1",
+      "instruction_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+      "authorization_sha256": "7362e28a99e174f17c45f4070472c883a033c9bfcb9446f1cc19e2221e1edacc",
+      "allowed_tools": [
+        "back",
+        "click",
+        "done",
+        "open",
+        "scroll",
+        "submit",
+        "type",
+        "wait"
+      ],
+      "require_find_app_before_open": false,
+      "find_query": null,
+      "recognized_rules": [
+        "natural_public_flight_tool_ceiling.v1"
+      ],
+      "arbitrary_semantic_constraints_verified": false
+    },
+    "background_request": {
+      "mode": "background",
+      "allowed_packages": [
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "bootstrap_package": "org.trillionnium.hepta.webhelper",
+      "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false,
+      "owner_task_selection": {
+        "schema": "hepta.owner-task-app-selection.v1",
+        "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+        "recognition": "natural_explicit_date_single_adult_flight_query.v1",
+        "original_ui_initial_package": "com.motorola.stylus",
+        "original_ui_allowed_packages": [
+          "com.motorola.stylus",
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_initial_package": "org.trillionnium.hepta.webhelper",
+        "effective_allowed_packages": [
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_scope_within_selected_apps": true,
+        "effective_scope_strictly_smaller": true,
+        "initial_app_changed": true,
+        "package_from_model_or_screen": false,
+        "grants_tool_authority": false,
+        "changes_saved_preferences": false
+      }
+    },
+    "background_lease_unreleased": false,
+    "web_helper_lease_unreleased": false,
+    "debug_nonce_sha256": null,
+    "expected_scope_sha256": null,
+    "actual_scope_sha256": null,
+    "state": "画面连续变化，已停止操作以免点错目标",
+    "pending": false,
+    "running": false,
+    "blocked": false,
+    "cleanup_known": true,
+    "app_uid": 10481,
+    "updated_wall_ms": 1794508181013,
+    "external_model": false,
+    "automatic_resume": false,
+    "goal_independently_verified": false,
+    "evidence_directory": "/data/data/org.trillionnium.hepta.local/files/control-tasks/6dfcaf6cbb3f4252b472f9cf6f80b5cc",
+    "model_reported_success": false,
+    "steps": 3,
+    "completion_verified": false,
+    "completion_evidence": {
+      "schema": "hepta.task-completion.v1",
+      "kind": "web_search_results",
+      "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+      "contract_sha256": "8c6d1341ad84a376fd8c87daf7dbb05761a5c1f6b134d601480b1f2f49d418a2",
+      "source": "controller_observation_checks_not_model_claims",
+      "completion_verified": false,
+      "missing": [
+        "model_bound_web_query_dispatch_missing",
+        "actual_same_record_flight_results_not_yet_verified"
+      ],
+      "rejected_success_claims": 0,
+      "max_rejected_success_claims": 2,
+      "web_query_dispatched": false,
+      "writes_required_for_unknown_or_read_only_goal": false,
+      "grants_tool_authority": false,
+      "task_id": "6dfcaf6cbb3f4252b472f9cf6f80b5cc",
+      "contract": {
+        "schema": "hepta.task-completion.v1",
+        "kind": "web_search_results",
+        "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+        "contract_sha256": "8c6d1341ad84a376fd8c87daf7dbb05761a5c1f6b134d601480b1f2f49d418a2",
+        "recognition": "natural_csair_flight_owner.v1",
+        "expected_body_sha256": null,
+        "source": "immutable_owner_contract",
+        "model_may_change_goal": false,
+        "grants_tool_authority": false
+      },
+      "proofs": [],
+      "model_success_claims": [],
+      "identity_failure": null,
+      "display_id": 23,
+      "background_generation": "6f7cea8e-65bb-4441-b4fe-9e54d998878d",
+      "persistent_storage_bytes_verified": false,
+      "new_database_item_identity_verified": false,
+      "observation_chain_verified": false,
+      "terminal_binding_and_cleanup_verified": false,
+      "completion_actor": null,
+      "model_done_synthesized": false,
+      "controller_completion_requested": false,
+      "controller_native_parent_session_bound": null
+    }
+  },
+  "installed_identity_after": {
+    "hepta": {
+      "package": "org.trillionnium.hepta.local",
+      "uid": 10481,
+      "apks": [
+        {
+          "path": "/data/app/~~ydmcznFzr59wjiXBKk_ZDQ==/org.trillionnium.hepta.local-PHrugxpSPRrvNXFBFIs7Cg==/base.apk",
+          "sha256": "ea485e6d28544d75a9010e441aae8df348d1b64884f9ff7a50cb909a3f8ea45e"
+        }
+      ]
+    },
+    "helper": {
+      "package": "org.trillionnium.hepta.webhelper",
+      "uid": 10484,
+      "apks": [
+        {
+          "path": "/data/app/~~iuCpyfrLdnn2FSYG4ZOcYQ==/org.trillionnium.hepta.webhelper-LMxwSbN_9UdoiNCifY0iXw==/base.apk",
+          "sha256": "02360c24c471dcd4be0cbc7c7fdb316a7918d656edd1407d765540b5a3f2f5ff"
+        }
+      ]
+    }
+  },
+  "capture_raw_index": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-v55-lfm3-flight-r1/CAPTURE-RAW-INDEX.json",
+    "bytes": 12077,
+    "sha256": "921b9c538b6d709c997c3fc43dc76d00ccc87e569093103b9419a1f24a6f8ed5"
+  },
+  "original_raw_fd_files": 6,
+  "capture_index_is_business_verdict": false,
+  "helper_journal_after_sha256": "d6d26a446c06173648bbf6820a64f236b42049218a1778322214ca785b333b54",
+  "markers_present_after": {
+    "qualification-scope.json": false,
+    "web-helper.active.json": false,
+    "background-session.active.json": false,
+    "control-session.interrupted.json": false,
+    "background-permission-interrupted.json": false
+  },
+  "web_lifecycle": {
+    "schema": "hepta.v55-original-web-lifecycle-links.v1",
+    "task_id": "6dfcaf6cbb3f4252b472f9cf6f80b5cc",
+    "bound_capture_present": true,
+    "ordinary_close_verified": true,
+    "business_verified": false,
+    "sdk_teardown_verified": false,
+    "missing": [],
+    "binding_sha256": "0875a94d8128168488b0c4e7e43cdda80495ef67a1dfc4844511be2717cb654f",
+    "controller_session_nonce": "031010a0aee44295ad7de645688031049c5fa11ae869421c9a54207ba7dd7752",
+    "profile_name": "hepta_v2_031010a0aee44295ad7de645688031049c5fa11ae869421c9a54207ba7dd7752",
+    "generation": "6f7cea8e-65bb-4441-b4fe-9e54d998878d",
+    "display_id": 23,
+    "captures": [
+      {
+        "nonce": "5a26fffdc6ac42a79ec5279d82e4abb5764689dc95424b37931a2e408a3293dd",
+        "raw_sha256": "7e4f98211577e9162788968e69d75980839b74fe4388b3d6f1228628fefc52a6",
+        "raw_bytes": 229571,
+        "actual_window_id": 3593,
+        "webview_instance": "4601e2cc-4ca4-4c6f-b109-4019b6292394",
+        "navigation_epoch": 2,
+        "storage": {
+          "profile_name": "hepta_v2_031010a0aee44295ad7de645688031049c5fa11ae869421c9a54207ba7dd7752",
+          "preload_callback_elapsed_ms": 850395772,
+          "capture_started_elapsed_ms": 850424953,
+          "capture_ended_elapsed_ms": 850425068,
+          "actual_runtime_features_recorded": true
+        },
+        "raw_file": "task/web-helper/raw-5a26fffdc6ac42a79ec5279d82e4abb5764689dc95424b37931a2e408a3293dd.json",
+        "flight_raw_pair": {
+          "schema": "hepta.v55-flight-full-raw-pair-links.v1",
+          "dom_schema": "hepta.fixed-top-document-dom.v4",
+          "comparison_scope": "full_raw_equality",
+          "raw_dom_equal": true,
+          "before_dom_sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "after_dom_sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "dom_utf8_bytes": 91012,
+          "node_count": 169,
+          "current_native_url": "https://m.csair.com/",
+          "dom_stability_sha256": "f999f3c57e971e73bde21612a6213f9aff54e8ae115d89c8a21cef94fbc97f37",
+          "full_native_geometry_replayed_by_this_collector": false,
+          "native_geometry_reference": "original verified main55 callback and retained four native samples",
+          "grants_action_authority": false,
+          "business_verified": false
+        },
+        "raw_dom_json_pointers": [
+          "/capture/before_dom_raw_utf8",
+          "/capture/dom_raw_utf8"
+        ]
+      },
+      {
+        "nonce": "5e3cbc7e753640e0a04800414709507e69d51a30bc8143f992b0c211bb836eb8",
+        "raw_sha256": "6bfdbe57a4ee67147041428e2a0d86c60c049a65ca83a49e178d44529532a09b",
+        "raw_bytes": 229571,
+        "actual_window_id": 3593,
+        "webview_instance": "4601e2cc-4ca4-4c6f-b109-4019b6292394",
+        "navigation_epoch": 2,
+        "storage": {
+          "profile_name": "hepta_v2_031010a0aee44295ad7de645688031049c5fa11ae869421c9a54207ba7dd7752",
+          "preload_callback_elapsed_ms": 850395772,
+          "capture_started_elapsed_ms": 850423872,
+          "capture_ended_elapsed_ms": 850424014,
+          "actual_runtime_features_recorded": true
+        },
+        "raw_file": "task/web-helper/raw-5e3cbc7e753640e0a04800414709507e69d51a30bc8143f992b0c211bb836eb8.json",
+        "flight_raw_pair": {
+          "schema": "hepta.v55-flight-full-raw-pair-links.v1",
+          "dom_schema": "hepta.fixed-top-document-dom.v4",
+          "comparison_scope": "full_raw_equality",
+          "raw_dom_equal": true,
+          "before_dom_sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "after_dom_sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "dom_utf8_bytes": 91012,
+          "node_count": 169,
+          "current_native_url": "https://m.csair.com/",
+          "dom_stability_sha256": "f999f3c57e971e73bde21612a6213f9aff54e8ae115d89c8a21cef94fbc97f37",
+          "full_native_geometry_replayed_by_this_collector": false,
+          "native_geometry_reference": "original verified main55 callback and retained four native samples",
+          "grants_action_authority": false,
+          "business_verified": false
+        },
+        "raw_dom_json_pointers": [
+          "/capture/before_dom_raw_utf8",
+          "/capture/dom_raw_utf8"
+        ]
+      },
+      {
+        "nonce": "626cbed43019410e901b0d68d516a51e7df789fff6794d5bba39041d760a9cf2",
+        "raw_sha256": "06fb6ec13ceea5399009607ebf602efbf5c40b84123a63116083fc84194971f7",
+        "raw_bytes": 229593,
+        "actual_window_id": 3593,
+        "webview_instance": "4601e2cc-4ca4-4c6f-b109-4019b6292394",
+        "navigation_epoch": 2,
+        "storage": {
+          "profile_name": "hepta_v2_031010a0aee44295ad7de645688031049c5fa11ae869421c9a54207ba7dd7752",
+          "preload_callback_elapsed_ms": 850395772,
+          "capture_started_elapsed_ms": 850414190,
+          "capture_ended_elapsed_ms": 850414315,
+          "actual_runtime_features_recorded": true
+        },
+        "raw_file": "task/web-helper/raw-626cbed43019410e901b0d68d516a51e7df789fff6794d5bba39041d760a9cf2.json",
+        "flight_raw_pair": {
+          "schema": "hepta.v55-flight-full-raw-pair-links.v1",
+          "dom_schema": "hepta.fixed-top-document-dom.v4",
+          "comparison_scope": "full_raw_equality",
+          "raw_dom_equal": true,
+          "before_dom_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "after_dom_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "dom_utf8_bytes": 91023,
+          "node_count": 169,
+          "current_native_url": "https://m.csair.com/",
+          "dom_stability_sha256": "645030fcb5ecbc3d049c9d8eaf60004c02c7e3011e92cfa77d683642eb23f275",
+          "full_native_geometry_replayed_by_this_collector": false,
+          "native_geometry_reference": "original verified main55 callback and retained four native samples",
+          "grants_action_authority": false,
+          "business_verified": false
+        },
+        "raw_dom_json_pointers": [
+          "/capture/before_dom_raw_utf8",
+          "/capture/dom_raw_utf8"
+        ]
+      },
+      {
+        "nonce": "6ec921bc5f764229a177da8acaee9353287437479ae64305807c8717c9e2b57d",
+        "raw_sha256": "f58b0ad1b84dad4707dcb696398ef6ecb9d2fab6622851f5ebe9815cae1e08f7",
+        "raw_bytes": 229571,
+        "actual_window_id": 3593,
+        "webview_instance": "4601e2cc-4ca4-4c6f-b109-4019b6292394",
+        "navigation_epoch": 2,
+        "storage": {
+          "profile_name": "hepta_v2_031010a0aee44295ad7de645688031049c5fa11ae869421c9a54207ba7dd7752",
+          "preload_callback_elapsed_ms": 850395772,
+          "capture_started_elapsed_ms": 850422595,
+          "capture_ended_elapsed_ms": 850422710,
+          "actual_runtime_features_recorded": true
+        },
+        "raw_file": "task/web-helper/raw-6ec921bc5f764229a177da8acaee9353287437479ae64305807c8717c9e2b57d.json",
+        "flight_raw_pair": {
+          "schema": "hepta.v55-flight-full-raw-pair-links.v1",
+          "dom_schema": "hepta.fixed-top-document-dom.v4",
+          "comparison_scope": "full_raw_equality",
+          "raw_dom_equal": true,
+          "before_dom_sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "after_dom_sha256": "4504b5d44950c0ee927a41a458f58bcb3ed07cba4722e65d4eef75390f3d967c",
+          "dom_utf8_bytes": 91012,
+          "node_count": 169,
+          "current_native_url": "https://m.csair.com/",
+          "dom_stability_sha256": "f999f3c57e971e73bde21612a6213f9aff54e8ae115d89c8a21cef94fbc97f37",
+          "full_native_geometry_replayed_by_this_collector": false,
+          "native_geometry_reference": "original verified main55 callback and retained four native samples",
+          "grants_action_authority": false,
+          "business_verified": false
+        },
+        "raw_dom_json_pointers": [
+          "/capture/before_dom_raw_utf8",
+          "/capture/dom_raw_utf8"
+        ]
+      },
+      {
+        "nonce": "8e83b31ce2fd43b79d7df3d170db1c88fd0dd09f8b4b4d539be27d6526454ac9",
+        "raw_sha256": "40e1f4819b89ba5ceb478088216737ba1c910739614c71009f4c970dcfe8509f",
+        "raw_bytes": 229593,
+        "actual_window_id": 3593,
+        "webview_instance": "4601e2cc-4ca4-4c6f-b109-4019b6292394",
+        "navigation_epoch": 2,
+        "storage": {
+          "profile_name": "hepta_v2_031010a0aee44295ad7de645688031049c5fa11ae869421c9a54207ba7dd7752",
+          "preload_callback_elapsed_ms": 850395772,
+          "capture_started_elapsed_ms": 850432991,
+          "capture_ended_elapsed_ms": 850433537,
+          "actual_runtime_features_recorded": true
+        },
+        "raw_file": "task/web-helper/raw-8e83b31ce2fd43b79d7df3d170db1c88fd0dd09f8b4b4d539be27d6526454ac9.json",
+        "flight_raw_pair": {
+          "schema": "hepta.v55-flight-full-raw-pair-links.v1",
+          "dom_schema": "hepta.fixed-top-document-dom.v4",
+          "comparison_scope": "full_raw_equality",
+          "raw_dom_equal": true,
+          "before_dom_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "after_dom_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "dom_utf8_bytes": 91023,
+          "node_count": 169,
+          "current_native_url": "https://m.csair.com/",
+          "dom_stability_sha256": "645030fcb5ecbc3d049c9d8eaf60004c02c7e3011e92cfa77d683642eb23f275",
+          "full_native_geometry_replayed_by_this_collector": false,
+          "native_geometry_reference": "original verified main55 callback and retained four native samples",
+          "grants_action_authority": false,
+          "business_verified": false
+        },
+        "raw_dom_json_pointers": [
+          "/capture/before_dom_raw_utf8",
+          "/capture/dom_raw_utf8"
+        ]
+      },
+      {
+        "nonce": "b4e19734a7d544df93e0d22bbffb266ea720947f797b46de9dc7e00500ec9383",
+        "raw_sha256": "c1b0caa35353c1ebdbaf5d5af6695366640639573ef6d6d2d4f644d2dfa21cea",
+        "raw_bytes": 229593,
+        "actual_window_id": 3593,
+        "webview_instance": "4601e2cc-4ca4-4c6f-b109-4019b6292394",
+        "navigation_epoch": 2,
+        "storage": {
+          "profile_name": "hepta_v2_031010a0aee44295ad7de645688031049c5fa11ae869421c9a54207ba7dd7752",
+          "preload_callback_elapsed_ms": 850395772,
+          "capture_started_elapsed_ms": 850413014,
+          "capture_ended_elapsed_ms": 850413175,
+          "actual_runtime_features_recorded": true
+        },
+        "raw_file": "task/web-helper/raw-b4e19734a7d544df93e0d22bbffb266ea720947f797b46de9dc7e00500ec9383.json",
+        "flight_raw_pair": {
+          "schema": "hepta.v55-flight-full-raw-pair-links.v1",
+          "dom_schema": "hepta.fixed-top-document-dom.v4",
+          "comparison_scope": "full_raw_equality",
+          "raw_dom_equal": true,
+          "before_dom_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "after_dom_sha256": "c6bbae67a442b5095afce548ca52c283ce41b9abf8a4f369deba37a803317f14",
+          "dom_utf8_bytes": 91023,
+          "node_count": 169,
+          "current_native_url": "https://m.csair.com/",
+          "dom_stability_sha256": "645030fcb5ecbc3d049c9d8eaf60004c02c7e3011e92cfa77d683642eb23f275",
+          "full_native_geometry_replayed_by_this_collector": false,
+          "native_geometry_reference": "original verified main55 callback and retained four native samples",
+          "grants_action_authority": false,
+          "business_verified": false
+        },
+        "raw_dom_json_pointers": [
+          "/capture/before_dom_raw_utf8",
+          "/capture/dom_raw_utf8"
+        ]
+      }
+    ],
+    "close_replies": 1,
+    "helper_close_records": [
+      {
+        "file": "close-dc627a3c-d35d-463e-ae7d-c7dcf0c485c2.json",
+        "bytes": 4785,
+        "sha256": "b14deb555b4f72974c51e810080e439cf686b72447971b85135ab9c9652fb8c9",
+        "storage": {
+          "profile_name": "hepta_v2_031010a0aee44295ad7de645688031049c5fa11ae869421c9a54207ba7dd7752",
+          "retirement_attempt": 1,
+          "retirement_callback_elapsed_ms": 850434060,
+          "retirement_deadline_elapsed_ms": 850437018,
+          "callback_within_deadline": true,
+          "cookies_present_after": false,
+          "profile_name_deleted": false,
+          "all_os_sockets_observed_closed": false
+        }
+      }
+    ],
+    "preserved_incomplete_or_prior_clear_records": [
+      {
+        "file": "close-73419c48-dfd3-42f9-ac4f-a359e36a080f.json",
+        "bytes": 4407,
+        "sha256": "b01a7ccf111d41224a1061d67e2efe4beb3e385a2461c1b44da4a8a5b6934f7d",
+        "used_as_completed_cleanup": false
+      }
+    ],
+    "cleanup_receipt_sha256": "65cafc7071c2d196b36b3f38dcb715f986a5eb661295017f595bd55fd0ae5a18"
+  },
+  "controller_session_after_sha256": "a98539b93542b71fc4b89dbad5c60d6e971254c85adaf1a30af63f7a0f2b4652",
+  "system_resources_absent": true,
+  "original_model_run_directories": [
+    "01158f07052341d6af6a47e7eb447aaf",
+    "07218943e8624c3abda03e090a64d7a9",
+    "09fd767ef57f4056a6b6a0999cdfd4d0",
+    "c84accb2d1b54d89a13fffbd32317cd3"
+  ],
+  "native_input_or_model_outputs_synthesized": false,
+  "raw_original_evidence_bytes": 15577718,
+  "raw_original_evidence_files": 152,
+  "two_lease_profiles_checked": false,
+  "collection": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-web-v55-lfm3-flight-r1/COLLECTION.json",
+    "sha256": "a4b81a3cbd8cc9cefe6c411f36171c933eaf371d8c407ae9a5ec555c14e634a6"
+  },
+  "ui_preferences_after_sha256": "c9364dde8c0b52e7890835d720967987f708e972b397fcc3f76d9d76a667137f",
+  "ui_preferences_unchanged": true,
+  "release_artifacts_unchanged": true,
+  "ended_wall_s": 1794508204.1031826
+}

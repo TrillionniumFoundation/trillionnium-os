@@ -1,0 +1,115 @@
+{
+  "schema": "hepta.main58-focused39-prior57-field-name-correction.v1",
+  "base_source": {
+    "bytes": 79802,
+    "sha256": "c1c989e1bb27edede54b9f31fd792e956dfbb358ba2c18dc87ef48d8c71bd909",
+    "git_blob_sha": "49ef1662b71249bfd5cf0ca0dc8ea657279d2142"
+  },
+  "source": {
+    "bytes": 79802,
+    "sha256": "a7b9a549983ff21f6c62b47ebb60d6c172c22d42d2d092ede5d726996546b2a7",
+    "git_blob_sha": "0ed1274edd5306cca458941c00eac0722712aec3"
+  },
+  "ordered_replacements": [
+    {
+      "before": "     and previous57[\"current_source_inventory_sha257\"]==CONFIG[\"current\"][\"previous57\"][\"source_inventory_sha257\"]",
+      "after": "     and previous57[\"current_source_inventory_sha256\"]==CONFIG[\"current\"][\"previous57\"][\"source_inventory_sha256\"]"
+    },
+    {
+      "before": "     and previous57[\"stage_source\"][\"sha257\"]==CONFIG[\"current\"][\"previous57\"][\"stage\"][\"sha257\"]",
+      "after": "     and previous57[\"stage_source\"][\"sha256\"]==CONFIG[\"current\"][\"previous57\"][\"stage\"][\"sha256\"]"
+    }
+  ],
+  "source_forward_reverse_exact": true,
+  "config_raw_unchanged": true,
+  "config_existing_keys_are_sha256": true,
+  "old_request_not_submitted": true,
+  "old_request_git": "af949bd7407af3300f55fa21cc402dd01e9cb0b2",
+  "idempotency_key_unchanged": "007f-v58-main-wire4-host-p4-r1",
+  "output_root_unchanged": "/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1",
+  "source_path_unchanged": "/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1.py",
+  "all_input_and_assertion_bytes_unchanged": true,
+  "original51_compilation_inputs_and15_projection_methods_unchanged": true,
+  "prior57_actual_result_git": "0299b6a5b89665e23ed9b3937210757287103916",
+  "loader_replacements": [
+    {
+      "before": "c1c989e1bb27edede54b9f31fd792e956dfbb358ba2c18dc87ef48d8c71bd909",
+      "after": "a7b9a549983ff21f6c62b47ebb60d6c172c22d42d2d092ede5d726996546b2a7"
+    }
+  ],
+  "supervisor_replacements": [
+    {
+      "before": "f2348b0419f37c648c1c1a153fcf6362fb281bd9a5856d452fa7f1080a8d9564",
+      "after": "66271c66c21afdf69165db024f54e5d88df3d195adfc073a3be73040e1b35858"
+    }
+  ],
+  "publisher_replacements": [
+    {
+      "before": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1.py\",\"bytes\":79802,\"sha256\":\"c1c989e1bb27edede54b9f31fd792e956dfbb358ba2c18dc87ef48d8c71bd909\"}]",
+      "after": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1.py\",\"bytes\":79802,\"sha256\":\"a7b9a549983ff21f6c62b47ebb60d6c172c22d42d2d092ede5d726996546b2a7\"}]"
+    },
+    {
+      "before": "ARGV_BYTES=34076",
+      "after": "ARGV_BYTES=34068"
+    },
+    {
+      "before": "ARGV_SHA=\"d1b583426f88545e5a5d2b6a809fbd59f6f0c585161dac634bed1c2363bf0db5\"",
+      "after": "ARGV_SHA=\"1b0b903f2beea63fec733c0263d45156d1897579cfaa5e95aa7dd189fdd04f5e\""
+    },
+    {
+      "before": "GZIP_BYTES=25557",
+      "after": "GZIP_BYTES=25551"
+    },
+    {
+      "before": "GZIP_SHA=\"5ed90d4494b77d9e453eae9dffec605f02317ddffd1e13fcde83eb1c12d5e3f5\"",
+      "after": "GZIP_SHA=\"ce320bf68dd68804cbdf6e44465a3ec306fbf6068aae7377cb872b329407a3dc\""
+    },
+    {
+      "before": "LOADER=\"import hashlib,os,pathlib,stat,sys\\np=pathlib.Path(\\\"/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1.py\\\")\\nassert all(not q.is_symlink() for q in (p,*p.parents))\\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\ntry:\\n a=os.fstat(fd)\\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==79802\\n with os.fdopen(os.dup(fd),\\\"rb\\\") as f:raw=f.read(79802+1)\\n assert len(raw)==79802 and hashlib.sha256(raw).hexdigest()==\\\"c1c989e1bb27edede54b9f31fd792e956dfbb358ba2c18dc87ef48d8c71bd909\\\"\\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\\nfinally:os.close(fd)\\nsys.argv=[str(p)]\\nexec(compile(raw,str(p),\\\"exec\\\",dont_inherit=True),{\\\"__name__\\\":\\\"__main__\\\",\\\"__file__\\\":str(p),\\\"__stage_source__\\\":raw})\\n\"",
+      "after": "LOADER=\"import hashlib,os,pathlib,stat,sys\\np=pathlib.Path(\\\"/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1.py\\\")\\nassert all(not q.is_symlink() for q in (p,*p.parents))\\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\ntry:\\n a=os.fstat(fd)\\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==79802\\n with os.fdopen(os.dup(fd),\\\"rb\\\") as f:raw=f.read(79802+1)\\n assert len(raw)==79802 and hashlib.sha256(raw).hexdigest()==\\\"a7b9a549983ff21f6c62b47ebb60d6c172c22d42d2d092ede5d726996546b2a7\\\"\\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\\nfinally:os.close(fd)\\nsys.argv=[str(p)]\\nexec(compile(raw,str(p),\\\"exec\\\",dont_inherit=True),{\\\"__name__\\\":\\\"__main__\\\",\\\"__file__\\\":str(p),\\\"__stage_source__\\\":raw})\\n\""
+    },
+    {
+      "before": "LOADER_SHA=\"f2348b0419f37c648c1c1a153fcf6362fb281bd9a5856d452fa7f1080a8d9564\"",
+      "after": "LOADER_SHA=\"66271c66c21afdf69165db024f54e5d88df3d195adfc073a3be73040e1b35858\""
+    },
+    {
+      "before": "SUPERVISOR=\"import hashlib,json,os,signal,subprocess,sys,time\\nloader=sys.argv[1]\\nassert len(loader.encode(\\\"utf-8\\\"))==866 and hashlib.sha256(loader.encode(\\\"utf-8\\\")).hexdigest()==\\\"f2348b0419f37c648c1c1a153fcf6362fb281bd9a5856d452fa7f1080a8d9564\\\"\\nassert os.getcwd()==\\\"/home/alex/hepta-local-007f-20261111\\\"\\nstarted=time.monotonic()\\np=subprocess.Popen([\\\"/usr/bin/python3\\\",\\\"-I\\\",\\\"-B\\\",\\\"-c\\\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main58-focused39-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"started\\\",\\\"child_pid\\\":p.pid,\\\"timeout_seconds\\\":1200,\\\"loader_sha256\\\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\\ncode=None;timed_out=False;forced=False;error=None\\ntry:\\n    code=p.wait(timeout=1200)\\nexcept BaseException as failure:\\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\\n    error=type(failure).__name__+\\\": \\\"+str(failure)\\n    if p.poll() is None:\\n        try:os.killpg(p.pid,signal.SIGTERM)\\n        except ProcessLookupError:pass\\n        try:code=p.wait(timeout=10)\\n        except subprocess.TimeoutExpired:\\n            forced=True\\n            try:os.killpg(p.pid,signal.SIGKILL)\\n            except ProcessLookupError:pass\\n            try:code=p.wait(timeout=10)\\n            except subprocess.TimeoutExpired:error+=\\\"; owned child exit not observed\\\"\\nexit_observed=p.poll() is not None\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main58-focused39-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"finished\\\",\\\"child_pid\\\":p.pid,\\\"child_returncode\\\":code,\\\"exit_observed\\\":exit_observed,\\\"timed_out\\\":timed_out,\\\"forced_kill\\\":forced,\\\"error\\\":error,\\\"elapsed_seconds\\\":time.monotonic()-started}),flush=True)\\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\\nraise SystemExit(code if code>=0 else 128-code)\\n\"",
+      "after": "SUPERVISOR=\"import hashlib,json,os,signal,subprocess,sys,time\\nloader=sys.argv[1]\\nassert len(loader.encode(\\\"utf-8\\\"))==866 and hashlib.sha256(loader.encode(\\\"utf-8\\\")).hexdigest()==\\\"66271c66c21afdf69165db024f54e5d88df3d195adfc073a3be73040e1b35858\\\"\\nassert os.getcwd()==\\\"/home/alex/hepta-local-007f-20261111\\\"\\nstarted=time.monotonic()\\np=subprocess.Popen([\\\"/usr/bin/python3\\\",\\\"-I\\\",\\\"-B\\\",\\\"-c\\\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main58-focused39-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"started\\\",\\\"child_pid\\\":p.pid,\\\"timeout_seconds\\\":1200,\\\"loader_sha256\\\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\\ncode=None;timed_out=False;forced=False;error=None\\ntry:\\n    code=p.wait(timeout=1200)\\nexcept BaseException as failure:\\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\\n    error=type(failure).__name__+\\\": \\\"+str(failure)\\n    if p.poll() is None:\\n        try:os.killpg(p.pid,signal.SIGTERM)\\n        except ProcessLookupError:pass\\n        try:code=p.wait(timeout=10)\\n        except subprocess.TimeoutExpired:\\n            forced=True\\n            try:os.killpg(p.pid,signal.SIGKILL)\\n            except ProcessLookupError:pass\\n            try:code=p.wait(timeout=10)\\n            except subprocess.TimeoutExpired:error+=\\\"; owned child exit not observed\\\"\\nexit_observed=p.poll() is not None\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main58-focused39-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"finished\\\",\\\"child_pid\\\":p.pid,\\\"child_returncode\\\":code,\\\"exit_observed\\\":exit_observed,\\\"timed_out\\\":timed_out,\\\"forced_kill\\\":forced,\\\"error\\\":error,\\\"elapsed_seconds\\\":time.monotonic()-started}),flush=True)\\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\\nraise SystemExit(code if code>=0 else 128-code)\\n\""
+    },
+    {
+      "before": "SUPERVISOR_SHA=\"e0f013e0fb9c765805c9e4163f222fe05ee3aea95527b2b6f68f45e8c93809b1\"",
+      "after": "SUPERVISOR_SHA=\"07f6c922a93c877c470aeb544afa998879bd768c8c9189057e116052a961ed22\""
+    }
+  ],
+  "loader": {
+    "bytes": 866,
+    "sha256": "66271c66c21afdf69165db024f54e5d88df3d195adfc073a3be73040e1b35858",
+    "git_blob_sha": "cf84dd6f372713f22ca789a42ecd40742f706bb8"
+  },
+  "supervisor": {
+    "bytes": 1786,
+    "sha256": "07f6c922a93c877c470aeb544afa998879bd768c8c9189057e116052a961ed22",
+    "git_blob_sha": "fcb63683a80796d72cd14dd22ba607cfc0d3eef4"
+  },
+  "publisher": {
+    "bytes": 10430,
+    "sha256": "058f53f31bafd64647da0ad7cb5c03a870d0471c62c46140594c2ec457930e25",
+    "git_blob_sha": "a2457ab3c651433d511b571577d67ed3e160dfca"
+  },
+  "request": {
+    "bytes": 45359,
+    "sha256": "a57574b958dfa67e1fc4a675f45134e23b5d873cc43857bdce3d1b7be9745fe0",
+    "git_blob_sha": "2991561a005f752e38856c0fea31a11fc15f58f4"
+  },
+  "gzip": {
+    "bytes": 25551,
+    "sha256": "ce320bf68dd68804cbdf6e44465a3ec306fbf6068aae7377cb872b329407a3dc"
+  },
+  "argument": {
+    "bytes": 34068,
+    "sha256": "1b0b903f2beea63fec733c0263d45156d1897579cfaa5e95aa7dd189fdd04f5e"
+  },
+  "crc_and_full_source_roundtrip": true,
+  "executed": false,
+  "phone_actions": 0
+}

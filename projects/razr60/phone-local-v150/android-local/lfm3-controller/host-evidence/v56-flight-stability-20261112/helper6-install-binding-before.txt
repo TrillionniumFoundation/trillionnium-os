@@ -1,0 +1,369 @@
+ACTIVITY MANAGER SERVICES (dumpsys activity services)
+  User 0 active services:
+  * ServiceRecord{85d6705 u0 org.trillionnium.hepta.local/.HeptaAccessibilityService c:android}
+    intent={cmp=org.trillionnium.hepta.local/.HeptaAccessibilityService}
+    packageName=org.trillionnium.hepta.local
+    processName=org.trillionnium.hepta.local
+    targetSdkVersion=35
+    permission=android.permission.BIND_ACCESSIBILITY_SERVICE
+    baseDir=/data/app/~~hQX6r7v5s_gKn7o8ImvScQ==/org.trillionnium.hepta.local-PNZseE9N9jPiez75ykUSRA==/base.apk
+    dataDir=/data/user/0/org.trillionnium.hepta.local
+    app=ProcessRecord{e664514 31544:org.trillionnium.hepta.local/u0a481}
+    mIsAllowedBgActivityStartsByBinding=true
+    useNewWiuLogic_forCapabilities()=true
+    useNewWiuLogic_forStart()=true
+    useNewBfslLogic()=true
+    mAllowWiu_noBinding=DENIED
+    mAllowWiu_inBindService=PROC_STATE_PERSISTENT
+    mAllowWiu_byBindings=DENIED
+    getFgsAllowWiu_legacy=PROC_STATE_PERSISTENT
+    getFgsAllowWiu_new=DENIED
+    getFgsAllowWiu_forStart=DENIED
+    getFgsAllowWiu_forCapabilities=DENIED
+    allowUiJobScheduling=false
+    recentCallingPackage=android
+    recentCallingUid=1000
+    mRecentCallingPid=3622
+    mAllowStart_noBinding=DENIED
+    mAllowStart_inBindService=PROC_STATE_PERSISTENT
+    mAllowStart_byBindings=DENIED
+    getFgsAllowStart_legacy=PROC_STATE_PERSISTENT
+    getFgsAllowStart_new=DENIED
+    getFgsAllowStart=DENIED
+    startForegroundCount=0
+    infoAllowStartForeground=[callingPackage: android; callingUid: 1000; uidState: PER ; uidBFSL: [BFSL]; intent: Intent { cmp=org.trillionnium.hepta.local/.HeptaAccessibilityService }; code:PROC_STATE_PERSISTENT; tempAllowListReason:<null>; allowWiu:10; targetSdkVersion:35; callerTargetSdkVersion:36; startForegroundCount:0; bindFromPackage:null: isBindService:true]
+    createTime=-5h4m18s829ms startingBgTimeout=--
+    lastActivity=-5h4m18s829ms restartTime=-5h4m18s829ms createdFromFg=true
+    Bindings:
+    * IntentBindRecord{4c00382 CREATE}:
+      intent={cmp=org.trillionnium.hepta.local/.HeptaAccessibilityService}
+      binder=android.os.BinderProxy@f5f4a93
+      requested=true received=true hasBound=true doRebind=false
+      * Client AppBindRecord{4fdbad0 ProcessRecord{b06d235 3622:system/1000}}
+        Per-process Connections:
+          ConnectionRecord{f7fe27c u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@26fd56f flags=0x2101001}
+    All Connections:
+      ConnectionRecord{f7fe27c u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@26fd56f flags=0x2101001}
+
+  Connection bindings to services:
+  * ConnectionRecord{87c2634 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@187507 flags=0x2101001}
+    binding=AppBindRecord{b0d2dc8 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@187507 flags=0x2101001
+  * ConnectionRecord{ac5ffc0 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@1acd43 flags=0x2101001}
+    binding=AppBindRecord{cd1d639 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@1acd43 flags=0x2101001
+  * ConnectionRecord{c04099 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@2e95e0 flags=0x2101001}
+    binding=AppBindRecord{2fe5900 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@2e95e0 flags=0x2101001
+  * ConnectionRecord{6ab9d6e u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@2ebce9 flags=0x2101001}
+    binding=AppBindRecord{2d74357 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@2ebce9 flags=0x2101001
+  * ConnectionRecord{79ffa99 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@30f7e0 flags=0x2101001}
+    binding=AppBindRecord{5d02ccd org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@30f7e0 flags=0x2101001
+  * ConnectionRecord{d30dacb u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@49519a flags=0x2101001}
+    binding=AppBindRecord{fa96a2f org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@49519a flags=0x2101001
+  * ConnectionRecord{1a80f58 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@737c3b flags=0x2101001}
+    binding=AppBindRecord{e4ea04a org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@737c3b flags=0x2101001
+  * ConnectionRecord{faa79dc u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@92ae4f flags=0x2101001}
+    binding=AppBindRecord{cca1472 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@92ae4f flags=0x2101001
+  * ConnectionRecord{4586e3d u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@a22394 flags=0x2101001}
+    binding=AppBindRecord{3ad9457 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@a22394 flags=0x2101001
+  * ConnectionRecord{b2643c6 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@dd25a1 flags=0x2101001}
+    binding=AppBindRecord{fca0d9b org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@dd25a1 flags=0x2101001
+  * ConnectionRecord{83497ed u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@f32604 flags=0x2101001}
+    binding=AppBindRecord{3c4459f org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@f32604 flags=0x2101001
+  * ConnectionRecord{a540892 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@ff0e1d flags=0x2101001}
+    binding=AppBindRecord{7d50a67 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@ff0e1d flags=0x2101001
+  * ConnectionRecord{1bca1b9 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@1094780 flags=0x2101001}
+    binding=AppBindRecord{a999c89 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@1094780 flags=0x2101001
+  * ConnectionRecord{a0fc4a u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@10d1db5 flags=0x2101001}
+    binding=AppBindRecord{cc095f0 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@10d1db5 flags=0x2101001
+  * ConnectionRecord{b3a15e8 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@126430b flags=0x2101001}
+    binding=AppBindRecord{120202e org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@126430b flags=0x2101001
+  * ConnectionRecord{a1cb6dd u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@15daab4 flags=0x2101001}
+    binding=AppBindRecord{37b2ec8 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@15daab4 flags=0x2101001
+  * ConnectionRecord{a14c5d8 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@15efcbb flags=0x2101001}
+    binding=AppBindRecord{8d2fd09 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@15efcbb flags=0x2101001
+  * ConnectionRecord{ddb2c19 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@17bff60 flags=0x2101001}
+    binding=AppBindRecord{c1dad67 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@17bff60 flags=0x2101001
+  * ConnectionRecord{2af06d1 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@1d031f8 flags=0x2101001}
+    binding=AppBindRecord{671a0c3 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@1d031f8 flags=0x2101001
+  * ConnectionRecord{b2ab6a u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@1e99555 flags=0x2101001}
+    binding=AppBindRecord{783c383 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@1e99555 flags=0x2101001
+  * ConnectionRecord{68c5a7e u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@1f70439 flags=0x2101001}
+    binding=AppBindRecord{c3950a1 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@1f70439 flags=0x2101001
+  * ConnectionRecord{3c09338 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@20e239b flags=0x2101001}
+    binding=AppBindRecord{4286a65 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@20e239b flags=0x2101001
+  * ConnectionRecord{d2eeb5a u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@2101f05 flags=0x2101001}
+    binding=AppBindRecord{2b33bb2 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@2101f05 flags=0x2101001
+  * ConnectionRecord{e589736 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@23fe0d1 flags=0x2101001}
+    binding=AppBindRecord{e4288bc org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@23fe0d1 flags=0x2101001
+  * ConnectionRecord{1f6ee1 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@23ff048 flags=0x2101001}
+    binding=AppBindRecord{72f0d40 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@23ff048 flags=0x2101001
+  * ConnectionRecord{8f0b4f u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@25fa1ae flags=0x2101001}
+    binding=AppBindRecord{ce2559a org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@25fa1ae flags=0x2101001
+  * ConnectionRecord{f7fe27c u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@26fd56f flags=0x2101001}
+    binding=AppBindRecord{4fdbad0 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@26fd56f flags=0x2101001
+  * ConnectionRecord{72c85c4 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@27758d7 flags=0x2101001}
+    binding=AppBindRecord{5abfa74 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@27758d7 flags=0x2101001
+  * ConnectionRecord{9644963 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@2f17b92 flags=0x2101001}
+    binding=AppBindRecord{4925479 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@2f17b92 flags=0x2101001
+  * ConnectionRecord{3e63325 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@2f9cb1c flags=0x2101001}
+    binding=AppBindRecord{cbdff0a org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@2f9cb1c flags=0x2101001
+  * ConnectionRecord{afbd165 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@305fa5c flags=0x2101001}
+    binding=AppBindRecord{c852b30 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@305fa5c flags=0x2101001
+  * ConnectionRecord{3e3673f u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@37d375e flags=0x2101001}
+    binding=AppBindRecord{a4e498c org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@37d375e flags=0x2101001
+  * ConnectionRecord{6a8d147 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@37d6486 flags=0x2101001}
+    binding=AppBindRecord{5e5e0fa org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@37d6486 flags=0x2101001
+  * ConnectionRecord{9dea434 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@39e2b07 flags=0x2101001}
+    binding=AppBindRecord{ec673a3 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@39e2b07 flags=0x2101001
+  * ConnectionRecord{bc066d5 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@3b2bf8c flags=0x2101001}
+    binding=AppBindRecord{73dc179 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@3b2bf8c flags=0x2101001
+  * ConnectionRecord{e7040da u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@3d35a85 flags=0x2101001}
+    binding=AppBindRecord{6a105be org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@3d35a85 flags=0x2101001
+  * ConnectionRecord{3d389de u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@3e9d519 flags=0x2101001}
+    binding=AppBindRecord{8226714 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@3e9d519 flags=0x2101001
+  * ConnectionRecord{8e2c2cc u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@42bc4ff flags=0x2101001}
+    binding=AppBindRecord{b6a1539 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@42bc4ff flags=0x2101001
+  * ConnectionRecord{913cb3b u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@478fdca flags=0x2101001}
+    binding=AppBindRecord{f1262d2 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@478fdca flags=0x2101001
+  * ConnectionRecord{7d058da u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@4c4d285 flags=0x2101001}
+    binding=AppBindRecord{143861f org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@4c4d285 flags=0x2101001
+  * ConnectionRecord{51073b9 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@4e12180 flags=0x2101001}
+    binding=AppBindRecord{baba5d org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@4e12180 flags=0x2101001
+  * ConnectionRecord{801be06 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@4ed20e1 flags=0x2101001}
+    binding=AppBindRecord{9ea58f3 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@4ed20e1 flags=0x2101001
+  * ConnectionRecord{c9ae4cc u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@5072eff flags=0x2101001}
+    binding=AppBindRecord{56ff784 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@5072eff flags=0x2101001
+  * ConnectionRecord{ced28ec u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@5256f9f flags=0x2101001}
+    binding=AppBindRecord{6b5d34f org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@5256f9f flags=0x2101001
+  * ConnectionRecord{31921b8 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@54ddc1b flags=0x2101001}
+    binding=AppBindRecord{60fe7cf org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@54ddc1b flags=0x2101001
+  * ConnectionRecord{e013c7a u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@5a280a5 flags=0x2101001}
+    binding=AppBindRecord{f590517 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@5a280a5 flags=0x2101001
+  * ConnectionRecord{1bf2891 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@5e8c2b8 flags=0x2101001}
+    binding=AppBindRecord{b9fb399 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@5e8c2b8 flags=0x2101001
+  * ConnectionRecord{b5d1490 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@620f353 flags=0x2101001}
+    binding=AppBindRecord{f862bbd org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@620f353 flags=0x2101001
+  * ConnectionRecord{28abcc7 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@64dce06 flags=0x2101001}
+    binding=AppBindRecord{64fb9b3 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@64dce06 flags=0x2101001
+  * ConnectionRecord{b72a93c u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@66a7f2f flags=0x2101001}
+    binding=AppBindRecord{aa3370c org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@66a7f2f flags=0x2101001
+  * ConnectionRecord{abd250d u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@67f33a4 flags=0x2101001}
+    binding=AppBindRecord{75bde34 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@67f33a4 flags=0x2101001
+  * ConnectionRecord{3250be8 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@6ab510b flags=0x2101001}
+    binding=AppBindRecord{469d213 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@6ab510b flags=0x2101001
+  * ConnectionRecord{1d833f0 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@6e17433 flags=0x2101001}
+    binding=AppBindRecord{a8c2f0c org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@6e17433 flags=0x2101001
+  * ConnectionRecord{e484c27 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@7147ee6 flags=0x2101001}
+    binding=AppBindRecord{a7f675f org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@7147ee6 flags=0x2101001
+  * ConnectionRecord{81c7c47 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@718db86 flags=0x2101001}
+    binding=AppBindRecord{ea265b2 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@718db86 flags=0x2101001
+  * ConnectionRecord{525bbe u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@77b4279 flags=0x2101001}
+    binding=AppBindRecord{67a3407 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@77b4279 flags=0x2101001
+  * ConnectionRecord{276f99b u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@78c69aa flags=0x2101001}
+    binding=AppBindRecord{2bd7891 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@78c69aa flags=0x2101001
+  * ConnectionRecord{b47e29c u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@795420f flags=0x2101001}
+    binding=AppBindRecord{c3a33ff org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@795420f flags=0x2101001
+  * ConnectionRecord{dcf5efc u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@79573ef flags=0x2101001}
+    binding=AppBindRecord{3e7997 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@79573ef flags=0x2101001
+  * ConnectionRecord{e82e027 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@80ce2e6 flags=0x2101001}
+    binding=AppBindRecord{83309ec org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@80ce2e6 flags=0x2101001
+  * ConnectionRecord{4125f1c u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@841e08f flags=0x2101001}
+    binding=AppBindRecord{6c148d9 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@841e08f flags=0x2101001
+  * ConnectionRecord{d48681a u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@86296c5 flags=0x2101001}
+    binding=AppBindRecord{fa32d97 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@86296c5 flags=0x2101001
+  * ConnectionRecord{8615489 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@878c390 flags=0x2101001}
+    binding=AppBindRecord{275597f org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@878c390 flags=0x2101001
+  * ConnectionRecord{24c2b60 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@8b5e363 flags=0x2101001}
+    binding=AppBindRecord{34ba8ca org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@8b5e363 flags=0x2101001
+  * ConnectionRecord{7247933 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@8f848a2 flags=0x2101001}
+    binding=AppBindRecord{1b8977e org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@8f848a2 flags=0x2101001
+  * ConnectionRecord{7dca416 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@90a9531 flags=0x2101001}
+    binding=AppBindRecord{7e7daca org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@90a9531 flags=0x2101001
+  * ConnectionRecord{a145b8 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@910101b flags=0x2101001}
+    binding=AppBindRecord{c00b0c2 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@910101b flags=0x2101001
+  * ConnectionRecord{2c72882 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@92bf7cd flags=0x2101001}
+    binding=AppBindRecord{672736b org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@92bf7cd flags=0x2101001
+  * ConnectionRecord{d4cf2f4 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@92d7cc7 flags=0x2101001}
+    binding=AppBindRecord{224f3b8 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@92d7cc7 flags=0x2101001
+  * ConnectionRecord{f0f2584 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@9459f97 flags=0x2101001}
+    binding=AppBindRecord{a640b61 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@9459f97 flags=0x2101001
+  * ConnectionRecord{6edfce3 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@98bcd12 flags=0x2101001}
+    binding=AppBindRecord{68f8f45 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@98bcd12 flags=0x2101001
+  * ConnectionRecord{a3bb73c u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@997052f flags=0x2101001}
+    binding=AppBindRecord{a46a3fe org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@997052f flags=0x2101001
+  * ConnectionRecord{8607209 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@9b3e710 flags=0x2101001}
+    binding=AppBindRecord{53f658d org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@9b3e710 flags=0x2101001
+  * ConnectionRecord{6a71dd5 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@9b5f28c flags=0x2101001}
+    binding=AppBindRecord{fcdb903 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@9b5f28c flags=0x2101001
+  * ConnectionRecord{a98ace4 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@a2d2877 flags=0x2101001}
+    binding=AppBindRecord{27dfa78 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@a2d2877 flags=0x2101001
+  * ConnectionRecord{ecf08a u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@a7b3af5 flags=0x2101001}
+    binding=AppBindRecord{f0995bc org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@a7b3af5 flags=0x2101001
+  * ConnectionRecord{bfee462 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@a7fb72d flags=0x2101001}
+    binding=AppBindRecord{a552850 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@a7fb72d flags=0x2101001
+  * ConnectionRecord{c798698 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@acf487b flags=0x2101001}
+    binding=AppBindRecord{cd3df56 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@acf487b flags=0x2101001
+  * ConnectionRecord{1c2cdea u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@b72b1d5 flags=0x2101001}
+    binding=AppBindRecord{ae09a3b org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@b72b1d5 flags=0x2101001
+  * ConnectionRecord{abf8c00 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@b8de283 flags=0x2101001}
+    binding=AppBindRecord{fe08afd org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@b8de283 flags=0x2101001
+  * ConnectionRecord{fa23912 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@bddb09d flags=0x2101001}
+    binding=AppBindRecord{33514df org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@bddb09d flags=0x2101001
+  * ConnectionRecord{ec766c1 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@bef5ba8 flags=0x2101001}
+    binding=AppBindRecord{b585d7d org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@bef5ba8 flags=0x2101001
+  * ConnectionRecord{64c99d4 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@c19f327 flags=0x2101001}
+    binding=AppBindRecord{bca1ac1 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@c19f327 flags=0x2101001
+  * ConnectionRecord{cc3b3ab u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@c2e81fa flags=0x2101001}
+    binding=AppBindRecord{dda1575 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@c2e81fa flags=0x2101001
+  * ConnectionRecord{46f4274 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@c315a47 flags=0x2101001}
+    binding=AppBindRecord{610190c org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@c315a47 flags=0x2101001
+  * ConnectionRecord{88b8190 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@c80f453 flags=0x2101001}
+    binding=AppBindRecord{994adc3 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@c80f453 flags=0x2101001
+  * ConnectionRecord{2535bbc u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@c8ec78e flags=0x2101001}
+    binding=AppBindRecord{4cefb61 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@c8ec78e flags=0x2101001
+  * ConnectionRecord{69ac383 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@cab0a32 flags=0x2101001}
+    binding=AppBindRecord{1b27a29 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@cab0a32 flags=0x2101001
+  * ConnectionRecord{f0ffad9 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@ddbd120 flags=0x2101001}
+    binding=AppBindRecord{c9d8211 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@ddbd120 flags=0x2101001
+  * ConnectionRecord{995b952 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@dea09dd flags=0x2101001}
+    binding=AppBindRecord{8754a46 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@dea09dd flags=0x2101001
+  * ConnectionRecord{eac88ca u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@e150c35 flags=0x2101001}
+    binding=AppBindRecord{c248aae org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@e150c35 flags=0x2101001
+  * ConnectionRecord{f4e1e48 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@e1db0eb flags=0x2101001}
+    binding=AppBindRecord{b56ea0e org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@e1db0eb flags=0x2101001
+  * ConnectionRecord{98e52f7 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@e461ef6 flags=0x2101001}
+    binding=AppBindRecord{d3c5fa8 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@e461ef6 flags=0x2101001
+  * ConnectionRecord{4928222 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@e4c33ed flags=0x2101001}
+    binding=AppBindRecord{bca5c50 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@e4c33ed flags=0x2101001
+  * ConnectionRecord{efa3573 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@e5a4de2 flags=0x2101001}
+    binding=AppBindRecord{84950ac org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@e5a4de2 flags=0x2101001
+  * ConnectionRecord{1927338 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@e7b839b flags=0x2101001}
+    binding=AppBindRecord{24c7934 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@e7b839b flags=0x2101001
+  * ConnectionRecord{8a47796 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@e8786b1 flags=0x2101001}
+    binding=AppBindRecord{de3664a org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@e8786b1 flags=0x2101001
+  * ConnectionRecord{edcd8e0 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@e8ed6e3 flags=0x2101001}
+    binding=AppBindRecord{2d46ebe org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@e8ed6e3 flags=0x2101001
+  * ConnectionRecord{7a40c68 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@ebc038b flags=0x2101001}
+    binding=AppBindRecord{e5cdcd0 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@ebc038b flags=0x2101001
+  * ConnectionRecord{9ef6f5c u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@ec78a2e flags=0x2101001}
+    binding=AppBindRecord{4455e61 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@ec78a2e flags=0x2101001
+  * ConnectionRecord{b106955 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@f0f3c0c flags=0x2101001}
+    binding=AppBindRecord{ae6bea2 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@f0f3c0c flags=0x2101001
+  * ConnectionRecord{bcf9eea u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@f5c26d5 flags=0x2101001}
+    binding=AppBindRecord{49de43b org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@f5c26d5 flags=0x2101001
+  * ConnectionRecord{359fc50 u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@f65a213 flags=0x2101001}
+    binding=AppBindRecord{a6f076d org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@f65a213 flags=0x2101001
+  * ConnectionRecord{9114787 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@f80cbc6 flags=0x2101001}
+    binding=AppBindRecord{3a0a4a3 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@f80cbc6 flags=0x2101001
+  * ConnectionRecord{6d6a46e u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@f957fe9 flags=0x2101001}
+    binding=AppBindRecord{b8e25a2 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@f957fe9 flags=0x2101001
+  * ConnectionRecord{8a588be u0 CR FGSA CAPS DEAD org.trillionnium.hepta.local/.HeptaAccessibilityService:@f9b0379 flags=0x2101001}
+    binding=AppBindRecord{4be433a org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@f9b0379 flags=0x2101001
+  * ConnectionRecord{591b701 u0 CR FGSA CAPS org.trillionnium.hepta.local/.HeptaAccessibilityService:@fabc4e8 flags=0x2101001}
+    binding=AppBindRecord{17575b4 org.trillionnium.hepta.local/.HeptaAccessibilityService:system}
+    conn=android.app.LoadedApk$ServiceDispatcher$InnerConnection@fabc4e8 flags=0x2101001

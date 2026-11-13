@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.helper6-build-submission-reconciliation.v1",
+  "original_submission_proof_git": "8f7b7f95cce8f237ec19179a020800f79b39076f",
+  "input_commit_verified": true,
+  "input": {
+    "bytes": 193927,
+    "sha256": "fd301ded2455febff45bdf2c6be7909a7dea0bf2ac2d5c2d4a04da59e872c631"
+  },
+  "original_idempotency_key": "007f-v55-web-helper-code6-build-r1",
+  "same_original_request_reused": true,
+  "same_output_root": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v55-web-helper-code6-build-r1",
+  "new_uploads": 0,
+  "new_output_roots": 0,
+  "status": "unknown",
+  "summary_read_request": {
+    "host": "mac",
+    "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v55-web-helper-code6-build-r1/SUMMARY.json",
+    "offset": 0,
+    "limit": 65536
+  },
+  "summary_read_result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "same_key_reconciliation_request": {
+    "host": "mac",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-B",
+      "-c",
+      "import base64,gzip,hashlib,os,stat,sys\nfrom pathlib import Path\ndef read(path,count,digest):\n    p=Path(path)\n    assert p.is_absolute() and all(not q.is_symlink() for q in (p,*p.parents))\n    with p.open(\"rb\") as f:\n        a=os.fstat(f.fileno());raw=f.read(count+1);b=os.fstat(f.fileno())\n    key=lambda s:(s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\n    assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==count and key(a)==key(b)==key(p.stat())\n    assert len(raw)==count and hashlib.sha256(raw).hexdigest()==digest\n    return raw\np=\"/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/helper6-wire4-build-r1.py\"\nraw=read(p,27617,\"1597652a5f7a34f215e01f39595a3c55310cd602a41c6cc89dda516433596919\")\ncompressed=read(\"/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/helper6-wire4-build-r1.input.json.gz\",193927,\"fd301ded2455febff45bdf2c6be7909a7dea0bf2ac2d5c2d4a04da59e872c631\")\nsource_input=gzip.decompress(compressed)\nassert len(source_input)==733346 and hashlib.sha256(source_input).hexdigest()==\"0ad3bb424013b522f8812eaa11531780ac832c6d4064191017885d387b20d49a\"\ntext=raw.decode(\"utf-8\",\"strict\")\nparts=base64.b64encode(compressed).decode(\"ascii\")\nsys.dont_write_bytecode=True\nsys.argv=[p,text]+[parts[i:i+60000] for i in range(0,len(parts),60000)]\nexec(compile(raw,p,\"exec\",dont_inherit=True),{\"__name__\":\"__main__\",\"__file__\":p})\n"
+    ],
+    "cwd": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f",
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "idempotency_key": "007f-v55-web-helper-code6-build-r1"
+  },
+  "same_key_reconciliation_result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.pty_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "actual_ack_observed": false,
+  "actual_build_result_observed": false,
+  "timeout_is_build_failure": false,
+  "timeout_is_absence_proof": false,
+  "subsequent_h_operations_issued": false,
+  "phone_commands": 0,
+  "signing_commands": 0
+}

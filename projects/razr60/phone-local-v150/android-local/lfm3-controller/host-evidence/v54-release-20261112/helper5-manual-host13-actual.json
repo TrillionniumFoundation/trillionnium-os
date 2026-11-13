@@ -1,0 +1,93 @@
+{
+  "all_originals_unchanged": true,
+  "all_pass": true,
+  "blocked_external_attempts": [],
+  "check_count": 13,
+  "checks": [
+    {
+      "name": "zero-new-records stays unknown, not a successful capture",
+      "passed": true
+    },
+    {
+      "name": "two raw failed DOMs form one pair with no capture authority",
+      "passed": true
+    },
+    {
+      "name": "one actually saved member remains partial and not success",
+      "passed": true
+    },
+    {
+      "name": "one success retains its own full DOM and geometry proof",
+      "passed": true
+    },
+    {
+      "name": "two earlier mismatch members plus one later same-ticket success remain distinct",
+      "passed": true
+    },
+    {
+      "name": "partial writer output cannot be promoted by a success record",
+      "passed": true
+    },
+    {
+      "name": "numeric false alias cannot satisfy authority boolean",
+      "passed": true
+    },
+    {
+      "name": "two independently valid members cannot merge different causes",
+      "passed": true
+    },
+    {
+      "name": "actual other process cannot stand in for the observed helper",
+      "passed": true
+    },
+    {
+      "name": "missing one earlier original record cannot pass append-only preservation",
+      "passed": true
+    },
+    {
+      "name": "original mismatch and complete-capture deadlines both fail closed",
+      "passed": true
+    },
+    {
+      "name": "failed-record profile is observed without claiming captured or formal cleanup",
+      "passed": true
+    },
+    {
+      "name": "root review cannot hide a profile already present in actual failed bytes",
+      "passed": true
+    }
+  ],
+  "deployed_driver": {
+    "bytes": 116283,
+    "path": "/home/alex/hepta-local-007f-20261111/helper5-current53-mi-driver-r1/manual_helper5_mi_r1.py",
+    "sha256": "bf176048634b10cd4878e56aecd39e0db75dccfb7204115594a3f5438ddefcbd"
+  },
+  "device_capture_generated": false,
+  "driver_sha256": "bf176048634b10cd4878e56aecd39e0db75dccfb7204115594a3f5438ddefcbd",
+  "finished_epoch": 1794471940.3537076,
+  "help": {
+    "exit_code": 0,
+    "stderr": {
+      "bytes": 0,
+      "path": "/home/alex/hepta-local-007f-20261111/helper5-current53-mi-driver-r1/help.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 4121,
+      "path": "/home/alex/hepta-local-007f-20261111/helper5-current53-mi-driver-r1/help.stdout",
+      "sha256": "1143a08d0af8422a8a84052e0e90fe478291cb80ef3016b0933ef585c4f47a61"
+    }
+  },
+  "java_producer_executed": false,
+  "old_full_suites_rerun": false,
+  "phone_actions": 0,
+  "phone_main_called": false,
+  "regression": {
+    "bytes": 1831,
+    "path": "/home/alex/hepta-local-007f-20261111/helper5-current53-mi-driver-r1/REGRESSION.json",
+    "sha256": "1df9096b756d343ff5266b8db623b9202785b75f8f290fe0cf3425915754922f"
+  },
+  "schema": "hepta.helper5-manual-mi-host-gate.r1",
+  "started_epoch": 1794471940.1157305,
+  "synthetic_source_shaped_fixtures": true
+}

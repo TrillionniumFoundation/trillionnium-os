@@ -1,0 +1,218 @@
+{
+  "schema": "hepta.native-app-followup-readonly-assessment.v1",
+  "status": "source-only follow-up; frozen Main56 unchanged; no H, phone, launch, package discovery or test executed",
+  "source_aggregate": {
+    "bytes": 1416544,
+    "sha256": "38baa995ee76520e1a9ff7a14baf51afdbd4f1af53f747ce7a0d114ef4809c90",
+    "git_blob_sha": "660335b7f19f519af4cfd168ebee186f1a4693b9"
+  },
+  "inspected_sources": [
+    {
+      "path": "src/org/trillionnium/hepta/local/MainActivity.java",
+      "bytes": 49287,
+      "sha256": "22e03ae02378cd05981faab93f70c2686de633b6bb7d35ab640ef358150c2aa5",
+      "git_blob_sha": "b90952bc21c35127f1a86eb3be38327c81a43794",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
+      "bytes": 2816,
+      "sha256": "e18294b0b18938636ed4112c0a5e82b2b70d76c5fb854a7fe25a876518fc73b7",
+      "git_blob_sha": "2028bd06c37fcf1a49228bd5055f99f34c690840",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
+      "bytes": 38388,
+      "sha256": "0045e81d6578a071de8dbdedd3c589afeb6025cf52d6c76fceb0e30e11e3dec6",
+      "git_blob_sha": "e38f35e5f17a7f482e7964a3ee93351f780c496c",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/TaskAuthorization.java",
+      "bytes": 23598,
+      "sha256": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8",
+      "git_blob_sha": "346e1790710fa4f0d62a59053328733773c9fe61",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "bytes": 42734,
+      "sha256": "7f3c7fd872e9901026ad7471dfc9a3e68d2c987eb1931896f80ea0f2acd6f4e1",
+      "git_blob_sha": "8283d4e83b7cf13c9deb7e55c6d26f26053e11cc",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "bytes": 116846,
+      "sha256": "68185b0bd3cf17adfb94f62b32a764ce692512ea20b438bbcdca766cff49d167",
+      "git_blob_sha": "9c54638c63c9bdc7a885c633d2de5d702dc1175b",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+      "bytes": 49971,
+      "sha256": "ad417d98fbd7b12bf4373270a1206c11984682c9f35b7b4a5179bb9fbff7ba98",
+      "git_blob_sha": "48323262aaf10962f0a481cafc18c56bc82e936b",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "bytes": 129287,
+      "sha256": "53dc2765f2f0504a4ea16618a2e0b44c0d443dceeb3834f030098ae2cea26fba",
+      "git_blob_sha": "6200e5325ec1397abd73e9bfa99235c7b063935d",
+      "mode": "100644"
+    }
+  ],
+  "current_code_facts": [
+    {
+      "fact": "用户普通界面可从实际已安装且 enabled/exported 的 LAUNCHER Activity 中选择1至6个包和一个初始包；启动前重新核持久选择和当前安装信息。",
+      "source": "MainActivity.java",
+      "methods": [
+        "reloadBackgroundApps",
+        "chooseBackgroundApps",
+        "requireCurrentBackgroundChoice"
+      ]
+    },
+    {
+      "fact": "BackgroundTaskTarget.resolve 对任何完整 Flight 或支持的 Shopping OWNER 强制把目标缩为 Helper，且目标必须属于已选范围；不识别的普通 OWNER 返回null并保留显式初始App/范围。",
+      "source": "BackgroundTaskTarget.java",
+      "methods": [
+        "resolve"
+      ]
+    },
+    {
+      "fact": "MainActivity.refreshBackgroundTaskTarget 在识别到上述自动目标后隐藏起始App下拉框。因此原生App路由问题在Web Session之前已存在。",
+      "source": "MainActivity.java",
+      "methods": [
+        "refreshBackgroundTaskTarget",
+        "startTask"
+      ]
+    },
+    {
+      "fact": "WebFlightSession.validateSelection 在识别Flight/Shopping后硬要求Helper singleton；supported只按OWNER识别，不看显式 Selection；LTC据此创建Web Session。",
+      "sources": [
+        "WebFlightSession.java",
+        "LocalTaskController.java"
+      ],
+      "methods": [
+        "validateSelection",
+        "supported",
+        "runTask"
+      ]
+    },
+    {
+      "fact": "BackgroundSession.Selection 接受合法显式普通包，ctrip.android.view不属于其禁用包。后台start使用手机本地su app_process和LocalSocket绑定task/OWNER/generation/allowedPackages，create之后向所选initialPackage发一次launch。",
+      "source": "BackgroundSession.java",
+      "methods": [
+        "Selection",
+        "checkPackage",
+        "start",
+        "action"
+      ]
+    },
+    {
+      "fact": "普通后台观察和输入已复用Service selectedRoot/backgroundBeforeDispatch，核真实display/window/package、OWNER/Selection和原NodeRef；新Flight官网稳定性例外不会自动授给原生携程。",
+      "source": "HeptaAccessibilityService.java",
+      "methods": [
+        "selectedRoot",
+        "backgroundBeforeDispatch",
+        "validate",
+        "performOnMain"
+      ]
+    },
+    {
+      "fact": "TaskAuthorization可由完整OWNER的明确only-tools条款把工具收为open/wait/done；读取观察由既有awaitObservation执行，不需要click/type/submit。",
+      "sources": [
+        "TaskAuthorization.java",
+        "LocalTaskController.java"
+      ],
+      "methods": [
+        "parse",
+        "toolList",
+        "awaitObservation"
+      ]
+    },
+    {
+      "fact": "TCG的现有完整业务合同仅Notes/Web；短目标“打开携程”属于UNKNOWN，不具已验证完成判据。当前代码因此只能独立报告实际launch/页面读取/cleanup证据，不应称完整任务verified或Flight查询成功。",
+      "source": "TaskCompletionGate.java",
+      "methods": [
+        "Contract.parse",
+        "verified"
+      ]
+    }
+  ],
+  "immediately_testable_bounded_scope": {
+    "user_visible_goal": "打开携程",
+    "candidate_restricted_owner": "打开携程。只允许使用打开应用、等待、结束任务。",
+    "owner_string_status": "source-derived candidate; not parsed by an executed gate and not submitted to phone",
+    "explicit_ui_selection": {
+      "initial_package": "ctrip.android.view",
+      "allowed_packages": [
+        "ctrip.android.view"
+      ],
+      "helper_selected": false
+    },
+    "required_first_observations": [
+      "实际该包仍在普通LAUNCHER目录且选择有效",
+      "后台bootstrap actual launch 回执",
+      "真实新display/generation/OWNER对应的AX页面包/窗口",
+      "原始before/frame与必要整幅截图",
+      "原生进程/模型父会话退出与后台lease释放"
+    ],
+    "success_scope": "只评价实际原生App启动/读页与清理；TCG unknown或模型partial保持原值",
+    "not_authorized_by_this_plan": [
+      "点击登录/同意弹窗",
+      "输入个人资料",
+      "查询航班",
+      "提交订单",
+      "支付"
+    ],
+    "execution_performed": false
+  },
+  "minimal_followup_changes": [
+    {
+      "area": "显式App路由",
+      "files": [
+        "MainActivity.java",
+        "BackgroundTaskTarget.java",
+        "WebFlightSession.java",
+        "LocalTaskController.java"
+      ],
+      "change": "把经普通UI固定且重核的Selection/initial package纳入受信路由。用户选原生包时保留该包；只有明确Helper后端才创建Web Session。OWNER语义与所选App冲突时拒绝/补齐，不能由模型或页面改路由。"
+    },
+    {
+      "area": "原生只读动作",
+      "files": [
+        "HeptaAccessibilityService.java",
+        "TaskAuthorization.java"
+      ],
+      "change": "复用现有open/read/click/type/scroll原语与后台owner/window/NodeRef守卫；仅按实际原生页面做最小识别与目标授予。既有官网carousel waiver不扩到原生App。"
+    },
+    {
+      "area": "原生航班结果合同",
+      "files": [
+        "TaskCompletionGate.java",
+        "future narrow native flight domain/result adapter"
+      ],
+      "change": "在实际原生结果页出现后定义日期/出发到达/人数与每行航班、时刻、价格/税费口径等观察证据；独立来源是native frame及原生操作结果，不构造WebReceipt/DOM。新typed provider及终态proof必须绑实际task/OWNER/app identity/display/generation、fresh最终观察与native worker/cleanup，缺结果或未知仍false。"
+    },
+    {
+      "area": "打开App本身的完成判据",
+      "files": [
+        "TaskCompletionGate.java",
+        "existing completion fixtures"
+      ],
+      "change": "只有未来确需将“打开App”作为正式verified goal时，新增精确open_app观察合同；当前可先做启动/读页独立实测，不为此改冻结56。"
+    }
+  ],
+  "boundaries": {
+    "actual_installed_ctrip_independently_checked_here": false,
+    "actual_installed_ctrip_fact_supplied_by_root": true,
+    "phone_disconnected_operation_test_performed": false,
+    "native_flight_results_observed": false,
+    "results_provider_ready": false,
+    "source_modified": false,
+    "new_suites_requested": false
+  }
+}

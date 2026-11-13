@@ -1,0 +1,861 @@
+{
+  "schema": "hepta.isolated-v57-assembly.v1",
+  "all_pass": true,
+  "exit_code": 0,
+  "version_code": 57,
+  "version_name": "0.57.0-flight-observation-stability",
+  "package": "org.trillionnium.hepta.local",
+  "source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+  "source_tree": "2368b777bad9fd9e2f5dcbcbefc6ea9c27fcb0da",
+  "source_file_count": 595,
+  "source_inventory_sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6",
+  "compiler_source_inventory_sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6",
+  "actual_compiler_source_inputs": 217,
+  "actual_compiler_inputs_bound_to_signed_asset": true,
+  "java_source_count": 115,
+  "application_class_count": 425,
+  "pocket4_build_receipt_sha256": "d448fcd425b8c11b4a134999cf1f7d5ed15e94ebde875b00962d721cb877e7d7",
+  "pocket4_build_result_sha256": "5dc739a182bda8065f2bda04c1da7e44c43b74307f76f582ba6cc09c371475f1",
+  "build_execution_host": "pocket4",
+  "android_java_compiled_in_original_build": true,
+  "java_dex_or_resources_recompiled_by_signer": false,
+  "native_recompiled_here": false,
+  "ndk_or_clang_executed_here": false,
+  "native_payloads_reused_from_signed54": true,
+  "native_baseline_signed_receipt_sha256": "eadc9dbb63b411015571a488377be6a8704c9f78415169a5164c8f13571f0f72",
+  "historical_native_static_receipt_sha256": "23a4d98257b29f9c2a06d87823c3b9379831d6d88563b63c0768980aee1e85d6",
+  "packaged_library_count": 17,
+  "library_pins": {
+    "libMNN.so": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d",
+    "libc++_shared.so": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754",
+    "libgeniex.so": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56",
+    "libgeniex_plugin_llama_cpp.so": "cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a",
+    "libggml-base.so": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40",
+    "libggml-cpu.so": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b",
+    "libggml-hexagon.so": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f",
+    "libggml-htp-v79.so": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5",
+    "libggml-opencl.so": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875",
+    "libggml.so": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149",
+    "libhepta_local_runner.so": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+    "libhepta_mobimind_runner.so": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020",
+    "libhepta_ui_venus_runner.so": "5fa2dcae05fb649157d96481c5890c157301c76dab3522fcabcbe01b9b0d8551",
+    "libllama-common.so": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122",
+    "libllama.so": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835",
+    "libmtmd.so": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d",
+    "libomp.so": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76"
+  },
+  "unchanged_native_library_count": 17,
+  "unchanged_native_library_pins": {
+    "libMNN.so": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d",
+    "libc++_shared.so": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754",
+    "libgeniex.so": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56",
+    "libgeniex_plugin_llama_cpp.so": "cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a",
+    "libggml-base.so": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40",
+    "libggml-cpu.so": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b",
+    "libggml-hexagon.so": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f",
+    "libggml-htp-v79.so": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5",
+    "libggml-opencl.so": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875",
+    "libggml.so": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149",
+    "libhepta_local_runner.so": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+    "libhepta_mobimind_runner.so": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020",
+    "libhepta_ui_venus_runner.so": "5fa2dcae05fb649157d96481c5890c157301c76dab3522fcabcbe01b9b0d8551",
+    "libllama-common.so": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122",
+    "libllama.so": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835",
+    "libmtmd.so": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d",
+    "libomp.so": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76"
+  },
+  "native_libraries_identical_to_formal_v54": true,
+  "native_libraries_identical_to_formal_v53": true,
+  "worker_sha256": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+  "native_worker_binding": {
+    "schema": "hepta.preserved-local-worker-binding.v1",
+    "name": "libhepta_local_runner.so",
+    "sha256": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+    "previous_sha256": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+    "native_worker_updated": false,
+    "native_recompiled_here": false,
+    "cancellation_sdk_phone_verified": false,
+    "source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+    "actual_compiler_receipt_sha256": "d448fcd425b8c11b4a134999cf1f7d5ed15e94ebde875b00962d721cb877e7d7",
+    "actual_compiler_receipt_kind": "pocket4_java_native_reuse",
+    "original_native_compiler_receipt_sha256": "51265398de2dcc4ccefb5aa0e24ea91770d8c9f3b54248f3d88068e04a4436cc",
+    "actual_mac_stage_sha256": "a037b49f05ea48caccb2902b95bbb2314a5f767e230138dd14ae3a16851ee4b2",
+    "generated_worker_sha256": "77b914eae46ea000d3c955628c35f6e96a715a4a14da3eb075923d2e6024bbb0",
+    "upstream_worker_sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e"
+  },
+  "host_check_records": 101,
+  "host_input_count": 419,
+  "nested_completion_stage_count": 18,
+  "nested18_are_within_core101": true,
+  "host_checks_sha256": "074b23871cf1c5c7efe5fe36eeac94db38a540a91e7a6c32aec174a4802f7d0b",
+  "pre_commit_host_receipt_sha256": "239e2639e7ba426f5068ae1e8620edf8bd5a1c564181fdfc8048f588a87b8aab",
+  "stage_result_sha256": "239e2639e7ba426f5068ae1e8620edf8bd5a1c564181fdfc8048f588a87b8aab",
+  "nested_completion_receipt_sha256": "5322369c80176d88ee2d4eb3d1f40a0616cbbc3b4ae59a077c574de9db7a17e8",
+  "source_commit_bound_after_exact_host_run": true,
+  "source_commit_binding_sha256": "45defda2a5f1a8c0c3277311e9a4de115eb3eeeb0a5a2244101bc9af9347519a",
+  "post_compile_test_only_delta": null,
+  "compiled_and_published_source_byte_identical": true,
+  "prior_main56_unsigned_receipt_sha256": "b557a981d07fb5a65c39da4abbf0474559035a875831bec820c6b4a55fcc7ece",
+  "tests_rerun_by_signer": false,
+  "previous_signed56_receipt_sha256": "e27e74e94b0668c1c07b04863c9aaabf1b3235f9ff2d0d0d8bd9a346e46b2c6b",
+  "previous_signed56_source_commit": "9f4168616546233033edd4b254b4236ae987ea7e",
+  "query_host_cases": 40,
+  "query_host_assertions": 187,
+  "query_host_result_sha256": "88ef49c0452aac03abe4720b55a886059945360179fa13400569248f260f61bd",
+  "query_exact_current_dispatch_methods_bound": true,
+  "query_runner_source_binding": {
+    "path": "/home/alex/hepta-local-007f-20261111/v57-main-p4-android-r1/source/tests/web-flight/run_query_host_tests.py",
+    "bytes": 41005,
+    "sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10",
+    "runner_count_repair_integrated_into_current_source": true,
+    "current_runner_corrected_outside_source_tree": false,
+    "test_case_assertions_modified": false,
+    "historical56_external_runner_receipt_sha256": "b557a981d07fb5a65c39da4abbf0474559035a875831bec820c6b4a55fcc7ece",
+    "historical56_external_runner": {
+      "path": "/home/alex/hepta-local-007f-20261111/v56-main-p4-android-r1/query40-runner.py",
+      "bytes": 41005,
+      "sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10",
+      "repository_original": {
+        "bytes": 41005,
+        "sha256": "0f4d983138ed8bcf5f0b622ee4d4063048e83413eafe3586595521f5e1b7eb45"
+      },
+      "count_only_patch": {
+        "before": "    need(len(PURE_PATHS)==45 and len(generated_factories)==3,\"fixed 43 production plus 2 retained plus 3 factory inputs\")",
+        "after": "    need(len(PURE_PATHS)==46 and len(generated_factories)==3,\"fixed 44 production plus 2 retained plus 3 factory inputs\")",
+        "count": 1
+      },
+      "source_inventory_modified": false,
+      "test_case_assertions_modified": false,
+      "repository_original_count_guard_known_incompatible": true
+    }
+  },
+  "real_web_class_cases": 80,
+  "real_web_class_assertions": 92,
+  "composition_host_cases": 79,
+  "composition_host_assertions": 215,
+  "calendar_native_cases": 13,
+  "calendar_native_assertions": 1001,
+  "current_web_regression_result_sha256": {
+    "evidence80": "825375a847fe0abacb6c1e9045e19a8206114c51982ab732b88c6a694a0f911e",
+    "composition43": "61a3780ab935e9e0ad8d6ae49f03e2e4ee593557bea88ac0c6225af43f181237",
+    "calendar13": "eaeafa66969bb3b2f9402001b2d776a2f12a9904bce975adc58557e2dde1814b"
+  },
+  "existing_web_regression_receipt_sha256": "61585af641cf4c1db70a9ae0d6f1e23ea93633fb7ead6b10b3a168d45aa2a3b1",
+  "composition43_explicit_fixture_successor": true,
+  "web57_host_json_map_null_fixture_compatibility": {
+    "predecessor_packet": {
+      "bytes": 357185,
+      "sha256": "ba0832568ca64be933ba31acd3646d0c63550f6202abeecf49dd12cecb52f110",
+      "git_blob_sha": "cd1d6fe815602cfd0909e7e6cf771a0c46bd2529"
+    },
+    "repair_review": {
+      "bytes": 12303,
+      "sha256": "ea7cb1288b9e108efe1ef6d11b97480c60ae5ce5ab53f01381fcf1022ffb25eb",
+      "git_blob_sha": "16ad80bd40b1753a65837680698a71e516ecfd73"
+    },
+    "original_failed_result": {
+      "bytes": 30361,
+      "sha256": "d66b4dcaf0eed2b650df9e88928a32ab5145608f600b868864c3925011d72532",
+      "git_blob_sha": "4f436784332e6a1bf7200cbaf105c28e17a55b29"
+    },
+    "production_sources_changed": false,
+    "original_4_raw_bytes_changed": false,
+    "all_4_dom_raw_values_changed": false,
+    "original_79_case_order_unchanged": true,
+    "original_211_assertions_unchanged": true,
+    "additional_assertions_in_existing_positive_case": 4,
+    "derived_capture_path": "capture.binding.authorization.find_query",
+    "archived_value": "present explicit JSON null",
+    "derived_host_value": "key omitted by desktop JSONObject(Map)",
+    "original_authorization_fully_recompiled": true,
+    "restoring_single_null_field_recovers_complete_capture": true,
+    "original_binding_sha256": "427b3e7743e044dc06643468e976ba0fd47c27b28b21203473fd31738937dc53",
+    "derived_host_binding_sha256": "b56264d8894c3c3946437e9aab857c3ccf8453170396acfbff5e556411da1e69",
+    "derived_captures_are_original_fd_records": false,
+    "expected_cases": 79,
+    "expected_assertions": 215,
+    "actual_cases": null,
+    "actual_assertions": null
+  },
+  "web57_prior_failed_output_preserved": true,
+  "web57_additional_host_json_compatibility_assertions": 4,
+  "focused_consumer_cases": 20,
+  "focused_consumer_assertions": 60,
+  "focused_arm_cases": 19,
+  "focused_arm_assertions": 98,
+  "focused39_receipt_sha256": "7e1b16ba42b2fdde52f7e18bc94d72e3efa673160ab2c1896017ee0e8c51bb56",
+  "identity_cases": 10,
+  "identity_assertions": 218,
+  "identity_receipt_sha256": "52762ada64c63bc58749d62e9bd183b586c40349f0e10082ded1c308d82df4f7",
+  "helper_required_version_code": 6,
+  "helper_protocol": "v4",
+  "flight_query_production_implemented": true,
+  "actual_flight_results_provider_ready": false,
+  "flight_query_phone_executed": false,
+  "web_query_executed": false,
+  "web_results_verified": false,
+  "web_binder_phone_verified": false,
+  "shopping_provider_phone_verified": false,
+  "cancellation_sdk_phone_verified": false,
+  "android_runtime_tested": false,
+  "installed_on_phone": false,
+  "phone_contacted": false,
+  "business_verified": false,
+  "ordinary_app_uid_accelerator_qualified": false,
+  "new_key_created": false,
+  "key_material_exported": false,
+  "existing_key_metadata_unchanged": true,
+  "signer_proof_path": "/home/alex/hepta-v35-task-authorization-e59-r1/SIGNER-PROOF.json",
+  "signer_proof_sha256": "97e3aba44ec7a303a935965c1d608692ac06007a33bb859fec481486c1a239fe",
+  "complete_jdk_receipt_sha256": "349939390c8b19e8cea03e28ce6c5bc2c1d010dd06d3a435b7f1517221f0dd1c",
+  "java_home": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64",
+  "matches_previously_recorded_signer": true,
+  "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "source_files_unchanged": true,
+  "actual_build_identity_sha256": "d24295e13e82de20a6afee815f853803a0eec8a71c98f48bca17f3e68d4a3e85",
+  "permissions": [
+    "org.trillionnium.hepta.webhelper.permission.BIND_EVIDENCE"
+  ],
+  "abi": [
+    "arm64-v8a"
+  ],
+  "manifest_explicit_queries": {
+    "packages": [
+      "com.android.settings",
+      "com.android.settings.intelligence",
+      "com.motorola.cn.calculator",
+      "com.motorola.launcher3",
+      "com.motorola.stylus",
+      "com.topjohnwu.magisk",
+      "com.zui.browser",
+      "org.trillionnium.hepta.webhelper"
+    ],
+    "intents": [
+      [
+        [
+          "action",
+          "android.intent.action.MAIN"
+        ],
+        [
+          "category",
+          "android.intent.category.HOME"
+        ]
+      ],
+      [
+        [
+          "action",
+          "android.intent.action.MAIN"
+        ],
+        [
+          "category",
+          "android.intent.category.LAUNCHER"
+        ]
+      ]
+    ]
+  },
+  "dependencies_downloaded": false,
+  "source_publication_receipt_sha256": "cba1734c8da78e80bbbed51f036e1ebbfbb9d99aa39dffb0d967078c0051d5a0",
+  "git_source_map_sha256": "5280a107976ccdc734a8ecfe8bffb08bb4b8a569526c0015704b6cdf270ede5f",
+  "started_epoch": 1794527525.7422242,
+  "steps": [
+    {
+      "name": "sign",
+      "argv": [
+        "/usr/bin/apksigner",
+        "sign",
+        "--ks",
+        "/home/alex/razr-local-lfm3-accde7885/r1/hepta-latest-app/keys/hepta-local-debug.jks",
+        "--ks-key-alias",
+        "hepta-local-debug",
+        "--ks-pass",
+        "pass:android",
+        "--key-pass",
+        "pass:android",
+        "--min-sdk-version",
+        "30",
+        "--out",
+        "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/out/hepta-local-0.57.0.apk",
+        "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/inputs/UNSIGNED.apk"
+      ],
+      "cwd": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1",
+      "pid": 3407197,
+      "exit_code": 0,
+      "timed_out": false,
+      "forced_kill": false,
+      "exit_observed": true,
+      "elapsed_seconds": 1.8749316500034183,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/sign.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "identity": [
+          66306,
+          51146702,
+          33152,
+          1,
+          0,
+          1794527526027747860,
+          1794527526027747860
+        ]
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/sign.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "identity": [
+          66306,
+          51146703,
+          33152,
+          1,
+          0,
+          1794527526027747860,
+          1794527526027747860
+        ]
+      },
+      "owned_group_cleanup_attempted": false,
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_error": null
+    },
+    {
+      "name": "verify",
+      "argv": [
+        "/usr/bin/apksigner",
+        "verify",
+        "--verbose",
+        "--print-certs",
+        "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/out/hepta-local-0.57.0.apk"
+      ],
+      "cwd": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1",
+      "pid": 3407435,
+      "exit_code": 0,
+      "timed_out": false,
+      "forced_kill": false,
+      "exit_observed": true,
+      "elapsed_seconds": 0.6703598849708214,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/verify.stdout",
+        "bytes": 969,
+        "sha256": "b659b045920b36231d53cc2391b47a753401c5a91f8088862c8a47c405563b53",
+        "identity": [
+          66306,
+          51146706,
+          33152,
+          1,
+          969,
+          1794527528516835040,
+          1794527528516835040
+        ]
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/verify.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "identity": [
+          66306,
+          51146707,
+          33152,
+          1,
+          0,
+          1794527527902813525,
+          1794527527902813525
+        ]
+      },
+      "owned_group_cleanup_attempted": false,
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_error": null
+    },
+    {
+      "name": "badging",
+      "argv": [
+        "/usr/lib/android-sdk/build-tools/debian/aapt2",
+        "dump",
+        "badging",
+        "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/out/hepta-local-0.57.0.apk"
+      ],
+      "cwd": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1",
+      "pid": 3407537,
+      "exit_code": 0,
+      "timed_out": false,
+      "forced_kill": false,
+      "exit_observed": true,
+      "elapsed_seconds": 0.03250113897956908,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/badging.stdout",
+        "bytes": 1014,
+        "sha256": "ce54d23a5b4eabd661bf48a13c1ed9ad64eade763fc20f887b1ee781f570501e",
+        "identity": [
+          66306,
+          51146708,
+          33152,
+          1,
+          1014,
+          1794527528591837668,
+          1794527528591837668
+        ]
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/badging.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "identity": [
+          66306,
+          51146709,
+          33152,
+          1,
+          0,
+          1794527528572837002,
+          1794527528572837002
+        ]
+      },
+      "owned_group_cleanup_attempted": false,
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_error": null
+    },
+    {
+      "name": "permissions",
+      "argv": [
+        "/usr/lib/android-sdk/build-tools/debian/aapt2",
+        "dump",
+        "permissions",
+        "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/out/hepta-local-0.57.0.apk"
+      ],
+      "cwd": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1",
+      "pid": 3407539,
+      "exit_code": 0,
+      "timed_out": false,
+      "forced_kill": false,
+      "exit_observed": true,
+      "elapsed_seconds": 0.009390254970639944,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/permissions.stdout",
+        "bytes": 120,
+        "sha256": "cd77666cf50bdf1af95f031147c7a89a89aa5045d088a2f751cbd23e0610d9b4",
+        "identity": [
+          66306,
+          51146710,
+          33152,
+          1,
+          120,
+          1794527528612838404,
+          1794527528612838404
+        ]
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/permissions.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "identity": [
+          66306,
+          51146711,
+          33152,
+          1,
+          0,
+          1794527528605838158,
+          1794527528605838158
+        ]
+      },
+      "owned_group_cleanup_attempted": false,
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_error": null
+    },
+    {
+      "name": "manifest",
+      "argv": [
+        "/usr/lib/android-sdk/build-tools/debian/aapt2",
+        "dump",
+        "xmltree",
+        "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/out/hepta-local-0.57.0.apk",
+        "--file",
+        "AndroidManifest.xml"
+      ],
+      "cwd": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1",
+      "pid": 3407540,
+      "exit_code": 0,
+      "timed_out": false,
+      "forced_kill": false,
+      "exit_observed": true,
+      "elapsed_seconds": 0.009958461043424904,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/manifest.stdout",
+        "bytes": 6675,
+        "sha256": "d9b626f1219ebfc4102f43d16371992ed55fae6ff7c2e376131bb6c9a741972e",
+        "identity": [
+          66306,
+          51146712,
+          33152,
+          1,
+          6675,
+          1794527528621838719,
+          1794527528621838719
+        ]
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/manifest.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "identity": [
+          66306,
+          51146713,
+          33152,
+          1,
+          0,
+          1794527528614838474,
+          1794527528614838474
+        ]
+      },
+      "owned_group_cleanup_attempted": false,
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_error": null
+    },
+    {
+      "name": "accessibility",
+      "argv": [
+        "/usr/lib/android-sdk/build-tools/debian/aapt2",
+        "dump",
+        "xmltree",
+        "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/out/hepta-local-0.57.0.apk",
+        "--file",
+        "res/xml/hepta_accessibility_service.xml"
+      ],
+      "cwd": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1",
+      "pid": 3407541,
+      "exit_code": 0,
+      "timed_out": false,
+      "forced_kill": false,
+      "exit_observed": true,
+      "elapsed_seconds": 0.018131067976355553,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/accessibility.stdout",
+        "bytes": 821,
+        "sha256": "1fa611fe8b5bc407c91b92d486b3b262dd95e55f6d9bb747fdd87d9afa272cb4",
+        "identity": [
+          66306,
+          51146714,
+          33152,
+          1,
+          821,
+          1794527528631839070,
+          1794527528631839070
+        ]
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/accessibility.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "identity": [
+          66306,
+          51146715,
+          33152,
+          1,
+          0,
+          1794527528624838824,
+          1794527528624838824
+        ]
+      },
+      "owned_group_cleanup_attempted": false,
+      "owned_group_absent_observed_after_failure": null,
+      "owned_group_cleanup_error": null
+    }
+  ],
+  "input_inventory_sha256": "78131493893f6203da7cf86b2acdac6857dc8b4b676335772b6956fa0e5b7274",
+  "apk": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/out/hepta-local-0.57.0.apk",
+  "apk_bytes": 21038933,
+  "apk_sha256": "c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4",
+  "unsigned_apk_sha256": "0b5d20941940d12bca1a9a0e30a6d1b20ff010326285e772e8f01a0956d0bb51",
+  "static_acceptance_sha256": "3f428b65b6bdc981dc0bb3c0538eb70e295486dd0be16d5f44981c477eb3b042",
+  "static_acceptance_schema": "hepta.local-model.static-acceptance.v4",
+  "resources_arsc_zip_layout": {
+    "compression_method": 0,
+    "local_data_offset": 21024936,
+    "four_byte_aligned": true,
+    "payload_sha256": "8c9835ee21b319889e39df6146f88147815bda68b1f88d3c1b44f29db5b402f8"
+  },
+  "all_compiled_members_unchanged": true,
+  "signed_member_sha256": {
+    "AndroidManifest.xml": "5dfe417f64eda2573a0b4b31945d05be6184978a825e272591127706ea74e30f",
+    "META-INF/HEPTA-LO.RSA": "9367a4fcedbaa19e6f6d93fcd963df6989d199b8eb3fcacffeabf4716f38dbd9",
+    "META-INF/HEPTA-LO.SF": "19884d3d14a275cb6ac66cbedba0034983da5ac1d909d7329a3939d400b0edcf",
+    "META-INF/MANIFEST.MF": "611eea7a00ff89390b95e6c42df3ddb6e188f91f4afffd9f519d62085d0b1772",
+    "assets/hepta-build-identity.json": "d24295e13e82de20a6afee815f853803a0eec8a71c98f48bca17f3e68d4a3e85",
+    "classes.dex": "e24fa7938360ec6bfebf666accb1e7eaf76e3b3dc9b663d5f56992262d89f9fc",
+    "lib/arm64-v8a/libMNN.so": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d",
+    "lib/arm64-v8a/libc++_shared.so": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754",
+    "lib/arm64-v8a/libgeniex.so": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56",
+    "lib/arm64-v8a/libgeniex_plugin_llama_cpp.so": "cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a",
+    "lib/arm64-v8a/libggml-base.so": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40",
+    "lib/arm64-v8a/libggml-cpu.so": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b",
+    "lib/arm64-v8a/libggml-hexagon.so": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f",
+    "lib/arm64-v8a/libggml-htp-v79.so": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5",
+    "lib/arm64-v8a/libggml-opencl.so": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875",
+    "lib/arm64-v8a/libggml.so": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149",
+    "lib/arm64-v8a/libhepta_local_runner.so": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+    "lib/arm64-v8a/libhepta_mobimind_runner.so": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020",
+    "lib/arm64-v8a/libhepta_ui_venus_runner.so": "5fa2dcae05fb649157d96481c5890c157301c76dab3522fcabcbe01b9b0d8551",
+    "lib/arm64-v8a/libllama-common.so": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122",
+    "lib/arm64-v8a/libllama.so": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835",
+    "lib/arm64-v8a/libmtmd.so": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d",
+    "lib/arm64-v8a/libomp.so": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76",
+    "res/xml/hepta_accessibility_service.xml": "9ea231b98439f65a35cdc9077383840fef3c233ca08c82b4c98353aedd858857",
+    "resources.arsc": "8c9835ee21b319889e39df6146f88147815bda68b1f88d3c1b44f29db5b402f8"
+  },
+  "signed_zip_layout": [
+    {
+      "path": "assets/hepta-build-identity.json",
+      "bytes": 30545,
+      "sha256": "d24295e13e82de20a6afee815f853803a0eec8a71c98f48bca17f3e68d4a3e85",
+      "compression_method": 8,
+      "compressed_bytes": 10872,
+      "local_header_offset": 0,
+      "data_offset": 62,
+      "data_offset_mod4": 2
+    },
+    {
+      "path": "AndroidManifest.xml",
+      "bytes": 5652,
+      "sha256": "5dfe417f64eda2573a0b4b31945d05be6184978a825e272591127706ea74e30f",
+      "compression_method": 8,
+      "compressed_bytes": 1655,
+      "local_header_offset": 10934,
+      "data_offset": 10983,
+      "data_offset_mod4": 3
+    },
+    {
+      "path": "classes.dex",
+      "bytes": 1088800,
+      "sha256": "e24fa7938360ec6bfebf666accb1e7eaf76e3b3dc9b663d5f56992262d89f9fc",
+      "compression_method": 8,
+      "compressed_bytes": 497406,
+      "local_header_offset": 12638,
+      "data_offset": 12679,
+      "data_offset_mod4": 3
+    },
+    {
+      "path": "lib/arm64-v8a/libMNN.so",
+      "bytes": 6408488,
+      "sha256": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d",
+      "compression_method": 8,
+      "compressed_bytes": 2458806,
+      "local_header_offset": 510085,
+      "data_offset": 510138,
+      "data_offset_mod4": 2
+    },
+    {
+      "path": "lib/arm64-v8a/libc++_shared.so",
+      "bytes": 9236352,
+      "sha256": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754",
+      "compression_method": 8,
+      "compressed_bytes": 2305180,
+      "local_header_offset": 2968944,
+      "data_offset": 2969004,
+      "data_offset_mod4": 0
+    },
+    {
+      "path": "lib/arm64-v8a/libgeniex.so",
+      "bytes": 19781824,
+      "sha256": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56",
+      "compression_method": 8,
+      "compressed_bytes": 5557038,
+      "local_header_offset": 5274184,
+      "data_offset": 5274240,
+      "data_offset_mod4": 0
+    },
+    {
+      "path": "lib/arm64-v8a/libgeniex_plugin_llama_cpp.so",
+      "bytes": 377040,
+      "sha256": "cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a",
+      "compression_method": 8,
+      "compressed_bytes": 152079,
+      "local_header_offset": 10831278,
+      "data_offset": 10831351,
+      "data_offset_mod4": 3
+    },
+    {
+      "path": "lib/arm64-v8a/libggml-base.so",
+      "bytes": 3534496,
+      "sha256": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40",
+      "compression_method": 8,
+      "compressed_bytes": 1009179,
+      "local_header_offset": 10983430,
+      "data_offset": 10983489,
+      "data_offset_mod4": 1
+    },
+    {
+      "path": "lib/arm64-v8a/libggml-cpu.so",
+      "bytes": 936328,
+      "sha256": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b",
+      "compression_method": 8,
+      "compressed_bytes": 414899,
+      "local_header_offset": 11992668,
+      "data_offset": 11992726,
+      "data_offset_mod4": 2
+    },
+    {
+      "path": "lib/arm64-v8a/libggml-hexagon.so",
+      "bytes": 3874328,
+      "sha256": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f",
+      "compression_method": 8,
+      "compressed_bytes": 983942,
+      "local_header_offset": 12407625,
+      "data_offset": 12407687,
+      "data_offset_mod4": 3
+    },
+    {
+      "path": "lib/arm64-v8a/libggml-htp-v79.so",
+      "bytes": 858848,
+      "sha256": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5",
+      "compression_method": 8,
+      "compressed_bytes": 505723,
+      "local_header_offset": 13391629,
+      "data_offset": 13391691,
+      "data_offset_mod4": 3
+    },
+    {
+      "path": "lib/arm64-v8a/libggml-opencl.so",
+      "bytes": 7886880,
+      "sha256": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875",
+      "compression_method": 8,
+      "compressed_bytes": 1882840,
+      "local_header_offset": 13897414,
+      "data_offset": 13897475,
+      "data_offset_mod4": 3
+    },
+    {
+      "path": "lib/arm64-v8a/libggml.so",
+      "bytes": 41088,
+      "sha256": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149",
+      "compression_method": 8,
+      "compressed_bytes": 16182,
+      "local_header_offset": 15780315,
+      "data_offset": 15780369,
+      "data_offset_mod4": 1
+    },
+    {
+      "path": "lib/arm64-v8a/libhepta_local_runner.so",
+      "bytes": 59952,
+      "sha256": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+      "compression_method": 8,
+      "compressed_bytes": 29918,
+      "local_header_offset": 15796551,
+      "data_offset": 15796619,
+      "data_offset_mod4": 3
+    },
+    {
+      "path": "lib/arm64-v8a/libhepta_mobimind_runner.so",
+      "bytes": 2186768,
+      "sha256": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020",
+      "compression_method": 8,
+      "compressed_bytes": 433195,
+      "local_header_offset": 15826537,
+      "data_offset": 15826608,
+      "data_offset_mod4": 0
+    },
+    {
+      "path": "lib/arm64-v8a/libhepta_ui_venus_runner.so",
+      "bytes": 58144,
+      "sha256": "5fa2dcae05fb649157d96481c5890c157301c76dab3522fcabcbe01b9b0d8551",
+      "compression_method": 8,
+      "compressed_bytes": 28617,
+      "local_header_offset": 16259803,
+      "data_offset": 16259874,
+      "data_offset_mod4": 2
+    },
+    {
+      "path": "lib/arm64-v8a/libllama-common.so",
+      "bytes": 6242864,
+      "sha256": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122",
+      "compression_method": 8,
+      "compressed_bytes": 1917719,
+      "local_header_offset": 16288491,
+      "data_offset": 16288553,
+      "data_offset_mod4": 1
+    },
+    {
+      "path": "lib/arm64-v8a/libllama.so",
+      "bytes": 5642424,
+      "sha256": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835",
+      "compression_method": 8,
+      "compressed_bytes": 1810064,
+      "local_header_offset": 18206272,
+      "data_offset": 18206327,
+      "data_offset_mod4": 3
+    },
+    {
+      "path": "lib/arm64-v8a/libmtmd.so",
+      "bytes": 1643536,
+      "sha256": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d",
+      "compression_method": 8,
+      "compressed_bytes": 613123,
+      "local_header_offset": 20016391,
+      "data_offset": 20016445,
+      "data_offset_mod4": 1
+    },
+    {
+      "path": "lib/arm64-v8a/libomp.so",
+      "bytes": 1234864,
+      "sha256": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76",
+      "compression_method": 8,
+      "compressed_bytes": 394838,
+      "local_header_offset": 20629568,
+      "data_offset": 20629621,
+      "data_offset_mod4": 1
+    },
+    {
+      "path": "res/xml/hepta_accessibility_service.xml",
+      "bytes": 648,
+      "sha256": "9ea231b98439f65a35cdc9077383840fef3c233ca08c82b4c98353aedd858857",
+      "compression_method": 8,
+      "compressed_bytes": 357,
+      "local_header_offset": 21024459,
+      "data_offset": 21024528,
+      "data_offset_mod4": 0
+    },
+    {
+      "path": "resources.arsc",
+      "bytes": 1008,
+      "sha256": "8c9835ee21b319889e39df6146f88147815bda68b1f88d3c1b44f29db5b402f8",
+      "compression_method": 0,
+      "compressed_bytes": 1008,
+      "local_header_offset": 21024885,
+      "data_offset": 21024936,
+      "data_offset_mod4": 0
+    },
+    {
+      "path": "META-INF/HEPTA-LO.SF",
+      "bytes": 2373,
+      "sha256": "19884d3d14a275cb6ac66cbedba0034983da5ac1d909d7329a3939d400b0edcf",
+      "compression_method": 8,
+      "compressed_bytes": 1167,
+      "local_header_offset": 21025944,
+      "data_offset": 21025994,
+      "data_offset_mod4": 2
+    },
+    {
+      "path": "META-INF/HEPTA-LO.RSA",
+      "bytes": 1645,
+      "sha256": "9367a4fcedbaa19e6f6d93fcd963df6989d199b8eb3fcacffeabf4716f38dbd9",
+      "compression_method": 8,
+      "compressed_bytes": 1473,
+      "local_header_offset": 21027161,
+      "data_offset": 21027212,
+      "data_offset_mod4": 0
+    },
+    {
+      "path": "META-INF/MANIFEST.MF",
+      "bytes": 2246,
+      "sha256": "611eea7a00ff89390b95e6c42df3ddb6e188f91f4afffd9f519d62085d0b1772",
+      "compression_method": 8,
+      "compressed_bytes": 1079,
+      "local_header_offset": 21028685,
+      "data_offset": 21028735,
+      "data_offset_mod4": 3
+    }
+  ],
+  "compiler_source_files_unchanged": true,
+  "all_inputs_unchanged": true,
+  "previous_signed54_source_apk_receipt_unchanged": true,
+  "previous_signed56_source_apk_receipt_unchanged": true,
+  "finished_epoch": 1794527530.895544,
+  "elapsed_seconds": 5.153319835662842,
+  "runner_sha256": "7814550e071c5a4206da4b021dc3d4952a23d1cf11ad1f6f3e1d751b7d5b180f",
+  "original_guard_count": 2084
+}

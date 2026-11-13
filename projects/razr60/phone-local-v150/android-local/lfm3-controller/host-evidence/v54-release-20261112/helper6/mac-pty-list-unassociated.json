@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.helper6-pty-list-reconciliation-limits.v1",
+  "request": {
+    "host": "mac",
+    "limit": 50
+  },
+  "actual_list_returned": true,
+  "session_count": 50,
+  "has_more": true,
+  "next_after_session_id": "dpty-0ed902212324e6374cdf62070596a569637d9fecd41db17256409156e62a71b1",
+  "all_returned_session_key_sets": [
+    "[\"host\",\"persistent_across_runtime_restart\",\"session_id\",\"status\"]"
+  ],
+  "all_returned_status_states": [
+    "inspect_with_pty_read"
+  ],
+  "key_argv_source_pid_or_timestamp_exposed": false,
+  "source_or_key_match_identified": false,
+  "unrelated_pty_output_read": false,
+  "additional_pages_read": 0,
+  "build_start_replayed": false,
+  "unresolved_build_status": "unknown",
+  "reason": "The returned page exposes only opaque IDs and inspect_with_pty_read status; it cannot associate this task's original key/source with a session.",
+  "phone_actions": 0
+}

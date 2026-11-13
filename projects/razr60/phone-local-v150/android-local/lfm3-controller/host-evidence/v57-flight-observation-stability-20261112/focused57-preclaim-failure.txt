@@ -1,0 +1,26 @@
+{"argv_bytes": 32656, "argv_sha256": "7bf25e8798e666d63a90953994cf83c1846cd213e0e296238e64f4d4a14019a6", "bounded_supervisor_sha256": "31b10cc36233a35884fee285e4fe499a828176cb46608ca626db775ef7d1eed6", "coordinator_started": false, "gzip_bytes": 24492, "gzip_sha256": "9397d5748e025ee0759a734541ae75066622a41cf631a812d6459763f4a7e5bd", "next_action": "exec_reviewed_supervisor_then_original_loader", "original_loader_sha256": "7fb26242696a2081955ef74061064f2138d969b635b1e0174a206fe2f5d9c7e9", "published": [{"bytes": 74445, "created_here": true, "identity": [66306, 41071297, 33152, 1, 1000, 1000, 74445, 1794525673128875675, 1794525673133470388], "path": "/home/alex/hepta-local-007f-20261111/v57-main-wire4-host-p4-r1.py", "reused_identical": false, "sha256": "11fee98b6e69b3d887e07a921635c330dc616795f1433ce5d530abf429763634"}], "schema": "hepta.fixed-source-gzip-argv-transport-receipt.v1", "transport_completed": true, "transport_key": "007f-v57-main-wire4-host-p4-r1"}
+{"schema": "hepta.main57-focused39-pty-bounded-launch.v1", "event": "started", "child_pid": 3258715, "timeout_seconds": 1200, "loader_sha256": "7fb26242696a2081955ef74061064f2138d969b635b1e0174a206fe2f5d9c7e9"}
+Traceback (most recent call last):
+  File [35m"<string>"[0m, line [35m14[0m, in [35m<module>[0m
+    [31mexec[0m[1;31m(compile(raw,str(p),"exec",dont_inherit=True),{"__name__":"__main__","__file__":str(p),"__stage_source__":raw})[0m
+    [31m~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"/home/alex/hepta-local-007f-20261111/v57-main-wire4-host-p4-r1.py"[0m, line [35m334[0m, in [35m<module>[0m
+    previous56=strict_json(previous56_raw)
+  File [35m"/home/alex/hepta-local-007f-20261111/v57-main-wire4-host-p4-r1.py"[0m, line [35m28[0m, in [35mstrict_json[0m
+    return [31mjson.loads[0m[1;31m(raw.decode("utf-8", "strict"), object_pairs_hook=pairs,[0m
+           [31m~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+                      [1;31mparse_float=no_number, parse_constant=no_number)[0m
+                      [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"/usr/lib/python3.14/json/__init__.py"[0m, line [35m365[0m, in [35mloads[0m
+    return [31mcls(**kw).decode[0m[1;31m(s)[0m
+           [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^[0m
+  File [35m"/usr/lib/python3.14/json/decoder.py"[0m, line [35m345[0m, in [35mdecode[0m
+    obj, end = [31mself.raw_decode[0m[1;31m(s, idx=_w(s, 0).end())[0m
+               [31m~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"/usr/lib/python3.14/json/decoder.py"[0m, line [35m361[0m, in [35mraw_decode[0m
+    obj, end = [31mself.scan_once[0m[1;31m(s, idx)[0m
+               [31m~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^[0m
+  File [35m"/home/alex/hepta-local-007f-20261111/v57-main-wire4-host-p4-r1.py"[0m, line [35m27[0m, in [35mno_number[0m
+    raise ValueError("unexpected floating point or non-finite metadata")
+[1;35mValueError[0m: [35munexpected floating point or non-finite metadata[0m
+{"schema": "hepta.main57-focused39-pty-bounded-launch.v1", "event": "finished", "child_pid": 3258715, "child_returncode": 1, "exit_observed": true, "timed_out": false, "forced_kill": false, "error": null, "elapsed_seconds": 0.4650236719753593}

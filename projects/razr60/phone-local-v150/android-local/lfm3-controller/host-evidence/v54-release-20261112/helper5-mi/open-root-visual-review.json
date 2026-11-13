@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.root-helper5-manual-mi-open-visual-review.v1",
+  "source_result_sha256": "0bbf3b48acbf93dd1d8e8f3757c9a7b2eadc8dca709d94cc3cc7577ea11e86bd",
+  "source_original_png": {
+    "bytes": 425351,
+    "sha256": "45bc5c972ebc0c80eca17227dadcdb36347847cb8088c12125672fbcc6209407",
+    "root_full_original_bytes_read": false
+  },
+  "source_original_xml": {
+    "bytes": 211693,
+    "sha256": "55746f2b9cac9aa24567a56820c27469d3e94f0574bf5d44bba1b675b612410e",
+    "root_full_original_bytes_read": false
+  },
+  "root_actual_visual_input": {
+    "path": "/home/alex/hepta-local-007f-20261111/helper5-current53-mi-open-r1-review-r1/after-page-full-frame.webp",
+    "bytes": 30514,
+    "sha256": "45d26de753bfc92455e71579dbd942348ea471e49a58f8517025b5aa84aa2384",
+    "dimensions": [
+      600,
+      1467
+    ],
+    "quality": 70,
+    "whole_frame": true,
+    "lossy": true
+  },
+  "whole_frame_visual_review_completed": true,
+  "preview_payload_and_chunk_hashes_independently_verified": true,
+  "preview_full_frame_not_crop": true,
+  "preview_is_lossy": true,
+  "actual_native_xml_prefix": {
+    "offset": 0,
+    "bytes": 8192,
+    "sha256": "71741b34b63a18e23d08e4114bd71e7cc4d4c48b731579102038775d8af06d73",
+    "contains_complete_native_controls_before_WebView": true
+  },
+  "observed_native_failure_text": "只读采集未完成：native_scale_changed_during_capture",
+  "observed_native_url": "https://www.mi.com/shop/search?keyword=AX3000T",
+  "read_only_button": {
+    "index": "2",
+    "text": "记录当前页面（只读）",
+    "resource-id": "",
+    "class": "android.widget.Button",
+    "package": "org.trillionnium.hepta.webhelper",
+    "content-desc": "",
+    "checkable": "false",
+    "checked": "false",
+    "clickable": "true",
+    "enabled": "true",
+    "focusable": "true",
+    "focused": "false",
+    "scrollable": "false",
+    "long-clickable": "false",
+    "password": "false",
+    "selected": "false",
+    "bounds": "[816,287][1224,455]",
+    "drawing-order": "3",
+    "hint": ""
+  },
+  "target_control_unoccluded": true,
+  "keyboard_or_modal_overlay": false,
+  "successful_capture_available": false,
+  "successful_capture_count": 0,
+  "new_record_count": 0,
+  "business_verified": false,
+  "model_invoked": false,
+  "formal_lease_verified": false,
+  "scope": "One manual site open; root visual input is a verified whole-frame lossy preview and bounded exact native XML prefix. Full original PNG/XML remain source-pinned and are replayed by the reviewed driver. Displayed product card is not verified SKU/price/order evidence."
+}

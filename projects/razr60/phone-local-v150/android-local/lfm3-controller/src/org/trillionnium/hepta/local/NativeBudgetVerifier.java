@@ -2,7 +2,7 @@ package org.trillionnium.hepta.local;
 
 import java.util.Map;
 
-/** Pure receipt validator: no alternate tokenizer estimate can authorize a new profile. */
+/** Pure receipt validator: exact profiles, including LFM3, require same-input-ID proof. */
 public final class NativeBudgetVerifier {
     private NativeBudgetVerifier(){}
     private static long number(Map<String,?> value,String key){

@@ -1,0 +1,157 @@
+{
+  "schema": "hepta.independent-notes54-normal-run-admission-source-review.v1",
+  "reviewer": "android_background",
+  "decision": "no_source_or_actual_preparation_binding_blocker",
+  "scope": "Read-only Git originals and V8 exact byte/ordered argv comparison; no host gate and no phone actions.",
+  "originals": [
+    {
+      "git_blob": "0d83b3405aadfa32fdb247ab24cf9c179948f222",
+      "bytes": 49143,
+      "sha256": "0b15a45a5149651f542add385bb2cb3a90120ae117d4d7e190ad56010e90dda0"
+    },
+    {
+      "git_blob": "bc1ab693a932242cca87ca3053adfb565e78da2b",
+      "bytes": 9623,
+      "sha256": "7daaec96faff31d9b77207f1cdbe428e6d4cbfba940cd0c4f7835539492e5580"
+    },
+    {
+      "git_blob": "88139b9db03444a9ce413e7bb17f4a9f2614433b",
+      "bytes": 7823,
+      "sha256": "952d67a0b21d5a9d1c996fb6c0f837f49c4b60db399963019c7306a6a6a6fc0e"
+    }
+  ],
+  "root_wrapper": {
+    "blob": "951e798c13ba6709bada8409b7132e084dd0d2d4",
+    "bytes": 3248,
+    "sha256": "df8dd6deb219f5db6ee471fc830ea0fff8275738e62bc06bdd0ad4833a4a1a68"
+  },
+  "root_visual_review": {
+    "blob": "ac8928e986eb32250490e983f1c7bc6ce1e3c7cc",
+    "bytes": 2706,
+    "sha256": "009230d35952b924d49b60e97e857dc10b609ef6d4f9b4c0570efa26299fe59f"
+  },
+  "wrapper_mechanical_verification": {
+    "baseline_git": "c19ac127f69e83bd605b0ed47c4e8f0bd95ed371",
+    "baseline_bytes": 2547,
+    "baseline_sha256": "43141af8da877e995124cbe15b648d8562f7bf712b9d3516b007c95b182c3fd5",
+    "only_changed_lines": [
+      2,
+      13
+    ],
+    "changed_content": [
+      "documentation",
+      "sys.argv"
+    ],
+    "stable_single_link_regular_file_full_sha_guard_and_same_raw_compile_unchanged": true,
+    "helper_template_git": "dc5d52e994fbd28790dbef9a504a2a20dcb51bbd",
+    "helper_argv_count": 63,
+    "changed_indexes": [
+      [
+        38,
+        "0b15a45a5149651f542add385bb2cb3a90120ae117d4d7e190ad56010e90dda0"
+      ],
+      [
+        43,
+        "180"
+      ],
+      [
+        44,
+        "1114"
+      ],
+      [
+        48,
+        "70403b827c822eaf38cdd63b3d7e4fd3b73ace755b58382972c5220095c28dc4"
+      ],
+      [
+        52,
+        "cb88e18226e823f3158cffba8b454aa3c5dca99cc35761a9f57307bda9657cf5"
+      ]
+    ],
+    "remaining_58_arguments_exactly_unchanged": true,
+    "outer_kind": "run",
+    "exact_export_out": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-r1-host-review-r1"
+  },
+  "actual_preparation": {
+    "prepared": true,
+    "task_started": false,
+    "start_tapped": false,
+    "target_app_operated": false,
+    "identity_uid": 10481,
+    "apk_sha256": "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a",
+    "runtime_config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+    "full_owner_exact_to_frozen_plan": true,
+    "owner_sha256": "4b0372268b965098e7a40955ea9a69971a5767930152a70ddfaf217843b4fc62",
+    "unique_start": {
+      "class": "android.widget.Button",
+      "package": "org.trillionnium.hepta.local",
+      "bounds": [
+        48,
+        1042,
+        312,
+        1186
+      ],
+      "point": [
+        180,
+        1114
+      ],
+      "enabled": true,
+      "clickable": true
+    },
+    "unique_stop": {
+      "text": "停止",
+      "bounds": [
+        312,
+        1042,
+        576,
+        1186
+      ],
+      "enabled": false,
+      "clickable": true
+    },
+    "original_preference_bytes": 653,
+    "original_preference_sha256": "c9364dde8c0b52e7890835d720967987f708e972b397fcc3f76d9d76a667137f",
+    "original_selection": {
+      "schema": "hepta.background-ui-choice.v1",
+      "initial": "com.motorola.stylus",
+      "packages": [
+        {
+          "package": "com.motorola.stylus",
+          "uid": 10382,
+          "signers": [
+            "be8804a55e9045a580d204979f6efb15c058731aa1021b78c046feab8ae76a26"
+          ]
+        },
+        {
+          "package": "org.trillionnium.hepta.webhelper",
+          "uid": 10484,
+          "signers": [
+            "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5"
+          ]
+        }
+      ]
+    },
+    "automatic_target_text": "本次将自动使用：Moto 笔记。已保存的应用范围保持不变。",
+    "effective_task_scope_observed": false
+  },
+  "visual_boundary": {
+    "root_reported_complete_lossy_preview_inspected": true,
+    "root_original_png_full_read": false,
+    "reviewer_image_inspection_performed": false,
+    "actual_original_xml_full_bytes_read_and_parsed": true,
+    "window_full_sha_bound_to_actual_preparation_and_root_review": true,
+    "window_full_raw_independently_read_by_this_reviewer": false,
+    "original_png_remains_runner_guard_input": true
+  },
+  "execution_boundary": {
+    "root_reports_owner15_normal_close_and_actual_exit0": true,
+    "owner15_close_raw_independently_read_by_this_reviewer": false,
+    "root_reports_wrapper_create_only_write_complete": true,
+    "runner_fresh_visual_window_lock_and_start_capture_10_seconds_guards_unchanged": true,
+    "start_window_90_seconds_begins_after_fresh_start_tap": true,
+    "actual_task_owner_selection_and_business_result_still_pending": true,
+    "reviewer_h_calls": 0,
+    "reviewer_phone_actions": 0,
+    "reviewer_execution": false,
+    "no_new_host_gate_required": true
+  }
+}

@@ -1,0 +1,2082 @@
+{
+  "observation": {
+    "observation_id": "c6fc903caded4a2cacaa6bf9291c5a80",
+    "package": "org.trillionnium.hepta.webhelper",
+    "screen_width": 720,
+    "screen_height": 1280,
+    "rotation": 0,
+    "window_id": 3598,
+    "screen_sha256": "5ba5291872eb3766cba5fc2dbb8344a19f992a5a40ae3aaa156ce9e13038788b",
+    "window": {
+      "scope": "active_root_only",
+      "metadata_status": "observed",
+      "window_id": 3598,
+      "root_bounds": [
+        0,
+        0,
+        720,
+        1280
+      ],
+      "root_class": "android.widget.FrameLayout",
+      "root_class_truncated": false,
+      "type": 1,
+      "display_id": 24,
+      "bounds": [
+        0,
+        0,
+        720,
+        1280
+      ],
+      "title": "Hepta 网页",
+      "title_truncated": false
+    },
+    "background_session": {
+      "mode": "background",
+      "allowed_packages": [
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "bootstrap_package": "org.trillionnium.hepta.webhelper",
+      "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false,
+      "owner_task_selection": {
+        "schema": "hepta.owner-task-app-selection.v1",
+        "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+        "recognition": "natural_explicit_date_single_adult_flight_query.v1",
+        "original_ui_initial_package": "com.motorola.stylus",
+        "original_ui_allowed_packages": [
+          "com.motorola.stylus",
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_initial_package": "org.trillionnium.hepta.webhelper",
+        "effective_allowed_packages": [
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_scope_within_selected_apps": true,
+        "effective_scope_strictly_smaller": true,
+        "initial_app_changed": true,
+        "package_from_model_or_screen": false,
+        "grants_tool_authority": false,
+        "changes_saved_preferences": false
+      },
+      "generation": "2598e051-6b5a-4126-8263-7c132605bc3d",
+      "display_id": 24
+    },
+    "app_tree_sha256": "25d2492949975c69c97ce7ede9b8efb8763d53e13385470d3d7f3000e1384cb5",
+    "observation_state_sha256": "a9f88ea05b5040e0744b59d450cc777fd23ca7ff44a1d00f2c8cd963298dc828",
+    "ime_visible": false,
+    "scroll_actions_schema": "hepta.observed-scroll-actions.v1",
+    "node_data_is_untrusted": true,
+    "nodes_truncated": false,
+    "collection": {
+      "schema": "hepta.observation-collection.v1",
+      "source": "same_observed_accessibility_traversal",
+      "visit_limit": 1536,
+      "node_limit": 512,
+      "text_utf16_exclusive_limit": 32768,
+      "visited_nodes": 89,
+      "retained_nodes": 49,
+      "retained_text_utf16": 660,
+      "pending_nodes_at_stop": 0,
+      "child_slots_omitted_by_traversal_limit": 0,
+      "nodes_omitted_by_node_limit": 0,
+      "nodes_omitted_by_text_limit": 0,
+      "truncation_reasons": [],
+      "elapsed_ms": 86,
+      "unvisited_descendant_count_known": false,
+      "grants_action_capability": false
+    },
+    "nodes": [
+      {
+        "id": "n0",
+        "bounds": [
+          0,
+          0,
+          720,
+          53
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.TextView",
+        "text": "https:\/\/m.csair.com\/",
+        "node_app_tree_sha256": "69c3af1fbcd868e9ce9f276e884559214f844fba77866bc020877d1b9e7014cb",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/0",
+          "parent_class": "android.widget.FrameLayout",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n1",
+        "bounds": [
+          0,
+          53,
+          720,
+          91
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.TextView",
+        "text": "已绑定 Hepta 公开信息查询；结果仍需字段与来源核验。",
+        "node_app_tree_sha256": "c8c4f5f15d05649d9f28aa21701c9ea272a1687ec2a8342e9b1c9346a189fe82",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/1",
+          "parent_class": "android.widget.FrameLayout",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n2",
+        "bounds": [
+          0,
+          91,
+          720,
+          1280
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.webkit.WebView",
+        "text": "中国南方航空官网-机票查询,机票预订",
+        "node_app_tree_sha256": "9705ad1f2a46b7a812e415fa4f0a1fcdca1c89b680f18f1193a8dcf643032b1f",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "scrollable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [
+          "forward",
+          "down"
+        ],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false,
+        "focused": true
+      },
+      {
+        "id": "n3",
+        "bounds": [
+          30,
+          160,
+          690,
+          184
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.TextView",
+        "text": "关闭",
+        "view_id": "cookie-tips-close",
+        "node_app_tree_sha256": "edd2b24c2ed751d86d5892639087bb71d1fee699ea02bd3c624f0e946e49c629",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/1",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n4",
+        "bounds": [
+          363,
+          217,
+          471,
+          307
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "child_text_status": "empty",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 3,
+        "view_id": "toolbarSwitch",
+        "node_app_tree_sha256": "8daa20cb2b01b28f6c8d6d916165cdbeb32d81bc03b334a3c20ef47fcecdce83",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/3",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n5",
+        "bounds": [
+          486,
+          217,
+          570,
+          307
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Button",
+        "text": "官网APP按钮，点按两次即可激活",
+        "view_id": "downloadbtn",
+        "node_app_tree_sha256": "7b55b65c5c58c5d50624349dba4fa2da4a6e077994fa1465897baf9c38206022",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/4",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n6",
+        "bounds": [
+          588,
+          217,
+          651,
+          307
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Button",
+        "text": "长辈版按钮，点按两次即可激活",
+        "view_id": "suitelderbtn",
+        "node_app_tree_sha256": "b5bad50e8f5c043b383d50b9cd858eeab13ea7b6f1821204f90564862dbd655f",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/5",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n7",
+        "bounds": [
+          60,
+          568,
+          360,
+          706
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "child_text_status": "empty",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 3,
+        "view_id": "booking",
+        "node_app_tree_sha256": "9abb4e8d5abd336c18f613f57785df95bc79ad70c1ee46a80979341e272a3cdb",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/7",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n8",
+        "bounds": [
+          360,
+          568,
+          660,
+          706
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "child_text_status": "empty",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 3,
+        "view_id": "mytrip",
+        "node_app_tree_sha256": "a511ff355f29a41aa7e3004d9fde12e18b769f27a3fc11a34e989614edc68e6d",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/8",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n9",
+        "bounds": [
+          60,
+          703,
+          360,
+          841
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "child_text_status": "empty",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 3,
+        "view_id": "flightstatus",
+        "node_app_tree_sha256": "4d70ef6bda85c28a0e307997bd748116b04f57139f2616062012260dee02568b",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/9",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n10",
+        "bounds": [
+          360,
+          703,
+          660,
+          841
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "child_text_status": "empty",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 3,
+        "view_id": "preSeat",
+        "node_app_tree_sha256": "911e395ebf69f52d0f43f5ca24cc323961f0c601cc4f220636d0a2b62c9344d7",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/10",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n11",
+        "bounds": [
+          60,
+          838,
+          360,
+          976
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "child_text_status": "empty",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 3,
+        "view_id": "SouthernAirlinesPearl",
+        "node_app_tree_sha256": "3e0a86544697b99e6ef36b0fe2744037b7b61fe1cb4501ed93a15e4d9c4b318b",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/11",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n12",
+        "bounds": [
+          360,
+          838,
+          660,
+          976
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "child_text_status": "empty",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 3,
+        "view_id": "travelguide",
+        "node_app_tree_sha256": "455dea68c50ece1b6c0ff941e5d3c9b9ed3026797a5ab5bd36b813936b825a78",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/12",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n13",
+        "bounds": [
+          81,
+          985,
+          270,
+          1070
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "child_text_status": "empty",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 2,
+        "node_app_tree_sha256": "b9eadaf12a3cfa45fc8a0276def6bc47921ac8b27cb382259332f20efad4f60a",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/13",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n14",
+        "bounds": [
+          309,
+          985,
+          459,
+          1070
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "child_text_status": "empty",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 2,
+        "view_id": "feedback",
+        "node_app_tree_sha256": "343e83e8bc76aba00c75906726203c3f7cfb69df9d82fa56e778552b1e1afa86",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/14",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n15",
+        "bounds": [
+          516,
+          991,
+          564,
+          1042
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Button",
+        "text": "国家和地区按钮，点按两次即可激活",
+        "node_app_tree_sha256": "d01f612457777d7e5aa9ebe8c1bc52c3f245e263bce13738d1873aa94a19db26",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/15",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n16",
+        "bounds": [
+          582,
+          979,
+          660,
+          1064
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "child_text_status": "empty",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 1,
+        "node_app_tree_sha256": "7b816a2eaa65d2ac9205e77c89746cdc798565aae72ca8390963682d5bf60f19",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/16",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n17",
+        "bounds": [
+          75,
+          1084,
+          175,
+          1144
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "child_text_status": "empty",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 2,
+        "view_id": "website",
+        "node_app_tree_sha256": "8d71772bb85444fe2dff804fd426501b6ed6194b660056d9d8cc13dc78b25d28",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/17",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n18",
+        "bounds": [
+          576,
+          1099,
+          645,
+          1129
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.TextView",
+        "text": "95539",
+        "node_app_tree_sha256": "52a553c1077aa3323406047e8dce12b18f8c75b4cb453421f62cfb08813ad2b0",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/20",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n19",
+        "bounds": [
+          609,
+          787,
+          684,
+          886
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "child_text_status": "empty",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 1,
+        "view_id": "customService",
+        "node_app_tree_sha256": "c2f1f1df7c46eb8195cce9d887436b13ec86c225aeaaef6d92fcf8677a4560f8",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/22",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n20",
+        "bounds": [
+          0,
+          91,
+          27,
+          721
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "description": "新窗口打开无障碍说明页面,按Alt加波浪键打开导盲模式",
+        "view_id": "esdTipLink1",
+        "node_app_tree_sha256": "e020f07d840ea318fe1bd87f2eba1f256cf921d99a91b2da589b5c1be576d273",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/23",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n21",
+        "bounds": [
+          0,
+          91,
+          21,
+          326
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "description": "跳转到主要内容区域",
+        "view_id": "esdTipLink2",
+        "node_app_tree_sha256": "39473591816787746469622b9c28c74619cc81b6fc6691e07977cb425e981448",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/24",
+          "parent_class": "android.webkit.WebView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n22",
+        "bounds": [
+          30,
+          118,
+          690,
+          160
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.TextView",
+        "text": "为提供良好的体验，本站点使用了cookie技术收集您的相关信息并保密存储，如继续浏览本网站，表示您已同意并接受",
+        "node_app_tree_sha256": "eb7f9b93d17339573c3176d167f98e26d68bede2e680ef7b3ac8bff4aea9f367",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/0\/0",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n23",
+        "bounds": [
+          261,
+          139,
+          384,
+          160
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.TextView",
+        "text": "《cookie政策》。",
+        "node_app_tree_sha256": "78762bb18c0786629b2fc21ce6dc657c88d8b74fd00f96b768af382469c5ae3a",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/0\/1",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n24",
+        "bounds": [
+          363,
+          280,
+          471,
+          305
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "description": "无障碍浏览",
+        "view_id": "toolbarSwitch",
+        "node_app_tree_sha256": "fe4178b194113005a52274ff8a5587a61a9288a22026ba2f28feac03676be649",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/3\/2",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n25",
+        "bounds": [
+          0,
+          313,
+          720,
+          571
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.ListView",
+        "child_text_status": "empty",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 8,
+        "view_id": "slider4",
+        "node_app_tree_sha256": "c9dfdd913c2b6508f8b58fd59a3625ddef5a8a69624e3ac9f897de83b7adcc2d",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/6\/0",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n26",
+        "bounds": [
+          123,
+          985,
+          168,
+          1069
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Button",
+        "text": "登录按钮，点按两次即可激活",
+        "node_app_tree_sha256": "70a1fff552c41464da3f22a2e08df8b56548d375bbe7507d84707f0000816a47",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/13\/1",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n27",
+        "bounds": [
+          372,
+          985,
+          459,
+          1069
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Button",
+        "text": "意见反馈按钮，点按两次即可激活",
+        "node_app_tree_sha256": "d5edbefa604499f3989da3b0596f96ab0c67794c951a587a188c5900b5cb5a40",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/14\/1",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n28",
+        "bounds": [
+          582,
+          997,
+          621,
+          1036
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Button",
+        "text": "中英文转换按钮，点按两次即可激活",
+        "node_app_tree_sha256": "5746d920f0d5c40e533da6d095da912a6283325fc25459e2209637812bc7c582",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/16\/0",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n29",
+        "bounds": [
+          117,
+          1087,
+          180,
+          1147
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Button",
+        "text": "电脑版按钮，点按两次即可激活",
+        "node_app_tree_sha256": "5c152559667bef9e438c9c9f7b2fa3a4e3ab2bc328b7edd7634c308cc0e061b1",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/17\/1",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n30",
+        "bounds": [
+          312,
+          1102,
+          441,
+          1127
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Button",
+        "text": "购票安全提示按钮，点按两次即可激活",
+        "view_id": "buyTicketTip_word",
+        "node_app_tree_sha256": "20d0da98c92f74fa22d0d0e44c46511b91cde40a67a5064df61ba37fc055b0af",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/18\/1",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n31",
+        "bounds": [
+          609,
+          787,
+          684,
+          886
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Button",
+        "text": "客户服务按钮，点按两次即可激活",
+        "node_app_tree_sha256": "c1dedfe5d8e564ac85b95daef7ad2a77de02d78531ce0eb514ae77c67d7328f6",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/22\/0",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n32",
+        "bounds": [
+          0,
+          91,
+          27,
+          721
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.TextView",
+        "text": "新窗口打开无障碍说明页面,按Alt加波浪键打开导盲模式",
+        "node_app_tree_sha256": "b7301c6b1c39ddf5573a8bf25564e58239d2812c28af39df85fe6e97b6976103",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/23\/0",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n33",
+        "bounds": [
+          0,
+          91,
+          21,
+          326
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.TextView",
+        "text": "跳转到主要内容区域",
+        "node_app_tree_sha256": "595072e4e79172cd7f7f82e599011ff0c3a1a503e3e6875d902670bf7b15f7a6",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/24\/0",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n34",
+        "bounds": [
+          363,
+          280,
+          471,
+          305
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.TextView",
+        "text": "无障碍浏览",
+        "node_app_tree_sha256": "bb0ca34c73d8025b6b1ac55bcfd176bf1e9370e2aedfe3f918bc4d4aed00f9e4",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/3\/2\/0",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n35",
+        "bounds": [
+          0,
+          313,
+          60,
+          571
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "child_text_status": "derived",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 1,
+        "child_text": "c63a71c015aa4b51a29e101d2f4c518b",
+        "child_text_source": "visible_noninteractive_descendants.v2",
+        "child_text_root_signature": "01394d6f3ecac501c86aff1f306fe82a854aba5345154a361e65231ac6285569",
+        "child_text_sources": [
+          {
+            "descendant_path": "0",
+            "property": "text",
+            "text_sha256": "d86c9f7a5ae82785d905ffa906e0b0dcfc3c4dc380a33123248d850b8c97e3d4",
+            "node_signature": "cd2f13f7d2f744afacf8f7a252d47aa59c0c7e5789b88cbea670a2c643ea0974",
+            "view_id": ""
+          }
+        ],
+        "view_id": "advertising2",
+        "node_app_tree_sha256": "5439957090643f1ba512d89951358e8a6481932b9d668fbc9832f020cd74e9d7",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/6\/0\/4",
+          "parent_class": "android.widget.ListView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n36",
+        "bounds": [
+          60,
+          313,
+          660,
+          571
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "child_text_status": "derived",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 1,
+        "child_text": "4273a6ba219449e1997003ee4dbd4392",
+        "child_text_source": "visible_noninteractive_descendants.v2",
+        "child_text_root_signature": "c2f1d9cb92b548df1b951a320d98847bbfc64b092c1ddd8b3bd875ccfff58a16",
+        "child_text_sources": [
+          {
+            "descendant_path": "0",
+            "property": "text",
+            "text_sha256": "f3aa6d1f9471cb6f2f002be81f9abdf327551637e1265b1e0592a71ab0354a92",
+            "node_signature": "5459636dd1b1a8159578749c4317171790b5172148e6e6735af02b7046d2f195",
+            "view_id": ""
+          }
+        ],
+        "view_id": "advertising1",
+        "node_app_tree_sha256": "825e00c51e0f7d71542099b0a8a347b834cc6aaa4cee56c30392a547336e337f",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/6\/0\/5",
+          "parent_class": "android.widget.ListView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n37",
+        "bounds": [
+          660,
+          313,
+          720,
+          571
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.view.View",
+        "child_text_status": "derived",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 1,
+        "child_text": "1d903d702ae74d3aaed486ea5b4794e1",
+        "child_text_source": "visible_noninteractive_descendants.v2",
+        "child_text_root_signature": "669907e8e3c7f0cb4ae866b1b019b0d68140a13ae90559480740c3af1077b82b",
+        "child_text_sources": [
+          {
+            "descendant_path": "0",
+            "property": "text",
+            "text_sha256": "5a00ff8a8988a85dfdbddfa3d7c00ddaed0c3462459b7c421b38f42a535711c7",
+            "node_signature": "db9fcc6c0b78b8926bb3cf356f8db903fe0af83df47151d8d2b6fc3189c56675",
+            "view_id": ""
+          }
+        ],
+        "view_id": "advertising0",
+        "node_app_tree_sha256": "3f944fd58c233041790760d36b5d4fed9a9df017f0a56702808bca6266da8b37",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/6\/0\/6",
+          "parent_class": "android.widget.ListView",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n38",
+        "bounds": [
+          162,
+          568,
+          360,
+          706
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Button",
+        "text": "机票预订按钮，点按两次即可激活",
+        "node_app_tree_sha256": "9c6347cee303a42ebc5283e7415608088cece81caba8b3b5932f1ccf9b5cfdbf",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/7\/1\/0",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n39",
+        "bounds": [
+          462,
+          568,
+          660,
+          706
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Button",
+        "text": "我的订单按钮，点按两次即可激活",
+        "node_app_tree_sha256": "27c3951c8c0b47f99dd8fb29f0bedb48eca102727f5d653f8a9a3374d7484a29",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/8\/1\/0",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n40",
+        "bounds": [
+          162,
+          703,
+          360,
+          841
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Button",
+        "text": "航班动态按钮，点按两次即可激活",
+        "node_app_tree_sha256": "91d25c125e22249cab539c4fb29f991de3ab19e66db3e7dc1bcbd24a23a3bca6",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/9\/1\/0",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n41",
+        "bounds": [
+          462,
+          703,
+          660,
+          841
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Button",
+        "text": "提前选座按钮，点按两次即可激活",
+        "node_app_tree_sha256": "d3a50c3770fcbfe988fba23806475a163bdfa32b85e85b1ac3b45750d21e2ecb",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/10\/1\/0",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n42",
+        "bounds": [
+          162,
+          838,
+          360,
+          976
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Button",
+        "text": "南航会员按钮，点按两次即可激活",
+        "node_app_tree_sha256": "6ab9571f3a4a08c3e2ccbc3d78b591ae26915c1b3ff7e8d01f03c8c156141fb8",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/11\/1\/0",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n43",
+        "bounds": [
+          462,
+          838,
+          660,
+          976
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Button",
+        "text": "服务大厅按钮，点按两次即可激活",
+        "node_app_tree_sha256": "791fb5868dfca80b55d4182e5fcff3ba54627745c74e180b7032337a79f3e8d2",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/12\/1\/0",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n44",
+        "bounds": [
+          630,
+          1213,
+          675,
+          1259
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.TextView",
+        "child_text_status": "empty",
+        "child_text_truncated": false,
+        "child_text_sources_complete": true,
+        "child_text_visited": 0,
+        "node_app_tree_sha256": "2b89db3cb1bd1348d325b0292cd1ca4c11fbd0f100d3be00cbc41902e442c2bc",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/21\/0\/1",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "clickable": true,
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n45",
+        "bounds": [
+          30,
+          1204,
+          690,
+          1262
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.TextView",
+        "text": "点击下方图标，选择“添加至主屏幕”   ",
+        "node_app_tree_sha256": "710c390437c93699f1303fdcf8012ca54486726ae53a6cc07a44215fcbc313cc",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/21\/0\/2",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n46",
+        "bounds": [
+          0,
+          313,
+          60,
+          571
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Image",
+        "text": "c63a71c015aa4b51a29e101d2f4c518b",
+        "node_app_tree_sha256": "1af5e1018e15bdfd96b8477be5f79904ddfffb4a0cd6048bf2860fa440fd0762",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/6\/0\/4\/0",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n47",
+        "bounds": [
+          60,
+          313,
+          660,
+          571
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Image",
+        "text": "4273a6ba219449e1997003ee4dbd4392",
+        "node_app_tree_sha256": "77a65f96311d89b3668622b74c2cd93e97a3f9f02a682a24dd8e7b2590e2dbd1",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/6\/0\/5\/0",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      },
+      {
+        "id": "n48",
+        "bounds": [
+          660,
+          313,
+          720,
+          571
+        ],
+        "package": "org.trillionnium.hepta.webhelper",
+        "class_name": "android.widget.Image",
+        "text": "1d903d702ae74d3aaed486ea5b4794e1",
+        "node_app_tree_sha256": "5b39efa5c8d042faa5825030f981150bb0d0cf2791c7e18f2050dc6f304aca20",
+        "native_tree_position": {
+          "schema": "hepta.native-tree-position.v1",
+          "path": "0\/2\/0\/6\/0\/6\/0",
+          "parent_class": "android.view.View",
+          "source": "same_bounded_accessibility_traversal",
+          "grants_action_capability": false
+        },
+        "scroll_actions_observed": true,
+        "scroll_directions": [],
+        "input_text_sha256": null,
+        "ime_enter": {
+          "schema": "hepta.observed-ime-enter.v1",
+          "observed": true,
+          "present": false,
+          "action_label": null,
+          "action_label_sha256": null,
+          "query_allowed": false,
+          "reason_code": "ime_action_unavailable"
+        },
+        "submit_available": false
+      }
+    ]
+  },
+  "qualification_scope": {
+    "schema": "hepta.qualification-task-scope.v1",
+    "task_id": "11f5735392b2402495a19e1ed5474d13",
+    "expected_scope_sha256": null,
+    "actual_scope_sha256": null,
+    "restricted": false,
+    "scope_loaded": false,
+    "qualification_id": null,
+    "build_identity_sha256": null,
+    "runtime_config_sha256": null,
+    "scope_refused": false,
+    "refusal": null,
+    "private_path_diagnostics": {
+      "schema": "hepta.private-path-diagnostics.v1",
+      "metadata_only": true,
+      "framework_files_absolute": "\/data\/user\/0\/org.trillionnium.hepta.local\/files",
+      "framework_files_canonical": "\/data\/data\/org.trillionnium.hepta.local\/files",
+      "framework_scope_absolute": "\/data\/user\/0\/org.trillionnium.hepta.local\/files\/qualification-scope.json",
+      "framework_scope_canonical": "\/data\/data\/org.trillionnium.hepta.local\/files\/qualification-scope.json",
+      "framework_runtime_absolute": "\/data\/user\/0\/org.trillionnium.hepta.local\/files\/model\/runtime-config.json",
+      "framework_runtime_canonical": "\/data\/data\/org.trillionnium.hepta.local\/files\/model\/runtime-config.json",
+      "captured_files_absolute": "\/data\/data\/org.trillionnium.hepta.local\/files"
+    },
+    "last_check": {
+      "schema": "hepta.qualification-scope-check.v1",
+      "restricted": false,
+      "action": "wait",
+      "target_package": "org.trillionnium.hepta.webhelper",
+      "fresh_root_package": null,
+      "fresh_root_window_id": null,
+      "fresh_root_type": null,
+      "fresh_root_display_id": null,
+      "fresh_root_active": null,
+      "fresh_root_visible": null,
+      "fresh_node_package": null,
+      "fresh_node_window_id": null,
+      "node_required": false,
+      "allowed": true,
+      "reason": null
+    }
+  },
+  "task_authorization": {
+    "schema": "hepta.owner-task-authorization.v1",
+    "parser": "hepta.owner-tool-clauses.zh.v4-fixed-intents+natural-flight-ceiling.v1",
+    "instruction_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+    "authorization_sha256": "7362e28a99e174f17c45f4070472c883a033c9bfcb9446f1cc19e2221e1edacc",
+    "allowed_tools": [
+      "back",
+      "click",
+      "done",
+      "open",
+      "scroll",
+      "submit",
+      "type",
+      "wait"
+    ],
+    "require_find_app_before_open": false,
+    "find_query": null,
+    "recognized_rules": [
+      "natural_public_flight_tool_ceiling.v1"
+    ],
+    "arbitrary_semantic_constraints_verified": false,
+    "task_id": "11f5735392b2402495a19e1ed5474d13",
+    "discovery_run_id": null,
+    "found_packages": [],
+    "opened_package": null,
+    "success_done_allowed": true,
+    "catalogue_sha256": "0f24e7349551897bbc631d1ecf8e5f1dfb232e84f3c38b775c0e4c766f39913d",
+    "discovery_observation_id": null,
+    "open_run_id": null,
+    "opened_observation_id": null,
+    "pending_open_package": null,
+    "retired": false,
+    "refused": false,
+    "refusal": null,
+    "last_check": {
+      "schema": "hepta.owner-action-check.v1",
+      "task_id": "11f5735392b2402495a19e1ed5474d13",
+      "authorization_sha256": "7362e28a99e174f17c45f4070472c883a033c9bfcb9446f1cc19e2221e1edacc",
+      "model_run_id": "b5c52bd3c04044f28108aa9001772e9f",
+      "action": "wait",
+      "target_package": "org.trillionnium.hepta.webhelper",
+      "allowed": true
+    }
+  },
+  "background_session": {
+    "schema": "hepta.background-session.v1",
+    "task_id": "11f5735392b2402495a19e1ed5474d13",
+    "app_uid": 10481,
+    "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+    "generation": "2598e051-6b5a-4126-8263-7c132605bc3d",
+    "socket": "hepta-bg-2598e051-6b5a-4126-8263-7c132605bc3d",
+    "display_name": "hepta-bg-2598e051-6b5a-4126-8263-7c132605bc3d",
+    "display_id": 24,
+    "state": "ACTIVE",
+    "created_elapsed_ms": 862333314,
+    "expires_elapsed_ms": 862873314,
+    "boot_count": 82,
+    "selection": {
+      "mode": "background",
+      "allowed_packages": [
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "bootstrap_package": "org.trillionnium.hepta.webhelper",
+      "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false,
+      "owner_task_selection": {
+        "schema": "hepta.owner-task-app-selection.v1",
+        "owner_sha256": "868050b2cd0f02abb963559bbe60afcdfea9a0e2be5e62d06ba6f354f85ad2ee",
+        "recognition": "natural_explicit_date_single_adult_flight_query.v1",
+        "original_ui_initial_package": "com.motorola.stylus",
+        "original_ui_allowed_packages": [
+          "com.motorola.stylus",
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_initial_package": "org.trillionnium.hepta.webhelper",
+        "effective_allowed_packages": [
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_scope_within_selected_apps": true,
+        "effective_scope_strictly_smaller": true,
+        "initial_app_changed": true,
+        "package_from_model_or_screen": false,
+        "grants_tool_authority": false,
+        "changes_saved_preferences": false
+      }
+    },
+    "retired": false,
+    "spawn_attempted": true,
+    "bootstrap_dispatched": true,
+    "bootstrap_model_issued": false,
+    "broker_process_exit_observed": false,
+    "broker_process_exit_code": null,
+    "broker_output": {
+      "schema": "hepta.background-broker-output.v1",
+      "task_id": "11f5735392b2402495a19e1ed5474d13",
+      "generation": "2598e051-6b5a-4126-8263-7c132605bc3d",
+      "app_uid": 10481,
+      "app_pid": 25673,
+      "process_binding": "owned_java_process_merged_stream",
+      "process_reference": 129476663,
+      "command_sha256": "0f493b5710da89d59ef339f0e9f71f28a52b0807ffab5bd13a5d2e2a9b370a3d",
+      "started_elapsed_ms": 862333320,
+      "output_file": "background-broker-2598e051-6b5a-4126-8263-7c132605bc3d.bin",
+      "receipt_file": "background-broker-2598e051-6b5a-4126-8263-7c132605bc3d.json",
+      "output_limit_bytes": 65536,
+      "observed_bytes": 0,
+      "stored_bytes": 0,
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "overflow": false,
+      "eof_seen": false,
+      "read_failed": false,
+      "merged_stdout_stderr": true,
+      "model_input": false,
+      "release_evidence": false,
+      "persisted": false
+    },
+    "app_display_readback": {
+      "schema": "hepta.background-app-display-readback.v1",
+      "source": "ordinary_app_public_display_readback",
+      "flags_source": "android.view.Display.getFlags",
+      "task_id": "11f5735392b2402495a19e1ed5474d13",
+      "generation": "2598e051-6b5a-4126-8263-7c132605bc3d",
+      "display_id": 24,
+      "display_name": "hepta-bg-2598e051-6b5a-4126-8263-7c132605bc3d",
+      "app_uid": 10481,
+      "app_pid": 25673,
+      "boot_count": 82,
+      "broker_request_id": "04116952-84bc-4068-ab15-b9060aedf68d",
+      "flags": 6272,
+      "valid": true,
+      "flags_match_broker": true,
+      "observed_started_elapsed_ms": 862350960,
+      "observed_ended_elapsed_ms": 862350961
+    },
+    "last_broker_response": {
+      "version": 1,
+      "request_id": "04116952-84bc-4068-ab15-b9060aedf68d",
+      "generation": "2598e051-6b5a-4126-8263-7c132605bc3d",
+      "ok": true,
+      "state": "ACTIVE",
+      "display_id": 24,
+      "flags": 6272,
+      "width": 720,
+      "height": 1280,
+      "density": 240,
+      "dispatched": false,
+      "display_name": "hepta-bg-2598e051-6b5a-4126-8263-7c132605bc3d",
+      "expires_elapsed_ms": 862873314,
+      "capture_secure": false,
+      "always_unlocked": false,
+      "ime_policy": "hide",
+      "display_policy_readback": {
+        "flag_namespace": "android.view.Display",
+        "flags_source": "android.view.Display.getFlags",
+        "flags": 6272,
+        "flag_constants": {
+          "FLAG_TRUSTED": 128,
+          "FLAG_OWN_FOCUS": 2048,
+          "FLAG_STEAL_TOP_FOCUS_DISABLED": 4096,
+          "FLAG_SECURE": 2,
+          "FLAG_ALWAYS_UNLOCKED": 512
+        },
+        "required_mask": 6272,
+        "forbidden_mask": 514,
+        "ime_source": "android.view.IWindowManager.getDisplayImePolicy",
+        "ime_actual": 2,
+        "ime_hide_constant": "android.view.WindowManager.DISPLAY_IME_POLICY_HIDE",
+        "ime_hide_value": 2,
+        "schema": "hepta.background-display-policy.v1",
+        "source": "broker_framework_readback",
+        "generation": "2598e051-6b5a-4126-8263-7c132605bc3d",
+        "display_id": 24,
+        "display_name": "hepta-bg-2598e051-6b5a-4126-8263-7c132605bc3d",
+        "observed_started_elapsed_ms": 862350104,
+        "observed_ended_elapsed_ms": 862350105
+      },
+      "operation": "state"
+    }
+  }
+}

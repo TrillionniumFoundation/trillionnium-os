@@ -1,0 +1,135 @@
+{
+  "actual_android_file_access_executed": false,
+  "actual_stat_receipt_sha256": "221fc909eb5c23f20b29f85ce0c19db971e2f12a565760e2a14550cf0705efcd",
+  "all_pass": true,
+  "android_syscalls_doubled": true,
+  "business_verified": false,
+  "cases": {
+    "actual_android_file_access_executed": false,
+    "actual_stat_values_replayed": true,
+    "actual_three_link_apk_rehashed_here": false,
+    "all_pass": true,
+    "android_syscalls_doubled": true,
+    "assertions": 218,
+    "business_verified": false,
+    "case_names": [
+      "actual_main_three_link_read_only_stamp_is_admitted",
+      "actual_helper_single_link_protected_stamp_is_admitted",
+      "symlink_directory_and_fifo_are_rejected",
+      "group_or_other_write_permission_is_rejected",
+      "empty_or_unlinked_metadata_is_rejected",
+      "every_identity_field_including_link_owner_group_is_stable",
+      "unchanged_file_sha_reads_one_fd_and_hashes_real_fixture_bytes",
+      "opened_fd_identity_mismatch_is_rejected_without_retry",
+      "post_read_fd_or_path_replacement_and_link_changes_are_rejected",
+      "short_grown_or_failed_read_never_returns_a_hash"
+    ],
+    "cases": 10,
+    "host_hash_payload_synthetic": true,
+    "package_manager_or_certificate_executed": false,
+    "phone_actions": 0,
+    "schema": "hepta.installed-apk-identity-host-checks.v1"
+  },
+  "cases_bytes": 931,
+  "cases_sha256": "a8633dc8c70ae9b34eb73926247e955785c220f14755720e046ee908a1260552",
+  "entire_jdk_closure_revalidated_here": false,
+  "exit_code": 0,
+  "finished_epoch": 1794490936.1659892,
+  "fresh_java_javac_binary_hashes_verified": true,
+  "frozen39_rerun": false,
+  "generated_java_sha256": "38ec317c6344665e06c73c3c50816cbfa4e96ef3ed69b6a40dd38d525ca26dd7",
+  "old_general_suites_rerun": false,
+  "original_guards": [
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/source/src/org/trillionnium/hepta/local/WebHelperIdentity.java",
+      "unchanged": true
+    },
+    {
+      "path": "/home/alex/hepta-v31-nanbeige42-e59-r1/toolchains/old-jdk17-revalidation-r1/RESULT.json",
+      "unchanged": true
+    },
+    {
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+      "unchanged": true
+    },
+    {
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+      "unchanged": true
+    }
+  ],
+  "originals_unchanged": true,
+  "package_manager_or_certificate_executed": false,
+  "phone_actions": 0,
+  "prior_jdk_receipt_referenced": "349939390c8b19e8cea03e28ce6c5bc2c1d010dd06d3a435b7f1517221f0dd1c",
+  "projected_file_sha_method_sha256": "12060e029073a246ce0be461186b6018fe2cfcc6f2345afc985f54c0ffc7f18a",
+  "projected_stamp_sha256": "1bf507560a124940fa8bd77f5c96516ff44c70b8fd97b0bf27c119664c4a39f2",
+  "schema": "hepta.main55-installed-apk-identity-host-stage.v1",
+  "source_sha256": "e3ca49ba910ff1bb26f50452e1f718313dbce51df9d77c8b107867351178e1d9",
+  "started_epoch": 1794490934.5371253,
+  "steps": [
+    {
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+        "--release",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-proc:none",
+        "-Xlint:all",
+        "-Werror",
+        "-d",
+        "/home/alex/hepta-local-007f-20261111/v55-installed-apk-identity-host-r1/classes",
+        "/home/alex/hepta-local-007f-20261111/v55-installed-apk-identity-host-r1/InstalledApkIdentityHostTest.java"
+      ],
+      "cleanup_errors": [],
+      "exception": null,
+      "exit_code": 0,
+      "forced": false,
+      "name": "javac",
+      "owned_group_absent_observed": null,
+      "owned_group_cleanup_attempted": false,
+      "seconds": 1.4086547110346146,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-installed-apk-identity-host-r1/javac.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-installed-apk-identity-host-r1/javac.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "-cp",
+        "/home/alex/hepta-local-007f-20261111/v55-installed-apk-identity-host-r1/classes",
+        "InstalledApkIdentityHostTest",
+        "/home/alex/hepta-local-007f-20261111/v55-installed-apk-identity-host-r1/ACTUAL-STAT.txt",
+        "/home/alex/hepta-local-007f-20261111/v55-installed-apk-identity-host-r1/io",
+        "/home/alex/hepta-local-007f-20261111/v55-installed-apk-identity-host-r1/CASES.json"
+      ],
+      "cleanup_errors": [],
+      "exception": null,
+      "exit_code": 0,
+      "forced": false,
+      "name": "identity-cases",
+      "owned_group_absent_observed": null,
+      "owned_group_cleanup_attempted": false,
+      "seconds": 0.20219855598406866,
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-installed-apk-identity-host-r1/identity-cases.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 53,
+        "path": "/home/alex/hepta-local-007f-20261111/v55-installed-apk-identity-host-r1/identity-cases.stdout",
+        "sha256": "208b9a288b9c72ddea7a11344d4a8f63092da848099472da09a16dd99aa46036"
+      }
+    }
+  ],
+  "test_template_sha256": "ab453bf79444fd0f82bc7136cfaaa696e2706ec089f8eb78a8c264b1424819ea",
+  "unchanged_original_methods": 8
+}

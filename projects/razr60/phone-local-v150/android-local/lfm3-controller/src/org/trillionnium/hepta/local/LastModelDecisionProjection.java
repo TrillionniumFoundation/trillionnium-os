@@ -9,12 +9,12 @@ import java.util.Map;
 public final class LastModelDecisionProjection {
     public static final String SOURCE="prior_model_output_not_observation";
     public static final int REASON_CODE_POINTS=96;
-    public final String taskId,modelRunId,sourceObservationId,action,reason;
+    public final String taskId,modelRunId,sourceObservationId,action,targetPackage,reason;
     public final int step;
     public final boolean reasonTruncated;
 
     private LastModelDecisionProjection(String taskId,int step,String run,String observation,ActionDecision decision){
-        this.taskId=taskId;this.step=step;modelRunId=run;sourceObservationId=observation;action=decision.action;
+        this.taskId=taskId;this.step=step;modelRunId=run;sourceObservationId=observation;action=decision.action;targetPackage=decision.packageName;
         String raw=decision.reason;int count=raw.codePointCount(0,raw.length());
         reasonTruncated=count>REASON_CODE_POINTS;
         reason=reasonTruncated?raw.substring(0,raw.offsetByCodePoints(0,REASON_CODE_POINTS)):raw;
@@ -46,10 +46,13 @@ public final class LastModelDecisionProjection {
         require(last!=null&&Integer.valueOf(step).equals(last.get("step"))&&action.equals(last.get("action")),
                 "prior decision does not match the last dispatched history step");
         Map<String,Object> out=new LinkedHashMap<String,Object>();
-        out.put("source",SOURCE);out.put("step",Integer.valueOf(step));out.put("action",action);out.put("reason",reason);
-        if(reasonTruncated)out.put("reason_truncated",Boolean.TRUE);
+        out.put("source",SOURCE);out.put("step",Integer.valueOf(step));out.put("action",action);
+        out.put("target_package",targetPackage);out.put("dispatched",Boolean.TRUE);
+        // Prior free-form reasoning stays in the raw/action receipts. Refeeding it
+        // anchors repeated text without supplying a new observation or tool fact.
         // The original task/run/observation binding remains in this immutable object and
-        // the existing per-step receipts. No historical target or authority is reissued.
+        // the existing per-step receipts. The historical package is descriptive only;
+        // no old node/label pair or action authority is reissued.
         return Collections.unmodifiableMap(out);
     }
     private static boolean identity(String value){return value!=null&&value.matches("[0-9a-f]{32}");}

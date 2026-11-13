@@ -1,0 +1,241 @@
+{
+  "schema": "hepta.notes54-actual-result-independent-scoped-review.v1",
+  "status": "completed_read_only_Git_review_of_actual_host_replay_and_root_visual_scope",
+  "inputs": [
+    {
+      "role": "original_phone_collector_result",
+      "blob": "3385b93ddff946d3451141450cb04e14cd3b93d8",
+      "bytes": 258543,
+      "sha256": "2d85991282f6a02834fcb492e8470ec7561a47fb9f524b750e319f7b1a3fae7d",
+      "qualified": false,
+      "collector_exit_code": 2
+    },
+    {
+      "role": "executed_independent_replay_source",
+      "blob": "3b9e3e775bcb6ca2442608dbf642eb918dd150c8",
+      "bytes": 26403,
+      "sha256": "585f6d2b0e3d0a092b0b5b7ad884dc20d7328dfc0552d5cd6cdf749c7cf67b22"
+    },
+    {
+      "role": "replay_successor_and_complete_derivation",
+      "blob": "5947e181ba088dc1ddbe30c913f9450f5923d224",
+      "bytes": 69244,
+      "sha256": "1a7f8f2bb7c43965723ab51cb189a9b7db933d72bf81f07fe03697c15af25893"
+    },
+    {
+      "role": "exact_short_start_request",
+      "blob": "f58610bbb010d1b3c415e5389e626ac8cdd6452b",
+      "bytes": 1200,
+      "sha256": "042526302713672f83b0db2f94f957d7c08daedae16055589a17e8218e9376e2"
+    },
+    {
+      "role": "projection_source_independent_review",
+      "blob": "f0363664f09d8bf0d572aff629bb85bdcfd20c07",
+      "bytes": 3192,
+      "sha256": "1b77ae57caae1fb4b91a167b48188c69a2e4cd772ef41108321ed305f06292a2"
+    },
+    {
+      "role": "full_context_successor_independent_review",
+      "blob": "f50eee03c684ab05b0a48526221250cc0a8289e9",
+      "bytes": 2007,
+      "sha256": "b88ae3d30033095efb32eb56bbea79e443a7cf0187ccd69d68af453e2715305f"
+    },
+    {
+      "role": "actual_independent_replay_result",
+      "blob": "160fe428870dea6568aa80fcd75994bcf057f2b8",
+      "bytes": 37761,
+      "sha256": "eef5e79feb21965a52c4bdc35892842af3d5e74c578792deb4f4cdec73f12db2"
+    },
+    {
+      "role": "actual_native_request_result",
+      "blob": "245396128a3c0f5f8b89c3e0525989e5f292dab9",
+      "bytes": 4840,
+      "sha256": "ec0c1319ec782bed213986e64e22f38df3c1378fa0e8a4ce3a2d9a5a6b3e674d"
+    },
+    {
+      "role": "root_full_final_image_and_scoped_review",
+      "blob": "61337aade4ebea6d801a6a39bd72369175c2cdd9",
+      "bytes": 3560,
+      "sha256": "89f5fb731de334318a832220d74eff0f48e69bb54543e34c4840491fa174f90d"
+    },
+    {
+      "role": "initial_source_write_unknown_preserved",
+      "blob": "fa43fd2a79b70c7539cdd9f0c97216dc74499348",
+      "bytes": 1149,
+      "sha256": "3eecb99a1715a2140b7d7b56abd61ca68b18b6c4f321d66f613c95340b7686d1"
+    }
+  ],
+  "task_id": "9b07550f62414bb5a9ccc16cc2db60e2",
+  "display_id": 21,
+  "generation": "6b1bd2f5-83cb-4604-92b6-891453298e91",
+  "review_execution": {
+    "new_H_calls": 0,
+    "new_phone_actions": 0,
+    "new_model_requests": 0,
+    "replay_rerun": false,
+    "source_modified": false,
+    "method": "Full immutable Git bytes/SHA verified; V8 strict consistency comparisons against original result, frozen source pins, actual replay result and Root's explicitly scoped visual review. This is not another Python gate or independent second phone observation."
+  },
+  "consistency_checks": {
+    "full_raw_identity": true,
+    "current_task_generation": true,
+    "actual_replay_scope": true,
+    "machine_main_scope": true,
+    "original_failure_retained": true,
+    "original_source_closure": true,
+    "derived_source_closure": true,
+    "actual_owner_scope": true,
+    "preferences": true,
+    "actual_le32": true,
+    "request_and_session_split": true,
+    "original_preservation_and_release": true,
+    "root_visual_scope": true
+  },
+  "actual_replay": {
+    "checks_passed": 9,
+    "main_machine_checks_passed": 8,
+    "original_files_preserved": 875,
+    "native_original_records": 4,
+    "system_samples": 17,
+    "qualified": false,
+    "original_collector_changed": false,
+    "source_derivations": {
+      "changes": [
+        "one exact nine-field observation projection comparison",
+        "idle verifier binds the derived workflow SHA",
+        "main verdict accepts two independently bound context arguments and compares the complete nine-field live context"
+      ],
+      "derived_verifier_pins": {
+        "controller_idle_evidence.py": "285f6575f5dc1eaaaff61b591cd8e0171e250ea0799a196ba298bd1cad6478db",
+        "controller_workflow_evidence.py": "1188e4ad4666614cfce38d0f74b60819dd2c0e32ebf9cac6cdbd74bcf649791e",
+        "main_user_inflight.py": "4aa6e0f8db9229e1764d9ee79220ed8fa3eb7ddc3bd5526a857fd179870afe30"
+      },
+      "full_owner_bootstrap_action_cleanup_selection_predicates_unchanged": true,
+      "missing_fields_synthesized": false,
+      "original_frames_modified": false,
+      "original_verifier_pins": {
+        "background_notes_plan.py": "df4aa09037d41709dbfa0efae522776f023fc1481859f22a0e078a22f015daff",
+        "controller_idle_evidence.py": "8ef4e544b5ac6f62f17ff37715de7a4be5d051f2312802580d404f15512b7240",
+        "controller_workflow_evidence.py": "405ed06f6302623e36dc39803ebe7781bb349b396851d0bfe6fa46f2ce6b6350",
+        "fixed_intent_v6_acceptance.py": "9b858dd02d34558ab6c898209378a2de3d34b38b6f1aa2a099da788273b3f2ba",
+        "live_inflight_window.py": "3f3faa3b692257710f48651d48f1a39405f0fb511fd94658af2617ded9443671",
+        "main_user_inflight.py": "79450f5c07b48958821d388a729223890fcd7f2cd0c085e85e15c48aadee167d",
+        "moto_note_body_evidence_v51.py": "091bcb7a633c9fec1e668b637fb3619de712c441db99f2164c47c4b3ba629e94",
+        "prepare_background_notes_v54_r1.py": "5e1db9854154042f3124afc1a2890c567a3fa32dedc41f80f237b0bd260e4d90",
+        "run_background_notes_v54_r1.py": "2fa7d0670786dcc3933974056acc03026e7ffd091f9f4b3218936ae60646df39"
+      },
+      "production_sources": {
+        "src/org/trillionnium/hepta/local/BackgroundSession.java": "0045e81d6578a071de8dbdedd3c589afeb6025cf52d6c76fceb0e30e11e3dec6",
+        "src/org/trillionnium/hepta/local/PhoneObservation.java": "9aeda02ab6fc541e9a8e04841093355c6055b590042f334b47fb55595ce5ca95"
+      },
+      "source_inventory_sha256": "8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d"
+    },
+    "provenance": "Actual host execution by Root used the same pinned source and original unused key after create-only transport reconciliation; original phone run was never repeated."
+  },
+  "specific_defects_retained": [
+    {
+      "area": "workflow frame binding",
+      "original_error": "ValueError: each actual model step must bind this task/lease",
+      "cause": "The signed v54 PhoneObservation emitted its legacy exact nine-field projection, while complete actual Selection carried new OWNER/UI provenance. The old comparator expected missing Selection fields in the frame.",
+      "correction_scope": "A fresh output-only verifier compares the exact actual signed nine-field projection. Full OWNER/bootstrap/action/cleanup Selection is separately and independently recomputed/bound; no frame fields are invented."
+    },
+    {
+      "area": "main coexistence verifier",
+      "original_error": "live context differs from original runtime/task",
+      "cause": "The actual runner recorded expected_background_selection and preparation_original_sha256 in addition to its old seven context fields; the old final verdict still required only seven.",
+      "correction_scope": "Fresh output-only verifier compares all nine actual fields, obtaining the two expected values from pinned original preparation and OWNER recomputation; all eight original main machine checks and raw command/clock/fence checks remain intact."
+    },
+    {
+      "area": "original final-frame exporter",
+      "original_error": "final frame is not the original nonzero same-generation task domain",
+      "correction_scope": "Original exporter/result unchanged. The source-bound independent workflow instead identifies and hashes the exact original final PNG; Root then read all original bytes and viewed it."
+    }
+  ],
+  "scope_results": {
+    "notes_local_model_create_save_list_reopen_verified": true,
+    "original_dual_ui_preferences_preserved": true,
+    "actual_task_scope_notes_only_verified": true,
+    "main_settings_launch_observed_by_root": true,
+    "actual_swipe_request_and_causal_work_bound_by_machine": true,
+    "main_settings_content_scroll_visually_verified": false,
+    "whole_main_scroll_case_qualified": false,
+    "whole_original_case_qualified": false,
+    "all_requested_hepta_business_tasks_completed": false
+  },
+  "original_ui_and_effective_scope": {
+    "preference_bytes": 653,
+    "preference_sha256": "c9364dde8c0b52e7890835d720967987f708e972b397fcc3f76d9d76a667137f",
+    "original_ui_allowed_packages": [
+      "com.motorola.stylus",
+      "org.trillionnium.hepta.webhelper"
+    ],
+    "effective_allowed_packages": [
+      "com.motorola.stylus"
+    ],
+    "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+    "complete_owner_task_selection_recomputed": true,
+    "three_archived_preference_copies_equal": true,
+    "actual_frame_legacy_provenance_not_relabelled": true
+  },
+  "native_scope": {
+    "request_id": "5c43f3f5683248d6816ad27838875a05",
+    "worker_generation": "dd366615fc6045b0b2eebd2c6075e7e7",
+    "request_sequence": 1,
+    "requested_compute": "npu",
+    "device_resolved": "HTP0",
+    "generation_complete": true,
+    "exact_input_tokens": 4091,
+    "actual_le32_bytes": 16364,
+    "actual_le32_sha256": "6f802c53822e78e76fc2b150f12a3fc1384a87e5976c90b41ec544c8f674e007",
+    "generated_tokens": 157,
+    "ttft_us": 4226323,
+    "prefill_tokens_per_second": 968.1447024901505,
+    "decode_tokens_per_second": 30.605947066917075,
+    "request_receipt_retained_flags": {
+      "production_receipt": false,
+      "native_action_authorized": false,
+      "process_exit_observed": false,
+      "worker_retained": true,
+      "destroy": null,
+      "deinit": null
+    },
+    "session_exit_distinct_from_request": {
+      "original_collection_actual_worker_exit_observed": true,
+      "original_collection_exit_code": 0,
+      "actual_replay_native_session_domain_passed": true
+    },
+    "continuous_NPU_busy_claimed": false,
+    "strict_comparative_benchmark_claimed": false
+  },
+  "final_original_png": {
+    "bytes": 29546,
+    "dimensions": [
+      720,
+      1280
+    ],
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-r1/evidence/task/2a5ed695e360491292eec08d49dc35af.png",
+    "sha256": "8120a674b34bbb6474efb876fd314c7cbbcf739da656a7956f4ee05a2c955807"
+  },
+  "visual_scope": {
+    "viewer": "Root",
+    "this_reviewer_did_not_view_images": true,
+    "root_viewed_complete_original_final_png": true,
+    "root_main_views_were_complete_lossy_previews": true,
+    "exact_note_body": "Hepta-v54r1-35b8e5db22fa 明天下午3点看牙，带上检查资料。",
+    "instruction_prefix_not_written": true,
+    "limitation": "Settings before/after previews stay at essentially the same bottom-of-list positions. Pixel change plus an actual swipe request is not evidence of visible content displacement."
+  },
+  "lock": {
+    "acquired": true,
+    "released": true,
+    "continuity_verified": true,
+    "continuity_checks": 225,
+    "reacquisition_attempted": false
+  },
+  "claims_not_added": [
+    "No new database row ID or direct database/storage-byte verification.",
+    "No repair or relabel of original qualified=false/collector exit2/exporter failure.",
+    "No whole-scroll-case success and no new phone rerun.",
+    "No synthetic or fake-SDK evidence substituted for this actual task."
+  ]
+}

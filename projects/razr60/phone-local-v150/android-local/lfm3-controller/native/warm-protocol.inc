@@ -2,6 +2,9 @@
  * subsequent requests can change only HEX32 request ID, token bound, deadline. */
 static char hepta_warm_session_dir[PATH_MAX];
 static int hepta_warm_completed_count,hepta_warm_control_fd=-1;
+static int hepta_warm_done_attempts,hepta_warm_done_delivered,hepta_warm_control_errno;
+static int hepta_warm_last_request_return_status=-1;
+static bool hepta_warm_control_failed;
 static int hepta_take_warm_arguments(int *argc,char **argv) {
     bool generation=false,task=false,directory=false;
     for(int i=1;i<*argc;){
@@ -31,11 +34,23 @@ static bool hepta_warm_prepare_control(void) {
 static bool hepta_warm_send(const char *format,...) {
     char frame[256];va_list args;va_start(args,format);
     int size=vsnprintf(frame,sizeof(frame),format,args);va_end(args);
-    return size>0&&(size_t)size<sizeof(frame)&&write_all(hepta_warm_control_fd,frame,(size_t)size);
+    if(size<=0||(size_t)size>=sizeof(frame)){errno=EMSGSIZE;hepta_warm_control_failed=true;hepta_warm_control_errno=errno;return false;}
+    bool delivered=write_all(hepta_warm_control_fd,frame,(size_t)size);
+    if(!delivered){hepta_warm_control_failed=true;hepta_warm_control_errno=errno;}
+    return delivered;
 }
 static int hepta_warm_line(char line[256]) {
     size_t used=0;
     while(!cancel_signal){
+        /* poll is bounded and not restarted by SA_RESTART: an idle worker must
+         * re-check its cancellation latch without another RUN or fake CLOSE. */
+        struct pollfd input={.fd=STDIN_FILENO,.events=POLLIN};int ready=poll(&input,1,100);
+        if(cancel_signal)return -1;
+        if(ready<0&&errno==EINTR)continue;
+        if(ready<0)return -1;
+        if(ready==0)continue;
+        if(input.revents&(POLLERR|POLLNVAL))return -1;
+        if(!(input.revents&(POLLIN|POLLHUP)))continue;
         unsigned char c;ssize_t count=read(STDIN_FILENO,&c,1);
         if(count<0&&errno==EINTR)continue;
         if(count==0)return used?-1:0;
@@ -62,11 +77,14 @@ static bool hepta_warm_terminal(const Options *o,bool close_requested,int status
         "\"sdk_init_count\":%d,\"model_create_count\":%d,\"model_reset_count\":%d,"
         "\"model_metadata_unchanged_before_close\":%s,\"close_requested\":%s,\"signal_observed\":%d,"
         "\"last_request_status\":%d,\"sdk_destroy_attempted\":%s,\"sdk_destroy_rc\":%" PRId32 ","
-        "\"sdk_deinit_attempted\":%s,\"sdk_deinit_rc\":%" PRId32 "}\n",
+        "\"sdk_deinit_attempted\":%s,\"sdk_deinit_rc\":%" PRId32 ","
+        "\"control_done_attempts\":%d,\"control_done_delivered\":%d,\"control_channel_write_failed\":%s,"
+        "\"control_channel_last_errno\":%d,\"last_request_return_status\":%d}\n",
         (long)getpid(),hepta_warm_sequence,hepta_warm_completed_count,hepta_warm_hash_count,
         hepta_warm_init_count,hepta_warm_create_count,hepta_warm_reset_count,unchanged?"true":"false",
         close_requested?"true":"false",(int)cancel_signal,status,destroyed?"true":"false",destroy_rc,
-        deinitialized?"true":"false",deinit_rc);
+        deinitialized?"true":"false",deinit_rc,hepta_warm_done_attempts,hepta_warm_done_delivered,
+        hepta_warm_control_failed?"true":"false",hepta_warm_control_errno,hepta_warm_last_request_return_status);
     ok=fflush(f)==0&&!ferror(f);if(fclose(f)!=0)ok=false;
     if(ok)ok=publish(&dest);
     ok=ok&&destroy_rc==0&&deinit_rc==0;
@@ -79,7 +97,7 @@ static int hepta_warm_loop(int argc,char **argv) {
     char root[PATH_MAX];if(strlen(initial.prompt)>=sizeof(root))return 64;strcpy(root,initial.prompt);
     char *slash=strrchr(root,'/');if(!slash||strcmp(slash,"/prompt.txt"))return 64;*slash=0;
     slash=strrchr(root,'/');if(!slash||!id_ok(slash+1))return 64;*slash=0;
-    if(!canonical(root)||!install_signals())return 64;
+    if(!canonical(root)||!install_signals(true))return 64;
     char session_parent[PATH_MAX];strcpy(session_parent,hepta_warm_session_dir);
     slash=strrchr(session_parent,'/');if(!slash||strcmp(slash+1,hepta_warm_generation))return 64;*slash=0;
     if(strcmp(session_parent,root))return 64;
@@ -124,13 +142,20 @@ static int hepta_warm_loop(int argc,char **argv) {
         hepta_prompt_budget=(HeptaPromptBudget){.exact=hepta_model_profile->exact_tokens,.model_sha256=hepta_model_profile->sha256};
         hepta_prompt_evidence_complete=false;
         memset(hepta_phase_timings,0,sizeof(hepta_phase_timings));
-        status=upstream_worker_main(argc,request_argv);
+        status=upstream_worker_main(argc,request_argv);hepta_warm_last_request_return_status=status;
         if(status==0)hepta_warm_completed_count++;
+        hepta_warm_done_attempts++;
         if(!hepta_warm_send("HEPTA_WARM_DONE %s %s %s %d %d\n",hepta_warm_generation,hepta_warm_task_id,parts[3],seq,status)){
-            status=74;break;
+            /* Keep an actually observed cancellation outcome after the parent
+             * closed its pipe. A normal broken channel remains an I/O failure. */
+            if(cancel_signal&&(status==0||status==128+(int)cancel_signal))status=128+(int)cancel_signal;
+            else status=74;
+            break;
         }
+        hepta_warm_done_delivered++;
         if(status!=0||cancel_signal)break;
     }
+    if(cancel_signal&&status==0&&!close_requested)status=128+(int)cancel_signal;
     if(!hepta_warm_terminal(&initial,close_requested,status))status=74;
     close(hepta_warm_control_fd);return status;
 }

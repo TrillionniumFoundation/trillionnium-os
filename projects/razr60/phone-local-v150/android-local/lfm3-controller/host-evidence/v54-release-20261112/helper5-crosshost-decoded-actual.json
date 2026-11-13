@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.helper5-crosshost-decoded.v1",
+  "all_pass": true,
+  "phone_executed": false,
+  "signed": false,
+  "compiled": false,
+  "source_export_result": {
+    "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-web-helper-code5-export-r1/RESULT.json",
+    "bytes": 13963,
+    "sha256": "a249a6cf3e1eb96cc0e6103979df9c4847a2bfa0634293875719146000e85e12"
+  },
+  "source_build_sha256": "cce5d75af6af48fb00b72b96475d686b61b89538c60cbd424fd99e79c58396a8",
+  "part_count": 3,
+  "original_part_texts": [
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-crosshost-input-r2-0.txt",
+      "bytes": 900121,
+      "sha256": "1c26cd74f152d595cc2d722003cb0bd0ca601f1fcd65fba12471cb2a219f1d72",
+      "part_index": 0,
+      "part_bytes": 900000,
+      "part_sha256": "78670aa6bc8298af68df093e23493b1d09628936a46f0f79e9c7c6477ebdc237",
+      "optional_final_lf": true
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-crosshost-input-r1-1.txt",
+      "bytes": 900121,
+      "sha256": "601ac54dad0ebd19debad82a4d583b3add0a9c9515f4e4e7ecd4b90340a28c72",
+      "part_index": 1,
+      "part_bytes": 900000,
+      "part_sha256": "60bbfbda51ad659b41f9382faa339b22ec03fd58064059c98d1a60e0781fc3ea",
+      "optional_final_lf": true
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-crosshost-input-r1-2.txt",
+      "bytes": 295477,
+      "sha256": "8e6ac0be97eb7b327b94b32a435f9331a6acee9a463a7ddf105d06a3b2a6dbab",
+      "part_index": 2,
+      "part_bytes": 295356,
+      "part_sha256": "7c8d2f458cc5b90b4d8a551b550f9170730bb175d8da79b09f48b68cf32f02ce",
+      "optional_final_lf": true
+    }
+  ],
+  "bundle": {
+    "path": "/home/alex/hepta-local-007f-20261111/v54-web-helper-code5-sign-inputs-r1.tar.gz",
+    "bytes": 1571517,
+    "sha256": "75671c2f81e2a9f9f31ccc58ed78fe12503a955b75f05b70d7e3e7e5aae0d1a7"
+  },
+  "all_original_parts_unchanged": true,
+  "canonical_base64_verified": true,
+  "complete_original_bundle_sha256": "75671c2f81e2a9f9f31ccc58ed78fe12503a955b75f05b70d7e3e7e5aae0d1a7"
+}

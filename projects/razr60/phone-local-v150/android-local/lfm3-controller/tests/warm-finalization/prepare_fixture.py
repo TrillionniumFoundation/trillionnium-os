@@ -37,14 +37,27 @@ public final class ControllerFinalizationFixture {
     private final LocalInference inference;
     private final AtomicBoolean cancelled=new AtomicBoolean();
     private final Object handleLock=new Object();
-    private volatile boolean running=true,blocked;
+    private volatile boolean running=true,blocked,terminalDecisionSealed;
     private Handle activeInference;
     /** Scope/config IO seam; default absent preserves all original 13 cases. */
     public interface ScopeCheck { void verifyUnchanged() throws Exception; }
     private ScopeCheck scope;
-    /** Admitted/live Owner authorization seam; actual admission runs in the controller harness. */
-    private interface AuthorizationCheck { void ready(); }
-    private final AuthorizationCheck authorization=new AuthorizationCheck(){public void ready(){}};
+    /** Type-only Owner boundary; this legacy fixture cannot create an authorized Frame. */
+    private static final class TaskAuthorization {
+        private interface Frame { boolean successAllowed(); }
+    }
+    private interface AuthorizationCheck { void ready(); TaskAuthorization.Frame frame(); }
+    private final AuthorizationCheck authorization=new AuthorizationCheck(){
+        public void ready(){}
+        public TaskAuthorization.Frame frame(){throw new AssertionError("legacy fixture has no controller-workflow candidate");}
+    };
+    /** Explicit non-Web contract; no helper close proof or Web completion is provided. */
+    private static final class TaskCompletionGate {
+        private static final String WEB="web_search_results";
+        private static final class Contract { private final String kind="unverified_goal"; }
+        private final Contract contract=new Contract();
+    }
+    private final TaskCompletionGate completion=new TaskCompletionGate();
     public void setScopeCheck(ScopeCheck check){scope=check;}
     private interface Handle { void cancel(); }
     private void emit(String value) { /* Android listener fixture; no IO. */ }
@@ -62,7 +75,7 @@ public final class ControllerFinalizationFixture {
                           boolean previousCleanup,boolean previouslyBlocked){
         String taskId="33333333333333333333333333333333";
         String finalStatus=previousStatus,summary=previousSummary;
-        boolean modelSuccess=previousSuccess,cleanup=previousCleanup;
+        boolean modelSuccess=previousSuccess,cleanup=previousCleanup,controllerSuccess=false;
         blocked=previouslyBlocked;
 """ + parts["close_result"] + """
         running=false;
@@ -81,7 +94,7 @@ public final class ControllerFinalizationFixture {
     digest = lambda value: hashlib.sha256(value).hexdigest()
     record = {
         "scope": "Exact production Stop method, endTask/exception handling, post-close scope check, terminal decisions and TaskCleanup; Android UI, model and scope/config IO are fixtures",
-        "completion_boundary": "Exact original cleanup/status block retained; new completion-identity/result projection runs in the full-controller completion harness",
+        "completion_boundary": "Exact production cleanup/status block; controller-workflow candidate is false in this legacy fixture, while the derived terminal and completion identity execute in the full-controller harness",
         "scope_io_default": "absent; all original 13 cases retained; configured production checks also run in qualification-scope full-controller harness",
         "controller_sha256": digest(controller.encode()),
         "inference_sha256": digest(inference.encode()),

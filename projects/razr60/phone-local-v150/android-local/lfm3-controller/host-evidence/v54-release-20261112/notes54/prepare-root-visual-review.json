@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.root-notes54-normal-preparation-visual-review.v1",
+  "actual_preparation": {
+    "git_blob": "0d83b3405aadfa32fdb247ab24cf9c179948f222",
+    "bytes": 49143,
+    "sha256": "0b15a45a5149651f542add385bb2cb3a90120ae117d4d7e190ad56010e90dda0"
+  },
+  "observed_whole_frame": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-prepare-r1-host-review-r1/prepared_idle_main-preview.webp",
+    "bytes": 16464,
+    "sha256": "2556d8404973d6664c4f6e6f31beaac1b392f8d728ffdfbcfba22dad88ee1a40",
+    "dimensions": [
+      480,
+      1173
+    ],
+    "lossy": true,
+    "complete_frame_inspected": true,
+    "original_png_bytes_read_by_root": false,
+    "original_png_used_by_runner": {
+      "path": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-prepare-r1/prepared-main.png",
+      "bytes": 182248,
+      "sha256": "70403b827c822eaf38cdd63b3d7e4fd3b73ace755b58382972c5220095c28dc4",
+      "dimensions": [
+        1224,
+        2992
+      ],
+      "rgba8_sha256": "b0434ff641e4c73ab3f50cf170069e6e571b1c6b71360733e54d0ae551eb8e49"
+    }
+  },
+  "original_xml": {
+    "git_blob": "88139b9db03444a9ce413e7bb17f4a9f2614433b",
+    "bytes": 7823,
+    "sha256": "952d67a0b21d5a9d1c996fb6c0f837f49c4b60db399963019c7306a6a6a6fc0e",
+    "full_bytes_read_by_root": true
+  },
+  "original_window": {
+    "bytes": 37842,
+    "sha256": "cb88e18226e823f3158cffba8b454aa3c5dca99cc35761a9f57307bda9657cf5",
+    "full_bytes_read_by_root": true
+  },
+  "visual_findings": {
+    "local_model_ready": true,
+    "accessibility_enabled": true,
+    "background_checkbox_checked": true,
+    "saved_scope_count": 2,
+    "automatic_task_target_text": "本次将自动使用：Moto 笔记。已保存的应用范围保持不变。",
+    "full_owner_visible": true,
+    "instruction": "记一下，Hepta-v54r1-35b8e5db22fa 明天下午3点看牙，带上检查资料。",
+    "instruction_sha256": "4b0372268b965098e7a40955ea9a69971a5767930152a70ddfaf217843b4fc62",
+    "start_enabled": true,
+    "stop_disabled": true,
+    "previous_task_terminal_visible": true,
+    "no_foreground_overlay_visible": true
+  },
+  "authorized_start": {
+    "point": [
+      180,
+      1114
+    ],
+    "bounds": [
+      48,
+      1042,
+      312,
+      1186
+    ],
+    "source": "unique actual native Start button in original XML, confirmed on inspected whole-frame preview",
+    "one_tap_only": true
+  },
+  "boundaries": {
+    "prepare_only": true,
+    "task_not_started": true,
+    "effective_task_scope_not_yet_observed": true,
+    "main54_notes_business_success": false,
+    "normal_owner_close_still_required": true,
+    "fresh_runner_visual_and_lock_guards_still_required": true
+  }
+}

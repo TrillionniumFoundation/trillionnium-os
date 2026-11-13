@@ -1,0 +1,258 @@
+{
+  "schema": "hepta.v54-one-helper-host-export-summary.v1",
+  "exporter_revision": "r2-typed-frames-main-subdirectory-bounded-previews",
+  "export_has_phone_actions": false,
+  "original_helper_exit_code": 0,
+  "helper_sha256": "5e1db9854154042f3124afc1a2890c567a3fa32dedc41f80f237b0bd260e4d90",
+  "source_result": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-prepare-r1/RESULT.json",
+    "bytes": 49143,
+    "sha256": "0b15a45a5149651f542add385bb2cb3a90120ae117d4d7e190ad56010e90dda0"
+  },
+  "actual_signed_build_receipt_sha256": "eadc9dbb63b411015571a488377be6a8704c9f78415169a5164c8f13571f0f72",
+  "apk_sha256": "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a",
+  "runtime_config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+  "plan": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-adapters-v54-r1/notes-plan-normal-r1.json",
+    "bytes": 575,
+    "sha256": "46a375026c4de1f29bdd428de36c5141a4eb1ccf0afdea00538b4aaf95ec319b"
+  },
+  "case_identity_fields_missing_in_failed_original": [],
+  "reported_original_fields_not_independent_qualification": {
+    "prepared": true,
+    "task_id": null,
+    "model_profile": null,
+    "compute": null,
+    "qualified": null,
+    "machine_checks_passed": null,
+    "cancel_machine_checks_passed": null,
+    "error": null,
+    "started_wall_s": 1794478656.3785932,
+    "ended_wall_s": 1794478695.5320222,
+    "last_session": {
+      "task_id": null,
+      "status": null,
+      "steps": null,
+      "cleanup_known": null,
+      "running": null,
+      "blocked": null,
+      "background_lease_unreleased": null
+    }
+  },
+  "visual_selection": {
+    "xml_png_observations_atomic": false,
+    "actual_root_visual_review_pending": true,
+    "ui_preferences_original": {
+      "path": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-prepare-r1/background-ui-choice-original.xml",
+      "bytes": 653,
+      "sha256": "c9364dde8c0b52e7890835d720967987f708e972b397fcc3f76d9d76a667137f"
+    },
+    "expected_task_selection_from_complete_owner": {
+      "mode": "background",
+      "allowed_packages": [
+        "com.motorola.stylus"
+      ],
+      "bootstrap_package": "com.motorola.stylus",
+      "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false,
+      "owner_task_selection": {
+        "schema": "hepta.owner-task-app-selection.v1",
+        "owner_sha256": "4b0372268b965098e7a40955ea9a69971a5767930152a70ddfaf217843b4fc62",
+        "recognition": "natural_note_comma_prefix.v1",
+        "original_ui_initial_package": "com.motorola.stylus",
+        "original_ui_allowed_packages": [
+          "com.motorola.stylus",
+          "org.trillionnium.hepta.webhelper"
+        ],
+        "effective_initial_package": "com.motorola.stylus",
+        "effective_allowed_packages": [
+          "com.motorola.stylus"
+        ],
+        "effective_scope_within_selected_apps": true,
+        "effective_scope_strictly_smaller": true,
+        "initial_app_changed": false,
+        "package_from_model_or_screen": false,
+        "grants_tool_authority": false,
+        "changes_saved_preferences": false
+      }
+    },
+    "effective_task_selection_observed_here": false,
+    "prepared_evidence_present": true,
+    "final_viewport_xml": {
+      "path": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-prepare-r1/start-viewport-00.xml",
+      "bytes": 7823,
+      "sha256": "952d67a0b21d5a9d1c996fb6c0f837f49c4b60db399963019c7306a6a6a6fc0e"
+    },
+    "complete_owner_prescroll_xml": {
+      "path": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-prepare-r1/background-selected.xml",
+      "bytes": 7823,
+      "sha256": "9ca2ace27d1784b699c7c8672d0c000101c0468a26ddf6ad08621cdb0068be38"
+    },
+    "prepared_window": {
+      "path": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-prepare-r1/prepared-window.txt",
+      "bytes": 37842,
+      "sha256": "cb88e18226e823f3158cffba8b454aa3c5dca99cc35761a9f57307bda9657cf5"
+    },
+    "instruction": "记一下，Hepta-v54r1-35b8e5db22fa 明天下午3点看牙，带上检查资料。",
+    "instruction_sha256": "4b0372268b965098e7a40955ea9a69971a5767930152a70ddfaf217843b4fc62",
+    "full_owner_present_in_final_xml": true,
+    "full_owner_visible_in_pixels_not_inferred": true,
+    "start_point": [
+      180,
+      1114
+    ],
+    "start_bounds": [
+      48,
+      1042,
+      312,
+      1186
+    ],
+    "idle_controls": {
+      "开始任务": {
+        "matches": 1,
+        "attributes": {
+          "index": "0",
+          "text": "开始任务",
+          "resource-id": "",
+          "class": "android.widget.Button",
+          "package": "org.trillionnium.hepta.local",
+          "content-desc": "",
+          "checkable": "false",
+          "checked": "false",
+          "clickable": "true",
+          "enabled": "true",
+          "focusable": "true",
+          "focused": "false",
+          "scrollable": "false",
+          "long-clickable": "false",
+          "password": "false",
+          "selected": "false",
+          "bounds": "[48,1042][312,1186]",
+          "drawing-order": "2",
+          "hint": ""
+        }
+      },
+      "停止": {
+        "matches": 1,
+        "attributes": {
+          "index": "1",
+          "text": "停止",
+          "resource-id": "",
+          "class": "android.widget.Button",
+          "package": "org.trillionnium.hepta.local",
+          "content-desc": "",
+          "checkable": "false",
+          "checked": "false",
+          "clickable": "true",
+          "enabled": "false",
+          "focusable": "true",
+          "focused": "false",
+          "scrollable": "false",
+          "long-clickable": "false",
+          "password": "false",
+          "selected": "false",
+          "bounds": "[312,1042][576,1186]",
+          "drawing-order": "1",
+          "hint": ""
+        }
+      },
+      "启用无障碍": {
+        "matches": 1,
+        "attributes": {
+          "index": "2",
+          "text": "启用无障碍",
+          "resource-id": "",
+          "class": "android.widget.Button",
+          "package": "org.trillionnium.hepta.local",
+          "content-desc": "",
+          "checkable": "false",
+          "checked": "false",
+          "clickable": "true",
+          "enabled": "true",
+          "focusable": "true",
+          "focused": "false",
+          "scrollable": "false",
+          "long-clickable": "false",
+          "password": "false",
+          "selected": "false",
+          "bounds": "[576,1042][858,1186]",
+          "drawing-order": "3",
+          "hint": ""
+        }
+      }
+    },
+    "background_selection": {
+      "allowed_packages": [
+        "com.motorola.stylus",
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "bootstrap_package": "com.motorola.stylus",
+      "scope_count": 2,
+      "automatic_target_text": "本次将自动使用：Moto 笔记。已保存的应用范围保持不变。",
+      "initial_spinner_hidden": true,
+      "selection_source": "ordinary_visible_multi_choice_and_persisted_initial"
+    }
+  },
+  "visuals": [
+    {
+      "role": "prepared_idle_main",
+      "relative_png": "prepared-main.png",
+      "sha256": "70403b827c822eaf38cdd63b3d7e4fd3b73ace755b58382972c5220095c28dc4",
+      "bytes": 182248,
+      "binding": "actual preparation PNG/window/XML and Start receipt",
+      "original_png": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-prepare-r1/prepared-main.png",
+        "bytes": 182248,
+        "sha256": "70403b827c822eaf38cdd63b3d7e4fd3b73ace755b58382972c5220095c28dc4",
+        "dimensions": [
+          1224,
+          2992
+        ],
+        "rgba8_sha256": "b0434ff641e4c73ab3f50cf170069e6e571b1c6b71360733e54d0ae551eb8e49"
+      },
+      "preview": {
+        "path": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-prepare-r1-host-review-r1/prepared_idle_main-preview.webp",
+        "bytes": 16464,
+        "sha256": "2556d8404973d6664c4f6e6f31beaac1b392f8d728ffdfbcfba22dad88ee1a40",
+        "dimensions": [
+          480,
+          1173
+        ],
+        "quality": 60,
+        "encoding": "WebP",
+        "resample": "LANCZOS",
+        "attempts": [
+          {
+            "width": 480,
+            "height": 1173,
+            "quality": 60,
+            "bytes": 16464
+          }
+        ],
+        "lossy": true,
+        "pixel_equality_claimed": false,
+        "base64_file": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-prepare-r1-host-review-r1/prepared_idle_main-PREVIEW-BASE64.json"
+      }
+    }
+  ],
+  "archive": {
+    "ok": true,
+    "archive": {
+      "path": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-prepare-r1-host-review-r1/original-records.tar.xz",
+      "bytes": 108372,
+      "sha256": "82eebb7b9b8ea1ce6d5852534013ec357458b545f1e9ad6de497cefbb130103a",
+      "internal_manifest_sha256": "550c40391af68dff144c7be129573cdbfb23559a1e97ed7e5bbdb9b3b521bc2a"
+    },
+    "manifest": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-prepare-r1-host-review-r1/ORIGINAL-MANIFEST.json",
+    "manifest_sha256": "54c5d35ae09bf3f5e691d0d19ee95a6fe5d40e2969043f94260cf138650037f2",
+    "included_files": 429,
+    "excluded_images": 2,
+    "source_unchanged": true
+  },
+  "export_errors": [],
+  "business_qualification_assigned": false,
+  "root_visual_review_pending": true,
+  "original_full_PNG_remains_runner_guard_input": true
+}

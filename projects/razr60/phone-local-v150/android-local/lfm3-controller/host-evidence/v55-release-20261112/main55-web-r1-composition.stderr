@@ -1,0 +1,5 @@
+Exception in thread "main" java.lang.AssertionError: no purchase path
+	at org.trillionnium.hepta.local.WebTaskCompositionHostTest.check(WebTaskCompositionHostTest.java:41)
+	at org.trillionnium.hepta.local.WebTaskCompositionHostTest.lambda$main$59(WebTaskCompositionHostTest.java:405)
+	at org.trillionnium.hepta.local.WebTaskCompositionHostTest.test(WebTaskCompositionHostTest.java:40)
+	at org.trillionnium.hepta.local.WebTaskCompositionHostTest.main(WebTaskCompositionHostTest.java:403)

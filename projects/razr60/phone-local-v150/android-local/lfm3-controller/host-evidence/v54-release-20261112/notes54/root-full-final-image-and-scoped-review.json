@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.root-notes54-scoped-visual-review.v1",
+  "actual_original_result": {
+    "git_blob": "3385b93ddff946d3451141450cb04e14cd3b93d8",
+    "bytes": 258543,
+    "sha256": "2d85991282f6a02834fcb492e8470ec7561a47fb9f524b750e319f7b1a3fae7d",
+    "original_qualified": false,
+    "original_collector_exit": 2
+  },
+  "independent_replay": {
+    "git_blob": "160fe428870dea6568aa80fcd75994bcf057f2b8",
+    "bytes": 37761,
+    "sha256": "eef5e79feb21965a52c4bdc35892842af3d5e74c578792deb4f4cdec73f12db2",
+    "checks_passed": 9,
+    "original_files_preserved": 875,
+    "qualified": false
+  },
+  "native_result": {
+    "git_blob": "245396128a3c0f5f8b89c3e0525989e5f292dab9",
+    "bytes": 4840,
+    "sha256": "ec0c1319ec782bed213986e64e22f38df3c1378fa0e8a4ce3a2d9a5a6b3e674d"
+  },
+  "task_id": "9b07550f62414bb5a9ccc16cc2db60e2",
+  "display_id": 21,
+  "generation": "6b1bd2f5-83cb-4604-92b6-891453298e91",
+  "root_observed_final_original_png": {
+    "bytes": 29546,
+    "dimensions": [
+      720,
+      1280
+    ],
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v54-lfm3-normal-r1/evidence/task/2a5ed695e360491292eec08d49dc35af.png",
+    "sha256": "8120a674b34bbb6474efb876fd314c7cbbcf739da656a7956f4ee05a2c955807",
+    "full_original_bytes_read_and_viewed": true,
+    "visible_body": "Hepta-v54r1-35b8e5db22fa 明天下午3点看牙，带上检查资料。",
+    "instruction_prefix_not_written": true
+  },
+  "root_observed_main_frames": [
+    {
+      "role": "main_before_settings_launch",
+      "sha256": "98cca01750255799c93d115f001db5a423ea4c6f6caafedb7c62b76cc69508d6",
+      "bytes": 15510,
+      "dimensions": [
+        480,
+        1173
+      ],
+      "lossy": true,
+      "complete_frame_viewed": true,
+      "original_png_sha256": "9e7970e9f711168f45b8cec7774a56e2b1339d5d0bb7f60ed35f27158520b772",
+      "original_png_full_bytes_read_by_root": false
+    },
+    {
+      "role": "main_settings_before_swipe",
+      "sha256": "ca4e98ec636f0e5f912b7b31920ee28b2bfdbd29753daf5924c8f161f001e49d",
+      "bytes": 23044,
+      "dimensions": [
+        480,
+        1173
+      ],
+      "lossy": true,
+      "complete_frame_viewed": true,
+      "original_png_sha256": "89ec9ce9e68ea59ecce3ac13dd93c1efe3c1721fb3b1e8f3fa5c97339cc5cded",
+      "original_png_full_bytes_read_by_root": false
+    },
+    {
+      "role": "main_settings_after_swipe",
+      "sha256": "1173560a7a0068e1b9d96130abb081be7d27d4215c06989fdd48f8277e9d139b",
+      "bytes": 23024,
+      "dimensions": [
+        480,
+        1173
+      ],
+      "lossy": true,
+      "complete_frame_viewed": true,
+      "original_png_sha256": "64a9c5c2de0787ca9e8b118b7f5c47373434feb646ab108e5bea76c6955ae50f",
+      "original_png_full_bytes_read_by_root": false
+    }
+  ],
+  "scope_results": {
+    "notes_local_model_create_save_list_reopen_verified": true,
+    "original_dual_ui_preferences_preserved": true,
+    "actual_task_scope_notes_only_verified": true,
+    "main_settings_launch_observed": true,
+    "main_swipe_request_bound_to_actual_input": true,
+    "main_settings_content_scroll_visually_verified": false,
+    "whole_main_scroll_case_qualified": false,
+    "whole_original_case_qualified": false,
+    "all_requested_hepta_business_tasks_completed": false
+  },
+  "visual_scroll_limitation": "Both actual Settings preview frames show the bottom section with the same list items at essentially the same positions. Different pixel hashes and an actual swipe request do not establish visible content displacement.",
+  "mutated_originals": false,
+  "new_phone_actions": 0
+}

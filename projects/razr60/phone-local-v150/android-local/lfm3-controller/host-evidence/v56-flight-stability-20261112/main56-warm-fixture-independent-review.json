@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.main56-background-client-fixture-independent-review.v1",
+  "scope": "source-only check of two type-completion hunks against actual Core56 r1 failure; no execution",
+  "source_delta": {
+    "git_blob_sha": "0efa5aec1a01576aa7edb6872e5d4635671321ed",
+    "bytes": 10765,
+    "sha256": "d078f08fafa777736dbe422874180185d7b692b32025baa8c280044bd8a172b0"
+  },
+  "base": {
+    "git_blob_sha": "07785c82038007af91ba6612d410df5e96d143b2",
+    "bytes": 5713,
+    "sha256": "ae5bccaf044adfb755de0555fdff7d511254a399fb904dc5f103b5a8a36f5bb9"
+  },
+  "candidate": {
+    "git_blob_sha": "b55a5e693c29035d94e1140c77b299f8fce56d1c",
+    "bytes": 6220,
+    "sha256": "e4ee5ea79e689a2e89d64f5c8092a523e77ab5a337c5965c34a32974d06092e1"
+  },
+  "actual_failure": {
+    "result": {
+      "git_blob_sha": "3274c9f9254450635364967eb3701ad30056910c",
+      "bytes": 8174,
+      "sha256": "df5c72a750e8ffc51fcb798565849157a9fbdfd2386314c305782cf7c96d2dc5"
+    },
+    "stdout": {
+      "git_blob_sha": "7367b41bc7fe35f428fe40698c21da30b0c50284",
+      "bytes": 1567,
+      "sha256": "0fc8f7fb1d2ef48d95903068d5da303dc80d37f9f07c7f4999acc3f314d2ee67"
+    },
+    "check": "background-client",
+    "original_parent_record_count": 58,
+    "compiler_errors": [
+      "terminalDecisionSealed",
+      "TaskAuthorization.Frame",
+      "completion.contract.kind",
+      "TaskCompletionGate.WEB"
+    ]
+  },
+  "mechanical": {
+    "two_hunks_forward_reverse": true,
+    "base_matches_current595": true,
+    "production_extraction_sections_unchanged": true,
+    "assertions_not_changed": true
+  },
+  "inspection": {
+    "terminalDecisionSealed_default_false": true,
+    "TaskAuthorization_Frame_private_type_no_factory": true,
+    "authorization_frame_method_still_throws": true,
+    "completion_contract_explicit_unknown_non_web": true,
+    "WEB_constant_matches_actual_production": true,
+    "actual_LTC_kind_check_requires_nonnull_completion_even_legacy_nonweb_cases": true,
+    "unchanged_actual_stop_and_close_result_extraction": true,
+    "old_Java_assertions_and_runner_unchanged": true,
+    "no_web_completion_candidate_or_permission_created": true
+  },
+  "finding": {
+    "source_blocker": null,
+    "only_legacy_fixture_type_surface_changed": true,
+    "production_unchanged_by_this_patch": true,
+    "actual_host_pass": false
+  },
+  "integration": {
+    "wait_for_same_successor_TCG_repair": true,
+    "do_not_release_fixture_only_aggregate": true,
+    "old_Core_r1_failure_preserved": true
+  },
+  "execution": {
+    "host_calls": 0,
+    "python": false,
+    "javac": false,
+    "phone_actions": 0
+  }
+}

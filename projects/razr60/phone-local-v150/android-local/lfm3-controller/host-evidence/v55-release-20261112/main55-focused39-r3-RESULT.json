@@ -1,0 +1,715 @@
+{
+  "schema": "hepta.main55-wire4-focused-host-stage.v1",
+  "root": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3",
+  "all_pass": true,
+  "source_checkpoint_git": "535176f354a43b269c3b2da5a1047b84c98c6e59",
+  "input": {
+    "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r1.input.json.gz",
+    "bytes": 190790,
+    "sha256": "c00a122765e8680298ea9066c246497cd94ad7b88605cd035ae20f4d7366bbe6",
+    "identity": [
+      66306,
+      41071222,
+      33152,
+      1,
+      190790,
+      1794492042519261001,
+      1794492054047337365
+    ]
+  },
+  "original_decoded_input": {
+    "bytes": 932162,
+    "sha256": "74e902506929b5871518ff33a5e3cf9409bfb96985097cfbbdbca5b592f880e0"
+  },
+  "derived_input": {
+    "bytes": 935559,
+    "sha256": "f9577768563f5fbf88bf77b0d484038c7ccd87b07d0ae5a79fb55ef92c987d4e"
+  },
+  "fixture_type_adapter": {
+    "schema": "hepta.explicit-synthetic-map-json-adapter.v1",
+    "path": "tests/main55-wire4/WebWire4SyntheticFactory.java",
+    "before": "WebEvidenceBinding.canonical(TaskAuthorization.parse(owner).evidence())",
+    "after": "WebEvidenceBinding.canonical(new JSONObject(TaskAuthorization.parse(owner).evidence()))",
+    "count": 1,
+    "original_factory": {
+      "bytes": 13173,
+      "sha256": "581fcf026f8c374f311d628a37f2e40584d92cedbd2a383e355b755655431330"
+    },
+    "compiled_factory": {
+      "bytes": 13189,
+      "sha256": "ed0ea43b11b828248afa432fbfd9ed4137302ed756b11104dc4d26be15c34d7d"
+    },
+    "original_methods_sha256": "75778aa5cec56163cae8563e184e930c73160d17a6b0cb61b702fbe33c038915",
+    "compiled_methods_sha256": "15df93ebd23df44a7ed66440dc2bccdb996040bde93cbc406d09aa611d2c9840",
+    "production_sources_changed": false,
+    "assertions_changed": false
+  },
+  "provider_type_adapter": {
+    "schema": "hepta.explicit-host-provider-map-api-adapter.v1",
+    "path": "tests/main55-wire4/WebFlightSessionArmProjection.java",
+    "replacements": [
+      {
+        "before": "JSONObject evidence(WebFlightDomain source){throw new AssertionError(\"no flight\");}",
+        "after": "java.util.Map<String,Object> evidence(WebFlightDomain source){throw new AssertionError(\"no flight\");}",
+        "count": 1
+      },
+      {
+        "before": "JSONObject evidence()throws Exception{return new JSONObject().put(\"host_provider_double\",true).put(\"dom_sha256\",domSha).put(\"business_verified\",false);}",
+        "after": "java.util.Map<String,Object> evidence(){\n            java.util.Map<String,Object> out=new java.util.LinkedHashMap<String,Object>();\n            out.put(\"host_provider_double\",true);out.put(\"dom_sha256\",domSha);out.put(\"business_verified\",false);return out;\n        }",
+        "count": 1
+      }
+    ],
+    "original": {
+      "bytes": 25296,
+      "sha256": "64d071d1486cfe61a35001e963e9dad82db650191a2de4a67b9354ebbfb3aa74"
+    },
+    "compiled": {
+      "bytes": 25428,
+      "sha256": "b9f0cd4529d269d6b989178bafe4f622e7441f70c493874fa6bee0095d1769be"
+    },
+    "actual_api_sources": [
+      {
+        "path": "src/org/trillionnium/hepta/local/WebTaskDomain.java",
+        "bytes": 8817,
+        "sha256": "fe2eb43d1546ae56803133b86fc959f3a5b5e036821553dddfc93fe02bdc9b98",
+        "git": "c64cbf8cbcfbcb9c5734049613d575f45380cb09",
+        "signature": "Map<String,Object> evidence()"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebFlightProgress.java",
+        "bytes": 16832,
+        "sha256": "47630c3e36b56470ebdb8353b24c68f94bf6274d7fefc08133cd7a78946a0691",
+        "git": "08e5a189ee8b2f16980f7f1e9dc08ae8454ef02d",
+        "signature": "Map<String,Object> evidence(WebFlightDomain now)"
+      }
+    ],
+    "original_three_provider_values_unchanged": true,
+    "dormant_flight_body_still_throws": true,
+    "record_false_assertion_unchanged": true,
+    "all_fifteen_production_method_blocks_unchanged": true,
+    "production_sources_changed": false,
+    "test_assertions_changed": false
+  },
+  "prior_failure": {
+    "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r1/RESULT.json",
+    "bytes": 23810,
+    "sha256": "94f173f6a003bf934ebedcb03d898b0ac1edcf5fe95f15a813484c68a46ff600",
+    "identity": [
+      66306,
+      59024757,
+      33152,
+      1,
+      23810,
+      1794492078924798588,
+      1794492078924798588
+    ]
+  },
+  "second_prior_failure": {
+    "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r2/RESULT.json",
+    "bytes": 29674,
+    "sha256": "ab4cf9b52cfb10b7cab5ec2286861358727d89fc23a54147c628570467030670",
+    "identity": [
+      66306,
+      61746218,
+      33152,
+      1,
+      29674,
+      1794493683851484519,
+      1794493683851484519
+    ]
+  },
+  "prior_preservation_file_count": 103,
+  "prior_failed_run_preserved": true,
+  "stage_source": {
+    "bytes": 34555,
+    "sha256": "07248b15132f712b25f4b2cdf13166c34c23094df738553bb7a667aba8b80af5"
+  },
+  "java_sources": 38,
+  "exact_method_projection_count": 15,
+  "actual_ax": {
+    "bytes": 211683,
+    "sha256": "83696c2a0838d4821e5bcedc3034c0f473adfcdc0443cc078ef58bcf8edac0c7"
+  },
+  "tools": {
+    "orgjson_ready": {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/ORGJSON-READY.json",
+      "bytes": 1289,
+      "sha256": "37f3b1790fce237f6339cab159015da7937e6517cc4a97f4dc16443c74e01d7b",
+      "identity": [
+        66306,
+        52985080,
+        33152,
+        1,
+        1289,
+        1794491312578250092,
+        1794491312578250092
+      ]
+    },
+    "java": {
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+      "bytes": 14544,
+      "sha256": "bb70208200cb6538b877d80478141194a716edb591f4910ec106589291e99196",
+      "identity": [
+        66306,
+        34879305,
+        33261,
+        1,
+        14544,
+        1793283530000000000,
+        1794274474910109494
+      ]
+    },
+    "javac": {
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+      "bytes": 14592,
+      "sha256": "2aaf03d13aeb80b8269696f2dcd9f4937d7366bbc68f91fdc703cf157e8f39c4",
+      "identity": [
+        66306,
+        34879135,
+        33261,
+        1,
+        14592,
+        1793283530000000000,
+        1794274474788105274
+      ]
+    },
+    "json": {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/host-json/json-20240303.jar",
+      "bytes": 78332,
+      "sha256": "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed",
+      "identity": [
+        66306,
+        54955731,
+        33152,
+        1,
+        78332,
+        1794491312574472900,
+        1794491312574472900
+      ]
+    }
+  },
+  "steps": [
+    {
+      "name": "compile",
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:all",
+        "-Werror",
+        "-cp",
+        "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/host-json/json-20240303.jar",
+        "-d",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/classes",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/background/FixedIntentTools.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ActionDecision.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ImeVisibility.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ObservationState.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ObservedAppLabels.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ObservedChildText.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ObservedImeEnter.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ObservedWindowMetadata.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/PhoneObservation.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/TaskAuthorization.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/WebEvidenceJson.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/WebEvidenceReceipt.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/WebNativeGeometry.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/WebRegionNativeBridge.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/web/WebFlightGoal.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/web/WebShoppingGoal.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebDomStability.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebMiActionRegion.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebObservedNavigation.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebRecoveryPolicy.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebStorageEvidence.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebTaskPurpose.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/tests/main55-wire4/WebArmDispatchHostTest.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/tests/main55-wire4/WebEvidenceClientArmProjection.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/tests/main55-wire4/WebFlightSessionArmProjection.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/tests/main55-wire4/WebWire4ConsumerHostTest.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/tests/main55-wire4/WebWire4SyntheticFactory.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/tests/main55-wire4/android/graphics/Rect.java",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/tests/main55-wire4/android/os/SystemClock.java"
+      ],
+      "pid": 1128241,
+      "exit_code": 0,
+      "timed_out": false,
+      "forced_kill": false,
+      "exit_observed": true,
+      "elapsed_seconds": 2.735916789039038,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "identity": [
+          66306,
+          61746338,
+          33152,
+          1,
+          0,
+          1794494529666399044,
+          1794494529666399044
+        ]
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "identity": [
+          66306,
+          61746339,
+          33152,
+          1,
+          0,
+          1794494529666399044,
+          1794494529666399044
+        ]
+      }
+    },
+    {
+      "name": "consumer",
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "-cp",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/classes:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/host-json/json-20240303.jar",
+        "org.trillionnium.hepta.local.WebWire4ConsumerHostTest",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/fixtures/actual-mi-ax.xml",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/consumer-RESULT.json"
+      ],
+      "pid": 1128479,
+      "exit_code": 0,
+      "timed_out": false,
+      "forced_kill": false,
+      "exit_observed": true,
+      "elapsed_seconds": 1.8963304600329138,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/consumer.stdout",
+        "bytes": 1792,
+        "sha256": "b0fd9061ffdb024cacc8941a5cdde5dd67b9b1970bd4da129ceccd0f380ac068",
+        "identity": [
+          66306,
+          61746437,
+          33152,
+          1,
+          1792,
+          1794494534222563773,
+          1794494534222563773
+        ]
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/consumer.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "identity": [
+          66306,
+          61746438,
+          33152,
+          1,
+          0,
+          1794494532402497949,
+          1794494532402497949
+        ]
+      }
+    },
+    {
+      "name": "arm",
+      "argv": [
+        "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "-cp",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/classes:/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/host-json/json-20240303.jar",
+        "org.trillionnium.hepta.local.WebArmDispatchHostTest",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/fixtures/actual-mi-ax.xml",
+        "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/arm-RESULT.json"
+      ],
+      "pid": 1128693,
+      "exit_code": 0,
+      "timed_out": false,
+      "forced_kill": false,
+      "exit_observed": true,
+      "elapsed_seconds": 2.23155535699334,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/arm.stdout",
+        "bytes": 1566,
+        "sha256": "ca7f646c2c23a442ba3885265f28bc090c112b8bf27d10ba7f8da5c3b0585599",
+        "identity": [
+          66306,
+          61746440,
+          33152,
+          1,
+          1566,
+          1794494536452644463,
+          1794494536452644463
+        ]
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/arm.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "identity": [
+          66306,
+          61746441,
+          33152,
+          1,
+          0,
+          1794494534299566559,
+          1794494534299566559
+        ]
+      }
+    }
+  ],
+  "reports": {
+    "consumer": {
+      "original": {
+        "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/consumer-RESULT.json",
+        "bytes": 1964,
+        "sha256": "c69f36bf592dbec29148c8231b8fd576db8b45588246a297d184a79d491fd4b8",
+        "identity": [
+          66306,
+          61746439,
+          33152,
+          1,
+          1964,
+          1794494534222563773,
+          1794494534222563773
+        ]
+      },
+      "report": {
+        "schema": "hepta.main55-wire4-consumer-host-test.v1",
+        "fixture_collection_stats_are_synthetic": true,
+        "native_signatures_and_visibility_are_synthetic": true,
+        "all_pass": true,
+        "cases": [
+          "raw_pair_region_receipt_replays_without_claiming_whole_page_equality",
+          "raw_hash_and_duplicate_key_tampering_rejected",
+          "scope_and_raw_equal_claims_cannot_be_relabeled",
+          "one_native_sample_change_and_css_mapping_claim_rejected",
+          "wrong_uid_request_and_old_wire_are_rejected",
+          "complete_original_native_four_roles_bind_without_dom_ids_or_css_mapping",
+          "four_role_relation_class_and_current_vs_del_price_fail_closed",
+          "actual_price_boundary_keeps_exact_native_labels",
+          "duplicate_anchor_rejected_before_bounds_visibility_filtering",
+          "duplicate_node_id_or_native_path_rejected",
+          "full_native_budget_retains_actual_391_and_truncation_never_grants",
+          "ime_presence_and_native_bound_mismatch_rejected",
+          "bridge_snapshot_clones_geometry_and_rechecks_same_frame",
+          "stable_semantic_fingerprint_excludes_only_sampling_identity",
+          "actual_selection_provenance_copied_without_legacy_literal",
+          "selection_owner_scope_and_boolean_type_mismatches_rejected",
+          "legacy_missing_selection_cannot_fabricate_background_source",
+          "arm_requires_exact_private_successful_capture_and_replays_actual_fd",
+          "arm_wrong_target_run_source_binding_or_expiry_rejected",
+          "arm_source_replaced_by_new_capture_even_same_region_is_rejected"
+        ],
+        "actual_ax_nodes": 566,
+        "assertion_count": 60,
+        "actual_ax_original_sha256": "83696c2a0838d4821e5bcedc3034c0f473adfcdc0443cc078ef58bcf8edac0c7",
+        "phone_actions": 0,
+        "actual_ax_original_bytes": 211683,
+        "actual_dom_v3_failure_promoted": false,
+        "service_native_dispatch_executed": false,
+        "dom_v4_css_hits_and_capture_identity_are_synthetic": true,
+        "android_compiled": false,
+        "case_count": 20,
+        "positive_useful_fixture_nodes": 391,
+        "business_verified": false
+      }
+    },
+    "arm": {
+      "original": {
+        "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/arm-RESULT.json",
+        "bytes": 1717,
+        "sha256": "1cce19f3abd8b3f682dc68369fc4a9782c500a4a224094c2dfb4daa64e8aac9f",
+        "identity": [
+          66306,
+          61746442,
+          33152,
+          1,
+          1717,
+          1794494536452644463,
+          1794494536452644463
+        ]
+      },
+      "report": {
+        "schema": "hepta.main55-arm-dispatch-host-test.v1",
+        "all_pass": true,
+        "cases": [
+          "client_actual_arm_method_sends_no_url_and_consumes_target_once",
+          "unknown_arm_outcome_survives_new_actual_capture_method",
+          "lookalike_source_object_and_prior_capture_are_not_last_private_source",
+          "cancelled_expired_source_and_nonregion_target_never_send_arm",
+          "expired_arm_callback_never_resets_attempt_fences",
+          "session_final_native_entry_is_cas_once",
+          "missing_live_native_token_rejects_even_with_verified_arm",
+          "native_token_frame_identity_and_duplicate_check_are_rejected",
+          "native_token_250ms_limit_and_future_timestamp_are_enforced",
+          "expired_arm_cancelled_task_missing_source_or_wrong_run_cannot_enter",
+          "false_or_stale_original_outcome_never_creates_navigation",
+          "claimed_dispatch_without_actual_final_hook_is_rejected",
+          "outcome_wrong_run_or_clock_still_clears_capability",
+          "outcome_journal_failure_clears_capability_and_cannot_reenter",
+          "last_predispatch_journal_failure_clears_state_but_not_client_fence",
+          "arm_journal_failure_clears_unpublished_pending_dispatch",
+          "early_guard_failure_also_clears_previous_in_memory_capability",
+          "successful_prepare_stamps_dispatch_after_verified_arm_and_journal",
+          "restricted_wait_record_failure_clears_state_without_any_arm"
+        ],
+        "byte_identical_production_methods": true,
+        "assertion_count": 98,
+        "phone_actions": 0,
+        "actual_native_refresh_executed": false,
+        "transport_provider_journal_clock_are_test_doubles": true,
+        "android_compiled": false,
+        "case_count": 19,
+        "actual_binder_transport_executed": false,
+        "business_verified": false,
+        "native_region_token_creation_is_synthetic": true
+      }
+    }
+  },
+  "android_compiled": false,
+  "binder_transport_tested": false,
+  "native_accessibility_tested": false,
+  "phone_actions": 0,
+  "business_verified": false,
+  "originals_and_written_sources_unchanged": true,
+  "compiled_class_count": 87,
+  "written_sources": [
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/stage.py",
+      "bytes": 34555,
+      "sha256": "07248b15132f712b25f4b2cdf13166c34c23094df738553bb7a667aba8b80af5"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/INPUT.json",
+      "bytes": 935559,
+      "sha256": "f9577768563f5fbf88bf77b0d484038c7ccd87b07d0ae5a79fb55ef92c987d4e"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ActionDecision.java",
+      "bytes": 25712,
+      "sha256": "ee2a0481bb1ad0d2a3dd95b501c101d1955f4f1142adfe150ba3f9643fa88b20"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+      "bytes": 9217,
+      "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+      "bytes": 12329,
+      "sha256": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+      "bytes": 4685,
+      "sha256": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ObservedAppLabels.java",
+      "bytes": 4889,
+      "sha256": "0276171bb8aaebee880a6d36fea5cbfdb157b09d2728a07148e4ce85d5ffbb9e"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/background/FixedIntentTools.java",
+      "bytes": 4137,
+      "sha256": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+      "bytes": 2730,
+      "sha256": "f5f3936a8185185cf5f036a74665ee6edfbd5c1f617299dd9cd6edd4bf7b23e2"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/TaskAuthorization.java",
+      "bytes": 23598,
+      "sha256": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/web/WebFlightGoal.java",
+      "bytes": 9611,
+      "sha256": "02f260915f2b64894b8cd1ed4223392ace9964920d9b77e6765548252d9624ac"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ObservationState.java",
+      "bytes": 1258,
+      "sha256": "a2a664a3567995de8665e66d7667cfc089277fdd16175aa9dab837f7919dd257"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ObservedWindowMetadata.java",
+      "bytes": 4536,
+      "sha256": "73948e97e6a164ef27753ba0536d0cfadac2ee670179aa2e5b4bb2af0e9e66c5"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ObservedChildText.java",
+      "bytes": 10858,
+      "sha256": "56433b62f9c4c895edac441160fcdc4aaee7365586daa4b86863448dc4dd54d5"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+      "bytes": 2303,
+      "sha256": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ObservedImeEnter.java",
+      "bytes": 4665,
+      "sha256": "e449d61e928dca5a72730b5394fa8f95a7db4dd4006440a95f839818e165acf1"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/ImeVisibility.java",
+      "bytes": 711,
+      "sha256": "4e7fdaf10d6d502e77642fb043296e8da5d94fbfc78d884826f60dafed8f6e36"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/WebEvidenceJson.java",
+      "bytes": 7253,
+      "sha256": "4f9c66cc527948d498f941543240d2bb304610b388735f3bc7264b9ccefa4e1e"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java",
+      "bytes": 4089,
+      "sha256": "90a414863297c1ff173fd14a7b31dce62bb5fbb561e7625f1fe3eb0dace47af7"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebStorageEvidence.java",
+      "bytes": 8539,
+      "sha256": "9e8df742ad0fdaac0fbc051c99772a52fbb40aae49f0a43589e252e71acc7fc0"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebTaskPurpose.java",
+      "bytes": 6731,
+      "sha256": "92303867e09343ebcbb3620b9a5850bce683c1d94988d1e534dd272dcaea8647"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/WebEvidenceReceipt.java",
+      "bytes": 29292,
+      "sha256": "85bd14c7dc45aee8fbc1c290299cd2b123c848f9d5c08634b4b2b66daeeb5cda"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/WebNativeGeometry.java",
+      "bytes": 14220,
+      "sha256": "a61e9601699fd7480c4f09be2c29de9cf755903a222c79efbfc9efbd23afbc49"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/PhoneObservation.java",
+      "bytes": 24711,
+      "sha256": "9dc1033ffc989b2a957e0999bb40d5c48d97117d89150a173141ae7cc7eff8d0"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/WebRegionNativeBridge.java",
+      "bytes": 17427,
+      "sha256": "faf50cafc7b11e763a840def5bee6c2cff77535c4a904c06ccd7d74afa489ca2"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+      "bytes": 5933,
+      "sha256": "3966bbe1122f6a6e13bf211291332aa63f755a891800d04169016958946f8f0e"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebRecoveryPolicy.java",
+      "bytes": 36054,
+      "sha256": "e5bba55512b5b71f084282170d2708461d8b62f536f03ba4f3b074a4a0502ce0"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java",
+      "bytes": 4424,
+      "sha256": "55209ef608fad0d8794d439aab2baf69bd7c8b043289c80ca7b25acaad1ff3d7"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebMiActionRegion.java",
+      "bytes": 20795,
+      "sha256": "027de25550bac1e58d835c1a0582f5f14aff144b76a2f4889f9d48b4f1abcd04"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebDomStability.java",
+      "bytes": 16055,
+      "sha256": "f7e432c1191008afa25a134147cd6fd133f975e102aa4cab722da3dc82a4ea53"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java",
+      "bytes": 5255,
+      "sha256": "d74bf8292782fc7a9e48f3460b8961eecd009d038c8b4e94431b94ecdd04043a"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/local/web/WebShoppingGoal.java",
+      "bytes": 10767,
+      "sha256": "b8eb72eddb99842758dc39b347d2679d247714b97e0a0afe6df217bf2e8cd8c8"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/src/org/trillionnium/hepta/webprotocol/WebObservedNavigation.java",
+      "bytes": 23060,
+      "sha256": "e524d91f50ec8d911692e371fed000d65e1be2f703f3efe36497ae64fd358132"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/tests/main55-wire4/WebWire4SyntheticFactory.java",
+      "bytes": 13189,
+      "sha256": "ed0ea43b11b828248afa432fbfd9ed4137302ed756b11104dc4d26be15c34d7d"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/tests/main55-wire4/WebWire4ConsumerHostTest.java",
+      "bytes": 33964,
+      "sha256": "ced14da55e078c44df802d3542810c1c4555f01f49fd4783450114539404d0ac"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/tests/main55-wire4/WebEvidenceClientArmProjection.java",
+      "bytes": 8332,
+      "sha256": "505854ec1e52fe00488363b1ff58c3a4022f93726e376f199e9b30f04aec3b9b"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/tests/main55-wire4/WebFlightSessionArmProjection.java",
+      "bytes": 25428,
+      "sha256": "b9f0cd4529d269d6b989178bafe4f622e7441f70c493874fa6bee0095d1769be"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/tests/main55-wire4/WebArmDispatchHostTest.java",
+      "bytes": 16374,
+      "sha256": "ce596e987a05c20e1aae053ce87ca93129b2c7a8f0d4bbda75e9d875df0dd872"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/tests/main55-wire4/android/graphics/Rect.java",
+      "bytes": 796,
+      "sha256": "6d3a2cbd8addc45df561f48779486fd31a3f3ef10a3d7ae22b686783e06bb6be"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/source/tests/main55-wire4/android/os/SystemClock.java",
+      "bytes": 348,
+      "sha256": "d8df8b7485536fbaa8c3a7bc9150a3b9969df0f52702050afe59f98cb0816caf"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/projection-originals/WebEvidenceClient.java",
+      "bytes": 20815,
+      "sha256": "96eb9307241ec3f5ad33dab37e894f9ddbcbf228c0bc48169b53056f42dab943"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/projection-originals/WebFlightSession.java",
+      "bytes": 38651,
+      "sha256": "f50bd815470c35adf5156c81d1fdbcbaaa5f365c57fb5cd74451f610d778e158"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/projection-originals/HeptaAccessibilityService.java",
+      "bytes": 117505,
+      "sha256": "cfd95f10db8b3c2a34830a73875c2e1bfaa1a6b6fdca47bc20be346ed77104fd"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/projection-originals/WebScopedNavigationHostTest.java",
+      "bytes": 30591,
+      "sha256": "a6463d7705bde482d4436df6222b85bd985ba6b4a9ec460bf27219fcf201d940"
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-main-wire4-host-p4-r3/fixtures/actual-mi-ax.xml",
+      "bytes": 211683,
+      "sha256": "83696c2a0838d4821e5bcedc3034c0f473adfcdc0443cc078ef58bcf8edac0c7"
+    }
+  ]
+}

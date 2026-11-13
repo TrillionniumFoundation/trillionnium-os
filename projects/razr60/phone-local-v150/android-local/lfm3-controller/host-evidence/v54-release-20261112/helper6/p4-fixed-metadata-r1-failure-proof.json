@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.helper6-fixed-input-metadata-read-failure.v1",
+  "request_key": "007f-helper6-p4-input-metadata-read-r1",
+  "source": {
+    "git": "fd514a997e3b531dc938b30007c0abe165f925f3",
+    "bytes": 2660,
+    "sha256": "2e4bc16553b8080e8ce2a3fdef30fc0afef007cc1e1987b3007304382afb4ae2"
+  },
+  "read": {
+    "archive_path": "/home/alex/.local/state/hepta-runtime-mac-worker/terminals/dpty-e02c92de28a8a963c082d7f57aa440cf6fa87d0b4f6dc443794df6b0433b8593/output.log",
+    "available_end": 484,
+    "bytes_hex": "54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0d0a202046696c65201b5b33356d223c737472696e673e221b5b306d2c206c696e65201b5b33356d341b5b306d2c20696e201b5b33356d3c6d6f64756c653e1b5b306d0d0a202020201b5b33316d657865631b5b306d1b5b313b33316d28636f6d70696c65287261772c2766697865642d68656c706572362d696e7075742d6d657461646174612d72312e7079272c2765786563272c646f6e745f696e68657269743d54727565292c7b275f5f6e616d655f5f273a275f5f6d61696e5f5f277d291b5b306d0d0a202020201b5b33316d7e7e7e7e1b5b306d1b5b313b33316d5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e1b5b306d0d0a202046696c65201b5b33356d2266697865642d68656c706572362d696e7075742d6d657461646174612d72312e7079221b5b306d2c206c696e65201b5b33356d34321b5b306d2c20696e201b5b33356d3c6d6f64756c653e1b5b306d0d0a1b5b313b33356d417373657274696f6e4572726f721b5b306d0d0a",
+    "chunk_sha256": "24302a7279ca1e1cb23433561f2afddd1bd4b3a8cef91c4aa3a81b0f34c74493",
+    "host": "pocket4",
+    "next_offset": 484,
+    "offset": 0,
+    "output_complete": true,
+    "persistent_across_runtime_restart": true,
+    "session_id": "dpty-e02c92de28a8a963c082d7f57aa440cf6fa87d0b4f6dc443794df6b0433b8593",
+    "status": {
+      "boot": "97d9600f-e081-465c-9e6e-62651e09806b",
+      "bytes_seen": 484,
+      "bytes_stored": 484,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794489517976,
+      "exit_code": 1,
+      "output_complete": true,
+      "owner_pid": 797858,
+      "pid": 797860,
+      "state": "exited"
+    },
+    "storage": "target_archive",
+    "text": "Traceback (most recent call last):\r\n  File \u001b[35m\"<string>\"\u001b[0m, line \u001b[35m4\u001b[0m, in \u001b[35m<module>\u001b[0m\r\n    \u001b[31mexec\u001b[0m\u001b[1;31m(compile(raw,'fixed-helper6-input-metadata-r1.py','exec',dont_inherit=True),{'__name__':'__main__'})\u001b[0m\r\n    \u001b[31m~~~~\u001b[0m\u001b[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\u001b[0m\r\n  File \u001b[35m\"fixed-helper6-input-metadata-r1.py\"\u001b[0m, line \u001b[35m42\u001b[0m, in \u001b[35m<module>\u001b[0m\r\n\u001b[1;35mAssertionError\u001b[0m\r\n",
+    "text_is_lossy": false,
+    "truncated_before_offset": false,
+    "utf8_pending": false
+  },
+  "claim": "Complete original PTY stream including ANSI/CRLF; exit 1 at source line 42 output budget assertion. No metadata JSON or InstalledIdentity source bytes were emitted. Prior assertions executed before the output guard; this is not a source predicate observation.",
+  "source_output_received": false,
+  "downloaded": false,
+  "compiled": false,
+  "signed": false,
+  "phone_contacted": false
+}

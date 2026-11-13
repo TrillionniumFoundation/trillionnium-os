@@ -1,0 +1,159 @@
+{
+  "schema": "hepta.main56-current-0803-actual-host-gates-review.v1",
+  "reviewer": "mobile_models",
+  "status": "three_actual_host_groups_passed_android_pending",
+  "source": {
+    "aggregate": {
+      "bytes": 1427055,
+      "sha256": "c1cc7cc16eef4c3a34131ee719101a69db080b76e72c98f03248036fc6fd628f",
+      "git_blob_sha": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c"
+    },
+    "physical_inventory": {
+      "bytes": 103795,
+      "sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+      "git_blob_sha": "c43a4be934ca00942ceeed086e16fc4b81d3a519"
+    },
+    "source_count": 595
+  },
+  "actuals": {
+    "core": {
+      "git_blob_sha": "5cb49be79cbf60bb9cfdc34eb24ea6a1a16aace1",
+      "bytes": 9732,
+      "sha256": "778fbfeac89fa330d123207c43e485818b530f77e978247c61f67d9d23ce9a39"
+    },
+    "web": {
+      "git_blob_sha": "a444cbac9951180a7dde73bee2984fdf063ee30a",
+      "bytes": 47337,
+      "sha256": "220ccb705ba17797d7403c26c1a9bcb438f46c8ea83e017c617a343d27232f7c"
+    },
+    "focused39": {
+      "git_blob_sha": "94faa212af37300fa4eee3384cdf382b034aad7e",
+      "bytes": 44408,
+      "sha256": "036e4f7b185a127e457712fcd23b6745d8aac18a04cf64da4035764329efee43"
+    }
+  },
+  "original_pty_checkpoints": {
+    "core": {
+      "git_blob_sha": "ffa52177623c3158d6316eee3d6f7ada5490564e",
+      "bytes": 5679,
+      "sha256": "098fcb1cf08ef933732f5a63b8b28b970dc76925282d5eb0c0eed2868afc28ed"
+    },
+    "web": {
+      "git_blob_sha": "7b9a068a1e9f1a7ec1a6f9d81644f733a15fa68c",
+      "bytes": 9216,
+      "sha256": "25283d2b6d4a4f72b1a4f1b76593c262e04100cff686587d5d9222a8f155515c"
+    },
+    "focused39": {
+      "git_blob_sha": "a03c1753e2626d030ffdf696b7f1b3288c8e5914",
+      "bytes": 8742,
+      "sha256": "772f2ac0649fa9cbb62c808d5af84d553d68394a592e9117a208dbc19bd0e028"
+    }
+  },
+  "verification": {
+    "all_three_same_aggregate": true,
+    "core": {
+      "cases": 101,
+      "nested_cases": 18,
+      "host_inputs": 419,
+      "nested_are_within_core": true,
+      "compiler_inputs": 217,
+      "java_sources": 115
+    },
+    "web": {
+      "evidence": {
+        "cases": 80,
+        "assertions": 92
+      },
+      "composition": {
+        "cases": 70,
+        "assertions": 178
+      },
+      "calendar": {
+        "cases": 13,
+        "assertions": 1001
+      },
+      "all70_names_exact": true,
+      "production_sources": 44,
+      "compile_units": 52,
+      "fixtures": 6
+    },
+    "focused": {
+      "java_sources": 51,
+      "pure_sources": 44,
+      "projected_methods": 15,
+      "consumer": {
+        "cases": 20,
+        "assertions": 60
+      },
+      "arm": {
+        "cases": 19,
+        "assertions": 98
+      },
+      "derived_input_verified": true
+    },
+    "all_steps_normal_zero": true,
+    "all_prior_evidence_unchanged": true,
+    "actual_bare_map_reconstructed_exact": true,
+    "bare_map": {
+      "git_blob_sha": "07cc1ccced2c41df1fcb06e5195650362b3676c0",
+      "bytes": 141875,
+      "sha256": "8d8cf9767861029b1cd4c6bb1143e07ee92296a475a44ae1979db79756233926"
+    },
+    "pty": [
+      {
+        "key": "actualCore56r2Pty",
+        "exit_code": 0,
+        "child_returncode": 0,
+        "timed_out": false,
+        "forced_kill": false,
+        "child_elapsed_seconds": 148.43267166998703,
+        "output_complete": true,
+        "raw_chunk_verified": true
+      },
+      {
+        "key": "actualWeb56r2Pty",
+        "exit_code": 0,
+        "child_returncode": 0,
+        "timed_out": false,
+        "forced_kill": false,
+        "child_elapsed_seconds": 10.759491352015175,
+        "output_complete": true,
+        "raw_chunk_verified": true
+      },
+      {
+        "key": "actualFocused56r1Pty",
+        "exit_code": 0,
+        "child_returncode": 0,
+        "timed_out": false,
+        "forced_kill": false,
+        "child_elapsed_seconds": 9.744082206045277,
+        "output_complete": true,
+        "raw_chunk_verified": true
+      }
+    ],
+    "android_pass": null,
+    "signed": false,
+    "published": false,
+    "phone_tested": false,
+    "flight_results_provider_ready": false,
+    "android_blocker": "Unexecuted query runner source guard expects45 but current PURE_PATHS is46; Audit owns explicit successor. Original0803 gates retain their exact source binding."
+  },
+  "evidence_scope": [
+    "All six original RESULT/checkpoint UTF-8 byte strings were fetched by Git object identity and independently checked against full bytes/SHA256/Git blob SHA1; originals were not JSON-reserialized.",
+    "All three actual receipts bind 0803dec4b6acc359b810bb79ca6fdd01ada69a8c, ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e,595 and the same Core56 r2 source root.",
+    "Core101 includes its18 nested stages; neither is represented as additional independent coverage. Web70 includes the original43 cases,10 terminal cases and17 stability cases with the exact ordered names.",
+    "Focused39 compiles51 Java sources, including44 actual pure production sources and15 exact method projections; its20/60 and19/98 reports retain test-double/native/Binder limits.",
+    "The local reconstructed bare595-row source map is byte-identical by whole length/SHA256 to the actual Core2 receipt's pinned SOURCE-BLOB-MAP. This review did not perform a new host map read.",
+    "All owned steps and three observed supervisor finishes exited0 without timeout/forced kill; prior failed Core/Web and earlier actual55 focused evidence remain unchanged.",
+    "The query40 runner had not executed in these three groups. A separate source-only count-guard defect was discovered before Android: actual PURE_PATHS46 vs retained assertion45. Its successor is owned by Audit; no original0803 source/receipt was changed.",
+    "Current installed phone remains Main55/helper6. Main56 Android, signing, publication, installation and phone task success are not inferred."
+  ],
+  "action_boundary": {
+    "host_requests_by_this_reviewer": 0,
+    "source_cas_ref_changed": false,
+    "new_gate_executed": false,
+    "new_phone_action": false,
+    "android_build_result": null,
+    "source_successor_waits_for_explicit_query_runner_resolution": true
+  }
+}

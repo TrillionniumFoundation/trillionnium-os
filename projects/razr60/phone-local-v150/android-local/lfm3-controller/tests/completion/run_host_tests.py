@@ -43,7 +43,28 @@ def main():
     files += [process, os_fake]
     extraction['ordinary_android_uid_io_fake'] = {'uid': 10481, 'host_uid_mapped': os.getuid(), 'not_android_permission_proof': True}
     files += [source / 'tests/fixed-intent-tools/FixedIntentIntegrationHostTest.java', source / 'tests/completion/TaskCompletionGateHostTest.java']
+    files += [source / 'tests/notes-task-phase/NotesTaskPhaseHostTest.java']
+    files += [source / 'tests/notes-task-phase/NotesListProvenanceHostTest.java']
+    files += [source / 'tests/notes-task-phase/NotesRecoveryHostTest.java']
+    files += [source / 'tests/notes-task-phase/NotesTaskScopeHostTest.java']
+    files += [source / 'tests/calculator-input/CalculatorInputGuardHostTest.java',
+              source / 'tests/calculator-input/FailedActionObservationHostTest.java']
+    files += [source / 'tests/notes-editor-phase/NotesEditorPhaseHostTest.java']
+    files += [source / 'tests/completion-status/CompletionStatusHostTest.java']
+    files += [source / 'tests/notes-create-workflow/NotesCreateWorkflowHostTest.java',
+              source / 'tests/notes-workflow-controller/NotesWorkflowControllerHostTest.java']
     pins = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
+    phase_fixture = source / 'tests/notes-task-phase/fixtures/v45-notes-trace.json'
+    phase_recognizer = source / 'tests/notes-task-phase/test_phase_grammar.py'
+    list_fixture = source / 'tests/notes-task-phase/fixtures/manual-notes-list.xml'
+    recovery_fixture = source / 'tests/notes-task-phase/fixtures/v46-notes-recovery-trace.json'
+    scope_fixture = source / 'tests/notes-task-phase/fixtures/v47-notes-scope-trace.json'
+    calculator_fixture = source / 'tests/calculator-input/fixtures/v47-background-type-failure.json'
+    editor_fixture = source / 'tests/notes-editor-phase/fixtures/v48-editor-click-trace.json'
+    completion_status_fixture = source / 'tests/completion-status/fixtures/v49-premature-success-trace.json'
+    workflow_fixture = source / 'tests/notes-create-workflow/fixtures/v50-background-parent-create-partial.json'
+    for p in (phase_fixture, phase_recognizer, list_fixture, recovery_fixture, scope_fixture, calculator_fixture, editor_fixture, completion_status_fixture, workflow_fixture):
+        pins[str(p)] = hashlib.sha256(p.read_bytes()).hexdigest()
     classes = out / 'classes'
     classes.mkdir()
     compiler = [shutil.which('javac')] if shutil.which('javac') else ['java', '-m', 'jdk.compiler/com.sun.tools.javac.Main']
@@ -52,6 +73,22 @@ def main():
     commands = [
         ('compile', compiler + flags + ['-encoding', 'UTF-8', lint, '-Werror', '-d', str(classes), *map(str, files)]),
         ('actual-completion', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.TaskCompletionGateHostTest', str(out / 'cases')]),
+        ('notes-task-phase', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesTaskPhaseHostTest', str(phase_fixture), str(out / 'notes-task-phase')]),
+        ('notes-task-phase-grammar', [sys.executable, str(phase_recognizer), str(out / 'notes-task-phase/grammar-cases.json')]),
+        ('notes-list-provenance', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesListProvenanceHostTest', str(list_fixture)]),
+        ('notes-recovery', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesRecoveryHostTest', str(recovery_fixture), str(out / 'notes-recovery')]),
+        ('notes-recovery-grammar', [sys.executable, str(phase_recognizer), str(out / 'notes-recovery/grammar-cases.json')]),
+        ('notes-task-scope', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesTaskScopeHostTest', str(scope_fixture), str(out / 'notes-task-scope')]),
+        ('notes-task-scope-grammar', [sys.executable, str(phase_recognizer), str(out / 'notes-task-scope/grammar-cases.json')]),
+        ('calculator-input', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.CalculatorInputGuardHostTest', str(calculator_fixture), str(out / 'calculator-input')]),
+        ('calculator-input-grammar', [sys.executable, str(phase_recognizer), str(out / 'calculator-input/grammar-cases.json')]),
+        ('failed-action-observation', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.FailedActionObservationHostTest', str(out / 'failed-action-observation')]),
+        ('notes-editor-phase', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesEditorPhaseHostTest', str(editor_fixture), str(out / 'notes-editor-phase')]),
+        ('notes-editor-phase-grammar', [sys.executable, str(phase_recognizer), str(out / 'notes-editor-phase/grammar-cases.json')]),
+        ('completion-status', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.CompletionStatusHostTest', str(completion_status_fixture), str(out / 'completion-status')]),
+        ('completion-status-grammar', [sys.executable, str(phase_recognizer), str(out / 'completion-status/grammar-cases.json')]),
+        ('notes-create-workflow', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesCreateWorkflowHostTest', str(workflow_fixture), str(out / 'notes-create-workflow')]),
+        ('notes-workflow-controller', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesWorkflowControllerHostTest', str(out / 'notes-workflow-controller')]),
     ]
     report = {'schema': 'hepta.task-completion-host.v1', 'source_inputs': pins, 'extraction': extraction,
               'compiler_contract': 'Java 8 API release' if args.release8 else 'Java 8 syntax/target only; not release8 or Android proof',

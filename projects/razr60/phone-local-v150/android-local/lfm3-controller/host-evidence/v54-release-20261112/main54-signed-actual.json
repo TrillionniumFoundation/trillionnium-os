@@ -1,0 +1,310 @@
+{
+  "abi": [
+    "arm64-v8a"
+  ],
+  "actual_build_identity_sha256": "4a963d8d00997e9d716bae759571d78e0acb886add311fa6c01485c043b449f6",
+  "actual_compiler_inputs_bound_to_signed_asset": true,
+  "actual_compiler_source_inputs": 211,
+  "actual_flight_results_provider_ready": false,
+  "all_pass": true,
+  "android_runtime_tested": false,
+  "apk": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/out/hepta-local-0.54.0.apk",
+  "apk_bytes": 20985685,
+  "apk_sha256": "0729f54704a058049e12041c7f901b1b6650924500663cf9952a03d6a33a8b8a",
+  "background_owned_task_policy_stdout_sha256": "a702295e026b34be17427f991eaab22586f77c4757566037f31ad8761406554f",
+  "calculator_pure_cases_sha256": "aa5d19de58b62f68e77713a675e5900583d441a590603dfaca9c43ff9053a044",
+  "calculator_pure_receipt_sha256": "d7d7b846df645d1a1c57a4a6c9141c644f45772c88c14bee03c17cb113c627e5",
+  "calendar_native_assertions": 1001,
+  "calendar_native_cases": 13,
+  "cancellation_sdk_phone_verified": false,
+  "complete_jdk_receipt_sha256": "349939390c8b19e8cea03e28ce6c5bc2c1d010dd06d3a435b7f1517221f0dd1c",
+  "completion_status_grammar_cases_sha256": "45f9430d8aabee43c7d7ae8117ddf7f593536c87bdeb049933aa23bac6fadf04",
+  "composition_host_assertions": 59,
+  "composition_host_cases": 43,
+  "current_web_regression_result_sha256": {
+    "CALENDAR-NATIVE-RESULT.json": "76effb499a8de9b4fe00ad3daddaba98c1fdc57780a49e2b31fd23ebdb59cf38",
+    "COMPOSITION-RESULT.json": "5a2ecc91a761d661ded8be6517d1671c743e55f06fc765ebba6144e59d792b05",
+    "WEB-RESULT.json": "825375a847fe0abacb6c1e9045e19a8206114c51982ab732b88c6a694a0f911e"
+  },
+  "dependencies_downloaded": false,
+  "empty_source_keys_directory_present": true,
+  "existing_key_metadata_unchanged": true,
+  "exit_code": 0,
+  "finished_utc": "2026-11-12T08:38:38Z",
+  "flight_query_phone_executed": false,
+  "flight_query_production_implemented": true,
+  "fresh_phone_signer_inspected": false,
+  "helper_protocol": "v3",
+  "helper_required_version_code": 5,
+  "host_check_records": 101,
+  "host_checks_sha256": "6c7f11e31c4fcb2e81c417995282987fcaf5f0fb632885f0f376a5745b9db3d8",
+  "host_input_count": 413,
+  "installed_on_phone": false,
+  "java_home": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64",
+  "library_pins": {
+    "libMNN.so": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d",
+    "libc++_shared.so": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754",
+    "libgeniex.so": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56",
+    "libgeniex_plugin_llama_cpp.so": "cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a",
+    "libggml-base.so": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40",
+    "libggml-cpu.so": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b",
+    "libggml-hexagon.so": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f",
+    "libggml-htp-v79.so": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5",
+    "libggml-opencl.so": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875",
+    "libggml.so": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149",
+    "libhepta_local_runner.so": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+    "libhepta_mobimind_runner.so": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020",
+    "libhepta_ui_venus_runner.so": "5fa2dcae05fb649157d96481c5890c157301c76dab3522fcabcbe01b9b0d8551",
+    "libllama-common.so": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122",
+    "libllama.so": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835",
+    "libmtmd.so": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d",
+    "libomp.so": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76"
+  },
+  "mac_archive_bytes": 562137,
+  "mac_archive_sha256": "17da0d3a86bd8505daa07e9895643b7de2d2877768fbaf9c8abd8475f8c6bcc2",
+  "mac_build_receipt_sha256": "51265398de2dcc4ccefb5aa0e24ea91770d8c9f3b54248f3d88068e04a4436cc",
+  "manifest_explicit_queries": {
+    "intents": [
+      [
+        [
+          "action",
+          "android.intent.action.MAIN"
+        ],
+        [
+          "category",
+          "android.intent.category.HOME"
+        ]
+      ],
+      [
+        [
+          "action",
+          "android.intent.action.MAIN"
+        ],
+        [
+          "category",
+          "android.intent.category.LAUNCHER"
+        ]
+      ]
+    ],
+    "packages": [
+      "com.android.settings",
+      "com.android.settings.intelligence",
+      "com.motorola.cn.calculator",
+      "com.motorola.launcher3",
+      "com.motorola.stylus",
+      "com.topjohnwu.magisk",
+      "com.zui.browser",
+      "org.trillionnium.hepta.webhelper"
+    ]
+  },
+  "matches_previously_recorded_signer": true,
+  "native_baseline_signed_receipt_sha256": "484b2be823f751ce12c643ac66cd54d4ecd4262ab939b080dd2d0378365ecccc",
+  "native_libraries_identical_to_formal_v53": true,
+  "native_worker_binding": {
+    "actual_compiler_receipt_sha256": "51265398de2dcc4ccefb5aa0e24ea91770d8c9f3b54248f3d88068e04a4436cc",
+    "actual_mac_stage_sha256": "a037b49f05ea48caccb2902b95bbb2314a5f767e230138dd14ae3a16851ee4b2",
+    "cancellation_sdk_phone_verified": false,
+    "generated_worker_sha256": "77b914eae46ea000d3c955628c35f6e96a715a4a14da3eb075923d2e6024bbb0",
+    "name": "libhepta_local_runner.so",
+    "native_worker_updated": false,
+    "previous_sha256": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+    "schema": "hepta.preserved-local-worker-binding.v1",
+    "sha256": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+    "source_commit": "42d3a0f447807659c0f78c8273edee01dd1b734f",
+    "upstream_worker_sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e"
+  },
+  "nested_phase_source_checks": {
+    "calculator-completion-pure/calculator-pure.stdout": {
+      "required_markers": [
+        "CalculatorCompletionHostTest assertions=230 cases=9"
+      ],
+      "sha256": "4c86fd9513635c9d83d40d02417a9559e701e045df0a93c459c2f478d3dfafe3"
+    },
+    "observation-collection/collection.stdout": {
+      "required_markers": [
+        "PASS 4124 actual collection assertions; XML is a separate snapshot; phone_tested=false"
+      ],
+      "sha256": "d02234dc2f9b25fe53bc6786daed2a877d08b93d24d3e3f2cfb35d9d5ff64bc2"
+    },
+    "task-completion/actual-completion.stdout": {
+      "required_markers": [
+        "PASS actual_controller_external_window_detour_recovers_only_after_same_item_click"
+      ],
+      "sha256": "25c9d20984369d28855104a4b83868ef9d225d35373735b3a7d06babede3e50e"
+    },
+    "task-completion/calculator-input-grammar.stdout": {
+      "required_markers": [
+        "PASS 36 production phase grammar cases"
+      ],
+      "sha256": "d44a578329e79a0365778cf788eea7a067cfcbb91eccc21069676822c13c2a36"
+    },
+    "task-completion/calculator-input.stdout": {
+      "required_markers": [
+        "PASS 507 Calculator native-button input checks"
+      ],
+      "sha256": "a8f0e2c471f251bf4692033a89f4baec9dd146b99ee297b917ad494d3f30f612"
+    },
+    "task-completion/completion-status-grammar.stdout": {
+      "required_markers": [
+        "PASS 39 production phase grammar cases; phone_tested=false"
+      ],
+      "sha256": "cc381dc889101d50ce42da42647985b5468e10abbfeacd711b1cf98965a5e4c8"
+    },
+    "task-completion/completion-status.stdout": {
+      "required_markers": [
+        "PASS 98 completion-status assertions; original_v49_partial=true; synthetic_positive_and_controller_io=true; phone_tested=false",
+        "completion_status_grammar_cases=39"
+      ],
+      "sha256": "35b2b7d0d898f98c57fb9c3d650504771f7920865cbd83a516c14380800fce52"
+    },
+    "task-completion/failed-action-observation.stdout": {
+      "required_markers": [
+        "PASS 106 one-shot failed-action observation checks; cases=5"
+      ],
+      "sha256": "081a718c6d89b3617ab4b3dbeef01cea8b93dbf17b51365e9f31f4478e967c50"
+    },
+    "task-completion/notes-create-workflow.stdout": {
+      "required_markers": [
+        "NotesCreateWorkflowHostTest checks=619"
+      ],
+      "sha256": "af0965c53b6ee26ae613ac33156e2152ebda54b18937c905441c44830433c051"
+    },
+    "task-completion/notes-editor-phase-grammar.stdout": {
+      "required_markers": [
+        "PASS 36 production phase grammar cases"
+      ],
+      "sha256": "d44a578329e79a0365778cf788eea7a067cfcbb91eccc21069676822c13c2a36"
+    },
+    "task-completion/notes-editor-phase.stdout": {
+      "required_markers": [
+        "PASS 206 Notes editor-phase assertions"
+      ],
+      "sha256": "0bdd96e6cecb324ae8ec3b5bc92b8fb85ae9d31f035adc5184c801f1b74c4ac6"
+    },
+    "task-completion/notes-list-provenance.stdout": {
+      "required_markers": [
+        "PASS 33 actual XML topology/source provenance cases"
+      ],
+      "sha256": "8da67c0fb4f35cb7ce1412e1e9965acd02ad5b8cfbafb57f7b310c0ef53a2a9f"
+    },
+    "task-completion/notes-recovery-grammar.stdout": {
+      "required_markers": [
+        "PASS 4 production phase grammar cases"
+      ],
+      "sha256": "0ab68f67edbf9ab99fa9515881f495ae4877a6177ef352428a55e6884c3e5e2f"
+    },
+    "task-completion/notes-recovery.stdout": {
+      "required_markers": [
+        "PASS 200 notes recovery and reason feedback assertions"
+      ],
+      "sha256": "c6f9c770979b413eaf902079a630036eba0bfb56f586eb53d2e917316c2e1838"
+    },
+    "task-completion/notes-task-phase-grammar.stdout": {
+      "required_markers": [
+        "PASS 4 production phase grammar cases"
+      ],
+      "sha256": "0ab68f67edbf9ab99fa9515881f495ae4877a6177ef352428a55e6884c3e5e2f"
+    },
+    "task-completion/notes-task-phase.stdout": {
+      "required_markers": [
+        "PASS 77 notes task phase and recorded two-state contracts"
+      ],
+      "sha256": "da6e4cf67c987f7f98b3568eedc8b00ec28126f01a5a89bdc50a214f32df3976"
+    },
+    "task-completion/notes-task-scope-grammar.stdout": {
+      "required_markers": [
+        "PASS 78 production phase grammar cases"
+      ],
+      "sha256": "b2b20fc8217b1c9341d4fdaeec112701448b24c1a077416ac19a1c41af0df67e"
+    },
+    "task-completion/notes-task-scope.stdout": {
+      "required_markers": [
+        "PASS 490 Notes task scope and current-surface assertions"
+      ],
+      "sha256": "59e5870aaa294600c583047c316b46c5f726a679e591cc2e59a36bad3cce403d"
+    },
+    "task-completion/notes-workflow-controller.stdout": {
+      "required_markers": [
+        "PASS 525 actual workflow controller assertions; cases=12; phone_tested=false; native_io_is_fake=true"
+      ],
+      "sha256": "f1ff4f7d9824e4162bc0e0456eacdabdb217aa749442a7d626268092ad01d5c2"
+    }
+  },
+  "nested_phase_source_receipt_sha256": "745b34624f7c77865a5f01a540d481b8e8c331096089d72f59c7c998262b1123",
+  "new_key_created": false,
+  "notes_create_workflow_receipt_sha256": "8d081070d6a9826c75a3ab5356dd6b111474295179bd214b0557f1202488d452",
+  "notes_owner_intent_receipt_sha256": "56995bcf0455411a83eaa3e03ace37408289000e8caad414a40eae0583de7ac0",
+  "notes_workflow_controller_receipt_sha256": "e5494592dddaf6a8942cbaabd0dd51f428dd82d78a0ef5dd0bcbe2af65056d72",
+  "observation_collection_cases_sha256": "4d502d287cd4693921b61e9941575fd881c554ed90675e0a9817397475f06091",
+  "observation_collection_receipt_sha256": "513aa12dd5a46c6f3344cbb388848f371f45d222c31d524174d16bcc44d080d2",
+  "ordinary_app_uid_accelerator_qualified": false,
+  "owned_cancellation_host_receipt_sha256": "ab467a71958deb373b1fbec29e56a645958211ce99cda63d18a97cb769f9f96a",
+  "owned_cancellation_host_stage_count": 8,
+  "packaged_library_count": 17,
+  "permissions": [
+    "org.trillionnium.hepta.webhelper.permission.BIND_EVIDENCE"
+  ],
+  "phone_contacted": false,
+  "pre_commit_host_receipt_sha256": "21ffbb2aad0b7b5657d58f6581cce751863ecd13852417a6f88efbc57fee594e",
+  "query_exact_current_dispatch_methods_bound": true,
+  "query_exact_dispatch_projection_sha256": "b25ebc507afb39051780a6b50a747fc996d948e0079bf14f89404deb7e009efd",
+  "query_host_assertions": 187,
+  "query_host_cases": 40,
+  "real_web_class_assertions": 92,
+  "real_web_class_cases": 80,
+  "real_web_class_count": 48,
+  "real_web_class_host_receipt_sha256": "77b2e89b50771c546e0abe0396107e87a51d7346e78f91c755679315c463ca12",
+  "required_host_stdout_markers": {
+    "python-tools": [
+      "TextOnlyClickHostTest checks=49",
+      "\"text_only_click_grammar_cases\": 16"
+    ]
+  },
+  "resources_arsc_zip_layout": {
+    "compression_method": 0,
+    "four_byte_aligned": true,
+    "local_data_offset": 12784,
+    "payload_sha256": "8c9835ee21b319889e39df6146f88147815bda68b1f88d3c1b44f29db5b402f8"
+  },
+  "runner_sha256": "20418102e216b3c303b5cbc62b0bcf219df774fc0ab5da5f8351d9a265299507",
+  "schema": "hepta.isolated-v54-assembly.v1",
+  "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "signer_proof_path": "/home/alex/hepta-v35-task-authorization-e59-r1/SIGNER-PROOF.json",
+  "signer_proof_sha256": "97e3aba44ec7a303a935965c1d608692ac06007a33bb859fec481486c1a239fe",
+  "source_commit": "42d3a0f447807659c0f78c8273edee01dd1b734f",
+  "source_commit_binding_sha256": "eb880f648381de86f1e1302d7c985127f713f6095b9b35e88c059601e8e5585e",
+  "source_commit_bound_after_exact_host_run": true,
+  "source_file_count": 589,
+  "source_files_unchanged": true,
+  "source_inventory_sha256": "8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d",
+  "stage_result_sha256": "21ffbb2aad0b7b5657d58f6581cce751863ecd13852417a6f88efbc57fee594e",
+  "started_utc": "2026-11-12T08:38:31Z",
+  "static_acceptance_sha256": "23a4d98257b29f9c2a06d87823c3b9379831d6d88563b63c0768980aee1e85d6",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "b88a75b93d08f7799b26658f0585abb2f5f8283029e8af1cd674463b4d758f4c",
+  "unchanged_native_library_count": 17,
+  "unchanged_native_library_pins": {
+    "libMNN.so": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d",
+    "libc++_shared.so": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754",
+    "libgeniex.so": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56",
+    "libgeniex_plugin_llama_cpp.so": "cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a",
+    "libggml-base.so": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40",
+    "libggml-cpu.so": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b",
+    "libggml-hexagon.so": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f",
+    "libggml-htp-v79.so": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5",
+    "libggml-opencl.so": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875",
+    "libggml.so": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149",
+    "libhepta_local_runner.so": "eeded3063bcbd28ce560ce11295391495e42a6b3b7a8a3e4abe6e5478a103ab5",
+    "libhepta_mobimind_runner.so": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020",
+    "libhepta_ui_venus_runner.so": "5fa2dcae05fb649157d96481c5890c157301c76dab3522fcabcbe01b9b0d8551",
+    "libllama-common.so": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122",
+    "libllama.so": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835",
+    "libmtmd.so": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d",
+    "libomp.so": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76"
+  },
+  "version_code": 54,
+  "version_name": "0.54.0-natural-official-web",
+  "web_binder_phone_verified": false,
+  "web_query_executed": false,
+  "web_results_verified": false
+}

@@ -1,0 +1,413 @@
+{
+  "schema": "hepta.main58-flight-runtime-and-late-binding-adaptation.v1",
+  "scope": "Only version, identity expectation and fixed paths; original collector/ordinary preparation/one independent Start body remains unchanged.",
+  "actual57_runtime_receipt": {
+    "git_blob_sha": "0b68cd448c97688b54b2c6395e714ab8db2ff6f3",
+    "bytes": 1899,
+    "sha256": "727ccbe7e8bc67c0086d167cf7405fa0754e720777bce01dec0c360beac70b15"
+  },
+  "actual57_three_raws_reconstructed_from_existing55_and_verified_against_all_actual57_size_sha": true,
+  "sources": {
+    "support": {
+      "base": {
+        "bytes": 70091,
+        "sha256": "b913dead1499aa1b3b8248d12a7db5c4e390ebf2695e29503ac26a28c9a035df",
+        "git_blob_sha": "d4b731ea01e0a566c20b2e975a15ebb6942c4ad8"
+      },
+      "final": {
+        "bytes": 70091,
+        "sha256": "ffc943520d277e4235f9e07eb6469881e7f0554878e675834318a6d3c86560e1",
+        "git_blob_sha": "8d5b21ce8ec8d08a36c243ce21849f33fccdab2f"
+      },
+      "ordered_replacements": [
+        {
+          "label": "current controller prose",
+          "before": "main57",
+          "after": "main58",
+          "count": 3
+        },
+        {
+          "label": "current schemas/revision",
+          "before": "v57",
+          "after": "v58",
+          "count": 7
+        },
+        {
+          "label": "plan code",
+          "before": "\"controller_version_code\": 57",
+          "after": "\"controller_version_code\": 58",
+          "count": 1
+        },
+        {
+          "label": "release code",
+          "before": "(\"controller\", MAIN, 57)",
+          "after": "(\"controller\", MAIN, 58)",
+          "count": 1
+        },
+        {
+          "label": "installed code",
+          "before": "(57 if role == \"controller\" else 6)",
+          "after": "(58 if role == \"controller\" else 6)",
+          "count": 1
+        }
+      ],
+      "full_reverse_exact": true
+    },
+    "prepare": {
+      "base": {
+        "bytes": 27543,
+        "sha256": "54ba68cb3bded501d6fa49f210fcfdc4fd077ec7e8ef5d2cc7074add291be937",
+        "git_blob_sha": "a65a52ac5d075e36d6a2fb672432582a8f29d699"
+      },
+      "final": {
+        "bytes": 27543,
+        "sha256": "cee95e2e0601ae14c42776398bd648aa88176bc42679e3546447e71529827d12",
+        "git_blob_sha": "4c5f0f282ddbab2c34afee0b12fde74e84201414"
+      },
+      "ordered_replacements": [
+        {
+          "label": "current controller prose",
+          "before": "main57",
+          "after": "main58",
+          "count": 1
+        },
+        {
+          "label": "current schema/revision",
+          "before": "v57",
+          "after": "v58",
+          "count": 2
+        },
+        {
+          "label": "actual support pin",
+          "before": "b913dead1499aa1b3b8248d12a7db5c4e390ebf2695e29503ac26a28c9a035df",
+          "after": "ffc943520d277e4235f9e07eb6469881e7f0554878e675834318a6d3c86560e1",
+          "count": 1
+        }
+      ],
+      "full_reverse_exact": true
+    },
+    "run": {
+      "base": {
+        "bytes": 34153,
+        "sha256": "40c9f57b3b06265daf20844c13ca286fa91693ceee2499bc0947b8a37dbc7aff",
+        "git_blob_sha": "771ba526305277ba2e0f8033b7e8be17be6083b3"
+      },
+      "final": {
+        "bytes": 34153,
+        "sha256": "c8017b1971ab28e22df151bd9c4c4f829958416d78c10348b458d0aec82795da",
+        "git_blob_sha": "17462a68017341d7d4b10a76d78a0962ee56b691"
+      },
+      "ordered_replacements": [
+        {
+          "label": "current controller prose",
+          "before": "main57",
+          "after": "main58",
+          "count": 1
+        },
+        {
+          "label": "current schema/revision",
+          "before": "v57",
+          "after": "v58",
+          "count": 3
+        },
+        {
+          "label": "actual support pin",
+          "before": "b913dead1499aa1b3b8248d12a7db5c4e390ebf2695e29503ac26a28c9a035df",
+          "after": "ffc943520d277e4235f9e07eb6469881e7f0554878e675834318a6d3c86560e1",
+          "count": 1
+        }
+      ],
+      "full_reverse_exact": true
+    },
+    "prepare_wrapper": {
+      "base": {
+        "bytes": 2916,
+        "sha256": "20eaf129f6983a8a0efdf1ca34b5c103c02555ad34cbe029db62483c7f039e96",
+        "git_blob_sha": "38a024ddeb4c6505f842443ea6276d4df8f981ae"
+      },
+      "final": {
+        "bytes": 2916,
+        "sha256": "a49850fbe455624b40568f32d88bf955ef17992de2b9ff88ada7a1dec2b2a496",
+        "git_blob_sha": "e01bc1cae20efcafeb0b8fc30a4e22a85d2c2b4a"
+      },
+      "ordered_replacements": [
+        {
+          "label": "prepare label",
+          "before": "Flight57",
+          "after": "Flight58",
+          "count": 1
+        },
+        {
+          "label": "prepare identity label",
+          "before": "installed57",
+          "after": "installed58",
+          "count": 1
+        },
+        {
+          "label": "paths",
+          "before": "v57",
+          "after": "v58",
+          "count": 4
+        },
+        {
+          "label": "actual prepare pin",
+          "before": "54ba68cb3bded501d6fa49f210fcfdc4fd077ec7e8ef5d2cc7074add291be937",
+          "after": "cee95e2e0601ae14c42776398bd648aa88176bc42679e3546447e71529827d12",
+          "count": 1
+        }
+      ],
+      "full_reverse_exact": true
+    },
+    "run_wrapper": {
+      "base": {
+        "bytes": 3216,
+        "sha256": "3402e41ac6c660ad985e65df3471e87eed8ad2de6c662de3a121b5506311ab23",
+        "git_blob_sha": "bf061f3ed0846f5f59f8fba78b18d0b679e8af63"
+      },
+      "final": {
+        "bytes": 3216,
+        "sha256": "9479b90f7c3a40f0edfeff33c7af6f2c8a22516e0d6864d2873e87869e07fc91",
+        "git_blob_sha": "3b5f31c35d43e330cc7cccaa63b5c1990c9a27b2"
+      },
+      "ordered_replacements": [
+        {
+          "label": "run label",
+          "before": "Flight57",
+          "after": "Flight58",
+          "count": 1
+        },
+        {
+          "label": "paths",
+          "before": "v57",
+          "after": "v58",
+          "count": 7
+        },
+        {
+          "label": "review path",
+          "before": "WEB57",
+          "after": "WEB58",
+          "count": 1
+        },
+        {
+          "label": "actual run pin",
+          "before": "40c9f57b3b06265daf20844c13ca286fa91693ceee2499bc0947b8a37dbc7aff",
+          "after": "c8017b1971ab28e22df151bd9c4c4f829958416d78c10348b458d0aec82795da",
+          "count": 1
+        }
+      ],
+      "full_reverse_exact": true
+    },
+    "release": {
+      "base": {
+        "bytes": 1353,
+        "sha256": "ffac95bb716aeec05fc2d322da5ccd264588a89ce54dfc52563968fe024cd061",
+        "git_blob_sha": "b1b071fea6da9aedfb007af9bb02075b40c0956a"
+      },
+      "final": {
+        "bytes": 1353,
+        "sha256": "a8ef3e6f31ea5ec777a7a9994f5d4afc747871332cfd746820d8e8dada18f0e0",
+        "git_blob_sha": "682464712c799cc518cb9333a68e14d2432112f2"
+      },
+      "ordered_replacements": [
+        {
+          "label": "release schema",
+          "before": "v57",
+          "after": "v58",
+          "count": 1
+        },
+        {
+          "label": "controller version",
+          "before": "\"version_code\": 57",
+          "after": "\"version_code\": 58",
+          "count": 1
+        }
+      ],
+      "full_reverse_exact": true
+    },
+    "publisher": {
+      "base": {
+        "bytes": 9626,
+        "sha256": "65e71ea81d2b71bdbad2f666269551e3366ccdaa57d9f97f9b049695c8b8f44d",
+        "git_blob_sha": "ca07932af0830c515dcc412d03a71e28265f8692"
+      },
+      "final": {
+        "bytes": 9626,
+        "sha256": "089dab157f3cfac030b73801bd77fa6cf13316db637801e038d76c380f40c8ff",
+        "git_blob_sha": "5191c85a9b1470bf165bb00c142dc55d2192f73f"
+      },
+      "ordered_replacements": [
+        {
+          "label": "BASE",
+          "before": "BASE=TASK_BASE+\"/background-web-adapters-v55-r1\"",
+          "after": "BASE=TASK_BASE+\"/background-web-adapters-v58-r1\"",
+          "count": 1
+        },
+        {
+          "label": "PINS",
+          "before": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v55-r1/web_entry_support.py\",\"bytes\":70091,\"sha256\":\"e5bbc07cd151bfb10c8b331706ef7158fd0a73b08d457f5c13f2c33ff2d90d21\"},{\"path\":\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v55-r1/prepare_background_web_v55_r1.py\",\"bytes\":27543,\"sha256\":\"a7ba8978f45ef6315ebcff3f61e7f4696adae373bf66a069936b4d3daaf588a6\"},{\"path\":\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v55-r1/run_background_web_v55_r1.py\",\"bytes\":34153,\"sha256\":\"a2f8e34d9ad4cf7771c91d24caa99fd464eda75f641c4b82316292ec8a1cacb3\"}]",
+          "after": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v58-r1/web_entry_support.py\",\"bytes\":70091,\"sha256\":\"ffc943520d277e4235f9e07eb6469881e7f0554878e675834318a6d3c86560e1\"},{\"path\":\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v58-r1/prepare_background_web_v58_r1.py\",\"bytes\":27543,\"sha256\":\"cee95e2e0601ae14c42776398bd648aa88176bc42679e3546447e71529827d12\"},{\"path\":\"/home/alex/hepta-local-007f-20261111/background-web-adapters-v58-r1/run_background_web_v58_r1.py\",\"bytes\":34153,\"sha256\":\"c8017b1971ab28e22df151bd9c4c4f829958416d78c10348b458d0aec82795da\"}]",
+          "count": 1
+        },
+        {
+          "label": "PAYLOAD_SHA",
+          "before": "PAYLOAD_SHA=\"858ec440e694bdbc659e763a5ec356998359b39bb5735ae77e8fe7f60214589d\"",
+          "after": "PAYLOAD_SHA=\"3823db773a29f7433b22caf7748e67201278d0b4b15e0c0be3d34523e58ff202\"",
+          "count": 1
+        },
+        {
+          "label": "ARGV_BYTES",
+          "before": "ARGV_BYTES=52584",
+          "after": "ARGV_BYTES=52588",
+          "count": 1
+        },
+        {
+          "label": "ARGV_SHA",
+          "before": "ARGV_SHA=\"7b1abd09ff98ac32678af570f5f3662b342182c9241911627ab2f1ffc866279c\"",
+          "after": "ARGV_SHA=\"4fd86807c6dde87cc88f4347435815c036a141614898a2430a6ac33e68f63a6c\"",
+          "count": 1
+        },
+        {
+          "label": "GZIP_BYTES",
+          "before": "GZIP_BYTES=39438",
+          "after": "GZIP_BYTES=39439",
+          "count": 1
+        },
+        {
+          "label": "GZIP_SHA",
+          "before": "GZIP_SHA=\"26fb727526018619e5c00953106df12f3af454d0f6a5e2a4963b608f99990521\"",
+          "after": "GZIP_SHA=\"13154507bd0f5ca759933cf991a58f5cf04fc1998f53feba3edcb7a21a3a9152\"",
+          "count": 1
+        },
+        {
+          "label": "TRANSPORT_KEY",
+          "before": "TRANSPORT_KEY=\"007f-web55-runtime-three-source-publish-r1\"",
+          "after": "TRANSPORT_KEY=\"007f-web58-runtime-three-source-publish-r1\"",
+          "count": 1
+        },
+        {
+          "label": "strict three filenames",
+          "before": "(\"web_entry_support.py\",\"prepare_background_web_v55_r1.py\",\"run_background_web_v55_r1.py\")",
+          "after": "(\"web_entry_support.py\",\"prepare_background_web_v58_r1.py\",\"run_background_web_v58_r1.py\")",
+          "count": 1
+        },
+        {
+          "label": "only fixed final directory guard",
+          "before": "component==\"background-web-adapters-v55-r1\"",
+          "after": "component==\"background-web-adapters-v58-r1\"",
+          "count": 1
+        }
+      ],
+      "full_reverse_exact": true
+    },
+    "dual_publisher": {
+      "base": {
+        "bytes": 10183,
+        "sha256": "7552f18711e8f9c4a7b8de6d6961f2e9e44a738d012a5e3c493a922c21c2cbf5",
+        "git_blob_sha": "705940e51dd5c6f2d3efe66f08d68d1012fe8aa1"
+      },
+      "final": {
+        "bytes": 10183,
+        "sha256": "a1f803db76404d231379d4598eaa98ce01e06c1e821fb271cd8bbdd311e4ad36",
+        "git_blob_sha": "5b1be5f161fe04a53f68f9b0dd0c5104e19ec0f7"
+      },
+      "ordered_replacements": [
+        {
+          "label": "current fixed root",
+          "before": "v57",
+          "after": "v58",
+          "count": 7
+        },
+        {
+          "label": "current key",
+          "before": "web57",
+          "after": "web58",
+          "count": 1
+        },
+        {
+          "label": "current fixed wrapper",
+          "before": "WEB57",
+          "after": "WEB58",
+          "count": 2
+        },
+        {
+          "label": "deployed support pin",
+          "before": "b913dead1499aa1b3b8248d12a7db5c4e390ebf2695e29503ac26a28c9a035df",
+          "after": "ffc943520d277e4235f9e07eb6469881e7f0554878e675834318a6d3c86560e1",
+          "count": 1
+        },
+        {
+          "label": "deployed prepare pin",
+          "before": "54ba68cb3bded501d6fa49f210fcfdc4fd077ec7e8ef5d2cc7074add291be937",
+          "after": "cee95e2e0601ae14c42776398bd648aa88176bc42679e3546447e71529827d12",
+          "count": 1
+        },
+        {
+          "label": "deployed run pin",
+          "before": "40c9f57b3b06265daf20844c13ca286fa91693ceee2499bc0947b8a37dbc7aff",
+          "after": "c8017b1971ab28e22df151bd9c4c4f829958416d78c10348b458d0aec82795da",
+          "count": 1
+        }
+      ],
+      "full_reverse_exact": true
+    },
+    "run_publisher": {
+      "base": {
+        "bytes": 7607,
+        "sha256": "955d96cd09cf201dd5fe55cdfe08992d8cb719f63c3bd6b37b12ca113d16da05",
+        "git_blob_sha": "53b1c5aac05c3d23172fa310b518f16628b7a677"
+      },
+      "final": {
+        "bytes": 7607,
+        "sha256": "1be4a13e6730a21fd7371ba909eba36539d8b9a6bf2c39012c1e2edbabed8493",
+        "git_blob_sha": "d0b0a03e30b33232321c8ff96811e04404f522ba"
+      },
+      "ordered_replacements": [
+        {
+          "label": "current key",
+          "before": "web57",
+          "after": "web58",
+          "count": 1
+        },
+        {
+          "label": "current fixed wrapper",
+          "before": "WEB57",
+          "after": "WEB58",
+          "count": 2
+        }
+      ],
+      "full_reverse_exact": true
+    }
+  },
+  "runtime_request": {
+    "bytes": 62961,
+    "sha256": "768d15e4ff6204b7e350fb6bfd52c7c088b05e1f6f5a17dc981535f6a4a8a575",
+    "git_blob_sha": "696b8461a1a0f36484450ceb6456156c10b1fa9d"
+  },
+  "root": "/home/alex/hepta-local-007f-20261111/background-web-adapters-v58-r1",
+  "stable_key": "007f-web58-runtime-three-source-publish-r1",
+  "runtime_payload": {
+    "bytes": 131787,
+    "sha256": "3823db773a29f7433b22caf7748e67201278d0b4b15e0c0be3d34523e58ff202",
+    "git_blob_sha": "271ecab896d0159143e0c7ecc0b4d44ac118072f"
+  },
+  "gzip": {
+    "bytes": 39439,
+    "sha256": "13154507bd0f5ca759933cf991a58f5cf04fc1998f53feba3edcb7a21a3a9152"
+  },
+  "base64": {
+    "bytes": 52588,
+    "sha256": "4fd86807c6dde87cc88f4347435815c036a141614898a2430a6ac33e68f63a6c",
+    "git_blob_sha": "65efe7a3bbfeabaa2a243fbcdc9aca1cfd4dc540"
+  },
+  "full_crc_and_whole_byte_roundtrip": true,
+  "fixed_directory_guard": "background-web-adapters-v58-r1",
+  "prepare_seven_values_pending": true,
+  "run_six_values_pending": true,
+  "release_status": "pending",
+  "helper6_fixed_release_metadata_unchanged": true,
+  "installed_uids_and_controller58_release_still_pending": true,
+  "runtime_publication_executes_or_imports_sources": false,
+  "phone_contacted": false,
+  "outer_owner_argv0": "/usr/bin/python3",
+  "next": "Root alone may publish the three fixed runtime files; seal RELEASE/PREP only from actual Main58 installation and actual owner. RUN waits actual preparation/full Root PNG review/normal owner close."
+}

@@ -1,0 +1,19 @@
+{
+  "all_17_known_jars_found": false,
+  "build_executed": false,
+  "candidate_file_count": 3,
+  "completed": false,
+  "error": "InventoryLimit: directory entry budget reached",
+  "exit_code": 2,
+  "inventory_complete": false,
+  "known_pins_all_match": true,
+  "phone_contacted": false,
+  "ready_for_build": false,
+  "result": {
+    "bytes": 36357,
+    "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-inventory-r1/RESULT.json",
+    "sha256": "9a0a6cbc9d4982c285196a478d1d4b447d642ba18c09d5043804c521bde4e926"
+  },
+  "schema": "hepta.helper6-pocket4-readonly-inventory.v1",
+  "signed": false
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.source-review.v1",
+  "subject": "Web54 r6 automatic target UI and original-preferences consumer",
+  "candidate": {
+    "git_blob": "0d60935d2b05f40271f1d53107ee77566d8d8f43",
+    "bytes": 146861,
+    "sha256": "481c609cbf8a9eb346e5a2c1d8707293164722d3fdf14d3cd5f8348242c03f6b"
+  },
+  "result": "no_source_level_blocker_in_reviewed_delta",
+  "reviewer": "android_code_audit",
+  "mechanical_checks": {
+    "full_candidate_utf8_and_git_blob_sha_verified": true,
+    "three_full_source_pins_verified": true,
+    "ordered_replacements": 17,
+    "reverse_counts": {
+      "support": 2,
+      "prepare": 8,
+      "run": 7
+    },
+    "all_reversed_sources_equal_actual_base_candidate": true,
+    "base_candidate": "2b8aa2a86bce7a76611432d03ef74a918b8a46cf",
+    "notes_reader_equivalent_after_exact_pkg_to_main_name_change": true,
+    "notes_parser_equivalent_after_tuple_to_list_comparison_change": true,
+    "original_preference_bytes_function_equal_notes_source": true,
+    "actual_main_activity_sha256": "22e03ae02378cd05981faab93f70c2686de633b6bb7d35ab640ef358150c2aa5",
+    "actual_background_target_sha256": "e18294b0b18938636ed4112c0a5e82b2b70d76c5fb854a7fe25a876518fc73b7"
+  },
+  "findings": [
+    "The saved preference precondition is already enabled with exactly Notes and helper, with either saved initial package. The fixed private XML read has bounded regular UID/nlink/stat guards and rejects sidecars. It grants no permission or task authority.",
+    "The ordinary chooser supplies the real two app labels. The exact automatic helper message matches actual MainActivity.refreshBackgroundTaskTarget and the initial Spinner must be absent. No synthetic Spinner selection is substituted.",
+    "Preparation archives the original preference bytes and requires exact equality before and after UI confirmation and after the final preparation capture. The consumer recomputes the full frozen OWNER plan and expected selection from the embedded original XML bytes; it rejects a legacy Spinner-only report.",
+    "The runner revalidates the same exact saved bytes before its existing one ordinary Start and again after raw collection. The runtime helper-only lease remains independently collected; expected_effective_lease_packages does not become an authority or a success claim.",
+    "The 17 changes leave existing owner, original one-Start operation lock, pixel/freshness, raw FD/lifecycle and cleanup paths outside this delta byte-for-byte unchanged. All collection/qualification/business defaults remain false unless their original independent paths succeed."
+  ],
+  "boundaries": {
+    "source_review_only": true,
+    "python_compilation_performed": false,
+    "new_focused_gate_executed": false,
+    "old_28_5_8_gates_repeated": false,
+    "phone_actions": 0,
+    "actual_lease_or_business_verified": false,
+    "main54_helper5_production_modified": false
+  },
+  "next": "Run the proposed focused UI/consumer and actual pure BackgroundTaskTarget checks on this exact candidate, then let the root owner perform ordinary preparation."
+}

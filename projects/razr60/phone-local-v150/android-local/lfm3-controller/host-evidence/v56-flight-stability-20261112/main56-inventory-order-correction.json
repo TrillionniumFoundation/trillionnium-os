@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.main56-physical-inventory-path-order-correction.v1",
+  "original_aggregate": {
+    "bytes": 1416544,
+    "sha256": "cc8968054f9673c5fa92c955dcea0eefec6d6dd897c3ea2cee4b51cfa0d5140b",
+    "git_blob_sha": "73f9ad1968e2532505f1c9fd7a8154249ce46480"
+  },
+  "result_aggregate": {
+    "bytes": 1416544,
+    "sha256": "38baa995ee76520e1a9ff7a14baf51afdbd4f1af53f747ce7a0d114ef4809c90",
+    "git_blob_sha": "660335b7f19f519af4cfd168ebee186f1a4693b9"
+  },
+  "original_delta": {
+    "bytes": 138919,
+    "sha256": "f7b6bcec747f70ee5ebe6dafb15e30d8fd7cd92eff5ca1640cc29668e90b9aa1",
+    "git_blob_sha": "a81e335a2ebac951b1153ad717ef25bc867100ce"
+  },
+  "result_delta": {
+    "bytes": 139026,
+    "sha256": "3f1dbfddac9beab5d5cedfd6b252dd7b595ff86625f5e16cf71c06bf1ff15339",
+    "git_blob_sha": "5363b460e3740a00f26cb2a69965e1b5830eec0f"
+  },
+  "changed_json_leaves": [
+    {
+      "path": "/main56_current_successor/final_source_inventory/sha256",
+      "before": "055f6844eb4fc59bfb0cc6bb3fbb4b692eb83242d0a938dc34f677850a4baea0",
+      "after": "4581b1c7cfe27caf4e3d24562072baa511705f3e13205fc8720021bba9cc4512"
+    },
+    {
+      "path": "/main56_current_successor/final_source_inventory/git_blob_sha",
+      "before": "5ff4ef05bec8c5004798f964ef43afb52234d92d",
+      "after": "89e9aaec004f6b07a7b60b24d9e1fba397e924cc"
+    }
+  ],
+  "reason": "Existing Core and Android inventory producers sort pathlib.Path values. POSIX path-component order differs from a flat path string for folder-prefix and hyphenated filename siblings.",
+  "actual55_original_path_order_reproduced": {
+    "bytes": 103607,
+    "sha256": "65bf7934d82692f45c10aedb947613043453b30bc7d55c4dc8b7e44e4ca0bed1",
+    "git_blob_sha": "041dbfa01fbe82e067737a85b64b4d56cbe964dd"
+  },
+  "physical_inventory": {
+    "bytes": 103795,
+    "sha256": "4581b1c7cfe27caf4e3d24562072baa511705f3e13205fc8720021bba9cc4512",
+    "git_blob_sha": "89e9aaec004f6b07a7b60b24d9e1fba397e924cc"
+  },
+  "production_and_test_raws_unchanged": true,
+  "lex_full_inventory_unchanged": true,
+  "no_host_execution": true
+}

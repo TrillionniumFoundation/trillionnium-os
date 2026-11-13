@@ -85,6 +85,7 @@ public final class BackgroundDisplayBroker {
     private final Set<String> launched = new HashSet<String>();
     private final Set<String> fixedToolsConsumed=new HashSet<String>();
     private final java.util.Map<String,JSONObject> fixedIntentProofs=new java.util.LinkedHashMap<String,JSONObject>();
+    private final java.util.Map<String,JSONObject> taskLaunchPolicies=new java.util.LinkedHashMap<String,JSONObject>();
 
     private BackgroundDisplayBroker(BrokerProtocol.Config config) throws BrokerProtocol.Refusal {
         this.config = config;
@@ -301,13 +302,24 @@ public final class BackgroundDisplayBroker {
                     intent = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
                         .setComponent(base.getComponent()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                 }
+                final BackgroundOwnedTaskPolicy.Activity initialActivity = launchActivityInfo(
+                    intent.getComponent(), r.packageName, fixedTarget == null ? -1 : fixedTarget.uid);
                 ActivityOptions options = ActivityOptions.makeBasic().setLaunchDisplayId(displayId);
                 synchronized (dispatchGate) {
                     guard(r, true);
                     snapshot().requireNoOtherDisplay(r.packageName, displayId);
                     if (closing.get()) throw new BrokerProtocol.Refusal("SESSION_CLOSING");
+                    if(fixedTarget!=null)FixedIntentDispatch.recheck(shell,config.ownerUid,fixedTarget);
+                    BackgroundOwnedTaskPolicy.Activity currentActivity = launchActivityInfo(
+                        intent.getComponent(), r.packageName, initialActivity.uid);
+                    if (!initialActivity.same(currentActivity))
+                        throw new BrokerProtocol.Refusal("LAUNCH_ACTIVITY_INFO_CHANGED");
+                    guard(r, true);
+                    BackgroundOwnedTaskPolicy.Plan taskPolicy = BackgroundOwnedTaskPolicy.choose(
+                        config.generation, displayId, r.packageName, currentActivity, intent.getFlags());
+                    intent.setFlags(taskPolicy.outboundFlags);
+                    taskLaunchPolicies.put(r.requestId, taskLaunchPolicyEvidence(r, currentActivity, taskPolicy));
                     if(fixedTarget!=null){
-                        FixedIntentDispatch.recheck(shell,config.ownerUid,fixedTarget);
                         if(!fixedToolsConsumed.add(r.operation))throw new BrokerProtocol.Refusal("FIXED_TOOL_ALREADY_CONSUMED");
                         fixedIntentProofs.put(r.requestId,new JSONObject().put("schema","hepta.background-fixed-intent.v1")
                             .put("request_id",r.requestId).put("generation",config.generation).put("display_id",displayId)
@@ -428,6 +440,52 @@ public final class BackgroundDisplayBroker {
 
     private void verifyLaunchedLocations(TaskSnapshot s) throws BrokerProtocol.Refusal {
         for (String pkg : launched) s.requireNoOtherDisplay(pkg, displayId);
+    }
+
+    /** Read the actual exported component twice; a missing mode is never substituted with zero. */
+    private BackgroundOwnedTaskPolicy.Activity launchActivityInfo(ComponentName component, String pkg,
+                                                                  int expectedUid) throws Exception {
+        if (component == null || !pkg.equals(component.getPackageName()))
+            throw new BrokerProtocol.Refusal("LAUNCH_ACTIVITY_COMPONENT_CHANGED");
+        ActivityInfo info = shell.getPackageManager().getActivityInfo(component, 0);
+        if (info == null || info.applicationInfo == null || !pkg.equals(info.packageName)
+            || !pkg.equals(info.applicationInfo.packageName)
+            || !component.equals(new ComponentName(info.packageName, info.name))
+            || (expectedUid >= 0 && info.applicationInfo.uid != expectedUid))
+            throw new BrokerProtocol.Refusal("LAUNCH_ACTIVITY_IDENTITY_CHANGED");
+        try {
+            return new BackgroundOwnedTaskPolicy.Activity(info.packageName, component.flattenToString(),
+                info.applicationInfo.uid, info.launchMode, info.documentLaunchMode, info.flags,
+                info.enabled, info.applicationInfo.enabled, info.exported, info.targetActivity,
+                info.permission, info.applicationInfo.sourceDir);
+        } catch (IllegalArgumentException invalid) {
+            throw new BrokerProtocol.Refusal("LAUNCH_ACTIVITY_IDENTITY_INVALID");
+        }
+    }
+
+    private JSONObject taskLaunchPolicyEvidence(BrokerProtocol.Request request,
+            BackgroundOwnedTaskPolicy.Activity activity, BackgroundOwnedTaskPolicy.Plan plan) throws Exception {
+        return new JSONObject().put("schema",BackgroundOwnedTaskPolicy.SCHEMA)
+            .put("request_id",request.requestId).put("generation",plan.generation)
+            .put("display_id",plan.displayId).put("package",plan.packageName)
+            .put("component",plan.component).put("target_uid",plan.targetUid)
+            .put("activity_info_source","PackageManager.getActivityInfo")
+            .put("activity_info_rechecked_before_dispatch",true)
+            .put("actual_launch_mode",plan.launchMode).put("actual_document_launch_mode",plan.documentLaunchMode)
+            .put("actual_activity_info_flags",plan.manifestFlags)
+            .put("actual_activity_enabled",activity.enabled).put("actual_application_enabled",activity.applicationEnabled)
+            .put("actual_exported",activity.exported)
+            .put("actual_target_activity",activity.targetActivity==null?JSONObject.NULL:activity.targetActivity)
+            .put("actual_required_permission",activity.permission==null?JSONObject.NULL:activity.permission)
+            .put("actual_source_dir",activity.sourceDir)
+            .put("original_intent_flags",plan.originalFlags).put("outbound_intent_flags",plan.outboundFlags)
+            .put("policy_eligible",plan.eligible).put("policy_reason",plan.reason)
+            .put("new_document_requested",plan.newDocumentRequested)
+            .put("retain_in_recents_requested",(plan.outboundFlags&BackgroundOwnedTaskPolicy.RETAIN_IN_RECENTS)!=0)
+            .put("framework_adjusted_flags_verified",plan.frameworkFlagsVerified)
+            .put("new_owned_task_identity_verified",plan.taskOwnershipVerified)
+            .put("recents_cleanup_verified",plan.recentsCleanupVerified)
+            .put("scope","Outbound new-task Intent only; no task removal or global policy change; not a cleanup proof.");
     }
 
     /** Requires the privileged whole-root list, not a per-application filtered getRunningTasks view. */
@@ -587,6 +645,7 @@ public final class BackgroundDisplayBroker {
             .put("display_policy_readback", displayPolicyReadback==null?JSONObject.NULL:new JSONObject(displayPolicyReadback.toString()));
         if (r != null) {value.put("operation", r.operation);
             if(fixedIntentProofs.containsKey(r.requestId))value.put("fixed_intent",fixedIntentProofs.get(r.requestId));
+            if(taskLaunchPolicies.containsKey(r.requestId))value.put("task_launch_policy",taskLaunchPolicies.get(r.requestId));
         }
         if (error != null) value.put("error", error);
         if (!terminalReason.isEmpty()) value.put("terminal_reason", terminalReason);

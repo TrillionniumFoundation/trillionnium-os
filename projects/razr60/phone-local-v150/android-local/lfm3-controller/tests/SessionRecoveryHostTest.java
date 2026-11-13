@@ -45,7 +45,7 @@ public final class SessionRecoveryHostTest {
         check(!SessionRecovery.noPriorRecord().automaticResume, "fresh never replays");
         check(!SessionRecovery.unreadableRecord().allowNewTask, "unreadable is not absent");
         check(!SessionRecovery.unreadableRecord().automaticResume, "unreadable never resumes");
-        for (String state : new String[]{"not_started", "cancelled_before_start", "model_reported_done", "partial", "failed", "cancelled"}) {
+        for (String state : new String[]{"not_started", "cancelled_before_start", "model_reported_done", "controller_verified_done", "partial", "failed", "cancelled"}) {
             SessionRecovery.Decision result = SessionRecovery.evaluate(terminal(state), UID);
             check(result.allowNewTask, state + " clean terminal permits a new task");
             check(result.priorRecordValid && !result.automaticResume, state + " retained, never replayed");
@@ -62,7 +62,7 @@ public final class SessionRecoveryHostTest {
         check("persistent_interruption_latch".equals(corruptLatched.reason), "latch takes precedence over corrupt base");
         // The loader passes existence only. Empty/malformed latch content cannot turn this boolean off.
         check(!SessionRecovery.evaluate(terminal("failed"), UID, true).allowNewTask, "partial latch never authorizes reset");
-        for (String state : new String[]{"pending", "running", "blocked", "interrupted", "termination_unknown", "idle", "completed", "future_status"}) {
+        for (String state : new String[]{"pending", "running", "blocked", "interrupted", "termination_unknown", "idle", "completed", "future_status", "controller_claimed_done", "controller_verified_done_extra"}) {
             blocked(terminal(state), state + " is not known clean terminal");
         }
         for (String flag : new String[]{"pending", "running", "blocked"}) {
@@ -71,6 +71,12 @@ public final class SessionRecoveryHostTest {
         }
         Map<String, Object> value = terminal("model_reported_done"); value.put("cleanup_known", false);
         blocked(value, "done text cannot establish cleanup");
+        value = terminal("controller_verified_done"); value.put("cleanup_known", false);
+        blocked(value, "controller completion text cannot establish cleanup");
+        value = terminal("controller_verified_done"); value.put("task_id", null);
+        blocked(value, "controller completion requires its actual task reservation");
+        value = terminal("controller_verified_done"); value.put("app_uid", UID + 1);
+        blocked(value, "controller completion cannot borrow another app UID");
         for (String flag : new String[]{"pending", "running", "blocked", "cleanup_known", "external_model", "automatic_resume"}) {
             value = terminal("failed"); value.remove(flag); blocked(value, "missing " + flag);
             value = terminal("failed"); value.put(flag, "false"); blocked(value, "string is not boolean " + flag);

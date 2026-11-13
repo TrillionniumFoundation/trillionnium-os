@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.v54-evidence-only-publication.v2",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "branch": "codex/hepta-v45-semantic-click-20261111-007f",
+  "pr_number": 139,
+  "expected_prior_head": "653abc27a7bd3d3998952363625fc0e79c350838",
+  "evidence_commit": "661deecb55985ec939a2c7426043c13cac40ce72",
+  "evidence_tree": "df3db0989516a59db6bf08fff5e4f93b87147812",
+  "actual_pr_head": "661deecb55985ec939a2c7426043c13cac40ce72",
+  "actual_ref_head": "661deecb55985ec939a2c7426043c13cac40ce72",
+  "draft": true,
+  "force": false,
+  "source_commit": "42d3a0f447807659c0f78c8273edee01dd1b734f",
+  "source_blobs_589_unchanged": true,
+  "existing_unmodified_repository_entries_preserved": 8864,
+  "new_evidence_files": 49,
+  "updated_evidence_index_and_readme": 2,
+  "index": {
+    "git_blob": "977255695d8034b48e6694222fca6c4ca6c79984",
+    "bytes": 39239,
+    "sha256": "05afdafa2b460b9e229d14e73b482adcc608ba79aac030cf5f3ebd7353b1770f"
+  },
+  "readme": {
+    "git_blob": "47c31d0f945f35edf1648222b1277dc0682c276b",
+    "bytes": 5125,
+    "sha256": "13d64556f272e4e7a97c055503aba8f587faff1cbc9f5469f349ab3557069e85"
+  },
+  "pr_title_body_modified": false,
+  "raw_originals_modified": false,
+  "new_host_tests_or_phone_actions": 0,
+  "notes54_original_qualified": false,
+  "notes54_visual_scroll_verified": false,
+  "flight_business_verified": false,
+  "shopping_business_verified": false
+}

@@ -15,12 +15,14 @@ class Contracts(unittest.TestCase):
         cls.before=Recognizer((DIRECTORY/"same-state-before.gbnf").read_text())
         cls.blocked=Recognizer((DIRECTORY/"same-state-blocked.gbnf").read_text())
         cls.changed=Recognizer((DIRECTORY/"same-state-changed.gbnf").read_text())
-    def test_multiple_exact_clicks_removed_and_restored_only_in_new_epoch(self):
+        cls.returned=Recognizer((DIRECTORY/"same-state-returned.gbnf").read_text())
+    def test_multiple_exact_clicks_removed_and_retained_when_state_returns(self):
         for node in ("n1","n2"):
             sample=raw("click",node_label="same label",node_id=node)
             self.assertTrue(self.before.accepts(sample))
             self.assertFalse(self.blocked.accepts(sample))
             self.assertTrue(self.changed.accepts(sample))
+            self.assertFalse(self.returned.accepts(sample))
         self.assertTrue(self.blocked.accepts(raw("click",node_label="different",node_id="n3")))
         self.assertFalse(self.blocked.accepts(raw("click",node_label="same label",node_id="n3")))
     def test_multiple_exact_open_packages_removed(self):
@@ -28,6 +30,7 @@ class Contracts(unittest.TestCase):
             self.assertTrue(self.before.accepts(raw("open",package)))
             self.assertFalse(self.blocked.accepts(raw("open",package)))
             self.assertTrue(self.changed.accepts(raw("open",package)))
+            self.assertFalse(self.returned.accepts(raw("open",package)))
         self.assertTrue(self.blocked.accepts(raw("open","com.example.other")))
         self.assertFalse(self.blocked.accepts(raw("open","com.example.unlisted")))
     def test_other_tools_and_type_payloads_are_not_broadened_or_selected(self):

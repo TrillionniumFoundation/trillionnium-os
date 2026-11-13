@@ -1,0 +1,395 @@
+{
+  "schema": "hepta.main57-source-evidence-index.v1",
+  "source_candidate_git": "517e61599073eb264c5e52871570d49e7af2d798",
+  "production_base_source_commit": "9f4168616546233033edd4b254b4236ae987ea7e",
+  "expected_prior_head": "c28266b18703bbb6287d2a3d7809384921214d01",
+  "source_count": 595,
+  "source_inventory_sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6",
+  "source_changes": [
+    {
+      "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "before": {
+        "bytes": 129287,
+        "sha256": "53dc2765f2f0504a4ea16618a2e0b44c0d443dceeb3834f030098ae2cea26fba",
+        "git_blob_sha": "6200e5325ec1397abd73e9bfa99235c7b063935d"
+      },
+      "after": {
+        "bytes": 144883,
+        "sha256": "f9704060dba7a6fa4604b8e26d9f4eed956ae684a1221b3980714ac6d1a53afb",
+        "git_blob_sha": "8f969cb0c75f8c942099271181762b38d9ba3160"
+      }
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "before": {
+        "bytes": 42734,
+        "sha256": "7f3c7fd872e9901026ad7471dfc9a3e68d2c987eb1931896f80ea0f2acd6f4e1",
+        "git_blob_sha": "8283d4e83b7cf13c9deb7e55c6d26f26053e11cc"
+      },
+      "after": {
+        "bytes": 44197,
+        "sha256": "07509c1345b1bacdfcbf504943f375869c274e245c6aafb5819581b4c8395408",
+        "git_blob_sha": "87b2bd6a8758fb6c46659270412bf9d630673591"
+      }
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
+      "before": {
+        "bytes": 23349,
+        "sha256": "503078f251696fb542912e5270efca13439ebcece4db8b3473e7fcb543b4fc2d",
+        "git_blob_sha": "5d41e41c7e6c447f4dba598a12f21673c168603b"
+      },
+      "after": {
+        "bytes": 32168,
+        "sha256": "badc1a68903a126d549e56d202ed01a01fc17c99556b5b50dc88b8729d4e397a",
+        "git_blob_sha": "4c375bd41f0a2442e6789f947e15cb119d78266e"
+      }
+    },
+    {
+      "path": "tests/web-flight/run_query_host_tests.py",
+      "before": {
+        "bytes": 41005,
+        "sha256": "0f4d983138ed8bcf5f0b622ee4d4063048e83413eafe3586595521f5e1b7eb45",
+        "git_blob_sha": "7b7a23db9302bc63b71f51a4d74d06c34183059d"
+      },
+      "after": {
+        "bytes": 41005,
+        "sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10",
+        "git_blob_sha": "c21109afe049ccaf2d664937bd24fb0e5abce4a2"
+      }
+    },
+    {
+      "path": "AndroidManifest.xml",
+      "before": {
+        "bytes": 2582,
+        "sha256": "c372aebecde61283232394ea687045992c68b689ab954ad523bc5569f96389bc",
+        "git_blob_sha": "24d84378527e48f8090129609da7f8e66f362b45"
+      },
+      "after": {
+        "bytes": 2594,
+        "sha256": "71aca282ccdd9fb1eb4bb611296418f7f80502bcb7a3b9bcdef98460cae13c73",
+        "git_blob_sha": "92012a454023ca82eaaa0b63384208fb86efb5d4"
+      }
+    }
+  ],
+  "actual_gates": {
+    "core": {
+      "git_blob_sha": "b2f4bc7cfc88d4ac83588678cb2559c16c687517",
+      "bytes": 11178,
+      "sha256": "239e2639e7ba426f5068ae1e8620edf8bd5a1c564181fdfc8048f588a87b8aab",
+      "groups": 101,
+      "host_inputs": 419,
+      "nested_completion_stages": 18,
+      "nested18_are_within101": true
+    },
+    "web": {
+      "git_blob_sha": "1a60d6d21767e88b90854e5fb2d55102a951d2fc",
+      "bytes": 54724,
+      "sha256": "61585af641cf4c1db70a9ae0d6f1e23ea93633fb7ead6b10b3a168d45aa2a3b1",
+      "groups": [
+        80,
+        79,
+        13
+      ],
+      "assertions": [
+        92,
+        215,
+        1001
+      ],
+      "pure_sources": 44,
+      "compilation_units": 52,
+      "fixtures": 6
+    },
+    "focused": {
+      "git_blob_sha": "0299b6a5b89665e23ed9b3937210757287103916",
+      "bytes": 45584,
+      "sha256": "7e1b16ba42b2fdde52f7e18bc94d72e3efa673160ab2c1896017ee0e8c51bb56",
+      "groups": [
+        20,
+        19
+      ],
+      "assertions": [
+        60,
+        98
+      ],
+      "java_sources": 51,
+      "pure_sources": 44,
+      "exact_method_projections": 15
+    },
+    "android": {
+      "git_blob_sha": "790f3f21acd920bd1798744d8fa8c152a649fd86",
+      "bytes": 244800,
+      "sha256": "5dc739a182bda8065f2bda04c1da7e44c43b74307f76f582ba6cc09c371475f1",
+      "tool_steps": 8,
+      "compiler_inputs": 217,
+      "java_sources": 115,
+      "compiled_classes": 425,
+      "native_recompiled_here": false
+    },
+    "query": {
+      "path": "/home/alex/hepta-local-007f-20261111/v57-main-p4-android-r1/query40/RESULT.json",
+      "bytes": 36218,
+      "sha256": "88ef49c0452aac03abe4720b55a886059945360179fa13400569248f260f61bd",
+      "cases": 40,
+      "assertions": 187,
+      "java_sources": 50,
+      "runner_sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10",
+      "repository_runner_count_repair_integrated": true
+    }
+  },
+  "files": [
+    {
+      "path": "AGGREGATE.json",
+      "git_blob_sha": "517e61599073eb264c5e52871570d49e7af2d798",
+      "bytes": 1459826,
+      "sha256": "b98bb0f97ad5b25423387c4e3f8734aec7d4f8c2d1044335af039e0dd1c57cc3"
+    },
+    {
+      "path": "SOURCE-DELTA.json",
+      "git_blob_sha": "e6f08c4b6e782570fbfbf3537921d70f213110fb",
+      "bytes": 470258,
+      "sha256": "98bf2454bfe232de580b0eb2ad785936f13a151ed6dd401250b7eff243a9d257"
+    },
+    {
+      "path": "SOURCE-INVENTORY.json",
+      "git_blob_sha": "c2938fd1a1eedba6abaa597c35985e6ab318993f",
+      "bytes": 103795,
+      "sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6"
+    },
+    {
+      "path": "HOST-SOURCE-BLOB-MAP.json",
+      "git_blob_sha": "0fe03df924d061e04f58c9174eeaacbd2cd4ad7b",
+      "bytes": 141875,
+      "sha256": "2ebce60579704b0545cd9880e6a3fa0b7f5cad6149439aa1419db8fb2c16d539"
+    },
+    {
+      "path": "COMPILER-INPUTS.json",
+      "git_blob_sha": "68cf69a87409dd4c887131687794930cf72097dc",
+      "bytes": 34376,
+      "sha256": "54e95d6949154c631302241f76ca3518650ac297166210056f7e2f7740fc4370"
+    },
+    {
+      "path": "source-pure-review.json",
+      "git_blob_sha": "d8e4078c04c2f84c89b8cebd9b6c01ec1e2a8e9d",
+      "bytes": 5582,
+      "sha256": "c17eec33f36bc2247a61497f0dc5b4a3380c21452d97c8ea9c5f41b46be41899"
+    },
+    {
+      "path": "source-service-session-review.json",
+      "git_blob_sha": "fa6eb4cde1ab61573fe520cd99182e78b7b0afeb",
+      "bytes": 6139,
+      "sha256": "2ab87d57357a74c2c15eea56196cf7379bf55a3d5c8a3ca4ccf547c5f07f7922"
+    },
+    {
+      "path": "core57-stage.py",
+      "git_blob_sha": "04f4e3f574fc9b19f47d4b568cb376b673d0506f",
+      "bytes": 561799,
+      "sha256": "4596b0dca391311a53334f594df620e166e3225df6bbaf20ae8c8fccce674b04"
+    },
+    {
+      "path": "core57-request.json",
+      "git_blob_sha": "a839fcf167792dbffd71f29b9a580efdb5fa5c97",
+      "bytes": 232151,
+      "sha256": "c7098025a59c534533a3cbadb93c21a7b6a3b736b37fd0d868b922f39f7512c2"
+    },
+    {
+      "path": "core57-filename-fix.json",
+      "git_blob_sha": "f749df0f2e7606f4f498532bd053de53d79ee1f2",
+      "bytes": 3633,
+      "sha256": "9e260984dbdee194c8af00c56c619f17321dff893bf59f58a11a891c39b66081"
+    },
+    {
+      "path": "core57-RESULT.json",
+      "git_blob_sha": "b2f4bc7cfc88d4ac83588678cb2559c16c687517",
+      "bytes": 11178,
+      "sha256": "239e2639e7ba426f5068ae1e8620edf8bd5a1c564181fdfc8048f588a87b8aab"
+    },
+    {
+      "path": "focused57-stage.py",
+      "git_blob_sha": "fa8bf4f1f1e11f93eb098dd051b420c3fc4b9900",
+      "bytes": 74469,
+      "sha256": "c0583de699bdba4d6b9963e8ae57851208362c313a8773909a971b690a683f53"
+    },
+    {
+      "path": "focused57-INPUT.json",
+      "git_blob_sha": "e9b09b2d6102c517889855b134083d1e2e6d8357",
+      "bytes": 1310324,
+      "sha256": "223868f5d8adece424e29002952921342ac68a80d91462ca2fa9244bf5e5a1b5"
+    },
+    {
+      "path": "focused57-RESULT.json",
+      "git_blob_sha": "0299b6a5b89665e23ed9b3937210757287103916",
+      "bytes": 45584,
+      "sha256": "7e1b16ba42b2fdde52f7e18bc94d72e3efa673160ab2c1896017ee0e8c51bb56"
+    },
+    {
+      "path": "focused57-preclaim-failure.txt",
+      "git_blob_sha": "85157e03a30f78589c07ca564d1e5028208e7022",
+      "bytes": 3422,
+      "sha256": "45b575980e86283996696a1ee655ad2618e9b6b67988933519d089e95d40ae01"
+    },
+    {
+      "path": "focused57-preclaim-fix.json",
+      "git_blob_sha": "6b81326a4b6f706867966990174d083487a427ad",
+      "bytes": 10306,
+      "sha256": "93e933d3eed0c8abb0cbb6afb1ca47a422676b1636163da5bbfe7154b0d70490"
+    },
+    {
+      "path": "web57-initial-stage.py",
+      "git_blob_sha": "012f77d66f782cb9787627c0217b0fcff64b99df",
+      "bytes": 147219,
+      "sha256": "2891fa5a6e6b5ace614d73593f5108f129a738cd4b4c3c7a487cbf5fa361d34c"
+    },
+    {
+      "path": "web57-initial-packet.json",
+      "git_blob_sha": "cd1d6fe815602cfd0909e7e6cf771a0c46bd2529",
+      "bytes": 357185,
+      "sha256": "ba0832568ca64be933ba31acd3646d0c63550f6202abeecf49dd12cecb52f110"
+    },
+    {
+      "path": "web57-transport-failure.txt",
+      "git_blob_sha": "74630c09146d4cb895fdf1f6adf0dd1f376b8b85",
+      "bytes": 633,
+      "sha256": "8722f20e658b2d73d76c5b5271f86fe6ad1f542518a5f7676a3318311ef87aa1"
+    },
+    {
+      "path": "web57-transport-fix.json",
+      "git_blob_sha": "8bfe3c53b981f3cdef4e588f3161676cfd773fc5",
+      "bytes": 2327,
+      "sha256": "c3ca1783dab63593435d14d51406660cdc9eaffeb1719505a359766567f4635e"
+    },
+    {
+      "path": "web57-initial-failed-RESULT.json",
+      "git_blob_sha": "4f436784332e6a1bf7200cbaf105c28e17a55b29",
+      "bytes": 30361,
+      "sha256": "d66b4dcaf0eed2b650df9e88928a32ab5145608f600b868864c3925011d72532"
+    },
+    {
+      "path": "web57-initial-failed-stderr.txt",
+      "git_blob_sha": "b6bab9eabba9dfcc7ffc2435e8f6b7b99c356e10",
+      "bytes": 1328,
+      "sha256": "7658bf88db3934278dfe73f1795f6ca30b272345c19ab600273fd22d9d6153d2"
+    },
+    {
+      "path": "web57-null-fixture-change.json",
+      "git_blob_sha": "16ad80bd40b1753a65837680698a71e516ecfd73",
+      "bytes": 12303,
+      "sha256": "ea7cb1288b9e108efe1ef6d11b97480c60ae5ce5ab53f01381fcf1022ffb25eb"
+    },
+    {
+      "path": "WebFlightNativeStabilityHostCases.java",
+      "git_blob_sha": "348d62b28b8930b05d3f401c06557692e7c3081e",
+      "bytes": 154154,
+      "sha256": "e0cc2a474545623cd8e79aaa73afb130f5dc8733efc43f521ad909df0ec384a2"
+    },
+    {
+      "path": "web57-null-fixture-review.json",
+      "git_blob_sha": "a09f90070054ddf4f953c38701e0c7efb5d20a7e",
+      "bytes": 4275,
+      "sha256": "3e2ebdf57b20586c4375f19bcedb5e8418ceb5b1476927e74bb6499b507b2eee"
+    },
+    {
+      "path": "existing-gate-consumers-review.json",
+      "git_blob_sha": "cbfa5073a51cf349a706276b242288968c109854",
+      "bytes": 5570,
+      "sha256": "87104b77f2af634bc47505a77cbbc94541cbdcb36a163cb5199b1ac76d7b9e2f"
+    },
+    {
+      "path": "publication-precheck.json",
+      "git_blob_sha": "7dc879f2aed2d7fe45d2921dae2fe2712eb06608",
+      "bytes": 5362,
+      "sha256": "46e9c3d5f6aabc91ed378a500c2d9ee0f0968be5705bd29410c56735d7af2a01"
+    },
+    {
+      "path": "main57-installer-current-review.json",
+      "git_blob_sha": "aa019a7e8298badbf570214040c033a78f1c369f",
+      "bytes": 3982,
+      "sha256": "e1854ad174154993773febac71757fdea4e40594408e6867ce5f39c833882149"
+    },
+    {
+      "path": "previous-notes56-evidence-cas-proof.json",
+      "git_blob_sha": "d2b4621bf1f57bd147083b8603338f780141c69f",
+      "bytes": 2504,
+      "sha256": "ae47e9c69f09173415a1fddc0700b0201bbe585e70bd898233a4543c2a0e7bce"
+    },
+    {
+      "path": "web57-corrected-stage.py",
+      "git_blob_sha": "95e8654ba2522f8140ec376d1a26b637160c7f90",
+      "bytes": 66923,
+      "sha256": "2e8d995002de046c4f11b78999115e1652cc3274b42a1d9a1ddd850b523263af"
+    },
+    {
+      "path": "web57-corrected-packet.json",
+      "git_blob_sha": "037096bebe3cf4776d588a2198fa2376b21453a7",
+      "bytes": 364848,
+      "sha256": "8ac71189842cde32a349e39a89da909fd7d759b29d6b14eba66120a5b65babca"
+    },
+    {
+      "path": "web57-corrected-packet-delta.json",
+      "git_blob_sha": "ec35b692ad7ad70b4ac1623bbf751cf6be2a56ab",
+      "bytes": 15642,
+      "sha256": "3351d27f31c5de80c5ecda6c81ebbaff59d459a92b67221971109f4addd663f7"
+    },
+    {
+      "path": "web57-corrected-handoff.json",
+      "git_blob_sha": "513c71d695781617da5b84b5330bd9d4b354cc11",
+      "bytes": 35424,
+      "sha256": "fdce877e5351dd27e160981cd79cc33ae2a73ccdd3fe59b06bacbc15b6947eb8"
+    },
+    {
+      "path": "web57-corrected-request.json",
+      "git_blob_sha": "af99f99c7920544ae3ddf3f0bc0cfa241239ee27",
+      "bytes": 38067,
+      "sha256": "d596239987b4ceca17c43e170f6bd7c39cd194bb3beb704dc7677f236d94e43e"
+    },
+    {
+      "path": "android57-stage.py",
+      "git_blob_sha": "bd30b22cf1a151710318a1e768be63f7a75b6bd8",
+      "bytes": 113856,
+      "sha256": "ac4b54eb0815bce791a99ae3e01de8077808fe55b5eabc58488fd1eba8126331"
+    },
+    {
+      "path": "android57-request.json",
+      "git_blob_sha": "baac2cd917c679c1f00b41ba0fd10c36cb192449",
+      "bytes": 59079,
+      "sha256": "27850a11ccc059475810fbf0254a2c308d3f342db743d6320c9d2e10400ac3e3"
+    },
+    {
+      "path": "android57-handoff.json",
+      "git_blob_sha": "d1bdfcf934ae90e0235524fbc239be3a655527b0",
+      "bytes": 15464,
+      "sha256": "dca28f2ffe010576bc99b5534bbe45d8e2a64e95e7d47df832e449feb576257f"
+    },
+    {
+      "path": "android57-RESULT.json",
+      "git_blob_sha": "790f3f21acd920bd1798744d8fa8c152a649fd86",
+      "bytes": 244800,
+      "sha256": "5dc739a182bda8065f2bda04c1da7e44c43b74307f76f582ba6cc09c371475f1"
+    },
+    {
+      "path": "web57-RESULT.json",
+      "git_blob_sha": "1a60d6d21767e88b90854e5fb2d55102a951d2fc",
+      "bytes": 54724,
+      "sha256": "61585af641cf4c1db70a9ae0d6f1e23ea93633fb7ead6b10b3a168d45aa2a3b1"
+    },
+    {
+      "path": "REPORT.md",
+      "git_blob_sha": "51999e00f80a53c1d50c3e5f0fd9696ade5e5ad2",
+      "bytes": 6940,
+      "sha256": "acb08141d97b0bb4a2abaaa107f08fe7ce40bf961de897fb85db870e13f93978"
+    }
+  ],
+  "original_evidence_rewritten": false,
+  "evidence_in_source_inventory": false,
+  "phone_actions": 0,
+  "main57_phone_tested": false,
+  "main57_signed": false,
+  "actual_flight_results_provider_ready": false,
+  "main56_notes_evidence_commit": "c28266b18703bbb6287d2a3d7809384921214d01",
+  "notes56_positive_scopes_are_not_main57_phone_results": true,
+  "scope": [
+    "Exact source and original host receipts only.",
+    "Prior failed attempts and separate host-derived fixtures remain explicit.",
+    "No payment/order authority or new phone result is introduced."
+  ]
+}

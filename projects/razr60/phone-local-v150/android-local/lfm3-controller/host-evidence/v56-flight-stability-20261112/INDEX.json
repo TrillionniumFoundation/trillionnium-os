@@ -1,0 +1,727 @@
+{
+  "schema": "hepta.v56-source-and-evidence-index.v1",
+  "status": "Complete source and evidence input for the authorized CAS. The separate PUBLICATION record binds the actual resulting commit and tree.",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "expected_prior_head": "dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e",
+  "source_prefix": "projects/razr60/phone-local-v150/android-local/lfm3-controller/",
+  "evidence_prefix": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v56-flight-stability-20261112/",
+  "source_payload": {
+    "bytes": 1427055,
+    "sha256": "c1cc7cc16eef4c3a34131ee719101a69db080b76e72c98f03248036fc6fd628f",
+    "git_blob_sha": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c"
+  },
+  "source_file_count": 595,
+  "source_changes_from_actual55": {
+    "modified_existing": 13,
+    "new": 1,
+    "unchanged": 581
+  },
+  "source_inventory": {
+    "bytes": 103795,
+    "sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+    "git_blob_sha": "c43a4be934ca00942ceeed086e16fc4b81d3a519"
+  },
+  "source_overlay_reconstruction": {
+    "base_commit": "42d3a0f447807659c0f78c8273edee01dd1b734f",
+    "overlay_rows": 40,
+    "base_rows_retained": 555,
+    "new_paths_relative54": 6
+  },
+  "same_source_required_for_core_web_focused_android": true,
+  "current_execution": {
+    "core56_r1": "failed_original_preserved",
+    "web56_r1": "failed_original_preserved",
+    "core56_r2": "actual_pass_101_including18_419",
+    "web56_r2": "actual_pass_80_70_13",
+    "focused39_initial660335_start_requested": false,
+    "focused39_final0803_r1": "actual_pass_20_plus19",
+    "android56_r1": "actual_pass_8tools_query40_187_same0803",
+    "current_source_successor_gates": "all four required actual groups verified against source0803/595/ca246",
+    "Main56_built": true,
+    "Main56_signed": false,
+    "Main56_installed": false,
+    "actual_flight_results_provider_ready": false,
+    "phone_business_verified": false
+  },
+  "raw_evidence_rewritten": false,
+  "original_failed_receipts_changed": false,
+  "existing_branch_tree_preserved": true,
+  "scope": [
+    "Current installed Main55/helper6 remain the actual phone baseline.",
+    "Flight55 failed after three model requests; query/result success is not inferred from capture or cleanup.",
+    "Full original failed receipts and raw frames remain intact; independent teardown observations do not rewrite their original false fields.",
+    "Current source contains only a bounded homepage stability exception and immutable completion lifecycle; no new Flight results provider or order/payment authorization.",
+    "Repository query runner retains a count guard of45 while its list has46; only the explicitly recorded external one-hunk runner executed original40/187. This is not a claim that the repository runner's original bytes can run directly."
+  ],
+  "files": [
+    {
+      "path": "main55-signed-RESULT.json",
+      "git_blob": "7c7b5b8157c5212609b2a5faab68015928721dae",
+      "bytes": 31662,
+      "sha256": "3caa0d8ae5252352fb606db1d851fd9e960423c0f7374a76c58b89c688556535",
+      "scope": "Actual signed Main55; business completion not implied."
+    },
+    {
+      "path": "helper6-recovery-build-RESULT.json",
+      "git_blob": "da62f09e433011bd24d362f851fc7310bfb82fb2",
+      "bytes": 230541,
+      "sha256": "8dad8522b39d9fb017fdb869bfdf9c8081f14d445a314bb4555d84e11e49539d",
+      "scope": "Actual packaging recovery; two current steps, twelve explicitly reused prior steps."
+    },
+    {
+      "path": "helper6-legacy-four-RESULT.json",
+      "git_blob": "c3a1c44d371622ea9c11270239da268dfb36bbac",
+      "bytes": 5087,
+      "sha256": "4592ebb3c8782c8fca6027432744cca7b373b30561ee9171bd6a8df09b13fc65",
+      "scope": "Actual independent four legacy groups."
+    },
+    {
+      "path": "helper6-signed-RESULT.json",
+      "git_blob": "96dcd734d1bdd3cad9a2a069ea6ce40f6bd97711",
+      "bytes": 195558,
+      "sha256": "020921fcb9459f3e64773d15e978e1d6e63de535c351873b86baa1965cbc3258",
+      "scope": "Actual signed Helper6 same certificate; no business claim."
+    },
+    {
+      "path": "helper6-install-original-failure.json",
+      "git_blob": "aeb85e0cbda85deea51a26fbe44725c10c174743",
+      "bytes": 33072,
+      "sha256": "d6afb1f04481f969b88ea641abbdd69541e72bbde6bd770038912caf533d1ad2",
+      "scope": "Original installation acceptance failure retained as recorded."
+    },
+    {
+      "path": "helper6-install-binding-before.txt",
+      "git_blob": "cb66b8ac43d29fa3fae1127264642f54e55af668",
+      "bytes": 36394,
+      "sha256": "9721d5865277d468ad3f6e2fb865f59c9a52d7364f5b513964a5999801a4c6a8",
+      "scope": "Original complete formal binding dump before installation."
+    },
+    {
+      "path": "helper6-install-binding-after.txt",
+      "git_blob": "17cffd14898062c9c0b90819562d93d0f0895585",
+      "bytes": 36394,
+      "sha256": "f6fe31ee8de4e50404d441fd21776bc418307c3fe45b777784b8a5980320f870",
+      "scope": "Original complete formal binding dump after installation."
+    },
+    {
+      "path": "helper6-readonly-reconciliation.json",
+      "git_blob": "f63da472879dc86576dbef7aa5f06318fea25d82",
+      "bytes": 71263,
+      "sha256": "463d04f9af87bce27c55fc4ea46aea4f1f6a547928d5a5873ecc60a3021aa901",
+      "scope": "Independent readonly reconciliation succeeds; original failed receipt unchanged; no second installation."
+    },
+    {
+      "path": "main55-phone-install-RESULT.json",
+      "git_blob": "a3f4a47cf6c67f1e771f66dd73ae392ed169ef91",
+      "bytes": 29456,
+      "sha256": "5ef0b5523a84d6e5e17a3527ea5bbe8f7b8df01ee11102d54b27019784b1555d",
+      "scope": "Actual Main55 installation and data preservation; no task launched by installer."
+    },
+    {
+      "path": "main55-phone-install-independent-review.json",
+      "git_blob": "b3fc4242be4e0aaa76c2f9fd06a5a53fc0f35d13",
+      "bytes": 3696,
+      "sha256": "c3e935deca31c260197ad79dec72aa42499f4f917298efb9c4e66b4f3d0ea5bd",
+      "scope": "Independent actual installation evidence review."
+    },
+    {
+      "path": "web55-runtime-publish.json",
+      "git_blob": "8712fc261bfc8612a57efa8a69db530c4acd49bb",
+      "bytes": 1899,
+      "sha256": "8e5d684e02131c97346fdff9806784c18cec71df3f40286c487b303552a737db",
+      "scope": "Actual three-runtime host publication only."
+    },
+    {
+      "path": "web55-release-prepare-publish.json",
+      "git_blob": "0b46c4a9dcc339f9bc80b640529e72c2ba3124fe",
+      "bytes": 2456,
+      "sha256": "b17e5a35a114c9d2debd8b31d3eb9dbc4947b610e278f7b0da860cf273892100",
+      "scope": "Actual sealed RELEASE and PREP publication only."
+    },
+    {
+      "path": "web55-prepare-RESULT.json",
+      "git_blob": "657eeb52433064b589852c099cf86142ff9d64ec",
+      "bytes": 22462,
+      "sha256": "5f1775993fbf13902ec1614500e3c497bb8d43ae34facf7fece7ded4a1ed45b9",
+      "scope": "Actual ordinary UI preparation before Run."
+    },
+    {
+      "path": "web55-prepare-root-visual-review.json",
+      "git_blob": "dd9acc028fbcd11163c2d0a08c9339c5df5b5394",
+      "bytes": 885,
+      "sha256": "3af8f5652d54ba7126de5195b2a80b145960550b2b254ece8a6e60c31daae040",
+      "scope": "Root actual whole original screenshot visual review before Run."
+    },
+    {
+      "path": "web55-unique-run-checkpoint.json",
+      "git_blob": "8317ddf611718b505895a2563032904ace41fec9",
+      "bytes": 18122,
+      "sha256": "1ec5b51dd5eb8280cc687a71d3e4e53263583fc3556a3b8e9868875fe89730c8",
+      "scope": "Actual selected unique Run wrapper/request/ACK and publish receipt."
+    },
+    {
+      "path": "web55-flight-original-RESULT.json",
+      "git_blob": "6797f63657396580105d9f77f7b119a4a63c6710",
+      "bytes": 38514,
+      "sha256": "708b724edf3e459a43f4e9aafc9cb3670d6aa9e1f6511e572f7aa0725143d46f",
+      "scope": "Original failed real Flight55 task, three steps, query not dispatched, no result provider."
+    },
+    {
+      "path": "web55-flight-CAPTURE-INDEX.json",
+      "git_blob": "e067710e6940850398852814d3dd6ed534286767",
+      "bytes": 12077,
+      "sha256": "921b9c538b6d709c997c3fc43dc76d00ccc87e569093103b9419a1f24a6f8ed5",
+      "scope": "Actual six bound raw capture FD index."
+    },
+    {
+      "path": "web55-flight-COLLECTION.json",
+      "git_blob": "bfcf35aab15cecfaed5326b2354433f870e5d560",
+      "bytes": 80655,
+      "sha256": "a4b81a3cbd8cc9cefe6c411f36171c933eaf371d8c407ae9a5ec555c14e634a6",
+      "scope": "Complete actual file collection metadata; original flags remain unchanged."
+    },
+    {
+      "path": "web55-flight-77-originals.json",
+      "git_blob": "c7002d09283cfe166dfa76fcdee0f98c1bb0d584",
+      "bytes": 1002099,
+      "sha256": "4ee7ce849909830dec098f9f4dfc043710b89d83a42270cd7404ab9bb7eff50e",
+      "scope": "All 77 exact original byte records; one non-UTF8 stderr remains canonical base64."
+    },
+    {
+      "path": "web55-flight-capture-a.json",
+      "git_blob": "1d47aca0a1ffb529c391019b6600f749187b467c",
+      "bytes": 229593,
+      "sha256": "c1b0caa35353c1ebdbaf5d5af6695366640639573ef6d6d2d4f644d2dfa21cea",
+      "scope": "Actual original complete capture FD A; no inferred future results."
+    },
+    {
+      "path": "web55-flight-capture-b.json",
+      "git_blob": "55fe09a0ca177aeb19d4494a13b85f98d652d4f0",
+      "bytes": 229571,
+      "sha256": "6bfdbe57a4ee67147041428e2a0d86c60c049a65ca83a49e178d44529532a09b",
+      "scope": "Actual original complete capture FD B."
+    },
+    {
+      "path": "web55-flight-step02-action.json",
+      "git_blob": "cf128e10694d82b543d0e035a0ac698c3721a236",
+      "bytes": 10228,
+      "sha256": "bebe1a993a485c9e4e420dd9fae239735031b3e7a2e15365ba0d787ba0d71b0e",
+      "scope": "Actual rejected stale booking click; accepted and dispatched remain false."
+    },
+    {
+      "path": "web55-flight-root-independent-review.json",
+      "git_blob": "ccaaa7bb2674381cec4961ab2f3f9441630b1b35",
+      "bytes": 9830,
+      "sha256": "a5bb183e396275f39ecacb4aaa7927348e55ba82e199ffbf0c624b9c71002ae3",
+      "scope": "Root independent original evidence review including bounded native teardown findings."
+    },
+    {
+      "path": "web55-observed-hardware-report.json",
+      "git_blob": "e083c4a6d4f65bf83523ffa76d0087adbc2b2974",
+      "bytes": 6187,
+      "sha256": "7e8e3db82c79dfbf153bc5fb915e91f76f99780876e6eaf79ff48033a15e5211",
+      "scope": "Observed HTP and memory allocation facts with explicit limits; no thermal or power measurements."
+    },
+    {
+      "path": "main56-stability-root-review.json",
+      "git_blob": "16f4ec635d4ee845b4c120f3ed13a83600a5d46c",
+      "bytes": 3321,
+      "sha256": "375a33a94eaf7469c0d059ee9191742ec0a5aff5cec17c42b96fa8ec24890b40",
+      "scope": "Source-only final stability review, no actual new execution."
+    },
+    {
+      "path": "main56-terminal-root-review.json",
+      "git_blob": "0c35f07f5efb823eaeff503d06cfe810edc96fed",
+      "bytes": 2895,
+      "sha256": "6c69235c47f6347c4f697d44b8a6740a54bc71f34d35edc32800b302c3796d6a",
+      "scope": "Source-only terminal proof review."
+    },
+    {
+      "path": "main56-terminal-independent-review.json",
+      "git_blob": "a4be28db3b78686bff6be2ecceffe2b9ca518e9c",
+      "bytes": 4796,
+      "sha256": "01d5e5ea1dc7c728a242046cfff99c0e298246a0008e0e420c75322c2a53c7c2",
+      "scope": "Independent source-only lifecycle review."
+    },
+    {
+      "path": "main56-installer-root-review.json",
+      "git_blob": "332e843e0c13b36d61dba2518b81305d24899e28",
+      "bytes": 5990,
+      "sha256": "958e1655dca75f204f49f6a996b758b683a4ad5218e88b3bd8700f88e5986c5a",
+      "scope": "Source-only installer review before actual Main56 values/owner seal."
+    },
+    {
+      "path": "main56-source-aggregate-initial-metadata.json",
+      "git_blob": "73f9ad1968e2532505f1c9fd7a8154249ce46480",
+      "bytes": 1416544,
+      "sha256": "cc8968054f9673c5fa92c955dcea0eefec6d6dd897c3ea2cee4b51cfa0d5140b",
+      "scope": "Complete source-only 595 aggregate, no build or business success claim."
+    },
+    {
+      "path": "main56-source-exact-delta-initial-metadata.json",
+      "git_blob": "a81e335a2ebac951b1153ad717ef25bc867100ce",
+      "bytes": 138919,
+      "sha256": "f7b6bcec747f70ee5ebe6dafb15e30d8fd7cd92eff5ca1640cc29668e90b9aa1",
+      "scope": "Exact verified reconstruction from actual Main55 aggregate."
+    },
+    {
+      "path": "main56-source-inventory-initial-flat-order.json",
+      "git_blob": "5ff4ef05bec8c5004798f964ef43afb52234d92d",
+      "bytes": 103795,
+      "sha256": "055f6844eb4fc59bfb0cc6bb3fbb4b692eb83242d0a938dc34f677850a4baea0",
+      "scope": "Canonical complete source inventory."
+    },
+    {
+      "path": "main56-qualification-fixture-source.json",
+      "git_blob": "f4eaf2246323f76e526831d1eb612e2d9c2d27b0",
+      "bytes": 40874,
+      "sha256": "0ae4613bc9a71fa0d5067a81dd1b027bf1e68ff18a0de018f47310995a320b08",
+      "scope": "Actual source-only four fixture changes and exact patch proofs."
+    },
+    {
+      "path": "main56-lifecycle-source-and-fixtures.json",
+      "git_blob": "2e1bf124b733b816599834c94606b2ee2dc681b8",
+      "bytes": 324548,
+      "sha256": "4f60a0b1b7116032237d9a1b30de1837ce7b2927cc21ba4e970637ccf80e30bf",
+      "scope": "Final source-only TCG/LTC/Core test and external Composition packet."
+    },
+    {
+      "path": "main56-session-close-integration.json",
+      "git_blob": "a283bc7fdfd98fce0cd64f4ad1779328fa156e15",
+      "bytes": 4819,
+      "sha256": "657b363bdfa46f4700d9703c66f9de88a87eb8f33ed668c94642258699ca4340",
+      "scope": "Exact source-only lifecycle close integration on the reviewed stability Session."
+    },
+    {
+      "path": "main56-r1-source-aggregate.json",
+      "git_blob": "660335b7f19f519af4cfd168ebee186f1a4693b9",
+      "bytes": 1416544,
+      "sha256": "38baa995ee76520e1a9ff7a14baf51afdbd4f1af53f747ce7a0d114ef4809c90",
+      "scope": "Actual Core56 r1/Web56 r1 source predecessor; both failures preserved. Original complete same595 source-only aggregate; corrected physical inventory uses original Path order, all raw source unchanged."
+    },
+    {
+      "path": "main56-r1-source-exact-delta.json",
+      "git_blob": "5363b460e3740a00f26cb2a69965e1b5830eec0f",
+      "bytes": 139026,
+      "sha256": "3f1dbfddac9beab5d5cedfd6b252dd7b595ff86625f5e16cf71c06bf1ff15339",
+      "scope": "Actual Core56 r1/Web56 r1 source predecessor; both failures preserved. Original exact forward/reverse reconstruction from actual Main55 aggregate and fixed source-tree Core test raw."
+    },
+    {
+      "path": "main56-r1-source-inventory.json",
+      "git_blob": "89e9aaec004f6b07a7b60b24d9e1fba397e924cc",
+      "bytes": 103795,
+      "sha256": "4581b1c7cfe27caf4e3d24562072baa511705f3e13205fc8720021bba9cc4512",
+      "scope": "Actual Core56 r1/Web56 r1 source predecessor; both failures preserved. Original physical inventory in actual Core/Android POSIX Path-component order."
+    },
+    {
+      "path": "main56-inventory-order-correction.json",
+      "git_blob": "0a2c970738204536c02cdb474fc951323f52b7b1",
+      "bytes": 2074,
+      "sha256": "bb4a9e9ce0e955da18aa28f148a47cff80a426f2204e63e99a0805df59c425a5",
+      "scope": "Metadata-only correction; prior unexecuted draft preserved, all595 source bytes unchanged."
+    },
+    {
+      "path": "main56-core-r1-RESULT.json",
+      "git_blob": "3274c9f9254450635364967eb3701ad30056910c",
+      "bytes": 8174,
+      "sha256": "df5c72a750e8ffc51fcb798565849157a9fbdfd2386314c305782cf7c96d2dc5",
+      "scope": "Actual Core r1 failure; 58 records and first background-client compile failure, original status unchanged."
+    },
+    {
+      "path": "main56-core-r1-background-client.stdout",
+      "git_blob": "7367b41bc7fe35f428fe40698c21da30b0c50284",
+      "bytes": 1567,
+      "sha256": "0fc8f7fb1d2ef48d95903068d5da303dc80d37f9f07c7f4999acc3f314d2ee67",
+      "scope": "Original four generated Java type errors, complete raw bytes."
+    },
+    {
+      "path": "main56-web-r1-RESULT.json",
+      "git_blob": "30962e2f30d7b0309aaacd44d67e795e436752ee",
+      "bytes": 29724,
+      "sha256": "f9bf137d294e385c6cd85987a10ba682fdb9bb8415fa51a005e5ff871914eec4",
+      "scope": "Actual compile0/evidence80 pass/composition1 failure; no complete gate pass."
+    },
+    {
+      "path": "main56-web-r1-composition.stderr",
+      "git_blob": "b437fd9854666141f78911df0a7b53c9de376165",
+      "bytes": 1012,
+      "sha256": "242466b11bebf08dc48246b949fb506dc8bde71bba0c7be798c0fa98d6b0ef75",
+      "scope": "Actual immutable evidence exception; complete raw stderr."
+    },
+    {
+      "path": "main56-warm-fixture-two-hunk-delta.json",
+      "git_blob": "0efa5aec1a01576aa7edb6872e5d4635671321ed",
+      "bytes": 10765,
+      "sha256": "d078f08fafa777736dbe422874180185d7b692b32025baa8c280044bd8a172b0",
+      "scope": "Two type-only fixture additions; old Java assertions/extraction unchanged."
+    },
+    {
+      "path": "main56-shopping-geometry-map-delta.json",
+      "git_blob": "4853e37309edf1c796775007e004fa461f72b0ac",
+      "bytes": 34913,
+      "sha256": "7de95422ab7907e8e5714fb9c910e3af66082dbd03e04098ae1a232408206654",
+      "scope": "One actual production evidence-boundary fix using existing jsonMap converter; TCG/LTC unchanged."
+    },
+    {
+      "path": "main56-composition-geometry-assertions.json",
+      "git_blob": "646892f142a8ada4657fcf9613c3f2c8e560fc4e",
+      "bytes": 58894,
+      "sha256": "cd861f247da01c21423e45e77195558e1700a4a2d72efda44ca210cc48cc1b92",
+      "scope": "Four explicit nested-geometry freeze assertions appended to an existing case, zero additional cases."
+    },
+    {
+      "path": "main56-repair-root-source-review.json",
+      "git_blob": "d4636cd0a6b0d2b588d3d29eb208c09eb6bbc7b4",
+      "bytes": 2163,
+      "sha256": "ee16415eb0cee6c339c7d7880f7c1508ee208977d34edaa5d10dff345a741b82",
+      "scope": "Root independent actual three-hunk source review; not execution."
+    },
+    {
+      "path": "main56-flight55-native-followup-readonly-plan.json",
+      "git_blob": "4a3cc8410ad6e8f1fcb9ca6f8b6084cf60484d27",
+      "bytes": 9023,
+      "sha256": "4453881d9dddaed0bbc5285644e8ebba75c3b052d4ee52ab9b908f5c2c68e69b",
+      "scope": "Read-only native Ctrip follow-up interface assessment; no frozen56 change, no phone operation."
+    },
+    {
+      "path": "main56-focused39-initial-closure-review.json",
+      "git_blob": "c17c54ae6476919f0db8ce941fa7f60daf386645",
+      "bytes": 4045,
+      "sha256": "01bb7393d2aef9559321956b12a719bcfcaf3cca03488120ede867d44055f027",
+      "scope": "Independent initial current39 projection closure review; old660335 request was never started."
+    },
+    {
+      "path": "main56-warm-fixture-independent-review.json",
+      "git_blob": "26e458e65ef259e0fd26c68adbaac558d51cc6dd",
+      "bytes": 2596,
+      "sha256": "4ae438b7a442edb10abdb173c6ba596107b8ce9a8044ce8f73b91ec4cd54abf6",
+      "scope": "Independent two-hunk type completion check; no fabricated Web completion."
+    },
+    {
+      "path": "main56-web-r2-independent-review.json",
+      "git_blob": "5f4a3ab2fcd6e018d19fc5b02939b9ceefb0a3f1",
+      "bytes": 5078,
+      "sha256": "b8dabde9fc47acf3732bca3476c2367b93521ca04f1ef8368c79855eacbb8e0d",
+      "scope": "New seven-hunk Web wiring review; expected70/178, no actual successor pass."
+    },
+    {
+      "path": "web56-adapter-source-packet.json",
+      "git_blob": "7c4f6ed7b5fee1e4363b02f2300c1595087ae677",
+      "bytes": 163802,
+      "sha256": "fd5f586a1b9282a271e54047cf003c97b4bce48c31dbee8b8fc1817efc56dc41",
+      "scope": "Same ordinary prepare/review/normalclose/RUN flow, version/path/pins only; late facts remain unknown."
+    },
+    {
+      "path": "web56-runtime-publisher-packet.json",
+      "git_blob": "c04ab358890259a25b7521e449c6feca44986292",
+      "bytes": 16061,
+      "sha256": "965829eb48aa24e5512a47990d326eb36d3092bdc63b6e0995ce038a16280afa",
+      "scope": "Three-file host-only publisher; no phone action, no RELEASE or wrapper installation."
+    },
+    {
+      "path": "web56-runtime-publisher-request.json",
+      "git_blob": "5122f53d26ffb238f3e9d03a88ca263b69912e6f",
+      "bytes": 62957,
+      "sha256": "d9d32277d0b10c2681f5b91dbfcf23989a72973ca2607f6b599fc532d9f7b1e2",
+      "scope": "Prepared exact request; no execution by mobile_models."
+    },
+    {
+      "path": "web56-adapter-independent-review.json",
+      "git_blob": "1b790e7f9304692b6d92da1d04bc7733290b8f2e",
+      "bytes": 4686,
+      "sha256": "7df3c951a878ce876e721e29d11aeac7963840c836273d6c74111815471bc958",
+      "scope": "Runtime13/4/4 and wrapper13/13 plus publisher9 exact reversible groups, full payload CRC."
+    },
+    {
+      "path": "owner20-idle-status-observed.json",
+      "git_blob": "83e40d351f489927a70fcefa5c30fc752f77dc95",
+      "bytes": 1842,
+      "sha256": "da606eae50ec2be05058baedeb8ffeae4a6af431da691be25cad4033f380552d",
+      "scope": "Actual Root observed idle owner status only; no Main56 action or installation implied."
+    },
+    {
+      "path": "main56-r2-source-aggregate.json",
+      "git_blob": "0803dec4b6acc359b810bb79ca6fdd01ada69a8c",
+      "bytes": 1427055,
+      "sha256": "c1cc7cc16eef4c3a34131ee719101a69db080b76e72c98f03248036fc6fd628f",
+      "scope": "Current same595 source-only candidate after actual Core/Web r1 fixes; not a gate pass."
+    },
+    {
+      "path": "main56-r2-source-delta-from-r1.json",
+      "git_blob": "9150a118ef3bc92b75fdbcef559f801ceafbab1a",
+      "bytes": 58425,
+      "sha256": "f39e868cc4ec10526a242c26bcade6a7928e501944dfe5ab73e395b1247d87c1",
+      "scope": "Exactly two source rows and three reversible hunks from actual660335 predecessor."
+    },
+    {
+      "path": "main56-r2-source-delta-from-main55.json",
+      "git_blob": "f5a9e580f7b41a15d6e3318c7b59ea83da4cc555",
+      "bytes": 215824,
+      "sha256": "2811e8aba659f4d8edc5eed35743aebfa246ff7ced1284c4bc87970d2369eb9b",
+      "scope": "Complete actual Main55 to current Main56 derivation:13 existing paths/64 hunks and one new policy class."
+    },
+    {
+      "path": "main56-r2-source-full-inventory.json",
+      "git_blob": "0a548d1541ad07fb4965d7e2d411c16fdff422db",
+      "bytes": 163370,
+      "sha256": "d87173f40a5f2793e077408674f2f8a24b8152d74f5fd01cdcdf5fd403ebd386",
+      "scope": "Full595 source metadata in lexical path order."
+    },
+    {
+      "path": "main56-r2-source-physical-inventory.json",
+      "git_blob": "c43a4be934ca00942ceeed086e16fc4b81d3a519",
+      "bytes": 103795,
+      "sha256": "ca24673843908c7f9343c949af64b8393e69ce53605128782036ae9ce9d1f46e",
+      "scope": "Physical595 three-field inventory in actual POSIX Path-component order."
+    },
+    {
+      "path": "main56-core-r2-RESULT.json",
+      "git_blob": "5cb49be79cbf60bb9cfdc34eb24ea6a1a16aace1",
+      "bytes": 9732,
+      "sha256": "778fbfeac89fa330d123207c43e485818b530f77e978247c61f67d9d23ce9a39",
+      "scope": "Actual final0803 Core101 including18 nested stages;419 inputs; Android/query/focused separate."
+    },
+    {
+      "path": "main56-core-r2-pty-completion.json",
+      "git_blob": "ffa52177623c3158d6316eee3d6f7ada5490564e",
+      "bytes": 5679,
+      "sha256": "098fcb1cf08ef933732f5a63b8b28b970dc76925282d5eb0c0eed2868afc28ed",
+      "scope": "Actual normal exit0 supervisor/PTY checkpoint."
+    },
+    {
+      "path": "main56-web-r2-RESULT.json",
+      "git_blob": "a444cbac9951180a7dde73bee2984fdf063ee30a",
+      "bytes": 47337,
+      "sha256": "220ccb705ba17797d7403c26c1a9bcb438f46c8ea83e017c617a343d27232f7c",
+      "scope": "Actual final0803 Web80/92+70/178+13/1001; prior failed r1 retained."
+    },
+    {
+      "path": "main56-web-r2-pty-completion.json",
+      "git_blob": "7b9a068a1e9f1a7ec1a6f9d81644f733a15fa68c",
+      "bytes": 9216,
+      "sha256": "25283d2b6d4a4f72b1a4f1b76593c262e04100cff686587d5d9222a8f155515c",
+      "scope": "Actual normal exit0 supervisor/PTY checkpoint."
+    },
+    {
+      "path": "main56-focused39-r1-RESULT.json",
+      "git_blob": "94faa212af37300fa4eee3384cdf382b034aad7e",
+      "bytes": 44408,
+      "sha256": "036e4f7b185a127e457712fcd23b6745d8aac18a04cf64da4035764329efee43",
+      "scope": "Actual final0803 20/60+19/98;51 Java/44pure/15projections; no native dispatch claim."
+    },
+    {
+      "path": "main56-focused39-r1-pty-completion.json",
+      "git_blob": "a03c1753e2626d030ffdf696b7f1b3288c8e5914",
+      "bytes": 8742,
+      "sha256": "772f2ac0649fa9cbb62c808d5af84d553d68394a592e9117a208dbc19bd0e028",
+      "scope": "Actual normal exit0 supervisor/PTY checkpoint."
+    },
+    {
+      "path": "main56-focused39-final-request.json",
+      "git_blob": "6a6dd4d552da982cc06e77d2ebac50e56961eb1c",
+      "bytes": 42181,
+      "sha256": "59ee45eb2e9ed4de713f84c4cc7b284ac3ca09fca5b477dc83495252ed6008be",
+      "scope": "Exact final source publisher/request for the completed gate; not an extra Start."
+    },
+    {
+      "path": "main56-focused39-final-source.py",
+      "git_blob": "ba87e56e966d7aa9f8b648a3eb358a8a75491ef7",
+      "bytes": 69343,
+      "sha256": "eaf4de0485e4990ec56751e55b1efdca4492f7b75b9507e2ca409db87fcbb9bd",
+      "scope": "Actual final gate source eaf4 tied to original inputs and materialized0803."
+    },
+    {
+      "path": "main56-focused39-final-input.json",
+      "git_blob": "baf4bf959ce91b7510694cf393866f056a65cf51",
+      "bytes": 1283344,
+      "sha256": "25b80314fb000cf4e48a56ad4e198d6b2fb0917802e1f687c5d041f17e04a13b",
+      "scope": "Exact derived gate input; old assertions and current production raw."
+    },
+    {
+      "path": "main56-focused39-final-input-delta.json",
+      "git_blob": "68ac0a3be3f226c40f77cf951860472539cdd0c1",
+      "bytes": 25866,
+      "sha256": "efbfce51da0412ebf84843a7cd04e736fd72ce6a4110e485c66fe56b5626e1a1",
+      "scope": "Explicit predecessor-to-current focused input derivation."
+    },
+    {
+      "path": "main56-focused39-final-transport-review.json",
+      "git_blob": "36b2c8f2ece5be163bec09bb8dfcaf2540dad26f",
+      "bytes": 87191,
+      "sha256": "de24aedaaf3851bc35d69305ab82744946946e1243e4c58bc5059849b40f0b0a",
+      "scope": "Producer's two-constant seal and exact source transport proof."
+    },
+    {
+      "path": "main56-publication-stager-pending.py",
+      "git_blob": "735486dc79b7e80f2baaceaac4f95346b34e3c21",
+      "bytes": 17357,
+      "sha256": "989d46c6289b1cafca7bb0418ae6b1db341f417cbae3fa1cfbdce8f1b7edbce4",
+      "scope": "Unexecuted metadata-only stager; nine actual pins remain null."
+    },
+    {
+      "path": "main56-publication-stager-delta.json",
+      "git_blob": "ce4f1be8a8c75bb74971c1e9163e69cca80a1e4f",
+      "bytes": 7677,
+      "sha256": "b959e396cb6ba6ecd9fff01317625d44198f902875124c39288da5eef8a45603",
+      "scope": "16 literal/CONFIG successor from actual Main55 stager; source-only."
+    },
+    {
+      "path": "main56-focused39-final-independent-review.json",
+      "git_blob": "d69c02086e9b1953e4370363047c722ec918ec06",
+      "bytes": 6002,
+      "sha256": "1d85aa88630a27d2ceb2fd78460a5ba0e0154276f93846a80d2363d9039da7e8",
+      "scope": "Final two-hunk/transport review; inherited original closure, no gate execution by reviewer."
+    },
+    {
+      "path": "main56-publication-stager-independent-review.json",
+      "git_blob": "494938e39f4638560eb45aa20bdba5c29bef6bf2",
+      "bytes": 2572,
+      "sha256": "b6b0bd7434a37e34c1d982fafdad10b9dd920c2bf8a70add67254b941659e4bb",
+      "scope": "Pending stager literal/contract review, not execution."
+    },
+    {
+      "path": "main56-core-web-focused-actual-review.json",
+      "git_blob": "4851d61f074353357e23bb9097b2205dea6e87ea",
+      "bytes": 6125,
+      "sha256": "398c48dd619748b095aebae1a40e53d9dfb1cdc59f9ae76facbbed7502428de2",
+      "scope": "Full actual three-gate reconciliation; Android query-runner blocker remains separate."
+    },
+    {
+      "path": "main56-android-r1-RESULT.json",
+      "git_blob": "1df64b678e912e1d4b1b0331918f4868eea750d0",
+      "bytes": 203372,
+      "sha256": "b557a981d07fb5a65c39da4abbf0474559035a875831bec820c6b4a55fcc7ece",
+      "scope": "Actual Android/query40 receipt;217/115/420/595,source0803 unchanged;17 native payloads reused."
+    },
+    {
+      "path": "main56-android-r1-pty-completion.json",
+      "git_blob": "e74e36fdfb29628b67afb71124bed104c4959f09",
+      "bytes": 7052,
+      "sha256": "2c303b784105ef2dd3f5008c8228ad9df8c7ab65fbe710adba2204d0e2577e50",
+      "scope": "Actual exit0/33.1127656s supervisor/PTY; no forced kill or timeout."
+    },
+    {
+      "path": "main56-android-r1-start-checkpoint.json",
+      "git_blob": "03b7e811029657f500aa7a84c4b68c11d631363c",
+      "bytes": 1054,
+      "sha256": "537c84cd9aabd848aa04f6427e3ed06738b939d277e2e8a8d2d416a4da239e33",
+      "scope": "Actual unique Start checkpoint; not an additional request."
+    },
+    {
+      "path": "main56-android-r1-builder.py",
+      "git_blob": "c4881a3645078736df30645c9cb0040837faee94",
+      "bytes": 206118,
+      "sha256": "85e530eebbc859dcea83955cd2f62153b2ab0414da8d7632dd7027eee45091f2",
+      "scope": "Exact executed builder source85e530,including explicit external query-runner derivation."
+    },
+    {
+      "path": "main56-core-r2-stage.py",
+      "git_blob": "fba5101e3faf859d182712424bcb60519928ef8e",
+      "bytes": 108035,
+      "sha256": "1e10c0265b946636651c852e7d8d0aaefc8b1611c25000f2f6e119a0c701a3d3",
+      "scope": "Exact executed Core2 source1e10c026."
+    },
+    {
+      "path": "main56-web-r2-stage.py",
+      "git_blob": "447b3ca01169ed691440ca866896d07f0c7b665f",
+      "bytes": 131893,
+      "sha256": "814e327adb50509d35a03a89f96ab085c3b4249c526d3b041ef3885e59e35391",
+      "scope": "Exact executed Web2 coordinator source814e327a."
+    },
+    {
+      "path": "main56-web-r2-fixture-packet.json",
+      "git_blob": "1153d7e55c4051ecf6e4c018defe43d26ff51fd2",
+      "bytes": 260128,
+      "sha256": "3687b09656e60a808ebdce1430951e04741581e9ddd0d2faa7f5c36220ed24b7",
+      "scope": "Exact6external fixture/44production packet with70composition cases."
+    },
+    {
+      "path": "main56-actual-core-source-blob-map.json",
+      "git_blob": "07cc1ccced2c41df1fcb06e5195650362b3676c0",
+      "bytes": 141875,
+      "sha256": "8d8cf9767861029b1cd4c6bb1143e07ee92296a475a44ae1979db79756233926",
+      "scope": "Complete595-row bytes reconstructed and whole-hash identical to actualCore map; Path ordering retained."
+    },
+    {
+      "path": "main56-external-query-runner.py",
+      "git_blob": "c21109afe049ccaf2d664937bd24fb0e5abce4a2",
+      "bytes": 41005,
+      "sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10",
+      "scope": "Corrected external runner; singlecount/description change; original40/187 retained."
+    },
+    {
+      "path": "main56-external-query-consumer-delta.json",
+      "git_blob": "e8bf96943a8a5934964301fb133d19f2588ca1e3",
+      "bytes": 12349,
+      "sha256": "7dc242a57144e663fb1551556e6f67aa067c521aebfe0e6c88ea004818a3620e",
+      "scope": "Exact singlehunk and builder/signer consumption proof; source inventory unchanged."
+    },
+    {
+      "path": "main56-external-query-root-review.json",
+      "git_blob": "2910f7bb587444342c5bcb51a2a73680dc5f2dad",
+      "bytes": 1619,
+      "sha256": "3884d66d920a5510bdbab979a8254bc5d8c399f059dc0fbe3fa30aa4eaec99e5",
+      "scope": "Root source review of external count adapter."
+    },
+    {
+      "path": "main56-external-query-bg-review.json",
+      "git_blob": "3de0b0a8270d7253f92cfd092025067da0243924",
+      "bytes": 5475,
+      "sha256": "91485bf83c7a24f4809445e9fbb1c356c8d4f7b991a325a0d35d457e0bca525c",
+      "scope": "Independent background review of external adapter/consumers."
+    },
+    {
+      "path": "main56-external-query-decision.json",
+      "git_blob": "fc4422b69701c74de7698bfb28bcf1a7c95bb5ce",
+      "bytes": 2436,
+      "sha256": "be1ae1278aac4761b4b2c3369111927d4c0b7e16d78ee5911e94b0cfb33dfa48",
+      "scope": "Parent's explicit externalfixture decision; original595/217 remain unchanged."
+    },
+    {
+      "path": "main56-all-required-actual-review.json",
+      "git_blob": "f89ea2d139cd4f7235306cf46441d40cb8c2e021",
+      "bytes": 10707,
+      "sha256": "524700ad2b00a89e9d2150561364759ce6eebd4994b9865630369f1d9b88c74c",
+      "scope": "Four complete actual host groups and explicit externalquery scope, before source CAS."
+    },
+    {
+      "path": "main56-source-CAS-preflight.json",
+      "git_blob": "fe3cb1e32549649f83822cc209e56b54cf8611fc",
+      "bytes": 9273,
+      "sha256": "54966bc416cd1db6d6d083e09a316ad623703873a5d343c056aa486c29b3f62c",
+      "scope": "Full previous tree and source595 changes preflight; no ref mutation implied."
+    }
+  ],
+  "external_query_runner": {
+    "repository_path": "tests/web-flight/run_query_host_tests.py",
+    "original": {
+      "bytes": 41005,
+      "sha256": "0f4d983138ed8bcf5f0b622ee4d4063048e83413eafe3586595521f5e1b7eb45",
+      "git_blob_sha": "7b7a23db9302bc63b71f51a4d74d06c34183059d"
+    },
+    "corrected": {
+      "bytes": 41005,
+      "sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10",
+      "git_blob_sha": "c21109afe049ccaf2d664937bd24fb0e5abce4a2"
+    },
+    "count_only_patch": {
+      "before": "    need(len(PURE_PATHS)==45 and len(generated_factories)==3,\"fixed 43 production plus 2 retained plus 3 factory inputs\")",
+      "after": "    need(len(PURE_PATHS)==46 and len(generated_factories)==3,\"fixed 44 production plus 2 retained plus 3 factory inputs\")",
+      "count": 1
+    },
+    "actual_pure_path_count": 46,
+    "actual_production_paths": 44,
+    "total_compiled_java": 50,
+    "source_inventory_modified": false,
+    "test_case_assertions_modified": false,
+    "repository_runner_count_guard_known_incompatible": true,
+    "external_execution_pending_actual_android": false,
+    "actual_result": {
+      "path": "/home/alex/hepta-local-007f-20261111/v56-main-p4-android-r1/query40/RESULT.json",
+      "bytes": 36220,
+      "sha256": "e0209a7697bf19342e896cdf97c07c53da9c798a9b0181a901b949f28a28bf0d"
+    },
+    "actual_cases": 40,
+    "actual_assertions": 187
+  }
+}

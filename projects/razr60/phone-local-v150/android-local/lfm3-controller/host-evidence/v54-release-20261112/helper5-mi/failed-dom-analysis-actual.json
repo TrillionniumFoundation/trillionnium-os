@@ -1,0 +1,1757 @@
+{
+  "analysis_completed": true,
+  "business_verified": false,
+  "capture_succeeded": false,
+  "classification": {
+    "business_verified": false,
+    "capture_groups": [
+      {
+        "business_verified": false,
+        "challenge": "b5af4fb744724b6fda832f9013a819bb49d9a2c0345a35ebe62219fd04e55463",
+        "formal_fd_evidence": false,
+        "grants_action_authority": false,
+        "grants_task_authority": false,
+        "instability_pair_complete": true,
+        "instability_pair_partial": false,
+        "instability_records": [
+          {
+            "bytes": 963232,
+            "file": "diagnostics/diagnostic-bfdc6653be17b14c965ea9d236f2e3b0d8a3c14723a332381eacc7261376752a.json",
+            "sha256": "1b0305a9002f64ddbe41dc197aafff8b0ace70f668f2b608d3b76b6feb7b2dda"
+          },
+          {
+            "bytes": 963233,
+            "file": "diagnostics/diagnostic-c4017cc82c05814c36b2515ca5cbb22f12d5331bf96cd43389460ec937bbffe8.json",
+            "sha256": "0d2e76e387ac5e82ee5adaa0c2a17d75a9aea9e7700d707ac86ae6506b61e840"
+          }
+        ],
+        "profile_name": "hepta_v2_0ed2d6440b6839e90b5a33c4255694c62e79058a5056b8fb3efdc371b1142d51",
+        "profile_storage": {
+          "all_os_sockets_observed_closed": false,
+          "business_verified": false,
+          "first_load_dispatch_begin_elapsed_ms": 815422404,
+          "first_url": "https://www.mi.com/shop/search?keyword=AX3000T",
+          "library": "androidx.webkit:webkit:1.13.0",
+          "preload_clear": {
+            "api": "WebStorageCompat.deleteBrowsingData",
+            "callback_elapsed_ms": 815422403,
+            "callback_observed": true,
+            "cookies_present_after": false,
+            "deadline_elapsed_ms": 815425348,
+            "deadline_met": true,
+            "initial_url": null,
+            "started_elapsed_ms": 815422349
+          },
+          "profile_assigned_elapsed_ms": 815422344,
+          "profile_name": "hepta_v2_0ed2d6440b6839e90b5a33c4255694c62e79058a5056b8fb3efdc371b1142d51",
+          "profile_names_before": [
+            "Default",
+            "hepta_v2_1170ccc3c685edb1407ae9497b5123609ce3338a255879bf13b00712ea42668f",
+            "hepta_v2_5070b7da9f5b76a38af6902e2bf765896cd312d57f9e6d35cefb2e416bfb266c"
+          ],
+          "profile_was_present_before": false,
+          "retirement_clear": null,
+          "runtime_delete_browsing_data": true,
+          "runtime_multi_profile": true,
+          "schema": "hepta.web-helper.storage-isolation.v1",
+          "webview_provider_package": "com.google.android.webview",
+          "webview_provider_version": "140.0.7339.207",
+          "webview_provider_version_code": 733920733,
+          "whole_device_storage_erased": false
+        },
+        "success_records": [],
+        "successful_capture_observed": false
+      }
+    ],
+    "complete_instability_pair_count": 1,
+    "formal_fd_evidence": false,
+    "grants_action_authority": false,
+    "grants_task_authority": false,
+    "new_record_count": 2,
+    "no_new_diagnostic_does_not_prove_capture_success": true,
+    "other_new_records": [],
+    "partial_instability_pair_count": 0,
+    "prior_records_preserved": true,
+    "schema": "hepta.manual-helper5-diagnostic-classification.v1",
+    "successful_capture_count": 0
+  },
+  "collector_compare_input": {
+    "android_elapsed_and_scale_sequence_outside_comparison": true,
+    "capture_source_sha256": "78d3b10928b2b6bcfd0e80d66c1ec8145f302bcd909d0c54d6b2799ce93778c2",
+    "kind": "two decoded JavaScript raw strings",
+    "observer_has_sample_timestamp_or_sequence": false,
+    "observer_script_sha256": "0d1b412d2e81e3f447ef36977bb27c321c136c207d64cca433a810f22ca5c983"
+  },
+  "diagnostic_trigger": "manual_record_button",
+  "difference_count": 2,
+  "difference_field_counts": {
+    "1": 1,
+    "3": 1
+  },
+  "differences_in_summary_truncated": false,
+  "dom_metadata": {
+    "after": {
+      "device_pixel_ratio": 3,
+      "document_extent_css_pixels": [
+        1240,
+        2497
+      ],
+      "document_scroll_css_pixels": [
+        0,
+        0
+      ],
+      "geometry_semantics_verified": false,
+      "href": "https://www.mi.com/shop/search?keyword=AX3000T",
+      "layout_viewport_css_pixels": [
+        1226,
+        2469
+      ],
+      "origin": "https://www.mi.com",
+      "ready_state": "complete",
+      "schema": "hepta.fixed-top-document-dom.v3",
+      "text_utf16_units": 31813,
+      "truncated": false,
+      "truncation_reasons": [],
+      "viewport_css_pixels": [
+        1240,
+        2497
+      ],
+      "viewport_meta_content": "width=1226",
+      "visited": 1460,
+      "visual_viewport": {
+        "height": 2497.22216796875,
+        "offset_left": 0,
+        "offset_top": 0,
+        "page_left": 0,
+        "page_top": 0,
+        "scale": 0.3290322721004486,
+        "width": 1239.9998779296875
+      }
+    },
+    "before": {
+      "device_pixel_ratio": 3,
+      "document_extent_css_pixels": [
+        1240,
+        2497
+      ],
+      "document_scroll_css_pixels": [
+        0,
+        0
+      ],
+      "geometry_semantics_verified": false,
+      "href": "https://www.mi.com/shop/search?keyword=AX3000T",
+      "layout_viewport_css_pixels": [
+        1226,
+        2469
+      ],
+      "origin": "https://www.mi.com",
+      "ready_state": "complete",
+      "schema": "hepta.fixed-top-document-dom.v3",
+      "text_utf16_units": 31813,
+      "truncated": false,
+      "truncation_reasons": [],
+      "viewport_css_pixels": [
+        1240,
+        2497
+      ],
+      "viewport_meta_content": "width=1226",
+      "visited": 1460,
+      "visual_viewport": {
+        "height": 2497.22216796875,
+        "offset_left": 0,
+        "offset_top": 0,
+        "page_left": 0,
+        "page_top": 0,
+        "scale": 0.3290322721004486,
+        "width": 1239.9998779296875
+      }
+    }
+  },
+  "dom_truncated_after": false,
+  "dom_truncated_before": false,
+  "elapsed_seconds": 0.22151746600866318,
+  "error": null,
+  "exit_code": 0,
+  "first_differences": [
+    {
+      "after": 82.87367248535156,
+      "after_present": true,
+      "before": 80.83193969726562,
+      "before_present": true,
+      "path": "/nodes/392/rect_css_pixels/1"
+    },
+    {
+      "after": 97.12633800506592,
+      "after_present": true,
+      "before": 99.16807556152344,
+      "before_present": true,
+      "path": "/nodes/392/rect_css_pixels/3"
+    }
+  ],
+  "first_mismatch_context": {
+    "actual_window_id": 3577,
+    "attempt_index": 1,
+    "binding": {
+      "actor": "manual_native_open",
+      "display_id": 0,
+      "goal_kind": "mi_public_product",
+      "grants_task_authority": false,
+      "initial_url": "https://www.mi.com/shop/search?keyword=AX3000T",
+      "schema": "hepta.web-helper.unbound-diagnostic.v2",
+      "site_policy": {
+        "denied_navigation_categories": [
+          "account",
+          "login",
+          "cart",
+          "order",
+          "payment",
+          "coupon_claim",
+          "foreign_origin",
+          "regional_store"
+        ],
+        "external_app_launch_allowed": false,
+        "goal_kind": "mi_public_product",
+        "initial_url": "https://www.mi.com/shop/search?keyword=AX3000T",
+        "main_frame_only": true,
+        "model_supplied_javascript_allowed": false,
+        "model_supplied_url_allowed": false,
+        "origin": "https://www.mi.com",
+        "regional_redirect_allowed": false,
+        "route_policy": "exact_search_or_numeric_public_detail_v1",
+        "schema": "hepta.web-site-policy.v1",
+        "site_policy_id": "mi_cn_ax3000t_read_v1"
+      },
+      "site_policy_id": "mi_cn_ax3000t_read_v1",
+      "site_policy_sha256": "b723aa3508c9a03ce8e432c58899a58d1bf0876315365c6b8ed304830229993a",
+      "task_id": null
+    },
+    "challenge": "b5af4fb744724b6fda832f9013a819bb49d9a2c0345a35ebe62219fd04e55463",
+    "committed_main_frame_url": "https://www.mi.com/shop/search?keyword=AX3000T",
+    "current_native_url": "https://www.mi.com/shop/search?keyword=AX3000T",
+    "deadline_elapsed_ms": 816983253,
+    "display_id": 0,
+    "geometry_samples": [
+      {
+        "native": {
+          "actual_window_id": 3577,
+          "bounds_screen_pixels": [
+            0,
+            455,
+            1224,
+            2920
+          ],
+          "display_id": 0,
+          "global_visible_rect_pixels": [
+            0,
+            455,
+            1224,
+            2920
+          ],
+          "global_visible_rect_source": "View.getGlobalVisibleRect; root-view coordinates",
+          "load_with_overview_mode": true,
+          "padding_pixels": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "sampled_elapsed_ms": 816980255,
+          "scale_callback_new": 0.9870967864990234,
+          "scale_callback_old": 0.9975550174713135,
+          "scale_change_sequence": 2,
+          "scale_changed_elapsed_ms": 815423972,
+          "scroll_pixels": [
+            0,
+            0
+          ],
+          "use_wide_viewport": true,
+          "view_transform": [
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "webview_get_scale": 0.9870967864990234
+        },
+        "phase": "before_js1"
+      },
+      {
+        "native": {
+          "actual_window_id": 3577,
+          "bounds_screen_pixels": [
+            0,
+            455,
+            1224,
+            2920
+          ],
+          "display_id": 0,
+          "global_visible_rect_pixels": [
+            0,
+            455,
+            1224,
+            2920
+          ],
+          "global_visible_rect_source": "View.getGlobalVisibleRect; root-view coordinates",
+          "load_with_overview_mode": true,
+          "padding_pixels": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "sampled_elapsed_ms": 816980305,
+          "scale_callback_new": 0.9870967864990234,
+          "scale_callback_old": 0.9975550174713135,
+          "scale_change_sequence": 2,
+          "scale_changed_elapsed_ms": 815423972,
+          "scroll_pixels": [
+            0,
+            0
+          ],
+          "use_wide_viewport": true,
+          "view_transform": [
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "webview_get_scale": 0.9870967864990234
+        },
+        "phase": "after_js1"
+      },
+      {
+        "native": {
+          "actual_window_id": 3577,
+          "bounds_screen_pixels": [
+            0,
+            455,
+            1224,
+            2920
+          ],
+          "display_id": 0,
+          "global_visible_rect_pixels": [
+            0,
+            455,
+            1224,
+            2920
+          ],
+          "global_visible_rect_source": "View.getGlobalVisibleRect; root-view coordinates",
+          "load_with_overview_mode": true,
+          "padding_pixels": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "sampled_elapsed_ms": 816980373,
+          "scale_callback_new": 0.9870967864990234,
+          "scale_callback_old": 0.9975550174713135,
+          "scale_change_sequence": 2,
+          "scale_changed_elapsed_ms": 815423972,
+          "scroll_pixels": [
+            0,
+            0
+          ],
+          "use_wide_viewport": true,
+          "view_transform": [
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "webview_get_scale": 0.9870967864990234
+        },
+        "phase": "before_js2"
+      },
+      {
+        "native": {
+          "actual_window_id": 3577,
+          "bounds_screen_pixels": [
+            0,
+            455,
+            1224,
+            2920
+          ],
+          "display_id": 0,
+          "global_visible_rect_pixels": [
+            0,
+            455,
+            1224,
+            2920
+          ],
+          "global_visible_rect_source": "View.getGlobalVisibleRect; root-view coordinates",
+          "load_with_overview_mode": true,
+          "padding_pixels": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "sampled_elapsed_ms": 816980424,
+          "scale_callback_new": 0.9870967864990234,
+          "scale_callback_old": 0.9975550174713135,
+          "scale_change_sequence": 2,
+          "scale_changed_elapsed_ms": 815423972,
+          "scroll_pixels": [
+            0,
+            0
+          ],
+          "use_wide_viewport": true,
+          "view_transform": [
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "webview_get_scale": 0.9870967864990234
+        },
+        "phase": "after_js2"
+      }
+    ],
+    "helper_package": "org.trillionnium.hepta.webhelper",
+    "helper_pid": 12007,
+    "helper_uid": 10484,
+    "mismatch_elapsed_ms": 816980492,
+    "navigation_epoch": 2,
+    "started_elapsed_ms": 816980253,
+    "visual_request_id": 816980254,
+    "webview_instance": "80bac615-58d7-413f-8684-1310d76fa156"
+  },
+  "formal_fd_evidence": false,
+  "grants_action_authority": false,
+  "grants_task_authority": false,
+  "input_integrity_verified": true,
+  "inputs": [
+    {
+      "bytes": 47812,
+      "path": "/home/alex/hepta-local-007f-20261111/helper5-current53-mi-capture-r1/RESULT.json",
+      "sha256": "cf8ac41e266fa7f8797411f29a3a079c238cd527ed4780a8bf5a85e634e0e8cc"
+    },
+    {
+      "bytes": 963232,
+      "path": "/home/alex/hepta-local-007f-20261111/helper5-current53-mi-capture-r1/diagnostics/diagnostic-bfdc6653be17b14c965ea9d236f2e3b0d8a3c14723a332381eacc7261376752a.json",
+      "sha256": "1b0305a9002f64ddbe41dc197aafff8b0ace70f668f2b608d3b76b6feb7b2dda"
+    },
+    {
+      "bytes": 963233,
+      "path": "/home/alex/hepta-local-007f-20261111/helper5-current53-mi-capture-r1/diagnostics/diagnostic-c4017cc82c05814c36b2515ca5cbb22f12d5331bf96cd43389460ec937bbffe8.json",
+      "sha256": "0d2e76e387ac5e82ee5adaa0c2a17d75a9aea9e7700d707ac86ae6506b61e840"
+    }
+  ],
+  "later_attempt_data_present": false,
+  "native_geometry_equal_under_actual_collector_fields": true,
+  "only_first_mismatch_observed": true,
+  "originals_unchanged": true,
+  "outputs": {
+    "after_dom": {
+      "bytes": 793529,
+      "path": "/home/alex/hepta-local-007f-20261111/helper5-mi-instability-analysis-r1/AFTER-DOM.json",
+      "sha256": "c20443a9bff359caf8d7d1d88a5599cdee1c06bb80448894b09f5b38daa52c5c"
+    },
+    "before_dom": {
+      "bytes": 793529,
+      "path": "/home/alex/hepta-local-007f-20261111/helper5-mi-instability-analysis-r1/BEFORE-DOM.json",
+      "sha256": "d794d5a14ac464ce78ba55f1fdfb949979397dfcc6a592c19393450be3c7708c"
+    },
+    "full_differences": {
+      "bytes": 2471,
+      "path": "/home/alex/hepta-local-007f-20261111/helper5-mi-instability-analysis-r1/DOM-DIFF.json",
+      "sha256": "1cc6b315933d53e6acff5b806bf46fde1488250f3bd08d8ca004c348f92610e4"
+    },
+    "product_context": {
+      "bytes": 212158,
+      "path": "/home/alex/hepta-local-007f-20261111/helper5-mi-instability-analysis-r1/PRODUCT-CONTEXT.json",
+      "sha256": "d673f3bff5fb9d6dd9c4d05125a0d1ecbc408e9b2e60b0b226ab257adc65ebf7"
+    }
+  },
+  "parsed_dom_equal": false,
+  "phone_contacted": false,
+  "products": {
+    "after": {
+      "keyword_occurrence_count": 6,
+      "match_contexts": [
+        {
+          "ancestors_self_first": [
+            {
+              "array_index": 255,
+              "href_raw": "",
+              "href_resolved": "https://www.mi.com/shop/search?keyword=AX3000T",
+              "id": "",
+              "path": "0/1/0/2/1/0/1/2/5",
+              "tag": "a",
+              "text": "（京）网械平台备字（2018）第00005号",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 127,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2/1/0/1/2",
+              "tag": "p",
+              "text": "\n        ©\n         京ICP证110507号\n                  网络食品经营备案 京食药网食备202010048  \n         新出发京批字第直220280号\n        \n        违法和不良信息举报电话：171-5104-4404  本网站所列数据，除特殊说明，所有数据均出自我司实验室测试\n      ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 67,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2/1/0/1",
+              "tag": "div",
+              "text": "  ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 56,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2/1/0",
+              "tag": "div",
+              "text": "  ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 50,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2/1",
+              "tag": "div",
+              "text": " ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 46,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2",
+              "tag": "div",
+              "text": " ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 39,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "app",
+              "path": "0/1/0",
+              "tag": "div",
+              "text": "  ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 2,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "stat_e3c9df7196008778",
+              "path": "0/1",
+              "tag": "body",
+              "text": "\n    \n\n\n\n\n",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 0,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0",
+              "tag": "html",
+              "text": "\n",
+              "visible_in_viewport": true
+            }
+          ],
+          "array_index": 255,
+          "context_subtree_root": "0/1/0/2/1/0/1",
+          "dom_path": "0/1/0/2/1/0/1/2/5",
+          "field_matches": [
+            {
+              "path": "/href_resolved",
+              "value": "https://www.mi.com/shop/search?keyword=AX3000T"
+            }
+          ]
+        },
+        {
+          "ancestors_self_first": [
+            {
+              "array_index": 256,
+              "href_raw": "",
+              "href_resolved": "https://www.mi.com/shop/search?keyword=AX3000T",
+              "id": "",
+              "path": "0/1/0/2/1/0/1/2/6",
+              "tag": "a",
+              "text": "药品医疗器械网络信息服务备案 (京)网药械信息备字（2024）第00478号",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 127,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2/1/0/1/2",
+              "tag": "p",
+              "text": "\n        ©\n         京ICP证110507号\n                  网络食品经营备案 京食药网食备202010048  \n         新出发京批字第直220280号\n        \n        违法和不良信息举报电话：171-5104-4404  本网站所列数据，除特殊说明，所有数据均出自我司实验室测试\n      ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 67,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2/1/0/1",
+              "tag": "div",
+              "text": "  ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 56,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2/1/0",
+              "tag": "div",
+              "text": "  ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 50,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2/1",
+              "tag": "div",
+              "text": " ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 46,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2",
+              "tag": "div",
+              "text": " ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 39,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "app",
+              "path": "0/1/0",
+              "tag": "div",
+              "text": "  ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 2,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "stat_e3c9df7196008778",
+              "path": "0/1",
+              "tag": "body",
+              "text": "\n    \n\n\n\n\n",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 0,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0",
+              "tag": "html",
+              "text": "\n",
+              "visible_in_viewport": true
+            }
+          ],
+          "array_index": 256,
+          "context_subtree_root": "0/1/0/2/1/0/1",
+          "dom_path": "0/1/0/2/1/0/1/2/6",
+          "field_matches": [
+            {
+              "path": "/href_resolved",
+              "value": "https://www.mi.com/shop/search?keyword=AX3000T"
+            }
+          ]
+        },
+        {
+          "ancestors_self_first": [
+            {
+              "array_index": 292,
+              "href_raw": "//www.mi.com/shop/search?keyword=AX3000T",
+              "href_resolved": "https://www.mi.com/shop/search?keyword=AX3000T",
+              "id": "",
+              "path": "0/1/0/1/0/0/1/0/0/2",
+              "tag": "a",
+              "text": "全部结果",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 165,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1/0/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 113,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 63,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 54,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 48,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 45,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 39,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "app",
+              "path": "0/1/0",
+              "tag": "div",
+              "text": "  ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 2,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "stat_e3c9df7196008778",
+              "path": "0/1",
+              "tag": "body",
+              "text": "\n    \n\n\n\n\n",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 0,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0",
+              "tag": "html",
+              "text": "\n",
+              "visible_in_viewport": true
+            }
+          ],
+          "array_index": 292,
+          "context_subtree_root": "0/1/0/1/0/0/1/0",
+          "dom_path": "0/1/0/1/0/0/1/0/0/2",
+          "field_matches": [
+            {
+              "path": "/href_raw",
+              "value": "//www.mi.com/shop/search?keyword=AX3000T"
+            },
+            {
+              "path": "/href_resolved",
+              "value": "https://www.mi.com/shop/search?keyword=AX3000T"
+            }
+          ]
+        },
+        {
+          "ancestors_self_first": [
+            {
+              "array_index": 568,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1/2/0/1/0/0/0/1",
+              "tag": "h2",
+              "text": "Xiaomi路由器AX3000T 白色",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 465,
+              "href_raw": "//www.mi.com/shop/buy?product_id=1230803766&cfrom=search",
+              "href_resolved": "https://www.mi.com/shop/buy?product_id=1230803766&cfrom=search",
+              "id": "",
+              "path": "0/1/0/1/0/0/1/2/0/1/0/0/0",
+              "tag": "a",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 423,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1/2/0/1/0/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 377,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1/2/0/1/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 295,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1/2/0/1",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 167,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1/2/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 115,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1/2",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 63,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 54,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 48,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 45,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 39,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "app",
+              "path": "0/1/0",
+              "tag": "div",
+              "text": "  ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 2,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "stat_e3c9df7196008778",
+              "path": "0/1",
+              "tag": "body",
+              "text": "\n    \n\n\n\n\n",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 0,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0",
+              "tag": "html",
+              "text": "\n",
+              "visible_in_viewport": true
+            }
+          ],
+          "array_index": 568,
+          "context_subtree_root": "0/1/0/1/0/0/1/2/0/1/0/0",
+          "dom_path": "0/1/0/1/0/0/1/2/0/1/0/0/0/1",
+          "field_matches": [
+            {
+              "path": "/text",
+              "value": "Xiaomi路由器AX3000T 白色"
+            }
+          ]
+        }
+      ],
+      "matching_node_array_indices": [
+        255,
+        256,
+        292,
+        568
+      ],
+      "raw_matching_node_scalars": [
+        {
+          "array_index": 255,
+          "node": {
+            "aria_checked": "",
+            "aria_disabled": null,
+            "aria_hidden": "",
+            "aria_label": "",
+            "aria_modal": "",
+            "aria_pressed": "",
+            "aria_selected": "",
+            "disabled": false,
+            "hidden_attr": false,
+            "href_raw": "",
+            "href_resolved": "https://www.mi.com/shop/search?keyword=AX3000T",
+            "id": "",
+            "iframe_contents_read": false,
+            "inert_attr": false,
+            "item_prop": "",
+            "item_scope": false,
+            "item_type": "",
+            "link_target": "",
+            "name": "",
+            "parent_path": "0/1/0/2/1/0/1/2",
+            "path": "0/1/0/2/1/0/1/2/5",
+            "role": "",
+            "tag": "a",
+            "text": "（京）网械平台备字（2018）第00005号",
+            "value": null,
+            "visible_in_viewport": true
+          }
+        },
+        {
+          "array_index": 256,
+          "node": {
+            "aria_checked": "",
+            "aria_disabled": null,
+            "aria_hidden": "",
+            "aria_label": "",
+            "aria_modal": "",
+            "aria_pressed": "",
+            "aria_selected": "",
+            "disabled": false,
+            "hidden_attr": false,
+            "href_raw": "",
+            "href_resolved": "https://www.mi.com/shop/search?keyword=AX3000T",
+            "id": "",
+            "iframe_contents_read": false,
+            "inert_attr": false,
+            "item_prop": "",
+            "item_scope": false,
+            "item_type": "",
+            "link_target": "_blank",
+            "name": "",
+            "parent_path": "0/1/0/2/1/0/1/2",
+            "path": "0/1/0/2/1/0/1/2/6",
+            "role": "",
+            "tag": "a",
+            "text": "药品医疗器械网络信息服务备案 (京)网药械信息备字（2024）第00478号",
+            "value": null,
+            "visible_in_viewport": true
+          }
+        },
+        {
+          "array_index": 292,
+          "node": {
+            "aria_checked": "",
+            "aria_disabled": null,
+            "aria_hidden": "",
+            "aria_label": "",
+            "aria_modal": "",
+            "aria_pressed": "",
+            "aria_selected": "",
+            "disabled": false,
+            "hidden_attr": false,
+            "href_raw": "//www.mi.com/shop/search?keyword=AX3000T",
+            "href_resolved": "https://www.mi.com/shop/search?keyword=AX3000T",
+            "id": "",
+            "iframe_contents_read": false,
+            "inert_attr": false,
+            "item_prop": "",
+            "item_scope": false,
+            "item_type": "",
+            "link_target": "",
+            "name": "",
+            "parent_path": "0/1/0/1/0/0/1/0/0",
+            "path": "0/1/0/1/0/0/1/0/0/2",
+            "role": "",
+            "tag": "a",
+            "text": "全部结果",
+            "value": null,
+            "visible_in_viewport": true
+          }
+        },
+        {
+          "array_index": 568,
+          "node": {
+            "aria_checked": "",
+            "aria_disabled": null,
+            "aria_hidden": "",
+            "aria_label": "",
+            "aria_modal": "",
+            "aria_pressed": "",
+            "aria_selected": "",
+            "disabled": false,
+            "hidden_attr": false,
+            "href_raw": null,
+            "href_resolved": null,
+            "id": "",
+            "iframe_contents_read": false,
+            "inert_attr": false,
+            "item_prop": "",
+            "item_scope": false,
+            "item_type": "",
+            "link_target": null,
+            "name": "",
+            "parent_path": "0/1/0/1/0/0/1/2/0/1/0/0/0",
+            "path": "0/1/0/1/0/0/1/2/0/1/0/0/0/1",
+            "role": "",
+            "tag": "h2",
+            "text": "Xiaomi路由器AX3000T 白色",
+            "value": null,
+            "visible_in_viewport": true
+          }
+        }
+      ]
+    },
+    "before": {
+      "keyword_occurrence_count": 6,
+      "match_contexts": [
+        {
+          "ancestors_self_first": [
+            {
+              "array_index": 255,
+              "href_raw": "",
+              "href_resolved": "https://www.mi.com/shop/search?keyword=AX3000T",
+              "id": "",
+              "path": "0/1/0/2/1/0/1/2/5",
+              "tag": "a",
+              "text": "（京）网械平台备字（2018）第00005号",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 127,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2/1/0/1/2",
+              "tag": "p",
+              "text": "\n        ©\n         京ICP证110507号\n                  网络食品经营备案 京食药网食备202010048  \n         新出发京批字第直220280号\n        \n        违法和不良信息举报电话：171-5104-4404  本网站所列数据，除特殊说明，所有数据均出自我司实验室测试\n      ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 67,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2/1/0/1",
+              "tag": "div",
+              "text": "  ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 56,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2/1/0",
+              "tag": "div",
+              "text": "  ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 50,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2/1",
+              "tag": "div",
+              "text": " ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 46,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2",
+              "tag": "div",
+              "text": " ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 39,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "app",
+              "path": "0/1/0",
+              "tag": "div",
+              "text": "  ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 2,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "stat_e3c9df7196008778",
+              "path": "0/1",
+              "tag": "body",
+              "text": "\n    \n\n\n\n\n",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 0,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0",
+              "tag": "html",
+              "text": "\n",
+              "visible_in_viewport": true
+            }
+          ],
+          "array_index": 255,
+          "context_subtree_root": "0/1/0/2/1/0/1",
+          "dom_path": "0/1/0/2/1/0/1/2/5",
+          "field_matches": [
+            {
+              "path": "/href_resolved",
+              "value": "https://www.mi.com/shop/search?keyword=AX3000T"
+            }
+          ]
+        },
+        {
+          "ancestors_self_first": [
+            {
+              "array_index": 256,
+              "href_raw": "",
+              "href_resolved": "https://www.mi.com/shop/search?keyword=AX3000T",
+              "id": "",
+              "path": "0/1/0/2/1/0/1/2/6",
+              "tag": "a",
+              "text": "药品医疗器械网络信息服务备案 (京)网药械信息备字（2024）第00478号",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 127,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2/1/0/1/2",
+              "tag": "p",
+              "text": "\n        ©\n         京ICP证110507号\n                  网络食品经营备案 京食药网食备202010048  \n         新出发京批字第直220280号\n        \n        违法和不良信息举报电话：171-5104-4404  本网站所列数据，除特殊说明，所有数据均出自我司实验室测试\n      ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 67,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2/1/0/1",
+              "tag": "div",
+              "text": "  ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 56,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2/1/0",
+              "tag": "div",
+              "text": "  ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 50,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2/1",
+              "tag": "div",
+              "text": " ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 46,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/2",
+              "tag": "div",
+              "text": " ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 39,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "app",
+              "path": "0/1/0",
+              "tag": "div",
+              "text": "  ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 2,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "stat_e3c9df7196008778",
+              "path": "0/1",
+              "tag": "body",
+              "text": "\n    \n\n\n\n\n",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 0,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0",
+              "tag": "html",
+              "text": "\n",
+              "visible_in_viewport": true
+            }
+          ],
+          "array_index": 256,
+          "context_subtree_root": "0/1/0/2/1/0/1",
+          "dom_path": "0/1/0/2/1/0/1/2/6",
+          "field_matches": [
+            {
+              "path": "/href_resolved",
+              "value": "https://www.mi.com/shop/search?keyword=AX3000T"
+            }
+          ]
+        },
+        {
+          "ancestors_self_first": [
+            {
+              "array_index": 292,
+              "href_raw": "//www.mi.com/shop/search?keyword=AX3000T",
+              "href_resolved": "https://www.mi.com/shop/search?keyword=AX3000T",
+              "id": "",
+              "path": "0/1/0/1/0/0/1/0/0/2",
+              "tag": "a",
+              "text": "全部结果",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 165,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1/0/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 113,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 63,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 54,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 48,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 45,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 39,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "app",
+              "path": "0/1/0",
+              "tag": "div",
+              "text": "  ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 2,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "stat_e3c9df7196008778",
+              "path": "0/1",
+              "tag": "body",
+              "text": "\n    \n\n\n\n\n",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 0,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0",
+              "tag": "html",
+              "text": "\n",
+              "visible_in_viewport": true
+            }
+          ],
+          "array_index": 292,
+          "context_subtree_root": "0/1/0/1/0/0/1/0",
+          "dom_path": "0/1/0/1/0/0/1/0/0/2",
+          "field_matches": [
+            {
+              "path": "/href_raw",
+              "value": "//www.mi.com/shop/search?keyword=AX3000T"
+            },
+            {
+              "path": "/href_resolved",
+              "value": "https://www.mi.com/shop/search?keyword=AX3000T"
+            }
+          ]
+        },
+        {
+          "ancestors_self_first": [
+            {
+              "array_index": 568,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1/2/0/1/0/0/0/1",
+              "tag": "h2",
+              "text": "Xiaomi路由器AX3000T 白色",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 465,
+              "href_raw": "//www.mi.com/shop/buy?product_id=1230803766&cfrom=search",
+              "href_resolved": "https://www.mi.com/shop/buy?product_id=1230803766&cfrom=search",
+              "id": "",
+              "path": "0/1/0/1/0/0/1/2/0/1/0/0/0",
+              "tag": "a",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 423,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1/2/0/1/0/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 377,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1/2/0/1/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 295,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1/2/0/1",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 167,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1/2/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 115,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1/2",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 63,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0/1",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 54,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 48,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1/0",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 45,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0/1/0/1",
+              "tag": "div",
+              "text": "",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 39,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "app",
+              "path": "0/1/0",
+              "tag": "div",
+              "text": "  ",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 2,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "stat_e3c9df7196008778",
+              "path": "0/1",
+              "tag": "body",
+              "text": "\n    \n\n\n\n\n",
+              "visible_in_viewport": true
+            },
+            {
+              "array_index": 0,
+              "href_raw": null,
+              "href_resolved": null,
+              "id": "",
+              "path": "0",
+              "tag": "html",
+              "text": "\n",
+              "visible_in_viewport": true
+            }
+          ],
+          "array_index": 568,
+          "context_subtree_root": "0/1/0/1/0/0/1/2/0/1/0/0",
+          "dom_path": "0/1/0/1/0/0/1/2/0/1/0/0/0/1",
+          "field_matches": [
+            {
+              "path": "/text",
+              "value": "Xiaomi路由器AX3000T 白色"
+            }
+          ]
+        }
+      ],
+      "matching_node_array_indices": [
+        255,
+        256,
+        292,
+        568
+      ],
+      "raw_matching_node_scalars": [
+        {
+          "array_index": 255,
+          "node": {
+            "aria_checked": "",
+            "aria_disabled": null,
+            "aria_hidden": "",
+            "aria_label": "",
+            "aria_modal": "",
+            "aria_pressed": "",
+            "aria_selected": "",
+            "disabled": false,
+            "hidden_attr": false,
+            "href_raw": "",
+            "href_resolved": "https://www.mi.com/shop/search?keyword=AX3000T",
+            "id": "",
+            "iframe_contents_read": false,
+            "inert_attr": false,
+            "item_prop": "",
+            "item_scope": false,
+            "item_type": "",
+            "link_target": "",
+            "name": "",
+            "parent_path": "0/1/0/2/1/0/1/2",
+            "path": "0/1/0/2/1/0/1/2/5",
+            "role": "",
+            "tag": "a",
+            "text": "（京）网械平台备字（2018）第00005号",
+            "value": null,
+            "visible_in_viewport": true
+          }
+        },
+        {
+          "array_index": 256,
+          "node": {
+            "aria_checked": "",
+            "aria_disabled": null,
+            "aria_hidden": "",
+            "aria_label": "",
+            "aria_modal": "",
+            "aria_pressed": "",
+            "aria_selected": "",
+            "disabled": false,
+            "hidden_attr": false,
+            "href_raw": "",
+            "href_resolved": "https://www.mi.com/shop/search?keyword=AX3000T",
+            "id": "",
+            "iframe_contents_read": false,
+            "inert_attr": false,
+            "item_prop": "",
+            "item_scope": false,
+            "item_type": "",
+            "link_target": "_blank",
+            "name": "",
+            "parent_path": "0/1/0/2/1/0/1/2",
+            "path": "0/1/0/2/1/0/1/2/6",
+            "role": "",
+            "tag": "a",
+            "text": "药品医疗器械网络信息服务备案 (京)网药械信息备字（2024）第00478号",
+            "value": null,
+            "visible_in_viewport": true
+          }
+        },
+        {
+          "array_index": 292,
+          "node": {
+            "aria_checked": "",
+            "aria_disabled": null,
+            "aria_hidden": "",
+            "aria_label": "",
+            "aria_modal": "",
+            "aria_pressed": "",
+            "aria_selected": "",
+            "disabled": false,
+            "hidden_attr": false,
+            "href_raw": "//www.mi.com/shop/search?keyword=AX3000T",
+            "href_resolved": "https://www.mi.com/shop/search?keyword=AX3000T",
+            "id": "",
+            "iframe_contents_read": false,
+            "inert_attr": false,
+            "item_prop": "",
+            "item_scope": false,
+            "item_type": "",
+            "link_target": "",
+            "name": "",
+            "parent_path": "0/1/0/1/0/0/1/0/0",
+            "path": "0/1/0/1/0/0/1/0/0/2",
+            "role": "",
+            "tag": "a",
+            "text": "全部结果",
+            "value": null,
+            "visible_in_viewport": true
+          }
+        },
+        {
+          "array_index": 568,
+          "node": {
+            "aria_checked": "",
+            "aria_disabled": null,
+            "aria_hidden": "",
+            "aria_label": "",
+            "aria_modal": "",
+            "aria_pressed": "",
+            "aria_selected": "",
+            "disabled": false,
+            "hidden_attr": false,
+            "href_raw": null,
+            "href_resolved": null,
+            "id": "",
+            "iframe_contents_read": false,
+            "inert_attr": false,
+            "item_prop": "",
+            "item_scope": false,
+            "item_type": "",
+            "link_target": null,
+            "name": "",
+            "parent_path": "0/1/0/1/0/0/1/2/0/1/0/0/0",
+            "path": "0/1/0/1/0/0/1/2/0/1/0/0/0/1",
+            "role": "",
+            "tag": "h2",
+            "text": "Xiaomi路由器AX3000T 白色",
+            "value": null,
+            "visible_in_viewport": true
+          }
+        }
+      ]
+    }
+  },
+  "provider_ready": false,
+  "raw_dom": {
+    "after": {
+      "bytes": 793529,
+      "path": "/home/alex/hepta-local-007f-20261111/helper5-mi-instability-analysis-r1/AFTER-DOM.json",
+      "sha256": "c20443a9bff359caf8d7d1d88a5599cdee1c06bb80448894b09f5b38daa52c5c"
+    },
+    "before": {
+      "bytes": 793529,
+      "path": "/home/alex/hepta-local-007f-20261111/helper5-mi-instability-analysis-r1/BEFORE-DOM.json",
+      "sha256": "d794d5a14ac464ce78ba55f1fdfb949979397dfcc6a592c19393450be3c7708c"
+    },
+    "first_differing_byte_offset": 211801
+  },
+  "raw_only_encoding_or_serialization_difference": false,
+  "same_challenge_epoch_profile_context": true,
+  "schema": "hepta.manual-mi-failed-dom-analysis.v1",
+  "source": {
+    "bytes": 18800,
+    "path": "/home/alex/hepta-local-007f-20261111/helper5-mi-instability-analysis-r1/ANALYZE.py",
+    "sha256": "18448b8978f43a1878fc1f34de24e29ac519f18a9dd68dc4edf477654b9c7a34"
+  },
+  "storage_isolation": {
+    "all_os_sockets_observed_closed": false,
+    "business_verified": false,
+    "first_load_dispatch_begin_elapsed_ms": 815422404,
+    "first_url": "https://www.mi.com/shop/search?keyword=AX3000T",
+    "library": "androidx.webkit:webkit:1.13.0",
+    "preload_clear": {
+      "api": "WebStorageCompat.deleteBrowsingData",
+      "callback_elapsed_ms": 815422403,
+      "callback_observed": true,
+      "cookies_present_after": false,
+      "deadline_elapsed_ms": 815425348,
+      "deadline_met": true,
+      "initial_url": null,
+      "started_elapsed_ms": 815422349
+    },
+    "profile_assigned_elapsed_ms": 815422344,
+    "profile_name": "hepta_v2_0ed2d6440b6839e90b5a33c4255694c62e79058a5056b8fb3efdc371b1142d51",
+    "profile_names_before": [
+      "Default",
+      "hepta_v2_1170ccc3c685edb1407ae9497b5123609ce3338a255879bf13b00712ea42668f",
+      "hepta_v2_5070b7da9f5b76a38af6902e2bf765896cd312d57f9e6d35cefb2e416bfb266c"
+    ],
+    "profile_was_present_before": false,
+    "retirement_clear": null,
+    "runtime_delete_browsing_data": true,
+    "runtime_multi_profile": true,
+    "schema": "hepta.web-helper.storage-isolation.v1",
+    "webview_provider_package": "com.google.android.webview",
+    "webview_provider_version": "140.0.7339.207",
+    "webview_provider_version_code": 733920733,
+    "whole_device_storage_erased": false
+  },
+  "terminal_failure_reason_not_recorded_in_pair": true
+}

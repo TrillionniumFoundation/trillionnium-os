@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.main55-mi-transaction-path-independent-review.v1",
+  "status": "source_review_no_blocker_actual_rerun_required",
+  "reviewer": "android_code_audit",
+  "actual_failure": {
+    "result": {
+      "git": "c3538df42438869158be5f4e34c665e77fb7e603",
+      "bytes": 28342,
+      "sha256": "2829b933cb305cf2c940bf7d86e6c98479c257b9ad72a85e8f62be196f3d0187"
+    },
+    "stderr": {
+      "git": "624cc8b8ed8806d8d467d3a2f940dece2a7bd139",
+      "bytes": 487,
+      "sha256": "09aa7132f588bb627caf24a32f5721e38f69fb0fac9e42e8029941240a170d8f"
+    },
+    "compile_exit": 0,
+    "evidence80": {
+      "cases": 80,
+      "assertions": 92,
+      "all_pass": true
+    },
+    "composition43_exit": 1,
+    "failed_case": "transaction_anchor_mints_no_capability",
+    "calendar13_executed": false,
+    "originals_unchanged": true,
+    "source_unchanged": true,
+    "written_unchanged": true
+  },
+  "patch": {
+    "git": "255925d79f79c2d2d14d34d59cb4b959216e8d48",
+    "bytes": 1972,
+    "sha256": "41984cd31ab320c351380b94dca1a8b157e1cb12447efa37ab678ef8866fd24f"
+  },
+  "base": {
+    "git_blob_sha": "31da0b4abaa16116fe504dfe61df9b988f05ec59",
+    "bytes": 17276,
+    "sha256": "cdc85225d7f938d47a8aeb62b6d7d4ccc439b420c698dd86a10841f543771f50"
+  },
+  "successor": {
+    "git_blob_sha": "4d38f27e602302f71ecbf1c4e2e4fcb367fa9fe0",
+    "bytes": 17440,
+    "sha256": "aaddee9837555083ec1d796b67a2cfc37a280b023b12b2dbd4e474d47586ac8b"
+  },
+  "checked": {
+    "one_hunk_exact_forward_reverse": true,
+    "existing_predicate_body_byte_identical": true,
+    "all_existing_test_assertions_unchanged": true,
+    "reads_same_bounded_anchor_subtree": true,
+    "negative_throws_into_existing_search_unavailable_handler": true,
+    "link_emission_occurs_only_after_negative_guard": true,
+    "region_and_binding_arm_shared_sources_unchanged": true,
+    "actual_focused39_source_list_does_not_include_changed_class": true
+  },
+  "cause": "The region-based search branch had stopped invoking its existing containsTransaction predicate. The complete card could therefore retain a product model/price while a visible anchor-subtree transaction label passed into a native click capability. The existing predicate rejects 购买/加购/购物车/付款/支付/领券/登录/同意/下单; the shared region's narrower conditional-price pattern did not replace it.",
+  "remaining": [
+    "Recompile the main Android Java/DEX with this changed production input in an independent root; preserve the original successful unsigned build receipt.",
+    "Execute the existing Web composition assertion and remaining calendar regression with the unchanged tests.",
+    "Bind final source inventories and actual test/compiler receipts to the correct successor; do not relabel the old compiled 216-row map.",
+    "The failing fixture is synthetic, not evidence of a real merchant purchase or a phone action."
+  ],
+  "h_calls_in_review": 0,
+  "python_or_java_executed": false,
+  "android_compiled": false,
+  "phone_actions": 0,
+  "business_verified": false
+}

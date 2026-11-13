@@ -1,0 +1,17 @@
+{
+  "host": "pocket4",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-u",
+    "-B",
+    "/home/alex/hepta-local-007f-20261111/ROOT-WEB57-FLIGHT-RUN-r1.py"
+  ],
+  "cwd": "/home/alex/hepta-local-007f-20261111",
+  "env": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "cols": 160,
+  "rows": 48,
+  "idempotency_key": "007f-background-web-v57-lfm3-flight-r1"
+}

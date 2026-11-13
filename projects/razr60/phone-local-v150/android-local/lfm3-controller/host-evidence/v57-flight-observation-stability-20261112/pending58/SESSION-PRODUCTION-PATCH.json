@@ -1,0 +1,167 @@
+{
+  "schema": "hepta.main58.flight-readonly-settle-source-delta.v1",
+  "status": "source-only-not-compiled-or-executed",
+  "base_source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+  "base_aggregate": "517e61599073eb264c5e52871570d49e7af2d798",
+  "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+  "base": {
+    "bytes": 44197,
+    "sha256": "07509c1345b1bacdfcbf504943f375869c274e245c6aafb5819581b4c8395408",
+    "git_blob_sha": "87b2bd6a8758fb6c46659270412bf9d630673591"
+  },
+  "final": {
+    "bytes": 46689,
+    "sha256": "d2e4f073366d3d3046b0f9b90156f87b1fb84c842a3053a5d32f31df5e3bbc9b",
+    "git_blob_sha": "d89ff1a111693bebd445c99fede473fbc968a314"
+  },
+  "ordered_replacements": [
+    {
+      "label": "retain cross-capture DOM failure reason",
+      "before": "        WebDomStability.Result domBracket=null;\n",
+      "after": "        WebDomStability.Result domBracket=null;String domBracketError=null;\n"
+    },
+    {
+      "label": "record exact DOM predicate rejection without retrying a capture exception",
+      "before": "        }catch(Exception incompleteBracket){\n            // A changing bracket supplies no action. Existing loading retries\n            // remain bounded and read-only; no preceding click is repeated.\n        }\n",
+      "after": "        }catch(Exception incompleteBracket){\n            // No action capability is published from a changing bracket.\n            domBracketError=incompleteBracket.getClass().getSimpleName()+\": \"+\n                    HeptaAccessibilityService.limited(HeptaAccessibilityService.message(incompleteBracket),512);\n        }\n"
+    },
+    {
+      "label": "preserve native proof and release source before bounded fresh read",
+      "before": "        if(retryLoadingDocument(first,last,after,stable,deadline)){\n            loadingAttemptKey=actualLoadingKey;\n            captureDeadline=Math.min(deadline,loadingDocumentStarted+6000);\n            before=observer.observe();service.requireBackgroundObservation(taskId,before);\n            continue;\n        }\n        if(!stable&&!sameOriginalFrame&&sameCaptureDomain&&goal!=null&&nativeSource!=null\n                &&first.stability().rawEqual&&domBracket.rawEqual&&last.stability().rawEqual){\n            // This service-created proof only admits the new read-only frame.\n            // A later action still needs its own original model target and live Permit checks.\n            nativeObservationBracket=service.verifyFlightObservationBracket(this,nativeSource,after,first,last,\n                    cancellation,captureDeadline);\n            stable=true;\n        }\n",
+      "after": "        if(!stable&&!sameOriginalFrame&&sameCaptureDomain&&goal!=null&&nativeSource!=null\n                &&first.stability().rawEqual&&domBracket.rawEqual&&last.stability().rawEqual){\n            // This service-created proof only admits the new read-only frame.\n            // A later action still needs its own original model target and live Permit checks.\n            nativeObservationBracket=service.verifyFlightObservationBracket(this,nativeSource,after,first,last,\n                    cancellation,captureDeadline);\n            stable=true;\n        }\n        // The retained NodeRef belongs only to this completed read bracket.\n        // Release it before a wait or a fresh observation replaces the graph.\n        if(nativeSource!=null){nativeSource.close();nativeSource=null;}\n        if(retryLoadingDocument(first,last,before,after,stable,sameCaptureDomain,domBracketError,deadline)){\n            loadingAttemptKey=actualLoadingKey;\n            captureDeadline=Math.min(deadline,loadingDocumentStarted+6000);\n            before=observer.observe();service.requireBackgroundObservation(taskId,before);\n            continue;\n        }\n"
+    },
+    {
+      "label": "carry original AX bracket evidence into existing read-only diagnostics",
+      "before": "    private boolean retryLoadingDocument(WebEvidenceReceipt first,WebEvidenceReceipt last,PhoneObservation frame,\n                                         boolean stable,long deadline)throws Exception{\n",
+      "after": "    private boolean retryLoadingDocument(WebEvidenceReceipt first,WebEvidenceReceipt last,\n                                         PhoneObservation before,PhoneObservation frame,boolean stable,\n                                         boolean sameCaptureDomain,String domBracketError,long deadline)throws Exception{\n"
+    },
+    {
+      "label": "allow the same bounded reader to settle any unstable Flight observation, without a node exception",
+      "before": "        if(!bodyPending&&!bookingPending&&!queryPending&&!(key.equals(loadingDocumentKey)&&!stable))return false;\n",
+      "after": "        if(!bodyPending&&!bookingPending&&!queryPending&&stable)return false;\n"
+    },
+    {
+      "label": "retire earlier capabilities and retain the original two-read/six-second budget",
+      "before": "        if(loadingDocumentReadRetries>=2||now+250>=Math.min(deadline,loadingDocumentStarted+6000))return false;\n        need(!retired&&!cancellation.isCancelled(),\"web task retired while waiting for page content\");\n        loadingDocumentReadRetries++;\n",
+      "after": "        boolean retry=loadingDocumentReadRetries<2&&now+250<Math.min(deadline,loadingDocumentStarted+6000);\n        if(!retry&&stable)return false;\n        need(!retired&&!cancellation.isCancelled(),\"web task retired while waiting for page content\");\n        // A new read cannot reuse an earlier page, node permit or dispatch check.\n        // Keep model-run attempted fences and the actual flight progress unchanged.\n        domain=null;current=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;\n        dispatchSource=null;dispatchSourceRun=null;dispatchSourceAction=null;\n        dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;shoppingDispatch=null;\n        completion.clearWebDomain();\n        if(retry)loadingDocumentReadRetries++;\n"
+    },
+    {
+      "label": "preserve real cause and exhaustion in existing web-load-wait originals",
+      "before": "                .put(\"actual_query_awaiting_results\",queryPending).put(\"read_only_retry\",loadingDocumentReadRetries)\n                .put(\"maximum_extra_reobservations\",2).put(\"deadline_elapsed_ms\",Math.min(deadline,loadingDocumentStarted+6000))\n                .put(\"action_replayed\",false).put(\"model_action_dispatched\",false).put(\"business_verified\",false));\n        SystemClock.sleep(200);\n",
+      "after": "                .put(\"actual_query_awaiting_results\",queryPending).put(\"read_only_retry\",loadingDocumentReadRetries)\n                .put(\"maximum_extra_reobservations\",2).put(\"deadline_elapsed_ms\",Math.min(deadline,loadingDocumentStarted+6000))\n                .put(\"reason\",stable?\"recognized_content_pending\":\"unstable_ax_dom_bracket\")\n                .put(\"reobserve_scheduled\",retry).put(\"read_only_budget_exhausted\",!retry)\n                .put(\"first_ax_observation_id\",before.id).put(\"last_ax_observation_id\",frame.id)\n                .put(\"first_ax_tree_sha256\",before.treeSha256).put(\"last_ax_tree_sha256\",frame.treeSha256)\n                .put(\"first_ax_app_tree_sha256\",before.state.appTreeSha256).put(\"last_ax_app_tree_sha256\",frame.state.appTreeSha256)\n                .put(\"first_ax_window_id\",before.windowId).put(\"last_ax_window_id\",frame.windowId)\n                .put(\"first_ax_rotation\",before.rotation).put(\"last_ax_rotation\",frame.rotation)\n                .put(\"first_ax_display_id\",before.windowMetadata.displayId).put(\"last_ax_display_id\",frame.windowMetadata.displayId)\n                .put(\"first_background_generation\",before.backgroundGeneration).put(\"last_background_generation\",frame.backgroundGeneration)\n                .put(\"same_original_frame\",sameFrame(before,frame)).put(\"same_capture_domain\",sameCaptureDomain)\n                .put(\"dom_bracket_error\",domBracketError==null?JSONObject.NULL:domBracketError)\n                .put(\"first_navigation_epoch\",first.epoch).put(\"last_navigation_epoch\",last.epoch)\n                .put(\"first_native_url\",first.url).put(\"last_native_url\",last.url)\n                .put(\"old_action_capabilities_retired\",true)\n                .put(\"action_replayed\",false).put(\"model_action_dispatched\",false).put(\"business_verified\",false));\n        if(!retry)return false;\n        SystemClock.sleep(200);\n"
+    }
+  ],
+  "unchanged": {
+    "prefix": {
+      "bytes": 10974,
+      "sha256": "12d5a75663298c9615a79e6e6a073a3a49554e187fc7316b50ef50c9925a216d",
+      "git_blob_sha": "9fcf6584e52a805c682c5d59058c250c7baf4b2f"
+    },
+    "suffix_from_publishWaiting_through_actions_close_sameFrame": {
+      "bytes": 23854,
+      "sha256": "0684dd6d942e6a404a52243a5cbb84e1c93854698f96e04ddcfda5ec3b94525a",
+      "git_blob_sha": "96b6c7b42a07bf4e79471a6792e2197c4f8684fd"
+    },
+    "action_checks": true,
+    "model_run_attempted_fences": true,
+    "flight_progress": true,
+    "helper_api_protocol": true,
+    "service_and_native_snapshot": true
+  },
+  "actual_failure": {
+    "result_blob": "3d4d46c24c6fec328dca1c9062ebdde76cfeedba",
+    "scope_bundle": "992bcb98b7ed1ff15b9dbe086ab4257f82132c1a",
+    "original_scope_pins": [
+      {
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v57-lfm3-flight-r1/evidence/task/scope-observation-036addfec7324b2ba31ae0a443702d30.json",
+        "bytes": 83385,
+        "sha256": "866e1dce748ad73c70e651f4ef75c18ef5a567ce3767a3532ee5d541ead7b785"
+      },
+      {
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v57-lfm3-flight-r1/evidence/task/scope-observation-86bdeddc70b04aa9abe416029e005276.json",
+        "bytes": 83383,
+        "sha256": "72d9eaf52c86921dd3c5b0d0eefb2765f33401f20234d64f3ae6ceb26a29ad69"
+      },
+      {
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v57-lfm3-flight-r1/evidence/task/scope-observation-98f1efecebfe4a4bb44222877b734958.json",
+        "bytes": 83385,
+        "sha256": "3c9bbf93584c794f2b8862ddbe7cf9d6d6dfbb0775962cd3191b1ea3d9d2dadf"
+      }
+    ],
+    "observed_retained_nodes": 59,
+    "traversal_visited_nodes": 620,
+    "whole_native_graph_comparison_claimed": false,
+    "changed_retained_nodes": [
+      {
+        "id": "n16",
+        "changed_keys": [
+          "bounds",
+          "node_app_tree_sha256"
+        ],
+        "before_bounds": [
+          185,
+          109,
+          232,
+          157
+        ],
+        "after_bounds": [
+          30,
+          109,
+          78,
+          157
+        ],
+        "native_path": "0/2/0/0/0/0/2/2/0/0"
+      },
+      {
+        "id": "n17",
+        "changed_keys": [
+          "bounds",
+          "node_app_tree_sha256"
+        ],
+        "before_bounds": [
+          438,
+          114,
+          592,
+          152
+        ],
+        "after_bounds": [
+          282,
+          114,
+          438,
+          152
+        ],
+        "native_path": "0/2/0/0/0/0/2/2/0/1"
+      }
+    ],
+    "before_app_tree_sha256": "b3b239f6c4843d5535900fa9895d7fa376a8a5d48cbbc6315484c02ce23f62c0",
+    "after_app_tree_sha256": "d0e34081d28a50fec56a22d2e3895b59e5623e29a4430a37990edc01509ba2da",
+    "same_png_sha256": "877ac387780b39c1ee4b9e1c18746a695638b0ac98f8c6d606439a0f5bb08e18",
+    "dom_pair_sha256": "376ef21379982a221bc06718665692743fdf14e47a43ac7d3af51181df12778e",
+    "query_dispatched": false,
+    "action_replayed": false
+  },
+  "behavior": {
+    "branch": "same already verified Flight lease/instance/epoch/URL/display/window, unstable observation bracket",
+    "maximum_extra_reobservations": 2,
+    "wait_milliseconds": 200,
+    "read_deadline_milliseconds": 6000,
+    "original_deadline_still_limits": true,
+    "budget_is_existing_loadingDocument_keyed_state": true,
+    "new_native_source_closed_before_wait": true,
+    "old_action_capabilities_discarded": true,
+    "next_iteration_new_observation_and_capture_nonces": true,
+    "original_sameFrame_and_dom_geometry_predicates_unchanged": true,
+    "existing_homepage_readonly_proof_preserved": true,
+    "capture_or_identity_exceptions_not_caught_for_retry": true,
+    "existing_diagnostic_prefix": "web-load-wait-",
+    "terminal_budget_exhaustion_recorded": true
+  },
+  "validation": {
+    "ordered_forward_exact": true,
+    "ordered_reverse_exact": true,
+    "no_host_execution": true,
+    "no_phone_actions": true,
+    "no_new_suite": true,
+    "production_ref_moved": false
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "schema": "hepta.main55-core101-r3-independent-source-review.v1",
+  "reviewer": "android_code_audit",
+  "status": "source_review_complete_no_concrete_blocker_in_requested_delta",
+  "reviewed": {
+    "review_git": "89464b8642b3bda115bd29ee17f35fe497c9f4b4",
+    "source": {
+      "git_blob_sha": "cd7a3a0e54c52deca060f97e5724913a7af15bbe",
+      "bytes": 54123,
+      "sha256": "2c02f930ce9e785efc849a1a72cc70a6900fa9d406fb29750e5c2723059ed44e"
+    },
+    "base": {
+      "git": "66c6919d179dff8b5f116f561d5b332ecc457ee4",
+      "bytes": 44671,
+      "sha256": "d2a7949d28b8f731bb8b0662001b94f6a652a4d384325c42dfe5cb12cd1ba980",
+      "independent_review_git": "6224ad989668c6f048a5ba2fe0d37bc532ac848a"
+    },
+    "final_aggregate": {
+      "git_blob_sha": "d3bf59d91e5681fd5991c4bfef8587ba9a7b2a2d",
+      "bytes": 1320157,
+      "sha256": "66ac069a14b64db51d9f2d09bf52acc6a8d9dc93484f8c21e3c3276ac31c2f06"
+    }
+  },
+  "mechanical": {
+    "all12ForwardReverse": true,
+    "aggregateRebuilt": {
+      "bytes": 1320157,
+      "sha256": "66ac069a14b64db51d9f2d09bf52acc6a8d9dc93484f8c21e3c3276ac31c2f06",
+      "git": "d3bf59d91e5681fd5991c4bfef8587ba9a7b2a2d"
+    },
+    "changed": [
+      "src/org/trillionnium/hepta/local/MiPublicProductPage.java",
+      "tests/calculator-input/CalculatorInputGuardHostTest.java"
+    ],
+    "plainInventory": {
+      "bytes": 103607,
+      "sha256": "65bf7934d82692f45c10aedb947613043453b30bc7d55c4dc8b7e44e4ca0bed1",
+      "git": "041dbfa01fbe82e067737a85b64b4d56cbe964dd"
+    },
+    "compiler": {
+      "bytes": 34208,
+      "sha256": "cf9549832cfdf97be65866600fb0021fb53ab11851c4b490ea07b80ff9265db9",
+      "git": "954303daecc66d4ca2913a95eb7b4710812ba27b"
+    }
+  },
+  "findings": [
+    "Twelve declared replacements independently reconstruct all 54123 source bytes; applying their inverses restores the previously reviewed 44671-byte r2 coordinator exactly.",
+    "The unchanged r2 Calculator fixture derivation is pinned to its exact 50d22 intermediate. The new derivation applies the one reviewed Mi transaction-label guard, preserves raw Java and inverse proof, updates its one overlay and inventory row, then hashes the complete 1320157-byte final aggregate and Git blob.",
+    "Independent V8 reconstruction equals d3bf59 byte-for-byte. Relative to original012cf only MiPublicProductPage.java and CalculatorInputGuardHostTest.java change; the other592 source metadata rows are identical.",
+    "The old216 map remains a distinct prior33bd object. Current216 is independently reconstructed by changing only the Mi SHA, equals cf954, and will be checked using the actual unchanged build_identity.source_inputs against the newly materialized tree. This does not relabel oldc641 as matching the new source.",
+    "The original101 runner, order, assertions, compiler flags and18 nested stages are unchanged. Shared I/O and owned-process cleanup remain outside all changed spans.",
+    "The first ROOT.mkdir is at line484 outside the line509 handler; the unsuccessful competitor cannot enter the result-writing block. All predecessor source and failed logs retain existing before/after guards.",
+    "The possibly written r2 source path is metadata only and is neither read nor modified nor executed. The new result explicitly records one production input change and requires a new same-source Android build, with no postcompile test sidecar.",
+    "Historical nested successor metadata is retained as predecessor history and is explicitly superseded by combined_current_source_successor; no new Android, core101 or business pass is claimed."
+  ],
+  "not_performed": {
+    "python_syntax_or_execution": true,
+    "java_or_core101_execution": true,
+    "host_mutation": true,
+    "phone_actions": true
+  },
+  "transport_reviewed_here": false
+}

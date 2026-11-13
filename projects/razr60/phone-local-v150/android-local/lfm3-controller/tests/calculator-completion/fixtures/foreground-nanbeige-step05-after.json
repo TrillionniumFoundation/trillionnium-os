@@ -1,0 +1,392 @@
+{
+  "observation_id": "1f0efbb1ff434a54aa2a1a3bb9bfb5eb",
+  "package": "com.motorola.cn.calculator",
+  "screen_width": 1224,
+  "screen_height": 2992,
+  "rotation": 0,
+  "window_id": 3281,
+  "screen_sha256": "a263edfeadca074e0f444d36e98a44d4d7d58f7534d012a79edaad6e49cff53c",
+  "window": {
+    "scope": "active_root_only",
+    "metadata_status": "observed",
+    "window_id": 3281,
+    "root_bounds": [
+      0,
+      0,
+      1224,
+      2992
+    ],
+    "root_class": "android.widget.FrameLayout",
+    "root_class_truncated": false,
+    "type": 1,
+    "display_id": 0,
+    "bounds": [
+      0,
+      0,
+      1224,
+      2992
+    ],
+    "title": "计算器",
+    "title_truncated": false
+  },
+  "app_tree_sha256": "a9cb28202aa5df0950082e7059bebb18600a1c7acc6052039df25296f6d16104",
+  "observation_state_sha256": "687ba22b3052697a797745530df69bb7aae0d67a333d52f998ead6645c03733f",
+  "ime_visible": false,
+  "scroll_actions_schema": "hepta.observed-scroll-actions.v1",
+  "node_data_is_untrusted": true,
+  "nodes_truncated": false,
+  "nodes": [
+    {
+      "id": "n0",
+      "bounds": [
+        48,
+        1438,
+        330,
+        1724
+      ],
+      "description": "清除",
+      "view_id": "com.motorola.cn.calculator:id\/clr",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n1",
+      "bounds": [
+        330,
+        1438,
+        612,
+        1724
+      ],
+      "description": "删除",
+      "view_id": "com.motorola.cn.calculator:id\/del",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n2",
+      "bounds": [
+        612,
+        1438,
+        894,
+        1724
+      ],
+      "description": "百分号",
+      "view_id": "com.motorola.cn.calculator:id\/op_percent",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n3",
+      "bounds": [
+        894,
+        1438,
+        1176,
+        1724
+      ],
+      "description": "除",
+      "view_id": "com.motorola.cn.calculator:id\/op_div",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n4",
+      "bounds": [
+        48,
+        1724,
+        330,
+        2011
+      ],
+      "text": "7",
+      "view_id": "com.motorola.cn.calculator:id\/digit_7",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n5",
+      "bounds": [
+        330,
+        1724,
+        612,
+        2011
+      ],
+      "text": "8",
+      "view_id": "com.motorola.cn.calculator:id\/digit_8",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n6",
+      "bounds": [
+        612,
+        1724,
+        894,
+        2011
+      ],
+      "text": "9",
+      "view_id": "com.motorola.cn.calculator:id\/digit_9",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n7",
+      "bounds": [
+        894,
+        1724,
+        1176,
+        2011
+      ],
+      "description": "乘",
+      "view_id": "com.motorola.cn.calculator:id\/op_mul",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n8",
+      "bounds": [
+        48,
+        2011,
+        330,
+        2298
+      ],
+      "text": "4",
+      "view_id": "com.motorola.cn.calculator:id\/digit_4",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n9",
+      "bounds": [
+        330,
+        2011,
+        612,
+        2298
+      ],
+      "text": "5",
+      "view_id": "com.motorola.cn.calculator:id\/digit_5",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n10",
+      "bounds": [
+        612,
+        2011,
+        894,
+        2298
+      ],
+      "text": "6",
+      "view_id": "com.motorola.cn.calculator:id\/digit_6",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n11",
+      "bounds": [
+        894,
+        2011,
+        1176,
+        2298
+      ],
+      "description": "减",
+      "view_id": "com.motorola.cn.calculator:id\/op_sub",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n12",
+      "bounds": [
+        48,
+        2298,
+        330,
+        2585
+      ],
+      "text": "1",
+      "view_id": "com.motorola.cn.calculator:id\/digit_1",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n13",
+      "bounds": [
+        330,
+        2298,
+        612,
+        2585
+      ],
+      "text": "2",
+      "view_id": "com.motorola.cn.calculator:id\/digit_2",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n14",
+      "bounds": [
+        612,
+        2298,
+        894,
+        2585
+      ],
+      "text": "3",
+      "view_id": "com.motorola.cn.calculator:id\/digit_3",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n15",
+      "bounds": [
+        894,
+        2298,
+        1176,
+        2585
+      ],
+      "description": "加",
+      "view_id": "com.motorola.cn.calculator:id\/op_add",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n16",
+      "bounds": [
+        48,
+        2585,
+        330,
+        2872
+      ],
+      "text": "0",
+      "view_id": "com.motorola.cn.calculator:id\/digit_0",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n17",
+      "bounds": [
+        330,
+        2585,
+        612,
+        2872
+      ],
+      "text": ".",
+      "view_id": "com.motorola.cn.calculator:id\/digit_point",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n18",
+      "bounds": [
+        612,
+        2585,
+        894,
+        2872
+      ],
+      "text": "+\/−",
+      "description": "正负",
+      "view_id": "com.motorola.cn.calculator:id\/op_positive_negative",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n19",
+      "bounds": [
+        894,
+        2585,
+        1176,
+        2872
+      ],
+      "description": "等于",
+      "view_id": "com.motorola.cn.calculator:id\/eq",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n20",
+      "bounds": [
+        60,
+        190,
+        216,
+        346
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "view_id": "com.motorola.cn.calculator:id\/switch_btn",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n21",
+      "bounds": [
+        0,
+        520,
+        1224,
+        593
+      ],
+      "text": "23×19",
+      "view_id": "com.motorola.cn.calculator:id\/formula",
+      "clickable": true,
+      "editable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n22",
+      "bounds": [
+        0,
+        617,
+        1224,
+        826
+      ],
+      "text": "437",
+      "view_id": "com.motorola.cn.calculator:id\/formula_or_result",
+      "clickable": true,
+      "editable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n23",
+      "bounds": [
+        276,
+        201,
+        1128,
+        269
+      ],
+      "text": "37+58",
+      "view_id": "com.motorola.cn.calculator:id\/item_formula",
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n24",
+      "bounds": [
+        276,
+        269,
+        1128,
+        350
+      ],
+      "text": "95",
+      "view_id": "com.motorola.cn.calculator:id\/item_result",
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    }
+  ]
+}

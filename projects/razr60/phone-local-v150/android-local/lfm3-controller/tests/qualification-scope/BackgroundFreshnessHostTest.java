@@ -83,9 +83,13 @@ final class BackgroundFreshnessHostTest {
         });
         test("background_snapshot_refresh_work_retains_production_traversal_bound",()->{
             GraphSetup s=new GraphSetup();s.root.children.clear();
-            for(int i=0;i<400;i++){AccessibilityNodeInfo child=new AccessibilityNodeInfo(SETTINGS,7);child.clickable=false;child.window.display=DISPLAY;s.root.children.add(child);}
+            for(int i=0;i<1600;i++){AccessibilityNodeInfo child=new AccessibilityNodeInfo(SETTINGS,7);child.clickable=false;child.window.display=DISPLAY;s.root.children.add(child);}
             PhoneObservation value=s.capture();int refreshed=s.root.refreshes;for(AccessibilityNodeInfo child:s.root.children)refreshed+=child.refreshes;
-            check(value.nodesTruncated&&refreshed==320&&s.root.children.get(319).refreshes==0,"no refresh outside existing MAX_VISITED");
+            check(value.collectionStats!=null&&value.collectionStats.visitLimit==1536,"actual declared traversal limit is archived");
+            check(value.nodesTruncated&&refreshed==1536&&s.root.children.get(1535).refreshes==0,"no refresh outside the explicit v50 bound");
+            check(value.collectionStats.visited==1536&&value.collectionStats.childSlotsOmitted==65
+                    &&value.collectionStats.pending==0&&value.collectionStats.limitReasons.equals(Collections.singletonList("traversal_limit")),
+                    "record the exact acquisition-budget reason without inventing an omitted descendant count");
         });
         test("foreground_snapshot_retains_existing_refresh_behavior",()->{
             GraphSetup s=new GraphSetup();s.fixture.background=null;s.fixture.foreground=s.root;s.root.window.display=0;s.child.window.display=0;s.capture();

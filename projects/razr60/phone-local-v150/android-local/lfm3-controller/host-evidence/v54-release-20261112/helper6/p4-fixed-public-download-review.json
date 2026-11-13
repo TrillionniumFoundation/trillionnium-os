@@ -1,0 +1,96 @@
+{
+  "schema": "hepta.helper6-fixed-public-inputs-independent-review.v1",
+  "status": "source_and_existing_partial_failure_review_complete",
+  "reviewer": "android_background",
+  "handoff": {
+    "git": "148d8bed532c98dbcf297c9ab2596962d0f2bb20",
+    "bytes": 67220,
+    "sha256": "9530f3f26f1099bb095f9dc8ec86cfd7e629a7677f87dce04f8d6fa49f462f2d"
+  },
+  "source_git": "f214bffe7f804559e43a61e97a9bae9603a845b8",
+  "independent_checks": {
+    "source": {
+      "bytes": 26148,
+      "sha256": "a8dbef392ef2edbe87e271513421dbc5a8b2b374ec9d4f303361f0e2b9772131"
+    },
+    "loader": {
+      "bytes": 852,
+      "sha256": "7d263582ffa29b0f01d818118dd13f07f1dd566f95ccd25131554eab2b79c493"
+    },
+    "config": {
+      "bytes": 14545,
+      "sha256": "fcb613a61670d5ceace8e595ae24cf93380cc160c27e07fa483c2d3ffa424a2a"
+    },
+    "same_source_create_only_transport": true,
+    "same_loader_request": true,
+    "config_matches_actual_archived_config": true,
+    "unique_relative_output_count": 34,
+    "ready": {
+      "git": "be047ff3399e5b72309dbe5869162bd0540129d5",
+      "bytes": 1289,
+      "sha256": "37f3b1790fce237f6339cab159015da7937e6517cc4a97f4dc16443c74e01d7b",
+      "verified": true,
+      "full_remaining_dependency_stage_complete": false,
+      "android_compiled": false,
+      "phone_contacted": false
+    },
+    "actual_result": {
+      "git": "6616146b360639708d4b55ffceef6a9c3b860ea6",
+      "bytes": 18213,
+      "sha256": "3ce37751fc824816475e624123a787f5e00bd011c11beb9d583835df453b18ad"
+    },
+    "complete_outer_count": 17,
+    "complete_runtime_count": 14,
+    "complete_outer_metadata_match_fixed_pins": true,
+    "complete_runtime_metadata_match_fixed_pins": true,
+    "r8_status": {
+      "http_status": 200,
+      "content_length": "18279079",
+      "verified": false,
+      "complete_size_and_sha_unavailable": true
+    },
+    "sdk_download_reached": false,
+    "final_completed": false,
+    "final_all_pinned_downloads_verified": false,
+    "exit_code": 1,
+    "error": "TimeoutError: The read operation timed out",
+    "elapsed_seconds": 139.91387536301045,
+    "originals_unchanged": true,
+    "no_new_download_or_host_operation_by_reviewer": true
+  },
+  "source_findings": [
+    "The complete fixed source and 852-byte stable-FD loader were read. The create-only source transport decodes to the same 26,148 bytes, and the request executes that exact loader. The actual archived CONFIG.json was independently reconstructed and matches 14,545 bytes/fcb613a6.",
+    "Only the fixed new output root is created. Its first exclusive mkdir occurs outside the handler; subsequent writes use relative paths, reject traversal/symlink paths, create-only files, fsync and stable readback. There is no directory scan, subprocess, build, signing, operation-lock or phone command.",
+    "The three fixed original receipts are opened read-only with NOFOLLOW and complete size/SHA/stability checks. Before download, all 17 outer coordinate/URL/size/SHA/extension tuples are checked against the original dependency receipt, 14 runtime tuples against the helper5 build, and the R8/SDK expected identities against their original receipts.",
+    "Requests are fixed HTTPS GETs to the three explicit public origins. The source uses a default verifying TLS context with TLS1.2 minimum, refuses redirects, requires final URL identity and HTTP200, rejects compressed transfer encoding, bounds byte counts, and verifies complete SHA plus newly written-file readback.",
+    "The org.json artifact is downloaded and fully checked first. ORGJSON-READY explicitly records full_remaining_dependency_stage_complete=false, android_compiled=false and phone_contacted=false. It is a standalone narrow readiness receipt and does not certify R8, SDK or an Android build.",
+    "AAR inspection reads only the exact bounded classes.jar member in memory, rejects duplicate entries and symlink member metadata, and never extracts archive paths. Each of the 14 output runtime JARs must match exactly one expected outer/inner byte digest.",
+    "The SDK branch would require canonical Gitiles base64, original decoded SHA256 and the fixed official Git blob hash before declaring sdk_dual_hash_verified. The actual failed run did not reach this branch.",
+    "The exception handler explicitly clears completed and all_pinned_downloads_verified; the finally block rechecks originals and preserves an exit1 on failure. Verified earlier artifacts remain separately recorded and are not promoted into a complete closure."
+  ],
+  "actual_result_interpretation": [
+    "The actual complete RESULT retains 17 verified outer downloads, including org.json, and all 14 verified runtime JARs. Their recorded sizes and digests match the fixed configuration individually.",
+    "The only incomplete artifact is R8: HTTP200 and Content-Length18279079 were received, but the body read raised TimeoutError. Its record remains verified=false and has no complete byte-count or SHA result. No complete R8 success is inferred from the headers.",
+    "The traceback identifies the R8 call at source line166 and body read at line95. SDK line168 was not reached; no SDK artifact record exists and sdk_dual_hash_verified remains false.",
+    "Final completed=false, all_pinned_downloads_verified=false and exit_code1 are preserved. Elapsed time is 139.91387536301045 seconds; all three original receipt guards remain unchanged.",
+    "The separately retrieved 1,289-byte ORGJSON-READY is byte/hash-bound in the final failure RESULT and its artifact record exactly matches the verified org.json entry. This supports using that one pinned JAR independently without treating the overall download stage as successful."
+  ],
+  "precision_notes": [
+    "The source's 1800-second budget is checked before requests and between body reads; its socket timeout is separately capped at30seconds. This source does not install a separate hard process-level wall-clock kill. The reviewed actual run failed earlier on the recorded body-read timeout.",
+    "The reviewer compared complete receipt bytes, configuration and source. The reviewer did not redownload binary artifacts, independently rerun TLS/ZIP operations or repeat the old dependency closure."
+  ],
+  "boundaries": {
+    "reviewer_host_calls": 0,
+    "reviewer_downloads": 0,
+    "reviewer_phone_actions": 0,
+    "original_timeout_rewritten": false,
+    "final_closure_verified": false,
+    "r8_download_verified": false,
+    "sdk_download_reached": false,
+    "build_executed": false,
+    "signed": false,
+    "phone_contacted": false,
+    "additional_gate_created_or_run": false,
+    "business_verified": false
+  }
+}

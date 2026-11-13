@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.helper6-installed-identity-four-hunk-review.v1",
+  "reviewer": "android_code_audit",
+  "status": "source review complete; no blocker in the reviewed four-hunk delta",
+  "inputs": {
+    "actual_base": {
+      "git": "e17215c97aefb6b70b528151ba718012126aaa78",
+      "bytes": 7567,
+      "sha256": "15c9d44cde2d93f823372ab6e0baf6214d4cb80835907694df1212be4d3edf73"
+    },
+    "fix": {
+      "git": "1c6a5faeecfc037e1dee4a0eb9a3ad7122ccbbed",
+      "bytes": 10186,
+      "sha256": "6b46185ce4496e4d44911b5d3a42953d9a650f134151ecfa7abd2aedc9e2f7a0"
+    },
+    "candidate": {
+      "bytes": 7692,
+      "sha256": "0743b10aff01040b52235d5c57691cc1d864acd6fcef1aa626317585894cc39c",
+      "git": "4a22a057282357b48dfaee0a94c885fac138fc5b",
+      "path": "src/org/trillionnium/hepta/webhelper/InstalledIdentity.java"
+    },
+    "actual_stat": {
+      "git": "4f360ef1c40e8b59919fb9b95721e7a89d271a0d",
+      "bytes": 10724,
+      "sha256": "221fc909eb5c23f20b29f85ce0c19db971e2f12a565760e2a14550cf0705efcd"
+    }
+  },
+  "mechanical": {
+    "change_count": 4,
+    "forward_full_bytes_equal": true,
+    "reverse_full_bytes_equal": true,
+    "unchanged_methods": [
+      {
+        "marker": "static int requireControllerCaller(",
+        "bytes": 910,
+        "sha256": "786e7e698b29d2d1e6360b0721cdb2cf315b9e8f3bcf5a5e90b9619808b06a51",
+        "git": "54e810f2acfa1c8ce63f576728c30760089db130",
+        "byte_identical": true
+      },
+      {
+        "marker": "static InstalledIdentity read(",
+        "bytes": 1637,
+        "sha256": "d0beb7cb2ecb96540050d77241a39a334220988ea138d2026fb7933141160cd8",
+        "git": "afa28f74f2681999bc44c5fcef24d56e2661ec4d",
+        "byte_identical": true
+      },
+      {
+        "marker": "void requireRequest(",
+        "bytes": 260,
+        "sha256": "df531992f57b0f7c648b198d501061fd39d73458f0b2fe1bb438cfbeb6dc15d5",
+        "git": "e5b5dae6db6d3d9a99b35b4549d49e50398e13a2",
+        "byte_identical": true
+      },
+      {
+        "marker": "void requireUnchanged(",
+        "bytes": 457,
+        "sha256": "28c0c8aa34d519bddf69f33265f8b3e46522ba01501d653ee61e60e437fcf8bc",
+        "git": "31705ee72ab8209aa8bcb849e8cec8a0e9c00741",
+        "byte_identical": true
+      },
+      {
+        "marker": "private static PackageInfo info(",
+        "bytes": 165,
+        "sha256": "f5a4758ac3cbbea1b3840c806269e073a4930b4b2470a5d0384c67c61bdb74f9",
+        "git": "169b6920ed6ae673f3250c24966c04b7328f51b0",
+        "byte_identical": true
+      },
+      {
+        "marker": "private static String signer(",
+        "bytes": 404,
+        "sha256": "c392ecd2dab3b7759a47008901c1f77fd9b3a66522161c796336cf11b05f3ec9",
+        "git": "8cb9c8d0695588dac3cbd91c3fa04f3c042f616d",
+        "byte_identical": true
+      },
+      {
+        "marker": "private static TreeMap<String,String> paths(",
+        "bytes": 820,
+        "sha256": "2537187a1b2dfedfca21a881c9a66e0eb30e78dbb39f6e1cf090e0ac8f7446c5",
+        "git": "bf01be81f31eb0e574e9ef91f9b6537373715614",
+        "byte_identical": true
+      },
+      {
+        "marker": "private static String fileSha(",
+        "bytes": 898,
+        "sha256": "1b9fecb34bde6eb8d51bc68c7a5a869adaec6a32daa5553159e0fd4ec42147a3",
+        "git": "3c0123296d0272b160ce9f452bb62528f3b80936",
+        "byte_identical": true
+      }
+    ]
+  },
+  "assessment": [
+    "Actual helper source independently confirms that controller identity is read before a formal Session dispatch and the old Stamp requires exactly one link; changing only the main APK reader would not complete the fix.",
+    "The new predicate requires a regular nonempty file with positive link count and no group/other write bits. It does not make the link count itself an authorization source.",
+    "UID and GID join dev/inode/size/mtime/ctime/mode/link count in the same descriptor/path stability comparison. Neither owner/group field is discarded after the first read.",
+    "All eight surrounding methods, PackageManager-selected base/split paths, package UID and signer checks, read-only NOFOLLOW open, byte budgets, same-FD full hash and before/after path checks are byte-identical. No new canonical-path implementation or its execution is claimed.",
+    "Main/helper source field names differ, but both apply the same observed risk boundary: stable protected installed-file identity with positive links. The actual main0555/nlink3 and helper0644/nlink1 facts motivate the change."
+  ],
+  "limits": {
+    "host_test_executed": false,
+    "android_compiled": false,
+    "android_syscalls_executed": false,
+    "phone_actions": 0,
+    "installed_apk_or_permissions_modified": false,
+    "mac_unknown_operation_changed": false,
+    "main_focused10_does_not_automatically_claim_helper_projection_execution": true
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.root-canonical-test-fixture-path-review.v1",
+  "candidate": {
+    "git_blob": "f5289ad219825e14e0ede26d49d286c0d6f5092f",
+    "bytes": 37862,
+    "sha256": "27b24b90fe4d288ee986750d3c14a900e0bd6a3776be852de67e1fc05402ad43"
+  },
+  "actual_failure": {
+    "git_blob": "08faa38b1dbb38329cb8b62c26c944d85a92c1d8",
+    "bytes": 7674,
+    "sha256": "895145f1b2316dea01b1fc23658d030d75cd7645848c4271af3cfe4d284e6b87"
+  },
+  "all_three_files_rehashed_and_reversed_to_actual_final_source": true,
+  "findings": [
+    "run_host_checks.py checks the original raw fixture against its recorded input hash and supplies its identical bytes to javac under WebTaskDomain.java; -Xlint:all and -Werror are unchanged, and the copy is rechecked after javac.",
+    "exact-admission includes the canonical file exactly through the explicit files list and records its full bytes/hash.",
+    "qualification-scope includes the canonical file through its existing sorted(output.glob('*.java')); it intentionally does not duplicate it in the explicit Goal list.",
+    "Java source and assertions are untouched; the change only corrects the compiler input basename for the existing isolated fake Web boundary. All original case names remain.",
+    "Actual host execution and final all101+18 success remain unproven until the new full gate finishes."
+  ],
+  "changed_files": [
+    {
+      "path": "tools/run_host_checks.py",
+      "bytes": 13537,
+      "sha256": "dc64aa551a0eddd6429ad3340db5445e9c00403a2110b48e1c05662f5d46ec3a"
+    },
+    {
+      "path": "tests/exact-admission/prepare_fixture.py",
+      "bytes": 8422,
+      "sha256": "4aeac49605ac0b38b14a15745da5b977b25f0932757b327b7e35dd6972a05a52"
+    },
+    {
+      "path": "tests/qualification-scope/prepare_fixture.py",
+      "bytes": 7902,
+      "sha256": "e034dff81b6392ddcf9d5ffcaa4225d4fc0d6967dfd510978234db0f9619da60"
+    }
+  ],
+  "source_level_blocker": false,
+  "android_production_inputs_changed": false,
+  "host_tests_executed_by_root": false,
+  "phone_commands": 0
+}

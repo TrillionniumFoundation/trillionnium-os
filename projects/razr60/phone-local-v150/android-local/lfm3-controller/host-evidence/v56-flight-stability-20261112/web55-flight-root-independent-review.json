@@ -1,0 +1,278 @@
+{
+  "schema": "hepta.root-flight55-original-result-review.v1",
+  "source_bundle": {
+    "git_blob_sha": "c7002d09283cfe166dfa76fcdee0f98c1bb0d584",
+    "bytes": 1002099,
+    "sha256": "4ee7ce849909830dec098f9f4dfc043710b89d83a42270cd7404ab9bb7eff50e",
+    "member_originals_verified": 77
+  },
+  "original_run_result": {
+    "git_blob_sha": "6797f63657396580105d9f77f7b119a4a63c6710",
+    "bytes": 38514,
+    "sha256": "708b724edf3e459a43f4e9aafc9cb3670d6aa9e1f6511e572f7aa0725143d46f",
+    "unchanged": true,
+    "sdk_teardown_fields": [
+      {
+        "path": "/sdk_teardown_verified",
+        "value": false
+      },
+      {
+        "path": "/web_lifecycle/sdk_teardown_verified",
+        "value": false
+      }
+    ]
+  },
+  "task_id": "6dfcaf6cbb3f4252b472f9cf6f80b5cc",
+  "business": {
+    "status": "failed",
+    "summary": "画面连续变化，已停止操作以免点错目标",
+    "steps": 3,
+    "completion_verified": false,
+    "query_dispatched": false,
+    "missing": [
+      "model_bound_web_query_dispatch_missing",
+      "actual_same_record_flight_results_not_yet_verified"
+    ],
+    "external_model": false,
+    "automatic_replay": false
+  },
+  "independent_native_lifecycle": {
+    "parent_generation": "c84accb2d1b54d89a13fffbd32317cd3",
+    "app_original": {
+      "path": "runs/c84accb2d1b54d89a13fffbd32317cd3/app-session-receipt.json",
+      "bytes": 2105,
+      "sha256": "f211a9f74d1e3ff914f89c165040691818ae3ee3bf6b65446fa3018de51f7a78"
+    },
+    "native_original": {
+      "path": "runs/c84accb2d1b54d89a13fffbd32317cd3/native-session-result.json",
+      "bytes": 678,
+      "sha256": "79eb8046bc4b5fd081179697af22e693bed0417425c82cf359712193e1bf14af"
+    },
+    "task_app_receipt_digest_matches": true,
+    "nested_native_receipt_identical": true,
+    "java_process_exit_observed": true,
+    "java_exit_code": 0,
+    "native_self_process_exit_observed": false,
+    "requests": 3,
+    "sdk_destroy_rc": 0,
+    "sdk_deinit_rc": 0,
+    "force_destroy_sent": false,
+    "automatic_restart": false,
+    "cross_task_reuse": false,
+    "cleanup_classification": "normal_close_with_observed_sdk_cleanup"
+  },
+  "requests": [
+    {
+      "request_id": "07218943e8624c3abda03e090a64d7a9",
+      "sequence": 1,
+      "device": "HTP0",
+      "native_original": {
+        "path": "runs/07218943e8624c3abda03e090a64d7a9/native-result.json",
+        "bytes": 4839,
+        "sha256": "c81bdeef1e012b75be742036fd57360299dbd55fc658984385bd7870ebdb8301"
+      },
+      "app_original": {
+        "path": "runs/07218943e8624c3abda03e090a64d7a9/app-receipt.json",
+        "bytes": 13421,
+        "sha256": "ecf05f27c67cbd0523f825e84b1d225a44d00004867bc539883ee4425dda0907"
+      },
+      "profile": {
+        "ttft_us": 2981900,
+        "media_time_us": 0,
+        "prompt_time_us": 2979207,
+        "decode_time_us": 4577067,
+        "prompt_tokens": 2972,
+        "generated_tokens": 139,
+        "draft_n_total": 0,
+        "draft_n_accepted": 0,
+        "prefill_tokens_per_second": 997.5808998837612,
+        "decode_tokens_per_second": 30.368792940981642
+      },
+      "native_elapsed_ms": 10895.05,
+      "app_elapsed_ms": 12555,
+      "raw_text_utf8": true
+    },
+    {
+      "request_id": "09fd767ef57f4056a6b6a0999cdfd4d0",
+      "sequence": 2,
+      "device": "HTP0",
+      "native_original": {
+        "path": "runs/09fd767ef57f4056a6b6a0999cdfd4d0/native-result.json",
+        "bytes": 4843,
+        "sha256": "40210ec4e95e4e0a19c7048bf32a7578359236dcd145314b4407e6f3f0676f6b"
+      },
+      "app_original": {
+        "path": "runs/09fd767ef57f4056a6b6a0999cdfd4d0/app-receipt.json",
+        "bytes": 11915,
+        "sha256": "3ce99b16a3be84829d5b66b70a863fa97bd97c28ac895ec3ce0914f405948d48"
+      },
+      "profile": {
+        "ttft_us": 3346777,
+        "media_time_us": 0,
+        "prompt_time_us": 3345915,
+        "decode_time_us": 4132881,
+        "prompt_tokens": 3277,
+        "generated_tokens": 127,
+        "draft_n_total": 0,
+        "draft_n_accepted": 0,
+        "prefill_tokens_per_second": 979.4032424613298,
+        "decode_tokens_per_second": 30.729169313125634
+      },
+      "native_elapsed_ms": 7526.087,
+      "app_elapsed_ms": 7544,
+      "raw_text_utf8": true
+    },
+    {
+      "request_id": "01158f07052341d6af6a47e7eb447aaf",
+      "sequence": 3,
+      "device": "HTP0",
+      "native_original": {
+        "path": "runs/01158f07052341d6af6a47e7eb447aaf/native-result.json",
+        "bytes": 4842,
+        "sha256": "d3c9620eeff2a0d9ac1bf9cd6e6f0997124e82569b4f385a08f2c134ca7ae27b"
+      },
+      "app_original": {
+        "path": "runs/01158f07052341d6af6a47e7eb447aaf/app-receipt.json",
+        "bytes": 11913,
+        "sha256": "848c7d9dbaedaacfa5fd6cb48b39431d399cf38989004f1be1cb54cf4c5375f8"
+      },
+      "profile": {
+        "ttft_us": 3421392,
+        "media_time_us": 0,
+        "prompt_time_us": 3420526,
+        "decode_time_us": 3716666,
+        "prompt_tokens": 3350,
+        "generated_tokens": 117,
+        "draft_n_total": 0,
+        "draft_n_accepted": 0,
+        "prefill_tokens_per_second": 979.3815337173289,
+        "decode_tokens_per_second": 31.4798262744083
+      },
+      "native_elapsed_ms": 7183.747,
+      "app_elapsed_ms": 7197,
+      "raw_text_utf8": true
+    }
+  ],
+  "actions": [
+    {
+      "path": "task/step-01-action.json",
+      "bytes": 10287,
+      "sha256": "8e511230c0c738b7035e404ee35f8f61f903428904fb9661b1d3a1de498faf51",
+      "action": {
+        "action": "done",
+        "observation_id": "a500afcde7044079a7aaee6d3b0eb396",
+        "package": "org.trillionnium.hepta.webhelper",
+        "status": "partial",
+        "summary": "需要先选择并读回出发城市、到达城市、完整日期等信息，再进行完整查询。",
+        "reason": "当前屏幕显示已打开 org.trillionnium.hepta.webhelper 页面，需先确认出发城市与到达城市及完整年月日，避免直接提交查询。"
+      },
+      "model_run_id": "07218943e8624c3abda03e090a64d7a9",
+      "dispatched": false,
+      "accepted": false,
+      "stale": true,
+      "detail": "stale:目标窗口内容已变化"
+    },
+    {
+      "path": "task/step-02-action.json",
+      "bytes": 10228,
+      "sha256": "bebe1a993a485c9e4e420dd9fae239735031b3e7a2e15365ba0d787ba0d71b0e",
+      "action": {
+        "action": "click",
+        "observation_id": "51b00e9a393345e8a69ac28abd31cda0",
+        "package": "org.trillionnium.hepta.webhelper",
+        "node_label": "机票预订按钮，点按两次即可激活",
+        "node_id": "n38",
+        "reason": "当前屏幕显示已打开Hepta网页，待完成步骤需先选择并读回出发城市与到达城市及完整年月日，不能直接提交查询。"
+      },
+      "model_run_id": "09fd767ef57f4056a6b6a0999cdfd4d0",
+      "dispatched": false,
+      "accepted": false,
+      "stale": true,
+      "detail": "stale:目标窗口内容已变化"
+    },
+    {
+      "path": "task/step-03-action.json",
+      "bytes": 10187,
+      "sha256": "bbdda42cf6ec2fcf2094eae3e431632824e48674e53f96f96909f6d7485fa5ff",
+      "action": {
+        "action": "click",
+        "observation_id": "397274a52938461fad0fef0ba17e8e92",
+        "package": "org.trillionnium.hepta.webhelper",
+        "node_label": "机票预订按钮，点按两次即可激活",
+        "node_id": "n38",
+        "reason": "当前屏幕节点n38为机票预订按钮，点击两次激活后可获取出发城市和到达城市信息。"
+      },
+      "model_run_id": "01158f07052341d6af6a47e7eb447aaf",
+      "dispatched": false,
+      "accepted": false,
+      "stale": true,
+      "detail": "stale:目标窗口内容已变化"
+    }
+  ],
+  "recorded_native_before_comparison": {
+    "before2": {
+      "bytes": 59325,
+      "sha256": "c38df547a0ede9121117c0cd64c8133a27f6c5f36591181c1708cd174824d7cc"
+    },
+    "before3": {
+      "bytes": 59325,
+      "sha256": "bdc96f3169e8ef5d9ffb82d7ca981449a86f4a9765567b42f623c809780cbb3f"
+    },
+    "retained_nodes_each": 49,
+    "changed_node_ids": [
+      "n35",
+      "n36",
+      "n37",
+      "n46",
+      "n47",
+      "n48"
+    ],
+    "window_metadata_equal": true,
+    "ime_visible": false,
+    "booking_node_identical": {
+      "id": "n38",
+      "bounds": [
+        162,
+        568,
+        360,
+        706
+      ],
+      "package": "org.trillionnium.hepta.webhelper",
+      "class_name": "android.widget.Button",
+      "text": "机票预订按钮，点按两次即可激活",
+      "node_app_tree_sha256": "f209eddd9cb32e6035fb8fcc9c3fbfe5ac3e2f7e0a626dcb56c740f6d61e34f5",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0/2/0/7/1/0",
+        "parent_class": "android.view.View",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    "limitation": "These are subsequent recorded before observations, not the ephemeral Graph taken by validate at each rejection; they do not independently prove the exact rejecting native hash component."
+  },
+  "invalid_utf8_originals_preserved_as_base64": [
+    {
+      "path": "runs/c84accb2d1b54d89a13fffbd32317cd3/stderr.log",
+      "bytes": 48897,
+      "sha256": "213cc0115859e83b80ba9708160d23b0bd7e6cf163f64b759338c592e47c0de6"
+    }
+  ],
+  "phone_actions_performed_by_this_review": 0,
+  "original_files_modified": false,
+  "original_failure_changed_to_success": false
+}

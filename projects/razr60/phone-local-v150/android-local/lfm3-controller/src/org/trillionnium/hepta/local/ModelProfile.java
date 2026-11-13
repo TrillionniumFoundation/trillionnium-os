@@ -5,7 +5,7 @@ public final class ModelProfile {
     public static final String LLAMA_COMMIT="19cce6919992fdffd92e0ac152caaf1e2b8f254e";
     public static final ModelProfile LFM3=new ModelProfile("lfm3-1.7b-qad-q4_0","LFM3-1.7B",
             "LiquidAI/LFM3-1.7B-GGUF","", "LFM3-1.7B-QAD-Q4_0.gguf",1049615680L,
-            "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452","lfm3",false,3L<<30);
+            "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452","lfm3",true,3L<<30);
     public static final ModelProfile MINICPM5=new ModelProfile("minicpm5-2b-q4_k_m","MiniCPM5-2B",
             "openbmb/MiniCPM5-2B-GGUF","2079a22f3beaa4e306449978533478fe0522f4b3","MiniCPM5-2B-Q4_K_M.gguf",1561318368L,
             "ec2d5801640099e97d8d7e8003ad4d81f336e757811f03a26173dddf386602fd","llama",true,3L<<30);
