@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.root-main58-offline-review-and-connection-recheck.v1",
+  "actual_phone_installed_version": 57,
+  "main58_signed": false,
+  "main58_installed": false,
+  "previous_blocked_checkpoint": "5055078026356a5264a22dcb263575ac0360b762",
+  "core58_original_ack_only_result_unknown": true,
+  "core58_original_session_id": "dpty-2b06b0a65c7104136c17ada20448725cd25c353d94b590495d7de8214a34feb5",
+  "recheck": {
+    "content": [
+      {
+        "type": "text",
+        "text": "McpServerError: Tunnel-client has not been seen for 300 seconds. Ensure tunnel-client is running and connected."
+      }
+    ],
+    "structuredContent": {
+      "error": "McpServerError: Tunnel-client has not been seen for 300 seconds. Ensure tunnel-client is running and connected.",
+      "error_code": "NOT_FOUND",
+      "error_data": {
+        "type": "http_error",
+        "code": 404,
+        "message": "Tunnel-client has not been seen for 300 seconds. Ensure tunnel-client is running and connected.",
+        "payload": {
+          "error": {
+            "message": "Tunnel-client has not been seen for 300 seconds. Ensure tunnel-client is running and connected.",
+            "type": "invalid_request_error",
+            "param": null,
+            "code": "tunnel_client_not_seen"
+          }
+        },
+        "url": "https://tunnel-service.gateway.unified-0.internal.api.openai.org/v1/mcp/tunnel_6aeeaa5f7b488191a6466ca467418530"
+      }
+    },
+    "isError": true
+  },
+  "focused": {
+    "request": "2991561a005f752e38856c0fea31a11fc15f58f4",
+    "source": "0ed1274edd5306cca458941c00eac0722712aec3",
+    "superseded_never_submitted_request": "af949bd7407af3300f55fa21cc402dd01e9cb0b2",
+    "root_source_original57_then_two_line_fix_forward_reverse_exact": true,
+    "root_publisher_loader_supervisor_gzip_crc_full_source_exact": true,
+    "actual57_fields_independently_read": true,
+    "executed": false,
+    "production_observation_settle_covered_here": false
+  },
+  "web": {
+    "request": "a983113e8ed328eeff3d13e1ee55cfa586f56086",
+    "source": "8ce7979d4ad9a21d51baa77331e8f417081324c7",
+    "handoff": "b84f6d02e8c35365faf4484985c8de8ed055e601",
+    "root_31_source_and_13_transport_patches_forward_reverse_exact": true,
+    "root_complete_gzip_crc_source_and_packet_pins_verified": true,
+    "literal_pin_git_sha_values_are_calculated_content_ids_not_separately_published_blobs": true,
+    "literal_pins_recovered_and_checked_from_complete_sources": true,
+    "expected_only": {
+      "evidence_cases": 80,
+      "evidence_assertions": 92,
+      "composition_cases": 89,
+      "composition_assertions": 275,
+      "calendar_cases": 13,
+      "calendar_assertions": 1001
+    },
+    "executed": false
+  },
+  "resume_first_action": "Read original Core58 PTY and existing RESULT; do not issue another Start or infer pass."
+}

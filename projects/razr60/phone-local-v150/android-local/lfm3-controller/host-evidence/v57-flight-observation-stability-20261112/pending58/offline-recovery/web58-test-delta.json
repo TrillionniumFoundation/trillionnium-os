@@ -1,0 +1,132 @@
+{
+  "schema": "hepta.main58.existing-composition-readonly-settle-delta.v1",
+  "status": "source-only-not-compiled-or-executed",
+  "production_source": {
+    "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+    "bytes": 46689,
+    "sha256": "d2e4f073366d3d3046b0f9b90156f87b1fb84c842a3053a5d32f31df5e3bbc9b",
+    "git_blob_sha": "d89ff1a111693bebd445c99fede473fbc968a314"
+  },
+  "method_projections": [
+    {
+      "marker": "PhoneObservation observe(PhoneObservation initial,Observer observer,long deadline)",
+      "bytes": 6742,
+      "sha256": "03e1cc3bbf2b10354058459e7a35f5985f8ef8fbc1be594571b954b018952788",
+      "git_blob_sha": "1b58c459d7710d0dcb7f56385bff11daa7653058",
+      "raw_utf8": "    PhoneObservation observe(PhoneObservation initial,Observer observer,long deadline)throws Exception{\n        need(!retired&&!cancellation.isCancelled(),\"web task retired\");\n        PhoneObservation before=initial;long captureDeadline=deadline;String loadingAttemptKey=null;\n        while(true){\n        HeptaAccessibilityService.FlightObservationSnapshot nativeSource=null;\n        try{\n        service.requireBackgroundObservation(taskId,before);\n        if(goal!=null)nativeSource=service.retainFlightObservation(this,before,cancellation,captureDeadline);\n        WebEvidenceReceipt first=client.capture(captureDeadline);\n        if(\"state_changed\".equals(first.status)){\n            // At most one read-only retry, after a fresh AX window observation; never repeat an action.\n            if(nativeSource!=null){nativeSource.close();nativeSource=null;}\n            before=observer.observe();service.requireBackgroundObservation(taskId,before);\n            if(goal!=null)nativeSource=service.retainFlightObservation(this,before,cancellation,captureDeadline);\n            first=client.capture(captureDeadline);\n            need(\"captured\".equals(first.status)||\"unavailable\".equals(first.status)||\"state_changed\".equals(first.status),\n                    \"unknown reply after the single evidence retry\");\n        }\n        if(\"unavailable\".equals(first.status)||\"state_changed\".equals(first.status)){\n            PhoneObservation after=observer.observe();service.requireBackgroundObservation(taskId,after);\n            return publishWaiting(after,first,\"initial_capture_not_stable\");\n        }\n        need(\"captured\".equals(first.status),\"actual page capture unavailable\");\n        PhoneObservation after=observer.observe();service.requireBackgroundObservation(taskId,after);\n        WebEvidenceReceipt last=client.capture(captureDeadline);\n        if(\"unavailable\".equals(last.status)||\"state_changed\".equals(last.status))\n            return publishWaiting(after,last,\"final_capture_not_stable\");\n        need(\"captured\".equals(last.status),\"actual final page capture unavailable\");\n        String actualLoadingKey=last.instance+\"\\n\"+last.epoch+\"\\n\"+last.url;\n        need(loadingAttemptKey==null||loadingAttemptKey.equals(actualLoadingKey),\n                \"read-only loading retry changed the original instance, URL or navigation epoch\");\n        WebDomStability.Result domBracket=null;String domBracketError=null;\n        try{\n            domBracket=WebDomStability.evaluate(first.domRaw(),last.beforeDomRaw(),purpose.sitePolicyId);\n        }catch(Exception incompleteBracket){\n            // No action capability is published from a changing bracket.\n            domBracketError=incompleteBracket.getClass().getSimpleName()+\": \"+\n                    HeptaAccessibilityService.limited(HeptaAccessibilityService.message(incompleteBracket),512);\n        }\n        boolean sameOriginalFrame=sameFrame(before,after);\n        boolean sameCaptureDomain=first.instance.equals(last.instance)&&first.epoch==last.epoch\n                &&first.url.equals(last.url)&&domBracket!=null;\n        boolean stable=sameOriginalFrame&&sameCaptureDomain;\n        JSONObject nativeObservationBracket=null;\n        if(!stable&&!sameOriginalFrame&&sameCaptureDomain&&goal!=null&&nativeSource!=null\n                &&first.stability().rawEqual&&domBracket.rawEqual&&last.stability().rawEqual){\n            // This service-created proof only admits the new read-only frame.\n            // A later action still needs its own original model target and live Permit checks.\n            nativeObservationBracket=service.verifyFlightObservationBracket(this,nativeSource,after,first,last,\n                    cancellation,captureDeadline);\n            stable=true;\n        }\n        // The retained NodeRef belongs only to this completed read bracket.\n        // Release it before a wait or a fresh observation replaces the graph.\n        if(nativeSource!=null){nativeSource.close();nativeSource=null;}\n        if(retryLoadingDocument(first,last,before,after,stable,sameCaptureDomain,domBracketError,deadline)){\n            loadingAttemptKey=actualLoadingKey;\n            captureDeadline=Math.min(deadline,loadingDocumentStarted+6000);\n            before=observer.observe();service.requireBackgroundObservation(taskId,before);\n            continue;\n        }\n        need(stable,\"AX/DOM bracket changed; no current page capability published\");\n        WebNativeGeometry firstGeometry=WebNativeGeometry.read(first.capture(),first.dom(),first.displayId,first.windowId,first.stability());\n        WebNativeGeometry lastGeometry=WebNativeGeometry.read(last.capture(),last.dom(),last.displayId,last.windowId,last.stability());\n        need(firstGeometry==null&&lastGeometry==null||firstGeometry!=null&&firstGeometry.same(lastGeometry),\n                \"native WebView geometry changed across the AX/DOM bracket\");\n        WebTaskDomain observed=applyNavigation(WebTaskDomain.observed(taskId,purpose,authorization,after,last,immutableBinding));\n        record(\"web-frame-\"+after.id+\".json\",new JSONObject(observed.evidence())\n                .put(\"first_capture_request_nonce\",first.callback().getString(\"request_nonce\"))\n                .put(\"last_capture_request_nonce\",last.callback().getString(\"request_nonce\"))\n                .put(\"first_ax_observation_id\",before.id).put(\"last_ax_observation_id\",after.id)\n                .put(\"ax_dom_capture_is_atomic\",false)\n                .put(\"original_same_frame_predicate\",sameOriginalFrame)\n                .put(\"readonly_native_observation_bracket\",nativeObservationBracket==null?JSONObject.NULL:nativeObservationBracket)\n                .put(\"readonly_native_observation_proof_grants_action\",false)\n                .put(\"same_lease_epoch_and_equal_dom_bracket\",first.stability().rawEqual&&domBracket.rawEqual&&last.stability().rawEqual)\n                .put(\"same_lease_epoch_and_stable_dom_scope_bracket\",true)\n                .put(\"between_captures_dom_stability\",domBracket.evidence())\n                .put(\"first_capture_dom_stability_sha256\",WebDomCanonical.sha256(first.stability().evidence()))\n                .put(\"last_capture_dom_stability_sha256\",WebDomCanonical.sha256(last.stability().evidence()))\n                .put(\"same_native_geometry_bracket\",firstGeometry!=null)\n                .put(\"native_geometry_sha256\",lastGeometry==null?JSONObject.NULL:lastGeometry.fingerprint));\n        current=after;currentCapture=last;domain=observed;completion.bindWebDomain(observed);\n        flightNativePermit=null;flightNativeCheck=null;\n        dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;\n        return after;\n        }finally{if(nativeSource!=null)nativeSource.close();}\n        }\n    }"
+    },
+    {
+      "marker": "private boolean retryLoadingDocument(",
+      "bytes": 5026,
+      "sha256": "6bbc0b4cc36365d884f47dca9b64e514f33092baa61d403c48aaea084e6d8329",
+      "git_blob_sha": "05e39beb540729b6ef8faceb22a593c082d11178",
+      "raw_utf8": "    private boolean retryLoadingDocument(WebEvidenceReceipt first,WebEvidenceReceipt last,\n                                         PhoneObservation before,PhoneObservation frame,boolean stable,\n                                         boolean sameCaptureDomain,String domBracketError,long deadline)throws Exception{\n        if(goal==null)return false;\n        String key=last.instance+\"\\n\"+last.epoch+\"\\n\"+last.url;\n        CsairCalendar a=CsairCalendar.read(first.dom()),b=CsairCalendar.read(last.dom());\n        boolean bodyPending=a!=null&&a.headerOnly||b!=null&&b.headerOnly;\n        boolean bookingPending=WebFlightDomain.bookingBodyPending(first.dom())||WebFlightDomain.bookingBodyPending(last.dom());\n        boolean queryPending=flightProgress!=null&&flightProgress.queryDispatched();\n        if(!bodyPending&&!bookingPending&&!queryPending&&stable)return false;\n        need(first.instance.equals(last.instance)&&first.epoch==last.epoch&&first.url.equals(last.url)\n                &&first.bindingSha.equals(last.bindingSha)&&first.displayId==last.displayId\n                &&first.windowId==last.windowId,\"loading observation changed the immutable page domain\");\n        long now=SystemClock.elapsedRealtime();\n        if(!key.equals(loadingDocumentKey)){\n            loadingDocumentKey=key;loadingDocumentStarted=now;loadingDocumentReadRetries=0;\n        }\n        boolean retry=loadingDocumentReadRetries<2&&now+250<Math.min(deadline,loadingDocumentStarted+6000);\n        if(!retry&&stable)return false;\n        need(!retired&&!cancellation.isCancelled(),\"web task retired while waiting for page content\");\n        // A new read cannot reuse an earlier page, node permit or dispatch check.\n        // Keep model-run attempted fences and the actual flight progress unchanged.\n        domain=null;current=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;\n        dispatchSource=null;dispatchSourceRun=null;dispatchSourceAction=null;\n        dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;shoppingDispatch=null;\n        completion.clearWebDomain();\n        if(retry)loadingDocumentReadRetries++;\n        record(\"web-load-wait-\"+UUID.randomUUID().toString().replace(\"-\",\"\")+\".json\",new JSONObject()\n                .put(\"schema\",\"hepta.web-read-only-content-wait.v1\").put(\"task_id\",taskId)\n                .put(\"binding_sha256\",journal.bindingSha).put(\"webview_instance\",last.instance)\n                .put(\"navigation_epoch\",last.epoch).put(\"native_url\",last.url)\n                .put(\"observation_id\",frame.id).put(\"first_request_nonce\",first.callback().getString(\"request_nonce\"))\n                .put(\"last_request_nonce\",last.callback().getString(\"request_nonce\"))\n                .put(\"first_dom_sha256\",first.domSha).put(\"last_dom_sha256\",last.domSha)\n                .put(\"recognized_calendar_body_pending\",bodyPending).put(\"recognized_booking_body_pending\",bookingPending)\n                .put(\"actual_query_awaiting_results\",queryPending).put(\"read_only_retry\",loadingDocumentReadRetries)\n                .put(\"maximum_extra_reobservations\",2).put(\"deadline_elapsed_ms\",Math.min(deadline,loadingDocumentStarted+6000))\n                .put(\"reason\",stable?\"recognized_content_pending\":\"unstable_ax_dom_bracket\")\n                .put(\"reobserve_scheduled\",retry).put(\"read_only_budget_exhausted\",!retry)\n                .put(\"first_ax_observation_id\",before.id).put(\"last_ax_observation_id\",frame.id)\n                .put(\"first_ax_tree_sha256\",before.treeSha256).put(\"last_ax_tree_sha256\",frame.treeSha256)\n                .put(\"first_ax_app_tree_sha256\",before.state.appTreeSha256).put(\"last_ax_app_tree_sha256\",frame.state.appTreeSha256)\n                .put(\"first_ax_window_id\",before.windowId).put(\"last_ax_window_id\",frame.windowId)\n                .put(\"first_ax_rotation\",before.rotation).put(\"last_ax_rotation\",frame.rotation)\n                .put(\"first_ax_display_id\",before.windowMetadata.displayId).put(\"last_ax_display_id\",frame.windowMetadata.displayId)\n                .put(\"first_background_generation\",before.backgroundGeneration).put(\"last_background_generation\",frame.backgroundGeneration)\n                .put(\"same_original_frame\",sameFrame(before,frame)).put(\"same_capture_domain\",sameCaptureDomain)\n                .put(\"dom_bracket_error\",domBracketError==null?JSONObject.NULL:domBracketError)\n                .put(\"first_navigation_epoch\",first.epoch).put(\"last_navigation_epoch\",last.epoch)\n                .put(\"first_native_url\",first.url).put(\"last_native_url\",last.url)\n                .put(\"old_action_capabilities_retired\",true)\n                .put(\"action_replayed\",false).put(\"model_action_dispatched\",false).put(\"business_verified\",false));\n        if(!retry)return false;\n        SystemClock.sleep(200);\n        need(!retired&&!cancellation.isCancelled(),\"web task retired while waiting for page content\");\n        service.requireTaskAuthorization(taskId,authorization);background.requireActive();\n        return true;\n    }"
+    },
+    {
+      "marker": "private PhoneObservation publishWaiting(",
+      "bytes": 764,
+      "sha256": "c6757cf06e5b63b053767d2aa4c75fa5fdc3e4c991fab6f3bacd784e8e53ad52",
+      "git_blob_sha": "e4cfb42718ed66b150de7bc705492fb759bc5635",
+      "raw_utf8": "    private PhoneObservation publishWaiting(PhoneObservation frame,WebEvidenceReceipt receipt,String reason)throws Exception{\n        WebTaskDomain waiting=applyNavigation(WebTaskDomain.waiting(taskId,purpose,authorization,frame,receipt,immutableBinding));\n        record(\"web-frame-\"+frame.id+\".json\",new JSONObject(waiting.evidence()).put(\"reason\",reason)\n                .put(\"capture_metadata_only\",true).put(\"ax_dom_capture_is_atomic\",false)\n                .put(\"same_lease_epoch_and_equal_dom_bracket\",false));\n        current=frame;currentCapture=null;domain=waiting;completion.bindWebDomain(waiting);\n        flightNativePermit=null;flightNativeCheck=null;\n        dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;return frame;\n    }"
+    },
+    {
+      "marker": "private WebTaskDomain applyNavigation(",
+      "bytes": 1090,
+      "sha256": "b8e4672d0fd4c2d9c082e6c0362558cc7e234e354c47a3180766c2a18f21c007",
+      "git_blob_sha": "20909696aeee298cdd96ee00e124565555977ccd",
+      "raw_utf8": "    private WebTaskDomain applyNavigation(WebTaskDomain value)throws Exception{\n        if(value.flight!=null){\n            if(flightProgress==null)flightProgress=WebFlightProgress.begin(value.flight);\n            flightProgress=flightProgress.observed(value.flight);\n            return value.withFlightProgress(flightProgress);\n        }\n        if(value.shopping==null)return value;\n        if(shoppingNavigation!=null&&!shoppingNavigation.matches(value.shopping))shoppingNavigation=null;\n        if(pendingNavigation!=null&&\"official_product_detail\".equals(value.phase)){\n            PendingNavigation actual=pendingNavigation;\n            shoppingNavigation=WebShoppingDomain.Navigation.confirm(actual.before,value.shopping,actual.action,\n                    actual.run,actual.accepted,actual.dispatched,actual.stale,actual.start,actual.end);\n            record(\"web-navigation-\"+actual.run+\".json\",new JSONObject(shoppingNavigation.evidence()));\n            pendingNavigation=null;\n        }\n        return shoppingNavigation!=null?value.withNavigation(shoppingNavigation):value;\n    }"
+    },
+    {
+      "marker": "private static boolean sameFrame(",
+      "bytes": 503,
+      "sha256": "65923ba4b5fb46a798f753dc68b6e11cb8a8eccd93fa9e18d900f15892a6621c",
+      "git_blob_sha": "d1ae994d7bbd78e487e67781cbe57596d2b24d52",
+      "raw_utf8": "    private static boolean sameFrame(PhoneObservation a,PhoneObservation b){\n        return a.packageName.equals(b.packageName)&&a.windowId==b.windowId&&a.rotation==b.rotation\n                &&a.treeSha256.equals(b.treeSha256)&&a.state.appTreeSha256.equals(b.state.appTreeSha256)\n                &&a.backgroundGeneration!=null&&a.backgroundGeneration.equals(b.backgroundGeneration)\n                &&a.windowMetadata.displayId!=null&&a.windowMetadata.displayId.equals(b.windowMetadata.displayId);\n    }"
+    },
+    {
+      "marker": "private static void need(boolean condition,String reason)",
+      "bytes": 102,
+      "sha256": "d59cd169cdfc1597269f7657f39da370907b6a669cfb23c8caf757ef47a13fc6",
+      "git_blob_sha": "085aa59f6727fbd7aa165476ee36269e258898e7",
+      "raw_utf8": "    private static void need(boolean condition,String reason){WebEvidenceJson.need(condition,reason);}"
+    },
+    {
+      "marker": "private static final class PendingNavigation",
+      "bytes": 600,
+      "sha256": "19ce08bdf233b7eb2024e1f26ddb09d8736fe21ad8529e5d00906fb53809de32",
+      "git_blob_sha": "f09bb90bfe77e2f9e4110fc7806dbd02ab181edd",
+      "raw_utf8": "    private static final class PendingNavigation {\n        final WebShoppingDomain before;final ActionDecision action;final String run;final long start,end;\n        final boolean accepted,dispatched,stale;\n        PendingNavigation(WebShoppingDomain before,ActionDecision action,String run,\n                          HeptaAccessibilityService.ActionOutcome outcome,long start,long end){\n            this.before=before;this.action=action;this.run=run;this.start=start;this.end=end;\n            this.accepted=outcome.accepted;this.dispatched=outcome.dispatched;this.stale=outcome.stale;\n        }\n    }"
+    }
+  ],
+  "new_host_helper": {
+    "path": "tests/web-flight/WebFlightObservationSettleHostCases.java",
+    "bytes": 96786,
+    "sha256": "75701ea7ed72901847ac3adb6426f020b84a21b442608307ce6052cbc9d14e4b",
+    "git_blob_sha": "137815b055ea31bb31eaee5256ad1ee1f3af3f65"
+  },
+  "composition": {
+    "path": "tests/web-flight/WebTaskCompositionHostTest.java",
+    "base": {
+      "bytes": 53410,
+      "sha256": "35c0702df7ff94e261dadbc219bc4afe7ddba8f72cc2cd5ec23f8acb0771f68e",
+      "git_blob_sha": "d1052b460b32020a5e7bfb061623d9447a13e597"
+    },
+    "successor": {
+      "bytes": 53619,
+      "sha256": "a1ec3836667a92f4489c73b6376b56dfd0d4ffd4b7501071e08b60bebd3723a3",
+      "git_blob_sha": "495f135e7d395273ce96e3583f200c3652badc66"
+    },
+    "ordered_replacements": [
+      {
+        "label": "append real Session observation orchestration cases to original composition main",
+        "count": 1,
+        "before": "        WebFlightNativeStabilityHostCases.run((name,count)->{cases.add(name);assertions+=count;});\n",
+        "after": "        WebFlightNativeStabilityHostCases.run((name,count)->{cases.add(name);assertions+=count;});\n        WebFlightObservationSettleHostCases.run((name,count)->{cases.add(name);assertions+=count;});\n"
+      },
+      {
+        "label": "disclose actual-versus-host boundary of observation retry",
+        "count": 1,
+        "before": "                .put(\"flight_native_stability_replay\",WebFlightNativeStabilityHostCases.provenance())\n",
+        "after": "                .put(\"flight_native_stability_replay\",WebFlightNativeStabilityHostCases.provenance())\n                .put(\"flight_readonly_observation_settle\",WebFlightObservationSettleHostCases.provenance())\n"
+      }
+    ]
+  },
+  "expected_cases": 89,
+  "expected_assertions": 275,
+  "added_cases": 10,
+  "added_assertions": 60,
+  "actual_result": null,
+  "unchanged_previous_cases": 79,
+  "unchanged_previous_assertions": 215,
+  "scope": {
+    "real_methods": 7,
+    "real_parsers": [
+      "WebEvidenceReceipt",
+      "WebDomStability",
+      "WebNativeGeometry",
+      "WebTaskDomain",
+      "WebFlightDomain",
+      "WebFlightProgress",
+      "TaskCompletionGate"
+    ],
+    "explicit_host_boundaries": [
+      "queued Client receipts/exceptions",
+      "SystemClock",
+      "Service source clone counters and scope/auth seams",
+      "diagnostic recorder"
+    ],
+    "native_proof_verification": "unconditionally throws; no positive token created",
+    "original_scopes": {
+      "bytes": 275673,
+      "sha256": "842c36e422bf94e983017a12e05d97b0eb65a07d1f8ce4c0d3a6616eb00059e3",
+      "git_blob_sha": "992bcb98b7ed1ff15b9dbe086ab4257f82132c1a"
+    },
+    "original_retained_nodes": 59,
+    "actual_visited_nodes": 620,
+    "full_native_traversal_replayed": false,
+    "phone_or_click_executed": false,
+    "business_verified": false,
+    "new_suite": false,
+    "production_source_changed_by_this_fixture": false
+  }
+}

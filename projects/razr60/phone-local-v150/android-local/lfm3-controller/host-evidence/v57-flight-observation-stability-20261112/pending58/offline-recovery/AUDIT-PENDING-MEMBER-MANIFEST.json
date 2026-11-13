@@ -1,0 +1,310 @@
+{
+  "schema": "hepta.main58-pending-recovery-manifest.v1",
+  "status": "prepared_not_verified_on_host",
+  "owners": {
+    "host_and_phone": "/root",
+    "aggregate_and_source_cas": "/root/mobile_models",
+    "web_and_android": "/root/android_code_audit",
+    "focused": "/root/mobile_models",
+    "core_sign_staging_install_flight": "/root/android_background"
+  },
+  "current_source": {
+    "aggregate": {
+      "git_blob_sha": "94ca147166c4e4c7faa5bd32085c5431eb36f4b1",
+      "bytes": 1465984,
+      "sha256": "600ff7c4198fc83d4e93399fc6bf039800805f4458406b4182952ddcff89b95b"
+    },
+    "source_file_count": 595,
+    "compiler_input_count": 217,
+    "java_source_count": 115,
+    "host_input_count": 419,
+    "version_code": 58,
+    "version_name": "0.58.0-flight-observation-settle",
+    "physical_source_inventory": {
+      "git_blob_sha": "ad9e8c0e0f312e8397cfab0d3958d513efe8a301",
+      "bytes": 103795,
+      "sha256": "b44d3a9d9083a86d5fff36dfcc0c27958ef047a05df928923ef7c2e204cb23d6"
+    },
+    "base_compiled_source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+    "last_reported_evidence_head": "b5dcd3a0032f99ea47950c28951a3510d590fecd",
+    "future_source_cas_expected_prior_head_must_be_refreshed": true,
+    "source_cas_completed": false
+  },
+  "host_block": {
+    "reported_by_root": "tunnel_client_not_seen",
+    "checkpoint": {
+      "git_blob_sha": "5055078026356a5264a22dcb263575ac0360b762",
+      "bytes": 8257,
+      "sha256": "6ed3697d368659af95b04715379d24e9abf6f9d5e69f799f0244c39f5fcc0315"
+    },
+    "scope": "No host calls, command submissions or phone actions performed while creating this manifest."
+  },
+  "core": {
+    "source": {
+      "git_blob_sha": "3149e05eac89cec18f7496865f4edbf32ef65740",
+      "bytes": 319314,
+      "sha256": "e98c4873da8914d14e33c7c7da093e7d39f89d3ea30295fae1019407d784ddcf"
+    },
+    "exact_submitted_request": {
+      "git_blob_sha": "564e981a6ee724128f01a624620dbf4eff6e8447",
+      "bytes": 151419,
+      "sha256": "920b9e972f6f5a8dcd60b0412b534bc390e980d4148a5763984ee8b8a18bcbb4"
+    },
+    "state": "actual_start_acknowledged_final_result_unknown",
+    "session_id": "dpty-2b06b0a65c7104136c17ada20448725cd25c353d94b590495d7de8214a34feb5",
+    "output_root": "/home/alex/hepta-local-007f-20261111/v58-main-core101-materialized-host-r1",
+    "actual_result": null,
+    "actual_exit_code": null,
+    "actual_all_pass": null,
+    "resume": "Read the existing session and pinned output after connection recovery; do not issue a new Core start."
+  },
+  "web": {
+    "source": {
+      "bytes": 182461,
+      "sha256": "c4e64f533be6c48654bd7449ade390682bca5bc35bbf541c6e6f5596444074f9",
+      "git_blob_sha": "8ce7979d4ad9a21d51baa77331e8f417081324c7"
+    },
+    "request": {
+      "bytes": 128456,
+      "sha256": "6220edf12aec52a935d50c3243320c5e3fdb59383382489c953a69eb7045a3cf",
+      "git_blob_sha": "a983113e8ed328eeff3d13e1ee55cfa586f56086"
+    },
+    "handoff": {
+      "bytes": 72195,
+      "sha256": "dc066688f0cc0c396f317fbad744e597ef584455eee37ed37c2b4dd0dd5e2be3",
+      "git_blob_sha": "b84f6d02e8c35365faf4484985c8de8ed055e601"
+    },
+    "packet": {
+      "bytes": 469284,
+      "sha256": "a680ec7cec8ec37a050c738e78c0b228323b8c1b881d147860faa85f38dad101",
+      "git_blob_sha": "b6cc9d54b3eef32f00e19ae9004f67bc2af42968"
+    },
+    "independent_preclaim_review": {
+      "bytes": 7258,
+      "sha256": "db042c2ab31ccf544cc11b232f6da3488c3a005d975344b36d75feda94ca8043",
+      "git_blob_sha": "af94bab9278dac05200bf60d32f3052d8eb5b78d"
+    },
+    "state": "unsubmitted",
+    "actual_result": null,
+    "expected_only": {
+      "evidence_cases": 80,
+      "evidence_assertions": 92,
+      "composition_cases": 89,
+      "composition_assertions": 275,
+      "calendar_cases": 13,
+      "calendar_assertions": 1001,
+      "compiled_java_count": 53,
+      "actual_session_blocks": 7,
+      "added_composition_cases": 10,
+      "added_composition_assertions": 60
+    },
+    "computed_assignment_pins_in_handoff_are_not_separate_blobs": true
+  },
+  "focused": {
+    "source": {
+      "git_blob_sha": "0ed1274edd5306cca458941c00eac0722712aec3",
+      "bytes": 79802,
+      "sha256": "a7b9a549983ff21f6c62b47ebb60d6c172c22d42d2d092ede5d726996546b2a7"
+    },
+    "request": {
+      "git_blob_sha": "2991561a005f752e38856c0fea31a11fc15f58f4",
+      "bytes": 45359,
+      "sha256": "a57574b958dfa67e1fc4a675f45134e23b5d873cc43857bdce3d1b7be9745fe0"
+    },
+    "compact": {
+      "git_blob_sha": "dca3aacae2692ce008d447674bd2d5899e49f012",
+      "bytes": 5709,
+      "sha256": "d4cfb8df884caf43c217a7c2b8600e7c1c51f17bc477a66c07113f3bd0a3de90"
+    },
+    "state": "unsubmitted_corrected_candidate",
+    "withdrawn_unsubmitted_request": "af949bd7407af3300f55fa21cc402dd01e9cb0b2",
+    "actual_result": null,
+    "expected_only": {
+      "consumer_cases": 20,
+      "consumer_assertions": 60,
+      "arm_cases": 19,
+      "arm_assertions": 98,
+      "java_files": 51,
+      "pure_sources": 44,
+      "projected_methods": 15
+    }
+  },
+  "android": {
+    "source": {
+      "bytes": 90099,
+      "sha256": "a933105576d7012b74386c934a7f1c9184fa9c01e87ebf9c13fc728ce54dfa51",
+      "git_blob_sha": "a8d1193fcdae2fd6262f668eb584d773fe42a9db"
+    },
+    "pending_exact_request": {
+      "bytes": 50051,
+      "sha256": "e9289e61d581aa7ee8dad9ddeb61a5a2185802e02c60bbd53266f9ce3007f083",
+      "git_blob_sha": "0000c0684a9576e63aa63639385b1f2cdcaee3e0"
+    },
+    "handoff": {
+      "bytes": 112016,
+      "sha256": "f2592fbb3423ebd4eaabbd0c761252235c6c564584144a2480e43a02c3e0f8cc",
+      "git_blob_sha": "d1096fce4e27963cad0996a713ca474b89f3b53c"
+    },
+    "full_input": {
+      "bytes": 1605061,
+      "sha256": "120cc1714b837e19d56acc4138bcb2194124b1100293f6bf2a8f71c32fb0ed33",
+      "git_blob_sha": "003656bcba9f8a9e1212deabcc978116648783e4"
+    },
+    "state": "unsubmitted_incomplete_late_binding",
+    "pending_request_must_not_be_submitted": true,
+    "remaining_config_null_fields": [
+      "CONFIG.focused_result"
+    ],
+    "focused_stage_is_corrected_0ed127": true,
+    "actual_result": null,
+    "actual_query40_result": null,
+    "actual_unsigned_apk": null,
+    "actual_class_count": null,
+    "current_expected_query_cases": 40,
+    "current_expected_query_assertions": 187,
+    "query_history": "Current repository runner is integrated. Historical integrated Main57 report and historical external Main56 runner remain separate.",
+    "late_seal": {
+      "field": "CONFIG.focused_result",
+      "expected_actual_path": "/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1/RESULT.json",
+      "expected_schema": "hepta.main58-wire4-focused-host-stage.v1",
+      "required_steps": [
+        "compile",
+        "consumer",
+        "arm"
+      ],
+      "future_success_not_claimed": true,
+      "after_seal_recompute": [
+        "source bytes/SHA/Git",
+        "loader source literal and lengths",
+        "supervisor loader SHA/length",
+        "publisher whole source gzip/pins/length assertions",
+        "exact request"
+      ],
+      "new_hunk_only_one_config_value": true
+    }
+  },
+  "later_pending_sources_reported_by_owner": {
+    "signer": {
+      "git_blob_sha": "c110570bca19aea7f8f4e1887cf5b6187faba77f",
+      "bytes": 97646,
+      "sha256": "49d8d2ba897661d0e3b68891c3fde6fe85dabdf90200de83aed62129b8fde158",
+      "actual_and_cas_null_fields": 10,
+      "executed": false
+    },
+    "metadata_stager": {
+      "git_blob_sha": "e24b2191d913d39a4ab0138a02c44530bf7b25cc",
+      "bytes": 17781,
+      "sha256": "bea8829401d1bb00018fe165cf2df79a7dd1331ca8ea2182ef2a3b8da425b14c",
+      "null_fields": 8,
+      "executed": false
+    },
+    "installer": {
+      "git_blob_sha": "ee42680d616aafb10e628d5c2669d51411f6fa91",
+      "bytes": 251724,
+      "sha256": "f476688b7c3ff6df4c1ad75d08cc16027d465f0bc54169fb8c053966f85bd379",
+      "release_fields_null": 13,
+      "owner": null,
+      "executed": false
+    },
+    "flight_compact": {
+      "git_blob_sha": "347bcf6a440fc7428ad502b204116b66220daca4",
+      "bytes": 15147,
+      "sha256": "699259b9e4be1ca62a0098ece8d219550776761e889c42984732d031033afb73",
+      "runtime_publish_request_git": "696b8461a1a0f36484450ceb6456156c10b1fa9d",
+      "release_actual": null,
+      "prepare_actual": null,
+      "run_actual": null,
+      "executed": false
+    },
+    "verification_scope": "These four current source references and null counts were supplied after full Git readback by their sole owner; this manifest does not claim an additional review of their bodies."
+  },
+  "required_new_tree_members": [
+    {
+      "relative_tree_member": "android58-pending-source.py",
+      "role": "current pending coordinator",
+      "bytes": 90099,
+      "sha256": "a933105576d7012b74386c934a7f1c9184fa9c01e87ebf9c13fc728ce54dfa51",
+      "git_blob_sha": "a8d1193fcdae2fd6262f668eb584d773fe42a9db",
+      "raw_blob_created_and_full_readback_verified": true
+    },
+    {
+      "relative_tree_member": "android58-pending-exact-request.json",
+      "role": "unsubmitted request; requires actual focused receipt sealing",
+      "bytes": 50051,
+      "sha256": "e9289e61d581aa7ee8dad9ddeb61a5a2185802e02c60bbd53266f9ce3007f083",
+      "git_blob_sha": "0000c0684a9576e63aa63639385b1f2cdcaee3e0",
+      "raw_blob_created_and_full_readback_verified": true
+    },
+    {
+      "relative_tree_member": "android58-full-input.json",
+      "role": "whole derived input, without future results",
+      "bytes": 1605061,
+      "sha256": "120cc1714b837e19d56acc4138bcb2194124b1100293f6bf2a8f71c32fb0ed33",
+      "git_blob_sha": "003656bcba9f8a9e1212deabcc978116648783e4",
+      "raw_blob_created_and_full_readback_verified": true
+    },
+    {
+      "relative_tree_member": "android58-compact-handoff.json",
+      "role": "exact source and transport derivation",
+      "bytes": 112016,
+      "sha256": "f2592fbb3423ebd4eaabbd0c761252235c6c564584144a2480e43a02c3e0f8cc",
+      "git_blob_sha": "d1096fce4e27963cad0996a713ca474b89f3b53c",
+      "raw_blob_created_and_full_readback_verified": true
+    },
+    {
+      "relative_tree_member": "android58-publisher.py",
+      "role": "same publisher raw embedded in exact request",
+      "bytes": 10437,
+      "sha256": "519026dfa10092e78ea71c536da5c3b568165ce15031e2fd5a0c94a1d1cd353d",
+      "git_blob_sha": "1a976bb6c3b38edb268cd4a9fdf29bdb75b6315c",
+      "raw_blob_created_and_full_readback_verified": true
+    },
+    {
+      "relative_tree_member": "android58-loader.py",
+      "role": "same loader raw embedded in publisher",
+      "bytes": 863,
+      "sha256": "9ad261c38cc7d70868fbde8ca3797965efa48f6e6197e10e1369b59582298eae",
+      "git_blob_sha": "8f9caa0c0ab63cb8f31f57e11a62e551d509fe70",
+      "raw_blob_created_and_full_readback_verified": true
+    },
+    {
+      "relative_tree_member": "android58-supervisor.py",
+      "role": "same supervisor raw embedded in publisher",
+      "bytes": 1802,
+      "sha256": "8c20204c978ab831a9e709c9dc0600b8b5d36633c087387c1438197d5a242935",
+      "git_blob_sha": "49fe5cc5d25770861c0907a288c9ffb08c977353",
+      "raw_blob_created_and_full_readback_verified": true
+    },
+    {
+      "relative_tree_member": "web58-independent-preclaim-review.json",
+      "role": "completed Git/source-only verification; no host execution",
+      "bytes": 7258,
+      "sha256": "db042c2ab31ccf544cc11b232f6da3488c3a005d975344b36d75feda94ca8043",
+      "git_blob_sha": "af94bab9278dac05200bf60d32f3052d8eb5b78d",
+      "raw_blob_created_and_full_readback_verified": true
+    }
+  ],
+  "additional_referenced_prior_input": {
+    "git_blob_sha": "e665a7f0cbf860e6e64a2e3c3ff8b1e2eea48fc8",
+    "bytes": 1598487,
+    "sha256": "d7174a964b506448c44f627e250cd662d953a94005790aad9ad7297671f5c13d"
+  },
+  "durability": "Add every required_new_tree_members row and this manifest as actual tree entries, not only as hashes in another JSON file. All seven Android current originals are stored as standalone Git blobs. The exact request also contains the complete compressed source; no external gzip object is required.",
+  "outcome_limits": {
+    "any_main58_actual_result_available": false,
+    "main58_test_pass_claimed": false,
+    "main58_signed": false,
+    "main58_installed": false,
+    "flight_results_provider_ready": false,
+    "actual_postquery_result_dom_available": false,
+    "query_dispatched_in_latest_actual_flight57": false,
+    "source_or_runtime_mutated_here": false
+  },
+  "recovery_order": [
+    "Read the original Core58 session/result; preserve unknown or failure honestly.",
+    "Once the expected materialized source tree exists, execute the already prepared Web and corrected focused requests exactly once under Root control.",
+    "After focused actual success, seal the Android focused_result value and regenerate its source and full exact transport pins; then execute once.",
+    "After actual gates and Android result, Mobile alone performs the source CAS; BG seals staging/signing/installation/Flight actual fields.",
+    "Continue the actual Flight form/query; implement a results provider only from real postquery DOM/AX evidence."
+  ]
+}
