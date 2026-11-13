@@ -67,6 +67,14 @@ jobs:
             --java-home "$JAVA_HOME" \
             --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar" \
             --python "$(command -v python)" --cc "$(command -v cc)"
+      - name: Run the focused mixed-UID classification and two-read exclusion gate
+        if: ${{ !cancelled() }}
+        run: |
+          set -euo pipefail
+          python -B "$GITHUB_WORKSPACE/$HEPTA_SOURCE/tests/owned-generation-mixed-uid/run_host.py" \
+            --source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
+            --output "$RUNNER_TEMP/hepta-owned-generation-mixed-uid" \
+            --cc "$(command -v cc)"
       - name: Preserve independent generation diagnostics even when the original gate rejects
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -74,7 +82,9 @@ jobs:
           name: hepta-owned-generation-diagnostic-${{ github.event.pull_request.head.sha || github.sha }}
           retention-days: 14
           if-no-files-found: warn
-          path: ${{ runner.temp }}/hepta-owned-generation-diagnostic/**
+          path: |
+            ${{ runner.temp }}/hepta-owned-generation-diagnostic/**
+            ${{ runner.temp }}/hepta-owned-generation-mixed-uid/**
 
   mnn-runtime:
     runs-on: macos-15-intel

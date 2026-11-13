@@ -1,0 +1,21 @@
+{
+  "head": "b316d693b824f1d1210499988939d07657f35981",
+  "run": 43441342330,
+  "job": 131939437226,
+  "original_files_unmodified": true,
+  "files": [
+    {
+      "source": "/home/alex/hepta-ci-b316-owned-visibility-261e-20261113-r1/artifact/native/empty_normal0/RESULT.json",
+      "fixture": "ci-b316-empty-RESULT.json",
+      "bytes": 3591,
+      "sha256": "d45d85240701bbf6cb414eb975eaaa5df2dfb1d4a7649770d5d32f43f4d11343"
+    },
+    {
+      "source": "/home/alex/hepta-ci-b316-owned-visibility-261e-20261113-r1/artifact/native/empty_normal0/helper.stderr",
+      "fixture": "ci-b316-helper.stderr",
+      "bytes": 16085,
+      "sha256": "79a113aaf3ea2d88b5c284ea87ff2e430d7894440606cf442e8458393dde15b5"
+    }
+  ],
+  "scope": "actual trace scalars used in synthetic status/stat filesystem records; no live CI process recreation or full cleanup success claim"
+}

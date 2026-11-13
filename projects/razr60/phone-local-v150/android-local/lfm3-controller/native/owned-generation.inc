@@ -31,8 +31,9 @@ typedef struct {
     long app_pid,leader_pid,pgid;
     uint64_t app_start,leader_start;
 } HgIdentity;
+typedef enum { HG_UID_UNRESOLVED=0, HG_UID_UNIFORM=1, HG_UID_MIXED=2 } HgUidKind;
 typedef struct {
-    int fd; long pid,ppid,pgid; unsigned long uid;
+    int fd; long pid,ppid,pgid; unsigned long uid,uids[4];
     uint64_t start; char state;
 #ifdef HEPTA_OWNED_GENERATION_HOST_TRACE
     bool trace_stat_valid,trace_uid_parsed,trace_uid_equal;
@@ -216,22 +217,57 @@ static bool hg_proc_stat(HgProcess *p) {
     HG_TRACE_STAT_PARSED(p)
     return true;
 }
-static bool hg_proc_uid(HgProcess *p) {
+static HgUidKind hg_proc_uid_kind(HgProcess *p) {
     unsigned char b[16385];size_t n=0;
-    if(HG_TRACE_READ(p,HG_TRACE_UID,hg_read_at(p->fd,"status",b,16384,&n))!=0||!n||memchr(b,0,n))return false;
+    memset(p->uids,0,sizeof(p->uids));
+    if(HG_TRACE_READ(p,HG_TRACE_UID,hg_read_at(p->fd,"status",b,16384,&n))!=0||!n||memchr(b,0,n))return HG_UID_UNRESOLVED;
     char *line=(char*)b;int count=0;unsigned long values[4]={0};
     while(line&&*line){
         char *next=strchr(line,'\n');if(next)*next++=0;
         if(!strncmp(line,"Uid:",4)){
             char extra;
-            if(sscanf(line+4,"%lu %lu %lu %lu %c",&values[0],&values[1],&values[2],&values[3],&extra)!=4)return false;
+            if(sscanf(line+4,"%lu %lu %lu %lu %c",&values[0],&values[1],&values[2],&values[3],&extra)!=4)return HG_UID_UNRESOLVED;
             count++;
         }
         line=next;
     }
     HG_TRACE_UID_TUPLE(p,values,count==1)
-    if(count!=1||values[0]!=values[1]||values[0]!=values[2]||values[0]!=values[3])return false;
-    p->uid=values[0];return true;
+    if(count!=1)return HG_UID_UNRESOLVED;
+    memcpy(p->uids,values,sizeof(p->uids));
+    if(values[0]!=values[1]||values[0]!=values[2]||values[0]!=values[3])return HG_UID_MIXED;
+    p->uid=values[0];return HG_UID_UNIFORM;
+}
+static bool hg_proc_uid(HgProcess *p) {
+    /* Caller/self/member authority still requires four identical UID values. */
+    return hg_proc_uid_kind(p)==HG_UID_UNIFORM;
+}
+static bool hg_mixed_older_unrelated(HgProcess *p,const HgIdentity *id,bool stat_ok) {
+    if(!stat_ok){HG_TRACE_PROC_FAILURE(p,"mixed_uid_stat_unresolved",HG_TRACE_STAT) return false;}
+    if(p->pid==id->leader_pid||p->pgid==id->pgid||p->start>=id->leader_start
+            ||(p->uids[0]==p->uids[1]&&p->uids[0]==p->uids[2]&&p->uids[0]==p->uids[3])){
+        HG_TRACE_POLICY(p,"mixed_uid_not_older_unrelated")
+        return false;
+    }
+    /* This is only an exclusion of an already existing process outside the
+     * worker group, never a grant of member or signal authority. Read the same
+     * held directory FD again; the complete four-UID tuple must stay exact. */
+    HgProcess again=*p;
+    if(!hg_proc_stat(&again)){
+        HG_TRACE_RECHECK_FAILURE(&again)
+        return false;
+    }
+    HgUidKind kind=hg_proc_uid_kind(&again);
+    if(kind==HG_UID_UNRESOLVED){
+        HG_TRACE_RECHECK_FAILURE(&again)
+        return false;
+    }
+    if(kind!=HG_UID_MIXED||again.pid!=p->pid||again.start!=p->start
+            ||again.pgid!=p->pgid||again.ppid!=p->ppid
+            ||memcmp(again.uids,p->uids,sizeof(p->uids))){
+        HG_TRACE_POLICY(&again,"mixed_uid_older_identity_changed")
+        return false;
+    }
+    return true;
 }
 static int hg_open_process(long pid,HgProcess *p) {
     char path[64];memset(p,0,sizeof(*p));p->fd=-1;p->pid=pid;
@@ -397,8 +433,13 @@ static HgScan hg_scan(const HgIdentity *id,uint64_t deadline) {
             HG_TRACE_OPEN_FAILURE(&p,errno)
             scan.unknown++;continue;
         }
-        bool stat_ok=hg_proc_stat(&p),uid_ok=hg_proc_uid(&p);
-        if(!uid_ok){HG_TRACE_PROC_FAILURE(&p,"uid_unresolved",HG_TRACE_UID) scan.unknown++;close(p.fd);continue;}
+        bool stat_ok=hg_proc_stat(&p);HgUidKind uid_kind=hg_proc_uid_kind(&p);
+        if(uid_kind==HG_UID_MIXED){
+            if(hg_mixed_older_unrelated(&p,id,stat_ok))scan.older_unrelated++;
+            else scan.unknown++;
+            close(p.fd);continue;
+        }
+        if(uid_kind!=HG_UID_UNIFORM){HG_TRACE_PROC_FAILURE(&p,"uid_unresolved",HG_TRACE_UID) scan.unknown++;close(p.fd);continue;}
         if(p.uid!=id->uid){
             if(stat_ok&&p.pgid==id->pgid){HG_TRACE_POLICY(&p,"different_uid_same_group") scan.unknown++;}
             close(p.fd);continue;

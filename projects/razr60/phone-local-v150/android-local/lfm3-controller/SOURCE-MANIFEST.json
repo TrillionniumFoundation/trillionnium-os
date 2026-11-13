@@ -8,6 +8,38 @@
   },
   "candidate_status": "reviewed_source_integration_pending_fresh_full_host_android_and_phone_qualification",
   "candidate_version_assigned": true,
+  "ci_mixed_uid_repair": {
+    "focused_gate": {
+      "assertions": 196,
+      "boundary": "Actual production parser and exclusion with synthetic stat/status, not a real setuid process or complete proc visibility test.",
+      "cases": 29,
+      "path": "tests/owned-generation-mixed-uid/run_host.py"
+    },
+    "fresh_android_build_pending": true,
+    "full_new_head_ci_pending": true,
+    "old_b2ca_phone_qualification_not_adopted": true,
+    "parent_commit": "b316d693b824f1d1210499988939d07657f35981",
+    "parent_component_tree": "e107f79e46fc9b162a8529d315d04b26c8e82b0a",
+    "parent_source_manifest_sha256": "272f9e63eedcd7cf15f91825a70e1b1a5650736119a7996c271d1d06de7bd50c",
+    "phone_tested": false,
+    "production_delta_paths": [
+      "native/owned-generation.inc"
+    ],
+    "retained_gate": {
+      "assertions_unchanged": true,
+      "canonical108_unchanged": true,
+      "cases": 87,
+      "checks": 267,
+      "path": "tests/owned-generation-cleanup/run_host.py"
+    },
+    "scope": "Mixed UID is separately typed; only a same-held-FD stable second stat/four-UID tuple read plus strict older-than-leader and different PGID excludes an unrelated process. No mixed tuple obtains signaling authority.",
+    "workflow": {
+      "changes": "Add focused gate and its artifact directory to existing independent diagnostic job; original Mac producer and Linux consumer are byte-identical.",
+      "git_blob": "c416a4280f490829506636042c35acdaf0ddcb12",
+      "path": ".github/workflows/hepta-local-android.yml",
+      "sha256": "fb3fd5ccd55f310fcd06d01c9b78618c9b94a8a001ba307ea55b804bd7a70422"
+    }
+  },
   "ci_visibility_diagnostic": {
     "installed_b2ca_apk_is_not_this_source_commit": true,
     "new_head_ci_and_full_gates_required": true,
@@ -28,7 +60,7 @@
     ],
     "source_overlay_sha256": "5c5b66cf9db19f2f831fc903bd3b991924cbaf75a39a023b50a1c774e13f9ced"
   },
-  "complete_source_files": 1725,
+  "complete_source_files": 1730,
   "current_validation": {
     "actual_flight_result_provider_implemented": false,
     "actual_flight_result_verified": false,
@@ -4998,9 +5030,9 @@
       "sha256": "2e8c514c30b0689e3527e9687b6fdc5bae81583a7deb23a313ddc33e7a91ffab"
     },
     {
-      "bytes": 34975,
+      "bytes": 36870,
       "path": "native/owned-generation.inc",
-      "sha256": "76e7af242c5025c788d80c793a3e1b47ecfb08ad6933398706676f696408be12"
+      "sha256": "5cf9e54ac3a8bda4c6da9fe0d01ab9675ddadd36a1b553d8223c538683dacf7d"
     },
     {
       "bytes": 2096,
@@ -7333,6 +7365,31 @@
       "sha256": "6d1dd609ab65b52738b225f56c5a36dcd73a49debb154b438412f2a1bd9b81bd"
     },
     {
+      "bytes": 866,
+      "path": "tests/owned-generation-mixed-uid/fixtures/PROVENANCE.json",
+      "sha256": "c2c8373cd645ace80b9398d948bc590396894b8c81b6331a9ba62920b26a436c"
+    },
+    {
+      "bytes": 3591,
+      "path": "tests/owned-generation-mixed-uid/fixtures/ci-b316-empty-RESULT.json",
+      "sha256": "d45d85240701bbf6cb414eb975eaaa5df2dfb1d4a7649770d5d32f43f4d11343"
+    },
+    {
+      "bytes": 16085,
+      "path": "tests/owned-generation-mixed-uid/fixtures/ci-b316-helper.stderr",
+      "sha256": "79a113aaf3ea2d88b5c284ea87ff2e430d7894440606cf442e8458393dde15b5"
+    },
+    {
+      "bytes": 2169,
+      "path": "tests/owned-generation-mixed-uid/mixed_uid_main.c",
+      "sha256": "2901300427c64d8d28b2fd34afa60b041f41b3011363f65e3fd6290f8df8c721"
+    },
+    {
+      "bytes": 11305,
+      "path": "tests/owned-generation-mixed-uid/run_host.py",
+      "sha256": "2599612b0d13ae751625ff37fd653506865dc27343e08c075f714167a74975bf"
+    },
+    {
       "bytes": 7754,
       "path": "tests/owned-worker-cancellation/NativeCancellationPipeHostTest.java",
       "sha256": "2e7036faa69a6310d416c6beca3eae4dfaf403965fde2246557daa09c6a5b2b7"
@@ -8706,7 +8763,7 @@
   "qualification_policy": "Qualification is separate external evidence bound to this exact full source and actual Git/build inputs. Source review, isolated targeted tests and historical receipts do not qualify the integrated candidate.",
   "release_version_assigned": false,
   "schema": "hepta.local-source.v3",
-  "source_preservation_scope": "Preserve every original v64 source path. This CI-only revision changes the two reviewed host visibility trace files and their complete manifest pins; Android version, all Java sources, original gate assertions and production guard/deadline semantics remain unchanged. Existing base_source and integration_sources are retained as historical v64 provenance. The separately reviewed diagnostic workflow remains outside this component.",
+  "source_preservation_scope": "Preserve all 1725 b316 source members. This isolated CI repair changes only mixed-UID classification and the strictly older/different-group exclusion in native/owned-generation.inc, adds five focused regression inputs and refreshes complete manifest pins. Android version, all Java sources, original canonical108 and retained87 assertions remain unchanged. Previous integration metadata remains historical provenance; no prior APK or phone qualification applies to this new native source.",
   "version_code": 64,
   "version_metadata_policy": "Version64 identifies this source candidate. Publication, fresh original build/signature and ordinary phone acceptance are distinct gates.",
   "version_name": "0.64.0-owned-worker-runtime"
