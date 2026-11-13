@@ -247,6 +247,18 @@ public final class QualificationScopeHostTest {
             QualificationScopeConfig.Bound bound=QualificationScopeConfig.capture(e.service,e.task,e.scopeSha,e.runtime);
             rejects(()->bound.requireReady());check(bound.restricted()&&e.scopeSha.equals(bound.actualSha256)&&bound.runtimeFile==null,"intermediate child symlink must be refused before runtime read");
         }});
+        test("canonical_context_root_keeps_session_leaf_symlink_rejected",()->{try(Env e=new Env(false,true)){
+            Path leaf=e.dir.resolve("control-session.json"),target=e.dir.resolve("same-session-bytes.json");
+            byte[] content=bytes("{\"status\":\"pending\"}");write(target,content,0600);Files.createSymbolicLink(leaf,target);
+            java.lang.reflect.Method reader=LocalTaskSession.class.getDeclaredMethod("readSessionRecord",File.class);reader.setAccessible(true);
+            boolean refused=false;
+            try{reader.invoke(null,leaf.toFile());}
+            catch(java.lang.reflect.InvocationTargetException wrapped){
+                Throwable cause=wrapped.getCause();
+                check(cause instanceof IOException&&"session record is not a direct private file".equals(cause.getMessage()),"actual strict reader must reject the child symlink");refused=true;
+            }
+            check(refused&&Files.isSymbolicLink(leaf)&&Arrays.equals(content,Files.readAllBytes(target)),"rejected child symlink and target bytes remain unchanged");
+        }});
     }
     public static void main(String[] args)throws Exception{
         check(args.length==1||(args.length==2&&"--apk-splits-only".equals(args[1])),"unexpected host test mode");
@@ -370,6 +382,27 @@ public final class QualificationScopeHostTest {
                 Thread.sleep(1);
             }
             check(tasks.lastResult!=null&&e.scopeSha.equals(tasks.lastResult.expectedScopeSha256)&&session!=null,"controller receives original expectation");check(e.scopeSha.equals(session.getString("expected_scope_sha256"))&&e.scopeSha.equals(session.getString("actual_scope_sha256")),"session terminal binds both hashes");
+            rejects(()->ui.scopeLaunch.claim("打开设置"));
+        }});
+        test("actual_ui_start_canonical_context_root_alias_commits_and_completes",()->{try(Env e=new Env(true,true)){
+            CountingModel model=new CountingModel(e,"done",SETTINGS,null);e.service.testInference=model;
+            LocalModelEngine engine=new LocalModelEngine(Paths.get(e.pm.packages.get("org.trillionnium.hepta.local").applicationInfo.sourceDir).toFile(),e.runtime);LocalTaskSession tasks=new LocalTaskSession(e.service,engine);ScopeUiFixture ui=new ScopeUiFixture(tasks,engine);
+            ui.intent(new Intent().putExtra("task","打开设置").putExtra(QualificationScope.EXPECTED_EXTRA,e.scopeSha));Handler.hold=true;check(ui.start(),"ordinary button schedules");
+            check("user_button".equals(tasks.origin)&&e.scopeSha.equals(tasks.expectedScopeSha),"source and expectation bound in pending session");
+            ui.intent(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).putExtra("task","new ordinary task"));check(e.scopeSha.equals(tasks.expectedScopeSha),"running pending session immutable");
+            Handler.drain();long end=System.currentTimeMillis()+10000;JSONObject session=null;
+            // The host Handler executes worker callbacks directly; wait for the actual
+            // terminal session write, rather than racing controller.running=false.
+            while(System.currentTimeMillis()<end){
+                if(tasks.blocked)break;
+                try{JSONObject candidate=new JSONObject(new String(Files.readAllBytes(e.dir.resolve("control-session.json")),StandardCharsets.UTF_8));
+                    if(tasks.lastResult!=null&&"partial".equals(candidate.getString("status"))){session=candidate;break;}}
+                catch(Exception transientWrite){/* host AtomicFile fixture can expose an in-progress write */}
+                Thread.sleep(1);
+            }
+            check(tasks.lastResult!=null&&e.scopeSha.equals(tasks.lastResult.expectedScopeSha256)&&session!=null,"alias-root ordinary task did not complete: "+tasks.log);check(e.scopeSha.equals(session.getString("expected_scope_sha256"))&&e.scopeSha.equals(session.getString("actual_scope_sha256")),"session terminal binds both hashes");
+            check(model.calls>0&&"user_button".equals(session.getString("origin"))&&session.getString("task_id").matches("[0-9a-f]{32}"),"ordinary controller/model request and terminal identity required");
+            check(Arrays.equals(Files.readAllBytes(e.dir.resolve("control-session.json")),Files.readAllBytes(new File(e.service.getFilesDir(),"control-session.json").toPath())),"framework alias and captured canonical root must name the same final journal bytes");
             rejects(()->ui.scopeLaunch.claim("打开设置"));
         }});
         test("actual_ui_bad_or_edited_expected_prefill_cannot_start",()->{try(Env e=new Env(true)){

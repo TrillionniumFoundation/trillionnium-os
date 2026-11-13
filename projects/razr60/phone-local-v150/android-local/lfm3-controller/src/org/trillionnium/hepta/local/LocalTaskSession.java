@@ -597,7 +597,7 @@ public final class LocalTaskSession {
             if(journalQueue.failed())value.put("blocked",true).put("cleanup_known",false)
                     .put("session_journal_failure_observed",true);
             stage="atomic_destination";
-            destination=new AtomicFile(new File(context.getFilesDir(),"control-session.json"));
+            destination=new AtomicFile(new File(context.getFilesDir().getCanonicalFile(),"control-session.json"));
             stage="encode_snapshot";
             byte[] written=value.toString(2).getBytes(StandardCharsets.UTF_8);
             if(written.length>SESSION_LIMIT)throw new IOException("session record exceeds bounded size");

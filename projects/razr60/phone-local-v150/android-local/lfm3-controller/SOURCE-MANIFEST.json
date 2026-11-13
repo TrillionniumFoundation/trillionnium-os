@@ -1,8 +1,8 @@
 {
   "schema": "hepta.local-source.v3",
-  "version_code": 60,
-  "version_name": "0.60.0-observation-result-journal-diagnostics",
-  "functional_scope": "Bounded shopping read-only observation retries, flight result query/frame/publication lifecycle and completion plumbing without a real result provider, accessibility-ready Start guard, and bounded original journal write stage/cause diagnostics.",
+  "version_code": 61,
+  "version_name": "0.61.0-canonical-session-journal-root",
+  "functional_scope": "Normalize the trusted Android Context files-directory parent before constructing the fixed session-journal child, preserving all strict reader, metadata, sidecar, byte-equality and fsync checks. Existing v60 observation/result scaffolding is inherited unchanged.",
   "candidate_status": "reviewed_host_validated_source_candidate_pending_full_build_and_phone",
   "android_build": "Requires a fresh full build of all 119 Java sources, native outputs and resources from the exact 221 production inputs, then original-key assembly. No prior APK qualifies this candidate.",
   "android_qualified": false,
@@ -16,25 +16,30 @@
     "phone_tested": false,
     "external_model_used": false,
     "focused_host_results": {
-      "retained_query": 40,
-      "retained_query_assertions": 187,
-      "result_lifetime": 31,
-      "result_lifetime_assertions": 99,
-      "result_completion_composition": 17,
-      "result_completion_composition_assertions": 70,
-      "shopping_readonly_retry": 28,
-      "shopping_readonly_retry_assertions": 83,
-      "original_v59_shopping_failure_replayed": 1,
-      "real_dom_flight_session": 16,
-      "real_dom_flight_session_assertions": 39,
-      "session_journal": 19
+      "qualification_scope": 125,
+      "existing_qualification_scope_cases_retained": 123,
+      "new_alias_parent_ordinary_schedule_case": 1,
+      "new_session_child_symlink_rejection_case": 1,
+      "legacy_v60_alias_case_failed_as_expected": true
     },
-    "native_and_ipc_boundaries": "Host service/native IO/authorization/IPC/publisher, typed result providers and cleanup carriers are instrumented. Archived public DOM/AX fixtures are retained exactly; future stable retry sequences and flight result rows are explicitly synthetic.",
+    "native_and_ipc_boundaries": "The existing qualification-scope harness executes exact extracted ordinary UI/session/writer/controller methods. Android AtomicFile, OS permission/fsync and UI/model effect endpoints remain explicit host surrogates; this is not phone or Android mount-namespace qualification.",
     "original_failures_preserved": true,
     "actual_flight_result_provider_implemented": false,
     "actual_flight_result_verified": false,
-    "journal_failure_root_cause_confirmed": false,
-    "journal_change_is_diagnostics_only": true
+    "journal_failure_root_cause_confirmed": true,
+    "journal_change_is_diagnostics_only": false,
+    "actual_journal_failure": {
+      "installed_version_code": 60,
+      "apk_sha256": "73c8c00e5ec8b4943b4d899323147f8cb39cc6a933bc250cc3dae5e8257e2120",
+      "main_pid": 9837,
+      "task_id": null,
+      "write_stage": "readback_and_sidecars",
+      "cause": "java.io.IOException: session record is not a direct private file",
+      "cause_log_bytes": 1498,
+      "cause_log_sha256": "f72a5e305ff6fd12594bd93c8af9b60713333c141e0cae9b636f59dd1aae1762",
+      "read_only_collection": "existing live in-memory session log; no method invocation or field mutation"
+    },
+    "phone_fix_acceptance_pending": true
   },
   "files": [
     {
@@ -54,8 +59,8 @@
     },
     {
       "path": "AndroidManifest.xml",
-      "bytes": 2604,
-      "sha256": "af6f14e0c166036f4bfdfd0395552f7aba86a0cc6ccbc44c05c452fcdaf4d1ff"
+      "bytes": 2596,
+      "sha256": "10e69390ceb9d2da89410fd32ccea285b05b7d1708f7b12e38146a434b858919"
     },
     {
       "path": "BACKGROUND-BROKER.md",
@@ -5359,8 +5364,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
-      "bytes": 46205,
-      "sha256": "a1c240445e91f9634ca805bf7c243c8e41a320e9410d56bdca92311913b174d6"
+      "bytes": 46224,
+      "sha256": "9a10156dc4b9f734fb942b2478a04948e9dbf91c8a678928af2971809df26fb3"
     },
     {
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
@@ -6659,8 +6664,8 @@
     },
     {
       "path": "tests/qualification-scope/QualificationScopeHostTest.java",
-      "bytes": 46504,
-      "sha256": "5e246111edfc6e90abbddd2417d03c0985e58e07d2e2546f5d5b4d32682a13c9"
+      "bytes": 50319,
+      "sha256": "68c05819b2fada5657ce5fd4f19fff55a11f1253a0d3aa22c58d082f2f816212"
     },
     {
       "path": "tests/qualification-scope/ServiceFixture.template",
@@ -7419,25 +7424,29 @@
     }
   ],
   "base_source": {
-    "commit": "c6a1d9b3fb001c8835c48a8fed32b569f3148d44",
-    "component_tree": "92f370a8efdc5a7768a49279d480a4697ed2d128"
+    "commit": "dc7b6ffec0d3bb5c3cc471598f41538c2aa908a1",
+    "component_tree": "618f7d165f7a4b1456e0411518e1787cda2dd60c"
   },
   "release_version_assigned": false,
-  "version_metadata_policy": "Version60/name identifies this source candidate. Full Android build, original signing, installation and actual ordinary phone acceptance remain separate exact-source gates.",
+  "version_metadata_policy": "Version61/name identifies this exact source candidate. Fresh full Android build, original signing, installation and actual ordinary Start on the phone remain separate exact-source gates.",
   "candidate_version_assigned": true,
   "integration_sources": {
-    "preceding_published_application_candidate": "c6a1d9b3fb001c8835c48a8fed32b569f3148d44",
-    "normal_git_parent_with_unchanged_application_component": "e9e915bdac3e25b9f6fef1625de45267812e41bf",
-    "prior_v59_integration": {
-      "preceding_published_candidate": "f519f2081b11dbbe851c2fb6528d32fffbc20c62",
-      "installed_current57_source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
-      "installed_current57_source_tree": "2368b777bad9fd9e2f5dcbcbefc6ea9c27fcb0da",
-      "installed_current57_apk_sha256": "c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4",
-      "installed_current57_source_inventory_sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6",
-      "real_failed_flight_task": "b350fd8665b640608093602b1e6a9f14"
-    },
-    "actual_failed_shopping_task": "475c3b4562e24c9595c49ca1d13e67e4",
-    "journal_diagnostics_overlay_sha256": "8f6ec8cc6c598fcb55b301c70535d11a71299ac07680e24aba2abc98e0e30d44"
+    "preceding_published_application_candidate": "dc7b6ffec0d3bb5c3cc471598f41538c2aa908a1",
+    "normal_git_parent": "dc7b6ffec0d3bb5c3cc471598f41538c2aa908a1",
+    "prior_v60_integration": {
+      "preceding_published_application_candidate": "c6a1d9b3fb001c8835c48a8fed32b569f3148d44",
+      "normal_git_parent_with_unchanged_application_component": "e9e915bdac3e25b9f6fef1625de45267812e41bf",
+      "prior_v59_integration": {
+        "preceding_published_candidate": "f519f2081b11dbbe851c2fb6528d32fffbc20c62",
+        "installed_current57_source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+        "installed_current57_source_tree": "2368b777bad9fd9e2f5dcbcbefc6ea9c27fcb0da",
+        "installed_current57_apk_sha256": "c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4",
+        "installed_current57_source_inventory_sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6",
+        "real_failed_flight_task": "b350fd8665b640608093602b1e6a9f14"
+      },
+      "actual_failed_shopping_task": "475c3b4562e24c9595c49ca1d13e67e4",
+      "journal_diagnostics_overlay_sha256": "8f6ec8cc6c598fcb55b301c70535d11a71299ac07680e24aba2abc98e0e30d44"
+    }
   },
-  "source_preservation_scope": "Every c6a1d9 file remains represented. Reviewed observation/result and Start changes, diagnostics and their host dependencies are explicit overlays. Original build programs, runtime pins, action-worker and complete DOM/native action predicates remain unchanged."
+  "source_preservation_scope": "Every dc7b6ff file remains represented. Only the trusted Context parent normalization, two appended behavioral host cases, and explicit version/source metadata differ. Original runners, Android fixture boundaries, runtime pins, SDK/native code, action guards and all existing assertions are unchanged."
 }
