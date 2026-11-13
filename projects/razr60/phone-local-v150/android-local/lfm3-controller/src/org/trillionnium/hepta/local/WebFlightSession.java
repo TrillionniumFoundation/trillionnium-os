@@ -71,8 +71,69 @@ final class WebFlightSession {
                     "actual ARM is not for the exact native bridge/model run");
         }
     }
+    private volatile CityObservationRetry cityObservationRetry;
+    private static final class CityObservationRetry {
+        final WebFlightDomain before;final String run,nodeId,kind,capabilityPurpose;
+        final long dispatchStarted,dispatchEnded;
+        private CityObservationRetry(WebFlightDomain before,ActionDecision action,String run,String kind,
+                String capabilityPurpose,long start,long end){
+            this.before=before;this.run=run;nodeId=action.nodeId;this.kind=kind;this.capabilityPurpose=capabilityPurpose;
+            dispatchStarted=start;dispatchEnded=end;
+        }
+        static CityObservationRetry fromOutcome(WebFlightDomain before,ActionDecision action,String run,
+                boolean accepted,boolean dispatched,boolean stale,long start,long end){
+            if(before==null||action==null||!accepted||!dispatched||stale||!"click".equals(action.action))return null;
+            before.requireCurrent(action);
+            String purpose=before.purpose(action.nodeId);
+            String kind="choose_departure_city".equals(purpose)?"departure":"choose_arrival_city".equals(purpose)?"arrival":null;
+            if(kind==null)return null;
+            need(run!=null&&run.matches("[0-9a-f]{32}")&&before.captureEnded>=0&&before.captureEnded<=start&&start<=end,
+                    "city-picker retry requires the actual same model dispatch clocks");
+            return new CityObservationRetry(before,action,run,kind,purpose,start,end);
+        }
+        boolean applies(String task,String ownerSha,String authorizationSha,String generation,
+                WebEvidenceReceipt first,WebEvidenceReceipt last,PhoneObservation frame,
+                boolean stable,WebDomStability.Result domBracket)throws Exception{
+            if(stable||domBracket==null||!domBracket.rawEqual||frame==null
+                    ||!before.taskId.equals(task)||!before.ownerSha.equals(ownerSha)
+                    ||!before.authorizationSha.equals(authorizationSha)||!before.generation.equals(generation)
+                    ||!"captured".equals(first.status)||!"captured".equals(last.status)
+                    ||!before.bindingSha.equals(first.bindingSha)||!before.bindingSha.equals(last.bindingSha)
+                    ||!before.instance.equals(first.instance)||!first.instance.equals(last.instance)
+                    ||first.epoch<before.epoch||first.epoch!=last.epoch||!before.url.equals(first.url)||!first.url.equals(last.url)
+                    ||first.displayId!=before.displayId||last.displayId!=before.displayId
+                    ||first.windowId!=before.windowId||last.windowId!=before.windowId
+                    ||first.started<dispatchEnded||first.ended>frame.capturedElapsedMillis||frame.capturedElapsedMillis>last.started
+                    ||!WebEvidenceProtocol.HELPER_PACKAGE.equals(frame.packageName)||frame.windowId!=before.windowId
+                    ||frame.windowMetadata.displayId==null||frame.windowMetadata.displayId.intValue()!=before.displayId
+                    ||!before.generation.equals(frame.backgroundGeneration)||frame.nodesTruncated||frame.collectionStats==null
+                    ||frame.collectionStats.truncated()||frame.collectionStats.pending!=0||frame.collectionStats.childSlotsOmitted!=0
+                    ||frame.state.imeVisibility!=ImeVisibility.HIDDEN)return false;
+            JSONObject binding=first.capture().getJSONObject("binding");
+            if(!before.taskId.equals(binding.getString("task_id"))||!before.ownerSha.equals(binding.getString("owner_sha256"))
+                    ||!before.contractSha.equals(binding.getString("contract_sha256"))
+                    ||!before.authorizationSha.equals(binding.getJSONObject("authorization").getString("authorization_sha256")))return false;
+            String raw=first.beforeDomRaw();
+            if(!first.stability().rawEqual||!last.stability().rawEqual||!raw.equals(first.domRaw())
+                    ||!raw.equals(last.beforeDomRaw())||!raw.equals(last.domRaw()))return false;
+            CsairCityPicker a=CsairCityPicker.read(first.dom()),b=CsairCityPicker.read(last.dom());
+            return a!=null&&b!=null&&kind.equals(a.kind)&&kind.equals(b.kind);
+        }
+        JSONObject evidence()throws Exception{
+            return new JSONObject().put("schema","hepta.flight-city-picker-observation-retry-source.v1")
+                    .put("task_id",before.taskId).put("owner_sha256",before.ownerSha).put("contract_sha256",before.contractSha)
+                    .put("authorization_sha256",before.authorizationSha).put("binding_sha256",before.bindingSha)
+                    .put("background_generation",before.generation).put("webview_instance",before.instance)
+                    .put("source_navigation_epoch",before.epoch).put("display_id",before.displayId).put("window_id",before.windowId)
+                    .put("source_observation_id",before.observationId).put("model_run_id",run).put("node_id",nodeId)
+                    .put("source_capability_purpose",capabilityPurpose).put("expected_city_picker_kind",kind)
+                    .put("dispatch_before_elapsed_ms",dispatchStarted).put("dispatch_after_elapsed_ms",dispatchEnded)
+                    .put("accepted",true).put("dispatched",true).put("stale",false)
+                    .put("grants_action_capability",false).put("business_verified",false);
+        }
+    }
     private String loadingDocumentKey;
-    private long loadingDocumentStarted;
+    private long loadingDocumentStarted,loadingDocumentDeadline;
     private int loadingDocumentReadRetries;
     private static final class PendingNavigation {
         final WebShoppingDomain before;final ActionDecision action;final String run;final long start,end;
@@ -158,6 +219,7 @@ final class WebFlightSession {
     }
     PhoneObservation observe(PhoneObservation initial,Observer observer,long deadline)throws Exception{
         need(!retired&&!cancellation.isCancelled(),"web task retired");
+        CityObservationRetry observationRetry=cityObservationRetry;cityObservationRetry=null;
         PhoneObservation before=initial;long captureDeadline=deadline;String loadingAttemptKey=null;
         while(true){
         HeptaAccessibilityService.FlightObservationSnapshot nativeSource=null;
@@ -201,9 +263,9 @@ final class WebFlightSession {
         boolean sameCaptureDomain=sameCaptureIdentity&&domBracket!=null;
         boolean stable=sameOriginalFrame&&sameCaptureDomain;
         JSONObject nativeObservationBracket=null;
-        if(retryLoadingDocument(first,last,after,stable,captureDeadline)){
+        if(retryLoadingDocument(first,last,after,stable,domBracket,observationRetry,captureDeadline)){
             loadingAttemptKey=actualLoadingKey;
-            captureDeadline=Math.min(captureDeadline,loadingDocumentStarted+6000);
+            captureDeadline=Math.min(captureDeadline,loadingDocumentDeadline);
             before=observer.observe();service.requireBackgroundObservation(taskId,before);
             continue;
         }
@@ -251,7 +313,7 @@ final class WebFlightSession {
     }
     /** Extra observations are bounded and read-only; an entry click is never replayed. */
     private boolean retryLoadingDocument(WebEvidenceReceipt first,WebEvidenceReceipt last,PhoneObservation frame,
-                                         boolean stable,long deadline)throws Exception{
+                                         boolean stable,WebDomStability.Result domBracket,CityObservationRetry observationRetry,long deadline)throws Exception{
         boolean shoppingUnstable=goal==null&&purpose.shopping!=null&&!stable;
         if(goal==null&&!shoppingUnstable)return false;
         String key=loadingKey(last);
@@ -259,15 +321,25 @@ final class WebFlightSession {
         boolean bodyPending=a!=null&&a.headerOnly||b!=null&&b.headerOnly;
         boolean bookingPending=goal!=null&&(WebFlightDomain.bookingBodyPending(first.dom())||WebFlightDomain.bookingBodyPending(last.dom()));
         boolean queryPending=flightProgress!=null&&flightProgress.queryDispatched();
-        if(!shoppingUnstable&&!bodyPending&&!bookingPending&&!queryPending&&!(key.equals(loadingDocumentKey)&&!stable))return false;
+        boolean cityPickerTransition=observationRetry!=null&&!nativeQueryEntered.get()
+                &&(flightProgress==null||!flightProgress.queryAttempted())
+                &&observationRetry.applies(taskId,purpose.ownerSha256,authorization.authorization.sha256,background.generation,
+                        first,last,frame,stable,domBracket);
+        // A city-open credential never inherits the generic loading-key continuation:
+        // every new city retry must replay its own exact picker/four-DOM predicates.
+        if(!shoppingUnstable&&!bodyPending&&!bookingPending&&!queryPending&&!cityPickerTransition
+                &&!(observationRetry==null&&key.equals(loadingDocumentKey)&&!stable))return false;
         need(first.instance.equals(last.instance)&&first.epoch==last.epoch&&first.url.equals(last.url)
                 &&first.bindingSha.equals(last.bindingSha)&&first.displayId==last.displayId
                 &&first.windowId==last.windowId,"loading observation changed the immutable page domain");
         long now=SystemClock.elapsedRealtime();
         if(!key.equals(loadingDocumentKey)){
             loadingDocumentKey=key;loadingDocumentStarted=now;loadingDocumentReadRetries=0;
+            // The actual city failure cost about 6.8s per full extra AX/DOM bracket.
+            // Freeze one phase deadline; no retry extends it or the original task deadline.
+            loadingDocumentDeadline=Math.min(deadline,now+(cityPickerTransition?16000:6000));
         }
-        if(loadingDocumentReadRetries>=2||now+250>=Math.min(deadline,loadingDocumentStarted+6000))return false;
+        if(loadingDocumentReadRetries>=2||now+250>=Math.min(deadline,loadingDocumentDeadline))return false;
         need(!retired&&!cancellation.isCancelled(),"web task retired while waiting for page content");
         service.requireTaskAuthorization(taskId,authorization);background.requireActive();
         loadingDocumentReadRetries++;
@@ -280,12 +352,14 @@ final class WebFlightSession {
                 .put("first_dom_sha256",first.domSha).put("last_dom_sha256",last.domSha)
                 .put("recognized_calendar_body_pending",bodyPending).put("recognized_booking_body_pending",bookingPending)
                 .put("shopping_unstable_readonly_bracket",shoppingUnstable)
-                .put("actual_query_awaiting_results",queryPending).put("read_only_retry",loadingDocumentReadRetries)
-                .put("maximum_extra_reobservations",2).put("deadline_elapsed_ms",Math.min(deadline,loadingDocumentStarted+6000))
+                .put("actual_query_awaiting_results",queryPending)
+                .put("actual_city_picker_transition",cityPickerTransition?observationRetry.evidence():JSONObject.NULL)
+                .put("read_only_retry",loadingDocumentReadRetries)
+                .put("maximum_extra_reobservations",2).put("deadline_elapsed_ms",Math.min(deadline,loadingDocumentDeadline))
                 .put("action_replayed",false).put("model_action_dispatched",false).put("business_verified",false));
         SystemClock.sleep(200);
         need(!retired&&!cancellation.isCancelled(),"web task retired while waiting for page content");
-        need(SystemClock.elapsedRealtime()<Math.min(deadline,loadingDocumentStarted+6000),
+        need(SystemClock.elapsedRealtime()<Math.min(deadline,loadingDocumentDeadline),
                 "read-only content wait exceeded its original deadline");
         service.requireTaskAuthorization(taskId,authorization);background.requireActive();
         return true;
@@ -300,6 +374,7 @@ final class WebFlightSession {
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;return frame;
     }
     void beforeModelAction(ActionDecision action,String run,long deadline)throws Exception{
+        cityObservationRetry=null;
         boolean prepared=false;
         try{
         WebTaskDomain original=domain;PhoneObservation frame=current;
@@ -465,6 +540,7 @@ final class WebFlightSession {
     /** Called with the original executor Outcome, immediately after the actual awaited dispatch. */
     void modelActionOutcome(ActionDecision action,String run,HeptaAccessibilityService.ActionOutcome outcome,
                             long dispatchStarted,long dispatchEnded)throws Exception{
+        cityObservationRetry=null;
         WebTaskDomain before=dispatchSource;
         try{
         need(!retired&&before!=null&&outcome!=null&&run!=null&&run.equals(dispatchSourceRun)
@@ -482,6 +558,11 @@ final class WebFlightSession {
                     outcome.stale,nativeQueryEntered.get(),dispatchStarted,dispatchEnded);
             record("web-flight-progress-"+run+".json",new JSONObject(flightProgress.evidence(before.flight))
                     .put("source","actual_controller_executor_outcome"));
+            CityObservationRetry transition=CityObservationRetry.fromOutcome(before.flight,action,run,
+                    outcome.accepted,outcome.dispatched,outcome.stale,dispatchStarted,dispatchEnded);
+            if(transition!=null){
+                record("web-city-observation-source-"+run+".json",transition.evidence());cityObservationRetry=transition;
+            }
         }
         if(before.shopping!=null&&"click".equals(action.action)){
             ShoppingDispatch actual=shoppingDispatch;
@@ -534,12 +615,12 @@ final class WebFlightSession {
                 &&!hasUnreleased(service),"helper retirement proof does not match this original task");
         cleanupKnown=true;
     }
-    void serviceRetired(){retired=true;if(flightProgress!=null)flightProgress.retire();domain=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
+    void serviceRetired(){retired=true;cityObservationRetry=null;if(flightProgress!=null)flightProgress.retire();domain=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;client.close();}
     Cleanup close(String reason){
         TaskCompletionGate.WebCloseAttempt completionClose=completion.beginWebClose(this,domain,taskId,journal.bindingSha,reason);
         boolean closeReturnedNormally=false;
-        retired=true;if(flightProgress!=null)flightProgress.retire();domain=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
+        retired=true;cityObservationRetry=null;if(flightProgress!=null)flightProgress.retire();domain=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;completion.clearWebDomain();
         try{
             if(!journal.attachWasPrepared()){

@@ -17,7 +17,9 @@ public final class FlightObservationSessionHost {
     private Client client;
     private final Completion completion=new Completion();
     private JSONObject immutableBinding,lastRecord;
-    private long loadingDocumentStarted,dispatchCheckedAt;
+    private long loadingDocumentStarted,loadingDocumentDeadline,dispatchCheckedAt;
+    private static final class CityObservationRetry {}
+    private CityObservationRetry cityObservationRetry;
     private PhoneObservation current;
     private WebEvidenceReceipt currentCapture;
     private WebTaskDomain domain;
@@ -89,7 +91,7 @@ public final class FlightObservationSessionHost {
         }
     }
     private boolean retryLoadingDocument(WebEvidenceReceipt first,WebEvidenceReceipt last,PhoneObservation frame,
-            boolean stable,long deadline){return false;}
+            boolean stable,WebDomStability.Result domBracket,CityObservationRetry observationRetry,long deadline){return false;}
     private PhoneObservation publishWaiting(PhoneObservation frame,WebEvidenceReceipt receipt,String reason){throw new AssertionError("unexercised waiting boundary");}
     private WebTaskDomain applyNavigation(WebTaskDomain d){return d;}
     private void record(String name,JSONObject value)throws Exception{

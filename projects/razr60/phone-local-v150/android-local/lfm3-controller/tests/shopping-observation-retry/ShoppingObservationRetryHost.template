@@ -16,7 +16,10 @@ public final class ShoppingObservationRetryHost {
     private boolean retired,failRecord;
     private final Cancellation cancellation=new Cancellation();
     private final String taskId="475c3b4562e24c9595c49ca1d13e67e4";
-    private Object goal=null,authorization=new Object();
+    private Object goal=null;
+    private final Authorization authorization=new Authorization();
+    private static final class Authorization {final Authority authorization=new Authority();}
+    private static final class Authority {String sha256;}
     private final Purpose purpose=new Purpose();
     private final HeptaAccessibilityService service=new HeptaAccessibilityService();
     private final Background background=new Background();
@@ -25,7 +28,14 @@ public final class ShoppingObservationRetryHost {
     private final List<JSONObject> records=new ArrayList<JSONObject>();
     private Client client;
     private JSONObject immutableBinding;
-    private long loadingDocumentStarted,dispatchCheckedAt,recordDelay;
+    private long loadingDocumentStarted,loadingDocumentDeadline,dispatchCheckedAt,recordDelay;
+    private CityObservationRetry cityObservationRetry;
+    private final java.util.concurrent.atomic.AtomicBoolean nativeQueryEntered=new java.util.concurrent.atomic.AtomicBoolean();
+    /** Flight-only endpoint: a shopping fixture must never obtain or use a city credential. */
+    private static final class CityObservationRetry {
+        boolean applies(String task,String owner,String authorization,String generation,WebEvidenceReceipt first,WebEvidenceReceipt last,PhoneObservation frame,boolean stable,WebDomStability.Result bracket){throw new AssertionError("shopping cannot use a city retry");}
+        JSONObject evidence(){throw new AssertionError("shopping cannot use a city retry");}
+    }
     private int loadingDocumentReadRetries;
     private String loadingDocumentKey,dispatchCheckedRun="old-run",dispatchCheckedAction="old-action";
     private Object flightNativePermit=new Object(),flightNativeCheck=new Object();
@@ -36,12 +46,12 @@ public final class ShoppingObservationRetryHost {
     private PhoneObservation[] observations;
     private int observed;
     interface Observer {PhoneObservation observe()throws Exception;}
-    private static final class Purpose {String sitePolicyId=WebShoppingGoal.SITE_POLICY_ID;Object shopping=new Object();}
+    private static final class Purpose {String sitePolicyId=WebShoppingGoal.SITE_POLICY_ID,ownerSha256;Object shopping=new Object();}
     private static final class Cancellation {boolean cancelled;boolean isCancelled(){return cancelled;}}
-    private static final class FlightProgress {boolean queryDispatched(){throw new AssertionError("not a flight test");}}
+    private static final class FlightProgress {boolean queryDispatched(){throw new AssertionError("not a flight test");}boolean queryAttempted(){throw new AssertionError("not a flight test");}}
     private static final class Journal {String bindingSha;}
     private static final class Background {
-        int checks,failAt;
+        int checks,failAt;String generation;
         void requireActive(){if(++checks==failAt)throw new IllegalStateException("instrumented background lease retirement");}
     }
     private static final class SystemClock {

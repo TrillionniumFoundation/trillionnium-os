@@ -1,8 +1,8 @@
 {
   "schema": "hepta.local-source.v3",
-  "version_code": 61,
-  "version_name": "0.61.0-canonical-session-journal-root",
-  "functional_scope": "Normalize the trusted Android Context files-directory parent before constructing the fixed session-journal child, preserving all strict reader, metadata, sidecar, byte-equality and fsync checks. Existing v60 observation/result scaffolding is inherited unchanged.",
+  "version_code": 62,
+  "version_name": "0.62.0-city-picker-observation-retry",
+  "functional_scope": "Following an actual accepted and dispatched city-open action, permit at most two complete read-only city-picker reobservations within one sixteen-second phase deadline bounded by the original task deadline. Every retry requires the same task, owner, authorization, helper instance, page binding, window, display, complete AX counters and identical four DOM strings for the expected picker kind. Final original stability, geometry and all action authority remain mandatory. No click or query is replayed.",
   "candidate_status": "reviewed_host_validated_source_candidate_pending_full_build_and_phone",
   "android_build": "Requires a fresh full build of all 119 Java sources, native outputs and resources from the exact 221 production inputs, then original-key assembly. No prior APK qualifies this candidate.",
   "android_qualified": false,
@@ -10,36 +10,38 @@
   "production_build_inputs_count": 221,
   "qualification_policy": "Current qualification is external evidence bound to this exact source and actual build inputs; historical reports in this repository are not current qualification.",
   "current_validation": {
-    "strict_host_gate": "The unchanged original complete host/build programs must run on this final full tree. Focused host passes do not substitute for Android or phone validation.",
+    "strict_host_gate": "Original canonical105, journal19 and all retained extra gates must run on the final complete source and actual Git identity. New city25 and actual fixture6 are explicit mandatory build gates in HOST-GATES.json.",
     "original_complete_host_gate_pending": true,
     "full_android_build": false,
     "phone_tested": false,
     "external_model_used": false,
     "focused_host_results": {
-      "qualification_scope": 125,
-      "existing_qualification_scope_cases_retained": 123,
-      "new_alias_parent_ordinary_schedule_case": 1,
-      "new_session_child_symlink_rejection_case": 1,
-      "legacy_v60_alias_case_failed_as_expected": true
+      "query_cases": 40,
+      "query_assertions": 187,
+      "city_policy_cases": 25,
+      "city_policy_assertions": 40,
+      "actual_city_fixture_cases": 6,
+      "actual_city_fixture_assertions": 16,
+      "retained_carousel_session_cases": 16,
+      "retained_carousel_session_assertions": 39,
+      "retained_shopping_current_cases": 28,
+      "preserved_old_shopping_failure_cases": 1
     },
-    "native_and_ipc_boundaries": "The existing qualification-scope harness executes exact extracted ordinary UI/session/writer/controller methods. Android AtomicFile, OS permission/fsync and UI/model effect endpoints remain explicit host surrogates; this is not phone or Android mount-namespace qualification.",
+    "actual_failure": {
+      "task_id": "ba7a072aff434c1384ec4dc2dc2f92b1",
+      "version_code": 61,
+      "apk_sha256": "fc496404a9998894b285ea2dca59a0bef34e558936f72f82cc621b89b4915e43",
+      "query_dispatched": false,
+      "four_dom_raw_strings_equal": true,
+      "actual_ax_drift": "Only city-picker return icon n17 and title n18 bounds moved horizontally; no actual stable later bracket was collected."
+    },
+    "native_and_ipc_boundaries": "Actual original DOM/AX/outcome bytes and pure production domain/parsers/retry predicates are replayed. Receipt metadata and archived native values are explicit host carriers, not live authenticated IPC or native action authority. The frame clock uses the recorded post-observation display recheck, because AX JSON does not serialize capturedElapsedMillis.",
     "original_failures_preserved": true,
+    "old_v61_actual_retry_refusal_preserved": true,
+    "old_actual_drift_not_reclassified_as_stable": true,
+    "future_phone_page_stability_proven": false,
     "actual_flight_result_provider_implemented": false,
-    "actual_flight_result_verified": false,
-    "journal_failure_root_cause_confirmed": true,
-    "journal_change_is_diagnostics_only": false,
-    "actual_journal_failure": {
-      "installed_version_code": 60,
-      "apk_sha256": "73c8c00e5ec8b4943b4d899323147f8cb39cc6a933bc250cc3dae5e8257e2120",
-      "main_pid": 9837,
-      "task_id": null,
-      "write_stage": "readback_and_sidecars",
-      "cause": "java.io.IOException: session record is not a direct private file",
-      "cause_log_bytes": 1498,
-      "cause_log_sha256": "f72a5e305ff6fd12594bd93c8af9b60713333c141e0cae9b636f59dd1aae1762",
-      "read_only_collection": "existing live in-memory session log; no method invocation or field mutation"
-    },
-    "phone_fix_acceptance_pending": true
+    "actual_flight_result_verified": false
   },
   "files": [
     {
@@ -59,8 +61,8 @@
     },
     {
       "path": "AndroidManifest.xml",
-      "bytes": 2596,
-      "sha256": "10e69390ceb9d2da89410fd32ccea285b05b7d1708f7b12e38146a434b858919"
+      "bytes": 2595,
+      "sha256": "5aeab58abef1e771cd16537d87e063806ef919a5eee803b34b1c0d9a9aa1ee5e"
     },
     {
       "path": "BACKGROUND-BROKER.md",
@@ -5694,8 +5696,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
-      "bytes": 45329,
-      "sha256": "8eacb92640772dc7e46a52d81c6531a093a9517ca2363cf38d3c6d4880dbe739"
+      "bytes": 52410,
+      "sha256": "17e9ed2c06d035924fcf02c8eaa5425c8fc32fd9a17e7f566d8446545e2e7f20"
     },
     {
       "path": "src/org/trillionnium/hepta/local/WebHelperIdentity.java",
@@ -6354,8 +6356,8 @@
     },
     {
       "path": "tests/flight-observation-worker/FlightObservationSessionHost.template",
-      "bytes": 16474,
-      "sha256": "4060fba6603737d4072deb5ad71ac9e9af6886527b4056a06b4b86fd92a0b2f7"
+      "bytes": 16680,
+      "sha256": "a3ffd4bdb430ffb4d31f3d3ddbfd86c19d3022a5e235d16269347f6f6650086a"
     },
     {
       "path": "tests/flight-observation-worker/FlightObservationWorkerHost.template",
@@ -7019,8 +7021,8 @@
     },
     {
       "path": "tests/shopping-observation-retry/ShoppingObservationRetryHost.template",
-      "bytes": 18934,
-      "sha256": "28eeb58b90238ba9479ff2cdce2d86779cc4122557b54ac44697110a9e352b2d"
+      "bytes": 19954,
+      "sha256": "1c8bfa35fa0b2bbed8d8f3ea80cbb1a32d20e5330ea95895dd1d27c2770b2606"
     },
     {
       "path": "tests/shopping-observation-retry/fixtures/actual-shopping-v57-r1/PROVENANCE.json",
@@ -7128,6 +7130,16 @@
       "sha256": "edab00a839c30c9865867ccb550fbdc1440f3da4aecd7f4c63af89702e12ebfb"
     },
     {
+      "path": "tests/web-flight/WebCityObservationFixtureHostTest.java",
+      "bytes": 14995,
+      "sha256": "a9822a9b6213fee3330fc35a894c7ac0a50be5ea1d9d767b799c4956fdf14a82"
+    },
+    {
+      "path": "tests/web-flight/WebCityObservationRetryHostTest.java",
+      "bytes": 15247,
+      "sha256": "6e9ed02fe558da807c9a0b0c2388134d69d959c6dddaa443d9037fafb2ec3697"
+    },
+    {
       "path": "tests/web-flight/WebFlightEvidenceHostTest.java",
       "bytes": 39445,
       "sha256": "dc51549dbdb160de1f47ddc6c2cc8872ab29c7121fbb3b4553bfc6ab23fbaf4e"
@@ -7168,14 +7180,74 @@
       "sha256": "fb12aa3d1d67f098eab14ce75b25dfb10b27c33e86f2e6a5d449bf7c0856c938"
     },
     {
+      "path": "tests/web-flight/fixtures/actual-city-v61-r1/PROVENANCE.json",
+      "bytes": 4947,
+      "sha256": "df1bfef20b72ae7c1a5ea2de51322bd54d110163d670609d9a27ec1f44500057"
+    },
+    {
+      "path": "tests/web-flight/fixtures/actual-city-v61-r1/raw-019f1826d6574784a26b5afffad63cc65ea3cea3f25a45e48bb7adaf5a961864.json.gz",
+      "bytes": 39455,
+      "sha256": "1c2920ae4070e80226a442721ea1641b0271918c612a2b89ed51439e66f548a0"
+    },
+    {
+      "path": "tests/web-flight/fixtures/actual-city-v61-r1/raw-0de358f0530542498aeafd61ae7f9679ab15e0f3cb7748acb82f85ee4d5a6e7e.json.gz",
+      "bytes": 38391,
+      "sha256": "4eca5ad74257f06881653d3ffd34bc17607e0229798ac86fbeb806613229ccf3"
+    },
+    {
+      "path": "tests/web-flight/fixtures/actual-city-v61-r1/raw-279a05b60a994d23a1ec6f36033ee7f2b2128d906c1b40f7b4e98530a7177232.json.gz",
+      "bytes": 39459,
+      "sha256": "ed8f5a6775fde4d92a1ab926ed44ea21fe38e022efc2812cce73d63bbd736ace"
+    },
+    {
+      "path": "tests/web-flight/fixtures/actual-city-v61-r1/scope-observation-7080bde351c04455bb74f1adc908e26b.json.gz",
+      "bytes": 10222,
+      "sha256": "276062bb44e5a4e92c81dc1f7d307412998039ce3318dd3606e15e4e0bd4d9d4"
+    },
+    {
+      "path": "tests/web-flight/fixtures/actual-city-v61-r1/scope-observation-abc97360b00f4ed5a9a55aead14482a3.json.gz",
+      "bytes": 10224,
+      "sha256": "14ebefb5460f5b34b4f9a92762110417f4ade00fb9a45bb15b3286b5ed2b5c5c"
+    },
+    {
+      "path": "tests/web-flight/fixtures/actual-city-v61-r1/scope-observation-dc3efe5a0806476c819ce44a6b78a963.json.gz",
+      "bytes": 7457,
+      "sha256": "a42caf15443ad2a564f975816b2ae57b00b9c81d54ebbe39ecf161c3552509d7"
+    },
+    {
+      "path": "tests/web-flight/fixtures/actual-city-v61-r1/step-05-action.json.gz",
+      "bytes": 3266,
+      "sha256": "4fb55dd687e711d46927cc8f6295eb84fe00192ac1a737e85fdec6654170f040"
+    },
+    {
+      "path": "tests/web-flight/fixtures/actual-city-v61-r1/web-action-ca0f174a3d0540989859d9ba837b2b09.json.gz",
+      "bytes": 3678,
+      "sha256": "efe58458ba08d146b9ec44b961acbbfd4ecbb84bca5877d02baffb0fbf1f8efe"
+    },
+    {
       "path": "tests/web-flight/legacy-boundary/WebFlightDomain.java",
       "bytes": 1337,
       "sha256": "0fc1e74e147d9d679f1c4dec59328095ef2635e72248ba541eabd72e6984d654"
     },
     {
+      "path": "tests/web-flight/reference-v61/WebFlightSession.java.reference",
+      "bytes": 45329,
+      "sha256": "8eacb92640772dc7e46a52d81c6531a093a9517ca2363cf38d3c6d4880dbe739"
+    },
+    {
+      "path": "tests/web-flight/run_city_observation_fixture_tests.py",
+      "bytes": 6659,
+      "sha256": "16e321e7ae9c6492ef9e75dafd7b39b266d4bc3449c5f39f75905f02b17d7db6"
+    },
+    {
+      "path": "tests/web-flight/run_city_observation_retry_tests.py",
+      "bytes": 9033,
+      "sha256": "41ea652b939282896d80e8520e87bb1588b560f0c276ff90a275660a2f15d139"
+    },
+    {
       "path": "tests/web-flight/run_query_host_tests.py",
-      "bytes": 41419,
-      "sha256": "d9a4387d48c8f20b326ce4a30e90d313ebbe7fc65caebf2d0c9f8fa364553d5b"
+      "bytes": 41845,
+      "sha256": "6d992b324e10cf481f68c5ca092778129da63b6d3cc10f3ff7e4fc0d764456d9"
     },
     {
       "path": "tests/web-flight/run_result_host_tests.py",
@@ -7424,29 +7496,19 @@
     }
   ],
   "base_source": {
-    "commit": "dc7b6ffec0d3bb5c3cc471598f41538c2aa908a1",
-    "component_tree": "618f7d165f7a4b1456e0411518e1787cda2dd60c"
+    "commit": "28c75e85356d85723617a66a763a4443af2c4d52",
+    "component_tree": "523aa2093e6ecc0eb001bd4bb221d7283a593af9"
   },
   "release_version_assigned": false,
-  "version_metadata_policy": "Version61/name identifies this exact source candidate. Fresh full Android build, original signing, installation and actual ordinary Start on the phone remain separate exact-source gates.",
+  "version_metadata_policy": "Version62 identifies this exact source. A fresh original full build, original-key signing and ordinary phone flight run remain separate gates.",
   "candidate_version_assigned": true,
   "integration_sources": {
-    "preceding_published_application_candidate": "dc7b6ffec0d3bb5c3cc471598f41538c2aa908a1",
-    "normal_git_parent": "dc7b6ffec0d3bb5c3cc471598f41538c2aa908a1",
-    "prior_v60_integration": {
-      "preceding_published_application_candidate": "c6a1d9b3fb001c8835c48a8fed32b569f3148d44",
-      "normal_git_parent_with_unchanged_application_component": "e9e915bdac3e25b9f6fef1625de45267812e41bf",
-      "prior_v59_integration": {
-        "preceding_published_candidate": "f519f2081b11dbbe851c2fb6528d32fffbc20c62",
-        "installed_current57_source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
-        "installed_current57_source_tree": "2368b777bad9fd9e2f5dcbcbefc6ea9c27fcb0da",
-        "installed_current57_apk_sha256": "c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4",
-        "installed_current57_source_inventory_sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6",
-        "real_failed_flight_task": "b350fd8665b640608093602b1e6a9f14"
-      },
-      "actual_failed_shopping_task": "475c3b4562e24c9595c49ca1d13e67e4",
-      "journal_diagnostics_overlay_sha256": "8f6ec8cc6c598fcb55b301c70535d11a71299ac07680e24aba2abc98e0e30d44"
-    }
+    "preceding_published_application_candidate": "28c75e85356d85723617a66a763a4443af2c4d52",
+    "normal_git_parent": "28c75e85356d85723617a66a763a4443af2c4d52",
+    "city_retry_donor_commit": "b792c859c74bd35524ac67800862430d9d99ecce",
+    "city_retry_donor_session_blob": "059d88a3372bd64909fba5b7f698d3cfccc06f05",
+    "donor_city_class_sha256": "73a9c0678a47d3b12019780386b95dd333fc7794c524acbb63c9bd77c274d8fb",
+    "donor_modifications": "Retain all v61 stronger capture/loading/auth/result-retirement paths; use one fixed city-only 16s phase deadline from measured full-read cost."
   },
-  "source_preservation_scope": "Every dc7b6ff file remains represented. Only the trusted Context parent normalization, two appended behavioral host cases, and explicit version/source metadata differ. Original runners, Android fixture boundaries, runtime pins, SDK/native code, action guards and all existing assertions are unchanged."
+  "source_preservation_scope": "Every exact v61 file is retained. Only WebFlightSession city observation orchestration, corresponding exact method-projection inputs, new narrow tests/real immutable fixtures, and version/source metadata differ. MainActivity, LocalTaskSession, HeptaAccessibilityService, LocalTaskController, NotesTaskPhase, native/SDK/toolchain/runtime pins and original full build programs remain byte-identical."
 }
