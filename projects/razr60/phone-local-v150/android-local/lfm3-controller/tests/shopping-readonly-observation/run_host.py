@@ -38,11 +38,12 @@ def main():
     tree=ast.parse(read(query).decode())
     values=[ast.literal_eval(n.value) for n in tree.body if isinstance(n,ast.Assign)
             and any(isinstance(t,ast.Name) and t.id=="PURE_PATHS" for t in n.targets)]
-    need(len(values)==1 and len(values[0])==50,"explicit 50-source query dependency closure required")
+    need(len(values)==1 and len(values[0])==55,"explicit 55-source query dependency closure required")
     rect="tests/qualification-scope/fixtures/android/graphics/Rect.java"
-    paths=[v for v in values[0] if v.startswith("src/") or v==rect]
-    need(len(paths)==49 and len(set(paths))==49 and rect in paths,
-         "48 production inputs and the original Android Rect boundary; no retained query tests substituted")
+    native_boundary="tests/native-app/legacy-boundary/NativeAppSession.java"
+    paths=[v for v in values[0] if v.startswith("src/") or v in (rect,native_boundary)]
+    need(len(paths)==54 and len(set(paths))==54 and rect in paths and native_boundary in paths,
+         "52 production inputs, original Rect and throwing native-session boundary; no retained query tests substituted")
     source={v:read(a.source/v) for v in paths}
     test=a.source/"tests/shopping-readonly-observation/ShoppingReadonlyObservationHost.java";read(test)
     quote_test=a.source/"tests/shopping-readonly-observation/ShoppingQuoteHost.java";read(quote_test)
@@ -109,6 +110,7 @@ def main():
     generated=a.output/"WebShoppingSessionProjection.java";generated.write_text(projection)
     result={"schema":"hepta.shopping-readonly-region-host.v1","all_pass":False,"started_epoch":time.time(),
             "phone_actions":0,"actual_native_snapshot_or_ipc_verified":False,"business_verified":False,
+            "native_app_boundary":"Real DTO/domain compile; NativeAppSession constructor and methods all throw in this retained Web-only suite",
             "actual_fixture_provenance":provenance,"quote_wire_template":qmeta,"source_inputs":inputs,"steps":[],
             "exact_session_methods":method_identity,"session_projection_sha256":sha(projection.encode()),"controller_frame_projection_exact":True,
             "host_json_adapter":{"scope":"Android JSONObject(Map) null retention only",

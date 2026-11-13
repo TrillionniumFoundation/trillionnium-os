@@ -65,9 +65,20 @@ public final class TaskAuthorization {
     public final boolean requireFindAppBeforeOpen;
     private final List<String> rules;
     private final String immutableOwner;
+    private final BackgroundTaskTarget.SelectionBinding executionSelection;
+    private final BackgroundTaskTarget executionTarget;
 
     private TaskAuthorization(String owner,Set<String> allowed,boolean first,String query,List<String> rules){
-        immutableOwner=owner;
+        this(owner,allowed,first,query,rules,null);
+    }
+    private TaskAuthorization(String owner,Set<String> allowed,boolean first,String query,List<String> rules,
+                              BackgroundTaskTarget.SelectionBinding selection){
+        immutableOwner=owner;executionSelection=selection;
+        executionTarget=selection==null?null:selection.executionTarget();
+        if(selection!=null){
+            require(executionTarget!=null&&executionTarget.explicitSelection,"执行目标未由显式应用选择产生");
+            executionTarget.requireOwner(owner);
+        }
         instructionSha256=hash(owner.getBytes(StandardCharsets.UTF_8));
         allowedTools=Collections.unmodifiableSet(new TreeSet<String>(allowed));
         requireFindAppBeforeOpen=first;findQuery=query;
@@ -76,10 +87,12 @@ public final class TaskAuthorization {
         if(rules.contains(NATURAL_FLIGHT_RULE))parser+="+natural-flight-ceiling.v1";
         if(rules.contains(NATURAL_SHOPPING_RULE))parser+="+natural-product-ceiling.v1";
         if(rules.contains(EXPLICIT_SHOPPING_RULE))parser+="+explicit-product-ceiling.v1";
+        if(executionTarget!=null&&!executionTarget.webHelper())parser+="+explicit-app-selection.v1";
         parserVersion=parser;
         // Length-delimited fields bind exact UTF-8, including the optional query.
         StringBuilder identity=new StringBuilder();field(identity,SCHEMA);field(identity,parserVersion);field(identity,instructionSha256);
         for(String tool:allowedTools)field(identity,tool);field(identity,first?"true":"false");field(identity,query==null?"":query);
+        if(executionTarget!=null&&!executionTarget.webHelper())field(identity,executionTarget.targetSha256);
         sha256=hash(identity.toString().getBytes(StandardCharsets.UTF_8));
     }
     /** The service compiles its task phase from the same OWNER; never model or screen text. */
@@ -148,6 +161,38 @@ public final class TaskAuthorization {
         if(first)require(allowed.contains("find_app")&&allowed.contains("open"),"查找前置与工具限制冲突");
         return new TaskAuthorization(owner,allowed,first,query,rules);
     }
+    /** Preserve the exact original OWNER parser result and only narrow it.
+     * This binding cannot be moved to an equal-looking replacement Selection.
+     */
+    TaskAuthorization forExecutionSelection(BackgroundTaskTarget.SelectionBinding selection){
+        require(executionSelection==null&&selection!=null,"执行目标不能重复或缺失绑定");
+        BackgroundTaskTarget target=selection.executionTarget();
+        require(target!=null&&target.explicitSelection,"执行目标缺少显式应用选择");target.requireOwner(immutableOwner);
+        Set<String> narrowed=new TreeSet<String>(allowedTools);List<String> nextRules=new ArrayList<String>(rules);
+        // Every explicit native target excludes the browser fixed intent, even
+        // when its OWNER has no currently supported native business contract.
+        if(!target.webHelper()){
+            narrowed.remove("web.search");nextRules.add("explicit_native_no_web_search.v1");
+        }
+        if(target.nativeGoal!=null){
+            target.nativeGoal.requireBinding(immutableOwner,target.packageName);
+            narrowed.retainAll(target.nativeGoal.toolCeiling);nextRules.add("native_app_tool_ceiling.v1");
+        }
+        if(requireFindAppBeforeOpen)require(narrowed.contains("find_app")&&narrowed.contains("open"),"原生目的与查找前置冲突");
+        TaskAuthorization bound=new TaskAuthorization(immutableOwner,narrowed,requireFindAppBeforeOpen,findQuery,nextRules,selection);
+        require(bound.executionTarget==target&&selection.executionTarget()==target,"执行目标在绑定期间被替换");
+        return bound;
+    }
+    void requireExecutionSelection(BackgroundTaskTarget.SelectionBinding selection){
+        require(selection!=null&&executionSelection==selection&&executionTarget!=null
+                &&selection.executionTarget()==executionTarget,"执行目标或应用选择实例被替换");
+        executionTarget.requireOwner(immutableOwner);
+    }
+    /** The completion gate cannot discard a bound native/helper selection. */
+    void requireCompletionSelection(BackgroundTaskTarget.SelectionBinding selection){
+        if(executionSelection==null)require(selection==null,"旧授权不能借用新的应用选择");
+        else requireExecutionSelection(selection);
+    }
     private static boolean explicitAppLookup(String text){return APP_LOOKUP.matcher(text.trim()).find();}
     private static String queryFrom(String before){
         Matcher quoted=QUOTED_QUERY.matcher(before);String query=null;
@@ -214,6 +259,7 @@ public final class TaskAuthorization {
         out.put("instruction_sha256",instructionSha256);out.put("authorization_sha256",sha256);
         out.put("allowed_tools",new ArrayList<String>(allowedTools));out.put("require_find_app_before_open",requireFindAppBeforeOpen);
         out.put("find_query",findQuery);out.put("recognized_rules",new ArrayList<String>(rules));
+        if(executionTarget!=null&&!executionTarget.webHelper())out.put("execution_target",executionTarget.evidence());
         out.put("arbitrary_semantic_constraints_verified",false);return out;
     }
     public String summary(){

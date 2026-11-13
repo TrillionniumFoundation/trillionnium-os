@@ -180,9 +180,9 @@ final class QualificationScopeConfig {
      * This exposes identity facts only; it does not install a scope or grant tools. */
     static final class CompletionInstalledIdentity {
         private final Installed installed;
-        final String packageName;final int uid;final Map<String,String> apkHashes;
+        final String packageName;final int uid;final long versionCode;final Map<String,String> apkHashes;
         private CompletionInstalledIdentity(Installed value){
-            installed=value;packageName=value.packageName;uid=value.uid;
+            installed=value;packageName=value.packageName;uid=value.uid;versionCode=value.version;
             Map<String,String> hashes=new TreeMap<String,String>();
             for(Map.Entry<String,Apk> e:value.apks.entrySet())hashes.put(e.getKey(),e.getValue().sha256);
             apkHashes=java.util.Collections.unmodifiableMap(hashes);
@@ -195,6 +195,13 @@ final class QualificationScopeConfig {
         static CompletionInstalledIdentity captureCalculator(Context context)throws Exception{
             Installed value=Installed.capture(context,CalculatorGoalContract.PACKAGE);
             QualificationScope.require(value.uid>=10000&&value.uid<90000,"Calculator input target must be an ordinary installed app");
+            return new CompletionInstalledIdentity(value);
+        }
+        static CompletionInstalledIdentity captureNativeApp(Context context,NativeAppGoal goal)throws Exception{
+            QualificationScope.require(goal!=null&&(NativeAppGoal.CTRIP_PACKAGE.equals(goal.packageName)
+                    ||NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName)),"native result provider is unavailable for this App");
+            Installed value=Installed.capture(context,goal.packageName);
+            QualificationScope.require(value.uid>=10000&&value.uid<90000,"native completion target must be an ordinary installed app");
             return new CompletionInstalledIdentity(value);
         }
         void verify(Context context)throws Exception{installed.verify(context);}

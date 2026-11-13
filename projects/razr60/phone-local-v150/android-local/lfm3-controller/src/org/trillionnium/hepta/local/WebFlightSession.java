@@ -147,6 +147,10 @@ final class WebFlightSession {
     }
 
     static void validateSelection(String owner,BackgroundSession.Selection selection){
+        if(selection!=null&&selection.taskTarget!=null){
+            selection.requireImmutableTarget(owner);
+            if(!selection.taskTarget.webHelper())return; // No helper purpose or session belongs to an explicit native target.
+        }
         WebFlightGoal flight=WebFlightGoal.parse(owner);WebShoppingGoal shopping=WebShoppingGoal.parse(owner);
         boolean selected=selection!=null&&selection.allowedPackages.contains(WebEvidenceProtocol.HELPER_PACKAGE);
         if(flight==null&&shopping==null){
@@ -161,16 +165,24 @@ final class WebFlightSession {
         if(flight!=null&&!flight.departureNotBefore(LocalDate.now()))
             throw new IllegalArgumentException("查询日期已过去，请指定今天或以后的完整日期");
     }
+    /** Constructor admission remains helper-only; generic native validation is not Web authority. */
+    static void requireWebSelection(String owner,BackgroundSession.Selection selection){
+        if(selection!=null&&selection.taskTarget!=null&&!selection.taskTarget.webHelper())
+            throw new IllegalArgumentException("所选原生应用不能创建网页任务");
+        validateSelection(owner,selection);
+    }
     static boolean supported(String owner){return WebFlightGoal.parse(owner)!=null||WebShoppingGoal.parse(owner)!=null;}
     static boolean hasUnreleased(Context context){return WebEvidenceJournal.hasUnreleased(context);}
 
     WebFlightSession(HeptaAccessibilityService service,String task,String owner,TaskAuthorization.Gate authorization,
                      BackgroundSession background,QualificationScopeConfig.FilesRoot filesRoot,File evidence,
                      TaskCompletionGate completion,HeptaAccessibilityService.Cancellation cancellation)throws Exception{
-        validateSelection(owner,background==null?null:background.selection);
+        requireWebSelection(owner,background==null?null:background.selection);
         purpose=WebTaskPurpose.fromOwner(owner);goal=purpose.flight;
         need(task.equals(authorization.taskId)&&completion!=null,"same task public-page contract required");
         authorization.authorization.requireOwner(owner);authorization.ready();
+        if(background!=null&&background.selection.taskTarget!=null)
+            background.selection.requireTaskTarget(owner,authorization.authorization);
         need(WebEvidenceBinding.canonical(new JSONObject(purpose.authorization.evidence())).equals(
                 WebEvidenceBinding.canonical(new JSONObject(authorization.authorization.evidence()))),
                 "actual complete original OWNER authorization differs");

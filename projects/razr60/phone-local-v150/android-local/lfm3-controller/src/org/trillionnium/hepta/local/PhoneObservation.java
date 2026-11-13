@@ -60,6 +60,9 @@ public final class PhoneObservation {
         public final boolean submitAvailable;
         public final Rect bounds;
         public final boolean clickable, editable, scrollable, enabled, focused, password;
+        /** Null means not collected; false is a real observed native value. */
+        public final Boolean selected, checkable, checked;
+        public final boolean selectionStateObserved;
         Node(String id, String packageName, String className, String viewId, String text,
              String description, Rect bounds, boolean clickable, boolean editable,
              boolean scrollable, boolean enabled, boolean focused, boolean password,ObservedChildText.Result childText,
@@ -86,6 +89,20 @@ public final class PhoneObservation {
              boolean scrollable, boolean enabled, boolean focused, boolean password,ObservedChildText.Result childText,
              ObservedScrollActions scrollActions,ObservedImeEnter imeEnter,String inputTextSha256,boolean submitAvailable,
              String observedAppTreeSignature,String nativeTreePath,String nativeParentClass) {
+            this(id,packageName,className,viewId,text,description,bounds,clickable,editable,scrollable,enabled,focused,password,
+                    childText,scrollActions,imeEnter,inputTextSha256,submitAvailable,observedAppTreeSignature,nativeTreePath,nativeParentClass,
+                    null,null,null);
+        }
+        Node(String id, String packageName, String className, String viewId, String text,
+             String description, Rect bounds, boolean clickable, boolean editable,
+             boolean scrollable, boolean enabled, boolean focused, boolean password,ObservedChildText.Result childText,
+             ObservedScrollActions scrollActions,ObservedImeEnter imeEnter,String inputTextSha256,boolean submitAvailable,
+             String observedAppTreeSignature,String nativeTreePath,String nativeParentClass,
+             Boolean selected,Boolean checkable,Boolean checked) {
+            if((selected==null)!=(checkable==null)||(selected==null)!=(checked==null))
+                throw new IllegalArgumentException("native selection facts must be observed together");
+            this.selected=selected;this.checkable=checkable;this.checked=checked;
+            selectionStateObserved=selected!=null;
             if(nativeTreePath==null){
                 if(nativeParentClass!=null)throw new IllegalArgumentException("native parent without an actual traversal path");
             }else if(nativeParentClass==null||nativeParentClass.length()>96
@@ -132,6 +149,10 @@ public final class PhoneObservation {
                     .put("schema","hepta.native-tree-position.v1").put("path",nativeTreePath)
                     .put("parent_class",nativeParentClass).put("source","same_bounded_accessibility_traversal")
                     .put("grants_action_capability",false));
+            if(selectionStateObserved)value.put("native_selection_state",new JSONObject()
+                    .put("schema","hepta.native-selection-state.v1").put("observed",true)
+                    .put("selected",selected).put("checkable",checkable).put("checked",checked)
+                    .put("source","same_bounded_accessibility_traversal").put("grants_action_capability",false));
             if (clickable) value.put("clickable",true);
             if (editable) value.put("editable",true);
             if (scrollable) value.put("scrollable",true); // Platform isScrollable, not a direction grant.

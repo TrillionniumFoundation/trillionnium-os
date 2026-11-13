@@ -1,82 +1,27 @@
 {
-  "android_build": "Requires fresh compilation of 125 main Java sources and 233 exact production inputs, original-key assembly, canonical108 and all retained gates. The unchanged complete helper7 source closure has 128 files and its separately signed APK remains pinned.",
+  "android_build": "Requires fresh original-key build and all mandatory gates for the exact frozen full source; paired helper7 is unchanged. Main Java is compiled only from src, while the complete helper128 closure and all test fixtures remain in the source map.",
   "android_qualified": false,
   "base_source": {
-    "commit": "c4e5bb4963cb664ecdf174cc978df3098da7928e",
-    "component_tree": "03f87c48149a3da25d94df61ab4901a8d6bce32b",
-    "source_manifest_sha256": "a19ea749f335062dce5a9c1443c0cb48f992c4c507c0d94714881ec124a1db82"
+    "commit": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
+    "component_tree": "49ea0b961973008cee6943e8ddccd7bc3465ec94",
+    "source_manifest_sha256": "4e84b231e512863270f8f87f42b326e5cded46b10a652ab729439fc23a2f19e6"
   },
-  "candidate_status": "reviewed_source_integration_pending_fresh_full_host_android_and_phone_qualification",
+  "candidate_status": "reviewed_native_app_source_pending_fresh_complete_gates_android_build_and_phone_acceptance",
   "candidate_version_assigned": true,
-  "ci_mixed_uid_repair": {
-    "focused_gate": {
-      "assertions": 196,
-      "boundary": "Actual production parser and exclusion with synthetic stat/status, not a real setuid process or complete proc visibility test.",
-      "cases": 29,
-      "path": "tests/owned-generation-mixed-uid/run_host.py"
-    },
-    "fresh_android_build_pending": true,
-    "full_new_head_ci_pending": true,
-    "old_b2ca_phone_qualification_not_adopted": true,
-    "parent_commit": "b316d693b824f1d1210499988939d07657f35981",
-    "parent_component_tree": "e107f79e46fc9b162a8529d315d04b26c8e82b0a",
-    "parent_source_manifest_sha256": "272f9e63eedcd7cf15f91825a70e1b1a5650736119a7996c271d1d06de7bd50c",
-    "phone_tested": false,
-    "production_delta_paths": [
-      "native/owned-generation.inc"
-    ],
-    "retained_gate": {
-      "assertions_unchanged": true,
-      "canonical108_unchanged": true,
-      "cases": 87,
-      "checks": 267,
-      "path": "tests/owned-generation-cleanup/run_host.py"
-    },
-    "scope": "Mixed UID is separately typed; only a same-held-FD stable second stat/four-UID tuple read plus strict older-than-leader and different PGID excludes an unrelated process. No mixed tuple obtains signaling authority.",
-    "workflow": {
-      "changes": "Add focused gate and its artifact directory to existing independent diagnostic job; original Mac producer and Linux consumer are byte-identical.",
-      "git_blob": "c416a4280f490829506636042c35acdaf0ddcb12",
-      "path": ".github/workflows/hepta-local-android.yml",
-      "sha256": "fb3fd5ccd55f310fcd06d01c9b78618c9b94a8a001ba307ea55b804bd7a70422"
-    }
-  },
-  "ci_visibility_diagnostic": {
-    "installed_b2ca_apk_is_not_this_source_commit": true,
-    "new_head_ci_and_full_gates_required": true,
-    "parent_commit": "ddc01631d0d376322a0e1d14627daeec6016bd3d",
-    "parent_component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
-    "parent_source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3",
-    "phone_reinstallation_required_for_diagnostics": false,
-    "prior_head_success_adopted": false,
-    "repository_workflow": {
-      "git_blob": "107afa319ea37cce145f1be2a8fc91c9bb7dc0b4",
-      "path": ".github/workflows/hepta-local-android.yml",
-      "sha256": "8cc9ca284116796ca06f3eb65a8e9019808a5d29c452d02d487ffe28c4c91598"
-    },
-    "scope": "Host diagnostics only; macro disabled Android behavior is unchanged by the reviewed trace implementation.",
-    "source_delta_paths": [
-      "native/owned-generation.inc",
-      "tests/owned-generation-cleanup/native_cases.py"
-    ],
-    "source_overlay_sha256": "5c5b66cf9db19f2f831fc903bd3b991924cbaf75a39a023b50a1c774e13f9ced"
-  },
-  "complete_source_files": 1730,
+  "complete_source_files": 1781,
   "current_validation": {
-    "actual_flight_result_provider_implemented": false,
-    "actual_flight_result_verified": false,
-    "actual_native_no_force_cancellation_phone_verified": false,
-    "actual_notes_readiness_phone_verified": false,
-    "actual_owned_generation_cleanup_phone_verified": false,
-    "actual_shopping_quote_phone_verified": false,
     "cleanup_scope": "Inherited generation group/marker scope only; unknown process visibility, identity, kernel API or deadline fails closed. Numeric group probe uses signal0 only; real TERM/KILL uses held proc directory FDs. Arbitrary setsid/setpgid/UID or namespace escape is not claimed covered.",
-    "external_model_used": false,
+    "closure_diagnostics_are_not_final_qualification": true,
     "full_android_build": false,
-    "isolated_overlay_host_receipts_do_not_qualify_combined_source": true,
+    "historical_phone_receipts_apply_to_their_original_heads_only": true,
+    "native_business_scope": "Current same-App readouts only; no generic unknown-goal success, lowest-price claim, order placement, payment or booking authority.",
+    "native_flight_business_verified": false,
+    "native_product_quote_business_verified": false,
+    "native_route_provider_phone_verified": false,
     "original_complete_host_gate_pending": true,
     "original_failures_preserved": true,
     "phone_tested": false,
-    "shopping_completion_scope": "Current visible official search-card display quote only. Does not prove product-detail navigation, lowest price, availability, order placement or payment.",
-    "strict_host_gate": "Fresh canonical108 preserves all original106 commands and appends SDK70 43/99 and owned-generation 87/267. Original journal19, helper4 and all retained Mac gates remain required. No old-head PASS is adopted."
+    "strict_host_gate": "Fresh original canonical108, journal19, paired helper4, all retained nine extra groups and six mandatory native gates must run for the exact frozen new head. No old-head or closure diagnostic PASS is adopted."
   },
   "files": [
     {
@@ -95,9 +40,9 @@
       "sha256": "e3a0fa3a85d59f1104564af2495a694e0e609f6ed8b18d597fbb0db128a564cb"
     },
     {
-      "bytes": 2586,
+      "bytes": 2584,
       "path": "AndroidManifest.xml",
-      "sha256": "03cdb77a6f8045e2dda258b1124e51e35417a5471b68c39e70532bd2045bd350"
+      "sha256": "981aeddd301a9de1b48e921ca345d0b9888c7a3b745a7ebcd62444b1d43c1b1a"
     },
     {
       "bytes": 12777,
@@ -5955,14 +5900,14 @@
       "sha256": "f344fbdd76154a086f4103868231203746056f2133331a54c48dac5e251d559e"
     },
     {
-      "bytes": 42036,
+      "bytes": 44189,
       "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
-      "sha256": "c5aa0fdb2240e9130a7990deaa73627411886ff7238bfda01781e90833f0d187"
+      "sha256": "5c677de3eb413e28ab316de1b1056d6774110e2b634fb7b870581600ce13b42e"
     },
     {
-      "bytes": 2816,
+      "bytes": 7520,
       "path": "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
-      "sha256": "e18294b0b18938636ed4112c0a5e82b2b70d76c5fb854a7fe25a876518fc73b7"
+      "sha256": "a97ab4c75d5f7838b5c0953b11147b852023c674a53a5d55f984e2653ba85a9a"
     },
     {
       "bytes": 10015,
@@ -6030,9 +5975,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 195066,
+      "bytes": 197417,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "a45c54803bb014747de2945f62cb71ed5ac52e07454b518f5de0c4df87e7614f"
+      "sha256": "7ee51146c229f9a394bcb716510c9483ebf3a95c2bf20194c567a2ba4cba6a49"
     },
     {
       "bytes": 711,
@@ -6065,19 +6010,19 @@
       "sha256": "81447620dbc2a789bba8c22d561c768144f4d5619859b202d07cd83660a05dce"
     },
     {
-      "bytes": 130896,
+      "bytes": 137838,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "b332d08ca8edf740ed6782adb42aec8b6c48c8a22adea36abad911a60c8e307c"
+      "sha256": "d48232534d1016416d3fc2cd2671d869f4960dd5aaaca8c0d0bc3d8781676afc"
     },
     {
-      "bytes": 46224,
+      "bytes": 46301,
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
-      "sha256": "9a10156dc4b9f734fb942b2478a04948e9dbf91c8a678928af2971809df26fb3"
+      "sha256": "2d429efc476daf8e89b447a49160cfb0ee180928fe6c545f079c387950c5094e"
     },
     {
-      "bytes": 49984,
+      "bytes": 50150,
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "sha256": "0154ac2eb3aca695410ba0bb9dfef4da0d44fe863bb185faa380859dec7e660f"
+      "sha256": "3dd75be5e05768e321127a4552655dd516be38121ebc75a2f8da26725bafd1d8"
     },
     {
       "bytes": 4417,
@@ -6125,9 +6070,44 @@
       "sha256": "8ef4facf78773e58b479552ed8c47403847c18eb7970089e043f34c6ff620ef3"
     },
     {
+      "bytes": 5857,
+      "path": "src/org/trillionnium/hepta/local/NativeAppDomain.java",
+      "sha256": "39afe44322a80a20c959823c6a119ecf735de55994ca7db707b381dc41d383eb"
+    },
+    {
+      "bytes": 14397,
+      "path": "src/org/trillionnium/hepta/local/NativeAppEvidence.java",
+      "sha256": "ff8b76cd14ed4d2ebfb4e6bbe20ea5dac7e391fa934726f921b195055ad37d37"
+    },
+    {
+      "bytes": 12488,
+      "path": "src/org/trillionnium/hepta/local/NativeAppGoal.java",
+      "sha256": "8f0049cda1202f1d9f2823e61479f6e031ba1f89007d7cf7f312671d78cc8474"
+    },
+    {
+      "bytes": 4764,
+      "path": "src/org/trillionnium/hepta/local/NativeAppObservation.java",
+      "sha256": "a2d0863b9b30d836f1901ba8304e871de4c68e9b1e7722722241bbd9a36064de"
+    },
+    {
+      "bytes": 33971,
+      "path": "src/org/trillionnium/hepta/local/NativeAppSession.java",
+      "sha256": "85afa60c61b9f4832e65a644504e6eb763beae3023f9cde071b4b1f398037ac1"
+    },
+    {
       "bytes": 2562,
       "path": "src/org/trillionnium/hepta/local/NativeBudgetVerifier.java",
       "sha256": "45c2675af31e3609a85befd921e5f9b3a82d9ecad78b003d7e642cd38b258087"
+    },
+    {
+      "bytes": 28477,
+      "path": "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
+      "sha256": "9e00f80f5c09828b505914d576c0efd7b3c2af671ca3228008b5ef1be17cbb2d"
+    },
+    {
+      "bytes": 26830,
+      "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
+      "sha256": "b95f57c9e1b8d0f89b3e6e80ee1495113e0ea1069fe2805e1dcb461092e73cb2"
     },
     {
       "bytes": 18644,
@@ -6145,9 +6125,9 @@
       "sha256": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f"
     },
     {
-      "bytes": 15384,
+      "bytes": 15478,
       "path": "src/org/trillionnium/hepta/local/NotesTaskPhaseGuard.java",
-      "sha256": "8b1b2b3d9abceb17876ff351edeff091accd20c6b028c23441beef83e6158d06"
+      "sha256": "b3824b28f3b68ba06b010e28f9a8aa508bde0c401fc95b73cae45a82acaff2e7"
     },
     {
       "bytes": 3870,
@@ -6215,9 +6195,9 @@
       "sha256": "0e498e9d58792be305b334bb12dc8d1f060e005c90555e04aa09b8f860f82db0"
     },
     {
-      "bytes": 24711,
+      "bytes": 26513,
       "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
-      "sha256": "9dc1033ffc989b2a957e0999bb40d5c48d97117d89150a173141ae7cc7eff8d0"
+      "sha256": "f8d31a7cbb6380aff4fadd9ec7cb62f08364e184b1562e55b63084cba2c6121a"
     },
     {
       "bytes": 3590,
@@ -6245,9 +6225,9 @@
       "sha256": "1879d69f1f344e3f4f7d2f8afd12a78a2747ca183d8895ac9e5e2b6f4f0e3a5d"
     },
     {
-      "bytes": 19799,
+      "bytes": 20476,
       "path": "src/org/trillionnium/hepta/local/QualificationScopeConfig.java",
-      "sha256": "17aeae9941cf4023d4447a5b7449b2f739f05d2b2d952d2cb49a74179f9d1024"
+      "sha256": "b13a1337c660da66058c61da8cc6608c6b5f5ab07e703a63061e7f60ab74894a"
     },
     {
       "bytes": 21282,
@@ -6315,9 +6295,9 @@
       "sha256": "a6fd24ca70899afb80e00a8b13132d71348240ed0c193739861333ddc7a01c71"
     },
     {
-      "bytes": 23598,
+      "bytes": 26917,
       "path": "src/org/trillionnium/hepta/local/TaskAuthorization.java",
-      "sha256": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8"
+      "sha256": "9e927199e30ef0316c81c7587956c5a866ca884d4949895e1d37e2cf7afa2012"
     },
     {
       "bytes": 8063,
@@ -6325,9 +6305,9 @@
       "sha256": "fe9b0717a548735d0e576dfad675deb9b91b41f0c17b3adfd310ed453a664c7b"
     },
     {
-      "bytes": 55287,
+      "bytes": 62928,
       "path": "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
-      "sha256": "ad068ce0b9e81fde0aee69565c298b78222365bbc2008bae748586e2f680ce35"
+      "sha256": "da4afaa5437331e731799718e591dd5e3f62e0f7448dbd1009e234cd8c084772"
     },
     {
       "bytes": 9746,
@@ -6410,9 +6390,9 @@
       "sha256": "55bb45677d862633cdae80d3786240026e57059288205b3d04bc500483bbcd6f"
     },
     {
-      "bytes": 56730,
+      "bytes": 57560,
       "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
-      "sha256": "bc9d4230991d3e6837cf95ed8114a0de14459d941cf0de6c567f0242c464776e"
+      "sha256": "ec43e3f5157e8f5f36478d157cba96411bdb8606ed846fdc98f0eca1256bcdeb"
     },
     {
       "bytes": 9993,
@@ -6835,9 +6815,9 @@
       "sha256": "a8ff9333321283bd9774eed5736bec6bd17bf1c578571a36437a18c5ad5fdcb6"
     },
     {
-      "bytes": 3740,
+      "bytes": 3803,
       "path": "tests/app-label/prepare_fixture.py",
-      "sha256": "dc68e3be877385cdae79493a5af018753207e8c2ed0ac1b5a72f6aa12e0863cb"
+      "sha256": "3ff3470dbd330b93dd234d03d2f98853419334d89faaffc9448b29b9c0b204a1"
     },
     {
       "bytes": 16222,
@@ -6910,9 +6890,9 @@
       "sha256": "7506f5479c1af59b05919976a9ffca1ba1f62cd5458dd9ec6884a7819bdf2fc3"
     },
     {
-      "bytes": 9195,
+      "bytes": 9491,
       "path": "tests/background-session/prepare_fixture.py",
-      "sha256": "658cc893113308fe682e27b409834ef88ad99bab4f858855a10a95f211b1836c"
+      "sha256": "0485ff322cd006d76003856c07c118f038c5e6a9456c3d0efad18e512252bb41"
     },
     {
       "bytes": 2775,
@@ -7055,9 +7035,9 @@
       "sha256": "1a90ca1e741546ba3a85726403a04055867d26f2661e9991aeffce3b81bdbb66"
     },
     {
-      "bytes": 8544,
+      "bytes": 8783,
       "path": "tests/exact-admission/prepare_fixture.py",
-      "sha256": "962357df792c9dbd1f766c71daeb7fb1d173b125531dca7e2e3b09fac34b4c90"
+      "sha256": "b6d1459abc465b13e5e67be44716b5ef8020b626b19cc329110d898f8947a697"
     },
     {
       "bytes": 19762,
@@ -7180,6 +7160,226 @@
       "sha256": "2c2f4e14ea38e16fe3a8d50e2ca96dcacd5417250c63f1c99949b59c905b2b1c"
     },
     {
+      "bytes": 717,
+      "path": "tests/native-app-facts/LegacyNodeSerialization.java",
+      "sha256": "b7a21844bf1cd723c868a83235483d5301df86008c274876a2913de6a2e000cc"
+    },
+    {
+      "bytes": 6224,
+      "path": "tests/native-app-facts/NativeSelectionFactsHostTest.java",
+      "sha256": "c5c898d0737885448d339478963e1a16ceda16ffa1d46368e97649294ae07946"
+    },
+    {
+      "bytes": 93861,
+      "path": "tests/native-app-facts/fixtures/ctrip-869-flight-form.xml",
+      "sha256": "e7f34d9e8225de7792ccd43481e83c6eef809496262b65018e2bfa4b629fe1f6"
+    },
+    {
+      "bytes": 24711,
+      "path": "tests/native-app-facts/reference/PhoneObservation-v64.java",
+      "sha256": "9dc1033ffc989b2a957e0999bb40d5c48d97117d89150a173141ae7cc7eff8d0"
+    },
+    {
+      "bytes": 9219,
+      "path": "tests/native-app-facts/run_host.py",
+      "sha256": "8db70dc367f06c72d895b29d26e09d072f5117e6ae663b7b2345171d9c561b12"
+    },
+    {
+      "bytes": 319,
+      "path": "tests/native-app-facts/stubs/android/graphics/Rect.java",
+      "sha256": "92a16c798f8b2f740c7b14618af7397b972426e50a1ff5037b2fd8422467931a"
+    },
+    {
+      "bytes": 9971,
+      "path": "tests/native-app-fixtures/NativeXmlFixture.java",
+      "sha256": "142e9a87d29e425c3284dc2b331709c0f3326e33004412e0bc8c2bbe6dca34d4"
+    },
+    {
+      "bytes": 11094,
+      "path": "tests/native-app-goal/NativeAppGoalHostTest.java",
+      "sha256": "674738f8f9de28731dd582344d807667045c9eebc771bccf482a2a12c4718e7e"
+    },
+    {
+      "bytes": 5575,
+      "path": "tests/native-app-goal/run_host.py",
+      "sha256": "cc21db9173f41415689e275f16ce6bb47d6d707e66063104b5ed878570bc74ca"
+    },
+    {
+      "bytes": 4601,
+      "path": "tests/native-app-provider/FIXTURES.json",
+      "sha256": "6f123f9c5be30df4899f019ac8740e0b19b789dfd65b14d2c6a6c8929ce9663b"
+    },
+    {
+      "bytes": 12304,
+      "path": "tests/native-app-provider/NativeAppObservationHostTest.java",
+      "sha256": "e8349733ebae0079d59d05921e9510ec5d84c05b32c128ce77d916b4a692e099"
+    },
+    {
+      "bytes": 21994,
+      "path": "tests/native-app-provider/NativeAppProviderHostTest.java",
+      "sha256": "839dfb0cf24c51d5f7ef37bcdda370fc45fcb58e015484647ed40a74270ce64f"
+    },
+    {
+      "bytes": 20982,
+      "path": "tests/native-app-provider/fixtures/calendar-result.xml",
+      "sha256": "36494a413e269d8cabd07b4b1dfdd49ada5508da5f63b01f572912ab98602269"
+    },
+    {
+      "bytes": 20043,
+      "path": "tests/native-app-provider/fixtures/calendar14.xml",
+      "sha256": "aaa46fc247a406b9d30ae81625e775a7552fa52a4155a6a3f44b219722f6a79c"
+    },
+    {
+      "bytes": 93861,
+      "path": "tests/native-app-provider/fixtures/form14.xml",
+      "sha256": "e7f34d9e8225de7792ccd43481e83c6eef809496262b65018e2bfa4b629fe1f6"
+    },
+    {
+      "bytes": 95922,
+      "path": "tests/native-app-provider/fixtures/form17.xml",
+      "sha256": "5e8d433a28d0f2aa3b895591d533c7903043601d2e34cfce8fed096d766a523c"
+    },
+    {
+      "bytes": 82723,
+      "path": "tests/native-app-provider/fixtures/home.xml",
+      "sha256": "3d41a958108d6c0a7a2247fc6aa4a90469407691f6e3824812b154594851b1c2"
+    },
+    {
+      "bytes": 146164,
+      "path": "tests/native-app-provider/fixtures/overlay14.xml",
+      "sha256": "484a4a1966d1a7880b772ebcc729402fda8594dec8392c27cfc2a679adca9e91"
+    },
+    {
+      "bytes": 99905,
+      "path": "tests/native-app-provider/fixtures/reset14.xml",
+      "sha256": "384306392834ca107d4a28efb3b1cc804c758dc36773aea3cd6587503c6f810b"
+    },
+    {
+      "bytes": 136818,
+      "path": "tests/native-app-provider/fixtures/result14.xml",
+      "sha256": "3b908dec948091d16df06d5632a5d67a0bbb0d369c08a6f6dee12a58fe1cb8e7"
+    },
+    {
+      "bytes": 136679,
+      "path": "tests/native-app-provider/fixtures/result16.xml",
+      "sha256": "bff376f9b8daba0e90d3a5608f8e19e79a5bab892225f954c1717e184998653c"
+    },
+    {
+      "bytes": 143543,
+      "path": "tests/native-app-provider/fixtures/result17-second.xml",
+      "sha256": "1bc4acfb65cf5b8096d3eada6d79f34a7eb960522a3f7af6ebf6b72ca76bdb7b"
+    },
+    {
+      "bytes": 143543,
+      "path": "tests/native-app-provider/fixtures/result17.xml",
+      "sha256": "1bc4acfb65cf5b8096d3eada6d79f34a7eb960522a3f7af6ebf6b72ca76bdb7b"
+    },
+    {
+      "bytes": 55869,
+      "path": "tests/native-app-provider/fixtures/xiaomi-search-results.xml",
+      "sha256": "b19c4e8345f6c84db1d0debe7bc64e6257c05c65294ac2ad1d2f176a0b6baa56"
+    },
+    {
+      "bytes": 11924,
+      "path": "tests/native-app-provider/run_host.py",
+      "sha256": "6f30f2f125fac8faafad1579cc95fdc09b3281f87099c7c0ee8c0dcbf55238c8"
+    },
+    {
+      "bytes": 6435,
+      "path": "tests/native-app-routing/InstalledIdentityFixture.template",
+      "sha256": "2cd5ef0db6c38491754f70d6cf71770b913e70dc8762a5ffa7c15185f43d8060"
+    },
+    {
+      "bytes": 12578,
+      "path": "tests/native-app-routing/NativeAppRoutingEntryHostTest.java",
+      "sha256": "6113c7a3a6c5b7ca62b70a05996603527b05c2736a3a1c7187e14b80625bb741"
+    },
+    {
+      "bytes": 19335,
+      "path": "tests/native-app-routing/NativeAppRoutingPureHostTest.java",
+      "sha256": "5a3de57ec34882d80a498c43afeca4b940bfcf324bb0e57baf6f8c503acc247c"
+    },
+    {
+      "bytes": 8377,
+      "path": "tests/native-app-routing/prepare_native_entry.py",
+      "sha256": "dcaab5d65b71c2637cf68a754945e283af5735e3b08cebf405a784e64ad9ef54"
+    },
+    {
+      "bytes": 13997,
+      "path": "tests/native-app-routing/run_host.py",
+      "sha256": "d4a43a59f1315d17692783e2ef44591e288d9e48bb3e6d67d68e46a5cb553fb1"
+    },
+    {
+      "bytes": 2790,
+      "path": "tests/native-app/legacy-boundary/NativeAppSession.java",
+      "sha256": "0e0687914a8c06532008ec5160e1f6bb421d589a3bf7914c915069ad9943b6f0"
+    },
+    {
+      "bytes": 24046,
+      "path": "tests/native-xiaomi-product/NativeXiaomiProductPageHostTest.java",
+      "sha256": "56e0ee7d0ffd5175f97fecbb40414b69ce0d2716325ba2f859868b2a25acdee8"
+    },
+    {
+      "bytes": 8104,
+      "path": "tests/native-xiaomi-product/fixtures/PROVENANCE.json",
+      "sha256": "86669e929c7fa99f86cc02206e06d0ec6fd4bd59aa5d02251c0277e67cb48d00"
+    },
+    {
+      "bytes": 46256,
+      "path": "tests/native-xiaomi-product/fixtures/detail-readonly.xml",
+      "sha256": "cfcaac115754a654e9091336ba1ef8c7e43ba066191f5e80deeaa238b1b09f88"
+    },
+    {
+      "bytes": 46256,
+      "path": "tests/native-xiaomi-product/fixtures/detail.xml",
+      "sha256": "cfcaac115754a654e9091336ba1ef8c7e43ba066191f5e80deeaa238b1b09f88"
+    },
+    {
+      "bytes": 2610,
+      "path": "tests/native-xiaomi-product/fixtures/home-promotion.xml",
+      "sha256": "569a4cea3d1e6d30684f74fa33f3974bd861f337136959e4812a81318c288932"
+    },
+    {
+      "bytes": 61706,
+      "path": "tests/native-xiaomi-product/fixtures/home-reset.xml",
+      "sha256": "5fb9e9f40d4efbc6e10571281db217f5ffe05043c22b9824fe3c51330074869e"
+    },
+    {
+      "bytes": 61712,
+      "path": "tests/native-xiaomi-product/fixtures/home.xml",
+      "sha256": "c23ea3a29252a457f246b6cd6680a2b7a8c6fe974720ef6875331779196c3ed3"
+    },
+    {
+      "bytes": 55869,
+      "path": "tests/native-xiaomi-product/fixtures/results.xml",
+      "sha256": "b19c4e8345f6c84db1d0debe7bc64e6257c05c65294ac2ad1d2f176a0b6baa56"
+    },
+    {
+      "bytes": 60766,
+      "path": "tests/native-xiaomi-product/fixtures/search-entry.xml",
+      "sha256": "390e9d5c8cf5c7baa89f318d6a48d0a87a33a71dbd6121e19628c71ea49a2e48"
+    },
+    {
+      "bytes": 60775,
+      "path": "tests/native-xiaomi-product/fixtures/search-focus.xml",
+      "sha256": "ca29a11ff87ef366612fddf5e8bd70248ffb0734b42ff68425578932a03c109b"
+    },
+    {
+      "bytes": 62534,
+      "path": "tests/native-xiaomi-product/fixtures/search-history-overlap.xml",
+      "sha256": "bb973b74d3dfe7ae66a5ef3a4a85a7c9048eca19f8b08be096753d965db28c0f"
+    },
+    {
+      "bytes": 64964,
+      "path": "tests/native-xiaomi-product/fixtures/suggestions.xml",
+      "sha256": "3f4c53a545c42dff04f4aeeaa990b695add1217cc0e468c1054de75c19005a26"
+    },
+    {
+      "bytes": 6864,
+      "path": "tests/native-xiaomi-product/run_host.py",
+      "sha256": "d363b7f889c12453817b22e93abad01717184385838bbd73028bfeb1918e6042"
+    },
+    {
       "bytes": 42214,
       "path": "tests/notes-create-workflow/NotesCreateWorkflowHostTest.java",
       "sha256": "47945669ef977a01fea42234c933ba573e92b30b253c8f5f2efad7d777912697"
@@ -7210,9 +7410,9 @@
       "sha256": "5edd2f10e0bb8692d4de9d1c07f5e101ac5be496ebe638ad63b8e87c68eabafa"
     },
     {
-      "bytes": 4088,
+      "bytes": 4129,
       "path": "tests/notes-owner-intent/run_host_tests.py",
-      "sha256": "e28b3ea291eeb8198768a94e3c4ae03fb7cce37dd9b800246eeca5dfb2362303"
+      "sha256": "844914afd4698eb59ff758db8c01774d26fd2a69014befe38cb957cd6677f334"
     },
     {
       "bytes": 13820,
@@ -7425,9 +7625,9 @@
       "sha256": "7d85fcbf85888bdaa54831aa72fea33f8a2948c91b4c29cd77391fbdb575af8c"
     },
     {
-      "bytes": 3560,
+      "bytes": 3599,
       "path": "tests/owner-grammar/run_host_tests.py",
-      "sha256": "0d3ebcfeb3e9628765028d87679915e2b1180703a5268830feeb7da8afc163e2"
+      "sha256": "d219dd34261ac7bacb89520e2e8e6179704b4618520f769f922c8c20d5880e07"
     },
     {
       "bytes": 3979,
@@ -7435,9 +7635,9 @@
       "sha256": "3890710fd3859fb9d8a76280d3ce023c446185f62c350a6e9ab9c7e5be7c92f7"
     },
     {
-      "bytes": 42038,
+      "bytes": 42292,
       "path": "tests/qualification-scope/BackgroundFreshnessHostTest.java",
-      "sha256": "6a8c7e52ad5455c6a4fe5c3ef79c307c5724c71dddaa1a32982069530a6a5003"
+      "sha256": "ee86680748f3d3ad1ddcfc26568cc17e4fc8644e128f4bcd901eb019b66304ff"
     },
     {
       "bytes": 2600,
@@ -7450,9 +7650,9 @@
       "sha256": "68c05819b2fada5657ce5fd4f19fff55a11f1253a0d3aa22c58d082f2f816212"
     },
     {
-      "bytes": 10776,
+      "bytes": 11101,
       "path": "tests/qualification-scope/ServiceFixture.template",
-      "sha256": "58360076eaa60fd8bd400be72f2b65554756d3cd532c2ec59f8dc2392c4dd36a"
+      "sha256": "32030d835a75003e19fd96aa52435e69167a29fabe0cec1671bade0dbdfd338e"
     },
     {
       "bytes": 2158,
@@ -7585,9 +7785,9 @@
       "sha256": "797c98ecd9819d6815d4e4bc36c8f15a6a0717f2af00b14f5d126d20f7374dfc"
     },
     {
-      "bytes": 4021,
+      "bytes": 4104,
       "path": "tests/qualification-scope/fixtures/android/view/accessibility/AccessibilityNodeInfo.java",
-      "sha256": "dc4980df4cbd400cfabd34f2860fd9d474f60fa19a5ed4d9dd519b39a510a8f4"
+      "sha256": "80b0922fd4f81f7a761f9e406343c8d52b95d5fc31db972fdbd3ba239fc29ff4"
     },
     {
       "bytes": 872,
@@ -7615,9 +7815,9 @@
       "sha256": "0970084f500c6be873496ca16394e90d0c15f9866da256736925263dae1f1f0a"
     },
     {
-      "bytes": 4728,
+      "bytes": 4799,
       "path": "tests/qualification-scope/fixtures/org/json/JSONObject.java",
-      "sha256": "30874c7357d1bcbd4ae051879262eb30618af8cb669749c76dc79fd99db0da2d"
+      "sha256": "f840ef292f18ea0da1644f3a32a0a38355073794c9af7bba14c74bf7daab6538"
     },
     {
       "bytes": 336,
@@ -7650,9 +7850,9 @@
       "sha256": "92348b922244a116873ae9a7620f17e60dd1ad45cf23c7426ee2ef72b6b51a7c"
     },
     {
-      "bytes": 14275,
+      "bytes": 17085,
       "path": "tests/qualification-scope/prepare_fixture.py",
-      "sha256": "dc097508e69e7fda268ebf1d5560d8e546a57540f14fb4099631a3af30ba8c70"
+      "sha256": "a8e28172a253a95aac6e4b7e2e9e747f50f9c88ba9540fe2214b8ceb97fc9201"
     },
     {
       "bytes": 2997,
@@ -7785,14 +7985,14 @@
       "sha256": "cf6846193c3242e6fefaba9fd8321b274eb8ca98e73cf793ca04ca29d9864089"
     },
     {
-      "bytes": 10154,
+      "bytes": 10285,
       "path": "tests/runtime-config-ui/RefreshFixture.template",
-      "sha256": "a613fdde078c1c1d1ef26884306a1dec46782626c5e6fb907a6861985fc2154b"
+      "sha256": "217ba393f1b9f497ad447f190f6e3522947e020ffa38b01be4c1c45bb6c66189"
     },
     {
-      "bytes": 5359,
+      "bytes": 6224,
       "path": "tests/runtime-config-ui/run_host_tests.py",
-      "sha256": "525084ef9a84fd2c5e3905cd25b879fbf947fe37130d195d94703cdfd37837bf"
+      "sha256": "e3bea13923ac098506610450c275c80bbe4aa004597e7c244966c1a8e01b7d6f"
     },
     {
       "bytes": 19435,
@@ -7905,9 +8105,9 @@
       "sha256": "7f47ef176b3e6f8ec0dbaa112e9d821337a4e62b9327f86ad08292d2a2015d6c"
     },
     {
-      "bytes": 21716,
+      "bytes": 21985,
       "path": "tests/session-journal/SessionJournalHost.template",
-      "sha256": "0ed6c9ec90f7106a8d93fb792a671b8ac756c344f030fb4b1b7ed75a87d934ae"
+      "sha256": "4847bc676c8d30eebd40a0834cd30b72c4a7417ec76faa2ae90b044439689662"
     },
     {
       "bytes": 4633,
@@ -8055,9 +8255,9 @@
       "sha256": "447b1375487da2775a4ef6801587c5c7a4f8b45d0958c59f5a7f945951dfe5ff"
     },
     {
-      "bytes": 12522,
+      "bytes": 12806,
       "path": "tests/shopping-readonly-observation/run_host.py",
-      "sha256": "2eaad4398f06819a9fd02eb29f832b7060a01335ba7f9790e6d8465c513effb8"
+      "sha256": "9accf3c7bcb6b84ab95f7ddbd490957fda6011ef9510bd1c15bfcf165b05182e"
     },
     {
       "bytes": 4938,
@@ -8105,9 +8305,9 @@
       "sha256": "87b747a2f5301761d53df4b3b8630455a0f4a47783765f1a9a17669b478a935e"
     },
     {
-      "bytes": 9496,
+      "bytes": 9579,
       "path": "tests/warm-finalization/prepare_fixture.py",
-      "sha256": "ad094b3c50b1976164107fcca45a5e6d2de2aea12bc5fffb54192b9660a83870"
+      "sha256": "c1938b9b265ae0ca788b11dfedc4db7a91522c8003f14cf89abad3a56bb620fd"
     },
     {
       "bytes": 3569,
@@ -8475,9 +8675,9 @@
       "sha256": "c2c3a6455b0344b8f113d907f8ec0110abd2427785dad3b660b41f8b556ed0ca"
     },
     {
-      "bytes": 42079,
+      "bytes": 42404,
       "path": "tests/web-flight/run_query_host_tests.py",
-      "sha256": "9967bd2df70cb26e8cd4020bd9ef297c44b773f8e44043ab2c5d986bbe8158e1"
+      "sha256": "383302c0b1e9bf229a56598591668b1418e8f3dbc43bac1fc873386459d6f569"
     },
     {
       "bytes": 5108,
@@ -8550,9 +8750,9 @@
       "sha256": "a513114211897bb620ecbbab38aadcce3a9137c58071df269cca7f828034118e"
     },
     {
-      "bytes": 19394,
+      "bytes": 19775,
       "path": "tools/run_host_checks.py",
-      "sha256": "a3740dcf78040a86799b39ef8050c417b26f03ddde72a23425f10d647861579a"
+      "sha256": "fd75a32547e012cf2778c87d2111e302ec7de83ed91e3870b19a40f70b6d82f9"
     },
     {
       "bytes": 1243,
@@ -8725,14 +8925,145 @@
       "sha256": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5"
     }
   ],
-  "functional_scope": "Reuse the pinned SDK C++ runtime for the generate exception boundary; classify only exactly bound SDK exception status70 as a failed request with verified SDK cleanup; require a durable pre-SDK owned-worker generation identity, held-proc-FD descendant cleanup and two kernel-confirmed absent group observations before clearing the warm worker slot. Retain all c4 business, helper7 ACK, action authorization and physical cleanup requirements.",
-  "integration_sources": {
-    "canonical_runner_sha256": "a3740dcf78040a86799b39ef8050c417b26f03ddde72a23425f10d647861579a",
-    "external_repository_workflow": {
-      "path": ".github/workflows/hepta-local-android.yml",
-      "sha256": "eb01680b330bacb4a134b1a9006d10c5f4607eb91ed5e343cefda17c56a7192f"
+  "functional_scope": "Explicit selected native App target is immutable from UI through authorization, session and controller. Bound Ctrip single-adult flight readouts and Xiaomi AX3000T displayed detail quotes use actual current native observations, model-owned query/navigation and typed completion. Unsupported native goals remain non-successful; an explicit helper selection alone preserves the historical web path. No booking, purchase or payment completion is added.",
+  "historical_parent_metadata": {
+    "metadata": {
+      "android_build": "Requires fresh compilation of 125 main Java sources and 233 exact production inputs, original-key assembly, canonical108 and all retained gates. The unchanged complete helper7 source closure has 128 files and its separately signed APK remains pinned.",
+      "android_qualified": false,
+      "base_source": {
+        "commit": "c4e5bb4963cb664ecdf174cc978df3098da7928e",
+        "component_tree": "03f87c48149a3da25d94df61ab4901a8d6bce32b",
+        "source_manifest_sha256": "a19ea749f335062dce5a9c1443c0cb48f992c4c507c0d94714881ec124a1db82"
+      },
+      "candidate_status": "reviewed_source_integration_pending_fresh_full_host_android_and_phone_qualification",
+      "candidate_version_assigned": true,
+      "ci_mixed_uid_repair": {
+        "focused_gate": {
+          "assertions": 196,
+          "boundary": "Actual production parser and exclusion with synthetic stat/status, not a real setuid process or complete proc visibility test.",
+          "cases": 29,
+          "path": "tests/owned-generation-mixed-uid/run_host.py"
+        },
+        "fresh_android_build_pending": true,
+        "full_new_head_ci_pending": true,
+        "old_b2ca_phone_qualification_not_adopted": true,
+        "parent_commit": "b316d693b824f1d1210499988939d07657f35981",
+        "parent_component_tree": "e107f79e46fc9b162a8529d315d04b26c8e82b0a",
+        "parent_source_manifest_sha256": "272f9e63eedcd7cf15f91825a70e1b1a5650736119a7996c271d1d06de7bd50c",
+        "phone_tested": false,
+        "production_delta_paths": [
+          "native/owned-generation.inc"
+        ],
+        "retained_gate": {
+          "assertions_unchanged": true,
+          "canonical108_unchanged": true,
+          "cases": 87,
+          "checks": 267,
+          "path": "tests/owned-generation-cleanup/run_host.py"
+        },
+        "scope": "Mixed UID is separately typed; only a same-held-FD stable second stat/four-UID tuple read plus strict older-than-leader and different PGID excludes an unrelated process. No mixed tuple obtains signaling authority.",
+        "workflow": {
+          "changes": "Add focused gate and its artifact directory to existing independent diagnostic job; original Mac producer and Linux consumer are byte-identical.",
+          "git_blob": "c416a4280f490829506636042c35acdaf0ddcb12",
+          "path": ".github/workflows/hepta-local-android.yml",
+          "sha256": "fb3fd5ccd55f310fcd06d01c9b78618c9b94a8a001ba307ea55b804bd7a70422"
+        }
+      },
+      "ci_visibility_diagnostic": {
+        "installed_b2ca_apk_is_not_this_source_commit": true,
+        "new_head_ci_and_full_gates_required": true,
+        "parent_commit": "ddc01631d0d376322a0e1d14627daeec6016bd3d",
+        "parent_component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
+        "parent_source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3",
+        "phone_reinstallation_required_for_diagnostics": false,
+        "prior_head_success_adopted": false,
+        "repository_workflow": {
+          "git_blob": "107afa319ea37cce145f1be2a8fc91c9bb7dc0b4",
+          "path": ".github/workflows/hepta-local-android.yml",
+          "sha256": "8cc9ca284116796ca06f3eb65a8e9019808a5d29c452d02d487ffe28c4c91598"
+        },
+        "scope": "Host diagnostics only; macro disabled Android behavior is unchanged by the reviewed trace implementation.",
+        "source_delta_paths": [
+          "native/owned-generation.inc",
+          "tests/owned-generation-cleanup/native_cases.py"
+        ],
+        "source_overlay_sha256": "5c5b66cf9db19f2f831fc903bd3b991924cbaf75a39a023b50a1c774e13f9ced"
+      },
+      "complete_source_files": 1730,
+      "current_validation": {
+        "actual_flight_result_provider_implemented": false,
+        "actual_flight_result_verified": false,
+        "actual_native_no_force_cancellation_phone_verified": false,
+        "actual_notes_readiness_phone_verified": false,
+        "actual_owned_generation_cleanup_phone_verified": false,
+        "actual_shopping_quote_phone_verified": false,
+        "cleanup_scope": "Inherited generation group/marker scope only; unknown process visibility, identity, kernel API or deadline fails closed. Numeric group probe uses signal0 only; real TERM/KILL uses held proc directory FDs. Arbitrary setsid/setpgid/UID or namespace escape is not claimed covered.",
+        "external_model_used": false,
+        "full_android_build": false,
+        "isolated_overlay_host_receipts_do_not_qualify_combined_source": true,
+        "original_complete_host_gate_pending": true,
+        "original_failures_preserved": true,
+        "phone_tested": false,
+        "shopping_completion_scope": "Current visible official search-card display quote only. Does not prove product-detail navigation, lowest price, availability, order placement or payment.",
+        "strict_host_gate": "Fresh canonical108 preserves all original106 commands and appends SDK70 43/99 and owned-generation 87/267. Original journal19, helper4 and all retained Mac gates remain required. No old-head PASS is adopted."
+      },
+      "functional_scope": "Reuse the pinned SDK C++ runtime for the generate exception boundary; classify only exactly bound SDK exception status70 as a failed request with verified SDK cleanup; require a durable pre-SDK owned-worker generation identity, held-proc-FD descendant cleanup and two kernel-confirmed absent group observations before clearing the warm worker slot. Retain all c4 business, helper7 ACK, action authorization and physical cleanup requirements.",
+      "integration_sources": {
+        "canonical_runner_sha256": "a3740dcf78040a86799b39ef8050c417b26f03ddde72a23425f10d647861579a",
+        "external_repository_workflow": {
+          "path": ".github/workflows/hepta-local-android.yml",
+          "sha256": "eb01680b330bacb4a134b1a9006d10c5f4607eb91ed5e343cefda17c56a7192f"
+        },
+        "normal_git_parent": "c4e5bb4963cb664ecdf174cc978df3098da7928e",
+        "paired_helper": {
+          "apk_bytes": 1414146,
+          "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
+          "certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+          "helper_source_closure_sha256": "4c00e1d9dda65b927557e35043c6f41fedc1ac5584f4c5aede2369ee0cb72f3f",
+          "package": "org.trillionnium.hepta.webhelper",
+          "version_code": 7,
+          "version_name": "0.7.0-web-evidence-v4"
+        },
+        "version_independent_overlays": [
+          {
+            "entries": 1,
+            "freeze_sha256": "fe0d32866b7ee173ea7bffa7dfa3fe5baf7ba92e7c026642f6865ce437f229e2",
+            "name": "sdk_runtime_link",
+            "overlay_sha256": "617ff4dc0f198cc6e4d6227887c4b431021b5e07f4e985d08e2ad362ab4f3c23"
+          },
+          {
+            "entries": 32,
+            "freeze_sha256": "1661cda7b23aa7340899580384c643416e3a3bbd3015b937223cb3c0d8460aa7",
+            "name": "owned_generation_sdk70",
+            "overlay_sha256": "405611dcba4f036ef4abf0c08fb1c407ac7c04bc22376e5714667c0ee658e8a5"
+          }
+        ]
+      },
+      "main_java_sources": 125,
+      "phone_qualified": false,
+      "production_build_inputs_count": 233,
+      "qualification_policy": "Qualification is separate external evidence bound to this exact full source and actual Git/build inputs. Source review, isolated targeted tests and historical receipts do not qualify the integrated candidate.",
+      "release_version_assigned": false,
+      "schema": "hepta.local-source.v3",
+      "source_preservation_scope": "Preserve all 1725 b316 source members. This isolated CI repair changes only mixed-UID classification and the strictly older/different-group exclusion in native/owned-generation.inc, adds five focused regression inputs and refreshes complete manifest pins. Android version, all Java sources, original canonical108 and retained87 assertions remain unchanged. Previous integration metadata remains historical provenance; no prior APK or phone qualification applies to this new native source.",
+      "version_code": 64,
+      "version_metadata_policy": "Version64 identifies this source candidate. Publication, fresh original build/signature and ordinary phone acceptance are distinct gates.",
+      "version_name": "0.64.0-owned-worker-runtime"
     },
-    "normal_git_parent": "c4e5bb4963cb664ecdf174cc978df3098da7928e",
+    "source_commit": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
+    "source_manifest_sha256": "4e84b231e512863270f8f87f42b326e5cded46b10a652ab729439fc23a2f19e6"
+  },
+  "integration_sources": {
+    "canonical_runner_sha256": "fd75a32547e012cf2778c87d2111e302ec7de83ed91e3870b19a40f70b6d82f9",
+    "external_repository_workflow": {
+      "base_commit": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
+      "base_sha256": "fb3fd5ccd55f310fcd06d01c9b78618c9b94a8a001ba307ea55b804bd7a70422",
+      "git_blob": "5cdc875bf0be3381135b6a9baa30295d758ebbe3",
+      "path": ".github/workflows/hepta-local-android.yml",
+      "sha256": "2c044d9a250d38ca55d2d57a0ea380aeaa26cc7ef2782fd5d29ff029b979216a"
+    },
+    "native_host_gate_contract_sha256": "c6373c7af1e8b255e1100cab06642bdab51017d2049bb1cc428328dcedb51259",
+    "normal_git_parent": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -8742,29 +9073,36 @@
       "version_code": 7,
       "version_name": "0.7.0-web-evidence-v4"
     },
-    "version_independent_overlays": [
-      {
-        "entries": 1,
-        "freeze_sha256": "fe0d32866b7ee173ea7bffa7dfa3fe5baf7ba92e7c026642f6865ce437f229e2",
-        "name": "sdk_runtime_link",
-        "overlay_sha256": "617ff4dc0f198cc6e4d6227887c4b431021b5e07f4e985d08e2ad362ab4f3c23"
-      },
-      {
-        "entries": 32,
-        "freeze_sha256": "1661cda7b23aa7340899580384c643416e3a3bbd3015b937223cb3c0d8460aa7",
-        "name": "owned_generation_sdk70",
-        "overlay_sha256": "405611dcba4f036ef4abf0c08fb1c407ac7c04bc22376e5714667c0ee658e8a5"
-      }
-    ]
+    "review_artifact_hashes": {
+      "FREEZE.json": "7566ad406931fcc9a4d175f46f0f190331e8ab570c90d9cd351b907da8baecc1",
+      "INDEPENDENT-NATIVE-ROUTING-REVIEW-r1.json": "929ab9c90dae3cbd4dae92d88481c4391424069bd2c502984e5f8234cd4b6bea",
+      "INDEPENDENT-XIAOMI-PURE-PARSER-REVIEW-r1.json": "1c22bfedf828f1be86a93e4cb92f952b35f781cd1b940502e3c5f05481b1a83c",
+      "PUBLIC-FIXTURE-REDACTION-r1.json": "e6c2a1b52ce4418fb12731880c0f169ced0cda50308ea326379ae3b20d646841",
+      "ROOT-NATIVE-DOMAIN-NULL-MASK-REVIEW-r1.json": "f816e5611c90ea873138fa495fc8ddfe980e4b336bafd991b2aff05ea2d1af51",
+      "ROOT-NATIVE-PROVIDER-FINAL-REVIEW-r1.json": "a1cf523cbb6c6b56cbda3b8e7d27fbb69445ae6d932f31522eb382796d2ecf45",
+      "ROOT-NATIVE-PROVIDER-REVIEW-r1.json": "a6f82198b0a15663951e4e1aadb5cb3cf4ed9875e712c0b67636d0ebaf9936b5",
+      "ROOT-NATIVE-ROUTING-REVIEW-r1.json": "104296c98ffc8d6cf1585f50f25f19ffdccb11a556e105de34deaf985c0c2a8c",
+      "ROOT-V65-NATIVE-CI-REVIEW-r1.json": "8a12d0a8f6d3666e762f99246bc89328cddd8afeaf38f29fd1b47bec8d35bc47"
+    },
+    "source_reconstruction_base": {
+      "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
+      "component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
+      "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
+    }
   },
-  "main_java_sources": 125,
+  "main_java_sources": 132,
   "phone_qualified": false,
-  "production_build_inputs_count": 233,
-  "qualification_policy": "Qualification is separate external evidence bound to this exact full source and actual Git/build inputs. Source review, isolated targeted tests and historical receipts do not qualify the integrated candidate.",
+  "production_build_inputs_count": 240,
+  "qualification_policy": "Source review and isolated host diagnostics are separate from fresh frozen-head build/signature and ordinary phone acceptance.",
   "release_version_assigned": false,
   "schema": "hepta.local-source.v3",
-  "source_preservation_scope": "Preserve all 1725 b316 source members. This isolated CI repair changes only mixed-UID classification and the strictly older/different-group exclusion in native/owned-generation.inc, adds five focused regression inputs and refreshes complete manifest pins. Android version, all Java sources, original canonical108 and retained87 assertions remain unchanged. Previous integration metadata remains historical provenance; no prior APK or phone qualification applies to this new native source.",
-  "version_code": 64,
-  "version_metadata_policy": "Version64 identifies this source candidate. Publication, fresh original build/signature and ordinary phone acceptance are distinct gates.",
-  "version_name": "0.64.0-owned-worker-runtime"
+  "source_preservation_scope": "All signed b2ca and published 0c40 members remain. Approved native route/provider/Xiaomi and minimal host dependency closures are combined; archived web-v65 calendar/drift business overlays are excluded. Historical original evidence and version-specific references retain their original names and bytes, except explicitly identified new public native fixtures with unrelated private values redacted.",
+  "source_reconstruction_base": {
+    "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
+    "component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
+    "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
+  },
+  "version_code": 65,
+  "version_metadata_policy": "Version65 identifies this native-App source candidate. Version64 source and original phone evidence remain historical; this stamp does not qualify the new APK.",
+  "version_name": "0.65.0-native-app-runtime"
 }

@@ -334,6 +334,35 @@ jobs:
       - name: Run host contracts
         working-directory: ${{ env.HEPTA_SOURCE }}
         run: python -B tools/run_host_checks.py --out "$RUNNER_TEMP/hepta-host-checks" --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar"
+      - name: Run all six required native App regression gates
+        run: |
+          set -euo pipefail
+          hepta_native_source="$GITHUB_WORKSPACE/$HEPTA_SOURCE"
+          hepta_native_out="$RUNNER_TEMP/hepta-native-app-gates"
+          mkdir "$hepta_native_out"
+          python -B "$hepta_native_source/tests/native-app-goal/run_host.py" \
+            --source "$hepta_native_source" --output "$hepta_native_out/goal" --java-home "$JAVA_HOME"
+          python -B "$hepta_native_source/tests/native-app-routing/run_host.py" \
+            --source "$hepta_native_source" --output "$hepta_native_out/routing" --java-home "$JAVA_HOME" \
+            --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar"
+          python -B "$hepta_native_source/tests/native-xiaomi-product/run_host.py" \
+            --source "$hepta_native_source" --output "$hepta_native_out/xiaomi" --java-home "$JAVA_HOME"
+          python -B "$hepta_native_source/tests/native-app-provider/run_host.py" \
+            --source "$hepta_native_source" --output "$hepta_native_out/provider" --java-home "$JAVA_HOME" \
+            --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar"
+          python -B "$hepta_native_source/tests/native-app-facts/run_host.py" \
+            --source "$hepta_native_source" --output "$hepta_native_out/facts" --java-home "$JAVA_HOME" \
+            --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar"
+          python -B "$hepta_native_source/tests/owned-generation-mixed-uid/run_host.py" \
+            --source "$hepta_native_source" --output "$hepta_native_out/mixed-uid" --cc "$(command -v cc)"
+      - name: Preserve all original native App gate results and streams
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-native-app-gates-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: ${{ runner.temp }}/hepta-native-app-gates/**
       - name: Run independent core acceptance regressions
         working-directory: projects/razr60/phone-local-v150/android-local/validation/core-phone-suite
         run: python -B -m unittest -v test_core_assertions.py

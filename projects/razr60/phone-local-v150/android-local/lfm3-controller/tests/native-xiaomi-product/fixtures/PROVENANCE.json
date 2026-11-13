@@ -1,0 +1,194 @@
+{
+  "schema": "hepta.native-xiaomi-public-fixtures.v2",
+  "source": "root ordinary App interactions and read-only UI hierarchy captures; no new phone operation by this parser worker",
+  "files": [
+    {
+      "name": "home",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-xiaomi-promo-back-r1/after-tree.xml",
+      "fixture_path": "tests/native-xiaomi-product/fixtures/home.xml",
+      "bytes": 61712,
+      "sha256": "c23ea3a29252a457f246b6cd6680a2b7a8c6fe974720ef6875331779196c3ed3",
+      "native_xml_nodes": 160,
+      "root_packages": [
+        "com.xiaomi.shop"
+      ],
+      "original_bytes_unchanged": true,
+      "original_bytes": 61712,
+      "original_sha256": "c23ea3a29252a457f246b6cd6680a2b7a8c6fe974720ef6875331779196c3ed3",
+      "qualification_original": false,
+      "public_redactions": []
+    },
+    {
+      "name": "search-entry",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-xiaomi-search-entry-r1/after-tree.xml",
+      "fixture_path": "tests/native-xiaomi-product/fixtures/search-entry.xml",
+      "bytes": 60766,
+      "sha256": "390e9d5c8cf5c7baa89f318d6a48d0a87a33a71dbd6121e19628c71ea49a2e48",
+      "native_xml_nodes": 172,
+      "root_packages": [
+        "com.xiaomi.shop"
+      ],
+      "original_bytes_unchanged": true,
+      "original_bytes": 60766,
+      "original_sha256": "390e9d5c8cf5c7baa89f318d6a48d0a87a33a71dbd6121e19628c71ea49a2e48",
+      "qualification_original": false,
+      "public_redactions": []
+    },
+    {
+      "name": "search-focus",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-xiaomi-search-focus-r1/after-tree.xml",
+      "fixture_path": "tests/native-xiaomi-product/fixtures/search-focus.xml",
+      "bytes": 60775,
+      "sha256": "ca29a11ff87ef366612fddf5e8bd70248ffb0734b42ff68425578932a03c109b",
+      "native_xml_nodes": 172,
+      "root_packages": [
+        "com.xiaomi.shop"
+      ],
+      "original_bytes_unchanged": true,
+      "original_bytes": 60775,
+      "original_sha256": "ca29a11ff87ef366612fddf5e8bd70248ffb0734b42ff68425578932a03c109b",
+      "qualification_original": false,
+      "public_redactions": []
+    },
+    {
+      "name": "suggestions",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-xiaomi-search-type-r1/after-tree.xml",
+      "fixture_path": "tests/native-xiaomi-product/fixtures/suggestions.xml",
+      "bytes": 64964,
+      "sha256": "3f4c53a545c42dff04f4aeeaa990b695add1217cc0e468c1054de75c19005a26",
+      "native_xml_nodes": 184,
+      "root_packages": [
+        "com.xiaomi.shop"
+      ],
+      "original_bytes_unchanged": true,
+      "original_bytes": 64964,
+      "original_sha256": "3f4c53a545c42dff04f4aeeaa990b695add1217cc0e468c1054de75c19005a26",
+      "qualification_original": false,
+      "public_redactions": []
+    },
+    {
+      "name": "results",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-xiaomi-search-submit-r1/after-tree.xml",
+      "fixture_path": "tests/native-xiaomi-product/fixtures/results.xml",
+      "bytes": 55869,
+      "sha256": "b19c4e8345f6c84db1d0debe7bc64e6257c05c65294ac2ad1d2f176a0b6baa56",
+      "native_xml_nodes": 157,
+      "root_packages": [
+        "com.xiaomi.shop"
+      ],
+      "original_bytes_unchanged": true,
+      "original_bytes": 55869,
+      "original_sha256": "b19c4e8345f6c84db1d0debe7bc64e6257c05c65294ac2ad1d2f176a0b6baa56",
+      "qualification_original": false,
+      "public_redactions": []
+    },
+    {
+      "name": "detail",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-xiaomi-product-card-r1/after-tree.xml",
+      "fixture_path": "tests/native-xiaomi-product/fixtures/detail.xml",
+      "bytes": 46256,
+      "sha256": "cfcaac115754a654e9091336ba1ef8c7e43ba066191f5e80deeaa238b1b09f88",
+      "native_xml_nodes": 130,
+      "root_packages": [
+        "com.xiaomi.shop"
+      ],
+      "original_bytes_unchanged": false,
+      "original_bytes": 46280,
+      "original_sha256": "19c8dc7f515e7be469e5c37bc2e3c551cc22250434a7fa640cd1d2abed39562f",
+      "qualification_original": false,
+      "public_redactions": [
+        {
+          "node_index_zero_based": 98,
+          "attribute": "text",
+          "replacement": "REDACTED_ADDRESS",
+          "original_utf16_length": 16,
+          "reason": "private delivery location in an invalid/offscreen bounds node; unrelated to price/actions",
+          "bounds_preserved": "[478,2866][1129,2757]",
+          "all_other_node_attributes_and_xml_bytes_unchanged": true
+        }
+      ]
+    },
+    {
+      "name": "detail-readonly",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-xiaomi-product-readonly-r2/after-tree.xml",
+      "fixture_path": "tests/native-xiaomi-product/fixtures/detail-readonly.xml",
+      "bytes": 46256,
+      "sha256": "cfcaac115754a654e9091336ba1ef8c7e43ba066191f5e80deeaa238b1b09f88",
+      "native_xml_nodes": 130,
+      "root_packages": [
+        "com.xiaomi.shop"
+      ],
+      "original_bytes_unchanged": false,
+      "original_bytes": 46280,
+      "original_sha256": "19c8dc7f515e7be469e5c37bc2e3c551cc22250434a7fa640cd1d2abed39562f",
+      "qualification_original": false,
+      "public_redactions": [
+        {
+          "node_index_zero_based": 98,
+          "attribute": "text",
+          "replacement": "REDACTED_ADDRESS",
+          "original_utf16_length": 16,
+          "reason": "private delivery location in an invalid/offscreen bounds node; unrelated to price/actions",
+          "bounds_preserved": "[478,2866][1129,2757]",
+          "all_other_node_attributes_and_xml_bytes_unchanged": true
+        }
+      ]
+    },
+    {
+      "name": "search-history-overlap",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-xiaomi-reset-back-results-r1/after-tree.xml",
+      "fixture_path": "tests/native-xiaomi-product/fixtures/search-history-overlap.xml",
+      "bytes": 62534,
+      "sha256": "bb973b74d3dfe7ae66a5ef3a4a85a7c9048eca19f8b08be096753d965db28c0f",
+      "native_xml_nodes": 177,
+      "root_packages": [
+        "com.xiaomi.shop"
+      ],
+      "original_bytes_unchanged": true,
+      "original_bytes": 62534,
+      "original_sha256": "bb973b74d3dfe7ae66a5ef3a4a85a7c9048eca19f8b08be096753d965db28c0f",
+      "qualification_original": false,
+      "public_redactions": []
+    },
+    {
+      "name": "home-promotion",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-xiaomi-home-r1/after-tree.xml",
+      "fixture_path": "tests/native-xiaomi-product/fixtures/home-promotion.xml",
+      "bytes": 2610,
+      "sha256": "569a4cea3d1e6d30684f74fa33f3974bd861f337136959e4812a81318c288932",
+      "native_xml_nodes": 7,
+      "root_packages": [
+        "com.xiaomi.shop"
+      ],
+      "original_bytes_unchanged": true,
+      "original_bytes": 2610,
+      "original_sha256": "569a4cea3d1e6d30684f74fa33f3974bd861f337136959e4812a81318c288932",
+      "qualification_original": false,
+      "public_redactions": []
+    },
+    {
+      "name": "home-reset",
+      "original_path": "/home/alex/hepta-resume-261e-r2/native-xiaomi-reset-back-search-r1/after-tree.xml",
+      "fixture_path": "tests/native-xiaomi-product/fixtures/home-reset.xml",
+      "bytes": 61706,
+      "sha256": "5fb9e9f40d4efbc6e10571281db217f5ffe05043c22b9824fe3c51330074869e",
+      "native_xml_nodes": 160,
+      "root_packages": [
+        "com.xiaomi.shop"
+      ],
+      "original_bytes_unchanged": true,
+      "original_bytes": 61706,
+      "original_sha256": "5fb9e9f40d4efbc6e10571281db217f5ffe05043c22b9824fe3c51330074869e",
+      "qualification_original": false,
+      "public_redactions": []
+    }
+  ],
+  "fixture_xml_values_actual": false,
+  "host_dto_node_ids_signatures_task_lease_and_collection_metadata_are_synthetic": true,
+  "no_android_runtime_or_dispatch_verified": true,
+  "first_fixture_copy_attempt": "wrong supplied after-ui.xml name refused before any file copied; terminal archived",
+  "public_fixture_values_except_listed_redactions_match_original": true,
+  "private_originals_preserved": true,
+  "public_fixtures_are_not_qualification_originals": true,
+  "original_values_not_embedded_in_redaction_metadata": true
+}

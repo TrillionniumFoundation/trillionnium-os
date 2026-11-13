@@ -20,7 +20,7 @@ def prepare(source, output):
     receipt = receipt[:-len("            }\n")]
     for call in ("ActionDecision.parse(answer.text,frame.grammar.schema)",
                  "ActionPolicy.validateAuthorizedDecision(action,before.packageName,frame.appPackages,frame.targets,frame.grammar.appLabels,authorization,frame.grammar.authorization,frame.grammar.fixedIntentTargets)",
-                 "DecisionGrammar.createImeAuthorized(observation.id,observation.packageName,packages,\n                        clicks,edits,scrolls,submits,targets,appLabels,authorization,observation.backgroundGeneration!=null,web==null?taskPhase.toolMask():web.toolMask(taskPhase.toolMask()),successEligible)"):
+                 "DecisionGrammar.createImeAuthorized(observation.id,observation.packageName,packages,\n                        clicks,edits,scrolls,submits,targets,appLabels,authorization,observation.backgroundGeneration!=null,nativeDomain!=null?nativeDomain.toolMask(taskPhase.toolMask()):web==null?taskPhase.toolMask():web.toolMask(taskPhase.toolMask()),successEligible)"):
         if controller.count(call) != 1:
             raise RuntimeError("exact candidate production call site missing or ambiguous: " + call)
     fixture = output / "PromptAdmissionFixture.java"

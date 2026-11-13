@@ -25,14 +25,28 @@ public final class TaskCompletionGate {
     public static final class Contract {
         public final String kind,ownerSha256,contractSha256,body,bodySha256,recognition;
         public final int bodyStartUtf16,bodyEndUtf16;
+        /** The exact selection-owned goal, never reparsed from model or screen text. */
+        public final NativeAppGoal nativeGoal;
+        public final String executionTargetSha256;
         private Contract(String owner,String kind,String body,String recognition){
             this(owner,kind,body,recognition,-1,-1);
         }
         private Contract(String owner,String kind,String body,String recognition,int start,int end){
+            this(owner,kind,body,recognition,start,end,null);
+        }
+        private Contract(String owner,String kind,String body,String recognition,int start,int end,BackgroundTaskTarget target){
             this.kind=kind;this.body=body;this.recognition=recognition;ownerSha256=hash(owner);
+            nativeGoal=target==null?null:target.nativeGoal;
+            executionTargetSha256=target==null?null:target.targetSha256;
+            if(target!=null){
+                target.requireOwner(owner);
+                require(target.explicitSelection&&!target.webHelper(),"native contract requires the actual explicit native target");
+                if(nativeGoal!=null){nativeGoal.requireBinding(owner,target.packageName);require(kind.equals(nativeGoal.kind),"native contract kind differs");}
+            }
             bodyStartUtf16=start;bodyEndUtf16=end;
             bodySha256=body==null?null:hash(body);
-            contractSha256=hash(SCHEMA+"\n"+ownerSha256+"\n"+kind+"\n"+(bodySha256==null?"":bodySha256)+"\n"+recognition);
+            contractSha256=hash(SCHEMA+"\n"+ownerSha256+"\n"+kind+"\n"+(bodySha256==null?"":bodySha256)+"\n"+recognition
+                    +(target==null?"":"\n"+target.targetSha256+"\n"+(nativeGoal==null?"":nativeGoal.contractSha256)));
         }
         public static Contract parse(String owner,TaskAuthorization authorization){
             if(authorization==null)throw new IllegalArgumentException("owner authorization required");
@@ -62,12 +76,26 @@ public final class TaskCompletionGate {
                 return new Contract(owner,WEB,null,"explicit_web_method_no_result_provider");
             return new Contract(owner,UNKNOWN,null,"no_complete_supported_owner_contract");
         }
+        private static Contract forExplicitTarget(String owner,TaskAuthorization authorization,BackgroundTaskTarget target){
+            Contract original=parse(owner,authorization);
+            if(target==null||target.webHelper()||(NOTES.equals(original.kind)&&NotesCompletionEvidence.NOTES.equals(target.packageName)))return original;
+            target.requireOwner(owner);
+            NativeAppGoal goal=target.nativeGoal;
+            // Unsupported native instructions retain UNKNOWN. A pure legacy Web
+            // recognizer cannot turn the explicitly selected native App into Web.
+            return new Contract(owner,goal==null?UNKNOWN:goal.kind,null,
+                    goal==null?"explicit_native_app_no_complete_supported_goal":goal.recognition,-1,-1,target);
+        }
         public Map<String,Object> evidence(){
             Map<String,Object> o=new LinkedHashMap<String,Object>();o.put("schema",SCHEMA);o.put("kind",kind);
             o.put("owner_sha256",ownerSha256);o.put("contract_sha256",contractSha256);o.put("recognition",recognition);
             o.put("expected_body_sha256",bodySha256);o.put("source","immutable_owner_contract");
             if(bodyStartUtf16>=0){o.put("body_source_start_utf16",bodyStartUtf16);o.put("body_source_end_utf16",bodyEndUtf16);
                 o.put("note_persistence_verification_policy","save_list_reopen");o.put("body_rewritten",false);}
+            if(executionTargetSha256!=null){
+                o.put("execution_target_sha256",executionTargetSha256);o.put("route",BackgroundTaskTarget.NATIVE_APP);
+                o.put("native_app_goal",nativeGoal==null?null:nativeGoal.evidence());
+            }
             o.put("model_may_change_goal",false);o.put("grants_tool_authority",false);return o;
         }
     }
@@ -77,6 +105,8 @@ public final class TaskCompletionGate {
     }
     public final String taskId;public final Contract contract;
     private final TaskAuthorization authorization;
+    private final BackgroundTaskTarget.SelectionBinding executionSelection;
+    private final BackgroundTaskTarget executionTarget;
     private NotesCompletionEvidence.Installed installed;
     private boolean domainBound,identityInvalid,launchProved,editorObserved,listObserved,reopened,webDispatched,priorVisibleBodyCollision;
     private int displayId=-1,rejectedSuccess;private String generation,identityFailure,editorObservationId;
@@ -93,6 +123,7 @@ public final class TaskCompletionGate {
     private String workflowVerifiedObservationId;
     private Map<String,Object> workflowEvidence;
     private WebTaskDomain webDomain;
+    private NativeAppSession nativeSession;
     // Completion is a historical, read-only result, not a retained action domain.
     // Only successClaim may create a candidate. The real Session consumes it once
     // before retirement, and only its authenticated ordinary CLOSE may seal it.
@@ -312,7 +343,58 @@ public final class TaskCompletionGate {
         return webDomain;
     }
     public TaskCompletionGate(String task,String owner,TaskAuthorization authorization){
-        require(id(task),"task identity required");taskId=task;contract=Contract.parse(owner,authorization);this.authorization=authorization;
+        this(task,owner,authorization,null);
+    }
+    TaskCompletionGate(String task,String owner,TaskAuthorization authorization,BackgroundTaskTarget.SelectionBinding selection){
+        require(id(task)&&authorization!=null,"task identity and owner authorization required");
+        authorization.requireCompletionSelection(selection);
+        executionSelection=selection;executionTarget=selection==null?null:selection.executionTarget();
+        taskId=task;contract=Contract.forExplicitTarget(owner,authorization,executionTarget);this.authorization=authorization;
+    }
+    /** Compatibility only for the inactive Notes phase on the same explicitly
+     * selected native task. It never equates two contracts or grants Notes tools. */
+    boolean boundNonNotesNativeContract(TaskAuthorization actual){
+        if(actual!=authorization||executionSelection==null||executionTarget==null
+                ||executionTarget.webHelper()||!executionTarget.explicitSelection
+                ||NOTES.equals(contract.kind)||WEB.equals(contract.kind))return false;
+        authorization.requireCompletionSelection(executionSelection);
+        return executionSelection.executionTarget()==executionTarget
+                &&executionTarget.ownerSha256.equals(contract.ownerSha256)
+                &&authorization.instructionSha256.equals(contract.ownerSha256)
+                &&executionTarget.targetSha256.equals(contract.executionTargetSha256)
+                &&executionTarget.nativeGoal==contract.nativeGoal
+                &&(contract.nativeGoal==null?UNKNOWN.equals(contract.kind):contract.nativeGoal.kind.equals(contract.kind));
+    }
+    NativeAppGoal nativeGoal(){
+        if(executionTarget==null||executionTarget.webHelper())return null;
+        authorization.requireCompletionSelection(executionSelection);
+        return contract.nativeGoal;
+    }
+    void bindNativeSession(NativeAppSession value){
+        require(nativeSession==null&&value!=null&&contract.nativeGoal!=null&&boundNonNotesNativeContract(authorization)
+                &&value.goal==contract.nativeGoal&&value.target==executionTarget&&value.selection==executionSelection
+                &&value.authorization.authorization==authorization&&taskId.equals(value.taskId),
+                "native completion requires the same immutable task/Selection/goal/session");
+        nativeSession=value;
+    }
+    NativeAppDomain nativeDomainFor(NotesCompletionEvidence.Frame frame){
+        if(contract.nativeGoal==null)return null;
+        require(nativeSession!=null&&!identityInvalid,"current native provider session unavailable");
+        return nativeSession.domainFor(frame);
+    }
+    synchronized Check terminalNativeCheck(NativeAppSession actual,NotesCompletionEvidence.Frame frame,TaskAuthorization.Frame owner,
+            int step,String run,boolean modelSuccess,boolean allCleanupKnown,boolean backgroundReleased,
+            boolean scopeRechecked,boolean installedRechecked,boolean cancelled,boolean processStarted,boolean processExitObserved,
+            Integer exitCode,boolean receiptValid,String workerTask,String workerGeneration,String workerReceiptSha){
+        if(actual==null||actual!=nativeSession||contract.nativeGoal==null||!boundNonNotesNativeContract(authorization)){
+            Map<String,Object> absent=evidence(frame);absent.put("completion_verified",false);absent.put("terminal_binding_and_cleanup_verified",false);
+            absent.put("missing",Collections.singletonList("same_native_provider_session_missing"));return new Check(false,false,immutableMap(absent));
+        }
+        Map<String,Object> terminal=actual.terminal(frame,owner,step,run,modelSuccess&&!identityInvalid,allCleanupKnown,
+                backgroundReleased,scopeRechecked,installedRechecked,cancelled,processStarted,processExitObserved,exitCode,
+                receiptValid,workerTask,workerGeneration,workerReceiptSha);
+        boolean passed=Boolean.TRUE.equals(terminal.get("completion_verified"));Map<String,Object> out=evidence(frame);
+        out.putAll(terminal);out.put("terminal_native_completion",terminal);out.put("contract",contract.evidence());return new Check(passed,false,immutableMap(out));
     }
     public void bindInstalled(NotesCompletionEvidence.Installed value){
         require(installed==null&&!launchProved,"installed completion identity already bound");installed=value;
@@ -481,7 +563,10 @@ public final class TaskCompletionGate {
         boolean quoteRequired=WEB.equals(contract.kind)&&webDomain!=null&&webDomain.shopping!=null&&webDomain.shopping.searchQuote!=null;
         boolean quoteScope=quoteCompletion!=null&&quoteCompletion.consume(this,webDomain,current,run);
         boolean finalReadAccepted=quoteRequired?quoteScope:finalObservationStable;
-        boolean verified=finalReadAccepted&&verified(current);Map<String,Object> claim=proof("native_done_success_claim",step,run,current,current);
+        boolean verified=finalReadAccepted&&verified(current);
+        if(contract.nativeGoal!=null)verified=verified&&nativeSession!=null
+                &&nativeSession.acceptSuccess(step,run,current,finalObservationStable)!=null;
+        Map<String,Object> claim=proof("native_done_success_claim",step,run,current,current);
         claim.put("original_whole_tree_stable",finalObservationStable);claim.put("search_quote_scope_required",quoteRequired);
         claim.put("search_quote_scope_verified",quoteRequired&&quoteScope);
         if(quoteRequired&&quoteScope)claim.put("search_quote_completion_scope",quoteCompletion.summary());
@@ -502,6 +587,7 @@ public final class TaskCompletionGate {
         return new Check(verified,!verified&&rejectedSuccess<MAX_REJECTED_SUCCESS,value);
     }
     public synchronized boolean verified(NotesCompletionEvidence.Frame current){
+        if(contract.nativeGoal!=null)return domainBound&&!identityInvalid&&sameDomain(current)&&nativeSession!=null&&nativeSession.ready(current);
         if(WEB.equals(contract.kind))return !webCloseStarted&&domainBound&&!identityInvalid&&sameDomain(current)&&webDomain!=null
                 &&webDomain.observationId.equals(current.observationId)
                 &&webDomain.generation.equals(current.backgroundGeneration)&&webDomain.displayId==current.displayId
@@ -549,6 +635,8 @@ public final class TaskCompletionGate {
             NotesPhase facts=notesPhase(current);
             o.put("current_surface",facts.currentSurface());o.put("current_list_item_node_id",facts.currentListItem);
             o.put("current_editor_body_matched",facts.currentBody);
+        }else if(contract.nativeGoal!=null){
+            o.put("native_app",nativeSession==null?Collections.singletonMap("missing","native_provider_session_unavailable"):nativeSession.promptEvidence());
         }else if(WEB.equals(contract.kind)){
             o.put("web_query_dispatched",webDispatched||webDomain!=null&&webDomain.queryDispatched());
             if(webDomain!=null)o.put("official_page",webDomain.promptEvidence());
@@ -558,6 +646,8 @@ public final class TaskCompletionGate {
     public Map<String,Object> evidence(NotesCompletionEvidence.Frame current){
         Map<String,Object> o=prompt(current);o.put("task_id",taskId);o.put("contract",contract.evidence());
         if(WEB.equals(contract.kind)&&webDomain!=null)o.put("official_page",webDomain.evidence());
+        if(contract.nativeGoal!=null&&nativeSession!=null){o.put("native_app_session",nativeSession.evidence());
+            if(verified(current))o.put("public_native_result",nativeSession.resultRecord());}
         o.put("proofs",new ArrayList<Map<String,Object>>(proofs));o.put("model_success_claims",new ArrayList<Map<String,Object>>(claims));
         o.put("identity_failure",identityFailure);o.put("display_id",domainBound?displayId:null);o.put("background_generation",generation);
         if(workflowEvidence!=null)o.put("notes_create_workflow",workflowEvidence);
@@ -572,6 +662,9 @@ public final class TaskCompletionGate {
         return o;
     }
     public String completionSummary(){
+        if(contract.nativeGoal!=null&&nativeSession!=null&&nativeSession.resultRecord()!=null){
+            Object summary=nativeSession.resultRecord().get("display_summary");require(summary instanceof String,"typed native result summary missing");return (String)summary;
+        }
         if(WEB.equals(contract.kind)&&webDomain!=null&&webDomain.resultReady()){
             Map<String,Object> value=webDomain.resultRecord();
             if("natural_csair_flight_owner.v1".equals(contract.recognition)||"official_csair_flight_owner.v1".equals(contract.recognition)){
@@ -588,6 +681,7 @@ public final class TaskCompletionGate {
         return "已核验本次正文进入笔记编辑器、返回列表并点击同一可访问正文条目重新打开；列表视觉裁切与存储原始字节未核验。";
     }
     public String incompleteSummary(){
+        if(contract.nativeGoal!=null)return "原生应用查询尚未通过本次任务的目标字段、实际模型操作链与当前页面核验，未确认完成。";
         if(NOTES.equals(contract.kind))return "未完成验证：缺少本次笔记保存、列表或同一条目重新打开的完整证据。";
         if("official_mi_product_owner.v1".equals(contract.recognition))return "尚未取得同一商品详情页、公开价和原生模型导航的完整证据，商品查询未验证完成。";
         if(WEB.equals(contract.kind))return webDispatched||webDomain!=null&&webDomain.queryDispatched()?"已发起网页查询，但尚无实际结果证明，任务部分完成。":"未确认网页查询及结果，任务未验证完成。";
@@ -615,6 +709,8 @@ public final class TaskCompletionGate {
                 }
                 else out.add("web_results_provider_unavailable");
             }
+        }else if(contract.nativeGoal!=null){
+            if(nativeSession==null)out.add("same_native_provider_session_missing");else out.addAll(nativeSession.missing());
         }else out.add("complete_owner_goal_verifier_unavailable");
         return Collections.unmodifiableList(out);
     }

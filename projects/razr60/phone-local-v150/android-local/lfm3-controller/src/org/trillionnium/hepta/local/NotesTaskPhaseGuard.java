@@ -29,7 +29,8 @@ public final class NotesTaskPhaseGuard {
     public synchronized Projection prepare(TaskCompletionGate completion,NotesCompletionEvidence.Frame frame){
         require(!retired&&frame!=null&&frame.observationId!=null&&frame.observationId.matches("[0-9a-f]{32}"),"live observed frame required");
         if(completion!=null)require(taskId.equals(completion.taskId)
-                &&contract.contractSha256.equals(completion.contract.contractSha256),"foreign completion contract");
+                &&(contract.contractSha256.equals(completion.contract.contractSha256)
+                    ||(!supported()&&completion.boundNonNotesNativeContract(authorization))),"foreign completion contract");
         TaskCompletionGate.NotesPhase facts=completion==null?null:completion.notesPhase(frame);
         String phase="unrestricted";boolean create=false;String item=null;
         if(supported()){

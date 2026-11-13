@@ -69,6 +69,7 @@ public final class RuntimeConfigUiHostTest {
     private String backgroundModePreferenceError,backgroundSelectionPreferenceError;
     private String lastShownProbeId,lastShownVisualProbeId,lastShownUiVenusProbeId;
     private int renderCalls;
+    private final Widget taskAuthorizationInfo=null; // This original model-config fixture has no preview pane.
     private boolean cachedModelFilePresent;
     // Android target-choice IO is a fixture boundary; the separate target gate executes its production policy.
     private void refreshBackgroundTaskTarget(){}
@@ -80,6 +81,7 @@ public final class RuntimeConfigUiHostTest {
 {{choice_error}}
 {{refresh}}
 {{refresh_impl}}
+{{preview_absent}}
 
     public static void main(String[] args)throws Exception {
         File files=new File(args[0]);File model=new File(files,"model/model.bin");

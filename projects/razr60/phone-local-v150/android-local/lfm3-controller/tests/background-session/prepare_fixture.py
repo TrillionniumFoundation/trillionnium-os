@@ -47,7 +47,10 @@ public final class LocalSocket implements Closeable {
  code['org/trillionnium/hepta/local/QualificationScopeConfig.java']='package org.trillionnium.hepta.local;\nimport android.content.Context;import android.system.*;import java.io.File;\nfinal class QualificationScopeConfig {\n'+part+'}\n'
  for name,text in code.items():
   dst=output/name;dst.parent.mkdir(parents=True,exist_ok=True);dst.write_text(text);files.append(dst)
- files += [pkg/(name+'.java') for name in ('BackgroundSession','MobiMindPrivateFiles','QualificationScope')]
+ files += [pkg/(name+'.java') for name in ('BackgroundSession','MobiMindPrivateFiles','QualificationScope',
+ 'BackgroundTaskTarget','NativeAppGoal','NotesOwnerIntent','TaskAuthorization','ActionDecision','DecisionGrammar',
+ 'ObservedTargetLabels','ObservedAppLabels','ObservedScrollActions','ObservedImeEnter','AppCatalogueRanker')]
+ files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java']
  files.append(source/'src/org/trillionnium/hepta/background/BrokerProtocol.java')
  files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget')]
  # The exact finalization block is shared with the existing warm-finalization harness.

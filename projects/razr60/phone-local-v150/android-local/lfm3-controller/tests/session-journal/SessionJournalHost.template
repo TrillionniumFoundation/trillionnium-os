@@ -43,7 +43,10 @@ public final class SessionJournalHost {
         static void require(boolean value,String why){SessionJournalHost.require(value,why);}
         void requireOwner(String ignored){}String summary(){return "owner";}
     }
-    static final class BackgroundSession {static final class Selection {}}
+    static final class BackgroundSession {static final class Selection {
+        // These journal cases are foreground-only. This new type dependency cannot grant an app route.
+        void requireTaskTarget(String owner,TaskAuthorization authorization){throw new AssertionError("background route is outside the journal-only fixture");}
+    }}
     static final class WebFlightSession {static void validateSelection(String owner,BackgroundSession.Selection selection){}}
     static final class LocalModelEngine {boolean isBusy(){return false;}}
     static final class LocalTaskController {

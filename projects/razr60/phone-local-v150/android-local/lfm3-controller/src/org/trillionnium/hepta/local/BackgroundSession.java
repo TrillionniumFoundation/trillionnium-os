@@ -41,19 +41,27 @@ final class BackgroundSession {
     private static final int REQUEST_LIMIT=16384, RESPONSE_LIMIT=65536;
     private static final long TTL_MS=540000;
     /** No package is inferred from the model or from untrusted screen text. */
-    static final class Selection {
+    static final class Selection implements BackgroundTaskTarget.SelectionBinding {
         final String initialPackage;
         final List<String> allowedPackages;
         private final Map<String,Object> ownerSelection;
+        final BackgroundTaskTarget taskTarget;
         Selection(String initial,Set<String> allowed){this(initial,allowed,null,null,null,null);}
+        Selection(BackgroundTaskTarget target){
+            this(requireExplicit(target).packageName,target.effectivePackages,target.originalInitialPackage,
+                    new TreeSet<String>(target.originalPackages),target.ownerSha256,target.recognition,target);
+        }
         Selection(String initial,Set<String> allowed,String uiInitial,Set<String> uiAllowed,
-                  String ownerSha,String recognition){
+                  String ownerSha,String recognition){this(initial,allowed,uiInitial,uiAllowed,ownerSha,recognition,null);}
+        private Selection(String initial,Set<String> allowed,String uiInitial,Set<String> uiAllowed,
+                  String ownerSha,String recognition,BackgroundTaskTarget target){
             if(allowed==null||allowed.isEmpty()||allowed.size()>6)throw new IllegalArgumentException("请选择 1 至 6 个后台任务应用");
             TreeSet<String> copy=new TreeSet<String>();
             for(String value:allowed){checkPackage(value);copy.add(value);}
             checkPackage(initial);
             if(!copy.contains(initial))throw new IllegalArgumentException("起始应用必须属于本次后台范围");
             initialPackage=initial;allowedPackages=Collections.unmodifiableList(new ArrayList<String>(copy));
+            taskTarget=target;
             if(ownerSha==null){
                 if(uiInitial!=null||uiAllowed!=null||recognition!=null)throw new IllegalArgumentException("任务范围来源不完整");
                 ownerSelection=null;
@@ -76,6 +84,23 @@ final class BackgroundSession {
                 proof.put("grants_tool_authority",false);proof.put("changes_saved_preferences",false);
                 ownerSelection=Collections.unmodifiableMap(proof);
             }
+        }
+        private static BackgroundTaskTarget requireExplicit(BackgroundTaskTarget target){
+            if(target==null||!target.explicitSelection||!target.packageName.equals(target.originalInitialPackage))
+                throw new IllegalArgumentException("本次任务缺少显式起始应用目标");
+            return target;
+        }
+        @Override public BackgroundTaskTarget executionTarget(){return taskTarget;}
+        void requireImmutableTarget(String owner){
+            BackgroundTaskTarget target=requireExplicit(taskTarget);target.requireOwner(owner);
+            if(!initialPackage.equals(target.packageName)
+                    ||!allowedPackages.equals(new ArrayList<String>(target.effectivePackages)))
+                throw new IllegalArgumentException("后台范围与不可变执行目标不一致");
+        }
+        void requireTaskTarget(String owner,TaskAuthorization authorization){
+            requireImmutableTarget(owner);
+            if(authorization==null)throw new IllegalArgumentException("执行目标缺少原始任务授权");
+            authorization.requireOwner(owner);authorization.requireExecutionSelection(this);
         }
         JSONObject json()throws Exception{
             JSONObject value=new JSONObject().put("mode","background")
@@ -128,13 +153,18 @@ final class BackgroundSession {
         retired=true;state="RELEASED";cleanupConfirmed=true;
     }
     synchronized JSONObject evidence(){
-        try{return baseJournal().put("retired",retired).put("spawn_attempted",spawnAttempted)
+        try{JSONObject value=baseJournal().put("retired",retired).put("spawn_attempted",spawnAttempted)
                 .put("bootstrap_dispatched",bootstrapDispatched).put("bootstrap_model_issued",false)
                 .put("broker_process_exit_observed",brokerExitObserved)
                 .put("broker_process_exit_code",brokerExitCode==null?JSONObject.NULL:brokerExitCode)
                 .put("broker_output",brokerOutput==null?JSONObject.NULL:brokerOutput.evidence())
                 .put("app_display_readback",appDisplayReadback==null?JSONObject.NULL:new JSONObject(appDisplayReadback.toString()))
-                .put("last_broker_response",lastResponse==null?JSONObject.NULL:new JSONObject(lastResponse.toString()));}
+                .put("last_broker_response",lastResponse==null?JSONObject.NULL:new JSONObject(lastResponse.toString()));
+            // Keep the exact existing Selection observation/wire schema. New
+            // route audit belongs to this real session, never to screen data.
+            if(selection.taskTarget!=null)value.put("execution_target",new JSONObject(selection.taskTarget.evidence()));
+            return value;
+        }
         catch(Exception failure){throw new IllegalStateException("后台会话凭据编码失败",failure);}
     }
     private JSONObject baseJournal()throws Exception{return new JSONObject().put("schema",SCHEMA).put("task_id",taskId)

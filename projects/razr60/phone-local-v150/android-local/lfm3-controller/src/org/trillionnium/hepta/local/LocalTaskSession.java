@@ -90,6 +90,7 @@ public final class LocalTaskSession {
         TaskAuthorization.require(authorization!=null,"任务授权合同缺失");authorization.requireOwner(owner);
         if (Looper.myLooper()!=Looper.getMainLooper()) throw new IllegalStateException("schedule must run on main thread");
         if (isRunning() || engine.isBusy() || isBlocked() || recovering) return false;
+        if(selection!=null)selection.requireTaskTarget(owner,authorization);
         WebFlightSession.validateSelection(owner,selection);
         final HeptaAccessibilityService service=HeptaAccessibilityService.connected();
         if (service==null) throw new IllegalStateException("请先启用 Hepta 本地操作无障碍服务");

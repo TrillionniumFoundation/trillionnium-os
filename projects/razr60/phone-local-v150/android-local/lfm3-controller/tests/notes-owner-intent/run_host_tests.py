@@ -21,7 +21,7 @@ def main():
         raise ValueError('test output must be outside immutable source')
     out.mkdir(parents=True, exist_ok=False)
     # The unchanged actual Owner grammar closure supplies the real authority compiler.
-    names = ('NotesOwnerIntent', 'TaskAuthorization', 'ActionDecision', 'DecisionGrammar',
+    names = ('BackgroundTaskTarget', 'NativeAppGoal', 'NotesOwnerIntent', 'TaskAuthorization', 'ActionDecision', 'DecisionGrammar',
              'ObservedTargetLabels', 'ObservedAppLabels', 'ObservedScrollActions',
              'ObservedImeEnter', 'AppCatalogueRanker')
     files = [source / 'src/org/trillionnium/hepta/local' / (name + '.java') for name in names]

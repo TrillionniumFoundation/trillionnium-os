@@ -102,6 +102,7 @@ public final class PromptAdmissionFixture {
     if len(values) != 1:
         raise RuntimeError("one production pure-class list required")
     files += [package / (name + ".java") for name in values[0]] + [package / "PhoneObservation.java"]
+    files += [source / "tests/native-app/legacy-boundary/NativeAppSession.java"]
     web_fixture_source=source/"tests/web-flight/legacy-boundary/WebFlightDomain.java"
     web_fixture_raw=web_fixture_source.read_bytes()
     web_fixture_compile=output/"WebTaskDomain.java"
@@ -121,6 +122,7 @@ public final class PromptAdmissionFixture {
                             for name, value in parts.items()},
         "text_byte_limit": int(text_limit[0]),
         "web_fixture_boundary": "Type-only WebTaskDomain; every Web capability method throws",
+        "native_app_fixture_boundary": "Real DTO/domain compile; all NativeAppSession operations/constructors throw in this original non-native prompt gate",
         "web_fixture_compiler_copy": {"source_path":str(web_fixture_source.relative_to(source)),
             "compiler_path":str(web_fixture_compile),"bytes":len(web_fixture_raw),
             "sha256":hashlib.sha256(web_fixture_raw).hexdigest(),"byte_identical":True},

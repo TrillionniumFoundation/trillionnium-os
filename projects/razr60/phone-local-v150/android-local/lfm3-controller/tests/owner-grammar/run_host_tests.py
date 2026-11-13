@@ -17,7 +17,7 @@ def main():
     args=parser.parse_args();source=args.source.resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=False)
     # Compile the actual dependency closure of this grammar task. Unrelated
     # process/session classes remain in the unchanged comprehensive host gate.
-    names=('NotesOwnerIntent','TaskAuthorization','ActionDecision','DecisionGrammar','ObservedTargetLabels',
+    names=('BackgroundTaskTarget','NativeAppGoal','NotesOwnerIntent','TaskAuthorization','ActionDecision','DecisionGrammar','ObservedTargetLabels',
            'ObservedAppLabels','ObservedScrollActions','ObservedImeEnter','AppCatalogueRanker')
     inputs=[source/'src/org/trillionnium/hepta/local'/(name+'.java') for name in names]
     inputs += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget')]

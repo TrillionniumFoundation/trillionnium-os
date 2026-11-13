@@ -26,7 +26,7 @@ def prepare(source, output):
         raise RuntimeError("production completion kind declaration is not unique")
     parts = {
         "stop": section(controller, "    public void stop(){", "    @Override public synchronized void close()"),
-        "close_result": section(controller, "            LocalInference.TaskCleanup modelCleanup;", "            if(completionInstalled!=null)try{completionInstalled.verify(service);}catch(Exception changed){\n"),
+        "close_result": section(controller, "            LocalInference.TaskCleanup modelCleanup;", "            boolean nativeInstalledRechecked=false;\n"),
         "cleanup_contract": section(inference, "    final class TaskCleanup {", "    interface Handle {"),
         "handle_contract": section(inference, "    interface Handle {", "    interface Callback {"),
         "message_helpers": section(service, "    static String limited(", "\n}"),
@@ -89,6 +89,8 @@ public final class ControllerFinalizationFixture {
 """ + parts["completion_kinds"] + """
         private static final class Contract { final String kind=UNKNOWN; }
         final Contract contract=new Contract();
+        /** No explicit native Selection/provider in these original cleanup cases. */
+        Object nativeGoal(){return null;}
     }
     private final TaskCompletionGate completion=new TaskCompletionGate();
     private interface AuthorizationCheck { void ready(); TaskAuthorization.Frame frame(); }
@@ -135,7 +137,7 @@ public final class ControllerFinalizationFixture {
     digest = lambda value: hashlib.sha256(value).hexdigest()
     record = {
         "scope": "Exact production Stop method, endTask/exception handling, post-close scope check, terminal decisions and TaskCleanup; Android UI, model and scope/config IO are fixtures",
-        "completion_boundary": "Exact production cleanup/status block; controller-workflow candidate is false and the completion kind is explicitly UNKNOWN using production constants. The actual Web/Notes terminal proof is not replaced or tested here; the full-controller harness executes it",
+        "completion_boundary": "Exact production cleanup/status block; controller-workflow candidate is false and the completion kind is explicitly UNKNOWN using production constants. The actual Web/Notes/native-App terminal proof is not replaced or tested here; the full-controller harness executes it",
         "scope_io_default": "absent; all original 13 cases retained; configured production checks also run in qualification-scope full-controller harness",
         "cancellation_boundary": "Actual TaskCancellationQueue with asynchronously started host worker; captured service/task and monotonic clock are explicit fixtures; test barriers wait for the real queue drain before releasing model teardown",
         "task_cancellation_queue_sha256": digest((package / "TaskCancellationQueue.java").read_bytes()),

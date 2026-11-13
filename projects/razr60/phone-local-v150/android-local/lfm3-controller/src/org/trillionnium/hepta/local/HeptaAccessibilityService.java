@@ -209,6 +209,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     // nodes. A real browser snapshot had 975 nodes before its deeper controls.
     // Output remains independently bounded and native exact-token admission is unchanged.
     private static final int MAX_NODES=128, MAX_VISITED=1536, MAX_CHARACTERS=6144;
+    // Private native evidence may retain a complete bounded card/header graph.
+    // The model still receives only the current native provider action domain.
+    private static final int NATIVE_APP_MAX_NODES=512;
     // Complete bounded evidence for an already bound helper lease. This does not
     // enlarge generic app actions or the model's permitted target set.
     private static final int WEB_MAX_NODES=512, WEB_MAX_CHARACTERS=32768;
@@ -1581,7 +1584,18 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         boolean webEvidence=activeWeb!=null&&background!=null&&activeWeb.taskId.equals(background.taskId)
                 &&background.selection.allowedPackages.equals(java.util.Collections.singletonList(
                         org.trillionnium.hepta.webprotocol.WebEvidenceProtocol.HELPER_PACKAGE));
-        int retainedLimit=webEvidence?WEB_MAX_NODES:MAX_NODES,textLimit=webEvidence?WEB_MAX_CHARACTERS:MAX_CHARACTERS;
+        BackgroundTaskTarget nativeTarget=background==null?null:background.selection.taskTarget;
+        NativeAppGoal nativeGoal=nativeTarget==null?null:nativeTarget.nativeGoal;
+        boolean nativeEvidence=activeWeb==null&&nativeTarget!=null&&nativeGoal!=null
+                &&nativeTarget.explicitSelection&&BackgroundTaskTarget.NATIVE_APP.equals(nativeTarget.route)
+                &&nativeGoal.ownerSha256.equals(background.ownerSha256)
+                &&nativeTarget.ownerSha256.equals(background.ownerSha256)
+                &&nativeGoal.packageName.equals(nativeTarget.packageName)
+                &&nativeTarget.packageName.equals(background.selection.initialPackage)
+                &&nativeTarget.packageName.equals(string(root.getPackageName()))
+                &&background.selection.allowedPackages.equals(java.util.Collections.singletonList(nativeTarget.packageName));
+        int retainedLimit=webEvidence?WEB_MAX_NODES:nativeEvidence?NATIVE_APP_MAX_NODES:MAX_NODES;
+        int textLimit=webEvidence?WEB_MAX_CHARACTERS:MAX_CHARACTERS;
         graph.displayId=background==null?Display.DEFAULT_DISPLAY:background.displayId();
         if(webEvidence&&(activeWeb.goal!=null||activeWeb.purpose.shopping!=null)){
             graph.flightNativeSnapshotLimit=activeWeb.goal!=null?WebFlightNativeStability.MAX_NATIVE_NODES:WebShoppingObservationStability.MAX_NATIVE_NODES;
@@ -1594,6 +1608,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         graph.packageName=string(root.getPackageName());graph.windowId=root.getWindowId();graph.rotation=rotation(graph.displayId);graph.bounds=new Rect();root.getBoundsInScreen(graph.bounds);
         if(graph.packageName.isEmpty()||graph.bounds.isEmpty())throw new IllegalStateException("活动窗口身份不可用");
         graph.windowMetadata=readWindowMetadata(root,graph.bounds,graph.windowId,graph.displayId);
+        // Native selection facts are read-only. Their presence grants no action
+        // or provider support; the same explicitly selected singleton App owns them.
+        boolean nativeSelectionFacts=background!=null
+                &&background.selection.allowedPackages.equals(java.util.Collections.singletonList(graph.packageName))
+                &&(NativeAppGoal.CTRIP_PACKAGE.equals(graph.packageName)
+                    ||NativeAppGoal.CSAIR_PACKAGE.equals(graph.packageName)
+                    ||NativeAppGoal.XIAOMI_PACKAGE.equals(graph.packageName));
         if(background!=null&&(graph.windowMetadata.displayId==null||graph.windowMetadata.displayId.intValue()!=graph.displayId
                 ||!background.allows(graph.packageName)))throw new IllegalStateException("后台观察窗口越界");
         ArrayDeque<String> nativePaths=new ArrayDeque<String>(),nativeParents=new ArrayDeque<String>();
@@ -1625,11 +1646,17 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         if(graph.rows.size()<retainedLimit&&characters+text.length()+description.length()+childText.text.length()<textLimit){
                             String id="n"+graph.rows.size();NodeRef reference=new NodeRef(node,childText,scrollActions,imeEnter,inputHash);graph.refs.put(id,reference);signatures.append(reference.appTreeSignature).append('|')
                                     .append(nativePath).append('|').append(nativeParentClass).append('\n');
+                            Boolean selected=nativeSelectionFacts?Boolean.valueOf(node.isSelected()):null;
+                            Boolean checkable=nativeSelectionFacts?Boolean.valueOf(node.isCheckable()):null;
+                            Boolean checked=nativeSelectionFacts?Boolean.valueOf(node.isChecked()):null;
+                            if(nativeSelectionFacts)signatures.append("native_selection|").append(nativePath).append('|')
+                                    .append(selected).append('|').append(checkable).append('|').append(checked).append('\n');
                             scrollStates.append(id).append('=').append(scrollActions.fingerprintInput()).append('\n');
                             boolean focused=node.isFocused();focusStates.append(id).append('=').append(focused).append('|').append(imeEnter.fingerprintInput()).append('|').append(inputHash).append('\n');
                             graph.rows.add(new PhoneObservation.Node(id,string(node.getPackageName()),string(node.getClassName()),limited(string(node.getViewIdResourceName()),96),text,description,bounds,node.isClickable(),node.isEditable(),node.isScrollable(),node.isEnabled(),focused,node.isPassword(),childText,scrollActions,imeEnter,inputHash,
                                     node.isEditable()&&focused&&node.isEnabled()&&!node.isPassword()&&imeEnter.queryAllowed()&&submitAvailable(string(node.getPackageName()),inputHash),reference.appTreeSignature,
-                                    nativePath.isEmpty()?null:nativePath,nativePath.isEmpty()?null:nativeParentClass));
+                                    nativePath.isEmpty()?null:nativePath,nativePath.isEmpty()?null:nativeParentClass,
+                                    selected,checkable,checked));
                             characters+=text.length()+description.length()+childText.text.length();
                         }else{
                             graph.truncated=true;

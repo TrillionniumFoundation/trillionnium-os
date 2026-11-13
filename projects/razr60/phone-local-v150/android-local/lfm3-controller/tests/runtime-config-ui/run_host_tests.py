@@ -56,6 +56,13 @@ def main():
         "model_file": method(engine, "public File modelFile()"),
         "configuration": method(engine, "public LocalRuntimeConfig configuration()"),
     }
+    # The original model-config fixture has no authorization-preview pane.
+    # Retain the actual absent-pane guard; any attempt to use a present pane throws.
+    preview = method(ui, "private void previewTaskAuthorization()")
+    preview_guard = "private void previewTaskAuthorization(){\n        if(taskAuthorizationInfo==null)return;"
+    if not preview.startswith(preview_guard):
+        raise RuntimeError("exact production absent-preview guard changed")
+    methods["preview_absent"] = preview_guard + '\n        throw new AssertionError("authorization preview is outside the model-config fixture");\n    }'
     generated = template_file.read_text()
     for name, body in methods.items():
         marker = "{{" + name + "}}"
@@ -74,6 +81,8 @@ def main():
         "production_methods_sha256": {name: hashlib.sha256(body.encode()).hexdigest() for name, body in methods.items()},
         "compiler_contract": "Java 8 API release" if args.release8 else "supplemental Java8 source/class target on available JDK",
         "view_session_io_fixtures": True, "android_runtime": False, "phone_tested": False,
+        "preview_boundary":"Actual absent-pane guard only, present pane throws; original configuration assertions do not qualify native authorization preview",
+        "preview_absent_guard_sha256":hashlib.sha256(preview_guard.encode()).hexdigest(),
         "native_model_tested": False, "configuration_modified": False}
     for name, command in stages:
         try:

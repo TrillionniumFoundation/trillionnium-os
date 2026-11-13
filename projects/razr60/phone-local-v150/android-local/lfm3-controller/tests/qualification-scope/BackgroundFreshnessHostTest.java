@@ -315,7 +315,10 @@ final class BackgroundFreshnessHostTest {
             };
             e.controller=new LocalTaskController(e.service,model);final LocalTaskController.TaskResult[] result={null};CountDownLatch completed=new CountDownLatch(1);
             String owner="在设置应用检查当前页面，依据新观察执行。";
-            check(e.controller.start(owner,null,TaskAuthorization.parse(owner),new BackgroundSession.Selection(SETTINGS,Collections.singleton(SETTINGS)),new LocalTaskController.Listener(){
+            BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,SETTINGS,Collections.singleton(SETTINGS));
+            BackgroundSession.Selection selection=new BackgroundSession.Selection(target);
+            TaskAuthorization authorization=TaskAuthorization.parse(owner).forExecutionSelection(selection);
+            check(e.controller.start(owner,null,authorization,selection,new LocalTaskController.Listener(){
                 public void onState(String state){}public void onFinished(LocalTaskController.TaskResult value){result[0]=value;completed.countDown();}}),"ordinary background controller starts");
             check(completed.await(10,TimeUnit.SECONDS),"controller terminates");
             check(e.service.effects()==0&&result[0].cleanupKnown&&!result[0].modelReportedSuccess,"no stale action, automatic replay, or synthetic success");
