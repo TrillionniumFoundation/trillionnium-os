@@ -86,6 +86,122 @@ final class WebFlightNativeStability {
         return new Permit(domain,frame,target,run,action,fresh,proof);
     }
 
+
+    /**
+     * Read-only observation admission for the exact compiled homepage. Callers
+     * must supply complete native traversals from the private service snapshot;
+     * retained rows alone can never satisfy this predicate. This produces no
+     * action Permit, and does not authenticate a caller-supplied JSON record.
+     */
+    static JSONObject compareObservationBracket(String taskId,JSONObject beforeFrame,JSONArray beforeNative,
+            JSONObject afterFrame,JSONArray afterNative,JSONObject first,JSONObject last,String targetPath)throws Exception{
+        need(taskId!=null&&!taskId.isEmpty()&&beforeFrame!=null&&afterFrame!=null,
+                "actual task and both original frames required");
+        requireCompleteObservation(beforeFrame,beforeNative);requireCompleteObservation(afterFrame,afterNative);
+        need(WebDomCanonical.same(without(beforeFrame,"observation_id","screen_sha256","app_tree_sha256",
+                        "observation_state_sha256","nodes","collection"),
+                without(afterFrame,"observation_id","screen_sha256","app_tree_sha256",
+                        "observation_state_sha256","nodes","collection")),
+                "observation window, Selection, IME or other frame metadata changed");
+        need(WebDomCanonical.same(without(beforeFrame.getJSONObject("collection"),"elapsed_ms"),
+                        without(afterFrame.getJSONObject("collection"),"elapsed_ms")),
+                "observation traversal counters changed");
+        JSONObject binding=first.getJSONObject("binding"),bg=binding.getJSONObject("background");
+        need(WebDomCanonical.same(binding,last.getJSONObject("binding"))
+                &&taskId.equals(binding.getString("task_id"))
+                &&"csair_public_flight".equals(binding.getString("goal_kind"))
+                &&"csair_public_flight_v1".equals(binding.getString("site_policy_id"))
+                &&"https://m.csair.com/".equals(binding.getString("initial_url")),
+                "same actual Flight task binding required");
+        JSONObject selected=beforeFrame.getJSONObject("background_session");
+        int display=beforeFrame.getJSONObject("window").getInt("display_id"),window=beforeFrame.getInt("window_id");
+        need(display>0&&window>=0&&bg.getInt("display_id")==display
+                &&bg.getString("generation").equals(selected.getString("generation"))
+                &&WebDomCanonical.same(bg.getJSONArray("selected_packages"),selected.getJSONArray("allowed_packages")),
+                "capture does not belong to the original background Selection");
+        for(JSONObject capture:new JSONObject[]{first,last}){
+            need("https://m.csair.com/".equals(capture.getString("committed_main_frame_url"))
+                    &&"https://m.csair.com/".equals(capture.getString("current_native_url"))
+                    &&capture.getInt("display_id")==display&&capture.getInt("actual_window_id")==window
+                    &&WebEvidenceProtocol.HELPER_PACKAGE.equals(capture.getString("helper_package"))
+                    &&capture.isNull("observed_link_navigation")&&!capture.getBoolean("truncated"),
+                    "observation exception is only for the unchanged official homepage");
+        }
+        for(String key:new String[]{"webview_instance","navigation_epoch","helper_uid","helper_pid",
+                "commit_elapsed_ms","observer_script_sha256"})
+            need(WebDomCanonical.same(first.get(key),last.get(key)),"capture identity changed: "+key);
+        need(!first.getString("webview_instance").isEmpty()
+                &&first.getLong("ended_elapsed_ms")<=last.getLong("started_elapsed_ms"),
+                "ordered independent captures required");
+        String firstRaw=first.getString("before_dom_raw_utf8"),lastRaw=last.getString("before_dom_raw_utf8");
+        need(firstRaw.equals(first.getString("dom_raw_utf8"))&&lastRaw.equals(last.getString("dom_raw_utf8")),
+                "each independent homepage capture must have equal complete before/after DOM raws");
+        JSONObject firstDom=WebEvidenceJson.parseDom(firstRaw),lastDom=WebEvidenceJson.parseDom(lastRaw);
+        // Across the two independently stable captures, only the existing complete
+        // homepage carousel predicate may differ. This remains read-only evidence;
+        // the later original target, model run and live action Permit are separate.
+        JSONObject domProof=compareDom(firstDom,lastDom);
+        WebNativeGeometry a=WebNativeGeometry.read(first,firstDom,display,window);
+        WebNativeGeometry b=WebNativeGeometry.read(last,lastDom,display,window);
+        need(a!=null&&b!=null&&a.same(b),"same independently replayed native WebView geometry required");
+        Map<String,JSONObject> nativeRows=nativeNodes(beforeNative);
+        String webview=ancestorClass(nativeRows,targetPath,"android.webkit.WebView");
+        need(webview!=null&&java.util.Arrays.equals(intRect(nativeRows.get(webview)),a.bounds),
+                "actual native WebView ancestor differs from capture geometry");
+        JSONObject nativeProof=compareNative(beforeNative,afterNative,targetPath);
+        nativeProof.put("retained_node_pairing",compareRetained(beforeFrame.getJSONArray("nodes"),
+                afterFrame.getJSONArray("nodes"),nativeProof.getString("native_slider_path")));
+        return new JSONObject().put("schema","hepta.csair-home-observation-bracket.v2")
+                .put("purpose","readonly_current_page_observation")
+                .put("task_id",taskId).put("first_observation",beforeFrame).put("last_observation",afterFrame)
+                .put("first_capture_challenge",first.getString("challenge"))
+                .put("last_capture_challenge",last.getString("challenge"))
+                .put("binding_sha256",WebDomCanonical.sha256(binding))
+                .put("webview_instance",first.get("webview_instance")).put("navigation_epoch",first.get("navigation_epoch"))
+                .put("display_id",display).put("window_id",window)
+                .put("all_four_dom_raws_equal",firstRaw.equals(lastRaw))
+                .put("each_capture_full_raw_dom_stable",true)
+                .put("first_dom_sha256",first.getString("dom_sha256"))
+                .put("last_dom_sha256",last.getString("dom_sha256"))
+                .put("dom_sha256",first.getString("dom_sha256"))
+                .put("dom_stability_sha256",first.getString("dom_stability_sha256"))
+                .put("last_dom_stability_sha256",last.getString("dom_stability_sha256"))
+                .put("native_geometry_sha256",b.fingerprint).put("dom",domProof).put("native",nativeProof)
+                .put("complete_native_snapshot_structure_replayed",true)
+                .put("retained_rows_are_not_the_complete_traversal",true)
+                .put("action_permit_created",false).put("coordinates_used_for_input",false)
+                .put("pixel_equality_claimed",false).put("fully_unoccluded_claimed",false)
+                .put("business_verified",false);
+    }
+    private static void requireCompleteObservation(JSONObject frame,JSONArray nativeRows)throws Exception{
+        need(WebEvidenceProtocol.HELPER_PACKAGE.equals(frame.get("package"))
+                &&Boolean.FALSE.equals(frame.get("nodes_truncated"))&&Boolean.FALSE.equals(frame.get("ime_visible"))
+                &&frame.getString("observation_id").length()>0,"complete helper observation with hidden IME required");
+        JSONObject window=frame.getJSONObject("window"),bg=frame.getJSONObject("background_session");
+        need("observed".equals(window.get("metadata_status"))&&window.getInt("window_id")==frame.getInt("window_id")
+                &&window.getInt("display_id")>0&&window.getInt("type")==1
+                &&Boolean.FALSE.equals(window.get("root_class_truncated"))&&Boolean.FALSE.equals(window.get("title_truncated"))
+                &&"background".equals(bg.get("mode"))&&bg.getInt("display_id")==window.getInt("display_id")
+                &&WebEvidenceProtocol.HELPER_PACKAGE.equals(bg.get("bootstrap_package"))
+                &&bg.getJSONArray("allowed_packages").length()==1
+                &&WebEvidenceProtocol.HELPER_PACKAGE.equals(bg.getJSONArray("allowed_packages").get(0)),
+                "exact observed background window metadata required");
+        JSONObject collection=frame.getJSONObject("collection");
+        need("hepta.observation-collection.v1".equals(collection.get("schema"))
+                &&"same_observed_accessibility_traversal".equals(collection.get("source"))
+                &&nativeRows!=null&&nativeRows.length()==collection.getInt("visited_nodes")
+                &&frame.getJSONArray("nodes").length()==collection.getInt("retained_nodes")
+                &&collection.getJSONArray("truncation_reasons").length()==0,"complete same-traversal evidence required");
+        for(String key:new String[]{"pending_nodes_at_stop","child_slots_omitted_by_traversal_limit",
+                "nodes_omitted_by_node_limit","nodes_omitted_by_text_limit"})
+            need(collection.getLong(key)==0,"omitted native traversal records");
+        JSONObject root=nativeNodes(nativeRows).get("0");
+        need(root.getInt("window_id")==frame.getInt("window_id")
+                &&root.getString("class").equals(window.getString("root_class"))
+                &&WebDomCanonical.same(root.getJSONArray("bounds"),window.getJSONArray("root_bounds")),
+                "actual complete native root differs from the observed window");
+    }
+
     /** Complete DOM comparison; only this observed eight-image slider may move. */
     static JSONObject compareDom(JSONObject before,JSONObject after)throws Exception{
         Map<String,JSONObject> a=domNodes(before),b=domNodes(after);

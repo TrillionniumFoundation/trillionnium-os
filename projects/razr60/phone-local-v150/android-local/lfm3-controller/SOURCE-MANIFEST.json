@@ -1,20 +1,33 @@
 {
   "schema": "hepta.local-source.v3",
-  "version_code": 58,
-  "version_name": "0.58.0-flight-action-stop-candidate",
-  "functional_scope": "Preserve installed flight native stability and typed Web completion while retaining owned background action work, bounded observation, captured cancellation and ordered persistence.",
-  "candidate_status": "v58_flight_async_control_forward_integration_unqualified",
-  "android_build": "Requires new complete 118-Java/resources/DEX compilation and original-key APK assembly against these exact 220 production inputs. Native source and payload reuse must be explicit and hash-bound; earlier candidate results remain historical.",
+  "version_code": 59,
+  "version_name": "0.59.0-flight-observation-action-stop-candidate",
+  "functional_scope": "Integrate installed current57 flight observation with f519 asynchronous Action/Stop; admit only independently stable homepage captures whose cross-capture DOM difference satisfies the existing complete carousel scope plus full native revalidation.",
+  "candidate_status": "current57_flight_observation_and_v58_async_control_source_candidate",
+  "android_build": "Requires a fresh full build of all 118 Java sources, native outputs and resources from the exact 220 production inputs, then original-key assembly. No prior APK qualifies this candidate.",
   "android_qualified": false,
   "phone_qualified": false,
   "production_build_inputs_count": 220,
   "qualification_policy": "Current qualification is external evidence bound to this exact source and actual build inputs; historical reports in this repository are not current qualification.",
   "current_validation": {
-    "strict_host_gate": "Run unchanged complete 105-check runner against this source, then separately execute current Web 80/44/query40/retirement36 and new synthetic flight policy36 gates with original failures preserved.",
+    "strict_host_gate": "Use the unchanged complete original host gate and source-bound build programs on the materialized full tree. Focused host results do not substitute for Android or phone validation.",
     "full_android_build": false,
     "phone_tested": false,
     "external_model_used": false,
-    "local_targeted_results": "Prior local source snapshots establish bounded synthetic behavior only; final published source gates remain required."
+    "focused_host_results": {
+      "action_worker": 33,
+      "observation_pipeline": 31,
+      "flight_worker": 17,
+      "flight_worker_assertions": 380,
+      "existing_flight_policy": 36,
+      "observation_bracket": 20,
+      "real_dom_session": 16,
+      "real_dom_session_assertions": 39
+    },
+    "native_and_ipc_boundaries": "Host native IO, service authority, IPC and publisher carriers are explicitly instrumented; actual source-private NodeRefs cannot be reconstructed from archived rows.",
+    "original_failures_preserved": true,
+    "real_original_flight_task_succeeded": false,
+    "flight_query_dispatch_observed": false
   },
   "files": [
     {
@@ -34,8 +47,8 @@
     },
     {
       "path": "AndroidManifest.xml",
-      "bytes": 2594,
-      "sha256": "6358f0272f263bc47d27f505c99bb23305aeed676092d7312c197df1748aa856"
+      "bytes": 2606,
+      "sha256": "dc06926d00841a2f7a00caa804e66892eb96137c4363f8deb296825682a073fb"
     },
     {
       "path": "BACKGROUND-BROKER.md",
@@ -161,6 +174,11 @@
       "path": "CONTROL-INTEGRATION.md",
       "bytes": 7556,
       "sha256": "c9e95744520bd2b8f72428386e12a9574982f9e93f763d4c1bd99516f71e4614"
+    },
+    {
+      "path": "FLIGHT-OBSERVATION-INTEGRATION.md",
+      "bytes": 7090,
+      "sha256": "d0170d4846632a6a7289f646eedfb0c4970860a7dbdcc8eb3f4bd6741cd8755e"
     },
     {
       "path": "HOST-CHECKS.json",
@@ -5294,8 +5312,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 163443,
-      "sha256": "28c623203e2e9de88f32ba19b32781b25665dddb2aa48e0dce17bfc8036e350f"
+      "bytes": 191233,
+      "sha256": "a92e81fd155020fdaba59826cc0dfb6ce05dc039893bf6ac4c8605c485a6b13b"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
@@ -5649,8 +5667,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
-      "bytes": 23349,
-      "sha256": "503078f251696fb542912e5270efca13439ebcece4db8b3473e7fcb543b4fc2d"
+      "bytes": 32859,
+      "sha256": "de88e47348d9b473f2d0c27fe92f4e0e76565665d421ed044f9f8c935e7d0bf8"
     },
     {
       "path": "src/org/trillionnium/hepta/local/WebFlightProgress.java",
@@ -5659,8 +5677,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
-      "bytes": 42734,
-      "sha256": "7f3c7fd872e9901026ad7471dfc9a3e68d2c987eb1931896f80ea0f2acd6f4e1"
+      "bytes": 44552,
+      "sha256": "d413bd893e3ca01404b1e76a1a188b7c741f3d6699c8d8e97655dcd9590e6a4d"
     },
     {
       "path": "src/org/trillionnium/hepta/local/WebHelperIdentity.java",
@@ -6311,6 +6329,61 @@
       "path": "tests/fixed-intent-tools/test_fixed_grammar.py",
       "bytes": 2446,
       "sha256": "ab1238f424d554fb752124bf7be67a74078f7e88c2501a15571113a449dfbe55"
+    },
+    {
+      "path": "tests/flight-observation-worker/FlightObservationBracketHost.java",
+      "bytes": 13225,
+      "sha256": "8e1232eb5551a87748b04e58a864c9711009311b18f6e2b551f537c3d6c16374"
+    },
+    {
+      "path": "tests/flight-observation-worker/FlightObservationSessionHost.template",
+      "bytes": 16474,
+      "sha256": "4060fba6603737d4072deb5ad71ac9e9af6886527b4056a06b4b86fd92a0b2f7"
+    },
+    {
+      "path": "tests/flight-observation-worker/FlightObservationWorkerHost.template",
+      "bytes": 19067,
+      "sha256": "2b239a7667388b76408e077fd3a908a221c77ad9fc4b578e3bdbe509fb8e1050"
+    },
+    {
+      "path": "tests/flight-observation-worker/fixtures/actual-flight-r2/OLD-PREDICATE-REPLAY.summary.json",
+      "bytes": 1801,
+      "sha256": "5ecf336c7dcf0e15692f1a8dcc788639575c32a0bceba16610f4abc8ecd40128"
+    },
+    {
+      "path": "tests/flight-observation-worker/fixtures/actual-flight-r2/PROVENANCE.json",
+      "bytes": 876,
+      "sha256": "205311d04602cd23c6032f53180de8965c43cc2b91afa06f9b73bba35e6fa3b4"
+    },
+    {
+      "path": "tests/flight-observation-worker/fixtures/actual-flight-r2/raw-47376b85b83d4797ba0a8776eb83698af269df66621c405bb644698501cf2983.json",
+      "bytes": 229813,
+      "sha256": "86a38bcc6bf05d723abaf072354d14af29f3cbe9c80a93a2adc2a381aed058e8"
+    },
+    {
+      "path": "tests/flight-observation-worker/fixtures/actual-flight-r2/raw-8fef0a4b1d774fe097edc1d63709213585bee4e24b3e4aaea1a723026e3c5209.json",
+      "bytes": 229821,
+      "sha256": "e6f7fe6397af0ed8199c08a8270165c282b7bee71f7d9daee98e58a2be3f5ee3"
+    },
+    {
+      "path": "tests/flight-observation-worker/reference-current57/WebFlightEvidenceHostTest.java",
+      "bytes": 37110,
+      "sha256": "cb6f785dec795a0d820c4b325dd3caedb958a03001bf9ff8031c89b3cfdde1b7"
+    },
+    {
+      "path": "tests/flight-observation-worker/run_bracket_host.py",
+      "bytes": 3088,
+      "sha256": "8643e322a6642e17278b3a354d3c7c26bdf394aab5d8d905f84a99f52442e0f8"
+    },
+    {
+      "path": "tests/flight-observation-worker/run_session_host.py",
+      "bytes": 4975,
+      "sha256": "50271e4e77b25ed011ecf76cbd734370fe0494fdeff9e19ec10bc6da8acfdd77"
+    },
+    {
+      "path": "tests/flight-observation-worker/run_worker_host.py",
+      "bytes": 4162,
+      "sha256": "c799c14f90016e2010dcd806500d8f154179a419b2124706cb309c5148e8fdf0"
     },
     {
       "path": "tests/ime-submit/ImeSubmitHostTest.java",
@@ -7279,18 +7352,20 @@
     }
   ],
   "base_source": {
-    "commit": "5da3c83fe46edb2617934a92c06a10608accb68e",
-    "component_tree": "24e8d82d4befdab6f4f32ef7efeba7faad345a04"
+    "commit": "f519f2081b11dbbe851c2fb6528d32fffbc20c62",
+    "component_tree": "849e754a12c2d151cc01718a4e387dae620335c1",
+    "repository_tree": "a6b480ad136f5130229488767a505a24512e7c95"
   },
   "release_version_assigned": false,
-  "version_metadata_policy": "Android version58/name identifies this unqualified candidate; original signing, installation, phone acceptance and production release are separate source-bound gates.",
+  "version_metadata_policy": "Version59/name identifies this source candidate; complete Android build, original signing, installation and actual phone acceptance remain separate exact-source gates.",
   "candidate_version_assigned": true,
   "integration_sources": {
-    "preceding_published_candidate": "23f3d1d739e6f34de189850961d9976f381b00a3",
-    "installed_build_identity_sha256": "7ebcc34c252b1fed0f110f84480ed10aaeb49057362b0ec140dea66f722fe692",
-    "installed_production_input_count": 217,
-    "installed_source_commit": null,
-    "content_comparison_base": "Actual dd2 v55 bytes; no phone Git merge-base asserted."
+    "preceding_published_candidate": "f519f2081b11dbbe851c2fb6528d32fffbc20c62",
+    "installed_current57_source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+    "installed_current57_source_tree": "2368b777bad9fd9e2f5dcbcbefc6ea9c27fcb0da",
+    "installed_current57_apk_sha256": "c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4",
+    "installed_current57_source_inventory_sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6",
+    "real_failed_flight_task": "b350fd8665b640608093602b1e6a9f14"
   },
-  "source_preservation_scope": "Keep all preceding candidate files; integrate fresh src/tests and reviewed conflicts. The 164 additional historical host-evidence files remain at their original source and are not copied here."
+  "source_preservation_scope": "Every f519 file remains represented. Four production files are replaced; focused host tests, exact original public homepage fixtures and integration notes are added. Service preserves all preexisting v58 source blocks; action and complete DOM/native predicates are unchanged."
 }
