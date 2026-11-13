@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   mnn-runtime:
-    runs-on: macos-15
+    runs-on: macos-15-intel
     timeout-minutes: 45
     env:
       HEPTA_SOURCE: projects/razr60/phone-local-v150/android-local/lfm3-controller
