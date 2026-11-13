@@ -255,9 +255,19 @@ jobs:
           api["load_frozen_source"](root / os.environ["HEPTA_SDK_FETCH_SOURCE"])
           print("Original SDK transport closure and fixed fetch source admitted.")
           PY
+      - name: Fetch and verify the pinned host JSON dependency
+        run: |
+          set -euo pipefail
+          hepta_json_jar="$RUNNER_TEMP/hepta-json-20240303.jar"
+          curl --fail --location --proto '=https' --tlsv1.2 --connect-timeout 15 --max-time 60 \
+            --output "$hepta_json_jar" \
+            'https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar'
+          printf '%s  %s\n' \
+            '3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed' "$hepta_json_jar" \
+            | sha256sum --check --strict
       - name: Run host contracts
         working-directory: ${{ env.HEPTA_SOURCE }}
-        run: python -B tools/run_host_checks.py --out "$RUNNER_TEMP/hepta-host-checks"
+        run: python -B tools/run_host_checks.py --out "$RUNNER_TEMP/hepta-host-checks" --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar"
       - name: Run independent core acceptance regressions
         working-directory: projects/razr60/phone-local-v150/android-local/validation/core-phone-suite
         run: python -B -m unittest -v test_core_assertions.py
@@ -350,6 +360,8 @@ jobs:
           if-no-files-found: warn
           path: |
             ${{ runner.temp }}/hepta-host-checks/HOST-CHECKS.json
+            ${{ runner.temp }}/hepta-host-checks/sdk-exception-failure-audit/**
+            ${{ runner.temp }}/hepta-host-checks/owned-generation-cleanup/**
             ${{ runner.temp }}/hepta-runtime-source-pair.json
             ${{ runner.temp }}/hepta-host-checks/*.stdout
             ${{ runner.temp }}/hepta-host-checks/*.stderr

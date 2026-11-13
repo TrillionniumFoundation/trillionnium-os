@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Build Android artifacts with cached JDK/SDK/NDK on macOS or Linux; no downloads."""
 from pathlib import Path
-import hashlib, json, os, re, subprocess, sys, shutil
+import hashlib, json, os, re, subprocess, sys, shutil, stat
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tools'))
 from build_identity import source_inputs
-from verify_mobimind_runtime import load_pins, _verify_payload
+from fetch_pinned_runtime import SHA256 as GENIEX_ARCHIVE_SHA256
 from model_profiles import PROFILES,DEFAULT_PROFILE,LLAMA_COMMIT
 OUT = Path(os.environ.get('HEPTA_BUILD_OUT', str(ROOT / 'out'))).expanduser().resolve()
 def required_path(name, alternate=None):
@@ -28,11 +28,27 @@ OUT.mkdir(parents=True,exist_ok=True)
 sys.path.insert(0,str(ROOT/'native'))
 from generate_adapter import generate
 source_before=source_inputs(ROOT)
-# Compilation needs only this exact already-packaged C++ payload. The assembler
-# still verifies the complete independent Mobi runtime and build provenance.
-CPP_PIN = next(item for item in load_pins(ROOT)['libraries'] if item['apk_name']=='libc++_shared.so')
-CPP_PATH = required_path('MOBIMIND_ANDROID_RUNTIME_DIR')/CPP_PIN['source_name']
-_verify_payload(CPP_PATH,CPP_PIN)
+# GenieX already exports its C++ exception ABI from this fixed SDK library.
+# Adding Mobi's independently built libc++ changes global locale/exception symbol
+# resolution during plugin dlopen (observed bad_cast in its IOS constructors).
+# Reuse the existing SDK runtime; the assembler still verifies both full runtimes.
+SDK_CPP_PIN = {'source_name':'llama_cpp/libggml-base.so','bytes':3534496,
+    'sha256':'bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40'}
+SDK_CPP_PATH = GENIEX/SDK_CPP_PIN['source_name']
+SDK_CPP_ABI = {'__cxa_begin_catch','__cxa_end_catch','__gxx_personality_v0','_ZTISt9exception'}
+BOUNDARY_UNDEFINED = SDK_CPP_ABI | {'fflush','fprintf','geniex_llm_generate','memset','stderr'}
+def verify_sdk_cpp():
+    descriptor=os.open(SDK_CPP_PATH,os.O_RDONLY|os.O_NOFOLLOW)
+    with os.fdopen(descriptor,'rb') as stream:
+        before=os.fstat(stream.fileno())
+        if not stat.S_ISREG(before.st_mode) or before.st_size!=SDK_CPP_PIN['bytes']:
+            raise RuntimeError('SDK C++ ABI provider is not the pinned regular file')
+        data=stream.read(SDK_CPP_PIN['bytes']+1)
+        after=os.fstat(stream.fileno())
+    fields=lambda value:(value.st_dev,value.st_ino,value.st_size,value.st_mtime_ns,value.st_ctime_ns)
+    if fields(before)!=fields(after) or len(data)!=SDK_CPP_PIN['bytes'] or hashlib.sha256(data).hexdigest()!=SDK_CPP_PIN['sha256']:
+        raise RuntimeError('SDK C++ ABI provider changed or differs from the pinned release')
+verify_sdk_cpp()
 llama_headers=ROOT/'native/vendor/llama'
 llama_pin=json.loads((llama_headers/'PIN.json').read_text())
 if llama_pin.get('commit')!=LLAMA_COMMIT:raise RuntimeError('llama header source pin differs')
@@ -74,14 +90,28 @@ undefined=subprocess.check_output([str(NDK/'llvm-nm'),'-u',str(worker_object)],t
 symbols={line.split()[-1] for line in undefined.splitlines() if line.split()}
 if 'hepta_guarded_llm_generate' not in symbols or 'hepta_sdk_generate_exception' not in symbols or 'geniex_llm_generate' in symbols:
     raise RuntimeError('Actual Android C object did not use the SDK exception boundary')
+# Inspect the actual production boundary object and actual fixed SDK exports.
+# An unexpected C++ ABI requirement must not silently pull in another runtime.
+boundary_undefined=subprocess.check_output([str(NDK/'llvm-nm'),'-u',str(boundary_object)],timeout=30).decode()
+(OUT/'native-exception-boundary-object-symbols.txt').write_text(boundary_undefined)
+boundary_symbols={line.split()[-1] for line in boundary_undefined.splitlines() if line.split()}
+if boundary_symbols!=BOUNDARY_UNDEFINED:
+    raise RuntimeError('Actual Android exception boundary has an unreviewed undefined-symbol closure')
+sdk_cpp_exports=subprocess.check_output([str(NDK/'llvm-nm'),'--dynamic','--defined-only',str(SDK_CPP_PATH)],timeout=30).decode()
+(OUT/'native-exception-sdk-abi-exports.txt').write_text(sdk_cpp_exports)
+export_symbols={line.split()[-1] for line in sdk_cpp_exports.splitlines() if line.split()}
+if not SDK_CPP_ABI.issubset(export_symbols):
+    raise RuntimeError('Pinned SDK does not export the complete exception ABI needed by the boundary')
+verify_sdk_cpp()
 run([NDK/'aarch64-linux-android30-clang++','-fPIE','-pie','-nostdlib++',worker_object,boundary_object,
-    '-L'+str(GENIEX),'-L'+str(GENIEX/'llama_cpp'),'-lgeniex','-lllama',CPP_PATH,'-ldl','-lm',
+    '-L'+str(GENIEX),'-L'+str(GENIEX/'llama_cpp'),'-lgeniex','-lllama',SDK_CPP_PATH,'-ldl','-lm',
     '-Wl,-rpath,$ORIGIN','-Wl,-rpath-link,'+str(GENIEX/'llama_cpp'),'-Wl,-z,max-page-size=16384','-o',OUT/'libhepta_local_runner.so'])
 dynamic=subprocess.check_output([str(NDK/'llvm-readelf'),'-d',str(OUT/'libhepta_local_runner.so')],timeout=30).decode()
 (OUT/'native-exception-dynamic.txt').write_text(dynamic)
-if re.findall(r'\(NEEDED\).*?\[([^]]+)\]',dynamic).count('libc++_shared.so')!=1:
-    raise RuntimeError('The actual Android worker must directly need the pinned shared C++ runtime exactly once')
-_verify_payload(CPP_PATH,CPP_PIN)
+needed=re.findall(r'\(NEEDED\).*?\[([^]]+)\]',dynamic)
+if needed!=['libgeniex.so','libllama.so','libggml-base.so','libdl.so','libm.so','libc.so']:
+    raise RuntimeError('Actual Android worker dependencies must retain the SDK runtime without a second C++ runtime')
+verify_sdk_cpp()
 # The baseline dispatcher must remain runnable without SHA2. Inspect the actual
 # unstripped Android ELF, not an inferred compiler configuration or host stub.
 disassembly=subprocess.check_output([str(NDK/'llvm-objdump'),'-d','--no-show-raw-insn',str(OUT/'libhepta_local_runner.so')],timeout=30).decode()
@@ -107,10 +137,16 @@ receipt={'schema':'hepta.local-model.mac-build.v2','compile_sdk':34,'target_sdk'
     'compute_default':'npu','context_default':8192,
     'model_profile_default':DEFAULT_PROFILE,'model_profiles':PROFILES,'llama_source_commit':LLAMA_COMMIT,
     'worker_adapter':adapter_receipt,
-    'sdk_exception_boundary':{'production_c_object_verified':True,'cpp_runtime_path':str(CPP_PATH),
-        'cpp_runtime_bytes':CPP_PIN['bytes'],'cpp_runtime_sha256':CPP_PIN['sha256'],
-        'cpp_runtime_provenance':'existing_apk_mobimind_r4_cpp_pin','vendor_sdk_or_abi_changed':False,
+    'sdk_exception_boundary':{'production_c_object_verified':True,'cpp_runtime_path':str(SDK_CPP_PATH),
+        'cpp_runtime_bytes':SDK_CPP_PIN['bytes'],'cpp_runtime_sha256':SDK_CPP_PIN['sha256'],
+        'cpp_runtime_provenance':'existing_pinned_geniex_0_10_0_libggml_base_exports',
+        'geniex_archive_sha256':GENIEX_ARCHIVE_SHA256,'vendor_sdk_or_abi_changed':False,
+        'boundary_undefined_symbols':sorted(boundary_symbols),'sdk_exception_abi_symbols':sorted(SDK_CPP_ABI),
+        'sdk_exception_abi_exports_verified':True,'additional_cpp_runtime_linked':False,
+        'actual_elf_needed':needed,
         'c_object_symbols_sha256':hashlib.sha256(undefined.encode()).hexdigest(),
+        'boundary_object_symbols_sha256':hashlib.sha256(boundary_undefined.encode()).hexdigest(),
+        'sdk_abi_exports_sha256':hashlib.sha256(sdk_cpp_exports.encode()).hexdigest(),
         'actual_elf_dynamic_sha256':hashlib.sha256(dynamic.encode()).hexdigest(),
         'phone_or_sdk_exception_health_verified':False},
     'sha256_instruction_gate':{'verified_actual_android_elf':True,'global_crypto_flag':False,

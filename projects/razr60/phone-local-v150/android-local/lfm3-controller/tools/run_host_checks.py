@@ -20,6 +20,8 @@ PURE_CLASSES=['NotesCreateWorkflow', 'NotesOwnerIntent', 'CalculatorTaskInputGua
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out",required=True,type=Path)
+    parser.add_argument("--json-jar",required=True,type=Path,
+                        help="Existing fixed org.json 20240303 JAR; this runner never downloads dependencies")
     args=parser.parse_args()
     out=args.out.expanduser().resolve()
     out.mkdir(parents=True,exist_ok=False)
@@ -53,6 +55,9 @@ def main():
         paths.update(p for p in (ROOT/"tests/completion-status/fixtures").rglob("*") if p.is_file())
         paths.update(p for p in (ROOT/"tests/observation-collection/fixtures").rglob("*") if p.is_file())
         paths.update(p for p in (ROOT/"tests/notes-create-workflow/fixtures").rglob("*") if p.is_file())
+        for fixture_root in ("tests/sdk-exception-failure-audit/fixtures",
+                             "tests/owned-generation-cleanup/fixtures"):
+            paths.update(p for p in (ROOT/fixture_root).rglob("*") if p.is_file())
         if any(p.is_symlink() for p in paths): raise RuntimeError("Host inputs must not be symbolic links")
         return [{"path":str(p.relative_to(ROOT)),"sha256":hashlib.sha256(p.read_bytes()).hexdigest()}
                 for p in sorted(paths)]
@@ -71,6 +76,19 @@ def main():
         return result
 
     try:
+        json_jar=args.json_jar.expanduser().absolute()
+        if json_jar.is_symlink() or not json_jar.is_file():
+            raise RuntimeError("Existing regular pinned host JSON JAR required")
+        json_bytes=json_jar.read_bytes()
+        json_digest=hashlib.sha256(json_bytes).hexdigest()
+        if len(json_bytes)!=78332 or json_digest!="3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed":
+            raise RuntimeError("Pinned org.json 20240303 host dependency differs")
+        java_home=Path(java).resolve().parent.parent
+        if not (java_home/"bin/javac").is_file():
+            raise RuntimeError("The selected Java runtime must have its full JDK javac for the mandatory audit gates")
+        report["host_json_dependency"]={"path":str(json_jar),"bytes":len(json_bytes),"sha256":json_digest,
+                                       "downloaded_by_canonical_runner":False}
+        report["additional_gate_java_home"]=str(java_home)
         classes=out/"classes"; classes.mkdir()
         fixtures=out/"grammar"; fixtures.mkdir()
         web_fixture_source=ROOT/"tests/web-flight/legacy-boundary/WebFlightDomain.java"
@@ -162,6 +180,39 @@ def main():
             "--source",ROOT,"--output",out/"owned-worker-cancellation"])
         run("background-owned-task-policy",[sys.executable,"-B",ROOT/"tests/background-owned-task/run_host_tests.py",
             "--out",out/"background-owned-task-policy","--java",java])
+        run("sdk-exception-failure-audit",[sys.executable,"-B",ROOT/"tests/sdk-exception-failure-audit/run_host.py",
+            "--source",ROOT,"--output",out/"sdk-exception-failure-audit","--java-home",java_home,
+            "--json-jar",json_jar,"--python",Path(sys.executable).resolve()])
+        run("owned-generation-cleanup",[sys.executable,"-B",ROOT/"tests/owned-generation-cleanup/run_host.py",
+            "--source",ROOT,"--output",out/"owned-generation-cleanup","--java-home",java_home,
+            "--json-jar",json_jar,"--python",Path(sys.executable).resolve(),"--cc",Path(cc).resolve()])
+        additional_contracts={"owned-generation-cleanup":{"schema":"hepta.owned-generation-cleanup-gate.v1","case_schema":"hepta.owned-generation-cleanup-host.v1","cases":87,"metric":"checks","count":267,"case_names_sha256":"2f63e71ea898341d5818b437c2977d8eb9023c207484a0a6587f73b23239180f"},"sdk-exception-failure-audit":{"schema":"hepta.sdk-exception-failure-audit-gate.v1","case_schema":"hepta.sdk-exception-failure-audit-host.v1","cases":43,"metric":"assertions","count":99,"case_names_sha256":"317c235ce467904c60ad8fe000f412adf3a96d5253a29581f92dff025da84188"}}
+        report["mandatory_additional_gate_receipts"]={}
+        for name in ("sdk-exception-failure-audit","owned-generation-cleanup"):
+            contract=additional_contracts[name]
+            gate_path=out/name/"RESULT.json"
+            gate_raw=gate_path.read_bytes()
+            gate=json.loads(gate_raw)
+            if gate.get("schema")!=contract["schema"] or gate.get("all_pass") is not True or gate.get("inputs_unchanged") is not True:
+                raise RuntimeError("Mandatory additional gate lacks its successful unchanged-input receipt: "+name)
+            cases=gate.get("cases")
+            if type(cases) is not dict or cases.get("schema")!=contract["case_schema"] or cases.get("all_pass") is not True:
+                raise RuntimeError("Mandatory additional gate has no typed case receipt: "+name)
+            if type(cases.get("cases")) is not int or cases["cases"]!=contract["cases"] or type(cases.get(contract["metric"])) is not int or cases[contract["metric"]]!=contract["count"]:
+                raise RuntimeError("Mandatory additional gate has incomplete cases/assertions: "+name)
+            names=cases.get("case_names")
+            if type(names) is not list or any(type(x) is not str for x in names) or len(names)!=contract["cases"] or len(set(names))!=len(names):
+                raise RuntimeError("Mandatory additional gate case identities are missing or duplicated: "+name)
+            names_hash=hashlib.sha256(json.dumps(names,ensure_ascii=True,separators=(",",":")).encode()).hexdigest()
+            if names_hash!=contract["case_names_sha256"]:
+                raise RuntimeError("Mandatory additional gate case identities changed: "+name)
+            cases_original=json.loads((out/name/"CASES.json").read_bytes())
+            if json.dumps(cases_original,sort_keys=True,separators=(",",":"))!=json.dumps(cases,sort_keys=True,separators=(",",":")):
+                raise RuntimeError("Mandatory additional gate RESULT/CASES originals differ: "+name)
+            report["mandatory_additional_gate_receipts"][name]={
+                "path":str(gate_path),"bytes":len(gate_raw),"sha256":hashlib.sha256(gate_raw).hexdigest(),
+                "schema":gate["schema"],"cases":cases}
+        if json_jar.read_bytes()!=json_bytes: raise RuntimeError("Host JSON dependency changed during checks")
         if all_inputs()!=report["source_inputs"]: raise RuntimeError("Source changed during host checks")
         report["all_pass"]=True
     except Exception as error:

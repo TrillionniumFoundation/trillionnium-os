@@ -52,8 +52,11 @@ static int probe_bootstrap(void) {
 #include "worker-appuid.c"
 #undef main
 #include "warm-protocol.inc"
+#include "owned-generation.inc"
 
 int main(int argc, char **argv) {
+    if(argc>1&&!strcmp(argv[1],"--hepta-owned-generation-cleanup-v1"))
+        return hepta_owned_generation_cleanup(argc,argv);
     if (argc == 2 && !strcmp(argv[1], "--help")) return upstream_worker_main(argc, argv);
     if(hepta_take_warm_arguments(&argc,argv)!=0)return 78;
     pid_t expected_parent = 0;
@@ -71,6 +74,11 @@ int main(int argc, char **argv) {
     fprintf(stderr, "HEPTA_PARENT_GUARD armed expected=%ld observed=%ld signal=SIGKILL\n",
             (long)expected_parent, (long)getppid());
     fflush(stderr);
+    if(!hepta_owned_generation_enter(hepta_warm_enabled?hepta_warm_session_dir:NULL,
+            hepta_warm_enabled?hepta_warm_generation:NULL,
+            hepta_warm_enabled?hepta_warm_task_id:NULL,expected_parent)){
+        fputs("HEPTA_OWNED_GENERATION early identity unavailable; SDK not entered\n",stderr);return 78;
+    }
     const char *version = geniex_version();
     if (!version || (strcmp(version,"v0.10.0") && strcmp(version,"0.10.0"))) {
         fputs("HEPTA_APPUID_BOOTSTRAP pinned SDK version mismatch\n",stderr); return 78;

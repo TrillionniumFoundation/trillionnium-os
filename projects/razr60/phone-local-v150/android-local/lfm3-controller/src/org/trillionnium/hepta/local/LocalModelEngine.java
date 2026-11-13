@@ -94,18 +94,23 @@ public final class LocalModelEngine implements AutoCloseable {
         private final RunHandle taskOwner;
         private final TaskCancellationQueue.Ticket cancelTicket;
         private final AtomicBoolean cancelRequested = new AtomicBoolean(false);
+        // A caller may be Stop, a deadline, or lifecycle shutdown. Internal failure cleanup is separate.
+        private final AtomicBoolean callerCancellationRequested = new AtomicBoolean(false);
         private final AtomicReference<Process> child = new AtomicReference<>();
         private volatile OwnedWorkerCancellation ownedCancellation;
-        private void requestCancellationOnly(){cancelRequested.set(true);if(taskOwner!=null)taskOwner.requestCancellationOnly();}
-        public void cancel() {
+        private void requestCancellationOnly(){callerCancellationRequested.set(true);cancelRequested.set(true);if(taskOwner!=null)taskOwner.requestCancellationOnly();}
+        private void markCallerCancellation(){callerCancellationRequested.set(true);if(taskOwner!=null)taskOwner.markCallerCancellation();}
+        public void cancel() {markCallerCancellation();cancelForFailure();}
+        private void cancelForFailure() {
             cancelRequested.set(true);
-            if(taskOwner!=null){taskOwner.cancel();return;}
+            if(taskOwner!=null){taskOwner.cancelForFailure();return;}
             OwnedWorkerCancellation owned=ownedCancellation;
             if(owned!=null){owned.cancel();return;}
             Process p = child.get();
             if (p != null && p.isAlive()) p.destroy();
         }
         public boolean isCancellationRequested() { return cancelRequested.get()||(taskOwner!=null&&taskOwner.isCancellationRequested()); }
+        private boolean callerCancellationRequested(){return callerCancellationRequested.get()||(taskOwner!=null&&taskOwner.callerCancellationRequested());}
     }
 
     /** Retains the existing process-wide slot until the task worker really exits. */
@@ -117,7 +122,11 @@ public final class LocalModelEngine implements AutoCloseable {
         private final AtomicBoolean ending=new AtomicBoolean();
         private volatile WarmProcessSession session;
         private volatile LocalInference.TaskCleanup cleanup;
+        private volatile WarmSdkFailure failedSdk;
+        private final String scopeToken=UUID.randomUUID().toString().replace("-","");
+        private volatile OwnedGenerationScope generationScope;
         private Future<LocalInference.TaskCleanup> finisher;
+        private long finisherSubmittedNanos,finisherDeadlineNanos;
         private int acceptedRequests;
         private WarmTask(String taskId){
             this.taskId=taskId;
@@ -160,10 +169,16 @@ public final class LocalModelEngine implements AutoCloseable {
         try{
             Future<LocalInference.TaskCleanup> finishing;
             synchronized(task){
-                if(task.finisher==null)task.finisher=executor.submit(()->finishWarmOwned(task));
+                if(task.finisher==null){
+                    if(task.finisherSubmittedNanos!=0)throw new IllegalStateException("finisher submission already attempted");
+                    task.finisherSubmittedNanos=System.nanoTime();
+                    task.finisherDeadlineNanos=Math.addExact(task.finisherSubmittedNanos,
+                            TimeUnit.MILLISECONDS.toNanos(task.cancellation.finishFutureMillis()));
+                    task.finisher=executor.submit(()->finishWarmOwned(task));
+                }
                 finishing=task.finisher;
             }
-            return finishing.get(task.cancellation.finishFutureMillis(),TimeUnit.MILLISECONDS);
+            return finishing.get(Math.max(0,task.finisherDeadlineNanos-System.nanoTime()),TimeUnit.NANOSECONDS);
         }
         catch(Exception failure){
             if(failure instanceof InterruptedException)Thread.currentThread().interrupt();
@@ -175,7 +190,8 @@ public final class LocalModelEngine implements AutoCloseable {
         if(task.cleanup!=null)return task.cleanup;
         Process process=task.owner.child.get();boolean observed=false,force=false,valid=false,persisted=false;
         Integer exit=null;String receiptHash=null;JSONObject nativeClose=new JSONObject();boolean cancelledSdkCleanup=false;
-        JSONObject receipt=new JSONObject();
+        JSONObject receipt=new JSONObject();byte[] nativeCloseBytes=new byte[0];boolean sdkExceptionCleanup=false;
+        OwnedGenerationScope.Cleanup generationCleanup=null;boolean generationKnown=false,parentForce=false;
         try{
             if(task.session!=null){WarmProcessSession.Cleanup result=task.session.finish();observed=result.exitObserved;exit=result.exitCode;force=result.forceSent;}
             else if(process!=null){
@@ -183,10 +199,21 @@ public final class LocalModelEngine implements AutoCloseable {
                 OwnedWorkerCancellation.Exit stopped=task.cancellation.awaitCancellation();
                 observed=stopped.observed;exit=stopped.code;force=stopped.forceSent;
             }
+            parentForce=force;
+            if(process==null)generationKnown=true;
+            else if(observed&&task.generationScope!=null&&warmActive.get()==task
+                    &&active.get()==task.owner&&PROCESS_ACTIVE.get()==task.owner&&task.owner.child.get()==process){
+                OwnedGenerationScope scope=task.generationScope;
+                generationCleanup=scope.finish(true,task.finisherSubmittedNanos,task.finisherDeadlineNanos);
+                generationKnown=generationCleanup.known&&task.generationScope==scope&&warmActive.get()==task
+                        &&active.get()==task.owner&&PROCESS_ACTIVE.get()==task.owner&&task.owner.child.get()==process;
+                force|=generationCleanup.forceKnown&&generationCleanup.forceUsed;
+            }
             privateDirectory(files.getCanonicalFile());privateDirectory(new File(files,"runs"));
             File directory=task.directory();privateDirectory(directory);
             File nativeFile=new File(directory,"native-session-result.json");
-            if(nativeFile.isFile())nativeClose=new JSONObject(new String(MobiMindPrivateFiles.read(nativeFile,OUTPUT_LIMIT,true).bytes,StandardCharsets.UTF_8));
+            if(nativeFile.isFile()){nativeCloseBytes=MobiMindPrivateFiles.read(nativeFile,OUTPUT_LIMIT,true).bytes;
+                nativeClose=new JSONObject(new String(nativeCloseBytes,StandardCharsets.UTF_8));}
             valid=process==null||(observed&&exit!=null&&exit==0&&task.session!=null
                     &&"hepta.geniex-task-session.result.v1".equals(nativeClose.optString("schema"))
                     &&task.generation().equals(nativeClose.optString("worker_generation"))&&task.taskId.equals(nativeClose.optString("task_id"))
@@ -204,16 +231,33 @@ public final class LocalModelEngine implements AutoCloseable {
             cancelledSdkCleanup=task.session!=null&&cancelledSdkCleanupBound(nativeClose,task.generation(),task.taskId,
                     task.session.workerPid(),task.session.requestsSent(),task.acceptedRequests,
                     task.owner.isCancellationRequested(),observed,exit,force,android.system.OsConstants.EPIPE);
+            // The original 143 SDK predicate is retained; whole-generation
+            // absence and zero descendant force are an additional conjunction.
+            cancelledSdkCleanup=cancelledSdkCleanup&&generationKnown
+                    &&generationCleanup!=null&&generationCleanup.unforced();
+            sdkExceptionCleanup=sdkFailureCleanupBound(task,process,nativeCloseBytes,observed,exit,force,receipt);
+            put(receipt,"caller_cancellation_requested",task.owner.callerCancellationRequested());
+            put(receipt,"sdk_exception_failure_cleanup_binding_valid",sdkExceptionCleanup);
+            put(receipt,"sdk_exception_failure",sdkExceptionCleanup?task.failedSdk.proof.audit():JSONObject.NULL);
             put(receipt,"schema","hepta.local-model.task-session.v1");put(receipt,"worker_generation",task.generation());put(receipt,"task_id",task.taskId);
             put(receipt,"app_uid",android.os.Process.myUid());put(receipt,"app_pid",android.os.Process.myPid());
             put(receipt,"process_started",process!=null);put(receipt,"process_exit_observed",observed);
             put(receipt,"exit_code",exit==null?JSONObject.NULL:exit);put(receipt,"force_destroy_sent",force);
             put(receipt,"requests_sent",task.session==null?0:task.session.requestsSent());put(receipt,"requests_accepted",task.acceptedRequests);
-            put(receipt,"cleanup_known",process==null||observed);put(receipt,"native_session_binding_valid",valid);
+            put(receipt,"cleanup_known",process==null||observed&&generationKnown);put(receipt,"native_session_binding_valid",valid);
+            put(receipt,"parent_force_destroy_sent",parentForce);
+            put(receipt,"finisher_submitted_monotonic_ns",task.finisherSubmittedNanos);
+            put(receipt,"finisher_deadline_monotonic_ns",task.finisherDeadlineNanos);
+            put(receipt,"generation_cleanup_known",generationKnown);
+            put(receipt,"generation_unforced",process==null||generationCleanup!=null&&generationCleanup.unforced());
+            put(receipt,"worker_generation_cleanup",generationCleanup==null?JSONObject.NULL:generationCleanup.evidence);
             put(receipt,"native_session_receipt",nativeClose);put(receipt,"cancel_requested",task.owner.isCancellationRequested());
             put(receipt,"cancellation_sdk_cleanup_binding_valid",cancelledSdkCleanup);
             put(receipt,"cleanup_classification",process==null?"not_started":!observed?"exit_unobserved":
+                    !generationKnown?"generation_cleanup_unknown":
+                    generationCleanup!=null&&generationCleanup.forceUsed?"generation_force_recovery":
                     cancelledSdkCleanup?"expected_cancelled_exit_143_with_observed_sdk_cleanup":
+                    sdkExceptionCleanup?"sdk_cpp_exception_exit_70_with_observed_sdk_cleanup":
                     valid?"normal_close_with_observed_sdk_cleanup":
                     exit!=null&&exit==143?"cancelled_exit_143_sdk_cleanup_unverified":
                     force&&exit!=null&&exit==137?"forced_exit_137":"other_exit_sdk_cleanup_unverified");
@@ -223,10 +267,83 @@ public final class LocalModelEngine implements AutoCloseable {
             MobiMindPrivateFiles.writeNew(appReceipt,receipt.toString(2).getBytes(StandardCharsets.UTF_8));
             receiptHash=sha256(MobiMindPrivateFiles.read(appReceipt,OUTPUT_LIMIT,true).bytes);persisted=true;
         }catch(Exception error){put(receipt,"close_error",error.toString());}
-        boolean cleanup=persisted&&(process==null||observed);
+        boolean cleanup=persisted&&(process==null||observed&&generationKnown);
         LocalInference.TaskCleanup result=new LocalInference.TaskCleanup(cleanup,process!=null,observed,exit,task.generation(),task.taskId,valid,receiptHash);
         if(cleanup){task.owner.child.set(null);active.compareAndSet(task.owner,null);PROCESS_ACTIVE.compareAndSet(task.owner,null);warmActive.compareAndSet(task,null);}
         task.cleanup=result;return result;
+    }
+
+
+    /** Kept only after the failed request's own app receipt has been durably read back. */
+    private static final class WarmSdkFailure {
+        final Process process;
+        final SdkExceptionFailure proof;
+        final String appReceiptHash;
+        WarmSdkFailure(Process process,SdkExceptionFailure proof,String appReceiptHash){
+            this.process=process;this.proof=proof;this.appReceiptHash=appReceiptHash;
+        }
+    }
+    private boolean currentSdkFailureOwner(WarmTask task,RunHandle h,Process process){
+        if(task==null||h==null||process==null||warmActive.get()!=task||PROCESS_ACTIVE.get()!=task.owner
+                ||active.get()!=task.owner||task.request.get()!=h||h.taskOwner!=task.owner
+                ||task.owner.child.get()!=process||h.child.get()!=process||process.isAlive()||task.session==null)return false;
+        OwnedWorkerCancellation.Snapshot stopped=task.cancellation.snapshot();
+        Integer sessionExit=task.session.observedExitCode();
+        return stopped.processBound&&stopped.exitObserved&&stopped.exitCode!=null&&stopped.exitCode.intValue()==70
+                &&stopped.forceAttempts==0&&sessionExit!=null&&sessionExit.intValue()==70;
+    }
+    private SdkExceptionFailure readSdkFailure(WarmTask task,RunHandle h,Request request,Process process,File run,
+            byte[] nativeRequest,boolean observed,Integer exit,boolean force)throws Exception{
+        if(!currentSdkFailureOwner(task,h,process))throw new IOException("failed SDK request is no longer the owned wait70");
+        File canonicalFiles=files.getCanonicalFile();
+        File sessionDirectory=new File(new File(canonicalFiles,"runs"),task.generation());
+        ArrayList<MobiMindPrivateFiles.Read> held=new ArrayList<>();
+        MobiMindPrivateFiles.Read session=readSdkInput(new File(sessionDirectory,"native-session-result.json"),OUTPUT_LIMIT,held);
+        MobiMindPrivateFiles.Read metadata=readSdkInput(new File(run,"prompt-evidence.json"),OUTPUT_LIMIT,held);
+        MobiMindPrivateFiles.Read formatted=readSdkInput(new File(run,"formatted-prompt.txt"),262144,held);
+        MobiMindPrivateFiles.Read ids=readSdkInput(new File(run,"formatted-input-ids.le32"),8192*4,held);
+        MobiMindPrivateFiles.Read raw=readSdkInput(new File(run,"raw-text.txt"),OUTPUT_LIMIT,held);
+        byte[] prompt=request.prompt.getBytes(StandardCharsets.UTF_8);
+        byte[] system=request.systemPrompt==null||request.systemPrompt.isEmpty()?null:request.systemPrompt.getBytes(StandardCharsets.UTF_8);
+        byte[] grammar=request.controllerGrammar==null?null:request.controllerGrammar.text.getBytes(StandardCharsets.UTF_8);
+        if(request.imageOrNull!=null)throw new IOException("text-only failed request required");
+        checkSdkOriginal(new File(run,"prompt.txt"),prompt,held);
+        checkSdkOriginal(new File(run,"system.txt"),system,held);
+        checkSdkOriginal(new File(run,"grammar.gbnf"),grammar,held);
+        if(grammar!=null&&!sha256(grammar).equals(request.controllerGrammar.sha256))throw new IOException("original grammar identity differs");
+        String modelPath=new File(new File(canonicalFiles,"model"),configuration.profile.fileName).getPath();
+        SdkExceptionFailure.Expected expected=new SdkExceptionFailure.Expected(configuration,task.generation(),task.taskId,h.runId,
+                task.session.workerPid(),task.session.requestsSent(),task.acceptedRequests,request.maxTokens,
+                modelPath,run.getPath(),prompt,system,grammar);
+        SdkExceptionFailure proof=SdkExceptionFailure.bind(expected,nativeRequest,session.bytes,metadata.bytes,
+                formatted.bytes,ids.bytes,raw.bytes,true,observed,exit,force);
+        for(MobiMindPrivateFiles.Read value:held)value.unchangedPath();
+        if(!currentSdkFailureOwner(task,h,process))throw new IOException("failed SDK owner changed during readback");
+        return proof;
+    }
+    private static MobiMindPrivateFiles.Read readSdkInput(File path,int maximum,List<MobiMindPrivateFiles.Read> held)throws Exception{
+        MobiMindPrivateFiles.Read value=MobiMindPrivateFiles.read(path,maximum,true);held.add(value);return value;
+    }
+    private static void checkSdkOriginal(File path,byte[] expected,List<MobiMindPrivateFiles.Read> held)throws Exception{
+        if(expected==null){if(MobiMindPrivateFiles.exists(path))throw new IOException("unexpected original "+path.getName());return;}
+        if(!Arrays.equals(expected,readSdkInput(path,TEXT_LIMIT,held).bytes))throw new IOException("original "+path.getName()+" changed");
+    }
+    private boolean sdkFailureCleanupBound(WarmTask task,Process process,byte[] nativeClose,boolean observed,Integer exit,boolean force,
+            JSONObject receipt){
+        WarmSdkFailure saved=task.failedSdk;
+        if(saved==null||saved.process!=process||task.session==null||warmActive.get()!=task||active.get()!=task.owner
+                ||PROCESS_ACTIVE.get()!=task.owner||task.owner.child.get()!=process||task.request.get()!=null)return false;
+        try{
+            File runs=new File(files.getCanonicalFile(),"runs"),run=new File(runs,saved.proof.requestId);
+            MobiMindPrivateFiles.Read nativeRequest=MobiMindPrivateFiles.read(new File(run,"native-result.json"),OUTPUT_LIMIT,true);
+            MobiMindPrivateFiles.Read appRequest=MobiMindPrivateFiles.read(new File(run,"app-receipt.json"),OUTPUT_LIMIT,true);
+            MobiMindPrivateFiles.Read session=MobiMindPrivateFiles.read(new File(new File(runs,task.generation()),"native-session-result.json"),OUTPUT_LIMIT,true);
+            boolean bound=Arrays.equals(session.bytes,nativeClose)&&saved.appReceiptHash.equals(sha256(appRequest.bytes))
+                    &&saved.proof.matches(configuration,task.generation(),task.taskId,task.session.workerPid(),
+                        task.session.requestsSent(),task.acceptedRequests,nativeRequest.bytes,session.bytes,observed,exit,force);
+            nativeRequest.unchangedPath();appRequest.unchangedPath();session.unchangedPath();
+            return bound;
+        }catch(Exception unavailable){put(receipt,"sdk_exception_failure_binding_error",unavailable.toString());return false;}
     }
 
     /** Cancellation cleanup is a separate proof; it never fabricates CLOSE or normal success. */
@@ -493,6 +610,7 @@ public final class LocalModelEngine implements AutoCloseable {
         boolean observed = false, complete = false, timedOut = false, forceSent = false;
         Process process = task==null?null:task.owner.child.get();
         WarmProcessSession.Reply warmReply=null;
+        SdkExceptionFailure failedSdkProof=null;
         try {
             privateDirectory(files.getCanonicalFile());
             privateDirectory(new File(files, "runs").getCanonicalFile());
@@ -601,11 +719,19 @@ public final class LocalModelEngine implements AutoCloseable {
             put(receipt, "grammar_constraint_enabled", r.controllerGrammar != null);
             put(receipt, "stdout_file", stdout.getPath()); put(receipt, "stderr_file", stderr.getPath());
             if (h.isCancellationRequested()) { status = "cancelled_before_start"; throw new IOException("cancel requested before start"); }
+            if(task!=null&&task.session==null){
+                if(task.generationScope!=null)throw new IOException("generation scope already prepared");
+                task.generationScope=new OwnedGenerationScope(files,runner,task.generation(),task.taskId,task.scopeToken);
+            }
             ProcessBuilder builder = new ProcessBuilder(args);
             builder.directory(run);
             if(task==null)builder.redirectOutput(stdout);
             builder.redirectError(stderr);
             Map<String, String> env = builder.environment();
+            if(task!=null){
+                if(task.generationScope==null)throw new IOException("generation scope unavailable before worker start");
+                task.generationScope.initialEnvironment(env);
+            }
             env.put("LD_LIBRARY_PATH", nativeDir.getPath() + ":/vendor/lib64");
             env.put("ADSP_LIBRARY_PATH", nativeDir.getPath() + ";/vendor/lib/rfsa/adsp;/system/lib/rfsa/adsp;/dsp");
             env.put("HEPTA_LOCAL_NATIVE_LIB_DIR", nativeDir.getPath());
@@ -727,7 +853,7 @@ public final class LocalModelEngine implements AutoCloseable {
             error = e.getClass().getSimpleName() + ": " + String.valueOf(e.getMessage());
             if(task!=null&&process!=null){
                 task.cancellation.attach(process,task.generation(),task.taskId);
-                task.owner.cancel();
+                task.owner.cancelForFailure();
                 OwnedWorkerCancellation.Exit stopped=task.cancellation.awaitCancellation();
                 observed=stopped.observed;exit=stopped.code;forceSent|=stopped.forceSent;
             }else if (process != null && process.isAlive()) {
@@ -745,9 +871,36 @@ public final class LocalModelEngine implements AutoCloseable {
         } finally {
             if(task!=null&&(h.isCancellationRequested()||task.ending.get())){complete=false;status="cancelled";}
             if(task!=null&&!complete&&task.session!=null){
-                task.owner.cancel();WarmProcessSession.Cleanup stopped=task.session.finish();
+                task.owner.cancelForFailure();WarmProcessSession.Cleanup stopped=task.session.finish();
                 observed=stopped.exitObserved;exit=stopped.exitCode;forceSent|=stopped.forceSent;
                 if(!observed)status="termination_unknown";
+            }
+            // exchange throws before its success-only receipt read. Read a failed request only after physical exit.
+            if(task!=null&&!complete&&observed&&process!=null&&task.session!=null){
+                try{
+                    File resultFile=new File(run,"native-result.json");
+                    if(MobiMindPrivateFiles.exists(resultFile)){
+                        MobiMindPrivateFiles.Read nativeRead=MobiMindPrivateFiles.read(resultFile,OUTPUT_LIMIT,true);
+                        nativeResult=new JSONObject(new String(nativeRead.bytes,StandardCharsets.UTF_8));
+                        put(receipt,"native_result_binding_valid",false);
+                        if(exit!=null&&exit.intValue()==70&&!forceSent&&!timedOut)
+                            failedSdkProof=readSdkFailure(task,h,r,process,run,nativeRead.bytes,observed,exit,forceSent);
+                        nativeRead.unchangedPath();
+                    }
+                }catch(Exception unavailable){failedSdkProof=null;put(receipt,"sdk_exception_failure_read_error",unavailable.toString());}
+            }
+            boolean callerCancellation=h.callerCancellationRequested();
+            if(failedSdkProof!=null){
+                complete=false;status=callerCancellation?"cancelled":"native_failed";
+                error="sdk_cpp_exception ("+failedSdkProof.kind+")";
+            }
+            put(receipt,"caller_cancellation_requested",callerCancellation);
+            put(receipt,"sdk_exception_failure_binding_valid",failedSdkProof!=null);
+            try{put(receipt,"sdk_exception_failure",failedSdkProof==null?JSONObject.NULL:failedSdkProof.audit());}
+            catch(Exception unavailable){
+                failedSdkProof=null;status=h.isCancellationRequested()?"cancelled":"engine_failed";
+                put(receipt,"sdk_exception_failure_binding_valid",false);put(receipt,"sdk_exception_failure",JSONObject.NULL);
+                put(receipt,"sdk_exception_failure_read_error",unavailable.toString());
             }
             try{
                 ActivityManager.MemoryInfo after=memoryInfo();
@@ -767,16 +920,22 @@ public final class LocalModelEngine implements AutoCloseable {
             put(receipt, "elapsed_ms", SystemClock.elapsedRealtime() - start);
             put(receipt, "native_receipt", nativeResult);
             put(receipt, "raw_text_file", new File(run, "raw-text.txt").getPath());
-            put(receipt, "raw_text_sha256_read", sha256(raw.getBytes(StandardCharsets.UTF_8)));
+            put(receipt, "raw_text_sha256_read", failedSdkProof==null?sha256(raw.getBytes(StandardCharsets.UTF_8)):failedSdkProof.rawHash);
             try {
                 File appReceipt=new File(run,"app-receipt.json");byte[] bytes=receipt.toString(2).getBytes(StandardCharsets.UTF_8);
                 if(task==null)writePrivate(appReceipt,bytes);else MobiMindPrivateFiles.writeNew(appReceipt,bytes);
+                if(failedSdkProof!=null){
+                    byte[] persisted=MobiMindPrivateFiles.read(appReceipt,OUTPUT_LIMIT,true).bytes;
+                    if(!Arrays.equals(bytes,persisted)||!currentSdkFailureOwner(task,h,process))
+                        throw new IOException("failed SDK app receipt/owner changed");
+                    task.failedSdk=new WarmSdkFailure(process,failedSdkProof,sha256(persisted));
+                }
             }
             catch (Exception persistError) {
                 put(receipt, "receipt_write_error", persistError.toString());
                 if(task!=null){
                     complete=false;status="receipt_failed";put(receipt,"request_committed",false);put(receipt,"inference_completed",false);
-                    task.owner.cancel();
+                    task.owner.cancelForFailure();
                     if(task.session!=null){WarmProcessSession.Cleanup stopped=task.session.finish();observed=stopped.exitObserved;exit=stopped.exitCode;forceSent|=stopped.forceSent;}
                     if(!observed&&process!=null)status="termination_unknown";
                     put(receipt,"status",status);put(receipt,"process_exit_observed",observed);
