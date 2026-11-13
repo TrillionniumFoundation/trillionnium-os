@@ -108,7 +108,7 @@ final class CsairCityPicker {
         final Map<String,JSONObject> nodes=new LinkedHashMap<String,JSONObject>();
         Index(JSONObject dom)throws Exception{
             String schema=string(dom,"schema");
-            need(("hepta.fixed-top-document-dom.v2".equals(schema)||"hepta.fixed-top-document-dom.v3".equals(schema)),"actual geometry-aware fixed DOM required");
+            need(("hepta.fixed-top-document-dom.v2".equals(schema)||"hepta.fixed-top-document-dom.v3".equals(schema)||"hepta.fixed-top-document-dom.v4".equals(schema)),"actual geometry-aware fixed DOM required");
             need(Boolean.FALSE.equals(dom.get("truncated"))&&dom.getJSONArray("truncation_reasons").length()==0,
                     "complete bounded DOM required");
             JSONArray rows=dom.getJSONArray("nodes");need(rows.length()>0&&rows.length()<=1024,"bounded DOM nodes");

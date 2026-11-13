@@ -154,6 +154,7 @@ public final class PhoneObservation {
     public final List<Node> nodes;
     public final String backgroundGeneration,backgroundBootstrapPackage;
     public final List<String> backgroundAllowedPackages;
+    private final String backgroundSelectionRaw;
     public final ObservationState state;
     public final ObservedWindowMetadata windowMetadata;
     final Rect windowBounds;
@@ -173,11 +174,30 @@ public final class PhoneObservation {
                      Rect bounds,File screenshot,String screenshotSha256,String treeSha256,
                      ObservationState state,ObservedWindowMetadata windowMetadata,boolean truncated,List<Node> nodes,
                      String backgroundGeneration,String backgroundBootstrapPackage,List<String> backgroundAllowedPackages,CollectionStats collectionStats) {
+        this(id,packageName,at,width,height,rotation,windowId,bounds,screenshot,screenshotSha256,treeSha256,
+                state,windowMetadata,truncated,nodes,backgroundGeneration,backgroundBootstrapPackage,backgroundAllowedPackages,
+                collectionStats,null,null);
+    }
+    PhoneObservation(String id,String packageName,long at,int width,int height,int rotation,int windowId,
+                     Rect bounds,File screenshot,String screenshotSha256,String treeSha256,
+                     ObservationState state,ObservedWindowMetadata windowMetadata,boolean truncated,List<Node> nodes,
+                     String backgroundGeneration,String backgroundBootstrapPackage,List<String> backgroundAllowedPackages,
+                     CollectionStats collectionStats,JSONObject actualSelection,String actualOwnerSha256) {
         if(collectionStats!=null&&(collectionStats.retained!=nodes.size()||collectionStats.truncated()!=truncated))
             throw new IllegalArgumentException("collection counters differ from actual observed nodes");
         this.collectionStats=collectionStats;
         this.backgroundGeneration=backgroundGeneration;this.backgroundBootstrapPackage=backgroundBootstrapPackage;
         this.backgroundAllowedPackages=Collections.unmodifiableList(new ArrayList<String>(backgroundAllowedPackages));
+        if(actualSelection==null){
+            if(actualOwnerSha256!=null)throw new IllegalArgumentException("owner without actual selection");
+            backgroundSelectionRaw=null;
+        }else{
+            if(backgroundGeneration==null||windowMetadata==null||windowMetadata.displayId==null
+                    ||windowMetadata.displayId.intValue()<=0||windowId<0)
+                throw new IllegalArgumentException("actual selection lacks its observed background window");
+            backgroundSelectionRaw=checkedSelection(actualSelection,actualOwnerSha256,
+                    backgroundBootstrapPackage,this.backgroundAllowedPackages);
+        }
         this.id=id;this.packageName=packageName;this.capturedElapsedMillis=at;
         this.width=width;this.height=height;this.rotation=rotation;this.windowId=windowId;
         this.windowBounds=new Rect(bounds);this.screenshot=screenshot;this.screenshotSha256=screenshotSha256;
@@ -215,12 +235,69 @@ public final class PhoneObservation {
     }
     JSONObject backgroundJson() throws JSONException {
         if(backgroundGeneration==null)return null;
-        return new JSONObject().put("mode","background").put("generation",backgroundGeneration)
-                .put("display_id",windowMetadata.displayId==null?JSONObject.NULL:windowMetadata.displayId)
-                .put("allowed_packages",new JSONArray(backgroundAllowedPackages))
-                .put("bootstrap_package",backgroundBootstrapPackage).put("bootstrap_source","owner_selected_initial_app")
-                .put("bootstrap_model_issued",false).put("home_allowed",false).put("main_display_fallback",false);
+        // Preserve the complete real Selection projection, including its original
+        // OWNER/UI derivation. Never replace it with a fixed provenance label.
+        JSONObject actual=backgroundSelectionEvidence();
+        if(actual==null)throw new IllegalStateException("actual background Selection provenance is missing");
+        return actual.put("generation",backgroundGeneration).put("display_id",windowMetadata.displayId);
     }
+    JSONObject backgroundSelectionEvidence()throws JSONException{
+        return backgroundSelectionRaw==null?null:new JSONObject(backgroundSelectionRaw);
+    }
+    private static String checkedSelection(JSONObject original,String owner,String initial,List<String> allowed){
+        try{
+            if(owner==null||!owner.matches("[0-9a-f]{64}"))throw new IllegalArgumentException("actual task OWNER SHA required");
+            JSONObject value=new JSONObject(original.toString());
+            java.util.Set<String> keys=new java.util.HashSet<String>(java.util.Arrays.asList(
+                    "mode","allowed_packages","bootstrap_package","bootstrap_source","bootstrap_model_issued","home_allowed","main_display_fallback"));
+            if(value.has("owner_task_selection"))keys.add("owner_task_selection");
+            exactKeys(value,keys);
+            require("background".equals(value.get("mode"))&&initial.equals(value.get("bootstrap_package"))
+                    &&new JSONArray(allowed).toString().equals(value.getJSONArray("allowed_packages").toString()),
+                    "observed Selection scope differs from its background lease");
+            for(String key:new String[]{"bootstrap_model_issued","home_allowed","main_display_fallback"})
+                require(Boolean.FALSE.equals(value.get(key)),"Selection scope flag differs: "+key);
+            if(!value.has("owner_task_selection")){
+                require("owner_selected_initial_app".equals(value.get("bootstrap_source")),
+                        "explicit UI Selection provenance differs");
+            }else{
+                require("owner_intent_within_explicit_ui_selection".equals(value.get("bootstrap_source")),
+                        "derived Selection provenance differs");
+                JSONObject proof=value.getJSONObject("owner_task_selection");
+                exactKeys(proof,new java.util.HashSet<String>(java.util.Arrays.asList("schema","owner_sha256","recognition",
+                        "original_ui_initial_package","original_ui_allowed_packages","effective_initial_package","effective_allowed_packages",
+                        "effective_scope_within_selected_apps","effective_scope_strictly_smaller","initial_app_changed",
+                        "package_from_model_or_screen","grants_tool_authority","changes_saved_preferences")));
+                require("hepta.owner-task-app-selection.v1".equals(proof.get("schema"))&&owner.equals(proof.get("owner_sha256"))
+                        &&initial.equals(proof.get("effective_initial_package"))
+                        &&new JSONArray(allowed).toString().equals(proof.getJSONArray("effective_allowed_packages").toString())
+                        &&allowed.size()==1,"actual OWNER/effective Selection differs");
+                Object recognition=proof.get("recognition");
+                require(recognition instanceof String&&((String)recognition).matches("[A-Za-z0-9_.]{1,96}"),
+                        "actual Selection recognition missing");
+                JSONArray choices=proof.getJSONArray("original_ui_allowed_packages");
+                require(choices.length()>0&&choices.length()<=6,"actual original UI scope budget");
+                java.util.Set<String> originals=new java.util.TreeSet<String>();
+                for(int i=0;i<choices.length();i++){
+                    Object choice=choices.get(i);require(choice instanceof String&&originals.add((String)choice),"original UI scope differs");
+                }
+                Object oldInitial=proof.get("original_ui_initial_package");
+                require(oldInitial instanceof String&&originals.contains(oldInitial)&&originals.containsAll(allowed)
+                        &&Boolean.TRUE.equals(proof.get("effective_scope_within_selected_apps"))
+                        &&Boolean.valueOf(allowed.size()<originals.size()).equals(proof.get("effective_scope_strictly_smaller"))
+                        &&Boolean.valueOf(!initial.equals(oldInitial)).equals(proof.get("initial_app_changed")),
+                        "Selection narrowing facts differ from the actual original UI scope");
+                for(String key:new String[]{"package_from_model_or_screen","grants_tool_authority","changes_saved_preferences"})
+                    require(Boolean.FALSE.equals(proof.get(key)),"Selection derivation flag differs: "+key);
+            }
+            return value.toString();
+        }catch(JSONException malformed){throw new IllegalArgumentException("malformed actual Selection projection",malformed);}
+    }
+    private static void exactKeys(JSONObject value,java.util.Set<String> expected){
+        java.util.Set<String> actual=new java.util.HashSet<String>();java.util.Iterator<String> keys=value.keys();
+        while(keys.hasNext())actual.add(keys.next());require(actual.equals(expected),"exact Selection projection fields required");
+    }
+    private static void require(boolean value,String reason){if(!value)throw new IllegalArgumentException(reason);}
     /** Node content is untrusted screen data, never a replacement instruction. */
     public JSONObject toJson() throws JSONException {
         JSONObject value=new JSONObject();value.put("observation_id",id);value.put("package",packageName);

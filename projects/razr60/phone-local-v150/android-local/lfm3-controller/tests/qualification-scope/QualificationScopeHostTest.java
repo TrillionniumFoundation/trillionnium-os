@@ -85,7 +85,7 @@ public final class QualificationScopeHostTest {
             check(latch.await(10,TimeUnit.SECONDS),"controller terminal timeout");
             write(dir.resolve("host-native-call-count.txt"),bytes(Integer.toString(model.calls)),0600);return result[0];
         }
-        public void close(){if(controller!=null)controller.close();if(service.ownedController!=null)service.ownedController.close();service.releaseTask(task);Handler.queued.clear();Handler.hold=false;Handler.holdPosts=false;}
+        public void close(){if(controller!=null)controller.close();if(service.ownedController!=null)service.ownedController.close();service.awaitWorkers();service.releaseTask(task);Handler.queued.clear();Handler.hold=false;Handler.holdPosts=false;}
     }
     static final class CountingModel implements LocalInference {
         final Env env;final String action,target;final Runnable mutate;int calls;
@@ -335,7 +335,10 @@ public final class QualificationScopeHostTest {
         }});
         test("owned_type_readback_exception_is_recorded_without_late_effect",()->{try(Env e=new Env(true)){
             e.bind(e.scopeSha);HeptaAccessibilityService.ActionOutcome[] reply=new HeptaAccessibilityService.ActionOutcome[1];Handler.hold=true;
-            e.service.enqueue(e.action("type",SETTINGS),()->false,value->reply[0]=value);e.service.node.onRefresh=()->{throw new IllegalStateException("node disappeared after accepted write");};Handler.drain();
+            // The worker now owns settling/readback before it queues the UI callback.
+            // Inject at the actual effect endpoint so the same readback failure still occurs.
+            e.service.effectHook=()->{e.service.node.onRefresh=()->{throw new IllegalStateException("node disappeared after accepted write");};};
+            e.service.enqueue(e.action("type",SETTINGS),()->false,value->reply[0]=value);Handler.drain();
             check(reply[0]!=null&&!reply[0].accepted&&reply[0].dispatched&&reply[0].qualificationScope.getBoolean("callback_lease_current")&&e.service.node.actions==1,"readback failure retained one known dispatch");
         }});
         test("disconnected_service_late_callback_does_not_throw_or_borrow",()->{try(Env e=new Env(true)){

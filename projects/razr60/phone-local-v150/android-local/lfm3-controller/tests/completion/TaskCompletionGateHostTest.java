@@ -86,6 +86,7 @@ public final class TaskCompletionGateHostTest {
         public void beginTask(String id){task=id;}
         public TaskCleanup endTask(){
             ends++;
+            if("close_cancelled".equals(mode))e.controller.stop();
             if("close_identity_changed".equals(mode))try{
                 QualificationScopeHostTest.write(Paths.get(e.pm.packages.get(P).applicationInfo.sourceDir),"changed installed bytes after completion".getBytes(StandardCharsets.UTF_8),0644);
             }catch(Exception changed){throw new IllegalStateException(changed);}
@@ -196,7 +197,7 @@ public final class TaskCompletionGateHostTest {
             boolean cleanupExpected=!"close_stop_final_verify_unknown_cleanup".equals(mode);
             LocalTaskController.TaskResult r=box[0];check(r!=null&&r.cleanupKnown==cleanupExpected&&r.modelReportedSuccess&&r.completionVerified==verified,"raw model claim and independently checked completion separated: "+mode+" / "+(r==null?"null":r.status+" "+r.summary));
             check(m.calls==expectedCalls&&m.ends==1,"bounded continuation and one retained task worker teardown");
-            String expectedStatus=!cleanupExpected?"blocked":mode.contains("stop_final_verify")?"cancelled":verified?("complete".equals(mode)?"controller_verified_done":"model_reported_done"):"cancel".equals(mode)?"cancelled":("close_invalid_receipt".equals(mode)||"readonly".equals(mode))?"failed":"partial";
+            String expectedStatus=!cleanupExpected?"blocked":mode.contains("stop_final_verify")?"cancelled":verified?("complete".equals(mode)?"controller_verified_done":"model_reported_done"):("cancel".equals(mode)||"close_cancelled".equals(mode))?"cancelled":("close_invalid_receipt".equals(mode)||"readonly".equals(mode))?"failed":"partial";
             check(expectedStatus.equals(r.status),"honest terminal status: "+mode+" / "+r.status);
             if(mode.contains("stop_final_verify"))check(m.finalVerifyStackObserved,"Stop occurred while real installed identity verifier was active");
             JSONObject result=FixedIntentIntegrationHostTest.json(r.evidenceDirectory.toPath().resolve("result.json"));check(result.getBoolean("model_reported_success")&&result.getBoolean("completion_verified")==verified,"terminal keeps original native success claim");
@@ -260,6 +261,7 @@ public final class TaskCompletionGateHostTest {
         test("actual_controller_cancel_after_rejection_stops_without_effect",()->controllerCase("cancel","读出当前页面的标题。",false,2));
         test("actual_controller_installed_identity_rechecked_after_close",()->controllerCase("close_identity_changed",OWNER,false,2));
         test("actual_controller_bad_native_close_receipt_cannot_complete",()->controllerCase("close_invalid_receipt",OWNER,false,2));
+        test("actual_controller_cancel_during_worker_teardown_cannot_complete",()->controllerCase("close_cancelled",OWNER,false,2));
         test("actual_controller_stop_during_final_identity_verify_cancels_workflow",()->controllerCase("close_stop_final_verify",OWNER,false,2));
         test("actual_controller_stop_during_final_identity_verify_cancels_model_done",()->controllerCase("detour_stop_final_verify",OWNER,false,5));
         test("actual_controller_stop_during_final_identity_verify_preserves_unknown_cleanup_block",()->controllerCase("close_stop_final_verify_unknown_cleanup",OWNER,false,2));

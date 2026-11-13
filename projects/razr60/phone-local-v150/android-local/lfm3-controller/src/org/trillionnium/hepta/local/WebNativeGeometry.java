@@ -2,6 +2,9 @@ package org.trillionnium.hepta.local;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.trillionnium.hepta.webprotocol.WebDomCanonical;
+import org.trillionnium.hepta.webprotocol.WebDomStability;
+import org.trillionnium.hepta.webprotocol.WebTaskPurpose;
 import java.security.MessageDigest;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -14,7 +17,7 @@ import java.util.Set;
  * stable native rectangle only; it never converts CSS geometry into a click.
  */
 final class WebNativeGeometry {
-    static final String SCHEMA="hepta.webview-geometry-bracket.v1";
+    static final String SCHEMA="hepta.webview-geometry-bracket.v2";
     private static final String[] PHASES={"before_js1","after_js1","before_js2","after_js2"};
     final int displayId,windowId;
     final int[] bounds;
@@ -31,11 +34,35 @@ final class WebNativeGeometry {
     /** Missing legacy geometry is not an action capability. Malformed new evidence is rejected. */
     static WebNativeGeometry read(JSONObject capture,JSONObject dom,int display,int window)throws Exception{
         if(!capture.has("capture_geometry"))return null;
+        WebTaskPurpose purpose=WebTaskPurpose.requireBinding(capture.getJSONObject("binding"));
+        String beforeRaw=string(capture,"before_dom_raw_utf8"),afterRaw=string(capture,"dom_raw_utf8");
+        // Reject duplicate keys and invalid Unicode before the shared semantic replay.
+        WebEvidenceJson.parseDom(beforeRaw);JSONObject after=WebEvidenceJson.parseDom(afterRaw);
+        need(WebDomCanonical.same(dom,after),"geometry DOM differs from the exact captured after-DOM");
+        WebDomStability.Result checked=WebDomStability.verify(beforeRaw,afterRaw,purpose.sitePolicyId,
+                capture.getJSONObject("dom_stability"));
+        return read(capture,dom,display,window,checked);
+    }
+    /** The checked result can only be created by the shared complete two-raw replay. */
+    static WebNativeGeometry read(JSONObject capture,JSONObject dom,int display,int window,
+                                  WebDomStability.Result checked)throws Exception{
+        if(!capture.has("capture_geometry"))return null;
+        need(checked!=null&&checked.beforeRawSha256.equals(string(capture,"before_dom_sha256"))
+                &&checked.afterRawSha256.equals(string(capture,"dom_sha256"))
+                &&WebDomCanonical.sha256(checked.evidence()).equals(string(capture,"dom_stability_sha256"))
+                &&checked.comparisonScope.equals(string(capture,"comparison_scope"))
+                &&Boolean.valueOf(checked.rawEqual).equals(capture.get("raw_dom_equal")),
+                "actual independent DOM stability replay is required");
         JSONObject geometry=capture.getJSONObject("capture_geometry");
         keys(geometry,"schema","samples","native_samples_equal","dom_equal_across_visual_callback",
-                "ui_thread_bracket","get_scale_is_deprecated_racy_observation","css_to_screen_mapping_verified");
-        need(SCHEMA.equals(string(geometry,"schema")),"native geometry schema");
-        for(String key:new String[]{"native_samples_equal","dom_equal_across_visual_callback","ui_thread_bracket",
+                "dom_comparison_scope","dom_stability_sha256","ui_thread_bracket",
+                "get_scale_is_deprecated_racy_observation","css_to_screen_mapping_verified");
+        need(SCHEMA.equals(string(geometry,"schema"))
+                &&Boolean.valueOf(checked.rawEqual).equals(geometry.get("dom_equal_across_visual_callback"))
+                &&checked.comparisonScope.equals(string(geometry,"dom_comparison_scope"))
+                &&string(capture,"dom_stability_sha256").equals(string(geometry,"dom_stability_sha256")),
+                "native geometry must carry the exact independently checked DOM scope");
+        for(String key:new String[]{"native_samples_equal","ui_thread_bracket",
                 "get_scale_is_deprecated_racy_observation"})need(Boolean.TRUE.equals(geometry.get(key)),"native geometry fact: "+key);
         need(Boolean.FALSE.equals(geometry.get("css_to_screen_mapping_verified")),"CSS mapping is not verified");
         need(display>0&&window>=0&&integer(capture,"display_id")==display
@@ -96,9 +123,8 @@ final class WebNativeGeometry {
             String current=stable.toString();
             if(firstStable==null)firstStable=current;else need(firstStable.equals(current),"native geometry changed across JS samples");
         }
-        need(("hepta.fixed-top-document-dom.v2".equals(string(dom,"schema"))
-                ||"hepta.fixed-top-document-dom.v3".equals(string(dom,"schema")))
-                &&Boolean.FALSE.equals(dom.get("geometry_semantics_verified")),"actual viewport observer schema");
+        need(WebDomStability.DOM_SCHEMA.equals(string(dom,"schema"))
+                &&Boolean.FALSE.equals(dom.get("geometry_semantics_verified")),"actual wire-v4 viewport observer schema");
         JSONObject vv=dom.getJSONObject("visual_viewport");
         keys(vv,"width","height","offset_left","offset_top","page_left","page_top","scale");
         need(number(vv.get("width"))>0&&number(vv.get("height"))>0

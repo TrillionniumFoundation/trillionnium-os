@@ -17,7 +17,25 @@ public final class RecoveryApplicationHostTest {
     private static Object field(Object object,String name)throws Exception{
         java.lang.reflect.Field f=object.getClass().getDeclaredField(name);f.setAccessible(true);return f.get(object);
     }
+    /** Host scheduling barrier only; Stop itself stays the exact nonblocking production method. */
+    private static void awaitCancellation(LocalProbeApplication app,Object lease)throws Exception{
+        LocalModelEngine.RunHandle owner=(LocalModelEngine.RunHandle)field(lease,"handle");
+        TaskCancellationQueue.Ticket ticket=(TaskCancellationQueue.Ticket)field(app.modelEngine(),"lastCancellation");
+        check(ticket!=null&&ticket.ownedBy(owner)&&ticket.taskId==null&&owner.runId.equals(ticket.runId),
+                "await only the exact captured recovery/external run");
+        check(ticket.awaitDrain(2000),"real cancellation worker did not drain within host bound");
+        check(!TaskCancellationQueue.processQueue().pending(),"drained cancellation still owns process admission");
+    }
+    private static void shutdownCancellationWorker()throws Exception{
+        java.util.concurrent.ExecutorService executor=(java.util.concurrent.ExecutorService)
+                field(TaskCancellationQueue.processQueue(),"executor");
+        executor.shutdown();
+        if(!executor.awaitTermination(2,java.util.concurrent.TimeUnit.SECONDS))
+            throw new AssertionError("host cancellation executor did not terminate");
+        if(TaskCancellationQueue.processQueue().pending())throw new AssertionError("host cancellation remained pending");
+    }
     private static void reset()throws Exception{
+        check(!TaskCancellationQueue.processQueue().pending(),"prior exact cancellation must drain before fixture reset");
         android.os.Looper.resetMain();android.os.Handler.reset();
         LocalTaskSession.initialBlocked=true;
         MobiMindModelEngine.initialBlocked=false;UiVenusModelEngine.initialBlocked=false;
@@ -181,11 +199,15 @@ public final class RecoveryApplicationHostTest {
             a.onTerminate();check(p.closed&&lease.isCancellationRequested(),"Application closes and cancels owned preparation");
             check(a.modelEngine().isBusy()&&p.running,"termination does not claim process cleanup or release slot");
             lease.releaseAfterTerminalPublication(true);p.running=false;
+            awaitCancellation(a,lease);
             check(!a.modelEngine().isBusy(),"explicit fixture no-start terminal can settle cancelled owned slot");
         });
         System.out.println("PASS permission_cases="+cases+" assertions="+assertions);
     }
     public static void main(String[] args)throws Exception{
+        try{runCases();}finally{shutdownCancellationWorker();}
+    }
+    private static void runCases()throws Exception{
         run("control_startup_barrier_can_be_borrowed",()->{
             LocalProbeApplication a=app();check(a.modelEngine().isBusy(),"startup slot held");check(a.canAcknowledgeControlRecovery(),"control confirmation allowed");
             LocalModelEngine.RecoveryReservation r=a.reserveControlRecovery();check(r.transactionId().matches("[0-9a-f]{32}"),"fresh UUID");
@@ -224,6 +246,7 @@ public final class RecoveryApplicationHostTest {
             install(a,r);a.modelEngine().cancelActive();r.close();
             same(field(a,"recoveryBarrier"),barrier,"cancel keeps exact barrier");check(a.modelEngine().isBusy(),"cancel keeps slot closed");
             check(a.taskSession().blocked&&a.taskSession().retainedCalls==1,"cancel marks session blocked");
+            awaitCancellation(a,r);
             LocalModelEngine.RecoveryReservation next=a.reserveControlRecovery();
             check(!next.transactionId().equals(r.transactionId()),"retry new UUID");check(!next.isCancellationRequested(),"retry fresh cancel flag");
             next.close();
@@ -234,6 +257,7 @@ public final class RecoveryApplicationHostTest {
             same(field(a,"recoveryBarrier"),barrier,"worker notification cannot clear reference");check(a.modelEngine().isBusy(),"worker rollback held");
             check(android.os.Handler.pending()==1,"main notification posted");check(a.taskSession().retainedCalls==0,"Session callback not on worker");
             android.os.Handler.drain();check(a.taskSession().blocked&&a.taskSession().retainedCalls==1,"main callback blocks");
+            awaitCancellation(a,r);
             check(a.canAcknowledgeControlRecovery(),"retry available after main handling");
         });
         run("successful_worker_close_clears_only_from_actual_receipt",()->{
@@ -245,12 +269,13 @@ public final class RecoveryApplicationHostTest {
         run("refused_main_post_reconciles_on_next_main_entry",()->{
             LocalProbeApplication a=app();Object barrier=field(a,"recoveryBarrier");LocalModelEngine.RecoveryReservation r=a.reserveControlRecovery();install(a,r);
             android.os.Handler.acceptPosts=false;worker(()->{a.modelEngine().cancelActive();r.close();});
-            same(field(a,"recoveryBarrier"),barrier,"failed post does not discard owner");check(a.canAcknowledgeControlRecovery(),"next main entry reconciles");
+            same(field(a,"recoveryBarrier"),barrier,"failed post does not discard owner");awaitCancellation(a,r);check(a.canAcknowledgeControlRecovery(),"next main entry reconciles");
             check(a.taskSession().retainedCalls==1,"retained callback eventually runs");check(a.taskSession().blocked,"session blocked");
         });
         run("stale_posted_notification_cannot_clear_new_attempt",()->{
             LocalProbeApplication a=app();LocalModelEngine.RecoveryReservation old=a.reserveControlRecovery();install(a,old);
             worker(()->{a.modelEngine().cancelActive();old.close();});
+            awaitCancellation(a,old);
             check(a.canAcknowledgeControlRecovery(),"main settles old close before post");
             LocalModelEngine.RecoveryReservation next=a.reserveControlRecovery();android.os.Handler.drain();
             same(field(a,"controlRecoveryAttempt"),next,"old notification ignored");check(!next.isCancellationRequested(),"new attempt remains owned");next.close();
@@ -261,11 +286,12 @@ public final class RecoveryApplicationHostTest {
             same(field(a,"recoveryBarrier"),barrier,"exception retains reference");check(a.modelEngine().isBusy(),"exception retains slot");
             check(a.taskSession().blocked,"callback blocked first");check(!a.canAcknowledgeControlRecovery(),"unknown callback refuses new borrow");
             rejects(()->a.reserveControlRecovery());
+            awaitCancellation(a,r);
         });
         run("retained_callback_reentry_does_not_reconcile_twice",()->{
             LocalProbeApplication a=app();LocalModelEngine.RecoveryReservation r=a.reserveControlRecovery();install(a,r);
             a.taskSession().duringRetained=()->check(!a.canAcknowledgeControlRecovery(),"reentrant eligibility sees current attempt");
-            a.modelEngine().cancelActive();r.close();check(a.taskSession().retainedCalls==1,"single callback");check(a.canAcknowledgeControlRecovery(),"retry after callback return");
+            a.modelEngine().cancelActive();r.close();check(a.taskSession().retainedCalls==1,"single callback");awaitCancellation(a,r);check(a.canAcknowledgeControlRecovery(),"retry after callback return");
         });
         run("install_exception_after_state_change_is_reblocked",()->{
             LocalProbeApplication a=app();Object barrier=field(a,"recoveryBarrier");LocalModelEngine.RecoveryReservation r=a.reserveControlRecovery();
@@ -284,7 +310,7 @@ public final class RecoveryApplicationHostTest {
         run("precommit_cancel_never_runs_install",()->{
             LocalProbeApplication a=app();LocalModelEngine.RecoveryReservation r=a.reserveControlRecovery();RecoveryJournalTransaction.Proof p=proof(10001,r.transactionId());
             a.modelEngine().cancelActive();final int[] installs={0};rejects(()->a.completeControlRecovery(r,p,()->installs[0]++));
-            check(installs[0]==0,"cancel prevents install");r.close();check(a.canAcknowledgeControlRecovery(),"fresh retry allowed");
+            check(installs[0]==0,"cancel prevents install");r.close();awaitCancellation(a,r);check(a.canAcknowledgeControlRecovery(),"fresh retry allowed");
         });
         run("diagnostic_change_during_install_prevents_commit",()->{
             LocalProbeApplication a=app();LocalModelEngine.RecoveryReservation r=a.reserveControlRecovery();RecoveryJournalTransaction.Proof p=proof(10001,r.transactionId());

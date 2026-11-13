@@ -1,0 +1,227 @@
+package org.trillionnium.hepta.local;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+/** Production session method bodies are inserted by the runner. Android and JSON are explicit host stubs. */
+public final class SessionJournalHost {
+    private static final List<String> passed=new ArrayList<String>();
+    private static void require(boolean value,String why){if(!value)throw new AssertionError(why);}
+    private static void await(CountDownLatch value)throws Exception{require(value.await(3,TimeUnit.SECONDS),"latch timeout");}
+    private static void pass(String value){passed.add(value);}
+    static final class Handler implements Executor {
+        final ConcurrentLinkedQueue<Runnable> posted=new ConcurrentLinkedQueue<Runnable>();
+        final ConcurrentLinkedQueue<Runnable> delayed=new ConcurrentLinkedQueue<Runnable>();
+        volatile boolean rejectDelivery;
+        public void execute(Runnable value){if(rejectDelivery)throw new RejectedExecutionException("main unavailable");posted.add(value);}
+        boolean postDelayed(Runnable value,long ignored){delayed.add(value);return true;}
+        void removeCallbacks(Runnable value){posted.remove(value);delayed.remove(value);}
+        void drain(){Runnable value;while((value=posted.poll())!=null)value.run();}
+        void fireDelayed(){Runnable value;while((value=delayed.poll())!=null)value.run();}
+    }
+    static final class Looper {
+        static final Object MAIN=new Object();static Object getMainLooper(){return MAIN;}static Object myLooper(){return MAIN;}
+    }
+    static final class QualificationScope {static void expected(String ignored){}}
+    static final class TaskAuthorization {
+        static void require(boolean value,String why){SessionJournalHost.require(value,why);}
+        void requireOwner(String ignored){}String summary(){return "owner";}
+    }
+    static final class BackgroundSession {static final class Selection {}}
+    static final class WebFlightSession {static void validateSelection(String owner,BackgroundSession.Selection selection){}}
+    static final class LocalModelEngine {boolean isBusy(){return false;}}
+    static final class LocalTaskController {
+        interface Listener {void onState(String value);void onFinished(TaskResult value);}
+        static final class TaskResult {boolean cleanupKnown;String taskId,status,summary,expectedScopeSha256,actualScopeSha256;}
+        volatile boolean running;final AtomicInteger starts=new AtomicInteger(),stops=new AtomicInteger();
+        boolean isRunning(){return running;}String currentTaskId(){return "0123456789abcdef0123456789abcdef";}
+        String currentActualScopeSha256(){return null;}
+        boolean start(String owner,String expected,TaskAuthorization authorization,BackgroundSession.Selection selection,Listener listener){
+            starts.incrementAndGet();running=true;return true;
+        }
+        void stop(){stops.incrementAndGet();running=false;}
+        synchronized boolean stopIfTask(String expected){if(!running||expected==null||!expected.equals(currentTaskId()))return false;stop();return true;}
+    }
+    static final class HeptaAccessibilityService {
+        static volatile HeptaAccessibilityService live;
+        final LocalTaskController task=new LocalTaskController();
+        static HeptaAccessibilityService connected(){return live;}
+        LocalTaskController taskController(LocalModelEngine ignored){return task;}
+        static String sha(byte[] bytes){return Integer.toHexString(java.util.Arrays.hashCode(bytes));}
+        static String message(Exception error){return error==null?"unknown":error.getClass().getSimpleName();}
+    }
+    static final class Session implements AutoCloseable {
+        final Handler main=new Handler();final ExecutorService io=Executors.newSingleThreadExecutor();
+        final SessionJournalQueue journalQueue=new SessionJournalQueue(io,main);
+        final LocalModelEngine engine=new LocalModelEngine();
+        final List<String> written=Collections.synchronizedList(new ArrayList<String>());
+        LocalTaskController controller;HeptaAccessibilityService controllerService;Runnable pendingStart;
+        String state="idle",log="",taskId,origin,instructionSha,nonceSha,expectedScopeSha,actualScopeSha;
+        TaskAuthorization taskAuthorization;BackgroundSession.Selection backgroundSelection;LocalTaskController.TaskResult lastResult;
+        volatile boolean pending,blocked,recovering;long generation,recoveryIgnoredGeneration=-1;
+        volatile boolean blockWrites,failWrites,unreleased,cachedLeaseUnreleased;
+        final CountDownLatch writeEntered=new CountDownLatch(1),releaseWrite=new CountDownLatch(1);
+        int publications;
+        Session(){HeptaAccessibilityService.live=new HeptaAccessibilityService();}
+        boolean isRunning(){return pending||(controller!=null&&controller.isRunning());}
+        boolean isBlocked(){return blocked||journalQueue.pending()||journalQueue.failed()||cachedLeaseUnreleased;}
+        void publish(){publications++;}
+        byte[] snapshotSession(String status,boolean cleanupKnown){
+            return (status+"|"+generation+"|"+state).getBytes(StandardCharsets.UTF_8);
+        }
+        static final class LeaseState {final boolean active;LeaseState(boolean active){this.active=active;}boolean unreleased(){return active;}}
+        LeaseState readLeaseState(){cachedLeaseUnreleased=unreleased;return new LeaseState(unreleased);}
+        void writeSessionSnapshot(byte[] value)throws Exception {writeSessionSnapshot(value,readLeaseState());}
+        void writeSessionSnapshot(byte[] value,LeaseState ignored)throws Exception {
+            writeEntered.countDown();
+            if(blockWrites)await(releaseWrite);
+            if(failWrites)throw new IOException("injected journal failure");
+            written.add(new String(value,StandardCharsets.UTF_8));
+        }
+        void flushIo()throws Exception {CountDownLatch done=new CountDownLatch(1);io.execute(new Runnable(){public void run(){done.countDown();}});await(done);}
+        public void close(){
+            releaseWrite.countDown();io.shutdown();
+            try{require(io.awaitTermination(3,TimeUnit.SECONDS),"IO still running");}
+            catch(InterruptedException interrupted){Thread.currentThread().interrupt();throw new AssertionError(interrupted);}
+            main.drain();
+        }
+        // Actual source bodies, not hand-written facsimiles of scheduling/cancellation behavior.
+{{SESSION_METHODS}}
+    }
+    public static void main(String[] ignored)throws Exception {
+        try(Session s=new Session()){
+            s.blockWrites=true;
+            require(s.schedule("owner","test",null,null,new TaskAuthorization(),null,350),"schedule accepted");await(s.writeEntered);
+            require(s.controller.starts.get()==0&&s.main.delayed.isEmpty(),"start before real durable write");
+            s.releaseWrite.countDown();s.flushIo();require(s.journalQueue.pending(),"writer exit alone released UI acknowledgement");
+            s.main.drain();require(s.controller.starts.get()==0&&s.main.delayed.size()==1,"reservation did not precede delayed start");
+            s.main.fireDelayed();require(s.controller.starts.get()==1,"confirmed reservation failed to start");
+            s.flushIo();s.main.drain();pass("actual_schedule_waits_for_real_write_and_main_acknowledgement");
+        }
+        try(Session s=new Session()){
+            s.blockWrites=true;s.schedule("owner","test",null,null,new TaskAuthorization(),null,350);await(s.writeEntered);
+            long before=System.nanoTime();s.stop();long elapsed=System.nanoTime()-before;
+            require(elapsed<TimeUnit.MILLISECONDS.toNanos(200),"Stop waited for writer");
+            require(!s.pending&&s.journalQueue.pending()&&s.controller.starts.get()==0,"Stop did not retire pending epoch");
+            s.releaseWrite.countDown();s.flushIo();s.main.drain();s.main.fireDelayed();
+            require(s.controller.starts.get()==0&&s.written.size()==2,"late reservation started retired task");
+            require(s.written.get(0).startsWith("pending|")&&s.written.get(1).startsWith("cancelled_before_start|"),"write order changed");
+            pass("actual_stop_returns_while_reservation_write_blocks_and_late_start_is_revoked");
+        }
+        try(Session s=new Session()){
+            s.blockWrites=true;s.controller=new LocalTaskController();s.controller.running=true;
+            long before=System.nanoTime();s.receiveState("running-state");
+            require(System.nanoTime()-before<TimeUnit.MILLISECONDS.toNanos(200),"UI state waited for IO");await(s.writeEntered);
+            s.stop();require(s.controller.stops.get()==1,"ordinary running Stop not forwarded");
+            require(s.journalQueue.pending(),"blocked progress write lost barrier");
+            pass("actual_receive_state_and_running_stop_do_not_wait_for_journal");
+        }
+        try(Session s=new Session()){
+            s.failWrites=true;s.schedule("owner","test",null,null,new TaskAuthorization(),null,350);s.flushIo();s.main.drain();s.main.fireDelayed();
+            require(s.blocked&&s.journalQueue.failed()&&s.controller.starts.get()==0,"failed durable reservation granted start");
+            require(!s.schedule("another","test",null,null,new TaskAuthorization(),null,350),"failed session admitted new task");
+            pass("actual_write_failure_blocks_start_and_new_admission");
+        }
+        try(Session s=new Session()){
+            s.blockWrites=true;s.schedule("owner","test",null,null,new TaskAuthorization(),null,350);await(s.writeEntered);
+            HeptaAccessibilityService.live=new HeptaAccessibilityService();s.releaseWrite.countDown();s.flushIo();s.main.drain();s.flushIo();s.main.drain();s.main.fireDelayed();
+            require(s.controller.starts.get()==0&&!s.pending,"service replacement received old pending start");
+            pass("actual_pending_start_rechecks_original_service");
+        }
+        try(Session s=new Session()){
+            s.blockWrites=true;s.persist("completed",true);await(s.writeEntered);
+            require(!s.schedule("owner","test",null,null,new TaskAuthorization(),null,350),"terminal write did not block new task");
+            pass("actual_terminal_record_remains_an_admission_barrier");
+        }
+        {
+            Handler main=new Handler();SessionJournalQueue q=new SessionJournalQueue(new Executor(){public void execute(Runnable r){throw new IllegalStateException("unknown before enqueue");}},main);
+            AtomicInteger writes=new AtomicInteger(),callbacks=new AtomicInteger();
+            require(!q.submit(new SessionJournalQueue.Write(){public void run(){writes.incrementAndGet();}},new SessionJournalQueue.Completion(){public void finished(SessionJournalQueue.Result r){callbacks.incrementAndGet();}}),"unknown submission reported accepted");
+            main.drain();require(q.failed()&&q.pending()&&writes.get()==0&&callbacks.get()==0,"unknown submission invented drain");
+            boolean refused=false;try{q.acknowledgedAfterVerifiedRecovery();}catch(IllegalStateException expected){refused=true;}
+            require(refused,"pending unknown barrier cleared");pass("unknown_unstarted_submission_retains_barrier_without_fake_callback");
+        }
+        {
+            Handler main=new Handler();ExecutorService real=Executors.newSingleThreadExecutor();CountDownLatch entered=new CountDownLatch(1),release=new CountDownLatch(1);
+            SessionJournalQueue q=new SessionJournalQueue(new Executor(){public void execute(Runnable r){real.execute(r);throw new IllegalStateException("unknown after enqueue");}},main);
+            AtomicInteger calls=new AtomicInteger();
+            require(!q.submit(new SessionJournalQueue.Write(){public void run()throws Exception{entered.countDown();await(release);}},new SessionJournalQueue.Completion(){public void finished(SessionJournalQueue.Result r){require(!r.success&&r.writeInvoked,"unknown enqueue granted permission");calls.incrementAndGet();}}),"uncertain submission accepted");
+            await(entered);require(q.pending()&&calls.get()==0,"blocked writer falsely drained");release.countDown();real.shutdown();require(real.awaitTermination(3,TimeUnit.SECONDS),"writer did not exit");main.drain();
+            require(q.failed()&&!q.pending()&&calls.get()==1,"real drain or single callback lost");pass("unknown_enqueued_write_waits_for_real_exit_and_never_grants_start");
+        }
+        {
+            Handler main=new Handler();SessionJournalQueue q=new SessionJournalQueue(new Executor(){public void execute(Runnable r){throw new RejectedExecutionException("definite rejection");}},main);
+            AtomicInteger writes=new AtomicInteger(),callbacks=new AtomicInteger();
+            q.submit(new SessionJournalQueue.Write(){public void run(){writes.incrementAndGet();}},new SessionJournalQueue.Completion(){public void finished(SessionJournalQueue.Result r){require(!r.success&&!r.writeInvoked,"rejection claimed a write");callbacks.incrementAndGet();}});
+            require(q.pending(),"rejection skipped UI acknowledgement");main.drain();
+            require(q.failed()&&!q.pending()&&writes.get()==0&&callbacks.get()==1,"rejection result incorrect");pass("definite_rejection_never_starts_writer_and_preserves_failure");
+        }
+        {
+            ExecutorService real=Executors.newSingleThreadExecutor();SessionJournalQueue q=new SessionJournalQueue(real,new Executor(){public void execute(Runnable r){throw new RejectedExecutionException("main unavailable");}});
+            q.submit(new SessionJournalQueue.Write(){public void run(){}},new SessionJournalQueue.Completion(){public void finished(SessionJournalQueue.Result r){throw new AssertionError("unexpected callback");}});
+            real.shutdown();require(real.awaitTermination(3,TimeUnit.SECONDS),"writer did not exit");
+            require(q.failed()&&q.pending(),"lost main acknowledgement exposed idle state");pass("lost_main_acknowledgement_retains_barrier");
+        }
+        try(Session s=new Session()){
+            s.blockWrites=true;s.state="first";s.persist("running",true);await(s.writeEntered);s.state="second";s.persist("cancelled",true);
+            s.releaseWrite.countDown();s.flushIo();s.main.drain();
+            require(s.written.size()==2&&s.written.get(0).endsWith("|first")&&s.written.get(1).endsWith("|second"),"queued write borrowed later state");
+            pass("actual_persist_captures_snapshot_before_serial_write");
+        }
+        try(Session s=new Session()){
+            s.controller=new LocalTaskController();s.controller.running=true;s.failWrites=true;
+            s.receiveState("running");s.flushIo();
+            require(s.blocked&&s.controller.stops.get()==1&&s.journalQueue.failed(),"write failure waited for UI to stop original task");
+            require(!s.main.posted.isEmpty(),"test did not withhold real completion");
+            pass("actual_write_failure_hook_stops_captured_task_before_ui_completion");
+        }
+        try(Session s=new Session()){
+            s.controller=new LocalTaskController();s.controller.running=true;s.main.rejectDelivery=true;
+            s.receiveState("running");s.flushIo();
+            require(s.blocked&&s.controller.stops.get()==1&&s.journalQueue.pending(),"lost UI ack did not stop captured running task");
+            pass("actual_lost_ui_ack_hook_stops_running_task_and_retains_barrier");
+        }
+        try(Session s=new Session()){
+            s.controller=new LocalTaskController();s.controller.running=true;LocalTaskController old=s.controller;
+            s.blockWrites=true;s.failWrites=true;s.receiveState("old-state");await(s.writeEntered);
+            s.controller=new LocalTaskController();s.controller.running=true;
+            s.releaseWrite.countDown();s.flushIo();
+            require(old.stops.get()==1&&s.controller.stops.get()==0,"worker failure borrowed replacement controller");
+            s.generation++;long replacementEpoch=s.generation;s.main.drain();
+            require(s.controller.stops.get()==0&&s.generation==replacementEpoch,"late UI failure borrowed replacement task");
+            pass("actual_worker_and_late_ui_failure_never_cancel_replacement_controller");
+        }
+        try(Session s=new Session()){
+            s.unreleased=true;s.cachedLeaseUnreleased=false;
+            require(s.schedule("owner","test",null,null,new TaskAuthorization(),null,350),"test did not enter from stale display cache");
+            s.flushIo();s.main.drain();s.main.fireDelayed();
+            require(s.blocked&&s.cachedLeaseUnreleased&&s.written.isEmpty()&&s.controller.starts.get()==0,"UI lease cache granted real task authority");
+            pass("actual_reservation_worker_rechecks_lease_after_stale_ui_cache");
+        }
+        {
+            Handler main=new Handler();ExecutorService real=Executors.newSingleThreadExecutor();SessionJournalQueue q=new SessionJournalQueue(real,main);
+            CountDownLatch entered=new CountDownLatch(1),release=new CountDownLatch(1);AtomicInteger writes=new AtomicInteger(),callbacks=new AtomicInteger(),failures=new AtomicInteger();
+            SessionJournalQueue.Write write=new SessionJournalQueue.Write(){public void run()throws Exception{entered.countDown();await(release);writes.incrementAndGet();}};
+            SessionJournalQueue.Completion complete=new SessionJournalQueue.Completion(){public void finished(SessionJournalQueue.Result r){callbacks.incrementAndGet();}};
+            for(int i=0;i<SessionJournalQueue.MAX_OUTSTANDING;i++)require(q.submit(write,complete),"premature capacity rejection");
+            await(entered);
+            require(!q.submit(write,complete,new SessionJournalQueue.Failure(){public void failed(Exception error){failures.incrementAndGet();}}),"capacity overflow accepted");
+            require(q.failed()&&q.pending()&&failures.get()==1,"saturation did not retain old work and fail captured owner");
+            release.countDown();real.shutdown();require(real.awaitTermination(3,TimeUnit.SECONDS),"writers not drained");main.drain();
+            require(!q.pending()&&writes.get()==SessionJournalQueue.MAX_OUTSTANDING&&callbacks.get()==SessionJournalQueue.MAX_OUTSTANDING,"old records dropped or duplicated after saturation");
+            pass("bounded_queue_saturation_preserves_every_admitted_record_and_stops_owner");
+        }
+        System.out.println("{\"schema\":\"hepta.session-journal-host.v1\",\"all_pass\":true,\"cases\":"+passed.size()+",\"android_test\":false,\"physical_fsync_stall_test\":false,\"phone_operations\":0,\"passed\":[\""+String.join("\",\"",passed)+"\"]}");
+    }
+}

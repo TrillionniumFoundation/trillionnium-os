@@ -68,7 +68,7 @@ public final class BackgroundSessionHostTest {
     static final class Env implements AutoCloseable {
         final Path directory;final Context context;final BackgroundSession session;
         Env()throws Exception{this(null);}
-        Env(String extra)throws Exception{directory=Files.createTempDirectory("hepta-background-client-");context=new Context(directory.toFile());Set<String> allowed=new TreeSet<String>(Arrays.asList(PKG,OTHER));if(extra!=null)allowed.add(extra);session=new BackgroundSession(context,TASK,"写备忘录",new BackgroundSession.Selection(PKG,allowed),new QualificationScopeConfig.FilesRoot(context));}
+        Env(String extra)throws Exception{directory=Files.createTempDirectory("hepta-background-client-").toRealPath();context=new Context(directory.toFile());Set<String> allowed=new TreeSet<String>(Arrays.asList(PKG,OTHER));if(extra!=null)allowed.add(extra);session=new BackgroundSession(context,TASK,"写备忘录",new BackgroundSession.Selection(PKG,allowed),new QualificationScopeConfig.FilesRoot(context));}
         void active()throws Exception{context.displays.displays.put(7,new Display(7,session.displayName));
             JSONObject receipt=decode(response(frame(request(session.generation,"state").toString().getBytes(StandardCharsets.UTF_8)),"ACTIVE",7,true,false));
             invoke(session,"accept",new Class<?>[]{JSONObject.class,boolean.class},receipt,true);
@@ -139,7 +139,7 @@ public final class BackgroundSessionHostTest {
         test("exchange_connects_then_configures_and_authenticates_before_bytes",()->{
             LocalSocket.responder=req->response(req,"ACTIVE",7,true,false);
             exchange(request(UUID.randomUUID().toString(),"state"));
-            check(LocalSocket.events.equals(Arrays.asList("connect","timeout","peer","output","input","close")),"socket lifecycle or UID-before-bytes ordering changed");
+            check(LocalSocket.events.equals(Arrays.asList("connect","timeout","peer","output","timeout","input","close")),"socket lifecycle, UID-before-bytes or pre-write timeout ordering changed");
         });
         test("absent_socket_is_typed_before_timeout_or_request",()->{
             LocalSocket.missing=true;
@@ -226,7 +226,7 @@ public final class BackgroundSessionHostTest {
             };
             ControllerFinalizationFixture controller=new ControllerFinalizationFixture(model);
             controller.setScopeCheck(()->{throw new IllegalStateException("scope changed during model teardown");});
-            if(stop)controller.stop();
+            if(stop){controller.stop();controller.awaitCancellation();}
             ControllerFinalizationFixture.Outcome result=controller.finish("blocked","background display release unknown",false,false,true);
             check("blocked".equals(result.status)&&!result.cleanupKnown&&result.blocked&&!result.modelSuccess,
                     "late scope refusal or Stop erased unresolved cleanup status");

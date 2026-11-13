@@ -141,7 +141,7 @@ final class CsairFlightForm {
         Index(JSONObject dom)throws Exception{
             String schema=text(dom,"schema");
             need("hepta.fixed-top-document-dom.v1".equals(schema)||"hepta.fixed-top-document-dom.v2".equals(schema)
-                    ||"hepta.fixed-top-document-dom.v3".equals(schema),
+                    ||"hepta.fixed-top-document-dom.v3".equals(schema)||"hepta.fixed-top-document-dom.v4".equals(schema),
                     "actual fixed observer DOM schema required");
             need(Boolean.FALSE.equals(dom.get("truncated"))&&dom.getJSONArray("truncation_reasons").length()==0,
                     "complete bounded DOM required");

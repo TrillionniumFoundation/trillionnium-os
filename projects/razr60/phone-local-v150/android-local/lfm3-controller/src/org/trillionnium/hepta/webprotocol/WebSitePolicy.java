@@ -15,18 +15,21 @@ import java.util.regex.Pattern;
  * proof are separate and cannot be obtained by matching a numeric URL.
  */
 public final class WebSitePolicy {
-    public static final String SCHEMA="hepta.web-site-policy.v1";
-    public static final String ID="mi_cn_ax3000t_read_v1";
+    public static final String SCHEMA="hepta.web-site-policy.v2";
+    public static final String ID="mi_cn_ax3000t_read_v2";
     public static final String ORIGIN="https://www.mi.com";
     public static final String INITIAL_URL=ORIGIN+"/shop/search?keyword=AX3000T";
-    private static final Pattern DETAIL_QUERY=Pattern.compile("(?:cfrom=search&)?product_id=[1-9][0-9]{0,19}");
+    private static final Pattern DETAIL_QUERY=Pattern.compile("product_id=([1-9][0-9]{0,19})&cfrom=search");
     public enum Route { INITIAL_PUBLIC_SEARCH, PUBLIC_DETAIL_CANDIDATE, DENIED }
     public final String id=ID,goalKind=WebShoppingGoal.KIND,initialUrl=INITIAL_URL,origin=ORIGIN,sha256;
     private final String immutableEvidence;
     private WebSitePolicy()throws Exception {
         JSONObject value=new JSONObject().put("schema",SCHEMA).put("site_policy_id",ID)
                 .put("goal_kind",WebShoppingGoal.KIND).put("origin",ORIGIN).put("initial_url",INITIAL_URL)
-                .put("route_policy","exact_search_or_numeric_public_detail_v1")
+                .put("route_policy","actual_search_card_observed_shop_buy_v2")
+                .put("controlled_blank_requires_exact_one_shot_armed_link",true)
+                .put("new_visible_window_or_external_navigation_allowed",false)
+                .put("auxiliary_network_blocked_url_interceptor_allowed",true)
                 .put("main_frame_only",true).put("regional_redirect_allowed",false)
                 .put("external_app_launch_allowed",false).put("model_supplied_url_allowed",false)
                 .put("model_supplied_javascript_allowed",false)
@@ -56,7 +59,7 @@ public final class WebSitePolicy {
                     ||uri.getRawFragment()!=null)return Route.DENIED;
             if(INITIAL_URL.equals(raw))return Route.INITIAL_PUBLIC_SEARCH;
             String query=uri.getRawQuery();
-            if("/shop/buy/detail".equals(uri.getRawPath())&&query!=null&&DETAIL_QUERY.matcher(query).matches())
+            if("/shop/buy".equals(uri.getRawPath())&&query!=null&&DETAIL_QUERY.matcher(query).matches())
                 return Route.PUBLIC_DETAIL_CANDIDATE;
         }catch(URISyntaxException invalid){return Route.DENIED;}
         return Route.DENIED;
@@ -65,7 +68,7 @@ public final class WebSitePolicy {
     public String observedProductLink(String committed,String hrefRaw,String hrefResolved,String target) {
         if(classify(committed)!=Route.INITIAL_PUBLIC_SEARCH||hrefRaw==null||hrefResolved==null
                 ||hrefRaw.length()==0||hrefRaw.length()>4096
-                ||!(target==null||target.length()==0||"_self".equals(target)))return null;
+                ||!(target==null||target.length()==0||"_self".equals(target)||"_blank".equals(target)))return null;
         try{
             URI raw=new URI(hrefRaw);String resolved=new URI(committed).resolve(raw).toString();
             if(!resolved.equals(hrefResolved)||classify(resolved)!=Route.PUBLIC_DETAIL_CANDIDATE)return null;
@@ -74,7 +77,7 @@ public final class WebSitePolicy {
     }
     public String candidateProductId(String raw) {
         if(classify(raw)!=Route.PUBLIC_DETAIL_CANDIDATE)return null;
-        try{String q=new URI(raw).getRawQuery();return q.substring(q.indexOf("product_id=")+"product_id=".length());}
+        try{java.util.regex.Matcher m=DETAIL_QUERY.matcher(new URI(raw).getRawQuery());return m.matches()?m.group(1):null;}
         catch(URISyntaxException invalid){return null;}
     }
 }

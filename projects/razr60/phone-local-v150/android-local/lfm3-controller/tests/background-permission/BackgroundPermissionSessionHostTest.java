@@ -16,6 +16,25 @@ public final class BackgroundPermissionSessionHostTest {
     static void check(boolean value,String message){if(!value)throw new AssertionError(message);}
     static void test(String name,Case body)throws Exception{body.run();passed.add(name);System.out.println("PASS "+name);}
     static void rejects(Case body)throws Exception{try{body.run();}catch(Exception expected){return;}throw new AssertionError("must refuse");}
+    static Object field(Object object,String name)throws Exception{
+        java.lang.reflect.Field value=object.getClass().getDeclaredField(name);value.setAccessible(true);return value.get(object);
+    }
+    /** Test teardown waits for the exact captured real queue work before resetting fixture state. */
+    static void awaitCancellation(LocalModelEngine model,Object captured)throws Exception{
+        TaskCancellationQueue.Ticket ticket=(TaskCancellationQueue.Ticket)field(model,"lastCancellation");
+        if(ticket!=null){
+            check(captured instanceof LocalModelEngine.RunHandle&&ticket.ownedBy(captured)
+                    &&ticket.taskId==null&&((LocalModelEngine.RunHandle)captured).runId.equals(ticket.runId),
+                    "only the exact captured external run may be awaited");
+            check(ticket.awaitDrain(2000),"real cancellation worker did not drain within host bound");
+        }
+        check(!TaskCancellationQueue.processQueue().pending(),"real cancellation worker still owns admission");
+    }
+    static void shutdownCancellationWorker()throws Exception{
+        ExecutorService executor=(ExecutorService)field(TaskCancellationQueue.processQueue(),"executor");
+        executor.shutdown();check(executor.awaitTermination(2,TimeUnit.SECONDS),"host cancellation executor did not terminate");
+        check(!TaskCancellationQueue.processQueue().pending(),"host cancellation remained pending");
+    }
     static final class Child extends Process {
         final CountDownLatch terminal=new CountDownLatch(1);final AtomicLong clock;final boolean delayed;
         volatile boolean alive=true;int destroys;final byte[] stdout;
@@ -35,7 +54,7 @@ public final class BackgroundPermissionSessionHostTest {
         final Path root;final Context context;final LocalModelEngine model;final AtomicLong clock=new AtomicLong(1000);final AtomicInteger launches=new AtomicInteger();
         ExecutorService executor;BackgroundPermissionSession session;Child child;boolean delayed,failResultFsync,failResultDirectory;byte[] stdout="0\n".getBytes(StandardCharsets.US_ASCII);
         Env()throws Exception{LocalModelEngine.fixtureReset();LocalProbeApplication.permission=null;Os.failFsyncPath=null;android.os.Process.uid=10123;
-            root=Files.createTempDirectory("hepta-permission-session-");context=new Context(root.toFile());model=new LocalModelEngine(context);}
+            root=Files.createTempDirectory("hepta-permission-session-").toRealPath();context=new Context(root.toFile());model=new LocalModelEngine(context);}
         void make(){executor=Executors.newSingleThreadExecutor();session=new BackgroundPermissionSession(context,model,()->{launches.incrementAndGet();child=new Child(clock,delayed,stdout);if(failResultFsync||failResultDirectory){File directory=root.resolve("background-permission-runs").toFile().listFiles()[0];Os.failFsyncPath=failResultFsync?new File(directory,"result.json").getPath():directory.getPath();}return child;},clock::get,executor);LocalProbeApplication.permission=session;}
         void await(boolean blocked)throws Exception{long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(8);while(System.nanoTime()<end){if(blocked?session.isBlocked():!session.isRunning())return;Thread.sleep(5);}throw new AssertionError("session did not reach expected terminal");}
         void awaitExecution(boolean blocked)throws Exception{
@@ -45,11 +64,20 @@ public final class BackgroundPermissionSessionHostTest {
         }
         Map<String,Object> marker()throws Exception{return MobiMindContract.jsonObject(Files.readAllBytes(root.resolve("background-permission-session.json")));}
         void write(String name,byte[] value)throws Exception{MobiMindPrivateFiles.writeNew(root.resolve(name).toFile(),value);}
-        public void close(){if(child!=null)child.finish();if(session!=null)session.close();model.close();LocalProbeApplication.permission=null;LocalModelEngine.fixtureReset();Os.failFsyncPath=null;android.os.Process.uid=10123;}
+        public void close(){
+            if(child!=null)child.finish();if(session!=null)session.close();
+            try{Object captured=((AtomicReference<?>)field(model,"active")).get();model.close();awaitCancellation(model,captured);}
+            catch(InterruptedException failure){Thread.currentThread().interrupt();throw new AssertionError("host cancellation wait interrupted",failure);}
+            catch(Exception failure){throw new AssertionError("host cancellation teardown failed",failure);}
+            LocalProbeApplication.permission=null;LocalModelEngine.fixtureReset();Os.failFsyncPath=null;android.os.Process.uid=10123;
+        }
     }
     static Map<String,Object> pending(){Map<String,Object> value=new BackgroundPermissionPreparation.Request("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","org.trillionnium.hepta.local",10123,10123,123,-1).evidence(1000);value.put("phase","pending");value.put("status","pending");value.put("process_started",false);value.put("process_exit_observed",false);value.put("cleanup_known",false);return value;}
     static byte[] bytes(Map<String,Object> value){return new org.json.JSONObject(value).toString().getBytes(StandardCharsets.UTF_8);}
     public static void main(String[] args)throws Exception{
+        try{runCases(args);}finally{shutdownCancellationWorker();}
+    }
+    private static void runCases(String[] args)throws Exception{
         test("actual_session_reserves_shared_slot_and_durable_terminal_before_release",()->{try(Env e=new Env()){
             e.make();e.session.startFromOwnerButton();e.await(false);Map<String,Object> m=e.marker();
             check(e.launches.get()==1&&!e.model.isBusy()&&!e.session.isBlocked(),"one child, actual shared lease released");

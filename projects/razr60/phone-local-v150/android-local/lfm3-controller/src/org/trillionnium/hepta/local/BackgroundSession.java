@@ -180,21 +180,32 @@ final class BackgroundSession {
     }
     /** No model-issued action can change the immutable package/display binding. */
     JSONObject action(String operation,String pkg,HeptaAccessibilityService.Cancellation cancellation)throws Exception{
+        return action(operation,pkg,cancellation,Long.MAX_VALUE);
+    }
+    JSONObject action(String operation,String pkg,HeptaAccessibilityService.Cancellation cancellation,long actionDeadline)throws Exception{
         if(!"launch".equals(operation)&&!"back".equals(operation))throw new IllegalArgumentException("后台工具未授权");
         requireActive();if(cancellation.isCancelled())throw new IllegalStateException("任务已停止");
         if(pkg!=null&&!allows(pkg))throw new IllegalArgumentException("目标应用未在本次后台范围内");
-        JSONObject response=call(operation,pkg,4000);accept(response,true);requireActive();return response;
+        long deadline=boundedActionDeadline(actionDeadline,4000);
+        JSONObject request=new JSONObject().put("version",1).put("request_id",UUID.randomUUID().toString())
+                .put("generation",generation).put("deadline_elapsed_ms",deadline).put("op",operation);
+        if(pkg!=null)request.put("package",pkg);
+        JSONObject response=exchange(socketName,generation,request,4500,cancellation);accept(response,true);requireActive();return response;
     }
     JSONObject fixedIntent(org.trillionnium.hepta.background.FixedIntentTarget target,String payload,String attemptId,HeptaAccessibilityService.Cancellation cancellation)throws Exception{
+        return fixedIntent(target,payload,attemptId,cancellation,Long.MAX_VALUE);
+    }
+    JSONObject fixedIntent(org.trillionnium.hepta.background.FixedIntentTarget target,String payload,String attemptId,HeptaAccessibilityService.Cancellation cancellation,long actionDeadline)throws Exception{
         if(target==null||!org.trillionnium.hepta.background.FixedIntentTools.isTool(target.action))throw new IllegalArgumentException("fixed background tool required");
         org.trillionnium.hepta.background.FixedIntentTools.forAction(target.action).validatePayload(payload);
         if(attemptId==null||!attemptId.matches("[0-9a-f]{64}"))throw new IllegalArgumentException("durable attempt binding required");
         requireActive();if(cancellation.isCancelled())throw new IllegalStateException("任务已停止");
         if(!allows(target.packageName))throw new IllegalArgumentException("固定工具目标不在后台范围");
+        long deadline=boundedActionDeadline(actionDeadline,4000);
         JSONObject request=new JSONObject().put("version",1).put("request_id",UUID.randomUUID().toString())
-                .put("generation",generation).put("deadline_elapsed_ms",SystemClock.elapsedRealtime()+4000).put("op",target.action)
+                .put("generation",generation).put("deadline_elapsed_ms",deadline).put("op",target.action)
                 .put("package",target.packageName).put("target_uid",target.uid).put("payload",payload).put("attempt_id",attemptId);
-        JSONObject response=exchange(socketName,generation,request,4500);
+        JSONObject response=exchange(socketName,generation,request,4500,cancellation);
         accept(response,true);requireActive();
         if(!target.action.equals(response.getString("operation"))||!response.getBoolean("dispatched"))throw new IOException("固定工具回执未确认派发");
         JSONObject proof=response.getJSONObject("fixed_intent"),installed=proof.getJSONObject("target");
@@ -310,21 +321,57 @@ final class BackgroundSession {
         private static final long serialVersionUID=1L;
         ConnectionUnavailable(IOException cause){super("后台 socket 尚不可连接",cause);}
     }
+    private static long boundedActionDeadline(long requested,int budget){
+        long now=SystemClock.elapsedRealtime(),deadline=Math.min(requested,now+budget);
+        if(deadline<=now)throw new IllegalStateException("后台动作原始截止时间已到，未发送请求");return deadline;
+    }
+    private static int remainingActionTimeout(JSONObject request,int maximum,
+            HeptaAccessibilityService.Cancellation cancellation)throws Exception{
+        if(cancellation==null)return maximum;
+        if(cancellation.isCancelled())throw new IOException("后台动作已停止或租约已退休；请求不重发");
+        long remaining=request.getLong("deadline_elapsed_ms")-SystemClock.elapsedRealtime();
+        if(remaining<=0)throw new java.net.SocketTimeoutException("后台动作原始截止时间已到；请求不重发");
+        return (int)Math.min((long)maximum,remaining);
+    }
+    private static void readResponseBytes(LocalSocket socket,DataInputStream input,byte[] bytes,
+            JSONObject request,int maximum,HeptaAccessibilityService.Cancellation cancellation)throws Exception{
+        if(cancellation==null){input.readFully(bytes);return;}
+        int offset=0;
+        while(offset<bytes.length){
+            socket.setSoTimeout(remainingActionTimeout(request,maximum,cancellation));
+            int count=input.read(bytes,offset,bytes.length-offset);
+            if(count<0)throw new java.io.EOFException("后台响应提前结束");
+            offset+=count;
+        }
+        // A late read return is not a new budget or a completed action at the original deadline.
+        remainingActionTimeout(request,maximum,cancellation);
+    }
     /** One bounded framed request, peer UID checked before any request bytes are sent. */
     private static JSONObject exchange(String name,String generation,JSONObject request,int timeout)throws Exception{
+        return exchange(name,generation,request,timeout,null);
+    }
+    private static JSONObject exchange(String name,String generation,JSONObject request,int timeout,
+            HeptaAccessibilityService.Cancellation cancellation)throws Exception{
         byte[] bytes=request.toString().getBytes(StandardCharsets.UTF_8);
         if(bytes.length<1||bytes.length>REQUEST_LIMIT)throw new IOException("后台请求长度越界");
         try(LocalSocket socket=new LocalSocket()){
             try{socket.connect(new LocalSocketAddress(name,LocalSocketAddress.Namespace.ABSTRACT));}
             catch(IOException unavailable){throw new ConnectionUnavailable(unavailable);}
             // Android creates the socket FD during connect; setSoTimeout before it throws.
-            socket.setSoTimeout(timeout);
+            socket.setSoTimeout(remainingActionTimeout(request,timeout,cancellation));
             Credentials peer=socket.getPeerCredentials();
             if(peer==null||(peer.getUid()!=0&&peer.getUid()!=2000))throw new IOException("后台服务身份不是 shell/root");
-            DataOutputStream output=new DataOutputStream(socket.getOutputStream());output.writeInt(bytes.length);output.write(bytes);output.flush();
-            DataInputStream input=new DataInputStream(socket.getInputStream());int length=input.readInt();
+            DataOutputStream output=new DataOutputStream(socket.getOutputStream());
+            socket.setSoTimeout(remainingActionTimeout(request,timeout,cancellation));
+            // connect/peer inspection can block. Recheck the original action authority before the first write.
+            // Once any request byte is attempted, ambiguity is retained; there is no second send.
+            if(cancellation!=null&&(cancellation.isCancelled()||SystemClock.elapsedRealtime()>=request.getLong("deadline_elapsed_ms")))
+                throw new IllegalStateException("后台动作已停止、租约已退休或原始截止时间已到；未发送请求");
+            output.writeInt(bytes.length);output.write(bytes);output.flush();
+            DataInputStream input=new DataInputStream(socket.getInputStream());byte[] header=new byte[4];
+            readResponseBytes(socket,input,header,request,timeout,cancellation);int length=ByteBuffer.wrap(header).getInt();
             if(length<1||length>RESPONSE_LIMIT)throw new IOException("后台响应长度越界");
-            byte[] payload=new byte[length];input.readFully(payload);
+            byte[] payload=new byte[length];readResponseBytes(socket,input,payload,request,timeout,cancellation);
             String decoded=StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
                     .onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(payload)).toString();
             JSONTokener parser=new JSONTokener(decoded);Object value=parser.nextValue();

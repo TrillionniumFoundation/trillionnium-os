@@ -20,7 +20,7 @@ def prepare(source, output):
     controller = (package / "LocalTaskController.java").read_text(encoding="utf-8")
     engine = (package / "LocalModelEngine.java").read_text(encoding="utf-8")
     service = (package / "HeptaAccessibilityService.java").read_text(encoding="utf-8")
-    await_block = section(controller, "    private ModelAnswer awaitModel(", "        long remaining=")
+    await_block = section(controller, "    private ModelAnswer awaitModel(", "        long remaining=taskDeadline-SystemClock.elapsedRealtime();")
     await_guard = await_block[await_block.index("{") + 1:]
     limited = section(service, "    static String limited(", "    static String message(")
     parts = {

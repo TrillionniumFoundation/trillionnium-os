@@ -16,16 +16,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Bounded read-only projection of an actual complete DOM-v3 record.
+ * Bounded read-only projection of an actual complete DOM-v4 record.
  * No Mi CSS selector, SKU, price, or currency is invented from a search index.
  * Only explicit visible HTML Product/Offer semantics can produce detail data;
  * a page without those semantics remains partial until its actual layout is reviewed.
  * This projection alone cannot grant an AX action or task completion.
  */
 final class MiPublicProductPage {
-    static final String SCHEMA="hepta.mi-public-product-page.v1";
-    static final String DOM_SCHEMA="hepta.fixed-top-document-dom.v3";
-    private static final Pattern MODEL=Pattern.compile("^(?:(?:Xiaomi|小米)[ ]*(?:(?:路由器|Router)[ ]*)?)?AX3000T$",Pattern.CASE_INSENSITIVE);
+    static final String SCHEMA="hepta.mi-public-product-page.v2";
+    static final String DOM_SCHEMA="hepta.fixed-top-document-dom.v4";
+    private static final Pattern MODEL=Pattern.compile("^(?:(?:Xiaomi|小米)[ ]*(?:(?:路由器|Router)[ ]*)?)?AX3000T(?: 白色)?$",Pattern.CASE_INSENSITIVE);
     private static final Pattern AMOUNT=Pattern.compile("^(?:(?:人民币|CNY|RMB|¥|￥)[ ]*)?((?:0|[1-9][0-9]{0,7})(?:\\.[0-9]{1,2})?)(?:[ ]*元)?$");
     private static final Pattern CONDITIONAL=Pattern.compile("券|会员|补贴|定金|分期|每月|月供|预售|预约|满减|到手|折后|需登录|需领|秒杀|限时|首购");
     final String url,phase;
@@ -84,7 +84,7 @@ final class MiPublicProductPage {
     static MiPublicProductPage read(WebShoppingGoal goal,WebSitePolicy policy,String committed,JSONObject dom)throws Exception{
         need(goal!=null&&policy!=null&&dom!=null,"immutable goal/policy and actual DOM required");
         need(DOM_SCHEMA.equals(text(dom,"schema"))&&Boolean.FALSE.equals(dom.get("truncated"))
-                &&dom.getJSONArray("truncation_reasons").length()==0,"complete exact DOM-v3 required");
+                &&dom.getJSONArray("truncation_reasons").length()==0,"complete exact DOM-v4 required");
         need(committed.equals(text(dom,"href"))&&policy.origin.equals(text(dom,"origin"))&&policy.allowsMainFrame(committed),
                 "same approved committed product route required");
         need("complete".equals(text(dom,"ready_state")),"public page still loading");
@@ -113,20 +113,19 @@ final class MiPublicProductPage {
         String phase=route==WebSitePolicy.Route.INITIAL_PUBLIC_SEARCH?"official_public_search":"official_product_detail";
         if(modal)missing.add("visible_modal_or_consent_requires_stop");
         if(route==WebSitePolicy.Route.INITIAL_PUBLIC_SEARCH){
-            for(JSONObject n:nodes.values()){
-                if(!"a".equals(text(n,"tag"))||!visible(n,nodes)||n.get("href_raw")==JSONObject.NULL
-                        ||n.get("href_resolved")==JSONObject.NULL||n.get("link_target")==JSONObject.NULL)continue;
-                String href=policy.observedProductLink(committed,text(n,"href_raw"),text(n,"href_resolved"),text(n,"link_target"));
-                if(href==null)continue;
-                List<JSONObject> names=matchingModel(nodes,text(n,"path"));
-                if(names.size()!=1||nestedControl(nodes,text(n,"path")))continue;
-                List<String> texts=visibleTexts(nodes,text(n,"path"),64);
-                if(texts.isEmpty()||containsTransaction(texts))continue;
-                links.add(new Link(n,names.get(0),texts,href));
+            try{
+                org.trillionnium.hepta.webprotocol.WebMiActionRegion region=
+                        org.trillionnium.hepta.webprotocol.WebMiActionRegion.read(dom);
+                JSONObject anchor=nodes.get(region.anchorPath),model=nodes.get(region.modelPath);
+                need(anchor!=null&&model!=null,"actual scoped anchor/model disappeared");
+                List<String> texts=visibleTexts(nodes,region.anchorPath,64);
+                need(!containsTransaction(texts),"transaction or consent labels cannot grant public product navigation");
+                links.add(new Link(anchor,model,texts,region.hrefResolved));
+                missing.add("native_semantic_region_bridge_required");
+            }catch(Exception unavailable){
+                missing.add("complete_observed_public_search_card_region_unavailable");
             }
             if(links.size()!=1)missing.add("unique_actual_AX3000T_anchor_not_observed");
-            if(links.size()==1&&(links.get(0).id.isEmpty()||!Integer.valueOf(1).equals(ids.get(links.get(0).id))))
-                missing.add("unique_DOM_id_to_native_AX_bridge_missing");
             missing.add("detail_page_not_observed");
         }else{
             List<JSONObject> products=new ArrayList<JSONObject>();

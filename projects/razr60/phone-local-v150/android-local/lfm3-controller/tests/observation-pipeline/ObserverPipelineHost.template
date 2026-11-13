@@ -33,6 +33,8 @@ public final class ObserverPipelineHost {
     static final class StaleObservation extends IllegalStateException {private static final long serialVersionUID=1L;}
     static final class Graph {
         final int serial;String packageName="fixture.notes",digest="same",backgroundGeneration;
+        // Selection provenance is outside this scheduling-only graph carrier and remains absent.
+        String backgroundSelectionRaw,backgroundOwnerSha;
         int windowId=7,rotation=0,displayId;boolean truncated;final Rect bounds=new Rect();
         final Object state=new Object(),windowMetadata=new Object(),rows=new Object(),collectionStats=new Object();
         final String backgroundBootstrapPackage="fixture.notes";final List<String> backgroundAllowedPackages=Collections.singletonList("fixture.notes");
@@ -65,9 +67,12 @@ public final class ObserverPipelineHost {
     static final class PhoneObservation {
         final String id;final File path;final long capturedElapsedMillis;final Object collectionStats;
         PhoneObservation(String id,String pkg,long captured,int width,int height,int rotation,int window,Rect bounds,
-            File path,String hash,String digest,Object state,Object metadata,boolean truncated,Object rows,String generation,String initial,List<String> packages,Object collectionStats){
+            File path,String hash,String digest,Object state,Object metadata,boolean truncated,Object rows,String generation,String initial,List<String> packages,Object collectionStats,JSONObject selection,String ownerSha){
             this.id=id;this.path=path;capturedElapsedMillis=captured;this.collectionStats=collectionStats;
         }
+    }
+    static final class JSONObject {
+        JSONObject(String raw){throw new AssertionError("observer scheduling fixture cannot construct Selection provenance");}
     }
     static final class Handler {
         static final class Job {final long when;final Runnable task;Job(long when,Runnable task){this.when=when;this.task=task;}}
@@ -95,6 +100,8 @@ public final class ObserverPipelineHost {
             executor.execute(()->{try{r.run();}catch(Throwable error){uncaught.incrementAndGet();}finally{active.decrementAndGet();}});}
     }
     static final Worker observationIo=new Worker();static final AtomicBoolean observationIoBusy=new AtomicBoolean();
+    static final ActionExecutionState.Slot actionSlot=new ActionExecutionState.Slot();
+    static final TaskCancellationQueue nativeCancellationQueue=TaskCancellationQueue.processQueue();
     static Thread mainThread;static ObserverPipelineHost live;String lease="task-one";
     Object taskScope,taskAuthorization,taskNotesPhase,taskCalculatorInput,taskSubmitAttempts,taskFixedIntentAttempts,appDiscovery;Runnable stopListener;
     final Handler main=new Handler();volatile ObservationRequest activeObservation;
@@ -131,6 +138,8 @@ public final class ObserverPipelineHost {
     private static String message(Throwable error){return error.getMessage()==null?error.getClass().getSimpleName():error.getMessage();}
 {{acquire}}
 {{recovery_idle}}
+{{action_pending}}
+{{cancellation_pending}}
 {{observation}}
     static boolean isMain(){return Thread.currentThread()==mainThread;}
     static void expect(boolean okay,String message){if(!okay)throw new AssertionError(message);}

@@ -1,4 +1,62 @@
-# Hepta v56: integrate current natural Web tasks with responsive observation
+# Hepta v59 candidate: flight observation and asynchronous background control
+
+This candidate forward-integrates frozen v58 source
+`f519f2081b11dbbe851c2fb6528d32fffbc20c62` with the observation-stability
+source used by the subsequently observed v57 installation. The retained source
+receipt declares `313685edc580a750aea6301d8ff3cfd617d6fab6` as its source
+identity; this has not been independently verified as a published Git commit.
+The donor's 217 production inputs were matched byte-for-byte to the installed
+APK's build asset
+`d24295e13e82de20a6afee815f853803a0eec8a71c98f48bca17f3e68d4a3e85`.
+The donor source identity does not qualify this merged candidate.
+
+The complete integrated production source contains 118 Java sources and 220
+production inputs. Android version 59 /
+`0.59.0-flight-observation-action-stop-candidate` identifies this candidate.
+Read [ACTION-EXECUTION-CONTRACT.md](ACTION-EXECUTION-CONTRACT.md) for ownership,
+deadlines, cancellation and completion boundaries. SOURCE-MANIFEST.json covers
+every component file. Prior builds and phone sessions remain bound to their
+original source; this candidate requires new formal build and phone gates.
+
+Flight observation verification uses the existing bounded observation worker.
+The main looper hands off short identity checks and independently owned node
+copies. Full graph, window, scope and lease checks run on the worker. Closing a
+snapshot retires it immediately, but a worker borrow keeps its nodes alive until
+that worker actually exits. Timeouts and cancellation never release a busy
+worker or recycle a node still in use. The read-only proof grants no action permit.
+
+An accepted, dispatched and non-stale native city-picker open can authorize
+read-only re-observation of its corresponding departure or arrival picker.
+Every retry requires the same task, owner, authorization, lease and page identity,
+complete AX evidence and four identical DOM captures after the actual action.
+The original maximum of two retries within six seconds and the original task
+deadline remain. Each retry collects a whole new bracket; publication still
+requires the strict final stability checks. No action or query is replayed, and
+this rule does not extend to date pickers or arbitrary page transitions.
+
+The narrow official-flight-home policy and typed Web terminal-completion checks
+remain. A read-only result must be captured under the actual task/model/frame
+identity, consumed once by ordinary typed close and checked after native and
+display cleanup. Flight-result parsing and purchase completion are still absent;
+page loading or a model's done response cannot establish business success.
+
+Validation requires the unchanged complete 105-check runner, separate current
+Web 80/44/query40/retirement36 and flight-policy36 gates, plus the new observation
+policy24, worker-lifecycle12 and city-retry24 gates. Their synthetic host scopes
+remain separate from live Android Binder and phone behavior. New full Android
+Java/resources/DEX/native compilation, original-key signing, in-place installation
+and real phone acceptance are separate gates. Model, native-library and sampler
+pins are unchanged. This source preview has not been qualified on the phone.
+
+## Historical source foundations
+
+The preceding v57 integration combined the asynchronous-control source
+`0b9e0031d2e137d6823668946d48e8154b339787` and scoped Web source
+`dd2cd48054c2c6f0b2597b7d9be05edd8ce6b34e`, with verified common ancestor
+`42d3a0f447807659c0f78c8273edee01dd1b734f`. The historical sections below retain
+their original version, model and result boundaries.
+
+## Frozen v56 foundation: natural Web tasks and responsive observation
 
 This standalone Android candidate forward-integrates the business v54 source
 42d3a0f447807659c0f78c8273edee01dd1b734f with the v55 observation, cleanup and

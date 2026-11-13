@@ -8,6 +8,9 @@ import org.trillionnium.hepta.webprotocol.WebRecoveryPolicy;
 import org.trillionnium.hepta.webprotocol.WebStorageEvidence;
 import org.trillionnium.hepta.webprotocol.WebTaskPurpose;
 import org.trillionnium.hepta.webprotocol.WebSitePolicy;
+import org.trillionnium.hepta.webprotocol.WebDomCanonical;
+import org.trillionnium.hepta.webprotocol.WebDomStability;
+import org.trillionnium.hepta.webprotocol.WebObservedNavigation;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.CodingErrorAction;
@@ -18,13 +21,19 @@ import java.util.Set;
 
 /** Pure replay of the authenticated helper reply. No reply is a business success. */
 final class WebEvidenceReceipt {
-    static final String OBSERVER_SHA="0d1b412d2e81e3f447ef36977bb27c321c136c207d64cca433a810f22ca5c983";
+    static final String OBSERVER_SHA="05bb7c1e4e1929b961c42af1e5c0e01918bf6ff64f153132ca11c7d85873e705";
     final String status,bindingSha,instance,url,domSha;
     final long epoch,started,ended;
     final int displayId,windowId;
     final boolean cleanupKnown,recovered,unstarted;
-    private final String replyRaw,evidenceRaw,captureRaw,domRaw;
+    private final String replyRaw,evidenceRaw,captureRaw,domRaw,armRaw;
+    private final WebDomStability.Result checkedStability;
     private WebEvidenceReceipt(JSONObject callback,String raw,String capture,String dom,boolean closed,boolean recovered)throws Exception{
+        this(callback,raw,capture,dom,closed,recovered,null,null);
+    }
+    private WebEvidenceReceipt(JSONObject callback,String raw,String capture,String dom,boolean closed,boolean recovered,
+                               WebDomStability.Result stability,JSONObject arm)throws Exception{
+        checkedStability=stability;armRaw=arm==null?null:WebDomCanonical.canonical(arm);
         status=WebEvidenceJson.text(callback,"status");bindingSha=nullableText(callback,"binding_sha256");
         instance=nullableText(callback,"webview_instance");epoch=callback.isNull("navigation_epoch")?-1:WebEvidenceJson.number(callback,"navigation_epoch");
         displayId=WebEvidenceJson.integer(callback,"actual_display_id");windowId=WebEvidenceJson.integer(callback,"actual_window_id");
@@ -40,9 +49,18 @@ final class WebEvidenceReceipt {
     JSONObject dom()throws Exception{return domRaw==null?null:WebEvidenceJson.parseDom(domRaw);}
     String evidenceRaw(){return evidenceRaw;}
     String domRaw(){return domRaw;}
+    String beforeDomRaw()throws Exception{return captureRaw==null?null:text(capture(),"before_dom_raw_utf8");}
+    WebDomStability.Result stability(){return checkedStability;}
+    JSONObject arm()throws Exception{return armRaw==null?null:WebEvidenceJson.parseEvidence(armRaw,WebEvidenceProtocol.MAX_EVIDENCE_BYTES);}
 
     static WebEvidenceReceipt verify(int code,String requestRaw,JSONObject binding,String callbackRaw,byte[] raw,
                                       int authenticatedHelperUid,long sentElapsed,long receivedElapsed)throws Exception{
+        return verify(code,requestRaw,binding,callbackRaw,raw,authenticatedHelperUid,sentElapsed,receivedElapsed,null);
+    }
+    static WebEvidenceReceipt verify(int code,String requestRaw,JSONObject binding,String callbackRaw,byte[] raw,
+                                      int authenticatedHelperUid,long sentElapsed,long receivedElapsed,JSONObject sourceCapture)throws Exception{
+        need((code==WebEvidenceProtocol.ARM_OBSERVED_LINK)==(sourceCapture!=null),
+                "ARM alone requires the client's exact private successful source capture");
         WebTaskPurpose purpose=WebTaskPurpose.requireBinding(binding);
         JSONObject request=WebEvidenceJson.parse(requestRaw,WebEvidenceProtocol.MAX_REQUEST_BYTES);
         WebEvidenceJson.keys(request,WebEvidenceProtocol.requestKeys(code));
@@ -149,6 +167,32 @@ final class WebEvidenceReceipt {
             need("attached".equals(status)&&raw==null,"attach response differs");
             return new WebEvidenceReceipt(callback,null,null,null,false,false);
         }
+        if(code==WebEvidenceProtocol.ARM_OBSERVED_LINK){
+            need("armed".equals(status)&&raw!=null,"observed link ARM requires its exact read-only FD");
+            String original=decode(raw);JSONObject evidence=WebEvidenceJson.parseEvidence(original,WebEvidenceProtocol.MAX_EVIDENCE_BYTES);
+            exact(evidence,"schema","request_json_utf8","request_sha256","binding","binding_sha256","controller_identity","helper_identity",
+                    "actual_window_id","arm","storage_isolation","actor","diagnostic_unbound","business_verified");
+            need(WebEvidenceProtocol.RAW_SCHEMA.equals(text(evidence,"schema"))
+                    &&"controller_observed_link_arm".equals(text(evidence,"actor"))
+                    &&Boolean.FALSE.equals(evidence.get("diagnostic_unbound"))&&Boolean.FALSE.equals(evidence.get("business_verified")),
+                    "formal observed-link ARM provenance required");
+            requireRequestAndBinding(evidence,requestRaw,binding);
+            need(same(evidence.getJSONObject("controller_identity"),binding.getJSONObject("controller_identity"))
+                    &&same(evidence.getJSONObject("helper_identity"),binding.getJSONObject("helper_identity"))
+                    &&number(evidence,"actual_window_id")==number(callback,"actual_window_id"),
+                    "ARM installed/window identity differs");
+            JSONObject arm=WebObservedNavigation.verifyArm(request,binding,sourceCapture,evidence.getJSONObject("arm"));
+            long armed=number(arm,"armed_elapsed_ms"),expires=number(arm,"expires_elapsed_ms");
+            need(sentElapsed<=armed&&armed<=receivedElapsed&&receivedElapsed<=expires
+                    &&number(sourceCapture,"ended_elapsed_ms")<=sentElapsed
+                    &&text(arm,"webview_instance").equals(text(callback,"webview_instance"))
+                    &&number(arm,"navigation_epoch")==number(callback,"navigation_epoch")
+                    &&number(arm,"actual_window_id")==number(callback,"actual_window_id")
+                    &&number(arm,"display_id")==number(callback,"actual_display_id"),
+                    "ARM reply is stale or belongs to another actual source window");
+            WebStorageEvidence.requireCapture(binding,evidence.getJSONObject("storage_isolation"),armed,armed);
+            return new WebEvidenceReceipt(callback,original,null,null,false,false,null,arm);
+        }
         need(code==WebEvidenceProtocol.CAPTURE,"unknown method");
         if("state_changed".equals(status)){
             need(raw==null,"state change is metadata only");
@@ -175,8 +219,9 @@ final class WebEvidenceReceipt {
                 "actual_window_id","webview_bounds_screen_pixels","navigation_epoch","committed_main_frame_url","commit_elapsed_ms",
                 "current_native_url","native_url_source","commit_source","visual_request_id","dom_raw_utf8","dom_sha256",
                 "observer_script_sha256","started_elapsed_ms","ended_elapsed_ms","business_verified","pixel_equality_claimed",
-                "all_visible_semantics_verified","truncated","capture_geometry");
-        need("hepta.owned-webview-origin-dom.v1".equals(text(capture,"schema"))
+                "all_visible_semantics_verified","truncated","capture_geometry","before_dom_raw_utf8","before_dom_sha256",
+                "dom_stability","dom_stability_sha256","raw_dom_equal","comparison_scope","observed_link_navigation");
+        need(WebObservedNavigation.CAPTURE_SCHEMA.equals(text(capture,"schema"))
                 &&text(request,"request_nonce").equals(text(capture,"challenge"))&&same(binding,capture.getJSONObject("binding"))
                 &&WebEvidenceProtocol.HELPER_PACKAGE.equals(text(capture,"helper_package"))
                 &&number(capture,"helper_uid")==authenticatedHelperUid&&number(capture,"helper_pid")>0
@@ -204,16 +249,50 @@ final class WebEvidenceReceipt {
         need(box.length()==4,"native WebView bounds shape");
         long[] r=new long[4];for(int i=0;i<4;i++){Object v=box.get(i);need(v instanceof Integer||v instanceof Long,"integer native bounds");r[i]=((Number)v).longValue();}
         need(0<=r[0]&&0<=r[1]&&r[0]<r[2]&&r[1]<r[3]&&r[2]<=32768&&r[3]<=32768,"native WebView bounds invalid");
-        String domRaw=text(capture,"dom_raw_utf8");need(WebEvidenceJson.sha(domRaw).equals(text(capture,"dom_sha256")),"exact DOM bytes/hash differ");
-        JSONObject dom=WebEvidenceJson.parseDom(domRaw);
-        need("hepta.fixed-top-document-dom.v3".equals(text(dom,"schema"))&&url.equals(text(dom,"href"))
-                &&origin.equals(text(dom,"origin"))&&"complete".equals(text(dom,"ready_state"))
-                &&Boolean.FALSE.equals(dom.get("truncated")),"DOM/current native origin/ready/truncation differs");
-        need(dom.getJSONArray("nodes").length()<=1024&&number(dom,"visited")>=dom.getJSONArray("nodes").length(),"DOM node budget");
+        String beforeRaw=text(capture,"before_dom_raw_utf8"),domRaw=text(capture,"dom_raw_utf8");
+        need(WebEvidenceJson.sha(beforeRaw).equals(text(capture,"before_dom_sha256"))
+                &&WebEvidenceJson.sha(domRaw).equals(text(capture,"dom_sha256")),"both exact DOM byte hashes required");
+        JSONObject beforeDom=WebEvidenceJson.parseDom(beforeRaw),dom=WebEvidenceJson.parseDom(domRaw);
+        for(JSONObject observed:Arrays.asList(beforeDom,dom)){
+            need(WebDomStability.DOM_SCHEMA.equals(text(observed,"schema"))&&url.equals(text(observed,"href"))
+                    &&origin.equals(text(observed,"origin"))&&"complete".equals(text(observed,"ready_state"))
+                    &&Boolean.FALSE.equals(observed.get("truncated")),"DOM/current native origin/ready/truncation differs");
+            need(observed.getJSONArray("nodes").length()<=1536&&number(observed,"visited")==observed.getJSONArray("nodes").length(),
+                    "complete wire-v4 DOM node budget");
+        }
+        WebDomStability.Result stability=WebDomStability.verify(beforeRaw,domRaw,purpose.sitePolicyId,capture.getJSONObject("dom_stability"));
+        need(stability.beforeRawSha256.equals(text(capture,"before_dom_sha256"))
+                &&stability.afterRawSha256.equals(text(capture,"dom_sha256"))
+                &&WebDomCanonical.sha256(stability.evidence()).equals(text(capture,"dom_stability_sha256"))
+                &&Boolean.valueOf(stability.rawEqual).equals(capture.get("raw_dom_equal"))
+                &&stability.comparisonScope.equals(text(capture,"comparison_scope")),
+                "complete independent raw-pair/scope replay differs");
+        if(purpose.flight!=null)need(stability.rawEqual&&WebDomStability.FULL_SCOPE.equals(stability.comparisonScope),
+                "flight still requires the complete original raw equality predicate");
+        Object navigation=capture.get("observed_link_navigation");
+        if(navigation!=JSONObject.NULL){
+            need(purpose.shopping!=null&&navigation instanceof JSONObject,"only a typed product-link navigation record is supported");
+            JSONObject observed=(JSONObject)navigation;
+            WebObservedNavigation.requireNavigationRecordShape(observed);
+            JSONObject arm=observed.getJSONObject("arm");
+            need(WebEvidenceBinding.sha256(binding).equals(text(arm,"binding_sha256"))
+                    &&text(binding,"task_id").equals(text(arm,"task_id"))
+                    &&text(binding,"controller_session_nonce").equals(text(arm,"controller_session_nonce"))
+                    &&text(binding,"storage_profile_name").equals(text(arm,"storage_profile_name"))
+                    &&text(capture,"webview_instance").equals(text(arm,"webview_instance"))
+                    &&number(capture,"actual_window_id")==number(arm,"actual_window_id")
+                    &&number(capture,"display_id")==number(arm,"display_id")
+                    &&number(arm,"navigation_epoch")<=number(capture,"navigation_epoch")
+                    &&number(arm,"armed_elapsed_ms")<=started,
+                    "observed navigation record belongs to another lease/window/instance or future ARM");
+            // This preserves partial/cancelled producer facts. It grants no
+            // navigation success: the private expected ARM and original native
+            // ActionOutcome/time bracket are replayed separately by the domain.
+        }
         need(WebNativeGeometry.read(capture,dom,WebEvidenceJson.integer(callback,"actual_display_id"),
-                WebEvidenceJson.integer(callback,"actual_window_id"))!=null,"formal capture requires actual native geometry");
+                WebEvidenceJson.integer(callback,"actual_window_id"),stability)!=null,"formal capture requires actual native geometry");
         WebStorageEvidence.requireCapture(binding,evidence.getJSONObject("storage_isolation"),started,ended);
-        return new WebEvidenceReceipt(callback,original,capture.toString(),domRaw,false,false);
+        return new WebEvidenceReceipt(callback,original,capture.toString(),domRaw,false,false,stability,null);
     }
 
     private static String purposeOrigin(WebTaskPurpose purpose,String value)throws Exception{

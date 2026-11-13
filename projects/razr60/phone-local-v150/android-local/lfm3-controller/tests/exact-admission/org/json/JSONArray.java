@@ -11,6 +11,7 @@ public final class JSONArray {
     public JSONArray(Object items){for(int i=0;i<Array.getLength(items);i++)values.add(Array.get(items,i));}
     public JSONArray put(Object value){values.add(value==null?JSONObject.NULL:value);return this;}
     public int length(){return values.size();}
+    public Object get(int index){return values.get(index);}
     public JSONObject getJSONObject(int index)throws JSONException{
         Object value=values.get(index);if(value instanceof JSONObject)return (JSONObject)value;
         if(value instanceof java.util.Map<?,?>)return new JSONObject((java.util.Map<?,?>)value);

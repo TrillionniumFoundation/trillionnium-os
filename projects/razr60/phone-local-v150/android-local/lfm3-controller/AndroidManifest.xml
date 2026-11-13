@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.trillionnium.hepta.local" android:versionCode="56" android:versionName="0.56.0-natural-web-responsive-observation">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.trillionnium.hepta.local" android:versionCode="59" android:versionName="0.59.0-flight-observation-action-stop-candidate">
     <uses-sdk android:minSdkVersion="30" android:targetSdkVersion="35" />
     <uses-permission android:name="org.trillionnium.hepta.webhelper.permission.BIND_EVIDENCE" />
     <queries>

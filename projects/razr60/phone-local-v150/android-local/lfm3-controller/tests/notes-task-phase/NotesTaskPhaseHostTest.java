@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.trillionnium.hepta.background.FixedIntentTarget;
@@ -194,7 +196,9 @@ public final class NotesTaskPhaseHostTest {
             ActionDecision wrong=create(observed,TaskCompletionGateHostTest.BODY+"different");
             ObservedTargetLabels labels=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,observed.observationId,P,Collections.singletonMap("n0",e.service.node.text));
             final HeptaAccessibilityService.ActionOutcome[] result=new HeptaAccessibilityService.ActionOutcome[1];
-            e.service.perform(e.task,e.service.current,wrong,labels,targets().get("notes.create"),gate,TaskCompletionGateHostTest.id(222),()->false,value->result[0]=value);
+            final CountDownLatch resultDone=new CountDownLatch(1);
+            e.service.perform(e.task,e.service.current,wrong,labels,targets().get("notes.create"),gate,TaskCompletionGateHostTest.id(222),()->false,value->{result[0]=value;resultDone.countDown();});
+            if(!resultDone.await(10,TimeUnit.SECONDS))throw new AssertionError("actual service callback did not finish for this request");
             check(result[0]!=null&&!result[0].accepted&&!result[0].dispatched&&e.service.effects()==0&&result[0].detail.contains("notes_task_phase"),"actual service refuses different fixed payload before dispatch or ledger consumption");
             e.service.releaseTask(e.task);denied(()->phase.requireCurrent(e.action("type",P)),"released service task retires phase");
         }
@@ -214,6 +218,9 @@ public final class NotesTaskPhaseHostTest {
             // Explicit IO scheduling boundary: start() has already committed its
             // task fields, while its queued worker has not entered runTask yet.
             field(controller,"currentTaskId",e.task);field(controller,"running",Boolean.TRUE);
+            // start() now also captures this same service/task cancellation
+            // ticket before enqueueing the worker. It carries no exit proof.
+            field(controller,"taskCancellation",new TaskCancellationQueue.Ticket(e.service,e.task));
             HeptaAccessibilityService.live=null;
             Method run=LocalTaskController.class.getDeclaredMethod("runTask",String.class,String.class,String.class,TaskAuthorization.Gate.class,BackgroundSession.Selection.class);
             run.setAccessible(true);run.invoke(controller,e.task,TaskCompletionGateHostTest.OWNER,null,gate,null);

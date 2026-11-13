@@ -46,8 +46,12 @@ public final class LocalTaskController implements AutoCloseable {
     private final Handler main=new Handler(Looper.getMainLooper());
     private final ExecutorService worker=Executors.newSingleThreadExecutor();
     private final AtomicBoolean cancelled=new AtomicBoolean();
+    private final java.util.concurrent.atomic.AtomicLong stopRequestedElapsed=new java.util.concurrent.atomic.AtomicLong(-1);
+    private volatile TaskCancellationQueue.Ticket taskCancellation;
     private final Object handleLock=new Object();
     private volatile boolean running,blocked,closed;
+    // stop() and the final read-only result decision share one terminal boundary.
+    private boolean terminalDecisionSealed;
     private volatile String currentTaskId,currentActualScopeSha256;
     private volatile Listener listener;
     private volatile TaskResult lastResult;
@@ -122,20 +126,38 @@ public final class LocalTaskController implements AutoCloseable {
         final TaskAuthorization.Gate authorization;
         try{authorization=service.bindTaskAuthorization(id,ownerAuthorization);}
         catch(RuntimeException error){service.releaseTask(id);throw error;}
-        listener=callback;currentTaskId=id;currentActualScopeSha256=null;lastResult=null;cancelled.set(false);running=true;
+        listener=callback;currentTaskId=id;currentActualScopeSha256=null;lastResult=null;taskCancellation=new TaskCancellationQueue.Ticket(service,id);stopRequestedElapsed.set(-1);cancelled.set(false);terminalDecisionSealed=false;running=true;
         try{worker.execute(new Runnable(){public void run(){runTask(id,instruction,expectedScopeSha256,authorization,backgroundSelection);}});}
         catch(RuntimeException error){running=false;service.releaseTask(id);throw error;}
         return true;
     }
     public void stop(){
-        if(!running)return;cancelled.set(true);emit("正在停止本地任务，等待当前推理退出…");
-        inference.cancelTask();
-        synchronized(handleLock){if(activeInference!=null)activeInference.cancel();}
+        final String task;final TaskCancellationQueue.Ticket ticket;final LocalInference.Handle handle;
+        synchronized(this){
+            if(!running||terminalDecisionSealed)return;task=currentTaskId;ticket=taskCancellation;
+            stopRequestedElapsed.compareAndSet(-1,SystemClock.elapsedRealtime());cancelled.set(true);
+            synchronized(handleLock){handle=activeInference;} // Snapshot only; never call native code under this lock.
+        }
+        service.retireActionWork(task,"cancelled");
+        service.requestNativeCancellation(ticket,new Runnable(){public void run(){
+            // Queue admission fences the exact old task; the request handle is captured, never looked up later.
+            inference.cancelTask();if(handle!=null)handle.cancel();
+        }});
+        emitForTask(task,"正在停止本地任务，等待动作和推理退出…");
+    }
+    /** A journal failure belongs to its captured task only; a later task cannot be selected after this check. */
+    boolean stopIfTask(String expectedTask){
+        if(expectedTask==null||!expectedTask.matches("[0-9a-f]{32}"))throw new IllegalArgumentException("exact captured task required");
+        synchronized(this){
+            if(!running||terminalDecisionSealed||!expectedTask.equals(currentTaskId))return false;
+            stop();return true;
+        }
     }
     @Override public synchronized void close(){closed=true;stop();worker.shutdown();}
-    private void emit(final String value){
+    private void emit(final String value){emitForTask(null,value);}
+    private void emitForTask(String expectedTask,final String value){
         final Listener selected;final String task;
-        synchronized(this){lastState=value;selected=listener;task=currentTaskId;}
+        synchronized(this){if(expectedTask!=null&&!expectedTask.equals(currentTaskId))return;lastState=value;selected=listener;task=currentTaskId;}
         main.post(new Runnable(){public void run(){
             synchronized(LocalTaskController.this){
                 if(selected!=null&&listener==selected&&running&&java.util.Objects.equals(task,currentTaskId))selected.onState(value);
@@ -150,7 +172,7 @@ public final class LocalTaskController implements AutoCloseable {
         File evidence=null;PhoneObservation observation=null;int steps=0,repairs=0,staleRounds=0;
         String finalStatus="failed",summary="任务未完成";boolean modelSuccess=false,cleanup=true,rawModelSuccessClaimed=false;
         boolean controllerSuccess=false,controllerCompletionRequested=false;
-        String lastModelDoneStatus=null,lastModelDoneSummary=null;
+        String lastModelDoneStatus=null,lastModelDoneSummary=null,acceptedCompletionModelRunId=null;
         TaskCompletionGate completion=new TaskCompletionGate(taskId,instruction,authorization.authorization);
         NotesTaskPhaseGuard notesPhase=null;
         CalculatorTaskInputGuard calculatorInput=null;
@@ -329,7 +351,8 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("task_authorization",outcome.taskAuthorization==null?JSONObject.NULL:outcome.taskAuthorization)
                         .put("background_session",outcome.backgroundSession==null?JSONObject.NULL:outcome.backgroundSession)
                         .put("ime_submit",outcome.imeSubmit==null?JSONObject.NULL:outcome.imeSubmit)
-                        .put("fixed_intent",outcome.fixedIntent==null?JSONObject.NULL:outcome.fixedIntent);
+                        .put("fixed_intent",outcome.fixedIntent==null?JSONObject.NULL:outcome.fixedIntent)
+                        .put("action_execution",outcome.actionExecution==null?JSONObject.NULL:outcome.actionExecution);
                 if(ActionPolicy.isReadOnlyDiscovery(action))actionReceipt.put("read_only",true).put("effect","launcher_catalogue_read");
                 if(calculatorInput.supported())actionReceipt.put("calculator_input",new JSONObject(frame.calculatorDomain.evidence()));
                 record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-action.json",steps),actionReceipt);
@@ -434,7 +457,7 @@ public final class LocalTaskController implements AutoCloseable {
                     if("success".equals(action.status)){
                         TaskCompletionGate.Check check=completion.successClaim(steps,decisionRunId,completionFrame(observation),stable);
                         record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-completion-check.json",steps),new JSONObject(check.evidence));
-                        if(check.verified){finalStatus="model_reported_done";summary=completion.completionSummary();modelSuccess=true;break;}
+                        if(check.verified){finalStatus="model_reported_done";summary=completion.completionSummary();modelSuccess=true;acceptedCompletionModelRunId=decisionRunId;break;}
                         summary=completion.incompleteSummary();
                         if(!check.retryAllowed||steps>=MAX_STEPS){finalStatus="partial";break;}
                         emit("完成证据尚不完整，正在重新观察并继续原任务…");
@@ -455,9 +478,15 @@ public final class LocalTaskController implements AutoCloseable {
         catch(CleanupUnknown error){controllerSuccess=false;blocked=true;cleanup=false;finalStatus="blocked";summary=error.getMessage();}
         catch(Exception error){controllerSuccess=false;finalStatus=cancelled.get()?"cancelled":"failed";summary=HeptaAccessibilityService.message(error);}
         finally{
+            service.retireActionWork(taskId,"controller_abandoned");
+            if(service.actionWorkPending()){
+                cancelled.set(true);cleanup=false;blocked=true;modelSuccess=false;controllerSuccess=false;
+                finalStatus="blocked";summary="动作工作尚未真实退出；保持未知状态，不接受新任务";
+            }
             synchronized(handleLock){activeInference=null;}
+            WebFlightSession.Cleanup webCleanup=null;
             if(activeWebTask!=null){
-                WebFlightSession.Cleanup webCleanup=activeWebTask.close(cancelled.get()?"cancelled":"failed".equals(finalStatus)?"error":"normal");
+                webCleanup=activeWebTask.close(cancelled.get()?"cancelled":"failed".equals(finalStatus)?"error":"normal");
                 if(evidence!=null)try{record(evidence,"web-helper-cleanup.json",webCleanup.evidence);}catch(Exception ignored){}
                 if(!webCleanup.known){cleanup=false;blocked=true;modelSuccess=false;controllerSuccess=false;finalStatus="blocked";summary="网页工具清理尚未确认，请使用清理后台空间后再开始任务";}
             }
@@ -470,13 +499,25 @@ public final class LocalTaskController implements AutoCloseable {
             LocalInference.TaskCleanup modelCleanup;
             try{modelCleanup=inference.endTask();}
             catch(Exception closeError){modelCleanup=new LocalInference.TaskCleanup(false,true,false,null,null,taskId,false,null);}
+            TaskCancellationQueue.Ticket cancellation=taskCancellation;
+            if(cancellation!=null&&taskId.equals(cancellation.taskId)){
+                cancellation.observeNativeCleanup(modelCleanup.cleanupKnown);
+                try{cancellation.awaitDrain(1000);}catch(InterruptedException interrupted){Thread.currentThread().interrupt();cleanup=false;blocked=true;}
+            }else{cleanup=false;blocked=true;}
+            // A signal call may still be blocked even after a separate real exit proof. It retains admission until it returns.
+            if(service.nativeCancellationWorkPending()){
+                cleanup=false;blocked=true;modelSuccess=false;controllerSuccess=false;finalStatus="blocked";
+                summary="模型取消工作尚未真实退出；退出回执与取消请求分开核验，暂不接受新任务";
+            }
             // endTask can block. Recheck the same immutable scope after it returns,
             // before publishing completion; old pre-close identity is insufficient.
-            if(scope!=null)try{scope.verifyUnchanged();}catch(Exception refusal){
+            boolean terminalScopeRechecked=false;
+            if(scope!=null)try{scope.verifyUnchanged();terminalScopeRechecked=true;}catch(Exception refusal){
                 finalStatus="failed";modelSuccess=false;controllerSuccess=false;summary=HeptaAccessibilityService.message(refusal);
             }
-            boolean controllerOwnerCompletionAllowed=false;
-            try{authorization.ready();if(controllerSuccess)controllerOwnerCompletionAllowed=authorization.frame().successAllowed();}
+            boolean controllerOwnerCompletionAllowed=false;TaskAuthorization.Frame terminalOwnerFrame=null;
+            try{authorization.ready();if(controllerSuccess)controllerOwnerCompletionAllowed=authorization.frame().successAllowed();
+                if(TaskCompletionGate.WEB.equals(completion.contract.kind))terminalOwnerFrame=authorization.frame();}
             catch(Exception refusal){finalStatus="failed";modelSuccess=false;controllerSuccess=false;summary=HeptaAccessibilityService.message(refusal);}
             if(!modelCleanup.cleanupKnown){cleanup=false;blocked=true;finalStatus="blocked";modelSuccess=false;controllerSuccess=false;summary="任务模型进程退出尚未确认，已停止接受新任务";}
             // Stop can arrive while endTask waits for the retained worker to exit.
@@ -511,15 +552,49 @@ public final class LocalTaskController implements AutoCloseable {
             if(controllerSuccess&&(!controllerNativeBound||!controllerOwnerCompletionAllowed||!completion.controllerWorkflowReady(completionFrame(observation)))){
                 controllerSuccess=false;finalStatus="partial";summary="笔记操作已结束，但本次完整核验尚未通过，请核对实际内容。";
             }
-            boolean completionVerified=(modelSuccess||controllerSuccess)&&cleanup&&modelCleanup.receiptValid&&completion.verified(completionFrame(observation));
-            String completionActor=completionVerified?(controllerSuccess?"controller/tool_workflow":"model_done_verified"):null;
-            java.util.Map<String,Object> completionEvidence=completion.evidence(completionFrame(observation));
-            completionEvidence.put("observation_chain_verified",completion.verified(completionFrame(observation)));
-            completionEvidence.put("terminal_binding_and_cleanup_verified",completionVerified);
+            boolean completionVerified;String completionActor;java.util.Map<String,Object> completionEvidence;
+            // All resource teardown and worker receipt checks have finished. A
+            // cancellation that wins this lock cannot be promoted by a late CLOSE.
+            synchronized(this){
+                if(cleanup&&cancelled.get()){
+                    finalStatus="cancelled";modelSuccess=false;controllerSuccess=false;summary="已停止；已经发生的操作不会自动重做";
+                }
+                NotesCompletionEvidence.Frame finalFrame=completionFrame(observation);
+                if(TaskCompletionGate.WEB.equals(completion.contract.kind)){
+                    boolean helperReleased=webCleanup!=null&&webCleanup.known&&activeWebTask!=null
+                            &&taskId.equals(activeWebTask.taskId)&&activeWebTask.released();
+                    boolean backgroundReleased=background!=null&&backgroundCleanup!=null&&backgroundCleanup.known
+                            &&background.released()&&taskId.equals(background.taskId)
+                            &&authorization.authorization.instructionSha256.equals(background.ownerSha256)
+                            &&finalFrame!=null&&background.generation.equals(finalFrame.backgroundGeneration)
+                            &&background.displayId()==finalFrame.displayId;
+                    TaskCompletionGate.Check terminal=completion.terminalWebCheck(activeWebTask,finalFrame,terminalOwnerFrame,
+                            steps,acceptedCompletionModelRunId,modelSuccess&&"model_reported_done".equals(finalStatus),
+                            cleanup,helperReleased,backgroundReleased,terminalScopeRechecked,cancelled.get(),
+                            modelCleanup.processStarted,modelCleanup.processExitObserved,modelCleanup.exitCode,modelCleanup.receiptValid,
+                            modelCleanup.taskId,modelCleanup.generation,modelCleanup.receiptSha256);
+                    completionVerified=terminal.verified;
+                    completionEvidence=new java.util.LinkedHashMap<String,Object>(terminal.evidence);
+                    if(modelSuccess&&!completionVerified){
+                        modelSuccess=false;finalStatus="partial";summary="网页结果曾被观察，但终态身份或清理证明未通过，未确认任务完成。";
+                    }
+                }else{
+                    completionVerified=(modelSuccess||controllerSuccess)&&cleanup&&modelCleanup.receiptValid&&completion.verified(finalFrame);
+                    completionEvidence=completion.evidence(finalFrame);
+                    completionEvidence.put("observation_chain_verified",completion.verified(finalFrame));
+                }
+                completionActor=completionVerified?(controllerSuccess?"controller/tool_workflow":"model_done_verified"):null;
+                completionEvidence.put("terminal_binding_and_cleanup_verified",completionVerified);
+                terminalDecisionSealed=true;
+            }
             completionEvidence.put("completion_actor",completionActor);completionEvidence.put("model_done_synthesized",false);
             completionEvidence.put("controller_completion_requested",controllerCompletionRequested);
             completionEvidence.put("controller_native_parent_session_bound",controllerCompletionRequested?Boolean.valueOf(controllerNativeBound):null);
+            JSONObject lastActionExecution=service.actionExecutionEvidence(taskId);
             if(evidence!=null){try{record(evidence,"result.json",new JSONObject().put("task_id",taskId).put("status",finalStatus)
+                    .put("stop_requested_elapsed_ms",stopRequestedElapsed.get()<0?JSONObject.NULL:Long.valueOf(stopRequestedElapsed.get()))
+                    .put("terminal_decided_elapsed_ms",SystemClock.elapsedRealtime())
+                    .put("last_action_execution",lastActionExecution==null?JSONObject.NULL:lastActionExecution)
                     .put("summary",summary).put("steps",steps).put("model_reported_success",rawModelSuccessClaimed)
                     .put("model_done_status",lastModelDoneStatus==null?JSONObject.NULL:lastModelDoneStatus)
                     .put("model_done_summary",lastModelDoneSummary==null?JSONObject.NULL:lastModelDoneSummary)
@@ -528,6 +603,9 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("controller_completion_requested",controllerCompletionRequested).put("model_done_synthesized",false)
                     .put("final_observation_id",observation==null?JSONObject.NULL:observation.id).put("cleanup_known",cleanup)
                     .put("observation_read_worker_pending_at_terminal",service.observationReadWorkPending())
+                    .put("action_worker_pending_at_terminal",service.actionWorkPending())
+                    .put("native_cancel_worker_pending_at_terminal",service.nativeCancellationWorkPending())
+                    .put("native_cancellation",cancellation==null?JSONObject.NULL:new JSONObject(cancellation.evidence()))
                     .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha256))
                     .put("actual_scope_sha256",scope==null?JSONObject.NULL:QualificationScopeConfig.nullable(scope.actualSha256))
                     .put("qualification_scope",scope==null?JSONObject.NULL:scope.evidence())
@@ -633,7 +711,8 @@ public final class LocalTaskController implements AutoCloseable {
                             .put("task_authorization",outcome.taskAuthorization==null?JSONObject.NULL:outcome.taskAuthorization)
                             .put("qualification_scope",outcome.qualificationScope==null?JSONObject.NULL:outcome.qualificationScope)
                             .put("background_session",outcome.backgroundSession==null?JSONObject.NULL:outcome.backgroundSession)
-                            .put("tool_child",outcome.toolChild==null?JSONObject.NULL:outcome.toolChild);
+                            .put("tool_child",outcome.toolChild==null?JSONObject.NULL:outcome.toolChild)
+                            .put("action_execution",outcome.actionExecution==null?JSONObject.NULL:outcome.actionExecution);
                     record(directory,childPrefix+"-action.json",raw);
                     boolean live=outcome.taskAuthorization!=null&&outcome.taskAuthorization.optBoolean("callback_lease_current",false)
                             &&!outcome.taskAuthorization.optBoolean("callback_cancelled",true);
@@ -703,7 +782,8 @@ public final class LocalTaskController implements AutoCloseable {
             public void onSuccess(String raw,String runId){if(delivered.compareAndSet(false,true)){result.set(new ModelAnswer(raw,runId));ready.countDown();}}
             public void onFailure(String message,boolean cleanup){if(delivered.compareAndSet(false,true)){error.set(message);cleanupKnown.set(cleanup);ready.countDown();}}
         });
-        synchronized(handleLock){activeInference=handle;if(cancelled.get())handle.cancel();}
+        synchronized(handleLock){activeInference=handle;}
+        if(cancelled.get())handle.cancel();
         long stopDeadline=SystemClock.elapsedRealtime()+timeout+17000;boolean cancellationSent=cancelled.get();
         while(!ready.await(120,TimeUnit.MILLISECONDS)){
             if((cancelled.get()||SystemClock.elapsedRealtime()>taskDeadline)&&!cancellationSent){handle.cancel();cancellationSent=true;}
@@ -774,12 +854,37 @@ public final class LocalTaskController implements AutoCloseable {
             catch(Exception ignored){/* No new action, success or retry on diagnostic IO failure. */}
         }
     }
-    private HeptaAccessibilityService.ActionOutcome awaitAction(String id,PhoneObservation observed,ActionDecision action,ObservedTargetLabels targets,org.trillionnium.hepta.background.FixedIntentTarget fixedTarget,TaskAuthorization.Gate authorization,String modelRunId,long deadline)throws Exception{
-        checkActive(deadline);final CountDownLatch ready=new CountDownLatch(1);final AtomicReference<HeptaAccessibilityService.ActionOutcome> value=new AtomicReference<HeptaAccessibilityService.ActionOutcome>();
-        service.perform(id,observed,action,targets,fixedTarget,authorization,modelRunId,new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}},
-                new HeptaAccessibilityService.ActionCallback(){public void onResult(HeptaAccessibilityService.ActionOutcome result){value.set(result);ready.countDown();}});
-        if(!ready.await(8000,TimeUnit.MILLISECONDS)){cancelled.set(true);throw new CleanupUnknown("动作回执超时，可能已有操作发生；已停止后续任务");}
-        HeptaAccessibilityService.ActionOutcome result=value.get();if(result==null)throw new IllegalStateException("动作未返回结果");return result;
+    private HeptaAccessibilityService.ActionOutcome awaitAction(String id,PhoneObservation observed,ActionDecision action,ObservedTargetLabels targets,
+            org.trillionnium.hepta.background.FixedIntentTarget fixedTarget,TaskAuthorization.Gate authorization,String modelRunId,long deadline)throws Exception{
+        checkActive(deadline);
+        final long actionDeadline=Math.min(deadline,SystemClock.elapsedRealtime()+8000);
+        final CountDownLatch ready=new CountDownLatch(1);
+        final AtomicReference<HeptaAccessibilityService.ActionOutcome> outcome=new AtomicReference<HeptaAccessibilityService.ActionOutcome>();
+        service.perform(id,observed,action,targets,fixedTarget,authorization,modelRunId,actionDeadline,
+                new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}},
+                new HeptaAccessibilityService.ActionCallback(){public void onResult(HeptaAccessibilityService.ActionOutcome value){
+                    if(outcome.compareAndSet(null,value))ready.countDown();
+                }});
+        try{
+            while(true){
+                if(cancelled.get())service.retireActionWork(id,"cancelled");
+                long remaining=actionDeadline-SystemClock.elapsedRealtime();
+                if(remaining<=0){
+                    cancelled.set(true);service.retireActionWork(id,"deadline");
+                    throw new CleanupUnknown("动作回执超时，可能已有操作发生；工作真实退出前保持阻塞，不重试");
+                }
+                if(ready.await(Math.min(100,remaining),TimeUnit.MILLISECONDS))break;
+            }
+        }catch(InterruptedException interrupted){
+            cancelled.set(true);service.retireActionWork(id,"controller_abandoned");Thread.currentThread().interrupt();
+            throw new CleanupUnknown("动作等待被中断，派发或退出状态未知；不重试");
+        }
+        if(SystemClock.elapsedRealtime()>=actionDeadline||service.actionWorkPending()){
+            cancelled.set(true);service.retireActionWork(id,"controller_abandoned");
+            throw new CleanupUnknown("动作回执迟到或动作工作尚未退出；不推进后续动作");
+        }
+        HeptaAccessibilityService.ActionOutcome result=outcome.get();
+        if(result==null)throw new IllegalStateException("动作回执为空");return result;
     }
     private void checkActive(long deadline)throws Stopped{if(cancelled.get())throw new Stopped();if(SystemClock.elapsedRealtime()>deadline)throw new IllegalStateException("本次任务已超时，已停止继续操作");}
     private static final class Stopped extends Exception {private static final long serialVersionUID=1L;}
@@ -881,10 +986,22 @@ public final class LocalTaskController implements AutoCloseable {
         if(web!=null&&fixedTargets!=null)fixedTargets=java.util.Collections.emptyMap();
         java.util.List<AppCatalogueRanker.Entry> allApps=catalogue.apps;
         java.util.List<PhoneObservation.Node> nodes=new java.util.ArrayList<PhoneObservation.Node>(observation.nodes);
+        if(web!=null){
+            // The complete bounded AX tree is already retained as private evidence.
+            // An exact-token model does not need hundreds of ungranted footer/cart
+            // controls: only this verified domain's real current target IDs enter
+            // its actionable screen view. Omission counts remain explicit.
+            java.util.Set<String> permitted=new java.util.HashSet<String>(web.clickIds);
+            permitted.addAll(web.editValues.keySet());
+            java.util.List<PhoneObservation.Node> selected=new java.util.ArrayList<PhoneObservation.Node>();
+            for(PhoneObservation.Node node:nodes)if(permitted.contains(node.id))selected.add(node);
+            nodes=selected;
+        }
         final java.util.Set<String> requiredIds=new java.util.HashSet<String>();
         for(PhoneObservation.Node node:nodes)
-            if(PromptActionDomain.requiresRetention(observation.packageName,node.packageName,node.enabled,node.password,
-                    node.clickable,node.editable,node.scrollActions))requiredIds.add(node.id);
+            if(web==null?PromptActionDomain.requiresRetention(observation.packageName,node.packageName,node.enabled,node.password,
+                    node.clickable,node.editable,node.scrollActions):
+                    web.clickIds.contains(node.id)||web.editValues.containsKey(node.id))requiredIds.add(node.id);
         java.util.Collections.sort(nodes,new java.util.Comparator<PhoneObservation.Node>(){
             public int compare(PhoneObservation.Node a,PhoneObservation.Node b){
                 boolean ar=requiredIds.contains(a.id),br=requiredIds.contains(b.id);
@@ -921,6 +1038,9 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("size",new JSONArray(new int[]{observation.width,observation.height}))
                     .put("ime_visible",observation.state.imeVisibility.value()==null?JSONObject.NULL:observation.state.imeVisibility.value());
             screen.put("window",observation.windowPromptJson());
+            if(web!=null)screen.put("node_projection_scope","current_verified_web_domain_targets")
+                    .put("whole_scene_included",false).put("private_full_native_node_count",observation.nodes.size())
+                    .put("domain_filtered_nodes",observation.nodes.size()-nodes.size());
             JSONArray projectedNodes=new JSONArray();java.util.Set<String> ids=new java.util.HashSet<String>();
             java.util.Map<String,String> projectedLabels=new java.util.HashMap<String,String>();
             java.util.Set<String> clicks=new java.util.HashSet<String>(),edits=new java.util.HashSet<String>();

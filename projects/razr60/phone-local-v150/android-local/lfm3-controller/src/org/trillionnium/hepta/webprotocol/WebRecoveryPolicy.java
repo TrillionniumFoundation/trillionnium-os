@@ -21,6 +21,7 @@ public final class WebRecoveryPolicy {
         try{
             String schema=text(prior,"schema");
             need(schema.equals("hepta.web-helper.lease-journal.v1")||schema.equals("hepta.web-helper.lease-journal.v2")
+                    ||schema.equals("hepta.web-helper.lease-journal.v3")
                     ||schema.equals(WebEvidenceProtocol.JOURNAL_SCHEMA),"unsupported prior journal");
             need(text(prior,"state").equals("active")||text(prior,"state").equals("unknown"),"prior state is not an unresolved lease");
             JSONObject binding=prior.getJSONObject("binding");

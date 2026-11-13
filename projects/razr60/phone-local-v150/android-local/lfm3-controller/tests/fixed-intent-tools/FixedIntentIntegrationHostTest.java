@@ -59,10 +59,17 @@ public final class FixedIntentIntegrationHostTest {
         FixedIntentTarget target=FixedIntentDispatch.inspect(e.service,android.os.Process.myUid(),action);
         return ActionDecision.parse(raw(e.service.current.id,action,ObservedAppLabels.project(target.appLabel),target.packageName,payload),ActionDecision.FIXED_INTENT_ACTION_SCHEMA);
     }
-    static HeptaAccessibilityService.ActionOutcome perform(QualificationScopeHostTest.Env e,ActionDecision action,FixedIntentTarget target,String run,HeptaAccessibilityService.Cancellation cancel){
+    static HeptaAccessibilityService.ActionOutcome perform(QualificationScopeHostTest.Env e,ActionDecision action,FixedIntentTarget target,String run,HeptaAccessibilityService.Cancellation cancel)throws Exception{
         HeptaAccessibilityService.ActionOutcome[] reply=new HeptaAccessibilityService.ActionOutcome[1];
+        final CountDownLatch completed=new CountDownLatch(1);final PhoneObservation observed=e.service.current;
+        final TaskAuthorization.Gate authorization=e.service.taskAuthorization;
         ObservedTargetLabels labels=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,e.service.current.id,e.service.current.packageName,Collections.singletonMap("n0",e.service.node.text));
-        e.service.perform(e.task,e.service.current,action,labels,target,e.service.taskAuthorization,run,cancel,value->reply[0]=value);
+        e.service.perform(e.task,observed,action,labels,target,authorization,run,cancel,value->{reply[0]=value;completed.countDown();});
+        check(completed.await(10,TimeUnit.SECONDS)&&reply[0]!=null,"actual captured fixed-intent callback arrived");
+        if(reply[0].actionExecution!=null){JSONObject state=reply[0].actionExecution;
+            check(e.task.equals(state.getString("task_id"))&&run.equals(state.getString("model_run_id"))
+                    &&observed.id.equals(state.getString("observation_id"))&&authorization.authorization.sha256.equals(state.getString("authorization_sha256")),
+                    "callback belongs to this task, run, observation and authorization");}
         return reply[0];
     }
     static JSONObject json(Path file)throws Exception{return new JSONObject(new String(Files.readAllBytes(file),StandardCharsets.UTF_8));}

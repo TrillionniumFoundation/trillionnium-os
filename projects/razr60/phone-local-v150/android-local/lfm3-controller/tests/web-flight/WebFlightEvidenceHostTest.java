@@ -19,6 +19,9 @@ import org.trillionnium.hepta.webprotocol.WebEvidenceBinding;
 import org.trillionnium.hepta.webprotocol.WebEvidenceProtocol;
 import org.trillionnium.hepta.webprotocol.WebRecoveryPolicy;
 import org.trillionnium.hepta.webprotocol.WebStorageEvidence;
+import org.trillionnium.hepta.webprotocol.WebDomStability;
+import org.trillionnium.hepta.webprotocol.WebDomCanonical;
+import org.trillionnium.hepta.webprotocol.WebObservedNavigation;
 
 /** Real pure production classes; synthetic native geometry/AX and callback identity.
  * The Rect fixture is explicitly Android IO. No phone, Binder authentication,
@@ -44,7 +47,16 @@ public final class WebFlightEvidenceHostTest {
     private static JSONObject copy(JSONObject value)throws Exception{return new JSONObject(value.toString());}
 
     private static JSONObject dom()throws Exception{
-        return new JSONObject().put("schema","hepta.fixed-top-document-dom.v3").put("geometry_semantics_verified",false)
+        JSONObject root=new JSONObject().put("path","0").put("parent_path",JSONObject.NULL).put("tag","html")
+                .put("rect_css_pixels",new JSONArray(new int[]{0,0,400,800}));
+        for(String key:new String[]{"id","name","role","aria_label","aria_hidden","aria_modal","aria_selected",
+                "aria_checked","aria_pressed","text","item_type","item_prop"})root.put(key,"");
+        for(String key:new String[]{"disabled","hidden_attr","inert_attr","item_scope","iframe_contents_read"})root.put(key,false);
+        root.put("visible_in_viewport",true);
+        for(String key:new String[]{"href_raw","href_resolved","link_target","value","aria_disabled"})root.put(key,JSONObject.NULL);
+        return new JSONObject().put("schema",WebDomStability.DOM_SCHEMA).put("geometry_semantics_verified",false)
+                .put("href","https://m.csair.com/").put("origin","https://m.csair.com").put("ready_state","complete")
+                .put("truncated",false).put("truncation_reasons",new JSONArray()).put("nodes",new JSONArray().put(root)).put("visited",1)
                 .put("visual_viewport",new JSONObject().put("width",400).put("height",800).put("offset_left",0)
                         .put("offset_top",0).put("page_left",0).put("page_top",0).put("scale",1))
                 .put("viewport_css_pixels",new JSONArray(new int[]{400,800}))
@@ -66,11 +78,25 @@ public final class WebFlightEvidenceHostTest {
                     .put("use_wide_viewport",true).put("load_with_overview_mode",true);
             samples.put(new JSONObject().put("phase",phases[i]).put("native",state));
         }
-        return new JSONObject().put("display_id",7).put("actual_window_id",19).put("started_elapsed_ms",1000)
+        JSONObject capture=new JSONObject().put("display_id",7).put("actual_window_id",19).put("started_elapsed_ms",1000)
                 .put("ended_elapsed_ms",1010).put("webview_bounds_screen_pixels",new JSONArray(new int[]{0,400,1200,2800}))
                 .put("capture_geometry",new JSONObject().put("schema",WebNativeGeometry.SCHEMA).put("samples",samples)
                         .put("native_samples_equal",true).put("dom_equal_across_visual_callback",true).put("ui_thread_bracket",true)
                         .put("get_scale_is_deprecated_racy_observation",true).put("css_to_screen_mapping_verified",false));
+        return wireFixtureStability(capture,dom(),captureBinding());
+    }
+    /** Both raw values are synthetic; the real shared verifier derives every proof/hash. */
+    private static JSONObject wireFixtureStability(JSONObject capture,JSONObject dom,JSONObject binding)throws Exception{
+        String raw=dom.toString();WebDomStability.Result proof=WebDomStability.evaluate(raw,raw,binding.getString("site_policy_id"));
+        String proofSha=WebDomCanonical.sha256(proof.evidence());
+        capture.put("binding",copy(binding)).put("dom_raw_utf8",raw).put("dom_sha256",WebEvidenceJson.sha(raw))
+                .put("before_dom_raw_utf8",raw).put("before_dom_sha256",WebEvidenceJson.sha(raw))
+                .put("dom_stability",proof.evidence()).put("dom_stability_sha256",proofSha)
+                .put("raw_dom_equal",proof.rawEqual).put("comparison_scope",proof.comparisonScope)
+                .put("observed_link_navigation",JSONObject.NULL);
+        capture.getJSONObject("capture_geometry").put("dom_equal_across_visual_callback",proof.rawEqual)
+                .put("dom_comparison_scope",proof.comparisonScope).put("dom_stability_sha256",proofSha);
+        return capture;
     }
     private static JSONObject state(JSONObject capture,int sample)throws Exception{
         return capture.getJSONObject("capture_geometry").getJSONArray("samples").getJSONObject(sample).getJSONObject("native");
@@ -215,9 +241,9 @@ public final class WebFlightEvidenceHostTest {
     }
     private static JSONObject captured()throws Exception{
         JSONObject d=dom().put("href","https://m.csair.com/").put("origin","https://m.csair.com")
-                .put("ready_state","complete").put("truncated",false).put("nodes",new JSONArray()).put("visited",0);
+                .put("ready_state","complete").put("truncated",false);
         String domRaw=d.toString();JSONObject b=captureBinding(),c=geometryCapture();
-        c.put("schema","hepta.owned-webview-origin-dom.v1").put("challenge",NONCE).put("binding",copy(b))
+        c.put("schema",WebObservedNavigation.CAPTURE_SCHEMA).put("challenge",NONCE).put("binding",copy(b))
                 .put("helper_package",PACKAGE).put("helper_uid",10484).put("helper_pid",123)
                 .put("webview_instance",INSTANCE).put("navigation_epoch",7).put("committed_main_frame_url","https://m.csair.com/")
                 .put("commit_elapsed_ms",950).put("current_native_url","https://m.csair.com/")
@@ -226,6 +252,7 @@ public final class WebFlightEvidenceHostTest {
                 .put("observer_script_sha256",WebEvidenceReceipt.OBSERVER_SHA)
                 .put("business_verified",false).put("pixel_equality_claimed",false)
                 .put("all_visible_semantics_verified",false).put("truncated",false);
+        wireFixtureStability(c,d,b);
         return new JSONObject().put("schema",WebEvidenceProtocol.RAW_SCHEMA).put("request_json_utf8",request().toString())
                 .put("request_sha256",WebEvidenceJson.sha(request().toString())).put("binding",b)
                 .put("binding_sha256",WebEvidenceBinding.sha256(b)).put("controller_identity",copy(b.getJSONObject("controller_identity")))

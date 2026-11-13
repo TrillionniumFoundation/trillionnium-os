@@ -22,10 +22,14 @@ public final class LocalModelEngine implements AutoCloseable {
     private final File files;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private static final AtomicReference<RunHandle> PROCESS_ACTIVE = new AtomicReference<>();
+    // Only flags/CAS/queue reservation run under this gate; no native signal, IO or exit wait.
+    private static final TaskCancellationQueue ACTIVE_CANCELLATION = TaskCancellationQueue.processQueue();
+    private static final Object PROCESS_ADMISSION = ACTIVE_CANCELLATION.admissionMonitor();
     private final AtomicReference<RunHandle> active = new AtomicReference<>();
     private final AtomicReference<WarmTask> warmActive = new AtomicReference<>();
     private final AtomicBoolean closed = new AtomicBoolean(false);
     private volatile Result lastResult;
+    private volatile TaskCancellationQueue.Ticket lastCancellation;
     private final ModelFileVerifier modelVerifier = new ModelFileVerifier();
     private final LocalRuntimeConfig configuration;
     private final String configurationError;
@@ -86,11 +90,13 @@ public final class LocalModelEngine implements AutoCloseable {
         public final String runId;
         private RunHandle(){this(UUID.randomUUID().toString().replace("-", ""));}
         private RunHandle(String runId){this(runId,null);}
-        private RunHandle(String runId,RunHandle taskOwner){this.runId=runId;this.taskOwner=taskOwner;}
+        private RunHandle(String runId,RunHandle taskOwner){this.runId=runId;this.taskOwner=taskOwner;this.cancelTicket=TaskCancellationQueue.Ticket.forRun(this,runId);}
         private final RunHandle taskOwner;
+        private final TaskCancellationQueue.Ticket cancelTicket;
         private final AtomicBoolean cancelRequested = new AtomicBoolean(false);
         private final AtomicReference<Process> child = new AtomicReference<>();
         private volatile OwnedWorkerCancellation ownedCancellation;
+        private void requestCancellationOnly(){cancelRequested.set(true);if(taskOwner!=null)taskOwner.requestCancellationOnly();}
         public void cancel() {
             cancelRequested.set(true);
             if(taskOwner!=null){taskOwner.cancel();return;}
@@ -125,8 +131,7 @@ public final class LocalModelEngine implements AutoCloseable {
         if(!WarmProcessSession.validId(taskId)||closed.get())throw new IllegalStateException("invalid or closed task model session");
         configuration();
         WarmTask task=new WarmTask(taskId);
-        if(!PROCESS_ACTIVE.compareAndSet(null,task.owner))throw new IllegalStateException("another model owns the process slot");
-        active.set(task.owner);warmActive.set(task);
+        claimProcess(task.owner,active);warmActive.set(task);
         if(closed.get())task.owner.cancel();
         return task;
     }
@@ -287,8 +292,7 @@ public final class LocalModelEngine implements AutoCloseable {
         if(android.os.Looper.myLooper()!=android.os.Looper.getMainLooper())throw new IllegalStateException("external reservation must run on main thread");
         if(closed.get()||requestId==null||!requestId.matches("[0-9a-f]{32}"))throw new IllegalStateException("invalid external reservation");
         RunHandle handle=new RunHandle(requestId);
-        if(!PROCESS_ACTIVE.compareAndSet(null,handle))throw new IllegalStateException("another local model owns the process slot");
-        active.set(handle);return new ExternalRunLease(handle);
+        claimProcess(handle,active);return new ExternalRunLease(handle);
     }
 
 
@@ -317,15 +321,18 @@ public final class LocalModelEngine implements AutoCloseable {
         recoveryMainThread();
         if(closed.get())throw new IllegalStateException("engine is closed");
         RunHandle handle=new RunHandle();
-        RecoverySlotHandoff<RunHandle> handoff=RecoverySlotHandoff.acquire(
-                recoverySlot(PROCESS_ACTIVE),recoverySlot(active),handle);
+        final RecoverySlotHandoff<RunHandle> handoff;
+        synchronized(PROCESS_ADMISSION){
+            if(ACTIVE_CANCELLATION.pending())throw new IllegalStateException("prior captured cancellation worker still active");
+            handoff=RecoverySlotHandoff.acquire(recoverySlot(PROCESS_ACTIVE),recoverySlot(active),handle);
+        }
         RecoveryBarrier barrier=new RecoveryBarrier(handle,handoff);
         if(closed.get())throw new IllegalStateException("engine closed while retaining recovery barrier");
         return barrier;
     }
     public boolean canReserveRecovery(RecoveryBarrier barrier){
         recoveryMainThread();
-        return !LocalProbeApplication.permissionPreparationBlocks(context)&&!closed.get()&&barrier!=null&&barrier.owner==this
+        return !ACTIVE_CANCELLATION.pending()&&!LocalProbeApplication.permissionPreparationBlocks(context)&&!closed.get()&&barrier!=null&&barrier.owner==this
                 &&barrier.handle.child.get()==null&&barrier.handoff.canBorrow();
     }
     interface RecoveryCloseListener { void onClosed(RecoveryReservation reservation); }
@@ -368,10 +375,12 @@ public final class LocalModelEngine implements AutoCloseable {
         @Override public void close(){
             if(!released.compareAndSet(false,true))return;
             try{
-                if(handle.child.get()!=null)
-                    throw new IllegalStateException("recovery reservation unexpectedly owns a child");
-                if(closed.get()||handle.isCancellationRequested())attempt.retainBarrierOnClose();
-                attempt.close();
+                synchronized(PROCESS_ADMISSION){
+                    if(handle.child.get()!=null)
+                        throw new IllegalStateException("recovery reservation unexpectedly owns a child");
+                    if(closed.get()||handle.isCancellationRequested())attempt.retainBarrierOnClose();
+                    attempt.close();
+                }
             }finally{
                 closeFinished.set(true);
                 RecoveryCloseListener listener=closeListener;
@@ -391,7 +400,11 @@ public final class LocalModelEngine implements AutoCloseable {
         if(closed.get()||barrier==null||barrier.owner!=this||barrier.handle.child.get()!=null)
             throw new IllegalStateException("owned recovery barrier is unavailable");
         RunHandle handle=new RunHandle();
-        RecoveryReservation reservation=new RecoveryReservation(barrier,handle,barrier.handoff.borrow(handle));
+        final RecoveryReservation reservation;
+        synchronized(PROCESS_ADMISSION){
+            if(ACTIVE_CANCELLATION.pending())throw new IllegalStateException("prior captured cancellation worker still active");
+            reservation=new RecoveryReservation(barrier,handle,barrier.handoff.borrow(handle));
+        }
         if(closed.get()){reservation.close();throw new IllegalStateException("engine closed during recovery handoff");}
         return reservation;
     }
@@ -401,8 +414,7 @@ public final class LocalModelEngine implements AutoCloseable {
         if (request == null || listener == null) throw new IllegalArgumentException("request and listener required");
         if (closed.get()) throw new IllegalStateException("engine is closed");
         final RunHandle handle = new RunHandle();
-        if (!PROCESS_ACTIVE.compareAndSet(null, handle)) throw new IllegalStateException("local model already has an active request in this app process");
-        active.set(handle);
+        claimProcess(handle,active);
         try {
             executor.execute(() -> execute(handle, request, listener));
         } catch (RuntimeException e) {
@@ -413,9 +425,27 @@ public final class LocalModelEngine implements AutoCloseable {
         return handle;
     }
 
-    public boolean isBusy() { return PROCESS_ACTIVE.get() != null||LocalProbeApplication.permissionPreparationBlocks(context); }
+    private static void claimProcess(RunHandle handle,AtomicReference<RunHandle> local){
+        synchronized(PROCESS_ADMISSION){
+            if(ACTIVE_CANCELLATION.pending()||!PROCESS_ACTIVE.compareAndSet(null,handle))
+                throw new IllegalStateException("local model or captured cancellation still owns the process slot");
+            local.set(handle);
+        }
+    }
+    public boolean isBusy() { return PROCESS_ACTIVE.get() != null||ACTIVE_CANCELLATION.pending()||LocalProbeApplication.permissionPreparationBlocks(context); }
     public Result lastResult() { return lastResult; }
-    public void cancelActive() { RunHandle h = active.get(); if (h != null) h.cancel(); }
+    /** Captures once under the same gate as all process admissions. Return is a request, never exit proof. */
+    public void cancelActive() {
+        synchronized(PROCESS_ADMISSION){
+            final RunHandle captured=active.get();
+            if(captured==null||PROCESS_ACTIVE.get()!=captured)return;
+            captured.requestCancellationOnly();lastCancellation=captured.cancelTicket;
+            ACTIVE_CANCELLATION.request(captured.cancelTicket,new TaskCancellationQueue.Lease(){public boolean current(String runId){
+                return captured.runId.equals(runId)&&active.get()==captured&&PROCESS_ACTIVE.get()==captured;
+            }},new Runnable(){public void run(){captured.cancel();}});
+        }
+    }
+    JSONObject cancellationEvidence(){TaskCancellationQueue.Ticket value=lastCancellation;return value==null?null:new JSONObject(value.evidence());}
     public File modelDirectory() { return new File(files, "model"); }
     public File modelFile() { return new File(modelDirectory(), configuration.profile.fileName); }
     public LocalRuntimeConfig configuration() {

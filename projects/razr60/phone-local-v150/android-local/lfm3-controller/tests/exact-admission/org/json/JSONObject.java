@@ -8,6 +8,8 @@ public final class JSONObject {
     public static final Object NULL=new Object();
     private final Map<String,Object> fields=new LinkedHashMap<String,Object>();
     public JSONObject(){}
+    /** Type boundary only: background Selection parsing is exercised with the real org.json gate. */
+    public JSONObject(String raw)throws JSONException{throw new JSONException("write-only admission fixture cannot parse a background Selection");}
     public JSONObject(Map<?,?> values){for(Map.Entry<?,?> item:values.entrySet())fields.put(String.valueOf(item.getKey()),item.getValue()==null?NULL:item.getValue());}
     public JSONObject put(String key,Object value)throws JSONException{
         if(key==null)throw new JSONException("null key");
@@ -17,6 +19,11 @@ public final class JSONObject {
     public JSONObject getJSONObject(String key)throws JSONException{
         Object value=get(key);if(value instanceof JSONObject)return (JSONObject)value;
         if(value instanceof Map<?,?>)return new JSONObject((Map<?,?>)value);throw new JSONException("not object");
+    }
+    public JSONArray getJSONArray(String key)throws JSONException{
+        Object value=get(key);if(value instanceof JSONArray)return (JSONArray)value;
+        if(value instanceof Collection<?>)return new JSONArray((Collection<?>)value);
+        throw new JSONException("not array");
     }
     public boolean has(String key){return fields.containsKey(key);}
     public boolean isNull(String key){return !has(key)||fields.get(key)==NULL||fields.get(key)==null;}

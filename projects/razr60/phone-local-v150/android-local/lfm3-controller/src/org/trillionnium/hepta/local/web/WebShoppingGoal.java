@@ -22,9 +22,9 @@ import java.util.regex.Pattern;
  * separate, mandatory controller/helper gates.
  */
 public final class WebShoppingGoal {
-    public static final String SCHEMA="hepta.web-shopping-goal.v1";
+    public static final String SCHEMA="hepta.web-shopping-goal.v2";
     public static final String KIND="mi_public_product";
-    public static final String SITE_POLICY_ID="mi_cn_ax3000t_read_v1";
+    public static final String SITE_POLICY_ID="mi_cn_ax3000t_read_v2";
     public static final String MODEL_TERM="AX3000T";
     public static final String DISPLAY_MODEL="Xiaomi 路由器 AX3000T";
     public static final String LEGACY_EXPLICIT_OWNER=

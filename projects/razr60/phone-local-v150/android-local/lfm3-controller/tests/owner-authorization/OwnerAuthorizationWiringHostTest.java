@@ -80,9 +80,74 @@ public final class OwnerAuthorizationWiringHostTest {
     }
     static HeptaAccessibilityService.ActionOutcome perform(QualificationScopeHostTest.Env e,TaskAuthorization.Gate gate,ActionDecision action,String run)throws Exception{
         final HeptaAccessibilityService.ActionOutcome[] reply=new HeptaAccessibilityService.ActionOutcome[1];
-        e.service.perform(e.task,e.service.current,action,labels(e),gate,run,()->false,value->reply[0]=value);
-        check(reply[0]!=null,"expected synchronous fake-IO callback");return reply[0];
+        final CountDownLatch completed=new CountDownLatch(1);final PhoneObservation observation=e.service.current;
+        e.service.perform(e.task,observation,action,labels(e),gate,run,()->false,value->{reply[0]=value;completed.countDown();});
+        check(completed.await(10,TimeUnit.SECONDS),"actual captured action callback arrived");
+        check(reply[0]!=null,"expected captured fake-IO callback");
+        if(reply[0].actionExecution!=null)actionIdentity(reply[0].actionExecution,e.task,observation,gate,run);
+        return reply[0];
     }
+    static void actionIdentity(JSONObject state,String task,PhoneObservation observation,TaskAuthorization.Gate gate,String run)throws Exception{
+        check(task.equals(state.getString("task_id"))&&run.equals(state.getString("model_run_id"))
+                &&observation.id.equals(state.getString("observation_id"))&&gate.authorization.sha256.equals(state.getString("authorization_sha256")),
+                "barrier belongs to the exact task, model run, observation and original authorization");
+    }
+    /** Hold the supplied cancellation boundary only after the real worker enters settle.
+     * No action, phase, drain, cancellation result or callback is manufactured. */
+    static final class SettleBoundary implements HeptaAccessibilityService.Cancellation,AutoCloseable {
+        final QualificationScopeHostTest.Env e;final TaskAuthorization.Gate gate;final PhoneObservation observation;
+        final String run;final AtomicBoolean stopped,entered=new AtomicBoolean();
+        final CountDownLatch settled=new CountDownLatch(1),released=new CountDownLatch(1);volatile String operation;
+        SettleBoundary(QualificationScopeHostTest.Env env,TaskAuthorization.Gate authorization,String modelRun,AtomicBoolean cancelled){
+            e=env;gate=authorization;observation=e.service.current;run=modelRun;stopped=cancelled;
+        }
+        public boolean isCancelled(){
+            try{
+                JSONObject state=e.service.actionExecutionEvidence(e.task);
+                if(state!=null&&!entered.get()){
+                    actionIdentity(state,e.task,observation,gate,run);
+                    JSONArray phases=state.getJSONArray("phases");boolean inSettle=false;
+                    for(int i=0;i<phases.length();i++)if("settle".equals(phases.getJSONObject(i).getString("phase")))inSettle=true;
+                    if(inSettle&&entered.compareAndSet(false,true)){
+                        operation=state.getString("operation_id");settled.countDown();
+                        check(released.await(10,TimeUnit.SECONDS),"test released its exact settled worker");
+                    }
+                }
+                return stopped.get();
+            }catch(InterruptedException interrupted){Thread.currentThread().interrupt();throw new AssertionError(interrupted);}
+            catch(Exception failure){throw new AssertionError(failure);}
+        }
+        void awaitSettle()throws Exception{
+            check(settled.await(10,TimeUnit.SECONDS),"actual captured worker reached settle");
+            JSONObject state=e.service.actionExecutionEvidence(e.task);actionIdentity(state,e.task,observation,gate,run);
+            check(operation.equals(state.getString("operation_id"))&&!state.getBoolean("worker_drained")
+                    &&!state.getBoolean("callback_published")&&e.service.actionWorkPending(),"same owned work is still in flight");
+        }
+        void awaitDrain()throws Exception{
+            released.countDown();e.service.awaitWorkers();
+            JSONObject state=e.service.actionExecutionEvidence(e.task);actionIdentity(state,e.task,observation,gate,run);
+            check(operation.equals(state.getString("operation_id"))&&state.getBoolean("worker_drained")
+                    &&!state.getBoolean("callback_published"),"exact worker drained while its real callback remains held");
+        }
+        public void close(){released.countDown();}
+    }
+    static Object privateField(Object target,String name)throws Exception{
+        java.lang.reflect.Field field=target.getClass().getDeclaredField(name);field.setAccessible(true);return field.get(target);
+    }
+    /** Wait behind the real serial session write while retaining the main-thread acknowledgement. */
+    static void awaitSessionWrite(LocalTaskSession session)throws Exception{
+        final long generation=session.generation;final TaskAuthorization authorization=session.taskAuthorization;
+        final Object queue=privateField(session,"journalQueue"),lock=privateField(queue,"gate");final long sequence;
+        synchronized(lock){sequence=((Long)privateField(queue,"issued")).longValue();}
+        check(sequence>0,"actual session journal job was submitted");
+        java.util.concurrent.ExecutorService io=(java.util.concurrent.ExecutorService)privateField(session,"recoveryWorker");
+        io.submit(()->{}).get(10,TimeUnit.SECONDS);
+        synchronized(lock){check(sequence==((Long)privateField(queue,"issued")).longValue(),"no replacement journal job crossed the captured write barrier");}
+        check(queue==privateField(session,"journalQueue")&&generation==session.generation&&authorization==session.taskAuthorization
+                &&!((SessionJournalQueue)queue).failed(),"same session generation and authorization completed real IO without failure");
+    }
+    /** Android navigation changes live IO; only the next observe() may replace the captured frame. */
+    static void navigateToClock(QualificationScopeHostTest.Env e){e.service.root.pkg=CLOCK;e.service.node.pkg=CLOCK;}
     static void denied(QualificationScopeHostTest.Env e,HeptaAccessibilityService.ActionOutcome r){
         check(!r.accepted&&!r.dispatched&&!r.stale&&e.service.effects()==0,"denial must have no actual effect API calls");
     }
@@ -111,7 +176,7 @@ public final class OwnerAuthorizationWiringHostTest {
             LocalTaskSession tasks=new LocalTaskSession(e.service,engine);ScopeUiFixture ui=new ScopeUiFixture(tasks,engine);
             ui.intent(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).putExtra("task",CLOCK_OWNER));
             check(!tasks.pending&&model.calls==0,"prefill/preview alone never starts a task");
-            Handler.hold=true;check(ui.start(),"actual user_button schedules");
+            Handler.hold=true;check(ui.start(),"actual user_button schedules");awaitSessionWrite(tasks);
             TaskAuthorization expected=TaskAuthorization.parse(CLOCK_OWNER);JSONObject pending=json(e.dir.resolve("control-session.json"));
             check(tasks.pending&&"user_button".equals(tasks.origin)&&expected.instructionSha256.equals(tasks.instructionSha),"pending source and exact owner bytes");
             check(expected.sha256.equals(pending.getString("task_authorization_sha256")),"pending contract SHA");
@@ -120,7 +185,7 @@ public final class OwnerAuthorizationWiringHostTest {
             ui.intent(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).putExtra("task","只允许点击和结束。"));
             check(expected.sha256.equals(tasks.taskAuthorization.sha256)&&expected.instructionSha256.equals(tasks.instructionSha),"later Intent cannot widen pending authorization");
             JSONObject unchanged=json(e.dir.resolve("control-session.json"));check(expected.sha256.equals(unchanged.getString("task_authorization_sha256")),"journal retains immutable original contract");
-            ui.endUi();Handler.drain();check(model.calls==0&&e.service.effects()==0&&!tasks.pending,"cancelled pending task has zero inference or effects");
+            ui.endUi();awaitSessionWrite(tasks);Handler.drain();check(model.calls==0&&e.service.effects()==0&&!tasks.pending,"cancelled pending task has zero inference or effects");
         }
     }
     static final class ScriptModel implements LocalInference {
@@ -222,17 +287,23 @@ public final class OwnerAuthorizationWiringHostTest {
         }});
         for(String kind:new String[]{"wait","click","type","scroll","home","open"})test("late_"+kind+"_callback_cannot_use_replacement_gate",()->{try(QualificationScopeHostTest.Env e=env()){
             TaskAuthorization.Gate old=bind(e,"继续执行任务。");HeptaAccessibilityService.ActionOutcome[] box=new HeptaAccessibilityService.ActionOutcome[1];AccessibilityNodeInfo node=e.service.node;Handler.hold=true;
-            e.service.perform(e.task,e.service.current,action(e,kind,"open".equals(kind)?CLOCK:SETTINGS),labels(e),old,RUN1,()->false,r->box[0]=r);check(box[0]==null,"actual delayed callback queued");
-            int effects=e.service.effects(),reads=node.refreshes;check(effects==("wait".equals(kind)?0:1),"actual pre-retirement dispatch count");e.service.releaseTask(e.task);
-            TaskAuthorization.Gate fresh=bind(e,"只允许查找和结束。");node.onRefresh=()->{throw new AssertionError("retired node read");};Handler.drain();
+            try(SettleBoundary boundary=new SettleBoundary(e,old,RUN1,new AtomicBoolean())){
+            e.service.perform(e.task,e.service.current,action(e,kind,"open".equals(kind)?CLOCK:SETTINGS),labels(e),old,RUN1,boundary,r->box[0]=r);boundary.awaitSettle();check(box[0]==null,"actual delayed callback queued");
+            int effects=e.service.effects(),reads=node.refreshes;check(effects==("wait".equals(kind)?0:1),"actual pre-retirement dispatch count");
+            old.retire();e.service.retireActionWork(e.task,"lease_retired");node.onRefresh=()->{throw new AssertionError("retired node read");};
+            boundary.awaitDrain();e.service.releaseTask(e.task);
+            TaskAuthorization.Gate fresh=bind(e,"只允许查找和结束。");Handler.drain();
             check(box[0]!=null&&!box[0].accepted&&!box[0].stale&&box[0].dispatched==!"wait".equals(kind),"late callback refuses while preserving existing dispatch");
             JSONObject evidence=box[0].taskAuthorization;check(old.authorization.sha256.equals(evidence.getString("authorization_sha256"))&&evidence.getBoolean("retired")&&!evidence.getBoolean("callback_lease_current"),"callback bound to old gate");
             check(e.service.effects()==effects&&node.refreshes==reads,"no late action or retired text read");fresh.ready();check(!Boolean.TRUE.equals(fresh.evidence().get("refused")),"new gate unpoisoned");
+            }
         }});
         test("cancelled_type_callback_preserves_dispatch_and_skips_read",()->{try(QualificationScopeHostTest.Env e=env()){
             TaskAuthorization.Gate gate=bind(e,"继续执行任务。");HeptaAccessibilityService.ActionOutcome[] box=new HeptaAccessibilityService.ActionOutcome[1];AtomicBoolean stopped=new AtomicBoolean();Handler.hold=true;
-            e.service.perform(e.task,e.service.current,action(e,"type",SETTINGS),labels(e),gate,RUN1,stopped::get,r->box[0]=r);int reads=e.service.node.refreshes;stopped.set(true);e.service.node.onRefresh=()->{throw new AssertionError("cancelled node read");};Handler.drain();
+            try(SettleBoundary boundary=new SettleBoundary(e,gate,RUN1,stopped)){
+            e.service.perform(e.task,e.service.current,action(e,"type",SETTINGS),labels(e),gate,RUN1,boundary,r->box[0]=r);boundary.awaitSettle();int reads=e.service.node.refreshes;stopped.set(true);e.service.node.onRefresh=()->{throw new AssertionError("cancelled node read");};boundary.awaitDrain();Handler.drain();
             check(box[0]!=null&&!box[0].accepted&&box[0].dispatched&&box[0].taskAuthorization.getBoolean("callback_cancelled")&&e.service.node.refreshes==reads&&e.service.node.actions==1,"cancelled callback remains actual one dispatch");
+            }
         }});
         test("controller_missing_contract_refuses_before_model_or_lease",()->{try(QualificationScopeHostTest.Env e=env()){
             ScriptModel model=new ScriptModel(e,"forbidden");e.controller=new LocalTaskController(e.service,model);
@@ -247,7 +318,7 @@ public final class OwnerAuthorizationWiringHostTest {
             check(!promptData(model.prompts.get(0)).has("last_model_decision"),"rejected first proposal creates no retained model intention");
         }});
         test("controller_real_find_open_observation_done_full_evidence_chain",()->{try(QualificationScopeHostTest.Env e=env()){
-            ScriptModel model=new ScriptModel(e,"sequence");e.service.effectHook=()->e.service.prepare(CLOCK);LocalTaskController.TaskResult r=controller(e,model);controllerIdentity(r,model);
+            ScriptModel model=new ScriptModel(e,"sequence");e.service.effectHook=()->navigateToClock(e);LocalTaskController.TaskResult r=controller(e,model);controllerIdentity(r,model);
             check("partial".equals(r.status)&&!r.modelReportedSuccess&&!r.completionVerified&&r.cleanupKnown&&model.calls==3&&e.service.opens==1&&e.service.effects()==1,"actual controlled sequence closes with one open and a grammar-conforming partial report");
             Path evidence=r.evidenceDirectory.toPath();TaskAuthorization expected=TaskAuthorization.parse(CLOCK_OWNER);
             for(int step=1;step<=3;step++){
@@ -276,10 +347,10 @@ public final class OwnerAuthorizationWiringHostTest {
             check(!terminal.getBoolean("goal_independently_verified"),"host controlled sequence is not phone semantic goal proof");
         }});
         test("same_user_button_task_pending_to_terminal_entire_contract_chain",()->{try(QualificationScopeHostTest.Env e=env()){
-            ScriptModel model=new ScriptModel(e,"sequence");e.service.testInference=model;e.service.effectHook=()->e.service.prepare(CLOCK);
+            ScriptModel model=new ScriptModel(e,"sequence");e.service.testInference=model;e.service.effectHook=()->navigateToClock(e);
             LocalModelEngine engine=new LocalModelEngine(Paths.get(e.pm.packages.get("org.trillionnium.hepta.local").applicationInfo.sourceDir).toFile(),e.runtime);
             LocalTaskSession tasks=new LocalTaskSession(e.service,engine);ScopeUiFixture ui=new ScopeUiFixture(tasks,engine);TaskAuthorization expected=TaskAuthorization.parse(CLOCK_OWNER);
-            ui.intent(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).putExtra("task",CLOCK_OWNER));Handler.hold=true;check(ui.start(),"actual ordinary Start reservation");
+            ui.intent(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).putExtra("task",CLOCK_OWNER));Handler.hold=true;check(ui.start(),"actual ordinary Start reservation");awaitSessionWrite(tasks);
             byte[] pendingBytes=Files.readAllBytes(e.dir.resolve("control-session.json"));Files.write(e.dir.resolve("host-pending-before-start.json"),pendingBytes);JSONObject pending=new JSONObject(new String(pendingBytes,StandardCharsets.UTF_8));
             check("pending".equals(pending.getString("status"))&&"user_button".equals(pending.getString("origin"))&&pending.isNull("task_id")&&model.calls==0,"durable pending precedes controller/inference");
             check(expected.instructionSha256.equals(pending.getString("instruction_sha256"))&&expected.sha256.equals(pending.getString("task_authorization_sha256")),"pending binds exact original owner and contract");

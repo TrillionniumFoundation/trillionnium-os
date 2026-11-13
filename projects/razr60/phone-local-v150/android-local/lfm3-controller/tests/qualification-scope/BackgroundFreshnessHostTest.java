@@ -119,7 +119,7 @@ final class BackgroundFreshnessHostTest {
         });
         test("foreground_observation_budget_after_root_acquisition_releases_root",()->{
             GraphSetup s=new GraphSetup();s.fixture.background=null;s.fixture.foreground=s.root;s.root.window.display=0;
-            final int[] checks={0};budgetFailure(()->s.fixture.budgetedSnapshot(()->{if(++checks[0]==3)throw new IllegalStateException("synthetic read deadline");}));
+            budgetFailure(()->s.fixture.budgetedSnapshot(()->{if(s.fixture.foregroundReads>0)throw new IllegalStateException("synthetic read deadline");}));
             check(s.root.recycles==1&&s.root.refreshes==0,"foreground root remains owned even when expiry precedes metadata");
         });
     }
@@ -136,7 +136,8 @@ final class BackgroundFreshnessHostTest {
             PhoneObservation observed=service.current;ObservedTargetLabels targets=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,observed.id,observed.packageName,
                     Collections.singletonMap("n0",ObservedTargetLabels.project(observed.nodes.get(0).label())));
             final HeptaAccessibilityService.ActionOutcome[] reply={null};service.perform(env.task,observed,action,targets,service.taskAuthorization,RUN,()->false,value->reply[0]=value);
-            check(reply[0]!=null,"synchronous fake result");return reply[0];
+            service.awaitWorkers();
+            check(reply[0]!=null,"bounded actual worker result");return reply[0];
         }
         public void close(){background.close();env.close();}
     }

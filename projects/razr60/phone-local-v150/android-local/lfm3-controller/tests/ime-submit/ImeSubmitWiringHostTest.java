@@ -39,13 +39,30 @@ public final class ImeSubmitWiringHostTest {
         ActionDecision action()throws Exception{return ActionDecision.parse(raw(service.current,"submit",null),ActionDecision.IME_ACTION_SCHEMA);}
         HeptaAccessibilityService.ActionOutcome run(ActionDecision action)throws Exception{
             final HeptaAccessibilityService.ActionOutcome[] reply=new HeptaAccessibilityService.ActionOutcome[1];
-            enqueue(action,()->false,value->reply[0]=value);check(reply[0]!=null,"synchronous fake reply");return reply[0];
+            final CountDownLatch completed=new CountDownLatch(1);final PhoneObservation observed=service.current;
+            enqueue(action,()->false,value->{reply[0]=value;completed.countDown();});
+            check(completed.await(10,TimeUnit.SECONDS),"actual captured submit callback arrived");
+            check(reply[0]!=null,"captured fake reply");
+            if(reply[0].actionExecution!=null){JSONObject state=reply[0].actionExecution;
+                check(env.task.equals(state.getString("task_id"))&&RUN.equals(state.getString("model_run_id"))
+                        &&observed.id.equals(state.getString("observation_id"))&&authorization.authorization.sha256.equals(state.getString("authorization_sha256")),
+                        "callback belongs to this task, run, observation and authorization");}
+            return reply[0];
         }
         void enqueue(ActionDecision action,HeptaAccessibilityService.Cancellation cancel,HeptaAccessibilityService.ActionCallback callback){
             PhoneObservation observed=service.current;
             ObservedTargetLabels targets=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,observed.id,observed.packageName,
                     Collections.singletonMap("n0",ObservedTargetLabels.project(observed.nodes.get(0).label())));
             service.perform(env.task,observed,action,targets,authorization,RUN,cancel,callback);
+        }
+        void awaitHeldAction()throws Exception{
+            JSONObject before=service.actionExecutionEvidence(env.task);check(before!=null,"actual captured action state exists");
+            check(env.task.equals(before.getString("task_id"))&&RUN.equals(before.getString("model_run_id"))
+                    &&service.current.id.equals(before.getString("observation_id"))
+                    &&authorization.authorization.sha256.equals(before.getString("authorization_sha256")),"held callback has exact original identity");
+            service.awaitWorkers();JSONObject after=service.actionExecutionEvidence(env.task);
+            check(before.getString("operation_id").equals(after.getString("operation_id"))&&after.getBoolean("worker_drained")
+                    &&!after.getBoolean("callback_published"),"same worker actually drained before delayed callback delivery");
         }
         void background(int display){
             background=BackgroundSession.fixture(env.task,display,Collections.singleton(service.root.pkg));
@@ -138,11 +155,11 @@ public final class ImeSubmitWiringHostTest {
         }});
         test("cancelled_callback_keeps_submit_receipt",()->{try(Setup s=new Setup("查询商品。")){
             AtomicBoolean cancel=new AtomicBoolean();HeptaAccessibilityService.ActionOutcome[] box=new HeptaAccessibilityService.ActionOutcome[1];Handler.hold=true;
-            s.enqueue(s.action(),cancel::get,r->box[0]=r);check(box[0]==null&&s.service.effects()==1,"effect before delayed callback");cancel.set(true);Handler.drain();
+            s.enqueue(s.action(),cancel::get,r->box[0]=r);s.awaitHeldAction();check(box[0]==null&&s.service.effects()==1,"effect before delayed callback");cancel.set(true);Handler.drain();
             check(!box[0].accepted&&box[0].dispatched,"cancellation cannot erase dispatch");proof(s,box[0],"accepted");
         }});
         test("retired_callback_keeps_old_submit_identity",()->{try(Setup s=new Setup("查询商品。")){
-            HeptaAccessibilityService.ActionOutcome[] box=new HeptaAccessibilityService.ActionOutcome[1];Handler.hold=true;s.enqueue(s.action(),()->false,r->box[0]=r);
+            HeptaAccessibilityService.ActionOutcome[] box=new HeptaAccessibilityService.ActionOutcome[1];Handler.hold=true;s.enqueue(s.action(),()->false,r->box[0]=r);s.awaitHeldAction();
             s.service.releaseTask(s.env.task);Handler.drain();check(!box[0].accepted&&box[0].dispatched,"retired callback retains known dispatch");proof(s,box[0],"accepted");
         }});
         test("wait_and_node_renumber_cannot_repeat_same_input",()->{try(Setup s=new Setup("查询商品。")){
@@ -165,17 +182,62 @@ public final class ImeSubmitWiringHostTest {
             s.background(9);s.background.close();zero(s,s.run(s.action()));check(s.journals.isEmpty(),"retired display no fallback");
         }});
     }
+    /** javac may capture work directly or through the enclosing worker Runnable. */
+    static boolean capturesActionState(Object closure,ActionExecutionState owned,int depth)throws Exception{
+        if(depth>2||!closure.getClass().getName().startsWith(HeptaAccessibilityService.class.getName()+"$"))return false;
+        for(java.lang.reflect.Field capture:closure.getClass().getDeclaredFields()){
+            if(capture.getType().getName().equals(HeptaAccessibilityService.class.getName()+"$ActionWork")){
+                capture.setAccessible(true);Object work=capture.get(closure);
+                java.lang.reflect.Field state=work.getClass().getDeclaredField("state");state.setAccessible(true);
+                if(state.get(work)==owned)return true;
+            }else if(capture.isSynthetic()&&capture.getName().startsWith("this$")&&Runnable.class.isAssignableFrom(capture.getType())){
+                capture.setAccessible(true);Object enclosing=capture.get(closure);
+                if(enclosing!=null&&capturesActionState(enclosing,owned,depth+1))return true;
+            }
+        }
+        return false;
+    }
+    /** Simulate one lost action callback, without also suppressing admission or terminal UI delivery. */
+    static void withholdActionCallback(QualificationScopeHostTest.Env e,String run,String observation)throws Exception{
+        e.service.awaitWorkers();String task=e.controller.currentTaskId();
+        java.lang.reflect.Field last=e.service.getClass().getDeclaredField("lastActionExecution");last.setAccessible(true);
+        ActionExecutionState owned=(ActionExecutionState)last.get(e.service);
+        check(owned!=null&&task.equals(owned.taskId)&&run.equals(owned.modelRunId)&&observation.equals(owned.observationId)
+                &&e.service.taskAuthorization.authorization.sha256.equals(owned.authorizationSha256),"withheld callback belongs to the captured controller request");
+        JSONObject before=new JSONObject(owned.evidence());
+        check(before.getBoolean("worker_drained")&&!before.getBoolean("callback_published"),"actual IME worker completed before losing its callback");
+        Runnable withheld=null;
+        synchronized(Handler.queued){
+            for(Iterator<Runnable> it=Handler.queued.iterator();it.hasNext();){
+                Runnable candidate=it.next();boolean matching=capturesActionState(candidate,owned,0);
+                if(matching){check(withheld==null,"exactly one captured action callback may be lost");withheld=candidate;it.remove();}
+            }
+        }
+        check(withheld!=null,"the real owned action callback was actually queued");
+        Handler.drain();
+        JSONObject after=new JSONObject(owned.evidence());
+        check(after.getBoolean("worker_drained")&&!after.getBoolean("callback_published")
+                &&owned.operationId.equals(after.getString("operation_id")),"other main messages do not publish the withheld callback");
+        Files.write(e.dir.resolve("host-withheld-ime-callback.json"),after.toString(2).getBytes(StandardCharsets.UTF_8));
+    }
     static void controllerCase(String syncFailure)throws Exception{
         try(QualificationScopeHostTest.Env e=new QualificationScopeHostTest.Env(false)){
             e.service.node.imePresent=true;e.service.node.imeLabel="搜索";
             final int[] calls={0};final List<String> prompts=new ArrayList<String>();
+            final CountDownLatch callbackEffect=new CountDownLatch(1);final String[] callbackObservation=new String[1];
             LocalInference model=new LocalInference(){
                 public LocalRuntimeConfig configuration(){return e.runtime;}
                 public Handle generate(String prompt,String system,File image,DecisionGrammar grammar,int tokens,long timeout,Callback callback){
                     try{
                         int step=++calls[0];prompts.add(prompt);check(ActionDecision.FIXED_INTENT_ACTION_SCHEMA.equals(grammar.schema),"normal controller uses explicit v6 with retained IME binding");
                         if(step==2)check(grammar.allowsSubmit("n0"),"after type current field has submit");
-                        if(step==2&&"callback".equals(syncFailure))Handler.hold=true;
+                        if(step==2&&"callback".equals(syncFailure)){
+                            callbackObservation[0]=grammar.observationId;
+                            e.service.effectHook=()->{
+                                check(e.service.node.lastAction==AccessibilityNodeInfo.AccessibilityAction.ACTION_IME_ENTER.getId(),"hold follows the actual IME invocation");
+                                Handler.hold=true;callbackEffect.countDown();
+                            };
+                        }
                         else if(step==2&&syncFailure!=null){
                             Path task=e.dir.resolve("control-tasks").resolve(e.controller.currentTaskId());
                             android.system.Os.failFsyncPath=("file".equals(syncFailure)?task.resolve("ime-submit-01-attempt.json"):task).toString();
@@ -188,6 +250,10 @@ public final class ImeSubmitWiringHostTest {
             };
             e.controller=new LocalTaskController(e.service,model);CountDownLatch done=new CountDownLatch(1);LocalTaskController.TaskResult[] result=new LocalTaskController.TaskResult[1];
             check(e.controller.start("查询当前应用的耳机。",new LocalTaskController.Listener(){public void onState(String state){}public void onFinished(LocalTaskController.TaskResult r){result[0]=r;done.countDown();}}),"normal user task starts");
+            if("callback".equals(syncFailure)){
+                check(callbackEffect.await(10,TimeUnit.SECONDS),"actual submit reached the callback-loss boundary");
+                withholdActionCallback(e,String.format(Locale.ROOT,"%032x",2),callbackObservation[0]);
+            }
             check(done.await(12,TimeUnit.SECONDS),"controller completes");
             if("callback".equals(syncFailure)){
                 check("blocked".equals(result[0].status)&&!result[0].cleanupKnown&&calls[0]==2&&e.service.node.actions==2,

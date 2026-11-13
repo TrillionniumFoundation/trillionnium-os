@@ -14,6 +14,9 @@ public final class Os {
   RandomAccessFile file=new RandomAccessFile(s,(flags&OsConstants.O_WRONLY)!=0?"rw":"r");FileDescriptor fd=file.getFD();OPEN.put(fd,new Open(p,file));return fd;}
  public static void close(FileDescriptor fd)throws Exception{Open o=OPEN.remove(fd);if(o!=null&&o.file!=null)o.file.close();}
  public static void chmod(String s,int mode)throws Exception{Files.setAttribute(Paths.get(s),"unix:mode",mode);}
+ public static void trackOutput(FileDescriptor fd,String path){OPEN.put(fd,new Open(Paths.get(path),null));}
+ public static void forgetOutput(FileDescriptor fd){OPEN.remove(fd);}
+ public static void fchmod(FileDescriptor fd,int mode)throws Exception{Open opened=OPEN.get(fd);if(opened==null)throw new IOException("untracked fixture output");chmod(opened.path.toString(),mode);}
  public static void mkdir(String s,int mode)throws Exception{Files.createDirectory(Paths.get(s));chmod(s,mode);}
  public static int write(FileDescriptor fd,byte[] b,int p,int n)throws Exception{OPEN.get(fd).file.write(b,p,n);return n;}
  public static void fsync(FileDescriptor fd)throws Exception{String path=OPEN.get(fd).path.toString();syncLog.add(path);if(path.equals(failFsyncPath))throw new IOException("injected fsync failure");if(fd.valid())fd.sync();}

@@ -16,6 +16,8 @@ def section(start,end):
     i=text.index(start);return text[i:text.index(end,i)]
 parts={'acquire':section('    public synchronized boolean acquireTask(', '    public synchronized void releaseTask('),
        'recovery_idle':section('    synchronized boolean recoveryControllerIdle(', '    synchronized void retireControllerAfterAcknowledgement('),
+       'action_pending':section('    boolean actionWorkPending()', '    void retireActionWork('),
+       'cancellation_pending':section('    boolean nativeCancellationWorkPending()', '    boolean requestNativeCancellation('),
        'observation':section('    /** Each observation owns', '    synchronized void bindQualificationScope(')}
 template_path=Path(__file__).with_name('ObserverPipelineHost.template')
 template=template_path.read_text()
@@ -27,11 +29,13 @@ record={'schema':'hepta.observation-pipeline-host.v1','production_sha256':hashli
         'generated_fixture_sha256':hashlib.sha256(fixture.read_bytes()).hexdigest(),
         'runner_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         'stability_gate_sha256':hashlib.sha256((root/'src/org/trillionnium/hepta/local/ObservationStabilityGate.java').read_bytes()).hexdigest(),
+        'action_state_sha256':hashlib.sha256((root/'src/org/trillionnium/hepta/local/ActionExecutionState.java').read_bytes()).hexdigest(),
+        'cancellation_queue_sha256':hashlib.sha256((root/'src/org/trillionnium/hepta/local/TaskCancellationQueue.java').read_bytes()).hexdigest(),
         'extracted':{key:hashlib.sha256(value.encode()).hexdigest() for key,value in parts.items()},'phone_operations':False,'android_runtime':False,'native_inference':False,'production_methods_executed':['acquireTask','recoveryControllerIdle','observe','sampleObservation','acceptSample','watchObservation','captureObservation','watchCapture','processScreenshot','acceptScreenshot','failObservation','retryObservation','copyScreenshot'],'boundary':'Android graph, screenshot, Web cleanup state and callback IO are instrumented fakes; production deadline, ownership, admission/recovery conjunctions, event fence and worker/main delivery execute unchanged.'}
 compiler=[shutil.which('javac')] if shutil.which('javac') else ['java','-m','jdk.compiler/com.sun.tools.javac.Main']
 flags=['--release','8'] if a.release8 else ['-source','8','-target','8']
 classes=out/'classes';classes.mkdir()
-commands=[('compile',compiler+flags+['-Xlint:all' if a.release8 else '-Xlint:all,-options','-Werror','-d',str(classes),str(root/'src/org/trillionnium/hepta/local/ObservationStabilityGate.java'),str(fixture)]),('tests',['java','-cp',str(classes),'org.trillionnium.hepta.local.ObserverPipelineHost'])]
+commands=[('compile',compiler+flags+['-encoding','UTF-8','-Xlint:all' if a.release8 else '-Xlint:all,-options','-Werror','-d',str(classes),str(root/'src/org/trillionnium/hepta/local/ObservationStabilityGate.java'),str(root/'src/org/trillionnium/hepta/local/ActionExecutionState.java'),str(root/'src/org/trillionnium/hepta/local/TaskCancellationQueue.java'),str(fixture)]),('tests',['java','-cp',str(classes),'org.trillionnium.hepta.local.ObserverPipelineHost'])]
 record['stages']=[]
 for name,command in commands:
     begin=time.monotonic();result=subprocess.run(command,text=True,capture_output=True,timeout=60)

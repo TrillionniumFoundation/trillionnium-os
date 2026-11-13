@@ -52,9 +52,9 @@ final class WebTaskDomain {
                 &&WebEvidenceBinding.canonical(new JSONObject(auth.authorization.evidence())).equals(
                         WebEvidenceBinding.canonical(binding.getJSONObject("authorization"))),
                 "same original OWNER, actual authority and compiled site purpose required");
-        need(WebEvidenceProtocol.HELPER_VERSION_CODE==5&&"hepta.web-helper.binding.v3".equals(binding.get("schema"))
-                &&WebEvidenceJson.number(binding.getJSONObject("helper_identity"),"version_code")==5,
-                "current code5/v3 helper binding required");
+        need(WebEvidenceProtocol.HELPER_VERSION_CODE==6&&"hepta.web-helper.binding.v4".equals(binding.get("schema"))
+                &&WebEvidenceJson.number(binding.getJSONObject("helper_identity"),"version_code")==6,
+                "current code6/v4 helper binding required");
         JSONObject bg=binding.getJSONObject("background");
         need(bg.getJSONArray("selected_packages").length()==1
                 &&WebEvidenceProtocol.HELPER_PACKAGE.equals(bg.getJSONArray("selected_packages").get(0))
@@ -63,6 +63,10 @@ final class WebTaskDomain {
                 "same explicit single-helper background lease required");
         String sha=WebEvidenceBinding.sha256(binding);
         need(sha.equals(receipt.bindingSha),"actual bound helper reply required");return sha;
+    }
+    WebTaskDomain withObservedLinkArm(JSONObject actualArm)throws Exception{
+        need(shopping!=null,"observed link ARM is only available to the current shopping provider");
+        return new WebTaskDomain(shopping.withObservedLinkArm(actualArm));
     }
     WebTaskDomain withNavigation(WebShoppingDomain.Navigation navigation){
         need(shopping!=null&&navigation!=null&&navigation.matches(shopping),"same task product navigation required");
@@ -78,6 +82,30 @@ final class WebTaskDomain {
         need(resultReady(),"actual public result and model navigation are missing");return shopping.resultRecord();
     }
     Map<String,Object> evidence(){return flight!=null?flight.evidence():shopping.evidence();}
+    /** A bounded view for the local model; the complete proof remains private. */
+    Map<String,Object> promptEvidence(){
+        Map<String,Object> full=evidence(),out=new java.util.LinkedHashMap<String,Object>();
+        out.put("schema","hepta.web-domain-model-view.v1");out.put("source","current_independently_verified_web_domain");
+        out.put("kind",flight!=null?"csair_public_flight":"mi_public_product");
+        out.put("observation_id",observationId);out.put("phase",phase);out.put("current_native_url",url);
+        out.put("allowed_click_ids",new java.util.ArrayList<String>(new java.util.TreeSet<String>(clickIds)));
+        out.put("exact_edit_values",new java.util.TreeMap<String,String>(editValues));
+        java.util.List<Map<String,Object>> controls=new java.util.ArrayList<Map<String,Object>>();
+        for(String id:new java.util.TreeSet<String>(clickIds)){
+            Map<String,Object> control=new java.util.LinkedHashMap<String,Object>();control.put("node_id",id);
+            control.put("purpose",flight!=null?flight.purpose(id):"open_observed_official_product_detail");controls.add(control);
+        }
+        out.put("current_controls",controls);
+        for(String key:new String[]{"next_goal","query_control_withheld","query_attempted","query_executed",
+                "server_query_completed","query_retry_permitted","same_frame_public_price_observed","model_navigation_confirmed",
+                "result_ready_for_completion_gate","missing"})
+            if(full.containsKey(key))out.put(key,full.get(key));
+        out.put("current_result_ready",resultReady());out.put("whole_scene_included",false);
+        out.put("private_full_evidence_retained",true);out.put("grants_tool_authority",false);
+        try{out.put("private_full_evidence_sha256",org.trillionnium.hepta.webprotocol.WebDomCanonical.sha256(new JSONObject(full)));}
+        catch(Exception malformed){throw new IllegalStateException("current web domain proof cannot be projected",malformed);}
+        return out;
+    }
     Set<String> clicks(Set<String> original){return flight!=null?flight.clicks(original):shopping.clicks(original);}
     Set<String> edits(Set<String> original){return flight!=null?flight.edits(original):shopping.edits(original);}
     Set<String> openPackages(Set<String> original){return flight!=null?flight.openPackages(original):shopping.openPackages(original);}
