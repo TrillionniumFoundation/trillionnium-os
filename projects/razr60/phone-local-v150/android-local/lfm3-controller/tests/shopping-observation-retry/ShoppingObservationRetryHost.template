@@ -1,0 +1,247 @@
+package org.trillionnium.hepta.local;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import org.json.*;
+import org.trillionnium.hepta.webprotocol.*;
+import org.trillionnium.hepta.local.web.WebShoppingGoal;
+
+/** Exact production observation/retry methods; retained original DOM and AX
+ * metadata, with explicitly instrumented clock/service/client/publisher.
+ * Repeating retained frames is a synthetic future sequence, not device evidence. */
+public final class ShoppingObservationRetryHost {
+    private boolean retired,failRecord;
+    private final Cancellation cancellation=new Cancellation();
+    private final String taskId="475c3b4562e24c9595c49ca1d13e67e4";
+    private Object goal=null,authorization=new Object();
+    private final Purpose purpose=new Purpose();
+    private final HeptaAccessibilityService service=new HeptaAccessibilityService();
+    private final Background background=new Background();
+    private final Completion completion=new Completion();
+    private final Journal journal=new Journal();
+    private final List<JSONObject> records=new ArrayList<JSONObject>();
+    private Client client;
+    private JSONObject immutableBinding;
+    private long loadingDocumentStarted,dispatchCheckedAt,recordDelay;
+    private int loadingDocumentReadRetries;
+    private String loadingDocumentKey,dispatchCheckedRun="old-run",dispatchCheckedAction="old-action";
+    private Object flightNativePermit=new Object(),flightNativeCheck=new Object();
+    private FlightProgress flightProgress;
+    private PhoneObservation current,before;
+    private WebEvidenceReceipt currentCapture;
+    private WebTaskDomain domain;
+    private PhoneObservation[] observations;
+    private int observed;
+    interface Observer {PhoneObservation observe()throws Exception;}
+    private static final class Purpose {String sitePolicyId=WebShoppingGoal.SITE_POLICY_ID;Object shopping=new Object();}
+    private static final class Cancellation {boolean cancelled;boolean isCancelled(){return cancelled;}}
+    private static final class FlightProgress {boolean queryDispatched(){throw new AssertionError("not a flight test");}}
+    private static final class Journal {String bindingSha;}
+    private static final class Background {
+        int checks,failAt;
+        void requireActive(){if(++checks==failAt)throw new IllegalStateException("instrumented background lease retirement");}
+    }
+    private static final class SystemClock {
+        static long now;static Runnable onSleep;
+        static long elapsedRealtime(){return now;}
+        static void sleep(long duration){now+=duration;if(onSleep!=null)onSleep.run();}
+    }
+    private static final class State {String appTreeSha256;State(String tree){appTreeSha256=tree;}}
+    private static final class WindowMetadata {Integer displayId;WindowMetadata(int id){displayId=id;}}
+    private static final class PhoneObservation {
+        String id,packageName,treeSha256,backgroundGeneration;int windowId,rotation;State state;WindowMetadata windowMetadata;
+        PhoneObservation(JSONObject retained){
+            JSONObject value=retained.getJSONObject("observation");id=value.getString("observation_id");
+            packageName=value.getString("package");treeSha256=value.getString("observation_state_sha256");
+            windowId=value.getInt("window_id");rotation=value.getInt("rotation");state=new State(value.getString("app_tree_sha256"));
+            windowMetadata=new WindowMetadata(value.getJSONObject("window").getInt("display_id"));
+            backgroundGeneration=value.getJSONObject("background_session").getString("generation");
+        }
+    }
+    private static final class WebEvidenceReceipt {
+        final JSONObject original;final String status="captured",bindingSha,instance,url,domSha;
+        final long epoch;final int displayId,windowId;
+        WebEvidenceReceipt(JSONObject capture)throws Exception{
+            original=new JSONObject(capture.toString());bindingSha=WebDomCanonical.sha256(original.getJSONObject("binding"));
+            instance=original.getString("webview_instance");epoch=original.getLong("navigation_epoch");
+            url=original.getString("current_native_url");displayId=original.getInt("display_id");windowId=original.getInt("actual_window_id");
+            domSha=original.getString("dom_sha256");
+        }
+        String domRaw(){return original.getString("dom_raw_utf8");}
+        String beforeDomRaw(){return original.getString("before_dom_raw_utf8");}
+        JSONObject dom()throws Exception{return WebEvidenceJson.parseDom(domRaw());}
+        JSONObject capture(){return new JSONObject(original.toString());}
+        JSONObject callback(){return new JSONObject().put("request_nonce",original.getString("challenge"));}
+        WebDomStability.Result stability()throws Exception{
+            return WebDomStability.verify(beforeDomRaw(),domRaw(),WebShoppingGoal.SITE_POLICY_ID,original.getJSONObject("dom_stability"));
+        }
+    }
+    private static final class Client {
+        final WebEvidenceReceipt[] values;int calls;long captureCost;
+        Client(JSONObject...captures)throws Exception{values=new WebEvidenceReceipt[captures.length];for(int i=0;i<captures.length;i++)values[i]=new WebEvidenceReceipt(captures[i]);}
+        WebEvidenceReceipt capture(long deadline){
+            if(calls>=values.length)throw new AssertionError("capture sequence exhausted or unbounded retry");
+            SystemClock.now+=captureCost;if(SystemClock.now>=deadline)throw new IllegalStateException("instrumented capture deadline");
+            return values[calls++];
+        }
+    }
+    private static final class WebTaskDomain {
+        static WebTaskDomain observed(String task,Purpose purpose,Object authorization,PhoneObservation frame,
+                WebEvidenceReceipt capture,JSONObject binding){return new WebTaskDomain();}
+        String evidence(){return "{}";}
+    }
+    private static final class Completion {int bound;void bindWebDomain(WebTaskDomain value){bound++;}}
+    private static final class HeptaAccessibilityService {
+        int authChecks,authFailAt,nativeProofCalls;
+        static final class FlightObservationSnapshot {void close(){throw new AssertionError("shopping must not acquire flight snapshot");}}
+        void requireBackgroundObservation(String task,PhoneObservation frame){if(frame==null)throw new IllegalStateException("missing observation");}
+        void requireTaskAuthorization(String task,Object authorization){
+            if(++authChecks==authFailAt)throw new IllegalStateException("instrumented authorization retirement");
+        }
+        FlightObservationSnapshot retainFlightObservation(ShoppingObservationRetryHost web,PhoneObservation frame,Cancellation cancel,long deadline){
+            throw new AssertionError("shopping cannot use flight observation authority");
+        }
+        JSONObject verifyFlightObservationBracket(ShoppingObservationRetryHost web,FlightObservationSnapshot source,
+                PhoneObservation frame,WebEvidenceReceipt first,WebEvidenceReceipt last,Cancellation cancel,long deadline){
+            nativeProofCalls++;throw new AssertionError("shopping cannot use flight slider exception");
+        }
+    }
+    private PhoneObservation publishWaiting(PhoneObservation frame,WebEvidenceReceipt receipt,String reason){throw new AssertionError("unexercised IPC waiting status");}
+    private WebTaskDomain applyNavigation(WebTaskDomain value){return value;}
+    private void record(String name,JSONObject value)throws Exception{
+        if(failRecord)throw new java.io.IOException("instrumented persistence failure");
+        records.add(new JSONObject(value.toString()));SystemClock.now+=recordDelay;
+    }
+    private static void need(boolean condition,String reason){WebEvidenceJson.need(condition,reason);}
+
+    /* EXACT_PRODUCTION_METHODS */
+
+    static int cases,assertions;static final JSONArray names=new JSONArray();
+    interface Work{void run()throws Exception;}
+    static void check(boolean condition,String why){assertions++;if(!condition)throw new AssertionError(why);}
+    static void test(String name,Work work)throws Exception{SystemClock.now=1000;SystemClock.onSleep=null;work.run();cases++;names.put(name);}
+    static void denied(Work work)throws Exception{
+        boolean refused=false;try{work.run();}catch(IllegalArgumentException|IllegalStateException|JSONException|java.io.IOException expected){refused=true;}
+        check(refused,"invalid or incomplete observation cannot publish");
+    }
+    static ShoppingObservationRetryHost fixture(JSONObject[] captures,PhoneObservation before,PhoneObservation...after)throws Exception{
+        ShoppingObservationRetryHost value=new ShoppingObservationRetryHost();value.client=new Client(captures);
+        value.immutableBinding=captures[0].getJSONObject("binding");value.journal.bindingSha=value.client.values[0].bindingSha;
+        value.before=before;value.observations=after;return value;
+    }
+    PhoneObservation run(long deadline)throws Exception{
+        return observe(before,()->{if(observed>=observations.length)throw new AssertionError("unbounded AX observations");return observations[observed++];},deadline);
+    }
+    static JSONObject read(Path p)throws Exception{return new JSONObject(new String(Files.readAllBytes(p),StandardCharsets.UTF_8));}
+    static JSONObject changed(JSONObject original,String key){
+        JSONObject copy=new JSONObject(original.toString());
+        if("binding".equals(key))copy.getJSONObject("binding").put("task_id","ffffffffffffffffffffffffffffffff");
+        else {Object value=copy.get(key);copy.put(key,value instanceof Number?((Number)value).longValue()+1:"changed:"+value);}
+        return copy;
+    }
+    static void noPublish(ShoppingObservationRetryHost f){check(f.completion.bound==0&&f.current==null&&f.currentCapture==null,"failed wait must not publish a domain");}
+    public static void main(String[] args)throws Exception{
+        Path dir=Paths.get(args[0]);JSONObject index=read(dir.resolve("PROVENANCE.json"));JSONArray files=index.getJSONArray("files");
+        JSONObject first=null,last=null,axFirst=null,axLast=null;
+        for(int i=0;i<files.length();i++){
+            JSONObject row=files.getJSONObject(i),raw=read(dir.resolve(row.getString("name")));
+            if(row.getString("name").startsWith("raw-")){if(first==null)first=raw.getJSONObject("capture");else last=raw.getJSONObject("capture");}
+            else if(axFirst==null)axFirst=raw;else axLast=raw;
+        }
+        final JSONObject a=first,b=last;final PhoneObservation x=new PhoneObservation(axFirst),y=new PhoneObservation(axLast);
+        boolean legacy=args.length==3&&"legacy".equals(args[2]);
+        if(legacy){
+            test("exact_v59_original_failure_preserved",()->{
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b},x,y);denied(()->f.run(Long.MAX_VALUE));noPublish(f);
+                check(f.client.calls==2&&f.observed==1&&f.loadingDocumentReadRetries==0,"old code must fail without retries");
+            });
+        }else{
+            test("actual_original_scope_and_native_change_replayed_without_action_authority",()->{
+                WebEvidenceReceipt firstReceipt=new WebEvidenceReceipt(a),lastReceipt=new WebEvidenceReceipt(b);
+                check(!firstReceipt.stability().rawEqual&&!lastReceipt.stability().rawEqual,"original captures used MI scoped proof, not full equality");
+                denied(()->WebDomStability.evaluate(firstReceipt.domRaw(),lastReceipt.beforeDomRaw(),WebShoppingGoal.SITE_POLICY_ID));
+                check(!sameFrame(x,y)&&WebEvidenceJson.parseDom(lastReceipt.beforeDomRaw()).getJSONArray("nodes").length()
+                        ==firstReceipt.dom().getJSONArray("nodes").length()+1,"actual AX drift and additional script membership retained");
+            });
+            test("derived_future_stable_sequence_requires_fresh_full_bracket",()->{
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b,b,b},x,y,y,y);
+                check(f.run(Long.MAX_VALUE)==y&&f.client.calls==4&&f.loadingDocumentReadRetries==1&&f.completion.bound==1,"exact retry before publication");
+                check(f.service.authChecks==2&&f.background.checks==2&&f.service.nativeProofCalls==0,"each retry checks authority and cannot enter flight fallback");
+                check(f.flightNativePermit==null&&f.flightNativeCheck==null&&f.dispatchCheckedRun==null&&f.dispatchCheckedAction==null&&f.dispatchCheckedAt==0,"old dispatch capability cleared");
+                check(f.records.get(0).getBoolean("shopping_unstable_readonly_bracket")&&!f.records.get(0).getBoolean("action_replayed")
+                        &&!f.records.get(0).getBoolean("model_action_dispatched"),"read-only receipt scope");
+            });
+            test("continuous_original_instability_stops_after_two_extra_attempts",()->{
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b,a,b,a,b},x,y,x,y,x,y);
+                denied(()->f.run(Long.MAX_VALUE));noPublish(f);check(f.client.calls==6&&f.loadingDocumentReadRetries==2&&f.observed==5,"finite read budget and no fourth attempt");
+            });
+            test("already_stable_original_frame_needs_no_extra_read",()->{
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{b,b},y,y);f.run(Long.MAX_VALUE);
+                check(f.client.calls==2&&f.loadingDocumentReadRetries==0&&f.completion.bound==1,"stable admission predicate preserved");
+            });
+            test("caller_deadline_prevents_even_one_extra_read",()->{
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b},x,y);denied(()->f.run(1200));noPublish(f);
+                check(f.loadingDocumentReadRetries==0&&f.client.calls==2,"deadline consumed without retry");
+            });
+            test("retry_window_does_not_expand_when_each_capture_costs_time",()->{
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b,a,b,a,b},x,y,x,y,x,y);f.client.captureCost=3000;
+                denied(()->f.run(Long.MAX_VALUE));noPublish(f);check(f.loadingDocumentReadRetries==1&&f.client.calls==3,"six-second retry deadline passed unchanged to IPC");
+            });
+            test("slow_receipt_and_sleep_cannot_start_read_after_retry_deadline",()->{
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b},x,y);f.recordDelay=6500;
+                denied(()->f.run(Long.MAX_VALUE));noPublish(f);check(f.client.calls==2&&f.observed==1,"expired wait cannot request another AX frame");
+            });
+            test("cancellation_before_entry_has_zero_reads",()->{
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b},x,y);f.cancellation.cancelled=true;
+                denied(()->f.run(Long.MAX_VALUE));noPublish(f);check(f.client.calls==0,"cancelled task never captures");
+            });
+            test("cancellation_during_wait_stops_before_the_next_observation",()->{
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b},x,y);SystemClock.onSleep=()->f.cancellation.cancelled=true;
+                denied(()->f.run(Long.MAX_VALUE));noPublish(f);check(f.client.calls==2&&f.observed==1,"late cancellation cannot continue reads");
+            });
+            test("retirement_during_wait_stops_before_the_next_observation",()->{
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b},x,y);SystemClock.onSleep=()->f.retired=true;
+                denied(()->f.run(Long.MAX_VALUE));noPublish(f);check(f.client.calls==2&&f.observed==1,"retired task cannot continue reads");
+            });
+            for(int i=1;i<=2;i++){
+                final int edge=i;
+                test("authorization_rechecked_at_wait_edge_"+i,()->{
+                    ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b},x,y);f.service.authFailAt=edge;
+                    denied(()->f.run(Long.MAX_VALUE));noPublish(f);check(f.client.calls==2&&f.observed==1,"lost authorization cannot retry");
+                });
+                test("background_lease_rechecked_at_wait_edge_"+i,()->{
+                    ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b},x,y);f.background.failAt=edge;
+                    denied(()->f.run(Long.MAX_VALUE));noPublish(f);check(f.client.calls==2&&f.observed==1,"lost VD lease cannot retry");
+                });
+            }
+            for(String key:new String[]{"webview_instance","navigation_epoch","current_native_url","display_id","actual_window_id","binding"}){
+                test("identity_change_inside_capture_pair_refuses_"+key,()->{
+                    ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,changed(b,key)},x,y);
+                    denied(()->f.run(Long.MAX_VALUE));noPublish(f);check(f.loadingDocumentReadRetries==0,"different capture domain cannot start a retry");
+                });
+                test("identity_change_between_retry_attempts_refuses_"+key,()->{
+                    JSONObject foreign=changed(b,key);ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b,foreign,foreign},x,y,y,y);
+                    denied(()->f.run(Long.MAX_VALUE));noPublish(f);check(f.loadingDocumentReadRetries==1,"foreign retry domain cannot reset its budget");
+                });
+            }
+            test("missing_compiled_shopping_purpose_has_no_new_retry_path",()->{
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b},x,y);f.purpose.shopping=null;
+                denied(()->f.run(Long.MAX_VALUE));noPublish(f);check(f.loadingDocumentReadRetries==0,"no generic unstable-page exception");
+            });
+            test("receipt_failure_never_retries_or_publishes",()->{
+                ShoppingObservationRetryHost f=fixture(new JSONObject[]{a,b},x,y);f.failRecord=true;
+                denied(()->f.run(Long.MAX_VALUE));noPublish(f);check(f.client.calls==2&&f.observed==1,"unrecorded retry is not executed");
+            });
+        }
+        JSONObject report=new JSONObject().put("schema","hepta.shopping-observation-readonly-retry-host.v1").put("all_pass",true)
+                .put("cases",cases).put("assertions",assertions).put("names",names).put("legacy_original_failure_replay",legacy)
+                .put("original_actual_dom_and_ax_metadata_replayed",true).put("future_stability_sequences_synthetic",true)
+                .put("clock_service_client_and_publisher_instrumented",true).put("production_observe_and_retry_bodies_executed",true)
+                .put("actual_authenticated_ipc_or_native_authority_proven",false).put("phone_actions",0).put("business_verified",false);
+        Files.write(Paths.get(args[1]),(report.toString(2)+"\n").getBytes(StandardCharsets.UTF_8),StandardOpenOption.CREATE_NEW);
+        System.out.println(report.toString());
+    }
+}

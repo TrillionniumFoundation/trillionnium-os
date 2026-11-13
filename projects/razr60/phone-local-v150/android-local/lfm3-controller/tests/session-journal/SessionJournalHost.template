@@ -20,6 +20,11 @@ public final class SessionJournalHost {
     private static void require(boolean value,String why){if(!value)throw new AssertionError(why);}
     private static void await(CountDownLatch value)throws Exception{require(value.await(3,TimeUnit.SECONDS),"latch timeout");}
     private static void pass(String value){passed.add(value);}
+    // Android Log is an explicit host boundary; retain exact strings for cause/bound assertions.
+    static final class android {static final class util {static final class Log {
+        static final List<String> rows=Collections.synchronizedList(new ArrayList<String>());
+        static int e(String tag,String value){require("HeptaSessionJournal".equals(tag),"diagnostic tag changed");rows.add(value);return 0;}
+    }}}
     static final class Handler implements Executor {
         final ConcurrentLinkedQueue<Runnable> posted=new ConcurrentLinkedQueue<Runnable>();
         final ConcurrentLinkedQueue<Runnable> delayed=new ConcurrentLinkedQueue<Runnable>();
@@ -221,6 +226,31 @@ public final class SessionJournalHost {
             release.countDown();real.shutdown();require(real.awaitTermination(3,TimeUnit.SECONDS),"writers not drained");main.drain();
             require(!q.pending()&&writes.get()==SessionJournalQueue.MAX_OUTSTANDING&&callbacks.get()==SessionJournalQueue.MAX_OUTSTANDING,"old records dropped or duplicated after saturation");
             pass("bounded_queue_saturation_preserves_every_admitted_record_and_stops_owner");
+        }
+        {
+            Exception cause=new IOException("actual parent fsync errno=22");
+            IOException error=new IOException("session journal write failed at parent_fsync_or_close",cause);
+            error.addSuppressed(new IOException("actual close errno=5"));
+            String details=Session.journalFailureDetails("write_test",error);
+            require(details.contains("stage=write_test")&&details.contains("actual parent fsync errno=22")
+                    &&details.contains("Caused by:")&&details.contains("Suppressed:")&&details.contains("actual close errno=5"),"actual diagnostic lost cause/suppressed exception");
+            android.util.Log.rows.clear();Session.logJournalFailure(details);
+            require(String.join("",android.util.Log.rows).equals(details),"logcat chunks lost diagnostic bytes");
+            for(String row:android.util.Log.rows)require(row.length()<=1000,"oversized logcat chunk");
+            pass("actual_diagnostic_preserves_stage_original_cause_suppressed_and_log_chunks");
+        }
+        {
+            char[] huge=new char[20000];java.util.Arrays.fill(huge,'x');
+            String details=Session.journalFailureDetails("huge_exception",new IOException(new String(huge)));
+            require(details.length()<8300&&details.contains("truncated at 8192 characters"),"exception diagnostic is not bounded/labeled");
+            require(Session.journalFailureDetails("already_failed",null).contains("original exception unavailable"),"missing error was invented");
+            pass("actual_diagnostic_bounds_large_error_and_marks_absent_original_cause");
+        }
+        try(Session s=new Session()){
+            s.failWrites=true;s.schedule("owner","test",null,null,new TaskAuthorization(),null,350);s.flushIo();s.main.drain();s.main.fireDelayed();
+            require(s.log.contains("injected journal failure")&&s.log.contains("stage=main_ack_epoch_"),"advanced diagnostic log lost real write failure");
+            require(s.blocked&&s.journalQueue.failed()&&s.controller.starts.get()==0,"diagnostic code changed failure admission");
+            pass("actual_failure_details_reach_existing_advanced_log_without_granting_start");
         }
         System.out.println("{\"schema\":\"hepta.session-journal-host.v1\",\"all_pass\":true,\"cases\":"+passed.size()+",\"android_test\":false,\"physical_fsync_stall_test\":false,\"phone_operations\":0,\"passed\":[\""+String.join("\",\"",passed)+"\"]}");
     }

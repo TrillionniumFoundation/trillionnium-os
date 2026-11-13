@@ -48,6 +48,8 @@ signatures=[
     'private void persist(String status,boolean cleanupKnown) {',
     'private void failSessionWrite(long expectedEpoch,Exception error){',
     'private SessionJournalQueue.Failure journalFailureHook(){',
+    'private static String journalFailureDetails(String stage,Exception error){',
+    'private static void logJournalFailure(String details){',
 ]
 source=session.read_text();methods=[body(source,s) for s in signatures]
 text=template.read_text();assert text.count('{{SESSION_METHODS}}')==1

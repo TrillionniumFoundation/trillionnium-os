@@ -524,6 +524,11 @@ public final class TaskCompletionGate {
     public String completionSummary(){
         if(WEB.equals(contract.kind)&&webDomain!=null&&webDomain.resultReady()){
             Map<String,Object> value=webDomain.resultRecord();
+            if("natural_csair_flight_owner.v1".equals(contract.recognition)||"official_csair_flight_owner.v1".equals(contract.recognition)){
+                require("hepta.csair-displayed-flight-result.v1".equals(value.get("schema"))
+                        &&value.get("display_summary") instanceof String,"typed current flight result summary required");
+                return (String)value.get("display_summary");
+            }
             return "已核对小米官网的 "+value.get("model_raw")+" 页面展示价：人民币 "+value.get("amount_decimal")+" 元。";
         }
         return "已核验本次正文进入笔记编辑器、返回列表并点击同一可访问正文条目重新打开；列表视觉裁切与存储原始字节未核验。";
@@ -551,8 +556,9 @@ public final class TaskCompletionGate {
                 else if(!verified(current))out.add("same_product_native_result_and_actual_model_navigation_missing");
             }else{
                 if(!webDispatched&&(webDomain==null||!webDomain.queryDispatched()))out.add("model_bound_web_query_dispatch_missing");
-                if("natural_csair_flight_owner.v1".equals(contract.recognition)||"official_csair_flight_owner.v1".equals(contract.recognition))
-                    out.add("actual_same_record_flight_results_not_yet_verified");
+                if("natural_csair_flight_owner.v1".equals(contract.recognition)||"official_csair_flight_owner.v1".equals(contract.recognition)){
+                    if(!verified(current))out.add("actual_same_record_flight_results_not_yet_verified");
+                }
                 else out.add("web_results_provider_unavailable");
             }
         }else out.add("complete_owner_goal_verifier_unavailable");

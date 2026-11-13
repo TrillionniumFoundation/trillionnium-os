@@ -76,10 +76,14 @@ final class WebTaskDomain {
         need(flight!=null&&progress!=null&&progress.matches(flight),"same task flight progression required");
         return new WebTaskDomain(flight.withProgress(progress));
     }
+    WebTaskDomain withFlightResult(WebFlightResult.Page actualPage)throws Exception{
+        need(flight!=null,"flight result belongs only to the current flight provider");
+        return new WebTaskDomain(flight.withResult(actualPage));
+    }
     boolean queryDispatched(){return flight!=null&&flight.queryDispatched();}
-    boolean resultReady(){return shopping!=null&&shopping.resultReady();}
+    boolean resultReady(){return flight!=null?flight.resultReady():shopping!=null&&shopping.resultReady();}
     Map<String,Object> resultRecord(){
-        need(resultReady(),"actual public result and model navigation are missing");return shopping.resultRecord();
+        need(resultReady(),"actual public result and model navigation are missing");return flight!=null?flight.resultRecord():shopping.resultRecord();
     }
     Map<String,Object> evidence(){return flight!=null?flight.evidence():shopping.evidence();}
     /** A bounded view for the local model; the complete proof remains private. */
@@ -97,10 +101,11 @@ final class WebTaskDomain {
         }
         out.put("current_controls",controls);
         for(String key:new String[]{"next_goal","query_control_withheld","query_attempted","query_executed",
-                "server_query_completed","query_retry_permitted","same_frame_public_price_observed","model_navigation_confirmed",
+                "server_query_completed","displayed_query_result_verified","query_retry_permitted","same_frame_public_price_observed","model_navigation_confirmed",
                 "result_ready_for_completion_gate","missing"})
             if(full.containsKey(key))out.put(key,full.get(key));
         out.put("current_result_ready",resultReady());out.put("whole_scene_included",false);
+        if(flight!=null&&flight.resultReady())out.put("current_flight_result",flight.resultModelView());
         out.put("private_full_evidence_retained",true);out.put("grants_tool_authority",false);
         try{out.put("private_full_evidence_sha256",org.trillionnium.hepta.webprotocol.WebDomCanonical.sha256(new JSONObject(full)));}
         catch(Exception malformed){throw new IllegalStateException("current web domain proof cannot be projected",malformed);}

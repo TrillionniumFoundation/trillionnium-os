@@ -563,7 +563,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         pickBackgroundApps.setText(backgroundError==null
                 ?(backgroundPackages.isEmpty()?"选择后台应用范围":"后台范围："+backgroundPackages.size()+" 个应用（更改）")
                 :"后台应用范围（需重新确认）");
-        startTask.setEnabled(configurationReady&&!busy&&!tasks.isBlocked()&&(!backgroundMode.isChecked()||backgroundError==null));stopTask.setEnabled(busy);
+        startTask.setEnabled(available&&configurationReady&&!busy&&!tasks.isBlocked()&&(!backgroundMode.isChecked()||backgroundError==null));stopTask.setEnabled(busy);
         runText.setEnabled(configurationReady&&!busy&&!tasks.isBlocked());
         LocalTaskController.TaskResult result=tasks.lastResult();
         if(result!=null){

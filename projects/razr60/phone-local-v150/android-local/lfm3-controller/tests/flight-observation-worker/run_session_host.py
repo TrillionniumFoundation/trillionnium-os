@@ -26,6 +26,7 @@ module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
 source=root/'src/org/trillionnium/hepta/local/WebFlightSession.java'
 raw=source.read_text();methods=[];identity=[]
 for signature in ['PhoneObservation observe(PhoneObservation initial,Observer observer,long deadline)',
+                  'private static String loadingKey(WebEvidenceReceipt receipt)',
                   'private static boolean sameFrame(PhoneObservation a,PhoneObservation b)']:
     value=module.body(raw,signature);methods.append(value)
     identity.append({'signature':signature,'bytes':len(value.encode()),'sha256':hashlib.sha256(value.encode()).hexdigest()})

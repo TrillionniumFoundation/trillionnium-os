@@ -11,22 +11,24 @@ import java.util.Map;
  */
 final class WebFlightProgress {
     static final String QUERY="submit_public_flight_query_once";
+    private final WebFlightResult.Lifetime lifetime;
     private final WebFlightDomain anchor;
     private final Confirmation departure,arrival,date;
     private final Pending pending;
     private final Query query;
 
-    private WebFlightProgress(WebFlightDomain anchor,Confirmation departure,Confirmation arrival,
+    private WebFlightProgress(WebFlightResult.Lifetime lifetime,WebFlightDomain anchor,Confirmation departure,Confirmation arrival,
                               Confirmation date,Pending pending,Query query){
+        this.lifetime=lifetime;
         this.anchor=anchor;this.departure=departure;this.arrival=arrival;
         this.date=date;this.pending=pending;this.query=query;
     }
     static WebFlightProgress begin(WebFlightDomain frame){
         need(frame!=null,"actual flight domain required");
-        return new WebFlightProgress(frame,null,null,null,null,null);
+        return new WebFlightProgress(new WebFlightResult.Lifetime(),frame,null,null,null,null,null);
     }
     boolean matches(WebFlightDomain frame){
-        return frame!=null&&anchor.taskId.equals(frame.taskId)&&anchor.ownerSha.equals(frame.ownerSha)
+        return lifetime.active()&&frame!=null&&anchor.taskId.equals(frame.taskId)&&anchor.ownerSha.equals(frame.ownerSha)
                 &&anchor.contractSha.equals(frame.contractSha)&&anchor.authorizationSha.equals(frame.authorizationSha)
                 &&anchor.bindingSha.equals(frame.bindingSha)&&anchor.generation.equals(frame.generation)
                 &&anchor.instance.equals(frame.instance)&&anchor.displayId==frame.displayId
@@ -36,7 +38,17 @@ final class WebFlightProgress {
     boolean selectionPending(){return pending!=null;}
     boolean queryAttempted(){return query!=null;}
     boolean queryDispatched(){return query!=null&&query.outcomeObserved&&query.nativeCallEntered
-            &&query.accepted&&query.dispatched&&!query.stale;}
+            &&query.accepted&&query.dispatched&&!query.stale&&lifetime.active();}
+    void retire(){lifetime.retire();}
+    WebFlightResult bindResult(WebFlightDomain current,WebFlightResult.Page actualPage){
+        need(matches(current)&&queryDispatched()&&query.resultBinding!=null,
+                "result needs this live lease's actual accepted query");
+        return WebFlightResult.bind(query.resultBinding,current.resultFrame(),actualPage);
+    }
+    boolean acceptsResult(WebFlightResult result,WebFlightDomain current){
+        return result!=null&&matches(current)&&queryDispatched()&&query.resultBinding!=null
+                &&result.matches(query.resultBinding,current.resultFrame());
+    }
     boolean selectionConfirmed(String kind,WebFlightDomain now){
         need(matches(now),"selection belongs to another flight lease");
         Confirmation value="departure".equals(kind)?departure:"arrival".equals(kind)?arrival:date;
@@ -55,7 +67,7 @@ final class WebFlightProgress {
         before.requireCurrent(action);
         need("click".equals(action.action)&&QUERY.equals(before.purpose(action.nodeId))
                 &&run!=null&&run.matches("[0-9a-f]{32}"),"one model-bound query control required");
-        return new WebFlightProgress(anchor,departure,arrival,date,null,new Query(before,action,run));
+        return new WebFlightProgress(lifetime,anchor,departure,arrival,date,null,new Query(before,action,run));
     }
     boolean isQueryAction(ActionDecision action,String run){
         return query!=null&&action!=null&&query.run.equals(run)&&"click".equals(action.action)
@@ -80,8 +92,8 @@ final class WebFlightProgress {
         if(QUERY.equals(purpose)){
             need(reservedFor(before,action,run),"query reservation missing or already consumed");
             need(!accepted||nativeQueryCallEntered,"accepted query requires actual native call entry");
-            return new WebFlightProgress(anchor,departure,arrival,date,null,
-                    new Query(query,accepted,dispatched,stale,nativeQueryCallEntered,start,end));
+            return new WebFlightProgress(lifetime,anchor,departure,arrival,date,null,
+                    new Query(lifetime,query,accepted,dispatched,stale,nativeQueryCallEntered,start,end));
         }
         need(query==null,"no page action after a query attempt");
         if(!accepted||!dispatched||stale)return this;
@@ -92,26 +104,27 @@ final class WebFlightProgress {
                     &&before.goal.departureDate.toString().equals(before.capability(action.nodeId).get("observed_iso_date"))
                     &&Boolean.TRUE.equals(before.capability(action.nodeId).get("native_parent_relationship_claimed")),
                     "full literal calendar date and actual native month/list relation required");
-            return new WebFlightProgress(anchor,departure,arrival,"date".equals(kind)?date:null,
+            return new WebFlightProgress(lifetime,anchor,departure,arrival,"date".equals(kind)?date:null,
                     new Pending(before,action,run,kind,start,end),null);
         }
         // Reopening a field invalidates its older confirmation even if the next
         // page has not loaded. An old year cannot survive a new date edit.
         if("choose_departure_city".equals(purpose))
-            return new WebFlightProgress(anchor,null,arrival,null,null,null);
+            return new WebFlightProgress(lifetime,anchor,null,arrival,null,null,null);
         if("choose_arrival_city".equals(purpose))
-            return new WebFlightProgress(anchor,departure,null,null,null,null);
+            return new WebFlightProgress(lifetime,anchor,departure,null,null,null,null);
         if("choose_departure_date".equals(purpose))
-            return new WebFlightProgress(anchor,departure,arrival,null,null,null);
+            return new WebFlightProgress(lifetime,anchor,departure,arrival,null,null,null);
         return this;
     }
     /** Fresh capture only. No click, retry, URL construction or OWNER rewriting. */
     WebFlightProgress observed(WebFlightDomain now){
-        need(matches(now),"flight progress cannot move to another lease, window or identity");
+        if(!matches(now)){lifetime.retire();need(false,"flight progress cannot move to another lease, window or identity");}
         if(now.captureStarted<0)return this;
         if(query!=null){
+            if(query.resultBinding!=null&&now.captureStarted>=query.end)query.resultBinding.observed(now.resultFrame());
             if(query.outcomeObserved&&query.after==null&&now.captureStarted>=query.end)
-                return new WebFlightProgress(anchor,departure,arrival,date,null,new Query(query,now));
+                return new WebFlightProgress(lifetime,anchor,departure,arrival,date,null,new Query(query,now));
             return this;
         }
         Confirmation dep=departure,arr=arrival,day=date;
@@ -130,7 +143,7 @@ final class WebFlightProgress {
             wait=null;
         }
         if(dep==departure&&arr==arrival&&day==date&&wait==pending)return this;
-        return new WebFlightProgress(anchor,dep,arr,day,wait,null);
+        return new WebFlightProgress(lifetime,anchor,dep,arr,day,wait,null);
     }
     Map<String,Object> evidence(WebFlightDomain now){
         need(matches(now),"flight evidence scope");
@@ -201,19 +214,24 @@ final class WebFlightProgress {
     }
     private static final class Query {
         final WebFlightDomain before,after;final ActionDecision action;final String run;
+        final WebFlightResult.Query resultBinding;
         final boolean outcomeObserved,accepted,dispatched,stale,nativeCallEntered;final long start,end;
         Query(WebFlightDomain before,ActionDecision action,String run){
             this.before=before;this.action=action;this.run=run;after=null;outcomeObserved=false;
             accepted=false;dispatched=false;stale=false;nativeCallEntered=false;start=-1;end=-1;
+            resultBinding=null;
         }
-        Query(Query original,boolean accepted,boolean dispatched,boolean stale,boolean entered,long start,long end){
+        Query(WebFlightResult.Lifetime lifetime,Query original,boolean accepted,boolean dispatched,boolean stale,boolean entered,long start,long end){
             before=original.before;action=original.action;run=original.run;after=null;outcomeObserved=true;
             this.accepted=accepted;this.dispatched=dispatched;this.stale=stale;nativeCallEntered=entered;this.start=start;this.end=end;
+            resultBinding=accepted&&dispatched&&!stale&&entered?new WebFlightResult.Query(lifetime,before.resultFrame(),run,action.nodeId,
+                    before.goal.fromCity,before.goal.toCity,before.goal.departureDate.toString(),accepted,dispatched,stale,entered,start,end):null;
         }
         Query(Query original,WebFlightDomain after){
             before=original.before;action=original.action;run=original.run;this.after=after;outcomeObserved=original.outcomeObserved;
             accepted=original.accepted;dispatched=original.dispatched;stale=original.stale;
             nativeCallEntered=original.nativeCallEntered;start=original.start;end=original.end;
+            resultBinding=original.resultBinding;
         }
         Map<String,Object> evidence(){
             Map<String,Object> out=dispatch(before,action,run,start,end);

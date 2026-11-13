@@ -1,33 +1,40 @@
 {
   "schema": "hepta.local-source.v3",
-  "version_code": 59,
-  "version_name": "0.59.0-flight-observation-action-stop-candidate",
-  "functional_scope": "Integrate installed current57 flight observation with f519 asynchronous Action/Stop; admit only independently stable homepage captures whose cross-capture DOM difference satisfies the existing complete carousel scope plus full native revalidation.",
-  "candidate_status": "current57_flight_observation_and_v58_async_control_source_candidate",
-  "android_build": "Requires a fresh full build of all 118 Java sources, native outputs and resources from the exact 220 production inputs, then original-key assembly. No prior APK qualifies this candidate.",
+  "version_code": 60,
+  "version_name": "0.60.0-observation-result-journal-diagnostics",
+  "functional_scope": "Bounded shopping read-only observation retries, flight result query/frame/publication lifecycle and completion plumbing without a real result provider, accessibility-ready Start guard, and bounded original journal write stage/cause diagnostics.",
+  "candidate_status": "reviewed_host_validated_source_candidate_pending_full_build_and_phone",
+  "android_build": "Requires a fresh full build of all 119 Java sources, native outputs and resources from the exact 221 production inputs, then original-key assembly. No prior APK qualifies this candidate.",
   "android_qualified": false,
   "phone_qualified": false,
-  "production_build_inputs_count": 220,
+  "production_build_inputs_count": 221,
   "qualification_policy": "Current qualification is external evidence bound to this exact source and actual build inputs; historical reports in this repository are not current qualification.",
   "current_validation": {
-    "strict_host_gate": "Use the unchanged complete original host gate and source-bound build programs on the materialized full tree. Focused host results do not substitute for Android or phone validation.",
+    "strict_host_gate": "The unchanged original complete host/build programs must run on this final full tree. Focused host passes do not substitute for Android or phone validation.",
+    "original_complete_host_gate_pending": true,
     "full_android_build": false,
     "phone_tested": false,
     "external_model_used": false,
     "focused_host_results": {
-      "action_worker": 33,
-      "observation_pipeline": 31,
-      "flight_worker": 17,
-      "flight_worker_assertions": 380,
-      "existing_flight_policy": 36,
-      "observation_bracket": 20,
-      "real_dom_session": 16,
-      "real_dom_session_assertions": 39
+      "retained_query": 40,
+      "retained_query_assertions": 187,
+      "result_lifetime": 31,
+      "result_lifetime_assertions": 99,
+      "result_completion_composition": 17,
+      "result_completion_composition_assertions": 70,
+      "shopping_readonly_retry": 28,
+      "shopping_readonly_retry_assertions": 83,
+      "original_v59_shopping_failure_replayed": 1,
+      "real_dom_flight_session": 16,
+      "real_dom_flight_session_assertions": 39,
+      "session_journal": 19
     },
-    "native_and_ipc_boundaries": "Host native IO, service authority, IPC and publisher carriers are explicitly instrumented; actual source-private NodeRefs cannot be reconstructed from archived rows.",
+    "native_and_ipc_boundaries": "Host service/native IO/authorization/IPC/publisher, typed result providers and cleanup carriers are instrumented. Archived public DOM/AX fixtures are retained exactly; future stable retry sequences and flight result rows are explicitly synthetic.",
     "original_failures_preserved": true,
-    "real_original_flight_task_succeeded": false,
-    "flight_query_dispatch_observed": false
+    "actual_flight_result_provider_implemented": false,
+    "actual_flight_result_verified": false,
+    "journal_failure_root_cause_confirmed": false,
+    "journal_change_is_diagnostics_only": true
   },
   "files": [
     {
@@ -47,8 +54,8 @@
     },
     {
       "path": "AndroidManifest.xml",
-      "bytes": 2606,
-      "sha256": "dc06926d00841a2f7a00caa804e66892eb96137c4363f8deb296825682a073fb"
+      "bytes": 2604,
+      "sha256": "af6f14e0c166036f4bfdfd0395552f7aba86a0cc6ccbc44c05c452fcdaf4d1ff"
     },
     {
       "path": "BACKGROUND-BROKER.md",
@@ -2026,16 +2033,6 @@
       "sha256": "fa8c93f30ea6622aa3d70efe88a497bcdf84b1c039bf59d3e5f9662fd3308fbe"
     },
     {
-      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
-      "bytes": 1696,
-      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
-    },
-    {
-      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
-      "bytes": 0,
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
-    {
       "path": "host-evidence/code5-r1/grammar/all.gbnf",
       "bytes": 3187,
       "sha256": "eb3a4ab7b3289e4742555499dd26e1998b7d03872db2cbb91d093201409790fb"
@@ -2074,6 +2071,16 @@
       "path": "host-evidence/code5-r1/grammar/system.gbnf",
       "bytes": 1882,
       "sha256": "5e844f20ef35b582bc40acd3557ebad7058267aad54d1bd12579a4158ec9e87e"
+    },
+    {
+      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
+      "bytes": 1696,
+      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
+    },
+    {
+      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "path": "host-evidence/code5-r1/java-compile.stderr",
@@ -4766,11 +4773,6 @@
       "sha256": "50d0b9a73b4c2e08f0ce0dd5df953637bd69eb519bce0dcd4e5b9001fddfef14"
     },
     {
-      "path": "provenance/mobimind-worker-r4-build.json",
-      "bytes": 3066,
-      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
-    },
-    {
       "path": "provenance/mobimind-worker-r4/CMakeLists.txt",
       "bytes": 1257,
       "sha256": "25260a2133c91a849287e8b09211ead6524e0f56e9ba1685af1a3be1011a197f"
@@ -4879,6 +4881,11 @@
       "path": "provenance/mobimind-worker-r4/tests/util_contract.cpp",
       "bytes": 3372,
       "sha256": "bd2ac495f8dc7c5188dee6bbae71446b57e90edc054ce5ab8f5a0708037a1b3f"
+    },
+    {
+      "path": "provenance/mobimind-worker-r4-build.json",
+      "bytes": 3066,
+      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
     },
     {
       "path": "provenance/ui-venus-app-r1/BASELINE.json",
@@ -5352,13 +5359,13 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
-      "bytes": 43474,
-      "sha256": "8d491f5b2c72f469de75bb517285d462a8cc3cdbc14182cdd5dd9ed95a8e5c6b"
+      "bytes": 46205,
+      "sha256": "a1c240445e91f9634ca805bf7c243c8e41a320e9410d56bdca92311913b174d6"
     },
     {
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "bytes": 49973,
-      "sha256": "60999c034fae03d0c11bb0e3bc6882799b013226876c9d7f3c21d0007c9cb8f1"
+      "bytes": 49984,
+      "sha256": "0154ac2eb3aca695410ba0bb9dfef4da0d44fe863bb185faa380859dec7e660f"
     },
     {
       "path": "src/org/trillionnium/hepta/local/MemoryAvailability.java",
@@ -5597,8 +5604,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
-      "bytes": 49971,
-      "sha256": "ad417d98fbd7b12bf4373270a1206c11984682c9f35b7b4a5179bb9fbff7ba98"
+      "bytes": 50443,
+      "sha256": "989c93460f1cc69522fb54925674297be9a31dccdb36422d1e347de933d1266a"
     },
     {
       "path": "src/org/trillionnium/hepta/local/UiVenusContract.java",
@@ -5662,8 +5669,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/WebFlightDomain.java",
-      "bytes": 43483,
-      "sha256": "a1be374d093186d8ae58c77aaa2a65e289ff3a9d89c31bae7eef9f223672c6a5"
+      "bytes": 47213,
+      "sha256": "ed6d080063937f428d14f3cabc70b1333feaf32ec53ab9cf572bae8ec0476a3f"
     },
     {
       "path": "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
@@ -5672,13 +5679,18 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/WebFlightProgress.java",
-      "bytes": 16832,
-      "sha256": "47630c3e36b56470ebdb8353b24c68f94bf6274d7fefc08133cd7a78946a0691"
+      "bytes": 18330,
+      "sha256": "e7ea2f28df02e1ed271a0b0f38672c2d722f032e2dc417e14e42fe05c99091a4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightResult.java",
+      "bytes": 24353,
+      "sha256": "55bb45677d862633cdae80d3786240026e57059288205b3d04bc500483bbcd6f"
     },
     {
       "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
-      "bytes": 44552,
-      "sha256": "d413bd893e3ca01404b1e76a1a188b7c741f3d6699c8d8e97655dcd9590e6a4d"
+      "bytes": 45329,
+      "sha256": "8eacb92640772dc7e46a52d81c6531a093a9517ca2363cf38d3c6d4880dbe739"
     },
     {
       "path": "src/org/trillionnium/hepta/local/WebHelperIdentity.java",
@@ -5702,8 +5714,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/WebTaskDomain.java",
-      "bytes": 8817,
-      "sha256": "fe2eb43d1546ae56803133b86fc959f3a5b5e036821553dddfc93fe02bdc9b98"
+      "bytes": 9269,
+      "sha256": "979a58370f7ed2cd856ba02a621e1f8536fabdc5ffb63e936334e9cc61990a18"
     },
     {
       "path": "src/org/trillionnium/hepta/local/web/WebFlightGoal.java",
@@ -6211,16 +6223,6 @@
       "sha256": "44bc7ee0c74dff2a8772be64b54ef2d2ba1cf9574c6f144320e94582e24e5542"
     },
     {
-      "path": "tests/completion-status/CompletionStatusHostTest.java",
-      "bytes": 29532,
-      "sha256": "f25f48a5f04f0cebd5dcf84c64a26be6055cdb7d79bb0879a7f5f5a9241001b2"
-    },
-    {
-      "path": "tests/completion-status/fixtures/v49-premature-success-trace.json",
-      "bytes": 148856,
-      "sha256": "1e07f76bfff89c2038d2f0eaa3b6108fadd9e6e8efbd2dd9cc43d1fac1e3c12c"
-    },
-    {
       "path": "tests/completion/TaskCompletionGateHostTest.java",
       "bytes": 31779,
       "sha256": "a6a93a12cef3775d4115372e49e53064341064c4f880f7444e4634dc3bdf630f"
@@ -6264,6 +6266,16 @@
       "path": "tests/completion/test_notes_completion.py",
       "bytes": 22278,
       "sha256": "db6066aa0ee987eecb66ba2ba88bef191ab49dfdc37527ac4eea5701d3b4678a"
+    },
+    {
+      "path": "tests/completion-status/CompletionStatusHostTest.java",
+      "bytes": 29532,
+      "sha256": "f25f48a5f04f0cebd5dcf84c64a26be6055cdb7d79bb0879a7f5f5a9241001b2"
+    },
+    {
+      "path": "tests/completion-status/fixtures/v49-premature-success-trace.json",
+      "bytes": 148856,
+      "sha256": "1e07f76bfff89c2038d2f0eaa3b6108fadd9e6e8efbd2dd9cc43d1fac1e3c12c"
     },
     {
       "path": "tests/exact-admission/ObservationHintsHostTest.java",
@@ -6377,8 +6389,8 @@
     },
     {
       "path": "tests/flight-observation-worker/run_session_host.py",
-      "bytes": 4975,
-      "sha256": "50271e4e77b25ed011ecf76cbd734370fe0494fdeff9e19ec10bc6da8acfdd77"
+      "bytes": 5057,
+      "sha256": "f9c5a54ffc9642a72d2d81da8a2c1a8693844071f4d1f158610014bbb26c2cf6"
     },
     {
       "path": "tests/flight-observation-worker/run_worker_host.py",
@@ -6772,8 +6784,8 @@
     },
     {
       "path": "tests/qualification-scope/fixtures/android/util/Log.java",
-      "bytes": 204,
-      "sha256": "c6886335b39e83a683a0d5dd4616f645d7f72c571d5ba2f28d18ab3f208d79ae"
+      "bytes": 258,
+      "sha256": "1377a66f1164fe2657577203d1b1b0e9593b7a21904bf970a585e517a65e2208"
     },
     {
       "path": "tests/qualification-scope/fixtures/android/view/Display.java",
@@ -6992,13 +7004,53 @@
     },
     {
       "path": "tests/session-journal/SessionJournalHost.template",
-      "bytes": 19095,
-      "sha256": "33f6d57fdcd2066376bd49a7b5d7dc85da93d59ada2b2b1869e9577f7a387efb"
+      "bytes": 21716,
+      "sha256": "0ed6c9ec90f7106a8d93fb792a671b8ac756c344f030fb4b1b7ed75a87d934ae"
     },
     {
       "path": "tests/session-journal/run_host.py",
-      "bytes": 4489,
-      "sha256": "06427229de2939fd1d1f4b0698ea1b7692f3cd2eb33e3a8624ffc30c834c179c"
+      "bytes": 4633,
+      "sha256": "b86805676feadce40606e7a1b1dbaec31a2db2161945a0838658c6360eac634d"
+    },
+    {
+      "path": "tests/shopping-observation-retry/ShoppingObservationRetryHost.template",
+      "bytes": 18934,
+      "sha256": "28eeb58b90238ba9479ff2cdce2d86779cc4122557b54ac44697110a9e352b2d"
+    },
+    {
+      "path": "tests/shopping-observation-retry/fixtures/actual-shopping-v57-r1/PROVENANCE.json",
+      "bytes": 4594,
+      "sha256": "5d94cf252af1dd84b2cdd2ea2cf0a565f2323be3229cffcd9f85154587822df6"
+    },
+    {
+      "path": "tests/shopping-observation-retry/fixtures/actual-shopping-v57-r1/raw-3b37b1d955864f03bdb24ab483e67110bc811bd3ca8b4cc08bfb0961a11322f2.json.gz",
+      "bytes": 62111,
+      "sha256": "989392bb8844746c1914adef0ed7b46ec1e3404b3c2f821329012fbabe6c37dd"
+    },
+    {
+      "path": "tests/shopping-observation-retry/fixtures/actual-shopping-v57-r1/raw-d1f6d97e7d4e4270a6f975b3a908fa2a9ee9f9536f01417094034b13c6bcc9ff.json.gz",
+      "bytes": 62071,
+      "sha256": "a6a27b2c4a13466844d8111e99012944918990d35c1f3b2888d1ba766255490d"
+    },
+    {
+      "path": "tests/shopping-observation-retry/fixtures/actual-shopping-v57-r1/scope-observation-d257d8d2bf6543db9b7a9bd1747e03b2.json.gz",
+      "bytes": 33458,
+      "sha256": "7c7818f605ef7e6af98140545e5028514f3b2dfb27d9098a17ce5cbe44294818"
+    },
+    {
+      "path": "tests/shopping-observation-retry/fixtures/actual-shopping-v57-r1/scope-observation-e777dc28ba0a4982ad62838bd4778dde.json.gz",
+      "bytes": 33703,
+      "sha256": "3e562b4fee763fcb3c23cd55243de81edc136afbab80574bdaacd25293b94fb4"
+    },
+    {
+      "path": "tests/shopping-observation-retry/reference-v59/WebFlightSession.java.reference",
+      "bytes": 44552,
+      "sha256": "d413bd893e3ca01404b1e76a1a188b7c741f3d6699c8d8e97655dcd9590e6a4d"
+    },
+    {
+      "path": "tests/shopping-observation-retry/run_host.py",
+      "bytes": 6490,
+      "sha256": "847fedfb4de9191811cee029a7b128cfa922292147a4cd610e16ac12e9f483a0"
     },
     {
       "path": "tests/test_ui_venus_q4_0_runtime.py",
@@ -7086,6 +7138,16 @@
       "sha256": "31917261ab88435247c5247f90c964f83f8003ff5e3b19d00635bb35e3238b5b"
     },
     {
+      "path": "tests/web-flight/WebFlightResultCompositionHostTest.java",
+      "bytes": 22599,
+      "sha256": "8f5fbebe19853b43ce515309f3b23f281f13c0fb97483c99b72ccaffc7fd40f7"
+    },
+    {
+      "path": "tests/web-flight/WebFlightResultLifetimeHostTest.java",
+      "bytes": 23532,
+      "sha256": "a0709d0f538d2d8bd06683f7798109bae05157e76d4319a5a38361fe03077704"
+    },
+    {
       "path": "tests/web-flight/WebNaturalOwnerHostTest.java",
       "bytes": 17335,
       "sha256": "c511f6f89b5b98f06166734f879cfd307793a8eb83bdef3caa8751c73594211b"
@@ -7107,8 +7169,13 @@
     },
     {
       "path": "tests/web-flight/run_query_host_tests.py",
-      "bytes": 41363,
-      "sha256": "6fc5f8e65c7b20efff7b121a1fb4baa3f3514db776caa4744f16fed0824d0fb7"
+      "bytes": 41419,
+      "sha256": "d9a4387d48c8f20b326ce4a30e90d313ebbe7fc65caebf2d0c9f8fa364553d5b"
+    },
+    {
+      "path": "tests/web-flight/run_result_host_tests.py",
+      "bytes": 5108,
+      "sha256": "eb57b27e06db1aab8c817caa684e8c96b8b57709cd2dd945b09210679c7d6504"
     },
     {
       "path": "tools/PHONE-ACCEPTANCE.md",
@@ -7352,20 +7419,25 @@
     }
   ],
   "base_source": {
-    "commit": "f519f2081b11dbbe851c2fb6528d32fffbc20c62",
-    "component_tree": "849e754a12c2d151cc01718a4e387dae620335c1",
-    "repository_tree": "a6b480ad136f5130229488767a505a24512e7c95"
+    "commit": "c6a1d9b3fb001c8835c48a8fed32b569f3148d44",
+    "component_tree": "92f370a8efdc5a7768a49279d480a4697ed2d128"
   },
   "release_version_assigned": false,
-  "version_metadata_policy": "Version59/name identifies this source candidate; complete Android build, original signing, installation and actual phone acceptance remain separate exact-source gates.",
+  "version_metadata_policy": "Version60/name identifies this source candidate. Full Android build, original signing, installation and actual ordinary phone acceptance remain separate exact-source gates.",
   "candidate_version_assigned": true,
   "integration_sources": {
-    "preceding_published_candidate": "f519f2081b11dbbe851c2fb6528d32fffbc20c62",
-    "installed_current57_source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
-    "installed_current57_source_tree": "2368b777bad9fd9e2f5dcbcbefc6ea9c27fcb0da",
-    "installed_current57_apk_sha256": "c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4",
-    "installed_current57_source_inventory_sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6",
-    "real_failed_flight_task": "b350fd8665b640608093602b1e6a9f14"
+    "preceding_published_application_candidate": "c6a1d9b3fb001c8835c48a8fed32b569f3148d44",
+    "normal_git_parent_with_unchanged_application_component": "e9e915bdac3e25b9f6fef1625de45267812e41bf",
+    "prior_v59_integration": {
+      "preceding_published_candidate": "f519f2081b11dbbe851c2fb6528d32fffbc20c62",
+      "installed_current57_source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+      "installed_current57_source_tree": "2368b777bad9fd9e2f5dcbcbefc6ea9c27fcb0da",
+      "installed_current57_apk_sha256": "c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4",
+      "installed_current57_source_inventory_sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6",
+      "real_failed_flight_task": "b350fd8665b640608093602b1e6a9f14"
+    },
+    "actual_failed_shopping_task": "475c3b4562e24c9595c49ca1d13e67e4",
+    "journal_diagnostics_overlay_sha256": "8f6ec8cc6c598fcb55b301c70535d11a71299ac07680e24aba2abc98e0e30d44"
   },
-  "source_preservation_scope": "Every f519 file remains represented. Four production files are replaced; focused host tests, exact original public homepage fixtures and integration notes are added. Service preserves all preexisting v58 source blocks; action and complete DOM/native predicates are unchanged."
+  "source_preservation_scope": "Every c6a1d9 file remains represented. Reviewed observation/result and Start changes, diagnostics and their host dependencies are explicit overlays. Original build programs, runtime pins, action-worker and complete DOM/native action predicates remain unchanged."
 }

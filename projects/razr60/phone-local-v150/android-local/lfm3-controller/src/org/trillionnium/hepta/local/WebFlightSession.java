@@ -184,7 +184,7 @@ final class WebFlightSession {
         if("unavailable".equals(last.status)||"state_changed".equals(last.status))
             return publishWaiting(after,last,"final_capture_not_stable");
         need("captured".equals(last.status),"actual final page capture unavailable");
-        String actualLoadingKey=last.instance+"\n"+last.epoch+"\n"+last.url;
+        String actualLoadingKey=loadingKey(last);
         need(loadingAttemptKey==null||loadingAttemptKey.equals(actualLoadingKey),
                 "read-only loading retry changed the original instance, URL or navigation epoch");
         WebDomStability.Result domBracket=null;
@@ -201,9 +201,9 @@ final class WebFlightSession {
         boolean sameCaptureDomain=sameCaptureIdentity&&domBracket!=null;
         boolean stable=sameOriginalFrame&&sameCaptureDomain;
         JSONObject nativeObservationBracket=null;
-        if(retryLoadingDocument(first,last,after,stable,deadline)){
+        if(retryLoadingDocument(first,last,after,stable,captureDeadline)){
             loadingAttemptKey=actualLoadingKey;
-            captureDeadline=Math.min(deadline,loadingDocumentStarted+6000);
+            captureDeadline=Math.min(captureDeadline,loadingDocumentStarted+6000);
             before=observer.observe();service.requireBackgroundObservation(taskId,before);
             continue;
         }
@@ -245,16 +245,21 @@ final class WebFlightSession {
         }finally{if(nativeSource!=null)nativeSource.close();}
         }
     }
+    private static String loadingKey(WebEvidenceReceipt receipt){
+        return receipt.bindingSha+"\n"+receipt.instance+"\n"+receipt.epoch+"\n"+receipt.url
+                +"\n"+receipt.displayId+"\n"+receipt.windowId;
+    }
     /** Extra observations are bounded and read-only; an entry click is never replayed. */
     private boolean retryLoadingDocument(WebEvidenceReceipt first,WebEvidenceReceipt last,PhoneObservation frame,
                                          boolean stable,long deadline)throws Exception{
-        if(goal==null)return false;
-        String key=last.instance+"\n"+last.epoch+"\n"+last.url;
-        CsairCalendar a=CsairCalendar.read(first.dom()),b=CsairCalendar.read(last.dom());
+        boolean shoppingUnstable=goal==null&&purpose.shopping!=null&&!stable;
+        if(goal==null&&!shoppingUnstable)return false;
+        String key=loadingKey(last);
+        CsairCalendar a=goal==null?null:CsairCalendar.read(first.dom()),b=goal==null?null:CsairCalendar.read(last.dom());
         boolean bodyPending=a!=null&&a.headerOnly||b!=null&&b.headerOnly;
-        boolean bookingPending=WebFlightDomain.bookingBodyPending(first.dom())||WebFlightDomain.bookingBodyPending(last.dom());
+        boolean bookingPending=goal!=null&&(WebFlightDomain.bookingBodyPending(first.dom())||WebFlightDomain.bookingBodyPending(last.dom()));
         boolean queryPending=flightProgress!=null&&flightProgress.queryDispatched();
-        if(!bodyPending&&!bookingPending&&!queryPending&&!(key.equals(loadingDocumentKey)&&!stable))return false;
+        if(!shoppingUnstable&&!bodyPending&&!bookingPending&&!queryPending&&!(key.equals(loadingDocumentKey)&&!stable))return false;
         need(first.instance.equals(last.instance)&&first.epoch==last.epoch&&first.url.equals(last.url)
                 &&first.bindingSha.equals(last.bindingSha)&&first.displayId==last.displayId
                 &&first.windowId==last.windowId,"loading observation changed the immutable page domain");
@@ -264,6 +269,7 @@ final class WebFlightSession {
         }
         if(loadingDocumentReadRetries>=2||now+250>=Math.min(deadline,loadingDocumentStarted+6000))return false;
         need(!retired&&!cancellation.isCancelled(),"web task retired while waiting for page content");
+        service.requireTaskAuthorization(taskId,authorization);background.requireActive();
         loadingDocumentReadRetries++;
         record("web-load-wait-"+UUID.randomUUID().toString().replace("-","")+".json",new JSONObject()
                 .put("schema","hepta.web-read-only-content-wait.v1").put("task_id",taskId)
@@ -273,11 +279,14 @@ final class WebFlightSession {
                 .put("last_request_nonce",last.callback().getString("request_nonce"))
                 .put("first_dom_sha256",first.domSha).put("last_dom_sha256",last.domSha)
                 .put("recognized_calendar_body_pending",bodyPending).put("recognized_booking_body_pending",bookingPending)
+                .put("shopping_unstable_readonly_bracket",shoppingUnstable)
                 .put("actual_query_awaiting_results",queryPending).put("read_only_retry",loadingDocumentReadRetries)
                 .put("maximum_extra_reobservations",2).put("deadline_elapsed_ms",Math.min(deadline,loadingDocumentStarted+6000))
                 .put("action_replayed",false).put("model_action_dispatched",false).put("business_verified",false));
         SystemClock.sleep(200);
         need(!retired&&!cancellation.isCancelled(),"web task retired while waiting for page content");
+        need(SystemClock.elapsedRealtime()<Math.min(deadline,loadingDocumentStarted+6000),
+                "read-only content wait exceeded its original deadline");
         service.requireTaskAuthorization(taskId,authorization);background.requireActive();
         return true;
     }
@@ -525,12 +534,12 @@ final class WebFlightSession {
                 &&!hasUnreleased(service),"helper retirement proof does not match this original task");
         cleanupKnown=true;
     }
-    void serviceRetired(){retired=true;domain=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
+    void serviceRetired(){retired=true;if(flightProgress!=null)flightProgress.retire();domain=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;client.close();}
     Cleanup close(String reason){
         TaskCompletionGate.WebCloseAttempt completionClose=completion.beginWebClose(this,domain,taskId,journal.bindingSha,reason);
         boolean closeReturnedNormally=false;
-        retired=true;domain=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
+        retired=true;if(flightProgress!=null)flightProgress.retire();domain=null;currentCapture=null;flightNativePermit=null;flightNativeCheck=null;pendingNavigation=null;shoppingNavigation=null;dispatchSource=null;shoppingDispatch=null;
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;completion.clearWebDomain();
         try{
             if(!journal.attachWasPrepared()){

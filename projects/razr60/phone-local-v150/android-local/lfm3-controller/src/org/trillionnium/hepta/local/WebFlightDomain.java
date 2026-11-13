@@ -28,6 +28,7 @@ final class WebFlightDomain {
     final Map<String,Object> queryCandidate;
     private final List<Map<String,Object>> capabilities;
     private final WebFlightProgress progress;
+    private final WebFlightResult result;
     private final Map<String,Object> proof;
     private WebFlightDomain(String task,WebFlightGoal goal,TaskAuthorization.Gate auth,PhoneObservation frame,WebEvidenceReceipt receipt,
                             String phase,String pageKey,Set<String> clicks,Map<String,String> edits,Map<String,Object> proof,
@@ -41,17 +42,19 @@ final class WebFlightDomain {
         captureStarted=receipt.started;captureEnded=receipt.ended;this.form=form;
         nativeReadbacks=Collections.unmodifiableMap(new LinkedHashMap<String,Map<String,Object>>(readbacks));
         queryCandidate=query==null?null:Collections.unmodifiableMap(new LinkedHashMap<String,Object>(query));
-        this.capabilities=Collections.unmodifiableList(new ArrayList<Map<String,Object>>(capabilities));progress=null;
+        this.capabilities=Collections.unmodifiableList(new ArrayList<Map<String,Object>>(capabilities));progress=null;result=null;
         this.proof=Collections.unmodifiableMap(new LinkedHashMap<String,Object>(proof));
     }
-    private WebFlightDomain(WebFlightDomain original,WebFlightProgress progress)throws Exception{
+    private WebFlightDomain(WebFlightDomain original,WebFlightProgress progress,WebFlightResult result)throws Exception{
         taskId=original.taskId;ownerSha=original.ownerSha;authorizationSha=original.authorizationSha;
         observationId=original.observationId;stateSha=original.stateSha;generation=original.generation;
         instance=original.instance;url=original.url;displayId=original.displayId;windowId=original.windowId;epoch=original.epoch;
         goal=original.goal;contractSha=original.contractSha;bindingSha=original.bindingSha;domSha=original.domSha;
         captureStarted=original.captureStarted;captureEnded=original.captureEnded;form=original.form;
-        nativeReadbacks=original.nativeReadbacks;queryCandidate=original.queryCandidate;this.progress=progress;
+        nativeReadbacks=original.nativeReadbacks;queryCandidate=original.queryCandidate;this.progress=progress;this.result=result;
         need(progress.matches(original),"same flight progression scope required");
+        boolean resultVerified=result!=null&&progress.acceptsResult(result,original);
+        need(result==null||resultVerified,"result does not belong to this live query and current frame");
         List<Map<String,Object>> targets=new ArrayList<Map<String,Object>>();
         Set<String> clicks=new HashSet<String>();
         boolean submitted=progress.queryAttempted(),pending=progress.selectionPending(),ready=progress.queryReady(original);
@@ -67,7 +70,7 @@ final class WebFlightDomain {
             }
             if(ready){targets.add(queryCandidate);clicks.add((String)queryCandidate.get("node_id"));}
         }
-        phase=submitted?(progress.queryDispatched()?"official_query_result_pending":"official_query_attempt_unconfirmed"):pending?"official_selection_readback_pending":
+        phase=resultVerified?"official_flight_results":submitted?(progress.queryDispatched()?"official_query_result_pending":"official_query_attempt_unconfirmed"):pending?"official_selection_readback_pending":
                 ready?"official_query_ready":original.phase;
         capabilities=Collections.unmodifiableList(targets);clickIds=Collections.unmodifiableSet(clicks);
         editValues=Collections.emptyMap();
@@ -77,26 +80,45 @@ final class WebFlightDomain {
         out.put("native_ax_capabilities",capabilities);out.put("allowed_click_ids",new ArrayList<String>(clickIds));
         out.put("query_control_withheld",!ready);out.put("query_attempted",submitted);
         out.put("query_executed",progress.queryDispatched());out.put("server_query_completed",false);
-        out.put("result_ready_for_completion_gate",false);out.put("query_retry_permitted",false);
+        out.put("displayed_query_result_verified",resultVerified);
+        out.put("server_response_payload_verified",false);
+        out.put("result_ready_for_completion_gate",resultVerified);out.put("query_retry_permitted",false);
+        out.remove("observed_public_flight_result");
+        if(resultVerified)out.put("observed_public_flight_result",result.evidence());
         out.put("query_control_withheld_reason",ready?null:submitted?"the one query attempt is consumed":
                 pending?"actual selection is awaiting fresh form/native readback":"same-lease city and complete-date confirmations are incomplete");
-        out.put("next_goal",submitted?"查询尝试已经记录；只读观察真实结果，不能重复查询、点击航班预订或声称已经查到航班。":
+        out.put("next_goal",resultVerified?"本帧的真实航班结果已与本次查询核对；按结果中的日期、机场、航班、时间、公开价和税费条件汇总，然后报告完成。不能预订或重复查询。":
+                submitted?"查询尝试已经记录；只读观察真实结果，不能重复查询、点击航班预订或声称已经查到航班。":
                 pending?"上次城市或日期点击等待实际表单读回；只可等待，不要重复点击。":
                 ready?"出发城市、到达城市、完整日期和人数已由本任务真实操作及当前表单核对；仅点击一次本帧『查询』，随后等待真实结果。":
                 progress.hasConfirmedCities()?original.proof.get("next_goal"):
                 "先选择并读回出发城市与到达城市，再选择完整年月日；不能直接提交查询。");
         List<String> missing=new ArrayList<String>();
-        if(!progress.selectionConfirmed("departure",original))missing.add("actual_selected_departure_city_confirmation");
-        if(!progress.selectionConfirmed("arrival",original))missing.add("actual_selected_arrival_city_confirmation");
-        if(!progress.selectionConfirmed("date",original))missing.add("actual_selected_complete_date_confirmation");
+        if(!submitted&&!progress.selectionConfirmed("departure",original))missing.add("actual_selected_departure_city_confirmation");
+        if(!submitted&&!progress.selectionConfirmed("arrival",original))missing.add("actual_selected_arrival_city_confirmation");
+        if(!submitted&&!progress.selectionConfirmed("date",original))missing.add("actual_selected_complete_date_confirmation");
         if(!progress.queryDispatched())missing.add("model_bound_public_query_dispatch");
-        missing.add("actual_same_record_flight_result");out.put("missing",missing);
+        if(!resultVerified)missing.add("actual_same_record_flight_result");out.put("missing",missing);
         pageKey=WebEvidenceJson.sha(new JSONObject().put("observed_page_key",original.pageKey)
                 .put("progress",new JSONObject(actual)).put("phase",phase)
+                .put("result_semantic_sha256",resultVerified?result.semanticSha():JSONObject.NULL)
+                .put("query_binding_id",resultVerified?result.queryId():JSONObject.NULL)
                 .put("capabilities",new JSONArray(capabilities)).toString());
         out.put("semantic_region_sha256",pageKey);proof=Collections.unmodifiableMap(out);
     }
-    WebFlightDomain withProgress(WebFlightProgress value)throws Exception{return new WebFlightDomain(this,value);}
+    WebFlightDomain withProgress(WebFlightProgress value)throws Exception{return new WebFlightDomain(this,value,null);}
+    /** Called only with a compiled provider's actual current-frame result. */
+    WebFlightDomain withResult(WebFlightResult.Page actualPage)throws Exception{
+        need(progress!=null&&result==null,"one result attachment to this current progression domain");
+        return new WebFlightDomain(this,progress,progress.bindResult(this,actualPage));
+    }
+    WebFlightResult.Frame resultFrame(){
+        return new WebFlightResult.Frame(new WebFlightResult.Scope(taskId,ownerSha,contractSha,authorizationSha,
+                bindingSha,generation,instance,displayId,windowId),observationId,stateSha,domSha,url,epoch,captureStarted,captureEnded);
+    }
+    boolean resultReady(){return progress!=null&&progress.acceptsResult(result,this);}
+    Map<String,Object> resultRecord(){need(resultReady(),"current flight result is unavailable or retired");return result.evidence();}
+    Map<String,Object> resultModelView(){need(resultReady(),"current flight result is unavailable or retired");return result.modelView();}
     Map<String,Object> progressEvidence(){return progress==null?null:progress.evidence(this);}
     boolean queryAttempted(){return progress!=null&&progress.queryAttempted();}
     boolean queryDispatched(){return progress!=null&&progress.queryDispatched();}
@@ -176,7 +198,7 @@ final class WebFlightDomain {
         CsairFlightForm observedForm=null;Map<String,Map<String,Object>> readbacks=new LinkedHashMap<String,Map<String,Object>>();
         Map<String,Object> query=null;
         WebNativeGeometry geometry=WebNativeGeometry.read(capture,dom,receipt.displayId,receipt.windowId,receipt.stability());
-        evidence.put("native_geometry",geometry==null?null:geometry.evidence());
+        evidence.put("native_geometry",geometry==null?null:jsonMap(geometry.evidence()));
         evidence.put("css_to_screen_mapping_verified",false);
         evidence.put("css_to_screen_mapping_used",false);
         evidence.put("dom_visible_is_screen_visibility_proof",false);
@@ -348,7 +370,7 @@ final class WebFlightDomain {
         evidence.put("display_id",receipt.displayId);evidence.put("window_id",receipt.windowId);
         evidence.put("webview_instance",receipt.instance);evidence.put("navigation_epoch",receipt.epoch);
         evidence.put("phase","official_page_capture_pending");evidence.put("capture_status",receipt.status);
-        evidence.put("capture_callback",receipt.callback());evidence.put("allowed_click_ids",Collections.emptyList());
+        evidence.put("capture_callback",jsonMap(receipt.callback()));evidence.put("allowed_click_ids",Collections.emptyList());
         evidence.put("native_ax_capabilities",Collections.emptyList());evidence.put("grants_tool_authority",false);
         evidence.put("query_executed",false);evidence.put("business_verified",false);evidence.put("cleanup_known",false);
         evidence.put("next_goal","官网证据尚未稳定；只可等待或报告未完成，不能点击、输入或宣称查询成功。");
@@ -356,6 +378,30 @@ final class WebFlightDomain {
         return new WebFlightDomain(task,goal,auth,frame,receipt,"official_page_capture_pending",key,
                 Collections.<String>emptySet(),Collections.<String,String>emptyMap(),evidence,
                 null,Collections.<String,Map<String,Object>>emptyMap(),null,Collections.<Map<String,Object>>emptyList());
+    }
+    // Keep parser containers out of the completion snapshot. This is a value
+    // conversion only: all geometry/callback fields are retained, and no
+    // authority or result-readiness decision is made here.
+    private static Map<String,Object> jsonMap(JSONObject value)throws Exception{
+        @SuppressWarnings("unchecked") Map<String,Object> out=(Map<String,Object>)jsonValue(value,0,new int[]{50000});
+        return out;
+    }
+    private static Object jsonValue(Object value,int depth,int[] budget)throws Exception{
+        need(depth<=32&&--budget[0]>=0,"bounded JSON flight evidence required");
+        if(value==JSONObject.NULL)return null;
+        if(value instanceof JSONObject){
+            Map<String,Object> out=new LinkedHashMap<String,Object>();java.util.Iterator<String> keys=((JSONObject)value).keys();
+            while(keys.hasNext()){String key=keys.next();out.put(key,jsonValue(((JSONObject)value).get(key),depth+1,budget));}
+            return Collections.unmodifiableMap(out);
+        }
+        if(value instanceof JSONArray){
+            List<Object> out=new ArrayList<Object>();JSONArray a=(JSONArray)value;
+            for(int i=0;i<a.length();i++)out.add(jsonValue(a.get(i),depth+1,budget));
+            return Collections.unmodifiableList(out);
+        }
+        need(value instanceof String||value instanceof Boolean||value instanceof Number,"JSON flight evidence scalar required");
+        if(value instanceof Number){double n=((Number)value).doubleValue();need(!Double.isNaN(n)&&!Double.isInfinite(n),"finite JSON flight evidence number");}
+        return value;
     }
     Map<String,Object> evidence(){return new LinkedHashMap<String,Object>(proof);}
     Set<String> clicks(Set<String> original){Set<String> out=new HashSet<String>(original);out.retainAll(clickIds);return out;}
@@ -369,7 +415,7 @@ final class WebFlightDomain {
     }
     void requireCurrent(ActionDecision action){
         need(action!=null&&observationId.equals(action.observationId)&&WebEvidenceProtocol.HELPER_PACKAGE.equals(action.packageName),"web action belongs to another frame");
-        if("done".equals(action.action)){need(!"success".equals(action.status),"actual flight results have not been independently verified");return;}
+        if("done".equals(action.action)){need(!"success".equals(action.status)||resultReady(),"actual flight results have not been independently verified");return;}
         if("wait".equals(action.action))return;
         if("click".equals(action.action)){need(action.nodeId!=null&&clickIds.contains(action.nodeId),"web click is not a proved current public navigation target");return;}
         if("type".equals(action.action)){need(action.nodeId!=null&&editValues.containsKey(action.nodeId)&&editValues.get(action.nodeId).equals(action.text),"web input differs from exact OWNER field");return;}

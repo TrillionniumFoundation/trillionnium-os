@@ -505,7 +505,34 @@ public final class LocalTaskSession {
         return new SessionJournalQueue.Failure(){public void failed(Exception error){
             blocked=true;
             if(selected!=null&&capturedTask!=null)selected.stopIfTask(capturedTask);
+            logJournalFailure(journalFailureDetails("queue_failure_hook",error));
         }};
+    }
+    /** Bounded diagnostics only: never writes a journal or grants task/recovery permission. */
+    private static String journalFailureDetails(String stage,Exception error){
+        final StringBuilder value=new StringBuilder("session_journal_failure stage="+stage+"\n");
+        final boolean[] truncated={false};
+        java.io.Writer bounded=new java.io.Writer(){
+            public void write(char[] text,int offset,int count){
+                int accepted=Math.min(count,Math.max(0,8192-value.length()));
+                value.append(text,offset,accepted);if(accepted<count)truncated[0]=true;
+            }
+            public void flush(){}
+            public void close(){}
+        };
+        java.io.PrintWriter printer=new java.io.PrintWriter(bounded);
+        if(error==null)printer.println("original exception unavailable; queue failure already observed");
+        else error.printStackTrace(printer);
+        printer.flush();
+        if(truncated[0])value.append("\n[exception diagnostic truncated at 8192 characters]");
+        return value.toString();
+    }
+    private static void logJournalFailure(String details){
+        // Small logcat records preserve the bounded original stack, including caused-by/suppressed errors.
+        // A logging failure cannot release or replace the ordinary journal failure barrier.
+        try{for(int offset=0;offset<details.length();offset+=1000)
+            android.util.Log.e("HeptaSessionJournal",details.substring(offset,Math.min(details.length(),offset+1000)));
+        }catch(RuntimeException unavailable){/* diagnostic sink only */}
     }
     private void failSessionWrite(long expectedEpoch,Exception error){
         blocked=true;
@@ -516,7 +543,9 @@ public final class LocalTaskSession {
         // Only the job's captured failure hook can cancel a task. Never look up
         // a replacement controller in this potentially late UI callback.
         state="会话记录保存未确认；已请求停止任务，暂不接受新任务。";
-        log=log+state+"\n";if(log.length()>16000)log=log.substring(log.length()-16000);
+        String details=journalFailureDetails("main_ack_epoch_"+expectedEpoch,error);logJournalFailure(details);
+        // This log is shown only inside the existing owner-opened Advanced Diagnostics panel.
+        log=log+state+"\n"+details+"\n";if(log.length()>16000)log=log.substring(log.length()-16000);
         publish();
     }
     private byte[] snapshotSession(String status,boolean cleanupKnown)throws Exception {
@@ -558,39 +587,53 @@ public final class LocalTaskSession {
     }
     private void writeSessionSnapshot(byte[] snapshot)throws Exception {writeSessionSnapshot(snapshot,readLeaseState());}
     private void writeSessionSnapshot(byte[] snapshot,LeaseState leases)throws Exception {
-        // This private copy cannot acquire newer task/authorization fields after queueing.
-        JSONObject value=parseSessionJson(snapshot);
-        value.put("background_lease_unreleased",leases.background).put("web_helper_lease_unreleased",leases.web);
-        if(journalQueue.failed())value.put("blocked",true).put("cleanup_known",false)
-                .put("session_journal_failure_observed",true);
-        AtomicFile destination=new AtomicFile(new File(context.getFilesDir(),"control-session.json"));
-        FileOutputStream out=null;
+        String stage="decode_snapshot";
+        AtomicFile destination=null;FileOutputStream out=null;
         try{
+            // This private copy cannot acquire newer task/authorization fields after queueing.
+            JSONObject value=parseSessionJson(snapshot);
+            stage="capture_lease_fields";
+            value.put("background_lease_unreleased",leases.background).put("web_helper_lease_unreleased",leases.web);
+            if(journalQueue.failed())value.put("blocked",true).put("cleanup_known",false)
+                    .put("session_journal_failure_observed",true);
+            stage="atomic_destination";
+            destination=new AtomicFile(new File(context.getFilesDir(),"control-session.json"));
+            stage="encode_snapshot";
             byte[] written=value.toString(2).getBytes(StandardCharsets.UTF_8);
             if(written.length>SESSION_LIMIT)throw new IOException("session record exceeds bounded size");
-            out=destination.startWrite();android.system.Os.fchmod(out.getFD(),0600);
-            out.write(written);out.flush();out.getFD().sync();
+            stage="atomic_start_write";out=destination.startWrite();
+            stage="private_file_mode";android.system.Os.fchmod(out.getFD(),0600);
+            stage="write_flush_file_sync";out.write(written);out.flush();out.getFD().sync();
             // Android AtomicFile may log a sync/rename failure without throwing.
             // Explicit sync and byte/sidecar checks must precede the pending-start permission.
-            destination.finishWrite(out);out=null;
+            stage="atomic_finish_write";destination.finishWrite(out);out=null;
+            stage="committed_file_mode";
             File base=destination.getBaseFile();android.system.Os.chmod(base.getPath(),0600);
+            stage="readback_and_sidecars";
             if(recordExists(new File(base.getPath()+".new"))||recordExists(new File(base.getPath()+".bak"))
                     ||!java.util.Arrays.equals(written,readSessionRecord(base)))
                 throw new IOException("session commit readback or sidecar check failed");
-            File parent=base.getParentFile().getCanonicalFile();
+            stage="canonical_parent";File parent=base.getParentFile().getCanonicalFile();
+            stage="open_parent";
             FileDescriptor directory=android.system.Os.open(parent.getPath(),android.system.OsConstants.O_RDONLY
                     |android.system.OsConstants.O_NOFOLLOW|android.system.OsConstants.O_CLOEXEC,0);
             try{
-                android.system.StructStat info=android.system.Os.fstat(directory);
+                stage="verify_parent_identity";android.system.StructStat info=android.system.Os.fstat(directory);
                 if(!android.system.OsConstants.S_ISDIR(info.st_mode)||info.st_uid!=android.os.Process.myUid())
                     throw new IOException("session commit parent identity differs");
-                android.system.Os.fsync(directory);
+                stage="parent_fsync_or_close";android.system.Os.fsync(directory);
             }finally{android.system.Os.close(directory);}
-        }catch(Exception error){if(out!=null)destination.failWrite(out);throw error;}
+        }catch(Exception error){
+            IOException observed=new IOException("session journal write failed at "+stage,error);
+            logJournalFailure(journalFailureDetails(stage,observed));
+            if(out!=null&&destination!=null)destination.failWrite(out);
+            throw observed;
+        }
     }
     /** Startup currently runs before any task or queue admission; its existing recovery boundary is retained. */
     private void persistStartupRecord(String status,boolean cleanupKnown){
         try{writeSessionSnapshot(snapshotSession(status,cleanupKnown));}
-        catch(Exception error){blocked=true;state=state+"（会话记录保存失败，已暂停新任务）";publish();}
+        catch(Exception error){blocked=true;logJournalFailure(journalFailureDetails("startup_record",error));
+            state=state+"（会话记录保存失败，已暂停新任务）";publish();}
     }
 }
