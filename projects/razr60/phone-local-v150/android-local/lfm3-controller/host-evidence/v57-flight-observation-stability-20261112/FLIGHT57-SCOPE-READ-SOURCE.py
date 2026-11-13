@@ -1,0 +1,25 @@
+import base64,hashlib,json,os,stat,zlib
+from pathlib import Path
+PINS=[{"path":"/home/alex/hepta-local-007f-20261111/background-web-v57-lfm3-flight-r1/evidence/task/scope-observation-036addfec7324b2ba31ae0a443702d30.json","bytes":83385,"sha256":"866e1dce748ad73c70e651f4ef75c18ef5a567ce3767a3532ee5d541ead7b785"},{"path":"/home/alex/hepta-local-007f-20261111/background-web-v57-lfm3-flight-r1/evidence/task/scope-observation-86bdeddc70b04aa9abe416029e005276.json","bytes":83383,"sha256":"72d9eaf52c86921dd3c5b0d0eefb2765f33401f20234d64f3ae6ceb26a29ad69"},{"path":"/home/alex/hepta-local-007f-20261111/background-web-v57-lfm3-flight-r1/evidence/task/scope-observation-98f1efecebfe4a4bb44222877b734958.json","bytes":83385,"sha256":"3c9bbf93584c794f2b8862ddbe7cf9d6d6dfbb0775962cd3191b1ea3d9d2dadf"}]
+def ident(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)
+rows=[]
+for pin in PINS:
+ p=Path(pin["path"])
+ assert all(not x.is_symlink() for x in (p,*p.parents))
+ fd=os.open(str(p),os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)
+ try:
+  a=os.fstat(fd);assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==pin["bytes"]
+  chunks=[];n=0
+  while n<=pin["bytes"]:
+   b=os.read(fd,min(65536,pin["bytes"]+1-n))
+   if not b:break
+   chunks.append(b);n+=len(b)
+  raw=b"".join(chunks)
+  assert len(raw)==pin["bytes"] and hashlib.sha256(raw).hexdigest()==pin["sha256"]
+  assert ident(a)==ident(os.fstat(fd))==ident(p.stat())
+  rows.append(dict(pin,raw_utf8=raw.decode("utf-8","strict")))
+ finally:os.close(fd)
+payload=(json.dumps({"schema":"hepta.flight57.last-three-scope-originals.v1","files":rows},ensure_ascii=False,separators=(",",":"))+"\n").encode("utf-8")
+c=zlib.compressobj(9,zlib.DEFLATED,31,8,zlib.Z_FIXED);packed=c.compress(payload)+c.flush()
+assert zlib.decompress(packed,31)==payload
+print(json.dumps({"schema":"hepta.original-scope-read.v1","raw_bytes":len(payload),"raw_sha256":hashlib.sha256(payload).hexdigest(),"gzip_bytes":len(packed),"gzip_sha256":hashlib.sha256(packed).hexdigest(),"gzip_base64":base64.b64encode(packed).decode("ascii"),"phone_actions":0,"source_files_modified":False},separators=(",",":")),flush=True)

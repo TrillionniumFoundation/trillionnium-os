@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.main57-publication-staging-result.v1",
+  "all_pass": true,
+  "exit_code": 0,
+  "root": "/home/alex/hepta-local-007f-20261111/v57-main-release-publication-r1",
+  "source_count": 595,
+  "source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+  "source_tree": "2368b777bad9fd9e2f5dcbcbefc6ea9c27fcb0da",
+  "source_inventory_sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6",
+  "core_result": {
+    "bytes": 11178,
+    "sha256": "239e2639e7ba426f5068ae1e8620edf8bd5a1c564181fdfc8048f588a87b8aab"
+  },
+  "host_map": {
+    "bytes": 141875,
+    "sha256": "2ebce60579704b0545cd9880e6a3fa0b7f5cad6149439aa1419db8fb2c16d539"
+  },
+  "input": {
+    "bytes": 109718,
+    "sha256": "6d263f96aa2718e8483c9d38c21d96f01a82aa7f9c9d79a40aaae4fc6c09e4b8"
+  },
+  "files": [
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v57-main-release-publication-r1/stage.py",
+      "bytes": 18367,
+      "sha256": "a7395972425dda0e9b11ece7cbc70739667ae968311ce52f2aed1a1de561bc49",
+      "identity": [
+        66306,
+        48663116,
+        33152,
+        1,
+        18367,
+        1794527443756566421,
+        1794527443756920161
+      ]
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v57-main-release-publication-r1/METADATA-INPUT.json",
+      "bytes": 109718,
+      "sha256": "6d263f96aa2718e8483c9d38c21d96f01a82aa7f9c9d79a40aaae4fc6c09e4b8",
+      "identity": [
+        66306,
+        48663117,
+        33152,
+        1,
+        109718,
+        1794527443758015716,
+        1794527443761920330
+      ]
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v57-main-release-publication-r1/GIT-SOURCE-BLOB-MAP.json",
+      "bytes": 289218,
+      "sha256": "5280a107976ccdc734a8ecfe8bffb08bb4b8a569526c0015704b6cdf270ede5f",
+      "identity": [
+        66306,
+        48663118,
+        33152,
+        1,
+        289218,
+        1794527443762610467,
+        1794527443764920431
+      ]
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v57-main-release-publication-r1/PUBLICATION.json",
+      "bytes": 7005,
+      "sha256": "cba1734c8da78e80bbbed51f036e1ebbfbb9d99aa39dffb0d967078c0051d5a0",
+      "identity": [
+        66306,
+        48663119,
+        33152,
+        1,
+        7005,
+        1794527443766399802,
+        1794527443766920498
+      ]
+    },
+    {
+      "path": "/home/alex/hepta-local-007f-20261111/v57-main-release-publication-r1/main57_signer.py",
+      "bytes": 95013,
+      "sha256": "7814550e071c5a4206da4b021dc3d4952a23d1cf11ad1f6f3e1d751b7d5b180f",
+      "identity": [
+        66306,
+        48663120,
+        33152,
+        1,
+        95013,
+        1794527443767676009,
+        1794527443770920633
+      ]
+    }
+  ],
+  "git_map_reconstructed_from_exact_host_rows": true,
+  "git_map_matched_actual_full_bytes_sha256": true,
+  "remote_git_rechecked_here": false,
+  "signer_source_compiled_not_executed": true,
+  "signer_executed": false,
+  "signed": false,
+  "phone_actions": 0,
+  "business_verified": false,
+  "originals_unchanged": true,
+  "written_files_unchanged": true,
+  "started_epoch": 1794527443.7561772,
+  "error": null,
+  "finished_epoch": 1794527443.772417,
+  "elapsed_seconds": 0.01623988151550293,
+  "stage_sha256": "a7395972425dda0e9b11ece7cbc70739667ae968311ce52f2aed1a1de561bc49"
+}

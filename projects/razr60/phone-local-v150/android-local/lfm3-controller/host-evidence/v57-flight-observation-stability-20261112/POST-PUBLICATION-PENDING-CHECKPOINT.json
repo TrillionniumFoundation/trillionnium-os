@@ -1,0 +1,531 @@
+{
+  "schema": "hepta.main57-post-publication-evidence-collection-checkpoint.v1",
+  "status": "Main57 actual Flight ended with failed business task; collector process exit0 and cleanup are separate. Awaiting original-file pack before one evidence-only CAS.",
+  "last_verified_branch_head": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+  "source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+  "source_tree": "2368b777bad9fd9e2f5dcbcbefc6ea9c27fcb0da",
+  "source_candidate_git": "517e61599073eb264c5e52871570d49e7af2d798",
+  "source_file_count": 595,
+  "source_inventory_sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6",
+  "evidence_prefix": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v57-flight-observation-stability-20261112/",
+  "files": [
+    {
+      "path": "PUBLICATION.json",
+      "git_blob_sha": "3bc9d124af369207924e74cbeccdd24dab86d585",
+      "bytes": 7005,
+      "sha256": "cba1734c8da78e80bbbed51f036e1ebbfbb9d99aa39dffb0d967078c0051d5a0"
+    },
+    {
+      "path": "GIT-SOURCE-BLOB-MAP.json",
+      "git_blob_sha": "9eb25cee2fe8dac38a8ff000f68f2ed1fd4d7db6",
+      "bytes": 289218,
+      "sha256": "5280a107976ccdc734a8ecfe8bffb08bb4b8a569526c0015704b6cdf270ede5f"
+    },
+    {
+      "path": "SOURCE-PUBLICATION-PROOF.json",
+      "git_blob_sha": "f2bb0d4d2bc9574f36c6a3dc2aaff0809e271e1d",
+      "bytes": 8356,
+      "sha256": "f68d04d2327a55a3c54ca56be47dc9e188d9f37b70c665367dc57db569f3d105"
+    },
+    {
+      "path": "main57-signed-RESULT.json",
+      "git_blob_sha": "5fcab14b2f4fc52fd04a69a3765620761a216422",
+      "bytes": 35104,
+      "sha256": "9deb86d5ba6b066bf250a432559bdc1fcee1138596af3f40133943c6259dd60c"
+    },
+    {
+      "path": "main57-publication-staging-RESULT.json",
+      "git_blob_sha": "b7071eee4b66d05815b1a8b4c3c8b8f8b504e503",
+      "bytes": 3299,
+      "sha256": "f58e0c55839a00c6678d64ea7321dfeaa0e9a98619749dcc39356e40a1af0252"
+    },
+    {
+      "path": "main57-final-signer.py",
+      "git_blob_sha": "04976f96ef3f1d20277a407dfb9348e944cfcef8",
+      "bytes": 95013,
+      "sha256": "7814550e071c5a4206da4b021dc3d4952a23d1cf11ad1f6f3e1d751b7d5b180f"
+    },
+    {
+      "path": "main57-final-publication-stager.py",
+      "git_blob_sha": "169ad1c74bd7d86c796bd319bc17a188c4660045",
+      "bytes": 18367,
+      "sha256": "a7395972425dda0e9b11ece7cbc70739667ae968311ce52f2aed1a1de561bc49"
+    },
+    {
+      "path": "main57-publication-metadata-input.json",
+      "git_blob_sha": "0040d604bfe29ddda6dbe5862d3355c8ccb2f70c",
+      "bytes": 109718,
+      "sha256": "6d263f96aa2718e8483c9d38c21d96f01a82aa7f9c9d79a40aaae4fc6c09e4b8"
+    },
+    {
+      "path": "main57-final-signing-handoff.json",
+      "git_blob_sha": "3e6c8e55d1bf953e4997950d5395fcd41ba462bd",
+      "bytes": 23795,
+      "sha256": "4f0aeb9b5be3cd5b132380a13ccfb202435f0a1028f260ca7ec19a98e06f1b32"
+    },
+    {
+      "path": "main57-publication-staging-request.json",
+      "git_blob_sha": "d50d422ec93590aff894c24fd28ea30839c51400",
+      "bytes": 67226,
+      "sha256": "d440fe356b0bc13bee9b3d89504b5e70004762583a396abd9c53818516ed48cc"
+    },
+    {
+      "path": "main57-signing-request.json",
+      "git_blob_sha": "e5e78292eb337783f267a56c2baa47ea06e76aab",
+      "bytes": 3086,
+      "sha256": "3c3aff16a7cb4e3680e19640e4abf6d1df9935da902f359a0a785b95bd378d58"
+    },
+    {
+      "path": "main57-installer-r1-source.py",
+      "git_blob_sha": "e89df10dc64ab6b27bfa800296392148f2da1aaf",
+      "bytes": 217158,
+      "sha256": "1514ba559b730bc9f90ba8099cf1ac5f592ee9bf136705790766ef311e915b48"
+    },
+    {
+      "path": "main57-installer-r1-preclaim-stderr.txt",
+      "git_blob_sha": "70210652030aaeaaedd6215e70f2bb93eedf2965",
+      "bytes": 1580,
+      "sha256": "ae755e75e079c6f72c2e6806e4275094c25c8bcede8dedf8a7dd3d4c4dc05e8b"
+    },
+    {
+      "path": "main57-installer-r1-owner-command.json",
+      "git_blob_sha": "3e4abd41919afd07425314bee75f0a48d55acf56",
+      "bytes": 1869,
+      "sha256": "976db5648e1e10a30774873b5728f3e292e0abf3dc18042d4fabc1a7a394adc0"
+    },
+    {
+      "path": "main57-installer-r1-host-publication.json",
+      "git_blob_sha": "e67571ccbdfefd4dd3224c7605ef1b634cc750e5",
+      "bytes": 2173,
+      "sha256": "196e7f4e598631049cebe6dd8a42b1982bf94551bc76bcb304e8931485678617"
+    },
+    {
+      "path": "main57-installer-r1-publish-request.json",
+      "git_blob_sha": "0392683efbf35c4f2ac443295056a19765e9f423",
+      "bytes": 75875,
+      "sha256": "81ab75c3eebc0fc655d2ca0df95babb721dfe4496eafe4eaef19f45fddb2eea6"
+    },
+    {
+      "path": "main57-installer-four-native-consumer-review.json",
+      "git_blob_sha": "f261639b2e040b75719a46391c7fbdc761da414b",
+      "bytes": 3439,
+      "sha256": "c68344b219f00bcd6af4def5ab379780495c88ce625e27aa82486383938e53e2"
+    },
+    {
+      "path": "main57-installer-r2-RESULT.json",
+      "git_blob_sha": "f86d8f056c053a98d9d16dc2d0d7c869f4c9e474",
+      "bytes": 210331,
+      "sha256": "29032d0ece78951703df4d5179de1578d9be59499d72aee9efe12a075fc4f653"
+    },
+    {
+      "path": "main57-installer-r2-source.py",
+      "git_blob_sha": "11e43784cbf8ab1ded4e59bcae562578bca40f17",
+      "bytes": 217159,
+      "sha256": "b175e7d654379970d4b8733f8c0fc03fd610d983e1c661e02b7622ff54a61179"
+    },
+    {
+      "path": "main57-installer-r2-publish-request.json",
+      "git_blob_sha": "1b56308f56cfdbf3e4ad72c22a252330cb3d1559",
+      "bytes": 75875,
+      "sha256": "9a4bb212f6b68971635b0fcb772e53406cdf5afd3e3c7d0df3b166dc3442f627"
+    },
+    {
+      "path": "main57-installer-r2-owner-command.json",
+      "git_blob_sha": "6e28a4237e790c1d64672d6131ae36b8457a0625",
+      "bytes": 1869,
+      "sha256": "6a72cf9a6a18a63ed62ded938dd90282580aa80eb883b110d9c9d7d5728feeaa"
+    },
+    {
+      "path": "main57-installer-r2-host-publication.json",
+      "git_blob_sha": "0e90dfd43acad4802f91976345677980751ead9e",
+      "bytes": 2173,
+      "sha256": "ad7c47ab8395fc64680659ca4583928e3d9b8edbdf96a1a3df518a358166e12e"
+    },
+    {
+      "path": "main57-installer-r2-handoff.json",
+      "git_blob_sha": "05bfb82ab11d1d43597fa9b51f9fab6486ffa0a6",
+      "bytes": 9553,
+      "sha256": "590a5b7602c62415d9de60f1bec116da75671bb49e0d09f49efec573f4c64b50"
+    },
+    {
+      "path": "main57-pre-run-root-checkpoint.json",
+      "git_blob_sha": "c1d4f2bd8018e6a1170b0f7c302c202b333cc2aa",
+      "bytes": 2525,
+      "sha256": "f3932ada4acc1d69aab9cf6950ebd48167d71acd807b067610406d92ce554285"
+    },
+    {
+      "path": "web57-flight-prepare-RESULT.json",
+      "git_blob_sha": "05c0367566f546c01b5b32aa8e8aefd67e4afa7a",
+      "bytes": 53737,
+      "sha256": "c527f0ab5b37694db79d5ad89102446523c09b88e74e2bd0edea5a3650a0ba9b"
+    },
+    {
+      "path": "web57-flight-start-root-visual-review.json",
+      "git_blob_sha": "172c201d11fff69f353af447c2e076a1f60b2b3a",
+      "bytes": 885,
+      "sha256": "5b82d1fea7677e0133272dcc49ce4f99ce6706d15c4aff96369ff26c1ce4eb73"
+    },
+    {
+      "path": "owner24-web57-normal-close.json",
+      "git_blob_sha": "feb28e2299e613f2a9aff0646879ee292badc8d2",
+      "bytes": 1829,
+      "sha256": "803bf2a4ec1caae1857622b712e2d5734e761dac8c7c6cc727bcc0660b010eae"
+    },
+    {
+      "path": "web57-flight-run-final-seal.json",
+      "git_blob_sha": "0e735a0d300bcdd40c3dd821e6f3d1a1387e1baf",
+      "bytes": 5461,
+      "sha256": "c7e8730178cdb5cc0ec8e3ab9dbae1a66b092833f3ef5e7614746da2183610ae"
+    },
+    {
+      "path": "web57-flight-run-wrapper.py",
+      "git_blob_sha": "23725e70c775a0445187ab9b0301a89ae1ec01eb",
+      "bytes": 3532,
+      "sha256": "5686cfeed3f312ef031b1c0168942e896e8090b0af831446fb0fabfa78cfc7a8"
+    },
+    {
+      "path": "web57-flight-run-publisher.py",
+      "git_blob_sha": "38785991980606d29e35832ff88a45d009d7a4e6",
+      "bytes": 7793,
+      "sha256": "23d5d381cebef07bcce61981121ff33b99eb36a000fc880c6812feb889dac9a4"
+    },
+    {
+      "path": "web57-flight-run-publish-request.json",
+      "git_blob_sha": "7f915ca3dc7a2e13cc06bc6761e976bb32a939bf",
+      "bytes": 11080,
+      "sha256": "16820116a3052d02c66a011b43ad6a36da01dcbe07e2a099b386a39fa53b783c"
+    },
+    {
+      "path": "web57-flight-independent-run-request.json",
+      "git_blob_sha": "242c7c93ae4cf7912d590a1c0a3f5e1e95c37190",
+      "bytes": 389,
+      "sha256": "b9d8b927c20eb95654d89df7cbdad650f8d5cd703ead5a47e48e48c1575fc1f7"
+    },
+    {
+      "path": "web57-flight-original-RESULT.json",
+      "git_blob_sha": "3d4d46c24c6fec328dca1c9062ebdde76cfeedba",
+      "bytes": 86436,
+      "sha256": "ce3e0aadb1ab0b66965ef2cad02f66d55f8d04d56fee742c0655910e7e4b6913"
+    },
+    {
+      "path": "web57-flight-actual-execution.json",
+      "git_blob_sha": "0adf2bfe1ce6f2aa0e79964b9cc709224e29ce9d",
+      "bytes": 7142,
+      "sha256": "b8267e07453e2422b467d1c2fd3baa5874bac1b031a015a19e7fd89c3230ad5d"
+    },
+    {
+      "path": "web57-flight-COLLECTION.json",
+      "git_blob_sha": "3a1a344d572546794e940866aaf610aafdbda035",
+      "bytes": 141746,
+      "sha256": "06a0f4d9b6193901a7c8ebeb9568e6199dd20384232d4e8292cec806640c7c7c"
+    },
+    {
+      "path": "web57-flight-CAPTURE-RAW-INDEX.json",
+      "git_blob_sha": "d77540a22275df8f3e8fc5eb92a24ffa9bbe4e51",
+      "bytes": 28220,
+      "sha256": "8878672ae1586e42f43c01d6b27de3dfebb863e5e3cabf9a0d85808af4cd7f4f"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v57-flight-observation-stability-20261112/FLIGHT57-TEXT-PACK-RESULT.json",
+      "git_blob_sha": "c9f6c2de5559d27695e2af3b496b7cf50880394e",
+      "bytes": 1012,
+      "sha256": "730776add802d5a7fac30699af42ac9cffecd2eb2a817401bb0607d14de0d509"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v57-flight-observation-stability-20261112/FLIGHT57-GZIP-TRANSFER-MANIFEST.json",
+      "git_blob_sha": "87b475be312887234425a9fc7da774797534a4ca",
+      "bytes": 11305,
+      "sha256": "07415628d41a9970054473938992cf8647419f1167bfc0e72a83ac81eccb686d"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v57-flight-observation-stability-20261112/FLIGHT57-LAST-THREE-SCOPE-ORIGINALS.json",
+      "git_blob_sha": "992bcb98b7ed1ff15b9dbe086ab4257f82132c1a",
+      "bytes": 275673,
+      "sha256": "842c36e422bf94e983017a12e05d97b0eb65a07d1f8ce4c0d3a6616eb00059e3"
+    }
+  ],
+  "actual_staging_all_pass": true,
+  "actual_signing_all_pass": true,
+  "normal_signing_child_count": 6,
+  "signed_apk": {
+    "path": "/home/alex/hepta-local-007f-20261111/v57-main-sign-r1/out/hepta-local-0.57.0.apk",
+    "bytes": 21038933,
+    "sha256": "c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4"
+  },
+  "source_and_input_preservation_verified": true,
+  "exact_signed_source_binding_and_all_current_gate_receipts_verified": true,
+  "same_recorded_signer_certificate": true,
+  "new_key_created": false,
+  "key_material_exported": false,
+  "actual_flight_results_provider_ready": false,
+  "actual_installation_result": {
+    "git_blob_sha": "f86d8f056c053a98d9d16dc2d0d7c869f4c9e474",
+    "bytes": 210331,
+    "sha256": "29032d0ece78951703df4d5179de1578d9be59499d72aee9efe12a075fc4f653"
+  },
+  "actual_flight_run_result": {
+    "git_blob_sha": "3d4d46c24c6fec328dca1c9062ebdde76cfeedba",
+    "bytes": 86436,
+    "sha256": "ce3e0aadb1ab0b66965ef2cad02f66d55f8d04d56fee742c0655910e7e4b6913"
+  },
+  "awaiting": [
+    "Root's complete 36-chunk gzip archive references, with original full gzip SHA retained, before the authorized single evidence-only CAS."
+  ],
+  "branch_ref_updated": false,
+  "phone_actions_by_this_agent": 0,
+  "source_publication_records_will_remain_original_bytes": true,
+  "intended_next_action": "Append this batch with actual installation/Flight evidence when authorized and complete; do not rewrite the frozen source binding, prior PUB or original failures.",
+  "observed_installation_attempts": [
+    {
+      "revision": "Main57 installer r1",
+      "owner_child_pid": 3434807,
+      "exit_code": 1,
+      "stdout_bytes": 0,
+      "source": {
+        "git_blob_sha": "e89df10dc64ab6b27bfa800296392148f2da1aaf",
+        "bytes": 217158,
+        "sha256": "1514ba559b730bc9f90ba8099cf1ac5f592ee9bf136705790766ef311e915b48"
+      },
+      "stderr": {
+        "git_blob_sha": "70210652030aaeaaedd6215e70f2bb93eedf2965",
+        "bytes": 1580,
+        "sha256": "ae755e75e079c6f72c2e6806e4275094c25c8bcede8dedf8a7dd3d4c4dc05e8b"
+      },
+      "first_failure": "Recovery56 collection.omitted_screenshots is an empty list, while r1 admission compared it to integer zero",
+      "stage": "host prerequisite before first output-directory claim",
+      "output_directory_claimed": false,
+      "adb_or_install_reached": false,
+      "normal_success_result_created": false,
+      "existing_installed_main_version": 56,
+      "subsequent_native_consumers_source_review": {
+        "git_blob_sha": "f261639b2e040b75719a46391c7fbdc761da414b",
+        "bytes": 3439,
+        "sha256": "c68344b219f00bcd6af4def5ab379780495c88ce625e27aa82486383938e53e2",
+        "scope": "75 fields in four original native records and two complete nested copies",
+        "additional_deterministic_mismatches": 0
+      }
+    },
+    {
+      "revision": "Main57 installer r2",
+      "owner_pid": 3386576,
+      "owner_child_pid": 3459758,
+      "exit_code": 0,
+      "source": {
+        "git_blob_sha": "11e43784cbf8ab1ded4e59bcae562578bca40f17",
+        "bytes": 217159,
+        "sha256": "b175e7d654379970d4b8733f8c0fc03fd610d983e1c661e02b7622ff54a61179"
+      },
+      "result": {
+        "git_blob_sha": "f86d8f056c053a98d9d16dc2d0d7c869f4c9e474",
+        "bytes": 210331,
+        "sha256": "29032d0ece78951703df4d5179de1578d9be59499d72aee9efe12a075fc4f653"
+      },
+      "completed": true,
+      "installed_verified": true,
+      "version_code": 57,
+      "uid": 10481,
+      "apk_sha256": "c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4",
+      "source_change": "One comparison: collection.omitted_screenshots == 0 becomes == []; original r1 source and failure remain unchanged.",
+      "helper_files_preserved": 50,
+      "configuration_and_originals_preserved": true,
+      "no_new_tasks_or_model_runs": true,
+      "qualified": false,
+      "business_verified": false
+    }
+  ],
+  "source_frozen_595_unchanged": true,
+  "original_failed_attempt_rewritten": false,
+  "supersedes_collection_checkpoint": {
+    "git_blob_sha": "f9cbb4509bc65d1bb87208bdbd9b8499430cffbf",
+    "bytes": 18406,
+    "sha256": "ce544a2c6604151b5d96c48e53761a1ebf332c749c0a379f6c14bae508577332"
+  },
+  "actual_current_installed_main_version": 57,
+  "actual_current_installed_uid": 10481,
+  "actual_current_installed_apk_sha256": "c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4",
+  "actual_preparation_result": {
+    "git_blob_sha": "05c0367566f546c01b5b32aa8e8aefd67e4afa7a",
+    "bytes": 53737,
+    "sha256": "c527f0ab5b37694db79d5ad89102446523c09b88e74e2bd0edea5a3650a0ba9b"
+  },
+  "actual_preparation_root_visual_review": {
+    "git_blob_sha": "172c201d11fff69f353af447c2e076a1f60b2b3a",
+    "bytes": 885,
+    "sha256": "5b82d1fea7677e0133272dcc49ce4f99ce6706d15c4aff96369ff26c1ce4eb73"
+  },
+  "actual_owner_normal_close": {
+    "git_blob_sha": "feb28e2299e613f2a9aff0646879ee292badc8d2",
+    "bytes": 1829,
+    "sha256": "803bf2a4ec1caae1857622b712e2d5734e761dac8c7c6cc727bcc0660b010eae"
+  },
+  "root_pre_run_checkpoint": {
+    "git_blob_sha": "c1d4f2bd8018e6a1170b0f7c302c202b333cc2aa",
+    "bytes": 2525,
+    "sha256": "f3932ada4acc1d69aab9cf6950ebd48167d71acd807b067610406d92ce554285"
+  },
+  "sealed_run_transport": {
+    "git_blob_sha": "0e735a0d300bcdd40c3dd821e6f3d1a1387e1baf",
+    "bytes": 5461,
+    "sha256": "c7e8730178cdb5cc0ec8e3ab9dbae1a66b092833f3ef5e7614746da2183610ae"
+  },
+  "actual_flight_run_execution_receipt": {
+    "git_blob_sha": "0adf2bfe1ce6f2aa0e79964b9cc709224e29ce9d",
+    "bytes": 7142,
+    "sha256": "b8267e07453e2422b467d1c2fd3baa5874bac1b031a015a19e7fd89c3230ad5d"
+  },
+  "recorded_preparation": {
+    "task_started": false,
+    "start_tapped": false,
+    "root_whole_original_png_reviewed": true,
+    "prepared_screen_sha256": "781e8fda6e6037808f71e13d6fda53b675b82034a6722dfcf6cef8a52232f6d7",
+    "prepared_window_sha256": "9ee6830916a5b11fe9e2cb1ba4286028b341d2a6624be65b7e24d0be638596b6",
+    "start_point": [
+      180,
+      1114
+    ],
+    "start_bounds": [
+      48,
+      1042,
+      312,
+      1186
+    ],
+    "selected_packages": [
+      "com.motorola.stylus",
+      "org.trillionnium.hepta.webhelper"
+    ],
+    "phone_action_issued_by_visual_review": false
+  },
+  "recorded_owner_handoff": {
+    "pid": 3386576,
+    "normal_close_observed": true,
+    "process_exit_observed": true,
+    "exit_code": 0,
+    "source": {
+      "git_blob_sha": "feb28e2299e613f2a9aff0646879ee292badc8d2",
+      "bytes": 1829,
+      "sha256": "803bf2a4ec1caae1857622b712e2d5734e761dac8c7c6cc727bcc0660b010eae"
+    }
+  },
+  "scope_limits": {
+    "notes_normal_main_scroll_cancel_recovery_measured_version": 56,
+    "flight57_business_result_not_yet_collected": false,
+    "actual_flight_results_provider_ready": false,
+    "shopping_phone_verified": false,
+    "shopping_checkout_implemented": false,
+    "no_inference_of_execution_from_sealed_request": true,
+    "flight57_business_verified": false,
+    "flight57_background_only": true,
+    "collector_exit_zero_is_not_business_success": true,
+    "original_sdk_teardown_false_retained": true
+  },
+  "actual_flight_collection": {
+    "git_blob_sha": "3a1a344d572546794e940866aaf610aafdbda035",
+    "bytes": 141746,
+    "sha256": "06a0f4d9b6193901a7c8ebeb9568e6199dd20384232d4e8292cec806640c7c7c"
+  },
+  "actual_flight_capture_raw_index": {
+    "git_blob_sha": "d77540a22275df8f3e8fc5eb92a24ffa9bbe4e51",
+    "bytes": 28220,
+    "sha256": "8878672ae1586e42f43c01d6b27de3dfebb863e5e3cabf9a0d85808af4cd7f4f"
+  },
+  "actual_flight": {
+    "task_id": "495b2b1e79a449e99c2fc604da1f452d",
+    "status": "failed",
+    "steps": 5,
+    "state": "AX/DOM bracket changed; no current page capability published",
+    "collector_exit_code": 0,
+    "collector_output_complete": true,
+    "phone_run_retried": false,
+    "read_only_pty_poll_timed_out_once": true,
+    "qualified": false,
+    "business_verified": false,
+    "sdk_teardown_verified": false,
+    "completion_verified": false,
+    "web_query_dispatched": false,
+    "results_provider_ready": false,
+    "cleanup_known": true,
+    "background_lease_unreleased": false,
+    "web_helper_lease_unreleased": false,
+    "display_id": 28,
+    "background_generation": "ee11c93f-a11a-4a80-b90c-b371e3e6a01d",
+    "ordinary_close_verified": true,
+    "system_resources_absent": true,
+    "operation_lock_released": true,
+    "operation_lock_continuity_checks": 804,
+    "collection_complete": true,
+    "ready_for_next_lease": true,
+    "main_user_actions_attempted": false,
+    "main_user_host_action_count": 0,
+    "raw_fd_file_count": 14,
+    "raw_index_is_business_verdict": false,
+    "indexed_original_file_count": 265,
+    "indexed_original_raw_bytes": 41650015,
+    "all_indexed_file_bodies_collected_by_this_agent": false,
+    "frame_change_root_cause_not_yet_inferred": true
+  },
+  "report_page_update": {
+    "page_id": "page_068281e08b308191ae1419bd5edded74",
+    "actual_edit_sequence": 28,
+    "changed_blocks": 5,
+    "block_count": 52,
+    "all_changed_blocks_exact_readback": true,
+    "other_blocks_unchanged": true,
+    "flight57_not_yet_started_claims_removed": true
+  },
+  "actual_original_pack": {
+    "result": {
+      "git_blob_sha": "c9f6c2de5559d27695e2af3b496b7cf50880394e",
+      "bytes": 1012,
+      "sha256": "730776add802d5a7fac30699af42ac9cffecd2eb2a817401bb0607d14de0d509"
+    },
+    "completed_on_host": true,
+    "selected_original_file_count": 218,
+    "selected_original_bytes": 30079181,
+    "transmitted_file_count": 201,
+    "omitted_png_count": 17,
+    "full_png_originals_transmitted": false,
+    "text_envelope": {
+      "bytes": 35244429,
+      "path": "/home/alex/hepta-local-007f-20261111/flight57-original-evidence-text-r1/TEXT-ENVELOPE.json",
+      "sha256": "1dfca55b450e31c86c53fa0c76e3c2557eb3e34a93faf333b01ba0d387e16f6a"
+    },
+    "gzip": {
+      "bytes": 1726746,
+      "path": "/home/alex/hepta-local-007f-20261111/flight57-original-evidence-text-r1/TEXT-ENVELOPE.json.gz",
+      "sha256": "dafce5150fc43b19790ec8340a5d7902baa14a403773e3270632334ef5bd93cf"
+    },
+    "transfer_manifest": {
+      "git_blob_sha": "87b475be312887234425a9fc7da774797534a4ca",
+      "bytes": 11305,
+      "sha256": "07415628d41a9970054473938992cf8647419f1167bfc0e72a83ac81eccb686d"
+    },
+    "transfer_chunk_count": 36,
+    "all_chunk_original_bytes_collected_by_this_agent": false,
+    "entire_envelope_decoded_by_this_agent": false,
+    "host_originals_unchanged": true,
+    "business_verdict_changed": false
+  },
+  "actual_native_scope_subset": {
+    "git_blob_sha": "992bcb98b7ed1ff15b9dbe086ab4257f82132c1a",
+    "bytes": 275673,
+    "sha256": "842c36e422bf94e983017a12e05d97b0eb65a07d1f8ce4c0d3a6616eb00059e3",
+    "full_raw_members_rehashed": 3,
+    "source_paths_and_pins": [
+      {
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v57-lfm3-flight-r1/evidence/task/scope-observation-036addfec7324b2ba31ae0a443702d30.json",
+        "bytes": 83385,
+        "sha256": "866e1dce748ad73c70e651f4ef75c18ef5a567ce3767a3532ee5d541ead7b785"
+      },
+      {
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v57-lfm3-flight-r1/evidence/task/scope-observation-86bdeddc70b04aa9abe416029e005276.json",
+        "bytes": 83383,
+        "sha256": "72d9eaf52c86921dd3c5b0d0eefb2765f33401f20234d64f3ae6ceb26a29ad69"
+      },
+      {
+        "path": "/home/alex/hepta-local-007f-20261111/background-web-v57-lfm3-flight-r1/evidence/task/scope-observation-98f1efecebfe4a4bb44222877b734958.json",
+        "bytes": 83385,
+        "sha256": "3c9bbf93584c794f2b8862ddbe7cf9d6d6dfbb0775962cd3191b1ea3d9d2dadf"
+      }
+    ]
+  }
+}

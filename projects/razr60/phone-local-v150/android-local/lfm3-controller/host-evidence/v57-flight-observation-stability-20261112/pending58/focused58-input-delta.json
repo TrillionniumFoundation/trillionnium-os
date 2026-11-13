@@ -1,0 +1,626 @@
+{
+  "schema": "hepta.main58-wire4-exact-input-derivation.v1",
+  "base": {
+    "bytes": 935559,
+    "sha256": "f9577768563f5fbf88bf77b0d484038c7ccd87b07d0ae5a79fb55ef92c987d4e",
+    "git_blob_sha": "d3390ca0395e8f925f7c3b93cf502f967ab6a72f"
+  },
+  "result": {
+    "bytes": 1313265,
+    "sha256": "784c722634848b0b9baac0d8d430ef24e8d2850964c185737f6de547aa6df593",
+    "git_blob_sha": "3cd9b58801247a8a3271fbe7c8d49f71ec14a586"
+  },
+  "aggregate": {
+    "bytes": 1465984,
+    "sha256": "600ff7c4198fc83d4e93399fc6bf039800805f4458406b4182952ddcff89b95b",
+    "git_blob_sha": "94ca147166c4e4c7faa5bd32085c5431eb36f4b1"
+  },
+  "pure_compilation_inputs": [
+    {
+      "path": "src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+      "bytes": 2730,
+      "sha256": "f5f3936a8185185cf5f036a74665ee6edfbd5c1f617299dd9cd6edd4bf7b23e2",
+      "git_blob_sha": "0a34b57522ec86255612bb35208c2678639e1aa3",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/FixedIntentTools.java",
+      "bytes": 4137,
+      "sha256": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947",
+      "git_blob_sha": "f472bf388c0c219458298376679db03f50010528",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ActionDecision.java",
+      "bytes": 25712,
+      "sha256": "ee2a0481bb1ad0d2a3dd95b501c101d1955f4f1142adfe150ba3f9643fa88b20",
+      "git_blob_sha": "91dd78c86d2461b2d0751be87c2f68aef32c02a7",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+      "bytes": 9217,
+      "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075",
+      "git_blob_sha": "6224f5c241d3aa75c2b37e2daa7cf3744b1f6bea",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CsairCityPicker.java",
+      "bytes": 10363,
+      "sha256": "699f1eebe2db1ae4d7973f95f51c342748c24d767efd6f1a998d27f60c9b339f",
+      "git_blob_sha": "9f70cfcbe936d659882e5a5ee029324ac17b343c",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CsairFlightForm.java",
+      "bytes": 15870,
+      "sha256": "27c88417bbfffc9b67d7a0a4cef896c1499b56fadb326e4985c84f5dd2cb0ef8",
+      "git_blob_sha": "349052c61a86d89d208dc7897a72285035c67e97",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
+      "bytes": 30605,
+      "sha256": "236d22187abfe777705d337241e310dd617b1c4c21ae39df4f52d960a1e106ca",
+      "git_blob_sha": "b2b1aba87d179ed9054baa25227380825510baf0",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
+      "bytes": 711,
+      "sha256": "4e7fdaf10d6d502e77642fb043296e8da5d94fbfc78d884826f60dafed8f6e36",
+      "git_blob_sha": "eafd2a2872fe9c4928a23c8e91f4d622384480ef",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MiPublicProductPage.java",
+      "bytes": 17440,
+      "sha256": "aaddee9837555083ec1d796b67a2cfc37a280b023b12b2dbd4e474d47586ac8b",
+      "git_blob_sha": "4d38f27e602302f71ecbf1c4e2e4fcb367fa9fe0",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
+      "bytes": 18644,
+      "sha256": "1ce2e8dfc588ae51545f88a0eccb2002cfd91f647db0225fd95398ff04157f7d",
+      "git_blob_sha": "5da9ae144dca74f67916729ec5b7d2b6ae0dbc00",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NotesCreateWorkflow.java",
+      "bytes": 21099,
+      "sha256": "0995cd9a7f5897d2dab5827a432eaa13cc7d8d6363ffda415baa6d566d80d80d",
+      "git_blob_sha": "e39942a3897444cdeb57b5642c3ea8c58213f362",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+      "bytes": 12329,
+      "sha256": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f",
+      "git_blob_sha": "1caf398a16da3c2544a9a93db7707e68f08d269f",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservationState.java",
+      "bytes": 1258,
+      "sha256": "a2a664a3567995de8665e66d7667cfc089277fdd16175aa9dab837f7919dd257",
+      "git_blob_sha": "6324f42b92d0b9a4292d4e0500a5a42e49a80c98",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedAppLabels.java",
+      "bytes": 4889,
+      "sha256": "0276171bb8aaebee880a6d36fea5cbfdb157b09d2728a07148e4ce85d5ffbb9e",
+      "git_blob_sha": "e3fc67e664176d560735cf2bc39199b2e0ab35c9",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedChildText.java",
+      "bytes": 10858,
+      "sha256": "56433b62f9c4c895edac441160fcdc4aaee7365586daa4b86863448dc4dd54d5",
+      "git_blob_sha": "9a5132adbff599b4185eef6d7ee424a3bd20c060",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedImeEnter.java",
+      "bytes": 4665,
+      "sha256": "e449d61e928dca5a72730b5394fa8f95a7db4dd4006440a95f839818e165acf1",
+      "git_blob_sha": "ee045dd05a5e3c66844f2d2a19a65836d9949c7f",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+      "bytes": 2303,
+      "sha256": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188",
+      "git_blob_sha": "28b58204a76d6e1072705fdd23391b82d9d4d6e2",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+      "bytes": 4685,
+      "sha256": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba",
+      "git_blob_sha": "7046527d72f32ded9cf4bd702f30538145be9d29",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedWindowMetadata.java",
+      "bytes": 4536,
+      "sha256": "73948e97e6a164ef27753ba0536d0cfadac2ee670179aa2e5b4bb2af0e9e66c5",
+      "git_blob_sha": "b6a949ed9b154778e3b5634404362b27617e6621",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
+      "bytes": 24711,
+      "sha256": "9dc1033ffc989b2a957e0999bb40d5c48d97117d89150a173141ae7cc7eff8d0",
+      "git_blob_sha": "1655e8d918e689368938560475c0c62ca94bd04d",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/TaskAuthorization.java",
+      "bytes": 23598,
+      "sha256": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8",
+      "git_blob_sha": "346e1790710fa4f0d62a59053328733773c9fe61",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+      "bytes": 49971,
+      "sha256": "ad417d98fbd7b12bf4373270a1206c11984682c9f35b7b4a5179bb9fbff7ba98",
+      "git_blob_sha": "48323262aaf10962f0a481cafc18c56bc82e936b",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebEvidenceJson.java",
+      "bytes": 7253,
+      "sha256": "4f9c66cc527948d498f941543240d2bb304610b388735f3bc7264b9ccefa4e1e",
+      "git_blob_sha": "be6a9acae9684c474d61fb0d991065793cccbd99",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebEvidenceReceipt.java",
+      "bytes": 29292,
+      "sha256": "85bd14c7dc45aee8fbc1c290299cd2b123c848f9d5c08634b4b2b66daeeb5cda",
+      "git_blob_sha": "ba05c6869d365f2c3a2d1d8b3036614d3a92f121",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightDomain.java",
+      "bytes": 43483,
+      "sha256": "a1be374d093186d8ae58c77aaa2a65e289ff3a9d89c31bae7eef9f223672c6a5",
+      "git_blob_sha": "da12c492e77b165efa68fce434f778ca2ca22361",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebNativeGeometry.java",
+      "bytes": 14220,
+      "sha256": "a61e9601699fd7480c4f09be2c29de9cf755903a222c79efbfc9efbd23afbc49",
+      "git_blob_sha": "65207b0ba2e4f77a7e21f7ae9f24df5315956ec3",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebShoppingDomain.java",
+      "bytes": 31717,
+      "sha256": "bbf256e37eb5cc3a1619371e9c29dc5f7af3139eeb4f602f602cf0f05551bf92",
+      "git_blob_sha": "78c1c4d616a815dbf31b214f0fb74754745c967c",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebTaskDomain.java",
+      "bytes": 8817,
+      "sha256": "fe2eb43d1546ae56803133b86fc959f3a5b5e036821553dddfc93fe02bdc9b98",
+      "git_blob_sha": "c64cbf8cbcfbcb9c5734049613d575f45380cb09",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/web/WebFlightGoal.java",
+      "bytes": 9611,
+      "sha256": "02f260915f2b64894b8cd1ed4223392ace9964920d9b77e6765548252d9624ac",
+      "git_blob_sha": "e2c2e21136231dd4321d3de29f8ca41a813d7bd5",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/web/WebShoppingGoal.java",
+      "bytes": 10767,
+      "sha256": "b8eb72eddb99842758dc39b347d2679d247714b97e0a0afe6df217bf2e8cd8c8",
+      "git_blob_sha": "2cfd308f8e4f68549e177a2cc490b08379b978d0",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java",
+      "bytes": 4089,
+      "sha256": "90a414863297c1ff173fd14a7b31dce62bb5fbb561e7625f1fe3eb0dace47af7",
+      "git_blob_sha": "6d53345301dfa06ed46eabaf2d82419640eb6ce8",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+      "bytes": 5933,
+      "sha256": "3966bbe1122f6a6e13bf211291332aa63f755a891800d04169016958946f8f0e",
+      "git_blob_sha": "e333c14a306bfc8a5fb79b636fc9da16d45ae73f",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebRecoveryPolicy.java",
+      "bytes": 36054,
+      "sha256": "e5bba55512b5b71f084282170d2708461d8b62f536f03ba4f3b074a4a0502ce0",
+      "git_blob_sha": "4daa7335854e14df6de32b36e608f53a28a2a095",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java",
+      "bytes": 5255,
+      "sha256": "d74bf8292782fc7a9e48f3460b8961eecd009d038c8b4e94431b94ecdd04043a",
+      "git_blob_sha": "e142eb0d3a8af4e24becf29256e7ca2536c192b3",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebStorageEvidence.java",
+      "bytes": 8539,
+      "sha256": "9e8df742ad0fdaac0fbc051c99772a52fbb40aae49f0a43589e252e71acc7fc0",
+      "git_blob_sha": "1560094f8a3d3ffcc727d3066f298576be3d709c",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebTaskPurpose.java",
+      "bytes": 6731,
+      "sha256": "92303867e09343ebcbb3620b9a5850bce683c1d94988d1e534dd272dcaea8647",
+      "git_blob_sha": "15f4d0cb484af754a00ed10580cd95d56455f434",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CsairCalendar.java",
+      "bytes": 20890,
+      "sha256": "9bc3019994e12493a6c2c6882a983c0021cb875ad6159033777c2c2c73618434",
+      "git_blob_sha": "d763010ffe1281775ba772e9498b974b7af14be1",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightProgress.java",
+      "bytes": 16832,
+      "sha256": "47630c3e36b56470ebdb8353b24c68f94bf6274d7fefc08133cd7a78946a0691",
+      "git_blob_sha": "08e5a189ee8b2f16980f7f1e9dc08ae8454ef02d",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java",
+      "bytes": 4424,
+      "sha256": "55209ef608fad0d8794d439aab2baf69bd7c8b043289c80ca7b25acaad1ff3d7",
+      "git_blob_sha": "4e2fc663c9a772eedc4d38852a8f6c2c284f179c",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebDomStability.java",
+      "bytes": 16055,
+      "sha256": "f7e432c1191008afa25a134147cd6fd133f975e102aa4cab722da3dc82a4ea53",
+      "git_blob_sha": "1865fcd42f7655613991fee167f252c1887ce5e1",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebMiActionRegion.java",
+      "bytes": 20795,
+      "sha256": "027de25550bac1e58d835c1a0582f5f14aff144b76a2f4889f9d48b4f1abcd04",
+      "git_blob_sha": "1872c6ca836ad9371f4473ec97cd92136f9af552",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/webprotocol/WebObservedNavigation.java",
+      "bytes": 23060,
+      "sha256": "e524d91f50ec8d911692e371fed000d65e1be2f703f3efe36497ae64fd358132",
+      "git_blob_sha": "fd79658b986c0a9e37b2db26d156341719b44d15",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebRegionNativeBridge.java",
+      "bytes": 17427,
+      "sha256": "faf50cafc7b11e763a840def5bee6c2cff77535c4a904c06ccd7d74afa489ca2",
+      "git_blob_sha": "f995c83a65a64013b2eb5907ca6a9b78f9e5c0a7",
+      "mode": "100644"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
+      "bytes": 32168,
+      "sha256": "badc1a68903a126d549e56d202ed01a01fc17c99556b5b50dc88b8729d4e397a",
+      "git_blob_sha": "4c375bd41f0a2442e6789f947e15cb119d78266e",
+      "mode": "100644"
+    }
+  ],
+  "projection_origins": [
+    {
+      "name": "WebEvidenceClient.java",
+      "bytes": 20815,
+      "sha256": "96eb9307241ec3f5ad33dab37e894f9ddbcbf228c0bc48169b53056f42dab943",
+      "git_blob_sha": "80c8ef7b9ac6ecafd1471f6d7ad59b21d3ffbb72",
+      "path": "src/org/trillionnium/hepta/local/WebEvidenceClient.java"
+    },
+    {
+      "name": "WebFlightSession.java",
+      "bytes": 46689,
+      "sha256": "d2e4f073366d3d3046b0f9b90156f87b1fb84c842a3053a5d32f31df5e3bbc9b",
+      "git_blob_sha": "d89ff1a111693bebd445c99fede473fbc968a314",
+      "path": "src/org/trillionnium/hepta/local/WebFlightSession.java"
+    },
+    {
+      "name": "HeptaAccessibilityService.java",
+      "bytes": 144883,
+      "sha256": "f9704060dba7a6fa4604b8e26d9f4eed956ae684a1221b3980714ac6d1a53afb",
+      "git_blob_sha": "8f969cb0c75f8c942099271181762b38d9ba3160",
+      "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java"
+    }
+  ],
+  "methods": [
+    {
+      "origin": "client",
+      "marker": "    synchronized WebEvidenceReceipt capture(",
+      "bytes": 900,
+      "sha256": "c7de9edd5a83b975e4f8d5c3ededa8875207ac5cfe083110794922dddfdc1a5a"
+    },
+    {
+      "origin": "client",
+      "marker": "    synchronized WebEvidenceReceipt armObservedLink(",
+      "bytes": 2614,
+      "sha256": "74d7e500d353fb623caa7a01d5f0202e8b09c68ed207d0309b9d136e50af0af6"
+    },
+    {
+      "origin": "client",
+      "marker": "    private long expiry(",
+      "bytes": 203,
+      "sha256": "d4890058d118af00c912dd1aabf2e53cd7c73992a50f94897ce7fec0fbf00d7a"
+    },
+    {
+      "origin": "client",
+      "marker": "    private JSONObject common(",
+      "bytes": 764,
+      "sha256": "ee1b3c76e2edb6339d08bfbeb54393ba00f81d44f4a0d298ac4af5d939a2a348"
+    },
+    {
+      "origin": "session",
+      "marker": "    private static final class ShoppingDispatch {",
+      "bytes": 1246,
+      "sha256": "fde5d00260590d230c09ced6e13fce5bcb086be09cb837cf8b8ea21c1d0d9e04"
+    },
+    {
+      "origin": "session",
+      "marker": "    private static final class PendingNavigation {",
+      "bytes": 600,
+      "sha256": "19ce08bdf233b7eb2024e1f26ddb09d8736fe21ad8529e5d00906fb53809de32"
+    },
+    {
+      "origin": "session",
+      "marker": "    void requireDispatch(",
+      "bytes": 493,
+      "sha256": "843d3221bef5ff6e28b93ea14422bc2f04334d834aa051bdde38c39c794c114e"
+    },
+    {
+      "origin": "session",
+      "marker": "    WebRegionNativeBridge nativeRegionForDispatch(",
+      "bytes": 501,
+      "sha256": "331346fa7420e7c814c017f31c241e9075b44941a27f41fa6c53d402f09382aa"
+    },
+    {
+      "origin": "session",
+      "marker": "    void acceptNativeRegionCheck(",
+      "bytes": 544,
+      "sha256": "68f06e44ab5ff5f8a24bc5f3b3ef4273a928f6a793909879bc9538b80171ab28"
+    },
+    {
+      "origin": "session",
+      "marker": "    private ShoppingDispatch requireShoppingDispatch(",
+      "bytes": 727,
+      "sha256": "2d2d551244e6039663a8057c37c8afdfef49a06ee68527abc980115e2e26029a"
+    },
+    {
+      "origin": "session",
+      "marker": "    void beforeNativeClickInvocation(",
+      "bytes": 2133,
+      "sha256": "7a3996607f43684e15fef210e7a23ddca4654c5ad5d5904963e7a78b14ddc861"
+    },
+    {
+      "origin": "session",
+      "marker": "    private static String actionKey(",
+      "bytes": 125,
+      "sha256": "6bef04d6accf4fdd30e1ff2a91a1ef0dacb8345df11563388a7f977f57a2d77f"
+    },
+    {
+      "origin": "session",
+      "marker": "    void modelActionOutcome(",
+      "bytes": 3839,
+      "sha256": "03cf7a6908fbd3d19ee09bcd44450f26b61ef3ceba9cbce3ac399bdf5aad55df"
+    },
+    {
+      "origin": "service",
+      "marker": "    static final class NativeRegionCheck {",
+      "bytes": 2247,
+      "sha256": "414058eac08807c16cfb3a972c38c16d84397e9e5a73563011d33d3f55f42c42"
+    },
+    {
+      "origin": "session",
+      "marker": "    void beforeModelAction(",
+      "bytes": 6266,
+      "sha256": "1a309ee0bd72f739375cad2a6a10d30a13a3830db14e44e767f9318e8b1c43ae"
+    }
+  ],
+  "changed_methods": [
+    {
+      "origin": "session",
+      "marker": "    void beforeNativeClickInvocation(",
+      "before": {
+        "bytes": 1514,
+        "sha256": "841dc6a1178c9a86c0a9f3227ea6dfc525784ab36bd931ec9f41209b83d899a1",
+        "git_blob_sha": "ba8ec0a696537c84405569bfe5633dcbfcf5f5d5"
+      },
+      "after": {
+        "bytes": 2133,
+        "sha256": "7a3996607f43684e15fef210e7a23ddca4654c5ad5d5904963e7a78b14ddc861",
+        "git_blob_sha": "dec7a7df3f6cfc5568bd7471e5b29cedfec28071"
+      }
+    },
+    {
+      "origin": "session",
+      "marker": "    void modelActionOutcome(",
+      "before": {
+        "bytes": 3779,
+        "sha256": "a9681d0613460a0c835a8dd906556acd728f220ac92b7c39a0544587ccf15336",
+        "git_blob_sha": "4b10afec559b85c35055c5c4470120e812e41e69"
+      },
+      "after": {
+        "bytes": 3839,
+        "sha256": "03cf7a6908fbd3d19ee09bcd44450f26b61ef3ceba9cbce3ac399bdf5aad55df",
+        "git_blob_sha": "e66be0eb79392fe39bad8a3e4e05c573912cf577"
+      }
+    },
+    {
+      "origin": "session",
+      "marker": "    void beforeModelAction(",
+      "before": {
+        "bytes": 5636,
+        "sha256": "cffbc4af647a1848f1c64be33a9904c1f01eb00c210f8468ecab70f5765085c5",
+        "git_blob_sha": "92954ae0adcf8d3e3461d216dbb9a5a73359ad2f"
+      },
+      "after": {
+        "bytes": 6266,
+        "sha256": "1a309ee0bd72f739375cad2a6a10d30a13a3830db14e44e767f9318e8b1c43ae",
+        "git_blob_sha": "1c7b2b965f6bc4356e9b02808e7c468e0bebe0b4"
+      }
+    }
+  ],
+  "type_only_replacements": [
+    {
+      "before": "    private PhoneObservation current;",
+      "after": "    private PhoneObservation current;\n    private WebEvidenceReceipt currentCapture;\n    private WebFlightNativeStability.Permit flightNativePermit;\n    private HeptaAccessibilityService.FlightNativeCheck flightNativeCheck;\n    private final java.util.concurrent.atomic.AtomicBoolean flightNativeEntered=new java.util.concurrent.atomic.AtomicBoolean();\n    private final java.util.Set<String> flightNativeAttemptedRuns=new java.util.HashSet<String>();",
+      "count": 1
+    },
+    {
+      "before": "        client=new WebEvidenceClientArmProjection(binding,source);",
+      "after": "        client=new WebEvidenceClientArmProjection(binding,source);currentCapture=source;",
+      "count": 1
+    },
+    {
+      "before": "    static final class HeptaAccessibilityService {",
+      "after": "    /** The dormant Flight type surface is explicit. It cannot construct a\n     * permit or satisfy a native check. Shopping null follows the production\n     * prepare predicate; the real top-level pure class is compiled separately\n     * with its complete actual44-source closure and exercised by Web cases. */\n    static final class WebFlightNativeStability {\n        private WebFlightNativeStability(){throw new AssertionError(\"type only\");}\n        static final class Permit {\n            private Permit(){throw new AssertionError(\"no synthetic Flight permit\");}\n            boolean matches(PhoneObservation frame,ActionDecision action,String run){throw new AssertionError(\"Flight not exercised here\");}\n            JSONObject domEvidence(){throw new AssertionError(\"Flight not exercised here\");}\n        }\n        static Permit prepare(WebTaskDomain domain,PhoneObservation frame,ActionDecision action,String run,\n                              WebEvidenceReceipt before,WebEvidenceReceipt after){\n            if(domain==null||domain.flight==null)return null;\n            throw new AssertionError(\"Flight capability is outside these unchanged Shopping ARM cases\");\n        }\n    }\n    static final class HeptaAccessibilityService {\n        static final class FlightNativeCheck {\n            final long checkedAt;\n            private FlightNativeCheck(){throw new AssertionError(\"no synthetic Flight native token\");}\n            boolean matches(PhoneObservation frame,WebFlightNativeStability.Permit permit){throw new AssertionError(\"Flight not exercised here\");}\n            JSONObject evidence(){throw new AssertionError(\"Flight not exercised here\");}\n        }",
+      "count": 1
+    }
+  ],
+  "successor_metadata": {
+    "schema": "hepta.main58-wire4-current-source-projection.v1",
+    "prior_actual_input": {
+      "bytes": 935559,
+      "sha256": "f9577768563f5fbf88bf77b0d484038c7ccd87b07d0ae5a79fb55ef92c987d4e",
+      "git_blob_sha": "d3390ca0395e8f925f7c3b93cf502f967ab6a72f"
+    },
+    "aggregate": {
+      "bytes": 1465984,
+      "sha256": "600ff7c4198fc83d4e93399fc6bf039800805f4458406b4182952ddcff89b95b",
+      "git_blob_sha": "94ca147166c4e4c7faa5bd32085c5431eb36f4b1"
+    },
+    "source_inventory_sha256": "b44d3a9d9083a86d5fff36dfcc0c27958ef047a05df928923ef7c2e204cb23d6",
+    "original_consumer_and_arm_case_sources_unchanged": true,
+    "original_factory_and_actual_ax_unchanged": true,
+    "projected_method_count": 15,
+    "changed_actual_method_count": 3,
+    "additional_actual_pure_compilation_inputs": [
+      {
+        "path": "src/org/trillionnium/hepta/local/CsairCityPicker.java",
+        "bytes": 10363,
+        "sha256": "699f1eebe2db1ae4d7973f95f51c342748c24d767efd6f1a998d27f60c9b339f",
+        "git_blob_sha": "9f70cfcbe936d659882e5a5ee029324ac17b343c"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/CsairFlightForm.java",
+        "bytes": 15870,
+        "sha256": "27c88417bbfffc9b67d7a0a4cef896c1499b56fadb326e4985c84f5dd2cb0ef8",
+        "git_blob_sha": "349052c61a86d89d208dc7897a72285035c67e97"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
+        "bytes": 30605,
+        "sha256": "236d22187abfe777705d337241e310dd617b1c4c21ae39df4f52d960a1e106ca",
+        "git_blob_sha": "b2b1aba87d179ed9054baa25227380825510baf0"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/MiPublicProductPage.java",
+        "bytes": 17440,
+        "sha256": "aaddee9837555083ec1d796b67a2cfc37a280b023b12b2dbd4e474d47586ac8b",
+        "git_blob_sha": "4d38f27e602302f71ecbf1c4e2e4fcb367fa9fe0"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
+        "bytes": 18644,
+        "sha256": "1ce2e8dfc588ae51545f88a0eccb2002cfd91f647db0225fd95398ff04157f7d",
+        "git_blob_sha": "5da9ae144dca74f67916729ec5b7d2b6ae0dbc00"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/NotesCreateWorkflow.java",
+        "bytes": 21099,
+        "sha256": "0995cd9a7f5897d2dab5827a432eaa13cc7d8d6363ffda415baa6d566d80d80d",
+        "git_blob_sha": "e39942a3897444cdeb57b5642c3ea8c58213f362"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+        "bytes": 49971,
+        "sha256": "ad417d98fbd7b12bf4373270a1206c11984682c9f35b7b4a5179bb9fbff7ba98",
+        "git_blob_sha": "48323262aaf10962f0a481cafc18c56bc82e936b"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebFlightDomain.java",
+        "bytes": 43483,
+        "sha256": "a1be374d093186d8ae58c77aaa2a65e289ff3a9d89c31bae7eef9f223672c6a5",
+        "git_blob_sha": "da12c492e77b165efa68fce434f778ca2ca22361"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebShoppingDomain.java",
+        "bytes": 31717,
+        "sha256": "bbf256e37eb5cc3a1619371e9c29dc5f7af3139eeb4f602f602cf0f05551bf92",
+        "git_blob_sha": "78c1c4d616a815dbf31b214f0fb74754745c967c"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebTaskDomain.java",
+        "bytes": 8817,
+        "sha256": "fe2eb43d1546ae56803133b86fc959f3a5b5e036821553dddfc93fe02bdc9b98",
+        "git_blob_sha": "c64cbf8cbcfbcb9c5734049613d575f45380cb09"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/CsairCalendar.java",
+        "bytes": 20890,
+        "sha256": "9bc3019994e12493a6c2c6882a983c0021cb875ad6159033777c2c2c73618434",
+        "git_blob_sha": "d763010ffe1281775ba772e9498b974b7af14be1"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebFlightProgress.java",
+        "bytes": 16832,
+        "sha256": "47630c3e36b56470ebdb8353b24c68f94bf6274d7fefc08133cd7a78946a0691",
+        "git_blob_sha": "08e5a189ee8b2f16980f7f1e9dc08ae8454ef02d"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
+        "bytes": 32168,
+        "sha256": "badc1a68903a126d549e56d202ed01a01fc17c99556b5b50dc88b8729d4e397a",
+        "git_blob_sha": "4c375bd41f0a2442e6789f947e15cb119d78266e"
+      }
+    ],
+    "flight_type_surface_only": true,
+    "flight_type_surface_cannot_construct_token": true,
+    "actual_flight_native_dispatch_tested_here": false,
+    "live_native_or_binder_executed": false,
+    "assertions_changed": false,
+    "host_executed": false,
+    "phone_actions": 0,
+    "business_verified": false,
+    "prior_actual56_input": {
+      "bytes": 1283344,
+      "sha256": "25b80314fb000cf4e48a56ad4e198d6b2fb0917802e1f687c5d041f17e04a13b",
+      "git_blob_sha": "baf4bf959ce91b7510694cf393866f056a65cf51"
+    },
+    "actual56_projected_methods_changed_here": 0,
+    "actual56_compile_file_assertions_changed_here": false,
+    "readonly_observation_bracket_executed_here": false,
+    "prior_actual57_input": {
+      "bytes": 1310324,
+      "sha256": "223868f5d8adece424e29002952921342ac68a80d91462ca2fa9244bf5e5a1b5",
+      "git_blob_sha": "e9b09b2d6102c517889855b134083d1e2e6d8357"
+    },
+    "actual57_projected_methods_changed_here": 0,
+    "actual57_compile_files_changed_here": false,
+    "readonly_observation_settle_executed_here": false
+  }
+}

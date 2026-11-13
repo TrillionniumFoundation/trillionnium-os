@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "/home/alex/hepta-local-007f-20261111/install_v57_idle_r1.py", line 1697, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/home/alex/hepta-local-007f-20261111/install_v57_idle_r1.py", line 1600, in main
+    helper_prerequisite = verified_helper6_install(observed)
+  File "/home/alex/hepta-local-007f-20261111/install_v57_idle_r1.py", line 1147, in verified_helper6_install
+    current = verified_current_recovery56(observed, retained)
+  File "/home/alex/hepta-local-007f-20261111/install_v57_idle_r1.py", line 976, in verified_current_recovery56
+    need(type(collection) is dict and collection.get("task_id") == task
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         and collection.get("errors") == [] and collection.get("omitted_screenshots") == 0
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+         and type(collection.get("task_model_sessions")) is list and len(collection["task_model_sessions"]) == 1,
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         "complete actual recovery task, one request and one parent inventory required")
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/hepta-local-007f-20261111/install_v57_idle_r1.py", line 111, in need
+    raise RuntimeError(message)
+RuntimeError: complete actual recovery task, one request and one parent inventory required

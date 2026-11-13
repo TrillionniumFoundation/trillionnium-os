@@ -1,0 +1,133 @@
+{
+  "schema": "hepta.main58-focused39-exact-transport.v1",
+  "base_actual_request": {
+    "git_blob_sha": "c5f38025ed2d6680010f8bdb74d5193588d349a2",
+    "bytes": 43983,
+    "sha256": "52a55e35d42c88abe701b6cc8e52b34a428dceac868fb20bad2369529634d26c"
+  },
+  "source": {
+    "path": "/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1.py",
+    "bytes": 79802,
+    "sha256": "c1c989e1bb27edede54b9f31fd792e956dfbb358ba2c18dc87ef48d8c71bd909",
+    "git_blob_sha": "49ef1662b71249bfd5cf0ca0dc8ea657279d2142"
+  },
+  "loader": {
+    "bytes": 866,
+    "sha256": "f2348b0419f37c648c1c1a153fcf6362fb281bd9a5856d452fa7f1080a8d9564",
+    "git_blob_sha": "4d0bedc9d465013cf0dad44d11b02eef74bd2fa6"
+  },
+  "supervisor": {
+    "bytes": 1786,
+    "sha256": "e0f013e0fb9c765805c9e4163f222fe05ee3aea95527b2b6f68f45e8c93809b1",
+    "git_blob_sha": "b2b60be417fa244c2c4b5fd570f4c17a19eb6323"
+  },
+  "publisher": {
+    "bytes": 10430,
+    "sha256": "7314a7b7da6a09aaecab5ad067438d57456873007a075b3096928a4090c5dbde",
+    "git_blob_sha": "aa7d5deff2b0c0e0a546895897111abaadad39f2"
+  },
+  "gzip": {
+    "bytes": 25557,
+    "sha256": "5ed90d4494b77d9e453eae9dffec605f02317ddffd1e13fcde83eb1c12d5e3f5"
+  },
+  "argument": {
+    "bytes": 34076,
+    "sha256": "d1b583426f88545e5a5d2b6a809fbd59f6f0c585161dac634bed1c2363bf0db5",
+    "git_blob_sha": "5046c1b0e10849bbaf80f8ef493dd0e179b91b1c"
+  },
+  "request": {
+    "bytes": 45367,
+    "sha256": "dd8b02904f251fafba30054809615562061f65b39f82f67bb34fd05fd0913c41",
+    "git_blob_sha": "af949bd7407af3300f55fa21cc402dd01e9cb0b2"
+  },
+  "idempotency_key": "007f-v58-main-wire4-host-p4-r1",
+  "output_root": "/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1",
+  "loader_replacements": [
+    {
+      "before": "/home/alex/hepta-local-007f-20261111/v57-main-wire4-host-p4-r2.py",
+      "after": "/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1.py",
+      "count": 1
+    },
+    {
+      "before": "74469",
+      "after": "79802",
+      "count": 3
+    },
+    {
+      "before": "c0583de699bdba4d6b9963e8ae57851208362c313a8773909a971b690a683f53",
+      "after": "c1c989e1bb27edede54b9f31fd792e956dfbb358ba2c18dc87ef48d8c71bd909",
+      "count": 1
+    }
+  ],
+  "supervisor_replacements": [
+    {
+      "before": "734a7afc264fa170c09945a131890f27d4849fd5b7ef03ea8510ab2e5b24dca5",
+      "after": "f2348b0419f37c648c1c1a153fcf6362fb281bd9a5856d452fa7f1080a8d9564",
+      "count": 1
+    },
+    {
+      "before": "hepta.main57-focused39-pty-bounded-launch.v1",
+      "after": "hepta.main58-focused39-pty-bounded-launch.v1",
+      "count": 2
+    }
+  ],
+  "publisher_replacements": [
+    {
+      "before": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/v57-main-wire4-host-p4-r2.py\",\"bytes\":74469,\"sha256\":\"c0583de699bdba4d6b9963e8ae57851208362c313a8773909a971b690a683f53\"}]",
+      "after": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1.py\",\"bytes\":79802,\"sha256\":\"c1c989e1bb27edede54b9f31fd792e956dfbb358ba2c18dc87ef48d8c71bd909\"}]",
+      "count": 1
+    },
+    {
+      "before": "ARGV_BYTES=32664",
+      "after": "ARGV_BYTES=34076",
+      "count": 1
+    },
+    {
+      "before": "ARGV_SHA=\"342689ca10d0b243e4f0458afc2333e0cf4bbca116b27f9077ede2466b478828\"",
+      "after": "ARGV_SHA=\"d1b583426f88545e5a5d2b6a809fbd59f6f0c585161dac634bed1c2363bf0db5\"",
+      "count": 1
+    },
+    {
+      "before": "GZIP_BYTES=24496",
+      "after": "GZIP_BYTES=25557",
+      "count": 1
+    },
+    {
+      "before": "GZIP_SHA=\"af9068cf14f11619d67e6e1db014c8d5a522fd04a81b08d847d054796cbb449e\"",
+      "after": "GZIP_SHA=\"5ed90d4494b77d9e453eae9dffec605f02317ddffd1e13fcde83eb1c12d5e3f5\"",
+      "count": 1
+    },
+    {
+      "before": "LOADER=\"import hashlib,os,pathlib,stat,sys\\np=pathlib.Path(\\\"/home/alex/hepta-local-007f-20261111/v57-main-wire4-host-p4-r2.py\\\")\\nassert all(not q.is_symlink() for q in (p,*p.parents))\\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\ntry:\\n a=os.fstat(fd)\\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==74469\\n with os.fdopen(os.dup(fd),\\\"rb\\\") as f:raw=f.read(74469+1)\\n assert len(raw)==74469 and hashlib.sha256(raw).hexdigest()==\\\"c0583de699bdba4d6b9963e8ae57851208362c313a8773909a971b690a683f53\\\"\\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\\nfinally:os.close(fd)\\nsys.argv=[str(p)]\\nexec(compile(raw,str(p),\\\"exec\\\",dont_inherit=True),{\\\"__name__\\\":\\\"__main__\\\",\\\"__file__\\\":str(p),\\\"__stage_source__\\\":raw})\\n\"",
+      "after": "LOADER=\"import hashlib,os,pathlib,stat,sys\\np=pathlib.Path(\\\"/home/alex/hepta-local-007f-20261111/v58-main-wire4-host-p4-r1.py\\\")\\nassert all(not q.is_symlink() for q in (p,*p.parents))\\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\ntry:\\n a=os.fstat(fd)\\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==79802\\n with os.fdopen(os.dup(fd),\\\"rb\\\") as f:raw=f.read(79802+1)\\n assert len(raw)==79802 and hashlib.sha256(raw).hexdigest()==\\\"c1c989e1bb27edede54b9f31fd792e956dfbb358ba2c18dc87ef48d8c71bd909\\\"\\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\\nfinally:os.close(fd)\\nsys.argv=[str(p)]\\nexec(compile(raw,str(p),\\\"exec\\\",dont_inherit=True),{\\\"__name__\\\":\\\"__main__\\\",\\\"__file__\\\":str(p),\\\"__stage_source__\\\":raw})\\n\"",
+      "count": 1
+    },
+    {
+      "before": "LOADER_SHA=\"734a7afc264fa170c09945a131890f27d4849fd5b7ef03ea8510ab2e5b24dca5\"",
+      "after": "LOADER_SHA=\"f2348b0419f37c648c1c1a153fcf6362fb281bd9a5856d452fa7f1080a8d9564\"",
+      "count": 1
+    },
+    {
+      "before": "SUPERVISOR=\"import hashlib,json,os,signal,subprocess,sys,time\\nloader=sys.argv[1]\\nassert len(loader.encode(\\\"utf-8\\\"))==866 and hashlib.sha256(loader.encode(\\\"utf-8\\\")).hexdigest()==\\\"734a7afc264fa170c09945a131890f27d4849fd5b7ef03ea8510ab2e5b24dca5\\\"\\nassert os.getcwd()==\\\"/home/alex/hepta-local-007f-20261111\\\"\\nstarted=time.monotonic()\\np=subprocess.Popen([\\\"/usr/bin/python3\\\",\\\"-I\\\",\\\"-B\\\",\\\"-c\\\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main57-focused39-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"started\\\",\\\"child_pid\\\":p.pid,\\\"timeout_seconds\\\":1200,\\\"loader_sha256\\\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\\ncode=None;timed_out=False;forced=False;error=None\\ntry:\\n    code=p.wait(timeout=1200)\\nexcept BaseException as failure:\\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\\n    error=type(failure).__name__+\\\": \\\"+str(failure)\\n    if p.poll() is None:\\n        try:os.killpg(p.pid,signal.SIGTERM)\\n        except ProcessLookupError:pass\\n        try:code=p.wait(timeout=10)\\n        except subprocess.TimeoutExpired:\\n            forced=True\\n            try:os.killpg(p.pid,signal.SIGKILL)\\n            except ProcessLookupError:pass\\n            try:code=p.wait(timeout=10)\\n            except subprocess.TimeoutExpired:error+=\\\"; owned child exit not observed\\\"\\nexit_observed=p.poll() is not None\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main57-focused39-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"finished\\\",\\\"child_pid\\\":p.pid,\\\"child_returncode\\\":code,\\\"exit_observed\\\":exit_observed,\\\"timed_out\\\":timed_out,\\\"forced_kill\\\":forced,\\\"error\\\":error,\\\"elapsed_seconds\\\":time.monotonic()-started}),flush=True)\\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\\nraise SystemExit(code if code>=0 else 128-code)\\n\"",
+      "after": "SUPERVISOR=\"import hashlib,json,os,signal,subprocess,sys,time\\nloader=sys.argv[1]\\nassert len(loader.encode(\\\"utf-8\\\"))==866 and hashlib.sha256(loader.encode(\\\"utf-8\\\")).hexdigest()==\\\"f2348b0419f37c648c1c1a153fcf6362fb281bd9a5856d452fa7f1080a8d9564\\\"\\nassert os.getcwd()==\\\"/home/alex/hepta-local-007f-20261111\\\"\\nstarted=time.monotonic()\\np=subprocess.Popen([\\\"/usr/bin/python3\\\",\\\"-I\\\",\\\"-B\\\",\\\"-c\\\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main58-focused39-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"started\\\",\\\"child_pid\\\":p.pid,\\\"timeout_seconds\\\":1200,\\\"loader_sha256\\\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\\ncode=None;timed_out=False;forced=False;error=None\\ntry:\\n    code=p.wait(timeout=1200)\\nexcept BaseException as failure:\\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\\n    error=type(failure).__name__+\\\": \\\"+str(failure)\\n    if p.poll() is None:\\n        try:os.killpg(p.pid,signal.SIGTERM)\\n        except ProcessLookupError:pass\\n        try:code=p.wait(timeout=10)\\n        except subprocess.TimeoutExpired:\\n            forced=True\\n            try:os.killpg(p.pid,signal.SIGKILL)\\n            except ProcessLookupError:pass\\n            try:code=p.wait(timeout=10)\\n            except subprocess.TimeoutExpired:error+=\\\"; owned child exit not observed\\\"\\nexit_observed=p.poll() is not None\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main58-focused39-pty-bounded-launch.v1\\\",\\\"event\\\":\\\"finished\\\",\\\"child_pid\\\":p.pid,\\\"child_returncode\\\":code,\\\"exit_observed\\\":exit_observed,\\\"timed_out\\\":timed_out,\\\"forced_kill\\\":forced,\\\"error\\\":error,\\\"elapsed_seconds\\\":time.monotonic()-started}),flush=True)\\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\\nraise SystemExit(code if code>=0 else 128-code)\\n\"",
+      "count": 1
+    },
+    {
+      "before": "SUPERVISOR_SHA=\"c66baadf2cac99995137e4f02b0645efd0a285cc5fd175ea54e662b65a3b6a9c\"",
+      "after": "SUPERVISOR_SHA=\"e0f013e0fb9c765805c9e4163f222fe05ee3aea95527b2b6f68f45e8c93809b1\"",
+      "count": 1
+    },
+    {
+      "before": "TRANSPORT_KEY=\"007f-v57-main-wire4-host-p4-report-parser-r2\"",
+      "after": "TRANSPORT_KEY=\"007f-v58-main-wire4-host-p4-r1\"",
+      "count": 1
+    }
+  ],
+  "gzip_crc_and_full_source_roundtrip_verified": true,
+  "actual_lengths_derived": true,
+  "private_source_injection_unchanged": "__stage_source__",
+  "owned_run_unchanged": true,
+  "publisher_algorithm_unchanged": true,
+  "executed": false,
+  "phone_actions": 0
+}

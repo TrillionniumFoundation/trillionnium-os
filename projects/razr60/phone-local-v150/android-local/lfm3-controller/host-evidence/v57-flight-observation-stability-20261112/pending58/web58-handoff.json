@@ -1,0 +1,1302 @@
+{
+  "schema": "hepta.main58-existing-web-coordinator-handoff.v1",
+  "source": {
+    "bytes": 182461,
+    "sha256": "c4e64f533be6c48654bd7449ade390682bca5bc35bbf541c6e6f5596444074f9",
+    "git_blob_sha": "8ce7979d4ad9a21d51baa77331e8f417081324c7"
+  },
+  "base": {
+    "bytes": 66923,
+    "sha256": "2e8d995002de046c4f11b78999115e1652cc3274b42a1d9a1ddd850b523263af",
+    "git_blob_sha": "95e8654ba2522f8140ec376d1a26b637160c7f90"
+  },
+  "fixture_packet": {
+    "bytes": 469284,
+    "sha256": "a680ec7cec8ec37a050c738e78c0b228323b8c1b881d147860faa85f38dad101",
+    "git_blob_sha": "b6cc9d54b3eef32f00e19ae9004f67bc2af42968"
+  },
+  "packet_delta": {
+    "bytes": 122992,
+    "sha256": "f50e65ea3b04735180feff6155c88da5d5522839fbe4c8df4efda0cdce547e79",
+    "git_blob_sha": "4c047ee117397d6e1c433e844c29a27940a6d190"
+  },
+  "new_test_helper": {
+    "bytes": 96786,
+    "sha256": "75701ea7ed72901847ac3adb6426f020b84a21b442608307ce6052cbc9d14e4b",
+    "git_blob_sha": "137815b055ea31bb31eaee5256ad1ee1f3af3f65"
+  },
+  "composition": {
+    "bytes": 53619,
+    "sha256": "a1ec3836667a92f4489c73b6376b56dfd0d4ffd4b7501071e08b60bebd3723a3",
+    "git_blob_sha": "495f135e7d395273ce96e3583f200c3652badc66"
+  },
+  "test_delta": {
+    "bytes": 20492,
+    "sha256": "f5f02b851437967e5485d166ebc656a1a7841c178ec820d632b090f8996344e9",
+    "git_blob_sha": "515a02c344feb83d5d3a100a23b0e62cd7b3084f"
+  },
+  "config_before": {
+    "schema": "hepta.main57-existing-web-regression-stage-config.v1",
+    "root": "/home/alex/hepta-local-007f-20261111/v57-main-web-regression-host-r2",
+    "source_root": "/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1/source",
+    "materialized_root": "/home/alex/hepta-local-007f-20261111/v57-main-core101-materialized-host-r1",
+    "decoded_input": {
+      "bytes": 364848,
+      "sha256": "8ac71189842cde32a349e39a89da909fd7d759b29d6b14eba66120a5b65babca",
+      "git_blob_sha": "037096bebe3cf4776d588a2198fa2376b21453a7"
+    },
+    "aggregate": {
+      "git": "517e61599073eb264c5e52871570d49e7af2d798",
+      "bytes": 1459826,
+      "sha256": "b98bb0f97ad5b25423387c4e3f8734aec7d4f8c2d1044335af039e0dd1c57cc3",
+      "inventory_sha256": "7e6b339f65f830245907124de97d4132211c057edbf38fda3b2acc14442a54ce"
+    },
+    "inventory": {
+      "bytes": 103795,
+      "sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6"
+    },
+    "java": {
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+      "bytes": 14544,
+      "sha256": "bb70208200cb6538b877d80478141194a716edb591f4910ec106589291e99196"
+    },
+    "javac": {
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+      "bytes": 14592,
+      "sha256": "2aaf03d13aeb80b8269696f2dcd9f4937d7366bbc68f91fdc703cf157e8f39c4"
+    },
+    "json": {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/host-json/json-20240303.jar",
+      "bytes": 78332,
+      "sha256": "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"
+    },
+    "orgjson_ready": {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/ORGJSON-READY.json",
+      "bytes": 1289,
+      "sha256": "37f3b1790fce237f6339cab159015da7937e6517cc4a97f4dc16443c74e01d7b"
+    },
+    "expected_gates": [
+      {
+        "name": "evidence80",
+        "class_name": "org.trillionnium.hepta.local.WebFlightEvidenceHostTest",
+        "prior_file": "WEB-RESULT.json",
+        "cases": 80,
+        "assertions": 92,
+        "schema": "hepta.web-flight-evidence-host-cases.v1"
+      },
+      {
+        "name": "composition43",
+        "class_name": "org.trillionnium.hepta.local.WebTaskCompositionHostTest",
+        "prior_file": "COMPOSITION-RESULT.json",
+        "cases": 79,
+        "assertions": 215,
+        "schema": "hepta.v55-web-task-composition-host.v1"
+      },
+      {
+        "name": "calendar13",
+        "class_name": "org.trillionnium.hepta.local.WebCalendarNativeHostTest",
+        "prior_file": "CALENDAR-NATIVE-RESULT.json",
+        "cases": 13,
+        "assertions": 1001,
+        "schema": "hepta.csair-calendar-native-host.v1"
+      }
+    ],
+    "case_name_mapping": {
+      "v3_receipt_and_real_composition": "v4_receipt_and_real_composition",
+      "duplicate_native_resource_id_blocks_even_disabled": "duplicate_native_card_description_blocks_even_disabled",
+      "duplicate_dom_id_blocks_product_link": "ambiguous_observed_region_blocks_product_link"
+    },
+    "key": "007f-v57-main-existing-web-regression-host-r2-json-null",
+    "prior_web": {
+      "root": "/home/alex/hepta-local-007f-20261111/v56-main-web-regression-host-r2",
+      "result": {
+        "bytes": 47337,
+        "sha256": "220ccb705ba17797d7403c26c1a9bcb438f46c8ea83e017c617a343d27232f7c",
+        "git_blob_sha": "a444cbac9951180a7dde73bee2984fdf063ee30a"
+      },
+      "stage": {
+        "bytes": 131893,
+        "sha256": "814e327adb50509d35a03a89f96ab085c3b4249c526d3b041ef3885e59e35391",
+        "git_blob_sha": "447b3ca01169ed691440ca866896d07f0c7b665f"
+      },
+      "packet": {
+        "bytes": 260128,
+        "sha256": "3687b09656e60a808ebdce1430951e04741581e9ddd0d2faa7f5c36220ed24b7",
+        "git_blob_sha": "1153d7e55c4051ecf6e4c018defe43d26ff51fd2"
+      }
+    },
+    "source_file_count": 595,
+    "fixture_count": 6,
+    "production_java_count": 44,
+    "compilation_unit_count": 52,
+    "added_case_names": [
+      "flight_observation_actual56_old_digest_failure_reproduced",
+      "flight_observation_actual_retained_rows_cannot_replace_complete_native",
+      "flight_observation_actual_raws_with_explicit_synthetic_complete_native",
+      "flight_observation_window_selection_ime_and_root_changes_rejected",
+      "flight_observation_target_unretained_and_retained_semantics_rejected",
+      "flight_observation_truncated_or_incomplete_native_rejected",
+      "flight_observation_four_raw_equality_and_homepage_scope_required",
+      "flight_observation_capture_epoch_binding_and_order_rejected",
+      "flight_observation_geometry_and_actual_native_ancestor_must_match"
+    ],
+    "prior_expected_gates": [
+      {
+        "name": "evidence80",
+        "class_name": "org.trillionnium.hepta.local.WebFlightEvidenceHostTest",
+        "prior_file": "WEB-RESULT.json",
+        "cases": 80,
+        "assertions": 92,
+        "schema": "hepta.web-flight-evidence-host-cases.v1"
+      },
+      {
+        "name": "composition43",
+        "class_name": "org.trillionnium.hepta.local.WebTaskCompositionHostTest",
+        "prior_file": "COMPOSITION-RESULT.json",
+        "cases": 70,
+        "assertions": 178,
+        "schema": "hepta.v55-web-task-composition-host.v1"
+      },
+      {
+        "name": "calendar13",
+        "class_name": "org.trillionnium.hepta.local.WebCalendarNativeHostTest",
+        "prior_file": "CALENDAR-NATIVE-RESULT.json",
+        "cases": 13,
+        "assertions": 1001,
+        "schema": "hepta.csair-calendar-native-host.v1"
+      }
+    ],
+    "prior_failed56": {
+      "root": "/home/alex/hepta-local-007f-20261111/v56-main-web-regression-host-r1",
+      "result": {
+        "bytes": 29724,
+        "sha256": "f9bf137d294e385c6cd85987a10ba682fdb9bb8415fa51a005e5ff871914eec4",
+        "git_blob_sha": "30962e2f30d7b0309aaacd44d67e795e436752ee"
+      },
+      "stage": {
+        "bytes": 124611,
+        "sha256": "e315704ec4f11f6e37cafc158dcbd831ad713efc376289100cdc48d35826eba6",
+        "git_blob_sha": "7bf26d7df0b20c2079695980303ff2237add2465"
+      },
+      "packet": {
+        "bytes": 255644,
+        "sha256": "2bdec480247b39ab2a0ec566d0999919d8723d52f55bc81f9df7beb9b1129ee5",
+        "git_blob_sha": "bb76eb9c16289058b5d2297edb9eb7d51118c69b"
+      },
+      "composition_stderr": {
+        "bytes": 1012,
+        "sha256": "242466b11bebf08dc48246b949fb506dc8bde71bba0c7be798c0fa98d6b0ef75",
+        "git_blob_sha": "b437fd9854666141f78911df0a7b53c9de376165"
+      },
+      "aggregate": {
+        "git": "660335b7f19f519af4cfd168ebee186f1a4693b9",
+        "bytes": 1416544,
+        "sha256": "38baa995ee76520e1a9ff7a14baf51afdbd4f1af53f747ce7a0d114ef4809c90",
+        "inventory_sha256": "71ad8ef4ea1023850c950282d57bcae3e73877e5e6a7ad582b58951e1ba7001e"
+      }
+    },
+    "prior_failed57": {
+      "root": "/home/alex/hepta-local-007f-20261111/v57-main-web-regression-host-r1",
+      "result": {
+        "bytes": 30361,
+        "sha256": "d66b4dcaf0eed2b650df9e88928a32ab5145608f600b868864c3925011d72532",
+        "git_blob_sha": "4f436784332e6a1bf7200cbaf105c28e17a55b29"
+      },
+      "stage": {
+        "bytes": 147219,
+        "sha256": "2891fa5a6e6b5ace614d73593f5108f129a738cd4b4c3c7a487cbf5fa361d34c",
+        "git_blob_sha": "012f77d66f782cb9787627c0217b0fcff64b99df"
+      },
+      "packet": {
+        "bytes": 357185,
+        "sha256": "ba0832568ca64be933ba31acd3646d0c63550f6202abeecf49dd12cecb52f110",
+        "git_blob_sha": "cd1d6fe815602cfd0909e7e6cf771a0c46bd2529"
+      },
+      "composition_stderr": {
+        "bytes": 1328,
+        "sha256": "7658bf88db3934278dfe73f1795f6ca30b272345c19ab600273fd22d9d6153d2",
+        "git_blob_sha": "b6bab9eabba9dfcc7ffc2435e8f6b7b99c356e10"
+      }
+    }
+  },
+  "config_after": {
+    "schema": "hepta.main58-existing-web-regression-stage-config.v1",
+    "root": "/home/alex/hepta-local-007f-20261111/v58-main-web-regression-host-r1",
+    "source_root": "/home/alex/hepta-local-007f-20261111/v58-main-core101-materialized-host-r1/source",
+    "materialized_root": "/home/alex/hepta-local-007f-20261111/v58-main-core101-materialized-host-r1",
+    "decoded_input": {
+      "bytes": 469284,
+      "sha256": "a680ec7cec8ec37a050c738e78c0b228323b8c1b881d147860faa85f38dad101",
+      "git_blob_sha": "b6cc9d54b3eef32f00e19ae9004f67bc2af42968"
+    },
+    "aggregate": {
+      "git": "94ca147166c4e4c7faa5bd32085c5431eb36f4b1",
+      "bytes": 1465984,
+      "sha256": "600ff7c4198fc83d4e93399fc6bf039800805f4458406b4182952ddcff89b95b",
+      "inventory_sha256": "625a23cbff539c25e0d9a439c522180a890309449bb7fc63e55d2461b0588327"
+    },
+    "inventory": {
+      "bytes": 103795,
+      "sha256": "b44d3a9d9083a86d5fff36dfcc0c27958ef047a05df928923ef7c2e204cb23d6"
+    },
+    "java": {
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+      "bytes": 14544,
+      "sha256": "bb70208200cb6538b877d80478141194a716edb591f4910ec106589291e99196"
+    },
+    "javac": {
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+      "bytes": 14592,
+      "sha256": "2aaf03d13aeb80b8269696f2dcd9f4937d7366bbc68f91fdc703cf157e8f39c4"
+    },
+    "json": {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/host-json/json-20240303.jar",
+      "bytes": 78332,
+      "sha256": "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"
+    },
+    "orgjson_ready": {
+      "path": "/home/alex/hepta-local-007f-20261111/v55-helper6-p4-public-inputs-r1/ORGJSON-READY.json",
+      "bytes": 1289,
+      "sha256": "37f3b1790fce237f6339cab159015da7937e6517cc4a97f4dc16443c74e01d7b"
+    },
+    "expected_gates": [
+      {
+        "name": "evidence80",
+        "class_name": "org.trillionnium.hepta.local.WebFlightEvidenceHostTest",
+        "prior_file": "WEB-RESULT.json",
+        "cases": 80,
+        "assertions": 92,
+        "schema": "hepta.web-flight-evidence-host-cases.v1"
+      },
+      {
+        "name": "composition43",
+        "class_name": "org.trillionnium.hepta.local.WebTaskCompositionHostTest",
+        "prior_file": "COMPOSITION-RESULT.json",
+        "cases": 89,
+        "assertions": 275,
+        "schema": "hepta.v55-web-task-composition-host.v1"
+      },
+      {
+        "name": "calendar13",
+        "class_name": "org.trillionnium.hepta.local.WebCalendarNativeHostTest",
+        "prior_file": "CALENDAR-NATIVE-RESULT.json",
+        "cases": 13,
+        "assertions": 1001,
+        "schema": "hepta.csair-calendar-native-host.v1"
+      }
+    ],
+    "case_name_mapping": {
+      "v3_receipt_and_real_composition": "v4_receipt_and_real_composition",
+      "duplicate_native_resource_id_blocks_even_disabled": "duplicate_native_card_description_blocks_even_disabled",
+      "duplicate_dom_id_blocks_product_link": "ambiguous_observed_region_blocks_product_link"
+    },
+    "key": "007f-v58-main-existing-web-regression-host-r1-observation-settle",
+    "prior_web": {
+      "root": "/home/alex/hepta-local-007f-20261111/v57-main-web-regression-host-r2",
+      "result": {
+        "bytes": 54724,
+        "sha256": "61585af641cf4c1db70a9ae0d6f1e23ea93633fb7ead6b10b3a168d45aa2a3b1",
+        "git_blob_sha": "1a60d6d21767e88b90854e5fb2d55102a951d2fc"
+      },
+      "stage": {
+        "bytes": 66923,
+        "sha256": "2e8d995002de046c4f11b78999115e1652cc3274b42a1d9a1ddd850b523263af",
+        "git_blob_sha": "95e8654ba2522f8140ec376d1a26b637160c7f90"
+      },
+      "packet": {
+        "bytes": 364848,
+        "sha256": "8ac71189842cde32a349e39a89da909fd7d759b29d6b14eba66120a5b65babca",
+        "git_blob_sha": "037096bebe3cf4776d588a2198fa2376b21453a7"
+      },
+      "aggregate": {
+        "git": "517e61599073eb264c5e52871570d49e7af2d798",
+        "bytes": 1459826,
+        "sha256": "b98bb0f97ad5b25423387c4e3f8734aec7d4f8c2d1044335af039e0dd1c57cc3",
+        "inventory_sha256": "7e6b339f65f830245907124de97d4132211c057edbf38fda3b2acc14442a54ce"
+      },
+      "inventory": {
+        "bytes": 103795,
+        "sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6"
+      }
+    },
+    "source_file_count": 595,
+    "fixture_count": 7,
+    "production_java_count": 44,
+    "compilation_unit_count": 53,
+    "added_case_names": [
+      "readonly_settle_actual_retained_transition_then_fresh_stable",
+      "readonly_settle_permanent_change_exhausts_two_reobservations",
+      "readonly_settle_snapshot_returned_before_wait_and_capture_exception",
+      "readonly_settle_cancellation_during_wait_stops_after_release",
+      "readonly_settle_deadline_six_seconds_and_reused_budget_fail_closed",
+      "readonly_settle_cross_epoch_window_or_instance_never_retries",
+      "readonly_settle_fresh_retry_cannot_switch_original_epoch",
+      "readonly_settle_capture_and_background_guard_exceptions_are_not_retried",
+      "readonly_settle_record_failure_propagates_after_capability_retirement",
+      "readonly_settle_stable_read_and_original_geometry_check_remain_exact"
+    ],
+    "prior_expected_gates": [
+      {
+        "name": "evidence80",
+        "class_name": "org.trillionnium.hepta.local.WebFlightEvidenceHostTest",
+        "prior_file": "WEB-RESULT.json",
+        "cases": 80,
+        "assertions": 92,
+        "schema": "hepta.web-flight-evidence-host-cases.v1"
+      },
+      {
+        "name": "composition43",
+        "class_name": "org.trillionnium.hepta.local.WebTaskCompositionHostTest",
+        "prior_file": "COMPOSITION-RESULT.json",
+        "cases": 79,
+        "assertions": 215,
+        "schema": "hepta.v55-web-task-composition-host.v1"
+      },
+      {
+        "name": "calendar13",
+        "class_name": "org.trillionnium.hepta.local.WebCalendarNativeHostTest",
+        "prior_file": "CALENDAR-NATIVE-RESULT.json",
+        "cases": 13,
+        "assertions": 1001,
+        "schema": "hepta.csair-calendar-native-host.v1"
+      }
+    ],
+    "prior_failed56": {
+      "root": "/home/alex/hepta-local-007f-20261111/v56-main-web-regression-host-r1",
+      "result": {
+        "bytes": 29724,
+        "sha256": "f9bf137d294e385c6cd85987a10ba682fdb9bb8415fa51a005e5ff871914eec4",
+        "git_blob_sha": "30962e2f30d7b0309aaacd44d67e795e436752ee"
+      },
+      "stage": {
+        "bytes": 124611,
+        "sha256": "e315704ec4f11f6e37cafc158dcbd831ad713efc376289100cdc48d35826eba6",
+        "git_blob_sha": "7bf26d7df0b20c2079695980303ff2237add2465"
+      },
+      "packet": {
+        "bytes": 255644,
+        "sha256": "2bdec480247b39ab2a0ec566d0999919d8723d52f55bc81f9df7beb9b1129ee5",
+        "git_blob_sha": "bb76eb9c16289058b5d2297edb9eb7d51118c69b"
+      },
+      "composition_stderr": {
+        "bytes": 1012,
+        "sha256": "242466b11bebf08dc48246b949fb506dc8bde71bba0c7be798c0fa98d6b0ef75",
+        "git_blob_sha": "b437fd9854666141f78911df0a7b53c9de376165"
+      },
+      "aggregate": {
+        "git": "660335b7f19f519af4cfd168ebee186f1a4693b9",
+        "bytes": 1416544,
+        "sha256": "38baa995ee76520e1a9ff7a14baf51afdbd4f1af53f747ce7a0d114ef4809c90",
+        "inventory_sha256": "71ad8ef4ea1023850c950282d57bcae3e73877e5e6a7ad582b58951e1ba7001e"
+      }
+    },
+    "prior_failed57": {
+      "root": "/home/alex/hepta-local-007f-20261111/v57-main-web-regression-host-r1",
+      "result": {
+        "bytes": 30361,
+        "sha256": "d66b4dcaf0eed2b650df9e88928a32ab5145608f600b868864c3925011d72532",
+        "git_blob_sha": "4f436784332e6a1bf7200cbaf105c28e17a55b29"
+      },
+      "stage": {
+        "bytes": 147219,
+        "sha256": "2891fa5a6e6b5ace614d73593f5108f129a738cd4b4c3c7a487cbf5fa361d34c",
+        "git_blob_sha": "012f77d66f782cb9787627c0217b0fcff64b99df"
+      },
+      "packet": {
+        "bytes": 357185,
+        "sha256": "ba0832568ca64be933ba31acd3646d0c63550f6202abeecf49dd12cecb52f110",
+        "git_blob_sha": "cd1d6fe815602cfd0909e7e6cf771a0c46bd2529"
+      },
+      "composition_stderr": {
+        "bytes": 1328,
+        "sha256": "7658bf88db3934278dfe73f1795f6ca30b272345c19ab600273fd22d9d6153d2",
+        "git_blob_sha": "b6bab9eabba9dfcc7ffc2435e8f6b7b99c356e10"
+      }
+    },
+    "historical_successful56": {
+      "root": "/home/alex/hepta-local-007f-20261111/v56-main-web-regression-host-r2",
+      "result": {
+        "bytes": 47337,
+        "sha256": "220ccb705ba17797d7403c26c1a9bcb438f46c8ea83e017c617a343d27232f7c",
+        "git_blob_sha": "a444cbac9951180a7dde73bee2984fdf063ee30a"
+      },
+      "stage": {
+        "bytes": 131893,
+        "sha256": "814e327adb50509d35a03a89f96ab085c3b4249c526d3b041ef3885e59e35391",
+        "git_blob_sha": "447b3ca01169ed691440ca866896d07f0c7b665f"
+      },
+      "packet": {
+        "bytes": 260128,
+        "sha256": "3687b09656e60a808ebdce1430951e04741581e9ddd0d2faa7f5c36220ed24b7",
+        "git_blob_sha": "1153d7e55c4051ecf6e4c018defe43d26ff51fd2"
+      }
+    },
+    "session_original": {
+      "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "bytes": 46689,
+      "sha256": "d2e4f073366d3d3046b0f9b90156f87b1fb84c842a3053a5d32f31df5e3bbc9b",
+      "git_blob_sha": "d89ff1a111693bebd445c99fede473fbc968a314"
+    }
+  },
+  "source_patch_count": 31,
+  "config_and_delta_literal_patches": [
+    {
+      "label": "current config with actual57 predecessor",
+      "count": 1,
+      "before_file": {
+        "bytes": 66923,
+        "sha256": "2e8d995002de046c4f11b78999115e1652cc3274b42a1d9a1ddd850b523263af",
+        "git_blob_sha": "95e8654ba2522f8140ec376d1a26b637160c7f90"
+      },
+      "after_file": {
+        "bytes": 68242,
+        "sha256": "08484c2fff96f4842f7cd7471e51d2a3d919837574f202168574280b9880ade3",
+        "git_blob_sha": "2a477c594a73375d02de7718749b92d187afeaaf"
+      },
+      "before_literal_pin": {
+        "bytes": 6815,
+        "sha256": "bf8a8cffe96c8e6b7d655affb7693908f92d3438918f9fa0dcff64d7e2aa6d07",
+        "git_blob_sha": "86ae9f7c26a3947b165949bf6bfb589961916e30"
+      },
+      "after_literal_pin": {
+        "bytes": 8134,
+        "sha256": "d555720155daad7b7b45d7c92f41ffb17f17c57abf61014e415b613f8c1dbd6f",
+        "git_blob_sha": "e9a1cae7978c5326da0f40ae4a53715456b7a858"
+      }
+    },
+    {
+      "label": "two composition calls plus new exact-method helper delta",
+      "count": 1,
+      "before_file": {
+        "bytes": 68242,
+        "sha256": "08484c2fff96f4842f7cd7471e51d2a3d919837574f202168574280b9880ade3",
+        "git_blob_sha": "2a477c594a73375d02de7718749b92d187afeaaf"
+      },
+      "after_file": {
+        "bytes": 177417,
+        "sha256": "845ec8b32723a8edacbea026222dafcf41c55fde4cfcd3f64fc44f3b3e5c7cac",
+        "git_blob_sha": "6e49e8ba1156594b5f770be0c4e38d38612f116c"
+      },
+      "before_literal_pin": {
+        "bytes": 15334,
+        "sha256": "6e02ed8cbd09d6643f6516a3318c0da023e575fe55719a180bccca7a53cd5c67",
+        "git_blob_sha": "77e7e2bd06996819510387367460fdee8341addc"
+      },
+      "after_literal_pin": {
+        "bytes": 124509,
+        "sha256": "411bcf876eae370f8ed46925cc30962818e5e407427f5644633eacb058bfe114",
+        "git_blob_sha": "c5765800013f8a3202d2ebc7e0cad89abcc6c268"
+      }
+    }
+  ],
+  "remaining_exact_source_patches": [
+    {
+      "label": "current documented scope",
+      "count": 1,
+      "before": "\"\"\"Run existing Web host gates against the exact Main57 source.\nThe actual56 80/70/13 assertions and the actual57 nine appended cases are retained.\nOnly the host JSON null representation is adapted in explicitly derived capture\ncopies; complete original raw records and production binding checks are unchanged.\nFour direct compatibility assertions join the existing positive case.\nActual counts come from child reports.\nNo SDK, Android build, core101 pass, signing, phone or model call is required.\n\"\"\"",
+      "after": "\"\"\"Run existing Web host gates against the exact Main58 source.\nThe actual57 80/79/13 cases and all original assertions are retained.\nTen narrow observation-settle cases replay seven exact Session blocks with\nexplicit host seams, current real parsers, and original retained-scope digests.\nNo SDK, Android build, core101 pass, signing, phone or model call is required.\nActual counts come from child reports.\n\"\"\"",
+      "before_file": {
+        "bytes": 177417,
+        "sha256": "845ec8b32723a8edacbea026222dafcf41c55fde4cfcd3f64fc44f3b3e5c7cac",
+        "git_blob_sha": "6e49e8ba1156594b5f770be0c4e38d38612f116c"
+      },
+      "after_file": {
+        "bytes": 177325,
+        "sha256": "0d75fd38ab9b5dde195d6719acc970775b6f7aaeefda2cb0cf608cba0b877958",
+        "git_blob_sha": "13ae8c1dc596c5915c7ded81a62e313ce74b1cc5"
+      }
+    },
+    {
+      "label": "derive current packet from actual57 success",
+      "count": 1,
+      "before": "def derive_packet(prior_raw):\n    delta=PACKET_DELTA\n    checked(prior_raw,delta[\"base\"],\"actual failed57 complete packet\")\n    packet=strict(prior_raw)\n    need(packet[\"schema\"]==\"hepta.main57-web-regression-fixture-successor.v1\"\n         and packet[\"current_aggregate\"]==CONFIG[\"aggregate\"]\n         and packet[\"main57_successor\"]==delta[\"main57_metadata_before\"]\n         and \"main57_host_json_null_successor\" not in packet,\"exact failed57 packet metadata\")\n    matches=[item for item in packet[\"files\"] if item[\"path\"]==delta[\"helper\"][\"path\"]]\n    need(len(matches)==1,\"one existing native-stability helper\")\n    helper=matches[0]\n    need(helper[\"origin\"]==delta[\"helper\"][\"origin_before\"],\"exact helper predecessor provenance\")\n    old_text=helper[\"raw_utf8\"]\n    checked(old_text.encode(\"utf-8\"),delta[\"helper\"][\"before\"],\"actual failed57 helper\")\n    new_text=old_text\n    need(len(delta[\"helper\"][\"ordered_replacements\"])==5\n         and delta[\"changed_production_inputs\"]==[],\"only five host JSON compatibility replacements\")\n    for change in delta[\"helper\"][\"ordered_replacements\"]:\n        need(change[\"count\"]==1 and new_text.count(change[\"before\"])==1,\"one explicit helper replacement\")\n        new_text=new_text.replace(change[\"before\"],change[\"after\"])\n    exact_changes(old_text.encode(\"utf-8\"),delta[\"helper\"][\"ordered_replacements\"],new_text.encode(\"utf-8\"))\n    checked(new_text.encode(\"utf-8\"),delta[\"helper\"][\"after\"],\"host JSON compatibility helper successor\")\n    helper.update(delta[\"helper\"][\"after\"]);helper[\"raw_utf8\"]=new_text\n    helper[\"origin\"]=delta[\"helper\"][\"origin_after\"]\n    packet[\"main57_successor\"]=delta[\"main57_metadata_after\"]\n    packet[\"main57_host_json_null_successor\"]=delta[\"added_metadata\"]\n    raw=encoded(packet)\n    checked(raw,delta[\"result\"],\"complete current packet full pin\")\n    reverse=strict(raw)\n    rh=[item for item in reverse[\"files\"] if item[\"path\"]==delta[\"helper\"][\"path\"]]\n    need(len(rh)==1,\"one helper in complete reverse packet\")\n    rh=rh[0]\n    for change in reversed(delta[\"helper\"][\"ordered_replacements\"]):\n        need(rh[\"raw_utf8\"].count(change[\"after\"])==1,\"unique helper reverse block\")\n        rh[\"raw_utf8\"]=rh[\"raw_utf8\"].replace(change[\"after\"],change[\"before\"])\n    rh.update(delta[\"helper\"][\"before\"]);rh[\"origin\"]=delta[\"helper\"][\"origin_before\"]\n    reverse[\"main57_successor\"]=delta[\"main57_metadata_before\"]\n    del reverse[\"main57_host_json_null_successor\"]\n    need(encoded(reverse)==prior_raw,\"whole failed57 packet remains byte-identical\")\n    return raw,packet\n\n",
+      "after": "def derive_packet(prior_raw):\n    delta=PACKET_DELTA\n    checked(prior_raw,delta[\"base\"],\"actual successful57 complete packet\")\n    packet=strict(prior_raw)\n    need(packet[\"schema\"]==delta[\"schema_before\"]\n         and packet[\"current_aggregate\"]==delta[\"aggregate_before\"]\n         and \"main58_successor\" not in packet,\"exact actual57 packet predecessor\")\n    matches=[item for item in packet[\"files\"] if item[\"path\"]==delta[\"composition\"][\"path\"]]\n    need(len(matches)==1 and len(packet[\"files\"])==6,\"one existing composition and six prior fixtures\")\n    item=matches[0]\n    original=dict(item)\n    before=item[\"raw_utf8\"].encode(\"utf-8\",\"strict\")\n    checked(before,delta[\"composition\"][\"before\"],\"actual57 composition raw\")\n    after=before.decode(\"utf-8\",\"strict\")\n    need(len(delta[\"composition\"][\"ordered_replacements\"])==2\n         and delta[\"changed_production_inputs\"]==[],\"two composition hooks; all44 full production rows unchanged\")\n    for hunk in delta[\"composition\"][\"ordered_replacements\"]:\n        need(hunk[\"count\"]==1 and after.count(hunk[\"before\"])==1,\"unique composition hook\")\n        after=after.replace(hunk[\"before\"],hunk[\"after\"])\n    exact_changes(before,delta[\"composition\"][\"ordered_replacements\"],after.encode(\"utf-8\"))\n    checked(after.encode(\"utf-8\"),delta[\"composition\"][\"after\"],\"current composition exact raw\")\n    item.update(delta[\"composition\"][\"after\"]);item[\"raw_utf8\"]=after\n    item[\"ordered_replacements\"]=item[\"ordered_replacements\"]+delta[\"composition\"][\"ordered_replacements\"]\n    helper=delta[\"new_helper\"]\n    need(helper[\"path\"] not in [f[\"path\"] for f in packet[\"files\"]],\"new external helper cannot shadow a prior fixture\")\n    checked(helper[\"raw_utf8\"].encode(\"utf-8\"),helper,\"exact observation-settle helper\")\n    packet[\"files\"].append(helper)\n    packet[\"schema\"]=delta[\"schema_after\"]\n    packet[\"current_aggregate\"]=delta[\"aggregate_after\"]\n    packet[\"main58_successor\"]=delta[\"added_metadata\"]\n    raw=encoded(packet)\n    checked(raw,delta[\"result\"],\"complete current packet full pin\")\n    reverse=strict(raw)\n    need(reverse[\"files\"].pop()==helper,\"only one appended helper\")\n    rows=[f for f in reverse[\"files\"] if f[\"path\"]==item[\"path\"]]\n    need(len(rows)==1,\"unique reverse composition\")\n    rows[0].clear();rows[0].update(original)\n    reverse[\"schema\"]=delta[\"schema_before\"]\n    reverse[\"current_aggregate\"]=delta[\"aggregate_before\"]\n    del reverse[\"main58_successor\"]\n    need(encoded(reverse)==prior_raw,\"whole actual57 packet remains byte-identical\")\n    return raw,packet\n\n",
+      "before_file": {
+        "bytes": 177325,
+        "sha256": "0d75fd38ab9b5dde195d6719acc970775b6f7aaeefda2cb0cf608cba0b877958",
+        "git_blob_sha": "13ae8c1dc596c5915c7ded81a62e313ce74b1cc5"
+      },
+      "after_file": {
+        "bytes": 177318,
+        "sha256": "03f3dd5a87c1a8c42ca8d97acbf91245b11aef3fac33dc2c89db1baeca08b65e",
+        "git_blob_sha": "e90d56db7b20f30e11d31ec36607c1d74bc12466"
+      }
+    },
+    {
+      "label": "validate actual narrow settle scope",
+      "count": 1,
+      "before": "        need(report[\"prior_case_count\"]==43",
+      "after": "        settle=report[\"flight_readonly_observation_settle\"]\n        need(settle[\"schema\"]==\"hepta.main58.readonly-settle-method-replay.v1\"\n             and settle[\"source_sha256\"]==CONFIG[\"session_original\"][\"sha256\"]\n             and type(settle[\"exact_production_blocks\"]) is int and settle[\"exact_production_blocks\"]==7\n             and type(settle[\"case_count\"]) is int and settle[\"case_count\"]==10\n             and type(settle[\"assertion_count\"]) is int and settle[\"assertion_count\"]==60\n             and settle[\"original_scope_bundle_sha256\"]==\"842c36e422bf94e983017a12e05d97b0eb65a07d1f8ce4c0d3a6616eb00059e3\"\n             and settle[\"actual_retained_nodes\"]==59 and settle[\"actual_visited_nodes\"]==620\n             and settle[\"unretained_native_nodes_replayed\"] is False\n             and settle[\"android_service_resources_clock_capture_transport_and_record_writer\"]==\"explicit host doubles\"\n             and settle[\"actual_receipt_dom_geometry_domain_progress_and_completion_parsers\"] is True\n             and settle[\"native_proof_positive_stub\"] is False and settle[\"native_action_token_created\"] is False\n             and settle[\"phone_or_binder_executed\"] is False and settle[\"click_replayed\"] is False\n             and settle[\"business_verified\"] is False,\n             \"exact Session orchestration with explicit host seams, not archived full native traversal or action success\")\n        need(report[\"prior_case_count\"]==43",
+      "before_file": {
+        "bytes": 177318,
+        "sha256": "03f3dd5a87c1a8c42ca8d97acbf91245b11aef3fac33dc2c89db1baeca08b65e",
+        "git_blob_sha": "e90d56db7b20f30e11d31ec36607c1d74bc12466"
+      },
+      "after_file": {
+        "bytes": 178710,
+        "sha256": "ccaae68f5fd171e3a93c528129eddbd24b8c85524f18238b5f646841274765ed",
+        "git_blob_sha": "4cd64c5cf306977342ec31be7559718e47953258"
+      }
+    },
+    {
+      "label": "current case-order message",
+      "count": 1,
+      "before": "actual56 case order retained with only nine read-only observation cases appended",
+      "after": "actual57 case order retained with only ten read-only observation-settle cases appended",
+      "before_file": {
+        "bytes": 178710,
+        "sha256": "ccaae68f5fd171e3a93c528129eddbd24b8c85524f18238b5f646841274765ed",
+        "git_blob_sha": "4cd64c5cf306977342ec31be7559718e47953258"
+      },
+      "after_file": {
+        "bytes": 178716,
+        "sha256": "d12496995891e3b70e70729f8db97b1648f036b0216516cd12f492266a948a9c",
+        "git_blob_sha": "c3eb2daedd89f9c124de519613316625589ed245"
+      }
+    },
+    {
+      "label": "prior success comment",
+      "count": 1,
+      "before": "# Preserve the actual successful56 output, its reports and historical failure\n# copies; derive the new packet from that fixed original without overwriting it.",
+      "after": "# Preserve actual successful57 and historical56 outputs and reports.\n# Derive the new packet only from the successful57 original.",
+      "before_file": {
+        "bytes": 178716,
+        "sha256": "d12496995891e3b70e70729f8db97b1648f036b0216516cd12f492266a948a9c",
+        "git_blob_sha": "c3eb2daedd89f9c124de519613316625589ed245"
+      },
+      "after_file": {
+        "bytes": 178687,
+        "sha256": "a7298993d3bc5c2aa04e81d10ee00da8259cfece66bc1fbc0b4382e332c51e73",
+        "git_blob_sha": "99c658ccb209bbc65181143224eeb2c5b2af72d4"
+      }
+    },
+    {
+      "label": "prior actual schema",
+      "count": 1,
+      "before": "need(prior_result[\"schema\"]==\"hepta.main56-existing-web-regressions-host-stage.v1\"",
+      "after": "need(prior_result[\"schema\"]==\"hepta.main57-existing-web-regressions-host-stage.v1\"",
+      "before_file": {
+        "bytes": 178687,
+        "sha256": "a7298993d3bc5c2aa04e81d10ee00da8259cfece66bc1fbc0b4382e332c51e73",
+        "git_blob_sha": "99c658ccb209bbc65181143224eeb2c5b2af72d4"
+      },
+      "after_file": {
+        "bytes": 178687,
+        "sha256": "fcc0b4f88df42b1ac9b6e7d66fbdfbca0f0db941fc9d64a49c6b5781f2b91cc8",
+        "git_blob_sha": "7aa0852e3bc65aa0e945527b30d59da2fb52ab16"
+      }
+    },
+    {
+      "label": "prior actual source and all preservation flags",
+      "count": 1,
+      "before": "and all(prior_result[k] is True for k in (\"originals_unchanged\",\"written_files_unchanged\",\"source_unchanged\",\"prior_output_preserved\",\"prior_failed56_output_preserved\")),\n     \"complete actual56 Web and retained failure provenance\")",
+      "after": "and prior_result[\"source_candidate_git\"]==CONFIG[\"prior_web\"][\"aggregate\"][\"git\"]\n     and prior_result[\"source_inventory_sha256\"]==CONFIG[\"prior_web\"][\"inventory\"][\"sha256\"]\n     and all(prior_result[k] is True for k in (\"originals_unchanged\",\"written_files_unchanged\",\"source_unchanged\",\n         \"prior_output_preserved\",\"prior_failed56_output_preserved\",\"prior_failed57_output_preserved\")),\n     \"complete actual57 Web and retained failures provenance\")",
+      "before_file": {
+        "bytes": 178687,
+        "sha256": "fcc0b4f88df42b1ac9b6e7d66fbdfbca0f0db941fc9d64a49c6b5781f2b91cc8",
+        "git_blob_sha": "7aa0852e3bc65aa0e945527b30d59da2fb52ab16"
+      },
+      "after_file": {
+        "bytes": 178912,
+        "sha256": "d5f1674b13484af340ab5cecef0fe4b3f9b6bbe044fce7f6f8f5c90142a221c0",
+        "git_blob_sha": "9e2998cbe8b971d9a9d1bf0b57b6e48e38e2fbe6"
+      }
+    },
+    {
+      "label": "historical56 full output preserved before new claim",
+      "count": 1,
+      "before": "# Preserve the actual56 first run without treating its completed evidence80",
+      "after": "HISTORICAL56=Path(CONFIG[\"historical_successful56\"][\"root\"])\nneed(HISTORICAL56.is_absolute() and HISTORICAL56 not in (ROOT,PRIOR,MATERIALIZED)\n     and ROOT not in HISTORICAL56.parents and HISTORICAL56 not in ROOT.parents,\n     \"separate original successful56 output\")\nhistorical56_output,historical56_facts=snapshot(HISTORICAL56)\noriginals.extend(historical56_facts.values())\nhistorical56_raw=checked(historical56_output[\"RESULT.json\"],CONFIG[\"historical_successful56\"][\"result\"],\"actual56 original success\")\nhistorical56=strict(historical56_raw)\nchecked(historical56_output[\"stage.py\"],CONFIG[\"historical_successful56\"][\"stage\"],\"actual56 original stage\")\nchecked(historical56_output[\"FIXTURE-PACKET.json\"],CONFIG[\"historical_successful56\"][\"packet\"],\"actual56 original packet\")\nneed(historical56[\"schema\"]==\"hepta.main56-existing-web-regressions-host-stage.v1\"\n     and historical56[\"all_pass\"] is True and type(historical56[\"exit_code\"]) is int and historical56[\"exit_code\"]==0\n     and historical56[\"root\"]==str(HISTORICAL56)\n     and historical56[\"stage_sha256\"]==CONFIG[\"historical_successful56\"][\"stage\"][\"sha256\"],\n     \"historical successful56 remains its actual original\")\n# Preserve the actual56 first run without treating its completed evidence80",
+      "before_file": {
+        "bytes": 178912,
+        "sha256": "d5f1674b13484af340ab5cecef0fe4b3f9b6bbe044fce7f6f8f5c90142a221c0",
+        "git_blob_sha": "9e2998cbe8b971d9a9d1bf0b57b6e48e38e2fbe6"
+      },
+      "after_file": {
+        "bytes": 180096,
+        "sha256": "ee6c0f47016edb148407c7f93894f1b374937f5aebb6f22e976f281fe5bc541f",
+        "git_blob_sha": "09c464fd59a28216776fb253ac115762edcfdef7"
+      }
+    },
+    {
+      "label": "failed57 stays bound to its own595",
+      "count": 1,
+      "before": "and failed57[\"source_candidate_git\"]==CONFIG[\"aggregate\"][\"git\"]\n     and failed57[\"source_inventory_sha256\"]==CONFIG[\"inventory\"][\"sha256\"]",
+      "after": "and failed57[\"source_candidate_git\"]==CONFIG[\"prior_web\"][\"aggregate\"][\"git\"]\n     and failed57[\"source_inventory_sha256\"]==CONFIG[\"prior_web\"][\"inventory\"][\"sha256\"]",
+      "before_file": {
+        "bytes": 180096,
+        "sha256": "ee6c0f47016edb148407c7f93894f1b374937f5aebb6f22e976f281fe5bc541f",
+        "git_blob_sha": "09c464fd59a28216776fb253ac115762edcfdef7"
+      },
+      "after_file": {
+        "bytes": 180122,
+        "sha256": "1b05d12ec7d39a1fc1d37f5032480ba65a1876e48b9b7950436e30e6196e25c1",
+        "git_blob_sha": "f60992c81aed6f664b363f663ffa07e2af5624bd"
+      }
+    },
+    {
+      "label": "success-derived packet input",
+      "count": 1,
+      "before": "packet_raw,packet=derive_packet(failed57_packet)\nchecked(packet_raw,CONFIG[\"decoded_input\"],\"explicit57 complete fixture packet\")\nneed(packet[\"schema\"]==\"hepta.main57-web-regression-fixture-successor.v1\"",
+      "after": "packet_raw,packet=derive_packet(prior_packet_raw)\nchecked(packet_raw,CONFIG[\"decoded_input\"],\"explicit58 complete fixture packet\")\nneed(packet[\"schema\"]==\"hepta.main58-web-regression-fixture-successor.v1\"",
+      "before_file": {
+        "bytes": 180122,
+        "sha256": "1b05d12ec7d39a1fc1d37f5032480ba65a1876e48b9b7950436e30e6196e25c1",
+        "git_blob_sha": "f60992c81aed6f664b363f663ffa07e2af5624bd"
+      },
+      "after_file": {
+        "bytes": 180123,
+        "sha256": "de006a7152bc2257771c4cc9e0f939535ef98bb8f0883cfd63881c837f361194",
+        "git_blob_sha": "f2f85ca27275de653066b617721089abb9612392"
+      }
+    },
+    {
+      "label": "new seventh external helper",
+      "count": 1,
+      "before": "\"tests/web-flight/WebFlightNativeStabilityHostCases.java\"]\nneed([item[\"path\"] for item in packet[\"files\"]]==expected_fixture_names,\"fixed exact six fixture members\")",
+      "after": "\"tests/web-flight/WebFlightNativeStabilityHostCases.java\",\n    \"tests/web-flight/WebFlightObservationSettleHostCases.java\"]\nneed([item[\"path\"] for item in packet[\"files\"]]==expected_fixture_names,\"fixed exact seven fixture members\")",
+      "before_file": {
+        "bytes": 180123,
+        "sha256": "de006a7152bc2257771c4cc9e0f939535ef98bb8f0883cfd63881c837f361194",
+        "git_blob_sha": "f2f85ca27275de653066b617721089abb9612392"
+      },
+      "after_file": {
+        "bytes": 180190,
+        "sha256": "5402b094b181b5607d275282cf63f21744cd1873dbf0488edcd90b651cd0f727",
+        "git_blob_sha": "a530a65956fa4f3a77b95e3fb72ef3ce6f66748c"
+      }
+    },
+    {
+      "label": "composition two additional hooks",
+      "count": 1,
+      "before": "==[3,28,3]",
+      "after": "==[3,30,3]",
+      "before_file": {
+        "bytes": 180190,
+        "sha256": "5402b094b181b5607d275282cf63f21744cd1873dbf0488edcd90b651cd0f727",
+        "git_blob_sha": "a530a65956fa4f3a77b95e3fb72ef3ce6f66748c"
+      },
+      "after_file": {
+        "bytes": 180190,
+        "sha256": "3ae63419dd3ffa621ae48332fec64ed957b1550e0c7603bb0e2ef7e3e5e15834",
+        "git_blob_sha": "eaee1790b0447a8f3dbd26e93aafe35d4387c2b8"
+      }
+    },
+    {
+      "label": "new complete compilation closure",
+      "count": 1,
+      "before": "need(len(java_names)==52 and len(set(java_names))==52,\"complete unique52 Java closure\")",
+      "after": "need(len(java_names)==53 and len(set(java_names))==53,\"complete unique53 Java closure\")\nsession_name=relative(CONFIG[\"session_original\"][\"path\"])\nneed(session_name in before,\"actual Session original exists\")\nsession_raw=checked(before[session_name],CONFIG[\"session_original\"],\"actual complete current Session\")\nneed(blob(session_raw)==CONFIG[\"session_original\"][\"git_blob_sha\"],\"actual Session Git\")\nsession_text=session_raw.decode(\"utf-8\",\"strict\")\nhelper_text=fixture_bytes[expected_fixture_names[-1]].decode(\"utf-8\",\"strict\")\nneed(len(PACKET_DELTA[\"exact_session_blocks\"])==7,\"seven reviewed exact production blocks\")\nfor block in PACKET_DELTA[\"exact_session_blocks\"]:\n    raw=block[\"raw_utf8\"].encode(\"utf-8\",\"strict\")\n    checked(raw,block,\"exact production method block\")\n    need(blob(raw)==block[\"git_blob_sha\"] and session_text.count(block[\"raw_utf8\"])==1\n         and helper_text.count(block[\"raw_utf8\"])==1,\"complete actual production block occurs exactly once in source and fixture\")",
+      "before_file": {
+        "bytes": 180190,
+        "sha256": "3ae63419dd3ffa621ae48332fec64ed957b1550e0c7603bb0e2ef7e3e5e15834",
+        "git_blob_sha": "eaee1790b0447a8f3dbd26e93aafe35d4387c2b8"
+      },
+      "after_file": {
+        "bytes": 181098,
+        "sha256": "45c73c155158c6465c5ed660cdc2ef241de374a8435220fb6dc35c9637790f90",
+        "git_blob_sha": "61cc131bd23d640bed205178a66da47b176c9210"
+      }
+    },
+    {
+      "label": "ten appended cases",
+      "count": 1,
+      "before": "need(len(CONFIG[\"added_case_names\"])==9 and len(set(CONFIG[\"added_case_names\"]))==9",
+      "after": "need(len(CONFIG[\"added_case_names\"])==10 and len(set(CONFIG[\"added_case_names\"]))==10",
+      "before_file": {
+        "bytes": 181098,
+        "sha256": "45c73c155158c6465c5ed660cdc2ef241de374a8435220fb6dc35c9637790f90",
+        "git_blob_sha": "61cc131bd23d640bed205178a66da47b176c9210"
+      },
+      "after_file": {
+        "bytes": 181100,
+        "sha256": "154506cff7cb4038924dca8157cca48539ab09c67c2f0749754f8e59876582b5",
+        "git_blob_sha": "f0171858dc1d27082e483daf4fe9a51778d83c88"
+      }
+    },
+    {
+      "label": "current name baseline message",
+      "count": 1,
+      "before": "only nine unique appended cases, actual56 seventy cases retained",
+      "after": "only ten unique appended cases, actual57 seventy-nine cases retained",
+      "before_file": {
+        "bytes": 181100,
+        "sha256": "154506cff7cb4038924dca8157cca48539ab09c67c2f0749754f8e59876582b5",
+        "git_blob_sha": "f0171858dc1d27082e483daf4fe9a51778d83c88"
+      },
+      "after_file": {
+        "bytes": 181104,
+        "sha256": "aaef90fd1cd56facbf377cecba752310098791d31ae9a2b3a3a2e63f0bc6d83d",
+        "git_blob_sha": "191168d3d005e12b1787a6e4efa37f96318b7acf"
+      }
+    },
+    {
+      "label": "current result schema",
+      "count": 1,
+      "before": "result={\"schema\":\"hepta.main57-existing-web-regressions-host-stage.v1\"",
+      "after": "result={\"schema\":\"hepta.main58-existing-web-regressions-host-stage.v1\"",
+      "before_file": {
+        "bytes": 181104,
+        "sha256": "aaef90fd1cd56facbf377cecba752310098791d31ae9a2b3a3a2e63f0bc6d83d",
+        "git_blob_sha": "191168d3d005e12b1787a6e4efa37f96318b7acf"
+      },
+      "after_file": {
+        "bytes": 181104,
+        "sha256": "e9778e261aab426acbfa79d4a4901f093b90db85af801f52e426262f9b371267",
+        "git_blob_sha": "74119f52f8fd9d12abfca751d0d540979ebcfb09"
+      }
+    },
+    {
+      "label": "actual closure counts",
+      "count": 1,
+      "before": "\"fixture_packet\":CONFIG[\"decoded_input\"],\"fixture_count\":6,\n        \"production_java_count\":44,\"compilation_unit_count\":52",
+      "after": "\"fixture_packet\":CONFIG[\"decoded_input\"],\"fixture_count\":7,\n        \"production_java_count\":44,\"compilation_unit_count\":53",
+      "before_file": {
+        "bytes": 181104,
+        "sha256": "e9778e261aab426acbfa79d4a4901f093b90db85af801f52e426262f9b371267",
+        "git_blob_sha": "74119f52f8fd9d12abfca751d0d540979ebcfb09"
+      },
+      "after_file": {
+        "bytes": 181104,
+        "sha256": "383c316296473088f8be499c33c0454067b6046de9b7ddc4af30adc2df45e47b",
+        "git_blob_sha": "d83bc704835db330d0a4d27837c868dcb0712230"
+      }
+    },
+    {
+      "label": "current derivation history",
+      "count": 1,
+      "before": "\"fixture_packet_derived_from_actual57_failed_run\":True,\n        \"old_fixture_packet\":CONFIG[\"prior_failed57\"][\"packet\"],",
+      "after": "\"fixture_packet_derived_from_actual57_failed_run\":False,\n        \"fixture_packet_derived_from_actual57_successful_run\":True,\n        \"old_fixture_packet\":CONFIG[\"prior_web\"][\"packet\"],",
+      "before_file": {
+        "bytes": 181104,
+        "sha256": "383c316296473088f8be499c33c0454067b6046de9b7ddc4af30adc2df45e47b",
+        "git_blob_sha": "d83bc704835db330d0a4d27837c868dcb0712230"
+      },
+      "after_file": {
+        "bytes": 181168,
+        "sha256": "817070e5129710e33f40e7fe03773a4c4b18ffb256044d3275ea87f482e31f31",
+        "git_blob_sha": "e0748c8169f52525c9f0d7c19e998ad1e26ef8be"
+      }
+    },
+    {
+      "label": "current test scope report",
+      "count": 1,
+      "before": "\"additional_host_json_compatibility_assertions\":4,\n        \"existing_actual56_assertions_changed_here\":False,",
+      "after": "\"additional_host_json_compatibility_assertions\":0,\"retained_host_json_compatibility_assertions\":4,\n        \"existing_actual56_assertions_changed_here\":False,\"existing_actual57_assertions_changed_here\":False,",
+      "before_file": {
+        "bytes": 181168,
+        "sha256": "817070e5129710e33f40e7fe03773a4c4b18ffb256044d3275ea87f482e31f31",
+        "git_blob_sha": "e0748c8169f52525c9f0d7c19e998ad1e26ef8be"
+      },
+      "after_file": {
+        "bytes": 181266,
+        "sha256": "db1c0e1e7083d4289d78b72f1378183071615e1e3ab97493fc6c51c608ab4dd0",
+        "git_blob_sha": "fc3617465498220f769474f5cc0dcfd38692cf1b"
+      }
+    },
+    {
+      "label": "retained observation and added settle scope",
+      "count": 1,
+      "before": "\"added_readonly_observation_cases\":9,",
+      "after": "\"added_readonly_observation_cases\":0,\"retained_readonly_observation_cases\":9,\n        \"added_readonly_settle_cases\":10,\"added_readonly_settle_assertions\":60,\n        \"readonly_settle_exact_production_blocks\":7,\n        \"readonly_settle_session_original\":CONFIG[\"session_original\"],\n        \"readonly_settle_scope\":packet[\"main58_successor\"],\n        \"historical_successful56_web_result\":dict(CONFIG[\"historical_successful56\"][\"result\"],path=str(HISTORICAL56/\"RESULT.json\")),\n        \"historical_successful56_output_count\":len(historical56_output),\n        \"historical_successful56_output_inventory_sha256\":sha(encoded(source_rows(historical56_output))),\n        \"historical_successful56_output_preserved\":False,",
+      "before_file": {
+        "bytes": 181266,
+        "sha256": "db1c0e1e7083d4289d78b72f1378183071615e1e3ab97493fc6c51c608ab4dd0",
+        "git_blob_sha": "fc3617465498220f769474f5cc0dcfd38692cf1b"
+      },
+      "after_file": {
+        "bytes": 181940,
+        "sha256": "ee487dcb65c719ba305c53bd9a22130fe326f0c20637ddbc63d9c59a8c588b83",
+        "git_blob_sha": "0e99eb2a6ae8ad1bb8117f2f0d6b6365a9425b29"
+      }
+    },
+    {
+      "label": "write exact session blocks and historical original",
+      "count": 1,
+      "before": "    written.append(write_new(ROOT/\"FIXTURE-DELTA.json\",encoded(PACKET_DELTA)))",
+      "after": "    written.append(write_new(ROOT/\"FIXTURE-DELTA.json\",encoded(PACKET_DELTA)))\n    written.append(write_new(ROOT/\"SESSION-PROJECTION-ORIGINAL.java\",session_raw))\n    written.append(write_new(ROOT/\"historical-successful56/RESULT.json\",historical56_raw))\n    written.append(write_new(ROOT/\"HISTORICAL-SUCCESSFUL56-OUTPUT-INVENTORY.json\",encoded(source_rows(historical56_output))))",
+      "before_file": {
+        "bytes": 181940,
+        "sha256": "ee487dcb65c719ba305c53bd9a22130fe326f0c20637ddbc63d9c59a8c588b83",
+        "git_blob_sha": "0e99eb2a6ae8ad1bb8117f2f0d6b6365a9425b29"
+      },
+      "after_file": {
+        "bytes": 182240,
+        "sha256": "003c1a28b681196dcf1e6584936d69beabd9e06e8e7fc67abb2470f4ec61acc2",
+        "git_blob_sha": "beb9200ce956f45a89d75222edebf0d3a001364c"
+      }
+    },
+    {
+      "label": "historical56 final full tree guard",
+      "count": 1,
+      "before": "        result[\"prior_failed57_output_preserved\"]=True",
+      "after": "        result[\"prior_failed57_output_preserved\"]=True\n        need(snapshot(HISTORICAL56)==(historical56_output,historical56_facts),\n             \"all actual successful56 output bytes and identities unchanged\")\n        result[\"historical_successful56_output_preserved\"]=True",
+      "before_file": {
+        "bytes": 182240,
+        "sha256": "003c1a28b681196dcf1e6584936d69beabd9e06e8e7fc67abb2470f4ec61acc2",
+        "git_blob_sha": "beb9200ce956f45a89d75222edebf0d3a001364c"
+      },
+      "after_file": {
+        "bytes": 182461,
+        "sha256": "d1781d6e4f085b21e9a5f58fa81a6f569008713227d75f8b963524a177e2495c",
+        "git_blob_sha": "fa205baccd12ce47ae9b9b7e868a9cbb9ebc5b7b"
+      }
+    },
+    {
+      "label": "current summary schema",
+      "count": 1,
+      "before": "\"schema\":\"hepta.main57-existing-web-regressions-host-summary.v1\"",
+      "after": "\"schema\":\"hepta.main58-existing-web-regressions-host-summary.v1\"",
+      "before_file": {
+        "bytes": 182461,
+        "sha256": "d1781d6e4f085b21e9a5f58fa81a6f569008713227d75f8b963524a177e2495c",
+        "git_blob_sha": "fa205baccd12ce47ae9b9b7e868a9cbb9ebc5b7b"
+      },
+      "after_file": {
+        "bytes": 182461,
+        "sha256": "ba2e07ff86dc2288b16293d0570d3cee15ddee290aad3959951a11aa9c2e92bc",
+        "git_blob_sha": "11931c2a49fb0dbc5160920afa7ca050c376c59e"
+      }
+    },
+    {
+      "label": "immediate predecessor label \"actual56 Web result\"",
+      "count": 1,
+      "before": "\"actual56 Web result\"",
+      "after": "\"actual57 Web result\"",
+      "before_file": {
+        "bytes": 182461,
+        "sha256": "ba2e07ff86dc2288b16293d0570d3cee15ddee290aad3959951a11aa9c2e92bc",
+        "git_blob_sha": "11931c2a49fb0dbc5160920afa7ca050c376c59e"
+      },
+      "after_file": {
+        "bytes": 182461,
+        "sha256": "d0842604d4d900b54439bcbdd4508d6013d1edf8cf1fe8006a8ffdf3ca912784",
+        "git_blob_sha": "9010914352e6734b63392baff70ecb9a8c26b2ed"
+      }
+    },
+    {
+      "label": "immediate predecessor label \"actual56 coordinator\"",
+      "count": 1,
+      "before": "\"actual56 coordinator\"",
+      "after": "\"actual57 coordinator\"",
+      "before_file": {
+        "bytes": 182461,
+        "sha256": "d0842604d4d900b54439bcbdd4508d6013d1edf8cf1fe8006a8ffdf3ca912784",
+        "git_blob_sha": "9010914352e6734b63392baff70ecb9a8c26b2ed"
+      },
+      "after_file": {
+        "bytes": 182461,
+        "sha256": "dd4e7873df633c6205278c4af620d6604ed1c2bb78dfabf0726f1db5fe1d0501",
+        "git_blob_sha": "2c10dfffda90d7bd4909a136c5740edd8f48a937"
+      }
+    },
+    {
+      "label": "immediate predecessor label \"actual56 packet\"",
+      "count": 1,
+      "before": "\"actual56 packet\"",
+      "after": "\"actual57 packet\"",
+      "before_file": {
+        "bytes": 182461,
+        "sha256": "dd4e7873df633c6205278c4af620d6604ed1c2bb78dfabf0726f1db5fe1d0501",
+        "git_blob_sha": "2c10dfffda90d7bd4909a136c5740edd8f48a937"
+      },
+      "after_file": {
+        "bytes": 182461,
+        "sha256": "8339a097427e61c1abee80d226d6ca8a3a9495c8b433361a6a929b11c59bf221",
+        "git_blob_sha": "4eca92e1acb66cf223a9704855aa028f571a9cc1"
+      }
+    },
+    {
+      "label": "immediate predecessor label \"actual56 report path\"",
+      "count": 1,
+      "before": "\"actual56 report path\"",
+      "after": "\"actual57 report path\"",
+      "before_file": {
+        "bytes": 182461,
+        "sha256": "8339a097427e61c1abee80d226d6ca8a3a9495c8b433361a6a929b11c59bf221",
+        "git_blob_sha": "4eca92e1acb66cf223a9704855aa028f571a9cc1"
+      },
+      "after_file": {
+        "bytes": 182461,
+        "sha256": "c4683067fc8224171ebce3e3ae3c746ff0ac43153ce175e74bb08439c467e05b",
+        "git_blob_sha": "03d8830bb7ae35d254d176c0bcb87788d109a105"
+      }
+    },
+    {
+      "label": "immediate predecessor label \"actual56 original report\"",
+      "count": 1,
+      "before": "\"actual56 original report\"",
+      "after": "\"actual57 original report\"",
+      "before_file": {
+        "bytes": 182461,
+        "sha256": "c4683067fc8224171ebce3e3ae3c746ff0ac43153ce175e74bb08439c467e05b",
+        "git_blob_sha": "03d8830bb7ae35d254d176c0bcb87788d109a105"
+      },
+      "after_file": {
+        "bytes": 182461,
+        "sha256": "39b98fc80ff0cc037a95f6754afa5087a87a58ccb7b03d922cf81d777e97d273",
+        "git_blob_sha": "b9433a5bc84f4d63183816ebcc6daafcb8b2ecc7"
+      }
+    },
+    {
+      "label": "immediate predecessor label \"actual56 baseline names and counts\"",
+      "count": 1,
+      "before": "\"actual56 baseline names and counts\"",
+      "after": "\"actual57 baseline names and counts\"",
+      "before_file": {
+        "bytes": 182461,
+        "sha256": "39b98fc80ff0cc037a95f6754afa5087a87a58ccb7b03d922cf81d777e97d273",
+        "git_blob_sha": "b9433a5bc84f4d63183816ebcc6daafcb8b2ecc7"
+      },
+      "after_file": {
+        "bytes": 182461,
+        "sha256": "c4e64f533be6c48654bd7449ade390682bca5bc35bbf541c6e6f5596444074f9",
+        "git_blob_sha": "8ce7979d4ad9a21d51baa77331e8f417081324c7"
+      }
+    }
+  ],
+  "unchanged_IO_owned_runner_block": {
+    "bytes": 9962,
+    "sha256": "e338a66c9785064cc6a039666b01e365ac757e6dfedbe83b215559e72b55caf0",
+    "git_blob_sha": "c7144f1bde677ee3d74eb9d90de52c8e87224389",
+    "entire_block_byte_identical": true
+  },
+  "source_forward_reverse_exact": true,
+  "whole_packet_independently_reconstructed": true,
+  "production44_and_two_auxiliary_inputs_match_current_aggregate": true,
+  "old_five_other_fixtures_byte_identical": true,
+  "expected_counts_only": {
+    "evidence": {
+      "cases": 80,
+      "assertions": 92
+    },
+    "composition": {
+      "prior_cases": 79,
+      "prior_assertions": 215,
+      "added_cases": 10,
+      "added_assertions": 60,
+      "cases": 89,
+      "assertions": 275,
+      "added_case_names": [
+        {
+          "name": "readonly_settle_actual_retained_transition_then_fresh_stable",
+          "assertions": 6
+        },
+        {
+          "name": "readonly_settle_permanent_change_exhausts_two_reobservations",
+          "assertions": 5
+        },
+        {
+          "name": "readonly_settle_snapshot_returned_before_wait_and_capture_exception",
+          "assertions": 4
+        },
+        {
+          "name": "readonly_settle_cancellation_during_wait_stops_after_release",
+          "assertions": 4
+        },
+        {
+          "name": "readonly_settle_deadline_six_seconds_and_reused_budget_fail_closed",
+          "assertions": 9
+        },
+        {
+          "name": "readonly_settle_cross_epoch_window_or_instance_never_retries",
+          "assertions": 9
+        },
+        {
+          "name": "readonly_settle_fresh_retry_cannot_switch_original_epoch",
+          "assertions": 4
+        },
+        {
+          "name": "readonly_settle_capture_and_background_guard_exceptions_are_not_retried",
+          "assertions": 9
+        },
+        {
+          "name": "readonly_settle_record_failure_propagates_after_capability_retirement",
+          "assertions": 4
+        },
+        {
+          "name": "readonly_settle_stable_read_and_original_geometry_check_remain_exact",
+          "assertions": 6
+        }
+      ]
+    },
+    "calendar": {
+      "cases": 13,
+      "assertions": 1001
+    }
+  },
+  "source_before_claim": {
+    "line": 623,
+    "handler_line": 680,
+    "all_originals_readonly_before_claim": true
+  },
+  "transport": {
+    "base_request": {
+      "bytes": 59079,
+      "sha256": "27850a11ccc059475810fbf0254a2c308d3f342db743d6320c9d2e10400ac3e3",
+      "git_blob_sha": "baac2cd917c679c1f00b41ba0fd10c36cb192449"
+    },
+    "request": {
+      "bytes": 128456,
+      "sha256": "6220edf12aec52a935d50c3243320c5e3fdb59383382489c953a69eb7045a3cf",
+      "git_blob_sha": "a983113e8ed328eeff3d13e1ee55cfa586f56086"
+    },
+    "publisher": {
+      "bytes": 10555,
+      "sha256": "9caacfb10177dc6aeeb4bb1de3f93842673f5bfa52864c40ccf0fa30bbb86551",
+      "git_blob_sha": "81014b059a9fe9fc9456992fb78afe2e7321fe98"
+    },
+    "loader": {
+      "bytes": 875,
+      "sha256": "46060761ec75098b563f28fe29e299b818ed2a32210f8dcc84b68e8bbc9656ff",
+      "git_blob_sha": "d5d6b8a591f4d8d46960749c6a73fb7f5c5a828a"
+    },
+    "supervisor": {
+      "bytes": 1800,
+      "sha256": "0a5908b5830a2a5329ec643706098f460f1fd6b79a7900064c269556853f5831",
+      "git_blob_sha": "70da05febf31c32e7531aa879d1d256a20ee383b"
+    },
+    "compressed": {
+      "bytes": 87741,
+      "sha256": "16c5f61a58125619a28110fbe65f285f7f54691130abff39749b3ef221ac5373",
+      "argument_bytes": 116988,
+      "argument_sha256": "fca1577858f6640378a767bdebc84d0a7683c3195d53d505126fc6ae05294b7f",
+      "fragments": [
+        {
+          "bytes": 48000,
+          "sha256": "522232be4a6b84fefa8faa21ae6dec3f60dc730c70d1bb3f203c2a57c2dcc7af"
+        },
+        {
+          "bytes": 48000,
+          "sha256": "bbf15f953893392d56b0f17d922d50a39331ba7e1b66808775b394ac2a48ed19"
+        },
+        {
+          "bytes": 20988,
+          "sha256": "9bc80509f09670ca8bfc70f4acfc36d5092e1054f8eecf6f0285c76300aaf632"
+        }
+      ]
+    },
+    "exact_publisher_patches": [
+      {
+        "label": "single fixed source destination",
+        "count": 1,
+        "before": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/v57-main-p4-android-r1.py\",\"bytes\":113856,\"sha256\":\"ac4b54eb0815bce791a99ae3e01de8077808fe55b5eabc58488fd1eba8126331\"}]",
+        "after": "PINS=[{\"path\":\"/home/alex/hepta-local-007f-20261111/v58-main-web-regression-host-r1.py\",\"bytes\":182461,\"sha256\":\"c4e64f533be6c48654bd7449ade390682bca5bc35bbf541c6e6f5596444074f9\"}]",
+        "before_file": {
+          "bytes": 10441,
+          "sha256": "ff75e82b4d84a84136c98583b07934217a62f4ffed3e3255f6cf4f50e09d94d1",
+          "git_blob_sha": "36cc4f5ea72149b83816490f6026c0975b409f90"
+        },
+        "after_file": {
+          "bytes": 10450,
+          "sha256": "5a1222dc8c143b5b4e9a0d268e664c90c8256c61c4fb5121a294915b59be21ed",
+          "git_blob_sha": "7e7306587547fca5b2447679ae228112a0ce58f1"
+        }
+      },
+      {
+        "label": "complete canonical argument byte count",
+        "count": 1,
+        "before": "ARGV_BYTES=47780",
+        "after": "ARGV_BYTES=116988",
+        "before_file": {
+          "bytes": 10450,
+          "sha256": "5a1222dc8c143b5b4e9a0d268e664c90c8256c61c4fb5121a294915b59be21ed",
+          "git_blob_sha": "7e7306587547fca5b2447679ae228112a0ce58f1"
+        },
+        "after_file": {
+          "bytes": 10451,
+          "sha256": "07e582e0cc057b9a5e01367f574d64ca38afc37531dd86cf5124de59de9c2bb9",
+          "git_blob_sha": "6b77693ee6439730c539f1de52824d515925d3aa"
+        }
+      },
+      {
+        "label": "complete canonical argument SHA",
+        "count": 1,
+        "before": "ARGV_SHA=\"76c79051b0be09ddde95625ab8884bf786ad07c813fa7b35494c141427e8eb7a\"",
+        "after": "ARGV_SHA=\"fca1577858f6640378a767bdebc84d0a7683c3195d53d505126fc6ae05294b7f\"",
+        "before_file": {
+          "bytes": 10451,
+          "sha256": "07e582e0cc057b9a5e01367f574d64ca38afc37531dd86cf5124de59de9c2bb9",
+          "git_blob_sha": "6b77693ee6439730c539f1de52824d515925d3aa"
+        },
+        "after_file": {
+          "bytes": 10451,
+          "sha256": "5ae343262ba48b82473f01fced43a694542900822f609486bdf8a8b5628fbcb8",
+          "git_blob_sha": "3bf343533b5a69bbb8c37bf088371ae17bf0b9aa"
+        }
+      },
+      {
+        "label": "whole gzip byte count",
+        "count": 1,
+        "before": "GZIP_BYTES=35833",
+        "after": "GZIP_BYTES=87741",
+        "before_file": {
+          "bytes": 10451,
+          "sha256": "5ae343262ba48b82473f01fced43a694542900822f609486bdf8a8b5628fbcb8",
+          "git_blob_sha": "3bf343533b5a69bbb8c37bf088371ae17bf0b9aa"
+        },
+        "after_file": {
+          "bytes": 10451,
+          "sha256": "b6ff7ce1badc768cd08518c3979fbd832bc6287aad2bc081550fe479725dc26d",
+          "git_blob_sha": "cedc72b875341875a83962e4afa5961e4822143f"
+        }
+      },
+      {
+        "label": "whole gzip SHA",
+        "count": 1,
+        "before": "GZIP_SHA=\"1dfb7d215bcf64a5d5c1575ffa94e8d8361c3292a57b52f58d0186de529fae84\"",
+        "after": "GZIP_SHA=\"16c5f61a58125619a28110fbe65f285f7f54691130abff39749b3ef221ac5373\"",
+        "before_file": {
+          "bytes": 10451,
+          "sha256": "b6ff7ce1badc768cd08518c3979fbd832bc6287aad2bc081550fe479725dc26d",
+          "git_blob_sha": "cedc72b875341875a83962e4afa5961e4822143f"
+        },
+        "after_file": {
+          "bytes": 10451,
+          "sha256": "3719b88b27fe13fa67872f5925f4a7b5e29ff92026acebe9bd74da981d628c20",
+          "git_blob_sha": "211f72ee09b43ec25700c982146de6555544ff33"
+        }
+      },
+      {
+        "label": "stable loader literal",
+        "count": 1,
+        "before": "LOADER=\"import hashlib,os,pathlib,stat,sys\\np=pathlib.Path(\\\"/home/alex/hepta-local-007f-20261111/v57-main-p4-android-r1.py\\\")\\nassert all(not q.is_symlink() for q in (p,*p.parents))\\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\ntry:\\n a=os.fstat(fd)\\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==113856\\n with os.fdopen(os.dup(fd),\\\"rb\\\") as f:raw=f.read(113856+1)\\n assert len(raw)==113856 and hashlib.sha256(raw).hexdigest()==\\\"ac4b54eb0815bce791a99ae3e01de8077808fe55b5eabc58488fd1eba8126331\\\"\\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\\nfinally:os.close(fd)\\nsys.argv=[str(p)]\\nexec(compile(raw,str(p),\\\"exec\\\",dont_inherit=True),{\\\"__name__\\\":\\\"__main__\\\",\\\"__file__\\\":str(p),\\\"__stage_source__\\\":raw})\\n\"",
+        "after": "LOADER=\"import hashlib,os,pathlib,stat,sys\\np=pathlib.Path(\\\"/home/alex/hepta-local-007f-20261111/v58-main-web-regression-host-r1.py\\\")\\nassert all(not q.is_symlink() for q in (p,*p.parents))\\nfd=os.open(str(p),os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW|os.O_NONBLOCK)\\ndef identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\\ntry:\\n a=os.fstat(fd)\\n assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==182461\\n with os.fdopen(os.dup(fd),\\\"rb\\\") as f:raw=f.read(182461+1)\\n assert len(raw)==182461 and hashlib.sha256(raw).hexdigest()==\\\"c4e64f533be6c48654bd7449ade390682bca5bc35bbf541c6e6f5596444074f9\\\"\\n assert identity(a)==identity(os.fstat(fd))==identity(os.lstat(p))\\nfinally:os.close(fd)\\nsys.argv=[str(p)]\\nexec(compile(raw,str(p),\\\"exec\\\",dont_inherit=True),{\\\"__name__\\\":\\\"__main__\\\",\\\"__file__\\\":str(p),\\\"__stage_source__\\\":raw})\\n\"",
+        "before_file": {
+          "bytes": 10451,
+          "sha256": "3719b88b27fe13fa67872f5925f4a7b5e29ff92026acebe9bd74da981d628c20",
+          "git_blob_sha": "211f72ee09b43ec25700c982146de6555544ff33"
+        },
+        "after_file": {
+          "bytes": 10460,
+          "sha256": "bf739b9bcac348fab92eac770c95c653272d42cc35f5e853cf72472900b30417",
+          "git_blob_sha": "3c4ecb61a3e83248a747bb0b54a636a0246c5fdf"
+        }
+      },
+      {
+        "label": "stable loader SHA",
+        "count": 1,
+        "before": "LOADER_SHA=\"75ce3c43ccb9cd9a6611b12d94d0dddefa5714e4f49c35102bf1a571ba32c723\"",
+        "after": "LOADER_SHA=\"46060761ec75098b563f28fe29e299b818ed2a32210f8dcc84b68e8bbc9656ff\"",
+        "before_file": {
+          "bytes": 10460,
+          "sha256": "bf739b9bcac348fab92eac770c95c653272d42cc35f5e853cf72472900b30417",
+          "git_blob_sha": "3c4ecb61a3e83248a747bb0b54a636a0246c5fdf"
+        },
+        "after_file": {
+          "bytes": 10460,
+          "sha256": "04364e30b68eac2aa485b26eed0443029cf8a5c0fe69c1dfd351e67111abb7f0",
+          "git_blob_sha": "18a6176ff79589fae0785970f7589339e5b2e491"
+        }
+      },
+      {
+        "label": "bounded supervisor literal",
+        "count": 1,
+        "before": "SUPERVISOR=\"import hashlib,json,os,signal,subprocess,sys,time\\nloader=sys.argv[1]\\nassert len(loader.encode(\\\"utf-8\\\"))==866 and hashlib.sha256(loader.encode(\\\"utf-8\\\")).hexdigest()==\\\"75ce3c43ccb9cd9a6611b12d94d0dddefa5714e4f49c35102bf1a571ba32c723\\\"\\nassert os.getcwd()==\\\"/home/alex/hepta-local-007f-20261111\\\"\\nstarted=time.monotonic()\\np=subprocess.Popen([\\\"/usr/bin/python3\\\",\\\"-I\\\",\\\"-B\\\",\\\"-c\\\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main57-pocket4-java-native-reuse-pty-launch.v1\\\",\\\"event\\\":\\\"started\\\",\\\"child_pid\\\":p.pid,\\\"timeout_seconds\\\":1200,\\\"loader_sha256\\\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\\ncode=None;timed_out=False;forced=False;error=None\\ntry:\\n    code=p.wait(timeout=1200)\\nexcept BaseException as failure:\\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\\n    error=type(failure).__name__+\\\": \\\"+str(failure)\\n    if p.poll() is None:\\n        try:os.killpg(p.pid,signal.SIGTERM)\\n        except ProcessLookupError:pass\\n        try:code=p.wait(timeout=10)\\n        except subprocess.TimeoutExpired:\\n            forced=True\\n            try:os.killpg(p.pid,signal.SIGKILL)\\n            except ProcessLookupError:pass\\n            try:code=p.wait(timeout=10)\\n            except subprocess.TimeoutExpired:error+=\\\"; owned child exit not observed\\\"\\nexit_observed=p.poll() is not None\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main57-pocket4-java-native-reuse-pty-launch.v1\\\",\\\"event\\\":\\\"finished\\\",\\\"child_pid\\\":p.pid,\\\"child_returncode\\\":code,\\\"exit_observed\\\":exit_observed,\\\"timed_out\\\":timed_out,\\\"forced_kill\\\":forced,\\\"error\\\":error,\\\"elapsed_seconds\\\":time.monotonic()-started}),flush=True)\\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\\nraise SystemExit(code if code>=0 else 128-code)\\n\"",
+        "after": "SUPERVISOR=\"import hashlib,json,os,signal,subprocess,sys,time\\nloader=sys.argv[1]\\nassert len(loader.encode(\\\"utf-8\\\"))==875 and hashlib.sha256(loader.encode(\\\"utf-8\\\")).hexdigest()==\\\"46060761ec75098b563f28fe29e299b818ed2a32210f8dcc84b68e8bbc9656ff\\\"\\nassert os.getcwd()==\\\"/home/alex/hepta-local-007f-20261111\\\"\\nstarted=time.monotonic()\\np=subprocess.Popen([\\\"/usr/bin/python3\\\",\\\"-I\\\",\\\"-B\\\",\\\"-c\\\",loader],stdin=subprocess.DEVNULL,start_new_session=True)\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main58-existing-web-regressions-pty-launch.v1\\\",\\\"event\\\":\\\"started\\\",\\\"child_pid\\\":p.pid,\\\"timeout_seconds\\\":1200,\\\"loader_sha256\\\":hashlib.sha256(loader.encode()).hexdigest()}),flush=True)\\ncode=None;timed_out=False;forced=False;error=None\\ntry:\\n    code=p.wait(timeout=1200)\\nexcept BaseException as failure:\\n    timed_out=isinstance(failure,subprocess.TimeoutExpired)\\n    error=type(failure).__name__+\\\": \\\"+str(failure)\\n    if p.poll() is None:\\n        try:os.killpg(p.pid,signal.SIGTERM)\\n        except ProcessLookupError:pass\\n        try:code=p.wait(timeout=10)\\n        except subprocess.TimeoutExpired:\\n            forced=True\\n            try:os.killpg(p.pid,signal.SIGKILL)\\n            except ProcessLookupError:pass\\n            try:code=p.wait(timeout=10)\\n            except subprocess.TimeoutExpired:error+=\\\"; owned child exit not observed\\\"\\nexit_observed=p.poll() is not None\\nprint(json.dumps({\\\"schema\\\":\\\"hepta.main58-existing-web-regressions-pty-launch.v1\\\",\\\"event\\\":\\\"finished\\\",\\\"child_pid\\\":p.pid,\\\"child_returncode\\\":code,\\\"exit_observed\\\":exit_observed,\\\"timed_out\\\":timed_out,\\\"forced_kill\\\":forced,\\\"error\\\":error,\\\"elapsed_seconds\\\":time.monotonic()-started}),flush=True)\\nif error is not None or timed_out or forced or not exit_observed or type(code) is not int:raise SystemExit(124 if timed_out else 125)\\nraise SystemExit(code if code>=0 else 128-code)\\n\"",
+        "before_file": {
+          "bytes": 10460,
+          "sha256": "04364e30b68eac2aa485b26eed0443029cf8a5c0fe69c1dfd351e67111abb7f0",
+          "git_blob_sha": "18a6176ff79589fae0785970f7589339e5b2e491"
+        },
+        "after_file": {
+          "bytes": 10458,
+          "sha256": "f905278cfd71b15a57d6d314454363350e831dcf34fa0e2d31a5827756b2226f",
+          "git_blob_sha": "8fdef2f825c15b4f47b9b6a29ef950f5ec9be15b"
+        }
+      },
+      {
+        "label": "bounded supervisor SHA",
+        "count": 1,
+        "before": "SUPERVISOR_SHA=\"5bfae20cedbce8ebf6435c0ddcaa4f696d1c77dae11165961ae5c02ba5b099d4\"",
+        "after": "SUPERVISOR_SHA=\"0a5908b5830a2a5329ec643706098f460f1fd6b79a7900064c269556853f5831\"",
+        "before_file": {
+          "bytes": 10458,
+          "sha256": "f905278cfd71b15a57d6d314454363350e831dcf34fa0e2d31a5827756b2226f",
+          "git_blob_sha": "8fdef2f825c15b4f47b9b6a29ef950f5ec9be15b"
+        },
+        "after_file": {
+          "bytes": 10458,
+          "sha256": "401e41695ee6bef7bc42e04d8d0f3665616e04cc7b65962e45209bf4f586ff06",
+          "git_blob_sha": "815a29d00af1ba66fcfc3cdd8d018ccb7111b7da"
+        }
+      },
+      {
+        "label": "unique transport key",
+        "count": 1,
+        "before": "TRANSPORT_KEY=\"007f-v57-main-p4-android-r1\"",
+        "after": "TRANSPORT_KEY=\"007f-v58-main-existing-web-regression-host-r1-observation-settle\"",
+        "before_file": {
+          "bytes": 10458,
+          "sha256": "401e41695ee6bef7bc42e04d8d0f3665616e04cc7b65962e45209bf4f586ff06",
+          "git_blob_sha": "815a29d00af1ba66fcfc3cdd8d018ccb7111b7da"
+        },
+        "after_file": {
+          "bytes": 10495,
+          "sha256": "6912ee2511aaee5e83157a8d32be5885a76f9555f06a94faba3ed4ff1ac5adc7",
+          "git_blob_sha": "b1ddc16ff05fc842c6f348d6e958e4a12d0029d8"
+        }
+      },
+      {
+        "label": "runtime loader length",
+        "count": 1,
+        "before": "len(LOADER.encode(\"utf-8\"))==866",
+        "after": "len(LOADER.encode(\"utf-8\"))==875",
+        "before_file": {
+          "bytes": 10495,
+          "sha256": "6912ee2511aaee5e83157a8d32be5885a76f9555f06a94faba3ed4ff1ac5adc7",
+          "git_blob_sha": "b1ddc16ff05fc842c6f348d6e958e4a12d0029d8"
+        },
+        "after_file": {
+          "bytes": 10495,
+          "sha256": "12517eb57c4c705e228fcb80bf1eb877e2706d3ef971bd3203789ba19d923c4e",
+          "git_blob_sha": "6614bf1a1c3d5731cfc089a727a0d8a17586b884"
+        }
+      },
+      {
+        "label": "runtime supervisor length",
+        "count": 1,
+        "before": "len(SUPERVISOR.encode(\"utf-8\"))==1802",
+        "after": "len(SUPERVISOR.encode(\"utf-8\"))==1800",
+        "before_file": {
+          "bytes": 10495,
+          "sha256": "12517eb57c4c705e228fcb80bf1eb877e2706d3ef971bd3203789ba19d923c4e",
+          "git_blob_sha": "6614bf1a1c3d5731cfc089a727a0d8a17586b884"
+        },
+        "after_file": {
+          "bytes": 10495,
+          "sha256": "0c89aff09d3d5287e6407d2fa9272fb3014975e031bc8ec8830c61efefdbc717",
+          "git_blob_sha": "8b1f4ac559d67c2a7b9832c92665a611369d352e"
+        }
+      },
+      {
+        "label": "bounded source argument fragments",
+        "count": 1,
+        "before": "need(len(sys.argv)==2,\"one complete compressed source argument\")\nargument=sys.argv[1].encode(\"ascii\",\"strict\")",
+        "after": "need(len(sys.argv)==4 and all(0<len(p)<=48000 for p in sys.argv[1:]),\"fixed compressed source argument fragments\")\nargument=\"\".join(sys.argv[1:]).encode(\"ascii\",\"strict\")",
+        "before_file": {
+          "bytes": 10495,
+          "sha256": "0c89aff09d3d5287e6407d2fa9272fb3014975e031bc8ec8830c61efefdbc717",
+          "git_blob_sha": "8b1f4ac559d67c2a7b9832c92665a611369d352e"
+        },
+        "after_file": {
+          "bytes": 10555,
+          "sha256": "9caacfb10177dc6aeeb4bb1de3f93842673f5bfa52864c40ccf0fa30bbb86551",
+          "git_blob_sha": "81014b059a9fe9fc9456992fb78afe2e7321fe98"
+        }
+      }
+    ],
+    "runtime_loader_length_assertion": 875,
+    "runtime_supervisor_length_assertion": 1800,
+    "complete_crc_and_source_sha_verified": true
+  },
+  "scope": {
+    "H_calls": 0,
+    "python_executed": false,
+    "jvm_executed": false,
+    "compiled": false,
+    "phone_actions": 0,
+    "actual_pass": null,
+    "new_suite": false
+  }
+}

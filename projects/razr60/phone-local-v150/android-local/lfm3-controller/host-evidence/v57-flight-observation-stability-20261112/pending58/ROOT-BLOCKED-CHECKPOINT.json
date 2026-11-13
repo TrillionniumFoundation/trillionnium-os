@@ -1,0 +1,215 @@
+{
+  "schema": "hepta.root-main58-connection-blocked-checkpoint.v1",
+  "recorded_utc": "2026-11-13 01:47:04 UTC or shortly afterward",
+  "phone": {
+    "installed_version": 57,
+    "installed_name": "0.57.0-flight-observation-stability",
+    "apk_sha256": "c1e126031ff8728a3335a5ef1e6d546b3b089ca03ee73a8b3671b67b7e124ad4",
+    "uid": 10481,
+    "last_task_id": "495b2b1e79a449e99c2fc604da1f452d",
+    "last_task_status": "failed",
+    "last_failure": "AX/DOM bracket changed; no current page capability published",
+    "steps": 5,
+    "query_dispatched": false,
+    "cleanup_known_at_collection": true,
+    "system_resources_absent_at_collection": true,
+    "no_phone_action_since_collected_flight57": true
+  },
+  "flight57": {
+    "result_blob": "3d4d46c24c6fec328dca1c9062ebdde76cfeedba",
+    "collection_blob": "3a1a344d572546794e940866aaf610aafdbda035",
+    "index_blob": "d77540a22275df8f3e8fc5eb92a24ffa9bbe4e51",
+    "execution_blob": "0adf2bfe1ce6f2aa0e79964b9cc709224e29ce9d",
+    "complete_archive_blob": "bdde205b21e45a0a809e5cf7005f47cab638915a",
+    "scope_subset_blob": "992bcb98b7ed1ff15b9dbe086ab4257f82132c1a",
+    "action_subset_blob": "790b315f1ec6edf2da5047a2d0223b3e500a7f95",
+    "native_receipts_blob": "e31fbf1124e9868f332ec135247e5924113f2f38",
+    "native_log_binary_envelope_blob": "2bd511450f793993ecddc715cede6fa71ad00339",
+    "native_metrics": [
+      {
+        "sequence": 1,
+        "request": "0245db96c6d447b799ca1d8a67d154be",
+        "model": "lfm3-1.7b-qad-q4_0",
+        "device": "HTP0",
+        "promptTokens": 2968,
+        "generatedTokens": 121,
+        "ttftSeconds": 2.96987,
+        "prefillTps": 999.6089804493594,
+        "decodeTps": 31.64566893713444,
+        "nativeSeconds": 9.729842000000001,
+        "generationMs": 6795.713,
+        "status": 0,
+        "complete": true,
+        "signal": 0,
+        "automaticCpuFallback": false
+      },
+      {
+        "sequence": 2,
+        "request": "841319297fe6425091cd342bb21d52e1",
+        "model": "lfm3-1.7b-qad-q4_0",
+        "device": "HTP0",
+        "promptTokens": 3319,
+        "generatedTokens": 132,
+        "ttftSeconds": 3.386504,
+        "prefillTps": 980.3660939249204,
+        "decodeTps": 30.323928474122894,
+        "nativeSeconds": 7.782317,
+        "generationMs": 7741.553,
+        "status": 0,
+        "complete": true,
+        "signal": 0,
+        "automaticCpuFallback": false
+      },
+      {
+        "sequence": 3,
+        "request": "60b4de03fc6b41de86083cfd3ef1910b",
+        "model": "lfm3-1.7b-qad-q4_0",
+        "device": "HTP0",
+        "promptTokens": 3557,
+        "generatedTokens": 111,
+        "ttftSeconds": 3.632854,
+        "prefillTps": 979.2944069542293,
+        "decodeTps": 31.282224566353687,
+        "nativeSeconds": 7.227019,
+        "generationMs": 7183.602,
+        "status": 0,
+        "complete": true,
+        "signal": 0,
+        "automaticCpuFallback": false
+      },
+      {
+        "sequence": 4,
+        "request": "7d30be39a5044087adb39e847390c3be",
+        "model": "lfm3-1.7b-qad-q4_0",
+        "device": "HTP0",
+        "promptTokens": 3687,
+        "generatedTokens": 124,
+        "ttftSeconds": 3.727411,
+        "prefillTps": 989.3309498516272,
+        "decodeTps": 31.613160966822242,
+        "nativeSeconds": 7.698805,
+        "generationMs": 7652.586,
+        "status": 0,
+        "complete": true,
+        "signal": 0,
+        "automaticCpuFallback": false
+      },
+      {
+        "sequence": 5,
+        "request": "0254a8c5e1a843ee876db4d669db6642",
+        "model": "lfm3-1.7b-qad-q4_0",
+        "device": "HTP0",
+        "promptTokens": 3815,
+        "generatedTokens": 126,
+        "ttftSeconds": 3.886069,
+        "prefillTps": 981.9592338916216,
+        "decodeTps": 30.760637321344174,
+        "nativeSeconds": 8.029537,
+        "generationMs": 7984.624,
+        "status": 0,
+        "complete": true,
+        "signal": 0,
+        "automaticCpuFallback": false
+      }
+    ]
+  },
+  "main58": {
+    "aggregate_blob": "94ca147166c4e4c7faa5bd32085c5431eb36f4b1",
+    "delta_blob": "1ceb8788cb5e8c16220be435a378837aebd6f65f",
+    "source_handoff_blob": "ad6a68abd2e8a41964525157d6a742a3a30de09e",
+    "source_session_blob": "d89ff1a111693bebd445c99fede473fbc968a314",
+    "source_patch_blob": "b68ad0de5956328f0dfa228d90aa9d8879f753a8",
+    "source_review_blob": "ea75799e5602a0bea1b9aec22f27290fb0de8643",
+    "source_files": 595,
+    "changed_files": 2,
+    "source_and_full_aggregate_reconstruction_reviewed": true,
+    "core": {
+      "request_blob": "564e981a6ee724128f01a624620dbf4eff6e8447",
+      "source_blob": "3149e05eac89cec18f7496865f4edbf32ef65740",
+      "handoff_blob": "944cf0559691495aef42ed746cf0ee94b1ed26a6",
+      "original_start_ack": {
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "host": "pocket4",
+        "persistent_across_runtime_restart": true,
+        "reused": false,
+        "session_id": "dpty-2b06b0a65c7104136c17ada20448725cd25c353d94b590495d7de8214a34feb5",
+        "status": {
+          "boot": "97d9600f-e081-465c-9e6e-62651e09806b",
+          "bytes_seen": 0,
+          "bytes_stored": 0,
+          "capture_error": null,
+          "created_unix_ms": 1794534061748,
+          "output_complete": false,
+          "owner_pid": 3934789,
+          "pid": 3934790,
+          "state": "running"
+        }
+      },
+      "last_successful_read_offset": 0,
+      "final_exit_and_result_unknown": true,
+      "new_start_or_retry_issued": false
+    },
+    "focused": {
+      "request_blob": "af949bd7407af3300f55fa21cc402dd01e9cb0b2",
+      "source_blob": "49ef1662b71249bfd5cf0ca0dc8ea657279d2142",
+      "handoff_blob": "a9ca41091e1ceb6845d540332ba45c5c0626cdde",
+      "executed": false,
+      "root_transport_review_complete": false
+    },
+    "web": {
+      "request_blob": "a983113e8ed328eeff3d13e1ee55cfa586f56086",
+      "handoff_blob": "b84f6d02e8c35365faf4484985c8de8ed055e601",
+      "executed": false,
+      "root_transport_review_complete": false
+    },
+    "signed": false,
+    "installed": false,
+    "flight_results_provider_implemented": false
+  },
+  "connection": {
+    "last_tool": "h_host_health",
+    "host": "pocket4",
+    "full_tool_error": {
+      "content": [
+        {
+          "type": "text",
+          "text": "McpServerError: Tunnel-client did not poll after this request was enqueued. Ensure tunnel-client is running and connected, then retry."
+        }
+      ],
+      "structuredContent": {
+        "error": "McpServerError: Tunnel-client did not poll after this request was enqueued. Ensure tunnel-client is running and connected, then retry.",
+        "error_code": "NOT_FOUND",
+        "error_data": {
+          "type": "http_error",
+          "code": 404,
+          "message": "Tunnel-client did not poll after this request was enqueued. Ensure tunnel-client is running and connected, then retry.",
+          "payload": {
+            "error": {
+              "message": "Tunnel-client did not poll after this request was enqueued. Ensure tunnel-client is running and connected, then retry.",
+              "type": "invalid_request_error",
+              "param": null,
+              "code": "tunnel_client_not_connected"
+            }
+          },
+          "url": "https://tunnel-service.gateway.unified-0.internal.api.openai.org/v1/mcp/tunnel_6aeeaa5f7b488191a6466ca467418530"
+        }
+      },
+      "isError": true
+    },
+    "classification": "tunnel_client_not_connected",
+    "is_test_failure": false,
+    "read_only_pty_and_result_polls_timed_out": true
+  },
+  "resume": {
+    "first_action": "Read original acknowledged Core58 PTY and its existing RESULT; do not start a second Core run or invent pass.",
+    "core_session_id": "dpty-2b06b0a65c7104136c17ada20448725cd25c353d94b590495d7de8214a34feb5",
+    "core_result_path": "/home/alex/hepta-local-007f-20261111/v58-main-core101-materialized-host-r1/RESULT.json",
+    "phone_operator": "root only",
+    "all_agents_H0": true,
+    "max_concurrent_H_RPCS": 2,
+    "host_mutations_serialized": true,
+    "source_and_evidence_CAS_owner": "mobile_models",
+    "next_after_actual_core_normal_exit": "Run exact reviewed focused/Web/Android gates sequentially; publish/sign/install only after actual completion and filled real pins."
+  }
+}

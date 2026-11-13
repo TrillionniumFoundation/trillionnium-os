@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.main58-two-file-source-handoff.v1",
+  "status": "source-only-current-host-gates-not-executed",
+  "source_parent_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+  "base_aggregate": {
+    "bytes": 1459826,
+    "sha256": "b98bb0f97ad5b25423387c4e3f8734aec7d4f8c2d1044335af039e0dd1c57cc3",
+    "git_blob_sha": "517e61599073eb264c5e52871570d49e7af2d798"
+  },
+  "aggregate": {
+    "name": "aggregate58",
+    "bytes": 1465984,
+    "sha256": "600ff7c4198fc83d4e93399fc6bf039800805f4458406b4182952ddcff89b95b",
+    "git_blob_sha": "94ca147166c4e4c7faa5bd32085c5431eb36f4b1"
+  },
+  "delta": {
+    "name": "delta58",
+    "bytes": 240110,
+    "sha256": "8a213bae868ffedb519f29685ff086d3feeb2ea940cbe63f4d62d6604fa5e193",
+    "git_blob_sha": "1ceb8788cb5e8c16220be435a378837aebd6f65f"
+  },
+  "path_source_inventory": {
+    "name": "inventory58_physical",
+    "bytes": 103795,
+    "sha256": "b44d3a9d9083a86d5fff36dfcc0c27958ef047a05df928923ef7c2e204cb23d6",
+    "git_blob_sha": "ad9e8c0e0f312e8397cfab0d3958d513efe8a301"
+  },
+  "full_inventory": {
+    "name": "inventory58_full",
+    "bytes": 163370,
+    "sha256": "625a23cbff539c25e0d9a439c522180a890309449bb7fc63e55d2461b0588327",
+    "git_blob_sha": "878bb9f734264058eb9cb180632e3bf5bb3c71b3"
+  },
+  "source_blob_map": {
+    "name": "blobmap58",
+    "bytes": 141875,
+    "sha256": "807e52edb4efda808a1dc1ae490ac13f7e92ff65f3f31c6156d4b8a54e2334e1",
+    "git_blob_sha": "93bc92f52bb2ced58731678377c8f21e9f134cee"
+  },
+  "compiler_inputs": {
+    "name": "compiler58",
+    "bytes": 34376,
+    "sha256": "b64d1a78f41ffa78c80c3d5145b012f0625e842725ceb83abbd8eec5bb63c4c8",
+    "git_blob_sha": "6b2ad70fe8dd4a2cdaffb2f571d931c45097da2b"
+  },
+  "changed_sources": [
+    {
+      "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "bytes": 46689,
+      "sha256": "d2e4f073366d3d3046b0f9b90156f87b1fb84c842a3053a5d32f31df5e3bbc9b",
+      "git_blob_sha": "d89ff1a111693bebd445c99fede473fbc968a314"
+    },
+    {
+      "path": "AndroidManifest.xml",
+      "bytes": 2591,
+      "sha256": "4818f3632b34a1bb6eb41d35e45f0d1d99ed50275da3d999f4a56608b7725b8e",
+      "git_blob_sha": "10ef60b074dca1cf5d0cf8063054cd9559ca805b"
+    }
+  ],
+  "source_delta": {
+    "bytes": 12578,
+    "sha256": "93b5cb89d15dbe74d718e97d57c336049f91feefa0e27af281de110141d81439",
+    "git_blob_sha": "b68ad0de5956328f0dfa228d90aa9d8879f753a8"
+  },
+  "source_file_count": 595,
+  "overlay_file_count": 40,
+  "unchanged_source_rows": 593,
+  "compiler_input_count": 217,
+  "java_source_count": 115,
+  "compiled_input_changed_paths": [
+    "AndroidManifest.xml",
+    "src/org/trillionnium/hepta/local/WebFlightSession.java"
+  ],
+  "ordered_hunks": 9,
+  "all_git_blobs_roundtrip_verified": true,
+  "final_overlay_order_preserved": true,
+  "base_files_preserved": true,
+  "action_policy_and_guards_preserved": true,
+  "source_tree_test_files_unchanged": true,
+  "external_existing_suite_changes_owned_by_audit": true,
+  "native_sources_unchanged": true,
+  "native_recompiled_here": false,
+  "results_provider_ready": false,
+  "phone_actions": 0,
+  "git_branch_ref_updated": false,
+  "previous_actual_failure_preserved": true
+}

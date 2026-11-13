@@ -1,0 +1,204 @@
+{
+  "schema": "hepta.main57-source-publication-proof.v1",
+  "source_commit": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+  "source_tree": "2368b777bad9fd9e2f5dcbcbefc6ea9c27fcb0da",
+  "expected_prior_head": "c28266b18703bbb6287d2a3d7809384921214d01",
+  "production_base_source_commit": "9f4168616546233033edd4b254b4236ae987ea7e",
+  "branch": "codex/hepta-v45-semantic-click-20261111-007f",
+  "pr": 139,
+  "actual_ref_head": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+  "actual_pr_head": "313685edc580a750aea6301d8ff3cfd617d6fab6",
+  "pr_open": true,
+  "pr_draft": true,
+  "compare_and_swap_mutation_count": 1,
+  "force": false,
+  "first_ref_readback_current_first_pr_readback_lagged": true,
+  "subsequent_readonly_both_exact": true,
+  "source_aggregate": {
+    "git_blob_sha": "517e61599073eb264c5e52871570d49e7af2d798",
+    "bytes": 1459826,
+    "sha256": "b98bb0f97ad5b25423387c4e3f8734aec7d4f8c2d1044335af039e0dd1c57cc3"
+  },
+  "source_file_count": 595,
+  "source_inventory": {
+    "git_blob_sha": "c2938fd1a1eedba6abaa597c35985e6ab318993f",
+    "bytes": 103795,
+    "sha256": "22d32f2de9ecd5690e1dfe7de8fa682b3a0469584ade1ec83ac69bf6558d10b6"
+  },
+  "source_changes": 5,
+  "source_path_set_unchanged": true,
+  "new_production_classes": 0,
+  "unchanged_source_files": 590,
+  "new_reachable_evidence_files": 41,
+  "source_prefix": "projects/razr60/phone-local-v150/android-local/lfm3-controller/",
+  "evidence_prefix": "projects/razr60/phone-local-v150/android-local/lfm3-controller/host-evidence/v57-flight-observation-stability-20261112/",
+  "actual_tree_verification": {
+    "schema": "hepta.main57-source-tree-preservation.v1",
+    "prior_commit": "c28266b18703bbb6287d2a3d7809384921214d01",
+    "prior_tree": "9ae0fc90f5d09cc3c0fb382c5eb1cdf93a9a9a05",
+    "candidate_tree": "2368b777bad9fd9e2f5dcbcbefc6ea9c27fcb0da",
+    "source_leaf": "c316261510d31c9cb357b94b1ac239e308211171",
+    "ancestor_sibling_trees_preserved": true,
+    "controller_sibling_trees_preserved": true,
+    "prior_host_evidence_trees_preserved": 16,
+    "exact_source_changes": [
+      "AndroidManifest.xml",
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "src/org/trillionnium/hepta/local/WebFlightNativeStability.java",
+      "src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "tests/web-flight/run_query_host_tests.py"
+    ],
+    "source595_all_blobs_modes_and_sizes_match": true,
+    "unchanged_source_files": 590,
+    "new_evidence_files": 41,
+    "all_other_repository_blobs_preserved": true,
+    "preservation_method": "Compared each ancestor directory by path/mode/type/SHA; all siblings outside the controller chain are identical. Within the controller root only Manifest/src/tests/new evidence changed. Full non-truncated src/tests trees contain exactly the four declared replacements; all other file tuples are identical. Every prior host-evidence subtree SHA is unchanged. The new evidence directory exactly matches all41 declared blob tuples. All595 final source rows match actual file Git blobs/modes/sizes.",
+    "new_route": [
+      {
+        "path": "projects",
+        "parent_tree": "2368b777bad9fd9e2f5dcbcbefc6ea9c27fcb0da",
+        "sha": "4218aa2d5c3146f1833e8b93322fd2c57f61fb14"
+      },
+      {
+        "path": "razr60",
+        "parent_tree": "4218aa2d5c3146f1833e8b93322fd2c57f61fb14",
+        "sha": "be92a0e2ed4be5c87fd063a67f22ea0c8cda795a"
+      },
+      {
+        "path": "phone-local-v150",
+        "parent_tree": "be92a0e2ed4be5c87fd063a67f22ea0c8cda795a",
+        "sha": "41517501513ee1b5d74d25721f38ac19a1c9c8be"
+      },
+      {
+        "path": "android-local",
+        "parent_tree": "41517501513ee1b5d74d25721f38ac19a1c9c8be",
+        "sha": "e0c5fd175d3a6bab79fb4602efce4e5c1d5d0679"
+      },
+      {
+        "path": "lfm3-controller",
+        "parent_tree": "e0c5fd175d3a6bab79fb4602efce4e5c1d5d0679",
+        "sha": "c316261510d31c9cb357b94b1ac239e308211171"
+      }
+    ],
+    "ref_not_yet_moved": false,
+    "scope_of_tree_check": "Performed before the single CAS; exact candidate is now the actual source tree."
+  },
+  "actual_host_gates": {
+    "core": {
+      "git_blob_sha": "b2f4bc7cfc88d4ac83588678cb2559c16c687517",
+      "bytes": 11178,
+      "sha256": "239e2639e7ba426f5068ae1e8620edf8bd5a1c564181fdfc8048f588a87b8aab",
+      "groups": 101,
+      "host_inputs": 419,
+      "nested_completion_stages": 18,
+      "nested18_are_within101": true
+    },
+    "web": {
+      "git_blob_sha": "1a60d6d21767e88b90854e5fb2d55102a951d2fc",
+      "bytes": 54724,
+      "sha256": "61585af641cf4c1db70a9ae0d6f1e23ea93633fb7ead6b10b3a168d45aa2a3b1",
+      "groups": [
+        80,
+        79,
+        13
+      ],
+      "assertions": [
+        92,
+        215,
+        1001
+      ],
+      "pure_sources": 44,
+      "compilation_units": 52,
+      "fixtures": 6
+    },
+    "focused": {
+      "git_blob_sha": "0299b6a5b89665e23ed9b3937210757287103916",
+      "bytes": 45584,
+      "sha256": "7e1b16ba42b2fdde52f7e18bc94d72e3efa673160ab2c1896017ee0e8c51bb56",
+      "groups": [
+        20,
+        19
+      ],
+      "assertions": [
+        60,
+        98
+      ],
+      "java_sources": 51,
+      "pure_sources": 44,
+      "exact_method_projections": 15
+    },
+    "android": {
+      "git_blob_sha": "790f3f21acd920bd1798744d8fa8c152a649fd86",
+      "bytes": 244800,
+      "sha256": "5dc739a182bda8065f2bda04c1da7e44c43b74307f76f582ba6cc09c371475f1",
+      "tool_steps": 8,
+      "compiler_inputs": 217,
+      "java_sources": 115,
+      "compiled_classes": 425,
+      "native_recompiled_here": false
+    },
+    "query": {
+      "path": "/home/alex/hepta-local-007f-20261111/v57-main-p4-android-r1/query40/RESULT.json",
+      "bytes": 36218,
+      "sha256": "88ef49c0452aac03abe4720b55a886059945360179fa13400569248f260f61bd",
+      "cases": 40,
+      "assertions": 187,
+      "java_sources": 50,
+      "runner_sha256": "5af6324496884603f2be5184334335e17d59dd653d0dd20ec859d5c064820b10",
+      "repository_runner_count_repair_integrated": true
+    }
+  },
+  "git_source_map": {
+    "git_blob_sha": "9eb25cee2fe8dac38a8ff000f68f2ed1fd4d7db6",
+    "bytes": 289218,
+    "sha256": "5280a107976ccdc734a8ecfe8bffb08bb4b8a569526c0015704b6cdf270ede5f"
+  },
+  "publication": {
+    "git_blob_sha": "3bc9d124af369207924e74cbeccdd24dab86d585",
+    "bytes": 7005,
+    "sha256": "cba1734c8da78e80bbbed51f036e1ebbfbb9d99aa39dffb0d967078c0051d5a0"
+  },
+  "reachable_index": {
+    "git_blob_sha": "a60d21a6c8e91126d566479fdf42502629939b5e",
+    "bytes": 14419,
+    "sha256": "898e251e2a77c2cc4ec3e190d091655ab4949b81af18d74c70f025d9687dc300"
+  },
+  "reachable_report": {
+    "git_blob_sha": "51999e00f80a53c1d50c3e5f0fd9696ade5e5ad2",
+    "bytes": 6940,
+    "sha256": "acb08141d97b0bb4a2abaaa107f08fe7ce40bf961de897fb85db870e13f93978"
+  },
+  "map_and_publication_complete_git_readback": true,
+  "map_and_publication_created_after_cas": true,
+  "map_and_publication_not_yet_tree_reachable": true,
+  "published_source_report_scope": "Main57 host validation and unsigned Android build; no signing/install/phone/business success",
+  "actual_flight_results_provider_ready": false,
+  "native_recompiled_here": false,
+  "original_failures_preserved": true,
+  "notes56_positive_scopes_remain_main56": true,
+  "signer_stager_contract_review": {
+    "handoff_git": "ad0693a8028687f36602153f96fc26770dcfb9fa",
+    "signer_git": "e9657847f9ad31597c7ece639b0620e80255f147",
+    "stager_git": "748df90ddddd66413bef5fb15df1cc60066ab4ba",
+    "scope": "Current version/pinned producer/PUB-MAP interface only, no new execution or broad body review",
+    "all_declared_current_config_checks": true,
+    "checks": {
+      "compiled_git": true,
+      "compiled_sha": true,
+      "core_result_sha": true,
+      "core_stage_sha": true,
+      "focused_result_sha": true,
+      "actual_build_stage_sha": true,
+      "web_stage_sha": true,
+      "web_packet_sha": true,
+      "version": true,
+      "publication_base": true,
+      "actual_inputs": true,
+      "build_and_web_pending": true,
+      "cas_pending": true,
+      "actual_focused_receipt_stage_sha": true,
+      "actual_focused_receipt_stage_bytes": true
+    }
+  },
+  "next_actions": "BG binds actual signing/staging values; Root owns execution. Append these post-CAS MAP/PUB/proof originals in a later evidence-only commit without rewriting source binding or earlier PUBLICATION."
+}
