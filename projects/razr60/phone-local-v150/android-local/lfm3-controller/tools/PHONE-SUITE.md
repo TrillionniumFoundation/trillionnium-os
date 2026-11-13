@@ -93,6 +93,20 @@ navigation history and final predicates; it does not prove every intermediate
 side effect. Form entry and settings-change tests need stronger task-specific
 final predicates before they are added.
 
+The effect verifier also recognizes production v6 `notes.create` and
+`web.search`. Each requires its native-hashed fixed-tool projection, exact
+installed target/component/UID and projected app label, literal payload SHA,
+task/run/source-window binding and one matching durable before-call attempt.
+Consumed journals must cover every ordinal from one through their total count;
+a retained second attempt cannot hide a missing first attempt. Each fixed tool
+may be consumed only once per task. A background launch also
+needs the corresponding broker proof with the same display, generation,
+ordinary caller, target, payload and attempt. Unknown/refused outcomes,
+replayed attempts, arbitrary components and app-label substitutions cannot
+count as accepted effects. A counted fixed launch still reports
+`saved_or_search_results_verified=false`; final business-goal proof is separate.
+v6 query-submit uses the same consumed-attempt and current-node checks as v5.
+
 On an unknown cleanup or uncertain submission, following cases remain
 `not_run`. `actual_launches` is null when a submission count is unknown; the
 known launch count and unknown count are both retained. There is no automatic

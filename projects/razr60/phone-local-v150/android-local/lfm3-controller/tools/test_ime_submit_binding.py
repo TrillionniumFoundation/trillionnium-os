@@ -45,7 +45,7 @@ def contract_digest(schema, encoding, pairs):
 
 
 class Fixture:
-    def __init__(self, label="搜索", background=False):
+    def __init__(self, label="搜索", background=False, schema=V5):
         self.label = label
         self.grammar = b'root ::= "metadata fixture; grammar execution is tested separately"\n'
         self.action = {"reason": "根据当前可编辑搜索框调用已观察的编辑器动作", "action": "submit",
@@ -53,14 +53,16 @@ class Fixture:
         self.capability = {"schema": "hepta.observed-ime-enter.v1", "action_name": "ACTION_IME_ENTER",
             "action_label": label, "action_label_sha256": sha(label.encode("utf-8")),
             "input_text_sha256": sha(TEXT.encode("utf-8"))}
-        self.data = {"action_schema": V5, "apps": [], "open_allowed_packages": [],
+        self.data = {"action_schema": schema, "apps": [], "open_allowed_packages": [],
             "screen": {"observation_id": OBS, "package": PKG,
                 "nodes": [["n7", "当前搜索", [0, 0, 100, 40], "tf"], ["n8", "其他字段", [0, 50, 100, 90], "tf"]],
                 "editable_fields": [{"node_id": "n7", "role": "editable_text", "text": TEXT[:96],
                     "focused": True, "enabled": True}, {"node_id": "n8", "role": "editable_text",
                     "text": "另一个输入", "focused": True, "enabled": True}],
                 "submit_actions": {"n7": dict(self.capability)}}}
-        self.app = {"run_id": RUN, "grammar_schema": V5, "grammar_sha256": sha(self.grammar),
+        if schema == a.FIXED_INTENT_ACTION_SCHEMA:
+            self.data["fixed_intent_tools"] = []
+        self.app = {"run_id": RUN, "grammar_schema": schema, "grammar_sha256": sha(self.grammar),
             "grammar_observation_id": OBS, "grammar_current_package": PKG,
             "target_label_contract": {"schema": "hepta.observed-target-labels.v1",
                 "encoding": "utf8-length-prefixed-be32-sorted-node-id.v1", "observation_id": OBS,
@@ -140,6 +142,21 @@ class SubmitPromptBindingTests(unittest.TestCase):
         f = Fixture()
         self.assertTrue(f.valid())
         self.assertEqual(a.ime_submit_prompt_capability(f.data, f.action), f.capability)
+
+    def test_v6_submit_retains_query_and_node_requirements(self):
+        f = Fixture(schema=a.FIXED_INTENT_ACTION_SCHEMA)
+        self.assertTrue(f.valid())
+        self.assertEqual(a.ime_submit_prompt_capability(f.data, f.action), f.capability)
+        for label in ("付款", "下单", "发送", "Enter"):
+            self.assertFalse(Fixture(label, schema=a.FIXED_INTENT_ACTION_SCHEMA).valid())
+        f.action["node_label"] = "其他字段"; f.rebind()
+        self.assertFalse(f.valid())
+
+    def test_v6_receipt_does_not_upgrade_a_v5_prompt(self):
+        f = Fixture(); f.app["grammar_schema"] = a.FIXED_INTENT_ACTION_SCHEMA
+        self.assertFalse(f.valid())
+        f.data["action_schema"] = a.FIXED_INTENT_ACTION_SCHEMA; f.rebind()
+        self.assertFalse(f.valid())  # The actual v6 producer always supplies its fixed-tool domain.
 
     def test_real_query_labels_only(self):
         for label in ("搜索", "搜尋", "查询", "查詢", "查找", "search", "query", "find", "ＳＥＡＲＣＨ", " Search "):
@@ -237,6 +254,15 @@ class SubmitSequenceBindingTests(unittest.TestCase):
         binding = result["model_action_bindings"][0]
         self.assertTrue(binding["ime_submit_binding_valid"])
         self.assertFalse(binding["ime_submit_goal_independently_verified"])
+
+    def test_v6_query_dispatch_keeps_exact_before_call_and_background_binding(self):
+        for background in (False, True):
+            f = Fixture(background=background, schema=a.FIXED_INTENT_ACTION_SCHEMA)
+            result = self.run_fixture(f)
+            self.assertTrue(result["passed"], result)
+            self.assertFalse(result["model_action_bindings"][0]["ime_submit_goal_independently_verified"])
+            f.journal["input_text_sha256"] = "0" * 64
+            self.assert_rejected(f)
 
     def test_background_requires_same_owned_display_generation(self):
         result = self.run_fixture(Fixture(background=True))

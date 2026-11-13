@@ -26,8 +26,10 @@ public final class HeptaAccessibilityService extends android.content.Context {
     public int rootsRead,opens,navigations,gestures,observations;
     public int mutateOnRoot=-1;public String mutateRootPackage;
     public Runnable effectHook;public Intent lastStartedIntent;
+    public Runnable packageManagerReadHook;
     public java.util.function.Supplier<List<PhoneObservation.Node>> observationRows;
     public HeptaAccessibilityService(File files,PackageManager pm){super(files,pm);live=this;}
+    @Override public PackageManager getPackageManager(){if(packageManagerReadHook!=null)packageManagerReadHook.run();return super.getPackageManager();}
     public static HeptaAccessibilityService connected(){return live;}
     public synchronized LocalTaskController taskController(LocalModelEngine engine){if(ownedController==null)ownedController=new LocalTaskController(this,testInference);return ownedController;}
 {{lease}}
@@ -60,6 +62,8 @@ public final class HeptaAccessibilityService extends android.content.Context {
         if(observationRows!=null)rows=observationRows.get();
         return new PhoneObservation(id,pkg,SystemClock.elapsedRealtime(),1080,2400,0,window,new Rect(0,0,1080,2400),new File(getFilesDir(),"synthetic.png"),"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",new ObservationState("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",ImeVisibility.HIDDEN),metadata,false,rows,taskBackground==null?null:taskBackground.generation,taskBackground==null?null:taskBackground.selection.initialPackage,taskBackground==null?Collections.<String>emptyList():taskBackground.selection.allowedPackages);
     }
+    String observationTimeoutMessage(String taskId){return "系统屏幕观察超时 [phase=fixture]";}
+    boolean observationReadWorkPending(){return false;}
     public void observe(String task,File directory,Cancellation cancel,long deadline,ObservationCallback callback){
         current=observation();currentGraph=readGraph();if(node!=null)currentGraph.refs.put("n0",new NodeRef(node,observedChildText(node),readScrollActions(node)));callback.onObservation(current);
     }
