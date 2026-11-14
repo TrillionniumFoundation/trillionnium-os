@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.litert-runner-validation-summary.v1",
+  "date_utc": "2026-11-11",
+  "source_runner_sha256": "3978dc122263bbc23a4c30983748620381a9eb95f3c1e6d976336676644ffb5e",
+  "critical_build_inputs_match": true,
+  "host_process_fixtures": {
+    "sdk": "explicit test double, not a real model",
+    "passed": 12,
+    "cases": [
+      {
+        "name": "normal_raw_preservation",
+        "observed_exit_code": 0
+      },
+      {
+        "name": "duplicate_request_key",
+        "observed_exit_code": 64
+      },
+      {
+        "name": "invalid_utf8",
+        "observed_exit_code": 64
+      },
+      {
+        "name": "trailing_document",
+        "observed_exit_code": 64
+      },
+      {
+        "name": "request_over_1mib",
+        "observed_exit_code": 64
+      },
+      {
+        "name": "generation_hang",
+        "observed_exit_code": 124
+      },
+      {
+        "name": "cleanup_hang",
+        "observed_exit_code": 124
+      },
+      {
+        "name": "load_hang",
+        "observed_exit_code": 124
+      },
+      {
+        "name": "duplicate_native_response",
+        "observed_exit_code": 70
+      },
+      {
+        "name": "stdin_never_closed",
+        "observed_exit_code": 124
+      },
+      {
+        "name": "sigterm",
+        "observed_exit_code": 143
+      },
+      {
+        "name": "stdout_backpressure",
+        "observed_exit_code": 74
+      }
+    ]
+  },
+  "android_link": {
+    "ndk": "28.1.13356709",
+    "api": 30,
+    "abi": "arm64-v8a/AArch64",
+    "compiler_and_link_exit_codes": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "runtime_release": "v0.19.1",
+    "c_api": "1.0.0",
+    "runtime_sha256": "d000b46697a43bfae6181f280240ddeff08ef25049902f42d54b35c519ec7764",
+    "products": {
+      "libhepta_litert_runner.so": {
+        "bytes": 247480,
+        "sha256": "972992ec4d21c8d5e2680e08b158e9e3e5ce7704cabf6e22bdb5327d72278e6c"
+      },
+      "hepta_litert_runner": {
+        "bytes": 247480,
+        "sha256": "972992ec4d21c8d5e2680e08b158e9e3e5ce7704cabf6e22bdb5327d72278e6c"
+      },
+      "liblitert-lm.so": {
+        "bytes": 22758512,
+        "sha256": "d000b46697a43bfae6181f280240ddeff08ef25049902f42d54b35c519ec7764"
+      }
+    },
+    "ndk_directory_label": "28.2.13676358",
+    "ndk_identity_source": "actual source.properties Pkg.Revision, not directory name"
+  },
+  "android_execution": false,
+  "real_model_inference": false,
+  "gpu_or_npu_execution_verified": false,
+  "controller_integration": false,
+  "phone_actions": false,
+  "independent_review": {
+    "status": "passed; no remaining runner code blocking findings",
+    "exact_runner_sha256": "3978dc122263bbc23a4c30983748620381a9eb95f3c1e6d976336676644ffb5e",
+    "runner_modified_for_test": false,
+    "additional_cases_passed": 28,
+    "additional_cases_total": 28,
+    "original_fixture_cases_independently_repeated": 12,
+    "driver": "tests/review_boundaries.py",
+    "driver_sha256": "9468ff8fccc358f618bc8ba68fe6a5764adf8cda1e4e9ebc257348f504d5940e",
+    "scope": "strict input and forced deadline/CAS/delayed-write signal races; explicit fake SDK only",
+    "phone_contacted": false,
+    "real_model_or_gpu_inference": false
+  }
+}

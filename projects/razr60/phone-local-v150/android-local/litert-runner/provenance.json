@@ -1,0 +1,78 @@
+{
+  "schema": "hepta.litert-runner-source-provenance.v1",
+  "original_source": [
+    "runner.c",
+    "build_android.py",
+    "tests/fake_sdk.c",
+    "tests/host_boundaries.py",
+    "README.md",
+    ".gitignore",
+    "tests/review_boundaries.py"
+  ],
+  "upstream_files": [
+    {
+      "path": "vendor/litert/c/engine.h",
+      "repository": "google-ai-edge/LiteRT-LM",
+      "ref": "v0.19.1",
+      "github_blob_sha": "bde3d0d71c97dbbfe185570f7bc3a128d9b185fe",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/v0.19.1/c/engine.h",
+      "sha256": "75f35e30fb056696b08c79a379f38e84cd9b61d4eec9c3f829984cdf8af6674c"
+    },
+    {
+      "path": "vendor/litert/c/conversation.h",
+      "repository": "google-ai-edge/LiteRT-LM",
+      "ref": "v0.19.1",
+      "github_blob_sha": "887e90fdc24f674d9515322ff3c538fdaa320bd2",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/v0.19.1/c/conversation.h",
+      "sha256": "251d4b5b17aaef3c2a489652928a9b9ebfc3675a44157c742e9a10ae327a8a5f"
+    },
+    {
+      "path": "vendor/litert/c/error_reporter.h",
+      "repository": "google-ai-edge/LiteRT-LM",
+      "ref": "v0.19.1",
+      "github_blob_sha": "3221a5473844d775031b5cadae8fb82e7d1caf9c",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/v0.19.1/c/error_reporter.h",
+      "sha256": "02f934f1ede54d4c9b926c16420d33b472062e0dc6ab6a9d968eb745f3b0755e"
+    },
+    {
+      "path": "vendor/litert/c/api_export.h",
+      "repository": "google-ai-edge/LiteRT-LM",
+      "ref": "v0.19.1",
+      "github_blob_sha": "7dfa23a6902e5d50c65563440a0c8bf36d62e97f",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/v0.19.1/c/api_export.h",
+      "sha256": "778c200b7424013bdf5106e1f9067b60ca7863c38d4ca9f8fdad37e4e4edc182"
+    },
+    {
+      "path": "vendor/yyjson/yyjson.h",
+      "repository": "ibireme/yyjson",
+      "ref": "0.13.0",
+      "github_blob_sha": "60561d535bd0be451c63a184d5452e7bb9830a09",
+      "url": "https://github.com/ibireme/yyjson/blob/0.13.0/src/yyjson.h",
+      "sha256": "ef803cda5c06b8962face6dfa39c3284b3bcf3e73f4d7317664690cc779679ca"
+    },
+    {
+      "path": "vendor/yyjson/yyjson.c",
+      "repository": "ibireme/yyjson",
+      "ref": "0.13.0",
+      "github_blob_sha": "a9bc5f87a07758d07a33f87e2c28beabd67d94d4",
+      "url": "https://github.com/ibireme/yyjson/blob/0.13.0/src/yyjson.c",
+      "sha256": "d2d58ef0a3b2267862dc363832c4f3185fd375aea933d5d3419d1a940d6ece2e"
+    },
+    {
+      "path": "vendor/yyjson/LICENSE",
+      "repository": "ibireme/yyjson",
+      "ref": "0.13.0",
+      "github_blob_sha": "a09bff355348932f9a1bd8c2e7417afb1ec0c943",
+      "url": "https://github.com/ibireme/yyjson/blob/0.13.0/LICENSE",
+      "sha256": "45e384d3d52c73cba3a64d6e6c25d47cd738cd8a55c30629e3201046eda62947"
+    },
+    {
+      "path": "vendor/litert/LICENSE",
+      "repository": "google-ai-edge/LiteRT-LM",
+      "ref": "v0.19.1",
+      "github_blob_sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/v0.19.1/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    }
+  ]
+}
