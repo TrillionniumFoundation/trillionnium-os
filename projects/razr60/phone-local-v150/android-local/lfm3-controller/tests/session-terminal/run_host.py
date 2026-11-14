@@ -200,7 +200,7 @@ for mode in ["host_owning_stream","android_nonowning_stream"]:
     row={"mode":mode,"helper_source_sha256":hashlib.sha256(text.encode()).hexdigest(),
          "helper_adaptation":"one FileInputStream import replacement only" if mode=="android_nonowning_stream" else "exact production source",
          "all_pass":False}
-    command=[str(java),"-m","jdk.compiler/com.sun.tools.javac.Main","-source","8","-target","8","-Xlint:all,-options","-Werror","-d",str(classes)]+[str(p) for p in common_sources]+[str(actual_helper)]
+    command=[str(java),"-m","jdk.compiler/com.sun.tools.javac.Main","-encoding","UTF-8","-source","8","-target","8","-Xlint:all,-options","-Werror","-d",str(classes)]+[str(p) for p in common_sources]+[str(actual_helper)]
     row["compile_command"]=command;p=subprocess.run(command,capture_output=True,timeout=90)
     (mode_dir/"compiler.stdout").write_bytes(p.stdout);(mode_dir/"compiler.stderr").write_bytes(p.stderr);row["compiler_returncode"]=p.returncode
     if p.returncode==0:

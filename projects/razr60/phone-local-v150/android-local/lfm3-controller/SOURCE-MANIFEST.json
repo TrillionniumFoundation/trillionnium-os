@@ -1,11 +1,11 @@
 {
   "android_qualified": false,
   "base_source": {
-    "commit": "c8a1f0f9d2b3de3d75758a661ca5efc85a582e4f",
-    "component_tree": "2dd7220a237b59b6edfcc66d27a991288ef18dd5",
-    "source_manifest_sha256": "147df7d1e1f184abdb7e26f6502737b91f0a631adb3f353f7d25a84701fb7acf"
+    "commit": "d88c02f41675b2b09ceaf4199db9754f46d737b6",
+    "component_tree": "0408e366da3e897731e609c6a4bf8cb7b291bbbb",
+    "source_manifest_sha256": "a58dd8bc898767b9ca8b9a377c5791b798fbc0e8ed961ce573d66fbf628bb963"
   },
-  "candidate_status": "r14_approved_code_passed_unified_host_gates_pending_frozen_android_and_phone_acceptance",
+  "candidate_status": "r15_explicit_fixture_utf8_pending_fresh_frozen_108_plus_15_and_phone_acceptance",
   "candidate_version_assigned": true,
   "complete_source_files": 1865,
   "current_validation": {
@@ -130,6 +130,7 @@
         }
       ],
       "post_test_source_change": "SOURCE-MANIFEST.json evidence metadata only; every listed file byte is unchanged",
+      "scope": "Historical R14 author receipts, not qualification of this child head. The original frozen C-locale failure is retained separately.",
       "tested_source_manifest_sha256": "8a00da455a18e83762f85d23dae015f66f6df5aeeb2984575c8fdec456ccdfc1"
     },
     "full_android_build": false,
@@ -138,7 +139,17 @@
     "native_product_quote_business_verified": false,
     "original_failures_preserved": true,
     "phone_tested": false,
-    "strict_host_gate": "All 108 canonical checks and 15 required native gates passed on the same production and test bytes; final manifest evidence metadata is bound separately. Frozen Android build and phone outcomes remain required."
+    "strict_host_gate": "The original R14 frozen build passed the canonical 108 and first 14 native gates, then exposed the terminal fixture javac charset failure under C locale. The corrected terminal gate passed both modes with the same C environment. This child requires fresh complete frozen 108 plus 15 before build qualification.",
+    "targeted_utf8_c_locale_regression": {
+      "LANG": "C",
+      "LC_ALL": "C",
+      "assertions": 515,
+      "both_modes_compile_and_run_exit_zero": true,
+      "cases": 88,
+      "cases_sha256": "98d9b5e878c37a96d283887c6300d944dcfac6b00581635a77e88cfc54ccedd3",
+      "generated_18_and_extracted_20_unchanged": true,
+      "result_sha256": "c42eeeb045dbad971ccb5205327875060ea24e9e51272ccc039f699f743a4753"
+    }
   },
   "files": [
     {
@@ -8647,9 +8658,9 @@
       "sha256": "0b0fd3e76ea9299b53e2dc54695f0b6dad23c89fe4c952333cff99657e894317"
     },
     {
-      "bytes": 16295,
+      "bytes": 16315,
       "path": "tests/session-terminal/run_host.py",
-      "sha256": "f3edf213833e97a31bb69268194c2a3b6b6436a34646826b5fa61eca2ac62f39"
+      "sha256": "e90b2bd1ba7d727bac446a45eb310089387d72c904a62df41cffc7b6af04d34e"
     },
     {
       "bytes": 23450,
@@ -10898,12 +10909,12 @@
       "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
       "git_blob": "0b930697d296f0945d8d0b584c54c10e0a28f583",
       "path": ".github/workflows/hepta-local-android.yml",
-      "prior_commit": "c8a1f0f9d2b3de3d75758a661ca5efc85a582e4f",
-      "prior_git_blob": "ad1201ec1ecb1bb9633cf360e3c5eac95ec44fe3",
+      "prior_commit": "d88c02f41675b2b09ceaf4199db9754f46d737b6",
+      "prior_git_blob": "0b930697d296f0945d8d0b584c54c10e0a28f583",
       "sha256": "28c49c65d2d963723ba318667b65dc7b92d2c4d36b14d48635dfc89653eaa54b"
     },
-    "native_host_gate_contract_sha256": "805fdebe4b11ea97afb15dc285a60f84a296a296e24ec069c26c59923271d187",
-    "normal_git_parent": "c8a1f0f9d2b3de3d75758a661ca5efc85a582e4f",
+    "native_host_gate_contract_sha256": "a68ac8add6b09619ace5d505f5ab5cb55db91e88cbc1ee247427d94477eff617",
+    "normal_git_parent": "d88c02f41675b2b09ceaf4199db9754f46d737b6",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -11058,6 +11069,29 @@
     "terminal_full_result_remains_sha_bound_private_record": true,
     "terminal_session_limit_bytes": 65536,
     "xiaomi_login_return": "one model decision with same-attempt pre-effect release proof; no credentials or terms action"
+  },
+  "r15_terminal_fixture_encoding_amendment": {
+    "all_137_production_java_bytes_unchanged": true,
+    "all_15_required_gates_retained": true,
+    "cases_or_assertions_removed": false,
+    "cause": "JDK17 default javac encoding was US-ASCII in the fixed LANG=C/LC_ALL=C build environment.",
+    "changed_program": "tests/session-terminal/run_host.py",
+    "compiler_argv_addition": [
+      "-encoding",
+      "UTF-8"
+    ],
+    "locale_changed": false,
+    "new_frozen_full_build_required": true,
+    "new_native_host_gate_contract_sha256": "a68ac8add6b09619ace5d505f5ab5cb55db91e88cbc1ee247427d94477eff617",
+    "new_phone_pass_claimed": false,
+    "new_runner_sha256": "e90b2bd1ba7d727bac446a45eb310089387d72c904a62df41cffc7b6af04d34e",
+    "old_runner_sha256": "f3edf213833e97a31bb69268194c2a3b6b6436a34646826b5fa61eca2ac62f39",
+    "original_frozen_failure_preserved": true,
+    "original_frozen_failure_result_sha256": "c2448ad707c052b6ce3e15b0f9052e0e8ecb79f8c1a6d328057e3395e78d7a25",
+    "parent_commit": "d88c02f41675b2b09ceaf4199db9754f46d737b6",
+    "production_bytes_changed": false,
+    "source_membership_changed": false,
+    "targeted_pass_result_sha256": "c42eeeb045dbad971ccb5205327875060ea24e9e51272ccc039f699f743a4753"
   },
   "release_version_assigned": false,
   "schema": "hepta.local-source.v3",
