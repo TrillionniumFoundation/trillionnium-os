@@ -334,7 +334,7 @@ jobs:
       - name: Run host contracts
         working-directory: ${{ env.HEPTA_SOURCE }}
         run: python -B tools/run_host_checks.py --out "$RUNNER_TEMP/hepta-host-checks" --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar"
-      - name: Run all six required native App regression gates
+      - name: Run all seven required native App regression gates
         run: |
           set -euo pipefail
           hepta_native_source="$GITHUB_WORKSPACE/$HEPTA_SOURCE"
@@ -355,6 +355,8 @@ jobs:
             --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar"
           python -B "$hepta_native_source/tests/owned-generation-mixed-uid/run_host.py" \
             --source "$hepta_native_source" --output "$hepta_native_out/mixed-uid" --cc "$(command -v cc)"
+          python -B "$hepta_native_source/tests/owned-single-task/run_host.py" \
+            --source "$hepta_native_source" --output "$hepta_native_out/owned-single-task" --java-home "$JAVA_HOME" --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar"
       - name: Preserve all original native App gate results and streams
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

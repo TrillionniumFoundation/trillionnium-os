@@ -169,9 +169,13 @@ final class NativeCtripFlightPage {
                 return new Page(frame,CALENDAR,"day_cells_not_exposed_by_native_provider",null,null,null,null,null,Collections.<DateCell>emptyList(),Collections.<Quote>emptyList(),Collections.<Map<String,Object>>emptyList(),values);
             }
             List<NativeAppEvidence.Node> tiles=findId(frame,PREFIX+"home_grid_flight_widget");
-            if(tiles.size()==1){NativeAppEvidence.Node tile=tiles.get(0);need(clickable(frame,tile),"actual home flight control required");
-                List<NativeAppEvidence.Node> labels=findText(frame,"机票");int matched=0;for(NativeAppEvidence.Node n:labels)if(n.within(tile))matched++;
-                need(matched==1,"unique same-tile flight label required");
+            if(tiles.size()==1){NativeAppEvidence.Node tile=tiles.get(0);
+                if(tile.label.isEmpty())need(resourceHomeClick(frame,tile.id),"exact installed-provider home resource control required");
+                else{
+                    need(clickable(frame,tile),"actual home flight control required");
+                    List<NativeAppEvidence.Node> labels=findText(frame,"机票");int matched=0;for(NativeAppEvidence.Node n:labels)if(n.within(tile))matched++;
+                    need(matched==1,"unique same-tile flight label required");
+                }
                 return new Page(frame,HOME,null,null,tile,null,null,null,Collections.<DateCell>emptyList(),Collections.<Quote>emptyList(),Collections.<Map<String,Object>>emptyList(),Collections.<Map<String,Object>>emptyList());}
             return empty(frame,UNAVAILABLE,"native_page_provider_not_recognized");
         }catch(IllegalArgumentException rejected){return empty(frame,UNAVAILABLE,"native_page_fields_rejected: "+bounded(rejected.getMessage(),180));}
@@ -260,6 +264,46 @@ final class NativeCtripFlightPage {
             if(n.description.startsWith(role)&&n.text.matches(".*(?:次日|后天|跨天|中转|经停).*"))throw new IllegalArgumentException("unimplemented date-offset or connection fields");
         }
         return new Quote(frame,number,wrapper,header,depart,arrive,depAirport,arrAirport,carrier,cabin,price,currency,tags);
+    }
+
+    /** A version-bound native adapter capability, never an inferred AX label.
+     * NativeAppSession separately verifies the complete installed APK identity
+     * before every observation and action. This narrow branch describes the
+     * actual v1779 cold-home grid whose five image tiles expose no AX text.
+     * The model must still select the exact current node with node_label="".
+     */
+    static boolean resourceHomeClick(NativeAppEvidence.Frame frame,String nodeId){
+        try{
+            need(frame!=null&&PACKAGE.equals(frame.packageName)&&frame.metadataObserved&&frame.windowType==1
+                    &&frame.collectionComplete&&!frame.nodesTruncated,"complete native application frame required");
+            need(!anyRole(frame,"列表页头部重新搜索")&&!anyRole(frame,"单程TripSwitcherCity")
+                    &&!anyRole(frame,"单程TripSwitcherDate")&&!anyRole(frame,"单程列表页")
+                    &&findId(frame,PREFIX+"bt_submit_inquire").isEmpty()
+                    &&findId(frame,PREFIX+"calendar_month_title_left_tv").isEmpty(),"home-only resource capability required");
+            NativeAppEvidence.Node tile=oneId(frame,PREFIX+"home_grid_flight_widget");
+            need(tile.id.equals(nodeId)&&tile==frame.byId.get(nodeId)&&tile.label.isEmpty()
+                    &&tile.text.isEmpty()&&tile.description.isEmpty(),"same actual empty-label flight node required");
+            String pagerPath=parent(tile.path);NativeAppEvidence.Node pager=null;
+            for(NativeAppEvidence.Node n:frame.nodes)if(pagerPath.equals(n.path)){
+                need(pager==null,"one actual parent pager required");pager=n;
+            }
+            need(frame.usable(pager)&&"androidx.viewpager.widget.ViewPager".equals(pager.className)
+                    &&"android.widget.FrameLayout".equals(pager.parentClass)&&pager.enabled&&!pager.password
+                    &&pager.scrollable&&!pager.editable,"actual home pager required");
+            String[] ids={"home_grid_hotel_widget","home_grid_flight_widget","home_grid_train_widget","home_grid_travel_widget","home_grid_strategy_widget"};
+            NativeAppEvidence.Node previous=null;
+            for(int i=0;i<ids.length;i++){
+                NativeAppEvidence.Node n=oneId(frame,PREFIX+ids[i]);
+                need(n.within(pager)&&n.path.equals(pager.path+"/"+i)&&"android.view.ViewGroup".equals(n.className)
+                        &&pager.className.equals(n.parentClass)&&n.enabled&&n.clickable&&!n.editable&&!n.scrollable&&!n.password
+                        &&Boolean.FALSE.equals(n.selected)&&Boolean.FALSE.equals(n.checkable)&&Boolean.FALSE.equals(n.checked),
+                        "same actual enabled image-tile row required");
+                if(previous!=null)need(previous.right<=n.left&&previous.top==n.top&&previous.bottom==n.bottom,
+                        "ordered nonoverlapping same-row home anchors required");
+                previous=n;
+            }
+            return true;
+        }catch(IllegalArgumentException rejected){return false;}
     }
 
     private static NativeAppEvidence.Node oneCard(NativeAppEvidence.Frame frame,NativeAppEvidence.Node header,String role){

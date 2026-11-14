@@ -34,7 +34,7 @@ def main():
     # The synthetic Android launch endpoint executes only after this exact fragment returns.
     admission = section(broker,
         '                    BackgroundOwnedTaskPolicy.Plan taskPolicy = BackgroundOwnedTaskPolicy.choose(',
-        '                    if(fixedTarget!=null){')
+        '                    // End unchanged standard/document admission.')
     guard = section(broker, '    private static void requireIsolatedTaskLaunch(',
         '    private JSONObject taskLaunchPolicyEvidence(')
     snapshot = section(broker, '    /** Requires the privileged whole-root list,',
@@ -49,6 +49,7 @@ public final class BrokerLaunchAdmissionFixture {
     final Map<String,BackgroundOwnedTaskPolicy.Plan> taskLaunchPolicies=new LinkedHashMap<String,BackgroundOwnedTaskPolicy.Plan>();
     int flagMutations, launches;
     Object activityTasks;Method allRootTasks;
+    BackgroundOwnedSingleTask ownedSingleTask;
     static final class Config {final String generation=GENERATION;}
     static final class Request {final String requestId="request",packageName="test.b";}
     final class Intent {
@@ -111,7 +112,7 @@ final class BrokerProtocol {
     compiler = [shutil.which('javac')] if shutil.which('javac') else ['java', '-m', 'jdk.compiler/com.sun.tools.javac.Main']
     compile_command = compiler + (['--release', '8'] if args.release8 else ['-source', '8', '-target', '8']) + [
         '-encoding', 'UTF-8', '-Xlint:all' if args.release8 else '-Xlint:all,-options', '-Werror', '-d', str(classes),
-        str(policy), str(fixture_path), str(component_path), str(protocol_path), str(test)]
+        str(policy), str(pkg/'BackgroundOwnedSingleTask.java'), str(fixture_path), str(component_path), str(protocol_path), str(test)]
     records=[]
     for name, command in [('compile',compile_command),('counterexample-and-guard',['java','-cp',str(classes),'org.trillionnium.hepta.background.BackgroundLaunchIsolationHostTest'])]:
         run = subprocess.run(command,capture_output=True,text=True,timeout=60)
@@ -123,6 +124,7 @@ final class BrokerProtocol {
             return run.returncode
     report={'schema':'hepta.background-launch-isolation-host.v1','status':'passed','stages':records,
         'source_sha256':{'BackgroundDisplayBroker.java':hashlib.sha256(broker.encode()).hexdigest(),
+            'BackgroundOwnedSingleTask.java':hashlib.sha256((pkg/'BackgroundOwnedSingleTask.java').read_bytes()).hexdigest(),
             'BackgroundOwnedTaskPolicy.java':hashlib.sha256(policy.read_bytes()).hexdigest()},
         'extracted_sha256':{name:hashlib.sha256(piece.encode()).hexdigest() for name,piece in [('admission',admission),('guard',guard),('snapshot',snapshot)]},
         'compiler_contract':'Java 8 API release gate' if args.release8 else 'Java 8 source/target only; no API release claim',

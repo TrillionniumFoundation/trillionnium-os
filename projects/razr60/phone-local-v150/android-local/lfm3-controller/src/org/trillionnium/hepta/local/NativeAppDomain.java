@@ -15,7 +15,7 @@ final class NativeAppDomain {
     static final String SCHEMA="hepta.native-app-action-domain.v1";
     final NativeAppEvidence.Frame frame;
     final String phase;
-    final Set<String> clickIds;
+    final Set<String> clickIds,resourceClickIds;
     final Map<String,String> editValues,purposes;
     final boolean backAllowed,resultReady;
     final List<String> missing;
@@ -26,6 +26,10 @@ final class NativeAppDomain {
         NativeAppEvidence.need(frame!=null&&phase!=null,"native action domain source required");
         this.frame=frame;this.phase=phase;clickIds=Collections.unmodifiableSet(new TreeSet<String>(clicks));
         editValues=Collections.unmodifiableMap(new TreeMap<String,String>(edits));this.purposes=Collections.unmodifiableMap(new TreeMap<String,String>(purposes));
+        Set<String> resourceIds=new TreeSet<String>();
+        for(String id:clickIds)if(NativeCtripFlightPage.HOME.equals(phase)&&"open_flight_form".equals(this.purposes.get(id))
+                &&NativeCtripFlightPage.resourceHomeClick(frame,id))resourceIds.add(id);
+        resourceClickIds=Collections.unmodifiableSet(resourceIds);
         for(String id:clickIds)requireNode(id,true,false);
         for(Map.Entry<String,String> e:editValues.entrySet()){requireNode(e.getKey(),false,true);NativeAppEvidence.need(e.getValue()!=null,"native literal edit value");}
         for(String id:this.purposes.keySet())NativeAppEvidence.need("back".equals(id)||clickIds.contains(id)||editValues.containsKey(id),"purpose without granted target");
@@ -35,7 +39,8 @@ final class NativeAppDomain {
     }
     private void requireNode(String id,boolean click,boolean edit){NativeAppEvidence.Node n=frame.byId.get(id);
         NativeAppEvidence.need(frame.collectionComplete&&!frame.nodesTruncated&&frame.usable(n)&&n.enabled&&!n.password
-                &&(!click||n.clickable&&!n.label.isEmpty())&&(!edit||n.editable),"native permission must name its actual current node");}
+                &&(!click||n.clickable&&(!n.label.isEmpty()||resourceClickIds.contains(id)))&&(!edit||n.editable),"native permission must name its actual current node");}
+    boolean permitsResourceClick(String id){return resourceClickIds.contains(id);}
     Set<String> clicks(Set<String> original){Set<String> out=new TreeSet<String>(original);out.retainAll(clickIds);return out;}
     Set<String> edits(Set<String> original){Set<String> out=new TreeSet<String>(original);out.retainAll(editValues.keySet());return out;}
     Set<String> openPackages(Set<String> original){return Collections.emptySet();}
@@ -65,6 +70,14 @@ final class NativeAppDomain {
         out.put("schema",SCHEMA);out.put("phase",phase);out.put("observation_id",frame.observationId);
         out.put("package",frame.packageName);out.put("background_generation",frame.generation);out.put("read_only_query_targets",purposes);
         out.put("literal_edit_values",editValues);out.put("back_allowed",backAllowed);out.put("provider",providerView);
+        if(!resourceClickIds.isEmpty()){
+            Map<String,Object> resources=new TreeMap<String,Object>();
+            for(String id:resourceClickIds){Map<String,Object> r=frame.byId.get(id).fact("description");
+                r.put("capability_source","installed_version_bound_native_provider");r.put("provider_version_code",NativeCtripFlightPage.VERSION_CODE);
+                r.put("provider_base_apk_sha256",NativeCtripFlightPage.BASE_APK_SHA256);r.put("purpose",purposes.get(id));
+                r.put("node_label",frame.byId.get(id).label);r.put("visible_label_inferred",false);resources.put(id,r);}
+            out.put("resource_clicks",resources);
+        }
         out.put("result_ready",resultReady);out.put("missing",missing);out.put("booking_purchase_or_payment_allowed",false);
         out.put("web_helper_allowed",false);out.put("external_model_allowed",false);return out;}
     Map<String,Object> evidence(){Map<String,Object> out=promptEvidence();out.put("source_frame",frame.evidence());

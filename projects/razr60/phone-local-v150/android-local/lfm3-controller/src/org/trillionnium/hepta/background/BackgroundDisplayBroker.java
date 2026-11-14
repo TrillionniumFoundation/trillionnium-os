@@ -83,6 +83,7 @@ public final class BackgroundDisplayBroker {
     private Method allRootTasks, startActivityAsUser, setImePolicy, getImePolicy, injectInput, keyDisplayId;
     private int virtualFlags, requiredDisplayFlags, forbiddenDisplayFlags, imeHide;
     private final Set<String> launched = new HashSet<String>();
+    private volatile BackgroundOwnedSingleTask ownedSingleTask;
     private final Set<String> fixedToolsConsumed=new HashSet<String>();
     private final java.util.Map<String,JSONObject> fixedIntentProofs=new java.util.LinkedHashMap<String,JSONObject>();
     private final java.util.Map<String,JSONObject> taskLaunchPolicies=new java.util.LinkedHashMap<String,JSONObject>();
@@ -279,9 +280,13 @@ public final class BackgroundDisplayBroker {
                   } finally { createInFlight = false; }
                 }
             } else if ("state".equals(r.operation)) {
-                if ("ACTIVE".equals(state)) { verifyDisplay(); verifyLaunchedLocations(snapshot()); }
+                if ("ACTIVE".equals(state)) {
+                    verifyDisplay(); verifyLaunchedLocations(snapshot());
+                    if(ownedSingleTask!=null&&!ownedSingleTask.observe())throw new BrokerProtocol.Refusal("OWNED_TASK_NOT_OBSERVED");
+                }
             } else if ("launch".equals(r.operation)||FixedIntentTools.isTool(r.operation)) {
                 guard(r, true);
+                if(ownedSingleTask!=null)throw new BrokerProtocol.Refusal("OWNED_TASK_LAUNCH_ALREADY_ATTEMPTED");
                 TaskSnapshot before = snapshot(); before.requireNoOtherDisplay(r.packageName, displayId);
                 final FixedIntentTarget fixedTarget;
                 final Intent intent;
@@ -299,7 +304,8 @@ public final class BackgroundDisplayBroker {
                         throw new BrokerProtocol.Refusal("PACKAGE_NOT_LAUNCHABLE");
                     ActivityInfo info = shell.getPackageManager().getActivityInfo(base.getComponent(), 0);
                     if (!info.enabled || !info.exported) throw new BrokerProtocol.Refusal("ACTIVITY_NOT_EXPORTED");
-                    intent = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+                    Intent nativeHome=BackgroundTaskOrganizer.nativeHome(shell,base);
+                    intent = nativeHome!=null ? nativeHome : new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
                         .setComponent(base.getComponent()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                 }
                 final BackgroundOwnedTaskPolicy.Activity initialActivity = launchActivityInfo(
@@ -315,11 +321,30 @@ public final class BackgroundDisplayBroker {
                     if (!initialActivity.same(currentActivity))
                         throw new BrokerProtocol.Refusal("LAUNCH_ACTIVITY_INFO_CHANGED");
                     guard(r, true);
+                    if (BackgroundOwnedSingleTask.eligible(currentActivity,intent.getFlags()) && fixedTarget==null) {
+                        if(ownedSingleTask!=null)throw new BrokerProtocol.Refusal("OWNED_TASK_LAUNCH_ALREADY_ATTEMPTED");
+                        BackgroundTaskOrganizer.recheckHome(shell,currentActivity);
+                        BackgroundTaskOrganizer organizer=new BackgroundTaskOrganizer(activityTasks,options,displayId,
+                            () -> { guard(r,true); snapshot().requireNoOtherDisplay(r.packageName,displayId); },
+                            () -> { snapshot().requireNoOtherDisplay(r.packageName,displayId); },
+                            () -> cleanupStarted.get() ? cleanupAt+CLEANUP_MS-100 : Math.min(r.deadline,expires));
+                        ownedSingleTask=new BackgroundOwnedSingleTask(organizer,config.generation,r.requestId,
+                            displayId,currentActivity,intent.getFlags());
+                        effectInFlight=true;
+                        try { ownedSingleTask.prepare(); } finally { effectInFlight=false; }
+                        BackgroundOwnedTaskPolicy.Activity preparedActivity=launchActivityInfo(
+                            intent.getComponent(),r.packageName,currentActivity.uid);
+                        if(!currentActivity.same(preparedActivity))throw new BrokerProtocol.Refusal("LAUNCH_ACTIVITY_INFO_CHANGED");
+                        BackgroundTaskOrganizer.recheckHome(shell,preparedActivity);
+                        ownedSingleTask.beforeDispatch();
+                    } else {
                     BackgroundOwnedTaskPolicy.Plan taskPolicy = BackgroundOwnedTaskPolicy.choose(
                         config.generation, displayId, r.packageName, currentActivity, intent.getFlags());
                     taskLaunchPolicies.put(r.requestId, taskLaunchPolicyEvidence(r, currentActivity, taskPolicy));
                     requireIsolatedTaskLaunch(taskPolicy);
                     intent.setFlags(taskPolicy.outboundFlags);
+                    // End unchanged standard/document admission.
+                    }
                     if(fixedTarget!=null){
                         if(!fixedToolsConsumed.add(r.operation))throw new BrokerProtocol.Refusal("FIXED_TOOL_ALREADY_CONSUMED");
                         fixedIntentProofs.put(r.requestId,new JSONObject().put("schema","hepta.background-fixed-intent.v1")
@@ -341,6 +366,7 @@ public final class BackgroundDisplayBroker {
                             null, options.toBundle(), 0);
                         if (!(launchResult instanceof Integer) || ((Integer) launchResult).intValue() < 0)
                             throw new BrokerProtocol.Refusal("FRAMEWORK_LAUNCH_NOT_ACCEPTED");
+                        if(ownedSingleTask!=null)ownedSingleTask.accepted(((Integer)launchResult).intValue());
                     }
                     finally { effectInFlight = false; }
                 }
@@ -349,7 +375,8 @@ public final class BackgroundDisplayBroker {
                     guard(r, true);
                     TaskSnapshot after = snapshot(); after.requireNoOtherDisplay(r.packageName, displayId);
                     verifyLaunchedLocations(after);
-                    if (r.packageName.equals(after.singleVisibleTop(displayId))) { observed = true; break; }
+                    if (r.packageName.equals(after.singleVisibleTop(displayId))
+                        && (ownedSingleTask==null || ownedSingleTask.observe())) { observed = true; break; }
                     Thread.sleep(40);
                 }
                 if (!observed) throw new BrokerProtocol.Refusal("LAUNCH_NOT_OBSERVED_ON_SESSION_DISPLAY");
@@ -530,11 +557,18 @@ public final class BackgroundDisplayBroker {
             // Root TaskInfo counts non-finishing descendant activities. Empty organizer containers have
             // literal "unknown" child names; admission requires all independent fields here.
             boolean emptyContainer = activities == 0 && !visible && top == null && base == null;
-            for (String name : names) {
+            boolean ownedAnchorSeen=false;
+            for (int childIndex=0;childIndex<names.length;childIndex++) {
+                String name=names[childIndex];
                 ComponentName child = name == null ? null : ComponentName.unflattenFromString(name);
                 if (child != null) packages.add(child.getPackageName());
                 else if (BrokerProtocol.packageName(name)) packages.add(name);
                 else if (emptyContainer && "unknown".equals(name)) { /* Empty task metadata; never ignore a resolved app package. */ }
+                else if ("unknown".equals(name) && !ownedAnchorSeen && ownedSingleTask!=null
+                    && ownedSingleTask.provesEmptyAnchor(id,type.getField("taskId").getInt(root),((int[])childIds)[childIndex])) {
+                    /* Only the new generation's fresh empty anchor; all other unresolved children still reject. */
+                    ownedAnchorSeen=true;
+                }
                 else throw new BrokerProtocol.Refusal("TASK_COMPONENT_UNRESOLVED");
             }
             rows.add(new TaskRow(id, visible, top == null ? null : top.getPackageName(), packages));
@@ -612,6 +646,8 @@ public final class BackgroundDisplayBroker {
                 // Mutating calls and release share one gate. If a Binder call stalls while holding it,
                 // the independent watchdog records UNKNOWN and terminates the owning process.
                 synchronized (dispatchGate) {
+                    BackgroundOwnedSingleTask ownedTasks=ownedSingleTask;
+                    if(ownedTasks!=null)try { ownedTasks.retire(); } catch(Throwable error) { releaseCallFailed=true; }
                     VirtualDisplay owned = virtual;
                     if (owned != null) try { owned.release(); } catch (Throwable error) { releaseCallFailed = true; }
                     ImageReader reader = surfaceReader;
@@ -626,7 +662,7 @@ public final class BackgroundDisplayBroker {
                     if (dm == null) { gone = virtual == null && !createInFlight && !effectInFlight; break; }
                     boolean present = displayId > 0 && dm.getDisplay(displayId) != null;
                     for (Display d : dm.getDisplays()) if (displayName.equals(d.getName())) present = true;
-                    if (!present) { gone = true; break; }
+                    if (!present && (ownedSingleTask==null || ownedSingleTask.absent())) { gone = true; break; }
                     Thread.sleep(25);
                 }
                 // A release exception can still end in proven absence; the actual absence is decisive.
@@ -659,6 +695,7 @@ public final class BackgroundDisplayBroker {
             if(fixedIntentProofs.containsKey(r.requestId))value.put("fixed_intent",fixedIntentProofs.get(r.requestId));
             if(taskLaunchPolicies.containsKey(r.requestId))value.put("task_launch_policy",taskLaunchPolicies.get(r.requestId));
         }
+        if(ownedSingleTask!=null)value.put("owned_single_task",new JSONObject(ownedSingleTask.evidence()));
         if (error != null) value.put("error", error);
         if (!terminalReason.isEmpty()) value.put("terminal_reason", terminalReason);
         return value.toString().getBytes(StandardCharsets.UTF_8);
@@ -666,7 +703,8 @@ public final class BackgroundDisplayBroker {
     private void printTerminal() {
         try { System.out.println(new JSONObject().put("schema", "hepta.background-broker-terminal.v1")
             .put("generation", config.generation).put("state", state).put("display_id", displayId)
-            .put("reason", terminalReason).put("release_confirmed", "RELEASED".equals(state))); }
+            .put("reason", terminalReason).put("release_confirmed", "RELEASED".equals(state))
+            .put("owned_single_task",ownedSingleTask==null?JSONObject.NULL:new JSONObject(ownedSingleTask.evidence()))); }
         catch (Throwable ignored) { System.err.println("terminal_receipt_unavailable"); }
     }
     private static int fields(Class<?> type, String... names) throws Exception {
@@ -676,6 +714,7 @@ public final class BackgroundDisplayBroker {
         while (error instanceof InvocationTargetException && ((InvocationTargetException) error).getCause() != null)
             error = ((InvocationTargetException) error).getCause();
         if (error instanceof BrokerProtocol.Refusal) return ((BrokerProtocol.Refusal) error).code;
+        if (error instanceof BackgroundOwnedSingleTask.Refusal) return ((BackgroundOwnedSingleTask.Refusal) error).code;
         if (error instanceof SecurityException) return "FRAMEWORK_PERMISSION_DENIED";
         if (error instanceof NoSuchFieldException || error instanceof NoSuchMethodException || error instanceof ClassNotFoundException)
             return "FRAMEWORK_API_UNAVAILABLE";

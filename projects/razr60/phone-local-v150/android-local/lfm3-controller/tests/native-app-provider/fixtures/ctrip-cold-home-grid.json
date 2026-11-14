@@ -1,0 +1,318 @@
+{
+  "schema": "hepta.ctrip-cold-home-grid-host-fixture.v1",
+  "provenance": {
+    "original_observation_id": "48597130a56044489fba97a8307d5610",
+    "original_screen_sha256": "770bbaf0ddbfb946a82c5ff5a0f27a927b7bd80ee2573ad1441022ac5d6ad1dd",
+    "original_app_tree_sha256": "74208cc6f1dfe7f3a4e22f975a363ca94d8496938cb61c242ddc2995a73ead41",
+    "original_retained_nodes": 68,
+    "selected_nodes": 6,
+    "source": "exact six observed grid records from ROOT-reviewed native background frame",
+    "boundary": "Other 62 records omitted from this public regression fixture; task, complete-frame counts, model and Android authority are host fixtures; no phone execution or business result."
+  },
+  "window": {
+    "scope": "active_root_only",
+    "metadata_status": "observed",
+    "window_id": 3826,
+    "root_bounds": [
+      0,
+      0,
+      720,
+      1280
+    ],
+    "root_class": "android.widget.FrameLayout",
+    "root_class_truncated": false,
+    "type": 1,
+    "display_id": 52,
+    "bounds": [
+      0,
+      0,
+      720,
+      1280
+    ],
+    "title": "携程旅行",
+    "title_truncated": false
+  },
+  "screen_width": 720,
+  "screen_height": 1280,
+  "nodes": [
+    {
+      "id": "n0",
+      "bounds": [
+        0,
+        262,
+        720,
+        626
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "androidx.viewpager.widget.ViewPager",
+      "node_app_tree_sha256": "769c30888cfcdde475e5575751c212d906d980ab34e7d7ccd64b2974bcf75c7f",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0/0",
+        "parent_class": "android.widget.FrameLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scrollable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [
+        "forward"
+      ],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n14",
+      "bounds": [
+        18,
+        280,
+        154,
+        395
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "view_id": "ctrip.android.view:id/home_grid_hotel_widget",
+      "node_app_tree_sha256": "983fc1b1359191acd0280ff8a39e458d44721ef0ad5929d2002ff758a50a84e6",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0/0/0",
+        "parent_class": "androidx.viewpager.widget.ViewPager",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n15",
+      "bounds": [
+        155,
+        280,
+        291,
+        395
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "view_id": "ctrip.android.view:id/home_grid_flight_widget",
+      "node_app_tree_sha256": "da3a9b7a020a8c56cd09fc4c9bf22b549443250385a19ceeae9d1ef7e78acbca",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0/0/1",
+        "parent_class": "androidx.viewpager.widget.ViewPager",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n16",
+      "bounds": [
+        292,
+        280,
+        428,
+        395
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "view_id": "ctrip.android.view:id/home_grid_train_widget",
+      "node_app_tree_sha256": "f3fa6521995791f7a42a86f9571fd4ce9724a17a9f2767923b71d02e43e35af2",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0/0/2",
+        "parent_class": "androidx.viewpager.widget.ViewPager",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n17",
+      "bounds": [
+        429,
+        280,
+        565,
+        395
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "view_id": "ctrip.android.view:id/home_grid_travel_widget",
+      "node_app_tree_sha256": "20f42b3561c9cc41f21737fe028786b7059920d0372665ad2f73e2db008ddbe1",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0/0/3",
+        "parent_class": "androidx.viewpager.widget.ViewPager",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n18",
+      "bounds": [
+        566,
+        280,
+        702,
+        395
+      ],
+      "package": "ctrip.android.view",
+      "class_name": "android.view.ViewGroup",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "view_id": "ctrip.android.view:id/home_grid_strategy_widget",
+      "node_app_tree_sha256": "7ea3af69f6d69f8460ad3ee16b12380dc2ee1f9244c027c0779f81c27f7b12c2",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0/0/4",
+        "parent_class": "androidx.viewpager.widget.ViewPager",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "native_selection_state": {
+        "schema": "hepta.native-selection-state.v1",
+        "observed": true,
+        "selected": false,
+        "checkable": false,
+        "checked": false,
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    }
+  ]
+}

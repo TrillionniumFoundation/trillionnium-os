@@ -171,7 +171,9 @@ final class BackgroundSession {
             .put("app_uid",android.os.Process.myUid()).put("owner_sha256",ownerSha256)
             .put("generation",generation).put("socket",socketName).put("display_name",displayName)
             .put("display_id",displayId).put("state",state).put("created_elapsed_ms",createdElapsed).put("expires_elapsed_ms",expiresElapsed)
-            .put("boot_count",bootCount).put("selection",selection.json());}
+            .put("boot_count",bootCount).put("selection",selection.json())
+            // This durable pre-spawn ceiling covers every later permitted Xiaomi launch.
+            .put("owned_task_retirement_required",selection.allowedPackages.contains("com.xiaomi.shop"));}
 
     /** Worker only. The durable lease precedes su and the first create request. */
     void start(HeptaAccessibilityService.Cancellation cancellation)throws Exception{
@@ -539,14 +541,23 @@ final class BackgroundSession {
         int currentBoot=readBootCount(context),oldBoot=old.getInt("boot_count");
         boolean newBoot=currentBoot>=0&&oldBoot>=0&&currentBoot!=oldBoot;
         boolean noLateCreate=newBoot||SystemClock.elapsedRealtime()>expiry+2000;
-        boolean known=(released||noLateCreate)&&displayAbsent(context,id,name);
+        boolean ownedTaskRetirement=ownedTaskRetirementRequired(old);
+        boolean known=(released||(!ownedTaskRetirement&&noLateCreate))&&displayAbsent(context,id,name);
         JSONObject evidence=new JSONObject().put("schema","hepta.background-reconcile.v1").put("generation",generation)
                 .put("cleanup_known",known).put("broker_released",released).put("boot_changed",newBoot)
+                .put("owned_task_retirement_required",ownedTaskRetirement)
                 .put("no_late_create",noLateCreate).put("display_absence_observed",displayAbsent(context,id,name))
                 .put("automatic_resume",false).put("broker_response",response==null?JSONObject.NULL:response);
         if(known){root.unchanged(context);if(!generation.equals(readJournal(path).getString("generation")))throw new IOException("清理期间后台租约发生变化");
             Os.remove(path.getPath());MobiMindPrivateFiles.syncDirectory(root.path);}
         return new Cleanup(known,evidence);
+    }
+    /** Old journals retain their old contract; new owned-task leases never infer recents absence. */
+    private static boolean ownedTaskRetirementRequired(JSONObject journal)throws Exception{
+        if(!journal.has("owned_task_retirement_required"))return false;
+        Object required=journal.get("owned_task_retirement_required");
+        if(!(required instanceof Boolean))throw new IOException("后台任务退休要求不是严格布尔值");
+        return ((Boolean)required).booleanValue();
     }
     private static JSONObject readJournal(File file)throws Exception{
         byte[] bytes=MobiMindPrivateFiles.read(file,16384,true).bytes;
