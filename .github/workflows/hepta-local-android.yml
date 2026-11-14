@@ -406,6 +406,35 @@ jobs:
             --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar" \
             > "$hepta_native_out/native-xiaomi-home-loading.runner.stdout" \
             2> "$hepta_native_out/native-xiaomi-home-loading.runner.stderr"
+      - name: Run required native query reservation and drained rejection gate
+        run: |
+          set -euo pipefail
+          hepta_native_source="$GITHUB_WORKSPACE/$HEPTA_SOURCE"
+          hepta_native_out="$RUNNER_TEMP/hepta-native-app-gates"
+          python -B "$hepta_native_source/tests/native-query-reservation/run_host.py" \
+            --source "$hepta_native_source" --output "$hepta_native_out/native-query-reservation" --java-home "$JAVA_HOME" \
+            --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar" \
+            > "$hepta_native_out/native-query-reservation.runner.stdout" \
+            2> "$hepta_native_out/native-query-reservation.runner.stderr"
+      - name: Run required native Xiaomi login return boundary gate
+        run: |
+          set -euo pipefail
+          hepta_native_source="$GITHUB_WORKSPACE/$HEPTA_SOURCE"
+          hepta_native_out="$RUNNER_TEMP/hepta-native-app-gates"
+          python -B "$hepta_native_source/tests/native-xiaomi-login/run_host.py" \
+            --source "$hepta_native_source" --output "$hepta_native_out/native-xiaomi-login" --java-home "$JAVA_HOME" \
+            --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar" \
+            > "$hepta_native_out/native-xiaomi-login.runner.stdout" \
+            2> "$hepta_native_out/native-xiaomi-login.runner.stderr"
+      - name: Run required bounded terminal session evidence gate
+        run: |
+          set -euo pipefail
+          hepta_native_source="$GITHUB_WORKSPACE/$HEPTA_SOURCE"
+          hepta_native_out="$RUNNER_TEMP/hepta-native-app-gates"
+          python -B "$hepta_native_source/tests/session-terminal/run_host.py" \
+            --output "$hepta_native_out/session-terminal" --java-home "$JAVA_HOME" \
+            > "$hepta_native_out/session-terminal.runner.stdout" \
+            2> "$hepta_native_out/session-terminal.runner.stderr"
       - name: Preserve all original native App gate results and streams
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

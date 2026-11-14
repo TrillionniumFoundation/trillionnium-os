@@ -101,7 +101,7 @@ def sources(source,out):
       source/'tests/native-app-provider/NativeResourceHomeHostTest.java',
       source/'tests/native-xiaomi-image-modal/ActualXiaomiImageModalFixture.java']
     paths += [source/TEST/(name+'.java') for name in ['IntegrationChecks','NativeActionSessionHostTest',
-        'NativeActionSnapshotCheckHostTest','NativeActionIntegrationHostTest']]
+        'NativeActionSnapshotCheckHostTest','NativeCarouselCurrentnessHostTest','NativeActionIntegrationHostTest']]
     paths += sorted((out/'generated').rglob('*.java'))
     if not any(str(p).endswith('/android/util/Log.java') for p in paths):
         log=out/'generated/android/util/Log.java'

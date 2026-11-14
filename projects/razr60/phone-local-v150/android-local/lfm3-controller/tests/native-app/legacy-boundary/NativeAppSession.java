@@ -31,6 +31,8 @@ final class NativeAppSession {
     void beforeModelAction(int step,ActionDecision action,String run,long now)throws Exception{throw unavailable();}
     void modelActionOutcome(ActionDecision action,String run,boolean accepted,boolean dispatched,
             boolean stale,String receiptSha,long finished)throws Exception{throw unavailable();}
+    void modelActionOutcome(ActionDecision action,String run,boolean accepted,boolean dispatched,
+            boolean stale,String receiptSha,long finished,Map<String,Object> actionExecution)throws Exception{throw unavailable();}
     void retire()throws Exception{throw unavailable();}
     private static UnsupportedOperationException unavailable(){
         return new UnsupportedOperationException("Native App session is not executed by legacy host suites");

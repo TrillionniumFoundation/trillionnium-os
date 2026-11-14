@@ -25,6 +25,9 @@ public final class JSONObject {
         Object value=get(key);if(value instanceof JSONObject)return (JSONObject)value;
         if(value instanceof Map<?,?>)return new JSONObject((Map<?,?>)value);throw new JSONException("not object");
     }
+    public JSONObject optJSONObject(String key){
+        try{return getJSONObject(key);}catch(JSONException missingOrWrongType){return null;}
+    }
     public boolean optBoolean(String key,boolean fallback){Object value=fields.get(key);return value instanceof Boolean?(Boolean)value:fallback;}
     public boolean has(String key){return fields.containsKey(key);}
     public boolean isNull(String key){return !has(key)||fields.get(key)==NULL||fields.get(key)==null;}

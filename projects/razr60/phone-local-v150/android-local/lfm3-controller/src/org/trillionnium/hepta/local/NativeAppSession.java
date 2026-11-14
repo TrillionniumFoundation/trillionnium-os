@@ -41,7 +41,11 @@ final class NativeAppSession {
     private int ordinal,observationOrdinal,productHomeLoadingWaits;
     private long productHomeLoadingSince=-1;
     private boolean retired,terminalConsumed,invalid,productQueryAttempted,productModalExitAttempted;
+    private boolean productLoginExitReserved;
+    private String productLoginProposalObservation;
     private String invalidReason;
+    private String reservationReobserveId;
+    private long reservationReobserveAfter;
     private LocalDate calendarProposedDate,confirmedFormDate,lastQueryDate;
     private Map<String,Object> calendarInspection,calendarYearProof,lastQueryProof,productQueryProof,productOpenProof;
     private String productSemantic;
@@ -88,6 +92,8 @@ final class NativeAppSession {
      * been written create-only. A later frame never replaces an earlier one. */
     void observed(NativeAppEvidence.Frame frame)throws Exception{
         live();requireFrame(frame);verifyInstalled();
+        if(reservationReobserveId!=null)need(!reservationReobserveId.equals(frame.observationId)&&frame.capturedElapsedMs>=reservationReobserveAfter,
+                "released query requires a newly captured observation after the drained rejection");
         String old=observations.get(frame.observationId);
         if(old!=null){need(old.equals(frame.sourceRecordSha)&&current!=null&&current.frame.sameSource(frame),"observation ID reused or old frame replayed");return;}
         need(inFlight==null,"native observation cannot advance before its action outcome");
@@ -103,6 +109,7 @@ final class NativeAppSession {
         Map<String,Object> e=base();e.put("frame",frame.evidence());e.put("provider",flight!=null?flight.evidence():product.evidence());
         e.put("domain",current.evidence());e.put("progress",progress());
         journal.write(String.format(java.util.Locale.ROOT,"native-app-page-%04d.json",observationOrdinal),e);
+        reservationReobserveId=null;reservationReobserveAfter=0;
     }
     private NativeAppDomain buildDomain(NativeAppEvidence.Frame frame){
         Set<String> clicks=new TreeSet<String>();Map<String,String> edits=new TreeMap<String,String>(),purposes=new TreeMap<String,String>();
@@ -122,6 +129,24 @@ final class NativeAppSession {
             view.put("next_goal",waiting?"首页仅有导航栏，内容尚未就绪；由模型调用 wait，再读取新的实际页面。"
                     :"首页内容等待预算已耗尽；根据当前未就绪证据结束 failure，不能声称查询成功。");
             missing.add(waiting?"native_home_content_loading":"native_home_loading_budget_exhausted");
+        }
+        else if(NativeXiaomiProductPage.LOGIN.equals(phase)){
+            view.put("observed_login_page",true);view.put("login_exit_reserved",productLoginExitReserved);
+            view.put("credentials_or_agreement_actions_available",false);
+            view.put("public_browsing_requires_login_verified",false);
+            if(productLoginExitReserved){
+                phase=NativeXiaomiProductPage.LOGIN_BLOCKED;
+                view.put("next_goal","返回请求的一次操作预算已占用，当前仍为或再次进入小米账号登录页面；结束 failure，说明查询尚未完成、需要用户处理当前登录页面，不能声称公开浏览必定要求登录。");
+                missing.add("native_login_after_reserved_exit_requires_user");
+            }else if(pending==null){
+                for(String id:product.clickIds)grant(clicks,purposes,frame.byId.get(id),NativeXiaomiProductPage.LOGIN_EXIT);
+                view.put("next_goal","当前完整页面为小米账号登录；可由本次模型选择当前明确的返回控件一次，再读取实际页面，或结束 failure。不能输入账号、接受协议或使用其他登录方式。");
+                missing.add("native_login_page_observed");
+            }else{
+                phase=NativeXiaomiProductPage.LOGIN_BLOCKED;
+                view.put("next_goal","当前登录页面的前序操作尚未确认；结束 failure，说明查询未完成，需要用户处理当前页面。");
+                missing.add("native_login_with_unresolved_transition");
+            }
         }
         else if(pending!=null){missing.add("waiting_for_actual_post_action_page");view.put("pending_purpose",pending.purpose);}
         else if(flight!=null){
@@ -287,7 +312,8 @@ final class NativeAppSession {
             if(guard!=null)e.put("native_action_guard",guard.evidence());return e;}
     }
     void beforeModelAction(int step,ActionDecision action,String run,long now)throws Exception{
-        live();verifyInstalled();need(current!=null&&inFlight==null&&step>0&&step<=MAX_ACTIONS&&NativeAppEvidence.id(run)&&usedRuns.add(run),"one actual bounded model action required");
+        live();verifyInstalled();need(reservationReobserveId==null,"released query requires fresh observation before another model action");
+        need(current!=null&&inFlight==null&&step>0&&step<=MAX_ACTIONS&&NativeAppEvidence.id(run)&&usedRuns.add(run),"one actual bounded model action required");
         current.requireCurrent(action);authorization.frame().requireDecision(action);need(++ordinal<=MAX_ACTIONS,"native action budget exhausted");
         if(NativeXiaomiProductPage.HOME_LOADING.equals(current.phase))
             need("wait".equals(action.action)&&++productHomeLoadingWaits<=MAX_PRODUCT_HOME_LOADING_WAITS,"bounded model-issued home loading wait required");
@@ -305,6 +331,12 @@ final class NativeAppSession {
                     "one prequery image-modal Back proposal required");
             productModalExitAttempted=true; // Consumed even if the actual dispatch is later stale.
         }
+        else if(NativeXiaomiProductPage.LOGIN_EXIT.equals(purpose)){
+            need(product!=null&&NativeXiaomiProductPage.LOGIN.equals(product.phase)&&pending==null
+                    &&!productLoginExitReserved&&!current.frame.observationId.equals(productLoginProposalObservation),
+                    "one fresh model proposal for the actual native login return control required");
+            productLoginExitReserved=true;productLoginProposalObservation=current.frame.observationId;
+        }
         if(!"wait".equals(action.action)&&!"done".equals(action.action)){acceptedClaim=null;lastDone=null;
             if(!"open_exact_product".equals(purpose)){productOpenProof=null;productSemantic=null;}}
         inFlight=new Attempt(ordinal,step,run,action,current,purpose,flight,product,now,date);
@@ -312,18 +344,89 @@ final class NativeAppSession {
         journal.write(String.format(java.util.Locale.ROOT,"native-app-attempt-%02d.json",ordinal),e);
         inFlight.journaled=true;
     }
+    /** Boolean-only legacy callers cannot prove that an effect never entered. */
     void modelActionOutcome(ActionDecision action,String run,boolean accepted,boolean dispatched,boolean stale,String receiptSha,long finished)throws Exception{
+        modelActionOutcome(action,run,accepted,dispatched,stale,receiptSha,finished,null);
+    }
+    void modelActionOutcome(ActionDecision action,String run,boolean accepted,boolean dispatched,boolean stale,String receiptSha,long finished,
+            Map<String,Object> actionExecution)throws Exception{
         live();Attempt a=inFlight;need(a!=null&&a.action==action&&a.run.equals(run)&&finished>=a.started&&NativeAppEvidence.sha(receiptSha),"same native action and durable receipt required");
+        boolean release=!accepted&&!dispatched&&stale&&provedUnenteredQuery(a,actionExecution,finished);
+        boolean loginRelease=!accepted&&!dispatched&&stale&&NativeXiaomiProductPage.LOGIN_EXIT.equals(a.purpose)
+                &&productLoginExitReserved&&a.guard==null&&provedUnenteredAction(a,actionExecution,finished)
+                &&actionExecution.get("native_action_guard")==null;
         if(a.guard!=null)a.guard.close();
         Map<String,Object> outcome=NativeAppEvidence.map();outcome.put("accepted",accepted);outcome.put("dispatched",dispatched);outcome.put("stale",stale);
-        outcome.put("step_action_record_sha256",receiptSha);outcome.put("model_issued",true);a.finished=finished;a.receipt=NativeAppEvidence.immutableMap(outcome);
+        outcome.put("step_action_record_sha256",receiptSha);outcome.put("model_issued",true);
+        outcome.put("query_reservation_released",release);
+        outcome.put("login_exit_reservation_released",loginRelease);
+        if(release){
+            Map<String,Object> proof=NativeAppEvidence.map();proof.put("schema","hepta.native-query-reservation-release.v1");
+            proof.put("date",a.date.toString());proof.put("action_execution_projection_sha256",NativeAppEvidence.fingerprint(actionExecution));
+            proof.put("original_observation_id",a.before.frame.observationId);proof.put("original_model_run_id",a.run);
+            proof.put("operation_id",actionExecution.get("operation_id"));proof.put("worker_drained",true);proof.put("effect_entered",false);
+            proof.put("fresh_observation_and_new_model_decision_required",true);proof.put("automatic_redispatch",false);
+            proof.put("business_verified",false);outcome.put("query_reservation_release",proof);
+        }
+        if(loginRelease){
+            Map<String,Object> proof=NativeAppEvidence.map();proof.put("schema","hepta.native-login-exit-reservation-release.v1");
+            proof.put("action_execution_projection_sha256",NativeAppEvidence.fingerprint(actionExecution));
+            proof.put("original_observation_id",a.before.frame.observationId);proof.put("original_model_run_id",a.run);
+            proof.put("operation_id",actionExecution.get("operation_id"));proof.put("worker_drained",true);proof.put("effect_entered",false);
+            proof.put("fresh_observation_and_new_model_decision_required",true);proof.put("automatic_redispatch",false);
+            proof.put("business_verified",false);outcome.put("login_exit_reservation_release",proof);
+        }
+        a.finished=finished;a.receipt=NativeAppEvidence.immutableMap(outcome);
         Map<String,Object> e=base();e.put("attempt",a.evidence());journal.write(String.format(java.util.Locale.ROOT,"native-app-outcome-%02d.json",a.ordinal),e);inFlight=null;
+        // Only the durable receipt above releases a reservation. The old frame
+        // and old model run stay unusable; neither a result nor an action is made.
+        if(release){queryAttempts.remove(a.date);requireReobservationAfterReleasedReservation(a,finished);}
+        if(loginRelease){productLoginExitReserved=false;requireReobservationAfterReleasedReservation(a,finished);}
         if(stale&&!dispatched)return;
         if(!accepted||stale){invalidate("native_action_receipt_not_accepted");return;}
         if("wait".equals(action.action))return;
         if("done".equals(action.action)){lastDone=a;return;}
         need(dispatched,"native action effect not dispatched");
         need(pending==null,"new native action while preceding transition unresolved");pending=a;
+    }
+    /** Service lifetime facts bound to this exact private Attempt; no JSON/model claim supplies authority. */
+    private boolean provedUnenteredAction(Attempt a,Map<String,Object> x,long finished){
+        if(a.before!=current||pending!=null||x==null)return false;
+        if(!"hepta.action-execution.v1".equals(x.get("schema"))||!"serial_action_worker".equals(x.get("execution_kind"))
+                ||!(x.get("operation_id") instanceof String)||!NativeAppEvidence.id((String)x.get("operation_id"))
+                ||!taskId.equals(x.get("task_id"))||!a.run.equals(x.get("model_run_id"))
+                ||!a.before.frame.observationId.equals(x.get("observation_id"))
+                ||!authorization.authorization.sha256.equals(x.get("authorization_sha256"))
+                ||executionNumber(x,"window_id")!=a.before.frame.windowId||executionNumber(x,"display_id")!=displayId
+                ||!generation.equals(x.get("background_generation")))return false;
+        if(!Boolean.FALSE.equals(x.get("retired"))||!x.containsKey("retirement_reason")||x.get("retirement_reason")!=null
+                ||!Boolean.FALSE.equals(x.get("effect_entered"))||!Boolean.FALSE.equals(x.get("effect_returned"))
+                ||!x.containsKey("api_accepted")||x.get("api_accepted")!=null
+                ||!Boolean.TRUE.equals(x.get("worker_drained"))||!Boolean.TRUE.equals(x.get("callback_published"))
+                ||!Boolean.TRUE.equals(x.get("callback_authority_current"))||!Boolean.FALSE.equals(x.get("automatic_redispatch")))return false;
+        long queued=executionNumber(x,"queued_elapsed_ms"),drained=executionNumber(x,"worker_drained_elapsed_ms");
+        long deadline=executionNumber(x,"deadline_elapsed_ms");
+        return queued>=a.started&&deadline>queued&&deadline-queued<=8000
+                &&drained>=queued&&drained<=finished&&finished<deadline;
+    }
+    private boolean provedUnenteredQuery(Attempt a,Map<String,Object> x,long finished){
+        ActionGuard g=a.guard;
+        if(!NativeActionSnapshotCheck.QUERY.equals(a.purpose)||a.date==null||!queryAttempts.contains(a.date)
+                ||g==null||g.state.get()!=0||g.action!=a.action||g.frame!=a.before.frame||!provedUnenteredAction(a,x,finished))return false;
+        if(executionNumber(x,"queued_elapsed_ms")<g.issued||executionNumber(x,"deadline_elapsed_ms")!=g.deadline)return false;
+        Object raw=x.get("native_action_guard");if(!(raw instanceof Map<?,?>))return false;
+        Map<?,?> guard=(Map<?,?>)raw;
+        return a.purpose.equals(guard.get("purpose"))&&a.run.equals(guard.get("model_run_id"))
+                &&g.actionSha.equals(guard.get("action_sha256"))&&g.historySha.equals(guard.get("query_history_sha256"))
+                &&executionNumber(guard,"attempt_started_elapsed_ms")==a.started
+                &&executionNumber(guard,"issued_elapsed_ms")==g.issued&&executionNumber(guard,"deadline_elapsed_ms")==g.deadline
+                &&executionNumber(guard,"state")==0&&Boolean.TRUE.equals(guard.get("single_atomic_claim"));
+    }
+    private void requireReobservationAfterReleasedReservation(Attempt a,long finished){
+        reservationReobserveId=a.before.frame.observationId;reservationReobserveAfter=finished;
+    }
+    private static long executionNumber(Map<?,?> value,String key){
+        Object number=value.get(key);return number instanceof Long||number instanceof Integer?((Number)number).longValue():-1;
     }
     private void advancePending(NativeAppEvidence.Frame frame){
         Attempt a=pending;need(a!=null&&a.receipt!=null&&frame.capturedElapsedMs>=a.finished,"post-action native frame precedes outcome");
@@ -356,7 +459,13 @@ final class NativeAppSession {
             }else if("open_flight_form".equals(p)&&NativeCtripFlightPage.FORM.equals(flight.phase))complete=true;
             else if("dismiss_research_sheet".equals(p)&&!NativeCtripFlightPage.OVERLAY.equals(flight.phase)&&!NativeCtripFlightPage.UNAVAILABLE.equals(flight.phase))complete=true;
         }else{
-            if("dismiss_image_modal_once".equals(a.purpose)&&a.product!=null
+            if(NativeXiaomiProductPage.LOGIN.equals(product.phase)){
+                proof.put("login_interrupted_navigation",true);proof.put("business_transition_verified",false);
+                proof.put("query_or_result_proof_created",false);complete=true;
+            }else if(NativeXiaomiProductPage.LOGIN_EXIT.equals(a.purpose)&&a.product!=null
+                    &&NativeXiaomiProductPage.LOGIN.equals(a.product.phase)&&"home_search".equals(product.phase)){
+                proof.put("navigation_only",true);proof.put("query_or_result_proof_created",false);complete=true;
+            }else if("dismiss_image_modal_once".equals(a.purpose)&&a.product!=null
                     &&NativeXiaomiProductPage.IMAGE_MODAL.equals(a.product.phase)&&"home_search".equals(product.phase)){
                 proof.put("navigation_only",true);proof.put("query_or_result_proof_created",false);complete=true;
             }else if(("submit_exact_suggestion".equals(a.purpose)||"submit_product_query".equals(a.purpose))&&product.quote!=null&&"search_card".equals(product.quote.kind)){
@@ -393,6 +502,8 @@ final class NativeAppSession {
         e.put("proved_form_date",confirmedFormDate==null?null:confirmedFormDate.toString());e.put("last_query_date",lastQueryDate==null?null:lastQueryDate.toString());
         List<String> dates=new ArrayList<String>();for(LocalDate d:queryAttempts)dates.add(d.toString());e.put("explicit_query_attempt_dates",dates);
         e.put("product_modal_exit_attempted",productModalExitAttempted);
+        e.put("product_login_exit_reserved",productLoginExitReserved);
+        e.put("product_login_proposal_observation",productLoginProposalObservation);
         e.put("product_home_loading_since_elapsed_ms",productHomeLoadingSince<0?null:Long.valueOf(productHomeLoadingSince));
         e.put("product_home_loading_wait_attempts",productHomeLoadingWaits);
         e.put("product_query_observed",productQueryProof!=null);e.put("product_detail_navigation_observed",productOpenProof!=null);e.put("pending",pending==null?null:pending.evidence());e.put("transitions",transitions);return e;}

@@ -388,7 +388,7 @@ public final class LocalTaskController implements AutoCloseable {
                 if(calculatorInput.supported())actionReceipt.put("calculator_input",new JSONObject(frame.calculatorDomain.evidence()));
                 record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-action.json",steps),actionReceipt);
                 if(activeNativeTask!=null)activeNativeTask.modelActionOutcome(action,decisionRunId,outcome.accepted,outcome.dispatched,outcome.stale,
-                        HeptaAccessibilityService.sha(actionReceipt.toString(2).getBytes(StandardCharsets.UTF_8)),nativeDispatchEnded);
+                        HeptaAccessibilityService.sha(actionReceipt.toString(2).getBytes(StandardCharsets.UTF_8)),nativeDispatchEnded,nativeQueryExecution(outcome.actionExecution));
                 TaskAuthorization.require(outcome.taskAuthorization!=null,"动作回执缺少任务授权");
                 if(outcome.stale&&!outcome.dispatched){
                     if(++staleRounds>2)throw new IllegalStateException("画面连续变化，已停止操作以免点错目标");
@@ -896,6 +896,28 @@ public final class LocalTaskController implements AutoCloseable {
             catch(Exception logging){error.addSuppressed(logging);}
             return new NotesWorkflowOutcome(latest[0],false,null,error);
         }
+    }
+    /** Copy only service-owned scalar lifetime facts; never parse model text as a receipt. */
+    private static java.util.Map<String,Object> nativeQueryExecution(JSONObject raw)throws Exception{
+        if(raw==null)return null;
+        java.util.Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();
+        for(String key:new String[]{"schema","execution_kind","operation_id","task_id","model_run_id","observation_id",
+                "authorization_sha256","window_id","display_id","background_generation","queued_elapsed_ms","deadline_elapsed_ms",
+                "retired","retirement_reason","effect_entered","effect_returned","api_accepted","worker_drained",
+                "worker_drained_elapsed_ms","callback_published","callback_authority_current","automatic_redispatch"}){
+            if(raw.has(key)){Object item=raw.get(key);value.put(key,item==JSONObject.NULL?null:item);}
+        }
+        JSONObject guard=raw.optJSONObject("native_action_guard");
+        if(raw.has("native_action_guard")&&guard==null)return null; // Unknown guard shape cannot prove an unentered action.
+        if(guard!=null){
+            java.util.Map<String,Object> copy=new java.util.LinkedHashMap<String,Object>();
+            for(String key:new String[]{"purpose","model_run_id","action_sha256","query_history_sha256",
+                    "attempt_started_elapsed_ms","issued_elapsed_ms","deadline_elapsed_ms","state","single_atomic_claim"}){
+                if(guard.has(key)){Object item=guard.get(key);copy.put(key,item==JSONObject.NULL?null:item);}
+            }
+            value.put("native_action_guard",copy);
+        }
+        return value;
     }
     private static java.util.Map<String,Object> completionFixed(JSONObject object)throws Exception{
         if(object==null)return null;java.util.Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();

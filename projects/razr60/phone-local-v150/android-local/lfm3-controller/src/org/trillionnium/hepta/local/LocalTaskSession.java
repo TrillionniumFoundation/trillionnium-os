@@ -336,7 +336,7 @@ public final class LocalTaskSession {
             if(!present&&!uncommitted&&!latchPresent&&!recoveryPending)return;
             if(present){
                 original=readSessionRecord(base);
-                prior=parseSessionJson(original);fields=fieldsOf(prior);
+                prior=parseSessionJson(original);verifyTerminalEvidence(prior);fields=fieldsOf(prior);
                 RecoveryJournalTransaction.Proof proof=null;
                 if(RecoveryJournalTransaction.IDLE_STATUS.equals(fields.get("status"))&&!latchPresent&&!recoveryPending&&!uncommitted){
                     proof=RecoveryJournalTransaction.verifyReady(recoveryStore,android.os.Process.myUid(),
@@ -550,6 +550,7 @@ public final class LocalTaskSession {
         publish();
     }
     private byte[] snapshotSession(String status,boolean cleanupKnown)throws Exception {
+        final LocalTaskController.TaskResult completed=lastResult;
         if(taskId!=null&&controller!=null&&taskId.equals(controller.currentTaskId()))actualScopeSha=controller.currentActualScopeSha256();
             JSONObject value=new JSONObject().put("schema","hepta.local-session.v1").put("status",status)
                 .put("task_id",taskId==null?JSONObject.NULL:taskId).put("origin",origin==null?JSONObject.NULL:origin)
@@ -571,10 +572,13 @@ public final class LocalTaskSession {
                     .put("old_session_disposition","interrupted_not_resumed")
                     .put("process_inventory_scope",RecoveryJournalTransaction.SCOPE);
             }
-            if(lastResult!=null)value.put("evidence_directory",lastResult.evidenceDirectory==null?JSONObject.NULL:lastResult.evidenceDirectory.getPath())
-                .put("model_reported_success",lastResult.modelReportedSuccess).put("steps",lastResult.steps)
-                .put("completion_verified",lastResult.completionVerified).put("completion_evidence",new JSONObject(lastResult.completionEvidence))
-                .put("goal_independently_verified",lastResult.completionVerified);
+            if(completed!=null){
+                value.put("evidence_directory",completed.evidenceDirectory==null?JSONObject.NULL:completed.evidenceDirectory.getPath())
+                    .put("model_reported_success",completed.modelReportedSuccess).put("steps",completed.steps)
+                    .put("completion_verified",completed.completionVerified)
+                    .put("completion_evidence",new JSONObject(completed.completionEvidence))
+                    .put("goal_independently_verified",completed.completionVerified);
+            }
             return value.toString(2).getBytes(StandardCharsets.UTF_8);
     }
     private static final class LeaseState {
@@ -601,6 +605,14 @@ public final class LocalTaskSession {
             destination=new AtomicFile(new File(context.getFilesDir().getCanonicalFile(),"control-session.json"));
             stage="encode_snapshot";
             byte[] written=value.toString(2).getBytes(StandardCharsets.UTF_8);
+            if(written.length>SESSION_LIMIT&&value.has("completion_evidence")&&!SessionTerminalEvidence.referenced(value)){
+                // Small terminal and pre-start failure records retain their original inline format.
+                // Only this captured oversized result needs an independently verified external reference.
+                stage="terminal_evidence_projection";
+                SessionTerminalEvidence.capture(value,value.getJSONObject("completion_evidence"));
+                stage="terminal_evidence_binding";bindTerminalEvidence(value);
+                stage="encode_bound_terminal";written=value.toString(2).getBytes(StandardCharsets.UTF_8);
+            }
             if(written.length>SESSION_LIMIT)throw new IOException("session record exceeds bounded size");
             stage="atomic_start_write";out=destination.startWrite();
             stage="private_file_mode";android.system.Os.fchmod(out.getFD(),0600);
@@ -624,12 +636,23 @@ public final class LocalTaskSession {
                     throw new IOException("session commit parent identity differs");
                 stage="parent_fsync_or_close";android.system.Os.fsync(directory);
             }finally{android.system.Os.close(directory);}
+            stage="terminal_evidence_recheck";verifyTerminalEvidence(value);
         }catch(Exception error){
             IOException observed=new IOException("session journal write failed at "+stage,error);
             logJournalFailure(journalFailureDetails(stage,observed));
             if(out!=null&&destination!=null)destination.failWrite(out);
             throw observed;
         }
+    }
+    private void bindTerminalEvidence(JSONObject value)throws Exception {
+        if(!SessionTerminalEvidence.referenced(value))return;
+        QualificationScopeConfig.FilesRoot root=new QualificationScopeConfig.FilesRoot(context);
+        SessionTerminalEvidence.bind(value,root.path,android.os.Process.myUid());root.unchanged(context);
+    }
+    private void verifyTerminalEvidence(JSONObject value)throws Exception {
+        if(!SessionTerminalEvidence.referenced(value))return;
+        QualificationScopeConfig.FilesRoot root=new QualificationScopeConfig.FilesRoot(context);
+        SessionTerminalEvidence.verify(value,root.path,android.os.Process.myUid());root.unchanged(context);
     }
     /** Startup currently runs before any task or queue admission; its existing recovery boundary is retained. */
     private void persistStartupRecord(String status,boolean cleanupKnown){

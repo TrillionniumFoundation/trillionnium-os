@@ -18,6 +18,8 @@ final class NativeXiaomiProductPage {
     static final String SCHEMA="hepta.native-xiaomi-product-page.v1";
     static final String IMAGE_MODAL="image_modal";
     static final String HOME_LOADING="home_loading",HOME_LOADING_EXHAUSTED="home_loading_budget_exhausted";
+    static final String LOGIN="native_login",LOGIN_BLOCKED="native_login_requires_user";
+    static final String LOGIN_EXIT="leave_native_login_once";
     private static final String TITLE="Xiaomi路由器AX3000T";
     private static final String VIEW="android.view.ViewGroup";
     private static final String TEXT="android.widget.TextView";
@@ -109,6 +111,7 @@ final class NativeXiaomiProductPage {
         if(!frame.collectionComplete||frame.nodesTruncated)return unavailable(frame,"complete_bounded_observation_required");
         for(NativeAppEvidence.Node node:frame.nodes)
             if(!frame.packageName.equals(node.packageName))return unavailable(frame,"foreign_node_package");
+        Page login=nativeLogin(frame);if(login!=null)return login;
         if(imageModal(frame))return page(frame,IMAGE_MODAL,"image_modal_content_unclassified",null,null);
         List<NativeAppEvidence.Node> models=exactText(frame,TITLE);
         boolean detailMarkers=uniqueText(frame,"加入购物车")!=null&&uniqueText(frame,"立即购买")!=null;
@@ -116,6 +119,54 @@ final class NativeXiaomiProductPage {
         if(uniqueText(frame,"综合")!=null&&uniqueText(frame,"销量")!=null&&uniqueText(frame,"价格")!=null)
             return results(goal,frame,models);
         return inputOrHome(goal,frame);
+    }
+
+    /** Recognizes the complete observed login form for the pinned native App.
+     * Only its literal return control is a navigation candidate. Login, consent,
+     * account input and external-account controls never become action targets.
+     */
+    private static Page nativeLogin(NativeAppEvidence.Frame frame){
+        if(frame.left!=0||frame.top!=0||frame.right!=frame.width||frame.bottom!=frame.height
+                ||frame.nodes.size()!=13)return null;
+        NativeAppEvidence.Node back=loginNode(frame,"0/0","android.widget.ImageView","back","","返回",true,false,false);
+        NativeAppEvidence.Node title=loginNode(frame,"0/3/0",TEXT,"","小米账号登录","",false,false,false);
+        NativeAppEvidence.Node input=loginNode(frame,"0/3/2","android.widget.AutoCompleteTextView","input","请输入手机号","",true,true,false);
+        NativeAppEvidence.Node agreement=loginNode(frame,"0/3/4",TEXT,"user_agreement_hint","已阅读并同意本应用用户协议 隐私政策、小米账号用户协议 隐私政策","",false,false,false);
+        NativeAppEvidence.Node next=loginNode(frame,"0/3/5","android.widget.Button","get_login_type","下一步","",true,false,false);
+        NativeAppEvidence.Node password=loginNode(frame,"0/3/6","android.widget.Button","password_login","密码登录","",true,false,false);
+        if(back==null||title==null||input==null||agreement==null||next==null||password==null
+                ||loginNode(frame,"0/1",TEXT,"help","帮助","",true,false,false)==null
+                ||loginNode(frame,"0/4",TEXT,"tv_other_login_way","其他登录方式","",false,false,false)==null
+                ||loginNode(frame,"0/5","android.widget.ImageView","sdk_wechat_auth","","微信登录",true,false,false)==null
+                ||loginNode(frame,"0/6","android.widget.ImageView","sdk_qq_auth","","QQ登录",true,false,false)==null
+                ||loginNode(frame,"0/7","android.widget.ImageView","sdk_weibo_auth","","微博登录",true,false,false)==null
+                ||loginNode(frame,"0/3/1",TEXT,"country_code","+86","",true,false,false)==null
+                ||loginNode(frame,"0/3/3","android.widget.CheckBox","user_agreement_checkbox","","",true,false,true)==null)
+            return null;
+        Map<String,Object> facts=map();facts.put("return_control",back.fact("description"));
+        facts.put("login_title",title.fact("text"));facts.put("empty_phone_prompt",input.fact("text"));
+        facts.put("agreement_text",agreement.fact("text"));facts.put("next_label",next.fact("text"));
+        facts.put("password_login_label",password.fact("text"));facts.put("public_browsing_requires_login_verified",false);
+        facts.put("credentials_or_agreement_actions_available",false);
+        return new Page(frame,LOGIN,Collections.singletonList("native_login_page_observed"),
+                Collections.singleton(back.id),Collections.<String,String>emptyMap(),
+                Collections.singletonMap(back.id,LOGIN_EXIT),facts,null);
+    }
+    private static NativeAppEvidence.Node loginNode(NativeAppEvidence.Frame frame,String path,String cls,String resource,
+            String text,String description,boolean clickable,boolean editable,boolean checkable){
+        NativeAppEvidence.Node found=null;
+        for(NativeAppEvidence.Node node:frame.nodes)if(path.equals(node.path)){
+            if(found!=null)return null;found=node;
+        }
+        if(!usable(frame,found)||!cls.equals(found.className)
+                ||!(resource.isEmpty()?"":"com.xiaomi.shop:id/"+resource).equals(found.viewId)
+                ||!text.equals(found.text)||!description.equals(found.description)
+                ||!(text.isEmpty()?description:text).equals(found.label)
+                ||!(path.startsWith("0/3/")?"android.widget.ScrollView":"android.widget.FrameLayout").equals(found.parentClass)
+                ||found.clickable!=clickable||found.editable!=editable||found.scrollable||!found.scrollDirections.isEmpty()
+                ||!Boolean.FALSE.equals(found.selected)||!Boolean.valueOf(checkable).equals(found.checkable)
+                ||!Boolean.FALSE.equals(found.checked))return null;
+        return found;
     }
 
     /** Only the observed image-window shape is classified. This does not identify

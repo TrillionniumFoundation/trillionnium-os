@@ -1,0 +1,58 @@
+    private static final class LoginTarget {
+        final LoginWindowBridgeHost h=new LoginWindowBridgeHost();
+        final AccessibilityNodeInfo node=new AccessibilityNodeInfo();
+        LoginTarget(){
+            NativeAppEvidence.Frame f=SyntheticXiaomiNativeLoginFixture.frame();NativeAppEvidence.Node back=f.byId.get("n0");
+            h.expected.windowId=f.windowId;h.expected.display=f.displayId;h.expected.packageName=f.packageName;
+            h.background.display=f.displayId;h.root.windowId=f.windowId;h.root.pkg=f.packageName;
+            h.root.window.id=f.windowId;h.root.window.display=f.displayId;h.root.window.type=f.windowType;
+            h.action.action="click";h.action.packageName=f.packageName;h.action.nodeId=back.id;
+            node.windowId=f.windowId;node.pkg=back.packageName;node.signature=back.signature;
+            node.window.id=f.windowId;node.window.display=f.displayId;NodeRef ref=new NodeRef();
+            ref.node=node;ref.signature=back.signature;h.graph.refs.put(back.id,ref);
+        }
+        void reject(boolean freshness)throws Exception{
+            boolean refused=false;
+            try{h.guardThenHostEffect(node,true);}
+            catch(StaleObservation expected){check(freshness,"only known freshness mismatch is recoverable");refused=true;check(!h.scope.refused,"freshness must not poison owned scope");}
+            catch(IllegalArgumentException|IllegalStateException expected){check(!freshness,"target freshness must use actual stale classifier");refused=true;}
+            check(refused&&h.effects==0,"actual guard rejects before host effect counter");
+        }
+    }
+    public static void main(String[] args)throws Exception{
+        one("login_literal_return_current_node_and_owned_window_pass_actual_scope_guard",()->{
+            LoginTarget f=new LoginTarget();f.h.guardThenHostEffect(f.node,true);
+            check(f.h.effects==1&&!f.h.scope.refused,"original exact bound target may reach host endpoint");
+        });
+        one("login_changed_target_signature_is_stale_before_effect",()->{LoginTarget f=new LoginTarget();f.node.signature="changed-target";f.reject(true);});
+        one("login_disabled_target_is_stale_before_effect",()->{LoginTarget f=new LoginTarget();f.node.enabled=false;f.reject(true);});
+        one("login_target_refresh_failure_is_stale_before_effect",()->{LoginTarget f=new LoginTarget();f.node.refreshed=false;f.reject(true);});
+        one("login_target_reference_replacement_cannot_reuse_original_id",()->{
+            LoginTarget f=new LoginTarget();f.h.graph.refs.get("n0").node=new AccessibilityNodeInfo();f.reject(false);
+        });
+        one("login_same_app_new_window_rejects_old_proposal_before_effect",()->{
+            LoginTarget f=new LoginTarget();f.h.root.windowId++;f.h.root.window.id++;f.reject(true);
+        });
+        one("login_foreign_package_root_remains_terminal",()->{LoginTarget f=new LoginTarget();f.h.root.pkg="com.foreign.app";f.reject(false);});
+        one("login_foreign_package_target_remains_terminal",()->{LoginTarget f=new LoginTarget();f.node.pkg="com.foreign.app";f.reject(false);});
+        one("login_main_display_or_foreign_display_never_receives_effect",()->{
+            for(int display:new int[]{0,24}){LoginTarget f=new LoginTarget();f.h.root.window.display=display;f.reject(false);}
+        });
+        one("login_non_application_or_mismatched_window_metadata_refuses_effect",()->{
+            LoginTarget f=new LoginTarget();f.h.root.window.type=3;f.reject(false);
+            LoginTarget g=new LoginTarget();g.h.root.window.id++;g.reject(false);
+        });
+        one("login_retired_lease_and_stop_preserve_zero_effect",()->{
+            LoginTarget f=new LoginTarget();f.h.background.active=false;f.reject(false);
+            LoginTarget g=new LoginTarget();g.h.work.stopped=true;g.reject(false);
+        });
+        one("login_stop_or_retirement_during_window_read_precedes_effect",()->{
+            LoginTarget f=new LoginTarget();f.h.afterRootRead=()->f.h.work.stopped=true;f.reject(false);
+            LoginTarget g=new LoginTarget();g.h.afterRootRead=()->g.h.background.active=false;g.reject(false);
+        });
+        JSONObject out=new JSONObject().put("schema","hepta.native-xiaomi-login-window-host.v1").put("all_pass",true)
+                .put("cases",names.size()).put("assertions",assertions).put("case_names",new JSONArray(names))
+                .put("phone_operations",0).put("android_execution",false).put("model_executed",false).put("business_completion_verified",false)
+                .put("boundary","Verbatim actual scope/background/target-refresh methods. Public login UI shape with synthetic display, window, node ID and signature seeds explicit host Android endpoints. Signature changes and effects are host doubles, not Android dispatch.");
+        Files.write(Paths.get(args[0]),(out.toString(2)+"\n").getBytes(StandardCharsets.UTF_8),StandardOpenOption.CREATE_NEW);System.out.println(out.toString());
+    }

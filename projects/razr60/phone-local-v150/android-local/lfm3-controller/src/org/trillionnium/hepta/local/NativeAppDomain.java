@@ -51,6 +51,8 @@ final class NativeAppDomain {
         if(clickIds.isEmpty())out.remove("click");if(editValues.isEmpty())out.remove("type");if(!backAllowed)out.remove("back");
         if(NativeXiaomiProductPage.HOME_LOADING.equals(phase))out.retainAll(Collections.singleton("wait"));
         if(NativeXiaomiProductPage.HOME_LOADING_EXHAUSTED.equals(phase))out.retainAll(Collections.singleton("done"));
+        if(NativeXiaomiProductPage.LOGIN.equals(phase))out.retainAll(java.util.Arrays.asList("click","done"));
+        if(NativeXiaomiProductPage.LOGIN_BLOCKED.equals(phase))out.retainAll(Collections.singleton("done"));
         return out;}
     DecisionGrammar boundedWaitGrammar(ObservedTargetLabels targets,ObservedAppLabels apps,TaskAuthorization.Frame authorization,Set<String> original){
         NativeAppEvidence.need(NativeXiaomiProductPage.HOME_LOADING.equals(phase)&&frame.metadataObserved&&frame.windowType==1
@@ -68,6 +70,13 @@ final class NativeAppDomain {
             }
             if(NativeXiaomiProductPage.HOME_LOADING_EXHAUSTED.equals(phase)){
                 NativeAppEvidence.need("done".equals(action.action)&&"failure".equals(action.status),"home loading budget exhausted; failure only");return;
+            }
+            if(NativeXiaomiProductPage.LOGIN_BLOCKED.equals(phase)){
+                NativeAppEvidence.need("done".equals(action.action)&&"failure".equals(action.status),"native login requires user handling; failure only");return;
+            }
+            if(NativeXiaomiProductPage.LOGIN.equals(phase)){
+                NativeAppEvidence.need("click".equals(action.action)||"done".equals(action.action)&&"failure".equals(action.status),
+                        "native login admits only its explicit return control or failure");
             }
             if("done".equals(action.action)){NativeAppEvidence.need(!"success".equals(action.status)||resultReady,"native result not verified");return;}
             if("wait".equals(action.action))return;

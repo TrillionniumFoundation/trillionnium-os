@@ -105,7 +105,7 @@ final class NativeActionSnapshotCheck {
         for(String p:before.ancestors)need(old.node(p).v.equals(fresh.node(p).v),"actual ancestor changed: "+p);
         for(String p:union(old.nodes.keySet(),fresh.nodes.keySet()))if(protectedPath(p,before.roots))
             need(old.nodes.containsKey(p)&&fresh.nodes.containsKey(p)&&old.node(p).v.equals(fresh.node(p).v),"complete protected subtree changed: "+p);
-        Set<String> anchors=anchors(old,fresh,before);List<String> changed=new ArrayList<String>();
+        Set<String> anchors=anchors(in,old,fresh,before);List<String> changed=new ArrayList<String>();
         for(String p:union(old.nodes.keySet(),fresh.nodes.keySet())){
             Node x=old.nodes.get(p),y=fresh.nodes.get(p);if(x!=null&&y!=null&&x.v.equals(y.v))continue;
             String found=null;for(String root:anchors)if(p.equals(root)||under(p,root)){need(found==null,"overlapping variable anchors");found=root;}
@@ -175,16 +175,29 @@ final class NativeActionSnapshotCheck {
     /** Roots are derived from the complete tree's real sibling relationships.
      * No numeric path (including 0/0/7) is whitelisted. All changed/new/deleted
      * descendants must be fully present in one of these fixed disjoint regions. */
-    private static Set<String> anchors(Snapshot old,Snapshot fresh,Scope scope){Set<String> out=new TreeSet<String>();
+    private static Set<String> anchors(Intent in,Snapshot old,Snapshot fresh,Scope scope){Set<String> out=new TreeSet<String>();
         for(Node a:old.nodes.values()){
             if("0".equals(a.path)||scope.ancestors.contains(a.path)||protectedPath(a.path,scope.roots)||!scope.ancestors.contains(parent(a.path)))continue;
             Node z=fresh.nodes.get(a.path);if(z==null||!a.visible()||!z.visible())continue;
             Map<String,Object> x=new TreeMap<String,Object>(a.v),y=new TreeMap<String,Object>(z.v);
             for(String k:Arrays.asList("text","description","label","ref_signature_sha256","children")){x.remove(k);y.remove(k);}
+            if(neutralHorizontalScrollMetadata(in,a,z)){x.remove("scroll_actions");y.remove("scroll_actions");}
             if(!x.equals(y))continue;boolean clear=true;
             for(String p:scope.roots)if(intersects(a.bounds,old.node(p).bounds))clear=false;
             if(clear&&neutral(old,a,scope)&&neutral(fresh,z,scope))out.add(a.path);
         }return out;
+    }
+    /** Only metadata of an already proved disjoint, neutral carousel may vary.
+     * The comparator supports click purposes only; no scroll target gains authority. */
+    private static boolean neutralHorizontalScrollMetadata(Intent in,Node a,Node z){
+        return CTRIP.equals(in.pkg)&&(YEAR.equals(in.purpose)||QUERY.equals(in.purpose))
+                &&"android.widget.HorizontalScrollView".equals(a.cls)&&a.cls.equals(z.cls)
+                &&b(a.v,"scrollable")&&b(z.v,"scrollable")
+                &&knownHorizontalScrollActions(s(a.v,"scroll_actions"))&&knownHorizontalScrollActions(s(z.v,"scroll_actions"));
+    }
+    private static boolean knownHorizontalScrollActions(String value){
+        return value.matches("hepta\\.observed-scroll-actions\\.v1\\|observed(?:\\|forward)?(?:\\|backward)?(?:\\|left)?(?:\\|right)?")
+                &&(value.contains("|left")||value.contains("|right"));
     }
     private static boolean neutral(Snapshot s,Node anchor,Scope scope){
         for(Node n:s.nodes.values())if(n.path.equals(anchor.path)||under(n.path,anchor.path)){
