@@ -1,0 +1,309 @@
+package org.trillionnium.hepta.local;
+
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.security.MessageDigest;
+import org.json.JSONObject;
+import org.json.JSONArray;
+
+/** Exact Service methods below execute against explicit fake Android endpoints.
+ * Full graph facts are synthetic contract fixtures, never phone observations.
+ * The real Session creates every ActionGuard through its normal action journal.
+ */
+final class NativeActionBridgeHost {
+    static final long MAX_OBSERVATION_AGE_MS=90000;
+    static final String DISPLAY_SERVICE="display";
+    static final class SystemClock {static long now=1000;static long elapsedRealtime(){return now;}}
+    static final class Rect {
+        int left,top,right,bottom;
+        Rect(){}Rect(int l,int t,int r,int b){left=l;top=t;right=r;bottom=b;}Rect(Rect b){this(b.left,b.top,b.right,b.bottom);}
+        boolean isEmpty(){return right<=left||bottom<=top;}
+        boolean contains(Rect b){return left<=b.left&&top<=b.top&&right>=b.right&&bottom>=b.bottom;}
+        static boolean intersects(Rect a,Rect b){return a.left<b.right&&b.left<a.right&&a.top<b.bottom&&b.top<a.bottom;}
+        @Override public boolean equals(Object v){if(!(v instanceof Rect))return false;Rect b=(Rect)v;return left==b.left&&top==b.top&&right==b.right&&bottom==b.bottom;}
+        @Override public int hashCode(){return Objects.hash(left,top,right,bottom);}
+        @Override public String toString(){return "Rect("+left+", "+top+" - "+right+", "+bottom+")";}
+    }
+    static final class Display {
+        static final int DEFAULT_DISPLAY=0;int width=1224,height=2992,rotation;
+        int getRotation(){return rotation;}void getRealMetrics(android.util.DisplayMetrics m){m.widthPixels=width;m.heightPixels=height;}
+    }
+    final class DisplayManager {Display getDisplay(int id){return displayPresent&&id==7?display:null;}}
+    static final class AccessibilityServiceInfo {
+        static final int FLAG_RETRIEVE_INTERACTIVE_WINDOWS=64,CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT=1;
+        int flags=FLAG_RETRIEVE_INTERACTIVE_WINDOWS,capabilities=CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT;
+        int getCapabilities(){return capabilities;}
+    }
+    static final class AccessibilityWindowInfo {
+        static final int TYPE_APPLICATION=1,TYPE_INPUT_METHOD=2;
+        int id=96,display=7,type=1,layer=1;Rect bounds=new Rect(0,0,1224,2992);boolean focused=true,active=true;int recycled;
+        int getId(){return id;}int getDisplayId(){return display;}int getType(){return type;}int getLayer(){return layer;}
+        void getBoundsInScreen(Rect b){copy(bounds,b);}boolean isFocused(){return focused;}boolean isActive(){return active;}void recycle(){recycled++;}
+    }
+    static void copy(Rect a,Rect b){b.left=a.left;b.top=a.top;b.right=a.right;b.bottom=a.bottom;}
+    static final class NodeData {
+        final Map<String,Object> values;NodeData parent;final List<NodeData> children=new ArrayList<NodeData>();
+        boolean refresh=true;int obtained,recycled,effects;Runnable beforeRefresh;ObservedScrollActions scrollOverride;ObservedImeEnter imeOverride;
+        NodeData(Map<String,Object> row){values=new TreeMap<String,Object>(row);}
+    }
+    static final class AccessibilityNodeInfo {
+        static final int ACTION_CLICK=16;final NodeData data;boolean released;
+        AccessibilityNodeInfo(NodeData data){this.data=data;data.obtained++;}
+        static AccessibilityNodeInfo obtain(AccessibilityNodeInfo n){return new AccessibilityNodeInfo(n.data);}
+        void recycle(){if(released)throw new AssertionError("double recycled fake reference");released=true;data.recycled++;}
+        boolean refresh(){if(data.beforeRefresh!=null){Runnable r=data.beforeRefresh;data.beforeRefresh=null;r.run();}return !released&&data.refresh;}
+        Object value(String key){if(released)throw new AssertionError("used recycled fake reference");return data.values.get(key);}
+        String s(String k){return (String)value(k);}boolean b(String k){return ((Boolean)value(k)).booleanValue();}
+        CharSequence getPackageName(){return s("package");}int getWindowId(){return ((Integer)value("window_id")).intValue();}
+        CharSequence getClassName(){return s("class");}String getViewIdResourceName(){return s("view_id");}
+        CharSequence getText(){return s("text");}CharSequence getContentDescription(){return s("description");}
+        boolean isPassword(){return b("password");}boolean isVisibleToUser(){return b("visible");}boolean isEnabled(){return b("enabled");}
+        boolean isClickable(){return b("clickable");}boolean isEditable(){return b("editable");}boolean isScrollable(){return b("scrollable");}
+        boolean isFocused(){return b("focused");}boolean isSelected(){return b("selected");}boolean isCheckable(){return b("checkable");}boolean isChecked(){return b("checked");}
+        int getChildCount(){return ((Integer)value("children")).intValue();}
+        void getBoundsInScreen(Rect b){List<?> r=(List<?>)value("bounds");b.left=(Integer)r.get(0);b.top=(Integer)r.get(1);b.right=(Integer)r.get(2);b.bottom=(Integer)r.get(3);}
+        boolean performAction(int action){if(action!=ACTION_CLICK)throw new AssertionError("only click effect endpoint");data.effects++;return true;}
+        @Override public boolean equals(Object o){return o instanceof AccessibilityNodeInfo&&((AccessibilityNodeInfo)o).data==data;}
+        @Override public int hashCode(){return System.identityHashCode(data);}
+    }
+    static final class PhoneObservation {
+        String id,packageName,treeSha256,screenshotSha256,backgroundBootstrapPackage;
+        int windowId,rotation,width,height;long capturedElapsedMillis;
+        ObservationState state;ObservedWindowMetadata windowMetadata;List<String> backgroundAllowedPackages;
+        static final class CollectionStats {
+            int visited,pending,nodeBudgetOmissions,textBudgetOmissions;long childSlotsOmitted;
+            boolean truncated(){return pending!=0||nodeBudgetOmissions!=0||textBudgetOmissions!=0||childSlotsOmitted!=0;}
+        }
+        static final class Node {
+            String id,packageName,className,viewId,text,description,nativeTreePath,nativeParentClass,observedAppTreeSignature;
+            Boolean selected,checkable,checked;Rect bounds;ObservedChildText.Result childText=ObservedChildText.notApplicable();
+            String label(){return ObservedChildText.displayLabel(text,description,childText);}
+        }
+    }
+    static final class BackgroundSession {
+        String taskId,generation,ownerSha256;int display=7;boolean active=true;
+        org.trillionnium.hepta.local.BackgroundSession.Selection selection;
+        int displayId(){return display;}void requireActive(){if(!active)throw new StaleObservation("fake lease retired");}
+    }
+    static final class QualificationScopeConfig {static final class Bound{boolean current=true;Object config;void refuse(String reason){current=false;}}}
+    static final class QualificationScope {static final class Violation extends IllegalStateException{private static final long serialVersionUID=1L;Violation(String text){super(text);}}}
+    interface Cancellation {boolean isCancelled();}
+    interface GraphBudget {void check();}
+    interface ActionCallback {void onResult(ActionOutcome outcome);}
+    static final class ActionOutcome {
+        final boolean accepted,dispatched,stale;final String message;
+        ActionOutcome(boolean accepted,boolean dispatched,boolean stale,String message){this.accepted=accepted;this.dispatched=dispatched;this.stale=stale;this.message=message;}
+    }
+    static final class StaleObservation extends IllegalStateException {
+        private static final long serialVersionUID=1L;StaleObservation(String message){super(message);}
+    }
+    static final class WebFlightSession {
+        WebFlightNativeStability.Permit flightNativePermitForDispatch(ActionDecision a,PhoneObservation p){throw new AssertionError("legacy Web is not native guard");}
+        void acceptFlightNativeCheck(ActionDecision a,PhoneObservation p,Object check){throw new AssertionError("Web check outside fixture");}
+        WebRegionNativeBridge nativeRegionForDispatch(ActionDecision a,String run,PhoneObservation p){throw new AssertionError("Web region outside fixture");}
+        void acceptNativeRegionCheck(ActionDecision a,String run,Object check){throw new AssertionError("Web region outside fixture");}
+        void beforeNativeClickInvocation(ActionDecision a,String run){throw new AssertionError("Web invocation outside fixture");}
+    }
+    static final class Graph {
+        PhoneObservation.CollectionStats collectionStats;ObservationDiagnostics.GraphStamp diagnosticStamp;
+        boolean nativeObservationComplete,truncated;String packageName,digest,backgroundGeneration,backgroundBootstrapPackage,backgroundSelectionRaw,backgroundOwnerSha;
+        int windowId,rotation,displayId;Rect bounds;ObservationState state;ObservedWindowMetadata windowMetadata;
+        List<String> backgroundAllowedPackages=Collections.emptyList();final List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();
+        final Map<String,NodeRef> refs=new HashMap<String,NodeRef>();
+        boolean flightNativeSnapshotComplete;int flightNativeSnapshotLimit;String flightNativeSnapshotRaw,flightRetainedSnapshotRaw;
+        List<NativeActionSnapshotCheck.Node> nativeActionBuilding,nativeActionNodes;Map<String,Object> nativeActionWindows;
+        int nativeActionText,nativeActionBytes,nativeActionWidth,nativeActionHeight;long nativeActionCapturedAt;
+        String nativeActionTaskId,nativeActionAuthorizationSha,nativeActionSelectionSha,nativeActionTargetSha,nativeActionGoalSha;
+        {{same_window}}
+        {{copy_for_action}}
+        {{close_graph}}
+    }
+    {{node_ref}}
+    {{action_work}}
+    PhoneObservation current;Graph currentGraph;TaskAuthorization.Gate taskAuthorization;WebFlightSession taskWeb;
+    BackgroundSession background;QualificationScopeConfig.Bound scope=new QualificationScopeConfig.Bound();
+    final Display display=new Display();boolean displayPresent=true,owned=true,isLocked,cancelled,authorizationCurrent=true;
+    final AccessibilityServiceInfo serviceInfo=new AccessibilityServiceInfo();
+    final List<AccessibilityWindowInfo> windowRows=new ArrayList<AccessibilityWindowInfo>();
+    final List<String> events=new ArrayList<String>();Fixture fixture;Runnable scopeMutation,chainMutation,windowMutation;
+    int windowReads,staleDiagnostics;boolean callbackAccepted;
+    Object getSystemService(String name){if(!DISPLAY_SERVICE.equals(name))throw new AssertionError("unexpected service");return new DisplayManager();}
+    AccessibilityServiceInfo getServiceInfo(){return serviceInfo;}
+    List<AccessibilityWindowInfo> windowsForDisplay(int ignored){
+        windowReads++;if(windowMutation!=null)windowMutation.run();List<AccessibilityWindowInfo> result=new ArrayList<AccessibilityWindowInfo>();
+        for(AccessibilityWindowInfo row:windowRows){AccessibilityWindowInfo w=new AccessibilityWindowInfo();w.id=row.id;w.display=row.display;w.type=row.type;w.layer=row.layer;
+            w.bounds=new Rect(row.bounds);w.focused=row.focused;w.active=row.active;result.add(w);}return result;
+    }
+    boolean owns(String task){return owned&&background!=null&&background.taskId.equals(task);}
+    boolean ownsScope(String task,QualificationScopeConfig.Bound value){return owns(task)&&scope==value&&value.current;}
+    boolean ownsAuthorization(String task,TaskAuthorization.Gate value){return owns(task)&&taskAuthorization==value&&authorizationCurrent;}
+    boolean ownsBackground(String task,BackgroundSession value){return owns(task)&&background==value&&value.active;}
+    boolean locked(){return isLocked;}BackgroundSession currentBackground(){return background;}
+    BackgroundSession backgroundFor(String task){return owns(task)?background:null;}
+    static void checkReadBudget(GraphBudget budget){if(budget!=null)budget.check();}
+    static String string(CharSequence s){return s==null?"":s.toString();}
+    static String message(Throwable e){return e.getMessage()==null?e.getClass().getSimpleName():e.getMessage();}
+    static String sha(byte[] raw){try{byte[] b=MessageDigest.getInstance("SHA-256").digest(raw);StringBuilder s=new StringBuilder();for(byte v:b)s.append(String.format(Locale.ROOT,"%02x",v&255));return s.toString();}catch(Exception e){throw new IllegalStateException(e);}}
+    static ObservedScrollActions readScrollActions(AccessibilityNodeInfo n){return n.data.scrollOverride!=null?n.data.scrollOverride:ObservedScrollActions.observed(n.isScrollable()?Arrays.asList("up","down"):Collections.<String>emptyList());}
+    static ObservedImeEnter readImeEnter(AccessibilityNodeInfo n){return n.data.imeOverride==null?ObservedImeEnter.UNKNOWN:n.data.imeOverride;}
+    static boolean hasAction(AccessibilityNodeInfo n,int action){return action==AccessibilityNodeInfo.ACTION_CLICK&&n.b("action_click");}
+    static ObservedChildText.Result observedChildText(AccessibilityNodeInfo n,boolean bounded,GraphBudget budget){checkReadBudget(budget);return ObservedChildText.notApplicable();}
+    // MORE_DECLARATIONS
+    void requireBackgroundObservation(String task,PhoneObservation frame){if(!owns(task)||frame!=current)throw new StaleObservation("fake background/current replaced");background.requireActive();}
+    String targetBindingError(PhoneObservation p,ActionDecision a,ObservedTargetLabels labels){
+        if(!p.id.equals(a.observationId)||!p.packageName.equals(a.packageName))return "stale:host binding";
+        if(a.nodeId!=null&&!currentGraph.refs.containsKey(a.nodeId))return "stale:host target missing";return null;
+    }
+    void requireBackgroundNodeWindow(BackgroundSession b,PhoneObservation p,AccessibilityNodeInfo n){
+        b.requireActive();if(b.display!=7||n.getWindowId()!=p.windowId||!p.packageName.equals(string(n.getPackageName())))throw new StaleObservation("fake node window");
+    }
+    ObservedWindowMetadata readWindowMetadata(AccessibilityNodeInfo n,Rect bounds,int window,int displayId){return fixture.metadata();}
+    AccessibilityNodeInfo regionParent(ActionWork work,AccessibilityNodeInfo node,List<AccessibilityNodeInfo> temporary){
+        actionCheck(work);NodeData d=node.data.parent;if(d==null)return null;AccessibilityNodeInfo v=new AccessibilityNodeInfo(d);temporary.add(v);return v;
+    }
+    AccessibilityNodeInfo regionChild(ActionWork work,AccessibilityNodeInfo node,int index,List<AccessibilityNodeInfo> temporary){
+        actionCheck(work);if(index<0||index>=node.data.children.size())return null;
+        AccessibilityNodeInfo v=new AccessibilityNodeInfo(node.data.children.get(index));temporary.add(v);return v;
+    }
+    void authorizationBeforeDispatch(String task,TaskAuthorization.Gate authorization,ActionDecision action,String run){
+        if(!ownsAuthorization(task,authorization))throw new StaleObservation("fake authorization revoked");authorization.check(action,run);events.add("authorization");
+    }
+    QualificationScopeConfig.Bound scopeFor(String task){if(!owns(task))throw new StaleObservation("fake scope owner");return scope;}
+    void scopeBeforeDispatch(String task,QualificationScopeConfig.Bound value,PhoneObservation frame,ActionDecision action,AccessibilityNodeInfo node,boolean effect,ActionWork work){
+        actionCheck(work);if(!ownsScope(task,value))throw new StaleObservation("fake scope changed");events.add("scope");
+        if(scopeMutation!=null){Runnable r=scopeMutation;scopeMutation=null;r.run();}actionCheck(work);
+    }
+    Graph readGraph(GraphBudget budget,BackgroundSession b)throws Exception{checkReadBudget(budget);events.add("full_census");return fixture.graph(fixture.fresh,budget);}
+    void finishAfter(long delay,boolean accepted,String text,ActionCallback callback,ActionWork work){callback.onResult(new ActionOutcome(accepted,accepted,false,text));}
+    Object requireLiveFlightNativeStability(String task,PhoneObservation p,ActionDecision a,WebFlightNativeStability.Permit permit,Graph graph,Cancellation cancel,ActionWork work){throw new AssertionError("Web authority outside fixture");}
+    Object requireLiveNativeRegion(String task,PhoneObservation p,AccessibilityNodeInfo n,WebRegionNativeBridge bridge,Cancellation cancel,ActionWork work){throw new AssertionError("Web region outside fixture");}
+    void recordStaleDiagnostic(ActionWork work,Graph a,Graph b,String id){staleDiagnostics++;}
+    void clickBranch(String taskId,PhoneObservation expected,ActionDecision action,ActionWork work)throws Exception{
+        Graph graph=work.graph;Cancellation cancel=work.cancel;QualificationScopeConfig.Bound dispatchScope=work.scope;
+        TaskAuthorization.Gate authorization=work.authorization;String modelRunId=work.state.modelRunId;
+        ActionCallback callback=outcome->{callbackAccepted=outcome.accepted;};
+        {{selected_refresh}}
+        boolean accepted;
+        {{click_branch}}
+    }
+    // ACTUAL_METHODS
+    // FIXTURE_AND_CASES
+    static java.nio.file.Path sourceRoot;
+    static String hash(String text){return NativeAppEvidence.hash(text);}
+    static String id(String text){return hash(text).substring(0,32);}
+    static Rect rect(List<?> v){return new Rect((Integer)v.get(0),(Integer)v.get(1),(Integer)v.get(2),(Integer)v.get(3));}
+    static void yes(boolean value,String reason){IntegrationChecks.yes(value,reason);}
+    static void one(String name,IntegrationChecks.Work work)throws Exception{IntegrationChecks.one(name,work);}
+    final class Fixture {
+        final NativeActionBridgeHost service=NativeActionBridgeHost.this;
+        final String purpose,task,owner,run;final org.trillionnium.hepta.local.BackgroundSession.Selection selection;
+        final TaskAuthorization authorization;final TaskAuthorization.Gate gate;final NativeAppSession session;
+        final Map<String,NodeData> data=new TreeMap<String,NodeData>();final List<Map<String,Object>> journal=new ArrayList<Map<String,Object>>();
+        final Map<String,String> ids=new TreeMap<String,String>();int serial,observations,step;boolean installedCurrent=true;
+        NativeActionSnapshotCheckHostTest.Fixture raw,fresh;NativeAppEvidence.Frame frame;ActionDecision action;ActionWork work;
+        Fixture(String p,String label)throws Exception{
+            fixture=this;purpose=p;task=id("bridge-task:"+label);run=id("bridge-model:"+label);
+            raw=NativeActionSnapshotCheck.SEARCH.equals(p)?NativeActionSnapshotCheckHostTest.xiaomi():NativeActionSnapshotCheck.OPEN.equals(p)?NativeActionSnapshotCheckHostTest.home():NativeActionSnapshotCheckHostTest.form(p);
+            owner=NativeActionSnapshotCheck.SEARCH.equals(p)?"在小米商城查一下小米AX3000T的售价":NativeAppProviderHostTest.OWNER;
+            BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,raw.pkg,Collections.singleton(raw.pkg));
+            selection=new org.trillionnium.hepta.local.BackgroundSession.Selection(target);authorization=TaskAuthorization.parse(owner).forExecutionSelection(selection);gate=authorization.bind(task);
+            background=new BackgroundSession();background.taskId=task;background.generation=NativeAppProviderHostTest.GENERATION;background.ownerSha256=target.ownerSha256;background.selection=selection;
+            taskAuthorization=gate;windowRows.add(new AccessibilityWindowInfo());SystemClock.now=1000;
+            NativeAppEvidence.Installed installed=new NativeAppEvidence.Installed(raw.pkg,NativeActionSnapshotCheck.SEARCH.equals(p)?10485:10367,
+                    NativeActionSnapshotCheck.SEARCH.equals(p)?20261010L:1779L,
+                    Collections.singletonMap("base",NativeActionSnapshotCheck.SEARCH.equals(p)?"95883c057eb15bc6e50a82f2e22da13b77980871624f60a2fb9e50cfdf4a8373":NativeCtripFlightPage.BASE_APK_SHA256));
+            session=new NativeAppSession(task,gate,selection,installed,NativeAppObservation.selectionSha(selection),background.generation,7,
+                    ()->{if(!installedCurrent)throw new IllegalStateException("host installed change");events.add("installed");},
+                    (leaf,value)->{Map<String,Object> e=NativeAppEvidence.map();e.put("leaf",leaf);e.put("value",NativeAppEvidence.immutableMap(value));journal.add(e);});
+            observeGraph(raw);
+            if(NativeActionSnapshotCheck.QUERY.equals(p))year();
+            String selected=null;for(Map.Entry<String,String> e:session.domain().purposes.entrySet())if(p.equals(e.getValue()))selected=e.getKey();
+            if(selected==null)throw new AssertionError("synthetic full provider fixture does not admit original purpose: "+p+" "+session.domain().evidence());
+            action=click(selected);SystemClock.now+=10;step++;gate.check(action,run);session.beforeModelAction(step,action,run,SystemClock.now);
+            NativeAppSession.ActionGuard guard=session.actionGuard(action,run,frame.observationId,SystemClock.now,SystemClock.now+8000);
+            work=new ActionWork(task,current,run,scope,gate,background,()->cancelled,currentGraph.copyForAction(action.nodeId,null),null,SystemClock.now,SystemClock.now+8000,guard);
+            work.phase("worker_started");fresh=raw.copy();SystemClock.now+=10;events.clear();
+        }
+        ObservedWindowMetadata metadata(){return ObservedWindowMetadata.observed(new int[]{0,0,1224,2992},"android.widget.FrameLayout",1,7,new int[]{0,0,1224,2992},"");}
+        ActionDecision click(String node)throws Exception{return ActionDecision.parse(new JSONObject().put("action","click").put("package",raw.pkg).put("observation_id",frame.observationId)
+                    .put("node_id",node).put("node_label",frame.byId.get(node).label).toString(),ActionDecision.IME_ACTION_SCHEMA);}
+        // FIXTURE_METHODS
+        Graph graph(NativeActionSnapshotCheckHostTest.Fixture values,GraphBudget budget)throws Exception{
+            for(Map.Entry<String,Map<String,Object>> e:values.nodes.entrySet()){
+                NodeData d=data.get(e.getKey());if(d==null){d=new NodeData(e.getValue());data.put(e.getKey(),d);}
+                else{d.values.clear();d.values.putAll(e.getValue());}d.values.put("window_id",96);d.parent=null;d.children.clear();
+                if(!ids.containsKey(e.getKey()))ids.put(e.getKey(),"n"+(serial++));
+            }
+            for(String path:values.nodes.keySet())if(!"0".equals(path)){int at=path.lastIndexOf('/');NodeData d=data.get(path),parent=data.get(path.substring(0,at));
+                d.parent=parent;int index=Integer.parseInt(path.substring(at+1));while(parent.children.size()<=index)parent.children.add(null);parent.children.set(index,d);}
+            Graph g=new Graph();g.packageName=values.pkg;g.windowId=96;g.rotation=0;g.displayId=7;g.bounds=new Rect(0,0,1224,2992);
+            g.backgroundGeneration=background.generation;g.backgroundOwnerSha=background.ownerSha256;g.backgroundSelectionRaw=selection.json().toString();
+            g.backgroundBootstrapPackage=values.pkg;g.backgroundAllowedPackages=Collections.singletonList(values.pkg);g.windowMetadata=metadata();
+            g.digest=hash(new JSONObject(values.nodes).toString());g.state=new ObservationState(g.digest,ImeVisibility.HIDDEN);
+            g.collectionStats=new PhoneObservation.CollectionStats();g.collectionStats.visited=values.nodes.size();
+            beginNativeActionCensus(g,background,budget);
+            for(String path:values.nodes.keySet()){
+                AccessibilityNodeInfo n=new AccessibilityNodeInfo(data.get(path));PhoneObservation.Node retained=null;NodeRef ref=null;
+                try{
+                    boolean useful=!string(n.getText()).isEmpty()||!string(n.getContentDescription()).isEmpty()||!string(n.getViewIdResourceName()).isEmpty()||n.isClickable()||n.isEditable()||n.isScrollable();
+                    if(n.isVisibleToUser()&&useful){
+                        ref=new NodeRef(n,ObservedChildText.notApplicable(),readScrollActions(n));retained=new PhoneObservation.Node();
+                        retained.id=ids.get(path);retained.packageName=string(n.getPackageName());retained.className=string(n.getClassName());retained.viewId=string(n.getViewIdResourceName());
+                        retained.text=string(n.getText());retained.description=string(n.getContentDescription());retained.nativeTreePath=path;retained.nativeParentClass=(String)values.nodes.get(path).get("parent_class");
+                        retained.selected=n.isSelected();retained.checkable=n.isCheckable();retained.checked=n.isChecked();retained.bounds=new Rect();n.getBoundsInScreen(retained.bounds);
+                        retained.observedAppTreeSignature=ref.appTreeSignature;g.rows.add(retained);g.refs.put(retained.id,ref);
+                    }
+                    collectNativeActionNode(g,n,path,(String)values.nodes.get(path).get("parent_class"),retained,ref);
+                }finally{n.recycle();}
+            }
+            // The fake BFS has visited each synthetic slot; only this explicit host
+            // boundary supplies completeness. The production finish method still
+            // rejects omissions, hidden/unknown IME, changed windows and geometry.
+            g.nativeObservationComplete=true;finishNativeActionCensus(g,budget);return g;
+        }
+        List<NativeAppEvidence.Node> retained(Graph g){
+            List<NativeAppEvidence.Node> result=new ArrayList<NativeAppEvidence.Node>();
+            for(PhoneObservation.Node row:g.rows){AccessibilityNodeInfo n=g.refs.get(row.id).node;Rect r=row.bounds;
+                String label=row.label();if(row.text.trim().isEmpty()&&row.description.trim().isEmpty()&&!"derived".equals(row.childText.status))label="";
+                result.add(new NativeAppEvidence.Node(row.id,row.packageName,row.className,row.viewId,row.text,row.description,row.nativeTreePath,row.nativeParentClass,
+                        row.observedAppTreeSignature,ObservedTargetLabels.project(label),r.left,r.top,r.right,r.bottom,n.isEnabled(),n.isPassword(),n.isClickable(),n.isEditable(),n.isScrollable(),
+                        n.isSelected(),n.isCheckable(),n.isChecked(),Collections.<String>emptySet()));
+            }return result;
+        }
+        NativeAppEvidence.Frame frame(List<NativeAppEvidence.Node> nodes,String tree)throws Exception{
+            observations++;String obs=id(task+":host-observation:"+observations);
+            return new NativeAppEvidence.Frame(task,selection.taskTarget.ownerSha256,selection.taskTarget.targetSha256,authorization.sha256,NativeAppObservation.selectionSha(selection),obs,raw.pkg,background.generation,
+                    tree,hash("host-state:"+tree),hash("host-screen:"+obs),hash("host-record:"+obs),hash("host-completion:"+obs),
+                    7,96,0,1224,2992,0,0,1224,2992,SystemClock.now,false,true,nodes,1,true);
+        }
+        void observeGraph(NativeActionSnapshotCheckHostTest.Fixture values)throws Exception{
+            SystemClock.now+=10;Graph g=graph(values,null);frame=frame(retained(g),g.digest);session.observed(frame);if(currentGraph!=null)currentGraph.close();currentGraph=g;
+            current=new PhoneObservation();current.id=frame.observationId;current.packageName=frame.packageName;current.treeSha256=frame.stateSha;
+            current.screenshotSha256=frame.screenshotSha;current.capturedElapsedMillis=frame.capturedElapsedMs;current.windowId=frame.windowId;
+            current.width=frame.width;current.height=frame.height;current.rotation=frame.rotation;current.state=new ObservationState(frame.treeSha,ImeVisibility.HIDDEN);
+            current.windowMetadata=metadata();current.backgroundBootstrapPackage=raw.pkg;current.backgroundAllowedPackages=Collections.singletonList(raw.pkg);
+        }
+        void year()throws Exception{
+            String node=null;for(Map.Entry<String,String> e:session.domain().purposes.entrySet())if(NativeActionSnapshotCheck.YEAR.equals(e.getValue()))node=e.getKey();
+            if(node==null)throw new AssertionError("original year action missing");ActionDecision date=click(node);SystemClock.now+=10;step++;
+            String first=id(task+":year-inspect");gate.check(date,first);session.beforeModelAction(step,date,first,SystemClock.now);
+            session.modelActionOutcome(date,first,true,true,false,hash("host-date-receipt"),++SystemClock.now);
+            NativeXmlFixture.Snapshot xml=NativeXmlFixture.read(sourceRoot.resolve("tests/native-app-provider/fixtures/calendar14.xml"));SystemClock.now+=10;
+            frame=frame(xml.nodes,xml.sourceSha256);session.observed(frame);
+            ActionDecision back=ActionDecision.parse(new JSONObject().put("action","back").put("package",raw.pkg).put("observation_id",frame.observationId).toString(),ActionDecision.IME_ACTION_SCHEMA);
+            String second=id(task+":year-back");SystemClock.now+=10;step++;gate.check(back,second);session.beforeModelAction(step,back,second,SystemClock.now);
+            session.modelActionOutcome(back,second,true,true,false,hash("host-back-receipt"),++SystemClock.now);observeGraph(raw);
+            yes(Boolean.TRUE.equals(((Map<?,?>)session.evidence().get("progress")).get("calendar_year_proved")),"bridge query uses actual Session calendar roundtrip");
+        }
+        void neutralText(){String path=NativeActionSnapshotCheck.SEARCH.equals(purpose)?"0/2/0":NativeActionSnapshotCheck.OPEN.equals(purpose)?"0/1/0":"0/0/7/0";
+            fresh.nodes.get(path).put("text","host unrelated updated text");fresh.nodes.get(path).put("label","host unrelated updated text");}
+        boolean dispatch()throws Exception{
+            String refusal=validate(task,current,action,null,()->cancelled,work);if(refusal!=null)return false;
+            clickBranch(task,current,action,work);return callbackAccepted;
+        }
+        int effects(){return data.get(raw.target).effects;}
+        void noEffect(String why){yes(effects()==0&&!work.state.effectEntered(),why);}
+    }
+    // TEST_CASES
+    {{bridge_cases}}
+}

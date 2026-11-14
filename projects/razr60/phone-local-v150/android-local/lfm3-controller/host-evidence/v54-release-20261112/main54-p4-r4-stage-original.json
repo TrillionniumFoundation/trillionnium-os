@@ -1,0 +1,267 @@
+{
+  "schema": "hepta.v54-host-candidate-stage.v1",
+  "all_pass": true,
+  "exit_code": 0,
+  "base_commit": "7dee83d838b2c76b3abe3a3e61d7837316f40853",
+  "source_commit": null,
+  "publication_pending": true,
+  "source_file_count": 589,
+  "source_inventory_sha256": "8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d",
+  "source_input_payload_sha256": "e195da919e53c6aa36c31f8b0f0a96f23ef67d895f2860b61fb72e73bd29cf6e",
+  "input_gzip_sha256": "62fffc6c3813848236ac44044841f9ba2b586f2c87add67f795f4f18860bd398",
+  "post_compile_fixture_delta": {
+    "schema": "hepta.v54-post-compile-host-runner-delta.v1",
+    "base_payload_git_blob": "89a12b72bd05111187e86be4a53b1b5798f4adf1",
+    "base_payload_sha256": "417f9f5de2364c88959eae546572bdb43d4dc71206b6e6557d839479dbe9179b",
+    "base_inventory_sha256": "2eb66bad5e487129f69c4f18c65f87bbd5e22c2568f163a3ad9fd982da95b1e6",
+    "actual_android_stage_git_blob": "44090f1f2f728299818f32bc0366ab147742e640",
+    "actual_android_stage_sha256": "a037b49f05ea48caccb2902b95bbb2314a5f767e230138dd14ae3a16851ee4b2",
+    "only_changed_paths": [
+      "tests/exact-admission/prepare_fixture.py",
+      "tests/notes-owner-intent/run_host_tests.py",
+      "tests/owner-grammar/run_host_tests.py",
+      "tests/qualification-scope/prepare_fixture.py",
+      "tools/run_host_checks.py"
+    ],
+    "patches": [
+      {
+        "git_blob": "0872bfcd67f62728cc0a5e8acfc4179d6220ceea",
+        "bytes": 5581,
+        "sha256": "249a576fe7164c55ce87cbda612f225a0d6650dc3819762d4f63fe30b49efc5f",
+        "path": "tests/notes-owner-intent/run_host_tests.py",
+        "base_sha256": "a10caa4df9f9c8493e703358fb15928d47baf0f47b1f418e9ff8e68c4ca33a29",
+        "new_sha256": "e28b3ea291eeb8198768a94e3c4ae03fb7cce37dd9b800246eeca5dfb2362303",
+        "patches": [
+          {
+            "before": "    files.append(source / 'tests/notes-owner-intent/NotesOwnerIntentHostTest.java')\n",
+            "after": "    files += [source / 'src/org/trillionnium/hepta/local/web' / (name + '.java')\n              for name in ('WebFlightGoal', 'WebShoppingGoal')]\n    files.append(source / 'tests/notes-owner-intent/NotesOwnerIntentHostTest.java')\n",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "git_blob": "a14e0b05930b9138a3cff25a6b138d1b48b78352",
+        "bytes": 5393,
+        "sha256": "7a2c78dcd954ca50f694b25451f8b5c402314333d2a2985bea00354c92661f45",
+        "path": "tests/owner-grammar/run_host_tests.py",
+        "base_sha256": "f85a28ca94a25bc03a48b5bdd3c45999aa1619fb99d4c60bdd90cfe1e986a639",
+        "new_sha256": "0d3ebcfeb3e9628765028d87679915e2b1180703a5268830feeb7da8afc163e2",
+        "patches": [
+          {
+            "path": "tests/owner-grammar/run_host_tests.py",
+            "before": "    inputs += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget')]\n",
+            "after": "    inputs += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget')]\n    inputs += [source/'src/org/trillionnium/hepta/local/web'/(name+'.java') for name in ('WebFlightGoal','WebShoppingGoal')]\n",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "git_blob": "f5289ad219825e14e0ede26d49d286c0d6f5092f",
+        "bytes": 37862,
+        "sha256": "27b24b90fe4d288ee986750d3c14a900e0bd6a3776be852de67e1fc05402ad43",
+        "path": "tools/run_host_checks.py",
+        "base_sha256": "b7247fcd7152a081d7454a702f0e5aeca492184bb80bd9e8c3e36a6b79b7db49",
+        "new_sha256": "dc64aa551a0eddd6429ad3340db5445e9c00403a2110b48e1c05662f5d46ec3a",
+        "patches": [
+          {
+            "before": "        run(\"java-compile\",compiler+[\"--release\",\"8\",\"-encoding\",\"UTF-8\",\"-Xlint:all\",\"-Werror\",\"-d\",classes,*sources,*tests])",
+            "after": "        web_fixture_source=ROOT/\"tests/web-flight/legacy-boundary/WebFlightDomain.java\"\n        web_fixture_raw=web_fixture_source.read_bytes()\n        web_fixture_compile=out/\"WebTaskDomain.java\"\n        if sources.count(web_fixture_source)!=1 or hashlib.sha256(web_fixture_raw).hexdigest()!=next(\n                r[\"sha256\"] for r in report[\"source_inputs\"] if r[\"path\"]==str(web_fixture_source.relative_to(ROOT))):\n            raise RuntimeError(\"Exact original Web type-boundary source required\")\n        web_fixture_compile.write_bytes(web_fixture_raw)\n        if web_fixture_compile.read_bytes()!=web_fixture_raw:\n            raise RuntimeError(\"Web type-boundary compiler copy changed\")\n        compile_sources=[web_fixture_compile if p==web_fixture_source else p for p in sources]\n        report[\"web_fixture_compiler_copy\"]={\"source_path\":str(web_fixture_source.relative_to(ROOT)),\n            \"compiler_path\":str(web_fixture_compile),\"bytes\":len(web_fixture_raw),\n            \"sha256\":hashlib.sha256(web_fixture_raw).hexdigest(),\"byte_identical\":True}\n        run(\"java-compile\",compiler+[\"--release\",\"8\",\"-encoding\",\"UTF-8\",\"-Xlint:all\",\"-Werror\",\"-d\",classes,*compile_sources,*tests])\n        if web_fixture_compile.read_bytes()!=web_fixture_raw:\n            raise RuntimeError(\"Web type-boundary compiler copy changed during javac\")",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "git_blob": "f5289ad219825e14e0ede26d49d286c0d6f5092f",
+        "bytes": 37862,
+        "sha256": "27b24b90fe4d288ee986750d3c14a900e0bd6a3776be852de67e1fc05402ad43",
+        "path": "tests/exact-admission/prepare_fixture.py",
+        "base_sha256": "780f801799bdf1a5cbec1b1515cfd1456e96bb691a0d59c0c50f725dcbc66baa",
+        "new_sha256": "4aeac49605ac0b38b14a15745da5b977b25f0932757b327b7e35dd6972a05a52",
+        "patches": [
+          {
+            "before": "    files += [package / \"web/WebFlightGoal.java\",package / \"web/WebShoppingGoal.java\",\n              source / \"tests/web-flight/legacy-boundary/WebFlightDomain.java\"]",
+            "after": "    web_fixture_source=source/\"tests/web-flight/legacy-boundary/WebFlightDomain.java\"\n    web_fixture_raw=web_fixture_source.read_bytes()\n    web_fixture_compile=output/\"WebTaskDomain.java\"\n    web_fixture_compile.write_bytes(web_fixture_raw)\n    if web_fixture_compile.read_bytes()!=web_fixture_raw or web_fixture_source.read_bytes()!=web_fixture_raw:\n        raise RuntimeError(\"Exact Web type-boundary compiler copy required\")\n    files += [package / \"web/WebFlightGoal.java\",package / \"web/WebShoppingGoal.java\",web_fixture_compile]",
+            "count": 1
+          },
+          {
+            "before": "        \"web_fixture_boundary\": \"Type-only WebTaskDomain; every Web capability method throws\",",
+            "after": "        \"web_fixture_boundary\": \"Type-only WebTaskDomain; every Web capability method throws\",\n        \"web_fixture_compiler_copy\": {\"source_path\":str(web_fixture_source.relative_to(source)),\n            \"compiler_path\":str(web_fixture_compile),\"bytes\":len(web_fixture_raw),\n            \"sha256\":hashlib.sha256(web_fixture_raw).hexdigest(),\"byte_identical\":True},",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "git_blob": "f5289ad219825e14e0ede26d49d286c0d6f5092f",
+        "bytes": 37862,
+        "sha256": "27b24b90fe4d288ee986750d3c14a900e0bd6a3776be852de67e1fc05402ad43",
+        "path": "tests/qualification-scope/prepare_fixture.py",
+        "base_sha256": "bfe2e9bda9f4a4a87d0281223b718f059ba04f159309a800e7c26d8d257095c5",
+        "new_sha256": "e034dff81b6392ddcf9d5ffcaa4225d4fc0d6967dfd510978234db0f9619da60",
+        "patches": [
+          {
+            "before": "    files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java', source/'tests/web-flight/legacy-boundary/WebFlightDomain.java']",
+            "after": "    web_fixture_source=source/'tests/web-flight/legacy-boundary/WebFlightDomain.java'\n    web_fixture_raw=web_fixture_source.read_bytes()\n    web_fixture_compile=output/'WebTaskDomain.java'\n    web_fixture_compile.write_bytes(web_fixture_raw)\n    if web_fixture_compile.read_bytes()!=web_fixture_raw or web_fixture_source.read_bytes()!=web_fixture_raw:\n        raise RuntimeError('Exact Web type-boundary compiler copy required')\n    files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java']",
+            "count": 1
+          },
+          {
+            "before": "        'phone_operations':False,'native_inference':False}",
+            "after": "        'web_fixture_compiler_copy':{'source_path':str(web_fixture_source.relative_to(source)),\n            'compiler_path':str(web_fixture_compile),'bytes':len(web_fixture_raw),\n            'sha256':hashlib.sha256(web_fixture_raw).hexdigest(),'byte_identical':True},\n        'phone_operations':False,'native_inference':False}",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "production_changed": false,
+    "java_assertions_changed": false,
+    "full_101_plus_18_executed": false
+  },
+  "mode": "host",
+  "started_epoch": 1794469385.046768,
+  "phone_commands_executed": 0,
+  "signed": false,
+  "phone_tested": false,
+  "web_query_executed": false,
+  "web_results_verified": false,
+  "tool_inputs": {
+    "java": {
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+      "bytes": 14544,
+      "sha256": "bb70208200cb6538b877d80478141194a716edb591f4910ec106589291e99196",
+      "requested_path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/java"
+    },
+    "javac": {
+      "path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+      "bytes": 14592,
+      "sha256": "2aaf03d13aeb80b8269696f2dcd9f4937d7366bbc68f91fdc703cf157e8f39c4",
+      "requested_path": "/home/alex/razr-local-ai-20261109-82d1243e/host-jdk17/extracted/usr/lib/jvm/java-17-openjdk-amd64/bin/javac"
+    },
+    "cc": {
+      "path": "/usr/bin/x86_64-linux-gnu-gcc-15",
+      "bytes": 1305304,
+      "sha256": "b5f1b773a7c733738352000c92a077dc5852a1a2fc6d836b1e411be1e9ec5f88",
+      "requested_path": "/usr/bin/cc"
+    }
+  },
+  "steps": [
+    {
+      "name": "original-host-checks",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/source/tools/run_host_checks.py",
+        "--out",
+        "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/host-checks"
+      ],
+      "cwd": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/source",
+      "exit_code": 0,
+      "timed_out": false,
+      "forced": false,
+      "elapsed_s": 203.39603750497918,
+      "stdout": {
+        "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/original-host-checks.stdout",
+        "bytes": 106,
+        "sha256": "a37d234cda9985ce014d461496c7fb0e98ec0c39195e6166829573b1597b8e56"
+      },
+      "stderr": {
+        "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/original-host-checks.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "input_derivation": {
+    "schema": "hepta.v54-r3-failure-preserving-source-derivation.v1",
+    "predecessor_input_file": {
+      "path": "/home/alex/hepta-local-007f-20261111/v54-main-final-host-r3.input.json.gz",
+      "bytes": 322081,
+      "sha256": "62fffc6c3813848236ac44044841f9ba2b586f2c87add67f795f4f18860bd398"
+    },
+    "predecessor_payload_sha256": "778a041fda449e483ecc2cd5aab8619c41f5bd0d3f8e8c8fca1979bd1bd72e76",
+    "patch_bytes": 37862,
+    "patch_sha256": "27b24b90fe4d288ee986750d3c14a900e0bd6a3776be852de67e1fc05402ad43",
+    "final_payload_bytes": 1139016,
+    "final_payload_sha256": "e195da919e53c6aa36c31f8b0f0a96f23ef67d895f2860b61fb72e73bd29cf6e",
+    "actual_failed_stage_sha256": "895145f1b2316dea01b1fc23658d030d75cd7645848c4271af3cfe4d284e6b87",
+    "old_source_count": 589,
+    "old_failure_files": [
+      {
+        "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r3/STAGE-RESULT.json",
+        "bytes": 7674,
+        "sha256": "895145f1b2316dea01b1fc23658d030d75cd7645848c4271af3cfe4d284e6b87"
+      },
+      {
+        "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r3/host-checks/HOST-CHECKS.json",
+        "bytes": 69330,
+        "sha256": "3f403c1e6b191f03dad6e447a1003e9e37c9aa1561d1031558631245b7869024"
+      },
+      {
+        "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r3/original-host-checks.stdout",
+        "bytes": 1402,
+        "sha256": "79faa35cd6b8d6285249faf078538e5b77edc57e00cd66958d3555dc19509285"
+      },
+      {
+        "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r3/original-host-checks.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r3/SOURCE-INVENTORY.json",
+        "bytes": 102673,
+        "sha256": "4784f89aaf4d26f1a9a42bbdb4549a735d6d937db8adcd645e2bb95dd664a1e7"
+      },
+      {
+        "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r3/SOURCE-BLOB-MAP.json",
+        "bytes": 147796,
+        "sha256": "58ae8af05338d86365918171bdc180f51db47e8b767be43189c02ffb50627f2b"
+      },
+      {
+        "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r3/INPUT.json",
+        "bytes": 1129628,
+        "sha256": "778a041fda449e483ecc2cd5aab8619c41f5bd0d3f8e8c8fca1979bd1bd72e76"
+      }
+    ],
+    "only_changed_paths": [
+      "tools/run_host_checks.py",
+      "tests/exact-admission/prepare_fixture.py",
+      "tests/qualification-scope/prepare_fixture.py"
+    ],
+    "production_changed": false
+  },
+  "source_inventory": {
+    "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/SOURCE-INVENTORY.json",
+    "bytes": 102673,
+    "sha256": "8675c0c438cdf10f599c23a3a6305a5678fd59270f09b4f73a43f7a67bf2237d"
+  },
+  "source_blob_map": {
+    "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/SOURCE-BLOB-MAP.json",
+    "bytes": 147796,
+    "sha256": "679997d2f987a656b2e705c55664cc37ad65043d0cbcb80acfeeaace600f79c1"
+  },
+  "host_checks": {
+    "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/host-checks/HOST-CHECKS.json",
+    "bytes": 100515,
+    "sha256": "6c7f11e31c4fcb2e81c417995282987fcaf5f0fb632885f0f376a5745b9db3d8"
+  },
+  "host_check_count": 101,
+  "host_input_count": 413,
+  "nested_completion": {
+    "path": "/home/alex/hepta-local-007f-20261111/v54-main-host-r4/host-checks/task-completion/RESULT.json",
+    "bytes": 49722,
+    "sha256": "745b34624f7c77865a5f01a540d481b8e8c331096089d72f59c7c998262b1123"
+  },
+  "nested_completion_stage_count": 18,
+  "java8_api_release": true,
+  "original_test_assertions_retained": true,
+  "android_compiled": false,
+  "native_compiled": false,
+  "separate_real_web_class_gate_required": true,
+  "separate_owned_cancellation_gate_required": true,
+  "source_unchanged": true,
+  "base_source_unchanged": true,
+  "tools_unchanged": true,
+  "previous_failed_source_unchanged": true,
+  "previous_failure_evidence_unchanged": true,
+  "finished_epoch": 1794469590.5394697,
+  "actual_host_all_pass": true,
+  "actual_host_error": null
+}

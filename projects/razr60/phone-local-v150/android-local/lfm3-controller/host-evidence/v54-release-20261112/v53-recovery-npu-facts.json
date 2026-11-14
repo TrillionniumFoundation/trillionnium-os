@@ -1,0 +1,76 @@
+{
+  "schema": "hepta.actual-v53-recovery-hexagon-configuration.v1",
+  "source": {
+    "path": "/home/alex/hepta-local-007f-20261111/background-notes-v53-lfm3-recovery-r1/evidence/runs/5ca399d93a914f63b88b6332ad5e2b3f/stderr.log",
+    "bytes": 45889,
+    "sha256": "65e997343d0f96453ca2f2d77ce5b9af2e1f8d5e24b5c535999a0e08277bc1d4"
+  },
+  "hardware_architecture": "v79",
+  "dma64_enabled": false,
+  "enumerated_devices": [
+    {
+      "device": "HTP0",
+      "physical": 0,
+      "virtual": 0,
+      "domain": "cdsp:3"
+    },
+    {
+      "device": "HTP1",
+      "physical": 0,
+      "virtual": 1,
+      "domain": "cdsp:3"
+    }
+  ],
+  "selected_devices": [
+    "HTP0"
+  ],
+  "runtime_capability_fields": {
+    "threads": 6,
+    "hvx": 6,
+    "hmx": 1,
+    "vtcm_megabytes": 8
+  },
+  "physical_core_count_inferred": false,
+  "power_mode": 6,
+  "power_mode_name": "sustained_high_performance",
+  "offload_layer_count": 25,
+  "total_layer_count": 25,
+  "log_gpu_word_is_generic_offload_not_adreno": true,
+  "context": {
+    "n_ctx": 8192,
+    "n_batch": 2048,
+    "n_ubatch": 1024,
+    "n_seq_max": 1,
+    "n_threads": 4,
+    "n_threads_batch": 4,
+    "flash_attn_type": 1,
+    "swa_full": false,
+    "kv_unified": false
+  },
+  "threadpool": {
+    "strict_cpu": true,
+    "poll": 1000,
+    "pinned_cores": [
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "reported_buffer_sizes_mib": {
+    "cpu_model": 205.08,
+    "htp_model": 1006.99,
+    "htp_kv_groups": [
+      96,
+      12.5
+    ],
+    "htp_recurrent_state": 0.61,
+    "htp_compute": 640.59,
+    "cpu_compute": 50.55,
+    "cpu_output": 0.49
+  },
+  "buffer_values_are_not_peak_rss_or_disjoint_allocation_totals": true,
+  "all_operations_on_npu_proven": false,
+  "continuous_accelerator_utilization_measured": false,
+  "thermal_power_measured": false
+}

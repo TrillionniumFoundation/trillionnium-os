@@ -1,0 +1,1 @@
+{"scope": "host_only", "self_test_comparisons": 316, "independent_pattern_vectors": 22, "file_reads_compared": 14, "large_length_bytes": 536870913, "upstream_portable_compression_unchanged": true, "host_runtime_hwcap_sha2": false, "phone_tested": false, "all_pass": true}

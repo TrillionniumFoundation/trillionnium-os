@@ -1,0 +1,713 @@
+{
+  "observation_id": "01f3295217bb4672b7723ccc9893d324",
+  "package": "com.zui.browser",
+  "screen_width": 1224,
+  "screen_height": 2992,
+  "rotation": 0,
+  "window_id": 3445,
+  "screen_sha256": "f3a970ed015d1b730ab36c54d8f921880161f148e2ee4a018a70366fbd4a5228",
+  "window": {
+    "scope": "active_root_only",
+    "metadata_status": "observed",
+    "window_id": 3445,
+    "root_bounds": [
+      0,
+      0,
+      1224,
+      2992
+    ],
+    "root_class": "android.widget.FrameLayout",
+    "root_class_truncated": false,
+    "type": 1,
+    "display_id": 0,
+    "bounds": [
+      0,
+      0,
+      1224,
+      2992
+    ],
+    "title": "浏览器",
+    "title_truncated": false
+  },
+  "app_tree_sha256": "6bde2b1a118b997c7e92b2f2c637b5c20ff8bbe0e9217350981c75a99d85a461",
+  "observation_state_sha256": "2aded7917b7c6650bf126f292f56ae776cf342e753c3fa8c0ca3b23196dd9921",
+  "ime_visible": false,
+  "scroll_actions_schema": "hepta.observed-scroll-actions.v1",
+  "node_data_is_untrusted": true,
+  "nodes_truncated": true,
+  "nodes": [
+    {
+      "id": "n0",
+      "bounds": [
+        0,
+        130,
+        1224,
+        2740
+      ],
+      "view_id": "com.zui.browser:id\/vp_phone_explore",
+      "node_app_tree_sha256": "ccf9cd423410cba17a51e786436d17960f4534c4459e07445df32c013eba16cd",
+      "scrollable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [
+        "backward"
+      ],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n1",
+      "bounds": [
+        0,
+        2740,
+        1224,
+        2920
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 5,
+      "view_id": "com.zui.browser:id\/ll_root",
+      "node_app_tree_sha256": "0d4e21f5aa6374fc8cf8ada27c3f8ba39b57630ab64406628f4f4192075e2061",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n2",
+      "bounds": [
+        0,
+        130,
+        1224,
+        301
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 3,
+      "view_id": "com.zui.browser:id\/ll_root",
+      "node_app_tree_sha256": "028076abd3525fec0b88cda91582cbf9d40e2051440ac9eee3da00914bdd1773",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n3",
+      "bounds": [
+        0,
+        2740,
+        244,
+        2920
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "view_id": "com.zui.browser:id\/fl_back",
+      "node_app_tree_sha256": "3148dbf22c93532931bdb01d52e1bb1d5ba241101f010119e5244d584278cc50",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n4",
+      "bounds": [
+        244,
+        2740,
+        489,
+        2920
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "view_id": "com.zui.browser:id\/fl_forward",
+      "node_app_tree_sha256": "46687921f9cb0a84fdaaa631d19faf575bebe8f865b7dd9d544306157fade0c5",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n5",
+      "bounds": [
+        489,
+        2740,
+        734,
+        2920
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "view_id": "com.zui.browser:id\/fl_menu",
+      "node_app_tree_sha256": "4622239233377d77e62f2db0c250bf402b45a034a697c8117416a94b0b2dacc1",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n6",
+      "bounds": [
+        734,
+        2740,
+        979,
+        2920
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "view_id": "com.zui.browser:id\/fl_home",
+      "node_app_tree_sha256": "ff5623ca4ccd4696b312feaa11a83c043c985a1169b38beeac63fad681739155",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n7",
+      "bounds": [
+        979,
+        2740,
+        1224,
+        2920
+      ],
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 1,
+      "child_text": "4",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "d8f0ecfef0e1ab3d6e55fbc4bec84bc5f67c3768fd721ca1621b040520c933f9",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a",
+          "node_signature": "163a19ea554c59c4be753be83413b02aa60d9efad77b37526ccf47dd91953afd",
+          "view_id": "com.zui.browser:id\/tv_window"
+        }
+      ],
+      "view_id": "com.zui.browser:id\/fl_window",
+      "node_app_tree_sha256": "478d0d4bf26a821d3503111da284828efe4853145dd4673a73e0f3f5dfc3265f",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n8",
+      "bounds": [
+        180,
+        184,
+        912,
+        245
+      ],
+      "text": "QQ浏览器搜索",
+      "view_id": "com.zui.browser:id\/tv_web_title",
+      "node_app_tree_sha256": "94f27f72b556c684123e8dd4a06d5092120f2193b95205fb556c4e1a21b3b834",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n9",
+      "bounds": [
+        948,
+        176,
+        1026,
+        254
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "view_id": "com.zui.browser:id\/iv_share",
+      "node_app_tree_sha256": "f2e7ad68be3a497ef3857cfa9187d090bcb099f7afdb0c164492298c578fbb63",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n10",
+      "bounds": [
+        1062,
+        176,
+        1140,
+        254
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "view_id": "com.zui.browser:id\/iv_web_fresh",
+      "node_app_tree_sha256": "5330ca0ed19c0966871349e239f376813a657eae4d7c4cd4fa37d01242f7dffa",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n11",
+      "bounds": [
+        1059,
+        2788,
+        1143,
+        2872
+      ],
+      "text": "4",
+      "view_id": "com.zui.browser:id\/tv_window",
+      "node_app_tree_sha256": "f3e81375c1aefc3778032f2dba82dc44152e817f55d4fb2b1e2ef56cfa425720",
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n12",
+      "bounds": [
+        0,
+        301,
+        1224,
+        2740
+      ],
+      "text": "QQ浏览器搜索",
+      "node_app_tree_sha256": "12e7a6a37cc9af27b53a5f837ace6e7203d72ba9cd3c7c8c88280ee932e719e7",
+      "scrollable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [
+        "forward",
+        "down"
+      ],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false,
+      "focused": true
+    },
+    {
+      "id": "n13",
+      "bounds": [
+        0,
+        301,
+        1224,
+        2740
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 5,
+      "node_app_tree_sha256": "00d282d8f1ced5d4e52bc8e8824dfe7d41048482ec28709a667a83dbeef2a81a",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n14",
+      "bounds": [
+        0,
+        301,
+        3,
+        304
+      ],
+      "description": "链接，无障碍模式读屏软件服务通道。",
+      "view_id": "ariaTipText",
+      "node_app_tree_sha256": "2286d9f2417bca017c750a24ada5a70544f68c09a192c52d9ed573b294a68092",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n15",
+      "bounds": [
+        0,
+        487,
+        1224,
+        2740
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 3,
+      "view_id": "mainBodyWapResult",
+      "node_app_tree_sha256": "659453ee09173eff8e133a263a8a2b72d275437ba79d69900e60cfbb68917c91",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n16",
+      "bounds": [
+        0,
+        301,
+        1224,
+        466
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": true,
+      "child_text_sources_complete": false,
+      "child_text_visited": 5,
+      "view_id": "header",
+      "node_app_tree_sha256": "402ae4b589ab491685a92229a7ac4335fc0fde125c664810806de9259ffaec7d",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n17",
+      "bounds": [
+        63,
+        2524,
+        1161,
+        2668
+      ],
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 3,
+      "child_text": "打开QQ浏览器，搜更多有用内容 · 立即打开",
+      "child_text_source": "visible_noninteractive_descendants.v2",
+      "child_text_root_signature": "1ee3729a0760d06b6e6735d7bc545ee137baa0746d08f6b92a0f558586b19e18",
+      "child_text_sources": [
+        {
+          "descendant_path": "1",
+          "property": "text",
+          "text_sha256": "9816c90e8247d9bfdb35e17263161d26a2df304e592407a47eee12cf6875a96e",
+          "node_signature": "919f412c6572dcd642fd3c6ad7c91af10a74b4e3915e1475bb85ec42427785f2",
+          "view_id": ""
+        },
+        {
+          "descendant_path": "2",
+          "property": "text",
+          "text_sha256": "1210b0ac1b4728e0cce9492d7642c249c8c5d06aaf7d2fcdb34372fc1f07271b",
+          "node_signature": "f791bed7a70ed87ac246cfd13171a130e4ee89f27f57b063d8c1ef610882cc0e",
+          "view_id": ""
+        }
+      ],
+      "node_app_tree_sha256": "ad35664d8ad84c1405c481b34ce541c49c70ab8700a7db967cdf4316c50447be",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n18",
+      "bounds": [
+        0,
+        487,
+        1224,
+        2740
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": true,
+      "child_text_sources_complete": false,
+      "child_text_visited": 16,
+      "view_id": "mainBody",
+      "node_app_tree_sha256": "7edd05999402670b99efc345ad4cb3951a6fecf945c776fe9e0847d381d3803e",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n19",
+      "bounds": [
+        1104,
+        2446,
+        1161,
+        2500
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "node_app_tree_sha256": "64069589447e41cab5f11f694e43b08c87c31a56762c61fd32037bf7ba974b07",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n20",
+      "bounds": [
+        192,
+        2569,
+        798,
+        2620
+      ],
+      "text": "打开QQ浏览器，搜更多有用内容",
+      "node_app_tree_sha256": "109db90fdbec8ea2abd3e2641565005e3eab3efd7be870eaf0da40034fa9220f",
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n21",
+      "bounds": [
+        918,
+        2569,
+        1089,
+        2620
+      ],
+      "text": "立即打开",
+      "node_app_tree_sha256": "8d50584b5d5953f0beef5b1903298a4077079a738ed8bc668301722c58fe4959",
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n22",
+      "bounds": [
+        0,
+        1852,
+        1224,
+        2740
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 3,
+      "view_id": "html_7db01c10_dda2_11f1_a968_a521666defee",
+      "node_app_tree_sha256": "4598ee6fcba9051d25051d3d305f148a14eb2f713b9d15afa665c33c8d4629ee",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "/usr/bin/adb",
+    "-H",
+    "127.0.0.1",
+    "-P",
+    "5037",
+    "-s",
+    "ZY22LS7WZT",
+    "shell",
+    "-T",
+    "cat /data/local/tmp/hepta-observe-8adfe81b55034833ae54ee47cf4cbeb0.xml"
+  ],
+  "started_wall_s": 1794382785.6974132,
+  "elapsed_s": 0.04129934310913086,
+  "exit_code": 0,
+  "client_timed_out": false,
+  "stdin_bytes": 0,
+  "stdin_sha256": null
+}

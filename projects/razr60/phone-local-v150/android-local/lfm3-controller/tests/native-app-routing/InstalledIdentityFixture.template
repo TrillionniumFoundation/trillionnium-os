@@ -1,0 +1,105 @@
+    /**
+     * Host-only installed-App IO boundary for native-app-routing entry cases.
+     * The declared provider hash below is a synthetic input to the real
+     * NativeAppSession admission; it is NOT the digest of the small host file.
+     * The host file is still captured and re-hashed by the unchanged Installed
+     * implementation. No Android installation or provider success is asserted.
+     */
+    static final class CompletionInstalledIdentity {
+        private static final String DECLARED_CTRIP_BASE_SHA256=
+                "666ce1e8234682c89247d5109c5cfa36451c6e67238ee38a545c2d84c88360fa";
+        private static final String HOST_APK_TEXT=
+                "SYNTHETIC HOST APP NOT INSTALLED BY THIS TEST";
+        static final java.util.concurrent.atomic.AtomicInteger hostNativeCaptureCalls=
+                new java.util.concurrent.atomic.AtomicInteger();
+        private final java.util.concurrent.atomic.AtomicInteger hostVerifyCalls=
+                new java.util.concurrent.atomic.AtomicInteger();
+        private final java.util.concurrent.atomic.AtomicInteger hostVerifiedRehashes=
+                new java.util.concurrent.atomic.AtomicInteger();
+        private final Installed installed;
+        private final Map<String,String> hostApkHashes,hostApkPaths;
+        private final String declaredApkSetSha256;
+        final String packageName;
+        final int uid;
+        final long versionCode;
+        final Map<String,String> apkHashes;
+
+        private CompletionInstalledIdentity(Installed value){
+            installed=value;packageName=value.packageName;uid=value.uid;versionCode=value.version;
+            Map<String,String> hashes=new TreeMap<String,String>();
+            Map<String,String> paths=new TreeMap<String,String>();
+            for(Map.Entry<String,Apk> e:value.apks.entrySet()){
+                hashes.put(e.getKey(),e.getValue().sha256);
+                paths.put(e.getKey(),e.getValue().path);
+            }
+            hostApkHashes=java.util.Collections.unmodifiableMap(hashes);
+            hostApkPaths=java.util.Collections.unmodifiableMap(paths);
+            Map<String,String> declared=new TreeMap<String,String>();
+            declared.put("base",DECLARED_CTRIP_BASE_SHA256);
+            apkHashes=java.util.Collections.unmodifiableMap(declared);
+            declaredApkSetSha256=QualificationScope.hash(
+                    ("base\t"+DECLARED_CTRIP_BASE_SHA256+"\n").getBytes(StandardCharsets.UTF_8));
+        }
+
+        static CompletionInstalledIdentity captureNotes(Context context)throws Exception{
+            throw new AssertionError("native routing entry fixture has no Notes installed IO");
+        }
+        static CompletionInstalledIdentity captureCalculator(Context context)throws Exception{
+            throw new AssertionError("native routing entry fixture has no Calculator installed IO");
+        }
+        static CompletionInstalledIdentity captureNativeApp(Context context,NativeAppGoal goal)throws Exception{
+            hostNativeCaptureCalls.incrementAndGet();
+            QualificationScope.require(goal!=null&&NativeAppGoal.CTRIP_PACKAGE.equals(goal.packageName),
+                    "native routing installed IO fixture only declares Ctrip");
+            Installed value=Installed.capture(context,goal.packageName);
+            QualificationScope.require(goal.packageName.equals(value.packageName)
+                    &&value.uid>=10000&&value.uid<90000&&value.version==1779
+                    &&value.apks.size()==1&&value.apks.containsKey("base"),
+                    "synthetic routing package metadata differs");
+            Apk base=value.apks.get("base");
+            String expectedPath=new File(context.getFilesDir(),
+                    "installed/ctrip-host-fixture.apk").getCanonicalPath();
+            QualificationScope.require(expectedPath.equals(base.path)
+                    &&QualificationScope.hash(HOST_APK_TEXT.getBytes(StandardCharsets.UTF_8)).equals(base.sha256),
+                    "exact synthetic host file required; declared provider hash is separate");
+            value.verify(context);
+            return new CompletionInstalledIdentity(value);
+        }
+
+        void verify(Context context)throws Exception{
+            hostVerifyCalls.incrementAndGet();
+            installed.verify(context);
+            Installed fresh=Installed.capture(context,packageName);
+            QualificationScope.require(packageName.equals(fresh.packageName)&&uid==fresh.uid
+                    &&versionCode==fresh.version&&installed.apks.keySet().equals(fresh.apks.keySet())
+                    &&installed.apkSetSha256.equals(fresh.apkSetSha256),
+                    "synthetic installed metadata or full host APK-set hash changed");
+            for(Map.Entry<String,Apk> e:fresh.apks.entrySet()){
+                QualificationScope.require(hostApkPaths.get(e.getKey()).equals(e.getValue().path)
+                        &&hostApkHashes.get(e.getKey()).equals(e.getValue().sha256),
+                        "synthetic installed path or fully re-read host APK changed");
+            }
+            installed.verify(context);
+            hostVerifiedRehashes.incrementAndGet();
+        }
+
+        Map<String,Object> evidence(){
+            Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();
+            value.put("source","synthetic_native_installed_io");
+            value.put("android_installation_verified",false);
+            value.put("declared_provider_identity_is_synthetic",true);
+            value.put("package",packageName);value.put("uid",uid);
+            value.put("version_code",versionCode);
+            value.put("apk_hashes",apkHashes);
+            value.put("apk_set_sha256",declaredApkSetSha256);
+            value.put("declared_expected_provider_apk_hashes",apkHashes);
+            value.put("actual_host_fixture_apk_hashes",hostApkHashes);
+            value.put("actual_host_fixture_apk_paths",hostApkPaths);
+            value.put("actual_host_fixture_apk_set_sha256",installed.apkSetSha256);
+            value.put("host_native_capture_invocations_global",hostNativeCaptureCalls.get());
+            value.put("host_verify_invocations_this_identity",hostVerifyCalls.get());
+            value.put("host_full_rehashes_passed_this_identity",hostVerifiedRehashes.get());
+            value.put("notes_calculator_installed_io","unavailable_throwing_boundary");
+            return value;
+        }
+    }

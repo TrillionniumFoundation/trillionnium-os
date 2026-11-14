@@ -1,0 +1,650 @@
+{
+  "compiled_application_dex_included": false,
+  "files": [
+    {
+      "bytes": 74746,
+      "path": "BUILD-PINS.json",
+      "sha256": "77261c3741563b1db2a624bf014727588b839465d84e119e5e43f45b42d22104"
+    },
+    {
+      "bytes": 3425,
+      "path": "HOST-GATES.json",
+      "sha256": "8239e9973891c8319bdf6f970159e827752dc1b996bb753970c42b6ca6f5eea5"
+    },
+    {
+      "bytes": 4384,
+      "path": "README.md",
+      "sha256": "a80c5242c8478789c790ef889745e523d0b76e0036f8e0c567c4c0ac0f51c45a"
+    },
+    {
+      "bytes": 2441,
+      "path": "SIGNED-APK.json",
+      "sha256": "8e8f35ef384fb38f812de6cadd9829b598de85ebd15d61503a86d1f1e597ae0a"
+    },
+    {
+      "bytes": 8501,
+      "path": "SOURCE-INVENTORY.json",
+      "sha256": "a8dce29109ba6385284403818df6821ab620832d2cd7f7a28a921b323de8ad03"
+    },
+    {
+      "bytes": 12682,
+      "path": "build_helper.py",
+      "sha256": "14678997d2b237ed2dd89c92626f5b2df541162205ccb4507a19595064f360fc"
+    },
+    {
+      "bytes": 8296,
+      "path": "provenance/BASE-SOURCE-INVENTORY.json",
+      "sha256": "3a9cb424a258adfe71b821dadf6b6319bd228a3bf2d0bf190c9d6b139f6b1c8e"
+    },
+    {
+      "bytes": 230541,
+      "path": "provenance/HELPER6-BUILD-RESULT.json",
+      "sha256": "8dad8522b39d9fb017fdb869bfdf9c8081f14d445a314bb4555d84e11e49539d"
+    },
+    {
+      "bytes": 8079,
+      "path": "provenance/HELPER7-SIGNED-RESULT.json",
+      "sha256": "ec6b0dd262672fa7a7e52a880b4d6d137ad794ff42329b6aabee9546a61e584b"
+    },
+    {
+      "bytes": 66541,
+      "path": "provenance/RESOURCE-SEED.json",
+      "sha256": "f62a87ad2d44a386fc80252eb1a584922ef7d72956e3734bde2e6a6e4627f977"
+    },
+    {
+      "bytes": 1606,
+      "path": "provenance/RETAINED-RUNNER-PORTABILITY.json",
+      "sha256": "3b96a143e9081f75b8e7c7a6702a9ed5596ec06d7edd26ae70e17983f6df880f"
+    },
+    {
+      "bytes": 1497,
+      "path": "reference-helper6/AndroidManifest.xml",
+      "sha256": "df746304aabbb2223355937ff08e16196b3cf2a4e642c240491a8859a59e4a95"
+    },
+    {
+      "bytes": 7983,
+      "path": "reference-helper6/src/org/trillionnium/hepta/webhelper/EvidenceFiles.java",
+      "sha256": "b84d1671f956afd67744be0a7f300921e660dbbcda557bf3ae3dc7fdb881aee0"
+    },
+    {
+      "bytes": 3454,
+      "path": "reference-helper6/src/org/trillionnium/hepta/webhelper/EvidenceService.java",
+      "sha256": "53ba16926f5b4618a752c3a7dd312e8f340ce6d588377f629a010b95b911a94f"
+    },
+    {
+      "bytes": 58411,
+      "path": "reference-helper6/src/org/trillionnium/hepta/webhelper/EvidenceSession.java",
+      "sha256": "ab896e73d99a614ea396907f739d99c0177b8e1cdb64c1bf725da753355d01bf"
+    },
+    {
+      "bytes": 5732,
+      "path": "reference-helper6/src/org/trillionnium/hepta/webhelper/Jsons.java",
+      "sha256": "484c6daa3a95a9e1849a70e4ceffb3666e23dd148851d2ae356361c2a6693ee5"
+    },
+    {
+      "bytes": 5396,
+      "path": "reference-helper6/src/org/trillionnium/hepta/webhelper/TaskBinding.java",
+      "sha256": "09a29ec16bc81db78b01fd3ad7120c4a3fb3b9e607c8f93ef039effbb6fca212"
+    },
+    {
+      "bytes": 5933,
+      "path": "reference-helper6/src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+      "sha256": "3966bbe1122f6a6e13bf211291332aa63f755a891800d04169016958946f8f0e"
+    },
+    {
+      "bytes": 256,
+      "path": "resources/00/compiled-res.zip",
+      "sha256": "70f2f5c25be926ea951c91197e0ed782233f2f2dc3dbffcf9e555f663ba99a01"
+    },
+    {
+      "bytes": 107644,
+      "path": "resources/05/compiled-res.zip",
+      "sha256": "ec1008aab3ff45fe62029d1ea981a95d316b3c2de82b2e3ef0d1db539c61d8c8"
+    },
+    {
+      "bytes": 256,
+      "path": "resources/09/compiled-res.zip",
+      "sha256": "70f2f5c25be926ea951c91197e0ed782233f2f2dc3dbffcf9e555f663ba99a01"
+    },
+    {
+      "bytes": 237889,
+      "path": "resources/helper6-unchanged-resource-seed.zip",
+      "sha256": "cb6e3e4b3d144af0157089e7e239da8453eaf0d0d516f30bdf1184b6a8f26d27"
+    },
+    {
+      "bytes": 1497,
+      "path": "source/AndroidManifest.xml",
+      "sha256": "fcb084fee66b9f200a6bd672b56e6bd95e279860ee5e056c08803a4a0a8363f2"
+    },
+    {
+      "bytes": 14579,
+      "path": "source/assets/readonly_dom.js",
+      "sha256": "05bb7c1e4e1929b961c42af1e5c0e01918bf6ff64f153132ca11c7d85873e705"
+    },
+    {
+      "bytes": 2730,
+      "path": "source/src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+      "sha256": "f5f3936a8185185cf5f036a74665ee6edfbd5c1f617299dd9cd6edd4bf7b23e2"
+    },
+    {
+      "bytes": 4137,
+      "path": "source/src/org/trillionnium/hepta/background/FixedIntentTools.java",
+      "sha256": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947"
+    },
+    {
+      "bytes": 25712,
+      "path": "source/src/org/trillionnium/hepta/local/ActionDecision.java",
+      "sha256": "ee2a0481bb1ad0d2a3dd95b501c101d1955f4f1142adfe150ba3f9643fa88b20"
+    },
+    {
+      "bytes": 9217,
+      "path": "source/src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+      "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075"
+    },
+    {
+      "bytes": 30605,
+      "path": "source/src/org/trillionnium/hepta/local/DecisionGrammar.java",
+      "sha256": "236d22187abfe777705d337241e310dd617b1c4c21ae39df4f52d960a1e106ca"
+    },
+    {
+      "bytes": 12329,
+      "path": "source/src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+      "sha256": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f"
+    },
+    {
+      "bytes": 4889,
+      "path": "source/src/org/trillionnium/hepta/local/ObservedAppLabels.java",
+      "sha256": "0276171bb8aaebee880a6d36fea5cbfdb157b09d2728a07148e4ce85d5ffbb9e"
+    },
+    {
+      "bytes": 4665,
+      "path": "source/src/org/trillionnium/hepta/local/ObservedImeEnter.java",
+      "sha256": "e449d61e928dca5a72730b5394fa8f95a7db4dd4006440a95f839818e165acf1"
+    },
+    {
+      "bytes": 2303,
+      "path": "source/src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+      "sha256": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188"
+    },
+    {
+      "bytes": 4685,
+      "path": "source/src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+      "sha256": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba"
+    },
+    {
+      "bytes": 23598,
+      "path": "source/src/org/trillionnium/hepta/local/TaskAuthorization.java",
+      "sha256": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8"
+    },
+    {
+      "bytes": 9611,
+      "path": "source/src/org/trillionnium/hepta/local/web/WebFlightGoal.java",
+      "sha256": "02f260915f2b64894b8cd1ed4223392ace9964920d9b77e6765548252d9624ac"
+    },
+    {
+      "bytes": 10767,
+      "path": "source/src/org/trillionnium/hepta/local/web/WebShoppingGoal.java",
+      "sha256": "b8eb72eddb99842758dc39b347d2679d247714b97e0a0afe6df217bf2e8cd8c8"
+    },
+    {
+      "bytes": 2367,
+      "path": "source/src/org/trillionnium/hepta/webhelper/CaptureReadBudget.java",
+      "sha256": "d1b616cf263a01a1298c992ba1d009d0adf4aa420971b1e27dc95368ecc455cb"
+    },
+    {
+      "bytes": 5245,
+      "path": "source/src/org/trillionnium/hepta/webhelper/DomInstabilityEvidence.java",
+      "sha256": "1bf49e47f467ab36ef2dd30696cc442e146999a55b9682dbd6b929ca9dc4d766"
+    },
+    {
+      "bytes": 16912,
+      "path": "source/src/org/trillionnium/hepta/webhelper/EvidenceFiles.java",
+      "sha256": "95e7bd4d80a87406ce1e313c0a9caf3028b06c3ffe8e399e6f428e4e31101a7d"
+    },
+    {
+      "bytes": 3448,
+      "path": "source/src/org/trillionnium/hepta/webhelper/EvidenceService.java",
+      "sha256": "63f8fbc189f207c9c3bef4d8c1290b143232bb5864055d1b3a7504f46d031828"
+    },
+    {
+      "bytes": 61368,
+      "path": "source/src/org/trillionnium/hepta/webhelper/EvidenceSession.java",
+      "sha256": "bab707e33091704d112d971bce38393c7a161fa1a436a3e5b439e5cf6fa9984c"
+    },
+    {
+      "bytes": 7692,
+      "path": "source/src/org/trillionnium/hepta/webhelper/InstalledIdentity.java",
+      "sha256": "0743b10aff01040b52235d5c57691cc1d864acd6fcef1aa626317585894cc39c"
+    },
+    {
+      "bytes": 6939,
+      "path": "source/src/org/trillionnium/hepta/webhelper/Jsons.java",
+      "sha256": "16b9961273110a709546b6f704f4a0274218fe1ba89b4ece234a51ff2d4e52e6"
+    },
+    {
+      "bytes": 6157,
+      "path": "source/src/org/trillionnium/hepta/webhelper/NativeRetirementProbe.java",
+      "sha256": "fd9124579a5528b5a12e55145dd49f7db1f1fbe3e41049eba7da4823ff391642"
+    },
+    {
+      "bytes": 5951,
+      "path": "source/src/org/trillionnium/hepta/webhelper/ObservedLinkPermit.java",
+      "sha256": "003ddc4af2695dd31bf26c5afaeffd591d948233d1e0741f93b6aaee8d0efe2a"
+    },
+    {
+      "bytes": 1420,
+      "path": "source/src/org/trillionnium/hepta/webhelper/OfficialOrigin.java",
+      "sha256": "7a127a62aa8918be1224b886f90f939bf31146a6522dd2f8a0af0244a57749eb"
+    },
+    {
+      "bytes": 26324,
+      "path": "source/src/org/trillionnium/hepta/webhelper/OfficialPageCapture.java",
+      "sha256": "ebb05c09a0fc5b01aa3a058ffba4f9104a9c7a4a4edbe6160b8ba9bccdc6dfc0"
+    },
+    {
+      "bytes": 33018,
+      "path": "source/src/org/trillionnium/hepta/webhelper/PageActivity.java",
+      "sha256": "21ff5a73e84c472f3e91620e21bd8ef6869ad05e87a1cc92c894e155c74d34f9"
+    },
+    {
+      "bytes": 2699,
+      "path": "source/src/org/trillionnium/hepta/webhelper/PageSitePolicy.java",
+      "sha256": "0a3f1e93eb2205a45e5fd6ec88c43b538ddb0e9976500ae160374399f93c483c"
+    },
+    {
+      "bytes": 2793,
+      "path": "source/src/org/trillionnium/hepta/webhelper/ProcessIdentity.java",
+      "sha256": "ed77fb207e67547a40a4356ca789fa666748ed2040fef1c7b0a8cc8d25e274b2"
+    },
+    {
+      "bytes": 15370,
+      "path": "source/src/org/trillionnium/hepta/webhelper/ProfileIsolation.java",
+      "sha256": "ad6dd2b678e231fa0bf881df847d9a008612bfbeae23fc867e7b2bcda10ee36c"
+    },
+    {
+      "bytes": 5433,
+      "path": "source/src/org/trillionnium/hepta/webhelper/RemoteReply.java",
+      "sha256": "bb0c441bd6ddb5ae46d9124c471050077a61571aa0d121f8a0cdffaa74d816b4"
+    },
+    {
+      "bytes": 6019,
+      "path": "source/src/org/trillionnium/hepta/webhelper/RetiredProfileClear.java",
+      "sha256": "09cb1dddfa469cda8e4c6c5d12221b36538548c6f08c9ae2234c66d2fa23c597"
+    },
+    {
+      "bytes": 5779,
+      "path": "source/src/org/trillionnium/hepta/webhelper/TaskBinding.java",
+      "sha256": "7718e70c3973fd0b7cb91a1b2a2de588607c808d3fbf8a7e2bece5090885f217"
+    },
+    {
+      "bytes": 9153,
+      "path": "source/src/org/trillionnium/hepta/webprotocol/WebCaptureAcknowledgement.java",
+      "sha256": "eae4d8766b1480c2964229047ff03bc0dd54cd7fab5155bea6903d844a7b1cd9"
+    },
+    {
+      "bytes": 4424,
+      "path": "source/src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java",
+      "sha256": "55209ef608fad0d8794d439aab2baf69bd7c8b043289c80ca7b25acaad1ff3d7"
+    },
+    {
+      "bytes": 16055,
+      "path": "source/src/org/trillionnium/hepta/webprotocol/WebDomStability.java",
+      "sha256": "f7e432c1191008afa25a134147cd6fd133f975e102aa4cab722da3dc82a4ea53"
+    },
+    {
+      "bytes": 4089,
+      "path": "source/src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java",
+      "sha256": "90a414863297c1ff173fd14a7b31dce62bb5fbb561e7625f1fe3eb0dace47af7"
+    },
+    {
+      "bytes": 6240,
+      "path": "source/src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+      "sha256": "30ef8a141c6502a623fc818798af9e71683c14a8a94dfa5a705243544e0975bf"
+    },
+    {
+      "bytes": 20795,
+      "path": "source/src/org/trillionnium/hepta/webprotocol/WebMiActionRegion.java",
+      "sha256": "027de25550bac1e58d835c1a0582f5f14aff144b76a2f4889f9d48b4f1abcd04"
+    },
+    {
+      "bytes": 23060,
+      "path": "source/src/org/trillionnium/hepta/webprotocol/WebObservedNavigation.java",
+      "sha256": "e524d91f50ec8d911692e371fed000d65e1be2f703f3efe36497ae64fd358132"
+    },
+    {
+      "bytes": 36054,
+      "path": "source/src/org/trillionnium/hepta/webprotocol/WebRecoveryPolicy.java",
+      "sha256": "e5bba55512b5b71f084282170d2708461d8b62f536f03ba4f3b074a4a0502ce0"
+    },
+    {
+      "bytes": 5255,
+      "path": "source/src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java",
+      "sha256": "d74bf8292782fc7a9e48f3460b8961eecd009d038c8b4e94431b94ecdd04043a"
+    },
+    {
+      "bytes": 8539,
+      "path": "source/src/org/trillionnium/hepta/webprotocol/WebStorageEvidence.java",
+      "sha256": "9e8df742ad0fdaac0fbc051c99772a52fbb40aae49f0a43589e252e71acc7fc0"
+    },
+    {
+      "bytes": 6731,
+      "path": "source/src/org/trillionnium/hepta/webprotocol/WebTaskPurpose.java",
+      "sha256": "92303867e09343ebcbb3620b9a5850bce683c1d94988d1e534dd272dcaea8647"
+    },
+    {
+      "bytes": 14497,
+      "path": "tests/ACTUAL-HELPER6-CAPTURES.json",
+      "sha256": "89ccd1b070a94c3c77d41a0bf4399d5c473e55fca5e27a3d9338297d3e523a32"
+    },
+    {
+      "bytes": 727421,
+      "path": "tests/actual-helper6-captures.tar.gz",
+      "sha256": "c3117e1fb69276a3ea99536f5b97ce457ca397fa48d654c2094c19d618783632"
+    },
+    {
+      "bytes": 13958,
+      "path": "tests/installed-identity/HelperInstalledApkIdentityHostTest.java",
+      "sha256": "e3214559da39d358b585fa481e855d47483ece95404e2ec855bbcd7d4b123502"
+    },
+    {
+      "bytes": 433,
+      "path": "tests/installed-identity/actual-apk-stat.txt",
+      "sha256": "6c1dc85d204e0d806425069fc20ada3a0f5795ee2ffc3b0bf4218f5ed37f8c04"
+    },
+    {
+      "bytes": 14579,
+      "path": "tests/retained/assets/readonly_dom.js",
+      "sha256": "05bb7c1e4e1929b961c42af1e5c0e01918bf6ff64f153132ca11c7d85873e705"
+    },
+    {
+      "bytes": 2730,
+      "path": "tests/retained/src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+      "sha256": "f5f3936a8185185cf5f036a74665ee6edfbd5c1f617299dd9cd6edd4bf7b23e2"
+    },
+    {
+      "bytes": 4137,
+      "path": "tests/retained/src/org/trillionnium/hepta/background/FixedIntentTools.java",
+      "sha256": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947"
+    },
+    {
+      "bytes": 25712,
+      "path": "tests/retained/src/org/trillionnium/hepta/local/ActionDecision.java",
+      "sha256": "ee2a0481bb1ad0d2a3dd95b501c101d1955f4f1142adfe150ba3f9643fa88b20"
+    },
+    {
+      "bytes": 9217,
+      "path": "tests/retained/src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+      "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075"
+    },
+    {
+      "bytes": 30605,
+      "path": "tests/retained/src/org/trillionnium/hepta/local/DecisionGrammar.java",
+      "sha256": "236d22187abfe777705d337241e310dd617b1c4c21ae39df4f52d960a1e106ca"
+    },
+    {
+      "bytes": 12329,
+      "path": "tests/retained/src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+      "sha256": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f"
+    },
+    {
+      "bytes": 4889,
+      "path": "tests/retained/src/org/trillionnium/hepta/local/ObservedAppLabels.java",
+      "sha256": "0276171bb8aaebee880a6d36fea5cbfdb157b09d2728a07148e4ce85d5ffbb9e"
+    },
+    {
+      "bytes": 4665,
+      "path": "tests/retained/src/org/trillionnium/hepta/local/ObservedImeEnter.java",
+      "sha256": "e449d61e928dca5a72730b5394fa8f95a7db4dd4006440a95f839818e165acf1"
+    },
+    {
+      "bytes": 2303,
+      "path": "tests/retained/src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+      "sha256": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188"
+    },
+    {
+      "bytes": 4685,
+      "path": "tests/retained/src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+      "sha256": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba"
+    },
+    {
+      "bytes": 23598,
+      "path": "tests/retained/src/org/trillionnium/hepta/local/TaskAuthorization.java",
+      "sha256": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8"
+    },
+    {
+      "bytes": 9611,
+      "path": "tests/retained/src/org/trillionnium/hepta/local/web/WebFlightGoal.java",
+      "sha256": "02f260915f2b64894b8cd1ed4223392ace9964920d9b77e6765548252d9624ac"
+    },
+    {
+      "bytes": 10767,
+      "path": "tests/retained/src/org/trillionnium/hepta/local/web/WebShoppingGoal.java",
+      "sha256": "b8eb72eddb99842758dc39b347d2679d247714b97e0a0afe6df217bf2e8cd8c8"
+    },
+    {
+      "bytes": 2367,
+      "path": "tests/retained/src/org/trillionnium/hepta/webhelper/CaptureReadBudget.java",
+      "sha256": "d1b616cf263a01a1298c992ba1d009d0adf4aa420971b1e27dc95368ecc455cb"
+    },
+    {
+      "bytes": 5245,
+      "path": "tests/retained/src/org/trillionnium/hepta/webhelper/DomInstabilityEvidence.java",
+      "sha256": "1bf49e47f467ab36ef2dd30696cc442e146999a55b9682dbd6b929ca9dc4d766"
+    },
+    {
+      "bytes": 5732,
+      "path": "tests/retained/src/org/trillionnium/hepta/webhelper/Jsons.java",
+      "sha256": "484c6daa3a95a9e1849a70e4ceffb3666e23dd148851d2ae356361c2a6693ee5"
+    },
+    {
+      "bytes": 5951,
+      "path": "tests/retained/src/org/trillionnium/hepta/webhelper/ObservedLinkPermit.java",
+      "sha256": "003ddc4af2695dd31bf26c5afaeffd591d948233d1e0741f93b6aaee8d0efe2a"
+    },
+    {
+      "bytes": 26324,
+      "path": "tests/retained/src/org/trillionnium/hepta/webhelper/OfficialPageCapture.java",
+      "sha256": "ebb05c09a0fc5b01aa3a058ffba4f9104a9c7a4a4edbe6160b8ba9bccdc6dfc0"
+    },
+    {
+      "bytes": 5433,
+      "path": "tests/retained/src/org/trillionnium/hepta/webhelper/RemoteReply.java",
+      "sha256": "bb0c441bd6ddb5ae46d9124c471050077a61571aa0d121f8a0cdffaa74d816b4"
+    },
+    {
+      "bytes": 4424,
+      "path": "tests/retained/src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java",
+      "sha256": "55209ef608fad0d8794d439aab2baf69bd7c8b043289c80ca7b25acaad1ff3d7"
+    },
+    {
+      "bytes": 16055,
+      "path": "tests/retained/src/org/trillionnium/hepta/webprotocol/WebDomStability.java",
+      "sha256": "f7e432c1191008afa25a134147cd6fd133f975e102aa4cab722da3dc82a4ea53"
+    },
+    {
+      "bytes": 4089,
+      "path": "tests/retained/src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java",
+      "sha256": "90a414863297c1ff173fd14a7b31dce62bb5fbb561e7625f1fe3eb0dace47af7"
+    },
+    {
+      "bytes": 5933,
+      "path": "tests/retained/src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+      "sha256": "3966bbe1122f6a6e13bf211291332aa63f755a891800d04169016958946f8f0e"
+    },
+    {
+      "bytes": 20795,
+      "path": "tests/retained/src/org/trillionnium/hepta/webprotocol/WebMiActionRegion.java",
+      "sha256": "027de25550bac1e58d835c1a0582f5f14aff144b76a2f4889f9d48b4f1abcd04"
+    },
+    {
+      "bytes": 23060,
+      "path": "tests/retained/src/org/trillionnium/hepta/webprotocol/WebObservedNavigation.java",
+      "sha256": "e524d91f50ec8d911692e371fed000d65e1be2f703f3efe36497ae64fd358132"
+    },
+    {
+      "bytes": 5255,
+      "path": "tests/retained/src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java",
+      "sha256": "d74bf8292782fc7a9e48f3460b8961eecd009d038c8b4e94431b94ecdd04043a"
+    },
+    {
+      "bytes": 8539,
+      "path": "tests/retained/src/org/trillionnium/hepta/webprotocol/WebStorageEvidence.java",
+      "sha256": "9e8df742ad0fdaac0fbc051c99772a52fbb40aae49f0a43589e252e71acc7fc0"
+    },
+    {
+      "bytes": 6731,
+      "path": "tests/retained/src/org/trillionnium/hepta/webprotocol/WebTaskPurpose.java",
+      "sha256": "92303867e09343ebcbb3620b9a5850bce683c1d94988d1e534dd272dcaea8647"
+    },
+    {
+      "bytes": 20334,
+      "path": "tests/retained/tests/capture-retry/CaptureRetryHostTest.java",
+      "sha256": "c3a72bcc69f4470b83602900c7dd0a262a7dd7a3fb5fbd20c5aaa9a6a4329b71"
+    },
+    {
+      "bytes": 334,
+      "path": "tests/retained/tests/capture-retry/stubs/android/content/Context.java",
+      "sha256": "e61534e39c0fc29875121c95ca3e2fd9179f2b1f1cf7c85dc21f45daa1eb9679"
+    },
+    {
+      "bytes": 347,
+      "path": "tests/retained/tests/capture-retry/stubs/android/content/res/AssetManager.java",
+      "sha256": "d1b8900938d937823edf242413e566b254a6033b4e063b1fc71c5b35e226e2f6"
+    },
+    {
+      "bytes": 56,
+      "path": "tests/retained/tests/capture-retry/stubs/android/graphics/Bitmap.java",
+      "sha256": "b39c01638664c6ebb8740713b85ae6cec7bb777e9b9f74e936446c9dd23352eb"
+    },
+    {
+      "bytes": 167,
+      "path": "tests/retained/tests/capture-retry/stubs/android/graphics/Rect.java",
+      "sha256": "21dab6e39452450a9c7028c476e376e2b30c3fdf6a265f1091e49fc6891734b9"
+    },
+    {
+      "bytes": 147,
+      "path": "tests/retained/tests/capture-retry/stubs/android/net/Uri.java",
+      "sha256": "06e01f2c1f4e2480302b1f481b1d7df577d1d3e1b63c9eebaf535997ed8f100c"
+    },
+    {
+      "bytes": 58,
+      "path": "tests/retained/tests/capture-retry/stubs/android/net/http/SslError.java",
+      "sha256": "8d64e156626dc30973fe7e2d6790f771171117f678884ba0873a1233e36c5e4b"
+    },
+    {
+      "bytes": 232,
+      "path": "tests/retained/tests/capture-retry/stubs/android/os/Looper.java",
+      "sha256": "327a1d79a852807d380472bc720c3c0f9be9c9d40ebcefe008de7d79b9122178"
+    },
+    {
+      "bytes": 133,
+      "path": "tests/retained/tests/capture-retry/stubs/android/os/Process.java",
+      "sha256": "be51f173977d5d73d1231c445ebdda3448c2fe36c2bdcc5d47660650853a4e38"
+    },
+    {
+      "bytes": 134,
+      "path": "tests/retained/tests/capture-retry/stubs/android/os/SystemClock.java",
+      "sha256": "2b79c38882b3c91d64e8a6c6e92cf0d70a23cdd5e24a70cdf6f5ad69d333c9a0"
+    },
+    {
+      "bytes": 142,
+      "path": "tests/retained/tests/capture-retry/stubs/android/view/Display.java",
+      "sha256": "4fee2e98bd47b7c7d7ccbabddd9a3d9013f0b5b2d0b317ab03edfcc2505914bc"
+    },
+    {
+      "bytes": 207,
+      "path": "tests/retained/tests/capture-retry/stubs/android/view/accessibility/AccessibilityNodeInfo.java",
+      "sha256": "f80b51f869904c36da4c61c70bdd4672c47a409cb27e00a845ae32a8e9d174e3"
+    },
+    {
+      "bytes": 79,
+      "path": "tests/retained/tests/capture-retry/stubs/android/webkit/SslErrorHandler.java",
+      "sha256": "b1171328dda671ae92ff6f1f790103dd18680d821736e1c18364e9338b4e5946"
+    },
+    {
+      "bytes": 92,
+      "path": "tests/retained/tests/capture-retry/stubs/android/webkit/ValueCallback.java",
+      "sha256": "e882726ceda5fc142e675c33201302a6da52cffdf05d0316a437246989f91ef0"
+    },
+    {
+      "bytes": 64,
+      "path": "tests/retained/tests/capture-retry/stubs/android/webkit/WebResourceError.java",
+      "sha256": "e73a32d7125a89b75740285f3d7e7e167e1c05347109a5b1475ee651d2cf1437"
+    },
+    {
+      "bytes": 136,
+      "path": "tests/retained/tests/capture-retry/stubs/android/webkit/WebResourceRequest.java",
+      "sha256": "d4e3fd44f80e543edb5be1c9df9349cccef301864a783451d7f2335a468ad4a6"
+    },
+    {
+      "bytes": 208,
+      "path": "tests/retained/tests/capture-retry/stubs/android/webkit/WebSettings.java",
+      "sha256": "35cb3ab06906c1e560d9c51c89e21191c492b17b747cf1e7cd7a4965e696caf3"
+    },
+    {
+      "bytes": 3466,
+      "path": "tests/retained/tests/capture-retry/stubs/android/webkit/WebView.java",
+      "sha256": "e36d9e5e57129ddea53eee73c11c5da981dd7fe26845f71be731af7d3675d39f"
+    },
+    {
+      "bytes": 621,
+      "path": "tests/retained/tests/capture-retry/stubs/android/webkit/WebViewClient.java",
+      "sha256": "ef26acac3e8b3c7b1d0f1ab9869ff87c0a8e972d79bb0ab7cb9c9938b1665223"
+    },
+    {
+      "bytes": 544,
+      "path": "tests/retained/tests/capture-retry/stubs/org/trillionnium/hepta/webhelper/PageSitePolicy.java",
+      "sha256": "07eff4bd74df362767bf6429b367bd9260404d0b4f6e81936b17ea7f2c304142"
+    },
+    {
+      "bytes": 30607,
+      "path": "tests/retained/tests/scoped-navigation/WebScopedNavigationHostTest.java",
+      "sha256": "3db6472425f0e07cf0d529c326b5c702ad13f021dc862063f427af0f29e1f368"
+    },
+    {
+      "bytes": 14703,
+      "path": "tests/retained/tests/typed-callback/RemoteReplyHostTest.java",
+      "sha256": "9f6b0482c1963169226c6bf9a6d7f274843edf0a16d07471efef66274c4ee264"
+    },
+    {
+      "bytes": 155,
+      "path": "tests/retained/tests/typed-callback/stubs/android/os/IBinder.java",
+      "sha256": "c021316750f0146afb5fd226a58b5856c20ddff0fe9a0c120ac75ab12c4f2faf"
+    },
+    {
+      "bytes": 659,
+      "path": "tests/retained/tests/typed-callback/stubs/android/os/Parcel.java",
+      "sha256": "ea6f025c2b4a3673f5bac366e5eeb4d3b4c2c288c8f9f8e0c18f204f5f1b418c"
+    },
+    {
+      "bytes": 505,
+      "path": "tests/retained/tests/typed-callback/stubs/android/os/ParcelFileDescriptor.java",
+      "sha256": "4ae06bb002595c358c30b07e95fe7b0565c4f0936aa85c38dc32f7dd0166db0d"
+    },
+    {
+      "bytes": 578,
+      "path": "tests/retained/tests/typed-callback/stubs/org/trillionnium/hepta/webhelper/EvidenceFiles.java",
+      "sha256": "214eae8971b69bd0824ae96e47d809297872aa6991c39271e59ee7ac53b21f7a"
+    },
+    {
+      "bytes": 170,
+      "path": "tests/retained/tests/typed-callback/stubs/org/trillionnium/hepta/webhelper/InstalledIdentity.java",
+      "sha256": "51770eb4a606758ba488ac91d72c1480978b5d93fc6a10dbe45b31ea124b6af1"
+    },
+    {
+      "bytes": 27964,
+      "path": "tests/run_retained_host_tests.py",
+      "sha256": "32078d18231ca5eaced75db52761eb06ed49385e814b0f5f6eca977f872a7bd5"
+    }
+  ],
+  "fixture_history_is_helper6": true,
+  "helper_production_delta": 8,
+  "manifest_excludes_only_itself": true,
+  "member_count": 127,
+  "original_helper6_sources": 43,
+  "private_key_included": false,
+  "runtime_java_files": 42,
+  "runtime_source_files": 44,
+  "schema": "hepta.helper7-source-closure.v1",
+  "signed_apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313"
+}

@@ -1,0 +1,3 @@
+package android.content;
+import android.content.pm.PackageManager;import android.content.res.AssetManager;import java.io.File;
+public class Context {private final File files;private final PackageManager pm;public Context(File f,PackageManager p){files=f;pm=p;}public File getFilesDir(){return files;}public PackageManager getPackageManager(){return pm;}public String getPackageName(){return "org.trillionnium.hepta.local";}public AssetManager getAssets(){return new AssetManager(new File(files,"assets"));}public boolean fixedPermissionGranted=true;public int permissionCheckedUid=-1;public int checkPermission(String permission,int pid,int uid){permissionCheckedUid=uid;return fixedPermissionGranted?PackageManager.PERMISSION_GRANTED:-1;}}

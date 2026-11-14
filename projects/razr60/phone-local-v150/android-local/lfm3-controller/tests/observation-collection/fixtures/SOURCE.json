@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.observation-collection-fixture.v1",
+  "source_task_id": "ad0dfc122a3f42a78c0610b8ba8b8f87",
+  "original_task_status": "failed",
+  "task_result_sha256": "3dbd108ebcc23b35305054613c2d3b16d809f1770f1ffc1a30a33a1173508722",
+  "original_selected_archive_sha256": "d110a8997829d4351182d47f43658409185f30ad2272745d0350a1b3002b2b24",
+  "frozen_old_source_commit": "06fb07b957c63622628afae90ec52887523b0860",
+  "xml_node_count": 975,
+  "xml_capture_is_same_observation_as_step02_or_step05": false,
+  "xml_actions_are_unknown": true,
+  "xml_is_visible_to_user_is_unknown": true,
+  "xml_is_editable_is_unknown": true,
+  "projection_boundary": "Synthetic Java host IO maps archived XML attributes. Visibility is a declared true fixture assumption, editable remains false, and platform action lists remain unknown. No model or phone action executes. The terminal XML is a later independent snapshot, not either model-bound frame.",
+  "files": [
+    {
+      "fixture": "final-current-browser.xml",
+      "original_relative_path": "final-current-browser.xml",
+      "size": 366281,
+      "sha256": "019d38ed44e7c0fa118bb9e596703053c594427d46a8b04e74409d9cf880c598"
+    },
+    {
+      "fixture": "step-02-before.json",
+      "original_relative_path": "evidence/task/step-02-before.json",
+      "size": 20770,
+      "sha256": "eaa8c759ee468336814c60859ec2455d63ee7ea14fc916b0ae9bda2155e6b31a"
+    },
+    {
+      "fixture": "step-05-before.json",
+      "original_relative_path": "evidence/task/step-05-before.json",
+      "size": 20770,
+      "sha256": "6d7c4c01baa90ac73036aa9736b2d1b5c26529a38dfb3cf6f4502cfd9727fab6"
+    },
+    {
+      "fixture": "00785-final-current-browser-dump.json",
+      "original_relative_path": "commands/00785-final-current-browser-dump.json",
+      "size": 396,
+      "sha256": "c39ececfcb3bd6bdcbae88ed34f7813b85a58ec9f31cf9c722eb88cba41e2acf"
+    },
+    {
+      "fixture": "00786-final-current-browser-read.json",
+      "original_relative_path": "commands/00786-final-current-browser-read.json",
+      "size": 384,
+      "sha256": "f7055593a9fb4e791f3b51fd6c2a7f0402081123133ae44b3bebef69aaf8a07e"
+    },
+    {
+      "fixture": "00787-final-current-browser-focus.json",
+      "original_relative_path": "commands/00787-final-current-browser-focus.json",
+      "size": 337,
+      "sha256": "f1c4596d08696c98316cfc46cda89ae5a842f30aa3a3a58cddb0ba73de085b13"
+    },
+    {
+      "fixture": "00790-final-screen.json",
+      "original_relative_path": "commands/00790-final-screen.json",
+      "size": 349,
+      "sha256": "ec8c6e7f420912afe1b4d95acdd91b17278c007b11dd2afdbefbb47152cb30fe"
+    },
+    {
+      "fixture": "v49-readGraph.txt",
+      "original_relative_path": "v49 source/src/org/trillionnium/hepta/local/HeptaAccessibilityService.java readGraph exact method excluding separator newline",
+      "size": 5806,
+      "sha256": "1e71cdf254fb2613173d215a2271cbaf34bf1773b75ae9a3b832039ffbada6bb"
+    }
+  ]
+}
