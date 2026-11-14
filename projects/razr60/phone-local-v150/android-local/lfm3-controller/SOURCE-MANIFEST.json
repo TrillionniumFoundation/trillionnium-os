@@ -1,11 +1,11 @@
 {
   "android_qualified": false,
   "base_source": {
-    "commit": "87f01cd43e97f30448359de9a521606dc8b155cf",
-    "component_tree": "37141cbcd7e1d7e0a882a86ba9bb1ab84ac13252",
-    "source_manifest_sha256": "62686d4a155d8848a452952ba2a2bbcd598330c635d9bcae4134e25f3a8e38ab"
+    "commit": "932c33996996a68cab709becfeb7814efb86cadc",
+    "component_tree": "3be55b70a1c1f3f77780e9755cb887b55c570743",
+    "source_manifest_sha256": "51c695644661f8d315c26e5dea831c4d9674fd54bd9edc0dcaa770ab23df0fde"
   },
-  "candidate_status": "reviewed_native_background_fixes_pending_fresh_build_and_phone_acceptance",
+  "candidate_status": "host_dependency_closure_corrected_pending_fresh_build_and_phone_acceptance",
   "candidate_version_assigned": true,
   "complete_source_files": 1790,
   "current_validation": {
@@ -7890,9 +7890,9 @@
       "sha256": "92348b922244a116873ae9a7620f17e60dd1ad45cf23c7426ee2ef72b6b51a7c"
     },
     {
-      "bytes": 17085,
+      "bytes": 17109,
       "path": "tests/qualification-scope/prepare_fixture.py",
-      "sha256": "a8e28172a253a95aac6e4b7e2e9e747f50f9c88ba9540fe2214b8ceb97fc9201"
+      "sha256": "4057243b043538c58c4d20995352841c22c79393e53536197d8733f7e137af55"
     },
     {
       "bytes": 2997,
@@ -8717,7 +8717,7 @@
     {
       "bytes": 42466,
       "path": "tests/web-flight/run_query_host_tests.py",
-      "sha256": "9a7d0d535e7ac77c845c3bd2efd4cffeafd15b96b4ae7030541772482cfb60bb"
+      "sha256": "ebd84725070b7986d9a9cc15389ce4854ebcdd12331e5b18f0d65aa62abf2e03"
     },
     {
       "bytes": 5108,
@@ -8790,9 +8790,9 @@
       "sha256": "a513114211897bb620ecbbab38aadcce3a9137c58071df269cca7f828034118e"
     },
     {
-      "bytes": 19775,
+      "bytes": 19800,
       "path": "tools/run_host_checks.py",
-      "sha256": "fd75a32547e012cf2778c87d2111e302ec7de83ed91e3870b19a40f70b6d82f9"
+      "sha256": "0f5b764d9324a0712d56cd59a23b77c09f8362cd2589071f89aa0ee8d6072dc1"
     },
     {
       "bytes": 1243,
@@ -8968,120 +8968,191 @@
   "functional_scope": "Version-bound native Ctrip image-tile identity keeps its actual empty AX label and model-owned current-node action. Owned singleTask background launch is restricted to this generation newly created organizer roots and new target leaf; original foreground/task guards and standard launch path remain. Existing native read-only result and SDK cleanup gates remain necessary.",
   "historical_parent_metadata": {
     "metadata": {
-      "android_build": "Requires fresh original-key build and all mandatory gates for the exact frozen full source; paired helper7 is unchanged. Main Java is compiled only from src, while the complete helper128 closure and all test fixtures remain in the source map.",
       "android_qualified": false,
       "base_source": {
-        "commit": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
-        "component_tree": "49ea0b961973008cee6943e8ddccd7bc3465ec94",
-        "source_manifest_sha256": "4e84b231e512863270f8f87f42b326e5cded46b10a652ab729439fc23a2f19e6"
+        "commit": "87f01cd43e97f30448359de9a521606dc8b155cf",
+        "component_tree": "37141cbcd7e1d7e0a882a86ba9bb1ab84ac13252",
+        "source_manifest_sha256": "62686d4a155d8848a452952ba2a2bbcd598330c635d9bcae4134e25f3a8e38ab"
       },
-      "candidate_status": "reviewed_native_app_source_pending_fresh_complete_gates_android_build_and_phone_acceptance",
+      "candidate_status": "reviewed_native_background_fixes_pending_fresh_build_and_phone_acceptance",
       "candidate_version_assigned": true,
-      "complete_source_files": 1781,
+      "complete_source_files": 1790,
       "current_validation": {
         "cleanup_scope": "Inherited generation group/marker scope only; unknown process visibility, identity, kernel API or deadline fails closed. Numeric group probe uses signal0 only; real TERM/KILL uses held proc directory FDs. Arbitrary setsid/setpgid/UID or namespace escape is not claimed covered.",
-        "closure_diagnostics_are_not_final_qualification": true,
         "full_android_build": false,
-        "historical_phone_receipts_apply_to_their_original_heads_only": true,
-        "native_business_scope": "Current same-App readouts only; no generic unknown-goal success, lowest-price claim, order placement, payment or booking authority.",
+        "historical_phone_receipts_apply_to_original_heads_only": true,
         "native_flight_business_verified": false,
         "native_product_quote_business_verified": false,
-        "native_route_provider_phone_verified": false,
-        "original_complete_host_gate_pending": true,
         "original_failures_preserved": true,
         "phone_tested": false,
-        "strict_host_gate": "Fresh original canonical108, journal19, paired helper4, all retained nine extra groups and six mandatory native gates must run for the exact frozen new head. No old-head or closure diagnostic PASS is adopted."
+        "strict_host_gate": "Fresh original canonical108, journal19, helper4, nine retained Mac extra groups and all seven native gates; fresh Android compile, original-signature assembly and ordinary phone acceptance."
       },
-      "functional_scope": "Explicit selected native App target is immutable from UI through authorization, session and controller. Bound Ctrip single-adult flight readouts and Xiaomi AX3000T displayed detail quotes use actual current native observations, model-owned query/navigation and typed completion. Unsupported native goals remain non-successful; an explicit helper selection alone preserves the historical web path. No booking, purchase or payment completion is added.",
+      "functional_scope": "Version-bound native Ctrip image-tile identity keeps its actual empty AX label and model-owned current-node action. Owned singleTask background launch is restricted to this generation newly created organizer roots and new target leaf; original foreground/task guards and standard launch path remain. Existing native read-only result and SDK cleanup gates remain necessary.",
       "historical_parent_metadata": {
         "metadata": {
-          "android_build": "Requires fresh compilation of 125 main Java sources and 233 exact production inputs, original-key assembly, canonical108 and all retained gates. The unchanged complete helper7 source closure has 128 files and its separately signed APK remains pinned.",
+          "android_build": "Requires fresh original-key build and all mandatory gates for the exact frozen full source; paired helper7 is unchanged. Main Java is compiled only from src, while the complete helper128 closure and all test fixtures remain in the source map.",
           "android_qualified": false,
           "base_source": {
-            "commit": "c4e5bb4963cb664ecdf174cc978df3098da7928e",
-            "component_tree": "03f87c48149a3da25d94df61ab4901a8d6bce32b",
-            "source_manifest_sha256": "a19ea749f335062dce5a9c1443c0cb48f992c4c507c0d94714881ec124a1db82"
+            "commit": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
+            "component_tree": "49ea0b961973008cee6943e8ddccd7bc3465ec94",
+            "source_manifest_sha256": "4e84b231e512863270f8f87f42b326e5cded46b10a652ab729439fc23a2f19e6"
           },
-          "candidate_status": "reviewed_source_integration_pending_fresh_full_host_android_and_phone_qualification",
+          "candidate_status": "reviewed_native_app_source_pending_fresh_complete_gates_android_build_and_phone_acceptance",
           "candidate_version_assigned": true,
-          "ci_mixed_uid_repair": {
-            "focused_gate": {
-              "assertions": 196,
-              "boundary": "Actual production parser and exclusion with synthetic stat/status, not a real setuid process or complete proc visibility test.",
-              "cases": 29,
-              "path": "tests/owned-generation-mixed-uid/run_host.py"
-            },
-            "fresh_android_build_pending": true,
-            "full_new_head_ci_pending": true,
-            "old_b2ca_phone_qualification_not_adopted": true,
-            "parent_commit": "b316d693b824f1d1210499988939d07657f35981",
-            "parent_component_tree": "e107f79e46fc9b162a8529d315d04b26c8e82b0a",
-            "parent_source_manifest_sha256": "272f9e63eedcd7cf15f91825a70e1b1a5650736119a7996c271d1d06de7bd50c",
-            "phone_tested": false,
-            "production_delta_paths": [
-              "native/owned-generation.inc"
-            ],
-            "retained_gate": {
-              "assertions_unchanged": true,
-              "canonical108_unchanged": true,
-              "cases": 87,
-              "checks": 267,
-              "path": "tests/owned-generation-cleanup/run_host.py"
-            },
-            "scope": "Mixed UID is separately typed; only a same-held-FD stable second stat/four-UID tuple read plus strict older-than-leader and different PGID excludes an unrelated process. No mixed tuple obtains signaling authority.",
-            "workflow": {
-              "changes": "Add focused gate and its artifact directory to existing independent diagnostic job; original Mac producer and Linux consumer are byte-identical.",
-              "git_blob": "c416a4280f490829506636042c35acdaf0ddcb12",
-              "path": ".github/workflows/hepta-local-android.yml",
-              "sha256": "fb3fd5ccd55f310fcd06d01c9b78618c9b94a8a001ba307ea55b804bd7a70422"
-            }
-          },
-          "ci_visibility_diagnostic": {
-            "installed_b2ca_apk_is_not_this_source_commit": true,
-            "new_head_ci_and_full_gates_required": true,
-            "parent_commit": "ddc01631d0d376322a0e1d14627daeec6016bd3d",
-            "parent_component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
-            "parent_source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3",
-            "phone_reinstallation_required_for_diagnostics": false,
-            "prior_head_success_adopted": false,
-            "repository_workflow": {
-              "git_blob": "107afa319ea37cce145f1be2a8fc91c9bb7dc0b4",
-              "path": ".github/workflows/hepta-local-android.yml",
-              "sha256": "8cc9ca284116796ca06f3eb65a8e9019808a5d29c452d02d487ffe28c4c91598"
-            },
-            "scope": "Host diagnostics only; macro disabled Android behavior is unchanged by the reviewed trace implementation.",
-            "source_delta_paths": [
-              "native/owned-generation.inc",
-              "tests/owned-generation-cleanup/native_cases.py"
-            ],
-            "source_overlay_sha256": "5c5b66cf9db19f2f831fc903bd3b991924cbaf75a39a023b50a1c774e13f9ced"
-          },
-          "complete_source_files": 1730,
+          "complete_source_files": 1781,
           "current_validation": {
-            "actual_flight_result_provider_implemented": false,
-            "actual_flight_result_verified": false,
-            "actual_native_no_force_cancellation_phone_verified": false,
-            "actual_notes_readiness_phone_verified": false,
-            "actual_owned_generation_cleanup_phone_verified": false,
-            "actual_shopping_quote_phone_verified": false,
             "cleanup_scope": "Inherited generation group/marker scope only; unknown process visibility, identity, kernel API or deadline fails closed. Numeric group probe uses signal0 only; real TERM/KILL uses held proc directory FDs. Arbitrary setsid/setpgid/UID or namespace escape is not claimed covered.",
-            "external_model_used": false,
+            "closure_diagnostics_are_not_final_qualification": true,
             "full_android_build": false,
-            "isolated_overlay_host_receipts_do_not_qualify_combined_source": true,
+            "historical_phone_receipts_apply_to_their_original_heads_only": true,
+            "native_business_scope": "Current same-App readouts only; no generic unknown-goal success, lowest-price claim, order placement, payment or booking authority.",
+            "native_flight_business_verified": false,
+            "native_product_quote_business_verified": false,
+            "native_route_provider_phone_verified": false,
             "original_complete_host_gate_pending": true,
             "original_failures_preserved": true,
             "phone_tested": false,
-            "shopping_completion_scope": "Current visible official search-card display quote only. Does not prove product-detail navigation, lowest price, availability, order placement or payment.",
-            "strict_host_gate": "Fresh canonical108 preserves all original106 commands and appends SDK70 43/99 and owned-generation 87/267. Original journal19, helper4 and all retained Mac gates remain required. No old-head PASS is adopted."
+            "strict_host_gate": "Fresh original canonical108, journal19, paired helper4, all retained nine extra groups and six mandatory native gates must run for the exact frozen new head. No old-head or closure diagnostic PASS is adopted."
           },
-          "functional_scope": "Reuse the pinned SDK C++ runtime for the generate exception boundary; classify only exactly bound SDK exception status70 as a failed request with verified SDK cleanup; require a durable pre-SDK owned-worker generation identity, held-proc-FD descendant cleanup and two kernel-confirmed absent group observations before clearing the warm worker slot. Retain all c4 business, helper7 ACK, action authorization and physical cleanup requirements.",
-          "integration_sources": {
-            "canonical_runner_sha256": "a3740dcf78040a86799b39ef8050c417b26f03ddde72a23425f10d647861579a",
-            "external_repository_workflow": {
-              "path": ".github/workflows/hepta-local-android.yml",
-              "sha256": "eb01680b330bacb4a134b1a9006d10c5f4607eb91ed5e343cefda17c56a7192f"
+          "functional_scope": "Explicit selected native App target is immutable from UI through authorization, session and controller. Bound Ctrip single-adult flight readouts and Xiaomi AX3000T displayed detail quotes use actual current native observations, model-owned query/navigation and typed completion. Unsupported native goals remain non-successful; an explicit helper selection alone preserves the historical web path. No booking, purchase or payment completion is added.",
+          "historical_parent_metadata": {
+            "metadata": {
+              "android_build": "Requires fresh compilation of 125 main Java sources and 233 exact production inputs, original-key assembly, canonical108 and all retained gates. The unchanged complete helper7 source closure has 128 files and its separately signed APK remains pinned.",
+              "android_qualified": false,
+              "base_source": {
+                "commit": "c4e5bb4963cb664ecdf174cc978df3098da7928e",
+                "component_tree": "03f87c48149a3da25d94df61ab4901a8d6bce32b",
+                "source_manifest_sha256": "a19ea749f335062dce5a9c1443c0cb48f992c4c507c0d94714881ec124a1db82"
+              },
+              "candidate_status": "reviewed_source_integration_pending_fresh_full_host_android_and_phone_qualification",
+              "candidate_version_assigned": true,
+              "ci_mixed_uid_repair": {
+                "focused_gate": {
+                  "assertions": 196,
+                  "boundary": "Actual production parser and exclusion with synthetic stat/status, not a real setuid process or complete proc visibility test.",
+                  "cases": 29,
+                  "path": "tests/owned-generation-mixed-uid/run_host.py"
+                },
+                "fresh_android_build_pending": true,
+                "full_new_head_ci_pending": true,
+                "old_b2ca_phone_qualification_not_adopted": true,
+                "parent_commit": "b316d693b824f1d1210499988939d07657f35981",
+                "parent_component_tree": "e107f79e46fc9b162a8529d315d04b26c8e82b0a",
+                "parent_source_manifest_sha256": "272f9e63eedcd7cf15f91825a70e1b1a5650736119a7996c271d1d06de7bd50c",
+                "phone_tested": false,
+                "production_delta_paths": [
+                  "native/owned-generation.inc"
+                ],
+                "retained_gate": {
+                  "assertions_unchanged": true,
+                  "canonical108_unchanged": true,
+                  "cases": 87,
+                  "checks": 267,
+                  "path": "tests/owned-generation-cleanup/run_host.py"
+                },
+                "scope": "Mixed UID is separately typed; only a same-held-FD stable second stat/four-UID tuple read plus strict older-than-leader and different PGID excludes an unrelated process. No mixed tuple obtains signaling authority.",
+                "workflow": {
+                  "changes": "Add focused gate and its artifact directory to existing independent diagnostic job; original Mac producer and Linux consumer are byte-identical.",
+                  "git_blob": "c416a4280f490829506636042c35acdaf0ddcb12",
+                  "path": ".github/workflows/hepta-local-android.yml",
+                  "sha256": "fb3fd5ccd55f310fcd06d01c9b78618c9b94a8a001ba307ea55b804bd7a70422"
+                }
+              },
+              "ci_visibility_diagnostic": {
+                "installed_b2ca_apk_is_not_this_source_commit": true,
+                "new_head_ci_and_full_gates_required": true,
+                "parent_commit": "ddc01631d0d376322a0e1d14627daeec6016bd3d",
+                "parent_component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
+                "parent_source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3",
+                "phone_reinstallation_required_for_diagnostics": false,
+                "prior_head_success_adopted": false,
+                "repository_workflow": {
+                  "git_blob": "107afa319ea37cce145f1be2a8fc91c9bb7dc0b4",
+                  "path": ".github/workflows/hepta-local-android.yml",
+                  "sha256": "8cc9ca284116796ca06f3eb65a8e9019808a5d29c452d02d487ffe28c4c91598"
+                },
+                "scope": "Host diagnostics only; macro disabled Android behavior is unchanged by the reviewed trace implementation.",
+                "source_delta_paths": [
+                  "native/owned-generation.inc",
+                  "tests/owned-generation-cleanup/native_cases.py"
+                ],
+                "source_overlay_sha256": "5c5b66cf9db19f2f831fc903bd3b991924cbaf75a39a023b50a1c774e13f9ced"
+              },
+              "complete_source_files": 1730,
+              "current_validation": {
+                "actual_flight_result_provider_implemented": false,
+                "actual_flight_result_verified": false,
+                "actual_native_no_force_cancellation_phone_verified": false,
+                "actual_notes_readiness_phone_verified": false,
+                "actual_owned_generation_cleanup_phone_verified": false,
+                "actual_shopping_quote_phone_verified": false,
+                "cleanup_scope": "Inherited generation group/marker scope only; unknown process visibility, identity, kernel API or deadline fails closed. Numeric group probe uses signal0 only; real TERM/KILL uses held proc directory FDs. Arbitrary setsid/setpgid/UID or namespace escape is not claimed covered.",
+                "external_model_used": false,
+                "full_android_build": false,
+                "isolated_overlay_host_receipts_do_not_qualify_combined_source": true,
+                "original_complete_host_gate_pending": true,
+                "original_failures_preserved": true,
+                "phone_tested": false,
+                "shopping_completion_scope": "Current visible official search-card display quote only. Does not prove product-detail navigation, lowest price, availability, order placement or payment.",
+                "strict_host_gate": "Fresh canonical108 preserves all original106 commands and appends SDK70 43/99 and owned-generation 87/267. Original journal19, helper4 and all retained Mac gates remain required. No old-head PASS is adopted."
+              },
+              "functional_scope": "Reuse the pinned SDK C++ runtime for the generate exception boundary; classify only exactly bound SDK exception status70 as a failed request with verified SDK cleanup; require a durable pre-SDK owned-worker generation identity, held-proc-FD descendant cleanup and two kernel-confirmed absent group observations before clearing the warm worker slot. Retain all c4 business, helper7 ACK, action authorization and physical cleanup requirements.",
+              "integration_sources": {
+                "canonical_runner_sha256": "a3740dcf78040a86799b39ef8050c417b26f03ddde72a23425f10d647861579a",
+                "external_repository_workflow": {
+                  "path": ".github/workflows/hepta-local-android.yml",
+                  "sha256": "eb01680b330bacb4a134b1a9006d10c5f4607eb91ed5e343cefda17c56a7192f"
+                },
+                "normal_git_parent": "c4e5bb4963cb664ecdf174cc978df3098da7928e",
+                "paired_helper": {
+                  "apk_bytes": 1414146,
+                  "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
+                  "certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+                  "helper_source_closure_sha256": "4c00e1d9dda65b927557e35043c6f41fedc1ac5584f4c5aede2369ee0cb72f3f",
+                  "package": "org.trillionnium.hepta.webhelper",
+                  "version_code": 7,
+                  "version_name": "0.7.0-web-evidence-v4"
+                },
+                "version_independent_overlays": [
+                  {
+                    "entries": 1,
+                    "freeze_sha256": "fe0d32866b7ee173ea7bffa7dfa3fe5baf7ba92e7c026642f6865ce437f229e2",
+                    "name": "sdk_runtime_link",
+                    "overlay_sha256": "617ff4dc0f198cc6e4d6227887c4b431021b5e07f4e985d08e2ad362ab4f3c23"
+                  },
+                  {
+                    "entries": 32,
+                    "freeze_sha256": "1661cda7b23aa7340899580384c643416e3a3bbd3015b937223cb3c0d8460aa7",
+                    "name": "owned_generation_sdk70",
+                    "overlay_sha256": "405611dcba4f036ef4abf0c08fb1c407ac7c04bc22376e5714667c0ee658e8a5"
+                  }
+                ]
+              },
+              "main_java_sources": 125,
+              "phone_qualified": false,
+              "production_build_inputs_count": 233,
+              "qualification_policy": "Qualification is separate external evidence bound to this exact full source and actual Git/build inputs. Source review, isolated targeted tests and historical receipts do not qualify the integrated candidate.",
+              "release_version_assigned": false,
+              "schema": "hepta.local-source.v3",
+              "source_preservation_scope": "Preserve all 1725 b316 source members. This isolated CI repair changes only mixed-UID classification and the strictly older/different-group exclusion in native/owned-generation.inc, adds five focused regression inputs and refreshes complete manifest pins. Android version, all Java sources, original canonical108 and retained87 assertions remain unchanged. Previous integration metadata remains historical provenance; no prior APK or phone qualification applies to this new native source.",
+              "version_code": 64,
+              "version_metadata_policy": "Version64 identifies this source candidate. Publication, fresh original build/signature and ordinary phone acceptance are distinct gates.",
+              "version_name": "0.64.0-owned-worker-runtime"
             },
-            "normal_git_parent": "c4e5bb4963cb664ecdf174cc978df3098da7928e",
+            "source_commit": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
+            "source_manifest_sha256": "4e84b231e512863270f8f87f42b326e5cded46b10a652ab729439fc23a2f19e6"
+          },
+          "integration_sources": {
+            "canonical_runner_sha256": "fd75a32547e012cf2778c87d2111e302ec7de83ed91e3870b19a40f70b6d82f9",
+            "external_repository_workflow": {
+              "base_commit": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
+              "base_sha256": "fb3fd5ccd55f310fcd06d01c9b78618c9b94a8a001ba307ea55b804bd7a70422",
+              "git_blob": "5cdc875bf0be3381135b6a9baa30295d758ebbe3",
+              "path": ".github/workflows/hepta-local-android.yml",
+              "sha256": "2c044d9a250d38ca55d2d57a0ea380aeaa26cc7ef2782fd5d29ff029b979216a"
+            },
+            "native_host_gate_contract_sha256": "c6373c7af1e8b255e1100cab06642bdab51017d2049bb1cc428328dcedb51259",
+            "normal_git_parent": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
             "paired_helper": {
               "apk_bytes": 1414146,
               "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -9091,46 +9162,53 @@
               "version_code": 7,
               "version_name": "0.7.0-web-evidence-v4"
             },
-            "version_independent_overlays": [
-              {
-                "entries": 1,
-                "freeze_sha256": "fe0d32866b7ee173ea7bffa7dfa3fe5baf7ba92e7c026642f6865ce437f229e2",
-                "name": "sdk_runtime_link",
-                "overlay_sha256": "617ff4dc0f198cc6e4d6227887c4b431021b5e07f4e985d08e2ad362ab4f3c23"
-              },
-              {
-                "entries": 32,
-                "freeze_sha256": "1661cda7b23aa7340899580384c643416e3a3bbd3015b937223cb3c0d8460aa7",
-                "name": "owned_generation_sdk70",
-                "overlay_sha256": "405611dcba4f036ef4abf0c08fb1c407ac7c04bc22376e5714667c0ee658e8a5"
-              }
-            ]
+            "review_artifact_hashes": {
+              "FREEZE.json": "7566ad406931fcc9a4d175f46f0f190331e8ab570c90d9cd351b907da8baecc1",
+              "INDEPENDENT-NATIVE-ROUTING-REVIEW-r1.json": "929ab9c90dae3cbd4dae92d88481c4391424069bd2c502984e5f8234cd4b6bea",
+              "INDEPENDENT-XIAOMI-PURE-PARSER-REVIEW-r1.json": "1c22bfedf828f1be86a93e4cb92f952b35f781cd1b940502e3c5f05481b1a83c",
+              "PUBLIC-FIXTURE-REDACTION-r1.json": "e6c2a1b52ce4418fb12731880c0f169ced0cda50308ea326379ae3b20d646841",
+              "ROOT-NATIVE-DOMAIN-NULL-MASK-REVIEW-r1.json": "f816e5611c90ea873138fa495fc8ddfe980e4b336bafd991b2aff05ea2d1af51",
+              "ROOT-NATIVE-PROVIDER-FINAL-REVIEW-r1.json": "a1cf523cbb6c6b56cbda3b8e7d27fbb69445ae6d932f31522eb382796d2ecf45",
+              "ROOT-NATIVE-PROVIDER-REVIEW-r1.json": "a6f82198b0a15663951e4e1aadb5cb3cf4ed9875e712c0b67636d0ebaf9936b5",
+              "ROOT-NATIVE-ROUTING-REVIEW-r1.json": "104296c98ffc8d6cf1585f50f25f19ffdccb11a556e105de34deaf985c0c2a8c",
+              "ROOT-V65-NATIVE-CI-REVIEW-r1.json": "8a12d0a8f6d3666e762f99246bc89328cddd8afeaf38f29fd1b47bec8d35bc47"
+            },
+            "source_reconstruction_base": {
+              "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
+              "component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
+              "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
+            }
           },
-          "main_java_sources": 125,
+          "main_java_sources": 132,
           "phone_qualified": false,
-          "production_build_inputs_count": 233,
-          "qualification_policy": "Qualification is separate external evidence bound to this exact full source and actual Git/build inputs. Source review, isolated targeted tests and historical receipts do not qualify the integrated candidate.",
+          "production_build_inputs_count": 240,
+          "qualification_policy": "Source review and isolated host diagnostics are separate from fresh frozen-head build/signature and ordinary phone acceptance.",
           "release_version_assigned": false,
           "schema": "hepta.local-source.v3",
-          "source_preservation_scope": "Preserve all 1725 b316 source members. This isolated CI repair changes only mixed-UID classification and the strictly older/different-group exclusion in native/owned-generation.inc, adds five focused regression inputs and refreshes complete manifest pins. Android version, all Java sources, original canonical108 and retained87 assertions remain unchanged. Previous integration metadata remains historical provenance; no prior APK or phone qualification applies to this new native source.",
-          "version_code": 64,
-          "version_metadata_policy": "Version64 identifies this source candidate. Publication, fresh original build/signature and ordinary phone acceptance are distinct gates.",
-          "version_name": "0.64.0-owned-worker-runtime"
+          "source_preservation_scope": "All signed b2ca and published 0c40 members remain. Approved native route/provider/Xiaomi and minimal host dependency closures are combined; archived web-v65 calendar/drift business overlays are excluded. Historical original evidence and version-specific references retain their original names and bytes, except explicitly identified new public native fixtures with unrelated private values redacted.",
+          "source_reconstruction_base": {
+            "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
+            "component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
+            "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
+          },
+          "version_code": 65,
+          "version_metadata_policy": "Version65 identifies this native-App source candidate. Version64 source and original phone evidence remain historical; this stamp does not qualify the new APK.",
+          "version_name": "0.65.0-native-app-runtime"
         },
-        "source_commit": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
-        "source_manifest_sha256": "4e84b231e512863270f8f87f42b326e5cded46b10a652ab729439fc23a2f19e6"
+        "source_commit": "87f01cd43e97f30448359de9a521606dc8b155cf",
+        "source_manifest_sha256": "62686d4a155d8848a452952ba2a2bbcd598330c635d9bcae4134e25f3a8e38ab"
       },
       "integration_sources": {
         "canonical_runner_sha256": "fd75a32547e012cf2778c87d2111e302ec7de83ed91e3870b19a40f70b6d82f9",
         "external_repository_workflow": {
-          "base_commit": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
-          "base_sha256": "fb3fd5ccd55f310fcd06d01c9b78618c9b94a8a001ba307ea55b804bd7a70422",
-          "git_blob": "5cdc875bf0be3381135b6a9baa30295d758ebbe3",
+          "base_commit": "87f01cd43e97f30448359de9a521606dc8b155cf",
+          "base_sha256": "2c044d9a250d38ca55d2d57a0ea380aeaa26cc7ef2782fd5d29ff029b979216a",
+          "git_blob": "c51ed5101bfadacefc4d804677b407dfee1cbe9e",
           "path": ".github/workflows/hepta-local-android.yml",
-          "sha256": "2c044d9a250d38ca55d2d57a0ea380aeaa26cc7ef2782fd5d29ff029b979216a"
+          "sha256": "c6a7bd65b9a96e4dc9223f09f72eecd59883395e62ac385b657b78d7debc5b6a"
         },
-        "native_host_gate_contract_sha256": "c6373c7af1e8b255e1100cab06642bdab51017d2049bb1cc428328dcedb51259",
-        "normal_git_parent": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
+        "native_host_gate_contract_sha256": "497820eaf4ab49a32e2d560ab6dfaacf7d1741d8997a0e23d41ded5edae40b4a",
+        "normal_git_parent": "87f01cd43e97f30448359de9a521606dc8b155cf",
         "paired_helper": {
           "apk_bytes": 1414146,
           "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -9141,15 +9219,12 @@
           "version_name": "0.7.0-web-evidence-v4"
         },
         "review_artifact_hashes": {
-          "FREEZE.json": "7566ad406931fcc9a4d175f46f0f190331e8ab570c90d9cd351b907da8baecc1",
-          "INDEPENDENT-NATIVE-ROUTING-REVIEW-r1.json": "929ab9c90dae3cbd4dae92d88481c4391424069bd2c502984e5f8234cd4b6bea",
-          "INDEPENDENT-XIAOMI-PURE-PARSER-REVIEW-r1.json": "1c22bfedf828f1be86a93e4cb92f952b35f781cd1b940502e3c5f05481b1a83c",
-          "PUBLIC-FIXTURE-REDACTION-r1.json": "e6c2a1b52ce4418fb12731880c0f169ced0cda50308ea326379ae3b20d646841",
-          "ROOT-NATIVE-DOMAIN-NULL-MASK-REVIEW-r1.json": "f816e5611c90ea873138fa495fc8ddfe980e4b336bafd991b2aff05ea2d1af51",
-          "ROOT-NATIVE-PROVIDER-FINAL-REVIEW-r1.json": "a1cf523cbb6c6b56cbda3b8e7d27fbb69445ae6d932f31522eb382796d2ecf45",
-          "ROOT-NATIVE-PROVIDER-REVIEW-r1.json": "a6f82198b0a15663951e4e1aadb5cb3cf4ed9875e712c0b67636d0ebaf9936b5",
-          "ROOT-NATIVE-ROUTING-REVIEW-r1.json": "104296c98ffc8d6cf1585f50f25f19ffdccb11a556e105de34deaf985c0c2a8c",
-          "ROOT-V65-NATIVE-CI-REVIEW-r1.json": "8a12d0a8f6d3666e762f99246bc89328cddd8afeaf38f29fd1b47bec8d35bc47"
+          "DERIVATION-r4.json": "269df9352dd55610fbb2794b063ba447e496f5a3fe847cc33372ba7390f879d9",
+          "HANDOFF.json": "4a2f1d099d61f525683924c303ab27e6b55b7dd6061310dadb295fdd00c495b4",
+          "INDEPENDENT-SOURCE-REVIEW.json": "cf5272bad60d60e250ae8d5d4daa4cd38ddd6c52429c9ba12548597c3c4e4f40",
+          "ROOT-PRODUCTION-SOURCE-REVIEW-r4.json": "3682d5fdf947eb4b3e35e2439cd8b2fa34a9c582b00faa70f3e93fc2e5cbd2a1",
+          "SNAPSHOT88-INDEPENDENT-REVIEW.json": "cc14670b13dbb02460ca9381f86c5c34a887e6dbb3e2c2c6cb220eeb2605187f",
+          "SOURCE-UNION-INDEPENDENT-REVIEW.json": "bdb8384454d76c99981b022386967aa9969e1ddb9c88eef255bea9317efeed42"
         },
         "source_reconstruction_base": {
           "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
@@ -9157,36 +9232,79 @@
           "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
         }
       },
-      "main_java_sources": 132,
+      "main_java_sources": 134,
       "phone_qualified": false,
-      "production_build_inputs_count": 240,
-      "qualification_policy": "Source review and isolated host diagnostics are separate from fresh frozen-head build/signature and ordinary phone acceptance.",
+      "production_build_inputs_count": 242,
+      "qualification_policy": "Source reviews, host gates, real Android build and actual native phone outcomes retain separate evidence.",
       "release_version_assigned": false,
       "schema": "hepta.local-source.v3",
-      "source_preservation_scope": "All signed b2ca and published 0c40 members remain. Approved native route/provider/Xiaomi and minimal host dependency closures are combined; archived web-v65 calendar/drift business overlays are excluded. Historical original evidence and version-specific references retain their original names and bytes, except explicitly identified new public native fixtures with unrelated private values redacted.",
+      "source_preservation_scope": "All actual v65 and signed b2ca members retained. No existing test assertion file removed; current targeted results are diagnostic references, never substituted for new frozen-head or phone acceptance.",
       "source_reconstruction_base": {
         "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
         "component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
         "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
       },
-      "version_code": 65,
-      "version_metadata_policy": "Version65 identifies this native-App source candidate. Version64 source and original phone evidence remain historical; this stamp does not qualify the new APK.",
-      "version_name": "0.65.0-native-app-runtime"
+      "version_code": 66,
+      "version_name": "0.66.0-native-background-runtime"
     },
-    "source_commit": "87f01cd43e97f30448359de9a521606dc8b155cf",
-    "source_manifest_sha256": "62686d4a155d8848a452952ba2a2bbcd598330c635d9bcae4134e25f3a8e38ab"
+    "source_commit": "932c33996996a68cab709becfeb7814efb86cadc",
+    "source_manifest_sha256": "51c695644661f8d315c26e5dea831c4d9674fd54bd9edc0dcaa770ab23df0fde"
+  },
+  "host_closure_amendment": {
+    "cause": "The canonical and qualification-fixture javac closures omitted NativeCtripFlightPage; the query source count still described its pre-addition closure.",
+    "changed_programs": [
+      "tests/qualification-scope/prepare_fixture.py",
+      "tests/web-flight/run_query_host_tests.py",
+      "tools/run_host_checks.py"
+    ],
+    "new_head_tests_run": false,
+    "original_case_and_assertion_contracts_retained": true,
+    "original_failure_preserved": true,
+    "production_bytes_changed": false,
+    "targeted_review_artifacts": [
+      {
+        "bytes": 4984,
+        "path": "/home/alex/hepta-v66-native-closure-fix-261e-20261114-r1/HANDOFF.json",
+        "sha256": "d454abc746d6116e69e09d26948ae5807322fda1e4efe8f5e2e80daeddbf4350"
+      },
+      {
+        "bytes": 300210,
+        "path": "/home/alex/hepta-v66-native-closure-fix-261e-20261114-r1/validation/compile-only-r1/RESULT.json",
+        "sha256": "6bc26105f8f26c9f64347c38648379a6c268161ada3f37a291c30fd844d5f165"
+      },
+      {
+        "bytes": 6421,
+        "path": "/home/alex/hepta-v66-native-build-261e-20261114-r2/preparation/ROOT-SOURCE-REVIEW.json",
+        "sha256": "4f7b2035fb966f607bb1be43f993a9f8d0cd21ead252803a3aee0bba381fd107"
+      },
+      {
+        "bytes": 4004,
+        "path": "/home/alex/hepta-v66-native-build-261e-20261114-r2/preparation/INDEPENDENT-SOURCE-REVIEW.json",
+        "sha256": "d5e2ceab811820cb50cd992183d1014a0894b6604463d8fd856dc1b22b97921c"
+      },
+      {
+        "bytes": 3666,
+        "path": "/home/alex/hepta-v66-native-build-261e-20261114-r2/preparation/INDEPENDENT-PREPARATION-REVIEW.json",
+        "sha256": "f750029eecbc5e48058623dca0d474e09c9c7eb5e5b4462c9c2fee6aea881069"
+      },
+      {
+        "bytes": 1012,
+        "path": "/home/alex/hepta-v66-native-build-261e-20261114-r2/preparation/SOURCE-MAP-ORDER-NORMALIZATION.json",
+        "sha256": "363ecc40614d8a76fa2305a2602809b6e8a885643d3ede097513f5bfb6c278a9"
+      }
+    ]
   },
   "integration_sources": {
-    "canonical_runner_sha256": "fd75a32547e012cf2778c87d2111e302ec7de83ed91e3870b19a40f70b6d82f9",
+    "canonical_runner_sha256": "0f5b764d9324a0712d56cd59a23b77c09f8362cd2589071f89aa0ee8d6072dc1",
     "external_repository_workflow": {
-      "base_commit": "87f01cd43e97f30448359de9a521606dc8b155cf",
-      "base_sha256": "2c044d9a250d38ca55d2d57a0ea380aeaa26cc7ef2782fd5d29ff029b979216a",
+      "base_commit": "932c33996996a68cab709becfeb7814efb86cadc",
+      "base_sha256": "c6a7bd65b9a96e4dc9223f09f72eecd59883395e62ac385b657b78d7debc5b6a",
       "git_blob": "c51ed5101bfadacefc4d804677b407dfee1cbe9e",
       "path": ".github/workflows/hepta-local-android.yml",
       "sha256": "c6a7bd65b9a96e4dc9223f09f72eecd59883395e62ac385b657b78d7debc5b6a"
     },
-    "native_host_gate_contract_sha256": "497820eaf4ab49a32e2d560ab6dfaacf7d1741d8997a0e23d41ded5edae40b4a",
-    "normal_git_parent": "87f01cd43e97f30448359de9a521606dc8b155cf",
+    "native_host_gate_contract_sha256": "93510b6bc63781912e2551913afe3e6c36c404bfb00073fe5321239382468469",
+    "normal_git_parent": "932c33996996a68cab709becfeb7814efb86cadc",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -9197,12 +9315,12 @@
       "version_name": "0.7.0-web-evidence-v4"
     },
     "review_artifact_hashes": {
-      "DERIVATION-r4.json": "269df9352dd55610fbb2794b063ba447e496f5a3fe847cc33372ba7390f879d9",
-      "HANDOFF.json": "4a2f1d099d61f525683924c303ab27e6b55b7dd6061310dadb295fdd00c495b4",
-      "INDEPENDENT-SOURCE-REVIEW.json": "cf5272bad60d60e250ae8d5d4daa4cd38ddd6c52429c9ba12548597c3c4e4f40",
-      "ROOT-PRODUCTION-SOURCE-REVIEW-r4.json": "3682d5fdf947eb4b3e35e2439cd8b2fa34a9c582b00faa70f3e93fc2e5cbd2a1",
-      "SNAPSHOT88-INDEPENDENT-REVIEW.json": "cc14670b13dbb02460ca9381f86c5c34a887e6dbb3e2c2c6cb220eeb2605187f",
-      "SOURCE-UNION-INDEPENDENT-REVIEW.json": "bdb8384454d76c99981b022386967aa9969e1ddb9c88eef255bea9317efeed42"
+      "HANDOFF.json": "d454abc746d6116e69e09d26948ae5807322fda1e4efe8f5e2e80daeddbf4350",
+      "INDEPENDENT-PREPARATION-REVIEW.json": "f750029eecbc5e48058623dca0d474e09c9c7eb5e5b4462c9c2fee6aea881069",
+      "INDEPENDENT-SOURCE-REVIEW.json": "d5e2ceab811820cb50cd992183d1014a0894b6604463d8fd856dc1b22b97921c",
+      "RESULT.json": "6bc26105f8f26c9f64347c38648379a6c268161ada3f37a291c30fd844d5f165",
+      "ROOT-SOURCE-REVIEW.json": "4f7b2035fb966f607bb1be43f993a9f8d0cd21ead252803a3aee0bba381fd107",
+      "SOURCE-MAP-ORDER-NORMALIZATION.json": "363ecc40614d8a76fa2305a2602809b6e8a885643d3ede097513f5bfb6c278a9"
     },
     "source_reconstruction_base": {
       "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
