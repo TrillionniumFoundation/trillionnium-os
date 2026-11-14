@@ -243,7 +243,7 @@ final class WebShoppingQuote {
             String label=n.label();
             if(n.text.trim().isEmpty()&&n.description.trim().isEmpty()&&(n.childText.truncated||!"derived".equals(n.childText.status)))label="";
             nodes.add(new NotesCompletionEvidence.Node(n.id,n.packageName,n.text,label,n.viewId,n.inputTextSha256,
-                    new int[]{n.bounds.left,n.bounds.top,n.bounds.right,n.bounds.bottom},n.editable,n.clickable,n.scrollable,n.enabled,n.password,n.childText,n.observedAppTreeSignature));
+                    new int[]{n.bounds.left,n.bounds.top,n.bounds.right,n.bounds.bottom},n.editable,n.clickable,n.scrollable,n.enabled,n.password,n.childText,n.observedAppTreeSignature,n.className,n.nativeTreePath));
         }
         return new NotesCompletionEvidence.Frame(o.id,o.packageName,o.windowId,o.windowMetadata.displayId==null?-1:o.windowMetadata.displayId,
                 o.backgroundGeneration,o.windowMetadata.type==null?-1:o.windowMetadata.type,"observed".equals(o.windowMetadata.status),o.nodesTruncated,nodes);

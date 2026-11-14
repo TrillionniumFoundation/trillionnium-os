@@ -1,11 +1,11 @@
 {
   "android_qualified": false,
   "base_source": {
-    "commit": "7325878a24c8c3f1060984f661dc06ab6d6012ff",
-    "component_tree": "7ccd5ba77ad51c1539eaf0e5e99698809556792e",
-    "source_manifest_sha256": "1180dda62ce0276ec43b5fe5598c188e3e234689a3f1ca543fbbb60c0a557b1b"
+    "commit": "e5410a66cdc58a3ebaf734164c014dd6b7837133",
+    "component_tree": "fc9b6bb5a32323c6a2641cfc9217a10ef6aa10a8",
+    "source_manifest_sha256": "c14cc94de748bffc6f601d3774da83a4d5d5e220cc749d958f61c7463a11b567"
   },
-  "candidate_status": "notes_observation_repairs_pending_fresh_v68_dual_build_and_phone_acceptance",
+  "candidate_status": "frame_projection_sync_pending_fresh_v68_dual_build_and_phone_acceptance",
   "candidate_version_assigned": true,
   "complete_source_files": 1825,
   "current_validation": {
@@ -6430,9 +6430,9 @@
       "sha256": "c85bcb3e64e9962ca2643e007a3e88c3ff673a903913076edea403d1bc85c07e"
     },
     {
-      "bytes": 21372,
+      "bytes": 21401,
       "path": "src/org/trillionnium/hepta/local/WebShoppingQuote.java",
-      "sha256": "58f34669fcdbb2b2303a0f663ccb977e9301201777c8159dc06848a000030a53"
+      "sha256": "af4791997c7920c74b3192c1d091aaffaef1fbf2446521b72bede4f80a1cb776"
     },
     {
       "bytes": 10104,
@@ -9145,13 +9145,13 @@
     "metadata": {
       "android_qualified": false,
       "base_source": {
-        "commit": "f842b4dd816b6dbbc89409a88969d12a8d40a045",
-        "component_tree": "ead9fc362bd6310824a0ca1b01b73861e491c934",
-        "source_manifest_sha256": "83406dbc91c0acb13aadc3adaaf8292cf7b5252519b0ef94f51fb57c88ff3292"
+        "commit": "7325878a24c8c3f1060984f661dc06ab6d6012ff",
+        "component_tree": "7ccd5ba77ad51c1539eaf0e5e99698809556792e",
+        "source_manifest_sha256": "1180dda62ce0276ec43b5fe5598c188e3e234689a3f1ca543fbbb60c0a557b1b"
       },
-      "candidate_status": "native_runtime_repairs_pending_fresh_v67_dual_build_and_phone_acceptance",
+      "candidate_status": "notes_observation_repairs_pending_fresh_v68_dual_build_and_phone_acceptance",
       "candidate_version_assigned": true,
-      "complete_source_files": 1806,
+      "complete_source_files": 1825,
       "current_validation": {
         "cleanup_scope": "Inherited generation group/marker scope only; unknown process visibility, identity, kernel API or deadline fails closed. Numeric group probe uses signal0 only; real TERM/KILL uses held proc directory FDs. Arbitrary setsid/setpgid/UID or namespace escape is not claimed covered.",
         "full_android_build": false,
@@ -9167,13 +9167,13 @@
         "metadata": {
           "android_qualified": false,
           "base_source": {
-            "commit": "02e5bf208b68457c6775646064c590cf7ab3a553",
-            "component_tree": "ab545e33da80f43bfb583be9d434564d6e3ea7cb",
-            "source_manifest_sha256": "38ad3ca700da885d373e1806dd39524e4b0b5ada53be51b860ef2589a2656ed9"
+            "commit": "f842b4dd816b6dbbc89409a88969d12a8d40a045",
+            "component_tree": "ead9fc362bd6310824a0ca1b01b73861e491c934",
+            "source_manifest_sha256": "83406dbc91c0acb13aadc3adaaf8292cf7b5252519b0ef94f51fb57c88ff3292"
           },
-          "candidate_status": "shopping_test_closure_repair_pending_fresh_dual_build_and_phone_acceptance",
+          "candidate_status": "native_runtime_repairs_pending_fresh_v67_dual_build_and_phone_acceptance",
           "candidate_version_assigned": true,
-          "complete_source_files": 1790,
+          "complete_source_files": 1806,
           "current_validation": {
             "cleanup_scope": "Inherited generation group/marker scope only; unknown process visibility, identity, kernel API or deadline fails closed. Numeric group probe uses signal0 only; real TERM/KILL uses held proc directory FDs. Arbitrary setsid/setpgid/UID or namespace escape is not claimed covered.",
             "full_android_build": false,
@@ -9189,11 +9189,11 @@
             "metadata": {
               "android_qualified": false,
               "base_source": {
-                "commit": "5eb47cfb6f53859a6cf6033abb4a1698e3b162af",
-                "component_tree": "6be46f960ab18a6560f30415d97a07302efd58d9",
-                "source_manifest_sha256": "6105f5297b57fb821cc17ed0ee85887c32f509c1b7f4a96239dc7bcf583c8803"
+                "commit": "02e5bf208b68457c6775646064c590cf7ab3a553",
+                "component_tree": "ab545e33da80f43bfb583be9d434564d6e3ea7cb",
+                "source_manifest_sha256": "38ad3ca700da885d373e1806dd39524e4b0b5ada53be51b860ef2589a2656ed9"
               },
-              "candidate_status": "literal_namespace_repair_pending_fresh_dual_build_and_phone_acceptance",
+              "candidate_status": "shopping_test_closure_repair_pending_fresh_dual_build_and_phone_acceptance",
               "candidate_version_assigned": true,
               "complete_source_files": 1790,
               "current_validation": {
@@ -9211,11 +9211,11 @@
                 "metadata": {
                   "android_qualified": false,
                   "base_source": {
-                    "commit": "52aa7c4aa05a726e287782de966c47c8d2385d1a",
-                    "component_tree": "59c8f62601963ae05dc705694c215447a516bd13",
-                    "source_manifest_sha256": "2bfa579d0b6733dbea380b6798d47437cfe8c9d0d942182fd3c165e4ccfba71f"
+                    "commit": "5eb47cfb6f53859a6cf6033abb4a1698e3b162af",
+                    "component_tree": "6be46f960ab18a6560f30415d97a07302efd58d9",
+                    "source_manifest_sha256": "6105f5297b57fb821cc17ed0ee85887c32f509c1b7f4a96239dc7bcf583c8803"
                   },
-                  "candidate_status": "explicit_release_and_diagnostic_variants_pending_fresh_build_and_phone_acceptance",
+                  "candidate_status": "literal_namespace_repair_pending_fresh_dual_build_and_phone_acceptance",
                   "candidate_version_assigned": true,
                   "complete_source_files": 1790,
                   "current_validation": {
@@ -9233,11 +9233,11 @@
                     "metadata": {
                       "android_qualified": false,
                       "base_source": {
-                        "commit": "932c33996996a68cab709becfeb7814efb86cadc",
-                        "component_tree": "3be55b70a1c1f3f77780e9755cb887b55c570743",
-                        "source_manifest_sha256": "51c695644661f8d315c26e5dea831c4d9674fd54bd9edc0dcaa770ab23df0fde"
+                        "commit": "52aa7c4aa05a726e287782de966c47c8d2385d1a",
+                        "component_tree": "59c8f62601963ae05dc705694c215447a516bd13",
+                        "source_manifest_sha256": "2bfa579d0b6733dbea380b6798d47437cfe8c9d0d942182fd3c165e4ccfba71f"
                       },
-                      "candidate_status": "host_dependency_closure_corrected_pending_fresh_build_and_phone_acceptance",
+                      "candidate_status": "explicit_release_and_diagnostic_variants_pending_fresh_build_and_phone_acceptance",
                       "candidate_version_assigned": true,
                       "complete_source_files": 1790,
                       "current_validation": {
@@ -9255,11 +9255,11 @@
                         "metadata": {
                           "android_qualified": false,
                           "base_source": {
-                            "commit": "87f01cd43e97f30448359de9a521606dc8b155cf",
-                            "component_tree": "37141cbcd7e1d7e0a882a86ba9bb1ab84ac13252",
-                            "source_manifest_sha256": "62686d4a155d8848a452952ba2a2bbcd598330c635d9bcae4134e25f3a8e38ab"
+                            "commit": "932c33996996a68cab709becfeb7814efb86cadc",
+                            "component_tree": "3be55b70a1c1f3f77780e9755cb887b55c570743",
+                            "source_manifest_sha256": "51c695644661f8d315c26e5dea831c4d9674fd54bd9edc0dcaa770ab23df0fde"
                           },
-                          "candidate_status": "reviewed_native_background_fixes_pending_fresh_build_and_phone_acceptance",
+                          "candidate_status": "host_dependency_closure_corrected_pending_fresh_build_and_phone_acceptance",
                           "candidate_version_assigned": true,
                           "complete_source_files": 1790,
                           "current_validation": {
@@ -9275,120 +9275,191 @@
                           "functional_scope": "Version-bound native Ctrip image-tile identity keeps its actual empty AX label and model-owned current-node action. Owned singleTask background launch is restricted to this generation newly created organizer roots and new target leaf; original foreground/task guards and standard launch path remain. Existing native read-only result and SDK cleanup gates remain necessary.",
                           "historical_parent_metadata": {
                             "metadata": {
-                              "android_build": "Requires fresh original-key build and all mandatory gates for the exact frozen full source; paired helper7 is unchanged. Main Java is compiled only from src, while the complete helper128 closure and all test fixtures remain in the source map.",
                               "android_qualified": false,
                               "base_source": {
-                                "commit": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
-                                "component_tree": "49ea0b961973008cee6943e8ddccd7bc3465ec94",
-                                "source_manifest_sha256": "4e84b231e512863270f8f87f42b326e5cded46b10a652ab729439fc23a2f19e6"
+                                "commit": "87f01cd43e97f30448359de9a521606dc8b155cf",
+                                "component_tree": "37141cbcd7e1d7e0a882a86ba9bb1ab84ac13252",
+                                "source_manifest_sha256": "62686d4a155d8848a452952ba2a2bbcd598330c635d9bcae4134e25f3a8e38ab"
                               },
-                              "candidate_status": "reviewed_native_app_source_pending_fresh_complete_gates_android_build_and_phone_acceptance",
+                              "candidate_status": "reviewed_native_background_fixes_pending_fresh_build_and_phone_acceptance",
                               "candidate_version_assigned": true,
-                              "complete_source_files": 1781,
+                              "complete_source_files": 1790,
                               "current_validation": {
                                 "cleanup_scope": "Inherited generation group/marker scope only; unknown process visibility, identity, kernel API or deadline fails closed. Numeric group probe uses signal0 only; real TERM/KILL uses held proc directory FDs. Arbitrary setsid/setpgid/UID or namespace escape is not claimed covered.",
-                                "closure_diagnostics_are_not_final_qualification": true,
                                 "full_android_build": false,
-                                "historical_phone_receipts_apply_to_their_original_heads_only": true,
-                                "native_business_scope": "Current same-App readouts only; no generic unknown-goal success, lowest-price claim, order placement, payment or booking authority.",
+                                "historical_phone_receipts_apply_to_original_heads_only": true,
                                 "native_flight_business_verified": false,
                                 "native_product_quote_business_verified": false,
-                                "native_route_provider_phone_verified": false,
-                                "original_complete_host_gate_pending": true,
                                 "original_failures_preserved": true,
                                 "phone_tested": false,
-                                "strict_host_gate": "Fresh original canonical108, journal19, paired helper4, all retained nine extra groups and six mandatory native gates must run for the exact frozen new head. No old-head or closure diagnostic PASS is adopted."
+                                "strict_host_gate": "Fresh original canonical108, journal19, helper4, nine retained Mac extra groups and all seven native gates; fresh Android compile, original-signature assembly and ordinary phone acceptance."
                               },
-                              "functional_scope": "Explicit selected native App target is immutable from UI through authorization, session and controller. Bound Ctrip single-adult flight readouts and Xiaomi AX3000T displayed detail quotes use actual current native observations, model-owned query/navigation and typed completion. Unsupported native goals remain non-successful; an explicit helper selection alone preserves the historical web path. No booking, purchase or payment completion is added.",
+                              "functional_scope": "Version-bound native Ctrip image-tile identity keeps its actual empty AX label and model-owned current-node action. Owned singleTask background launch is restricted to this generation newly created organizer roots and new target leaf; original foreground/task guards and standard launch path remain. Existing native read-only result and SDK cleanup gates remain necessary.",
                               "historical_parent_metadata": {
                                 "metadata": {
-                                  "android_build": "Requires fresh compilation of 125 main Java sources and 233 exact production inputs, original-key assembly, canonical108 and all retained gates. The unchanged complete helper7 source closure has 128 files and its separately signed APK remains pinned.",
+                                  "android_build": "Requires fresh original-key build and all mandatory gates for the exact frozen full source; paired helper7 is unchanged. Main Java is compiled only from src, while the complete helper128 closure and all test fixtures remain in the source map.",
                                   "android_qualified": false,
                                   "base_source": {
-                                    "commit": "c4e5bb4963cb664ecdf174cc978df3098da7928e",
-                                    "component_tree": "03f87c48149a3da25d94df61ab4901a8d6bce32b",
-                                    "source_manifest_sha256": "a19ea749f335062dce5a9c1443c0cb48f992c4c507c0d94714881ec124a1db82"
+                                    "commit": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
+                                    "component_tree": "49ea0b961973008cee6943e8ddccd7bc3465ec94",
+                                    "source_manifest_sha256": "4e84b231e512863270f8f87f42b326e5cded46b10a652ab729439fc23a2f19e6"
                                   },
-                                  "candidate_status": "reviewed_source_integration_pending_fresh_full_host_android_and_phone_qualification",
+                                  "candidate_status": "reviewed_native_app_source_pending_fresh_complete_gates_android_build_and_phone_acceptance",
                                   "candidate_version_assigned": true,
-                                  "ci_mixed_uid_repair": {
-                                    "focused_gate": {
-                                      "assertions": 196,
-                                      "boundary": "Actual production parser and exclusion with synthetic stat/status, not a real setuid process or complete proc visibility test.",
-                                      "cases": 29,
-                                      "path": "tests/owned-generation-mixed-uid/run_host.py"
-                                    },
-                                    "fresh_android_build_pending": true,
-                                    "full_new_head_ci_pending": true,
-                                    "old_b2ca_phone_qualification_not_adopted": true,
-                                    "parent_commit": "b316d693b824f1d1210499988939d07657f35981",
-                                    "parent_component_tree": "e107f79e46fc9b162a8529d315d04b26c8e82b0a",
-                                    "parent_source_manifest_sha256": "272f9e63eedcd7cf15f91825a70e1b1a5650736119a7996c271d1d06de7bd50c",
-                                    "phone_tested": false,
-                                    "production_delta_paths": [
-                                      "native/owned-generation.inc"
-                                    ],
-                                    "retained_gate": {
-                                      "assertions_unchanged": true,
-                                      "canonical108_unchanged": true,
-                                      "cases": 87,
-                                      "checks": 267,
-                                      "path": "tests/owned-generation-cleanup/run_host.py"
-                                    },
-                                    "scope": "Mixed UID is separately typed; only a same-held-FD stable second stat/four-UID tuple read plus strict older-than-leader and different PGID excludes an unrelated process. No mixed tuple obtains signaling authority.",
-                                    "workflow": {
-                                      "changes": "Add focused gate and its artifact directory to existing independent diagnostic job; original Mac producer and Linux consumer are byte-identical.",
-                                      "git_blob": "c416a4280f490829506636042c35acdaf0ddcb12",
-                                      "path": ".github/workflows/hepta-local-android.yml",
-                                      "sha256": "fb3fd5ccd55f310fcd06d01c9b78618c9b94a8a001ba307ea55b804bd7a70422"
-                                    }
-                                  },
-                                  "ci_visibility_diagnostic": {
-                                    "installed_b2ca_apk_is_not_this_source_commit": true,
-                                    "new_head_ci_and_full_gates_required": true,
-                                    "parent_commit": "ddc01631d0d376322a0e1d14627daeec6016bd3d",
-                                    "parent_component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
-                                    "parent_source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3",
-                                    "phone_reinstallation_required_for_diagnostics": false,
-                                    "prior_head_success_adopted": false,
-                                    "repository_workflow": {
-                                      "git_blob": "107afa319ea37cce145f1be2a8fc91c9bb7dc0b4",
-                                      "path": ".github/workflows/hepta-local-android.yml",
-                                      "sha256": "8cc9ca284116796ca06f3eb65a8e9019808a5d29c452d02d487ffe28c4c91598"
-                                    },
-                                    "scope": "Host diagnostics only; macro disabled Android behavior is unchanged by the reviewed trace implementation.",
-                                    "source_delta_paths": [
-                                      "native/owned-generation.inc",
-                                      "tests/owned-generation-cleanup/native_cases.py"
-                                    ],
-                                    "source_overlay_sha256": "5c5b66cf9db19f2f831fc903bd3b991924cbaf75a39a023b50a1c774e13f9ced"
-                                  },
-                                  "complete_source_files": 1730,
+                                  "complete_source_files": 1781,
                                   "current_validation": {
-                                    "actual_flight_result_provider_implemented": false,
-                                    "actual_flight_result_verified": false,
-                                    "actual_native_no_force_cancellation_phone_verified": false,
-                                    "actual_notes_readiness_phone_verified": false,
-                                    "actual_owned_generation_cleanup_phone_verified": false,
-                                    "actual_shopping_quote_phone_verified": false,
                                     "cleanup_scope": "Inherited generation group/marker scope only; unknown process visibility, identity, kernel API or deadline fails closed. Numeric group probe uses signal0 only; real TERM/KILL uses held proc directory FDs. Arbitrary setsid/setpgid/UID or namespace escape is not claimed covered.",
-                                    "external_model_used": false,
+                                    "closure_diagnostics_are_not_final_qualification": true,
                                     "full_android_build": false,
-                                    "isolated_overlay_host_receipts_do_not_qualify_combined_source": true,
+                                    "historical_phone_receipts_apply_to_their_original_heads_only": true,
+                                    "native_business_scope": "Current same-App readouts only; no generic unknown-goal success, lowest-price claim, order placement, payment or booking authority.",
+                                    "native_flight_business_verified": false,
+                                    "native_product_quote_business_verified": false,
+                                    "native_route_provider_phone_verified": false,
                                     "original_complete_host_gate_pending": true,
                                     "original_failures_preserved": true,
                                     "phone_tested": false,
-                                    "shopping_completion_scope": "Current visible official search-card display quote only. Does not prove product-detail navigation, lowest price, availability, order placement or payment.",
-                                    "strict_host_gate": "Fresh canonical108 preserves all original106 commands and appends SDK70 43/99 and owned-generation 87/267. Original journal19, helper4 and all retained Mac gates remain required. No old-head PASS is adopted."
+                                    "strict_host_gate": "Fresh original canonical108, journal19, paired helper4, all retained nine extra groups and six mandatory native gates must run for the exact frozen new head. No old-head or closure diagnostic PASS is adopted."
                                   },
-                                  "functional_scope": "Reuse the pinned SDK C++ runtime for the generate exception boundary; classify only exactly bound SDK exception status70 as a failed request with verified SDK cleanup; require a durable pre-SDK owned-worker generation identity, held-proc-FD descendant cleanup and two kernel-confirmed absent group observations before clearing the warm worker slot. Retain all c4 business, helper7 ACK, action authorization and physical cleanup requirements.",
-                                  "integration_sources": {
-                                    "canonical_runner_sha256": "a3740dcf78040a86799b39ef8050c417b26f03ddde72a23425f10d647861579a",
-                                    "external_repository_workflow": {
-                                      "path": ".github/workflows/hepta-local-android.yml",
-                                      "sha256": "eb01680b330bacb4a134b1a9006d10c5f4607eb91ed5e343cefda17c56a7192f"
+                                  "functional_scope": "Explicit selected native App target is immutable from UI through authorization, session and controller. Bound Ctrip single-adult flight readouts and Xiaomi AX3000T displayed detail quotes use actual current native observations, model-owned query/navigation and typed completion. Unsupported native goals remain non-successful; an explicit helper selection alone preserves the historical web path. No booking, purchase or payment completion is added.",
+                                  "historical_parent_metadata": {
+                                    "metadata": {
+                                      "android_build": "Requires fresh compilation of 125 main Java sources and 233 exact production inputs, original-key assembly, canonical108 and all retained gates. The unchanged complete helper7 source closure has 128 files and its separately signed APK remains pinned.",
+                                      "android_qualified": false,
+                                      "base_source": {
+                                        "commit": "c4e5bb4963cb664ecdf174cc978df3098da7928e",
+                                        "component_tree": "03f87c48149a3da25d94df61ab4901a8d6bce32b",
+                                        "source_manifest_sha256": "a19ea749f335062dce5a9c1443c0cb48f992c4c507c0d94714881ec124a1db82"
+                                      },
+                                      "candidate_status": "reviewed_source_integration_pending_fresh_full_host_android_and_phone_qualification",
+                                      "candidate_version_assigned": true,
+                                      "ci_mixed_uid_repair": {
+                                        "focused_gate": {
+                                          "assertions": 196,
+                                          "boundary": "Actual production parser and exclusion with synthetic stat/status, not a real setuid process or complete proc visibility test.",
+                                          "cases": 29,
+                                          "path": "tests/owned-generation-mixed-uid/run_host.py"
+                                        },
+                                        "fresh_android_build_pending": true,
+                                        "full_new_head_ci_pending": true,
+                                        "old_b2ca_phone_qualification_not_adopted": true,
+                                        "parent_commit": "b316d693b824f1d1210499988939d07657f35981",
+                                        "parent_component_tree": "e107f79e46fc9b162a8529d315d04b26c8e82b0a",
+                                        "parent_source_manifest_sha256": "272f9e63eedcd7cf15f91825a70e1b1a5650736119a7996c271d1d06de7bd50c",
+                                        "phone_tested": false,
+                                        "production_delta_paths": [
+                                          "native/owned-generation.inc"
+                                        ],
+                                        "retained_gate": {
+                                          "assertions_unchanged": true,
+                                          "canonical108_unchanged": true,
+                                          "cases": 87,
+                                          "checks": 267,
+                                          "path": "tests/owned-generation-cleanup/run_host.py"
+                                        },
+                                        "scope": "Mixed UID is separately typed; only a same-held-FD stable second stat/four-UID tuple read plus strict older-than-leader and different PGID excludes an unrelated process. No mixed tuple obtains signaling authority.",
+                                        "workflow": {
+                                          "changes": "Add focused gate and its artifact directory to existing independent diagnostic job; original Mac producer and Linux consumer are byte-identical.",
+                                          "git_blob": "c416a4280f490829506636042c35acdaf0ddcb12",
+                                          "path": ".github/workflows/hepta-local-android.yml",
+                                          "sha256": "fb3fd5ccd55f310fcd06d01c9b78618c9b94a8a001ba307ea55b804bd7a70422"
+                                        }
+                                      },
+                                      "ci_visibility_diagnostic": {
+                                        "installed_b2ca_apk_is_not_this_source_commit": true,
+                                        "new_head_ci_and_full_gates_required": true,
+                                        "parent_commit": "ddc01631d0d376322a0e1d14627daeec6016bd3d",
+                                        "parent_component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
+                                        "parent_source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3",
+                                        "phone_reinstallation_required_for_diagnostics": false,
+                                        "prior_head_success_adopted": false,
+                                        "repository_workflow": {
+                                          "git_blob": "107afa319ea37cce145f1be2a8fc91c9bb7dc0b4",
+                                          "path": ".github/workflows/hepta-local-android.yml",
+                                          "sha256": "8cc9ca284116796ca06f3eb65a8e9019808a5d29c452d02d487ffe28c4c91598"
+                                        },
+                                        "scope": "Host diagnostics only; macro disabled Android behavior is unchanged by the reviewed trace implementation.",
+                                        "source_delta_paths": [
+                                          "native/owned-generation.inc",
+                                          "tests/owned-generation-cleanup/native_cases.py"
+                                        ],
+                                        "source_overlay_sha256": "5c5b66cf9db19f2f831fc903bd3b991924cbaf75a39a023b50a1c774e13f9ced"
+                                      },
+                                      "complete_source_files": 1730,
+                                      "current_validation": {
+                                        "actual_flight_result_provider_implemented": false,
+                                        "actual_flight_result_verified": false,
+                                        "actual_native_no_force_cancellation_phone_verified": false,
+                                        "actual_notes_readiness_phone_verified": false,
+                                        "actual_owned_generation_cleanup_phone_verified": false,
+                                        "actual_shopping_quote_phone_verified": false,
+                                        "cleanup_scope": "Inherited generation group/marker scope only; unknown process visibility, identity, kernel API or deadline fails closed. Numeric group probe uses signal0 only; real TERM/KILL uses held proc directory FDs. Arbitrary setsid/setpgid/UID or namespace escape is not claimed covered.",
+                                        "external_model_used": false,
+                                        "full_android_build": false,
+                                        "isolated_overlay_host_receipts_do_not_qualify_combined_source": true,
+                                        "original_complete_host_gate_pending": true,
+                                        "original_failures_preserved": true,
+                                        "phone_tested": false,
+                                        "shopping_completion_scope": "Current visible official search-card display quote only. Does not prove product-detail navigation, lowest price, availability, order placement or payment.",
+                                        "strict_host_gate": "Fresh canonical108 preserves all original106 commands and appends SDK70 43/99 and owned-generation 87/267. Original journal19, helper4 and all retained Mac gates remain required. No old-head PASS is adopted."
+                                      },
+                                      "functional_scope": "Reuse the pinned SDK C++ runtime for the generate exception boundary; classify only exactly bound SDK exception status70 as a failed request with verified SDK cleanup; require a durable pre-SDK owned-worker generation identity, held-proc-FD descendant cleanup and two kernel-confirmed absent group observations before clearing the warm worker slot. Retain all c4 business, helper7 ACK, action authorization and physical cleanup requirements.",
+                                      "integration_sources": {
+                                        "canonical_runner_sha256": "a3740dcf78040a86799b39ef8050c417b26f03ddde72a23425f10d647861579a",
+                                        "external_repository_workflow": {
+                                          "path": ".github/workflows/hepta-local-android.yml",
+                                          "sha256": "eb01680b330bacb4a134b1a9006d10c5f4607eb91ed5e343cefda17c56a7192f"
+                                        },
+                                        "normal_git_parent": "c4e5bb4963cb664ecdf174cc978df3098da7928e",
+                                        "paired_helper": {
+                                          "apk_bytes": 1414146,
+                                          "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
+                                          "certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+                                          "helper_source_closure_sha256": "4c00e1d9dda65b927557e35043c6f41fedc1ac5584f4c5aede2369ee0cb72f3f",
+                                          "package": "org.trillionnium.hepta.webhelper",
+                                          "version_code": 7,
+                                          "version_name": "0.7.0-web-evidence-v4"
+                                        },
+                                        "version_independent_overlays": [
+                                          {
+                                            "entries": 1,
+                                            "freeze_sha256": "fe0d32866b7ee173ea7bffa7dfa3fe5baf7ba92e7c026642f6865ce437f229e2",
+                                            "name": "sdk_runtime_link",
+                                            "overlay_sha256": "617ff4dc0f198cc6e4d6227887c4b431021b5e07f4e985d08e2ad362ab4f3c23"
+                                          },
+                                          {
+                                            "entries": 32,
+                                            "freeze_sha256": "1661cda7b23aa7340899580384c643416e3a3bbd3015b937223cb3c0d8460aa7",
+                                            "name": "owned_generation_sdk70",
+                                            "overlay_sha256": "405611dcba4f036ef4abf0c08fb1c407ac7c04bc22376e5714667c0ee658e8a5"
+                                          }
+                                        ]
+                                      },
+                                      "main_java_sources": 125,
+                                      "phone_qualified": false,
+                                      "production_build_inputs_count": 233,
+                                      "qualification_policy": "Qualification is separate external evidence bound to this exact full source and actual Git/build inputs. Source review, isolated targeted tests and historical receipts do not qualify the integrated candidate.",
+                                      "release_version_assigned": false,
+                                      "schema": "hepta.local-source.v3",
+                                      "source_preservation_scope": "Preserve all 1725 b316 source members. This isolated CI repair changes only mixed-UID classification and the strictly older/different-group exclusion in native/owned-generation.inc, adds five focused regression inputs and refreshes complete manifest pins. Android version, all Java sources, original canonical108 and retained87 assertions remain unchanged. Previous integration metadata remains historical provenance; no prior APK or phone qualification applies to this new native source.",
+                                      "version_code": 64,
+                                      "version_metadata_policy": "Version64 identifies this source candidate. Publication, fresh original build/signature and ordinary phone acceptance are distinct gates.",
+                                      "version_name": "0.64.0-owned-worker-runtime"
                                     },
-                                    "normal_git_parent": "c4e5bb4963cb664ecdf174cc978df3098da7928e",
+                                    "source_commit": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
+                                    "source_manifest_sha256": "4e84b231e512863270f8f87f42b326e5cded46b10a652ab729439fc23a2f19e6"
+                                  },
+                                  "integration_sources": {
+                                    "canonical_runner_sha256": "fd75a32547e012cf2778c87d2111e302ec7de83ed91e3870b19a40f70b6d82f9",
+                                    "external_repository_workflow": {
+                                      "base_commit": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
+                                      "base_sha256": "fb3fd5ccd55f310fcd06d01c9b78618c9b94a8a001ba307ea55b804bd7a70422",
+                                      "git_blob": "5cdc875bf0be3381135b6a9baa30295d758ebbe3",
+                                      "path": ".github/workflows/hepta-local-android.yml",
+                                      "sha256": "2c044d9a250d38ca55d2d57a0ea380aeaa26cc7ef2782fd5d29ff029b979216a"
+                                    },
+                                    "native_host_gate_contract_sha256": "c6373c7af1e8b255e1100cab06642bdab51017d2049bb1cc428328dcedb51259",
+                                    "normal_git_parent": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
                                     "paired_helper": {
                                       "apk_bytes": 1414146,
                                       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -9398,46 +9469,53 @@
                                       "version_code": 7,
                                       "version_name": "0.7.0-web-evidence-v4"
                                     },
-                                    "version_independent_overlays": [
-                                      {
-                                        "entries": 1,
-                                        "freeze_sha256": "fe0d32866b7ee173ea7bffa7dfa3fe5baf7ba92e7c026642f6865ce437f229e2",
-                                        "name": "sdk_runtime_link",
-                                        "overlay_sha256": "617ff4dc0f198cc6e4d6227887c4b431021b5e07f4e985d08e2ad362ab4f3c23"
-                                      },
-                                      {
-                                        "entries": 32,
-                                        "freeze_sha256": "1661cda7b23aa7340899580384c643416e3a3bbd3015b937223cb3c0d8460aa7",
-                                        "name": "owned_generation_sdk70",
-                                        "overlay_sha256": "405611dcba4f036ef4abf0c08fb1c407ac7c04bc22376e5714667c0ee658e8a5"
-                                      }
-                                    ]
+                                    "review_artifact_hashes": {
+                                      "FREEZE.json": "7566ad406931fcc9a4d175f46f0f190331e8ab570c90d9cd351b907da8baecc1",
+                                      "INDEPENDENT-NATIVE-ROUTING-REVIEW-r1.json": "929ab9c90dae3cbd4dae92d88481c4391424069bd2c502984e5f8234cd4b6bea",
+                                      "INDEPENDENT-XIAOMI-PURE-PARSER-REVIEW-r1.json": "1c22bfedf828f1be86a93e4cb92f952b35f781cd1b940502e3c5f05481b1a83c",
+                                      "PUBLIC-FIXTURE-REDACTION-r1.json": "e6c2a1b52ce4418fb12731880c0f169ced0cda50308ea326379ae3b20d646841",
+                                      "ROOT-NATIVE-DOMAIN-NULL-MASK-REVIEW-r1.json": "f816e5611c90ea873138fa495fc8ddfe980e4b336bafd991b2aff05ea2d1af51",
+                                      "ROOT-NATIVE-PROVIDER-FINAL-REVIEW-r1.json": "a1cf523cbb6c6b56cbda3b8e7d27fbb69445ae6d932f31522eb382796d2ecf45",
+                                      "ROOT-NATIVE-PROVIDER-REVIEW-r1.json": "a6f82198b0a15663951e4e1aadb5cb3cf4ed9875e712c0b67636d0ebaf9936b5",
+                                      "ROOT-NATIVE-ROUTING-REVIEW-r1.json": "104296c98ffc8d6cf1585f50f25f19ffdccb11a556e105de34deaf985c0c2a8c",
+                                      "ROOT-V65-NATIVE-CI-REVIEW-r1.json": "8a12d0a8f6d3666e762f99246bc89328cddd8afeaf38f29fd1b47bec8d35bc47"
+                                    },
+                                    "source_reconstruction_base": {
+                                      "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
+                                      "component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
+                                      "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
+                                    }
                                   },
-                                  "main_java_sources": 125,
+                                  "main_java_sources": 132,
                                   "phone_qualified": false,
-                                  "production_build_inputs_count": 233,
-                                  "qualification_policy": "Qualification is separate external evidence bound to this exact full source and actual Git/build inputs. Source review, isolated targeted tests and historical receipts do not qualify the integrated candidate.",
+                                  "production_build_inputs_count": 240,
+                                  "qualification_policy": "Source review and isolated host diagnostics are separate from fresh frozen-head build/signature and ordinary phone acceptance.",
                                   "release_version_assigned": false,
                                   "schema": "hepta.local-source.v3",
-                                  "source_preservation_scope": "Preserve all 1725 b316 source members. This isolated CI repair changes only mixed-UID classification and the strictly older/different-group exclusion in native/owned-generation.inc, adds five focused regression inputs and refreshes complete manifest pins. Android version, all Java sources, original canonical108 and retained87 assertions remain unchanged. Previous integration metadata remains historical provenance; no prior APK or phone qualification applies to this new native source.",
-                                  "version_code": 64,
-                                  "version_metadata_policy": "Version64 identifies this source candidate. Publication, fresh original build/signature and ordinary phone acceptance are distinct gates.",
-                                  "version_name": "0.64.0-owned-worker-runtime"
+                                  "source_preservation_scope": "All signed b2ca and published 0c40 members remain. Approved native route/provider/Xiaomi and minimal host dependency closures are combined; archived web-v65 calendar/drift business overlays are excluded. Historical original evidence and version-specific references retain their original names and bytes, except explicitly identified new public native fixtures with unrelated private values redacted.",
+                                  "source_reconstruction_base": {
+                                    "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
+                                    "component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
+                                    "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
+                                  },
+                                  "version_code": 65,
+                                  "version_metadata_policy": "Version65 identifies this native-App source candidate. Version64 source and original phone evidence remain historical; this stamp does not qualify the new APK.",
+                                  "version_name": "0.65.0-native-app-runtime"
                                 },
-                                "source_commit": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
-                                "source_manifest_sha256": "4e84b231e512863270f8f87f42b326e5cded46b10a652ab729439fc23a2f19e6"
+                                "source_commit": "87f01cd43e97f30448359de9a521606dc8b155cf",
+                                "source_manifest_sha256": "62686d4a155d8848a452952ba2a2bbcd598330c635d9bcae4134e25f3a8e38ab"
                               },
                               "integration_sources": {
                                 "canonical_runner_sha256": "fd75a32547e012cf2778c87d2111e302ec7de83ed91e3870b19a40f70b6d82f9",
                                 "external_repository_workflow": {
-                                  "base_commit": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
-                                  "base_sha256": "fb3fd5ccd55f310fcd06d01c9b78618c9b94a8a001ba307ea55b804bd7a70422",
-                                  "git_blob": "5cdc875bf0be3381135b6a9baa30295d758ebbe3",
+                                  "base_commit": "87f01cd43e97f30448359de9a521606dc8b155cf",
+                                  "base_sha256": "2c044d9a250d38ca55d2d57a0ea380aeaa26cc7ef2782fd5d29ff029b979216a",
+                                  "git_blob": "c51ed5101bfadacefc4d804677b407dfee1cbe9e",
                                   "path": ".github/workflows/hepta-local-android.yml",
-                                  "sha256": "2c044d9a250d38ca55d2d57a0ea380aeaa26cc7ef2782fd5d29ff029b979216a"
+                                  "sha256": "c6a7bd65b9a96e4dc9223f09f72eecd59883395e62ac385b657b78d7debc5b6a"
                                 },
-                                "native_host_gate_contract_sha256": "c6373c7af1e8b255e1100cab06642bdab51017d2049bb1cc428328dcedb51259",
-                                "normal_git_parent": "0c40f58b030e82e322c5c4e9790bcb47060d2cfb",
+                                "native_host_gate_contract_sha256": "497820eaf4ab49a32e2d560ab6dfaacf7d1741d8997a0e23d41ded5edae40b4a",
+                                "normal_git_parent": "87f01cd43e97f30448359de9a521606dc8b155cf",
                                 "paired_helper": {
                                   "apk_bytes": 1414146,
                                   "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -9448,15 +9526,12 @@
                                   "version_name": "0.7.0-web-evidence-v4"
                                 },
                                 "review_artifact_hashes": {
-                                  "FREEZE.json": "7566ad406931fcc9a4d175f46f0f190331e8ab570c90d9cd351b907da8baecc1",
-                                  "INDEPENDENT-NATIVE-ROUTING-REVIEW-r1.json": "929ab9c90dae3cbd4dae92d88481c4391424069bd2c502984e5f8234cd4b6bea",
-                                  "INDEPENDENT-XIAOMI-PURE-PARSER-REVIEW-r1.json": "1c22bfedf828f1be86a93e4cb92f952b35f781cd1b940502e3c5f05481b1a83c",
-                                  "PUBLIC-FIXTURE-REDACTION-r1.json": "e6c2a1b52ce4418fb12731880c0f169ced0cda50308ea326379ae3b20d646841",
-                                  "ROOT-NATIVE-DOMAIN-NULL-MASK-REVIEW-r1.json": "f816e5611c90ea873138fa495fc8ddfe980e4b336bafd991b2aff05ea2d1af51",
-                                  "ROOT-NATIVE-PROVIDER-FINAL-REVIEW-r1.json": "a1cf523cbb6c6b56cbda3b8e7d27fbb69445ae6d932f31522eb382796d2ecf45",
-                                  "ROOT-NATIVE-PROVIDER-REVIEW-r1.json": "a6f82198b0a15663951e4e1aadb5cb3cf4ed9875e712c0b67636d0ebaf9936b5",
-                                  "ROOT-NATIVE-ROUTING-REVIEW-r1.json": "104296c98ffc8d6cf1585f50f25f19ffdccb11a556e105de34deaf985c0c2a8c",
-                                  "ROOT-V65-NATIVE-CI-REVIEW-r1.json": "8a12d0a8f6d3666e762f99246bc89328cddd8afeaf38f29fd1b47bec8d35bc47"
+                                  "DERIVATION-r4.json": "269df9352dd55610fbb2794b063ba447e496f5a3fe847cc33372ba7390f879d9",
+                                  "HANDOFF.json": "4a2f1d099d61f525683924c303ab27e6b55b7dd6061310dadb295fdd00c495b4",
+                                  "INDEPENDENT-SOURCE-REVIEW.json": "cf5272bad60d60e250ae8d5d4daa4cd38ddd6c52429c9ba12548597c3c4e4f40",
+                                  "ROOT-PRODUCTION-SOURCE-REVIEW-r4.json": "3682d5fdf947eb4b3e35e2439cd8b2fa34a9c582b00faa70f3e93fc2e5cbd2a1",
+                                  "SNAPSHOT88-INDEPENDENT-REVIEW.json": "cc14670b13dbb02460ca9381f86c5c34a887e6dbb3e2c2c6cb220eeb2605187f",
+                                  "SOURCE-UNION-INDEPENDENT-REVIEW.json": "bdb8384454d76c99981b022386967aa9969e1ddb9c88eef255bea9317efeed42"
                                 },
                                 "source_reconstruction_base": {
                                   "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
@@ -9464,36 +9539,79 @@
                                   "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
                                 }
                               },
-                              "main_java_sources": 132,
+                              "main_java_sources": 134,
                               "phone_qualified": false,
-                              "production_build_inputs_count": 240,
-                              "qualification_policy": "Source review and isolated host diagnostics are separate from fresh frozen-head build/signature and ordinary phone acceptance.",
+                              "production_build_inputs_count": 242,
+                              "qualification_policy": "Source reviews, host gates, real Android build and actual native phone outcomes retain separate evidence.",
                               "release_version_assigned": false,
                               "schema": "hepta.local-source.v3",
-                              "source_preservation_scope": "All signed b2ca and published 0c40 members remain. Approved native route/provider/Xiaomi and minimal host dependency closures are combined; archived web-v65 calendar/drift business overlays are excluded. Historical original evidence and version-specific references retain their original names and bytes, except explicitly identified new public native fixtures with unrelated private values redacted.",
+                              "source_preservation_scope": "All actual v65 and signed b2ca members retained. No existing test assertion file removed; current targeted results are diagnostic references, never substituted for new frozen-head or phone acceptance.",
                               "source_reconstruction_base": {
                                 "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
                                 "component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
                                 "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
                               },
-                              "version_code": 65,
-                              "version_metadata_policy": "Version65 identifies this native-App source candidate. Version64 source and original phone evidence remain historical; this stamp does not qualify the new APK.",
-                              "version_name": "0.65.0-native-app-runtime"
+                              "version_code": 66,
+                              "version_name": "0.66.0-native-background-runtime"
                             },
-                            "source_commit": "87f01cd43e97f30448359de9a521606dc8b155cf",
-                            "source_manifest_sha256": "62686d4a155d8848a452952ba2a2bbcd598330c635d9bcae4134e25f3a8e38ab"
+                            "source_commit": "932c33996996a68cab709becfeb7814efb86cadc",
+                            "source_manifest_sha256": "51c695644661f8d315c26e5dea831c4d9674fd54bd9edc0dcaa770ab23df0fde"
+                          },
+                          "host_closure_amendment": {
+                            "cause": "The canonical and qualification-fixture javac closures omitted NativeCtripFlightPage; the query source count still described its pre-addition closure.",
+                            "changed_programs": [
+                              "tests/qualification-scope/prepare_fixture.py",
+                              "tests/web-flight/run_query_host_tests.py",
+                              "tools/run_host_checks.py"
+                            ],
+                            "new_head_tests_run": false,
+                            "original_case_and_assertion_contracts_retained": true,
+                            "original_failure_preserved": true,
+                            "production_bytes_changed": false,
+                            "targeted_review_artifacts": [
+                              {
+                                "bytes": 4984,
+                                "path": "/home/alex/hepta-v66-native-closure-fix-261e-20261114-r1/HANDOFF.json",
+                                "sha256": "d454abc746d6116e69e09d26948ae5807322fda1e4efe8f5e2e80daeddbf4350"
+                              },
+                              {
+                                "bytes": 300210,
+                                "path": "/home/alex/hepta-v66-native-closure-fix-261e-20261114-r1/validation/compile-only-r1/RESULT.json",
+                                "sha256": "6bc26105f8f26c9f64347c38648379a6c268161ada3f37a291c30fd844d5f165"
+                              },
+                              {
+                                "bytes": 6421,
+                                "path": "/home/alex/hepta-v66-native-build-261e-20261114-r2/preparation/ROOT-SOURCE-REVIEW.json",
+                                "sha256": "4f7b2035fb966f607bb1be43f993a9f8d0cd21ead252803a3aee0bba381fd107"
+                              },
+                              {
+                                "bytes": 4004,
+                                "path": "/home/alex/hepta-v66-native-build-261e-20261114-r2/preparation/INDEPENDENT-SOURCE-REVIEW.json",
+                                "sha256": "d5e2ceab811820cb50cd992183d1014a0894b6604463d8fd856dc1b22b97921c"
+                              },
+                              {
+                                "bytes": 3666,
+                                "path": "/home/alex/hepta-v66-native-build-261e-20261114-r2/preparation/INDEPENDENT-PREPARATION-REVIEW.json",
+                                "sha256": "f750029eecbc5e48058623dca0d474e09c9c7eb5e5b4462c9c2fee6aea881069"
+                              },
+                              {
+                                "bytes": 1012,
+                                "path": "/home/alex/hepta-v66-native-build-261e-20261114-r2/preparation/SOURCE-MAP-ORDER-NORMALIZATION.json",
+                                "sha256": "363ecc40614d8a76fa2305a2602809b6e8a885643d3ede097513f5bfb6c278a9"
+                              }
+                            ]
                           },
                           "integration_sources": {
-                            "canonical_runner_sha256": "fd75a32547e012cf2778c87d2111e302ec7de83ed91e3870b19a40f70b6d82f9",
+                            "canonical_runner_sha256": "0f5b764d9324a0712d56cd59a23b77c09f8362cd2589071f89aa0ee8d6072dc1",
                             "external_repository_workflow": {
-                              "base_commit": "87f01cd43e97f30448359de9a521606dc8b155cf",
-                              "base_sha256": "2c044d9a250d38ca55d2d57a0ea380aeaa26cc7ef2782fd5d29ff029b979216a",
+                              "base_commit": "932c33996996a68cab709becfeb7814efb86cadc",
+                              "base_sha256": "c6a7bd65b9a96e4dc9223f09f72eecd59883395e62ac385b657b78d7debc5b6a",
                               "git_blob": "c51ed5101bfadacefc4d804677b407dfee1cbe9e",
                               "path": ".github/workflows/hepta-local-android.yml",
                               "sha256": "c6a7bd65b9a96e4dc9223f09f72eecd59883395e62ac385b657b78d7debc5b6a"
                             },
-                            "native_host_gate_contract_sha256": "497820eaf4ab49a32e2d560ab6dfaacf7d1741d8997a0e23d41ded5edae40b4a",
-                            "normal_git_parent": "87f01cd43e97f30448359de9a521606dc8b155cf",
+                            "native_host_gate_contract_sha256": "93510b6bc63781912e2551913afe3e6c36c404bfb00073fe5321239382468469",
+                            "normal_git_parent": "932c33996996a68cab709becfeb7814efb86cadc",
                             "paired_helper": {
                               "apk_bytes": 1414146,
                               "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -9504,12 +9622,12 @@
                               "version_name": "0.7.0-web-evidence-v4"
                             },
                             "review_artifact_hashes": {
-                              "DERIVATION-r4.json": "269df9352dd55610fbb2794b063ba447e496f5a3fe847cc33372ba7390f879d9",
-                              "HANDOFF.json": "4a2f1d099d61f525683924c303ab27e6b55b7dd6061310dadb295fdd00c495b4",
-                              "INDEPENDENT-SOURCE-REVIEW.json": "cf5272bad60d60e250ae8d5d4daa4cd38ddd6c52429c9ba12548597c3c4e4f40",
-                              "ROOT-PRODUCTION-SOURCE-REVIEW-r4.json": "3682d5fdf947eb4b3e35e2439cd8b2fa34a9c582b00faa70f3e93fc2e5cbd2a1",
-                              "SNAPSHOT88-INDEPENDENT-REVIEW.json": "cc14670b13dbb02460ca9381f86c5c34a887e6dbb3e2c2c6cb220eeb2605187f",
-                              "SOURCE-UNION-INDEPENDENT-REVIEW.json": "bdb8384454d76c99981b022386967aa9969e1ddb9c88eef255bea9317efeed42"
+                              "HANDOFF.json": "d454abc746d6116e69e09d26948ae5807322fda1e4efe8f5e2e80daeddbf4350",
+                              "INDEPENDENT-PREPARATION-REVIEW.json": "f750029eecbc5e48058623dca0d474e09c9c7eb5e5b4462c9c2fee6aea881069",
+                              "INDEPENDENT-SOURCE-REVIEW.json": "d5e2ceab811820cb50cd992183d1014a0894b6604463d8fd856dc1b22b97921c",
+                              "RESULT.json": "6bc26105f8f26c9f64347c38648379a6c268161ada3f37a291c30fd844d5f165",
+                              "ROOT-SOURCE-REVIEW.json": "4f7b2035fb966f607bb1be43f993a9f8d0cd21ead252803a3aee0bba381fd107",
+                              "SOURCE-MAP-ORDER-NORMALIZATION.json": "363ecc40614d8a76fa2305a2602809b6e8a885643d3ede097513f5bfb6c278a9"
                             },
                             "source_reconstruction_base": {
                               "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
@@ -9532,64 +9650,97 @@
                           "version_code": 66,
                           "version_name": "0.66.0-native-background-runtime"
                         },
-                        "source_commit": "932c33996996a68cab709becfeb7814efb86cadc",
-                        "source_manifest_sha256": "51c695644661f8d315c26e5dea831c4d9674fd54bd9edc0dcaa770ab23df0fde"
+                        "source_commit": "52aa7c4aa05a726e287782de966c47c8d2385d1a",
+                        "source_manifest_sha256": "2bfa579d0b6733dbea380b6798d47437cfe8c9d0d942182fd3c165e4ccfba71f"
                       },
                       "host_closure_amendment": {
-                        "cause": "The canonical and qualification-fixture javac closures omitted NativeCtripFlightPage; the query source count still described its pre-addition closure.",
+                        "cause": "Repair the legacy broker fixture dependency closure and reported ReDoS; make the primary manifest non-debuggable and bind separately selected release/diagnostic builds to actual APK flags and compiler configuration.",
                         "changed_programs": [
-                          "tests/qualification-scope/prepare_fixture.py",
-                          "tests/web-flight/run_query_host_tests.py",
-                          "tools/run_host_checks.py"
+                          "AndroidManifest.xml",
+                          "assemble_pocket4.py",
+                          "build_mac.py",
+                          "tests/action-grammar/test_completion_protocol.py",
+                          "tests/background-broker/run_host_checks.py",
+                          "tools/build_identity.py",
+                          "tools/test_build_identity.py",
+                          "tools/test_qualification_scope_build.py"
                         ],
+                        "java_native_helper_resources_unchanged": true,
                         "new_head_tests_run": false,
                         "original_case_and_assertion_contracts_retained": true,
                         "original_failure_preserved": true,
-                        "production_bytes_changed": false,
+                        "production_bytes_changed": true,
+                        "production_changed_paths": [
+                          "AndroidManifest.xml",
+                          "assemble_pocket4.py",
+                          "build_mac.py",
+                          "tools/build_identity.py"
+                        ],
+                        "repository_workflow_change": "Archive the required build-variant.json beside the existing unsigned build inputs.",
                         "targeted_review_artifacts": [
                           {
-                            "bytes": 4984,
-                            "path": "/home/alex/hepta-v66-native-closure-fix-261e-20261114-r1/HANDOFF.json",
-                            "sha256": "d454abc746d6116e69e09d26948ae5807322fda1e4efe8f5e2e80daeddbf4350"
+                            "bytes": 3585,
+                            "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r4/preparation/reviews/ROOT-FLAVOR-SOURCE-REVIEW-r1.json",
+                            "sha256": "d1725bfad92d83ea9575adc6c6bc9ed186aba7aed31d5fb2b41eebca4715a77f"
                           },
                           {
-                            "bytes": 300210,
-                            "path": "/home/alex/hepta-v66-native-closure-fix-261e-20261114-r1/validation/compile-only-r1/RESULT.json",
-                            "sha256": "6bc26105f8f26c9f64347c38648379a6c268161ada3f37a291c30fd844d5f165"
+                            "bytes": 13729,
+                            "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r4/preparation/reviews/BUILD-FLAVOR-HANDOFF.json",
+                            "sha256": "15ab278523fcc44061e334d7556d7e29b64a2147504db52b0f5a389be9c5d637"
                           },
                           {
-                            "bytes": 6421,
-                            "path": "/home/alex/hepta-v66-native-build-261e-20261114-r2/preparation/ROOT-SOURCE-REVIEW.json",
-                            "sha256": "4f7b2035fb966f607bb1be43f993a9f8d0cd21ead252803a3aee0bba381fd107"
+                            "bytes": 4185,
+                            "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r4/preparation/reviews/BROKER-CLOSURE-HANDOFF.json",
+                            "sha256": "55509b428bf839637a3b4fc2c90432fb4613a422a3719ef7367f4997216e0770"
                           },
                           {
-                            "bytes": 4004,
-                            "path": "/home/alex/hepta-v66-native-build-261e-20261114-r2/preparation/INDEPENDENT-SOURCE-REVIEW.json",
-                            "sha256": "d5e2ceab811820cb50cd992183d1014a0894b6604463d8fd856dc1b22b97921c"
+                            "bytes": 4045,
+                            "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r4/preparation/reviews/REDOS-RESULT.json",
+                            "sha256": "c51341037981806a5e10d220d81d316ef00c5e75683647653dea171ef563f877"
                           },
                           {
-                            "bytes": 3666,
-                            "path": "/home/alex/hepta-v66-native-build-261e-20261114-r2/preparation/INDEPENDENT-PREPARATION-REVIEW.json",
-                            "sha256": "f750029eecbc5e48058623dca0d474e09c9c7eb5e5b4462c9c2fee6aea881069"
+                            "bytes": 38036,
+                            "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r4/preparation/reviews/PARENT-CI-FINAL-REVIEW.json",
+                            "sha256": "1d0348ddd190e6445b8ffdc03a0b981aecd538446d4638716948a95ae1316503"
                           },
                           {
-                            "bytes": 1012,
-                            "path": "/home/alex/hepta-v66-native-build-261e-20261114-r2/preparation/SOURCE-MAP-ORDER-NORMALIZATION.json",
-                            "sha256": "363ecc40614d8a76fa2305a2602809b6e8a885643d3ede097513f5bfb6c278a9"
+                            "bytes": 8314,
+                            "path": "/home/alex/hepta-v66-union-candidate-261e-20261114-r4/UNION.json",
+                            "sha256": "817b29eb0c04e56acd877b18ba7be09d76917f87c5a4ff6300f11ee4add0284b"
+                          },
+                          {
+                            "bytes": 3142,
+                            "path": "/home/alex/hepta-v66-native-build-261e-20261114-r4/preparation/PREPARATION.json",
+                            "sha256": "f8351d3e511e99ba40da91e4cde1f951aa1f3e63a52f92c49513d306d0375510"
+                          },
+                          {
+                            "bytes": 10765,
+                            "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r4/preparation/reviews/INDEPENDENT-SOURCE-REVIEW-r2.json",
+                            "sha256": "9dd7942188dfbc73fb7cac9b68c262080a45718dff7dbaa9555541b733dc0419"
+                          },
+                          {
+                            "bytes": 5504,
+                            "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r4/preparation/reviews/INDEPENDENT-R4-PREPARATION-REVIEW-r2.json",
+                            "sha256": "96f52d13f4b81fa7e25a9b64988a6e843dd164fdd2120889c7a2ded304e3a980"
+                          },
+                          {
+                            "bytes": 4144,
+                            "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r4/preparation/reviews/FREEZE-PLAN-r1-FAILURE.json",
+                            "sha256": "3b573068d0fc81729724ea80117fcf8a01fc0cb0c6738947297d84465d1dc167"
                           }
                         ]
                       },
                       "integration_sources": {
                         "canonical_runner_sha256": "0f5b764d9324a0712d56cd59a23b77c09f8362cd2589071f89aa0ee8d6072dc1",
                         "external_repository_workflow": {
-                          "base_commit": "932c33996996a68cab709becfeb7814efb86cadc",
+                          "base_commit": "52aa7c4aa05a726e287782de966c47c8d2385d1a",
                           "base_sha256": "c6a7bd65b9a96e4dc9223f09f72eecd59883395e62ac385b657b78d7debc5b6a",
-                          "git_blob": "c51ed5101bfadacefc4d804677b407dfee1cbe9e",
+                          "git_blob": "87eb28bccd52b20fc56f4ca3a4346d9038c82a9b",
                           "path": ".github/workflows/hepta-local-android.yml",
-                          "sha256": "c6a7bd65b9a96e4dc9223f09f72eecd59883395e62ac385b657b78d7debc5b6a"
+                          "sha256": "f9015198dcafa4d7a745be12ce92cb5d0da8a600eb992d12f4a43c8efc87ebea"
                         },
-                        "native_host_gate_contract_sha256": "93510b6bc63781912e2551913afe3e6c36c404bfb00073fe5321239382468469",
-                        "normal_git_parent": "932c33996996a68cab709becfeb7814efb86cadc",
+                        "native_host_gate_contract_sha256": "7c107240cc05841c4b4674b3867838b80e1197a138773f6a33d507db12aa9f4f",
+                        "normal_git_parent": "52aa7c4aa05a726e287782de966c47c8d2385d1a",
                         "paired_helper": {
                           "apk_bytes": 1414146,
                           "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -9600,12 +9751,16 @@
                           "version_name": "0.7.0-web-evidence-v4"
                         },
                         "review_artifact_hashes": {
-                          "HANDOFF.json": "d454abc746d6116e69e09d26948ae5807322fda1e4efe8f5e2e80daeddbf4350",
-                          "INDEPENDENT-PREPARATION-REVIEW.json": "f750029eecbc5e48058623dca0d474e09c9c7eb5e5b4462c9c2fee6aea881069",
-                          "INDEPENDENT-SOURCE-REVIEW.json": "d5e2ceab811820cb50cd992183d1014a0894b6604463d8fd856dc1b22b97921c",
-                          "RESULT.json": "6bc26105f8f26c9f64347c38648379a6c268161ada3f37a291c30fd844d5f165",
-                          "ROOT-SOURCE-REVIEW.json": "4f7b2035fb966f607bb1be43f993a9f8d0cd21ead252803a3aee0bba381fd107",
-                          "SOURCE-MAP-ORDER-NORMALIZATION.json": "363ecc40614d8a76fa2305a2602809b6e8a885643d3ede097513f5bfb6c278a9"
+                          "BROKER-CLOSURE-HANDOFF.json": "55509b428bf839637a3b4fc2c90432fb4613a422a3719ef7367f4997216e0770",
+                          "BUILD-FLAVOR-HANDOFF.json": "15ab278523fcc44061e334d7556d7e29b64a2147504db52b0f5a389be9c5d637",
+                          "FREEZE-PLAN-r1-FAILURE.json": "3b573068d0fc81729724ea80117fcf8a01fc0cb0c6738947297d84465d1dc167",
+                          "INDEPENDENT-R4-PREPARATION-REVIEW-r2.json": "96f52d13f4b81fa7e25a9b64988a6e843dd164fdd2120889c7a2ded304e3a980",
+                          "INDEPENDENT-SOURCE-REVIEW-r2.json": "9dd7942188dfbc73fb7cac9b68c262080a45718dff7dbaa9555541b733dc0419",
+                          "PARENT-CI-FINAL-REVIEW.json": "1d0348ddd190e6445b8ffdc03a0b981aecd538446d4638716948a95ae1316503",
+                          "PREPARATION.json": "f8351d3e511e99ba40da91e4cde1f951aa1f3e63a52f92c49513d306d0375510",
+                          "REDOS-RESULT.json": "c51341037981806a5e10d220d81d316ef00c5e75683647653dea171ef563f877",
+                          "ROOT-FLAVOR-SOURCE-REVIEW-r1.json": "d1725bfad92d83ea9575adc6c6bc9ed186aba7aed31d5fb2b41eebca4715a77f",
+                          "UNION.json": "817b29eb0c04e56acd877b18ba7be09d76917f87c5a4ff6300f11ee4add0284b"
                         },
                         "source_reconstruction_base": {
                           "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
@@ -9628,19 +9783,13 @@
                       "version_code": 66,
                       "version_name": "0.66.0-native-background-runtime"
                     },
-                    "source_commit": "52aa7c4aa05a726e287782de966c47c8d2385d1a",
-                    "source_manifest_sha256": "2bfa579d0b6733dbea380b6798d47437cfe8c9d0d942182fd3c165e4ccfba71f"
+                    "source_commit": "5eb47cfb6f53859a6cf6033abb4a1698e3b162af",
+                    "source_manifest_sha256": "6105f5297b57fb821cc17ed0ee85887c32f509c1b7f4a96239dc7bcf583c8803"
                   },
                   "host_closure_amendment": {
-                    "cause": "Repair the legacy broker fixture dependency closure and reported ReDoS; make the primary manifest non-debuggable and bind separately selected release/diagnostic builds to actual APK flags and compiler configuration.",
+                    "cause": "Escape both literal dots in the Android namespace regexp and add negative namespace lookalike regressions for CodeQL alert 71; preserve every existing build-variant admission predicate.",
                     "changed_programs": [
-                      "AndroidManifest.xml",
-                      "assemble_pocket4.py",
-                      "build_mac.py",
-                      "tests/action-grammar/test_completion_protocol.py",
-                      "tests/background-broker/run_host_checks.py",
                       "tools/build_identity.py",
-                      "tools/test_build_identity.py",
                       "tools/test_qualification_scope_build.py"
                     ],
                     "java_native_helper_resources_unchanged": true,
@@ -9649,76 +9798,54 @@
                     "original_failure_preserved": true,
                     "production_bytes_changed": true,
                     "production_changed_paths": [
-                      "AndroidManifest.xml",
-                      "assemble_pocket4.py",
-                      "build_mac.py",
                       "tools/build_identity.py"
                     ],
-                    "repository_workflow_change": "Archive the required build-variant.json beside the existing unsigned build inputs.",
+                    "repository_workflow_change": null,
+                    "repository_workflow_unchanged": true,
                     "targeted_review_artifacts": [
                       {
-                        "bytes": 3585,
-                        "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r4/preparation/reviews/ROOT-FLAVOR-SOURCE-REVIEW-r1.json",
-                        "sha256": "d1725bfad92d83ea9575adc6c6bc9ed186aba7aed31d5fb2b41eebca4715a77f"
+                        "bytes": 3054,
+                        "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r5/preparation/ROOT-R5-REVIEW.json",
+                        "sha256": "e8d601678f14615ffa4c0d1a79b932c27b12d032c3139d9ae8a67cea2dae31cc"
                       },
                       {
-                        "bytes": 13729,
-                        "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r4/preparation/reviews/BUILD-FLAVOR-HANDOFF.json",
-                        "sha256": "15ab278523fcc44061e334d7556d7e29b64a2147504db52b0f5a389be9c5d637"
+                        "bytes": 21026,
+                        "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r5/preparation/CODEQL71-READ-RESULT.json",
+                        "sha256": "eb30f2f53c5fa79c2d31286c2742c19450db05bc898669c98bfe473b51c3450a"
                       },
                       {
-                        "bytes": 4185,
-                        "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r4/preparation/reviews/BROKER-CLOSURE-HANDOFF.json",
-                        "sha256": "55509b428bf839637a3b4fc2c90432fb4613a422a3719ef7367f4997216e0770"
+                        "bytes": 7396,
+                        "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r5/preparation/CODEQL71-HANDOFF.json",
+                        "sha256": "fe87f4691781c8b18b8b9f6e5acde148445223f40bcb8690e178a43d27eb9dcf"
                       },
                       {
-                        "bytes": 4045,
-                        "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r4/preparation/reviews/REDOS-RESULT.json",
-                        "sha256": "c51341037981806a5e10d220d81d316ef00c5e75683647653dea171ef563f877"
+                        "bytes": 3137,
+                        "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r5/preparation/INDEPENDENT-SOURCE-REVIEW.json",
+                        "sha256": "04305c8efea2bb6356578f1d2f4c5fbb261bbe19e3658abeaf9e255191b7227c"
                       },
                       {
-                        "bytes": 38036,
-                        "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r4/preparation/reviews/PARENT-CI-FINAL-REVIEW.json",
-                        "sha256": "1d0348ddd190e6445b8ffdc03a0b981aecd538446d4638716948a95ae1316503"
+                        "bytes": 5289,
+                        "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r5/preparation/INDEPENDENT-FREEZER-REVIEW.json",
+                        "sha256": "0e081adb86510286ef3e275d426aa1d999b6d5cd31147f8d4ba008cf75645c29"
                       },
                       {
-                        "bytes": 8314,
-                        "path": "/home/alex/hepta-v66-union-candidate-261e-20261114-r4/UNION.json",
-                        "sha256": "817b29eb0c04e56acd877b18ba7be09d76917f87c5a4ff6300f11ee4add0284b"
-                      },
-                      {
-                        "bytes": 3142,
-                        "path": "/home/alex/hepta-v66-native-build-261e-20261114-r4/preparation/PREPARATION.json",
-                        "sha256": "f8351d3e511e99ba40da91e4cde1f951aa1f3e63a52f92c49513d306d0375510"
-                      },
-                      {
-                        "bytes": 10765,
-                        "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r4/preparation/reviews/INDEPENDENT-SOURCE-REVIEW-r2.json",
-                        "sha256": "9dd7942188dfbc73fb7cac9b68c262080a45718dff7dbaa9555541b733dc0419"
-                      },
-                      {
-                        "bytes": 5504,
-                        "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r4/preparation/reviews/INDEPENDENT-R4-PREPARATION-REVIEW-r2.json",
-                        "sha256": "96f52d13f4b81fa7e25a9b64988a6e843dd164fdd2120889c7a2ded304e3a980"
-                      },
-                      {
-                        "bytes": 4144,
-                        "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r4/preparation/reviews/FREEZE-PLAN-r1-FAILURE.json",
-                        "sha256": "3b573068d0fc81729724ea80117fcf8a01fc0cb0c6738947297d84465d1dc167"
+                        "bytes": 4662,
+                        "path": "/home/alex/hepta-v66-codeql-namespace-261e-20261114-r2/validation/RESULT.json",
+                        "sha256": "5ed90172469278e309afba9580b35ba218fcce17fbcf742686886487bcc5dd61"
                       }
                     ]
                   },
                   "integration_sources": {
                     "canonical_runner_sha256": "0f5b764d9324a0712d56cd59a23b77c09f8362cd2589071f89aa0ee8d6072dc1",
                     "external_repository_workflow": {
-                      "base_commit": "52aa7c4aa05a726e287782de966c47c8d2385d1a",
-                      "base_sha256": "c6a7bd65b9a96e4dc9223f09f72eecd59883395e62ac385b657b78d7debc5b6a",
+                      "base_commit": "5eb47cfb6f53859a6cf6033abb4a1698e3b162af",
+                      "base_sha256": "f9015198dcafa4d7a745be12ce92cb5d0da8a600eb992d12f4a43c8efc87ebea",
                       "git_blob": "87eb28bccd52b20fc56f4ca3a4346d9038c82a9b",
                       "path": ".github/workflows/hepta-local-android.yml",
                       "sha256": "f9015198dcafa4d7a745be12ce92cb5d0da8a600eb992d12f4a43c8efc87ebea"
                     },
-                    "native_host_gate_contract_sha256": "7c107240cc05841c4b4674b3867838b80e1197a138773f6a33d507db12aa9f4f",
-                    "normal_git_parent": "52aa7c4aa05a726e287782de966c47c8d2385d1a",
+                    "native_host_gate_contract_sha256": "3ceb250fa2e8d564ea21d182518accd18432ed954bc2054dc44481ec3db4e63b",
+                    "normal_git_parent": "5eb47cfb6f53859a6cf6033abb4a1698e3b162af",
                     "paired_helper": {
                       "apk_bytes": 1414146,
                       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -9729,16 +9856,12 @@
                       "version_name": "0.7.0-web-evidence-v4"
                     },
                     "review_artifact_hashes": {
-                      "BROKER-CLOSURE-HANDOFF.json": "55509b428bf839637a3b4fc2c90432fb4613a422a3719ef7367f4997216e0770",
-                      "BUILD-FLAVOR-HANDOFF.json": "15ab278523fcc44061e334d7556d7e29b64a2147504db52b0f5a389be9c5d637",
-                      "FREEZE-PLAN-r1-FAILURE.json": "3b573068d0fc81729724ea80117fcf8a01fc0cb0c6738947297d84465d1dc167",
-                      "INDEPENDENT-R4-PREPARATION-REVIEW-r2.json": "96f52d13f4b81fa7e25a9b64988a6e843dd164fdd2120889c7a2ded304e3a980",
-                      "INDEPENDENT-SOURCE-REVIEW-r2.json": "9dd7942188dfbc73fb7cac9b68c262080a45718dff7dbaa9555541b733dc0419",
-                      "PARENT-CI-FINAL-REVIEW.json": "1d0348ddd190e6445b8ffdc03a0b981aecd538446d4638716948a95ae1316503",
-                      "PREPARATION.json": "f8351d3e511e99ba40da91e4cde1f951aa1f3e63a52f92c49513d306d0375510",
-                      "REDOS-RESULT.json": "c51341037981806a5e10d220d81d316ef00c5e75683647653dea171ef563f877",
-                      "ROOT-FLAVOR-SOURCE-REVIEW-r1.json": "d1725bfad92d83ea9575adc6c6bc9ed186aba7aed31d5fb2b41eebca4715a77f",
-                      "UNION.json": "817b29eb0c04e56acd877b18ba7be09d76917f87c5a4ff6300f11ee4add0284b"
+                      "CODEQL71-HANDOFF.json": "fe87f4691781c8b18b8b9f6e5acde148445223f40bcb8690e178a43d27eb9dcf",
+                      "CODEQL71-READ-RESULT.json": "eb30f2f53c5fa79c2d31286c2742c19450db05bc898669c98bfe473b51c3450a",
+                      "INDEPENDENT-FREEZER-REVIEW.json": "0e081adb86510286ef3e275d426aa1d999b6d5cd31147f8d4ba008cf75645c29",
+                      "INDEPENDENT-SOURCE-REVIEW.json": "04305c8efea2bb6356578f1d2f4c5fbb261bbe19e3658abeaf9e255191b7227c",
+                      "RESULT.json": "5ed90172469278e309afba9580b35ba218fcce17fbcf742686886487bcc5dd61",
+                      "ROOT-R5-REVIEW.json": "e8d601678f14615ffa4c0d1a79b932c27b12d032c3139d9ae8a67cea2dae31cc"
                     },
                     "source_reconstruction_base": {
                       "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
@@ -9761,69 +9884,76 @@
                   "version_code": 66,
                   "version_name": "0.66.0-native-background-runtime"
                 },
-                "source_commit": "5eb47cfb6f53859a6cf6033abb4a1698e3b162af",
-                "source_manifest_sha256": "6105f5297b57fb821cc17ed0ee85887c32f509c1b7f4a96239dc7bcf583c8803"
+                "source_commit": "02e5bf208b68457c6775646064c590cf7ab3a553",
+                "source_manifest_sha256": "38ad3ca700da885d373e1806dd39524e4b0b5ada53be51b860ef2589a2656ed9"
               },
               "host_closure_amendment": {
-                "cause": "Escape both literal dots in the Android namespace regexp and add negative namespace lookalike regressions for CodeQL alert 71; preserve every existing build-variant admission predicate.",
+                "cause": "Refresh the shopping read-only test explicit dependency cardinalities for the already-frozen query closure: 56 total paths, 53 production paths, 55 filtered compile paths; retain all original test cases, assertions, filtering and product bytes.",
                 "changed_programs": [
-                  "tools/build_identity.py",
-                  "tools/test_qualification_scope_build.py"
+                  "tests/shopping-readonly-observation/run_host.py"
                 ],
                 "java_native_helper_resources_unchanged": true,
                 "new_head_tests_run": false,
                 "original_case_and_assertion_contracts_retained": true,
                 "original_failure_preserved": true,
-                "production_bytes_changed": true,
-                "production_changed_paths": [
-                  "tools/build_identity.py"
-                ],
+                "production_bytes_changed": false,
+                "production_changed_paths": [],
                 "repository_workflow_change": null,
                 "repository_workflow_unchanged": true,
                 "targeted_review_artifacts": [
                   {
-                    "bytes": 3054,
-                    "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r5/preparation/ROOT-R5-REVIEW.json",
-                    "sha256": "e8d601678f14615ffa4c0d1a79b932c27b12d032c3139d9ae8a67cea2dae31cc"
+                    "bytes": 4300,
+                    "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r6/preparation/ROOT-R6-REVIEW-r2.json",
+                    "sha256": "8430b5938df463b80a928a1eba76de1e33baa5b3b70ce1f45e7318bf0a90669a"
                   },
                   {
-                    "bytes": 21026,
-                    "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r5/preparation/CODEQL71-READ-RESULT.json",
-                    "sha256": "eb30f2f53c5fa79c2d31286c2742c19450db05bc898669c98bfe473b51c3450a"
+                    "bytes": 7800,
+                    "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r6/preparation/ORIGINAL-MAC-FAILURE-REVIEW.json",
+                    "sha256": "9a02499117f89c138730f78e79b8ad8b1b14c5eab1da6074ae47e0f540e12e58"
                   },
                   {
-                    "bytes": 7396,
-                    "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r5/preparation/CODEQL71-HANDOFF.json",
-                    "sha256": "fe87f4691781c8b18b8b9f6e5acde148445223f40bcb8690e178a43d27eb9dcf"
+                    "bytes": 17890,
+                    "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r6/preparation/SHOPPING-SOURCE-REVIEW.json",
+                    "sha256": "c77d2a92eaf516cfaf54caa155f3b05df963ed59c46185522f02bd2a88a088d8"
                   },
                   {
-                    "bytes": 3137,
-                    "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r5/preparation/INDEPENDENT-SOURCE-REVIEW.json",
-                    "sha256": "04305c8efea2bb6356578f1d2f4c5fbb261bbe19e3658abeaf9e255191b7227c"
+                    "bytes": 13268,
+                    "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r6/preparation/ACTUAL-MAC-HANDOFF.json",
+                    "sha256": "869852597b85f0108887b70c8982a6f49ab42e73c2dedbcc1eeea93c7b2dfcaf"
                   },
                   {
-                    "bytes": 5289,
-                    "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r5/preparation/INDEPENDENT-FREEZER-REVIEW.json",
-                    "sha256": "0e081adb86510286ef3e275d426aa1d999b6d5cd31147f8d4ba008cf75645c29"
+                    "bytes": 12415,
+                    "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r6/preparation/ACTUAL-MAC-RESULT.json",
+                    "sha256": "070d7fc6fa5a3c85b93c04aecd37661d9c0a8a07320006a8d54ccb4176d5fe46"
                   },
                   {
-                    "bytes": 4662,
-                    "path": "/home/alex/hepta-v66-codeql-namespace-261e-20261114-r2/validation/RESULT.json",
-                    "sha256": "5ed90172469278e309afba9580b35ba218fcce17fbcf742686886487bcc5dd61"
+                    "bytes": 31485,
+                    "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r6/preparation/ACTUAL-MAC-GATE-RESULT.json",
+                    "sha256": "5dc0139eaaecc8b9f4087a139578a8b7d76bcae93d005d1ab30fbe8440e8803b"
+                  },
+                  {
+                    "bytes": 14125,
+                    "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r6/preparation/INDEPENDENT-FREEZER-REVIEW.json",
+                    "sha256": "4231438b4df42f9c8a1f61cc2b289908f550dce3a071264b1d800aedb69b02f0"
+                  },
+                  {
+                    "bytes": 5287,
+                    "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r6/preparation/ACTUAL-UNION-RESULT.json",
+                    "sha256": "7b3285c247ad94e02d49e249ed88c14f0eb0e09296ba0c3e9a7a14077447079d"
                   }
                 ]
               },
               "integration_sources": {
                 "canonical_runner_sha256": "0f5b764d9324a0712d56cd59a23b77c09f8362cd2589071f89aa0ee8d6072dc1",
                 "external_repository_workflow": {
-                  "base_commit": "5eb47cfb6f53859a6cf6033abb4a1698e3b162af",
+                  "base_commit": "02e5bf208b68457c6775646064c590cf7ab3a553",
                   "base_sha256": "f9015198dcafa4d7a745be12ce92cb5d0da8a600eb992d12f4a43c8efc87ebea",
                   "git_blob": "87eb28bccd52b20fc56f4ca3a4346d9038c82a9b",
                   "path": ".github/workflows/hepta-local-android.yml",
                   "sha256": "f9015198dcafa4d7a745be12ce92cb5d0da8a600eb992d12f4a43c8efc87ebea"
                 },
-                "native_host_gate_contract_sha256": "3ceb250fa2e8d564ea21d182518accd18432ed954bc2054dc44481ec3db4e63b",
-                "normal_git_parent": "5eb47cfb6f53859a6cf6033abb4a1698e3b162af",
+                "native_host_gate_contract_sha256": "40d524943625811ff497264c80b3fb6eecdb25682696eb61516a5a619bf170f0",
+                "normal_git_parent": "02e5bf208b68457c6775646064c590cf7ab3a553",
                 "paired_helper": {
                   "apk_bytes": 1414146,
                   "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -9834,12 +9964,14 @@
                   "version_name": "0.7.0-web-evidence-v4"
                 },
                 "review_artifact_hashes": {
-                  "CODEQL71-HANDOFF.json": "fe87f4691781c8b18b8b9f6e5acde148445223f40bcb8690e178a43d27eb9dcf",
-                  "CODEQL71-READ-RESULT.json": "eb30f2f53c5fa79c2d31286c2742c19450db05bc898669c98bfe473b51c3450a",
-                  "INDEPENDENT-FREEZER-REVIEW.json": "0e081adb86510286ef3e275d426aa1d999b6d5cd31147f8d4ba008cf75645c29",
-                  "INDEPENDENT-SOURCE-REVIEW.json": "04305c8efea2bb6356578f1d2f4c5fbb261bbe19e3658abeaf9e255191b7227c",
-                  "RESULT.json": "5ed90172469278e309afba9580b35ba218fcce17fbcf742686886487bcc5dd61",
-                  "ROOT-R5-REVIEW.json": "e8d601678f14615ffa4c0d1a79b932c27b12d032c3139d9ae8a67cea2dae31cc"
+                  "ACTUAL-MAC-GATE-RESULT.json": "5dc0139eaaecc8b9f4087a139578a8b7d76bcae93d005d1ab30fbe8440e8803b",
+                  "ACTUAL-MAC-HANDOFF.json": "869852597b85f0108887b70c8982a6f49ab42e73c2dedbcc1eeea93c7b2dfcaf",
+                  "ACTUAL-MAC-RESULT.json": "070d7fc6fa5a3c85b93c04aecd37661d9c0a8a07320006a8d54ccb4176d5fe46",
+                  "ACTUAL-UNION-RESULT.json": "7b3285c247ad94e02d49e249ed88c14f0eb0e09296ba0c3e9a7a14077447079d",
+                  "INDEPENDENT-FREEZER-REVIEW.json": "4231438b4df42f9c8a1f61cc2b289908f550dce3a071264b1d800aedb69b02f0",
+                  "ORIGINAL-MAC-FAILURE-REVIEW.json": "9a02499117f89c138730f78e79b8ad8b1b14c5eab1da6074ae47e0f540e12e58",
+                  "ROOT-R6-REVIEW-r2.json": "8430b5938df463b80a928a1eba76de1e33baa5b3b70ce1f45e7318bf0a90669a",
+                  "SHOPPING-SOURCE-REVIEW.json": "c77d2a92eaf516cfaf54caa155f3b05df963ed59c46185522f02bd2a88a088d8"
                 },
                 "source_reconstruction_base": {
                   "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
@@ -9862,76 +9994,86 @@
               "version_code": 66,
               "version_name": "0.66.0-native-background-runtime"
             },
-            "source_commit": "02e5bf208b68457c6775646064c590cf7ab3a553",
-            "source_manifest_sha256": "38ad3ca700da885d373e1806dd39524e4b0b5ada53be51b860ef2589a2656ed9"
+            "source_commit": "f842b4dd816b6dbbc89409a88969d12a8d40a045",
+            "source_manifest_sha256": "83406dbc91c0acb13aadc3adaaf8292cf7b5252519b0ef94f51fb57c88ff3292"
           },
           "host_closure_amendment": {
-            "cause": "Refresh the shopping read-only test explicit dependency cardinalities for the already-frozen query closure: 56 total paths, 53 production paths, 55 filtered compile paths; retain all original test cases, assertions, filtering and product bytes.",
+            "cause": "Repair observed native App blockers: one context-bound pre-query modal Back, verified calendar sticky/content month evidence, actual DEFAULT_DISPLAY geometry; increment version to 67 and retain all original gates.",
             "changed_programs": [
-              "tests/shopping-readonly-observation/run_host.py"
+              "AndroidManifest.xml",
+              "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
+              "src/org/trillionnium/hepta/local/NativeAppSession.java",
+              "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
+              "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
+              "tests/background-broker/BrokerTaskSnapshotHostTest.java",
+              "tests/background-broker/run_host_checks.py",
+              "tests/native-app-provider/NativeXiaomiModalSessionHostTest.java",
+              "tests/native-app-provider/run_host.py",
+              "tests/native-ctrip-calendar/LegacyCalendarReplayHostTest.java",
+              "tests/native-ctrip-calendar/NativeCtripCalendarHostTest.java",
+              "tests/native-ctrip-calendar/fixtures/PROVENANCE.json",
+              "tests/native-ctrip-calendar/fixtures/actual-empty-background.json",
+              "tests/native-ctrip-calendar/fixtures/main-calendar.xml",
+              "tests/native-ctrip-calendar/fixtures/main-form17.xml",
+              "tests/native-ctrip-calendar/previous-f842/NativeCtripFlightPage.java.txt",
+              "tests/native-ctrip-calendar/run_host.py",
+              "tests/native-xiaomi-image-modal/ActualXiaomiImageModalFixture.java",
+              "tests/native-xiaomi-image-modal/NativeXiaomiImageModalHostTest.java",
+              "tests/native-xiaomi-image-modal/fixtures/PROVENANCE.json",
+              "tests/native-xiaomi-image-modal/fixtures/actual-binding.json",
+              "tests/native-xiaomi-image-modal/fixtures/actual-observation.json",
+              "tests/native-xiaomi-image-modal/fixtures/actual-page.json",
+              "tests/native-xiaomi-image-modal/run_host.py"
             ],
-            "java_native_helper_resources_unchanged": true,
+            "java_native_helper_resources_unchanged": false,
+            "native_helper_resources_unchanged": true,
             "new_head_tests_run": false,
             "original_case_and_assertion_contracts_retained": true,
             "original_failure_preserved": true,
-            "production_bytes_changed": false,
-            "production_changed_paths": [],
+            "production_bytes_changed": true,
+            "production_changed_paths": [
+              "AndroidManifest.xml",
+              "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
+              "src/org/trillionnium/hepta/local/NativeAppSession.java",
+              "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
+              "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java"
+            ],
             "repository_workflow_change": null,
             "repository_workflow_unchanged": true,
             "targeted_review_artifacts": [
               {
-                "bytes": 4300,
-                "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r6/preparation/ROOT-R6-REVIEW-r2.json",
-                "sha256": "8430b5938df463b80a928a1eba76de1e33baa5b3b70ce1f45e7318bf0a90669a"
+                "bytes": 9034,
+                "path": "/home/alex/hepta-v67-native-repairs-261e-20261114-r7-author/evidence/PREPARE.json",
+                "sha256": "c276fb538bb1c0eed79a1cab52e9794f35ec9d3837f754fd35760d2ce7cd1eb1"
               },
               {
-                "bytes": 7800,
-                "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r6/preparation/ORIGINAL-MAC-FAILURE-REVIEW.json",
-                "sha256": "9a02499117f89c138730f78e79b8ad8b1b14c5eab1da6074ae47e0f540e12e58"
+                "bytes": 282,
+                "path": "/home/alex/hepta-v67-native-repairs-261e-20261114-r7-author/evidence/ACTUAL-COUNTS.json",
+                "sha256": "d80e7ac09e024f7437c7b9e1d653d1e6bbaeb2a330d70640af7b100a73c4e5cc"
               },
               {
-                "bytes": 17890,
-                "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r6/preparation/SHOPPING-SOURCE-REVIEW.json",
-                "sha256": "c77d2a92eaf516cfaf54caa155f3b05df963ed59c46185522f02bd2a88a088d8"
+                "bytes": 1702,
+                "path": "/home/alex/hepta-v67-native-repairs-261e-20261114-r7-author/validation/EXECUTION.json",
+                "sha256": "cebd852d97502f4be32d4e431ea4fbc6118526fb5939a613eb32af118fa55742"
               },
               {
-                "bytes": 13268,
-                "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r6/preparation/ACTUAL-MAC-HANDOFF.json",
-                "sha256": "869852597b85f0108887b70c8982a6f49ab42e73c2dedbcc1eeea93c7b2dfcaf"
-              },
-              {
-                "bytes": 12415,
-                "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r6/preparation/ACTUAL-MAC-RESULT.json",
-                "sha256": "070d7fc6fa5a3c85b93c04aecd37661d9c0a8a07320006a8d54ccb4176d5fe46"
-              },
-              {
-                "bytes": 31485,
-                "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r6/preparation/ACTUAL-MAC-GATE-RESULT.json",
-                "sha256": "5dc0139eaaecc8b9f4087a139578a8b7d76bcae93d005d1ab30fbe8440e8803b"
-              },
-              {
-                "bytes": 14125,
-                "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r6/preparation/INDEPENDENT-FREEZER-REVIEW.json",
-                "sha256": "4231438b4df42f9c8a1f61cc2b289908f550dce3a071264b1d800aedb69b02f0"
-              },
-              {
-                "bytes": 5287,
-                "path": "/home/alex/hepta-v66-native-integrated-261e-20261114-r6/preparation/ACTUAL-UNION-RESULT.json",
-                "sha256": "7b3285c247ad94e02d49e249ed88c14f0eb0e09296ba0c3e9a7a14077447079d"
+                "bytes": 423645,
+                "path": "/home/alex/hepta-v67-native-repairs-261e-20261114-r7-author/validation/provider-r1/RESULT.json",
+                "sha256": "6f284db231fbd66241f40f2c1fa9ba7fdd3c708174161cd76dc06f4bc1da6ffb"
               }
             ]
           },
           "integration_sources": {
             "canonical_runner_sha256": "0f5b764d9324a0712d56cd59a23b77c09f8362cd2589071f89aa0ee8d6072dc1",
             "external_repository_workflow": {
-              "base_commit": "02e5bf208b68457c6775646064c590cf7ab3a553",
+              "base_commit": "f842b4dd816b6dbbc89409a88969d12a8d40a045",
               "base_sha256": "f9015198dcafa4d7a745be12ce92cb5d0da8a600eb992d12f4a43c8efc87ebea",
               "git_blob": "87eb28bccd52b20fc56f4ca3a4346d9038c82a9b",
               "path": ".github/workflows/hepta-local-android.yml",
               "sha256": "f9015198dcafa4d7a745be12ce92cb5d0da8a600eb992d12f4a43c8efc87ebea"
             },
-            "native_host_gate_contract_sha256": "40d524943625811ff497264c80b3fb6eecdb25682696eb61516a5a619bf170f0",
-            "normal_git_parent": "02e5bf208b68457c6775646064c590cf7ab3a553",
+            "native_host_gate_contract_sha256": "75f8feb32ea22b1eb5e83b8bcfe4a15436af0501fb4045dba2099c046f87423e",
+            "normal_git_parent": "f842b4dd816b6dbbc89409a88969d12a8d40a045",
             "paired_helper": {
               "apk_bytes": 1414146,
               "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -9942,14 +10084,10 @@
               "version_name": "0.7.0-web-evidence-v4"
             },
             "review_artifact_hashes": {
-              "ACTUAL-MAC-GATE-RESULT.json": "5dc0139eaaecc8b9f4087a139578a8b7d76bcae93d005d1ab30fbe8440e8803b",
-              "ACTUAL-MAC-HANDOFF.json": "869852597b85f0108887b70c8982a6f49ab42e73c2dedbcc1eeea93c7b2dfcaf",
-              "ACTUAL-MAC-RESULT.json": "070d7fc6fa5a3c85b93c04aecd37661d9c0a8a07320006a8d54ccb4176d5fe46",
-              "ACTUAL-UNION-RESULT.json": "7b3285c247ad94e02d49e249ed88c14f0eb0e09296ba0c3e9a7a14077447079d",
-              "INDEPENDENT-FREEZER-REVIEW.json": "4231438b4df42f9c8a1f61cc2b289908f550dce3a071264b1d800aedb69b02f0",
-              "ORIGINAL-MAC-FAILURE-REVIEW.json": "9a02499117f89c138730f78e79b8ad8b1b14c5eab1da6074ae47e0f540e12e58",
-              "ROOT-R6-REVIEW-r2.json": "8430b5938df463b80a928a1eba76de1e33baa5b3b70ce1f45e7318bf0a90669a",
-              "SHOPPING-SOURCE-REVIEW.json": "c77d2a92eaf516cfaf54caa155f3b05df963ed59c46185522f02bd2a88a088d8"
+              "ACTUAL-COUNTS.json": "d80e7ac09e024f7437c7b9e1d653d1e6bbaeb2a330d70640af7b100a73c4e5cc",
+              "EXECUTION.json": "cebd852d97502f4be32d4e431ea4fbc6118526fb5939a613eb32af118fa55742",
+              "PREPARE.json": "c276fb538bb1c0eed79a1cab52e9794f35ec9d3837f754fd35760d2ce7cd1eb1",
+              "RESULT.json": "6f284db231fbd66241f40f2c1fa9ba7fdd3c708174161cd76dc06f4bc1da6ffb"
             },
             "source_reconstruction_base": {
               "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
@@ -9969,39 +10107,42 @@
             "component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
             "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
           },
-          "version_code": 66,
-          "version_name": "0.66.0-native-background-runtime"
+          "version_code": 67,
+          "version_name": "0.67.0-native-background-runtime"
         },
-        "source_commit": "f842b4dd816b6dbbc89409a88969d12a8d40a045",
-        "source_manifest_sha256": "83406dbc91c0acb13aadc3adaaf8292cf7b5252519b0ef94f51fb57c88ff3292"
+        "source_commit": "7325878a24c8c3f1060984f661dc06ab6d6012ff",
+        "source_manifest_sha256": "1180dda62ce0276ec43b5fe5598c188e3e234689a3f1ca543fbbb60c0a557b1b"
       },
       "host_closure_amendment": {
-        "cause": "Repair observed native App blockers: one context-bound pre-query modal Back, verified calendar sticky/content month evidence, actual DEFAULT_DISPLAY geometry; increment version to 67 and retain all original gates.",
+        "cause": "Repair actual complete nonscroll Notes editor evidence and add bounded task-bound native observation diagnostics without changing stability, deadlines or action authorization; version68 and all original gates retained.",
         "changed_programs": [
           "AndroidManifest.xml",
-          "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-          "src/org/trillionnium/hepta/local/NativeAppSession.java",
-          "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
-          "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
-          "tests/background-broker/BrokerTaskSnapshotHostTest.java",
-          "tests/background-broker/run_host_checks.py",
-          "tests/native-app-provider/NativeXiaomiModalSessionHostTest.java",
-          "tests/native-app-provider/run_host.py",
-          "tests/native-ctrip-calendar/LegacyCalendarReplayHostTest.java",
-          "tests/native-ctrip-calendar/NativeCtripCalendarHostTest.java",
-          "tests/native-ctrip-calendar/fixtures/PROVENANCE.json",
-          "tests/native-ctrip-calendar/fixtures/actual-empty-background.json",
-          "tests/native-ctrip-calendar/fixtures/main-calendar.xml",
-          "tests/native-ctrip-calendar/fixtures/main-form17.xml",
-          "tests/native-ctrip-calendar/previous-f842/NativeCtripFlightPage.java.txt",
-          "tests/native-ctrip-calendar/run_host.py",
-          "tests/native-xiaomi-image-modal/ActualXiaomiImageModalFixture.java",
-          "tests/native-xiaomi-image-modal/NativeXiaomiImageModalHostTest.java",
-          "tests/native-xiaomi-image-modal/fixtures/PROVENANCE.json",
-          "tests/native-xiaomi-image-modal/fixtures/actual-binding.json",
-          "tests/native-xiaomi-image-modal/fixtures/actual-observation.json",
-          "tests/native-xiaomi-image-modal/fixtures/actual-page.json",
-          "tests/native-xiaomi-image-modal/run_host.py"
+          "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+          "src/org/trillionnium/hepta/local/LocalTaskController.java",
+          "src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
+          "src/org/trillionnium/hepta/local/ObservationDiagnostics.java",
+          "tests/action-worker/run_host_tests.py",
+          "tests/notes-nonscroll-editor/NotesNonScrollEditorHostTest.java",
+          "tests/notes-nonscroll-editor/PreviousNotesEditorReplay.java",
+          "tests/notes-nonscroll-editor/fixtures/DESCRIPTORS.json",
+          "tests/notes-nonscroll-editor/fixtures/PROVENANCE.json",
+          "tests/notes-nonscroll-editor/fixtures/previous-v67-NotesCompletionEvidence.java.txt",
+          "tests/notes-nonscroll-editor/fixtures/previous-v67-completionFrame.java.txt",
+          "tests/notes-nonscroll-editor/fixtures/v66-scrollable.json",
+          "tests/notes-nonscroll-editor/fixtures/v67-after.json",
+          "tests/notes-nonscroll-editor/fixtures/v67-readiness-2.json",
+          "tests/notes-nonscroll-editor/fixtures/v67-readiness-3.json",
+          "tests/notes-nonscroll-editor/fixtures/v67-readiness-4.json",
+          "tests/notes-nonscroll-editor/run_host.py",
+          "tests/observation-diagnostics/DiagnosticChecks.java",
+          "tests/observation-diagnostics/DiagnosticControllerHost.template",
+          "tests/observation-diagnostics/DiagnosticGraphHost.template",
+          "tests/observation-diagnostics/DiagnosticPipelineCases.fragment",
+          "tests/observation-diagnostics/ObservationDiagnosticsHostTest.java",
+          "tests/observation-diagnostics/run_host.py",
+          "tests/observation-pipeline/ObserverPipelineHost.template",
+          "tests/observation-pipeline/run_host_tests.py",
+          "tests/qualification-scope/prepare_fixture.py"
         ],
         "java_native_helper_resources_unchanged": false,
         "native_helper_resources_unchanged": true,
@@ -10011,47 +10152,57 @@
         "production_bytes_changed": true,
         "production_changed_paths": [
           "AndroidManifest.xml",
-          "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-          "src/org/trillionnium/hepta/local/NativeAppSession.java",
-          "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
-          "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java"
+          "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+          "src/org/trillionnium/hepta/local/LocalTaskController.java",
+          "src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
+          "src/org/trillionnium/hepta/local/ObservationDiagnostics.java"
         ],
-        "repository_workflow_change": null,
-        "repository_workflow_unchanged": true,
+        "repository_workflow_change": ".github/workflows/hepta-local-android.yml",
+        "repository_workflow_unchanged": false,
         "targeted_review_artifacts": [
           {
-            "bytes": 9034,
-            "path": "/home/alex/hepta-v67-native-repairs-261e-20261114-r7-author/evidence/PREPARE.json",
-            "sha256": "c276fb538bb1c0eed79a1cab52e9794f35ec9d3837f754fd35760d2ce7cd1eb1"
+            "bytes": 7837,
+            "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r8/preparation/reviews/NOTES-HANDOFF.json",
+            "sha256": "c886913abf4cfa69130bedb7fda6e73c890abb534d4adfce57f08d3c10a27ece"
           },
           {
-            "bytes": 282,
-            "path": "/home/alex/hepta-v67-native-repairs-261e-20261114-r7-author/evidence/ACTUAL-COUNTS.json",
-            "sha256": "d80e7ac09e024f7437c7b9e1d653d1e6bbaeb2a330d70640af7b100a73c4e5cc"
+            "bytes": 1789,
+            "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r8/preparation/reviews/DIAGNOSTIC-HANDOFF.json",
+            "sha256": "21c0bfa92f17f71f767c2c530b5bda2ee96c1e2c96996b2cd1fb4909fc5b1e53"
           },
           {
-            "bytes": 1702,
-            "path": "/home/alex/hepta-v67-native-repairs-261e-20261114-r7-author/validation/EXECUTION.json",
-            "sha256": "cebd852d97502f4be32d4e431ea4fbc6118526fb5939a613eb32af118fa55742"
+            "bytes": 7597,
+            "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r8/preparation/reviews/DIAGNOSTIC-SOURCE-REVIEW-r2.json",
+            "sha256": "4352844cd90555d3516d4cf66b6838e5095682c7b2208039c4ce78ba68900608"
           },
           {
-            "bytes": 423645,
-            "path": "/home/alex/hepta-v67-native-repairs-261e-20261114-r7-author/validation/provider-r1/RESULT.json",
-            "sha256": "6f284db231fbd66241f40f2c1fa9ba7fdd3c708174161cd76dc06f4bc1da6ffb"
+            "bytes": 5592,
+            "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r8/preparation/reviews/DIAGNOSTIC-JDK17-REVIEW.json",
+            "sha256": "bdc9025964b052dce70fa0fe68840d90e1c10fde2df8f6d05c521e87ba1a3c23"
+          },
+          {
+            "bytes": 3348,
+            "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r8/preparation/reviews/DIAGNOSTIC-FOCUSED-RESULT.json",
+            "sha256": "7a4dfb62592a137b98c9529d62555cee55ec3265016f7dbfacd5e9329ca28d49"
+          },
+          {
+            "bytes": 1450,
+            "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r8/preparation/reviews/WORKFLOW-HANDOFF.json",
+            "sha256": "499be29b3e68092299fc68a36da4b9c4f18058cdd0db9508aeff2c5a9cb650aa"
           }
         ]
       },
       "integration_sources": {
         "canonical_runner_sha256": "0f5b764d9324a0712d56cd59a23b77c09f8362cd2589071f89aa0ee8d6072dc1",
         "external_repository_workflow": {
-          "base_commit": "f842b4dd816b6dbbc89409a88969d12a8d40a045",
+          "base_commit": "7325878a24c8c3f1060984f661dc06ab6d6012ff",
           "base_sha256": "f9015198dcafa4d7a745be12ce92cb5d0da8a600eb992d12f4a43c8efc87ebea",
-          "git_blob": "87eb28bccd52b20fc56f4ca3a4346d9038c82a9b",
+          "git_blob": "6623adc13efccd4db2f243a98d721417174a74ab",
           "path": ".github/workflows/hepta-local-android.yml",
-          "sha256": "f9015198dcafa4d7a745be12ce92cb5d0da8a600eb992d12f4a43c8efc87ebea"
+          "sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128"
         },
-        "native_host_gate_contract_sha256": "75f8feb32ea22b1eb5e83b8bcfe4a15436af0501fb4045dba2099c046f87423e",
-        "normal_git_parent": "f842b4dd816b6dbbc89409a88969d12a8d40a045",
+        "native_host_gate_contract_sha256": "41da5b61a736de7124d0799ebeb231c5781a0f1c221928a6eea6b2a2f47094e4",
+        "normal_git_parent": "7325878a24c8c3f1060984f661dc06ab6d6012ff",
         "paired_helper": {
           "apk_bytes": 1414146,
           "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -10062,10 +10213,12 @@
           "version_name": "0.7.0-web-evidence-v4"
         },
         "review_artifact_hashes": {
-          "ACTUAL-COUNTS.json": "d80e7ac09e024f7437c7b9e1d653d1e6bbaeb2a330d70640af7b100a73c4e5cc",
-          "EXECUTION.json": "cebd852d97502f4be32d4e431ea4fbc6118526fb5939a613eb32af118fa55742",
-          "PREPARE.json": "c276fb538bb1c0eed79a1cab52e9794f35ec9d3837f754fd35760d2ce7cd1eb1",
-          "RESULT.json": "6f284db231fbd66241f40f2c1fa9ba7fdd3c708174161cd76dc06f4bc1da6ffb"
+          "DIAGNOSTIC-FOCUSED-RESULT.json": "7a4dfb62592a137b98c9529d62555cee55ec3265016f7dbfacd5e9329ca28d49",
+          "DIAGNOSTIC-HANDOFF.json": "21c0bfa92f17f71f767c2c530b5bda2ee96c1e2c96996b2cd1fb4909fc5b1e53",
+          "DIAGNOSTIC-JDK17-REVIEW.json": "bdc9025964b052dce70fa0fe68840d90e1c10fde2df8f6d05c521e87ba1a3c23",
+          "DIAGNOSTIC-SOURCE-REVIEW-r2.json": "4352844cd90555d3516d4cf66b6838e5095682c7b2208039c4ce78ba68900608",
+          "NOTES-HANDOFF.json": "c886913abf4cfa69130bedb7fda6e73c890abb534d4adfce57f08d3c10a27ece",
+          "WORKFLOW-HANDOFF.json": "499be29b3e68092299fc68a36da4b9c4f18058cdd0db9508aeff2c5a9cb650aa"
         },
         "source_reconstruction_base": {
           "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
@@ -10073,9 +10226,9 @@
           "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
         }
       },
-      "main_java_sources": 134,
+      "main_java_sources": 135,
       "phone_qualified": false,
-      "production_build_inputs_count": 242,
+      "production_build_inputs_count": 243,
       "qualification_policy": "Source reviews, host gates, real Android build and actual native phone outcomes retain separate evidence.",
       "release_version_assigned": false,
       "schema": "hepta.local-source.v3",
@@ -10085,42 +10238,16 @@
         "component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
         "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
       },
-      "version_code": 67,
-      "version_name": "0.67.0-native-background-runtime"
+      "version_code": 68,
+      "version_name": "0.68.0-native-background-runtime"
     },
-    "source_commit": "7325878a24c8c3f1060984f661dc06ab6d6012ff",
-    "source_manifest_sha256": "1180dda62ce0276ec43b5fe5598c188e3e234689a3f1ca543fbbb60c0a557b1b"
+    "source_commit": "e5410a66cdc58a3ebaf734164c014dd6b7837133",
+    "source_manifest_sha256": "c14cc94de748bffc6f601d3774da83a4d5d5e220cc749d958f61c7463a11b567"
   },
   "host_closure_amendment": {
-    "cause": "Repair actual complete nonscroll Notes editor evidence and add bounded task-bound native observation diagnostics without changing stability, deadlines or action authorization; version68 and all original gates retained.",
+    "cause": "Synchronize the actual WebShoppingQuote completion-frame projection with the already approved Controller metadata; preserve the original exact consistency assertion, web hash/schema, constructors, version68 and every existing gate.",
     "changed_programs": [
-      "AndroidManifest.xml",
-      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
-      "src/org/trillionnium/hepta/local/ObservationDiagnostics.java",
-      "tests/action-worker/run_host_tests.py",
-      "tests/notes-nonscroll-editor/NotesNonScrollEditorHostTest.java",
-      "tests/notes-nonscroll-editor/PreviousNotesEditorReplay.java",
-      "tests/notes-nonscroll-editor/fixtures/DESCRIPTORS.json",
-      "tests/notes-nonscroll-editor/fixtures/PROVENANCE.json",
-      "tests/notes-nonscroll-editor/fixtures/previous-v67-NotesCompletionEvidence.java.txt",
-      "tests/notes-nonscroll-editor/fixtures/previous-v67-completionFrame.java.txt",
-      "tests/notes-nonscroll-editor/fixtures/v66-scrollable.json",
-      "tests/notes-nonscroll-editor/fixtures/v67-after.json",
-      "tests/notes-nonscroll-editor/fixtures/v67-readiness-2.json",
-      "tests/notes-nonscroll-editor/fixtures/v67-readiness-3.json",
-      "tests/notes-nonscroll-editor/fixtures/v67-readiness-4.json",
-      "tests/notes-nonscroll-editor/run_host.py",
-      "tests/observation-diagnostics/DiagnosticChecks.java",
-      "tests/observation-diagnostics/DiagnosticControllerHost.template",
-      "tests/observation-diagnostics/DiagnosticGraphHost.template",
-      "tests/observation-diagnostics/DiagnosticPipelineCases.fragment",
-      "tests/observation-diagnostics/ObservationDiagnosticsHostTest.java",
-      "tests/observation-diagnostics/run_host.py",
-      "tests/observation-pipeline/ObserverPipelineHost.template",
-      "tests/observation-pipeline/run_host_tests.py",
-      "tests/qualification-scope/prepare_fixture.py"
+      "src/org/trillionnium/hepta/local/WebShoppingQuote.java"
     ],
     "java_native_helper_resources_unchanged": false,
     "native_helper_resources_unchanged": true,
@@ -10129,58 +10256,64 @@
     "original_failure_preserved": true,
     "production_bytes_changed": true,
     "production_changed_paths": [
-      "AndroidManifest.xml",
-      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
-      "src/org/trillionnium/hepta/local/ObservationDiagnostics.java"
+      "src/org/trillionnium/hepta/local/WebShoppingQuote.java"
     ],
-    "repository_workflow_change": ".github/workflows/hepta-local-android.yml",
-    "repository_workflow_unchanged": false,
+    "repository_workflow_change": null,
+    "repository_workflow_unchanged": true,
     "targeted_review_artifacts": [
       {
-        "bytes": 7837,
-        "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r8/preparation/reviews/NOTES-HANDOFF.json",
-        "sha256": "c886913abf4cfa69130bedb7fda6e73c890abb534d4adfce57f08d3c10a27ece"
+        "bytes": 14160,
+        "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r9/preparation/reviews/R8-MAC-EXTRAS-FAILED.json",
+        "sha256": "a62421a0b8c54264fbc827c113ccf1c63f0259c1d0432416f773991e76a09a51"
       },
       {
-        "bytes": 1789,
-        "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r8/preparation/reviews/DIAGNOSTIC-HANDOFF.json",
-        "sha256": "21c0bfa92f17f71f767c2c530b5bda2ee96c1e2c96996b2cd1fb4909fc5b1e53"
+        "bytes": 815,
+        "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r9/preparation/reviews/R8-SHOPPING-FAILURE.stderr",
+        "sha256": "042a92f8d3826cf22cef8603fd13454cb6612042a46e8e3d4a72cb9b5dc6f898"
       },
       {
-        "bytes": 7597,
-        "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r8/preparation/reviews/DIAGNOSTIC-SOURCE-REVIEW-r2.json",
-        "sha256": "4352844cd90555d3516d4cf66b6838e5095682c7b2208039c4ce78ba68900608"
+        "bytes": 1175,
+        "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r9/preparation/reviews/QUOTE-PRODUCTION.patch",
+        "sha256": "a4c3d5b5a8a7b0278a6dec0013d148e5c075cec3b442da22815d16c1e675cbb6"
       },
       {
-        "bytes": 5592,
-        "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r8/preparation/reviews/DIAGNOSTIC-JDK17-REVIEW.json",
-        "sha256": "bdc9025964b052dce70fa0fe68840d90e1c10fde2df8f6d05c521e87ba1a3c23"
+        "bytes": 3849,
+        "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r9/preparation/reviews/STATIC-COMPARISON.json",
+        "sha256": "0f77b47747bddf34d9214473d828aade5ec9c207d5047e10710c6c91c32dcc92"
       },
       {
-        "bytes": 3348,
-        "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r8/preparation/reviews/DIAGNOSTIC-FOCUSED-RESULT.json",
-        "sha256": "7a4dfb62592a137b98c9529d62555cee55ec3265016f7dbfacd5e9329ca28d49"
+        "bytes": 21178,
+        "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r9/preparation/reviews/IMPACT-REVIEW.json",
+        "sha256": "ae57ebb925346a830644827de85715da633d8c1920f5b4e01de28d42b587abeb"
       },
       {
-        "bytes": 1450,
-        "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r8/preparation/reviews/WORKFLOW-HANDOFF.json",
-        "sha256": "499be29b3e68092299fc68a36da4b9c4f18058cdd0db9508aeff2c5a9cb650aa"
+        "bytes": 12922,
+        "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r9/preparation/reviews/TARGETED-MAC-RESULT.json",
+        "sha256": "d09b02e3088087d66b1848cc26c03cb0b0edd7a8f2d51923eeee42ccaad931f6"
+      },
+      {
+        "bytes": 9405,
+        "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r9/preparation/reviews/TARGETED-MAC-CASES.json",
+        "sha256": "f548f89a0aa4c53f858cd9ce8c5337ab56ab0cdb1d8dd716adffefa77b894f76"
+      },
+      {
+        "bytes": 31704,
+        "path": "/home/alex/hepta-v68-native-integrated-261e-20261114-r9/preparation/reviews/TARGETED-GATE-RESULT.json",
+        "sha256": "6104b36961e0d0dea5513f6be740cfc5daf26c8d04b2dd57971b464638f1e367"
       }
     ]
   },
   "integration_sources": {
     "canonical_runner_sha256": "0f5b764d9324a0712d56cd59a23b77c09f8362cd2589071f89aa0ee8d6072dc1",
     "external_repository_workflow": {
-      "base_commit": "7325878a24c8c3f1060984f661dc06ab6d6012ff",
-      "base_sha256": "f9015198dcafa4d7a745be12ce92cb5d0da8a600eb992d12f4a43c8efc87ebea",
+      "base_commit": "e5410a66cdc58a3ebaf734164c014dd6b7837133",
+      "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
       "git_blob": "6623adc13efccd4db2f243a98d721417174a74ab",
       "path": ".github/workflows/hepta-local-android.yml",
       "sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128"
     },
-    "native_host_gate_contract_sha256": "41da5b61a736de7124d0799ebeb231c5781a0f1c221928a6eea6b2a2f47094e4",
-    "normal_git_parent": "7325878a24c8c3f1060984f661dc06ab6d6012ff",
+    "native_host_gate_contract_sha256": "c4c9193fb2ca94d8f86ba8a786a064a73b811a7fa253e3e58833dced411a751c",
+    "normal_git_parent": "e5410a66cdc58a3ebaf734164c014dd6b7837133",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -10191,12 +10324,14 @@
       "version_name": "0.7.0-web-evidence-v4"
     },
     "review_artifact_hashes": {
-      "DIAGNOSTIC-FOCUSED-RESULT.json": "7a4dfb62592a137b98c9529d62555cee55ec3265016f7dbfacd5e9329ca28d49",
-      "DIAGNOSTIC-HANDOFF.json": "21c0bfa92f17f71f767c2c530b5bda2ee96c1e2c96996b2cd1fb4909fc5b1e53",
-      "DIAGNOSTIC-JDK17-REVIEW.json": "bdc9025964b052dce70fa0fe68840d90e1c10fde2df8f6d05c521e87ba1a3c23",
-      "DIAGNOSTIC-SOURCE-REVIEW-r2.json": "4352844cd90555d3516d4cf66b6838e5095682c7b2208039c4ce78ba68900608",
-      "NOTES-HANDOFF.json": "c886913abf4cfa69130bedb7fda6e73c890abb534d4adfce57f08d3c10a27ece",
-      "WORKFLOW-HANDOFF.json": "499be29b3e68092299fc68a36da4b9c4f18058cdd0db9508aeff2c5a9cb650aa"
+      "IMPACT-REVIEW.json": "ae57ebb925346a830644827de85715da633d8c1920f5b4e01de28d42b587abeb",
+      "QUOTE-PRODUCTION.patch": "a4c3d5b5a8a7b0278a6dec0013d148e5c075cec3b442da22815d16c1e675cbb6",
+      "R8-MAC-EXTRAS-FAILED.json": "a62421a0b8c54264fbc827c113ccf1c63f0259c1d0432416f773991e76a09a51",
+      "R8-SHOPPING-FAILURE.stderr": "042a92f8d3826cf22cef8603fd13454cb6612042a46e8e3d4a72cb9b5dc6f898",
+      "STATIC-COMPARISON.json": "0f77b47747bddf34d9214473d828aade5ec9c207d5047e10710c6c91c32dcc92",
+      "TARGETED-GATE-RESULT.json": "6104b36961e0d0dea5513f6be740cfc5daf26c8d04b2dd57971b464638f1e367",
+      "TARGETED-MAC-CASES.json": "f548f89a0aa4c53f858cd9ce8c5337ab56ab0cdb1d8dd716adffefa77b894f76",
+      "TARGETED-MAC-RESULT.json": "d09b02e3088087d66b1848cc26c03cb0b0edd7a8f2d51923eeee42ccaad931f6"
     },
     "source_reconstruction_base": {
       "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
