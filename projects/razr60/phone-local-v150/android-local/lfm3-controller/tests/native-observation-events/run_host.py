@@ -99,7 +99,9 @@ def main():
     r={'schema':'hepta.native-observation-events-host-gate.v1','all_pass':False,'stages':[],
        'input_before':before,'tools_before':tool_before,'compiler_contract':'JDK17 --release 8 -Xlint:all -Werror',
        'android_execution':False,'phone_execution':False,'sdk_loaded':False,'model_executed':False,
-       'business_completion_verified':False,'action_guard_changed':True,'native_action_guard_qualification_claimed':False,'deadline_expanded':False}
+       'business_completion_verified':False,'action_guard_changed':True,'native_action_guard_qualification_claimed':False,'deadline_expanded':True,
+       'observation_budget':{'settle_ms':10000,'capture_margin_ms':2000,'total_ms':12000,
+           'task_deadline_caps_total':True,'retry_renews_deadline':False,'legacy_explicit_ten_second_cases_retained':True}}
     try:
         generated=output/'generated';generated.mkdir();extraction=generate(source,generated,h);h.save(output/'EXTRACTION.json',extraction)
         classes=output/'classes';classes.mkdir()

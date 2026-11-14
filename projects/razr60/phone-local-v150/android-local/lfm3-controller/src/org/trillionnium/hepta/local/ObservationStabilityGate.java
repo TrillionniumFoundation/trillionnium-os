@@ -5,8 +5,16 @@ import java.util.Objects;
 /** Bounded stability of the complete observed graph; never authorizes an effect. */
 public final class ObservationStabilityGate {
     // Retries share the original caller deadline; this cap never grants a new observation window.
-    public static final long SAMPLE_GAP_MS=200, SETTLE_LIMIT_MS=10000;
+    public static final long SAMPLE_GAP_MS=200, SETTLE_LIMIT_MS=10000,
+            CAPTURE_MARGIN_MS=2000, TOTAL_LIMIT_MS=SETTLE_LIMIT_MS+CAPTURE_MARGIN_MS;
     public enum Result { WAIT, READY, EXPIRED, CANCELLED }
+
+    /** One total observation budget, clipped to the task. Capture/retry never renews it. */
+    public static long requestDeadline(long started,long taskDeadline){
+        if(started<0||taskDeadline<0)throw new IllegalArgumentException("elapsed deadlines required");
+        long end=started>Long.MAX_VALUE-TOTAL_LIMIT_MS?Long.MAX_VALUE:started+TOTAL_LIMIT_MS;
+        return Math.min(end,taskDeadline);
+    }
 
     /** Existing active-window identity/digest plus its observation truncation state. */
     public static final class FrameKey {

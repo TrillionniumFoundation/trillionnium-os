@@ -1,11 +1,11 @@
 {
   "android_qualified": false,
   "base_source": {
-    "commit": "2f4ee8298ba4ad1a466511af363593e43e409f54",
-    "component_tree": "44aef08c7486488590f48f618846d98f9c806fdf",
-    "source_manifest_sha256": "626b75f6847f193e52c9392de508b231969d162550c65a6464f0fe1d9ee0f3de"
+    "commit": "de39ea3bed06a9ffa6ba4233c2b7b3c1fa0d3ef7",
+    "component_tree": "a49c6d2a22a220db823bbeb3dfc21173a0619d99",
+    "source_manifest_sha256": "8a8dbf8807579119c05debf903cb792171fba94d12dadfb028adc42cb5702d98"
   },
-  "candidate_status": "query_hook_fixture_sync_pending_fresh_v69_dual_build_and_phone_acceptance",
+  "candidate_status": "capture_headroom_pending_fresh_v69_dual_build_and_phone_acceptance",
   "candidate_version_assigned": true,
   "complete_source_files": 1838,
   "current_validation": {
@@ -6015,9 +6015,9 @@
       "sha256": "81447620dbc2a789bba8c22d561c768144f4d5619859b202d07cd83660a05dce"
     },
     {
-      "bytes": 142259,
+      "bytes": 142285,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "2e7f3b4967d26b162d114e20309e36245962046e4dc2d03eb19f5ed782fb1f57"
+      "sha256": "81ce744ac91f59a7c61a267c8f1217a388c3138d44d84e0e6d595a03389c6994"
     },
     {
       "bytes": 46301,
@@ -6145,9 +6145,9 @@
       "sha256": "c5549acf81475cc0e5cc73fc8651360b90aee5b63c51ef67b54f899dc87d4cd7"
     },
     {
-      "bytes": 3870,
+      "bytes": 4368,
       "path": "src/org/trillionnium/hepta/local/ObservationStabilityGate.java",
-      "sha256": "ba98c74a6b4c89e04338bb1965fba913a4039f840b8f1073f96f0c9bfcdd8fe8"
+      "sha256": "426100c4f31e825c9e0f0c556c8c89d23aa45a40593978cb5fd8d5946a4beeb8"
     },
     {
       "bytes": 1258,
@@ -6615,9 +6615,9 @@
       "sha256": "97482f715d03465736fee47f8f1b996c12bf3e8213e3cf44a5626beb2dec610f"
     },
     {
-      "bytes": 8731,
+      "bytes": 11527,
       "path": "tests/ObservationStabilityHostTest.java",
-      "sha256": "28b07236e1e4483f7850e9a86b04ff4d25014eac7f9a430a606ec503b603080e"
+      "sha256": "bc3ef8018feb66653c8e8020989a6e4c09924d845b75a297b55ec2df412f0e61"
     },
     {
       "bytes": 9255,
@@ -7425,19 +7425,19 @@
       "sha256": "bd703e93f159a32eb7c26c9501881dcf7982c6ec13fab37f98548f43239b588c"
     },
     {
-      "bytes": 1656,
+      "bytes": 1971,
       "path": "tests/native-observation-events/EventChecks.java",
-      "sha256": "b40dae1378e3f7075262169116424c7750924e9b5a5ee0d6b5fe6be082db3dcd"
+      "sha256": "b8b8c1302af4a19643e6dda64702e49f887bb5613a6bb0ddc298941b00fccc0a"
     },
     {
-      "bytes": 18315,
+      "bytes": 25605,
       "path": "tests/native-observation-events/EventPipelineCases.fragment",
-      "sha256": "901a1ab86a9cebbcea425044e4ebc8cd2fcef80e387b3e0ce35dc2879467b66e"
+      "sha256": "1308891068baba0f28878af870f59dfad5702894c35ee6900df60f94a5121dc3"
     },
     {
-      "bytes": 10861,
+      "bytes": 11074,
       "path": "tests/native-observation-events/run_host.py",
-      "sha256": "5292d035ad5d720ba04e5e523818649d348b7b229d3342adcf10de271a76bea2"
+      "sha256": "86729b665b5219e113ce12e3dd9b3bf31f82e10ee54d9dc2d9614ed8a34c7244"
     },
     {
       "bytes": 2395,
@@ -7745,9 +7745,9 @@
       "sha256": "02872d79635dfe0f9448bdfa33b6a802154b006d4a8c2cc0e2cb4e174bb11859"
     },
     {
-      "bytes": 9506,
+      "bytes": 12085,
       "path": "tests/observation-diagnostics/DiagnosticControllerHost.template",
-      "sha256": "a295978b5b031ec4ed7c59218c06f8c390293648068404892d5b7a00bf7b94f7"
+      "sha256": "664702d4ef345b096c3e76b4b96fe4ea8c5af4a493a558301471e8424f90bb4d"
     },
     {
       "bytes": 7651,
@@ -7765,9 +7765,9 @@
       "sha256": "ca1cb0b78a660eca9da04bdcbde82e340d4f9d90dbcdb639d8ab8c6032505cfb"
     },
     {
-      "bytes": 13693,
+      "bytes": 14019,
       "path": "tests/observation-diagnostics/run_host.py",
-      "sha256": "c3d71ab657f0e56a64fe0c1dc8df078d04a9e49dc86a8eb9bf73088bd9391a81"
+      "sha256": "0fdb59b8a11b209fe9f883d4d90cbe588a86a0a3b78b586463bb4160d2574300"
     },
     {
       "bytes": 1190,
@@ -10623,8 +10623,8 @@
       "path": ".github/workflows/hepta-local-android.yml",
       "sha256": "2f947aa9b37f06767f9ed41c06782d2c6759f80f5475b581b230042a45e030d6"
     },
-    "native_host_gate_contract_sha256": "cf2dd7d229593b9f6c55868efcd29587e2495ae6a4b7cfe31a7658674924d77a",
-    "normal_git_parent": "2f4ee8298ba4ad1a466511af363593e43e409f54",
+    "native_host_gate_contract_sha256": "94a5b9de5085a9a359429b648b11d0ef5247ea9a9a927648ab05757e0d9996b2",
+    "normal_git_parent": "de39ea3bed06a9ffa6ba4233c2b7b3c1fa0d3ef7",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -10648,6 +10648,34 @@
     }
   },
   "main_java_sources": 136,
+  "observation_budget_amendment": {
+    "capture_has_independent_two_second_timer": false,
+    "capture_headroom_ms": 2000,
+    "cause": "Real ordinary v69 Ctrip observation reached matching samples at 9243 ms and screenshot graph at 9583 ms, then expired during PNG encoding at the old 10000 ms total cutoff. Preserve the fixed 10000 ms settle cap while allowing capture completion within a fixed 12000 ms total request bound, clipped to the original task deadline.",
+    "native_host_contract_sha256": "94a5b9de5085a9a359429b648b11d0ef5247ea9a9a927648ab05757e0d9996b2",
+    "new_android_build": false,
+    "new_phone_execution": false,
+    "old_explicit_ten_second_fixture_cases_retained": true,
+    "original_native_case_names_and_relative_order_retained": true,
+    "original_phone_failures_preserved": true,
+    "production_changed_paths": [
+      "src/org/trillionnium/hepta/local/ObservationStabilityGate.java",
+      "src/org/trillionnium/hepta/local/LocalTaskController.java"
+    ],
+    "retry_renews_deadline": false,
+    "service_graph_currentness_events_permissions_notes_models_unchanged": true,
+    "service_sha256": "7662d0ed749fb700e316b0fadc2c1ac8cf603b04a403178645436537c6652275",
+    "settle_limit_ms": 10000,
+    "targeted_host_counterfactual_zero_headroom": "Real pipeline fails late PNG and both full graph checks must finish; isolated zero-margin copy exits 1.",
+    "targeted_host_positive_cases": {
+      "legacy_pipeline": 31,
+      "native_observation_events": 68,
+      "observation_diagnostics": 51,
+      "stability": 10
+    },
+    "task_deadline_caps_request": true,
+    "total_request_limit_ms": 12000
+  },
   "phone_qualified": false,
   "previous_source_amendment": {
     "cause": "Recheck complete native observations under unrelated accessibility events and revalidate four admitted native actions against a complete fresh census and original one-shot Session authority; version69 and all original gates retained.",

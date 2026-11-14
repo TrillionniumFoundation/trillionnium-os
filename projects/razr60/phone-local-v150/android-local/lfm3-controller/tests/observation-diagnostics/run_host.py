@@ -162,7 +162,12 @@ def main():
         report['actual_Service_observation_and_callback_compiled_verbatim']=True
         report['actual_Controller_await_compiled_verbatim']=True
         report['actual_native_graph_projection_and_stale_receipt_compiled_verbatim']=True
-        report['original_deadline_and_guard_calls_retained']=True;report['all_pass']=True
+        report['original_deadline_and_guard_calls_retained']=False
+        report['original_guard_calls_retained']=True
+        report['deadline_expanded']=True
+        report['observation_budget']={'settle_ms':10000,'capture_margin_ms':2000,'total_ms':12000,
+            'task_deadline_caps_total':True,'retry_renews_deadline':False,'legacy_explicit_ten_second_cases_retained':True}
+        report['all_pass']=True
     except Exception as error:report['error']={'type':type(error).__name__,'message':str(error)}
     finally:
         report['input_after']=[meta(x) for x in paths];report['tools_after']=[meta(x) for x in tools]

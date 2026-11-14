@@ -962,7 +962,7 @@ public final class LocalTaskController implements AutoCloseable {
     }
     private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline)throws Exception{
         checkActive(deadline);service.verifyBackgroundRemote(id);checkActive(deadline);
-        final long observationDeadline=Math.min(deadline,SystemClock.elapsedRealtime()+10000);
+        final long observationDeadline=ObservationStabilityGate.requestDeadline(SystemClock.elapsedRealtime(),deadline);
         final CountDownLatch ready=new CountDownLatch(1);
         final AtomicReference<PhoneObservation> value=new AtomicReference<PhoneObservation>();
         final AtomicReference<String> error=new AtomicReference<String>();

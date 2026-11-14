@@ -152,6 +152,95 @@
             noPublication(f,r,reason);check(f.errors.size()==1,"retired capture did not retain original failure");f.dispose();
         });
     }
+
+    /** New caller budget; original explicit ten-second fixture cases stay unchanged. */
+    static void budgetBegin(ObserverPipelineHost f,long taskDeadline){
+        long deadline=ObservationStabilityGate.requestDeadline(SystemClock.now,taskDeadline);
+        f.observe(f.lease,f.directory,()->f.cancelled.get(),deadline,new ObservationCallback(){
+            public void onObservation(PhoneObservation value){expect(isMain(),"publish off main");f.delivered.add(value);}
+            public void onError(String error){expect(isMain(),"error off main");f.errors.add(error);}
+        });
+        f.main.drain();
+    }
+    static ObservationRequest budgetCapture(ObserverPipelineHost f,long taskDeadline)throws Exception{
+        final long firstAt=SystemClock.now+9600;final ReadHook read=f.readHook;
+        f.readHook=(g,n)->{if(n==1)SystemClock.now=firstAt;read.read(g,n);};
+        budgetBegin(f,taskDeadline);ObservationRequest request=f.activeObservation;f.awaitSample();
+        SystemClock.now+=200;f.main.drainUntil(()->f.pendingScreenshot!=null);
+        await(()->f.pendingScreenshot!=null||(f.reads.get()>=2&&!observationIoBusy.get()&&observationIo.active.get()==0),"late second sample or capture");
+        f.main.drainUntil(()->f.pendingScreenshot!=null);check(f.pendingScreenshot!=null,"late stable pair did not capture");
+        return request;
+    }
+    static void noBudgetPublication(ObserverPipelineHost f,ObservationRequest r,long taskDeadline,String why){
+        check(f.delivered.isEmpty()&&f.directory.list().length==0,why+": publication or unpublished PNG");
+        check(r.deadline==ObservationStabilityGate.requestDeadline(r.started,taskDeadline),why+": deadline renewed");
+        check(r.finished&&f.errors.size()==1,why+": terminal result was not singular");
+    }
+    static void captureBudgetCases()throws Exception{
+        eventCase("budget_late_stable_pair_finishes_saved_graph_after_ten_seconds",()->{
+            ObserverPipelineHost f=nativeFixture(null);Block block=new Block();Bitmap.encodeHook=block;
+            ObservationRequest r=budgetCapture(f,21000);block.entered();
+            check(SystemClock.now==r.started+9800,"late pair must finish within original settle phase");
+            SystemClock.now=r.started+10900;f.main.drain();block.open();f.finish();
+            check(f.delivered.size()==1&&f.errors.isEmpty()&&f.reads.get()==4,"late PNG and both full graph checks must finish");
+            check(r.deadline==13000&&f.current.capturedElapsedMillis==r.started+9800,"fixed total deadline or original capture age changed");
+            f.dispose();
+        });
+        eventCase("budget_queued_product_one_ms_before_deadline_publishes_once",()->{
+            ObserverPipelineHost f=nativeFixture(null);ObservationRequest r=budgetCapture(f,21000);
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"queued complete product");
+            SystemClock.now=r.deadline-1;f.main.drain();
+            check(f.delivered.size()==1&&f.errors.isEmpty(),"last live millisecond rejected");
+            SystemClock.now=r.deadline;f.main.drain();f.pendingScreenshot.onFailure(ERROR_TAKE_SCREENSHOT_INTERVAL_TIME_SHORT);f.deliverScreenshot();f.finish();
+            check(f.delivered.size()==1&&f.errors.isEmpty()&&r.finished,"late watchdog/callback changed success");
+            f.dispose();
+        });
+        eventCase("budget_queued_product_at_exact_deadline_retires_once",()->{
+            ObserverPipelineHost f=nativeFixture(null);ObservationRequest r=budgetCapture(f,21000);
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"queued complete product at cutoff");
+            SystemClock.now=r.deadline;f.main.drain();f.deliverScreenshot();f.finish();
+            noBudgetPublication(f,r,21000,"exact total cutoff");f.main.drain();
+            check(f.errors.size()==1&&!f.capturePending&&!f.observationReadWorkPending(),"late delivery or worker changed failure");
+            f.dispose();
+        });
+        eventCase("budget_short_task_deadline_still_cuts_off_capture",()->{
+            ObserverPipelineHost f=nativeFixture(null);Block block=new Block();Bitmap.encodeHook=block;
+            ObservationRequest r=budgetCapture(f,11500);block.entered();check(r.deadline==11500,"task deadline not clipped");
+            SystemClock.now=11500;f.main.drain();block.open();f.finish();
+            noBudgetPublication(f,r,11500,"short task cutoff");f.dispose();
+        });
+        eventCase("budget_stop_during_capture_margin_keeps_main_responsive_and_drains",()->{
+            ObserverPipelineHost f=nativeFixture(null);Block block=new Block();Bitmap.encodeHook=block;
+            ObservationRequest r=budgetCapture(f,21000);block.entered();SystemClock.now=r.started+10900;f.cancelled.set(true);
+            AtomicBoolean heartbeat=new AtomicBoolean();f.main.post(()->heartbeat.set(true));f.main.drain();
+            check(heartbeat.get()&&r.finished&&f.errors.size()==1,"Stop did not retire exactly once on responsive main");
+            check(f.observationReadWorkPending(),"request retirement must not claim worker drain");
+            block.open();f.finish();f.deliverScreenshot();f.finish();
+            noBudgetPublication(f,r,21000,"Stop in margin");
+            check(!f.observationReadWorkPending()&&!f.capturePending,"late worker/callback did not drain");f.dispose();
+        });
+        for(final String reason:new String[]{"digest","display","unknown_event"})eventCase("budget_margin_rejects_"+reason+"_without_retry_renewal",()->{
+            ObserverPipelineHost f=nativeFixture((x,g,n)->{if(n==4&&!"unknown_event".equals(reason))changeIdentity(g,reason);});
+            Bitmap.encodeHook=()->{SystemClock.now=f.activeObservation.started+10900;if("unknown_event".equals(reason))f.noteObservationEvent(-1);};
+            ObservationRequest r=budgetCapture(f,21000);f.finish();f.finish();
+            noBudgetPublication(f,r,21000,reason+" in saved graph margin");
+            check(count(r,"CAPTURE_RETRY")==1&&count(r,"SAMPLE_EXPIRED")==1,"retry borrowed a new settling interval");
+            if("unknown_event".equals(reason))check(count(r,"CAPTURE_EVENT_RESET")==1&&count(r,"CAPTURE_EVENT_RECHECKED")==0,"unknown event bypassed original fence");
+            else check(count(r,"SAVED_GRAPH_CHANGED")==1,"actual saved graph identity change was accepted");
+            check(f.reads.get()==5&&f.pendingScreenshot!=null,"retry must not admit another capture");f.dispose();
+        });
+        eventCase("budget_samples_after_ten_seconds_cannot_borrow_capture_margin",()->{
+            ObserverPipelineHost f=nativeFixture((x,g,n)->g.digest=n<3?"changing-"+n:"late-arrival");
+            budgetBegin(f,21000);ObservationRequest r=f.activeObservation;f.awaitSample();
+            SystemClock.now=r.started+9600;f.main.drain();f.awaitSample();
+            SystemClock.now=r.started+9800;f.main.drain();f.awaitSample();
+            SystemClock.now=r.started+10000;f.main.drain();f.awaitSample();f.finish();
+            noBudgetPublication(f,r,21000,"late settling");
+            check(f.pendingScreenshot==null&&count(r,"SAMPLE_READY")==0&&count(r,"SAMPLE_EXPIRED")==1,"settle phase expanded with total budget");
+            f.dispose();
+        });
+    }
+
     public static void main(String[] args)throws Exception{
         mainThread=Thread.currentThread();
         eventCase("identical_complete_samples_progress_despite_repeated_target_events",()->{
@@ -199,6 +288,6 @@
                 }
             });
         }
-        captureCases();completenessCases();scopeCases();deadlineCases();
+        captureCases();completenessCases();scopeCases();deadlineCases();captureBudgetCases();
         observationIo.executor.shutdown();EventChecks.finish(args[0]);
     }

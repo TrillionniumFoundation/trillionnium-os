@@ -2,7 +2,7 @@ import org.trillionnium.hepta.local.ObservationStabilityGate;
 import org.trillionnium.hepta.local.ObservationStabilityGate.FrameKey;
 import org.trillionnium.hepta.local.ObservationStabilityGate.Result;
 
-/** Eight contracts for bounded transitions, complete identity, late capture and retirement. */
+/** Ten contracts for bounded transitions, complete identity, late capture and retirement. */
 public final class ObservationStabilityHostTest {
     private static void expect(boolean value,String message){if(!value)throw new AssertionError(message);}
     private static FrameKey key(String pkg,int id,int rotation,int left,int right,String digest,boolean truncated){
@@ -103,10 +103,42 @@ public final class ObservationStabilityHostTest {
         expect(gate.sample(400,stable(),true)==Result.CANCELLED,"reset cannot reuse a retired request for a new task");
         expect(!gate.requestAlive(400,true),"retired capture remains invalid");
     }
+    private static void boundedRequestDeadline(){
+        expect(ObservationStabilityGate.SETTLE_LIMIT_MS==10000&&ObservationStabilityGate.CAPTURE_MARGIN_MS==2000,
+                "settle and capture margin remain separate fixed budgets");
+        expect(ObservationStabilityGate.requestDeadline(1000,21000)==13000,"one twelve-second observation budget");
+        expect(ObservationStabilityGate.requestDeadline(1000,5000)==5000,"short task deadline wins");
+        expect(ObservationStabilityGate.requestDeadline(1000,999)==999,"expired task cannot gain a new window");
+        expect(ObservationStabilityGate.requestDeadline(Long.MAX_VALUE-10,Long.MAX_VALUE)==Long.MAX_VALUE,
+                "elapsed-time addition saturates without overflow");
+        int rejected=0;
+        try{ObservationStabilityGate.requestDeadline(-1,1000);}catch(IllegalArgumentException expected){rejected++;}
+        try{ObservationStabilityGate.requestDeadline(0,-1);}catch(IllegalArgumentException expected){rejected++;}
+        expect(rejected==2,"negative elapsed deadlines are rejected");
+    }
+    private static void captureMarginDoesNotExtendSettling(){
+        long deadline=ObservationStabilityGate.requestDeadline(1000,21000);
+        ObservationStabilityGate gate=new ObservationStabilityGate(1000,deadline);
+        expect(gate.sample(10600,stable(),true)==Result.WAIT,"late first sample within fixed settle phase");
+        expect(gate.sample(10800,stable(),true)==Result.READY,"late stable pair still requires a full gap");
+        expect(gate.requestAlive(11900,true),"capture and final graph may finish after ten-second settling");
+        expect(gate.requestAlive(12999,true),"last millisecond before total deadline is alive");
+        expect(!gate.requestAlive(13000,true),"exact total deadline forbids publication");
+        ObservationStabilityGate retry=new ObservationStabilityGate(1000,deadline);
+        expect(retry.sample(10600,stable(),true)==Result.WAIT,"retry starts with observed sample");
+        expect(retry.sample(10800,stable(),true)==Result.READY,"retry first capture eligible");
+        retry.resetEvidence();
+        expect(retry.sample(11000,stable(),true)==Result.EXPIRED,"capture retry cannot borrow the margin for new samples");
+        expect(retry.nextSampleDelay(11000)==0,"retry does not renew settling");
+        ObservationStabilityGate clipped=new ObservationStabilityGate(1000,ObservationStabilityGate.requestDeadline(1000,11500));
+        clipped.sample(10600,stable(),true);expect(clipped.sample(10800,stable(),true)==Result.READY,"short task capture eligible");
+        expect(clipped.requestAlive(11499,true)&&!clipped.requestAlive(11500,true),"task cutoff still bounds late capture");
+    }
     public static void main(String[] args){
         stableAndChangingFrames();delayedTransitionBeyondTwoSeconds();transientRootIsBusy();
         captureMismatchResamplesWithoutOldEvidence();continuousChangesExpire();originalDeadlinesNeverExtend();
         lateCaptureStillUsesCallerDeadline();cancellationAndRetirement();
-        System.out.println("8 focused observation stability contracts passed");
+        boundedRequestDeadline();captureMarginDoesNotExtendSettling();
+        System.out.println("10 focused observation stability contracts passed");
     }
 }

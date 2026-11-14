@@ -18,7 +18,11 @@ final class EventChecks {
         JSONObject value=new JSONObject().put("schema","hepta.native-observation-events-host.v1").put("all_pass",true)
                 .put("cases",names.size()).put("assertions",assertions).put("case_names",names)
                 .put("android_execution",false).put("phone_execution",false).put("business_completion_verified",false)
-                .put("action_guard_changed",true).put("native_action_guard_qualification_claimed",false).put("deadline_expanded",false);
+                .put("action_guard_changed",true).put("native_action_guard_qualification_claimed",false).put("deadline_expanded",true)
+                .put("settle_limit_ms",ObservationStabilityGate.SETTLE_LIMIT_MS)
+                .put("capture_margin_ms",ObservationStabilityGate.CAPTURE_MARGIN_MS)
+                .put("total_limit_ms",ObservationStabilityGate.TOTAL_LIMIT_MS)
+                .put("legacy_explicit_ten_second_cases_retained",true);
         Files.write(Paths.get(output),value.toString(2).getBytes(StandardCharsets.UTF_8));System.out.println(value.toString());
     }
 }
