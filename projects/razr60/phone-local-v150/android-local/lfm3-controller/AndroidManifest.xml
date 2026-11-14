@@ -14,7 +14,7 @@
         <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent>
         <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.HOME" /></intent>
     </queries>
-    <application android:name=".LocalProbeApplication" android:label="Hepta" android:theme="@android:style/Theme.Material.Light.NoActionBar" android:debuggable="true" android:allowBackup="false" android:extractNativeLibs="true" android:usesCleartextTraffic="false" android:supportsRtl="true">
+    <application android:name=".LocalProbeApplication" android:label="Hepta" android:theme="@android:style/Theme.Material.Light.NoActionBar" android:debuggable="false" android:allowBackup="false" android:extractNativeLibs="true" android:usesCleartextTraffic="false" android:supportsRtl="true">
         <uses-native-library android:name="libadsprpc.so" android:required="false" />
         <uses-native-library android:name="libcdsprpc.so" android:required="false" />
         <uses-native-library android:name="libOpenCL.so" android:required="false" />

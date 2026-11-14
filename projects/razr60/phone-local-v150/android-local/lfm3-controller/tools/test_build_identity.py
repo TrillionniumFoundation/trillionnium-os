@@ -2,7 +2,7 @@
 from pathlib import Path
 import tempfile
 import unittest
-from build_identity import source_inputs, verify_source_inputs
+from build_identity import source_inputs, verify_source_inputs, build_configuration
 
 
 class BuildIdentityTests(unittest.TestCase):
@@ -14,30 +14,34 @@ class BuildIdentityTests(unittest.TestCase):
             path = root/name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text("fixture: " + name)
+        (root/"AndroidManifest.xml").write_text('<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="66"><application android:debuggable="false"/></manifest>')
+
+    def receipt(self, root):
+        return {"source_inputs":source_inputs(root), "build_configuration":build_configuration(root,"release")}
 
     def test_matching_inputs_are_accepted(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); self.source(root)
-            verify_source_inputs(root, {"source_inputs":source_inputs(root)})
+            verify_source_inputs(root, self.receipt(root))
 
     def test_mutated_codegen_include_rejects_cached_outputs(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); self.source(root)
-            receipt = {"source_inputs":source_inputs(root)}
+            receipt = self.receipt(root)
             (root/"native/publish-appuid.inc").write_text("changed publication code")
             with self.assertRaises(RuntimeError): verify_source_inputs(root, receipt)
 
     def test_added_java_source_rejects_cached_outputs(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); self.source(root)
-            receipt = {"source_inputs":source_inputs(root)}
+            receipt = self.receipt(root)
             (root/"src/example/NewAction.java").write_text("new action")
             with self.assertRaises(RuntimeError): verify_source_inputs(root, receipt)
 
     def test_manifest_change_rejects_cached_outputs(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); self.source(root)
-            receipt = {"source_inputs":source_inputs(root)}
+            receipt = self.receipt(root)
             (root/"AndroidManifest.xml").write_text("different version")
             with self.assertRaises(RuntimeError): verify_source_inputs(root, receipt)
 
@@ -49,14 +53,14 @@ class BuildIdentityTests(unittest.TestCase):
     def test_separate_runtime_verifier_change_rejects_cached_outputs(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); self.source(root)
-            receipt = {"source_inputs":source_inputs(root)}
+            receipt = self.receipt(root)
             (root/"tools/verify_mobimind_runtime.py").write_text("changed binary qualification")
             with self.assertRaises(RuntimeError): verify_source_inputs(root, receipt)
 
     def test_added_ui_venus_build_provenance_rejects_cached_outputs(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);self.source(root)
-            receipt={"source_inputs":source_inputs(root)}
+            receipt=self.receipt(root)
             target=root/"provenance/ui-venus-app-r1/NATIVE-BUILD-RECEIPT.json"
             target.parent.mkdir(parents=True);target.write_text('{"synthetic":true}')
             with self.assertRaises(RuntimeError):verify_source_inputs(root,receipt)

@@ -503,4 +503,5 @@ jobs:
             ${{ runner.temp }}/hepta-build/dex/classes.dex
             ${{ runner.temp }}/hepta-build/libhepta_local_runner.so
             ${{ runner.temp }}/hepta-build/mac-build-receipt.json
+            ${{ runner.temp }}/hepta-build/build-variant.json
 

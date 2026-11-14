@@ -7,7 +7,7 @@ from gbnf_recognizer import Recognizer
 
 root=Path(__file__).resolve().parents[2]
 source=(root/"src/org/trillionnium/hepta/local/LocalTaskController.java").read_text()
-matched=re.search(r'private static final String SYSTEM\s*=\s*((?:"(?:[^"\\]|\\.)*"\s*\+?\s*)+);',source)
+matched=re.search(r'private static final String SYSTEM\s*=\s*("(?:[^"\\]|\\.)*"(?:\s*\+\s*"(?:[^"\\]|\\.)*")*)\s*;',source)
 assert matched,"actual Java SYSTEM literal declaration missing"
 parts=re.findall(r'"(?:[^"\\]|\\.)*"',matched.group(1))
 assert not re.sub(r'"(?:[^"\\]|\\.)*"',"",matched.group(1)).replace("+","").strip()

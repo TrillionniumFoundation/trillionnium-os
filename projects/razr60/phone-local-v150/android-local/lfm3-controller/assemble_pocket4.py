@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble cached arm64 SDK libraries, sign a debug APK, and statically verify it."""
+"""Assemble and sign an explicit Android build variant, then verify its actual APK."""
 from pathlib import Path
 import hashlib, json, os, subprocess, zipfile, struct, shutil, sys
 import re
@@ -7,12 +7,15 @@ import xml.etree.ElementTree as ET
 
 ROOT=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tools'))
-from build_identity import verify_source_inputs, actual_build_identity
+from build_identity import (verify_source_inputs, actual_build_identity, selected_variant,
+                            build_configuration, claim_build_output, compiled_debuggable)
 from model_profiles import PROFILES,DEFAULT_PROFILE,LLAMA_COMMIT
 from verify_runtime import verify_runtime_archive
 from verify_mobimind_runtime import verify_mobimind_runtime,verify_worker_linker_policy
 from verify_ui_venus_runtime import verify_ui_venus_runtime,verify_worker_dynamic
-OUT=Path(os.environ.get('HEPTA_BUILD_OUT', str(ROOT/'out'))).expanduser().resolve()
+VARIANT=selected_variant(os.environ)
+CONFIGURATION=build_configuration(ROOT,VARIANT)
+OUT,OUTPUT_MARKER=claim_build_output(ROOT,VARIANT,os.environ)
 KEYS=ROOT/'keys'
 sdk_directory=os.environ.get('GENIEX_ANDROID_LIB_DIR')
 if not sdk_directory: raise RuntimeError('Set GENIEX_ANDROID_LIB_DIR to the pinned GenieX 0.10.0 Android arm64 lib directory')
@@ -85,6 +88,8 @@ if set(ui_venus_expected)&set(libraries):
 libraries.update({name:item['path'] for name,item in ui_venus_expected.items()})
 build=json.loads((OUT/'mac-build-receipt.json').read_text())
 verify_source_inputs(ROOT,build)
+if build['build_configuration']!=CONFIGURATION or build.get('build_output_marker')!=OUTPUT_MARKER:
+    raise RuntimeError('Requested assembly variant differs from the compiled output and directory marker')
 actual_build_asset=actual_build_identity(ROOT,build)
 actual_build_asset_name='assets/hepta-build-identity.json'
 expected_outputs={'classes.dex':OUT/'dex/classes.dex','base.apk':OUT/'base.apk','libhepta_local_runner.so':OUT/'libhepta_local_runner.so'}
@@ -168,6 +173,9 @@ verify=run([APKSIGNER,'verify','--verbose','--print-certs',APK])
 badging=run([AAPT2,'dump','badging',APK])
 permissions=run([AAPT2,'dump','permissions',APK])
 manifest=run([AAPT2,'dump','xmltree',APK,'--file','AndroidManifest.xml'])
+actual_debuggable=compiled_debuggable(manifest)
+if actual_debuggable is not CONFIGURATION['debuggable']:
+    raise RuntimeError('Actual APK debugging flag differs from the requested and compiled variant')
 actual_permissions=[]
 for line in permissions.splitlines():
     if line.strip().startswith('uses-permission'):
@@ -244,7 +252,8 @@ receipt={'schema':'hepta.local-model.static-acceptance.v3','apk':str(APK),'apk_b
     'package':'org.trillionnium.hepta.local','permissions':actual_permissions,'abi':['arm64-v8a'],
     'version_code':version_code, 'version_name':version_name,
     'actual_build_identity_asset':actual_build_asset_name,'actual_build_identity_sha256':hashlib.sha256(actual_build_asset).hexdigest(),
-    'debuggable':True,'extract_native_libs':True,'compile_sdk':34,'min_sdk':30,'target_sdk':35,
+    'build_configuration':CONFIGURATION,'build_output_marker':OUTPUT_MARKER,
+    'debuggable':actual_debuggable,'extract_native_libs':True,'compile_sdk':34,'min_sdk':30,'target_sdk':35,
     'uses_native_libraries_optional':['libadsprpc.so','libcdsprpc.so','libOpenCL.so'],
     'runtime':'llama_cpp','model':'LiquidAI/LFM3-1.7B-GGUF','default_compute':'npu','default_context':8192,
     'model_profile_default':DEFAULT_PROFILE,'model_profiles':PROFILES,'llama_source_commit':LLAMA_COMMIT,
