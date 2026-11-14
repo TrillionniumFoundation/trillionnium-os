@@ -1,0 +1,491 @@
+{
+  "observation_id": "b387bbcda59a41e28997e9981529fc3d",
+  "package": "com.motorola.stylus",
+  "screen_width": 720,
+  "screen_height": 1280,
+  "rotation": 0,
+  "window_id": 33,
+  "screen_sha256": "7a60b132a2921675153722238680eacad9822824b9450bdf2995d15b2f4baa29",
+  "window": {
+    "scope": "active_root_only",
+    "metadata_status": "observed",
+    "window_id": 33,
+    "root_bounds": [
+      0,
+      0,
+      720,
+      1280
+    ],
+    "root_class": "android.widget.FrameLayout",
+    "root_class_truncated": false,
+    "type": 1,
+    "display_id": 3,
+    "bounds": [
+      0,
+      0,
+      720,
+      1280
+    ],
+    "title": "Moto 笔记",
+    "title_truncated": false
+  },
+  "background_session": {
+    "mode": "background",
+    "allowed_packages": [
+      "com.motorola.stylus"
+    ],
+    "bootstrap_package": "com.motorola.stylus",
+    "bootstrap_source": "owner_intent_within_explicit_ui_selection",
+    "bootstrap_model_issued": false,
+    "main_display_fallback": false,
+    "home_allowed": false,
+    "owner_task_selection": {
+      "schema": "hepta.owner-task-app-selection.v1",
+      "owner_sha256": "46ebb8f8f527289e557b9a4723ac8f3c7a840ba4c220e675b98287fdd4fc5577",
+      "recognition": "explicit_native_app_selection.v1",
+      "original_ui_initial_package": "com.motorola.stylus",
+      "original_ui_allowed_packages": [
+        "com.motorola.stylus",
+        "com.xiaomi.shop",
+        "ctrip.android.view",
+        "org.trillionnium.hepta.webhelper"
+      ],
+      "effective_initial_package": "com.motorola.stylus",
+      "effective_allowed_packages": [
+        "com.motorola.stylus"
+      ],
+      "effective_scope_within_selected_apps": true,
+      "effective_scope_strictly_smaller": true,
+      "initial_app_changed": false,
+      "package_from_model_or_screen": false,
+      "grants_tool_authority": false,
+      "changes_saved_preferences": false
+    },
+    "generation": "fb91ffdd-3f36-47f5-8c4a-b0512fc0294d",
+    "display_id": 3
+  },
+  "app_tree_sha256": "ce970a4fd68e4be6cb94dfb5c80a4ee804e997c1757e93825d4a9fc71719a483",
+  "observation_state_sha256": "fbd27bf6bb67ff41e442a735d28e875fde5a2aa19aa77f78d6c07d2540b84d9e",
+  "ime_visible": false,
+  "scroll_actions_schema": "hepta.observed-scroll-actions.v1",
+  "node_data_is_untrusted": true,
+  "nodes_truncated": false,
+  "collection": {
+    "schema": "hepta.observation-collection.v1",
+    "source": "same_observed_accessibility_traversal",
+    "visit_limit": 1536,
+    "node_limit": 128,
+    "text_utf16_exclusive_limit": 6144,
+    "visited_nodes": 17,
+    "retained_nodes": 11,
+    "retained_text_utf16": 114,
+    "pending_nodes_at_stop": 0,
+    "child_slots_omitted_by_traversal_limit": 0,
+    "nodes_omitted_by_node_limit": 0,
+    "nodes_omitted_by_text_limit": 0,
+    "truncation_reasons": [],
+    "elapsed_ms": 12,
+    "unvisited_descendant_count_known": false,
+    "grants_action_capability": false
+  },
+  "nodes": [
+    {
+      "id": "n0",
+      "bounds": [
+        0,
+        0,
+        100,
+        112
+      ],
+      "package": "com.motorola.stylus",
+      "class_name": "android.widget.FrameLayout",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "node_app_tree_sha256": "a2af1b05954d00bd4a9fbc9171745c37d5baac01d6bbf0e63572e92c34a9300a",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/0",
+        "parent_class": "android.widget.RelativeLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n1",
+      "bounds": [
+        100,
+        0,
+        520,
+        112
+      ],
+      "package": "com.motorola.stylus",
+      "class_name": "android.widget.TextView",
+      "text": "标题",
+      "view_id": "com.motorola.stylus:id\/title",
+      "node_app_tree_sha256": "7616f421dd07a8634e00c8d3139b8a3fc29404527a29af9e8fd37c03d2e8dd9f",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/1",
+        "parent_class": "android.widget.RelativeLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n2",
+      "bounds": [
+        520,
+        0,
+        620,
+        112
+      ],
+      "package": "com.motorola.stylus",
+      "class_name": "android.widget.FrameLayout",
+      "node_app_tree_sha256": "fd13a15fa14e55d55d316330bd855f20908d41ee4b4a9014cb011d5bb5bd2bc8",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/2",
+        "parent_class": "android.widget.RelativeLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false,
+      "enabled": false
+    },
+    {
+      "id": "n3",
+      "bounds": [
+        620,
+        0,
+        720,
+        112
+      ],
+      "package": "com.motorola.stylus",
+      "class_name": "android.widget.FrameLayout",
+      "node_app_tree_sha256": "a0e19f931a618877d5246e5092b1ed4ce05f093865e78f7e37381a776b352ca3",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/0\/3",
+        "parent_class": "android.widget.RelativeLayout",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false,
+      "enabled": false
+    },
+    {
+      "id": "n4",
+      "bounds": [
+        0,
+        112,
+        720,
+        1120
+      ],
+      "package": "com.motorola.stylus",
+      "class_name": "android.webkit.WebView",
+      "text": "NoteEditor",
+      "node_app_tree_sha256": "c13f9b171587e6bbbc35487236ed4ae526cc05e756fd9ee6d33eb3bd62a527b9",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/1\/0",
+        "parent_class": "android.webkit.WebView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "scrollable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [
+        "forward",
+        "down"
+      ],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n5",
+      "bounds": [
+        35,
+        1123,
+        165,
+        1229
+      ],
+      "package": "com.motorola.stylus",
+      "class_name": "android.widget.FrameLayout",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "node_app_tree_sha256": "211a332674334be41ed86539bc3765c8b89b06fb322d42402628ec0b33dd16fe",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/2\/0",
+        "parent_class": "androidx.recyclerview.widget.RecyclerView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n6",
+      "bounds": [
+        165,
+        1123,
+        295,
+        1229
+      ],
+      "package": "com.motorola.stylus",
+      "class_name": "android.widget.FrameLayout",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "node_app_tree_sha256": "fb361780b41c5cd56b81d381216c9a910dce394e94bdd4c6cd5efdd1e6dcb833",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/2\/1",
+        "parent_class": "androidx.recyclerview.widget.RecyclerView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n7",
+      "bounds": [
+        295,
+        1123,
+        425,
+        1229
+      ],
+      "package": "com.motorola.stylus",
+      "class_name": "android.widget.FrameLayout",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "node_app_tree_sha256": "d4550b2df83df239cebdbc69b47c69917a0a94598039b44e78ea5269b163ccb6",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/2\/2",
+        "parent_class": "androidx.recyclerview.widget.RecyclerView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n8",
+      "bounds": [
+        425,
+        1123,
+        555,
+        1229
+      ],
+      "package": "com.motorola.stylus",
+      "class_name": "android.widget.FrameLayout",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "node_app_tree_sha256": "eb1fc5838271117a61c0045547c49edfda1cb4b10324051a136316d78156f559",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/2\/3",
+        "parent_class": "androidx.recyclerview.widget.RecyclerView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n9",
+      "bounds": [
+        555,
+        1123,
+        685,
+        1229
+      ],
+      "package": "com.motorola.stylus",
+      "class_name": "android.widget.FrameLayout",
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "child_text_sources_complete": true,
+      "child_text_visited": 0,
+      "node_app_tree_sha256": "79ac553c7e0498f91c6b1d515931b90725d8c80aa0d1f897d0a11f8f47a78f37",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/2\/4",
+        "parent_class": "androidx.recyclerview.widget.RecyclerView",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n10",
+      "bounds": [
+        30,
+        112,
+        690,
+        1120
+      ],
+      "package": "com.motorola.stylus",
+      "class_name": "android.widget.EditText",
+      "text": "Hepta261eV66LFM3后台验收20261113R1：一记录本机长正文，二核对保存后重开内容，三确认主屏可继续操作。\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+      "node_app_tree_sha256": "3dafb720b4a75039c7187cc133ff9081eb5583b48ab691ff29202c2be1283067",
+      "native_tree_position": {
+        "schema": "hepta.native-tree-position.v1",
+        "path": "0\/1\/0\/0\/0\/0",
+        "parent_class": "android.view.View",
+        "source": "same_bounded_accessibility_traversal",
+        "grants_action_capability": false
+      },
+      "clickable": true,
+      "editable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": "042dc1eb87c03df2f973117597b3839997abefb6b18e7e4b2607e9d2ca121ffb",
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": true,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_semantics_unverified"
+      },
+      "submit_available": false,
+      "focused": true
+    }
+  ]
+}

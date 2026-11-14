@@ -48,6 +48,8 @@ public final class NotesCompletionEvidence {
         public final boolean editable,clickable,scrollable,enabled,password;
         public final ObservedChildText.Result childText;
         public final String observedAppTreeSignature;
+        /** Same-traversal metadata; legacy callers leave these unknown. */
+        public final String className,nativeTreePath;
         private final boolean boundsKnown;
         /** label is the complete original display label, before the existing 36-unit projection.
          * For unavailable/truncated derived child text the bridge must supply an empty label. */
@@ -58,6 +60,12 @@ public final class NotesCompletionEvidence {
         public Node(String id,String packageName,String text,String label,String viewId,String inputTextSha256,
                     int[] bounds,boolean editable,boolean clickable,boolean scrollable,boolean enabled,boolean password,
                     ObservedChildText.Result childText,String observedAppTreeSignature){
+            this(id,packageName,text,label,viewId,inputTextSha256,bounds,editable,clickable,scrollable,enabled,password,
+                    childText,observedAppTreeSignature,null,null);
+        }
+        public Node(String id,String packageName,String text,String label,String viewId,String inputTextSha256,
+                    int[] bounds,boolean editable,boolean clickable,boolean scrollable,boolean enabled,boolean password,
+                    ObservedChildText.Result childText,String observedAppTreeSignature,String className,String nativeTreePath){
             this.id=id;this.packageName=packageName;this.text=text;this.label=label;this.viewId=viewId;
             this.inputTextSha256=inputTextSha256;boundsKnown=bounds!=null&&bounds.length==4;
             left=boundsKnown?bounds[0]:0;top=boundsKnown?bounds[1]:0;
@@ -65,6 +73,7 @@ public final class NotesCompletionEvidence {
             this.editable=editable;this.clickable=clickable;this.scrollable=scrollable;
             this.enabled=enabled;this.password=password;
             this.childText=childText==null?ObservedChildText.notApplicable():childText;this.observedAppTreeSignature=observedAppTreeSignature;
+            this.className=className;this.nativeTreePath=nativeTreePath;
         }
         public int[] bounds(){return new int[]{left,top,right,bottom};}
     }
@@ -134,9 +143,27 @@ public final class NotesCompletionEvidence {
             }
             if(node.editable){editor=node;editors++;}
         }
+        // A full-height Moto editor may fit without advertising a scroll action.
+        // Keep the old scrollable path intact. The additional path requires the
+        // actual WebView class and traversal ancestry; the label alone is not proof.
+        boolean nonScrollableContext=false;
+        if(contexts==0){
+            Node candidate=null;int labelled=0;
+            for(Node node:frame.nodes){
+                if(NOTES.equals(node.packageName)&&node.enabled&&!node.password&&!node.editable
+                        &&"NoteEditor".equals(node.text)){candidate=node;labelled++;}
+            }
+            if(labelled==1&&!candidate.scrollable&&validBounds(candidate)
+                    &&"android.webkit.WebView".equals(candidate.className)
+                    &&nativePath(candidate.nativeTreePath)&&isSha(candidate.observedAppTreeSignature)){
+                context=candidate;contexts=1;nonScrollableContext=true;
+            }
+        }
         if(contexts!=1)return absentBody("unique_observed_NoteEditor_context_required",body);
         if(editors!=1)return absentBody("unique_enabled_nonpassword_editable_required",body);
         if(!validBounds(editor)||!inside(editor,context))return absentBody("editable_outside_observed_editor_bounds",body);
+        if(nonScrollableContext&&!observedEditorDescendant(frame.nodes,context,editor))
+            return absentBody("non_scroll_editor_requires_actual_webview_ancestor",body);
         String rawSha=sha(editor.text),bodySha=sha(body);
         boolean rawExact=body.equals(editor.text);
         boolean observedForty=(body+FORTY_LF).equals(editor.text);
@@ -248,6 +275,19 @@ public final class NotesCompletionEvidence {
     }
     private static boolean observedSingleBase(Installed installed){
         return installed.apkHashes.size()==1&&OBSERVED_BASE_APK_SHA256.equals(installed.apkHashes.get("base"));
+    }
+    private static boolean nativePath(String path){
+        return path!=null&&path.matches("0(?:/(?:0|[1-9][0-9]{0,5})){0,127}");
+    }
+    private static boolean observedEditorDescendant(List<Node> nodes,Node context,Node editor){
+        if(!"android.widget.EditText".equals(editor.className)||!nativePath(editor.nativeTreePath)
+                ||!editor.nativeTreePath.startsWith(context.nativeTreePath+"/")
+                ||!isSha(editor.observedAppTreeSignature))return false;
+        for(Node node:nodes){
+            if(node!=context&&context.nativeTreePath.equals(node.nativeTreePath))return false;
+            if(node!=editor&&editor.nativeTreePath.equals(node.nativeTreePath))return false;
+        }
+        return true;
     }
     private static boolean validBounds(Node n){return n.boundsKnown&&n.left>=0&&n.top>=0&&n.right>n.left&&n.bottom>n.top;}
     private static boolean inside(Node n,Node outer){return outer.left<=n.left&&outer.top<=n.top&&n.right<=outer.right&&n.bottom<=outer.bottom;}

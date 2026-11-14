@@ -25,7 +25,7 @@ def prepare(source, output):
         'service_interfaces_outcome': section(s, '    public interface ObservationCallback', '    private static volatile HeptaAccessibilityService live;'),
         'web_binding': section(s, '    synchronized void bindWebFlightSession(', '    synchronized void bindBackgroundSession('),
         'background_binding': section(s, '    synchronized void bindBackgroundSession(', '    private void refreshApps()'),
-        'app_catalogue': section(s, '    public AppCatalogueRanker.Page appCatalogue(', '    /** Each observation owns'),
+        'app_catalogue': section(s, '    public AppCatalogueRanker.Page appCatalogue(', '    private String diagnosticTask;'),
         'lease': section(s, '    public synchronized boolean acquireTask(', '    private boolean locked()'),
         'scope_validate_dispatch': section(s, '    synchronized void bindQualificationScope(', '    private void coordinateClick('),
         'node_graph': section(s, '    private static boolean hasAction(', '    /** Inspect window metadata only.'),
@@ -101,7 +101,7 @@ def prepare(source, output):
           'ConservativeTokenBudget','AppCatalogueRanker','ObservedTextProjection','ObservedTransitionProjection',
           'CompactTaskHistory','PromptActionDomain','RecoveryQuiescence','RecoveryJournalTransaction',
           'QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','LocalTaskController','LocalInference','PhoneObservation',
-          'ActionExecutionState','TaskCancellationQueue','SessionJournalQueue']
+          'ActionExecutionState','TaskCancellationQueue','SessionJournalQueue','ObservationDiagnostics']
     if (pkg/'ObservedAppLabels.java').is_file():pure.append('ObservedAppLabels')
     files=[pkg/(name+'.java') for name in dict.fromkeys(pure)]
     files += [source/'tests/native-app/legacy-boundary/NativeAppSession.java']

@@ -124,7 +124,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         @Override public synchronized void close(){if(closed)return;closed=true;graph.close();}
     }
 
-    public interface ObservationCallback { void onObservation(PhoneObservation value); void onError(String error); }
+    public interface ObservationCallback {
+        void onObservation(PhoneObservation value); void onError(String error);
+        // Old consumers remain compatible. The callable contains pure bounded values only.
+        default void onDiagnostic(java.util.concurrent.Callable<String> snapshot) {}
+    }
     public interface Cancellation { boolean isCancelled(); }
     public interface ActionCallback { void onResult(ActionOutcome result); }
     public static final class ActionOutcome {
@@ -426,11 +430,41 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         AppCatalogueRanker.Page initial=snapshot.search("",0);authorizationFor(taskId).bindCatalogue(initial);return initial;
     }
 
+    private String diagnosticTask;private int diagnosticRequests;
+    private synchronized ObservationDiagnostics observationDiagnostic(ObservationRequest request){
+        BackgroundSession background=request.background;
+        if(background==null||!owns(request.taskId)||!request.taskId.equals(background.taskId))return null;
+        BackgroundTaskTarget target=background.selection.taskTarget;
+        if(target==null||target.nativeGoal==null||!target.explicitSelection
+                ||!BackgroundTaskTarget.NATIVE_APP.equals(target.route)
+                ||!target.ownerSha256.equals(background.ownerSha256)
+                ||!target.nativeGoal.ownerSha256.equals(background.ownerSha256)
+                ||!target.nativeGoal.packageName.equals(target.packageName)
+                ||!target.packageName.equals(background.selection.initialPackage)
+                ||!background.selection.allowedPackages.equals(java.util.Collections.singletonList(target.packageName)))return null;
+        if(!request.taskId.equals(diagnosticTask)){diagnosticTask=request.taskId;diagnosticRequests=0;}
+        if(diagnosticRequests>=ObservationDiagnostics.MAX_RECORDS)return null;
+        try{return new ObservationDiagnostics(request.taskId,UUID.randomUUID().toString().replace("-",""),
+                background.ownerSha256,target.packageName,background.generation,request.displayId,++diagnosticRequests,request.started,request.deadline);}
+        catch(RuntimeException unavailable){return null;}
+    }
+    /** Static: it cannot capture the Service, request, Graph, node or Bitmap. */
+    private static final class DiagnosticSnapshot implements java.util.concurrent.Callable<String> {
+        private final ObservationDiagnostics values;
+        DiagnosticSnapshot(ObservationDiagnostics values){this.values=values;}
+        @Override public String call(){
+            String raw=new JSONObject(values.snapshot(SystemClock.elapsedRealtime())).toString();
+            if(raw.getBytes(StandardCharsets.UTF_8).length>ObservationDiagnostics.MAX_JSON_BYTES)
+                throw new IllegalStateException("bounded observation diagnostic exceeded");
+            return raw;
+        }
+    }
     /** Each observation owns its samples/capture and the caller's original deadline. */
     private static final class ObservationRequest {
         final String taskId;final File directory;final ObservationCallback callback;final Cancellation cancel;
         final ObservationStabilityGate gate;final long started,deadline;final BackgroundSession background;final int displayId;
         Graph captured;long token;int intervalRetries;boolean shotPending;
+        ObservationDiagnostics trace;
         volatile boolean finished;
         volatile long events;
         private String phase="queued";private long phaseAt;
@@ -440,7 +474,17 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             this.displayId=background==null?Display.DEFAULT_DISPLAY:background.displayId();
             this.gate=new ObservationStabilityGate(started,deadline);
         }
-        synchronized void phase(String value){if(!finished){phase=value;phaseAt=SystemClock.elapsedRealtime();}}
+        synchronized void phase(String value){if(!finished){phase=value;phaseAt=SystemClock.elapsedRealtime();if(trace!=null)trace.phase(value,phaseAt);}}
+        void note(ObservationDiagnostics.Event event){if(trace!=null)trace.note(event);}
+        void worker(boolean active){if(trace!=null)trace.worker(active);}
+        void graph(String stage,Graph graph){
+            if(trace==null||graph==null||graph.diagnosticStamp==null)return;
+            ObservationDiagnostics.GraphStamp stamp=graph.diagnosticStamp;
+            if(!trace.packageName.equals(stamp.packageName)||!trace.generation.equals(stamp.generation)
+                    ||trace.displayId!=stamp.displayId||!trace.ownerSha.equals(stamp.ownerSha))return;
+            String key=sha((graph.packageName+"|"+graph.windowId+"|"+graph.rotation+"|"+graph.bounds+"|"+graph.digest+"|"+graph.truncated).getBytes(StandardCharsets.UTF_8));
+            trace.graph(stage,key,stamp.appTree,stamp.state,stamp.window,graph.truncated,SystemClock.elapsedRealtime());
+        }
         synchronized String diagnostic(String reason){
             long now=SystemClock.elapsedRealtime();
             return reason+" [phase="+phase+",elapsed_ms="+Math.max(0,now-started)+",phase_ms="+Math.max(0,now-phaseAt)+"]";
@@ -469,11 +513,16 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private void noteObservationEvent(int displayId){
         ObservationRequest request=activeObservation;
-        if(request!=null&&!request.finished&&(displayId<0||displayId==request.displayId))request.events++;
+        if(request!=null&&!request.finished&&(displayId<0||displayId==request.displayId)){
+            request.events++;request.note(displayId<0?ObservationDiagnostics.Event.EVENT_UNKNOWN:ObservationDiagnostics.Event.EVENT_TARGET);
+        }
     }
     public void observe(final String taskId,final File evidenceDirectory,final Cancellation cancel,
                         final long deadline,final ObservationCallback callback) {
         final ObservationRequest request=new ObservationRequest(taskId,evidenceDirectory,callback,cancel,deadline,backgroundFor(taskId));
+        request.trace=observationDiagnostic(request);
+        if(request.trace!=null)try{callback.onDiagnostic(new DiagnosticSnapshot(request.trace));}
+        catch(RuntimeException unavailable){/* Optional diagnostics grant no authority and do not replace the observation. */}
         main.post(new Runnable(){public void run(){
             if(activeObservation!=null){
                 ObservationRequest old=activeObservation;
@@ -509,8 +558,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private void requireObservationWork(ObservationRequest request){
         long now=SystemClock.elapsedRealtime();
         if(request.finished||activeObservation!=request||request.cancel.isCancelled()||!owns(request.taskId)
-                ||!ownsBackground(request.taskId,request.background)||now<request.started||now>=request.deadline)
-            throw new ObservationAbandoned();
+                ||!ownsBackground(request.taskId,request.background)||now<request.started||now>=request.deadline){
+            request.note(ObservationDiagnostics.Event.WORKER_ABANDONED);throw new ObservationAbandoned();
+        }
     }
     private GraphBudget observationBudget(final ObservationRequest request){
         return new GraphBudget(){public void check(){requireObservationWork(request);}};
@@ -522,29 +572,33 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private void sampleObservation(final ObservationRequest request){
         if(!observationActive(request))return;
         if(!observationIoBusy.compareAndSet(false,true)){failObservation(request,"先前屏幕读取尚未退出");return;}
-        request.phase("sample_graph");
+        request.note(ObservationDiagnostics.Event.SAMPLE_START);request.worker(true);request.phase("sample_graph");
         try{observationIo.execute(new Runnable(){public void run(){
             Graph graph=null;String error=null;final long events=request.events;
             try{
                 requireObservationWork(request);
                 try{graph=readGraph(observationBudget(request),request.background);}
-                catch(NoActiveWindow|StaleObservation busy){/* No stable frame is asserted. */}
-                requireObservationWork(request);
-            }catch(Exception failure){error="无法读取当前活动窗口："+message(failure);}
-            finally{observationIoBusy.set(false);}
+                catch(NoActiveWindow busy){request.note(ObservationDiagnostics.Event.SAMPLE_NO_ROOT);}
+                catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SAMPLE_STALE_ROOT);}
+                request.graph("sample_graph",graph);requireObservationWork(request);
+            }catch(Exception failure){request.note(ObservationDiagnostics.Event.SAMPLE_ERROR);error="无法读取当前活动窗口："+message(failure);}
+            finally{request.worker(false);observationIoBusy.set(false);}
             final Graph sampled=graph;final String failure=error;
             boolean posted=false;
             try{posted=main.post(new Runnable(){public void run(){acceptSample(request,sampled,failure,events);}});}
             finally{if(!posted&&sampled!=null)sampled.close();}
-        }});}catch(RuntimeException unavailable){observationIoBusy.set(false);failObservation(request,"屏幕观察队列不可用："+message(unavailable));}
+        }});}catch(RuntimeException unavailable){request.worker(false);observationIoBusy.set(false);failObservation(request,"屏幕观察队列不可用："+message(unavailable));}
     }
     private void acceptSample(final ObservationRequest request,Graph graph,String error,long events){
         try{
             if(!observationActive(request))return;
             if(error!=null){failObservation(request,error);return;}
-            if(events!=request.events){if(graph!=null){graph.close();graph=null;}request.gate.resetEvidence();}
+            if(events!=request.events){if(graph!=null){graph.close();graph=null;}request.gate.resetEvidence();
+                request.note(ObservationDiagnostics.Event.SAMPLE_EVENT_RESET);if(request.trace!=null)request.trace.reset();}
             long now=SystemClock.elapsedRealtime();
             ObservationStabilityGate.Result result=request.gate.sample(now,graph==null?null:frameKey(graph),true);
+            if(graph==null&&request.trace!=null)request.trace.missingSample();
+            request.note(ObservationDiagnostics.Event.valueOf("SAMPLE_"+result.name()));
             if(result==ObservationStabilityGate.Result.EXPIRED||result==ObservationStabilityGate.Result.CANCELLED){
                 failObservation(request,"窗口仍在变化或没有活动窗口，未取得稳定观察");return;
             }
@@ -553,7 +607,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 request.captured=graph;graph=null;captureObservation(request);return;
             }
             long delay=request.gate.nextSampleDelay(now);
-            if(result==ObservationStabilityGate.Result.READY)delay=Math.min(delay,screenshotDelay);
+            if(result==ObservationStabilityGate.Result.READY){request.note(ObservationDiagnostics.Event.SCREENSHOT_INTERVAL_WAIT);delay=Math.min(delay,screenshotDelay);}
             request.phase("sample_gap");
             main.postDelayed(new Runnable(){public void run(){sampleObservation(request);}},delay);
         }catch(Exception failure){failObservation(request,"无法接收当前活动窗口："+message(failure));}
@@ -562,6 +616,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private void failObservation(ObservationRequest request,String error){
         if(request.finished)return;
         String diagnostic=request.diagnostic(error);
+        request.note(ObservationDiagnostics.Event.REQUEST_ERROR);if(request.trace!=null)request.trace.finish("failed",SystemClock.elapsedRealtime());
         request.finished=true;request.gate.retire();
         if(request.shotPending&&captureSerial==request.token){capturePending=false;captureSerial++;}
         request.shotPending=false;
@@ -571,7 +626,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private void retryObservation(final ObservationRequest request,long delay){
         if(request.captured!=null){request.captured.close();request.captured=null;}
-        request.gate.resetEvidence();
+        request.gate.resetEvidence();request.note(ObservationDiagnostics.Event.CAPTURE_RETRY);if(request.trace!=null)request.trace.reset();
         if(!observationActive(request))return;
         request.phase("retry_gap");
         // This never renews the fixed settling deadline or the original caller deadline.
@@ -590,6 +645,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         // A target-display event at any point after screenshot admission invalidates
         // this capture, even if later graph reads return to the same tree identity.
         final CaptureIdentity identity=new CaptureIdentity(request.captured,SystemClock.elapsedRealtime(),request.events);
+        request.note(ObservationDiagnostics.Event.CAPTURE_START);
         capturePending=true;request.shotPending=true;lastScreenshotAt=identity.capturedAt;
         final long token=++captureSerial;request.token=token;request.phase("screenshot_callback");
         watchCapture(request,lastScreenshotAt+5000);
@@ -598,15 +654,17 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 if(request.finished||activeObservation!=request||captureSerial!=token)return;
                 capturePending=false;captureSerial++;request.shotPending=false;
                 if(!observationActive(request))return;
-                if(code==ERROR_TAKE_SCREENSHOT_INTERVAL_TIME_SHORT&&request.intervalRetries++<1)
-                    retryObservation(request,500);
+                request.note(ObservationDiagnostics.Event.CAPTURE_CALLBACK_FAIL);
+                if(code==ERROR_TAKE_SCREENSHOT_INTERVAL_TIME_SHORT&&request.intervalRetries++<1){
+                    request.note(ObservationDiagnostics.Event.INTERVAL_RETRY);retryObservation(request,500);
+                }
                 else failObservation(request,"系统截图失败，错误码 "+code+"；不会绕过受保护画面");
             }
             @Override public void onSuccess(ScreenshotResult result){
                 if(request.finished||activeObservation!=request||captureSerial!=token){result.getHardwareBuffer().close();return;}
                 capturePending=false;captureSerial++;request.shotPending=false;
                 if(!observationActive(request)){result.getHardwareBuffer().close();return;}
-                processScreenshot(request,identity,result);
+                request.note(ObservationDiagnostics.Event.CAPTURE_CALLBACK_OK);processScreenshot(request,identity,result);
             }
         });}catch(Exception error){failObservation(request,"系统截图不可用："+message(error));}
     }
@@ -614,6 +672,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(!observationIoBusy.compareAndSet(false,true)){
             result.getHardwareBuffer().close();failObservation(request,"先前屏幕读取尚未退出");return;
         }
+        request.worker(true);
         try{observationIo.execute(new Runnable(){public void run(){
             final ObservationProduct product=new ObservationProduct(identity);Graph after=null;
             boolean copyEntered=false,retry=false;String error=null;
@@ -622,8 +681,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 product.bitmap=copyScreenshot(result);requireObservationWork(request);
                 request.phase("screenshot_graph");
                 try{after=readGraph(observationBudget(request),request.background);}
-                catch(NoActiveWindow|StaleObservation busy){retry=true;}
-                if(!retry&&!identity.matches(after))retry=true;
+                catch(NoActiveWindow busy){request.note(ObservationDiagnostics.Event.SCREENSHOT_GRAPH_MISSING);retry=true;}
+                catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SCREENSHOT_GRAPH_STALE);retry=true;}
+                request.graph("screenshot_graph",after);
+                if(!retry&&!identity.matches(after)){request.note(ObservationDiagnostics.Event.SCREENSHOT_GRAPH_CHANGED);retry=true;}
                 if(after!=null){after.close();after=null;}
                 if(!retry){
                     if(product.bitmap.getWidth()<1||product.bitmap.getHeight()<1||(long)product.bitmap.getWidth()*product.bitmap.getHeight()>16000000L)
@@ -644,27 +705,32 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     // Encoding/fsync/hash cannot turn a changed graph into a newly published observation.
                     request.phase("saved_graph");
                     try{after=readGraph(observationBudget(request),request.background);}
-                    catch(NoActiveWindow|StaleObservation busy){retry=true;}
-                    if(!retry&&!identity.matches(after))retry=true;
+                    catch(NoActiveWindow busy){request.note(ObservationDiagnostics.Event.SAVED_GRAPH_MISSING);retry=true;}
+                    catch(StaleObservation busy){request.note(ObservationDiagnostics.Event.SAVED_GRAPH_STALE);retry=true;}
+                    request.graph("saved_graph",after);
+                    if(!retry&&!identity.matches(after)){request.note(ObservationDiagnostics.Event.SAVED_GRAPH_CHANGED);retry=true;}
                 }
                 requireObservationWork(request);
             }catch(Exception failure){error="观察失败："+message(failure);}
             finally{
                 if(!copyEntered)result.getHardwareBuffer().close();
-                if(after!=null)after.close();observationIoBusy.set(false);
+                if(after!=null)after.close();request.worker(false);observationIoBusy.set(false);
             }
             final boolean resample=retry;final String failure=error;boolean posted=false;
             try{posted=main.post(new Runnable(){public void run(){acceptScreenshot(request,product,resample,failure);}});}
             finally{if(!posted)product.close();}
         }});}catch(RuntimeException unavailable){
-            observationIoBusy.set(false);result.getHardwareBuffer().close();failObservation(request,"屏幕观察队列不可用："+message(unavailable));
+            request.worker(false);observationIoBusy.set(false);result.getHardwareBuffer().close();failObservation(request,"屏幕观察队列不可用："+message(unavailable));
         }
     }
     private void acceptScreenshot(ObservationRequest request,ObservationProduct product,boolean retry,String error){
         try{
             if(!observationActive(request))return;
             if(error!=null){failObservation(request,error);return;}
-            if(retry||product.events!=request.events){retryObservation(request,200);return;}
+            if(retry||product.events!=request.events){
+                if(product.events!=request.events)request.note(ObservationDiagnostics.Event.CAPTURE_EVENT_RESET);
+                retryObservation(request,200);return;
+            }
             request.phase("publish");
             Graph graph=request.captured;
             if(graph==null||product.bitmap==null||product.path==null||product.digest==null)
@@ -675,6 +741,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     graph.backgroundSelectionRaw==null?null:new JSONObject(graph.backgroundSelectionRaw),graph.backgroundOwnerSha);
             clearSnapshot();current=observation;currentGraph=graph;currentBitmap=product.bitmap;
             request.captured=null;product.bitmap=null;product.published=true;
+            if(request.trace!=null)request.trace.published(observation.id,SystemClock.elapsedRealtime());
             request.finished=true;request.gate.retire();activeObservation=null;
             request.callback.onObservation(observation);
         }catch(Exception failure){failObservation(request,"观察发布失败："+message(failure));}
@@ -926,7 +993,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                                 .withAuthorization(callbackFlags(computed.taskAuthorization,currentLease,stopped))
                                 .withBackground(computed.backgroundSession).withSubmit(computed.imeSubmit)
                                 .withFixedIntent(computed.fixedIntent).withToolChild(computed.toolChild);
-                        callback.onResult(delivered.withActionExecution(new JSONObject(work.state.evidence())));
+                        callback.onResult(delivered.withActionExecution(actionDiagnosticEvidence(work)));
                     }});
                 }});}catch(java.util.concurrent.RejectedExecutionException rejected){
                     // execute() rejected before running: no worker, node read or effect is in flight.
@@ -983,6 +1050,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final ActionExecutionState state;final PhoneObservation expected;final Graph graph;final Cancellation cancel;
         final QualificationScopeConfig.Bound scope;final TaskAuthorization.Gate authorization;final BackgroundSession background;
         final WebRegionNativeBridge nativeRegion;
+        String diagnosticFreshness;
         ActionWork(String task,PhoneObservation expected,String run,QualificationScopeConfig.Bound scope,
                 TaskAuthorization.Gate authorization,BackgroundSession background,Cancellation cancel,Graph graph,WebRegionNativeBridge nativeRegion,long queued,long deadline){
             this.expected=expected;this.scope=scope;this.authorization=authorization;this.background=background;
@@ -1007,6 +1075,25 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
         void enterEffect(){logMarker(state.enterEffect(cancel.isCancelled(),currentLease()));check();}
         void effectReturned(Boolean accepted){logMarker(state.effectReturned(accepted));}
+    }
+    private static void recordStaleDiagnostic(ActionWork work,Graph before,Graph after,String selectedId){
+        if(work==null||work.background==null||work.diagnosticFreshness!=null)return;
+        try{
+            Map<String,Object> difference=ObservationDiagnostics.difference(before.diagnosticStamp,after.diagnosticStamp,selectedId);
+            if(difference==null)return;
+            Map<String,Object> operation=work.state.evidence();
+            difference.put("task_id",operation.get("task_id"));difference.put("operation_id",operation.get("operation_id"));
+            difference.put("model_run_id",operation.get("model_run_id"));difference.put("observation_id",operation.get("observation_id"));
+            difference.put("guard_result","whole_graph_stale_rejected");difference.put("guard_changed",false);
+            String raw=new JSONObject(difference).toString();
+            if(raw.getBytes(StandardCharsets.UTF_8).length<=ObservationDiagnostics.MAX_JSON_BYTES)work.diagnosticFreshness=raw;
+        }catch(RuntimeException unavailable){/* A diagnostic never changes the original refusal. */}
+    }
+    private static JSONObject actionDiagnosticEvidence(ActionWork work){
+        JSONObject value=new JSONObject(work.state.evidence());
+        if(work.diagnosticFreshness!=null)try{value.put("freshness_diagnostic",new JSONObject(work.diagnosticFreshness));}
+        catch(Exception unavailable){/* Preserve the original execution receipt. */}
+        return value;
     }
     private Cancellation actionCancellation(final ActionWork work,final Cancellation original){
         if(work==null)return original;
@@ -1067,7 +1154,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                                 requireLiveFlightNativeStability(taskId,expected,action,permit,now,cancel,work));
                         actionCheck(work);
                     }catch(Exception mismatch){throw new StaleObservation("stale:首页目标局部复核失败："+message(mismatch));}
-                }else if(!graph.digest.equals(now.digest))return "stale:目标窗口内容已变化";
+                }else if(!graph.digest.equals(now.digest)){
+                    recordStaleDiagnostic(work,graph,now,action.nodeId);return "stale:目标窗口内容已变化";
+                }
             }
         }
         catch(StaleObservation changed){return message(changed);}
@@ -1413,6 +1502,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private static final class Graph {
         PhoneObservation.CollectionStats collectionStats;
+        ObservationDiagnostics.GraphStamp diagnosticStamp;
         String packageName,digest,backgroundGeneration,backgroundBootstrapPackage;int windowId,rotation,displayId;Rect bounds;boolean truncated;
         List<String> backgroundAllowedPackages=java.util.Collections.emptyList();
         String backgroundSelectionRaw,backgroundOwnerSha;
@@ -1457,6 +1547,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             copy.backgroundAllowedPackages=java.util.Collections.unmodifiableList(new ArrayList<String>(backgroundAllowedPackages));
             copy.backgroundSelectionRaw=backgroundSelectionRaw;copy.backgroundOwnerSha=backgroundOwnerSha;
             copy.state=state;copy.windowMetadata=windowMetadata;copy.collectionStats=collectionStats;
+            copy.diagnosticStamp=diagnosticStamp; // Immutable hashes/geometry only; no new node copy or live read.
             // O(1) evidence transfer; complete snapshots were frozen on the read worker.
             copy.flightNativeSnapshotComplete=flightNativeSnapshotComplete;copy.flightNativeSnapshotLimit=flightNativeSnapshotLimit;
             copy.flightNativeSnapshotRaw=flightNativeSnapshotRaw;copy.flightRetainedSnapshotRaw=flightRetainedSnapshotRaw;
@@ -1699,9 +1790,28 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             // Focus is newly model-visible evidence, not an expansion of the old progress predicate.
             graph.digest=sha(graph.windowMetadata.bindFreshness(graph.state.fingerprintInput()+"\nnode_focus="+focusStates+"\nnode_scroll_actions="+scrollStates)
                     .getBytes(StandardCharsets.UTF_8));checkReadBudget(budget);
+            if(nativeEvidence)graph.diagnosticStamp=nativeDiagnosticStamp(graph);
             graph.freezeFlightSnapshots(budget);checkReadBudget(budget);return graph;
         }catch(RuntimeException e){graph.close();throw e;}
         finally{while(!queue.isEmpty())queue.removeFirst().recycle();}
+    }
+    /** Reduce existing selected-App rows; never refresh or traverse an extra node. */
+    private static ObservationDiagnostics.GraphStamp nativeDiagnosticStamp(Graph graph){
+        try{
+            if(graph.backgroundGeneration==null||graph.rows.size()>ObservationDiagnostics.MAX_NODES)return null;
+            List<ObservationDiagnostics.NodeStamp> rows=new ArrayList<ObservationDiagnostics.NodeStamp>();
+            for(PhoneObservation.Node row:graph.rows){
+                if(!graph.packageName.equals(row.packageName))return null;
+                String flags=row.clickable+"|"+row.editable+"|"+row.scrollable+"|"+row.enabled+"|"+row.focused+"|"+row.password
+                        +"|"+row.selected+"|"+row.checkable+"|"+row.checked+"|"+row.scrollActions.fingerprintInput()
+                        +"|"+row.imeEnter.fingerprintInput()+"|"+row.inputTextSha256;
+                rows.add(new ObservationDiagnostics.NodeStamp(row.id,row.nativeTreePath,row.observedAppTreeSignature,
+                        sha(flags.getBytes(StandardCharsets.UTF_8)),row.bounds.left,row.bounds.top,row.bounds.right,row.bounds.bottom));
+            }
+            return new ObservationDiagnostics.GraphStamp(graph.packageName,graph.backgroundGeneration,graph.backgroundOwnerSha,
+                    graph.displayId,graph.windowId,graph.state.appTreeSha256,graph.digest,
+                    sha(graph.windowMetadata.bindFreshness("").getBytes(StandardCharsets.UTF_8)),graph.truncated,rows);
+        }catch(RuntimeException unavailable){return null;}
     }
     private static JSONObject snapshotFlightNode(AccessibilityNodeInfo node,String path,String parentClass)throws Exception{
         String text=node.isPassword()?"":string(node.getText()),description=node.isPassword()?"":string(node.getContentDescription());

@@ -1,0 +1,97 @@
+package org.trillionnium.hepta.local;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import org.json.JSONObject;
+import org.json.JSONArray;
+
+/** Actual Controller await method, explicit callback/authorization/disk IO fakes. */
+final class DiagnosticControllerHost {
+    static final class SystemClock {static long now=1000;static long elapsedRealtime(){return now;}}
+    static final class Selection {String initialPackage=DiagnosticChecks.APP;}
+    static final class BackgroundSession {String generation=DiagnosticChecks.GENERATION,ownerSha256=DiagnosticChecks.OWNER;Selection selection=new Selection();}
+    static final class TaskAuthorization {static final class Gate {Map<String,Object> evidence(){return Collections.<String,Object>emptyMap();}}}
+    static final class PhoneObservation {final String id="44444444444444444444444444444444";JSONObject toJson(){return new JSONObject().put("observation_id",id);}}
+    static final class HeptaAccessibilityService {
+        interface Cancellation {boolean isCancelled();}
+        interface ObservationCallback {void onObservation(PhoneObservation o);void onError(String e);default void onDiagnostic(Callable<String> value){}}
+        String mutation,originalError;boolean omitDiagnostic,throwDiagnostic,timeout;int observeCalls,remoteChecks,authorityChecks,snapshotCalls;PhoneObservation value=new PhoneObservation();
+        Callable<String> lastSnapshot;ObservationCallback callback;Cancellation cancellation;
+        void verifyBackgroundRemote(String id){remoteChecks++;}
+        void observe(String id,File dir,Cancellation cancel,long deadline,ObservationCallback cb){
+            observeCalls++;callback=cb;cancellation=cancel;
+            ObservationDiagnostics values=new ObservationDiagnostics(id,DiagnosticChecks.REQUEST,DiagnosticChecks.OWNER,DiagnosticChecks.APP,DiagnosticChecks.GENERATION,9,1,1000,deadline);
+            Callable<String> production=ObserverPipelineHost.actualSnapshot(values);
+            lastSnapshot=()->{snapshotCalls++;if(throwDiagnostic)throw new IllegalStateException("fixture snapshot failed");JSONObject proof=new JSONObject(production.call());
+                if(mutation!=null){if(mutation.equals("oversize"))proof.put("extra",DiagnosticChecks.repeat('x',17000));
+                    else if(mutation.equals("sequence"))proof.put("request_sequence",97);
+                    else if(mutation.equals("deadline"))proof.put("deadline_elapsed_ms",deadline+1);
+                    else proof.put(mutation,mutation.equals("request_id")?"../escape":"foreign");}
+                return proof.toString();};
+            if(!omitDiagnostic)cb.onDiagnostic(lastSnapshot);
+            if(timeout){SystemClock.now=deadline;return;}
+            if(originalError!=null)cb.onError(originalError);else cb.onObservation(value);
+        }
+        String observationTimeoutMessage(String id){return "original observation timeout";}
+        void requireTaskAuthorization(String id,TaskAuthorization.Gate g){authorityChecks++;}
+        void requireScopeObservation(String id,PhoneObservation o){authorityChecks++;}
+        void requireBackgroundObservation(String id,PhoneObservation o){authorityChecks++;}
+        void requireAuthorizationObservation(String id,TaskAuthorization.Gate g,PhoneObservation o){authorityChecks++;}
+        JSONObject qualificationScopeEvidence(String id){return new JSONObject();}JSONObject backgroundEvidence(String id){return new JSONObject();}
+    }
+    final HeptaAccessibilityService service=new HeptaAccessibilityService();BackgroundSession activeNativeBackground=new BackgroundSession();
+    final AtomicBoolean cancelled=new AtomicBoolean();final Map<String,JSONObject> written=new LinkedHashMap<String,JSONObject>();
+    final java.util.List<String> pendingObservationDiagnostics=new java.util.ArrayList<String>();int observationDiagnosticErrors;
+    void checkActive(long deadline){if(cancelled.get()||SystemClock.now>=deadline)throw new IllegalStateException("original task stopped");}
+    void record(File dir,String name,JSONObject body)throws Exception{if(name.startsWith("observation-diagnostic-"))throw new AssertionError("diagnostic must use existing result only");written.put(name,body);}
+{{await_observation}}
+{{take_diagnostics}}
+    static DiagnosticControllerHost fresh(){SystemClock.now=1000;ObserverPipelineHost.SystemClock.now=1000;return new DiagnosticControllerHost();}
+    PhoneObservation call()throws Exception{return awaitObservationRaw(DiagnosticChecks.TASK,new File("host-diagnostic-no-actual-write"),new TaskAuthorization.Gate(),21000);}
+    int diagnostics(){return pendingObservationDiagnostics.size();}
+    static void runTests()throws Exception{
+        DiagnosticChecks.run("actual_controller_consumes_static_Service_snapshot_and_original_result",()->{
+            DiagnosticControllerHost f=fresh();PhoneObservation o=f.call();DiagnosticChecks.check(o==f.service.value&&f.service.observeCalls==1&&f.service.remoteChecks==1&&f.service.authorityChecks==4,"original success path");
+            DiagnosticChecks.check(f.diagnostics()==1&&f.service.snapshotCalls==1&&f.service.cancellation.isCancelled(),"finally snapshot once after abandonment");
+            JSONObject d=new JSONObject(f.pendingObservationDiagnostics.get(0));DiagnosticChecks.check(d.getLong("deadline_elapsed_ms")==11000,"same original min deadline");
+        });
+        DiagnosticChecks.run("actual_controller_keeps_original_observation_error_and_records_diagnostic",()->{
+            DiagnosticControllerHost f=fresh();f.service.originalError="original immutable observer error";
+            try{f.call();throw new AssertionError("error lost");}catch(IllegalStateException e){DiagnosticChecks.check(e.getMessage().equals(f.service.originalError),"original exception wins");}
+            DiagnosticChecks.check(f.diagnostics()==1&&f.service.observeCalls==1&&f.service.authorityChecks==0,"no retry or authority");
+        });
+        DiagnosticChecks.run("actual_controller_timeout_uses_original_deadline_and_one_final_snapshot",()->{
+            DiagnosticControllerHost f=fresh();f.service.timeout=true;try{f.call();throw new AssertionError("timeout lost");}catch(IllegalStateException e){DiagnosticChecks.check(e.getMessage().equals("original observation timeout"),"original timeout wins");}
+            DiagnosticChecks.check(f.diagnostics()==1&&f.service.observeCalls==1&&SystemClock.now==11000,"no deadline renewal or retry");
+        });
+        DiagnosticChecks.run("actual_controller_default_missing_diagnostic_is_compatible",()->{
+            DiagnosticControllerHost f=fresh();f.service.omitDiagnostic=true;DiagnosticChecks.check(f.call()==f.service.value&&f.diagnostics()==0&&f.service.snapshotCalls==0,"default callback compatibility");
+        });
+        for(final String field:new String[]{"task_id","request_id","schema","background_generation","owner_sha256","package","deadline","sequence","oversize"})
+            DiagnosticChecks.run("actual_controller_rejects_diagnostic_"+field+"_without_replacing_result",()->{
+                DiagnosticControllerHost f=fresh();f.service.mutation=field;DiagnosticChecks.check(f.call()==f.service.value&&f.diagnostics()==0&&f.service.observeCalls==1,"bad diagnostic altered success");
+            });
+        DiagnosticChecks.run("actual_controller_snapshot_exception_cannot_replace_original_failure",()->{
+            DiagnosticControllerHost f=fresh();f.service.originalError="original failure before snapshot";f.service.throwDiagnostic=true;
+            try{f.call();throw new AssertionError("error lost");}catch(IllegalStateException e){DiagnosticChecks.check(e.getMessage().equals(f.service.originalError),"snapshot failure replaced error");}
+            DiagnosticChecks.check(f.diagnostics()==0&&f.service.snapshotCalls==1&&f.observationDiagnosticErrors==1,"bounded error without IO");
+        });
+        DiagnosticChecks.run("actual_controller_finally_adds_no_IO_and_terminal_uses_existing_result",()->{
+            DiagnosticControllerHost f=fresh();f.call();DiagnosticChecks.check(f.written.size()==1&&f.diagnostics()==1,"only original scope record before cleanup");
+            JSONObject collected=f.takeObservationDiagnostics(DiagnosticChecks.TASK);
+            f.record(new File("fixture-terminal"),"result.json",new JSONObject().put("observation_diagnostics",collected));
+            DiagnosticChecks.check(f.written.size()==2&&collected.getInt("additional_file_writes")==0&&collected.getJSONArray("records").length()==1,"existing result only");
+            DiagnosticChecks.check(f.diagnostics()==0&&f.observationDiagnosticErrors==0&&f.takeObservationDiagnostics(DiagnosticChecks.TASK)==null,"take clears once");
+        });
+        DiagnosticChecks.run("actual_controller_terminal_discards_foreign_and_invalid_buffer_entries",()->{
+            DiagnosticControllerHost f=fresh();f.call();f.pendingObservationDiagnostics.add("not JSON");f.observationDiagnosticErrors=1;
+            JSONObject collected=f.takeObservationDiagnostics("99999999999999999999999999999999");
+            DiagnosticChecks.check(collected.getJSONArray("records").length()==0&&collected.getInt("discarded_records")==2&&collected.getInt("snapshot_errors")==1,"same-task-only terminal");
+            DiagnosticChecks.check(f.diagnostics()==0&&f.observationDiagnosticErrors==0,"no cross-task values");
+        });
+    }
+}

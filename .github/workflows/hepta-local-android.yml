@@ -357,6 +357,25 @@ jobs:
             --source "$hepta_native_source" --output "$hepta_native_out/mixed-uid" --cc "$(command -v cc)"
           python -B "$hepta_native_source/tests/owned-single-task/run_host.py" \
             --source "$hepta_native_source" --output "$hepta_native_out/owned-single-task" --java-home "$JAVA_HOME" --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar"
+      - name: Run required Notes non-scroll editor gate
+        run: |
+          set -euo pipefail
+          hepta_native_source="$GITHUB_WORKSPACE/$HEPTA_SOURCE"
+          hepta_native_out="$RUNNER_TEMP/hepta-native-app-gates"
+          python -B "$hepta_native_source/tests/notes-nonscroll-editor/run_host.py" \
+            --source "$hepta_native_source" --output "$hepta_native_out/notes-nonscroll-editor" --java-home "$JAVA_HOME" \
+            > "$hepta_native_out/notes-nonscroll-editor.runner.stdout" \
+            2> "$hepta_native_out/notes-nonscroll-editor.runner.stderr"
+      - name: Run required observation diagnostics gate
+        run: |
+          set -euo pipefail
+          hepta_native_source="$GITHUB_WORKSPACE/$HEPTA_SOURCE"
+          hepta_native_out="$RUNNER_TEMP/hepta-native-app-gates"
+          python -B "$hepta_native_source/tests/observation-diagnostics/run_host.py" \
+            --source "$hepta_native_source" --output "$hepta_native_out/observation-diagnostics" --java-home "$JAVA_HOME" \
+            --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar" \
+            > "$hepta_native_out/observation-diagnostics.runner.stdout" \
+            2> "$hepta_native_out/observation-diagnostics.runner.stderr"
       - name: Preserve all original native App gate results and streams
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

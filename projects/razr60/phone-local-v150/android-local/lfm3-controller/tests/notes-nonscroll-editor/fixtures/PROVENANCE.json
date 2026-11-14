@@ -1,0 +1,85 @@
+{
+  "DTO_boundary": "Actual Node constructors/label and controller completionFrame extracted verbatim; outer observation/window and Rect are host data carriers. Empty child-label Result source provenance is not reconstructed and is not used by editor predicate.",
+  "current_task_id": "357aea8806654ac893b10c51cc570308",
+  "fixtures": [
+    {
+      "bytes": 15437,
+      "nodes_truncated": false,
+      "observation_id": "4b80db10a5a04feb8065196620c60837",
+      "original_read_only": true,
+      "path": "v67-after.json",
+      "retained_nodes": 11,
+      "screen_sha256": "c5e2dfccedeebc577ccc3c8a4d4301e30a7390b07ad2131b5bd2aa0ba7649364",
+      "sha256": "4d1af0c7655df3362ee8f00271769726068302880a877816e375dadbebc946c9",
+      "source": "/workspace/scratch/261e5112510c/v67-notes-review-7325878a-r1/originals/collection/task/step-01-after.json"
+    },
+    {
+      "bytes": 15437,
+      "nodes_truncated": false,
+      "observation_id": "d0f91aea3bdf4f468a4b373c138ce282",
+      "original_read_only": true,
+      "path": "v67-readiness-2.json",
+      "retained_nodes": 11,
+      "screen_sha256": "9b1bef97b3e97764cd46e5dd9e7a3b375c73bdc81a801fc86ac66b21de2929a9",
+      "sha256": "4dab1fdcef82b62aa2591b3755ce4b50bedf3abc5b10603b53da4eab3fd0b5d4",
+      "source": "/workspace/scratch/261e5112510c/v67-notes-review-7325878a-r1/originals/collection/task/step-01-notes-readiness-observation-2.json"
+    },
+    {
+      "bytes": 15437,
+      "nodes_truncated": false,
+      "observation_id": "2d08ea4ee9ec43428f76c29b1874b873",
+      "original_read_only": true,
+      "path": "v67-readiness-3.json",
+      "retained_nodes": 11,
+      "screen_sha256": "c5e2dfccedeebc577ccc3c8a4d4301e30a7390b07ad2131b5bd2aa0ba7649364",
+      "sha256": "e4c50127fad4193b9eb4a214516236557989cbf73d54695ad0e7256b0afe70a6",
+      "source": "/workspace/scratch/261e5112510c/v67-notes-review-7325878a-r1/originals/collection/task/step-01-notes-readiness-observation-3.json"
+    },
+    {
+      "bytes": 15437,
+      "nodes_truncated": false,
+      "observation_id": "5227d1bfbeac4014bf1b81446e6a87ea",
+      "original_read_only": true,
+      "path": "v67-readiness-4.json",
+      "retained_nodes": 11,
+      "screen_sha256": "c5e2dfccedeebc577ccc3c8a4d4301e30a7390b07ad2131b5bd2aa0ba7649364",
+      "sha256": "60dbb8c22014ee5fb3dabf8b83a36aaa3286da9dd0da5cdc81dbca2918878ce3",
+      "source": "/workspace/scratch/261e5112510c/v67-notes-review-7325878a-r1/originals/collection/task/step-01-notes-readiness-observation-4.json"
+    },
+    {
+      "bytes": 15493,
+      "nodes_truncated": false,
+      "observation_id": "b387bbcda59a41e28997e9981529fc3d",
+      "original_read_only": true,
+      "path": "v66-scrollable.json",
+      "retained_nodes": 11,
+      "screen_sha256": "7a60b132a2921675153722238680eacad9822824b9450bdf2995d15b2f4baa29",
+      "sha256": "66c8ce2cda5e876a7538cd104f0ba46ed53f078a3cd00695421f8805309a6ce8",
+      "source": "/workspace/scratch/261e5112510c/v66-notes-review-f842-r1/originals/collection/task/step-01-after.json"
+    }
+  ],
+  "host_only": true,
+  "persistent_save_or_reopen_proven": false,
+  "phone_execution": false,
+  "positive_fields_from_actual_captured_JSON": true,
+  "previous_source": {
+    "LocalTaskController.java": {
+      "bytes": 138037,
+      "sha256": "3704fc85589b17b5da10d5152706e17b436b1be881fa106d21162e3dc97b08cf"
+    },
+    "NotesCompletionEvidence.java": {
+      "bytes": 18644,
+      "sha256": "1ce2e8dfc588ae51545f88a0eccb2002cfd91f647db0225fd95398ff04157f7d"
+    },
+    "completionFrame": {
+      "bytes": 1083,
+      "sha256": "5a9c338aff35ec0b3bfbb6385c1d7f23333d2281988b6c226642f2032895fc56"
+    }
+  },
+  "privacy_review": "Captured node text/description are test Notes body, public UI labels, and app metadata. No account, address, phone, credential, or unrelated app body is present. Observations are complete byte-identical originals. Historical synthetic test body retained without rewrite.",
+  "private_account_fields_present": false,
+  "schema": "hepta.notes-nonscroll-editor-fixtures.v1",
+  "screenshots_not_used_for_admission": true,
+  "source_component": "7ccd5ba77ad51c1539eaf0e5e99698809556792e",
+  "source_head": "7325878a24c8c3f1060984f661dc06ab6d6012ff"
+}

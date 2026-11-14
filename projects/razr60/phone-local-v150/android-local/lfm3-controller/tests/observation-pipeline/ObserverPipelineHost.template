@@ -2,6 +2,7 @@ package org.trillionnium.hepta.local;
 
 import java.io.*;
 import java.nio.file.*;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.*;
@@ -9,13 +10,26 @@ import java.util.concurrent.atomic.*;
 
 /** Production scheduling/ownership methods; Android calls are explicit instrumented fakes. */
 public final class ObserverPipelineHost {
-    interface ObservationCallback {void onObservation(PhoneObservation value);void onError(String error);}
+{{observation_callback}}
     interface Cancellation {boolean isCancelled();}
     interface GraphBudget {void check();}
     static final class SystemClock {static volatile long now=1000;static long elapsedRealtime(){return now;}}
     static final class Display {static final int DEFAULT_DISPLAY=0;}
     static final class Rect {int left=0,top=0,right=1080,bottom=2400;}
-    static final class BackgroundSession {final int display;boolean closed;BackgroundSession(int display){this.display=display;}int displayId(){return display;}boolean released(){return closed;}}
+    // Old scheduling cases have no native goal. New diagnostic cases may supply
+    // explicit synthetic selection values; this carrier does not parse/authorize a task.
+    static final class NativeAppGoal {String ownerSha256,packageName;}
+    static final class BackgroundTaskTarget {
+        static final String NATIVE_APP="native_app";NativeAppGoal nativeGoal;
+        boolean explicitSelection;String route,ownerSha256,packageName;
+    }
+    static final class Selection {BackgroundTaskTarget taskTarget;String initialPackage;List<String> allowedPackages;}
+    static final class BackgroundSession {
+        final int display;boolean closed;String taskId,ownerSha256,generation;
+        final Selection selection=new Selection();
+        BackgroundSession(int display){this.display=display;}
+        int displayId(){return display;}boolean released(){return closed;}
+    }
     // Explicit IO boundary only: these states stand for the existing Web journal,
     // controller lifecycle and Android looper. No admission policy is duplicated.
     static final class WebFlightSession {
@@ -32,6 +46,7 @@ public final class ObserverPipelineHost {
     static final class NoActiveWindow extends IllegalStateException {private static final long serialVersionUID=1L;}
     static final class StaleObservation extends IllegalStateException {private static final long serialVersionUID=1L;}
     static final class Graph {
+        ObservationDiagnostics.GraphStamp diagnosticStamp;
         final int serial;String packageName="fixture.notes",digest="same",backgroundGeneration;
         // Selection provenance is outside this scheduling-only graph carrier and remains absent.
         String backgroundSelectionRaw,backgroundOwnerSha;
@@ -72,7 +87,10 @@ public final class ObserverPipelineHost {
         }
     }
     static final class JSONObject {
+        private final org.json.JSONObject value;
+        JSONObject(Map<?,?> map){value=new org.json.JSONObject(map);}
         JSONObject(String raw){throw new AssertionError("observer scheduling fixture cannot construct Selection provenance");}
+        @Override public String toString(){return value.toString();}
     }
     static final class Handler {
         static final class Job {final long when;final Runnable task;Job(long when,Runnable task){this.when=when;this.task=task;}}
@@ -135,11 +153,17 @@ public final class ObserverPipelineHost {
         expect(!isMain(),"hash on main");if(hashHook!=null)hashHook.run();MessageDigest digest=MessageDigest.getInstance("SHA-256");
         digest.update(Files.readAllBytes(file.toPath()));return Arrays.toString(digest.digest());
     }
+    private static String sha(byte[] raw){
+        try{byte[] digest=MessageDigest.getInstance("SHA-256").digest(raw);StringBuilder out=new StringBuilder();
+            for(byte b:digest)out.append(String.format(java.util.Locale.ROOT,"%02x",b&255));return out.toString();}
+        catch(java.security.NoSuchAlgorithmException error){throw new AssertionError(error);}
+    }
     private static String message(Throwable error){return error.getMessage()==null?error.getClass().getSimpleName():error.getMessage();}
 {{acquire}}
 {{recovery_idle}}
 {{action_pending}}
 {{cancellation_pending}}
+{{diagnostic}}
 {{observation}}
     static boolean isMain(){return Thread.currentThread()==mainThread;}
     static void expect(boolean okay,String message){if(!okay)throw new AssertionError(message);}
