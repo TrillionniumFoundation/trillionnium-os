@@ -18,6 +18,14 @@ final class NativeAppSession {
     NativeAppSession(String task,TaskAuthorization.Gate auth,BackgroundTaskTarget.SelectionBinding selected,
             NativeAppEvidence.Installed installed,String selectionSha,String generation,int display,
             InstalledVerifier verifier,Journal journal)throws Exception{throw unavailable();}
+    /** Type-only new API; these legacy cases cannot create or claim a native Attempt. */
+    static final class ActionGuard {
+        private ActionGuard(){throw unavailable();}
+        void requireClaimed(){throw unavailable();}
+        void close(){throw unavailable();}
+        Map<String,Object> evidence(){throw unavailable();}
+    }
+    ActionGuard actionGuard(ActionDecision action,String run,String observation,long issued,long deadline)throws ActionDecision.InvalidActionException{throw unavailable();}
     void verifyInstalled()throws Exception{throw unavailable();}
     void observed(NativeAppEvidence.Frame frame)throws Exception{throw unavailable();}
     void beforeModelAction(int step,ActionDecision action,String run,long now)throws Exception{throw unavailable();}

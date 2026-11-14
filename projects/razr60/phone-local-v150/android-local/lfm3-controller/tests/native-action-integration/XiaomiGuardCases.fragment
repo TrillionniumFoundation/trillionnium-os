@@ -1,0 +1,48 @@
+    /** Focused entry; original private Harness above is extracted verbatim. */
+    static void guardCase(String name,Test test)throws Exception{
+        IntegrationChecks.one(name,()->{int before=checks;test.run();IntegrationChecks.addHelperAssertions(checks-before);});
+    }
+    static ActionDecision startGuardAttempt(Harness h,String purpose)throws Exception{
+        ActionDecision action=h.action(purpose);h.step++;h.clock+=10;h.run=id(h.task+":action-guard:"+h.step);
+        h.owner.check(action,h.run);h.session.beforeModelAction(h.step,action,h.run,h.clock);return action;
+    }
+    static NativeAppSession.ActionGuard newGuard(Harness h,ActionDecision action)throws Exception{
+        return h.session.actionGuard(action,h.run,h.frame.observationId,h.clock,h.clock+8000);
+    }
+    static void finishGuardAttempt(Harness h,ActionDecision action,String next)throws Exception{
+        h.session.modelActionOutcome(action,h.run,true,true,false,sha("host-original-outcome:"+h.run),++h.clock);h.xml(next);
+    }
+    static void run(Path fixtureRoot)throws Exception{
+        fixtures=fixtureRoot;
+        guardCase("xiaomi_original_home_search_guard_is_navigation_only",()->{
+            Harness h=new Harness("guard-home");h.xml("home.xml");ActionDecision a=startGuardAttempt(h,"open_search");
+            NativeAppSession.ActionGuard g=newGuard(h,a);int writes=h.journal.size();
+            check(g!=null&&NativeActionSnapshotCheck.SEARCH.equals(g.purpose)&&g.action==a,"original search action");
+            check(g.frame==h.frame&&g.targetNode==h.frame.byId.get(a.nodeId)&&g.selection==h.selection&&g.goal==h.selection.target.nativeGoal,"original frame/node/Selection/goal");
+            check(g.queryHistory==null&&g.historySha==null,"search navigation has no product query proof");
+            g.requireOpen(a,h.run,h.clock);g.verifyInstalled();g.claim(a,h.run,h.clock);g.requireClaimed();
+            check(h.journal.size()==writes&&!h.session.domain().resultReady,"guard does not create observation/result");
+            finishGuardAttempt(h,a,"search-entry.xml");
+            IntegrationChecks.rejects(()->g.requireClaimed(),"outcome closes original home guard");
+            check(h.node("set_product_query")!=null,"original parsed transition is still required");h.noQueryOrResult();
+        });
+        unsupportedGuardCases();
+    }
+    static void unsupportedGuardCases()throws Exception{
+        guardCase("xiaomi_type_submit_and_exact_card_remain_outside_four_purpose_guard",()->{
+            Harness h=new Harness("guard-unsupported");h.xml("home.xml");h.perform("open_search","search-entry.xml");
+            ActionDecision type=startGuardAttempt(h,"set_product_query");check(newGuard(h,type)==null,"type keeps old full currentness");
+            finishGuardAttempt(h,type,"suggestions.xml");
+            String submit=h.node("submit_exact_suggestion")!=null?"submit_exact_suggestion":"submit_product_query";
+            ActionDecision query=startGuardAttempt(h,submit);check(newGuard(h,query)==null,"query not aliased to navigation");
+            finishGuardAttempt(h,query,"results.xml");
+            ActionDecision card=startGuardAttempt(h,"open_exact_product");check(newGuard(h,card)==null,"card/price not aliased to navigation");
+            finishGuardAttempt(h,card,"detail.xml");
+            check(h.session.domain().resultReady,"unchanged synthetic query/card/detail chain remains usable");
+        });
+        guardCase("xiaomi_replaced_installed_identity_refuses_bound_worker_guard",()->{
+            Harness h=new Harness("guard-installed");h.xml("home.xml");ActionDecision a=startGuardAttempt(h,"open_search");NativeAppSession.ActionGuard g=newGuard(h,a);
+            h.installedCurrent=false;IntegrationChecks.rejects(()->g.verifyInstalled(),"bound installed verifier detects replacement");
+            g.close();IntegrationChecks.rejects(()->g.claim(a,h.run,h.clock),"closed home search cannot be reused");
+        });
+    }

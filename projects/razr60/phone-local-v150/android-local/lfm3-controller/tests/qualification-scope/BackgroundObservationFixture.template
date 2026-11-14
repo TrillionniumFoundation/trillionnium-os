@@ -14,6 +14,21 @@ final class BackgroundObservationFixture {
     BackgroundSession background;
     // This legacy IO fixture has no bound Web lease; actual Web paths have their own gate.
     private final WebFlightSession taskWeb=null;
+    // Original graph tests have no action guard authorization. The real census
+    // producer below therefore cannot acquire a native action snapshot here.
+    private final TaskAuthorization.Gate taskAuthorization=null;
+    private static final String DISPLAY_SERVICE="display";
+    private boolean ownsAuthorization(String task,TaskAuthorization.Gate gate){throw new AssertionError("no native action lease in legacy graph fixture");}
+    private Object getSystemService(String name){throw new AssertionError("no native action display service in legacy graph fixture");}
+    private AccessibilityServiceInfo getServiceInfo(){throw new AssertionError("no native action window census in legacy graph fixture");}
+    private static final class DisplayManager {
+        Display getDisplay(int id){throw new AssertionError("no native action display in legacy graph fixture");}
+    }
+    private static final class AccessibilityServiceInfo {
+        static final int FLAG_RETRIEVE_INTERACTIVE_WINDOWS=64,CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT=1;
+        int flags;
+        int getCapabilities(){throw new AssertionError("no native action capability in legacy graph fixture");}
+    }
     final List<AccessibilityWindowInfo> windows=new ArrayList<AccessibilityWindowInfo>();
     AccessibilityNodeInfo foreground;
     int foregroundReads,windowReads,sequence;

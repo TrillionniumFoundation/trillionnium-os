@@ -1,0 +1,204 @@
+    interface Change {void apply(ObserverPipelineHost f,Graph g,int ordinal);}
+    static PhoneObservation.CollectionStats counts(int retained,int pending,int nodes,int text,long children){
+        return new PhoneObservation.CollectionStats(1536,512,6144,3,retained,10,pending,nodes,text,children,1);
+    }
+    static void nativeGraph(Graph g){
+        g.packageName=EventChecks.APP;g.backgroundGeneration=EventChecks.GENERATION;g.backgroundOwnerSha=EventChecks.OWNER;
+        g.backgroundSelectionRaw="{\"fixture\":\"synthetic_native_selection\"}";
+        g.backgroundBootstrapPackage=EventChecks.APP;g.backgroundAllowedPackages=Collections.singletonList(EventChecks.APP);
+        g.state=new ObservationState(EventChecks.OWNER,ImeVisibility.HIDDEN);
+        g.windowMetadata=ObservedWindowMetadata.observed(new int[]{0,0,1080,2400},"android.widget.FrameLayout",1,g.displayId,new int[]{0,0,1080,2400},EventChecks.APP);
+        g.rows.add(new PhoneObservation.Node("n0",EventChecks.APP,"0/0",EventChecks.OWNER));
+        g.refs.put("n0",new NodeRef(EventChecks.OWNER));g.collectionStats=counts(1,0,0,0,0);
+    }
+    static void sealGraph(Graph g){
+        // IO boundary: real state/window hashing, synthetic already-collected node signatures.
+        String key=g.backgroundGeneration+"|"+g.backgroundOwnerSha+"|"+g.backgroundSelectionRaw+"|"+g.packageName+"|"+g.digest;
+        if(g.state!=null&&g.windowMetadata!=null)key=g.windowMetadata.bindFreshness(key+"|"+g.state.fingerprintInput());
+        g.digest=sha(key.getBytes(StandardCharsets.UTF_8));g.nativeObservationComplete=completeNativeObservationGraph(g);
+        String h=EventChecks.OWNER;
+        g.diagnosticStamp=new ObservationDiagnostics.GraphStamp(g.packageName,g.backgroundGeneration,g.backgroundOwnerSha,g.displayId,g.windowId,h,sha(g.digest.getBytes(StandardCharsets.UTF_8)),h,g.truncated,Collections.<ObservationDiagnostics.NodeStamp>emptyList());
+    }
+    static ObserverPipelineHost nativeFixture(final Change change)throws Exception{
+        ObserverPipelineHost f=new ObserverPipelineHost();f.lease=EventChecks.TASK;
+        BackgroundSession bg=new BackgroundSession(9);bg.taskId=f.lease;bg.ownerSha256=EventChecks.OWNER;bg.generation=EventChecks.GENERATION;
+        BackgroundTaskTarget t=new BackgroundTaskTarget();t.route=BackgroundTaskTarget.NATIVE_APP;t.explicitSelection=true;
+        t.ownerSha256=bg.ownerSha256;t.packageName=EventChecks.APP;t.nativeGoal=new NativeAppGoal();
+        t.nativeGoal.ownerSha256=t.ownerSha256;t.nativeGoal.packageName=t.packageName;
+        bg.selection.taskTarget=t;bg.selection.initialPackage=t.packageName;bg.selection.allowedPackages=Collections.singletonList(t.packageName);
+        f.taskBackground=bg;f.readHook=(g,n)->{nativeGraph(g);if(change!=null)change.apply(f,g,n);sealGraph(g);};return f;
+    }
+    static void check(boolean value,String why){EventChecks.check(value,why);}
+    static void eventCase(String name,Case body)throws Exception{EventChecks.run(name,()->test(name,body));}
+    static org.json.JSONObject report(ObservationRequest r)throws Exception{return new org.json.JSONObject(new DiagnosticSnapshot(r.trace).call());}
+    static long count(ObservationRequest r,String name)throws Exception{return report(r).getJSONObject("events").optLong(name,0);}
+    static ObservationRequest twoSamples(ObserverPipelineHost f)throws Exception{
+        f.begin();ObservationRequest r=f.activeObservation;f.awaitSample();SystemClock.now+=200;f.main.drain();f.awaitSample();f.finish();return r;
+    }
+    static void noPublication(ObserverPipelineHost f,ObservationRequest r,String why){
+        check(f.delivered.isEmpty(),why+": published");check(f.directory.list().length==0,why+": leaked file");
+        check(r.deadline==r.started+10000,why+": deadline renewed");
+    }
+    static void changeIdentity(Graph g,String kind){
+        if("digest".equals(kind))g.digest="changed-observed-node";
+        else if("window".equals(kind))g.windowId++;
+        else if("rotation".equals(kind))g.rotation=1;
+        else if("bounds".equals(kind)){g.bounds.right=1079;g.windowMetadata=ObservedWindowMetadata.observed(new int[]{0,0,1079,2400},"android.widget.FrameLayout",1,g.displayId,new int[]{0,0,1080,2400},EventChecks.APP);}
+        else if("ime".equals(kind))g.state=new ObservationState(EventChecks.OWNER,ImeVisibility.VISIBLE);
+        else if("generation".equals(kind))g.backgroundGeneration="99999999-2222-3333-4444-555555555555";
+        else if("owner".equals(kind))g.backgroundOwnerSha=EventChecks.repeat('b',64);
+        else if("display".equals(kind))g.displayId++;
+        else throw new AssertionError(kind);
+    }
+    static void captureCases()throws Exception{
+        for(final int at:new int[]{3,4})for(final boolean stale:new boolean[]{false,true})eventCase("fresh_graph_"+at+"_"+(stale?"stale":"missing")+"_still_retries",()->{
+            ObserverPipelineHost f=nativeFixture((x,g,n)->{if(n<=3)x.noteObservationEvent(9);if(n==at){if(stale)throw new StaleObservation();throw new NoActiveWindow();}});
+            ObservationRequest r=twoSamples(f);noPublication(f,r,"unavailable fresh graph");
+            check(count(r,(at==3?"SCREENSHOT":"SAVED")+"_GRAPH_"+(stale?"STALE":"MISSING"))==1&&count(r,"CAPTURE_RETRY")==1,"reason lost");f.dispose();
+        });
+        eventCase("incomplete_screenshot_or_saved_graph_cannot_recheck_events",()->{
+            for(final int at:new int[]{3,4}){
+                ObserverPipelineHost f=nativeFixture((x,g,n)->{if(n==at)g.collectionStats=counts(1,0,0,0,1);if(n<=3)x.noteObservationEvent(9);});
+                ObservationRequest r=twoSamples(f);noPublication(f,r,"incomplete recheck");check(count(r,"CAPTURE_EVENT_RESET")==1,"incomplete event bypass");f.dispose();
+            }
+        });
+        eventCase("target_event_during_saved_read_not_credited_to_that_read",()->{
+            ObserverPipelineHost f=nativeFixture((x,g,n)->{if(n==4)x.noteObservationEvent(9);});ObservationRequest r=twoSamples(f);
+            noPublication(f,r,"saved watermark");check(count(r,"CAPTURE_EVENT_RESET")==1&&count(r,"CAPTURE_EVENT_RECHECKED")==0,"post-start event inherited evidence");f.dispose();
+        });
+        eventCase("target_event_after_saved_read_before_main_requires_retry",()->{
+            ObserverPipelineHost f=nativeFixture(null);f.autoScreenshot=false;f.startCapture();ObservationRequest r=f.activeObservation;f.deliverScreenshot();
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"actual saved read");f.noteObservationEvent(9);f.main.drain();
+            noPublication(f,r,"publication watermark");check(count(r,"CAPTURE_EVENT_RESET")==1&&count(r,"CAPTURE_EVENT_RECHECKED")==0,"later event bypass");f.dispose();
+        });
+        eventCase("unknown_capture_event_cannot_be_rechecked_by_same_graph",()->{
+            ObserverPipelineHost f=nativeFixture(null);Bitmap.encodeHook=()->f.noteObservationEvent(-1);ObservationRequest r=twoSamples(f);
+            noPublication(f,r,"unknown capture");check(count(r,"CAPTURE_EVENT_RESET")==1&&r.unknownEvents==1,"unknown used target path");f.dispose();
+        });
+    }
+    static void completenessCases()throws Exception{
+        for(final String kind:new String[]{"truncated","missing_stats","pending","child_slots","node_omission","text_omission","retained_count","refs","foreign_row","path","selection","signature","window_unknown","window_type","window_display","window_bounds","root_bounds","title_truncated","class_truncated"}){
+            eventCase("complete_observable_graph_requires_"+kind,()->{
+                ObserverPipelineHost f=nativeFixture((x,g,n)->{
+                    if("truncated".equals(kind))g.truncated=true;
+                    else if("missing_stats".equals(kind))g.collectionStats=null;
+                    else if("pending".equals(kind))g.collectionStats=counts(1,1,0,0,0);
+                    else if("child_slots".equals(kind))g.collectionStats=counts(1,0,0,0,1);
+                    else if("node_omission".equals(kind))g.collectionStats=counts(1,0,1,0,0);
+                    else if("text_omission".equals(kind))g.collectionStats=counts(1,0,0,1,0);
+                    else if("retained_count".equals(kind))g.collectionStats=counts(2,0,0,0,0);
+                    else if("refs".equals(kind))g.refs.clear();
+                    else if("foreign_row".equals(kind))g.rows.get(0).packageName="other.app";
+                    else if("path".equals(kind))g.rows.get(0).nativeTreePath=null;
+                    else if("selection".equals(kind))g.rows.get(0).selectionStateObserved=false;
+                    else if("signature".equals(kind))g.refs.get("n0").appTreeSignature=EventChecks.repeat('b',64);
+                    else if("window_unknown".equals(kind))g.windowMetadata=ObservedWindowMetadata.unknown(new int[]{0,0,1080,2400},"frame");
+                    else {
+                        int[] root={0,0,1080,2400},win={0,0,1080,2400};int type=1,display=9;String title="app",clazz="frame";
+                        if("window_type".equals(kind))type=3;if("window_display".equals(kind))display=0;
+                        if("window_bounds".equals(kind))win[2]=100;if("root_bounds".equals(kind))root[2]=1079;
+                        if("title_truncated".equals(kind))title=EventChecks.repeat('t',97);
+                        if("class_truncated".equals(kind))clazz=EventChecks.repeat('c',129);
+                        g.windowMetadata=ObservedWindowMetadata.observed(root,clazz,type,display,win,title);
+                    }
+                    x.noteObservationEvent(9);
+                });ObservationRequest r=twoSamples(f);noPublication(f,r,kind);
+                check(count(r,"SAMPLE_EVENT_RESET")==2&&count(r,"SAMPLE_EVENT_RECHECKED")==0,"incomplete graph accepted");f.dispose();
+            });
+        }
+    }
+    static void scopeCases()throws Exception{
+        for(final String kind:new String[]{"goal","explicit","route","goal_owner","goal_package","target_owner","initial_package","allowed_packages","graph_selection","graph_bootstrap","graph_allowed","web"}){
+            eventCase("recheck_requires_original_native_binding_"+kind,()->{
+                ObserverPipelineHost f=nativeFixture((x,g,n)->{
+                    if("graph_selection".equals(kind))g.backgroundSelectionRaw=null;
+                    if("graph_bootstrap".equals(kind))g.backgroundBootstrapPackage="other.app";
+                    if("graph_allowed".equals(kind))g.backgroundAllowedPackages=Arrays.asList(EventChecks.APP,"other.app");
+                    x.noteObservationEvent(9);
+                });BackgroundTaskTarget t=f.taskBackground.selection.taskTarget;
+                if("goal".equals(kind))t.nativeGoal=null;if("explicit".equals(kind))t.explicitSelection=false;
+                if("route".equals(kind))t.route="legacy";if("goal_owner".equals(kind))t.nativeGoal.ownerSha256=EventChecks.repeat('b',64);
+                if("goal_package".equals(kind))t.nativeGoal.packageName="other.app";
+                if("target_owner".equals(kind))t.ownerSha256=EventChecks.repeat('b',64);
+                if("initial_package".equals(kind))f.taskBackground.selection.initialPackage="other.app";
+                if("allowed_packages".equals(kind))f.taskBackground.selection.allowedPackages=Arrays.asList(EventChecks.APP,"other.app");
+                if("web".equals(kind))f.taskWeb=new WebFlightSession();
+                ObservationRequest r=twoSamples(f);noPublication(f,r,kind);check(f.pendingScreenshot==null,"scope manufactured admission");f.dispose();
+            });
+        }
+        eventCase("unknown_event_in_old_sample_gap_is_covered_by_next_fresh_sample",()->{
+            ObserverPipelineHost f=nativeFixture(null);f.begin();ObservationRequest r=f.activeObservation;f.awaitSample();f.noteObservationEvent(-1);
+            SystemClock.now+=200;f.main.drain();f.awaitSample();f.finish();
+            check(f.delivered.size()==1&&r.unknownEvents==1&&count(r,"SAMPLE_EVENT_RESET")==0,"changed legacy gap semantics");f.dispose();
+        });
+    }
+    static void deadlineCases()throws Exception{
+        eventCase("continuous_changed_graph_keeps_original_ten_second_expiry",()->{
+            ObserverPipelineHost f=nativeFixture((x,g,n)->{g.digest="changing-"+n;x.noteObservationEvent(9);});ObservationRequest r=twoSamples(f);
+            noPublication(f,r,"changing graph");SystemClock.now=r.deadline;f.main.drain();f.finish();
+            check(r.finished&&f.errors.size()==1&&f.errors.get(0).contains("elapsed_ms=10000"),"expiry not preserved");f.dispose();
+        });
+        eventCase("continuous_events_through_final_saved_read_still_expire_conservatively",()->{
+            ObserverPipelineHost f=nativeFixture((x,g,n)->x.noteObservationEvent(9));ObservationRequest r=twoSamples(f);
+            noPublication(f,r,"final read noisy");check(count(r,"CAPTURE_RETRY")==1,"missing conservative final fence");
+            SystemClock.now=r.deadline;f.main.drain();f.finish();check(r.finished&&f.errors.size()==1,"renewed capture deadline");f.dispose();
+        });
+        for(final String reason:new String[]{"cancel","deadline","lease"})eventCase("eligible_capture_"+reason+"_cannot_publish_late",()->{
+            ObserverPipelineHost f=nativeFixture((x,g,n)->{if(n<=3)x.noteObservationEvent(9);});Block b=new Block();Bitmap.encodeHook=b;
+            f.startCapture();b.entered();ObservationRequest r=f.activeObservation;
+            if("cancel".equals(reason))f.cancelled.set(true);else if("lease".equals(reason))f.taskBackground=new BackgroundSession(9);
+            else SystemClock.now=r.deadline;
+            if(!"deadline".equals(reason))SystemClock.now+=100;f.main.drain();b.open();f.finish();
+            noPublication(f,r,reason);check(f.errors.size()==1,"retired capture did not retain original failure");f.dispose();
+        });
+    }
+    public static void main(String[] args)throws Exception{
+        mainThread=Thread.currentThread();
+        eventCase("identical_complete_samples_progress_despite_repeated_target_events",()->{
+            ObserverPipelineHost f=nativeFixture((x,g,n)->{if(n<=3)for(int i=0;i<5;i++)x.noteObservationEvent(9);});
+            Bitmap.encodeHook=()->{for(int i=0;i<12;i++)f.noteObservationEvent(9);};ObservationRequest r=twoSamples(f);
+            check(f.delivered.size()==1&&f.errors.isEmpty()&&f.reads.get()==4,"same graph did not publish");
+            check(count(r,"SAMPLE_EVENT_RECHECKED")==2&&count(r,"SAMPLE_READY")==1,"two actual samples");
+            check(count(r,"CAPTURE_EVENT_RECHECKED")==1&&count(r,"CAPTURE_EVENT_RESET")==0,"early events not rechecked");
+            check(count(r,"EVENT_TARGET")==27&&count(r,"EVENT_UNKNOWN")==0,"events lost");
+            check(r.deadline==11000&&r.started==1000&&SystemClock.now==1200,"deadline/clock changed");f.dispose();
+        });
+        eventCase("native_recheck_does_not_depend_on_optional_trace",()->{
+            ObserverPipelineHost f=nativeFixture((x,g,n)->{if(n<=3)x.noteObservationEvent(9);});f.diagnosticTask=f.lease;f.diagnosticRequests=96;
+            ObservationRequest r=twoSamples(f);check(r.trace==null&&f.delivered.size()==1,"trace became authority");f.dispose();
+        });
+        eventCase("known_visible_ime_stable_unknown_ime_cannot_recheck",()->{
+            ObserverPipelineHost f=nativeFixture((x,g,n)->{g.state=new ObservationState(EventChecks.OWNER,ImeVisibility.VISIBLE);if(n<=3)x.noteObservationEvent(9);});
+            ObservationRequest r=twoSamples(f);check(f.delivered.size()==1,"known visible IME");f.dispose();
+            f=nativeFixture((x,g,n)->{g.state=new ObservationState(EventChecks.OWNER,ImeVisibility.UNKNOWN);x.noteObservationEvent(9);});
+            r=twoSamples(f);noPublication(f,r,"unknown IME");check(count(r,"SAMPLE_EVENT_RESET")==2,"unknown bypass");f.dispose();
+        });
+        eventCase("unknown_display_resets_other_display_does_not",()->{
+            ObserverPipelineHost f=nativeFixture((x,g,n)->{x.noteObservationEvent(-1);x.noteObservationEvent(0);});ObservationRequest r=twoSamples(f);
+            noPublication(f,r,"unknown");check(r.events==2&&r.unknownEvents==2&&count(r,"EVENT_TARGET")==0,"event category");
+            check(count(r,"SAMPLE_EVENT_RESET")==2,"unknown did not reset");f.dispose();
+            f=nativeFixture((x,g,n)->x.noteObservationEvent(0));r=twoSamples(f);
+            check(f.delivered.size()==1&&r.events==0&&r.unknownEvents==0,"other display interfered");f.dispose();
+        });
+        eventCase("legacy_non_native_goal_keeps_original_reset",()->{
+            ObserverPipelineHost f=nativeFixture((x,g,n)->x.noteObservationEvent(9));f.taskBackground.selection.taskTarget.nativeGoal=null;
+            ObservationRequest r=twoSamples(f);noPublication(f,r,"legacy");check(f.pendingScreenshot==null&&r.trace==null,"legacy entered fast path");f.dispose();
+        });
+        eventCase("incomplete_first_sample_cannot_seed_native_mode",()->{
+            ObserverPipelineHost f=nativeFixture((x,g,n)->{if(n==1)g.collectionStats=null;});ObservationRequest r=twoSamples(f);
+            noPublication(f,r,"incomplete first");check(f.pendingScreenshot==null&&count(r,"SAMPLE_READY")==0,"borrowed old sample");
+            SystemClock.now+=200;f.main.drain();f.awaitSample();f.finish();check(f.delivered.size()==1&&f.reads.get()==5,"later complete samples");f.dispose();
+        });
+        for(final String kind:new String[]{"digest","window","rotation","bounds","ime","generation","owner","display"}){
+            eventCase("actual_identity_change_"+kind+"_requires_resampling",()->{
+                for(final int at:new int[]{2,3,4}){
+                    ObserverPipelineHost f=nativeFixture((x,g,n)->{if(n==at)changeIdentity(g,kind);if(n<=3)x.noteObservationEvent(9);});
+                    ObservationRequest r=twoSamples(f);noPublication(f,r,kind+" at "+at);
+                    if(at>2)check(count(r,at==3?"SCREENSHOT_GRAPH_CHANGED":"SAVED_GRAPH_CHANGED")==1&&count(r,"CAPTURE_RETRY")==1,"actual change not retried");
+                    else check(f.pendingScreenshot==null,"changed second sample admitted capture");f.dispose();
+                }
+            });
+        }
+        captureCases();completenessCases();scopeCases();deadlineCases();
+        observationIo.executor.shutdown();EventChecks.finish(args[0]);
+    }

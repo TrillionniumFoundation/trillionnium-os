@@ -26,7 +26,12 @@ final class DiagnosticGraphHost {
         int displayId=9,windowId=71;boolean truncated;State state=new State();Window windowMetadata=new Window();
         List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();ObservationDiagnostics.GraphStamp diagnosticStamp;
     }
-    static final class ActionWork {Object background=new Object();String diagnosticFreshness;final ActionExecutionState state;
+    /** Never constructed: legacy diagnostic cases have no native action authority. */
+    static final class NativeGuardBoundary {
+        private NativeGuardBoundary(){throw new AssertionError("no native guard in diagnostic legacy cases");}
+        Map<String,Object> evidence(){throw new AssertionError("no native guard evidence in diagnostic legacy cases");}
+    }
+    static final class ActionWork {Object background=new Object();String diagnosticFreshness,nativeActionProof;NativeGuardBoundary nativeGuard;final ActionExecutionState state;
         ActionWork(){state=new ActionExecutionState(DiagnosticChecks.REQUEST,DiagnosticChecks.TASK,"33333333333333333333333333333333","44444444444444444444444444444444",DiagnosticChecks.OWNER,71,9,DiagnosticChecks.GENERATION,1000,9000,()->1000);}}
     static String sha(byte[] bytes){try{byte[] value=MessageDigest.getInstance("SHA-256").digest(bytes);StringBuilder out=new StringBuilder();for(byte b:value)out.append(String.format(Locale.ROOT,"%02x",b&255));return out.toString();}catch(java.security.NoSuchAlgorithmException e){throw new AssertionError(e);}}
 {{native_stamp}}

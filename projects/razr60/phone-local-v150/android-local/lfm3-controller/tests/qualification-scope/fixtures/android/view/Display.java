@@ -1,1 +1,1 @@
-package android.view;public final class Display {public static final int DEFAULT_DISPLAY=0;}
+package android.view;public final class Display {public static final int DEFAULT_DISPLAY=0;public int getRotation(){throw new AssertionError("legacy display has no native action geometry");}public void getRealMetrics(android.util.DisplayMetrics metrics){throw new AssertionError("legacy display has no native action metrics");}}

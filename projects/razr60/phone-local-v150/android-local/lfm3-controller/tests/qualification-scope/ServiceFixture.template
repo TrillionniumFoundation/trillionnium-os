@@ -28,6 +28,13 @@ public final class HeptaAccessibilityService extends android.content.Context {
             WebRegionNativeBridge bridge,Cancellation cancel,ActionWork work)throws Exception{
         throw new AssertionError("legacy fixture cannot execute a Web native-region recheck");
     }
+    /** Non-native legacy gate: no guard comparison or final native claim may succeed. */
+    private Map<String,Object> compareNativeAction(String task,PhoneObservation frame,ActionDecision action,Graph fresh,ActionWork work)throws Exception{
+        throw new AssertionError("legacy fixture has no native action comparison capability");
+    }
+    private void finalNativeActionCheck(String task,PhoneObservation frame,ActionDecision action,ActionWork work)throws Exception{
+        throw new AssertionError("legacy fixture has no final native action capability");
+    }
     static HeptaAccessibilityService live;
     static final int GLOBAL_ACTION_BACK=1,GLOBAL_ACTION_HOME=2;
     final Handler main=new Handler(Looper.getMainLooper());

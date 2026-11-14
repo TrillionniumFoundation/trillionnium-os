@@ -92,12 +92,16 @@ def generate(source,output):
             text=text.replace(marker,methods[name],1)
         if '{{' in text:raise RuntimeError('unfilled '+fixture)
         write(output/(fixture+'.java'),text)
-    # This original refusal remains the live call site. The test helpers cannot
-    # manufacture a permissive action path disconnected from that branch.
+    # Preserve the exact native guard and original default refusal call site.
+    # This observer suite does not qualify the separate native action guard.
     branch='''}else if(!graph.digest.equals(now.digest)){
-                    recordStaleDiagnostic(work,graph,now,action.nodeId);return "stale:目标窗口内容已变化";
+                    if(work!=null&&work.nativeGuard!=null){
+                        try{compareNativeAction(taskId,expected,action,now,work);work.nativeActionRevalidated=true;}
+                        catch(Exception mismatch){recordStaleDiagnostic(work,graph,now,action.nodeId);
+                            return "stale:原生目的复核失败："+message(mismatch);}
+                    }else{recordStaleDiagnostic(work,graph,now,action.nodeId);return "stale:目标窗口内容已变化";}
                 }'''
-    if service.count(branch)!=1:raise RuntimeError('unchanged whole-graph stale refusal call site required')
+    if service.count(branch)!=1:raise RuntimeError('exact separately guarded native branch and original fallback required')
     callback='callback.onResult(delivered.withActionExecution(actionDiagnosticEvidence(work)));'
     if service.count(callback)!=1:raise RuntimeError('actual action callback must consume diagnostic evidence')
     await_body=methods['await_observation'];finally_body=await_body[await_body.index('        }finally{\n            abandoned.set(true);'):]
@@ -112,6 +116,7 @@ def generate(source,output):
         'stale_refusal_callsite':{'bytes':len(branch.encode()),'sha256':sha(branch.encode())},
         'action_callback_callsite':{'bytes':len(callback.encode()),'sha256':sha(callback.encode())},
         'legacy_pipeline_main_not_replaced_in_source':True,
+        'default_whole_graph_action_refusal_retained':True,'native_action_guard_qualification_claimed':False,
         'diagnostic_finally_has_no_IO_or_wait':True,'terminal_diagnostic_uses_only_existing_result_write':True,
         'cleanup_terminal_order_source_sha256':sha(finalization.encode()),
         'boundary':'Actual Service/Controller bodies, pure tracker and stability gate. Android graph/clock, already-observed row carriers, Session carrier, callback/authorization and disk endpoints are explicit host fakes; no Android/currentness or business qualification.'}
@@ -137,6 +142,7 @@ def main():
     report={'schema':'hepta.observation-diagnostics-host-gate.v1','all_pass':False,'stages':[],
         'input_before':before,'tools_before':tools_before,'android_execution':False,'phone_execution':False,'phone_operations':0,
         'model_executed':False,'business_completion_verified':False,'sdk_loaded':False,
+        'action_guard_changed':True,'native_action_guard_qualification_claimed':False,
         'compiler_contract':'JDK17 --release 8 -Xlint:all -Werror',
         'boundary':'Production observer/consumer methods execute with explicit host IO; no device or effect authority.'}
     try:

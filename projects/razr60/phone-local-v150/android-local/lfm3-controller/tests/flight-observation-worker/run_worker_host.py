@@ -33,12 +33,13 @@ out=a.output.resolve();out.mkdir(parents=True,exist_ok=False);java=out/'FlightOb
 jar=a.json_jar.resolve()
 canonical=root/'src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java'
 diagnostics=root/'src/org/trillionnium/hepta/local/ObservationDiagnostics.java'
+native_action=root/'src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java'
 record={'schema':'hepta.flight-observation-worker-validation.v1','source_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),
     'template_sha256':hashlib.sha256(template.read_bytes()).hexdigest(),'generated_sha256':hashlib.sha256(java.read_bytes()).hexdigest(),
     'extracted_methods':extracted,'phone_operations':0,'android_compiled':False,'android_runtime_tested':False,
     'boundary':'Exact production token, Graph, copy, main handoff, read queue, await, task/lease predicates and verify orchestration. Android node/frame/scope/Handler/native traversal use instrumented host carriers. Pure bracket rules are separate tests.',
     'stages':[]}
-commands=[('compile',['java','-m','jdk.compiler/com.sun.tools.javac.Main','-source','8','-target','8','-encoding','UTF-8','-Xlint:all,-options,-try','-Werror','-cp',str(jar),'-d',str(out/'classes'),str(canonical),str(diagnostics),str(java)]),
+commands=[('compile',['java','-m','jdk.compiler/com.sun.tools.javac.Main','-source','8','-target','8','-encoding','UTF-8','-Xlint:all,-options,-try','-Werror','-cp',str(jar),'-d',str(out/'classes'),str(canonical),str(diagnostics),str(native_action),str(java)]),
           ('tests',['java','-cp',str(out/'classes')+':'+str(jar),'org.trillionnium.hepta.local.FlightObservationWorkerHost'])]
 for name,cmd in commands:
     start=time.monotonic();r=subprocess.run(cmd,capture_output=True,text=True,timeout=45)

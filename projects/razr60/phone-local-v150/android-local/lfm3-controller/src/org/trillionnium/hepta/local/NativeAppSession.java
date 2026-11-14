@@ -170,10 +170,91 @@ final class NativeAppSession {
     }
     private static void grant(Set<String> ids,Map<String,String> purposes,NativeAppEvidence.Node node,String purpose){need(node!=null&&purpose!=null,"actual query target and purpose required");ids.add(node.id);purposes.put(node.id,purpose);}
 
+    /** A private Session Attempt supplies authority; the pure comparator does not.
+     * All non-atomic fields are frozen on the controller after its original
+     * attempt journal completed. The worker never advances/reads Session state. */
+    static final class ActionGuard {
+        final ActionDecision action;final String run,purpose;
+        final NativeAppEvidence.Frame frame;final NativeAppEvidence.Node targetNode;
+        final BackgroundTaskTarget.SelectionBinding selection;final BackgroundTaskTarget target;
+        final TaskAuthorization.Gate authorization;final NativeAppGoal goal;
+        final NativeAppEvidence.Installed installed;
+        final long issued,deadline,attemptStarted;
+        final Map<String,Object> identity,queryHistory;
+        final String actionSha,historySha;
+        private final InstalledVerifier verifier;
+        // close and claim have one linearization point, not two independent flags.
+        private final java.util.concurrent.atomic.AtomicInteger state=new java.util.concurrent.atomic.AtomicInteger(0);
+        private ActionGuard(NativeAppSession session,Attempt attempt,long issued,long deadline){
+            action=attempt.action;run=attempt.run;purpose=attempt.purpose;frame=attempt.before.frame;
+            targetNode=frame.byId.get(action.nodeId);selection=session.selection;target=session.target;
+            authorization=session.authorization;goal=session.goal;installed=session.installed;verifier=session.installedVerifier;
+            this.issued=issued;this.deadline=deadline;attemptStarted=attempt.started;
+            need(targetNode!=null&&targetNode.direct()&&targetNode.label.equals(action.nodeLabel)
+                    &&targetNode.selected!=null&&targetNode.checkable!=null&&targetNode.checked!=null,
+                    "original retained target/path/selection tuple required");
+            Map<String,Object> id=NativeAppEvidence.map();id.put("task_id",session.taskId);
+            id.put("owner_sha256",goal.ownerSha256);id.put("target_sha256",target.targetSha256);
+            id.put("authorization_sha256",authorization.authorization.sha256);id.put("selection_sha256",session.selectionSha);
+            id.put("installed_set_sha256",installed.apkSetSha256);id.put("goal_sha256",goal.contractSha256);
+            id.put("background_generation",session.generation);id.put("origin_observation_id",frame.observationId);
+            identity=NativeAppEvidence.immutableMap(id);
+            Map<String,Object> a=NativeAppEvidence.map();a.put("action_schema",action.actionSchema);a.put("action",action.action);
+            a.put("observation_id",action.observationId);a.put("package",action.packageName);a.put("node_id",action.nodeId);
+            a.put("node_label",action.nodeLabel);a.put("text",action.text);a.put("model_run_id",run);
+            a.put("ordinal",attempt.ordinal);a.put("step",attempt.step);a.put("before_source_sha256",frame.sourceRecordSha);
+            actionSha=NativeAppEvidence.fingerprint(a);
+            if(NativeActionSnapshotCheck.QUERY.equals(purpose)){
+                need(attempt.date!=null&&attempt.date.equals(session.confirmedFormDate)&&session.calendarYearProof!=null
+                        &&attempt.flight==session.flight&&attempt.flight.form!=null&&attempt.flight.form.matches(attempt.date)
+                        &&session.queryAttempts.contains(attempt.date)&&session.queryAttempts.size()<=2,
+                        "same already-consumed query Attempt/date/year history required");
+                Map<String,Object> history=NativeAppEvidence.map();history.put("date",attempt.date.toString());
+                history.put("calendar_year_round_trip",session.calendarYearProof);
+                history.put("form_before",attempt.flight.form.evidence());history.put("before_source_sha256",frame.sourceRecordSha);
+                history.put("model_run_id",run);history.put("ordinal",attempt.ordinal);history.put("step",attempt.step);
+                history.put("original_query_budget_already_consumed",true);
+                queryHistory=NativeAppEvidence.immutableMap(history);historySha=NativeAppEvidence.fingerprint(queryHistory);
+            }else{queryHistory=null;historySha=null;}
+        }
+        void requireOpen(ActionDecision expected,String expectedRun,long now){
+            need(state.get()==0&&action==expected&&run.equals(expectedRun)&&now>=issued&&now<deadline,
+                    "native Attempt guard retired, replaced, claimed or expired");
+        }
+        void verifyInstalled()throws Exception{verifier.verify();}
+        // Hash the actual composite signature, including scroll/IME/input freshness.
+        NativeActionSnapshotCheck.Intent intent(String originalFullSignature){
+            return new NativeActionSnapshotCheck.Intent(purpose,goal.packageName,targetNode.path,targetNode.label,
+                    NativeAppEvidence.hash(originalFullSignature),run,action.nodeId,actionSha,historySha,identity,issued,deadline);
+        }
+        void claim(ActionDecision expected,String expectedRun,long now){
+            need(action==expected&&run.equals(expectedRun)&&now>=issued&&now<deadline
+                    &&state.compareAndSet(0,1),"native Attempt closed or already claimed; no second effect");
+        }
+        void requireClaimed(){need(state.get()==1,"native Attempt closed before effect entry");}
+        void close(){state.getAndSet(2);}
+        Map<String,Object> evidence(){Map<String,Object> e=NativeAppEvidence.map();e.put("purpose",purpose);
+            e.put("model_run_id",run);e.put("action_sha256",actionSha);e.put("query_history_sha256",historySha);
+            e.put("attempt_started_elapsed_ms",attemptStarted);e.put("issued_elapsed_ms",issued);e.put("deadline_elapsed_ms",deadline);
+            e.put("state",Integer.valueOf(state.get()));e.put("single_atomic_claim",true);return e;}
+    }
+    ActionGuard actionGuard(ActionDecision action,String run,String observation,long issued,long deadline)throws ActionDecision.InvalidActionException{
+        live();Attempt a=inFlight;
+        need(a!=null&&a.journaled&&a.action==action&&a.run.equals(run)&&a.before==current
+                &&a.before.frame.observationId.equals(observation)&&a.started<=issued,
+                "guard requires the same journaled in-flight original Attempt");
+        if(!"click".equals(action.action)||!java.util.Arrays.asList(NativeActionSnapshotCheck.OPEN,
+                NativeActionSnapshotCheck.YEAR,NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH).contains(a.purpose))return null;
+        need(action.toolChildOrigin==null&&a.guard==null&&deadline>issued&&deadline-issued<=8000,
+                "one original native action worker budget required");
+        current.requireCurrent(action);requireFrame(a.before.frame);
+        a.guard=new ActionGuard(this,a,issued,deadline);return a.guard;
+    }
+
     private static final class Attempt {
         final int ordinal,step;final String run,purpose;final ActionDecision action;final NativeAppDomain before;
         final NativeCtripFlightPage.Page flight;final NativeXiaomiProductPage.Page product;final long started;
-        final LocalDate date;long finished;Map<String,Object> receipt;
+        final LocalDate date;long finished;Map<String,Object> receipt;boolean journaled;ActionGuard guard;
         Attempt(int ordinal,int step,String run,ActionDecision action,NativeAppDomain before,String purpose,
                 NativeCtripFlightPage.Page flight,NativeXiaomiProductPage.Page product,long started,LocalDate date){
             this.ordinal=ordinal;this.step=step;this.run=run;this.action=action;this.before=before;this.purpose=purpose;
@@ -183,7 +264,8 @@ final class NativeAppSession {
             e.put("action",action.action);e.put("purpose",purpose);e.put("node_id",action.nodeId);e.put("node_label",action.nodeLabel);
             e.put("literal_type_text",action.text);e.put("done_status",action.status);e.put("before",before.frame.evidence());
             e.put("dispatch_started_elapsed_ms",started);e.put("dispatch_finished_elapsed_ms",finished==0?null:Long.valueOf(finished));
-            e.put("expected_date",date==null?null:date.toString());e.put("actual_action_receipt",receipt);return e;}
+            e.put("expected_date",date==null?null:date.toString());e.put("actual_action_receipt",receipt);
+            if(guard!=null)e.put("native_action_guard",guard.evidence());return e;}
     }
     void beforeModelAction(int step,ActionDecision action,String run,long now)throws Exception{
         live();verifyInstalled();need(current!=null&&inFlight==null&&step>0&&step<=MAX_ACTIONS&&NativeAppEvidence.id(run)&&usedRuns.add(run),"one actual bounded model action required");
@@ -207,9 +289,11 @@ final class NativeAppSession {
         inFlight=new Attempt(ordinal,step,run,action,current,purpose,flight,product,now,date);
         Map<String,Object> e=base();e.put("attempt",inFlight.evidence());e.put("same_owner_authorization",authorization.frame().evidence());e.put("dispatch_occurred",false);
         journal.write(String.format(java.util.Locale.ROOT,"native-app-attempt-%02d.json",ordinal),e);
+        inFlight.journaled=true;
     }
     void modelActionOutcome(ActionDecision action,String run,boolean accepted,boolean dispatched,boolean stale,String receiptSha,long finished)throws Exception{
         live();Attempt a=inFlight;need(a!=null&&a.action==action&&a.run.equals(run)&&finished>=a.started&&NativeAppEvidence.sha(receiptSha),"same native action and durable receipt required");
+        if(a.guard!=null)a.guard.close();
         Map<String,Object> outcome=NativeAppEvidence.map();outcome.put("accepted",accepted);outcome.put("dispatched",dispatched);outcome.put("stale",stale);
         outcome.put("step_action_record_sha256",receiptSha);outcome.put("model_issued",true);a.finished=finished;a.receipt=NativeAppEvidence.immutableMap(outcome);
         Map<String,Object> e=base();e.put("attempt",a.evidence());journal.write(String.format(java.util.Locale.ROOT,"native-app-outcome-%02d.json",a.ordinal),e);inFlight=null;
@@ -290,7 +374,8 @@ final class NativeAppSession {
         e.put("product_query_observed",productQueryProof!=null);e.put("product_detail_navigation_observed",productOpenProof!=null);e.put("pending",pending==null?null:pending.evidence());e.put("transitions",transitions);return e;}
     private Map<String,Object> base(){Map<String,Object> e=NativeAppEvidence.map();e.put("schema",SCHEMA);e.put("task_id",taskId);
         e.put("owner_sha256",goal.ownerSha256);e.put("execution_target_sha256",target.targetSha256);e.put("authorization_sha256",authorization.authorization.sha256);return e;}
-    private void invalidate(String reason){invalid=true;invalidReason=reason;acceptedClaim=null;}
+    private void invalidate(String reason){if(inFlight!=null&&inFlight.guard!=null)inFlight.guard.close();
+        invalid=true;invalidReason=reason;acceptedClaim=null;}
 
     static final class SuccessClaim {
         final NativeAppSession session;final int step;final String run,frameSha,observation;final Map<String,Object> result;
@@ -307,6 +392,7 @@ final class NativeAppSession {
         acceptedClaim=new SuccessClaim(this,step,run,current.frame,current.resultRecord());return acceptedClaim;
     }
     void retire()throws Exception{if(retired)return;retired=true;
+        if(inFlight!=null&&inFlight.guard!=null)inFlight.guard.close();
         Map<String,Object> e=base();e.put("action_domain_retired",true);e.put("pending_action",inFlight!=null||pending!=null);
         e.put("invalid",invalid);e.put("invalid_reason",invalidReason);e.put("accepted_completion_candidate",acceptedClaim!=null);
         e.put("progress",progress());journal.write("native-app-retired.json",e);

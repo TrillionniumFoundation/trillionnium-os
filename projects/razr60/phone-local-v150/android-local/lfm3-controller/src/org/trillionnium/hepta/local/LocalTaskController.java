@@ -1061,10 +1061,15 @@ public final class LocalTaskController implements AutoCloseable {
     private HeptaAccessibilityService.ActionOutcome awaitAction(String id,PhoneObservation observed,ActionDecision action,ObservedTargetLabels targets,
             org.trillionnium.hepta.background.FixedIntentTarget fixedTarget,TaskAuthorization.Gate authorization,String modelRunId,long deadline)throws Exception{
         checkActive(deadline);
-        final long actionDeadline=Math.min(deadline,SystemClock.elapsedRealtime()+8000);
+        final long actionIssued=SystemClock.elapsedRealtime();
+        final long actionDeadline=Math.min(deadline,actionIssued+8000);
+        NativeAppSession nativeTask=activeNativeTask;
+        final NativeAppSession.ActionGuard nativeGuard=nativeTask==null?null:
+                nativeTask.actionGuard(action,modelRunId,observed.id,actionIssued,actionDeadline);
         final CountDownLatch ready=new CountDownLatch(1);
         final AtomicReference<HeptaAccessibilityService.ActionOutcome> outcome=new AtomicReference<HeptaAccessibilityService.ActionOutcome>();
-        service.perform(id,observed,action,targets,fixedTarget,authorization,modelRunId,actionDeadline,
+        try{
+        service.perform(id,observed,action,targets,fixedTarget,authorization,modelRunId,actionDeadline,nativeGuard,
                 new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}},
                 new HeptaAccessibilityService.ActionCallback(){public void onResult(HeptaAccessibilityService.ActionOutcome value){
                     if(outcome.compareAndSet(null,value))ready.countDown();
@@ -1089,6 +1094,7 @@ public final class LocalTaskController implements AutoCloseable {
         }
         HeptaAccessibilityService.ActionOutcome result=outcome.get();
         if(result==null)throw new IllegalStateException("动作回执为空");return result;
+        }finally{if(nativeGuard!=null)nativeGuard.close();}
     }
     private void checkActive(long deadline)throws Stopped{if(cancelled.get())throw new Stopped();if(SystemClock.elapsedRealtime()>deadline)throw new IllegalStateException("本次任务已超时，已停止继续操作");}
     private static final class Stopped extends Exception {private static final long serialVersionUID=1L;}

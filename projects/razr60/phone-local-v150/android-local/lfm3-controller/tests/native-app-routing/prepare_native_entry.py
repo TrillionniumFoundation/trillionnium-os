@@ -85,7 +85,7 @@ def prepare(source, output, entries):
     service_path.write_bytes(service_after)
     paths = [p for p in paths if p not in (legacy.resolve(), config_path.resolve())]
     actual = [package / (name + ".java") for name in
-              ("NativeAppSession", "NativeCtripFlightPage", "NativeXiaomiProductPage")]
+              ("NativeAppSession", "NativeActionSnapshotCheck", "NativeCtripFlightPage", "NativeXiaomiProductPage")]
     paths += [generated_config, *actual]
     paths = list(dict.fromkeys(p.resolve() for p in paths))
     require(sum(p.name == "NativeAppSession.java" for p in paths) == 1

@@ -50,7 +50,7 @@ public final class ObserverPipelineHost {
         final int serial;String packageName="fixture.notes",digest="same",backgroundGeneration;
         // Selection provenance is outside this scheduling-only graph carrier and remains absent.
         String backgroundSelectionRaw,backgroundOwnerSha;
-        int windowId=7,rotation=0,displayId;boolean truncated;final Rect bounds=new Rect();
+        int windowId=7,rotation=0,displayId;boolean truncated,nativeObservationComplete;final Rect bounds=new Rect();
         final Object state=new Object(),windowMetadata=new Object(),rows=new Object(),collectionStats=new Object();
         final String backgroundBootstrapPackage="fixture.notes";final List<String> backgroundAllowedPackages=Collections.singletonList("fixture.notes");
         boolean closed;

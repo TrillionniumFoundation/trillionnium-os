@@ -27,7 +27,10 @@ def prepare(source, output):
         'background_binding': section(s, '    synchronized void bindBackgroundSession(', '    private void refreshApps()'),
         'app_catalogue': section(s, '    public AppCatalogueRanker.Page appCatalogue(', '    private String diagnosticTask;'),
         'lease': section(s, '    public synchronized boolean acquireTask(', '    private boolean locked()'),
-        'scope_validate_dispatch': section(s, '    synchronized void bindQualificationScope(', '    private void coordinateClick('),
+        # Keep each original dispatch method verbatim. The new native bridge is
+        # executed by its separate gate; this non-native fixture has throwing endpoints.
+        'scope_validate_dispatch': (section(s, '    synchronized void bindQualificationScope(', '    private void requireNativeActionGuard(')
+                                    + section(s, '    private String validate(', '    private void coordinateClick(')),
         'node_graph': section(s, '    private static boolean hasAction(', '    /** Inspect window metadata only.'),
         # Preserve each legacy-tested production method byte-for-byte; the new
         # helper-only live-region implementation has a throwing type boundary below.
@@ -101,7 +104,7 @@ def prepare(source, output):
           'ConservativeTokenBudget','AppCatalogueRanker','ObservedTextProjection','ObservedTransitionProjection',
           'CompactTaskHistory','PromptActionDomain','RecoveryQuiescence','RecoveryJournalTransaction',
           'QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','LocalTaskController','LocalInference','PhoneObservation',
-          'ActionExecutionState','TaskCancellationQueue','SessionJournalQueue','ObservationDiagnostics']
+          'ActionExecutionState','TaskCancellationQueue','SessionJournalQueue','ObservationDiagnostics','NativeActionSnapshotCheck']
     if (pkg/'ObservedAppLabels.java').is_file():pure.append('ObservedAppLabels')
     files=[pkg/(name+'.java') for name in dict.fromkeys(pure)]
     files += [source/'tests/native-app/legacy-boundary/NativeAppSession.java']
@@ -159,7 +162,9 @@ def prepare(source, output):
         'web_fixture_compiler_copy':{'source_path':str(web_fixture_source.relative_to(source)),
             'compiler_path':str(web_fixture_compile),'bytes':len(web_fixture_raw),
             'sha256':hashlib.sha256(web_fixture_raw).hexdigest(),'byte_identical':True},
-        'native_app_fixture_boundary':'Real immutable NativeAppEvidence/NativeAppDomain and actual observation copying compile; NativeAppSession is an all-throw type boundary for these original non-native cases. Separate native provider gates must replace it with the actual class.',
+        'native_app_fixture_boundary':'Real immutable NativeAppEvidence/NativeAppDomain and actual observation copying compile; NativeAppSession and the four-purpose Service bridge are all-throw type boundaries for these original non-native cases. Separate native provider gates replace the Session; the native-action gate executes the actual complete collector/bridge/final checker.',
+        'native_action_bridge_excluded':{'bytes':len(section(s,'    private void requireNativeActionGuard(','    private String validate(').encode()),
+            'sha256':hashlib.sha256(section(s,'    private void requireNativeActionGuard(','    private String validate(').encode()).hexdigest()},
         'phone_operations':False,'native_inference':False}
     (output/'EXTRACTION.json').write_text(json.dumps(record,indent=2)+'\n')
     return files, record
