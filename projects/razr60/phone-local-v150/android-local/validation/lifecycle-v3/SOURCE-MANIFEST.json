@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.lifecycle-source.v1",
+  "revision": 3,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 15068,
+      "sha256": "843937a3b629fb35a5aee7ed7d3bbe40b6448a2baa740e0961b01d94e5447b99"
+    },
+    {
+      "path": "lifecycle_guards.py",
+      "bytes": 20892,
+      "sha256": "13a588901c00479a582e2da01544c83b3ac405cc94cd5ebf455a650708a488c6"
+    },
+    {
+      "path": "phone_lifecycle.py",
+      "bytes": 55601,
+      "sha256": "fca3ffc4f86ebcb11df5f2b40e98d16a56280cc0f6dabf3420766b34ba7ff08a"
+    },
+    {
+      "path": "test_lifecycle_guards.py",
+      "bytes": 17795,
+      "sha256": "be6989505c56be08f47423a78a6c6fd371d94c791433728a8718dfe19ade22ad"
+    }
+  ],
+  "phone_contacted": false,
+  "host_contracts": 21,
+  "actual_device_cancellation": "not_run",
+  "retained_display_sample_parse": "passed_offline",
+  "private_retained_display_dump_published": false
+}

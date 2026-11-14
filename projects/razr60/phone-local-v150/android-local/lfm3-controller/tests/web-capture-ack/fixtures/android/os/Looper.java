@@ -1,0 +1,1 @@
+package android.os;public final class Looper {private static final Looper MAIN=new Looper();private static final ThreadLocal<Looper> VALUE=new ThreadLocal<Looper>();public static Looper myLooper(){return VALUE.get();}public static Looper getMainLooper(){return MAIN;}public static void fixture(Looper l){VALUE.set(l);}}

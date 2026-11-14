@@ -1,0 +1,1 @@
+{"schema":"hepta.web-controller-rpc-failure.v1","method":"captureEvidence","request_nonce":"025e65cec0644bf8b293857c4fa63d6d900b53dcccba42b095f73d2739025c60","binding_sha256":"5c7ea15e4337715f534b155abae50684d0b9985b27a02ec0cbda04c02dc9c5c3","reason":"evidence RPC deadline exceeded","outcome_known":false,"automatic_retry":false,"recorded_elapsed_ms":892234042}

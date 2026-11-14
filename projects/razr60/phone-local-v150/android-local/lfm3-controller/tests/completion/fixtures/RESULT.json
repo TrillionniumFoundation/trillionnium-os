@@ -1,0 +1,487 @@
+{
+  "schema": "hepta.ordinary-moto-note-test.v3",
+  "driver_revision": "notes-r3-fixed-intent",
+  "stage": "run",
+  "qualified": false,
+  "started_wall_s": 1794351510.8999898,
+  "private_trigger_used": false,
+  "host_note_input": false,
+  "plan": {
+    "schema": "hepta.moto-note-plan.v2-r3",
+    "target_package": "com.motorola.stylus",
+    "marker": "Hepta-v43r3-1f2921c77294",
+    "body": "Hepta-v43r3-1f2921c77294。购物清单：牛奶、鸡蛋、面包。",
+    "instruction": "打开 Moto 笔记（com.motorola.stylus），新建一条笔记，正文完整写入以下一行：Hepta-v43r3-1f2921c77294。购物清单：牛奶、鸡蛋、面包。 保存这条新笔记，然后回到笔记列表，重新打开它并停留在正文完整可见的页面。不要修改或删除已有笔记，不分享或发送。",
+    "instruction_sha256": "ca650a1e54d1c455cf43f03b45b7cc1f314bb5f571d5eb5185876ac021f8235e",
+    "phone_tested": false
+  },
+  "plan_sha256": "536fcf246dea854111e8d05a1d5faf9bd9ba38ad97631414243a9939747a5f56",
+  "runtime_config": {
+    "schema": "hepta.local-runtime.v2",
+    "model_profile": "nanbeige4.2-3b-q4_k_m",
+    "compute": "npu",
+    "context_tokens": 8192,
+    "threads": 4
+  },
+  "runtime_config_sha256": "c3ea7615c9b7fab7ea10d2211885715de92d4c69cef548fca859d7de47d26a76",
+  "apk_sha256": "20c732b7fc3e3d8f4aa6b94e597c549e04d64faddbbac9f015216f1c74990fd9",
+  "expected_uid": 10481,
+  "owner_pid": 252457,
+  "owner_start_ticks": "13910385",
+  "owner_boot_id": "97d9600f-e081-465c-9e6e-62651e09806b",
+  "owner_root": "/home/alex/hepta-local-6cc233-20261110-r1/owner-06",
+  "helper_pins": {
+    "v35_identity": "a4a751cf03956783e551f54b16dd37769f00d5b7cd2a0225b667becbc6e6d003",
+    "warm_receipts": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5",
+    "model_profiles": "9ba9403bdf64c2d765b31ffbbed2e95ac846f50df6ecb4e21efd4ebc926a397a",
+    "phone_acceptance": "411da90ca9ef83441fa0a199a25d71361ab582db5b54ac08bd39e5e8597e6302",
+    "phone_suite": "2681e21ae0ead263b9313a6e49b4faf8951f3e87ab6b5c669c41fe34dbe5267a"
+  },
+  "evidence_extension": {
+    "schema": "hepta.notes-r3-v6-evidence-extension.v1",
+    "file": "fixed_intent_v6_acceptance.py",
+    "sha256": "4b556bcbd080a7bc96b8a8c3111482de9b14e47ca1b2695b7a2899288d4b0069"
+  },
+  "installed_identity_before": {
+    "hepta": {
+      "package": "org.trillionnium.hepta.local",
+      "uid": 10481,
+      "apks": [
+        {
+          "path": "/data/app/~~wP4lrphenU4-vXbcgMG7ng==/org.trillionnium.hepta.local-D5H8ugOHS0M4nogvSpuLVA==/base.apk",
+          "sha256": "20c732b7fc3e3d8f4aa6b94e597c549e04d64faddbbac9f015216f1c74990fd9"
+        }
+      ]
+    },
+    "notes": {
+      "package": "com.motorola.stylus",
+      "uid": 10382,
+      "apks": [
+        {
+          "path": "/product/preinstall/MotoStylus/MotoStylus.apk",
+          "sha256": "0e1a52a937c04ec8df380bff3750ce4b345fa0d8d33683e5ae8aa08e70e94017"
+        }
+      ]
+    }
+  },
+  "baseline_session": {
+    "schema": "hepta.local-session.v1",
+    "status": "failed",
+    "task_id": "6403fea22b4b491f8e7bbc1c434c2204",
+    "origin": "user_button",
+    "instruction_sha256": "6f5d3425c7bb011868c53256db71361d6e201af6d37d611bb3685ac062b6271a",
+    "task_authorization_sha256": "62d28b1ac9bb15ffa39be874e6d9a025be82eab4eb994ceffc0ab53d2f9d5cf5",
+    "task_authorization": {
+      "schema": "hepta.owner-task-authorization.v1",
+      "parser": "hepta.owner-tool-clauses.zh.v3-ime-submit",
+      "instruction_sha256": "6f5d3425c7bb011868c53256db71361d6e201af6d37d611bb3685ac062b6271a",
+      "authorization_sha256": "62d28b1ac9bb15ffa39be874e6d9a025be82eab4eb994ceffc0ab53d2f9d5cf5",
+      "allowed_tools": [
+        "back",
+        "click",
+        "done",
+        "find_app",
+        "home",
+        "open",
+        "scroll",
+        "submit",
+        "type",
+        "wait"
+      ],
+      "require_find_app_before_open": false,
+      "find_query": null,
+      "recognized_rules": [],
+      "arbitrary_semantic_constraints_verified": false
+    },
+    "background_request": {
+      "mode": "background",
+      "allowed_packages": [
+        "com.motorola.cn.calculator"
+      ],
+      "bootstrap_package": "com.motorola.cn.calculator",
+      "bootstrap_source": "owner_selected_initial_app",
+      "bootstrap_model_issued": false,
+      "main_display_fallback": false,
+      "home_allowed": false
+    },
+    "background_lease_unreleased": false,
+    "debug_nonce_sha256": null,
+    "expected_scope_sha256": null,
+    "actual_scope_sha256": null,
+    "state": "本地推理失败：engine_failed: Failure: Deadline: native task worker deadline",
+    "pending": false,
+    "running": false,
+    "blocked": false,
+    "cleanup_known": true,
+    "app_uid": 10481,
+    "updated_wall_ms": 1794350434603,
+    "external_model": false,
+    "automatic_resume": false,
+    "goal_independently_verified": false,
+    "evidence_directory": "/data/data/org.trillionnium.hepta.local/files/control-tasks/6403fea22b4b491f8e7bbc1c434c2204",
+    "model_reported_success": false,
+    "steps": 5
+  },
+  "formal_service_binding": {
+    "verified": true,
+    "component": "org.trillionnium.hepta.local/org.trillionnium.hepta.local.HeptaAccessibilityService",
+    "app_pid": 12279,
+    "app_uid": 10481,
+    "client_pid": 3622,
+    "client_uid": 1000,
+    "binder_received": true,
+    "has_bound": true,
+    "connection_ids": [
+      "72ac84f"
+    ],
+    "service_dump_sha256": "51e00aadfc724d99ba894d49b7219f720298b9063101c291df8db90df91f3f70",
+    "identity_scope": "exact active AMS ServiceRecord and live system-client binding; label-only AccessibilityManager rows are not component attestation"
+  },
+  "main_display_mapping": {
+    "verified": true,
+    "logical_display_id": 0,
+    "physical_display_id": "4630947043778501779",
+    "hwc_display_id": 0,
+    "port": 147,
+    "screen_size": [
+      1224,
+      2992
+    ],
+    "rotation": 0,
+    "display_dump_sha256": "c24bd68fb84f9442e7e2e1f2d1f41e4851c9864fcb4c9471a668d8c803b0b3fe",
+    "surfaceflinger_dump_sha256": "d01416390f86be91be5202135332b4e587e1528c3e3f97191fc1057b5035c6e2",
+    "claim_scope": "fresh sequential system logical-0 primary/base/override and SurfaceFlinger physical-ID match; HWC ID is not assumed logical"
+  },
+  "prepared_screen_sha256": "23b2c7a2c421b4db556ae926168be6d66d2f22b5ba339c0e2f512784b7cdee10",
+  "prepared_window_sha256": "27f92784604a3f90c56cc8db785dda34115e946ac55c6dd5555b08d2746f58f5",
+  "prepared_geometry": {
+    "display_id": 0,
+    "screen_size": [
+      1224,
+      2992
+    ],
+    "content_rect": [
+      0,
+      130,
+      1224,
+      2920
+    ],
+    "main_focus": "Window{eb15dcf u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+    "system_bars": [
+      {
+        "type": "statusBars",
+        "source_id": "73500000",
+        "frame": [
+          0,
+          0,
+          1224,
+          130
+        ],
+        "visible": true
+      },
+      {
+        "type": "navigationBars",
+        "source_id": "d17c0001",
+        "frame": [
+          0,
+          2920,
+          1224,
+          2992
+        ],
+        "visible": true
+      }
+    ],
+    "geometry_source": "display0.WindowInsetsStateController.InsetsState"
+  },
+  "start_pixel_proof": {
+    "algorithm": "exact_decoded_RGBA_pixels_outside_system_bars_v1",
+    "pixels_equal": true,
+    "reviewed_content_rgba_sha256": "5bf325915c3cb155845c463f7f94a6b8cf268d4db233d8b5594ae87211308c08",
+    "current_content_rgba_sha256": "5bf325915c3cb155845c463f7f94a6b8cf268d4db233d8b5594ae87211308c08",
+    "reviewed_png_sha256": "cddbdf0548e18a70ff5bf27f09505f851dd95fc9883921026e185204134fbf9e",
+    "current_png_sha256": "23b2c7a2c421b4db556ae926168be6d66d2f22b5ba339c0e2f512784b7cdee10",
+    "reviewed_window_dump_sha256": "27f92784604a3f90c56cc8db785dda34115e946ac55c6dd5555b08d2746f58f5",
+    "current_window_dump_sha256": "27f92784604a3f90c56cc8db785dda34115e946ac55c6dd5555b08d2746f58f5",
+    "reviewed_geometry": {
+      "display_id": 0,
+      "screen_size": [
+        1224,
+        2992
+      ],
+      "content_rect": [
+        0,
+        130,
+        1224,
+        2920
+      ],
+      "main_focus": "Window{eb15dcf u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+      "system_bars": [
+        {
+          "type": "statusBars",
+          "source_id": "73500000",
+          "frame": [
+            0,
+            0,
+            1224,
+            130
+          ],
+          "visible": true
+        },
+        {
+          "type": "navigationBars",
+          "source_id": "d17c0001",
+          "frame": [
+            0,
+            2920,
+            1224,
+            2992
+          ],
+          "visible": true
+        }
+      ],
+      "geometry_source": "display0.WindowInsetsStateController.InsetsState"
+    },
+    "current_geometry": {
+      "display_id": 0,
+      "screen_size": [
+        1224,
+        2992
+      ],
+      "content_rect": [
+        0,
+        130,
+        1224,
+        2920
+      ],
+      "main_focus": "Window{eb15dcf u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+      "system_bars": [
+        {
+          "type": "statusBars",
+          "source_id": "73500000",
+          "frame": [
+            0,
+            0,
+            1224,
+            130
+          ],
+          "visible": true
+        },
+        {
+          "type": "navigationBars",
+          "source_id": "d17c0001",
+          "frame": [
+            0,
+            2920,
+            1224,
+            2992
+          ],
+          "visible": true
+        }
+      ],
+      "geometry_source": "display0.WindowInsetsStateController.InsetsState"
+    },
+    "coordinates": [
+      180,
+      2559
+    ],
+    "pixel_tolerance": 0,
+    "resized": false,
+    "button_only_crop_used": false,
+    "claim_scope": "operator-reviewed reference plus fresh exact app-content pixels; pre-tap observations are sequential, not atomic"
+  },
+  "start_attempted": true,
+  "task_id": "a3e5e4e40db74678ae69c8318e137d58",
+  "terminal_session": {
+    "schema": "hepta.local-session.v1",
+    "status": "model_reported_done",
+    "task_id": "a3e5e4e40db74678ae69c8318e137d58",
+    "origin": "user_button",
+    "instruction_sha256": "ca650a1e54d1c455cf43f03b45b7cc1f314bb5f571d5eb5185876ac021f8235e",
+    "task_authorization_sha256": "ecd23474a179868b76f66658a8eb3a27c4eb5fe0dcaeb2928f21963963078152",
+    "task_authorization": {
+      "schema": "hepta.owner-task-authorization.v1",
+      "parser": "hepta.owner-tool-clauses.zh.v4-fixed-intents",
+      "instruction_sha256": "ca650a1e54d1c455cf43f03b45b7cc1f314bb5f571d5eb5185876ac021f8235e",
+      "authorization_sha256": "ecd23474a179868b76f66658a8eb3a27c4eb5fe0dcaeb2928f21963963078152",
+      "allowed_tools": [
+        "back",
+        "click",
+        "done",
+        "find_app",
+        "home",
+        "notes.create",
+        "open",
+        "scroll",
+        "submit",
+        "type",
+        "wait",
+        "web.search"
+      ],
+      "require_find_app_before_open": false,
+      "find_query": null,
+      "recognized_rules": [],
+      "arbitrary_semantic_constraints_verified": false
+    },
+    "background_request": null,
+    "background_lease_unreleased": false,
+    "debug_nonce_sha256": null,
+    "expected_scope_sha256": null,
+    "actual_scope_sha256": null,
+    "state": "模型已结束，请核对结果：完成创建并保存含指定正文的 Moto 笔记；需后续回到笔记列表并重新打开正文完整可见页面。",
+    "pending": false,
+    "running": false,
+    "blocked": false,
+    "cleanup_known": true,
+    "app_uid": 10481,
+    "updated_wall_ms": 1794351693913,
+    "external_model": false,
+    "automatic_resume": false,
+    "goal_independently_verified": false,
+    "evidence_directory": "/data/data/org.trillionnium.hepta.local/files/control-tasks/a3e5e4e40db74678ae69c8318e137d58",
+    "model_reported_success": true,
+    "steps": 4
+  },
+  "acceptance": {
+    "owner_bound": true,
+    "model_effects": [
+      {
+        "step": "step-01",
+        "action": {
+          "action": "open",
+          "observation_id": "edefb5edb69e4270bab407e489a1ee8f",
+          "app_label": "Moto 笔记",
+          "package": "com.motorola.stylus",
+          "reason": "OWNER首个未满足子目标为打开Moto笔记；当前screen在设置页且search_settings可见，先执行open Moto笔记。"
+        },
+        "binding": {
+          "verified": true,
+          "action_receipt": "task/step-01-action.json",
+          "model_run_id": "2d35eaf0fbf4441cb5b6e2f0d91c9fdf",
+          "task_session_binding_valid": true,
+          "worker_generation": "0a01a5781a224fdabadb53e9d9d27351",
+          "task_id": "a3e5e4e40db74678ae69c8318e137d58",
+          "worker_pid": 14317,
+          "app_uid": 10481,
+          "app_session_receipt_sha256": "66813b1c897194dbe0dd85ccfe44750106205b6de729382155deb9b0f7295b13",
+          "step_model_receipt": "task/step-01-model-0.json",
+          "native_raw_output": "runs/2d35eaf0fbf4441cb5b6e2f0d91c9fdf/raw-text.txt",
+          "native_result": "runs/2d35eaf0fbf4441cb5b6e2f0d91c9fdf/native-result.json",
+          "raw_text_sha256": "f9ad5d43c997402cab3f054085b5315b4d88718291791b80fce1c9ce1eee0fcc"
+        },
+        "accepted": true,
+        "stale": false,
+        "before_editable_body": false,
+        "after_editable_body": false,
+        "after_note_list_marker": false
+      },
+      {
+        "step": "step-02",
+        "action": {
+          "action": "click",
+          "observation_id": "c63d2590416f403e84edf5382af62f43",
+          "package": "com.motorola.stylus",
+          "node_label": "所有笔记",
+          "node_id": "n7",
+          "reason": "step 1 已打开 Moto 笔记；当前可见笔记列表页有“所有笔记”入口，OWNER下一个未满足子目标为新建并保存笔记，先点击“所有笔记”进入笔记列表以定位新建入口。"
+        },
+        "binding": {
+          "verified": true,
+          "action_receipt": "task/step-02-action.json",
+          "model_run_id": "1fab3038623544dd8e1f023a698e9d74",
+          "task_session_binding_valid": true,
+          "worker_generation": "0a01a5781a224fdabadb53e9d9d27351",
+          "task_id": "a3e5e4e40db74678ae69c8318e137d58",
+          "worker_pid": 14317,
+          "app_uid": 10481,
+          "app_session_receipt_sha256": "66813b1c897194dbe0dd85ccfe44750106205b6de729382155deb9b0f7295b13",
+          "step_model_receipt": "task/step-02-model-0.json",
+          "native_raw_output": "runs/1fab3038623544dd8e1f023a698e9d74/raw-text.txt",
+          "native_result": "runs/1fab3038623544dd8e1f023a698e9d74/native-result.json",
+          "raw_text_sha256": "bd5e42f68a96031ae98e9d2bf90f8c0e9a8f153b6ab5ec7220e77fcfe4dff593"
+        },
+        "accepted": true,
+        "stale": false,
+        "before_editable_body": false,
+        "after_editable_body": false,
+        "after_note_list_marker": false
+      },
+      {
+        "step": "step-03",
+        "action": {
+          "action": "notes.create",
+          "observation_id": "ddfe0139c9ac40349a368981ef38ad6a",
+          "app_label": "Moto 笔记",
+          "package": "com.motorola.stylus",
+          "text": "Hepta-v43r3-1f2921c77294。购物清单：牛奶、鸡蛋、面包。",
+          "reason": "step 2 已点击“所有笔记”并进入笔记列表；当前可见笔记列表页尚无新建/编辑入口，OWNER下一个未满足子目标为先创建并保存含指定正文的笔记，使用 fixed_intent_tools 的"
+        },
+        "binding": {
+          "verified": true,
+          "action_receipt": "task/step-03-action.json",
+          "model_run_id": "0b46cb028ede4a59854b0a1f5a474f04",
+          "task_session_binding_valid": true,
+          "worker_generation": "0a01a5781a224fdabadb53e9d9d27351",
+          "task_id": "a3e5e4e40db74678ae69c8318e137d58",
+          "worker_pid": 14317,
+          "app_uid": 10481,
+          "app_session_receipt_sha256": "66813b1c897194dbe0dd85ccfe44750106205b6de729382155deb9b0f7295b13",
+          "step_model_receipt": "task/step-03-model-0.json",
+          "native_raw_output": "runs/0b46cb028ede4a59854b0a1f5a474f04/raw-text.txt",
+          "native_result": "runs/0b46cb028ede4a59854b0a1f5a474f04/native-result.json",
+          "raw_text_sha256": "6d97de7011c6bf56603f9377082af3ba2ff6a2348f974f8d9dbaf795402a23ec"
+        },
+        "accepted": true,
+        "stale": false,
+        "before_editable_body": false,
+        "after_editable_body": false,
+        "after_note_list_marker": true,
+        "notes_create_binding": {
+          "verified": false,
+          "new_note_creation_review_required": true,
+          "launch_is_not_save_proof": true,
+          "reason": "actual editor body not observed"
+        }
+      }
+    ],
+    "invalid_effects": [
+      "step-03"
+    ],
+    "machine_checks_passed": false,
+    "body_entry_actions": [],
+    "local_inference_verified": true,
+    "model_wrote_exact_body": false,
+    "model_left_editor_with_list_marker": false,
+    "model_reopened_saved_body": false,
+    "independent_current_ui": {
+      "checks": [
+        {
+          "kind": "foreground_package",
+          "expected": "com.motorola.stylus",
+          "passed": true,
+          "xml_packages": [
+            "com.motorola.stylus"
+          ],
+          "focus_line": "mCurrentFocus=Window{36ea902 u0 com.motorola.stylus/com.motorola.stylus.note.text.TextNoteActivity}",
+          "focus_package": "com.motorola.stylus"
+        },
+        {
+          "kind": "visible_text",
+          "expected": "Hepta-v43r3-1f2921c77294。购物清单：牛奶、鸡蛋、面包。",
+          "match": "exact",
+          "passed": false,
+          "matches": []
+        }
+      ],
+      "expectations_supplied": true,
+      "all_passed": false
+    },
+    "cleanup_confirmed": true,
+    "saved_note_qualified": false,
+    "qualification_pending": "Independent manual review of actual new-note creation is required even when all machine checks pass.",
+    "qualification_scope": "exact note content, model dispatch and save/reopen; review actual creation target and before/after images to establish a new note",
+    "new_note_creation_review_required": true,
+    "model_reported_done_is_not_save_proof": true
+  },
+  "machine_checks_passed": false,
+  "finished_wall_s": 1794351702.9424899
+}

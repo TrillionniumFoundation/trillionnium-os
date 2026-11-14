@@ -1,0 +1,88 @@
+    static void boundGraph(Graph g){
+        g.packageName=DiagnosticChecks.APP;g.backgroundGeneration=DiagnosticChecks.GENERATION;g.backgroundOwnerSha=DiagnosticChecks.OWNER;
+        String hash=sha(g.digest.getBytes(StandardCharsets.UTF_8));
+        g.diagnosticStamp=new ObservationDiagnostics.GraphStamp(g.packageName,g.backgroundGeneration,g.backgroundOwnerSha,g.displayId,g.windowId,
+                hash,hash,DiagnosticChecks.OWNER,g.truncated,Collections.<ObservationDiagnostics.NodeStamp>emptyList());
+    }
+    static ObserverPipelineHost nativeFixture()throws Exception{
+        ObserverPipelineHost f=new ObserverPipelineHost();f.lease=DiagnosticChecks.TASK;
+        BackgroundSession bg=new BackgroundSession(9);bg.taskId=f.lease;bg.ownerSha256=DiagnosticChecks.OWNER;bg.generation=DiagnosticChecks.GENERATION;
+        BackgroundTaskTarget t=new BackgroundTaskTarget();t.route=BackgroundTaskTarget.NATIVE_APP;t.explicitSelection=true;
+        t.ownerSha256=bg.ownerSha256;t.packageName=DiagnosticChecks.APP;t.nativeGoal=new NativeAppGoal();
+        t.nativeGoal.ownerSha256=t.ownerSha256;t.nativeGoal.packageName=t.packageName;
+        bg.selection.taskTarget=t;bg.selection.initialPackage=t.packageName;bg.selection.allowedPackages=Collections.singletonList(t.packageName);
+        f.taskBackground=bg;f.readHook=(g,n)->boundGraph(g);return f;
+    }
+    static Callable<String> actualSnapshot(ObservationDiagnostics values){return new DiagnosticSnapshot(values);}
+    static org.json.JSONObject report(ObservationRequest request)throws Exception{return new org.json.JSONObject(new DiagnosticSnapshot(request.trace).call());}
+    static void diag(String name,Case body)throws Exception{DiagnosticChecks.run(name,()->test(name,body));}
+    static void diagnosticTests()throws Exception{
+        mainThread=Thread.currentThread();
+        diag("actual_factory_requires_same_native_owner_package_and_lease",()->{
+            ObserverPipelineHost f=nativeFixture();ObservationRequest r=new ObservationRequest(f.lease,f.directory,new ObservationCallback(){public void onObservation(PhoneObservation o){}public void onError(String e){}},()->false,11000,f.taskBackground);
+            DiagnosticChecks.check(f.observationDiagnostic(r)!=null,"matching synthetic carrier");
+            f.taskBackground.selection.taskTarget.nativeGoal.ownerSha256=DiagnosticChecks.repeat('b',64);
+            DiagnosticChecks.check(f.observationDiagnostic(r)==null,"foreign goal owner");
+            f.taskBackground.selection.taskTarget.nativeGoal.ownerSha256=DiagnosticChecks.OWNER;f.taskBackground.selection.allowedPackages=Arrays.asList(DiagnosticChecks.APP,"other.app");
+            DiagnosticChecks.check(f.observationDiagnostic(r)==null,"not singleton");
+            f.taskBackground.selection.allowedPackages=Collections.singletonList(DiagnosticChecks.APP);f.lease="33333333333333333333333333333333";
+            DiagnosticChecks.check(f.observationDiagnostic(r)==null,"retired lease");f.dispose();
+        });
+        diag("actual_factory_record_cap_and_new_task_isolation",()->{
+            ObserverPipelineHost f=nativeFixture();ObservationCallback callback=new ObservationCallback(){public void onObservation(PhoneObservation o){}public void onError(String e){}};
+            ObservationRequest r=new ObservationRequest(f.lease,f.directory,callback,()->false,11000,f.taskBackground);
+            Set<String> ids=new HashSet<String>();for(int i=1;i<=96;i++){ObservationDiagnostics d=f.observationDiagnostic(r);DiagnosticChecks.check(d!=null&&d.sequence==i&&ids.add(d.requestId),"bounded unique request "+i);}
+            DiagnosticChecks.check(f.observationDiagnostic(r)==null,"97th diagnostic refused");
+            f.lease="33333333333333333333333333333333";f.taskBackground.taskId=f.lease;r=new ObservationRequest(f.lease,f.directory,callback,()->false,11000,f.taskBackground);
+            DiagnosticChecks.check(f.observationDiagnostic(r).sequence==1,"new task starts separate sequence");f.dispose();
+        });
+        diag("actual_default_callback_keeps_legacy_non_native_observation",()->{
+            ObserverPipelineHost f=new ObserverPipelineHost();f.begin();ObservationRequest r=f.activeObservation;f.awaitSample();
+            DiagnosticChecks.check(r.trace==null,"old task receives no native diagnostic");f.dispose();
+        });
+        diag("actual_native_pipeline_publishes_bound_static_value_snapshot",()->{
+            ObserverPipelineHost f=nativeFixture();f.begin();ObservationRequest r=f.activeObservation;f.awaitSample();SystemClock.now+=200;f.main.drain();f.awaitSample();f.finish();
+            DiagnosticChecks.check(f.delivered.size()==1&&f.reads.get()==4,"unchanged samples and rechecks");
+            org.json.JSONObject j=report(r);DiagnosticChecks.check(j.getString("published_observation_id").equals(f.current.id)&&j.getString("task_id").equals(f.lease),"published identity");
+            DiagnosticChecks.check(j.getJSONObject("events").getInt("SAMPLE_START")==2&&j.getJSONObject("events").getInt("CAPTURE_START")==1,"actual counts");
+            DiagnosticChecks.check(j.getJSONArray("last_graphs").length()==4,"actual frame hashes");
+            int reads=f.reads.get();new DiagnosticSnapshot(r.trace).call();DiagnosticChecks.check(f.reads.get()==reads,"snapshot performs no read");
+            java.lang.reflect.Field[] fields=DiagnosticSnapshot.class.getDeclaredFields();DiagnosticChecks.check(fields.length==1&&fields[0].getType()==ObservationDiagnostics.class,"no captured Service/request/graph");f.dispose();
+        });
+        diag("actual_target_unknown_event_counts_preserve_old_reset_rule",()->{
+            ObserverPipelineHost f=nativeFixture();Block b=new Block();f.readHook=(g,n)->{boundGraph(g);b.run();};f.begin();ObservationRequest r=f.activeObservation;b.entered();
+            f.noteObservationEvent(0);f.noteObservationEvent(9);f.noteObservationEvent(-1);b.open();f.awaitSample();
+            org.json.JSONObject e=report(r).getJSONObject("events");DiagnosticChecks.check(r.events==2&&e.getInt("EVENT_TARGET")==1&&e.getInt("EVENT_UNKNOWN")==1,"target/unknown only");
+            DiagnosticChecks.check(e.getInt("SAMPLE_EVENT_RESET")==1&&e.getInt("SAMPLE_MISSING")==1,"actual reset distinguishable");f.dispose();
+        });
+        for(final boolean stale:new boolean[]{false,true})diag("actual_sample_"+(stale?"stale_root":"missing_root")+"_reason_is_distinct",()->{
+            ObserverPipelineHost f=nativeFixture();f.readHook=(g,n)->{boundGraph(g);if(stale)throw new StaleObservation();throw new NoActiveWindow();};f.begin();ObservationRequest r=f.activeObservation;f.awaitSample();
+            org.json.JSONObject e=report(r).getJSONObject("events");DiagnosticChecks.check(e.getInt(stale?"SAMPLE_STALE_ROOT":"SAMPLE_NO_ROOT")==1&&e.getInt("SAMPLE_MISSING")==1,"sample category");f.dispose();
+        });
+        for(final int at:new int[]{3,4})diag("actual_capture_changed_graph_"+at+"_has_specific_reason",()->{
+            ObserverPipelineHost f=nativeFixture();f.readHook=(g,n)->{if(n==at)g.digest="changed";boundGraph(g);};f.begin();ObservationRequest r=f.activeObservation;f.awaitSample();SystemClock.now+=200;f.main.drain();f.awaitSample();f.finish();
+            org.json.JSONObject e=report(r).getJSONObject("events");DiagnosticChecks.check(e.getInt(at==3?"SCREENSHOT_GRAPH_CHANGED":"SAVED_GRAPH_CHANGED")==1&&e.getInt("CAPTURE_RETRY")==1,"capture retry reason");
+            DiagnosticChecks.check(f.delivered.isEmpty()&&f.directory.list().length==0&&r.deadline==11000,"no stale output or renewal");f.dispose();
+        });
+        diag("actual_screenshot_interval_retry_remains_single_and_bounded",()->{
+            ObserverPipelineHost f=nativeFixture();f.autoScreenshot=false;f.begin();ObservationRequest r=f.activeObservation;f.awaitSample();SystemClock.now+=200;f.main.drain();f.awaitSample();
+            f.pendingScreenshot.onFailure(ERROR_TAKE_SCREENSHOT_INTERVAL_TIME_SHORT);
+            org.json.JSONObject e=report(r).getJSONObject("events");DiagnosticChecks.check(e.getInt("INTERVAL_RETRY")==1&&e.getInt("CAPTURE_CALLBACK_FAIL")==1&&r.intervalRetries==1,"one interval retry recorded");
+            DiagnosticChecks.check(r.deadline==11000&&!r.finished,"deadline unchanged");f.dispose();
+        });
+        diag("actual_watchdog_timeout_freezes_trace_without_false_drain",()->{
+            ObserverPipelineHost f=nativeFixture();Block b=new Block();f.readHook=(g,n)->{boundGraph(g);b.run();};f.begin();ObservationRequest r=f.activeObservation;b.entered();
+            SystemClock.now=11000;f.main.drain();org.json.JSONObject j=report(r);
+            DiagnosticChecks.check(f.errors.size()==1&&f.errors.get(0).contains("elapsed_ms=10000")&&j.getLong("elapsed_ms")==10000,"original 10s bound");
+            DiagnosticChecks.check(j.getBoolean("worker_active_at_last_diagnostic_update")&&!j.getBoolean("worker_drained_proved_by_this_record")&&f.observationReadWorkPending(),"timeout not drain");
+            String frozen=j.toString();b.open();f.finish();DiagnosticChecks.check(frozen.equals(report(r).toString())&&f.delivered.isEmpty(),"late worker cannot rewrite/publish");f.dispose();
+        });
+        diag("actual_callback_diagnostic_exception_preserves_observation",()->{
+            ObserverPipelineHost f=nativeFixture();f.observe(f.lease,f.directory,()->false,11000,new ObservationCallback(){
+                public void onDiagnostic(Callable<String> value){throw new IllegalStateException("fixture diagnostic consumer unavailable");}
+                public void onObservation(PhoneObservation value){f.delivered.add(value);}public void onError(String value){f.errors.add(value);}});
+            f.main.drain();f.awaitSample();SystemClock.now+=200;f.main.drain();f.awaitSample();f.finish();
+            DiagnosticChecks.check(f.delivered.size()==1&&f.errors.isEmpty(),"diagnostic callback changed observation");f.dispose();
+        });
+        observationIo.executor.shutdown();
+    }

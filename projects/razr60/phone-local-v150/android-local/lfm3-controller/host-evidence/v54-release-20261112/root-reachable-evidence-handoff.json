@@ -1,0 +1,145 @@
+{
+  "schema": "hepta.root-reachable-evidence-handoff.v1",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "items": [
+    {
+      "suggested_name": "helper4-upgrade-actual.json",
+      "git_blob": "d466c99ccba9ae5ae22588ed5339641baf77fba2",
+      "bytes": 74275,
+      "sha256": "3e449e0aba6af4d143810157a7ef0aba7e39e2d5ad74ffedd9b7935fe225aa90",
+      "scope": "actual installed helper4 / 32 original diagnostics preserved"
+    },
+    {
+      "suggested_name": "helper4-mi-open-actual.json",
+      "git_blob": "30fd39a07978bb3b51243796998b6be3ca7ce800",
+      "bytes": 31713,
+      "sha256": "fcd46aadac04edafcad6d5537860d13ca05d29787a4615ef7cc2c2a5ae9e9427",
+      "scope": "manual Mi open / no saved Mi capture"
+    },
+    {
+      "suggested_name": "helper4-mi-capture-failure-actual.json",
+      "git_blob": "4a75c821546b63f55a3ed802017b471c888ea040",
+      "bytes": 31641,
+      "sha256": "d568beb210462b361987c596c167e8eaa8bef78a8b3055e262dba9e35cdf6a0c",
+      "scope": "actual DOM changed failure / no model or product success"
+    },
+    {
+      "suggested_name": "helper4-mi-retire-r1-failure-actual.json",
+      "git_blob": "7ffb76eafc9a013f7c08dce4cbdd6e4ea8f6fd7d",
+      "bytes": 9706,
+      "sha256": "47a0a1954fe6803450fb840bf3c520a4b88ac3e2b8abf069093f2c4c5f04276c",
+      "scope": "tuple/list test-driver failure before any Back"
+    },
+    {
+      "suggested_name": "helper4-mi-retire-r1-owner.json",
+      "git_blob": "17f79959b8270814b99cf3c26f089c7bdedb6b23",
+      "bytes": 341,
+      "sha256": "75678b1896d820bcbddcdf7cf3c6b7e146b0822bffea736cddd8c9d30b297f43",
+      "scope": "actual owner exit2 / original failure"
+    },
+    {
+      "suggested_name": "helper4-mi-retire-r2-actual.json",
+      "git_blob": "d7a03c463e4a485ed113d9ba12f2659c68cc03b6",
+      "bytes": 36034,
+      "sha256": "9bc5b680c09613f04f7662c225eacdf025340879bf3f6c0702bc8e6730f6cf3f",
+      "scope": "one ordinary Back / scoped cleanup / all32 plus one new close"
+    },
+    {
+      "suggested_name": "helper4-mi-retire-r2-owner.json",
+      "git_blob": "da6a583eb854928c060a7c7d587de773f0e9049c",
+      "bytes": 341,
+      "sha256": "83f31eaae00db3ee366f686e3204f980952b86cce66f22600c60bb1a780d16ed",
+      "scope": "actual owner exit0"
+    },
+    {
+      "suggested_name": "helper4-mi-retire-r2-close-raw.json",
+      "git_blob": "5493a9033ec820d896492fb8bb6e0a06aef6b0a4",
+      "bytes": 1632,
+      "sha256": "d10cedcc236d4d93114f3c3cae3515ef7dac658dca34f565f9802e86bcda4c0e",
+      "scope": "raw actual new manual close; profile first observed in close"
+    },
+    {
+      "suggested_name": "helper4-mi-retire-r2-root-review.json",
+      "git_blob": "7039f9df3b2a1ddc3d56af3ae5b42e756295f43b",
+      "bytes": 2839,
+      "sha256": "75913f2e4063786254b12d70ea803f886cc204548edf9522add72f0bd4ea5c9b",
+      "scope": "root actual close read / limited manual scope"
+    },
+    {
+      "suggested_name": "helper5-build-actual-unsigned.json",
+      "git_blob": "009b8a1512687b3c2aecb232eb7f95a489d52ef1",
+      "bytes": 129146,
+      "sha256": "cce5d75af6af48fb00b72b96475d686b61b89538c60cbd424fd99e79c58396a8",
+      "scope": "actual 33/175 and Android38 build; not signed/installed"
+    },
+    {
+      "suggested_name": "main54-code5-r6-android-actual.json",
+      "git_blob": "44090f1f2f728299818f32bc0366ab147742e640",
+      "bytes": 28841,
+      "sha256": "a037b49f05ea48caccb2902b95bbb2314a5f767e230138dd14ae3a16851ee4b2",
+      "scope": "actual query40 + web80 + composition43 + calendar13 + Android211"
+    },
+    {
+      "suggested_name": "main54-p4-r3-failure-actual.json",
+      "git_blob": "08faa38b1dbb38329cb8b62c26c944d85a92c1d8",
+      "bytes": 7674,
+      "sha256": "895145f1b2316dea01b1fc23658d030d75cd7645848c4271af3cfe4d284e6b87",
+      "scope": "actual Werror auxiliary-class fixture failure, unchanged production"
+    },
+    {
+      "suggested_name": "main54-p4-canonical-fixture-root-review.json",
+      "git_blob": "b86f6cf52764428b663df61dde16fa75776be424",
+      "bytes": 2028,
+      "sha256": "6f258e87d1b801253cb59ba8cc01fcf9cac65621217596fdd29f100279265af9",
+      "scope": "source-only exact three Python compiler-basename corrections"
+    },
+    {
+      "suggested_name": "v53-recovery-actual.json",
+      "git_blob": "f2d1e434cdf603bd73e334724887b6a62eadf64a",
+      "bytes": 141943,
+      "sha256": "274323579331a407ddc697b2101bda360240713427be24eb727649071eccfbce",
+      "scope": "original false qualification/exit2 retained; actual Notes outcome scoped separately"
+    },
+    {
+      "suggested_name": "v53-recovery-independent-replay.json",
+      "git_blob": "6cb74956eb1eab5491ea4a3501d6427a7d1c1899",
+      "bytes": 35308,
+      "sha256": "4c2a847f2ddb8cc1995cafd8758e1f85fe12d4c4e40db507bf707f8a612407dc",
+      "scope": "independent actual9/9 replay; background_only"
+    },
+    {
+      "suggested_name": "v53-cancel-actual.json",
+      "git_blob": "4c765e64a0413d9828ad81c7087763990c830862",
+      "bytes": 137745,
+      "sha256": "b5e8191c952456fad910aad500fca060d65808648842f4cc83f2fcbead0877a2",
+      "scope": "one healthy SDK cleanup cancellation; raw failure flags preserved"
+    },
+    {
+      "suggested_name": "v53-cancel-independent-review.json",
+      "git_blob": "8e7d7ded7b2c58963856a01d40871bdcd1cd534b",
+      "bytes": 10605,
+      "sha256": "a91d60051ba2c545e0923e769170f146ec806ca9fb0364909c6c63453fd48f23",
+      "scope": "22 actual independent cancellation checks; no business success"
+    }
+  ],
+  "additional_references": [
+    {
+      "git_blob": "e101c5b8e90f60981f1864df8c74ee7950f32aca",
+      "scope": "BG independent R2 retirement review; root raw close review supplements it"
+    },
+    {
+      "git_blob": "a9d43121eaa2d539d7bbcd81884c47d9b9ccc4ca",
+      "scope": "P4 r4 actual PTY exit0 and 101; add full STAGE when independently read"
+    },
+    {
+      "git_blob": "b5ae04ac0175d84d1ad34e716a4667609d97db32",
+      "scope": "v53 recovery scoped combined review"
+    },
+    {
+      "git_blob": "b9a13d3e651179240934791aa031abc434bee515",
+      "scope": "actual recovery NPU structured facts"
+    }
+  ],
+  "instructions": "Preserve existing reports and all negative flags. Add these raw JSON blobs plus a reader-facing index to a reachable evidence tree; do not silently reinterpret manual records as local-model business outcomes. Use existing final release evidence folder. Do not publish private screenshots or unrelated device dumps from this list.",
+  "phone_actions_by_handoff": 0
+}

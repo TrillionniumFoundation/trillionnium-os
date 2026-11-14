@@ -1,0 +1,137 @@
+{
+  "schema": "hepta.helper4-uncaptured-retirement-r2-independent-result-review.v1",
+  "scope": "complete immutable phone RESULT read plus comparison to complete prior helper4 install RESULT; raw close not independently re-read in this review",
+  "input": {
+    "git_blob": "d7a03c463e4a485ed113d9ba12f2659c68cc03b6",
+    "bytes": 36034,
+    "sha256": "9bc5b680c09613f04f7662c225eacdf025340879bf3f6c0702bc8e6730f6cf3f"
+  },
+  "prior_install": {
+    "git_blob": "d466c99ccba9ae5ae22588ed5339641baf77fba2",
+    "bytes": 74275,
+    "sha256": "3e449e0aba6af4d143810157a7ef0aba7e39e2d5ad74ffedd9b7935fe225aa90"
+  },
+  "actual": {
+    "completed": true,
+    "back_actions": 1,
+    "all_submitted_returned": true,
+    "helper_departure": {
+      "display_id": 0,
+      "focus_line": "mCurrentFocus=Window{27cd0bf u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+      "focus_package": "org.trillionnium.hepta.local",
+      "focus_source": "dumpsys window displays: unique display 0 mCurrentFocus"
+    },
+    "old_records": 32,
+    "final_records": 33,
+    "all_old_records_exact": true,
+    "new_records": [
+      "diagnostic-close-c681b5ba-d88b-441c-b1ee-5dad210718cc.json"
+    ],
+    "close": {
+      "profile_name": "hepta_v2_1170ccc3c685edb1407ae9497b5123609ce3338a255879bf13b00712ea42668f",
+      "cleanup": {
+        "captures_retired": true,
+        "stop_loading_called": true,
+        "webview_destroyed": true,
+        "active_view_absent": true,
+        "storage_clear_completed": true
+      },
+      "retirement_clear": {
+        "started_elapsed_ms": 809487697,
+        "deadline_elapsed_ms": 809490697,
+        "callback_elapsed_ms": 809487753,
+        "callback_observed": true,
+        "deadline_met": true,
+        "cookies_present_after": false,
+        "api": "WebStorageCompat.deleteBrowsingData",
+        "attempt": 1,
+        "close_request_nonce": null,
+        "actor": "automatic_owned_retirement"
+      },
+      "preload_clear": {
+        "started_elapsed_ms": 806002184,
+        "deadline_elapsed_ms": 806005183,
+        "initial_url": null,
+        "callback_elapsed_ms": 806002257,
+        "callback_observed": true,
+        "deadline_met": true,
+        "cookies_present_after": false,
+        "api": "WebStorageCompat.deleteBrowsingData"
+      },
+      "storage_isolation": {
+        "schema": "hepta.web-helper.storage-isolation.v1",
+        "library": "androidx.webkit:webkit:1.13.0",
+        "runtime_multi_profile": true,
+        "runtime_delete_browsing_data": true,
+        "profile_name": "hepta_v2_1170ccc3c685edb1407ae9497b5123609ce3338a255879bf13b00712ea42668f",
+        "profile_names_before": [
+          "Default",
+          "hepta_v2_5070b7da9f5b76a38af6902e2bf765896cd312d57f9e6d35cefb2e416bfb266c"
+        ],
+        "profile_was_present_before": false,
+        "profile_assigned_elapsed_ms": 806002180,
+        "webview_provider_package": "com.google.android.webview",
+        "webview_provider_version": "140.0.7339.207",
+        "webview_provider_version_code": 733920733,
+        "preload_clear": {
+          "started_elapsed_ms": 806002184,
+          "deadline_elapsed_ms": 806005183,
+          "initial_url": null,
+          "callback_elapsed_ms": 806002257,
+          "callback_observed": true,
+          "deadline_met": true,
+          "cookies_present_after": false,
+          "api": "WebStorageCompat.deleteBrowsingData"
+        },
+        "first_load_dispatch_begin_elapsed_ms": 806002258,
+        "retirement_clear": {
+          "started_elapsed_ms": 809487697,
+          "deadline_elapsed_ms": 809490697,
+          "callback_elapsed_ms": 809487753,
+          "callback_observed": true,
+          "deadline_met": true,
+          "cookies_present_after": false,
+          "api": "WebStorageCompat.deleteBrowsingData",
+          "attempt": 1,
+          "close_request_nonce": null,
+          "actor": "automatic_owned_retirement"
+        },
+        "all_os_sockets_observed_closed": false,
+        "whole_device_storage_erased": false,
+        "business_verified": false,
+        "first_url": "https://www.mi.com/shop/search?keyword=AX3000T"
+      },
+      "loaded_profile_storage_clear_observed": true,
+      "profile_first_observed_in_close": true,
+      "prior_captured_profile_known": false,
+      "prior_capture_to_profile_binding_verified": false,
+      "scope": "one signed manual singleton page retired by observed ordinary Back with one new close",
+      "formal_lease_cleanup_verified": false,
+      "profile_name_deleted": false,
+      "all_os_sockets_observed_closed": false,
+      "whole_device_storage_erased": false,
+      "business_verified": false,
+      "file": "diagnostics/diagnostic-close-c681b5ba-d88b-441c-b1ee-5dad210718cc.json",
+      "bytes": 1632,
+      "sha256": "d10cedcc236d4d93114f3c3cae3515ef7dac658dca34f565f9802e86bcda4c0e"
+    },
+    "device_uptime_bracket_ms": [
+      809482170,
+      809503980
+    ],
+    "retirement_callback_elapsed_ms": 56,
+    "main_task": "4320372daa4f4a2bba4f1fcf1297c352",
+    "config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+    "main_unchanged": true,
+    "task_and_config_unchanged": true,
+    "profile_prior_observed": false,
+    "formal_lease_cleanup_verified": false,
+    "business_verified": false
+  },
+  "original_r1_failure_retained": {
+    "git_blob": "7ffb76eafc9a013f7c08dce4cbdd6e4ea8f6fd7d",
+    "sha256": "47a0a1954fe6803450fb840bf3c520a4b88ac3e2b8abf069093f2c4c5f04276c",
+    "back_actions": 0
+  },
+  "phone_actions_by_reviewer": 0
+}

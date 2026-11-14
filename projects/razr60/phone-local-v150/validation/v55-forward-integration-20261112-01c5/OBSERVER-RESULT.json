@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.observation-pipeline-host.v1",
+  "production_sha256": "bedbc34ac3b516f0e270e965e84bcf6fa908f09717b2b2b59583d456c43dd7a3",
+  "template_sha256": "dd456a6e0f8326cc4a6a43cbd33780f9c7ae920c69741c761e2633255bd40324",
+  "generated_fixture_sha256": "05b8cb1a0bacdf1b7b7fcdcb1d8f90cb3c8e5aa7597e866a0a228e2dc499aa24",
+  "runner_sha256": "6d8c89def31cb3f606657d8ad135ab700b2b4f1782129820a237da12ef2f87b7",
+  "stability_gate_sha256": "ba98c74a6b4c89e04338bb1965fba913a4039f840b8f1073f96f0c9bfcdd8fe8",
+  "extracted": {
+    "acquire": "78e04a9e53cc9355c9b55143e48e5ac8bab7672cccef3830dd2241211e9f6537",
+    "recovery_idle": "6ead88aabea8a7c8e09849db7f2621ebcd86d319f351c3de6e31a710d675a296",
+    "observation": "8b123d07416daf341ee5cd53554fd42374d2cf12ec1b7d8dd52cc860c270b502"
+  },
+  "phone_operations": false,
+  "android_runtime": false,
+  "native_inference": false,
+  "production_methods_executed": [
+    "acquireTask",
+    "recoveryControllerIdle",
+    "observe",
+    "sampleObservation",
+    "acceptSample",
+    "watchObservation",
+    "captureObservation",
+    "watchCapture",
+    "processScreenshot",
+    "acceptScreenshot",
+    "failObservation",
+    "retryObservation",
+    "copyScreenshot"
+  ],
+  "boundary": "Android graph, screenshot, Web cleanup state and callback IO are instrumented fakes; production deadline, ownership, admission/recovery conjunctions, event fence and worker/main delivery execute unchanged.",
+  "stages": [
+    {
+      "name": "compile",
+      "exit_code": 0,
+      "elapsed_s": 3.2799524090078194
+    },
+    {
+      "name": "tests",
+      "exit_code": 0,
+      "elapsed_s": 0.4100184670242015
+    }
+  ],
+  "status": "passed",
+  "compiler_contract": "Java 8 API release",
+  "passed_cases": 31
+}

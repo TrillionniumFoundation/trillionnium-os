@@ -1,0 +1,68 @@
+{
+  "actual_phone_execution": false,
+  "apk": {
+    "bytes": 1414146,
+    "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/hepta-web-helper-0.7.0-v4.apk",
+    "sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313"
+  },
+  "build_pins": {
+    "bytes": 74746,
+    "path": "BUILD-PINS.json",
+    "sha256": "77261c3741563b1db2a624bf014727588b839465d84e119e5e43f45b42d22104"
+  },
+  "business_verified": false,
+  "certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "compiled_payloads_preserved": {
+    "changed": [],
+    "count": 372,
+    "removed": [],
+    "unchanged": true
+  },
+  "fresh_android_build": {
+    "bytes": 285943,
+    "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/full-unsigned-r1/RESULT.json",
+    "sha256": "8312421851f847834cbe9c8830763abdd8e653d37813ec7c6301d32b799a7ee0"
+  },
+  "package": "org.trillionnium.hepta.webhelper",
+  "private_signing_key_included": false,
+  "schema": "hepta.helper7-paired-artifact.v1",
+  "signature_zip_entries": [
+    {
+      "bytes": 1645,
+      "name": "META-INF/HEPTA-LO.RSA",
+      "sha256": "1b2536e00e7952bf7347149c4f7f1dcd89686e7a651b369eb4bf018fe55223c3"
+    },
+    {
+      "bytes": 43414,
+      "name": "META-INF/HEPTA-LO.SF",
+      "sha256": "31d874bc2909d65c8a7082eb02257141e89f0af08d6464544d5e847fa37e83e7"
+    },
+    {
+      "bytes": 43287,
+      "name": "META-INF/MANIFEST.MF",
+      "sha256": "9e2f171a952e1df704febb3c6caf2498e594ff58a4f9dfefa134e62cd1f60d27"
+    }
+  ],
+  "signed_receipt": {
+    "bytes": 8079,
+    "path": "provenance/HELPER7-SIGNED-RESULT.json",
+    "sha256": "ec6b0dd262672fa7a7e52a880b4d6d137ad794ff42329b6aabee9546a61e584b"
+  },
+  "source_closure_reproduction": {
+    "bytes": 275567,
+    "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/closure-reproduce-r1/RESULT.json",
+    "sha256": "45ceb0b0b443d1517eeed05928ea662d03972c82d7954a454f069ccfc2e9bf7f"
+  },
+  "source_inventory": {
+    "bytes": 8501,
+    "path": "SOURCE-INVENTORY.json",
+    "sha256": "a8dce29109ba6385284403818df6821ab620832d2cd7f7a28a921b323de8ad03"
+  },
+  "unsigned": {
+    "bytes": 1375299,
+    "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/full-unsigned-r1/helper7-unsigned.apk",
+    "sha256": "f8e623bc95c78c72e3b5af2bc2ba91421667b44be9b666e9ee028df9e886d399"
+  },
+  "version_code": 7,
+  "version_name": "0.7.0-web-evidence-v4"
+}

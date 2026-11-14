@@ -1,0 +1,267 @@
+package org.trillionnium.hepta.local;
+
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import org.json.*;
+
+/** Exact production lifecycle/handoff methods; Android native IO below is an explicit blocking fake. */
+public final class FlightObservationWorkerHost {
+    static final Thread MAIN=Thread.currentThread();
+    static final String TASK="11111111111111111111111111111111",OWNER="owner",GEN="generation-a";
+    static int cases,assertions;
+    interface Case {void run()throws Exception;}
+    static void check(boolean value,String why){assertions++;if(!value)throw new AssertionError(why);}
+    static void run(String name,Case work)throws Exception{work.run();cases++;System.out.println("PASS "+name);}
+    static void await(CountDownLatch latch)throws InterruptedException{check(latch.await(3,TimeUnit.SECONDS),"host latch deadline");}
+    static void refuses(Case work)throws Exception{
+        boolean refused=false;try{work.run();}catch(IllegalStateException expected){refused=true;}
+        check(refused,"expected refusal");
+    }
+    static void futureRefuses(Future<?> f)throws Exception{
+        boolean refused=false;try{f.get(3,TimeUnit.SECONDS);}catch(ExecutionException e){
+            check(e.getCause() instanceof IllegalStateException||e.getCause() instanceof RejectedExecutionException,
+                    "unexpected host failure: "+e.getCause());refused=true;
+        }check(refused,"late result was accepted");
+    }
+    static final class SystemClock {
+        static final AtomicLong value=new AtomicLong(100);
+        static long elapsedRealtime(){return value.get();}
+    }
+    static final class Looper {static Thread getMainLooper(){return MAIN;}static Thread myLooper(){return Thread.currentThread();}}
+    static final class Handler {
+        final BlockingQueue<Runnable> queued=new LinkedBlockingQueue<Runnable>();boolean reject;
+        boolean post(Runnable work){if(reject)return false;queued.add(work);return true;}
+        void runOne()throws Exception{Runnable r=queued.poll(3,TimeUnit.SECONDS);check(r!=null,"no main handoff queued");r.run();}
+    }
+    static final class Rect {
+        final int left,top,right,bottom;
+        Rect(int l,int t,int r,int b){left=l;top=t;right=r;bottom=b;}
+        Rect(Rect r){this(r.left,r.top,r.right,r.bottom);}
+        @Override public boolean equals(Object v){if(!(v instanceof Rect))return false;Rect r=(Rect)v;return left==r.left&&top==r.top&&right==r.right&&bottom==r.bottom;}
+        @Override public int hashCode(){return left+31*top+961*right+29791*bottom;}
+    }
+    static final class AccessibilityNodeInfo {
+        static final List<AccessibilityNodeInfo> copies=Collections.synchronizedList(new ArrayList<AccessibilityNodeInfo>());
+        final String id;final AtomicInteger closes=new AtomicInteger();
+        AccessibilityNodeInfo(String id){this.id=id;}
+        static AccessibilityNodeInfo obtain(AccessibilityNodeInfo n){
+            check(n.closes.get()==0,"copied retired node");AccessibilityNodeInfo c=new AccessibilityNodeInfo(n.id);copies.add(c);return c;
+        }
+        void recycle(){check(closes.incrementAndGet()==1,"double node recycle");}
+    }
+    static final class ObservedImeEnter {}
+    enum ImeVisibility {HIDDEN,VISIBLE}
+    static final class ObservationState {ImeVisibility imeVisibility=ImeVisibility.HIDDEN;}
+    static final class ObservedWindowMetadata {}
+    static final class PhoneObservation {
+        final String id;final String generation;final long capturedElapsedMillis=90;
+        PhoneObservation(String id,String generation){this.id=id;this.generation=generation;}
+        JSONObject toJson(){check(Thread.currentThread()!=MAIN,"frame serialization ran on main");return new JSONObject().put("observation_id",id);}
+        static final class CollectionStats {
+            int visited=1,retained=1,pending;long childSlotsOmitted;boolean truncated(){return pending!=0||childSlotsOmitted!=0;}
+        }
+        static final class Node {
+            final String id="n0",className="android.widget.Button",nativeTreePath="0/0";
+            String label(){return WebFlightNativeStability.LABEL;}
+            JSONObject json(){return new JSONObject().put("id",id);}
+        }
+    }
+    static final class WebFlightNativeStability {static final String LABEL="booking";static final int MAX_NATIVE_NODES=1536;}
+    static final class WebShoppingObservationStability {
+        static final int MAX_NATIVE_NODES=1024;
+        static PhoneObservation.Node target(List<PhoneObservation.Node> rows){throw new AssertionError("flight-only host carrier has no shopping target");}
+    }
+    static final class QualificationScopeConfig {static final class Bound {
+        void verifyUnchanged(){check(Thread.currentThread()!=MAIN,"scope file IO ran on main");}void requireReady(){}
+    }}
+    static final class TaskAuthorization {static final class Gate {
+        void ready(){check(Thread.currentThread()!=MAIN,"authority IO ran on main");}
+    }}
+    static final class BackgroundSession {
+        final String generation;volatile boolean released;
+        BackgroundSession(String g){generation=g;}
+        void requireActive(){if(released)throw new IllegalStateException("released background");}
+    }
+    static final class WebFlightSession {
+        final String taskId=TASK;final Object goal=new Object();final TaskAuthorization.Gate authorization;
+        final Purpose purpose=new Purpose();
+        static final class Purpose {final Object flight=new Object(),shopping=null;}
+        WebFlightSession(TaskAuthorization.Gate a){authorization=a;}
+    }
+    static final class WebEvidenceReceipt {}
+    static final class WebRegionNativeBridge {
+        final PhoneObservation.Node anchor=new PhoneObservation.Node();final String nativeWebViewId="web";
+        static final class Role {String nodeId;}
+        List<Role> roles(){return Collections.emptyList();}
+    }
+    static final class StaleObservation extends IllegalStateException {
+        private static final long serialVersionUID=1L;StaleObservation(String why){super(why);}
+    }
+    static final class NodeRef {
+        final AccessibilityNodeInfo node;final String signature,appTreeSignature,inputTextSha256;final ObservedImeEnter imeEnter;
+        NodeRef(String id){node=new AccessibilityNodeInfo(id);signature="signature";appTreeSignature="tree";inputTextSha256=null;imeEnter=new ObservedImeEnter();}
+        /*__NODE_COPY__*/
+    }
+    /*__GRAPH_BUDGET__*/
+    /*__CHECK_READ_BUDGET__*/
+    /*__GRAPH__*/
+
+    static final class HeptaAccessibilityService {
+        interface Cancellation {boolean isCancelled();}
+        static final AtomicBoolean observationIoBusy=new AtomicBoolean();
+        static Executor observationIo;
+        final Handler main=new Handler();
+        String lease=TASK;boolean live=true;
+        QualificationScopeConfig.Bound taskScope=new QualificationScopeConfig.Bound();
+        TaskAuthorization.Gate taskAuthorization=new TaskAuthorization.Gate();
+        BackgroundSession taskBackground=new BackgroundSession(GEN);
+        WebFlightSession taskWeb=new WebFlightSession(taskAuthorization);
+        volatile PhoneObservation current=new PhoneObservation("before",GEN);Graph currentGraph=graph();
+        CountDownLatch entered=new CountDownLatch(1),release=new CountDownLatch(0);
+        volatile FlightObservationSnapshot workerSource,workerObserved;
+        boolean owns(String id){return live&&id.equals(lease);}
+        boolean locked(){check(Thread.currentThread()!=MAIN,"keyguard IPC ran on main");return false;}
+        void requireBackgroundObservation(String task,PhoneObservation frame){
+            taskBackground.requireActive();if(!TASK.equals(task)||!taskBackground.generation.equals(frame.generation))throw new IllegalStateException("foreign background generation");
+        }
+        /*__SNAPSHOT__*/
+        /*__READ__*/
+        /*__MAIN_HANDOFF__*/
+        /*__CURRENT__*/
+        /*__COMPLETE_GRAPH__*/
+        /*__OWNS__*/
+        /*__LIVE__*/
+        /*__AUTHORITY__*/
+        /*__COMPLETE_SNAPSHOT__*/
+        /*__RETAIN__*/
+        /*__VERIFY__*/
+        private JSONObject verifyFlightObservationOnWorker(WebFlightSession web,FlightObservationSnapshot source,
+                FlightObservationSnapshot observed,PhoneObservation after,WebEvidenceReceipt first,WebEvidenceReceipt last,
+                Cancellation cancel,long deadline,GraphBudget budget)throws Exception{
+            check(Thread.currentThread()!=MAIN,"native traversal ran on main");workerSource=source;workerObserved=observed;
+            checkReadBudget(budget);entered.countDown();await(release);checkReadBudget(budget);
+            check(source.original.node.closes.get()==0&&observed.original.node.closes.get()==0,"native read used recycled copy");
+            return new JSONObject().put("host_native_read_returned",true).put("action_permit_created",false);
+        }
+    }
+    static Graph graph(){
+        Graph g=new Graph();g.packageName="helper";g.digest="digest";g.backgroundGeneration=GEN;g.backgroundBootstrapPackage="helper";
+        g.windowId=7;g.displayId=3;g.bounds=new Rect(0,0,400,700);g.backgroundAllowedPackages=Collections.singletonList("helper");
+        g.backgroundSelectionRaw="selection";g.backgroundOwnerSha=OWNER;g.state=new ObservationState();g.windowMetadata=new ObservedWindowMetadata();
+        g.collectionStats=new PhoneObservation.CollectionStats();g.rows.add(new PhoneObservation.Node());g.refs.put("n0",new NodeRef("n0"));
+        g.flightNativeSnapshotComplete=true;g.flightNativeSnapshotRaw="[{\"path\":\"0\"}]";g.flightRetainedSnapshotRaw="[{\"id\":\"n0\"}]";return g;
+    }
+    static final class Env implements AutoCloseable {
+        final ExecutorService controller=Executors.newSingleThreadExecutor(),nativeWorker=Executors.newSingleThreadExecutor();
+        final HeptaAccessibilityService service=new HeptaAccessibilityService();
+        final AtomicBoolean cancelled=new AtomicBoolean();
+        HeptaAccessibilityService.FlightObservationSnapshot source;
+        Env(){SystemClock.value.set(100);HeptaAccessibilityService.observationIoBusy.set(false);HeptaAccessibilityService.observationIo=nativeWorker;}
+        void retain()throws Exception{
+            Future<HeptaAccessibilityService.FlightObservationSnapshot> f=controller.submit(()->service.retainFlightObservation(service.taskWeb,service.current,cancelled::get,1000));
+            service.main.runOne();source=f.get(3,TimeUnit.SECONDS);check(source!=null,"source missing");
+        }
+        Future<JSONObject> verify()throws Exception{
+            service.current=new PhoneObservation("after",service.taskBackground.generation);
+            Future<JSONObject> f=controller.submit(()->service.verifyFlightObservationBracket(service.taskWeb,source,service.current,
+                    new WebEvidenceReceipt(),new WebEvidenceReceipt(),cancelled::get,1000));
+            service.main.runOne();return f;
+        }
+        void drained()throws Exception{
+            nativeWorker.submit(()->{}).get(3,TimeUnit.SECONDS);
+            check(!HeptaAccessibilityService.observationIoBusy.get(),"read slot not physically drained");
+        }
+        @Override public void close()throws Exception{
+            service.release.countDown();controller.shutdown();nativeWorker.shutdown();
+            check(controller.awaitTermination(3,TimeUnit.SECONDS)&&nativeWorker.awaitTermination(3,TimeUnit.SECONDS),"host worker leaked");
+            if(source!=null)source.close();service.currentGraph.close();
+        }
+    }
+    public static void main(String[] argv)throws Exception{
+        run("main_handoff_uses_frozen_graph_and_independent_node",()->{try(Env e=new Env()){
+            e.retain();check(e.source.graph.flightNativeSnapshotRaw==e.service.currentGraph.flightNativeSnapshotRaw,"frozen string recopied");
+            check(e.source.original.node!=e.service.currentGraph.refs.get("n0").node,"borrowed original node");
+            e.service.currentGraph.close();check(e.source.original.node.closes.get()==0,"main close invalidated source");
+        }});
+        run("success_drains_copies_before_delivery",()->{try(Env e=new Env()){
+            e.retain();JSONObject value=e.verify().get(3,TimeUnit.SECONDS);
+            check(value.getBoolean("host_native_read_returned")&&!value.getBoolean("action_permit_created"),"wrong read-only result");
+            check(!HeptaAccessibilityService.observationIoBusy.get(),"published before physical drain");
+            check(e.service.workerSource.original.node.closes.get()==1&&e.service.workerObserved.original.node.closes.get()==1,"owned copies did not drain exactly once");
+        }});
+        run("deadline_does_not_free_blocked_worker_or_node_copies",()->{try(Env e=new Env()){
+            e.retain();e.service.release=new CountDownLatch(1);Future<JSONObject> f=e.verify();await(e.service.entered);
+            SystemClock.value.set(1001);futureRefuses(f);e.source.close();
+            check(HeptaAccessibilityService.observationIoBusy.get(),"timeout freed native capacity");
+            check(e.service.workerSource.original.node.closes.get()==0&&e.service.workerObserved.original.node.closes.get()==0,"timeout recycled in-flight copies");
+            e.service.release.countDown();e.drained();check(e.service.workerSource.original.node.closes.get()==1,"source copy leaked");
+        }});
+        run("cancel_does_not_free_blocked_worker_or_publish_late_result",()->{try(Env e=new Env()){
+            e.retain();e.service.release=new CountDownLatch(1);Future<JSONObject> f=e.verify();await(e.service.entered);e.cancelled.set(true);
+            futureRefuses(f);check(HeptaAccessibilityService.observationIoBusy.get(),"cancel freed native capacity");
+            e.service.release.countDown();e.drained();
+        }});
+        run("new_task_lease_rejects_late_bracket",()->{try(Env e=new Env()){
+            e.retain();e.service.release=new CountDownLatch(1);Future<JSONObject> f=e.verify();await(e.service.entered);
+            e.service.lease="new-task";e.service.release.countDown();futureRefuses(f);e.drained();
+        }});
+        run("new_background_generation_rejects_late_bracket",()->{try(Env e=new Env()){
+            e.retain();e.service.release=new CountDownLatch(1);Future<JSONObject> f=e.verify();await(e.service.entered);
+            e.service.taskBackground=new BackgroundSession("generation-b");e.service.release.countDown();futureRefuses(f);e.drained();
+        }});
+        run("replaced_authorization_rejects_late_bracket",()->{try(Env e=new Env()){
+            e.retain();e.service.release=new CountDownLatch(1);Future<JSONObject> f=e.verify();await(e.service.entered);
+            e.service.taskAuthorization=new TaskAuthorization.Gate();e.service.release.countDown();futureRefuses(f);e.drained();
+        }});
+        run("new_current_frame_rejects_late_bracket",()->{try(Env e=new Env()){
+            e.retain();e.service.release=new CountDownLatch(1);Future<JSONObject> f=e.verify();await(e.service.entered);
+            e.service.current=new PhoneObservation("new-frame",GEN);e.service.release.countDown();futureRefuses(f);e.drained();
+        }});
+        run("retired_service_rejects_late_bracket",()->{try(Env e=new Env()){
+            e.retain();e.service.release=new CountDownLatch(1);Future<JSONObject> f=e.verify();await(e.service.entered);
+            e.service.live=false;e.service.release.countDown();futureRefuses(f);e.drained();
+        }});
+        run("definitive_executor_rejection_releases_slot",()->{try(Env e=new Env()){
+            e.retain();HeptaAccessibilityService.observationIo=r->{throw new RejectedExecutionException("host rejected");};
+            futureRefuses(e.verify());check(!HeptaAccessibilityService.observationIoBusy.get(),"rejected queue retained slot");
+        }});
+        run("uncertain_executor_error_keeps_capacity_until_actual_run",()->{try(Env e=new Env()){
+            e.retain();AtomicReference<Runnable> uncertain=new AtomicReference<Runnable>();
+            HeptaAccessibilityService.observationIo=r->{uncertain.set(r);throw new IllegalStateException("host uncertain submission");};
+            futureRefuses(e.verify());check(HeptaAccessibilityService.observationIoBusy.get(),"uncertain submit freed capacity");
+            e.nativeWorker.submit(uncertain.get()).get(3,TimeUnit.SECONDS);e.drained();
+        }});
+        run("expired_main_handoff_never_copies_a_node",()->{try(Env e=new Env()){
+            int copies=AccessibilityNodeInfo.copies.size();
+            Future<?> f=e.controller.submit(()->{try{return e.service.retainFlightObservation(e.service.taskWeb,e.service.current,e.cancelled::get,1000);}catch(Exception x){throw new IllegalStateException(x);}});
+            Runnable queued=e.service.main.queued.poll(3,TimeUnit.SECONDS);check(queued!=null,"expired handoff never queued");
+            SystemClock.value.set(1001);futureRefuses(f);queued.run();
+            check(AccessibilityNodeInfo.copies.size()==copies,"abandoned main callback copied a node");
+        }});
+        run("completed_unclaimed_snapshot_is_closed_on_cancel",()->{try(Env e=new Env()){
+            e.retain();HeptaAccessibilityService.FlightObservationSnapshot value=e.source.copyForRead();
+            HeptaAccessibilityService.FlightObservationRead<HeptaAccessibilityService.FlightObservationSnapshot> read=e.service.new FlightObservationRead<>(()->value,e.cancelled::get,1000,null);
+            read.run();e.cancelled.set(true);refuses(()->read.await());check(value.original.node.closes.get()==1,"unclaimed result leaked");
+        }});
+        run("completed_unclaimed_snapshot_is_closed_on_expiry",()->{try(Env e=new Env()){
+            e.retain();HeptaAccessibilityService.FlightObservationSnapshot value=e.source.copyForRead();
+            HeptaAccessibilityService.FlightObservationRead<HeptaAccessibilityService.FlightObservationSnapshot> read=e.service.new FlightObservationRead<>(()->value,e.cancelled::get,1000,null);
+            read.run();SystemClock.value.set(1001);refuses(()->read.await());check(value.original.node.closes.get()==1,"expired result leaked");
+        }});
+        run("missing_complete_native_count_rejects_before_capture",()->{try(Env e=new Env()){
+            e.service.currentGraph.collectionStats.visited=2;
+            Future<?> f=e.controller.submit(()->{try{return e.service.retainFlightObservation(e.service.taskWeb,e.service.current,e.cancelled::get,1000);}catch(Exception x){throw new IllegalStateException(x);}});
+            e.service.main.runOne();futureRefuses(f);
+        }});
+        run("main_cannot_wait_or_enter_native_verification",()->{try(Env e=new Env()){
+            refuses(()->e.service.retainFlightObservation(e.service.taskWeb,e.service.current,e.cancelled::get,1000));
+            check(e.service.main.queued.isEmpty(),"main self-wait enqueued work");
+        }});
+        run("snapshot_close_is_idempotent_and_copy_after_close_rejected",()->{try(Env e=new Env()){
+            e.retain();e.source.close();e.source.close();check(e.source.original.node.closes.get()==1,"double-close effect");refuses(()->e.source.copyForRead());
+        }});
+        System.out.println(new JSONObject().put("schema","hepta.flight-observation-worker-host.v1").put("cases",cases).put("assertions",assertions)
+                .put("all_pass",true).put("phone_operations",0).put("android_runtime",false).put("native_io_is_instrumented",true));
+    }
+}

@@ -1,0 +1,13 @@
+{
+  "tag": "helper4-mi-uncaptured-retire-r1",
+  "exit_code": 2,
+  "finished_utc": "2026-11-12T06:42:28Z",
+  "stdout": {
+    "bytes": 252,
+    "sha256": "a7cc20bc8a331160b77d3a8a45e39e536e528afa51b13a7119d4a9d0c429818a"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

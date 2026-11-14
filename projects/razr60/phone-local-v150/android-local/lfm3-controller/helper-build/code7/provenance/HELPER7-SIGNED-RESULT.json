@@ -1,0 +1,218 @@
+{
+  "all_pass": true,
+  "apk": {
+    "bytes": 1414146,
+    "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/hepta-web-helper-0.7.0-v4.apk",
+    "sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313"
+  },
+  "build_result": {
+    "bytes": 285943,
+    "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/full-unsigned-r1/RESULT.json",
+    "sha256": "8312421851f847834cbe9c8830763abdd8e653d37813ec7c6301d32b799a7ee0"
+  },
+  "compiled_payloads_preserved": {
+    "changed": [],
+    "count": 372,
+    "removed": [],
+    "unchanged": true
+  },
+  "existing_signer_resolver": {
+    "bytes": 50092,
+    "path": "/home/alex/hepta-local-007f-20261111/v51-build-r2/v51_assembly_filled.py",
+    "sha256": "3bfad635fb8fdd6d971c60fb8b998a56e63fefaee75ae7a6140b4403cfbca53b"
+  },
+  "expected_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "finished_epoch": 1794557383.087856,
+  "host_gates": [
+    {
+      "bytes": 52126,
+      "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/tests/ack-chain-r3/RESULT.json",
+      "sha256": "54ebb7e056daf77947609612ad06778b7042d65e856d3f3611cf7c1a47dde8a6"
+    },
+    {
+      "bytes": 12309,
+      "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/tests/capture-parser-r1/RESULT.json",
+      "sha256": "cbce78d005ac86a60026bf9098cd434d2d16cd931ef09a921e0c15815f0a8863"
+    },
+    {
+      "bytes": 59900,
+      "path": "/home/alex/hepta-helper7-independent-261e-20261113-r1/RESULT.json",
+      "sha256": "c9c475aa1a3439f28b09e0370d4d55dafbd7f09fd19704e066497e246efa6b85"
+    },
+    {
+      "bytes": 7144,
+      "path": "/home/alex/hepta-helper7-independent-261e-20261113-r1/installed-identity-r1/RESULT.json",
+      "sha256": "a96e8461792ea469b54ac68ea1ecd4d524fca128dea276fb1883f54aaaf152fb"
+    }
+  ],
+  "installed": false,
+  "key_metadata": {
+    "bytes": 3534,
+    "device": 66306,
+    "inode": 37617717,
+    "mode": "0o600",
+    "mtime_ns": 1794145797957966808,
+    "uid": 1000
+  },
+  "new_key_created": false,
+  "phone_operations": 0,
+  "previous_failed_stage": {
+    "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r1/RESULT.json",
+    "reason": "r1 required equal full ZIP member sets and did not allow the three actual signer metadata entries; original failure preserved",
+    "sha256": "3bd57883bef2ee97fcb9a165188c995eaa658c46acf4d3d40d7f7ec394942d88"
+  },
+  "remaining_qualification": [
+    "paired main exact APK pin and actual Android acceptance remain pending"
+  ],
+  "resource_layout": {
+    "data_offset": 1321212,
+    "data_offset_mod4": 0,
+    "stored": true
+  },
+  "schema": "hepta.helper7-original-signer.v1",
+  "signature_zip_entries": [
+    {
+      "bytes": 1645,
+      "name": "META-INF/HEPTA-LO.RSA",
+      "sha256": "1b2536e00e7952bf7347149c4f7f1dcd89686e7a651b369eb4bf018fe55223c3"
+    },
+    {
+      "bytes": 43414,
+      "name": "META-INF/HEPTA-LO.SF",
+      "sha256": "31d874bc2909d65c8a7082eb02257141e89f0af08d6464544d5e847fa37e83e7"
+    },
+    {
+      "bytes": 43287,
+      "name": "META-INF/MANIFEST.MF",
+      "sha256": "9e2f171a952e1df704febb3c6caf2498e594ff58a4f9dfefa134e62cd1f60d27"
+    }
+  ],
+  "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "started_epoch": 1794557380.9888527,
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/apksigner",
+        "sign",
+        "--ks",
+        "/home/alex/razr-local-lfm3-accde7885/r1/hepta-latest-app/keys/hepta-local-debug.jks",
+        "--ks-key-alias",
+        "hepta-local-debug",
+        "--ks-pass",
+        "pass:android",
+        "--key-pass",
+        "pass:android",
+        "--min-sdk-version",
+        "30",
+        "--out",
+        "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/hepta-web-helper-0.7.0-v4.apk",
+        "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/full-unsigned-r1/helper7-unsigned.apk"
+      ],
+      "elapsed_seconds": 1.2793629849911667,
+      "exit_code": 0,
+      "name": "sign",
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/sign.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/sign.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/apksigner",
+        "verify",
+        "--verbose",
+        "--print-certs",
+        "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/hepta-web-helper-0.7.0-v4.apk"
+      ],
+      "elapsed_seconds": 0.6228517609997652,
+      "exit_code": 0,
+      "name": "verify",
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/verify.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 969,
+        "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/verify.stdout",
+        "sha256": "b659b045920b36231d53cc2391b47a753401c5a91f8088862c8a47c405563b53"
+      }
+    },
+    {
+      "argv": [
+        "/usr/lib/android-sdk/build-tools/debian/aapt2",
+        "dump",
+        "badging",
+        "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/hepta-web-helper-0.7.0-v4.apk"
+      ],
+      "elapsed_seconds": 0.013918476994149387,
+      "exit_code": 0,
+      "name": "badging",
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/badging.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 4379,
+        "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/badging.stdout",
+        "sha256": "2f65f12df90ca91b80e34324121504a97d169617cdbd278276868009959a0d80"
+      }
+    },
+    {
+      "argv": [
+        "/usr/lib/android-sdk/build-tools/debian/aapt2",
+        "dump",
+        "permissions",
+        "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/hepta-web-helper-0.7.0-v4.apk"
+      ],
+      "elapsed_seconds": 0.010824841971043497,
+      "exit_code": 0,
+      "name": "permissions",
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/permissions.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 164,
+        "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/permissions.stdout",
+        "sha256": "228fdbaf28995701b85d638de7828592758e53ff94bbd0e229cc84291694daf9"
+      }
+    },
+    {
+      "argv": [
+        "/usr/lib/android-sdk/build-tools/debian/aapt2",
+        "dump",
+        "xmltree",
+        "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/hepta-web-helper-0.7.0-v4.apk",
+        "--file",
+        "AndroidManifest.xml"
+      ],
+      "elapsed_seconds": 0.009936236019711941,
+      "exit_code": 0,
+      "name": "manifest",
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/manifest.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 3825,
+        "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/signed-r2/manifest.stdout",
+        "sha256": "af7ca8924dab3c1eaf560f6c05634b81b8720808aac69e24faddd74053f093a3"
+      }
+    }
+  ],
+  "unsigned": {
+    "bytes": 1375299,
+    "path": "/home/alex/hepta-helper7-capture-ack-261e-20261113-r1/build/full-unsigned-r1/helper7-unsigned.apk",
+    "sha256": "f8e623bc95c78c72e3b5af2bc2ba91421667b44be9b666e9ee028df9e886d399"
+  }
+}

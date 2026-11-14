@@ -1,0 +1,78 @@
+package org.trillionnium.hepta.local;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.*;
+import org.json.JSONObject;
+
+/** Existing observed-row carriers only. No AccessibilityNodeInfo or live read exists here. */
+final class DiagnosticGraphHost {
+    static final class Rect {int left,top,right,bottom;Rect(int l,int t,int r,int b){left=l;top=t;right=r;bottom=b;}}
+    static final class Fingerprint {String value="observed";String fingerprintInput(){return value;}}
+    static final class PhoneObservation {
+        static final class Node {
+            String id,packageName=DiagnosticChecks.APP,nativeTreePath,observedAppTreeSignature=DiagnosticChecks.OWNER,inputTextSha256;
+            String privateText="SENSITIVE_NODE_CONTENT_MUST_NOT_BE_RECORDED";
+            boolean clickable,editable,scrollable,enabled=true,focused,password;
+            Boolean selected=false,checkable=false,checked=false;
+            final Fingerprint scrollActions=new Fingerprint(),imeEnter=new Fingerprint();Rect bounds=new Rect(0,0,100,100);
+            Node(String id,String path){this.id=id;nativeTreePath=path;}
+        }
+    }
+    static final class State {String appTreeSha256=DiagnosticChecks.OWNER;}
+    static final class Window {String value="already observed window";String bindFreshness(String raw){return value+raw;}}
+    static final class Graph {
+        String packageName=DiagnosticChecks.APP,backgroundGeneration=DiagnosticChecks.GENERATION,backgroundOwnerSha=DiagnosticChecks.OWNER,digest=DiagnosticChecks.OWNER;
+        int displayId=9,windowId=71;boolean truncated;State state=new State();Window windowMetadata=new Window();
+        List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();ObservationDiagnostics.GraphStamp diagnosticStamp;
+    }
+    /** Never constructed: legacy diagnostic cases have no native action authority. */
+    static final class NativeGuardBoundary {
+        private NativeGuardBoundary(){throw new AssertionError("no native guard in diagnostic legacy cases");}
+        Map<String,Object> evidence(){throw new AssertionError("no native guard evidence in diagnostic legacy cases");}
+    }
+    static final class ActionWork {Object background=new Object();String diagnosticFreshness,nativeActionProof;NativeGuardBoundary nativeGuard;final ActionExecutionState state;
+        ActionWork(){state=new ActionExecutionState(DiagnosticChecks.REQUEST,DiagnosticChecks.TASK,"33333333333333333333333333333333","44444444444444444444444444444444",DiagnosticChecks.OWNER,71,9,DiagnosticChecks.GENERATION,1000,9000,()->1000);}}
+    static String sha(byte[] bytes){try{byte[] value=MessageDigest.getInstance("SHA-256").digest(bytes);StringBuilder out=new StringBuilder();for(byte b:value)out.append(String.format(Locale.ROOT,"%02x",b&255));return out.toString();}catch(java.security.NoSuchAlgorithmException e){throw new AssertionError(e);}}
+{{native_stamp}}
+{{stale_record}}
+{{action_evidence}}
+    static Graph graph(int count){Graph g=new Graph();for(int i=0;i<count;i++)g.rows.add(new PhoneObservation.Node("n"+i,"0/"+i));return g;}
+    static void runTests()throws Exception{
+        DiagnosticChecks.run("actual_observed_row_adapter_records_hashes_not_content",()->{
+            Graph g=graph(3);g.rows.get(1).inputTextSha256=DiagnosticChecks.repeat('b',64);g.diagnosticStamp=nativeDiagnosticStamp(g);
+            DiagnosticChecks.check(g.diagnosticStamp!=null&&g.diagnosticStamp.nodes.size()==3,"actual copy");
+            JSONObject j=new JSONObject(ObservationDiagnostics.difference(g.diagnosticStamp,g.diagnosticStamp,"n1"));
+            DiagnosticChecks.check(!j.toString().contains("SENSITIVE")&&!j.getBoolean("node_text_recorded")&&j.getBoolean("selected_stamp_equal"),"no content or fake difference");
+        });
+        DiagnosticChecks.run("actual_observed_row_adapter_refuses_foreign_or_overbudget_rows",()->{
+            Graph g=graph(1);g.rows.get(0).packageName="foreign.app";DiagnosticChecks.check(nativeDiagnosticStamp(g)==null,"foreign row");
+            DiagnosticChecks.check(nativeDiagnosticStamp(graph(513))==null,"node bound");g=graph(1);g.backgroundGeneration=null;DiagnosticChecks.check(nativeDiagnosticStamp(g)==null,"no lease");
+        });
+        DiagnosticChecks.run("actual_stale_receipt_binds_operation_and_keeps_effect_false",()->{
+            Graph a=graph(2),b=graph(2);b.rows.get(1).observedAppTreeSignature=DiagnosticChecks.repeat('b',64);b.digest=DiagnosticChecks.repeat('c',64);
+            a.diagnosticStamp=nativeDiagnosticStamp(a);b.diagnosticStamp=nativeDiagnosticStamp(b);ActionWork w=new ActionWork();recordStaleDiagnostic(w,a,b,"n0");
+            JSONObject j=actionDiagnosticEvidence(w),d=j.getJSONObject("freshness_diagnostic");
+            DiagnosticChecks.check(d.getString("task_id").equals(DiagnosticChecks.TASK)&&d.getString("operation_id").equals(DiagnosticChecks.REQUEST),"operation identity");
+            DiagnosticChecks.check(d.getBoolean("selected_stamp_equal")&&d.getInt("changed_retained_path_count")==1&&!d.getBoolean("observation_state_equal"),"exact selected vs changed other path");
+            DiagnosticChecks.check(!j.getBoolean("effect_entered")&&!j.getBoolean("effect_returned")&&!d.getBoolean("guard_changed")&&!d.getBoolean("grants_action_authority"),"refusal preserved");
+        });
+        DiagnosticChecks.run("actual_stale_receipt_does_not_cross_app_lease_window",()->{
+            for(int variant=0;variant<4;variant++){Graph a=graph(1),b=graph(1);if(variant==0)b.packageName="other.app";if(variant==1)b.backgroundGeneration="99999999-2222-3333-4444-555555555555";if(variant==2)b.windowId++;if(variant==3)b.displayId++;
+                b.rows.get(0).packageName=b.packageName;a.diagnosticStamp=nativeDiagnosticStamp(a);b.diagnosticStamp=nativeDiagnosticStamp(b);ActionWork w=new ActionWork();recordStaleDiagnostic(w,a,b,"n0");
+                DiagnosticChecks.check(!actionDiagnosticEvidence(w).has("freshness_diagnostic"),"scope mismatch "+variant);}
+        });
+        DiagnosticChecks.run("bounded_path_difference_keeps_total_and_original_selected_path",()->{
+            Graph a=graph(20),b=graph(20);for(PhoneObservation.Node n:b.rows)n.focused=true;
+            b.rows.get(10).id="n99";b.digest=DiagnosticChecks.repeat('b',64);a.diagnosticStamp=nativeDiagnosticStamp(a);b.diagnosticStamp=nativeDiagnosticStamp(b);
+            JSONObject d=new JSONObject(ObservationDiagnostics.difference(a.diagnosticStamp,b.diagnosticStamp,"n10"));
+            DiagnosticChecks.check(d.getString("selected_original_path").equals("0/10")&&d.getBoolean("selected_path_present_after")&&!d.getBoolean("selected_stamp_equal"),"selected path does not rebind to new ID");
+            DiagnosticChecks.check(d.getJSONArray("node_differences").length()==8&&d.getInt("changed_retained_path_count")==20&&d.getBoolean("node_differences_truncated"),"bounded difference");
+            DiagnosticChecks.check(d.toString(2).getBytes(StandardCharsets.UTF_8).length<=16384&&!d.getBoolean("complete_tree_claimed"),"bounded no complete tree claim");
+        });
+        DiagnosticChecks.run("diagnostic_failure_or_absence_keeps_original_action_receipt",()->{
+            Graph a=graph(1),b=graph(1);ActionWork w=new ActionWork();recordStaleDiagnostic(w,a,b,"n0");JSONObject before=new JSONObject(w.state.evidence()),after=actionDiagnosticEvidence(w);
+            DiagnosticChecks.check(before.similar(after),"null stamp changed action evidence");w.diagnosticFreshness="not json";DiagnosticChecks.check(before.similar(actionDiagnosticEvidence(w)),"invalid diagnostic changed original evidence");
+        });
+    }
+}

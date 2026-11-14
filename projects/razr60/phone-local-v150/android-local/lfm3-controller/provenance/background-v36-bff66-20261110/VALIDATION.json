@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.background-v36-delivery-state.v1",
+  "source_commit": "1af05baf1e5313a0f5f7eb65107fb3bee305d65b",
+  "as_of_utc": "2026-11-10T15:25:26Z",
+  "host": {
+    "passed": true,
+    "check_records": 87,
+    "java_api_release": 8,
+    "jdk": 17,
+    "receipt_sha256": "b920fd240ff33888c549fdf3b68a926b122dc940dccfa8fc416650b457325833"
+  },
+  "client": {
+    "passed": 45,
+    "failed": 0,
+    "included_in_host_gate": true,
+    "receipt_sha256": "3a7eab8b78f42315c100a68b6f9af83910f376d403e1172476700819abcaa4a1"
+  },
+  "broker": {
+    "passed": 43,
+    "failed": 0,
+    "included_in_host_gate": true,
+    "receipt_sha256": "b24e8e74c080c13d3450d102d06a3d4b771fd81b91ca478225e05ab91b5a2306"
+  },
+  "android_build": {
+    "passed": true,
+    "sdk": 34,
+    "compiler_inputs": 167,
+    "receipt_sha256": "d6dbb486e2b6badce1cd909241e95702a1268a3c268702f39b64d6685b7b3819"
+  },
+  "compiled_archive": {
+    "bytes": 355230,
+    "sha256": "e2786c8059157fd3232a0508abc7fa83f008a9b94562e72e7e15c7d94b1cec2c",
+    "transfer_to_pocket4_confirmed": true
+  },
+  "assembly": {
+    "status": "unknown",
+    "first_submission_timed_out": true,
+    "same_idempotency_key_reconciliation": "blocked_by_disconnected_tunnel"
+  },
+  "installation": {
+    "submitted": false,
+    "verified": false
+  },
+  "v36_phone_test": {
+    "executed": false,
+    "passed": false
+  },
+  "model_selection": {
+    "candidate": "orvena-4b-q4_k_m",
+    "candidate_compute": "npu",
+    "candidate_context_tokens": 8192,
+    "activated_on_phone": false,
+    "qualified_best_model": false
+  },
+  "external_blocker": {
+    "code": "tunnel_client_not_connected",
+    "scope": "HeptaRuntime connector; host list, mac health and assembly reconciliation unavailable",
+    "last_recheck_code": "tunnel_client_not_seen",
+    "last_recheck_message": "Tunnel-client has not been seen for 300 seconds."
+  },
+  "phone_state": {
+    "last_read_utc": "2026-11-10T14:57:59Z",
+    "formal_accessibility_enabled": true,
+    "scope_present": true,
+    "scope_enabled": true,
+    "scope_discrepancy_unresolved": true,
+    "cooperative_lock_held_by_other_live_owner": true
+  },
+  "claims": {
+    "shopping_verified": false,
+    "flight_search_verified": false,
+    "notes_verified": false,
+    "main_screen_concurrent_input_verified": false,
+    "full_phone_acceptance": false
+  },
+  "prepared_phone_driver": {
+    "revision": "r2",
+    "synthetic_process_parser_cases": 22,
+    "synthetic_process_parser_passed": 22,
+    "independently_reviewed": true,
+    "driver_entry_executed": false,
+    "host_helper_executed": false,
+    "phone_operations": false,
+    "driver_sha256": "533c27c1d1ae400862b4322ff269aeb9557a1f113c539c253f8c7f9f091ff7af",
+    "preparation_receipt_sha256": "1545adc885e0946c0a986705bd42e768c01808a2f3984d11fa3fdaa2d986ae0f"
+  }
+}

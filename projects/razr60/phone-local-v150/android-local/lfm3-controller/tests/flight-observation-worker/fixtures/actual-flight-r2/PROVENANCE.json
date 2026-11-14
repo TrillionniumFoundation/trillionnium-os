@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.actual-flight-r2-original-fixtures.v1",
+  "task_id": "b350fd8665b640608093602b1e6a9f14",
+  "source": "SHA-verified original phone evidence retrieved read-only by independent flight_run_review",
+  "original_outcome": "failed: AX/DOM bracket changed; no current page capability published",
+  "web_query_dispatched": false,
+  "full_native_traversal_included": false,
+  "fixtures_authenticate_live_service_token": false,
+  "files": [
+    {
+      "path": "raw-47376b85b83d4797ba0a8776eb83698af269df66621c405bb644698501cf2983.json",
+      "bytes": 229813,
+      "sha256": "86a38bcc6bf05d723abaf072354d14af29f3cbe9c80a93a2adc2a381aed058e8"
+    },
+    {
+      "path": "raw-8fef0a4b1d774fe097edc1d63709213585bee4e24b3e4aaea1a723026e3c5209.json",
+      "bytes": 229821,
+      "sha256": "e6f7fe6397af0ed8199c08a8270165c282b7bee71f7d9daee98e58a2be3f5ee3"
+    }
+  ]
+}

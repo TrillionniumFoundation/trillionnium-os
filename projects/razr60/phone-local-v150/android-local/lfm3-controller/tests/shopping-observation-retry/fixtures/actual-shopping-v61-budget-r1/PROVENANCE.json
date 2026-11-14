@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.shopping-actual-budget-fixture.v1",
+  "source_task": "4a8a5ac0f67d4faf8045d3b3ace06d13",
+  "installed_version": 61,
+  "source_run_sha256": "d39a60db317f969bd3562f97a164805777f16edbd4368c4af4f6cff418b9dd05",
+  "files": [
+    {
+      "role": "first_request",
+      "file": "request-48adfb5324fc48f8992fc3b3c089ffb33ca2c44f7a194da483d679be927d255e.json",
+      "original_path": "/home/alex/hepta-resume-261e-r2/shopping-v61-qwen-r1/collection/task/web-helper/request-48adfb5324fc48f8992fc3b3c089ffb33ca2c44f7a194da483d679be927d255e.json",
+      "bytes": 741,
+      "sha256": "04e65c2204f9428b7eddd344ba38b325c3a9dd0e87c9714c5038a01f1bb07d0b"
+    },
+    {
+      "role": "first_reply",
+      "file": "reply-48adfb5324fc48f8992fc3b3c089ffb33ca2c44f7a194da483d679be927d255e.json",
+      "original_path": "/home/alex/hepta-resume-261e-r2/shopping-v61-qwen-r1/collection/task/web-helper/reply-48adfb5324fc48f8992fc3b3c089ffb33ca2c44f7a194da483d679be927d255e.json",
+      "bytes": 1405,
+      "sha256": "9fb77c909c56534c07ed8c834a475c0150aa7acfd9aaa1da698b45c45803cf4f"
+    },
+    {
+      "role": "last_request",
+      "file": "request-4c5e9553163044a1b871e00404dad91e53aaa64d5d2f4f429b1605b2b9800567.json",
+      "original_path": "/home/alex/hepta-resume-261e-r2/shopping-v61-qwen-r1/collection/task/web-helper/request-4c5e9553163044a1b871e00404dad91e53aaa64d5d2f4f429b1605b2b9800567.json",
+      "bytes": 741,
+      "sha256": "9df7ab6676cb941202bdefc37d5ffe72ac7fc199d60b349e50dbc4067d9d71ed"
+    },
+    {
+      "role": "last_reply",
+      "file": "reply-4c5e9553163044a1b871e00404dad91e53aaa64d5d2f4f429b1605b2b9800567.json",
+      "original_path": "/home/alex/hepta-resume-261e-r2/shopping-v61-qwen-r1/collection/task/web-helper/reply-4c5e9553163044a1b871e00404dad91e53aaa64d5d2f4f429b1605b2b9800567.json",
+      "bytes": 1405,
+      "sha256": "ca1e2f69bdd44162f332e85c86bb3867f9d54b8517cbb3848caccadc8880a94f"
+    },
+    {
+      "role": "wait",
+      "file": "web-load-wait-fbc8ee66c87545bca4fdd9297b4646c0.json",
+      "original_path": "/home/alex/hepta-resume-261e-r2/shopping-v61-qwen-r1/collection/task/web-load-wait-fbc8ee66c87545bca4fdd9297b4646c0.json",
+      "bytes": 1135,
+      "sha256": "a25ab6965469ff608da8eee6f710ca81044953038279e46939db8e5fab81bfc1"
+    },
+    {
+      "role": "extra_request",
+      "file": "request-025e65cec0644bf8b293857c4fa63d6d900b53dcccba42b095f73d2739025c60.json",
+      "original_path": "/home/alex/hepta-resume-261e-r2/shopping-v61-qwen-r1/collection/task/web-helper/request-025e65cec0644bf8b293857c4fa63d6d900b53dcccba42b095f73d2739025c60.json",
+      "bytes": 741,
+      "sha256": "1de118b38ca52a4330899aa6a2b665f950fa65bb960b256b1918b3f85648724d"
+    },
+    {
+      "role": "extra_failure",
+      "file": "failure-025e65cec0644bf8b293857c4fa63d6d900b53dcccba42b095f73d2739025c60-522a441e-194f-4c5b-9534-41a239206b23.json",
+      "original_path": "/home/alex/hepta-resume-261e-r2/shopping-v61-qwen-r1/collection/task/web-helper/failure-025e65cec0644bf8b293857c4fa63d6d900b53dcccba42b095f73d2739025c60-522a441e-194f-4c5b-9534-41a239206b23.json",
+      "bytes": 362,
+      "sha256": "522f5c46795b4d877b24e24e89d69433c1bf7313a8a4080c61033ad3dfccf479"
+    }
+  ],
+  "native_or_business_authority": false
+}

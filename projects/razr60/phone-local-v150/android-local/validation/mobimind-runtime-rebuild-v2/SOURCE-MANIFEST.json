@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.mobimind.runtime-rebuild-helper.v2",
+  "scope": "host_only",
+  "app_source_manifest_sha256": "ae815ddf677ab3591f9d588cae19d9067fe86d04445d562b9f2583a9147f7edf",
+  "mac_two_stage_job": "1a1bd9743fd-138b0-71a",
+  "mac_two_stage_exit_code": 0,
+  "three_original_whole_hashes_matched": true,
+  "linux_ci_executed": false,
+  "phone_contacted": false,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 7604,
+      "sha256": "9a3989c777dbf8368d5e06a7220862824f281923c976328b49bde12123117e09"
+    },
+    {
+      "path": "evidence/mac-r28b-r2a/NEW-BUILD-RECEIPT.json",
+      "bytes": 18505,
+      "sha256": "62640d6fefbfe02ff45cbe25fc1e9b65656134537d1c652dfad1d307e999dd13"
+    },
+    {
+      "path": "evidence/mac-r28b-r2a/source-qualification.json",
+      "bytes": 859,
+      "sha256": "6ab828e6c20e4161a808d8349a92288fa716a574ca77f0203c4d61e73e0584fc"
+    },
+    {
+      "path": "evidence/mac-r28b-r2a/three-elf-comparison.json",
+      "bytes": 1144,
+      "sha256": "a371b2711735f4f5ef9cf9e0f321d270fc67215618f473886f043f19ee57bd54"
+    },
+    {
+      "path": "evidence/mac-r28b-r2a/worker-compile-commands.json",
+      "bytes": 2543,
+      "sha256": "0f5dd9a87c51f07a593893ffd6f495809df4ff54b49d2157b7a410063a05623d"
+    },
+    {
+      "path": "evidence/worker-path-repro/PATH-READ.json",
+      "bytes": 22774,
+      "sha256": "f4956b94ea3f739c23df1de3f66934702d00c4296daa9d036353629672df5ba4"
+    },
+    {
+      "path": "evidence/worker-path-repro/REPORT.json",
+      "bytes": 449600,
+      "sha256": "d02d1127eae15c231413d07f341e951ea4d3bd84a3b9a204b0163d606991b437"
+    },
+    {
+      "path": "evidence/worker-path-repro/rebuild_worker_paths.py",
+      "bytes": 7979,
+      "sha256": "43d47b981c875ee393a7a31e0a52ed04e0d2631f870453bd9c979b33dab53ad4"
+    },
+    {
+      "path": "hepta-local-android-workflow.patch",
+      "bytes": 3928,
+      "sha256": "8f5f1fae6a70c71979ca36b88ebb997517dafc2a6db21db8d0f48e9f5cb7ed7a"
+    },
+    {
+      "path": "rebuild_exact_runtime.py",
+      "bytes": 26029,
+      "sha256": "62309fa20e51186f37f59e6aba1ea8ace08fb086131b61b47383f89e3c42e861"
+    },
+    {
+      "path": "toolchain-provenance.json",
+      "bytes": 10410,
+      "sha256": "47ba72115827b9e305cc036176793ecf73f5597f256f7d7c7a181e5edde8ab0b"
+    },
+    {
+      "path": "workflow-proposal.yml",
+      "bytes": 8466,
+      "sha256": "bd1dea5b0e16cfe47a683687d12d108e1b9cd7b48f21fd7c71bbe2e4bada9932"
+    }
+  ]
+}

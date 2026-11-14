@@ -1,0 +1,602 @@
+{
+  "observation_id": "ddfe0139c9ac40349a368981ef38ad6a",
+  "package": "com.motorola.stylus",
+  "screen_width": 1224,
+  "screen_height": 2992,
+  "rotation": 0,
+  "window_id": 3385,
+  "screen_sha256": "b29e0cad3010c117e7517e8cab46a741e2a094736c89c8486004769be3307b53",
+  "window": {
+    "scope": "active_root_only",
+    "metadata_status": "observed",
+    "window_id": 3385,
+    "root_bounds": [
+      77,
+      697,
+      883,
+      1923
+    ],
+    "root_class": "android.widget.FrameLayout",
+    "root_class_truncated": false,
+    "type": 1,
+    "display_id": 0,
+    "bounds": [
+      77,
+      697,
+      883,
+      1923
+    ],
+    "title": "弹出式窗口",
+    "title_truncated": false
+  },
+  "app_tree_sha256": "288e030b09d4ba1b402c730f63bc8dd8f2fca2d45d715d52f595e84b8a40b380",
+  "observation_state_sha256": "ad4ae4bf010ca459b77572e6f6a63f32f569bc3b42c239c3fb1a71f102be980c",
+  "ime_visible": false,
+  "scroll_actions_schema": "hepta.observed-scroll-actions.v1",
+  "node_data_is_untrusted": true,
+  "nodes_truncated": false,
+  "nodes": [
+    {
+      "id": "n0",
+      "bounds": [
+        727,
+        1767,
+        847,
+        1887
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "view_id": "com.motorola.stylus:id\/drawer_add_category",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n1",
+      "bounds": [
+        77,
+        736,
+        883,
+        891
+      ],
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text": "所有笔记 · 0",
+      "child_text_source": "visible_noninteractive_descendants.v1",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "63a5921f846a4ff2b4e1179515ca3dd180bd93e2fc6772df298296c90233f348",
+          "node_signature": "c2e11675274d873b6c1cd5cd3ac1034e6b5aa9d73f92f230762b67e926931d43"
+        },
+        {
+          "descendant_path": "1",
+          "property": "text",
+          "text_sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+          "node_signature": "e28c0c7558693b602b2c0c6583be3eec0df0b85f29edf3fc6d60b5db608886bf"
+        }
+      ],
+      "view_id": "com.motorola.stylus:id\/drawer_all_notes",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n2",
+      "bounds": [
+        77,
+        891,
+        883,
+        1046
+      ],
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text": "未分类 · 0",
+      "child_text_source": "visible_noninteractive_descendants.v1",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "54b89f901274588b3771688dff6fc07fa0fe44c04639ea8a825d0fef952d2272",
+          "node_signature": "bf1aba658dae943432cfc4124f57a1aae261937ad84a18d9e05e6d9dcab3198f"
+        },
+        {
+          "descendant_path": "1",
+          "property": "text",
+          "text_sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+          "node_signature": "c63b36201f4b802c5ca4620fe7006ef1ea3c76861b770a496d9eda52e9719174"
+        }
+      ],
+      "view_id": "com.motorola.stylus:id\/drawer_uncategorized",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n3",
+      "bounds": [
+        129,
+        1072,
+        831,
+        1188
+      ],
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text": "分类 · 编辑",
+      "child_text_source": "visible_noninteractive_descendants.v1",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "515559957fd3acbdd96991b2e6bc90e608ef779aa8177c97286bfc16f0ceb606",
+          "node_signature": "5864a538e94ddc052d380a37e97fc3d00d0ba878d259b3c1f51bb61b657cd20b"
+        },
+        {
+          "descendant_path": "1",
+          "property": "text",
+          "text_sha256": "051836569928a9f91145a70e00b212b62a06c21a97d2d828cb75acd3fbe851b9",
+          "node_signature": "4fcff19509c931c3c53e37d65ee8fc6eeea031c83c27cb3c56799e0f6e4bc4cd"
+        }
+      ],
+      "view_id": "com.motorola.stylus:id\/drawer_edit_layout",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n4",
+      "bounds": [
+        227,
+        778,
+        760,
+        850
+      ],
+      "text": "所有笔记",
+      "view_id": "com.motorola.stylus:id\/name",
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n5",
+      "bounds": [
+        760,
+        781,
+        844,
+        846
+      ],
+      "text": "0",
+      "view_id": "com.motorola.stylus:id\/count",
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n6",
+      "bounds": [
+        227,
+        933,
+        760,
+        1005
+      ],
+      "text": "未分类",
+      "view_id": "com.motorola.stylus:id\/name",
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n7",
+      "bounds": [
+        760,
+        936,
+        844,
+        1001
+      ],
+      "text": "0",
+      "view_id": "com.motorola.stylus:id\/count",
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n8",
+      "bounds": [
+        129,
+        1124,
+        648,
+        1188
+      ],
+      "text": "分类",
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n9",
+      "bounds": [
+        759,
+        1124,
+        831,
+        1179
+      ],
+      "text": "编辑",
+      "view_id": "com.motorola.stylus:id\/category_edit",
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n10",
+      "bounds": [
+        77,
+        1214,
+        883,
+        1369
+      ],
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text": "待处理 · 0",
+      "child_text_source": "visible_noninteractive_descendants.v1",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "999a459c3f3f2d1694440efc4afb9c9342069e0e4ee375b7dea943a28931283a",
+          "node_signature": "7aee54cb9b75670d5754d3cac83d1e4b9b4e5777bb154ee1217e982e648b01cd"
+        },
+        {
+          "descendant_path": "1",
+          "property": "text",
+          "text_sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+          "node_signature": "cc01d0909069fb948837b23fc462c52204bb6a732e9b383f827a04cc06acf1cb"
+        }
+      ],
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n11",
+      "bounds": [
+        77,
+        1369,
+        883,
+        1524
+      ],
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text": "个人 · 0",
+      "child_text_source": "visible_noninteractive_descendants.v1",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "15dec507959ec950e366f395d3d31a7d4af18bae47a7c13d58106f03bde06d61",
+          "node_signature": "f15f0c184b688fd55fe8825eee84143bb1dc814de0b468192a45bcaa6cd2438c"
+        },
+        {
+          "descendant_path": "1",
+          "property": "text",
+          "text_sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+          "node_signature": "58015b85c7f4c75b80f09910562718b30163e55b0bb347fb5a70b759afe56247"
+        }
+      ],
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n12",
+      "bounds": [
+        77,
+        1524,
+        883,
+        1679
+      ],
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text": "工作 · 0",
+      "child_text_source": "visible_noninteractive_descendants.v1",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "bc62d1b6b936c78dbbd0bbe5572e32d03c66b98b4e4ce961b44249c344f570ad",
+          "node_signature": "84e080cd5b3dbdd8fabbf7977802034326551ece194497fbef4b071b7f0c2843"
+        },
+        {
+          "descendant_path": "1",
+          "property": "text",
+          "text_sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+          "node_signature": "68d63e87f0cc8734e9fdfe45eb0d2e6d5cb8791f2ac078aaab385efb145fbd60"
+        }
+      ],
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n13",
+      "bounds": [
+        227,
+        1256,
+        760,
+        1328
+      ],
+      "text": "待处理",
+      "view_id": "com.motorola.stylus:id\/name",
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n14",
+      "bounds": [
+        760,
+        1259,
+        844,
+        1324
+      ],
+      "text": "0",
+      "view_id": "com.motorola.stylus:id\/count",
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n15",
+      "bounds": [
+        227,
+        1411,
+        760,
+        1483
+      ],
+      "text": "个人",
+      "view_id": "com.motorola.stylus:id\/name",
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n16",
+      "bounds": [
+        760,
+        1414,
+        844,
+        1479
+      ],
+      "text": "0",
+      "view_id": "com.motorola.stylus:id\/count",
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n17",
+      "bounds": [
+        227,
+        1566,
+        760,
+        1638
+      ],
+      "text": "工作",
+      "view_id": "com.motorola.stylus:id\/name",
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    },
+    {
+      "id": "n18",
+      "bounds": [
+        760,
+        1569,
+        844,
+        1634
+      ],
+      "text": "0",
+      "view_id": "com.motorola.stylus:id\/count",
+      "scroll_actions_observed": true,
+      "scroll_directions": [],
+      "input_text_sha256": null,
+      "ime_enter": {
+        "schema": "hepta.observed-ime-enter.v1",
+        "observed": true,
+        "present": false,
+        "action_label": null,
+        "action_label_sha256": null,
+        "query_allowed": false,
+        "reason_code": "ime_action_unavailable"
+      },
+      "submit_available": false
+    }
+  ]
+}

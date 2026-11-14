@@ -1,0 +1,1 @@
+package android.content; public final class Context { private final android.content.res.AssetManager assets; public Context(java.io.File f){assets=new android.content.res.AssetManager(f);} public android.content.res.AssetManager getAssets(){return assets;} public String getPackageName(){return "org.trillionnium.hepta.webhelper";} }

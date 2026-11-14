@@ -1,0 +1,5 @@
+HEPTA_APPUID_PUBLISH method=renameat2_noreplace file=result published=true
+HEPTA_APPUID_PUBLISH stage=renameat2_noreplace file=result errno=17 error=File exists
+HEPTA_APPUID_PUBLISH stage=renameat2_noreplace file=link-result errno=17 error=File exists
+HEPTA_APPUID_PUBLISH method=renameat2_noreplace file=empty-result published=true
+HEPTA_APPUID_PUBLISH stage=file_fsync file=invalid-result errno=9 error=Bad file descriptor

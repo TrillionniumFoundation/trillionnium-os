@@ -1,0 +1,1 @@
+package android.os;public final class Handler {private final Looper loop;public Handler(Looper l){loop=l;}public boolean post(Runnable r){Looper old=Looper.myLooper();Looper.fixture(loop);try{r.run();}finally{Looper.fixture(old);}return true;}public boolean postDelayed(Runnable r,long delay){return true;}}

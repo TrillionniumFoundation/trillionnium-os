@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.helper-retained87-portability-review-r1",
+  "all_pass": true,
+  "syntax_pass": true,
+  "help_exit": 0,
+  "six_parameter_interface": true,
+  "exact_original56_input_map": true,
+  "exact_original55_compile_order": true,
+  "four_retained_command_vectors_equal_after_only_path_substitution": true,
+  "two_identity_command_vectors_equal_after_only_path_substitution": true,
+  "two_original_identity_method_spans_unchanged": true,
+  "portable_java_tests_executed_here": false,
+  "phone_operations": 0,
+  "source": {
+    "path": "/home/alex/hepta-helper7-retained-portable-261e-20261113-r1/run_retained_host_tests.py",
+    "bytes": 27964,
+    "sha256": "32078d18231ca5eaced75db52761eb06ed49385e814b0f5f6eca977f872a7bd5"
+  },
+  "actual_prior_fresh_results": [
+    {
+      "path": "/home/alex/hepta-helper7-independent-261e-20261113-r1/RESULT.json",
+      "sha256": "c9c475aa1a3439f28b09e0370d4d55dafbd7f09fd19704e066497e246efa6b85",
+      "cases": 77,
+      "assertions": 536
+    },
+    {
+      "path": "/home/alex/hepta-helper7-independent-261e-20261113-r1/installed-identity-r1/RESULT.json",
+      "sha256": "a96e8461792ea469b54ac68ea1ecd4d524fca128dea276fb1883f54aaaf152fb",
+      "cases": 10,
+      "assertions": 218
+    }
+  ],
+  "candidate_admission": "Supplied complete source and tools are fully recorded and checked unchanged; authoritative candidate/version/tool pins remain the surrounding frozen build manifest.",
+  "remaining": "The final integrated build must execute this portable runner on its exact new source; these original successful receipts are not a new portable run."
+}

@@ -1,0 +1,1 @@
+package org.trillionnium.hepta.webhelper;import org.json.JSONObject;final class OfficialPageCapture {interface Callback{void captured(JSONObject c);void failed(String s);}}

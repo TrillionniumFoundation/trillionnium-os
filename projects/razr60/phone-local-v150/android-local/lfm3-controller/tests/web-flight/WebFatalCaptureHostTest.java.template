@@ -1,0 +1,114 @@
+package org.trillionnium.hepta.local;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.*;
+import org.json.*;
+
+/** Executes the verbatim production publishWaiting method. The narrow surrounding
+ * objects are explicit host value carriers: this does not replay authenticated IPC,
+ * run Android cleanup, or establish native action authority. */
+public final class WebFatalCaptureHostTest {
+    private static int cases,assertions;
+    private static final JSONArray names=new JSONArray();
+    private interface Work {void run()throws Exception;}
+    private static void check(boolean value,String message){assertions++;if(!value)throw new AssertionError(message);}
+    private static void test(String name,Work body)throws Exception{body.run();cases++;names.put(name);}
+    private static JSONObject copy(JSONObject value){return new JSONObject(value.toString());}
+    private static final class PhoneObservation {
+        final String id;
+        PhoneObservation(String value){id=value;}
+    }
+    private static final class WebEvidenceReceipt {
+        final String status;
+        private final JSONObject value;
+        WebEvidenceReceipt(JSONObject callback){value=copy(callback);status=value.getString("status");}
+        JSONObject callback(){return copy(value);}
+    }
+    private static final class WebTaskDomain {
+        static int waitingCalls;
+        static WebTaskDomain waiting(String task,Object purpose,Object authorization,PhoneObservation frame,
+                                     WebEvidenceReceipt receipt,String binding){waitingCalls++;return new WebTaskDomain();}
+        Map<String,Object> evidence(){return Collections.<String,Object>singletonMap("host_value_carrier",Boolean.TRUE);}
+    }
+    private static final class Completion {
+        int calls;
+        WebTaskDomain value;
+        void bindWebDomain(WebTaskDomain domain){calls++;value=domain;}
+    }
+    private static final class Projection {
+        final String taskId;
+        final Object purpose=new Object(),authorization=new Object();
+        final String immutableBinding="host-value-carrier";
+        final Completion completion=new Completion();
+        final List<String> recordNames=new ArrayList<String>();
+        final List<JSONObject> records=new ArrayList<JSONObject>();
+        PhoneObservation current=new PhoneObservation("previous");
+        Object currentCapture=new Object(),flightNativePermit=new Object(),flightNativeCheck=new Object();
+        WebTaskDomain domain=new WebTaskDomain();
+        WebShoppingQuote.Pending shoppingReadCompletion;
+        String dispatchCheckedRun="previous-run",dispatchCheckedAction="previous-action";
+        long dispatchCheckedAt=123;
+        boolean failRecord;
+        Projection(String task){taskId=task;}
+        WebTaskDomain applyNavigation(WebTaskDomain value){return value;}
+        void record(String name,JSONObject value)throws IOException {
+            if(failRecord)throw new IOException("synthetic durable writer failure");
+            recordNames.add(name);records.add(copy(value));
+        }
+/*__ACTUAL_PUBLISH_WAITING__*/
+    }
+    private static Projection fresh(JSONObject frame){WebTaskDomain.waitingCalls=0;return new Projection(frame.getString("task_id"));}
+    private static void fatal(Projection p,JSONObject frame,JSONObject callback)throws Exception {
+        PhoneObservation prior=p.current;WebTaskDomain priorDomain=p.domain;
+        boolean refused=false;
+        try{p.publishWaiting(new PhoneObservation(frame.getString("observation_id")),new WebEvidenceReceipt(callback),"host-caller-reason");}
+        catch(IllegalStateException expected){refused=expected.getMessage().contains("网页证据存储已达上限");}
+        check(refused,"quota refusal must leave via ordinary exception");
+        check(WebTaskDomain.waitingCalls==0&&p.completion.calls==0,"fatal error published a waiting/model domain");
+        check(p.current==prior&&p.domain==priorDomain&&p.currentCapture!=null,"fatal path silently published current data");
+        check(p.records.size()==1&&p.recordNames.get(0).equals("web-capture-fatal-"+callback.getString("request_nonce")+".json"),"fatal evidence identity differs");
+        JSONObject evidence=p.records.get(0);
+        check(evidence.getJSONObject("capture_callback").similar(callback),"original callback changed");
+        check(evidence.getString("task_id").equals(frame.getString("task_id"))
+                &&evidence.getString("observation_id").equals(frame.getString("observation_id")),"fatal record lost task/frame binding");
+        check(!evidence.getBoolean("automatic_retry")&&!evidence.getBoolean("model_wait_requested")
+                &&!evidence.getBoolean("business_verified"),"fatal record invented progress");
+    }
+    private static void waiting(JSONObject frame,JSONObject callback)throws Exception {
+        Projection p=fresh(frame);PhoneObservation next=new PhoneObservation(frame.getString("observation_id"));
+        check(p.publishWaiting(next,new WebEvidenceReceipt(callback),"ordinary waiting")==next,"transient frame not returned");
+        check(WebTaskDomain.waitingCalls==1&&p.completion.calls==1&&p.completion.value==p.domain,"ordinary waiting publication changed");
+        check(p.current==next&&p.currentCapture==null&&p.flightNativePermit==null&&p.flightNativeCheck==null,"waiting retained old capture authority");
+        check(p.dispatchCheckedRun==null&&p.dispatchCheckedAction==null&&p.dispatchCheckedAt==0,"waiting retained dispatch authority");
+        check(p.records.size()==1&&p.recordNames.get(0).equals("web-frame-"+next.id+".json"),"transient frame used fatal evidence");
+        check(p.records.get(0).getBoolean("capture_metadata_only")&&!p.records.get(0).getBoolean("ax_dom_capture_is_atomic"),"waiting metadata claim changed");
+    }
+    public static void main(String[] args)throws Exception {
+        Path original=Paths.get(args[0]),output=Paths.get(args[1]);
+        JSONObject frame=new JSONObject(new String(Files.readAllBytes(original),StandardCharsets.UTF_8));
+        JSONObject actual=frame.getJSONObject("capture_callback");
+        check("unavailable".equals(actual.getString("status"))&&"private evidence storage budget reached".equals(actual.getString("reason")),"actual refusal fixture differs");
+        test("actual_quota_callback_fails_without_waiting",()->fatal(fresh(frame),frame,copy(actual)));
+        test("same_permanent_reason_state_changed_fails",()->{JSONObject callback=copy(actual);callback.put("status","state_changed");fatal(fresh(frame),frame,callback);});
+        test("transient_unavailable_retains_waiting",()->{JSONObject callback=copy(actual);callback.put("reason","DOM sample changed");waiting(frame,callback);});
+        test("transient_navigation_change_retains_waiting",()->{JSONObject callback=copy(actual);callback.put("status","state_changed").put("reason","navigation epoch changed");waiting(frame,callback);});
+        test("reason_substring_is_not_permanent_classifier",()->{JSONObject callback=copy(actual);callback.put("reason","prefix private evidence storage budget reached suffix");waiting(frame,callback);});
+        test("null_reason_is_not_permanent_classifier",()->{JSONObject callback=copy(actual);callback.put("reason",JSONObject.NULL);waiting(frame,callback);});
+        test("fatal_evidence_write_error_propagates",()->{
+            Projection p=fresh(frame);p.failRecord=true;boolean refused=false;
+            try{p.publishWaiting(new PhoneObservation(frame.getString("observation_id")),new WebEvidenceReceipt(actual),"unused");}
+            catch(IOException expected){refused="synthetic durable writer failure".equals(expected.getMessage());}
+            check(refused&&p.records.isEmpty(),"durable write error swallowed");
+            check(WebTaskDomain.waitingCalls==0&&p.completion.calls==0,"write failure published waiting");
+        });
+        JSONObject result=new JSONObject().put("schema","hepta.flight-fatal-capture-method-host.v1").put("all_pass",true)
+                .put("cases",cases).put("assertions",assertions).put("case_names",names)
+                .put("verbatim_production_publish_waiting",true).put("surrounding_types_are_host_stubs",true)
+                .put("authenticated_ipc_replayed",false).put("android_cleanup_executed",false)
+                .put("phone_operations",0).put("business_verified",false);
+        Files.write(output,(result.toString(2)+"\n").getBytes(StandardCharsets.UTF_8),StandardOpenOption.CREATE_NEW);
+        System.out.println(result.toString());
+    }
+}

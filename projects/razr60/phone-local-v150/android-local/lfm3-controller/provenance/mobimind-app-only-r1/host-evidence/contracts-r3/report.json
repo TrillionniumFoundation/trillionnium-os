@@ -1,0 +1,47 @@
+[
+  {
+    "argv": [
+      "java",
+      "-m",
+      "jdk.compiler/com.sun.tools.javac.Main",
+      "--release",
+      "8",
+      "-encoding",
+      "UTF-8",
+      "-Xlint:all",
+      "-Werror",
+      "-d",
+      "hepta-mobimind-app-draft-r1/host-evidence/contracts-r3/classes",
+      "hepta-mobimind-app-draft-r1/src/org/trillionnium/hepta/local/MobiMindPins.java",
+      "hepta-mobimind-app-draft-r1/src/org/trillionnium/hepta/local/MobiMindContract.java",
+      "hepta-mobimind-app-draft-r1/src/org/trillionnium/hepta/local/MobiMindSessionContract.java",
+      "hepta-mobimind-app-draft-r1/tests/MobiMindContractHostTest.java",
+      "hepta-mobimind-app-draft-r1/tests/MobiMindSessionContractHostTest.java"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "java",
+      "-cp",
+      "hepta-mobimind-app-draft-r1/host-evidence/contracts-r3/classes",
+      "MobiMindContractHostTest"
+    ],
+    "exit_code": 0,
+    "stdout": "MobiMindContractHostTest assertions=58\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "java",
+      "-cp",
+      "hepta-mobimind-app-draft-r1/host-evidence/contracts-r3/classes",
+      "MobiMindSessionContractHostTest"
+    ],
+    "exit_code": 0,
+    "stdout": "MobiMindSessionContractHostTest assertions=41\n",
+    "stderr": ""
+  }
+]
