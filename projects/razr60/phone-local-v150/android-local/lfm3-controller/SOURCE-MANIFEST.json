@@ -1,14 +1,23 @@
 {
   "android_qualified": false,
   "base_source": {
-    "commit": "d88c02f41675b2b09ceaf4199db9754f46d737b6",
-    "component_tree": "0408e366da3e897731e609c6a4bf8cb7b291bbbb",
-    "source_manifest_sha256": "a58dd8bc898767b9ca8b9a377c5791b798fbc0e8ed961ce573d66fbf628bb963"
+    "commit": "7a9b5dadaab194dc2ce0d52163a0db428b1fe028",
+    "component_tree": "08f3d1c32944f834530b659cb6c3b7ec12c00039",
+    "source_manifest_sha256": "bf99aebd7009d29cad75f3b796af4005084f30219aff61929cb905c4b214d991"
   },
-  "candidate_status": "r15_explicit_fixture_utf8_pending_fresh_frozen_108_plus_15_and_phone_acceptance",
+  "candidate_status": "r16_corrected_build_root_binding_pending_fresh_frozen_108_plus_15_and_phone_acceptance",
   "candidate_version_assigned": true,
   "complete_source_files": 1865,
   "current_validation": {
+    "build_root_preflight": {
+      "all_pass": true,
+      "all_placeholders_resolved": true,
+      "identity_preflight_used_parent_head": "7a9b5dadaab194dc2ce0d52163a0db428b1fe028",
+      "old_wrong_roots_rejected": true,
+      "phone_or_android_qualification": false,
+      "sha256": "af613120629ea8a28692504a9779b9d677406242ac12c8c5fd4538af895be823",
+      "source_or_build_input_files_written": 0
+    },
     "cleanup_scope": "R13 prior outcomes preserved; new candidate unexecuted on phone",
     "final_host_receipts": {
       "author_host_pass_is_not_phone_or_android_qualification": true,
@@ -139,7 +148,7 @@
     "native_product_quote_business_verified": false,
     "original_failures_preserved": true,
     "phone_tested": false,
-    "strict_host_gate": "The original R14 frozen build passed the canonical 108 and first 14 native gates, then exposed the terminal fixture javac charset failure under C locale. The corrected terminal gate passed both modes with the same C environment. This child requires fresh complete frozen 108 plus 15 before build qualification.",
+    "strict_host_gate": "R15 preparation rejected mismatched build output roots before creating source or host outputs. The corrected full generator prefix passed a read-only root and placeholder preflight, including rejection of the old wrong roots. This metadata-only child still requires a fresh complete frozen 108 plus 15 and actual Android/phone qualification.",
     "targeted_utf8_c_locale_regression": {
       "LANG": "C",
       "LC_ALL": "C",
@@ -10909,12 +10918,12 @@
       "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
       "git_blob": "0b930697d296f0945d8d0b584c54c10e0a28f583",
       "path": ".github/workflows/hepta-local-android.yml",
-      "prior_commit": "d88c02f41675b2b09ceaf4199db9754f46d737b6",
+      "prior_commit": "7a9b5dadaab194dc2ce0d52163a0db428b1fe028",
       "prior_git_blob": "0b930697d296f0945d8d0b584c54c10e0a28f583",
       "sha256": "28c49c65d2d963723ba318667b65dc7b92d2c4d36b14d48635dfc89653eaa54b"
     },
-    "native_host_gate_contract_sha256": "a68ac8add6b09619ace5d505f5ab5cb55db91e88cbc1ee247427d94477eff617",
-    "normal_git_parent": "d88c02f41675b2b09ceaf4199db9754f46d737b6",
+    "native_host_gate_contract_sha256": "3c8f299d6f2d6e74e18cd405b939665b4f7526183cfd6b5d61ea197d4a38c640",
+    "normal_git_parent": "7a9b5dadaab194dc2ce0d52163a0db428b1fe028",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -11092,6 +11101,35 @@
     "production_bytes_changed": false,
     "source_membership_changed": false,
     "targeted_pass_result_sha256": "c42eeeb045dbad971ccb5205327875060ea24e9e51272ccc039f699f743a4753"
+  },
+  "r16_build_root_binding_amendment": {
+    "all_137_java_bytes_unchanged": true,
+    "all_1864_nonmanifest_members_unchanged": true,
+    "all_required_gate_behavior_and_case_matrices_retained": true,
+    "complete_generator_prefix_preflight_sha256": "af613120629ea8a28692504a9779b9d677406242ac12c8c5fd4538af895be823",
+    "explicit_javac_utf8_preserved": true,
+    "external_dependency_paths_rebound_to_r16": true,
+    "new_consumer": {
+      "driver_template_sha256": "8cc256eefc2b8013cf58a7704f2846bb823e1b2aa6b5681bcf7218950ede749a",
+      "input_generator_sha256": "5ef736d8130efeead4e43fc6cfe1063be0a5777f26da8a30c9fcec5234b1c61e"
+    },
+    "new_frozen_complete_build_required": true,
+    "new_native_host_gate_contract_sha256": "3c8f299d6f2d6e74e18cd405b939665b4f7526183cfd6b5d61ea197d4a38c640",
+    "new_phone_pass_claimed": false,
+    "old_wrong_root_negative_rejected": true,
+    "parent_commit": "7a9b5dadaab194dc2ce0d52163a0db428b1fe028",
+    "parent_contract_sha256": "a68ac8add6b09619ace5d505f5ab5cb55db91e88cbc1ee247427d94477eff617",
+    "prior_preparation_refusal_preserved": true,
+    "production_bytes_changed": false,
+    "r14_and_r15_inputs_preserved": true,
+    "required_build_locale_unchanged": {
+      "LANG": "C",
+      "LC_ALL": "C"
+    },
+    "source_manifest_only": true,
+    "source_membership_changed": false,
+    "tests_changed": false,
+    "workflow_changed": false
   },
   "release_version_assigned": false,
   "schema": "hepta.local-source.v3",
