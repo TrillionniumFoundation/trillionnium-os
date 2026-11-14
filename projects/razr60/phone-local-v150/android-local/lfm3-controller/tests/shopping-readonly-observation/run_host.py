@@ -38,12 +38,14 @@ def main():
     tree=ast.parse(read(query).decode())
     values=[ast.literal_eval(n.value) for n in tree.body if isinstance(n,ast.Assign)
             and any(isinstance(t,ast.Name) and t.id=="PURE_PATHS" for t in n.targets)]
-    need(len(values)==1 and len(values[0])==55,"explicit 55-source query dependency closure required")
+    need(len(values)==1 and len(values[0])==56,"explicit 56-source query dependency closure required")
     rect="tests/qualification-scope/fixtures/android/graphics/Rect.java"
     native_boundary="tests/native-app/legacy-boundary/NativeAppSession.java"
+    native_ctrip="src/org/trillionnium/hepta/local/NativeCtripFlightPage.java"
     paths=[v for v in values[0] if v.startswith("src/") or v in (rect,native_boundary)]
-    need(len(paths)==54 and len(set(paths))==54 and rect in paths and native_boundary in paths,
-         "52 production inputs, original Rect and throwing native-session boundary; no retained query tests substituted")
+    need(len(paths)==55 and len(set(paths))==55 and rect in paths and native_boundary in paths
+         and native_ctrip in paths and set(values[0])-set(paths)=={"tests/web-flight/WebFlightQueryHostTest.java"},
+         "53 production inputs including real NativeCtripFlightPage, original Rect and throwing native-session boundary; only retained query test excluded")
     source={v:read(a.source/v) for v in paths}
     test=a.source/"tests/shopping-readonly-observation/ShoppingReadonlyObservationHost.java";read(test)
     quote_test=a.source/"tests/shopping-readonly-observation/ShoppingQuoteHost.java";read(quote_test)
