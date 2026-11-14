@@ -1,11 +1,11 @@
 {
   "android_qualified": false,
   "base_source": {
-    "commit": "4a970197cf9d71fab79a3749cd47cc867d927c4b",
-    "component_tree": "faed7088f232de8f6bb74aedbce32f2720c9ba95",
-    "source_manifest_sha256": "5240c7200a72c122b89b4a9cf553188b25b0a455eab740a1de09f1b7a8003b50"
+    "commit": "2f4ee8298ba4ad1a466511af363593e43e409f54",
+    "component_tree": "44aef08c7486488590f48f618846d98f9c806fdf",
+    "source_manifest_sha256": "626b75f6847f193e52c9392de508b231969d162550c65a6464f0fe1d9ee0f3de"
   },
-  "candidate_status": "native_observation_action_repairs_pending_fresh_v69_dual_build_and_phone_acceptance",
+  "candidate_status": "query_hook_fixture_sync_pending_fresh_v69_dual_build_and_phone_acceptance",
   "candidate_version_assigned": true,
   "complete_source_files": 1838,
   "current_validation": {
@@ -8955,9 +8955,9 @@
       "sha256": "c2c3a6455b0344b8f113d907f8ec0110abd2427785dad3b660b41f8b556ed0ca"
     },
     {
-      "bytes": 42466,
+      "bytes": 42654,
       "path": "tests/web-flight/run_query_host_tests.py",
-      "sha256": "ebd84725070b7986d9a9cc15389ce4854ebcdd12331e5b18f0d65aa62abf2e03"
+      "sha256": "e770f24c7bb51ffdd3a395b452583111151392c83e532e93b17ccfe6d6d8a738"
     },
     {
       "bytes": 5108,
@@ -10590,6 +10590,66 @@
     "source_manifest_sha256": "5240c7200a72c122b89b4a9cf553188b25b0a455eab740a1de09f1b7a8003b50"
   },
   "host_closure_amendment": {
+    "cause": "The query40 exact service-hook literal predates the existing final native action recheck and claimed guard. Synchronize only that literal to the current production block.",
+    "changed_programs": [
+      "tests/web-flight/run_query_host_tests.py"
+    ],
+    "guard_order": [
+      "web.beforeNativeClickInvocation",
+      "finalNativeActionCheck",
+      "requireClaimed",
+      "enterActionEffect",
+      "ACTION_CLICK",
+      "actionEffectReturned"
+    ],
+    "java_native_helper_resources_unchanged": true,
+    "native_helper_resources_unchanged": true,
+    "new_head_tests_run": false,
+    "new_runner_sha256": "e770f24c7bb51ffdd3a395b452583111151392c83e532e93b17ccfe6d6d8a738",
+    "old_runner_sha256": "ebd84725070b7986d9a9cc15389ce4854ebcdd12331e5b18f0d65aa62abf2e03",
+    "original_case_and_assertion_contracts_retained": true,
+    "original_failure_preserved": true,
+    "production_bytes_changed": false,
+    "production_changed_paths": [],
+    "repository_workflow_unchanged": true,
+    "unique_complete_hook_assertion_preserved": true
+  },
+  "integration_sources": {
+    "canonical_runner_sha256": "0f5b764d9324a0712d56cd59a23b77c09f8362cd2589071f89aa0ee8d6072dc1",
+    "external_repository_workflow": {
+      "base_commit": "4a970197cf9d71fab79a3749cd47cc867d927c4b",
+      "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
+      "git_blob": "d8947ea76bbf7545596bbf695f21a23c0379d41f",
+      "path": ".github/workflows/hepta-local-android.yml",
+      "sha256": "2f947aa9b37f06767f9ed41c06782d2c6759f80f5475b581b230042a45e030d6"
+    },
+    "native_host_gate_contract_sha256": "cf2dd7d229593b9f6c55868efcd29587e2495ae6a4b7cfe31a7658674924d77a",
+    "normal_git_parent": "2f4ee8298ba4ad1a466511af363593e43e409f54",
+    "paired_helper": {
+      "apk_bytes": 1414146,
+      "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
+      "certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+      "helper_source_closure_sha256": "4c00e1d9dda65b927557e35043c6f41fedc1ac5584f4c5aede2369ee0cb72f3f",
+      "package": "org.trillionnium.hepta.webhelper",
+      "version_code": 7,
+      "version_name": "0.7.0-web-evidence-v4"
+    },
+    "review_artifact_hashes": {
+      "ACTION-HOST-HANDOFF.json": "50a20d2ea13bc0cfc650d6af59a34586d8668eeea4b1b5446ae26891e629db55",
+      "ACTUAL-INTEGRATION-REVIEW.json": "27580b7e97ce4fd210cce09e1c895b6c8d2023fc04903355f4b3d5e3de109b6a",
+      "BUILD-CONSUMER-REVIEW.json": "8eba51d707beb7f4921d55a92feef37cfabacedf56b01b44f80fa97e5df24cad",
+      "RESULT.json": "dcc0edbe6fc212e5b83dcb57f7b727c684ce7fcbeeea9f958d8db240f51219f7",
+      "WORKFLOW-REVIEW.json": "eb921231510f0dcbad8e777d735833a1898cfde668806c2dc8707b2a1dd6ea30"
+    },
+    "source_reconstruction_base": {
+      "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
+      "component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
+      "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
+    }
+  },
+  "main_java_sources": 136,
+  "phone_qualified": false,
+  "previous_source_amendment": {
     "cause": "Recheck complete native observations under unrelated accessibility events and revalidate four admitted native actions against a complete fresh census and original one-shot Session authority; version69 and all original gates retained.",
     "changed_programs": [
       "AndroidManifest.xml",
@@ -10668,41 +10728,6 @@
       }
     ]
   },
-  "integration_sources": {
-    "canonical_runner_sha256": "0f5b764d9324a0712d56cd59a23b77c09f8362cd2589071f89aa0ee8d6072dc1",
-    "external_repository_workflow": {
-      "base_commit": "4a970197cf9d71fab79a3749cd47cc867d927c4b",
-      "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
-      "git_blob": "d8947ea76bbf7545596bbf695f21a23c0379d41f",
-      "path": ".github/workflows/hepta-local-android.yml",
-      "sha256": "2f947aa9b37f06767f9ed41c06782d2c6759f80f5475b581b230042a45e030d6"
-    },
-    "native_host_gate_contract_sha256": "c0cca01226b3b34ca6fdacc18865d933f38d9a1357542eb21b60179c73dbbe8f",
-    "normal_git_parent": "4a970197cf9d71fab79a3749cd47cc867d927c4b",
-    "paired_helper": {
-      "apk_bytes": 1414146,
-      "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
-      "certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
-      "helper_source_closure_sha256": "4c00e1d9dda65b927557e35043c6f41fedc1ac5584f4c5aede2369ee0cb72f3f",
-      "package": "org.trillionnium.hepta.webhelper",
-      "version_code": 7,
-      "version_name": "0.7.0-web-evidence-v4"
-    },
-    "review_artifact_hashes": {
-      "ACTION-HOST-HANDOFF.json": "50a20d2ea13bc0cfc650d6af59a34586d8668eeea4b1b5446ae26891e629db55",
-      "ACTUAL-INTEGRATION-REVIEW.json": "27580b7e97ce4fd210cce09e1c895b6c8d2023fc04903355f4b3d5e3de109b6a",
-      "BUILD-CONSUMER-REVIEW.json": "8eba51d707beb7f4921d55a92feef37cfabacedf56b01b44f80fa97e5df24cad",
-      "RESULT.json": "dcc0edbe6fc212e5b83dcb57f7b727c684ce7fcbeeea9f958d8db240f51219f7",
-      "WORKFLOW-REVIEW.json": "eb921231510f0dcbad8e777d735833a1898cfde668806c2dc8707b2a1dd6ea30"
-    },
-    "source_reconstruction_base": {
-      "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
-      "component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
-      "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
-    }
-  },
-  "main_java_sources": 136,
-  "phone_qualified": false,
   "production_build_inputs_count": 244,
   "qualification_policy": "Source reviews, host gates, real Android build and actual native phone outcomes retain separate evidence.",
   "release_version_assigned": false,
