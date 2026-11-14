@@ -13,6 +13,12 @@ import java.util.*;
 /** Only acquisition/observation/Android effects are IO fakes; extracted sections are production. */
 public final class HeptaAccessibilityService extends android.content.Context {
 {{service_interfaces_outcome}}
+    /** Type-only failed-read API: legacy gates cannot mint or consume recovery authority. */
+    static final class NativeObservationRetryProof {
+        private NativeObservationRetryProof(){throw new AssertionError("legacy fixture cannot mint failed-read proof");}
+        void requireOriginal(Object service,String task,Object authorization,PhoneObservation before){throw new AssertionError("legacy fixture has no failed-read proof");}
+        Map<String,Object> evidence(){throw new AssertionError("legacy fixture has no failed-read proof");}
+    }
     /** Type-only legacy boundary; never a successful native-region recheck. */
     static final class NativeRegionCheck {
         private NativeRegionCheck(){throw new AssertionError("legacy fixture has no Web native-region evidence");}
@@ -105,6 +111,9 @@ public final class HeptaAccessibilityService extends android.content.Context {
     public void observe(String task,File directory,Cancellation cancel,long deadline,ObservationCallback callback){
         current=observation();currentGraph=readGraph();if(node!=null)currentGraph.refs.put("n0",new NodeRef(node,observedChildText(node),readScrollActions(node)));callback.onObservation(current);
     }
+    void observeAfterTransientFailure(String task,File directory,Cancellation cancel,long deadline,ObservationCallback callback,NativeObservationRetryProof proof){
+        throw new AssertionError("legacy fixture cannot submit a failed-read replacement");
+    }
     public ActionOutcome execute(ActionDecision action)throws Exception{
         final java.util.concurrent.CountDownLatch completed=new java.util.concurrent.CountDownLatch(1);
         final ActionOutcome[] box=new ActionOutcome[1];ObservedTargetLabels labels=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,current.id,current.packageName,java.util.Collections.singletonMap("n0",node==null?"":node.text));
@@ -130,3 +139,4 @@ public final class HeptaAccessibilityService extends android.content.Context {
 {{node_identity}}
 {{strings}}
 }
+

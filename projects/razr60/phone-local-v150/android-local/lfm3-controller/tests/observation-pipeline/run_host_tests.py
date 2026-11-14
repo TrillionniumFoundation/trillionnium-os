@@ -32,6 +32,7 @@ record={'schema':'hepta.observation-pipeline-host.v1','production_sha256':hashli
         'runner_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         'stability_gate_sha256':hashlib.sha256((root/'src/org/trillionnium/hepta/local/ObservationStabilityGate.java').read_bytes()).hexdigest(),
         'diagnostic_source_sha256':hashlib.sha256((root/'src/org/trillionnium/hepta/local/ObservationDiagnostics.java').read_bytes()).hexdigest(),
+        'window_metadata_source_sha256':hashlib.sha256((root/'src/org/trillionnium/hepta/local/ObservedWindowMetadata.java').read_bytes()).hexdigest(),
         'json_fixture_sources':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((root/'tests/qualification-scope/fixtures/org/json').glob('*.java'))},
         'action_state_sha256':hashlib.sha256((root/'src/org/trillionnium/hepta/local/ActionExecutionState.java').read_bytes()).hexdigest(),
         'cancellation_queue_sha256':hashlib.sha256((root/'src/org/trillionnium/hepta/local/TaskCancellationQueue.java').read_bytes()).hexdigest(),
@@ -39,7 +40,7 @@ record={'schema':'hepta.observation-pipeline-host.v1','production_sha256':hashli
 compiler=[shutil.which('javac')] if shutil.which('javac') else ['java','-m','jdk.compiler/com.sun.tools.javac.Main']
 flags=['--release','8'] if a.release8 else ['-source','8','-target','8']
 classes=out/'classes';classes.mkdir()
-commands=[('compile',compiler+flags+['-encoding','UTF-8','-Xlint:all' if a.release8 else '-Xlint:all,-options','-Werror','-d',str(classes),str(root/'src/org/trillionnium/hepta/local/ObservationStabilityGate.java'),str(root/'src/org/trillionnium/hepta/local/ActionExecutionState.java'),str(root/'src/org/trillionnium/hepta/local/TaskCancellationQueue.java'),str(root/'src/org/trillionnium/hepta/local/ObservationDiagnostics.java')]+[str(p) for p in sorted((root/'tests/qualification-scope/fixtures/org/json').glob('*.java'))]+[str(fixture)]),('tests',['java','-cp',str(classes),'org.trillionnium.hepta.local.ObserverPipelineHost'])]
+commands=[('compile',compiler+flags+['-encoding','UTF-8','-Xlint:all' if a.release8 else '-Xlint:all,-options','-Werror','-d',str(classes),str(root/'src/org/trillionnium/hepta/local/ObservationStabilityGate.java'),str(root/'src/org/trillionnium/hepta/local/ActionExecutionState.java'),str(root/'src/org/trillionnium/hepta/local/TaskCancellationQueue.java'),str(root/'src/org/trillionnium/hepta/local/ObservationDiagnostics.java'),str(root/'src/org/trillionnium/hepta/local/ObservedWindowMetadata.java')]+[str(p) for p in sorted((root/'tests/qualification-scope/fixtures/org/json').glob('*.java'))]+[str(fixture)]),('tests',['java','-cp',str(classes),'org.trillionnium.hepta.local.ObserverPipelineHost'])]
 record['stages']=[]
 for name,command in commands:
     begin=time.monotonic();result=subprocess.run(command,text=True,capture_output=True,timeout=60)
@@ -50,3 +51,4 @@ for name,command in commands:
 record['status']='passed';record['compiler_contract']='Java 8 API release' if a.release8 else 'Java 8 syntax/class target only; strict release gate remains pending'
 record['passed_cases']=sum(line.startswith('PASS ') for line in (out/'tests.stdout').read_text().splitlines())
 (out/'RESULT.json').write_text(json.dumps(record,indent=2)+'\n');print(json.dumps(record,indent=2))
+

@@ -25,6 +25,12 @@ final class NativeAppSession {
         void close(){throw unavailable();}
         Map<String,Object> evidence(){throw unavailable();}
     }
+    static final class ReadRecoveryPermit {
+        private ReadRecoveryPermit(){throw unavailable();}
+        void requireCurrent(){throw unavailable();}
+        Map<String,Object> evidence(){throw unavailable();}
+    }
+    ReadRecoveryPermit observationRecoveryPermit(ActionDecision action,String run,String observation){throw unavailable();}
     ActionGuard actionGuard(ActionDecision action,String run,String observation,long issued,long deadline)throws ActionDecision.InvalidActionException{throw unavailable();}
     void verifyInstalled()throws Exception{throw unavailable();}
     void observed(NativeAppEvidence.Frame frame)throws Exception{throw unavailable();}
@@ -50,3 +56,4 @@ final class NativeAppSession {
             boolean processExitObserved,Integer exitCode,boolean receiptValid,String workerTask,
             String workerGeneration,String workerReceiptSha){throw unavailable();}
 }
+

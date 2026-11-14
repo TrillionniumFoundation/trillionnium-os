@@ -18,7 +18,7 @@ import time
 PKG = Path('src/org/trillionnium/hepta/local')
 TEST = Path('tests/observation-diagnostics')
 JAVA = ['HeptaAccessibilityService.java','LocalTaskController.java','ObservationDiagnostics.java',
-        'ObservationStabilityGate.java','ActionExecutionState.java','TaskCancellationQueue.java']
+        'ObservationStabilityGate.java','ActionExecutionState.java','TaskCancellationQueue.java','ObservedWindowMetadata.java']
 OWN = ['run_host.py','DiagnosticChecks.java','ObservationDiagnosticsHostTest.java',
        'DiagnosticPipelineCases.fragment','DiagnosticGraphHost.template','DiagnosticControllerHost.template']
 
@@ -83,8 +83,10 @@ def generate(source,output):
         'stale_record':body(service,'    private static void recordStaleDiagnostic(ActionWork work,Graph before,Graph after,String selectedId){'),
         'action_evidence':body(service,'    private static JSONObject actionDiagnosticEvidence(ActionWork work){'),
         'take_diagnostics':body(controller,'    private JSONObject takeObservationDiagnostics(String task){'),
-        'await_observation':body(controller,'    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline)throws Exception{')}
-    for fixture,names in [('DiagnosticGraphHost',['native_stamp','stale_record','action_evidence']),('DiagnosticControllerHost',['await_observation','take_diagnostics'])]:
+        'await_observation':body(controller,'    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline)throws Exception{'),
+        'await_observation_request':body(controller,'    private PhoneObservation awaitObservationRaw(String id,File directory,TaskAuthorization.Gate authorization,long deadline,\n'),
+        'read_retry_failure':body(controller,'    private static final class NativeObservationTransientFailure extends IllegalStateException {')}
+    for fixture,names in [('DiagnosticGraphHost',['native_stamp','stale_record','action_evidence']),('DiagnosticControllerHost',['await_observation','await_observation_request','read_retry_failure','take_diagnostics'])]:
         text=(source/TEST/(fixture+'.template')).read_text()
         for name in names:
             marker='{{'+name+'}}'
@@ -104,7 +106,7 @@ def generate(source,output):
     if service.count(branch)!=1:raise RuntimeError('exact separately guarded native branch and original fallback required')
     callback='callback.onResult(delivered.withActionExecution(actionDiagnosticEvidence(work)));'
     if service.count(callback)!=1:raise RuntimeError('actual action callback must consume diagnostic evidence')
-    await_body=methods['await_observation'];finally_body=await_body[await_body.index('        }finally{\n            abandoned.set(true);'):]
+    await_body=methods['await_observation_request'];finally_body=await_body[await_body.index('        }finally{\n            abandoned.set(true);'):]
     if any(token in finally_body for token in ('record(', 'System.err', 'System.out', '.wait(', '.sleep(')):raise RuntimeError('diagnostic finally must not perform IO or wait')
     finalization=section(controller,'        finally{\n            service.retireActionWork(taskId,', '    private static NotesCompletionEvidence.Frame completionFrame(')
     positions=[finalization.index(token) for token in ['backgroundCleanup=background.close();','modelCleanup=inference.endTask();','terminalDecisionSealed=true;','record(evidence,"result.json"','takeObservationDiagnostics(taskId)','if(cleanup)service.releaseTask(taskId);','running=false;','selected.onFinished(result)']]
@@ -176,3 +178,4 @@ def main():
     print(json.dumps({'all_pass':report['all_pass'],'result':meta(output/'RESULT.json')}));return 0 if report['all_pass'] else 1
 
 if __name__=='__main__':raise SystemExit(main())
+

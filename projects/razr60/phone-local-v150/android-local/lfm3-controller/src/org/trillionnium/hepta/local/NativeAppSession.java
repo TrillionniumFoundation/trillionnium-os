@@ -38,6 +38,7 @@ final class NativeAppSession {
     private NativeCtripFlightPage.Page flight;
     private NativeXiaomiProductPage.Page product;
     private Attempt inFlight,pending,lastDone;
+    private Attempt recoverableStaleAttempt;
     private int ordinal,observationOrdinal,productHomeLoadingWaits;
     private long productHomeLoadingSince=-1;
     private boolean retired,terminalConsumed,invalid,productQueryAttempted,productModalExitAttempted;
@@ -93,7 +94,7 @@ final class NativeAppSession {
     void observed(NativeAppEvidence.Frame frame)throws Exception{
         live();requireFrame(frame);verifyInstalled();
         if(reservationReobserveId!=null)need(!reservationReobserveId.equals(frame.observationId)&&frame.capturedElapsedMs>=reservationReobserveAfter,
-                "released query requires a newly captured observation after the drained rejection");
+                "drained stale outcome requires a newly captured observation");
         String old=observations.get(frame.observationId);
         if(old!=null){need(old.equals(frame.sourceRecordSha)&&current!=null&&current.frame.sameSource(frame),"observation ID reused or old frame replayed");return;}
         need(inFlight==null,"native observation cannot advance before its action outcome");
@@ -209,8 +210,79 @@ final class NativeAppSession {
             if(product.quote!=null&&"search_card".equals(product.quote.kind)&&productQueryProof==null){back=true;purposes.put("back","return_to_owned_product_search");}
             missing.addAll(product.missing);
         }
+        Map<String,Object> recovery=recoverableStaleView(frame,phase,clicks,purposes);
+        if(recovery!=null)view.put("recoverable_pre_effect_stale",recovery);
         if(result==null&&missing.isEmpty())missing.add("native_query_action_chain_not_complete");
         return new NativeAppDomain(frame,phase,clicks,edits,purposes,back,view,result,missing);
+    }
+    /** Descriptive recovery context only; every new action still needs the current
+     * Domain, a new model run, the full Service comparison and its one-effect guard. */
+    private Map<String,Object> recoverableStaleView(NativeAppEvidence.Frame frame,String phase,
+            Set<String> clicks,Map<String,String> purposes){
+        Attempt a=recoverableStaleAttempt;
+        if(a==null||a.receipt==null||pending!=null||!a.before.phase.equals(phase)
+                ||a.before.frame.observationId.equals(frame.observationId)||frame.capturedElapsedMs<a.finished
+                ||!frame.metadataObserved||frame.windowType!=1||!frame.collectionComplete||frame.nodesTruncated)return null;
+        NativeAppEvidence.Frame old=a.before.frame;
+        if(!old.metadataObserved||old.windowType!=1||old.windowId!=frame.windowId||old.rotation!=frame.rotation
+                ||old.width!=frame.width||old.height!=frame.height||old.left!=frame.left||old.top!=frame.top
+                ||old.right!=frame.right||old.bottom!=frame.bottom)return null;
+        NativeAppEvidence.Node original=old.byId.get(a.action.nodeId),fresh=null;
+        if(original==null||!original.direct()||original.signature==null)return null;
+        for(String id:clicks)if(a.purpose.equals(purposes.get(id))){
+            NativeAppEvidence.Node n=frame.byId.get(id);
+            if(fresh!=null||n==null||!n.direct()||!n.enabled||n.password||!n.clickable||n.editable
+                    ||!original.path.equals(n.path)||!original.signature.equals(n.signature)
+                    ||!original.packageName.equals(n.packageName)||!original.className.equals(n.className)
+                    ||!original.viewId.equals(n.viewId)||!original.label.equals(n.label)
+                    ||original.left!=n.left||original.top!=n.top||original.right!=n.right||original.bottom!=n.bottom)return null;
+            fresh=n;
+        }
+        if(fresh==null)return null;
+        Map<String,Object> value=NativeAppEvidence.map();value.put("schema","hepta.native-stale-recovery-context.v1");
+        value.put("previous_step",a.step);value.put("previous_model_run_id",a.run);
+        value.put("previous_observation_id",old.observationId);value.put("purpose",a.purpose);
+        value.put("previous_action_effect_entered",false);value.put("worker_drained",true);
+        value.put("durable_action_record_sha256",a.receipt.get("step_action_record_sha256"));
+        value.put("current_observation_id",frame.observationId);value.put("current_node_id",fresh.id);
+        value.put("current_frame_record_sha256",frame.sourceRecordSha);value.put("same_target_ref_sha256",fresh.signature);
+        value.put("new_model_decision_required",true);value.put("previous_node_id_reusable",false);
+        value.put("automatic_redispatch",false);value.put("business_verified",false);value.put("grants_tool_authority",false);
+        return value;
+    }
+    /** Opaque eligibility for one controller-owned fresh observation attempt.
+     * It is never an action token, read completion, or proof of a live Service lease. */
+    static final class ReadRecoveryPermit {
+        private final NativeAppSession session;private final Attempt attempt;
+        private ReadRecoveryPermit(NativeAppSession session,Attempt attempt){this.session=session;this.attempt=attempt;}
+        void requireCurrent(){session.requireReadRecovery(attempt);}
+        Map<String,Object> evidence(){
+            requireCurrent();Map<String,Object> value=session.base();
+            value.put("schema","hepta.native-stale-read-recovery-permit.v1");
+            value.put("original_model_run_id",attempt.run);value.put("original_observation_id",attempt.before.frame.observationId);
+            value.put("original_action_sha256",attempt.guard.actionSha);value.put("purpose",attempt.purpose);
+            value.put("original_frame_record_sha256",attempt.before.frame.sourceRecordSha);
+            value.put("action_record_sha256",attempt.receipt.get("step_action_record_sha256"));
+            value.put("window_id",attempt.before.frame.windowId);value.put("display_id",session.displayId);
+            value.put("background_generation",session.generation);value.put("drained_outcome_elapsed_ms",attempt.finished);
+            value.put("fresh_observation_and_new_model_decision_required",true);value.put("grants_action_authority",false);
+            value.put("grants_service_read_authority",false);value.put("business_verified",false);return NativeAppEvidence.immutableMap(value);
+        }
+    }
+    ReadRecoveryPermit observationRecoveryPermit(ActionDecision action,String runId,String observationId){
+        Attempt a=recoverableStaleAttempt;if(a==null)return null;
+        need(a.action==action&&a.run.equals(runId)&&a.before.frame.observationId.equals(observationId),
+                "read recovery belongs to the original model action and observation");
+        requireReadRecovery(a);return new ReadRecoveryPermit(this,a);
+    }
+    private void requireReadRecovery(Attempt a){
+        live();need(a!=null&&a==recoverableStaleAttempt&&a.before==current&&inFlight==null&&pending==null
+                &&a.journaled&&a.receipt!=null&&a.finished>=a.started
+                &&Boolean.TRUE.equals(a.receipt.get("pre_effect_stale_recovery_available"))
+                &&a.guard!=null&&a.guard.state.get()==2
+                &&a.before.frame.observationId.equals(reservationReobserveId)&&reservationReobserveAfter==a.finished,
+                "read recovery lost its durable unentered Attempt or current reobservation barrier");
+        requireFrame(a.before.frame);
     }
     private static void grant(Set<String> ids,Map<String,String> purposes,NativeAppEvidence.Node node,String purpose){need(node!=null&&purpose!=null,"actual query target and purpose required");ids.add(node.id);purposes.put(node.id,purpose);}
 
@@ -312,7 +384,7 @@ final class NativeAppSession {
             if(guard!=null)e.put("native_action_guard",guard.evidence());return e;}
     }
     void beforeModelAction(int step,ActionDecision action,String run,long now)throws Exception{
-        live();verifyInstalled();need(reservationReobserveId==null,"released query requires fresh observation before another model action");
+        live();verifyInstalled();need(reservationReobserveId==null,"drained stale outcome requires fresh observation before another model action");
         need(current!=null&&inFlight==null&&step>0&&step<=MAX_ACTIONS&&NativeAppEvidence.id(run)&&usedRuns.add(run),"one actual bounded model action required");
         current.requireCurrent(action);authorization.frame().requireDecision(action);need(++ordinal<=MAX_ACTIONS,"native action budget exhausted");
         if(NativeXiaomiProductPage.HOME_LOADING.equals(current.phase))
@@ -342,7 +414,7 @@ final class NativeAppSession {
         inFlight=new Attempt(ordinal,step,run,action,current,purpose,flight,product,now,date);
         Map<String,Object> e=base();e.put("attempt",inFlight.evidence());e.put("same_owner_authorization",authorization.frame().evidence());e.put("dispatch_occurred",false);
         journal.write(String.format(java.util.Locale.ROOT,"native-app-attempt-%02d.json",ordinal),e);
-        inFlight.journaled=true;
+        inFlight.journaled=true;recoverableStaleAttempt=null;
     }
     /** Boolean-only legacy callers cannot prove that an effect never entered. */
     void modelActionOutcome(ActionDecision action,String run,boolean accepted,boolean dispatched,boolean stale,String receiptSha,long finished)throws Exception{
@@ -351,6 +423,7 @@ final class NativeAppSession {
     void modelActionOutcome(ActionDecision action,String run,boolean accepted,boolean dispatched,boolean stale,String receiptSha,long finished,
             Map<String,Object> actionExecution)throws Exception{
         live();Attempt a=inFlight;need(a!=null&&a.action==action&&a.run.equals(run)&&finished>=a.started&&NativeAppEvidence.sha(receiptSha),"same native action and durable receipt required");
+        boolean recovery=!accepted&&!dispatched&&stale&&provedUnenteredGuardedAction(a,actionExecution,finished);
         boolean release=!accepted&&!dispatched&&stale&&provedUnenteredQuery(a,actionExecution,finished);
         boolean loginRelease=!accepted&&!dispatched&&stale&&NativeXiaomiProductPage.LOGIN_EXIT.equals(a.purpose)
                 &&productLoginExitReserved&&a.guard==null&&provedUnenteredAction(a,actionExecution,finished)
@@ -360,6 +433,16 @@ final class NativeAppSession {
         outcome.put("step_action_record_sha256",receiptSha);outcome.put("model_issued",true);
         outcome.put("query_reservation_released",release);
         outcome.put("login_exit_reservation_released",loginRelease);
+        outcome.put("pre_effect_stale_recovery_available",recovery);
+        if(recovery){
+            Map<String,Object> proof=NativeAppEvidence.map();proof.put("schema","hepta.native-stale-recovery-proof.v1");
+            proof.put("action_execution_projection_sha256",NativeAppEvidence.fingerprint(actionExecution));
+            proof.put("original_observation_id",a.before.frame.observationId);proof.put("original_model_run_id",a.run);
+            proof.put("operation_id",actionExecution.get("operation_id"));proof.put("worker_drained",true);
+            proof.put("effect_entered",false);proof.put("guard_unclaimed",true);
+            proof.put("fresh_observation_and_new_model_decision_required",true);
+            proof.put("automatic_redispatch",false);proof.put("business_verified",false);outcome.put("pre_effect_stale_recovery",proof);
+        }
         if(release){
             Map<String,Object> proof=NativeAppEvidence.map();proof.put("schema","hepta.native-query-reservation-release.v1");
             proof.put("date",a.date.toString());proof.put("action_execution_projection_sha256",NativeAppEvidence.fingerprint(actionExecution));
@@ -382,6 +465,7 @@ final class NativeAppSession {
         // and old model run stay unusable; neither a result nor an action is made.
         if(release){queryAttempts.remove(a.date);requireReobservationAfterReleasedReservation(a,finished);}
         if(loginRelease){productLoginExitReserved=false;requireReobservationAfterReleasedReservation(a,finished);}
+        if(recovery){recoverableStaleAttempt=a;requireReobservationAfterReleasedReservation(a,finished);}
         if(stale&&!dispatched)return;
         if(!accepted||stale){invalidate("native_action_receipt_not_accepted");return;}
         if("wait".equals(action.action))return;
@@ -410,14 +494,20 @@ final class NativeAppSession {
                 &&drained>=queued&&drained<=finished&&finished<deadline;
     }
     private boolean provedUnenteredQuery(Attempt a,Map<String,Object> x,long finished){
+        return NativeActionSnapshotCheck.QUERY.equals(a.purpose)&&a.date!=null&&queryAttempts.contains(a.date)
+                &&provedUnenteredGuardedAction(a,x,finished);
+    }
+    private boolean provedUnenteredGuardedAction(Attempt a,Map<String,Object> x,long finished){
         ActionGuard g=a.guard;
-        if(!NativeActionSnapshotCheck.QUERY.equals(a.purpose)||a.date==null||!queryAttempts.contains(a.date)
+        if(!java.util.Arrays.asList(NativeActionSnapshotCheck.OPEN,NativeActionSnapshotCheck.YEAR,
+                NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH).contains(a.purpose)
                 ||g==null||g.state.get()!=0||g.action!=a.action||g.frame!=a.before.frame||!provedUnenteredAction(a,x,finished))return false;
         if(executionNumber(x,"queued_elapsed_ms")<g.issued||executionNumber(x,"deadline_elapsed_ms")!=g.deadline)return false;
         Object raw=x.get("native_action_guard");if(!(raw instanceof Map<?,?>))return false;
         Map<?,?> guard=(Map<?,?>)raw;
         return a.purpose.equals(guard.get("purpose"))&&a.run.equals(guard.get("model_run_id"))
-                &&g.actionSha.equals(guard.get("action_sha256"))&&g.historySha.equals(guard.get("query_history_sha256"))
+                &&g.actionSha.equals(guard.get("action_sha256"))&&guard.containsKey("query_history_sha256")
+                &&java.util.Objects.equals(g.historySha,guard.get("query_history_sha256"))
                 &&executionNumber(guard,"attempt_started_elapsed_ms")==a.started
                 &&executionNumber(guard,"issued_elapsed_ms")==g.issued&&executionNumber(guard,"deadline_elapsed_ms")==g.deadline
                 &&executionNumber(guard,"state")==0&&Boolean.TRUE.equals(guard.get("single_atomic_claim"));

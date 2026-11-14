@@ -31,7 +31,10 @@
         diag("actual_factory_record_cap_and_new_task_isolation",()->{
             ObserverPipelineHost f=nativeFixture();ObservationCallback callback=new ObservationCallback(){public void onObservation(PhoneObservation o){}public void onError(String e){}};
             ObservationRequest r=new ObservationRequest(f.lease,f.directory,callback,()->false,11000,f.taskBackground);
-            Set<String> ids=new HashSet<String>();for(int i=1;i<=96;i++){ObservationDiagnostics d=f.observationDiagnostic(r);DiagnosticChecks.check(d!=null&&d.sequence==i&&ids.add(d.requestId),"bounded unique request "+i);}
+            Set<String> ids=new HashSet<String>();for(int i=1;i<=96;i++){
+                r=new ObservationRequest(f.lease,f.directory,callback,()->false,11000,f.taskBackground);
+                ObservationDiagnostics d=f.observationDiagnostic(r);DiagnosticChecks.check(d!=null&&d.sequence==i&&ids.add(d.requestId),"bounded unique request "+i);
+            }
             DiagnosticChecks.check(f.observationDiagnostic(r)==null,"97th diagnostic refused");
             f.lease="33333333333333333333333333333333";f.taskBackground.taskId=f.lease;r=new ObservationRequest(f.lease,f.directory,callback,()->false,11000,f.taskBackground);
             DiagnosticChecks.check(f.observationDiagnostic(r).sequence==1,"new task starts separate sequence");f.dispose();
@@ -86,3 +89,4 @@
         });
         observationIo.executor.shutdown();
     }
+

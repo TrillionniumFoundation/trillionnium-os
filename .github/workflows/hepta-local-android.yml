@@ -435,6 +435,36 @@ jobs:
             --output "$hepta_native_out/session-terminal" --java-home "$JAVA_HOME" \
             > "$hepta_native_out/session-terminal.runner.stdout" \
             2> "$hepta_native_out/session-terminal.runner.stderr"
+      - name: Run required fresh-model stale recovery and census budget gate
+        run: |
+          set -euo pipefail
+          hepta_native_source="$GITHUB_WORKSPACE/$HEPTA_SOURCE"
+          hepta_native_out="$RUNNER_TEMP/hepta-native-app-gates"
+          python -B "$hepta_native_source/tests/native-stale-recovery/run_host.py" \
+            --source "$hepta_native_source" --output "$hepta_native_out/native-stale-recovery" --java-home "$JAVA_HOME" \
+            --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar" \
+            > "$hepta_native_out/native-stale-recovery.runner.stdout" \
+            2> "$hepta_native_out/native-stale-recovery.runner.stderr"
+      - name: Run required drained Service observation retry gate
+        run: |
+          set -euo pipefail
+          hepta_native_source="$GITHUB_WORKSPACE/$HEPTA_SOURCE"
+          hepta_native_out="$RUNNER_TEMP/hepta-native-app-gates"
+          python -B "$hepta_native_source/tests/native-observation-retry/run_host.py" \
+            --source "$hepta_native_source" --output "$hepta_native_out/native-observation-retry" --java-home "$JAVA_HOME" \
+            --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar" \
+            > "$hepta_native_out/native-observation-retry.runner.stdout" \
+            2> "$hepta_native_out/native-observation-retry.runner.stderr"
+      - name: Run required single Controller observation retry gate
+        run: |
+          set -euo pipefail
+          hepta_native_source="$GITHUB_WORKSPACE/$HEPTA_SOURCE"
+          hepta_native_out="$RUNNER_TEMP/hepta-native-app-gates"
+          python -B "$hepta_native_source/tests/native-observation-read-retry/run_host.py" \
+            --source "$hepta_native_source" --output "$hepta_native_out/native-observation-read-retry" --java-home "$JAVA_HOME" \
+            --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar" \
+            > "$hepta_native_out/native-observation-read-retry.runner.stdout" \
+            2> "$hepta_native_out/native-observation-read-retry.runner.stderr"
       - name: Preserve all original native App gate results and streams
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

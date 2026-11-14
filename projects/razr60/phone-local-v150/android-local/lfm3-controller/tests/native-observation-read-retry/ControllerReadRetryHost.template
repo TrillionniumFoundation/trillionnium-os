@@ -1,0 +1,260 @@
+package org.trillionnium.hepta.local;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import org.json.JSONObject;
+import org.json.JSONArray;
+
+/** Verbatim Controller and private Service proof, actual Session permit and
+ * writer. Observer/Android/clock endpoints are synthetic; no phone qualification. */
+final class ControllerReadRetryHost {
+    static Path outputRoot;static int fixtureOrdinal;
+    static final class SystemClock {static long elapsedRealtime(){return NativeActionBridgeHost.SystemClock.now;}}
+    static void clock(long value){NativeActionBridgeHost.SystemClock.now=value;}
+    static final class PhoneObservation {
+        final String id,packageName;final NativeAppEvidence.Frame nativeFrame;
+        PhoneObservation(NativeAppEvidence.Frame frame){nativeFrame=frame;id=frame.observationId;packageName=frame.packageName;}
+        JSONObject toJson(){return new JSONObject().put("observation_id",id).put("package",packageName).put("synthetic_host_endpoint",true);}
+    }
+    static final class BackgroundSession {
+        String generation,ownerSha256;Selection selection=new Selection();static final class Selection {String initialPackage;}
+    }
+    static final class WebFlightSession {
+        interface Observer {PhoneObservation observe()throws Exception;}
+        PhoneObservation observe(PhoneObservation value,Observer ignored,long deadline){return value;}
+    }
+    static final class NativeAppObservation {
+        static NativeAppEvidence.Frame copy(String id,TaskAuthorization.Gate authorization,BackgroundSession background,PhoneObservation observed,Object completion,String sourceSha){
+            if(!id.equals(observed.nativeFrame.taskId)||authorization==null||background==null||sourceSha==null)throw new AssertionError("invalid synthetic observation endpoint");
+            return observed.nativeFrame;
+        }
+    }
+    static Object completionFrame(PhoneObservation observed){return observed.nativeFrame;}
+    // Host chmod endpoint; create-new, write and FD.sync execute unchanged.
+    static final class android {static final class system {static final class Os {
+        static void chmod(String path,int mode)throws IOException{
+            if(mode!=0600)throw new AssertionError("unexpected file mode");
+            Files.setPosixFilePermissions(Paths.get(path),EnumSet.of(PosixFilePermission.OWNER_READ,PosixFilePermission.OWNER_WRITE));
+        }
+    }}}
+    static final class Disk {
+{{record}}
+    }
+    static final class HeptaAccessibilityService {
+        interface Cancellation {boolean isCancelled();}
+        interface ObservationCallback {
+            void onObservation(PhoneObservation value);void onError(String error);
+            default void onDiagnostic(Callable<String> snapshot){}
+            default void onReadRetryAvailable(String error,NativeObservationRetryProof proof){onError(error);}
+        }
+        static final class NativeReadIdentity {String packageName,generation,owner;int windowId,displayId;}
+        static final class ObservationRequest {
+            String taskId,requestId;BackgroundSession background;NativeReadIdentity readIdentity;
+            long started,deadline,failedAt;int readWorksFinished=3,readGraphChanges=2,readCaptureFailures=1;
+        }
+{{service_proof}}
+        final ControllerReadRetryHost host;
+        String firstMode="typed",retryMode="success",proofMutation;
+        long firstAt=-1,retryAt=-1,firstDeadline,retryDeadline;
+        int observeCalls,retryCalls,remoteChecks,authorityChecks;
+        boolean duplicateFirst,duplicateRetry;
+        Cancellation firstCancellation,retryCancellation;ObservationCallback firstCallback,retryCallback;
+        NativeObservationRetryProof issued;PhoneObservation latest;IntegrationChecks.Work beforeFirstCallback,beforeRetryCallback;
+        HeptaAccessibilityService(ControllerReadRetryHost host){this.host=host;}
+        static String sha(byte[] raw){return NativeActionBridgeHost.sha(raw);}
+        NativeObservationRetryProof mint(String id,long started,long deadline){
+            ObservationRequest request=new ObservationRequest();request.taskId="task".equals(proofMutation)?NativeActionBridgeHost.id("foreign-proof-task"):id;
+            request.requestId=NativeActionBridgeHost.id("synthetic-read:"+observeCalls+":"+retryCalls);
+            request.started=started;request.deadline=deadline;request.failedAt=SystemClock.elapsedRealtime();request.background=host.activeNativeBackground;
+            NativeAppEvidence.Frame frame=host.fixture.frame;request.readIdentity=new NativeReadIdentity();
+            request.readIdentity.packageName=frame.packageName;request.readIdentity.generation=frame.generation;
+            request.readIdentity.owner=frame.ownerSha;request.readIdentity.windowId=frame.windowId;request.readIdentity.displayId=frame.displayId;
+            Object issuer="service".equals(proofMutation)?new Object():this;
+            Object authorization="authorization".equals(proofMutation)?host.fixture.authorization.bind(id):host.authorization;
+            PhoneObservation before="before".equals(proofMutation)?new PhoneObservation(host.before.nativeFrame):host.before;
+            NativeObservationRetryProof proof=new NativeObservationRetryProof(issuer,authorization,before,request,SystemClock.elapsedRealtime());
+            if("consumed".equals(proofMutation))proof.consumed.set(true);return proof;
+        }
+        PhoneObservation fresh()throws Exception{latest=new PhoneObservation(host.fixture.frame(host.fixture.frame.nodes,host.fixture.frame.treeSha));return latest;}
+        void verifyBackgroundRemote(String id){remoteChecks++;host.events.add("remote_check");}
+        void observe(String id,File directory,Cancellation cancel,long deadline,ObservationCallback callback)throws Exception{
+            observeCalls++;host.events.add("old_read_submitted");firstDeadline=deadline;firstCancellation=cancel;firstCallback=callback;
+            long started=SystemClock.elapsedRealtime();if("timeout".equals(firstMode)){clock(deadline);return;}
+            clock(firstAt>=0?firstAt:Math.min(started+10200,deadline-1));
+            if("success".equals(firstMode)){callback.onObservation(fresh());return;}
+            if("error".equals(firstMode)){callback.onError("original ordinary read failure");return;}
+            issued=mint(id,started,deadline);if(beforeFirstCallback!=null)beforeFirstCallback.run();
+            callback.onReadRetryAvailable("original bounded transient read failure",issued);
+            if(duplicateFirst)callback.onObservation(new PhoneObservation(host.before.nativeFrame));
+        }
+        void observeAfterTransientFailure(String id,File directory,Cancellation cancel,long deadline,ObservationCallback callback,NativeObservationRetryProof proof)throws Exception{
+            retryCalls++;host.events.add("new_read_submitted");retryDeadline=deadline;retryCancellation=cancel;retryCallback=callback;
+            yes(host.nativeObservationRetryUsed,"budget spent before submission");
+            yes(host.written.containsKey("native-observation-read-retry-01.json"),"real durable intent before submission");
+            yes(firstCancellation!=cancel&&firstCancellation.isCancelled()&&!cancel.isCancelled(),"new token after old abandonment");
+            proof.requireOriginal(this,id,host.authorization,host.before);
+            yes(proof.consumed.compareAndSet(false,true),"fake admission consumes actual one-use proof");
+            if(beforeRetryCallback!=null)beforeRetryCallback.run();
+            if("timeout".equals(retryMode)){clock(deadline);return;}
+            clock(retryAt>=0?retryAt:Math.min(SystemClock.elapsedRealtime()+300,deadline-1));
+            if("error".equals(retryMode)){callback.onError("replacement read still unstable");return;}
+            if("typed".equals(retryMode)){callback.onReadRetryAvailable("second transient failure",mint(id,SystemClock.elapsedRealtime(),deadline));return;}
+            callback.onObservation(fresh());if(duplicateRetry)callback.onError("late duplicate error");
+        }
+        String observationTimeoutMessage(String id){return "original observation deadline reached";}
+        void requireTaskAuthorization(String id,TaskAuthorization.Gate gate){yes(id.equals(host.currentTaskId)&&gate==host.authorization,"actual Gate identity binding");authorityChecks++;}
+        void requireScopeObservation(String id,PhoneObservation value){yes(value==latest,"scope uses fresh observation");authorityChecks++;}
+        void requireBackgroundObservation(String id,PhoneObservation value){yes(value==latest,"background uses fresh observation");authorityChecks++;}
+        void requireAuthorizationObservation(String id,TaskAuthorization.Gate gate,PhoneObservation value){yes(value==latest&&gate==host.authorization,"authorization uses fresh observation");authorityChecks++;}
+        JSONObject qualificationScopeEvidence(String id){return new JSONObject().put("host_endpoint",true);}
+        JSONObject backgroundEvidence(String id){return new JSONObject().put("host_endpoint",true);}
+    }
+    final NativeActionBridgeHost.Fixture fixture;final TaskAuthorization.Gate authorization;
+    final PhoneObservation before;final File directory;final HeptaAccessibilityService service;
+    NativeAppSession activeNativeTask;WebFlightSession activeWebTask;BackgroundSession activeNativeBackground;
+    String currentTaskId;boolean nativeObservationRetryUsed;
+    final AtomicBoolean cancelled=new AtomicBoolean();
+    final List<String> events=new ArrayList<String>(),messages=new ArrayList<String>();
+    final Set<Long> checkedTaskDeadlines=new HashSet<Long>();final Map<String,JSONObject> written=new LinkedHashMap<String,JSONObject>();
+    final List<String> pendingObservationDiagnostics=new ArrayList<String>();int observationDiagnosticErrors;
+    IntegrationChecks.Work afterDurableIntent;Runnable onEmit;boolean failIntentBeforeWrite;
+    ControllerReadRetryHost(String label,boolean eligible)throws Exception{
+        fixture=NativeActionBridgeHost.recoveryHome("controller:"+label);authorization=fixture.gate;
+        if(eligible)NativeActionBridgeHost.staleOutcome(fixture,NativeActionBridgeHost.recoveryExecution(fixture,"none"));
+        else {clock(SystemClock.elapsedRealtime()+1);fixture.session.modelActionOutcome(fixture.action,fixture.run,false,false,true,NativeActionBridgeHost.hash("legacy-controller-receipt"),SystemClock.elapsedRealtime());}
+        before=new PhoneObservation(fixture.frame);activeNativeTask=fixture.session;currentTaskId=fixture.task;
+        activeNativeBackground=new BackgroundSession();activeNativeBackground.generation=fixture.frame.generation;
+        activeNativeBackground.ownerSha256=fixture.frame.ownerSha;activeNativeBackground.selection.initialPackage=fixture.frame.packageName;
+        Path path=outputRoot.resolve(String.format(Locale.ROOT,"case-%03d",++fixtureOrdinal));Files.createDirectory(path);directory=path.toFile();service=new HeptaAccessibilityService(this);
+    }
+    void checkActive(long deadline){checkedTaskDeadlines.add(Long.valueOf(deadline));if(cancelled.get()||SystemClock.elapsedRealtime()>=deadline)throw new IllegalStateException("original task stopped or expired");}
+    void emit(String text){messages.add(text);if(onEmit!=null)onEmit.run();}
+    void record(File dir,String name,JSONObject value)throws Exception{
+        boolean intent="native-observation-read-retry-01.json".equals(name);
+        if(intent){events.add("intent_write_entered");if(failIntentBeforeWrite)throw new IOException("explicit host disk failure");}
+        Disk.record(dir,name,value);written.put(name,value);
+        if(intent){events.add("intent_synced");yes(Files.readAllBytes(new File(dir,name).toPath()).length>0,"actual fsynced intent bytes");if(afterDurableIntent!=null)afterDurableIntent.run();}
+    }
+{{retry_failure}}
+{{retry_wrapper}}
+{{await_observation}}
+{{await_observation_request}}
+{{await_raw}}
+{{await_raw_request}}
+    PhoneObservation call(long deadline)throws Exception{return awaitAfterStaleNativeAction(currentTaskId,directory,authorization,deadline,fixture.action,fixture.run,before);}
+    static void yes(boolean condition,String reason){IntegrationChecks.yes(condition,reason);}
+    static void one(String name,IntegrationChecks.Work body)throws Exception{IntegrationChecks.one(name,body);}
+    static void refused(IntegrationChecks.Work body,String reason)throws Exception{IntegrationChecks.rejects(body,reason);}
+    void noNewRead(String reason){yes(service.retryCalls==0,reason);fixture.noEffect("Controller read tests have no platform effect");}
+    void noIntent(String reason){yes(!written.containsKey("native-observation-read-retry-01.json"),reason);}
+    static ControllerReadRetryHost fresh(String name)throws Exception{return new ControllerReadRetryHost(name,true);}
+    static void cases()throws Exception{
+        one("controller_actual_durable_permit_new_read_and_new_observation",()->{
+            ControllerReadRetryHost f=fresh("positive");long deadline=SystemClock.elapsedRealtime()+480000;PhoneObservation value=f.call(deadline);
+            yes(value==f.service.latest&&value!=f.before&&!value.id.equals(f.before.id),"returned new observation");
+            yes(f.service.observeCalls==1&&f.service.retryCalls==1&&f.service.authorityChecks==4,"one failed read then one bound new read");
+            yes(f.events.indexOf("intent_synced")<f.events.indexOf("new_read_submitted"),"durable-first order");
+            JSONObject intent=f.written.get("native-observation-read-retry-01.json");
+            yes(intent.getLong("original_task_deadline_elapsed_ms")==deadline&&!intent.getBoolean("action_replayed")&&!intent.getBoolean("old_request_renewed"),"original task deadline and no replay");
+            yes(intent.getJSONObject("failed_read_terminal").getString("before_observation_id").equals(f.before.id),"actual failed-read proof retained");
+            yes(intent.getJSONObject("unentered_action").getString("original_observation_id").equals(f.before.id),"actual Session permit retained");
+            yes(f.activeNativeTask.domain().frame.observationId.equals(value.id),"actual Session owns fresh frame");
+            yes(f.service.retryCancellation.isCancelled()&&f.checkedTaskDeadlines.equals(Collections.singleton(Long.valueOf(deadline))),"tokens abandoned and original task checks");
+            yes(f.written.size()==3,"intent plus original scope and native frame writes");f.fixture.noEffect("recovery is not a click");
+        });
+        one("controller_original_success_needs_no_replacement",()->{
+            ControllerReadRetryHost f=fresh("initial-success");f.service.firstMode="success";yes(f.call(480000)==f.service.latest,"original success returned");
+            f.noNewRead("success never retries");f.noIntent("success has no retry intent");yes(!f.nativeObservationRetryUsed,"success does not spend budget");
+        });
+        for(final String mode:Arrays.asList("error","timeout"))one("controller_original_"+mode+"_is_not_transient_proof",()->{
+            ControllerReadRetryHost f=fresh(mode);f.service.firstMode=mode;refused(()->f.call(480000),"ordinary failure must terminate");
+            f.noNewRead("ordinary error cannot retry");f.noIntent("ordinary error no intent");yes(!f.nativeObservationRetryUsed,"ordinary error budget unused");
+        });
+        one("controller_serialized_stale_without_real_private_permit_cannot_retry",()->{
+            ControllerReadRetryHost f=new ControllerReadRetryHost("no-permit",false);refused(()->f.call(480000),"legacy booleans insufficient");f.noNewRead("actual Session denies permit");f.noIntent("no qualified intent");
+        });
+        one("controller_task_budget_is_not_refunded",()->{
+            ControllerReadRetryHost f=fresh("spent");f.nativeObservationRetryUsed=true;refused(()->f.call(480000),"spent budget rejects");f.noNewRead("no second task retry");f.noIntent("spent budget no intent");
+        });
+        for(final String mutation:Arrays.asList("service","task","authorization","before","consumed"))one("controller_cross_producer_rejects_"+mutation,()->{
+            ControllerReadRetryHost f=fresh("cross-"+mutation);f.service.proofMutation=mutation;refused(()->f.call(480000),"different producer binding");
+            f.noNewRead("mismatched producer cannot submit");f.noIntent("mismatched producer cannot journal");yes(!f.nativeObservationRetryUsed,"invalid proof rejected before budget spend");
+        });
+        for(final String mutation:Arrays.asList("task","session","web","stop","permit"))one("controller_callback_boundary_rejects_"+mutation,()->{
+            ControllerReadRetryHost f=fresh("callback-"+mutation);f.service.beforeFirstCallback=()->{
+                if("task".equals(mutation))f.currentTaskId=NativeActionBridgeHost.id("foreign-active-task");
+                else if("session".equals(mutation))f.activeNativeTask=null;else if("web".equals(mutation))f.activeWebTask=new WebFlightSession();
+                else if("stop".equals(mutation))f.cancelled.set(true);else f.activeNativeTask.retire();};
+            refused(()->f.call(480000),"callback boundary lost eligibility");f.noNewRead("changed callback no retry");f.noIntent("changed callback no intent");
+        });
+        for(final String mutation:Arrays.asList("stop","permit","consumed","deadline","task","session","web"))one("controller_durable_boundary_rechecks_"+mutation,()->{
+            ControllerReadRetryHost f=fresh("durable-"+mutation);final long deadline=480000;f.afterDurableIntent=()->{
+                if("stop".equals(mutation))f.cancelled.set(true);else if("permit".equals(mutation))f.activeNativeTask.retire();
+                else if("consumed".equals(mutation))f.service.issued.consumed.set(true);else if("deadline".equals(mutation))clock(deadline);
+                else if("task".equals(mutation))f.currentTaskId=NativeActionBridgeHost.id("changed-after-sync");
+                else if("session".equals(mutation))f.activeNativeTask=null;else f.activeWebTask=new WebFlightSession();};
+            refused(()->f.call(deadline),"state changed while syncing");f.noNewRead("post-journal check blocks submission");
+            yes(f.written.containsKey("native-observation-read-retry-01.json")&&f.nativeObservationRetryUsed,"durable intent retained and budget spent");
+        });
+        one("controller_journal_failure_submits_no_new_read",()->{
+            ControllerReadRetryHost f=fresh("disk-failure");f.failIntentBeforeWrite=true;IntegrationChecks.ioRejects(()->f.call(480000),"disk failure propagated");
+            f.noNewRead("failed write no submission");f.noIntent("failed write no durable intent");yes(f.nativeObservationRetryUsed,"failed write cannot refund budget");
+        });
+        one("controller_actual_create_new_collision_preserves_original_file",()->{
+            ControllerReadRetryHost f=fresh("collision");Path p=new File(f.directory,"native-observation-read-retry-01.json").toPath();byte[] original="existing immutable evidence".getBytes(StandardCharsets.UTF_8);Files.write(p,original);
+            refused(()->f.call(480000),"actual createNewFile rejects duplicate");yes(Arrays.equals(original,Files.readAllBytes(p)),"old file unchanged");f.noNewRead("collision blocks submission");yes(f.nativeObservationRetryUsed,"collision budget spent");
+        });
+        one("controller_stop_after_emit_before_submit",()->{
+            ControllerReadRetryHost f=fresh("emit-stop");f.onEmit=()->f.cancelled.set(true);refused(()->f.call(480000),"raw await rechecks Stop");f.noNewRead("Stop after emit prevents submit");yes(f.nativeObservationRetryUsed&&f.written.size()==1,"only intent remains");
+        });
+        for(final String mode:Arrays.asList("error","typed","timeout"))one("controller_replacement_"+mode+"_has_no_third_read",()->{
+            ControllerReadRetryHost f=fresh("replacement-"+mode);f.service.retryMode=mode;refused(()->f.call(480000),"replacement failure propagates");
+            yes(f.service.observeCalls==1&&f.service.retryCalls==1&&f.service.authorityChecks==0,"no loop or false success binding");yes(f.nativeObservationRetryUsed&&f.written.size()==1,"one intent only");f.fixture.noEffect("read errors execute no effects");
+        });
+        one("controller_stop_during_new_read_cannot_publish",()->{
+            ControllerReadRetryHost f=fresh("retry-stop");f.service.beforeRetryCallback=()->f.cancelled.set(true);refused(()->f.call(480000),"Stop wins over callback");
+            yes(f.service.retryCalls==1&&f.service.authorityChecks==0&&f.written.size()==1,"stopped success cannot publish");yes(f.activeNativeTask.domain().frame.observationId.equals(f.before.id),"real Session keeps old frame");
+        });
+        one("controller_old_exact_deadline_refuses_typed_proof",()->{
+            ControllerReadRetryHost f=fresh("old-cutoff");f.service.firstAt=SystemClock.elapsedRealtime()+12000;refused(()->f.call(480000),"late old callback rejected");f.noNewRead("expired proof no retry");f.noIntent("expired proof no intent");
+        });
+        one("controller_new_exact_deadline_refuses_success",()->{
+            ControllerReadRetryHost f=fresh("new-cutoff");f.service.retryAt=SystemClock.elapsedRealtime()+10200+12000;refused(()->f.call(480000),"late replacement rejected");yes(f.service.retryCalls==1&&f.service.authorityChecks==0&&f.written.size()==1,"late callback cannot publish");
+        });
+        one("controller_original_task_caps_both_deadlines",()->{
+            ControllerReadRetryHost f=fresh("task-cap");long now=SystemClock.elapsedRealtime(),deadline=now+15000;f.call(deadline);
+            yes(f.service.firstDeadline==now+12000&&f.service.retryDeadline==deadline,"new read clipped by original task deadline");yes(f.checkedTaskDeadlines.equals(Collections.singleton(Long.valueOf(deadline))),"no new task deadline");
+        });
+        one("controller_duplicate_callbacks_cannot_replace_first_delivery",()->{
+            ControllerReadRetryHost f=fresh("duplicates");f.service.duplicateFirst=true;f.service.duplicateRetry=true;PhoneObservation value=f.call(480000);
+            yes(value==f.service.latest&&f.service.retryCalls==1&&f.service.authorityChecks==4,"first failure and first replacement success win");
+            f.service.firstCallback.onObservation(new PhoneObservation(f.before.nativeFrame));f.service.retryCallback.onError("after abandonment");yes(f.written.size()==3&&f.activeNativeTask.domain().frame.observationId.equals(value.id),"abandoned callbacks cannot alter current result");
+        });
+        one("controller_initial_observation_never_auto_retries",()->{
+            ControllerReadRetryHost f=fresh("raw-only");refused(()->f.awaitObservation(f.currentTaskId,f.directory,f.authorization,480000),"initial read has no wrapper");f.noNewRead("non-stale callsite no automatic retry");f.noIntent("non-stale callsite no intent");yes(!f.nativeObservationRetryUsed,"no retry budget spent");
+        });
+        one("controller_missing_native_session_cannot_retry",()->{
+            ControllerReadRetryHost f=fresh("missing-native");f.activeNativeTask=null;refused(()->f.call(480000),"real native permit needed");f.noNewRead("missing native session no retry");f.noIntent("no native intent");
+        });
+        for(final String field:Arrays.asList("action","run","observation"))one("controller_original_binding_rejects_"+field,()->{
+            ControllerReadRetryHost f=fresh("original-"+field);ActionDecision action="action".equals(field)?f.fixture.click(f.fixture.action.nodeId):f.fixture.action;
+            String run="run".equals(field)?NativeActionBridgeHost.id("foreign-original-run"):f.fixture.run;
+            PhoneObservation before="observation".equals(field)?new PhoneObservation(f.fixture.frame(f.fixture.frame.nodes,f.fixture.frame.treeSha)):f.before;
+            refused(()->f.awaitAfterStaleNativeAction(f.currentTaskId,f.directory,f.authorization,480000,action,run,before),"real Session rejects old action binding");yes(f.service.observeCalls==0&&f.service.retryCalls==0,"bad original action starts no read");f.noIntent("bad original action no intent");
+        });
+    }
+    public static void main(String[] args)throws Exception{
+        NativeActionBridgeHost.sourceRoot=Paths.get(args[0]);NativeAppProviderHostTest.fixtures=NativeActionBridgeHost.sourceRoot.resolve("tests/native-app-provider/fixtures");
+        outputRoot=Paths.get(args[2]);Files.createDirectory(outputRoot);cases();
+        IntegrationChecks.finish(Paths.get(args[1]),"hepta.native-observation-controller-retry-host.v1",
+            "Verbatim Controller and Service proof; actual Session/private permit and create-new/fsync writer. Synthetic observer delivery, observation carriers, clock, chmod and cancellation schedule. No phone, Android, model or business pass.");
+    }
+}

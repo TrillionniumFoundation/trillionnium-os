@@ -14,6 +14,7 @@ import java.util.regex.*;
  * a matching snapshot alone cannot supply either. */
 final class NativeActionSnapshotCheck {
     static final int MAX_NODES=1536, MAX_TEXT=32768, MAX_BYTES=1048576;
+    static final int MAX_REJECTION_DIAGNOSTIC_BYTES=262144;
     static final String CTRIP="ctrip.android.view", XIAOMI="com.xiaomi.shop";
     static final String OPEN="open_flight_form", YEAR="inspect_departure_year", QUERY="query_observed_form", SEARCH="open_search";
     static final String CP=CTRIP+":id/";
@@ -120,6 +121,36 @@ final class NativeActionSnapshotCheck {
         out.put("query_history_binding_sha256",in.historySha);out.put("query_history_proved_by_comparator",false);
         out.put("grants_dispatch",false);out.put("provider_frame_constructed",false);out.put("session_observed_called",false);
         out.put("live_node_chain_window_and_one_effect_recheck_required",true);out.put("business_verified",false);return freeze(out);
+    }
+    /** Complete private diagnostic of a rejected comparison. No screenshot is
+     * acquired here and no predicate, action permission or original refusal changes. */
+    static Map<String,Object> rejectionEvidence(Intent in,Snapshot old,Snapshot fresh,long comparedAt,
+            String operation,String originalScreen,String originalFrameRecord,String reason){
+        need(in!=null&&old!=null&&fresh!=null&&id(operation)&&sha(originalScreen)&&sha(originalFrameRecord),
+                "same-operation original frame diagnostic binding required");
+        for(String k:IDENTITY)need(in.identity.get(k).equals(old.env.get(k))&&in.identity.get(k).equals(fresh.env.get(k)),
+                "diagnostic cannot cross task/owner/observation/lease");
+        need(in.pkg.equals(s(old.env,"package"))&&in.pkg.equals(s(fresh.env,"package"))
+                &&old.env.get("display_id").equals(fresh.env.get("display_id"))
+                &&old.env.get("window_id").equals(fresh.env.get("window_id")),"diagnostic same App window required");
+        need(reason!=null&&!reason.isEmpty()&&reason.length()<=512&&comparedAt>=time(fresh.env,"captured_elapsed_ms"),
+                "bounded actual comparison refusal");
+        Map<String,Object> out=new TreeMap<String,Object>();out.put("schema","hepta.native-action-rejection-census.v1");
+        out.put("operation_id",operation);out.put("model_run_id",in.run);out.put("original_action_sha256",in.actionSha);
+        out.put("original_observation_id",in.identity.get("origin_observation_id"));out.put("purpose",in.purpose);
+        out.put("target_path",in.path);out.put("original_node_id",in.node);out.put("comparison_refusal",reason);
+        out.put("compared_elapsed_ms",comparedAt);out.put("original_screen_sha256",originalScreen);
+        out.put("original_phone_observation_record_sha256",originalFrameRecord);
+        out.put("before",diagnosticSnapshot(old));out.put("fresh",diagnosticSnapshot(fresh));
+        out.put("fresh_screenshot_observed",false);out.put("complete_two_censuses",true);out.put("nodes_truncated",false);
+        out.put("original_refusal_preserved",true);out.put("grants_dispatch",false);out.put("business_verified",false);
+        need(canonical(out).getBytes(StandardCharsets.UTF_8).length<=MAX_REJECTION_DIAGNOSTIC_BYTES,
+                "complete rejection diagnostic byte budget");return freeze(out);
+    }
+    private static Map<String,Object> diagnosticSnapshot(Snapshot snapshot){
+        Map<String,Object> out=new TreeMap<String,Object>();out.put("snapshot_sha256",snapshot.sha);
+        out.put("envelope",snapshot.env);List<Map<String,Object>> nodes=new ArrayList<Map<String,Object>>();
+        for(Node n:snapshot.nodes.values())nodes.add(n.v);out.put("nodes",nodes);return out;
     }
     private static final class Scope {
         final Set<String> roots=new TreeSet<String>(),ancestors=new TreeSet<String>();final Map<String,Object> facts=new TreeMap<String,Object>();

@@ -18,7 +18,9 @@ final class DiagnosticControllerHost {
     static final class PhoneObservation {final String id="44444444444444444444444444444444";JSONObject toJson(){return new JSONObject().put("observation_id",id);}}
     static final class HeptaAccessibilityService {
         interface Cancellation {boolean isCancelled();}
-        interface ObservationCallback {void onObservation(PhoneObservation o);void onError(String e);default void onDiagnostic(Callable<String> value){}}
+        static final class NativeObservationRetryProof {}
+        interface ObservationCallback {void onObservation(PhoneObservation o);void onError(String e);default void onDiagnostic(Callable<String> value){}
+            default void onReadRetryAvailable(String e,NativeObservationRetryProof proof){onError(e);}}
         String mutation,originalError;boolean omitDiagnostic,throwDiagnostic,timeout;int observeCalls,remoteChecks,authorityChecks,snapshotCalls;PhoneObservation value=new PhoneObservation();
         Callable<String> lastSnapshot;ObservationCallback callback;Cancellation cancellation;
         long observedDeadline,callbackAt=-1;boolean duplicateCallback;
@@ -40,6 +42,9 @@ final class DiagnosticControllerHost {
             if(duplicateCallback)cb.onError("late duplicate error");
         }
         String observationTimeoutMessage(String id){return "original observation timeout";}
+        void observeAfterTransientFailure(String id,File dir,Cancellation cancel,long deadline,ObservationCallback cb,NativeObservationRetryProof proof){
+            throw new AssertionError("original diagnostic cases must not submit a replacement read");
+        }
         void requireTaskAuthorization(String id,TaskAuthorization.Gate g){authorityChecks++;}
         void requireScopeObservation(String id,PhoneObservation o){authorityChecks++;}
         void requireBackgroundObservation(String id,PhoneObservation o){authorityChecks++;}
@@ -52,6 +57,8 @@ final class DiagnosticControllerHost {
     void checkActive(long deadline){if(cancelled.get()||SystemClock.now>=deadline)throw new IllegalStateException("original task stopped");}
     void record(File dir,String name,JSONObject body)throws Exception{if(name.startsWith("observation-diagnostic-"))throw new AssertionError("diagnostic must use existing result only");written.put(name,body);}
 {{await_observation}}
+{{await_observation_request}}
+{{read_retry_failure}}
 {{take_diagnostics}}
     static DiagnosticControllerHost fresh(){SystemClock.now=1000;ObserverPipelineHost.SystemClock.now=1000;return new DiagnosticControllerHost();}
     PhoneObservation call()throws Exception{return call(21000);}
