@@ -196,6 +196,10 @@ class FullFlowTests(unittest.TestCase):
     def setUp(self):
         self.directory=tempfile.TemporaryDirectory();self.root=Path(self.directory.name)
         self.args=arguments(self.root)
+        # These cases retain real fsync and child scheduling. The 0.3-second
+        # fake-clock transaction budget is not a host filesystem latency limit.
+        self.args.preparation_seconds=10
+        self.args.restore_seconds=10
         adb=self.root/"adb-version-stub";adb.write_text("#!/bin/sh\nprintf 'Android Debug Bridge version 1.0.41\\n'\n");adb.chmod(0o700)
         self.core=self.root/"host_core_stub.py"
         self.core.write_text("import json,sys,time\nfrom pathlib import Path\np=Path(sys.argv[sys.argv.index('--output')+1]);p.mkdir()\n(p/'suite-result.json').write_text(json.dumps({'suite_verdict':'fail','core_functional_acceptance':'fail'}))\nsys.exit(2)\n")
@@ -219,6 +223,24 @@ class FullFlowTests(unittest.TestCase):
         self.assertEqual(report["core_functional_acceptance"],"fail")
         self.assertTrue(report["restoration"]["verified"])
         self.assertFalse(report["whole_device_continuous_network_absence_claimed"])
+
+    def test_slow_durable_writes_preserve_full_transaction(self):
+        phone=FakePhone(self.args,self.out)
+        real_write=w.write
+        def slow_write(path,value):
+            time.sleep(0.08)
+            return real_write(path,value)
+        with patch.object(w,"write",side_effect=slow_write) as writes:
+            self.assertEqual(self.run_fake(phone),3)
+        self.assertGreater(writes.call_count,2)
+        report=g.strict_json((self.out/"offline-result.json").read_bytes())
+        self.assertEqual(report["verdict"],"completed_and_restored")
+        self.assertTrue(report["offline_precondition_verified_twice"])
+        self.assertTrue(report["offline_conditions_observed_through_normal_suite"])
+        self.assertTrue(report["restoration"]["verified_twice"])
+        self.assertEqual(report["core_functional_acceptance"],"fail")
+        self.assertEqual(report["suite"]["exit_code"],2)
+        self.assertEqual((phone.wifi,phone.global_data,phone.selected),(1,1,1))
 
     def test_unknown_offline_network_never_starts_suite(self):
         phone=FakePhone(self.args,self.out);phone.invalid_offline_network=True

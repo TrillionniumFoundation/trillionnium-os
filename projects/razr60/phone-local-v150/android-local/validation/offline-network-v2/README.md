@@ -79,3 +79,12 @@ python3 -B -m unittest discover -s . -p 'test_offline_transaction.py' -v
 ```
 
 The tests use an in-memory radio-state provider, never an ADB server or phone. They cover ambiguous status text, exact USB selection, missing-key refusal, an effect followed by a command timeout, SIM drift, restoration of both independent data readbacks, refusal to start on an unknown network and separation of functional failure from restoration. A Linux-only test delivers two real SIGTERM signals while a harmless owned Python child is active and verifies that finally still completes. It is skipped when the host's mounted `/proc` does not match its PID namespace; that skip must not be reported as passed. Run the full host qualification on Pocket4 before phone execution.
+
+Full-flow host cases use 10-second preparation and restoration budgets because
+they retain actual file/directory fsync and child-process scheduling. A regression
+adds 80 ms to each write while still calling the real durable writer; it requires
+the complete offline transaction, two restoration observations and the original
+failed core result. Fake-clock transaction cases retain their 0.3-second budgets
+and timeout assertions. The real two-SIGTERM case retains its explicit 2-second
+restoration budget. This fixture allowance changes no production CLI deadline,
+core-suite pin, radio operation, durability rule or phone qualification claim.
