@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
  * The caller must own the immutable goal and exact current Frame. */
 final class NativeXiaomiProductPage {
     static final String SCHEMA="hepta.native-xiaomi-product-page.v1";
+    static final String IMAGE_MODAL="image_modal";
     private static final String TITLE="Xiaomi路由器AX3000T";
     private static final String VIEW="android.view.ViewGroup";
     private static final String TEXT="android.widget.TextView";
@@ -107,12 +108,44 @@ final class NativeXiaomiProductPage {
         if(!frame.collectionComplete||frame.nodesTruncated)return unavailable(frame,"complete_bounded_observation_required");
         for(NativeAppEvidence.Node node:frame.nodes)
             if(!frame.packageName.equals(node.packageName))return unavailable(frame,"foreign_node_package");
+        if(imageModal(frame))return page(frame,IMAGE_MODAL,"image_modal_content_unclassified",null,null);
         List<NativeAppEvidence.Node> models=exactText(frame,TITLE);
         boolean detailMarkers=uniqueText(frame,"加入购物车")!=null&&uniqueText(frame,"立即购买")!=null;
         if(detailMarkers)return detail(goal,frame,models);
         if(uniqueText(frame,"综合")!=null&&uniqueText(frame,"销量")!=null&&uniqueText(frame,"价格")!=null)
             return results(goal,frame,models);
         return inputOrHome(goal,frame);
+    }
+
+    /** Only the observed image-window shape is classified. This does not identify
+     * promotional content, a close button, consent, or a safe click. The bound
+     * Session may separately permit one pre-query Back and require a fresh home.
+     */
+    private static boolean imageModal(NativeAppEvidence.Frame frame){
+        if(frame.left<=0||frame.top<=0||frame.right>=frame.width||frame.bottom>=frame.height
+                ||frame.nodes.size()!=2)return false;
+        NativeAppEvidence.Node image=null,small=null;
+        for(NativeAppEvidence.Node n:frame.nodes){
+            // Any observed text, description, derived label, or resource id
+            // rejects this path, including login/privacy/consent dialogs.
+            if(!usable(frame,n)||!"android.widget.ImageView".equals(n.className)
+                    ||!"android.widget.FrameLayout".equals(n.parentClass)||!n.clickable
+                    ||n.editable||n.scrollable||!n.scrollDirections.isEmpty()
+                    ||!n.text.isEmpty()||!n.description.isEmpty()||!n.label.isEmpty()||!n.viewId.isEmpty()
+                    ||!Boolean.FALSE.equals(n.selected)||!Boolean.FALSE.equals(n.checkable)
+                    ||!Boolean.FALSE.equals(n.checked))return false;
+            if("0/0".equals(n.path))image=n;
+            else if("0/1".equals(n.path))small=n;
+            else return false;
+        }
+        if(image==null||small==null)return false;
+        long smallWidth=(long)small.right-small.left,smallHeight=(long)small.bottom-small.top;
+        long gap=(long)small.top-image.bottom;
+        return image.left==frame.left&&image.top==frame.top&&image.right==frame.right
+                &&small.bottom==frame.bottom&&smallWidth==smallHeight
+                &&smallWidth<(long)image.right-image.left&&smallHeight<(long)image.bottom-image.top
+                &&(long)small.left+small.right==(long)frame.left+frame.right
+                &&gap>0&&gap<=smallHeight;
     }
 
     private static Page detail(NativeAppGoal goal,NativeAppEvidence.Frame frame,List<NativeAppEvidence.Node> models){

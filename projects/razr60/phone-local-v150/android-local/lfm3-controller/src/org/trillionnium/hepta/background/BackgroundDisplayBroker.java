@@ -20,6 +20,7 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.InputDevice;
 import android.view.InputEvent;
@@ -46,7 +47,6 @@ import org.json.JSONObject;
  * No UiAutomation, network, executable tool, policy grant, secure capture, or default-screen input.
  */
 public final class BackgroundDisplayBroker {
-    public static final int WIDTH = 720, HEIGHT = 1280, DENSITY = 240;
     private static final long STARTUP_MS = 8000, SOCKET_MS = 3000, CLEANUP_MS = 1500;
     private final BrokerProtocol.Config config;
     private final BrokerProtocol.Receipts receipts = new BrokerProtocol.Receipts();
@@ -70,6 +70,8 @@ public final class BackgroundDisplayBroker {
     private volatile int displayId = -1;
     private volatile int displayFlags;
     private volatile JSONObject displayPolicyReadback;
+    private volatile DisplayGeometry displayGeometry;
+    private volatile JSONObject displayGeometryReadback;
     private final java.util.Map<String,Integer> displayFlagConstants=new java.util.LinkedHashMap<String,Integer>();
     private volatile LocalSocket connection;
     private volatile LocalServerSocket server;
@@ -255,9 +257,12 @@ public final class BackgroundDisplayBroker {
                   createInFlight = true;
                   try {
                     ensureNameAbsent();
+                    final DisplayGeometry geometry = DisplayGeometry.snapshotDefault(displays);
+                    displayGeometry = geometry;
+                    guard(r, false);
                     displayThread = new HandlerThread("HeptaBackgroundSurface"); displayThread.start();
                     Handler handler = new Handler(displayThread.getLooper());
-                    surfaceReader = ImageReader.newInstance(WIDTH, HEIGHT, PixelFormat.RGBA_8888, 3);
+                    surfaceReader = ImageReader.newInstance(geometry.width, geometry.height, PixelFormat.RGBA_8888, 3);
                     surfaceReader.setOnImageAvailableListener(reader -> {
                         try (Image image = reader.acquireLatestImage()) {
                             if (image == null) return; // Drain without observing or copying pixels.
@@ -266,7 +271,7 @@ public final class BackgroundDisplayBroker {
                     }, handler);
                     guard(r, false);
                     dispatched = true;
-                    VirtualDisplay created = displays.createVirtualDisplay(displayName, WIDTH, HEIGHT, DENSITY,
+                    VirtualDisplay created = displays.createVirtualDisplay(displayName, geometry.width, geometry.height, geometry.density,
                         surfaceReader.getSurface(), virtualFlags);
                     virtual = created;
                     if (created == null) throw new BrokerProtocol.Refusal("DISPLAY_CREATION_FAILED");
@@ -446,6 +451,14 @@ public final class BackgroundDisplayBroker {
         Display actual = displays.getDisplay(displayId);
         if (actual == null || !actual.isValid() || !displayName.equals(actual.getName()))
             throw new BrokerProtocol.Refusal("DISPLAY_IDENTITY_LOST");
+        DisplayGeometry expected = displayGeometry;
+        if (expected == null) throw new BrokerProtocol.Refusal("DISPLAY_GEOMETRY_NOT_SNAPSHOTTED");
+        DisplayGeometry observed = DisplayGeometry.read(actual, displayId);
+        boolean matches = expected.sameSize(observed);
+        displayGeometryReadback = new JSONObject(observed.evidence()).put("schema", "hepta.background-display-geometry.v1")
+            .put("source", "broker_framework_readback").put("generation", config.generation)
+            .put("matches_snapshot", matches);
+        if (!matches) throw new BrokerProtocol.Refusal("DISPLAY_GEOMETRY_CHANGED");
         int flags = actual.getFlags(); displayFlags = flags;
         if ((flags & requiredDisplayFlags) != requiredDisplayFlags || (flags & forbiddenDisplayFlags) != 0)
             throw new BrokerProtocol.Refusal("DISPLAY_FLAGS_NOT_ACCEPTED");
@@ -459,6 +472,65 @@ public final class BackgroundDisplayBroker {
             .put("source","broker_framework_readback").put("generation",config.generation)
             .put("display_id",displayId).put("display_name",displayName)
             .put("observed_started_elapsed_ms",readStarted).put("observed_ended_elapsed_ms",SystemClock.elapsedRealtime());
+    }
+
+    /** Logical maximum display region, not physical panel pixels or a foreground App window. */
+    static final class DisplayGeometry {
+        // Admission bounds; the existing screenshot path independently retains its 16M-pixel cap.
+        static final int MAX_EDGE = 4096, MIN_DENSITY = 80, MAX_DENSITY = 1000;
+        static final long MAX_PIXELS = 16000000L;
+        final int displayId, width, height, density, rotation;
+        final String name;
+        final long startedElapsed, endedElapsed;
+        private DisplayGeometry(int id, String name, int width, int height, int density, int rotation,
+                                long started, long ended) {
+            this.displayId=id;this.name=name;this.width=width;this.height=height;
+            this.density=density;this.rotation=rotation;this.startedElapsed=started;this.endedElapsed=ended;
+        }
+        static DisplayGeometry snapshotDefault(DisplayManager manager) throws BrokerProtocol.Refusal {
+            if (manager == null) throw new BrokerProtocol.Refusal("DISPLAY_GEOMETRY_UNAVAILABLE");
+            // Never choose the first enumerated display: a foldable's cover display is a different ID.
+            DisplayGeometry first=read(manager.getDisplay(Display.DEFAULT_DISPLAY),Display.DEFAULT_DISPLAY);
+            DisplayGeometry second=read(manager.getDisplay(Display.DEFAULT_DISPLAY),Display.DEFAULT_DISPLAY);
+            if (!first.sameSize(second) || first.rotation!=second.rotation || !first.name.equals(second.name)
+                || second.startedElapsed<first.endedElapsed)
+                throw new BrokerProtocol.Refusal("DEFAULT_DISPLAY_GEOMETRY_CHANGED");
+            return new DisplayGeometry(second.displayId,second.name,second.width,second.height,second.density,
+                second.rotation,first.startedElapsed,second.endedElapsed);
+        }
+        @SuppressWarnings("deprecation")
+        static DisplayGeometry read(Display actual, int expectedId) throws BrokerProtocol.Refusal {
+            long started=SystemClock.elapsedRealtime();
+            if (expectedId<0 || actual==null || !actual.isValid() || actual.getDisplayId()!=expectedId)
+                throw new BrokerProtocol.Refusal("DISPLAY_GEOMETRY_UNAVAILABLE");
+            String name=actual.getName();
+            int rotation=actual.getRotation();
+            DisplayMetrics metrics=new DisplayMetrics();
+            // This non-Activity broker sizes a new display. getRealMetrics preserves the current
+            // logical/max-bounds region, rotation and wm overrides; no Display.Mode fallback.
+            actual.getRealMetrics(metrics);
+            if (!actual.isValid() || actual.getDisplayId()!=expectedId || name==null || name.isEmpty()
+                || name.length()>256 || !name.equals(actual.getName()) || rotation!=actual.getRotation())
+                throw new BrokerProtocol.Refusal("DISPLAY_GEOMETRY_CHANGED_DURING_READ");
+            int width=metrics.widthPixels,height=metrics.heightPixels,density=metrics.densityDpi;
+            long ended=SystemClock.elapsedRealtime();
+            if (width<1 || height<1 || width>MAX_EDGE || height>MAX_EDGE || (long)width*height>MAX_PIXELS
+                || density<MIN_DENSITY || density>MAX_DENSITY || rotation<0 || rotation>3
+                || started<0 || ended<started)
+                throw new BrokerProtocol.Refusal("DISPLAY_GEOMETRY_BOUNDS");
+            return new DisplayGeometry(expectedId,name,width,height,density,rotation,started,ended);
+        }
+        boolean sameSize(DisplayGeometry other) {
+            return other!=null && width==other.width && height==other.height && density==other.density;
+        }
+        java.util.Map<String,Object> evidence() {
+            java.util.Map<String,Object> out=new java.util.LinkedHashMap<String,Object>();
+            out.put("metrics_source","android.view.Display.getRealMetrics");out.put("display_id",displayId);
+            out.put("display_name",name);out.put("width",width);out.put("height",height);out.put("density",density);
+            out.put("rotation",rotation);out.put("pixels",(long)width*height);out.put("max_pixels",MAX_PIXELS);
+            out.put("observed_started_elapsed_ms",startedElapsed);out.put("observed_ended_elapsed_ms",endedElapsed);
+            return out;
+        }
     }
 
     private void ensureNameAbsent() throws BrokerProtocol.Refusal {
@@ -683,10 +755,15 @@ public final class BackgroundDisplayBroker {
         LocalServerSocket listening = server; if (listening != null) try { listening.close(); } catch (IOException ignored) {}
     }
     private byte[] response(BrokerProtocol.Request r, boolean ok, String error, boolean dispatched) throws Exception {
+        DisplayGeometry geometry=displayGeometry;
         JSONObject value = new JSONObject().put("version", BrokerProtocol.VERSION)
             .put("request_id", r == null ? JSONObject.NULL : r.requestId).put("generation", config.generation)
             .put("ok", ok).put("state", state).put("display_id", displayId).put("flags", displayFlags)
-            .put("width", WIDTH).put("height", HEIGHT).put("density", DENSITY)
+            .put("width", geometry==null?JSONObject.NULL:geometry.width)
+            .put("height", geometry==null?JSONObject.NULL:geometry.height)
+            .put("density", geometry==null?JSONObject.NULL:geometry.density)
+            .put("display_geometry_snapshot",geometry==null?JSONObject.NULL:new JSONObject(geometry.evidence()))
+            .put("display_geometry_readback",displayGeometryReadback==null?JSONObject.NULL:new JSONObject(displayGeometryReadback.toString()))
             .put("dispatched", dispatched).put("display_name", displayName)
             .put("expires_elapsed_ms", expires).put("capture_secure", false).put("always_unlocked", false)
             .put("ime_policy", "hide")

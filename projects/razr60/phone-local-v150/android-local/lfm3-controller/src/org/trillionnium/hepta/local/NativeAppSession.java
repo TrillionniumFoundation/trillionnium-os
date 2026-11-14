@@ -37,7 +37,7 @@ final class NativeAppSession {
     private NativeXiaomiProductPage.Page product;
     private Attempt inFlight,pending,lastDone;
     private int ordinal,observationOrdinal;
-    private boolean retired,terminalConsumed,invalid,productQueryAttempted;
+    private boolean retired,terminalConsumed,invalid,productQueryAttempted,productModalExitAttempted;
     private String invalidReason;
     private LocalDate calendarProposedDate,confirmedFormDate,lastQueryDate;
     private Map<String,Object> calendarInspection,calendarYearProof,lastQueryProof,productQueryProof,productOpenProof;
@@ -141,6 +141,15 @@ final class NativeAppSession {
                 }
                 if(result==null&&flight.missing!=null)missing.add(flight.missing);
             }else missing.add(flight.missing==null?"native_flight_page_unrecognized":flight.missing);
+        }else if(NativeXiaomiProductPage.IMAGE_MODAL.equals(phase)){
+            // This permits one navigation attempt, not an interpretation of the images.
+            // The same installed App, task, Selection, lease and current frame remain mandatory.
+            view.putAll(product.modelView());view.put("product_modal_exit_attempted",productModalExitAttempted);
+            view.put("modal_exit_requires_fresh_home",true);
+            if(!productModalExitAttempted&&!productQueryAttempted&&productQueryProof==null&&productOpenProof==null){
+                back=true;purposes.put("back","dismiss_image_modal_once");
+            }else missing.add("one_prequery_modal_exit_attempt_unavailable");
+            missing.addAll(product.missing);
         }else{
             view.putAll(product.modelView());
             for(String id:product.clickIds){String purpose=product.purposes.get(id);
@@ -187,6 +196,12 @@ final class NativeAppSession {
             need(lastQueryProof!=null&&date.equals(flight.resolvedDates(lastQueryDate).get(action.nodeId))&&dateAttempts.add(date),"one actual date-strip proposal per date");}
         else if("verify_form_after_result_date".equals(purpose))date=flight==null||lastQueryDate==null?null:flight.displayedMonthDay(lastQueryDate);
         else if("submit_exact_suggestion".equals(purpose)||"submit_product_query".equals(purpose)){need(!productQueryAttempted,"native product query already attempted");productQueryAttempted=true;}
+        else if("dismiss_image_modal_once".equals(purpose)){
+            need(product!=null&&NativeXiaomiProductPage.IMAGE_MODAL.equals(product.phase)
+                    &&!productModalExitAttempted&&!productQueryAttempted&&productQueryProof==null&&productOpenProof==null,
+                    "one prequery image-modal Back proposal required");
+            productModalExitAttempted=true; // Consumed even if the actual dispatch is later stale.
+        }
         if(!"wait".equals(action.action)&&!"done".equals(action.action)){acceptedClaim=null;lastDone=null;
             if(!"open_exact_product".equals(purpose)){productOpenProof=null;productSemantic=null;}}
         inFlight=new Attempt(ordinal,step,run,action,current,purpose,flight,product,now,date);
@@ -216,7 +231,7 @@ final class NativeAppSession {
                 for(Map<String,Object> m:flight.calendarMonths)if(((Integer)m.get("month")).intValue()==a.flight.form.month){
                     need(proposed==null,"calendar has ambiguous source year for the selected form month");
                     proposed=LocalDate.of(((Integer)m.get("year")).intValue(),a.flight.form.month,a.flight.form.day);header=m;}
-                need(proposed!=null&&flight.calendarMonths.size()<=3,"actual same-month calendar title required");
+                need(proposed!=null&&flight.calendarYearHeadersAdmitted(),"actual same-month calendar title required");
                 proof.put("calendar_month_header",header);proof.put("form_before",a.flight.form.evidence());proof.put("year_source","actual_native_calendar_month_title_after_model_date_control");
                 proof.put("owner_year_used_as_observed_value",false);calendarProposedDate=proposed;calendarInspection=NativeAppEvidence.immutableMap(proof);complete=true;
             }else if("return_from_calendar".equals(p)&&NativeCtripFlightPage.FORM.equals(flight.phase)){
@@ -236,7 +251,10 @@ final class NativeAppSession {
             }else if("open_flight_form".equals(p)&&NativeCtripFlightPage.FORM.equals(flight.phase))complete=true;
             else if("dismiss_research_sheet".equals(p)&&!NativeCtripFlightPage.OVERLAY.equals(flight.phase)&&!NativeCtripFlightPage.UNAVAILABLE.equals(flight.phase))complete=true;
         }else{
-            if(("submit_exact_suggestion".equals(a.purpose)||"submit_product_query".equals(a.purpose))&&product.quote!=null&&"search_card".equals(product.quote.kind)){
+            if("dismiss_image_modal_once".equals(a.purpose)&&a.product!=null
+                    &&NativeXiaomiProductPage.IMAGE_MODAL.equals(a.product.phase)&&"home_search".equals(product.phase)){
+                proof.put("navigation_only",true);proof.put("query_or_result_proof_created",false);complete=true;
+            }else if(("submit_exact_suggestion".equals(a.purpose)||"submit_product_query".equals(a.purpose))&&product.quote!=null&&"search_card".equals(product.quote.kind)){
                 proof.put("search_result_quote",product.quote.evidence());productQueryProof=NativeAppEvidence.immutableMap(proof);complete=true;
             }else if("open_exact_product".equals(a.purpose)&&product.quote!=null&&"detail_display".equals(product.quote.kind)){
                 need(productQueryProof!=null&&a.product.quote!=null&&"search_card".equals(a.product.quote.kind)
@@ -268,6 +286,7 @@ final class NativeAppSession {
     private Map<String,Object> progress(){Map<String,Object> e=NativeAppEvidence.map();e.put("actual_model_actions",ordinal);e.put("calendar_year_proved",calendarYearProof!=null);
         e.put("proved_form_date",confirmedFormDate==null?null:confirmedFormDate.toString());e.put("last_query_date",lastQueryDate==null?null:lastQueryDate.toString());
         List<String> dates=new ArrayList<String>();for(LocalDate d:queryAttempts)dates.add(d.toString());e.put("explicit_query_attempt_dates",dates);
+        e.put("product_modal_exit_attempted",productModalExitAttempted);
         e.put("product_query_observed",productQueryProof!=null);e.put("product_detail_navigation_observed",productOpenProof!=null);e.put("pending",pending==null?null:pending.evidence());e.put("transitions",transitions);return e;}
     private Map<String,Object> base(){Map<String,Object> e=NativeAppEvidence.map();e.put("schema",SCHEMA);e.put("task_id",taskId);
         e.put("owner_sha256",goal.ownerSha256);e.put("execution_target_sha256",target.targetSha256);e.put("authorization_sha256",authorization.authorization.sha256);return e;}

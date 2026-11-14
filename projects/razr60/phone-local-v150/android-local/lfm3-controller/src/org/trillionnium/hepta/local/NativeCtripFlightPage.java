@@ -110,19 +110,29 @@ final class NativeCtripFlightPage {
         final List<DateCell> dates;
         final List<Quote> quotes;
         final List<Map<String,Object>> rejectedCards,calendarMonths;
+        final boolean calendarStickyHeaderPairVerified;
         private Page(NativeAppEvidence.Frame frame,String phase,String missing,Form form,NativeAppEvidence.Node home,
                 NativeAppEvidence.Node from,NativeAppEvidence.Node to,NativeAppEvidence.Node root,List<DateCell> dates,List<Quote> quotes,
                 List<Map<String,Object>> rejected,List<Map<String,Object>> months){
+            this(frame,phase,missing,form,home,from,to,root,dates,quotes,rejected,months,false);
+        }
+        private Page(NativeAppEvidence.Frame frame,String phase,String missing,Form form,NativeAppEvidence.Node home,
+                NativeAppEvidence.Node from,NativeAppEvidence.Node to,NativeAppEvidence.Node root,List<DateCell> dates,List<Quote> quotes,
+                List<Map<String,Object>> rejected,List<Map<String,Object>> months,boolean stickyHeaderPairVerified){
             this.frame=frame;this.phase=phase;this.missing=missing;this.form=form;homeFlight=home;fromHeader=from;toHeader=to;resultRoot=root;
+            calendarStickyHeaderPairVerified=stickyHeaderPairVerified;
             this.dates=Collections.unmodifiableList(new ArrayList<DateCell>(dates));this.quotes=Collections.unmodifiableList(new ArrayList<Quote>(quotes));
             rejectedCards=Collections.unmodifiableList(new ArrayList<Map<String,Object>>(rejected));calendarMonths=Collections.unmodifiableList(new ArrayList<Map<String,Object>>(months));
         }
+        boolean calendarYearHeadersAdmitted(){return CALENDAR.equals(phase)&&!calendarMonths.isEmpty()
+                &&(calendarMonths.size()<=3||(calendarStickyHeaderPairVerified&&calendarMonths.size()==4));}
         Map<String,Object> evidence(){Map<String,Object> o=NativeAppEvidence.map();o.put("schema","hepta.ctrip-native-page.v1");o.put("phase",phase);o.put("missing",missing);o.put("frame",frame.evidence());
             o.put("provider_version_code",VERSION_CODE);o.put("package",PACKAGE);o.put("supported_route_scope","Beijing_to_Shanghai_single_adult");
             if(form!=null)o.put("form",form.evidence());if(homeFlight!=null)o.put("home_flight_control",homeFlight.fact("description"));
             if(fromHeader!=null)o.put("from_header",fromHeader.fact("text"));if(toHeader!=null)o.put("to_header",toHeader.fact("text"));
             List<Map<String,Object>> dateFacts=new ArrayList<Map<String,Object>>();for(DateCell c:dates)dateFacts.add(c.evidence());o.put("date_strip",dateFacts);
             List<Map<String,Object>> quoteFacts=new ArrayList<Map<String,Object>>();for(Quote q:quotes)quoteFacts.add(q.evidence());o.put("displayed_cards",quoteFacts);o.put("rejected_cards",rejectedCards);o.put("calendar_months",calendarMonths);
+            if(calendarStickyHeaderPairVerified)o.put("calendar_header_resolution","one_same_month_sticky_and_content_pair_with_consecutive_visible_months");
             o.put("query_executed_by_this_page",false);o.put("business_verified",false);o.put("grants_tool_authority",false);return o;}
         /** Infer a bounded calendar continuation from an already proved query
          * date. Role strings such as 当天 are intentionally not used as selection.
@@ -163,6 +173,8 @@ final class NativeCtripFlightPage {
             if(anyRole(frame,"单程列表页"))return results(goal,frame);
             List<NativeAppEvidence.Node> months=findId(frame,PREFIX+"calendar_month_title_left_tv");
             if(!months.isEmpty()){
+                if(repeatedMonthText(months)||(months.size()>3&&hasStickyMonthPath(frame,months)))
+                    return stickyCalendar(frame,months);
                 List<Map<String,Object>> values=new ArrayList<Map<String,Object>>();Set<String> distinct=new TreeSet<String>();
                 for(NativeAppEvidence.Node n:months){Matcher m=MONTH.matcher(n.text);need(m.matches()&&distinct.add(n.text),"unambiguous actual month headers required");
                     LocalDate.of(Integer.parseInt(m.group(1)),Integer.parseInt(m.group(2)),1);Map<String,Object> x=n.fact("text");x.put("year",Integer.valueOf(m.group(1)));x.put("month",Integer.valueOf(m.group(2)));values.add(x);}
@@ -180,6 +192,66 @@ final class NativeCtripFlightPage {
             return empty(frame,UNAVAILABLE,"native_page_provider_not_recognized");
         }catch(IllegalArgumentException rejected){return empty(frame,UNAVAILABLE,"native_page_fields_rejected: "+bounded(rejected.getMessage(),180));}
         catch(DateTimeException rejected){return empty(frame,UNAVAILABLE,"native_calendar_value_rejected: "+bounded(rejected.getMessage(),180));}
+    }
+
+    /** Resolve only the observed v1779 sticky/content duplication. All original
+     * header facts survive; no calendar day or coordinate capability is made.
+     * Unique legacy headers retain their existing path and <=3 year-proof gate.
+     */
+    private static boolean repeatedMonthText(List<NativeAppEvidence.Node> months){
+        Set<String> text=new TreeSet<String>();for(NativeAppEvidence.Node n:months)if(!text.add(n.text))return true;return false;
+    }
+    private static boolean hasStickyMonthPath(NativeAppEvidence.Frame frame,List<NativeAppEvidence.Node> months){
+        List<NativeAppEvidence.Node> lists=findId(frame,PREFIX+"calendar_list");
+        if(lists.size()!=1||lists.get(0).path==null||lists.get(0).path.lastIndexOf('/')<0)return false;
+        String path=parent(lists.get(0).path)+"/1/0/0";
+        for(NativeAppEvidence.Node n:months)if(path.equals(n.path))return true;return false;
+    }
+    private static LocalDate monthValue(NativeAppEvidence.Node n){
+        Matcher m=MONTH.matcher(n.text);need(m.matches(),"literal complete calendar month required");
+        return LocalDate.of(Integer.parseInt(m.group(1)),Integer.parseInt(m.group(2)),1);
+    }
+    private static Page stickyCalendar(NativeAppEvidence.Frame frame,List<NativeAppEvidence.Node> months){
+        need(months.size()>=3&&months.size()<=5,"bounded sticky calendar month graph required");
+        int allHeaders=0;for(NativeAppEvidence.Node n:frame.nodes)if((PREFIX+"calendar_month_title_left_tv").equals(n.viewId))allHeaders++;
+        need(allHeaders==months.size(),"no unusable or foreign calendar header may be ignored");
+        NativeAppEvidence.Node list=oneId(frame,PREFIX+"calendar_list");
+        need("android.widget.ListView".equals(list.className)&&"android.widget.FrameLayout".equals(list.parentClass)
+                &&list.enabled&&list.scrollable&&!list.editable&&!list.password&&list.path.endsWith("/0"),"actual enabled calendar list required");
+        String stickyPath=parent(list.path)+"/1/0/0";
+        List<NativeAppEvidence.Node> content=new ArrayList<NativeAppEvidence.Node>();NativeAppEvidence.Node sticky=null;
+        for(NativeAppEvidence.Node n:months){
+            need("android.widget.TextView".equals(n.className)&&"android.widget.LinearLayout".equals(n.parentClass)
+                    &&n.enabled&&!n.password&&!n.editable&&!n.clickable&&!n.scrollable&&n.description.isEmpty(),"actual plain month title required");
+            monthValue(n);
+            if(stickyPath.equals(n.path)){need(sticky==null,"one sticky month title required");sticky=n;}
+            else{
+                need(n.within(list)&&n.path.substring(list.path.length()+1).matches("(?:0|[1-9][0-9]{0,5})/0/0"),"month title must belong to the same list content row");
+                content.add(n);
+            }
+        }
+        need(sticky!=null&&content.size()>=2&&content.size()<=4,"one sticky title and bounded complete content month sequence required");
+        Collections.sort(content,new Comparator<NativeAppEvidence.Node>(){public int compare(NativeAppEvidence.Node a,NativeAppEvidence.Node b){return Integer.compare(a.top,b.top);}});
+        NativeAppEvidence.Node first=content.get(0);
+        need(first.path.equals(list.path+"/0/0/0")&&first.text.equals(sticky.text)
+                &&first.left==sticky.left&&first.right==sticky.right&&first.top==list.top
+                &&first.bottom<=sticky.top&&first.bottom-first.top<sticky.bottom-sticky.top
+                &&sticky.left>=list.left&&sticky.right<=list.right&&sticky.top>=list.top&&sticky.bottom<=list.bottom
+                &&sticky.bottom<content.get(1).top,"same clipped first month and sibling sticky title geometry required");
+        LocalDate previous=null;NativeAppEvidence.Node previousNode=null;int previousIndex=-1;
+        List<Map<String,Object>> values=new ArrayList<Map<String,Object>>();
+        for(NativeAppEvidence.Node n:content){
+            LocalDate month=monthValue(n);String row=n.path.substring(list.path.length()+1);int index=Integer.parseInt(row.substring(0,row.indexOf('/')));
+            if(previous!=null)need(previous.plusMonths(1).equals(month)&&previousNode.bottom<n.top&&index>previousIndex,"consecutive ordered content month headers required");
+            Map<String,Object> x=n.fact("text");x.put("year",month.getYear());x.put("month",month.getMonthValue());
+            if(n==first){Map<String,Object> pair=NativeAppEvidence.map();pair.put("schema","hepta.ctrip-sticky-month-pair.v1");
+                pair.put("content_header",first.fact("text"));pair.put("sticky_header",sticky.fact("text"));pair.put("calendar_list",list.fact("description"));
+                pair.put("same_literal_month",true);pair.put("same_observation",true);pair.put("day_cells_or_selected_date_inferred",false);
+                x.put("sticky_header_pair",NativeAppEvidence.immutableMap(pair));}
+            values.add(x);previous=month;previousNode=n;previousIndex=index;
+        }
+        return new Page(frame,CALENDAR,"day_cells_not_exposed_by_native_provider",null,null,null,null,null,
+                Collections.<DateCell>emptyList(),Collections.<Quote>emptyList(),Collections.<Map<String,Object>>emptyList(),values,true);
     }
 
     private static Page form(NativeAppGoal goal,NativeAppEvidence.Frame frame){
