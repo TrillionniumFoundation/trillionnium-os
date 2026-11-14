@@ -17,6 +17,8 @@ final class NativeAppSession {
     static final String SCHEMA="hepta.native-app-session.v1";
     static final long OBSERVED_TRANSITION_MS=15000;
     static final int MAX_OBSERVATIONS=96,MAX_ACTIONS=20;
+    static final long PRODUCT_HOME_LOADING_MS=15000;
+    static final int MAX_PRODUCT_HOME_LOADING_WAITS=2;
     interface Journal {void write(String leaf,Map<String,Object> value)throws Exception;}
     interface InstalledVerifier {void verify()throws Exception;}
     final String taskId,selectionSha,generation;
@@ -36,7 +38,8 @@ final class NativeAppSession {
     private NativeCtripFlightPage.Page flight;
     private NativeXiaomiProductPage.Page product;
     private Attempt inFlight,pending,lastDone;
-    private int ordinal,observationOrdinal;
+    private int ordinal,observationOrdinal,productHomeLoadingWaits;
+    private long productHomeLoadingSince=-1;
     private boolean retired,terminalConsumed,invalid,productQueryAttempted,productModalExitAttempted;
     private String invalidReason;
     private LocalDate calendarProposedDate,confirmedFormDate,lastQueryDate;
@@ -93,6 +96,8 @@ final class NativeAppSession {
         observations.put(frame.observationId,frame.sourceRecordSha);acceptedClaim=null;
         flight=NativeCtripFlightPage.supported(goal)?NativeCtripFlightPage.inspect(goal,frame):null;
         product=NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName)?NativeXiaomiProductPage.inspect(goal,frame):null;
+        if(product!=null&&NativeXiaomiProductPage.HOME_LOADING.equals(product.phase)&&productHomeLoadingSince<0)
+            productHomeLoadingSince=frame.capturedElapsedMs;
         if(pending!=null)advancePending(frame);
         current=buildDomain(frame);
         Map<String,Object> e=base();e.put("frame",frame.evidence());e.put("provider",flight!=null?flight.evidence():product.evidence());
@@ -104,6 +109,20 @@ final class NativeAppSession {
         Map<String,Object> view=NativeAppEvidence.map(),result=null;List<String> missing=new ArrayList<String>();boolean back=false;
         String phase=flight!=null?flight.phase:product.phase;
         if(!frame.metadataObserved||frame.windowType!=1||!frame.collectionComplete||frame.nodesTruncated){missing.add("complete_actual_native_application_frame_required");}
+        else if(NativeXiaomiProductPage.HOME_LOADING.equals(phase)){
+            view.putAll(product.modelView());
+            long elapsed=frame.capturedElapsedMs-productHomeLoadingSince;
+            boolean waiting=productHomeLoadingSince>=0&&elapsed>=0&&elapsed<PRODUCT_HOME_LOADING_MS
+                    &&productHomeLoadingWaits<MAX_PRODUCT_HOME_LOADING_WAITS;
+            if(!waiting)phase=NativeXiaomiProductPage.HOME_LOADING_EXHAUSTED;
+            view.put("loading_wait_only",waiting);view.put("loading_wait_attempts",productHomeLoadingWaits);
+            view.put("loading_max_wait_attempts",MAX_PRODUCT_HOME_LOADING_WAITS);
+            view.put("loading_observation_budget_ms",PRODUCT_HOME_LOADING_MS);
+            view.put("loading_remaining_observed_ms",Math.max(0L,PRODUCT_HOME_LOADING_MS-elapsed));
+            view.put("next_goal",waiting?"首页仅有导航栏，内容尚未就绪；由模型调用 wait，再读取新的实际页面。"
+                    :"首页内容等待预算已耗尽；根据当前未就绪证据结束 failure，不能声称查询成功。");
+            missing.add(waiting?"native_home_content_loading":"native_home_loading_budget_exhausted");
+        }
         else if(pending!=null){missing.add("waiting_for_actual_post_action_page");view.put("pending_purpose",pending.purpose);}
         else if(flight!=null){
             view.put("from",goal.fromCity);view.put("to",goal.toCity);view.put("requested_departure_date",goal.departureDate.toString());
@@ -270,6 +289,8 @@ final class NativeAppSession {
     void beforeModelAction(int step,ActionDecision action,String run,long now)throws Exception{
         live();verifyInstalled();need(current!=null&&inFlight==null&&step>0&&step<=MAX_ACTIONS&&NativeAppEvidence.id(run)&&usedRuns.add(run),"one actual bounded model action required");
         current.requireCurrent(action);authorization.frame().requireDecision(action);need(++ordinal<=MAX_ACTIONS,"native action budget exhausted");
+        if(NativeXiaomiProductPage.HOME_LOADING.equals(current.phase))
+            need("wait".equals(action.action)&&++productHomeLoadingWaits<=MAX_PRODUCT_HOME_LOADING_WAITS,"bounded model-issued home loading wait required");
         String purpose="back".equals(action.action)?current.purposes.get("back"):action.nodeId==null?action.action:current.purposes.get(action.nodeId);
         LocalDate date=null;
         if("query_observed_form".equals(purpose)){need(confirmedFormDate!=null&&flight!=null&&flight.form!=null&&flight.form.matches(confirmedFormDate)
@@ -346,7 +367,8 @@ final class NativeAppSession {
                 proof.put("query",productQueryProof);proof.put("search_card",a.product.quote.evidence());proof.put("detail",product.quote.evidence());
                 productOpenProof=NativeAppEvidence.immutableMap(proof);productSemantic=product.quote.semanticFingerprint;complete=true;
             }else if("set_product_query".equals(a.purpose)||"open_search".equals(a.purpose)||"return_to_owned_product_search".equals(a.purpose)){
-                complete=!"unrecognized_native_page".equals(product.phase)&&!"observation_unavailable".equals(product.phase);
+                complete=!"unrecognized_native_page".equals(product.phase)&&!"observation_unavailable".equals(product.phase)
+                        &&!NativeXiaomiProductPage.HOME_LOADING.equals(product.phase);
             }
         }
         if(complete){transitions.add(NativeAppEvidence.immutableMap(proof));pending=null;}
@@ -371,6 +393,8 @@ final class NativeAppSession {
         e.put("proved_form_date",confirmedFormDate==null?null:confirmedFormDate.toString());e.put("last_query_date",lastQueryDate==null?null:lastQueryDate.toString());
         List<String> dates=new ArrayList<String>();for(LocalDate d:queryAttempts)dates.add(d.toString());e.put("explicit_query_attempt_dates",dates);
         e.put("product_modal_exit_attempted",productModalExitAttempted);
+        e.put("product_home_loading_since_elapsed_ms",productHomeLoadingSince<0?null:Long.valueOf(productHomeLoadingSince));
+        e.put("product_home_loading_wait_attempts",productHomeLoadingWaits);
         e.put("product_query_observed",productQueryProof!=null);e.put("product_detail_navigation_observed",productOpenProof!=null);e.put("pending",pending==null?null:pending.evidence());e.put("transitions",transitions);return e;}
     private Map<String,Object> base(){Map<String,Object> e=NativeAppEvidence.map();e.put("schema",SCHEMA);e.put("task_id",taskId);
         e.put("owner_sha256",goal.ownerSha256);e.put("execution_target_sha256",target.targetSha256);e.put("authorization_sha256",authorization.authorization.sha256);return e;}

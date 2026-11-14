@@ -1392,7 +1392,9 @@ public final class LocalTaskController implements AutoCloseable {
                 java.util.Map<String,String> allowedAppLabels=new java.util.TreeMap<String,String>();
                 for(String packageName:packages)allowedAppLabels.put(packageName,shownAppLabels.get(packageName));
                 ObservedAppLabels appLabels=ObservedAppLabels.create(ObservedAppLabels.SCHEMA,observation.id,observation.packageName,allowedAppLabels);
-                DecisionGrammar grammar=fixedTargets==null?DecisionGrammar.createImeAuthorized(observation.id,observation.packageName,packages,
+                DecisionGrammar grammar=nativeDomain!=null&&NativeXiaomiProductPage.HOME_LOADING.equals(nativeDomain.phase)
+                        ?nativeDomain.boundedWaitGrammar(targets,appLabels,authorization,taskPhase.toolMask())
+                        :fixedTargets==null?DecisionGrammar.createImeAuthorized(observation.id,observation.packageName,packages,
                         clicks,edits,scrolls,submits,targets,appLabels,authorization,observation.backgroundGeneration!=null,nativeDomain!=null?nativeDomain.toolMask(taskPhase.toolMask()):web==null?taskPhase.toolMask():web.toolMask(taskPhase.toolMask()),successEligible)
                         :DecisionGrammar.createFixedIntentAuthorized(observation.id,observation.packageName,packages,
                         clicks,edits,scrolls,submits,targets,appLabels,authorization,observation.backgroundGeneration!=null,fixedTargets,taskPhase.exactPayloads(fixedTargets),nativeDomain!=null?nativeDomain.toolMask(taskPhase.toolMask()):web==null?taskPhase.toolMask():web.toolMask(taskPhase.toolMask()),successEligible);

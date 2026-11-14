@@ -920,10 +920,16 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         AccessibilityNodeInfo root=null;AccessibilityWindowInfo window=null;
         try{
             root=selectedRoot(background,work==null?null:work.budget());window=root==null?null:root.getWindow();
-            if(root==null||window==null||window.getDisplayId()!=background.displayId()
-                    ||window.getType()!=AccessibilityWindowInfo.TYPE_APPLICATION||root.getWindowId()!=expected.windowId
+            if(root==null||window==null||background.displayId()<=Display.DEFAULT_DISPLAY||window.getDisplayId()!=background.displayId()
+                    ||window.getType()!=AccessibilityWindowInfo.TYPE_APPLICATION||root.getWindowId()<0||window.getId()!=root.getWindowId()
                     ||!expected.packageName.equals(string(root.getPackageName()))||!root.isVisibleToUser())
                 throw new IllegalStateException("后台目标窗口已变化");
+            background.requireActive();actionCheck(work);
+            if(!ownsBackground(taskId,background))throw new IllegalStateException("后台任务租约已退休");
+            // A new window within the same verified owned display and package
+            // invalidates this proposal; only a new observation/model run may continue.
+            if(root.getWindowId()!=expected.windowId)
+                throw new StaleObservation("后台同应用窗口已换代，需重新观察");
             if(nodeRequired){
                 Graph selected=graphForAction(work);NodeRef ref=selected==null?null:selected.refs.get(action.nodeId);
                 if(node==null||ref==null||ref.node!=node)throw new IllegalStateException("后台节点不属于本次观察");

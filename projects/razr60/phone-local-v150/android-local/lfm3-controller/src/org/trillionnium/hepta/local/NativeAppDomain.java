@@ -48,11 +48,27 @@ final class NativeAppDomain {
     Set<String> toolMask(Set<String> original){Set<String> out=new TreeSet<String>(
             java.util.Arrays.asList("click","type","back","wait","done"));
         if(original!=null)out.retainAll(original);
-        if(clickIds.isEmpty())out.remove("click");if(editValues.isEmpty())out.remove("type");if(!backAllowed)out.remove("back");return out;}
+        if(clickIds.isEmpty())out.remove("click");if(editValues.isEmpty())out.remove("type");if(!backAllowed)out.remove("back");
+        if(NativeXiaomiProductPage.HOME_LOADING.equals(phase))out.retainAll(Collections.singleton("wait"));
+        if(NativeXiaomiProductPage.HOME_LOADING_EXHAUSTED.equals(phase))out.retainAll(Collections.singleton("done"));
+        return out;}
+    DecisionGrammar boundedWaitGrammar(ObservedTargetLabels targets,ObservedAppLabels apps,TaskAuthorization.Frame authorization,Set<String> original){
+        NativeAppEvidence.need(NativeXiaomiProductPage.HOME_LOADING.equals(phase)&&frame.metadataObserved&&frame.windowType==1
+                &&frame.displayId>0&&frame.collectionComplete&&!frame.nodesTruncated&&clickIds.isEmpty()&&editValues.isEmpty()
+                &&!backAllowed&&!resultReady&&toolMask(original).equals(Collections.singleton("wait")),
+                "bounded readiness grammar requires the current complete loading-only domain");
+        return DecisionGrammar.createBoundedWaitAuthorized(frame.observationId,frame.packageName,targets,apps,authorization,toolMask(original));
+    }
     void requireCurrent(ActionDecision action)throws ActionDecision.InvalidActionException{
         try{
             NativeAppEvidence.need(action!=null&&action.toolChildOrigin==null&&frame.observationId.equals(action.observationId)
                     &&frame.packageName.equals(action.packageName),"same native model/frame/package required");
+            if(NativeXiaomiProductPage.HOME_LOADING.equals(phase)){
+                NativeAppEvidence.need("wait".equals(action.action),"home content is loading; bounded model wait required");return;
+            }
+            if(NativeXiaomiProductPage.HOME_LOADING_EXHAUSTED.equals(phase)){
+                NativeAppEvidence.need("done".equals(action.action)&&"failure".equals(action.status),"home loading budget exhausted; failure only");return;
+            }
             if("done".equals(action.action)){NativeAppEvidence.need(!"success".equals(action.status)||resultReady,"native result not verified");return;}
             if("wait".equals(action.action))return;
             NativeAppEvidence.need(frame.collectionComplete&&!frame.nodesTruncated,"incomplete native frame cannot grant action");

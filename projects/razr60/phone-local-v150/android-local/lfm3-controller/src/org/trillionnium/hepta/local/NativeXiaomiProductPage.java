@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 final class NativeXiaomiProductPage {
     static final String SCHEMA="hepta.native-xiaomi-product-page.v1";
     static final String IMAGE_MODAL="image_modal";
+    static final String HOME_LOADING="home_loading",HOME_LOADING_EXHAUSTED="home_loading_budget_exhausted";
     private static final String TITLE="Xiaomi路由器AX3000T";
     private static final String VIEW="android.view.ViewGroup";
     private static final String TEXT="android.widget.TextView";
@@ -323,7 +324,34 @@ final class NativeXiaomiProductPage {
             return new Page(frame,"home_search",Collections.<String>emptyList(),Collections.singleton(search.id),
                     Collections.<String,String>emptyMap(),purposes,facts,null);
         }
+        if(home!=null&&search==null&&navigationOnlyHome(frame))
+            return page(frame,HOME_LOADING,"native_home_search_content_not_loaded",null,null);
         return page(frame,"unrecognized_native_page","no_current_supported_native_page",null,null);
+    }
+
+    /** Recognize only the complete installed-version home navigation shell.
+     * This supplies no node permission, content claim or automatic action. */
+    private static boolean navigationOnlyHome(NativeAppEvidence.Frame frame){
+        if(frame.left!=0||frame.top!=0||frame.right!=frame.width||frame.bottom!=frame.height)return false;
+        String prefix="com.xiaomi.shop.plugin.homepage:id/";
+        Set<String> buttons=new LinkedHashSet<String>(),labels=new LinkedHashSet<String>();int messages=0;
+        Set<String> expectedButtons=new LinkedHashSet<String>(java.util.Arrays.asList(
+                "main_bottom_home","main_bottom_category","main_bottom_discovery","main_bottom_cart","main_bottom_mine"));
+        Set<String> expectedLabels=new LinkedHashSet<String>(java.util.Arrays.asList("首页","分类","服务","购物车","我的"));
+        for(NativeAppEvidence.Node n:frame.nodes){
+            if(!usable(frame,n)||n.editable||n.scrollable||!n.scrollDirections.isEmpty()
+                    ||!Boolean.FALSE.equals(n.checkable)||!Boolean.FALSE.equals(n.checked))return false;
+            if((prefix+"msgLayout").equals(n.viewId)){
+                if(++messages>1||!"android.widget.RelativeLayout".equals(n.className)||!"消息".equals(n.description)||!n.clickable)return false;
+            }else if((prefix+"main_view_nav_bar_text").equals(n.viewId)){
+                if(!TEXT.equals(n.className)||n.clickable||!expectedLabels.contains(n.text)||!labels.add(n.text)
+                        ||(long)n.top*3<(long)frame.height*2)return false;
+            }else if(n.viewId.startsWith(prefix)&&expectedButtons.contains(n.viewId.substring(prefix.length()))){
+                if(!"android.view.View".equals(n.className)||!n.clickable||!buttons.add(n.viewId.substring(prefix.length()))
+                        ||(long)n.top*3<(long)frame.height*2)return false;
+            }else return false;
+        }
+        return buttons.equals(expectedButtons)&&labels.equals(expectedLabels);
     }
 
     private static Page unavailable(NativeAppEvidence.Frame frame,String missing){

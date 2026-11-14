@@ -93,7 +93,7 @@ public final class LocalTaskSession {
         if(selection!=null)selection.requireTaskTarget(owner,authorization);
         WebFlightSession.validateSelection(owner,selection);
         final HeptaAccessibilityService service=HeptaAccessibilityService.connected();
-        if (service==null) throw new IllegalStateException("请先启用 Hepta 本地操作无障碍服务");
+        if (service==null) throw new IllegalStateException("请先启用 Hepta 手机助手无障碍服务");
         if (owner==null || owner.trim().isEmpty()) throw new IllegalArgumentException("请先输入要完成的手机任务");
         if (controllerService!=service) { controller=service.taskController(engine); controllerService=service; }
         final long epoch=++generation;

@@ -106,6 +106,19 @@ public final class DecisionGrammar {
                 targets,appLabels,authorization,background,submits,true,null,Collections.<String,String>emptyMap(),taskTools,successEligible);
     }
 
+    /** Narrow nonterminal entry for a verified, finite native readiness phase.
+     * Ordinary task masks still require terminal reporting. The caller binds
+     * this to the same current NativeAppDomain; this factory can emit only wait. */
+    static DecisionGrammar createBoundedWaitAuthorized(String observationId,String currentPackage,
+            ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization,Set<String> taskTools){
+        TaskAuthorization.require(authorization!=null&&authorization.allows("wait"),"bounded wait requires unchanged OWNER authority");
+        if(targets==null||appLabels==null||!Collections.singleton("wait").equals(taskTools))
+            throw new IllegalArgumentException("exact current wait-only projection required");
+        return createInternal(observationId,currentPackage,Collections.<String>emptySet(),Collections.<String>emptySet(),
+                Collections.<String>emptySet(),Collections.<String,ObservedScrollActions>emptyMap(),targets,appLabels,authorization,true,
+                Collections.<String>emptySet(),true,null,Collections.<String,String>emptyMap(),taskTools,false,true);
+    }
+
     /** Explicit v6: supplied installed targets are separate from launcher-open pairs. */
     public static DecisionGrammar createFixedIntentAuthorized(String observationId,String currentPackage,Set<String> shownApps,
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
@@ -182,7 +195,19 @@ public final class DecisionGrammar {
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
             ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization,boolean background,Set<String> submitNodes,boolean imeProtocol,
             Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,Map<String,String> exactPayloads,Set<String> taskTools,boolean successEligible){
-        taskTools=checkedTaskTools(taskTools);
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
+                targets,appLabels,authorization,background,submitNodes,imeProtocol,fixedTargets,exactPayloads,taskTools,successEligible,false);
+    }
+    private static DecisionGrammar createInternal(String observationId,String currentPackage,Set<String> shownApps,
+            Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
+            ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization,boolean background,Set<String> submitNodes,boolean imeProtocol,
+            Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,Map<String,String> exactPayloads,Set<String> taskTools,boolean successEligible,boolean boundedWait){
+        if(boundedWait){
+            if(!background||authorization==null||!authorization.allows("wait")||!imeProtocol||fixedTargets!=null
+                    ||successEligible||!Collections.singleton("wait").equals(taskTools))
+                throw new IllegalArgumentException("bounded wait cannot grant effects or completion");
+            taskTools=Collections.singleton("wait");
+        }else taskTools=checkedTaskTools(taskTools);
         if(observationId==null||!observationId.matches("[0-9a-f]{32}"))throw new IllegalArgumentException("invalid observed id");
         checkPackage(currentPackage);
         if(targets==null||!observationId.equals(targets.observationId)||!currentPackage.equals(targets.packageName))
@@ -254,7 +279,7 @@ public final class DecisionGrammar {
             branches.add(name);rule(rules,name,prefix(name,observationId)+field("package",jsonValue(currentPackage))+ending());
         }
         if(permitted(taskTools,"wait")&&(authorization==null||authorization.allows("wait"))){branches.add("wait");rule(rules,"wait",prefix("wait",observationId)+field("package",jsonValue(currentPackage))+comma()+field("duration_ms","duration")+ending());}
-        branches.add("done");rule(rules,"done",prefix("done",observationId)+field("package",jsonValue(currentPackage))+comma()+field("status","status")+comma()+field("summary","summary-string")+ending());
+        if(permitted(taskTools,"done")){branches.add("done");rule(rules,"done",prefix("done",observationId)+field("package",jsonValue(currentPackage))+comma()+field("status","status")+comma()+field("summary","summary-string")+ending());}
         // A brief state assessment precedes action selection in the generated JSON.
         boolean successAllowed=successEligible&&(authorization==null||authorization.successAllowed());
         rule(rules,"status",alternatives(new TreeSet<String>(java.util.Arrays.asList(successAllowed?new String[]{"success","partial","failure"}:new String[]{"partial","failure"}))));

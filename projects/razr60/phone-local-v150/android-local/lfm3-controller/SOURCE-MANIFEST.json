@@ -1,22 +1,49 @@
 {
   "android_qualified": false,
   "base_source": {
-    "commit": "de39ea3bed06a9ffa6ba4233c2b7b3c1fa0d3ef7",
-    "component_tree": "a49c6d2a22a220db823bbeb3dfc21173a0619d99",
-    "source_manifest_sha256": "8a8dbf8807579119c05debf903cb792171fba94d12dadfb028adc42cb5702d98"
+    "commit": "3affb1f4f72afa87c59bb2b55cbce4c40fbda605",
+    "component_tree": "a81ce6b0fbf22f8eda39ed696b7f0a110ed57b58",
+    "source_manifest_sha256": "c588d738aa17d6e9728b38b69d07cca2e44d3f257394a8efcda961b03485256f"
   },
-  "candidate_status": "capture_headroom_pending_fresh_v69_dual_build_and_phone_acceptance",
+  "candidate_status": "bounded_home_loading_pending_fresh_v69_dual_build_and_phone_acceptance",
   "candidate_version_assigned": true,
-  "complete_source_files": 1838,
+  "complete_source_files": 1846,
   "current_validation": {
     "cleanup_scope": "Inherited generation group/marker scope only; unknown process visibility, identity, kernel API or deadline fails closed. Numeric group probe uses signal0 only; real TERM/KILL uses held proc directory FDs. Arbitrary setsid/setpgid/UID or namespace escape is not claimed covered.",
+    "final_host_receipts": {
+      "canonical": {
+        "bytes": 143368,
+        "path": "/home/alex/hepta-v69-xiaomi-loading-261e-20261114-r1/evidence/canonical-host-final-r2/HOST-CHECKS.json",
+        "sha256": "90717d53b4b10a5db814b26a7a20f6d4c45415bc74c2fd6d0c0a9f711a8ed2a3"
+      },
+      "loading": {
+        "bytes": 1066129,
+        "path": "/home/alex/hepta-v69-xiaomi-loading-261e-20261114-r1/evidence/final-default-gate-r2/RESULT.json",
+        "sha256": "1f60c5c2afa11423bb66c341b3781eb0695ecabdecfb6baee4a2d0763f0a9a09"
+      },
+      "qualification": {
+        "bytes": 1306,
+        "path": "/home/alex/hepta-v69-xiaomi-loading-261e-20261114-r1/evidence/qualification-fix-r2/VALIDATION.json",
+        "sha256": "877458534ba111adddc125b7e0712a5ddadd5850933548f2e9b42e7c5d1c43cb"
+      },
+      "query": {
+        "bytes": 40585,
+        "path": "/home/alex/hepta-v69-xiaomi-loading-261e-20261114-r1/evidence/query40-final/RESULT.json",
+        "sha256": "cc441db8549c2dcbd64a8daf34545063ba43b39259f45b8b48d9182383ebe045"
+      },
+      "shopping": {
+        "bytes": 29671,
+        "path": "/home/alex/hepta-v69-xiaomi-loading-261e-20261114-r1/evidence/shopping-host-final/RESULT.json",
+        "sha256": "f1cd8788fbb3a29bd56829a95733b3f221e3769edf005acb0aad3e347c4434dc"
+      }
+    },
     "full_android_build": false,
     "historical_phone_receipts_apply_to_original_heads_only": true,
     "native_flight_business_verified": false,
     "native_product_quote_business_verified": false,
     "original_failures_preserved": true,
     "phone_tested": false,
-    "strict_host_gate": "Fresh original canonical108, journal19, helper4, nine retained Mac extra groups and all seven native gates; fresh Android compile, original-signature assembly and ordinary phone acceptance."
+    "strict_host_gate": "Current source passed full canonical 108, qualification 144, query 40/187, shopping 43/50 plus quote 28/122, and default loading 50/195; R13 dual build and phone business acceptance remain required."
   },
   "files": [
     {
@@ -37,7 +64,7 @@
     {
       "bytes": 2592,
       "path": "AndroidManifest.xml",
-      "sha256": "f0e795806ba2ce7d117825cfb1702bf4735308a744bf9d202f0b0eb76e967fbd"
+      "sha256": "525748cb9cab5693f4c55570ec93192e7990065d1fe2e94629990195fa436e69"
     },
     {
       "bytes": 12777,
@@ -2655,16 +2682,6 @@
       "sha256": "fa8c93f30ea6622aa3d70efe88a497bcdf84b1c039bf59d3e5f9662fd3308fbe"
     },
     {
-      "bytes": 1696,
-      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
-      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
-    },
-    {
-      "bytes": 0,
-      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
-    {
       "bytes": 3187,
       "path": "host-evidence/code5-r1/grammar/all.gbnf",
       "sha256": "eb3a4ab7b3289e4742555499dd26e1998b7d03872db2cbb91d093201409790fb"
@@ -2703,6 +2720,16 @@
       "bytes": 1882,
       "path": "host-evidence/code5-r1/grammar/system.gbnf",
       "sha256": "5e844f20ef35b582bc40acd3557ebad7058267aad54d1bd12579a4158ec9e87e"
+    },
+    {
+      "bytes": 1696,
+      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
+      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
+    },
+    {
+      "bytes": 0,
+      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "bytes": 0,
@@ -5425,11 +5452,6 @@
       "sha256": "50d0b9a73b4c2e08f0ce0dd5df953637bd69eb519bce0dcd4e5b9001fddfef14"
     },
     {
-      "bytes": 3066,
-      "path": "provenance/mobimind-worker-r4-build.json",
-      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
-    },
-    {
       "bytes": 1257,
       "path": "provenance/mobimind-worker-r4/CMakeLists.txt",
       "sha256": "25260a2133c91a849287e8b09211ead6524e0f56e9ba1685af1a3be1011a197f"
@@ -5538,6 +5560,11 @@
       "bytes": 3372,
       "path": "provenance/mobimind-worker-r4/tests/util_contract.cpp",
       "sha256": "bd2ac495f8dc7c5188dee6bbae71446b57e90edc054ce5ab8f5a0708037a1b3f"
+    },
+    {
+      "bytes": 3066,
+      "path": "provenance/mobimind-worker-r4-build.json",
+      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
     },
     {
       "bytes": 607,
@@ -5960,9 +5987,9 @@
       "sha256": "27c88417bbfffc9b67d7a0a4cef896c1499b56fadb326e4985c84f5dd2cb0ef8"
     },
     {
-      "bytes": 30605,
+      "bytes": 33063,
       "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
-      "sha256": "236d22187abfe777705d337241e310dd617b1c4c21ae39df4f52d960a1e106ca"
+      "sha256": "ba5de0e5819a7684fd0f3692969ae5986052cb137ccaf0276c3a8d7005b672f6"
     },
     {
       "bytes": 904,
@@ -5980,9 +6007,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 240718,
+      "bytes": 241276,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "7662d0ed749fb700e316b0fadc2c1ac8cf603b04a403178645436537c6652275"
+      "sha256": "8238e460b3d63bb52e952072191eb4267ddf7e5456b17771cb701658001f0cfa"
     },
     {
       "bytes": 711,
@@ -6015,19 +6042,19 @@
       "sha256": "81447620dbc2a789bba8c22d561c768144f4d5619859b202d07cd83660a05dce"
     },
     {
-      "bytes": 142285,
+      "bytes": 142505,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "81ce744ac91f59a7c61a267c8f1217a388c3138d44d84e0e6d595a03389c6994"
+      "sha256": "22772f5c8f5cbb3d5f0533062089182eda2bdba3b64617f4bb4c45fc5ee8b6d5"
     },
     {
       "bytes": 46301,
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
-      "sha256": "2d429efc476daf8e89b447a49160cfb0ee180928fe6c545f079c387950c5094e"
+      "sha256": "a18389449b2c737233004dfab8bcbd70d5e079752b6c414e0435967d82ac20f5"
     },
     {
       "bytes": 50150,
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "sha256": "3dd75be5e05768e321127a4552655dd516be38121ebc75a2f8da26725bafd1d8"
+      "sha256": "2383a7cc5a290fcf559a4e786ea307e5157fa1799b4f7adcdcf4253029ea7f27"
     },
     {
       "bytes": 4417,
@@ -6080,9 +6107,9 @@
       "sha256": "4d5366a8fe0b603405ade16b2592c21d1fcb6d972d0e8c8105788cdf26cf72ce"
     },
     {
-      "bytes": 6999,
+      "bytes": 8453,
       "path": "src/org/trillionnium/hepta/local/NativeAppDomain.java",
-      "sha256": "41c14da08ef4b38322c74f62c6ed62d6c6c569e425024b250544bf354526dda5"
+      "sha256": "3f7684d83628079144c5e37ca06c3468174d0bee3700160ea05dfdde3187474f"
     },
     {
       "bytes": 14397,
@@ -6100,9 +6127,9 @@
       "sha256": "a2d0863b9b30d836f1901ba8304e871de4c68e9b1e7722722241bbd9a36064de"
     },
     {
-      "bytes": 42796,
+      "bytes": 44866,
       "path": "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "sha256": "5a09a178d8f965e488463405a5b15aebf6ed68a7e885a3c0578959b6a108e2c5"
+      "sha256": "2f9dae5d39804f725aabc2df666f288f53760f120c3853db1a259fa11b1c9815"
     },
     {
       "bytes": 2562,
@@ -6115,9 +6142,9 @@
       "sha256": "c000f56cbdf687d8f42657d3b0263493adf11878c6350f7a8624ea4731216912"
     },
     {
-      "bytes": 28940,
+      "bytes": 31213,
       "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
-      "sha256": "c25c72d850e6e11f6b273c086b3dd363f8f87dd68604b1d47e045593f041e6ea"
+      "sha256": "c0f04ceeaf56758db268b619ad2fb4e12a0c0d70c99c1523a9964471a0681805"
     },
     {
       "bytes": 21274,
@@ -6960,16 +6987,6 @@
       "sha256": "44bc7ee0c74dff2a8772be64b54ef2d2ba1cf9574c6f144320e94582e24e5542"
     },
     {
-      "bytes": 29532,
-      "path": "tests/completion-status/CompletionStatusHostTest.java",
-      "sha256": "f25f48a5f04f0cebd5dcf84c64a26be6055cdb7d79bb0879a7f5f5a9241001b2"
-    },
-    {
-      "bytes": 148856,
-      "path": "tests/completion-status/fixtures/v49-premature-success-trace.json",
-      "sha256": "1e07f76bfff89c2038d2f0eaa3b6108fadd9e6e8efbd2dd9cc43d1fac1e3c12c"
-    },
-    {
       "bytes": 31779,
       "path": "tests/completion/TaskCompletionGateHostTest.java",
       "sha256": "a6a93a12cef3775d4115372e49e53064341064c4f880f7444e4634dc3bdf630f"
@@ -7013,6 +7030,16 @@
       "bytes": 22278,
       "path": "tests/completion/test_notes_completion.py",
       "sha256": "db6066aa0ee987eecb66ba2ba88bef191ab49dfdc37527ac4eea5701d3b4678a"
+    },
+    {
+      "bytes": 29532,
+      "path": "tests/completion-status/CompletionStatusHostTest.java",
+      "sha256": "f25f48a5f04f0cebd5dcf84c64a26be6055cdb7d79bb0879a7f5f5a9241001b2"
+    },
+    {
+      "bytes": 148856,
+      "path": "tests/completion-status/fixtures/v49-premature-success-trace.json",
+      "sha256": "1e07f76bfff89c2038d2f0eaa3b6108fadd9e6e8efbd2dd9cc43d1fac1e3c12c"
     },
     {
       "bytes": 18220,
@@ -7215,6 +7242,11 @@
       "sha256": "4d5642e1f1cd075093bb8cd780a02a22b8b5e1e5371df01018622f71e467a1e2"
     },
     {
+      "bytes": 3303,
+      "path": "tests/native-app/legacy-boundary/NativeAppSession.java",
+      "sha256": "e21938a0c4816e9e03b9d2163a5aee42799e144875292d9a515acd9c2f9e5c76"
+    },
+    {
       "bytes": 717,
       "path": "tests/native-app-facts/LegacyNodeSerialization.java",
       "sha256": "b7a21844bf1cd723c868a83235483d5301df86008c274876a2913de6a2e000cc"
@@ -7380,11 +7412,6 @@
       "sha256": "d4a43a59f1315d17692783e2ef44591e288d9e48bb3e6d67d68e46a5cb553fb1"
     },
     {
-      "bytes": 3303,
-      "path": "tests/native-app/legacy-boundary/NativeAppSession.java",
-      "sha256": "e21938a0c4816e9e03b9d2163a5aee42799e144875292d9a515acd9c2f9e5c76"
-    },
-    {
       "bytes": 1523,
       "path": "tests/native-ctrip-calendar/LegacyCalendarReplayHostTest.java",
       "sha256": "c52c0ad64a65f9b6639716d65cadd4cb7041cb0c55203d36549969a9d326986a"
@@ -7438,6 +7465,46 @@
       "bytes": 11074,
       "path": "tests/native-observation-events/run_host.py",
       "sha256": "86729b665b5219e113ce12e3dd9b3bf31f82e10ee54d9dc2d9614ed8a34c7244"
+    },
+    {
+      "bytes": 16857,
+      "path": "tests/native-xiaomi-home-loading/LoadingSessionCases.fragment",
+      "sha256": "8eaace63632804555f6e93a4885c17e7b0f6bfa688142266e4c6735c6e995a14"
+    },
+    {
+      "bytes": 14407,
+      "path": "tests/native-xiaomi-home-loading/LoadingWindowBridgeHost.template",
+      "sha256": "90d07724272c61038768d92ee0a1a5db88529bfffa4a60459339ec852ea95d9e"
+    },
+    {
+      "bytes": 3915,
+      "path": "tests/native-xiaomi-home-loading/README.md",
+      "sha256": "1c48aff521fdffe420ad098cec972c37f567ea039caf54dbe0ba724046e78bb3"
+    },
+    {
+      "bytes": 1201,
+      "path": "tests/native-xiaomi-home-loading/fixtures/PROVENANCE.json",
+      "sha256": "a93934b3cf5142c003248813189e652b6de76c1d953599a6a11604778a5992a0"
+    },
+    {
+      "bytes": 2055,
+      "path": "tests/native-xiaomi-home-loading/fixtures/actual-binding.json",
+      "sha256": "3f36685e033f89cca6fd9c030c37e8dca5ecca283a171f73a2b518002b86fd20"
+    },
+    {
+      "bytes": 18232,
+      "path": "tests/native-xiaomi-home-loading/fixtures/actual-observation.json",
+      "sha256": "64183d754dd2a6aa0c84d3c02a01a7560535b6e2fd30ef48ffff0d4107e8c191"
+    },
+    {
+      "bytes": 6631,
+      "path": "tests/native-xiaomi-home-loading/fixtures/actual-page.json",
+      "sha256": "6d5a588bf2639b1d6dce6064d86531ea8b134c22dc930d35ee43d88e2e47421c"
+    },
+    {
+      "bytes": 17171,
+      "path": "tests/native-xiaomi-home-loading/run_host.py",
+      "sha256": "02bf60f91704c924250c705ce2c30972fd5001ce3b620a580b481a890dd70b1d"
     },
     {
       "bytes": 2395,
@@ -8130,9 +8197,9 @@
       "sha256": "92348b922244a116873ae9a7620f17e60dd1ad45cf23c7426ee2ef72b6b51a7c"
     },
     {
-      "bytes": 17865,
+      "bytes": 17918,
       "path": "tests/qualification-scope/prepare_fixture.py",
-      "sha256": "4fd2b08e45be0f519e78fd59c1e34865ea590f93cfc5084ad1bbe10931ee7724"
+      "sha256": "5ae980e523e93dec247fed252360b6d2fb43e948b12e9f13e12a4013c8b1346c"
     },
     {
       "bytes": 2997,
@@ -8535,9 +8602,9 @@
       "sha256": "447b1375487da2775a4ef6801587c5c7a4f8b45d0958c59f5a7f945951dfe5ff"
     },
     {
-      "bytes": 13035,
+      "bytes": 13063,
       "path": "tests/shopping-readonly-observation/run_host.py",
-      "sha256": "031991b97d0b6ffebc16a2a26fd276fa17e1b187b1332ef844ea8fe9296cd627"
+      "sha256": "7c89347d07de4f4a34ef6e1ea7d08dd34d3898d996486921fad3bc9f58efed13"
     },
     {
       "bytes": 4938,
@@ -8955,9 +9022,9 @@
       "sha256": "c2c3a6455b0344b8f113d907f8ec0110abd2427785dad3b660b41f8b556ed0ca"
     },
     {
-      "bytes": 42654,
+      "bytes": 42718,
       "path": "tests/web-flight/run_query_host_tests.py",
-      "sha256": "e770f24c7bb51ffdd3a395b452583111151392c83e532e93b17ccfe6d6d8a738"
+      "sha256": "1311d59b90be58d6d4c53fb891fe454f998f5bb21642dfe4c2ab05ff12af631d"
     },
     {
       "bytes": 5108,
@@ -9030,9 +9097,9 @@
       "sha256": "a513114211897bb620ecbbab38aadcce3a9137c58071df269cca7f828034118e"
     },
     {
-      "bytes": 19800,
+      "bytes": 19827,
       "path": "tools/run_host_checks.py",
-      "sha256": "0f5b764d9324a0712d56cd59a23b77c09f8362cd2589071f89aa0ee8d6072dc1"
+      "sha256": "6b42920533f9cd241fd7a3d76af1c97dfd3a5d6f8225e898f75fc58ee474c7d8"
     },
     {
       "bytes": 1243,
@@ -10614,17 +10681,37 @@
     "repository_workflow_unchanged": true,
     "unique_complete_hook_assertion_preserved": true
   },
+  "host_fixture_dependency_amendment": {
+    "actual_production_sources_added_to_compile_lists": true,
+    "assertions_deleted_or_relaxed": false,
+    "cause": "Full Controller compilation in qualification-scope omitted the actual ObservationStabilityGate dependency. Current native loading Domain/Controller additionally need the real NativeXiaomiProductPage in explicit isolated class lists.",
+    "changed_paths": [
+      "tests/qualification-scope/prepare_fixture.py",
+      "tools/run_host_checks.py",
+      "tests/web-flight/run_query_host_tests.py",
+      "tests/shopping-readonly-observation/run_host.py"
+    ],
+    "original_artifact_zip_sha256": "9c6db663fce8d1e09f8c242b218ef9da1f854913b12a5bee958446f07b168187",
+    "original_failure_preserved": true,
+    "parent_ci_head": "3affb1f4f72afa87c59bb2b55cbce4c40fbda605",
+    "parent_ci_job": 132517885372,
+    "parent_ci_run": 43616923000,
+    "production_logic_changed_by_fixture_fix": false,
+    "query_input_count": 57,
+    "shopping_input_count": 56
+  },
   "integration_sources": {
-    "canonical_runner_sha256": "0f5b764d9324a0712d56cd59a23b77c09f8362cd2589071f89aa0ee8d6072dc1",
+    "canonical_runner_sha256": "6b42920533f9cd241fd7a3d76af1c97dfd3a5d6f8225e898f75fc58ee474c7d8",
     "external_repository_workflow": {
       "base_commit": "4a970197cf9d71fab79a3749cd47cc867d927c4b",
       "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
-      "git_blob": "d8947ea76bbf7545596bbf695f21a23c0379d41f",
+      "git_blob": "ad1201ec1ecb1bb9633cf360e3c5eac95ec44fe3",
       "path": ".github/workflows/hepta-local-android.yml",
-      "sha256": "2f947aa9b37f06767f9ed41c06782d2c6759f80f5475b581b230042a45e030d6"
+      "prior_git_blob": "d8947ea76bbf7545596bbf695f21a23c0379d41f",
+      "sha256": "506011642ccd773e5d435eafd3807c881b7af775a41c777b87bcc36fe550961e"
     },
-    "native_host_gate_contract_sha256": "94a5b9de5085a9a359429b648b11d0ef5247ea9a9a927648ab05757e0d9996b2",
-    "normal_git_parent": "de39ea3bed06a9ffa6ba4233c2b7b3c1fa0d3ef7",
+    "native_host_gate_contract_sha256": "27b76f1251658e66d488f89f4a394d82d3b8307c2161851934384536cbf02f22",
+    "normal_git_parent": "3affb1f4f72afa87c59bb2b55cbce4c40fbda605",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -10767,5 +10854,35 @@
     "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
   },
   "version_code": 69,
-  "version_name": "0.69.0-native-background-runtime"
+  "version_name": "0.69.0-native-background-runtime",
+  "xiaomi_home_loading_amendment": {
+    "accessibility_label": "Hepta 手机助手",
+    "automatic_action_replay": false,
+    "cause": "Actual complete first Xiaomi frame contained only navigation and message icon; old parser stopped before content loaded and old same-package background window replacement permanently refused scope.",
+    "maximum_model_issued_loading_waits": 2,
+    "native_host_gate_contract_sha256": "27b76f1251658e66d488f89f4a394d82d3b8307c2161851934384536cbf02f22",
+    "new_android_build": false,
+    "new_host_assertions": 195,
+    "new_host_cases": 50,
+    "new_host_gate": "tests/native-xiaomi-home-loading/run_host.py",
+    "new_phone_execution": false,
+    "observed_loading_budget_ms": 15000,
+    "ordinary_grammar_terminal_rule_retained": true,
+    "original_phone_failure_preserved": true,
+    "package_components_permissions_changed": false,
+    "production_changed_paths": [
+      "AndroidManifest.xml",
+      "src/org/trillionnium/hepta/local/DecisionGrammar.java",
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "src/org/trillionnium/hepta/local/LocalTaskSession.java",
+      "src/org/trillionnium/hepta/local/MainActivity.java",
+      "src/org/trillionnium/hepta/local/NativeAppDomain.java",
+      "src/org/trillionnium/hepta/local/NativeAppSession.java",
+      "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java"
+    ],
+    "repository_ci_gate_added": true,
+    "same_owned_background_package_window_generation_requires_fresh_observation_and_model": true,
+    "wall_clock_fifteen_second_guarantee": false
+  }
 }

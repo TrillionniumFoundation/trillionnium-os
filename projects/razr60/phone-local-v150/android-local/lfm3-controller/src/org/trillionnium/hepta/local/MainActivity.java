@@ -275,7 +275,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             boolean consumed=false;
             try{
                 if(tasks.isRunning()||tasks.isBlocked()||engine.isBusy())throw new IllegalStateException("已有本地请求或退出状态待确认");
-                if(HeptaAccessibilityService.connected()==null)throw new IllegalStateException("请先正常启用 Hepta 本地操作无障碍服务");
+                if(HeptaAccessibilityService.connected()==null)throw new IllegalStateException("请先正常启用 Hepta 手机助手无障碍服务");
                 PrivateDebugTask request=PrivateDebugTask.consume(this,nonce);
                 consumed=true;
                 if(scopeLaunchError!=null)throw new IllegalStateException(scopeLaunchError);
