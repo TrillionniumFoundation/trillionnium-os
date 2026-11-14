@@ -172,6 +172,14 @@ class BuildFlavorTests(unittest.TestCase):
                 with self.subTest(namespace=namespace,value=value):
                     self.assertIs(compiled_debuggable(dump),expected)
 
+    def test_compiled_namespace_hostname_is_literal(self):
+        for hostname in ('schemasXandroid.com', 'schemas.androidXcom', 'schemasXandroidXcom'):
+            for value in ('false', 'true', '(type 0x12)0x0', '(type 0x12)0xffffffff'):
+                dump=('      E: application (line=17)\n        A: http://'+hostname+
+                      '/apk/res/android:debuggable(0x0101000f)='+value+'\n')
+                with self.subTest(hostname=hostname,value=value),self.assertRaises(RuntimeError):
+                    compiled_debuggable(dump)
+
     def test_missing_ambiguous_string_or_child_debug_flags_fail(self):
         head='      E: application (line=17)\n'
         attr='        A: http://schemas.android.com/apk/res/android:debuggable(0x0101000f)=true\n'

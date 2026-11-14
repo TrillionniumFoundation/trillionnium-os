@@ -97,7 +97,7 @@ def compiled_debuggable(manifest_dump):
         if "android:debuggable" in stripped:
             # The pinned Linux AAPT2 uses typed PrettyPrint (unquoted true/false);
             # SDK AAPT2 also has the explicit TYPE_INT_BOOLEAN hexadecimal form.
-            match = re.fullmatch(r"A: (?:android|http://schemas.android.com/apk/res/android):debuggable\(0x0101000f\)=(true|false|\(type 0x12\)0x0|\(type 0x12\)0xffffffff)", stripped)
+            match = re.fullmatch(r"A: (?:android|http://schemas\.android\.com/apk/res/android):debuggable\(0x0101000f\)=(true|false|\(type 0x12\)0x0|\(type 0x12\)0xffffffff)", stripped)
             if match is None or active is None or indent != active + 2:
                 raise RuntimeError("Malformed or non-application compiled debugging attribute")
             values.append(match.group(1) in ("true", "(type 0x12)0xffffffff"))
