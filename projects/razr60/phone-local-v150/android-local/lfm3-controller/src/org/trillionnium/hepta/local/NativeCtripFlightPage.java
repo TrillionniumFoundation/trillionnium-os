@@ -26,6 +26,7 @@ final class NativeCtripFlightPage {
     // deliberately exposes no installed-identity override or version fallback.
     static final String HOME="ctrip_home",FORM="ctrip_single_flight_form",CALENDAR="ctrip_native_calendar";
     static final String RESULTS="ctrip_single_flight_results",OVERLAY="ctrip_research_overlay",UNAVAILABLE="unavailable";
+    static final String LOGIN_REQUIRED="ctrip_login_required";
     private static final String PREFIX="ctrip.android.view:id/";
     private static final Pattern FORM_DATE=Pattern.compile("([0-9]{1,2})月([0-9]{1,2})日(今天|明天|后天|周[一二三四五六日天])");
     private static final Pattern MONTH=Pattern.compile("([0-9]{4})年([0-9]{1,2})月");
@@ -164,6 +165,7 @@ final class NativeCtripFlightPage {
         if(!frame.metadataObserved||frame.windowType!=1)return empty(frame,UNAVAILABLE,"actual_application_window_metadata_missing");
         if(!frame.collectionComplete||frame.nodesTruncated)return empty(frame,UNAVAILABLE,"actual_native_collection_incomplete");
         try{
+            if(hasLoginMarker(frame))return loginRequired(frame);
             // This sheet leaves the underlying native flight tree exposed. Its
             // mere presence vetoes every quote in that same observation.
             if(anyRole(frame,"列表页头部重新搜索")||anyRole(frame,"单程TripSwitcherCity")||anyRole(frame,"单程TripSwitcherDate"))
@@ -192,6 +194,51 @@ final class NativeCtripFlightPage {
             return empty(frame,UNAVAILABLE,"native_page_provider_not_recognized");
         }catch(IllegalArgumentException rejected){return empty(frame,UNAVAILABLE,"native_page_fields_rejected: "+bounded(rejected.getMessage(),180));}
         catch(DateTimeException rejected){return empty(frame,UNAVAILABLE,"native_calendar_value_rejected: "+bounded(rejected.getMessage(),180));}
+    }
+
+    /** Read only the observed v1779 login obstruction. Account identifiers are
+     * deliberately not read. Recognition creates no login, consent, registration,
+     * return-navigation or result authority. */
+    private static boolean hasLoginMarker(NativeAppEvidence.Frame f){
+        for(NativeAppEvidence.Node n:f.nodes)if((PREFIX+"bLoginBtn").equals(n.viewId)
+                ||(PREFIX+"tvLoginMiddle").equals(n.viewId)||(PREFIX+"tvServiceProtocolRemark").equals(n.viewId))return true;
+        return false;
+    }
+    private static Page loginRequired(NativeAppEvidence.Frame f){
+        need(findId(f,PREFIX+"bt_submit_inquire").isEmpty()&&findId(f,PREFIX+"home_grid_flight_widget").isEmpty()
+                &&findId(f,PREFIX+"calendar_month_title_left_tv").isEmpty()&&!anyRole(f,"单程列表页")
+                &&!anyRole(f,"列表页头部重新搜索")&&!anyRole(f,"单程TripSwitcherCity")&&!anyRole(f,"单程TripSwitcherDate"),
+                "login must not coexist with a flight form, calendar, home or result");
+        NativeAppEvidence.Node button=loginNode(f,"bLoginBtn","android.widget.Button","本机号码一键登录","",true);
+        NativeAppEvidence.Node subtitle=loginNode(f,"tvPersonalizedSubtitle","android.widget.TextView","账号安全，放心登录","",false);
+        NativeAppEvidence.Node other=loginNode(f,"tvLoginMiddle","android.widget.TextView","其他登录方式","",true);
+        NativeAppEvidence.Node select=loginNode(f,"rlSelectIcon","android.widget.RelativeLayout","","",true);
+        NativeAppEvidence.Node icon=loginNode(f,"ivSelectIcon","android.widget.ImageView","","勾选服务协议和个人信息保护指引",false);
+        NativeAppEvidence.Node remark=loginNode(f,"tvServiceProtocolRemark","android.widget.TextView","阅读并同意携程的",
+                "阅读并同意携程的，服务协议和个人信息保护指引，以及《中国电信认证服务条款》，未注册手机号将自动注册",false);
+        NativeAppEvidence.Node protocol=loginNode(f,"tvServiceProtocol","android.widget.TextView","《服务协议》","",true);
+        NativeAppEvidence.Node privacy=loginNode(f,"tvServicePolicy","android.widget.TextView","《个人信息保护指引》","",true);
+        NativeAppEvidence.Node carrier=loginNode(f,"tvCarrierServicePolicy","android.widget.TextView","《中国电信认证服务条款》","",true);
+        String scope=parent(button.path);
+        for(NativeAppEvidence.Node n:java.util.Arrays.asList(button,subtitle,other,select,remark,protocol,privacy,carrier))
+            need(scope.equals(parent(n.path))&&"android.widget.ScrollView".equals(n.parentClass),"same observed login container required");
+        need(icon.within(select)&&parent(icon.path).equals(select.path)&&select.className.equals(icon.parentClass),
+                "same observed agreement indicator required");
+        need(subtitle.bottom<=button.top&&button.bottom<=other.top&&other.bottom<=select.top
+                &&select.right<=remark.left&&remark.right<=protocol.left&&protocol.right<=privacy.left
+                &&privacy.bottom<=carrier.top,"ordered nonoverlapping login anchors required");
+        return empty(f,LOGIN_REQUIRED,"native_ctrip_login_requires_user_handling");
+    }
+    private static NativeAppEvidence.Node loginNode(NativeAppEvidence.Frame f,String id,String cls,String text,String description,boolean clickable){
+        NativeAppEvidence.Node value=null;
+        for(NativeAppEvidence.Node n:f.nodes)if((PREFIX+id).equals(n.viewId)){
+            need(value==null,"ambiguous native login anchor");value=n;
+        }
+        need(f.usable(value)&&cls.equals(value.className)&&text.equals(value.text)&&description.equals(value.description)
+                &&value.enabled&&!value.password&&!value.editable&&!value.scrollable&&value.clickable==clickable
+                &&Boolean.FALSE.equals(value.selected)&&Boolean.FALSE.equals(value.checkable)&&Boolean.FALSE.equals(value.checked),
+                "exact usable native login anchor required: "+id);
+        return value;
     }
 
     /** Resolve only the observed v1779 sticky/content duplication. All original

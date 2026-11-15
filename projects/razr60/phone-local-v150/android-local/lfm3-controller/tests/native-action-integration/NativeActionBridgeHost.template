@@ -145,9 +145,46 @@ final class NativeActionBridgeHost {
     static String message(Throwable e){return e.getMessage()==null?e.getClass().getSimpleName():e.getMessage();}
     static String sha(byte[] raw){try{byte[] b=MessageDigest.getInstance("SHA-256").digest(raw);StringBuilder s=new StringBuilder();for(byte v:b)s.append(String.format(Locale.ROOT,"%02x",v&255));return s.toString();}catch(Exception e){throw new IllegalStateException(e);}}
     static ObservedScrollActions readScrollActions(AccessibilityNodeInfo n){return n.data.scrollOverride!=null?n.data.scrollOverride:ObservedScrollActions.observed(n.isScrollable()?Arrays.asList("up","down"):Collections.<String>emptyList());}
-    static ObservedImeEnter readImeEnter(AccessibilityNodeInfo n){return n.data.imeOverride==null?ObservedImeEnter.UNKNOWN:n.data.imeOverride;}
+    static ObservedImeEnter readImeEnter(AccessibilityNodeInfo n){
+        if(n.data.imeOverride!=null)return n.data.imeOverride;
+        return ObservedImeEnter.ABSENT.fingerprintInput().equals(n.s("ime_enter"))?ObservedImeEnter.ABSENT:ObservedImeEnter.UNKNOWN;
+    }
     static boolean hasAction(AccessibilityNodeInfo n,int action){return action==AccessibilityNodeInfo.ACTION_CLICK&&n.b("action_click");}
-    static ObservedChildText.Result observedChildText(AccessibilityNodeInfo n,boolean bounded,GraphBudget budget){checkReadBudget(budget);return ObservedChildText.notApplicable();}
+    static ObservedChildText.Result observedChildText(AccessibilityNodeInfo n,boolean bounded,GraphBudget budget){
+        checkReadBudget(budget);
+        // Explicit fake Android endpoint: inputType is zero. For a visible
+        // childless clickable blank, run the real empty-leaf collector instead
+        // of inventing not_applicable. Other fixture label boundaries stay as before.
+        Rect bounds=new Rect();n.getBoundsInScreen(bounds);
+        if(n.getChildCount()!=0||!n.isVisibleToUser()||bounds.isEmpty()||!n.isClickable()||!hasAction(n,AccessibilityNodeInfo.ACTION_CLICK)
+                ||n.isEditable()||n.isPassword()||!string(n.getText()).trim().isEmpty()||!string(n.getContentDescription()).trim().isEmpty())
+            return ObservedChildText.notApplicable();
+        return ObservedChildText.collect(n,new ObservedChildText.Reader<AccessibilityNodeInfo>(){
+            public ObservedChildText.Metadata metadata(AccessibilityNodeInfo node){return new ObservedChildText.Metadata(true,true,node.isClickable(),hasAction(node,AccessibilityNodeInfo.ACTION_CLICK),node.isEditable(),node.isPassword(),true);}
+            public String text(AccessibilityNodeInfo node){return string(node.getText());}
+            public String description(AccessibilityNodeInfo node){return string(node.getContentDescription());}
+            public String identity(AccessibilityNodeInfo node){return baseNodeSignature(node);}
+            public String viewId(AccessibilityNodeInfo node){return string(node.getViewIdResourceName());}
+            public int childCount(AccessibilityNodeInfo node){return node.getChildCount();}
+            public AccessibilityNodeInfo child(AccessibilityNodeInfo node,int index){throw new AssertionError("childless fake endpoint acquired a child");}
+            public void release(AccessibilityNodeInfo node){throw new AssertionError("childless fake endpoint released borrowed root");}
+        });
+    }
+    static String actualBlankLeafReferenceSha(Map<String,Object> facts){
+        AccessibilityNodeInfo node=new AccessibilityNodeInfo(new NodeData(facts));
+        try{
+            NodeRef reference=new NodeRef(node,observedChildText(node,false,null),readScrollActions(node));
+            try{return hash(reference.signature);}finally{reference.node.recycle();}
+        }finally{node.recycle();}
+    }
+    static boolean recordedRejectionPresent(Fixture f){return f.work.nativeActionRejection!=null;}
+    static String actualComparisonDisposition(Fixture f)throws Exception{
+        Graph fresh=f.graph(f.fresh,f.work.budget());
+        try{f.service.compareNativeAction(f.task,f.service.current,f.action,fresh,f.work);return "compatible";}
+        catch(StaleObservation changed){return "stale";}
+        catch(IllegalArgumentException hard){return "hard_refusal";}
+        finally{fresh.close();}
+    }
     // MORE_DECLARATIONS
     void requireBackgroundObservation(String task,PhoneObservation frame){if(!owns(task)||frame!=current)throw new StaleObservation("fake background/current replaced");background.requireActive();}
     String targetBindingError(PhoneObservation p,ActionDecision a,ObservedTargetLabels labels){
@@ -248,7 +285,8 @@ final class NativeActionBridgeHost {
                 try{
                     boolean useful=!string(n.getText()).isEmpty()||!string(n.getContentDescription()).isEmpty()||!string(n.getViewIdResourceName()).isEmpty()||n.isClickable()||n.isEditable()||n.isScrollable();
                     if(n.isVisibleToUser()&&useful){
-                        ref=new NodeRef(n,ObservedChildText.notApplicable(),readScrollActions(n));retained=new PhoneObservation.Node();
+                        ObservedChildText.Result childText=observedChildText(n,true,budget);
+                        ref=new NodeRef(n,childText,readScrollActions(n));retained=new PhoneObservation.Node();retained.childText=childText;
                         retained.id=ids.get(path);retained.packageName=string(n.getPackageName());retained.className=string(n.getClassName());retained.viewId=string(n.getViewIdResourceName());
                         retained.text=string(n.getText());retained.description=string(n.getContentDescription());retained.nativeTreePath=path;retained.nativeParentClass=(String)values.nodes.get(path).get("parent_class");
                         retained.selected=n.isSelected();retained.checkable=n.isCheckable();retained.checked=n.isChecked();retained.bounds=new Rect();n.getBoundsInScreen(retained.bounds);

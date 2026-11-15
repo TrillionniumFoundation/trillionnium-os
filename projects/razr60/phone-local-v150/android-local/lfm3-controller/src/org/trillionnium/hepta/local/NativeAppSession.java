@@ -117,6 +117,12 @@ final class NativeAppSession {
         Map<String,Object> view=NativeAppEvidence.map(),result=null;List<String> missing=new ArrayList<String>();boolean back=false;
         String phase=flight!=null?flight.phase:product.phase;
         if(!frame.metadataObserved||frame.windowType!=1||!frame.collectionComplete||frame.nodesTruncated){missing.add("complete_actual_native_application_frame_required");}
+        else if("ctrip_login_required".equals(phase)){
+            view.put("observed_login_page",true);view.put("requires_user_handling",true);
+            view.put("credentials_or_agreement_actions_available",false);
+            view.put("next_goal","当前携程为本机号码登录页；尚未取得可核验的机票结果。结束 partial 或 failure，如实说明当前登录阻碍，需要用户自行处理。");
+            missing.add(flight.missing);
+        }
         else if(NativeXiaomiProductPage.HOME_LOADING.equals(phase)){
             view.putAll(product.modelView());
             long elapsed=frame.capturedElapsedMs-productHomeLoadingSince;
@@ -169,9 +175,14 @@ final class NativeAppSession {
                 back=true;purposes.put("back","dismiss_research_sheet");missing.add("overlay_blocks_all_underlying_results");
             }else if(NativeCtripFlightPage.RESULTS.equals(phase)){
                 LocalDate shown=lastQueryDate==null?null:flight.displayedMonthDay(lastQueryDate);view.put("observed_departure_date",shown==null?null:shown.toString());
-                if(lastQueryProof!=null&&goal.departureDate.equals(lastQueryDate)&&goal.departureDate.equals(shown)&&!flight.quotes.isEmpty()){
-                    result=flightResult(frame);List<Map<String,Object>> quotes=new ArrayList<Map<String,Object>>();for(NativeCtripFlightPage.Quote q:flight.quotes){if(quotes.size()==3)break;quotes.add(q.modelView());}
-                    view.put("current_displayed_economy_cards",quotes);view.put("additional_visible_admitted_cards",Math.max(0,flight.quotes.size()-quotes.size()));
+                if(lastQueryProof!=null&&goal.departureDate.equals(lastQueryDate)&&goal.departureDate.equals(shown)){
+                    if(!flight.quotes.isEmpty()){
+                        result=flightResult(frame);List<Map<String,Object>> quotes=new ArrayList<Map<String,Object>>();for(NativeCtripFlightPage.Quote q:flight.quotes){if(quotes.size()==3)break;quotes.add(q.modelView());}
+                        view.put("current_displayed_economy_cards",quotes);view.put("additional_visible_admitted_cards",Math.max(0,flight.quotes.size()-quotes.size()));
+                    }else{
+                        missing.add("native_target_query_waiting_for_complete_cards");
+                        view.put("next_goal","本任务已在目标日期表单执行查询，当前结果日期相同，但尚无完整可核验的航班卡片；可 wait 后读取新页面，或如实结束未完成。");
+                    }
                 }else if(lastQueryProof==null||shown==null){back=true;purposes.put("back","verify_form_after_result_date");missing.add("same_task_explicit_query_missing");}
                 else if(goal.departureDate.equals(shown)){back=true;purposes.put("back","verify_form_after_result_date");missing.add("target_date_form_and_explicit_query_required");}
                 else{

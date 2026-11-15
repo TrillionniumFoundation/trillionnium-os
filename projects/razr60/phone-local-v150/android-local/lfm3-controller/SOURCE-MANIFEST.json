@@ -5,9 +5,9 @@
     "component_tree": "08f3d1c32944f834530b659cb6c3b7ec12c00039",
     "source_manifest_sha256": "bf99aebd7009d29cad75f3b796af4005084f30219aff61929cb905c4b214d991"
   },
-  "candidate_status": "r18_semantic_and_evidence_serializers_reviewed_pending_fresh_published_head_host_mac_android_phone_acceptance",
+  "candidate_status": "r19_reviewed_currentness_system_dependencies_and_ctrip_login_loading_pending_fresh_published_head_host_mac_android_phone_acceptance",
   "candidate_version_assigned": true,
-  "complete_source_files": 1885,
+  "complete_source_files": 1889,
   "current_validation": {
     "frozen_head_host_gates_pending": true,
     "full_android_build": false,
@@ -17,7 +17,7 @@
     "phone_tested": false,
     "required_canonical_checks": 108,
     "required_native_gates": 19,
-    "strict_host_gate": "Fresh canonical108 and native19 must run on the exact published and frozen complete source; original R17 and isolated author reports are not adopted.",
+    "strict_host_gate": "Fresh canonical108 and native19 must run on the exact published and frozen R19 complete source; every parent and isolated author report remains historical.",
     "unified_host_pass": false
   },
   "files": [
@@ -5982,9 +5982,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 266900,
+      "bytes": 267217,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "2c7abb7a24a4c729294984b1c473429d46024bd76e321776eed05a35418abd15"
+      "sha256": "2c3f09a88f191cd0a4f112173b5c9287af014a175bfe19b554c0b169fa2dc1ef"
     },
     {
       "bytes": 711,
@@ -6017,9 +6017,9 @@
       "sha256": "81447620dbc2a789bba8c22d561c768144f4d5619859b202d07cd83660a05dce"
     },
     {
-      "bytes": 149994,
+      "bytes": 150662,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "69dd1a577c97fd50570bdd1799752738eec76fcb585902f0b832d495d8b1f817"
+      "sha256": "fde93a9ef0de8a86f55c9aa3b04de1c731d794213c86fabd37c44bfffc47f00a"
     },
     {
       "bytes": 47910,
@@ -6077,9 +6077,9 @@
       "sha256": "8ef4facf78773e58b479552ed8c47403847c18eb7970089e043f34c6ff620ef3"
     },
     {
-      "bytes": 35894,
+      "bytes": 39909,
       "path": "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
-      "sha256": "382d2440e17eb9ed934a0498f113141e9a049e1a09d0b16f282eefb1c1c82e84"
+      "sha256": "0ac969fe789ca1183d51c86c4ce38f80b2e6199f5dc62593a27d7bc3a5cca930"
     },
     {
       "bytes": 9218,
@@ -6102,9 +6102,9 @@
       "sha256": "a2d0863b9b30d836f1901ba8304e871de4c68e9b1e7722722241bbd9a36064de"
     },
     {
-      "bytes": 63832,
+      "bytes": 64699,
       "path": "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "sha256": "649378147a08fbc6e572ee9a43914c2c993e1a5097efface274406b044645e45"
+      "sha256": "649b6a1f7f364f56dec1074bf9c125bc79f0d382816f7f20a1a88a75aa79ce4a"
     },
     {
       "bytes": 2562,
@@ -6112,9 +6112,9 @@
       "sha256": "45c2675af31e3609a85befd921e5f9b3a82d9ecad78b003d7e642cd38b258087"
     },
     {
-      "bytes": 38119,
+      "bytes": 42335,
       "path": "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
-      "sha256": "c000f56cbdf687d8f42657d3b0263493adf11878c6350f7a8624ea4731216912"
+      "sha256": "085309202a24c8f4f0f5986027bc32c13d73a8a5766ff046539a09ea2a719541"
     },
     {
       "bytes": 35607,
@@ -6827,9 +6827,9 @@
       "sha256": "bdf9d92ef810882dc6bc57f880daf0319d1f486b4f9b82b4646c2afb16ddf0cc"
     },
     {
-      "bytes": 9684,
+      "bytes": 9716,
       "path": "tests/action-worker/run_host_tests.py",
-      "sha256": "f59adeeea1b625f18516c8adc43234bc64f1fb305ffac75df644e708c393ff16"
+      "sha256": "b4fccf4b1dad46a8141e1e7bf1562eeec9a23ce2f8f533738a084d2383c8848c"
     },
     {
       "bytes": 5399,
@@ -7137,9 +7137,9 @@
       "sha256": "f9c5a54ffc9642a72d2d81da8a2c1a8693844071f4d1f158610014bbb26c2cf6"
     },
     {
-      "bytes": 4363,
+      "bytes": 4461,
       "path": "tests/flight-observation-worker/run_worker_host.py",
-      "sha256": "ed6f8a71ebf1a9133b3e885c48e13c96d1c4c05c81c3cc74d9a0a0144ae97959"
+      "sha256": "eeedb3271e50de21e132af93b12a5f854ee9d33c4f32cc06f54e081c939b562a"
     },
     {
       "bytes": 9927,
@@ -7192,9 +7192,9 @@
       "sha256": "8d65a7ced1795834bfe8a921bade5d496a5eb25bfc465340e81c50998a9102ba"
     },
     {
-      "bytes": 30126,
+      "bytes": 33012,
       "path": "tests/native-action-integration/NativeActionBridgeHost.template",
-      "sha256": "fc2a7d8d136669e39927d2e7c7d3a098ceab28cd2150bf956ee7d52ae6029aad"
+      "sha256": "b4c8a5f1381ab1db9cf588c1323d9888bd963d4f1261eb7e06a9526bb94c6b3c"
     },
     {
       "bytes": 1048,
@@ -7217,9 +7217,9 @@
       "sha256": "4dae1d479bc1691a2b53e33eb6b781dfa382403cb664f356a71de9f5ff47f90d"
     },
     {
-      "bytes": 12955,
+      "bytes": 22548,
       "path": "tests/native-action-integration/NativeXiaomiHomeVariationHostTest.java",
-      "sha256": "b807a8daacf2843252a0cb8d800b78390bb5b25c6380797fc51c0143eb63ebbb"
+      "sha256": "1c6350993e55d3e5544d4965486babeb50a35f7981256851c791377225aaf8e4"
     },
     {
       "bytes": 3964,
@@ -7230,6 +7230,11 @@
       "bytes": 181894,
       "path": "tests/native-action-integration/fixtures/r17-xiaomi-open-search-rejection.json",
       "sha256": "78cdcf07d09bc136ce4091dad115b015aa263cc6ea7c840e06bdf5a7f3b2442d"
+    },
+    {
+      "bytes": 182139,
+      "path": "tests/native-action-integration/fixtures/r18-xiaomi-open-search-rejection.json",
+      "sha256": "b27ecaed3a4dd0419fbc49809887b2e6b77cd0a80be17b006d0d8cab72c41d4a"
     },
     {
       "bytes": 12983,
@@ -7297,6 +7302,11 @@
       "sha256": "839dfb0cf24c51d5f7ef37bcdda370fc45fcb58e015484647ed40a74270ce64f"
     },
     {
+      "bytes": 24084,
+      "path": "tests/native-app-provider/NativeCtripLoginLoadingHostTest.java",
+      "sha256": "0335c69559c3edb2b4612e3f6f7d2e8c1e78f6c2892cb076cfd4b7c5d63010b3"
+    },
+    {
       "bytes": 16035,
       "path": "tests/native-app-provider/NativeResourceHomeHostTest.java",
       "sha256": "26d6f8b232170f3e787584ad7e7f629e0b61cb7aa26b6c87e2f82e67fcb74d2c"
@@ -7320,6 +7330,16 @@
       "bytes": 10153,
       "path": "tests/native-app-provider/fixtures/ctrip-cold-home-grid.json",
       "sha256": "8cae8ec8f3deb6e45f4c4778c6a6de9826aba383ffb7a572ea7ad9c08ac8eb58"
+    },
+    {
+      "bytes": 52345,
+      "path": "tests/native-app-provider/fixtures/ctrip-loading-r18.json",
+      "sha256": "e58b11da5ce3750ae074bb6a8a818e27e347cb66feca5b7414c552c5220f3e82"
+    },
+    {
+      "bytes": 25173,
+      "path": "tests/native-app-provider/fixtures/ctrip-login-r18-redacted.json",
+      "sha256": "ef4fd9367820cf0c87b7b805890abe58cd0a5d972a3dd235e4a60c64639d878a"
     },
     {
       "bytes": 93861,
@@ -7372,9 +7392,9 @@
       "sha256": "b19c4e8345f6c84db1d0debe7bc64e6257c05c65294ac2ad1d2f176a0b6baa56"
     },
     {
-      "bytes": 23585,
+      "bytes": 27783,
       "path": "tests/native-app-provider/run_host.py",
-      "sha256": "be7d53c89bf61e1ef95cae291c580a76b09de593d7e4ad9e176acc1eb6803476"
+      "sha256": "cf51495ef3b9c2843385c63dda92f4b5d7198499d1bdfad4c2e6f8c1a9fcf53a"
     },
     {
       "bytes": 6435,
@@ -7562,9 +7582,9 @@
       "sha256": "ee840432dd43450fc48c3b32d9d62ef6cfec47d4824979fa87c8e3a784adcdcd"
     },
     {
-      "bytes": 9048,
+      "bytes": 9098,
       "path": "tests/native-stale-recovery/run_budget.py",
-      "sha256": "d42b3d456720a3fd734ca7c3c779aeb1df8dfad1b6bdb39be8d741b86dc1288b"
+      "sha256": "c107d25a6e1cbd94438ef60a7c515b36435349ca223cd673ddfde92ca0be812c"
     },
     {
       "bytes": 14162,
@@ -10971,6 +10991,23 @@
     "scope": "Historical R17 receipts only; no qualification of this R18 source",
     "source_manifest_sha256": "f87de6114a9919c9ac1a0f05a543707cf498724a1d24f7982bb413284ad36dd1"
   },
+  "historical_r18_6b579_build": {
+    "adopted_as_current_validation": false,
+    "commit": "6b57916cdd44cd18579f10b6f59ef1d053b4d61c",
+    "completed_build_handoff": {
+      "bytes": 416670,
+      "path": "/home/alex/hepta-r18-build-4592-20261114-r3/BUILD-HANDOFF.json",
+      "sha256": "b3a43b3ec025b03d7545730cce5d93d371356b93836461d7d0589b0de5e39c98"
+    },
+    "component_tree": "af5d4def951008721a7bc56ee22b294d579f46a6",
+    "linux_canonical108_native19_result": {
+      "bytes": 333180,
+      "path": "/home/alex/hepta-r18-build-4592-20261114-r3/host/RESULT.json",
+      "sha256": "8f12dab3d17b42a50c74d1d89f1c3255dc67500c1fa8f509857fbb1e83a71e3c"
+    },
+    "prior_frozen_root_preserved_in_place": "/home/alex/hepta-r18-build-4592-20261114-r3",
+    "scope": "Historical completed R18 build for 6b579 only; no validation of this R19 source."
+  },
   "historical_r18_a455_build_attempt": {
     "adopted_as_current_validation": false,
     "android_native_compilation_started": false,
@@ -11043,12 +11080,12 @@
       "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
       "git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
       "path": ".github/workflows/hepta-local-android.yml",
-      "prior_commit": "a455fa187ebb1298fc186c8cacae570ca099aaaa",
+      "prior_commit": "6b57916cdd44cd18579f10b6f59ef1d053b4d61c",
       "prior_git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
       "sha256": "cf6f060c5284ce50e23f7702fd95f07a008e67a690fa1ec763deda0f3b482aca"
     },
-    "native_host_gate_contract_sha256": "dbd733477e16c29af55c313271ed3a66a5037b2923393d93b8652dcefa5d94cd",
-    "normal_git_parent": "a455fa187ebb1298fc186c8cacae570ca099aaaa",
+    "native_host_gate_contract_sha256": "1ffbb2582004dfbfb522e3347d468b23d75e9de39d8bde00371e0e0cf96dc204",
+    "normal_git_parent": "6b57916cdd44cd18579f10b6f59ef1d053b4d61c",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -11770,6 +11807,193 @@
         "old": 3
       }
     }
+  },
+  "r19_currentness_prompt_and_ctrip_amendment": {
+    "all_source_author_handoffs": [
+      {
+        "bytes": 16117,
+        "path": "/home/alex/hepta-r18-shopping-4592-r1/HANDOFF-r2.json",
+        "sha256": "a9d6808af2e7d0b78bdf5af3483a6cdd6b41409a9d5dd19c5a03c4f44687b3b5"
+      },
+      {
+        "bytes": 4949,
+        "path": "/home/alex/hepta-r19-prompt-4592-r1/HANDOFF-r1.json",
+        "sha256": "0b526d8db3c16b8d1f0395156ef770ce45f9513aca86fb33a5b1cec7733447d4"
+      },
+      {
+        "bytes": 3412,
+        "path": "/home/alex/hepta-r19-build-4592-20261115/dependency-revision-r1/HANDOFF-r1.json",
+        "sha256": "83c3cde510a2347656fba472cc595644c5a6a0111a0d67d07520148e4ede3d07"
+      },
+      {
+        "bytes": 6939,
+        "path": "/home/alex/hepta-r19-ctrip-login-4592-r1/HANDOFF-r1.json",
+        "sha256": "0904713e848b96a149aa262469a5af25e80a2f6b546587d2230fbd6eafc15587"
+      }
+    ],
+    "author_results_adopted_as_current_validation": false,
+    "budget_assertions": 198,
+    "budget_compact_bytes_each": 262144,
+    "budget_diagnostics": 20,
+    "budget_java_sources": 22,
+    "budget_source_paths": 26,
+    "canonical_host_input_count": 620,
+    "changed_nonmanifest_paths": [
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
+      "src/org/trillionnium/hepta/local/NativeAppSession.java",
+      "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
+      "tests/action-worker/run_host_tests.py",
+      "tests/flight-observation-worker/run_worker_host.py",
+      "tests/native-action-integration/NativeActionBridgeHost.template",
+      "tests/native-action-integration/NativeXiaomiHomeVariationHostTest.java",
+      "tests/native-action-integration/fixtures/r18-xiaomi-open-search-rejection.json",
+      "tests/native-app-provider/NativeCtripLoginLoadingHostTest.java",
+      "tests/native-app-provider/fixtures/ctrip-loading-r18.json",
+      "tests/native-app-provider/fixtures/ctrip-login-r18-redacted.json",
+      "tests/native-app-provider/run_host.py",
+      "tests/native-stale-recovery/run_budget.py"
+    ],
+    "ctrip_author_handoff": {
+      "bytes": 6939,
+      "path": "/home/alex/hepta-r19-ctrip-login-4592-r1/HANDOFF-r1.json",
+      "sha256": "0904713e848b96a149aa262469a5af25e80a2f6b546587d2230fbd6eafc15587"
+    },
+    "current_published_head_acceptance_pending": true,
+    "dependency_revision_handoff": {
+      "bytes": 3412,
+      "path": "/home/alex/hepta-r19-build-4592-20261115/dependency-revision-r1/HANDOFF-r1.json",
+      "sha256": "83c3cde510a2347656fba472cc595644c5a6a0111a0d67d07520148e4ede3d07"
+    },
+    "external_dependency_path_changes": [
+      {
+        "gate": "native-selection-facts",
+        "index": 0,
+        "new": "/home/alex/hepta-r19-build-4592-20261115/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "owned-single-task",
+        "index": 0,
+        "new": "/home/alex/hepta-r19-build-4592-20261115/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "observation-diagnostics",
+        "index": 0,
+        "new": "/home/alex/hepta-r19-build-4592-20261115/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-observation-events",
+        "index": 0,
+        "new": "/home/alex/hepta-r19-build-4592-20261115/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-xiaomi-home-loading",
+        "index": 0,
+        "new": "/home/alex/hepta-r19-build-4592-20261115/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-query-reservation",
+        "index": 0,
+        "new": "/home/alex/hepta-r19-build-4592-20261115/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-xiaomi-login",
+        "index": 0,
+        "new": "/home/alex/hepta-r19-build-4592-20261115/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-stale-recovery",
+        "index": 0,
+        "new": "/home/alex/hepta-r19-build-4592-20261115/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-observation-retry",
+        "index": 0,
+        "new": "/home/alex/hepta-r19-build-4592-20261115/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-observation-read-retry",
+        "index": 0,
+        "new": "/home/alex/hepta-r19-build-4592-20261115/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar"
+      }
+    ],
+    "final_live_chain_and_click_dispatch_unchanged": true,
+    "fixes": [
+      "Require complete exact horizontal coverage and valid derived leaf references for the already version-bound Xiaomi home-search banner variation; all other authority and frame checks remain mandatory.",
+      "Classify only explicitly typed protected-tree or unclassified-tree content changes as stale observations after retaining the complete rejection census; do not accept the changed scene.",
+      "Clarify that requested owner/provider values are goals, unknown facts are unknown, and completion evidence is required; retain partial/failure for actual current obstacles.",
+      "Compile the existing real ObservedChildText source in the budget, action-worker and flight-observation-worker dependencies required by the comparator; preserve all test assertions.",
+      "Recognize the strictly bounded native Ctrip login page as a truthful user-handled obstacle without granting login, consent, registration, navigation or success authority.",
+      "After a valid same-target query proof, retain wait for matching-date empty results while loading; never manufacture a query proof or accept a price without actual result evidence."
+    ],
+    "guard_session_stop_outcome_authority_unchanged": true,
+    "login_does_not_create_pending_query_or_completion_proof": true,
+    "login_fixture_account_fields_artificially_redacted": true,
+    "login_original_raw_ax_is_not_claimed_identical_to_redacted_fixture": true,
+    "mac_quote_assertions": 130,
+    "mac_quote_cases": 28,
+    "native_action_integration_assertions": 366,
+    "native_action_integration_cases": 155,
+    "native_action_pure_assertions": 157,
+    "native_action_pure_cases": 76,
+    "native_contract_sha256": "1ffbb2582004dfbfb522e3347d468b23d75e9de39d8bde00371e0e0cf96dc204",
+    "native_stale_assertions": 774,
+    "native_stale_cases": 110,
+    "new_canonical_host_source_members": [
+      "tests/native-app-provider/NativeCtripLoginLoadingHostTest.java"
+    ],
+    "new_independent_linux_build_root": "/home/alex/hepta-r19-build-4592-20261115",
+    "new_independent_mac_build_root": "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r19-build-4592",
+    "normal_git_parent": "6b57916cdd44cd18579f10b6f59ef1d053b4d61c",
+    "original_canonical108_native19_mac9_retained": true,
+    "original_pending_transition_deadline_ms": 15000,
+    "production_changed_paths": [
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
+      "src/org/trillionnium/hepta/local/NativeAppSession.java",
+      "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java"
+    ],
+    "prompt_author_handoff": {
+      "bytes": 4949,
+      "path": "/home/alex/hepta-r19-prompt-4592-r1/HANDOFF-r1.json",
+      "sha256": "0b526d8db3c16b8d1f0395156ef770ce45f9513aca86fb33a5b1cec7733447d4"
+    },
+    "prompt_inverse_audit": {
+      "bytes": 1327,
+      "path": "/home/alex/hepta-r19-build-4592-20261115/preparation/PROMPT-INVERSE-AUDIT-r1.json",
+      "sha256": "3e0e9b90c2a0bcf587e794eccdde15c818924bd1094ab6161b3826ac334d07d1"
+    },
+    "provider_additive_assertions": 131,
+    "provider_additive_cases": 38,
+    "provider_assertions": 997,
+    "provider_cases": 198,
+    "provider_original_assertions": 866,
+    "provider_original_cases": 160,
+    "shopping_author_handoff": {
+      "bytes": 16117,
+      "path": "/home/alex/hepta-r18-shopping-4592-r1/HANDOFF-r2.json",
+      "sha256": "a9d6808af2e7d0b78bdf5af3483a6cdd6b41409a9d5dd19c5a03c4f44687b3b5"
+    },
+    "snapshot_assertions": 213,
+    "snapshot_cases": 49,
+    "source_files": 1889,
+    "system_added_utf16_units": 270,
+    "system_added_utf8_bytes": 650,
+    "system_exact_new_tokens_not_measured": true,
+    "system_whole_file_inverse_verified": true,
+    "token_budgets_and_grammar_unchanged": true
   },
   "release_version_assigned": false,
   "schema": "hepta.local-source.v3",

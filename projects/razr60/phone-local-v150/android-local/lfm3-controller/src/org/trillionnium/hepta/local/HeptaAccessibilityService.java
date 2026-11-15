@@ -1524,7 +1524,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 String raw=new JSONObject(diagnostic).toString();
                 if(raw.getBytes(StandardCharsets.UTF_8).length<=NativeActionSnapshotCheck.MAX_REJECTION_DIAGNOSTIC_BYTES)
                     work.nativeActionRejection=raw;
-            }catch(RuntimeException unavailable){/* The exact original refusal is still thrown. */}
+            }catch(RuntimeException unavailable){/* The exact original refusal is still retained. */}
+            // Only the comparator's explicit scene-currentness refusal is stale.
+            // Malformed/authority/deadline failures keep their original hard failure.
+            if(refusal instanceof NativeActionSnapshotCheck.CurrentnessChanged)
+                throw new StaleObservation(refusal.getMessage());
             throw refusal;
         }
         actionCheck(work);return proof;

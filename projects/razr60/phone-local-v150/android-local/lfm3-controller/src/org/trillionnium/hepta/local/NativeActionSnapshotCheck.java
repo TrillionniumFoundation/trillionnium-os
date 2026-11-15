@@ -27,6 +27,16 @@ final class NativeActionSnapshotCheck {
     static final Pattern DATE=Pattern.compile("([0-9]{1,2})月([0-9]{1,2})日(今天|明天|后天|周[一二三四五六日天])");
     private NativeActionSnapshotCheck(){}
 
+    /** A well-formed, bound two-census comparison found changed scene facts.
+     * This is a refusal, never a dispatch/retry capability. Only the Service can
+     * turn it into a stale outcome, still subject to the original drained guard. */
+    enum CurrentnessReason { PROTECTED_SUBTREE_CHANGED, UNCLASSIFIED_TREE_CHANGE }
+    static final class CurrentnessChanged extends IllegalArgumentException {
+        private static final long serialVersionUID=1L;
+        final CurrentnessReason reason;
+        private CurrentnessChanged(CurrentnessReason reason,String detail){super(detail);this.reason=reason;}
+    }
+
     /** Values copied only from the same still-live private Session Attempt.
      * This data object is deliberately not an authority/capability token.
      * refSha256 is SHA-256 of the full Service NodeRef.signature UTF-8 string,
@@ -105,14 +115,17 @@ final class NativeActionSnapshotCheck {
         need(roleFacts(in,old).equals(roleFacts(in,fresh)),"global Provider roles/ambiguity changed");
         for(String p:before.ancestors)need(old.node(p).v.equals(fresh.node(p).v),"actual ancestor changed: "+p);
         Map<String,String> homeVariations=xiaomiSearchHomeVariations(in,old,fresh);
-        for(String p:union(old.nodes.keySet(),fresh.nodes.keySet()))if(protectedPath(p,before.roots)&&!protectedPath(p,homeVariations.keySet()))
-            need(old.nodes.containsKey(p)&&fresh.nodes.containsKey(p)&&old.node(p).v.equals(fresh.node(p).v),"complete protected subtree changed: "+p);
+        for(String p:union(old.nodes.keySet(),fresh.nodes.keySet()))if(protectedPath(p,before.roots)&&!protectedPath(p,homeVariations.keySet())){
+            if(!(old.nodes.containsKey(p)&&fresh.nodes.containsKey(p)&&old.node(p).v.equals(fresh.node(p).v)))
+                throw new CurrentnessChanged(CurrentnessReason.PROTECTED_SUBTREE_CHANGED,"complete protected subtree changed: "+p);
+        }
         Set<String> anchors=anchors(in,old,fresh,before);List<String> changed=new ArrayList<String>();
         Set<String> classified=union(anchors,homeVariations.keySet());
         for(String p:union(old.nodes.keySet(),fresh.nodes.keySet())){
             Node x=old.nodes.get(p),y=fresh.nodes.get(p);if(x!=null&&y!=null&&x.v.equals(y.v))continue;
             String found=null;for(String root:classified)if(p.equals(root)||under(p,root)){need(found==null,"overlapping variable anchors");found=root;}
-            need(found!=null,"change outside proved disjoint branch: "+p);changed.add(p);
+            if(found==null)throw new CurrentnessChanged(CurrentnessReason.UNCLASSIFIED_TREE_CHANGE,"change outside proved disjoint branch: "+p);
+            changed.add(p);
         }
         Map<String,Object> out=new TreeMap<String,Object>();out.put("schema","hepta.native-action-snapshot-comparison.candidate.v1");
         out.put("purpose",in.purpose);out.put("target_path",in.path);out.put("model_run_id",in.run);out.put("original_node_id",in.node);
@@ -209,7 +222,9 @@ final class NativeActionSnapshotCheck {
     /** Only the installed-version-bound Xiaomi SEARCH opener can classify these
      * two observed home decorations. Every other protected field stays exact.
      * A banner overlapping the icon is not treated as disjoint: its complete
-     * visible footprint and leaf facts must be identical across page slots. */
+     * visible coverage and blank-leaf facts must stay equal across page slots.
+     * Horizontal animation may partition that same fixed coverage, but never
+     * adds a gap/overlap, changes a leaf capability or authorizes a banner click. */
     private static Map<String,String> xiaomiSearchHomeVariations(Intent in,Snapshot old,Snapshot fresh){
         Map<String,String> out=new TreeMap<String,String>();
         if(!SEARCH.equals(in.purpose)||!XIAOMI.equals(in.pkg))return out;
@@ -227,7 +242,7 @@ final class NativeActionSnapshotCheck {
                 if("android.widget.FrameLayout".equals(holder.cls)&&i(holder.v,"children")==1&&contains(holder.bounds,a.bounds)
                         &&"androidx.recyclerview.widget.RecyclerView".equals(content.cls)&&"com.xiaomi.shop:id/recyclerView".equals(content.view)
                         &&parent(content.path).equals(pager.path)&&bannerVisibleCoverageEqual(old,fresh,a))
-                    out.put(a.path,"same_complete_single_visible_leaf_coverage");
+                    out.put(a.path,"same_complete_horizontal_blank_leaf_coverage");
             }
         }
         List<Node> switches=findId(old,hp+"switcher"),newSwitches=findId(fresh,hp+"switcher");
@@ -240,25 +255,65 @@ final class NativeActionSnapshotCheck {
         return out;
     }
     private static boolean bannerVisibleCoverageEqual(Snapshot old,Snapshot fresh,Node anchor){
-        Node visibleOld=null,visibleFresh=null;int count=0;
+        List<Node> visibleOld=new ArrayList<Node>(),visibleFresh=new ArrayList<Node>();int count=0;
         for(String p:union(old.nodes.keySet(),fresh.nodes.keySet()))if(under(p,anchor.path)){
             Node a=old.nodes.get(p),z=fresh.nodes.get(p);
             if(a==null||z==null||!parent(p).equals(anchor.path)||!"android.widget.FrameLayout".equals(a.cls)
                     ||i(a.v,"children")!=0||!a.view.isEmpty()||!a.text.isEmpty()||!a.desc.isEmpty()
                     ||!b(a.v,"enabled")||!b(a.v,"clickable")||!b(a.v,"action_click")||b(a.v,"scrollable")
                     ||!neutralFlags(a)||!neutralFlags(z)||!sameExcept(a,z,"bounds","visible","label","ref_signature_sha256"))return false;
-            if(a.visible()){
-                if(visibleOld!=null||!a.bounds.equals(anchor.bounds)||!"".equals(a.label)||!sha(nullable(a.v,"ref_signature_sha256")))return false;
-                visibleOld=a;
-            }else if(a.label!=null||a.v.get("ref_signature_sha256")!=null)return false;
-            if(z.visible()){
-                if(visibleFresh!=null||!z.bounds.equals(anchor.bounds)||!"".equals(z.label)||!sha(nullable(z.v,"ref_signature_sha256")))return false;
-                visibleFresh=z;
-            }else if(z.label!=null||z.v.get("ref_signature_sha256")!=null)return false;
+            if(b(a.v,"visible")){
+                if(!a.visible()||!blankBannerLeafReference(a))return false;visibleOld.add(a);
+            }else if(!hiddenBannerLeaf(a,anchor))return false;
+            if(b(z.v,"visible")){
+                if(!z.visible()||!blankBannerLeafReference(z))return false;visibleFresh.add(z);
+            }else if(!hiddenBannerLeaf(z,anchor))return false;
             count++;
         }
-        return count==i(anchor.v,"children")&&visibleOld!=null&&visibleFresh!=null&&sameExcept(visibleOld,visibleFresh,"path");
+        if(count!=i(anchor.v,"children")||!horizontalCoverage(anchor,visibleOld)||!horizontalCoverage(anchor,visibleFresh))return false;
+        Node first=visibleOld.get(0);
+        for(Node n:visibleOld)if(!sameExcept(first,n,"path","bounds","ref_signature_sha256"))return false;
+        for(Node n:visibleFresh)if(!sameExcept(first,n,"path","bounds","ref_signature_sha256"))return false;
+        return true;
     }
+    /** Prove each snapshot covers exactly the same rectangle, not merely the same
+     * total area or bounding box. The observed bounds are never repaired/clipped. */
+    private static boolean horizontalCoverage(Node anchor,List<Node> leaves){
+        if(!anchor.visible()||leaves.isEmpty())return false;
+        Collections.sort(leaves,new Comparator<Node>(){public int compare(Node a,Node z){return Integer.compare(a.bounds.get(0),z.bounds.get(0));}});
+        int edge=anchor.bounds.get(0);
+        for(Node n:leaves){
+            if(!n.visible()||!n.bounds.get(1).equals(anchor.bounds.get(1))||!n.bounds.get(3).equals(anchor.bounds.get(3))
+                    ||n.bounds.get(0)!=edge||n.bounds.get(2)<=edge||n.bounds.get(2)>anchor.bounds.get(2))return false;
+            edge=n.bounds.get(2);
+        }
+        return edge==anchor.bounds.get(2);
+    }
+    private static boolean hiddenBannerLeaf(Node n,Node anchor){
+        if(n.label!=null||n.v.get("ref_signature_sha256")!=null)return false;
+        // Offscreen clipped empty/inverted rectangles are recorded verbatim.
+        // A hidden positive rectangle inside the banner has no independent
+        // visibility explanation and cannot be silently omitted from coverage.
+        return n.bounds.get(2)<=n.bounds.get(0)||n.bounds.get(3)<=n.bounds.get(1)||!intersects(n.bounds,anchor.bounds);
+    }
+    /** Only this observed blank, clickable, childless leaf can have its derived
+     * ref explained by geometry. Match the actual Service base signature,
+     * ObservedChildText empty-complete binding, then scroll/IME freshness.
+     * An unexplained hash or any extra action/input metadata still refuses. */
+    private static boolean blankBannerLeafReference(Node n){
+        if(!"".equals(n.label)||n.v.get("input_sha256")!=null
+                ||!"hepta.observed-scroll-actions.v1|observed".equals(s(n.v,"scroll_actions"))
+                ||!"hepta.observed-ime-enter.v1|true|false|null".equals(s(n.v,"ime_enter")))return false;
+        String rect="Rect("+n.bounds.get(0)+", "+n.bounds.get(1)+" - "+n.bounds.get(2)+", "+n.bounds.get(3)+")";
+        String base=hash(n.pkg+"\u0001"+i(n.v,"window_id")+"\u0001"+n.cls+"\u0001"+n.view+"\u0001"+rect+"\u0001"+
+                n.text+"\u0001"+n.desc+"\u0001"+b(n.v,"enabled")+"|"+b(n.v,"clickable")+"|"+b(n.v,"editable")+"|"+b(n.v,"scrollable"));
+        String child=hash(signatureField(ObservedChildText.SOURCE)+signatureField("empty")+signatureField("")+
+                signatureField("false")+signatureField(base)+signatureField("true"));
+        String tree=hash(signatureField(base)+signatureField(child));
+        return hash(tree+"\nscroll_actions="+s(n.v,"scroll_actions")+"\nime_enter="+s(n.v,"ime_enter")+
+                "|focused="+b(n.v,"focused")+"|full_input=null").equals(n.v.get("ref_signature_sha256"));
+    }
+    private static String signatureField(String value){return value.length()+":"+value;}
     private static boolean switcherDisjoint(Snapshot old,Snapshot fresh,Node anchor,Node target){
         if(intersects(anchor.bounds,target.bounds))return false;
         for(String p:union(old.nodes.keySet(),fresh.nodes.keySet()))if(p.equals(anchor.path)||under(p,anchor.path)){

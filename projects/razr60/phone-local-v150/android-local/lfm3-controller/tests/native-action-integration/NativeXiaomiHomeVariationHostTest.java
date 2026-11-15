@@ -109,6 +109,104 @@ final class NativeXiaomiHomeVariationHostTest {
             parent.beforeRefresh=()->{NativeActionBridgeHost.NodeData replacement=new NativeActionBridgeHost.NodeData(target.values);replacement.parent=parent;parent.children.set(4,replacement);};
             IntegrationChecks.rejects(()->f.dispatch(),"same fields cannot replace the original retained child object");f.noEffect("late actual reference replacement never enters effect");
         });
+        runR18Transition(source);
+    }
+    static final String R18_FIXTURE_SHA="b27ecaed3a4dd0419fbc49809887b2e6b77cd0a80be17b006d0d8cab72c41d4a";
+    static void clip(Fixture f,String path,int left,int top,int right,int bottom){
+        Map<String,Object> n=f.node(true,path);
+        n.put("bounds",NativeActionSnapshotCheckHostTest.rect(left,top,right,bottom));n.put("visible",true);n.put("label","");
+        n.put("ref_signature_sha256",NativeActionBridgeHost.actualBlankLeafReferenceSha(n));
+    }
+    static void hide(Fixture f,String path){
+        Map<String,Object> n=f.node(true,path);n.put("visible",false);n.put("label",null);n.put("ref_signature_sha256",null);
+        n.put("bounds",NativeActionSnapshotCheckHostTest.rect(1224,0,1224,931));
+    }
+    static void runR18Transition(Path source)throws Exception{
+        byte[] bytes=Files.readAllBytes(source.resolve("tests/native-action-integration/fixtures/r18-xiaomi-open-search-rejection.json"));
+        final Map<String,Object> raw=new JSONObject(new String(bytes,StandardCharsets.UTF_8)).toMap();
+        IntegrationChecks.one("recorded_r18_xiaomi_exact_two_clip_transition",()->{
+            yes(R18_FIXTURE_SHA.equals(NativeActionBridgeHost.sha(bytes)),"exact new retained fixture bytes");
+            Fixture f=new Fixture(raw);
+            yes("b8e1fd019f31eadd60dc163b2bfb4d55d5869919dc29f6ab2895c5e7b00842ed".equals(f.root.get("source_action_sha256")),"original rejected phone action pin retained");
+            yes("6b57916cdd44cd18579f10b6f59ef1d053b4d61c".equals(f.root.get("source_commit")),"retained R18 identity, not a fresh host phone run");
+            yes(f.rows(false).size()==82&&f.rows(true).size()==82,"all 82+82 original nodes retained");
+            yes(f.snapshot(false).sha.equals(f.before.get("snapshot_sha256"))&&f.snapshot(true).sha.equals(f.fresh.get("snapshot_sha256")),"both original complete snapshot fingerprints reproduced");
+            yes(f.node(false,BANNER+"/3").get("bounds").equals(NativeActionSnapshotCheckHostTest.rect(0,0,1224,931))
+                    &&f.node(true,BANNER+"/6").get("bounds").equals(NativeActionSnapshotCheckHostTest.rect(0,0,18,931))
+                    &&f.node(true,BANNER+"/7").get("bounds").equals(NativeActionSnapshotCheckHostTest.rect(18,0,1224,931)),"exact recorded full page and two clips");
+            Map<String,Object> proof=f.compare();Map<String,Object> variants=map(proof.get("xiaomi_search_home_variations"));
+            yes(variants.size()==2&&"same_complete_horizontal_blank_leaf_coverage".equals(variants.get(BANNER))
+                    &&"same_bounded_disjoint_search_hint".equals(variants.get(SWITCHER)),"only exact banner coverage and independent disjoint hint classified");
+            yes(list(proof.get("changed_paths")).size()==12,"all twelve recorded changes accounted for");
+            yes(Boolean.FALSE.equals(proof.get("grants_dispatch"))&&Boolean.FALSE.equals(proof.get("fully_unoccluded_claimed")),"coverage does not confer an action or pixel Z-order proof");
+        });
+        IntegrationChecks.one("recorded_r18_blank_leaf_refs_match_actual_service_producer",()->{
+            Fixture f=new Fixture(raw);
+            for(String path:Arrays.asList(BANNER+"/3",BANNER+"/6",BANNER+"/7")){
+                Map<String,Object> n=f.node(!path.endsWith("/3"),path);
+                yes(n.get("ref_signature_sha256").equals(NativeActionBridgeHost.actualBlankLeafReferenceSha(n)),"actual extracted NodeRef plus real empty-child binding reproduces recorded ref "+path);
+            }
+        });
+        negative(raw,"r18_zero_visible_clips",f->{hide(f,BANNER+"/6");hide(f,BANNER+"/7");});
+        negative(raw,"r18_visible_zero_width",f->clip(f,BANNER+"/6",0,0,0,931));
+        negative(raw,"r18_visible_reverse_width",f->clip(f,BANNER+"/6",18,0,0,931));
+        negative(raw,"r18_horizontal_gap_with_valid_refs",f->clip(f,BANNER+"/6",0,0,17,931));
+        negative(raw,"r18_horizontal_overlap_with_valid_refs",f->clip(f,BANNER+"/6",0,0,19,931));
+        negative(raw,"r18_equal_total_area_gap_and_overlap_with_valid_refs",f->{
+            clip(f,BANNER+"/6",0,0,500,931);clip(f,BANNER+"/7",600,0,1100,931);clip(f,BANNER+"/8",1000,0,1224,931);
+            yes(500+500+224==1224,"deliberate hole and overlap cancel in total area; bounding box also stays full");
+        });
+        negative(raw,"r18_different_top_with_valid_ref",f->clip(f,BANNER+"/6",0,1,18,931));
+        negative(raw,"r18_different_bottom_with_valid_ref",f->clip(f,BANNER+"/6",0,0,18,930));
+        negative(raw,"r18_clip_crosses_anchor_left_with_valid_ref",f->clip(f,BANNER+"/6",-1,0,18,931));
+        negative(raw,"r18_clip_crosses_anchor_right_with_valid_ref",f->clip(f,BANNER+"/7",18,0,1225,931));
+        negative(raw,"r18_hidden_slot_has_label",f->f.node(true,BANNER+"/5").put("label",""));
+        negative(raw,"r18_hidden_slot_has_ref",f->f.node(true,BANNER+"/5").put("ref_signature_sha256",f.node(true,BANNER+"/6").get("ref_signature_sha256")));
+        negative(raw,"r18_hidden_positive_area_inside_anchor",f->f.node(true,BANNER+"/5").put("bounds",NativeActionSnapshotCheckHostTest.rect(20,0,30,931)));
+        for(final String flag:Arrays.asList("clickable","action_click","enabled"))
+            negative(raw,"r18_leaf_loses_"+flag,f->f.node(true,BANNER+"/6").put(flag,false));
+        for(final String flag:Arrays.asList("editable","password","scrollable","focused","selected","checkable","checked"))
+            negative(raw,"r18_leaf_acquires_"+flag,f->f.node(true,BANNER+"/6").put(flag,true));
+        negative(raw,"r18_leaf_new_text",f->f.node(true,BANNER+"/6").put("text","立即购买"));
+        negative(raw,"r18_leaf_new_description",f->f.node(true,BANNER+"/6").put("description","付款"));
+        negative(raw,"r18_leaf_new_view_identity",f->f.node(true,BANNER+"/6").put("view_id","different:banner-leaf"));
+        negative(raw,"r18_leaf_new_class",f->f.node(true,BANNER+"/6").put("class","android.widget.ImageView"));
+        negative(raw,"r18_leaf_wrong_actual_parent",f->f.node(true,BANNER+"/6").put("parent_class","android.widget.FrameLayout"));
+        negative(raw,"r18_leaf_missing_child",f->f.node(true,BANNER+"/6").put("children",1));
+        negative(raw,"r18_leaf_unknown_scroll",f->f.node(true,BANNER+"/6").put("scroll_actions",ObservedScrollActions.UNKNOWN.fingerprintInput()));
+        negative(raw,"r18_leaf_unknown_ime",f->f.node(true,BANNER+"/6").put("ime_enter",ObservedImeEnter.UNKNOWN.fingerprintInput()));
+        negative(raw,"r18_leaf_unexplained_input",f->f.node(true,BANNER+"/6").put("input_sha256",NativeActionSnapshotCheck.hash("not-a-blank-leaf")));
+        negative(raw,"r18_leaf_unexplained_ref",f->f.node(true,BANNER+"/6").put("ref_signature_sha256",NativeActionSnapshotCheck.hash("forged-clipped-ref")));
+        negative(raw,"r18_leaf_missing_ref",f->f.node(true,BANNER+"/6").put("ref_signature_sha256",null));
+        IntegrationChecks.one("recorded_r18_unsafe_coverage_is_typed_stale_not_a_permit",()->{
+            Fixture data=new Fixture(raw);clip(data,BANNER+"/6",0,0,17,931);
+            try{data.compare();throw new AssertionError("gap acquired compatibility");}
+            catch(NativeActionSnapshotCheck.CurrentnessChanged refusal){
+                yes(refusal.reason==NativeActionSnapshotCheck.CurrentnessReason.PROTECTED_SUBTREE_CHANGED,"comparator supplies explicit bound scene-currentness type");
+            }
+            NativeActionBridgeHost.Fixture f=bridge(data.root,"typed-gap");
+            yes("stale".equals(NativeActionBridgeHost.actualComparisonDisposition(f)),"actual extracted Service converts only typed scene refusal");
+            yes(NativeActionBridgeHost.recordedRejectionPresent(f),"original complete refusal diagnostic remains present");
+            f.noEffect("stale classification itself never enters an effect or supplies a retry seal");
+        });
+        IntegrationChecks.one("recorded_r18_plain_predicate_error_stays_hard_refusal",()->{
+            Fixture data=new Fixture(raw);data.node(true,"0/0/1/3/0/0").put("text","Xiaomi路由器AX3000T");
+            try{data.compare();throw new AssertionError("changed business role acquired compatibility");}
+            catch(NativeActionSnapshotCheck.CurrentnessChanged wrong){throw new AssertionError("ordinary semantic error broadened into typed currentness",wrong);}
+            catch(IllegalArgumentException expected){yes(true,"ordinary semantic predicate remains its original error type");}
+            NativeActionBridgeHost.Fixture f=bridge(data.root,"hard-role");
+            yes("hard_refusal".equals(NativeActionBridgeHost.actualComparisonDisposition(f)),"actual Service preserves ordinary IllegalArgumentException");
+            f.noEffect("hard refusal does not dispatch");
+        });
+        IntegrationChecks.one("recorded_r18_transition_reaches_original_search_ax_target_only",()->{
+            NativeActionBridgeHost.Fixture f=bridge(raw,"two-clip-target");
+            yes(f.dispatch()&&f.effects()==1,"actual compare/final census/live chain accepts one synthetic directed AX click");
+            yes(f.data.get(TARGET).effects==1,"effect belongs to the original search NodeRef");
+            boolean untouched=true;for(Map.Entry<String,NativeActionBridgeHost.NodeData> e:f.data.entrySet())
+                if(!TARGET.equals(e.getKey())&&e.getValue().effects!=0)untouched=false;
+            yes(untouched,"no banner clip or other node receives the effect");
+            yes(f.service.events.contains("full_census"),"fresh full census still executes before original target action");
+        });
     }
     public static void main(String[] args)throws Exception{
         run(java.nio.file.Paths.get(args[0]));
