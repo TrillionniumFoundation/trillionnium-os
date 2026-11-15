@@ -5,7 +5,7 @@ from pathlib import Path
 import argparse, hashlib, json, os, stat, subprocess, time, traceback
 SCHEMA="hepta.native-xiaomi-product-compiled-gate.v1"
 SHARED={
-"src/org/trillionnium/hepta/local/NativeAppGoal.java":"8f0049cda1202f1d9f2823e61479f6e031ba1f89007d7cf7f312671d78cc8474",
+"src/org/trillionnium/hepta/local/NativeAppGoal.java":"beb5b1ed745404a30ada6d32cd2174c6b608b96f02f6d5916f84fd2c4b92bae5",
 "src/org/trillionnium/hepta/local/NativeAppEvidence.java":"ff8b76cd14ed4d2ebfb4e6bbe20ea5dac7e391fa934726f921b195055ad37d37",
 "src/org/trillionnium/hepta/local/ObservedChildText.java":"56433b62f9c4c895edac441160fcdc4aaee7365586daa4b86863448dc4dd54d5",
 "src/org/trillionnium/hepta/local/ObservedTargetLabels.java":"c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba"}

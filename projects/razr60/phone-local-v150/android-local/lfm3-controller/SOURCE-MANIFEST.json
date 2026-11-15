@@ -5,7 +5,7 @@
     "component_tree": "08f3d1c32944f834530b659cb6c3b7ec12c00039",
     "source_manifest_sha256": "bf99aebd7009d29cad75f3b796af4005084f30219aff61929cb905c4b214d991"
   },
-  "candidate_status": "local_usability_completion_protocol_contract_pending_fresh_published_head_host_mac_android_phone_acceptance",
+  "candidate_status": "local_usability_exact_fixture_call_and_reviewed_goal_pin_pending_fresh_published_head_full_ci_and_phone_acceptance",
   "candidate_version_assigned": true,
   "complete_source_files": 1891,
   "completion_protocol_contract_amendment": {
@@ -6872,9 +6872,9 @@
       "sha256": "a8ff9333321283bd9774eed5736bec6bd17bf1c578571a36437a18c5ad5fdcb6"
     },
     {
-      "bytes": 3803,
+      "bytes": 3816,
       "path": "tests/app-label/prepare_fixture.py",
-      "sha256": "3ff3470dbd330b93dd234d03d2f98853419334d89faaffc9448b29b9c0b204a1"
+      "sha256": "89b62d64d2d3d321aba20005d8cd788bc1664856b032d456a37734f332ec0743"
     },
     {
       "bytes": 16222,
@@ -7814,7 +7814,7 @@
     {
       "bytes": 6864,
       "path": "tests/native-xiaomi-product/run_host.py",
-      "sha256": "d363b7f889c12453817b22e93abad01717184385838bbd73028bfeb1918e6042"
+      "sha256": "c9476f04f0162a24ffd1b5fb49beea5b2d6b0434696edcfb8fd9d3896c325731"
     },
     {
       "bytes": 42214,
@@ -9507,6 +9507,37 @@
       "sha256": "d5ab468b1b3155195d24b771376581dd441fd59a20b71feda98af4074fcaa3d5"
     }
   ],
+  "fixture_binding_amendment": {
+    "canonical_checks_required": 108,
+    "changed_nonmanifest_paths": [
+      "tests/app-label/prepare_fixture.py",
+      "tests/native-xiaomi-product/run_host.py"
+    ],
+    "exact_production_call": "createImeAuthorized(...,successEligible,doneStatuses)",
+    "exactly_one_call_requirement_unchanged": true,
+    "failed_original_ci": {
+      "attempt": 1,
+      "checks_attempted": 71,
+      "checks_passed": 70,
+      "failed_check": "python-tools",
+      "job_id": 132716372973,
+      "original_receipt_sha256": "6600c2ddab3624315dccf85fe393389b8535a5e661347f659672d1b65c5d982e",
+      "preserved": true,
+      "python_errors": 1,
+      "python_tests": 297,
+      "run_id": 43681604819
+    },
+    "fresh_exact_head_full_ci_pending": true,
+    "model_inference_performed": false,
+    "native_gates_required": 19,
+    "normal_git_parent": "8843aa69b08ce24514ca1c07e4ae2750afb7cb60",
+    "original_compiler_exit_count_and_scope_requirements_unchanged": true,
+    "other_shared_pins_and_strict_hash_equality_unchanged": true,
+    "phone_validation_pending": true,
+    "production_source_changed": false,
+    "python_tools_tests_required": 297,
+    "xiaomi_reviewed_goal_sha256": "beb5b1ed745404a30ada6d32cd2174c6b608b96f02f6d5916f84fd2c4b92bae5"
+  },
   "functional_scope": "Version-bound native Ctrip image-tile identity keeps its actual empty AX label and model-owned current-node action. Owned singleTask background launch is restricted to this generation newly created organizer roots and new target leaf; original foreground/task guards and standard launch path remain. Existing native read-only result and SDK cleanup gates remain necessary.",
   "historical_parent_metadata": {
     "metadata": {
@@ -11125,12 +11156,12 @@
       "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
       "git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
       "path": ".github/workflows/hepta-local-android.yml",
-      "prior_commit": "c60c592d72815ef9be91da3f99c9e90e7d41c06d",
+      "prior_commit": "8843aa69b08ce24514ca1c07e4ae2750afb7cb60",
       "prior_git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
       "sha256": "cf6f060c5284ce50e23f7702fd95f07a008e67a690fa1ec763deda0f3b482aca"
     },
     "native_host_gate_contract_sha256": "1ffbb2582004dfbfb522e3347d468b23d75e9de39d8bde00371e0e0cf96dc204",
-    "normal_git_parent": "c60c592d72815ef9be91da3f99c9e90e7d41c06d",
+    "normal_git_parent": "8843aa69b08ce24514ca1c07e4ae2750afb7cb60",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
