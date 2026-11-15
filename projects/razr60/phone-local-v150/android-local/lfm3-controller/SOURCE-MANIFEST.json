@@ -5,9 +5,9 @@
     "component_tree": "08f3d1c32944f834530b659cb6c3b7ec12c00039",
     "source_manifest_sha256": "bf99aebd7009d29cad75f3b796af4005084f30219aff61929cb905c4b214d991"
   },
-  "candidate_status": "r19_reviewed_currentness_system_dependencies_and_ctrip_login_loading_pending_fresh_published_head_host_mac_android_phone_acceptance",
+  "candidate_status": "local_usability_spacing_and_terminal_domains_pending_fresh_published_head_host_mac_android_phone_acceptance",
   "candidate_version_assigned": true,
-  "complete_source_files": 1889,
+  "complete_source_files": 1891,
   "current_validation": {
     "frozen_head_host_gates_pending": true,
     "full_android_build": false,
@@ -17,7 +17,7 @@
     "phone_tested": false,
     "required_canonical_checks": 108,
     "required_native_gates": 19,
-    "strict_host_gate": "Fresh canonical108 and native19 must run on the exact published and frozen R19 complete source; every parent and isolated author report remains historical.",
+    "strict_host_gate": "Fresh original canonical108, native19 and retained Mac gates must run on this exact published and frozen complete source; independent Java21 diagnostics and every parent receipt remain historical to their tested source and environment.",
     "unified_host_pass": false
   },
   "files": [
@@ -5962,9 +5962,9 @@
       "sha256": "27c88417bbfffc9b67d7a0a4cef896c1499b56fadb326e4985c84f5dd2cb0ef8"
     },
     {
-      "bytes": 33063,
+      "bytes": 36744,
       "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
-      "sha256": "ba5de0e5819a7684fd0f3692969ae5986052cb137ccaf0276c3a8d7005b672f6"
+      "sha256": "30fab955aa9016bcae743b9d38acc2c969dc7eeb387e226f8c4cf58ba1df1b99"
     },
     {
       "bytes": 904,
@@ -6017,9 +6017,9 @@
       "sha256": "81447620dbc2a789bba8c22d561c768144f4d5619859b202d07cd83660a05dce"
     },
     {
-      "bytes": 150662,
+      "bytes": 150882,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "fde93a9ef0de8a86f55c9aa3b04de1c731d794213c86fabd37c44bfffc47f00a"
+      "sha256": "64bde7b8621e1493484a6cd2715951dcc85f9a1b812188e54dc7d31e19b4812c"
     },
     {
       "bytes": 47910,
@@ -6082,9 +6082,9 @@
       "sha256": "0ac969fe789ca1183d51c86c4ce38f80b2e6199f5dc62593a27d7bc3a5cca930"
     },
     {
-      "bytes": 9218,
+      "bytes": 9873,
       "path": "src/org/trillionnium/hepta/local/NativeAppDomain.java",
-      "sha256": "40733e48f9be46c577f732022f463feb0bbd42d0b7fb32ff96fcc4802b526ec5"
+      "sha256": "495f9d98854d8137e48e07b074987d81bcfbab8f3b3fe437cdd3239c16719f1a"
     },
     {
       "bytes": 14397,
@@ -6092,9 +6092,9 @@
       "sha256": "ff8b76cd14ed4d2ebfb4e6bbe20ea5dac7e391fa934726f921b195055ad37d37"
     },
     {
-      "bytes": 12488,
+      "bytes": 13841,
       "path": "src/org/trillionnium/hepta/local/NativeAppGoal.java",
-      "sha256": "8f0049cda1202f1d9f2823e61479f6e031ba1f89007d7cf7f312671d78cc8474"
+      "sha256": "beb5b1ed745404a30ada6d32cd2174c6b608b96f02f6d5916f84fd2c4b92bae5"
     },
     {
       "bytes": 4764,
@@ -7282,9 +7282,14 @@
       "sha256": "674738f8f9de28731dd582344d807667045c9eebc771bccf482a2a12c4718e7e"
     },
     {
-      "bytes": 5575,
+      "bytes": 9652,
+      "path": "tests/native-app-goal/NativeAppGoalSpacingHostTest.java",
+      "sha256": "f72d3d6bea1b2b4727d4308381c9fcf8f9cab782743c76f7cfc78c33d8b8403e"
+    },
+    {
+      "bytes": 8542,
       "path": "tests/native-app-goal/run_host.py",
-      "sha256": "cc21db9173f41415689e275f16ce6bb47d6d707e66063104b5ed878570bc74ca"
+      "sha256": "1f845254c01112a1db90b13be0b52688c37dea7f9a131383d1cdbcc5dfdb215e"
     },
     {
       "bytes": 4601,
@@ -7412,14 +7417,19 @@
       "sha256": "5a3de57ec34882d80a498c43afeca4b940bfcf324bb0e57baf6f8c503acc247c"
     },
     {
+      "bytes": 19535,
+      "path": "tests/native-app-routing/NativeTerminalStatusHostTest.java",
+      "sha256": "d07da413525749c5f52209b95d2c56b9a3ef6601bc3248fbd3c15de43f3d318f"
+    },
+    {
       "bytes": 8406,
       "path": "tests/native-app-routing/prepare_native_entry.py",
       "sha256": "2edd6a279a9c660d1e82b20cac1504e2655ca7cc98d2774a74f9dac2f3a2d51b"
     },
     {
-      "bytes": 13997,
+      "bytes": 15986,
       "path": "tests/native-app-routing/run_host.py",
-      "sha256": "d4a43a59f1315d17692783e2ef44591e288d9e48bb3e6d67d68e46a5cb553fb1"
+      "sha256": "8ed42a21c5b19bf411f099e14545c31631aa6f8db79868a0d25a0fd0e5585f4e"
     },
     {
       "bytes": 4021,
@@ -11080,12 +11090,12 @@
       "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
       "git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
       "path": ".github/workflows/hepta-local-android.yml",
-      "prior_commit": "6b57916cdd44cd18579f10b6f59ef1d053b4d61c",
+      "prior_commit": "1c116343597aa752d76cf25aeaf1c718f4488dbe",
       "prior_git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
       "sha256": "cf6f060c5284ce50e23f7702fd95f07a008e67a690fa1ec763deda0f3b482aca"
     },
     "native_host_gate_contract_sha256": "1ffbb2582004dfbfb522e3347d468b23d75e9de39d8bde00371e0e0cf96dc204",
-    "normal_git_parent": "6b57916cdd44cd18579f10b6f59ef1d053b4d61c",
+    "normal_git_parent": "1c116343597aa752d76cf25aeaf1c718f4488dbe",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -11107,6 +11117,75 @@
       "component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
       "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
     }
+  },
+  "local_usability_amendment": {
+    "business_completion_verified": false,
+    "canonical_host_input_count": 622,
+    "changed_nonmanifest_paths": [
+      "src/org/trillionnium/hepta/local/DecisionGrammar.java",
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "src/org/trillionnium/hepta/local/NativeAppDomain.java",
+      "src/org/trillionnium/hepta/local/NativeAppGoal.java",
+      "tests/native-app-goal/NativeAppGoalSpacingHostTest.java",
+      "tests/native-app-goal/run_host.py",
+      "tests/native-app-routing/NativeTerminalStatusHostTest.java",
+      "tests/native-app-routing/run_host.py"
+    ],
+    "device_operations": 0,
+    "existing_java_release8_lint_and_error_gates_unchanged": true,
+    "fixes": [
+      "Accept ASCII spaces only between complete literal native-flight fields. Match the untouched OWNER; preserve exact date, route, passenger count, package, spans, hashes and query-only authority.",
+      "Intersect current native terminal statuses with existing OWNER and completion evidence. Share the immutable status domain across prompt, constrained JSON and post-parse checks; retain all native action and completion validators."
+    ],
+    "flight_spacing": {
+      "candidate_java21_strict_pass": true,
+      "candidate_result_sha256": "e0ec3c4bf613ca846dde3ae0b982c48687a5a9a28694df9567b0ae5260ddd245",
+      "counterfactual_result_sha256": "d9c61e5999cd78da510f395c6400c6b83fa41aec59be45887593c0a03b6c27bb",
+      "gate": "tests/native-app-goal/run_host.py",
+      "new_assertions": 155,
+      "new_cases": 41,
+      "old_source_new_case_failed": true,
+      "original_assertions": 131,
+      "original_cases": 47,
+      "original_test_file_sha256": "674738f8f9de28731dd582344d807667045c9eebc771bccf482a2a12c4718e7e"
+    },
+    "fresh_android_build_pending": true,
+    "fresh_canonical_ci_pending": true,
+    "fresh_mac_checks_pending": true,
+    "historical_ci_or_phone_receipts_adopted_as_current_validation": false,
+    "independent_host_boundary": "Java21 compiler module without ct.sym: no release8 or JDK17 run is claimed. Flight, terminal core and new test compile with all lint and Werror. Full old/new Controller have the same pre-existing serial warning; the separate integration diagnostic disables only serial lint and uses exact R19 archived host fixture classes. The production CI compiler contract is unchanged.",
+    "model_inference_performed": false,
+    "native_terminal_status": {
+      "candidate_grammar_domain_mismatches": 0,
+      "gate": "tests/native-app-routing/run_host.py",
+      "gate_count_checks_added_after_independent_test": true,
+      "independent_result_sha256": "f326fd810b9e0ebbcf2da7e51c84f010102a02e25b9dce2e2d247b6202bbe83d",
+      "new_actual_gbnf_cases": 69,
+      "new_assertions": 98,
+      "old_source_grammar_domain_mismatches": 12,
+      "original_decision_grammar_assertions": 17,
+      "widening_mutation_rejected": true
+    },
+    "new_release_version_assigned": false,
+    "new_source_members": [
+      "tests/native-app-goal/NativeAppGoalSpacingHostTest.java",
+      "tests/native-app-routing/NativeTerminalStatusHostTest.java"
+    ],
+    "normal_git_parent": "1c116343597aa752d76cf25aeaf1c718f4488dbe",
+    "original_canonical108_native19_mac_gates_retained": true,
+    "parent_component_tree": "338ccd98b98c45a6da88aadeeba7927a9e5fb5ca",
+    "parent_source_manifest_sha256": "1c95955c836c9865a840fd16680e6ad9063f64903609dc7b5219993f576971ad",
+    "phone_validation_pending": true,
+    "production_changed_paths": [
+      "src/org/trillionnium/hepta/local/DecisionGrammar.java",
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "src/org/trillionnium/hepta/local/NativeAppDomain.java",
+      "src/org/trillionnium/hepta/local/NativeAppGoal.java"
+    ],
+    "removed_source_members": [],
+    "source_files": 1891,
+    "version_code_unchanged": 69,
+    "version_name_unchanged": "0.69.0-native-background-runtime"
   },
   "main_java_sources": 137,
   "observation_budget_amendment": {

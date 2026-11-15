@@ -40,6 +40,18 @@ public final class NativeAppGoal {
             + "([0-9]{4})年([0-9]{1,2})月([0-9]{1,2})日" + ROUTE);
     private static final Pattern FLIGHT_ISO = Pattern.compile(PREFIX + APP + QUERY
             + "([0-9]{4})-([0-9]{2})-([0-9]{2})" + ROUTE);
+    // Recognize ASCII spaces only between complete literal fields. Match the
+    // original OWNER directly: do not trim, join city/date characters, rewrite
+    // offsets, infer parameters or change the existing query-only tool ceiling.
+    private static final String FIELD_SPACE = "[ ]*";
+    private static final String SPACED_ROUTE = "(?:从" + FIELD_SPACE + ")?([\\p{IsHan}]{2,12}?)"
+            + FIELD_SPACE + "到" + FIELD_SPACE + "([\\p{IsHan}]{2,12}?)" + FIELD_SPACE
+            + "(?:的" + FIELD_SPACE + ")?单程" + FIELD_SPACE + "(?:机票|航班)" + FIELD_SPACE
+            + "[，,]" + FIELD_SPACE + "(?:1|一)" + FIELD_SPACE + "(?:名|位)" + FIELD_SPACE + "成人[。]?";
+    private static final Pattern FLIGHT_ZH_SPACED = Pattern.compile(PREFIX + APP + QUERY + FIELD_SPACE
+            + "([0-9]{4})年([0-9]{1,2})月([0-9]{1,2})日" + FIELD_SPACE + SPACED_ROUTE);
+    private static final Pattern FLIGHT_ISO_SPACED = Pattern.compile(PREFIX + APP + QUERY + FIELD_SPACE
+            + "([0-9]{4})-([0-9]{2})-([0-9]{2})" + FIELD_SPACE + SPACED_ROUTE);
     private static final Pattern PRODUCT = Pattern.compile(PREFIX
             + "(?:(?:在|用)小米商城(?:APP|App|app|应用)?(?:里|中|上)?)?"
             + "(?:查一下|查下|查询|查查|查看)(?:小米|Xiaomi)[ ]?(?:路由器[ ]?)?"
@@ -93,7 +105,13 @@ public final class NativeAppGoal {
             Matcher match = FLIGHT_ZH.matcher(owner); int suffix = 1;
             if (!match.matches()) {
                 match = FLIGHT_ISO.matcher(owner); suffix = 0;
-                if (!match.matches()) return null;
+                if (!match.matches()) {
+                    match = FLIGHT_ZH_SPACED.matcher(owner); suffix = 1;
+                    if (!match.matches()) {
+                        match = FLIGHT_ISO_SPACED.matcher(owner); suffix = 0;
+                        if (!match.matches()) return null;
+                    }
+                }
             }
             String namedApp = match.group(1);
             if (namedApp != null && !explicitlySelectedPackage.equals(packageForName(namedApp))) return null;

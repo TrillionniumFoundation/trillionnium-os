@@ -25,9 +25,12 @@ public final class DecisionGrammar {
     public final Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedIntentTargets;
     /** Intersects OWNER authority with the current controller completion evidence. */
     public final boolean successAllowed;
+    /** The exact immutable terminal domain shared by sampling and post-parse checks. */
+    public final Set<String> doneStatuses;
 
-    private DecisionGrammar(ObservedTargetLabels targets,String text,List<String> actions,Map<String,List<String>> scrollDirections,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization,Set<String> submits,boolean imeProtocol,Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,boolean successAllowed){
-        this.successAllowed=successAllowed;
+    private DecisionGrammar(ObservedTargetLabels targets,String text,List<String> actions,Map<String,List<String>> scrollDirections,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization,Set<String> submits,boolean imeProtocol,Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,Set<String> doneStatuses){
+        this.doneStatuses=Collections.unmodifiableSet(new TreeSet<String>(doneStatuses));
+        this.successAllowed=this.doneStatuses.contains("success");
         this.submitNodes=Collections.unmodifiableSet(new TreeSet<String>(submits));
         this.fixedIntentTargets=Collections.unmodifiableMap(new TreeMap<String,org.trillionnium.hepta.background.FixedIntentTarget>(fixedTargets==null?Collections.<String,org.trillionnium.hepta.background.FixedIntentTarget>emptyMap():fixedTargets));
         this.authorization=authorization;this.appLabels=appLabels;this.schema=fixedTargets!=null?ActionDecision.FIXED_INTENT_ACTION_SCHEMA:imeProtocol?ActionDecision.IME_ACTION_SCHEMA:appLabels==null?SCHEMA:ObservedAppLabels.ACTION_SCHEMA;
@@ -96,6 +99,14 @@ public final class DecisionGrammar {
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
             Map<String,ObservedImeEnter> submitActions,ObservedTargetLabels targets,ObservedAppLabels appLabels,
             TaskAuthorization.Frame authorization,boolean background,Set<String> taskTools,boolean successEligible){
+        return createImeAuthorized(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
+                submitActions,targets,appLabels,authorization,background,taskTools,successEligible,null);
+    }
+    /** A current domain may only remove terminal choices, never grant success. */
+    public static DecisionGrammar createImeAuthorized(String observationId,String currentPackage,Set<String> shownApps,
+            Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
+            Map<String,ObservedImeEnter> submitActions,ObservedTargetLabels targets,ObservedAppLabels appLabels,
+            TaskAuthorization.Frame authorization,boolean background,Set<String> taskTools,boolean successEligible,Set<String> taskDoneStatuses){
         TaskAuthorization.require(authorization!=null,"IME 动作语法缺少用户授权");
         if(appLabels==null||targets==null||submitActions==null||submitActions.size()>200)
             throw new IllegalArgumentException("observed query action projection required");
@@ -103,7 +114,7 @@ public final class DecisionGrammar {
         for(String id:submits)if(!targets.labels.containsKey(id)||submitActions.get(id)==null||!submitActions.get(id).queryAllowed())
             throw new IllegalArgumentException("submit is not a supplied query-labelled action");
         return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
-                targets,appLabels,authorization,background,submits,true,null,Collections.<String,String>emptyMap(),taskTools,successEligible);
+                targets,appLabels,authorization,background,submits,true,null,Collections.<String,String>emptyMap(),taskTools,successEligible,false,taskDoneStatuses);
     }
 
     /** Narrow nonterminal entry for a verified, finite native readiness phase.
@@ -150,9 +161,17 @@ public final class DecisionGrammar {
             Map<String,ObservedImeEnter> submitActions,ObservedTargetLabels targets,ObservedAppLabels appLabels,
             TaskAuthorization.Frame authorization,boolean background,Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,
             Map<String,String> exactPayloads,Set<String> taskTools,boolean successEligible){
+        return createFixedIntentAuthorized(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
+                submitActions,targets,appLabels,authorization,background,fixedTargets,exactPayloads,taskTools,successEligible,null);
+    }
+    public static DecisionGrammar createFixedIntentAuthorized(String observationId,String currentPackage,Set<String> shownApps,
+            Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
+            Map<String,ObservedImeEnter> submitActions,ObservedTargetLabels targets,ObservedAppLabels appLabels,
+            TaskAuthorization.Frame authorization,boolean background,Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,
+            Map<String,String> exactPayloads,Set<String> taskTools,boolean successEligible,Set<String> taskDoneStatuses){
         // Reuse the exact v5 validation for the existing node/action domain.
         DecisionGrammar checked=createImeAuthorized(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
-                submitActions,targets,appLabels,authorization,background,taskTools,successEligible);
+                submitActions,targets,appLabels,authorization,background,taskTools,successEligible,taskDoneStatuses);
         if(fixedTargets==null||fixedTargets.size()>2)throw new IllegalArgumentException("installed fixed targets required");
         Map<String,org.trillionnium.hepta.background.FixedIntentTarget> permitted=new TreeMap<String,org.trillionnium.hepta.background.FixedIntentTarget>();
         for(Map.Entry<String,org.trillionnium.hepta.background.FixedIntentTarget> entry:fixedTargets.entrySet()){
@@ -168,7 +187,7 @@ public final class DecisionGrammar {
         for(Map.Entry<String,String> payload:exactPayloads.entrySet())
             org.trillionnium.hepta.background.FixedIntentTools.forAction(payload.getKey()).validatePayload(payload.getValue());
         return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
-                targets,appLabels,authorization,background,checked.submitNodes,true,permitted,exactPayloads,taskTools,successEligible);
+                targets,appLabels,authorization,background,checked.submitNodes,true,permitted,exactPayloads,taskTools,successEligible,false,taskDoneStatuses);
     }
 
     private static DecisionGrammar createInternal(String observationId,String currentPackage,Set<String> shownApps,
@@ -202,6 +221,13 @@ public final class DecisionGrammar {
             Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
             ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization,boolean background,Set<String> submitNodes,boolean imeProtocol,
             Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,Map<String,String> exactPayloads,Set<String> taskTools,boolean successEligible,boolean boundedWait){
+        return createInternal(observationId,currentPackage,shownApps,clickableNodes,editableNodes,scrollActions,
+                targets,appLabels,authorization,background,submitNodes,imeProtocol,fixedTargets,exactPayloads,taskTools,successEligible,boundedWait,null);
+    }
+    private static DecisionGrammar createInternal(String observationId,String currentPackage,Set<String> shownApps,
+            Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,
+            ObservedTargetLabels targets,ObservedAppLabels appLabels,TaskAuthorization.Frame authorization,boolean background,Set<String> submitNodes,boolean imeProtocol,
+            Map<String,org.trillionnium.hepta.background.FixedIntentTarget> fixedTargets,Map<String,String> exactPayloads,Set<String> taskTools,boolean successEligible,boolean boundedWait,Set<String> taskDoneStatuses){
         if(boundedWait){
             if(!background||authorization==null||!authorization.allows("wait")||!imeProtocol||fixedTargets!=null
                     ||successEligible||!Collections.singleton("wait").equals(taskTools))
@@ -281,8 +307,11 @@ public final class DecisionGrammar {
         if(permitted(taskTools,"wait")&&(authorization==null||authorization.allows("wait"))){branches.add("wait");rule(rules,"wait",prefix("wait",observationId)+field("package",jsonValue(currentPackage))+comma()+field("duration_ms","duration")+ending());}
         if(permitted(taskTools,"done")){branches.add("done");rule(rules,"done",prefix("done",observationId)+field("package",jsonValue(currentPackage))+comma()+field("status","status")+comma()+field("summary","summary-string")+ending());}
         // A brief state assessment precedes action selection in the generated JSON.
-        boolean successAllowed=successEligible&&(authorization==null||authorization.successAllowed());
-        rule(rules,"status",alternatives(new TreeSet<String>(java.util.Arrays.asList(successAllowed?new String[]{"success","partial","failure"}:new String[]{"partial","failure"}))));
+        Set<String> doneStatuses=completionStatuses(authorization,successEligible,boundedWait?Collections.<String>emptySet():taskDoneStatuses);
+        if(permitted(taskTools,"done")){
+            if(doneStatuses.isEmpty())throw new IllegalArgumentException("terminal branch requires an allowed completion status");
+            rule(rules,"status",alternatives(doneStatuses));
+        }
         rule(rules,"duration","[1-9] [0-9]{2} | "+literal("1")+" [0-9]{3} | "+literal("2000"));
         rule(rules,"app-offset",literal("0")+" | [1-9] [0-9]{0,2} | [1-3] [0-9]{3} | "+literal("40")+" [0-8] [0-9] | "+literal("409")+" [0-5]");
         rule(rules,"query-string",literal("\"")+" json-char{0,64} "+literal("\""));
@@ -294,15 +323,26 @@ public final class DecisionGrammar {
         rules.append("json-char ::= [^\"\\\\\\x00-\\x1F] | "+literal("\\")+" [\"\\\\/bfnrt]\n");
         rule(rules,"ws","[ \\t\\n\\r]{0,8}");
         List<String> ruleNames=new ArrayList<String>();for(String branch:branches)ruleNames.add(branch.replace('_','-').replace('.','-'));
-        return new DecisionGrammar(targets,"root ::= ws ("+join(ruleNames," | ")+") ws\n"+rules.toString(),branches,scrolls,appLabels,authorization,submits,imeProtocol,fixedTargets,successAllowed);
+        return new DecisionGrammar(targets,"root ::= ws ("+join(ruleNames," | ")+") ws\n"+rules.toString(),branches,scrolls,appLabels,authorization,submits,imeProtocol,fixedTargets,doneStatuses);
     }
 
     /** Recheck the same immutable grammar predicate after native parsing and
      * immediately before controller dispatch. Service done has no phone effect;
      * accepting a report still requires the existing independent final gate. */
     public void requireCompletionStatus(ActionDecision action)throws ActionDecision.InvalidActionException{
-        if("done".equals(action.action)&&"success".equals(action.status)&&!successAllowed)
-            throw new ActionDecision.InvalidActionException("当前观察未满足本任务完成证据，done 只能报告 partial 或 failure");
+        if("done".equals(action.action)&&!doneStatuses.contains(action.status))
+            throw new ActionDecision.InvalidActionException("当前观察允许的 done 状态为 "+doneStatuses);
+    }
+
+    /** Domain restrictions intersect, rather than replace, OWNER and completion evidence. */
+    static Set<String> completionStatuses(TaskAuthorization.Frame authorization,boolean successEligible,Set<String> domainStatuses){
+        Set<String> statuses=new TreeSet<String>(java.util.Arrays.asList("failure","partial","success"));
+        if(domainStatuses!=null){
+            if(!statuses.containsAll(domainStatuses))throw new IllegalArgumentException("unknown completion status restriction");
+            statuses.retainAll(domainStatuses);
+        }
+        if(!successEligible||authorization!=null&&!authorization.successAllowed())statuses.remove("success");
+        return Collections.unmodifiableSet(statuses);
     }
 
     public boolean allowsSubmit(String nodeId){return submitNodes.contains(nodeId);}

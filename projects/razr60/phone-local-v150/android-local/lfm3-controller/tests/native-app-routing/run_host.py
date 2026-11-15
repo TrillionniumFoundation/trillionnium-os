@@ -110,7 +110,13 @@ def main():
         scope_record["native_route_ui_io_boundary_adapter"]={"input_sha256":sha(ui_before),"output_sha256":sha(ui_after),
             "change":"generated host declaration final removed only; actual extracted production methods unchanged",
             "selected_package_and_installed_choice":"explicit deterministic host IO; not Android installation evidence"}
-        entry += [source/"tests/native-app-routing/NativeAppRoutingEntryHostTest.java"]
+        terminal_fixture=out/"terminal-fixture";terminal_fixture.mkdir()
+        terminal_login=module(source/"tests/native-xiaomi-login/run_host.py","terminal_status_portable_login")
+        terminal_util=module(source/"tests/native-xiaomi-home-loading/run_host.py","terminal_status_fixture_utilities")
+        extraction["terminal_status_fixture"]=terminal_login.fixture(source,terminal_fixture,terminal_util)
+        entry += [source/"tests/native-app-routing/NativeAppRoutingEntryHostTest.java",
+                  source/"tests/native-app-routing/NativeTerminalStatusHostTest.java",
+                  terminal_fixture/"SyntheticXiaomiNativeLoginFixture.java"]
         entry=list(dict.fromkeys(Path(p).resolve() for p in entry));entry_classes=out/"entry-classes";entry_classes.mkdir()
         extraction["entry_extraction"]=scope_record;extraction["entry_compile_inputs"]=[str(p) for p in entry]
         write(out/"EXTRACTION.json",(json.dumps(extraction,indent=2)+"\n").encode())
@@ -119,9 +125,25 @@ def main():
         run("entry-cases",[jdk/"bin/java","-cp",entry_classes,
                            "org.trillionnium.hepta.local.NativeAppRoutingEntryHostTest",out/"entry-cases"],90)
         entry_cases=check_cases(out/"entry-cases/CASES.json","hepta.native-app-routing-entry-host.v1",EXPECTED_ENTRY)
+        run("terminal-status-cases",[jdk/"bin/java","-cp",entry_classes,
+                                     "org.trillionnium.hepta.local.NativeTerminalStatusHostTest",out/"terminal-status"])
+        terminal=json.loads((out/"terminal-status/RESULT.json").read_text())
+        require(terminal.get("schema")=="hepta.native-terminal-status-host.v1" and terminal.get("all_pass") is True
+                and terminal.get("baseline_counterfactual") is False and terminal.get("postparse_domain_mismatches")==0
+                and terminal.get("assertions")==98,
+                "actual terminal prompt/grammar/domain consistency gate")
+        grammar_rows=json.loads((out/"terminal-status/grammar-cases.json").read_text())
+        require(terminal["grammar_cases"]==len(grammar_rows)==69 and len({r["name"] for r in grammar_rows})==len(grammar_rows),
+                "complete unique terminal grammar matrix")
+        recognizer=module(source/"tests/action-grammar/gbnf_recognizer.py","terminal_status_independent_gbnf")
+        for row in grammar_rows:
+            require(recognizer.Recognizer(row["grammar"]).accepts(row["json"])==row["accepted"],
+                    "actual generated GBNF status mismatch: "+row["name"])
+        terminal["independent_gbnf_cases"]=len(grammar_rows)
+        write(out/"terminal-status/GBNF-RESULT.json",(json.dumps(terminal,indent=2)+"\n").encode())
         cases={"schema":"hepta.native-app-routing-host.v1","all_pass":True,"cases":pure_cases["cases"]+entry_cases["cases"],
                "assertions":pure_cases["assertions"]+entry_cases["assertions"],"case_names":EXPECTED_PURE+EXPECTED_ENTRY,
-               "pure":pure_cases,"entry":entry_cases,"phone_operations":0,"android_runtime":False,"provider_or_business_verified":False}
+                "pure":pure_cases,"entry":entry_cases,"terminal_status":terminal,"phone_operations":0,"android_runtime":False,"provider_or_business_verified":False}
         write(out/"CASES.json",(json.dumps(cases,ensure_ascii=False,indent=2)+"\n").encode())
         record["cases"]=cases;record["all_pass"]=True
     except Exception as error:

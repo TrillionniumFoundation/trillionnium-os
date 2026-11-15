@@ -45,6 +45,15 @@ final class NativeAppDomain {
     Set<String> edits(Set<String> original){Set<String> out=new TreeSet<String>(original);out.retainAll(editValues.keySet());return out;}
     Set<String> openPackages(Set<String> original){return Collections.emptySet();}
     <T> Map<String,T> noNodeActions(Map<String,T> original){return Collections.emptyMap();}
+    /** The same phase restriction used by requireCurrent; this grants no action. */
+    Set<String> doneStatuses(){
+        if(NativeXiaomiProductPage.HOME_LOADING.equals(phase))return Collections.emptySet();
+        if(NativeXiaomiProductPage.HOME_LOADING_EXHAUSTED.equals(phase)
+                ||NativeXiaomiProductPage.LOGIN.equals(phase)||NativeXiaomiProductPage.LOGIN_BLOCKED.equals(phase))
+            return Collections.singleton("failure");
+        return Collections.unmodifiableSet(new TreeSet<String>(java.util.Arrays.asList(resultReady
+                ?new String[]{"failure","partial","success"}:new String[]{"failure","partial"})));
+    }
     Set<String> toolMask(Set<String> original){Set<String> out=new TreeSet<String>(
             java.util.Arrays.asList("click","type","back","wait","done"));
         if(original!=null)out.retainAll(original);
