@@ -14,7 +14,11 @@ assert not re.sub(r'"(?:[^"\\]|\\.)*"',"",matched.group(1)).replace("+","").stri
 system="".join(json.loads(part) for part in parts)
 menu=[line for line in system.splitlines() if line.startswith("工具：")]
 assert len(menu)==1 and "done(status,summary)" in menu[0]
-assert "status=success" in system and "不能完成用partial或failure" in system
+assert "status=success" in system
+assert "done.status只能选completion.allowed_done_statuses" in system
+assert "不能完成时选择其中允许的非success状态" in system
+assert "集合为空时不能done" in system
+assert "不能完成用partial或failure" not in system
 assert "仅在加载时等100..2000毫秒" in menu[0]
 assert "done须同时含status和summary" in system
 assert "action必须是工具名字符串、不能null" in system

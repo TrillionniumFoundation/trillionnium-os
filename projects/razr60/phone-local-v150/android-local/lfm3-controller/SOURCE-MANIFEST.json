@@ -5,9 +5,44 @@
     "component_tree": "08f3d1c32944f834530b659cb6c3b7ec12c00039",
     "source_manifest_sha256": "bf99aebd7009d29cad75f3b796af4005084f30219aff61929cb905c4b214d991"
   },
-  "candidate_status": "local_usability_spacing_and_terminal_domains_pending_fresh_published_head_host_mac_android_phone_acceptance",
+  "candidate_status": "local_usability_completion_protocol_contract_pending_fresh_published_head_host_mac_android_phone_acceptance",
   "candidate_version_assigned": true,
   "complete_source_files": 1891,
+  "completion_protocol_contract_amendment": {
+    "changed_nonmanifest_paths": [
+      "tests/action-grammar/test_completion_protocol.py"
+    ],
+    "compiler_exit_and_count_criteria_unchanged": true,
+    "failed_original_ci": {
+      "checks_attempted": 56,
+      "checks_passed": 55,
+      "failed_check": "completion-protocol",
+      "failure_preserved": true,
+      "job_id": 132711323828,
+      "original_host_receipt_sha256": "1cebe505631a5d7709d8336dc6c232bb963f39cbd6f638b95c3f25157fb48481",
+      "run_attempt": 1,
+      "run_id": 43679686022
+    },
+    "fresh_exact_head_full_ci_pending": true,
+    "independent_local_result_sha256": "7a7ed75b0bc6823bb60302a158fe4d21bbdb06b53762522321650162737e594c",
+    "model_inference_performed": false,
+    "new_text_contract": [
+      "preserve success marker",
+      "require the current allowed_done_statuses domain",
+      "require an allowed nonsuccess terminal status for incomplete work",
+      "forbid done when the set is empty",
+      "reject the obsolete unconditional terminal guidance"
+    ],
+    "normal_git_parent": "c60c592d72815ef9be91da3f99c9e90e7d41c06d",
+    "obsolete_unconditional_partial_failure_text_requirement_replaced": true,
+    "original_canonical108_and_native19_entry_counts_unchanged": true,
+    "original_nonobsolete_assertions_and_grammar_samples_retained": true,
+    "original_test_counterfactual_failed": true,
+    "phone_validation_pending": true,
+    "production_source_changed": false,
+    "prompt_contract_mutations_rejected": 4,
+    "updated_full_test_passed": true
+  },
   "current_validation": {
     "frozen_head_host_gates_pending": true,
     "full_android_build": false,
@@ -6782,9 +6817,9 @@
       "sha256": "7b08cc03343bff4434db8b47e90631a21e36046d1e25220ae469ec75574646da"
     },
     {
-      "bytes": 2630,
+      "bytes": 2826,
       "path": "tests/action-grammar/test_completion_protocol.py",
-      "sha256": "5f8de2069de93ac63d2780308ca8810fd2e764edd142b5354831fe16859f2f61"
+      "sha256": "4496d33d76ce5aa1c1c63ffd3e04a000dd5c461c1d245a0351d7e154719041a9"
     },
     {
       "bytes": 10970,
@@ -11090,12 +11125,12 @@
       "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
       "git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
       "path": ".github/workflows/hepta-local-android.yml",
-      "prior_commit": "1c116343597aa752d76cf25aeaf1c718f4488dbe",
+      "prior_commit": "c60c592d72815ef9be91da3f99c9e90e7d41c06d",
       "prior_git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
       "sha256": "cf6f060c5284ce50e23f7702fd95f07a008e67a690fa1ec763deda0f3b482aca"
     },
     "native_host_gate_contract_sha256": "1ffbb2582004dfbfb522e3347d468b23d75e9de39d8bde00371e0e0cf96dc204",
-    "normal_git_parent": "1c116343597aa752d76cf25aeaf1c718f4488dbe",
+    "normal_git_parent": "c60c592d72815ef9be91da3f99c9e90e7d41c06d",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
