@@ -5907,9 +5907,9 @@
       "sha256": "f344fbdd76154a086f4103868231203746056f2133331a54c48dac5e251d559e"
     },
     {
-      "bytes": 45061,
+      "bytes": 46271,
       "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
-      "sha256": "c1b8dcdf3ac1a2047aebf257d2db6f0ad4f5fb7683bcfb70db699ad7a15e6b0e"
+      "sha256": "00ce8e87e6a30fb1b26d9d65e5fe677b8f9b0c86bf44d66376f0b02d0df93158"
     },
     {
       "bytes": 7520,
@@ -6902,9 +6902,9 @@
       "sha256": "19342c87ed194d786de7c9c4fc467c154ba042753ec2202ad3580d4dfb4d359e"
     },
     {
-      "bytes": 31073,
+      "bytes": 41878,
       "path": "tests/background-session/BackgroundSessionHostTest.java",
-      "sha256": "97761e57bb423d9c57bf1049798551d5368befae44ce167fcd76670974b150d2"
+      "sha256": "3dc9afdd8143ceb458f92ea33bfd85ad5a5dc6b22cba3e59b76ed8af343a1a90"
     },
     {
       "bytes": 8825,
@@ -6912,9 +6912,9 @@
       "sha256": "7506f5479c1af59b05919976a9ffca1ba1f62cd5458dd9ec6884a7819bdf2fc3"
     },
     {
-      "bytes": 9491,
+      "bytes": 9812,
       "path": "tests/background-session/prepare_fixture.py",
-      "sha256": "0485ff322cd006d76003856c07c118f038c5e6a9456c3d0efad18e512252bb41"
+      "sha256": "0ce14082cd5cbfbea59f59fbed887ec310569d820703e7d1ea11e6ce9c3506cd"
     },
     {
       "bytes": 2775,

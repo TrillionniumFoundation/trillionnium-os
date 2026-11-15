@@ -54,6 +54,21 @@ public final class BackgroundSessionHostTest {
         if("ACTIVE".equals(state))value.put("display_policy_readback",policy(generation,id));
         return frame(value.toString().getBytes(StandardCharsets.UTF_8));
     }
+    static void bootstrap(Env e,HeptaAccessibilityService.Cancellation cancellation,long deadline)throws Exception{
+        invoke(e.session,"startBrokerSession",new Class<?>[]{HeptaAccessibilityService.Cancellation.class,long.class},cancellation,deadline);
+    }
+    static byte[] bootstrapResponse(Env e,byte[] request,String state,boolean dispatched)throws Exception{
+        JSONObject value=decode(response(request,state,7,true,dispatched));
+        // The lease expiry is fixed at construction, even when transport advances the host clock.
+        value.put("expires_elapsed_ms",e.session.expiresElapsed);
+        return frame(value.toString().getBytes(StandardCharsets.UTF_8));
+    }
+    static void boundary(String name,Runnable hook){
+        if("connect".equals(name))LocalSocket.onConnect=hook;
+        else if("peer".equals(name))LocalSocket.onPeer=hook;
+        else if("output".equals(name))LocalSocket.onOutput=hook;
+        else throw new AssertionError("unknown transport boundary");
+    }
     static final String ATTEMPT="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     static JSONObject fixedResponse(byte[] request,org.trillionnium.hepta.background.FixedIntentTarget target)throws Exception{
         JSONObject req=decode(request);JSONObject value=decode(response(request,"ACTIVE",7,true,true));
@@ -132,6 +147,95 @@ public final class BackgroundSessionHostTest {
             finally{LocalProbeApplication.permissionBusy=false;}
         }});
         test("start_cannot_block_main_thread",()->{try(Env e=new Env()){rejects(()->e.session.start(()->false));check(!e.journalPresent()&&LocalSocket.connections==0,"no process or transport before thread check");}});
+        test("bootstrap_success_preserves_owner_target_and_durable_lease",()->{try(Env e=new Env()){
+            e.journal();LocalSocket.responder=req->{JSONObject sent=decode(req);
+                if("create".equals(sent.getString("op")))e.context.displays.displays.put(7,new Display(7,e.session.displayName));
+                return bootstrapResponse(e,req,"ACTIVE","launch".equals(sent.getString("op")));};
+            bootstrap(e,()->false,SystemClock.now+4500);
+            check(LocalSocket.connections==2&&LocalSocket.closedWrites.size()==2&&e.session.displayId()==7&&e.journalPresent(),"bootstrap state or lease missing");
+            JSONObject create=decode(LocalSocket.closedWrites.get(0)),launch=decode(LocalSocket.closedWrites.get(1));
+            check("create".equals(create.getString("op"))&&create.length()==5&&create.getLong("deadline_elapsed_ms")==1003000,"create wire or original budget changed");
+            check("launch".equals(launch.getString("op"))&&PKG.equals(launch.getString("package"))&&launch.length()==6&&launch.getLong("deadline_elapsed_ms")==1004000,"owner target or launch budget changed");
+            check(e.session.evidence().getBoolean("bootstrap_dispatched")&&!e.session.evidence().getBoolean("bootstrap_model_issued"),"bootstrap dispatch provenance lost");
+        }});
+        for(String operation:new String[]{"create","launch"})for(String at:new String[]{"connect","peer","output"})
+            test("bootstrap_cancel_"+operation+"_during_"+at+"_writes_nothing",()->{try(Env e=new Env()){
+                e.journal();final boolean[] cancelled={false};final int attempt="create".equals(operation)?1:2;
+                boundary(at,()->{if(LocalSocket.connections==attempt)cancelled[0]=true;});
+                LocalSocket.responder=req->{JSONObject sent=decode(req);
+                    if("create".equals(sent.getString("op")))e.context.displays.displays.put(7,new Display(7,e.session.displayName));
+                    return bootstrapResponse(e,req,"ACTIVE","launch".equals(sent.getString("op")));};
+                rejects(()->bootstrap(e,()->cancelled[0],SystemClock.now+4500));
+                check(LocalSocket.connections==attempt&&LocalSocket.closedWrites.size()==attempt&&LocalSocket.closedWrites.get(attempt-1).length==0,"cancelled bootstrap wrote bytes or retried");
+                check(e.journalPresent()&&!e.session.released()&&!e.session.evidence().getBoolean("bootstrap_dispatched"),"stop discarded lease or invented successful launch");
+            }});
+        for(String operation:new String[]{"create","launch"})for(String at:new String[]{"connect","output"})
+            test("bootstrap_deadline_"+operation+"_during_"+at+"_writes_nothing",()->{try(Env e=new Env()){
+                e.journal();final int attempt="create".equals(operation)?1:2;final long deadline=SystemClock.now+("create".equals(operation)?3000:4000);
+                boundary(at,()->{if(LocalSocket.connections==attempt)SystemClock.now=deadline;});
+                LocalSocket.responder=req->{JSONObject sent=decode(req);
+                    if("create".equals(sent.getString("op")))e.context.displays.displays.put(7,new Display(7,e.session.displayName));
+                    return bootstrapResponse(e,req,"ACTIVE","launch".equals(sent.getString("op")));};
+                rejects(()->bootstrap(e,()->false,1004500));
+                check(LocalSocket.connections==attempt&&LocalSocket.closedWrites.get(attempt-1).length==0,"expired original bootstrap deadline wrote bytes or retried");
+                check(e.journalPresent()&&!e.session.released(),"deadline discarded a potentially live lease");
+            }});
+        test("bootstrap_connect_retry_preserves_original_connect_deadline",()->{try(Env e=new Env()){
+            e.journal();final long deadline=SystemClock.now+4500;
+            LocalSocket.onConnect=()->{LocalSocket.missing=LocalSocket.connections==1;if(LocalSocket.missing)SystemClock.now+=2000;};
+            LocalSocket.responder=req->{JSONObject sent=decode(req);
+                if("create".equals(sent.getString("op"))){check(sent.getLong("deadline_elapsed_ms")==deadline,"connect retry minted a later create deadline");e.context.displays.displays.put(7,new Display(7,e.session.displayName));}
+                return bootstrapResponse(e,req,"ACTIVE","launch".equals(sent.getString("op")));};
+            bootstrap(e,()->false,deadline);
+            check(LocalSocket.connections==3&&LocalSocket.closedWrites.get(0).length==0&&"create".equals(decode(LocalSocket.closedWrites.get(1)).getString("op"))&&"launch".equals(decode(LocalSocket.closedWrites.get(2)).getString("op")),"only absent pre-dispatch connection may retry");
+        }});
+        test("bootstrap_expired_connect_window_has_no_second_attempt",()->{try(Env e=new Env()){
+            e.journal();final long deadline=SystemClock.now+4500;LocalSocket.onConnect=()->{LocalSocket.missing=true;SystemClock.now=deadline;};
+            rejects(()->bootstrap(e,()->false,deadline));
+            check(LocalSocket.connections==1&&LocalSocket.closedWrites.get(0).length==0&&e.journalPresent(),"expired connect window retried or erased lease");
+        }});
+        test("bootstrap_create_and_launch_cannot_extend_lease_expiry",()->{try(Env e=new Env()){
+            e.journal();SystemClock.now=e.session.expiresElapsed-1000;
+            LocalSocket.responder=req->{JSONObject sent=decode(req);check(sent.getLong("deadline_elapsed_ms")==e.session.expiresElapsed,"bootstrap deadline exceeded original lease");
+                if("create".equals(sent.getString("op")))e.context.displays.displays.put(7,new Display(7,e.session.displayName));
+                return bootstrapResponse(e,req,"ACTIVE","launch".equals(sent.getString("op")));};
+            bootstrap(e,()->false,e.session.expiresElapsed);check(LocalSocket.connections==2,"bounded bootstrap did not complete");
+        }});
+        for(String failure:new String[]{"cancelled_reply","timed_out_reply","late_reply"})for(boolean removed:new boolean[]{false,true})
+            test("bootstrap_uncertain_create_"+failure+"_cleanup_removed_"+removed,()->{try(Env e=new Env()){
+                e.journal();final boolean[] cancelled={false};
+                LocalSocket.responder=req->{check("create".equals(decode(req).getString("op")),"uncertain create proceeded to launch");
+                    e.context.displays.displays.put(7,new Display(7,e.session.displayName));
+                    if("timed_out_reply".equals(failure))throw new java.net.SocketTimeoutException("display created but reply lost");
+                    if("cancelled_reply".equals(failure))cancelled[0]=true;
+                    if("late_reply".equals(failure))SystemClock.now+=3000;
+                    return bootstrapResponse(e,req,"ACTIVE",false);};
+                rejects(()->bootstrap(e,()->cancelled[0],1004500));
+                check(LocalSocket.connections==1&&LocalSocket.closedWrites.size()==1&&"create".equals(decode(LocalSocket.closedWrites.get(0)).getString("op")),"uncertain create was replayed");
+                check(e.session.displayId()==-1&&e.journalPresent()&&!e.session.released(),"unobserved display was accepted or lease discarded");
+                LocalSocket.responder=req->{check("close".equals(decode(req).getString("op")),"cleanup replayed bootstrap");
+                    if(removed)e.context.displays.displays.clear();return bootstrapResponse(e,req,"RELEASED",false);};
+                BackgroundSession.Cleanup cleanup=e.session.close();
+                check(LocalSocket.connections==2&&cleanup.known==removed&&e.session.released()==removed&&e.journalPresent()!=removed,"cleanup needs broker receipt AND display absence, even after cancellation");
+            }});
+        for(String failure:new String[]{"cancelled_reply","timed_out_reply","late_reply"})for(boolean removed:new boolean[]{false,true})
+            test("bootstrap_uncertain_launch_"+failure+"_cleanup_removed_"+removed,()->{try(Env e=new Env()){
+                e.journal();final boolean[] cancelled={false};
+                LocalSocket.responder=req->{String op=decode(req).getString("op");
+                    if("create".equals(op)){e.context.displays.displays.put(7,new Display(7,e.session.displayName));return bootstrapResponse(e,req,"ACTIVE",false);}
+                    check("launch".equals(op),"unexpected bootstrap operation");
+                    if("timed_out_reply".equals(failure))throw new java.net.SocketTimeoutException("launch dispatched but reply lost");
+                    if("cancelled_reply".equals(failure))cancelled[0]=true;
+                    if("late_reply".equals(failure))SystemClock.now+=4000;
+                    return bootstrapResponse(e,req,"ACTIVE",true);};
+                rejects(()->bootstrap(e,()->cancelled[0],1004500));
+                check(LocalSocket.connections==2&&LocalSocket.closedWrites.size()==2&&"launch".equals(decode(LocalSocket.closedWrites.get(1)).getString("op")),"uncertain bootstrap launch was replayed");
+                check(e.session.displayId()==7&&e.journalPresent()&&!e.session.released()&&"create".equals(e.session.evidence().getJSONObject("last_broker_response").getString("operation")),"uncertain launch was accepted or lease discarded");
+                LocalSocket.responder=req->{check("close".equals(decode(req).getString("op")),"cleanup replayed bootstrap launch");
+                    if(removed)e.context.displays.displays.clear();return bootstrapResponse(e,req,"RELEASED",false);};
+                BackgroundSession.Cleanup cleanup=e.session.close();
+                check(LocalSocket.connections==3&&cleanup.known==removed&&e.session.released()==removed&&e.journalPresent()!=removed,"uncertain launch needs broker release AND display absence despite cancellation");
+            }});
         test("android_timeout_requires_created_socket",()->{try(LocalSocket socket=new LocalSocket()){
             try{socket.setSoTimeout(3500);throw new AssertionError("uncreated socket accepted timeout");}
             catch(IOException expected){check("socket not created".equals(expected.getMessage()),"wrong Android lifecycle failure");}

@@ -198,16 +198,20 @@ final class BackgroundSession {
         brokerOutputThread=new Thread(brokerOutput,"hepta-background-broker-output");
         brokerOutputThread.setDaemon(true);brokerOutputThread.start();
         long connectDeadline=Math.min(expiresElapsed,SystemClock.elapsedRealtime()+4500);
+        startBrokerSession(cancellation,connectDeadline);
+    }
+    /** Bootstrap transport after the durable lease and owned broker process have been created. */
+    private void startBrokerSession(HeptaAccessibilityService.Cancellation cancellation,long connectDeadline)throws Exception{
         Exception connectionFailure=null;
         while(SystemClock.elapsedRealtime()<connectDeadline){
             if(cancellation.isCancelled())throw new IllegalStateException("任务已停止，正在释放后台空间");
-            try{JSONObject response=call("create",null,3000);accept(response,true);connectionFailure=null;break;}
+            try{JSONObject response=call("create",null,3000,cancellation,connectDeadline);accept(response,true);connectionFailure=null;break;}
             catch(ConnectionUnavailable error){connectionFailure=error;SystemClock.sleep(80);}
         }
         if(connectionFailure!=null||!"ACTIVE".equals(state))throw new IOException("手机后台执行服务未就绪；请确认本机已允许 Hepta 的 su 请求",connectionFailure);
         requireActive();saveJournal();
         if(cancellation.isCancelled())throw new IllegalStateException("任务已停止，正在释放后台空间");
-        JSONObject launch=call("launch",selection.initialPackage,4000);bootstrapDispatched=launch.optBoolean("dispatched",false);
+        JSONObject launch=call("launch",selection.initialPackage,4000,cancellation,expiresElapsed);bootstrapDispatched=launch.optBoolean("dispatched",false);
         accept(launch,true);requireActive();saveJournal();
     }
     /** No model-issued action can change the immutable package/display binding. */
@@ -348,6 +352,16 @@ final class BackgroundSession {
                 .put("generation",generation).put("deadline_elapsed_ms",SystemClock.elapsedRealtime()+budget).put("op",operation);
         if(pkg!=null)request.put("package",pkg);
         return exchange(socketName,generation,request,budget+500);
+    }
+    /** Keep bootstrap cancellation and the original connect/lease deadline through connect, proof, write and read.
+     * Cleanup deliberately retains the cancellation-independent call above: a possibly created display still needs release proof. */
+    private JSONObject call(String operation,String pkg,int budget,HeptaAccessibilityService.Cancellation cancellation,
+            long originalDeadline)throws Exception{
+        long deadline=boundedActionDeadline(Math.min(originalDeadline,expiresElapsed),budget);
+        JSONObject request=new JSONObject().put("version",1).put("request_id",UUID.randomUUID().toString())
+                .put("generation",generation).put("deadline_elapsed_ms",deadline).put("op",operation);
+        if(pkg!=null)request.put("package",pkg);
+        return exchange(socketName,generation,request,budget+500,cancellation);
     }
     private static final class ConnectionUnavailable extends IOException {
         private static final long serialVersionUID=1L;
