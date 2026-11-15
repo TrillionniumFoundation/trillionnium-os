@@ -304,7 +304,7 @@ public final class LocalTaskController implements AutoCloseable {
                 // Includes fresh observations after stale/undispatched proposals.
                 // Observation evidence can advance a stage; it never replays an action.
                 completion.observed(completionFrame(before));
-                record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-before.json",steps),before.toJson());
+                record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-before.json",steps),before.toEvidenceJson());
                 PromptFrame frame=prompt(instruction,apps,before,history,lastTransition,lastModelDecision,null,config,repeatGuard,noEffectGuard,authorization.frame(),scope.config,service.fixedIntentTargets(taskId,authorization.frame()),completion,notesPhase,calculatorInput);
                 String prompt=frame.text;
                 ActionDecision action=null;String decisionRunId=null;
@@ -451,7 +451,7 @@ public final class LocalTaskController implements AutoCloseable {
                 if(ActionPolicy.isReadOnlyDiscovery(action))row.put("query",action.query).put("offset",action.offset).put("read_only",true).put("dispatched",false)
                         .put("find_returned",outcome.appCatalogue.apps.size()).put("find_matches",outcome.appCatalogue.matchingApps)
                         .put("find_catalogue_sha256",outcome.appCatalogue.catalogueSha256);
-                history.put(row);record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-after.json",steps),observation.toJson());
+                history.put(row);record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-after.json",steps),observation.toEvidenceJson());
                 if(completionInstalled!=null)try{completionInstalled.verify(service);}catch(Exception changed){completion.invalidateInstalled("installed_notes_identity_changed");}
                 completion.action(steps,decisionRunId,action,outcome.accepted,outcome.dispatched,outcome.stale,
                         completionFrame(before),completionFrame(observation),completionFixed(outcome.fixedIntent));
@@ -516,7 +516,7 @@ public final class LocalTaskController implements AutoCloseable {
                         if(!check.retryAllowed||steps>=MAX_STEPS){finalStatus="partial";break;}
                         emit("完成证据尚不完整，正在重新观察并继续原任务…");
                         observation=awaitObservation(taskId,evidence,authorization,deadline);completion.observed(completionFrame(observation));
-                        record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-completion-reobserve.json",steps),observation.toJson());
+                        record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-completion-reobserve.json",steps),observation.toEvidenceJson());
                         lastTransition=observedTransition(steps,before,observation);continue;
                     }
                     finalStatus="partial".equals(action.status)?"partial":"failed";
@@ -751,7 +751,7 @@ public final class LocalTaskController implements AutoCloseable {
                         :prefix+"-observation-"+(count+1)+".json";
                 // Preserve every returned raw frame before checking whether it
                 // can authorize this workflow; rejected frames remain diagnosable.
-                if(count>0)record(directory,file,current.toJson());
+                if(count>0)record(directory,file,current.toEvidenceJson());
                 lastObservationFile=file;
                 JSONObject sample=new JSONObject().put("observation_id",current.id).put("window_id",current.windowId)
                         .put("display_id",current.windowMetadata.displayId).put("observation_file",file)
@@ -831,7 +831,7 @@ public final class LocalTaskController implements AutoCloseable {
                     PhoneObservation current=awaitObservation(task,directory,auth,deadline);
                     latest[0]=current;latestFrame[0]=workflowObservation(current);completion.observed(latestFrame[0].frame);
                     if(++observations[0]>5)throw new IllegalStateException("Notes workflow read bound exceeded");
-                    record(directory,prefix+"-observation-"+observations[0]+".json",current.toJson());return latestFrame[0];
+                    record(directory,prefix+"-observation-"+observations[0]+".json",current.toEvidenceJson());return latestFrame[0];
                 }
                 public void checkpoint(String name,java.util.Map<String,Object> evidence)throws Exception{
                     checkActive(deadline);service.requireTaskAuthorization(task,auth);
@@ -854,7 +854,7 @@ public final class LocalTaskController implements AutoCloseable {
                         throw new IllegalStateException("Notes child repeats an unchanged effect");
                     domain.requireTextOnlyClick(decision);domain.phaseDomain.requireCurrent(decision);domain.calculatorDomain.requireCurrent(decision);
                     String childPrefix=String.format(java.util.Locale.ROOT,"step-%02d-tool-child-%02d",grant.parentStep,child.ordinal);
-                    record(directory,childPrefix+"-before.json",before.toJson());childBefore.put(child.id,before);
+                    record(directory,childPrefix+"-before.json",before.toEvidenceJson());childBefore.put(child.id,before);
                     HeptaAccessibilityService.ActionOutcome outcome=awaitAction(task,before,decision,domain.targets,null,auth,grant.parentRunId,deadline);
                     JSONObject raw=new JSONObject().put("schema",NotesCreateWorkflow.CHILD_SCHEMA).put("actor_kind","tool_child").put("model_issued",false)
                             .put("parent_model_run_id",grant.parentRunId).put("parent_fixed_intent_attempt_id",grant.attemptId)
@@ -879,7 +879,7 @@ public final class LocalTaskController implements AutoCloseable {
                     String childPrefix=String.format(java.util.Locale.ROOT,"step-%02d-tool-child-%02d",grant.parentStep,child.call.ordinal);
                     if(child.after!=null){
                         if(child.after!=latestFrame[0])throw new IllegalStateException("Notes child after observation was replaced");
-                        record(directory,childPrefix+"-after.json",latest[0].toJson());
+                        record(directory,childPrefix+"-after.json",latest[0].toEvidenceJson());
                         PhoneObservation before=childBefore.get(child.call.id);if(before==null)throw new IllegalStateException("Notes child before missing");
                         ActionDecision decision=child.call.decision();repeat.observed(decision,before.state,latest[0].state);
                         noEffect.observed(decision,before.packageName,before.state,latest[0].packageName,latest[0].state,
@@ -1017,7 +1017,7 @@ public final class LocalTaskController implements AutoCloseable {
         NativeAppSession nativeTask=activeNativeTask;
         if(nativeTask!=null){
             // Preserve the raw actual frame before any provider/transition check.
-            JSONObject original=observed.toJson();
+            JSONObject original=observed.toEvidenceJson();
             record(directory,"native-app-frame-"+observed.id+".json",original);
             String sourceSha=HeptaAccessibilityService.sha(original.toString(2).getBytes(StandardCharsets.UTF_8));
             nativeTask.observed(NativeAppObservation.copy(id,authorization,activeNativeBackground,observed,completionFrame(observed),sourceSha));
@@ -1064,7 +1064,7 @@ public final class LocalTaskController implements AutoCloseable {
             }
             PhoneObservation result=value.get();if(result==null)throw new IllegalStateException("没有取得屏幕观察");
             try{service.requireTaskAuthorization(id,authorization);service.requireScopeObservation(id,result);service.requireBackgroundObservation(id,result);service.requireAuthorizationObservation(id,authorization,result);}
-            finally{record(directory,"scope-observation-"+result.id+".json",new JSONObject().put("observation",result.toJson())
+            finally{record(directory,"scope-observation-"+result.id+".json",new JSONObject().put("observation",result.toEvidenceJson())
                     .put("qualification_scope",service.qualificationScopeEvidence(id)).put("task_authorization",new JSONObject(authorization.evidence()))
                     .put("background_session",service.backgroundEvidence(id)==null?JSONObject.NULL:service.backgroundEvidence(id)));}
             return result;
@@ -1123,7 +1123,7 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("original_accepted",outcome.accepted).put("original_dispatched",outcome.dispatched).put("original_detail",outcome.detail)
                     .put("effect_retried",false).put("completion_advanced",false).put("observation_attempts",1).put("observed",false);
             PhoneObservation after=awaitObservationRaw(task,directory,auth,Math.min(deadline,SystemClock.elapsedRealtime()+3500));
-            JSONObject raw=after.toJson();String name=String.format(java.util.Locale.ROOT,"step-%02d-failed-after.json",step);
+            JSONObject raw=after.toEvidenceJson();String name=String.format(java.util.Locale.ROOT,"step-%02d-failed-after.json",step);
             record(directory,name,raw);
             diagnostic.put("observed",true).put("observation_id",after.id).put("observation_file",name)
                     .put("observation_sha256",HeptaAccessibilityService.sha(raw.toString(2).getBytes(StandardCharsets.UTF_8)));

@@ -340,11 +340,20 @@ public final class PhoneObservation {
         while(keys.hasNext())actual.add(keys.next());require(actual.equals(expected),"exact Selection projection fields required");
     }
     private static void require(boolean value,String reason){if(!value)throw new IllegalArgumentException(reason);}
-    /** Node content is untrusted screen data, never a replacement instruction. */
+    /** Existing frame semantics used by page comparisons; node content remains untrusted. */
     public JSONObject toJson() throws JSONException {
+        return json(false);
+    }
+    /** Journal evidence retains the original capture clock and lineage without granting freshness. */
+    public JSONObject toEvidenceJson() throws JSONException {
+        return json(true);
+    }
+    private JSONObject json(boolean includeCaptureEvidence) throws JSONException {
         JSONObject value=new JSONObject();value.put("observation_id",id);value.put("package",packageName);
-        value.put("captured_elapsed_ms",capturedElapsedMillis);
-        if(captureEvidenceRaw!=null)value.put("capture",new JSONObject(captureEvidenceRaw));
+        if(includeCaptureEvidence){
+            value.put("captured_elapsed_ms",capturedElapsedMillis);
+            if(captureEvidenceRaw!=null)value.put("capture",new JSONObject(captureEvidenceRaw));
+        }
         value.put("screen_width",width);value.put("screen_height",height);value.put("rotation",rotation);
         value.put("window_id",windowId);value.put("screen_sha256",screenshotSha256);
         value.put("window",windowJson());

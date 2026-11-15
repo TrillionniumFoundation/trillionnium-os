@@ -44,33 +44,41 @@ final class ObservationEvidenceHost {
             if(cause instanceof Error)throw (Error)cause;throw failure;
         }
     }
+    private static JSONObject journal(PhoneObservation value)throws Exception{
+        // Keep the original R17 counterfactual compilable; it fails the pipeline before this call.
+        return (JSONObject)PhoneObservation.class.getDeclaredMethod("toEvidenceJson").invoke(value);
+    }
     private static void refused(Map<String,Object> value)throws Exception{
         boolean rejected=false;try{current(value);}catch(IllegalArgumentException expected){rejected=true;}
         check(rejected,"invalid capture metadata accepted by actual constructor");
     }
     static void run()throws Exception{
         SnapshotChecks.run("actual_observation_legacy_constructor_keeps_age_without_invented_capture",()->{
-            PhoneObservation value=legacy();JSONObject json=value.toJson();
+            PhoneObservation value=legacy();JSONObject json=journal(value);
             check(value.capturedElapsedMillis==1000L&&json.getLong("captured_elapsed_ms")==1000L,"original capture age lost in evidence");
             check(!json.has("capture"),"legacy constructor invented capture lineage");
+            check(!value.toJson().has("captured_elapsed_ms")&&!value.toJson().has("capture"),
+                "legacy semantic frame acquired journal-only clocks");
             check(json.getJSONArray("nodes").length()==0&&!json.getBoolean("nodes_truncated"),"legacy observed nodes changed");
         });
         SnapshotChecks.run("actual_observation_serializes_history_without_freshness_or_effect_grant",()->{
-            PhoneObservation value=current(evidence());JSONObject json=value.toJson(),e=json.getJSONObject("capture");
+            PhoneObservation value=current(evidence());JSONObject json=journal(value),e=json.getJSONObject("capture");
             check(json.getLong("captured_elapsed_ms")==1000L&&e.getLong("capture_requested_elapsed_ms")==1000L,"publish replaced capture time");
             check(e.getLong("published_elapsed_ms")==1600L&&e.getLong("capture_age_at_publication_ms")==600L,"historical age not preserved");
+            check(value.toJson().toString().equals(legacy().toJson().toString()),
+                "non-null capture metadata changed the existing frame semantics");
             check(!e.getBoolean("publication_refreshes_capture_age")&&!e.getBoolean("grants_action_authority")
                 &&!e.getBoolean("business_completion_verified")&&e.getBoolean("fresh_action_validation_required"),"evidence acquired authority");
         });
         SnapshotChecks.run("actual_observation_freezes_input_and_returns_independent_json",()->{
             Map<String,Object> v=evidence(),nested=new LinkedHashMap<String,Object>();nested.put("value","before");
             List<Object> list=new ArrayList<Object>();list.add(nested);v.put("fixture_nested_values",list);
-            PhoneObservation value=current(v);String original=value.toJson().toString();
+            PhoneObservation value=current(v);String original=journal(value).toString();
             nested.put("value","after");list.add("new");v.put("published_elapsed_ms",Long.valueOf(9000));
-            check(original.equals(value.toJson().toString()),"caller mutated frozen observation evidence");
-            JSONObject returned=value.toJson();returned.getJSONObject("capture").put("published_elapsed_ms",9000);
+            check(original.equals(journal(value).toString()),"caller mutated frozen observation evidence");
+            JSONObject returned=journal(value);returned.getJSONObject("capture").put("published_elapsed_ms",9000);
             returned.put("captured_elapsed_ms",9000);
-            check(original.equals(value.toJson().toString()),"returned JSON changed original observation evidence");
+            check(original.equals(journal(value).toString()),"returned JSON changed original observation evidence");
         });
         SnapshotChecks.run("actual_observation_rejects_capture_age_replacement_and_nonlong_time",()->{
             Map<String,Object> v=evidence();v.put("capture_requested_elapsed_ms",Long.valueOf(1600));refused(v);

@@ -22,7 +22,7 @@ final class ControllerReadRetryHost {
     static final class PhoneObservation {
         final String id,packageName;final NativeAppEvidence.Frame nativeFrame;
         PhoneObservation(NativeAppEvidence.Frame frame){nativeFrame=frame;id=frame.observationId;packageName=frame.packageName;}
-        JSONObject toJson(){return new JSONObject().put("observation_id",id).put("package",packageName).put("synthetic_host_endpoint",true);}
+        JSONObject toEvidenceJson(){return new JSONObject().put("observation_id",id).put("package",packageName).put("synthetic_host_endpoint",true);}
     }
     static final class BackgroundSession {
         String generation,ownerSha256;Selection selection=new Selection();static final class Selection {String initialPackage;}

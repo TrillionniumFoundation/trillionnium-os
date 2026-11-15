@@ -15,7 +15,7 @@ final class DiagnosticControllerHost {
     static final class Selection {String initialPackage=DiagnosticChecks.APP;}
     static final class BackgroundSession {String generation=DiagnosticChecks.GENERATION,ownerSha256=DiagnosticChecks.OWNER;Selection selection=new Selection();}
     static final class TaskAuthorization {static final class Gate {Map<String,Object> evidence(){return Collections.<String,Object>emptyMap();}}}
-    static final class PhoneObservation {final String id="44444444444444444444444444444444";JSONObject toJson(){return new JSONObject().put("observation_id",id);}}
+    static final class PhoneObservation {final String id="44444444444444444444444444444444";JSONObject toEvidenceJson(){return new JSONObject().put("observation_id",id);}}
     static final class HeptaAccessibilityService {
         interface Cancellation {boolean isCancelled();}
         static final class NativeObservationRetryProof {}

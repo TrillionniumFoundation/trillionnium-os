@@ -48,7 +48,20 @@ public final class ShoppingQuoteHost {
             .put(nativeRow(REC+"/0","android.widget.TextView","android.view.View",0,new int[]{100,660,200,800},
                     after?"明确的测试推荐B":"明确的测试推荐A","","",false));
     }
-    static PhoneObservation frame(long time,JSONArray rows)throws Exception{
+    static Map<String,Object> capture(long time){
+        // Explicit host clock fixture in the real non-native capture schema; no Android acquisition is claimed.
+        Map<String,Object> value=new LinkedHashMap<String,Object>();
+        value.put("schema","hepta.observation-capture.v1");value.put("mode","post_encoding_whole_graph");
+        value.put("capture_requested_elapsed_ms",Long.valueOf(time));
+        value.put("screenshot_callback_elapsed_ms",Long.valueOf(time+4));
+        value.put("pair_sealed_elapsed_ms",null);value.put("published_elapsed_ms",Long.valueOf(time+40));
+        value.put("capture_age_at_publication_ms",Long.valueOf(40));value.put("post_encoding_whole_graph_rechecked",true);
+        value.put("publication_refreshes_capture_age",false);value.put("fresh_action_validation_required",true);
+        value.put("grants_action_authority",false);value.put("business_completion_verified",false);
+        return value;
+    }
+    static PhoneObservation frame(long time,JSONArray rows)throws Exception{return frame(time,rows,false);}
+    static PhoneObservation frame(long time,JSONArray rows,boolean withCapture)throws Exception{
         List<PhoneObservation.Node> nodes=new ArrayList<PhoneObservation.Node>();int chars=0;
         for(int i=0;i<rows.length();i++){
             JSONObject n=rows.getJSONObject(i);JSONArray box=n.getJSONArray("bounds");
@@ -64,7 +77,8 @@ public final class ShoppingQuoteHost {
             WebEvidenceJson.sha("explicit synthetic screen"),WebEvidenceJson.sha(state.fingerprintInput()),state,
             ObservedWindowMetadata.observed(new int[]{0,0,720,1280},"android.widget.FrameLayout",1,36,new int[]{0,0,720,1280},""),
             false,nodes,generation,WebEvidenceProtocol.HELPER_PACKAGE,Collections.singletonList(WebEvidenceProtocol.HELPER_PACKAGE),
-            new PhoneObservation.CollectionStats(1024,512,6144,rows.length(),rows.length(),chars,0,0,0,0,10),selection,purpose.ownerSha256);
+            new PhoneObservation.CollectionStats(1024,512,6144,rows.length(),rows.length(),chars,0,0,0,0,10),selection,purpose.ownerSha256,
+            withCapture?capture(time):null);
     }
     static WebEvidenceReceipt receipt(JSONObject original,long at)throws Exception{
         JSONObject raw=obj(original),cap=raw.getJSONObject("capture"),request=new JSONObject(raw.getString("request_json_utf8"));
@@ -93,14 +107,15 @@ public final class ShoppingQuoteHost {
     static final class Sample {
         final PhoneObservation frame;final JSONArray rows;final WebEvidenceReceipt receipt;final JSONObject proof;
         final WebTaskDomain raw,domain;
-        Sample(long at,boolean after,String change)throws Exception{
+        Sample(long at,boolean after,String change)throws Exception{this(at,after,change,false);}
+        Sample(long at,boolean after,String change,boolean withCapture)throws Exception{
             rows=graph(after);
             if("ancestor".equals(change))ShoppingReadonlyObservationHost.nativeNode(rows,"0/0/0").put("description","synthetic ancestor change");
             if("target".equals(change))ShoppingReadonlyObservationHost.nativeNode(rows,TARGET).getJSONArray("bounds").put(0,1);
-            frame=frame(at-50,rows);JSONObject actual=after?lastRaw:firstRaw;
+            frame=frame(at-50,rows,withCapture);JSONObject actual=after?lastRaw:firstRaw;
             receipt=receipt(actual,at);
             WebEvidenceReceipt previous=receipt(actual,at-2000);
-            PhoneObservation before=frame(at-2050,rows);
+            PhoneObservation before=frame(at-2050,rows,withCapture);
             proof=WebShoppingObservationStability.compareObservationBracket(task,before.toJson(),rows,frame.toJson(),rows,
                     previous.capture(),receipt.capture(),TARGET);
             proof.put("source","private_service_snapshot_and_live_complete_native_traversal")
@@ -189,6 +204,23 @@ public final class ShoppingQuoteHost {
             check("https://www.mi.com/shop/buy?product_id=1230803766&cfrom=search".equals(r.get("official_product_link")),"actual observed official link");
             check(b.domain.promptEvidence().containsKey("current_search_card_quote")&&b.domain.resultReady(),"current result and model projection wired");
             b.domain.requireCurrent(done(b));
+            // The service supplies non-null capture evidence on Web observations too.
+            // Exercise the unchanged real bracket/quote path with distinct original capture clocks.
+            Sample capturedBefore=new Sample(BASE+12000,false,null,true);
+            Sample capturedAfter=new Sample(BASE+18000,true,null,true);
+            JSONObject firstEvidence=capturedBefore.frame.toEvidenceJson(),lastEvidence=capturedAfter.frame.toEvidenceJson();
+            check(capturedBefore.frame.capturedElapsedMillis==BASE+11950
+                &&capturedAfter.frame.capturedElapsedMillis==BASE+17950,"real frame clocks were not equalized");
+            check(firstEvidence.getLong("captured_elapsed_ms")!=lastEvidence.getLong("captured_elapsed_ms")
+                &&!WebDomCanonical.same(firstEvidence.getJSONObject("capture"),lastEvidence.getJSONObject("capture")),
+                "journal capture evidence must retain the distinct original times");
+            check(lastEvidence.getJSONObject("capture").getLong("capture_age_at_publication_ms")==40
+                &&!lastEvidence.getJSONObject("capture").getBoolean("publication_refreshes_capture_age"),
+                "journal evidence cannot refresh the frame age");
+            check(!capturedBefore.frame.toJson().has("capture")&&!capturedAfter.frame.toJson().has("captured_elapsed_ms"),
+                "journal-only clocks leaked into the original Web frame comparison");
+            Flow capturedFlow=new Flow(capturedBefore,capturedAfter);
+            check(capturedFlow.claim().verified,"non-null capture evidence blocked the original typed quote flow");
         });
         test("ordinary_search_without_private_read_proof_stays_incomplete",()->{
             check(!a.raw.resultReady(),"mere card capture is not private native quote proof");

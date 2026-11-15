@@ -5,7 +5,7 @@
     "component_tree": "08f3d1c32944f834530b659cb6c3b7ec12c00039",
     "source_manifest_sha256": "bf99aebd7009d29cad75f3b796af4005084f30219aff61929cb905c4b214d991"
   },
-  "candidate_status": "r18_reviewed_guard_snapshot_and_xiaomi_repairs_pending_fresh_frozen_host_android_and_phone_acceptance",
+  "candidate_status": "r18_semantic_and_evidence_serializers_reviewed_pending_fresh_published_head_host_mac_android_phone_acceptance",
   "candidate_version_assigned": true,
   "complete_source_files": 1885,
   "current_validation": {
@@ -6017,9 +6017,9 @@
       "sha256": "81447620dbc2a789bba8c22d561c768144f4d5619859b202d07cd83660a05dce"
     },
     {
-      "bytes": 149914,
+      "bytes": 149994,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "1287e8c97ad3dc3192d1f443712399a40777d3276032164d2a92ed72c146aeb5"
+      "sha256": "69dd1a577c97fd50570bdd1799752738eec76fcb585902f0b832d495d8b1f817"
     },
     {
       "bytes": 47910,
@@ -6212,9 +6212,9 @@
       "sha256": "0e498e9d58792be305b334bb12dc8d1f060e005c90555e04aa09b8f860f82db0"
     },
     {
-      "bytes": 28614,
+      "bytes": 28994,
       "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
-      "sha256": "be96183d0218b01de0e44963ab973267ba3cf3d1c77a2fbda7b7930b6beb151a"
+      "sha256": "5851664ef71af222f565d6031316510439ef49b7fd6185f7837c30812e8a2053"
     },
     {
       "bytes": 3590,
@@ -7462,9 +7462,9 @@
       "sha256": "86729b665b5219e113ce12e3dd9b3bf31f82e10ee54d9dc2d9614ed8a34c7244"
     },
     {
-      "bytes": 25092,
+      "bytes": 25100,
       "path": "tests/native-observation-read-retry/ControllerReadRetryHost.template",
-      "sha256": "9d28d50a689fa550d887cf73c64a781a839d2b00c5a22432a196ae85fff07e82"
+      "sha256": "87116b0f97aa198c360048513e113c24d439eed445897f54112bbdca26a2819e"
     },
     {
       "bytes": 1646,
@@ -7492,9 +7492,9 @@
       "sha256": "cdc25c6875acc0b84eb304ae44c4f3db72878ed59ef5bba7a7d51e2fc847f223"
     },
     {
-      "bytes": 7106,
+      "bytes": 7722,
       "path": "tests/native-observation-snapshot/ObservationEvidenceHost.java",
-      "sha256": "706213f1a8b79795403612d18af3521c0e582b90b55372a4f0c6d89f731a10d6"
+      "sha256": "400b73ab67cbec6ece40e279a1416cffb1708108f1b1a01843fd332964964e11"
     },
     {
       "bytes": 2082,
@@ -7957,9 +7957,9 @@
       "sha256": "02872d79635dfe0f9448bdfa33b6a802154b006d4a8c2cc0e2cb4e174bb11859"
     },
     {
-      "bytes": 12565,
+      "bytes": 12573,
       "path": "tests/observation-diagnostics/DiagnosticControllerHost.template",
-      "sha256": "8e36c8e4496871f879ef272dac1da5a3ac5e972afc5723c13e84812c7886fecc"
+      "sha256": "08bbe21273899fc4aa81ba6b6d6eb66ed578057cd16724269bbd89dfc956918d"
     },
     {
       "bytes": 7673,
@@ -8717,9 +8717,9 @@
       "sha256": "418d413399c6ae2f16851a47eba67ef58232354d7f45f1a074b80907006b7d65"
     },
     {
-      "bytes": 28250,
+      "bytes": 31142,
       "path": "tests/shopping-readonly-observation/ShoppingQuoteHost.java",
-      "sha256": "26bb355f70155bee3adc93a88071b26b9f03cdd3fb9cf981c303cd247e1b882b"
+      "sha256": "a061e72ff325b86675e0ac37180f8929a9ee5013bb52a3a5e70dec6fff9dcc9f"
     },
     {
       "bytes": 20077,
@@ -10971,6 +10971,26 @@
     "scope": "Historical R17 receipts only; no qualification of this R18 source",
     "source_manifest_sha256": "f87de6114a9919c9ac1a0f05a543707cf498724a1d24f7982bb413284ad36dd1"
   },
+  "historical_r18_a455_build_attempt": {
+    "adopted_as_current_validation": false,
+    "android_native_compilation_started": false,
+    "commit": "a455fa187ebb1298fc186c8cacae570ca099aaaa",
+    "linux_canonical108_and_native19_result": {
+      "bytes": 333183,
+      "path": "/home/alex/hepta-r18-build-4592-20261114-r2/host/RESULT.json",
+      "sha256": "16f3123a9a97ffe0673c87f6703eabddd8f681f39079302f693108bba30e1740"
+    },
+    "mac_extras_failure": {
+      "bytes": 13910,
+      "cause": "Volatile observation capture metadata entered the semantic frame comparison.",
+      "group": "shopping-region-quote",
+      "path": "/Users/qianqi/Documents/Codex/2026-11-14/hepta-r18-build-4592-r2/extra-gates/RESULT.json",
+      "quote_exit_code": 1,
+      "sha256": "e57da53cbf7f4cc593e6df0d0f35a6535c6f6a373e8d5c54491c350922140db8"
+    },
+    "phone_operations": 0,
+    "scope": "Historical a455 source only; no validation of this new source."
+  },
   "host_closure_amendment": {
     "cause": "The query40 exact service-hook literal predates the existing final native action recheck and claimed guard. Synchronize only that literal to the current production block.",
     "changed_programs": [
@@ -11023,12 +11043,12 @@
       "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
       "git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
       "path": ".github/workflows/hepta-local-android.yml",
-      "prior_commit": "dabfee6bceb50ed4c7e506c637e5258c5fec8ea9",
+      "prior_commit": "a455fa187ebb1298fc186c8cacae570ca099aaaa",
       "prior_git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
       "sha256": "cf6f060c5284ce50e23f7702fd95f07a008e67a690fa1ec763deda0f3b482aca"
     },
-    "native_host_gate_contract_sha256": "9bfa96272228cc7642e3e8ceea4722dcfcf8276d7e0d852c1a1fdd71db9b596c",
-    "normal_git_parent": "dabfee6bceb50ed4c7e506c637e5258c5fec8ea9",
+    "native_host_gate_contract_sha256": "dbd733477e16c29af55c313271ed3a66a5037b2923393d93b8652dcefa5d94cd",
+    "normal_git_parent": "a455fa187ebb1298fc186c8cacae570ca099aaaa",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -11641,6 +11661,115 @@
     "production_sources_unchanged": true,
     "test_assertions_and_case_bodies_unchanged": true,
     "type_only_boundary_still_throws": true
+  },
+  "r18_observation_evidence_schema_amendment": {
+    "author_prevalidation_handoff": {
+      "bytes": 14635,
+      "path": "/home/alex/hepta-r18-4592-observation-schema/HANDOFF-r1.json",
+      "sha256": "f6a398abe212f80d223d34967be8b12aafe571e37859d4869c34071787c5c7b0"
+    },
+    "author_results_adopted_as_new_head": false,
+    "canonical_host_input_count": 619,
+    "capture_age_and_constructor_validation_unchanged": true,
+    "changed_nonmanifest_paths": [
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "src/org/trillionnium/hepta/local/PhoneObservation.java",
+      "tests/native-observation-read-retry/ControllerReadRetryHost.template",
+      "tests/native-observation-snapshot/ObservationEvidenceHost.java",
+      "tests/observation-diagnostics/DiagnosticControllerHost.template",
+      "tests/shopping-readonly-observation/ShoppingQuoteHost.java"
+    ],
+    "controller_only_ten_existing_journal_call_renames": true,
+    "current_published_head_acceptance_pending": true,
+    "external_dependency_path_changes": [
+      {
+        "gate": "native-selection-facts",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "owned-single-task",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "observation-diagnostics",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-observation-events",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-xiaomi-home-loading",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-query-reservation",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-xiaomi-login",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-stale-recovery",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-observation-retry",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-observation-read-retry",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r3/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar"
+      }
+    ],
+    "fix": "Preserve original semantic observation JSON for business comparisons while recording original capture clock and lineage through the explicit evidence serializer.",
+    "frame_and_diagnostic_hashes_use_same_recorded_object": true,
+    "mac_quote_assertions": 130,
+    "mac_quote_cases": 28,
+    "native_contract_sha256": "dbd733477e16c29af55c313271ed3a66a5037b2923393d93b8652dcefa5d94cd",
+    "new_independent_linux_build_root": "/home/alex/hepta-r18-build-4592-20261114-r3",
+    "new_independent_mac_build_root": "/Users/qianqi/Documents/Codex/2026-11-14/hepta-r18-build-4592-r3",
+    "normal_git_parent": "a455fa187ebb1298fc186c8cacae570ca099aaaa",
+    "original_canonical108_native19_mac9_retained": true,
+    "prior_linux_pass_and_mac_failure_preserved_in_place": "/home/alex/hepta-r18-build-4592-20261114-r2",
+    "production_changed_paths": [
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "src/org/trillionnium/hepta/local/PhoneObservation.java"
+    ],
+    "service_action_authority_and_business_comparators_unchanged": true,
+    "snapshot_assertions": 213,
+    "snapshot_cases": 49,
+    "snapshot_matrix_additions": {
+      "actual_observation_legacy_constructor_keeps_age_without_invented_capture": {
+        "new": 4,
+        "old": 3
+      },
+      "actual_observation_serializes_history_without_freshness_or_effect_grant": {
+        "new": 4,
+        "old": 3
+      }
+    }
   },
   "release_version_assigned": false,
   "schema": "hepta.local-source.v3",
