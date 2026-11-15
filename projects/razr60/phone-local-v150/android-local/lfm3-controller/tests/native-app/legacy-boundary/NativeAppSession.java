@@ -23,6 +23,7 @@ final class NativeAppSession {
         private ActionGuard(){throw unavailable();}
         void requireClaimed(){throw unavailable();}
         void close(){throw unavailable();}
+        void closeAfterUnenteredAwait(Map<String,Object> execution,java.util.concurrent.atomic.AtomicBoolean cancelled){throw unavailable();}
         Map<String,Object> evidence(){throw unavailable();}
     }
     static final class ReadRecoveryPermit {

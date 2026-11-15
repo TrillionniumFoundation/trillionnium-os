@@ -7402,9 +7402,9 @@
       "sha256": "d4a43a59f1315d17692783e2ef44591e288d9e48bb3e6d67d68e46a5cb553fb1"
     },
     {
-      "bytes": 3879,
+      "bytes": 4021,
       "path": "tests/native-app/legacy-boundary/NativeAppSession.java",
-      "sha256": "c1b9a43b370dc668c2b0cccf93e2030e2a3747a0d7e1eb34e5658a2d1456c1ff"
+      "sha256": "d834849f2dc578aad516907f60f560a8e5c9317094fe830bcfe32fd4d560bb30"
     },
     {
       "bytes": 1523,
@@ -11023,12 +11023,12 @@
       "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
       "git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
       "path": ".github/workflows/hepta-local-android.yml",
-      "prior_commit": "1131fa546750507477f055e04344999b99391098",
+      "prior_commit": "dabfee6bceb50ed4c7e506c637e5258c5fec8ea9",
       "prior_git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
       "sha256": "cf6f060c5284ce50e23f7702fd95f07a008e67a690fa1ec763deda0f3b482aca"
     },
-    "native_host_gate_contract_sha256": "0db7ebc45ee632dc04b0a095d4b28db2c8c1635956cb5814fd388fda77bc85ca",
-    "normal_git_parent": "1131fa546750507477f055e04344999b99391098",
+    "native_host_gate_contract_sha256": "9bfa96272228cc7642e3e8ceea4722dcfcf8276d7e0d852c1a1fdd71db9b596c",
+    "normal_git_parent": "dabfee6bceb50ed4c7e506c637e5258c5fec8ea9",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -11561,6 +11561,86 @@
       "tests/qualification-scope/prepare_fixture.py"
     ],
     "source_members_removed": []
+  },
+  "r18_legacy_type_boundary_amendment": {
+    "canonical_host_input_count": 619,
+    "changed_nonmanifest_paths": [
+      "tests/native-app/legacy-boundary/NativeAppSession.java"
+    ],
+    "current_published_head_acceptance_pending": true,
+    "external_dependency_path_changes": [
+      {
+        "gate": "native-selection-facts",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "owned-single-task",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "observation-diagnostics",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-observation-events",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-xiaomi-home-loading",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-query-reservation",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-xiaomi-login",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-stale-recovery",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-observation-retry",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-observation-read-retry",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114-r2/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar"
+      }
+    ],
+    "failure_corrected": "The legacy all-throw NativeAppSession.ActionGuard type boundary must declare the production await closure API so the original non-native controller suites compile.",
+    "native_contract_sha256": "9bfa96272228cc7642e3e8ceea4722dcfcf8276d7e0d852c1a1fdd71db9b596c",
+    "native_execution_not_substituted": true,
+    "new_independent_linux_build_root": "/home/alex/hepta-r18-build-4592-20261114-r2",
+    "new_independent_mac_build_root": "/Users/qianqi/Documents/Codex/2026-11-14/hepta-r18-build-4592-r2",
+    "normal_git_parent": "dabfee6bceb50ed4c7e506c637e5258c5fec8ea9",
+    "original_canonical108_and_native19_retained": true,
+    "prior_failed_build_preserved_in_place": "/home/alex/hepta-r18-build-4592-20261114",
+    "production_sources_unchanged": true,
+    "test_assertions_and_case_bodies_unchanged": true,
+    "type_only_boundary_still_throws": true
   },
   "release_version_assigned": false,
   "schema": "hepta.local-source.v3",
