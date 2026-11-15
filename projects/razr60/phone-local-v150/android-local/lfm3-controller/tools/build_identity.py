@@ -110,7 +110,8 @@ def source_inputs(root):
     root = Path(root)
     paths = {root / "AndroidManifest.xml", root / "build_mac.py", root / "assemble_pocket4.py",
              root / "tools/build_identity.py", root / "tools/verify_runtime.py", root / "tools/fetch_pinned_runtime.py",root / "tools/model_profiles.py",
-             root / "tools/verify_mobimind_runtime.py", root / "tools/verify_ui_venus_runtime.py", root / "provenance/mobimind-worker-r4-build.json",
+             root / "tools/verify_mobimind_runtime.py", root / "tools/verify_ui_venus_runtime.py",
+             root / "tools/verify_vlm_runtime.py", root / "tools/build_vlm_worker.py", root / "provenance/mobimind-worker-r4-build.json",
              root / "provenance/mobimind-worker-r4/SOURCE-MANIFEST.json"}
     paths.update((root / "src").rglob("*.java"))
     paths.update((root / "res").rglob("*.xml"))

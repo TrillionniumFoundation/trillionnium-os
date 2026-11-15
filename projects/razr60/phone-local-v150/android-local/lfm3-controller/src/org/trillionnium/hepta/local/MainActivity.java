@@ -152,7 +152,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         diagnostics.addView(text("本次指令的权限与工具范围",12));diagnostics.addView(taskAuthorizationInfo);
         diagnostics.addView(text("任务记录",12));diagnostics.addView(progress);
         taskDiagnostics=text("",12);taskDiagnostics.setTextIsSelectable(true);diagnostics.addView(taskDiagnostics);
-        diagnostics.addView(text("本地文字推理；控制任务读取无障碍节点。截图仅保留在手机内用于复核操作。",12));
+        diagnostics.addView(text("本地任务读取当前应用的无障碍节点；视觉模型还会读取同一轮截图。截图与推理记录保存在手机内。",12));
         probePrompt=new EditText(this);probePrompt.setText("只输出 42。");probePrompt.setMinLines(2);diagnostics.addView(probePrompt);
         LinearLayout probes=new LinearLayout(this);diagnostics.addView(probes);
         runText=button("文本推理");probes.addView(runText);
@@ -301,7 +301,12 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         try{
             if(tasks.isRunning()||tasks.isBlocked()||engine.isBusy())throw new IllegalStateException("已有本地请求正在运行或退出状态待确认");
             if(!engine.modelFile().isFile())throw new IllegalStateException("所选本地模型尚未导入");
-            engine.configuration();
+            LocalRuntimeConfig selectedModel=engine.configuration();
+            if(selectedModel.profile.visual()){
+                if(!new File(engine.modelDirectory(),VlmPins.PROJECTOR).isFile())
+                    throw new IllegalStateException("本地视觉投影文件尚未导入");
+                if(!backgroundMode.isChecked())throw new IllegalStateException("当前本地视觉模型需要启用后台操作并选择起始应用");
+            }
             if(scopeLaunchError!=null)throw new IllegalStateException(scopeLaunchError);
             final TaskAuthorization originalAuthorization=TaskAuthorization.parse(owner);
             final TaskAuthorization authorization;
@@ -536,12 +541,16 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         if(modelInfo==null)return;
         boolean available=HeptaAccessibilityService.connected()!=null;
         String device,modelName="本地模型",modelState;
-        boolean configurationReady=false;
+        boolean configurationReady=false,visualProfile=false,visualObserve=false;
         try {
             LocalRuntimeConfig configuration=engine.configuration();
+            visualProfile=configuration.profile.visual();visualObserve=configuration.visualObservationOnly;
             device="npu".equals(configuration.compute)?"Hexagon NPU":"Adreno GPU";modelName=configuration.profile.displayName;
-            if(inspectModelFile)cachedModelFilePresent=engine.modelFile().isFile();
+            if(visualProfile)device="Hexagon NPU + Adreno GPU视觉";
+            if(inspectModelFile)cachedModelFilePresent=engine.modelFile().isFile()
+                    &&(!visualProfile||new File(engine.modelDirectory(),VlmPins.PROJECTOR).isFile());
             modelState=cachedModelFilePresent?"本地模型已导入":"本地模型待导入";
+            if(visualProfile)modelState+=visualObserve?" · 仅观察，不执行工具":" · 本地视觉工具模式";
             configurationReady=true;
         }catch(Exception error) {
             device="运行参数待修正";modelState="本地配置错误："+HeptaAccessibilityService.message(error);
@@ -553,7 +562,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         backgroundPermissionState.setText(backgroundPermission.state());
         backgroundSummary.setText(tasks.isRunning()&&backgroundMode.isChecked()?"正在后台执行":
                 tasks.hasBackgroundLease()?"上次后台空间待清理":
-                backgroundMode.isChecked()?"将在所选应用范围内后台操作":"将在当前屏幕操作");
+                backgroundMode.isChecked()?"将在所选起始应用的后台空间操作":"将在当前屏幕操作");
         openRootManager.setEnabled(rootManagerNavigationIdle());
         prepareBackgroundPermission.setEnabled(!busy&&!tasks.isBlocked()&&!tasks.isRecovering()&&!tasks.hasBackgroundLease()
                 &&!visualDiagnostic.isBusy()&&!visualDiagnostic.isBlocked()&&!uiVenusDiagnostic.isBusy()&&!uiVenusDiagnostic.isBlocked());
@@ -569,7 +578,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                 ?(backgroundPackages.isEmpty()?"选择后台应用范围":"后台范围："+backgroundPackages.size()+" 个应用（更改）")
                 :"后台应用范围（需重新确认）");
         startTask.setEnabled(available&&configurationReady&&!busy&&!tasks.isBlocked()&&(!backgroundMode.isChecked()||backgroundError==null));stopTask.setEnabled(busy);
-        runText.setEnabled(configurationReady&&!busy&&!tasks.isBlocked());
+        runText.setEnabled(configurationReady&&!visualProfile&&!busy&&!tasks.isBlocked());
         LocalTaskController.TaskResult result=tasks.lastResult();
         if(result!=null){
             if(!busy&&!tasks.isBlocked()&&!tasks.isRecovering())taskState.setText(result.displaySummary);

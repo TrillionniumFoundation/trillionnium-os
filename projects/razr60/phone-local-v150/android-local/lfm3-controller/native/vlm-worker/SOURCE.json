@@ -1,0 +1,241 @@
+{
+  "schema": "hepta.vlm.source.v1",
+  "llama_source_commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+  "geniex_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+  "files": [
+    {
+      "path": "native/admission.h",
+      "bytes": 669,
+      "sha256": "a5ff6f3de5c3932648cde762e177b9bb20fd89ccdd75e20ca0403fab45d22728"
+    },
+    {
+      "path": "native/generation-bridge.c",
+      "bytes": 4754,
+      "sha256": "d47d13445995481346cab225343195947b120b599fcf7901af9e994809d6b4cb"
+    },
+    {
+      "path": "native/guard-io.h",
+      "bytes": 983,
+      "sha256": "3d078ffd79765ec27e9485a5c7ce1bede84536b3052de9e54346f71a06ee89ba"
+    },
+    {
+      "path": "native/link-probe.cpp",
+      "bytes": 2496,
+      "sha256": "71fb7ced9634d7f869cc5fed3c69b32bbdc96e844df9bf01b39f6bac3bd52c4a"
+    },
+    {
+      "path": "native/owned-generation.inc",
+      "bytes": 36870,
+      "sha256": "5cf9e54ac3a8bda4c6da9fe0d01ab9675ddadd36a1b553d8223c538683dacf7d"
+    },
+    {
+      "path": "native/parent-death-guard.h",
+      "bytes": 2096,
+      "sha256": "92b094ecf9294907ba3f1e3d6c3a3b98fe2c01ec217e57055136bc69b7ee3a92"
+    },
+    {
+      "path": "native/private-io.inc",
+      "bytes": 5448,
+      "sha256": "0962a052ef7c255cc681723653cb729f2be974d47f5f3499ad8df56378b7a8ab"
+    },
+    {
+      "path": "native/sha256-dispatch.h",
+      "bytes": 7208,
+      "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
+    },
+    {
+      "path": "native/vlm-worker.cpp",
+      "bytes": 29909,
+      "sha256": "61de25e46a8eb69363b15f7fff6fa3cea9ee70e7c9d95aa6fb35954a1bf52a54"
+    },
+    {
+      "path": "vendor/llama/LICENSE",
+      "bytes": 1078,
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d"
+    },
+    {
+      "path": "vendor/llama/PIN.json",
+      "bytes": 1406,
+      "sha256": "c475b19715dcc77af1e444f6dbf190dc7b564f4e8487ae4cfe20e8be12307986"
+    },
+    {
+      "path": "vendor/llama/common/chat.h",
+      "bytes": 19831,
+      "sha256": "7e1a0a2dd930d748cadc3eb85b6544950b432da63da6651369f453dad4d36cd1"
+    },
+    {
+      "path": "vendor/llama/common/common.h",
+      "bytes": 57988,
+      "sha256": "0ec74cedd9815bb0fb31828455d612003ef53808f417cc029740735232ad0150"
+    },
+    {
+      "path": "vendor/llama/common/jinja/caps.h",
+      "bytes": 1026,
+      "sha256": "50b2c243067d236480dbf7fcaafa30a7a5b70d770b0671d6b4168f122548b75a"
+    },
+    {
+      "path": "vendor/llama/common/jinja/lexer.h",
+      "bytes": 5354,
+      "sha256": "93aecd72cc952fab08f657aa2a70e9f58421672b19d3179f8bdf555e683a1cc7"
+    },
+    {
+      "path": "vendor/llama/common/jinja/parser.h",
+      "bytes": 533,
+      "sha256": "6225eb759da910f3dd7753aed71c6938131cfa04c609d744e6f1390396422316"
+    },
+    {
+      "path": "vendor/llama/common/jinja/runtime.h",
+      "bytes": 25749,
+      "sha256": "f9ae41317610521432a97931f53d407f9746d33943516ea0b58499ea83d7bc85"
+    },
+    {
+      "path": "vendor/llama/common/jinja/string.h",
+      "bytes": 1765,
+      "sha256": "d32ad2a319398b8dbc1cc43b39dd10ab2eb0ce2eae9d0eaf3c2162777dd615dc"
+    },
+    {
+      "path": "vendor/llama/common/jinja/utils.h",
+      "bytes": 5189,
+      "sha256": "a2172202e7378487c6b7eb44700cbcf0cb2e8bdf84f621f364a5272a0238a98d"
+    },
+    {
+      "path": "vendor/llama/common/jinja/value.h",
+      "bytes": 29880,
+      "sha256": "efcf36b845c78c89836d487c7b196b94713ed64c345cd21ad63a433786900ce8"
+    },
+    {
+      "path": "vendor/llama/common/json-schema.h",
+      "bytes": 6095,
+      "sha256": "57933a181ec0e84cbba1abea7fd898dc03e452d7de1a35795b787cee679d02af"
+    },
+    {
+      "path": "vendor/llama/common/json.h",
+      "bytes": 13476,
+      "sha256": "a352f31307f1be2bdb34c027b876f42a1c5d1ea775cc8e4f11d703b16c40d22f"
+    },
+    {
+      "path": "vendor/llama/common/peg-parser.h",
+      "bytes": 21675,
+      "sha256": "eb77d966fc34d3d84ee7ce0bc7a0354ed217e3b23f68dc806d8a5a9e0784dd66"
+    },
+    {
+      "path": "vendor/llama/common/sampling.h",
+      "bytes": 6443,
+      "sha256": "63faa4ccb76fd466d3b5d86b14bc84a890bafa1f972fc46f66230eeb3384ce29"
+    },
+    {
+      "path": "vendor/llama/ggml-alloc.h",
+      "bytes": 3689,
+      "sha256": "d114067f9099c4a0e2bbc0625c676d4894d9cf0ea27168ee072c7de0e71bb51d"
+    },
+    {
+      "path": "vendor/llama/ggml-backend.h",
+      "bytes": 27570,
+      "sha256": "0e5e8e1f16d11ebbf501e38bc6705d79eee819b5f0b17476533f2100ed9674e2"
+    },
+    {
+      "path": "vendor/llama/ggml-cpu.h",
+      "bytes": 7753,
+      "sha256": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e"
+    },
+    {
+      "path": "vendor/llama/ggml-opt.h",
+      "bytes": 14040,
+      "sha256": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2"
+    },
+    {
+      "path": "vendor/llama/ggml.h",
+      "bytes": 118304,
+      "sha256": "2b4dd92fa992cb4ef484917a6c62fef5097698744160ccc09214fd0c459c92c7"
+    },
+    {
+      "path": "vendor/llama/gguf.h",
+      "bytes": 11355,
+      "sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4"
+    },
+    {
+      "path": "vendor/llama/llama-cpp.h",
+      "bytes": 1102,
+      "sha256": "26175c5711004432b5678d6b14ce711a79388ff96eeff46dab3c9f8a3694521d"
+    },
+    {
+      "path": "vendor/llama/llama.h",
+      "bytes": 90962,
+      "sha256": "c0854771d3760a41642c4e59429c5b3b9fc774887c59d37eeadc4527681732cd"
+    },
+    {
+      "path": "vendor/llama/mtmd-helper.h",
+      "bytes": 16152,
+      "sha256": "4c610053ef3383d99e341fb1a93f2ab66d01a24c117096c7a7721d6b9fc122da"
+    },
+    {
+      "path": "vendor/llama/mtmd.h",
+      "bytes": 26213,
+      "sha256": "8cca120b5095c19362aebff2d5b35a7247b364dc3fb28d8f0a3a99754c865813"
+    },
+    {
+      "path": "tools/build_android.py",
+      "bytes": 8661,
+      "sha256": "9d26e40f41b23fa5c474246a15e19cf0b37ec86a7612845786f02e6702394e86"
+    },
+    {
+      "path": "tools/freeze.py",
+      "bytes": 1135,
+      "sha256": "07972cf3d6c0d236c2d16df3667239fc56780270368f38408f8fc8cc3e6e0029"
+    }
+  ],
+  "runtime": [
+    {
+      "name": "libllama.so",
+      "bytes": 5642424,
+      "sha256": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835"
+    },
+    {
+      "name": "libmtmd.so",
+      "bytes": 1643536,
+      "sha256": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d"
+    },
+    {
+      "name": "libllama-common.so",
+      "bytes": 6242864,
+      "sha256": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122"
+    },
+    {
+      "name": "libggml.so",
+      "bytes": 41088,
+      "sha256": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149"
+    },
+    {
+      "name": "libggml-base.so",
+      "bytes": 3534496,
+      "sha256": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40"
+    },
+    {
+      "name": "libggml-cpu.so",
+      "bytes": 936328,
+      "sha256": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b"
+    },
+    {
+      "name": "libggml-hexagon.so",
+      "bytes": 3874328,
+      "sha256": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f"
+    },
+    {
+      "name": "libggml-htp-v79.so",
+      "bytes": 858848,
+      "sha256": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5"
+    },
+    {
+      "name": "libggml-opencl.so",
+      "bytes": 7886880,
+      "sha256": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875"
+    },
+    {
+      "name": "libomp.so",
+      "bytes": 1234864,
+      "sha256": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76"
+    }
+  ],
+  "actions_dispatched": false,
+  "phone_contacted": false
+}

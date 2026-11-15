@@ -68,6 +68,69 @@ public final class PromptAdmissionHostTest {
         value.put("input_ids_sha256",repeat("a",64));value.put("total_context_tokens",count+512);
         return value;
     }
+    /** Visual configuration and exact-input admission have their own explicit matrix. */
+    private static void visualAdmission(AppCatalogueRanker.Page apps,PhoneObservation screen,JSONArray history,
+            PromptAdmissionFixture.Result textFrame)throws Exception{
+        final LocalRuntimeConfig visual=new LocalRuntimeConfig(ModelProfile.GUI_OWL_4B,"npu",8192,4);
+        check(visual.profile==ModelProfile.GUI_OWL_4B&&visual.profile.visual()
+                &&visual.contextTokens==8192&&visual.threads==4&&"HTP0".equals(visual.expectedDevice()),
+                "GUI visual admission uses its exact HTP0/8192/four-thread configuration");
+        rejects(new Throwing(){public void run(){new LocalRuntimeConfig(ModelProfile.GUI_OWL_4B,"npu",4096,4);}},
+                IllegalArgumentException.class,"GUI 4096 context remains rejected");
+        rejects(new Throwing(){public void run(){new LocalRuntimeConfig(ModelProfile.GUI_OWL_4B,"gpu",8192,4);}},
+                IllegalArgumentException.class,"GUI main device cannot fall back to GPU");
+        rejects(new Throwing(){public void run(){new LocalRuntimeConfig(ModelProfile.GUI_OWL_4B,"npu",8192,3);}},
+                IllegalArgumentException.class,"GUI thread count must remain exactly four");
+
+        // This private method is extracted byte-for-byte from the production
+        // controller with SYSTEM. Reflection exposes it only to this host test.
+        Method actualSystem=PromptAdmissionFixture.class.getDeclaredMethod("systemPrompt",LocalRuntimeConfig.class);
+        actualSystem.setAccessible(true);
+        String textSystem=PromptAdmissionFixture.system();
+        String system=(String)actualSystem.invoke(null,visual);
+        check(textSystem.contains("无图像输入，不猜无标签图标用途或坐标。"),"original text system remains unchanged");
+        check(system.equals(textSystem.replace("无图像输入，不猜无标签图标用途或坐标。",
+                "附有同一观察帧的图像，可用于理解当前页面；所有工具仍只允许本轮节点和动作域，不猜无标签图标用途或坐标。")),
+                "visual system changes only the actual image-input declaration");
+        PromptAdmissionFixture.Result frame=PromptAdmissionFixture.build(OWNER,apps,screen,history,visual);
+        check(frame.text.equals(textFrame.text)&&frame.text.endsWith("\nOWNER\n"+OWNER),
+                "GUI retains the complete original prompt and OWNER bytes");
+        check(frame.ids.equals(textFrame.ids)&&frame.nodes==30&&frame.required==13&&frame.visibleText==6,
+                "GUI retains every original current node and visible readout");
+        check(frame.grammar.text.equals(textFrame.grammar.text)&&frame.grammar.sha256.equals(textFrame.grammar.sha256),
+                "vision cannot expand or replace the current action grammar");
+        check(frame.history==6&&frame.events.rows.size()==6&&frame.events.observed==6,
+                "GUI retains the complete ordered action history");
+        ConservativeTokenBudget expected=ConservativeTokenBudget.estimate(system,frame.text,visual);
+        check(frame.budget.profile==ModelProfile.GUI_OWL_4B&&frame.budget.contextTokens==8192
+                &&frame.budget.systemBytesUpper==system.getBytes(StandardCharsets.UTF_8).length
+                &&frame.budget.promptBytesUpper==frame.text.getBytes(StandardCharsets.UTF_8).length
+                &&frame.budget.totalContextUpper==expected.totalContextUpper&&frame.budget.admitted==expected.admitted,
+                "GUI prompt budgeting uses the exact same production visual system and complete prompt");
+        check(!frame.budget.provenUpperBound&&frame.budget.profile.exactTokenizationRequired&&frame.budget.mayAttemptNative(),
+                "GUI projection grants only an attempt at native exact admission");
+        check(Boolean.FALSE.equals(frame.budgetReceipt.get("is_exact_token_count"))
+                &&Boolean.FALSE.equals(frame.budgetReceipt.get("is_proven_upper_bound"))
+                &&Boolean.TRUE.equals(frame.budgetReceipt.get("native_exact_tokenization_required"))
+                &&Boolean.TRUE.equals(frame.budgetReceipt.get("native_multimodal_token_and_position_count_required"))
+                &&Boolean.TRUE.equals(frame.budgetReceipt.get("current_frame_image_requested")),
+                "GUI budget requires actual native multimodal token and position counts");
+        check(frame.budgetReceipt.get("image_tokens")==JSONObject.NULL
+                &&frame.budgetReceipt.get("image_sent_to_model")==JSONObject.NULL,
+                "Java prompt construction cannot invent image tokens or claim image delivery");
+        check("advisory_native_exact_required".equals(frame.budgetReceipt.get("java_admission_role"))
+                &&Boolean.TRUE.equals(frame.budgetReceipt.get("may_attempt_native_admission")),
+                "GUI exact admission stays explicitly pending");
+        PromptAdmissionFixture.awaitAdmission(frame.text,visual);
+        PromptAdmissionFixture.inputText(frame.text,true);
+        String oversized=repeat("完整输入",2000)+frame.text;
+        ConservativeTokenBudget large=ConservativeTokenBudget.estimate(system,oversized,visual);
+        check(!large.admitted&&!large.provenUpperBound&&large.mayAttemptNative()
+                &&large.promptBytesUpper==oversized.getBytes(StandardCharsets.UTF_8).length,
+                "oversized GUI projection remains truthful and cannot delete input before native exact admission");
+        PromptAdmissionFixture.inputText(oversized,true);
+        PromptAdmissionFixture.awaitAdmission(oversized,visual);
+    }
     public static void main(String[] args)throws Exception{
         final LocalRuntimeConfig exact=new LocalRuntimeConfig(ModelProfile.GEMMA4_E4B,"npu",4096,4);
         final PhoneObservation screen=observation();
@@ -94,9 +157,14 @@ public final class PromptAdmissionHostTest {
 
         Method attempt=ConservativeTokenBudget.class.getMethod("mayAttemptNative");
         int exactProfiles=0,upperProfiles=0;
+        int visualProfiles=0;
         for(Field field:ModelProfile.class.getFields()){
             if(field.getType()!=ModelProfile.class)continue;
             ModelProfile profile=(ModelProfile)field.get(null);
+            if(profile.visual()){
+                check(profile==ModelProfile.GUI_OWL_4B,"only the explicit GUI profile leaves the original text matrix");
+                visualProfiles++;continue;
+            }
             LocalRuntimeConfig config=new LocalRuntimeConfig(profile,"npu",4096,4);
             ConservativeTokenBudget budget=ConservativeTokenBudget.estimate(PromptAdmissionFixture.system(),frame.text,config);
             check(!budget.admitted,"large frame exceeds heuristic for "+profile.id);
@@ -107,6 +175,7 @@ public final class PromptAdmissionHostTest {
             }else upperProfiles++;
         }
         check(exactProfiles==12&&upperProfiles==0,"all declared profiles require native exact admission");
+        check(visualProfiles==1,"exactly one GUI visual profile requires its separate 8192 admission matrix");
         cases++;
 
         final LocalRuntimeConfig lfm3=new LocalRuntimeConfig(ModelProfile.LFM3,"npu",4096,4);
@@ -162,8 +231,12 @@ public final class PromptAdmissionHostTest {
         check(withData.equals(withoutData),"existing observations, history, task authorization and tool domains remain structurally identical");
         check(with.budget.totalContextUpper>without.budget.totalContextUpper,"added model intention remains counted by existing input budget");
         cases++;
+        int beforeVisual=assertions;
+        visualAdmission(apps,screen,history,frame);
         System.out.println("PASS cases="+cases+" assertions="+assertions+" profiles="+(exactProfiles+upperProfiles)
                 +" synthetic_prompt_bytes="+frame.text.getBytes(StandardCharsets.UTF_8).length
                 +" heuristic_context="+frame.budget.totalContextUpper+" native_generation_not_run=true");
+        System.out.println("PASS visual_profiles="+visualProfiles+" visual_assertions="+(assertions-beforeVisual)
+                +" original_text_profile_matrix=12 native_multimodal_generation_not_run=true");
     }
 }

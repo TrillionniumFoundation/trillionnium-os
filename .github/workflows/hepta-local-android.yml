@@ -225,6 +225,41 @@ jobs:
             ${{ runner.temp }}/hepta-ui-venus-rebuild/producer/CURRENT-CI-SOURCE.json
             ${{ runner.temp }}/hepta-ui-venus-rebuild/producer/COMPILER-IDENTITY.json
             ${{ runner.temp }}/hepta-ui-venus-rebuild/CURRENT-CONSUMER-SOURCE.json
+      - name: Rebuild and bind the independent current-frame VLM worker on macOS
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-vlm-build-evidence"
+          python -B "$GITHUB_WORKSPACE/$HEPTA_SOURCE/tools/build_vlm_worker.py" \
+            --ndk "$ANDROID_NDK_ROOT" --sdk-libs "$RUNNER_TEMP/hepta-ui-venus-geniex/lib" \
+            --output "$RUNNER_TEMP/hepta-vlm-rebuild" \
+            > "$RUNNER_TEMP/hepta-vlm-build-evidence/build.stdout" \
+            2> "$RUNNER_TEMP/hepta-vlm-build-evidence/build.stderr"
+          python -B "$GITHUB_WORKSPACE/$HEPTA_SOURCE/tools/vlm_ci_transfer.py" bind \
+            --repo-root "$GITHUB_WORKSPACE" --source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
+            --runtime "$RUNNER_TEMP/hepta-vlm-rebuild" \
+            --source-head "$SOURCE_HEAD_SHA" --repository "$GITHUB_REPOSITORY" \
+            --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            > "$RUNNER_TEMP/hepta-vlm-build-evidence/producer-verification.json"
+      - name: Transfer the exact VLM worker from this workflow attempt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-vlm-macos-runtime-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/hepta-vlm-rebuild/libhepta_local_vlm_runner.so
+            ${{ runner.temp }}/hepta-vlm-rebuild/BUILD-RECEIPT.json
+            ${{ runner.temp }}/hepta-vlm-rebuild/CURRENT-CI-TRANSFER.json
+      - name: Preserve independent VLM build evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-vlm-macos-evidence-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/hepta-vlm-build-evidence/**
+            ${{ runner.temp }}/hepta-vlm-rebuild/**
       - name: Preserve actual independent UI-Venus build evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -331,6 +366,8 @@ jobs:
           printf '%s  %s\n' \
             '3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed' "$hepta_json_jar" \
             | sha256sum --check --strict
+      - name: Install the pinned independent template renderer
+        run: python -m pip install --disable-pip-version-check --no-deps -r "$GITHUB_WORKSPACE/$HEPTA_SOURCE/tests/vlm-contract/requirements.txt"
       - name: Run host contracts
         working-directory: ${{ env.HEPTA_SOURCE }}
         run: python -B tools/run_host_checks.py --out "$RUNNER_TEMP/hepta-host-checks" --json-jar "$RUNNER_TEMP/hepta-json-20240303.jar"
@@ -563,6 +600,48 @@ jobs:
             --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
             > "$RUNNER_TEMP/hepta-ui-venus-consumer-verification.json"
           printf '%s\n' "UI_VENUS_ANDROID_RUNTIME_DIR=$RUNNER_TEMP/hepta-ui-venus-from-macos/producer/runtime" >> "$GITHUB_ENV"
+      - name: Download this workflow attempt's independent VLM worker
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-vlm-macos-runtime-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-vlm-from-macos
+      - name: Verify the VLM source, compiler, runtime and workflow attempt on Linux
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-vlm-linux-evidence"
+          python -B "$GITHUB_WORKSPACE/$HEPTA_SOURCE/tools/vlm_ci_transfer.py" verify \
+            --repo-root "$GITHUB_WORKSPACE" --source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
+            --runtime "$RUNNER_TEMP/hepta-vlm-from-macos" \
+            --source-head "$SOURCE_HEAD_SHA" --repository "$GITHUB_REPOSITORY" \
+            --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            > "$RUNNER_TEMP/hepta-vlm-linux-evidence/consumer-verification.json"
+          printf '%s\n' "LOCAL_VLM_ANDROID_RUNTIME_DIR=$RUNNER_TEMP/hepta-vlm-from-macos" >> "$GITHUB_ENV"
+      - name: Run required 11 VLM packaging, 14 CI transfer and 43 native guard checks
+        run: |
+          set -euo pipefail
+          hepta_vlm_out="$RUNNER_TEMP/hepta-vlm-linux-evidence"
+          export HEPTA_TEST_VLM_RUNTIME="$LOCAL_VLM_ANDROID_RUNTIME_DIR"
+          python -B "$GITHUB_WORKSPACE/$HEPTA_SOURCE/tests/test_vlm_runtime.py" -v \
+            > "$hepta_vlm_out/packaging.stdout" 2> "$hepta_vlm_out/packaging.stderr"
+          python -B "$GITHUB_WORKSPACE/$HEPTA_SOURCE/tests/test_vlm_ci_transfer.py" -v \
+            > "$hepta_vlm_out/ci-transfer.stdout" 2> "$hepta_vlm_out/ci-transfer.stderr"
+          cc -std=c11 -O2 -Wall -Wextra -Werror \
+            "$GITHUB_WORKSPACE/$HEPTA_SOURCE/native/vlm-worker/tests/guard-test.c" \
+            -o "$hepta_vlm_out/native-guard-test" \
+            > "$hepta_vlm_out/native-compile.stdout" 2> "$hepta_vlm_out/native-compile.stderr"
+          "$hepta_vlm_out/native-guard-test" \
+            > "$hepta_vlm_out/native-guards.json" 2> "$hepta_vlm_out/native-guards.stderr"
+      - name: Preserve VLM Linux consumer and regression evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-vlm-linux-evidence-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/hepta-vlm-linux-evidence/**
+            ${{ runner.temp }}/hepta-vlm-from-macos/BUILD-RECEIPT.json
+            ${{ runner.temp }}/hepta-vlm-from-macos/CURRENT-CI-TRANSFER.json
       - name: Verify packaging with an ephemeral development signer
         working-directory: ${{ env.HEPTA_SOURCE }}
         run: python -B assemble_pocket4.py
@@ -577,6 +656,9 @@ jobs:
             ${{ runner.temp }}/hepta-host-checks/HOST-CHECKS.json
             ${{ runner.temp }}/hepta-host-checks/sdk-exception-failure-audit/**
             ${{ runner.temp }}/hepta-host-checks/owned-generation-cleanup/**
+            ${{ runner.temp }}/hepta-host-checks/vlm-result-contract/**
+            ${{ runner.temp }}/hepta-host-checks/vlm-template-render/**
+            ${{ runner.temp }}/hepta-host-checks/vlm-adapter-lifecycle/**
             ${{ runner.temp }}/hepta-runtime-source-pair.json
             ${{ runner.temp }}/hepta-host-checks/*.stdout
             ${{ runner.temp }}/hepta-host-checks/*.stderr

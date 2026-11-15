@@ -45,7 +45,8 @@ def main():
         ROOT/"tests/action-grammar/DecisionGrammarHostTest.java"]
     def all_inputs():
         paths=set(ROOT.glob("*.py"))
-        for directory, extensions in (("src",("*.java",)),("tests",("*.java","*.py","*.template")),
+        paths.add(ROOT/"tests/vlm-contract/requirements.txt")
+        for directory, extensions in (("src",("*.java",)),("tests",("*.java","*.py","*.template","*.inc")),
                                       ("native",("*.c","*.cpp","*.h","*.inc","*.py")),("tools",("*.py",))):
             for extension in extensions: paths.update((ROOT/directory).rglob(extension))
         paths.update(p for p in (ROOT/"tests/completion/fixtures").rglob("*") if p.is_file())
@@ -58,7 +59,8 @@ def main():
         paths.update(p for p in (ROOT/"tests/observation-collection/fixtures").rglob("*") if p.is_file())
         paths.update(p for p in (ROOT/"tests/notes-create-workflow/fixtures").rglob("*") if p.is_file())
         for fixture_root in ("tests/sdk-exception-failure-audit/fixtures",
-                             "tests/owned-generation-cleanup/fixtures"):
+                             "tests/owned-generation-cleanup/fixtures",
+                             "tests/vlm-contract/fixtures"):
             paths.update(p for p in (ROOT/fixture_root).rglob("*") if p.is_file())
         if any(p.is_symlink() for p in paths): raise RuntimeError("Host inputs must not be symbolic links")
         return [{"path":str(p.relative_to(ROOT)),"sha256":hashlib.sha256(p.read_bytes()).hexdigest()}
@@ -214,6 +216,14 @@ def main():
             report["mandatory_additional_gate_receipts"][name]={
                 "path":str(gate_path),"bytes":len(gate_raw),"sha256":hashlib.sha256(gate_raw).hexdigest(),
                 "schema":gate["schema"],"cases":cases}
+        run("vlm-result-contract",[sys.executable,"-B",ROOT/"tests/vlm-contract/run_host_tests.py",
+            "--source",ROOT,"--output",out/"vlm-result-contract","--java-home",java_home])
+        run("vlm-template-render",[sys.executable,"-B",ROOT/"tests/vlm-contract/check_template.py",
+            "--template",ROOT/"tests/vlm-contract/fixtures/gui-owl-chat-template.jinja",
+            "--output",out/"vlm-template-render"])
+        run("vlm-adapter-lifecycle",[sys.executable,"-B",ROOT/"tests/vlm-adapter/run_host.py",
+            "--source",ROOT,"--output",out/"vlm-adapter-lifecycle","--java-home",java_home,
+            "--json-jar",json_jar,"--template",ROOT/"tests/vlm-contract/fixtures/gui-owl-chat-template.jinja"])
         if json_jar.read_bytes()!=json_bytes: raise RuntimeError("Host JSON dependency changed during checks")
         if all_inputs()!=report["source_inputs"]: raise RuntimeError("Source changed during host checks")
         report["all_pass"]=True

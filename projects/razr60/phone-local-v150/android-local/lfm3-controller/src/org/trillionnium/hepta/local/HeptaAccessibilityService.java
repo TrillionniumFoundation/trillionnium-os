@@ -258,7 +258,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         return ownedController;
     }
     public synchronized LocalTaskController taskController(LocalModelEngine engine){
-        return taskController(new EngineInferenceAdapter(engine));
+        return taskController(engine.configuration().profile.visual()
+                ?new VlmInferenceAdapter(this,engine):new EngineInferenceAdapter(engine));
     }
     /** Administrative retirement only; no action, inference, capture or old task is restarted. */
     synchronized boolean recoveryControllerIdle(LocalTaskController expected){
@@ -402,6 +403,28 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     ||!background.selection.allowedPackages.equals(observed.backgroundAllowedPackages))
                 throw new IllegalStateException("观察中的原始应用选择与当前后台租约不同");
         }catch(Exception invalid){throw new IllegalStateException("后台选择来源无法复核",invalid);}
+    }
+    /** Read-only ownership check for an in-flight visual request. The old frame
+     * is not relabeled fresh; the existing action path still reacquires and
+     * compares current nodes before any tool effect.
+     */
+    void requireVisualFrameOwnership(LocalTaskController expectedController,String id,
+            TaskAuthorization.Gate auth,BackgroundSession expected,PhoneObservation observed,DecisionGrammar grammar){
+        synchronized(this){
+            TaskAuthorization.require(live==this&&ownedController==expectedController&&ownsAuthorization(id,auth)
+                    &&expected!=null&&taskBackground==expected&&id.equals(expected.taskId),
+                    "视觉请求的任务或后台空间已退休");
+        }
+        requireTaskAuthorization(id,auth);requireBackgroundObservation(id,observed);
+        TaskAuthorization.require(grammar!=null&&grammar.authorization!=null
+                &&grammar.authorization.authorization==auth.authorization&&id.equals(grammar.authorization.taskId)
+                &&observed.id.equals(grammar.observationId)&&observed.packageName.equals(grammar.currentPackage)
+                &&auth.authorization.instructionSha256.equals(expected.ownerSha256),
+                "视觉请求与原始画面、工具语法或用户指令不一致");
+        synchronized(this){
+            TaskAuthorization.require(live==this&&ownedController==expectedController&&ownsAuthorization(id,auth)
+                    &&taskBackground==expected&&!expected.released(),"视觉请求在校验期间已退休");
+        }
     }
 
 

@@ -19,6 +19,7 @@ class ScopeBuildIdentityTests(unittest.TestCase):
         for name in ('AndroidManifest.xml','build_mac.py','assemble_pocket4.py','tools/build_identity.py',
                      'tools/verify_runtime.py','tools/fetch_pinned_runtime.py','tools/model_profiles.py',
                      'tools/verify_mobimind_runtime.py','tools/verify_ui_venus_runtime.py',
+                     'tools/verify_vlm_runtime.py','tools/build_vlm_worker.py',
                      'provenance/mobimind-worker-r4-build.json','provenance/mobimind-worker-r4/SOURCE-MANIFEST.json',
                      'src/example/QualificationScope.java','src/example/Service.java','native/worker.c','res/values/strings.xml'):
             p=root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text('synthetic '+name)

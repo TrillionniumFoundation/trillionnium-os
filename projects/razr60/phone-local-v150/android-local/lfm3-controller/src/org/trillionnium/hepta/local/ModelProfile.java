@@ -30,6 +30,12 @@ public final class ModelProfile {
     public static final ModelProfile LFM25_8B_A1B=new ModelProfile("lfm2.5-8b-a1b-q4_0","LFM2.5-8B-A1B（实验）",
             "LiquidAI/LFM2.5-8B-A1B-GGUF","49c14831707011e64d70b2ebd8462ba08d608434","LFM2.5-8B-A1B-Q4_0.gguf",4844678368L,
             "48ed1465d761311b2fd57b7fb46cf969a20b3a8281945b04e10f52bd1609e715","lfm2moe",true,7L<<30);
+    // Separate pinned projector and an observed image are required by the visual adapter.
+    // This admission threshold is engineering headroom, not measured peak memory.
+    public static final ModelProfile GUI_OWL_4B=new ModelProfile("gui-owl-1.5-4b-instruct-i1-q4_0","GUI-Owl 1.5 4B（视觉候选）",
+            "mradermacher/GUI-Owl-1.5-4B-Instruct-i1-GGUF","86a5a5659edfba4f5e10efed46ac448ae3562467",
+            "GUI-Owl-1.5-4B-Instruct.i1-Q4_0.gguf",2375774624L,
+            "c71f372d2e2b71f173622f1966ac6a1bc60da1c2dbdd6d92534ab6f83724b8df","qwen3vl",true,6L<<30);
     // Experimental text-only Qwen candidate. The 5 GiB admission threshold is
     // qualification headroom, not a measured peak. No projector is admitted.
     public static final ModelProfile QWEN35_4B=new ModelProfile("qwen3.5-4b-q4_0","Qwen 3.5 4B（实验）",
@@ -64,6 +70,7 @@ public final class ModelProfile {
     public static ModelProfile named(String id){
         if(LFM3.id.equals(id))return LFM3;
         if(LFM25_8B_A1B.id.equals(id))return LFM25_8B_A1B;
+        if(GUI_OWL_4B.id.equals(id))return GUI_OWL_4B;
         if(MINICPM5.id.equals(id))return MINICPM5;
         if(SPARK.id.equals(id))return SPARK;
         if(GEMMA4_E4B.id.equals(id))return GEMMA4_E4B;
@@ -76,4 +83,5 @@ public final class ModelProfile {
         if(NANBEIGE42_3B.id.equals(id))return NANBEIGE42_3B;
         throw new IllegalArgumentException("unknown pinned model_profile");
     }
+    public boolean visual(){return this==GUI_OWL_4B;}
 }

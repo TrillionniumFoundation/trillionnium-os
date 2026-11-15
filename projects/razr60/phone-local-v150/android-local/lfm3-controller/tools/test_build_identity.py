@@ -9,6 +9,7 @@ class BuildIdentityTests(unittest.TestCase):
     def source(self, root):
         for name in ("AndroidManifest.xml", "build_mac.py", "assemble_pocket4.py", "tools/build_identity.py",
                      "tools/verify_runtime.py", "tools/fetch_pinned_runtime.py", "tools/model_profiles.py", "tools/verify_mobimind_runtime.py", "tools/verify_ui_venus_runtime.py",
+                     "tools/verify_vlm_runtime.py", "tools/build_vlm_worker.py",
                      "provenance/mobimind-worker-r4-build.json", "provenance/mobimind-worker-r4/SOURCE-MANIFEST.json",
                      "src/example/Controller.java", "native/publish-appuid.inc", "native/worker.c", "res/values/strings.xml"):
             path = root/name
@@ -63,6 +64,20 @@ class BuildIdentityTests(unittest.TestCase):
             receipt=self.receipt(root)
             target=root/"provenance/ui-venus-app-r1/NATIVE-BUILD-RECEIPT.json"
             target.parent.mkdir(parents=True);target.write_text('{"synthetic":true}')
+            with self.assertRaises(RuntimeError):verify_source_inputs(root,receipt)
+
+    def test_vlm_verifier_change_rejects_cached_outputs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);self.source(root)
+            receipt=self.receipt(root)
+            (root/"tools/verify_vlm_runtime.py").write_text("changed VLM qualification")
+            with self.assertRaises(RuntimeError):verify_source_inputs(root,receipt)
+
+    def test_vlm_builder_change_rejects_cached_outputs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);self.source(root)
+            receipt=self.receipt(root)
+            (root/"tools/build_vlm_worker.py").write_text("changed VLM build")
             with self.assertRaises(RuntimeError):verify_source_inputs(root,receipt)
 
 

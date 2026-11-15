@@ -13,12 +13,16 @@ public final class LocalRuntimeConfig {
     public final String compute;
     public final ModelProfile profile;
     public final int contextTokens, threads;
+    public final boolean visualObservationOnly;
 
     public LocalRuntimeConfig(String compute, int contextTokens, int threads) {
         this(ModelProfile.LFM3,compute,contextTokens,threads);
     }
 
     public LocalRuntimeConfig(ModelProfile profile,String compute, int contextTokens, int threads) {
+        this(profile,compute,contextTokens,threads,false);
+    }
+    public LocalRuntimeConfig(ModelProfile profile,String compute,int contextTokens,int threads,boolean visualObservationOnly) {
         if(profile==null)throw new IllegalArgumentException("model profile is required");
         if (!"npu".equals(compute) && !"gpu".equals(compute))
             throw new IllegalArgumentException("compute must be exactly npu or gpu; no automatic fallback");
@@ -26,25 +30,35 @@ public final class LocalRuntimeConfig {
             throw new IllegalArgumentException("context_tokens must be 4096 or 8192");
         if (threads < 1 || threads > 8)
             throw new IllegalArgumentException("threads must be 1..8");
+        if(profile.visual()&&(!"npu".equals(compute)||contextTokens!=8192||threads!=4))
+            throw new IllegalArgumentException("visual profile requires HTP0, context 8192 and four threads");
+        if(visualObservationOnly&&!profile.visual())throw new IllegalArgumentException("observation-only mode requires a visual profile");
         this.compute = compute;
         this.profile = profile;
         this.contextTokens = contextTokens;
         this.threads = threads;
+        this.visualObservationOnly=visualObservationOnly;
     }
 
     public static LocalRuntimeConfig defaults() { return new LocalRuntimeConfig("npu", 8192, 4); }
     public static LocalRuntimeConfig fromFields(java.util.Map<String,?> value){
         if(value==null)throw new IllegalArgumentException("runtime config required");
         boolean legacy="hepta.local-runtime.v1".equals(value.get("schema"));
-        if(!legacy&&!"hepta.local-runtime.v2".equals(value.get("schema")))throw new IllegalArgumentException("unknown runtime-config schema");
+        boolean visualSchema="hepta.local-runtime.v3".equals(value.get("schema"));
+        if(!legacy&&!visualSchema&&!"hepta.local-runtime.v2".equals(value.get("schema")))throw new IllegalArgumentException("unknown runtime-config schema");
         java.util.Set<String> keys=new java.util.HashSet<>(java.util.Arrays.asList("schema","compute","context_tokens","threads"));
         if(!legacy)keys.add("model_profile");
+        if(visualSchema)keys.add("visual_mode");
         if(!keys.equals(value.keySet()))throw new IllegalArgumentException("missing or unknown runtime-config field");
         if(!(value.get("compute") instanceof String)||!(value.get("context_tokens") instanceof Integer)
                 ||!(value.get("threads") instanceof Integer)||(!legacy&&!(value.get("model_profile") instanceof String)))
             throw new IllegalArgumentException("runtime-config types differ");
         ModelProfile selected=legacy?ModelProfile.LFM3:ModelProfile.named((String)value.get("model_profile"));
-        return new LocalRuntimeConfig(selected,(String)value.get("compute"),(Integer)value.get("context_tokens"),(Integer)value.get("threads"));
+        if(selected.visual()!=visualSchema)throw new IllegalArgumentException("visual profiles require explicit v3 visual_mode");
+        if(visualSchema&&!"observe".equals(value.get("visual_mode"))&&!"tools".equals(value.get("visual_mode")))
+            throw new IllegalArgumentException("visual_mode must be exactly observe or tools");
+        return new LocalRuntimeConfig(selected,(String)value.get("compute"),(Integer)value.get("context_tokens"),(Integer)value.get("threads"),
+                visualSchema&&"observe".equals(value.get("visual_mode")));
     }
     public String expectedDevice() { return "npu".equals(compute) ? "HTP0" : "GPUOpenCL"; }
     public boolean matchesResolvedDevice(String device, boolean warningPresent, int gpuLayers) {

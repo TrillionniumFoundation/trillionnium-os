@@ -194,6 +194,12 @@ public final class LocalTaskController implements AutoCloseable {
             "启动应用可能恢复子页，用可见返回键/back回到目标页，勿为重试打开无关应用。全部目标按原顺序实现且历史动作和当前可见结果支持才done且status=success；done.status只能选completion.allowed_done_statuses，不能完成时选择其中允许的非success状态；集合为空时不能done。task_authorization中的success_done_allowed只表示权限，不证明目标完成。done须同时含status和summary；wait不表示完成/停留。禁止其它字段、输入密码或执行代码/网络命令。\n";
 
 
+    private static String systemPrompt(LocalRuntimeConfig config){
+        if(config==null)throw new IllegalArgumentException("local configuration required");
+        return config.profile.visual()?SYSTEM.replace("无图像输入，不猜无标签图标用途或坐标。",
+                "附有同一观察帧的图像，可用于理解当前页面；所有工具仍只允许本轮节点和动作域，不猜无标签图标用途或坐标。"):SYSTEM;
+    }
+
     public LocalTaskController(HeptaAccessibilityService service,LocalInference inference){
         if(service==null||inference==null)throw new IllegalArgumentException("service and local inference required");
         this.service=service;this.inference=inference;
@@ -411,7 +417,7 @@ public final class LocalTaskController implements AutoCloseable {
             inference.beginTask(taskId);
             emit("正在观察当前屏幕…");observation=awaitObservation(taskId,evidence,authorization,deadline);
             completion.observed(completionFrame(observation));
-            while(steps<MAX_STEPS){
+            taskSteps: while(steps<MAX_STEPS){
                 checkActive(deadline);steps++;
                 final PhoneObservation before=observation;
                 // Includes fresh observations after stale/undispatched proposals.
@@ -424,11 +430,20 @@ public final class LocalTaskController implements AutoCloseable {
                 for(int attempt=0;attempt<2;attempt++){
                     emit("正在用手机本地模型规划第 "+steps+" 步…");
                     record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-budget-%d.json",steps,attempt),frame.budgetJson());
-                    ModelAnswer answer=awaitModel(prompt,frame.grammar,deadline);
+                    ModelAnswer answer=awaitModel(prompt,frame.grammar,deadline,before,instruction,authorization,background);
                     record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-model-%d.json",steps,attempt),
                             new JSONObject().put("run_id",answer.runId).put("raw_text",answer.text).put("observation_id",before.id)
                                     .put("original_instruction_sha256",HeptaAccessibilityService.sha(instruction.getBytes(StandardCharsets.UTF_8))));
                     checkActive(deadline);
+                    if(!inference.modelOutputDispatchAllowed()){
+                        record(evidence,"visual-observation-only.json",new JSONObject()
+                                .put("schema","hepta.visual-observation-only.v1").put("task_id",taskId)
+                                .put("observation_id",before.id).put("model_run_id",answer.runId)
+                                .put("model_output_dispatched",false).put("business_completion_verified",false)
+                                .put("ordinary_task_mode","observe").put("automatic_resume",false));
+                        finalStatus="partial";summary="本地视觉推理已完成；本次为仅观察模式，未执行模型工具调用。";
+                        break taskSteps;
+                    }
                     try{
                         action=ActionDecision.parse(answer.text,frame.grammar.schema);
                         // Preserve a parsed native claim even when the current
@@ -1064,21 +1079,48 @@ public final class LocalTaskController implements AutoCloseable {
         return result;
     }
     private static final class ModelAnswer {final String text,runId;ModelAnswer(String text,String runId){this.text=text;this.runId=runId;}}
-    private ModelAnswer awaitModel(String prompt,DecisionGrammar grammar,long taskDeadline)throws Exception{
-        if(!ConservativeTokenBudget.estimate(SYSTEM,prompt,inference.configuration()).mayAttemptNative())
+    private ModelAnswer awaitModel(String prompt,DecisionGrammar grammar,long taskDeadline,
+                                  PhoneObservation before,String originalInstruction,
+                                  TaskAuthorization.Gate authorization,BackgroundSession background)throws Exception{
+        final LocalRuntimeConfig runtime=inference.configuration();
+        final String system=systemPrompt(runtime);
+        if(!ConservativeTokenBudget.estimate(system,prompt,runtime).mayAttemptNative())
             throw new IllegalStateException("完整指令超出手机本地上下文上限，请拆分任务");
         long remaining=taskDeadline-SystemClock.elapsedRealtime();if(remaining<1000)throw new IllegalStateException("任务时间已用完");
-        long timeout=Math.min(MODEL_TIMEOUT_MS,remaining);final CountDownLatch ready=new CountDownLatch(1);
+        boolean visual=inference.acceptsObservedImage();
+        if(visual!=runtime.profile.visual())throw new IllegalStateException("本地推理器与模型的图像输入能力不一致");
+        long timeout=Math.min(visual?120000L:MODEL_TIMEOUT_MS,remaining);final CountDownLatch ready=new CountDownLatch(1);
         final AtomicReference<ModelAnswer> result=new AtomicReference<ModelAnswer>();
         final AtomicReference<String> error=new AtomicReference<String>();final AtomicBoolean cleanupKnown=new AtomicBoolean(true);
         final AtomicBoolean delivered=new AtomicBoolean();
-        LocalInference.Handle handle=inference.generate(prompt,SYSTEM,null,grammar,LocalRuntimeConfig.GENERATION_TOKENS,timeout,new LocalInference.Callback(){
+        LocalInference.CurrentFrame currentFrame=null;
+        if(visual){
+            if(before==null||before.windowMetadata==null||before.windowMetadata.displayId==null
+                    ||grammar.authorization==null||!before.id.equals(grammar.observationId)
+                    ||!before.packageName.equals(grammar.currentPackage))
+                throw new IllegalStateException("本地视觉推理需要同一任务的当前后台画面");
+            grammar.authorization.authorization.requireOwner(originalInstruction);
+            currentFrame=new LocalInference.CurrentFrame(before.screenshot,grammar.authorization.taskId,
+                    grammar.authorization.authorization.instructionSha256,before.id,before.backgroundGeneration,
+                    before.packageName,before.screenshotSha256,before.width,before.height,
+                    before.windowMetadata.displayId.intValue(),before.windowId,before.rotation,
+                    before.capturedElapsedMillis,originalInstruction.getBytes(StandardCharsets.UTF_8),
+                    new LocalInference.Currentness(){public void requireCurrent()throws Exception{
+                        checkActive(taskDeadline);
+                        service.requireVisualFrameOwnership(LocalTaskController.this,grammar.authorization.taskId,
+                                authorization,background,before,grammar);
+                        checkActive(taskDeadline);
+                    }});
+        }
+        LocalInference.Handle handle=inference.generateObserved(prompt,system,currentFrame,grammar,LocalRuntimeConfig.GENERATION_TOKENS,timeout,new LocalInference.Callback(){
             public void onSuccess(String raw,String runId){if(delivered.compareAndSet(false,true)){result.set(new ModelAnswer(raw,runId));ready.countDown();}}
             public void onFailure(String message,boolean cleanup){if(delivered.compareAndSet(false,true)){error.set(message);cleanupKnown.set(cleanup);ready.countDown();}}
         });
         synchronized(handleLock){activeInference=handle;}
         if(cancelled.get())handle.cancel();
-        long stopDeadline=SystemClock.elapsedRealtime()+timeout+17000;boolean cancellationSent=cancelled.get();
+        long completionGrace=inference.requestCompletionGraceMillis();
+        if(completionGrace<17000L||completionGrace>24000L){handle.cancel();throw new CleanupUnknown("本地推理退出期限无效");}
+        long stopDeadline=SystemClock.elapsedRealtime()+timeout+completionGrace;boolean cancellationSent=cancelled.get();
         while(!ready.await(120,TimeUnit.MILLISECONDS)){
             if((cancelled.get()||SystemClock.elapsedRealtime()>taskDeadline)&&!cancellationSent){handle.cancel();cancellationSent=true;}
             if(SystemClock.elapsedRealtime()>stopDeadline){handle.cancel();throw new CleanupUnknown("未能确认本地推理进程退出，暂不接受新任务");}
@@ -1335,7 +1377,11 @@ public final class LocalTaskController implements AutoCloseable {
                 .put("native_exact_tokenization_required",budget.profile.exactTokenizationRequired)
                 .put("tokenizer_reference_sha256",budget.provenUpperBound?ConservativeTokenBudget.TOKENIZER_REFERENCE_SHA256:JSONObject.NULL)
                 .put("system_utf8_upper",budget.systemBytesUpper).put("prompt_utf8_upper",budget.promptBytesUpper)
-                .put("formatter_upper",ConservativeTokenBudget.TEMPLATE_BOUND).put("image_tokens",0).put("image_sent_to_model",false)
+                .put("formatter_upper",ConservativeTokenBudget.TEMPLATE_BOUND)
+                .put("image_tokens",budget.profile.visual()?JSONObject.NULL:Integer.valueOf(0))
+                .put("image_sent_to_model",budget.profile.visual()?JSONObject.NULL:Boolean.FALSE)
+                .put("current_frame_image_requested",budget.profile.visual())
+                .put("native_multimodal_token_and_position_count_required",budget.profile.visual())
                 .put("bos_eos_upper",ConservativeTokenBudget.BOS_EOS_BOUND).put("generation_tokens",ConservativeTokenBudget.GENERATION).put("reserved_tokens",ConservativeTokenBudget.RESERVED)
                 .put(budget.provenUpperBound?"prompt_tokens_upper":"projection_prompt_score",budget.promptTokensUpper)
                 .put(budget.provenUpperBound?"total_context_upper":"projection_context_score",budget.totalContextUpper)
@@ -1588,7 +1634,7 @@ public final class LocalTaskController implements AutoCloseable {
             // Escape markup only in untrusted JSON. Owner text is unchanged.
             // Screenshots remain private action-verification evidence, never model input.
             String text="UNTRUSTED_DATA\n"+promptSections(data).replace("<","\\u003c")+"\nOWNER\n"+owner;
-            ConservativeTokenBudget budget=ConservativeTokenBudget.estimate(SYSTEM,text,config);
+            ConservativeTokenBudget budget=ConservativeTokenBudget.estimate(systemPrompt(config),text,config);
             // Exact-token profiles retain this bounded observation and complete
             // history. A byte heuristic must not erase readouts or reject them
             // before the native same-input-ID budget guard can decide.

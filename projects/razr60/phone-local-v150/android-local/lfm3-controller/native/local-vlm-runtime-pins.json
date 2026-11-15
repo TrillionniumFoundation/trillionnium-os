@@ -1,0 +1,162 @@
+{
+  "schema": "hepta.local-vlm.worker-packaging.v1",
+  "worker_build_qualified": true,
+  "ordinary_app_runtime_qualified": false,
+  "phone_contacted": false,
+  "source_manifest_sha256": "212221cd0fd29f50ce3aa15a4e3504b648c12cc59847b12e54370fe1c2636a00",
+  "reference_build_receipt_sha256": "ee6b209b474f6027962b180d0c02023fa1f4d69616f50ee323e9162280a973a5",
+  "llama_source_commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+  "geniex_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+  "worker": {
+    "apk_name": "libhepta_local_vlm_runner.so",
+    "source_name": "libhepta_local_vlm_runner.so",
+    "bytes": 147424,
+    "sha256": "33aea41ab348adad9b08ed6ae6f16ffd1fd06a12435d33847549dad276c8bd3e",
+    "needed": [
+      "libllama-common.so",
+      "libmtmd.so",
+      "libllama.so",
+      "libggml.so",
+      "libggml-base.so",
+      "libdl.so",
+      "libm.so",
+      "libc.so"
+    ],
+    "runpath": "$ORIGIN"
+  },
+  "runtime": [
+    {
+      "name": "libllama.so",
+      "bytes": 5642424,
+      "sha256": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835"
+    },
+    {
+      "name": "libmtmd.so",
+      "bytes": 1643536,
+      "sha256": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d"
+    },
+    {
+      "name": "libllama-common.so",
+      "bytes": 6242864,
+      "sha256": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122"
+    },
+    {
+      "name": "libggml.so",
+      "bytes": 41088,
+      "sha256": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149"
+    },
+    {
+      "name": "libggml-base.so",
+      "bytes": 3534496,
+      "sha256": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40"
+    },
+    {
+      "name": "libggml-cpu.so",
+      "bytes": 936328,
+      "sha256": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b"
+    },
+    {
+      "name": "libggml-hexagon.so",
+      "bytes": 3874328,
+      "sha256": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f"
+    },
+    {
+      "name": "libggml-htp-v79.so",
+      "bytes": 858848,
+      "sha256": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5"
+    },
+    {
+      "name": "libggml-opencl.so",
+      "bytes": 7886880,
+      "sha256": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875"
+    },
+    {
+      "name": "libomp.so",
+      "bytes": 1234864,
+      "sha256": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76"
+    }
+  ],
+  "vendor_needed": [
+    {
+      "from": "libggml-opencl.so",
+      "needed": "libOpenCL.so",
+      "device_namespace_verified": false
+    }
+  ],
+  "vendor_versioned_symbols": [
+    "clBuildProgram@OPENCL_1.0",
+    "clCreateBuffer@OPENCL_1.0",
+    "clCreateBufferWithProperties@OPENCL_3.0",
+    "clCreateCommandQueue@OPENCL_1.0",
+    "clCreateContext@OPENCL_1.0",
+    "clCreateImage@OPENCL_1.2",
+    "clCreateKernel@OPENCL_1.0",
+    "clCreateProgramWithBinary@OPENCL_1.0",
+    "clCreateProgramWithSource@OPENCL_1.0",
+    "clCreateSubBuffer@OPENCL_1.1",
+    "clEnqueueBarrierWithWaitList@OPENCL_1.2",
+    "clEnqueueCopyBuffer@OPENCL_1.0",
+    "clEnqueueFillBuffer@OPENCL_1.2",
+    "clEnqueueMapBuffer@OPENCL_1.0",
+    "clEnqueueMarkerWithWaitList@OPENCL_1.2",
+    "clEnqueueNDRangeKernel@OPENCL_1.0",
+    "clEnqueueReadBuffer@OPENCL_1.0",
+    "clEnqueueUnmapMemObject@OPENCL_1.0",
+    "clEnqueueWriteBuffer@OPENCL_1.0",
+    "clFinish@OPENCL_1.0",
+    "clFlush@OPENCL_1.0",
+    "clGetDeviceIDs@OPENCL_1.0",
+    "clGetDeviceInfo@OPENCL_1.0",
+    "clGetKernelSubGroupInfo@OPENCL_2.1",
+    "clGetKernelWorkGroupInfo@OPENCL_1.0",
+    "clGetPlatformIDs@OPENCL_1.0",
+    "clGetPlatformInfo@OPENCL_1.0",
+    "clGetProgramBuildInfo@OPENCL_1.0",
+    "clGetProgramInfo@OPENCL_1.0",
+    "clReleaseEvent@OPENCL_1.0",
+    "clReleaseKernel@OPENCL_1.0",
+    "clReleaseMemObject@OPENCL_1.0",
+    "clReleaseProgram@OPENCL_1.0",
+    "clSetKernelArg@OPENCL_1.0",
+    "clWaitForEvents@OPENCL_1.0"
+  ],
+  "profiles": [
+    {
+      "id": "ui-venus-2-9b-q4_0",
+      "directory": "ui-venus-model",
+      "architecture": "qwen35",
+      "tokenizer_pre": "qwen35",
+      "template_bytes": 7740,
+      "template_sha256": "4a3d47f53cc133e5dc859e9532fcb74baf0459ef426b8f107a3ac6e5926533e5",
+      "model": {
+        "name": "UI-Venus-2-9B-Q4_0.gguf",
+        "bytes": 5482832672,
+        "sha256": "2e881d6e74899b47b1f0c9052abeeb0a7ff55913dfb18d942a3de3cadb3d1adb"
+      },
+      "projector": {
+        "name": "mmproj-UI-Venus-2-9B-f16.gguf",
+        "bytes": 918165664,
+        "sha256": "6ef77c3bf87391664be7cd71c595352e7281dabe52f24e961e2deace550f3af2"
+      }
+    },
+    {
+      "id": "gui-owl-1.5-4b-instruct-i1-q4_0",
+      "directory": "gui-owl-model",
+      "architecture": "qwen3vl",
+      "tokenizer_pre": "qwen2",
+      "tokenizer_model": "gpt2",
+      "template_bytes": 5292,
+      "template_sha256": "3636d0f0bd6bef02654cdffdc447b79cb2cef8ab02cc75267345946291a489e4",
+      "model": {
+        "name": "GUI-Owl-1.5-4B-Instruct.i1-Q4_0.gguf",
+        "bytes": 2375774624,
+        "sha256": "c71f372d2e2b71f173622f1966ac6a1bc60da1c2dbdd6d92534ab6f83724b8df"
+      },
+      "projector": {
+        "name": "GUI-Owl-1.5-4B-Instruct.mmproj-f16.gguf",
+        "bytes": 836180288,
+        "sha256": "eabdc0291d460f2e68874f51044030a7da8fe956c2a6b86abd69fd701227c105"
+      }
+    }
+  ]
+}

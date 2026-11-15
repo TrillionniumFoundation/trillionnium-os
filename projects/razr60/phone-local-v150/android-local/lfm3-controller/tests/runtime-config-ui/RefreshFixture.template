@@ -12,8 +12,9 @@ public final class RuntimeConfigUiHostTest {
         boolean isChecked(){return checked;}void setVisibility(int value){visibility=value;}
     }
     private static final class View {static final int VISIBLE=0,GONE=8;}
-    private static final class Profile {String displayName="fixture model",fileName="model.bin";}
-    private static final class LocalRuntimeConfig {String compute="gpu";final Profile profile=new Profile();}
+    private static final class Profile {String displayName="fixture model",fileName="model.bin";boolean visual;boolean visual(){return visual;}}
+    private static final class VlmPins {static final String PROJECTOR="projector.bin";}
+    private static final class LocalRuntimeConfig {String compute="gpu";final Profile profile=new Profile();boolean visualObservationOnly;}
     private static final class LocalModelEngine {
         final File files;final LocalRuntimeConfig configuration=new LocalRuntimeConfig();String configurationError;
         boolean busy;Result result;
@@ -145,6 +146,20 @@ public final class RuntimeConfigUiHostTest {
         cold.tasks.stateText="上次任务已结束\n\n上次任务结果：\n"+failed.displaySummary;cold.refresh();
         check(cold.tasks.result==null&&cold.tasks.stateText.equals(cold.taskState.text),"cold session state retains the recovered explanation without an in-memory TaskResult");
         check(cold.startTask.enabled&&!cold.stopTask.enabled&&cold.renderCalls==0,"cold result presentation does not start or restore a task");
+        RuntimeConfigUiHostTest visual=new RuntimeConfigUiHostTest(files);
+        visual.engine.configuration.profile.visual=true;visual.engine.configuration.compute="npu";
+        visual.engine.configuration.visualObservationOnly=true;visual.refresh();
+        check(visual.modelInfo.text.contains("本地模型待导入")&&visual.modelInfo.text.contains("仅观察，不执行工具"),"visual observation mode never claims missing model pair is imported");
+        check(!visual.runText.enabled&&visual.renderCalls==0,"visual profile cannot enter the text-only probe");
+        File visualModel=new File(files,"gui-owl-model/model.bin"),projector=new File(files,"gui-owl-model/"+VlmPins.PROJECTOR);
+        check(visualModel.getParentFile().mkdirs()&&visualModel.createNewFile(),"fresh visual model fixture created");
+        visual.refresh();check(visual.modelInfo.text.contains("本地模型待导入"),"main model alone does not claim the pair is available");
+        check(projector.createNewFile(),"fresh projector fixture created");visual.refresh();
+        check(visual.modelInfo.text.contains("本地模型已导入")&&visual.modelDiagnostics.text.contains("Hexagon NPU + Adreno GPU"),"the visual pair and explicit two-device route are visible");
+        visual.engine.configuration.visualObservationOnly=false;visual.backgroundMode.checked=true;visual.backgroundPackages.add("example.notes");visual.refresh();
+        check(visual.modelInfo.text.contains("本地视觉工具模式")&&!visual.modelInfo.text.contains("仅观察"),"explicit tools configuration has its own visible state");
+        check(visual.backgroundSummary.text.contains("所选起始应用")&&!visual.runText.enabled,"background summary reflects one selected initial app and visual text-probe remains disabled");
+        visual.engine.busy=true;visual.refresh();check(visual.stopTask.enabled&&!visual.startTask.enabled,"visual busy mode keeps ordinary Stop");
         System.out.println("{\"passed\":"+checks+",\"failed\":0,\"production_methods_executed\":7}");
     }
 }

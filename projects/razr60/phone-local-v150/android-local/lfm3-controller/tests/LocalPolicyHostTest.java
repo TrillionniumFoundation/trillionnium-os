@@ -45,6 +45,24 @@ public final class LocalPolicyHostTest {
         saved.put("schema","hepta.local-runtime.v2");saved.put("model_profile",ModelProfile.GEMMA4_E4B.id);
         LocalRuntimeConfig explicitSelected=LocalRuntimeConfig.fromFields(saved);
         check(explicitSelected.profile==ModelProfile.GEMMA4_E4B&&explicitSelected.contextTokens==4096,"explicit selected profile/context are preserved");
+        java.util.Map<String,Object> visual=new java.util.LinkedHashMap<String,Object>();
+        visual.put("schema","hepta.local-runtime.v3");visual.put("model_profile",ModelProfile.GUI_OWL_4B.id);
+        visual.put("compute","npu");visual.put("context_tokens",8192);visual.put("threads",4);visual.put("visual_mode","observe");
+        LocalRuntimeConfig observed=LocalRuntimeConfig.fromFields(visual);
+        check(observed.profile==ModelProfile.GUI_OWL_4B&&observed.profile.visual()&&observed.visualObservationOnly,"visual observe requires explicit pinned v3 configuration");
+        visual.put("visual_mode","tools");check(!LocalRuntimeConfig.fromFields(visual).visualObservationOnly,"tools is an explicit visual configuration");
+        Object[][] invalidVisual={{"schema","hepta.local-runtime.v2"},{"schema","hepta.local-runtime.v1"},
+                {"compute","gpu"},{"context_tokens",4096},{"threads",3},{"visual_mode","auto"},{"visual_mode",Boolean.TRUE},
+                {"model_profile",ModelProfile.LFM3.id},{"context_tokens",Long.valueOf(8192)},{"extra",Boolean.TRUE}};
+        for(Object[] change:invalidVisual){
+            java.util.Map<String,Object> bad=new java.util.LinkedHashMap<String,Object>(visual);bad.put((String)change[0],change[1]);
+            boolean rejected=false;try{LocalRuntimeConfig.fromFields(bad);}catch(IllegalArgumentException expected){rejected=true;}
+            check(rejected,"invalid visual schema/device/mode/types refused: "+change[0]);
+        }
+        java.util.Map<String,Object> implicit=new java.util.LinkedHashMap<String,Object>(visual);implicit.remove("visual_mode");
+        boolean noMode=false;try{LocalRuntimeConfig.fromFields(implicit);}catch(IllegalArgumentException expected){noMode=true;}
+        check(noMode,"visual execution mode cannot be inferred from a missing field");
+        check(!defaults.profile.visual()&&!defaults.visualObservationOnly&&!explicitSelected.visualObservationOnly&&!explicitLegacy.visualObservationOnly,"old text and legacy defaults retain their route");
         check(defaults.matchesResolvedDevice("HTP0",false,-1),"NPU exact identity");
         check(!defaults.matchesResolvedDevice("CPU",false,-1),"CPU coercion rejected");
         check(!defaults.matchesResolvedDevice("HTP0",true,-1),"device warning rejected");

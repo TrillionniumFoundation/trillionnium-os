@@ -387,6 +387,95 @@ public final class LocalModelEngine implements AutoCloseable {
         put(evidence,"sdk_cleanup_proven_by_this_object",false);put(receipt,"owned_worker_cancellation",evidence);
     }
 
+    /** Retains the ordinary task's process slot across serial visual generations.
+     * Each child keeps its own cancellation clock and generation cleanup proof.
+     * Releasing a child never admits another task or diagnostic.
+     */
+    public final class TaskExternalLease {
+        public final String taskId;
+        private final RunHandle handle=new RunHandle();
+        private String childGeneration,childToken;
+        private OwnedWorkerCancellation cancellation;
+        private final Set<String> usedGenerations=new HashSet<>();
+        private boolean requestReserved,ending,released;
+        private TaskExternalLease(String taskId){this.taskId=taskId;}
+        public String generation(){return handle.runId;}
+        public boolean isCancellationRequested(){return handle.isCancellationRequested();}
+        public void cancel(){handle.cancel();}
+        public synchronized boolean current(){
+            return !released&&active.get()==handle&&PROCESS_ACTIVE.get()==handle;
+        }
+        public synchronized OwnedWorkerCancellation prepareRequest(String generation,String token){
+            if(!current()||ending||requestReserved||handle.child.get()!=null
+                    ||handle.isCancellationRequested()||!WarmProcessSession.validId(generation)
+                    ||!WarmProcessSession.validId(token)||generation.equals(handle.runId)
+                    ||usedGenerations.contains(generation))
+                throw new IllegalStateException("visual task is retired, cancelled or already owns a request");
+            childGeneration=generation;childToken=token;usedGenerations.add(generation);
+            cancellation=new OwnedWorkerCancellation(generation,taskId);
+            handle.ownedCancellation=cancellation;
+            requestReserved=true;
+            return cancellation;
+        }
+        public synchronized void attach(Process process,OwnedWorkerCancellation expected){
+            if(!current()||!requestReserved||process==null||expected!=cancellation
+                    ||!handle.child.compareAndSet(null,process))
+                throw new IllegalStateException("foreign visual child ownership");
+            cancellation.attach(process,childGeneration,taskId);
+            if(handle.isCancellationRequested())cancellation.cancel();
+        }
+        public synchronized boolean ownsRequest(String generation,String token,
+                                                OwnedWorkerCancellation expected,Process process){
+            return current()&&requestReserved&&generation.equals(childGeneration)&&token.equals(childToken)
+                    &&expected==cancellation&&handle.child.get()==process;
+        }
+        public synchronized void retireRequest(Process process,boolean directExitObserved,Integer exitCode,
+                                               OwnedGenerationScope.Cleanup proof,
+                                               boolean terminalPublished){
+            if(!current()||!requestReserved||!terminalPublished||handle.child.get()!=process)
+                throw new IllegalStateException("visual request terminal is not owned and published");
+            if(process==null){
+                if(directExitObserved||exitCode!=null||proof!=null||cancellation.snapshot().processBound)
+                    throw new IllegalStateException("a started visual child cannot be retired as unstarted");
+            }else if(!directExitObserved||exitCode==null||process.isAlive()||process.exitValue()!=exitCode.intValue()
+                    ||proof==null||!proof.known
+                    ||!taskId.equals(proof.evidence.optString("task_id"))
+                    ||!childGeneration.equals(proof.evidence.optString("worker_generation"))
+                    ||!childToken.equals(proof.evidence.optString("scope_token"))
+                    ||!proof.evidence.optBoolean("direct_process_exit_observed",false)
+                    ||!proof.evidence.optBoolean("cleanup_known",false))
+                throw new IllegalStateException("visual generation exit or absence remains unknown");
+            handle.child.set(null);handle.ownedCancellation=null;
+            cancellation=null;childGeneration=null;childToken=null;requestReserved=false;
+        }
+        public synchronized void endRequests(){
+            if(!current())throw new IllegalStateException("visual task slot is no longer current");
+            ending=true;
+        }
+        public synchronized boolean requestPending(){return requestReserved;}
+        public synchronized void releaseAfterTerminalPublication(boolean terminalPublished){
+            if(released)return;
+            if(!current()||!ending||requestReserved||handle.child.get()!=null||!terminalPublished)
+                throw new IllegalStateException("visual task terminal cannot release its process slot");
+            released=true;
+            active.compareAndSet(handle,null);PROCESS_ACTIVE.compareAndSet(handle,null);
+        }
+    }
+    public TaskExternalLease reserveTaskExternal(String taskId){
+        LocalProbeApplication.requirePermissionPreparationIdle(context);
+        if(closed.get()||!WarmProcessSession.validId(taskId))
+            throw new IllegalStateException("invalid external task reservation");
+        TaskExternalLease lease=new TaskExternalLease(taskId);
+        claimProcess(lease.handle,active);
+        if(closed.get())lease.cancel();
+        return lease;
+    }
+    Future<?> submitTaskExternal(TaskExternalLease lease,Runnable work){
+        if(lease==null||work==null||!lease.current()||closed.get())
+            throw new IllegalStateException("visual request has no current process slot");
+        return executor.submit(work);
+    }
+
     /** Shares the existing single-model slot and visible Stop with a model-only native worker.
      * The caller must durably reserve its own diagnostic session before attaching a child,
      * and may release only after owned exit (or no start) and durable terminal publication.
@@ -567,14 +656,15 @@ public final class LocalModelEngine implements AutoCloseable {
         }
     }
     JSONObject cancellationEvidence(){TaskCancellationQueue.Ticket value=lastCancellation;return value==null?null:new JSONObject(value.evidence());}
-    public File modelDirectory() { return new File(files, "model"); }
+    public File modelDirectory() { return new File(files, configuration.profile.visual()?"gui-owl-model":"model"); }
     public File modelFile() { return new File(modelDirectory(), configuration.profile.fileName); }
     public LocalRuntimeConfig configuration() {
         if (configurationError != null) throw new IllegalStateException("本地运行参数无效：" + configurationError);
         return configuration;
     }
     private LocalRuntimeConfig readConfiguration() throws Exception {
-        File dir = modelDirectory().getCanonicalFile();
+        // Configuration has one stable location before the selected profile is known.
+        File dir = new File(files,"model").getCanonicalFile();
         File file = new File(dir, "runtime-config.json");
         if (!file.exists()) return LocalRuntimeConfig.defaults();
         if (!dir.getParentFile().equals(files.getCanonicalFile()) || !file.getCanonicalFile().equals(file))
@@ -625,6 +715,7 @@ public final class LocalModelEngine implements AutoCloseable {
             put(receipt, "parent_death_guard_is_cleanup_proof", false);
             put(receipt, "package_name", context.getPackageName());
             LocalRuntimeConfig config = configuration();
+            if(config.profile.visual())throw new IOException("visual tasks require their current-frame adapter");
             put(receipt, "runtime", LocalRuntimeConfig.RUNTIME);
             put(receipt, "mode", LocalRuntimeConfig.MODE);
             put(receipt, "model_id", config.profile.repository);
