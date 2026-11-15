@@ -1,0 +1,89 @@
+{
+  "schema": "hepta.mobimind.android-worker-build.v2",
+  "source_commit": "bce7456ce60b5e51b4d3b357f303515860353d8c",
+  "worker_revision": "r4",
+  "probe_archive_sha256": "6dba288425cae32b15a74a66e7449d9a393ed56111fdcc237497b08088546080",
+  "probe_source_manifest_sha256": "b642269f327219c23d9fd778621921c85fd19cb8a35def970e5097ca88d2d8f5",
+  "ndk": "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358",
+  "cmake": "/opt/homebrew/Cellar/cmake/4.3.2/bin/cmake",
+  "worker_rebuilt": true,
+  "mnn_library_rebuilt": false,
+  "cxx_library_rebuilt": false,
+  "dependency_original_build": "/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/opencl-probe-build-r2",
+  "http_resource_support": false,
+  "libraries": [
+    {
+      "name": "hepta-mobimind-probe",
+      "bytes": 2186768,
+      "sha256": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020",
+      "elf_class": 64,
+      "machine": "AArch64",
+      "needed": [
+        "libMNN.so",
+        "liblog.so",
+        "libandroid.so",
+        "libdl.so",
+        "libm.so",
+        "libc++_shared.so",
+        "libc.so"
+      ],
+      "rebuilt_this_run": true
+    },
+    {
+      "name": "libMNN.so",
+      "bytes": 6408488,
+      "sha256": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d",
+      "elf_class": 64,
+      "machine": "AArch64",
+      "needed": [
+        "liblog.so",
+        "libm.so",
+        "libandroid.so",
+        "libc++_shared.so",
+        "libdl.so",
+        "libc.so"
+      ],
+      "rebuilt_this_run": false
+    },
+    {
+      "name": "libc++_shared.so",
+      "bytes": 9236352,
+      "sha256": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754",
+      "elf_class": 64,
+      "machine": "AArch64",
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ],
+      "rebuilt_this_run": false
+    }
+  ],
+  "arm_sha_static_qualification": {
+    "sha2_instructions_present": true,
+    "sha2_only_in_target_function": true,
+    "sha2_instruction_count": 56,
+    "runtime_getauxval_import_present": true,
+    "translation_unit_global_sha2_disabled": true,
+    "android_execution_performed": false
+  },
+  "android_execution_performed": false,
+  "phone_contacted": false,
+  "installed": false,
+  "whole_runtime_requalified": false,
+  "model_inference_performed": false,
+  "source_qualification": {
+    "express/Executor.cpp": {
+      "upstream_sha256": "79fd37b7111e91201efcbca12aa61f287d6ffe7d05a95cc7e9b215a6990cda05",
+      "existing_telemetry_sha256": "73415fa6b438c14c47be37294fbc0e46aa16bdf0901cfbb30746d4617280a4eb"
+    },
+    "source/core/Pipeline.cpp": {
+      "upstream_sha256": "f7cd899354b062e55f19643a3b88becfcf4a33983f57b249362a4d72ded2cfa2",
+      "existing_telemetry_sha256": "2df51615121e33986b35c814dfd6d09192bdd6eb841759efd7b5508744822d01"
+    },
+    "transformers/llm/engine/src/llm.cpp": {
+      "upstream_sha256": "30fafe27c266787512fd6a0a18811f7c7aeaed4b0215d185599e8e50777cf0b8",
+      "existing_telemetry_sha256": "185a0aba9e3c38dc8e9e4a39eb486609d633b9edec2be850057b8b5e03c057cc"
+    }
+  }
+}

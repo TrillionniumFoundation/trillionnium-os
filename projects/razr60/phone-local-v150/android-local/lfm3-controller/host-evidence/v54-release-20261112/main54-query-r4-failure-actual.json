@@ -1,0 +1,367 @@
+{
+  "actual_model_or_a11y_executed": false,
+  "all_pass": false,
+  "business_verified": false,
+  "error": "RuntimeError: actual command failed: query-chain",
+  "finished_epoch": 1794463897.6880078,
+  "originals_unchanged": true,
+  "phone_actions": 0,
+  "projection_sha256": "cd50e221ac6f930042ff3d39512f12d3573592da6c47798cb931a6b10a00c7c0",
+  "schema": "hepta.v54-flight-query-compiled-gate.v1",
+  "source_inputs": [
+    {
+      "bytes": 2730,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+      "sha256": "f5f3936a8185185cf5f036a74665ee6edfbd5c1f617299dd9cd6edd4bf7b23e2"
+    },
+    {
+      "bytes": 4137,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/background/FixedIntentTools.java",
+      "sha256": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947"
+    },
+    {
+      "bytes": 25712,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ActionDecision.java",
+      "sha256": "ee2a0481bb1ad0d2a3dd95b501c101d1955f4f1142adfe150ba3f9643fa88b20"
+    },
+    {
+      "bytes": 9217,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+      "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075"
+    },
+    {
+      "bytes": 10313,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/CsairCityPicker.java",
+      "sha256": "7a6765c1312e7219d0421cae5441f80c7db9f37623b764397b6c4659546d48d5"
+    },
+    {
+      "bytes": 15820,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/CsairFlightForm.java",
+      "sha256": "431f820a07cc4dbd6309bb74b17cff659334df21be8a6bdee71994133c90d43b"
+    },
+    {
+      "bytes": 30605,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/DecisionGrammar.java",
+      "sha256": "236d22187abfe777705d337241e310dd617b1c4c21ae39df4f52d960a1e106ca"
+    },
+    {
+      "bytes": 711,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ImeVisibility.java",
+      "sha256": "4e7fdaf10d6d502e77642fb043296e8da5d94fbfc78d884826f60dafed8f6e36"
+    },
+    {
+      "bytes": 17572,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/MiPublicProductPage.java",
+      "sha256": "a34a3216b36b77f8c3c7c0adaec66f3624afb217697b655e49f194809d85d3be"
+    },
+    {
+      "bytes": 18644,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
+      "sha256": "1ce2e8dfc588ae51545f88a0eccb2002cfd91f647db0225fd95398ff04157f7d"
+    },
+    {
+      "bytes": 21099,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/NotesCreateWorkflow.java",
+      "sha256": "0995cd9a7f5897d2dab5827a432eaa13cc7d8d6363ffda415baa6d566d80d80d"
+    },
+    {
+      "bytes": 12329,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+      "sha256": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f"
+    },
+    {
+      "bytes": 1258,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ObservationState.java",
+      "sha256": "a2a664a3567995de8665e66d7667cfc089277fdd16175aa9dab837f7919dd257"
+    },
+    {
+      "bytes": 4889,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ObservedAppLabels.java",
+      "sha256": "0276171bb8aaebee880a6d36fea5cbfdb157b09d2728a07148e4ce85d5ffbb9e"
+    },
+    {
+      "bytes": 10858,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ObservedChildText.java",
+      "sha256": "56433b62f9c4c895edac441160fcdc4aaee7365586daa4b86863448dc4dd54d5"
+    },
+    {
+      "bytes": 4665,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ObservedImeEnter.java",
+      "sha256": "e449d61e928dca5a72730b5394fa8f95a7db4dd4006440a95f839818e165acf1"
+    },
+    {
+      "bytes": 2303,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+      "sha256": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188"
+    },
+    {
+      "bytes": 4685,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+      "sha256": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba"
+    },
+    {
+      "bytes": 4536,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ObservedWindowMetadata.java",
+      "sha256": "73948e97e6a164ef27753ba0536d0cfadac2ee670179aa2e5b4bb2af0e9e66c5"
+    },
+    {
+      "bytes": 18273,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/PhoneObservation.java",
+      "sha256": "9aeda02ab6fc541e9a8e04841093355c6055b590042f334b47fb55595ce5ca95"
+    },
+    {
+      "bytes": 23598,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/TaskAuthorization.java",
+      "sha256": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8"
+    },
+    {
+      "bytes": 32841,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+      "sha256": "68052883f8fa072cf772b587690e94606970579ce74430bcff27fc8e39c246d2"
+    },
+    {
+      "bytes": 7253,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/WebEvidenceJson.java",
+      "sha256": "4f9c66cc527948d498f941543240d2bb304610b388735f3bc7264b9ccefa4e1e"
+    },
+    {
+      "bytes": 22392,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/WebEvidenceReceipt.java",
+      "sha256": "06665e3b63fd72852a1369729f8b006b281ec7c5604768ede59a794832f295f9"
+    },
+    {
+      "bytes": 43169,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/WebFlightDomain.java",
+      "sha256": "35fa95ec4b78c36aab6c46f09190a8c1633443a9c0a4737b217b9088b6f2a4b1"
+    },
+    {
+      "bytes": 12169,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/WebNativeGeometry.java",
+      "sha256": "39dfab09bd0ddbc4c57904089f07ac12ffb454fe0a0fa03adfa60d3d8ab0988c"
+    },
+    {
+      "bytes": 25838,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/WebShoppingDomain.java",
+      "sha256": "e608f1e7d04c9e9141ef8a31866f69aa0634685f51765a18c557048611f8d633"
+    },
+    {
+      "bytes": 6533,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/WebTaskDomain.java",
+      "sha256": "32635c24a07e6804da968d60a67e2aa0b66634e0d6f37befbfe3d3fb65169260"
+    },
+    {
+      "bytes": 9611,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/web/WebFlightGoal.java",
+      "sha256": "02f260915f2b64894b8cd1ed4223392ace9964920d9b77e6765548252d9624ac"
+    },
+    {
+      "bytes": 10767,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/web/WebShoppingGoal.java",
+      "sha256": "106fd6dbb66582991c522c306891458587514133867a458a96f6a7e06aa8a0f4"
+    },
+    {
+      "bytes": 4089,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java",
+      "sha256": "90a414863297c1ff173fd14a7b31dce62bb5fbb561e7625f1fe3eb0dace47af7"
+    },
+    {
+      "bytes": 5507,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+      "sha256": "66c9488106d0b072e7b5a7337f5cbb2bcd3f0b1ccb65b6cf844b2194bca64bf7"
+    },
+    {
+      "bytes": 35981,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/webprotocol/WebRecoveryPolicy.java",
+      "sha256": "c3b5ddc20d2f4e01f7cc80df5be04af318c18cbc6cc1b3a43cdcc68710cc1f35"
+    },
+    {
+      "bytes": 4995,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java",
+      "sha256": "704f3de1bea1e0471d5daeb5cfc8255fd30b002c20eafc49c21fef2eb5ecc7a4"
+    },
+    {
+      "bytes": 8539,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/webprotocol/WebStorageEvidence.java",
+      "sha256": "9e8df742ad0fdaac0fbc051c99772a52fbb40aae49f0a43589e252e71acc7fc0"
+    },
+    {
+      "bytes": 6731,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/webprotocol/WebTaskPurpose.java",
+      "sha256": "92303867e09343ebcbb3620b9a5850bce683c1d94988d1e534dd272dcaea8647"
+    },
+    {
+      "bytes": 15279,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/notes-owner-intent/NotesOwnerIntentHostTest.java",
+      "sha256": "617eb96a0273bd391c45d442d4e4ec50c6cd9eb4f1039b93d015fd814e6ad44e"
+    },
+    {
+      "bytes": 796,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/qualification-scope/fixtures/android/graphics/Rect.java",
+      "sha256": "6d3a2cbd8addc45df561f48779486fd31a3f3ef10a3d7ae22b686783e06bb6be"
+    },
+    {
+      "bytes": 11000,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/web-flight/CsairCityPickerHostTest.java",
+      "sha256": "fd36b0f202ad4e2dc9486949e8ed0f75be0d4689852ce4d61ecb840035399323"
+    },
+    {
+      "bytes": 37110,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/web-flight/WebFlightEvidenceHostTest.java",
+      "sha256": "cb6f785dec795a0d820c4b325dd3caedb958a03001bf9ff8031c89b3cfdde1b7"
+    },
+    {
+      "bytes": 17335,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/web-flight/WebNaturalOwnerHostTest.java",
+      "sha256": "c511f6f89b5b98f06166734f879cfd307793a8eb83bdef3caa8751c73594211b"
+    },
+    {
+      "bytes": 14323,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/web-flight/WebUnstartedRetirementHostTest.java",
+      "sha256": "fb12aa3d1d67f098eab14ce75b25dfb10b27c33e86f2e6a5d449bf7c0856c938"
+    },
+    {
+      "bytes": 27007,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/web-flight/WebTaskCompositionHostTest.java",
+      "sha256": "01698444c7dfb9d37aaecd2aa981b746e603817cd01f9c80bd046e94ac8bbed5"
+    },
+    {
+      "bytes": 20840,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/CsairCalendar.java",
+      "sha256": "b18c650a866ef7acc65582e5a4c2b4c3d60d71139472ab340abc720618f2719d"
+    },
+    {
+      "bytes": 11235,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/web-flight/CsairCalendarHostTest.java",
+      "sha256": "8036a21854b736f781fe41b87e3a45a7a34f45eecf1d85ca078530c51ff9cfee"
+    },
+    {
+      "bytes": 13972,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/web-flight/WebCalendarNativeHostTest.java",
+      "sha256": "edab00a839c30c9865867ccb550fbdc1440f3da4aecd7f4c63af89702e12ebfb"
+    },
+    {
+      "bytes": 16832,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/WebFlightProgress.java",
+      "sha256": "47630c3e36b56470ebdb8353b24c68f94bf6274d7fefc08133cd7a78946a0691"
+    },
+    {
+      "bytes": 27420,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/web-flight/WebFlightQueryHostTest.java",
+      "sha256": "7fd8fdff5aea0099e16f004b5461bbf9f0f9f8ab91529d43143816aecc275507"
+    },
+    {
+      "bytes": 29912,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "sha256": "05d675db442aeb2195a7df087ef2005db2153047a051385fdfc6b73fc6cc3fa0"
+    },
+    {
+      "bytes": 99800,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "sha256": "4b83ea02176b5bb0c25259e2fb2c2f3ee0a1c82a0042349b5d933c20c730efce"
+    },
+    {
+      "bytes": 386724,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/fixtures/calendar-stable.json",
+      "sha256": "f61fd86cb24b212c3434bb5eda1a4e29b65c06c22d3fc4238366f31a324dd7fa"
+    },
+    {
+      "bytes": 178888,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/fixtures/calendar-stable.xml",
+      "sha256": "59d753e32edd620eb2e1fb0947c898df89eb7bf8dbc63dc4138a1636272b82ec"
+    },
+    {
+      "bytes": 78332,
+      "path": "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v53-web-helper-r3-dependency-closure-r2/artifacts/org.json/json/20240303/json-20240303.jar",
+      "sha256": "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"
+    }
+  ],
+  "started_epoch": 1794463891.3758552,
+  "steps": [
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-proc:none",
+        "-classpath",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v53-web-helper-r3-dependency-closure-r2/artifacts/org.json/json/20240303/json-20240303.jar",
+        "-d",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/query-host/classes",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/background/FixedIntentTarget.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/background/FixedIntentTools.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ActionDecision.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/CsairCityPicker.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/CsairFlightForm.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/DecisionGrammar.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ImeVisibility.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/MiPublicProductPage.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/NotesCompletionEvidence.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/NotesCreateWorkflow.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/NotesOwnerIntent.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ObservationState.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ObservedAppLabels.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ObservedChildText.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ObservedImeEnter.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/ObservedWindowMetadata.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/PhoneObservation.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/TaskAuthorization.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/TaskCompletionGate.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/WebEvidenceJson.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/WebEvidenceReceipt.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/WebFlightDomain.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/WebNativeGeometry.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/WebShoppingDomain.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/WebTaskDomain.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/web/WebFlightGoal.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/web/WebShoppingGoal.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/webprotocol/WebRecoveryPolicy.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/webprotocol/WebStorageEvidence.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/webprotocol/WebTaskPurpose.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/notes-owner-intent/NotesOwnerIntentHostTest.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/qualification-scope/fixtures/android/graphics/Rect.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/web-flight/CsairCityPickerHostTest.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/web-flight/WebFlightEvidenceHostTest.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/web-flight/WebNaturalOwnerHostTest.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/web-flight/WebUnstartedRetirementHostTest.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/web-flight/WebTaskCompositionHostTest.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/CsairCalendar.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/web-flight/CsairCalendarHostTest.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/web-flight/WebCalendarNativeHostTest.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/src/org/trillionnium/hepta/local/WebFlightProgress.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/source/tests/web-flight/WebFlightQueryHostTest.java",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/query-host/generated/org/trillionnium/hepta/local/WebFlightDispatchProjection.java"
+      ],
+      "exit_code": 0,
+      "forced": false,
+      "name": "javac",
+      "seconds": 5.622512,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java",
+        "-cp",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/query-host/classes:/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v53-web-helper-r3-dependency-closure-r2/artifacts/org.json/json/20240303/json-20240303.jar",
+        "org.trillionnium.hepta.local.WebFlightQueryHostTest",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/fixtures/calendar-stable.json",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/fixtures/calendar-stable.xml",
+        "/Users/qianqi/Documents/Codex/2026-11-11/hepta-local-007f/v54-main-android-r4/query-host/CASES.json"
+      ],
+      "exit_code": 1,
+      "forced": false,
+      "name": "query-chain",
+      "seconds": 0.6823584999999994,
+      "stderr_sha256": "dedec1bd711eb1858c17940ec80bffac7068e12369c8830d767b0cf5341915ad",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

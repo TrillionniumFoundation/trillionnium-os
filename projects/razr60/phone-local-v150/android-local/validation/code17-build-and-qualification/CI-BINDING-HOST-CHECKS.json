@@ -1,0 +1,17 @@
+{
+  "schema": "hepta.code17.ci-binding-check.v1",
+  "frozen_code17_accepted": true,
+  "frozen_code16_rejected": true,
+  "source_member_tampering_rejected": true,
+  "synthetic_previous_code16_binding_rejected": true,
+  "new_helper_hash_and_source_pins_match": true,
+  "python_parse_pass": true,
+  "compiler_qualifier_unchanged": true,
+  "phone_contacted": false,
+  "runtime_build_executed": false,
+  "runtime_pins_changed": false,
+  "app_source_modified": false,
+  "source_manifest_sha256": "3f7602f4c9ff73adfaabfdcf93496c043c10b59e6b5b75304bc13c473d3a2074",
+  "rebuild_helper_sha256": "60524086ef83cc80c6aa889731805dc2040c987631090d7a6da433b32171ae1d",
+  "synthetic_receipt_is_evidence_of_runtime_build": false
+}

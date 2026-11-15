@@ -1,0 +1,135 @@
+import java.io.File;
+
+/** Exact production refresh/config accessors; Android views and session IO are fixtures. */
+public final class RuntimeConfigUiHostTest {
+    private static int checks;
+    private static final String CONFIG_ERROR="runtime-config.json: unsupported model profile";
+    private static void check(boolean value,String message){checks++;if(!value)throw new AssertionError(message);}
+
+    private static final class Widget {
+        String text="";boolean enabled=true,checked;int visibility;
+        void setText(String value){text=value;}void setEnabled(boolean value){enabled=value;}
+        boolean isChecked(){return checked;}void setVisibility(int value){visibility=value;}
+    }
+    private static final class View {static final int VISIBLE=0,GONE=8;}
+    private static final class Profile {String displayName="fixture model",fileName="model.bin";}
+    private static final class LocalRuntimeConfig {String compute="gpu";final Profile profile=new Profile();}
+    private static final class LocalModelEngine {
+        final File files;final LocalRuntimeConfig configuration=new LocalRuntimeConfig();String configurationError;
+        boolean busy;Result result;
+        LocalModelEngine(File files){this.files=files;}
+        boolean isBusy(){return busy;}Result lastResult(){return result;}
+        static final class Result {String runId="text-result";}
+{{model_directory}}
+{{model_file}}
+{{configuration}}
+    }
+    private static final class LocalTaskSession {
+        boolean running,blocked,recovering,backgroundLease,acknowledge;LocalTaskController.TaskResult result;
+        boolean isRunning(){return running;}boolean isBlocked(){return blocked;}boolean isRecovering(){return recovering;}
+        boolean hasBackgroundLease(){return backgroundLease;}boolean canAcknowledgeInterruption(){return acknowledge;}
+        String state(){return "fixture state";}String log(){return "fixture log";}String taskId(){return null;}
+        LocalTaskController.TaskResult lastResult(){return result;}
+    }
+    private static final class LocalTaskController {
+        static final class TaskResult {String taskId,summary,evidenceDirectory;int steps;boolean cleanupKnown;}
+    }
+    private static final class BackgroundPermissionSession {
+        boolean blocks;String state(){return "fixture permission state";}boolean blocksOtherWork(){return blocks;}
+    }
+    private static final class MobiMindModelEngine {
+        boolean busy,blocked;Result result;
+        boolean isBusy(){return busy;}boolean isBlocked(){return blocked;}
+        Result lastResult(){return result;}String recoveryMessage(){return "fixture visual recovery";}
+        static final class Result {String runId="visual-result";}
+    }
+    private static final class UiVenusModelEngine {
+        boolean busy,blocked;Result result;
+        boolean isBusy(){return busy;}boolean isBlocked(){return blocked;}
+        Result lastResult(){return result;}String recoveryMessage(){return "fixture venus recovery";}
+        static final class Result {String runId="venus-result";}
+    }
+    private static final class HeptaAccessibilityService {
+        static Object connected(){return new Object();}
+        static String message(Exception error){return error.getMessage();}
+    }
+    private final LocalModelEngine engine;
+    private final LocalTaskSession tasks=new LocalTaskSession();
+    private final BackgroundPermissionSession backgroundPermission=new BackgroundPermissionSession();
+    private final MobiMindModelEngine visualDiagnostic=new MobiMindModelEngine();
+    private final UiVenusModelEngine uiVenusDiagnostic=new UiVenusModelEngine();
+    private final Widget modelInfo=new Widget(),taskState=new Widget(),taskLog=new Widget();
+    private final Widget modelDiagnostics=new Widget(),backgroundSummary=new Widget(),taskDiagnostics=new Widget();
+    private final Widget backgroundPermissionState=new Widget(),openRootManager=new Widget(),prepareBackgroundPermission=new Widget();
+    private final Widget backgroundMode=new Widget(),pickBackgroundApps=new Widget(),initialBackgroundApp=new Widget();
+    private final Widget cleanupBackground=new Widget(),acknowledgeInterruption=new Widget(),backgroundChoiceState=new Widget();
+    private final Widget startTask=new Widget(),stopTask=new Widget(),runText=new Widget(),taskResult=new Widget();
+    private final Widget visualProbeOutput=new Widget(),uiVenusProbeOutput=new Widget();
+    private final java.util.Set<String> backgroundPackages=new java.util.TreeSet<String>();
+    private String backgroundModePreferenceError,backgroundSelectionPreferenceError;
+    private String lastShownProbeId,lastShownVisualProbeId,lastShownUiVenusProbeId;
+    private int renderCalls;
+    private final Widget taskAuthorizationInfo=null; // This original model-config fixture has no preview pane.
+    private boolean cachedModelFilePresent;
+    // Android target-choice IO is a fixture boundary; the separate target gate executes its production policy.
+    private void refreshBackgroundTaskTarget(){}
+    private RuntimeConfigUiHostTest(File files){engine=new LocalModelEngine(files);}
+    private void renderProbe(LocalModelEngine.Result result){renderCalls++;lastShownProbeId=result.runId;}
+    private void renderVisualProbe(MobiMindModelEngine.Result result){renderCalls++;lastShownVisualProbeId=result.runId;}
+    private void renderUiVenusProbe(UiVenusModelEngine.Result result){renderCalls++;lastShownUiVenusProbeId=result.runId;}
+{{navigation_idle}}
+{{choice_error}}
+{{refresh}}
+{{refresh_impl}}
+{{preview_absent}}
+
+    public static void main(String[] args)throws Exception {
+        File files=new File(args[0]);File model=new File(files,"model/model.bin");
+        if(!model.getParentFile().mkdirs()||!model.createNewFile())throw new IllegalStateException("fresh model fixture required");
+
+        RuntimeConfigUiHostTest invalid=new RuntimeConfigUiHostTest(files);
+        invalid.engine.configurationError=CONFIG_ERROR;
+        invalid.refresh();
+        check(invalid.modelInfo.text.contains(CONFIG_ERROR),"configuration failure must remain visible");
+        check(invalid.modelDiagnostics.text.contains("运行参数待修正"),"configuration diagnostics must request repair");
+        check(!invalid.modelInfo.text.contains("本地模型已导入"),"invalid configuration must not claim a usable model");
+        check(!invalid.startTask.enabled&&!invalid.runText.enabled,"invalid configuration must disable new inference");
+        check(!invalid.stopTask.enabled,"idle invalid configuration must not invent an active worker");
+        check(invalid.openRootManager.enabled&&invalid.prepareBackgroundPermission.enabled,"configuration error must retain idle permission controls");
+        check(invalid.backgroundMode.enabled&&invalid.pickBackgroundApps.enabled&&invalid.initialBackgroundApp.enabled,"configuration error must retain owner UI choices");
+        invalid.refresh();
+        check(invalid.modelInfo.text.contains(CONFIG_ERROR)&&CONFIG_ERROR.equals(invalid.engine.configurationError),"refresh must not clear or silently replace the configuration error");
+
+        invalid.tasks.running=true;invalid.refresh();
+        check(invalid.stopTask.enabled,"configuration error must not prevent Stop for an active task");
+        check(!invalid.startTask.enabled&&!invalid.runText.enabled,"active task remains blocked from new work");
+        invalid.tasks.running=false;invalid.engine.busy=true;invalid.refresh();
+        check(invalid.stopTask.enabled,"configuration error must not prevent Stop for an external worker");
+        invalid.engine.busy=false;invalid.tasks.backgroundLease=true;invalid.tasks.blocked=true;invalid.refresh();
+        check(invalid.cleanupBackground.visibility==View.VISIBLE&&invalid.cleanupBackground.enabled,"configuration error must retain background cleanup");
+        invalid.tasks.acknowledge=true;invalid.refresh();
+        check(invalid.acknowledgeInterruption.enabled,"configuration error must retain eligible interruption recovery");
+
+        RuntimeConfigUiHostTest background=new RuntimeConfigUiHostTest(files);
+        background.backgroundMode.checked=true;background.backgroundPackages.add("example.notes");
+        background.engine.configurationError=CONFIG_ERROR;background.refresh();
+        check(background.backgroundMode.checked&&background.backgroundPackages.contains("example.notes"),"refresh must preserve selected background mode and range");
+        check(!background.startTask.enabled,"background mode must not re-enable invalid configuration");
+
+        RuntimeConfigUiHostTest valid=new RuntimeConfigUiHostTest(files);valid.refresh();
+        check(valid.startTask.enabled&&valid.runText.enabled,"valid idle configuration must retain normal controls");
+        check(valid.modelDiagnostics.text.contains("fixture model")&&valid.modelDiagnostics.text.contains("Adreno GPU")&&valid.modelInfo.text.contains("本地模型已导入"),"concise model state and separate diagnostics must remain accurate");
+        valid.engine.configuration.compute="npu";valid.refresh();
+        check(valid.modelDiagnostics.text.contains("Hexagon NPU"),"NPU diagnostics must retain its selected backend");
+        valid.engine.busy=true;valid.refresh();
+        check(valid.stopTask.enabled&&!valid.startTask.enabled&&!valid.runText.enabled,"valid busy configuration retains Stop and existing gating");
+        valid.engine.busy=false;valid.visualDiagnostic.blocked=true;valid.refresh();
+        check(!valid.startTask.enabled&&!valid.runText.enabled,"configuration readiness must not bypass diagnostic recovery");
+
+        RuntimeConfigUiHostTest missing=new RuntimeConfigUiHostTest(new File(files,"missing"));missing.refresh();
+        check(missing.modelInfo.text.contains("本地模型待导入"),"valid configuration without weights retains missing-model status");
+        check(missing.startTask.enabled&&missing.runText.enabled,"this repair must preserve existing missing-weight entry behavior");
+        check(invalid.renderCalls==0&&background.renderCalls==0&&valid.renderCalls==0&&missing.renderCalls==0,"refresh must not launch inference or synthesize results");
+        System.out.println("{\"passed\":"+checks+",\"failed\":0,\"production_methods_executed\":7}");
+    }
+}

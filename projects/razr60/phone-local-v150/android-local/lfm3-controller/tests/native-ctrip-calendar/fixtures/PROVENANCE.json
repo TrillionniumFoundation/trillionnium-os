@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.native-ctrip-calendar-fixtures.v1",
+  "files": [
+    {
+      "path": "fixtures/main-calendar.xml",
+      "original_local_path": "/workspace/scratch/261e5112510c/v66-flight-review-f842-r1/main-calendar/after-tree.xml",
+      "bytes": 25347,
+      "sha256": "37f5e6e3e2fdef8b1d6b94f57f183ccf9b787f9dac1cc51cca1ac90e99eb3232",
+      "boundary": "foreground UIAutomator full original, manual date control, no model/query/date change",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "fixtures/main-form17.xml",
+      "original_local_path": "/workspace/scratch/261e5112510c/v66-device-preparation/flight-main-form-after-tree.xml",
+      "bytes": 87792,
+      "sha256": "c32b808470d268877604a384ab65fc8ee9cb2a4195d6a419fc8d491bdf30366e",
+      "boundary": "foreground UIAutomator full original, manual flight form, no model/query/date change",
+      "source_bytes_modified": false
+    },
+    {
+      "path": "fixtures/actual-empty-background.json",
+      "original_local_path": "/workspace/scratch/261e5112510c/v66-flight-review-f842-r1/originals/collection/task/step-05-after.json",
+      "bytes": 5875,
+      "sha256": "a83e40360367d0e026c10874df2fbef79299b199ae19a608b7511ba681e68b81",
+      "boundary": "actual failed f842 background task complete PhoneObservation, no inferred month or day",
+      "source_bytes_modified": false
+    }
+  ],
+  "bound_background_frame_actual": false,
+  "fixtures_new_android_task_performed": false,
+  "main_XML_to_Frame": "unchanged NativeXmlFixture -> original ObservedChildText and ObservedTargetLabels; NodeRef/window/task/lease/dispatch explicit host model",
+  "negative_mutations_synthetic": true,
+  "actual_background_empty_JSON": "Only original node facts reused; host authority tuple explicit model",
+  "price_or_day_coordinates_authorized": false
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.actual-shopping-readonly-region-fixtures.v1",
+  "task_id": "4a8a5ac0f67d4faf8045d3b3ace06d13",
+  "files": [
+    {
+      "file": "raw-first.json.gz",
+      "source": "/home/alex/hepta-resume-261e-r2/shopping-v61-qwen-r1/collection/task/web-helper/raw-48adfb5324fc48f8992fc3b3c089ffb33ca2c44f7a194da483d679be927d255e.json",
+      "bytes": 2062241,
+      "sha256": "bf52e2688f2e0c1a45b9425e13d9cb38c1dc57f863f77dd50f1b85253738e4e3",
+      "gzip_bytes": 62159,
+      "gzip_sha256": "e674fd9ae3b58693538747bc9dacd08334ac36c1f6d08b0f254edcf982504ae3"
+    },
+    {
+      "file": "raw-last.json.gz",
+      "source": "/home/alex/hepta-resume-261e-r2/shopping-v61-qwen-r1/collection/task/web-helper/raw-4c5e9553163044a1b871e00404dad91e53aaa64d5d2f4f429b1605b2b9800567.json",
+      "bytes": 2062279,
+      "sha256": "7cbd170bc1cee69a6758d7db0cd0e463cb080b46f1067dcb0fbf022ad0352be9",
+      "gzip_bytes": 62239,
+      "gzip_sha256": "2c37ee005ef6e69ff92d628fc385509b118ccba9e5df44adade0eaf5b2534939"
+    },
+    {
+      "file": "ax-first.json.gz",
+      "source": "/home/alex/hepta-resume-261e-r2/shopping-v61-qwen-r1/collection/task/scope-observation-398537eaec554137a46446c6020a9c7f.json",
+      "bytes": 444740,
+      "sha256": "d1bcef5e9c7d8582a313961c041d494770cf0e82f44b19ff6dab8a5e63b16a8a",
+      "gzip_bytes": 33550,
+      "gzip_sha256": "3f1eaf02958a518a7be98fe8d0f7772c99bd31301169cf2e0a67ade1f3abda4f"
+    },
+    {
+      "file": "ax-last.json.gz",
+      "source": "/home/alex/hepta-resume-261e-r2/shopping-v61-qwen-r1/collection/task/scope-observation-fe1cbd75169f4c5d8718a88710a711aa.json",
+      "bytes": 449255,
+      "sha256": "990034132979cb96bb63979d64d6503ec71e57e161460ec58786e6d49d899ed3",
+      "gzip_bytes": 33844,
+      "gzip_sha256": "afcba41489fcb6484021985376c098ce1ca833c5d37651f4e3394f4dcbaff25a"
+    }
+  ],
+  "observer": {
+    "file": "readonly_dom.js",
+    "bytes": 14579,
+    "sha256": "05bb7c1e4e1929b961c42af1e5c0e01918bf6ff64f153132ca11c7d85873e705",
+    "source_apk": "/home/alex/hepta-local-007f-20261111/v55-web-helper-code6-sign-r1/out/hepta-web-helper-0.6.0-v4.apk",
+    "apk_sha256": "02360c24c471dcd4be0cbc7c7fdb316a7918d656edd1407d765540b5a3f2f5ff"
+  },
+  "full_native_snapshots_present": false,
+  "phone_actions": 0,
+  "business_verified": false
+}

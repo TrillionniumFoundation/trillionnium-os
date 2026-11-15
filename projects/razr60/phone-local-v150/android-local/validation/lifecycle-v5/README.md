@@ -1,0 +1,394 @@
+# Independent Hepta lifecycle validation
+
+The current revision is 5. It proves private directory aliases by stable
+physical directory identity and adds an explicit, optional observed-template
+cancellation mode. The faster exact PNG comparison and all native/task/display
+gates remain. Manual observation remains the default. Older revisions and their
+results remain separate.
+
+This tool is outside the frozen Android source. Preparation and host tests do not
+contact a phone. `monitor` and `idle-restart` operate only the explicitly supplied
+device. The operator must finish any other phone task first and own the phone
+exclusively throughout a lifecycle experiment. Do not run it alongside a core
+matrix or another automation loop.
+
+## What is actually qualified
+
+The cancellation case binds the original private one-use nonce, task owner,
+observation, local-model request, ordinary App UID, App parent PID, native child
+PID and process start ticks. It records the focused foreground app while the
+owned native process is alive, establishing whether Hepta was in the background.
+The installed APK hash/version/profile/configuration and absence of an INTERNET
+declaration are checked before a task is submitted. A local model path and model
+hash are then checked in the owned process arguments and App receipt.
+
+The monitor shows the existing task through a normal MainActivity launch without
+`auto_task` or `auto_run` extras. It waits one second for the activity transition,
+retains two full screenshots separated by at least 0.3 seconds, then waits for an
+explicit operator request identifying the visible **停止** control and its pixel
+rectangle. It does not guess button coordinates. After the operator request, it
+waits for the pinned SDK's actual `llm.cpp:...:generate` entry marker in **this
+run's** stderr, rechecks the same worker and visible control, and sends one tap.
+This proves entry to generation/prefill, not that a decoded token already exists.
+The operator can inspect the UI during slow hash/create work so a short
+generation window does not require another remote round trip.
+
+Passing cancellation requires the original native process to exit, the original
+App process to survive, a nonzero owned native exit with `cancel_requested=true`
+and no timeout, a clean nonce-bound `cancelled` task/session, no new native run,
+and no new action dispatch after the observed Stop. A naturally completed native
+receipt, a changed PID/start time, an expired screenshot, a changed Stop region
+or uncertain cleanup is inconclusive. There is no retry or active-app kill.
+
+The idle restart case first proves the complete SessionRecovery contract twice
+over a stable interval: a fully identified known-clean terminal session, no
+pending/running/blocked flags, no unknown cleanup, no native worker and no
+`.bak`, `.new`, interruption latch or unconsumed debug request. An immediate
+same-shell hash/sidecar/process guard precedes its single **idle-only** force-stop.
+It then opens MainActivity without auto extras and observes that the previous
+session bytes and all task/run/consumed-nonce memberships stay unchanged.
+
+Restarting an Activity does not prove Accessibility has rebound. The tool saves
+the exact package's `dumpsys activity services` component/ProcessRecord evidence.
+It never treats identical `Bound services` display labels or an enabled-settings
+entry as exact binding proof. If a recorded rebind is needed, the operator does
+it separately. A fresh task's real accepted nonce trigger (which checks
+`connected()!=null`) and new native run establish operational recovery.
+
+The device's radios are not disabled or measured. `device_offline_proven` stays
+false. No-INTERNET/local-model evidence does not become a whole-device network
+isolation claim. No lockscreen, screen-off, broad app or power qualification is
+implied by these lifecycle cases.
+
+## 1. Prepare an exact plan offline
+
+Use the actual source and candidate matching the installed APK. The candidate
+format is the same one used by `phone_suite.py`; no SHA or profile is hardcoded
+in this tool. Supply an exact short instruction in a UTF-8 host file.
+
+```sh
+python3 phone_lifecycle.py prepare \
+  --source-dir /absolute/path/to/frozen/source \
+  --candidate /absolute/path/to/candidate.json \
+  --instruction-file /absolute/path/to/cancellation-instruction.txt \
+  --output /absolute/path/to/new-lifecycle-plan
+```
+
+Source members and the four imported base drivers are hash verified. The plan
+also pins this tool and its guards. Subsequent source/tool changes require a new
+plan rather than silently changing an existing attempt.
+
+## 2. Arm a persistent monitor
+
+Before launching, the operator obtains the **physical** SurfaceFlinger display
+ID and the **logical** input display ID, dimensions and pixel mapping from the
+actual device. They are different namespaces. The tool rejects a physical ID
+missing from the observed inventory or screenshot dimensions that do not match
+the explicitly supplied input dimensions. There is no default display guess,
+coordinate scaling or rotation correction.
+
+```sh
+python3 phone_lifecycle.py monitor \
+  --plan /absolute/path/to/new-lifecycle-plan/plan.json \
+  --output /absolute/path/to/new-cancel-run \
+  --adb /absolute/path/to/adb --adb-host 127.0.0.1 \
+  --adb-port OBSERVED_PORT --serial OBSERVED_SERIAL \
+  --physical-display-id OBSERVED_PHYSICAL_ID \
+  --logical-display-id OBSERVED_LOGICAL_ID \
+  --input-width OBSERVED_WIDTH --input-height OBSERVED_HEIGHT
+```
+
+Use a host supervisor timeout longer than the 30-minute armed wait plus the
+10-minute task and one-minute cleanup bounds, or explicitly terminate the
+**armed** job before any start request. Do not terminate the host monitor while
+the phone task is active. The monitor initially writes `status.json` with phase
+`armed` and does not contact ADB until a correct `start-request.json` arrives.
+This avoids remote process-start latency consuming the cancellation window.
+
+The status includes an exact `start_request_template`. Publish it to
+`RUN/start-request.json` as a new private **0600** regular file with one link.
+An atomic host file-write API is suitable. Or, with a low-latency host shell:
+
+```sh
+python3 phone_lifecycle.py request start --run-dir /absolute/path/to/new-cancel-run
+```
+
+## 3. Observe and request the visible Stop
+
+When phase becomes `awaiting-observed-stop`, inspect
+`RUN/stop-observation.png`. Its raw command output and any Android display
+warning prefix are retained separately. The PNG signature, chunks, CRCs,
+geometry and decompression bound are checked. Active UiAutomation is never used.
+
+Locate the actual enabled **停止** control. Record its rectangle `[x1,y1,x2,y2]`
+and a point strictly inside it. The status includes a
+`cancel_request_template` binding the screenshot hash, nonce, task, run and
+worker PID/start ticks. Fill only `point`, `rectangle` and
+`requested_host_wall_ms`, then publish it once as
+`RUN/cancel-request.json`, private 0600. If a low-latency host shell is available:
+
+```sh
+python3 phone_lifecycle.py request cancel \
+  --run-dir /absolute/path/to/new-cancel-run \
+  --point OBSERVED_X OBSERVED_Y \
+  --rectangle OBSERVED_X1 OBSERVED_Y1 OBSERVED_X2 OBSERVED_Y2
+```
+
+The monitor requires the approved control's decoded pixels to match in both
+retained initial frames and in a fresh capture immediately before the tap.
+Changes elsewhere, such as the status-bar clock,
+do not invalidate the control. It checks foreground package, logical display,
+same native/App PID/start ticks, nonce/session and receipt ownership again.
+It records the tap attempt **before** injection, so an ambiguous transport
+result can never cause a second tap.
+
+If the worker finishes first or any guard fails, no speculative click is sent.
+Read the final status; do not manufacture a pass or delete recovery evidence.
+An inconclusive run can leave a live task or an unconsumed private request, so
+the operator must inspect its actual state before another experiment. The tool
+does not clear such files or stop the active App on the operator's behalf.
+
+## 4. Prove a fresh task can start afterward
+
+After `cancel-complete`, `verdict=pass`, `cleanup_known=true`, run **one new**
+nonce-bound case with the already approved core/phone driver. Do not replay the
+cancelled nonce. Then evaluate its retained evidence offline:
+
+```sh
+python3 phone_lifecycle.py followup \
+  --prior-status /absolute/path/to/new-cancel-run/status.json \
+  --case-dir /absolute/path/to/fresh-suite/cases/CASE_ID \
+  --output /absolute/path/to/new-followup-review.json
+```
+
+The review checks fresh task/nonce identity, exact instruction and observation
+ownership, accepted private trigger and new owned local-model process receipts.
+It reports ability to start/infer separately from the new task's actual goal
+verdict. A failed navigation goal does not become a lifecycle success claim for
+phone control.
+
+## 5. Idle restart and no automatic replay
+
+Wait for the previous fresh task's clean terminal publication, not just its
+worker exit or `result.json`. Then execute the separate explicit idle experiment:
+
+```sh
+python3 phone_lifecycle.py idle-restart \
+  --plan /absolute/path/to/new-lifecycle-plan/plan.json \
+  --output /absolute/path/to/new-idle-restart-run \
+  --adb /absolute/path/to/adb --adb-host 127.0.0.1 \
+  --adb-port OBSERVED_PORT --serial OBSERVED_SERIAL
+```
+
+Observe `idle-restart-no-replay-observed`. Service-process evidence is retained,
+but actual Accessibility recovery remains unqualified until a new task is
+accepted and starts native inference. If the operator performs a necessary
+service rebind, retain that intervention separately; the tool never toggles
+services. Run another fresh case and use `followup` with this idle-restart
+`status.json` to verify operational recovery. Never delete a latch, `.bak` or
+`.new` simply to make this test run.
+
+## Host checks
+
+```sh
+python3 -m unittest -v test_lifecycle_guards.py
+```
+
+These focused host checks exercise complete-session identity, real host `/proc`
+parsing and PID reuse detection, screenshot-region change/CRC handling, private
+request-file rules and the natural-completion cancellation race. They do not
+count as device lifecycle results. Keep actual phone screenshots, prompts,
+receipts and runtime records outside this source directory and out of GitHub.
+# Runtime path correction in revision 2
+
+Revision 2 preserves the original lifecycle protocol and records new evidence separately. The first code8 revision-1 monitor launched one task and sent zero Stop taps. It rejected a valid native process because it treated `legacyNativeLibraryDir` as the final executable directory and assumed `run-as pwd` had the same spelling as Java's private data directory. That run remains inconclusive; the task later completed naturally and does not demonstrate cancellation.
+
+Before submitting a task, revision 2 reads the SHA-verified installation's package record, requires its exact package code path and `arm64-v8a` ABI, and searches only the declared library directory to depth two for one regular `libhepta_local_runner.so`. Its observed canonical path must be exactly `<codePath>/lib/arm64/libhepta_local_runner.so`. The private roots `/data/user/<current-user>/<package>` and, for user zero, `/data/data/<package>` are resolved individually under the App UID. They are accepted as aliases only when the observed canonical paths agree and remain inside that same user/package. Missing, ambiguous, changed or cross-user paths stop preparation before a task is launched. No suffix match or unobserved alias substitution is used.
+
+The live native check still requires the ordinary App UID, exact parent PID, unchanged PID/start ticks, exact run/profile/model/configuration and owner/observation binding. Prompt, result, text, system and grammar paths must refer to the same exact private run. `runtime-path-binding.json` records the observed path qualification; small `process-<pid>-latest.json` files aid diagnosis while the complete raw reads remain in private command evidence. Existing visible Stop, generate-entry, exit, cancellation receipt, clean session and natural-completion race rules are unchanged.
+
+Revision 2's original host suite contained 14 contracts. These are host qualifications, not proof of a successful device cancellation. Each revision's own `phone_lifecycle.py prepare` freezes a **new** plan; old plans intentionally fail a changed tool-hash gate. Never overwrite an old run or relabel it as cancelled.
+
+## Display and transition correction in revision 3
+
+This revision preserves revisions 1 and 2 and requires a new plan bound to its
+own tool hashes. On the observed Android 16 device, `dumpsys window windows`
+contains `mTopFocusedDisplayId` while `dumpsys window displays` contains a
+separate `mCurrentFocus` inside each `Display: mDisplayId=...` block. A null
+secondary-display focus must not replace, hide, or authorize primary-display
+focus. The parser requires one exact requested display block and one exact
+component focus inside it, rejecting malformed or duplicate labels. It reads
+top-display identity immediately before and after the display-scoped focus dump.
+Both must equal the explicitly supplied logical display. The three complete
+reads and their hashes are retained; this is a bounded sequence, not an atomic
+snapshot claim. This parser is checked before submitting a task as well as at
+the existing background and pre-tap gates.
+
+An Activity launch can finish before its transition animation finishes. The
+monitor waits one second after launch, retains `stop-observation-first.png`,
+waits at least 0.3 seconds and retains `stop-observation.png`. Once the operator
+identifies the Stop rectangle, its exact decoded pixels must match in both
+frames; a blank/transition frame cannot authorize a later guessed point. The
+unchanged final full-frame capture, foreground/display check, same live
+PID/start-ticks, task/nonce and real generate-entry checks still precede the
+single tap. If the native call finishes while these checks or operator review
+are in progress, the result stays inconclusive and no tap is submitted.
+
+When Pillow is already present on the host, an optional
+`stop-observation-top1600.png` previews only the top 1600 rows at original size.
+This is a lossless host crop with origin `[0,0]`; no phone-side image processing,
+scaling, coordinate remapping or control detection is performed. Its pixels
+are verified against the complete original PNG, and `stop-preview.json`
+records both identities. The control request still binds the original full
+PNG SHA, and all click guards use that original. Missing host Pillow simply
+leaves the full PNG as the preview source. An operator must never infer a Stop
+control that is absent from the displayed image.
+
+The current suite contains 21 focused host contracts, including missing,
+ambiguous and cross-display focus, actual user scope, transition-region changes
+and preview pixel identity. The retained real display-dump shape was also
+parsed offline, without putting that private UI dump in the source archive.
+These qualifications do not count as a successful phone cancellation. Native
+calls may be shorter than remote screenshot transfer and manual review; this
+tool does not prolong, replay or restart an active inference to make the test
+pass.
+
+## Exact pixel acceleration in revision 4
+
+Timing on an already retained phone screenshot showed that revision 3 spent
+about 4.9 seconds in two pure-Python pixel reconstructions, in addition to
+preview encoding. Revision 4 retains that exact implementation as
+`png_roi_portable` and as the fallback when host Pillow is unavailable.
+
+The accelerated path first checks the complete retained PNG's CRCs, dimensions,
+channel format and compressed payload. Bounded decompression must still end
+exactly at the expected scanline length, with no trailing compressed stream or
+unconsumed input; every row filter must be 0 through 4. Pillow then decodes only
+the original RGB or RGBA mode, without conversion, resizing, color correction
+or alpha compositing. The digest covers the exact crop's original channel
+bytes in row order. A decoded image may be reused only for the same PNG and
+compressed-byte SHA, dimensions and channel count.
+
+The optional preview is now `stop-observation-top1100.png`. It keeps origin
+`[0,0]`, original width and pixel scale, and remains bound to the complete source
+PNG. Its identity check uses the same exact pixel hash. All three retained-frame
+ROI comparisons, actual logical-display focus, private task/nonce, native
+PID/start ticks, generate-entry, one-tap and clean-cancellation gates are
+unchanged. This revision does not make a naturally completed worker count as
+cancelled.
+
+There are 28 host tests. The seven accelerated-decoder tests require host Pillow
+and explicitly skip when it is absent; the portable lifecycle tests still run.
+They compare RGB and RGBA, each of the five PNG filters and mixed filter rows,
+against both independently specified original pixel bytes and the preserved
+portable decoder. They also exercise partial rectangles, alpha, cache identity,
+missing Pillow, CRC faults, invalid filters, short decompression and trailing
+compressed data. Qualification on Pocket4 must include all 28 with no skips,
+an exact fast/portable digest comparison on an existing retained screenshot,
+and a host timing record. These host observations remain distinct from real
+phone cancellation or recovery acceptance.
+
+Run the host-only retained-image benchmark outside a live cancellation window:
+
+```sh
+python3 -B benchmark_png_roi.py \
+  --image /absolute/path/to/already-retained-screen.png \
+  --output /absolute/path/to/new-private-preview-benchmark
+```
+
+It retains its preview and timing report only in the new private output
+directory. Do not add that screenshot-derived output to the source archive or
+repository. It reads no live device state and submits no phone commands.
+
+## Physical directory identity and optional preauthorization in revision 5
+
+An actual code10 revision-4 attempt stopped before task submission: both
+`readlink -f` commands succeeded, but `/data/data/<package>` and
+`/data/user/0/<package>` each retained their own spelling. Separate root-owned
+read-only observations established the same directory device number, inode,
+App UID, GID, mode and type before and after. The failed attempt remains
+unverified with zero launches and zero taps.
+
+Revision 5 still permits only the exact current-user package root and, for user
+zero, its explicit `/data/data` counterpart. It reads each under the ordinary
+App UID using `stat -L -c '%d|%i|%u|%g|%f|%F|%n'` before and after the individual
+readlink observations. Every row must have exactly the requested pathname and
+directory type. The two passes and all allowed roots must have the same device,
+inode, UID, GID and directory mode; UID must equal the App UID. Missing roots,
+unknown roots, malformed output, changing identity, non-directory types and
+cross-user paths fail before launch. Readlink targets must still be within the
+explicit whitelist. These observations are retained and are not described as
+an atomic snapshot. Native-path validation reconstructs this complete physical
+binding from its retained raw rows; a boolean assertion alone cannot admit an
+alias. All run filenames must still belong to one exact admitted private root.
+
+### Optional observed-template cancellation
+
+A native generation window can be shorter than a remote screenshot download
+and human response. An operator may therefore identify the actual enabled
+**停止** button in an already retained original full screenshot of the **same
+APK on the same phone and display**. This is an explicit observation supplied
+by the operator, not a control detected by the script. A cropped preview,
+coordinate guess, image from another APK, or a template for a different button
+is not a valid reference.
+
+Prepare a private host reference after viewing that actual image:
+
+```sh
+python3 phone_lifecycle.py stop-template \
+  --candidate /absolute/path/to/exact-candidate.json \
+  --image /private/original-observed-full-screen.png \
+  --output /private/new-observed-stop-template \
+  --serial OBSERVED_SERIAL \
+  --physical-display-id OBSERVED_PHYSICAL_ID \
+  --logical-display-id OBSERVED_LOGICAL_ID \
+  --input-width OBSERVED_WIDTH --input-height OBSERVED_HEIGHT \
+  --observed-component org.trillionnium.hepta.local/.MainActivity \
+  --point OBSERVED_X OBSERVED_Y \
+  --rectangle OBSERVED_X1 OBSERVED_Y1 OBSERVED_X2 OBSERVED_Y2 \
+  --operator-observed-enabled-stop
+```
+
+This command never invokes a subprocess or device. It copies the original PNG
+without scaling, records the exact ROI pixel hash, and binds APK hash/version,
+device serial, physical/logical display and dimensions. The reference expires
+within ten minutes. Keep it private and outside the source tree.
+
+Add `--stop-template /private/new-observed-stop-template/template.json` to the
+normal `monitor` command. Without this option the tool remains fully manual.
+In the optional mode, the armed `start_request_template` additionally contains
+the reference SHA, exact owner-instruction SHA and cancellation mode. The
+operator still publishes the exact armed start request, binding this one
+host-run challenge. Supplying a reference alone does not launch a task or
+authorize an action on a different run.
+
+After the current nonce task starts, the monitor observes the actual live
+native child, shows only that existing task, and retains the same two full
+stable screenshots. Both ROI pixel sequences must equal the operator's
+reference. The optional mode omits the non-authorizing preview encoding and
+creates an ordinary cancellation request using **only the current** task,
+nonce, request, PID and start ticks. The reference cannot supply old task IDs
+or direct a replay. This removes the network round trip for the cancellation
+request; it does not remove any current-session/native/owner checks.
+
+The monitor still waits for this exact worker's real generate-entry marker,
+captures a third full fresh screenshot, checks identical ROI pixels and exact
+current MainActivity/display/user, and rechecks the original worker immediately
+before its sole tap attempt. No native process is paused, extended, retried or
+replayed to create an opportunity. A changed ROI, expired template, completed
+worker, mismatched identity or cleanup race remains inconclusive. The original
+nonzero native exit, cancel flag, clean terminal session, preserved App process
+and no-new-dispatch/no-new-run requirements still decide the outcome.
+
+Revision 5 has 46 focused host tests. Run both files:
+
+```sh
+python3 -B -m unittest -v test_lifecycle_guards.py test_lifecycle_templates.py
+```
+
+The cancellation protocol in this revision targets the existing GenieX text
+controller's actual native entry marker and receipt. It does not claim that a
+MNN model-only or future visual-controller run has the same lifecycle contract.
+Those endpoints need their own actual-process/evidence adaptation before a
+device cancellation result can be reported for them.
+

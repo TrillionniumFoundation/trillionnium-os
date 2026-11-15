@@ -1,0 +1,20 @@
+{
+  "schema": "hepta.owned-single-task-fixtures.v1",
+  "fixtures_actual": false,
+  "framework_io_synthetic": true,
+  "description": "The two text files are explicit synthetic task-dump shapes. Their parsing structure was checked against the independently retained full Android 16 dumps. No synthetic TaskInfo value is evidence that an Android device supports the new capability.",
+  "actual_reference_inputs_not_redistributed": {
+    "activities_full": {"bytes": 69017, "sha256": "455c6a37cf8109ecc94f1ae0d7dae972d71f2c0019e4c6cfa7684cf3f598b0c1"},
+    "recents_full": {"bytes": 16176, "sha256": "9d220b70f345df2706b0d516a0b09b103f7ce7d778afa292991420d4f1848faa"},
+    "xiaomi_binary_manifest": {"bytes": 97236, "sha256": "108a47be450a9c8c00da003e31e7776d968b8cb8aa67b79b4d9dd04537ca59a6"}
+  },
+  "framework_source": {
+    "repository": "aosp-mirror/platform_frameworks_base",
+    "commit": "99b01a65cc4c104933788b3143285ab6bae65827",
+    "ActivityStarter.java": "92f51bed419f95c725a5186fdcddeea22a52ee2c",
+    "Task.java": "89634707995a1b78ce2e6565c91bacb0affcf758",
+    "TaskOrganizerController.java": "acb0cd718fb856ad3610c3c92ba5b802b79659dc"
+  },
+  "phone_operations": 0,
+  "business_result_verified": false
+}

@@ -1,0 +1,942 @@
+{
+  "schema": "hepta.manual-observer-reviewed-action.v1",
+  "revision": "v53-formal4-mi-native-observation-and-uncaptured-retirement-r3",
+  "completed": true,
+  "installed_verified": true,
+  "install_submitted": false,
+  "install_success_returned": false,
+  "target_activity_launch_count": 0,
+  "site_button_tapped": false,
+  "capture_button_tapped": false,
+  "consent_actions": 0,
+  "query_submissions": 0,
+  "text_inputs": 0,
+  "task_started": false,
+  "model_invoked": false,
+  "background_session_created": false,
+  "configuration_changed": false,
+  "business_verified": false,
+  "qualified": false,
+  "model_issued": false,
+  "started_wall_s": 1794467221.8143866,
+  "scope": "one independently reviewed official-page action; no consent, login, order or payment",
+  "owner": {
+    "root": "/home/alex/hepta-local-007f-20261111/owner-15",
+    "pid": 2898006,
+    "start_ticks": "24911394",
+    "boot_id": "97d9600f-e081-465c-9e6e-62651e09806b"
+  },
+  "formal_artifact_proof": {
+    "schema": "hepta.formal-helper-code4-upgrade-artifact-proof.v1",
+    "signed_result_sha256": "616c12d398843f66339fe302b7e63c369f25502e962d8b143bfeea4a73bc898f",
+    "build_result_sha256": "021815261d930ce2e21de877a149a560908a74371dc08e169a1b2a116ef9fdec",
+    "source_archive_sha256": "2d92f0ef83ec04f6c76f768fbc615421381dbe7eabefe5afa5f1065d5b7fad43",
+    "source_inventory_sha256": "265a44242a92a167d35b0c92211da44b1ca37d5bbe905f2c504aac8cbcfe7a5c",
+    "apk_sha256": "b636485ee245e5074b065b5357c5e1cb0734f726eb26300ff7f7b18e77d737e0",
+    "apk_bytes": 1377275,
+    "source_file_count": 36,
+    "runtime_java_count": 34,
+    "compiled_member_count": 372,
+    "signed_zip_member_count": 375,
+    "actual_signed_resource_layout": {
+      "method": 0,
+      "data_offset": 1282224,
+      "data_offset_mod4": 0,
+      "bytes": 20492
+    },
+    "interface_source_sha256": {
+      "AndroidManifest.xml": "4354715a29cb263a161a2a974b0c8a099e68bffa87e027ef5ce862bf053c5e18",
+      "assets/readonly_dom.js": "0d1b412d2e81e3f447ef36977bb27c321c136c207d64cca433a810f22ca5c983",
+      "src/org/trillionnium/hepta/background/FixedIntentTarget.java": "f5f3936a8185185cf5f036a74665ee6edfbd5c1f617299dd9cd6edd4bf7b23e2",
+      "src/org/trillionnium/hepta/background/FixedIntentTools.java": "c20285039abaf4ad6028ffb18c1b5e755eccb9a13059576817e557177a294947",
+      "src/org/trillionnium/hepta/local/ActionDecision.java": "ee2a0481bb1ad0d2a3dd95b501c101d1955f4f1142adfe150ba3f9643fa88b20",
+      "src/org/trillionnium/hepta/local/AppCatalogueRanker.java": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075",
+      "src/org/trillionnium/hepta/local/DecisionGrammar.java": "236d22187abfe777705d337241e310dd617b1c4c21ae39df4f52d960a1e106ca",
+      "src/org/trillionnium/hepta/local/NotesOwnerIntent.java": "c3d8406e7d3bc6e513e0bad47d043f7d981cca82f5bbac095dce70aa84700e3f",
+      "src/org/trillionnium/hepta/local/ObservedAppLabels.java": "0276171bb8aaebee880a6d36fea5cbfdb157b09d2728a07148e4ce85d5ffbb9e",
+      "src/org/trillionnium/hepta/local/ObservedImeEnter.java": "e449d61e928dca5a72730b5394fa8f95a7db4dd4006440a95f839818e165acf1",
+      "src/org/trillionnium/hepta/local/ObservedScrollActions.java": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188",
+      "src/org/trillionnium/hepta/local/ObservedTargetLabels.java": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba",
+      "src/org/trillionnium/hepta/local/TaskAuthorization.java": "9dbcabb1d4f505d581c2dc4b9fd772a4f7578344573c372e1831c84e2f82ecc8",
+      "src/org/trillionnium/hepta/local/web/WebFlightGoal.java": "02f260915f2b64894b8cd1ed4223392ace9964920d9b77e6765548252d9624ac",
+      "src/org/trillionnium/hepta/local/web/WebShoppingGoal.java": "106fd6dbb66582991c522c306891458587514133867a458a96f6a7e06aa8a0f4",
+      "src/org/trillionnium/hepta/webhelper/EvidenceFiles.java": "b84d1671f956afd67744be0a7f300921e660dbbcda557bf3ae3dc7fdb881aee0",
+      "src/org/trillionnium/hepta/webhelper/EvidenceService.java": "e609970e749f66e16cfa245cec1215ed9056035808e5232fe0b611d5dcb16fa4",
+      "src/org/trillionnium/hepta/webhelper/EvidenceSession.java": "79f8277d841eac0b72778d3bc33e0d150fb56aaecdce02340f7edd4097b45d06",
+      "src/org/trillionnium/hepta/webhelper/InstalledIdentity.java": "15c9d44cde2d93f823372ab6e0baf6214d4cb80835907694df1212be4d3edf73",
+      "src/org/trillionnium/hepta/webhelper/Jsons.java": "484c6daa3a95a9e1849a70e4ceffb3666e23dd148851d2ae356361c2a6693ee5",
+      "src/org/trillionnium/hepta/webhelper/NativeRetirementProbe.java": "fd9124579a5528b5a12e55145dd49f7db1f1fbe3e41049eba7da4823ff391642",
+      "src/org/trillionnium/hepta/webhelper/OfficialOrigin.java": "7a127a62aa8918be1224b886f90f939bf31146a6522dd2f8a0af0244a57749eb",
+      "src/org/trillionnium/hepta/webhelper/OfficialPageCapture.java": "dda03fbb4b0333cfe94f0daec428bfba376f837b4408f5828e5f02a3ebc27b11",
+      "src/org/trillionnium/hepta/webhelper/PageActivity.java": "0b11585e7d223d80432146083b0a65012d1d4e5e95d136608421f5a8719202b2",
+      "src/org/trillionnium/hepta/webhelper/PageSitePolicy.java": "eaf5122f57b78575852e063c60d0358c6f5551844139d23c815b2b5d50f4efb7",
+      "src/org/trillionnium/hepta/webhelper/ProcessIdentity.java": "ed77fb207e67547a40a4356ca789fa666748ed2040fef1c7b0a8cc8d25e274b2",
+      "src/org/trillionnium/hepta/webhelper/ProfileIsolation.java": "fd5e4f00947f8ced53a7eca318eeb4a579cc7ed31057b4d1d6e45958ec4d0fbd",
+      "src/org/trillionnium/hepta/webhelper/RemoteReply.java": "8da64fd8d7fbd1438fcc4926d34be3233e42bb29c12fbde3b920ed0f673c617b",
+      "src/org/trillionnium/hepta/webhelper/RetiredProfileClear.java": "09cb1dddfa469cda8e4c6c5d12221b36538548c6f08c9ae2234c66d2fa23c597",
+      "src/org/trillionnium/hepta/webhelper/TaskBinding.java": "f00f197fde76df917b1b470c86e228476ebb9424a624bf1da75ccf6e65189f40",
+      "src/org/trillionnium/hepta/webprotocol/WebEvidenceBinding.java": "90a414863297c1ff173fd14a7b31dce62bb5fbb561e7625f1fe3eb0dace47af7",
+      "src/org/trillionnium/hepta/webprotocol/WebEvidenceProtocol.java": "66c9488106d0b072e7b5a7337f5cbb2bcd3f0b1ccb65b6cf844b2194bca64bf7",
+      "src/org/trillionnium/hepta/webprotocol/WebRecoveryPolicy.java": "c3b5ddc20d2f4e01f7cc80df5be04af318c18cbc6cc1b3a43cdcc68710cc1f35",
+      "src/org/trillionnium/hepta/webprotocol/WebSitePolicy.java": "704f3de1bea1e0471d5daeb5cfc8255fd30b002c20eafc49c21fef2eb5ecc7a4",
+      "src/org/trillionnium/hepta/webprotocol/WebStorageEvidence.java": "9e8df742ad0fdaac0fbc051c99772a52fbb40aae49f0a43589e252e71acc7fc0",
+      "src/org/trillionnium/hepta/webprotocol/WebTaskPurpose.java": "92303867e09343ebcbb3620b9a5850bce683c1d94988d1e534dd272dcaea8647"
+    },
+    "runtime_qualified": false,
+    "phone_contacted": false,
+    "business_verified": false
+  },
+  "controller_idle_proof_sha256": "9cde9b15efb57757c19473c92059b5f4ce094ae8a07ad6ac3cf1b05d63615e2c",
+  "idle_resources_before": {
+    "processes": [
+      {
+        "uid": 10481,
+        "pid": 30185,
+        "ppid": 1973,
+        "args": "org.trillionnium.hepta.local"
+      }
+    ],
+    "ps_sha256": "7ed040e1a543b68fdf7b32211d6f5e4e10907ac1912f96aaf7050cf4b5db4fc1",
+    "display_sha256": "2b300745692cb81c88a944c725313a39a0beb16d87670002efe1a1332e826e4a",
+    "no_owned_display": true
+  },
+  "formal_before": {
+    "verified": true,
+    "component": "org.trillionnium.hepta.local/org.trillionnium.hepta.local.HeptaAccessibilityService",
+    "app_pid": 30185,
+    "app_uid": 10481,
+    "client_pid": 3622,
+    "client_uid": 1000,
+    "binder_received": true,
+    "has_bound": true,
+    "connection_ids": [
+      "937a257"
+    ],
+    "service_dump_sha256": "3c3e3386fb0ba67c8056440ad420dff16eade6c1f0c627de4dcaf5c4799de487",
+    "identity_scope": "exact active AMS ServiceRecord and live system-client binding; label-only AccessibilityManager rows are not component attestation"
+  },
+  "ordinary_wake_requested": true,
+  "observer_installed_identity": {
+    "package": "org.trillionnium.hepta.webhelper",
+    "uid": 10484,
+    "apks": [
+      {
+        "path": "/data/app/~~4rPx93iCj8bfSoiX4dhQ2Q==/org.trillionnium.hepta.webhelper-rf1W8BRiuSJG8y7Ehs-grA==/base.apk",
+        "sha256": "b636485ee245e5074b065b5357c5e1cb0734f726eb26300ff7f7b18e77d737e0"
+      }
+    ]
+  },
+  "manual_retirement": {
+    "profile_name": "hepta_v2_1170ccc3c685edb1407ae9497b5123609ce3338a255879bf13b00712ea42668f",
+    "source_diagnostic_sha256": null,
+    "reference_result_sha256": "d568beb210462b361987c596c167e8eaa8bef78a8b3055e262dba9e35cdf6a0c",
+    "review_sha256": "877ae2fff85f67ca747981cebc6ba9433651dd85542d98ef036d537225c802c5",
+    "back_actions": [
+      {
+        "index": 0,
+        "argv": [
+          "input",
+          "-d",
+          "0",
+          "keyevent",
+          "KEYCODE_BACK"
+        ],
+        "source_xml_sha256": "8b72930437736692ad9fe8b598136769c2832fee690d334d92fa518d5c4620d7",
+        "source_png_sha256": "b40e6b83349212afcd04f78d8a3b8a20b2f86250b60162a465a807d85ffce764",
+        "current_focus": {
+          "display_id": 0,
+          "focus_line": "mCurrentFocus=Window{82eb0de u0 org.trillionnium.hepta.webhelper/org.trillionnium.hepta.webhelper.PageActivity}",
+          "focus_package": "org.trillionnium.hepta.webhelper",
+          "focus_source": "dumpsys window displays: unique display 0 mCurrentFocus"
+        },
+        "surface_binding": {
+          "helper_window": {
+            "order": 12,
+            "token": "82eb0de",
+            "user": 0,
+            "name": "org.trillionnium.hepta.webhelper/org.trillionnium.hepta.webhelper.PageActivity",
+            "display": 0,
+            "uid": 10484,
+            "package": "org.trillionnium.hepta.webhelper",
+            "visible": true,
+            "onscreen": true,
+            "surface": true,
+            "ready": true,
+            "type": "BASE_APPLICATION",
+            "frame": [
+              0,
+              0,
+              1224,
+              2992
+            ]
+          },
+          "system_bar_windows": [
+            {
+              "order": 4,
+              "token": "39d3ef3",
+              "user": 0,
+              "name": "NavigationBar0",
+              "display": 0,
+              "uid": 10320,
+              "package": "com.android.systemui",
+              "visible": true,
+              "onscreen": true,
+              "surface": true,
+              "ready": true,
+              "type": "NAVIGATION_BAR",
+              "frame": [
+                0,
+                2848,
+                1224,
+                2992
+              ]
+            },
+            {
+              "order": 8,
+              "token": "d829e2e",
+              "user": 0,
+              "name": "StatusBar",
+              "display": 0,
+              "uid": 10320,
+              "package": "com.android.systemui",
+              "visible": true,
+              "onscreen": true,
+              "surface": true,
+              "ready": true,
+              "type": "STATUS_BAR",
+              "frame": [
+                0,
+                0,
+                1224,
+                130
+              ]
+            }
+          ],
+          "ime_client": [
+            "10484",
+            "23359",
+            "0"
+          ],
+          "actual_ime_hidden": true,
+          "no_other_visible_window_above_helper": true,
+          "target_outside_actual_system_bar_frames": true,
+          "sequential_not_atomic": true
+        },
+        "submitted": true,
+        "returned": true,
+        "automatic_retry": false,
+        "model_issued": false,
+        "business_action": false
+      }
+    ],
+    "input_outcome_unknown": false,
+    "cleanup_verified": true,
+    "force_stop_used": false,
+    "maximum_back_actions": 8,
+    "profile_known_before_back": false,
+    "source_diagnostic_available": false,
+    "prior_captured_profile_known": false,
+    "lifecycle_source_sha256": {
+      "src/org/trillionnium/hepta/webhelper/EvidenceSession.java": "79f8277d841eac0b72778d3bc33e0d150fb56aaecdce02340f7edd4097b45d06",
+      "src/org/trillionnium/hepta/webhelper/PageActivity.java": "0b11585e7d223d80432146083b0a65012d1d4e5e95d136608421f5a8719202b2",
+      "src/org/trillionnium/hepta/webhelper/ProfileIsolation.java": "fd5e4f00947f8ced53a7eca318eeb4a579cc7ed31057b4d1d6e45958ec4d0fbd"
+    },
+    "formal_lease_cleanup_verified": false,
+    "fresh_native_identity": {
+      "native_initial_url": "https://www.mi.com/shop/search?keyword=AX3000T",
+      "native_capture_failure": "只读采集未完成：DOM changed across visual callback",
+      "profile_observed": false,
+      "no_website_node_used_as_native_identity": true
+    },
+    "last_helper_scene": {
+      "xml_file": "retire-before-back-00.xml",
+      "xml_sha256": "8b72930437736692ad9fe8b598136769c2832fee690d334d92fa518d5c4620d7",
+      "png_file": "retire-before-back-00.png",
+      "png_bytes": 404298,
+      "png_sha256": "b40e6b83349212afcd04f78d8a3b8a20b2f86250b60162a465a807d85ffce764",
+      "logical_display_id": 0,
+      "physical_display_id": "4630947043778501779",
+      "before_png_focus": {
+        "display_id": 0,
+        "focus_line": "mCurrentFocus=Window{82eb0de u0 org.trillionnium.hepta.webhelper/org.trillionnium.hepta.webhelper.PageActivity}",
+        "focus_package": "org.trillionnium.hepta.webhelper",
+        "focus_source": "dumpsys window displays: unique display 0 mCurrentFocus"
+      },
+      "after_png_focus": {
+        "display_id": 0,
+        "focus_line": "mCurrentFocus=Window{82eb0de u0 org.trillionnium.hepta.webhelper/org.trillionnium.hepta.webhelper.PageActivity}",
+        "focus_package": "org.trillionnium.hepta.webhelper",
+        "focus_source": "dumpsys window displays: unique display 0 mCurrentFocus"
+      },
+      "sequential_not_atomic": true,
+      "system_bar_binding": {
+        "status_bar": [
+          0,
+          0,
+          1224,
+          130
+        ],
+        "navigation_bar": [
+          0,
+          2920,
+          1224,
+          2992
+        ],
+        "comparison_rect": [
+          0,
+          130,
+          1224,
+          2920
+        ],
+        "source": "actual Display 0 InsetsState before and after PNG"
+      },
+      "started_monotonic_s": 255726.058661983,
+      "png_captured_monotonic_s": 255729.251202131,
+      "ui_state_dumps": {
+        "window-windows": {
+          "file": "retire-before-back-00-window-windows.txt",
+          "bytes": 101347,
+          "sha256": "1b38e5a71888d76d196571d54f2716b7850472251873b3b2b4185f196aa1dbe8"
+        },
+        "input-method": {
+          "file": "retire-before-back-00-input-method.txt",
+          "bytes": 119027,
+          "sha256": "f1d55a485b542e88a31b12381ae8e9dd946cf4827f65f6d580ec7c14b9692afd"
+        }
+      },
+      "actual_input_surface_binding": null,
+      "png_and_window_bracket_ended_monotonic_s": 255729.638553302
+    },
+    "departed_focus": {
+      "display_id": 0,
+      "focus_line": "mCurrentFocus=Window{27cd0bf u0 org.trillionnium.hepta.local/org.trillionnium.hepta.local.MainActivity}",
+      "focus_package": "org.trillionnium.hepta.local",
+      "focus_source": "dumpsys window displays: unique display 0 mCurrentFocus"
+    },
+    "profile_first_observed_in_close": true,
+    "prior_capture_to_profile_binding_verified": false,
+    "actual_close": {
+      "profile_name": "hepta_v2_1170ccc3c685edb1407ae9497b5123609ce3338a255879bf13b00712ea42668f",
+      "cleanup": {
+        "captures_retired": true,
+        "stop_loading_called": true,
+        "webview_destroyed": true,
+        "active_view_absent": true,
+        "storage_clear_completed": true
+      },
+      "retirement_clear": {
+        "started_elapsed_ms": 809487697,
+        "deadline_elapsed_ms": 809490697,
+        "callback_elapsed_ms": 809487753,
+        "callback_observed": true,
+        "deadline_met": true,
+        "cookies_present_after": false,
+        "api": "WebStorageCompat.deleteBrowsingData",
+        "attempt": 1,
+        "close_request_nonce": null,
+        "actor": "automatic_owned_retirement"
+      },
+      "preload_clear": {
+        "started_elapsed_ms": 806002184,
+        "deadline_elapsed_ms": 806005183,
+        "initial_url": null,
+        "callback_elapsed_ms": 806002257,
+        "callback_observed": true,
+        "deadline_met": true,
+        "cookies_present_after": false,
+        "api": "WebStorageCompat.deleteBrowsingData"
+      },
+      "storage_isolation": {
+        "schema": "hepta.web-helper.storage-isolation.v1",
+        "library": "androidx.webkit:webkit:1.13.0",
+        "runtime_multi_profile": true,
+        "runtime_delete_browsing_data": true,
+        "profile_name": "hepta_v2_1170ccc3c685edb1407ae9497b5123609ce3338a255879bf13b00712ea42668f",
+        "profile_names_before": [
+          "Default",
+          "hepta_v2_5070b7da9f5b76a38af6902e2bf765896cd312d57f9e6d35cefb2e416bfb266c"
+        ],
+        "profile_was_present_before": false,
+        "profile_assigned_elapsed_ms": 806002180,
+        "webview_provider_package": "com.google.android.webview",
+        "webview_provider_version": "140.0.7339.207",
+        "webview_provider_version_code": 733920733,
+        "preload_clear": {
+          "started_elapsed_ms": 806002184,
+          "deadline_elapsed_ms": 806005183,
+          "initial_url": null,
+          "callback_elapsed_ms": 806002257,
+          "callback_observed": true,
+          "deadline_met": true,
+          "cookies_present_after": false,
+          "api": "WebStorageCompat.deleteBrowsingData"
+        },
+        "first_load_dispatch_begin_elapsed_ms": 806002258,
+        "retirement_clear": {
+          "started_elapsed_ms": 809487697,
+          "deadline_elapsed_ms": 809490697,
+          "callback_elapsed_ms": 809487753,
+          "callback_observed": true,
+          "deadline_met": true,
+          "cookies_present_after": false,
+          "api": "WebStorageCompat.deleteBrowsingData",
+          "attempt": 1,
+          "close_request_nonce": null,
+          "actor": "automatic_owned_retirement"
+        },
+        "all_os_sockets_observed_closed": false,
+        "whole_device_storage_erased": false,
+        "business_verified": false,
+        "first_url": "https://www.mi.com/shop/search?keyword=AX3000T"
+      },
+      "loaded_profile_storage_clear_observed": true,
+      "profile_first_observed_in_close": true,
+      "prior_captured_profile_known": false,
+      "prior_capture_to_profile_binding_verified": false,
+      "scope": "one signed manual singleton page retired by observed ordinary Back with one new close",
+      "formal_lease_cleanup_verified": false,
+      "profile_name_deleted": false,
+      "all_os_sockets_observed_closed": false,
+      "whole_device_storage_erased": false,
+      "business_verified": false,
+      "file": "diagnostics/diagnostic-close-c681b5ba-d88b-441c-b1ee-5dad210718cc.json",
+      "bytes": 1632,
+      "sha256": "d10cedcc236d4d93114f3c3cae3515ef7dac658dca34f565f9802e86bcda4c0e"
+    },
+    "no_input_after_helper_departure": true,
+    "original_diagnostics_preserved": true,
+    "device_uptime_bracket_ms": [
+      809482170,
+      809503980
+    ]
+  },
+  "diagnostics": [
+    {
+      "file": "diagnostics/diagnostic-020c1d13a67d132eed6874ba43cf0d6f35cd473c095e94f890ac6bc2e6b2667f.json",
+      "bytes": 30993,
+      "sha256": "386f86ef76923ce994574893bc05eec906f3ef839f32d8a77a68092e0115d986",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "storage_isolation",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-0e8377e803ac9a467c4a5cb52e5937a15a6a93b43f7934bcaebeedba84b689fc.json",
+      "bytes": 308739,
+      "sha256": "96aecf073ee65951c988a5710fea394713e64af161f0513e36ee2d539991ebc3",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-200d1eb4031744b38d899525241af8f89643659ed769590d5cf4614cc0f376c5.json",
+      "bytes": 305357,
+      "sha256": "ffe2b5a4cf79e12098abafdc63a006583f9eaddb7f786671bcf1d03bc03e4f83",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-2185104639ec2e909a3eb0241b33d7f2714925010d63223c7e6509f4ec8c660b.json",
+      "bytes": 305381,
+      "sha256": "4d41342931181e4a208439b0dab4766d25d9d0b2e0bd08d5a24c420cae99f969",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-260f603251c34639addc7c70fea84f3bcf676e12d373bdaa69f43d6c9fbe3f46.json",
+      "bytes": 305386,
+      "sha256": "f716aaac6fd44a1015a1f6f1d61b4a0fb2efdda433b3fddcce684840fe103ea9",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-292f3f81694870ce87b987a04046ccb48e0b3cd6b11813b24f014a5f6a5cccea.json",
+      "bytes": 308752,
+      "sha256": "b5d351b711eac0b70c7458bc0c1f3f52c4e5d4f9e8e0a3b35a9e2529585adf22",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-342e51e1e6c5fac683309de2758c0586b1bff94816565a36c127ae276cade8fb.json",
+      "bytes": 61927,
+      "sha256": "5a34609ecb6965fac2e2525673583ac9f5bcc38652f674d81b8090f5dc17cf57",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-3534609dabda0ed5ee97004cdf586290d34aacb8a51857e109007dfbc0911500.json",
+      "bytes": 305381,
+      "sha256": "27b9eddd923d7efb44e3eabebe87b503e63869c84a8074ba4ecce53a553db806",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-361c2e19f1f7b8b606ada953ce8764a08d3c97b859d1d5d56a2cbab4cd113b55.json",
+      "bytes": 305381,
+      "sha256": "17ffb325c0ae0ebfd4186c21e1d07ce0ae6110bd6c7392a477cd983622831fc8",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-3c8fb015d9749da98ed615aab0a6d0d6315b45b9836b92b6ca4d40bb1cf35e16.json",
+      "bytes": 309230,
+      "sha256": "383622b7853d7e39d870c08522ed7287760de6d9b18cdc8ae08230a23c8afbb3",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "storage_isolation",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-4d769f772d5eaf8fa7128b3c7f3a7e5ccc978c535a185e602b9747a81adcdea5.json",
+      "bytes": 308216,
+      "sha256": "cc2e3cdef57f3adcd4e64779e6ff827c1586e9e0b2d15737db808441856dffc9",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-4edc3ac8e659e5438cd1ff507c370b6f34a899e0ce8391af67809996e66e6547.json",
+      "bytes": 63083,
+      "sha256": "737a08eef8ccca27b42b11900daa5182cf27b538bafd275dad9fcbd23530d416",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "storage_isolation",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-53ddffb0458add0e7c1faf8fe6a090a5640a9ef3db51904199d2d9fa946d45b3.json",
+      "bytes": 308752,
+      "sha256": "0861ac8b133b636478364f3957eed71391dd63e79e4b29530538fbaaafb31136",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-5988650db5f7f527be3c7e4e8ea17b3fa7d9d6158e020178f218bfd2da0a0019.json",
+      "bytes": 305381,
+      "sha256": "74bac5bde381e25e4af3978e9184c3d2f70331a7c2ad943c7845b62511a532f3",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-5d1be4c0d35bdebf71644cde85a6e5284c11933ab08286070abb99ce332620e4.json",
+      "bytes": 305699,
+      "sha256": "6535ad2d33943cb0e55fba533fca0c172a6f27b1a18e255d783f2fb02c34598a",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-612297bc8413908925c112255fcbda05a294ca746122db1fc9b50c7e05999c88.json",
+      "bytes": 305381,
+      "sha256": "05c2064dc1fce4c42c516d3d0e2c4a76f86e69b1e2fbe31149d0b99505c24bfc",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-6926d45f605fe7e01b4060920f868da64534095f0601bc5ea648da9de669d20b.json",
+      "bytes": 309579,
+      "sha256": "60d2c114cf1dd29dc77bace83afff6f991e9423bf01e5e93298ba5f4a7601328",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "storage_isolation",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-6f948b0dfff7afd85b17de1f34cbe3a4efafd7d77c1339788cd570cc192ba2bf.json",
+      "bytes": 305381,
+      "sha256": "5e2b305ed6681abec482db258269a839c3de4bbbf9a8d9509541701fbb516fbc",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-774161b299dfb95da9b6d80f2a60c1ca38e7a4b1fa9540698fc5b11d22e24677.json",
+      "bytes": 16983,
+      "sha256": "e717bcbf4def54057def6b90ce5a52f86ca2270c7d14f097fa501a216c3cddd0",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-80c8614b93cffb391969fe3f3ebab1a433dd5ecb102ab573feee469e5b4a5e82.json",
+      "bytes": 305381,
+      "sha256": "3bc2c24b558df3c5bd248c93172b1b18027464b6506b6aa90fcae466f442d718",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-839c1cc1b1d1c76a695c6a855c6323be0cda6a1f67d8e7f575028fffb3a7e78f.json",
+      "bytes": 305381,
+      "sha256": "e57bacfe2d127e9805a352cb02c1ce959fe17ed01dd9663a2fc5d3083c501cc0",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-84b334a0ca431d9387e45114fe4121919bb79efae43eaafef1ecc09fd3eb656d.json",
+      "bytes": 305381,
+      "sha256": "41bc9473e7803d1d1374a78d840dc17d2c84d14dc3e7fb090475f670ce61dd70",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-963551623468fb947925862e7eb1e6b5fda0c53ba5ed9fb2b1e474f04a6e9d86.json",
+      "bytes": 308728,
+      "sha256": "9218dc03267ace444073fffb4f24db6f5ea6994e510643cd558557e4b6c2d7b8",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-9aad2bf65e8bc7aa21e2aee5638694040fd88a1b47e1b9a061d726032bbb653c.json",
+      "bytes": 305381,
+      "sha256": "455e1c6e287badf5b717877ab6792e87b4ac91bff9d1cf2836474225e86b6560",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-bb8cf70a120986c87db41ac296f7a471441e142eca1f95a45451415c2e6d1452.json",
+      "bytes": 305381,
+      "sha256": "b1d93f8d8710f22455b6ab7dfdc17f316ac0fb4a23ff62bd9f88ba5cabf7a494",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-c3e5c2949009203895f588c088fe97373396c5672e72c89d5284723735fab2ae.json",
+      "bytes": 63091,
+      "sha256": "c4c74dda1e632fce53fbef0688583b8c28cedfa6d0462ca149cdd0ebf3628da8",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "storage_isolation",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-close-1dfe5600-0db0-49a9-a145-b697ec617956.json",
+      "bytes": 1529,
+      "sha256": "f4b9ce45808da1904b58d19e07f9c87cb1860bbc7315aef6a7ad89e0fe641060",
+      "schema": "hepta.web-helper.diagnostic-close.v2",
+      "top_level_fields": [
+        "business_verified",
+        "cleanup",
+        "reason",
+        "schema",
+        "storage_isolation"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-close-c681b5ba-d88b-441c-b1ee-5dad210718cc.json",
+      "bytes": 1632,
+      "sha256": "d10cedcc236d4d93114f3c3cae3515ef7dac658dca34f565f9802e86bcda4c0e",
+      "schema": "hepta.web-helper.diagnostic-close.v2",
+      "top_level_fields": [
+        "business_verified",
+        "cleanup",
+        "reason",
+        "schema",
+        "storage_isolation"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-d12138c40d118cddb742ebaa38b93944b10ecccede48565fad27f9a4e462dffa.json",
+      "bytes": 305381,
+      "sha256": "0136ddd29c328a8a2866853e765337f3b50f03bddb3bb47619f2a1f0e12e5679",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-e34366c697facacb44049015744abeecab23f84982963f95e4369c0f2b5cf931.json",
+      "bytes": 305381,
+      "sha256": "21fe48d7cc2b7b86dafd9f0cd359f0b4eeb4f4962690b0b1cd53e2add25ec8f0",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-e413cb069e3c5196bf59f929590c16f979d73703ca7194a1c3fc87373df96c49.json",
+      "bytes": 59144,
+      "sha256": "3a5be3816a291ab75bef4997ce04226e9a252a8e26c1a7fcc7056c1b6c3eb009",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-e94b76746ba64e1c54e2799d62814b2e3f0c3bc0185dd8a74e2496a5d29c231f.json",
+      "bytes": 305381,
+      "sha256": "af3aeb11c295b62c1a47c6c5bd04993bd545a91dc7689e79ee89d7a40c17472e",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "task_id"
+      ]
+    },
+    {
+      "file": "diagnostics/diagnostic-f596b99af486f258e6e100b38bc48bb35864243dcf4335bdd4fde73258053e27.json",
+      "bytes": 386724,
+      "sha256": "f61fd86cb24b212c3434bb5eda1a4e29b65c06c22d3fc4238366f31a324dd7fa",
+      "schema": "hepta.web-helper.manual-diagnostic.v1",
+      "top_level_fields": [
+        "actor",
+        "business_verified",
+        "capture",
+        "cause",
+        "diagnostic_unbound",
+        "schema",
+        "storage_isolation",
+        "task_id"
+      ]
+    }
+  ],
+  "purpose": "normal_uncaptured_manual_back_until_own_activity_destroyed",
+  "webpage_inputs": 0,
+  "diagnostic_record_count": 33,
+  "existing_diagnostics_are_not_assumed_current": true,
+  "formal_after_ui": {
+    "verified": true,
+    "component": "org.trillionnium.hepta.local/org.trillionnium.hepta.local.HeptaAccessibilityService",
+    "app_pid": 30185,
+    "app_uid": 10481,
+    "client_pid": 3622,
+    "client_uid": 1000,
+    "binder_received": true,
+    "has_bound": true,
+    "connection_ids": [
+      "a2e62ad"
+    ],
+    "service_dump_sha256": "f5125eed68f23969387a2403a77ca85dd76a5476fbafe990148535024f2d9150",
+    "identity_scope": "exact active AMS ServiceRecord and live system-client binding; label-only AccessibilityManager rows are not component attestation"
+  },
+  "hepta_installed_identity_preserved": true,
+  "runtime_config_and_terminal_preserved": true,
+  "no_new_hepta_tasks_or_model_runs": true,
+  "current_terminal_task": "4320372daa4f4a2bba4f1fcf1297c352",
+  "current_runtime_config_sha256": "b1fa9a0f9f23562b667217063ce491eeb5bfe489f3dd45044d1ae733e2056ef2",
+  "disposition": "await_independent_actual_page_review_before_any_further_input",
+  "private_observation_directory": "files/web-evidence-v1",
+  "private_observation_pattern": "diagnostic-*.json",
+  "observer_uid": 10484,
+  "observer_apk_sha256": "b636485ee245e5074b065b5357c5e1cb0734f726eb26300ff7f7b18e77d737e0",
+  "finished_wall_s": 1794467251.6097724
+}
