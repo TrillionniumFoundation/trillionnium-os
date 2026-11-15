@@ -11023,12 +11023,12 @@
       "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
       "git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
       "path": ".github/workflows/hepta-local-android.yml",
-      "prior_commit": "aecd5b17af5e6c36507789970c2b2e7ec937a4be",
-      "prior_git_blob": "6d2035eb80ab01bdee12c08d2455923e37c9681b",
+      "prior_commit": "1131fa546750507477f055e04344999b99391098",
+      "prior_git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
       "sha256": "cf6f060c5284ce50e23f7702fd95f07a008e67a690fa1ec763deda0f3b482aca"
     },
-    "native_host_gate_contract_sha256": "f05770237c0b1a69499dcbaef64bd670aa35b06d0f61f181d97102ad79071944",
-    "normal_git_parent": "aecd5b17af5e6c36507789970c2b2e7ec937a4be",
+    "native_host_gate_contract_sha256": "0db7ebc45ee632dc04b0a095d4b28db2c8c1635956cb5814fd388fda77bc85ca",
+    "normal_git_parent": "1131fa546750507477f055e04344999b99391098",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -11431,6 +11431,84 @@
     "private_phone_records_in_public_source": false,
     "read_recovery": "At most one new read per task, using an opaque live Session permit and request-specific Service proof after worker/resource drain; original per-request and task deadlines and Stop checks remain.",
     "stale_action_context": "Only exact durable unentered/drained guarded Attempt proof may describe a current same-target fresh frame; a fresh model decision and all original dispatch checks remain mandatory."
+  },
+  "r18_dependency_root_binding_amendment": {
+    "all_19_gate_schemas_cases_assertions_runners_requirements_unchanged": true,
+    "dependency_bytes": 78332,
+    "dependency_contents_unchanged": true,
+    "dependency_sha256": "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed",
+    "external_path_changes": [
+      {
+        "gate": "native-selection-facts",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-v69-native-build-261e-20261114-r17/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "owned-single-task",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-v69-native-build-261e-20261114-r17/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "observation-diagnostics",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-v69-native-build-261e-20261114-r17/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-observation-events",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-v69-native-build-261e-20261114-r17/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-xiaomi-home-loading",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-v69-native-build-261e-20261114-r17/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-query-reservation",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-v69-native-build-261e-20261114-r17/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-xiaomi-login",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-v69-native-build-261e-20261114-r17/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-stale-recovery",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-v69-native-build-261e-20261114-r17/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-observation-retry",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-v69-native-build-261e-20261114-r17/readonly-query-inputs/json-20240303.jar"
+      },
+      {
+        "gate": "native-observation-read-retry",
+        "index": 0,
+        "new": "/home/alex/hepta-r18-build-4592-20261114/readonly-query-inputs/json-20240303.jar",
+        "old": "/home/alex/hepta-v69-native-build-261e-20261114-r17/readonly-query-inputs/json-20240303.jar"
+      }
+    ],
+    "fresh_published_head_host_android_and_phone_acceptance_still_pending": true,
+    "native_contract_after_sha256": "0db7ebc45ee632dc04b0a095d4b28db2c8c1635956cb5814fd388fda77bc85ca",
+    "native_contract_before_sha256": "f05770237c0b1a69499dcbaef64bd670aa35b06d0f61f181d97102ad79071944",
+    "nonmanifest_source_members_unchanged": true,
+    "normal_git_parent": "1131fa546750507477f055e04344999b99391098",
+    "prior_r18_feature_amendment_is_retained_without_additional_application_changes": true,
+    "source_change_scope": [
+      "SOURCE-MANIFEST.json"
+    ],
+    "source_entries_unchanged": true
   },
   "r18_guard_and_observation_amendment": {
     "action_freshness_and_deadlines_unchanged": true,
