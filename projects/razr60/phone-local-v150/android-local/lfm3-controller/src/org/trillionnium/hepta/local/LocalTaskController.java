@@ -1145,6 +1145,7 @@ public final class LocalTaskController implements AutoCloseable {
                 nativeTask.actionGuard(action,modelRunId,observed.id,actionIssued,actionDeadline);
         final CountDownLatch ready=new CountDownLatch(1);
         final AtomicReference<HeptaAccessibilityService.ActionOutcome> outcome=new AtomicReference<HeptaAccessibilityService.ActionOutcome>();
+        java.util.Map<String,Object> unenteredAwaitReceipt=null;
         try{
         service.perform(id,observed,action,targets,fixedTarget,authorization,modelRunId,actionDeadline,nativeGuard,
                 new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}},
@@ -1170,8 +1171,16 @@ public final class LocalTaskController implements AutoCloseable {
             throw new CleanupUnknown("动作回执迟到或动作工作尚未退出；不推进后续动作");
         }
         HeptaAccessibilityService.ActionOutcome result=outcome.get();
-        if(result==null)throw new IllegalStateException("动作回执为空");return result;
-        }finally{if(nativeGuard!=null)nativeGuard.close();}
+        if(result==null)throw new IllegalStateException("动作回执为空");
+        if(nativeGuard!=null&&!cancelled.get()&&!result.accepted&&!result.dispatched&&result.stale)
+            unenteredAwaitReceipt=nativeQueryExecution(result.actionExecution);
+        return result;
+        }finally{if(nativeGuard!=null){synchronized(this){
+            // stop() uses this same monitor; no journal or Service IO runs here.
+            if(unenteredAwaitReceipt!=null&&!cancelled.get()&&SystemClock.elapsedRealtime()<actionDeadline)
+                nativeGuard.closeAfterUnenteredAwait(unenteredAwaitReceipt,cancelled);
+            else nativeGuard.close();
+        }}}
     }
     private void checkActive(long deadline)throws Stopped{if(cancelled.get())throw new Stopped();if(SystemClock.elapsedRealtime()>deadline)throw new IllegalStateException("本次任务已超时，已停止继续操作");}
     private static final class Stopped extends Exception {private static final long serialVersionUID=1L;}
@@ -1572,3 +1581,4 @@ public final class LocalTaskController implements AutoCloseable {
         android.system.Os.chmod(file.getPath(),0600);
     }
 }
+

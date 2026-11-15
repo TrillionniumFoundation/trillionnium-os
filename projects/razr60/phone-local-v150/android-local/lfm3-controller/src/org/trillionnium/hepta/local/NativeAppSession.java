@@ -301,6 +301,18 @@ final class NativeAppSession {
         private final InstalledVerifier verifier;
         // close and claim have one linearization point, not two independent flags.
         private final java.util.concurrent.atomic.AtomicInteger state=new java.util.concurrent.atomic.AtomicInteger(0);
+        // A normal Controller await may close an unclaimed guard before the
+        // durable outcome is written. This one-use digest preserves that exact
+        // handoff; it never makes a closed guard usable by an effect worker.
+        private static final class UnenteredAwaitReceipt {
+            final Map<String,Object> execution;final String sha;
+            final java.util.concurrent.atomic.AtomicBoolean cancelled;
+            UnenteredAwaitReceipt(Map<String,Object> value,java.util.concurrent.atomic.AtomicBoolean token){
+                execution=NativeAppEvidence.immutableMap(value);sha=NativeAppEvidence.fingerprint(execution);cancelled=token;
+            }
+        }
+        private final java.util.concurrent.atomic.AtomicReference<UnenteredAwaitReceipt> unenteredAwaitReceipt=
+                new java.util.concurrent.atomic.AtomicReference<UnenteredAwaitReceipt>();
         private ActionGuard(NativeAppSession session,Attempt attempt,long issued,long deadline){
             action=attempt.action;run=attempt.run;purpose=attempt.purpose;frame=attempt.before.frame;
             targetNode=frame.byId.get(action.nodeId);selection=session.selection;target=session.target;
@@ -348,7 +360,26 @@ final class NativeAppSession {
                     &&state.compareAndSet(0,1),"native Attempt closed or already claimed; no second effect");
         }
         void requireClaimed(){need(state.get()==1,"native Attempt closed before effect entry");}
-        void close(){state.getAndSet(2);}
+        synchronized void close(){state.getAndSet(2);unenteredAwaitReceipt.set(null);}
+        synchronized void closeAfterUnenteredAwait(Map<String,Object> execution,java.util.concurrent.atomic.AtomicBoolean cancelled){
+            boolean sealed=false;
+            try{
+                if(execution==null||cancelled==null||cancelled.get())return;
+                UnenteredAwaitReceipt receipt=new UnenteredAwaitReceipt(execution,cancelled);
+                if(!cancelled.get()&&state.compareAndSet(0,2)){unenteredAwaitReceipt.set(receipt);sealed=true;}
+            }finally{
+                state.getAndSet(2);
+                if(!sealed||cancelled==null||cancelled.get())unenteredAwaitReceipt.set(null);
+            }
+        }
+        private boolean consumeUnenteredOutcome(Map<String,Object> execution){
+            if(state.get()==0)return true;
+            if(state.get()!=2||execution==null)return false;
+            UnenteredAwaitReceipt sealed=unenteredAwaitReceipt.get();
+            if(sealed==null||sealed.cancelled.get()||!sealed.execution.equals(execution)
+                    ||!sealed.sha.equals(NativeAppEvidence.fingerprint(execution)))return false;
+            return unenteredAwaitReceipt.compareAndSet(sealed,null)&&!sealed.cancelled.get();
+        }
         Map<String,Object> evidence(){Map<String,Object> e=NativeAppEvidence.map();e.put("purpose",purpose);
             e.put("model_run_id",run);e.put("action_sha256",actionSha);e.put("query_history_sha256",historySha);
             e.put("attempt_started_elapsed_ms",attemptStarted);e.put("issued_elapsed_ms",issued);e.put("deadline_elapsed_ms",deadline);
@@ -424,7 +455,8 @@ final class NativeAppSession {
             Map<String,Object> actionExecution)throws Exception{
         live();Attempt a=inFlight;need(a!=null&&a.action==action&&a.run.equals(run)&&finished>=a.started&&NativeAppEvidence.sha(receiptSha),"same native action and durable receipt required");
         boolean recovery=!accepted&&!dispatched&&stale&&provedUnenteredGuardedAction(a,actionExecution,finished);
-        boolean release=!accepted&&!dispatched&&stale&&provedUnenteredQuery(a,actionExecution,finished);
+        boolean release=recovery&&NativeActionSnapshotCheck.QUERY.equals(a.purpose)
+                &&a.date!=null&&queryAttempts.contains(a.date);
         boolean loginRelease=!accepted&&!dispatched&&stale&&NativeXiaomiProductPage.LOGIN_EXIT.equals(a.purpose)
                 &&productLoginExitReserved&&a.guard==null&&provedUnenteredAction(a,actionExecution,finished)
                 &&actionExecution.get("native_action_guard")==null;
@@ -493,15 +525,11 @@ final class NativeAppSession {
         return queued>=a.started&&deadline>queued&&deadline-queued<=8000
                 &&drained>=queued&&drained<=finished&&finished<deadline;
     }
-    private boolean provedUnenteredQuery(Attempt a,Map<String,Object> x,long finished){
-        return NativeActionSnapshotCheck.QUERY.equals(a.purpose)&&a.date!=null&&queryAttempts.contains(a.date)
-                &&provedUnenteredGuardedAction(a,x,finished);
-    }
     private boolean provedUnenteredGuardedAction(Attempt a,Map<String,Object> x,long finished){
         ActionGuard g=a.guard;
         if(!java.util.Arrays.asList(NativeActionSnapshotCheck.OPEN,NativeActionSnapshotCheck.YEAR,
                 NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH).contains(a.purpose)
-                ||g==null||g.state.get()!=0||g.action!=a.action||g.frame!=a.before.frame||!provedUnenteredAction(a,x,finished))return false;
+                ||g==null||g.action!=a.action||g.frame!=a.before.frame||!provedUnenteredAction(a,x,finished))return false;
         if(executionNumber(x,"queued_elapsed_ms")<g.issued||executionNumber(x,"deadline_elapsed_ms")!=g.deadline)return false;
         Object raw=x.get("native_action_guard");if(!(raw instanceof Map<?,?>))return false;
         Map<?,?> guard=(Map<?,?>)raw;
@@ -510,7 +538,8 @@ final class NativeAppSession {
                 &&java.util.Objects.equals(g.historySha,guard.get("query_history_sha256"))
                 &&executionNumber(guard,"attempt_started_elapsed_ms")==a.started
                 &&executionNumber(guard,"issued_elapsed_ms")==g.issued&&executionNumber(guard,"deadline_elapsed_ms")==g.deadline
-                &&executionNumber(guard,"state")==0&&Boolean.TRUE.equals(guard.get("single_atomic_claim"));
+                &&executionNumber(guard,"state")==0&&Boolean.TRUE.equals(guard.get("single_atomic_claim"))
+                &&g.consumeUnenteredOutcome(x);
     }
     private void requireReobservationAfterReleasedReservation(Attempt a,long finished){
         reservationReobserveId=a.before.frame.observationId;reservationReobserveAfter=finished;
@@ -650,3 +679,4 @@ final class NativeAppSession {
     List<String> missing(){return current==null?Collections.singletonList("current_native_observation_missing"):current.missing;}
     private static void need(boolean value,String reason){NativeAppEvidence.need(value,reason);}
 }
+

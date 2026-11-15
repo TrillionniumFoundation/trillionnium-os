@@ -168,6 +168,7 @@ public final class PhoneObservation {
     }
     public final String id, packageName, screenshotSha256, treeSha256;
     public final long capturedElapsedMillis;
+    private final String captureEvidenceRaw;
     public final int width, height, rotation, windowId;
     public final boolean nodesTruncated;
     public final CollectionStats collectionStats;
@@ -204,6 +205,14 @@ public final class PhoneObservation {
                      ObservationState state,ObservedWindowMetadata windowMetadata,boolean truncated,List<Node> nodes,
                      String backgroundGeneration,String backgroundBootstrapPackage,List<String> backgroundAllowedPackages,
                      CollectionStats collectionStats,JSONObject actualSelection,String actualOwnerSha256) {
+        this(id,packageName,at,width,height,rotation,windowId,bounds,screenshot,screenshotSha256,treeSha256,state,windowMetadata,
+                truncated,nodes,backgroundGeneration,backgroundBootstrapPackage,backgroundAllowedPackages,collectionStats,actualSelection,actualOwnerSha256,null);
+    }
+    PhoneObservation(String id,String packageName,long at,int width,int height,int rotation,int windowId,
+                      Rect bounds,File screenshot,String screenshotSha256,String treeSha256,
+                      ObservationState state,ObservedWindowMetadata windowMetadata,boolean truncated,List<Node> nodes,
+                      String backgroundGeneration,String backgroundBootstrapPackage,List<String> backgroundAllowedPackages,
+                      CollectionStats collectionStats,JSONObject actualSelection,String actualOwnerSha256,java.util.Map<String,Object> captureEvidence) {
         if(collectionStats!=null&&(collectionStats.retained!=nodes.size()||collectionStats.truncated()!=truncated))
             throw new IllegalArgumentException("collection counters differ from actual observed nodes");
         this.collectionStats=collectionStats;
@@ -220,6 +229,18 @@ public final class PhoneObservation {
                     backgroundBootstrapPackage,this.backgroundAllowedPackages);
         }
         this.id=id;this.packageName=packageName;this.capturedElapsedMillis=at;
+        if(captureEvidence!=null){
+            Object capture=captureEvidence.get("capture_requested_elapsed_ms");
+            if(!(capture instanceof Long)||((Long)capture).longValue()!=at
+                    ||!"hepta.observation-capture.v1".equals(captureEvidence.get("schema"))
+                    ||!Boolean.FALSE.equals(captureEvidence.get("publication_refreshes_capture_age"))
+                    ||!Boolean.FALSE.equals(captureEvidence.get("grants_action_authority"))
+                    ||!Boolean.FALSE.equals(captureEvidence.get("business_completion_verified")))
+                throw new IllegalArgumentException("capture evidence cannot replace observation age or grant authority");
+            captureEvidenceRaw=new JSONObject(captureEvidence).toString();
+            if(captureEvidenceRaw.getBytes(java.nio.charset.StandardCharsets.UTF_8).length>8192)
+                throw new IllegalArgumentException("capture evidence exceeds fixed byte bound");
+        }else captureEvidenceRaw=null;
         this.width=width;this.height=height;this.rotation=rotation;this.windowId=windowId;
         this.windowBounds=new Rect(bounds);this.screenshot=screenshot;this.screenshotSha256=screenshotSha256;
         this.treeSha256=treeSha256;this.nodesTruncated=truncated;
@@ -322,6 +343,8 @@ public final class PhoneObservation {
     /** Node content is untrusted screen data, never a replacement instruction. */
     public JSONObject toJson() throws JSONException {
         JSONObject value=new JSONObject();value.put("observation_id",id);value.put("package",packageName);
+        value.put("captured_elapsed_ms",capturedElapsedMillis);
+        if(captureEvidenceRaw!=null)value.put("capture",new JSONObject(captureEvidenceRaw));
         value.put("screen_width",width);value.put("screen_height",height);value.put("rotation",rotation);
         value.put("window_id",windowId);value.put("screen_sha256",screenshotSha256);
         value.put("window",windowJson());

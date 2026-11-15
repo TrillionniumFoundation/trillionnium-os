@@ -28,6 +28,7 @@ def generate(code,tests,out,common):
     fragment=(tests/TEST/'RecoveryCases.fragment').read_text(encoding='utf-8')
     bridge_path=generated/'NativeActionBridgeHost.java';bridge=bridge_path.read_text(encoding='utf-8')
     extra='    private ActionExecutionState lastActionExecution;\n'+receipt+'\n'+terminal+'\n'+fragment
+    extra+='\n'+(tests/TEST/'ControllerAwaitBridge.fragment').read_text(encoding='utf-8')
     need(bridge.count('    // TEST_CASES')==1,'unique bridge injection site')
     bridge_path.write_text(bridge.replace('    // TEST_CASES',extra,1),encoding='utf-8')
     common.write(generated/'NativeStaleProjectionBridge.java',
@@ -39,11 +40,32 @@ def generate(code,tests,out,common):
     common.write(generated/'NativeStalePromptBridge.java',
         'package org.trillionnium.hepta.local;\nfinal class NativeStalePromptBridge {\n'+actual_prompt+
         '\nstatic String value(){return SYSTEM;}\n}\n')
+    await_anchors={
+      'await_action':'    private HeptaAccessibilityService.ActionOutcome awaitAction(',
+      'check_active':'    private void checkActive(long deadline)',
+      'stopped':'    private static final class Stopped extends Exception {',
+      'cleanup_unknown':'    private static final class CleanupUnknown extends Exception {',
+      'stop':'    public void stop(){',
+      'record':'    private static void record(File directory,String name,JSONObject value)throws Exception{'}
+    await_methods={key:extractor.body(controller,anchor) for key,anchor in await_anchors.items()}
+    await_methods['projection']=projection;await_methods['outcome_call']=call
+    record_call='                record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-action.json",steps),actionReceipt);'
+    need(controller.count(record_call)==1,'one actual action receipt write before Session outcome')
+    need(controller.index(record_call)<start,'actual Controller journals before publishing Session outcome')
+    await_methods['record_call']=record_call
+    need('synchronized(this)' in await_methods['stop'],'Stop shares the real Controller monitor')
+    await_template=(tests/TEST/'ControllerGuardClosureHost.template').read_text(encoding='utf-8')
+    for key,value in await_methods.items():
+        marker='{{'+key+'}}';need(await_template.count(marker)==1,'unique actual await marker '+key)
+        await_template=await_template.replace(marker,value,1)
+    need('{{' not in await_template,'complete actual await closure extraction')
+    common.write(generated/'ControllerGuardClosureHost.java',await_template)
     paths,bg=integration.sources(code,out)
     paths += [tests/TEST/'NativeStaleRecoveryHostTest.java',tests/'tests/native-query-reservation/NativeQueryReservationHostTest.java']
     paths=list(dict.fromkeys(p.resolve() for p in paths))
     extracted=dict(methods);extracted.update(parts)
     extracted.update(action_receipt=receipt,terminal_execution=terminal,controller_projection=projection,system_prompt=actual_prompt)
+    extracted.update({'closure_'+key:value for key,value in await_methods.items()})
     extraction={
       'schema':'hepta.native-stale-recovery-extraction.v1','bodies_verbatim':True,
       'service_source':common.meta(code/PKG/'HeptaAccessibilityService.java'),
@@ -86,13 +108,18 @@ def main():
         report['compile_inputs']=[common.meta(p) for p in paths]
         for name,argv in [('compile',[jdk/'bin/javac',*flags,'-d',classes,*paths]),
           ('recovery-cases',[jdk/'bin/java','-cp',str(classes)+os.pathsep+str(jar),
-            'org.trillionnium.hepta.local.NativeStaleRecoveryHostTest',source,out/'RECOVERY-CASES.json'])]:
+            'org.trillionnium.hepta.local.NativeStaleRecoveryHostTest',source,out/'RECOVERY-CASES.json']),
+          ('await-closure-cases',[jdk/'bin/java','-cp',str(classes)+os.pathsep+str(jar),
+            'org.trillionnium.hepta.local.ControllerGuardClosureHost',source,out/'AWAIT-CLOSURE-CASES.json',out/'await-private'])]:
             result=common.stage(name,argv,out,env);report['steps'].append(result)
             need(result['exit_code']==0,'actual stage failed: '+name)
         cases=json.loads((out/'RECOVERY-CASES.json').read_text(encoding='utf-8'))
         need(cases['all_pass'] and cases['cases']==len(cases['case_names'])==len(set(cases['case_names'])) and cases['assertions']>0,
              'complete unique real case records')
         recovery_cases=cases
+        closure_cases=json.loads((out/'AWAIT-CLOSURE-CASES.json').read_text(encoding='utf-8'))
+        need(closure_cases['all_pass'] and closure_cases['cases']==len(closure_cases['case_names'])==len(set(closure_cases['case_names']))
+          and closure_cases['assertions']>0,'actual Controller await closure cases')
         result=common.stage('census-budget',[sys.executable,source/TEST/'run_budget.py',
           '--component',source,'--output',out/'budget','--java-home',jdk,'--json-jar',jar],out,env)
         report['steps'].append(result);need(result['exit_code']==0,'actual census budget probe failed')
@@ -103,9 +130,11 @@ def main():
           'actual maximum twenty-census projection and terminal IO checks')
         budget_cases=dict(b,cases=1,case_names=['twenty_maximum_censuses_actual_projection_prompt_and_terminal_io'],case_assertions=[b['assertions']])
         common.save(out/'BUDGET-CASES.json',budget_cases)
-        cases=dict(recovery_cases,cases=recovery_cases['cases']+1,assertions=recovery_cases['assertions']+b['assertions'],
-          case_names=recovery_cases['case_names']+budget_cases['case_names'],case_assertions=recovery_cases['case_assertions']+[b['assertions']],
-          groups={'recovery':recovery_cases,'census_budget':budget_cases})
+        cases=dict(recovery_cases,cases=recovery_cases['cases']+closure_cases['cases']+1,
+          assertions=recovery_cases['assertions']+closure_cases['assertions']+b['assertions'],
+          case_names=recovery_cases['case_names']+closure_cases['case_names']+budget_cases['case_names'],
+          case_assertions=recovery_cases['case_assertions']+closure_cases['case_assertions']+[b['assertions']],
+          groups={'recovery':recovery_cases,'controller_await_closure':closure_cases,'census_budget':budget_cases})
         common.save(out/'CASES.json',cases);report['budget_result']=common.meta(out/'budget/RESULT.json')
         report['extra_files']={str(p.relative_to(out)):common.meta(p) for p in sorted((out/'budget').rglob('*'))
           if p.is_file() and 'classes' not in p.parts and p.suffix!='.java'}
@@ -127,7 +156,7 @@ def main():
                      'exact old production runtime failure: '+mode)
             oldreport['both_runtime_failures_reproduced']=True
         report.update(all_pass=True,cases=cases,cases_file=common.meta(out/'CASES.json'),
-          case_records={name:common.meta(out/name) for name in ('RECOVERY-CASES.json','BUDGET-CASES.json')},extraction_file=common.meta(out/'EXTRACTION.json'),
+          case_records={name:common.meta(out/name) for name in ('RECOVERY-CASES.json','AWAIT-CLOSURE-CASES.json','BUDGET-CASES.json')},extraction_file=common.meta(out/'EXTRACTION.json'),
           generated_files={str(p.relative_to(out)):common.meta(p) for folder in ('generated','budget')
             for p in sorted((out/folder).rglob('*.java'))})
     except Exception as error:report['error']={'type':type(error).__name__,'message':str(error)}
@@ -137,3 +166,4 @@ def main():
     print(json.dumps({'all_pass':report['all_pass'],'cases':report.get('cases'),'error':report.get('error'),'result':str(out/'RESULT.json')}))
     return 0 if report['all_pass'] else 1
 if __name__=='__main__':raise SystemExit(main())
+

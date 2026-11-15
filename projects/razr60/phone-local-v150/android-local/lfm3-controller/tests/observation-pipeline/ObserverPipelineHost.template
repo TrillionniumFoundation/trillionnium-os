@@ -48,6 +48,7 @@ public final class ObserverPipelineHost {
     static final class Graph {
         ObservationDiagnostics.GraphStamp diagnosticStamp;
         final int serial;String packageName="fixture.notes",digest="same",backgroundGeneration;
+        long readStartedElapsedMs,readCompletedElapsedMs;
         // Selection provenance is outside this scheduling-only graph carrier and remains absent.
         String backgroundSelectionRaw,backgroundOwnerSha;
         int windowId=7,rotation=0,displayId;boolean truncated,nativeObservationComplete;final Rect bounds=new Rect();
@@ -66,6 +67,7 @@ public final class ObserverPipelineHost {
     static final class Bitmap {
         static final List<Bitmap> made=Collections.synchronizedList(new ArrayList<Bitmap>());
         static volatile Runnable copyHook,encodeHook;
+        static volatile java.util.function.Consumer<OutputStream> streamHook;
         boolean recycled;final boolean wrapper;
         Bitmap(boolean wrapper){this.wrapper=wrapper;made.add(this);}
         static final class Config {static final Config ARGB_8888=new Config();}
@@ -75,15 +77,21 @@ public final class ObserverPipelineHost {
         int getWidth(){return 1080;}int getHeight(){return 2400;}
         boolean compress(CompressFormat format,int quality,OutputStream out){
             expect(!isMain(),"PNG encoding on main");if(encodeHook!=null)encodeHook.run();
-            try{out.write(new byte[]{1,2,3});return true;}catch(IOException error){throw new IllegalStateException(error);}
+            try{out.write(new byte[]{1,2,3});if(streamHook!=null)streamHook.accept(out);return true;}catch(IOException error){throw new IllegalStateException(error);}
         }
         synchronized void recycle(){expect(!recycled,"bitmap recycled twice");recycled=true;}
     }
     static final class PhoneObservation {
         final String id;final File path;final long capturedElapsedMillis;final Object collectionStats;
+        final Map<String,Object> captureEvidence;
         PhoneObservation(String id,String pkg,long captured,int width,int height,int rotation,int window,Rect bounds,
             File path,String hash,String digest,Object state,Object metadata,boolean truncated,Object rows,String generation,String initial,List<String> packages,Object collectionStats,JSONObject selection,String ownerSha){
+            this(id,pkg,captured,width,height,rotation,window,bounds,path,hash,digest,state,metadata,truncated,rows,generation,initial,packages,collectionStats,selection,ownerSha,null);
+        }
+        PhoneObservation(String id,String pkg,long captured,int width,int height,int rotation,int window,Rect bounds,
+            File path,String hash,String digest,Object state,Object metadata,boolean truncated,Object rows,String generation,String initial,List<String> packages,Object collectionStats,JSONObject selection,String ownerSha,Map<String,Object> captureEvidence){
             this.id=id;this.path=path;capturedElapsedMillis=captured;this.collectionStats=collectionStats;
+            this.captureEvidence=captureEvidence;
         }
     }
     static final class JSONObject {
@@ -140,8 +148,16 @@ public final class ObserverPipelineHost {
     private boolean locked(){return locked;}
     private Graph readGraph(GraphBudget budget,BackgroundSession background){
         expect(!isMain(),"observation graph read on main");budget.check();int n=reads.incrementAndGet();
-        Graph graph=new Graph(n,background==null?0:background.displayId());graphs.add(graph);
-        try{if(readHook!=null)readHook.read(graph,n);budget.check();return graph;}catch(RuntimeException error){graph.close();throw error;}
+        Graph graph=new Graph(n,background==null?0:background.displayId());graph.readStartedElapsedMs=SystemClock.now;graphs.add(graph);
+        try{if(readHook!=null)readHook.read(graph,n);budget.check();graph.readCompletedElapsedMs=SystemClock.now;return graph;}catch(RuntimeException error){graph.close();throw error;}
+    }
+    // Legacy fixtures do not supply the additional complete native window census.
+    private static FrozenObservationWindow frozenObservationWindow(Graph graph){return null;}
+    private FrozenObservationWindow readFrozenObservationWindow(ObservationRequest request,CaptureIdentity identity){
+        throw new AssertionError("legacy fixture cannot supply current frozen-window IO");
+    }
+    private void requireTaskAuthorization(String task,Object authorization){
+        expect(owns(task)&&authorization!=null&&authorization==taskAuthorization,"retired fixture authorization");
     }
     private Executor getMainExecutor(){return r->main.post(r);}
     private void takeScreenshot(int display,Executor executor,TakeScreenshotCallback callback){
@@ -197,7 +213,7 @@ public final class ObserverPipelineHost {
     static int passed;
     static void test(String name,Case body)throws Exception{
         expect(!observationIoBusy.get()&&observationIo.active.get()==0,"previous worker not drained");
-        SystemClock.now=1000;Bitmap.made.clear();Bitmap.copyHook=null;Bitmap.encodeHook=null;observationIo.reject=false;WebFlightSession.unreleased=false;
+        SystemClock.now=1000;Bitmap.made.clear();Bitmap.copyHook=null;Bitmap.encodeHook=null;Bitmap.streamHook=null;observationIo.reject=false;WebFlightSession.unreleased=false;
         body.run();passed++;System.out.println("PASS "+name);
     }
     public static void main(String[] args)throws Exception{

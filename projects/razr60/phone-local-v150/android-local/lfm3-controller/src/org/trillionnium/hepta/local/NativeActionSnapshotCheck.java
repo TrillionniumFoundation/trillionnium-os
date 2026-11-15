@@ -104,12 +104,14 @@ final class NativeActionSnapshotCheck {
         need(before.roots.equals(after.roots)&&before.facts.equals(after.facts),"fresh purpose semantics differ");
         need(roleFacts(in,old).equals(roleFacts(in,fresh)),"global Provider roles/ambiguity changed");
         for(String p:before.ancestors)need(old.node(p).v.equals(fresh.node(p).v),"actual ancestor changed: "+p);
-        for(String p:union(old.nodes.keySet(),fresh.nodes.keySet()))if(protectedPath(p,before.roots))
+        Map<String,String> homeVariations=xiaomiSearchHomeVariations(in,old,fresh);
+        for(String p:union(old.nodes.keySet(),fresh.nodes.keySet()))if(protectedPath(p,before.roots)&&!protectedPath(p,homeVariations.keySet()))
             need(old.nodes.containsKey(p)&&fresh.nodes.containsKey(p)&&old.node(p).v.equals(fresh.node(p).v),"complete protected subtree changed: "+p);
         Set<String> anchors=anchors(in,old,fresh,before);List<String> changed=new ArrayList<String>();
+        Set<String> classified=union(anchors,homeVariations.keySet());
         for(String p:union(old.nodes.keySet(),fresh.nodes.keySet())){
             Node x=old.nodes.get(p),y=fresh.nodes.get(p);if(x!=null&&y!=null&&x.v.equals(y.v))continue;
-            String found=null;for(String root:anchors)if(p.equals(root)||under(p,root)){need(found==null,"overlapping variable anchors");found=root;}
+            String found=null;for(String root:classified)if(p.equals(root)||under(p,root)){need(found==null,"overlapping variable anchors");found=root;}
             need(found!=null,"change outside proved disjoint branch: "+p);changed.add(p);
         }
         Map<String,Object> out=new TreeMap<String,Object>();out.put("schema","hepta.native-action-snapshot-comparison.candidate.v1");
@@ -118,6 +120,7 @@ final class NativeActionSnapshotCheck {
         out.put("before_snapshot_sha256",old.sha);out.put("fresh_snapshot_sha256",fresh.sha);out.put("semantic_sha256",hash(canonical(before.facts)));
         out.put("protected_subtrees",new ArrayList<String>(before.roots));out.put("checked_ancestors",new ArrayList<String>(before.ancestors));
         out.put("variable_branch_anchors",new ArrayList<String>(anchors));out.put("changed_paths",changed);out.put("changed_paths_truncated",false);
+        out.put("xiaomi_search_home_variations",homeVariations);out.put("fully_unoccluded_claimed",false);
         out.put("query_history_binding_sha256",in.historySha);out.put("query_history_proved_by_comparator",false);
         out.put("grants_dispatch",false);out.put("provider_frame_constructed",false);out.put("session_observed_called",false);
         out.put("live_node_chain_window_and_one_effect_recheck_required",true);out.put("business_verified",false);return freeze(out);
@@ -203,6 +206,78 @@ final class NativeActionSnapshotCheck {
             if(relevant)out.put(n.path,n.v);
         }return out;
     }
+    /** Only the installed-version-bound Xiaomi SEARCH opener can classify these
+     * two observed home decorations. Every other protected field stays exact.
+     * A banner overlapping the icon is not treated as disjoint: its complete
+     * visible footprint and leaf facts must be identical across page slots. */
+    private static Map<String,String> xiaomiSearchHomeVariations(Intent in,Snapshot old,Snapshot fresh){
+        Map<String,String> out=new TreeMap<String,String>();
+        if(!SEARCH.equals(in.purpose)||!XIAOMI.equals(in.pkg))return out;
+        String hp="com.xiaomi.shop.plugin.homepage:id/";
+        Node target=old.node(in.path),pager=old.node(parent(target.path)),newPager=fresh.node(pager.path);
+        if(!"androidx.viewpager.widget.ViewPager".equals(pager.cls)||!hp.concat("home_3_vp").equals(pager.view)
+                ||!pager.v.equals(newPager.v))return out;
+        List<Node> banners=findId(old,"com.xiaomi.shop:id/bannerViewPager"),newBanners=findId(fresh,"com.xiaomi.shop:id/bannerViewPager");
+        if(banners.size()==1&&newBanners.size()==1){
+            Node a=banners.get(0),z=newBanners.get(0);
+            if(a.path.equals(z.path)&&a.v.equals(z.v)&&"androidx.viewpager.widget.ViewPager".equals(a.cls)
+                    &&b(a.v,"scrollable")&&under(a.path,pager.path)
+                    &&under(parent(a.path),pager.path)&&under(parent(parent(a.path)),pager.path)){
+                Node holder=old.node(parent(a.path)),content=old.node(parent(holder.path));
+                if("android.widget.FrameLayout".equals(holder.cls)&&i(holder.v,"children")==1&&contains(holder.bounds,a.bounds)
+                        &&"androidx.recyclerview.widget.RecyclerView".equals(content.cls)&&"com.xiaomi.shop:id/recyclerView".equals(content.view)
+                        &&parent(content.path).equals(pager.path)&&bannerVisibleCoverageEqual(old,fresh,a))
+                    out.put(a.path,"same_complete_single_visible_leaf_coverage");
+            }
+        }
+        List<Node> switches=findId(old,hp+"switcher"),newSwitches=findId(fresh,hp+"switcher");
+        if(switches.size()==1&&newSwitches.size()==1){
+            Node a=switches.get(0),z=newSwitches.get(0);
+            if(a.path.equals(z.path)&&parent(a.path).equals(pager.path)&&"android.widget.ViewSwitcher".equals(a.cls)
+                    &&a.text.isEmpty()&&a.desc.isEmpty()&&a.click()&&sameExcept(a,z,"label","ref_signature_sha256")
+                    &&switcherDisjoint(old,fresh,a,target))out.put(a.path,"same_bounded_disjoint_search_hint");
+        }
+        return out;
+    }
+    private static boolean bannerVisibleCoverageEqual(Snapshot old,Snapshot fresh,Node anchor){
+        Node visibleOld=null,visibleFresh=null;int count=0;
+        for(String p:union(old.nodes.keySet(),fresh.nodes.keySet()))if(under(p,anchor.path)){
+            Node a=old.nodes.get(p),z=fresh.nodes.get(p);
+            if(a==null||z==null||!parent(p).equals(anchor.path)||!"android.widget.FrameLayout".equals(a.cls)
+                    ||i(a.v,"children")!=0||!a.view.isEmpty()||!a.text.isEmpty()||!a.desc.isEmpty()
+                    ||!b(a.v,"enabled")||!b(a.v,"clickable")||!b(a.v,"action_click")||b(a.v,"scrollable")
+                    ||!neutralFlags(a)||!neutralFlags(z)||!sameExcept(a,z,"bounds","visible","label","ref_signature_sha256"))return false;
+            if(a.visible()){
+                if(visibleOld!=null||!a.bounds.equals(anchor.bounds)||!"".equals(a.label)||!sha(nullable(a.v,"ref_signature_sha256")))return false;
+                visibleOld=a;
+            }else if(a.label!=null||a.v.get("ref_signature_sha256")!=null)return false;
+            if(z.visible()){
+                if(visibleFresh!=null||!z.bounds.equals(anchor.bounds)||!"".equals(z.label)||!sha(nullable(z.v,"ref_signature_sha256")))return false;
+                visibleFresh=z;
+            }else if(z.label!=null||z.v.get("ref_signature_sha256")!=null)return false;
+            count++;
+        }
+        return count==i(anchor.v,"children")&&visibleOld!=null&&visibleFresh!=null&&sameExcept(visibleOld,visibleFresh,"path");
+    }
+    private static boolean switcherDisjoint(Snapshot old,Snapshot fresh,Node anchor,Node target){
+        if(intersects(anchor.bounds,target.bounds))return false;
+        for(String p:union(old.nodes.keySet(),fresh.nodes.keySet()))if(p.equals(anchor.path)||under(p,anchor.path)){
+            Node a=old.nodes.get(p),z=fresh.nodes.get(p);
+            if(a==null||z==null||!neutralFlags(a)||!neutralFlags(z)
+                    ||!sameExcept(a,z,"text","description","label","ref_signature_sha256","bounds"))return false;
+            if(a.visible()&&(!contains(anchor.bounds,a.bounds)||intersects(a.bounds,target.bounds)))return false;
+            if(z.visible()&&(!contains(anchor.bounds,z.bounds)||intersects(z.bounds,target.bounds)))return false;
+        }
+        return true;
+    }
+    private static boolean neutralFlags(Node node){
+        for(String flag:Arrays.asList("editable","password","focused","checkable","checked","selected"))if(b(node.v,flag))return false;
+        return true;
+    }
+    private static boolean sameExcept(Node a,Node z,String... fields){
+        Map<String,Object> x=new TreeMap<String,Object>(a.v),y=new TreeMap<String,Object>(z.v);
+        for(String field:fields){x.remove(field);y.remove(field);}return x.equals(y);
+    }
     /** Roots are derived from the complete tree's real sibling relationships.
      * No numeric path (including 0/0/7) is whitelisted. All changed/new/deleted
      * descendants must be fully present in one of these fixed disjoint regions. */
@@ -273,3 +348,4 @@ final class NativeActionSnapshotCheck {
     private static void canonical(Object v,StringBuilder out){if(v==null)out.append('n');else if(v instanceof String){String s=(String)v;out.append('s').append(s.getBytes(StandardCharsets.UTF_8).length).append(':').append(s);}else if(v instanceof Boolean)out.append(Boolean.TRUE.equals(v)?'t':'f');else if(v instanceof Number)out.append('i').append(v).append(';');else if(v instanceof List){out.append('[');for(Object x:(List<?>)v)canonical(x,out);out.append(']');}else if(v instanceof Map){out.append('{');for(Map.Entry<?,?> e:((Map<?,?>)v).entrySet()){canonical(e.getKey(),out);canonical(e.getValue(),out);}out.append('}');}else throw new IllegalArgumentException("noncanonical value");}
     static String hash(String value){try{byte[] b=MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8));StringBuilder out=new StringBuilder();for(byte x:b)out.append(String.format(java.util.Locale.ROOT,"%02x",x&255));return out.toString();}catch(Exception e){throw new IllegalStateException(e);}}
 }
+

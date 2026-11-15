@@ -53,6 +53,16 @@ def prepare(source, output):
         'node_identity': pieces['node_identity'],
         'strings': pieces['strings'],
     }
+    # The legacy collector fixture has no asynchronous observer/request endpoint.
+    # Exclude only the two new observer-specific helpers; all original collector,
+    # root selection, census and action bodies remain exact. The snapshot gate
+    # executes the pure policy and pins/checks the live Android adapter separately.
+    observer_only = section(s,
+        '    /** Pure copy from the original complete read; partial/action graphs cannot enter this path. */',
+        '    /** Only metadata of all reported windows on the selected display. No other')
+    if snapshot_parts['snapshot'].count(observer_only) != 1:
+        raise RuntimeError('one observer-only helper block in collector fixture')
+    snapshot_parts['snapshot'] = snapshot_parts['snapshot'].replace(observer_only, '', 1)
     fixture = (Path(__file__).parent / 'BackgroundObservationFixture.template').read_text()
     for name, code in snapshot_parts.items():fixture=fixture.replace('{{'+name+'}}',code)
     if '{{' in fixture:raise RuntimeError('unfilled background snapshot fixture')
@@ -144,6 +154,7 @@ def prepare(source, output):
         'extracted':{n:{'bytes':len(v.encode()),'sha256':hashlib.sha256(v.encode()).hexdigest()} for n,v in {**pieces,**comparison_parts,**session_parts,**ui_parts,**{'background_'+n:v for n,v in snapshot_parts.items()}}.items()},
         'full_actual_classes':['TaskCompletionGate','NotesCompletionEvidence','LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','SessionTerminalEvidence'],
         'boundary':'Android IO and effect endpoints are fakes; production admission/dispatch and controller code is executed',
+        'observer_helper_excluded_from_legacy_collector':{'bytes':len(observer_only.encode()),'sha256':hashlib.sha256(observer_only.encode()).hexdigest(),'covered_by':'tests/native-observation-snapshot/run_host.py','legacy_collector_methods_modified':False},
         'web_fixture_boundary':'Explicit empty Web journal only; real Web OWNER/selection and every helper action/cleanup throw AssertionError; actual Web classes have their separate gate',
         'background_fixture_boundary':'Actual complete immutable Selection and package check extracted verbatim; all broker/display transport remains explicit IO fake and not Android proof',
         'native_validation_prefix_sha256':hashlib.sha256(web_entry_prefix.encode()).hexdigest(),

@@ -201,9 +201,10 @@ final class NativeActionBridgeHost {
         final Map<String,NodeData> data=new TreeMap<String,NodeData>();final List<Map<String,Object>> journal=new ArrayList<Map<String,Object>>();
         final Map<String,String> ids=new TreeMap<String,String>();int serial,observations,step;boolean installedCurrent=true;
         NativeActionSnapshotCheckHostTest.Fixture raw,fresh;NativeAppEvidence.Frame frame;ActionDecision action;ActionWork work;
-        Fixture(String p,String label)throws Exception{
+        Fixture(String p,String label)throws Exception{this(p,label,null);}
+        Fixture(String p,String label,NativeActionSnapshotCheckHostTest.Fixture recorded)throws Exception{
             fixture=this;purpose=p;task=id("bridge-task:"+label);run=id("bridge-model:"+label);
-            raw=NativeActionSnapshotCheck.SEARCH.equals(p)?NativeActionSnapshotCheckHostTest.xiaomi():NativeActionSnapshotCheck.OPEN.equals(p)?NativeActionSnapshotCheckHostTest.home():NativeActionSnapshotCheckHostTest.form(p);
+            raw=recorded!=null?recorded:NativeActionSnapshotCheck.SEARCH.equals(p)?NativeActionSnapshotCheckHostTest.xiaomi():NativeActionSnapshotCheck.OPEN.equals(p)?NativeActionSnapshotCheckHostTest.home():NativeActionSnapshotCheckHostTest.form(p);
             owner=NativeActionSnapshotCheck.SEARCH.equals(p)?"在小米商城查一下小米AX3000T的售价":NativeAppProviderHostTest.OWNER;
             BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,raw.pkg,Collections.singleton(raw.pkg));
             selection=new org.trillionnium.hepta.local.BackgroundSession.Selection(target);authorization=TaskAuthorization.parse(owner).forExecutionSelection(selection);gate=authorization.bind(task);
@@ -307,3 +308,4 @@ final class NativeActionBridgeHost {
     // TEST_CASES
     {{bridge_cases}}
 }
+
