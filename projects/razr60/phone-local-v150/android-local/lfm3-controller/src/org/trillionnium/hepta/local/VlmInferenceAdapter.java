@@ -281,10 +281,7 @@ public final class VlmInferenceAdapter implements LocalInference {
             env.put("ADSP_LIBRARY_PATH",nativeDir+";/vendor/lib/rfsa/adsp;/system/lib/rfsa/adsp;/dsp");
             env.put("GENIEX_PLUGIN_PATH",nativeDir);env.put("TMPDIR",round.directory.getPath());
             env.remove("LD_PRELOAD");env.remove("LD_AUDIT");env.remove("GENIEX_QAIRT_LIB");
-            File cache=context.getCacheDir();
-            need(cache!=null&&cache.getAbsoluteFile().equals(cache.getCanonicalFile()),"private kernel cache root unavailable");
-            MobiMindPrivateFiles.directory(cache,false);
-            File kernels=new File(cache,"hepta-vlm-opencl-kernels");MobiMindPrivateFiles.directory(kernels,false);
+            File kernels=kernelCacheDirectory(round.audit);
             env.put("GGML_OPENCL_KERNEL_CACHE_DIR",kernels.getPath());
             round.audit.put("argv",argv);round.audit.put("scope_environment_field_count",WorkerGenerationProof.ENVIRONMENT.length);
             round.audit.put("configured_ld_library_path",env.get("LD_LIBRARY_PATH"));
@@ -300,6 +297,31 @@ public final class VlmInferenceAdapter implements LocalInference {
             supervise(round,stdout,stderr);
         }catch(Exception failure){error=failure;}
         finally{finishRequest(round,error);}
+    }
+    private File kernelCacheDirectory(Map<String,Object> audit)throws Exception{
+        audit.put("kernel_cache_preparation_stage","context");
+        File supplied=context.getCacheDir();
+        audit.put("context_cache_directory",supplied==null?null:supplied.getPath());
+        audit.put("context_cache_absolute_directory",supplied==null?null:supplied.getAbsolutePath());
+        audit.put("canonical_app_data_directory",files.getParent());
+        need(supplied!=null&&supplied.isAbsolute()&&"cache".equals(supplied.getName())
+                &&supplied.getParentFile()!=null,"private kernel cache root unavailable");
+        // Normalize only Android's app-data parent. Both leaves still pass the
+        // original private-file guard, which rejects symlinks and foreign owners.
+        audit.put("kernel_cache_preparation_stage","parent");
+        File parent=supplied.getParentFile().getCanonicalFile();
+        audit.put("canonical_context_cache_parent",parent.getPath());
+        need(parent.equals(files.getParentFile()),"private kernel cache parent differs from app data");
+        File cache=new File(parent,"cache");
+        audit.put("kernel_cache_preparation_stage","cache");
+        audit.put("selected_cache_canonical_directory",cache.getCanonicalPath()); // Evidence only; never the selected path.
+        MobiMindPrivateFiles.directory(cache,false);
+        File kernels=new File(cache,"hepta-vlm-opencl-kernels");
+        audit.put("kernel_cache_preparation_stage","kernel_child");
+        MobiMindPrivateFiles.directory(kernels,false);
+        audit.put("configured_opencl_kernel_cache_directory",kernels.getPath());
+        audit.put("kernel_cache_preparation_stage","ready");
+        return kernels;
     }
     private void preflight(Round round)throws Exception{
         need(PACKAGE.equals(context.getPackageName())&&android.os.Process.isApplicationUid(android.os.Process.myUid()),

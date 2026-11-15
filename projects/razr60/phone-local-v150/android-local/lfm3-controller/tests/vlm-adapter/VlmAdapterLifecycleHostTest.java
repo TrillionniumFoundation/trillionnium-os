@@ -563,6 +563,110 @@ public final class VlmAdapterLifecycleHostTest {
             check(tools.adapter.modelOutputDispatchAllowed(),"explicit tools mode denied controller parsing");
         }
     }
+    /** Real host directories/symlinks; the Android UID projection remains an explicit fixture. */
+    static final class CacheEnvironment implements AutoCloseable {
+        final Path base,app;final Context context;final ManualExecutor executor=new ManualExecutor();
+        final LocalModelEngine engine;final VlmInferenceAdapter adapter;
+        final Map<String,Object> audit=new LinkedHashMap<>();
+        CacheEnvironment(String name)throws Exception{
+            base=root.resolve("cache-"+name);app=base.resolve("data/data/org.trillionnium.hepta.local");
+            Files.createDirectories(app.resolve("files"));Files.createDirectories(app.resolve("cache"));
+            context=new Context(app.resolve("files").toFile());
+            engine=new LocalModelEngine(context,new LocalRuntimeConfig(ModelProfile.GUI_OWL_4B,"npu",8192,4,false),executor);
+            adapter=new VlmInferenceAdapter(context,engine);
+        }
+        File resolve()throws Exception{return (File)call(adapter,"kernelCacheDirectory",audit);}
+        void refused(String reason,String stage)throws Exception{
+            try{resolve();throw new AssertionError("untrusted cache path admitted");}
+            catch(java.io.IOException expected){check(reason.equals(expected.getMessage()),"cache refusal came from a different boundary: "+expected);}
+            check(stage.equals(audit.get("kernel_cache_preparation_stage"))
+                    &&!audit.containsKey("configured_opencl_kernel_cache_directory"),"failed cache path was marked configured");
+        }
+        public void close(){android.system.Os.foreignOwnerPath=null;executor.shutdownNow();engine.close();}
+    }
+    static int mode(Path path)throws Exception{return ((Number)Files.getAttribute(path,"unix:mode")).intValue()&0777;}
+    static void canonicalCache()throws Exception{
+        try(CacheEnvironment e=new CacheEnvironment("canonical")){
+            Files.setAttribute(e.app.resolve("cache"),"unix:mode",02771);
+            File kernels=e.resolve();
+            check(kernels.equals(e.app.resolve("cache/hepta-vlm-opencl-kernels").toFile()),"canonical cache target differs");
+            check(mode(e.app.resolve("cache"))==0700&&mode(kernels.toPath())==0700,"private cache modes were not retained");
+            Path existing=kernels.toPath().resolve("existing-kernel");Files.write(existing,b("keep existing kernel cache"));
+            check(e.resolve().equals(kernels)&&Arrays.equals(Files.readAllBytes(existing),b("keep existing kernel cache")),"cache reuse deleted or replaced existing contents");
+            check("ready".equals(e.audit.get("kernel_cache_preparation_stage"))
+                    &&kernels.getPath().equals(e.audit.get("configured_opencl_kernel_cache_directory")),"successful cache path not audited");
+        }
+    }
+    static void frameworkParentAliasCache()throws Exception{
+        try(CacheEnvironment e=new CacheEnvironment("framework-parent-alias")){
+            Path user=e.base.resolve("data/user");Files.createDirectories(user);
+            Files.createSymbolicLink(user.resolve("0"),e.base.resolve("data/data"));
+            e.context.cacheDirectory=user.resolve("0/org.trillionnium.hepta.local/cache").toFile();
+            File supplied=e.context.getCacheDir();
+            check(!supplied.getAbsoluteFile().equals(supplied.getCanonicalFile()),"fixture does not reproduce the old whole-path refusal");
+            File kernels=e.resolve();
+            check(kernels.equals(e.app.resolve("cache/hepta-vlm-opencl-kernels").toFile()),"framework parent alias selected a different app cache");
+            check(supplied.getPath().equals(e.audit.get("context_cache_directory"))
+                    &&supplied.getAbsolutePath().equals(e.audit.get("context_cache_absolute_directory"))
+                    &&e.app.toString().equals(e.audit.get("canonical_context_cache_parent"))
+                    &&e.app.toString().equals(e.audit.get("canonical_app_data_directory"))
+                    &&e.app.resolve("cache").toString().equals(e.audit.get("selected_cache_canonical_directory")),"original and canonical cache paths were conflated in audit");
+            check(Files.isSymbolicLink(user.resolve("0"))&&Files.isDirectory(kernels.toPath()),"framework alias was rewritten or canonical child was not created");
+        }
+    }
+    static void cacheLeafAlias()throws Exception{
+        try(CacheEnvironment e=new CacheEnvironment("leaf-alias")){
+            Path target=e.base.resolve("untrusted-cache-target");Files.createDirectories(target);Files.setAttribute(target,"unix:mode",0755);
+            Files.delete(e.app.resolve("cache"));Files.createSymbolicLink(e.app.resolve("cache"),target);
+            e.refused("directory must be canonical","cache");
+            check(Files.isSymbolicLink(e.app.resolve("cache"))&&mode(target)==0755
+                    &&!Files.exists(target.resolve("hepta-vlm-opencl-kernels")),"cache leaf alias was followed or mutated");
+            check(target.toString().equals(e.audit.get("selected_cache_canonical_directory")),"rejected cache alias lost diagnostic target");
+        }
+    }
+    static void kernelChildAlias()throws Exception{
+        try(CacheEnvironment e=new CacheEnvironment("child-alias")){
+            Path target=e.base.resolve("untrusted-kernel-target");Files.createDirectories(target);Files.setAttribute(target,"unix:mode",0755);
+            Path child=e.app.resolve("cache/hepta-vlm-opencl-kernels");Files.createSymbolicLink(child,target);
+            e.refused("directory must be canonical","kernel_child");
+            check(Files.isSymbolicLink(child)&&mode(target)==0755,"kernel child alias was followed or chmodded");
+        }
+    }
+    static void foreignCacheParent()throws Exception{
+        try(CacheEnvironment e=new CacheEnvironment("foreign-parent")){
+            Path foreign=e.base.resolve("another-app");Files.createDirectories(foreign);
+            e.context.cacheDirectory=foreign.resolve("cache").toFile();
+            e.refused("private kernel cache parent differs from app data","parent");
+            check(!Files.exists(foreign.resolve("cache")),"foreign app parent caused cache creation");
+            check(foreign.toString().equals(e.audit.get("canonical_context_cache_parent")),"refused foreign parent missing from audit");
+        }
+    }
+    static void invalidCacheRoots()throws Exception{
+        try(CacheEnvironment e=new CacheEnvironment("invalid-context")){
+            e.context.cacheDirectory=null;e.refused("private kernel cache root unavailable","context");
+            check(e.audit.containsKey("context_cache_directory")&&e.audit.get("context_cache_directory")==null,"null framework cache was not recorded");
+            e.audit.clear();e.context.cacheDirectory=new File("relative/cache");e.refused("private kernel cache root unavailable","context");
+            e.audit.clear();e.context.cacheDirectory=e.app.resolve("code_cache").toFile();e.refused("private kernel cache root unavailable","context");
+            check(!Files.exists(e.app.resolve("code_cache")),"unrequested alternate cache leaf was created");
+        }
+    }
+    static void nonDirectoryCache(boolean child)throws Exception{
+        try(CacheEnvironment e=new CacheEnvironment(child?"child-file":"root-file")){
+            Path target=e.app.resolve(child?"cache/hepta-vlm-opencl-kernels":"cache");
+            if(!child)Files.delete(target);Files.write(target,b("ordinary file must remain"));
+            e.refused("directory must be app-owned",child?"kernel_child":"cache");
+            check(Arrays.equals(Files.readAllBytes(target),b("ordinary file must remain")),"non-directory cache path was overwritten");
+        }
+    }
+    static void foreignOwnedCache(boolean child)throws Exception{
+        try(CacheEnvironment e=new CacheEnvironment(child?"child-owner":"root-owner")){
+            Path target=e.app.resolve(child?"cache/hepta-vlm-opencl-kernels":"cache");
+            Files.createDirectories(target);Files.setAttribute(target,"unix:mode",0755);
+            android.system.Os.foreignOwnerPath=target.toString();
+            e.refused("directory must be app-owned",child?"kernel_child":"cache");
+            check(mode(target)==0755,"foreign-owned fixture cache was chmodded before refusal");
+        }
+    }
     public static void main(String[] args)throws Exception{
         root=Paths.get(args[0]);Files.createDirectories(root);template=Files.readAllBytes(Paths.get(args[1]));PNG=png(0xffffffff);
         boolean passed=false;
@@ -592,6 +696,16 @@ public final class VlmAdapterLifecycleHostTest {
             test("all_transparent_original_frame_rejected",()->unavailablePixels("transparent-black",0x00000000));
             test("transparent_colour_original_frame_rejected",()->unavailablePixels("transparent-colour",0x00abcdef));
             test("explicit_observe_tools_modes_and_24s_cleanup_grace",VlmAdapterLifecycleHostTest::modes);
+            test("canonical_context_cache_retains_private_modes_and_contents",VlmAdapterLifecycleHostTest::canonicalCache);
+            test("framework_parent_alias_accepted_and_original_paths_audited",VlmAdapterLifecycleHostTest::frameworkParentAliasCache);
+            test("cache_leaf_symlink_refused_without_target_mutation",VlmAdapterLifecycleHostTest::cacheLeafAlias);
+            test("kernel_child_symlink_refused_without_target_mutation",VlmAdapterLifecycleHostTest::kernelChildAlias);
+            test("different_app_cache_parent_refused",VlmAdapterLifecycleHostTest::foreignCacheParent);
+            test("null_relative_and_alternate_context_cache_refused",VlmAdapterLifecycleHostTest::invalidCacheRoots);
+            test("cache_root_regular_file_refused",()->nonDirectoryCache(false));
+            test("kernel_child_regular_file_refused",()->nonDirectoryCache(true));
+            test("foreign_owned_cache_root_refused",()->foreignOwnedCache(false));
+            test("foreign_owned_kernel_child_refused",()->foreignOwnedCache(true));
             check(android.graphics.BitmapFactory.decoded==android.graphics.BitmapFactory.recycled,"decoded inspection bitmap leaked");
             passed=true;System.out.println("PASS "+cases.size()+" lifecycle cases / "+checks+" assertions; native generation helper and launch are fixtures");
         }finally{

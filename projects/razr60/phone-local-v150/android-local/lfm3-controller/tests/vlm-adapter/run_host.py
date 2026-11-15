@@ -41,8 +41,10 @@ def prepare(source, output):
     for name in ["Os.java", "OsConstants.java", "StructStat.java", "ErrnoException.java"]:
         code = (android / name).read_text()
         if name == "Os.java":
+            code = code.replace('public static String failFsyncPath;',
+                                'public static String failFsyncPath;public static String foreignOwnerPath;')
             code = code.replace('r.st_uid=((Number)a.get("uid")).intValue();',
-                                'r.st_uid=android.os.Process.myUid();')
+                                'r.st_uid=s.equals(foreignOwnerPath)?10482:android.os.Process.myUid();')
         write("android/system/" + name, code)
     write("android/os/Process.java", """package android.os;
 public final class Process {
@@ -98,10 +100,10 @@ public final class PackageManager {public static final int GET_PERMISSIONS=4096;
 public final class Context {
  public static final String ACTIVITY_SERVICE="activity";
  private final java.io.File files;public final android.content.pm.PackageManager manager=new android.content.pm.PackageManager();
- public String packageName="org.trillionnium.hepta.local";
- public Context(java.io.File files){this.files=files;}
+ public String packageName="org.trillionnium.hepta.local";public java.io.File cacheDirectory;
+ public Context(java.io.File files){this.files=files;cacheDirectory=new java.io.File(files.getParentFile(),"cache");}
  public Context getApplicationContext(){return this;}public java.io.File getFilesDir(){return files;}
- public java.io.File getCacheDir(){return new java.io.File(files,"cache");}
+ public java.io.File getCacheDir(){return cacheDirectory;}
  public String getPackageName(){return packageName;}public android.content.pm.PackageManager getPackageManager(){return manager;}
  public android.content.pm.ApplicationInfo getApplicationInfo(){return new android.content.pm.ApplicationInfo();}
  public Object getSystemService(String name){return new android.app.ActivityManager();}

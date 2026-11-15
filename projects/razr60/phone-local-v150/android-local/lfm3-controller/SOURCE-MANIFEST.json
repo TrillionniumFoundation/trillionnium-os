@@ -6646,9 +6646,9 @@
       "sha256": "aab2a12e324aae8191dff73c3b43f8643f7edba8a5f418d67219901bcdea6d1c"
     },
     {
-      "bytes": 54911,
+      "bytes": 56355,
       "path": "src/org/trillionnium/hepta/local/VlmInferenceAdapter.java",
-      "sha256": "a6c496bbefca0bc84e6ebf044da9e5143b72d70aa3a14d33da6608c2d300239c"
+      "sha256": "0f1c592f902bd512d66d9e6f4de3d301ba2e5b978bbe7547c6434e8a4e5b9fbc"
     },
     {
       "bytes": 1091,
@@ -9166,14 +9166,14 @@
       "sha256": "5b625af8f03834dae1b2768358d008495c13d612188083a3acb7c001f89bb718"
     },
     {
-      "bytes": 48485,
+      "bytes": 57807,
       "path": "tests/vlm-adapter/VlmAdapterLifecycleHostTest.java",
-      "sha256": "3a094cf47e9586eb6d2d1c979a7297b354d8e21f20f1ae0b97cc6355cd5994ce"
+      "sha256": "7ec26eedfe73d5c5ccb1a5e186cdd63d8157414ae2a34d0469f8e61f062ed8c1"
     },
     {
-      "bytes": 16206,
+      "bytes": 16500,
       "path": "tests/vlm-adapter/run_host.py",
-      "sha256": "8e66b6b364434825fff998cce3b06b148775504f808d3ce7c6c83c763e7628e3"
+      "sha256": "2ab7d328f451652e4b1340e7568cc36101a9a54edf76cb99108a8daa6ed0fac6"
     },
     {
       "bytes": 22690,
@@ -11495,12 +11495,12 @@
       "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
       "git_blob": "2080ab027a3898ab097c2380e401b56a4321817c",
       "path": ".github/workflows/hepta-local-android.yml",
-      "prior_commit": "17982bec52e2bd65143ac67f22b3ef9844ccfbc4",
+      "prior_commit": "e480f18d86fd93fd24bfc38e26ab00cc999c4868",
       "prior_git_blob": "2080ab027a3898ab097c2380e401b56a4321817c",
       "sha256": "30f086fe1b9c6f69f808b8b874fe5aa1e7998eeeb256d51423fdafa3ee42a977"
     },
     "native_host_gate_contract_sha256": "1ffbb2582004dfbfb522e3347d468b23d75e9de39d8bde00371e0e0cf96dc204",
-    "normal_git_parent": "17982bec52e2bd65143ac67f22b3ef9844ccfbc4",
+    "normal_git_parent": "e480f18d86fd93fd24bfc38e26ab00cc999c4868",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -12557,6 +12557,34 @@
     "visual_profile": "gui-owl-1.5-4b-instruct-i1-q4_0",
     "worker_sha256": "33aea41ab348adad9b08ed6ae6f16ffd1fd06a12435d33847549dad276c8bd3e"
   },
+  "r21_kernel_cache_parent_amendment": {
+    "additional_cache_assertions": 39,
+    "additional_cache_cases": 10,
+    "android_compiled_for_new_candidate": false,
+    "cache_leaf_and_kernel_child_symlink_rejected": true,
+    "canonical_checks_required": 111,
+    "changed_nonmanifest_paths": [
+      "src/org/trillionnium/hepta/local/VlmInferenceAdapter.java",
+      "tests/vlm-adapter/VlmAdapterLifecycleHostTest.java",
+      "tests/vlm-adapter/run_host.py"
+    ],
+    "current_exact_published_head_ci_pending": true,
+    "fix": "Canonicalize only the framework cache parent and bind it to the held canonical files parent; retain the fixed cache and kernel leaves under unchanged private-directory owner/type/no-symlink checks. Record actual framework/canonical paths and failure stage.",
+    "java_framework_alias_direction_on_phone_independently_observed": false,
+    "native_gates_required": 19,
+    "native_worker_rebuilt": false,
+    "ordinary_android_parent_alias_host_case": true,
+    "original_25_vlm_lifecycle_cases_and_187_assertions_retained": true,
+    "original_freeze_retained": true,
+    "parent_commit": "e480f18d86fd93fd24bfc38e26ab00cc999c4868",
+    "phone_tested_for_new_candidate": false,
+    "previous_integration_parent": "17982bec52e2bd65143ac67f22b3ef9844ccfbc4",
+    "previous_manifest_sha256": "dff0dad1ffcebd83d9347aab20165b5770195216c3bf2ea3c414d96b1f9de754",
+    "previous_workflow_prior_commit": "17982bec52e2bd65143ac67f22b3ef9844ccfbc4",
+    "prior_host_phone_and_ci_receipts_are_not_new_candidate_qualification": true,
+    "schema": "hepta.r21-kernel-cache-parent-amendment.v1",
+    "unchanged_native_worker_sha256": "33aea41ab348adad9b08ed6ae6f16ffd1fd06a12435d33847549dad276c8bd3e"
+  },
   "r21_outcome_cold_start_amendment": {
     "changed_production_files": [
       "src/org/trillionnium/hepta/local/LocalTaskController.java",
@@ -12655,7 +12683,7 @@
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "xiaomi_home_loading_amendment": {
-    "accessibility_label": "Hepta \u624b\u673a\u52a9\u624b",
+    "accessibility_label": "Hepta 手机助手",
     "automatic_action_replay": false,
     "cause": "Actual complete first Xiaomi frame contained only navigation and message icon; old parser stopped before content loaded and old same-package background window replacement permanently refused scope.",
     "maximum_model_issued_loading_waits": 2,
