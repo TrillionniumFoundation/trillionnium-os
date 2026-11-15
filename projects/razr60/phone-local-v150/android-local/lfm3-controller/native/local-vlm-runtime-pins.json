@@ -3,15 +3,15 @@
   "worker_build_qualified": true,
   "ordinary_app_runtime_qualified": false,
   "phone_contacted": false,
-  "source_manifest_sha256": "4a622b79e313acd1aefcefe457b5928e8717713f139ab6724d6e189d68052dce",
-  "reference_build_receipt_sha256": "ad49234f27dc78bd8e7fcb8b68063cc24b62f2d7ca253a9a8cf979332d659eb9",
+  "source_manifest_sha256": "032e1a99f3e46f4d096e1d7906399e8afe1e6490a2135d15766f157e2e7a7fbd",
+  "reference_build_receipt_sha256": "d3f77b957963071d0fa888a5c4c40e351a3e1b1fc65332de341b83cbc303d816",
   "llama_source_commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
   "geniex_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
   "worker": {
     "apk_name": "libhepta_local_vlm_runner.so",
     "source_name": "libhepta_local_vlm_runner.so",
     "bytes": 147544,
-    "sha256": "27aa467faa1be26dc97e3290178eb208b3705bfb13df8e034d9b04bd5eace781",
+    "sha256": "079c30132cb55fa89480c4436fa2a11908d87025bba878907b04b83373eef63c",
     "needed": [
       "libllama-common.so",
       "libmtmd.so",

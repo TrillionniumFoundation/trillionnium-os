@@ -55,8 +55,10 @@ class VlmRuntime(unittest.TestCase):
     def test_added_cpp_runtime(self):self.receipt_mutation('new_cpp_runtime_added',True)
     def test_vendor_closure_cannot_be_overclaimed(self):
         self.receipt_mutation('strong_undefined_closure_complete',True)
-        proof=self.root/'native/vlm-worker/provenance/LINKED-BACKENDS-HOST-R5.json'
+        proof=self.root/'native/vlm-worker/provenance/LINKED-BACKENDS-HOST-R6.json'
         self.mutate(proof,proof.read_bytes()+b'\n')
+        order_proof=self.root/'native/vlm-worker/provenance/VISION-INIT-ORDER-HOST-R6.json'
+        self.mutate(order_proof,order_proof.read_bytes()+b'\n')
         original=json.loads((self.runtime/'BUILD-RECEIPT.json').read_text())
         for key,value in [('registration','dynamic_plugin'),('generic_plugin_entry_absent',False),
                           ('generic_plugin_entry_absent',1),('phone_registration_executed',True),
@@ -74,6 +76,13 @@ class VlmRuntime(unittest.TestCase):
         for value in (None,'','g'*64):
             with self.subTest(linked_backend_host_receipt_sha256=value):
                 self.receipt_mutation('linked_backend_host_receipt_sha256',value)
+        for key,expected in (('vision_init_order_host_cases',5),('vision_init_order_host_checks',23)):
+            for value in (None,True,0,expected+1,float(expected)):
+                with self.subTest(vision_init_order_field=key,value=value):
+                    self.receipt_mutation(key,value)
+        for value in (None,'','g'*64):
+            with self.subTest(vision_init_order_host_receipt_sha256=value):
+                self.receipt_mutation('vision_init_order_host_receipt_sha256',value)
     def test_rpath_and_foreign_runpath(self):
         for value in [self.elf.replace('(RUNPATH)','(RPATH)'),self.elf.replace('[$ORIGIN]','[/data/local/tmp]'),
                       self.elf.replace('[libllama-common.so]','[libc++_shared.so]')]:

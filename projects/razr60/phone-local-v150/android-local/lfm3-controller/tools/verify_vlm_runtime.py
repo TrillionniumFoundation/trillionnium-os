@@ -47,10 +47,10 @@ def load_pins(root):
         _need(len(data)==row['bytes'] and _sha(data)==row['sha256'],'VLM source differs: '+str(rel))
     _need(_read_regular(source/'native/owned-generation.inc',131072)==
           _read_regular(root/'native/owned-generation.inc',131072),'VLM must preserve the ordinary generation cleanup core')
-    reference=_read_regular(source/'provenance/ANDROID-BUILD-R5.json',131072)
+    reference=_read_regular(source/'provenance/ANDROID-BUILD-R6.json',131072)
     _need(_sha(reference)==pins['reference_build_receipt_sha256'],'VLM reference build receipt differs')
     reference_data=json.loads(reference)
-    host_raw=_read_regular(source/'provenance/LINKED-BACKENDS-HOST-R5.json',131072)
+    host_raw=_read_regular(source/'provenance/LINKED-BACKENDS-HOST-R6.json',131072)
     _need(_sha(host_raw)==reference_data.get('linked_backend_host_receipt_sha256'),
           'VLM reference linked backend regression receipt differs')
     host=json.loads(host_raw)
@@ -69,6 +69,27 @@ def load_pins(root):
     _need(all(_same_json({k:host['sources'][name].get(k) for k in ('bytes','sha256')},
                         {k:recipe_sources[name][k] for k in ('bytes','sha256')}) for name in host_sources),
           'VLM linked backend regression source identity differs')
+    order_raw=_read_regular(source/'provenance/VISION-INIT-ORDER-HOST-R6.json',131072)
+    _need(_sha(order_raw)==reference_data.get('vision_init_order_host_receipt_sha256'),
+          'VLM reference vision initialization regression receipt differs')
+    order=json.loads(order_raw)
+    _need(order.get('schema')=='hepta.vlm.vision-init-order-host-run.v1' and order.get('passed') is True
+          and order.get('sources_unchanged') is True and order.get('phone_contacted') is False
+          and order.get('model_inference_performed') is False and order.get('opencl_backend_executed') is False
+          and _same_json(order.get('result'),{'schema':'hepta.vlm.vision-init-order-host.v1',
+              'passed':True,'cases':5,'checks':23,'production_statements_executed':True,
+              'early_metric_control_rejected':True,'phone_contacted':False,'model_inference_performed':False})
+          and _same_json(order.get('extraction',{}).get('actual_source_order'),['init','guard','metric']),
+          'VLM reference vision initialization regression scope differs')
+    order_sources={'native/vlm-worker.cpp','tests/vision-init-order-fixture.cpp','tools/test_vision_init_order.py'}
+    order_sources.update(name for name in recipe_sources if name.startswith('vendor/llama/')
+                         and name.count('/')==2 and name.endswith('.h'))
+    _need(type(order.get('sources')) is dict and set(order['sources'])==order_sources,
+          'VLM vision initialization regression input membership differs')
+    _need(all(type(order['sources'][name]) is dict and
+              _same_json({k:order['sources'][name].get(k) for k in ('bytes','sha256')},
+                         {k:recipe_sources[name][k] for k in ('bytes','sha256')}) for name in order_sources),
+          'VLM vision initialization regression source identity differs')
     sdk=json.loads(_read_regular(root/'provenance/ui-venus-app-r1/sdk-runtime-pins.json',65536))
     expected={row['name']:row for row in sdk['files']}
     _need(all(expected.get(row['name'])==row for row in pins['runtime']),
@@ -99,12 +120,15 @@ def verify_vlm_runtime(root,runtime_dir):
             'libraries':{'libggml-cpu.so':'ggml_backend_cpu_reg',
                 'libggml-hexagon.so':'ggml_backend_hexagon_reg','libggml-opencl.so':'ggml_backend_opencl_reg'},
             'generic_plugin_entry_absent':True,'phone_registration_executed':False},
-        'linked_backend_host_checks':23}
+        'linked_backend_host_checks':23,'vision_init_order_host_cases':5,'vision_init_order_host_checks':23}
     _need(all(_same_json(receipt.get(k),v) for k,v in expected.items()),
           'VLM build/source/ABI scope differs')
     host_proof=receipt.get('linked_backend_host_receipt_sha256')
     _need(type(host_proof) is str and re.fullmatch('[0-9a-f]{64}',host_proof),
           'VLM linked backend host regression receipt pin missing')
+    order_proof=receipt.get('vision_init_order_host_receipt_sha256')
+    _need(type(order_proof) is str and re.fullmatch('[0-9a-f]{64}',order_proof),
+          'VLM vision initialization host regression receipt pin missing')
     actual=receipt['worker']
     _need(Path(actual['path']).name==member['source_name'] and actual['bytes']==member['bytes']
           and actual['sha256']==member['sha256'],'VLM built artifact identity differs')

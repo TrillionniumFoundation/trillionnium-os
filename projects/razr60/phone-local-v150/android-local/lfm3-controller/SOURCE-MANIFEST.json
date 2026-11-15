@@ -5,9 +5,9 @@
     "component_tree": "08f3d1c32944f834530b659cb6c3b7ec12c00039",
     "source_manifest_sha256": "bf99aebd7009d29cad75f3b796af4005084f30219aff61929cb905c4b214d991"
   },
-  "candidate_status": "r21_guiowl_current_frame_candidate_pending_exact_head_full_ci_android_and_phone_validation",
+  "candidate_status": "r21_opencl_allocation_order_fix_pending_exact_head_full_gates_apk_and_phone_validation",
   "candidate_version_assigned": true,
-  "complete_source_files": 1964,
+  "complete_source_files": 1969,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -57,11 +57,13 @@
     "required_linked_backend_checks": 23,
     "required_mac_gates": 9,
     "required_native_gates": 19,
+    "required_vision_init_order_cases": 5,
+    "required_vision_init_order_checks": 23,
     "required_vlm_ci_transfer_checks": 14,
     "required_vlm_guard_checks": 43,
     "required_vlm_packaging_checks": 11,
     "root_manifest_refreshed_after_local_host_runs": false,
-    "strict_host_gate": "This manifest freezes the complete source before the new canonical111, native19, linked-backend23 and retained 11/14/43 checks. Exact published-head CI, retained Mac9, full APK compilation and phone inference/business outcomes require their own new receipts. The recorded r5 Android native worker compile does not qualify those pending stages.",
+    "strict_host_gate": "Complete R6 source is frozen before canonical111, native19, linked-backend23, vision lifecycle5cases/23checks and retained 11/14/43 checks. Fresh exact-head CI, retained Mac9, full APK compilation and phone inference/business outcomes need independent new receipts. This actual native worker build does not qualify those pending stages.",
     "unified_host_pass": false
   },
   "files": [
@@ -5003,7 +5005,7 @@
     {
       "bytes": 5327,
       "path": "native/local-vlm-runtime-pins.json",
-      "sha256": "f3430c3327221e344c584eab42d6d46f4cb05e865032cbf38838de17da92608c"
+      "sha256": "13dfa50b8a7de4bb67888039e6aed4a545d43e04486befce6389f08e868d8b96"
     },
     {
       "bytes": 1495,
@@ -5246,9 +5248,9 @@
       "sha256": "75af717eb17ca62af80f097ea5f6cb6743532d2e8323461d42ddc8794359b7c0"
     },
     {
-      "bytes": 8385,
+      "bytes": 8721,
       "path": "native/vlm-worker/SOURCE.json",
-      "sha256": "4a622b79e313acd1aefcefe457b5928e8717713f139ab6724d6e189d68052dce"
+      "sha256": "032e1a99f3e46f4d096e1d7906399e8afe1e6490a2135d15766f157e2e7a7fbd"
     },
     {
       "bytes": 669,
@@ -5298,7 +5300,7 @@
     {
       "bytes": 29791,
       "path": "native/vlm-worker/native/vlm-worker.cpp",
-      "sha256": "1935244e1acb421f9f2b719921713b5d6b2df81eb86cbea717b24a0be5c43ac1"
+      "sha256": "4c9215d9a37281c35d7fe855ac425e103b9829e6d47a754c35e37d2a199b3a11"
     },
     {
       "bytes": 8556,
@@ -5309,6 +5311,11 @@
       "bytes": 9329,
       "path": "native/vlm-worker/provenance/ANDROID-BUILD-R5.json",
       "sha256": "ad49234f27dc78bd8e7fcb8b68063cc24b62f2d7ca253a9a8cf979332d659eb9"
+    },
+    {
+      "bytes": 9503,
+      "path": "native/vlm-worker/provenance/ANDROID-BUILD-R6.json",
+      "sha256": "d3f77b957963071d0fa888a5c4c40e351a3e1b1fc65332de341b83cbc303d816"
     },
     {
       "bytes": 122,
@@ -5326,9 +5333,19 @@
       "sha256": "06df8558523a589087220c6c0818accf9bbf9a56842f666036e6ce9715959ef1"
     },
     {
+      "bytes": 6032,
+      "path": "native/vlm-worker/provenance/LINKED-BACKENDS-HOST-R6.json",
+      "sha256": "0e39891ae91d02a8c986ef72a3eb8b29654ba51ed1d167d159ffab738025fc25"
+    },
+    {
       "bytes": 663,
       "path": "native/vlm-worker/provenance/REPRODUCIBLE-R4.json",
       "sha256": "2e84e431be18e6a0471481be690653f8e4bf3ab7220ad430d3df43bb5cc923f3"
+    },
+    {
+      "bytes": 7381,
+      "path": "native/vlm-worker/provenance/VISION-INIT-ORDER-HOST-R6.json",
+      "sha256": "51d433d91a5cd0aee4fe98298d21d32d6db5ef8961c2c36f5266b64570949582"
     },
     {
       "bytes": 1430,
@@ -5361,9 +5378,14 @@
       "sha256": "241dda670ef4ac5ffa1227a7af362440674dd8b4cd2b8473378b56c65a336eaa"
     },
     {
-      "bytes": 10589,
+      "bytes": 5643,
+      "path": "native/vlm-worker/tests/vision-init-order-fixture.cpp",
+      "sha256": "9a9083296cb208c76767a61df47b73245fc3bcc0f6fe87c7e9bf0c32367de6d8"
+    },
+    {
+      "bytes": 11227,
       "path": "native/vlm-worker/tools/build_android.py",
-      "sha256": "a1d488a2b6bea012edc3403aa2bcbee6a0c9cbff58fd9610a7d888b5f611feda"
+      "sha256": "20dda2af7f39a036e8240079b8fd352c2c1036c3850ebc44990e5da99f56811a"
     },
     {
       "bytes": 1143,
@@ -5374,6 +5396,11 @@
       "bytes": 4024,
       "path": "native/vlm-worker/tools/test_linked_backends.py",
       "sha256": "fccfc533438ce86175e67ca06839bf2d01fe760b723945d109a26397836727af"
+    },
+    {
+      "bytes": 5639,
+      "path": "native/vlm-worker/tools/test_vision_init_order.py",
+      "sha256": "3aa47f875984b023ba4ca6d6bd418411909cf40cfbb8e1741f88895631e69802"
     },
     {
       "bytes": 1078,
@@ -6688,7 +6715,7 @@
     {
       "bytes": 1091,
       "path": "src/org/trillionnium/hepta/local/VlmPins.java",
-      "sha256": "483244c661bf7b26a01ab01451fbe6a3b57ef8ab746467219fc28805ba857168"
+      "sha256": "a1261de07acdd70eb5edd1d0ce7b95dd2211d001b1c6506d5561eb5bd8cc200e"
     },
     {
       "bytes": 34867,
@@ -9151,9 +9178,9 @@
       "sha256": "b108df1b4264d06a3c54cd3ba7fb1588293ca99a11299e7ff764932693c18600"
     },
     {
-      "bytes": 5514,
+      "bytes": 6169,
       "path": "tests/test_vlm_runtime.py",
-      "sha256": "2300f73e5931034a98ae5935b4ca41d5aee5a9fad77f9b0e8a8cc78f1c310af8"
+      "sha256": "feaec02d57941dcdd7571e03939b60eb48484c298ee3fe2c5eb8e9af2a069cfa"
     },
     {
       "bytes": 8573,
@@ -9866,14 +9893,14 @@
       "sha256": "5622ec1b12e55136f0a66179dca64029db0e979b8fc2dec6bf6a318cac4a251a"
     },
     {
-      "bytes": 8115,
+      "bytes": 10249,
       "path": "tools/verify_vlm_runtime.py",
-      "sha256": "48dca6d8363f56a8a7909fcf2fc7adff437319cb7e2d07bcc58138059c7f1c95"
+      "sha256": "6e9eda6ba7f2b31570aa372fa8531feace1c468ef523130fa091263330735c34"
     },
     {
       "bytes": 6504,
       "path": "tools/vlm_ci_transfer.py",
-      "sha256": "6232df820fc2684bb326ad00e09ad837267d45448e5327a369bd9c6b702c7762"
+      "sha256": "9d9d56f353c1bf878c4bcc14d0ad43351e5b9251e81eaa3f69314ffe360f7f50"
     },
     {
       "bytes": 7410,
@@ -11530,12 +11557,12 @@
       "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
       "git_blob": "2080ab027a3898ab097c2380e401b56a4321817c",
       "path": ".github/workflows/hepta-local-android.yml",
-      "prior_commit": "45e78459d9afef419e6b14c8e29ed20fb0ba7d94",
+      "prior_commit": "6de80efbaf5357e8b549d616e74631c37257b577",
       "prior_git_blob": "2080ab027a3898ab097c2380e401b56a4321817c",
       "sha256": "30f086fe1b9c6f69f808b8b874fe5aa1e7998eeeb256d51423fdafa3ee42a977"
     },
     "native_host_gate_contract_sha256": "1ffbb2582004dfbfb522e3347d468b23d75e9de39d8bde00371e0e0cf96dc204",
-    "normal_git_parent": "45e78459d9afef419e6b14c8e29ed20fb0ba7d94",
+    "normal_git_parent": "6de80efbaf5357e8b549d616e74631c37257b577",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -11736,7 +11763,7 @@
       }
     ]
   },
-  "production_build_inputs_count": 301,
+  "production_build_inputs_count": 306,
   "qualification_policy": "Source reviews, host gates, real Android build and actual native phone outcomes retain separate evidence.",
   "r14_runtime_reliability_amendment": {
     "all_original_required_gate_cases_retained": true,
@@ -12724,6 +12751,96 @@
     "schema": "hepta.r21-linked-backend-registration-amendment.v1",
     "vendor_opencl_phone_verification_pending": true
   },
+  "r21_opencl_allocation_lifecycle_amendment": {
+    "actual_native_worker": {
+      "bytes": 147544,
+      "sha256": "079c30132cb55fa89480c4436fa2a11908d87025bba878907b04b83373eef63c"
+    },
+    "actual_native_worker_compiled": true,
+    "actual_previous_phone_failure": {
+      "business_completion_verified": false,
+      "cause": "OpenCL max-allocation getter dereferenced backend_ctx before mtmd initialized the selected GPU.",
+      "crash_buffer_sha256": "3d95bb5c5653378b1ec4d59d218799cffe63a6f5535caee575890bcf26e21182",
+      "fault_address": "0x70",
+      "native_exit_code": 139,
+      "pid": 5797,
+      "signal": 11,
+      "source_head": "6de80efbaf5357e8b549d616e74631c37257b577",
+      "task_id": "43464f16ea9b4b26955ae789439758a5"
+    },
+    "all_historical_r4_r5_provenance_retained": true,
+    "business_completion_qualified": false,
+    "changed_nonmanifest_paths": [
+      "native/local-vlm-runtime-pins.json",
+      "native/vlm-worker/SOURCE.json",
+      "native/vlm-worker/native/vlm-worker.cpp",
+      "native/vlm-worker/provenance/ANDROID-BUILD-R6.json",
+      "native/vlm-worker/provenance/LINKED-BACKENDS-HOST-R6.json",
+      "native/vlm-worker/provenance/VISION-INIT-ORDER-HOST-R6.json",
+      "native/vlm-worker/tests/vision-init-order-fixture.cpp",
+      "native/vlm-worker/tools/build_android.py",
+      "native/vlm-worker/tools/test_vision_init_order.py",
+      "src/org/trillionnium/hepta/local/VlmPins.java",
+      "tests/test_vlm_runtime.py",
+      "tools/verify_vlm_runtime.py",
+      "tools/vlm_ci_transfer.py"
+    ],
+    "controller_adapter_cleanup_and_90_second_guards_unchanged": true,
+    "exact_published_head_ci_pending": true,
+    "existing_text_defaults_and_explicit_gui_selection_unchanged": true,
+    "fix": "Move the identical vision_max_allocation_bytes getter after successful mtmd initialization, vision validation and the existing request check.",
+    "full_android_apk_build_qualified": false,
+    "full_candidate_host_gates_pending_at_freeze": true,
+    "getter_semantics_positive_integer_and_88_fields_unchanged": true,
+    "native_compiled_recipe_members": 43,
+    "native_source_manifest": {
+      "bytes": 8721,
+      "sha256": "032e1a99f3e46f4d096e1d7906399e8afe1e6490a2135d15766f157e2e7a7fbd"
+    },
+    "new_backend_handle_or_cpu_fallback": false,
+    "observe_dispatch_and_payment_domain_rules_unchanged": true,
+    "original_canonical_runner_external_workflow_and_build_mac_unchanged": true,
+    "parent_commit": "6de80efbaf5357e8b549d616e74631c37257b577",
+    "parent_manifest_sha256": "e9ecc1ca5cce499924e5db9cb7926fb6635421c72fbdf074b1f0215305d65260",
+    "phone_qualified": false,
+    "previous_current_validation": {
+      "exact_published_head_ci_pending": true,
+      "frozen_head_host_gates_pending": true,
+      "full_android_build": false,
+      "historical_receipts_apply_only_to_their_original_sources": true,
+      "local_canonical108_non_manifest_inputs_pass": false,
+      "local_native19_non_manifest_inputs_pass": false,
+      "native_flight_business_verified": false,
+      "native_shopping_business_verified": false,
+      "phone_tested": false,
+      "required_canonical_checks": 111,
+      "required_linked_backend_checks": 23,
+      "required_mac_gates": 9,
+      "required_native_gates": 19,
+      "required_vlm_ci_transfer_checks": 14,
+      "required_vlm_guard_checks": 43,
+      "required_vlm_packaging_checks": 11,
+      "root_manifest_refreshed_after_local_host_runs": false,
+      "strict_host_gate": "This manifest freezes the complete source before the new canonical111, native19, linked-backend23 and retained 11/14/43 checks. Exact published-head CI, retained Mac9, full APK compilation and phone inference/business outcomes require their own new receipts. The recorded r5 Android native worker compile does not qualify those pending stages.",
+      "unified_host_pass": false
+    },
+    "reference_android_build_receipt": {
+      "bytes": 9503,
+      "sha256": "d3f77b957963071d0fa888a5c4c40e351a3e1b1fc65332de341b83cbc303d816"
+    },
+    "reference_linked_backend_host_receipt": {
+      "bytes": 6032,
+      "sha256": "0e39891ae91d02a8c986ef72a3eb8b29654ba51ed1d167d159ffab738025fc25"
+    },
+    "reference_vision_init_order_host_receipt": {
+      "bytes": 7381,
+      "sha256": "51d433d91a5cd0aee4fe98298d21d32d6db5ef8961c2c36f5266b64570949582"
+    },
+    "required_lifecycle_cases": 5,
+    "required_lifecycle_checks": 23,
+    "schema": "hepta.r21-opencl-allocation-lifecycle-amendment.v1",
+    "sdk_model_and_explicit_HTP0_GPUOpenCL_selection_unchanged": true
+  },
   "r21_outcome_cold_start_amendment": {
     "changed_production_files": [
       "src/org/trillionnium/hepta/local/LocalTaskController.java",
@@ -12822,7 +12939,7 @@
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "xiaomi_home_loading_amendment": {
-    "accessibility_label": "Hepta 手机助手",
+    "accessibility_label": "Hepta \u624b\u673a\u52a9\u624b",
     "automatic_action_replay": false,
     "cause": "Actual complete first Xiaomi frame contained only navigation and message icon; old parser stopped before content loaded and old same-package background window replacement permanently refused scope.",
     "maximum_model_issued_loading_waits": 2,

@@ -55,6 +55,10 @@ def build(source,ndk,libs,out):
     host_receipt=json.loads((out/'linked-backends-host/RESULT.json').read_text())
     if host_receipt.get('passed') is not True or host_receipt.get('result',{}).get('checks')!=23:
         raise ValueError('linked backend production-helper host regression did not pass')
+    run([sys.executable,'-B',source/'tools/test_vision_init_order.py','--out',out/'vision-init-order-host'],out,'vision-init-order-host')
+    vision_receipt=json.loads((out/'vision-init-order-host/RESULT.json').read_text())
+    if vision_receipt.get('passed') is not True or vision_receipt.get('result',{}).get('cases')!=5 or vision_receipt.get('result',{}).get('checks')!=23:
+        raise ValueError('vision initialization lifecycle host regression did not pass')
     native=source/'native';obj=out/'generation-bridge.o';target=out/'libhepta_local_vlm_runner.so'
     flags=['-O2','-fPIE','-Wall','-Wextra','-Werror','-fvisibility=hidden',
         '-ffile-prefix-map='+str(source)+'=hepta-vlm-worker']
@@ -133,6 +137,8 @@ def build(source,ndk,libs,out):
         'required_api_imports':required,'sha2_instruction_owners':owners,
         'linked_backend_abi':linked_backend_abi,'linked_backend_host_checks':23,
         'linked_backend_host_receipt_sha256':sha(out/'linked-backends-host/RESULT.json'),
+        'vision_init_order_host_cases':5,'vision_init_order_host_checks':23,
+        'vision_init_order_host_receipt_sha256':sha(out/'vision-init-order-host/RESULT.json'),
         'worker':{'path':str(target),'bytes':target.stat().st_size,'sha256':sha(target)},
         'elapsed_seconds':time.monotonic()-began,'android_executed':False,'phone_contacted':False,
         'model_inference_performed':False,'ordinary_app_qualified':False,'dispatcher_connected':False}

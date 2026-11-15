@@ -280,7 +280,6 @@ void infer(Request &r,common_json &receipt,std::string &raw) {
     receipt["lm_device"]=ggml_backend_dev_name(htp);receipt["vision_device"]=ggml_backend_dev_name(gpu);
     receipt["lm_device_description"]=ggml_backend_dev_description(htp);
     receipt["vision_device_description"]=ggml_backend_dev_description(gpu);
-    receipt["vision_max_allocation_bytes"]=uint64_t(ggml_backend_buft_get_max_size(ggml_backend_dev_buffer_type(gpu)));
     Resources res;ggml_backend_dev_t devices[]={htp,nullptr};
     auto mp=llama_model_default_params();mp.devices=devices;mp.n_gpu_layers=-1;
     mp.split_mode=LLAMA_SPLIT_MODE_NONE;mp.main_gpu=0;mp.load_mode=LLAMA_LOAD_MODE_NONE;
@@ -309,6 +308,7 @@ void infer(Request &r,common_json &receipt,std::string &raw) {
     vp.progress_callback=load_progress;vp.progress_callback_user_data=&r;
     res.vision=mtmd_init_from_file(projector_fd.c_str(),res.model,vp);
     need(res.vision && mtmd_support_vision(res.vision),"GPUOpenCL vision load failed; fallback forbidden");r.check();
+    receipt["vision_max_allocation_bytes"]=uint64_t(ggml_backend_buft_get_max_size(ggml_backend_dev_buffer_type(gpu)));
     auto bitmap=mtmd_helper_bitmap_init_from_buf(res.vision,r.image->input.bytes,r.image->input.size,false,mtmd_helper_init_opt_default());
     res.bitmap=bitmap.bitmap;
     if(bitmap.video_ctx){mtmd_helper_video_free(bitmap.video_ctx);throw std::runtime_error("video input forbidden");}
