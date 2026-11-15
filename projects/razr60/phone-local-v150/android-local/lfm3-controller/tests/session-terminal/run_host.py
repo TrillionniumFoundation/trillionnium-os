@@ -64,6 +64,7 @@ signatures=[
  "private static JSONObject parseSessionJson(byte[] original)throws Exception{",
  "private static Map<String,Object> fieldsOf(JSONObject prior)throws Exception{",
  "private void recoverPreviousSession() {",
+ "private static String restoredOutcomeSummary(JSONObject prior){",
  "private static boolean recordExists(File file)throws Exception{",
  "private static void createInterruptionLatch(File latch,JSONObject reason)throws Exception{",
  "private static byte[] readSessionRecord(File file)throws Exception{",

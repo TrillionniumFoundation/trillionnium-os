@@ -572,7 +572,8 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         runText.setEnabled(configurationReady&&!busy&&!tasks.isBlocked());
         LocalTaskController.TaskResult result=tasks.lastResult();
         if(result!=null){
-            taskResult.setText(result.summary);
+            if(!busy&&!tasks.isBlocked()&&!tasks.isRecovering())taskState.setText(result.displaySummary);
+            taskResult.setText(result.displaySummary);
             taskDiagnostics.setText("任务："+result.taskId+"\n步骤："+result.steps
                     +"\n退出状态已确认："+result.cleanupKnown+"\n记录："+result.evidenceDirectory);
         }else{

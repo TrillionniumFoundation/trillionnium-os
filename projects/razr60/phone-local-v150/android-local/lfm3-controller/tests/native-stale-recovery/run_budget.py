@@ -25,14 +25,14 @@ def identity(path):
     raw = path.read_bytes()
     return {'path': str(path), 'bytes': len(raw), 'sha256': sha(raw)}
 
-assert sha(runner.read_bytes()) == 'e90b2bd1ba7d727bac446a45eb310089387d72c904a62df41cffc7b6af04d34e'
+assert sha(runner.read_bytes()) == 'a3dfbeea735c501a5bf0c529987b0ebaf4e805401c0859b99f325e551e066540'
 assert sha(a.json_jar.read_bytes()) == '3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'
 assert sha((src/'SessionTerminalEvidence.java').read_bytes()) == '566cbd71a364d51069de271afd7db641fcdf2b97f93682107e4f76e9405b7db0'
-assert sha((src/'LocalTaskSession.java').read_bytes()) == 'ccb59c5ca91214f892b060dda829ec41a1c25e91863631e3dc8dc90d7f800e0c'
+assert sha((src/'LocalTaskSession.java').read_bytes()) == '09ce1dfa98264ba68a1ca73867e99d1b0ac70bafa77f062e2f2c3942ced9cedf'
 assert sha((src/'NativeActionSnapshotCheck.java').read_bytes()) == '0ac969fe789ca1183d51c86c4ce38f80b2e6199f5dc62593a27d7bc3a5cca930'
 
 # Use the already reviewed real-file IO fixture producer through its complete
-# generation stage. Do not run its 88 unrelated cases or change any source.
+# generation stage. Do not run its unrelated fixture cases or change any source.
 producer = runner.read_text(encoding='utf-8')
 boundary = 'for mode in ["host_owning_stream","android_nonowning_stream"]:'
 assert producer.count(boundary) == 1

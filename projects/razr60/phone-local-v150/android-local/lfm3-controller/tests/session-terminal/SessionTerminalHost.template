@@ -58,6 +58,22 @@ public final class SessionTerminalHost {
                 .put("app_uid",android.os.Process.myUid()).put("updated_wall_ms",1L).put("state","旧任务仍在运行")
                 .put("external_model",false).put("automatic_resume",false);
     }
+    /** Explicit presentation fixture only. Provider truth is tested by the full
+     * actual-controller gate; these cases exercise durable capture and startup. */
+    static JSONObject explainedResult(String code,boolean large)throws Exception {
+        JSONObject value=result("failed",false,false,true);
+        String source="native_xiaomi_login_page".equals(code)?"version_bound_native_provider_terminal":
+                "APP_ALREADY_ON_MAIN_DISPLAY".equals(code)?"owned_background_broker_refusal":"completion_contract";
+        String message="持久化说明测试："+code;
+        JSONObject reason=new JSONObject().put("schema","hepta.task-user-explanation.v1").put("task_id",TASK)
+                .put("owner_sha256",OWNER).put("code",code).put("source",source).put("message",message)
+                .put("changes_task_status",false).put("grants_tool_authority",false).put("business_verified",false)
+                .put("model_summary_preserved",true);
+        value.put("user_explanation",reason).put("display_summary",message+"\n\n任务记录："+value.getString("summary"));
+        if(!large){JSONObject completion=value.getJSONObject("completion_evidence");
+            completion.put("native_app_session",new JSONObject());value.put("completion_evidence",completion);}
+        return value;
+    }
     static final class Main implements Executor {
         final ConcurrentLinkedQueue<Runnable> tasks=new ConcurrentLinkedQueue<Runnable>();
         public void execute(Runnable runnable){tasks.add(runnable);}
@@ -69,8 +85,9 @@ public final class SessionTerminalHost {
         boolean isRunning(){return running;}String currentTaskId(){return id;}String currentActualScopeSha256(){return scope;}
         boolean stopIfTask(String expected){if(!running||!Objects.equals(id,expected))return false;running=false;stops++;return true;}
         static final class TaskResult {
-            String taskId,status,summary,expectedScopeSha256,actualScopeSha256;int steps;File evidenceDirectory;
+            String taskId,status,summary,displaySummary,expectedScopeSha256,actualScopeSha256;int steps;File evidenceDirectory;
             boolean modelReportedSuccess,cleanupKnown,completionVerified;Map<String,Object> completionEvidence;
+            Map<String,Object> userExplanation=Collections.emptyMap();
         }
     }
     static final class HeptaAccessibilityService {
@@ -120,6 +137,8 @@ public final class SessionTerminalHost {
             r.taskId=s.taskId;r.status=result.getString("status");r.summary=result.getString("summary");r.steps=result.getInt("steps");
             r.modelReportedSuccess=result.getBoolean("model_reported_success");r.cleanupKnown=result.getBoolean("cleanup_known");
             r.completionVerified=result.getBoolean("completion_verified");r.evidenceDirectory=task.toFile();
+            r.displaySummary=result.has("display_summary")?result.getString("display_summary"):r.summary;
+            if(result.has("user_explanation"))r.userExplanation=map(result.getJSONObject("user_explanation"));
             r.expectedScopeSha256=result.isNull("expected_scope_sha256")?null:result.getString("expected_scope_sha256");
             r.actualScopeSha256=result.isNull("actual_scope_sha256")?null:result.getString("actual_scope_sha256");
             r.completionEvidence=map(result.getJSONObject("completion_evidence"));s.lastResult=r;
@@ -162,6 +181,62 @@ public final class SessionTerminalHost {
                     require(!restored.blocked&&restored.controller.starts==0,"verified terminal did not recover without replay");
                 }finally{restored.close();}
                 pass("oversize_"+status+"_persists_exact_outcome_and_restarts_without_replay");
+            }
+        }
+        for(String code:new String[]{"native_xiaomi_login_page","APP_ALREADY_ON_MAIN_DISPLAY","goal_verifier_unavailable"}){
+            for(boolean large:new boolean[]{false,true}){
+                try(Scenario s=new Scenario("cold-presentation-"+code+"-"+large,explainedResult(code,large))){
+                    byte[] original=Files.readAllBytes(s.resultPath);s.complete();JSONObject committed=s.committed();
+                    require(committed.getString("state").equals(s.result.getString("summary"))
+                            &&committed.getString("display_summary").equals(s.result.getString("display_summary")),"display persistence changed original summary");
+                    require("failed".equals(committed.getString("status"))&&committed.getBoolean("cleanup_known")
+                            &&!committed.getBoolean("completion_verified"),"display persistence changed terminal facts");
+                    require(SessionTerminalEvidence.referenced(committed)==large,"inline/reference boundary not exercised");
+                    byte[] journal=Files.readAllBytes(s.sessionPath);
+                    // Fresh application session, with no TaskResult and no prior
+                    // controller. All displayed data must come from disk.
+                    Session restored=new Session(s.files);restored.controller=null;
+                    try{restored.recoverPreviousSession();
+                        require(!restored.blocked&&restored.lastResult==null&&restored.controller==null,"cold display recreated task execution state");
+                        require(restored.state.contains("上次任务结果：\n"+s.result.getString("display_summary")),"new session did not restore durable explanation");
+                        require(Arrays.equals(journal,Files.readAllBytes(s.sessionPath))&&Arrays.equals(original,Files.readAllBytes(s.resultPath)),"cold display rewrote original records");
+                    }finally{restored.close();}
+                    pass("fresh_session_restores_"+code+(large?"_from_bound_reference":"_from_inline_terminal")+"_without_result_or_controller");
+                }
+            }
+        }
+        String[] presentationFaults={"schema","task_id","owner_sha256","code","source","message","changes_task_status","grants_tool_authority",
+                "business_verified","model_summary_preserved","display_summary","missing_display","missing_reason"};
+        for(String fault:presentationFaults){
+            try(Scenario s=new Scenario("cold-presentation-mismatch-"+fault,explainedResult("native_xiaomi_login_page",false))){
+                s.complete();JSONObject changed=s.committed();JSONObject reason=changed.getJSONObject("user_explanation");
+                if(fault.equals("display_summary"))changed.put(fault,"unbound replacement");
+                else if(fault.equals("missing_display"))changed.put("display_summary",(Object)null);
+                else if(fault.equals("missing_reason"))changed.put("user_explanation",(Object)null);
+                else{
+                    if(fault.equals("changes_task_status")||fault.equals("grants_tool_authority")||fault.equals("business_verified"))reason.put(fault,true);
+                    else if(fault.equals("model_summary_preserved"))reason.put(fault,false);
+                    else reason.put(fault,"different");
+                    changed.put("user_explanation",reason);
+                }
+                write(s.sessionPath,bytes(changed));Session restored=new Session(s.files);restored.controller=null;
+                try{restored.recoverPreviousSession();
+                    require(!restored.blocked&&restored.lastResult==null&&restored.controller==null,"display mismatch changed startup admission");
+                    require(!restored.state.contains("上次任务结果")&&!restored.state.contains("持久化说明测试"),"mismatched display was trusted");
+                }finally{restored.close();}
+                pass("cold_presentation_"+fault+"_mismatch_is_hidden_without_changing_recovery");
+            }
+        }
+        for(String barrier:new String[]{"new_sidecar","interruption_latch"}){
+            try(Scenario s=new Scenario("cold-presentation-barrier-"+barrier,explainedResult("native_xiaomi_login_page",false))){
+                s.complete();write(barrier.equals("new_sidecar")?Paths.get(s.sessionPath+".new"):
+                        s.files.resolve("control-session.interrupted.json"),new byte[0]);
+                Session restored=new Session(s.files);restored.controller=null;
+                try{restored.recoverPreviousSession();
+                    require(restored.blocked&&restored.lastResult==null&&restored.controller==null,"presentation bypassed startup barrier");
+                    require(!restored.state.contains("持久化说明测试")&&restored.state.contains("暂停新任务"),"old presentation hid current recovery barrier");
+                }finally{restored.close();}
+                pass("cold_"+barrier+"_keeps_current_interruption_state_above_saved_presentation");
             }
         }
         try(Scenario s=new Scenario("partial-component-proof",result("partial",false,true,true))){

@@ -26,13 +26,14 @@ public final class RuntimeConfigUiHostTest {
     }
     private static final class LocalTaskSession {
         boolean running,blocked,recovering,backgroundLease,acknowledge;LocalTaskController.TaskResult result;
+        String stateText="fixture state";
         boolean isRunning(){return running;}boolean isBlocked(){return blocked;}boolean isRecovering(){return recovering;}
         boolean hasBackgroundLease(){return backgroundLease;}boolean canAcknowledgeInterruption(){return acknowledge;}
-        String state(){return "fixture state";}String log(){return "fixture log";}String taskId(){return null;}
+        String state(){return stateText;}String log(){return "fixture log";}String taskId(){return null;}
         LocalTaskController.TaskResult lastResult(){return result;}
     }
     private static final class LocalTaskController {
-        static final class TaskResult {String taskId,summary,evidenceDirectory;int steps;boolean cleanupKnown;}
+        static final class TaskResult {String taskId,summary,displaySummary,evidenceDirectory;int steps;boolean cleanupKnown;}
     }
     private static final class BackgroundPermissionSession {
         boolean blocks;String state(){return "fixture permission state";}boolean blocksOtherWork(){return blocks;}
@@ -130,6 +131,20 @@ public final class RuntimeConfigUiHostTest {
         check(missing.modelInfo.text.contains("本地模型待导入"),"valid configuration without weights retains missing-model status");
         check(missing.startTask.enabled&&missing.runText.enabled,"this repair must preserve existing missing-weight entry behavior");
         check(invalid.renderCalls==0&&background.renderCalls==0&&valid.renderCalls==0&&missing.renderCalls==0,"refresh must not launch inference or synthesize results");
+        RuntimeConfigUiHostTest outcome=new RuntimeConfigUiHostTest(files);
+        LocalTaskController.TaskResult failed=new LocalTaskController.TaskResult();
+        failed.taskId="synthetic-outcome";failed.summary="模型报告无法完成：未知";
+        failed.displaySummary="最后读取到的是小米账号登录页。\n\n任务记录："+failed.summary;failed.cleanupKnown=true;
+        outcome.tasks.result=failed;outcome.refresh();
+        check(failed.displaySummary.equals(outcome.taskState.text)&&failed.displaySummary.equals(outcome.taskResult.text),"both visible outcome fields use the bound presentation");
+        check("模型报告无法完成：未知".equals(failed.summary),"rendering preserves the original terminal summary");
+        check(outcome.startTask.enabled&&!outcome.stopTask.enabled&&outcome.renderCalls==0,"presentation neither restarts work nor changes idle admission");
+        outcome.tasks.blocked=true;outcome.refresh();
+        check("fixture state".equals(outcome.taskState.text)&&!outcome.startTask.enabled,"a later journal/recovery block remains primary over the earlier result presentation");
+        RuntimeConfigUiHostTest cold=new RuntimeConfigUiHostTest(files);
+        cold.tasks.stateText="上次任务已结束\n\n上次任务结果：\n"+failed.displaySummary;cold.refresh();
+        check(cold.tasks.result==null&&cold.tasks.stateText.equals(cold.taskState.text),"cold session state retains the recovered explanation without an in-memory TaskResult");
+        check(cold.startTask.enabled&&!cold.stopTask.enabled&&cold.renderCalls==0,"cold result presentation does not start or restore a task");
         System.out.println("{\"passed\":"+checks+",\"failed\":0,\"production_methods_executed\":7}");
     }
 }

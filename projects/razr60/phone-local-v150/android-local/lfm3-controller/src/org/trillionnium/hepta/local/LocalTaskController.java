@@ -20,23 +20,135 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class LocalTaskController implements AutoCloseable {
     public interface Listener { void onState(String chineseState); void onFinished(TaskResult result); }
     public static final class TaskResult {
-        public final String taskId,status,summary;
+        public final String taskId,status,summary,displaySummary;
         public final String expectedScopeSha256,actualScopeSha256;
         public final int steps;
         public final File evidenceDirectory;
         public final PhoneObservation finalObservation;
         public final boolean modelReportedSuccess,cleanupKnown,completionVerified;
-        public final java.util.Map<String,Object> completionEvidence;
+        public final java.util.Map<String,Object> completionEvidence,userExplanation;
         TaskResult(String taskId,String status,String summary,int steps,File evidence,PhoneObservation observation,
                    boolean modelSuccess,boolean cleanupKnown,String expectedScope,String actualScope){
             this(taskId,status,summary,steps,evidence,observation,modelSuccess,cleanupKnown,expectedScope,actualScope,false,java.util.Collections.<String,Object>emptyMap());
         }
         TaskResult(String taskId,String status,String summary,int steps,File evidence,PhoneObservation observation,
                    boolean modelClaim,boolean cleanupKnown,String expectedScope,String actualScope,boolean completionVerified,java.util.Map<String,Object> completionEvidence){
+            this(taskId,status,summary,steps,evidence,observation,modelClaim,cleanupKnown,expectedScope,actualScope,
+                    completionVerified,completionEvidence,java.util.Collections.<String,Object>emptyMap());
+        }
+        TaskResult(String taskId,String status,String summary,int steps,File evidence,PhoneObservation observation,
+                   boolean modelClaim,boolean cleanupKnown,String expectedScope,String actualScope,boolean completionVerified,
+                   java.util.Map<String,Object> completionEvidence,java.util.Map<String,Object> userExplanation){
             this.taskId=taskId;this.status=status;this.summary=summary;this.steps=steps;this.evidenceDirectory=evidence;
             this.finalObservation=observation;this.modelReportedSuccess=modelClaim;this.cleanupKnown=cleanupKnown;this.completionVerified=completionVerified;
             this.completionEvidence=java.util.Collections.unmodifiableMap(new java.util.LinkedHashMap<String,Object>(completionEvidence));
+            this.userExplanation=java.util.Collections.unmodifiableMap(new java.util.LinkedHashMap<String,Object>(userExplanation));
+            this.displaySummary=OutcomeExplanation.display(summary,this.userExplanation);
             this.expectedScopeSha256=expectedScope;this.actualScopeSha256=actualScope;
+        }
+    }
+    /** Read-only presentation of existing terminal evidence. It neither changes
+     * the model summary nor grants an action, success, retry, login or task removal. */
+    static final class OutcomeExplanation {
+        private OutcomeExplanation(){}
+        static java.util.Map<String,Object> create(String task,String owner,String status,boolean cleanup,boolean complete,
+                NotesCompletionEvidence.Frame frame,java.util.Map<String,Object> completion,JSONObject background){
+            if(!cleanup||complete||!("failed".equals(status)||"partial".equals(status))||task==null||owner==null)
+                return java.util.Collections.emptyMap();
+            try{
+                java.util.Map<String,Object> nativeReason=nativeReason(task,owner,frame,completion);
+                if(!nativeReason.isEmpty())return nativeReason;
+                java.util.Map<String,Object> launchReason=launchReason(task,owner,background);
+                if(!launchReason.isEmpty())return launchReason;
+                java.util.Map<?,?> contract=map(completion.get("contract"));
+                if(task.equals(completion.get("task_id"))&&owner.equals(completion.get("owner_sha256"))
+                        &&TaskCompletionGate.UNKNOWN.equals(completion.get("kind"))
+                        &&TaskCompletionGate.SCHEMA.equals(contract.get("schema"))&&owner.equals(contract.get("owner_sha256"))
+                        &&TaskCompletionGate.UNKNOWN.equals(contract.get("kind"))
+                        &&completion.get("missing") instanceof java.util.List<?>
+                        &&((java.util.List<?>)completion.get("missing")).contains("complete_owner_goal_verifier_unavailable"))
+                    return reason(task,owner,"goal_verifier_unavailable","completion_contract",
+                            "当前版本还不能完整核验这类任务是否完成，请核对应用中的实际结果。模型的结束说明不代表任务已完成。");
+            }catch(Exception unavailable){/* Presentation alone must never replace the original terminal or block cleanup. */}
+            return java.util.Collections.emptyMap();
+        }
+        private static java.util.Map<String,Object> nativeReason(String task,String owner,NotesCompletionEvidence.Frame frame,
+                java.util.Map<String,Object> completion){
+            if(frame==null||!frame.metadataObserved||frame.nodesTruncated||frame.windowType!=1||frame.displayId<=0
+                    ||frame.nodes==null||!task.equals(completion.get("task_id"))||!owner.equals(completion.get("owner_sha256"))
+                    ||completion.get("identity_failure")!=null)return java.util.Collections.emptyMap();
+            java.util.Map<?,?> terminal=map(completion.get("terminal_native_completion"));
+            java.util.Map<?,?> session=map(completion.get("native_app_session"));
+            java.util.Map<?,?> domain=map(session.get("current_domain")),source=map(domain.get("source_frame"));
+            java.util.Map<?,?> provider=map(domain.get("provider"));
+            if(!"hepta.native-app-terminal-completion.v1".equals(terminal.get("schema"))
+                    ||!"hepta.native-app-session.v1".equals(session.get("schema"))||!NativeAppDomain.SCHEMA.equals(domain.get("schema"))
+                    ||!NativeAppEvidence.SCHEMA.equals(source.get("schema"))
+                    ||!task.equals(terminal.get("task_id"))||!task.equals(session.get("task_id"))||!task.equals(source.get("task_id"))
+                    ||!owner.equals(terminal.get("owner_sha256"))||!owner.equals(session.get("owner_sha256"))||!owner.equals(source.get("owner_sha256"))
+                    ||!sameSha(terminal.get("execution_target_sha256"),session.get("execution_target_sha256"),source.get("execution_target_sha256"))
+                    ||!sameSha(terminal.get("authorization_sha256"),session.get("authorization_sha256"),source.get("task_authorization_sha256"))
+                    ||!yes(terminal,"one_terminal_attempt","action_domain_retired","all_cleanup_known","background_released",
+                            "scope_rechecked_after_worker_exit","installed_app_rechecked_after_cleanup","owner_rechecked","native_normal0_parent_session_bound")
+                    ||!Boolean.FALSE.equals(terminal.get("cancelled"))||!Boolean.FALSE.equals(terminal.get("completion_verified"))
+                    ||!Boolean.FALSE.equals(session.get("invalid"))||!yes(session,"action_domain_retired")
+                    ||!Boolean.FALSE.equals(domain.get("result_ready"))||!yes(source,"window_metadata_observed","actual_collection_complete")
+                    ||!Boolean.FALSE.equals(source.get("nodes_truncated"))
+                    ||!frame.observationId.equals(domain.get("observation_id"))||!frame.observationId.equals(source.get("observation_id"))
+                    ||!frame.packageName.equals(domain.get("package"))||!frame.packageName.equals(source.get("package"))
+                    ||!frame.backgroundGeneration.equals(domain.get("background_generation"))
+                    ||!frame.backgroundGeneration.equals(source.get("background_generation"))
+                    ||!number(source.get("display_id"),frame.displayId)||!number(source.get("window_id"),frame.windowId)
+                    ||!number(source.get("window_type"),frame.windowType)||!number(source.get("retained_nodes"),frame.nodes.size())
+                    ||!TaskCompletionGate.webFrameSha(frame).equals(source.get("completion_frame_sha256")))
+                return java.util.Collections.emptyMap();
+            String phase=String.valueOf(domain.get("phase")),code,message;
+            if(NativeAppGoal.XIAOMI_PACKAGE.equals(frame.packageName)&&yes(provider,"observed_login_page")
+                    &&(NativeXiaomiProductPage.LOGIN.equals(phase)||NativeXiaomiProductPage.LOGIN_BLOCKED.equals(phase))){
+                code="native_xiaomi_login_page";
+                message="最后读取到的是小米账号登录页，尚未取得本次商品售价。请先处理该应用的登录页面，再重新开始任务。";
+            }else return java.util.Collections.emptyMap();
+            java.util.Map<String,Object> out=reason(task,owner,code,"version_bound_native_provider_terminal",message);
+            out.put("observation_id",frame.observationId);out.put("completion_frame_sha256",source.get("completion_frame_sha256"));
+            out.put("package",frame.packageName);out.put("phase",phase);out.put("display_id",frame.displayId);
+            out.put("background_generation",frame.backgroundGeneration);return out;
+        }
+        private static java.util.Map<String,Object> launchReason(String task,String owner,JSONObject background)throws Exception{
+            if(background==null||!"hepta.background-session.v1".equals(background.getString("schema"))
+                    ||!task.equals(background.getString("task_id"))||!owner.equals(background.getString("owner_sha256"))
+                    ||!"RELEASED".equals(background.getString("state"))||!Boolean.TRUE.equals(background.get("retired"))
+                    ||!Boolean.FALSE.equals(background.get("bootstrap_dispatched"))
+                    ||!Boolean.TRUE.equals(background.get("broker_process_exit_observed"))
+                    ||!number(background.get("broker_process_exit_code"),0))return java.util.Collections.emptyMap();
+            JSONObject response=background.getJSONObject("last_broker_response");
+            String generation=background.getString("generation");int display=background.getInt("display_id");
+            if(display<=0||!generation.equals(response.getString("generation"))||!number(response.get("version"),1)
+                    ||!number(response.get("display_id"),display)||!"RELEASED".equals(response.getString("state"))
+                    ||!background.getString("display_name").equals(response.getString("display_name"))
+                    ||!background.get("expires_elapsed_ms").equals(response.get("expires_elapsed_ms"))
+                    ||!Boolean.FALSE.equals(response.get("ok"))||!Boolean.FALSE.equals(response.get("dispatched"))
+                    ||!"launch".equals(response.getString("operation"))
+                    ||!"APP_ALREADY_ON_MAIN_DISPLAY".equals(response.getString("error"))
+                    ||!"APP_ALREADY_ON_MAIN_DISPLAY".equals(response.getString("terminal_reason")))return java.util.Collections.emptyMap();
+            java.util.Map<String,Object> out=reason(task,owner,"APP_ALREADY_ON_MAIN_DISPLAY","owned_background_broker_refusal",
+                    "所选应用仍有主屏任务，后台任务尚未开始。请先在最近任务中结束该应用的主屏任务，再重新开始后台任务。");
+            out.put("broker_request_id",response.getString("request_id"));out.put("background_generation",generation);
+            out.put("display_id",display);return out;
+        }
+        private static java.util.Map<String,Object> reason(String task,String owner,String code,String source,String message){
+            java.util.Map<String,Object> out=new java.util.LinkedHashMap<String,Object>();
+            out.put("schema","hepta.task-user-explanation.v1");out.put("task_id",task);out.put("owner_sha256",owner);
+            out.put("code",code);out.put("source",source);out.put("message",message);
+            out.put("changes_task_status",false);out.put("grants_tool_authority",false);out.put("business_verified",false);
+            out.put("model_summary_preserved",true);return out;
+        }
+        private static java.util.Map<?,?> map(Object value){return value instanceof java.util.Map<?,?>
+                ?(java.util.Map<?,?>)value:java.util.Collections.emptyMap();}
+        private static boolean yes(java.util.Map<?,?> value,String... keys){for(String key:keys)if(!Boolean.TRUE.equals(value.get(key)))return false;return true;}
+        private static boolean number(Object value,long expected){return (value instanceof Integer||value instanceof Long)&&((Number)value).longValue()==expected;}
+        private static boolean sameSha(Object a,Object b,Object c){return a instanceof String&&((String)a).matches("[0-9a-f]{64}")&&a.equals(b)&&a.equals(c);}
+        static String display(String original,java.util.Map<String,Object> explanation){
+            Object message=explanation.get("message");return message instanceof String?message+"\n\n任务记录："+original:original;
         }
     }
     private static final int MAX_STEPS=20, MAX_TOTAL_REPAIRS=2;
@@ -665,13 +777,18 @@ public final class LocalTaskController implements AutoCloseable {
             completionEvidence.put("completion_actor",completionActor);completionEvidence.put("model_done_synthesized",false);
             completionEvidence.put("controller_completion_requested",controllerCompletionRequested);
             completionEvidence.put("controller_native_parent_session_bound",controllerCompletionRequested?Boolean.valueOf(controllerNativeBound):null);
+            java.util.Map<String,Object> userExplanation=java.util.Collections.emptyMap();
+            try{userExplanation=OutcomeExplanation.create(taskId,authorization.authorization.instructionSha256,
+                    finalStatus,cleanup,completionVerified,completionFrame(observation),completionEvidence,background==null?null:background.evidence());}
+            catch(Exception unavailable){/* A display-only explanation cannot replace the original result or cleanup. */}
             JSONObject lastActionExecution=service.actionExecutionEvidence(taskId);
             if(evidence!=null){try{record(evidence,"result.json",new JSONObject().put("task_id",taskId).put("status",finalStatus)
                     .put("stop_requested_elapsed_ms",stopRequestedElapsed.get()<0?JSONObject.NULL:Long.valueOf(stopRequestedElapsed.get()))
                     .put("terminal_decided_elapsed_ms",SystemClock.elapsedRealtime())
                     .put("last_action_execution",lastActionExecution==null?JSONObject.NULL:lastActionExecution)
                     .put("observation_diagnostics",takeObservationDiagnostics(taskId))
-                    .put("summary",summary).put("steps",steps).put("model_reported_success",rawModelSuccessClaimed)
+                    .put("summary",summary).put("display_summary",OutcomeExplanation.display(summary,userExplanation))
+                    .put("user_explanation",new JSONObject(userExplanation)).put("steps",steps).put("model_reported_success",rawModelSuccessClaimed)
                     .put("model_done_status",lastModelDoneStatus==null?JSONObject.NULL:lastModelDoneStatus)
                     .put("model_done_summary",lastModelDoneSummary==null?JSONObject.NULL:lastModelDoneSummary)
                     .put("completion_verified",completionVerified).put("completion_evidence",new JSONObject(completionEvidence))
@@ -699,7 +816,7 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("external_model",false).put("automatic_replay",false).put("goal_independently_verified",completionVerified));}catch(Exception ignored){summary=summary+"（结果记录保存失败）";}}
             if(cleanup)service.releaseTask(taskId);
             activeWebTask=null;activeNativeTask=null;activeNativeBackground=null;
-            final TaskResult result=new TaskResult(taskId,finalStatus,summary,steps,evidence,observation,rawModelSuccessClaimed,cleanup,expectedScopeSha256,scope==null?null:scope.actualSha256,completionVerified,completionEvidence);
+            final TaskResult result=new TaskResult(taskId,finalStatus,summary,steps,evidence,observation,rawModelSuccessClaimed,cleanup,expectedScopeSha256,scope==null?null:scope.actualSha256,completionVerified,completionEvidence,userExplanation);
             final Listener selected;
             synchronized(this){lastResult=result;selected=listener;running=false;}
             main.post(new Runnable(){public void run(){

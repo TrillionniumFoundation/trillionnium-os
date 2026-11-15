@@ -116,6 +116,7 @@ def main():
         extraction["terminal_status_fixture"]=terminal_login.fixture(source,terminal_fixture,terminal_util)
         entry += [source/"tests/native-app-routing/NativeAppRoutingEntryHostTest.java",
                   source/"tests/native-app-routing/NativeTerminalStatusHostTest.java",
+                  source/"tests/native-app-routing/OutcomeExplanationHostTest.java",
                   terminal_fixture/"SyntheticXiaomiNativeLoginFixture.java"]
         entry=list(dict.fromkeys(Path(p).resolve() for p in entry));entry_classes=out/"entry-classes";entry_classes.mkdir()
         extraction["entry_extraction"]=scope_record;extraction["entry_compile_inputs"]=[str(p) for p in entry]
@@ -141,9 +142,19 @@ def main():
                     "actual generated GBNF status mismatch: "+row["name"])
         terminal["independent_gbnf_cases"]=len(grammar_rows)
         write(out/"terminal-status/GBNF-RESULT.json",(json.dumps(terminal,indent=2)+"\n").encode())
+        run("outcome-explanation-cases",[jdk/"bin/java","-cp",entry_classes,
+                "org.trillionnium.hepta.local.OutcomeExplanationHostTest",out/"OUTCOME-CASES.json"])
+        outcome=json.loads((out/"OUTCOME-CASES.json").read_text())
+        require(outcome.get("schema")=="hepta.outcome-explanation-host.v1" and outcome.get("all_pass") is True
+                and outcome.get("cases")==len(outcome.get("case_names",[]))==76
+                and len(set(outcome.get("case_names",[])))==76 and outcome.get("assertions")==159
+                and outcome.get("phone_operations")==0 and outcome.get("android_runtime") is False
+                and outcome.get("model_inference") is False and outcome.get("provider_or_business_verified") is False,
+                "read-only outcome explanation regression gate")
         cases={"schema":"hepta.native-app-routing-host.v1","all_pass":True,"cases":pure_cases["cases"]+entry_cases["cases"],
                "assertions":pure_cases["assertions"]+entry_cases["assertions"],"case_names":EXPECTED_PURE+EXPECTED_ENTRY,
-                "pure":pure_cases,"entry":entry_cases,"terminal_status":terminal,"phone_operations":0,"android_runtime":False,"provider_or_business_verified":False}
+                "pure":pure_cases,"entry":entry_cases,"terminal_status":terminal,"outcome_explanation":outcome,
+                "phone_operations":0,"android_runtime":False,"provider_or_business_verified":False}
         write(out/"CASES.json",(json.dumps(cases,ensure_ascii=False,indent=2)+"\n").encode())
         record["cases"]=cases;record["all_pass"]=True
     except Exception as error:

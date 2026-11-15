@@ -354,6 +354,11 @@ public final class LocalTaskSession {
         if(decision.allowNewTask){
             state=acknowledgedSession==null?"上次任务已结束，退出状态已有记录；可开始新任务。"
                     :"新的空闲会话已核验，可开始新任务；旧任务仍为中断，原清理状态仍未知。";
+            // The original journal and terminal checks above remain the sole
+            // startup authority. This restores a previous explanation as text,
+            // without recreating a result/controller or resuming the old task.
+            String previousExplanation=restoredOutcomeSummary(prior);
+            if(!previousExplanation.isEmpty())state=state+"\n\n上次任务结果：\n"+previousExplanation;
             log=state+"\n没有自动恢复或重放上次任务。\n";
             return;
         }
@@ -386,6 +391,32 @@ public final class LocalTaskSession {
             // Keep the original evidence unchanged when it cannot be preserved safely. Stay blocked in memory.
             log=log+"旧会话记录无法完整保存；仍保持阻塞，不会据此认定退出完成。\n";
         }
+    }
+
+    /** Read-only presentation from an already accepted private terminal journal.
+     * Old, incomplete or mismatched presentation fields simply remain hidden. */
+    private static String restoredOutcomeSummary(JSONObject prior){
+        try{
+            if(prior==null||!prior.has("user_explanation")||!prior.has("display_summary")
+                    ||!("failed".equals(prior.get("status"))||"partial".equals(prior.get("status")))
+                    ||!Boolean.TRUE.equals(prior.get("cleanup_known"))||!Boolean.FALSE.equals(prior.get("completion_verified")))return "";
+            JSONObject reason=prior.getJSONObject("user_explanation");
+            String task=prior.getString("task_id"),owner=prior.getString("instruction_sha256");
+            if(!"hepta.task-user-explanation.v1".equals(reason.get("schema"))
+                    ||!task.matches("[0-9a-f]{32}")||!owner.matches("[0-9a-f]{64}")
+                    ||!task.equals(reason.get("task_id"))||!owner.equals(reason.get("owner_sha256"))
+                    ||!Boolean.FALSE.equals(reason.get("changes_task_status"))||!Boolean.FALSE.equals(reason.get("grants_tool_authority"))
+                    ||!Boolean.FALSE.equals(reason.get("business_verified"))||!Boolean.TRUE.equals(reason.get("model_summary_preserved")))return "";
+            String code=reason.getString("code"),source=reason.getString("source");
+            boolean known=("native_xiaomi_login_page".equals(code)&&"version_bound_native_provider_terminal".equals(source))
+                    ||("APP_ALREADY_ON_MAIN_DISPLAY".equals(code)&&"owned_background_broker_refusal".equals(source))
+                    ||("goal_verifier_unavailable".equals(code)&&"completion_contract".equals(source));
+            Object message=reason.get("message"),raw=prior.get("state"),display=prior.get("display_summary");
+            if(!known||!(message instanceof String)||!(raw instanceof String)||!(display instanceof String)
+                    ||((String)message).isEmpty()||((String)message).length()>512||((String)display).length()>4096
+                    ||!display.equals(message+"\n\n任务记录："+raw))return "";
+            return (String)display;
+        }catch(Exception unavailable){return "";}
     }
 
     private static boolean recordExists(File file)throws Exception{
@@ -578,6 +609,8 @@ public final class LocalTaskSession {
                     .put("completion_verified",completed.completionVerified)
                     .put("completion_evidence",new JSONObject(completed.completionEvidence))
                     .put("goal_independently_verified",completed.completionVerified);
+                if(!completed.userExplanation.isEmpty())value.put("display_summary",completed.displaySummary)
+                        .put("user_explanation",new JSONObject(completed.userExplanation));
             }
             return value.toString(2).getBytes(StandardCharsets.UTF_8);
     }
