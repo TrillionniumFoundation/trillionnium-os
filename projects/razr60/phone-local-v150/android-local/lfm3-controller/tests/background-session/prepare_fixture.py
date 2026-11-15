@@ -30,15 +30,17 @@ public final class LocalSocket implements Closeable {
  public interface Reply {byte[] reply(byte[] request)throws Exception;}
  public static Reply responder;public static int peerUid=0,connections,timeout;
  public static boolean missing;public static byte[] sent=new byte[0];
+ public static Runnable onConnect,onPeer,onOutput;
+ public static final List<byte[]> closedWrites=new ArrayList<byte[]>();
  public static final List<String> events=new ArrayList<String>();
  private boolean connected;private final ByteArrayOutputStream output=new ByteArrayOutputStream();
- public static void reset(){responder=null;peerUid=0;connections=0;timeout=0;missing=false;sent=new byte[0];events.clear();}
+ public static void reset(){responder=null;peerUid=0;connections=0;timeout=0;missing=false;sent=new byte[0];events.clear();closedWrites.clear();onConnect=null;onPeer=null;onOutput=null;}
  public void setSoTimeout(int ms)throws IOException{if(!connected)throw new IOException("socket not created");events.add("timeout");timeout=ms;}
- public void connect(LocalSocketAddress a)throws IOException{events.add("connect");connections++;if(missing)throw new IOException("synthetic absent endpoint");if(a.namespace!=LocalSocketAddress.Namespace.ABSTRACT)throw new IOException("wrong namespace");connected=true;}
- public Credentials getPeerCredentials(){events.add("peer");return new Credentials(peerUid);}
- public OutputStream getOutputStream(){events.add("output");return output;}
+ public void connect(LocalSocketAddress a)throws IOException{events.add("connect");connections++;if(onConnect!=null)onConnect.run();if(missing)throw new IOException("synthetic absent endpoint");if(a.namespace!=LocalSocketAddress.Namespace.ABSTRACT)throw new IOException("wrong namespace");connected=true;}
+ public Credentials getPeerCredentials(){events.add("peer");if(onPeer!=null)onPeer.run();return new Credentials(peerUid);}
+ public OutputStream getOutputStream(){events.add("output");if(onOutput!=null)onOutput.run();return output;}
  public InputStream getInputStream()throws IOException{events.add("input");sent=output.toByteArray();try{return new ByteArrayInputStream(responder.reply(sent));}catch(IOException e){throw e;}catch(Exception e){throw new IOException(e);}}
- public void close(){events.add("close");connected=false;}
+ public void close(){events.add("close");closedWrites.add(output.toByteArray());connected=false;}
 }''',
  'org/trillionnium/hepta/local/LocalProbeApplication.java':'package org.trillionnium.hepta.local;final class LocalProbeApplication {static boolean permissionBusy;static void requirePermissionPreparationIdle(android.content.Context c){if(permissionBusy)throw new IllegalStateException("permission preparation active");}}',
  'org/trillionnium/hepta/local/HeptaAccessibilityService.java':'''package org.trillionnium.hepta.local;final class HeptaAccessibilityService {interface Cancellation{boolean isCancelled();}static String sha(byte[] bytes){return QualificationScope.hash(bytes);}static String message(Throwable t){return t.getMessage()==null?t.getClass().getSimpleName():t.getMessage();}}'''
