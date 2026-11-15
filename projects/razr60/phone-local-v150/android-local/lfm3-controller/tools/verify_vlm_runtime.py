@@ -7,6 +7,14 @@ def _sha(raw):return hashlib.sha256(raw).hexdigest()
 def _need(value,message):
     if not value:raise RuntimeError(message)
 
+def _same_json(actual,expected):
+    if type(actual) is not type(expected):return False
+    if isinstance(expected,dict):
+        return actual.keys()==expected.keys() and all(_same_json(actual[k],v) for k,v in expected.items())
+    if isinstance(expected,list):
+        return len(actual)==len(expected) and all(_same_json(a,b) for a,b in zip(actual,expected))
+    return actual==expected
+
 def load_pins(root):
     root=Path(root)
     pins=json.loads(_read_regular(root/'native/local-vlm-runtime-pins.json',65536))
@@ -39,8 +47,28 @@ def load_pins(root):
         _need(len(data)==row['bytes'] and _sha(data)==row['sha256'],'VLM source differs: '+str(rel))
     _need(_read_regular(source/'native/owned-generation.inc',131072)==
           _read_regular(root/'native/owned-generation.inc',131072),'VLM must preserve the ordinary generation cleanup core')
-    reference=_read_regular(source/'provenance/ANDROID-BUILD-R4.json',131072)
+    reference=_read_regular(source/'provenance/ANDROID-BUILD-R5.json',131072)
     _need(_sha(reference)==pins['reference_build_receipt_sha256'],'VLM reference build receipt differs')
+    reference_data=json.loads(reference)
+    host_raw=_read_regular(source/'provenance/LINKED-BACKENDS-HOST-R5.json',131072)
+    _need(_sha(host_raw)==reference_data.get('linked_backend_host_receipt_sha256'),
+          'VLM reference linked backend regression receipt differs')
+    host=json.loads(host_raw)
+    _need(host.get('schema')=='hepta.vlm.linked-backend-host-run.v1' and host.get('passed') is True
+          and host.get('sources_unchanged') is True and host.get('phone_contacted') is False
+          and host.get('model_inference_performed') is False
+          and _same_json(host.get('result'),{'schema':'hepta.vlm.linked-backend-host.v1','checks':23,
+              'rejection_cases':13,'passed':True,'plugin_init_absent':True,
+              'phone_contacted':False,'model_inference_performed':False}),
+          'VLM reference linked backend regression scope differs')
+    host_sources={'native/linked-backends.h','native/vlm-worker.cpp','tests/linked-backends-fixture.cpp',
+        'tests/linked-backends-test.cpp','vendor/llama/ggml-backend.h','tools/test_linked_backends.py'}
+    _need(type(host.get('sources')) is dict and set(host['sources'])==host_sources,
+          'VLM linked backend regression input membership differs')
+    recipe_sources={row['path']:row for row in recipe['files']}
+    _need(all(_same_json({k:host['sources'][name].get(k) for k in ('bytes','sha256')},
+                        {k:recipe_sources[name][k] for k in ('bytes','sha256')}) for name in host_sources),
+          'VLM linked backend regression source identity differs')
     sdk=json.loads(_read_regular(root/'provenance/ui-venus-app-r1/sdk-runtime-pins.json',65536))
     expected={row['name']:row for row in sdk['files']}
     _need(all(expected.get(row['name'])==row for row in pins['runtime']),
@@ -66,9 +94,17 @@ def verify_vlm_runtime(root,runtime_dir):
         'new_cpp_runtime_added':False,'vendor_needed':pins['vendor_needed'],
         'vendor_versioned_symbols':pins['vendor_versioned_symbols'],'vendor_opencl_verification_pending':True,
         'strong_undefined_closure_complete':False,'android_executed':False,'model_inference_performed':False,
-        'ordinary_app_qualified':False,'dispatcher_connected':False,'phone_contacted':False}
-    _need(all(type(receipt.get(k)) is type(v) and receipt[k]==v for k,v in expected.items()),
+        'ordinary_app_qualified':False,'dispatcher_connected':False,'phone_contacted':False,
+        'linked_backend_abi':{'registration':'linked_GGML_BACKEND_DL_OFF',
+            'libraries':{'libggml-cpu.so':'ggml_backend_cpu_reg',
+                'libggml-hexagon.so':'ggml_backend_hexagon_reg','libggml-opencl.so':'ggml_backend_opencl_reg'},
+            'generic_plugin_entry_absent':True,'phone_registration_executed':False},
+        'linked_backend_host_checks':23}
+    _need(all(_same_json(receipt.get(k),v) for k,v in expected.items()),
           'VLM build/source/ABI scope differs')
+    host_proof=receipt.get('linked_backend_host_receipt_sha256')
+    _need(type(host_proof) is str and re.fullmatch('[0-9a-f]{64}',host_proof),
+          'VLM linked backend host regression receipt pin missing')
     actual=receipt['worker']
     _need(Path(actual['path']).name==member['source_name'] and actual['bytes']==member['bytes']
           and actual['sha256']==member['sha256'],'VLM built artifact identity differs')

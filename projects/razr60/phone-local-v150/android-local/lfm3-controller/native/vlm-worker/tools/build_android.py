@@ -15,6 +15,20 @@ def run(cmd,out,name):
     if p.returncode:raise RuntimeError(name+' failed: '+p.stderr.decode('utf-8','replace')[-12000:])
     return p.stdout.decode('utf-8','strict')
 
+def require_linked_backend_abi(files):
+    """Check actual pinned SDK ELF facts, not plugin filename assumptions."""
+    required={'libggml-cpu.so':'ggml_backend_cpu_reg',
+        'libggml-hexagon.so':'ggml_backend_hexagon_reg',
+        'libggml-opencl.so':'ggml_backend_opencl_reg'}
+    core=files['libggml.so']
+    if not set(required).issubset(core['dt_needed']) or not set(required.values()).issubset(core['imports']):
+        raise ValueError('pinned ggml linked registry dependency/import contract differs')
+    for name,symbol in required.items():
+        if symbol not in files[name]['exports'] or 'ggml_backend_init' in files[name]['exports']:
+            raise ValueError('pinned linked backend registry/plugin-entry contract differs: '+name)
+    return {'registration':'linked_GGML_BACKEND_DL_OFF','libraries':required,
+        'generic_plugin_entry_absent':True,'phone_registration_executed':False}
+
 def build(source,ndk,libs,out):
     source=source.resolve(strict=True);ndk=ndk.resolve(strict=True);libs=libs.resolve(strict=True);out=out.resolve()
     if out.exists() or source==out or source in out.parents:raise ValueError('new output outside source required')
@@ -37,6 +51,10 @@ def build(source,ndk,libs,out):
         p=libs/m['name']
         if p.is_symlink() or p.stat().st_size!=m['bytes'] or sha(p)!=m['sha256']:raise ValueError('runtime changed: '+m['name'])
         runtime.append(dict(m,path=str(p)))
+    run([sys.executable,'-B',source/'tools/test_linked_backends.py','--out',out/'linked-backends-host'],out,'linked-backends-host')
+    host_receipt=json.loads((out/'linked-backends-host/RESULT.json').read_text())
+    if host_receipt.get('passed') is not True or host_receipt.get('result',{}).get('checks')!=23:
+        raise ValueError('linked backend production-helper host regression did not pass')
     native=source/'native';obj=out/'generation-bridge.o';target=out/'libhepta_local_vlm_runner.so'
     flags=['-O2','-fPIE','-Wall','-Wextra','-Werror','-fvisibility=hidden',
         '-ffile-prefix-map='+str(source)+'=hepta-vlm-worker']
@@ -77,6 +95,7 @@ def build(source,ndk,libs,out):
                 continue
             if not found:raise ValueError('unresolved DT_NEEDED: '+p.name+' -> '+dep)
             pending.append(found)
+    linked_backend_abi=require_linked_backend_abi(inspected)
     all_exports=set().union(*(x['exports'] for x in inspected.values()))
     unresolved={name:sorted(set(info['imports'])-all_exports) for name,info in inspected.items()}
     unresolved={k:v for k,v in unresolved.items() if v}
@@ -87,9 +106,13 @@ def build(source,ndk,libs,out):
         'sdk_cpp_unresolved':sdk_unresolved,'vendor_needed':vendor_needed,'vendor_versioned_symbols':sorted(vendor_symbols)},indent=2)+'\n')
     if sdk_unresolved:raise ValueError('undefined SDK/C++ ABI closure differs: '+json.dumps(sdk_unresolved))
     required=['mtmd_tokenize_from_parts','mtmd_helper_get_n_tokens','mtmd_helper_get_n_pos','mtmd_helper_eval_chunks',
-        'llama_sampler_init_grammar','llama_model_load_from_file','mtmd_init_from_file']
+        'llama_sampler_init_grammar','llama_model_load_from_file','mtmd_init_from_file',
+        'ggml_backend_reg_by_name','ggml_backend_reg_name','ggml_backend_dev_backend_reg']
     imports=inspected[target.name]['imports']
     if any(x not in imports for x in required):raise ValueError('required direct API import missing')
+    forbidden={'ggml_backend_load','ggml_backend_load_all','ggml_backend_load_all_from_path',
+        'ggml_backend_register','ggml_backend_init_best','ggml_backend_cpu_reg'}
+    if forbidden.intersection(imports):raise ValueError('worker imports backend loading, registration or fallback')
     if not any('common_chat_templates_apply' in x for x in imports):raise ValueError('matching Jinja API import missing')
     if any('geniex_' in x for x in imports):raise ValueError('opaque SDK boundary unexpectedly used')
     dis=run([bindir/'llvm-objdump','-d','--no-show-raw-insn',target],out,'disassembly')
@@ -108,6 +131,8 @@ def build(source,ndk,libs,out):
         'vendor_opencl_verification_pending':bool(vendor_needed),'vendor_versioned_symbols':sorted(vendor_symbols),
         'new_cpp_runtime_added':False,'symbol_closure_sha256':sha(out/'SYMBOL-CLOSURE.json'),
         'required_api_imports':required,'sha2_instruction_owners':owners,
+        'linked_backend_abi':linked_backend_abi,'linked_backend_host_checks':23,
+        'linked_backend_host_receipt_sha256':sha(out/'linked-backends-host/RESULT.json'),
         'worker':{'path':str(target),'bytes':target.stat().st_size,'sha256':sha(target)},
         'elapsed_seconds':time.monotonic()-began,'android_executed':False,'phone_contacted':False,
         'model_inference_performed':False,'ordinary_app_qualified':False,'dispatcher_connected':False}

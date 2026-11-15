@@ -24,6 +24,11 @@
       "sha256": "71fb7ced9634d7f869cc5fed3c69b32bbdc96e844df9bf01b39f6bac3bd52c4a"
     },
     {
+      "path": "native/linked-backends.h",
+      "bytes": 1826,
+      "sha256": "fa05d6bc14e288bcd9136f6e80b7c026d96751dba388da5da160546673dc74d2"
+    },
+    {
       "path": "native/owned-generation.inc",
       "bytes": 36870,
       "sha256": "5cf9e54ac3a8bda4c6da9fe0d01ab9675ddadd36a1b553d8223c538683dacf7d"
@@ -45,8 +50,8 @@
     },
     {
       "path": "native/vlm-worker.cpp",
-      "bytes": 29909,
-      "sha256": "61de25e46a8eb69363b15f7fff6fa3cea9ee70e7c9d95aa6fb35954a1bf52a54"
+      "bytes": 29791,
+      "sha256": "1935244e1acb421f9f2b719921713b5d6b2df81eb86cbea717b24a0be5c43ac1"
     },
     {
       "path": "vendor/llama/LICENSE",
@@ -175,13 +180,33 @@
     },
     {
       "path": "tools/build_android.py",
-      "bytes": 8661,
-      "sha256": "9d26e40f41b23fa5c474246a15e19cf0b37ec86a7612845786f02e6702394e86"
+      "bytes": 10589,
+      "sha256": "a1d488a2b6bea012edc3403aa2bcbee6a0c9cbff58fd9610a7d888b5f611feda"
     },
     {
       "path": "tools/freeze.py",
-      "bytes": 1135,
-      "sha256": "07972cf3d6c0d236c2d16df3667239fc56780270368f38408f8fc8cc3e6e0029"
+      "bytes": 1143,
+      "sha256": "602cc2d2a4ad4157ed8433fa0cff676cded9527ca947f2dc8f632837f57ddaba"
+    },
+    {
+      "path": "tools/test_linked_backends.py",
+      "bytes": 4024,
+      "sha256": "fccfc533438ce86175e67ca06839bf2d01fe760b723945d109a26397836727af"
+    },
+    {
+      "path": "tests/guard-test.c",
+      "bytes": 3008,
+      "sha256": "6bd082a746cc30844ddc81a39019ee169be7d700bfa3c786e847e437e5cb491d"
+    },
+    {
+      "path": "tests/linked-backends-fixture.cpp",
+      "bytes": 2043,
+      "sha256": "64d386b88fade541b741f1a6f0ad2681eee9a408839b2f4fb7af25d2ad3e2d7f"
+    },
+    {
+      "path": "tests/linked-backends-test.cpp",
+      "bytes": 2014,
+      "sha256": "241dda670ef4ac5ffa1227a7af362440674dd8b4cd2b8473378b56c65a336eaa"
     }
   ],
   "runtime": [

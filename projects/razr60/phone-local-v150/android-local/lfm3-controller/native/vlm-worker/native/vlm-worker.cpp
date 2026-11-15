@@ -3,6 +3,7 @@
 #include "admission.h"
 #include "llama.h"
 #include "ggml-backend.h"
+#include "linked-backends.h"
 #include "mtmd.h"
 #include "mtmd-helper.h"
 #include "common/chat.h"
@@ -267,12 +268,11 @@ void infer(Request &r,common_json &receipt,std::string &raw) {
     need(setenv("ADSP_LIBRARY_PATH",r.native_dir.c_str(),1)==0,"ADSP path setup failed");
     need(unsetenv("GGML_HEXAGON_NDEV")==0 && setenv("GGML_HEXAGON_DEVICES","1",1)==0,
         "single explicit HTP device setup failed");
-    // CPU backend supplies host scheduling and unsupported kernels only. It is
-    // never a selectable full-model or vision fallback in this worker.
-    for(const char *name:{"libggml-cpu.so","libggml-hexagon.so","libggml-opencl.so"})
-        need(ggml_backend_load((r.native_dir+"/"+name).c_str()),"required backend load failed");
+    // Validate linked registration before llama_backend_init, whose empty-registry
+    // branch would otherwise scan for dynamic plugins. No plugin loading/fallback.
+    const auto selected=hepta_vlm::require_linked_backends();
     BackendLifecycle backend_lifecycle;
-    auto htp=ggml_backend_dev_by_name("HTP0"),gpu=ggml_backend_dev_by_name("GPUOpenCL");
+    auto htp=selected.htp,gpu=selected.vision;
     need(htp && gpu && std::strcmp(ggml_backend_dev_name(htp),"HTP0")==0
         && std::strcmp(ggml_backend_dev_name(gpu),"GPUOpenCL")==0
         && ggml_backend_dev_type(htp)!=GGML_BACKEND_DEVICE_TYPE_CPU

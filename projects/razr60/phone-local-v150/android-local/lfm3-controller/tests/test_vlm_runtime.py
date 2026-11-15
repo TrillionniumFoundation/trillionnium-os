@@ -53,7 +53,27 @@ class VlmRuntime(unittest.TestCase):
         p=self.runtime/'BUILD-RECEIPT.json';data=json.loads(p.read_text());data['runtime'][0]['sha256']='0'*64
         self.mutate(p,json.dumps(data).encode())
     def test_added_cpp_runtime(self):self.receipt_mutation('new_cpp_runtime_added',True)
-    def test_vendor_closure_cannot_be_overclaimed(self):self.receipt_mutation('strong_undefined_closure_complete',True)
+    def test_vendor_closure_cannot_be_overclaimed(self):
+        self.receipt_mutation('strong_undefined_closure_complete',True)
+        proof=self.root/'native/vlm-worker/provenance/LINKED-BACKENDS-HOST-R5.json'
+        self.mutate(proof,proof.read_bytes()+b'\n')
+        original=json.loads((self.runtime/'BUILD-RECEIPT.json').read_text())
+        for key,value in [('registration','dynamic_plugin'),('generic_plugin_entry_absent',False),
+                          ('generic_plugin_entry_absent',1),('phone_registration_executed',True),
+                          ('phone_registration_executed',0)]:
+            with self.subTest(linked_backend_field=key,value=value):
+                abi=dict(original['linked_backend_abi']);abi[key]=value
+                self.receipt_mutation('linked_backend_abi',abi)
+        abi=dict(original['linked_backend_abi']);abi['libraries']=dict(abi['libraries'])
+        abi['libraries']['libggml-cpu.so']='ggml_backend_init'
+        self.receipt_mutation('linked_backend_abi',abi)
+        self.receipt_mutation('linked_backend_abi',None)
+        for value in (None,True,0,24,23.0):
+            with self.subTest(linked_backend_host_checks=value):
+                self.receipt_mutation('linked_backend_host_checks',value)
+        for value in (None,'','g'*64):
+            with self.subTest(linked_backend_host_receipt_sha256=value):
+                self.receipt_mutation('linked_backend_host_receipt_sha256',value)
     def test_rpath_and_foreign_runpath(self):
         for value in [self.elf.replace('(RUNPATH)','(RPATH)'),self.elf.replace('[$ORIGIN]','[/data/local/tmp]'),
                       self.elf.replace('[libllama-common.so]','[libc++_shared.so]')]:

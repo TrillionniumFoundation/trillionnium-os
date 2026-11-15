@@ -1,6 +1,6 @@
 # Hepta one-turn native VLM protocol, v1
 
-Status: final Android worker r4 is compiled and reproducible across two isolated source paths: 147424 bytes, SHA-256 33aea41ab348adad9b08ed6ae6f16ffd1fd06a12435d33847549dad276c8bd3e. The 43 host guard/budget checks and 11 packaging tests pass. SDK/C++ strong symbol closure is verified with the existing runtime. The OpenCL backend still requires the device vendor libOpenCL.so; its 35 versioned APIs and App namespace remain a phone acceptance gate. No phone execution or inference acceptance is claimed.
+Status: the r5 Android native worker compiled from the frozen SOURCE.json is 147544 bytes, SHA-256 27aa467faa1be26dc97e3290178eb208b3705bfb13df8e034d9b04bd5eace781. The original build receipt and executed 23-check linked-backend host receipt are preserved as provenance/ANDROID-BUILD-R5.json and provenance/LINKED-BACKENDS-HOST-R5.json. This records native compilation only; full APK compilation and r5 ordinary-App GPU/HTP inference remain separate pending acceptance gates. Historical r4 provenance and the actual 45e pre-model backend-load failure remain retained. The unchanged runtime still requires vendor OpenCL APIs and phone acceptance; no business success is claimed.
 
 ## Launch and lifetime
 
@@ -64,6 +64,10 @@ Explicit profiles only:
 Complete sizes/SHA-256 are compiled into `native/vlm-worker.cpp`. Every invocation fully hashes both files and retains their FDs; llama/mtmd open `/proc/self/fd/FD`, not an unbound path. Both profiles also independently pin embedded architecture, tokenizer pre, and template hash. GUI-Owl's verified template is 5292 UTF-8 bytes, SHA-256 `3636d0f0bd6bef02654cdffdc447b79cb2cef8ab02cc75267345946291a489e4`, tokenizer pre `qwen2`.
 
 Devices are fixed to main `HTP0` and vision `GPUOpenCL`. Device absence, loading failure, or missing vision capability ends the request. There is no alternate model/device retry. The CPU backend is registered for host scheduling and unsupported kernels required by llama; **zero CPU operations is not claimed**. Graph placement/performance and actual phone support still need device evidence.
+
+The pinned GenieX build sets `GGML_BACKEND_DL=OFF`: libggml.so links CPU, Hexagon and OpenCL, and its registry constructor registers those backends. Their shared objects do not export the dynamic-plugin entry `ggml_backend_init`. r5 makes no ggml_backend_load/load_all call and does not manually re-register CPU. Before llama_backend_init it requires exact registered names and ownership: CPU registry/device of type CPU, HTP registry/HTP0 device of API type GPU, and OpenCL registry/GPUOpenCL device of API type GPU. The pinned Hexagon API's GPU enum does not relabel the physical NPU. Missing or mismatched registration fails closed before model loading; CPU is never returned as the model/vision selection. The unchanged receipt still does not prove zero CPU operations or instantaneous accelerator utilization.
+
+The r5 builder runs the production helper against a linked host registry without a generic plugin-init symbol, then checks actual SDK DT_NEEDED/import/export facts and forbids worker imports for plugin scanning, manual registration and automatic best-device fallback. These checks do not execute Android backends. The native result schema and its 88 successful fields remain unchanged.
 
 Context is 8192, batch 256, ubatch 128, threads 4, one sequence. The actual image-containing chunk collection is tokenized once, both its token count and position count are admitted against `8192 - max_tokens - 16`, and the same retained chunks are evaluated once. No KV shift/truncate path exists.
 

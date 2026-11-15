@@ -7,7 +7,7 @@ section=code.split('const Pin runtime_pins[] = {',1)[1].split('\n};',1)[0]
 runtime=[{'name':name,'bytes':int(size),'sha256':sha} for name,size,sha in re.findall(r'\{"([^"\n]+)",(\d+),"([a-f0-9]{64})"\}',section)]
 assert len(runtime)==10
 files=[]
-for sub in ['native','vendor','tools']:
+for sub in ['native','vendor','tools','tests']:
     for p in sorted((root/sub).rglob('*')):
         if p.is_file() and '__pycache__' not in p.parts:
             b=p.read_bytes();files.append({'path':str(p.relative_to(root)),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()})

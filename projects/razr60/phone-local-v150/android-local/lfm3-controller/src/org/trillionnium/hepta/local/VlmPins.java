@@ -4,8 +4,8 @@ package org.trillionnium.hepta.local;
 public final class VlmPins {
     private VlmPins() {}
     public static final String WORKER="libhepta_local_vlm_runner.so";
-    public static final long WORKER_BYTES=147424L;
-    public static final String WORKER_SHA="33aea41ab348adad9b08ed6ae6f16ffd1fd06a12435d33847549dad276c8bd3e";
+    public static final long WORKER_BYTES=147544L;
+    public static final String WORKER_SHA="27aa467faa1be26dc97e3290178eb208b3705bfb13df8e034d9b04bd5eace781";
     public static final String PROJECTOR="GUI-Owl-1.5-4B-Instruct.mmproj-f16.gguf";
     public static final long PROJECTOR_BYTES=836180288L;
     public static final String PROJECTOR_SHA="eabdc0291d460f2e68874f51044030a7da8fe956c2a6b86abd69fd701227c105";

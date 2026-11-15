@@ -7,7 +7,7 @@
   },
   "candidate_status": "r21_guiowl_current_frame_candidate_pending_exact_head_full_ci_android_and_phone_validation",
   "candidate_version_assigned": true,
-  "complete_source_files": 1958,
+  "complete_source_files": 1964,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -54,9 +54,14 @@
     "native_shopping_business_verified": false,
     "phone_tested": false,
     "required_canonical_checks": 111,
+    "required_linked_backend_checks": 23,
+    "required_mac_gates": 9,
     "required_native_gates": 19,
-    "root_manifest_refreshed_after_local_host_runs": true,
-    "strict_host_gate": "Exact published and frozen head CI remains pending; pre-manifest local host receipts cover the unchanged code/fixtures only. Retained Mac gates, Android compilation and new phone outcomes remain independent receipts.",
+    "required_vlm_ci_transfer_checks": 14,
+    "required_vlm_guard_checks": 43,
+    "required_vlm_packaging_checks": 11,
+    "root_manifest_refreshed_after_local_host_runs": false,
+    "strict_host_gate": "This manifest freezes the complete source before the new canonical111, native19, linked-backend23 and retained 11/14/43 checks. Exact published-head CI, retained Mac9, full APK compilation and phone inference/business outcomes require their own new receipts. The recorded r5 Android native worker compile does not qualify those pending stages.",
     "unified_host_pass": false
   },
   "files": [
@@ -4998,7 +5003,7 @@
     {
       "bytes": 5327,
       "path": "native/local-vlm-runtime-pins.json",
-      "sha256": "231a55ce37b83a7cd6e299a90a3f0c021206feb61d5aaaf2b8b7cc6d047ac415"
+      "sha256": "f3430c3327221e344c584eab42d6d46f4cb05e865032cbf38838de17da92608c"
     },
     {
       "bytes": 1495,
@@ -5236,14 +5241,14 @@
       "sha256": "b3f12a4a6b91a8a0079372dc7a2c1fb7a974d78503c98a742ed518e3bf87a926"
     },
     {
-      "bytes": 10078,
+      "bytes": 11453,
       "path": "native/vlm-worker/PROTOCOL.md",
-      "sha256": "f0d01a77c987f134c2e92f1f669fd50edb149bac7232a9147d9d075fcfbddca7"
+      "sha256": "75af717eb17ca62af80f097ea5f6cb6743532d2e8323461d42ddc8794359b7c0"
     },
     {
-      "bytes": 7575,
+      "bytes": 8385,
       "path": "native/vlm-worker/SOURCE.json",
-      "sha256": "212221cd0fd29f50ce3aa15a4e3504b648c12cc59847b12e54370fe1c2636a00"
+      "sha256": "4a622b79e313acd1aefcefe457b5928e8717713f139ab6724d6e189d68052dce"
     },
     {
       "bytes": 669,
@@ -5266,6 +5271,11 @@
       "sha256": "71fb7ced9634d7f869cc5fed3c69b32bbdc96e844df9bf01b39f6bac3bd52c4a"
     },
     {
+      "bytes": 1826,
+      "path": "native/vlm-worker/native/linked-backends.h",
+      "sha256": "fa05d6bc14e288bcd9136f6e80b7c026d96751dba388da5da160546673dc74d2"
+    },
+    {
       "bytes": 36870,
       "path": "native/vlm-worker/native/owned-generation.inc",
       "sha256": "5cf9e54ac3a8bda4c6da9fe0d01ab9675ddadd36a1b553d8223c538683dacf7d"
@@ -5286,14 +5296,19 @@
       "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
     },
     {
-      "bytes": 29909,
+      "bytes": 29791,
       "path": "native/vlm-worker/native/vlm-worker.cpp",
-      "sha256": "61de25e46a8eb69363b15f7fff6fa3cea9ee70e7c9d95aa6fb35954a1bf52a54"
+      "sha256": "1935244e1acb421f9f2b719921713b5d6b2df81eb86cbea717b24a0be5c43ac1"
     },
     {
       "bytes": 8556,
       "path": "native/vlm-worker/provenance/ANDROID-BUILD-R4.json",
       "sha256": "ee6b209b474f6027962b180d0c02023fa1f4d69616f50ee323e9162280a973a5"
+    },
+    {
+      "bytes": 9329,
+      "path": "native/vlm-worker/provenance/ANDROID-BUILD-R5.json",
+      "sha256": "ad49234f27dc78bd8e7fcb8b68063cc24b62f2d7ca253a9a8cf979332d659eb9"
     },
     {
       "bytes": 122,
@@ -5304,6 +5319,11 @@
       "bytes": 4068,
       "path": "native/vlm-worker/provenance/LINK-PROBE.json",
       "sha256": "dfcaacaba6c7e7bf48996e38468259d09171a4339aa0be11007e8f75667ee72e"
+    },
+    {
+      "bytes": 6078,
+      "path": "native/vlm-worker/provenance/LINKED-BACKENDS-HOST-R5.json",
+      "sha256": "06df8558523a589087220c6c0818accf9bbf9a56842f666036e6ce9715959ef1"
     },
     {
       "bytes": 663,
@@ -5331,14 +5351,29 @@
       "sha256": "6bd082a746cc30844ddc81a39019ee169be7d700bfa3c786e847e437e5cb491d"
     },
     {
-      "bytes": 8661,
-      "path": "native/vlm-worker/tools/build_android.py",
-      "sha256": "9d26e40f41b23fa5c474246a15e19cf0b37ec86a7612845786f02e6702394e86"
+      "bytes": 2043,
+      "path": "native/vlm-worker/tests/linked-backends-fixture.cpp",
+      "sha256": "64d386b88fade541b741f1a6f0ad2681eee9a408839b2f4fb7af25d2ad3e2d7f"
     },
     {
-      "bytes": 1135,
+      "bytes": 2014,
+      "path": "native/vlm-worker/tests/linked-backends-test.cpp",
+      "sha256": "241dda670ef4ac5ffa1227a7af362440674dd8b4cd2b8473378b56c65a336eaa"
+    },
+    {
+      "bytes": 10589,
+      "path": "native/vlm-worker/tools/build_android.py",
+      "sha256": "a1d488a2b6bea012edc3403aa2bcbee6a0c9cbff58fd9610a7d888b5f611feda"
+    },
+    {
+      "bytes": 1143,
       "path": "native/vlm-worker/tools/freeze.py",
-      "sha256": "07972cf3d6c0d236c2d16df3667239fc56780270368f38408f8fc8cc3e6e0029"
+      "sha256": "602cc2d2a4ad4157ed8433fa0cff676cded9527ca947f2dc8f632837f57ddaba"
+    },
+    {
+      "bytes": 4024,
+      "path": "native/vlm-worker/tools/test_linked_backends.py",
+      "sha256": "fccfc533438ce86175e67ca06839bf2d01fe760b723945d109a26397836727af"
     },
     {
       "bytes": 1078,
@@ -6653,7 +6688,7 @@
     {
       "bytes": 1091,
       "path": "src/org/trillionnium/hepta/local/VlmPins.java",
-      "sha256": "a17a283ae3953636549d6298223a31a4c360885963b8aca44a29d9c2c4776477"
+      "sha256": "483244c661bf7b26a01ab01451fbe6a3b57ef8ab746467219fc28805ba857168"
     },
     {
       "bytes": 34867,
@@ -9116,9 +9151,9 @@
       "sha256": "b108df1b4264d06a3c54cd3ba7fb1588293ca99a11299e7ff764932693c18600"
     },
     {
-      "bytes": 4186,
+      "bytes": 5514,
       "path": "tests/test_vlm_runtime.py",
-      "sha256": "6ed06c140f154b9130236e0f719f417a2da32005811656f8667641d9688d1d55"
+      "sha256": "2300f73e5931034a98ae5935b4ca41d5aee5a9fad77f9b0e8a8cc78f1c310af8"
     },
     {
       "bytes": 8573,
@@ -9831,14 +9866,14 @@
       "sha256": "5622ec1b12e55136f0a66179dca64029db0e979b8fc2dec6bf6a318cac4a251a"
     },
     {
-      "bytes": 5584,
+      "bytes": 8115,
       "path": "tools/verify_vlm_runtime.py",
-      "sha256": "2a04cf5bad73e271549bce9d4cebc6d03456e53905a56b8a76f6ad04cd2f13a9"
+      "sha256": "48dca6d8363f56a8a7909fcf2fc7adff437319cb7e2d07bcc58138059c7f1c95"
     },
     {
       "bytes": 6504,
       "path": "tools/vlm_ci_transfer.py",
-      "sha256": "340629443ab4ccd8933da8bf711bcce3e6846224bef6b184c097171d6062d4aa"
+      "sha256": "6232df820fc2684bb326ad00e09ad837267d45448e5327a369bd9c6b702c7762"
     },
     {
       "bytes": 7410,
@@ -11495,12 +11530,12 @@
       "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
       "git_blob": "2080ab027a3898ab097c2380e401b56a4321817c",
       "path": ".github/workflows/hepta-local-android.yml",
-      "prior_commit": "e480f18d86fd93fd24bfc38e26ab00cc999c4868",
+      "prior_commit": "45e78459d9afef419e6b14c8e29ed20fb0ba7d94",
       "prior_git_blob": "2080ab027a3898ab097c2380e401b56a4321817c",
       "sha256": "30f086fe1b9c6f69f808b8b874fe5aa1e7998eeeb256d51423fdafa3ee42a977"
     },
     "native_host_gate_contract_sha256": "1ffbb2582004dfbfb522e3347d468b23d75e9de39d8bde00371e0e0cf96dc204",
-    "normal_git_parent": "e480f18d86fd93fd24bfc38e26ab00cc999c4868",
+    "normal_git_parent": "45e78459d9afef419e6b14c8e29ed20fb0ba7d94",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -11592,7 +11627,7 @@
     "version_code_unchanged": 69,
     "version_name_unchanged": "0.69.0-native-background-runtime"
   },
-  "main_java_sources": 137,
+  "main_java_sources": 140,
   "observation_budget_amendment": {
     "capture_has_independent_two_second_timer": false,
     "capture_headroom_ms": 2000,
@@ -11701,7 +11736,7 @@
       }
     ]
   },
-  "production_build_inputs_count": 245,
+  "production_build_inputs_count": 301,
   "qualification_policy": "Source reviews, host gates, real Android build and actual native phone outcomes retain separate evidence.",
   "r14_runtime_reliability_amendment": {
     "all_original_required_gate_cases_retained": true,
@@ -12584,6 +12619,110 @@
     "prior_host_phone_and_ci_receipts_are_not_new_candidate_qualification": true,
     "schema": "hepta.r21-kernel-cache-parent-amendment.v1",
     "unchanged_native_worker_sha256": "33aea41ab348adad9b08ed6ae6f16ffd1fd06a12435d33847549dad276c8bd3e"
+  },
+  "r21_linked_backend_registration_amendment": {
+    "actual_native_build_linked_backend_checks": 23,
+    "actual_native_build_rejection_cases": 13,
+    "actual_native_worker": {
+      "bytes": 147544,
+      "sha256": "27aa467faa1be26dc97e3290178eb208b3705bfb13df8e034d9b04bd5eace781"
+    },
+    "actual_native_worker_compiled": true,
+    "actual_previous_phone_failure": {
+      "business_completion_verified": false,
+      "cause": "The pinned GGML_BACKEND_DL=OFF CPU backend has no ggml_backend_init plugin entry; r4 wrongly requested dynamic plugin loading before model loading.",
+      "independent_failure_review": {
+        "bytes": 6586,
+        "path": "r21_work/device/vlm-cache-independent-review/actual-cachefix45-01/FAILURE-AND-IMAGE-REVIEW.json",
+        "sha256": "a36a3da8ecf4fd5a0fde204d692e25bb0fd2cdf05dd9d494820a68eecd0b2ddb"
+      },
+      "model_output_observed": false,
+      "native_exit_code": 74,
+      "source_head": "45e78459d9afef419e6b14c8e29ed20fb0ba7d94",
+      "task_id": "20fe9a26683e4afa85db61941fe9aa2e"
+    },
+    "all_historical_r4_provenance_retained": true,
+    "all_original_sdk_and_model_pins_unchanged": true,
+    "business_completion_qualified": false,
+    "changed_nonmanifest_paths": [
+      "native/local-vlm-runtime-pins.json",
+      "native/vlm-worker/PROTOCOL.md",
+      "native/vlm-worker/SOURCE.json",
+      "native/vlm-worker/native/linked-backends.h",
+      "native/vlm-worker/native/vlm-worker.cpp",
+      "native/vlm-worker/provenance/ANDROID-BUILD-R5.json",
+      "native/vlm-worker/provenance/LINKED-BACKENDS-HOST-R5.json",
+      "native/vlm-worker/tests/linked-backends-fixture.cpp",
+      "native/vlm-worker/tests/linked-backends-test.cpp",
+      "native/vlm-worker/tools/build_android.py",
+      "native/vlm-worker/tools/freeze.py",
+      "native/vlm-worker/tools/test_linked_backends.py",
+      "src/org/trillionnium/hepta/local/VlmPins.java",
+      "tests/test_vlm_runtime.py",
+      "tools/verify_vlm_runtime.py",
+      "tools/vlm_ci_transfer.py"
+    ],
+    "controller_adapter_and_cleanup_sources_unchanged": true,
+    "exact_published_head_ci_pending": true,
+    "existing_text_defaults_and_explicit_gui_selection_unchanged": true,
+    "extra_cpp_runtime_added": false,
+    "fix": "Query the already linked CPU, HTP and OpenCL registries and require exact device name, type and registry ownership. Preserve HTP0 language-model and GPUOpenCL vision selection; CPU is not returned as a model/device fallback.",
+    "full_android_apk_build_qualified": false,
+    "full_candidate_host_gates_pending_at_freeze": true,
+    "independently_counted_parent_build_inputs": 295,
+    "independently_counted_parent_java_sources": 140,
+    "native_compiled_recipe_members": 41,
+    "native_result_88_field_schema_and_current_frame_identity_unchanged": true,
+    "native_source_manifest": {
+      "bytes": 8385,
+      "sha256": "4a622b79e313acd1aefcefe457b5928e8717713f139ab6724d6e189d68052dce"
+    },
+    "observe_dispatch_and_payment_domain_rules_unchanged": true,
+    "original_8_dt_needed_and_origin_runpath_preserved": true,
+    "original_canonical_runner_and_external_workflow_bytes_unchanged": true,
+    "owner_task_display_original_png_grammar_and_90_second_stale_guards_unchanged": true,
+    "parent_commit": "45e78459d9afef419e6b14c8e29ed20fb0ba7d94",
+    "parent_manifest_sha256": "59cecfa202c67556095e7aa22e97ffe2d5acdcb65b6cb15a7fc17b71d8fbe87b",
+    "phone_qualified": false,
+    "post_compile_protocol_status_only_updated": true,
+    "previous_current_validation": {
+      "exact_published_head_ci_pending": true,
+      "frozen_head_host_gates_pending": true,
+      "full_android_build": false,
+      "historical_receipts_apply_only_to_their_original_sources": true,
+      "local_canonical108_non_manifest_inputs_pass": false,
+      "local_native19_non_manifest_inputs_pass": false,
+      "native_flight_business_verified": false,
+      "native_shopping_business_verified": false,
+      "phone_tested": false,
+      "required_canonical_checks": 111,
+      "required_native_gates": 19,
+      "root_manifest_refreshed_after_local_host_runs": true,
+      "strict_host_gate": "Exact published and frozen head CI remains pending; pre-manifest local host receipts cover the unchanged code/fixtures only. Retained Mac gates, Android compilation and new phone outcomes remain independent receipts.",
+      "unified_host_pass": false
+    },
+    "previous_reported_counters": {
+      "complete_source_files": 1958,
+      "main_java_sources": 137,
+      "production_build_inputs_count": 245
+    },
+    "reference_android_build_receipt": {
+      "bytes": 9329,
+      "sha256": "ad49234f27dc78bd8e7fcb8b68063cc24b62f2d7ca253a9a8cf979332d659eb9"
+    },
+    "reference_linked_backend_host_receipt": {
+      "bytes": 6078,
+      "sha256": "06df8558523a589087220c6c0818accf9bbf9a56842f666036e6ce9715959ef1"
+    },
+    "required_canonical_checks": 111,
+    "required_ci_transfer_checks": 14,
+    "required_linked_backend_checks": 23,
+    "required_mac_gates": 9,
+    "required_native_gates": 19,
+    "required_original_native_guard_checks": 43,
+    "required_packaging_checks": 11,
+    "schema": "hepta.r21-linked-backend-registration-amendment.v1",
+    "vendor_opencl_phone_verification_pending": true
   },
   "r21_outcome_cold_start_amendment": {
     "changed_production_files": [
