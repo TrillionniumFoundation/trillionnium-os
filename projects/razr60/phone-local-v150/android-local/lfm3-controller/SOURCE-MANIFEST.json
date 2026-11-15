@@ -11488,19 +11488,19 @@
     "shopping_input_count": 56
   },
   "integration_sources": {
-    "canonical_runner_sha256": "6b42920533f9cd241fd7a3d76af1c97dfd3a5d6f8225e898f75fc58ee474c7d8",
+    "canonical_runner_sha256": "8b9d4ec20573a3ab084283947f6c366ff0b95d712eec0f549e6d5d0e12a6e17c",
     "external_repository_workflow": {
       "base_commit": "4a970197cf9d71fab79a3749cd47cc867d927c4b",
       "base_fields_scope": "base_commit and base_sha256 preserve the historical reconstruction anchor; prior_commit and prior_git_blob identify the immediate Git parent.",
       "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
-      "git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
+      "git_blob": "2080ab027a3898ab097c2380e401b56a4321817c",
       "path": ".github/workflows/hepta-local-android.yml",
-      "prior_commit": "8843aa69b08ce24514ca1c07e4ae2750afb7cb60",
-      "prior_git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
-      "sha256": "cf6f060c5284ce50e23f7702fd95f07a008e67a690fa1ec763deda0f3b482aca"
+      "prior_commit": "17982bec52e2bd65143ac67f22b3ef9844ccfbc4",
+      "prior_git_blob": "2080ab027a3898ab097c2380e401b56a4321817c",
+      "sha256": "30f086fe1b9c6f69f808b8b874fe5aa1e7998eeeb256d51423fdafa3ee42a977"
     },
     "native_host_gate_contract_sha256": "1ffbb2582004dfbfb522e3347d468b23d75e9de39d8bde00371e0e0cf96dc204",
-    "normal_git_parent": "8843aa69b08ce24514ca1c07e4ae2750afb7cb60",
+    "normal_git_parent": "17982bec52e2bd65143ac67f22b3ef9844ccfbc4",
     "paired_helper": {
       "apk_bytes": 1414146,
       "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
@@ -12496,6 +12496,50 @@
       "tools"
     ],
     "input_png_modified_by_adapter": false,
+    "integration_binding_correction": {
+      "current_head_ci_pending": true,
+      "parent_commit": "17982bec52e2bd65143ac67f22b3ef9844ccfbc4",
+      "previous_integration_sources": {
+        "canonical_runner_sha256": "6b42920533f9cd241fd7a3d76af1c97dfd3a5d6f8225e898f75fc58ee474c7d8",
+        "external_repository_workflow": {
+          "base_commit": "4a970197cf9d71fab79a3749cd47cc867d927c4b",
+          "base_fields_scope": "base_commit and base_sha256 preserve the historical reconstruction anchor; prior_commit and prior_git_blob identify the immediate Git parent.",
+          "base_sha256": "1798d3d83f12067cb02fbd051c88b7bd11a60ba970407c21990778723b00a128",
+          "git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
+          "path": ".github/workflows/hepta-local-android.yml",
+          "prior_commit": "8843aa69b08ce24514ca1c07e4ae2750afb7cb60",
+          "prior_git_blob": "cfaf68eff647996137c5cee5744aa3357ac2d838",
+          "sha256": "cf6f060c5284ce50e23f7702fd95f07a008e67a690fa1ec763deda0f3b482aca"
+        },
+        "native_host_gate_contract_sha256": "1ffbb2582004dfbfb522e3347d468b23d75e9de39d8bde00371e0e0cf96dc204",
+        "normal_git_parent": "8843aa69b08ce24514ca1c07e4ae2750afb7cb60",
+        "paired_helper": {
+          "apk_bytes": 1414146,
+          "apk_sha256": "edd439f2432f84ba97ed641eaba5d4f3e2b852f652f90e0ef311ca04ee150313",
+          "certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+          "helper_source_closure_sha256": "4c00e1d9dda65b927557e35043c6f41fedc1ac5584f4c5aede2369ee0cb72f3f",
+          "package": "org.trillionnium.hepta.webhelper",
+          "version_code": 7,
+          "version_name": "0.7.0-web-evidence-v4"
+        },
+        "review_artifact_hashes": {
+          "ACTION-HOST-HANDOFF.json": "50a20d2ea13bc0cfc650d6af59a34586d8668eeea4b1b5446ae26891e629db55",
+          "ACTUAL-INTEGRATION-REVIEW.json": "27580b7e97ce4fd210cce09e1c895b6c8d2023fc04903355f4b3d5e3de109b6a",
+          "BUILD-CONSUMER-REVIEW.json": "8eba51d707beb7f4921d55a92feef37cfabacedf56b01b44f80fa97e5df24cad",
+          "RESULT.json": "dcc0edbe6fc212e5b83dcb57f7b727c684ce7fcbeeea9f958d8db240f51219f7",
+          "WORKFLOW-REVIEW.json": "eb921231510f0dcbad8e777d735833a1898cfde668806c2dc8707b2a1dd6ea30"
+        },
+        "source_reconstruction_base": {
+          "commit": "b2ca2d2f280c88d0c5d691ebcf44f24faf71d88c",
+          "component_tree": "0ef4fd675fe4f6ded593c2736917040a1765abea",
+          "source_manifest_sha256": "c445976f3c7d3405cec3be876a356d8411c81e6f7a911c97f101db29cc51d7f3"
+        }
+      },
+      "previous_manifest_sha256": "b54a7d40049764098e243b9414aef34b58a9c543adcac6b5a182e472b2e448ee",
+      "production_test_workflow_bytes_changed": false,
+      "reason": "Bind the intentionally changed current canonical runner and external workflow to their actual bytes; preserve historical anchors explicitly and retain strict comparison. No production, test or workflow bytes change in this correction.",
+      "schema": "hepta.r21-integration-pin-correction.v1"
+    },
     "model_sha256": "c71f372d2e2b71f173622f1966ac6a1bc60da1c2dbdd6d92534ab6f83724b8df",
     "native_model_execution_on_phone_verified": false,
     "native_worker_rebuilt": true,
@@ -12611,7 +12655,7 @@
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "xiaomi_home_loading_amendment": {
-    "accessibility_label": "Hepta 手机助手",
+    "accessibility_label": "Hepta \u624b\u673a\u52a9\u624b",
     "automatic_action_replay": false,
     "cause": "Actual complete first Xiaomi frame contained only navigation and message icon; old parser stopped before content loaded and old same-package background window replacement permanently refused scope.",
     "maximum_model_issued_loading_waits": 2,
