@@ -147,11 +147,10 @@ public final class WebDomStability {
         return Collections.unmodifiableMap(nodes);
     }
     private static JSONObject metadata(JSONObject dom)throws Exception{
-        JSONObject value=new JSONObject(WebDomCanonical.canonical(dom));
-        value.remove("nodes");value.remove("action_region_observations");value.remove("clipping_context_observations");return value;
+        return WebDomCanonical.without(dom,"nodes","action_region_observations","clipping_context_observations");
     }
     private static JSONObject without(JSONObject value,String key)throws Exception{
-        JSONObject copy=new JSONObject(WebDomCanonical.canonical(value));copy.remove(key);return copy;
+        return WebDomCanonical.without(value,key);
     }
     /** Clip observations are retained as raw data; they grant no hidden-content exemption. */
     private static void checkClipObservationCrossReferences(JSONObject dom)throws Exception{

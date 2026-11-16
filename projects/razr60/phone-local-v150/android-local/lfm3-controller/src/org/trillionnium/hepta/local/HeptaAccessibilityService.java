@@ -2582,7 +2582,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
         if(original==null||fresh==null||!original.node.equals(fresh.node)||!original.signature.equals(fresh.signature))
             throw new StaleObservation("原始节点引用与同路径新目标不相同");
-        JSONObject proof=WebFlightNativeStability.compareNative(oldNative,newNative,permit.targetPath);
+        JSONObject proof=WebFlightNativeStability.compareNative(oldNative,newNative,permit.targetPath,permit.domEvidence());
         proof.put("retained_node_pairing",WebFlightNativeStability.compareRetained(oldRetained,newRetained,
                 proof.getString("native_slider_path")));
         actionCheck(work);
@@ -2862,7 +2862,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 liveProof.put("retained_node_pairing",WebShoppingObservationStability.compareRetained(observedRows,liveRows,
                         liveProof.getString("recommendation_native_path")));
             }else{
-                liveProof=WebFlightNativeStability.compareNative(observedNative,liveNative,source.targetPath);
+                liveProof=WebFlightNativeStability.compareNative(observedNative,liveNative,source.targetPath,proof.getJSONObject("dom"));
                 liveProof.put("retained_node_pairing",WebFlightNativeStability.compareRetained(observedRows,liveRows,
                         liveProof.getString("native_slider_path")));
             }

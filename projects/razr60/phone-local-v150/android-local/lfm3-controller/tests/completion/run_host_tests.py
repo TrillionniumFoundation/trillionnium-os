@@ -17,6 +17,7 @@ def main():
     parser.add_argument('--source', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--release8', action='store_true')
+    parser.add_argument('--actual-fixtures', type=Path, help='Optional private raw phone fixtures; never required by public tests')
     args = parser.parse_args()
     source = args.source.resolve()
     out = args.output.resolve()
@@ -53,6 +54,7 @@ def main():
     files += [source / 'tests/completion-status/CompletionStatusHostTest.java']
     files += [source / 'tests/notes-create-workflow/NotesCreateWorkflowHostTest.java',
               source / 'tests/notes-workflow-controller/NotesWorkflowControllerHostTest.java']
+    files += [source / 'tests/notes-reopen-readiness/NotesReopenReadinessHostTest.java']
     pins = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     phase_fixture = source / 'tests/notes-task-phase/fixtures/v45-notes-trace.json'
     phase_recognizer = source / 'tests/notes-task-phase/test_phase_grammar.py'
@@ -65,6 +67,9 @@ def main():
     workflow_fixture = source / 'tests/notes-create-workflow/fixtures/v50-background-parent-create-partial.json'
     for p in (phase_fixture, phase_recognizer, list_fixture, recovery_fixture, scope_fixture, calculator_fixture, editor_fixture, completion_status_fixture, workflow_fixture):
         pins[str(p)] = hashlib.sha256(p.read_bytes()).hexdigest()
+    if args.actual_fixtures is not None:
+        for p in sorted(args.actual_fixtures.resolve().glob('*.json')):
+            pins[str(p)] = hashlib.sha256(p.read_bytes()).hexdigest()
     classes = out / 'classes'
     classes.mkdir()
     compiler = [shutil.which('javac')] if shutil.which('javac') else ['java', '-m', 'jdk.compiler/com.sun.tools.javac.Main']
@@ -89,6 +94,7 @@ def main():
         ('completion-status-grammar', [sys.executable, str(phase_recognizer), str(out / 'completion-status/grammar-cases.json')]),
         ('notes-create-workflow', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesCreateWorkflowHostTest', str(workflow_fixture), str(out / 'notes-create-workflow')]),
         ('notes-workflow-controller', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesWorkflowControllerHostTest', str(out / 'notes-workflow-controller')]),
+        ('notes-reopen-readiness', ['java', '-cp', str(classes), 'org.trillionnium.hepta.local.NotesReopenReadinessHostTest', '--output', str(out / 'notes-reopen-readiness')] + (['--actual-fixtures', str(args.actual_fixtures.resolve())] if args.actual_fixtures is not None else [])),
     ]
     report = {'schema': 'hepta.task-completion-host.v1', 'source_inputs': pins, 'extraction': extraction,
               'compiler_contract': 'Java 8 API release' if args.release8 else 'Java 8 syntax/target only; not release8 or Android proof',

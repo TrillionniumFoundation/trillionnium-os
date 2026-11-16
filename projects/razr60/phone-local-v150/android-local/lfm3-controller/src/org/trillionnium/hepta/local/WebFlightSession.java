@@ -347,7 +347,7 @@ final class WebFlightSession {
         if(sameCaptureIdentity&&purpose.shopping!=null&&nativeSource!=null){
             WebObservationTiming.Span eligibility=WebObservationTiming.begin(timing,WebObservationTiming.Phase.SHOPPING_DOM_ELIGIBILITY,captureDeadline);
             try{
-                supportedShoppingCaptures=WebShoppingObservationStability.supportsCaptures(first.capture(),last.capture());
+                supportedShoppingCaptures=WebShoppingObservationStability.supportsCaptures(first,last);
                 WebObservationTiming.complete(eligibility,supportedShoppingCaptures);
             }catch(Exception|Error failure){WebObservationTiming.failed(eligibility,failure);throw failure;}
         }

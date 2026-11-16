@@ -46,6 +46,12 @@ final class WebShoppingObservationStability {
         try{captureDom(first,last);return true;}catch(Exception rejected){return false;}
     }
 
+    /** Read-only eligibility may reuse each immutable receipt's own-pair proof.
+     * The owned native admission below still independently replays the full JSON path. */
+    static boolean supportsCaptures(WebEvidenceReceipt first,WebEvidenceReceipt last){
+        try{captureDom(first.capture(),last.capture(),first,last);return true;}catch(Exception rejected){return false;}
+    }
+
     static JSONObject compareDom(JSONObject before,JSONObject after)throws Exception{
         Map<String,JSONObject> a=WebDomStability.index(before),b=WebDomStability.index(after);
         requireDomCounts(before,a);requireDomCounts(after,b);
@@ -115,6 +121,10 @@ final class WebShoppingObservationStability {
     }
 
     private static JSONObject captureDom(JSONObject first,JSONObject last)throws Exception{
+        return captureDom(first,last,null,null);
+    }
+    private static JSONObject captureDom(JSONObject first,JSONObject last,WebEvidenceReceipt verifiedFirst,WebEvidenceReceipt verifiedLast)throws Exception{
+        need((verifiedFirst==null)==(verifiedLast==null),"complete private receipt pair required");
         JSONObject binding=first.getJSONObject("binding");WebTaskPurpose purpose=WebTaskPurpose.requireBinding(binding);
         need(purpose.shopping!=null&&WebMiActionRegion.POLICY.equals(purpose.sitePolicyId)
                 &&WebDomCanonical.same(binding,last.getJSONObject("binding")),"same original shopping binding required");
@@ -125,7 +135,8 @@ final class WebShoppingObservationStability {
                 &&!first.getString("webview_instance").isEmpty()
                 &&first.getLong("ended_elapsed_ms")<=last.getLong("started_elapsed_ms"),"ordered actual capture bracket required");
         JSONObject[] doms=new JSONObject[4];int at=0;
-        JSONArray ownProofs=new JSONArray();
+        JSONArray ownProofs=new JSONArray();int receiptIndex=0;
+        WebEvidenceReceipt[] verified=new WebEvidenceReceipt[]{verifiedFirst,verifiedLast};
         for(JSONObject capture:new JSONObject[]{first,last}){
             need(OBSERVER_SHA.equals(capture.get("observer_script_sha256"))
                     &&WebSitePolicy.INITIAL_URL.equals(capture.get("committed_main_frame_url"))
@@ -137,7 +148,10 @@ final class WebShoppingObservationStability {
             need(x.getBytes(StandardCharsets.UTF_8).length<=1024*1024&&y.getBytes(StandardCharsets.UTF_8).length<=1024*1024,
                     "bounded original raw DOM values required");
             doms[at++]=WebEvidenceJson.parseDom(x);doms[at++]=WebEvidenceJson.parseDom(y);
-            WebDomStability.Result own=WebDomStability.verify(x,y,WebMiActionRegion.POLICY,capture.getJSONObject("dom_stability"));
+            WebEvidenceReceipt receipt=verified[receiptIndex++];
+            WebDomStability.Result own=receipt==null
+                    ?WebDomStability.verify(x,y,WebMiActionRegion.POLICY,capture.getJSONObject("dom_stability"))
+                    :receipt.verifiedStability(capture);
             need(own.region!=null&&own.beforeRawSha256.equals(capture.get("before_dom_sha256"))
                     &&own.afterRawSha256.equals(capture.get("dom_sha256"))
                     &&WebDomCanonical.sha256(own.evidence()).equals(capture.get("dom_stability_sha256")),
@@ -422,7 +436,7 @@ final class WebShoppingObservationStability {
     }
 
     private static JSONObject without(JSONObject value,String...keys)throws Exception{
-        JSONObject copy=new JSONObject(WebDomCanonical.canonical(value));for(String key:keys)copy.remove(key);return copy;
+        return WebDomCanonical.without(value,keys);
     }
 
     private static String unique(Map<String,JSONObject> nodes,String key,String value)throws Exception{

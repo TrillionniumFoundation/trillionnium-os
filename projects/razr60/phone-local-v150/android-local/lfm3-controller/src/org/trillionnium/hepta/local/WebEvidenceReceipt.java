@@ -28,6 +28,10 @@ final class WebEvidenceReceipt {
     final boolean cleanupKnown,recovered,unstarted;
     private final String replyRaw,evidenceRaw,captureRaw,domRaw,armRaw;
     private final WebDomStability.Result checkedStability;
+    // This parser-owned tree never escapes. Each caller receives a detached copy.
+    // Its immutable strings retain the exact already-verified FD evidence and binding.
+    private final JSONObject captureSnapshot;
+    private final String capturedEvidenceSha256,capturedBindingSha256;
     private WebEvidenceReceipt(JSONObject callback,String raw,String capture,String dom,boolean closed,boolean recovered)throws Exception{
         this(callback,raw,capture,dom,closed,recovered,null,null);
     }
@@ -40,16 +44,55 @@ final class WebEvidenceReceipt {
         replyRaw=callback.toString();evidenceRaw=raw;captureRaw=capture;domRaw=dom;cleanupKnown=closed;this.recovered=recovered;
         unstarted=closed&&"unstarted_retired".equals(status);
         JSONObject c=capture==null?null:WebEvidenceJson.parseCaptureEvidence(capture,WebEvidenceProtocol.MAX_EVIDENCE_BYTES);
+        captureSnapshot=c;
+        capturedEvidenceSha256=c==null?null:WebEvidenceJson.sha(raw);
+        capturedBindingSha256=c==null?null:WebEvidenceBinding.sha256(c.getJSONObject("binding"));
+        if(c!=null)need(capturedEvidenceSha256.equals(text(callback,"raw_sha256"))
+                &&capturedBindingSha256.equals(bindingSha),"private capture must retain exact FD bytes and task binding");
         url=c==null?null:WebEvidenceJson.text(c,"current_native_url");
         domSha=c==null?null:WebEvidenceJson.text(c,"dom_sha256");
         started=c==null?-1:WebEvidenceJson.number(c,"started_elapsed_ms");ended=c==null?-1:WebEvidenceJson.number(c,"ended_elapsed_ms");
     }
     JSONObject callback()throws Exception{return WebEvidenceJson.parse(replyRaw,WebEvidenceProtocol.MAX_CALLBACK_BYTES);}
-    JSONObject capture()throws Exception{return captureRaw==null?null:WebEvidenceJson.parseCaptureEvidence(captureRaw,WebEvidenceProtocol.MAX_EVIDENCE_BYTES);}
+    JSONObject capture()throws Exception{return captureSnapshot==null?null:(JSONObject)copyParsed(captureSnapshot);}
+    /** Reuse only the exact private, authenticated capture on this receipt.
+     * Every field, including both original DOM strings and task/window binding,
+     * must remain byte/value-identical. This does not admit a page or native frame. */
+    WebDomStability.Result verifiedStability(JSONObject candidate)throws Exception{
+        need("captured".equals(status)&&captureSnapshot!=null&&checkedStability!=null
+                &&capturedEvidenceSha256!=null&&capturedBindingSha256.equals(bindingSha)
+                &&sameParsed(captureSnapshot,candidate),"own-pair proof belongs only to its exact private capture");
+        return checkedStability;
+    }
+    private static Object copyParsed(Object value)throws Exception{
+        if(value instanceof JSONObject){
+            JSONObject source=(JSONObject)value,out=new JSONObject();java.util.Iterator<String> keys=source.keys();
+            while(keys.hasNext()){String key=keys.next();out.put(key,copyParsed(source.get(key)));}return out;
+        }
+        if(value instanceof JSONArray){
+            JSONArray source=(JSONArray)value,out=new JSONArray();
+            for(int i=0;i<source.length();i++)out.put(copyParsed(source.get(i)));return out;
+        }
+        if(value==JSONObject.NULL||value instanceof String||value instanceof Boolean
+                ||value instanceof Long||value instanceof Integer||value instanceof Double)return value;
+        throw new IllegalArgumentException("private parsed capture scalar differs");
+    }
+    private static boolean sameParsed(Object left,Object right)throws Exception{
+        if(left instanceof JSONObject&&right instanceof JSONObject){
+            JSONObject a=(JSONObject)left,b=(JSONObject)right;if(a.length()!=b.length())return false;
+            java.util.Iterator<String> keys=a.keys();
+            while(keys.hasNext()){String key=keys.next();if(!b.has(key)||!sameParsed(a.get(key),b.get(key)))return false;}return true;
+        }
+        if(left instanceof JSONArray&&right instanceof JSONArray){
+            JSONArray a=(JSONArray)left,b=(JSONArray)right;if(a.length()!=b.length())return false;
+            for(int i=0;i<a.length();i++)if(!sameParsed(a.get(i),b.get(i)))return false;return true;
+        }
+        return left==right||left!=null&&right!=null&&left.getClass()==right.getClass()&&left.equals(right);
+    }
     JSONObject dom()throws Exception{return domRaw==null?null:WebEvidenceJson.parseDom(domRaw);}
     String evidenceRaw(){return evidenceRaw;}
     String domRaw(){return domRaw;}
-    String beforeDomRaw()throws Exception{return captureRaw==null?null:text(capture(),"before_dom_raw_utf8");}
+    String beforeDomRaw()throws Exception{return captureSnapshot==null?null:text(captureSnapshot,"before_dom_raw_utf8");}
     WebDomStability.Result stability(){return checkedStability;}
     JSONObject arm()throws Exception{return armRaw==null?null:WebEvidenceJson.parseEvidence(armRaw,WebEvidenceProtocol.MAX_EVIDENCE_BYTES);}
 

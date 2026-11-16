@@ -878,25 +878,43 @@ public final class LocalTaskController implements AutoCloseable {
     private NotesEditorReadinessOutcome awaitNotesCreatedEditor(String task,File directory,int step,String run,
             TaskAuthorization.Gate auth,TaskCompletionGate completion,QualificationScopeConfig.CompletionInstalledIdentity installed,
             PhoneObservation initial,long taskDeadline){
+        return awaitNotesEditorReadiness(task,directory,step,run,auth,completion,installed,initial,taskDeadline,null,null);
+    }
+    /** Called by the parent workflow only after its verified same-item click. */
+    private NotesEditorReadinessOutcome awaitNotesReopenedEditor(String task,File directory,
+            NotesCreateWorkflow.Grant grant,NotesCreateWorkflow.ChildCall child,TaskAuthorization.Gate auth,
+            TaskCompletionGate completion,QualificationScopeConfig.CompletionInstalledIdentity installed,
+            PhoneObservation initial,long workflowDeadline){
+        return awaitNotesEditorReadiness(task,directory,grant.parentStep,grant.parentRunId,auth,completion,
+                installed,initial,workflowDeadline,grant,child);
+    }
+    private NotesEditorReadinessOutcome awaitNotesEditorReadiness(String task,File directory,int step,String run,
+            TaskAuthorization.Gate auth,TaskCompletionGate completion,QualificationScopeConfig.CompletionInstalledIdentity installed,
+            PhoneObservation initial,long taskDeadline,NotesCreateWorkflow.Grant reopenGrant,NotesCreateWorkflow.ChildCall reopenChild){
+        final boolean reopened=reopenChild!=null;
         long started=SystemClock.elapsedRealtime(),deadline=Math.min(taskDeadline,started+TaskCompletionGate.NOTES_EDITOR_READINESS_MS);
         PhoneObservation current=initial;Exception failure=null;boolean bodyReady=false;
         java.util.List<NotesCreateWorkflow.Observation> reads=new java.util.ArrayList<NotesCreateWorkflow.Observation>();
         java.util.Set<String> seen=new java.util.HashSet<String>();JSONArray samples=new JSONArray();JSONObject reset=null;
-        String prefix=String.format(java.util.Locale.ROOT,"step-%02d-notes-readiness",step),receiptName=prefix+"-result.json";
+        String prefix=reopened?String.format(java.util.Locale.ROOT,"step-%02d-tool-child-%02d-reopen-readiness",step,reopenChild.ordinal)
+                :String.format(java.util.Locale.ROOT,"step-%02d-notes-readiness",step),receiptName=prefix+"-result.json";
+        if(reopened){seen.add(reopenGrant.createdObservationId);seen.add(reopenGrant.workflowInitialObservationId);seen.add(reopenChild.observationId);}
         String lastObservationFile=null;
         try{
-            if(installed==null||!completion.notesCreateWorkflowRequested(auth.frame()))
+            if(installed==null||(!reopened&&!completion.notesCreateWorkflowRequested(auth.frame()))
+                    ||(reopened&&(reopenGrant==null||reopenChild.grant!=reopenGrant||!task.equals(reopenGrant.taskId)
+                            ||!"click".equals(reopenChild.action)||!run.equals(reopenGrant.parentRunId))))
                 throw new IllegalStateException("Notes editor readiness requires the existing ordinary parent workflow authority");
             for(int count=0;count<TaskCompletionGate.NOTES_EDITOR_MAX_OBSERVATIONS;count++){
-                String file=count==0?String.format(java.util.Locale.ROOT,"step-%02d-after.json",step)
+                String file=count==0?(reopened?prefix+"-first-after.json":String.format(java.util.Locale.ROOT,"step-%02d-after.json",step))
                         :prefix+"-observation-"+(count+1)+".json";
                 // Preserve every returned raw frame before checking whether it
                 // can authorize this workflow; rejected frames remain diagnosable.
-                if(count>0)record(directory,file,current.toEvidenceJson());
+                if(count>0||reopened)record(directory,file,current.toEvidenceJson());
                 lastObservationFile=file;
                 JSONObject sample=new JSONObject().put("observation_id",current.id).put("window_id",current.windowId)
                         .put("display_id",current.windowMetadata.displayId).put("observation_file",file)
-                        .put("first_model_after",count==0).put("validation_accepted",false)
+                        .put("first_model_after",!reopened&&count==0).put("first_reopen_after",reopened&&count==0).put("validation_accepted",false)
                         .put("elapsed_ms",SystemClock.elapsedRealtime()-started);
                 samples.put(sample);
                 checkActive(deadline);installed.verify(service);service.requireTaskAuthorization(task,auth);
@@ -905,10 +923,11 @@ public final class LocalTaskController implements AutoCloseable {
                         ||current.windowId!=initial.windowId||current.rotation!=initial.rotation||!seen.add(current.id))throw new IllegalStateException("Notes editor readiness received a foreign, replaced-window or repeated frame");
                 NotesCreateWorkflow.Observation read=workflowObservation(current);reads.add(read);
                 completion.observed(read.frame);TaskCompletionGate.NotesPhase facts=completion.notesPhase(read.frame);
-                sample.put("validation_accepted",true).put("current_body_matched",facts.currentBody)
-                        .put("domain_valid",facts.domainValid);
-                if(!facts.domainValid||!facts.launchProved)throw new IllegalStateException("Notes create or installed observation identity is unproved");
-                if(facts.currentBody){bodyReady=true;break;}
+                boolean domainValid=reopened?reopenGrant.domain(read):facts.domainValid&&facts.launchProved;
+                boolean currentBody=reopened?reopenGrant.body(read):facts.currentBody;
+                sample.put("validation_accepted",domainValid).put("current_body_matched",currentBody).put("domain_valid",domainValid);
+                if(!domainValid)throw new IllegalStateException("Notes create or installed observation identity is unproved");
+                if(currentBody){bodyReady=true;break;}
                 if(count+1>=TaskCompletionGate.NOTES_EDITOR_MAX_OBSERVATIONS)break;
                 if(count==0){
                     // clearCache is a public read-side client operation. Its return
@@ -927,8 +946,10 @@ public final class LocalTaskController implements AutoCloseable {
         }catch(Exception error){failure=error;}
         long finished=SystemClock.elapsedRealtime();
         try{
-            record(directory,receiptName,new JSONObject().put("schema","hepta.notes-created-editor-readiness.v1")
+            record(directory,receiptName,new JSONObject().put("schema",reopened?"hepta.notes-reopened-editor-readiness.v1":"hepta.notes-created-editor-readiness.v1")
                     .put("task_id",task).put("model_run_id",run).put("parent_step",step)
+                    .put("after_verified_reopen_child",reopened).put("reopen_child_id",reopened?reopenChild.id:JSONObject.NULL)
+                    .put("workflow_id",reopened?reopenGrant.workflowId:JSONObject.NULL)
                     .put("first_after_observation_id",initial.id).put("first_after_preserved",true)
                     .put("first_after_window_id",initial.windowId).put("window_replacement_allowed",false)
                     .put("last_observation_id",current.id).put("last_observation_file",lastObservationFile==null?JSONObject.NULL:lastObservationFile)
@@ -973,6 +994,14 @@ public final class LocalTaskController implements AutoCloseable {
                     latest[0]=current;latestFrame[0]=workflowObservation(current);completion.observed(latestFrame[0].frame);
                     if(++observations[0]>5)throw new IllegalStateException("Notes workflow read bound exceeded");
                     record(directory,prefix+"-observation-"+observations[0]+".json",current.toEvidenceJson());return latestFrame[0];
+                }
+                public NotesCreateWorkflow.Observation awaitReopenedBody(NotesCreateWorkflow.ChildCall child,NotesCreateWorkflow.Observation first)throws Exception{
+                    if(first!=latestFrame[0]||child.grant!=grant||!"click".equals(child.action))
+                        throw new IllegalStateException("Notes reopen readiness origin changed");
+                    NotesEditorReadinessOutcome ready=awaitNotesReopenedEditor(task,directory,grant,child,auth,completion,installed,latest[0],deadline);
+                    latest[0]=ready.observation;latestFrame[0]=workflowObservation(latest[0]);
+                    if(ready.error!=null)throw ready.error;
+                    return latestFrame[0];
                 }
                 public void checkpoint(String name,java.util.Map<String,Object> evidence)throws Exception{
                     checkActive(deadline);service.requireTaskAuthorization(task,auth);

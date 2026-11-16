@@ -201,6 +201,8 @@ public final class NotesCreateWorkflow {
     public interface IO {
         /** Must check cancellation/deadline/actual installed identity and archive the raw observation. */
         Observation observe() throws Exception;
+        /** Read-only recovery after the verified list click; no child redispatch. */
+        default Observation awaitReopenedBody(ChildCall child,Observation first)throws Exception{return first;}
         /** Durable once-only parent/child journal, before any child side effect. */
         void checkpoint(String name,Map<String,Object> evidence) throws Exception;
         /** Must use normal live authorization/phase/scope/domain/no-effect checks. No JSON parsing. */
@@ -269,7 +271,13 @@ public final class NotesCreateWorkflow {
                     // The parent fixed-intent success is preserved. No child retry or completion promotion.
                     reason="child_not_verified_no_retry";break;
                 }
-                Observation after=io.observe();ChildRecord row=new ChildRecord(child,current,after,dispatch);
+                Observation after=io.observe();
+                if("click".equals(action)&&!grant.body(after)){
+                    Observation firstAfter=after;after=io.awaitReopenedBody(child,firstAfter);
+                    require(after!=null&&grant.domain(after)&&after.frame.windowId==firstAfter.frame.windowId
+                            &&after.rotation==firstAfter.rotation,"reopen readiness replaced its original window/domain");
+                }
+                ChildRecord row=new ChildRecord(child,current,after,dispatch);
                 records.add(row);io.recorded(row);current=after;
                 if("click".equals(action)){
                     if(!grant.body(current)){reason="reopened_full_body_missing";break;}

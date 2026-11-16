@@ -148,7 +148,7 @@ final class WebFlightNativeStability {
         String webview=ancestorClass(nativeRows,targetPath,"android.webkit.WebView");
         need(webview!=null&&java.util.Arrays.equals(intRect(nativeRows.get(webview)),a.bounds),
                 "actual native WebView ancestor differs from capture geometry");
-        JSONObject nativeProof=compareNative(beforeNative,afterNative,targetPath);
+        JSONObject nativeProof=compareNative(beforeNative,afterNative,targetPath,domProof);
         nativeProof.put("retained_node_pairing",compareRetained(beforeFrame.getJSONArray("nodes"),
                 afterFrame.getJSONArray("nodes"),nativeProof.getString("native_slider_path")));
         return new JSONObject().put("schema","hepta.csair-home-observation-bracket.v2")
@@ -202,7 +202,7 @@ final class WebFlightNativeStability {
                 "actual complete native root differs from the observed window");
     }
 
-    /** Complete DOM comparison; only this observed eight-image slider may move. */
+    /** Complete DOM comparison; only this observed seven- or eight-image slider may move. */
     static JSONObject compareDom(JSONObject before,JSONObject after)throws Exception{
         Map<String,JSONObject> a=domNodes(before),b=domNodes(after);
         need(a.keySet().equals(b.keySet()),"homepage DOM membership changed");
@@ -228,7 +228,8 @@ final class WebFlightNativeStability {
                 need(images==1,"slider image membership changed");
             }
         }
-        need(ids.size()==8&&allowed.size()==17,"exact eight-image carousel required");
+        int imageCount=requireCarouselIds(ids);
+        need(allowed.size()==1+2*imageCount,"complete carousel DOM membership required");
         double delta=rect(b.get(slider),"rect_css_pixels")[0]-rect(a.get(slider),"rect_css_pixels")[0];
         double[] root=rect(a.get(slider),"rect_css_pixels");
         need(Math.abs(delta)<=root[2]-root[0],"carousel translation exceeds its observed width");
@@ -261,6 +262,7 @@ final class WebFlightNativeStability {
         return new JSONObject().put("schema","hepta.csair-home-dom-scope.v1")
                 .put("scope","official_home_booking_with_observed_slider4_horizontal_translation")
                 .put("slider_dom_path",slider).put("booking_dom_path",booking)
+                .put("carousel_image_count",imageCount).put("carousel_ids",carouselIds(imageCount))
                 .put("horizontal_translation_css_pixels",delta).put("changes",changes)
                 .put("whole_dom_equal",WebDomCanonical.same(before,after))
                 .put("all_other_dom_records_equal",true).put("coordinates_used_for_input",false)
@@ -272,7 +274,7 @@ final class WebFlightNativeStability {
      * including ancestors and nonretained nodes. Native path pairs observations;
      * the model's original NodeRef is separately checked by the service.
      */
-    static JSONObject compareNative(JSONArray before,JSONArray after,String targetPath)throws Exception{
+    static JSONObject compareNative(JSONArray before,JSONArray after,String targetPath,JSONObject domProof)throws Exception{
         Map<String,JSONObject> a=nativeNodes(before),b=nativeNodes(after);
         need(a.keySet().equals(b.keySet()),"native traversal membership changed");
         JSONObject target=a.get(targetPath);
@@ -285,7 +287,7 @@ final class WebFlightNativeStability {
         String slider=unique(a,"view_id","slider4"),booking=unique(a,"view_id","booking");
         JSONObject container=a.get(slider);
         need("android.widget.ListView".equals(container.get("class"))&&container.getBoolean("visible")
-                &&container.getInt("children")==8&&inside(targetPath,booking)
+                &&inside(targetPath,booking)
                 &&!inside(targetPath,slider)&&!inside(booking,slider),"separate original native booking and slider required");
         need(ancestorClass(a,targetPath,"android.webkit.WebView")!=null
                 &&ancestorClass(a,targetPath,"android.webkit.WebView").equals(ancestorClass(a,slider,"android.webkit.WebView")),
@@ -300,7 +302,10 @@ final class WebFlightNativeStability {
                     "native carousel image missing");
             changedScope.add(e.getKey());changedScope.add(image);
         }
-        need(ids.size()==8&&changedScope.size()==16,"native carousel membership must be complete");
+        int imageCount=requireCarouselIds(ids);
+        need(container.getInt("children")==imageCount&&changedScope.size()==2*imageCount,
+                "native carousel declared count and complete membership must agree");
+        requireDomCarousel(domProof,imageCount);
         int[] box=intRect(container),targetBox=intRect(target);
         JSONArray changes=new JSONArray();List<int[]> oldCover=new ArrayList<int[]>(),newCover=new ArrayList<int[]>();
         for(String path:a.keySet()){
@@ -323,6 +328,7 @@ final class WebFlightNativeStability {
         return new JSONObject().put("schema","hepta.csair-home-native-scope.v1")
                 .put("scope","complete_native_tree_except_observed_carousel_geometry")
                 .put("native_target_path",targetPath).put("native_slider_path",slider)
+                .put("carousel_image_count",imageCount).put("carousel_ids",carouselIds(imageCount))
                 .put("native_booking_path",booking).put("before",before).put("after",after)
                 .put("changes",changes).put("all_non_carousel_records_equal_by_native_path",true)
                 .put("ordinal_node_ids_used_for_rebinding",false)
@@ -330,6 +336,22 @@ final class WebFlightNativeStability {
                 .put("existing_target_overlap",intersections(oldCover,targetBox))
                 .put("observed_target_interior_clear",true).put("fully_unoccluded_claimed",false)
                 .put("coordinates_used_for_input",false).put("business_verified",false);
+    }
+
+    private static int requireCarouselIds(Set<String> ids){
+        int count=ids.size();need(count==7||count==8,"exact seven- or eight-image carousel required");
+        for(int i=0;i<count;i++)need(ids.contains("advertising"+i),"complete continuous carousel ID set required");
+        return count;
+    }
+    private static JSONArray carouselIds(int count){
+        JSONArray result=new JSONArray();for(int i=0;i<count;i++)result.put("advertising"+i);return result;
+    }
+    private static void requireDomCarousel(JSONObject proof,int count)throws Exception{
+        need(proof!=null&&"hepta.csair-home-dom-scope.v1".equals(proof.opt("schema")),"paired verified DOM carousel proof required");
+        Object value=proof.get("carousel_image_count");
+        need((value instanceof Integer||value instanceof Long)&&((Number)value).longValue()==count
+                &&WebDomCanonical.same(proof.getJSONArray("carousel_ids"),carouselIds(count)),
+                "paired DOM and native carousel count and complete ID set must agree");
     }
 
     static JSONObject compareRetained(JSONArray before,JSONArray after,String sliderPath)throws Exception{

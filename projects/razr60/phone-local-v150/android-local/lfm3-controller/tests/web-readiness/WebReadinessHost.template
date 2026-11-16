@@ -103,6 +103,7 @@ public final class WebReadinessHost {
      * read-only quote proof is exercised by the separate mandatory real-DOM/typed-completion gate. */
     private static final class WebShoppingObservationStability {
         static boolean supported;static boolean supportsCaptures(JSONObject first,JSONObject last){return supported;}
+        static boolean supportsCaptures(WebEvidenceReceipt first,WebEvidenceReceipt last){return supported;}
     }
     private static final class WebTaskDomain {
         final Object shopping=null;
@@ -288,6 +289,7 @@ public final class WebReadinessHost {
                     check(unchanged.equals(TaskDisplayText.forStatus(unchanged)),"unknown or cleanup status must remain original");
                 check(TaskDisplayText.forStatus("initial page commit wait exceeded its original deadline").contains("尚未完成加载"),"loading message missing");
                 check(TaskDisplayText.forStatus("readonly Flight observation cancelled or expired").contains("观察超时"),"timeout message missing");
+                check(TaskDisplayText.forStatus("RPC deadline exhausted").contains("观察超时"),"RPC deadline display missing");
             });
         }
         JSONObject out=new JSONObject().put("all_pass",true).put("cases",cases).put("assertions",assertions).put("names",names)

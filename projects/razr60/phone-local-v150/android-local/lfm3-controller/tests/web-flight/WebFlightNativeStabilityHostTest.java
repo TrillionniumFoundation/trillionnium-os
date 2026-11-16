@@ -102,6 +102,8 @@ public final class WebFlightNativeStabilityHostTest {
                 .put(retainedNode(SLIDER+"/0","n3",""));
     }
 
+    private static JSONObject domProof8()throws Exception{JSONObject d=dom();return WebFlightNativeStability.compareDom(d,copy(d));}
+
     public static void main(String[] args)throws Exception{
         check(args.length==1,"one new output path required");final Path output=Paths.get(args[0]);
         check(!Files.exists(output),"create-only output required");
@@ -131,24 +133,24 @@ public final class WebFlightNativeStabilityHostTest {
         test("truncated_dom_rejected",()->{JSONObject a=dom();a.put("truncated",true);denied(()->WebFlightNativeStability.compareDom(a,copy(a)));});
         test("wrong_official_origin_rejected",()->{JSONObject a=dom();a.put("href","https://example.invalid/");denied(()->WebFlightNativeStability.compareDom(a,copy(a)));});
         test("native_carousel_change_keeps_three_pixel_overlap",()->{
-            JSONArray a=nativeTree(0,100),b=nativeTree(1,100);JSONObject p=WebFlightNativeStability.compareNative(a,b,TARGET);
+            JSONArray a=nativeTree(0,100),b=nativeTree(1,100);JSONObject p=WebFlightNativeStability.compareNative(a,b,TARGET,domProof8());
             check(p.getBoolean("existing_target_overlap_unchanged")&&p.getBoolean("observed_target_interior_clear"),"overlap and interior independently checked");
             JSONArray overlap=p.getJSONArray("existing_target_overlap");
             check(overlap.length()==1&&overlap.getJSONArray(0).getInt(1)==97&&overlap.getJSONArray(0).getInt(3)==100,"three-pixel strip retained");
             check(!p.getBoolean("ordinal_node_ids_used_for_rebinding")&&!p.getBoolean("business_verified"),"no rebinding or business proof");
         });
-        test("native_target_text_change_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);at(b,TARGET).put("text","支付");denied(()->WebFlightNativeStability.compareNative(a,b,TARGET));});
-        test("native_ancestor_bounds_change_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);at(b,"0/0").getJSONArray("bounds").put(3,699);denied(()->WebFlightNativeStability.compareNative(a,b,TARGET));});
-        test("native_omitted_child_rejected",()->{JSONArray a=nativeTree(0,100),b=without(copy(a),SLIDER+"/4/0");denied(()->WebFlightNativeStability.compareNative(a,b,TARGET));});
-        test("native_duplicate_path_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);b.put(copy(at(b,TARGET)));denied(()->WebFlightNativeStability.compareNative(a,b,TARGET));});
-        test("native_foreign_package_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);at(b,SLIDER+"/2").put("package","other.app");denied(()->WebFlightNativeStability.compareNative(a,b,TARGET));});
-        test("native_mixed_window_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);at(b,SLIDER+"/2").put("window_id",72);denied(()->WebFlightNativeStability.compareNative(a,b,TARGET));});
-        test("native_parent_class_change_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);at(b,TARGET).put("parent_class","android.widget.Other");denied(()->WebFlightNativeStability.compareNative(a,b,TARGET));});
-        test("native_carousel_action_state_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);at(b,SLIDER+"/0").put("focused",true);denied(()->WebFlightNativeStability.compareNative(a,b,TARGET));});
-        test("native_visible_carousel_outside_container_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);at(b,SLIDER+"/0").getJSONArray("bounds").put(2,401);denied(()->WebFlightNativeStability.compareNative(a,b,TARGET));});
-        test("native_target_overlap_change_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);at(b,SLIDER+"/0").getJSONArray("bounds").put(3,98);at(b,SLIDER+"/0/0").getJSONArray("bounds").put(3,98);denied(()->WebFlightNativeStability.compareNative(a,b,TARGET));});
-        test("native_target_center_covered_rejected_even_unchanged",()->{JSONArray a=nativeTree(0,160);denied(()->WebFlightNativeStability.compareNative(a,copy(a),TARGET));});
-        test("native_missing_target_rejected",()->{JSONArray a=nativeTree(0,100);denied(()->WebFlightNativeStability.compareNative(a,copy(a),"0/0/1/9"));});
+        test("native_target_text_change_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);at(b,TARGET).put("text","支付");denied(()->WebFlightNativeStability.compareNative(a,b,TARGET,domProof8()));});
+        test("native_ancestor_bounds_change_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);at(b,"0/0").getJSONArray("bounds").put(3,699);denied(()->WebFlightNativeStability.compareNative(a,b,TARGET,domProof8()));});
+        test("native_omitted_child_rejected",()->{JSONArray a=nativeTree(0,100),b=without(copy(a),SLIDER+"/4/0");denied(()->WebFlightNativeStability.compareNative(a,b,TARGET,domProof8()));});
+        test("native_duplicate_path_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);b.put(copy(at(b,TARGET)));denied(()->WebFlightNativeStability.compareNative(a,b,TARGET,domProof8()));});
+        test("native_foreign_package_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);at(b,SLIDER+"/2").put("package","other.app");denied(()->WebFlightNativeStability.compareNative(a,b,TARGET,domProof8()));});
+        test("native_mixed_window_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);at(b,SLIDER+"/2").put("window_id",72);denied(()->WebFlightNativeStability.compareNative(a,b,TARGET,domProof8()));});
+        test("native_parent_class_change_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);at(b,TARGET).put("parent_class","android.widget.Other");denied(()->WebFlightNativeStability.compareNative(a,b,TARGET,domProof8()));});
+        test("native_carousel_action_state_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);at(b,SLIDER+"/0").put("focused",true);denied(()->WebFlightNativeStability.compareNative(a,b,TARGET,domProof8()));});
+        test("native_visible_carousel_outside_container_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);at(b,SLIDER+"/0").getJSONArray("bounds").put(2,401);denied(()->WebFlightNativeStability.compareNative(a,b,TARGET,domProof8()));});
+        test("native_target_overlap_change_rejected",()->{JSONArray a=nativeTree(0,100),b=copy(a);at(b,SLIDER+"/0").getJSONArray("bounds").put(3,98);at(b,SLIDER+"/0/0").getJSONArray("bounds").put(3,98);denied(()->WebFlightNativeStability.compareNative(a,b,TARGET,domProof8()));});
+        test("native_target_center_covered_rejected_even_unchanged",()->{JSONArray a=nativeTree(0,160);denied(()->WebFlightNativeStability.compareNative(a,copy(a),TARGET,domProof8()));});
+        test("native_missing_target_rejected",()->{JSONArray a=nativeTree(0,100);denied(()->WebFlightNativeStability.compareNative(a,copy(a),"0/0/1/9",domProof8()));});
         test("retained_ordinal_change_is_not_node_rebinding",()->{
             JSONArray a=retained(),b=copy(a);b.getJSONObject(0).put("id","n9");
             JSONObject proof=WebFlightNativeStability.compareRetained(a,b,SLIDER);
