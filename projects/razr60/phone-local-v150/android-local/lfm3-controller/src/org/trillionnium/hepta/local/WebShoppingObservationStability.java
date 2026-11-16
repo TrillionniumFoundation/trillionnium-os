@@ -279,7 +279,8 @@ final class WebShoppingObservationStability {
                 need(!x.getBoolean("editable")&&!x.getBoolean("password")&&!x.getBoolean("focused")
                         &&!x.getBoolean("scrollable"),"native recommendation carries unsupported input state");
                 for(JSONObject row:new JSONObject[]{x,y})if(row.getBoolean("visible"))
-                    need(contains(box,intRect(row))&&!overlap(targetBox,intRect(row)),"visible native recommendation escaped its container");
+                    needRecommendationContainment(contains(box,intRect(row))&&!overlap(targetBox,intRect(row)),
+                            before,after,targetPath,rec,path,row==x,box,targetBox,row);
                 if(!WebDomCanonical.same(x,y))changes.put(new JSONObject().put("native_path",path).put("before",x).put("after",y));
             }
             for(JSONObject row:new JSONObject[]{x,y})if(row.getBoolean("visible")&&!inside(path,targetPath)&&!inside(targetPath,path))
@@ -289,6 +290,84 @@ final class WebShoppingObservationStability {
                 .put("recommendation_native_path",rec).put("before",before).put("after",after).put("outside_changes",changes)
                 .put("complete_native_membership_equal",true).put("all_non_recommendation_native_records_equal",true)
                 .put("action_permit_created",false).put("business_verified",false);
+    }
+
+    private static final String CONTAINMENT_FAILURE="visible native recommendation escaped its container";
+    private static final int PRIVATE_NATIVE_PAIR_BYTES=2*1024*1024;
+    /** A private, stackless locator attached at the actual first rejection; never an action capability. */
+    private static final class NativeContainmentPoint extends Exception {
+        final JSONArray before,after;final JSONObject row;
+        final String target,container,path;final boolean beforeSide;
+        final int[] containerBox,targetBox,rowBox;
+        NativeContainmentPoint(JSONArray before,JSONArray after,String target,String container,String path,
+                               boolean beforeSide,int[] containerBox,int[] targetBox,JSONObject row)throws Exception{
+            super("native containment failure locator",null,false,false);
+            this.before=before;this.after=after;this.target=target;this.container=container;this.path=path;
+            this.beforeSide=beforeSide;this.containerBox=containerBox.clone();this.targetBox=targetBox.clone();
+            this.row=row;this.rowBox=intRect(row);
+        }
+    }
+    private static void needRecommendationContainment(boolean condition,JSONArray before,JSONArray after,
+            String target,String container,String path,boolean beforeSide,int[] box,int[] targetBox,JSONObject row){
+        if(condition)return;
+        try{need(false,CONTAINMENT_FAILURE);}
+        catch(IllegalArgumentException original){
+            try{original.addSuppressed(new NativeContainmentPoint(before,after,target,container,path,beforeSide,box,targetBox,row));}
+            catch(Throwable unavailable){/* Preserve the exact original rejection even if diagnostics cannot be made. */}
+            throw original;
+        }
+    }
+    /** Called only after the original native-dom span has ended. Raw strings are the service's full snapshots. */
+    static String[] containmentFailureDiagnostic(Throwable failure,JSONArray before,JSONArray after,
+            String beforeRaw,String afterRaw,String targetPath){
+        if(failure==null||failure.getClass()!=IllegalArgumentException.class||!CONTAINMENT_FAILURE.equals(failure.getMessage()))return null;
+        NativeContainmentPoint point=null;
+        try{
+            Throwable[] markers=failure.getSuppressed();
+            if(markers.length!=1||!(markers[0] instanceof NativeContainmentPoint))return null;
+            point=(NativeContainmentPoint)markers[0];
+            need(point.before==before&&point.after==after&&point.target.equals(targetPath),"diagnostic snapshot identity");
+            if(beforeRaw==null||afterRaw==null||beforeRaw.length()>PRIVATE_NATIVE_PAIR_BYTES||afterRaw.length()>PRIVATE_NATIVE_PAIR_BYTES
+                    ||(long)beforeRaw.getBytes(StandardCharsets.UTF_8).length+afterRaw.getBytes(StandardCharsets.UTF_8).length>PRIVATE_NATIVE_PAIR_BYTES)
+                return containmentUnavailable("private_pair_exceeds_cap");
+            JSONArray parsedBefore=WebEvidenceJson.parseEvidence("{\"nodes\":"+beforeRaw+"}",PRIVATE_NATIVE_PAIR_BYTES).getJSONArray("nodes");
+            JSONArray parsedAfter=WebEvidenceJson.parseEvidence("{\"nodes\":"+afterRaw+"}",PRIVATE_NATIVE_PAIR_BYTES).getJSONArray("nodes");
+            Map<String,JSONObject> a=nativeNodes(parsedBefore),b=nativeNodes(parsedAfter);
+            need(WebDomCanonical.same(parsedBefore,before)&&WebDomCanonical.same(parsedAfter,after),"diagnostic raw snapshot differs");
+            need(a.keySet().equals(b.keySet())&&a.containsKey(point.path)&&a.containsKey(point.target)&&a.containsKey(point.container),
+                    "diagnostic full membership differs");
+            JSONObject row=(point.beforeSide?a:b).get(point.path);
+            need((point.beforeSide?nativeNodes(before):nativeNodes(after)).get(point.path)==point.row
+                    &&Arrays.equals(point.rowBox,intRect(row))&&Arrays.equals(point.containerBox,intRect(a.get(point.container)))
+                    &&Arrays.equals(point.targetBox,intRect(a.get(point.target)))&&Boolean.TRUE.equals(row.get("visible")),
+                    "diagnostic failure point differs");
+            boolean contained=contains(point.containerBox,point.rowBox),overlaps=overlap(point.targetBox,point.rowBox);
+            need(!contained||overlaps,"diagnostic failure predicate no longer fails");
+            String beforeSha=WebDomCanonical.sha256Utf8(beforeRaw),afterSha=WebDomCanonical.sha256Utf8(afterRaw);
+            JSONObject metadata=new JSONObject().put("schema","hepta.native-containment-failure.v1").put("available",true)
+                    .put("native_path",point.path).put("side",point.beforeSide?"before":"after")
+                    .put("recommendation_native_path",point.container).put("target_native_path",point.target)
+                    .put("row_bounds",new JSONArray(point.rowBox)).put("container_bounds",new JSONArray(point.containerBox))
+                    .put("target_bounds",new JSONArray(point.targetBox)).put("visible",true)
+                    .put("container_contains_row",contained).put("row_overlaps_target",overlaps)
+                    .put("original_overlap_evaluated",contained).put("before_raw_sha256",beforeSha).put("after_raw_sha256",afterSha)
+                    .put("before_row_count",parsedBefore.length()).put("after_row_count",parsedAfter.length())
+                    .put("complete_source_snapshots",true).put("contains_page_text",false).put("grants_action_capability",false);
+            String payload=new JSONObject().put("schema","hepta.native-containment-private-pair.v1")
+                    .put("before_snapshot_raw",beforeRaw).put("after_snapshot_raw",afterRaw)
+                    .put("before_raw_sha256",beforeSha).put("after_raw_sha256",afterSha)
+                    .put("before_row_count",parsedBefore.length()).put("after_row_count",parsedAfter.length())
+                    .put("failure_metadata",metadata).put("complete",true).put("contains_page_text",true)
+                    .put("grants_action_capability",false).toString();
+            if(payload.getBytes(StandardCharsets.UTF_8).length>PRIVATE_NATIVE_PAIR_BYTES)
+                return containmentUnavailable("private_pair_exceeds_cap");
+            return new String[]{metadata.toString(),payload};
+        }catch(Throwable unavailable){return containmentUnavailable("diagnostic_unavailable");}
+    }
+    private static String[] containmentUnavailable(String reason){
+        try{return new String[]{new JSONObject().put("schema","hepta.native-containment-failure.v1").put("available",false)
+                .put("reason",reason).put("contains_page_text",false).put("grants_action_capability",false).toString(),null};}
+        catch(Throwable unavailable){return null;}
     }
 
     /** Failure-only metadata. Never publishes a row value or changes the rejection. */

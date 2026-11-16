@@ -3028,8 +3028,17 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         WebObservationTiming.complete(domTiming);
         }catch(Exception|Error failure){
             WebObservationTiming.failed(domTiming,failure);
-            if(web.purpose.shopping!=null)
+            if(web.purpose.shopping!=null){
                 WebObservationTiming.failureStructure(domTiming,failure,beforeNative,observedNative,source.targetPath);
+                try{
+                    final String beforeRaw=source.graph.flightNativeSnapshotRaw,afterRaw=observed.flightNativeSnapshotRaw;
+                    final String targetPath=source.targetPath;
+                    WebObservationTiming.failureGeometry(domTiming,failure,new WebObservationTiming.FailureDiagnostic(){
+                        public String[] collect(){return WebShoppingObservationStability.containmentFailureDiagnostic(
+                                failure,beforeNative,observedNative,beforeRaw,afterRaw,targetPath);}
+                    });
+                }catch(Throwable unavailable){/* Optional diagnostics cannot replace the original rejection. */}
+            }
             throw failure;
         }
         WebObservationTiming.Span finalTiming=null;

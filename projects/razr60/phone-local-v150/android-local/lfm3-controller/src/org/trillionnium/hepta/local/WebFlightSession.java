@@ -446,6 +446,13 @@ final class WebFlightSession {
             if(observationFailure==null)WebObservationTiming.complete(whole);else WebObservationTiming.failed(whole,observationFailure);
             if(observationTiming==timing)observationTiming=null;
             // Diagnostic persistence must not replace the original outcome or grant a page capability.
+            try{
+                if(observationFailure!=null)timing.persistPrivateNativePair(observationFailure,new WebObservationTiming.PrivateEvidenceWriter(){
+                    public void write(String name,byte[] bytes)throws Exception{
+                        MobiMindPrivateFiles.writeNew(new File(evidence,name),bytes);
+                    }
+                });
+            }catch(Throwable diagnosticFailure){/* The original failed observation remains authoritative. */}
             try{record("web-observation-timing-"+timing.id()+".json",timing.snapshot());}catch(Exception diagnosticFailure){}
         }
     }

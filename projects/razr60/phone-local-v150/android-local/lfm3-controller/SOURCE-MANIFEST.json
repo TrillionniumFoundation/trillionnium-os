@@ -23,9 +23,9 @@
     "previous_manifest_sha256": "3b442123253504d89138cb3c02381ba978ef589453cc2a806fe1a98ed861a9af",
     "recognized_booking_pending_phase_budget_ms": 16000
   },
-  "candidate_status": "native_terminal_joint_source_frozen_before_new_joint_host_and_android_gates",
+  "candidate_status": "native_containment_diagnostics_source_frozen_before_current_host_and_android_gates",
   "candidate_version_assigned": true,
-  "complete_source_files": 2109,
+  "complete_source_files": 2112,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -62,13 +62,14 @@
     "updated_full_test_passed": true
   },
   "current_validation": {
-    "actual_final_android_application_build": "pending",
-    "actual_profile_business_task": "pending",
+    "actual_android_application_build": "pending",
+    "actual_price_business_task": "not passed",
     "all_blockers_closed": false,
-    "combined_canonical_host_suite": "pending at source freeze; later execution recorded separately",
-    "combined_targeted_host_gates": "pending at source freeze; later execution recorded separately",
-    "individual_targeted_overlays": "PASS on separate overlays, not combined qualification",
-    "phase": "source_freeze_before_joint_gates",
+    "current_canonical_host_suite": "pending; execution recorded separately",
+    "current_owned_generation_cleanup": "pending within canonical suite",
+    "current_sdk_exception_audit": "pending within canonical suite",
+    "isolated_targeted_overlay": "17 cases / 71 assertions PASS; current portable component run pending",
+    "phase": "source_freeze_before_current_gates",
     "phone_claims_from_host_tests": false
   },
   "dom_reuse_and_reopen_amendment": {
@@ -6441,9 +6442,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 286579,
+      "bytes": 287279,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "276fda03ed33bf45eda790a5798e67b59573a58a6a65d006f892dc9a691766c4"
+      "sha256": "1ca8f425f780be1130f1a81529d5abc9b3be6153459f6f0c4c9c6b3cecbbd718"
     },
     {
       "bytes": 711,
@@ -6906,9 +6907,9 @@
       "sha256": "55bb45677d862633cdae80d3786240026e57059288205b3d04bc500483bbcd6f"
     },
     {
-      "bytes": 77026,
+      "bytes": 77507,
       "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
-      "sha256": "789433dc2254f7661b5318ceb85b8715418335eeb291ee0ca9984a6799207445"
+      "sha256": "a86f308053da7f615c05fb9da03634df73f0f131ad1576165c7a1b07bd63d471"
     },
     {
       "bytes": 9993,
@@ -6926,9 +6927,9 @@
       "sha256": "d21e5a2c063a3670350591cc2dc12280f6f4b4ff5bb4c25136121520515c4bc9"
     },
     {
-      "bytes": 6674,
+      "bytes": 15485,
       "path": "src/org/trillionnium/hepta/local/WebObservationTiming.java",
-      "sha256": "9654d2a5b4609e4ff526bb52af214bc111831a4287651a78485694dc956d4449"
+      "sha256": "23cc115bf8eb378dcc1f26ee0d682df3e861df61ff22ea2cf822df84dfbd9027"
     },
     {
       "bytes": 17427,
@@ -6941,9 +6942,9 @@
       "sha256": "5c11833d76c7b1d9b45de83e31e309b6819e2b930c73008b479dd70e2e3a9eb3"
     },
     {
-      "bytes": 56331,
+      "bytes": 63137,
       "path": "src/org/trillionnium/hepta/local/WebShoppingObservationStability.java",
-      "sha256": "067ea0f96dad908ce6c30cc6942cf8fe7f9f87272b0d69db0d45e598debb4820"
+      "sha256": "613148d806b0eade9b3c893a652e5661e45f22e53476a884d3eb5be8576a6eaa"
     },
     {
       "bytes": 21401,
@@ -8024,6 +8025,21 @@
       "bytes": 3646,
       "path": "tests/native-change-diagnostic/run_structure_host.py",
       "sha256": "771a12428468bcf1013f450117fd38a0d16252f429e7ea1fa6b650f9d9ace877"
+    },
+    {
+      "bytes": 13328,
+      "path": "tests/native-containment-diagnostic/NativeContainmentDiagnosticHostTest.java",
+      "sha256": "63a7f8a76673fc93d8e82703978418534013f7c60612728647f890bf382c8e26"
+    },
+    {
+      "bytes": 1668,
+      "path": "tests/native-containment-diagnostic/README.md",
+      "sha256": "9efb6940ceefae6d1c621c6e9284d23d43a458c29f15aa389f55fc4b88a1c0a6"
+    },
+    {
+      "bytes": 3899,
+      "path": "tests/native-containment-diagnostic/run_host.py",
+      "sha256": "9773fa7257fcf11afdb82717eb6b98bc0ae6da5b364823fc7ae14d72842d5914"
     },
     {
       "bytes": 1523,
@@ -12570,6 +12586,36 @@
     "unknown_retirement_keeps_display_custody": true,
     "user0_fallback": false
   },
+  "native_containment_diagnostic_amendment": {
+    "approved_overlay_manifest_sha256": "5c3294ef79dea504f200dd3b164a7ab02dea7e4899e00e4db954eff0c2a5691b",
+    "baseline_manifest_sha256": "a22d371e846d673c688fe41934f2ba490bece8de9bae81cb5cd8507117538916",
+    "diagnostic_work_deferred_until_failure_finalization": true,
+    "first_rejection_locator_only": true,
+    "historical_full_native_pair_available": false,
+    "isolated_gate_sha256": "0373c2aa0fdbda12019a69a0be51910a5f55a212e3fd7a7e819ae948908571f7",
+    "late_unfinished_worker_is_not_waited_for": true,
+    "new_action_authority": false,
+    "normal_git_parent": "4b70c456d0031c1e6993f5cacc8dfb15a19f1b9f",
+    "ordinary_exception_not_made_recoverable": true,
+    "original_predicate_and_rejection_preserved": true,
+    "over_cap_is_unavailable_not_truncated": true,
+    "phone_operations": 0,
+    "private_complete_pair_maximum_utf8_bytes": 2097152,
+    "production_changed_paths": [
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "src/org/trillionnium/hepta/local/WebFlightSession.java",
+      "src/org/trillionnium/hepta/local/WebObservationTiming.java",
+      "src/org/trillionnium/hepta/local/WebShoppingObservationStability.java"
+    ],
+    "production_input_path_sequence_unchanged": true,
+    "public_output_metadata_and_hash_only": true,
+    "targeted_host_paths": [
+      "tests/native-containment-diagnostic/NativeContainmentDiagnosticHostTest.java",
+      "tests/native-containment-diagnostic/README.md",
+      "tests/native-containment-diagnostic/run_host.py"
+    ],
+    "task_deadlines_unchanged": true
+  },
   "native_terminal_joint_revision": {
     "baseline_manifest_sha256": "d0ac553ae69e8f7291b8db0e242e18baa28fb25ec0df324d1b6afad7a07d9f0d",
     "new_action_authority": false,
@@ -12727,14 +12773,13 @@
   },
   "prior_freeze_validation": {
     "actual_final_android_application_build": "pending",
-    "actual_profile_recovery_and_business_task": "pending",
+    "actual_profile_business_task": "pending",
     "all_blockers_closed": false,
-    "canonical_checks_executed": 112,
-    "complete_android_java_precompile": "pending for this final source",
-    "full_canonical_host_receipt_sha256": "0cf6612651053dee99d97031ec94eb55f9980506db4ecbd6fadddb812dfbbd31",
-    "full_canonical_host_suite": "PASS for exact reviewed complete candidate and unchanged final source inputs",
-    "phone_claims_from_host_tests": false,
-    "standalone_readonly_recovery_diagnostic": "Inherited exact root-owned r3 PASS; not App recovery authority"
+    "combined_canonical_host_suite": "pending at source freeze; later execution recorded separately",
+    "combined_targeted_host_gates": "pending at source freeze; later execution recorded separately",
+    "individual_targeted_overlays": "PASS on separate overlays, not combined qualification",
+    "phase": "source_freeze_before_joint_gates",
+    "phone_claims_from_host_tests": false
   },
   "production_build_inputs_count": 331,
   "profile_recents_prelaunch_recovery_amendment": {
