@@ -339,6 +339,64 @@ public final class VlmAdapterLifecycleHostTest {
             check(!new String(json(aggregate),StandardCharsets.UTF_8).contains("hepta.geniex-task-session"),"GenieX native close was fabricated");
         }
     }
+    static void scopedTaskCleanup()throws Exception{
+        try(Environment e=new Environment("task-scoped-cleanup")){
+            LocalInference.TaskCleanup empty=e.adapter.endTask(OTHER);
+            check(empty.cleanupKnown&&!empty.processStarted&&!empty.processExitObserved
+                    &&OTHER.equals(empty.taskId)&&empty.generation==null&&empty.receiptSha256==null
+                    &&empty.exitCode==null&&!e.engine.isBusy()&&e.executor.size()==0,
+                    "pre-reservation failure borrowed a model session");
+            e.adapter.beginTask(TASK);Object task=field(e.adapter,"task");
+            rejects(()->e.adapter.endTask(OTHER));
+            check(field(e.adapter,"task")==task&&e.engine.isBusy()&&e.executor.size()==0,
+                    "foreign task cleanup touched the owned model reservation");
+            Callback callback=new Callback(e.engine);Object round=e.request(1,callback);
+            prepareReturned(e,round);finish(e,round);LocalInference.TaskCleanup previous=e.end();
+            check(previous.receiptValid&&previous.processStarted&&TASK.equals(previous.taskId),
+                    "prior completed task fixture missing actual bound aggregate");
+            check(e.adapter.endTask(TASK)==previous,"same task repeated close lost its original receipt");
+            int submissions=e.executor.attempts;
+            LocalInference.TaskCleanup bootstrapFailure=e.adapter.endTask(OTHER);
+            check(bootstrapFailure!=previous&&OTHER.equals(bootstrapFailure.taskId)
+                    &&bootstrapFailure.cleanupKnown&&!bootstrapFailure.processStarted&&!bootstrapFailure.processExitObserved
+                    &&bootstrapFailure.generation==null&&bootstrapFailure.exitCode==null&&bootstrapFailure.receiptSha256==null,
+                    "new bootstrap failure inherited the prior task model session");
+            check(e.adapter.endTask(TASK)==previous&&!e.engine.isBusy()&&submissions==e.executor.attempts,
+                    "no-worker terminal mutated prior proof or submitted native cleanup work");
+            e.adapter.beginTask(OTHER);LocalInference.TaskCleanup reserved=e.end();
+            check(OTHER.equals(reserved.taskId)&&reserved.generation!=null&&!reserved.generation.equals(previous.generation)
+                    &&reserved.cleanupKnown&&!reserved.processStarted&&!reserved.receiptValid&&!e.engine.isBusy(),
+                    "new reserved no-process task did not retain its own aggregate");
+            check(e.adapter.endTask(OTHER)==reserved,"new task repeated close returned a different receipt");
+        }
+    }
+    static final class CleanupOnly implements LocalInference {
+        final TaskCleanup proof;int calls;
+        CleanupOnly(TaskCleanup proof){this.proof=proof;}
+        public LocalRuntimeConfig configuration(){throw new AssertionError("cleanup must not read configuration");}
+        public TaskCleanup endTask(){calls++;return proof;}
+        public Handle generate(String prompt,String system,File image,DecisionGrammar grammar,int maximum,long timeout,LocalInference.Callback callback){
+            throw new AssertionError("cleanup must not start inference");
+        }
+    }
+    static void cleanupBindingBoundary()throws Exception{
+        CleanupOnly empty=new CleanupOnly(LocalInference.TaskCleanup.noWorker());
+        LocalInference.TaskCleanup none=empty.endTask(TASK);
+        check(TASK.equals(none.taskId)&&none.cleanupKnown&&!none.processStarted&&empty.calls==1,
+                "legacy empty sentinel did not acquire the captured task identity");
+        rejects(()->empty.endTask(null));rejects(()->empty.endTask("not-a-task"));
+        check(empty.calls==1,"invalid expected task reached adapter cleanup");
+        CleanupOnly foreign=new CleanupOnly(new LocalInference.TaskCleanup(true,true,true,0,G1,OTHER,true,S1));
+        rejects(()->foreign.endTask(TASK));
+        CleanupOnly unbound=new CleanupOnly(new LocalInference.TaskCleanup(true,true,true,0,G1,null,true,S1));
+        rejects(()->unbound.endTask(TASK));
+        CleanupOnly unknown=new CleanupOnly(new LocalInference.TaskCleanup(false,false,false,null,null,null,false,null));
+        rejects(()->unknown.endTask(TASK));
+        LocalInference.TaskCleanup actualUnknown=new LocalInference.TaskCleanup(false,true,false,null,G1,TASK,false,null);
+        check(new CleanupOnly(actualUnknown).endTask(TASK)==actualUnknown,
+                "same-task unknown cleanup was rewritten or promoted");
+        rejects(()->new CleanupOnly(null).endTask(TASK));
+    }
     static void callbackAfterCleanup()throws Exception{
         try(Environment e=new Environment("callback-order")){
             e.adapter.beginTask(TASK);Callback callback=new Callback(e.engine);Object round=e.request(1,callback);prepareReturned(e,round);
@@ -675,6 +733,8 @@ public final class VlmAdapterLifecycleHostTest {
             test("captured_stop_drain_preserves_shared_admission",VlmAdapterLifecycleHostTest::capturedStop);
             test("actual_host_Process_stop_exit_does_not_release_task",VlmAdapterLifecycleHostTest::realHeldProcess);
             test("two_rounds_one_task_slot_and_aggregate",VlmAdapterLifecycleHostTest::twoRounds);
+            test("pre_begin_failure_cannot_reuse_previous_task_cleanup",VlmAdapterLifecycleHostTest::scopedTaskCleanup);
+            test("captured_task_cleanup_rejects_foreign_or_unbound_proofs",VlmAdapterLifecycleHostTest::cleanupBindingBoundary);
             test("callback_waits_for_generation_cleanup",VlmAdapterLifecycleHostTest::callbackAfterCleanup);
             test("missing_frame_currentness_bad_grammar_and_bounds",VlmAdapterLifecycleHostTest::missingCurrentFrame);
             test("unknown_generation_cleanup_retains_slot",()->unknownCleanup(false));

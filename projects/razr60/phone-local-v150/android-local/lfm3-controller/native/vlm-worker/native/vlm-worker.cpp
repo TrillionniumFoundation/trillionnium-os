@@ -4,6 +4,7 @@
 #include "llama.h"
 #include "ggml-backend.h"
 #include "linked-backends.h"
+#include "stage-clock.h"
 #include "mtmd.h"
 #include "mtmd-helper.h"
 #include "common/chat.h"
@@ -259,12 +260,15 @@ void tokenize_once(Request &r, Resources &res, const common_chat_prompt &prompt)
 }
 
 void infer(Request &r,common_json &receipt,std::string &raw) {
+    hepta_vlm::StageClock stages(hv_now,r.generation.c_str(),r.id.c_str());
+    stages.enter("runtime_hash");
     for(const auto &pin:runtime_pins)r.pin(r.native_dir,pin,false);
     receipt["runtime_files_full_sha_verified"]=true;
+    stages.enter("model_hash");
     r.model=r.pin(r.files+"/"+r.profile->directory,r.profile->model,true);
     r.projector=r.pin(r.files+"/"+r.profile->directory,r.profile->projector,true);
     receipt["model_files_full_sha_verified"]=true;
-    r.check();
+    r.check();stages.enter("backend_init");
     need(setenv("ADSP_LIBRARY_PATH",r.native_dir.c_str(),1)==0,"ADSP path setup failed");
     need(unsetenv("GGML_HEXAGON_NDEV")==0 && setenv("GGML_HEXAGON_DEVICES","1",1)==0,
         "single explicit HTP device setup failed");
@@ -285,7 +289,9 @@ void infer(Request &r,common_json &receipt,std::string &raw) {
     mp.split_mode=LLAMA_SPLIT_MODE_NONE;mp.main_gpu=0;mp.load_mode=LLAMA_LOAD_MODE_NONE;
     mp.progress_callback=load_progress;mp.progress_callback_user_data=&r;
     const auto model_fd=r.model->fdpath(),projector_fd=r.projector->fdpath();
+    stages.enter("language_model_load");
     res.model=llama_model_load_from_file(model_fd.c_str(),mp);need(res.model,"HTP0 model load failed");r.check();
+    stages.enter("language_metadata");
     need(meta(res.model,"general.architecture")==r.profile->architecture,"pinned architecture differs");
     auto pre=meta(res.model,"tokenizer.ggml.pre");
     if(r.profile->tokenizer_pre)need(pre==r.profile->tokenizer_pre,"pinned tokenizer pre differs");
@@ -301,20 +307,24 @@ void infer(Request &r,common_json &receipt,std::string &raw) {
     cp.n_seq_max=1;cp.n_outputs_max=1;cp.n_outputs_max_per_seq=1;cp.n_threads=4;cp.n_threads_batch=4;
     cp.flash_attn_type=LLAMA_FLASH_ATTN_TYPE_ENABLED;cp.offload_kqv=true;cp.op_offload=true;
     cp.abort_callback=abort_compute;cp.abort_callback_data=&r;
+    stages.enter("language_context_init");
     res.context=llama_init_from_model(res.model,cp);need(res.context,"HTP0 context load failed");
     need(llama_n_ctx(res.context)==kContext,"actual context differs");r.check();
     auto vp=mtmd_context_params_default();vp.use_gpu=true;vp.device=gpu;vp.n_threads=4;
     vp.warmup=false;vp.image_max_tokens=1024;vp.flash_attn_type=cp.flash_attn_type;
     vp.progress_callback=load_progress;vp.progress_callback_user_data=&r;
+    stages.enter("vision_model_load");
     res.vision=mtmd_init_from_file(projector_fd.c_str(),res.model,vp);
     need(res.vision && mtmd_support_vision(res.vision),"GPUOpenCL vision load failed; fallback forbidden");r.check();
     receipt["vision_max_allocation_bytes"]=uint64_t(ggml_backend_buft_get_max_size(ggml_backend_dev_buffer_type(gpu)));
+    stages.enter("original_image_decode");
     auto bitmap=mtmd_helper_bitmap_init_from_buf(res.vision,r.image->input.bytes,r.image->input.size,false,mtmd_helper_init_opt_default());
     res.bitmap=bitmap.bitmap;
     if(bitmap.video_ctx){mtmd_helper_video_free(bitmap.video_ctx);throw std::runtime_error("video input forbidden");}
     need(res.bitmap&&!mtmd_bitmap_is_audio(res.bitmap)&&mtmd_bitmap_get_data(res.bitmap)
         && mtmd_bitmap_get_nx(res.bitmap)==uint32_t(r.width)&&mtmd_bitmap_get_ny(res.bitmap)==uint32_t(r.height),"original image decode geometry differs");
     mtmd_bitmap_set_id(res.bitmap,r.image->input.digest);mtmd_bitmap_set_mergeable(res.bitmap,false);
+    stages.enter("chat_template");
     auto templates=common_chat_templates_init(res.model,"");need(bool(templates),"GGUF chat template initialization failed");
     common_chat_templates_inputs chat;
     chat.enable_thinking=false;chat.force_pure_content=true;chat.use_jinja=true;
@@ -329,6 +339,7 @@ void infer(Request &r,common_json &receipt,std::string &raw) {
     const auto rendered=common_chat_templates_apply(templates.get(),chat);
     const auto formatted=rendered.prompt.str();need(!formatted.empty()&&formatted.size()<=1048576,"formatted prompt bound exceeded");
     receipt["formatted_prompt_sha256"]=digest(formatted);r.publish("formatted-prompt.txt",formatted);
+    stages.enter("tokenize_and_admit");
     tokenize_once(r,res,rendered.prompt);
     const size_t n_tokens=mtmd_helper_get_n_tokens(res.chunks);const llama_pos n_pos=mtmd_helper_get_n_pos(res.chunks);
     size_t images=0,image_tokens=0,sum_tokens=0;llama_pos sum_pos=0;
@@ -355,10 +366,12 @@ void infer(Request &r,common_json &receipt,std::string &raw) {
     // No re-tokenization, truncation, KV shifting, or second chunk object occurs
     // between admission and this exact evaluation call.
     llama_pos past=0;
+    stages.enter("multimodal_prefill");
     const int eval_rc=mtmd_helper_eval_chunks(res.vision,res.context,res.chunks,0,0,kBatch,true,&past);
     receipt["prefill_return_code"]=eval_rc;receipt["prefill_positions"]=past;
     need(eval_rc==0&&past==n_pos,"same-chunk prefill failed or positions differ");r.check();
     receipt["same_chunks_counted_and_evaluated"]=true;
+    stages.enter("constrained_decode");
     const auto *vocab=llama_model_get_vocab(res.model);need(vocab,"model vocabulary missing");
     res.sampler=llama_sampler_chain_init(llama_sampler_chain_default_params());need(res.sampler,"sampler allocation failed");
     auto grammar=llama_sampler_init_grammar(vocab,r.grammar->str().c_str(),"root");need(grammar,"current frame GBNF rejected");
@@ -381,6 +394,9 @@ void infer(Request &r,common_json &receipt,std::string &raw) {
     need(hv_utf8(reinterpret_cast<const unsigned char *>(raw.data()),raw.size()),"raw output is not complete UTF-8");
     if(!eog)throw Failure(65,"token_limit");
     need(!raw.empty(),"empty model output");r.check();
+    // Declared before the backend and Resources: the last interval includes
+    // their existing destructors, rather than guessing teardown from totals.
+    stages.enter("resource_teardown");
 }
 
 int execute(int argc,char **argv) {

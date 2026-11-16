@@ -59,13 +59,14 @@ public final class PromptAdmissionFixture {
         private final PromptFrame frame;
         public final int nodes,required,visibleText,history;
         public final RecentActionProjection.ReadableEvents events;
-        public final JSONObject budgetReceipt;
+        public final JSONObject budgetReceipt,visualPromptEvidence;
         Result(PromptFrame frame)throws Exception{
             this.frame=frame;clickIds=frame.clickNodeIds;
             text=frame.text;grammar=frame.grammar;budget=frame.budget;ids=frame.nodeIds;
             nodes=frame.nodesShown;required=frame.requiredNodes;
             visibleText=frame.visibleTextShown;history=frame.historyShown;
             events=frame.eventHistory;budgetReceipt=frame.budgetJson();
+            visualPromptEvidence=frame.visualPromptOriginal==null?null:frame.visualPromptEvidence();
         }
         public void requireTextOnlyClick(ActionDecision action)throws ActionDecision.InvalidActionException{
             frame.requireTextOnlyClick(action);
@@ -101,7 +102,7 @@ public final class PromptAdmissionFixture {
               and any(isinstance(target, ast.Name) and target.id == "PURE_CLASSES" for target in item.targets)]
     if len(values) != 1:
         raise RuntimeError("one production pure-class list required")
-    files += [package / (name + ".java") for name in values[0]] + [package / "PhoneObservation.java"]
+    files += [package / (name + ".java") for name in values[0]] + [package / "PhoneObservation.java", package / "VisualPromptProjection.java"]
     files += [source / "tests/native-app/legacy-boundary/NativeAppSession.java"]
     web_fixture_source=source/"tests/web-flight/legacy-boundary/WebFlightDomain.java"
     web_fixture_raw=web_fixture_source.read_bytes()

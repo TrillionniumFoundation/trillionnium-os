@@ -13,6 +13,14 @@ public final class EngineInferenceAdapter implements LocalInference {
         task=engine.beginWarmTask(taskId);
     }
     @Override public void cancelTask(){LocalModelEngine.WarmTask value=task;if(value!=null)engine.cancelWarmTask(value);}
+    @Override public synchronized TaskCleanup endTask(String expectedTaskId){
+        TaskCleanup.requireTaskId(expectedTaskId);
+        LocalModelEngine.WarmTask value=task;
+        if(value==null)return TaskCleanup.noWorker(expectedTaskId);
+        if(!expectedTaskId.equals(value.taskId))
+            throw new IllegalStateException("model slot is owned by a different task");
+        return TaskCleanup.requireTask(expectedTaskId,endTask());
+    }
     @Override public synchronized TaskCleanup endTask(){
         LocalModelEngine.WarmTask value=task;if(value==null)return TaskCleanup.noWorker();
         TaskCleanup proof=engine.finishWarmTask(value);

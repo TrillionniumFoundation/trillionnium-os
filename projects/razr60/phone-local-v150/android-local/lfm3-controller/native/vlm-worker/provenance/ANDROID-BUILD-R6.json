@@ -10,11 +10,11 @@
       "-Wextra",
       "-Werror",
       "-fvisibility=hidden",
-      "-ffile-prefix-map=/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source=hepta-vlm-worker",
+      "-ffile-prefix-map=/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source=hepta-vlm-worker",
       "-c",
-      "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source/native/generation-bridge.c",
+      "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source/native/generation-bridge.c",
       "-o",
-      "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/native-runtime/generation-bridge.o"
+      "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/build-02/generation-bridge.o"
     ],
     [
       "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android30-clang++",
@@ -25,13 +25,13 @@
       "-Wextra",
       "-Werror",
       "-fvisibility=hidden",
-      "-ffile-prefix-map=/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source=hepta-vlm-worker",
+      "-ffile-prefix-map=/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source=hepta-vlm-worker",
       "-pie",
       "-nostdlib++",
-      "-isystem/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source/vendor/llama",
-      "-isystem/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source/vendor/llama/common",
-      "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source/native/vlm-worker.cpp",
-      "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/native-runtime/generation-bridge.o",
+      "-isystem/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source/vendor/llama",
+      "-isystem/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source/vendor/llama/common",
+      "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source/native/vlm-worker.cpp",
+      "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/build-02/generation-bridge.o",
       "-L/Users/qianqi/Documents/Codex/2026-11-08/razr-local-profiles-dda84ccf-code4/runtime/lib/llama_cpp",
       "-lllama-common",
       "-lmtmd",
@@ -47,14 +47,14 @@
       "-Wl,-z,relro",
       "-Wl,--no-undefined",
       "-o",
-      "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/native-runtime/libhepta_local_vlm_runner.so"
+      "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/build-02/libhepta_local_vlm_runner.so"
     ]
   ],
   "compiler_version": "Android (13324770, +pgo, -bolt, +lto, -mlgo, based on r530567d) clang version 19.0.0 (https://android.googlesource.com/toolchain/llvm-project 97a699bf4812a18fb657c2779f5296a4ab2694d2)\nTarget: aarch64-unknown-linux-android30\nThread model: posix\nInstalledDir: /Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin\n",
   "compiler_path": "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android30-clang++",
   "compiler_wrapper_sha256": "662b264a3a4ecaa251c2eee4537000a69b5078211223a9eeb76b0c3a213a1ee4",
   "source_properties_sha256": "84bef2c605bb263571c299f1eef3307ff58f741710f8cce514cb525b28567f41",
-  "source_manifest_sha256": "032e1a99f3e46f4d096e1d7906399e8afe1e6490a2135d15766f157e2e7a7fbd",
+  "source_manifest_sha256": "c8b9f13bdd0e38bf1963b1bcf68937c71395dcf2282eb7fceec1d7dffce3595a",
   "runtime": [
     {
       "name": "libllama.so",
@@ -178,7 +178,7 @@
     "clWaitForEvents@OPENCL_1.0"
   ],
   "new_cpp_runtime_added": false,
-  "symbol_closure_sha256": "00b7c50e5346262eeef8cccb1100ad4358461cdd7f3e55bb013939e7651ef4c5",
+  "symbol_closure_sha256": "5e1859f787c7ee72e10967e96fff352a0e77695852651af6cb71a2b38d94cc93",
   "required_api_imports": [
     "mtmd_tokenize_from_parts",
     "mtmd_helper_get_n_tokens",
@@ -205,16 +205,16 @@
     "phone_registration_executed": false
   },
   "linked_backend_host_checks": 23,
-  "linked_backend_host_receipt_sha256": "0e39891ae91d02a8c986ef72a3eb8b29654ba51ed1d167d159ffab738025fc25",
+  "linked_backend_host_receipt_sha256": "eab88a7443acdb75f54a23ba2b5344c9e266f88c024b5c48f9a36a2a0efadce9",
   "vision_init_order_host_cases": 5,
   "vision_init_order_host_checks": 23,
-  "vision_init_order_host_receipt_sha256": "51d433d91a5cd0aee4fe98298d21d32d6db5ef8961c2c36f5266b64570949582",
+  "vision_init_order_host_receipt_sha256": "1a1088f39211eed098d632e2663c33632f3099c5296d49aaea7db98c94863e3c",
   "worker": {
-    "path": "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/native-runtime/libhepta_local_vlm_runner.so",
-    "bytes": 147544,
-    "sha256": "079c30132cb55fa89480c4436fa2a11908d87025bba878907b04b83373eef63c"
+    "path": "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/build-02/libhepta_local_vlm_runner.so",
+    "bytes": 150752,
+    "sha256": "032feab773dd5d8485c7c45cc0134c9f6b48076d0ff6dd06cade37f2d89456c6"
   },
-  "elapsed_seconds": 1.7182116249999995,
+  "elapsed_seconds": 1.842990167,
   "android_executed": false,
   "phone_contacted": false,
   "model_inference_performed": false,

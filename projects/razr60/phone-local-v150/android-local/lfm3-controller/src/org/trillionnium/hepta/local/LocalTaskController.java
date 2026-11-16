@@ -125,13 +125,13 @@ public final class LocalTaskController implements AutoCloseable {
             if(display<=0||!generation.equals(response.getString("generation"))||!number(response.get("version"),1)
                     ||!number(response.get("display_id"),display)||!"RELEASED".equals(response.getString("state"))
                     ||!background.getString("display_name").equals(response.getString("display_name"))
-                    ||!background.get("expires_elapsed_ms").equals(response.get("expires_elapsed_ms"))
+                    ||!sameNumber(background.get("expires_elapsed_ms"),response.get("expires_elapsed_ms"))
                     ||!Boolean.FALSE.equals(response.get("ok"))||!Boolean.FALSE.equals(response.get("dispatched"))
                     ||!"launch".equals(response.getString("operation"))
                     ||!"APP_ALREADY_ON_MAIN_DISPLAY".equals(response.getString("error"))
                     ||!"APP_ALREADY_ON_MAIN_DISPLAY".equals(response.getString("terminal_reason")))return java.util.Collections.emptyMap();
             java.util.Map<String,Object> out=reason(task,owner,"APP_ALREADY_ON_MAIN_DISPLAY","owned_background_broker_refusal",
-                    "所选应用仍有主屏任务，后台任务尚未开始。请先在最近任务中结束该应用的主屏任务，再重新开始后台任务。");
+                    "所选应用仍有主屏任务（可能已退到后台），本次后台操作尚未开始。你可以自行在最近任务中关闭该应用，再重试。若要保留现有任务，可在支持前台操作的本地模型配置下取消「在后台空间操作」，阅读主屏操作提示后再点击「开始任务」。");
             out.put("broker_request_id",response.getString("request_id"));out.put("background_generation",generation);
             out.put("display_id",display);return out;
         }
@@ -146,6 +146,13 @@ public final class LocalTaskController implements AutoCloseable {
                 ?(java.util.Map<?,?>)value:java.util.Collections.emptyMap();}
         private static boolean yes(java.util.Map<?,?> value,String... keys){for(String key:keys)if(!Boolean.TRUE.equals(value.get(key)))return false;return true;}
         private static boolean number(Object value,long expected){return (value instanceof Integer||value instanceof Long)&&((Number)value).longValue()==expected;}
+        // baseJournal stores a Long; a separately parsed broker response may store
+        // the same wire integer as Integer. Require integral types and equal value.
+        private static boolean sameNumber(Object first,Object second){
+            return (first instanceof Integer||first instanceof Long)
+                    &&(second instanceof Integer||second instanceof Long)
+                    &&((Number)first).longValue()==((Number)second).longValue();
+        }
         private static boolean sameSha(Object a,Object b,Object c){return a instanceof String&&((String)a).matches("[0-9a-f]{64}")&&a.equals(b)&&a.equals(c);}
         static String display(String original,java.util.Map<String,Object> explanation){
             Object message=explanation.get("message");return message instanceof String?message+"\n\n任务记录："+original:original;
@@ -196,8 +203,7 @@ public final class LocalTaskController implements AutoCloseable {
 
     private static String systemPrompt(LocalRuntimeConfig config){
         if(config==null)throw new IllegalArgumentException("local configuration required");
-        return config.profile.visual()?SYSTEM.replace("无图像输入，不猜无标签图标用途或坐标。",
-                "附有同一观察帧的图像，可用于理解当前页面；所有工具仍只允许本轮节点和动作域，不猜无标签图标用途或坐标。"):SYSTEM;
+        return config.profile.visual()?VisualPromptProjection.SYSTEM:SYSTEM;
     }
 
     public LocalTaskController(HeptaAccessibilityService service,LocalInference inference){
@@ -430,6 +436,8 @@ public final class LocalTaskController implements AutoCloseable {
                 for(int attempt=0;attempt<2;attempt++){
                     emit("正在用手机本地模型规划第 "+steps+" 步…");
                     record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-budget-%d.json",steps,attempt),frame.budgetJson());
+                    if(frame.visualPromptOriginal!=null)record(evidence,
+                            String.format(java.util.Locale.ROOT,"step-%02d-visual-prompt-source-%d.json",steps,attempt),frame.visualPromptEvidence());
                     ModelAnswer answer=awaitModel(prompt,frame.grammar,deadline,before,instruction,authorization,background);
                     record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-model-%d.json",steps,attempt),
                             new JSONObject().put("run_id",answer.runId).put("raw_text",answer.text).put("observation_id",before.id)
@@ -685,7 +693,7 @@ public final class LocalTaskController implements AutoCloseable {
                 if(!backgroundCleanup.known){cleanup=false;blocked=true;finalStatus="blocked";modelSuccess=false;controllerSuccess=false;summary="后台屏幕释放尚未确认，已停止接受新任务";}
             }
             LocalInference.TaskCleanup modelCleanup;
-            try{modelCleanup=inference.endTask();}
+            try{modelCleanup=inference.endTask(taskId);}
             catch(Exception closeError){modelCleanup=new LocalInference.TaskCleanup(false,true,false,null,null,taskId,false,null);}
             TaskCancellationQueue.Ticket cancellation=taskCancellation;
             if(cancellation!=null&&taskId.equals(cancellation.taskId)){
@@ -1346,7 +1354,8 @@ public final class LocalTaskController implements AutoCloseable {
     private static final class Stopped extends Exception {private static final long serialVersionUID=1L;}
     private static final class CleanupUnknown extends Exception {private static final long serialVersionUID=1L;CleanupUnknown(String m){super(m);}}
     private static final class PromptFrame {
-        final String text;final java.util.Set<String> nodeIds,appPackages,clickNodeIds;final ConservativeTokenBudget budget;
+        final String text;final JSONObject visualPromptOriginal;
+        final java.util.Set<String> nodeIds,appPackages,clickNodeIds;final ConservativeTokenBudget budget;
         final DecisionGrammar grammar;
         final NotesTaskPhaseGuard.Domain phaseDomain;
         final CalculatorTaskInputGuard.Domain calculatorDomain;
@@ -1357,7 +1366,8 @@ public final class LocalTaskController implements AutoCloseable {
         final int editableFieldsShown,editableFieldsObserved,visibleTextShown,visibleTextObserved,historyProjectionBytes,requiredNodes;
         final RecentActionProjection.ReadableEvents eventHistory;final JSONObject appSearch;
         PromptFrame(String text,java.util.Set<String> ids,java.util.Set<String> packages,ConservativeTokenBudget budget,DecisionGrammar grammar,int shown,int observed,int apps,int history,AppCatalogueRanker.Page catalogue,
-                    int editableFieldsShown,int editableFieldsObserved,int visibleTextShown,int visibleTextObserved,RecentActionProjection.ReadableEvents eventHistory,int historyProjectionBytes,JSONObject appSearch,int requiredNodes,java.util.Set<String> clicks,NotesTaskPhaseGuard.Domain phaseDomain,CalculatorTaskInputGuard.Domain calculatorDomain,NativeAppDomain nativeDomain){
+                    int editableFieldsShown,int editableFieldsObserved,int visibleTextShown,int visibleTextObserved,RecentActionProjection.ReadableEvents eventHistory,int historyProjectionBytes,JSONObject appSearch,int requiredNodes,java.util.Set<String> clicks,NotesTaskPhaseGuard.Domain phaseDomain,CalculatorTaskInputGuard.Domain calculatorDomain,NativeAppDomain nativeDomain,JSONObject visualPromptOriginal){
+            this.visualPromptOriginal=visualPromptOriginal;
             this.phaseDomain=phaseDomain;
             this.calculatorDomain=calculatorDomain;this.nativeDomain=nativeDomain;
             this.text=text;nodeIds=java.util.Collections.unmodifiableSet(new java.util.HashSet<String>(ids));
@@ -1367,6 +1377,15 @@ public final class LocalTaskController implements AutoCloseable {
             this.editableFieldsShown=editableFieldsShown;this.editableFieldsObserved=editableFieldsObserved;
             this.visibleTextShown=visibleTextShown;this.visibleTextObserved=visibleTextObserved;this.eventHistory=eventHistory;this.appSearch=appSearch;
             this.historyProjectionBytes=historyProjectionBytes;this.requiredNodes=requiredNodes;
+        }
+        JSONObject visualPromptEvidence()throws Exception{
+            if(visualPromptOriginal==null)throw new IllegalStateException("visual model projection absent");
+            return new JSONObject().put("schema",VisualPromptProjection.SCHEMA)
+                    .put("original_controller_data",visualPromptOriginal)
+                    .put("original_owner_rewritten",false).put("metadata_projection_filtered_screen_or_history",false)
+                    .put("grammar_or_dispatch_authority_changed",false)
+                    .put("model_prompt_sha256",MobiMindContract.sha(text.getBytes(StandardCharsets.UTF_8)))
+                    .put("model_prompt_utf8_bytes",text.getBytes(StandardCharsets.UTF_8).length);
         }
         void requireTextOnlyClick(ActionDecision action)throws ActionDecision.InvalidActionException{
             PromptActionDomain.requireTextOnlyClick(action,targets,clickNodeIds);
@@ -1632,8 +1651,11 @@ public final class LocalTaskController implements AutoCloseable {
             if(lastTransition!=null)data.put("last_transition",new JSONObject(lastTransition.forCurrent(observation.id,observation.packageName)));
             data.put("screen",screen);
             // Escape markup only in untrusted JSON. Owner text is unchanged.
-            // Screenshots remain private action-verification evidence, never model input.
-            String text="UNTRUSTED_DATA\n"+promptSections(data).replace("<","\\u003c")+"\nOWNER\n"+owner;
+            // Visual inference keeps the complete audit data privately, while
+            // redundant transport identifiers do not consume model context.
+            // Current screen, history, authority domains and OWNER stay intact.
+            JSONObject modelData=config.profile.visual()?VisualPromptProjection.project(data):data;
+            String text="UNTRUSTED_DATA\n"+promptSections(modelData).replace("<","\\u003c")+"\nOWNER\n"+owner;
             ConservativeTokenBudget budget=ConservativeTokenBudget.estimate(systemPrompt(config),text,config);
             // Exact-token profiles retain this bounded observation and complete
             // history. A byte heuristic must not erase readouts or reject them
@@ -1653,7 +1675,7 @@ public final class LocalTaskController implements AutoCloseable {
                 NotesTaskPhaseGuard.Domain phaseDomain=taskPhase.bind(clicks,edits,submits.keySet(),fixedTargets,packages,scrolls);phaseGuard.publish(phaseDomain);
                 CalculatorTaskInputGuard.Domain calculatorDomain=calculator.bind(clicks,edits,submits.keySet(),fixedTargets,packages,scrolls);calculatorGuard.publish(calculatorDomain);
                 return new PromptFrame(text,ids,packages,budget,grammar,nodeCount,observation.nodes.size(),appCount,history.length(),catalogue,
-                        editableFields.size(),editableFieldsObserved,visibleText.size(),visibleTextObserved,events,historyBytes,appSearch,requiredIds.size(),clicks,phaseDomain,calculatorDomain,nativeDomain);
+                        editableFields.size(),editableFieldsObserved,visibleText.size(),visibleTextObserved,events,historyBytes,appSearch,requiredIds.size(),clicks,phaseDomain,calculatorDomain,nativeDomain,config.profile.visual()?data:null);
             }
             // Only profiles with a proved upper bound reach optional reductions.
             // Keep the complete readable action trace, including labels and typed text.

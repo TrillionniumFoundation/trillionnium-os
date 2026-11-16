@@ -49,9 +49,14 @@
       "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
     },
     {
+      "path": "native/stage-clock.h",
+      "bytes": 1641,
+      "sha256": "c357de9b80631ff94e49fa22049776280b27f4626931d1788d1d50e5cf047ee4"
+    },
+    {
       "path": "native/vlm-worker.cpp",
-      "bytes": 29791,
-      "sha256": "4c9215d9a37281c35d7fe855ac425e103b9829e6d47a754c35e37d2a199b3a11"
+      "bytes": 30541,
+      "sha256": "6901bf8e7df072c564b89bedf3e6774d105c842064ce38d37aea89bf0cc87600"
     },
     {
       "path": "vendor/llama/LICENSE",
@@ -194,6 +199,11 @@
       "sha256": "fccfc533438ce86175e67ca06839bf2d01fe760b723945d109a26397836727af"
     },
     {
+      "path": "tools/test_stage_clock.py",
+      "bytes": 2430,
+      "sha256": "fcd2e74bc8a1b47f92a12f33e8ddbe8d2116033b42f14feb0cec210665c658c5"
+    },
+    {
       "path": "tools/test_vision_init_order.py",
       "bytes": 5639,
       "sha256": "3aa47f875984b023ba4ca6d6bd418411909cf40cfbb8e1741f88895631e69802"
@@ -212,6 +222,11 @@
       "path": "tests/linked-backends-test.cpp",
       "bytes": 2014,
       "sha256": "241dda670ef4ac5ffa1227a7af362440674dd8b4cd2b8473378b56c65a336eaa"
+    },
+    {
+      "path": "tests/stage-clock-test.cpp",
+      "bytes": 1972,
+      "sha256": "512bf36b3564ef793ed9dadd9c1a931f5be1ede7aefaec80bee85c032feba5df"
     },
     {
       "path": "tests/vision-init-order-fixture.cpp",

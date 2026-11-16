@@ -562,7 +562,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         backgroundPermissionState.setText(backgroundPermission.state());
         backgroundSummary.setText(tasks.isRunning()&&backgroundMode.isChecked()?"正在后台执行":
                 tasks.hasBackgroundLease()?"上次后台空间待清理":
-                backgroundMode.isChecked()?"将在所选起始应用的后台空间操作":"将在当前屏幕操作");
+                backgroundMode.isChecked()?"将在所选起始应用的后台空间操作":"前台模式会操作主屏幕；点击「开始任务」表示同意本次主屏操作");
         openRootManager.setEnabled(rootManagerNavigationIdle());
         prepareBackgroundPermission.setEnabled(!busy&&!tasks.isBlocked()&&!tasks.isRecovering()&&!tasks.hasBackgroundLease()
                 &&!visualDiagnostic.isBusy()&&!visualDiagnostic.isBlocked()&&!uiVenusDiagnostic.isBusy()&&!uiVenusDiagnostic.isBlocked());

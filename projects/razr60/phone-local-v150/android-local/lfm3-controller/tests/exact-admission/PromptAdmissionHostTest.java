@@ -89,12 +89,23 @@ public final class PromptAdmissionHostTest {
         String textSystem=PromptAdmissionFixture.system();
         String system=(String)actualSystem.invoke(null,visual);
         check(textSystem.contains("无图像输入，不猜无标签图标用途或坐标。"),"original text system remains unchanged");
-        check(system.equals(textSystem.replace("无图像输入，不猜无标签图标用途或坐标。",
-                "附有同一观察帧的图像，可用于理解当前页面；所有工具仍只允许本轮节点和动作域，不猜无标签图标用途或坐标。")),
-                "visual system changes only the actual image-input declaration");
+        check(system.equals(VisualPromptProjection.SYSTEM)
+                &&system.getBytes(StandardCharsets.UTF_8).length<textSystem.getBytes(StandardCharsets.UTF_8).length,
+                "GUI uses its concise visual contract; text-only system is unchanged");
         PromptAdmissionFixture.Result frame=PromptAdmissionFixture.build(OWNER,apps,screen,history,visual);
-        check(frame.text.equals(textFrame.text)&&frame.text.endsWith("\nOWNER\n"+OWNER),
-                "GUI retains the complete original prompt and OWNER bytes");
+        Method sections=PromptAdmissionFixture.class.getDeclaredMethod("promptSections",JSONObject.class);
+        sections.setAccessible(true);
+        JSONObject full=frame.visualPromptEvidence.getJSONObject("original_controller_data");
+        String original="UNTRUSTED_DATA\n"+((String)sections.invoke(null,full)).replace("<","\\u003c")+"\nOWNER\n"+OWNER;
+        check(original.equals(textFrame.text)&&frame.text.endsWith("\nOWNER\n"+OWNER),
+                "GUI retains the complete pre-projection prompt in private evidence and exact OWNER in model input");
+        String projected="UNTRUSTED_DATA\n"+((String)sections.invoke(null,VisualPromptProjection.project(full))).replace("<","\\u003c")+"\nOWNER\n"+OWNER;
+        check(frame.text.equals(projected)&&frame.text.getBytes(StandardCharsets.UTF_8).length<original.getBytes(StandardCharsets.UTF_8).length,
+                "only the reviewed metadata projection reaches the visual model");
+        check(MobiMindContract.sha(frame.text.getBytes(StandardCharsets.UTF_8)).equals(frame.visualPromptEvidence.get("model_prompt_sha256"))
+                &&Boolean.FALSE.equals(frame.visualPromptEvidence.get("metadata_projection_filtered_screen_or_history"))
+                &&Boolean.FALSE.equals(frame.visualPromptEvidence.get("grammar_or_dispatch_authority_changed")),
+                "full source evidence binds the actual model prompt without claiming new tool authority");
         check(frame.ids.equals(textFrame.ids)&&frame.nodes==30&&frame.required==13&&frame.visibleText==6,
                 "GUI retains every original current node and visible readout");
         check(frame.grammar.text.equals(textFrame.grammar.text)&&frame.grammar.sha256.equals(textFrame.grammar.sha256),

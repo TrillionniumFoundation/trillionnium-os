@@ -151,9 +151,29 @@ def main():
                 and outcome.get("phone_operations")==0 and outcome.get("android_runtime") is False
                 and outcome.get("model_inference") is False and outcome.get("provider_or_business_verified") is False,
                 "read-only outcome explanation regression gate")
+        # The older Android IO JSON fixture preserves every integer as Long. Use
+        # the fixed real parser for the live Long/parsed Integer receipt boundary.
+        refusal_fixture=source/"tests/native-app-routing/fixtures/r6-ctrip-background-cleanup.json"
+        require(refusal_fixture.stat().st_size==8593 and sha(refusal_fixture.read_bytes())==
+                "88d86ade77248e6f7aa0f16d18ae59da292655996591d10b9f5b149973c71626",
+                "preserved actual R6 refusal fixture differs")
+        real_json_entry=[p for p in entry if not (p.parent.name=="json" and p.parent.parent.name=="org")]
+        real_json_entry.append(source/"tests/native-app-routing/LaunchRefusalRoundtripHostTest.java")
+        real_json_classes=out/"real-json-entry-classes";real_json_classes.mkdir()
+        run("real-json-entry-compile",[jdk/"bin/javac","--release","8","-encoding","UTF-8","-proc:none","-Xlint:all,-options","-Werror",
+                                      "-classpath",jar,"-d",real_json_classes,*real_json_entry])
+        run("launch-refusal-roundtrip-cases",[jdk/"bin/java","-cp",str(real_json_classes)+os.pathsep+str(jar),
+                "org.trillionnium.hepta.local.LaunchRefusalRoundtripHostTest",refusal_fixture,out/"LAUNCH-REFUSAL-ROUNDTRIP.json"])
+        roundtrip=json.loads((out/"LAUNCH-REFUSAL-ROUNDTRIP.json").read_text())
+        require(roundtrip.get("schema")=="hepta.launch-refusal-roundtrip-host.v1" and roundtrip.get("all_pass") is True
+                and roundtrip.get("cases")==len(roundtrip.get("case_names",[]))==14
+                and len(set(roundtrip.get("case_names",[])))==14 and roundtrip.get("assertions")==32
+                and roundtrip.get("real_json_dependency") is True and roundtrip.get("phone_operations")==0
+                and roundtrip.get("android_runtime") is False and roundtrip.get("model_inference") is False
+                and roundtrip.get("business_verified") is False,"real JSON refusal explanation regression gate")
         cases={"schema":"hepta.native-app-routing-host.v1","all_pass":True,"cases":pure_cases["cases"]+entry_cases["cases"],
                "assertions":pure_cases["assertions"]+entry_cases["assertions"],"case_names":EXPECTED_PURE+EXPECTED_ENTRY,
-                "pure":pure_cases,"entry":entry_cases,"terminal_status":terminal,"outcome_explanation":outcome,
+                "pure":pure_cases,"entry":entry_cases,"terminal_status":terminal,"outcome_explanation":outcome,"launch_refusal_roundtrip":roundtrip,
                 "phone_operations":0,"android_runtime":False,"provider_or_business_verified":False}
         write(out/"CASES.json",(json.dumps(cases,ensure_ascii=False,indent=2)+"\n").encode())
         record["cases"]=cases;record["all_pass"]=True

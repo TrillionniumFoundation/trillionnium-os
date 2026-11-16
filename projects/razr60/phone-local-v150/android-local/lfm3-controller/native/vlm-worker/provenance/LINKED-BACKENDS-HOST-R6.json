@@ -2,32 +2,32 @@
   "schema": "hepta.vlm.linked-backend-host-run.v1",
   "sources": {
     "native/linked-backends.h": {
-      "path": "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source/native/linked-backends.h",
+      "path": "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source/native/linked-backends.h",
       "bytes": 1826,
       "sha256": "fa05d6bc14e288bcd9136f6e80b7c026d96751dba388da5da160546673dc74d2"
     },
     "native/vlm-worker.cpp": {
-      "path": "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source/native/vlm-worker.cpp",
-      "bytes": 29791,
-      "sha256": "4c9215d9a37281c35d7fe855ac425e103b9829e6d47a754c35e37d2a199b3a11"
+      "path": "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source/native/vlm-worker.cpp",
+      "bytes": 30541,
+      "sha256": "6901bf8e7df072c564b89bedf3e6774d105c842064ce38d37aea89bf0cc87600"
     },
     "tests/linked-backends-fixture.cpp": {
-      "path": "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source/tests/linked-backends-fixture.cpp",
+      "path": "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source/tests/linked-backends-fixture.cpp",
       "bytes": 2043,
       "sha256": "64d386b88fade541b741f1a6f0ad2681eee9a408839b2f4fb7af25d2ad3e2d7f"
     },
     "tests/linked-backends-test.cpp": {
-      "path": "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source/tests/linked-backends-test.cpp",
+      "path": "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source/tests/linked-backends-test.cpp",
       "bytes": 2014,
       "sha256": "241dda670ef4ac5ffa1227a7af362440674dd8b4cd2b8473378b56c65a336eaa"
     },
     "vendor/llama/ggml-backend.h": {
-      "path": "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source/vendor/llama/ggml-backend.h",
+      "path": "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source/vendor/llama/ggml-backend.h",
       "bytes": 27570,
       "sha256": "0e5e8e1f16d11ebbf501e38bc6705d79eee819b5f0b17476533f2100ed9674e2"
     },
     "tools/test_linked_backends.py": {
-      "path": "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source/tools/test_linked_backends.py",
+      "path": "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source/tools/test_linked_backends.py",
       "bytes": 4024,
       "sha256": "fccfc533438ce86175e67ca06839bf2d01fe760b723945d109a26397836727af"
     }
@@ -42,22 +42,22 @@
         "-Wextra",
         "-Werror",
         "-pedantic",
-        "-I/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source/vendor/llama",
-        "-I/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source/native",
+        "-I/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source/vendor/llama",
+        "-I/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source/native",
         "-dynamiclib",
         "-Wl,-install_name,@rpath/liblinked-backend-fixture.dylib",
-        "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source/tests/linked-backends-fixture.cpp",
+        "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source/tests/linked-backends-fixture.cpp",
         "-o",
-        "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/native-runtime/linked-backends-host/liblinked-backend-fixture.dylib"
+        "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/build-02/linked-backends-host/liblinked-backend-fixture.dylib"
       ],
       "exit_code": 0,
       "stdout": {
-        "path": "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/native-runtime/linked-backends-host/compile-fixture.stdout",
+        "path": "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/build-02/linked-backends-host/compile-fixture.stdout",
         "bytes": 0,
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       },
       "stderr": {
-        "path": "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/native-runtime/linked-backends-host/compile-fixture.stderr",
+        "path": "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/build-02/linked-backends-host/compile-fixture.stderr",
         "bytes": 0,
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       }
@@ -71,40 +71,40 @@
         "-Wextra",
         "-Werror",
         "-pedantic",
-        "-I/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source/vendor/llama",
-        "-I/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source/native",
-        "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/source/tests/linked-backends-test.cpp",
-        "-L/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/native-runtime/linked-backends-host",
+        "-I/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source/vendor/llama",
+        "-I/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source/native",
+        "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/source/tests/linked-backends-test.cpp",
+        "-L/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/build-02/linked-backends-host",
         "-llinked-backend-fixture",
         "-Wl,-rpath,@loader_path",
         "-o",
-        "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/native-runtime/linked-backends-host/linked-backends-test"
+        "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/build-02/linked-backends-host/linked-backends-test"
       ],
       "exit_code": 0,
       "stdout": {
-        "path": "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/native-runtime/linked-backends-host/compile-test.stdout",
+        "path": "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/build-02/linked-backends-host/compile-test.stdout",
         "bytes": 0,
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       },
       "stderr": {
-        "path": "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/native-runtime/linked-backends-host/compile-test.stderr",
+        "path": "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/build-02/linked-backends-host/compile-test.stderr",
         "bytes": 0,
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       }
     },
     {
       "argv": [
-        "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/native-runtime/linked-backends-host/linked-backends-test",
-        "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/native-runtime/linked-backends-host/liblinked-backend-fixture.dylib"
+        "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/build-02/linked-backends-host/linked-backends-test",
+        "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/build-02/linked-backends-host/liblinked-backend-fixture.dylib"
       ],
       "exit_code": 0,
       "stdout": {
-        "path": "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/native-runtime/linked-backends-host/execute-test.stdout",
+        "path": "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/build-02/linked-backends-host/execute-test.stdout",
         "bytes": 177,
         "sha256": "006c49c94a6fa86dbd7f9eb45822d1cdffa34256db16beb88609df7e699c7b30"
       },
       "stderr": {
-        "path": "/Users/qianqi/Documents/Codex/2026-11-15/hepta-r21-vlm-maxalloc-fix-native-22402-r6/native-runtime/linked-backends-host/execute-test.stderr",
+        "path": "/Users/qianqi/Documents/Codex/2026-11-16/hepta-r22-vlm-native-22402-01/build-02/linked-backends-host/execute-test.stderr",
         "bytes": 0,
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       }

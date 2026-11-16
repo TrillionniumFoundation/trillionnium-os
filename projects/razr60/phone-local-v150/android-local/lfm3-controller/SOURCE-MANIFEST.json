@@ -5,9 +5,9 @@
     "component_tree": "08f3d1c32944f834530b659cb6c3b7ec12c00039",
     "source_manifest_sha256": "bf99aebd7009d29cad75f3b796af4005084f30219aff61929cb905c4b214d991"
   },
-  "candidate_status": "r21_opencl_allocation_order_fix_pending_exact_head_full_gates_apk_and_phone_validation",
+  "candidate_status": "r22_task_cleanup_explanation_and_visual_latency_candidate_pending_full_gates_build_and_phone",
   "candidate_version_assigned": true,
-  "complete_source_files": 1969,
+  "complete_source_files": 1978,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -44,27 +44,11 @@
     "updated_full_test_passed": true
   },
   "current_validation": {
-    "exact_published_head_ci_pending": true,
-    "frozen_head_host_gates_pending": true,
-    "full_android_build": false,
-    "historical_receipts_apply_only_to_their_original_sources": true,
-    "local_canonical108_non_manifest_inputs_pass": false,
-    "local_native19_non_manifest_inputs_pass": false,
-    "native_flight_business_verified": false,
-    "native_shopping_business_verified": false,
-    "phone_tested": false,
-    "required_canonical_checks": 111,
-    "required_linked_backend_checks": 23,
-    "required_mac_gates": 9,
-    "required_native_gates": 19,
-    "required_vision_init_order_cases": 5,
-    "required_vision_init_order_checks": 23,
-    "required_vlm_ci_transfer_checks": 14,
-    "required_vlm_guard_checks": 43,
-    "required_vlm_packaging_checks": 11,
-    "root_manifest_refreshed_after_local_host_runs": false,
-    "strict_host_gate": "Complete R6 source is frozen before canonical111, native19, linked-backend23, vision lifecycle5cases/23checks and retained 11/14/43 checks. Fresh exact-head CI, retained Mac9, full APK compilation and phone inference/business outcomes need independent new receipts. This actual native worker build does not qualify those pending stages.",
-    "unified_host_pass": false
+    "actual_android_application_build": "pending",
+    "actual_phone_install_and_regression": "pending",
+    "all_blockers_closed": false,
+    "full_frozen_source_gates": "pending",
+    "scope": "new R22 source, historical R6 results remain historical"
   },
   "files": [
     {
@@ -5005,7 +4989,7 @@
     {
       "bytes": 5327,
       "path": "native/local-vlm-runtime-pins.json",
-      "sha256": "13dfa50b8a7de4bb67888039e6aed4a545d43e04486befce6389f08e868d8b96"
+      "sha256": "997b383be7bf1d69cb4a38f3a7ee3bba0cdeaf99a161de25ebcfc8c66299eb02"
     },
     {
       "bytes": 1495,
@@ -5248,9 +5232,9 @@
       "sha256": "75af717eb17ca62af80f097ea5f6cb6743532d2e8323461d42ddc8794359b7c0"
     },
     {
-      "bytes": 8721,
+      "bytes": 9197,
       "path": "native/vlm-worker/SOURCE.json",
-      "sha256": "032e1a99f3e46f4d096e1d7906399e8afe1e6490a2135d15766f157e2e7a7fbd"
+      "sha256": "c8b9f13bdd0e38bf1963b1bcf68937c71395dcf2282eb7fceec1d7dffce3595a"
     },
     {
       "bytes": 669,
@@ -5298,9 +5282,14 @@
       "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
     },
     {
-      "bytes": 29791,
+      "bytes": 1641,
+      "path": "native/vlm-worker/native/stage-clock.h",
+      "sha256": "c357de9b80631ff94e49fa22049776280b27f4626931d1788d1d50e5cf047ee4"
+    },
+    {
+      "bytes": 30541,
       "path": "native/vlm-worker/native/vlm-worker.cpp",
-      "sha256": "4c9215d9a37281c35d7fe855ac425e103b9829e6d47a754c35e37d2a199b3a11"
+      "sha256": "6901bf8e7df072c564b89bedf3e6774d105c842064ce38d37aea89bf0cc87600"
     },
     {
       "bytes": 8556,
@@ -5313,9 +5302,9 @@
       "sha256": "ad49234f27dc78bd8e7fcb8b68063cc24b62f2d7ca253a9a8cf979332d659eb9"
     },
     {
-      "bytes": 9503,
+      "bytes": 9342,
       "path": "native/vlm-worker/provenance/ANDROID-BUILD-R6.json",
-      "sha256": "d3f77b957963071d0fa888a5c4c40e351a3e1b1fc65332de341b83cbc303d816"
+      "sha256": "58545b00b49adc784c933635e97cd3f8f7353e0cf5189b42f761af37d9d649f2"
     },
     {
       "bytes": 122,
@@ -5333,9 +5322,9 @@
       "sha256": "06df8558523a589087220c6c0818accf9bbf9a56842f666036e6ce9715959ef1"
     },
     {
-      "bytes": 6032,
+      "bytes": 5667,
       "path": "native/vlm-worker/provenance/LINKED-BACKENDS-HOST-R6.json",
-      "sha256": "0e39891ae91d02a8c986ef72a3eb8b29654ba51ed1d167d159ffab738025fc25"
+      "sha256": "eab88a7443acdb75f54a23ba2b5344c9e266f88c024b5c48f9a36a2a0efadce9"
     },
     {
       "bytes": 663,
@@ -5343,9 +5332,9 @@
       "sha256": "2e84e431be18e6a0471481be690653f8e4bf3ab7220ad430d3df43bb5cc923f3"
     },
     {
-      "bytes": 7381,
+      "bytes": 7047,
       "path": "native/vlm-worker/provenance/VISION-INIT-ORDER-HOST-R6.json",
-      "sha256": "51d433d91a5cd0aee4fe98298d21d32d6db5ef8961c2c36f5266b64570949582"
+      "sha256": "1a1088f39211eed098d632e2663c33632f3099c5296d49aaea7db98c94863e3c"
     },
     {
       "bytes": 1430,
@@ -5378,6 +5367,11 @@
       "sha256": "241dda670ef4ac5ffa1227a7af362440674dd8b4cd2b8473378b56c65a336eaa"
     },
     {
+      "bytes": 1972,
+      "path": "native/vlm-worker/tests/stage-clock-test.cpp",
+      "sha256": "512bf36b3564ef793ed9dadd9c1a931f5be1ede7aefaec80bee85c032feba5df"
+    },
+    {
       "bytes": 5643,
       "path": "native/vlm-worker/tests/vision-init-order-fixture.cpp",
       "sha256": "9a9083296cb208c76767a61df47b73245fc3bcc0f6fe87c7e9bf0c32367de6d8"
@@ -5396,6 +5390,11 @@
       "bytes": 4024,
       "path": "native/vlm-worker/tools/test_linked_backends.py",
       "sha256": "fccfc533438ce86175e67ca06839bf2d01fe760b723945d109a26397836727af"
+    },
+    {
+      "bytes": 2430,
+      "path": "native/vlm-worker/tools/test_stage_clock.py",
+      "sha256": "fcd2e74bc8a1b47f92a12f33e8ddbe8d2116033b42f14feb0cec210665c658c5"
     },
     {
       "bytes": 5639,
@@ -6313,9 +6312,9 @@
       "sha256": "b2656fc23d0ad7166c20330e7e05e89ba550be4a87ebf8f3512b906e16fbfb54"
     },
     {
-      "bytes": 2660,
+      "bytes": 3112,
       "path": "src/org/trillionnium/hepta/local/EngineInferenceAdapter.java",
-      "sha256": "a631cfef0d02237960788631cdf25024c65179adde901f838d3337fb2a02f35c"
+      "sha256": "ec4e9cbd879f97e6ad6f31d9713d9467887c1838c8411cb50053bbaa102119b1"
     },
     {
       "bytes": 5928,
@@ -6338,9 +6337,9 @@
       "sha256": "e2d7cd763683831ced97fcd9bc5e08c2d134e4543dd55c079e5451265d60d0ae"
     },
     {
-      "bytes": 6052,
+      "bytes": 7554,
       "path": "src/org/trillionnium/hepta/local/LocalInference.java",
-      "sha256": "28e9119276692d6aa6f2562d393e9cff49a31b5a7ca79a68c00ebce29cfd59fb"
+      "sha256": "73d906b09ed2b8670faceab8b27152bbb0f2227ebdbb29eb7e4c987d3f3df7d3"
     },
     {
       "bytes": 79635,
@@ -6358,9 +6357,9 @@
       "sha256": "e99ef5b8c965dc5d09983a638412b3b5329f0dd9180099e8fe8f8e824153c991"
     },
     {
-      "bytes": 166581,
+      "bytes": 168400,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "7be13468b7f94202d689742ae3a6dc5d66f3437af049b071844651143e4aeaad"
+      "sha256": "4ef392d7a5f5425d6a0353ee65f49286826d86d1c39537d2146be605deec5432"
     },
     {
       "bytes": 50762,
@@ -6368,9 +6367,9 @@
       "sha256": "09ce1dfa98264ba68a1ca73867e99d1b0ac70bafa77f062e2f2c3942ced9cedf"
     },
     {
-      "bytes": 51178,
+      "bytes": 51241,
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "sha256": "486b983f7311f8fa6c2002bf811305f0bf3f9491907abc3640d2f9525222e613"
+      "sha256": "e12d621a3837d017bf32df92031ea101cf65afb49af0d201aafd85f75b31a136"
     },
     {
       "bytes": 4417,
@@ -6708,14 +6707,19 @@
       "sha256": "aab2a12e324aae8191dff73c3b43f8643f7edba8a5f418d67219901bcdea6d1c"
     },
     {
-      "bytes": 56355,
+      "bytes": 9335,
+      "path": "src/org/trillionnium/hepta/local/VisualPromptProjection.java",
+      "sha256": "024c24468fe9493396030e7f4c243531d86d2074f3c2157e0776b4792d484bb8"
+    },
+    {
+      "bytes": 57155,
       "path": "src/org/trillionnium/hepta/local/VlmInferenceAdapter.java",
-      "sha256": "0f1c592f902bd512d66d9e6f4de3d301ba2e5b978bbe7547c6434e8a4e5b9fbc"
+      "sha256": "b90f858df35153e4a7ad5475326bc35087601b38a3503179d1e8fbb76a5c4317"
     },
     {
       "bytes": 1091,
       "path": "src/org/trillionnium/hepta/local/VlmPins.java",
-      "sha256": "a1261de07acdd70eb5edd1d0ce7b95dd2211d001b1c6506d5561eb5bd8cc200e"
+      "sha256": "a0638bca1ec2d7197f61723a39357bc317d8b47c3cf7aa38e47444cca7e03428"
     },
     {
       "bytes": 34867,
@@ -7383,9 +7387,9 @@
       "sha256": "692227e199d6963fd68a3f185a000331d7901838e3f699aa8c160f9b5d4f57ab"
     },
     {
-      "bytes": 19525,
+      "bytes": 20690,
       "path": "tests/exact-admission/PromptAdmissionHostTest.java",
-      "sha256": "93d7fa5bb460cfe673086fb696ba6a9b71c01170d1a2f6ff8ba9b8771ccc6341"
+      "sha256": "09552d4039d9898fbb5c7d8aaecb2437eaaef4fde91e694ed5ce7524b332f21b"
     },
     {
       "bytes": 15284,
@@ -7413,9 +7417,9 @@
       "sha256": "1a90ca1e741546ba3a85726403a04055867d26f2661e9991aeffce3b81bdbb66"
     },
     {
-      "bytes": 8783,
+      "bytes": 8946,
       "path": "tests/exact-admission/prepare_fixture.py",
-      "sha256": "b6d1459abc465b13e5e67be44716b5ef8020b626b19cc329110d898f8947a697"
+      "sha256": "03a0edc883ca21fac70886946bbe39fcd40c10caf64aa30a7b96733b65f89618"
     },
     {
       "bytes": 19762,
@@ -7768,6 +7772,11 @@
       "sha256": "2cd5ef0db6c38491754f70d6cf71770b913e70dc8762a5ffa7c15185f43d8060"
     },
     {
+      "bytes": 5548,
+      "path": "tests/native-app-routing/LaunchRefusalRoundtripHostTest.java",
+      "sha256": "b3fd59d9ead20e30b1616f00d881e3e55397cfa5249c65d1f4dd942aeccac623"
+    },
+    {
       "bytes": 12578,
       "path": "tests/native-app-routing/NativeAppRoutingEntryHostTest.java",
       "sha256": "6113c7a3a6c5b7ca62b70a05996603527b05c2736a3a1c7187e14b80625bb741"
@@ -7788,14 +7797,24 @@
       "sha256": "6c319c86aedfb84f81b7406b9e106bfd94f44c28fd45f89d7ace744188877802"
     },
     {
+      "bytes": 8593,
+      "path": "tests/native-app-routing/fixtures/r6-ctrip-background-cleanup.json",
+      "sha256": "88d86ade77248e6f7aa0f16d18ae59da292655996591d10b9f5b149973c71626"
+    },
+    {
+      "bytes": 619,
+      "path": "tests/native-app-routing/fixtures/r6-ctrip-background-cleanup.provenance.json",
+      "sha256": "ed6793a5ebd86ce1840fc44651e6a0fdc392cf476f7747d3f3c40435edeab703"
+    },
+    {
       "bytes": 8406,
       "path": "tests/native-app-routing/prepare_native_entry.py",
       "sha256": "2edd6a279a9c660d1e82b20cac1504e2655ca7cc98d2774a74f9dac2f3a2d51b"
     },
     {
-      "bytes": 16935,
+      "bytes": 18956,
       "path": "tests/native-app-routing/run_host.py",
-      "sha256": "86c7beabbd89a7550b7fd45695d3cf8c03bb602810600cffa9cf74fc16580040"
+      "sha256": "98d166056d434785dde61a6150145c0cc56fbf1519e88770e3319ed3b50f2b93"
     },
     {
       "bytes": 1523,
@@ -8733,9 +8752,9 @@
       "sha256": "92348b922244a116873ae9a7620f17e60dd1ad45cf23c7426ee2ef72b6b51a7c"
     },
     {
-      "bytes": 19063,
+      "bytes": 19122,
       "path": "tests/qualification-scope/prepare_fixture.py",
-      "sha256": "c17bfe223e5d5959fdad1752067552b81056b588f65241d0b173f0951acdff5c"
+      "sha256": "4cbe6bc569ccf69ea753658579e091652942c97dcf5b553cb09aefa5a4309c18"
     },
     {
       "bytes": 2997,
@@ -9218,6 +9237,16 @@
       "sha256": "c490db14eaddaed65d43b38967586825abad0934ca5c6e5060a47e16aa1eb582"
     },
     {
+      "bytes": 8506,
+      "path": "tests/visual-prompt-projection/VisualPromptProjectionHostTest.java",
+      "sha256": "bc471ac70eef7e6d000c70f54ba931b35029f254028e65b634c2d1dbfb7bb5e8"
+    },
+    {
+      "bytes": 5645,
+      "path": "tests/visual-prompt-projection/run_host_tests.py",
+      "sha256": "e1d5c30b797213f7c8e31e45f1e6ff65a6b2dae13e93f2379702d5be711812da"
+    },
+    {
       "bytes": 4295,
       "path": "tests/vlm-adapter/GenerationScopeFixture.java.inc",
       "sha256": "3d48494226bc9ac662dd0220bda6736ace407d2d712d7c23330fc94dde2f74ef"
@@ -9228,9 +9257,9 @@
       "sha256": "5b625af8f03834dae1b2768358d008495c13d612188083a3acb7c001f89bb718"
     },
     {
-      "bytes": 57807,
+      "bytes": 62598,
       "path": "tests/vlm-adapter/VlmAdapterLifecycleHostTest.java",
-      "sha256": "7ec26eedfe73d5c5ccb1a5e186cdd63d8157414ae2a34d0469f8e61f062ed8c1"
+      "sha256": "59e82823e5452c11c292548bc1dd7793069de7f884c5c16a6cca5e449c2d535a"
     },
     {
       "bytes": 16500,
@@ -9273,9 +9302,9 @@
       "sha256": "87b747a2f5301761d53df4b3b8630455a0f4a47783765f1a9a17669b478a935e"
     },
     {
-      "bytes": 9579,
+      "bytes": 9757,
       "path": "tests/warm-finalization/prepare_fixture.py",
-      "sha256": "c1938b9b265ae0ca788b11dfedc4db7a91522c8003f14cf89abad3a56bb620fd"
+      "sha256": "b2c801b411e1b139f92aa4beaeaa9f15f5dc61cf227b481d0bc67c12ebdd8cc9"
     },
     {
       "bytes": 3569,
@@ -9723,9 +9752,9 @@
       "sha256": "a513114211897bb620ecbbab38aadcce3a9137c58071df269cca7f828034118e"
     },
     {
-      "bytes": 20687,
+      "bytes": 20908,
       "path": "tools/run_host_checks.py",
-      "sha256": "8b9d4ec20573a3ab084283947f6c366ff0b95d712eec0f549e6d5d0e12a6e17c"
+      "sha256": "2a842d03d6b913be14e51af80b38b6bbe865428e0ddb27512bbb77ac2605a0f0"
     },
     {
       "bytes": 1243,
@@ -11654,7 +11683,7 @@
     "version_code_unchanged": 69,
     "version_name_unchanged": "0.69.0-native-background-runtime"
   },
-  "main_java_sources": 140,
+  "main_java_sources": 141,
   "observation_budget_amendment": {
     "capture_has_independent_two_second_timer": false,
     "capture_headroom_ms": 2000,
@@ -11763,7 +11792,7 @@
       }
     ]
   },
-  "production_build_inputs_count": 306,
+  "production_build_inputs_count": 310,
   "qualification_policy": "Source reviews, host gates, real Android build and actual native phone outcomes retain separate evidence.",
   "r14_runtime_reliability_amendment": {
     "all_original_required_gate_cases_retained": true,
@@ -12928,6 +12957,59 @@
     "summary_model_raw_status_business_cleanup_owner_and_action_authority_preserved": true,
     "task_or_controller_reconstructed": false
   },
+  "r22_blocker_resolution_amendment": {
+    "changed_nonmanifest_paths": [
+      "native/local-vlm-runtime-pins.json",
+      "native/vlm-worker/SOURCE.json",
+      "native/vlm-worker/native/stage-clock.h",
+      "native/vlm-worker/native/vlm-worker.cpp",
+      "native/vlm-worker/provenance/ANDROID-BUILD-R6.json",
+      "native/vlm-worker/provenance/LINKED-BACKENDS-HOST-R6.json",
+      "native/vlm-worker/provenance/VISION-INIT-ORDER-HOST-R6.json",
+      "native/vlm-worker/tests/stage-clock-test.cpp",
+      "native/vlm-worker/tools/test_stage_clock.py",
+      "src/org/trillionnium/hepta/local/EngineInferenceAdapter.java",
+      "src/org/trillionnium/hepta/local/LocalInference.java",
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "src/org/trillionnium/hepta/local/MainActivity.java",
+      "src/org/trillionnium/hepta/local/VisualPromptProjection.java",
+      "src/org/trillionnium/hepta/local/VlmInferenceAdapter.java",
+      "src/org/trillionnium/hepta/local/VlmPins.java",
+      "tests/exact-admission/PromptAdmissionHostTest.java",
+      "tests/exact-admission/prepare_fixture.py",
+      "tests/native-app-routing/LaunchRefusalRoundtripHostTest.java",
+      "tests/native-app-routing/fixtures/r6-ctrip-background-cleanup.json",
+      "tests/native-app-routing/fixtures/r6-ctrip-background-cleanup.provenance.json",
+      "tests/native-app-routing/run_host.py",
+      "tests/qualification-scope/prepare_fixture.py",
+      "tests/visual-prompt-projection/VisualPromptProjectionHostTest.java",
+      "tests/visual-prompt-projection/run_host_tests.py",
+      "tests/vlm-adapter/VlmAdapterLifecycleHostTest.java",
+      "tests/warm-finalization/prepare_fixture.py",
+      "tools/run_host_checks.py"
+    ],
+    "changes": [
+      "Bind model cleanup to captured task identity, including pre-begin failures",
+      "Compare integral lease expiry by numeric value for genuine refusal explanation",
+      "Retain full private audit data while projecting redundant visual-model metadata",
+      "Use concise visual system prompt with unchanged action domain and authority",
+      "Record identity-bound native stage timing without changing native result schema"
+    ],
+    "default_text_profile_unchanged": "lfm2.5-8b-a1b-q4_0",
+    "external_model_added": false,
+    "frame_freshness_limit_unchanged_ms": 90000,
+    "maximum_image_token_budget_unchanged": 1024,
+    "native_worker_sha256": "032feab773dd5d8485c7c45cc0134c9f6b48076d0ff6dd06cade37f2d89456c6",
+    "new_phone_latency_claimed": false,
+    "normal_git_parent": "a1056ef078de6956fd09ab618b8182a90954a46f",
+    "original_failed_evidence_preserved": true,
+    "parent_source_manifest_sha256": "5fcdf8a12fac9f3e9bba8dc3a717b55348d1080c648e1f5ea616e9d529efe0b8",
+    "previous_111_checks_retained": true,
+    "reference_r6_actual_image_tokens": 1000,
+    "required_canonical_checks": 112,
+    "runtime_version_unchanged": "GenieX 0.10.0",
+    "unowned_app_task_policy_changed": false
+  },
   "release_version_assigned": false,
   "schema": "hepta.local-source.v3",
   "source_preservation_scope": "All actual v65 and signed b2ca members retained. No existing test assertion file removed; current targeted results are diagnostic references, never substituted for new frozen-head or phone acceptance.",
@@ -12939,7 +13021,7 @@
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "xiaomi_home_loading_amendment": {
-    "accessibility_label": "Hepta \u624b\u673a\u52a9\u624b",
+    "accessibility_label": "Hepta 手机助手",
     "automatic_action_replay": false,
     "cause": "Actual complete first Xiaomi frame contained only navigation and message icon; old parser stopped before content loaded and old same-package background window replacement permanently refused scope.",
     "maximum_model_issued_loading_waits": 2,

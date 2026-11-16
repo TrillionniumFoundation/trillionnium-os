@@ -622,6 +622,20 @@ public final class VlmInferenceAdapter implements LocalInference {
         receipt.put("actions_dispatched",false);receipt.put("business_completion_verified",false);
         round.appReceipt=write(new File(round.directory,"app-receipt.json"),json(receipt),RECEIPT_LIMIT);
     }
+    @Override public synchronized TaskCleanup endTask(String expectedTaskId){
+        TaskCleanup.requireTaskId(expectedTaskId);
+        final Task value=task;
+        if(value==null){
+            // A bootstrap failure may occur before beginTask. Preserve repeated
+            // cleanup for its actual task without borrowing the previous task.
+            TaskCleanup previous=lastCleanup;
+            return previous!=null&&expectedTaskId.equals(previous.taskId)
+                    ?TaskCleanup.requireTask(expectedTaskId,previous):TaskCleanup.noWorker(expectedTaskId);
+        }
+        if(!expectedTaskId.equals(value.taskId))
+            throw new IllegalStateException("visual model slot is owned by a different task");
+        return TaskCleanup.requireTask(expectedTaskId,endTask());
+    }
     @Override public TaskCleanup endTask(){
         final Task value=task;if(value==null)return lastCleanup==null?TaskCleanup.noWorker():lastCleanup;
         Future<?> finisher;

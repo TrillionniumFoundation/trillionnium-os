@@ -28,6 +28,7 @@ def prepare(source, output):
         "stop": section(controller, "    public void stop(){", "    @Override public synchronized void close()"),
         "close_result": section(controller, "            LocalInference.TaskCleanup modelCleanup;", "            boolean nativeInstalledRechecked=false;\n"),
         "cleanup_contract": section(inference, "    final class TaskCleanup {", "    interface Handle {"),
+        "scoped_cleanup_contract": section(inference, "    /** Finish only the captured task;", "    final class TaskCleanup {"),
         "handle_contract": section(inference, "    interface Handle {", "    interface Callback {"),
         "message_helpers": section(service, "    static String limited(", "\n}"),
         "completion_kinds": completion_kinds[0],
@@ -37,7 +38,8 @@ def prepare(source, output):
         "public interface LocalInference {\n"
         + parts["cleanup_contract"]
         + parts["handle_contract"]
-        + "void cancelTask();\nTaskCleanup endTask();\n}\n"
+        + "void cancelTask();\nTaskCleanup endTask();\n"
+        + parts["scoped_cleanup_contract"] + "}\n"
     )
     fixture = """package org.trillionnium.hepta.local;
 import java.util.concurrent.atomic.AtomicBoolean;

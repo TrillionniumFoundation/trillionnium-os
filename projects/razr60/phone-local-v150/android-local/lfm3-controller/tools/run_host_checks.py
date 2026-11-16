@@ -216,6 +216,8 @@ def main():
             report["mandatory_additional_gate_receipts"][name]={
                 "path":str(gate_path),"bytes":len(gate_raw),"sha256":hashlib.sha256(gate_raw).hexdigest(),
                 "schema":gate["schema"],"cases":cases}
+        run("visual-prompt-projection",[sys.executable,"-B",ROOT/"tests/visual-prompt-projection/run_host_tests.py",
+            "--source",ROOT,"--out",out/"visual-prompt-projection","--json-jar",json_jar,"--release8"])
         run("vlm-result-contract",[sys.executable,"-B",ROOT/"tests/vlm-contract/run_host_tests.py",
             "--source",ROOT,"--output",out/"vlm-result-contract","--java-home",java_home])
         run("vlm-template-render",[sys.executable,"-B",ROOT/"tests/vlm-contract/check_template.py",

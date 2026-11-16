@@ -61,6 +61,11 @@ public interface LocalInference {
     default void cancelTask() { }
     /** Called on the controller worker before publishing a task terminal. */
     default TaskCleanup endTask() { return TaskCleanup.noWorker(); }
+    /** Finish only the captured task; a prior task's receipt cannot describe a new task. */
+    default TaskCleanup endTask(String expectedTaskId) {
+        TaskCleanup.requireTaskId(expectedTaskId);
+        return TaskCleanup.requireTask(expectedTaskId,endTask());
+    }
     final class TaskCleanup {
         public final boolean cleanupKnown, processStarted, processExitObserved, receiptValid;
         public final Integer exitCode;
@@ -72,6 +77,25 @@ public interface LocalInference {
             this.receiptValid=receiptValid;this.receiptSha256=receiptSha256;
         }
         static TaskCleanup noWorker() { return new TaskCleanup(true,false,false,null,null,null,true,null); }
+        static TaskCleanup noWorker(String taskId) {
+            requireTaskId(taskId);
+            return new TaskCleanup(true,false,false,null,null,taskId,true,null);
+        }
+        static void requireTaskId(String taskId) {
+            if(taskId==null||!taskId.matches("[0-9a-f]{32}"))
+                throw new IllegalArgumentException("exact task identity required for model cleanup");
+        }
+        static TaskCleanup requireTask(String expectedTaskId,TaskCleanup proof) {
+            requireTaskId(expectedTaskId);
+            if(proof==null)throw new IllegalStateException("model cleanup proof missing");
+            if(expectedTaskId.equals(proof.taskId))return proof;
+            // Only the legacy empty sentinel is task-neutral. Unknown cleanup or
+            // any worker/receipt identity must never be relabelled as this task.
+            if(proof.taskId==null&&proof.cleanupKnown&&!proof.processStarted&&!proof.processExitObserved
+                    &&proof.exitCode==null&&proof.generation==null&&proof.receiptValid&&proof.receiptSha256==null)
+                return noWorker(expectedTaskId);
+            throw new IllegalStateException("model cleanup belongs to a different or unbound task");
+        }
     }
     interface Handle { void cancel(); }
     interface Callback {
