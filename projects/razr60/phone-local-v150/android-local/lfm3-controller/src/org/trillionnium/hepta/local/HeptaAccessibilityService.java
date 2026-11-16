@@ -2835,7 +2835,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         JSONObject proof;
         try{
         proof=web.purpose.shopping!=null
-                ?WebShoppingObservationStability.compareObservationBracket(web.taskId,new JSONObject(source.frameRaw),
+                ?WebShoppingObservationStability.compareReadonlyObservationBracket(web.taskId,new JSONObject(source.frameRaw),
                         beforeNative,new JSONObject(observedSource.frameRaw),observedNative,firstCapture,lastCapture,source.targetPath)
                 :WebFlightNativeStability.compareObservationBracket(web.taskId,new JSONObject(source.frameRaw),
                         beforeNative,new JSONObject(observedSource.frameRaw),observedNative,firstCapture,lastCapture,source.targetPath);

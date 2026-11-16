@@ -5,9 +5,9 @@
     "component_tree": "08f3d1c32944f834530b659cb6c3b7ec12c00039",
     "source_manifest_sha256": "bf99aebd7009d29cad75f3b796af4005084f30219aff61929cb905c4b214d991"
   },
-  "candidate_status": "geometry_same_call_reuse_calendar_label_and_failure_diagnostic_pending_phone",
+  "candidate_status": "pre_dispatch_reobserve_and_natural_price_readonly_footer_pending_phone",
   "candidate_version_assigned": true,
-  "complete_source_files": 2014,
+  "complete_source_files": 2025,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -6355,9 +6355,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 271896,
+      "bytes": 271904,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "7f0934dd1180cc2f897efffdd93bd7c3ad1a0e0a76eb67269d53c654e7728820"
+      "sha256": "b181815b38be0efe9a3f98178e6dd6ca5e9d36c4e955b81a6a80ba4e73f56e03"
     },
     {
       "bytes": 711,
@@ -6390,9 +6390,9 @@
       "sha256": "e99ef5b8c965dc5d09983a638412b3b5329f0dd9180099e8fe8f8e824153c991"
     },
     {
-      "bytes": 171352,
+      "bytes": 173212,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "4e019ac530141e4121487268e32712652c569b1627ed1dab3486ecc10e18d02c"
+      "sha256": "351fba6ac61f182658b1d2622d89825a4f20bc7d866152a855838747790fd64f"
     },
     {
       "bytes": 50762,
@@ -6810,9 +6810,9 @@
       "sha256": "55bb45677d862633cdae80d3786240026e57059288205b3d04bc500483bbcd6f"
     },
     {
-      "bytes": 66223,
+      "bytes": 73100,
       "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
-      "sha256": "cd76637718842838708cde362413f5dd869b075e3b11f49834ddbadfac1a581c"
+      "sha256": "ee2b2f8c1a236e6e0297db549381001877c7d00374c412b8078e83d66d919b98"
     },
     {
       "bytes": 9993,
@@ -6845,9 +6845,9 @@
       "sha256": "5c11833d76c7b1d9b45de83e31e309b6819e2b930c73008b479dd70e2e3a9eb3"
     },
     {
-      "bytes": 39855,
+      "bytes": 56318,
       "path": "src/org/trillionnium/hepta/local/WebShoppingObservationStability.java",
-      "sha256": "81a1783c70ccb5c8b2797ea04c813efe828933b6f6a87535e2194540d2c6edeb"
+      "sha256": "1e20cc8428b11f91b1a78b7645728f0311b09275139e40c5399f091be0450ccb"
     },
     {
       "bytes": 21401,
@@ -8855,9 +8855,9 @@
       "sha256": "a50e1bf377d1ae6016db5ad4aa81ef813c8f43d6779b35edfd06514642ee58ea"
     },
     {
-      "bytes": 3944,
+      "bytes": 4370,
       "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/WebFlightSession.java",
-      "sha256": "92348b922244a116873ae9a7620f17e60dd1ad45cf23c7426ee2ef72b6b51a7c"
+      "sha256": "79f935c7c05d3ff5d5b3b246137c6e940f22457a83b6bbb7ad1950968aec9b6d"
     },
     {
       "bytes": 19122,
@@ -9235,6 +9235,26 @@
       "sha256": "6d32d809b37d889b4463cf74c1cc6dfbc1a5e47247f819ad9e9816b742ffd7ac"
     },
     {
+      "bytes": 8169,
+      "path": "tests/shopping-readonly-observation/FOOTER-HOST-VALIDATION.json",
+      "sha256": "d7494a649afc5099fa90031a2c5c92963eeec3cb782677ef400ac810e7f45868"
+    },
+    {
+      "bytes": 3978,
+      "path": "tests/shopping-readonly-observation/ShoppingFooterActualReplay.java",
+      "sha256": "4c4f45e37002dec21f9fddf20e85cd250951d04398a06b1a8fe1c7ff2ae1e972"
+    },
+    {
+      "bytes": 14650,
+      "path": "tests/shopping-readonly-observation/ShoppingFooterObservationHost.java",
+      "sha256": "09be4a87f062f5b7ec572f7516e8ffafc8ebfa326425a0f86b008f00e623c331"
+    },
+    {
+      "bytes": 1108,
+      "path": "tests/shopping-readonly-observation/ShoppingFooterStrictBaselineHost.java",
+      "sha256": "64602fb0ceabd8c83c559a452e4cb40f98b45de94ca8daa4faca816892789449"
+    },
+    {
       "bytes": 31142,
       "path": "tests/shopping-readonly-observation/ShoppingQuoteHost.java",
       "sha256": "a061e72ff325b86675e0ac37180f8929a9ee5013bb52a3a5e70dec6fff9dcc9f"
@@ -9288,6 +9308,11 @@
       "bytes": 703,
       "path": "tests/shopping-readonly-observation/fixtures/quote-wire-boundary/reply-first.json.gz",
       "sha256": "447b1375487da2775a4ef6801587c5c7a4f8b45d0958c59f5a7f945951dfe5ff"
+    },
+    {
+      "bytes": 15396,
+      "path": "tests/shopping-readonly-observation/run_footer_host.py",
+      "sha256": "3aa63964c214790c7444b8ebf2659fa53775451eab1016f55f76fc7d9c96ebe9"
     },
     {
       "bytes": 13191,
@@ -9625,6 +9650,16 @@
       "sha256": "fcbea8df53ca553abd9aa43d9bc49b9929150a84d35f0b48203cb9db9d1d8160"
     },
     {
+      "bytes": 27106,
+      "path": "tests/web-final-integration/HOST-VALIDATION.json",
+      "sha256": "e4d2d32ba685c6bd51758cf78251a766120d9133e918bdad3d97aaba1df2d8b0"
+    },
+    {
+      "bytes": 3795,
+      "path": "tests/web-final-integration/README.md",
+      "sha256": "409df8890ae36ccf0f3072ccf088ff087856eb4e77d8a369149a09d643caff00"
+    },
+    {
       "bytes": 11235,
       "path": "tests/web-flight/CsairCalendarHostTest.java",
       "sha256": "8036a21854b736f781fe41b87e3a45a7a34f45eecf1d85ca078530c51ff9cfee"
@@ -9855,6 +9890,26 @@
       "sha256": "61475ee3dfe293d5d24534b3bf1abd913619642b13c028762347ae9fe833e017"
     },
     {
+      "bytes": 23979,
+      "path": "tests/web-pre-dispatch/HOST-VALIDATION.json",
+      "sha256": "bfa0dc57c096c5f0bfa4791f552e35bec76c8780e267de823e3c9e8fb1038961"
+    },
+    {
+      "bytes": 23243,
+      "path": "tests/web-pre-dispatch/WebPreDispatchHost.template",
+      "sha256": "43d4767413678b408cc24a0a157e92699b7e6e0892a552a5d6c35dd20c73e712"
+    },
+    {
+      "bytes": 8754,
+      "path": "tests/web-pre-dispatch/WebPreDispatchReceiptHostTest.java",
+      "sha256": "7844ae6a2908f9d0dfaf78a80378b81da18237f7d0ea4cf8f3aff8f3b33c9b3a"
+    },
+    {
+      "bytes": 7578,
+      "path": "tests/web-pre-dispatch/run_predispatch_host.py",
+      "sha256": "3547f9e0e8e2e5ea55bfe724bb75647e8eca0570357a1ab6c74baee9b5f3b895"
+    },
+    {
       "bytes": 18098,
       "path": "tests/web-readiness/HOST-VALIDATION.json",
       "sha256": "4fcd059ce1ed7d6f3adecad220c8df6ab146e5ea90a75d36fc63190fa6b028dd"
@@ -9865,9 +9920,9 @@
       "sha256": "61e8f6f116ff885671dba3322e8d1c2115ab685651a972759b9c00a9a852c0db"
     },
     {
-      "bytes": 23468,
+      "bytes": 23783,
       "path": "tests/web-readiness/WebReadinessHost.template",
-      "sha256": "65f84322d1420df05599c43f30908a9861f3815fc20ad2a1c9ce37db861e8b15"
+      "sha256": "1d6b5f31ce706e4e0a2ca595519a9f456c5e651332bdc8b0888da06a4cfcdb5f"
     },
     {
       "bytes": 59316,
@@ -11936,6 +11991,23 @@
     "phone_operations": 0
   },
   "phone_qualified": false,
+  "predispatch_footer_amendment": {
+    "action_replay_added": false,
+    "executor_outcome_fabricated": false,
+    "existing_action_quote_completion_and_native_gates_retained": true,
+    "footer_scope": "Existing natural-price read-only observation only; legacy specifications requests remain rejected.",
+    "fresh_observation_and_new_model_decision_required": true,
+    "host_validation_sha256": "e4d2d32ba685c6bd51758cf78251a766120d9133e918bdad3d97aaba1df2d8b0",
+    "native_source_unchanged": true,
+    "no_effect_or_pending_capability_before_typed_recovery": true,
+    "normal_git_parent": "47d47aec94bc52d7ef2b848762533d7bf8de3a07",
+    "notes_workflow_source_unchanged": true,
+    "old_frame_acceptance_added": false,
+    "original_stale_round_limit_and_original_deadline_preserved": true,
+    "pre_dispatch_unavailable_reason_and_original_identity_verified": true,
+    "previous_manifest_sha256": "0b64fee114cb302a996447eddc7f76b0e6287970e68c57a3cad474fc2dbb69e0",
+    "task_or_stage_deadline_extended": false
+  },
   "previous_source_amendment": {
     "cause": "Recheck complete native observations under unrelated accessibility events and revalidate four admitted native actions against a complete fresh census and original one-shot Session authority; version69 and all original gates retained.",
     "changed_programs": [

@@ -104,6 +104,10 @@ public final class WebReadinessHost {
     private static final class WebShoppingObservationStability {
         static boolean supported;static boolean supportsCaptures(JSONObject first,JSONObject last){return supported;}
         static boolean supportsCaptures(WebEvidenceReceipt first,WebEvidenceReceipt last){return supported;}
+        static final class ReadObservationEligibility {}
+        static ReadObservationEligibility readObservationEligibility(WebEvidenceReceipt first,WebEvidenceReceipt last){
+            return supported?new ReadObservationEligibility():null; // Same host-only supported flag; no native evidence claim.
+        }
     }
     private static final class WebTaskDomain {
         final Object shopping=null;

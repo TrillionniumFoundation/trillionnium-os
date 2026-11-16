@@ -47,6 +47,13 @@ final class WebFlightSession {
     }
     void attach(long deadline){throw unavailable();}
     PhoneObservation observe(PhoneObservation initial,Observer observer,long deadline){throw unavailable();}
+    static final class PreDispatchPageChanged extends IllegalStateException {
+        private static final long serialVersionUID=1L;
+        private PreDispatchPageChanged(){throw unavailable();}
+        JSONObject evidence(){throw unavailable();}
+    }
+    void claimPreDispatchReobserve(PreDispatchPageChanged failure,PhoneObservation frame,ActionDecision action,
+            String run,long deadline){throw unavailable();}
     void beforeModelAction(ActionDecision action,String run,long deadline){throw unavailable();}
     void requireDispatch(ActionDecision action,String run){throw unavailable();}
     WebFlightNativeStability.Permit flightNativePermitForDispatch(ActionDecision action,PhoneObservation frame){throw unavailable();}

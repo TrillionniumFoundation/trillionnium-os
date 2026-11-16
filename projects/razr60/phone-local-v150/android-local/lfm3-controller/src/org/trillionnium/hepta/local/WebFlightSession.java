@@ -343,15 +343,15 @@ final class WebFlightSession {
         boolean stable=sameOriginalFrame&&sameCaptureDomain;
         JSONObject nativeObservationBracket=null;
         WebNativeObservationChanged nativeChange=null;
-        boolean supportedShoppingCaptures=false;
+        WebShoppingObservationStability.ReadObservationEligibility shoppingEligibility=null;
         if(sameCaptureIdentity&&purpose.shopping!=null&&nativeSource!=null){
             WebObservationTiming.Span eligibility=WebObservationTiming.begin(timing,WebObservationTiming.Phase.SHOPPING_DOM_ELIGIBILITY,captureDeadline);
             try{
-                supportedShoppingCaptures=WebShoppingObservationStability.supportsCaptures(first,last);
-                WebObservationTiming.complete(eligibility,supportedShoppingCaptures);
+                shoppingEligibility=WebShoppingObservationStability.readObservationEligibility(first,last);
+                WebObservationTiming.complete(eligibility,shoppingEligibility!=null);
             }catch(Exception|Error failure){WebObservationTiming.failed(eligibility,failure);throw failure;}
         }
-        if(supportedShoppingCaptures){
+        if(shoppingEligibility!=null){
             // A private complete native proof admits only this new card observation.
             // It creates no product ARM; beforeModelAction and native dispatch retain every original gate.
             try{
@@ -524,6 +524,80 @@ final class WebFlightSession {
         flightNativePermit=null;flightNativeCheck=null;
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;return frame;
     }
+    /** An authenticated failed read before any effect preparation. Never an executor outcome. */
+    static final class PreDispatchPageChanged extends IllegalStateException {
+        private static final long serialVersionUID=1L;
+        private final WebFlightSession session;
+        private final WebTaskDomain original;
+        private final PhoneObservation frame;
+        private final ActionDecision action;
+        private final String run,callbackRaw;
+        private final long deadline;
+        private boolean claimed;
+        private PreDispatchPageChanged(WebFlightSession session,WebTaskDomain original,PhoneObservation frame,
+                ActionDecision action,String run,long deadline,WebEvidenceReceipt fresh)throws Exception{
+            super("document changed before action");this.session=session;this.original=original;this.frame=frame;
+            this.action=action;this.run=run;this.deadline=deadline;callbackRaw=fresh.callback().toString();
+        }
+        JSONObject evidence()throws Exception{
+            need(claimed,"pre-dispatch rejection must be claimed by its original controller");
+            return new JSONObject().put("schema","hepta.web-pre-dispatch-rejection.v1")
+                    .put("source","authenticated_capture_before_effect_preparation")
+                    .put("task_id",original.taskId).put("model_run_id",run).put("observation_id",frame.id)
+                    .put("action",action.action).put("node_id",action.nodeId==null?JSONObject.NULL:action.nodeId)
+                    .put("binding_sha256",session.journal.bindingSha).put("background_generation",original.generation)
+                    .put("display_id",original.displayId).put("window_id",original.windowId)
+                    .put("webview_instance",original.instance).put("navigation_epoch",original.epoch)
+                    .put("original_task_deadline_elapsed_ms",deadline).put("capture_callback",new JSONObject(callbackRaw))
+                    .put("accepted",false).put("dispatched",false).put("stale",true).put("model_issued",true)
+                    .put("executor_called",false).put("executor_outcome_created",false)
+                    .put("arm_requested",false).put("query_reserved",false).put("native_invocation_entered",false)
+                    .put("action_replayed",false).put("old_request_renewed",false)
+                    .put("fresh_observation_and_new_model_decision_required",true).put("business_verified",false);
+        }
+    }
+    private void requirePreDispatchCapture(WebTaskDomain original,PhoneObservation frame,ActionDecision action,
+            String run,long deadline,WebEvidenceReceipt fresh,boolean preparationWasClear)throws Exception{
+        if("captured".equals(fresh.status))return;
+        // The receipt constructor is private. Its unavailable branch already
+        // verified the exact RPC, helper UID, binding, instance/epoch and no FD.
+        JSONObject callback=fresh.callback();
+        if("unavailable".equals(fresh.status)&&"DOM changed across visual callback".equals(callback.opt("reason"))){
+            need(preparationWasClear&&!retired&&!cancellation.isCancelled()&&SystemClock.elapsedRealtime()<deadline
+                    &&domain==original&&current==frame,"pre-dispatch read is no longer current");
+            service.requireTaskAuthorization(taskId,authorization);background.requireActive();
+            service.requireBackgroundObservation(taskId,frame);
+            need(taskId.equals(original.taskId)&&original.observationId.equals(frame.id)
+                    &&original.generation.equals(frame.backgroundGeneration)&&original.generation.equals(background.generation)
+                    &&frame.windowMetadata!=null&&frame.windowMetadata.displayId!=null
+                    &&original.displayId==frame.windowMetadata.displayId&&original.windowId==frame.windowId
+                    &&journal.bindingSha.equals(fresh.bindingSha)&&original.instance.equals(fresh.instance)
+                    &&original.epoch==fresh.epoch&&original.displayId==fresh.displayId&&original.windowId==fresh.windowId
+                    &&Boolean.FALSE.equals(callback.get("retired")),"pre-dispatch failed read changed its original domain");
+            need(dispatchSource==null&&dispatchSourceRun==null&&dispatchSourceAction==null
+                    &&dispatchCheckedRun==null&&dispatchCheckedAction==null&&dispatchCheckedAt==0&&shoppingDispatch==null
+                    &&flightNativePermit==null&&flightNativeCheck==null&&!flightNativeEntered.get()
+                    &&!flightNativeAttemptedRuns.contains(run)&&pendingNavigation==null&&!nativeQueryEntered.get()
+                    &&(flightProgress==null||!flightProgress.queryAttempted()),"pre-dispatch recovery cannot follow an effect attempt");
+            throw new PreDispatchPageChanged(this,original,frame,action,run,deadline,fresh);
+        }
+        need(false,"document changed before action");
+    }
+    void claimPreDispatchReobserve(PreDispatchPageChanged failure,PhoneObservation frame,ActionDecision action,
+            String run,long deadline)throws Exception{
+        need(failure!=null&&failure.session==this&&!failure.claimed&&failure.original==domain
+                &&failure.frame==current&&failure.frame==frame&&failure.action==action&&failure.run.equals(run)
+                &&failure.deadline==deadline&&!retired&&!cancellation.isCancelled()&&SystemClock.elapsedRealtime()<deadline,
+                "pre-dispatch rejection is not current for this exact model decision");
+        service.requireTaskAuthorization(taskId,authorization);background.requireActive();
+        service.requireBackgroundObservation(taskId,frame);failure.original.requireCurrent(action);
+        need(dispatchSource==null&&dispatchSourceRun==null&&dispatchSourceAction==null
+                &&dispatchCheckedRun==null&&dispatchCheckedAction==null&&dispatchCheckedAt==0&&shoppingDispatch==null
+                &&flightNativePermit==null&&flightNativeCheck==null&&!flightNativeEntered.get()
+                &&!flightNativeAttemptedRuns.contains(run)&&pendingNavigation==null&&!nativeQueryEntered.get()
+                &&(flightProgress==null||!flightProgress.queryAttempted()),"pre-dispatch rejection gained an effect attempt");
+        failure.claimed=true;
+    }
     void beforeModelAction(ActionDecision action,String run,long deadline)throws Exception{
         cityObservationRetry=null;shoppingReadCompletion=null;
         boolean prepared=false;
@@ -531,6 +605,11 @@ final class WebFlightSession {
         WebTaskDomain original=domain;PhoneObservation frame=current;
         need(original!=null&&frame!=null&&run!=null&&run.matches("[0-9a-f]{32}"),"current model-bound web action required");
         original.requireCurrent(action);service.requireTaskAuthorization(taskId,authorization);background.requireActive();
+        final boolean preparationWasClear=dispatchSource==null&&dispatchSourceRun==null&&dispatchSourceAction==null
+                &&dispatchCheckedRun==null&&dispatchCheckedAction==null&&dispatchCheckedAt==0&&shoppingDispatch==null
+                &&flightNativePermit==null&&flightNativeCheck==null&&!flightNativeEntered.get()
+                &&!flightNativeAttemptedRuns.contains(run)&&pendingNavigation==null&&!nativeQueryEntered.get()
+                &&(flightProgress==null||!flightProgress.queryAttempted());
         dispatchSource=null;dispatchSourceRun=null;dispatchSourceAction=null;
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;shoppingDispatch=null;
         flightNativePermit=null;flightNativeCheck=null;flightNativeEntered.set(false);
@@ -546,7 +625,7 @@ final class WebFlightSession {
             prepared=true;return;
         }
         WebEvidenceReceipt fresh=client.capture(deadline);
-        need("captured".equals(fresh.status),"document changed before action");
+        requirePreDispatchCapture(original,frame,action,run,deadline,fresh,preparationWasClear);
         WebTaskDomain rechecked=applyNavigation(WebTaskDomain.observed(taskId,purpose,authorization,frame,fresh,immutableBinding));
         if(original.shopping!=null&&original.shopping.searchQuote!=null)
             rechecked=rechecked.withRecheckedShoppingQuote(original.shopping.searchQuote,frame,fresh);

@@ -504,7 +504,27 @@ public final class LocalTaskController implements AutoCloseable {
                 frame.calculatorDomain.requireCurrent(action);
                 if(frame.nativeDomain!=null)frame.nativeDomain.requireCurrent(action);
                 emit("正在执行第 "+steps+" 步："+chineseAction(action.action));
-                if(activeWebTask!=null)activeWebTask.beforeModelAction(action,decisionRunId,deadline);
+                final WebFlightSession webTask=activeWebTask;
+                try{if(webTask!=null)webTask.beforeModelAction(action,decisionRunId,deadline);}
+                catch(WebFlightSession.PreDispatchPageChanged changed){
+                    checkActive(deadline);
+                    if(activeWebTask!=webTask||activeNativeTask!=null||!taskId.equals(currentTaskId))throw changed;
+                    webTask.claimPreDispatchReobserve(changed,before,action,decisionRunId,deadline);
+                    int staleRound=++staleRounds;
+                    JSONObject rejection=changed.evidence().put("step",steps).put("stale_round",staleRound)
+                            .put("stale_round_limit",2).put("reobserve_permitted",staleRound<=2);
+                    record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-web-pre-dispatch-rejection.json",steps),rejection);
+                    if(staleRound>2)throw new IllegalStateException("画面连续变化，已停止操作以免点错目标");
+                    history.put(new JSONObject().put("step",steps).put("action",action.action).put("target_package",action.packageName)
+                            .put("before_package",before.packageName).put("model_issued",true).put("accepted",false)
+                            .put("dispatched",false).put("stale",true)
+                            .put("action_rejected","pre-dispatch DOM changed; no executor called; a new model decision is required"));
+                    emit("网页发生变化，正在重新观察并由本地模型重新决定…");
+                    checkActive(deadline);
+                    observation=awaitObservation(taskId,evidence,authorization,deadline);
+                    if(before.id.equals(observation.id))throw new IllegalStateException("重新观察没有产生新的画面标识，已停止操作");
+                    lastTransition=observedTransition(steps,before,observation);continue;
+                }
                 long nativeDispatchStarted=activeNativeTask==null?-1:SystemClock.elapsedRealtime();
                 if(activeNativeTask!=null)activeNativeTask.beforeModelAction(steps,action,decisionRunId,nativeDispatchStarted);
                 long webDispatchStarted=activeWebTask==null?-1:SystemClock.elapsedRealtime();
