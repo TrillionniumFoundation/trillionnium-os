@@ -139,7 +139,8 @@ public final class ProfileTaskPolicy {
             BackgroundOwnedSingleTask.RecentTasks checked=BackgroundOwnedSingleTask.RecentTasks.parse(text);
             Map<Integer,Recent> rows=new LinkedHashMap<Integer,Recent>();int current=-1;boolean raw=false;
             Pattern header=Pattern.compile("  \\* Recent #[0-9]+: Task\\{[^\\s{}]+ #([0-9]+) .+\\}");
-            Pattern identity=Pattern.compile("    userId=([0-9]+) effectiveUid=([0-9]+)(?: .*)?");
+            Pattern identity=Pattern.compile("    userId=(0|[1-9][0-9]*) effectiveUid=([^\\s]+)(?: (.*))?");
+            Pattern duplicateIdentity=Pattern.compile("(?:^|\\s)(?:userId|effectiveUid)=");
             for(String line:text.split("\\n",-1)){
                 if("  Recent tasks:".equals(line)){raw=true;continue;}
                 if("  Visible recent tasks (most recent first):".equals(line))break;
@@ -148,13 +149,37 @@ public final class ProfileTaskPolicy {
                 if(h.matches()){current=parseInt(h.group(1));continue;}
                 if(line.startsWith("    userId=")){
                     Matcher m=identity.matcher(line);need(current>0&&m.matches(),"PROFILE_RECENT_USER_UNKNOWN");
-                    int user=parseInt(m.group(1)),uid=parseInt(m.group(2));
+                    need(m.group(3)==null||!duplicateIdentity.matcher(m.group(3)).find(),
+                            "PROFILE_RECENT_IDENTITY_DUPLICATE");
+                    int user=parseInt(m.group(1)),uid=recentUid(m.group(2));
                     need(uid/100000==user,"PROFILE_RECENT_UID_USER_MISMATCH");
                     need(rows.put(current,new Recent(current,user,uid))==null,"PROFILE_RECENT_IDENTITY_DUPLICATE");
                 }
             }
             need(rows.keySet().equals(checked.ids),"PROFILE_RECENT_IDENTITY_INCOMPLETE");
             return new Recents(rows,checked);
+        }
+        // Android 16 QPR2 UserHandle.formatUid(PrintWriter,int), not a package UID guess.
+        // Keep the pre-existing decimal UID input; formatted forms must be canonical.
+        private static int recentUid(String text)throws Refusal{
+            if(text.matches("0|[1-9][0-9]*"))return parseInt(text);
+            Matcher m=Pattern.compile("u(0|[1-9][0-9]*)(ai|a|i|s)(0|[1-9][0-9]*)").matcher(text);
+            need(m.matches(),"PROFILE_RECENT_UID_INVALID");
+            int user=parseInt(m.group(1)),offset=parseInt(m.group(3));
+            String kind=m.group(2);long appId;
+            if("a".equals(kind)){
+                need(offset<=79999,"PROFILE_RECENT_UID_INVALID");appId=10000L+offset;
+            }else if("s".equals(kind)){
+                need(user>0&&offset<=9999,"PROFILE_RECENT_UID_INVALID");appId=offset;
+            }else if("ai".equals(kind)){
+                // The producer uses ai at exactly FIRST_ISOLATED_UID (99000) too.
+                need(offset<=9000,"PROFILE_RECENT_UID_INVALID");appId=90000L+offset;
+            }else{
+                need(offset>=1&&offset<=999,"PROFILE_RECENT_UID_INVALID");appId=99000L+offset;
+            }
+            long uid=(long)user*100000L+appId;
+            need(uid>=10000L&&uid<=Integer.MAX_VALUE,"PROFILE_RECENT_UID_INVALID");
+            return (int)uid;
         }
         public void requireDedicatedEmpty(ProfileTarget target)throws Refusal{
             for(Recent row:rows.values())need(row.user!=target.profile.userId,"PROFILE_ALREADY_HAS_RECENT_TASK");

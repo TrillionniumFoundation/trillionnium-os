@@ -492,13 +492,24 @@ public final class LocalTaskSession {
         if(Looper.myLooper()!=Looper.getMainLooper())throw new IllegalStateException("background cleanup must begin on main thread");
         if(isRunning()||recovering||journalQueue.pending())throw new IllegalStateException("请先停止任务并等待会话记录真实退出");
         final long epoch=++generation;final HeptaAccessibilityService service=HeptaAccessibilityService.connected();
+        final LocalTaskController priorController=controller;
+        final BackgroundSession.ReconciliationCheck prelaunchCheck=new BackgroundSession.ReconciliationCheck(){
+            public void check()throws Exception{
+                if(!recovering||generation!=epoch||pending||controller!=priorController
+                        ||(priorController!=null&&priorController.isRunning())||journalQueue.pending())
+                    throw new IOException("启动前恢复的普通 UI 会话已变化");
+                if(service==null){if(priorController!=null)throw new IOException("原控制器服务无法核验");}
+                else if(service!=HeptaAccessibilityService.connected()||!service.prelaunchReconciliationIdle(priorController))
+                    throw new IOException("原控制器观察、动作或取消工作尚未排空");
+            }
+        };
         recovering=true;setState("正在核验并释放上一次后台空间；不会恢复或重做任务…");
         recoveryWorker.execute(new Runnable(){public void run(){
             BackgroundSession.Cleanup result=null;WebFlightSession.Cleanup webResult=null;Exception failure=null;
             try{
                 // Recovery may need actual VD absence after a dead helper process.
                 // Each side retains its own proof; releasing the VD never proves helper retirement.
-                result=BackgroundSession.reconcile(context);
+                result=BackgroundSession.reconcile(context,prelaunchCheck);
                 if(result!=null&&result.known)webResult=WebFlightSession.reconcile(context);
             }catch(Exception error){failure=error;}
             readLeaseState();
@@ -509,7 +520,7 @@ public final class LocalTaskSession {
                 if(error!=null){setState("后台空间清理未确认："+HeptaAccessibilityService.message(error));return;}
                 if(observed==null||!observed.known||observedWeb==null||!observedWeb.known){setState("后台空间或网页工具仍未确认释放，继续暂停新任务；请稍后再次清理");return;}
                 try{if(service!=null&&service==HeptaAccessibilityService.connected()){
-                    service.acceptBackgroundReconciliation(observed.evidence);service.acceptWebReconciliation(observedWeb);
+                    service.acceptBackgroundReconciliation(observed);service.acceptWebReconciliation(observedWeb);
                 }}
                 catch(Exception mismatch){blocked=true;setState("后台释放凭据未匹配原会话："+HeptaAccessibilityService.message(mismatch));return;}
                 setState("后台空间已确认释放。旧任务不会恢复；若会话仍中断，请确认中断后建立新会话。");

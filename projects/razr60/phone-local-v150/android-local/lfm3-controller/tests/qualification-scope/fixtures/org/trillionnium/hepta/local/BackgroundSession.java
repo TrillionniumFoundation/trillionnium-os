@@ -18,7 +18,7 @@ final class BackgroundSession {
                 .put("main_display_fallback",false).put("home_allowed",false);
             }catch(Exception failure){throw new IllegalStateException("synthetic explicit Selection encoding failed",failure);}}
     }
-    static final class Cleanup {final boolean known;final JSONObject evidence=new JSONObject();Cleanup(boolean value){known=value;}}
+    static final class Cleanup {final boolean known;final JSONObject evidence=new JSONObject();final Object prelaunchRecovery=null;Cleanup(boolean value){known=value;}}
     static int controllerDisplay=-1;
     final String taskId,generation,ownerSha256;final Selection selection;final int testDisplay;boolean testClosed;
     BackgroundSession(Context c,String id,String owner,Selection s,QualificationScopeConfig.FilesRoot root){
@@ -29,10 +29,12 @@ final class BackgroundSession {
     static BackgroundSession fixture(String id,int display,java.util.Set<String> packages){return new BackgroundSession(id,display,packages);}
     static boolean hasUnreleased(Context c){return false;}
     boolean released(){return testClosed;}
+    boolean prelaunchRecoveryEligible(){return false;} // This legacy IO fake cannot establish profile recovery.
     boolean allows(String p){return selection.allowedPackages.contains(p);}
     int displayId(){return testDisplay;}
     JSONObject evidence(){try{return new JSONObject().put("task_id",taskId).put("generation",generation).put("display_id",testDisplay);}catch(Exception error){throw new IllegalStateException(error);}}
     void acceptReconciliation(JSONObject p){throw new UnsupportedOperationException();}
+    void acceptReconciliation(Cleanup p){throw new UnsupportedOperationException("no owned profile recovery receipt in legacy IO fixture");}
     void verifyRemote(){requireActive();}
     ProfileTarget profileTarget(){
         if(selection.profileTarget!=null)throw new UnsupportedOperationException("legacy IO fixture cannot qualify a managed profile");

@@ -365,6 +365,20 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private synchronized BackgroundSession currentBackground(){return taskBackground;}
     private synchronized boolean ownsBackground(String id,BackgroundSession background){return owns(id)&&taskBackground==background;}
     JSONObject backgroundEvidence(String id){BackgroundSession background=backgroundFor(id);return background==null?null:background.evidence();}
+    /** Read-only worker guard for the narrow prelaunch recovery; it never grants input authority. */
+    synchronized boolean prelaunchReconciliationIdle(LocalTaskController expected){
+        return live==this&&ownedController==expected&&(expected==null||!expected.isRunning())
+                &&activeObservation==null&&!capturePending&&!observationReadWorkPending()&&!actionWorkPending()&&!nativeCancellationWorkPending()
+                &&(taskBackground==null||taskBackground.prelaunchRecoveryEligible())
+                &&(taskWeb==null||taskWeb.released())
+                &&(lease==null||(expected!=null&&lease.equals(expected.currentTaskId())));
+    }
+    synchronized void acceptBackgroundReconciliation(BackgroundSession.Cleanup cleanup)throws Exception{
+        if(cleanup==null)throw new IllegalStateException("后台清理凭据缺失");
+        if(cleanup.prelaunchRecovery==null){acceptBackgroundReconciliation(cleanup.evidence);return;}
+        if(!prelaunchReconciliationIdle(ownedController))throw new IllegalStateException("启动前恢复的控制器工作尚未排空");
+        if(taskBackground!=null)taskBackground.acceptReconciliation(cleanup);
+    }
     synchronized void acceptBackgroundReconciliation(JSONObject proof)throws Exception{
         if(ownedController!=null&&ownedController.isRunning())throw new IllegalStateException("后台控制器尚未停止");
         if(taskBackground!=null)taskBackground.acceptReconciliation(proof);

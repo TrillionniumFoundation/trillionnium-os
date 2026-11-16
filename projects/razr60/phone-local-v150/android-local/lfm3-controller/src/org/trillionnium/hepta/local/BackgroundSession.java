@@ -12,6 +12,7 @@ import android.system.Os;
 import android.view.Display;
 import org.trillionnium.hepta.background.BrokerProtocol;
 import org.trillionnium.hepta.background.ProfileTarget;
+import org.trillionnium.hepta.background.ProfilePrelaunchRecovery;
 import org.trillionnium.hepta.background.WindowOwnership;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -115,9 +116,14 @@ final class BackgroundSession {
             return value;
         }
     }
+    interface ReconciliationCheck {void check()throws Exception;}
     static final class Cleanup {
         final boolean known;final JSONObject evidence;
-        Cleanup(boolean known,JSONObject evidence){this.known=known;this.evidence=evidence;}
+        final ProfileRecoveryClient.Receipt prelaunchRecovery;
+        Cleanup(boolean known,JSONObject evidence){this(known,evidence,null);}
+        private Cleanup(boolean known,JSONObject evidence,ProfileRecoveryClient.Receipt receipt){
+            this.known=known;this.evidence=evidence;prelaunchRecovery=receipt;
+        }
     }
     final String taskId,generation,socketName,displayName,ownerSha256;
     final Selection selection;
@@ -198,6 +204,23 @@ final class BackgroundSession {
     }
     int displayId(){return displayId;}
     boolean released(){return "RELEASED".equals(state)&&retired&&cleanupConfirmed;}
+    synchronized boolean prelaunchRecoveryEligible(){return profileTarget()!=null&&retired&&!profileLaunchAttempted&&displayId==-1
+            &&("INITIAL".equals(state)||"CLEANUP_UNKNOWN".equals(state));}
+    synchronized void acceptReconciliation(Cleanup result)throws Exception{
+        if(result==null)throw new IOException("后台清理凭据缺失");
+        if(result.prelaunchRecovery==null){acceptReconciliation(result.evidence);return;}
+        ProfileRecoveryClient.Receipt receipt=result.prelaunchRecovery;
+        if(!result.known||profileTarget()==null||profileLaunchAttempted||displayId!=-1
+                ||hasUnreleased(context)||!displayAbsent(context,displayId,displayName)
+                ||!generation.equals(result.evidence.getString("generation"))
+                ||!ProfilePrelaunchRecovery.SOURCE.equals(result.evidence.getString("reconciliation_source"))
+                ||!receipt.receiptSha256().equals(result.evidence.getString("prelaunch_receipt_sha256")))
+            throw new IOException("启动前恢复凭据不属于当前租约");
+        // The opaque receipt came from a newly owned read-only process; re-read its durable private bytes.
+        // This never synthesizes the original broker's close/RELEASED response.
+        receipt.requireLease(taskId,generation,ownerSha256,createdElapsed,expiresElapsed,bootCount,profileTarget());
+        retired=true;state="RELEASED";cleanupConfirmed=true;
+    }
     synchronized void acceptReconciliation(JSONObject proof)throws Exception{
         if(!proof.getBoolean("cleanup_known")||!generation.equals(proof.optString("generation"))
                 ||hasUnreleased(context)||!displayAbsent(context,displayId,displayName))
@@ -646,11 +669,13 @@ final class BackgroundSession {
         catch(Exception unknown){return true;}
     }
     /** Recovery never restarts a task or creates a display. It can only close the recorded lease. */
-    static Cleanup reconcile(Context context)throws Exception{
+    static Cleanup reconcile(Context context)throws Exception{return reconcile(context,null);}
+    static Cleanup reconcile(Context context,ReconciliationCheck prelaunchCheck)throws Exception{
         QualificationScopeConfig.FilesRoot root=new QualificationScopeConfig.FilesRoot(context);
         File path=new File(root.path,JOURNAL);
         if(!MobiMindPrivateFiles.exists(path))return new Cleanup(true,new JSONObject().put("cleanup_known",true).put("no_lease",true));
-        JSONObject old=readJournal(path);String generation=old.getString("generation"),socket=old.getString("socket"),name=old.getString("display_name");
+        byte[] originalJournal=MobiMindPrivateFiles.read(path,16384,true).bytes;
+        JSONObject old=parseJournal(originalJournal);String generation=old.getString("generation"),socket=old.getString("socket"),name=old.getString("display_name");
         if(!isUuid(generation)||!("hepta-bg-"+generation).equals(socket)||!socket.equals(name))throw new IOException("旧后台租约身份无效");
         int id=old.getInt("display_id");long expiry=old.getLong("expires_elapsed_ms");
         ProfileTarget target=journalProfileTarget(old);
@@ -658,15 +683,34 @@ final class BackgroundSession {
                 .put("request_id",UUID.randomUUID().toString()).put("generation",generation)
                 .put("deadline_elapsed_ms",SystemClock.elapsedRealtime()+3500).put("op","close");
         if(target!=null)closeRequest.put("target_sha256",target.sha256);
-        JSONObject response=null,profileCleanup=null;boolean released=false;
+        JSONObject response=null,profileCleanup=null;boolean released=false,connectionUnavailable=false;
         try{response=exchange(socket,generation,closeRequest,4000);
             released=response.getBoolean("ok")&&"RELEASED".equals(response.getString("state"));
             if(response.getInt("display_id")>0)id=response.getInt("display_id");
             if(released&&target!=null)profileCleanup=checkedProfileCleanup(response,target,generation,id,old.getBoolean("profile_launch_attempted"));
-        }catch(ConnectionUnavailable absent){/* Reconcile below only after expiry or a proved boot change. */}
+        }catch(ConnectionUnavailable absent){connectionUnavailable=true;/* No fallback for an invalid/authentication-failed response. */}
         int currentBoot=readBootCount(context),oldBoot=old.getInt("boot_count");
         boolean newBoot=currentBoot>=0&&oldBoot>=0&&currentBoot!=oldBoot;
         boolean noLateCreate=newBoot||SystemClock.elapsedRealtime()>expiry+2000;
+        if(!released&&connectionUnavailable&&target!=null&&prelaunchCheck!=null&&noLateCreate
+                &&id==-1&&Boolean.FALSE.equals(old.get("profile_launch_attempted"))){
+            prelaunchCheck.check();
+            ProfileRecoveryClient.Receipt receipt=ProfileRecoveryClient.collect(context,originalJournal,prelaunchCheck);
+            // Preserve the exact old lease and the distinct proof before retiring only this journal.
+            receipt.persist(context);
+            final JSONObject verifiedEvidence=receipt.evidence(); // All receipt IO/validation precedes retirement.
+            prelaunchCheck.check();root.unchanged(context);
+            byte[] currentJournal=MobiMindPrivateFiles.read(path,16384,true).bytes;
+            if(!java.util.Arrays.equals(originalJournal,currentJournal)
+                    ||!receipt.request.journalSha256.equals(HeptaAccessibilityService.sha(currentJournal))
+                    ||!generation.equals(parseJournal(currentJournal).getString("generation"))
+                    ||!displayAbsent(context,-1,name))throw new IOException("恢复期间原租约或显示状态发生变化");
+            receipt.request.requireFence(SystemClock.elapsedRealtime(),readBootCount(context));
+            prelaunchCheck.check();root.unchanged(context);
+            // No task result, cleanup report, or broker diagnostic is rewritten by recovery.
+            Os.remove(path.getPath());MobiMindPrivateFiles.syncDirectory(root.path);
+            return new Cleanup(true,verifiedEvidence,receipt);
+        }
         boolean ownedTaskRetirement=ownedTaskRetirementRequired(old);
         boolean known=(released||(!ownedTaskRetirement&&noLateCreate))&&displayAbsent(context,id,name);
         JSONObject evidence=new JSONObject().put("schema","hepta.background-reconcile.v1").put("generation",generation)
@@ -706,7 +750,9 @@ final class BackgroundSession {
         return target;
     }
     private static JSONObject readJournal(File file)throws Exception{
-        byte[] bytes=MobiMindPrivateFiles.read(file,16384,true).bytes;
+        return parseJournal(MobiMindPrivateFiles.read(file,16384,true).bytes);
+    }
+    private static JSONObject parseJournal(byte[] bytes)throws Exception{
         JSONObject value=new JSONObject(new String(bytes,StandardCharsets.UTF_8));
         if(!SCHEMA.equals(value.getString("schema"))||value.getInt("app_uid")!=android.os.Process.myUid())throw new IOException("后台租约格式或应用 UID 不匹配");
         long created=value.getLong("created_elapsed_ms"),expiry=value.getLong("expires_elapsed_ms");
