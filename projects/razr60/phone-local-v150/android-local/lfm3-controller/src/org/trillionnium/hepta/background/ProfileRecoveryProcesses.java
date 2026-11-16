@@ -50,6 +50,22 @@ final class ProfileRecoveryProcesses {
         }
     }
     static JSONObject capture(Proc proc,int self,ProfilePrelaunchRecovery.Request request)throws Exception{
+        need(request!=null,"RECOVERY_REQUEST_MISSING");
+        return capture(proc,self,request.ownerUid,request.generation,request.started,request.deadline);
+    }
+    static JSONObject capture(Proc proc,int self,int owner,String generation,long started,long deadline)throws Exception{
+        return capture(proc,self,new CensusScope(owner,generation,started,deadline));
+    }
+    private static final class CensusScope {
+        final int ownerUid;final String generation;final long started,deadline;
+        CensusScope(int owner,String generation,long started,long deadline)throws IOException{
+            need(owner>=10000&&owner<90000&&ProfileIdentity.uuid(generation)&&started>=0
+                    &&started<=Long.MAX_VALUE-ProfilePrelaunchRecovery.LIMIT_MS
+                    &&deadline==started+ProfilePrelaunchRecovery.LIMIT_MS,"RECOVERY_CENSUS_SCOPE");
+            ownerUid=owner;this.generation=generation;this.started=started;this.deadline=deadline;
+        }
+    }
+    private static JSONObject capture(Proc proc,int self,CensusScope request)throws Exception{
         long begun=proc.now();SelfPin selfPin=new SelfPin();
         for(int attempt=0;attempt<MAX_CENSUS_ATTEMPTS;attempt++){
             try{return captureAttempt(proc,self,request,begun,selfPin);}
@@ -65,7 +81,7 @@ final class ProfileRecoveryProcesses {
         }
         throw new IOException("RECOVERY_PROC_CENSUS_UNSTABLE");
     }
-    private static JSONObject captureAttempt(Proc proc,int self,ProfilePrelaunchRecovery.Request request,
+    private static JSONObject captureAttempt(Proc proc,int self,CensusScope request,
             long begun,SelfPin selfPin)throws Exception{
         check(proc,request);
         String[] entries=proc.entries();
@@ -150,7 +166,7 @@ final class ProfileRecoveryProcesses {
         return StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
                 .onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(bytes)).toString();
     }
-    private static void check(Proc proc,ProfilePrelaunchRecovery.Request request)throws IOException{
+    private static void check(Proc proc,CensusScope request)throws IOException{
         need(proc.now()>=request.started&&proc.now()<request.deadline,"RECOVERY_PROC_DEADLINE");
     }
     private static void need(boolean value,String reason)throws IOException{if(!value)throw new IOException(reason);}

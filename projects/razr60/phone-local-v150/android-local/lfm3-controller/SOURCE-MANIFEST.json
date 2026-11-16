@@ -23,9 +23,9 @@
     "previous_manifest_sha256": "3b442123253504d89138cb3c02381ba978ef589453cc2a806fe1a98ed861a9af",
     "recognized_booking_pending_phase_budget_ms": 16000
   },
-  "candidate_status": "native_containment_diagnostics_source_frozen_before_current_host_and_android_gates",
+  "candidate_status": "postlaunch_recovery_source_frozen_before_current_canonical_and_android_gates",
   "candidate_version_assigned": true,
-  "complete_source_files": 2112,
+  "complete_source_files": 2123,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -63,13 +63,27 @@
   },
   "current_validation": {
     "actual_android_application_build": "pending",
-    "actual_price_business_task": "not passed",
+    "actual_native_ctrip_business_task": "not passed",
+    "actual_ordinary_postlaunch_recovery": "not qualified by host tests",
     "all_blockers_closed": false,
-    "current_canonical_host_suite": "pending; execution recorded separately",
-    "current_owned_generation_cleanup": "pending within canonical suite",
-    "current_sdk_exception_audit": "pending within canonical suite",
-    "isolated_targeted_overlay": "17 cases / 71 assertions PASS; current portable component run pending",
-    "phase": "source_freeze_before_current_gates",
+    "current_canonical_host_suite": "pending; current execution recorded separately",
+    "current_owned_generation_cleanup": "pending within canonical",
+    "current_sdk_exception_audit": "pending within canonical",
+    "isolated_targeted_receipts": [
+      {
+        "bytes": 5869,
+        "description": "Actual completed targeted host-policy-02; synthetic Android/process IO; not device qualification",
+        "path": "/home/alex/hepta-profile-isolation-2a7a8ab1-20261116/profile-postlaunch-recovery-fix-r1/host-policy-02/RESULT.json",
+        "sha256": "81df143536dee97b07cf70c86358e794e9637b6df7cbd5d2a9e6d032ef4345a9"
+      },
+      {
+        "bytes": 12111,
+        "description": "Actual completed targeted host-client-02; synthetic Android/process IO; not device qualification",
+        "path": "/home/alex/hepta-profile-isolation-2a7a8ab1-20261116/profile-postlaunch-recovery-fix-r1/host-client-02/RESULT.json",
+        "sha256": "245eb86144899d7b84632709155c472916c3f6f5b10bbec0ec463b680508fd80"
+      }
+    ],
+    "phase": "source_freeze_before_current_canonical",
     "phone_claims_from_host_tests": false
   },
   "dom_reuse_and_reopen_amendment": {
@@ -6297,6 +6311,16 @@
       "sha256": "c1c36d26b9f24fc99a513d25aa9baf0e7ab03c550a89bd0763ed0b1d9830475d"
     },
     {
+      "bytes": 13742,
+      "path": "src/org/trillionnium/hepta/background/ProfilePostlaunchRecovery.java",
+      "sha256": "a6f9da68bffa89040399b4ce58d9d94814ac9bedda2818448b1bfea4d057ec7a"
+    },
+    {
+      "bytes": 14614,
+      "path": "src/org/trillionnium/hepta/background/ProfilePostlaunchRecoveryMain.java",
+      "sha256": "73e74ef5d72b89d67c4a245fff33912f4818739c9d955094cf7fc84a74b19494"
+    },
+    {
       "bytes": 13485,
       "path": "src/org/trillionnium/hepta/background/ProfilePrelaunchRecovery.java",
       "sha256": "895598fab3f3a2640a877b7565960331365f9cc34903cfeb70fbe7bd4a181a70"
@@ -6312,9 +6336,9 @@
       "sha256": "069970c4c1d9350e709d18b7b2da4e204178727efbf1c0894066a02384a4b79f"
     },
     {
-      "bytes": 10198,
+      "bytes": 11235,
       "path": "src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java",
-      "sha256": "14f735150e48c1f2dc985e3a805ae1fde30a0ea828a5d83959c78328b03c2757"
+      "sha256": "9fd0453f33c93094e6ace8fdcdcbb959d47cbac480b2e5f1bbfe03a29a987dc9"
     },
     {
       "bytes": 6309,
@@ -6367,9 +6391,9 @@
       "sha256": "f344fbdd76154a086f4103868231203746056f2133331a54c48dac5e251d559e"
     },
     {
-      "bytes": 61073,
+      "bytes": 64087,
       "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
-      "sha256": "6254c0f6c78057df6fb68ddc1652b4a4b2eca354b6fb43ae688cd08849237a30"
+      "sha256": "7c54a087c067037eedd5442eb57bc23cc9fda58c26b55ceb3bae2d69cf5d3594"
     },
     {
       "bytes": 8844,
@@ -6442,9 +6466,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 287279,
+      "bytes": 288276,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "1ca8f425f780be1130f1a81529d5abc9b3be6153459f6f0c4c9c6b3cecbbd718"
+      "sha256": "755cb2596148024102616087e6f241bec72b965649a6390c17185c3662f9144e"
     },
     {
       "bytes": 711,
@@ -6482,9 +6506,9 @@
       "sha256": "57fddc5bacb0b88f60a4095086a5b7cca043d80827794ade7184572b71d8354a"
     },
     {
-      "bytes": 51643,
+      "bytes": 51726,
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
-      "sha256": "99a2eb5ebeb3f61cdd4bdb5c74ec20e65e5575773da91700bee2e3b499c4d4de"
+      "sha256": "554c46104381e80aba393928e81e78a899ffabb362b700c5195c62226b76310e"
     },
     {
       "bytes": 55319,
@@ -6695,6 +6719,11 @@
       "bytes": 5046,
       "path": "src/org/trillionnium/hepta/local/ProfileCatalogueClient.java",
       "sha256": "49794028fa8c0fb60526721f41dbe75ad64e40a1c145d63fb49a905183e3758c"
+    },
+    {
+      "bytes": 9577,
+      "path": "src/org/trillionnium/hepta/local/ProfilePostlaunchRecoveryClient.java",
+      "sha256": "0c7415ccf85673bf1f0e06c0fb9c095f76377f5ed00befcb888a9813c01cd4b9"
     },
     {
       "bytes": 9490,
@@ -7422,9 +7451,9 @@
       "sha256": "96c863832ec6a3b0bceff84fd71fcfcbb041c849c40e4da7e70691a24643ff3f"
     },
     {
-      "bytes": 11702,
+      "bytes": 12500,
       "path": "tests/background-session/prepare_fixture.py",
-      "sha256": "28040f223a976a515e992fc9bed164f40ede5d3ca6ccfbc9df46be720ea301c5"
+      "sha256": "aeff30876734ca13fc31a4d0523522e4ec3123db44914e43cdcc358bbf55abe5"
     },
     {
       "bytes": 2775,
@@ -8902,6 +8931,46 @@
       "sha256": "8a5886202510ae3b36840ccdb99d11d6b3d5bd89bc5006f06d898cf516bbab1b"
     },
     {
+      "bytes": 2706,
+      "path": "tests/profile-postlaunch-recovery/FakePostlaunchRecoveryProcess.java",
+      "sha256": "5d8d1d1df792d1ff0cc30f800ea18ff80cc3be70c428f8d417fad1a9b8f3b901"
+    },
+    {
+      "bytes": 377,
+      "path": "tests/profile-postlaunch-recovery/PostlaunchRecoveryProofFixture.java",
+      "sha256": "c73f9f41a8e11ef74efea8d2b95bc5fa0e0121c58e65164f9a9c4c3f6ad9a7ba"
+    },
+    {
+      "bytes": 13695,
+      "path": "tests/profile-postlaunch-recovery/ProfilePostlaunchRecoveryHostTest.java",
+      "sha256": "ae4ae25580159ac3b9a8860e8396707f6b6647e1e62aa10df1d3c324102a97a6"
+    },
+    {
+      "bytes": 8217,
+      "path": "tests/profile-postlaunch-recovery/ProfilePostlaunchRecoverySessionHostTest.java",
+      "sha256": "4a28cc1d8877acb2f8695fb8c3d5678e94bb0555eb53a56448790639610f6c2e"
+    },
+    {
+      "bytes": 3132,
+      "path": "tests/profile-postlaunch-recovery/README.md",
+      "sha256": "3c691e9c13da3e4ba8dc6339be6963c3e30260854ccbeba67d4d90dfcb98cf8f"
+    },
+    {
+      "bytes": 3419,
+      "path": "tests/profile-postlaunch-recovery/RecoveryIdleHostTest.template",
+      "sha256": "deead64215ba04c35503b1ff91ec1b7d82928d93cddaa58240f97108bbc996b1"
+    },
+    {
+      "bytes": 3135,
+      "path": "tests/profile-postlaunch-recovery/run_host.py",
+      "sha256": "53b3fd08f9d9477a6f0d2afc7be60fd5f87931b121599a488137ebd576760f06"
+    },
+    {
+      "bytes": 7471,
+      "path": "tests/profile-postlaunch-recovery/run_session_host.py",
+      "sha256": "b070b2c5a8766436bd216208021998935ca2b8e2fe4b916d6a614e43627c068b"
+    },
+    {
       "bytes": 7882,
       "path": "tests/profile-recents-uid/ProfileRecentUidHostTest.java",
       "sha256": "34f2b40cb19929e5e12b27d6ed1be928d84bd2aed042cc849f091620359c02a9"
@@ -9202,9 +9271,9 @@
       "sha256": "ae5e4e1d99275442ecec64f63658d180af540ee73ddee6aa360d8bb9e22c1d62"
     },
     {
-      "bytes": 5690,
+      "bytes": 5828,
       "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/BackgroundSession.java",
-      "sha256": "2de318027672dc311d49a7edb43f623d0072d8831968512fa291e59d46d3b6df"
+      "sha256": "c649bc18a3343bcc3c7efe13058e421003256eaadefc198eab0e5d7d558b9f86"
     },
     {
       "bytes": 445,
@@ -12562,7 +12631,7 @@
     "version_code_unchanged": 69,
     "version_name_unchanged": "0.69.0-native-background-runtime"
   },
-  "main_java_sources": 159,
+  "main_java_sources": 162,
   "managed_profile_isolation_amendment": {
     "actual_leaf_user_ids_required": true,
     "android_manifest_unchanged": true,
@@ -12675,6 +12744,50 @@
     "phone_operations": 0
   },
   "phone_qualified": false,
+  "postlaunch_recovery_amendment": {
+    "added_java_paths": [
+      "src/org/trillionnium/hepta/background/ProfilePostlaunchRecovery.java",
+      "src/org/trillionnium/hepta/background/ProfilePostlaunchRecoveryMain.java",
+      "src/org/trillionnium/hepta/local/ProfilePostlaunchRecoveryClient.java"
+    ],
+    "baseline_manifest_sha256": "fdcc35a55a2aad6b8de2d6516b8750d419468a853165039461dd36d715c6e3b2",
+    "existing_input_relative_order_preserved": true,
+    "host_paths": [
+      "tests/background-session/prepare_fixture.py",
+      "tests/profile-postlaunch-recovery/FakePostlaunchRecoveryProcess.java",
+      "tests/profile-postlaunch-recovery/PostlaunchRecoveryProofFixture.java",
+      "tests/profile-postlaunch-recovery/ProfilePostlaunchRecoveryHostTest.java",
+      "tests/profile-postlaunch-recovery/ProfilePostlaunchRecoverySessionHostTest.java",
+      "tests/profile-postlaunch-recovery/README.md",
+      "tests/profile-postlaunch-recovery/RecoveryIdleHostTest.template",
+      "tests/profile-postlaunch-recovery/run_host.py",
+      "tests/profile-postlaunch-recovery/run_session_host.py",
+      "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/BackgroundSession.java"
+    ],
+    "modified_existing_input_paths": [
+      "src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java",
+      "src/org/trillionnium/hepta/local/BackgroundSession.java",
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "src/org/trillionnium/hepta/local/LocalTaskSession.java"
+    ],
+    "no_signal_remove_or_launch_in_new_checker": true,
+    "normal_git_parent": "f432b15c4a31cbc6f736de3d5175028aefe96350",
+    "ordinary_owner_reconcile_and_ack_required": true,
+    "phone_operations": 0,
+    "production_paths": [
+      "src/org/trillionnium/hepta/background/ProfilePostlaunchRecovery.java",
+      "src/org/trillionnium/hepta/background/ProfilePostlaunchRecoveryMain.java",
+      "src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java",
+      "src/org/trillionnium/hepta/local/BackgroundSession.java",
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "src/org/trillionnium/hepta/local/LocalTaskSession.java",
+      "src/org/trillionnium/hepta/local/ProfilePostlaunchRecoveryClient.java"
+    ],
+    "reviewed_binding_sha256": "4eeeb66a69c8a43c63d6ac4e8e26728c482f03fecc36da9221fbbb3c3c19e526",
+    "reviewed_production_patch_sha256": "295412dda419c6995a277250cd2dce2c9079794600fa32cfcee50d47a4821eda",
+    "separate_postlaunch_proof_schema": true,
+    "unchanged_existing_input_count": 327
+  },
   "predispatch_footer_amendment": {
     "action_replay_added": false,
     "executor_outcome_fabricated": false,
@@ -12772,16 +12885,17 @@
     ]
   },
   "prior_freeze_validation": {
-    "actual_final_android_application_build": "pending",
-    "actual_profile_business_task": "pending",
+    "actual_android_application_build": "pending",
+    "actual_price_business_task": "not passed",
     "all_blockers_closed": false,
-    "combined_canonical_host_suite": "pending at source freeze; later execution recorded separately",
-    "combined_targeted_host_gates": "pending at source freeze; later execution recorded separately",
-    "individual_targeted_overlays": "PASS on separate overlays, not combined qualification",
-    "phase": "source_freeze_before_joint_gates",
+    "current_canonical_host_suite": "pending; execution recorded separately",
+    "current_owned_generation_cleanup": "pending within canonical suite",
+    "current_sdk_exception_audit": "pending within canonical suite",
+    "isolated_targeted_overlay": "17 cases / 71 assertions PASS; current portable component run pending",
+    "phase": "source_freeze_before_current_gates",
     "phone_claims_from_host_tests": false
   },
-  "production_build_inputs_count": 331,
+  "production_build_inputs_count": 334,
   "profile_recents_prelaunch_recovery_amendment": {
     "android_manifest_unchanged": true,
     "approved_union_sha256": "5534162a73d21b5c82882ffa334a4dae2e8f357caa7736c7f63e5e07a192f0f0",

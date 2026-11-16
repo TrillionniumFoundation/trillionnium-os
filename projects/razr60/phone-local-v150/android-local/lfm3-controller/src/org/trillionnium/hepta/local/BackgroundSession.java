@@ -13,6 +13,7 @@ import android.view.Display;
 import org.trillionnium.hepta.background.BrokerProtocol;
 import org.trillionnium.hepta.background.ProfileTarget;
 import org.trillionnium.hepta.background.ProfilePrelaunchRecovery;
+import org.trillionnium.hepta.background.ProfilePostlaunchRecovery;
 import org.trillionnium.hepta.background.WindowOwnership;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -120,9 +121,14 @@ final class BackgroundSession {
     static final class Cleanup {
         final boolean known;final JSONObject evidence;
         final ProfileRecoveryClient.Receipt prelaunchRecovery;
-        Cleanup(boolean known,JSONObject evidence){this(known,evidence,null);}
+        final ProfilePostlaunchRecoveryClient.Receipt postlaunchRecovery;
+        Cleanup(boolean known,JSONObject evidence){this(known,evidence,null,null);}
         private Cleanup(boolean known,JSONObject evidence,ProfileRecoveryClient.Receipt receipt){
-            this.known=known;this.evidence=evidence;prelaunchRecovery=receipt;
+            this(known,evidence,receipt,null);
+        }
+        private Cleanup(boolean known,JSONObject evidence,ProfileRecoveryClient.Receipt prelaunch,
+                ProfilePostlaunchRecoveryClient.Receipt postlaunch){
+            this.known=known;this.evidence=evidence;prelaunchRecovery=prelaunch;postlaunchRecovery=postlaunch;
         }
     }
     final String taskId,generation,socketName,displayName,ownerSha256;
@@ -206,8 +212,21 @@ final class BackgroundSession {
     boolean released(){return "RELEASED".equals(state)&&retired&&cleanupConfirmed;}
     synchronized boolean prelaunchRecoveryEligible(){return profileTarget()!=null&&retired&&!profileLaunchAttempted&&displayId==-1
             &&("INITIAL".equals(state)||"CLEANUP_UNKNOWN".equals(state));}
+    synchronized boolean postlaunchRecoveryEligible(){return profileTarget()!=null&&retired&&profileLaunchAttempted&&displayId>0
+            &&"CLEANUP_UNKNOWN".equals(state);}
     synchronized void acceptReconciliation(Cleanup result)throws Exception{
         if(result==null)throw new IOException("后台清理凭据缺失");
+        if(result.postlaunchRecovery!=null){
+            ProfilePostlaunchRecoveryClient.Receipt receipt=result.postlaunchRecovery;
+            if(result.prelaunchRecovery!=null||!result.known||!postlaunchRecoveryEligible()
+                    ||hasUnreleased(context)||!displayAbsent(context,displayId,displayName)
+                    ||!generation.equals(result.evidence.getString("generation"))
+                    ||!ProfilePostlaunchRecovery.SOURCE.equals(result.evidence.getString("reconciliation_source"))
+                    ||!receipt.receiptSha256().equals(result.evidence.getString("postlaunch_receipt_sha256")))
+                throw new IOException("已启动恢复凭据不属于当前租约");
+            receipt.requireLease(taskId,generation,ownerSha256,createdElapsed,expiresElapsed,bootCount,profileTarget(),displayId);
+            retired=true;state="RELEASED";cleanupConfirmed=true;return;
+        }
         if(result.prelaunchRecovery==null){acceptReconciliation(result.evidence);return;}
         ProfileRecoveryClient.Receipt receipt=result.prelaunchRecovery;
         if(!result.known||profileTarget()==null||profileLaunchAttempted||displayId!=-1
@@ -710,6 +729,25 @@ final class BackgroundSession {
             // No task result, cleanup report, or broker diagnostic is rewritten by recovery.
             Os.remove(path.getPath());MobiMindPrivateFiles.syncDirectory(root.path);
             return new Cleanup(true,verifiedEvidence,receipt);
+        }
+        if(!released&&connectionUnavailable&&target!=null&&prelaunchCheck!=null&&noLateCreate
+                &&id>0&&Boolean.TRUE.equals(old.get("profile_launch_attempted"))
+                &&"CLEANUP_UNKNOWN".equals(old.getString("state"))){
+            prelaunchCheck.check();
+            ProfilePostlaunchRecoveryClient.Receipt receipt=ProfilePostlaunchRecoveryClient.collect(context,originalJournal,prelaunchCheck);
+            receipt.persist(context);
+            final JSONObject verifiedEvidence=receipt.evidence();
+            prelaunchCheck.check();root.unchanged(context);
+            byte[] currentJournal=MobiMindPrivateFiles.read(path,16384,true).bytes;
+            if(!java.util.Arrays.equals(originalJournal,currentJournal)
+                    ||!receipt.request.journalSha256.equals(HeptaAccessibilityService.sha(currentJournal))
+                    ||!generation.equals(parseJournal(currentJournal).getString("generation"))
+                    ||!displayAbsent(context,id,name))throw new IOException("已启动恢复期间原租约或显示状态发生变化");
+            receipt.request.requireFence(SystemClock.elapsedRealtime(),readBootCount(context));
+            prelaunchCheck.check();root.unchanged(context);
+            // A distinct postlaunch absence proof retires only this exact journal, never the old task result.
+            Os.remove(path.getPath());MobiMindPrivateFiles.syncDirectory(root.path);
+            return new Cleanup(true,verifiedEvidence,null,receipt);
         }
         boolean ownedTaskRetirement=ownedTaskRetirementRequired(old);
         boolean known=(released||(!ownedTaskRetirement&&noLateCreate))&&displayAbsent(context,id,name);

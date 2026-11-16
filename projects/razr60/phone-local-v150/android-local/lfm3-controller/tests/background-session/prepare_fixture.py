@@ -56,7 +56,7 @@ final class HostRecoveryProcessBoundary {static Process start(String command)thr
  'ObservedTargetLabels','ObservedAppLabels','ObservedScrollActions','ObservedImeEnter','AppCatalogueRanker')]
  files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java']
  files.append(source/'src/org/trillionnium/hepta/background/BrokerProtocol.java')
- files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','WindowOwnership','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfilePrelaunchRecovery')]
+ files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','WindowOwnership','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfilePrelaunchRecovery','ProfilePostlaunchRecovery')]
  # Keep the actual recovery client, projecting only the root process factory to a refusing IO boundary.
  # The dedicated recovery gate replaces the same factory with its explicit owned-process fixture.
  recovery_source=pkg/'ProfileRecoveryClient.java';recovery_raw=recovery_source.read_text()
@@ -65,6 +65,11 @@ final class HostRecoveryProcessBoundary {static Process start(String command)thr
  recovery_projection=output/'org/trillionnium/hepta/local/ProfileRecoveryClient.java'
  recovery_projection.write_text(recovery_raw.replace(recovery_seam,'HostRecoveryProcessBoundary.start(command)'))
  files.append(recovery_projection)
+ post_source=pkg/'ProfilePostlaunchRecoveryClient.java';post_raw=post_source.read_text()
+ if post_raw.count(recovery_seam)!=1:raise RuntimeError('nonunique postlaunch recovery process factory seam')
+ post_projection=output/'org/trillionnium/hepta/local/ProfilePostlaunchRecoveryClient.java'
+ post_projection.write_text(post_raw.replace(recovery_seam,'HostRecoveryProcessBoundary.start(command)'))
+ files.append(post_projection)
  # The exact finalization block is shared with the existing warm-finalization harness.
  # Android/model IO remains fake; the status policy itself is not reimplemented here.
  warm_helper=source/'tests/warm-finalization/prepare_fixture.py'
@@ -73,6 +78,6 @@ final class HostRecoveryProcessBoundary {static Process start(String command)thr
  terminal_files,terminal_record=warm.prepare(source,output/'terminal')
  files += [p for p in terminal_files if p.name in ('LocalInference.java','ControllerFinalizationFixture.java','TaskCancellationQueue.java')]
 
- records={'schema':'hepta.background-client-host-extraction.v1','actual_full_classes':['BackgroundSession','MobiMindPrivateFiles','QualificationScope','BrokerProtocol','ProfilePrelaunchRecovery','ProfileTaskPolicy','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask'],'actual_files_root_sha256':hashlib.sha256(part.encode()).hexdigest(),'boundary':'Android LocalSocket/DisplayManager/Keyguard/clock IO are explicit fakes; no broker process, Android runtime, root, model or phone actions','source_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in files if p.parent==pkg},'controller_finalization':terminal_record,'recovery_client_projection':{'source_sha256':hashlib.sha256(recovery_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(recovery_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','recovery_success_or_phone_qualification_claimed':False}}
+ records={'schema':'hepta.background-client-host-extraction.v1','actual_full_classes':['BackgroundSession','MobiMindPrivateFiles','QualificationScope','BrokerProtocol','ProfilePrelaunchRecovery','ProfilePostlaunchRecovery','ProfileTaskPolicy','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask'],'actual_files_root_sha256':hashlib.sha256(part.encode()).hexdigest(),'boundary':'Android LocalSocket/DisplayManager/Keyguard/clock IO are explicit fakes; no broker process, Android runtime, root, model or phone actions','source_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in files if p.parent==pkg},'controller_finalization':terminal_record,'recovery_client_projection':{'source_sha256':hashlib.sha256(recovery_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(recovery_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','recovery_success_or_phone_qualification_claimed':False},'postlaunch_client_projection':{'source_sha256':hashlib.sha256(post_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(post_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','recovery_success_or_phone_qualification_claimed':False}}
  (output/'EXTRACTION.json').write_text(json.dumps(records,indent=2)+'\n')
  return files,records
