@@ -144,6 +144,19 @@ def generate(root, out):
     replace_once('    if(!install_signals())return 74;',
                  '    if(!install_signals(hepta_warm_enabled))return 74;')
     adapted=add_sdk_exception_boundary(adapted)
+    # First nonempty streaming callback: one metadata-only checkpoint per warm request.
+    # Keep the original upstream bytes, callback return/fence, SDK input and deadlines intact.
+    replace_once('static bool on_token(const char *token,void *unused) {',
+                 '#include "first-token-checkpoint.h"\nstatic HeptaFirstTokenCheckpoint hepta_first_token_state;\n\n'
+                 'static bool on_token(const char *token,void *unused) {')
+    replace_once('    if(size>=room)callback_limit=true;\n    return fence(PH_GENERATE)&&!callback_limit;',
+                 '    if(size>=room)callback_limit=true;\n'
+                 '    if(size&&!callback_limit&&hepta_first_token_state.armed&&!hepta_first_token_state.emitted)\n'
+                 '        hepta_first_token_observe(&hepta_first_token_state,stderr,size,callback_count,monotonic_ns(),getpid());\n'
+                 '    return fence(PH_GENERATE)&&!callback_limit;')
+    replace_once('    hepta_timing_begin(HEPTA_TIMED_GENERATE);',
+                 '    hepta_first_token_begin(&hepta_first_token_state,hepta_warm_enabled,hepta_warm_generation,hepta_warm_task_id,o.id);\n'
+                 '    hepta_timing_begin(HEPTA_TIMED_GENERATE);')
     (out/'worker-appuid.c').write_text(adapted)
     difference=''.join(difflib.unified_diff(source.splitlines(True),adapted.splitlines(True),fromfile='frozen/worker-upstream.c',tofile='generated/worker-appuid.c'))
     (out/'worker-adapter.diff').write_text(difference)

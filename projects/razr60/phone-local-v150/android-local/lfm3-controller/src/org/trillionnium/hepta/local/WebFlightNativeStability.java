@@ -307,7 +307,7 @@ final class WebFlightNativeStability {
             JSONObject x=a.get(path),y=b.get(path);
             if(!changedScope.contains(path)){
                 need(!inside(path,slider)||path.equals(slider),"unrecognized native carousel descendant");
-                need(WebDomCanonical.same(x,y),"native target, ancestor or non-carousel node changed: "+path);continue;
+                if(!WebDomCanonical.same(x,y))throw new WebNativeObservationChanged("native target, ancestor or non-carousel node changed: ",path);continue;
             }
             need(WebDomCanonical.same(without(x,"bounds","visible"),without(y,"bounds","visible")),
                     "native carousel nongeometry field changed");

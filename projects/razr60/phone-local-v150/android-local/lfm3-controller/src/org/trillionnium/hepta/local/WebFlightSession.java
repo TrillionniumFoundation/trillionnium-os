@@ -241,22 +241,76 @@ final class WebFlightSession {
         need(!retired&&!cancellation.isCancelled(),"web task retired");
         CityObservationRetry observationRetry=cityObservationRetry;cityObservationRetry=null;
         PhoneObservation before=initial;long captureDeadline=deadline;String loadingAttemptKey=null;
+        // Fixed, read-only initial commit wait. A blank page is not model evidence.
+        long initialCommitDeadline=-1;int initialCommitReads=0;boolean initialCommitResolved=false;
+        String initialCommitInstance=null,initialCommitBinding=null;
+        int initialCommitDisplay=-1,initialCommitWindow=-1;
         while(true){
+        final long initialReadDeadline=initialCommitDeadline>=0&&!initialCommitResolved?Math.min(captureDeadline,initialCommitDeadline):captureDeadline;
         HeptaAccessibilityService.FlightObservationSnapshot nativeSource=null;
         try{
         service.requireBackgroundObservation(taskId,before);
-        if(goal!=null||purpose.shopping!=null)nativeSource=service.retainFlightObservation(this,before,cancellation,captureDeadline);
-        WebEvidenceReceipt first=client.capture(captureDeadline);
+        if(goal!=null||purpose.shopping!=null)nativeSource=service.retainFlightObservation(this,before,cancellation,initialReadDeadline);
+        WebEvidenceReceipt first=client.capture(initialReadDeadline);
+        need(initialCommitDeadline<0||initialCommitResolved||SystemClock.elapsedRealtime()<initialCommitDeadline,
+                "initial page commit wait exceeded its original deadline");
         if("state_changed".equals(first.status)&&"private evidence storage budget reached".equals(first.callback().opt("reason")))
             return publishWaiting(before,first,"initial_capture_storage_exhausted");
         if("state_changed".equals(first.status)){
             // At most one read-only retry, after a fresh AX window observation; never repeat an action.
             if(nativeSource!=null){nativeSource.close();nativeSource=null;}
             before=observer.observe();service.requireBackgroundObservation(taskId,before);
-            if(goal!=null||purpose.shopping!=null)nativeSource=service.retainFlightObservation(this,before,cancellation,captureDeadline);
-            first=client.capture(captureDeadline);
+            if(goal!=null||purpose.shopping!=null)nativeSource=service.retainFlightObservation(this,before,cancellation,initialReadDeadline);
+            first=client.capture(initialReadDeadline);
+        need(initialCommitDeadline<0||initialCommitResolved||SystemClock.elapsedRealtime()<initialCommitDeadline,
+                "initial page commit wait exceeded its original deadline");
             need("captured".equals(first.status)||"unavailable".equals(first.status)||"state_changed".equals(first.status),
                     "unknown reply after the single evidence retry");
+        }
+        if(domain==null&&"unavailable".equals(first.status)
+                &&"no_main_frame_commit".equals(first.callback().optString("reason"))){
+            long now=SystemClock.elapsedRealtime();
+            need(!initialCommitResolved,"initial committed page became uncommitted");
+            need(first.epoch==0&&(first.url==null||first.url.isEmpty())
+                    &&first.instance!=null&&!first.instance.isEmpty()
+                    &&journal.bindingSha.equals(first.bindingSha)&&first.windowId==before.windowId
+                    &&before.windowMetadata!=null&&before.windowMetadata.displayId!=null
+                    &&first.displayId==before.windowMetadata.displayId.intValue(),
+                    "initial uncommitted page identity differs");
+            if(initialCommitDeadline<0){
+                initialCommitDeadline=Math.min(deadline,now+32000);
+                initialCommitInstance=first.instance;initialCommitBinding=first.bindingSha;
+                initialCommitDisplay=first.displayId;initialCommitWindow=first.windowId;
+            }
+            need(initialCommitInstance.equals(first.instance)&&initialCommitBinding.equals(first.bindingSha)
+                    &&initialCommitDisplay==first.displayId&&initialCommitWindow==first.windowId,
+                    "initial uncommitted page instance or window changed");
+            need(initialCommitReads<64&&now+500<initialCommitDeadline,
+                    "initial page commit wait exceeded its original deadline");
+            need(!retired&&!cancellation.isCancelled(),"web task retired while waiting for initial page");
+            service.requireTaskAuthorization(taskId,authorization);background.requireActive();
+            record("web-initial-commit-wait-"+UUID.randomUUID().toString().replace("-","")+".json",new JSONObject()
+                    .put("schema","hepta.web-initial-commit-wait.v1").put("task_id",taskId)
+                    .put("binding_sha256",journal.bindingSha).put("webview_instance",first.instance)
+                    .put("display_id",first.displayId).put("window_id",first.windowId)
+                    .put("request_nonce",first.callback().getString("request_nonce"))
+                    .put("read_only_retry",++initialCommitReads).put("maximum_extra_pending_reads",64)
+                    .put("deadline_elapsed_ms",initialCommitDeadline).put("model_request_started",false)
+                    .put("action_replayed",false).put("business_verified",false));
+            SystemClock.sleep(500);
+            need(!retired&&!cancellation.isCancelled(),"web task retired while waiting for initial page");
+            need(SystemClock.elapsedRealtime()<initialCommitDeadline,"initial page commit wait exceeded its original deadline");
+            service.requireTaskAuthorization(taskId,authorization);background.requireActive();
+            before=observer.observe();service.requireBackgroundObservation(taskId,before);
+            continue;
+        }
+        if(initialCommitInstance!=null){
+            need(initialCommitResolved||SystemClock.elapsedRealtime()<initialCommitDeadline,
+                    "initial page commit wait exceeded its original deadline");
+            need(initialCommitInstance.equals(first.instance)&&initialCommitBinding.equals(first.bindingSha)
+                    &&initialCommitDisplay==first.displayId&&initialCommitWindow==first.windowId,
+                    "initial committed page instance or window changed");
+            if("captured".equals(first.status))initialCommitResolved=true;
         }
         if("unavailable".equals(first.status)||"state_changed".equals(first.status)){
             PhoneObservation after=observer.observe();service.requireBackgroundObservation(taskId,after);
@@ -288,6 +342,7 @@ final class WebFlightSession {
         boolean sameCaptureDomain=sameCaptureIdentity&&domBracket!=null;
         boolean stable=sameOriginalFrame&&sameCaptureDomain;
         JSONObject nativeObservationBracket=null;
+        WebNativeObservationChanged nativeChange=null;
         boolean supportedShoppingCaptures=false;
         if(sameCaptureIdentity&&purpose.shopping!=null&&nativeSource!=null){
             WebObservationTiming.Span eligibility=WebObservationTiming.begin(timing,WebObservationTiming.Phase.SHOPPING_DOM_ELIGIBILITY,captureDeadline);
@@ -299,9 +354,20 @@ final class WebFlightSession {
         if(supportedShoppingCaptures){
             // A private complete native proof admits only this new card observation.
             // It creates no product ARM; beforeModelAction and native dispatch retain every original gate.
-            nativeObservationBracket=service.verifyFlightObservationBracket(this,nativeSource,after,first,last,
-                    cancellation,captureDeadline);
-            stable=true;
+            try{
+                nativeObservationBracket=service.verifyFlightObservationBracket(this,nativeSource,after,first,last,
+                        cancellation,captureDeadline);
+                stable=true;
+            }catch(WebNativeObservationChanged changed){
+                // Old frames stay rejected. A later, complete fresh read must pass every original gate.
+                nativeChange=changed;stable=false;
+                record("web-native-change-"+UUID.randomUUID().toString().replace("-","")+".json",new JSONObject()
+                        .put("schema","hepta.web-readonly-native-change.v1").put("task_id",taskId)
+                        .put("binding_sha256",journal.bindingSha).put("webview_instance",last.instance)
+                        .put("navigation_epoch",last.epoch).put("observation_id",after.id)
+                        .put("native_path",changed.nativePath).put("original_error",changed.getMessage())
+                        .put("old_frame_rejected",true).put("grants_action_authority",false));
+            }
         }
         if(retryLoadingDocument(first,last,after,stable,domBracket,observationRetry,captureDeadline)){
             loadingAttemptKey=actualLoadingKey;
@@ -315,9 +381,29 @@ final class WebFlightSession {
             // It independently replays the complete homepage DOM scope and all
             // native guards even when the shared generic DOM bracket rejected it.
             // A later action still needs its own original model target and live Permit checks.
-            nativeObservationBracket=service.verifyFlightObservationBracket(this,nativeSource,after,first,last,
-                    cancellation,captureDeadline);
-            stable=true;
+            try{
+                nativeObservationBracket=service.verifyFlightObservationBracket(this,nativeSource,after,first,last,
+                        cancellation,captureDeadline);
+                stable=true;
+            }catch(WebNativeObservationChanged changed){
+                // Old frames stay rejected. A later, complete fresh read must pass every original gate.
+                nativeChange=changed;stable=false;
+                record("web-native-change-"+UUID.randomUUID().toString().replace("-","")+".json",new JSONObject()
+                        .put("schema","hepta.web-readonly-native-change.v1").put("task_id",taskId)
+                        .put("binding_sha256",journal.bindingSha).put("webview_instance",last.instance)
+                        .put("navigation_epoch",last.epoch).put("observation_id",after.id)
+                        .put("native_path",changed.nativePath).put("original_error",changed.getMessage())
+                        .put("old_frame_rejected",true).put("grants_action_authority",false));
+            }
+        }
+        if(nativeChange!=null){
+            if(goal!=null&&retryLoadingDocument(first,last,after,false,domBracket,observationRetry,captureDeadline)){
+                loadingAttemptKey=actualLoadingKey;
+                captureDeadline=Math.min(captureDeadline,loadingDocumentDeadline);
+                before=observer.observe();service.requireBackgroundObservation(taskId,before);
+                continue;
+            }
+            throw nativeChange;
         }
         need(stable,"AX/DOM bracket changed; no current page capability published");
         WebNativeGeometry firstGeometry=WebNativeGeometry.read(first.capture(),first.dom(),first.displayId,first.windowId,first.stability());
@@ -364,7 +450,8 @@ final class WebFlightSession {
     private boolean retryLoadingDocument(WebEvidenceReceipt first,WebEvidenceReceipt last,PhoneObservation frame,
                                          boolean stable,WebDomStability.Result domBracket,CityObservationRetry observationRetry,long deadline)throws Exception{
         boolean shoppingUnstable=goal==null&&purpose.shopping!=null&&!stable;
-        if(goal==null&&!shoppingUnstable)return false;
+        boolean initialDocumentUnstable=domain==null&&(goal!=null||purpose.shopping!=null)&&!stable;
+        if(goal==null&&!shoppingUnstable&&!initialDocumentUnstable)return false;
         String key=loadingKey(last);
         CsairCalendar a=goal==null?null:CsairCalendar.read(first.dom()),b=goal==null?null:CsairCalendar.read(last.dom());
         boolean bodyPending=a!=null&&a.headerOnly||b!=null&&b.headerOnly;
@@ -376,7 +463,7 @@ final class WebFlightSession {
                         first,last,frame,stable,domBracket);
         // A city-open credential never inherits the generic loading-key continuation:
         // every new city retry must replay its own exact picker/four-DOM predicates.
-        if(!shoppingUnstable&&!bodyPending&&!bookingPending&&!queryPending&&!cityPickerTransition
+        if(!shoppingUnstable&&!initialDocumentUnstable&&!bodyPending&&!bookingPending&&!queryPending&&!cityPickerTransition
                 &&!(observationRetry==null&&key.equals(loadingDocumentKey)&&!stable))return false;
         need(first.instance.equals(last.instance)&&first.epoch==last.epoch&&first.url.equals(last.url)
                 &&first.bindingSha.equals(last.bindingSha)&&first.displayId==last.displayId
@@ -387,7 +474,7 @@ final class WebFlightSession {
             // The actual city failure cost about 6.8s per full extra AX/DOM bracket.
             // Actual MI capture plus verified reply costs about 4.5s; two full extra reads need a 32s phase.
             // Freeze one phase deadline; no retry extends it or the original task deadline.
-            loadingDocumentDeadline=Math.min(deadline,now+(shoppingUnstable?32000:cityPickerTransition?16000:6000));
+            loadingDocumentDeadline=Math.min(deadline,now+(shoppingUnstable||initialDocumentUnstable?32000:cityPickerTransition?16000:6000));
         }
         if(loadingDocumentReadRetries>=2||now+250>=Math.min(deadline,loadingDocumentDeadline))return false;
         need(!retired&&!cancellation.isCancelled(),"web task retired while waiting for page content");
@@ -402,6 +489,7 @@ final class WebFlightSession {
                 .put("first_dom_sha256",first.domSha).put("last_dom_sha256",last.domSha)
                 .put("recognized_calendar_body_pending",bodyPending).put("recognized_booking_body_pending",bookingPending)
                 .put("shopping_unstable_readonly_bracket",shoppingUnstable)
+                .put("initial_document_unstable_readonly_bracket",initialDocumentUnstable)
                 .put("actual_query_awaiting_results",queryPending)
                 .put("actual_city_picker_transition",cityPickerTransition?observationRetry.evidence():JSONObject.NULL)
                 .put("read_only_retry",loadingDocumentReadRetries)

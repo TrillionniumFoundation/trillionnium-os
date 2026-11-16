@@ -1,0 +1,298 @@
+package org.trillionnium.hepta.local;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import org.json.*;
+import org.trillionnium.hepta.webprotocol.*;
+import org.trillionnium.hepta.local.web.WebShoppingGoal;
+
+/** Exact production observation/retry methods; retained original DOM and AX
+ * metadata, with explicitly instrumented clock/service/client/publisher.
+ * Repeating retained frames is a synthetic future sequence, not device evidence. */
+public final class WebReadinessHost {
+    private boolean retired,failRecord;
+    private final Cancellation cancellation=new Cancellation();
+    private final String taskId="475c3b4562e24c9595c49ca1d13e67e4";
+    private Object goal=null;
+    private final Authorization authorization=new Authorization();
+    private static final class Authorization {final Authority authorization=new Authority();}
+    private static final class Authority {String sha256;}
+    private final Purpose purpose=new Purpose();
+    private final HeptaAccessibilityService service=new HeptaAccessibilityService();
+    private final Background background=new Background();
+    private final Completion completion=new Completion();
+    private final Journal journal=new Journal();
+    private final List<JSONObject> records=new ArrayList<JSONObject>();
+    private Client client;
+    private JSONObject immutableBinding;
+    private long loadingDocumentStarted,loadingDocumentDeadline,dispatchCheckedAt,recordDelay,observationCost;
+    private CityObservationRetry cityObservationRetry;
+    private final java.util.concurrent.atomic.AtomicBoolean nativeQueryEntered=new java.util.concurrent.atomic.AtomicBoolean();
+    /** Flight-only endpoint: a shopping fixture must never obtain or use a city credential. */
+    private static final class CityObservationRetry {
+        boolean applies(String task,String owner,String authorization,String generation,WebEvidenceReceipt first,WebEvidenceReceipt last,PhoneObservation frame,boolean stable,WebDomStability.Result bracket){throw new AssertionError("shopping cannot use a city retry");}
+        JSONObject evidence(){throw new AssertionError("shopping cannot use a city retry");}
+    }
+    private int loadingDocumentReadRetries;
+    private String loadingDocumentKey,dispatchCheckedRun="old-run",dispatchCheckedAction="old-action";
+    private Object flightNativePermit=new Object(),flightNativeCheck=new Object();
+    private FlightProgress flightProgress;
+    private PhoneObservation current,before;
+    private WebEvidenceReceipt currentCapture;
+    private WebTaskDomain domain;
+    private PhoneObservation[] observations;
+    private int observed;
+    interface Observer {PhoneObservation observe()throws Exception;}
+    private static final class Purpose {String sitePolicyId=WebShoppingGoal.SITE_POLICY_ID,ownerSha256;Object shopping=new Object();}
+    private static final class Cancellation {boolean cancelled;boolean isCancelled(){return cancelled;}}
+    private static final class FlightProgress {boolean queryDispatched(){throw new AssertionError("not a flight test");}boolean queryAttempted(){throw new AssertionError("not a flight test");}}
+    private static final class Journal {String bindingSha;}
+    private static final class Background {
+        int checks,failAt;String generation;
+        void requireActive(){if(++checks==failAt)throw new IllegalStateException("instrumented background lease retirement");}
+    }
+    private static final class SystemClock {
+        static long now;static Runnable onSleep;
+        static long elapsedRealtime(){return now;}
+        static void sleep(long duration){now+=duration;if(onSleep!=null)onSleep.run();}
+    }
+    private static final class State {String appTreeSha256;State(String tree){appTreeSha256=tree;}}
+    private static final class WindowMetadata {Integer displayId;WindowMetadata(int id){displayId=id;}}
+    private static final class PhoneObservation {
+        String id,packageName,treeSha256,backgroundGeneration;int windowId,rotation;State state;WindowMetadata windowMetadata;
+        PhoneObservation(JSONObject retained){
+            JSONObject value=retained.getJSONObject("observation");id=value.getString("observation_id");
+            packageName=value.getString("package");treeSha256=value.getString("observation_state_sha256");
+            windowId=value.getInt("window_id");rotation=value.getInt("rotation");state=new State(value.getString("app_tree_sha256"));
+            windowMetadata=new WindowMetadata(value.getJSONObject("window").getInt("display_id"));
+            backgroundGeneration=value.getJSONObject("background_session").getString("generation");
+        }
+    }
+    private static final class WebEvidenceReceipt {
+        final JSONObject original;final String status,bindingSha,instance,url,domSha;
+        final long epoch;final int displayId,windowId;
+        WebEvidenceReceipt(JSONObject capture)throws Exception{
+            original=new JSONObject(capture.toString());status=original.optString("_host_status","captured");bindingSha=WebDomCanonical.sha256(original.getJSONObject("binding"));
+            instance=original.getString("webview_instance");epoch="unavailable".equals(status)?0:original.getLong("navigation_epoch");
+            url="unavailable".equals(status)?null:original.getString("current_native_url");displayId=original.getInt("display_id");windowId=original.getInt("actual_window_id");
+            domSha=original.getString("dom_sha256");
+        }
+        String domRaw(){return original.getString("dom_raw_utf8");}
+        String beforeDomRaw(){return original.getString("before_dom_raw_utf8");}
+        JSONObject dom()throws Exception{return WebEvidenceJson.parseDom(domRaw());}
+        JSONObject capture(){return new JSONObject(original.toString());}
+        JSONObject callback(){return new JSONObject().put("request_nonce",original.getString("challenge")).put("reason",original.optString("_host_reason",""));}
+        WebDomStability.Result stability()throws Exception{
+            return WebDomStability.verify(beforeDomRaw(),domRaw(),WebShoppingGoal.SITE_POLICY_ID,original.getJSONObject("dom_stability"));
+        }
+    }
+    private static final class Client {
+        final WebEvidenceReceipt[] values;int calls,attempts;long captureCost;boolean enforceDeadline=true;final List<Long> deadlines=new ArrayList<Long>();
+        Client(JSONObject...captures)throws Exception{values=new WebEvidenceReceipt[captures.length];for(int i=0;i<captures.length;i++)values[i]=new WebEvidenceReceipt(captures[i]);}
+        WebEvidenceReceipt capture(long deadline){
+            attempts++;deadlines.add(deadline);
+            if(calls>=values.length)throw new AssertionError("capture sequence exhausted or unbounded retry");
+            SystemClock.now+=captureCost;if(enforceDeadline&&SystemClock.now>=deadline)throw new IllegalStateException("instrumented capture deadline");
+            return values[calls++];
+        }
+    }
+    /** This budget-only harness does not have private native snapshots. The new
+     * read-only quote proof is exercised by the separate mandatory real-DOM/typed-completion gate. */
+    private static final class WebShoppingObservationStability {
+        static boolean supported;static boolean supportsCaptures(JSONObject first,JSONObject last){return supported;}
+    }
+    private static final class WebTaskDomain {
+        final Object shopping=null;
+        WebTaskDomain withShoppingReadQuote(Object goal,PhoneObservation frame,WebEvidenceReceipt receipt,JSONObject proof){
+            throw new AssertionError("budget-only harness cannot grant a shopping quote");
+        }
+        static WebTaskDomain observed(String task,Purpose purpose,Object authorization,PhoneObservation frame,
+                WebEvidenceReceipt capture,JSONObject binding){return new WebTaskDomain();}
+        String evidence(){return "{}";}
+    }
+    private static final class Completion {int bound;void bindWebDomain(WebTaskDomain value){bound++;}}
+    private static final class HeptaAccessibilityService {
+        int authChecks,authFailAt,nativeProofCalls,typedChanges;boolean provideNative,integrityFailure;final List<Long> retainDeadlines=new ArrayList<Long>();
+        static final class FlightObservationSnapshot {void close(){}}
+        void requireBackgroundObservation(String task,PhoneObservation frame){if(frame==null)throw new IllegalStateException("missing observation");}
+        void requireTaskAuthorization(String task,Object authorization){
+            if(++authChecks==authFailAt)throw new IllegalStateException("instrumented authorization retirement");
+        }
+        FlightObservationSnapshot retainFlightObservation(WebReadinessHost web,PhoneObservation frame,Cancellation cancel,long deadline){
+            // The shared retain endpoint is now used for shopping read-only proof as well.
+            // This legacy budget harness supplies no private native token, never a fake proof.
+            retainDeadlines.add(deadline);return provideNative?new FlightObservationSnapshot():null;
+        }
+        JSONObject verifyFlightObservationBracket(WebReadinessHost web,FlightObservationSnapshot source,
+                PhoneObservation frame,WebEvidenceReceipt first,WebEvidenceReceipt last,Cancellation cancel,long deadline){
+            nativeProofCalls++;
+            if(integrityFailure)throw new IllegalStateException("instrumented identity mismatch");
+            if(typedChanges-->0)throw new WebNativeObservationChanged("native target, ancestor or outside recommendation node changed: ","0/1");
+            return new JSONObject();
+        }
+    }
+    private PhoneObservation publishWaiting(PhoneObservation frame,WebEvidenceReceipt receipt,String reason){throw new AssertionError("unexercised IPC waiting status");}
+    private WebTaskDomain applyNavigation(WebTaskDomain value){return value;}
+    private void record(String name,JSONObject value)throws Exception{
+        if(name.startsWith("web-observation-timing-"))return; // Separate diagnostic artifact; does not replace frame/wait evidence.
+        if(failRecord)throw new java.io.IOException("instrumented persistence failure");
+        records.add(new JSONObject(value.toString()));SystemClock.now+=recordDelay;
+    }
+    private static void need(boolean condition,String reason){WebEvidenceJson.need(condition,reason);}
+
+    private volatile WebObservationTiming observationTiming;
+
+    // Caller control only: real Csair parsing has separate unchanged fixture gates.
+    private static final class CsairCalendar {boolean headerOnly;static CsairCalendar read(JSONObject dom){return null;}}
+    private static final class WebFlightDomain {static boolean bookingBodyPending(JSONObject dom){return false;}}
+
+    /* EXACT_PRODUCTION_METHODS */
+
+    static int cases,assertions;static final JSONArray names=new JSONArray();
+    interface Work{void run()throws Exception;}
+    static void check(boolean condition,String why){assertions++;if(!condition)throw new AssertionError(why);}
+    static void test(String name,Work work)throws Exception{SystemClock.now=1000;SystemClock.onSleep=null;WebShoppingObservationStability.supported=false;work.run();cases++;names.put(name);}
+    static void denied(Work work)throws Exception{
+        boolean refused=false;try{work.run();}catch(IllegalArgumentException|IllegalStateException|JSONException|java.io.IOException expected){refused=true;}
+        check(refused,"invalid or incomplete observation cannot publish");
+    }
+    static WebReadinessHost fixture(JSONObject[] captures,PhoneObservation before,PhoneObservation...after)throws Exception{
+        WebReadinessHost value=new WebReadinessHost();value.client=new Client(captures);
+        value.immutableBinding=captures[0].getJSONObject("binding");value.journal.bindingSha=value.client.values[0].bindingSha;
+        value.before=before;value.observations=after;return value;
+    }
+    PhoneObservation run(long deadline)throws Exception{
+        return observe(before,()->{if(observed>=observations.length)throw new AssertionError("unbounded AX observations");SystemClock.now+=observationCost;return observations[observed++];},deadline);
+    }
+    static JSONObject read(Path p)throws Exception{return new JSONObject(new String(Files.readAllBytes(p),StandardCharsets.UTF_8));}
+    static JSONObject changed(JSONObject original,String key){
+        JSONObject copy=new JSONObject(original.toString());
+        if("binding".equals(key))copy.getJSONObject("binding").put("task_id","ffffffffffffffffffffffffffffffff");
+        else {Object value=copy.get(key);copy.put(key,value instanceof Number?((Number)value).longValue()+1:"changed:"+value);}
+        return copy;
+    }
+    static void noPublish(WebReadinessHost f){check(f.completion.bound==0&&f.current==null&&f.currentCapture==null,"failed wait must not publish a domain");}
+    static JSONObject pending(JSONObject source){return new JSONObject(source.toString()).put("_host_status","unavailable").put("_host_reason","no_main_frame_commit");}
+    static long count(WebReadinessHost f,String schema){long n=0;for(JSONObject r:f.records)if(schema.equals(r.optString("schema")))n++;return n;}
+    static PhoneObservation[] repeated(PhoneObservation f,int n){PhoneObservation[] rows=new PhoneObservation[n];java.util.Arrays.fill(rows,f);return rows;}
+    public static void main(String[] args)throws Exception{
+        Path dir=Paths.get(args[0]);JSONObject index=read(dir.resolve("PROVENANCE.json"));JSONArray files=index.getJSONArray("files");
+        JSONObject first=null,last=null,axFirst=null,axLast=null;
+        for(int i=0;i<files.length();i++){
+            JSONObject row=files.getJSONObject(i),raw=read(dir.resolve(row.getString("name")));
+            if(row.getString("name").startsWith("raw-")){if(first==null)first=raw.getJSONObject("capture");else last=raw.getJSONObject("capture");}
+            else if(axFirst==null)axFirst=raw;else axLast=raw;
+        }
+        final JSONObject a=first,b=last;final PhoneObservation x=new PhoneObservation(axFirst),y=new PhoneObservation(axLast);
+        String mode=args[2];boolean all="all".equals(mode);
+        if(all||"precommit".equals(mode))test("uncommitted_page_waits_for_actual_capture_before_model_domain",()->{
+            WebReadinessHost f=fixture(new JSONObject[]{pending(b),pending(b),b,b},y,y,y,y);
+            PhoneObservation result=f.run(90000);
+            check(result==y&&f.completion.bound==1&&f.client.calls==4&&f.observed==3,"only a captured frame may be published");
+            check(count(f,"hepta.web-initial-commit-wait.v1")==2&&f.loadingDocumentReadRetries==0,"pending reads are separate from content retries");
+            check(f.client.deadlines.equals(java.util.Arrays.asList(90000L,33000L,33000L,90000L)),"capture must use original pending deadline");
+            check(f.service.retainDeadlines.equals(java.util.Arrays.asList(90000L,33000L,33000L)),"native handoff must use same pending deadline");
+            for(JSONObject row:f.records)if("hepta.web-initial-commit-wait.v1".equals(row.optString("schema")))
+                check(!row.getBoolean("model_request_started")&&!row.getBoolean("action_replayed")&&row.getLong("deadline_elapsed_ms")==33000,"fixed precommit budget and no action");
+        });
+        if(all||"initialflight".equals(mode))test("initial_flight_shaped_unstable_document_gets_fresh_read",()->{
+            WebReadinessHost f=fixture(new JSONObject[]{a,b,b,b},x,y,y,y);f.goal=new Object();f.purpose.shopping=null;
+            check(f.run(90000)==y&&f.loadingDocumentReadRetries==1&&f.client.calls==4,"initial shared readiness retry missing");
+            check(f.loadingDocumentDeadline==33000&&f.service.nativeProofCalls==0,"fixed 32-second read phase without native authority");
+        });
+        if(all||"nativechange".equals(mode))test("typed_native_change_rejects_old_frame_then_rechecks_fresh_frame",()->{
+            WebReadinessHost f=fixture(new JSONObject[]{b,b,b,b},y,y,y,y);
+            WebShoppingObservationStability.supported=true;f.service.provideNative=true;f.service.typedChanges=1;
+            check(f.run(90000)==y&&f.loadingDocumentReadRetries==1&&f.service.nativeProofCalls==2,"fresh complete native comparison required");
+            check(count(f,"hepta.web-readonly-native-change.v1")==1&&f.completion.bound==1,"old rejected bracket must not publish");
+        });
+        if(all){
+            test("native_identity_failure_never_becomes_readiness_retry",()->{
+                WebReadinessHost f=fixture(new JSONObject[]{b,b},y,y);
+                WebShoppingObservationStability.supported=true;f.service.provideNative=true;f.service.integrityFailure=true;
+                denied(()->f.run(90000));noPublish(f);
+                check(f.loadingDocumentReadRetries==0&&f.client.calls==2,"identity errors cannot spend retry budget");
+            });
+            test("persistent_native_changes_stop_after_two_extra_reads",()->{
+                WebReadinessHost f=fixture(new JSONObject[]{b,b,b,b,b,b},y,repeated(y,5));
+                WebShoppingObservationStability.supported=true;f.service.provideNative=true;f.service.typedChanges=4;
+                denied(()->f.run(90000));noPublish(f);
+                check(f.loadingDocumentReadRetries==2&&f.service.nativeProofCalls==3&&f.client.calls==6,"bounded fresh comparisons only");
+            });
+            for(String key:new String[]{"binding","webview_instance","display_id","actual_window_id"}){
+                final String changedKey=key;
+                test("pending_identity_change_rejects_"+key,()->{
+                    JSONObject wrong=changed(b,changedKey);
+                    WebReadinessHost f=fixture(new JSONObject[]{pending(b),wrong,b},y,y,y);
+                    denied(()->f.run(90000));noPublish(f);
+                    check(f.client.calls==2&&f.loadingDocumentReadRetries==0,"changed pending identity must not publish or retry");
+                });
+            }
+            test("pending_capture_late_return_cannot_escape_fixed_phase_deadline",()->{
+                WebReadinessHost f=fixture(new JSONObject[]{pending(b),b,b},y,y,y);
+                SystemClock.onSleep=()->f.client.captureCost=40000;
+                denied(()->f.run(200000));noPublish(f);
+                check(f.client.calls==1&&f.client.attempts==2,"late captured result must not be accepted");
+            });
+            for(String replyStatus:new String[]{"captured","state_changed"}){
+                final String lateStatus=replyStatus;
+                test("pending_"+replyStatus+"_late_reply_rejected_even_if_client_returns",()->{
+                    JSONObject late=new JSONObject(b.toString()).put("_host_status",lateStatus);
+                    WebReadinessHost f=fixture(new JSONObject[]{pending(b),late,b},y,y,y);
+                    f.client.enforceDeadline=false;SystemClock.onSleep=()->f.client.captureCost=40000;
+                    denied(()->f.run(200000));noPublish(f);
+                    check(f.client.calls==2&&f.client.attempts==2&&f.observed==1,"late returned reply must stop before another observation");
+                    check(f.client.deadlines.get(1)==33000L&&f.service.retainDeadlines.get(1)==33000L,"late IPC cannot refund phase budget");
+                });
+            }
+            test("pending_cancellation_stops_before_next_observation",()->{
+                WebReadinessHost f=fixture(new JSONObject[]{pending(b)},y);
+                SystemClock.onSleep=()->f.cancellation.cancelled=true;
+                denied(()->f.run(90000));noPublish(f);
+                check(f.client.calls==1&&f.observed==0,"cancel cannot cause a new read");
+            });
+            test("pending_record_failure_stops_without_retry",()->{
+                WebReadinessHost f=fixture(new JSONObject[]{pending(b)},y);f.failRecord=true;
+                denied(()->f.run(90000));noPublish(f);
+                check(f.client.calls==1&&f.observed==0,"unrecorded wait must not continue");
+            });
+            test("pending_authority_retirement_stops_before_sleep",()->{
+                WebReadinessHost f=fixture(new JSONObject[]{pending(b)},y);f.service.authFailAt=1;
+                denied(()->f.run(90000));noPublish(f);
+                check(f.client.calls==1&&f.observed==0&&SystemClock.now==1000,"authority is checked before waiting");
+            });
+            test("pending_deadline_is_fixed_and_bounded",()->{
+                JSONObject[] pending=new JSONObject[64];java.util.Arrays.fill(pending,pending(b));
+                WebReadinessHost f=fixture(pending,y,repeated(y,64));
+                denied(()->f.run(90000));noPublish(f);
+                check(f.client.calls==64&&f.observed==63&&SystemClock.now==32500,"no reset or unbounded polling");
+                for(JSONObject row:f.records)if("hepta.web-initial-commit-wait.v1".equals(row.optString("schema")))
+                    check(row.getLong("deadline_elapsed_ms")==33000,"original pending deadline changed");
+            });
+            test("task_deadline_caps_pending_wait",()->{
+                JSONObject[] pending=new JSONObject[8];java.util.Arrays.fill(pending,pending(b));
+                WebReadinessHost f=fixture(pending,y,repeated(y,8));
+                denied(()->f.run(2800));noPublish(f);
+                check(f.client.calls==4&&SystemClock.now==2500,"task deadline is never extended");
+                for(JSONObject row:f.records)if("hepta.web-initial-commit-wait.v1".equals(row.optString("schema")))
+                    check(row.getLong("deadline_elapsed_ms")==2800,"pending budget ignored task deadline");
+            });
+            test("ordinary_known_page_change_has_chinese_display_only",()->{
+                String raw="native target, ancestor or outside recommendation node changed: 0/2";
+                check(TaskDisplayText.forStatus(raw).contains("网页内容发生变化")&&!TaskDisplayText.forStatus(raw).contains("0/2"),"ordinary display exposed native path");
+                check(raw.equals("native target, ancestor or outside recommendation node changed: 0/2"),"raw diagnostic mutated");
+                for(String unchanged:new String[]{"controller_verified_done","已停止；已经发生的操作不会自动重做","generation cleanup unknown","unexpected identity mismatch"})
+                    check(unchanged.equals(TaskDisplayText.forStatus(unchanged)),"unknown or cleanup status must remain original");
+                check(TaskDisplayText.forStatus("initial page commit wait exceeded its original deadline").contains("尚未完成加载"),"loading message missing");
+                check(TaskDisplayText.forStatus("readonly Flight observation cancelled or expired").contains("观察超时"),"timeout message missing");
+            });
+        }
+        JSONObject out=new JSONObject().put("all_pass",true).put("cases",cases).put("assertions",assertions).put("names",names)
+                .put("phone_actions",0).put("private_native_authority_proven",false).put("future_read_sequences_synthetic",true);
+        Files.write(Paths.get(args[1]),(out.toString(2)+"\n").getBytes(StandardCharsets.UTF_8));
+        System.out.println(out.toString());
+    }
+}

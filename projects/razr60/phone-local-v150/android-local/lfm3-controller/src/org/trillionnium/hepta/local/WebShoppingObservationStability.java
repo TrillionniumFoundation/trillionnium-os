@@ -217,7 +217,7 @@ final class WebShoppingObservationStability {
         for(String path:a.keySet()){
             JSONObject x=a.get(path),y=b.get(path);
             if(!path.startsWith(rec+"/")){
-                need(WebDomCanonical.same(x,y),"native target, ancestor or outside recommendation node changed: "+path);
+                if(!WebDomCanonical.same(x,y))throw new WebNativeObservationChanged("native target, ancestor or outside recommendation node changed: ",path);
             }else{
                 need(++scoped<=512&&WebDomCanonical.same(without(x,"text","description","bounds","visible"),
                         without(y,"text","description","bounds","visible")),"native recommendation identity or action state changed");

@@ -557,7 +557,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         }
         modelInfo.setText(modelState+" · "+(available?"无障碍已启用":"请启用无障碍"));
         modelDiagnostics.setText(modelName+" · "+device+" · 无外部模型");
-        taskState.setText(tasks.state());taskLog.setText(tasks.log());
+        taskState.setText(TaskDisplayText.forStatus(tasks.state()));taskLog.setText(tasks.log());
         boolean busy=tasks.isRunning()||engine.isBusy();
         backgroundPermissionState.setText(backgroundPermission.state());
         backgroundSummary.setText(tasks.isRunning()&&backgroundMode.isChecked()?"正在后台执行":
@@ -581,8 +581,8 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         runText.setEnabled(configurationReady&&!visualProfile&&!busy&&!tasks.isBlocked());
         LocalTaskController.TaskResult result=tasks.lastResult();
         if(result!=null){
-            if(!busy&&!tasks.isBlocked()&&!tasks.isRecovering())taskState.setText(result.displaySummary);
-            taskResult.setText(result.displaySummary);
+            if(!busy&&!tasks.isBlocked()&&!tasks.isRecovering())taskState.setText(TaskDisplayText.forStatus(result.displaySummary));
+            taskResult.setText(TaskDisplayText.forStatus(result.displaySummary));
             taskDiagnostics.setText("任务："+result.taskId+"\n步骤："+result.steps
                     +"\n退出状态已确认："+result.cleanupKnown+"\n记录："+result.evidenceDirectory);
         }else{

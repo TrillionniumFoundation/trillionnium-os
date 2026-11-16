@@ -44,7 +44,8 @@ def main():
     java_dir = source / "src/org/trillionnium/hepta/local"
     main_file, engine_file = java_dir / "MainActivity.java", java_dir / "LocalModelEngine.java"
     template_file = Path(__file__).resolve().with_name("RefreshFixture.template")
-    inputs = (main_file, engine_file, template_file, Path(__file__).resolve())
+    display_file = java_dir / "TaskDisplayText.java"
+    inputs = (main_file, engine_file, display_file, template_file, Path(__file__).resolve())
     pins = {str(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in inputs}
     ui, engine = main_file.read_text(), engine_file.read_text()
     methods = {
@@ -71,10 +72,18 @@ def main():
         generated = generated.replace(marker, body)
     fixture = out / "RuntimeConfigUiHostTest.java"
     fixture.write_text(generated)
+    # The legacy extracted UI fixture is in the default package. Compile the
+    # exact production display helper with only its package declaration removed.
+    display_source = display_file.read_text()
+    declaration = "package org.trillionnium.hepta.local;\n"
+    if not display_source.startswith(declaration):
+        raise RuntimeError("production display helper package differs")
+    display_fixture = out / "TaskDisplayText.java"
+    display_fixture.write_text(display_source[len(declaration):])
     javac = shutil.which("javac")
     compiler = [javac] if javac else ["java", "-m", "jdk.compiler/com.sun.tools.javac.Main"]
     flags = ["--release", "8", "-Xlint:all"] if args.release8 else ["-source", "8", "-target", "8", "-Xlint:all,-options"]
-    stages = [("compile", compiler + flags + ["-encoding", "UTF-8", "-Werror", "-d", str(classes), str(fixture)]),
+    stages = [("compile", compiler + flags + ["-encoding", "UTF-8", "-Werror", "-d", str(classes), str(fixture), str(display_fixture)]),
               ("refresh", ["java", "-cp", str(classes), "RuntimeConfigUiHostTest", str(out / "files")])]
     report = {"schema": "hepta.runtime-config-ui-host-validation.v1", "passed": False,
         "source_sha256": pins, "stages": [],
