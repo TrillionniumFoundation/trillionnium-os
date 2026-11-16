@@ -87,7 +87,8 @@ final class WebFlightDomain {
         if(resultVerified)out.put("observed_public_flight_result",result.evidence());
         out.put("query_control_withheld_reason",ready?null:submitted?"the one query attempt is consumed":
                 pending?"actual selection is awaiting fresh form/native readback":"same-lease city and complete-date confirmations are incomplete");
-        out.put("next_goal",resultVerified?"本帧的真实航班结果已与本次查询核对；按结果中的日期、机场、航班、时间、公开价和税费条件汇总，然后报告完成。不能预订或重复查询。":
+        out.put("next_goal","official_page_capture_pending".equals(phase)?original.proof.get("next_goal"):
+                resultVerified?"本帧的真实航班结果已与本次查询核对；按结果中的日期、机场、航班、时间、公开价和税费条件汇总，然后报告完成。不能预订或重复查询。":
                 submitted?"查询尝试已经记录；只读观察真实结果，不能重复查询、点击航班预订或声称已经查到航班。":
                 pending?"上次城市或日期点击等待实际表单读回；只可等待，不要重复点击。":
                 ready?"出发城市、到达城市、完整日期和人数已由本任务真实操作及当前表单核对；仅点击一次本帧『查询』，随后等待真实结果。":

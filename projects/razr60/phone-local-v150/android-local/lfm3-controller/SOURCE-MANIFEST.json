@@ -23,9 +23,9 @@
     "previous_manifest_sha256": "3b442123253504d89138cb3c02381ba978ef589453cc2a806fe1a98ed861a9af",
     "recognized_booking_pending_phase_budget_ms": 16000
   },
-  "candidate_status": "booking_document_budget_pending_phone",
+  "candidate_status": "initial_unavailable_reobservation_pending_phone",
   "candidate_version_assigned": true,
-  "complete_source_files": 2039,
+  "complete_source_files": 2048,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -6808,9 +6808,9 @@
       "sha256": "a81ed2250d98d7c316a7f9fa0462b63f32e782c8ef0239a9cc38e597db43e49a"
     },
     {
-      "bytes": 60443,
+      "bytes": 60538,
       "path": "src/org/trillionnium/hepta/local/WebFlightDomain.java",
-      "sha256": "c61938db4efa4df6faa33de2be23e8bfc9086fe95bcb6af0269f6d98505bfc01"
+      "sha256": "1b1a27d8c4bb410b92827a85621904e2db2fdc8287730d01c0a5af3d5e7826b5"
     },
     {
       "bytes": 34367,
@@ -6828,9 +6828,9 @@
       "sha256": "55bb45677d862633cdae80d3786240026e57059288205b3d04bc500483bbcd6f"
     },
     {
-      "bytes": 73230,
+      "bytes": 77026,
       "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
-      "sha256": "dd45a9b72319bdc52a78152b13f62a849914d97b83146afb7435581a86fa6286"
+      "sha256": "789433dc2254f7661b5318ceb85b8715418335eeb291ee0ca9984a6799207445"
     },
     {
       "bytes": 9993,
@@ -8683,6 +8683,11 @@
       "sha256": "3890710fd3859fb9d8a76280d3ce023c446185f62c350a6e9ab9c7e5be7c92f7"
     },
     {
+      "bytes": 114294,
+      "path": "tests/pending-capture-integration/HOST-VALIDATION.json",
+      "sha256": "6c63b54de5c40df4b50e1c3a93c0bbec36fd8f639565e50ef30f50a33c8251f5"
+    },
+    {
       "bytes": 42292,
       "path": "tests/qualification-scope/BackgroundFreshnessHostTest.java",
       "sha256": "ee86680748f3d3ad1ddcfc26568cc17e4fc8644e128f4bcd901eb019b66304ff"
@@ -9963,6 +9968,26 @@
       "sha256": "caaea75baa3b57a6e57f16604595bd7e75969eefc7ffff1862d42d1787ebfc39"
     },
     {
+      "bytes": 18325,
+      "path": "tests/web-initial-unavailable/HOST-VALIDATION.json",
+      "sha256": "4d330b0263a3d86951cb3ccae9069036798e591ada4922c3d056d4c56fbff6ec"
+    },
+    {
+      "bytes": 1948,
+      "path": "tests/web-initial-unavailable/README.md",
+      "sha256": "23aeebabfe8a9b685fe9c9240579a413f9d2b0cf54d6840e4d62f2feb64b92fc"
+    },
+    {
+      "bytes": 28853,
+      "path": "tests/web-initial-unavailable/WebInitialUnavailableHost.template",
+      "sha256": "6d8b1e4e2af3f93b5eeebfbe7ee86f3cece69eab6d58d9ca22f4d63c43634276"
+    },
+    {
+      "bytes": 5529,
+      "path": "tests/web-initial-unavailable/run_host.py",
+      "sha256": "8a74a6b1b2ef6c361d2e04ab4ff1c699a69b60902c982cc2543b283b5fd0a687"
+    },
+    {
       "bytes": 3764,
       "path": "tests/web-observation-timing/CaptureDomReplay.java",
       "sha256": "d68166f511ce143266a74a18597c4b34abf60410d92f93b8aaf35b8fba2fbfea"
@@ -9976,6 +10001,26 @@
       "bytes": 2726,
       "path": "tests/web-observation-timing/README.md",
       "sha256": "61475ee3dfe293d5d24534b3bf1abd913619642b13c028762347ae9fe833e017"
+    },
+    {
+      "bytes": 28644,
+      "path": "tests/web-pending-prompt/HOST-VALIDATION.json",
+      "sha256": "5401510a972412ee29b30084cce87fa02d5e92682b4c7d82bbc1dfadb2758bce"
+    },
+    {
+      "bytes": 1948,
+      "path": "tests/web-pending-prompt/README.md",
+      "sha256": "23aeebabfe8a9b685fe9c9240579a413f9d2b0cf54d6840e4d62f2feb64b92fc"
+    },
+    {
+      "bytes": 26024,
+      "path": "tests/web-pending-prompt/WebFlightPendingGoalHostTest.java",
+      "sha256": "cb5a6267c8a9350596d1958654b8560c96a822eb344772b3f54c3be2354d4dbd"
+    },
+    {
+      "bytes": 8705,
+      "path": "tests/web-pending-prompt/run_host.py",
+      "sha256": "337d3529e508424d8cd36816c8c9cc4480db7a536598af88a271b48c102c4a20"
     },
     {
       "bytes": 23979,
@@ -11949,6 +11994,23 @@
     "production_logic_changed_by_fixture_fix": false,
     "query_input_count": 57,
     "shopping_input_count": 56
+  },
+  "initial_unavailable_amendment": {
+    "action_replay_added": false,
+    "cancellation_authorization_and_lease_guards_unchanged": true,
+    "complete_capture_validation_unchanged": true,
+    "complete_fresh_pair_required": true,
+    "controller_and_notes_workflow_source_unchanged": true,
+    "final_pending_phase_preserves_wait_instruction": true,
+    "host_validation_sha256": "6c63b54de5c40df4b50e1c3a93c0bbec36fd8f639565e50ef30f50a33c8251f5",
+    "maximum_extra_read_only_reobservations": 2,
+    "native_source_unchanged": true,
+    "normal_git_parent": "6e0129647f2f7b49a97c45ca57768f6aea3b3979",
+    "old_incomplete_pair_rejected": true,
+    "original_task_and_phase_deadlines_unchanged": true,
+    "previous_manifest_sha256": "4c6d67f7b59229a658dc8df8e53b75be24db2f4f4e7c90e3e2b1605b4d012afc",
+    "previously_started_initial_phase_required": true,
+    "submitted_and_pending_selection_prompt_precedence_unchanged": true
   },
   "integration_sources": {
     "canonical_runner_sha256": "8b9d4ec20573a3ab084283947f6c366ff0b95d712eec0f549e6d5d0e12a6e17c",

@@ -319,8 +319,15 @@ final class WebFlightSession {
         need("captured".equals(first.status),"actual page capture unavailable");
         PhoneObservation after=observer.observe();service.requireBackgroundObservation(taskId,after);
         WebEvidenceReceipt last=client.capture(captureDeadline);
-        if("unavailable".equals(last.status)||"state_changed".equals(last.status))
+        if("unavailable".equals(last.status)||"state_changed".equals(last.status)){
+            if(retryInitialUnavailablePair(first,last,after,loadingAttemptKey,captureDeadline)){
+                if(nativeSource!=null){nativeSource.close();nativeSource=null;}
+                captureDeadline=Math.min(captureDeadline,loadingDocumentDeadline);
+                before=observer.observe();service.requireBackgroundObservation(taskId,before);
+                continue;
+            }
             return publishWaiting(after,last,"final_capture_not_stable");
+        }
         need("captured".equals(last.status),"actual final page capture unavailable");
         String actualLoadingKey=loadingKey(last);
         need(loadingAttemptKey==null||loadingAttemptKey.equals(actualLoadingKey),
@@ -445,6 +452,45 @@ final class WebFlightSession {
     private static String loadingKey(WebEvidenceReceipt receipt){
         return receipt.bindingSha+"\n"+receipt.instance+"\n"+receipt.epoch+"\n"+receipt.url
                 +"\n"+receipt.displayId+"\n"+receipt.windowId;
+    }
+    /** Only the remaining read of an already-started initial flight phase; no new deadline or capability. */
+    private boolean retryInitialUnavailablePair(WebEvidenceReceipt first,WebEvidenceReceipt last,PhoneObservation frame,
+                                                 String attemptKey,long deadline)throws Exception{
+        if(goal==null||domain!=null||current!=null||currentCapture!=null||flightProgress!=null
+                ||nativeQueryEntered.get()||flightNativeEntered.get()
+                ||attemptKey==null||!attemptKey.equals(loadingDocumentKey)||loadingDocumentReadRetries!=1
+                ||!"unavailable".equals(last.status)
+                ||!"DOM changed across visual callback".equals(last.callback().opt("reason")))return false;
+        need("captured".equals(first.status)&&attemptKey.equals(loadingKey(first))
+                &&journal.bindingSha.equals(first.bindingSha)&&first.bindingSha.equals(last.bindingSha)
+                &&first.instance.equals(last.instance)&&first.epoch==last.epoch
+                &&first.displayId==last.displayId&&first.windowId==last.windowId
+                &&WebEvidenceProtocol.HELPER_PACKAGE.equals(frame.packageName)
+                &&frame.windowId==first.windowId&&frame.windowMetadata!=null
+                &&frame.windowMetadata.displayId!=null&&frame.windowMetadata.displayId.intValue()==first.displayId
+                &&background.generation.equals(frame.backgroundGeneration),
+                "initial unavailable retry changed the original page or native window");
+        long limit=Math.min(deadline,loadingDocumentDeadline),now=SystemClock.elapsedRealtime();
+        if(loadingDocumentDeadline<=0||now+250>=limit)return false;
+        need(!retired&&!cancellation.isCancelled(),"web task retired while waiting for page content");
+        service.requireTaskAuthorization(taskId,authorization);background.requireActive();
+        loadingDocumentReadRetries++;
+        record("web-initial-capture-retry-"+UUID.randomUUID().toString().replace("-","")+".json",new JSONObject()
+                .put("schema","hepta.web-initial-capture-retry.v1").put("task_id",taskId)
+                .put("binding_sha256",journal.bindingSha).put("webview_instance",first.instance)
+                .put("navigation_epoch",first.epoch).put("native_url",first.url)
+                .put("display_id",first.displayId).put("window_id",first.windowId)
+                .put("observation_id",frame.id).put("first_request_nonce",first.callback().getString("request_nonce"))
+                .put("unavailable_request_nonce",last.callback().getString("request_nonce"))
+                .put("reason","DOM changed across visual callback").put("read_only_retry",loadingDocumentReadRetries)
+                .put("maximum_extra_reobservations",2).put("deadline_elapsed_ms",limit)
+                .put("old_pair_rejected",true).put("fresh_complete_pair_required",true)
+                .put("action_replayed",false).put("model_action_dispatched",false).put("business_verified",false));
+        SystemClock.sleep(200);
+        need(!retired&&!cancellation.isCancelled(),"web task retired while waiting for page content");
+        need(SystemClock.elapsedRealtime()<limit,"read-only content wait exceeded its original deadline");
+        service.requireTaskAuthorization(taskId,authorization);background.requireActive();
+        return true;
     }
     /** Extra observations are bounded and read-only; an entry click is never replayed. */
     private boolean retryLoadingDocument(WebEvidenceReceipt first,WebEvidenceReceipt last,PhoneObservation frame,
