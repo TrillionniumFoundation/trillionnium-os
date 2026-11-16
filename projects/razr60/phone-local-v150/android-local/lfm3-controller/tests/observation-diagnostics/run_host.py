@@ -109,7 +109,7 @@ def generate(source,output):
     await_body=methods['await_observation_request'];finally_body=await_body[await_body.index('        }finally{\n            abandoned.set(true);'):]
     if any(token in finally_body for token in ('record(', 'System.err', 'System.out', '.wait(', '.sleep(')):raise RuntimeError('diagnostic finally must not perform IO or wait')
     finalization=section(controller,'        finally{\n            service.retireActionWork(taskId,', '    private static NotesCompletionEvidence.Frame completionFrame(')
-    positions=[finalization.index(token) for token in ['backgroundCleanup=background.close();','modelCleanup=inference.endTask();','terminalDecisionSealed=true;','record(evidence,"result.json"','takeObservationDiagnostics(taskId)','if(cleanup)service.releaseTask(taskId);','running=false;','selected.onFinished(result)']]
+    positions=[finalization.index(token) for token in ['backgroundCleanup=background.close();','modelCleanup=inference.endTask(taskId);','terminalDecisionSealed=true;','record(evidence,"result.json"','takeObservationDiagnostics(taskId)','if(cleanup)service.releaseTask(taskId);','running=false;','selected.onFinished(result)']]
     if positions!=sorted(positions) or finalization.count('takeObservationDiagnostics(taskId)')!=1:raise RuntimeError('original cleanup then existing terminal record order required')
     if controller.count('pendingObservationDiagnostics.add(')!=1 or controller.count('pendingObservationDiagnostics.size()<96')!=1:raise RuntimeError('bounded single memory admission required')
     extraction={'schema':'hepta.observation-diagnostics-extraction.v1','bodies_verbatim':True,

@@ -146,7 +146,16 @@ public final class NotesWorkflowControllerHostTest {
                 check(raw.getBoolean("controller_completion_requested"),"terminal candidate is explicit even when later rejected");
                 if(!verified)check(!raw.getJSONObject("completion_evidence").getBoolean("terminal_binding_and_cleanup_verified"),"post-workflow gate failure removes terminal completion");
             }
-            if("cleanup_unknown".equals(mode)){
+            if("foreign_session_task".equals(mode)){
+                check(result.taskId.equals(model.task),"current task began and generated before the foreign teardown was returned");
+                JSONObject session=raw.getJSONObject("model_session");
+                check(result.taskId.equals(session.getString("task_id")),"foreign teardown cannot replace the current task identity");
+                check(session.isNull("worker_generation")&&session.isNull("exit_code")
+                        &&session.isNull("app_receipt_sha256"),"foreign generation, exit and receipt are never current-task proof");
+                check(!session.getBoolean("process_exit_observed")&&!session.getBoolean("receipt_valid"),
+                        "rejected foreign teardown cannot prove current-task exit or a valid receipt");
+            }
+            if("cleanup_unknown".equals(mode)||"foreign_session_task".equals(mode)){
                 check(!result.cleanupKnown&&!env.service.acquireTask(TaskCompletionGateHostTest.id(9191),()->{}),"unknown cleanup retains the task lease");
                 env.service.releaseTask(result.taskId); // Explicit fake-environment teardown only.
             }else check(result.cleanupKnown,"known teardown retained");
@@ -159,7 +168,7 @@ public final class NotesWorkflowControllerHostTest {
         runCase("complete",NATURAL,"controller_verified_done",true);
         runCase("no_worker",OWNER,"partial",false);
         runCase("bad_receipt",OWNER,"failed",false);
-        runCase("foreign_session_task",OWNER,"partial",false);
+        runCase("foreign_session_task",OWNER,"blocked",false);
         runCase("missing_session_hash",OWNER,"partial",false);
         runCase("nonzero_exit",OWNER,"partial",false);
         runCase("close_identity_changed",OWNER,"partial",false);

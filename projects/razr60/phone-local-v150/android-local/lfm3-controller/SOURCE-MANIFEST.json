@@ -5,7 +5,7 @@
     "component_tree": "08f3d1c32944f834530b659cb6c3b7ec12c00039",
     "source_manifest_sha256": "bf99aebd7009d29cad75f3b796af4005084f30219aff61929cb905c4b214d991"
   },
-  "candidate_status": "r22_task_cleanup_explanation_and_visual_latency_candidate_pending_full_gates_build_and_phone",
+  "candidate_status": "r22_runtime_blockers_candidate_fixture_aligned_pending_full_gates_build_and_phone",
   "candidate_version_assigned": true,
   "complete_source_files": 1978,
   "completion_protocol_contract_amendment": {
@@ -48,7 +48,7 @@
     "actual_phone_install_and_regression": "pending",
     "all_blockers_closed": false,
     "full_frozen_source_gates": "pending",
-    "scope": "new R22 source, historical R6 results remain historical"
+    "scope": "new fixture-aligned R22 source; earlier phone tests apply to installed R6 only"
   },
   "files": [
     {
@@ -8302,9 +8302,9 @@
       "sha256": "849a1017c0407f1597c0f21d0d172f83c366d81c9e97e881e8f4cb82d37b4a28"
     },
     {
-      "bytes": 14780,
+      "bytes": 15653,
       "path": "tests/notes-workflow-controller/NotesWorkflowControllerHostTest.java",
-      "sha256": "99ebbfb3af5b8c635b18184bdcfd7c3f5354fccbb64d5cbd71690ebf09a5bf26"
+      "sha256": "89ca89db8824a067ca08ff3abd3d257ea32f043c290ee657ac661722f8365d0d"
     },
     {
       "bytes": 12471,
@@ -8387,9 +8387,9 @@
       "sha256": "ca1cb0b78a660eca9da04bdcbde82e340d4f9d90dbcdb639d8ab8c6032505cfb"
     },
     {
-      "bytes": 14437,
+      "bytes": 14443,
       "path": "tests/observation-diagnostics/run_host.py",
-      "sha256": "965d92747eadf8b244fd6ad712c1939d38c5b47edf6514f89a23f5240efcd333"
+      "sha256": "96f7ea4762ed5db5cc52be31dfe56b357c3002d88887316ee172a3a0c14fd496"
     },
     {
       "bytes": 1190,
@@ -13009,6 +13009,27 @@
     "required_canonical_checks": 112,
     "runtime_version_unchanged": "GenieX 0.10.0",
     "unowned_app_task_policy_changed": false
+  },
+  "r22_fixture_followup_amendment": {
+    "actual_no_worker_scenario_separate": true,
+    "canonical_failure": "task-completion: foreign teardown must not certify the current task",
+    "changed_nonmanifest_paths": [
+      "tests/notes-workflow-controller/NotesWorkflowControllerHostTest.java",
+      "tests/observation-diagnostics/run_host.py"
+    ],
+    "foreign_scenario_retained": true,
+    "foreign_task_cleanup_blocks_and_retains_admission_lease": true,
+    "fresh_complete_source_gates_pending": true,
+    "full_observation_diagnostics_gate_release8_passed": true,
+    "full_task_completion_gate_release8_passed": true,
+    "native_failure": "observation-diagnostics: exact extracted scoped endTask call anchor",
+    "original_failures_preserved": true,
+    "parent_git_object": "4b88829797b79e75f7ac8e7eb625a1eaec3770a2",
+    "parent_manifest_sha256": "6864e9bd52740ff2fe4a2ce2aa8fcc0ad47ec7899020d64df43069f365b56f9a",
+    "phone_tested": false,
+    "production_files_changed": false,
+    "workflow_assertions": 529,
+    "workflow_scenarios_retained": 12
   },
   "release_version_assigned": false,
   "schema": "hepta.local-source.v3",
