@@ -23,6 +23,7 @@ final class CsairCalendar {
     private static final Pattern PATH = Pattern.compile("0(?:/(?:0|[1-9][0-9]{0,4})){0,32}");
     private static final Pattern MONTH = Pattern.compile("([1-9][0-9]{3})年([1-9]|1[0-2])月");
     private static final Pattern DAY = Pattern.compile("[1-9]|[12][0-9]|3[01]");
+    private static final Pattern PRICE_ANNOTATION = Pattern.compile("¥[1-9][0-9]{0,5}");
     private static final Pattern ISO = Pattern.compile("([1-9][0-9]{3})-([0][1-9]|1[0-2])-([0][1-9]|[12][0-9]|3[01])");
     private static final String[] WEEK = {"日","一","二","三","四","五","六"};
 
@@ -49,6 +50,8 @@ final class CsairCalendar {
     static final class DateTarget {
         final int year,month,day;
         final String isoDate,monthHeaderText,monthHeaderPath,monthPath,dayListPath,dayPath,dayText,domId;
+        final String pricedDisplayLabel;
+        final Map<String,Object> originalPriceSpan;
         final boolean domDisabled,domVisibleInViewport,zeroHeightDayList;
         final List<Map<String,Object>> originalAncestors;
         DateTarget(Index index,Month observed,JSONObject node,int d)throws Exception{
@@ -60,6 +63,9 @@ final class CsairCalendar {
             domDisabled=index.disabledThrough(node);domVisibleInViewport=flag(node,"visible_in_viewport");
             zeroHeightDayList=observed.zeroHeightDayList;
             originalAncestors=index.ancestry(node);
+            JSONObject price=index.pricedDaySpan(node,dayListPath);
+            pricedDisplayLabel=price==null?null:dayText+text(price,"text");
+            originalPriceSpan=price==null?null:index.nodeEvidence(price);
         }
         Map<String,Object> evidence(){
             Map<String,Object> out=new LinkedHashMap<String,Object>();
@@ -68,6 +74,8 @@ final class CsairCalendar {
             out.put("month_dom_path",monthPath);out.put("day_list_dom_path",dayListPath);
             out.put("day_dom_path",dayPath);out.put("day_dom_tag","li");out.put("day_dom_id",domId);
             out.put("observed_day_text",dayText);out.put("dom_disabled",domDisabled);
+            out.put("observed_priced_display_label",pricedDisplayLabel);out.put("original_price_span",originalPriceSpan);
+            out.put("price_annotation_is_flight_result",false);
             out.put("dom_visible_in_viewport",domVisibleInViewport);
             out.put("zero_height_layout_list",zeroHeightDayList);out.put("original_dom_ancestors",originalAncestors);
             out.put("native_visibility_verified",false);out.put("native_action_click_verified",false);
@@ -282,6 +290,32 @@ final class CsairCalendar {
             }
             return false;
         }
+        /** Exact visible text projection for this one literal date cell, never a fare result. */
+        JSONObject pricedDaySpan(JSONObject day,String layoutList)throws Exception{
+            List<JSONObject> direct=children(day);
+            if(direct.size()!=1||!passiveLabelNode(day))return null;
+            JSONObject price=direct.get(0);
+            if(!"span".equals(text(price,"tag"))||!PRICE_ANNOTATION.matcher(text(price,"text")).matches()
+                    ||!passiveLabelNode(price)||!children(price).isEmpty()
+                    ||!visibleThrough(price,layoutList)||disabledThrough(price))return null;
+            double[] cell=rectangle(day),label=rectangle(price);
+            if(label[0]<cell[0]||label[1]<cell[1]||label[2]>cell[2]||label[3]>cell[3])return null;
+            return price;
+        }
+        private boolean passiveLabelNode(JSONObject node)throws Exception{
+            for(String key:new String[]{"id","role","name","aria_label"})if(!text(node,key).isEmpty())return false;
+            // Composite labels require the complete observed v4 passive-label facts.
+            // A legacy/missing field cannot be invented from the numeric day.
+            for(String key:new String[]{"hidden_attr","inert_attr"})if(!Boolean.FALSE.equals(node.opt(key)))return false;
+            for(String key:new String[]{"aria_modal","aria_selected","aria_checked","aria_pressed"})
+                if(!"".equals(node.opt(key)))return false;
+            Object hidden=node.opt("aria_hidden"),disabled=node.opt("aria_disabled");
+            if(!("".equals(hidden)||"false".equals(hidden))
+                    ||!(disabled==JSONObject.NULL||"false".equals(disabled)))return false;
+            for(String key:new String[]{"href_raw","href_resolved","link_target","value"})
+                if(node.opt(key)!=JSONObject.NULL)return false;
+            return !flag(node,"disabled")&&!flag(node,"iframe_contents_read");
+        }
         List<Map<String,Object>> ancestry(JSONObject node)throws Exception{
             List<Map<String,Object>> out=new ArrayList<Map<String,Object>>();JSONObject cursor=node;
             while(cursor!=null){out.add(nodeEvidence(cursor));Object p=cursor.get("parent_path");cursor=p instanceof String?nodes.get(p):null;}
@@ -322,3 +356,4 @@ final class CsairCalendar {
     }
     private static void need(boolean ok,String message){if(!ok)throw new IllegalArgumentException(message);}
 }
+

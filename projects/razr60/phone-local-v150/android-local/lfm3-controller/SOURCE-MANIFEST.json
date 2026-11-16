@@ -5,9 +5,9 @@
     "component_tree": "08f3d1c32944f834530b659cb6c3b7ec12c00039",
     "source_manifest_sha256": "bf99aebd7009d29cad75f3b796af4005084f30219aff61929cb905c4b214d991"
   },
-  "candidate_status": "bounded_observation_reuse_reopen_and_carousel_pending_fresh_android_build_and_phone",
+  "candidate_status": "geometry_same_call_reuse_calendar_label_and_failure_diagnostic_pending_phone",
   "candidate_version_assigned": true,
-  "complete_source_files": 2008,
+  "complete_source_files": 2014,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -47,158 +47,8 @@
     "actual_android_application_build": "pending",
     "actual_phone_install_and_regression": "pending",
     "all_blockers_closed": false,
-    "canonical_host_checks": "PASS: 112",
-    "comparison_projection_ownership": "PASS: 1560 / 1215 / 21",
-    "component_integration": {
-      "all_pass": true,
-      "android_or_phone_qualification_claimed": false,
-      "base_commit": "2b46214ba63277f474a10ea054564356632846fe",
-      "flight_carousel": {
-        "accepted_counts": [
-          7,
-          8
-        ],
-        "all_three_original_calls_bind_their_own_dom_proof": true,
-        "complete_continuous_id_sets_required": true,
-        "dom_native_cardinality_and_membership_pairing_required": true,
-        "existing_booking_dom_and_native_target_guards_unchanged": true,
-        "external_original_capture_replay": {
-          "accepted_complete_button_captures": 2,
-          "comparison_scope": "Each saved complete DOM before/after pair; no actual Android dispatch or business query is claimed.",
-          "inputs": [
-            {
-              "bytes": 225760,
-              "expect_admitted": true,
-              "sha256": "9b666a7e8bd34ac803135c4cb1c17e25fe1654d3b01feefdbbca0b971ce19f90"
-            },
-            {
-              "bytes": 225784,
-              "expect_admitted": true,
-              "sha256": "e1134c4552f0f82d1736ff68a0d293d6c5322e0fff6cb2ad4fc2645d819ee19c"
-            },
-            {
-              "bytes": 224019,
-              "expect_admitted": false,
-              "sha256": "c44410e3c14097556ab5774d96168e1a234403e26c406ba8be2f502685f1cc86"
-            }
-          ],
-          "missing_aria_capture_remains_rejected": 1,
-          "raw_captures_published": false,
-          "receipt_sha256": "fd94c28cab0c124f1893cd925c416bf962032e9acbab67ce894269f8ac3118eb",
-          "rejection_reason": "complete unchanged booking button missing"
-        },
-        "gate_sha256": "ed5e2f6bf2f40a7660795b8bc7efd25b7196c4b010d78aa895c8d2969e96a7ad",
-        "missing_dom_proof_parameter_compile_rejected": true,
-        "synthetic_bracket_cases": 20,
-        "synthetic_cardinality_and_pairing_cases": 34,
-        "synthetic_policy_cases": 36
-      },
-      "notes_reopen": {
-        "actions_replayed": false,
-        "baseline_red_receipt_sha256": "d56ca2a662d0d8088567275b97c877f71c7c72374617b6be49d2e1b09b3e2529",
-        "baseline_red_test_sha256": "2131cf4323242d8cd4a803dc11a527a105d6dba54b5564f73c5b58da05f2545c",
-        "completion_gate_sha256": "bae21d11ab6baaea5f0352a1a8998ccfd47ac2780d8d876de2cad5a2948976e9",
-        "completion_stages_passed": 19,
-        "current_test_report_only_amendment": "The optional actual replay count is now the number of rows actually processed; the regression cases and production behavior are unchanged.",
-        "current_test_sha256": "3f5bd2d37b25a17a3f98195ecead147453c5d6d1f036fec9c3add273db172f4a",
-        "explicit_external_original_capture_replay": {
-          "original_frames": 2,
-          "original_missing_body_still_rejected": true,
-          "passed": true,
-          "raw_fixture_published": false,
-          "receipt_sha256": "d0030c1a139d3fc9fee3a9b358d18f6173a1a7d86ff9ae01a69a740d869a164c",
-          "test_sha256": "2131cf4323242d8cd4a803dc11a527a105d6dba54b5564f73c5b58da05f2545c"
-        },
-        "fresh_complete_body_and_separate_stable_read_required": true,
-        "original_and_rejected_observation_bytes_retained": true,
-        "original_workflow_deadline_retained": true,
-        "prior_baseline_behavioral_red": true,
-        "public_default_private_capture_count": 0,
-        "readiness_gate_sha256": "41c6809fcca4e3d9e6fe1e93f313a1299465a12ae5452f2f2fa9e0bf99bd35e8",
-        "recovery_only_after_verified_same_item_click": true,
-        "synthetic_cases": [
-          "delayed",
-          "never",
-          "window",
-          "duplicate",
-          "changed-apk",
-          "cancel",
-          "cache-false",
-          "sdk32",
-          "expired"
-        ]
-      },
-      "phone_actions": 0,
-      "production_delta_sha256": "cba2e3a35568b1cbeaeca578243bdce3d62417136ae5f661173d1b355367f8af",
-      "production_inputs": [
-        {
-          "after_sha256": "bdd9d743d66f3452b15e74544a4f89c463b72efa30c7299059eb5f9b4c7f6175",
-          "before_sha256": "55209ef608fad0d8794d439aab2baf69bd7c8b043289c80ca7b25acaad1ff3d7",
-          "bytes": 11283,
-          "path": "src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java"
-        },
-        {
-          "after_sha256": "d6daff55e02af33debadee3c36f49c81a63353191e5dc85e1f32ae5aa0e05561",
-          "before_sha256": "f7e432c1191008afa25a134147cd6fd133f975e102aa4cab722da3dc82a4ea53",
-          "bytes": 15911,
-          "path": "src/org/trillionnium/hepta/webprotocol/WebDomStability.java"
-        },
-        {
-          "after_sha256": "a81ed2250d98d7c316a7f9fa0462b63f32e782c8ef0239a9cc38e597db43e49a",
-          "before_sha256": "6556d804a2e51823366bbc164a9813c6888021e0dd03a2088ec9fd72c15eae30",
-          "bytes": 33073,
-          "path": "src/org/trillionnium/hepta/local/WebEvidenceReceipt.java"
-        },
-        {
-          "after_sha256": "348360d71f6a2b324885b1e173594d3333ae193c21368c4f05f5bb33d02b6797",
-          "before_sha256": "7a802a24a7e14ee6194374dc6db79cb506e2d5cddab661c7c98067e266934ea2",
-          "bytes": 37928,
-          "path": "src/org/trillionnium/hepta/local/WebShoppingObservationStability.java"
-        },
-        {
-          "after_sha256": "cd76637718842838708cde362413f5dd869b075e3b11f49834ddbadfac1a581c",
-          "before_sha256": "9c6fdbce5b8ee20870b1436972becc477fb904ff1bd217dcbccf111a6e1a6717",
-          "bytes": 66223,
-          "path": "src/org/trillionnium/hepta/local/WebFlightSession.java"
-        },
-        {
-          "after_sha256": "70d6452bc9a7781a26c2b0c4e21af616976a21c406438af67c054f0e1b319192",
-          "before_sha256": "0f2c457fd2937549df06bd491e6c86c73ca5b911c48685ca218cc825f2da8b8c",
-          "bytes": 1398,
-          "path": "src/org/trillionnium/hepta/local/TaskDisplayText.java"
-        },
-        {
-          "after_sha256": "15a934bb9ad19c1e3eeafdeb225a9863d990a01fd0d9f95ce323da980f4ddf64",
-          "before_sha256": "8f66fc429386c7748a37d7c1730e081fb65ea13ae89ca27c98ccc8c3cd464d60",
-          "bytes": 22766,
-          "path": "src/org/trillionnium/hepta/local/NotesCreateWorkflow.java"
-        },
-        {
-          "after_sha256": "4e019ac530141e4121487268e32712652c569b1627ed1dab3486ecc10e18d02c",
-          "before_sha256": "4ef392d7a5f5425d6a0353ee65f49286826d86d1c39537d2146be605deec5432",
-          "bytes": 171352,
-          "path": "src/org/trillionnium/hepta/local/LocalTaskController.java"
-        },
-        {
-          "after_sha256": "bfae931eb2d00142b908ea920647c328a3b9ffc873688a821844ad2146cfaf86",
-          "before_sha256": "e0111b3d4d5c6b766770144c4d36fa76576bd05ac7c4e757a023cba8342e06ed",
-          "bytes": 34367,
-          "path": "src/org/trillionnium/hepta/local/WebFlightNativeStability.java"
-        },
-        {
-          "after_sha256": "7f0934dd1180cc2f897efffdd93bd7c3ad1a0e0a76eb67269d53c654e7728820",
-          "before_sha256": "3d3649d25abb619eaf87892f1b0b9346341d1f50fac11e9378b714faf031095f",
-          "bytes": 271896,
-          "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java"
-        }
-      ],
-      "schema": "hepta.dom-reuse-component-integration.v1"
-    },
-    "exact_original_capture_replay": "PASS: 80 receipt verifications; original decisions and proof hashes retained",
-    "native_workflow_host_gates": "PASS: 19",
     "phone_claims_from_host_tests": false,
-    "readiness": "PASS: three expected baseline failures; 18 current cases; 129 assertions",
-    "shopping": "PASS: 43 observation + 28 quote cases"
+    "source_and_targeted_host_validation": "PASS; see exact hash-bound host receipt"
   },
   "dom_reuse_and_reopen_amendment": {
     "action_replay_added": false,
@@ -6470,9 +6320,9 @@
       "sha256": "e4aa0a5e36c3676b0b2ee9912f5aaaa036ce7088a83645715800766f762cee14"
     },
     {
-      "bytes": 20890,
+      "bytes": 23417,
       "path": "src/org/trillionnium/hepta/local/CsairCalendar.java",
-      "sha256": "9bc3019994e12493a6c2c6882a983c0021cb875ad6159033777c2c2c73618434"
+      "sha256": "2af8121fd6e36bd631871a20393af4869535d2f6b18ac84777b5c74dee4cd7c1"
     },
     {
       "bytes": 10363,
@@ -6940,9 +6790,9 @@
       "sha256": "a81ed2250d98d7c316a7f9fa0462b63f32e782c8ef0239a9cc38e597db43e49a"
     },
     {
-      "bytes": 57592,
+      "bytes": 60355,
       "path": "src/org/trillionnium/hepta/local/WebFlightDomain.java",
-      "sha256": "600a65d62f21293fe4b6ced24be196496e508eb291fc1594eb2cdd4d376c9850"
+      "sha256": "cd2caf1854af873a761ef3124c53e4db5827a7f1a890928ce3479f6bf522ff0b"
     },
     {
       "bytes": 34367,
@@ -6975,14 +6825,14 @@
       "sha256": "a61e9601699fd7480c4f09be2c29de9cf755903a222c79efbfc9efbd23afbc49"
     },
     {
-      "bytes": 398,
+      "bytes": 610,
       "path": "src/org/trillionnium/hepta/local/WebNativeObservationChanged.java",
-      "sha256": "d2977852878aee7080667b02545688ab3fbddec85791c8f5c4916d04a9ef31c7"
+      "sha256": "4e218ab1a82889693c48bac6d601e68e6f95d5bab289e6cb0f2b3bc6046e6523"
     },
     {
-      "bytes": 4717,
+      "bytes": 5253,
       "path": "src/org/trillionnium/hepta/local/WebObservationTiming.java",
-      "sha256": "b4851f3461ceb5763360339eb13725e5200c87273eb770e9701c8e809ab6243a"
+      "sha256": "61dad9573d09d6effb77975b008dd8a9190585e971d07d8a6c18548c23ce5a29"
     },
     {
       "bytes": 17427,
@@ -6995,9 +6845,9 @@
       "sha256": "5c11833d76c7b1d9b45de83e31e309b6819e2b930c73008b479dd70e2e3a9eb3"
     },
     {
-      "bytes": 37928,
+      "bytes": 39855,
       "path": "src/org/trillionnium/hepta/local/WebShoppingObservationStability.java",
-      "sha256": "348360d71f6a2b324885b1e173594d3333ae193c21368c4f05f5bb33d02b6797"
+      "sha256": "81a1783c70ccb5c8b2797ea04c813efe828933b6f6a87535e2194540d2c6edeb"
     },
     {
       "bytes": 21401,
@@ -8033,6 +7883,16 @@
       "bytes": 18956,
       "path": "tests/native-app-routing/run_host.py",
       "sha256": "98d166056d434785dde61a6150145c0cc56fbf1519e88770e3319ed3b50f2b93"
+    },
+    {
+      "bytes": 8666,
+      "path": "tests/native-change-diagnostic/NativeChangeDiagnosticHostTest.java",
+      "sha256": "a493d982c62c3376b8ef52277e7cade80ec6beb16988e67220b1e47bd7f513dc"
+    },
+    {
+      "bytes": 3634,
+      "path": "tests/native-change-diagnostic/run_host.py",
+      "sha256": "007a08a13cce1cc4842ae333a474b94c73ebc45f2a4e868518b33b0dc62bd23d"
     },
     {
       "bytes": 1523,
@@ -9780,6 +9640,11 @@
       "sha256": "e41938b6e4774d0123c9c743126a96166ddae8490e339f7e62905b7d14db4da0"
     },
     {
+      "bytes": 19690,
+      "path": "tests/web-flight/WebCalendarDisplayLabelHostTest.java",
+      "sha256": "b53b5ec7d6d32ed24238a1396973c01d96ab1ad1aeb325d162ae5df321b394b1"
+    },
+    {
       "bytes": 13972,
       "path": "tests/web-flight/WebCalendarNativeHostTest.java",
       "sha256": "edab00a839c30c9865867ccb550fbdc1440f3da4aecd7f4c63af89702e12ebfb"
@@ -9935,6 +9800,11 @@
       "sha256": "8eacb92640772dc7e46a52d81c6531a093a9517ca2363cf38d3c6d4880dbe739"
     },
     {
+      "bytes": 5585,
+      "path": "tests/web-flight/run_calendar_display_label_host_tests.py",
+      "sha256": "4d672ea2e92e6e61e85487c9a2e3ea597eb51756aa44b50898af043c2c62bd83"
+    },
+    {
       "bytes": 6659,
       "path": "tests/web-flight/run_city_observation_fixture_tests.py",
       "sha256": "16e321e7ae9c6492ef9e75dafd7b39b266d4bc3449c5f39f75905f02b17d7db6"
@@ -9958,6 +9828,16 @@
       "bytes": 5108,
       "path": "tests/web-flight/run_result_host_tests.py",
       "sha256": "eb57b27e06db1aab8c817caa684e8c96b8b57709cd2dd945b09210679c7d6504"
+    },
+    {
+      "bytes": 21046,
+      "path": "tests/web-geometry-reuse/HOST-VALIDATION.json",
+      "sha256": "b036acb11a15dd9f92a347f07b024d24a3ffd8f3524d81e41829fb513bcbc2a2"
+    },
+    {
+      "bytes": 2752,
+      "path": "tests/web-geometry-reuse/README.md",
+      "sha256": "caaea75baa3b57a6e57f16604595bd7e75969eefc7ffff1862d42d1787ebfc39"
     },
     {
       "bytes": 3764,
@@ -10287,6 +10167,22 @@
     "xiaomi_reviewed_goal_sha256": "beb5b1ed745404a30ada6d32cd2174c6b608b96f02f6d5916f84fd2c4b92bae5"
   },
   "functional_scope": "Version-bound native Ctrip image-tile identity keeps its actual empty AX label and model-owned current-node action. Owned singleTask background launch is restricted to this generation newly created organizer roots and new target leaf; original foreground/task guards and standard launch path remain. Existing native read-only result and SDK cleanup gates remain necessary.",
+  "geometry_calendar_diagnostic_amendment": {
+    "action_replay_added": false,
+    "bounded_nontext_failure_metadata_only": true,
+    "calendar_native_target_month_and_full_label_binding_required": true,
+    "calendar_price_label_is_not_flight_result_evidence": true,
+    "final_native_independent_first_full_dom_replay_retained": true,
+    "host_validation_sha256": "b036acb11a15dd9f92a347f07b024d24a3ffd8f3524d81e41829fb513bcbc2a2",
+    "native_source_unchanged": true,
+    "normal_git_parent": "c662471c570170f42af855943224c71fc1eb960c",
+    "notes_source_unchanged": true,
+    "old_frame_acceptance_added": false,
+    "original_four_strict_dom_parses_and_all_geometry_checks_retained": true,
+    "previous_manifest_sha256": "dee70b9a392b4adac028f7db64e46f5178acc2c522868ae41d907e7cab821edc",
+    "same_call_immutable_own_result_reused_for_geometry": true,
+    "task_or_stage_deadline_extended": false
+  },
   "historical_parent_metadata": {
     "metadata": {
       "android_qualified": false,

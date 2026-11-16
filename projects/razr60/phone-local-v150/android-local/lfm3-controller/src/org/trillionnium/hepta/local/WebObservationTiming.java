@@ -17,7 +17,7 @@ final class WebObservationTiming {
     static final int MAX_SPANS=96;
     static final class Span {
         final WebObservationTiming owner;final Phase phase;final long started,deadline;final int ordinal;
-        long ended=-1;String outcome="pending",errorType;Boolean predicateResult;
+        long ended=-1;String outcome="pending",errorType,nativeChangeDiagnostic;Boolean predicateResult;
         Span(WebObservationTiming owner,Phase phase,long started,long deadline,int ordinal){
             this.owner=owner;this.phase=phase;this.started=started;this.deadline=deadline;this.ordinal=ordinal;
         }
@@ -47,6 +47,8 @@ final class WebObservationTiming {
             span.ended=span.owner.clock.now();span.predicateResult=predicateResult;
             span.outcome=failure==null?"completed":span.ended>=span.deadline?"deadline_expired":"failed";
             span.errorType=failure==null?null:failure.getClass().getName();
+            if(span.phase==Phase.NATIVE_DOM_BRACKET&&failure instanceof WebNativeObservationChanged)
+                span.nativeChangeDiagnostic=((WebNativeObservationChanged)failure).diagnostic;
         }
     }
     JSONObject snapshot()throws Exception{
@@ -55,20 +57,25 @@ final class WebObservationTiming {
             captured=clock.now();omitted=dropped;rows=new Object[spans.size()][];
             for(int i=0;i<spans.size();i++){
                 Span s=spans.get(i);rows[i]=new Object[]{s.ordinal,s.phase.name().toLowerCase(java.util.Locale.ROOT),
-                        s.started,s.deadline,s.ended,s.outcome,s.errorType,s.predicateResult};
+                        s.started,s.deadline,s.ended,s.outcome,s.errorType,s.predicateResult,s.nativeChangeDiagnostic};
             }
         }
         JSONArray events=new JSONArray();
         for(Object[] row:rows){
             long start=((Long)row[2]).longValue(),limit=((Long)row[3]).longValue(),end=((Long)row[4]).longValue();
-            events.put(new JSONObject().put("ordinal",row[0]).put("phase",row[1])
+            JSONObject event=new JSONObject().put("ordinal",row[0]).put("phase",row[1])
                     .put("started_elapsed_ms",start).put("deadline_elapsed_ms",limit)
                     .put("finished_elapsed_ms",end<0?JSONObject.NULL:Long.valueOf(end))
                     .put("duration_ms",end<0?JSONObject.NULL:Long.valueOf(end-start))
                     .put("outcome",row[5]).put("error_type",row[6]==null?JSONObject.NULL:row[6])
                     .put("predicate_result",row[7]==null?JSONObject.NULL:row[7])
                     .put("deadline_exceeded_at_snapshot",captured>=limit)
-                    .put("deadline_exceeded_at_finish",end<0?JSONObject.NULL:Boolean.valueOf(end>=limit)));
+                    .put("deadline_exceeded_at_finish",end<0?JSONObject.NULL:Boolean.valueOf(end>=limit));
+            if(row[8]!=null){
+                try{event.put("native_change_diagnostic",new JSONObject((String)row[8]));}
+                catch(Exception ignored){event.put("native_change_diagnostic",new JSONObject().put("available",false));}
+            }
+            events.put(event);
         }
         return new JSONObject().put("schema","hepta.web-observation-timing.v1").put("task_id",taskId)
                 .put("trace_id",traceId).put("started_elapsed_ms",started).put("deadline_elapsed_ms",deadline)

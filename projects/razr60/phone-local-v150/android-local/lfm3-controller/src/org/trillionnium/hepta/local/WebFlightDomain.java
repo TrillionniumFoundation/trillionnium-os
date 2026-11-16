@@ -253,19 +253,26 @@ final class WebFlightDomain {
                     date.put("month_header_text",target.monthHeaderText);date.put("month_header_dom_path",target.monthHeaderPath);
                     date.put("month_dom_path",target.monthPath);date.put("day_list_dom_path",target.dayListPath);
                     date.put("day_dom_path",target.dayPath);date.put("day_dom_text",target.dayText);
+                    date.put("observed_priced_display_label",target.pricedDisplayLabel);
+                    date.put("original_price_span",target.originalPriceSpan);date.put("price_annotation_is_flight_result",false);
                     date.put("dom_disabled",target.domDisabled);date.put("dom_visible_in_viewport",target.domVisibleInViewport);
                     date.put("zero_height_layout_list",target.zeroHeightDayList);
                     if(requested.ready&&geometry!=null&&nativePickerTitle(frame,geometry,"选择日期")
                             &&nativePickerTitle(frame,geometry,target.monthHeaderText)){
                         PhoneObservation.Node node=calendarNativeDay(frame,geometry,target);
                         if(node!=null){
-                            addCapability(clicks,capabilities,node,target.dayPath,target.domId,target.dayText,
+                            addCapability(clicks,capabilities,node,target.dayPath,target.domId,node.label(),
                                     "choose_departure_date_from_immutable_owner");
                             Map<String,Object> capability=capabilities.get(capabilities.size()-1);
                             capability.put("observed_iso_date",target.isoDate);
                             capability.put("observed_month_header",target.monthHeaderText);
                             capability.put("observed_month_header_dom_path",target.monthHeaderPath);
                             capability.put("observed_month_dom_path",target.monthPath);
+                            capability.put("observed_priced_display_label",target.pricedDisplayLabel);
+                            capability.put("original_price_span",target.originalPriceSpan);
+                            capability.put("price_annotation_is_flight_result",false);
+                            capability.put("native_label_uniqueness_scope",target.dayText.equals(node.label())?
+                                    "whole_frame_bare_day_legacy":"same_frame_bound_month_list");
                             capability.put("native_target_semantics","same_frame_month_heading_then_list_direct_day");
                             capability.put("native_tree_path",node.nativeTreePath);
                             capability.put("native_parent_class",node.nativeParentClass);
@@ -450,18 +457,44 @@ final class WebFlightDomain {
         PhoneObservation.Node day=uniqueNative(frame,geometry,target.domId,"android.view.View",target.dayText,
                 Collections.singletonList(target.dayText),false);
         PhoneObservation.Node heading=calendarMonthHeading(frame,target.monthHeaderText);
-        if(day==null||heading==null||day.nativeTreePath==null||heading.nativeTreePath==null
-                ||!"android.widget.ListView".equals(day.nativeParentClass)
-                ||!nativePickerTitle(frame,geometry,target.monthHeaderText))return null;
+        if(heading==null||heading.nativeTreePath==null||!nativePickerTitle(frame,geometry,target.monthHeaderText))return null;
+        if(day!=null&&calendarDayFollowsHeading(day,heading))return day;
+        if(target.pricedDisplayLabel==null)return null;
+        String headerPath=heading.nativeTreePath;int slash=headerPath.lastIndexOf('/');
+        if(slash<0)return null;
+        String listPath=headerPath.substring(0,slash)+"/"+(Integer.parseInt(headerPath.substring(slash+1))+1);
+        List<PhoneObservation.Node> candidates=new ArrayList<PhoneObservation.Node>();
+        for(PhoneObservation.Node node:frame.nodes){
+            if(!target.pricedDisplayLabel.equals(node.label()))continue;
+            // An unlocated same label cannot supply a month binding.
+            if(node.nativeTreePath==null)return null;
+            int parent=node.nativeTreePath.lastIndexOf('/');
+            if(parent>=0&&listPath.equals(node.nativeTreePath.substring(0,parent)))candidates.add(node);
+        }
+        // Scope to the already verified month/list before counting, but never
+        // discard a disabled or malformed duplicate inside that month.
+        if(candidates.size()!=1)return null;
+        day=candidates.get(0);
+        if(!calendarDayFollowsHeading(day,heading)||!target.domId.equals(day.viewId)||!WebEvidenceProtocol.HELPER_PACKAGE.equals(day.packageName)
+                ||!"android.view.View".equals(day.className)||!day.clickable||!day.enabled||day.editable||day.password||day.scrollable
+                ||day.observedAppTreeSignature==null||!day.observedAppTreeSignature.matches("[0-9a-f]{64}")
+                ||!geometry.contains(day.bounds.left,day.bounds.top,day.bounds.right,day.bounds.bottom)
+                ||!inside(frame.windowMetadata.rootBounds(),day)||!inside(frame.windowMetadata.windowBounds(),day)
+                ||day.bounds.left<0||day.bounds.top<0||day.bounds.right>frame.width||day.bounds.bottom>frame.height)return null;
+        String own=day.text.isEmpty()?day.description:day.text;
+        return target.pricedDisplayLabel.equals(own)?day:null;
+    }
+    private static boolean calendarDayFollowsHeading(PhoneObservation.Node day,PhoneObservation.Node heading){
+        if(day.nativeTreePath==null||!"android.widget.ListView".equals(day.nativeParentClass))return false;
         String dayPath=day.nativeTreePath,headerPath=heading.nativeTreePath;
         int daySlash=dayPath.lastIndexOf('/'),headerSlash=headerPath.lastIndexOf('/');
-        if(daySlash<0||headerSlash<0)return null;
+        if(daySlash<0||headerSlash<0)return false;
         String listPath=dayPath.substring(0,daySlash);int listSlash=listPath.lastIndexOf('/');
-        if(listSlash<0||!listPath.substring(0,listSlash).equals(headerPath.substring(0,headerSlash)))return null;
+        if(listSlash<0||!listPath.substring(0,listSlash).equals(headerPath.substring(0,headerSlash)))return false;
         int listIndex=Integer.parseInt(listPath.substring(listSlash+1));
         int headerIndex=Integer.parseInt(headerPath.substring(headerSlash+1));
         // The month heading and immediately following native ListView share an actual parent.
-        return listIndex==headerIndex+1?day:null;
+        return listIndex==headerIndex+1;
     }
     /** Each known DOM field string must also occur in this same native field's
      * own label or real bounded descendant sources. A clickable label alone is
@@ -709,3 +742,4 @@ final class WebFlightDomain {
     }
     private static void need(boolean ok,String why){WebEvidenceJson.need(ok,why);}
 }
+

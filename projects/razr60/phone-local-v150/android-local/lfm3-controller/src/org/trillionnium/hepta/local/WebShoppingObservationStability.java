@@ -136,6 +136,7 @@ final class WebShoppingObservationStability {
                 &&first.getLong("ended_elapsed_ms")<=last.getLong("started_elapsed_ms"),"ordered actual capture bracket required");
         JSONObject[] doms=new JSONObject[4];int at=0;
         JSONArray ownProofs=new JSONArray();int receiptIndex=0;
+        WebDomStability.Result[] ownResults=new WebDomStability.Result[2];
         WebEvidenceReceipt[] verified=new WebEvidenceReceipt[]{verifiedFirst,verifiedLast};
         for(JSONObject capture:new JSONObject[]{first,last}){
             need(OBSERVER_SHA.equals(capture.get("observer_script_sha256"))
@@ -156,6 +157,7 @@ final class WebShoppingObservationStability {
                     &&own.afterRawSha256.equals(capture.get("dom_sha256"))
                     &&WebDomCanonical.sha256(own.evidence()).equals(capture.get("dom_stability_sha256")),
                     "each capture must retain its original independently verified card proof");
+            ownResults[receiptIndex-1]=own;
             ownProofs.put(own.evidence());
         }
         JSONObject middle=compareDom(doms[1],doms[2]);
@@ -163,8 +165,8 @@ final class WebShoppingObservationStability {
         for(JSONObject d:doms)requireDomCounts(d,WebDomStability.index(d));
         WebMiActionRegion region=WebMiActionRegion.read(doms[0]);
         for(JSONObject d:doms)need(region.sameRegion(WebMiActionRegion.read(d)),"all four complete card regions must agree");
-        WebNativeGeometry a=WebNativeGeometry.read(first,doms[1],first.getInt("display_id"),first.getInt("actual_window_id"));
-        WebNativeGeometry b=WebNativeGeometry.read(last,doms[3],last.getInt("display_id"),last.getInt("actual_window_id"));
+        WebNativeGeometry a=WebNativeGeometry.read(first,doms[1],first.getInt("display_id"),first.getInt("actual_window_id"),ownResults[0]);
+        WebNativeGeometry b=WebNativeGeometry.read(last,doms[3],last.getInt("display_id"),last.getInt("actual_window_id"),ownResults[1]);
         need(a!=null&&a.same(b),"original native WebView geometry changed across captures");
         return new JSONObject().put("dom_scope",middle).put("capture_stability_proofs",ownProofs)
                 .put("native_geometry_sha256",b.fingerprint).put("native_webview_bounds",new JSONArray(b.bounds))
@@ -231,7 +233,7 @@ final class WebShoppingObservationStability {
         for(String path:a.keySet()){
             JSONObject x=a.get(path),y=b.get(path);
             if(!path.startsWith(rec+"/")){
-                if(!WebDomCanonical.same(x,y))throw new WebNativeObservationChanged("native target, ancestor or outside recommendation node changed: ",path);
+                if(!WebDomCanonical.same(x,y))throw new WebNativeObservationChanged("native target, ancestor or outside recommendation node changed: ",path,nativeChangeDiagnostic(path,x,y));
             }else{
                 need(++scoped<=512&&WebDomCanonical.same(without(x,"text","description","bounds","visible"),
                         without(y,"text","description","bounds","visible")),"native recommendation identity or action state changed");
@@ -248,6 +250,30 @@ final class WebShoppingObservationStability {
                 .put("recommendation_native_path",rec).put("before",before).put("after",after).put("outside_changes",changes)
                 .put("complete_native_membership_equal",true).put("all_non_recommendation_native_records_equal",true)
                 .put("action_permit_created",false).put("business_verified",false);
+    }
+
+    /** Failure-only metadata. Never publishes a row value or changes the rejection. */
+    private static String nativeChangeDiagnostic(String path,JSONObject before,JSONObject after){
+        final String unavailable="{\"schema\":\"hepta.native-row-change-diagnostic.v1\",\"available\":false,\"contains_page_text\":false,\"grants_action_capability\":false}";
+        try{
+            if(path==null||path.length()>1024||!path.matches("0(?:/(?:0|[1-9][0-9]{0,5})){0,127}")
+                    ||before==null||after==null||before.length()>64||after.length()>64)return unavailable;
+            Set<String> keys=new TreeSet<String>();
+            for(java.util.Iterator<String> it=before.keys();it.hasNext();)keys.add(it.next());
+            for(java.util.Iterator<String> it=after.keys();it.hasNext();)keys.add(it.next());
+            if(keys.size()>64)return unavailable;
+            JSONArray fields=new JSONArray();
+            for(String key:keys){
+                if(!key.matches("[a-z][a-z0-9_]{0,63}"))return unavailable;
+                if(before.has(key)!=after.has(key)||!WebDomCanonical.same(before.get(key),after.get(key)))fields.put(key);
+            }
+            String result=new JSONObject().put("schema","hepta.native-row-change-diagnostic.v1")
+                    .put("available",true).put("native_path",path).put("changed_fields",fields)
+                    .put("before_canonical_sha256",WebDomCanonical.sha256(before))
+                    .put("after_canonical_sha256",WebDomCanonical.sha256(after))
+                    .put("contains_page_text",false).put("grants_action_capability",false).toString();
+            return result.length()<=4096?result:unavailable;
+        }catch(Exception ignored){return unavailable;}
     }
 
     static JSONObject compareRetained(JSONArray before,JSONArray after,String recommendation)throws Exception{
