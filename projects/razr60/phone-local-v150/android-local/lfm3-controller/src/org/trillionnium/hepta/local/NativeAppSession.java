@@ -126,6 +126,15 @@ final class NativeAppSession {
         Map<String,Object> view=NativeAppEvidence.map(),result=null;List<String> missing=new ArrayList<String>();boolean back=false;
         String phase=flight!=null?flight.phase:product.phase;
         if(!frame.metadataObserved||frame.windowType!=1||!frame.collectionComplete||frame.nodesTruncated){missing.add("complete_actual_native_application_frame_required");}
+        else if(NativeCtripFlightPage.FIRST_LAUNCH_PRIVACY.equals(phase)){
+            boolean queryAttempted=!queryAttempts.isEmpty()||lastQueryProof!=null;
+            view.put("observed_first_launch_privacy",true);view.put("initialization_required",true);
+            view.put("flight_query_attempted",queryAttempted);view.put("credentials_or_agreement_actions_available",false);
+            view.put("next_goal",queryAttempted
+                    ?"当前显示携程首次启动指引，尚未取得可核验的机票结果。结束 partial 或 failure，如实报告初始化阻碍。"
+                    :"携程首次启动指引尚未完成，未执行机票查询。结束 partial 或 failure，如实报告初始化阻碍。");
+            missing.add(flight.missing);
+        }
         else if("ctrip_login_required".equals(phase)){
             view.put("observed_login_page",true);view.put("requires_user_handling",true);
             view.put("credentials_or_agreement_actions_available",false);

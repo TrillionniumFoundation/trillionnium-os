@@ -107,6 +107,15 @@ public final class LocalTaskController implements AutoCloseable {
                     &&(NativeXiaomiProductPage.LOGIN.equals(phase)||NativeXiaomiProductPage.LOGIN_BLOCKED.equals(phase))){
                 code="native_xiaomi_login_page";
                 message="最后读取到的是小米账号登录页，尚未取得本次商品售价。请先处理该应用的登录页面，再重新开始任务。";
+            }else if(NativeAppGoal.CTRIP_PACKAGE.equals(frame.packageName)
+                    &&NativeCtripFlightPage.FIRST_LAUNCH_PRIVACY.equals(phase)
+                    &&yes(provider,"observed_first_launch_privacy","initialization_required")
+                    &&Boolean.FALSE.equals(provider.get("credentials_or_agreement_actions_available"))
+                    &&provider.get("flight_query_attempted") instanceof Boolean){
+                code="native_ctrip_first_launch_privacy";
+                message=Boolean.FALSE.equals(provider.get("flight_query_attempted"))
+                        ?"携程首次启动指引尚未完成，未执行机票查询。请完成首次启动准备后重新开始任务。"
+                        :"当前显示携程首次启动指引，尚未取得可核验的机票结果。请完成首次启动准备后重新开始任务。";
             }else return java.util.Collections.emptyMap();
             java.util.Map<String,Object> out=reason(task,owner,code,"version_bound_native_provider_terminal",message);
             out.put("observation_id",frame.observationId);out.put("completion_frame_sha256",source.get("completion_frame_sha256"));

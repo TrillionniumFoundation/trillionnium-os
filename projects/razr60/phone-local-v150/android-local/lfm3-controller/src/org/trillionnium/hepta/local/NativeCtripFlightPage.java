@@ -27,6 +27,7 @@ final class NativeCtripFlightPage {
     static final String HOME="ctrip_home",FORM="ctrip_single_flight_form",CALENDAR="ctrip_native_calendar";
     static final String RESULTS="ctrip_single_flight_results",OVERLAY="ctrip_research_overlay",UNAVAILABLE="unavailable";
     static final String LOGIN_REQUIRED="ctrip_login_required";
+    static final String FIRST_LAUNCH_PRIVACY="ctrip_first_launch_privacy";
     private static final String PREFIX="ctrip.android.view:id/";
     private static final Pattern FORM_DATE=Pattern.compile("([0-9]{1,2})月([0-9]{1,2})日(今天|明天|后天|周[一二三四五六日天])");
     private static final Pattern MONTH=Pattern.compile("([0-9]{4})年([0-9]{1,2})月");
@@ -165,6 +166,7 @@ final class NativeCtripFlightPage {
         if(!frame.metadataObserved||frame.windowType!=1)return empty(frame,UNAVAILABLE,"actual_application_window_metadata_missing");
         if(!frame.collectionComplete||frame.nodesTruncated)return empty(frame,UNAVAILABLE,"actual_native_collection_incomplete");
         try{
+            if(hasFirstLaunchPrivacyMarker(frame))return firstLaunchPrivacy(frame);
             if(hasLoginMarker(frame))return loginRequired(frame);
             // This sheet leaves the underlying native flight tree exposed. Its
             // mere presence vetoes every quote in that same observation.
@@ -194,6 +196,51 @@ final class NativeCtripFlightPage {
             return empty(frame,UNAVAILABLE,"native_page_provider_not_recognized");
         }catch(IllegalArgumentException rejected){return empty(frame,UNAVAILABLE,"native_page_fields_rejected: "+bounded(rejected.getMessage(),180));}
         catch(DateTimeException rejected){return empty(frame,UNAVAILABLE,"native_calendar_value_rejected: "+bounded(rejected.getMessage(),180));}
+    }
+
+    /** Classify only the complete observed v1779 first-launch modal. The body
+     * is bounded AX text, not proof that the terms were read or accepted. This
+     * page grants no consent, scroll, return, query or other action authority. */
+    private static boolean hasFirstLaunchPrivacyMarker(NativeAppEvidence.Frame f){
+        for(NativeAppEvidence.Node n:f.nodes)if("个人信息保护指引".equals(n.text)
+                ||(PREFIX+"common_boot_permission_positive_btn").equals(n.viewId)
+                ||(PREFIX+"common_boot_permission_negative_btn").equals(n.viewId)
+                ||(PREFIX+"common_boot_permission_content_tv").equals(n.viewId))return true;
+        return false;
+    }
+    private static Page firstLaunchPrivacy(NativeAppEvidence.Frame f){
+        need(f.nodes.size()==5&&f.left>0&&f.top>0&&f.right<f.width&&f.bottom<f.height,
+                "complete inset first-launch modal required");
+        NativeAppEvidence.Node title=privacyNode(f,"0/1","","android.widget.TextView","个人信息保护指引",false,false);
+        NativeAppEvidence.Node scroll=privacyNode(f,"0/2","","android.widget.ScrollView","",false,true);
+        NativeAppEvidence.Node positive=privacyNode(f,"0/3",PREFIX+"common_boot_permission_positive_btn",
+                "android.widget.TextView","同意并继续",true,false);
+        NativeAppEvidence.Node negative=privacyNode(f,"0/4",PREFIX+"common_boot_permission_negative_btn",
+                "android.widget.TextView","不同意",true,false);
+        NativeAppEvidence.Node body=privacyNode(f,"0/2/0",PREFIX+"common_boot_permission_content_tv",
+                "android.widget.TextView",null,false,false);
+        need(!body.text.isEmpty()&&body.text.startsWith("感谢您使用携程旅行！")
+                &&body.within(scroll)&&body.left==scroll.left&&body.top==scroll.top
+                &&body.right==scroll.right&&body.bottom==scroll.bottom,
+                "same observed bounded first-launch body required");
+        need(title.bottom<=scroll.top&&scroll.bottom<=positive.top&&positive.bottom<=negative.top
+                &&scroll.scrollDirections.equals(new TreeSet<String>(java.util.Arrays.asList("forward","down"))),
+                "ordered first-launch modal anchors required");
+        return empty(f,FIRST_LAUNCH_PRIVACY,"native_ctrip_first_launch_privacy_requires_preparation");
+    }
+    private static NativeAppEvidence.Node privacyNode(NativeAppEvidence.Frame f,String path,String id,
+            String cls,String text,boolean clickable,boolean scrollable){
+        NativeAppEvidence.Node found=null;
+        for(NativeAppEvidence.Node n:f.nodes)if(path.equals(n.path)){
+            need(found==null,"ambiguous first-launch anchor");found=n;
+        }
+        need(f.usable(found)&&id.equals(found.viewId)&&cls.equals(found.className)
+                &&(text==null||text.equals(found.text))&&found.description.isEmpty()
+                &&("0/2/0".equals(path)?"android.widget.ScrollView":"android.widget.FrameLayout").equals(found.parentClass)
+                &&found.enabled&&!found.password&&!found.editable&&found.clickable==clickable&&found.scrollable==scrollable
+                &&Boolean.FALSE.equals(found.selected)&&Boolean.FALSE.equals(found.checkable)&&Boolean.FALSE.equals(found.checked)
+                &&(scrollable||found.scrollDirections.isEmpty()),"exact observed first-launch anchor required: "+path);
+        return found;
     }
 
     /** Read only the observed v1779 login obstruction. Account identifiers are

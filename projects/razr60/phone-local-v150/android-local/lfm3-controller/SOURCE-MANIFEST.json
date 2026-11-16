@@ -23,9 +23,9 @@
     "previous_manifest_sha256": "3b442123253504d89138cb3c02381ba978ef589453cc2a806fe1a98ed861a9af",
     "recognized_booking_pending_phase_budget_ms": 16000
   },
-  "candidate_status": "host_compile_closure_verified_pending_product_build_and_app_recovery",
+  "candidate_status": "native_terminal_joint_source_frozen_before_new_joint_host_and_android_gates",
   "candidate_version_assigned": true,
-  "complete_source_files": 2104,
+  "complete_source_files": 2109,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -63,14 +63,13 @@
   },
   "current_validation": {
     "actual_final_android_application_build": "pending",
-    "actual_profile_recovery_and_business_task": "pending",
+    "actual_profile_business_task": "pending",
     "all_blockers_closed": false,
-    "canonical_checks_executed": 112,
-    "complete_android_java_precompile": "pending for this final source",
-    "full_canonical_host_receipt_sha256": "0cf6612651053dee99d97031ec94eb55f9980506db4ecbd6fadddb812dfbbd31",
-    "full_canonical_host_suite": "PASS for exact reviewed complete candidate and unchanged final source inputs",
-    "phone_claims_from_host_tests": false,
-    "standalone_readonly_recovery_diagnostic": "Inherited exact root-owned r3 PASS; not App recovery authority"
+    "combined_canonical_host_suite": "pending at source freeze; later execution recorded separately",
+    "combined_targeted_host_gates": "pending at source freeze; later execution recorded separately",
+    "individual_targeted_overlays": "PASS on separate overlays, not combined qualification",
+    "phase": "source_freeze_before_joint_gates",
+    "phone_claims_from_host_tests": false
   },
   "dom_reuse_and_reopen_amendment": {
     "action_replay_added": false,
@@ -6317,9 +6316,9 @@
       "sha256": "14f735150e48c1f2dc985e3a805ae1fde30a0ea828a5d83959c78328b03c2757"
     },
     {
-      "bytes": 6246,
+      "bytes": 6309,
       "path": "src/org/trillionnium/hepta/background/ProfileTarget.java",
-      "sha256": "506277683020daf3d7c83f7c934d75efbd9f2a481bb5e9a158b81a8e839af435"
+      "sha256": "b65d62af4dd9f68d6c0070b21bf7fe0127a0a1898cc0f6ee604c9d56fa83f821"
     },
     {
       "bytes": 3571,
@@ -6477,9 +6476,9 @@
       "sha256": "e99ef5b8c965dc5d09983a638412b3b5329f0dd9180099e8fe8f8e824153c991"
     },
     {
-      "bytes": 174881,
+      "bytes": 175757,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "2b4547465d5e92caa7bf46d0f8ef24671c78357400f0a705363e69914f3fca52"
+      "sha256": "57fddc5bacb0b88f60a4095086a5b7cca043d80827794ade7184572b71d8354a"
     },
     {
       "bytes": 51643,
@@ -6562,9 +6561,9 @@
       "sha256": "c2d0227fb8994b4deb570833b2aa3cae5181304c4c7582c9ba9f960925a846e7"
     },
     {
-      "bytes": 71690,
+      "bytes": 72481,
       "path": "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "sha256": "c77c86bff841bc8aba7b91a37300194d8e2142872c470856f20020ee83afee01"
+      "sha256": "9a9b6da3844c559c93170a3680f732366a02e368abd82d28c5c4775170b1e26e"
     },
     {
       "bytes": 2562,
@@ -6572,9 +6571,9 @@
       "sha256": "45c2675af31e3609a85befd921e5f9b3a82d9ecad78b003d7e642cd38b258087"
     },
     {
-      "bytes": 42335,
+      "bytes": 45929,
       "path": "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java",
-      "sha256": "085309202a24c8f4f0f5986027bc32c13d73a8a5766ff046539a09ea2a719541"
+      "sha256": "0b99bed52ada56eb57e04452ae0728ec82298496fb8343da71d0345f14e6419d"
     },
     {
       "bytes": 40071,
@@ -8067,6 +8066,21 @@
       "sha256": "bd703e93f159a32eb7c26c9501881dcf7982c6ec13fab37f98548f43239b588c"
     },
     {
+      "bytes": 15555,
+      "path": "tests/native-ctrip-onboarding/NativeCtripOnboardingHostTest.java",
+      "sha256": "997860c692353b7b05244c29fa3e20c4487558cf08c9aebaccce869bf3a75b18"
+    },
+    {
+      "bytes": 2756,
+      "path": "tests/native-ctrip-onboarding/README.md",
+      "sha256": "f26bce8856ac5f2e7647b2004c73dfb7e32bd9cc0a6fa585721791c8ad0bbd7d"
+    },
+    {
+      "bytes": 8539,
+      "path": "tests/native-ctrip-onboarding/run_host.py",
+      "sha256": "b1f7c2f71e4ead2a89d2a1ef5a32039949f670382f62d67b5e5e3411715359fe"
+    },
+    {
       "bytes": 1971,
       "path": "tests/native-observation-events/EventChecks.java",
       "sha256": "b8b8c1302af4a19643e6dda64702e49f887bb5613a6bb0ddc298941b00fccc0a"
@@ -8955,6 +8969,16 @@
       "bytes": 5291,
       "path": "tests/profile-recovery/run_session_host.py",
       "sha256": "335146738003c9b5bf15badb6d58433c377907a745f59c751fa5c1219a4ca8ed"
+    },
+    {
+      "bytes": 18748,
+      "path": "tests/profile-terminal-evidence/ProfileTerminalEvidenceHostTest.java",
+      "sha256": "d6735da90a4f91b7f071e82e568aa26c64021d2956560097f3a2138e46ae5ae0"
+    },
+    {
+      "bytes": 11043,
+      "path": "tests/profile-terminal-evidence/run_host.py",
+      "sha256": "5840f0cc9237e42bd4d991dd674f31692be4074b7aa70cd5794d438ac33d1c6f"
     },
     {
       "bytes": 42292,
@@ -12546,6 +12570,27 @@
     "unknown_retirement_keeps_display_custody": true,
     "user0_fallback": false
   },
+  "native_terminal_joint_revision": {
+    "baseline_manifest_sha256": "d0ac553ae69e8f7291b8db0e242e18baa28fb25ec0df324d1b6afad7a07d9f0d",
+    "new_action_authority": false,
+    "new_host_paths": [
+      "tests/native-ctrip-onboarding/NativeCtripOnboardingHostTest.java",
+      "tests/native-ctrip-onboarding/README.md",
+      "tests/native-ctrip-onboarding/run_host.py",
+      "tests/profile-terminal-evidence/ProfileTerminalEvidenceHostTest.java",
+      "tests/profile-terminal-evidence/run_host.py"
+    ],
+    "normal_git_parent": "c02658e399aea52aabbbbbea16800ed61c90d022",
+    "original_failures_preserved": true,
+    "phone_operations": 0,
+    "production_changed_paths": [
+      "src/org/trillionnium/hepta/background/ProfileTarget.java",
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "src/org/trillionnium/hepta/local/NativeAppSession.java",
+      "src/org/trillionnium/hepta/local/NativeCtripFlightPage.java"
+    ],
+    "production_input_path_sequence_unchanged": true
+  },
   "observation_budget_amendment": {
     "capture_has_independent_two_second_timer": false,
     "capture_headroom_ms": 2000,
@@ -12679,6 +12724,17 @@
         "sha256": "dcc0edbe6fc212e5b83dcb57f7b727c684ce7fcbeeea9f958d8db240f51219f7"
       }
     ]
+  },
+  "prior_freeze_validation": {
+    "actual_final_android_application_build": "pending",
+    "actual_profile_recovery_and_business_task": "pending",
+    "all_blockers_closed": false,
+    "canonical_checks_executed": 112,
+    "complete_android_java_precompile": "pending for this final source",
+    "full_canonical_host_receipt_sha256": "0cf6612651053dee99d97031ec94eb55f9980506db4ecbd6fadddb812dfbbd31",
+    "full_canonical_host_suite": "PASS for exact reviewed complete candidate and unchanged final source inputs",
+    "phone_claims_from_host_tests": false,
+    "standalone_readonly_recovery_diagnostic": "Inherited exact root-owned r3 PASS; not App recovery authority"
   },
   "production_build_inputs_count": 331,
   "profile_recents_prelaunch_recovery_amendment": {

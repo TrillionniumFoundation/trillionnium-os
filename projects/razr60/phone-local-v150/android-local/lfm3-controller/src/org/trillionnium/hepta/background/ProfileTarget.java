@@ -73,7 +73,7 @@ public final class ProfileTarget {
     public Map<String,Object> evidence(){
         Map<String,Object> v=new LinkedHashMap<String,Object>();v.put("schema",SCHEMA);v.put("profile",profile.evidence());v.put("full_uid",fullUid);
         v.put("package",packageName);v.put("component",component);v.put("version_code",versionCode);v.put("apk_hashes",apkHashes);
-        v.put("apk_set_sha256",apkSetSha256);v.put("signer_sha256",signerSha256);v.put("target_identity_sha256",sha256);
+        v.put("apk_set_sha256",apkSetSha256);v.put("signer_sha256",Collections.unmodifiableList(new java.util.ArrayList<String>(signerSha256)));v.put("target_identity_sha256",sha256);
         v.put("grants_action_authority",false);return Collections.unmodifiableMap(v);
     }
 }
