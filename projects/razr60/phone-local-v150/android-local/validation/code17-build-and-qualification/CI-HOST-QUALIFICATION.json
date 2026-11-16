@@ -1,0 +1,222 @@
+{
+  "schema": "hepta.code17.ci-host-qualification.v1",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "source_head_sha": "c726c48b7f9f9477957a138f5a9c826643d423da",
+  "source_manifest_sha256": "3f7602f4c9ff73adfaabfdcf93496c043c10b59e6b5b75304bc13c473d3a2074",
+  "run_id": 42565206107,
+  "run_attempt": 1,
+  "run_url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42565206107",
+  "job_id": 128991843088,
+  "runner": "ubuntu-24.04",
+  "java": "Temurin 17",
+  "host_suite_all_pass": true,
+  "host_check_count": 46,
+  "source_inputs_verified_against_frozen_source": 118,
+  "artifact": {
+    "id": 13652004468,
+    "bytes": 36556,
+    "sha256": "e093b874dc1bd3abc4fec89f4459e1b140a1004ce1b1452cfcf472e4076b142d",
+    "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42565206107/artifacts/13652004468",
+    "host_checks_member": "hepta-host-checks/HOST-CHECKS.json",
+    "host_checks_sha256": "b9a097da9bb871ca829c126374aa630575dcd1d8f781990645a0c46792abf6c0",
+    "host_checks_bytes": 33924
+  },
+  "host_checks": [
+    {
+      "name": "java-compile",
+      "exit_code": 0
+    },
+    {
+      "name": "ActionFreshnessHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "AppCatalogueHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "BudgetHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "DispatchedActionSequenceHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "Gemma4ProfileHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ImeObservationHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "LocalPolicyHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "MemoryAvailabilityHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "MobiMindContractHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "MobiMindSessionContractHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ModelProfileHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ObservationStabilityHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ObservedChildTextHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ObservedScrollActionsHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ObservedTargetLabelsHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ObservedTextProjectionHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ObservedWindowMetadataHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "PersistentActionPolicyHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "RecentActionProjectionHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "RepeatActionGuardHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "RepeatClickProjectionHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ScrollGrammarHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "SessionRecoveryHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ActionDecisionHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "DecisionGrammarHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "grammar-recognition",
+      "exit_code": 0
+    },
+    {
+      "name": "scroll-grammar-recognition",
+      "exit_code": 0
+    },
+    {
+      "name": "completion-protocol",
+      "exit_code": 0
+    },
+    {
+      "name": "python-tools",
+      "exit_code": 0
+    },
+    {
+      "name": "mobimind-private-staging",
+      "exit_code": 0
+    },
+    {
+      "name": "model_profile_contract-compile",
+      "exit_code": 0
+    },
+    {
+      "name": "model_profile_contract",
+      "exit_code": 0
+    },
+    {
+      "name": "parent_death_contract-compile",
+      "exit_code": 0
+    },
+    {
+      "name": "parent_death_contract",
+      "exit_code": 0
+    },
+    {
+      "name": "phase_timing_contract-compile",
+      "exit_code": 0
+    },
+    {
+      "name": "phase_timing_contract",
+      "exit_code": 0
+    },
+    {
+      "name": "prompt_budget_contract-compile",
+      "exit_code": 0
+    },
+    {
+      "name": "prompt_budget_contract",
+      "exit_code": 0
+    },
+    {
+      "name": "publish_contract-compile",
+      "exit_code": 0
+    },
+    {
+      "name": "publish_contract",
+      "exit_code": 0
+    },
+    {
+      "name": "sha256_probe-compile",
+      "exit_code": 0
+    },
+    {
+      "name": "sha256_probe",
+      "exit_code": 0
+    },
+    {
+      "name": "sha256-hashlib-differential",
+      "exit_code": 0
+    },
+    {
+      "name": "native-adapter-syntax",
+      "exit_code": 0
+    },
+    {
+      "name": "private-prompt-evidence",
+      "exit_code": 0
+    }
+  ],
+  "overall_workflow_conclusion": "failure",
+  "later_failure": "Pinned GenieX archive download returned HTTP 504 Gateway Time-out before Android compilation. Host contracts completed successfully beforehand.",
+  "android_compiled_in_this_run": false,
+  "phone_tested_in_ci": false,
+  "local_split_reports_preserved": true,
+  "retry": {
+    "run_id": 42569728212,
+    "head_sha": "c726c48b7f9f9477957a138f5a9c826643d423da",
+    "event": "workflow_dispatch",
+    "run_attempt": 1,
+    "reason": "Fresh full MNN producer and consumer, preserving exact run and attempt binding; no pin or test changes."
+  }
+}

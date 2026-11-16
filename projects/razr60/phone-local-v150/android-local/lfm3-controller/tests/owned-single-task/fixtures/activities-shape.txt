@@ -1,0 +1,7 @@
+ACTIVITY MANAGER ACTIVITIES (dumpsys activity activities)
+Display #0 (activities from top to bottom):
+  * Task{123 #10 type=standard A=10001:example.other U=0 visible=true}
+    * Hist  #0: ActivityRecord{123 u0 example.other/.Main t10}
+      mActivityComponent=example.other/.Main
+  TaskOrganizerController:
+  SleepTokens={}

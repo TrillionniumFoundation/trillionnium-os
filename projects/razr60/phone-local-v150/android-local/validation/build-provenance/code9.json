@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.android-build-provenance.v1",
+  "version_code": 9,
+  "version_name": "0.9.0-local-targets",
+  "package": "org.trillionnium.hepta.local",
+  "source_manifest_sha256": "a60df35bf0899a32db06fd0486592e573c3f078fff5d13079bd2171ff3aee0a4",
+  "source_manifest_members": 559,
+  "source_archive_sha256": "b12ae6fa8442932e7ff230adb96c629131ce5bb041fe6c732fdc1ec0ce96e841",
+  "true_android_java_dex_native_rebuild": true,
+  "host_platform": "darwin",
+  "java_version": 17,
+  "compile_sdk": 34,
+  "ndk_version": "28.2.13676358",
+  "generated_worker_sha256": "605a080c42415bc461e050385da537d94af9a880c73b5d651c65e3a88c1f1c3a",
+  "native_generated_source_unchanged_from_code6": true,
+  "apk_sha256": "c6bb4f8758c88d255d03c5d412aa1680b60826b09c6d6798a5eda5ba8954a16f",
+  "apk_bytes": 15381957,
+  "same_original_installation_signer_verified": true,
+  "signer_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "new_key_created": false,
+  "all_packaged_runtime_members_verified_against_pinned_archive": true,
+  "source_host_gates_passed": 32,
+  "child_label_host_assertions": 130,
+  "persistent_policy_host_assertions": 73,
+  "sha256_instruction_gate": {
+    "verified_actual_android_elf": true,
+    "global_crypto_flag": false,
+    "runtime_gate": "getauxval(AT_HWCAP) & HWCAP_SHA2",
+    "instruction_owners": {
+      "hepta_sha256_armv8_blocks": 56
+    },
+    "disassembly_sha256": "909a5fbac75f2562afdf37bd6c25a4cf48429bdfb0b52f4562389a306c766cc7"
+  },
+  "runtime_change_scope": "Observed descendant labels and freshness binding; conservative rejection of explicitly labelled persistent destructive clicks; exact host grammar-verifier compatibility. No model, native, grammar or existing action freshness policy change from code8.",
+  "policy_boundary": "Does not classify every unknown destructive operation. Bare clear/delete remains unclassified to avoid treating reversible editing as persistent destruction. Explicit persistent destruction is unsupported, even if model reason claims authorization.",
+  "device_full_acceptance": "in_progress_not_claimed",
+  "model_weights_or_keys_or_phone_ui_published": false
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "hepta.v56.source-preparation.v1",
+  "original_runtime_fixture_exit": 1,
+  "original_runtime_fixture_evidence": "/home/alex/hepta-razr-948b-integration-20261112/evidence/runtime-config-before-adaptation",
+  "source_closure_exit": 0,
+  "source_closure_stdout": "{\"source_manifest_verified\": true, \"members\": 1434, \"phone_qualified\": false}\n",
+  "source_closure_stderr": "",
+  "diff_check_exit": 0,
+  "diff_check_stdout": "",
+  "source_members": 1434,
+  "production_build_inputs": 211,
+  "version_code": 56,
+  "phone_operations": false
+}

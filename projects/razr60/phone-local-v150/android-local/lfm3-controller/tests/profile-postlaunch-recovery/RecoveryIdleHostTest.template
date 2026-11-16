@@ -1,0 +1,46 @@
+package org.trillionnium.hepta.local;
+import org.json.JSONObject;
+/** Actual Service idle predicates, with explicit controller/Android worker state fixtures. */
+public final class RecoveryIdleHostTest {
+ static int cases,assertions;
+ static final class LocalTaskController {boolean running;final String task;LocalTaskController(String t){task=t;}boolean isRunning(){return running;}String currentTaskId(){return task;}}
+ static final class Web {final boolean value;Web(boolean v){value=v;}boolean released(){return value;}}
+ static RecoveryIdleHostTest live;
+ LocalTaskController ownedController;Object activeObservation;boolean capturePending,readPending,actionPending,cancelPending;
+ BackgroundSession taskBackground;Web taskWeb;String lease;
+ boolean observationReadWorkPending(){return readPending;}boolean actionWorkPending(){return actionPending;}boolean nativeCancellationWorkPending(){return cancelPending;}
+ /* ACTUAL_GUARDS */
+ RecoveryIdleHostTest(BackgroundSession b){taskBackground=b;ownedController=new LocalTaskController(b.taskId);lease=b.taskId;live=this;}
+ static void need(boolean v){assertions++;if(!v)throw new AssertionError("recovery idle predicate");}
+ public static void main(String[] args)throws Exception{
+  android.os.Looper.worker=true;android.net.LocalSocket.reset();android.net.LocalSocket.missing=true;
+  android.os.SystemClock.now=1000000;android.provider.Settings.Global.boot=10;FakePostlaunchRecoveryProcess.reset();
+  try(ProfileSessionHostTest.Env e=new ProfileSessionHostTest.Env()){
+   ProfilePostlaunchRecoverySessionHostTest.ready(e);RecoveryIdleHostTest f=new RecoveryIdleHostTest(e.session);
+   need(f.postlaunchReconciliationIdle(f.ownedController));need(!f.prelaunchReconciliationIdle(f.ownedController));cases++;
+   for(String bad:new String[]{"disconnected","different_controller","running","observation","capture","read","action","cancel","web","lease"}){
+    f=new RecoveryIdleHostTest(e.session);LocalTaskController expected=f.ownedController;
+    if(bad.equals("disconnected"))live=null;
+    if(bad.equals("different_controller"))expected=new LocalTaskController(e.session.taskId);
+    if(bad.equals("running"))f.ownedController.running=true;
+    if(bad.equals("observation"))f.activeObservation=new Object();
+    if(bad.equals("capture"))f.capturePending=true;
+    if(bad.equals("read"))f.readPending=true;
+    if(bad.equals("action"))f.actionPending=true;
+    if(bad.equals("cancel"))f.cancelPending=true;
+    if(bad.equals("web"))f.taskWeb=new Web(false);
+    if(bad.equals("lease"))f.lease="other";
+    need(!f.postlaunchReconciliationIdle(expected));cases++;
+   }
+   f=new RecoveryIdleHostTest(e.session);BackgroundSessionHostTest.field(e.session,"retired",false);
+   need(!f.postlaunchReconciliationIdle(f.ownedController));cases++;
+  }
+  android.os.SystemClock.now=1000000;FakeRecoveryProcess.reset();
+  try(ProfileSessionHostTest.Env e=new ProfileSessionHostTest.Env()){
+   ProfileRecoverySessionHostTest.ready(e);RecoveryIdleHostTest f=new RecoveryIdleHostTest(e.session);
+   need(f.prelaunchReconciliationIdle(f.ownedController));need(!f.postlaunchReconciliationIdle(f.ownedController));cases++;
+  }
+  System.out.println(new JSONObject().put("passed",true).put("cases",cases).put("assertions",assertions)
+   .put("actual_service_predicates_extracted_verbatim",true).put("controller_workers_and_android_io_synthetic",true).put("phone_contacted",false));
+ }
+}
