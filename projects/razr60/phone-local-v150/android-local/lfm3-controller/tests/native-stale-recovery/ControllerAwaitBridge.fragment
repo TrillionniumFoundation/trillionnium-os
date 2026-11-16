@@ -1,0 +1,28 @@
+    // Called by the synthetic Controller Service endpoint. The comparison,
+    // ActionExecutionState and diagnostic producer are the real extracted code.
+    static JSONObject controllerAwaitExecution(Fixture f,NativeAppSession.ActionGuard guard,
+            ActionDecision action,String run,long deadline,String mode)throws Exception{
+        f.action=action;
+        f.work=f.service.new ActionWork(f.task,f.service.current,run,f.service.scope,f.gate,f.service.background,
+                ()->f.service.cancelled,f.service.currentGraph.copyForAction(action.nodeId,null),null,
+                SystemClock.now,deadline,guard);
+        f.work.phase("worker_started");
+        f.fresh=f.raw.copy();
+        f.fresh.add("0/2","android.view.View","","","",NativeActionSnapshotCheckHostTest.rect(0,2700,1224,2800));f.fresh.link();
+        String refusal=f.service.validate(f.task,f.service.current,action,null,()->f.service.cancelled,f.work);
+        yes(refusal!=null&&refusal.contains("actual ancestor changed: 0"),"actual strict comparison supplies the pre-effect refusal");
+        if("claimed".equals(mode))guard.claim(action,run,SystemClock.now);
+        if("ordinary-close".equals(mode))guard.close();
+        if("retired".equals(mode))f.work.state.retire("cancelled");
+        if("entered".equals(mode)){guard.claim(action,run,SystemClock.now);f.work.state.enterEffect(false,true);f.work.state.effectReturned(Boolean.FALSE);}
+        SystemClock.now++;f.work.state.drained();SystemClock.now++;f.work.state.publish(false,true);SystemClock.now++;
+        // The desktop JSON jar omits Map nulls, whereas the Android Service
+        // receipt retains explicit nulls. Reuse the existing Android-null shim;
+        // all lifetime and guard values still come from their real producers.
+        JSONObject receipt=recoveryJson(f.work.state.evidence()),diagnostic=actionDiagnosticEvidence(f.work);
+        for(String key:diagnostic.keySet())if(!receipt.has(key))receipt.put(key,diagnostic.get(key));
+        receipt.put("native_action_guard",recoveryJson(guard.evidence()));
+        // Contradictory JSON cannot change the actual claimed/closed object.
+        if("claimed".equals(mode)||"ordinary-close".equals(mode))receipt.getJSONObject("native_action_guard").put("state",0);
+        return receipt;
+    }

@@ -1,0 +1,2 @@
+package org.trillionnium.hepta.webhelper;import android.content.Context;import org.json.JSONObject;import org.trillionnium.hepta.webprotocol.WebDomCanonical;
+final class InstalledIdentity {final JSONObject evidence;InstalledIdentity(JSONObject v)throws Exception{evidence=new JSONObject(v.toString());}void requireRequest(JSONObject v)throws Exception{Jsons.need(WebDomCanonical.same(evidence,v),"fixture installed identity");}void requireUnchanged(Context c)throws Exception{if(evidence.getInt("uid")<10000)throw new IllegalStateException("synthetic app UID expected");}}

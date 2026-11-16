@@ -1,0 +1,114 @@
+{
+  "schema": "hepta.original-shopping-failure-export.v1",
+  "task_id": "475c3b4562e24c9595c49ca1d13e67e4",
+  "originals_unchanged": true,
+  "phone_commands": 0,
+  "files": [
+    {
+      "source": "/home/alex/hepta-resume-261e-r2/shopping-v57-r1/collection/task/scope-observation-d257d8d2bf6543db9b7a9bd1747e03b2.json",
+      "name": "scope-observation-d257d8d2bf6543db9b7a9bd1747e03b2.json",
+      "bytes": 443857,
+      "sha256": "fd081db1accccc53fdd158abb20bf64472b1fd9727e99b2d1711f7301daf519e",
+      "metadata": {
+        "observation_id": "d257d8d2bf6543db9b7a9bd1747e03b2",
+        "window_id": 3654,
+        "app_tree_sha256": "5615cb8be04f8b78a5d70bfd62589fa88f0d261d40f852b093967034ad14558f"
+      },
+      "top_keys": [
+        "observation",
+        "qualification_scope",
+        "task_authorization",
+        "background_session"
+      ],
+      "fixture_file": "scope-observation-d257d8d2bf6543db9b7a9bd1747e03b2.json.gz",
+      "gzip_sha256": "7c7818f605ef7e6af98140545e5028514f3b2dfb27d9098a17ce5cbe44294818",
+      "gzip_bytes": 33458
+    },
+    {
+      "source": "/home/alex/hepta-resume-261e-r2/shopping-v57-r1/collection/task/scope-observation-e777dc28ba0a4982ad62838bd4778dde.json",
+      "name": "scope-observation-e777dc28ba0a4982ad62838bd4778dde.json",
+      "bytes": 448358,
+      "sha256": "50ec0a73354231d753c8ed915ec8555f09306a49303c4b7265474fd6adf25f45",
+      "metadata": {
+        "observation_id": "e777dc28ba0a4982ad62838bd4778dde",
+        "window_id": 3654,
+        "app_tree_sha256": "7118938714f8d1343e511890256239499be9d46029159cbb2cce353fe724e5b9"
+      },
+      "top_keys": [
+        "observation",
+        "qualification_scope",
+        "task_authorization",
+        "background_session"
+      ],
+      "fixture_file": "scope-observation-e777dc28ba0a4982ad62838bd4778dde.json.gz",
+      "gzip_sha256": "3e562b4fee763fcb3c23cd55243de81edc136afbab80574bdaacd25293b94fb4",
+      "gzip_bytes": 33703
+    },
+    {
+      "source": "/home/alex/hepta-resume-261e-r2/shopping-v57-r1-web-evidence-r2/web-helper/raw-3b37b1d955864f03bdb24ab483e67110bc811bd3ca8b4cc08bfb0961a11322f2.json",
+      "name": "raw-3b37b1d955864f03bdb24ab483e67110bc811bd3ca8b4cc08bfb0961a11322f2.json",
+      "bytes": 2060974,
+      "sha256": "3fbebe047effd63ada254d452f61506c185aa2812872c68a394127db32385a49",
+      "metadata": {
+        "started_elapsed_ms": 881252933,
+        "ended_elapsed_ms": 881255744,
+        "navigation_epoch": 2,
+        "display_id": 32,
+        "actual_window_id": 3654,
+        "current_native_url": "https://www.mi.com/shop/search?keyword=AX3000T",
+        "dom_sha256": "f477443efd7996fbca7a13b3da6f845d2d6406c9baeecb3a83f009caa973bdf2"
+      },
+      "top_keys": [
+        "schema",
+        "request_json_utf8",
+        "request_sha256",
+        "binding",
+        "binding_sha256",
+        "controller_identity",
+        "helper_identity",
+        "actual_window_id",
+        "capture",
+        "storage_isolation",
+        "actor",
+        "diagnostic_unbound",
+        "business_verified"
+      ],
+      "fixture_file": "raw-3b37b1d955864f03bdb24ab483e67110bc811bd3ca8b4cc08bfb0961a11322f2.json.gz",
+      "gzip_sha256": "989392bb8844746c1914adef0ed7b46ec1e3404b3c2f821329012fbabe6c37dd",
+      "gzip_bytes": 62111
+    },
+    {
+      "source": "/home/alex/hepta-resume-261e-r2/shopping-v57-r1-web-evidence-r2/web-helper/raw-d1f6d97e7d4e4270a6f975b3a908fa2a9ee9f9536f01417094034b13c6bcc9ff.json",
+      "name": "raw-d1f6d97e7d4e4270a6f975b3a908fa2a9ee9f9536f01417094034b13c6bcc9ff.json",
+      "bytes": 2062077,
+      "sha256": "3710839118b4251f262cf7387a49668ba98457e763d064eacf486a7b39d24aad",
+      "metadata": {
+        "started_elapsed_ms": 881260498,
+        "ended_elapsed_ms": 881262124,
+        "navigation_epoch": 2,
+        "display_id": 32,
+        "actual_window_id": 3654,
+        "current_native_url": "https://www.mi.com/shop/search?keyword=AX3000T",
+        "dom_sha256": "a22058f0744399f6949fd0a201918efc90535b02fa8a2e04d147c0dfb40d1fde"
+      },
+      "top_keys": [
+        "schema",
+        "request_json_utf8",
+        "request_sha256",
+        "binding",
+        "binding_sha256",
+        "controller_identity",
+        "helper_identity",
+        "actual_window_id",
+        "capture",
+        "storage_isolation",
+        "actor",
+        "diagnostic_unbound",
+        "business_verified"
+      ],
+      "fixture_file": "raw-d1f6d97e7d4e4270a6f975b3a908fa2a9ee9f9536f01417094034b13c6bcc9ff.json.gz",
+      "gzip_sha256": "a6a27b2c4a13466844d8111e99012944918990d35c1f3b2888d1ba766255490d",
+      "gzip_bytes": 62071
+    }
+  ]
+}

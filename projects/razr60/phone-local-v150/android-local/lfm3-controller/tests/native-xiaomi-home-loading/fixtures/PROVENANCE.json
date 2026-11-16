@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.native-home-loading-fixture-provenance.v1",
+  "owner": "在小米商城查一下小米AX3000T的售价",
+  "source_task": "358b396a60d54bf783c90f42b3cac4e4",
+  "files": [
+    {
+      "file": "actual-observation.json",
+      "bytes": 18232,
+      "sha256": "64183d754dd2a6aa0c84d3c02a01a7560535b6e2fd30ef48ffff0d4107e8c191",
+      "source": "/home/alex/hepta-razr-84f8-20261114/v69-shopping-lfm3-npu-01/collection/task/step-01-before.json"
+    },
+    {
+      "file": "actual-page.json",
+      "bytes": 6631,
+      "sha256": "6d5a588bf2639b1d6dce6064d86531ea8b134c22dc930d35ee43d88e2e47421c",
+      "source": "/home/alex/hepta-razr-84f8-20261114/v69-shopping-lfm3-npu-01/collection/task/native-app-page-0001.json"
+    },
+    {
+      "file": "actual-binding.json",
+      "bytes": 2055,
+      "sha256": "3f36685e033f89cca6fd9c030c37e8dca5ecca283a171f73a2b518002b86fd20",
+      "source": "/home/alex/hepta-razr-84f8-20261114/v69-shopping-lfm3-npu-01/collection/task/native-app-binding.json"
+    }
+  ],
+  "boundary": "Original saved complete phone frame/page/binding. Future frames and task/model/dispatch callbacks in tests are explicitly synthetic, not phone or business evidence."
+}

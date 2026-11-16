@@ -1,0 +1,32 @@
+{
+  "baseline_expected_phase": "unrecognized_native_page",
+  "fixture_kind": "synthetic_portable_host_fixture",
+  "frame": {
+    "actual_collection_complete": true,
+    "actual_selection_sha256": "80ae741d320798d812ddba19280e2619464ab430a65c62a6dca9a8648d20c9d3",
+    "app_tree_sha256": "bbe00cdd9a386471da392bdad3baa63fc5f0d2cb7ea8d1ac4e22794c14baee10",
+    "background_generation": "00000000-0000-4000-8000-000000000071",
+    "captured_elapsed_ms": 1000,
+    "completion_frame_sha256": "840ec75f3d442119d0afa013236da2609fed71bd2bd455049a5c79bf5b1b676b",
+    "display_id": 7,
+    "execution_target_sha256": "2f09a2f1dfaa062a8a248d90eedd988fbedba897fd43f6eac30c7644b462adcf",
+    "nodes_truncated": false,
+    "observation_id": "10418d9e69c27340cb37c9353c35cd1d",
+    "observation_state_sha256": "45bf3bb796a583a28d1b9fe26411943e20146f5e0527b64a2db376c16b19236f",
+    "owner_sha256": "8d76e0c231b30a3c18fd4c57967ba8546e6d8d9fe0a6132086c24536a540b421",
+    "package": "com.xiaomi.shop",
+    "phone_observation_record_sha256": "a5712621250eaec58dd1720eba57336eef039b6194775c6e10f452b241b24777",
+    "retained_nodes": 13,
+    "rotation": 0,
+    "schema": "hepta.synthetic-native-login-frame.v1",
+    "screen_sha256": "b4586edef2e65a75cd2559468fd62e956394bf957c0dbf975623f42d3bf4b25d",
+    "screenshots_used_as_text": false,
+    "task_authorization_sha256": "38f7593c7375c87a16a6796861a8dd5b609f3f011ad77bbeeb2132025641aca8",
+    "task_id": "a8ca325db309e7e8c7738d32527da815",
+    "window_id": 71,
+    "window_metadata_observed": true,
+    "window_type": 1
+  },
+  "is_phone_receipt": false,
+  "schema": "hepta.synthetic-native-login-page.v1"
+}
