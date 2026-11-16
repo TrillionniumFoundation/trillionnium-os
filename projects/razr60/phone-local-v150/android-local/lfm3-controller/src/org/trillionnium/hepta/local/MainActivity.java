@@ -37,7 +37,8 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         }
     };
     private CheckBox backgroundMode;
-    private Button pickBackgroundApps,cleanupBackground;
+    private Button pickBackgroundApps,pickProfileTarget,cleanupBackground;
+    private boolean profileCatalogueLoading;
     private Spinner initialBackgroundApp;
     private TextView backgroundChoiceState,backgroundInitialLabel;
     private BackgroundUiPreferences.Selection rememberedBackgroundSelection;
@@ -102,6 +103,9 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         backgroundPermissionDetails.addView(text("先选择可操作的应用范围，再选择本次任务的起始应用。任务会使用你明确选择的应用，不会自动改用网页查询工具。开始时会先打开该应用。后台任务需要本机 root 授权；应用兼容性可能影响隔离，遇到越界或锁屏会停止。",12));
         pickBackgroundApps=button("选择后台应用范围");page.addView(pickBackgroundApps);
         pickBackgroundApps.setOnClickListener(v -> chooseBackgroundApps());
+        pickProfileTarget=button("选择隔离资料中的携程");page.addView(pickProfileTarget);
+        pickProfileTarget.setOnClickListener(v -> chooseProfileTarget());
+        page.addView(text("资料隔离当前支持携程，需要已配置的专属工作资料。个人空间已有任务会保留。",12));
         backgroundChoiceState=text("",12);page.addView(backgroundChoiceState);
         initialBackgroundApp=new Spinner(this){
             @Override public boolean performClick(){backgroundInitialChoicePending=true;return super.performClick();}
@@ -198,7 +202,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         try{
             String owner=taskInput.getText().toString();TaskAuthorization preview=TaskAuthorization.parse(owner);
             if(backgroundMode!=null&&backgroundMode.isChecked()){
-                BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,selectedBackgroundPackage(),backgroundPackages);
+                BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,selectedBackgroundPackage(),backgroundPackages,selectedProfileTarget());
                 preview=preview.forExecutionSelection(new BackgroundSession.Selection(target));
             }
             taskAuthorizationInfo.setText(preview.summary());
@@ -318,7 +322,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                 if(expectedScope!=null||MobiMindPrivateFiles.exists(new File(root.path,QualificationScope.FILE_NAME)))
                     throw new IllegalStateException("当前 qualification scope 已启用，后台任务不可启动；原范围保持不变");
                 requireCurrentBackgroundChoice();
-                BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,selectedBackgroundPackage(),backgroundPackages);
+                BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,selectedBackgroundPackage(),backgroundPackages,selectedProfileTarget());
                 selection=new BackgroundSession.Selection(target);
                 authorization=originalAuthorization.forExecutionSelection(selection);
                 selection.requireTaskTarget(owner,authorization);
@@ -348,7 +352,42 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             refresh();
         }catch(Exception error){probeOutput.setText("无法启动："+error);refresh();}
     }
-    private void reloadBackgroundApps(){
+    private org.trillionnium.hepta.background.ProfileTarget selectedProfileTarget(){
+        return rememberedBackgroundSelection==null?null:rememberedBackgroundSelection.profileTarget;
+    }
+    private void chooseProfileTarget(){
+        if(profileCatalogueLoading||!hasWindowFocus()||isFinishing()||isDestroyed()
+                ||tasks.isRunning()||engine.isBusy()||tasks.isBlocked()||tasks.isRecovering()
+                ||tasks.hasBackgroundLease()||backgroundPermission.blocksOtherWork())return;
+        profileCatalogueLoading=true;taskState.setText("正在读取隔离资料中的携程……");refresh();
+        new Thread(() -> {
+            java.util.List<org.trillionnium.hepta.background.ProfileTarget> found=null;String error=null;
+            try{found=ProfileCatalogueClient.load(getApplicationContext());}catch(Exception failure){error=HeptaAccessibilityService.message(failure);}
+            final java.util.List<org.trillionnium.hepta.background.ProfileTarget> targets=found;final String failure=error;
+            runOnUiThread(() -> {
+                profileCatalogueLoading=false;
+                if(isFinishing()||isDestroyed())return;
+                refresh();
+                if(failure!=null){taskState.setText("无法读取隔离资料："+failure);return;}
+                if(targets==null||targets.isEmpty()){taskState.setText("未找到可用工作资料中的携程。请完成专属资料配置、解锁资料并安装携程，然后重新读取。");return;}
+                if(!hasWindowFocus()||tasks.isRunning()||engine.isBusy()||tasks.isBlocked()||tasks.isRecovering()||tasks.hasBackgroundLease())return;
+                String[] labels=new String[targets.size()];
+                for(int i=0;i<labels.length;i++)labels[i]="携程 · 工作资料 "+targets.get(i).profile.userId;
+                new AlertDialog.Builder(this).setTitle("明确选择本次隔离实例").setItems(labels,(dialog,index) -> {
+                    if(tasks.isRunning()||engine.isBusy()||tasks.isBlocked()||tasks.isRecovering()||tasks.hasBackgroundLease())return;
+                    try{
+                        BackgroundUiPreferences.Selection choice=BackgroundUiPreferences.captureProfile(targets.get(index));
+                        BackgroundUiPreferences.save(MainActivity.this,choice);BackgroundUiPreferences.saveMode(MainActivity.this,true);
+                        rememberedBackgroundSelection=choice;backgroundPackages.clear();backgroundPackages.add(choice.initial);
+                        backgroundMode.setChecked(true);backgroundModePreferenceError=null;backgroundSelectionPreferenceError=null;
+                        reloadBackgroundApps();updateBackgroundSelection(choice.initial);refresh();
+                    }catch(Exception invalid){taskState.setText("隔离实例未保存："+HeptaAccessibilityService.message(invalid));}
+                }).setNegativeButton("取消",null).show();
+            });
+        },"hepta-profile-catalogue").start();
+    }
+    private void reloadBackgroundApps(){reloadBackgroundApps(true);}
+    private void reloadBackgroundApps(boolean includeSelectedProfile){
         backgroundAppLabels.clear();
         String home=null;
         android.content.pm.ResolveInfo homeInfo=getPackageManager().resolveActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME),android.content.pm.PackageManager.MATCH_DEFAULT_ONLY);
@@ -359,18 +398,20 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             if(pkg.equals(getPackageName())||pkg.equals(home)||"android".equals(pkg)||"com.android.systemui".equals(pkg))continue;
             backgroundAppLabels.put(pkg,String.valueOf(info.loadLabel(getPackageManager())));
         }
+        org.trillionnium.hepta.background.ProfileTarget profile=selectedProfileTarget();
+        if(includeSelectedProfile&&profile!=null)backgroundAppLabels.put(profile.packageName,"携程 · 工作资料 "+profile.profile.userId);
     }
     private void chooseBackgroundApps(){
-        reloadBackgroundApps();final java.util.List<String> packages=new java.util.ArrayList<String>(backgroundAppLabels.keySet());
+        reloadBackgroundApps(false);final java.util.List<String> packages=new java.util.ArrayList<String>(backgroundAppLabels.keySet());
         final java.util.Set<String> chosen=new java.util.TreeSet<String>(backgroundPackages);chosen.retainAll(packages);
         String[] labels=new String[packages.size()];boolean[] checked=new boolean[packages.size()];
         for(int i=0;i<packages.size();i++){String pkg=packages.get(i);labels[i]=backgroundAppLabels.get(pkg)+" · "+pkg;checked[i]=chosen.contains(pkg);}
         final String initial=selectedBackgroundPackage();
-        new AlertDialog.Builder(this).setTitle("本次后台可操作应用（最多 6 个）")
+        new AlertDialog.Builder(this).setTitle("个人空间后台应用（最多 6 个）")
                 .setMultiChoiceItems(labels,checked,(dialog,which,enabled) -> {if(enabled)chosen.add(packages.get(which));else chosen.remove(packages.get(which));})
                 .setNegativeButton("取消",null).setPositiveButton("使用所选应用",(dialog,which) -> {
                     if(chosen.isEmpty()||chosen.size()>6){taskState.setText("请选择 1 至 6 个后台应用");return;}
-                    backgroundPackages.clear();backgroundPackages.addAll(chosen);updateBackgroundSelection(initial);
+                    rememberedBackgroundSelection=null; backgroundPackages.clear();backgroundPackages.addAll(chosen);updateBackgroundSelection(initial);
                     rememberExplicitBackgroundChoice();refresh();
                 }).show();
     }
@@ -467,7 +508,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         String error=backgroundChoiceError();String summary="";
         if(backgroundMode.isChecked()){
             try{
-                BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(taskInput.getText().toString(),selectedBackgroundPackage(),backgroundPackages);
+                BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(taskInput.getText().toString(),selectedBackgroundPackage(),backgroundPackages,selectedProfileTarget());
                 summary="本次使用："+backgroundAppLabels.getOrDefault(target.packageName,target.packageName)
                         +(target.webHelper()?"（官网查询工具）":"（所选应用）")+"。已保存的应用范围保持不变。";
             }catch(Exception unavailable){summary=HeptaAccessibilityService.message(unavailable);}
@@ -558,7 +599,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         modelInfo.setText(modelState+" · "+(available?"无障碍已启用":"请启用无障碍"));
         modelDiagnostics.setText(modelName+" · "+device+" · 无外部模型");
         taskState.setText(TaskDisplayText.forStatus(tasks.state()));taskLog.setText(tasks.log());
-        boolean busy=tasks.isRunning()||engine.isBusy();
+        boolean busy=tasks.isRunning()||engine.isBusy()||profileCatalogueLoading;
         backgroundPermissionState.setText(backgroundPermission.state());
         backgroundSummary.setText(tasks.isRunning()&&backgroundMode.isChecked()?"正在后台执行":
                 tasks.hasBackgroundLease()?"上次后台空间待清理":
@@ -567,6 +608,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         prepareBackgroundPermission.setEnabled(!busy&&!tasks.isBlocked()&&!tasks.isRecovering()&&!tasks.hasBackgroundLease()
                 &&!visualDiagnostic.isBusy()&&!visualDiagnostic.isBlocked()&&!uiVenusDiagnostic.isBusy()&&!uiVenusDiagnostic.isBlocked());
         backgroundMode.setEnabled(!busy&&!tasks.isRecovering());pickBackgroundApps.setEnabled(!busy&&!tasks.isRecovering());initialBackgroundApp.setEnabled(!busy&&!tasks.isRecovering());
+        pickProfileTarget.setEnabled(!busy&&!tasks.isBlocked()&&!tasks.isRecovering()&&!tasks.hasBackgroundLease()&&!backgroundPermission.blocksOtherWork());
         cleanupBackground.setVisibility(tasks.hasBackgroundLease()?View.VISIBLE:View.GONE);
         cleanupBackground.setEnabled(!tasks.isRunning()&&!tasks.isRecovering()&&!backgroundPermission.blocksOtherWork());
         boolean recoveryAvailable=tasks.canAcknowledgeInterruption();

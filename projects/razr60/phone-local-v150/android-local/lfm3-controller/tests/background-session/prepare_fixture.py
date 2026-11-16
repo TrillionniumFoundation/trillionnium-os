@@ -40,6 +40,7 @@ public final class LocalSocket implements Closeable {
  public InputStream getInputStream()throws IOException{events.add("input");sent=output.toByteArray();try{return new ByteArrayInputStream(responder.reply(sent));}catch(IOException e){throw e;}catch(Exception e){throw new IOException(e);}}
  public void close(){events.add("close");connected=false;}
 }''',
+ 'org/trillionnium/hepta/local/ProfileCatalogueClient.java':'''package org.trillionnium.hepta.local;import org.trillionnium.hepta.background.ProfileTarget;final class ProfileCatalogueClient {static ProfileTarget actual;static void requireCurrent(android.content.Context c,ProfileTarget expected){if(actual==null||!expected.same(actual))throw new IllegalStateException("synthetic privileged catalogue identity unavailable");}}''',
  'org/trillionnium/hepta/local/LocalProbeApplication.java':'package org.trillionnium.hepta.local;final class LocalProbeApplication {static boolean permissionBusy;static void requirePermissionPreparationIdle(android.content.Context c){if(permissionBusy)throw new IllegalStateException("permission preparation active");}}',
  'org/trillionnium/hepta/local/HeptaAccessibilityService.java':'''package org.trillionnium.hepta.local;final class HeptaAccessibilityService {interface Cancellation{boolean isCancelled();}static String sha(byte[] bytes){return QualificationScope.hash(bytes);}static String message(Throwable t){return t.getMessage()==null?t.getClass().getSimpleName():t.getMessage();}}'''
  }
@@ -52,7 +53,7 @@ public final class LocalSocket implements Closeable {
  'ObservedTargetLabels','ObservedAppLabels','ObservedScrollActions','ObservedImeEnter','AppCatalogueRanker')]
  files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java']
  files.append(source/'src/org/trillionnium/hepta/background/BrokerProtocol.java')
- files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget')]
+ files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','WindowOwnership')]
  # The exact finalization block is shared with the existing warm-finalization harness.
  # Android/model IO remains fake; the status policy itself is not reimplemented here.
  warm_helper=source/'tests/warm-finalization/prepare_fixture.py'

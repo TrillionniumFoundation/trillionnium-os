@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.trillionnium.hepta.background.ProfileTarget;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import java.util.TreeSet;
 /** Remember UI choices only. A saved choice is never a task, authorization, or lease. */
 final class BackgroundUiPreferences {
     private static final String FILE="background-ui-choice-v1";
-    private static final String SCHEMA="hepta.background-ui-choice.v1";
+    private static final String SCHEMA="hepta.background-ui-choice.v1",PROFILE_SCHEMA="hepta.background-ui-profile-choice.v1";
     private static final String MODE="enabled",SELECTION="selection";
     private static final int MAX_BYTES=8192;
 
@@ -39,15 +40,21 @@ final class BackgroundUiPreferences {
     static final class Selection {
         final String initial;
         final Map<String,Installed> packages;
-        Selection(String initial,Map<String,Installed> values){
+        final ProfileTarget profileTarget;
+        Selection(String initial,Map<String,Installed> values){this(initial,values,null);}
+        private Selection(String initial,Map<String,Installed> values,ProfileTarget target){
             if(values==null||values.isEmpty()||values.size()>6||!values.containsKey(initial))
                 throw new IllegalArgumentException("background choice range missing");
             for(Map.Entry<String,Installed> item:values.entrySet()){
                 packageName(item.getKey());if(item.getValue()==null)throw new IllegalArgumentException("background choice identity missing");
             }
+            if(target!=null&&(values.size()!=1||!target.packageName.equals(initial)
+                    ||!new Installed(target.fullUid,target.signerSha256).same(values.get(initial))))
+                throw new IllegalArgumentException("profile choice identity differs");
+            profileTarget=target;
             this.initial=initial;this.packages=Collections.unmodifiableMap(new TreeMap<String,Installed>(values));
         }
-        Selection withInitial(String value){return new Selection(value,packages);}
+        Selection withInitial(String value){return new Selection(value,packages,profileTarget);}
     }
 
     private static SharedPreferences preferences(Context context){
@@ -71,8 +78,11 @@ final class BackgroundUiPreferences {
         if(!(value instanceof String))throw new IllegalStateException("saved background choice is malformed");
         String raw=(String)value;
         if(raw.getBytes(StandardCharsets.UTF_8).length>MAX_BYTES)throw new IllegalStateException("saved background choice is too large");
-        JSONObject root=new JSONObject(raw);keys(root,"schema","initial","packages");
-        if(!SCHEMA.equals(root.get("schema"))||!(root.get("initial") instanceof String)
+        JSONObject root=new JSONObject(raw);
+        boolean profile=PROFILE_SCHEMA.equals(root.optString("schema"));
+        if(profile)keys(root,"schema","initial","packages","profile_target_wire","profile_target_sha256");
+        else keys(root,"schema","initial","packages");
+        if(!(profile||SCHEMA.equals(root.get("schema")))||!(root.get("initial") instanceof String)
                 ||!(root.get("packages") instanceof JSONArray))
             throw new IllegalStateException("saved background choice schema differs");
         JSONArray items=root.getJSONArray("packages");
@@ -97,7 +107,10 @@ final class BackgroundUiPreferences {
             if(selected.put(pkg,new Installed((int)number,signers))!=null)
                 throw new IllegalStateException("saved background package duplicated");
         }
-        return new Selection(root.getString("initial"),selected);
+        ProfileTarget target=profile?ProfileTarget.fromWire(root.getString("profile_target_wire")):null;
+        if(target!=null&&!target.sha256.equals(root.getString("profile_target_sha256")))
+            throw new IllegalStateException("saved profile target digest differs");
+        return new Selection(root.getString("initial"),selected,target);
     }
     static void save(Context context,Selection selection)throws Exception{
         JSONArray items=new JSONArray();
@@ -105,10 +118,20 @@ final class BackgroundUiPreferences {
             Installed value=item.getValue();
             items.put(new JSONObject().put("package",item.getKey()).put("uid",value.uid).put("signers",new JSONArray(value.signers)));
         }
-        String raw=new JSONObject().put("schema",SCHEMA).put("initial",selection.initial).put("packages",items).toString();
+        JSONObject value=new JSONObject().put("schema",selection.profileTarget==null?SCHEMA:PROFILE_SCHEMA)
+                .put("initial",selection.initial).put("packages",items);
+        if(selection.profileTarget!=null)value.put("profile_target_wire",selection.profileTarget.wire())
+                .put("profile_target_sha256",selection.profileTarget.sha256);
+        String raw=value.toString();
         if(raw.getBytes(StandardCharsets.UTF_8).length>MAX_BYTES)throw new IllegalStateException("background choice is too large");
         if(!preferences(context).edit().putString(SELECTION,raw).commit())
             throw new IllegalStateException("background choice was not persisted");
+    }
+    static Selection captureProfile(ProfileTarget actualTarget){
+        if(actualTarget==null)throw new IllegalArgumentException("profile target missing");
+        Map<String,Installed> identities=new TreeMap<String,Installed>();
+        identities.put(actualTarget.packageName,new Installed(actualTarget.fullUid,actualTarget.signerSha256));
+        return new Selection(actualTarget.packageName,identities,actualTarget);
     }
     /** Called only after a visible owner selection, never during restore. */
     static Selection capture(Context context,Set<String> selected,String initial,Set<String> launchable)throws Exception{
@@ -125,6 +148,13 @@ final class BackgroundUiPreferences {
     static void requireCurrent(Context context,Selection saved,Set<String> selected,String initial,Set<String> launchable)throws Exception{
         if(saved==null||selected==null||!saved.packages.keySet().equals(new TreeSet<String>(selected))
                 ||!saved.initial.equals(initial))throw new IllegalStateException("background choice needs confirmation");
+        if(saved.profileTarget!=null){
+            // UI continuity only. The privileged broker revalidates this actual target before creating or launching anything.
+            if(saved.packages.size()!=1||!saved.profileTarget.packageName.equals(initial)
+                    ||!saved.packages.get(initial).same(new Installed(saved.profileTarget.fullUid,saved.profileTarget.signerSha256)))
+                throw new IllegalStateException("profile choice identity differs");
+            return;
+        }
         for(Map.Entry<String,Installed> item:saved.packages.entrySet()){
             if(launchable==null||!launchable.contains(item.getKey())||!item.getValue().same(installed(context,item.getKey())))
                 throw new IllegalStateException("selected app installation changed; choose the range again");

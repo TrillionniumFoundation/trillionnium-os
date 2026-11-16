@@ -9,6 +9,10 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.Region;
+import android.os.Parcel;
+import org.trillionnium.hepta.background.ProfileTarget;
+import org.trillionnium.hepta.background.WindowOwnership;
 import android.hardware.HardwareBuffer;
 import android.hardware.display.DisplayManager;
 import android.util.SparseArray;
@@ -393,6 +397,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         BackgroundSession background=backgroundFor(id);
         if(background==null){if(observed.backgroundGeneration!=null)throw new IllegalStateException("前台任务收到了后台观察");return;}
         background.requireActive();
+        requireHistoricalProfileWindow(background,observed);
         if(!background.generation.equals(observed.backgroundGeneration)||observed.windowMetadata.displayId==null
                 ||background.displayId()!=observed.windowMetadata.displayId.intValue()||!background.allows(observed.packageName))
             throw new IllegalStateException("观察不属于本次后台屏幕与应用范围");
@@ -487,18 +492,20 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     /** Each observation owns its samples/capture and the caller's original deadline. */
     private static final class NativeReadIdentity {
         final String packageName,generation,owner,window;
+        final WindowOwnership profileWindow;
         final int displayId,windowId,rotation,left,top,right,bottom;
         NativeReadIdentity(Graph graph){
             packageName=graph.packageName;generation=graph.backgroundGeneration;owner=graph.backgroundOwnerSha;
             displayId=graph.displayId;windowId=graph.windowId;rotation=graph.rotation;
             left=graph.bounds.left;top=graph.bounds.top;right=graph.bounds.right;bottom=graph.bounds.bottom;
-            window=windowIdentity(graph.windowMetadata);
+            window=windowIdentity(graph.windowMetadata);profileWindow=graph.profileWindow;
             if(window==null)throw new IllegalStateException("complete native window identity required");
         }
         private static String windowIdentity(Object value){
             return value instanceof ObservedWindowMetadata?((ObservedWindowMetadata)value).bindFreshness(""):null;
         }
         boolean matches(Graph graph){
+            if(graph!=null)requireSameProfileOwner(profileWindow,graph.profileWindow);
             return graph!=null&&graph.nativeObservationComplete&&!graph.truncated
                     &&packageName.equals(graph.packageName)&&java.util.Objects.equals(generation,graph.backgroundGeneration)
                     &&java.util.Objects.equals(owner,graph.backgroundOwnerSha)&&displayId==graph.displayId&&windowId==graph.windowId
@@ -533,6 +540,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             value.put("failed_request_id",requestId);value.put("before_observation_id",before.id);
             value.put("package",identity.packageName);value.put("window_id",identity.windowId);value.put("display_id",identity.displayId);
             value.put("owner_sha256",identity.owner);value.put("background_generation",identity.generation);
+            if(identity.profileWindow!=null)value.put("actual_profile_window",identity.profileWindow.evidence());
             value.put("failed_request_started_elapsed_ms",started);value.put("failed_request_deadline_elapsed_ms",deadline);
             value.put("failed_request_terminal_elapsed_ms",failedAt);value.put("failed_request_terminal_status","failed");
             value.put("read_queue_drain_observed_elapsed_ms",drainedAt);value.put("completed_read_works",completedReadWorks);
@@ -595,27 +603,30 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final ObservationStabilityGate.FrameKey frame;final int displayId;final String generation;
         final long capturedAt,events,unknownEvents,graphStartedAt,graphCompletedAt;final boolean nativeRecheck;
         final FrozenObservationWindow frozenWindow;
+        final WindowOwnership profileWindow;
         CaptureIdentity(Graph graph,long capturedAt,long events,long unknownEvents,boolean nativeRecheck){
-            frame=frameKey(graph);displayId=graph.displayId;generation=graph.backgroundGeneration;
+            frame=frameKey(graph);displayId=graph.displayId;generation=graph.backgroundGeneration;profileWindow=graph.profileWindow;
             this.capturedAt=capturedAt;this.events=events;this.unknownEvents=unknownEvents;this.nativeRecheck=nativeRecheck;
             graphStartedAt=graph.readStartedElapsedMs;graphCompletedAt=graph.readCompletedElapsedMs;
             frozenWindow=nativeRecheck?frozenObservationWindow(graph):null;
         }
-        boolean matches(Graph graph){return displayId==graph.displayId&&java.util.Objects.equals(generation,graph.backgroundGeneration)
-                &&frame.equals(frameKey(graph));}
+        boolean matches(Graph graph){requireSameProfileOwner(profileWindow,graph.profileWindow);
+            return displayId==graph.displayId&&java.util.Objects.equals(generation,graph.backgroundGeneration)&&frame.equals(frameKey(graph));}
     }
     /** Copied window identity/geometry only. No node content, children or traversal digest is a field. */
     private static final class FrozenObservationWindow {
         final String packageName,metadata;
         final int windowId,displayId,rotation,left,top,right,bottom,width,height;
         final Map<String,Object> windows;
+        final WindowOwnership profileWindow;
         FrozenObservationWindow(String pkg,int window,int display,int rotation,int left,int top,int right,int bottom,
-                int width,int height,String metadata,Map<String,Object> windows){
-            packageName=pkg;windowId=window;displayId=display;this.rotation=rotation;
+                int width,int height,String metadata,Map<String,Object> windows,WindowOwnership profileWindow){
+            this.profileWindow=profileWindow;packageName=pkg;windowId=window;displayId=display;this.rotation=rotation;
             this.left=left;this.top=top;this.right=right;this.bottom=bottom;this.width=width;this.height=height;
             this.metadata=metadata;this.windows=java.util.Collections.unmodifiableMap(new java.util.TreeMap<String,Object>(windows));
         }
         boolean matches(FrozenObservationWindow other){
+            if(other!=null)requireSameProfileOwner(profileWindow,other.profileWindow);
             return other!=null&&packageName.equals(other.packageName)&&windowId==other.windowId&&displayId==other.displayId
                     &&rotation==other.rotation&&left==other.left&&top==other.top&&right==other.right&&bottom==other.bottom
                     &&width==other.width&&height==other.height&&metadata.equals(other.metadata)&&windows.equals(other.windows);
@@ -750,7 +761,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
     }
     private GraphBudget observationBudget(final ObservationRequest request){
-        return new GraphBudget(){public void check(){requireObservationWork(request);}};
+        return new GraphBudget(){public void check(){requireObservationWork(request);}
+            public Cancellation cancellation(){return request.cancel;}public long deadline(){return request.deadline;}};
     }
     private static ObservationStabilityGate.FrameKey frameKey(Graph graph){
         return new ObservationStabilityGate.FrameKey(graph.packageName,graph.windowId,graph.rotation,
@@ -764,6 +776,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 ||request.displayId!=background.displayId()||graph.displayId!=request.displayId
                 ||!background.generation.equals(graph.backgroundGeneration)
                 ||!background.ownerSha256.equals(graph.backgroundOwnerSha)||graph.backgroundSelectionRaw==null)return false;
+        NativeAppEvidence.requireProfileTarget(background.profileTarget(),graph.profileWindow);
         BackgroundTaskTarget target=background.selection.taskTarget;
         return target!=null&&target.nativeGoal!=null&&target.explicitSelection
                 &&BackgroundTaskTarget.NATIVE_APP.equals(target.route)
@@ -1058,7 +1071,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             PhoneObservation observation=new PhoneObservation(product.id,graph.packageName,product.capturedAt,
                     product.bitmap.getWidth(),product.bitmap.getHeight(),graph.rotation,graph.windowId,graph.bounds,product.path,product.digest,graph.digest,graph.state,graph.windowMetadata,graph.truncated,graph.rows,graph.backgroundGeneration,graph.backgroundBootstrapPackage,graph.backgroundAllowedPackages,graph.collectionStats,
                     graph.backgroundSelectionRaw==null?null:new JSONObject(graph.backgroundSelectionRaw),graph.backgroundOwnerSha,
-                    product.captureEvidence(SystemClock.elapsedRealtime()));
+                    product.captureEvidence(SystemClock.elapsedRealtime()),graph.profileWindow);
             clearSnapshot();current=observation;currentGraph=graph;currentBitmap=product.bitmap;
             request.captured=null;product.bitmap=null;product.published=true;
             if(request.trace!=null)request.trace.published(observation.id,SystemClock.elapsedRealtime());
@@ -1198,6 +1211,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     ||!expected.packageName.equals(string(root.getPackageName()))||!root.isVisibleToUser())
                 throw new IllegalStateException("后台目标窗口已变化");
             background.requireActive();actionCheck(work);
+            requireActualProfileTask(background,expected,window);
             if(!ownsBackground(taskId,background))throw new IllegalStateException("后台任务租约已退休");
             // A new window within the same verified owned display and package
             // invalidates this proposal; only a new observation/model run may continue.
@@ -1226,6 +1240,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     ||window.getId()!=expected.windowId||node.getWindowId()!=expected.windowId
                     ||!expected.packageName.equals(string(node.getPackageName()))||!background.allows(string(node.getPackageName())))
                 throw new IllegalStateException("后台节点已移出绑定屏幕、窗口或应用");
+            requireActualProfileTask(background,expected,window);
         }finally{if(window!=null)window.recycle();}
     }
     private void scopeOpenIntent(String taskId,QualificationScopeConfig.Bound dispatchScope,String target,Intent launch){
@@ -1385,6 +1400,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         String diagnosticFreshness;
         final NativeAppSession.ActionGuard nativeGuard;
         boolean nativeActionRevalidated;String nativeActionProof,nativeActionRejection;
+        WindowOwnership profileDispatchProof;
         ActionWork(String task,PhoneObservation expected,String run,QualificationScopeConfig.Bound scope,
                 TaskAuthorization.Gate authorization,BackgroundSession background,Cancellation cancel,Graph graph,WebRegionNativeBridge nativeRegion,long queued,long deadline){
             this(task,expected,run,scope,authorization,background,cancel,graph,nativeRegion,queued,deadline,null);
@@ -1407,7 +1423,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     state.displayId==background.displayId()&&background.generation.equals(state.backgroundGeneration));
         }
         void check(){state.check(cancel.isCancelled(),currentLease());}
-        GraphBudget budget(){return new GraphBudget(){public void check(){ActionWork.this.check();}};}
+        GraphBudget budget(){return new GraphBudget(){public void check(){ActionWork.this.check();}
+            public Cancellation cancellation(){return cancel;}public long deadline(){return state.deadlineElapsed;}};}
         void phase(String phase){check();logMarker(state.phase(phase));}
         void logMarker(Map<String,Object> marker){
             // Fixed phase/identity fields sampled inside the state lock. Log failure grants no authority.
@@ -1437,6 +1454,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         catch(Exception unavailable){/* Preserve the original refusal and execution lifecycle. */}
         if(work.nativeActionProof!=null)try{value.put("native_action_revalidation",new JSONObject(work.nativeActionProof));}
         catch(Exception unavailable){/* The original dispatch/retirement evidence remains authoritative. */}
+        if(work.profileDispatchProof!=null)try{value.put("live_profile_before_effect",new JSONObject(work.profileDispatchProof.evidence()));}
+        catch(Exception unavailable){/* Metadata cannot authorize or repeat an effect. */}
         if(work.nativeGuard!=null)try{value.put("native_action_guard",new JSONObject(work.nativeGuard.evidence()));}
         catch(Exception unavailable){/* No new authority follows from missing audit metadata. */}
         return value;
@@ -1450,7 +1469,21 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private Graph graphForAction(ActionWork work){return work==null?currentGraph:work.graph;}
     private static void actionCheck(ActionWork work){if(work!=null)work.check();}
     private static void actionPhase(ActionWork work,String phase){if(work!=null)work.phase(phase);}
-    private static void enterActionEffect(ActionWork work){if(work!=null)work.enterEffect();}
+    /** Last worker fence before any effect entry; no stale action is replayed. */
+    private void requireLiveProfileBeforeEffect(ActionWork work){
+        if(work.background==null||work.background.profileTarget()==null)return;
+        actionCheck(work);requireHistoricalProfileWindow(work.background,work.expected);
+        AccessibilityNodeInfo root=selectedRoot(work.background,work.budget());
+        if(root==null)throw new ProfileOwnershipViolation("profile 派发前实际窗口缺失");
+        try{
+            WindowOwnership actual=readProfileWindow(root,work.background,work.budget());
+            requireSameProfileOwner(work.expected.profileWindow,actual);
+            if(actual.windowId!=work.expected.windowId)
+                throw new StaleObservation("profile 同任务窗口已换代，未派发旧动作");
+            work.profileDispatchProof=actual;actionCheck(work);
+        }finally{root.recycle();}
+    }
+    private void enterActionEffect(ActionWork work){if(work!=null){requireLiveProfileBeforeEffect(work);work.enterEffect();}}
     private static void actionEffectReturned(ActionWork work,Boolean accepted){if(work!=null)work.effectReturned(accepted);}
     private boolean refreshActionNode(ActionWork work,AccessibilityNodeInfo node){
         actionPhase(work,"node_refresh");actionCheck(work);boolean refreshed=node.refresh();actionCheck(work);return refreshed;
@@ -1481,6 +1514,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         actionCheck(work);NativeAppSession.ActionGuard guard=work.nativeGuard;BackgroundSession background=work.background;
         guard.requireOpen(action,work.state.modelRunId,SystemClock.elapsedRealtime());
         NativeAppEvidence.Frame original=guard.frame;
+        requireHistoricalProfileWindow(background,frame);
+        requireSameProfileWindow(original.profileWindow,frame.profileWindow);
+        requireSameProfileWindow(original.profileWindow,work.graph.profileWindow);
         if(guard.authorization!=work.authorization||background.selection!=guard.selection
                 ||work.expected!=frame||!task.equals(work.state.taskId)||guard.deadline!=work.state.deadlineElapsed
                 ||guard.issued>work.state.queuedElapsed
@@ -1510,7 +1546,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 ||frame.displayId!=graph.displayId||frame.width!=graph.nativeActionWidth||frame.height!=graph.nativeActionHeight
                 ||stats.childSlotsOmitted>Integer.MAX_VALUE)
             throw new StaleObservation("原生完整访问快照缺失、越界或不属于原Attempt");
+        requireSameProfileWindow(frame.profileWindow,graph.profileWindow);
         Map<String,Object> env=new java.util.TreeMap<String,Object>(guard.identity);
+        // The fresh envelope copies actual graph ownership, never expected profile facts.
+        if(graph.profileWindow!=null)env.putAll(NativeAppEvidence.profileActionIdentity(graph.profileWindow));
         env.put("package",graph.packageName);env.put("display_id",graph.displayId);env.put("window_id",graph.windowId);
         env.put("rotation",graph.rotation);env.put("width",graph.nativeActionWidth);env.put("height",graph.nativeActionHeight);
         env.put("root_bounds",java.util.Arrays.asList(graph.bounds.left,graph.bounds.top,graph.bounds.right,graph.bounds.bottom));
@@ -1654,6 +1693,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 }else if(!graph.digest.equals(now.digest)){
                     if(work!=null&&work.nativeGuard!=null){
                         try{compareNativeAction(taskId,expected,action,now,work);work.nativeActionRevalidated=true;}
+                        catch(ProfileOwnershipViolation identityChanged){throw identityChanged;}
                         catch(Exception mismatch){recordStaleDiagnostic(work,graph,now,action.nodeId);
                             return "stale:原生目的复核失败："+message(mismatch);}
                     }else{recordStaleDiagnostic(work,graph,now,action.nodeId);return "stale:目标窗口内容已变化";}
@@ -2012,6 +2052,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         String packageName,digest,backgroundGeneration,backgroundBootstrapPackage;int windowId,rotation,displayId;Rect bounds;boolean truncated;
         List<String> backgroundAllowedPackages=java.util.Collections.emptyList();
         String backgroundSelectionRaw,backgroundOwnerSha;
+        WindowOwnership profileWindow;
         ObservationState state;
         ObservedWindowMetadata windowMetadata;
         final List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();
@@ -2043,7 +2084,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 flightNativeSnapshotComplete=false;flightNativeSnapshotRaw=null;flightRetainedSnapshotRaw=null;
             }finally{flightNativeSnapshot=null;}
         }
-        boolean sameWindow(Graph other){return windowId==other.windowId&&rotation==other.rotation&&displayId==other.displayId
+        boolean sameWindow(Graph other){requireSameProfileOwner(profileWindow,other.profileWindow);return windowId==other.windowId&&rotation==other.rotation&&displayId==other.displayId
                 &&java.util.Objects.equals(backgroundGeneration,other.backgroundGeneration)
                 &&java.util.Objects.equals(backgroundSelectionRaw,other.backgroundSelectionRaw)
                 &&java.util.Objects.equals(backgroundOwnerSha,other.backgroundOwnerSha)
@@ -2056,7 +2097,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             copy.backgroundBootstrapPackage=backgroundBootstrapPackage;copy.windowId=windowId;copy.rotation=rotation;
             copy.displayId=displayId;copy.bounds=new Rect(bounds);copy.truncated=truncated;
             copy.backgroundAllowedPackages=java.util.Collections.unmodifiableList(new ArrayList<String>(backgroundAllowedPackages));
-            copy.backgroundSelectionRaw=backgroundSelectionRaw;copy.backgroundOwnerSha=backgroundOwnerSha;
+            copy.backgroundSelectionRaw=backgroundSelectionRaw;copy.backgroundOwnerSha=backgroundOwnerSha;copy.profileWindow=profileWindow;
             copy.state=state;copy.windowMetadata=windowMetadata;copy.collectionStats=collectionStats;
             copy.diagnosticStamp=diagnosticStamp; // Immutable hashes/geometry only; no new node copy or live read.
             // O(1) evidence transfer; complete snapshots were frozen on the read worker.
@@ -2086,7 +2127,133 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
         void close(){for(NodeRef n:refs.values())n.node.recycle();refs.clear();}
     }
-    private interface GraphBudget { void check(); }
+    /** Profile identity failures are terminal, never a same-App scene retry. */
+    private static final class ProfileOwnershipViolation extends IllegalStateException {
+        private static final long serialVersionUID=1L;
+        ProfileOwnershipViolation(String reason){super(reason);}
+        ProfileOwnershipViolation(String reason,Throwable cause){super(reason,cause);}
+    }
+    private static void requireSameProfileOwner(WindowOwnership original,WindowOwnership actual){
+        if(!NativeAppEvidence.sameProfileOwner(original,actual))
+            throw new ProfileOwnershipViolation("后台 profile、用户序列号或真实任务 token 已变化");
+    }
+    private static void requireSameProfileWindow(WindowOwnership original,WindowOwnership actual){
+        requireSameProfileOwner(original,actual);
+        if(original!=null&&original.windowId!=actual.windowId)
+            throw new ProfileOwnershipViolation("后台 profile 证明不属于原观察窗口");
+    }
+    private static void requireHistoricalProfileWindow(BackgroundSession background,PhoneObservation frame){
+        try{
+            NativeAppEvidence.requireProfileTarget(background.profileTarget(),frame.profileWindow);
+            // The Session retains the exact received proof object's provenance. Historical
+            // capture validation cannot renew it; effects still require a new live RPC.
+            if(frame.profileWindow!=null)background.requireHistoricalProfileWindow(frame.profileWindow,
+                    frame.windowId,frame.profileWindow.taskId,frame.capturedElapsedMillis);
+        }catch(RuntimeException unavailable){throw new ProfileOwnershipViolation("原观察缺少同 profile 的采集时归属证明",unavailable);}
+    }
+    /**
+     * Public Parcelable output only; no hidden-API exemption, reflection, title
+     * parsing, package-to-user inference or expected task ID participates.
+     * The prefix is pinned to Android 16 qpr2 AOSP AccessibilityWindowInfo
+     * 817452aae13e872cee097d147447676cd2e00077bcba7df476633c11b3b4e38c.
+     * Runtime schema checks and independent broker leaf corroboration are both
+     * required. Host checks do not qualify this platform adapter on a device.
+     */
+    static int actualProfileAccessibilityTaskId(AccessibilityWindowInfo window){
+        if(android.os.Build.VERSION.SDK_INT!=36||window==null)
+            throw new ProfileOwnershipViolation("当前平台没有已限定的 profile 窗口任务读取方式");
+        Parcel parcel=Parcel.obtain(),roundTrip=Parcel.obtain();AccessibilityWindowInfo copy=null;
+        try{
+            window.writeToParcel(parcel,0);
+            int bytes=parcel.dataSize();
+            if(bytes<28||bytes>65536)throw new ProfileOwnershipViolation("profile 窗口 parcel 超出固定结构范围");
+            parcel.setDataPosition(0);
+            int display=parcel.readInt(),type=parcel.readInt(),layer=parcel.readInt(),flags=parcel.readInt();
+            int id=parcel.readInt(),parent=parcel.readInt(),task=parcel.readInt();
+            int publicFlags=(window.isActive()?1:0)|(window.isFocused()?2:0)
+                    |(window.isAccessibilityFocused()?4:0)|(window.isInPictureInPictureMode()?8:0);
+            if(display<=0||type!=AccessibilityWindowInfo.TYPE_APPLICATION||id<0||task<=0||parent< -1||parent==id
+                    ||display!=window.getDisplayId()||type!=window.getType()||layer!=window.getLayer()
+                    ||id!=window.getId()||flags!=publicFlags)
+                throw new ProfileOwnershipViolation("profile 窗口 parcel 与公开窗口字段不一致");
+            Region parsed=Region.CREATOR.createFromParcel(parcel),actual=new Region();
+            window.getRegionInScreen(actual);Rect bounds=new Rect();window.getBoundsInScreen(bounds);
+            if(parsed==null||bounds.isEmpty()||!parsed.equals(actual)||!parsed.getBounds().equals(bounds))
+                throw new ProfileOwnershipViolation("profile 窗口 parcel 几何结构不一致");
+            // The framework must consume and reproduce the complete actual parcel;
+            // no partially decoded or trailing alternative schema is accepted.
+            parcel.setDataPosition(0);copy=AccessibilityWindowInfo.CREATOR.createFromParcel(parcel);
+            if(copy==null||parcel.dataPosition()!=bytes)
+                throw new ProfileOwnershipViolation("profile 窗口 parcel 未被框架完整消费");
+            copy.writeToParcel(roundTrip,0);
+            if(!java.util.Arrays.equals(parcel.marshall(),roundTrip.marshall()))
+                throw new ProfileOwnershipViolation("profile 窗口 parcel 完整往返不一致");
+            return task;
+        }catch(ProfileOwnershipViolation refused){throw refused;}
+        catch(RuntimeException malformed){throw new ProfileOwnershipViolation("profile 窗口任务结构不可验证",malformed);}
+        finally{if(copy!=null)copy.recycle();roundTrip.recycle();parcel.recycle();}
+    }
+    /** Local identity fence; a historical proof alone cannot authorize dispatch. */
+    private static void requireActualProfileTask(BackgroundSession background,PhoneObservation frame,AccessibilityWindowInfo window){
+        if(background.profileTarget()==null){
+            if(frame.profileWindow!=null)throw new ProfileOwnershipViolation("普通 user0 任务收到 profile 观察");
+            return;
+        }
+        requireHistoricalProfileWindow(background,frame);
+        if(window==null||actualProfileAccessibilityTaskId(window)!=frame.profileWindow.taskId)
+            throw new ProfileOwnershipViolation("实际可访问性窗口已不属于原 profile leaf");
+    }
+    /** Worker-only fresh RPC on the caller's existing cancellation and deadline. */
+    private WindowOwnership readProfileWindow(AccessibilityNodeInfo root,BackgroundSession background,final GraphBudget budget){
+        if(background==null||background.profileTarget()==null)return null;
+        if(Looper.myLooper()==Looper.getMainLooper()||budget==null||budget.cancellation()==null
+                ||budget.deadline()<=SystemClock.elapsedRealtime())
+            throw new ProfileOwnershipViolation("profile 窗口复核必须在有界 worker 上执行");
+        checkReadBudget(budget);List<AccessibilityWindowInfo> windows=null;AccessibilityWindowInfo nodeWindow=null;
+        try{
+            background.requireActive();
+            if(root==null||root.getWindowId()<0||!background.profileTarget().packageName.equals(string(root.getPackageName())))
+                throw new ProfileOwnershipViolation("profile 实际根窗口缺失");
+            windows=windowsForDisplay(background.displayId());AccessibilityWindowInfo matched=null;int count=0;
+            if(windows==null||windows.isEmpty()||windows.size()>64)
+                throw new ProfileOwnershipViolation("profile 完整窗口集合不可用");
+            for(AccessibilityWindowInfo candidate:windows){
+                checkReadBudget(budget);
+                if(candidate.getId()==root.getWindowId()){matched=candidate;count++;}
+            }
+            if(count!=1||matched==null||matched.getDisplayId()!=background.displayId()
+                    ||matched.getType()!=AccessibilityWindowInfo.TYPE_APPLICATION)
+                throw new ProfileOwnershipViolation("profile 实际窗口不唯一或显示不符");
+            int actualTask=actualProfileAccessibilityTaskId(matched);
+            nodeWindow=root.getWindow();
+            if(nodeWindow==null||nodeWindow.getId()!=matched.getId()||nodeWindow.getDisplayId()!=matched.getDisplayId()
+                    ||actualProfileAccessibilityTaskId(nodeWindow)!=actualTask)
+                throw new ProfileOwnershipViolation("profile 根与完整窗口集合任务身份不一致");
+            final HeptaAccessibilityService.Cancellation cancellation=new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){
+                try{budget.check();return budget.cancellation().isCancelled();}catch(RuntimeException retired){return true;}
+            }};
+            WindowOwnership proof=background.verifyProfileWindow(matched.getId(),actualTask,cancellation,budget.deadline());
+            checkReadBudget(budget);
+            background.requireProfileWindow(proof,matched.getId(),actualTask,SystemClock.elapsedRealtime());
+            return proof;
+        }catch(ProfileOwnershipViolation refused){throw refused;}
+        catch(Exception unavailable){throw new ProfileOwnershipViolation("profile 实际任务归属复核失败",unavailable);}
+        finally{
+            if(nodeWindow!=null)nodeWindow.recycle();
+            if(windows!=null)for(AccessibilityWindowInfo window:windows)window.recycle();
+        }
+    }
+    private void finishProfileRead(Graph graph,BackgroundSession background,GraphBudget budget){
+        AccessibilityNodeInfo root=selectedRoot(background,budget);
+        if(root==null)throw new ProfileOwnershipViolation("profile 完整读取后窗口缺失");
+        try{
+            WindowOwnership after=readProfileWindow(root,background,budget);
+            requireSameProfileOwner(graph.profileWindow,after);
+            if(after.windowId!=graph.windowId)throw new StaleObservation("profile 同任务窗口在完整读取中换代");
+            graph.profileWindow=after;
+        }finally{root.recycle();}
+    }
+    private interface GraphBudget { void check(); default HeptaAccessibilityService.Cancellation cancellation(){return null;} default long deadline(){return 0;} }
     private static void checkReadBudget(GraphBudget budget){if(budget!=null)budget.check();}
     /** Inspect window metadata only. Never traverse an IME root or collect its text. */
     private ImeVisibility readImeVisibility(int targetWindowId,int targetDisplayId){
@@ -2217,7 +2384,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 ||graph.nativeActionWidth<=0||graph.nativeActionHeight<=0)return null;
         return new FrozenObservationWindow(graph.packageName,graph.windowId,graph.displayId,graph.rotation,
                 graph.bounds.left,graph.bounds.top,graph.bounds.right,graph.bounds.bottom,
-                graph.nativeActionWidth,graph.nativeActionHeight,graph.windowMetadata.bindFreshness(""),graph.nativeActionWindows);
+                graph.nativeActionWidth,graph.nativeActionHeight,graph.windowMetadata.bindFreshness(""),graph.nativeActionWindows,graph.profileWindow);
     }
     /** Post-encoding current identity only: never read root children, text, descriptions or node signatures. */
     private FrozenObservationWindow readFrozenObservationWindow(ObservationRequest request,CaptureIdentity identity){
@@ -2233,6 +2400,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             window.bounds=new Rect();root.getBoundsInScreen(window.bounds);window.rotation=rotation(window.displayId);
             if(!root.isVisibleToUser()||window.bounds.isEmpty())throw new StaleObservation("封存观察的当前窗口不可见");
             window.windowMetadata=readWindowMetadata(root,window.bounds,window.windowId,window.displayId);
+            window.profileWindow=readProfileWindow(root,request.background,budget);
             DisplayManager manager=(DisplayManager)getSystemService(DISPLAY_SERVICE);
             Display display=manager==null?null:manager.getDisplay(window.displayId);
             if(display==null||display.getRotation()!=window.rotation)throw new StaleObservation("封存观察的显示已变化");
@@ -2242,7 +2410,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             checkReadBudget(budget);requireTaskAuthorization(request.taskId,taskAuthorization);
             return new FrozenObservationWindow(window.packageName,window.windowId,window.displayId,window.rotation,
                     window.bounds.left,window.bounds.top,window.bounds.right,window.bounds.bottom,metrics.widthPixels,metrics.heightPixels,
-                    window.windowMetadata.bindFreshness(""),windows);
+                    window.windowMetadata.bindFreshness(""),windows,window.profileWindow);
         }finally{root.recycle();}
     }
     /** Only metadata of all reported windows on the selected display. No other
@@ -2390,6 +2558,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         graph.packageName=string(root.getPackageName());graph.windowId=root.getWindowId();graph.rotation=rotation(graph.displayId);graph.bounds=new Rect();root.getBoundsInScreen(graph.bounds);
         if(graph.packageName.isEmpty()||graph.bounds.isEmpty())throw new IllegalStateException("活动窗口身份不可用");
         graph.windowMetadata=readWindowMetadata(root,graph.bounds,graph.windowId,graph.displayId);
+        graph.profileWindow=readProfileWindow(root,background,budget);
         // Native selection facts are read-only. Their presence grants no action
         // or provider support; the same explicitly selected singleton App owns them.
         boolean nativeSelectionFacts=background!=null
@@ -2478,8 +2647,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             graph.collectionStats=new PhoneObservation.CollectionStats(MAX_VISITED,retainedLimit,textLimit,
                     visited,graph.rows.size(),characters,queue.size(),nodeBudgetOmissions,textBudgetOmissions,
                     childSlotsOmitted,SystemClock.elapsedRealtime()-started);
+            if(background!=null&&background.profileTarget()!=null)finishProfileRead(graph,background,budget);
             String binding=background==null?"":("background="+background.generation+"|display="+graph.displayId+"|owner="+graph.backgroundOwnerSha
                     +"|selection="+sha(graph.backgroundSelectionRaw.getBytes(StandardCharsets.UTF_8))+"|");
+            if(graph.profileWindow!=null)binding+="profile="+NativeAppEvidence.fingerprint(
+                    NativeAppEvidence.profileActionIdentity(graph.profileWindow))+"|";
             String appTree=sha((binding+graph.packageName+"|"+graph.windowId+"|"+graph.rotation+"|"+graph.bounds+"|"+signatures).getBytes(StandardCharsets.UTF_8));
             graph.state=new ObservationState(appTree,readImeVisibility(graph.windowId,graph.displayId));
             // Focus is newly model-visible evidence, not an expansion of the old progress predicate.
@@ -2788,7 +2960,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             final GraphBudget budget=new GraphBudget(){public void check(){
                 requireFlightObservationLive(web,source,after,cancel,deadline);
                 requireFlightObservationLive(web,observed,after,cancel,deadline);
-            }};
+            }public Cancellation cancellation(){return cancel;}public long deadline(){return deadline;}};
             FlightObservationRead<JSONObject> call=new FlightObservationRead<JSONObject>(new java.util.concurrent.Callable<JSONObject>(){
                 public JSONObject call()throws Exception{
                     return verifyFlightObservationOnWorker(web,ownedSource,ownedObserved,after,first,last,cancel,deadline,budget,timing);

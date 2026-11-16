@@ -11,6 +11,8 @@ import android.provider.Settings;
 import android.system.Os;
 import android.view.Display;
 import org.trillionnium.hepta.background.BrokerProtocol;
+import org.trillionnium.hepta.background.ProfileTarget;
+import org.trillionnium.hepta.background.WindowOwnership;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -46,6 +48,7 @@ final class BackgroundSession {
         final List<String> allowedPackages;
         private final Map<String,Object> ownerSelection;
         final BackgroundTaskTarget taskTarget;
+        final ProfileTarget profileTarget;
         Selection(String initial,Set<String> allowed){this(initial,allowed,null,null,null,null);}
         Selection(BackgroundTaskTarget target){
             this(requireExplicit(target).packageName,target.effectivePackages,target.originalInitialPackage,
@@ -61,7 +64,7 @@ final class BackgroundSession {
             checkPackage(initial);
             if(!copy.contains(initial))throw new IllegalArgumentException("起始应用必须属于本次后台范围");
             initialPackage=initial;allowedPackages=Collections.unmodifiableList(new ArrayList<String>(copy));
-            taskTarget=target;
+            taskTarget=target;profileTarget=target==null?null:target.profileTarget;
             if(ownerSha==null){
                 if(uiInitial!=null||uiAllowed!=null||recognition!=null)throw new IllegalArgumentException("任务范围来源不完整");
                 ownerSelection=null;
@@ -108,6 +111,7 @@ final class BackgroundSession {
                 .put("bootstrap_source",ownerSelection==null?"owner_selected_initial_app":"owner_intent_within_explicit_ui_selection").put("bootstrap_model_issued",false)
                 .put("main_display_fallback",false).put("home_allowed",false);
             if(ownerSelection!=null)value.put("owner_task_selection",new JSONObject(ownerSelection));
+            if(profileTarget!=null)value.put("profile_target_wire",profileTarget.wire()).put("profile_target_sha256",profileTarget.sha256);
             return value;
         }
     }
@@ -127,6 +131,9 @@ final class BackgroundSession {
     private volatile boolean retired,spawnAttempted,bootstrapDispatched,cleanupConfirmed;
     private volatile JSONObject lastResponse;
     private volatile JSONObject appDisplayReadback;
+    private volatile JSONObject profileCleanupEvidence;
+    private volatile boolean profileLaunchAttempted;
+    private final java.util.IdentityHashMap<WindowOwnership,Boolean> profileProofs=new java.util.IdentityHashMap<WindowOwnership,Boolean>();
     private Process brokerProcess;
     private volatile boolean brokerExitObserved;
     private volatile Integer brokerExitCode;
@@ -144,12 +151,66 @@ final class BackgroundSession {
         createdElapsed=SystemClock.elapsedRealtime();expiresElapsed=createdElapsed+TTL_MS;bootCount=readBootCount(context);
     }
     boolean allows(String pkg){return selection.allowedPackages.contains(pkg);}
+    ProfileTarget profileTarget(){return selection.profileTarget;}
+    private int protocolVersion(){return profileTarget()==null?BrokerProtocol.VERSION:BrokerProtocol.PROFILE_VERSION;}
+    private JSONObject request(String operation,String pkg,long deadline)throws Exception{
+        JSONObject value=new JSONObject().put("version",protocolVersion()).put("request_id",UUID.randomUUID().toString())
+                .put("generation",generation).put("deadline_elapsed_ms",deadline).put("op",operation);
+        if(pkg!=null)value.put("package",pkg);
+        if(profileTarget()!=null)value.put("target_sha256",profileTarget().sha256);
+        return value;
+    }
+    void verifyProfileInstallation()throws Exception{
+        if(profileTarget()==null)throw new IllegalStateException("profile target required");
+        verifyRemote();
+    }
+    WindowOwnership verifyProfileWindow(int windowId,int observedTaskId,HeptaAccessibilityService.Cancellation cancel,long originalDeadline)throws Exception{
+        ProfileTarget target=profileTarget();if(target==null)throw new IllegalStateException("profile target required");
+        requireActive();if(cancel==null||cancel.isCancelled())throw new IOException("profile observation cancelled");
+        long begun=SystemClock.elapsedRealtime(),deadline=Math.min(expiresElapsed,boundedActionDeadline(originalDeadline,4000));
+        JSONObject request=request("window",target.packageName,deadline).put("window_id",windowId).put("task_id",observedTaskId);
+        JSONObject response=exchange(socketName,generation,request,4500,cancel);accept(response,true);requireActive();
+        WindowOwnership proof=WindowOwnership.fromWire(response.getString("window_ownership_wire"),target);
+        long now=SystemClock.elapsedRealtime();proof.requireMatches(target,generation,displayId,windowId,observedTaskId,now);
+        if(proof.observedElapsedMs<begun||proof.expiresElapsedMs>deadline||cancel.isCancelled())
+            throw new IOException("profile window proof exceeded original request");
+        synchronized(profileProofs){
+            // Retain the actual received objects for historical frame provenance.
+            // Expiry remains enforced separately by requireProfileWindow on live use.
+            if(profileProofs.size()>=BrokerProtocol.MAX_PROFILE_REQUEST_IDS)throw new IOException("profile proof bound");
+            profileProofs.put(proof,Boolean.TRUE);
+        }
+        return proof;
+    }
+    void requireProfileWindow(WindowOwnership proof,int windowId,int observedTaskId,long now){
+        requireActive();
+        if(profileTarget()==null||proof==null)throw new IllegalStateException("actual profile window proof missing");
+        synchronized(profileProofs){if(!profileProofs.containsKey(proof))throw new IllegalStateException("profile proof was not obtained from this live broker");}
+        proof.requireMatches(profileTarget(),generation,displayId,windowId,observedTaskId,now);
+    }
+    /** Historical provenance only; never renews a live window or permits an effect. */
+    void requireHistoricalProfileWindow(WindowOwnership proof,int windowId,int observedTaskId,long capturedAt){
+        if(profileTarget()==null||proof==null||capturedAt>SystemClock.elapsedRealtime())
+            throw new IllegalStateException("actual historical profile proof missing");
+        synchronized(profileProofs){if(!profileProofs.containsKey(proof))
+            throw new IllegalStateException("historical proof was not received from this session broker");}
+        proof.requireMatches(profileTarget(),generation,displayId,windowId,observedTaskId,capturedAt);
+    }
     int displayId(){return displayId;}
     boolean released(){return "RELEASED".equals(state)&&retired&&cleanupConfirmed;}
     synchronized void acceptReconciliation(JSONObject proof)throws Exception{
         if(!proof.getBoolean("cleanup_known")||!generation.equals(proof.optString("generation"))
                 ||hasUnreleased(context)||!displayAbsent(context,displayId,displayName))
             throw new IOException("后台清理凭据不属于当前租约");
+        if(profileTarget()!=null){
+            JSONObject response=proof.getJSONObject("broker_response");
+            if(!Boolean.TRUE.equals(proof.get("broker_released"))||!Boolean.TRUE.equals(response.get("ok"))
+                    ||!"RELEASED".equals(response.getString("state"))||!"close".equals(response.getString("operation"))
+                    ||strictInt(response,"version")!=BrokerProtocol.PROFILE_VERSION
+                    ||!generation.equals(response.getString("generation")))
+                throw new IOException("profile reconciliation lacks the actual release response");
+            ensureProfileCleanup(response);
+        }
         retired=true;state="RELEASED";cleanupConfirmed=true;
     }
     synchronized JSONObject evidence(){
@@ -167,19 +228,25 @@ final class BackgroundSession {
         }
         catch(Exception failure){throw new IllegalStateException("后台会话凭据编码失败",failure);}
     }
-    private JSONObject baseJournal()throws Exception{return new JSONObject().put("schema",SCHEMA).put("task_id",taskId)
+    private JSONObject baseJournal()throws Exception{JSONObject value=new JSONObject().put("schema",SCHEMA).put("task_id",taskId)
             .put("app_uid",android.os.Process.myUid()).put("owner_sha256",ownerSha256)
             .put("generation",generation).put("socket",socketName).put("display_name",displayName)
             .put("display_id",displayId).put("state",state).put("created_elapsed_ms",createdElapsed).put("expires_elapsed_ms",expiresElapsed)
             .put("boot_count",bootCount).put("selection",selection.json())
             // This durable pre-spawn ceiling covers every later permitted Xiaomi launch.
-            .put("owned_task_retirement_required",selection.allowedPackages.contains("com.xiaomi.shop"));}
+            .put("owned_task_retirement_required",profileTarget()!=null||selection.allowedPackages.contains("com.xiaomi.shop"));
+        if(profileTarget()!=null)value.put("profile_target_wire",profileTarget().wire()).put("profile_target_sha256",profileTarget().sha256)
+                .put("profile_isolation_required",true).put("profile_launch_attempted",profileLaunchAttempted);
+        if(profileCleanupEvidence!=null)value.put("profile_cleanup",new JSONObject(profileCleanupEvidence.toString()));
+        return value;
+    }
 
     /** Worker only. The durable lease precedes su and the first create request. */
     void start(HeptaAccessibilityService.Cancellation cancellation)throws Exception{
         LocalProbeApplication.requirePermissionPreparationIdle(context);
         if(android.os.Looper.myLooper()==android.os.Looper.getMainLooper())throw new IllegalStateException("后台创建不得阻塞主线程");
         requireUnlocked();filesRoot.unchanged(context);
+        if(profileTarget()!=null)ProfileCatalogueClient.requireCurrent(context,profileTarget());
         MobiMindPrivateFiles.writeNew(journal,baseJournal().toString().getBytes(StandardCharsets.UTF_8));
         if(cancellation.isCancelled())throw new IllegalStateException("任务已停止，后台空间未启动");
         File apk=new File(context.getApplicationInfo().sourceDir).getCanonicalFile();
@@ -188,6 +255,7 @@ final class BackgroundSession {
         String command="CLASSPATH="+quote(apk.getPath())+" /system/bin/app_process / "+BROKER
                 +" --socket "+quote(socketName)+" --owner-uid "+android.os.Process.myUid()
                 +" --generation "+quote(generation)+" --allowed-packages "+quote(packages)
+                +(profileTarget()==null?"":" --profile-target "+quote(profileTarget().wire()))
                 +" --ttl-ms "+TTL_MS+" --expires-elapsed-ms "+expiresElapsed;
         File taskRoot=MobiMindPrivateFiles.directory(new File(filesRoot.path,"control-tasks"),false);
         File taskDirectory=MobiMindPrivateFiles.directory(new File(taskRoot,taskId),false);
@@ -207,6 +275,7 @@ final class BackgroundSession {
         if(connectionFailure!=null||!"ACTIVE".equals(state))throw new IOException("手机后台执行服务未就绪；请确认本机已允许 Hepta 的 su 请求",connectionFailure);
         requireActive();saveJournal();
         if(cancellation.isCancelled())throw new IllegalStateException("任务已停止，正在释放后台空间");
+        if(profileTarget()!=null){profileLaunchAttempted=true;saveJournal();}
         JSONObject launch=call("launch",selection.initialPackage,4000);bootstrapDispatched=launch.optBoolean("dispatched",false);
         accept(launch,true);requireActive();saveJournal();
     }
@@ -219,15 +288,14 @@ final class BackgroundSession {
         requireActive();if(cancellation.isCancelled())throw new IllegalStateException("任务已停止");
         if(pkg!=null&&!allows(pkg))throw new IllegalArgumentException("目标应用未在本次后台范围内");
         long deadline=boundedActionDeadline(actionDeadline,4000);
-        JSONObject request=new JSONObject().put("version",1).put("request_id",UUID.randomUUID().toString())
-                .put("generation",generation).put("deadline_elapsed_ms",deadline).put("op",operation);
-        if(pkg!=null)request.put("package",pkg);
+        JSONObject request=request(operation,pkg,deadline);
         JSONObject response=exchange(socketName,generation,request,4500,cancellation);accept(response,true);requireActive();return response;
     }
     JSONObject fixedIntent(org.trillionnium.hepta.background.FixedIntentTarget target,String payload,String attemptId,HeptaAccessibilityService.Cancellation cancellation)throws Exception{
         return fixedIntent(target,payload,attemptId,cancellation,Long.MAX_VALUE);
     }
     JSONObject fixedIntent(org.trillionnium.hepta.background.FixedIntentTarget target,String payload,String attemptId,HeptaAccessibilityService.Cancellation cancellation,long actionDeadline)throws Exception{
+        if(profileTarget()!=null)throw new IllegalStateException("profile mode does not grant fixed-intent tools");
         if(target==null||!org.trillionnium.hepta.background.FixedIntentTools.isTool(target.action))throw new IllegalArgumentException("fixed background tool required");
         org.trillionnium.hepta.background.FixedIntentTools.forAction(target.action).validatePayload(payload);
         if(attemptId==null||!attemptId.matches("[0-9a-f]{64}"))throw new IllegalArgumentException("durable attempt binding required");
@@ -292,8 +360,8 @@ final class BackgroundSession {
     }
     private BrokerProtocol.DisplayPolicy readBrokerPolicy(JSONObject response,int id)throws Exception{
         if(response==null||id<=0||!Boolean.TRUE.equals(response.get("ok"))||!"ACTIVE".equals(response.getString("state"))
-                ||strictInt(response,"version")!=1||!isUuid(response.getString("request_id"))||!generation.equals(response.getString("generation"))
-                ||!java.util.Arrays.asList("create","state","launch","back","notes.create","web.search").contains(response.getString("operation"))
+                ||strictInt(response,"version")!=protocolVersion()||!isUuid(response.getString("request_id"))||!generation.equals(response.getString("generation"))
+                ||!java.util.Arrays.asList("create","state","launch","back","window","notes.create","web.search").contains(response.getString("operation"))
                 ||strictLong(response,"expires_elapsed_ms")!=expiresElapsed
                 ||id!=strictInt(response,"display_id")||!displayName.equals(response.getString("display_name")))
             throw new IOException("后台策略回执身份不匹配");
@@ -334,6 +402,13 @@ final class BackgroundSession {
         if(keyguard==null||keyguard.isKeyguardLocked())throw new IllegalStateException("手机已锁定或锁屏状态未知，后台任务停止");}
     private synchronized void accept(JSONObject response,boolean requireSuccess)throws Exception{
         String next=response.getString("state");int id=response.getInt("display_id");
+        if(profileTarget()!=null){
+            ProfileTarget actual=ProfileTarget.fromWire(response.getString("profile_target_wire"));
+            if(!profileTarget().same(actual))throw new IOException("profile target readback changed");
+            if("ACTIVE".equals(next)&&Boolean.TRUE.equals(response.get("ok"))
+                    &&!Boolean.TRUE.equals(response.get("profile_current_identity_verified")))
+                throw new IOException("profile live identity was not verified");
+        }
         if(displayId>0&&id!=displayId)throw new IOException("后台屏幕标识发生变化");
         if("ACTIVE".equals(next)&&id<=0)throw new IOException("后台服务返回了主屏或无效屏幕");
         JSONObject readback="ACTIVE".equals(next)?readAppDisplay(response,id):null;
@@ -344,9 +419,7 @@ final class BackgroundSession {
                 +" "+response.optString("message",""));
     }
     private JSONObject call(String operation,String pkg,int budget)throws Exception{
-        JSONObject request=new JSONObject().put("version",1).put("request_id",UUID.randomUUID().toString())
-                .put("generation",generation).put("deadline_elapsed_ms",SystemClock.elapsedRealtime()+budget).put("op",operation);
-        if(pkg!=null)request.put("package",pkg);
+        JSONObject request=request(operation,pkg,SystemClock.elapsedRealtime()+budget);
         return exchange(socketName,generation,request,budget+500);
     }
     private static final class ConnectionUnavailable extends IOException {
@@ -409,8 +482,12 @@ final class BackgroundSession {
             JSONTokener parser=new JSONTokener(decoded);Object value=parser.nextValue();
             if(!(value instanceof JSONObject)||parser.nextClean()!=0)throw new IOException("后台响应不是单个 JSON 对象");
             JSONObject result=(JSONObject)value;
-            if(result.getInt("version")!=1||!request.getString("request_id").equals(result.getString("request_id"))
+            if(result.getInt("version")!=request.getInt("version")||!request.getString("request_id").equals(result.getString("request_id"))
                     ||!generation.equals(result.getString("generation")))throw new IOException("后台响应请求/会话标识不匹配");
+            if(request.getInt("version")==BrokerProtocol.PROFILE_VERSION
+                    &&(!request.getString("op").equals(result.getString("operation"))
+                       ||!request.getString("target_sha256").equals(ProfileTarget.fromWire(result.getString("profile_target_wire")).sha256)))
+                throw new IOException("profile response scope or operation differs");
             String state=result.getString("state");
             if(!java.util.Arrays.asList("INITIAL","ACTIVE","CLOSING","RELEASED","CLEANUP_UNKNOWN").contains(state))throw new IOException("后台响应状态未知");
             result.getBoolean("ok");result.getInt("display_id");
@@ -435,19 +512,19 @@ final class BackgroundSession {
             }else if(!spawnAttempted){state="RELEASED";known=true;deleteJournal();}
             else if("RELEASED".equals(state)&&lastResponse!=null&&displayAbsent(context,displayId,displayName)){
                 // A failed launch can already return system-confirmed RELEASED and exit the broker.
-                known=true;deleteJournal();
+                ensureProfileCleanup(lastResponse);known=true;deleteJournal();
             }
             else{
                 JSONObject response=call("close",null,3500);accept(response,false);
                 known=response.getBoolean("ok")&&"RELEASED".equals(state)&&displayAbsent(context,displayId,displayName);
-                if(known)deleteJournal();else saveJournal();
+                if(known){ensureProfileCleanup(response);deleteJournal();}else saveJournal();
             }
         }catch(Exception failure){known=false;error=HeptaAccessibilityService.message(failure);state="CLEANUP_UNKNOWN";
             try{if(MobiMindPrivateFiles.exists(journal))saveJournal();}catch(Exception ignored){} }
         if(brokerProcess!=null){
             try{brokerExitObserved=brokerProcess.waitFor(700,TimeUnit.MILLISECONDS);if(brokerExitObserved)brokerExitCode=brokerProcess.exitValue();}
             catch(InterruptedException interrupted){Thread.currentThread().interrupt();}
-            if(!known&&!brokerExitObserved)brokerProcess.destroy(); // Never counts as release evidence.
+            if(!known&&!brokerExitObserved&&profileTarget()==null)brokerProcess.destroy(); // Never counts as release evidence.
         }
         if(brokerOutput!=null){
             try{if(brokerOutputThread!=null)brokerOutputThread.join(200);}
@@ -455,8 +532,52 @@ final class BackgroundSession {
             brokerOutput.persist("session_close_snapshot");
         }
         cleanupConfirmed=known;
-        try{return new Cleanup(known,evidence().put("cleanup_known",known).put("cleanup_error",error==null?JSONObject.NULL:error));}
+        try{JSONObject record=evidence().put("cleanup_known",known).put("cleanup_error",error==null?JSONObject.NULL:error);
+            if(profileCleanupEvidence!=null)record.put("profile_cleanup",new JSONObject(profileCleanupEvidence.toString()));
+            return new Cleanup(known,record);}
         catch(Exception impossible){throw new IllegalStateException(impossible);}
+    }
+    private void ensureProfileCleanup(JSONObject response)throws Exception{
+        if(profileTarget()==null)return;
+        JSONObject proof=checkedProfileCleanup(response,profileTarget(),generation,displayId,profileLaunchAttempted);
+        if(!displayAbsent(context,displayId,displayName))throw new IOException("profile display absence is not established");
+        proof.put("display_absence_observed",true);profileCleanupEvidence=proof;
+    }
+    private static JSONObject checkedProfileCleanup(JSONObject response,ProfileTarget target,String generation,int display,boolean launched)throws Exception{
+        if(response==null||!Boolean.TRUE.equals(response.get("profile_cleanup_known"))
+                ||!target.same(ProfileTarget.fromWire(response.getString("profile_target_wire"))))
+            throw new IOException("profile cleanup missing actual broker scope");
+        JSONObject proof=response.getJSONObject("profile_cleanup");
+        requireProfileFields(proof,"schema","generation","display_id","target_sha256","user_id","user_serial","full_uid",
+                "cleanup_known","live_tasks_absent","recents_tasks_absent","foreign_tasks_present","identity_unknown","owned_tasks");
+        if(!"hepta.profile-task-cleanup.v1".equals(proof.getString("schema"))
+                ||!generation.equals(proof.getString("generation"))||display!=strictInt(proof,"display_id")
+                ||!target.sha256.equals(proof.getString("target_sha256"))||target.profile.userId!=strictInt(proof,"user_id")
+                ||target.profile.serial!=strictLong(proof,"user_serial")||target.fullUid!=strictInt(proof,"full_uid"))
+            throw new IOException("profile cleanup identity differs");
+        for(String key:new String[]{"cleanup_known","live_tasks_absent","recents_tasks_absent"})
+            if(!Boolean.TRUE.equals(proof.get(key)))throw new IOException("profile cleanup absence unknown");
+        for(String key:new String[]{"foreign_tasks_present","identity_unknown"})
+            if(!Boolean.FALSE.equals(proof.get(key)))throw new IOException("profile cleanup identity unknown");
+        JSONArray tasks=proof.getJSONArray("owned_tasks");
+        if(tasks.length()>32||(launched&&tasks.length()==0))throw new IOException("profile owned task cleanup incomplete");
+        Set<Integer> ids=new java.util.HashSet<Integer>();Set<String> tokens=new java.util.HashSet<String>();
+        for(int i=0;i<tasks.length();i++){
+            JSONObject task=tasks.getJSONObject(i);
+            requireProfileFields(task,"task_id","parent_task_id","task_token_id","user_id","user_serial","full_uid","live_absent","recents_absent");
+            int id=strictInt(task,"task_id"),parent=strictInt(task,"parent_task_id");
+            String token=task.getString("task_token_id");
+            if(id<=0||parent<=0||id==parent||!ids.add(id)||!isUuid(token)||!tokens.add(token)
+                    ||target.profile.userId!=strictInt(task,"user_id")||target.profile.serial!=strictLong(task,"user_serial")
+                    ||target.fullUid!=strictInt(task,"full_uid")||!Boolean.TRUE.equals(task.get("live_absent"))
+                    ||!Boolean.TRUE.equals(task.get("recents_absent")))throw new IOException("profile leaf cleanup differs");
+        }
+        return new JSONObject(proof.toString());
+    }
+    private static void requireProfileFields(JSONObject value,String... names)throws Exception{
+        Set<String> expected=new TreeSet<String>(java.util.Arrays.asList(names)),actual=new TreeSet<String>();
+        java.util.Iterator<String> keys=value.keys();while(keys.hasNext())actual.add(keys.next());
+        if(!actual.equals(expected))throw new IOException("profile evidence fields differ");
     }
     /** Diagnostic bytes only. A log, EOF, exit, or reported RELEASED never grants lease cleanup. */
     private static final class BrokerOutput implements Runnable {
@@ -532,11 +653,16 @@ final class BackgroundSession {
         JSONObject old=readJournal(path);String generation=old.getString("generation"),socket=old.getString("socket"),name=old.getString("display_name");
         if(!isUuid(generation)||!("hepta-bg-"+generation).equals(socket)||!socket.equals(name))throw new IOException("旧后台租约身份无效");
         int id=old.getInt("display_id");long expiry=old.getLong("expires_elapsed_ms");
-        JSONObject response=null;boolean released=false;
-        try{response=exchange(socket,generation,new JSONObject().put("version",1).put("request_id",UUID.randomUUID().toString())
-                .put("generation",generation).put("deadline_elapsed_ms",SystemClock.elapsedRealtime()+3500).put("op","close"),4000);
+        ProfileTarget target=journalProfileTarget(old);
+        JSONObject closeRequest=new JSONObject().put("version",target==null?BrokerProtocol.VERSION:BrokerProtocol.PROFILE_VERSION)
+                .put("request_id",UUID.randomUUID().toString()).put("generation",generation)
+                .put("deadline_elapsed_ms",SystemClock.elapsedRealtime()+3500).put("op","close");
+        if(target!=null)closeRequest.put("target_sha256",target.sha256);
+        JSONObject response=null,profileCleanup=null;boolean released=false;
+        try{response=exchange(socket,generation,closeRequest,4000);
             released=response.getBoolean("ok")&&"RELEASED".equals(response.getString("state"));
             if(response.getInt("display_id")>0)id=response.getInt("display_id");
+            if(released&&target!=null)profileCleanup=checkedProfileCleanup(response,target,generation,id,old.getBoolean("profile_launch_attempted"));
         }catch(ConnectionUnavailable absent){/* Reconcile below only after expiry or a proved boot change. */}
         int currentBoot=readBootCount(context),oldBoot=old.getInt("boot_count");
         boolean newBoot=currentBoot>=0&&oldBoot>=0&&currentBoot!=oldBoot;
@@ -548,16 +674,36 @@ final class BackgroundSession {
                 .put("owned_task_retirement_required",ownedTaskRetirement)
                 .put("no_late_create",noLateCreate).put("display_absence_observed",displayAbsent(context,id,name))
                 .put("automatic_resume",false).put("broker_response",response==null?JSONObject.NULL:response);
+        if(known&&target!=null){if(profileCleanup==null)throw new IOException("profile cleanup proof missing");profileCleanup.put("display_absence_observed",true);evidence.put("profile_cleanup",profileCleanup);}
         if(known){root.unchanged(context);if(!generation.equals(readJournal(path).getString("generation")))throw new IOException("清理期间后台租约发生变化");
             Os.remove(path.getPath());MobiMindPrivateFiles.syncDirectory(root.path);}
         return new Cleanup(known,evidence);
     }
     /** Old journals retain their old contract; new owned-task leases never infer recents absence. */
     private static boolean ownedTaskRetirementRequired(JSONObject journal)throws Exception{
+        if(journalProfileTarget(journal)!=null)return true;
         if(!journal.has("owned_task_retirement_required"))return false;
         Object required=journal.get("owned_task_retirement_required");
         if(!(required instanceof Boolean))throw new IOException("后台任务退休要求不是严格布尔值");
         return ((Boolean)required).booleanValue();
+    }
+    private static ProfileTarget journalProfileTarget(JSONObject journal)throws Exception{
+        if(!journal.has("profile_target_wire")){
+            JSONObject selection=journal.optJSONObject("selection");
+            if(journal.has("profile_target_sha256")||journal.has("profile_isolation_required")||journal.has("profile_launch_attempted")
+                    ||(selection!=null&&(selection.has("profile_target_wire")||selection.has("profile_target_sha256"))))
+                throw new IOException("profile journal is incomplete");
+            return null;
+        }
+        ProfileTarget target=ProfileTarget.fromWire(journal.getString("profile_target_wire"));
+        if(!target.sha256.equals(journal.getString("profile_target_sha256"))
+                ||!Boolean.TRUE.equals(journal.get("profile_isolation_required"))
+                ||!Boolean.TRUE.equals(journal.get("owned_task_retirement_required"))
+                ||!(journal.get("profile_launch_attempted") instanceof Boolean))throw new IOException("profile journal scope differs");
+        JSONObject selection=journal.getJSONObject("selection");
+        if(!target.wire().equals(selection.getString("profile_target_wire"))
+                ||!target.sha256.equals(selection.getString("profile_target_sha256")))throw new IOException("profile journal Selection differs");
+        return target;
     }
     private static JSONObject readJournal(File file)throws Exception{
         byte[] bytes=MobiMindPrivateFiles.read(file,16384,true).bytes;
@@ -565,6 +711,7 @@ final class BackgroundSession {
         if(!SCHEMA.equals(value.getString("schema"))||value.getInt("app_uid")!=android.os.Process.myUid())throw new IOException("后台租约格式或应用 UID 不匹配");
         long created=value.getLong("created_elapsed_ms"),expiry=value.getLong("expires_elapsed_ms");
         if(created<0||expiry<=created||expiry-created!=TTL_MS)throw new IOException("后台租约截止时间无效");
+        journalProfileTarget(value);
         return value;
     }
     private static boolean displayAbsent(Context context,int id,String name){

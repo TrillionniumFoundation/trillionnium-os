@@ -86,6 +86,17 @@ public final class BackgroundDisplayBroker {
     private int virtualFlags, requiredDisplayFlags, forbiddenDisplayFlags, imeHide;
     private final Set<String> launched = new HashSet<String>();
     private volatile BackgroundOwnedSingleTask ownedSingleTask;
+    private volatile ProfilePackages profilePackages;
+    private volatile ProfilePackages.Readback profileReadback;
+    private volatile ProfileOwnedTask profileOwnedTask;
+    private volatile ProfileTaskPlatform profilePlatform;
+    private volatile BrokerProtocol.Request activeProfileRequest;
+    private volatile WindowOwnership profileWindow;
+    private volatile String profileWindowRequest;
+    private volatile boolean profileRequestDispatched;
+    private volatile java.util.Map<String,Object> profileCleanupReadback;
+    private volatile java.util.Map<String,Object> profilePersonalAudit;
+    private final ProfileDisplayCustody profileCustody=new ProfileDisplayCustody();
     private final Set<String> fixedToolsConsumed=new HashSet<String>();
     private final java.util.Map<String,JSONObject> fixedIntentProofs=new java.util.LinkedHashMap<String,JSONObject>();
     private final java.util.Map<String,JSONObject> taskLaunchPolicies=new java.util.LinkedHashMap<String,JSONObject>();
@@ -108,6 +119,7 @@ public final class BackgroundDisplayBroker {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 owner.beginCleanup("process_shutdown");
                 owner.awaitCleanup(CLEANUP_MS);
+                owner.holdProfileCustody();
             }, "HeptaBackgroundShutdown"));
             broker.startWatchdog();
             broker.initializeFramework();
@@ -129,6 +141,9 @@ public final class BackgroundDisplayBroker {
             }
         }
         // Binder threads must not retain an orphaned shell process after the session ends.
+        // A profile custodian is deliberately retained when owned-task absence is unknown.
+        // SIGKILL/OS death remains unprovable: Binder death can destroy the virtual display.
+        if(broker!=null)broker.holdProfileCustody();
         System.exit(exit);
     }
 
@@ -167,7 +182,12 @@ public final class BackgroundDisplayBroker {
         keyDisplayId = KeyEvent.class.getMethod("setDisplayId", int.class);
         if (activityTasks == null || windowManager == null || inputManager == null)
             throw new BrokerProtocol.Refusal("FRAMEWORK_SERVICE_MISSING");
-        snapshot(); // Required privileged unfiltered task query; unsupported access fails before a display exists.
+        if(config.profileTarget==null) snapshot(); // Existing user-0 policy is unchanged.
+        else {
+            profilePackages=new ProfilePackages(shell);
+            profileReadback=ProfileTaskPlatform.preflight(activityTasks,profilePackages,
+                    config.profileTarget,Math.min(expires,started+STARTUP_MS));
+        }
         checkOwnerPackages();
         requireUnlocked();
         frameworkReady = true;
@@ -187,6 +207,11 @@ public final class BackgroundDisplayBroker {
         boolean heptaOwner = false;
         for (String owner : owners) if ("org.trillionnium.hepta.local".equals(owner)) heptaOwner = true;
         if (!heptaOwner) throw new BrokerProtocol.Refusal("OWNER_PACKAGE_MISMATCH");
+        if(config.profileTarget!=null){
+            if(profileReadback==null||!config.profileTarget.same(profileReadback.target))
+                throw new BrokerProtocol.Refusal("PROFILE_INSTALLATION_IDENTITY_CHANGED");
+            return; // Target PM identity was resolved in its actual user, not the controller's user.
+        }
         for (String pkg : config.packages) {
             if ("org.trillionnium.hepta.local".equals(pkg) || "com.android.systemui".equals(pkg)
                 || "com.android.shell".equals(pkg)) throw new BrokerProtocol.Refusal("BROKER_CONTROL_PACKAGE_FORBIDDEN");
@@ -242,6 +267,7 @@ public final class BackgroundDisplayBroker {
 
     private byte[] perform(BrokerProtocol.Request r) throws Exception {
         boolean dispatched = false;
+        if(config.profileTarget!=null){activeProfileRequest=r;profileWindow=null;profileWindowRequest=null;profileRequestDispatched=false;}
         try {
             if ("close".equals(r.operation)) {
                 beginCleanup("client_close");
@@ -257,6 +283,8 @@ public final class BackgroundDisplayBroker {
                   createInFlight = true;
                   try {
                     ensureNameAbsent();
+                    if(config.profileTarget!=null)profileReadback=ProfileTaskPlatform.preflight(
+                            activityTasks,profilePackages,config.profileTarget,Math.min(r.deadline,expires));
                     final DisplayGeometry geometry = DisplayGeometry.snapshotDefault(displays);
                     displayGeometry = geometry;
                     guard(r, false);
@@ -271,6 +299,7 @@ public final class BackgroundDisplayBroker {
                     }, handler);
                     guard(r, false);
                     dispatched = true;
+                    if(config.profileTarget!=null)profileCustody.beforeCreate();
                     VirtualDisplay created = displays.createVirtualDisplay(displayName, geometry.width, geometry.height, geometry.density,
                         surfaceReader.getSurface(), virtualFlags);
                     virtual = created;
@@ -286,9 +315,26 @@ public final class BackgroundDisplayBroker {
                 }
             } else if ("state".equals(r.operation)) {
                 if ("ACTIVE".equals(state)) {
-                    verifyDisplay(); verifyLaunchedLocations(snapshot());
-                    if(ownedSingleTask!=null&&!ownedSingleTask.observe())throw new BrokerProtocol.Refusal("OWNED_TASK_NOT_OBSERVED");
+                    verifyDisplay();
+                    if(config.profileTarget!=null){
+                        if(profileOwnedTask!=null&&!profileOwnedTask.observe())throw new BrokerProtocol.Refusal("PROFILE_TASK_NOT_OBSERVED");
+                        else if(profileOwnedTask==null)requireUnlaunchedProfileEmpty();
+                        if(profileOwnedTask!=null)refreshProfileTaskEvidence();
+                    } else {
+                        verifyLaunchedLocations(snapshot());
+                        if(ownedSingleTask!=null&&!ownedSingleTask.observe())throw new BrokerProtocol.Refusal("OWNED_TASK_NOT_OBSERVED");
+                    }
                 }
+            } else if(config.profileTarget!=null&&"launch".equals(r.operation)) {
+                dispatched=launchProfile(r);
+            } else if(config.profileTarget!=null&&"window".equals(r.operation)) {
+                guard(r,true);
+                if(profileOwnedTask==null)throw new BrokerProtocol.Refusal("PROFILE_TASK_NOT_ACTIVE");
+                profileWindow=profileOwnedTask.window(r.windowId,r.observedTaskId,Math.min(r.deadline,expires));
+                profileWindowRequest=r.requestId;
+                refreshProfileTaskEvidence();
+            } else if(config.profileTarget!=null&&"back".equals(r.operation)) {
+                dispatched=backProfile(r);
             } else if ("launch".equals(r.operation)||FixedIntentTools.isTool(r.operation)) {
                 guard(r, true);
                 if(ownedSingleTask!=null)throw new BrokerProtocol.Refusal("OWNED_TASK_LAUNCH_ALREADY_ATTEMPTED");
@@ -421,21 +467,116 @@ public final class BackgroundDisplayBroker {
             guard(r, "ACTIVE".equals(state));
             return response(r, true, null, dispatched);
         } catch (Throwable error) {
+            if(config.profileTarget!=null)dispatched|=profileRequestDispatched;
             beginCleanup(code(error));
             awaitCleanup(Math.max(1, Math.min(CLEANUP_MS, r.deadline - SystemClock.elapsedRealtime())));
             serve = false;
             return response(r, false, code(error), dispatched);
-        }
+        } finally {if(config.profileTarget!=null)activeProfileRequest=null;}
     }
 
     private void guard(BrokerProtocol.Request r, boolean active) throws Exception {
         r.checkDeadline(SystemClock.elapsedRealtime(), expires);
         if (closing.get()) throw new BrokerProtocol.Refusal("SESSION_CLOSING");
         requireUnlocked();
+        if(config.profileTarget!=null)recheckProfile(true,Math.min(r.deadline,expires));
         if (active) {
             if (!"ACTIVE".equals(state)) throw new BrokerProtocol.Refusal("SESSION_NOT_ACTIVE");
             verifyDisplay();
         }
+    }
+
+    private void recheckProfile(boolean ready,long deadline)throws Exception {
+        if(profilePackages==null)throw new BrokerProtocol.Refusal("PROFILE_PLATFORM_UNAVAILABLE");
+        ProfilePackages.Readback actual=profilePackages.read(config.profileTarget.profile.userId,ready,deadline);
+        if(!config.profileTarget.same(actual.target))throw new BrokerProtocol.Refusal("PROFILE_INSTALLATION_IDENTITY_CHANGED");
+        profileReadback=actual;
+    }
+    private long profileDeadline(){
+        return cleanupStarted.get()?cleanupAt+CLEANUP_MS-100:
+                Math.min(expires,requestDeadline>0?requestDeadline:started+STARTUP_MS);
+    }
+    private void profileActiveGuard()throws Exception {
+        BrokerProtocol.Request request=activeProfileRequest;
+        if(request==null)throw new BrokerProtocol.Refusal("PROFILE_ACTIVE_REQUEST_MISSING");
+        guard(request,true);
+    }
+    private void requireUnlaunchedProfileEmpty()throws Exception {
+        ProfileTaskPolicy.Snapshot snapshot=BackgroundTaskOrganizer.profileSnapshot(activityTasks);
+        snapshot.requireDedicatedEmpty(config.profileTarget);
+        ProfileTaskPolicy.Recents.parse(BackgroundTaskOrganizer.profileRecents(()->profileDeadline()))
+                .requireDedicatedEmpty(config.profileTarget);
+        for(ProfileTaskPolicy.Root root:snapshot.roots)if(root.display==displayId)
+            throw new BrokerProtocol.Refusal("PROFILE_FOREIGN_ROOT_ON_DISPLAY");
+    }
+    private boolean launchProfile(BrokerProtocol.Request r)throws Exception {
+        guard(r,true);
+        if(profileOwnedTask!=null)throw new BrokerProtocol.Refusal("PROFILE_LAUNCH_ALREADY_ATTEMPTED");
+        final ProfileTaskPolicy.Activity initial=profileReadback.activity;
+        initial.requireEligible(config.profileTarget);
+        final ComponentName component=ComponentName.unflattenFromString(profileReadback.target.component);
+        if(component==null)throw new BrokerProtocol.Refusal("PROFILE_LAUNCHER_UNAVAILABLE");
+        final Intent intent=new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+                .setComponent(component).setPackage(r.packageName)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        final ActivityOptions options=ActivityOptions.makeBasic().setLaunchDisplayId(displayId);
+        synchronized(dispatchGate){
+            guard(r,true);requireUnlaunchedProfileEmpty();
+            if(!initial.same(profileReadback.activity))throw new BrokerProtocol.Refusal("PROFILE_ACTIVITY_INFO_CHANGED");
+            profilePlatform=new ProfileTaskPlatform(activityTasks,options,displayId,profilePackages,
+                    config.profileTarget,()->profileActiveGuard(),()->profileDeadline());
+            profileOwnedTask=new ProfileOwnedTask(profilePlatform,config.profileTarget,config.generation,r.requestId,displayId);
+            effectInFlight=true;
+            try{profileOwnedTask.prepare();}finally{effectInFlight=false;}
+            guard(r,true);
+            if(!initial.same(profileReadback.activity))throw new BrokerProtocol.Refusal("PROFILE_ACTIVITY_INFO_CHANGED");
+            profileOwnedTask.beforeDispatch();
+            profileRequestDispatched=true;effectInFlight=true;
+            try{
+                // Explicit target user under the existing root Binder identity. No current-user
+                // fallback, task-ID override, reparenting, user switch or cross-profile intent proxy.
+                Object result=startActivityAsUser.invoke(activityTasks,null,"com.android.shell",null,
+                        intent,null,null,null,0,0,null,options.toBundle(),config.profileTarget.profile.userId);
+                if(!(result instanceof Integer))throw new BrokerProtocol.Refusal("PROFILE_START_RESULT_UNAVAILABLE");
+                profileOwnedTask.accepted((Integer)result);
+                launched.add(r.packageName);
+            }finally{effectInFlight=false;}
+        }
+        boolean observed=false;
+        while(SystemClock.elapsedRealtime()<Math.min(r.deadline,expires)-100){
+            guard(r,true);
+            if(profileOwnedTask.observe()){observed=true;break;}
+            Thread.sleep(40);
+        }
+        if(!observed)throw new BrokerProtocol.Refusal("PROFILE_LAUNCH_NOT_OBSERVED");
+        refreshProfileTaskEvidence();
+        return true;
+    }
+    private boolean backProfile(BrokerProtocol.Request r)throws Exception {
+        guard(r,true);
+        if(profileOwnedTask==null||!profileOwnedTask.observe())throw new BrokerProtocol.Refusal("PROFILE_BACK_TARGET_UNAVAILABLE");
+        long now=SystemClock.uptimeMillis();
+        KeyEvent down=new KeyEvent(now,now,KeyEvent.ACTION_DOWN,KeyEvent.KEYCODE_BACK,0,0,
+                KeyCharacterMap.VIRTUAL_KEYBOARD,0,KeyEvent.FLAG_FROM_SYSTEM,InputDevice.SOURCE_KEYBOARD);
+        KeyEvent up=new KeyEvent(now,now+1,KeyEvent.ACTION_UP,KeyEvent.KEYCODE_BACK,0,0,
+                KeyCharacterMap.VIRTUAL_KEYBOARD,0,KeyEvent.FLAG_FROM_SYSTEM,InputDevice.SOURCE_KEYBOARD);
+        keyDisplayId.invoke(down,displayId);keyDisplayId.invoke(up,displayId);
+        boolean downOk,upOk;
+        synchronized(dispatchGate){
+            guard(r,true);
+            if(!profileOwnedTask.observe())throw new BrokerProtocol.Refusal("PROFILE_BACK_TARGET_CHANGED");
+            int actualUid=profileReadback.target.fullUid;
+            profileRequestDispatched=true;effectInFlight=true;
+            try{
+                downOk=Boolean.TRUE.equals(injectInput.invoke(inputManager,down,1,actualUid));
+                upOk=Boolean.TRUE.equals(injectInput.invoke(inputManager,up,1,actualUid));
+            }finally{effectInFlight=false;}
+        }
+        if(!downOk||!upOk)throw new BrokerProtocol.Refusal("PROFILE_BACK_INJECTION_NOT_CONFIRMED");
+        guard(r,true);
+        if(!profileOwnedTask.observe())throw new BrokerProtocol.Refusal("PROFILE_BACK_RESULT_NOT_OBSERVED");
+        refreshProfileTaskEvidence();
+        return true;
     }
 
     private void requireUnlocked() throws BrokerProtocol.Refusal {
@@ -681,6 +822,12 @@ public final class BackgroundDisplayBroker {
                 long now = SystemClock.elapsedRealtime();
                 if (cleanupStarted.get() && now - cleanupAt >= CLEANUP_MS) {
                     boolean known = cleanupDone.getCount() == 0 && "RELEASED".equals(state);
+                    if(config.profileTarget!=null&&profileCustody.known()){
+                        state="RELEASED";printTerminal();Runtime.getRuntime().halt(0);
+                    }
+                    if(config.profileTarget!=null&&profileCustody.retain()){
+                        quarantineProfile("cleanup_deadline");printTerminal();return;
+                    }
                     if (!known) state = "CLEANUP_UNKNOWN";
                     printTerminal();
                     // Bound even a stalled cleanup or a client that stops reading the close response.
@@ -712,6 +859,7 @@ public final class BackgroundDisplayBroker {
         closing.set(true);
         if (!cleanupStarted.compareAndSet(false, true)) return;
         cleanupAt = SystemClock.elapsedRealtime(); terminalReason = reason; state = "CLOSING";
+        if(config.profileTarget!=null){beginProfileCleanup();return;}
         Thread cleanup = new Thread(() -> {
             boolean releaseCallFailed = false;
             try {
@@ -746,6 +894,83 @@ public final class BackgroundDisplayBroker {
         cleanup.setDaemon(true); cleanup.start();
     }
 
+    private void beginProfileCleanup(){
+        Thread cleanup=new Thread(()->{
+            try{
+                synchronized(dispatchGate){
+                    ProfileOwnedTask tasks=profileOwnedTask;
+                    if(tasks!=null){
+                        tasks.retire(cleanupAt+CLEANUP_MS-100);
+                        refreshProfileTaskEvidence();
+                        if(!tasks.cleanupKnown())throw new IOException("PROFILE_TASK_RETIRE_UNCONFIRMED");
+                    }else{
+                        recheckProfile(false,cleanupAt+CLEANUP_MS-100);
+                        requireUnlaunchedProfileEmpty();
+                        profileCleanupReadback=emptyProfileCleanup(true);
+                    }
+                    profileCustody.tasksVerified();
+                    // The watchdog can mark uncertainty while a Binder call is in flight. It is
+                    // monotonic: an observed quarantine refuses a new release call. A release
+                    // already in flight can still time out; its custodian then remains alive.
+                    if(!profileCustody.mayRelease())throw new IOException("PROFILE_CUSTODY_QUARANTINED");
+                    VirtualDisplay owned=virtual;
+                    if(owned!=null)owned.release();
+                    ImageReader reader=surfaceReader;if(reader!=null)reader.close();
+                    HandlerThread worker=displayThread;if(worker!=null)worker.quitSafely();
+                }
+                if(createInFlight||effectInFlight)throw new IOException("PROFILE_EFFECT_UNRESOLVED");
+                boolean gone=false;
+                while(SystemClock.elapsedRealtime()<cleanupAt+CLEANUP_MS-100){
+                    DisplayManager dm=displays;
+                    if(dm==null){gone=virtual==null&&!createInFlight&&!effectInFlight;break;}
+                    boolean present=displayId>0&&dm.getDisplay(displayId)!=null;
+                    for(Display display:dm.getDisplays())if(displayName.equals(display.getName()))present=true;
+                    if(!present){gone=true;break;}
+                    Thread.sleep(25);
+                }
+                if(!gone)throw new IOException("PROFILE_DISPLAY_ABSENCE_UNCONFIRMED");
+                profileCustody.displayVerifiedAbsent();state="RELEASED";
+            }catch(Throwable error){
+                // Never release, close the surface, halt, or exit merely because retire failed.
+                if(profileOwnedTask!=null)refreshProfileTaskEvidence();
+                quarantineProfile(code(error));
+            }finally{cleanupDone.countDown();}
+        },"HeptaProfileCleanup");
+        cleanup.setDaemon(true);cleanup.start();
+    }
+    private void refreshProfileTaskEvidence(){
+        ProfileOwnedTask tasks=profileOwnedTask;
+        if(tasks!=null){profileCleanupReadback=tasks.cleanupEvidence();profilePersonalAudit=tasks.personalAudit();}
+    }
+    private java.util.Map<String,Object> emptyProfileCleanup(boolean known){
+        ProfileTarget target=config.profileTarget;
+        java.util.Map<String,Object> out=new java.util.LinkedHashMap<String,Object>();
+        out.put("schema","hepta.profile-task-cleanup.v1");out.put("generation",config.generation);
+        out.put("display_id",displayId);out.put("target_sha256",target.sha256);
+        out.put("user_id",target.profile.userId);out.put("user_serial",target.profile.serial);out.put("full_uid",target.fullUid);
+        out.put("cleanup_known",known);out.put("live_tasks_absent",known);out.put("recents_tasks_absent",known);
+        out.put("foreign_tasks_present",false);out.put("identity_unknown",!known);
+        out.put("owned_tasks",java.util.Collections.emptyList());return java.util.Collections.unmodifiableMap(out);
+    }
+    private void quarantineProfile(String reason){
+        profileCustody.unresolved();serve=false;state="CLEANUP_UNKNOWN";
+        java.util.Map<String,Object> previous=profileCleanupReadback;
+        java.util.Map<String,Object> out=new java.util.LinkedHashMap<String,Object>(
+                previous==null?emptyProfileCleanup(false):previous);
+        out.put("cleanup_known",false);out.put("live_tasks_absent",false);out.put("recents_tasks_absent",false);
+        out.put("identity_unknown",true);profileCleanupReadback=java.util.Collections.unmodifiableMap(out);
+        if(terminalReason.isEmpty())terminalReason=reason;
+        LocalServerSocket listening=server;
+        if(listening!=null)try{listening.close();}catch(IOException ignored){}
+    }
+    private void holdProfileCustody(){
+        // Retaining the live binder owner is intentional. DESTROY_CONTENT_ON_REMOVAL remains
+        // enabled; removing that flag would allow main-display migration instead. Unexpected
+        // SIGKILL, OS process death or power loss is still UNKNOWN, never a cleanup proof.
+        while(config.profileTarget!=null&&profileCustody.retain()){
+            try{Thread.sleep(250);}catch(InterruptedException ignored){}
+        }
+    }
     private void awaitCleanup(long millis) {
         try { cleanupDone.await(Math.max(1, millis), TimeUnit.MILLISECONDS); }
         catch (InterruptedException ignored) { Thread.currentThread().interrupt(); }
@@ -756,7 +981,7 @@ public final class BackgroundDisplayBroker {
     }
     private byte[] response(BrokerProtocol.Request r, boolean ok, String error, boolean dispatched) throws Exception {
         DisplayGeometry geometry=displayGeometry;
-        JSONObject value = new JSONObject().put("version", BrokerProtocol.VERSION)
+        JSONObject value = new JSONObject().put("version", config.profileTarget==null?BrokerProtocol.VERSION:BrokerProtocol.PROFILE_VERSION)
             .put("request_id", r == null ? JSONObject.NULL : r.requestId).put("generation", config.generation)
             .put("ok", ok).put("state", state).put("display_id", displayId).put("flags", displayFlags)
             .put("width", geometry==null?JSONObject.NULL:geometry.width)
@@ -773,6 +998,20 @@ public final class BackgroundDisplayBroker {
             if(taskLaunchPolicies.containsKey(r.requestId))value.put("task_launch_policy",taskLaunchPolicies.get(r.requestId));
         }
         if(ownedSingleTask!=null)value.put("owned_single_task",new JSONObject(ownedSingleTask.evidence()));
+        if(config.profileTarget!=null){
+            ProfilePackages.Readback actual=profileReadback;
+            java.util.Map<String,Object> cleanup=profileCleanupReadback;
+            if(cleanup==null)cleanup=emptyProfileCleanup(false);
+            value.put("profile_target_wire",actual==null?JSONObject.NULL:actual.target.wire())
+                    .put("profile_current_identity_verified",ok&&"ACTIVE".equals(state)&&actual!=null
+                            &&config.profileTarget.same(actual.target))
+                    .put("profile_cleanup",new JSONObject(cleanup))
+                    .put("profile_personal_task_audit",profilePersonalAudit==null?JSONObject.NULL:new JSONObject(profilePersonalAudit))
+                    .put("profile_cleanup_known",Boolean.TRUE.equals(cleanup.get("cleanup_known")))
+                    .put("profile_custody_retained",closing.get()&&profileCustody.retain());
+            WindowOwnership window=profileWindow;
+            if(r!=null&&window!=null&&r.requestId.equals(profileWindowRequest))value.put("window_ownership_wire",window.wire());
+        }
         if (error != null) value.put("error", error);
         if (!terminalReason.isEmpty()) value.put("terminal_reason", terminalReason);
         return value.toString().getBytes(StandardCharsets.UTF_8);
@@ -781,7 +1020,10 @@ public final class BackgroundDisplayBroker {
         try { System.out.println(new JSONObject().put("schema", "hepta.background-broker-terminal.v1")
             .put("generation", config.generation).put("state", state).put("display_id", displayId)
             .put("reason", terminalReason).put("release_confirmed", "RELEASED".equals(state))
-            .put("owned_single_task",ownedSingleTask==null?JSONObject.NULL:new JSONObject(ownedSingleTask.evidence()))); }
+            .put("owned_single_task",ownedSingleTask==null?JSONObject.NULL:new JSONObject(ownedSingleTask.evidence()))
+            .put("profile_cleanup",config.profileTarget==null?JSONObject.NULL:new JSONObject(
+                    profileCleanupReadback==null?emptyProfileCleanup(false):profileCleanupReadback))
+            .put("profile_custody_retained",config.profileTarget!=null&&profileCustody.retain())); }
         catch (Throwable ignored) { System.err.println("terminal_receipt_unavailable"); }
     }
     private static int fields(Class<?> type, String... names) throws Exception {
@@ -792,10 +1034,15 @@ public final class BackgroundDisplayBroker {
             error = ((InvocationTargetException) error).getCause();
         if (error instanceof BrokerProtocol.Refusal) return ((BrokerProtocol.Refusal) error).code;
         if (error instanceof BackgroundOwnedSingleTask.Refusal) return ((BackgroundOwnedSingleTask.Refusal) error).code;
+        if (error instanceof ProfileTaskPolicy.Refusal) return ((ProfileTaskPolicy.Refusal) error).code;
         if (error instanceof SecurityException) return "FRAMEWORK_PERMISSION_DENIED";
         if (error instanceof NoSuchFieldException || error instanceof NoSuchMethodException || error instanceof ClassNotFoundException)
             return "FRAMEWORK_API_UNAVAILABLE";
-        if (error instanceof IOException) return "TRANSPORT_IO_ERROR";
+        if (error instanceof IOException) {
+            String message=error.getMessage();
+            if(message!=null&&message.matches("PROFILE_[A-Z0-9_]{1,96}"))return message;
+            return "TRANSPORT_IO_ERROR";
+        }
         return "FRAMEWORK_OPERATION_FAILED";
     }
 }

@@ -1,6 +1,8 @@
 package org.trillionnium.hepta.local;
 import android.content.Context;
 import org.json.JSONObject;
+import org.trillionnium.hepta.background.ProfileTarget;
+import org.trillionnium.hepta.background.WindowOwnership;
 /** Explicit IO boundary fake. Controlled display metadata is not an Android VirtualDisplay test. */
 final class BackgroundSession {
     static final class Selection {
@@ -32,6 +34,20 @@ final class BackgroundSession {
     JSONObject evidence(){try{return new JSONObject().put("task_id",taskId).put("generation",generation).put("display_id",testDisplay);}catch(Exception error){throw new IllegalStateException(error);}}
     void acceptReconciliation(JSONObject p){throw new UnsupportedOperationException();}
     void verifyRemote(){requireActive();}
+    ProfileTarget profileTarget(){
+        if(selection.profileTarget!=null)throw new UnsupportedOperationException("legacy IO fixture cannot qualify a managed profile");
+        return null;
+    }
+    WindowOwnership verifyProfileWindow(int window,int task,HeptaAccessibilityService.Cancellation cancel,long deadline){
+        throw new UnsupportedOperationException("no broker or actual profile window in legacy IO fixture");
+    }
+    void requireProfileWindow(WindowOwnership proof,int window,int task,long now){
+        throw new UnsupportedOperationException("no live profile proof in legacy IO fixture");
+    }
+    void requireHistoricalProfileWindow(WindowOwnership proof,int window,int task,long capturedAt){
+        throw new UnsupportedOperationException("no actual received profile proof in legacy IO fixture");
+    }
+    void verifyProfileInstallation(){throw new UnsupportedOperationException("no profile installation qualification in legacy fixture");}
     void requireActive(){if(testClosed)throw new IllegalStateException("fixture display closed");}
     void start(HeptaAccessibilityService.Cancellation c){if(controllerDisplay<1||c.isCancelled())throw new UnsupportedOperationException();}
     JSONObject action(String op,String pkg,HeptaAccessibilityService.Cancellation c){throw new UnsupportedOperationException();}

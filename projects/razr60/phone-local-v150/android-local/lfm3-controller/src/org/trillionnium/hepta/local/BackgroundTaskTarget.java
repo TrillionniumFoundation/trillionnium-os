@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import org.trillionnium.hepta.background.FixedIntentTarget;
+import org.trillionnium.hepta.background.ProfileTarget;
 import org.trillionnium.hepta.background.FixedIntentTools;
 import org.trillionnium.hepta.local.web.WebFlightGoal;
 import org.trillionnium.hepta.local.web.WebShoppingGoal;
@@ -24,11 +25,19 @@ final class BackgroundTaskTarget {
     final String route,targetSha256;
     final boolean explicitSelection;
     final NativeAppGoal nativeGoal;
+    final ProfileTarget profileTarget;
     private BackgroundTaskTarget(String owner,String target,String recognition,String initial,Set<String> selected){
         this(owner,target,recognition,initial,selected,false,null);
     }
     private BackgroundTaskTarget(String owner,String target,String recognition,String initial,Set<String> selected,
                                  boolean explicitSelection,NativeAppGoal nativeGoal){
+        this(owner,target,recognition,initial,selected,explicitSelection,nativeGoal,null);
+    }
+    private BackgroundTaskTarget(String owner,String target,String recognition,String initial,Set<String> selected,
+                                 boolean explicitSelection,NativeAppGoal nativeGoal,ProfileTarget profileTarget){
+        if(profileTarget!=null&&(!explicitSelection||!profileTarget.packageName.equals(target)||selected.size()!=1
+                ||!selected.contains(target)||!target.equals(initial)))throw new IllegalArgumentException("隔离资料仅支持明确选择的单一携程实例");
+        this.profileTarget=profileTarget;
         this.packageName=target;this.recognition=recognition;
         ownerSha256=FixedIntentTarget.payloadSha256(owner);originalInitialPackage=initial;
         TreeSet<String> copy=new TreeSet<String>(selected);
@@ -46,6 +55,7 @@ final class BackgroundTaskTarget {
                 Boolean.toString(explicitSelection),nativeGoal==null?"":nativeGoal.contractSha256})field(binding,value);
         for(String value:originalPackages)field(binding,value);
         field(binding,"effective");for(String value:effectivePackages)field(binding,value);
+        if(profileTarget!=null){field(binding,"explicit-managed-profile.v1");field(binding,profileTarget.sha256);}
         targetSha256=FixedIntentTarget.payloadSha256(binding.toString());
     }
     /** Ordinary UI entry. Its explicit initial app wins; OWNER is never rewritten.
@@ -53,11 +63,15 @@ final class BackgroundTaskTarget {
      * but this entry never calls its automatic helper selection for a native app.
      */
     static BackgroundTaskTarget resolveExplicitSelection(String owner,String initial,Set<String> selected){
+        return resolveExplicitSelection(owner,initial,selected,null);
+    }
+    static BackgroundTaskTarget resolveExplicitSelection(String owner,String initial,Set<String> selected,ProfileTarget profileTarget){
         if(owner==null||owner.isEmpty()||selected==null||selected.isEmpty()||selected.size()>6
                 ||initial==null||!selected.contains(initial))
             throw new IllegalArgumentException("请先输入任务并选择后台可操作的起始应用");
         for(String value:selected)if(value==null||!value.matches("[A-Za-z][A-Za-z0-9_]*(?:\\.[A-Za-z][A-Za-z0-9_]*)+"))
             throw new IllegalArgumentException("后台应用范围无效，请重新选择");
+        if(profileTarget!=null&&!profileTarget.packageName.equals(initial))throw new IllegalArgumentException("隔离资料目标与所选应用不同");
         if(HELPER.equals(initial)){
             BackgroundTaskTarget legacy=resolve(owner,initial,selected);
             if(legacy==null||!HELPER.equals(legacy.packageName))
@@ -66,7 +80,7 @@ final class BackgroundTaskTarget {
         }
         NativeAppGoal goal=NativeAppGoal.parse(owner,initial);
         return new BackgroundTaskTarget(owner,initial,goal==null?"explicit_native_app_selection.v1":goal.recognition,
-                initial,selected,true,goal);
+                initial,selected,true,goal,profileTarget);
     }
     boolean webHelper(){return WEB_HELPER.equals(route);}
     void requireOwner(String owner){
@@ -83,6 +97,7 @@ final class BackgroundTaskTarget {
         value.put("effective_initial_package",packageName);
         value.put("effective_allowed_packages",Collections.unmodifiableList(new ArrayList<String>(effectivePackages)));
         value.put("native_goal",nativeGoal==null?null:nativeGoal.evidence());
+        if(profileTarget!=null)value.put("profile_target",profileTarget.evidence());
         value.put("owner_rewritten",false);value.put("package_from_model_or_screen",false);
         value.put("grants_tool_authority",false);value.put("business_verified",false);
         return Collections.unmodifiableMap(value);

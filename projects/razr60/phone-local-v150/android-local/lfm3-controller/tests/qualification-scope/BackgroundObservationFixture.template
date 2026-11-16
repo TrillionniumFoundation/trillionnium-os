@@ -1,6 +1,11 @@
 package org.trillionnium.hepta.local;
 import android.graphics.Rect;
 import android.os.SystemClock;
+import android.os.Looper;
+import android.os.Parcel;
+import android.graphics.Region;
+import org.trillionnium.hepta.background.ProfileTarget;
+import org.trillionnium.hepta.background.WindowOwnership;
 import android.view.Display;
 import android.view.accessibility.*;
 import java.io.File;

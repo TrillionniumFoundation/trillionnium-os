@@ -21,9 +21,11 @@ import java.util.UUID;
 /** Strict, bounded wire contract. No Android classes, subprocesses, or network clients. */
 public final class BrokerProtocol {
     public static final int VERSION = 1;
+    public static final int PROFILE_VERSION = 2;
     public static final int MAX_REQUEST = 16384;
     public static final int MAX_RESPONSE = 65536;
     public static final int MAX_REQUEST_IDS = 128;
+    public static final int MAX_PROFILE_REQUEST_IDS = 512;
     public static final long MAX_REQUEST_MS = 10000;
     public static final long MAX_TTL_MS = 600000;
     private BrokerProtocol() {}
@@ -77,17 +79,19 @@ public final class BrokerProtocol {
         public final Set<String> packages;
         public final long ttlMs;
         public final long expiresElapsedMs;
+        public final ProfileTarget profileTarget;
         private Config(String socket, int owner, String generation, Set<String> packages,
-                       long ttl, long expiry) {
+                       long ttl, long expiry, ProfileTarget profileTarget) {
             socketName = socket; ownerUid = owner; this.generation = generation;
             this.packages = Collections.unmodifiableSet(new LinkedHashSet<String>(packages));
-            ttlMs = ttl; expiresElapsedMs = expiry;
+            ttlMs = ttl; expiresElapsedMs = expiry; this.profileTarget=profileTarget;
         }
         public static Config parse(String[] args) throws Refusal {
-            if (args.length != 12) throw new Refusal("INVALID_ARGUMENTS");
+            if (args.length != 12 && args.length != 14) throw new Refusal("INVALID_ARGUMENTS");
             Map<String,String> a = new HashMap<String,String>();
             Set<String> keys = new LinkedHashSet<String>(Arrays.asList("--socket", "--owner-uid",
                 "--generation", "--allowed-packages", "--ttl-ms", "--expires-elapsed-ms"));
+            if(args.length==14)keys.add("--profile-target");
             for (int i = 0; i < args.length; i += 2) {
                 if (!keys.contains(args[i]) || a.put(args[i], args[i + 1]) != null)
                     throw new Refusal("INVALID_ARGUMENTS");
@@ -98,7 +102,7 @@ public final class BrokerProtocol {
             if (socket == null || !socket.startsWith("hepta-bg-") || !uuid(socket.substring(9)))
                 throw new Refusal("INVALID_SOCKET_NAME");
             long uid = decimal(a.get("--owner-uid"));
-            // This initial shell-context integration intentionally supports Android user 0 only.
+            // The controller peer remains user 0, independently of the explicit target profile.
             if (uid < 10000 || uid >= 90000) throw new Refusal("OWNER_USER_UNSUPPORTED");
             long ttl = decimal(a.get("--ttl-ms"));
             long expiry = decimal(a.get("--expires-elapsed-ms"));
@@ -113,7 +117,13 @@ public final class BrokerProtocol {
             for (String row : rows) {
                 if (!packageName(row) || !packages.add(row)) throw new Refusal("INVALID_PACKAGE_SCOPE");
             }
-            return new Config(socket, (int) uid, gen, packages, ttl, expiry);
+            ProfileTarget target=null;
+            if(args.length==14){
+                try{target=ProfileTarget.fromWire(a.get("--profile-target"));}
+                catch(IllegalArgumentException invalid){throw new Refusal("PROFILE_TARGET_INVALID");}
+                if(packages.size()!=1||!packages.contains(target.packageName))throw new Refusal("PROFILE_PACKAGE_SCOPE_INVALID");
+            }
+            return new Config(socket, (int) uid, gen, packages, ttl, expiry,target);
         }
     }
 
@@ -126,8 +136,11 @@ public final class BrokerProtocol {
         public final long deadline;
         public final String payload,attemptId;
         public final int targetUid;
-        private Request(byte[] bytes, String id, String gen, String op, String pkg, long deadline,String payload,String attemptId,int targetUid) {
+        public final int version,windowId,observedTaskId;
+        public final String profileTargetSha256;
+        private Request(byte[] bytes, String id, String gen, String op, String pkg, long deadline,String payload,String attemptId,int targetUid,int version,String profileTargetSha256,int windowId,int observedTaskId) {
             this.payload=payload;this.attemptId=attemptId;this.targetUid=targetUid;
+            this.version=version;this.profileTargetSha256=profileTargetSha256;this.windowId=windowId;this.observedTaskId=observedTaskId;
             this.bytes = bytes.clone(); requestId = id; generation = gen; operation = op;
             packageName = pkg; this.deadline = deadline;
         }
@@ -142,33 +155,47 @@ public final class BrokerProtocol {
             Set<String> expected = new LinkedHashSet<String>(Arrays.asList("version", "request_id",
                 "generation", "deadline_elapsed_ms", "op"));
             String op = string(map, "op");
+            long rawVersion=number(map,"version");
+            if(rawVersion!=VERSION&&rawVersion!=PROFILE_VERSION)throw new Refusal("PROTOCOL_VERSION");
+            int version=(int)rawVersion;boolean profile=version==PROFILE_VERSION,window="window".equals(op);
             boolean fixed=FixedIntentTools.isTool(op);
+            if(profile)expected.add("target_sha256");
+            if(window){if(!profile)throw new Refusal("OPERATION_NOT_ALLOWED");expected.addAll(Arrays.asList("package","window_id","task_id"));}
+            if(profile&&fixed)throw new Refusal("PROFILE_FIXED_INTENT_NOT_ALLOWED");
             if ("launch".equals(op) || "back".equals(op)||fixed) expected.add("package");
             if(fixed)expected.addAll(Arrays.asList("payload","attempt_id","target_uid"));
             if (!map.keySet().equals(expected)) throw new Refusal("REQUEST_FIELDS");
-            if (number(map, "version") != VERSION) throw new Refusal("PROTOCOL_VERSION");
+            String targetSha=profile?string(map,"target_sha256"):null;
+            if(profile&&!ProfileIdentity.hash(targetSha))throw new Refusal("PROFILE_TARGET_DIGEST_INVALID");
+            int windowId=-1,taskId=-1;
+            if(window){long w=number(map,"window_id"),t=number(map,"task_id");
+                if(w<0||w>Integer.MAX_VALUE||t<=0||t>Integer.MAX_VALUE)throw new Refusal("PROFILE_WINDOW_REQUEST_INVALID");
+                windowId=(int)w;taskId=(int)t;
+            }
             String id = string(map, "request_id"), gen = string(map, "generation");
             if (!uuid(id) || !uuid(gen)) throw new Refusal("INVALID_REQUEST_IDENTITY");
-            if (!fixed&&!Arrays.asList("create", "state", "launch", "back", "close").contains(op))
+            if (!fixed&&!Arrays.asList("create", "state", "launch", "back", "close", "window").contains(op))
                 throw new Refusal("OPERATION_NOT_ALLOWED");
-            String pkg = ("launch".equals(op) || "back".equals(op)||fixed) ? string(map, "package") : null;
+            String pkg = ("launch".equals(op) || "back".equals(op)||fixed||window) ? string(map, "package") : null;
             if (pkg != null && !packageName(pkg)) throw new Refusal("INVALID_PACKAGE");
             long deadline = number(map, "deadline_elapsed_ms");
             if (deadline <= 0) throw new Refusal("INVALID_DEADLINE");
             String payload=null,attempt=null;int targetUid=-1;
             if(fixed){
-                FixedIntentTools.Profile profile=FixedIntentTools.forAction(op);
-                if(!profile.packageName.equals(pkg))throw new Refusal("FIXED_TARGET_PACKAGE_MISMATCH");
+                FixedIntentTools.Profile fixedProfile=FixedIntentTools.forAction(op);
+                if(!fixedProfile.packageName.equals(pkg))throw new Refusal("FIXED_TARGET_PACKAGE_MISMATCH");
                 payload=string(map,"payload");attempt=string(map,"attempt_id");long uid=number(map,"target_uid");
                 if(uid<10000||uid>=90000||!attempt.matches("[0-9a-f]{64}"))throw new Refusal("FIXED_TARGET_IDENTITY_INVALID");
-                try{profile.validatePayload(payload);}catch(IllegalArgumentException invalid){throw new Refusal("FIXED_PAYLOAD_INVALID");}
+                try{fixedProfile.validatePayload(payload);}catch(IllegalArgumentException invalid){throw new Refusal("FIXED_PAYLOAD_INVALID");}
                 targetUid=(int)uid;
             }
-            return new Request(input, id, gen, op, pkg, deadline,payload,attempt,targetUid);
+            return new Request(input, id, gen, op, pkg, deadline,payload,attempt,targetUid,version,targetSha,windowId,taskId);
         }
         public void authenticate(Config config, int peerUid) throws Refusal {
             if (peerUid != config.ownerUid) throw new Refusal("CALLER_UID_MISMATCH");
             if (!generation.equals(config.generation)) throw new Refusal("GENERATION_MISMATCH");
+            if(config.profileTarget==null){if(version!=VERSION||profileTargetSha256!=null)throw new Refusal("PROFILE_SCOPE_MISMATCH");}
+            else if(version!=PROFILE_VERSION||!config.profileTarget.sha256.equals(profileTargetSha256))throw new Refusal("PROFILE_SCOPE_MISMATCH");
             if (packageName != null && !config.packages.contains(packageName))
                 throw new Refusal("PACKAGE_NOT_ALLOWED");
         }
@@ -185,7 +212,8 @@ public final class BrokerProtocol {
         public synchronized byte[] replay(Request request) throws Refusal {
             byte[][] row = records.get(request.requestId);
             if (row == null) {
-                int limit = "close".equals(request.operation) ? MAX_REQUEST_IDS : MAX_REQUEST_IDS - 1;
+                int maximum = request.version == PROFILE_VERSION ? MAX_PROFILE_REQUEST_IDS : MAX_REQUEST_IDS;
+                int limit = "close".equals(request.operation) ? maximum : maximum - 1;
                 if (records.size() >= limit) throw new Refusal("SESSION_REQUEST_LIMIT");
                 return null;
             }
@@ -195,7 +223,8 @@ public final class BrokerProtocol {
         public synchronized void remember(Request request, byte[] response) throws Refusal {
             if (response.length == 0 || response.length > MAX_RESPONSE) throw new Refusal("RESPONSE_SIZE");
             if (records.containsKey(request.requestId)) throw new Refusal("REQUEST_ALREADY_RECORDED");
-            int limit = "close".equals(request.operation) ? MAX_REQUEST_IDS : MAX_REQUEST_IDS - 1;
+            int maximum = request.version == PROFILE_VERSION ? MAX_PROFILE_REQUEST_IDS : MAX_REQUEST_IDS;
+            int limit = "close".equals(request.operation) ? maximum : maximum - 1;
             if (records.size() >= limit) throw new Refusal("SESSION_REQUEST_LIMIT");
             records.put(request.requestId, new byte[][] {request.bytes.clone(), response.clone()});
         }

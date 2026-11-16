@@ -12,6 +12,7 @@ public final class ScopeUiFixture extends Activity {
     Widget backgroundMode=new Widget();
     java.util.Set<String> backgroundPackages=new java.util.TreeSet<String>();
     String selectedBackgroundPackage(){return null;}
+    org.trillionnium.hepta.background.ProfileTarget selectedProfileTarget(){throw new AssertionError("foreground fixture has no profile selection authority");}
     // Foreground scope tests do not simulate a persisted background choice.
     // Entering the background branch must fail, never grant synthetic UI authority.
     void requireCurrentBackgroundChoice(){throw new AssertionError("background preference path is outside this foreground scope fixture");}

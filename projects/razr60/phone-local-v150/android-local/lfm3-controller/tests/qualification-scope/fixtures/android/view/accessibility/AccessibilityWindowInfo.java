@@ -7,5 +7,12 @@ public final class AccessibilityWindowInfo {
  public int getId(){return id;}public int getType(){return type;}public int getDisplayId(){return display;}public boolean isActive(){return active;}
  public boolean isFocused(){return focused;}public int getLayer(){return layer;}public AccessibilityNodeInfo getRoot(){return root;}
  public CharSequence getTitle(){return title;}public void getBoundsInScreen(Rect r){r.left=bounds.left;r.top=bounds.top;r.right=bounds.right;r.bottom=bounds.bottom;}
+ /** New platform API type boundaries only. These legacy tests never serialize a real window. */
+ public boolean isAccessibilityFocused(){throw new AssertionError("no profile window in legacy fixture");}
+ public boolean isInPictureInPictureMode(){throw new AssertionError("no profile window in legacy fixture");}
+ public void getRegionInScreen(android.graphics.Region region){throw new AssertionError("no profile region in legacy fixture");}
+ public void writeToParcel(android.os.Parcel parcel,int flags){throw new AssertionError("no profile parcel in legacy fixture");}
+ public static final class Creator {public AccessibilityWindowInfo createFromParcel(android.os.Parcel parcel){throw new AssertionError("no framework parcel in legacy fixture");}}
+ public static final Creator CREATOR=new Creator();
  public void recycle(){recycles++;}
 }

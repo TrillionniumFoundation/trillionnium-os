@@ -404,12 +404,14 @@ public final class LocalTaskController implements AutoCloseable {
                 checkActive(deadline);
                 if(background==null||activeWebTask!=null)throw new IllegalStateException("原生查询必须使用同一原生后台选择，不能附带网页会话");
                 final QualificationScopeConfig.CompletionInstalledIdentity nativeInstalled=
-                        QualificationScopeConfig.CompletionInstalledIdentity.captureNativeApp(service,completion.nativeGoal());
+                        QualificationScopeConfig.CompletionInstalledIdentity.captureNativeApp(service,completion.nativeGoal(),background);
                 completionInstalled=nativeInstalled;
                 record(evidence,"completion-installed-identity.json",new JSONObject(nativeInstalled.evidence()));
                 final File nativeEvidence=evidence;
                 NativeAppSession nativeTask=new NativeAppSession(taskId,authorization,backgroundSelection,
-                        new NativeAppEvidence.Installed(nativeInstalled.packageName,nativeInstalled.uid,nativeInstalled.versionCode,nativeInstalled.apkHashes),
+                        nativeInstalled.profileTarget==null
+                                ?new NativeAppEvidence.Installed(nativeInstalled.packageName,nativeInstalled.uid,nativeInstalled.versionCode,nativeInstalled.apkHashes)
+                                :new NativeAppEvidence.Installed(nativeInstalled.profileTarget),
                         NativeAppObservation.selectionSha(backgroundSelection),background.generation,background.displayId(),
                         new NativeAppSession.InstalledVerifier(){public void verify()throws Exception{nativeInstalled.verify(service);}},
                         new NativeAppSession.Journal(){public void write(String leaf,java.util.Map<String,Object> value)throws Exception{
@@ -805,7 +807,7 @@ public final class LocalTaskController implements AutoCloseable {
                             steps,acceptedCompletionModelRunId,modelSuccess&&"model_reported_done".equals(finalStatus),
                             cleanup,backgroundReleased,terminalScopeRechecked,nativeInstalledRechecked,cancelled.get(),
                             modelCleanup.processStarted,modelCleanup.processExitObserved,modelCleanup.exitCode,modelCleanup.receiptValid,
-                            modelCleanup.taskId,modelCleanup.generation,modelCleanup.receiptSha256);
+                            modelCleanup.taskId,modelCleanup.generation,modelCleanup.receiptSha256,nativeProfileCleanup(backgroundCleanup));
                     completionVerified=terminal.verified;completionEvidence=new java.util.LinkedHashMap<String,Object>(terminal.evidence);
                     if(modelSuccess&&!completionVerified){modelSuccess=false;finalStatus="partial";summary="原生应用页面曾被读取，但最终目标、身份或清理证明未通过。";}
                 }else{
@@ -1112,6 +1114,27 @@ public final class LocalTaskController implements AutoCloseable {
             value.put("native_action_guard",copy);
         }
         return value;
+    }
+    /** Copies only the already verified session cleanup projection; no expected identity can fill a missing fact. */
+    private static java.util.Map<String,Object> nativeProfileCleanup(BackgroundSession.Cleanup cleanup){
+        if(cleanup==null||!cleanup.known)return null;
+        try{
+            JSONObject raw=cleanup.evidence.optJSONObject("profile_cleanup");if(raw==null)return null;
+            java.util.Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();
+            java.util.Iterator<String> keys=raw.keys();int count=0;
+            while(keys.hasNext()){
+                String key=keys.next();if(++count>14)return null;Object item=raw.get(key);
+                if("owned_tasks".equals(key)){
+                    if(!(item instanceof JSONArray))return null;JSONArray rows=(JSONArray)item;
+                    if(rows.length()>32)return null;
+                    java.util.List<java.util.Map<String,Object>> copied=new java.util.ArrayList<java.util.Map<String,Object>>();
+                    for(int i=0;i<rows.length();i++)copied.add(completionFixed(rows.getJSONObject(i)));
+                    value.put(key,copied);
+                }else if(item instanceof String||item instanceof Boolean||item instanceof Integer||item instanceof Long)value.put(key,item);
+                else return null;
+            }
+            return NativeAppEvidence.immutableMap(value);
+        }catch(Exception invalid){return null;}
     }
     private static java.util.Map<String,Object> completionFixed(JSONObject object)throws Exception{
         if(object==null)return null;java.util.Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();

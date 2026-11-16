@@ -127,7 +127,7 @@ def prepare(source, output):
     web_dom_canonical=source/'src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java'
     files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java',web_protocol,web_dom_canonical,
               source/'tests/web-flight/legacy-boundary/WebShoppingQuote.java']
-    files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','FixedIntentDispatch','BrokerProtocol')]
+    files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','FixedIntentDispatch','BrokerProtocol','ProfileIdentity','ProfileTarget','WindowOwnership')]
     # The real immutable Selection is now part of ordinary authorization admission.
     # Replace only that former fixture class; broker/display transport stays explicit IO fake.
     background_raw=(pkg/'BackgroundSession.java').read_text()

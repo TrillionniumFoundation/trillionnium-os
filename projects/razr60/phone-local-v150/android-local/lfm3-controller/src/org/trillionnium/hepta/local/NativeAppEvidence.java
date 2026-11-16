@@ -12,6 +12,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import org.trillionnium.hepta.background.ProfileTarget;
+import org.trillionnium.hepta.background.WindowOwnership;
 
 /** Detached facts from one actual bounded native observation. Nothing in this
  * type supplies a node reference, dispatch permission, query or completion.
@@ -27,8 +29,20 @@ final class NativeAppEvidence {
         final int uid;
         final long versionCode;
         final Map<String,String> apkHashes;
+        final ProfileTarget profileTarget;
         Installed(String pkg,int uid,long version,Map<String,String> hashes){
-            need(pkg!=null&&uid>=10000&&uid<90000&&version>0&&hashes!=null&&!hashes.isEmpty(),"ordinary installed App identity required");
+            this(pkg,uid,version,hashes,null);
+        }
+        Installed(ProfileTarget actualTarget){
+            this(actualTarget==null?null:actualTarget.packageName,actualTarget==null?-1:actualTarget.fullUid,
+                    actualTarget==null?-1:actualTarget.versionCode,actualTarget==null?null:actualTarget.apkHashes,actualTarget);
+        }
+        private Installed(String pkg,int uid,long version,Map<String,String> hashes,ProfileTarget profile){
+            need(pkg!=null&&version>0&&hashes!=null&&!hashes.isEmpty(),"installed App identity required");
+            if(profile==null)need(uid>=10000&&uid<90000,"ordinary user0 installed App identity required");
+            else need(profile.packageName.equals(pkg)&&profile.fullUid==uid&&profile.versionCode==version
+                    &&profile.apkHashes.equals(hashes),"exact admitted profile installation required");
+            profileTarget=profile;
             TreeMap<String,String> copy=new TreeMap<String,String>();
             for(Map.Entry<String,String> e:hashes.entrySet()){
                 need(e.getKey()!=null&&(e.getKey().equals("base")||e.getKey().matches("split:[A-Za-z0-9_.-]+"))&&sha(e.getValue()),"complete APK identity required");
@@ -41,7 +55,8 @@ final class NativeAppEvidence {
         }
         Map<String,Object> evidence(){
             Map<String,Object> o=map();o.put("package",packageName);o.put("uid",uid);o.put("version_code",versionCode);
-            o.put("apk_hashes",apkHashes);o.put("apk_set_sha256",apkSetSha256);return o;
+            o.put("apk_hashes",apkHashes);o.put("apk_set_sha256",apkSetSha256);
+            if(profileTarget!=null)o.put("profile_target",profileTarget.evidence());return o;
         }
     }
 
@@ -89,6 +104,7 @@ final class NativeAppEvidence {
         final boolean nodesTruncated,collectionComplete,metadataObserved;
         final List<Node> nodes;
         final Map<String,Node> byId;
+        final WindowOwnership profileWindow;
         Frame(String task,String owner,String target,String auth,String selection,String observation,String pkg,String generation,
                 String tree,String state,String screen,String source,String completion,int display,int window,int rotation,
                 int width,int height,int left,int top,int right,int bottom,long captured,boolean truncated,
@@ -100,6 +116,18 @@ final class NativeAppEvidence {
                 String tree,String state,String screen,String source,String completion,int display,int window,int rotation,
                 int width,int height,int left,int top,int right,int bottom,long captured,boolean truncated,
                 boolean countersComplete,List<Node> nodes,int windowType,boolean metadataObserved){
+            this(task,owner,target,auth,selection,observation,pkg,generation,tree,state,screen,source,completion,
+                    display,window,rotation,width,height,left,top,right,bottom,captured,truncated,countersComplete,nodes,windowType,metadataObserved,null);
+        }
+        Frame(String task,String owner,String target,String auth,String selection,String observation,String pkg,String generation,
+                String tree,String state,String screen,String source,String completion,int display,int window,int rotation,
+                int width,int height,int left,int top,int right,int bottom,long captured,boolean truncated,
+                boolean countersComplete,List<Node> nodes,int windowType,boolean metadataObserved,WindowOwnership actualProfileWindow){
+            if(actualProfileWindow!=null)need(actualProfileWindow.generation.equals(generation)
+                    &&actualProfileWindow.displayId==display&&actualProfileWindow.windowId==window
+                    &&actualProfileWindow.observedElapsedMs<=captured&&captured<actualProfileWindow.expiresElapsedMs,
+                    "actual profile frame window/lease/capture binding differs");
+            profileWindow=actualProfileWindow;
             need(id(task)&&sha(owner)&&sha(target)&&sha(auth)&&sha(selection)&&id(observation)&&pkg!=null&&backgroundGeneration(generation),"native task/frame identities required");
             need(sha(tree)&&sha(state)&&sha(screen)&&sha(source)&&sha(completion),"native original frame hashes required");
             need(display>0&&window>=0&&rotation>=0&&rotation<=3&&width>0&&height>0&&right>left&&bottom>top&&captured>=0,"actual background window required");
@@ -119,7 +147,7 @@ final class NativeAppEvidence {
                 &&authorizationSha.equals(f.authorizationSha)&&selectionSha.equals(f.selectionSha)&&observationId.equals(f.observationId)
                 &&packageName.equals(f.packageName)&&generation.equals(f.generation)&&displayId==f.displayId&&windowId==f.windowId
                 &&rotation==f.rotation&&treeSha.equals(f.treeSha)&&stateSha.equals(f.stateSha)&&sourceRecordSha.equals(f.sourceRecordSha)
-                &&windowType==f.windowType&&metadataObserved==f.metadataObserved
+                &&windowType==f.windowType&&metadataObserved==f.metadataObserved&&sameProfileWindow(profileWindow,f.profileWindow)
                 &&completionFrameSha.equals(f.completionFrameSha)&&screenshotSha.equals(f.screenshotSha);}
         Map<String,Object> evidence(){
             Map<String,Object> o=map();o.put("schema",SCHEMA);o.put("task_id",taskId);o.put("owner_sha256",ownerSha);o.put("execution_target_sha256",targetSha);
@@ -129,10 +157,34 @@ final class NativeAppEvidence {
             o.put("app_tree_sha256",treeSha);o.put("observation_state_sha256",stateSha);o.put("screen_sha256",screenshotSha);
             o.put("phone_observation_record_sha256",sourceRecordSha);o.put("completion_frame_sha256",completionFrameSha);o.put("captured_elapsed_ms",capturedElapsedMs);
             o.put("retained_nodes",nodes.size());o.put("nodes_truncated",nodesTruncated);o.put("actual_collection_complete",collectionComplete);
+            if(profileWindow!=null)o.put("actual_profile_window",profileWindow.evidence());
             o.put("screenshots_used_as_text",false);return o;
         }
     }
 
+    /** Stable identity across fresh reads; expiry/proof IDs never renew an old frame. */
+    static boolean sameProfileOwner(WindowOwnership a,WindowOwnership b){
+        if(a==null||b==null)return a==b;
+        return a.targetSha256.equals(b.targetSha256)&&a.generation.equals(b.generation)
+                &&a.displayId==b.displayId&&a.taskId==b.taskId&&a.parentTaskId==b.parentTaskId
+                &&a.taskTokenId.equals(b.taskTokenId)&&a.userId==b.userId&&a.userSerial==b.userSerial&&a.fullUid==b.fullUid;
+    }
+    static boolean sameProfileWindow(WindowOwnership a,WindowOwnership b){
+        return sameProfileOwner(a,b)&&(a==null||a.windowId==b.windowId);
+    }
+    static void requireProfileTarget(ProfileTarget expected,WindowOwnership actual){
+        if(expected==null){need(actual==null,"profile evidence on an ordinary user0 task");return;}
+        need(actual!=null&&expected.sha256.equals(actual.targetSha256)&&expected.profile.userId==actual.userId
+                &&expected.profile.serial==actual.userSerial&&expected.fullUid==actual.fullUid,
+                "actual window does not belong to the selected profile installation");
+    }
+    static Map<String,Object> profileActionIdentity(WindowOwnership actual){
+        need(actual!=null,"actual profile ownership required");Map<String,Object> out=map();
+        out.put("profile_target_sha256",actual.targetSha256);out.put("profile_user_id",actual.userId);
+        out.put("profile_user_serial",actual.userSerial);out.put("profile_full_uid",actual.fullUid);
+        out.put("profile_task_id",actual.taskId);out.put("profile_parent_task_id",actual.parentTaskId);
+        out.put("profile_task_token_id",actual.taskTokenId);return Collections.unmodifiableMap(out);
+    }
     static Map<String,Object> map(){return new LinkedHashMap<String,Object>();}
     static Map<String,Object> immutableMap(Map<String,Object> source){
         Map<String,Object> out=map();for(Map.Entry<String,Object> e:source.entrySet())out.put(e.getKey(),immutableValue(e.getValue(),0));

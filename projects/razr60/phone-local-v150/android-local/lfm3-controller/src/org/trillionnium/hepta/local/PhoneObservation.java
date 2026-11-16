@@ -8,6 +8,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.trillionnium.hepta.background.ProfileTarget;
+import org.trillionnium.hepta.background.WindowOwnership;
 
 /** Immutable description of one observed active window and original-size screenshot. */
 public final class PhoneObservation {
@@ -177,6 +179,9 @@ public final class PhoneObservation {
     public final String backgroundGeneration,backgroundBootstrapPackage;
     public final List<String> backgroundAllowedPackages;
     private final String backgroundSelectionRaw;
+    public static final String PROFILE_WINDOW_TASK_SOURCE="android16_a11y_public_parcel_checked_v1";
+    public final ProfileTarget profileTarget;
+    public final WindowOwnership profileWindow;
     public final ObservationState state;
     public final ObservedWindowMetadata windowMetadata;
     final Rect windowBounds;
@@ -213,6 +218,16 @@ public final class PhoneObservation {
                       ObservationState state,ObservedWindowMetadata windowMetadata,boolean truncated,List<Node> nodes,
                       String backgroundGeneration,String backgroundBootstrapPackage,List<String> backgroundAllowedPackages,
                       CollectionStats collectionStats,JSONObject actualSelection,String actualOwnerSha256,java.util.Map<String,Object> captureEvidence) {
+        this(id,packageName,at,width,height,rotation,windowId,bounds,screenshot,screenshotSha256,treeSha256,state,windowMetadata,
+                truncated,nodes,backgroundGeneration,backgroundBootstrapPackage,backgroundAllowedPackages,collectionStats,
+                actualSelection,actualOwnerSha256,captureEvidence,null);
+    }
+    PhoneObservation(String id,String packageName,long at,int width,int height,int rotation,int windowId,
+                      Rect bounds,File screenshot,String screenshotSha256,String treeSha256,
+                      ObservationState state,ObservedWindowMetadata windowMetadata,boolean truncated,List<Node> nodes,
+                      String backgroundGeneration,String backgroundBootstrapPackage,List<String> backgroundAllowedPackages,
+                      CollectionStats collectionStats,JSONObject actualSelection,String actualOwnerSha256,
+                      java.util.Map<String,Object> captureEvidence,WindowOwnership actualProfileWindow) {
         if(collectionStats!=null&&(collectionStats.retained!=nodes.size()||collectionStats.truncated()!=truncated))
             throw new IllegalArgumentException("collection counters differ from actual observed nodes");
         this.collectionStats=collectionStats;
@@ -228,6 +243,19 @@ public final class PhoneObservation {
             backgroundSelectionRaw=checkedSelection(actualSelection,actualOwnerSha256,
                     backgroundBootstrapPackage,this.backgroundAllowedPackages);
         }
+        ProfileTarget selectedProfile=null;
+        if(actualSelection!=null&&actualSelection.has("profile_target_wire"))try{
+            selectedProfile=ProfileTarget.fromWire(actualSelection.getString("profile_target_wire"));
+        }catch(JSONException malformed){throw new IllegalArgumentException("profile Selection malformed",malformed);}
+        if(selectedProfile==null){
+            if(actualProfileWindow!=null)throw new IllegalArgumentException("profile window on a user0 observation");
+        }else{
+            if(actualProfileWindow==null||!selectedProfile.packageName.equals(packageName))
+                throw new IllegalArgumentException("actual profile window provenance missing");
+            actualProfileWindow.requireMatches(selectedProfile,backgroundGeneration,windowMetadata.displayId.intValue(),
+                    windowId,actualProfileWindow.taskId,at);
+        }
+        profileTarget=selectedProfile;profileWindow=actualProfileWindow;
         this.id=id;this.packageName=packageName;this.capturedElapsedMillis=at;
         if(captureEvidence!=null){
             Object capture=captureEvidence.get("capture_requested_elapsed_ms");
@@ -281,7 +309,10 @@ public final class PhoneObservation {
         // OWNER/UI derivation. Never replace it with a fixed provenance label.
         JSONObject actual=backgroundSelectionEvidence();
         if(actual==null)throw new IllegalStateException("actual background Selection provenance is missing");
-        return actual.put("generation",backgroundGeneration).put("display_id",windowMetadata.displayId);
+        actual.put("generation",backgroundGeneration).put("display_id",windowMetadata.displayId);
+        if(profileWindow!=null)actual.put("actual_profile_window",new JSONObject(profileWindow.evidence())
+                .put("accessibility_task_id_source",PROFILE_WINDOW_TASK_SOURCE));
+        return actual;
     }
     JSONObject backgroundSelectionEvidence()throws JSONException{
         return backgroundSelectionRaw==null?null:new JSONObject(backgroundSelectionRaw);
@@ -293,7 +324,18 @@ public final class PhoneObservation {
             java.util.Set<String> keys=new java.util.HashSet<String>(java.util.Arrays.asList(
                     "mode","allowed_packages","bootstrap_package","bootstrap_source","bootstrap_model_issued","home_allowed","main_display_fallback"));
             if(value.has("owner_task_selection"))keys.add("owner_task_selection");
+            boolean profileWire=value.has("profile_target_wire"),profileSha=value.has("profile_target_sha256");
+            require(profileWire==profileSha,"profile Selection requires wire and digest together");
+            if(profileWire){keys.add("profile_target_wire");keys.add("profile_target_sha256");}
             exactKeys(value,keys);
+            if(profileWire){
+                Object wire=value.get("profile_target_wire"),digest=value.get("profile_target_sha256");
+                require(wire instanceof String&&digest instanceof String,"profile Selection fields require exact strings");
+                ProfileTarget profile=ProfileTarget.fromWire((String)wire);
+                require(profile.sha256.equals(digest)&&profile.packageName.equals(initial)
+                        &&allowed.equals(Collections.singletonList(profile.packageName)),
+                        "profile Selection differs from its exact target installation");
+            }
             require("background".equals(value.get("mode"))&&initial.equals(value.get("bootstrap_package"))
                     &&new JSONArray(allowed).toString().equals(value.getJSONArray("allowed_packages").toString()),
                     "observed Selection scope differs from its background lease");

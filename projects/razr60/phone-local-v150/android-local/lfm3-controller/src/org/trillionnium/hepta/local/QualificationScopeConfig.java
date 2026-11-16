@@ -180,12 +180,25 @@ final class QualificationScopeConfig {
      * This exposes identity facts only; it does not install a scope or grant tools. */
     static final class CompletionInstalledIdentity {
         private final Installed installed;
+        final org.trillionnium.hepta.background.ProfileTarget profileTarget;
         final String packageName;final int uid;final long versionCode;final Map<String,String> apkHashes;
         private CompletionInstalledIdentity(Installed value){
-            installed=value;packageName=value.packageName;uid=value.uid;versionCode=value.version;
+            installed=value;profileTarget=null;packageName=value.packageName;uid=value.uid;versionCode=value.version;
             Map<String,String> hashes=new TreeMap<String,String>();
             for(Map.Entry<String,Apk> e:value.apks.entrySet())hashes.put(e.getKey(),e.getValue().sha256);
             apkHashes=java.util.Collections.unmodifiableMap(hashes);
+        }
+        private CompletionInstalledIdentity(org.trillionnium.hepta.background.ProfileTarget target){
+            installed=null;profileTarget=target;packageName=target.packageName;uid=target.fullUid;
+            versionCode=target.versionCode;apkHashes=target.apkHashes;
+        }
+        static CompletionInstalledIdentity captureNativeApp(Context context,NativeAppGoal goal,BackgroundSession background)throws Exception{
+            if(background==null||background.profileTarget()==null)return captureNativeApp(context,goal);
+            background.verifyProfileInstallation();
+            org.trillionnium.hepta.background.ProfileTarget target=background.profileTarget();
+            QualificationScope.require(goal!=null&&NativeAppGoal.CTRIP_PACKAGE.equals(goal.packageName)
+                    &&goal.packageName.equals(target.packageName),"explicit profile native target differs");
+            return new CompletionInstalledIdentity(target);
         }
         static CompletionInstalledIdentity captureNotes(Context context)throws Exception{
             Installed value=Installed.capture(context,"com.motorola.stylus");
@@ -204,11 +217,13 @@ final class QualificationScopeConfig {
             QualificationScope.require(value.uid>=10000&&value.uid<90000,"native completion target must be an ordinary installed app");
             return new CompletionInstalledIdentity(value);
         }
-        void verify(Context context)throws Exception{installed.verify(context);}
+        void verify(Context context)throws Exception{if(profileTarget==null)installed.verify(context);else ProfileCatalogueClient.requireCurrent(context,profileTarget);}
         Map<String,Object> evidence(){
-            Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();value.put("source","ordinary_package_manager_and_full_apk_hash");
+            Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();
+            value.put("source",profileTarget==null?"ordinary_package_manager_and_full_apk_hash":"privileged_target_user_package_manager_and_full_apk_hash");
+            if(profileTarget!=null)value.put("profile_target",profileTarget.evidence());
             value.put("package",packageName);value.put("uid",uid);value.put("apk_hashes",apkHashes);
-            value.put("apk_set_sha256",installed.apkSetSha256);value.put("version_code",installed.version);return value;
+            value.put("apk_set_sha256",profileTarget==null?installed.apkSetSha256:profileTarget.apkSetSha256);value.put("version_code",versionCode);return value;
         }
     }
     /** APK-set hash = SHA256 of sorted UTF-8 `base|split:name<TAB>sha256<LF>` rows. */

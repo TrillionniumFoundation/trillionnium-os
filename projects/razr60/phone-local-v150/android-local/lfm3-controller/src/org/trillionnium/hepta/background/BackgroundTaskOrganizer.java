@@ -114,6 +114,74 @@ final class BackgroundTaskOrganizer implements BackgroundOwnedSingleTask.Platfor
         return info;
     }
 
+    /** Profile path: keep the normal target-user singleTask rules; never set launchTaskId/inTask. */
+    void bindProfileRoot(Object root,Object cookie)throws Exception{
+        activeCheck.check();setRoot.invoke(options,wrapper(root));setCookie.invoke(options,(IBinder)cookie);
+        ActivityOptions copy=(ActivityOptions)ActivityOptions.class.getMethod("fromBundle",android.os.Bundle.class)
+                .invoke(null,options.toBundle());
+        Object actualRoot=ActivityOptions.class.getMethod("getLaunchRootTask").invoke(copy);
+        Object actualCookie=ActivityOptions.class.getMethod("getLaunchCookie").invoke(copy);
+        Object task=ActivityOptions.class.getMethod("getLaunchTaskId").invoke(copy);
+        if(!(task instanceof Integer)||((Integer)task)!=-1||actualRoot==null
+                ||!root.equals(tokenBinder.invoke(actualRoot))||!cookie.equals(actualCookie)
+                ||copy.getLaunchDisplayId()!=display)throw new IOException("PROFILE_LAUNCH_OPTIONS_MISMATCH");
+    }
+
+    /** Strict parallel arrays from RootTaskInfo, including every actual child user. */
+    static ProfileTaskPolicy.Snapshot profileSnapshot(Object activityTasks)throws Exception{
+        Object raw=Class.forName("android.app.IActivityTaskManager").getMethod("getAllRootTaskInfos").invoke(activityTasks);
+        if(!(raw instanceof List)||((List<?>)raw).size()>ProfileTaskPolicy.MAX_ROOTS)
+            throw new IOException("PROFILE_ROOT_QUERY_INCOMPLETE");
+        List<ProfileTaskPolicy.Root> out=new ArrayList<ProfileTaskPolicy.Root>();
+        for(Object row:(List<?>)raw){
+            if(row==null)throw new IOException("PROFILE_ROOT_QUERY_INCOMPLETE");
+            Object ids=field(row,"childTaskIds"),users=field(row,"childTaskUserIds");
+            Object names=field(row,"childTaskNames"),bounds=field(row,"childTaskBounds");
+            if(!(ids instanceof int[])||!(users instanceof int[])||!(names instanceof String[])
+                    ||!(bounds instanceof android.graphics.Rect[]))throw new IOException("PROFILE_CHILD_ARRAYS_UNAVAILABLE");
+            android.graphics.Rect[] rectangles=(android.graphics.Rect[])bounds;int[][] geometry=new int[rectangles.length][];
+            for(int i=0;i<rectangles.length;i++){
+                android.graphics.Rect r=rectangles[i];
+                if(r==null)throw new IOException("PROFILE_CHILD_BOUNDS_UNAVAILABLE");
+                geometry[i]=new int[]{r.left,r.top,r.right,r.bottom};
+            }
+            out.add(new ProfileTaskPolicy.Root(integer(row,"taskId"),integer(row,"displayId"),integer(row,"userId"),
+                    integer(row,"numActivities"),bool(row,"visible"),component(field(row,"baseActivity")),
+                    component(field(row,"topActivity")),(int[])ids,(int[])users,(String[])names,geometry));
+        }
+        return new ProfileTaskPolicy.Snapshot(out);
+    }
+
+    /** Full raw recent-task dump, before any profile display or organizer container exists. */
+    static String profileRecents(LongSupplier deadline)throws Exception{
+        Object am=Class.forName("android.app.ActivityManager").getMethod("getService").invoke(null);
+        if(!(am instanceof IInterface))throw new IOException("PROFILE_RECENTS_SERVICE_UNAVAILABLE");
+        final IBinder binder=((IInterface)am).asBinder();
+        if(binder==null)throw new IOException("PROFILE_RECENTS_SERVICE_UNAVAILABLE");
+        final ParcelFileDescriptor[] pipe=ParcelFileDescriptor.createPipe();
+        final ByteArrayOutputStream bytes=new ByteArrayOutputStream();
+        final AtomicReference<Throwable> failure=new AtomicReference<Throwable>();
+        Thread reader=new Thread(()->{
+            try(ParcelFileDescriptor.AutoCloseInputStream in=new ParcelFileDescriptor.AutoCloseInputStream(pipe[0])){
+                byte[] buffer=new byte[8192];int n;
+                while((n=in.read(buffer))!=-1){
+                    if(bytes.size()+n>BackgroundOwnedSingleTask.MAX_DUMP_BYTES)throw new IOException("PROFILE_RECENTS_SIZE");
+                    bytes.write(buffer,0,n);
+                }
+            }catch(Throwable error){failure.set(error);}
+        },"HeptaProfileRecents");
+        reader.setDaemon(true);reader.start();
+        try{binder.dump(pipe[1].getFileDescriptor(),new String[]{"-a","recents"});}
+        finally{pipe[1].close();}
+        long remaining=deadline.getAsLong()-SystemClock.elapsedRealtime();
+        if(remaining>0)reader.join(remaining);
+        if(reader.isAlive()){pipe[0].close();throw new IOException("PROFILE_RECENTS_DEADLINE");}
+        if(failure.get()!=null)throw new IOException("PROFILE_RECENTS_READ_FAILED",failure.get());
+        if(SystemClock.elapsedRealtime()>=deadline.getAsLong())throw new IOException("PROFILE_RECENTS_DEADLINE");
+        return StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
+                .onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(bytes.toByteArray())).toString();
+    }
+
     @Override public Object newCookie(){return new Binder();}
     @Override public void guard() throws Exception {activeCheck.check();}
     @Override public List<BackgroundOwnedSingleTask.Task> roots() throws Exception {return rows(roots.invoke(organizer,display,null));}

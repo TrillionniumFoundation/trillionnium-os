@@ -21,6 +21,17 @@ final class NativeActionSnapshotCheck {
     static final Set<String> NK=keys("path,parent_class,package,window_id,class,view_id,text,description,label,ref_signature_sha256,bounds,visible,enabled,clickable,editable,scrollable,focused,password,selected,checkable,checked,children,scroll_actions,ime_enter,input_sha256,action_click");
     static final Set<String> EK=keys("task_id,owner_sha256,target_sha256,authorization_sha256,selection_sha256,installed_set_sha256,goal_sha256,background_generation,origin_observation_id,package,display_id,window_id,rotation,width,height,root_bounds,window_metadata_sha256,reported_windows_sha256,reported_windows_complete,ime_visibility,captured_elapsed_ms,full_native_complete,visited,pending,node_omissions,text_omissions,child_omissions");
     static final Set<String> IDENTITY=keys("task_id,owner_sha256,target_sha256,authorization_sha256,selection_sha256,installed_set_sha256,goal_sha256,background_generation,origin_observation_id");
+    static final Set<String> PROFILE_IDENTITY=keys("profile_target_sha256,profile_user_id,profile_user_serial,profile_full_uid,profile_task_id,profile_parent_task_id,profile_task_token_id");
+    static final Set<String> PROFILE_AUTHORITY=union(IDENTITY,PROFILE_IDENTITY),PROFILE_ENVELOPE=union(EK,PROFILE_IDENTITY);
+    private static void profileIdentity(Map<String,Object> fields){
+        if(!fields.containsKey("profile_target_sha256"))return;
+        int user=i(fields,"profile_user_id"),uid=i(fields,"profile_full_uid");
+        need(user>0&&user<=21473&&uid>0&&uid/100000==user&&uid%100000>=10000&&uid%100000<90000
+                &&time(fields,"profile_user_serial")>0&&sha(s(fields,"profile_target_sha256")),"profile full UID/serial/target");
+        need(i(fields,"profile_task_id")>0&&i(fields,"profile_parent_task_id")>0
+                &&i(fields,"profile_task_id")!=i(fields,"profile_parent_task_id")
+                &&s(fields,"profile_task_token_id").matches("[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}"),"profile leaf/token");
+    }
     static final Set<String> FORM_IDS=keys("tv_depart_city,tv_arrival_city,tv_depart_date,tv_adult_count,tv_child_count,tv_baby_count,bt_submit_inquire");
     static final Set<String> ROLES=keys("列表页头部重新搜索,单程TripSwitcherCity,单程TripSwitcherDate,单程列表页,单程,往返,多程,经济舱");
     static final String[] TILE_IDS={"home_grid_hotel_widget","home_grid_flight_widget","home_grid_train_widget","home_grid_travel_widget","home_grid_strategy_widget"};
@@ -49,7 +60,8 @@ final class NativeActionSnapshotCheck {
             need(Arrays.asList(OPEN,YEAR,QUERY,SEARCH).contains(purpose),"unsupported purpose");
             need((SEARCH.equals(purpose)?XIAOMI:CTRIP).equals(pkg),"purpose/package mismatch");
             need(path(path)&&label!=null&&label.length()<=4096&&sha(refSha256)&&id(run)&&node!=null&&node.matches("n[0-9]{1,4}")&&sha(actionSha),"original action identity");
-            need(identity!=null&&identity.keySet().equals(IDENTITY),"exact authority identity");
+            need(identity!=null&&(identity.keySet().equals(IDENTITY)||identity.keySet().equals(PROFILE_AUTHORITY)),"exact authority identity");
+            profileIdentity(identity);
             need(!QUERY.equals(purpose)||sha(historySha)&&!hash("").equals(historySha),"real query history binding missing");
             need(started>=0&&deadline>started&&deadline-started<=8000,"original action deadline");
             this.purpose=purpose;this.pkg=pkg;this.path=path;this.label=label;this.refSha256=refSha256;this.run=run;this.node=node;
@@ -76,7 +88,8 @@ final class NativeActionSnapshotCheck {
     static final class Snapshot {
         final Map<String,Object> env; final Map<String,Node> nodes; final String sha;
         Snapshot(Map<String,Object> input,List<Node> list){
-            need(input!=null&&input.keySet().equals(EK),"complete exact envelope");env=freeze(input);
+            need(input!=null&&(input.keySet().equals(EK)||input.keySet().equals(PROFILE_ENVELOPE)),"complete exact envelope");env=freeze(input);
+            profileIdentity(env);
             need(b(env,"full_native_complete")&&b(env,"reported_windows_complete")&&"hidden".equals(s(env,"ime_visibility")),"actual complete census/known hidden IME");
             for(String k:Arrays.asList("pending","node_omissions","text_omissions","child_omissions"))need(i(env,k)==0,"collection omitted "+k);
             for(String k:Arrays.asList("owner_sha256","target_sha256","authorization_sha256","selection_sha256","installed_set_sha256","goal_sha256","window_metadata_sha256","reported_windows_sha256"))need(sha(s(env,k)),"identity hash "+k);
@@ -100,7 +113,9 @@ final class NativeActionSnapshotCheck {
     }
     static Map<String,Object> compare(Intent in,Snapshot old,Snapshot fresh,long now){
         need(in!=null&&old!=null&&fresh!=null,"two complete actual snapshots");
-        for(String k:IDENTITY)need(in.identity.get(k).equals(old.env.get(k))&&in.identity.get(k).equals(fresh.env.get(k)),"binding changed: "+k);
+        need(old.env.keySet().equals(fresh.env.keySet())
+                &&old.env.containsKey("profile_target_sha256")==in.identity.containsKey("profile_target_sha256"),"profile mode changed");
+        for(String k:in.identity.keySet())need(in.identity.get(k).equals(old.env.get(k))&&in.identity.get(k).equals(fresh.env.get(k)),"binding changed: "+k);
         need(in.pkg.equals(s(old.env,"package"))&&in.pkg.equals(s(fresh.env,"package")),"App changed");
         long first=time(old.env,"captured_elapsed_ms"),last=time(fresh.env,"captured_elapsed_ms");
         need(first<=in.started&&in.started<=last&&last<=now&&now<in.deadline&&now-first<=90000,"original age/deadline/clock");
@@ -144,8 +159,10 @@ final class NativeActionSnapshotCheck {
             String operation,String originalScreen,String originalFrameRecord,String reason){
         need(in!=null&&old!=null&&fresh!=null&&id(operation)&&sha(originalScreen)&&sha(originalFrameRecord),
                 "same-operation original frame diagnostic binding required");
-        for(String k:IDENTITY)need(in.identity.get(k).equals(old.env.get(k))&&in.identity.get(k).equals(fresh.env.get(k)),
-                "diagnostic cannot cross task/owner/observation/lease");
+        need(old.env.keySet().equals(fresh.env.keySet())
+                &&old.env.containsKey("profile_target_sha256")==in.identity.containsKey("profile_target_sha256"),"diagnostic profile mode changed");
+        for(String k:in.identity.keySet())need(in.identity.get(k).equals(old.env.get(k))&&in.identity.get(k).equals(fresh.env.get(k)),
+                "diagnostic cannot cross task/owner/observation/lease/profile");
         need(in.pkg.equals(s(old.env,"package"))&&in.pkg.equals(s(fresh.env,"package"))
                 &&old.env.get("display_id").equals(fresh.env.get("display_id"))
                 &&old.env.get("window_id").equals(fresh.env.get("window_id")),"diagnostic same App window required");

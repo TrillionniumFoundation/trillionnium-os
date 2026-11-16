@@ -25,6 +25,9 @@ final class NativeAppObservation {
                 &&background.generation.equals(observed.backgroundGeneration)&&background.displayId()==completion.displayId
                 &&observed.backgroundAllowedPackages.size()==1&&observed.backgroundAllowedPackages.contains(target.packageName)
                 &&target.packageName.equals(observed.backgroundBootstrapPackage),"same native lease/package/selection required");
+        NativeAppEvidence.requireProfileTarget(background.profileTarget(),observed.profileWindow);
+        if(observed.profileWindow!=null)background.requireHistoricalProfileWindow(observed.profileWindow,
+                observed.windowId,observed.profileWindow.taskId,observed.capturedElapsedMillis);
         String expected=selectionSha(selected),actual=NativeAppEvidence.fingerprint(value(observed.backgroundSelectionEvidence()));
         NativeAppEvidence.need(expected.equals(actual),"actual observed native Selection projection differs");
         List<NativeAppEvidence.Node> nodes=new ArrayList<NativeAppEvidence.Node>();
@@ -45,7 +48,7 @@ final class NativeAppObservation {
                 observed.screenshotSha256,originalRecordSha,TaskCompletionGate.webFrameSha(completion),completion.displayId,
                 observed.windowId,observed.rotation,observed.width,observed.height,observed.windowBounds.left,observed.windowBounds.top,
                 observed.windowBounds.right,observed.windowBounds.bottom,observed.capturedElapsedMillis,observed.nodesTruncated,complete,nodes,
-                completion.windowType,completion.metadataObserved);
+                completion.windowType,completion.metadataObserved,observed.profileWindow);
     }
     private static Object value(Object v)throws Exception{
         if(v==null||v==JSONObject.NULL)return null;

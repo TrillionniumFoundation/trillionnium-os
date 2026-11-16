@@ -72,7 +72,7 @@
         return new FrozenObservationWindow("package".equals(kind)?"other.app":w.packageName,
             w.windowId+("window".equals(kind)?1:0),w.displayId+("display".equals(kind)?1:0),w.rotation+("rotation".equals(kind)?1:0),
             w.left,w.top,w.right-("root_geometry".equals(kind)?1:0),w.bottom,w.width-("display_geometry".equals(kind)?1:0),w.height,
-            "metadata".equals(kind)?"different window metadata":w.metadata,windows);
+            "metadata".equals(kind)?"different window metadata":w.metadata,windows,w.profileWindow);
     }
     static void normalAndHistoryCases()throws Exception{
         snapshotCase("png_only_content_change_preserves_original_paired_history",()->{

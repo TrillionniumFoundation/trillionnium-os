@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import org.trillionnium.hepta.background.WindowOwnership;
 
 /** One immutable native-App query task. This class has no Android dispatch,
  * coordinate, network, model, restart or retry API. Every transition consumes
@@ -62,7 +63,9 @@ final class NativeAppSession {
         t.requireOwner(auth.authorization.immutableOwner());
         need(t.nativeGoal.ownerSha256.equals(auth.authorization.instructionSha256)&&t.nativeGoal.packageName.equals(t.packageName),"same immutable native goal required");
         need(NativeAppEvidence.sha(selectionSha)&&NativeAppEvidence.backgroundGeneration(generation)&&display>0&&verifier!=null&&journal!=null,"actual background lease and journal required");
-        requireInstalled(t.nativeGoal,installed);verifier.verify();
+        requireInstalled(t.nativeGoal,installed);
+        need(t.profileTarget==null?installed.profileTarget==null:t.profileTarget.same(installed.profileTarget),
+                "selected profile and independently verified installation differ");verifier.verify();
         taskId=task;authorization=auth;selection=selected;target=t;goal=t.nativeGoal;this.installed=installed;
         this.selectionSha=selectionSha;this.generation=generation;displayId=display;installedVerifier=verifier;this.journal=journal;
         Map<String,Object> e=base();e.put("installed_app",installed.evidence());e.put("selection_projection_sha256",selectionSha);
@@ -79,7 +82,9 @@ final class NativeAppSession {
         else throw new IllegalArgumentException("native App provider not implemented for this immutable goal");
     }
     private void live(){need(!retired&&!invalid,"native task retired or invalid: "+invalidReason);authorization.ready();
-        authorization.authorization.requireCompletionSelection(selection);need(selection.executionTarget()==target&&target.nativeGoal==goal,"native Selection object changed");}
+        authorization.authorization.requireCompletionSelection(selection);need(selection.executionTarget()==target&&target.nativeGoal==goal,"native Selection object changed");
+        need(target.profileTarget==null?installed.profileTarget==null:target.profileTarget.same(installed.profileTarget),
+                "native profile Selection changed");}
     void verifyInstalled()throws Exception{installedVerifier.verify();}
     NativeAppDomain domain(){live();need(current!=null,"current native observation missing");return current;}
     NativeAppDomain domainFor(NotesCompletionEvidence.Frame frame){NativeAppDomain d=domain();
@@ -87,7 +92,11 @@ final class NativeAppSession {
     private void requireFrame(NativeAppEvidence.Frame f){need(f!=null&&taskId.equals(f.taskId)&&goal.ownerSha256.equals(f.ownerSha)
                 &&target.targetSha256.equals(f.targetSha)&&authorization.authorization.sha256.equals(f.authorizationSha)
                 &&selectionSha.equals(f.selectionSha)&&goal.packageName.equals(f.packageName)&&generation.equals(f.generation)
-                &&displayId==f.displayId,"native observation task/owner/target/authorization/lease differs");}
+                &&displayId==f.displayId,"native observation task/owner/target/authorization/lease differs");
+        NativeAppEvidence.requireProfileTarget(installed.profileTarget,f.profileWindow);
+        if(f.profileWindow!=null)f.profileWindow.requireMatches(installed.profileTarget,generation,displayId,f.windowId,
+                f.profileWindow.taskId,f.capturedElapsedMs);
+    }
 
     /** Called only after the corresponding full PhoneObservation bytes have
      * been written create-only. A later frame never replaces an earlier one. */
@@ -337,6 +346,8 @@ final class NativeAppSession {
             id.put("authorization_sha256",authorization.authorization.sha256);id.put("selection_sha256",session.selectionSha);
             id.put("installed_set_sha256",installed.apkSetSha256);id.put("goal_sha256",goal.contractSha256);
             id.put("background_generation",session.generation);id.put("origin_observation_id",frame.observationId);
+            NativeAppEvidence.requireProfileTarget(installed.profileTarget,frame.profileWindow);
+            if(frame.profileWindow!=null)id.putAll(NativeAppEvidence.profileActionIdentity(frame.profileWindow));
             identity=NativeAppEvidence.immutableMap(id);
             Map<String,Object> a=NativeAppEvidence.map();a.put("action_schema",action.actionSchema);a.put("action",action.action);
             a.put("observation_id",action.observationId);a.put("package",action.packageName);a.put("node_id",action.nodeId);
@@ -638,13 +649,18 @@ final class NativeAppSession {
         e.put("product_home_loading_wait_attempts",productHomeLoadingWaits);
         e.put("product_query_observed",productQueryProof!=null);e.put("product_detail_navigation_observed",productOpenProof!=null);e.put("pending",pending==null?null:pending.evidence());e.put("transitions",transitions);return e;}
     private Map<String,Object> base(){Map<String,Object> e=NativeAppEvidence.map();e.put("schema",SCHEMA);e.put("task_id",taskId);
-        e.put("owner_sha256",goal.ownerSha256);e.put("execution_target_sha256",target.targetSha256);e.put("authorization_sha256",authorization.authorization.sha256);return e;}
+        e.put("owner_sha256",goal.ownerSha256);e.put("execution_target_sha256",target.targetSha256);e.put("authorization_sha256",authorization.authorization.sha256);
+        if(installed.profileTarget!=null)e.put("profile_target",installed.profileTarget.evidence());return e;}
     private void invalidate(String reason){if(inFlight!=null&&inFlight.guard!=null)inFlight.guard.close();
         invalid=true;invalidReason=reason;acceptedClaim=null;}
 
     static final class SuccessClaim {
         final NativeAppSession session;final int step;final String run,frameSha,observation;final Map<String,Object> result;
-        private SuccessClaim(NativeAppSession s,int step,String run,NativeAppEvidence.Frame frame,Map<String,Object> result){session=s;this.step=step;this.run=run;frameSha=frame.completionFrameSha;observation=frame.observationId;this.result=NativeAppEvidence.immutableMap(result);}
+        final WindowOwnership profileWindow;
+        private SuccessClaim(NativeAppSession s,int step,String run,NativeAppEvidence.Frame frame,Map<String,Object> result){
+            session=s;this.step=step;this.run=run;frameSha=frame.completionFrameSha;observation=frame.observationId;
+            profileWindow=frame.profileWindow;this.result=NativeAppEvidence.immutableMap(result);
+        }
     }
     boolean ready(NotesCompletionEvidence.Frame frame){return !retired&&!invalid&&current!=null&&current.resultReady&&frame!=null
             &&current.frame.observationId.equals(frame.observationId)&&current.frame.completionFrameSha.equals(TaskCompletionGate.webFrameSha(frame))&&pending==null&&inFlight==null;}
@@ -653,7 +669,8 @@ final class NativeAppSession {
         if(!finalWholeTreeStable||!ready(frame)||lastDone==null||lastDone.step!=step||!lastDone.run.equals(run)
                 ||!"success".equals(lastDone.action.status)||!lastDone.before.resultReady
                 ||!lastDone.before.frame.treeSha.equals(current.frame.treeSha)||lastDone.before.frame.windowId!=current.frame.windowId
-                ||lastDone.before.frame.rotation!=current.frame.rotation)return null;
+                ||lastDone.before.frame.rotation!=current.frame.rotation
+                ||!NativeAppEvidence.sameProfileWindow(lastDone.before.frame.profileWindow,current.frame.profileWindow))return null;
         acceptedClaim=new SuccessClaim(this,step,run,current.frame,current.resultRecord());return acceptedClaim;
     }
     void retire()throws Exception{if(retired)return;retired=true;
@@ -666,22 +683,84 @@ final class NativeAppSession {
             boolean modelSuccess,boolean cleanup,boolean backgroundReleased,boolean scopeRechecked,boolean installedRechecked,
             boolean cancelled,boolean processStarted,boolean processExitObserved,Integer exitCode,boolean receiptValid,
             String workerTask,String workerGeneration,String workerReceiptSha){
+        return terminal(frame,owner,step,run,modelSuccess,cleanup,backgroundReleased,scopeRechecked,installedRechecked,
+                cancelled,processStarted,processExitObserved,exitCode,receiptValid,workerTask,workerGeneration,workerReceiptSha,null);
+    }
+    Map<String,Object> terminal(NotesCompletionEvidence.Frame frame,TaskAuthorization.Frame owner,int step,String run,
+            boolean modelSuccess,boolean cleanup,boolean backgroundReleased,boolean scopeRechecked,boolean installedRechecked,
+            boolean cancelled,boolean processStarted,boolean processExitObserved,Integer exitCode,boolean receiptValid,
+            String workerTask,String workerGeneration,String workerReceiptSha,Map<String,Object> profileCleanup){
         SuccessClaim claim=acceptedClaim;acceptedClaim=null;boolean first=!terminalConsumed;terminalConsumed=true;
         boolean snapshot=first&&retired&&!invalid&&claim!=null&&claim.session==this&&claim.step==step&&claim.run.equals(run)
                 &&frame!=null&&claim.observation.equals(frame.observationId)&&claim.frameSha.equals(TaskCompletionGate.webFrameSha(frame))
-                &&frame.displayId==displayId&&generation.equals(frame.backgroundGeneration)&&inFlight==null&&pending==null;
+                &&frame.displayId==displayId&&generation.equals(frame.backgroundGeneration)&&inFlight==null&&pending==null
+                &&current!=null&&NativeAppEvidence.sameProfileWindow(claim.profileWindow,current.frame.profileWindow)
+                &&(installed.profileTarget==null?claim.profileWindow==null:claim.profileWindow!=null
+                    &&installed.profileTarget.sha256.equals(claim.profileWindow.targetSha256)
+                    &&installed.profileTarget.profile.userId==claim.profileWindow.userId
+                    &&installed.profileTarget.profile.serial==claim.profileWindow.userSerial
+                    &&installed.profileTarget.fullUid==claim.profileWindow.fullUid);
         boolean ownerBound=owner!=null&&owner.authorization==authorization.authorization&&taskId.equals(owner.taskId)&&owner.successAllowed();
         boolean nativeBound=processStarted&&processExitObserved&&Integer.valueOf(0).equals(exitCode)&&receiptValid
                 &&taskId.equals(workerTask)&&NativeAppEvidence.id(workerGeneration)&&NativeAppEvidence.sha(workerReceiptSha);
-        boolean passed=snapshot&&modelSuccess&&cleanup&&backgroundReleased&&scopeRechecked&&installedRechecked&&ownerBound&&!cancelled&&nativeBound;
+        boolean profileBound=profileCleanupBound(installed.profileTarget,claim==null?null:claim.profileWindow,profileCleanup);
+        boolean passed=snapshot&&modelSuccess&&cleanup&&backgroundReleased&&scopeRechecked&&installedRechecked&&ownerBound&&!cancelled&&nativeBound&&profileBound;
         Map<String,Object> e=base();e.put("schema","hepta.native-app-terminal-completion.v1");e.put("one_terminal_attempt",first);
         e.put("action_domain_retired",retired);e.put("same_final_native_result_snapshot",snapshot);e.put("model_success_claim_verified",snapshot);
         e.put("all_cleanup_known",cleanup);e.put("background_released",backgroundReleased);e.put("scope_rechecked_after_worker_exit",scopeRechecked);
         e.put("installed_app_rechecked_after_cleanup",installedRechecked);e.put("owner_rechecked",ownerBound);e.put("cancelled",cancelled);
         e.put("native_normal0_parent_session_bound",nativeBound);e.put("worker_task_id",workerTask);e.put("worker_generation",workerGeneration);e.put("worker_receipt_sha256",workerReceiptSha);
+        if(installed.profileTarget!=null){
+            e.put("profile_cleanup_bound_to_final_window",profileBound);
+            e.put("final_actual_profile_window",claim==null||claim.profileWindow==null?null:claim.profileWindow.evidence());
+            e.put("profile_cleanup",profileBound?NativeAppEvidence.immutableMap(profileCleanup):null);
+        }
         e.put("completion_verified",passed);e.put("business_verified",passed);e.put("terminal_binding_and_cleanup_verified",passed);
         e.put("observation_chain_verified",snapshot);e.put("actual_query_transitions",transitions);e.put("public_native_result",claim==null?null:claim.result);
         e.put("missing",passed?Collections.emptyList():Collections.singletonList("native_final_task_identity_or_query_or_cleanup_missing"));return NativeAppEvidence.immutableMap(e);
+    }
+    /** Consumes only the broker/session's actual retirement projection, never an expected profile or a live-window token. */
+    static boolean profileCleanupBound(org.trillionnium.hepta.background.ProfileTarget expected,
+            WindowOwnership frame,Map<String,Object> cleanup){
+        if(expected==null)return frame==null&&cleanup==null;
+        try{
+            if(frame==null||cleanup==null)return false;
+            NativeAppEvidence.requireProfileTarget(expected,frame);
+            Set<String> fields=new TreeSet<String>(java.util.Arrays.asList("schema","generation","display_id","target_sha256",
+                    "user_id","user_serial","full_uid","cleanup_known","live_tasks_absent","recents_tasks_absent",
+                    "foreign_tasks_present","identity_unknown","owned_tasks","display_absence_observed"));
+            if(!cleanup.keySet().equals(fields)||!"hepta.profile-task-cleanup.v1".equals(cleanup.get("schema"))
+                    ||!frame.generation.equals(cleanup.get("generation"))||!expected.sha256.equals(cleanup.get("target_sha256"))
+                    ||!profileNumber(cleanup.get("display_id"),frame.displayId)||!profileNumber(cleanup.get("user_id"),frame.userId)
+                    ||!profileNumber(cleanup.get("user_serial"),frame.userSerial)||!profileNumber(cleanup.get("full_uid"),frame.fullUid))return false;
+            for(String name:java.util.Arrays.asList("cleanup_known","live_tasks_absent","recents_tasks_absent","display_absence_observed"))
+                if(!Boolean.TRUE.equals(cleanup.get(name)))return false;
+            for(String name:java.util.Arrays.asList("foreign_tasks_present","identity_unknown"))
+                if(!Boolean.FALSE.equals(cleanup.get(name)))return false;
+            Object values=cleanup.get("owned_tasks");if(!(values instanceof List<?>))return false;
+            List<?> rows=(List<?>)values;if(rows.isEmpty()||rows.size()>32)return false;
+            Set<String> rowFields=new TreeSet<String>(java.util.Arrays.asList("task_id","parent_task_id","task_token_id",
+                    "user_id","user_serial","full_uid","live_absent","recents_absent"));
+            Set<Long> tasks=new TreeSet<Long>();Set<String> tokens=new TreeSet<String>();int matches=0;
+            for(Object value:rows){
+                if(!(value instanceof Map<?,?>))return false;Map<?,?> row=(Map<?,?>)value;
+                if(!row.keySet().equals(rowFields)||!profileNumber(row.get("user_id"),frame.userId)
+                        ||!profileNumber(row.get("user_serial"),frame.userSerial)||!profileNumber(row.get("full_uid"),frame.fullUid)
+                        ||!Boolean.TRUE.equals(row.get("live_absent"))||!Boolean.TRUE.equals(row.get("recents_absent")))return false;
+                Object task=row.get("task_id"),parent=row.get("parent_task_id"),token=row.get("task_token_id");
+                if(!(task instanceof Integer||task instanceof Long)||!(parent instanceof Integer||parent instanceof Long)
+                        ||((Number)task).longValue()<=0||((Number)task).longValue()>Integer.MAX_VALUE
+                        ||((Number)parent).longValue()<=0||((Number)parent).longValue()>Integer.MAX_VALUE
+                        ||((Number)task).longValue()==((Number)parent).longValue()||!(token instanceof String)
+                        ||!((String)token).matches("[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}")
+                        ||!tasks.add(((Number)task).longValue())||!tokens.add((String)token))return false;
+                if(profileNumber(task,frame.taskId)&&profileNumber(parent,frame.parentTaskId)&&frame.taskTokenId.equals(token))matches++;
+            }
+            return matches==1;
+        }catch(RuntimeException malformed){return false;}
+    }
+    private static boolean profileNumber(Object value,long expected){
+        return (value instanceof Integer||value instanceof Long)&&((Number)value).longValue()==expected;
     }
     Map<String,Object> evidence(){Map<String,Object> e=base();e.put("progress",progress());e.put("invalid",invalid);e.put("invalid_reason",invalidReason);e.put("action_domain_retired",retired);
         e.put("current_domain",current==null?null:current.evidence());return e;}

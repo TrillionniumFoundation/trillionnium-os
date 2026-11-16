@@ -386,13 +386,22 @@ public final class TaskCompletionGate {
             int step,String run,boolean modelSuccess,boolean allCleanupKnown,boolean backgroundReleased,
             boolean scopeRechecked,boolean installedRechecked,boolean cancelled,boolean processStarted,boolean processExitObserved,
             Integer exitCode,boolean receiptValid,String workerTask,String workerGeneration,String workerReceiptSha){
+        return terminalNativeCheck(actual,frame,owner,step,run,modelSuccess,allCleanupKnown,backgroundReleased,
+                scopeRechecked,installedRechecked,cancelled,processStarted,processExitObserved,exitCode,receiptValid,
+                workerTask,workerGeneration,workerReceiptSha,null);
+    }
+    synchronized Check terminalNativeCheck(NativeAppSession actual,NotesCompletionEvidence.Frame frame,TaskAuthorization.Frame owner,
+            int step,String run,boolean modelSuccess,boolean allCleanupKnown,boolean backgroundReleased,
+            boolean scopeRechecked,boolean installedRechecked,boolean cancelled,boolean processStarted,boolean processExitObserved,
+            Integer exitCode,boolean receiptValid,String workerTask,String workerGeneration,String workerReceiptSha,
+            Map<String,Object> profileCleanup){
         if(actual==null||actual!=nativeSession||contract.nativeGoal==null||!boundNonNotesNativeContract(authorization)){
             Map<String,Object> absent=evidence(frame);absent.put("completion_verified",false);absent.put("terminal_binding_and_cleanup_verified",false);
             absent.put("missing",Collections.singletonList("same_native_provider_session_missing"));return new Check(false,false,immutableMap(absent));
         }
         Map<String,Object> terminal=actual.terminal(frame,owner,step,run,modelSuccess&&!identityInvalid,allCleanupKnown,
                 backgroundReleased,scopeRechecked,installedRechecked,cancelled,processStarted,processExitObserved,exitCode,
-                receiptValid,workerTask,workerGeneration,workerReceiptSha);
+                receiptValid,workerTask,workerGeneration,workerReceiptSha,profileCleanup);
         boolean passed=Boolean.TRUE.equals(terminal.get("completion_verified"));Map<String,Object> out=evidence(frame);
         out.putAll(terminal);out.put("terminal_native_completion",terminal);out.put("contract",contract.evidence());return new Check(passed,false,immutableMap(out));
     }

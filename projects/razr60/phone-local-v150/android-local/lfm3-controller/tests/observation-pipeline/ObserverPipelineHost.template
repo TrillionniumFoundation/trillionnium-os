@@ -13,6 +13,18 @@ public final class ObserverPipelineHost {
 {{observation_callback}}
     interface Cancellation {boolean isCancelled();}
     interface GraphBudget {void check();}
+    /** Scheduling-only legacy boundary: no profile proof can be minted or admitted here. */
+    static final class WindowOwnership {
+        Map<String,Object> evidence(){throw new AssertionError("legacy observer has no actual profile proof");}
+    }
+    static final class NativeAppEvidence {
+        static void requireProfileTarget(Object expected,WindowOwnership actual){
+            if(expected!=null||actual!=null)throw new AssertionError("legacy observer cannot qualify a profile window");
+        }
+    }
+    static void requireSameProfileOwner(WindowOwnership before,WindowOwnership after){
+        if(before!=null||after!=null)throw new AssertionError("legacy observer cannot compare actual profile ownership");
+    }
     static final class SystemClock {static volatile long now=1000;static long elapsedRealtime(){return now;}}
     static final class Display {static final int DEFAULT_DISPLAY=0;}
     static final class Rect {int left=0,top=0,right=1080,bottom=2400;}
@@ -29,6 +41,7 @@ public final class ObserverPipelineHost {
         final Selection selection=new Selection();
         BackgroundSession(int display){this.display=display;}
         int displayId(){return display;}boolean released(){return closed;}
+        Object profileTarget(){return null;} // Explicit scheduling fixture has no profile selection.
     }
     // Explicit IO boundary only: these states stand for the existing Web journal,
     // controller lifecycle and Android looper. No admission policy is duplicated.
@@ -47,6 +60,7 @@ public final class ObserverPipelineHost {
     static final class StaleObservation extends IllegalStateException {private static final long serialVersionUID=1L;}
     static final class Graph {
         ObservationDiagnostics.GraphStamp diagnosticStamp;
+        WindowOwnership profileWindow; // Must remain absent in this scheduling-only fixture.
         final int serial;String packageName="fixture.notes",digest="same",backgroundGeneration;
         long readStartedElapsedMs,readCompletedElapsedMs;
         // Selection provenance is outside this scheduling-only graph carrier and remains absent.
@@ -90,6 +104,11 @@ public final class ObserverPipelineHost {
         }
         PhoneObservation(String id,String pkg,long captured,int width,int height,int rotation,int window,Rect bounds,
             File path,String hash,String digest,Object state,Object metadata,boolean truncated,Object rows,String generation,String initial,List<String> packages,Object collectionStats,JSONObject selection,String ownerSha,Map<String,Object> captureEvidence){
+            this(id,pkg,captured,width,height,rotation,window,bounds,path,hash,digest,state,metadata,truncated,rows,generation,initial,packages,collectionStats,selection,ownerSha,captureEvidence,null);
+        }
+        PhoneObservation(String id,String pkg,long captured,int width,int height,int rotation,int window,Rect bounds,
+            File path,String hash,String digest,Object state,Object metadata,boolean truncated,Object rows,String generation,String initial,List<String> packages,Object collectionStats,JSONObject selection,String ownerSha,Map<String,Object> captureEvidence,WindowOwnership profile){
+            if(profile!=null)throw new AssertionError("legacy observer cannot publish profile authority");
             this.id=id;this.path=path;capturedElapsedMillis=captured;this.collectionStats=collectionStats;
             this.captureEvidence=captureEvidence;
         }

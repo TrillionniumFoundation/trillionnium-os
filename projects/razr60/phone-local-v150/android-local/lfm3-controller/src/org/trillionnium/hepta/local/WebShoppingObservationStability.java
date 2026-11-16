@@ -438,7 +438,7 @@ final class WebShoppingObservationStability {
         JSONObject evidence()throws Exception{return new JSONObject(proofRaw);}
         static FooterVisibilityObservation ifChanged(WebTaskPurpose purpose,JSONObject first,JSONObject last,
                 JSONObject[] doms,WebMiActionRegion region)throws Exception{
-            @SuppressWarnings("unchecked") Map<String,JSONObject>[] all=new Map[4];
+            @SuppressWarnings({"unchecked","rawtypes"}) Map<String,JSONObject>[] all=new Map[4];
             for(int i=0;i<4;i++)all[i]=WebDomStability.index(doms[i]);
             String anchor=null;
             for(Map.Entry<String,JSONObject> entry:all[1].entrySet()){

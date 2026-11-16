@@ -2,6 +2,9 @@ package org.trillionnium.hepta.local;
 import android.content.*;
 import android.content.pm.*;
 import android.graphics.Rect;
+import android.graphics.Region;
+import org.trillionnium.hepta.background.ProfileTarget;
+import org.trillionnium.hepta.background.WindowOwnership;
 import android.os.*;
 import android.view.Display;
 import android.view.accessibility.*;
@@ -75,6 +78,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
 {{web_binding}}
 {{background_binding}}
 {{app_catalogue}}
+    private List<AccessibilityWindowInfo> windowsForDisplay(int display){throw new AssertionError("legacy action fixture has no profile window bridge");}
     private AccessibilityNodeInfo selectedRoot(){return getRootInActiveWindow();}
     private AccessibilityNodeInfo selectedRoot(BackgroundSession background,GraphBudget budget){checkReadBudget(budget);AccessibilityNodeInfo value=selectedRoot();checkReadBudget(budget);return value;}
     public AccessibilityNodeInfo getRootInActiveWindow(){rootsRead++;if(rootsRead==mutateOnRoot&&root!=null)root.pkg=mutateRootPackage;return root;}

@@ -56,5 +56,10 @@ final class NativeAppSession {
             boolean scopeRechecked,boolean installedRechecked,boolean cancelled,boolean processStarted,
             boolean processExitObserved,Integer exitCode,boolean receiptValid,String workerTask,
             String workerGeneration,String workerReceiptSha){throw unavailable();}
+    Map<String,Object> terminal(NotesCompletionEvidence.Frame frame,TaskAuthorization.Frame owner,
+            int step,String run,boolean modelSuccess,boolean allCleanupKnown,boolean backgroundReleased,
+            boolean scopeRechecked,boolean installedRechecked,boolean cancelled,boolean processStarted,
+            boolean processExitObserved,Integer exitCode,boolean receiptValid,String workerTask,
+            String workerGeneration,String workerReceiptSha,Map<String,Object> profileCleanup){throw unavailable();}
 }
 
