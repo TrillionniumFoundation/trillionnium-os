@@ -91,6 +91,7 @@ final class WebFlightDomain {
                 submitted?"查询尝试已经记录；只读观察真实结果，不能重复查询、点击航班预订或声称已经查到航班。":
                 pending?"上次城市或日期点击等待实际表单读回；只可等待，不要重复点击。":
                 ready?"出发城市、到达城市、完整日期和人数已由本任务真实操作及当前表单核对；仅点击一次本帧『查询』，随后等待真实结果。":
+                "official_home".equals(original.phase)?original.proof.get("next_goal"):
                 progress.hasConfirmedCities()?original.proof.get("next_goal"):
                 "先选择并读回出发城市与到达城市，再选择完整年月日；不能直接提交查询。");
         List<String> missing=new ArrayList<String>();

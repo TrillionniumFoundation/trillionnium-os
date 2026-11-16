@@ -2840,7 +2840,12 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 :WebFlightNativeStability.compareObservationBracket(web.taskId,new JSONObject(source.frameRaw),
                         beforeNative,new JSONObject(observedSource.frameRaw),observedNative,firstCapture,lastCapture,source.targetPath);
         WebObservationTiming.complete(domTiming);
-        }catch(Exception|Error failure){WebObservationTiming.failed(domTiming,failure);throw failure;}
+        }catch(Exception|Error failure){
+            WebObservationTiming.failed(domTiming,failure);
+            if(web.purpose.shopping!=null)
+                WebObservationTiming.failureStructure(domTiming,failure,beforeNative,observedNative,source.targetPath);
+            throw failure;
+        }
         WebObservationTiming.Span finalTiming=null;
         try{
             WebObservationTiming.Span graphTiming=WebObservationTiming.begin(timing,WebObservationTiming.Phase.NATIVE_READ_GRAPH,deadline);

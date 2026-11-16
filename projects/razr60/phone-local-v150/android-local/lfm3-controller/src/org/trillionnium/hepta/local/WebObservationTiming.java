@@ -17,7 +17,7 @@ final class WebObservationTiming {
     static final int MAX_SPANS=96;
     static final class Span {
         final WebObservationTiming owner;final Phase phase;final long started,deadline;final int ordinal;
-        long ended=-1;String outcome="pending",errorType,nativeChangeDiagnostic;Boolean predicateResult;
+        long ended=-1;String outcome="pending",errorType,nativeChangeDiagnostic,nativeChangeStructure;Boolean predicateResult;
         Span(WebObservationTiming owner,Phase phase,long started,long deadline,int ordinal){
             this.owner=owner;this.phase=phase;this.started=started;this.deadline=deadline;this.ordinal=ordinal;
         }
@@ -40,6 +40,22 @@ final class WebObservationTiming {
     static void complete(Span span){finish(span,null,null);}
     static void complete(Span span,boolean predicateResult){finish(span,null,Boolean.valueOf(predicateResult));}
     static void failed(Span span,Throwable failure){finish(span,failure,null);}
+    /** Failure-only metadata; the original end time and exception remain authoritative. */
+    static void failureStructure(Span span,Throwable failure,JSONArray before,JSONArray after,String targetPath){
+        try{
+            if(span==null||span.phase!=Phase.NATIVE_DOM_BRACKET||!(failure instanceof WebNativeObservationChanged))return;
+            WebNativeObservationChanged changed=(WebNativeObservationChanged)failure;
+            synchronized(span.owner){
+                if(span.ended<0||span.errorType==null||!span.errorType.equals(failure.getClass().getName())
+                        ||!java.util.Objects.equals(span.nativeChangeDiagnostic,changed.diagnostic)
+                        ||span.nativeChangeStructure!=null)return;
+            }
+            String structure=WebNativeObservationChanged.structureAfterFailure(changed,before,after,targetPath);
+            synchronized(span.owner){
+                if(span.nativeChangeStructure==null)span.nativeChangeStructure=structure;
+            }
+        }catch(Throwable unavailable){/* Diagnostic failure must not replace the original rejection. */}
+    }
     private static void finish(Span span,Throwable failure,Boolean predicateResult){
         if(span==null)return;
         synchronized(span.owner){
@@ -57,7 +73,7 @@ final class WebObservationTiming {
             captured=clock.now();omitted=dropped;rows=new Object[spans.size()][];
             for(int i=0;i<spans.size();i++){
                 Span s=spans.get(i);rows[i]=new Object[]{s.ordinal,s.phase.name().toLowerCase(java.util.Locale.ROOT),
-                        s.started,s.deadline,s.ended,s.outcome,s.errorType,s.predicateResult,s.nativeChangeDiagnostic};
+                        s.started,s.deadline,s.ended,s.outcome,s.errorType,s.predicateResult,s.nativeChangeDiagnostic,s.nativeChangeStructure};
             }
         }
         JSONArray events=new JSONArray();
@@ -74,6 +90,10 @@ final class WebObservationTiming {
             if(row[8]!=null){
                 try{event.put("native_change_diagnostic",new JSONObject((String)row[8]));}
                 catch(Exception ignored){event.put("native_change_diagnostic",new JSONObject().put("available",false));}
+            }
+            if(row[9]!=null){
+                try{event.put("native_change_structure",new JSONObject((String)row[9]));}
+                catch(Exception ignored){event.put("native_change_structure",new JSONObject().put("available",false));}
             }
             events.put(event);
         }
