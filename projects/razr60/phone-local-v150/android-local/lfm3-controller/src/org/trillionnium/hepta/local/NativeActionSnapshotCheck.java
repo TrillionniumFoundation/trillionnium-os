@@ -203,10 +203,38 @@ final class NativeActionSnapshotCheck {
             out.facts.put("literal_departure_date",date.text);out.facts.put("year_inferred",false);
         }else{
             for(Node n:s.nodes.values())if(n.visible())need(!b(n.v,"editable")&&!"加入购物车".equals(n.text)&&!"立即购买".equals(n.text),"fresh home only, no input/detail phase");
-            Node home=oneIdText(s,"com.xiaomi.shop.plugin.homepage:id/main_view_nav_bar_text","首页"),search=oneId(s,"com.xiaomi.shop.plugin.homepage:id/searchIcon");
-            need("android.widget.TextView".equals(home.cls)&&b(home.v,"selected")&&"android.widget.ImageView".equals(search.cls)&&"搜索".equals(search.desc)&&search.click()&&search.bounds.get(3)<home.bounds.get(1)&&search.path.equals(in.path),"same actual selected home/search");
+            Node home=oneIdText(s,"com.xiaomi.shop.plugin.homepage:id/main_view_nav_bar_text","首页"),icon=oneId(s,"com.xiaomi.shop.plugin.homepage:id/searchIcon");
+            Node entry=oneId(s,"com.xiaomi.shop.plugin.homepage:id/switcher"),pager=oneId(s,"com.xiaomi.shop.plugin.homepage:id/home_3_vp");
+            Node container=s.node(parent(entry.path));
+            need("android.widget.TextView".equals(home.cls)&&b(home.v,"selected")&&"android.widget.ImageView".equals(icon.cls)&&"搜索".equals(icon.desc)&&icon.click()
+                    &&icon.bounds.get(3)<home.bounds.get(1)&&entry.bounds.get(3)<home.bounds.get(1),"same actual selected home/search");
+            need("android.widget.ViewSwitcher".equals(entry.cls)&&entry.click()&&entry.path.equals(in.path)
+                    &&entry.text.isEmpty()&&entry.desc.isEmpty()&&entry.label!=null&&!entry.label.isEmpty()
+                    &&"androidx.viewpager.widget.ViewPager".equals(pager.cls)&&"com.xiaomi.shop.plugin.homepage:id/home_3_vp".equals(pager.view)
+                    &&parent(icon.path).equals(container.path)&&index(icon.path)==index(entry.path)+1
+                    &&entry.within(pager)&&icon.within(pager)&&entry.bounds.get(2)<=icon.bounds.get(0)
+                    &&icon.bounds.get(0)-entry.bounds.get(2)<=Math.max(entry.bounds.get(3)-entry.bounds.get(1),icon.bounds.get(3)-icon.bounds.get(1))
+                    &&Math.min(entry.bounds.get(3),icon.bounds.get(3))>Math.max(entry.bounds.get(1),icon.bounds.get(1)),"actual native query entry, not adjacent search icon");
+            need(container.path.equals(pager.path)||"android.widget.RelativeLayout".equals(container.cls)
+                    &&"com.xiaomi.shop.plugin.homepage:id/searchContainer".equals(container.view)
+                    &&container.usable()&&container.within(pager)&&entry.within(container)&&icon.within(container)
+                    &&!b(container.v,"clickable")&&container.text.isEmpty()&&container.desc.isEmpty()&&neutralFlags(container)
+                    &&!b(container.v,"scrollable"),"observed compressed or retained query-entry parent");
+            for(String resource:Arrays.asList(entry.view,icon.view,pager.view)){
+                int count=0;for(Node n:s.nodes.values())if(resource.equals(n.view))count++;
+                need(count==1,"unique complete native query-entry resource");
+            }
+            need(entry.children==1,"complete query-entry child slot");Node hint=s.node(entry.path+"/0");
+            need(hint.children==1,"complete query-entry hint slot");Node term=s.node(hint.path+"/0");
+            need(term.children==0&&"android.widget.LinearLayout".equals(hint.cls)&&hint.view.isEmpty()
+                    &&"android.widget.TextView".equals(term.cls)&&"com.xiaomi.shop:id/text".equals(term.view)
+                    &&hint.text.isEmpty()&&term.desc.isEmpty()&&!term.text.trim().isEmpty()
+                    &&hint.desc.equals("搜索"+term.text)&&hint.within(entry)&&term.within(hint)
+                    &&!b(hint.v,"clickable")&&!b(hint.v,"action_click")&&!b(term.v,"clickable")&&!b(term.v,"action_click"),"complete noninteractive query-entry hint");
+            for(Node n:Arrays.asList(entry,icon,hint,term))need(n.usable()&&neutralFlags(n)&&!b(n.v,"scrollable"),"neutral actual query-entry controls");
             need(!(hasText(s,"综合")&&hasText(s,"销量")&&hasText(s,"价格")),"not a results page");
-            out.facts.put("home",home.v);out.facts.put("search",search.v);out.protect(s,parent(search.path));out.protect(s,parent(home.path));
+            out.facts.put("home",home.v);out.facts.put("query_entry",entry.v);out.facts.put("entry_hint",hint.v);out.facts.put("entry_hint_term",term.v);
+            out.facts.put("adjacent_search_icon",icon.v);out.protect(s,pager.path);out.protect(s,parent(home.path));
         }return out;
     }
     private static Map<String,Object> roleFacts(Intent in,Snapshot s){Map<String,Object> out=new TreeMap<String,Object>();
@@ -215,12 +243,13 @@ final class NativeActionSnapshotCheck {
             boolean relevant;
             if(CTRIP.equals(in.pkg)){String shortId=n.view.startsWith(CP)?n.view.substring(CP.length()):"";
                 relevant=FORM_IDS.contains(shortId)||Arrays.asList(TILE_IDS).contains(shortId)||"calendar_month_title_left_tv".equals(shortId)||"calendar_list".equals(shortId)||ROLES.contains(n.view)||ROLES.contains(n.desc)||"机票".equals(n.text);
-            }else relevant=n.view.equals("com.xiaomi.shop.plugin.homepage:id/main_view_nav_bar_text")||n.view.equals("com.xiaomi.shop.plugin.homepage:id/searchIcon")||xiaomi.contains(n.text)||n.text.startsWith("Xiaomi路由器")||"android.widget.EditText".equals(n.cls)||b(n.v,"editable");
+            }else relevant=n.view.equals("com.xiaomi.shop.plugin.homepage:id/main_view_nav_bar_text")||n.view.equals("com.xiaomi.shop.plugin.homepage:id/searchIcon")||n.view.equals("com.xiaomi.shop.plugin.homepage:id/switcher")||xiaomi.contains(n.text)||n.text.startsWith("Xiaomi路由器")||"android.widget.EditText".equals(n.cls)||b(n.v,"editable");
             if(relevant)out.put(n.path,n.v);
         }return out;
     }
-    /** Only the installed-version-bound Xiaomi SEARCH opener can classify these
-     * two observed home decorations. Every other protected field stays exact.
+    /** Only the installed-version-bound Xiaomi SEARCH opener can classify this
+     * observed banner decoration. The query-entry target and its entire hint
+     * subtree stay exact, including the original projected label/signature.
      * A banner overlapping the icon is not treated as disjoint: its complete
      * visible coverage and blank-leaf facts must stay equal across page slots.
      * Horizontal animation may partition that same fixed coverage, but never
@@ -229,9 +258,9 @@ final class NativeActionSnapshotCheck {
         Map<String,String> out=new TreeMap<String,String>();
         if(!SEARCH.equals(in.purpose)||!XIAOMI.equals(in.pkg))return out;
         String hp="com.xiaomi.shop.plugin.homepage:id/";
-        Node target=old.node(in.path),pager=old.node(parent(target.path)),newPager=fresh.node(pager.path);
+        Node target=old.node(in.path),pager=oneId(old,hp+"home_3_vp"),newPager=fresh.node(pager.path);
         if(!"androidx.viewpager.widget.ViewPager".equals(pager.cls)||!hp.concat("home_3_vp").equals(pager.view)
-                ||!pager.v.equals(newPager.v))return out;
+                ||!under(target.path,pager.path)||!pager.v.equals(newPager.v))return out;
         List<Node> banners=findId(old,"com.xiaomi.shop:id/bannerViewPager"),newBanners=findId(fresh,"com.xiaomi.shop:id/bannerViewPager");
         if(banners.size()==1&&newBanners.size()==1){
             Node a=banners.get(0),z=newBanners.get(0);
@@ -244,13 +273,6 @@ final class NativeActionSnapshotCheck {
                         &&parent(content.path).equals(pager.path)&&bannerVisibleCoverageEqual(old,fresh,a))
                     out.put(a.path,"same_complete_horizontal_blank_leaf_coverage");
             }
-        }
-        List<Node> switches=findId(old,hp+"switcher"),newSwitches=findId(fresh,hp+"switcher");
-        if(switches.size()==1&&newSwitches.size()==1){
-            Node a=switches.get(0),z=newSwitches.get(0);
-            if(a.path.equals(z.path)&&parent(a.path).equals(pager.path)&&"android.widget.ViewSwitcher".equals(a.cls)
-                    &&a.text.isEmpty()&&a.desc.isEmpty()&&a.click()&&sameExcept(a,z,"label","ref_signature_sha256")
-                    &&switcherDisjoint(old,fresh,a,target))out.put(a.path,"same_bounded_disjoint_search_hint");
         }
         return out;
     }
@@ -314,17 +336,6 @@ final class NativeActionSnapshotCheck {
                 "|focused="+b(n.v,"focused")+"|full_input=null").equals(n.v.get("ref_signature_sha256"));
     }
     private static String signatureField(String value){return value.length()+":"+value;}
-    private static boolean switcherDisjoint(Snapshot old,Snapshot fresh,Node anchor,Node target){
-        if(intersects(anchor.bounds,target.bounds))return false;
-        for(String p:union(old.nodes.keySet(),fresh.nodes.keySet()))if(p.equals(anchor.path)||under(p,anchor.path)){
-            Node a=old.nodes.get(p),z=fresh.nodes.get(p);
-            if(a==null||z==null||!neutralFlags(a)||!neutralFlags(z)
-                    ||!sameExcept(a,z,"text","description","label","ref_signature_sha256","bounds"))return false;
-            if(a.visible()&&(!contains(anchor.bounds,a.bounds)||intersects(a.bounds,target.bounds)))return false;
-            if(z.visible()&&(!contains(anchor.bounds,z.bounds)||intersects(z.bounds,target.bounds)))return false;
-        }
-        return true;
-    }
     private static boolean neutralFlags(Node node){
         for(String flag:Arrays.asList("editable","password","focused","checkable","checked","selected"))if(b(node.v,flag))return false;
         return true;

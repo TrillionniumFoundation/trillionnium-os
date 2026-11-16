@@ -369,15 +369,70 @@ final class NativeXiaomiProductPage {
             }
         }
         if(home!=null&&search!=null&&search.bottom<home.top){
-            Map<String,String> purposes=new LinkedHashMap<String,String>();purposes.put(search.id,"open_search");
-            Map<String,Object> proof=map();proof.put("home_marker",home.fact("text"));proof.put("search_icon",search.fact("description"));
-            Map<String,Object> facts=map();facts.put(search.id,proof);
-            return new Page(frame,"home_search",Collections.<String>emptyList(),Collections.singleton(search.id),
-                    Collections.<String,String>emptyMap(),purposes,facts,null);
+            Page entry=homeSearchEntry(frame,home,search);
+            return entry!=null?entry:page(frame,"home_unverified","observed_native_query_entry_required",null,null);
         }
         if(home!=null&&search==null&&navigationOnlyHome(frame))
             return page(frame,HOME_LOADING,"native_home_search_content_not_loaded",null,null);
         return page(frame,"unrecognized_native_page","no_current_supported_native_page",null,null);
+    }
+
+    /** The retained manual search-entry transition used the ViewSwitcher, not
+     * its adjacent searchIcon. Keep that distinct control as observed context;
+     * it has not proved that it opens an editable product query. The two exact
+     * noninteractive descendants supply the original entry label, never a
+     * replacement label or the owner's requested product as current UI text. */
+    private static Page homeSearchEntry(NativeAppEvidence.Frame frame,NativeAppEvidence.Node home,NativeAppEvidence.Node icon){
+        String hp="com.xiaomi.shop.plugin.homepage:id/";
+        NativeAppEvidence.Node entry=null,pager=null,hint=null,term=null;int entries=0,pagers=0,icons=0,descendants=0;
+        for(NativeAppEvidence.Node n:frame.nodes){
+            if((hp+"switcher").equals(n.viewId)){entries++;entry=n;}
+            if((hp+"home_3_vp").equals(n.viewId)){pagers++;pager=n;}
+            if((hp+"searchIcon").equals(n.viewId))icons++;
+        }
+        if(entries!=1||pagers!=1||icons!=1||!usable(frame,entry)||!usable(frame,pager)
+                ||!"android.widget.ViewSwitcher".equals(entry.className)||!"androidx.viewpager.widget.ViewPager".equals(pager.className)
+                ||!homeSearchContainer(frame,entry,icon,pager)
+                ||!entry.within(pager)||!icon.within(pager)||!adjacent(entry,icon)
+                ||!entry.clickable||!entry.text.isEmpty()||!entry.description.isEmpty()
+                ||!homeSearchNeutral(entry)||!homeSearchNeutral(icon)||entry.bottom>=home.top)return null;
+        for(NativeAppEvidence.Node n:frame.nodes)if(under(n.path,entry.path)){
+            descendants++;
+            if((entry.path+"/0").equals(n.path))hint=n;
+            if((entry.path+"/0/0").equals(n.path))term=n;
+        }
+        if(descendants!=2||!usable(frame,hint)||!usable(frame,term)
+                ||!"android.widget.LinearLayout".equals(hint.className)||!entry.className.equals(hint.parentClass)
+                ||!TEXT.equals(term.className)||!hint.className.equals(term.parentClass)
+                ||!hint.viewId.isEmpty()||!"com.xiaomi.shop:id/text".equals(term.viewId)
+                ||hint.clickable||term.clickable||!homeSearchNeutral(hint)||!homeSearchNeutral(term)
+                ||!hint.text.isEmpty()||!term.description.isEmpty()||term.text.trim().isEmpty()
+                ||!hint.description.equals("搜索"+term.text)||!hint.within(entry)||!term.within(hint)
+                ||!entry.label.equals(ObservedTargetLabels.project(hint.description+" · "+term.text)))return null;
+        Map<String,String> purposes=new LinkedHashMap<String,String>();purposes.put(entry.id,"open_search");
+        Map<String,Object> proof=map();proof.put("home_marker",home.fact("text"));proof.put("query_entry",entry.fact("description"));
+        proof.put("query_entry_original_label",entry.label);proof.put("entry_hint",hint.fact("description"));proof.put("entry_hint_term",term.fact("text"));
+        proof.put("adjacent_search_icon",icon.fact("description"));proof.put("adjacent_search_icon_offered",false);
+        proof.put("hint_is_owner_query",false);Map<String,Object> facts=map();facts.put(entry.id,proof);
+        return new Page(frame,"home_search",Collections.<String>emptyList(),Collections.singleton(entry.id),
+                Collections.<String,String>emptyMap(),purposes,facts,null);
+    }
+    private static boolean homeSearchNeutral(NativeAppEvidence.Node n){
+        return !n.editable&&!n.scrollable&&n.scrollDirections.isEmpty()&&Boolean.FALSE.equals(n.selected)
+                &&Boolean.FALSE.equals(n.checkable)&&Boolean.FALSE.equals(n.checked);
+    }
+    /** Both retained producers are explicit: compressed service AX uses the
+     * pager as parent; the original manual XML retains searchContainer. */
+    private static boolean homeSearchContainer(NativeAppEvidence.Frame frame,NativeAppEvidence.Node entry,
+            NativeAppEvidence.Node icon,NativeAppEvidence.Node pager){
+        if(!parent(entry.path).equals(parent(icon.path))||!entry.parentClass.equals(icon.parentClass))return false;
+        if(parent(entry.path).equals(pager.path))return entry.parentClass.equals(pager.className);
+        NativeAppEvidence.Node container=null;int count=0;
+        for(NativeAppEvidence.Node n:frame.nodes)if("com.xiaomi.shop.plugin.homepage:id/searchContainer".equals(n.viewId)){container=n;count++;}
+        return count==1&&usable(frame,container)&&"android.widget.RelativeLayout".equals(container.className)
+                &&container.className.equals(entry.parentClass)&&container.path.equals(parent(entry.path))
+                &&container.within(pager)&&entry.within(container)&&icon.within(container)
+                &&!container.clickable&&container.text.isEmpty()&&container.description.isEmpty()&&homeSearchNeutral(container);
     }
 
     /** Recognize only the complete installed-version home navigation shell.

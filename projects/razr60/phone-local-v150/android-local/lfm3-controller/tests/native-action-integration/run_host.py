@@ -31,6 +31,7 @@ METHODS={
  'refresh':'    private boolean refreshActionNode(',
  'base_signature':'    private static String baseNodeSignature(',
  'node_signature':'    private static String nodeSignature(',
+ 'observed_child_text':'    private static ObservedChildText.Result observedChildText(final AccessibilityNodeInfo root,final boolean refreshChildren,final GraphBudget budget){',
  'input_hash':'    private static String inputTextHash('}
 
 def sha(raw):return hashlib.sha256(raw).hexdigest()
@@ -101,7 +102,7 @@ def sources(source,out):
       source/'tests/native-app-provider/NativeResourceHomeHostTest.java',
       source/'tests/native-xiaomi-image-modal/ActualXiaomiImageModalFixture.java']
     paths += [source/TEST/(name+'.java') for name in ['IntegrationChecks','NativeActionSessionHostTest',
-        'NativeActionSnapshotCheckHostTest','NativeCarouselCurrentnessHostTest','NativeXiaomiHomeVariationHostTest','NativeActionIntegrationHostTest']]
+        'NativeActionSnapshotCheckHostTest','NativeCarouselCurrentnessHostTest','NativeXiaomiHomeVariationHostTest','NativeXiaomiEntryObservationHostTest','NativeActionIntegrationHostTest']]
     paths += sorted((out/'generated').rglob('*.java'))
     if not any(str(p).endswith('/android/util/Log.java') for p in paths):
         log=out/'generated/android/util/Log.java'

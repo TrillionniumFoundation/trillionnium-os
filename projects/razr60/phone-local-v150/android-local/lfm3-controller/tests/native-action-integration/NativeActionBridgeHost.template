@@ -47,7 +47,13 @@ final class NativeActionBridgeHost {
         NodeData(Map<String,Object> row){values=new TreeMap<String,Object>(row);}
     }
     static final class AccessibilityNodeInfo {
-        static final int ACTION_CLICK=16;final NodeData data;boolean released;
+        static final int ACTION_CLICK=16,ACTION_LONG_CLICK=32,ACTION_SET_TEXT=2097152,ACTION_SCROLL_FORWARD=4096,ACTION_SCROLL_BACKWARD=8192;
+        static final class AccessibilityAction {
+            static final AccessibilityAction ACTION_SCROLL_UP=new AccessibilityAction(101),ACTION_SCROLL_DOWN=new AccessibilityAction(102),
+                    ACTION_SCROLL_LEFT=new AccessibilityAction(103),ACTION_SCROLL_RIGHT=new AccessibilityAction(104);
+            private final int id;AccessibilityAction(int id){this.id=id;}int getId(){return id;}
+        }
+        final NodeData data;boolean released;
         AccessibilityNodeInfo(NodeData data){this.data=data;data.obtained++;}
         static AccessibilityNodeInfo obtain(AccessibilityNodeInfo n){return new AccessibilityNodeInfo(n.data);}
         void recycle(){if(released)throw new AssertionError("double recycled fake reference");released=true;data.recycled++;}
@@ -61,6 +67,8 @@ final class NativeActionBridgeHost {
         boolean isClickable(){return b("clickable");}boolean isEditable(){return b("editable");}boolean isScrollable(){return b("scrollable");}
         boolean isFocused(){return b("focused");}boolean isSelected(){return b("selected");}boolean isCheckable(){return b("checkable");}boolean isChecked(){return b("checked");}
         int getChildCount(){return ((Integer)value("children")).intValue();}
+        int getInputType(){return 0;}boolean isLongClickable(){return false;}
+        AccessibilityNodeInfo getChild(int index){if(index<0||index>=data.children.size()||data.children.get(index)==null)return null;return new AccessibilityNodeInfo(data.children.get(index));}
         void getBoundsInScreen(Rect b){List<?> r=(List<?>)value("bounds");b.left=(Integer)r.get(0);b.top=(Integer)r.get(1);b.right=(Integer)r.get(2);b.bottom=(Integer)r.get(3);}
         boolean performAction(int action){if(action!=ACTION_CLICK)throw new AssertionError("only click effect endpoint");data.effects++;return true;}
         @Override public boolean equals(Object o){return o instanceof AccessibilityNodeInfo&&((AccessibilityNodeInfo)o).data==data;}
@@ -150,26 +158,8 @@ final class NativeActionBridgeHost {
         return ObservedImeEnter.ABSENT.fingerprintInput().equals(n.s("ime_enter"))?ObservedImeEnter.ABSENT:ObservedImeEnter.UNKNOWN;
     }
     static boolean hasAction(AccessibilityNodeInfo n,int action){return action==AccessibilityNodeInfo.ACTION_CLICK&&n.b("action_click");}
-    static ObservedChildText.Result observedChildText(AccessibilityNodeInfo n,boolean bounded,GraphBudget budget){
-        checkReadBudget(budget);
-        // Explicit fake Android endpoint: inputType is zero. For a visible
-        // childless clickable blank, run the real empty-leaf collector instead
-        // of inventing not_applicable. Other fixture label boundaries stay as before.
-        Rect bounds=new Rect();n.getBoundsInScreen(bounds);
-        if(n.getChildCount()!=0||!n.isVisibleToUser()||bounds.isEmpty()||!n.isClickable()||!hasAction(n,AccessibilityNodeInfo.ACTION_CLICK)
-                ||n.isEditable()||n.isPassword()||!string(n.getText()).trim().isEmpty()||!string(n.getContentDescription()).trim().isEmpty())
-            return ObservedChildText.notApplicable();
-        return ObservedChildText.collect(n,new ObservedChildText.Reader<AccessibilityNodeInfo>(){
-            public ObservedChildText.Metadata metadata(AccessibilityNodeInfo node){return new ObservedChildText.Metadata(true,true,node.isClickable(),hasAction(node,AccessibilityNodeInfo.ACTION_CLICK),node.isEditable(),node.isPassword(),true);}
-            public String text(AccessibilityNodeInfo node){return string(node.getText());}
-            public String description(AccessibilityNodeInfo node){return string(node.getContentDescription());}
-            public String identity(AccessibilityNodeInfo node){return baseNodeSignature(node);}
-            public String viewId(AccessibilityNodeInfo node){return string(node.getViewIdResourceName());}
-            public int childCount(AccessibilityNodeInfo node){return node.getChildCount();}
-            public AccessibilityNodeInfo child(AccessibilityNodeInfo node,int index){throw new AssertionError("childless fake endpoint acquired a child");}
-            public void release(AccessibilityNodeInfo node){throw new AssertionError("childless fake endpoint released borrowed root");}
-        });
-    }
+    // The complete production observedChildText producer is extracted with
+    // the method extraction; child nodes below are explicit fake Android endpoints.
     static String actualBlankLeafReferenceSha(Map<String,Object> facts){
         AccessibilityNodeInfo node=new AccessibilityNodeInfo(new NodeData(facts));
         try{

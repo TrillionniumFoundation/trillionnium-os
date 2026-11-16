@@ -70,6 +70,32 @@ public final class NativeXiaomiProductPageHostTest {
         List<NativeAppEvidence.Node> nodes=new ArrayList<NativeAppEvidence.Node>(f.nodes);if(!nodes.remove(before))throw new IllegalArgumentException("old node missing");if(after!=null)nodes.add(after);
         return frame(f,nodes,false,true,1,true);
     }
+    private static NativeAppEvidence.Node resource(NativeAppEvidence.Frame f,String suffix){
+        NativeAppEvidence.Node result=null;for(NativeAppEvidence.Node n:f.nodes)if(n.viewId.endsWith(":id/"+suffix)){
+            if(result!=null)throw new AssertionError("duplicate fixture resource "+suffix);result=n;}
+        if(result==null)throw new AssertionError("fixture resource missing "+suffix);return result;
+    }
+    private static NativeAppEvidence.Node path(NativeAppEvidence.Frame f,String value){
+        for(NativeAppEvidence.Node n:f.nodes)if(value.equals(n.path))return n;throw new AssertionError("fixture path missing");
+    }
+    /** Explicit synthetic node mutation, never an Android reference. */
+    private static NativeAppEvidence.Node alter(NativeAppEvidence.Node n,String key,Object value){
+        return new NativeAppEvidence.Node("id".equals(key)?(String)value:n.id,n.packageName,
+                "class".equals(key)?(String)value:n.className,"view".equals(key)?(String)value:n.viewId,
+                "text".equals(key)?(String)value:n.text,"description".equals(key)?(String)value:n.description,
+                "path".equals(key)?(String)value:n.path,"parent".equals(key)?(String)value:n.parentClass,
+                hash("HOST_ENTRY_MUTATION\n"+n.signature+"\n"+key+"\n"+value),"label".equals(key)?(String)value:n.label,
+                n.left,n.top,n.right,n.bottom,"enabled".equals(key)?((Boolean)value).booleanValue():n.enabled,
+                n.password,"clickable".equals(key)?((Boolean)value).booleanValue():n.clickable,
+                "editable".equals(key)?((Boolean)value).booleanValue():n.editable,
+                "scrollable".equals(key)?((Boolean)value).booleanValue():n.scrollable,
+                "selected".equals(key)?(Boolean)value:n.selected,"selected".equals(key)&&value==null?null:"checkable".equals(key)?(Boolean)value:n.checkable,
+                "selected".equals(key)&&value==null?null:n.checked,n.scrollDirections);
+    }
+    private static void changedEntryRejected(String name,String relative,String key,Object value)throws Exception{
+        test(name,()->{NativeAppEvidence.Frame f=load("home");NativeAppEvidence.Node entry=resource(f,"switcher"),n=path(f,entry.path+relative);
+            unavailable(replace(f,n,alter(n,key,value)),name);});
+    }
     private static NativeXiaomiProductPage.Page inspect(NativeAppEvidence.Frame f){return NativeXiaomiProductPage.inspect(GOAL,f);}
     private static void noQuote(NativeAppEvidence.Frame f,String why){check(inspect(f).quote==null,why);}
     private static void unavailable(NativeAppEvidence.Frame f,String why){
@@ -83,12 +109,44 @@ public final class NativeXiaomiProductPageHostTest {
         check(Boolean.FALSE.equals(q.evidence().get("promotions_deducted_from_amount"))&&Boolean.FALSE.equals(q.evidence().get("lowest_price_verified")),"no discount/lowest-price inference");
     }
     private static void cases()throws Exception{
-        test("actual_home_selects_resource_bound_search_icon",()->{
+        test("actual_home_selects_observed_query_entry_not_adjacent_icon",()->{
             NativeAppEvidence.Frame f=load("home");NativeXiaomiProductPage.Page p=inspect(f);
             check("home_search".equals(p.phase)&&p.clickIds.size()==1&&p.editValues.isEmpty(),"actual homepage route");
             NativeAppEvidence.Node n=f.byId.get(p.clickIds.iterator().next());
-            check(n.clickable&&"com.xiaomi.shop.plugin.homepage:id/searchIcon".equals(n.viewId)&&"open_search".equals(p.purposes.get(n.id)),"real icon NodeRef carrier");
+            check(n.clickable&&"com.xiaomi.shop.plugin.homepage:id/switcher".equals(n.viewId)&&"open_search".equals(p.purposes.get(n.id)),"actual search-entry transition NodeRef carrier");
         });
+        test("query_entry_preserves_original_derived_label_and_no_query_claim",()->{
+            NativeAppEvidence.Frame f=load("home");NativeXiaomiProductPage.Page p=inspect(f);NativeAppEvidence.Node entry=resource(f,"switcher"),icon=resource(f,"searchIcon");
+            check(p.clickIds.contains(entry.id)&&!p.clickIds.contains(icon.id),"adjacent icon stays observed, not granted open_search");
+            check("搜索洗衣机 · 洗衣机".equals(entry.label),"fixture original hint label, never replaced with 搜索 or AX3000T");
+            check(p.quote==null&&p.editValues.isEmpty()&&!Boolean.TRUE.equals(p.evidence().get("query_dispatched")),"entry navigation is not a product query or result");
+        });
+        test("query_entry_requires_switcher",()->{NativeAppEvidence.Frame f=load("home");unavailable(replace(f,resource(f,"switcher"),null),"icon is not substitute entry");});
+        test("query_entry_requires_adjacent_icon_context",()->{NativeAppEvidence.Frame f=load("home");unavailable(replace(f,resource(f,"searchIcon"),null),"missing observed sibling");});
+        test("query_entry_rejects_duplicate_resource",()->{NativeAppEvidence.Frame f=load("home");NativeAppEvidence.Node n=resource(f,"switcher");
+            NativeAppEvidence.Node extra=alter(alter(n,"id","n999"),"path",n.path+"/1");List<NativeAppEvidence.Node> nodes=new ArrayList<NativeAppEvidence.Node>(f.nodes);nodes.add(extra);
+            unavailable(frame(f,nodes,false,true,1,true),"duplicate entry resource never first-match");});
+        test("query_entry_rejects_missing_hint",()->{NativeAppEvidence.Frame f=load("home");unavailable(replace(f,path(f,resource(f,"switcher").path+"/0"),null),"complete actual hint path");});
+        test("query_entry_rejects_missing_term",()->{NativeAppEvidence.Frame f=load("home");unavailable(replace(f,path(f,resource(f,"switcher").path+"/0/0"),null),"complete actual term path");});
+        test("query_entry_rejects_extra_descendant",()->{NativeAppEvidence.Frame f=load("home");NativeAppEvidence.Node entry=resource(f,"switcher"),n=path(f,entry.path+"/0/0");
+            NativeAppEvidence.Node extra=alter(alter(n,"id","n999"),"path",entry.path+"/1");List<NativeAppEvidence.Node> nodes=new ArrayList<NativeAppEvidence.Node>(f.nodes);nodes.add(extra);
+            unavailable(frame(f,nodes,false,true,1,true),"extra descendant cannot supply derived authority");});
+        changedEntryRejected("query_entry_rejects_wrong_class","","class","android.widget.ImageView");
+        changedEntryRejected("query_entry_rejects_wrong_parent","","parent","android.widget.FrameLayout");
+        changedEntryRejected("query_entry_rejects_forged_original_label","","label","AX3000T");
+        changedEntryRejected("query_entry_rejects_unclickable_entry","","clickable",Boolean.FALSE);
+        changedEntryRejected("query_entry_rejects_editable_entry","","editable",Boolean.TRUE);
+        changedEntryRejected("query_entry_rejects_selected_entry","","selected",Boolean.TRUE);
+        changedEntryRejected("query_entry_rejects_unknown_selection","","selected",null);
+        changedEntryRejected("query_entry_rejects_checkable_entry","","checkable",Boolean.TRUE);
+        changedEntryRejected("query_entry_rejects_wrong_hint_class","/0","class","android.widget.TextView");
+        changedEntryRejected("query_entry_rejects_unrelated_hint","/0","description","登录");
+        changedEntryRejected("query_entry_rejects_clickable_hint","/0","clickable",Boolean.TRUE);
+        changedEntryRejected("query_entry_rejects_wrong_term_resource","/0/0","view","com.xiaomi.shop:id/login");
+        changedEntryRejected("query_entry_rejects_hint_term_mismatch","/0/0","text","冰箱");
+        changedEntryRejected("query_entry_rejects_clickable_term","/0/0","clickable",Boolean.TRUE);
+        test("query_entry_rejects_term_outside_actual_parent",()->{NativeAppEvidence.Frame f=load("home");NativeAppEvidence.Node entry=resource(f,"switcher"),term=path(f,entry.path+"/0/0");
+            unavailable(replace(f,term,edit(term,null,null,null,null,null,null,new int[]{entry.left,entry.top,entry.right+1,entry.bottom})),"term outside entry");});
         test("actual_search_entry_types_only_literal_owner_span",()->{
             NativeAppEvidence.Frame f=load("search-entry");NativeXiaomiProductPage.Page p=inspect(f);
             check("search_input".equals(p.phase)&&p.clickIds.isEmpty()&&p.editValues.size()==1,"no AI or search click before exact text");
@@ -242,8 +300,8 @@ public final class NativeXiaomiProductPageHostTest {
             NativeAppEvidence.Frame f=load("home-reset");NativeXiaomiProductPage.Page p=inspect(f);
             check("home_search".equals(p.phase)&&p.clickIds.size()==1&&p.quote==null,"actual reset is homepage, not cached result");
             NativeAppEvidence.Node n=f.byId.get(p.clickIds.iterator().next());
-            check(n.clickable&&"com.xiaomi.shop.plugin.homepage:id/searchIcon".equals(n.viewId)
-                    &&"open_search".equals(p.purposes.get(n.id)),"same real homepage search resource");
+            check(n.clickable&&"com.xiaomi.shop.plugin.homepage:id/switcher".equals(n.viewId)
+                    &&"open_search".equals(p.purposes.get(n.id)),"same real homepage query-entry resource");
         });
         test("real_old_child_collector_preserves_bound_prefix_and_legacy_blocker",()->{
             NativeXmlFixture.Snapshot fixture=NativeXmlFixture.read(fixtures.resolve("results.xml"));

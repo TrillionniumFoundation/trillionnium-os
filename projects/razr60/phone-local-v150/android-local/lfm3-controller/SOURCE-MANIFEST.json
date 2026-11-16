@@ -5,9 +5,9 @@
     "component_tree": "08f3d1c32944f834530b659cb6c3b7ec12c00039",
     "source_manifest_sha256": "bf99aebd7009d29cad75f3b796af4005084f30219aff61929cb905c4b214d991"
   },
-  "candidate_status": "r22_runtime_blockers_candidate_fixture_aligned_pending_full_gates_build_and_phone",
+  "candidate_status": "r22_scoped_cleanup_background_explanation_visual_latency_and_native_search_entry_pending_full_validation",
   "candidate_version_assigned": true,
-  "complete_source_files": 1978,
+  "complete_source_files": 1984,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -48,7 +48,7 @@
     "actual_phone_install_and_regression": "pending",
     "all_blockers_closed": false,
     "full_frozen_source_gates": "pending",
-    "scope": "new fixture-aligned R22 source; earlier phone tests apply to installed R6 only"
+    "scope": "final combined R22 candidate; all previous phone evidence belongs to installed R6"
   },
   "files": [
     {
@@ -6417,9 +6417,9 @@
       "sha256": "11ff3d26283dc4e8789c427363043675427e647bff6524b1c5a987afba4a8a9c"
     },
     {
-      "bytes": 39909,
+      "bytes": 41714,
       "path": "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
-      "sha256": "0ac969fe789ca1183d51c86c4ce38f80b2e6199f5dc62593a27d7bc3a5cca930"
+      "sha256": "75da5b89f756eb86f4291fa92df9297349c6f456331ec35aae84601f93e262cc"
     },
     {
       "bytes": 9873,
@@ -6457,9 +6457,9 @@
       "sha256": "085309202a24c8f4f0f5986027bc32c13d73a8a5766ff046539a09ea2a719541"
     },
     {
-      "bytes": 35607,
+      "bytes": 40071,
       "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
-      "sha256": "e726893f6d4d9f53f722b0d5b53dae204b5ab3f2b3c65ee0e3dfe2f5b6401439"
+      "sha256": "d7e760032b9fdc0889330730ebe880a48f1cf786284f1f961571b12272233313"
     },
     {
       "bytes": 21274,
@@ -7552,14 +7552,14 @@
       "sha256": "8d65a7ced1795834bfe8a921bade5d496a5eb25bfc465340e81c50998a9102ba"
     },
     {
-      "bytes": 33012,
+      "bytes": 32030,
       "path": "tests/native-action-integration/NativeActionBridgeHost.template",
-      "sha256": "b4c8a5f1381ab1db9cf588c1323d9888bd963d4f1261eb7e06a9526bb94c6b3c"
+      "sha256": "6c58d537346f1b60f0d141c953a14d308bbdd6a9f3444eab9d85050cceb050e2"
     },
     {
-      "bytes": 1048,
+      "bytes": 1106,
       "path": "tests/native-action-integration/NativeActionIntegrationHostTest.java",
-      "sha256": "48cb6cdacd46563282b31ce54f94da8a042643829fc7a374a7329161763d63e1"
+      "sha256": "69ef66f0683c77f65375bf4a1a52e226e08e42fa626393f3c803d013377dbd65"
     },
     {
       "bytes": 18860,
@@ -7567,9 +7567,9 @@
       "sha256": "071bf1dfe6eaa057947f7a2ab383d2ba1ff01766b7eafa9f1eca2a8887a15ba8"
     },
     {
-      "bytes": 21259,
+      "bytes": 21782,
       "path": "tests/native-action-integration/NativeActionSnapshotCheckHostTest.java",
-      "sha256": "ee54a3248b40c6d0f13089a039825e2000c37d200502cf17d4a4946b0ea6a599"
+      "sha256": "80851ebd00274b6302ba653e00e008eda693e8ce8e358aa2f60bc70d9ddc50ab"
     },
     {
       "bytes": 7986,
@@ -7577,9 +7577,14 @@
       "sha256": "4dae1d479bc1691a2b53e33eb6b781dfa382403cb664f356a71de9f5ff47f90d"
     },
     {
-      "bytes": 22548,
+      "bytes": 10840,
+      "path": "tests/native-action-integration/NativeXiaomiEntryObservationHostTest.java",
+      "sha256": "9f21bc21eed0ea29a651886e22c338dfd119b2d2c699da9c539f06ec738f81dd"
+    },
+    {
+      "bytes": 25350,
       "path": "tests/native-action-integration/NativeXiaomiHomeVariationHostTest.java",
-      "sha256": "1c6350993e55d3e5544d4965486babeb50a35f7981256851c791377225aaf8e4"
+      "sha256": "7689f6eec9e37962d11c7409ccf3de36f5777f7b87f94b18106529cd59f732fa"
     },
     {
       "bytes": 3964,
@@ -7597,9 +7602,9 @@
       "sha256": "b27ecaed3a4dd0419fbc49809887b2e6b77cd0a80be17b006d0d8cab72c41d4a"
     },
     {
-      "bytes": 12983,
+      "bytes": 13200,
       "path": "tests/native-action-integration/run_host.py",
-      "sha256": "fa00579c0f67868e36f2d6a9cf812d11370b5e93b8c18e66e308704ac0926404"
+      "sha256": "3a398aa036b1d04fb754e4785cbe3c845b7f39094d66bdf90dfc100b7aa47679"
     },
     {
       "bytes": 4021,
@@ -7974,7 +7979,7 @@
     {
       "bytes": 9103,
       "path": "tests/native-stale-recovery/run_budget.py",
-      "sha256": "e55d63a66b477a89e63b01aaf4812ccf36929fa73eefd03380c5dc3ab8463066"
+      "sha256": "20fa1ab7a853968580e1effc8b4ea6d62899b2733956ec7018e5d11244f8580a"
     },
     {
       "bytes": 14162,
@@ -8097,9 +8102,9 @@
       "sha256": "8f46b57cbec601bbc9bcc3c72f53889f9ca029d48a51209a30b30859bc7c8933"
     },
     {
-      "bytes": 24046,
+      "bytes": 30538,
       "path": "tests/native-xiaomi-product/NativeXiaomiProductPageHostTest.java",
-      "sha256": "56e0ee7d0ffd5175f97fecbb40414b69ce0d2716325ba2f859868b2a25acdee8"
+      "sha256": "910c1070e60dd5ecb0d17d6965a82fb97d95c9ac328abd54c978674504b46cba"
     },
     {
       "bytes": 8104,
@@ -8159,7 +8164,32 @@
     {
       "bytes": 6864,
       "path": "tests/native-xiaomi-product/run_host.py",
-      "sha256": "c9476f04f0162a24ffd1b5fb49beea5b2d6b0434696edcfb8fd9d3896c325731"
+      "sha256": "933cab2e5d9230326fc6e4b42143a6482fe710a44f1108f9136f28472f6dff3a"
+    },
+    {
+      "bytes": 2443,
+      "path": "tests/native-xiaomi-search-entry/fixtures/PROVENANCE.json",
+      "sha256": "77c44ab9207748d9ec82877dd06be3f5bb36677aa36a135334d0a05c50049cd6"
+    },
+    {
+      "bytes": 8656,
+      "path": "tests/native-xiaomi-search-entry/fixtures/home.json.gz",
+      "sha256": "97d858f0b31366372ad47d6ed90c5ef4feb621c73a7c23422bacad82d23fba2c"
+    },
+    {
+      "bytes": 2816,
+      "path": "tests/native-xiaomi-search-entry/fixtures/loading.json.gz",
+      "sha256": "222efa63bc2359c6e13f1cf106695ade66357e97eb3c59a93da572d4d6ab4a6b"
+    },
+    {
+      "bytes": 3281,
+      "path": "tests/native-xiaomi-search-entry/fixtures/login.json.gz",
+      "sha256": "895d85f8f4c62472c947cf2758ad8df27c0d7e8f4ed0764e3a3b693631277260"
+    },
+    {
+      "bytes": 2040,
+      "path": "tests/native-xiaomi-search-entry/fixtures/manual-search-entry-RESULT.json",
+      "sha256": "275dd04b104cd0a784807658b46ea76038783104a933e50c997cb95852174acf"
     },
     {
       "bytes": 42214,
@@ -13030,6 +13060,44 @@
     "production_files_changed": false,
     "workflow_assertions": 529,
     "workflow_scenarios_retained": 12
+  },
+  "r22_native_search_entry_amendment": {
+    "actual_release8_seven_targeted_gate_groups_passed": true,
+    "adjacent_searchIcon_no_longer_offered_as_open_search": true,
+    "carousel_target_changes_require_fresh_observation_and_model_decision": true,
+    "changed_nonmanifest_paths": [
+      "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
+      "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
+      "tests/native-action-integration/NativeActionBridgeHost.template",
+      "tests/native-action-integration/NativeActionIntegrationHostTest.java",
+      "tests/native-action-integration/NativeActionSnapshotCheckHostTest.java",
+      "tests/native-action-integration/NativeXiaomiEntryObservationHostTest.java",
+      "tests/native-action-integration/NativeXiaomiHomeVariationHostTest.java",
+      "tests/native-action-integration/run_host.py",
+      "tests/native-stale-recovery/run_budget.py",
+      "tests/native-xiaomi-product/NativeXiaomiProductPageHostTest.java",
+      "tests/native-xiaomi-product/run_host.py",
+      "tests/native-xiaomi-search-entry/fixtures/PROVENANCE.json",
+      "tests/native-xiaomi-search-entry/fixtures/home.json.gz",
+      "tests/native-xiaomi-search-entry/fixtures/loading.json.gz",
+      "tests/native-xiaomi-search-entry/fixtures/login.json.gz",
+      "tests/native-xiaomi-search-entry/fixtures/manual-search-entry-RESULT.json"
+    ],
+    "host_result_sha256": "12b0d6be98a74f9ce0f5d6e7ebcc4f22d9fb30802ce555e3f5ce28e4737935e1",
+    "native_search_and_quote_phone_qualification_pending": true,
+    "negative_control_compiled_then_rejected_old_entry": true,
+    "negative_control_result_sha256": "2187fafa16ea23f441e0a736ee7fac220ab4cda2a76787ee7a7a6adeffa1994e",
+    "observed_entry_resource": "com.xiaomi.shop.plugin.homepage:id/switcher",
+    "original_90_second_freshness_and_installed_identity_checks_unchanged": true,
+    "original_manual_entry_proof_is_not_current_installed_business_success": true,
+    "original_node_label_and_full_target_subtree_preserved": true,
+    "overlay_manifest_sha256": "b3ed735d59692b315743620c6b90d92fcd4f10b96d4f384a86c287444c7ad86d",
+    "parent_git_object": "d455e55f1600072ea99af881b0a432711e738e60",
+    "parent_manifest_sha256": "c5832b388b8d22ef8744cbeb434d9b4aa4ab23c570dd960d5f1dc9596a0411f2",
+    "production_paths": [
+      "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
+      "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java"
+    ]
   },
   "release_version_assigned": false,
   "schema": "hepta.local-source.v3",

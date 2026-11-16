@@ -65,11 +65,16 @@ public final class NativeActionSnapshotCheckHostTest {
         f.target="0/0/1";f.label="";f.link();return f;
     }
     static Fixture xiaomi(){Fixture f=new Fixture(NativeActionSnapshotCheck.SEARCH,NativeActionSnapshotCheck.XIAOMI);
-        f.add("0","android.widget.FrameLayout","","","",rect(0,0,1224,2992));f.add("0/0","android.widget.LinearLayout","","","",rect(0,0,1224,400));
-        f.add("0/0/0","android.widget.ImageView","com.xiaomi.shop.plugin.homepage:id/searchIcon","","搜索",rect(1000,100,1200,300));f.click("0/0/0");
+        f.add("0","android.widget.FrameLayout","","","",rect(0,0,1224,2992));
+        f.add("0/0","androidx.viewpager.widget.ViewPager","com.xiaomi.shop.plugin.homepage:id/home_3_vp","","",rect(0,0,1224,400));
+        f.add("0/0/0","android.widget.ViewSwitcher","com.xiaomi.shop.plugin.homepage:id/switcher","","",rect(156,287,1000,375));f.click("0/0/0");
+        f.nodes.get("0/0/0").put("label","搜索洗衣机 · 洗衣机");
+        f.add("0/0/0/0","android.widget.LinearLayout","","","搜索洗衣机",rect(156,301,1000,360));
+        f.add("0/0/0/0/0","android.widget.TextView","com.xiaomi.shop:id/text","洗衣机","",rect(156,301,302,360));
+        f.add("0/0/1","android.widget.ImageView","com.xiaomi.shop.plugin.homepage:id/searchIcon","","搜索",rect(1000,290,1156,372));f.click("0/0/1");
         f.add("0/1","android.widget.LinearLayout","","","",rect(0,2800,1224,2992));f.add("0/1/0","android.widget.TextView","com.xiaomi.shop.plugin.homepage:id/main_view_nav_bar_text","首页","",rect(0,2800,200,2992));f.nodes.get("0/1/0").put("selected",true);
         f.add("0/2","android.widget.LinearLayout","","","",rect(0,400,1224,2700));f.add("0/2/0","android.widget.TextView","","推荐A","",rect(0,600,1224,800));
-        f.target="0/0/0";f.label="搜索";f.link();return f;
+        f.target="0/0/0";f.label="搜索洗衣机 · 洗衣机";f.link();return f;
     }
     static Fixture fresh(Fixture f){Fixture x=f.copy();x.env.put("captured_elapsed_ms",300L);return x;}
     static Map<String,Object> compare(Fixture old,Fixture fresh){return NativeActionSnapshotCheck.compare(old.intent(),old.snapshot(),fresh.snapshot(),400L);}

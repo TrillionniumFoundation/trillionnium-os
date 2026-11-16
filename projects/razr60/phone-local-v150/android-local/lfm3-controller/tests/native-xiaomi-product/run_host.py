@@ -67,7 +67,7 @@ def main():
     try:
         command("javac",[a.java_home/"bin/javac","--release","8","-encoding","UTF-8","-Xlint:all","-Werror","-d",classes,*[a.source/x for x in PATHS]])
         command("cases",[a.java_home/"bin/java","-cp",classes,"org.trillionnium.hepta.local.NativeXiaomiProductPageHostTest",provenance_path.parent,a.output/"CASES.json"])
-        cases=json.loads((a.output/"CASES.json").read_bytes());need(cases["all_pass"] is True and cases["cases"]==33 and len(set(cases["case_names"]))==33,"complete fixed parser cases")
+        cases=json.loads((a.output/"CASES.json").read_bytes());need(cases["all_pass"] is True and cases["cases"]==55 and len(set(cases["case_names"]))==55,"complete fixed parser cases")
         need(cases["phone_operations"]==0 and cases["android_runtime"] is False and cases["business_verified"] is False,"host-only case scope")
         result["cases"]=cases;result["all_pass"]=True
     except Exception as error:
