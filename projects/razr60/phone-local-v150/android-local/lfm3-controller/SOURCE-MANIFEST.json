@@ -5,9 +5,27 @@
     "component_tree": "08f3d1c32944f834530b659cb6c3b7ec12c00039",
     "source_manifest_sha256": "bf99aebd7009d29cad75f3b796af4005084f30219aff61929cb905c4b214d991"
   },
-  "candidate_status": "homepage_next_goal_and_failure_structure_diagnostic_pending_phone",
+  "booking_budget_amendment": {
+    "action_replay_added": false,
+    "all_other_phase_budgets_unchanged": true,
+    "cancellation_authorization_and_lease_guards_unchanged": true,
+    "clamped_to_original_task_deadline": true,
+    "complete_capture_validation_unchanged": true,
+    "controller_and_notes_workflow_source_unchanged": true,
+    "host_validation_sha256": "a3725f880b1f468f286385f16990790dcc35aaccc53c8332ebed258e3fa7547f",
+    "maximum_extra_read_only_reobservations": 2,
+    "native_source_unchanged": true,
+    "normal_git_parent": "cfacefe61e8f9456191ccda39f0af684dd38257c",
+    "old_frame_acceptance_added": false,
+    "original_task_deadline_extended": false,
+    "phase_frozen_once_per_page_identity": true,
+    "previous_booking_pending_phase_budget_ms": 6000,
+    "previous_manifest_sha256": "3b442123253504d89138cb3c02381ba978ef589453cc2a806fe1a98ed861a9af",
+    "recognized_booking_pending_phase_budget_ms": 16000
+  },
+  "candidate_status": "booking_document_budget_pending_phone",
   "candidate_version_assigned": true,
-  "complete_source_files": 2033,
+  "complete_source_files": 2039,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -6810,9 +6828,9 @@
       "sha256": "55bb45677d862633cdae80d3786240026e57059288205b3d04bc500483bbcd6f"
     },
     {
-      "bytes": 73100,
+      "bytes": 73230,
       "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
-      "sha256": "ee2b2f8c1a236e6e0297db549381001877c7d00374c412b8078e83d66d919b98"
+      "sha256": "dd45a9b72319bdc52a78152b13f62a849914d97b83146afb7435581a86fa6286"
     },
     {
       "bytes": 9993,
@@ -7333,6 +7351,11 @@
       "bytes": 3238,
       "path": "tests/background-session/run_target_host_tests.py",
       "sha256": "b62aa7b46dfca858315f7d1cc5947748dc0cdffebcbc0896a3665ed463ff4ce2"
+    },
+    {
+      "bytes": 100027,
+      "path": "tests/booking-budget-integration/HOST-VALIDATION.json",
+      "sha256": "a3725f880b1f468f286385f16990790dcc35aaccc53c8332ebed258e3fa7547f"
     },
     {
       "bytes": 20286,
@@ -9458,6 +9481,31 @@
       "bytes": 9757,
       "path": "tests/warm-finalization/prepare_fixture.py",
       "sha256": "b2c801b411e1b139f92aa4beaeaa9f15f5dc61cf227b481d0bc67c12ebdd8cc9"
+    },
+    {
+      "bytes": 18537,
+      "path": "tests/web-booking-budget/BUDGET-HOST-VALIDATION.json",
+      "sha256": "c280429b3dd6876ddd7db191bdddf40432b00b18f6c9ca0ddb4f30db74a8a9f8"
+    },
+    {
+      "bytes": 15649,
+      "path": "tests/web-booking-budget/READINESS-HOST-VALIDATION.json",
+      "sha256": "f456e95783a9ecb8ce8aae25cfca09c99ef86c09ce97693c721d1e3b5bee9b84"
+    },
+    {
+      "bytes": 1959,
+      "path": "tests/web-booking-budget/README.md",
+      "sha256": "f129a4c23b01e623b346da357210e145c4d0e1457863842696f47b2ba76ee56c"
+    },
+    {
+      "bytes": 25461,
+      "path": "tests/web-booking-budget/WebBookingBudgetHost.template",
+      "sha256": "92deb3b399ea87de58de708d9855181ad775cd5454163f1baaaa7b7e073f94a8"
+    },
+    {
+      "bytes": 5356,
+      "path": "tests/web-booking-budget/run_budget_host.py",
+      "sha256": "eba9b360eb6e1d2b4097c501ea0bcd99fcd60a5fc8e94ba714eb97964713160b"
     },
     {
       "bytes": 3569,

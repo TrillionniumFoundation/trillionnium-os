@@ -473,8 +473,9 @@ final class WebFlightSession {
             loadingDocumentKey=key;loadingDocumentStarted=now;loadingDocumentReadRetries=0;
             // The actual city failure cost about 6.8s per full extra AX/DOM bracket.
             // Actual MI capture plus verified reply costs about 4.5s; two full extra reads need a 32s phase.
+            // Actual booking capture plus verified handoff costs about 2.7s; a fresh pair also needs AX reads.
             // Freeze one phase deadline; no retry extends it or the original task deadline.
-            loadingDocumentDeadline=Math.min(deadline,now+(shoppingUnstable||initialDocumentUnstable?32000:cityPickerTransition?16000:6000));
+            loadingDocumentDeadline=Math.min(deadline,now+(shoppingUnstable||initialDocumentUnstable?32000:(cityPickerTransition||bookingPending)?16000:6000));
         }
         if(loadingDocumentReadRetries>=2||now+250>=Math.min(deadline,loadingDocumentDeadline))return false;
         need(!retired&&!cancellation.isCancelled(),"web task retired while waiting for page content");
