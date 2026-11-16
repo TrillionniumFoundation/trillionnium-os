@@ -136,6 +136,8 @@ final class WebFlightSession {
     private String loadingDocumentKey;
     private long loadingDocumentStarted,loadingDocumentDeadline;
     private int loadingDocumentReadRetries;
+    private volatile WebObservationTiming observationTiming;
+    WebObservationTiming observationTiming(){return observationTiming;}
     private static final class PendingNavigation {
         final WebShoppingDomain before;final ActionDecision action;final String run;final long start,end;
         final boolean accepted,dispatched,stale;
@@ -231,6 +233,11 @@ final class WebFlightSession {
         record("web-helper-attached.json",response.callback());
     }
     PhoneObservation observe(PhoneObservation initial,Observer observer,long deadline)throws Exception{
+        final WebObservationTiming timing=new WebObservationTiming(taskId,deadline,SystemClock::elapsedRealtime);
+        observationTiming=timing;
+        final WebObservationTiming.Span whole=WebObservationTiming.begin(timing,WebObservationTiming.Phase.OBSERVE,deadline);
+        Throwable observationFailure=null;
+        try{
         need(!retired&&!cancellation.isCancelled(),"web task retired");
         CityObservationRetry observationRetry=cityObservationRetry;cityObservationRetry=null;
         PhoneObservation before=initial;long captureDeadline=deadline;String loadingAttemptKey=null;
@@ -265,9 +272,12 @@ final class WebFlightSession {
         need(loadingAttemptKey==null||loadingAttemptKey.equals(actualLoadingKey),
                 "read-only loading retry changed the original instance, URL or navigation epoch");
         WebDomStability.Result domBracket=null;
+        WebObservationTiming.Span domScope=WebObservationTiming.begin(timing,WebObservationTiming.Phase.DOM_SCOPE_BRACKET,captureDeadline);
         try{
             domBracket=WebDomStability.evaluate(first.domRaw(),last.beforeDomRaw(),purpose.sitePolicyId);
+            WebObservationTiming.complete(domScope);
         }catch(Exception incompleteBracket){
+            WebObservationTiming.failed(domScope,incompleteBracket);
             // A changing bracket supplies no action. Existing loading retries
             // remain bounded and read-only; no preceding click is repeated.
         }
@@ -278,8 +288,15 @@ final class WebFlightSession {
         boolean sameCaptureDomain=sameCaptureIdentity&&domBracket!=null;
         boolean stable=sameOriginalFrame&&sameCaptureDomain;
         JSONObject nativeObservationBracket=null;
-        if(sameCaptureIdentity&&purpose.shopping!=null&&nativeSource!=null
-                &&WebShoppingObservationStability.supportsCaptures(first.capture(),last.capture())){
+        boolean supportedShoppingCaptures=false;
+        if(sameCaptureIdentity&&purpose.shopping!=null&&nativeSource!=null){
+            WebObservationTiming.Span eligibility=WebObservationTiming.begin(timing,WebObservationTiming.Phase.SHOPPING_DOM_ELIGIBILITY,captureDeadline);
+            try{
+                supportedShoppingCaptures=WebShoppingObservationStability.supportsCaptures(first.capture(),last.capture());
+                WebObservationTiming.complete(eligibility,supportedShoppingCaptures);
+            }catch(Exception|Error failure){WebObservationTiming.failed(eligibility,failure);throw failure;}
+        }
+        if(supportedShoppingCaptures){
             // A private complete native proof admits only this new card observation.
             // It creates no product ARM; beforeModelAction and native dispatch retain every original gate.
             nativeObservationBracket=service.verifyFlightObservationBracket(this,nativeSource,after,first,last,
@@ -330,6 +347,13 @@ final class WebFlightSession {
         dispatchCheckedRun=null;dispatchCheckedAction=null;dispatchCheckedAt=0;
         return after;
         }finally{if(nativeSource!=null)nativeSource.close();}
+        }
+        }catch(Exception|Error failure){observationFailure=failure;throw failure;}
+        finally{
+            if(observationFailure==null)WebObservationTiming.complete(whole);else WebObservationTiming.failed(whole,observationFailure);
+            if(observationTiming==timing)observationTiming=null;
+            // Diagnostic persistence must not replace the original outcome or grant a page capability.
+            try{record("web-observation-timing-"+timing.id()+".json",timing.snapshot());}catch(Exception diagnosticFailure){}
         }
     }
     private static String loadingKey(WebEvidenceReceipt receipt){

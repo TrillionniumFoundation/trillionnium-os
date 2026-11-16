@@ -2635,17 +2635,29 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private final class FlightObservationRead<T> implements Runnable {
         private final java.util.concurrent.Callable<T> read;private final Cancellation cancel;private final long deadline;
         private final Runnable cleanup;private boolean done,abandoned;private T value;private Throwable error;
+        private final WebObservationTiming timing;private final WebObservationTiming.Phase readPhase,waitPhase;
+        private final WebObservationTiming.Span queueTiming;
         FlightObservationRead(java.util.concurrent.Callable<T> read,Cancellation cancel,long deadline,Runnable cleanup){
-            this.read=read;this.cancel=cancel;this.deadline=deadline;this.cleanup=cleanup;
+            this(read,cancel,deadline,cleanup,null,null,null,null);
         }
+        FlightObservationRead(java.util.concurrent.Callable<T> read,Cancellation cancel,long deadline,Runnable cleanup,
+                WebObservationTiming timing,WebObservationTiming.Phase queuePhase,WebObservationTiming.Phase readPhase,
+                WebObservationTiming.Phase waitPhase){
+            this.read=read;this.cancel=cancel;this.deadline=deadline;this.cleanup=cleanup;
+            this.timing=timing;this.readPhase=readPhase;this.waitPhase=waitPhase;
+            queueTiming=WebObservationTiming.begin(timing,queuePhase,deadline);
+        }
+        void submissionRejected(Throwable failure){WebObservationTiming.failed(queueTiming,failure);}
         private void requireOpen(){
             if(cancel.isCancelled()||SystemClock.elapsedRealtime()>=deadline)
                 throw new IllegalStateException("readonly Flight observation cancelled or expired");
         }
         @Override public void run(){
-            T actual=null;Throwable failure=null;
+            T actual=null;Throwable failure=null;WebObservationTiming.Span readTiming=null;
+            WebObservationTiming.complete(queueTiming);
             try{
                 synchronized(this){if(abandoned)return;}
+                readTiming=WebObservationTiming.begin(timing,readPhase,deadline);
                 requireOpen();actual=read.call();requireOpen();
             }catch(Throwable refused){failure=refused;}
             finally{
@@ -2655,6 +2667,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 synchronized(this){
                     try{if(abandoned||failure!=null)releaseValue(actual);else value=actual;}
                     catch(Throwable releaseFailure){if(failure==null)failure=releaseFailure;else failure.addSuppressed(releaseFailure);}
+                    if(failure==null)WebObservationTiming.complete(readTiming);else WebObservationTiming.failed(readTiming,failure);
                     error=failure;done=true;notifyAll();
                 }
             }
@@ -2664,21 +2677,28 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }
         T await()throws Exception{
             boolean claimed=false;
+            WebObservationTiming.Span waitTiming=WebObservationTiming.begin(timing,waitPhase,deadline);
             try{
                 synchronized(this){
                     while(!done){requireOpen();wait(Math.min(50,Math.max(1,deadline-SystemClock.elapsedRealtime())));}
                     requireOpen();
                     if(error instanceof Exception)throw (Exception)error;
                     if(error instanceof Error)throw (Error)error;
-                    T result=value;value=null;claimed=true;return result;
+                    T result=value;value=null;claimed=true;WebObservationTiming.complete(waitTiming);return result;
                 }
-            }finally{if(!claimed)synchronized(this){abandoned=true;releaseValue(value);value=null;}}
+            }catch(Exception|Error failure){WebObservationTiming.failed(waitTiming,failure);throw failure;}
+            finally{if(!claimed)synchronized(this){abandoned=true;releaseValue(value);value=null;}}
         }
     }
-    private <T>T readFlightObservationOnMain(java.util.concurrent.Callable<T> read,Cancellation cancel,long deadline)throws Exception{
+    private <T>T readFlightObservationOnMain(java.util.concurrent.Callable<T> read,Cancellation cancel,long deadline,
+            WebObservationTiming timing)throws Exception{
         if(Looper.myLooper()==Looper.getMainLooper())throw new IllegalStateException("Flight observation waits only on its worker");
-        FlightObservationRead<T> call=new FlightObservationRead<T>(read,cancel,deadline,null);
-        if(!main.post(call))throw new IllegalStateException("readonly Flight observation main looper unavailable");
+        FlightObservationRead<T> call=new FlightObservationRead<T>(read,cancel,deadline,null,timing,
+                WebObservationTiming.Phase.MAIN_QUEUE,WebObservationTiming.Phase.MAIN_READ,WebObservationTiming.Phase.MAIN_WAIT);
+        if(!main.post(call)){
+            IllegalStateException failure=new IllegalStateException("readonly Flight observation main looper unavailable");
+            call.submissionRejected(failure);throw failure;
+        }
         return call.await();
     }
     /** In-memory admission only. No scope file, live window, node refresh, or graph traversal on main. */
@@ -2740,7 +2760,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     catch(RuntimeException failure){copy.close();throw failure;}
                 }
             }
-        },cancel,deadline);
+        },cancel,deadline,web.observationTiming());
         if(source==null)return null;
         boolean accepted=false;
         try{
@@ -2757,6 +2777,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final FlightObservationSnapshot observed=retainFlightObservation(web,after,cancel,deadline);
         if(observed==null)throw new StaleObservation("Flight只读复核缺少新的完整原生目标");
         FlightObservationSnapshot sourceCopy=null,observedCopy=null;boolean ownershipTransferred=false;
+        final WebObservationTiming timing=web.observationTiming();
         try{
             sourceCopy=source.copyForRead();observedCopy=observed.copyForRead();
             final FlightObservationSnapshot ownedSource=sourceCopy,ownedObserved=observedCopy;
@@ -2770,13 +2791,14 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             }};
             FlightObservationRead<JSONObject> call=new FlightObservationRead<JSONObject>(new java.util.concurrent.Callable<JSONObject>(){
                 public JSONObject call()throws Exception{
-                    return verifyFlightObservationOnWorker(web,ownedSource,ownedObserved,after,first,last,cancel,deadline,budget);
+                    return verifyFlightObservationOnWorker(web,ownedSource,ownedObserved,after,first,last,cancel,deadline,budget,timing);
                 }
-            },cancel,deadline,cleanup);
+            },cancel,deadline,cleanup,timing,WebObservationTiming.Phase.NATIVE_QUEUE,
+                    WebObservationTiming.Phase.NATIVE_READ,WebObservationTiming.Phase.NATIVE_WAIT);
             // Unexpected submission failure keeps capacity fenced; only definitive rejection proves no read entered.
             ownershipTransferred=true;
             try{observationIo.execute(call);}
-            catch(java.util.concurrent.RejectedExecutionException rejected){cleanup.run();throw rejected;}
+            catch(java.util.concurrent.RejectedExecutionException rejected){call.submissionRejected(rejected);cleanup.run();throw rejected;}
             JSONObject result=call.await();
             requireFlightObservationAuthority(web,source,after,cancel,deadline);
             requireFlightObservationAuthority(web,observed,after,cancel,deadline);
@@ -2788,7 +2810,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private JSONObject verifyFlightObservationOnWorker(WebFlightSession web,FlightObservationSnapshot source,
             FlightObservationSnapshot observedSource,PhoneObservation after,WebEvidenceReceipt first,WebEvidenceReceipt last,
-            Cancellation cancel,long deadline,GraphBudget budget)throws Exception{
+            Cancellation cancel,long deadline,GraphBudget budget,WebObservationTiming timing)throws Exception{
         if(Looper.myLooper()==Looper.getMainLooper())throw new IllegalStateException("Flight native traversal must stay off main");
         checkReadBudget(budget);requireFlightObservationAuthority(web,source,after,cancel,deadline);
         requireFlightObservationAuthority(web,observedSource,after,cancel,deadline);
@@ -2809,13 +2831,24 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             throw new StaleObservation("Flight只读capture的任务或OWNER来源不同");
         JSONArray beforeNative=new JSONArray(source.graph.flightNativeSnapshotRaw);
         JSONArray observedNative=new JSONArray(observed.flightNativeSnapshotRaw);
-        JSONObject proof=web.purpose.shopping!=null
+        WebObservationTiming.Span domTiming=WebObservationTiming.begin(timing,WebObservationTiming.Phase.NATIVE_DOM_BRACKET,deadline);
+        JSONObject proof;
+        try{
+        proof=web.purpose.shopping!=null
                 ?WebShoppingObservationStability.compareObservationBracket(web.taskId,new JSONObject(source.frameRaw),
                         beforeNative,new JSONObject(observedSource.frameRaw),observedNative,firstCapture,lastCapture,source.targetPath)
                 :WebFlightNativeStability.compareObservationBracket(web.taskId,new JSONObject(source.frameRaw),
                         beforeNative,new JSONObject(observedSource.frameRaw),observedNative,firstCapture,lastCapture,source.targetPath);
+        WebObservationTiming.complete(domTiming);
+        }catch(Exception|Error failure){WebObservationTiming.failed(domTiming,failure);throw failure;}
+        WebObservationTiming.Span finalTiming=null;
         try{
-            checkReadBudget(budget);liveGraph=readGraph(budget,source.background);checkReadBudget(budget);
+            WebObservationTiming.Span graphTiming=WebObservationTiming.begin(timing,WebObservationTiming.Phase.NATIVE_READ_GRAPH,deadline);
+            try{
+                checkReadBudget(budget);liveGraph=readGraph(budget,source.background);checkReadBudget(budget);
+                WebObservationTiming.complete(graphTiming);
+            }catch(Exception|Error failure){WebObservationTiming.failed(graphTiming,failure);throw failure;}
+            finalTiming=WebObservationTiming.begin(timing,WebObservationTiming.Phase.NATIVE_FINAL_RECHECK,deadline);
             if(!completeFlightGraph(liveGraph)||!observed.sameWindow(liveGraph)
                     ||!observed.windowMetadata.bindFreshness("").equals(liveGraph.windowMetadata.bindFreshness("")))
                 throw new StaleObservation("Flight只读观察最后完整图或窗口已变化");
@@ -2853,7 +2886,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 throw new StaleObservation("Flight观察期间交互窗口覆盖元数据变化");
             requireFlightObservationAuthority(web,source,after,cancel,deadline);
             requireFlightObservationAuthority(web,observedSource,after,cancel,deadline);checkReadBudget(budget);
-            return proof.put("source","private_service_snapshot_and_live_complete_native_traversal")
+            JSONObject result=proof.put("source","private_service_snapshot_and_live_complete_native_traversal")
                     .put("original_target_obtained_before_graph_recycling",true)
                     .put("original_node_ref_identity_preserved",true).put("actual_ancestor_chain_refreshed",true)
                     .put("source_retained_elapsed_ms",source.retainedAt)
@@ -2863,7 +2896,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     .put("live_native_recheck",liveProof).put("interactive_windows_before",windowsBefore)
                     .put("interactive_windows_after",windowsAfter).put("two_interactive_window_reads_equal",true)
                     .put("native_invocation_entered",false);
-        }finally{if(liveGraph!=null)liveGraph.close();}
+            WebObservationTiming.complete(finalTiming);return result;
+        }catch(Exception|Error failure){WebObservationTiming.failed(finalTiming,failure);throw failure;}
+        finally{if(liveGraph!=null)liveGraph.close();}
     }
 
     private void refreshFlightObservationTargetChain(BackgroundSession background,PhoneObservation frame,NodeRef original,

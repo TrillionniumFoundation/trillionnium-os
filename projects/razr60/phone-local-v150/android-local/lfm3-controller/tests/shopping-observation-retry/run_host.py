@@ -108,6 +108,7 @@ def main():
     paths = next(ast.literal_eval(n.value) for n in parsed.body if isinstance(n, ast.Assign)
                  and any(isinstance(t, ast.Name) and t.id == 'PURE_PATHS' for t in n.targets))
     inputs = [root / p for p in paths if p != 'tests/web-flight/WebFlightQueryHostTest.java']
+    inputs.append(root / 'src/org/trillionnium/hepta/local/WebObservationTiming.java')
     signatures = ['PhoneObservation observe(PhoneObservation initial,Observer observer,long deadline)',
                   'private boolean retryLoadingDocument(WebEvidenceReceipt first,WebEvidenceReceipt last,PhoneObservation frame,',
                   'private static boolean sameFrame(PhoneObservation a,PhoneObservation b)']

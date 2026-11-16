@@ -87,6 +87,8 @@ public final class FlightObservationWorkerHost {
         final String taskId=TASK;final Object goal=new Object();final TaskAuthorization.Gate authorization;
         final Purpose purpose=new Purpose();
         static final class Purpose {final Object flight=new Object(),shopping=null;}
+        WebObservationTiming timing;
+        WebObservationTiming observationTiming(){return timing;}
         WebFlightSession(TaskAuthorization.Gate a){authorization=a;}
     }
     static final class WebEvidenceReceipt {}
@@ -139,6 +141,11 @@ public final class FlightObservationWorkerHost {
         private JSONObject verifyFlightObservationOnWorker(WebFlightSession web,FlightObservationSnapshot source,
                 FlightObservationSnapshot observed,PhoneObservation after,WebEvidenceReceipt first,WebEvidenceReceipt last,
                 Cancellation cancel,long deadline,GraphBudget budget)throws Exception{
+            return verifyFlightObservationOnWorker(web,source,observed,after,first,last,cancel,deadline,budget,null);
+        }
+        private JSONObject verifyFlightObservationOnWorker(WebFlightSession web,FlightObservationSnapshot source,
+                FlightObservationSnapshot observed,PhoneObservation after,WebEvidenceReceipt first,WebEvidenceReceipt last,
+                Cancellation cancel,long deadline,GraphBudget budget,WebObservationTiming timing)throws Exception{
             check(Thread.currentThread()!=MAIN,"native traversal ran on main");workerSource=source;workerObserved=observed;
             checkReadBudget(budget);entered.countDown();await(release);checkReadBudget(budget);
             check(source.original.node.closes.get()==0&&observed.original.node.closes.get()==0,"native read used recycled copy");
@@ -157,7 +164,7 @@ public final class FlightObservationWorkerHost {
         final HeptaAccessibilityService service=new HeptaAccessibilityService();
         final AtomicBoolean cancelled=new AtomicBoolean();
         HeptaAccessibilityService.FlightObservationSnapshot source;
-        Env(){SystemClock.value.set(100);HeptaAccessibilityService.observationIoBusy.set(false);HeptaAccessibilityService.observationIo=nativeWorker;}
+        Env(){SystemClock.value.set(100);service.taskWeb.timing=new WebObservationTiming(TASK,1000,SystemClock::elapsedRealtime);HeptaAccessibilityService.observationIoBusy.set(false);HeptaAccessibilityService.observationIo=nativeWorker;}
         void retain()throws Exception{
             Future<HeptaAccessibilityService.FlightObservationSnapshot> f=controller.submit(()->service.retainFlightObservation(service.taskWeb,service.current,cancelled::get,1000));
             service.main.runOne();source=f.get(3,TimeUnit.SECONDS);check(source!=null,"source missing");
@@ -177,6 +184,11 @@ public final class FlightObservationWorkerHost {
             check(controller.awaitTermination(3,TimeUnit.SECONDS)&&nativeWorker.awaitTermination(3,TimeUnit.SECONDS),"host worker leaked");
             if(source!=null)source.close();service.currentGraph.close();
         }
+    }
+    static JSONObject phase(JSONObject snapshot,String phase)throws Exception{
+        JSONArray spans=snapshot.getJSONArray("spans");
+        for(int i=0;i<spans.length();i++)if(phase.equals(spans.getJSONObject(i).getString("phase")))return spans.getJSONObject(i);
+        throw new AssertionError("missing phase timing: "+phase);
     }
     public static void main(String[] argv)throws Exception{
         run("main_handoff_uses_frozen_graph_and_independent_node",()->{try(Env e=new Env()){
@@ -261,6 +273,49 @@ public final class FlightObservationWorkerHost {
         run("snapshot_close_is_idempotent_and_copy_after_close_rejected",()->{try(Env e=new Env()){
             e.retain();e.source.close();e.source.close();check(e.source.original.node.closes.get()==1,"double-close effect");refuses(()->e.source.copyForRead());
         }});
+        run("timing_success_records_main_and_worker_without_deadline_renewal",()->{try(Env e=new Env()){
+            e.retain();e.verify().get(3,TimeUnit.SECONDS);
+            JSONObject snapshot=e.service.taskWeb.timing.snapshot();
+            for(String name:new String[]{"main_queue","main_read","main_wait","native_queue","native_read","native_wait"}){
+                JSONObject row=phase(snapshot,name);check("completed".equals(row.getString("outcome")),"missing completed phase "+name);
+                check(row.getLong("deadline_elapsed_ms")==1000,"timing renewed a fixed deadline");
+            }
+            check(!HeptaAccessibilityService.observationIoBusy.get(),"trace changed ownership drainage");
+        }});
+        run("timing_deadline_distinguishes_pending_native_read_from_expired_wait",()->{try(Env e=new Env()){
+            e.retain();e.service.release=new CountDownLatch(1);Future<JSONObject> f=e.verify();await(e.service.entered);
+            SystemClock.value.set(1001);futureRefuses(f);
+            JSONObject atExpiry=e.service.taskWeb.timing.snapshot();
+            check("deadline_expired".equals(phase(atExpiry,"native_wait").getString("outcome")),"expired wait not recorded");
+            check("pending".equals(phase(atExpiry,"native_read").getString("outcome")),"blocked native read was marked drained");
+            check(phase(atExpiry,"native_read").isNull("finished_elapsed_ms"),"pending native read has an invented end");
+            check(HeptaAccessibilityService.observationIoBusy.get(),"timing freed active native read slot");
+            e.service.release.countDown();e.drained();
+            check("deadline_expired".equals(phase(e.service.taskWeb.timing.snapshot(),"native_read").getString("outcome")),"physical exit absent");
+            check("pending".equals(phase(atExpiry,"native_read").getString("outcome")),"earlier persisted snapshot mutated");
+        }});
+        run("timing_main_queue_expiry_does_not_invent_main_execution",()->{try(Env e=new Env()){
+            int copies=AccessibilityNodeInfo.copies.size();
+            Future<?> f=e.controller.submit(()->{try{return e.service.retainFlightObservation(e.service.taskWeb,e.service.current,e.cancelled::get,1000);}catch(Exception x){throw new IllegalStateException(x);}});
+            Runnable queued=e.service.main.queued.poll(3,TimeUnit.SECONDS);check(queued!=null,"main request missing");
+            SystemClock.value.set(1001);futureRefuses(f);JSONObject snapshot=e.service.taskWeb.timing.snapshot();
+            check("pending".equals(phase(snapshot,"main_queue").getString("outcome")),"unexecuted queue marked ended");
+            check("deadline_expired".equals(phase(snapshot,"main_wait").getString("outcome")),"main wait expiry missing");
+            queued.run();check(AccessibilityNodeInfo.copies.size()==copies,"abandoned timing callback copied nodes");
+            JSONArray spans=e.service.taskWeb.timing.snapshot().getJSONArray("spans");
+            for(int i=0;i<spans.length();i++)check(!"main_read".equals(spans.getJSONObject(i).getString("phase")),"skipped read invented execution");
+        }});
+        run("timing_is_bounded_and_omits_exception_messages_and_page_text",()->{
+            SystemClock.value.set(100);WebObservationTiming t=new WebObservationTiming(TASK,1000,SystemClock::elapsedRealtime);
+            for(int i=0;i<WebObservationTiming.MAX_SPANS+7;i++){
+                WebObservationTiming.Span span=WebObservationTiming.begin(t,WebObservationTiming.Phase.SHOPPING_DOM_ELIGIBILITY,1000);
+                WebObservationTiming.failed(span,new IllegalStateException("PRIVATE_PAGE_TEXT_OMIT"));
+            }
+            JSONObject snapshot=t.snapshot();check(snapshot.getJSONArray("spans").length()==WebObservationTiming.MAX_SPANS,"unbounded timing buffer");
+            check(snapshot.getInt("dropped_spans")==7,"dropped span count missing");
+            check(!snapshot.toString().contains("PRIVATE_PAGE_TEXT_OMIT"),"sensitive exception message persisted");
+            check(!snapshot.getBoolean("grants_action_capability"),"timing unexpectedly grants authority");
+        });
         System.out.println(new JSONObject().put("schema","hepta.flight-observation-worker-host.v1").put("cases",cases).put("assertions",assertions)
                 .put("all_pass",true).put("phone_operations",0).put("android_runtime",false).put("native_io_is_instrumented",true));
     }

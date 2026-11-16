@@ -37,7 +37,7 @@ query_ast=ast.parse((root/'tests/web-flight/run_query_host_tests.py').read_text(
 paths=next(ast.literal_eval(n.value) for n in query_ast.body if isinstance(n,ast.Assign)
            and any(isinstance(t,ast.Name) and t.id=='PURE_PATHS' for t in n.targets))
 paths=[x for x in paths if x!='tests/web-flight/WebFlightQueryHostTest.java']
-paths=list(dict.fromkeys(paths+['src/org/trillionnium/hepta/local/WebFlightNativeStability.java']))
+paths=list(dict.fromkeys(paths+['src/org/trillionnium/hepta/local/WebFlightNativeStability.java','src/org/trillionnium/hepta/local/WebObservationTiming.java']))
 sources=[root/x for x in paths]+[java]
 jar=a.json_jar.resolve()
 record={'schema':'hepta.flight-session-original-fixture-host-run.v1',

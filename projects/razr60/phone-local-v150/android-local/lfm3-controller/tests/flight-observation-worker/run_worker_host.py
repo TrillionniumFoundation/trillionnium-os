@@ -40,7 +40,7 @@ record={'schema':'hepta.flight-observation-worker-validation.v1','source_sha256'
     'extracted_methods':extracted,'phone_operations':0,'android_compiled':False,'android_runtime_tested':False,
     'boundary':'Exact production token, Graph, copy, main handoff, read queue, await, task/lease predicates and verify orchestration. Android node/frame/scope/Handler/native traversal use instrumented host carriers. Pure bracket rules are separate tests.',
     'stages':[]}
-commands=[('compile',['java','-m','jdk.compiler/com.sun.tools.javac.Main','-source','8','-target','8','-encoding','UTF-8','-Xlint:all,-options,-try','-Werror','-cp',str(jar),'-d',str(out/'classes'),str(canonical),str(diagnostics),str(native_action),str(observed_child),str(java)]),
+commands=[('compile',['java','-m','jdk.compiler/com.sun.tools.javac.Main','-source','8','-target','8','-encoding','UTF-8','-Xlint:all,-options,-try','-Werror','-cp',str(jar),'-d',str(out/'classes'),str(canonical),str(diagnostics),str(native_action),str(observed_child),str(root/'src/org/trillionnium/hepta/local/WebObservationTiming.java'),str(java)]),
           ('tests',['java','-cp',str(out/'classes')+':'+str(jar),'org.trillionnium.hepta.local.FlightObservationWorkerHost'])]
 for name,cmd in commands:
     start=time.monotonic();r=subprocess.run(cmd,capture_output=True,text=True,timeout=45)

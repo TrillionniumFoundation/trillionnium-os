@@ -9,6 +9,7 @@ import org.trillionnium.hepta.webprotocol.*;
  * Original DOM/capture geometry is replayed; no live NodeRef/native token is reconstructed. */
 public final class FlightObservationSessionHost {
     private boolean retired,failRecord;
+    private static final class SystemClock {static long elapsedRealtime(){return System.nanoTime()/1000000L;}}
     private final Cancellation cancellation=new Cancellation();
     private final String taskId="b350fd8665b640608093602b1e6a9f14";
     private Object goal=new Object(),authorization=new Object();
@@ -102,9 +103,12 @@ public final class FlightObservationSessionHost {
     private PhoneObservation publishWaiting(PhoneObservation frame,WebEvidenceReceipt receipt,String reason){throw new AssertionError("unexercised waiting boundary");}
     private WebTaskDomain applyNavigation(WebTaskDomain d){return d;}
     private void record(String name,JSONObject value)throws Exception{
+        if(name.startsWith("web-observation-timing-"))return; // Separate diagnostic artifact; does not replace frame/wait evidence.
         if(failRecord)throw new java.io.IOException("instrumented record failure");lastRecord=new JSONObject(value.toString());
     }
     private static void need(boolean condition,String reason){WebEvidenceJson.need(condition,reason);}
+
+    private volatile WebObservationTiming observationTiming;
 
     /* EXACT_PRODUCTION_METHODS */
 

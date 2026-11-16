@@ -134,10 +134,13 @@ public final class ShoppingObservationRetryHost {
     private PhoneObservation publishWaiting(PhoneObservation frame,WebEvidenceReceipt receipt,String reason){throw new AssertionError("unexercised IPC waiting status");}
     private WebTaskDomain applyNavigation(WebTaskDomain value){return value;}
     private void record(String name,JSONObject value)throws Exception{
+        if(name.startsWith("web-observation-timing-"))return; // Separate diagnostic artifact; does not replace frame/wait evidence.
         if(failRecord)throw new java.io.IOException("instrumented persistence failure");
         records.add(new JSONObject(value.toString()));SystemClock.now+=recordDelay;
     }
     private static void need(boolean condition,String reason){WebEvidenceJson.need(condition,reason);}
+
+    private volatile WebObservationTiming observationTiming;
 
     /* EXACT_PRODUCTION_METHODS */
 

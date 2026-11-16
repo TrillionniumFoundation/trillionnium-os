@@ -5,9 +5,9 @@
     "component_tree": "08f3d1c32944f834530b659cb6c3b7ec12c00039",
     "source_manifest_sha256": "bf99aebd7009d29cad75f3b796af4005084f30219aff61929cb905c4b214d991"
   },
-  "candidate_status": "r22_scoped_cleanup_background_explanation_visual_latency_and_native_search_entry_pending_full_validation",
+  "candidate_status": "observation_phase_timing_only_pending_fresh_android_build_and_phone_trace",
   "candidate_version_assigned": true,
-  "complete_source_files": 1984,
+  "complete_source_files": 1988,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -48,7 +48,7 @@
     "actual_phone_install_and_regression": "pending",
     "all_blockers_closed": false,
     "full_frozen_source_gates": "pending",
-    "scope": "final combined R22 candidate; all previous phone evidence belongs to installed R6"
+    "targeted_host_regressions": "passed; exact baseline counterfactual failed only new timing assertion"
   },
   "files": [
     {
@@ -6322,9 +6322,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 268881,
+      "bytes": 271848,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "e36ee58884d145aae9d1c50bdb1e9844b57673a3cb22dd846dec421943d49a61"
+      "sha256": "3d3649d25abb619eaf87892f1b0b9346341d1f50fac11e9378b714faf031095f"
     },
     {
       "bytes": 711,
@@ -6772,9 +6772,9 @@
       "sha256": "55bb45677d862633cdae80d3786240026e57059288205b3d04bc500483bbcd6f"
     },
     {
-      "bytes": 57560,
+      "bytes": 59316,
       "path": "src/org/trillionnium/hepta/local/WebFlightSession.java",
-      "sha256": "ec43e3f5157e8f5f36478d157cba96411bdb8606ed846fdc98f0eca1256bcdeb"
+      "sha256": "b5a06cebe0b12a02b76b28f06632895304c2c9c857f25c133f2fce4f808947db"
     },
     {
       "bytes": 9993,
@@ -6785,6 +6785,11 @@
       "bytes": 14220,
       "path": "src/org/trillionnium/hepta/local/WebNativeGeometry.java",
       "sha256": "a61e9601699fd7480c4f09be2c29de9cf755903a222c79efbfc9efbd23afbc49"
+    },
+    {
+      "bytes": 4717,
+      "path": "src/org/trillionnium/hepta/local/WebObservationTiming.java",
+      "sha256": "b4851f3461ceb5763360339eb13725e5200c87273eb770e9701c8e809ab6243a"
     },
     {
       "bytes": 17427,
@@ -7452,14 +7457,14 @@
       "sha256": "8e1232eb5551a87748b04e58a864c9711009311b18f6e2b551f537c3d6c16374"
     },
     {
-      "bytes": 17200,
+      "bytes": 17506,
       "path": "tests/flight-observation-worker/FlightObservationSessionHost.template",
-      "sha256": "e38d480bc6088d31ee8e34730ddff749bc914987f8ba5d15e2cd0dce1699a475"
+      "sha256": "19cebbdaf6b8291b4db28619d1299be6130248f45b6745ca053617189b95a75e"
     },
     {
-      "bytes": 19464,
+      "bytes": 24597,
       "path": "tests/flight-observation-worker/FlightObservationWorkerHost.template",
-      "sha256": "4fdc03b2656cf515ab0d039a3cda3a7ca9a3dc5bd5c92aee796141983c7f1fef"
+      "sha256": "437310affbf43f5bda965490df2a5a196ede60d9fe41c8d69e141d87a8d78f09"
     },
     {
       "bytes": 1801,
@@ -7492,14 +7497,14 @@
       "sha256": "8643e322a6642e17278b3a354d3c7c26bdf394aab5d8d905f84a99f52442e0f8"
     },
     {
-      "bytes": 5057,
+      "bytes": 5118,
       "path": "tests/flight-observation-worker/run_session_host.py",
-      "sha256": "f9c5a54ffc9642a72d2d81da8a2c1a8693844071f4d1f158610014bbb26c2cf6"
+      "sha256": "1271ee7f708a59270a6fa5c7b997282d22c96c9f9effbd9cdad6ae23b0afbb3e"
     },
     {
-      "bytes": 4461,
+      "bytes": 4532,
       "path": "tests/flight-observation-worker/run_worker_host.py",
-      "sha256": "eeedb3271e50de21e132af93b12a5f854ee9d33c4f32cc06f54e081c939b562a"
+      "sha256": "c47289efc3fd1c4587d568e9ec12f1699111428d8f029ac19db2dc5ba89bce8d"
     },
     {
       "bytes": 9927,
@@ -9072,9 +9077,9 @@
       "sha256": "a3dfbeea735c501a5bf0c529987b0ebaf4e805401c0859b99f325e551e066540"
     },
     {
-      "bytes": 23450,
+      "bytes": 23645,
       "path": "tests/shopping-observation-retry/ShoppingObservationRetryHost.template",
-      "sha256": "5d33717a12a9b42b77f1f1c9e55db8d8eb6b136c15a26375efa9288918afb09e"
+      "sha256": "8fa8259a78679ebdbd48bae02fc83df061f9c77b8e9c864e8949e0ae93abb9a8"
     },
     {
       "bytes": 4594,
@@ -9152,9 +9157,9 @@
       "sha256": "17e9ed2c06d035924fcf02c8eaa5425c8fc32fd9a17e7f566d8446545e2e7f20"
     },
     {
-      "bytes": 10311,
+      "bytes": 10398,
       "path": "tests/shopping-observation-retry/run_host.py",
-      "sha256": "418d413399c6ae2f16851a47eba67ef58232354d7f45f1a074b80907006b7d65"
+      "sha256": "6d32d809b37d889b4463cf74c1cc6dfbc1a5e47247f819ad9e9816b742ffd7ac"
     },
     {
       "bytes": 31142,
@@ -9710,6 +9715,21 @@
       "bytes": 5108,
       "path": "tests/web-flight/run_result_host_tests.py",
       "sha256": "eb57b27e06db1aab8c817caa684e8c96b8b57709cd2dd945b09210679c7d6504"
+    },
+    {
+      "bytes": 3764,
+      "path": "tests/web-observation-timing/CaptureDomReplay.java",
+      "sha256": "d68166f511ce143266a74a18597c4b34abf60410d92f93b8aaf35b8fba2fbfea"
+    },
+    {
+      "bytes": 9964,
+      "path": "tests/web-observation-timing/HOST-VALIDATION.json",
+      "sha256": "1b5fd9a6bde91009076082b0ab504eb56bced9c44d0f277f4eaecc08dc5f2610"
+    },
+    {
+      "bytes": 2726,
+      "path": "tests/web-observation-timing/README.md",
+      "sha256": "61475ee3dfe293d5d24534b3bf1abd913619642b13c028762347ae9fe833e017"
     },
     {
       "bytes": 10326,
@@ -11713,7 +11733,7 @@
     "version_code_unchanged": 69,
     "version_name_unchanged": "0.69.0-native-background-runtime"
   },
-  "main_java_sources": 141,
+  "main_java_sources": 142,
   "observation_budget_amendment": {
     "capture_has_independent_two_second_timer": false,
     "capture_headroom_ms": 2000,
@@ -11741,6 +11761,15 @@
     },
     "task_deadline_caps_request": true,
     "total_request_limit_ms": 12000
+  },
+  "observation_phase_timing_amendment": {
+    "bounded_in_memory_spans": 96,
+    "capture_reuse_implemented": false,
+    "deadline_or_authority_relaxation": false,
+    "host_receipt": "tests/web-observation-timing/HOST-VALIDATION.json",
+    "normal_git_parent": "480d4bb76c194901b55607193168718eb0592ec7",
+    "page_text_recorded": false,
+    "phone_operations": 0
   },
   "phone_qualified": false,
   "previous_source_amendment": {
@@ -11822,7 +11851,7 @@
       }
     ]
   },
-  "production_build_inputs_count": 310,
+  "production_build_inputs_count": 311,
   "qualification_policy": "Source reviews, host gates, real Android build and actual native phone outcomes retain separate evidence.",
   "r14_runtime_reliability_amendment": {
     "all_original_required_gate_cases_retained": true,
