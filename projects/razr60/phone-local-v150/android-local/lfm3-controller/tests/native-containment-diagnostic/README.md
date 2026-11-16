@@ -1,6 +1,10 @@
 # Native containment failure diagnostic regression
 
-Run python3 -B tests/native-containment-diagnostic/run_host.py --source <component> --output <new-output-directory> --java-home <jdk17> --json-jar <json-20240303.jar>.
+Run with the existing JDK 17 and pinned JSON dependency:
+
+```sh
+python3 -B tests/native-containment-diagnostic/run_host.py --source <component> --output <new-output-directory> --java-home <jdk17> --json-jar <json-20240303.jar>
+```
 
 The runner compiles current pure production classes and enforces the four reviewed production hashes and JSON dependency hash. The 17 cases / 71 assertions use complete synthetic producer-shaped trees. The historical price case has no complete native failure pair and is not claimed as replayed. Full Android Service and Session are hash-bound but not compiled or executed by this pure gate; actual Android compilation is separate.
 

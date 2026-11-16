@@ -23,8 +23,27 @@
     "previous_manifest_sha256": "3b442123253504d89138cb3c02381ba978ef589453cc2a806fe1a98ed861a9af",
     "recognized_booking_pending_phase_budget_ms": 16000
   },
-  "candidate_status": "postlaunch_recovery_source_frozen_before_current_canonical_and_android_gates",
+  "candidate_status": "ci_containment_repair_source_frozen_before_current_targeted_gates",
   "candidate_version_assigned": true,
+  "ci_containment_repair_amendment": {
+    "baseline_manifest_sha256": "8dd4b459a4da939f8594df16a5198fbce6cdd2fc6e7a298b5b0956fca4c57889",
+    "changed_nonmanifest_paths": [
+      "src/org/trillionnium/hepta/local/WebShoppingObservationStability.java",
+      "tests/native-containment-diagnostic/README.md",
+      "tests/native-containment-diagnostic/run_host.py",
+      "tests/native-app-routing/InstalledIdentityFixture.template",
+      "tests/native-app-routing/prepare_native_entry.py",
+      "tests/native-app-routing/NativeAppRoutingEntryHostTest.java"
+    ],
+    "current_service_pin": "Bind the existing postlaunch recovery Service bytes already present in the parent; no Service source change.",
+    "host_gate_flags_and_assertions_unchanged": true,
+    "native_model_manifest_and_runtime_unchanged": true,
+    "normal_git_parent": "5612750414db5bc804a64d0f9c363c135bff1c2f",
+    "phone_operations": 0,
+    "production_change": "Add serialVersionUID to the existing private diagnostic exception; executable predicates and rejection behavior are unchanged.",
+    "routing_fixture_change": "Match the existing three-argument installed-identity API for ordinary sessions while refusing profile IO, and explicitly select no profile in the existing ordinary native UI fixture; original gate flags, case names, counts and assertions are unchanged.",
+    "validation": "Current targeted results are recorded separately; historical host and phone results do not qualify this candidate."
+  },
   "complete_source_files": 2123,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
@@ -6971,9 +6990,9 @@
       "sha256": "5c11833d76c7b1d9b45de83e31e309b6819e2b930c73008b479dd70e2e3a9eb3"
     },
     {
-      "bytes": 63137,
+      "bytes": 63194,
       "path": "src/org/trillionnium/hepta/local/WebShoppingObservationStability.java",
-      "sha256": "613148d806b0eade9b3c893a652e5661e45f22e53476a884d3eb5be8576a6eaa"
+      "sha256": "70170e5f9f9946021ea703ff668116a5d68f354a65424b469be9cf3da596e52f"
     },
     {
       "bytes": 21401,
@@ -7976,9 +7995,9 @@
       "sha256": "cf51495ef3b9c2843385c63dda92f4b5d7198499d1bdfad4c2e6f8c1a9fcf53a"
     },
     {
-      "bytes": 6435,
+      "bytes": 6890,
       "path": "tests/native-app-routing/InstalledIdentityFixture.template",
-      "sha256": "2cd5ef0db6c38491754f70d6cf71770b913e70dc8762a5ffa7c15185f43d8060"
+      "sha256": "c5f1d82d5d1726b4a5ca8368d662e54adeb2100fadb64e42fb28264a6e6e6dd1"
     },
     {
       "bytes": 5548,
@@ -7986,9 +8005,9 @@
       "sha256": "b3fd59d9ead20e30b1616f00d881e3e55397cfa5249c65d1f4dd942aeccac623"
     },
     {
-      "bytes": 12578,
+      "bytes": 12682,
       "path": "tests/native-app-routing/NativeAppRoutingEntryHostTest.java",
-      "sha256": "6113c7a3a6c5b7ca62b70a05996603527b05c2736a3a1c7187e14b80625bb741"
+      "sha256": "c908947068301fb7220f81ebf0fb4ea35d5d0ff3f100388d5910e6274fe3fc35"
     },
     {
       "bytes": 19335,
@@ -8018,7 +8037,7 @@
     {
       "bytes": 8406,
       "path": "tests/native-app-routing/prepare_native_entry.py",
-      "sha256": "2edd6a279a9c660d1e82b20cac1504e2655ca7cc98d2774a74f9dac2f3a2d51b"
+      "sha256": "141ad488bbf03ffe35611f180c4100ceb3b734cc7ea357a40ddfb20d044a11c9"
     },
     {
       "bytes": 18956,
@@ -8061,14 +8080,14 @@
       "sha256": "63a7f8a76673fc93d8e82703978418534013f7c60612728647f890bf382c8e26"
     },
     {
-      "bytes": 1668,
+      "bytes": 1731,
       "path": "tests/native-containment-diagnostic/README.md",
-      "sha256": "9efb6940ceefae6d1c621c6e9284d23d43a458c29f15aa389f55fc4b88a1c0a6"
+      "sha256": "18dc649fc94b09229f919749216ec808c2d47be11b7fdb8a5e12917d2492234f"
     },
     {
       "bytes": 3899,
       "path": "tests/native-containment-diagnostic/run_host.py",
-      "sha256": "9773fa7257fcf11afdb82717eb6b98bc0ae6da5b364823fc7ae14d72842d5914"
+      "sha256": "fc4a15b62970c8e60e62fcaa1027a4013bcf117619f93606d1dd66fe5e4e2c98"
     },
     {
       "bytes": 1523,
