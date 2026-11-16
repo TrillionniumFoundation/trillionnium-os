@@ -15,6 +15,7 @@ final class ProfileRecoveryProcesses {
     static final String BROKER="org.trillionnium.hepta.background.BackgroundDisplayBroker";
     static final int STAT_MAX=16384,STATUS_MAX=65536,CMDLINE_MAX=65536,MAX_PROCESSES=65536;
     static final long PF_KTHREAD=0x00200000L;
+    static final int MAX_CENSUS_ATTEMPTS=3;
     private ProfileRecoveryProcesses(){}
     interface Proc {
         String[] entries()throws Exception;
@@ -35,8 +36,38 @@ final class ProfileRecoveryProcesses {
         boolean inspect(int owner){for(int uid:uids)if(uid==0||uid==2000||uid==owner)return true;return false;}
         String canonical(){return pid+":"+ticks+":"+flags+":"+Arrays.toString(uids);}
     }
+    static final class ProcessGone extends IOException {
+        private static final long serialVersionUID=1L;
+        final int pid;
+        ProcessGone(int pid,Throwable cause){super("RECOVERY_PROC_GONE",cause);this.pid=pid;}
+    }
+    private static final class SelfPin {
+        Directory directory;Identity identity;
+        void observe(Directory currentDirectory,Identity currentIdentity)throws IOException{
+            if(identity==null){directory=currentDirectory;identity=currentIdentity;}
+            else need(directory.same(currentDirectory)&&identity.same(currentIdentity),
+                    "RECOVERY_PROC_SELF_IDENTITY_CHANGED");
+        }
+    }
     static JSONObject capture(Proc proc,int self,ProfilePrelaunchRecovery.Request request)throws Exception{
-        long begun=proc.now();check(proc,request);
+        long begun=proc.now();SelfPin selfPin=new SelfPin();
+        for(int attempt=0;attempt<MAX_CENSUS_ATTEMPTS;attempt++){
+            try{return captureAttempt(proc,self,request,begun,selfPin);}
+            catch(ProcessGone gone){
+                // Only the native adapter's positive disappearance signal may discard this whole census.
+                // A failed close or a disappearing checker is never a retryable process absence.
+                if(gone.pid<=0||gone.pid==self||gone.getSuppressed().length!=0
+                        ||(gone.getCause()!=null&&gone.getCause().getSuppressed().length!=0))throw gone;
+                check(proc,request);
+                if(attempt+1==MAX_CENSUS_ATTEMPTS)
+                    throw new IOException("RECOVERY_PROC_CENSUS_UNSTABLE",gone);
+            }
+        }
+        throw new IOException("RECOVERY_PROC_CENSUS_UNSTABLE");
+    }
+    private static JSONObject captureAttempt(Proc proc,int self,ProfilePrelaunchRecovery.Request request,
+            long begun,SelfPin selfPin)throws Exception{
+        check(proc,request);
         String[] entries=proc.entries();
         need(entries!=null&&entries.length>0&&entries.length<=MAX_PROCESSES,"RECOVERY_PROC_ENUMERATION");
         Set<Integer> seen=new HashSet<Integer>();TreeMap<Integer,String> rows=new TreeMap<Integer,String>();
@@ -52,11 +83,13 @@ final class ProfileRecoveryProcesses {
                 checkCommand(command,before.flags,request.generation);cmdSha=ProfileIdentity.sha(command);
             }
             Identity after=identity(proc.read(pid,"stat",STAT_MAX),proc.read(pid,"status",STATUS_MAX),pid);
+            // A known identity change must reject before any later directory disappearance.
+            need(before.same(after),"RECOVERY_PROC_IDENTITY_CHANGED");
             Directory last=proc.directory(pid);
-            need(first.same(last)&&before.same(after),"RECOVERY_PROC_IDENTITY_CHANGED");
+            need(first.same(last),"RECOVERY_PROC_IDENTITY_CHANGED");
             rows.put(pid,before.canonical()+":"+first.uid+":"+first.device+":"+first.inode+":"+cmdSha);
             if(pid==self){need(before.uids[0]==0&&before.uids[1]==0&&before.uids[2]==0&&before.uids[3]==0,
-                    "RECOVERY_PROC_SELF_UID");ownTicks=before.ticks;}
+                    "RECOVERY_PROC_SELF_UID");selfPin.observe(first,before);ownTicks=before.ticks;}
         }
         check(proc,request);need(ownTicks>0&&inspected>0,"RECOVERY_PROC_SELF_MISSING");
         StringBuilder canonical=new StringBuilder();for(String row:rows.values())canonical.append(row).append('\n');

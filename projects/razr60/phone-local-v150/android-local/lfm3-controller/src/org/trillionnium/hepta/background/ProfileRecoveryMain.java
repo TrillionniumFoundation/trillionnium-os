@@ -4,7 +4,7 @@ import android.content.Context;
 import android.hardware.display.DisplayManager;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.provider.Settings;
+import android.system.ErrnoException;
 import android.system.Os;
 import android.system.OsConstants;
 import android.system.StructStat;
@@ -12,7 +12,6 @@ import android.view.Display;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -27,6 +26,7 @@ public final class ProfileRecoveryMain {
     private ProfileRecoveryMain(){}
     public static void main(String[] args){
         final AtomicBoolean emitted=new AtomicBoolean();ProfilePrelaunchRecovery.Request request=null;int exit=70;
+        final ProfileRecoveryBootCount bootCount=new ProfileRecoveryBootCount(SystemClock::elapsedRealtime);
         try{
             ProfilePrelaunchRecovery.need(android.os.Process.myUid()==0&&args.length==2&&"--request".equals(args[0]),
                     "RECOVERY_ROOT_ARGUMENTS");
@@ -37,9 +37,12 @@ public final class ProfileRecoveryMain {
                     try{Thread.sleep(Math.max(1,Math.min(100,bound.deadline-SystemClock.elapsedRealtime())));}
                     catch(InterruptedException ignored){}
                 }
-                failure(emitted,bound,"RECOVERY_DEADLINE");
-                // This process has only read capabilities. It cannot own a task or a display.
-                Runtime.getRuntime().halt(70);
+                try{bootCount.abortForDeadline();}
+                finally{
+                    failure(emitted,bound,"RECOVERY_DEADLINE");
+                    // Stop the actual owned read-only child before the hard parent exit.
+                    Runtime.getRuntime().halt(70);
+                }
             },"HeptaProfileRecoveryDeadline");watchdog.setDaemon(true);watchdog.start();
             if(Looper.getMainLooper()==null)Looper.prepareMainLooper();
             Object thread=Class.forName("android.app.ActivityThread").getMethod("systemMain").invoke(null);
@@ -48,7 +51,7 @@ public final class ProfileRecoveryMain {
             String[] packages=shell.getPackageManager().getPackagesForUid(request.ownerUid);
             ProfilePrelaunchRecovery.need(packages!=null&&Arrays.asList(packages).contains("org.trillionnium.hepta.local"),
                     "RECOVERY_CONTROLLER_UID");
-            int boot=boot(shell);request.requireFence(SystemClock.elapsedRealtime(),boot);
+            int boot=boot(bootCount,request);request.requireFence(SystemClock.elapsedRealtime(),boot);
             long begun=SystemClock.elapsedRealtime();
             AndroidProc proc=new AndroidProc(request);
             JSONObject processBefore=ProfileRecoveryProcesses.capture(proc,android.os.Process.myPid(),request);
@@ -67,7 +70,7 @@ public final class ProfileRecoveryMain {
             ProfilePrelaunchRecovery.need(before.target.same(after.target)&&before.activity.same(after.activity),
                     "RECOVERY_INSTALLATION_CHANGED_DURING_READ");
             JSONObject processAfter=ProfileRecoveryProcesses.capture(proc,android.os.Process.myPid(),request);
-            request.requireFence(SystemClock.elapsedRealtime(),boot(shell));
+            request.requireFence(SystemClock.elapsedRealtime(),boot(bootCount,request));
             JSONObject value=new JSONObject().put("schema",ProfilePrelaunchRecovery.SCHEMA)
                     .put("source",ProfilePrelaunchRecovery.SOURCE).put("request_id",request.requestId)
                     .put("owner_uid",request.ownerUid).put("task_id",request.taskId).put("generation",request.generation)
@@ -84,7 +87,7 @@ public final class ProfileRecoveryMain {
                             .put("target_user_id",after.target.profile.userId).put("target_task_ids",new JSONArray()))
                     .put("displays",displays).put("process_before",processBefore).put("process_after",processAfter)
                     .put("cleanup_known",true).put("automatic_resume",false);
-            ProfilePrelaunchRecovery.validate(value,request,SystemClock.elapsedRealtime(),boot(shell));
+            ProfilePrelaunchRecovery.validate(value,request,SystemClock.elapsedRealtime(),boot(bootCount,request));
             emit(emitted,value);exit=0;
         }catch(Throwable failure){
             String code=failure.getMessage();
@@ -124,9 +127,8 @@ public final class ProfileRecoveryMain {
         return new JSONObject().put("complete",true).put("count",actual.size()).put("snapshot_sha256",ProfileIdentity.sha(canonical.toString()))
                 .put("exact_name_absent",true).put("recorded_id_absent",true);
     }
-    private static int boot(Context context)throws Exception{
-        int value=Settings.Global.getInt(context.getContentResolver(),Settings.Global.BOOT_COUNT,-1);
-        ProfilePrelaunchRecovery.need(value>=0,"RECOVERY_BOOT_UNKNOWN");return value;
+    private static int boot(ProfileRecoveryBootCount reader,ProfilePrelaunchRecovery.Request request)throws Exception{
+        return reader.read(request.deadline);
     }
     private static void failure(AtomicBoolean emitted,ProfilePrelaunchRecovery.Request request,String code){
         try{emit(emitted,new JSONObject().put("schema","hepta.profile-prelaunch-recovery-error.v1")
@@ -143,20 +145,54 @@ public final class ProfileRecoveryMain {
         public String[] entries()throws Exception{check();String[] rows=new File("/proc").list();
             ProfilePrelaunchRecovery.need(rows!=null,"RECOVERY_PROC_ENUMERATION");return rows;}
         public ProfileRecoveryProcesses.Directory directory(int pid)throws Exception{
-            check();StructStat s=Os.lstat("/proc/"+pid);
+            check();StructStat s;
+            try{s=Os.lstat("/proc/"+pid);}
+            catch(ErrnoException failure){
+                if(failure.errno==OsConstants.ENOENT&&failure.getSuppressed().length==0)
+                    throw new ProfileRecoveryProcesses.ProcessGone(pid,failure);
+                throw failure;
+            }
             ProfilePrelaunchRecovery.need(OsConstants.S_ISDIR(s.st_mode),"RECOVERY_PROC_NOT_DIRECTORY");
             return new ProfileRecoveryProcesses.Directory(s.st_uid,s.st_dev,s.st_ino);
         }
         public byte[] read(int pid,String leaf,int maximum)throws Exception{
             check();ProfilePrelaunchRecovery.need("stat".equals(leaf)||"status".equals(leaf)||"cmdline".equals(leaf),"RECOVERY_PROC_LEAF");
-            FileDescriptor fd=Os.open("/proc/"+pid+"/"+leaf,OsConstants.O_RDONLY|OsConstants.O_CLOEXEC|OsConstants.O_NOFOLLOW,0);
-            try(FileInputStream input=new FileInputStream(fd);ByteArrayOutputStream output=new ByteArrayOutputStream()){
+            FileDescriptor fd=open(pid,leaf);
+            Throwable primary=null;
+            try{
+                ByteArrayOutputStream output=new ByteArrayOutputStream();
                 StructStat before=Os.fstat(fd);ProfilePrelaunchRecovery.need(OsConstants.S_ISREG(before.st_mode),"RECOVERY_PROC_FILE_TYPE");
                 byte[] buffer=new byte[4096];int count;
-                while((count=input.read(buffer))!=-1){check();ProfilePrelaunchRecovery.need(output.size()+count<=maximum,"RECOVERY_PROC_FILE_BOUND");output.write(buffer,0,count);}
+                while((count=Os.read(fd,buffer,0,buffer.length))>0){check();ProfilePrelaunchRecovery.need(output.size()+count<=maximum,"RECOVERY_PROC_FILE_BOUND");output.write(buffer,0,count);}
                 StructStat after=Os.fstat(fd);
                 ProfilePrelaunchRecovery.need(before.st_dev==after.st_dev&&before.st_ino==after.st_ino&&before.st_uid==after.st_uid
                         &&before.st_mode==after.st_mode,"RECOVERY_PROC_FILE_CHANGED");check();return output.toByteArray();
+            }catch(Exception|Error failure){primary=failure;throw failure;}
+            finally{
+                try{Os.close(fd);}
+                catch(Exception|Error closeFailure){
+                    if(primary==null)throw closeFailure;
+                    if(closeFailure!=primary)primary.addSuppressed(closeFailure);
+                }
+            }
+        }
+        private FileDescriptor open(int pid,String leaf)throws Exception{
+            try{return Os.open("/proc/"+pid+"/"+leaf,
+                    OsConstants.O_RDONLY|OsConstants.O_CLOEXEC|OsConstants.O_NOFOLLOW,0);}
+            catch(ErrnoException failure){
+                // No FD was acquired. A missing leaf alone does not establish process exit.
+                if((failure.errno==OsConstants.ENOENT||failure.errno==OsConstants.ESRCH)
+                        &&failure.getSuppressed().length==0){
+                    check();
+                    try{Os.lstat("/proc/"+pid);}
+                    catch(ErrnoException confirmation){
+                        if(confirmation.errno==OsConstants.ENOENT&&confirmation.getSuppressed().length==0){
+                            check();throw new ProfileRecoveryProcesses.ProcessGone(pid,failure);
+                        }
+                        if(confirmation!=failure)failure.addSuppressed(confirmation);
+                    }
+                }
+                throw failure;
             }
         }
         private void check()throws IOException{

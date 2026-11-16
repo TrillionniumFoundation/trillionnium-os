@@ -20,7 +20,7 @@ def main():
     names=('BackgroundTaskTarget','NativeAppGoal','NotesOwnerIntent','TaskAuthorization','ActionDecision','DecisionGrammar','ObservedTargetLabels',
            'ObservedAppLabels','ObservedScrollActions','ObservedImeEnter','AppCatalogueRanker')
     inputs=[source/'src/org/trillionnium/hepta/local'/(name+'.java') for name in names]
-    inputs += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget')]
+    inputs += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget')]
     inputs += [source/'src/org/trillionnium/hepta/local/web'/(name+'.java') for name in ('WebFlightGoal','WebShoppingGoal')]
     inputs.append(source/'tests/owner-grammar/OwnerGrammarHostTest.java')
     pins={str(p.relative_to(source)):hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs}

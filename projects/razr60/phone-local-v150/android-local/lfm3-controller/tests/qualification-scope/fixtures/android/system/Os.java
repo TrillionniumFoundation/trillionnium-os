@@ -18,6 +18,8 @@ public final class Os {
  public static void forgetOutput(FileDescriptor fd){OPEN.remove(fd);}
  public static void fchmod(FileDescriptor fd,int mode)throws Exception{Open opened=OPEN.get(fd);if(opened==null)throw new IOException("untracked fixture output");chmod(opened.path.toString(),mode);}
  public static void mkdir(String s,int mode)throws Exception{Files.createDirectory(Paths.get(s));chmod(s,mode);}
+ /** Android Os.read returns 0 at EOF; RandomAccessFile returns -1. No UID/fsync qualification is implied. */
+ public static int read(FileDescriptor fd,byte[] b,int p,int n)throws Exception{Open opened=OPEN.get(fd);if(opened==null||opened.file==null)throw new IOException("untracked fixture input");int count=opened.file.read(b,p,n);return count<0?0:count;}
  public static int write(FileDescriptor fd,byte[] b,int p,int n)throws Exception{OPEN.get(fd).file.write(b,p,n);return n;}
  public static void fsync(FileDescriptor fd)throws Exception{String path=OPEN.get(fd).path.toString();syncLog.add(path);if(path.equals(failFsyncPath))throw new IOException("injected fsync failure");if(fd.valid())fd.sync();}
 }

@@ -49,6 +49,7 @@ public final class ComponentName {
 ''')
     files += [fixture,component,root/'tests/background-broker/BrokerTaskSnapshotHostTest.java']
     files.append(root/'src/org/trillionnium/hepta/background/FixedIntentTools.java')
+    files += [root/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('ProfileIdentity','ProfileTarget')]
     files += [root/'src/org/trillionnium/hepta/background/BackgroundOwnedSingleTask.java',
               root/'src/org/trillionnium/hepta/background/BackgroundOwnedTaskPolicy.java']
     geometry_start = '    static final class DisplayGeometry {'

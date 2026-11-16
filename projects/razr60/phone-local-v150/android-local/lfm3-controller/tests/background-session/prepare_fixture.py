@@ -18,7 +18,7 @@ def prepare(source,output):
  code={
  'org/json/JSONTokener.java':'''package org.json; public final class JSONTokener {private final String raw;public JSONTokener(String raw){this.raw=raw;}public Object nextValue()throws JSONException{return new JSONObject(raw);}public char nextClean(){return 0;}}''',
  'android/os/SystemClock.java':'''package android.os;public final class SystemClock {public static long now=1000000;public static long elapsedRealtime(){return now;}public static void sleep(long ms){now+=ms;}}''',
- 'android/provider/Settings.java':'''package android.provider;public final class Settings {public static final class Global {public static final String BOOT_COUNT="boot_count";public static int boot=10;public static int getInt(Object resolver,String key){return boot;}}}''',
+ 'android/provider/Settings.java':'''package android.provider;public final class Settings {public static final class Global {public static final String BOOT_COUNT="boot_count";public static int boot=10;public static int getInt(Object resolver,String key){return boot;}public static int getInt(Object resolver,String key,int fallback){return boot;}}}''',
  'android/app/KeyguardManager.java':'''package android.app;public final class KeyguardManager {public boolean locked;public boolean isKeyguardLocked(){return locked;}}''',
  'android/view/Display.java':'''package android.view;public final class Display {public static final int DEFAULT_DISPLAY=0;public final int id;public final String name;public boolean valid=true;public int flags=6272;public Display(int id,String name){this.id=id;this.name=name;}public String getName(){return name;}public int getDisplayId(){return id;}public int getFlags(){return flags;}public boolean isValid(){return valid;}}''',
  'android/hardware/display/DisplayManager.java':'''package android.hardware.display;public final class DisplayManager {public final java.util.Map<Integer,android.view.Display> displays=new java.util.LinkedHashMap<Integer,android.view.Display>();public android.view.Display getDisplay(int id){return displays.get(id);}public android.view.Display[] getDisplays(){return displays.values().toArray(new android.view.Display[0]);}}''',
@@ -40,6 +40,9 @@ public final class LocalSocket implements Closeable {
  public InputStream getInputStream()throws IOException{events.add("input");sent=output.toByteArray();try{return new ByteArrayInputStream(responder.reply(sent));}catch(IOException e){throw e;}catch(Exception e){throw new IOException(e);}}
  public void close(){events.add("close");connected=false;}
 }''',
+ 'org/trillionnium/hepta/local/HostRecoveryProcessBoundary.java':'''package org.trillionnium.hepta.local;
+/** Root-process IO is unavailable in this generic host fixture; never returns synthetic authority. */
+final class HostRecoveryProcessBoundary {static Process start(String command)throws java.io.IOException{throw new java.io.IOException("host fixture cannot launch a recovery root process");}}''',
  'org/trillionnium/hepta/local/ProfileCatalogueClient.java':'''package org.trillionnium.hepta.local;import org.trillionnium.hepta.background.ProfileTarget;final class ProfileCatalogueClient {static ProfileTarget actual;static void requireCurrent(android.content.Context c,ProfileTarget expected){if(actual==null||!expected.same(actual))throw new IllegalStateException("synthetic privileged catalogue identity unavailable");}}''',
  'org/trillionnium/hepta/local/LocalProbeApplication.java':'package org.trillionnium.hepta.local;final class LocalProbeApplication {static boolean permissionBusy;static void requirePermissionPreparationIdle(android.content.Context c){if(permissionBusy)throw new IllegalStateException("permission preparation active");}}',
  'org/trillionnium/hepta/local/HeptaAccessibilityService.java':'''package org.trillionnium.hepta.local;final class HeptaAccessibilityService {interface Cancellation{boolean isCancelled();}static String sha(byte[] bytes){return QualificationScope.hash(bytes);}static String message(Throwable t){return t.getMessage()==null?t.getClass().getSimpleName():t.getMessage();}}'''
@@ -53,7 +56,15 @@ public final class LocalSocket implements Closeable {
  'ObservedTargetLabels','ObservedAppLabels','ObservedScrollActions','ObservedImeEnter','AppCatalogueRanker')]
  files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java']
  files.append(source/'src/org/trillionnium/hepta/background/BrokerProtocol.java')
- files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','WindowOwnership')]
+ files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','WindowOwnership','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfilePrelaunchRecovery')]
+ # Keep the actual recovery client, projecting only the root process factory to a refusing IO boundary.
+ # The dedicated recovery gate replaces the same factory with its explicit owned-process fixture.
+ recovery_source=pkg/'ProfileRecoveryClient.java';recovery_raw=recovery_source.read_text()
+ recovery_seam='new ProcessBuilder("su","-c",command).redirectErrorStream(true).start()'
+ if recovery_raw.count(recovery_seam)!=1:raise RuntimeError('nonunique recovery process factory seam')
+ recovery_projection=output/'org/trillionnium/hepta/local/ProfileRecoveryClient.java'
+ recovery_projection.write_text(recovery_raw.replace(recovery_seam,'HostRecoveryProcessBoundary.start(command)'))
+ files.append(recovery_projection)
  # The exact finalization block is shared with the existing warm-finalization harness.
  # Android/model IO remains fake; the status policy itself is not reimplemented here.
  warm_helper=source/'tests/warm-finalization/prepare_fixture.py'
@@ -62,6 +73,6 @@ public final class LocalSocket implements Closeable {
  terminal_files,terminal_record=warm.prepare(source,output/'terminal')
  files += [p for p in terminal_files if p.name in ('LocalInference.java','ControllerFinalizationFixture.java','TaskCancellationQueue.java')]
 
- records={'schema':'hepta.background-client-host-extraction.v1','actual_full_classes':['BackgroundSession','MobiMindPrivateFiles','QualificationScope','BrokerProtocol'],'actual_files_root_sha256':hashlib.sha256(part.encode()).hexdigest(),'boundary':'Android LocalSocket/DisplayManager/Keyguard/clock IO are explicit fakes; no broker process, Android runtime, root, model or phone actions','source_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in files if p.parent==pkg},'controller_finalization':terminal_record}
+ records={'schema':'hepta.background-client-host-extraction.v1','actual_full_classes':['BackgroundSession','MobiMindPrivateFiles','QualificationScope','BrokerProtocol','ProfilePrelaunchRecovery','ProfileTaskPolicy','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask'],'actual_files_root_sha256':hashlib.sha256(part.encode()).hexdigest(),'boundary':'Android LocalSocket/DisplayManager/Keyguard/clock IO are explicit fakes; no broker process, Android runtime, root, model or phone actions','source_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in files if p.parent==pkg},'controller_finalization':terminal_record,'recovery_client_projection':{'source_sha256':hashlib.sha256(recovery_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(recovery_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','recovery_success_or_phone_qualification_claimed':False}}
  (output/'EXTRACTION.json').write_text(json.dumps(records,indent=2)+'\n')
  return files,records

@@ -39,7 +39,7 @@ def main():
                 ROOT/"tests/native-app/legacy-boundary/NativeAppSession.java"]
     report["web_fixture_boundary"]="Legacy non-Web tests use a type-only WebTaskDomain whose methods throw; actual Web classes have an independent gate"
     report["native_fixture_boundary"]="Legacy non-native tests compile the real pure NativeAppEvidence/Domain and an unconstructible all-throw NativeAppSession; native session execution has an independent mandatory gate"
-    sources += [ROOT/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","BackgroundOwnedTaskPolicy")]
+    sources += [ROOT/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","BackgroundOwnedTaskPolicy","ProfileIdentity","ProfileTarget","WindowOwnership")]
     tests=sorted((ROOT/"tests").glob("*HostTest.java"))+[
         ROOT/"tests/action-parser/ActionDecisionHostTest.java",
         ROOT/"tests/action-grammar/DecisionGrammarHostTest.java"]

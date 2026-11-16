@@ -16,6 +16,7 @@ public final class JSONObject {
         if(value==null)fields.remove(key);else fields.put(key,value);return this;
     }
     public Object get(String key)throws JSONException{if(!fields.containsKey(key))throw new JSONException("missing "+key);return fields.get(key);}
+    public String getString(String key)throws JSONException{Object value=get(key);if(!(value instanceof String))throw new JSONException("string required");return (String)value;}
     public JSONObject getJSONObject(String key)throws JSONException{
         Object value=get(key);if(value instanceof JSONObject)return (JSONObject)value;
         if(value instanceof Map<?,?>)return new JSONObject((Map<?,?>)value);throw new JSONException("not object");

@@ -11,8 +11,8 @@ def main():
  sp=importlib.util.spec_from_file_location('bg_fixture',s/'tests/background-session/prepare_fixture.py');m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m)
  f=out/'fixture';files,record=m.prepare(s,f);files=[v for v in files if '/org/json/' not in str(v)]
  # Real pinned org.json is used; only Android boundary fixtures are adapted.
- v=f/'android/provider/Settings.java';t=v.read_text();old='public static int getInt(Object resolver,String key){return boot;}';assert t.count(old)==1
- v.write_text(t.replace(old,old+'public static int getInt(Object resolver,String key,int fallback){return boot;}'))
+ v=f/'android/provider/Settings.java';t=v.read_text()
+ assert t.count('public static int getInt(Object resolver,String key,int fallback){return boot;}')==1
  v=f/'android/os/Looper.java';t=v.read_text();old='public static Looper myLooper(){return L;}';assert t.count(old)==1
  v.write_text(t.replace(old,'public static boolean worker;public static Looper myLooper(){return worker?null:L;}'))
  (f/'android/os/Process.java').write_text('package android.os;public final class Process {private Process(){}public static int myUid(){return 10481;}public static int myPid(){return 123;}}\n')

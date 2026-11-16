@@ -29,7 +29,7 @@ def prepare(source, output):
     os = output / "android/system/Os.java"
     os.write_text(os.read_text().replace('r.st_uid=((Number)a.get("uid")).intValue();', "r.st_uid=10123;"))
     settings = output / "android/provider/Settings.java"
-    settings.write_text(settings.read_text().replace("public static int getInt(Object resolver,String key)", "public static int getInt(Object resolver,String key,int fallback){return boot;}public static int getInt(Object resolver,String key)"))
+    assert settings.read_text().count("public static int getInt(Object resolver,String key,int fallback){return boot;}")==1
     handler = output / "android/os/Handler.java"
     handler.write_text("package android.os;public final class Handler {public Handler(Looper looper){}public boolean post(Runnable value){value.run();return true;}}\n")
     files.append(handler)

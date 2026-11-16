@@ -1,9 +1,9 @@
 {
   "android_qualified": false,
   "base_source": {
-    "commit": "7a9b5dadaab194dc2ce0d52163a0db428b1fe028",
-    "component_tree": "08f3d1c32944f834530b659cb6c3b7ec12c00039",
-    "source_manifest_sha256": "bf99aebd7009d29cad75f3b796af4005084f30219aff61929cb905c4b214d991"
+    "commit": "d49c7108214cd6f5670e68a4119118b0dffb3ae9",
+    "component_tree": "567376d80f00e4a78b59f76f183816b291d665fc",
+    "source_manifest_sha256": "0c09a7b891e99de38986ed0fefe9b45fdab3e4ef2751661d53c0c9a6bd82fdd3"
   },
   "booking_budget_amendment": {
     "action_replay_added": false,
@@ -23,9 +23,9 @@
     "previous_manifest_sha256": "3b442123253504d89138cb3c02381ba978ef589453cc2a806fe1a98ed861a9af",
     "recognized_booking_pending_phase_budget_ms": 16000
   },
-  "candidate_status": "profile_recents_prelaunch_recovery_host_qualified_pending_phone",
+  "candidate_status": "host_compile_closure_verified_pending_product_build_and_app_recovery",
   "candidate_version_assigned": true,
-  "complete_source_files": 2095,
+  "complete_source_files": 2104,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -65,9 +65,12 @@
     "actual_final_android_application_build": "pending",
     "actual_profile_recovery_and_business_task": "pending",
     "all_blockers_closed": false,
-    "complete_android_java_precompile": "PASS for all actual final Java inputs",
+    "canonical_checks_executed": 112,
+    "complete_android_java_precompile": "pending for this final source",
+    "full_canonical_host_receipt_sha256": "0cf6612651053dee99d97031ec94eb55f9980506db4ecbd6fadddb812dfbbd31",
+    "full_canonical_host_suite": "PASS for exact reviewed complete candidate and unchanged final source inputs",
     "phone_claims_from_host_tests": false,
-    "source_and_targeted_host_validation": "PASS as scoped in profile_recents_prelaunch_recovery_amendment"
+    "standalone_readonly_recovery_diagnostic": "Inherited exact root-owned r3 PASS; not App recovery authority"
   },
   "dom_reuse_and_reopen_amendment": {
     "action_replay_added": false,
@@ -6299,14 +6302,19 @@
       "sha256": "895598fab3f3a2640a877b7565960331365f9cc34903cfeb70fbe7bd4a181a70"
     },
     {
-      "bytes": 12115,
-      "path": "src/org/trillionnium/hepta/background/ProfileRecoveryMain.java",
-      "sha256": "e9609f116cb892b6567a10e34400b579d6976142b1679b2d789b30de274b3816"
+      "bytes": 5742,
+      "path": "src/org/trillionnium/hepta/background/ProfileRecoveryBootCount.java",
+      "sha256": "97f5461774ca53a70b6f43c9bdaf201bb902b904f334b97d4e2e3bd8c686cdec"
     },
     {
-      "bytes": 8286,
+      "bytes": 13852,
+      "path": "src/org/trillionnium/hepta/background/ProfileRecoveryMain.java",
+      "sha256": "069970c4c1d9350e709d18b7b2da4e204178727efbf1c0894066a02384a4b79f"
+    },
+    {
+      "bytes": 10198,
       "path": "src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java",
-      "sha256": "53d9aae0dbbd136d95b3ce3f2a468f30b1781e3c48d541614513384e1f9fa1c1"
+      "sha256": "14f735150e48c1f2dc985e3a805ae1fde30a0ea828a5d83959c78328b03c2757"
     },
     {
       "bytes": 6246,
@@ -6509,9 +6517,9 @@
       "sha256": "2f7117fd3234d514775717eef9bf04a67e347f809a93a1f34623e62a8b7a552e"
     },
     {
-      "bytes": 3910,
+      "bytes": 4131,
       "path": "src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java",
-      "sha256": "27e1e87e94b74e7c15b88de9e804748537b1f33bc65bb3816b09c5b00110de22"
+      "sha256": "9bf20793a50815d82d4a9447f5aaa290ab3dafe506f21179f6bf28b560d0ff9e"
     },
     {
       "bytes": 2764,
@@ -7349,9 +7357,9 @@
       "sha256": "59c0655e0eae7e1242eac2cc2f1ca3746f52797c6ca37873607fbc9bc66bd298"
     },
     {
-      "bytes": 9697,
+      "bytes": 9820,
       "path": "tests/background-broker/run_host_checks.py",
-      "sha256": "3c9e8cf0cdbda83d620fca134c387058d1c576e94d58b356a383629ab4acea6a"
+      "sha256": "670889a13204abab0b0ddf19b7395a7b49fb55bb43d00ba0245f8110d745a6e5"
     },
     {
       "bytes": 3268,
@@ -7384,9 +7392,9 @@
       "sha256": "46ec9e4458781bf1bda1f2f39f9e818de861b877388ed4a325ca1ad4dd3014a0"
     },
     {
-      "bytes": 6080,
+      "bytes": 5959,
       "path": "tests/background-permission/prepare_session_fixture.py",
-      "sha256": "04b2ed5add1fb4518d70733b1f809e5f89105f024b9a3abaff70221441617327"
+      "sha256": "f02c9d0d3a4695ee00da1aad106a5ba658bd1b37a54035d64f238d7b98c48baa"
     },
     {
       "bytes": 3593,
@@ -7414,9 +7422,9 @@
       "sha256": "96c863832ec6a3b0bceff84fd71fcfcbb041c849c40e4da7e70691a24643ff3f"
     },
     {
-      "bytes": 9973,
+      "bytes": 11702,
       "path": "tests/background-session/prepare_fixture.py",
-      "sha256": "becb5747ef0d90ac8bc8cb16562db25988e29e631501dffa33306cdbdfbe75ba"
+      "sha256": "28040f223a976a515e992fc9bed164f40ede5d3ca6ccfbc9df46be720ea301c5"
     },
     {
       "bytes": 2775,
@@ -7564,14 +7572,14 @@
       "sha256": "0970084f500c6be873496ca16394e90d0c15f9866da256736925263dae1f1f0a"
     },
     {
-      "bytes": 3978,
+      "bytes": 4156,
       "path": "tests/exact-admission/org/json/JSONObject.java",
-      "sha256": "1a90ca1e741546ba3a85726403a04055867d26f2661e9991aeffce3b81bdbb66"
+      "sha256": "8f898d70c2f2e78ad901713c1e1aefff3e12b7e37f878c8ef6e502a3ef4c90ad"
     },
     {
-      "bytes": 8946,
+      "bytes": 8998,
       "path": "tests/exact-admission/prepare_fixture.py",
-      "sha256": "03a0edc883ca21fac70886946bbe39fcd40c10caf64aa30a7b96733b65f89618"
+      "sha256": "69623b0c48f946b728b3c71978f5986961691e22a1e71af9add9a731c8cbc31f"
     },
     {
       "bytes": 19762,
@@ -8479,9 +8487,9 @@
       "sha256": "5edd2f10e0bb8692d4de9d1c07f5e101ac5be496ebe638ad63b8e87c68eabafa"
     },
     {
-      "bytes": 4129,
+      "bytes": 4165,
       "path": "tests/notes-owner-intent/run_host_tests.py",
-      "sha256": "844914afd4698eb59ff758db8c01774d26fd2a69014befe38cb957cd6677f334"
+      "sha256": "8051523ebf4be85e24d48f3febbfd69db34a436123bf1d66b9feffd03e763a28"
     },
     {
       "bytes": 23802,
@@ -8754,9 +8762,9 @@
       "sha256": "7d85fcbf85888bdaa54831aa72fea33f8a2948c91b4c29cd77391fbdb575af8c"
     },
     {
-      "bytes": 3599,
+      "bytes": 3633,
       "path": "tests/owner-grammar/run_host_tests.py",
-      "sha256": "d219dd34261ac7bacb89520e2e8e6179704b4618520f769f922c8c20d5880e07"
+      "sha256": "fa30069f3ecdcf6fb86aa69905e22e1008a216603be2c42b08cfc795a7f90294"
     },
     {
       "bytes": 3979,
@@ -8879,6 +8887,46 @@
       "sha256": "af642fabad30ce6bc544165760eff6ff3f67bb99c405b1e9ce882a7704a9090f"
     },
     {
+      "bytes": 9798,
+      "path": "tests/profile-recovery-census/ProfileRecoveryCensusHostTest.java",
+      "sha256": "5ab8990fc290184d86d840ccbbfcbdd81867dd091d5bed53a784903af536952c"
+    },
+    {
+      "bytes": 5191,
+      "path": "tests/profile-recovery-census/run_host.py",
+      "sha256": "b6b3c62d86c2f46de8af847578123a6a0f1701f8bf25a6719a718debadbd9c93"
+    },
+    {
+      "bytes": 5472,
+      "path": "tests/profile-recovery-platform/FdOwnershipHostTest.java",
+      "sha256": "3d20bfa06247cf9ad6bede0cae44795c4435542c6a1a04a7d31f1ecf4208ac47"
+    },
+    {
+      "bytes": 7289,
+      "path": "tests/profile-recovery-platform/ProcErrnoAdapterHostTest.java",
+      "sha256": "66dd92e389ec06aa5f271d18060eda9bc6522345201f2ecae972dba1687d3428"
+    },
+    {
+      "bytes": 9473,
+      "path": "tests/profile-recovery-platform/ProfileRecoveryBootCountHostTest.java",
+      "sha256": "e24c74603018e2b55842a5ffdde632ea10fc080c43a7f0c5526fd671cd2a70a7"
+    },
+    {
+      "bytes": 2797,
+      "path": "tests/profile-recovery-platform/README.md",
+      "sha256": "3c99d8f2efac561142c04bccf6360d288a78abf134f11cf0be47b22a0e3c8539"
+    },
+    {
+      "bytes": 2369,
+      "path": "tests/profile-recovery-platform/run_boot_host.py",
+      "sha256": "0d22652dc7951340ad254dbabf0792ef09c97f77cef25166643320d3643680a2"
+    },
+    {
+      "bytes": 11077,
+      "path": "tests/profile-recovery-platform/run_fd_host.py",
+      "sha256": "a53c942ac7f0bf06f1a185bd92110bc29c019830ae831d37c2e65e57b68d4d87"
+    },
+    {
       "bytes": 2271,
       "path": "tests/profile-recovery/FakeRecoveryProcess.java",
       "sha256": "b4580cd2f8ea4d34905d613583694e30efc72009e31d6a911f0bd6d97e6a7510"
@@ -8904,9 +8952,9 @@
       "sha256": "090226fb6879a90ad5499f0da59177826177ad77dedfb0a7dd7e913f29556404"
     },
     {
-      "bytes": 5401,
+      "bytes": 5291,
       "path": "tests/profile-recovery/run_session_host.py",
-      "sha256": "de23f93c40173398d2274ecd4def4463e26971f15281f1f31d62001c80af384e"
+      "sha256": "335146738003c9b5bf15badb6d58433c377907a745f59c751fa5c1219a4ca8ed"
     },
     {
       "bytes": 42292,
@@ -8924,9 +8972,9 @@
       "sha256": "68c05819b2fada5657ce5fd4f19fff55a11f1253a0d3aa22c58d082f2f816212"
     },
     {
-      "bytes": 12790,
+      "bytes": 12967,
       "path": "tests/qualification-scope/ServiceFixture.template",
-      "sha256": "6affc5f339fcc06b6a8e5636d2d04815260aa06785bf6267790a18c14a0aa29b"
+      "sha256": "42cd3e6f91874e611c420e8cc3e0fba0c092398c0d4a46378bc7449fb5328a86"
     },
     {
       "bytes": 2158,
@@ -9039,9 +9087,9 @@
       "sha256": "82862a73196a107b7dc457f853c0462b93d6d158429779a69fe22ccc3fe12ee6"
     },
     {
-      "bytes": 3120,
+      "bytes": 3478,
       "path": "tests/qualification-scope/fixtures/android/system/Os.java",
-      "sha256": "2c3660e0ee8893ce01540b7d1c31ca9a48f86ab604591ec1654ab3a8d58e821d"
+      "sha256": "44fe5e152e15b56a2c64ca6cc718c80eee68d3887183f59590e80b1dc3366d9b"
     },
     {
       "bytes": 308,
@@ -9279,9 +9327,9 @@
       "sha256": "cf6846193c3242e6fefaba9fd8321b274eb8ca98e73cf793ca04ca29d9864089"
     },
     {
-      "bytes": 14099,
+      "bytes": 14298,
       "path": "tests/runtime-config-ui/RefreshFixture.template",
-      "sha256": "4d111c716ce3eaa4ff8e2564e2bf81f98a37aeb05d16a6c4723d32d4c6c2ccf2"
+      "sha256": "e019837c23917cc934ea63225277be0066e6e4e971544602713eb489fb27e486"
     },
     {
       "bytes": 6817,
@@ -10184,9 +10232,9 @@
       "sha256": "d4b6bf0b16a67c0395c7faaf7f1c16742fdcf28d97e287289cc398ee9291ac62"
     },
     {
-      "bytes": 42786,
+      "bytes": 42967,
       "path": "tests/web-flight/run_query_host_tests.py",
-      "sha256": "331c8a52614f47c04df24f14e6fdf910169970c7e78e5d9bd66ae49ab9d7677c"
+      "sha256": "ed7253ae2b5c62fbb3909c903714984f6d165bd8aadc9affaae10be14d0cd216"
     },
     {
       "bytes": 5108,
@@ -10374,9 +10422,9 @@
       "sha256": "a513114211897bb620ecbbab38aadcce3a9137c58071df269cca7f828034118e"
     },
     {
-      "bytes": 20908,
+      "bytes": 20960,
       "path": "tools/run_host_checks.py",
-      "sha256": "2a842d03d6b913be14e51af80b38b6bbe865428e0ddb27512bbb77ac2605a0f0"
+      "sha256": "9a4b814069439742785c46403c1fb42eaf2f1312633ad256c65b5726d69f42d5"
     },
     {
       "bytes": 1243,
@@ -12212,6 +12260,127 @@
     "repository_workflow_unchanged": true,
     "unique_complete_hook_assertion_preserved": true
   },
+  "host_compile_closure_revision_amendment": {
+    "actual_full_host_control_sha256": "b24eb0ea03b1268a700f72201a4c7b38a5b98691fbe5887c294177a27fb28e92",
+    "actual_full_host_result_sha256": "0cf6612651053dee99d97031ec94eb55f9980506db4ecbd6fadddb812dfbbd31",
+    "complete_production_input_sequence_equal_to_E": true,
+    "host_only_dependency_and_platform_fixture_revision": true,
+    "host_overlay_files": [
+      {
+        "before_sha256": "3c9e8cf0cdbda83d620fca134c387058d1c576e94d58b356a383629ab4acea6a",
+        "bytes": 9820,
+        "path": "tests/background-broker/run_host_checks.py",
+        "sha256": "670889a13204abab0b0ddf19b7395a7b49fb55bb43d00ba0245f8110d745a6e5"
+      },
+      {
+        "before_sha256": "04b2ed5add1fb4518d70733b1f809e5f89105f024b9a3abaff70221441617327",
+        "bytes": 5959,
+        "path": "tests/background-permission/prepare_session_fixture.py",
+        "sha256": "f02c9d0d3a4695ee00da1aad106a5ba658bd1b37a54035d64f238d7b98c48baa"
+      },
+      {
+        "before_sha256": "becb5747ef0d90ac8bc8cb16562db25988e29e631501dffa33306cdbdfbe75ba",
+        "bytes": 11702,
+        "path": "tests/background-session/prepare_fixture.py",
+        "sha256": "28040f223a976a515e992fc9bed164f40ede5d3ca6ccfbc9df46be720ea301c5"
+      },
+      {
+        "before_sha256": "1a90ca1e741546ba3a85726403a04055867d26f2661e9991aeffce3b81bdbb66",
+        "bytes": 4156,
+        "path": "tests/exact-admission/org/json/JSONObject.java",
+        "sha256": "8f898d70c2f2e78ad901713c1e1aefff3e12b7e37f878c8ef6e502a3ef4c90ad"
+      },
+      {
+        "before_sha256": "03a0edc883ca21fac70886946bbe39fcd40c10caf64aa30a7b96733b65f89618",
+        "bytes": 8998,
+        "path": "tests/exact-admission/prepare_fixture.py",
+        "sha256": "69623b0c48f946b728b3c71978f5986961691e22a1e71af9add9a731c8cbc31f"
+      },
+      {
+        "before_sha256": "844914afd4698eb59ff758db8c01774d26fd2a69014befe38cb957cd6677f334",
+        "bytes": 4165,
+        "path": "tests/notes-owner-intent/run_host_tests.py",
+        "sha256": "8051523ebf4be85e24d48f3febbfd69db34a436123bf1d66b9feffd03e763a28"
+      },
+      {
+        "before_sha256": "d219dd34261ac7bacb89520e2e8e6179704b4618520f769f922c8c20d5880e07",
+        "bytes": 3633,
+        "path": "tests/owner-grammar/run_host_tests.py",
+        "sha256": "fa30069f3ecdcf6fb86aa69905e22e1008a216603be2c42b08cfc795a7f90294"
+      },
+      {
+        "before_sha256": "de23f93c40173398d2274ecd4def4463e26971f15281f1f31d62001c80af384e",
+        "bytes": 5291,
+        "path": "tests/profile-recovery/run_session_host.py",
+        "sha256": "335146738003c9b5bf15badb6d58433c377907a745f59c751fa5c1219a4ca8ed"
+      },
+      {
+        "before_sha256": "6affc5f339fcc06b6a8e5636d2d04815260aa06785bf6267790a18c14a0aa29b",
+        "bytes": 12967,
+        "path": "tests/qualification-scope/ServiceFixture.template",
+        "sha256": "42cd3e6f91874e611c420e8cc3e0fba0c092398c0d4a46378bc7449fb5328a86"
+      },
+      {
+        "before_sha256": "2c3660e0ee8893ce01540b7d1c31ca9a48f86ab604591ec1654ab3a8d58e821d",
+        "bytes": 3478,
+        "path": "tests/qualification-scope/fixtures/android/system/Os.java",
+        "sha256": "44fe5e152e15b56a2c64ca6cc718c80eee68d3887183f59590e80b1dc3366d9b"
+      },
+      {
+        "before_sha256": "4d111c716ce3eaa4ff8e2564e2bf81f98a37aeb05d16a6c4723d32d4c6c2ccf2",
+        "bytes": 14298,
+        "path": "tests/runtime-config-ui/RefreshFixture.template",
+        "sha256": "e019837c23917cc934ea63225277be0066e6e4e971544602713eb489fb27e486"
+      },
+      {
+        "before_sha256": "331c8a52614f47c04df24f14e6fdf910169970c7e78e5d9bd66ae49ab9d7677c",
+        "bytes": 42967,
+        "path": "tests/web-flight/run_query_host_tests.py",
+        "sha256": "ed7253ae2b5c62fbb3909c903714984f6d165bd8aadc9affaae10be14d0cd216"
+      },
+      {
+        "before_sha256": "2a842d03d6b913be14e51af80b38b6bbe865428e0ddb27512bbb77ac2605a0f0",
+        "bytes": 20960,
+        "path": "tools/run_host_checks.py",
+        "sha256": "9a4b814069439742785c46403c1fb42eaf2f1312633ad256c65b5726d69f42d5"
+      }
+    ],
+    "normal_git_parent": "d49c7108214cd6f5670e68a4119118b0dffb3ae9",
+    "ordinary_app_recovery_pending": true,
+    "original_failed_receipts_sha256": [
+      "6f74aa187738db0585ac88460bba64e56a8f52159a9f4fba5b67b69d4f3a49ad",
+      "9f9c060a30956a1400291a03f2258e70ff84d406a00f079906855ccfcadbca0c",
+      "2a6a535f60beaa4d95f7003a91f698b1d1bad9a988d6f41283b7f6bc4293fa78",
+      "b7a34c9be5bae7ff5a902fc98d8031b1ac904dd0c1818f97b2a1c21decaf3aa5",
+      "da269866bdd931b11be7cb6ec53bc5c64c1604ed2588b1f1244ba3c86cd8440b",
+      "1b74f69ec8e556492713a1a80cf64006a8e342df723c25464ec08e2b9e4c61f8",
+      "df9f14b2713d046b2d9fff943f73cba57c393611a89d7871ae58ae21b2e1db79",
+      "6a93297fba31841671d11174a9521fab5654d8567908f1765e6a144e198a091c",
+      "9622212987f4de7b103a40b0846f70872cb7bff7b75b17ca28ade7f925d3dd33",
+      "59a4ca9036cbc9bcb356a062e5b5fb0515decd5cb71469198cf6c45b3d9f16a2",
+      "3a8f106564021d772e9bccd1b214ee8419e8e89a81db6c445267591fb4b6ce90",
+      "a5568c5c930807043ce4e65943f1fef4e7b542916578268d4e76a0ef62ff68a2"
+    ],
+    "original_failure_receipts_preserved": true,
+    "phone_actions": 0,
+    "prior_E_current_validation": {
+      "actual_final_android_application_build": "pending",
+      "actual_profile_recovery_and_business_task": "pending",
+      "all_blockers_closed": false,
+      "complete_android_java_precompile": "pending for this final source",
+      "full_canonical_host_suite": "pending on this frozen source",
+      "phone_claims_from_host_tests": false,
+      "source_integration_and_targeted_host_validation": "PASS for exact reviewed source and scoped synthetic boundary gates",
+      "standalone_readonly_recovery_diagnostic": "PASS; exact root-owned diagnostic receipt; not App recovery authority"
+    },
+    "product_build_pending": true,
+    "production_bytes_changed_relative_to_E": false,
+    "published_baseline_manifest_sha256": "0c09a7b891e99de38986ed0fefe9b45fdab3e4ef2751661d53c0c9a6bd82fdd3",
+    "remote_operations_in_freeze": 0,
+    "reviewed_package_manifest_sha256": "5d999f2d234f38e8e40f9292247d7595a464aab759a39551fa0ac369f3a21cc2",
+    "source_bound_by_full_member_map": true,
+    "unpublished_E_manifest_sha256": "405403f11c6c6c7fb32ea1cb77cfaed00266ef28a25b6e951f602b23ba7b8634"
+  },
   "host_fixture_dependency_amendment": {
     "actual_production_sources_added_to_compile_lists": true,
     "assertions_deleted_or_relaxed": false,
@@ -12353,7 +12522,7 @@
     "version_code_unchanged": 69,
     "version_name_unchanged": "0.69.0-native-background-runtime"
   },
-  "main_java_sources": 158,
+  "main_java_sources": 159,
   "managed_profile_isolation_amendment": {
     "actual_leaf_user_ids_required": true,
     "android_manifest_unchanged": true,
@@ -12511,7 +12680,7 @@
       }
     ]
   },
-  "production_build_inputs_count": 330,
+  "production_build_inputs_count": 331,
   "profile_recents_prelaunch_recovery_amendment": {
     "android_manifest_unchanged": true,
     "approved_union_sha256": "5534162a73d21b5c82882ffa334a4dae2e8f357caa7736c7f63e5e07a192f0f0",
@@ -12721,6 +12890,141 @@
         "before_sha256": null,
         "bytes": 9490,
         "path": "src/org/trillionnium/hepta/local/ProfileRecoveryClient.java"
+      }
+    ]
+  },
+  "profile_recovery_runtime_amendment": {
+    "acquired_fd_failures_not_retryable": true,
+    "android_manifest_unchanged": true,
+    "app_recovery_qualification_pending": true,
+    "boot_count_original_request_deadline_retained": true,
+    "boot_count_read_only_owned_subprocess": true,
+    "final_product_build_pending": true,
+    "full_host_suite_pending": true,
+    "known_identity_or_creator_failures_not_retryable": true,
+    "maximum_complete_process_census_attempts": 3,
+    "model_configuration_unchanged": true,
+    "native_source_unchanged": true,
+    "no_new_cleanup_authority_from_standalone_diagnostic": true,
+    "normal_git_parent": "d49c7108214cd6f5670e68a4119118b0dffb3ae9",
+    "ordinary_owner_recovery_required": true,
+    "original_failures_preserved": true,
+    "original_twelve_second_request_deadline_unchanged": true,
+    "partial_process_census_discarded_before_retry": true,
+    "phone_operations_in_freeze": 0,
+    "previous_base_source": {
+      "commit": "7a9b5dadaab194dc2ce0d52163a0db428b1fe028",
+      "component_tree": "08f3d1c32944f834530b659cb6c3b7ec12c00039",
+      "source_manifest_sha256": "bf99aebd7009d29cad75f3b796af4005084f30219aff61929cb905c4b214d991"
+    },
+    "previous_current_validation": {
+      "actual_final_android_application_build": "pending",
+      "actual_profile_recovery_and_business_task": "pending",
+      "all_blockers_closed": false,
+      "complete_android_java_precompile": "PASS for all actual final Java inputs",
+      "phone_claims_from_host_tests": false,
+      "source_and_targeted_host_validation": "PASS as scoped in profile_recents_prelaunch_recovery_amendment"
+    },
+    "previous_manifest_sha256": "0c09a7b891e99de38986ed0fefe9b45fdab3e4ef2751661d53c0c9a6bd82fdd3",
+    "private_journal_and_latch_transaction_unchanged": true,
+    "process_disappearance_requires_explicit_native_errno": true,
+    "production_files": [
+      {
+        "after_bytes": 5742,
+        "after_sha256": "97f5461774ca53a70b6f43c9bdaf201bb902b904f334b97d4e2e3bd8c686cdec",
+        "before_bytes": null,
+        "before_sha256": null,
+        "path": "src/org/trillionnium/hepta/background/ProfileRecoveryBootCount.java"
+      },
+      {
+        "after_bytes": 13852,
+        "after_sha256": "069970c4c1d9350e709d18b7b2da4e204178727efbf1c0894066a02384a4b79f",
+        "before_bytes": 12115,
+        "before_sha256": "e9609f116cb892b6567a10e34400b579d6976142b1679b2d789b30de274b3816",
+        "path": "src/org/trillionnium/hepta/background/ProfileRecoveryMain.java"
+      },
+      {
+        "after_bytes": 10198,
+        "after_sha256": "14f735150e48c1f2dc985e3a805ae1fde30a0ea828a5d83959c78328b03c2757",
+        "before_bytes": 8286,
+        "before_sha256": "53d9aae0dbbd136d95b3ce3f2a468f30b1781e3c48d541614513384e1f9fa1c1",
+        "path": "src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java"
+      },
+      {
+        "after_bytes": 4131,
+        "after_sha256": "9bf20793a50815d82d4a9447f5aaa290ab3dafe506f21179f6bf28b560d0ff9e",
+        "before_bytes": 3910,
+        "before_sha256": "27e1e87e94b74e7c15b88de9e804748537b1f33bc65bb3816b09c5b00110de22",
+        "path": "src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java"
+      }
+    ],
+    "raw_file_descriptors_closed_with_primary_exception_preserved": true,
+    "recovery_request_and_proof_schemas_unchanged": true,
+    "remote_operations_in_freeze": 0,
+    "root_owned_readonly_diagnostic_receipt_sha256": "9a29edd93c777c6146464974416ee2435c5aa93de801802fdc113516ca94a041",
+    "root_owned_readonly_diagnostic_scope": "Instrumented same-package diagnostic; no installation, UI, original record mutation or App cleanup commit.",
+    "root_owned_readonly_diagnostic_stdout_sha256": "7ac0480a9c1954de263a0ad11def82c06d9dac3fcce0dc5e64a4eff7e6fbb41d",
+    "targeted_host_gate_sha256s": [
+      "cae854fb02a34884d5cc2d2044683d47f474d22f75ff7a2f418306ce3081a009",
+      "dd8252570aff68087dae87a4615f35fe910aa46c3ec0d6724733cd64d3b36762",
+      "4b15667e376fbf142c3d132b254d697d3a42e3b64eb171b1880a17773499bad4"
+    ],
+    "test_files": [
+      {
+        "after_bytes": 9798,
+        "after_sha256": "5ab8990fc290184d86d840ccbbfcbdd81867dd091d5bed53a784903af536952c",
+        "before_bytes": null,
+        "before_sha256": null,
+        "path": "tests/profile-recovery-census/ProfileRecoveryCensusHostTest.java"
+      },
+      {
+        "after_bytes": 5191,
+        "after_sha256": "b6b3c62d86c2f46de8af847578123a6a0f1701f8bf25a6719a718debadbd9c93",
+        "before_bytes": null,
+        "before_sha256": null,
+        "path": "tests/profile-recovery-census/run_host.py"
+      },
+      {
+        "after_bytes": 5472,
+        "after_sha256": "3d20bfa06247cf9ad6bede0cae44795c4435542c6a1a04a7d31f1ecf4208ac47",
+        "before_bytes": null,
+        "before_sha256": null,
+        "path": "tests/profile-recovery-platform/FdOwnershipHostTest.java"
+      },
+      {
+        "after_bytes": 7289,
+        "after_sha256": "66dd92e389ec06aa5f271d18060eda9bc6522345201f2ecae972dba1687d3428",
+        "before_bytes": null,
+        "before_sha256": null,
+        "path": "tests/profile-recovery-platform/ProcErrnoAdapterHostTest.java"
+      },
+      {
+        "after_bytes": 9473,
+        "after_sha256": "e24c74603018e2b55842a5ffdde632ea10fc080c43a7f0c5526fd671cd2a70a7",
+        "before_bytes": null,
+        "before_sha256": null,
+        "path": "tests/profile-recovery-platform/ProfileRecoveryBootCountHostTest.java"
+      },
+      {
+        "after_bytes": 2797,
+        "after_sha256": "3c99d8f2efac561142c04bccf6360d288a78abf134f11cf0be47b22a0e3c8539",
+        "before_bytes": null,
+        "before_sha256": null,
+        "path": "tests/profile-recovery-platform/README.md"
+      },
+      {
+        "after_bytes": 2369,
+        "after_sha256": "0d22652dc7951340ad254dbabf0792ef09c97f77cef25166643320d3643680a2",
+        "before_bytes": null,
+        "before_sha256": null,
+        "path": "tests/profile-recovery-platform/run_boot_host.py"
+      },
+      {
+        "after_bytes": 11077,
+        "after_sha256": "a53c942ac7f0bf06f1a185bd92110bc29c019830ae831d37c2e65e57b68d4d87",
+        "before_bytes": null,
+        "before_sha256": null,
+        "path": "tests/profile-recovery-platform/run_fd_host.py"
       }
     ]
   },
@@ -14031,7 +14335,7 @@
     "unknown_goal_retry_added": false
   },
   "xiaomi_home_loading_amendment": {
-    "accessibility_label": "Hepta 手机助手",
+    "accessibility_label": "Hepta \u624b\u673a\u52a9\u624b",
     "automatic_action_replay": false,
     "cause": "Actual complete first Xiaomi frame contained only navigation and message icon; old parser stopped before content loaded and old same-package background window replacement permanently refused scope.",
     "maximum_model_issued_loading_waits": 2,

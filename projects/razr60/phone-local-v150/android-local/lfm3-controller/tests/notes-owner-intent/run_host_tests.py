@@ -26,7 +26,7 @@ def main():
              'ObservedImeEnter', 'AppCatalogueRanker')
     files = [source / 'src/org/trillionnium/hepta/local' / (name + '.java') for name in names]
     files += [source / 'src/org/trillionnium/hepta/background' / (name + '.java')
-              for name in ('FixedIntentTools', 'FixedIntentTarget')]
+              for name in ('FixedIntentTools', 'FixedIntentTarget', 'ProfileIdentity', 'ProfileTarget')]
     files += [source / 'src/org/trillionnium/hepta/local/web' / (name + '.java')
               for name in ('WebFlightGoal', 'WebShoppingGoal')]
     files.append(source / 'tests/notes-owner-intent/NotesOwnerIntentHostTest.java')

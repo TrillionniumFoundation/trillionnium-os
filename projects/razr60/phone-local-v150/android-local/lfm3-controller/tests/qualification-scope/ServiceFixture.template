@@ -56,6 +56,8 @@ public final class HeptaAccessibilityService extends android.content.Context {
     private volatile ActionExecutionState lastActionExecution;
     private static final TaskCancellationQueue nativeCancellationQueue=new TaskCancellationQueue(worker("scope-cancel-fixture"));
     LocalTaskController ownedController;LocalInference testInference;
+    // Explicit synchronous observer IO fixture: no asynchronous request or screenshot is created.
+    private volatile Object activeObservation;private boolean capturePending;
     volatile PhoneObservation current;Graph currentGraph;AppCatalogueRanker appDiscovery;
     final Map<String,String> launchable=new LinkedHashMap<String,String>();
     static final long MAX_OBSERVATION_AGE_MS=90000;

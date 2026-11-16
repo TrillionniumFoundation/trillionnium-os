@@ -6,7 +6,6 @@ import android.system.StructStat;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
-import java.io.FileInputStream;
 import java.io.IOException;
 
 /** Small, bounded private inputs and installed runtime files; model weights stay native-owned. */
@@ -31,17 +30,24 @@ final class MobiMindPrivateFiles {
     static Read read(File path,int maximum,boolean owned)throws Exception{
         if(maximum<1||!path.getAbsoluteFile().equals(path.getCanonicalFile()))throw new IOException("canonical bounded file required");
         FileDescriptor fd=Os.open(path.getPath(),OsConstants.O_RDONLY|OsConstants.O_NOFOLLOW|OsConstants.O_CLOEXEC,0);
-        FileInputStream in=null;
+        Throwable primary=null;
         try{
             StructStat before=Os.fstat(fd);
             if(!OsConstants.S_ISREG(before.st_mode)||before.st_size<0||before.st_size>maximum
                     ||(owned&&(before.st_uid!=android.os.Process.myUid()||before.st_nlink!=1||(before.st_mode&0777)!=0600)))
                 throw new IOException("file ownership/type/size/mode mismatch: "+path.getName());
-            in=new FileInputStream(fd);ByteArrayOutputStream data=new ByteArrayOutputStream();byte[] buffer=new byte[65536];int n;
-            while((n=in.read(buffer))!=-1){if(data.size()+n>maximum)throw new IOException("file grew beyond bound");data.write(buffer,0,n);}
+            ByteArrayOutputStream data=new ByteArrayOutputStream();byte[] buffer=new byte[65536];int n;
+            while((n=Os.read(fd,buffer,0,buffer.length))>0){if(data.size()+n>maximum)throw new IOException("file grew beyond bound");data.write(buffer,0,n);}
             if(data.size()!=before.st_size||!same(before,Os.fstat(fd))||!same(before,Os.lstat(path.getPath())))throw new IOException("file changed during read");
             return new Read(path,data.toByteArray(),before);
-        }finally{if(in!=null)in.close();else Os.close(fd);}
+        }catch(Exception|Error failure){primary=failure;throw failure;}
+        finally{
+            try{Os.close(fd);}
+            catch(Exception|Error closeFailure){
+                if(primary==null)throw closeFailure;
+                if(closeFailure!=primary)primary.addSuppressed(closeFailure);
+            }
+        }
     }
     static void writeNew(File path,byte[] bytes)throws Exception{
         if(!path.getAbsoluteFile().equals(path.getCanonicalFile()))throw new IOException("canonical new file required");

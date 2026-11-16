@@ -73,6 +73,8 @@ public final class RuntimeConfigUiHostTest {
     private int renderCalls;
     private final Widget taskAuthorizationInfo=null; // This original model-config fixture has no preview pane.
     private boolean cachedModelFilePresent;
+    // Explicit view/catalogue IO fixture; this model-config gate never launches a profile catalogue.
+    private boolean profileCatalogueLoading;private final Widget pickProfileTarget=new Widget();
     // Android target-choice IO is a fixture boundary; the separate target gate executes its production policy.
     private void refreshBackgroundTaskTarget(){}
     private RuntimeConfigUiHostTest(File files){engine=new LocalModelEngine(files);}
