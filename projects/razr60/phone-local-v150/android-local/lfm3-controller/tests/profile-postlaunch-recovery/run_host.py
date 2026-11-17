@@ -10,7 +10,7 @@ def main():
  a=p.parse_args();s=a.source.resolve();o=a.output.resolve();o.mkdir(parents=True,exist_ok=False)
  assert sha(a.json_jar)=='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'
  bg=s/'src/org/trillionnium/hepta/background'
- names=['ProfileIdentity','ProfileTarget','WindowOwnership','BrokerProtocol','FixedIntentTools','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfileOwnedTask','ProfileDisplayCustody','ProfilePrelaunchRecovery','ProfilePostlaunchRecovery','ProfileRecoveryProcesses']
+ names=['ProfileIdentity','ProfileTarget','WindowOwnership','BrokerProtocol','FixedIntentTools','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfileOwnedTask','ProfilePermissionTransient','ProfileDisplayCustody','ProfilePrelaunchRecovery','ProfilePostlaunchRecovery','ProfileRecoveryProcesses']
  files=[bg/(n+'.java') for n in names]+[s/'tests/profile-recovery/ProfileRecoveryHostTest.java',s/'tests/profile-recovery-census/ProfileRecoveryCensusHostTest.java',Path(__file__).with_name('ProfilePostlaunchRecoveryHostTest.java')]
  pins={str(x.relative_to(s)):sha(x) for x in files};classes=o/'classes';classes.mkdir();cp=str(classes)+':'+str(a.json_jar)
  commands=[('compile',[str(a.java_home/'bin/javac'),'--release','8','-encoding','UTF-8','-Xlint:all,-options','-Werror','-proc:none','-cp',str(a.json_jar),'-d',str(classes),*[str(x) for x in files]])]

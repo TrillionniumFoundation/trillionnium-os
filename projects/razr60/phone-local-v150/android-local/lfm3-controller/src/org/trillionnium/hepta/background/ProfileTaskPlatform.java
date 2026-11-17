@@ -49,6 +49,33 @@ final class ProfileTaskPlatform implements ProfileOwnedTask.Platform {
     }
     @Override public List<BackgroundOwnedSingleTask.Task> roots()throws Exception{return organizer.roots();}
     @Override public List<BackgroundOwnedSingleTask.Task> children(Object token)throws Exception{return organizer.children(token);}
+    @Override public ProfilePermissionTransient.Proof permissionTransient(BackgroundOwnedSingleTask.Task root,
+            BackgroundOwnedSingleTask.Task leaf)throws Exception{
+        // No new process/service or task mutation. The existing binder dump is bounded by
+        // its byte ceiling/deadline; real TaskInfo tokens/cookies bracket the full chain.
+        // Retirement is permitted after cancellation. Do not reuse active-request
+        // input guards here: this operation only gathers bounded identity evidence.
+        long started=SystemClock.elapsedRealtime();
+        ProfileTaskPolicy.need(started<deadline.getAsLong(),"PROFILE_PERMISSION_PROOF_DEADLINE");recheck(false);
+        ProfilePermissionTransient.Authority before=packages.permissionController(expected.profile.userId,deadline.getAsLong());
+        requireSamePermissionPair(root,leaf);
+        BackgroundTaskOrganizer.profileSnapshot(activityTasks).requireOnlyOwned(expected,root.display,root.id,leaf.id);
+        String chain=organizer.activitiesDump();
+        ProfilePermissionTransient.Authority after=packages.permissionController(expected.profile.userId,deadline.getAsLong());
+        ProfileTaskPolicy.need(before.same(after),"PROFILE_PERMISSION_SYSTEM_IDENTITY_CHANGED");
+        requireSamePermissionPair(root,leaf);recheck(false);
+        BackgroundTaskOrganizer.profileSnapshot(activityTasks).requireOnlyOwned(expected,root.display,root.id,leaf.id);
+        ProfileTaskPolicy.need(SystemClock.elapsedRealtime()<deadline.getAsLong(),"PROFILE_PERMISSION_PROOF_DEADLINE");
+        return ProfilePermissionTransient.verify(chain,expected,root,leaf,after,started,SystemClock.elapsedRealtime());
+    }
+    private void requireSamePermissionPair(BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf)throws Exception{
+        List<BackgroundOwnedSingleTask.Task> roots=organizer.roots();
+        ProfileTaskPolicy.need(roots!=null&&roots.size()==1&&ProfilePermissionTransient.sameTaskInfo(root,roots.get(0)),
+                "PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ");
+        List<BackgroundOwnedSingleTask.Task> leaves=organizer.children(root.token);
+        ProfileTaskPolicy.need(leaves!=null&&leaves.size()==1&&ProfilePermissionTransient.sameTaskInfo(leaf,leaves.get(0)),
+                "PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ");
+    }
     @Override public void createRoot(Object cookie)throws Exception{organizer.createRoot(cookie);}
     @Override public void bindRoot(Object token,Object cookie)throws Exception{organizer.bindProfileRoot(token,cookie);}
     @Override public void removeLeaf(Object token)throws Exception{organizer.removeOwnedLeaf(token);}

@@ -58,6 +58,8 @@ def main():
         paths.update(p for p in (ROOT/"tests/completion-status/fixtures").rglob("*") if p.is_file())
         paths.update(p for p in (ROOT/"tests/observation-collection/fixtures").rglob("*") if p.is_file())
         paths.update(p for p in (ROOT/"tests/notes-create-workflow/fixtures").rglob("*") if p.is_file())
+        paths.update(p for p in (ROOT/"tests/profile-permission-transient/fixtures").rglob("*") if p.is_file())
+        paths.add(ROOT/"tests/profile-permission-transient/README.md")
         for fixture_root in ("tests/sdk-exception-failure-audit/fixtures",
                              "tests/owned-generation-cleanup/fixtures",
                              "tests/vlm-contract/fixtures"):
@@ -216,6 +218,19 @@ def main():
             report["mandatory_additional_gate_receipts"][name]={
                 "path":str(gate_path),"bytes":len(gate_raw),"sha256":hashlib.sha256(gate_raw).hexdigest(),
                 "schema":gate["schema"],"cases":cases}
+        run("profile-permission-transient",[sys.executable,"-B",ROOT/"tests/profile-permission-transient/run_host.py",
+            "--source",ROOT,"--output",out/"profile-permission-transient","--java-home",java_home])
+        permission_raw=(out/"profile-permission-transient/RESULT.json").read_bytes()
+        permission_gate=json.loads(permission_raw)
+        permission_cases=permission_gate.get("synthetic_summary",{})
+        if (permission_gate.get("schema")!="hepta.profile-permission-transient-canonical-host.v1"
+                or permission_gate.get("all_pass") is not True or permission_gate.get("source_inputs_unchanged") is not True
+                or permission_gate.get("real_dump_requested") is not False
+                or permission_cases.get("passed") is not True or permission_cases.get("cases")!=12
+                or permission_cases.get("fixture_kind")!="synthetic"):
+            raise RuntimeError("Mandatory permission transient gate receipt differs")
+        report["permission_transient_gate"]={"bytes":len(permission_raw),
+            "sha256":hashlib.sha256(permission_raw).hexdigest(),"cases":permission_cases}
         run("visual-prompt-projection",[sys.executable,"-B",ROOT/"tests/visual-prompt-projection/run_host_tests.py",
             "--source",ROOT,"--out",out/"visual-prompt-projection","--json-jar",json_jar,"--release8"])
         run("vlm-result-contract",[sys.executable,"-B",ROOT/"tests/vlm-contract/run_host_tests.py",

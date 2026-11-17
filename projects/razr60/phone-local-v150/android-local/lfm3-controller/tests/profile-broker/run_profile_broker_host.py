@@ -24,7 +24,7 @@ def main():
     test = Path(__file__).with_name('ProfileBrokerHostTest.java')
     names = ['ProfileIdentity', 'ProfileTarget', 'WindowOwnership', 'BrokerProtocol', 'FixedIntentTools',
              'BackgroundOwnedTaskPolicy', 'BackgroundOwnedSingleTask', 'ProfileTaskPolicy',
-             'ProfileOwnedTask', 'ProfileDisplayCustody']
+             'ProfileOwnedTask','ProfilePermissionTransient', 'ProfileDisplayCustody']
     inputs = [a.source / (n + '.java') for n in names] + [test]
     pins = {x.name: digest(x) for x in inputs}
     classes = a.output / 'classes'

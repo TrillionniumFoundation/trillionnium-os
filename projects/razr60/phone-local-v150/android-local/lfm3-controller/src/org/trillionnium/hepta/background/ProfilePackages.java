@@ -125,6 +125,52 @@ final class ProfilePackages {
         need(facts.same(finalFacts),"PROFILE_ACTIVITY_CHANGED_DURING_READ");
         checkTime(deadline);return new Readback(actual,facts,running,unlocked,quiet,suspended);
     }
+    ProfilePermissionTransient.Authority permissionController(int userId,long deadline)throws Exception{
+        checkTime(deadline);requireParentCurrent();ProfileIdentity profile=identity(userId);
+        Context context=(Context)Context.class.getMethod("createContextAsUser",UserHandle.class,int.class)
+                .invoke(shell,handle(userId),0);
+        need(Integer.valueOf(userId).equals(Context.class.getMethod("getUserId").invoke(context)),
+                "PROFILE_PERMISSION_CONTEXT_USER_MISMATCH");
+        PackageManager pm=context.getPackageManager();
+        String configured=(String)PackageManager.class.getMethod("getPermissionControllerPackageName").invoke(pm);
+        need(ProfilePermissionTransient.PACKAGE.equals(configured),"PROFILE_PERMISSION_SYSTEM_PACKAGE_MISMATCH");
+        PackageInfo before=pm.getPackageInfo(configured,PackageManager.GET_SIGNING_CERTIFICATES);
+        ApplicationInfo app=before.applicationInfo;
+        need(app!=null&&configured.equals(before.packageName)&&configured.equals(app.packageName)
+                &&app.uid/100000==userId,"PROFILE_PERMISSION_PACKAGE_USER_MISMATCH");
+        Map<String,String> apkPaths=paths(app);
+        need(apkPaths.equals(java.util.Collections.singletonMap("base",ProfilePermissionTransient.APK)),
+                "PROFILE_PERMISSION_APK_SET_CHANGED");
+        int bit=ApplicationInfo.class.getField("PRIVATE_FLAG_PRIVILEGED").getInt(null);
+        need(bit>0&&(bit&(bit-1))==0,"PROFILE_PERMISSION_PRIVILEGED_FLAG_UNKNOWN");
+        int privateFlags=ApplicationInfo.class.getField("privateFlags").getInt(app);
+        ComponentName component=ComponentName.unflattenFromString(ProfilePermissionTransient.COMPONENT);
+        ActivityInfo activity=pm.getActivityInfo(component,0);
+        need(activity!=null&&activity.applicationInfo!=null&&configured.equals(activity.packageName)
+                &&component.getClassName().equals(activity.name)&&activity.applicationInfo.uid==app.uid
+                &&Objects.equals(activity.applicationInfo.sourceDir,app.sourceDir),"PROFILE_PERMISSION_ACTIVITY_PM_MISMATCH");
+        Set<String> certificates=signers(before);need(certificates.size()==1,"PROFILE_PERMISSION_SIGNER_SET_CHANGED");
+        boolean available=app.enabled&&activity.enabled&&!pm.isPackageSuspended(configured)&&!pm.isInstantApp(configured);
+        ProfilePermissionTransient.Authority authority=new ProfilePermissionTransient.Authority(userId,app.uid,configured,
+                app.sourceDir,hashApk(app.sourceDir,deadline),certificates.iterator().next(),before.getLongVersionCode(),
+                (app.flags&ApplicationInfo.FLAG_SYSTEM)!=0,(privateFlags&bit)!=0,
+                (app.flags&ApplicationInfo.FLAG_INSTALLED)!=0,available);
+        PackageInfo after=pm.getPackageInfo(configured,PackageManager.GET_SIGNING_CERTIFICATES);
+        ActivityInfo afterActivity=pm.getActivityInfo(component,0);
+        need(after.applicationInfo!=null&&afterActivity.applicationInfo!=null
+                &&after.applicationInfo.uid==app.uid&&after.applicationInfo.flags==app.flags
+                &&ApplicationInfo.class.getField("privateFlags").getInt(after.applicationInfo)==privateFlags
+                &&after.applicationInfo.enabled==app.enabled&&after.getLongVersionCode()==before.getLongVersionCode()
+                &&after.lastUpdateTime==before.lastUpdateTime&&after.firstInstallTime==before.firstInstallTime
+                &&paths(after.applicationInfo).equals(apkPaths)&&signers(after).equals(certificates)
+                &&afterActivity.enabled==activity.enabled&&Objects.equals(afterActivity.name,activity.name)
+                &&Objects.equals(afterActivity.packageName,activity.packageName)&&afterActivity.applicationInfo.uid==app.uid
+                &&Objects.equals(afterActivity.applicationInfo.sourceDir,app.sourceDir)
+                &&configured.equals(PackageManager.class.getMethod("getPermissionControllerPackageName").invoke(pm))
+                &&!pm.isPackageSuspended(configured)&&!pm.isInstantApp(configured)&&profile.same(identity(userId)),
+                "PROFILE_PERMISSION_SYSTEM_IDENTITY_CHANGED_DURING_READ");
+        checkTime(deadline);return authority;
+    }
     ProfileIdentity identity(int userId)throws Exception{
         need(userId>0,"PROFILE_USER_ZERO_FORBIDDEN");
         Object info=UserManager.class.getMethod("getUserInfo",int.class).invoke(users,userId);

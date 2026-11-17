@@ -19,7 +19,7 @@ def main():
     existing=a.source.resolve()/'tests/profile-broker/ProfileBrokerHostTest.java'
     test=Path(__file__).with_name('ProfileRecentUidHostTest.java')
     names=['ProfileIdentity','ProfileTarget','WindowOwnership','BrokerProtocol','FixedIntentTools',
-           'BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfileOwnedTask','ProfileDisplayCustody']
+           'BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfileOwnedTask','ProfilePermissionTransient','ProfileDisplayCustody']
     before={str(p):sha(p) for p in [src/(n+'.java') for n in names]+[existing,test,a.candidate_policy]}
     actual_sha=sha(a.actual_recents) if a.actual_recents else None
     result={'schema':'hepta.profile-recent-uid-regression.v1','phone_contacted':False,

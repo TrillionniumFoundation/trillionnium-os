@@ -23,7 +23,7 @@
     "previous_manifest_sha256": "3b442123253504d89138cb3c02381ba978ef589453cc2a806fe1a98ed861a9af",
     "recognized_booking_pending_phase_budget_ms": 16000
   },
-  "candidate_status": "profile_leaf_retention_frozen_before_current_full_gates",
+  "candidate_status": "source_candidate_requires_separate_current_build_and_device_qualification",
   "candidate_version_assigned": true,
   "ci_containment_repair_amendment": {
     "baseline_manifest_sha256": "8dd4b459a4da939f8594df16a5198fbce6cdd2fc6e7a298b5b0956fca4c57889",
@@ -44,7 +44,7 @@
     "routing_fixture_change": "Match the existing three-argument installed-identity API for ordinary sessions while refusing profile IO, and explicitly select no profile in the existing ordinary native UI fixture; original gate flags, case names, counts and assertions are unchanged.",
     "validation": "Current targeted results are recorded separately; historical host and phone results do not qualify this candidate."
   },
-  "complete_source_files": 2123,
+  "complete_source_files": 2128,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -81,29 +81,16 @@
     "updated_full_test_passed": true
   },
   "current_validation": {
-    "actual_android_application_build": "pending",
-    "actual_native_ctrip_business_task": "not passed",
-    "actual_ordinary_postlaunch_recovery": "not qualified by host tests",
-    "all_blockers_closed": false,
-    "current_canonical_host_suite": "pending; current execution recorded separately",
-    "current_owned_generation_cleanup": "pending within canonical",
-    "current_sdk_exception_audit": "pending within canonical",
-    "isolated_targeted_receipts": [
-      {
-        "bytes": 5869,
-        "description": "Actual completed targeted host-policy-02; synthetic Android/process IO; not device qualification",
-        "path": "/home/alex/hepta-profile-isolation-2a7a8ab1-20261116/profile-postlaunch-recovery-fix-r1/host-policy-02/RESULT.json",
-        "sha256": "81df143536dee97b07cf70c86358e794e9637b6df7cbd5d2a9e6d032ef4345a9"
-      },
-      {
-        "bytes": 12111,
-        "description": "Actual completed targeted host-client-02; synthetic Android/process IO; not device qualification",
-        "path": "/home/alex/hepta-profile-isolation-2a7a8ab1-20261116/profile-postlaunch-recovery-fix-r1/host-client-02/RESULT.json",
-        "sha256": "245eb86144899d7b84632709155c472916c3f6f5b10bbec0ec463b680508fd80"
-      }
+    "android_compiled_at_freeze": false,
+    "embedded_host_result_is_current": false,
+    "phone_tested": false,
+    "required_host_validation": [
+      "canonical including permission transient",
+      "unchanged upstream profile broker 47 cases and 449 assertions",
+      "all 19 native gates from unchanged base CI workflow",
+      "additional original raw-fixture host check"
     ],
-    "phase": "source_freeze_before_current_canonical",
-    "phone_claims_from_host_tests": false
+    "scope": "source freeze only; current host/build/device results are separately bound receipts"
   },
   "dom_reuse_and_reopen_amendment": {
     "action_replay_added": false,
@@ -6320,14 +6307,19 @@
       "sha256": "7c170e15deb8407a80b4dbcab3564697d2192c63365bb5a062ecba6f3ebbadcd"
     },
     {
-      "bytes": 21617,
+      "bytes": 27207,
       "path": "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
-      "sha256": "67c30e4d36753e561a3f97e34f319bfa1dd770f9fea696f94e0e30216ccd32ba"
+      "sha256": "efeda2811e343559c4571214f637ff5eaac391e8205266d01b8c2c101d9631cb"
     },
     {
-      "bytes": 15352,
+      "bytes": 19548,
       "path": "src/org/trillionnium/hepta/background/ProfilePackages.java",
-      "sha256": "c1c36d26b9f24fc99a513d25aa9baf0e7ab03c550a89bd0763ed0b1d9830475d"
+      "sha256": "f0a250bc72ec631aa11fee84900740120a5a1161aa114d7d348249c3885e7d9f"
+    },
+    {
+      "bytes": 17905,
+      "path": "src/org/trillionnium/hepta/background/ProfilePermissionTransient.java",
+      "sha256": "8b97f7a14d55262100059efc77b84bf0e05e2b6f076e16d9487b4a4dca407f74"
     },
     {
       "bytes": 13742,
@@ -6365,9 +6357,9 @@
       "sha256": "b65d62af4dd9f68d6c0070b21bf7fe0127a0a1898cc0f6ee604c9d56fa83f821"
     },
     {
-      "bytes": 3571,
+      "bytes": 5925,
       "path": "src/org/trillionnium/hepta/background/ProfileTaskPlatform.java",
-      "sha256": "43236fb7711624c0622cf83d068d9dbe7a3af995e213c012c922bc37002c76a6"
+      "sha256": "0dd2a4974374f271057b5c008d0e2f41b6457247d66ee6da9af0e314a839ebfa"
     },
     {
       "bytes": 14622,
@@ -8860,9 +8852,9 @@
       "sha256": "5880a651260aa18566364f4dbca427c5adbba8048eee7f1b8a3d55f4a6f69e04"
     },
     {
-      "bytes": 2872,
+      "bytes": 2901,
       "path": "tests/profile-broker/run_profile_broker_host.py",
-      "sha256": "b9f6770c108be4e8a86727497d9216fb5fb3ae2e64d8c60ef76b9ba4e1ee9803"
+      "sha256": "5272168417fff2c217aeae9071d48254c58ca33214e56eb8d83e3f77d80e4b64"
     },
     {
       "bytes": 10073,
@@ -8950,6 +8942,26 @@
       "sha256": "8a5886202510ae3b36840ccdb99d11d6b3d5bd89bc5006f06d898cf516bbab1b"
     },
     {
+      "bytes": 22844,
+      "path": "tests/profile-permission-transient/ProfilePermissionTransientHostTest.java",
+      "sha256": "c1c3442d2b45d167fee9cd248084b25baece3a6c68c07384a611966b74de4980"
+    },
+    {
+      "bytes": 8464,
+      "path": "tests/profile-permission-transient/README.md",
+      "sha256": "7ffcf648e4430b869cabee7171c4d51965314ad530db3c514d7814ab3152328d"
+    },
+    {
+      "bytes": 2306,
+      "path": "tests/profile-permission-transient/fixtures/synthetic-activities.txt",
+      "sha256": "7f8adcb158486f74a1ebe342e54902b9fc7550ed7b0dd7bf11b36d1d97ab63f0"
+    },
+    {
+      "bytes": 6219,
+      "path": "tests/profile-permission-transient/run_host.py",
+      "sha256": "2e6af0fe99d97a421e1b32bb35e23e5c93e1477417eab7f541e3191d68c1b25b"
+    },
+    {
       "bytes": 2706,
       "path": "tests/profile-postlaunch-recovery/FakePostlaunchRecoveryProcess.java",
       "sha256": "5d8d1d1df792d1ff0cc30f800ea18ff80cc3be70c428f8d417fad1a9b8f3b901"
@@ -8980,9 +8992,9 @@
       "sha256": "deead64215ba04c35503b1ff91ec1b7d82928d93cddaa58240f97108bbc996b1"
     },
     {
-      "bytes": 3135,
+      "bytes": 3164,
       "path": "tests/profile-postlaunch-recovery/run_host.py",
-      "sha256": "53b3fd08f9d9477a6f0d2afc7be60fd5f87931b121599a488137ebd576760f06"
+      "sha256": "c6cd7698a9476b5b45eb1e90ecc6e4ba1df61563d8e333fa0f79d9b794782394"
     },
     {
       "bytes": 7471,
@@ -9000,9 +9012,9 @@
       "sha256": "9a20a25d9ee8d4acf5e2311a523536c8026e2b11378b9c696a1b0afe83f2a8f6"
     },
     {
-      "bytes": 4596,
+      "bytes": 4625,
       "path": "tests/profile-recents-uid/run_host.py",
-      "sha256": "af642fabad30ce6bc544165760eff6ff3f67bb99c405b1e9ce882a7704a9090f"
+      "sha256": "35e09dd31a70380c74f6ad5cd8e6e1f6c0f2a91999ed9ea1a0fd97a60b92e537"
     },
     {
       "bytes": 9798,
@@ -9010,9 +9022,9 @@
       "sha256": "5ab8990fc290184d86d840ccbbfcbdd81867dd091d5bed53a784903af536952c"
     },
     {
-      "bytes": 5191,
+      "bytes": 5220,
       "path": "tests/profile-recovery-census/run_host.py",
-      "sha256": "b6b3c62d86c2f46de8af847578123a6a0f1701f8bf25a6719a718debadbd9c93"
+      "sha256": "786e13775b5dfb962d0ae001c4777449840bbf7a942a2081ce0c3ce024b8c09b"
     },
     {
       "bytes": 5472,
@@ -9065,9 +9077,9 @@
       "sha256": "a55bc7736bb8042f9de6d4596760b93ba6502199a64c3a7f14719980828767ff"
     },
     {
-      "bytes": 3289,
+      "bytes": 3318,
       "path": "tests/profile-recovery/run_host.py",
-      "sha256": "090226fb6879a90ad5499f0da59177826177ad77dedfb0a7dd7e913f29556404"
+      "sha256": "a609de979484ebe19fa6746e34e747969a44a993c4d04b4246760f3a3e360f1d"
     },
     {
       "bytes": 5291,
@@ -10550,9 +10562,9 @@
       "sha256": "a513114211897bb620ecbbab38aadcce3a9137c58071df269cca7f828034118e"
     },
     {
-      "bytes": 20960,
+      "bytes": 22285,
       "path": "tools/run_host_checks.py",
-      "sha256": "9a4b814069439742785c46403c1fb42eaf2f1312633ad256c65b5726d69f42d5"
+      "sha256": "98054f2fd6c4b83406ba1b5759af6dffc3442f907affd6d4d8cbd1a2f20917a8"
     },
     {
       "bytes": 1243,
@@ -12650,7 +12662,7 @@
     "version_code_unchanged": 69,
     "version_name_unchanged": "0.69.0-native-background-runtime"
   },
-  "main_java_sources": 162,
+  "main_java_sources": 163,
   "managed_profile_isolation_amendment": {
     "actual_leaf_user_ids_required": true,
     "android_manifest_unchanged": true,
@@ -12793,6 +12805,70 @@
     "normal_git_parent": "480d4bb76c194901b55607193168718eb0592ec7",
     "page_text_recorded": false,
     "phone_operations": 0
+  },
+  "permission_retirement_base_validation": {
+    "base_head": "071dccc05ca62372e73891ce82d5b400f3d3754f",
+    "historical_current_validation": {
+      "actual_android_application_build": "pending",
+      "actual_native_ctrip_business_task": "not passed",
+      "actual_ordinary_postlaunch_recovery": "not qualified by host tests",
+      "all_blockers_closed": false,
+      "current_canonical_host_suite": "pending; current execution recorded separately",
+      "current_owned_generation_cleanup": "pending within canonical",
+      "current_sdk_exception_audit": "pending within canonical",
+      "isolated_targeted_receipts": [
+        {
+          "bytes": 5869,
+          "description": "Actual completed targeted host-policy-02; synthetic Android/process IO; not device qualification",
+          "path": "/home/alex/hepta-profile-isolation-2a7a8ab1-20261116/profile-postlaunch-recovery-fix-r1/host-policy-02/RESULT.json",
+          "sha256": "81df143536dee97b07cf70c86358e794e9637b6df7cbd5d2a9e6d032ef4345a9"
+        },
+        {
+          "bytes": 12111,
+          "description": "Actual completed targeted host-client-02; synthetic Android/process IO; not device qualification",
+          "path": "/home/alex/hepta-profile-isolation-2a7a8ab1-20261116/profile-postlaunch-recovery-fix-r1/host-client-02/RESULT.json",
+          "sha256": "245eb86144899d7b84632709155c472916c3f6f5b10bbec0ec463b680508fd80"
+        }
+      ],
+      "phase": "source_freeze_before_current_canonical",
+      "phone_claims_from_host_tests": false
+    }
+  },
+  "permission_transient_retirement_amendment": {
+    "android_build_at_freeze": false,
+    "base_head": "071dccc05ca62372e73891ce82d5b400f3d3754f",
+    "base_manifest_sha256": "ce970f63f4291200eda2d3c1d75f819104eb6a24c1dc077ece82b57c8fbb6633",
+    "canonical_gate": "profile-permission-transient",
+    "device_guard_main_display_escape_allowed": false,
+    "host_test_contract": "tests/profile-permission-transient/README.md",
+    "input_authority_added": false,
+    "maximum_proof_age_ms": 2000,
+    "permission_grants_added": false,
+    "phone_operations": 0,
+    "production_files": {
+      "ProfileOwnedTask.java": {
+        "bytes": 27207,
+        "sha256": "efeda2811e343559c4571214f637ff5eaac391e8205266d01b8c2c101d9631cb"
+      },
+      "ProfilePackages.java": {
+        "bytes": 19548,
+        "sha256": "f0a250bc72ec631aa11fee84900740120a5a1161aa114d7d348249c3885e7d9f"
+      },
+      "ProfilePermissionTransient.java": {
+        "bytes": 17905,
+        "sha256": "8b97f7a14d55262100059efc77b84bf0e05e2b6f076e16d9487b4a4dca407f74"
+      },
+      "ProfileTaskPlatform.java": {
+        "bytes": 5925,
+        "sha256": "0dd2a4974374f271057b5c008d0e2f41b6457247d66ee6da9af0e314a839ebfa"
+      }
+    },
+    "production_source_input_map_sha256": "cd71af584acd37ba246d37e4eed2cba20207975d0a302c873b6291ceb00dc5d5",
+    "public_fixture": "authored synthetic complete hierarchy; not raw device data",
+    "qualification_is_recorded_by_separate_exact_source_receipts": true,
+    "raw_device_fixture": "excluded from published source; separately verified on host",
+    "upstream_first_claim_cookie_requirement_preserved": true,
+    "upstream_retained_token_ownership_preserved": true
   },
   "phone_qualified": false,
   "postlaunch_recovery_amendment": {
@@ -12946,7 +13022,7 @@
     "phase": "source_freeze_before_current_gates",
     "phone_claims_from_host_tests": false
   },
-  "production_build_inputs_count": 334,
+  "production_build_inputs_count": 335,
   "profile_leaf_retention_amendment": {
     "additional_diagnostic_field": "profile_last_leaf_validation",
     "baseline_manifest_sha256": "ed31eb3a8a6fabe573cf359ca1357c57fc9763624538593445853fcdee203319",
