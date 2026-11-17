@@ -108,6 +108,21 @@ def prepare(source, output):
     fixture = (Path(__file__).parent / 'UiFixture.template').read_text()
     for name,code in ui_parts.items():fixture=fixture.replace('{{'+name+'}}',code)
     (output / 'ScopeUiFixture.java').write_text(fixture)
+    # Execute the actual saved-mode default/type check. Only SharedPreferences IO
+    # is replaced by a supplied map; no selection, persistence or task authority.
+    preferences_raw=(pkg/'BackgroundUiPreferences.java').read_text()
+    mode_parts={
+        'mode_key':section(preferences_raw, '    private static final String MODE=', '    private static final int MAX_BYTES='),
+        'mode':section(preferences_raw, '    static boolean mode(Context context){', '    static void saveMode('),
+    }
+    (output/'BackgroundModePreferencesFixture.java').write_text(
+        'package org.trillionnium.hepta.local;\nimport android.content.Context;\nimport java.util.Map;\n'
+        '/** Exact production mode reader; SharedPreferences is explicit host IO. */\n'
+        'final class BackgroundModePreferencesFixture {\n'
+        '    static Map<String,?> saved;\n'
+        '    static final class Preferences {Map<String,?> getAll(){return saved;}}\n'
+        '    private static Preferences preferences(Context context){return new Preferences();}\n'
+        +mode_parts['mode_key']+mode_parts['mode']+'}\n')
     pure=['BackgroundTaskTarget','NativeAppGoal','NativeAppEvidence','NativeAppDomain','NativeCtripFlightPage','NativeXiaomiProductPage','NativeAppObservation','NotesCreateWorkflow','NotesOwnerIntent','CalculatorTaskInputGuard','CalculatorGoalContract','CalculatorCompletionEvidence','NotesTaskPhaseGuard','TaskCompletionGate','NotesCompletionEvidence','FixedIntentAttemptGuard','LastModelDecisionProjection','TaskAuthorization','ActionDecision','ActionPolicy','ObservedTargetLabels','ObservedScrollActions','ObservedImeEnter','SubmitAttemptGuard','ObservationStabilityGate','RecentActionProjection',
           'PersistentActionPolicy','ImeVisibility','ObservationState','ObservedWindowMetadata','ObservedChildText',
           'RepeatActionGuard','SameStateNoEffectGuard','DecisionGrammar','ModelProfile','LocalRuntimeConfig','VlmPins',
@@ -150,8 +165,8 @@ def prepare(source, output):
     files += [p for p in sorted((Path(__file__).parent/'fixtures').rglob('*.java'))
               if p.name not in ('BackgroundSession.java','WebFlightSession.java')]
     files += [Path(__file__).parent/'QualificationScopeHostTest.java',Path(__file__).parent/'BackgroundFreshnessHostTest.java']
-    record={'schema':'hepta.scope-host-extraction.v1','source_files':{n:hashlib.sha256((pkg/n).read_bytes()).hexdigest() for n in ['TaskAuthorization.java','HeptaAccessibilityService.java','LocalTaskSession.java','SessionTerminalEvidence.java','MainActivity.java','LocalTaskController.java','QualificationScope.java','QualificationScopeConfig.java']},
-        'extracted':{n:{'bytes':len(v.encode()),'sha256':hashlib.sha256(v.encode()).hexdigest()} for n,v in {**pieces,**comparison_parts,**session_parts,**ui_parts,**{'background_'+n:v for n,v in snapshot_parts.items()}}.items()},
+    record={'schema':'hepta.scope-host-extraction.v1','source_files':{n:hashlib.sha256((pkg/n).read_bytes()).hexdigest() for n in ['TaskAuthorization.java','HeptaAccessibilityService.java','LocalTaskSession.java','SessionTerminalEvidence.java','MainActivity.java','BackgroundUiPreferences.java','LocalTaskController.java','QualificationScope.java','QualificationScopeConfig.java']},
+        'extracted':{n:{'bytes':len(v.encode()),'sha256':hashlib.sha256(v.encode()).hexdigest()} for n,v in {**pieces,**comparison_parts,**session_parts,**ui_parts,**{'preferences_'+n:v for n,v in mode_parts.items()},**{'background_'+n:v for n,v in snapshot_parts.items()}}.items()},
         'full_actual_classes':['TaskCompletionGate','NotesCompletionEvidence','LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','SessionTerminalEvidence'],
         'boundary':'Android IO and effect endpoints are fakes; production admission/dispatch and controller code is executed',
         'observer_helper_excluded_from_legacy_collector':{'bytes':len(observer_only.encode()),'sha256':hashlib.sha256(observer_only.encode()).hexdigest(),'covered_by':'tests/native-observation-snapshot/run_host.py','legacy_collector_methods_modified':False},

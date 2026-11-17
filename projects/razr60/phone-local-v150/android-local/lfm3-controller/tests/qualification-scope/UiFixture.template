@@ -27,7 +27,8 @@ public final class ScopeUiFixture extends Activity {
     void restore(Bundle b){restoreScopeUi(b);}void save(Bundle b){onSaveInstanceState(b);}
     void endUi(){tasks.stop();scopeLaunch=QualificationScope.Launch.normal();scopeLaunchError=null;}
     void runUiVenusProbe(String n,boolean c){}void runVisualProbe(String n,boolean c){}void runProbe(boolean i,int m){}
-    void recordDebugTrigger(String n,boolean a,boolean c,String e){}
+    int debugTriggers;boolean debugAccepted,debugConsumed;String debugError,debugNonceSha;
+    void recordDebugTrigger(String n,boolean a,boolean c,String e){debugTriggers++;debugNonceSha=n;debugAccepted=a;debugConsumed=c;debugError=e;}
 {{binding}}
 {{intent_start}}
 }

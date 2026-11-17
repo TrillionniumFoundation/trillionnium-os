@@ -1,7 +1,5 @@
 """Exercise the actual collector with synthetic app files; never calls ADB."""
-import contextlib
 import copy
-import io
 import json
 from pathlib import Path
 import tempfile
@@ -71,16 +69,29 @@ class WarmCollectionTest(unittest.TestCase):
             timeout=1, poll=.01, stop_grace=0, setup_home=False, include_screenshots=False,
             expected_package="com.example.calculator", expected_visible_text=["95"], text_match="exact",
             expected_compute="npu", expected_context=4096)
-        with patch.object(m, "Adb", WarmFakeAdb), patch.object(m, "capture_ui", return_value=xml_view()), contextlib.redirect_stdout(io.StringIO()):
-            code = m.run_task(args)
-        return code, json.loads((args.evidence_root / name / "acceptance.json").read_bytes())
+        # Construct already-existing synthetic task/worker files. This fake call
+        # only populates an in-memory map; it never invokes the retired driver.
+        fake = WarmFakeAdb(args)
+        fake.request = json.dumps({"nonce":"1"*64}).encode()
+        fake.command(["synthetic-records-only"], label="launch-once")
+        fake.calls.clear()
+        directory = args.evidence_root / name
+        with patch.object(m, "run_task", side_effect=AssertionError("collector test cannot start a task")), \
+                patch.object(m.subprocess, "run", side_effect=AssertionError("collector test cannot start a process")), \
+                patch.object(fake, "command", side_effect=AssertionError("collector must only read supplied files")):
+            collection = m.collect_evidence(fake, directory, TASK, args.instruction, set(), False, 10042,
+                args.expected_compute, args.expected_context)
+        self.assertFalse(fake.calls)
+        self.assertTrue(m.ui_predicates(xml_view(), args.expected_package, args.expected_visible_text)["all_passed"],
+            "the synthetic visible goal stays true even when model/exit evidence is damaged")
+        return collection
 
     def test_collector_fetches_exact_generation_terminal_and_shared_log(self):
-        code, report = self.run_case("valid")
-        self.assertEqual(code, 0, report)
-        self.assertTrue(report["native_receipts_verified"])
-        self.assertTrue(report["collection"]["task_model_sessions_valid"])
-        row = report["collection"]["associated_runs"][0]
+        report = self.run_case("valid")
+        self.assertFalse(report["errors"], report)
+        self.assertTrue(m.collection_verified(report))
+        self.assertTrue(report["task_model_sessions_valid"])
+        row = report["associated_runs"][0]
         self.assertFalse(row["process_exit_observed"])
         self.assertIsNone(row["exit_code"])
         self.assertEqual(row["accelerator_log_scope"], "same_owned_task_generation")
@@ -90,9 +101,8 @@ class WarmCollectionTest(unittest.TestCase):
         for damage in ("request_claims_exit", "late_uncommitted", "missing_exit", "wrong_generation",
                        "missing_terminal", "missing_log", "corrupt_output"):
             WarmFakeAdb.damage = damage
-            code, report = self.run_case(damage)
-            self.assertEqual(code, 3, (damage, report))
-            self.assertFalse(report["native_receipts_verified"], damage)
+            report = self.run_case(damage)
+            self.assertFalse(m.collection_verified(report), (damage, report))
 
 
 if __name__ == "__main__":

@@ -232,16 +232,16 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     }
     /** Consume the restriction once. Reused Intents cannot replay or clear a pending claim. */
     private void acceptScopePrefill(Intent intent,String task,String expected,boolean hasExpected,boolean autoTask){
-        if(intent.getBooleanExtra(SCOPE_INTENT_CONSUMED,false)||tasks.isRunning())return;
+        // Legacy automated requests have no verified background selection. They
+        // cannot replace the owner's pending task, scope claim, or display choice.
+        if(autoTask||intent.getBooleanExtra(SCOPE_INTENT_CONSUMED,false)||tasks.isRunning())return;
         boolean normalEntry=Intent.ACTION_MAIN.equals(intent.getAction())&&intent.hasCategory(Intent.CATEGORY_LAUNCHER);
         if(task==null&&!hasExpected&&!normalEntry&&!autoTask)return;
         scopeLaunch=QualificationScope.Launch.normal();scopeLaunchError=null;
-        if(hasExpected||autoTask)backgroundMode.setChecked(false);
         if(task!=null)taskInput.setText(task);
         try{
             QualificationScope.require(!hasExpected||expected!=null,"null expected scope extra");
-            if(!autoTask)scopeLaunch=QualificationScope.Launch.prefill(task,expected);
-            else QualificationScope.expected(expected); // The consumed private request supplies the exact OWNER below.
+            scopeLaunch=QualificationScope.Launch.prefill(task,expected);
         }catch(Exception error){scopeLaunchError=HeptaAccessibilityService.message(error);}
     }
 
@@ -275,23 +275,12 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         }
         if(intent.getBooleanExtra("auto_task",false)){
             final String nonce=intent.getStringExtra("test_nonce");
-            intent.removeExtra("auto_task");intent.removeExtra("test_nonce");
-            boolean consumed=false;
-            try{
-                if(tasks.isRunning()||tasks.isBlocked()||engine.isBusy())throw new IllegalStateException("已有本地请求或退出状态待确认");
-                if(HeptaAccessibilityService.connected()==null)throw new IllegalStateException("请先正常启用 Hepta 手机助手无障碍服务");
-                PrivateDebugTask request=PrivateDebugTask.consume(this,nonce);
-                consumed=true;
-                if(scopeLaunchError!=null)throw new IllegalStateException(scopeLaunchError);
-                if(hasExpectedScope&&suppliedTask!=null)QualificationScope.require(suppliedTask.equals(request.instruction),"private OWNER differs from scoped prefill");
-                scopeLaunch=QualificationScope.Launch.prefill(request.instruction,expectedScope);
-                taskInput.setText(request.instruction);
-                boolean accepted=beginTask(request.instruction,"private_debug_nonce",request.nonceSha256);
-                recordDebugTrigger(request.nonceSha256,accepted,consumed,accepted?null:"前台任务未启动");
-            }catch(Exception error){
-                taskState.setText("未启动测试任务："+HeptaAccessibilityService.message(error));
-                recordDebugTrigger(nonce==null?null:HeptaAccessibilityService.sha(nonce.getBytes(StandardCharsets.UTF_8)),false,consumed,HeptaAccessibilityService.message(error));
-            }
+            intent.removeExtra("auto_task");intent.removeExtra("test_nonce");intent.removeExtra("auto_run");
+            // A private nonce proves neither a selected virtual display nor an
+            // owner-confirmed background app range. Refuse before consuming it.
+            String error="自动测试需要已确认的后台应用范围。请启用「在后台空间操作」、选择目标应用后点击「开始任务」；旧自动入口不会执行手机操作。";
+            taskState.setText("未启动测试任务："+error);
+            recordDebugTrigger(nonce==null?null:HeptaAccessibilityService.sha(nonce.getBytes(StandardCharsets.UTF_8)),false,false,error);
             return;
         }
         String supplied=intent.getStringExtra("prompt");if(supplied!=null)probePrompt.setText(supplied);
@@ -327,7 +316,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                 authorization=originalAuthorization.forExecutionSelection(selection);
                 selection.requireTaskTarget(owner,authorization);
                 if(authorization.requireFindAppBeforeOpen||!authorization.allowedTools.contains("open"))
-                    throw new IllegalStateException("当前指令的方法限制不允许预先打开后台起始应用，请使用前台模式");
+                    throw new IllegalStateException("当前指令不允许打开所选后台起始应用，后台任务未启动");
             }else{selection=null;authorization=originalAuthorization;}
             if(!tasks.schedule(owner,source,nonceSha,expectedScope,authorization,selection,500))throw new IllegalStateException("本地任务未能取得唯一会话");
             scopeLaunch=scopeLaunch.accepted();
@@ -429,7 +418,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         pickBackgroundApps.setText(backgroundPackages.isEmpty()?"选择后台应用范围":"后台范围："+backgroundPackages.size()+" 个应用（更改）");
     }
     private void restoreBackgroundUi(Bundle state){
-        backgroundMode.setChecked(state.getBoolean("background_mode",false));
+        backgroundMode.setChecked(state.getBoolean("background_mode",true));
         try{
             java.util.ArrayList<String> saved=state.getStringArrayList("background_packages");
             if(saved!=null&&saved.size()>6)throw new IllegalStateException("saved range too large");

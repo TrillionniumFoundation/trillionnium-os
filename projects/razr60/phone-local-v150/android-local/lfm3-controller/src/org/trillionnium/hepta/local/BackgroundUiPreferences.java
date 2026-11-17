@@ -62,7 +62,7 @@ final class BackgroundUiPreferences {
     }
     static boolean mode(Context context){
         Map<String,?> values=preferences(context).getAll();
-        if(!values.containsKey(MODE))return false;
+        if(!values.containsKey(MODE))return true;
         Object value=values.get(MODE);
         if(!(value instanceof Boolean))throw new IllegalStateException("saved background mode is malformed");
         return ((Boolean)value).booleanValue();

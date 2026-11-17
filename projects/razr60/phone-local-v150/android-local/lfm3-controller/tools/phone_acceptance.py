@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""One-shot Hepta device acceptance driver. No installs, model probes, PID kills, or retries of tasks.
+"""Hepta receipt collection and historical acceptance helpers.
 
 Device identifiers and ADB port are required arguments; no public default selects a phone or port 5037.
-All phone interaction occurs only when an operator executes this script.
+The legacy run-task mutation path is retired before any host or phone operation.
+collect-status only reads app receipts when an operator executes this script.
 """
 from __future__ import annotations
 import argparse
@@ -891,6 +892,9 @@ def collect_evidence(adb, directory, task_id, instruction, baseline_runs, screen
 
 
 def run_task(args):
+    raise DriverError("Legacy run-task is retired: use the owned virtual display harness with the normal background Start button and a verified current app selection; no ADB command or task was submitted")
+    # Retained verbatim only for offline historical receipt/one-shot regression
+    # fixtures. No CLI option or callable production path can reach this body.
     if not CASE_ID.fullmatch(args.case_id) or args.case_id in (".", ".."):
         raise DriverError("case ID must be a safe new directory name")
     instruction = args.instruction
@@ -1033,7 +1037,7 @@ def main():
     parser.add_argument("--serial", required=True, help="explicit selected device; no public default")
     parser.add_argument("--command-timeout", type=float, default=20)
     sub = parser.add_subparsers(dest="operation", required=True)
-    run = sub.add_parser("run-task", help="submit one new task and independently verify its final UI")
+    run = sub.add_parser("run-task", help="retired: refuses before host/phone effects; use the normal owned-background Start harness")
     run.add_argument("--case-id", required=True); run.add_argument("--instruction", required=True)
     run.add_argument("--evidence-root", type=Path, required=True)
     run.add_argument("--expected-package"); run.add_argument("--expected-visible-text", action="append", default=[])

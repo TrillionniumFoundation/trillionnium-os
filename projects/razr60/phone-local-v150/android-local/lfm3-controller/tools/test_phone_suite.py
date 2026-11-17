@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Host-only regressions for the suite ledger and dispatch evidence gates."""
+"""Current entry refusals and fake-only historical ledger/evidence regressions."""
+import ast
+import builtins
 import copy
 import contextlib
 import io
@@ -9,10 +11,34 @@ import subprocess
 import tempfile
 from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import phone_acceptance as a
 import phone_suite as s
+
+ORIGINAL_EXISTING_SERVER = s.require_existing_adb_server
+
+
+def historical_run_suite(args, plan, raw):
+    """Execute only the pinned old ledger under fake transports; never current run."""
+    source = Path(s.__file__).read_text()
+    function = next(node for node in ast.parse(source).body if isinstance(node, ast.FunctionDef) and node.name == 'run_suite')
+    if not isinstance(function.body[0], ast.Raise):
+        raise AssertionError('current run_suite must refuse before the historical body')
+    body = ''.join(source.splitlines(True)[function.body[1].lineno-1:function.end_lineno])
+    if a.digest(body.encode()) != '070d27efd4271941ef3da97d33c83825f0ac55a2e474b4f730df050cfdb0e388':
+        raise AssertionError('historical suite ledger must remain byte-identical')
+    if a.Adb is not FakeAdb and not isinstance(a.Adb, Mock):
+        raise AssertionError('historical fixture requires fake-only ADB')
+    namespace = dict(s.__dict__)
+    def forbidden_server(*unused_args, **unused_kwargs):
+        raise AssertionError('historical fixture cannot contact a real ADB server')
+    if namespace['require_existing_adb_server'] is ORIGINAL_EXISTING_SERVER:
+        namespace['require_existing_adb_server'] = forbidden_server
+    function.body = function.body[1:]
+    with patch.object(subprocess, 'run', side_effect=AssertionError('historical fixture cannot start a process')):
+        exec(compile(ast.Module(body=[function], type_ignores=[]), '<offline-legacy-suite-fixture>', 'exec'), namespace)
+        return namespace['run_suite'](args, plan, raw)
 
 
 def plan():
@@ -332,7 +358,7 @@ class SuiteTests(unittest.TestCase):
                         "verdict":original,"cleanup_unknown":False,"task_id":"a"*32})
                     return 0 if original=="pass" else 2
                 with patch.object(s,"require_existing_adb_server",return_value={}),patch.object(a,"Adb",FakeAdb),patch.object(a,"run_task",side_effect=execute) as submitted,contextlib.redirect_stdout(io.StringIO()):
-                    self.assertEqual(s.run_suite(args,p,json.dumps(p).encode()),2)
+                    self.assertEqual(historical_run_suite(args,p,json.dumps(p).encode()),2)
                 result=json.loads((root/"suite-result.json").read_text())
                 self.assertEqual(submitted.call_count,1)
                 self.assertEqual(result["counts"][expected],1)
@@ -352,7 +378,7 @@ class SuiteTests(unittest.TestCase):
                     "verdict":"pass","cleanup_unknown":False,"task_id":"a"*32})
                 return 0
             with patch.object(s,"require_existing_adb_server",return_value={}),patch.object(a,"Adb",FakeAdb),patch.object(a,"run_task",side_effect=execute),contextlib.redirect_stdout(io.StringIO()):
-                self.assertEqual(s.run_suite(args,p,json.dumps(p).encode()),0)
+                self.assertEqual(historical_run_suite(args,p,json.dumps(p).encode()),0)
             result=json.loads((root/"suite-result.json").read_text())
             self.assertEqual(result["counts"]["pass"],1)
             self.assertEqual(result["actual_launches"],1)
@@ -398,7 +424,7 @@ class SuiteTests(unittest.TestCase):
 
     def test_existing_directory_refused_before_device_contact(self):
         with tempfile.TemporaryDirectory() as tmp, patch.object(a, "Adb", side_effect=AssertionError("phone")):
-            with self.assertRaises(FileExistsError): s.run_suite(SimpleNamespace(output=Path(tmp)), plan(), b"{}")
+            with self.assertRaises(FileExistsError): historical_run_suite(SimpleNamespace(output=Path(tmp)), plan(), b"{}")
 
     def test_uncertain_submission_halts_without_replay(self):
         p = plan(); second = copy.deepcopy(p["cases"][0]); second["case_id"] = "settings-02"; p["cases"].append(second)
@@ -406,7 +432,7 @@ class SuiteTests(unittest.TestCase):
             root = Path(tmp)/"new"
             args = SimpleNamespace(output=root, adb="/mock/adb", adb_host="127.0.0.1", adb_port=5061, serial="TEST_ONLY", command_timeout=20)
             with patch.object(s, "require_existing_adb_server", return_value={}) as existing, patch.object(a, "Adb", FakeAdb), patch.object(a, "run_task", side_effect=KeyboardInterrupt()) as execute, contextlib.redirect_stdout(io.StringIO()):
-                self.assertEqual(s.run_suite(args, p, json.dumps(p).encode()), 2)
+                self.assertEqual(historical_run_suite(args, p, json.dumps(p).encode()), 2)
             r = json.loads((root/"suite-result.json").read_text())
             self.assertEqual(execute.call_count, 1)
             self.assertEqual(existing.call_count, 2)
@@ -419,7 +445,7 @@ class SuiteTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             args = SimpleNamespace(output=Path(tmp)/"new", adb="/mock/adb", adb_host="127.0.0.1", adb_port=5061, serial="TEST_ONLY", command_timeout=20)
             with patch.object(s, "require_existing_adb_server", side_effect=a.DriverError("existing server unavailable")), patch.object(a, "Adb", side_effect=AssertionError("phone command")), patch.object(a, "run_task") as execute, contextlib.redirect_stdout(io.StringIO()):
-                self.assertEqual(s.run_suite(args, p, json.dumps(p).encode()), 2)
+                self.assertEqual(historical_run_suite(args, p, json.dumps(p).encode()), 2)
             execute.assert_not_called()
             r = json.loads((args.output/"suite-result.json").read_text())
             self.assertEqual(r["actual_launches"], 0)
@@ -430,12 +456,54 @@ class SuiteTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             args=SimpleNamespace(output=Path(tmp)/"new",adb="/mock/adb",adb_host="127.0.0.1",adb_port=5061,serial="TEST_ONLY",command_timeout=20)
             with patch.object(s,"require_existing_adb_server",return_value={}),patch.object(a,"Adb",FakeAdb),patch.object(a,"run_task") as execute,contextlib.redirect_stdout(io.StringIO()):
-                self.assertEqual(s.run_suite(args,p,json.dumps(p).encode()),2)
+                self.assertEqual(historical_run_suite(args,p,json.dumps(p).encode()),2)
             execute.assert_not_called()
             result=json.loads((args.output/"suite-result.json").read_text())
             self.assertEqual(result["actual_launches"],0)
             self.assertEqual(result["counts"]["not_run"],1)
             self.assertTrue(FakeAdb.interrupted_latch)
+
+
+class CurrentSuiteEntryTests(unittest.TestCase):
+    @contextlib.contextmanager
+    def no_effects(self):
+        with contextlib.ExitStack() as stack:
+            guarded = [(s, 'require_existing_adb_server'), (s, 'preflight'), (a, 'Adb'), (a, 'run_task'),
+                (subprocess, 'run'), (subprocess, 'Popen'), (a, 'private_write'), (a, 'write_json'),
+                (builtins, 'open'), (io, 'open'), (a.os, 'open'), (a.os, 'mkdir'), (a.os, 'makedirs'),
+                (Path, 'open'), (Path, 'mkdir'), (Path, 'resolve'), (Path, 'expanduser'), (Path, 'read_bytes'),
+                (Path, 'write_bytes'), (Path, 'write_text')]
+            calls = [stack.enter_context(patch.object(owner, name,
+                side_effect=AssertionError('retired suite must have no IO: '+name))) for owner, name in guarded]
+            yield
+            for call in calls:
+                call.assert_not_called()
+
+    def test_direct_suite_refuses_before_args_plan_or_any_io(self):
+        class Unreadable:
+            def __getattr__(self, name):
+                raise AssertionError('retired suite cannot read arguments: '+name)
+            def __getitem__(self, name):
+                raise AssertionError('retired suite cannot inspect a plan: '+name)
+        with self.no_effects(), self.assertRaisesRegex(a.DriverError, 'owned virtual display.*background Start'):
+            s.run_suite(Unreadable(), Unreadable(), Unreadable())
+
+    def test_cli_suite_refuses_before_plan_read_and_no_unknown_submission(self):
+        argv = ['phone_suite.py', 'run', '/never/read-plan.json', '--adb', '/never/executed', '--adb-port', '12345',
+            '--serial', 'FAKE', '--output', '/never/created']
+        with patch.object(s.sys, 'argv', argv), self.no_effects(), self.assertRaisesRegex(a.DriverError, 'no case was submitted'):
+            s.main()
+
+    def test_cli_validate_keeps_offline_plan_parser(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary)/'plan.json';path.write_text(json.dumps(plan()))
+            output = io.StringIO()
+            with patch.object(s.sys, 'argv', ['phone_suite.py', 'validate', str(path)]), \
+                    patch.object(a, 'Adb', side_effect=AssertionError('validate cannot use ADB')), \
+                    patch.object(s, 'require_existing_adb_server', side_effect=AssertionError('validate is offline')), \
+                    contextlib.redirect_stdout(output):
+                self.assertEqual(s.main(), 0)
+            self.assertTrue(json.loads(output.getvalue())['runnable'])
 
 
 if __name__ == "__main__":

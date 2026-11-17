@@ -37,6 +37,108 @@
     "reviewed_test_only_patch_sha256": "4fda8c55ca2dcd90a162f6edcdb7a4bbca19d54b2542e3a19408ecdd0f720e77"
   },
   "android_qualified": false,
+  "background_entry_policy_amendment": {
+    "android_build": false,
+    "background_default_when_unsaved": true,
+    "base_commit": "b1f7a6f768a9f6f8c2b9b2c8c363fa260b614b81",
+    "base_manifest_sha256": "45c324c537b9130613f5a374995d3895db1a9f81fd3b0f87f6bdd449e3348e7b",
+    "baseline_current_validation_historical": {
+      "all_blockers_closed": false,
+      "android_compiled_at_freeze": false,
+      "author_focused_results_are_not_combined_execution": true,
+      "combined_tests_run": false,
+      "phase": "combined_source_closure_only",
+      "phone_tested": false,
+      "profile_permission_synthetic_cases_required": 16,
+      "required_canonical_checks": 113,
+      "required_native_gates": 19,
+      "state_settle_cases_required": 21
+    },
+    "collect_status_and_offline_plan_validation_retained": true,
+    "documentation_changed_paths": [
+      "BACKGROUND-CONTROL.md"
+    ],
+    "driver_changed_paths": [
+      "tools/phone_acceptance.py",
+      "tools/phone_suite.py"
+    ],
+    "focused_host_results": [
+      {
+        "counts": {
+          "cases": 151
+        },
+        "name": "qualification-scope",
+        "result_sha256": "4d7e607ee62e7108672601b31e2157d11d4642ba818bc4b364fe86eef544977f"
+      },
+      {
+        "counts": {
+          "cases": 33
+        },
+        "name": "owner-authorization",
+        "result_sha256": "feeacb956a316a75534c64f0cb26598c1a693f2522593d87d1e8a183cb234146"
+      },
+      {
+        "counts": {
+          "checks": 38
+        },
+        "name": "runtime-config-ui",
+        "result_sha256": "44bf9e79a6063998d2598425e01c1833dd9f49aa5d4d97174ce1f9ca619163c2"
+      },
+      {
+        "counts": {
+          "assertions": 109,
+          "cases": 38,
+          "launch_refusal_roundtrip_cases": 14
+        },
+        "name": "native-app-routing",
+        "result_sha256": "d559a790f3a4947b343928b2d70773177c7719b3aedf011f9411d9b1c2ba4111"
+      },
+      {
+        "counts": {
+          "phone_acceptance": 40,
+          "phone_suite": 45,
+          "tests": 87,
+          "warm_collection": 2,
+          "warm_corruption_categories": 7
+        },
+        "name": "entry-tools",
+        "result_sha256": "8d7f3fa545be34088e022621f7091a0552d85977e8da3455bb544ce7c18f788b"
+      }
+    ],
+    "full_app_qualification": false,
+    "legacy_body_sha256": {
+      "run_suite": "070d27efd4271941ef3da97d33c83825f0ac55a2e474b4f730df050cfdb0e388",
+      "run_task": "d835146316602f53c0c2a3989162bfd97af1ca2cd8a23d41d6b71268c3add2ef"
+    },
+    "legacy_driver_override_flag": false,
+    "legacy_flow_assertions_retained_in_fake_only_tests": true,
+    "legacy_task_and_suite_drivers_retired_before_io": true,
+    "model_inference": false,
+    "old_private_trigger_positive_replaced_by_no_effect_refusals": true,
+    "other_production_inputs_byte_identical": 333,
+    "phone_operations": 0,
+    "production_changed_paths": [
+      "src/org/trillionnium/hepta/local/BackgroundUiPreferences.java",
+      "src/org/trillionnium/hepta/local/MainActivity.java"
+    ],
+    "rejected_auto_task_consumes_private_nonce": false,
+    "rejected_auto_task_preserves_owner_task_and_scope": true,
+    "saved_manual_foreground_choice_preserved": true,
+    "scope_prefill_changes_display_mode": false,
+    "source_freeze_scope": "Focused host validation only; no installation, Android runtime, main-screen concurrency or native App success is claimed. Full canonical and native gates and device qualification remain separate.",
+    "source_input_count": 335,
+    "source_input_map_sha256": "0c6604ff6bdfec48934c3186abbb706a6642f7cb9f442abdc969bafec147cf0d",
+    "test_changed_paths": [
+      "tests/qualification-scope/QualificationScopeHostTest.java",
+      "tests/qualification-scope/UiFixture.template",
+      "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/PrivateDebugTask.java",
+      "tests/qualification-scope/prepare_fixture.py",
+      "tools/test_phone_acceptance.py",
+      "tools/test_phone_suite.py",
+      "tools/test_warm_collection.py"
+    ],
+    "warm_collector_direct_test_preserves_all_seven_corruption_refusals": true
+  },
   "base_source": {
     "commit": "d49c7108214cd6f5670e68a4119118b0dffb3ae9",
     "component_tree": "567376d80f00e4a78b59f76f183816b291d665fc",
@@ -85,7 +187,7 @@
     "production_source_inputs_count": 334,
     "validation": "Source frozen after host-only focused fixture validation and before followup CI. Existing signed APK and phone evidence remain bound to db9a277; byte-identical production inputs do not rename its build head. Original CI failure is preserved."
   },
-  "candidate_status": "R5_COMBINED_SOURCE_FROZEN_PENDING_COMBINED_CI_ANDROID_BUILD_PHONE",
+  "candidate_status": "BACKGROUND_ENTRY_POLICY_FOCUSED_HOST_PASSED_PENDING_FULL_CI_ANDROID_BUILD_PHONE",
   "candidate_version_assigned": true,
   "ci_containment_repair_amendment": {
     "baseline_manifest_sha256": "8dd4b459a4da939f8594df16a5198fbce6cdd2fc6e7a298b5b0956fca4c57889",
@@ -147,7 +249,10 @@
     "android_compiled_at_freeze": false,
     "author_focused_results_are_not_combined_execution": true,
     "combined_tests_run": false,
-    "phase": "combined_source_closure_only",
+    "focused_host_tests_passed": true,
+    "full_canonical_run_for_this_candidate": false,
+    "full_native_gate_run_for_this_candidate": false,
+    "phase": "background_entry_source_frozen_after_focused_host_validation",
     "phone_tested": false,
     "profile_permission_synthetic_cases_required": 16,
     "required_canonical_checks": 113,
@@ -199,9 +304,9 @@
       "sha256": "5ac0d79f5d66f403ec30b3bd8ec2b033b4f39d447bd1cdc30d3d1f1b1c48d7e4"
     },
     {
-      "bytes": 4077,
+      "bytes": 5435,
       "path": "BACKGROUND-CONTROL.md",
-      "sha256": "ab7d94b8670a5cf33853512a5de7464ded0c1d47d3f22f37f00f3edf5dd23a69"
+      "sha256": "75577c0cfebdca11f7e2712060889e06f9295959efa13a69d72f041d6081ae35"
     },
     {
       "bytes": 2250,
@@ -6474,9 +6579,9 @@
       "sha256": "411b819a7cca81d69b10be9747f9360be94e2514f06c186dcede20338281773a"
     },
     {
-      "bytes": 12309,
+      "bytes": 12308,
       "path": "src/org/trillionnium/hepta/local/BackgroundUiPreferences.java",
-      "sha256": "c0819727a993faba8eddf4fad99fbf39d5fa14793531b8dc84be15498553ea1c"
+      "sha256": "3f7400d4b98e79c30b42dfd9a6cd01f106d838a5be47bf73428eebbb1f27120f"
     },
     {
       "bytes": 10425,
@@ -6584,9 +6689,9 @@
       "sha256": "554c46104381e80aba393928e81e78a899ffabb362b700c5195c62226b76310e"
     },
     {
-      "bytes": 55319,
+      "bytes": 54443,
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "sha256": "f97f9d17a67949e2886e98a8c897bbd96095f927bdd93d11ea6fa0c5153d79e6"
+      "sha256": "b8b2c2247e725332252c7e8d58a74e36749d1025731944557e47ae9d1bf99298"
     },
     {
       "bytes": 4417,
@@ -9204,9 +9309,9 @@
       "sha256": "8b022b85242ec23faad902f31b55d8f5b1dabde7e1f6391921c0f25a8e47b17a"
     },
     {
-      "bytes": 50319,
+      "bytes": 54266,
       "path": "tests/qualification-scope/QualificationScopeHostTest.java",
-      "sha256": "68c05819b2fada5657ce5fd4f19fff55a11f1253a0d3aa22c58d082f2f816212"
+      "sha256": "7d6ffbdfa5d3d70f6fd82b26a07a3a4a28cc331c86da328acd67e12ed9d9252c"
     },
     {
       "bytes": 12967,
@@ -9219,9 +9324,9 @@
       "sha256": "26a9dda638d8646cb48cd4c9d1c4d26f085893d97d665f63e82d5d80f5248051"
     },
     {
-      "bytes": 2541,
+      "bytes": 2709,
       "path": "tests/qualification-scope/UiFixture.template",
-      "sha256": "9debfdeb9094e492a957bbff63d2577c420fd22d6d33e282b947d867234c0750"
+      "sha256": "01ccbcdaf77ceac7bcf8e116240bc3f083af38981a8e31824ae0d453ecd4ed00"
     },
     {
       "bytes": 430,
@@ -9414,9 +9519,9 @@
       "sha256": "c166191abe27bb2fbb7f17468a1d0b0aba692033ac6d9e150bb244287f171b6c"
     },
     {
-      "bytes": 515,
+      "bytes": 554,
       "path": "tests/qualification-scope/fixtures/org/trillionnium/hepta/local/PrivateDebugTask.java",
-      "sha256": "a50e1bf377d1ae6016db5ad4aa81ef813c8f43d6779b35edfd06514642ee58ea"
+      "sha256": "a9970f2fa713e1ca1c3d6b302043788e62b5e7a7ce793943136ec1e512c5ff09"
     },
     {
       "bytes": 567,
@@ -9429,9 +9534,9 @@
       "sha256": "79f935c7c05d3ff5d5b3b246137c6e940f22457a83b6bbb7ad1950968aec9b6d"
     },
     {
-      "bytes": 19174,
+      "bytes": 20364,
       "path": "tests/qualification-scope/prepare_fixture.py",
-      "sha256": "cc6524ba6da483bf0e57035d3ff706746baeb348e4e64660a551bad72b149564"
+      "sha256": "87edd1a26bdfb8640c5e4bc8e1916f72278178310e02847dc990ea8340d24836"
     },
     {
       "bytes": 2997,
@@ -10644,9 +10749,9 @@
       "sha256": "ee26ed1f2f2b2ffd5f14fbd526c6d3cbf05d7ed8d65c422df5e60a72fa0cfa3a"
     },
     {
-      "bytes": 65521,
+      "bytes": 65964,
       "path": "tools/phone_acceptance.py",
-      "sha256": "673a017689bff6d8a1972f6d3e64ff20803c0f00926265e2d0abc2cbe80371b9"
+      "sha256": "57cdac22bded1bda94043590113f3d7651191703f2fb418818ffc94bc861fad5"
     },
     {
       "bytes": 50893,
@@ -10654,9 +10759,9 @@
       "sha256": "d25889ef9fffb22e08871f7a3b57a57e28d5f48977d4e42929364434599ea58e"
     },
     {
-      "bytes": 58983,
+      "bytes": 59185,
       "path": "tools/phone_suite.py",
-      "sha256": "a513114211897bb620ecbbab38aadcce3a9137c58071df269cca7f828034118e"
+      "sha256": "606ce0c73a9b0cbf820f452fccb334c4b1e7d3bf34deb2e46e6b08c3d5e7e226"
     },
     {
       "bytes": 22285,
@@ -10729,9 +10834,9 @@
       "sha256": "1595732ce20ab5c5522f0dd987a52cfe93263b7460bbabb7a02f2fc7856c3afe"
     },
     {
-      "bytes": 25801,
+      "bytes": 30133,
       "path": "tools/test_phone_acceptance.py",
-      "sha256": "366e32660aa47203384363d948617f576f2f912fe6a3a2d1fab0e32a90587871"
+      "sha256": "a0802592ca4fe3c25ef48daadefdb005306af67af9a9c9c6f706bfea824dc32e"
     },
     {
       "bytes": 32464,
@@ -10739,9 +10844,9 @@
       "sha256": "b2846df4eb51933fe116d9a920ff4c19e92e746c52e6124040e1b6ad03cad4a4"
     },
     {
-      "bytes": 26383,
+      "bytes": 30598,
       "path": "tools/test_phone_suite.py",
-      "sha256": "50acdd9b4c6ca3acc8bc347f5b0fbf280bf806862739f892046d01694b5d79f1"
+      "sha256": "31945d33eeeb7220e74714704c230f4b26f52e689b037a1d7df3637ab6bd727c"
     },
     {
       "bytes": 6076,
@@ -10789,9 +10894,9 @@
       "sha256": "fabd3465edc295837415e56b13e654b86fe0919711ea7ca4006ecab989ef7622"
     },
     {
-      "bytes": 5341,
+      "bytes": 6138,
       "path": "tools/test_warm_collection.py",
-      "sha256": "4d97a5c80829c0b3cc18111380b5248d20bfa85d36cc0f9280499121e0f2fc4a"
+      "sha256": "331fd26445451500c65c35475c9999ebb36efcac8cc46b10954260249fd037eb"
     },
     {
       "bytes": 2278,
