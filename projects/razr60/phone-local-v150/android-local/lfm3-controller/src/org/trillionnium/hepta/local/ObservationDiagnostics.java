@@ -32,7 +32,15 @@ final class ObservationDiagnostics {
     private long phaseAt,lastClock,transitionTotal,frameTotal;
     private boolean ended,clockRegressed,workerActive;
     private String previousSampleKey,publishedObservationId,terminal;
+    private GraphStamp capturedStamp,afterStamp;
+    private String afterStage;
+    private Map<String,Object> pairSeal,publication,lastMismatch;
+    private long mismatchTotal;
     private Map<String,Object> lastSavedGraphChange,lastSeedDecision;private long seedAdmissions;
+    private static final String[] SEAL_PREDICATES={"native_graph_rechecked","frozen_window_present","frozen_window_matches",
+        "authorization_present","authorization_same","pair_events_same","pair_unknown_events_same","capture_unknown_events_same",
+        "sample_start_after_request","sample_complete_after_start","sample_complete_before_capture","capture_before_callback",
+        "callback_before_pair_start","pair_start_before_complete"};
 
     ObservationDiagnostics(String task,String request,String owner,String pkg,String generation,int display,int sequence,long started,long deadline){
         if(!id(task)||!id(request)||!sha(owner)||pkg==null||pkg.length()>128||!pkg.matches("[A-Za-z0-9_.]+")
@@ -53,9 +61,11 @@ final class ObservationDiagnostics {
         Map<String,Object> row=map();row.put("phase",name);row.put("elapsed_ms",now-started);
         append(transitions,row,MAX_TRANSITIONS);transitionTotal=plus(transitionTotal,1);
     }
-    synchronized void note(Event event){if(!ended&&event!=null)counts[event.ordinal()]=plus(counts[event.ordinal()],1);}
+    synchronized void note(Event event){
+        if(!ended&&event!=null){counts[event.ordinal()]=plus(counts[event.ordinal()],1);readMismatch(event);}
+    }
     synchronized void worker(boolean active){if(!ended)workerActive=active;}
-    synchronized void reset(){if(!ended)previousSampleKey=null;}
+    synchronized void reset(){if(!ended){previousSampleKey=null;capturedStamp=null;afterStamp=null;afterStage=null;}}
     synchronized void graph(String stage,String key,String appTree,String state,String window,boolean truncated,long now){
         if(ended||!("sample_graph".equals(stage)||"screenshot_graph".equals(stage)||"saved_graph".equals(stage))
                 ||!sha(key)||!sha(appTree)||!sha(state)||!sha(window))return;
@@ -86,10 +96,97 @@ final class ObservationDiagnostics {
         if("admitted".equals(decision))seedAdmissions=plus(seedAdmissions,1);
     }
     synchronized void missingSample(){if(!ended){note(Event.SAMPLE_MISSING);previousSampleKey=null;}}
+    /** References are immutable bounded values from reads which already occurred.
+     * No Graph/Android object, new traversal, screenshot or authority is retained. */
+    synchronized void capture(GraphStamp stamp){
+        if(ended)return;capturedStamp=stamp;afterStamp=null;afterStage=null;pairSeal=null;publication=null;
+    }
+    synchronized void retained(String stage,GraphStamp stamp){
+        if(ended||!("screenshot_graph".equals(stage)||"saved_graph".equals(stage)))return;
+        afterStage=stage;afterStamp=stamp;
+    }
+    synchronized void beginSeal(long captureEvents,long captureUnknown,long pairEvents,long pairUnknown,boolean retry,boolean selected){
+        if(ended)return;pairSeal=map();pairSeal.put("capture_events",captureEvents);pairSeal.put("capture_unknown_events",captureUnknown);
+        pairSeal.put("pair_start_events",pairEvents);pairSeal.put("pair_start_unknown_events",pairUnknown);
+        pairSeal.put("retry_before_seal",retry);pairSeal.put("native_recheck_selected",selected);pairSeal.put("seal_created",false);
+        Map<String,Object> predicates=map();for(String name:SEAL_PREDICATES)predicates.put(name,null);pairSeal.put("predicates",predicates);
+        pairSeal.put("predicate_null_means_not_evaluated",true);pairSeal.put("grants_action_authority",false);
+    }
+    static boolean sealPredicate(ObservationDiagnostics values,int index,boolean result){
+        if(values!=null)values.recordSeal(index,result,null,null);return result;
+    }
+    static boolean sealCounter(ObservationDiagnostics values,int index,long expected,long observed){
+        boolean result=expected==observed;if(values!=null)values.recordSeal(index,result,Long.valueOf(expected),Long.valueOf(observed));return result;
+    }
+    private synchronized void recordSeal(int index,boolean result,Long expected,Long observed){
+        if(ended||pairSeal==null||index<0||index>=SEAL_PREDICATES.length)return;
+        Object raw=pairSeal.get("predicates");if(!(raw instanceof Map<?,?>))return;
+        Map<String,Object> predicates=map();for(String name:SEAL_PREDICATES)predicates.put(name,((Map<?,?>)raw).get(name));
+        predicates.put(SEAL_PREDICATES[index],Boolean.valueOf(result));pairSeal.put("predicates",predicates);
+        if(expected!=null){pairSeal.put(SEAL_PREDICATES[index]+"_expected",expected);pairSeal.put(SEAL_PREDICATES[index]+"_observed",observed);}
+    }
+    synchronized void sealCreated(){if(!ended&&pairSeal!=null)pairSeal.put("seal_created",true);}
+    synchronized void publicationMode(boolean sealed,long events){
+        if(ended)return;publication=map();publication.put("mode",sealed?"frozen_window_identity":"whole_observed_graph");
+        publication.put("checked_event_watermark",events);publication.put("seal_created",sealed);publication.put("grants_action_authority",false);
+    }
+    synchronized void publicationDecision(boolean retry,boolean eventsChanged,boolean eventsRechecked,boolean currentCheck){
+        if(ended||publication==null)return;publication.put("retry_after_existing_fence",retry);
+        publication.put("events_changed",eventsChanged);publication.put("events_rechecked",eventsRechecked);
+        publication.put("current_check",currentCheck);
+    }
+    private void readMismatch(Event event){
+        final String stage;
+        switch(event){
+            case SCREENSHOT_GRAPH_MISSING:case SCREENSHOT_GRAPH_STALE:case SCREENSHOT_GRAPH_CHANGED:stage="screenshot_graph";break;
+            case SAVED_GRAPH_MISSING:case SAVED_GRAPH_STALE:case SAVED_GRAPH_CHANGED:stage="saved_graph";break;
+            default:return;
+        }
+        GraphStamp after=stage.equals(afterStage)?afterStamp:null;
+        String reason=noncomparable(capturedStamp,after);
+        Map<String,Object> row=map();row.put("mismatch_stage",stage);row.put("existing_event",event.name());
+        row.put("same_identity_comparable",reason==null);row.put("noncomparable_reason",reason);
+        Map<String,Object> diff=reason==null?difference(capturedStamp,after,null):null;
+        row.put("graph_difference",diff);row.put("graph_difference_omitted_for_byte_limit",false);
+        row.put("node_differences_truncated",diff==null?null:diff.get("node_differences_truncated"));
+        row.put("selected_node_id",null);row.put("additional_graph_reads",0);row.put("additional_screenshots",0);
+        row.put("grants_action_authority",false);lastMismatch=Collections.unmodifiableMap(row);mismatchTotal=plus(mismatchTotal,1);
+    }
+    private String noncomparable(GraphStamp before,GraphStamp after){
+        if(before==null)return "captured_stamp_unavailable";if(after==null)return "after_stamp_unavailable";
+        if(!packageName.equals(before.packageName)||!packageName.equals(after.packageName))return "package_identity_changed";
+        if(!generation.equals(before.generation)||!generation.equals(after.generation))return "background_generation_changed";
+        if(!ownerSha.equals(before.ownerSha)||!ownerSha.equals(after.ownerSha))return "owner_identity_changed";
+        if(displayId!=before.displayId||displayId!=after.displayId)return "display_identity_changed";
+        if(before.windowId!=after.windowId)return "window_identity_changed";return null;
+    }
+    /** Keep the original byte ceiling and all prior fields if the new optional
+     * bounded difference would otherwise make a serialized record too large. */
+    static Map<String,Object> withoutReadDifference(Map<String,Object> original){
+        Map<String,Object> value=new LinkedHashMap<String,Object>(original);
+        Object raw=value.get("last_read_mismatch");
+        if(raw instanceof Map<?,?>){
+            Map<String,Object> row=map();for(Map.Entry<?,?> entry:((Map<?,?>)raw).entrySet())
+                if(entry.getKey() instanceof String)row.put((String)entry.getKey(),entry.getValue());
+            if(row.get("graph_difference")!=null){row.put("graph_difference",null);row.put("graph_difference_omitted_for_byte_limit",true);}
+            value.put("last_read_mismatch",row);
+        }
+        return value;
+    }
+    /** Preserve prior diagnostics while dropping only the optional second graph detail. */
+    static Map<String,Object> withoutSavedGraphDifference(Map<String,Object> original){
+        Map<String,Object> value=new LinkedHashMap<String,Object>(original);
+        if(value.containsKey("last_native_saved_graph_change")){
+            value.remove("last_native_saved_graph_change");
+            value.put("native_saved_graph_detail_omitted_for_budget",true);
+        }
+        return value;
+    }
     synchronized void published(String id,long now){if(!ended&&id(id)){publishedObservationId=id;note(Event.PUBLISHED);finish("published",now);}}
     synchronized void finish(String status,long now){
         if(ended)return;if(!"published".equals(status)&&!"failed".equals(status))return;
         now=clock(now);closePhase(now);terminal=status;ended=true;
+        capturedStamp=null;afterStamp=null;afterStage=null;
     }
     synchronized Map<String,Object> snapshot(long now){
         long end=ended?lastClock:Math.max(lastClock,now);
@@ -114,13 +211,29 @@ final class ObservationDiagnostics {
         value.put("transitions_truncated",transitionTotal>MAX_TRANSITIONS);value.put("transition_limit",MAX_TRANSITIONS);
         value.put("last_graphs",copyRows(frames));value.put("graph_record_count",frameTotal);
         value.put("graph_records_truncated",frameTotal>MAX_FRAMES);value.put("graph_record_limit",MAX_FRAMES);
+        value.put("last_pair_seal",pairSeal==null?null:copyMap(pairSeal));
+        value.put("last_publication_check",publication==null?null:copyMap(publication));
+        value.put("last_read_mismatch",lastMismatch==null?null:copyMap(lastMismatch));
+        value.put("read_mismatch_count",mismatchTotal);value.put("read_mismatch_record_limit",1);
+        value.put("read_mismatch_records_truncated",mismatchTotal>1);
+        value.put("retained_graph_stamps_released_at_terminal",ended&&capturedStamp==null&&afterStamp==null);
         value.put("node_text_recorded",false);value.put("screenshot_pixels_recorded",false);
-        if(lastSavedGraphChange!=null)value.put("last_native_saved_graph_change",new LinkedHashMap<String,Object>(lastSavedGraphChange));
-        if(lastSeedDecision!=null){value.put("last_native_seed_decision",new LinkedHashMap<String,Object>(lastSeedDecision));
+        if(lastSavedGraphChange!=null)value.put("last_native_saved_graph_change",copyMap(lastSavedGraphChange));
+        if(lastSeedDecision!=null){value.put("last_native_seed_decision",copyMap(lastSeedDecision));
             value.put("native_seed_admission_count",seedAdmissions);}
         value.put("grants_action_authority",false);value.put("changes_deadline",false);return value;
     }
     private static Map<String,Object> map(){return new LinkedHashMap<String,Object>();}
+    private static Map<String,Object> copyMap(Map<?,?> source){
+        Map<String,Object> out=map();for(Map.Entry<?,?> entry:source.entrySet())
+            if(entry.getKey() instanceof String)out.put((String)entry.getKey(),copyValue(entry.getValue()));
+        return out;
+    }
+    private static Object copyValue(Object value){
+        if(value instanceof Map<?,?>)return copyMap((Map<?,?>)value);
+        if(value instanceof List<?>){List<Object> out=new ArrayList<Object>();for(Object item:(List<?>)value)out.add(copyValue(item));return out;}
+        return value;
+    }
     private static void append(List<Map<String,Object>> rows,Map<String,Object> row,int limit){
         if(rows.size()==limit)rows.remove(0);rows.add(Collections.unmodifiableMap(row));
     }

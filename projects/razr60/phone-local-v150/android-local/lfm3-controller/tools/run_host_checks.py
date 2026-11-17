@@ -14,7 +14,7 @@ import sys
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
-PURE_CLASSES=['NativeAppEvidence', 'NativeAppDomain', 'NativeCtripFlightPage', 'NativeXiaomiProductPage', 'BackgroundTaskTarget', 'NativeAppGoal', 'NotesCreateWorkflow', 'NotesOwnerIntent', 'CalculatorTaskInputGuard', 'CalculatorGoalContract', 'CalculatorCompletionEvidence', 'NotesTaskPhaseGuard', 'TaskCompletionGate', 'NotesCompletionEvidence', 'FixedIntentAttemptGuard', 'LastModelDecisionProjection', 'BackgroundPermissionPreparation', 'TaskAuthorization', 'QualificationScope', 'ActionDecision', 'ActionPolicy', 'ObservedTargetLabels', 'ObservedAppLabels', 'ObservedScrollActions', 'ObservedImeEnter', 'SubmitAttemptGuard', 'ObservationStabilityGate', 'RecentActionProjection', 'PersistentActionPolicy', 'ImeVisibility', 'ObservationState', 'ObservedWindowMetadata', 'ObservedChildText', 'RepeatActionGuard', 'SameStateNoEffectGuard', 'DecisionGrammar', 'ModelProfile', 'NativeBudgetVerifier', 'LocalRuntimeConfig', 'ModelFileVerifier', 'ConservativeTokenBudget', 'MemoryAvailability', 'AppCatalogueRanker', 'SessionRecovery', 'MobiMindPins', 'MobiMindContract', 'MobiMindSessionContract', 'UiVenusPins', 'UiVenusInputContract', 'UiVenusRequestContract', 'UiVenusContract', 'UiVenusProcessContract', 'UiVenusSessionContract', 'DiagnosticStartupGate', 'ObservedTextProjection', 'ObservedTransitionProjection', 'CompactTaskHistory', 'PromptActionDomain', 'RecoveryQuiescence', 'RecoveryDispatch', 'RecoveryJournalTransaction', 'RecoverySlotHandoff', 'WarmProcessSession', 'OwnedWorkerCancellation']
+PURE_CLASSES=['NativeActionSnapshotCheck', 'NativeAppEvidence', 'NativeAppDomain', 'NativeCtripFlightPage', 'NativeXiaomiProductPage', 'BackgroundTaskTarget', 'NativeAppGoal', 'NotesCreateWorkflow', 'NotesOwnerIntent', 'CalculatorTaskInputGuard', 'CalculatorGoalContract', 'CalculatorCompletionEvidence', 'NotesTaskPhaseGuard', 'TaskCompletionGate', 'NotesCompletionEvidence', 'FixedIntentAttemptGuard', 'LastModelDecisionProjection', 'BackgroundPermissionPreparation', 'TaskAuthorization', 'QualificationScope', 'ActionDecision', 'ActionPolicy', 'ObservedTargetLabels', 'ObservedAppLabels', 'ObservedScrollActions', 'ObservedImeEnter', 'SubmitAttemptGuard', 'ObservationStabilityGate', 'RecentActionProjection', 'PersistentActionPolicy', 'ImeVisibility', 'ObservationState', 'ObservedWindowMetadata', 'ObservedChildText', 'RepeatActionGuard', 'SameStateNoEffectGuard', 'DecisionGrammar', 'ModelProfile', 'NativeBudgetVerifier', 'LocalRuntimeConfig', 'ModelFileVerifier', 'ConservativeTokenBudget', 'MemoryAvailability', 'AppCatalogueRanker', 'SessionRecovery', 'MobiMindPins', 'MobiMindContract', 'MobiMindSessionContract', 'UiVenusPins', 'UiVenusInputContract', 'UiVenusRequestContract', 'UiVenusContract', 'UiVenusProcessContract', 'UiVenusSessionContract', 'DiagnosticStartupGate', 'ObservedTextProjection', 'ObservedTransitionProjection', 'CompactTaskHistory', 'PromptActionDomain', 'RecoveryQuiescence', 'RecoveryDispatch', 'RecoveryJournalTransaction', 'RecoverySlotHandoff', 'WarmProcessSession', 'OwnedWorkerCancellation']
 
 
 def main():
@@ -60,6 +60,8 @@ def main():
         paths.update(p for p in (ROOT/"tests/notes-create-workflow/fixtures").rglob("*") if p.is_file())
         paths.update(p for p in (ROOT/"tests/profile-permission-transient/fixtures").rglob("*") if p.is_file())
         paths.add(ROOT/"tests/profile-permission-transient/README.md")
+        paths.add(ROOT/"tests/native-observation-events/SavedGraphSeedCases.fragment")
+        paths.update(p for p in (ROOT/"tests/native-model-projection").rglob("*") if p.is_file())
         for fixture_root in ("tests/sdk-exception-failure-audit/fixtures",
                              "tests/owned-generation-cleanup/fixtures",
                              "tests/vlm-contract/fixtures"):
@@ -229,10 +231,48 @@ def main():
                 or permission_cases.get("passed") is not True or permission_cases.get("cases")!=16
                 or permission_cases.get("fixture_kind")!="synthetic"):
             raise RuntimeError("Mandatory permission transient gate receipt differs")
+        permission_retry=permission_gate.get("read_retry_summary",{})
+        if (permission_retry.get("passed") is not True or permission_retry.get("cases")!=21
+                or permission_retry.get("taskinfo_and_framework_fixtures_synthetic") is not True
+                or permission_retry.get("real_pair_bracket_method_extracted") is not True
+                or permission_retry.get("phone_contacted") is not False
+                or permission_retry.get("android_build") is not False):
+            raise RuntimeError("Mandatory typed permission read-retry gate receipt differs")
         report["permission_transient_gate"]={"bytes":len(permission_raw),
-            "sha256":hashlib.sha256(permission_raw).hexdigest(),"cases":permission_cases}
+            "sha256":hashlib.sha256(permission_raw).hexdigest(),"cases":permission_cases,
+            "read_retry_cases":permission_retry}
         run("visual-prompt-projection",[sys.executable,"-B",ROOT/"tests/visual-prompt-projection/run_host_tests.py",
             "--source",ROOT,"--out",out/"visual-prompt-projection","--json-jar",json_jar,"--release8"])
+        run("native-model-projection",[sys.executable,"-B",ROOT/"tests/native-model-projection/run_host.py",
+            "--source",ROOT,"--output",out/"native-model-projection","--java-home",java_home,"--json-jar",json_jar])
+        projection_raw=(out/"native-model-projection/RESULT.json").read_bytes()
+        projection_gate=json.loads(projection_raw)
+        artifacts=projection_gate.get("non_native_byte_identical",{})
+        baseline=projection_gate.get("baseline_sources_before",[])
+        if (projection_gate.get("schema")!="hepta.native-model-projection-host-validation.v1"
+                or projection_gate.get("passed") is not True or projection_gate.get("inputs_unchanged") is not True
+                or projection_gate.get("native_69_grammar_rows_exact") is not True
+                or projection_gate.get("native_projection",{}).get("passed") is not True
+                or projection_gate.get("native_projection",{}).get("checks")!=81
+                or projection_gate.get("visual_projection",{}).get("passed") is not True
+                or projection_gate.get("wiring",{}).get("passed") is not True
+                or projection_gate.get("wiring",{}).get("checks")!=24
+                or len(artifacts.get("files",[]))!=13
+                or len({x.get("path") for x in artifacts.get("files",[])})!=13
+                or artifacts.get("ordinary_visual_notes_system_prompt_grammar_budget_exact") is not True
+                or artifacts.get("visual_private_evidence_exact") is not True
+                or [x.get("sha256") for x in baseline]!=[
+                    "d8db23c8095ba08420e5dfe118584941767bf90681010c5c3ee2005cb0e7c8d4",
+                    "52443e185e163210c9dc7b4de27d4031568bc12af985ec72898f88e3dbe68506"]
+                or projection_gate.get("phone_operations")!=0
+                or projection_gate.get("android_runtime") is not False
+                or projection_gate.get("model_inference") is not False):
+            raise RuntimeError("Mandatory same-compact native projection comparator receipt differs")
+        report["native_projection_gate"]={"bytes":len(projection_raw),
+            "sha256":hashlib.sha256(projection_raw).hexdigest(),
+            "comparison_scope":projection_gate.get("baseline_scope"),
+            "native_checks":81,"wiring_checks":24,"native_grammar_rows_exact":69,
+            "ordinary_visual_notes_artifacts_exact":13,"baseline_sources":baseline}
         run("vlm-result-contract",[sys.executable,"-B",ROOT/"tests/vlm-contract/run_host_tests.py",
             "--source",ROOT,"--output",out/"vlm-result-contract","--java-home",java_home])
         run("vlm-template-render",[sys.executable,"-B",ROOT/"tests/vlm-contract/check_template.py",

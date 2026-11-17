@@ -6,19 +6,23 @@ def pin(p):
  b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
 def main():
  p=argparse.ArgumentParser()
- for name in ('source','output','java-home','json-jar','baseline-source'):p.add_argument('--'+name,type=Path,required=True)
+ for name in ('source','output','java-home','json-jar'):p.add_argument('--'+name,type=Path,required=True)
+ p.add_argument('--baseline-source',type=Path)
  p.add_argument('--replay-prompt',type=Path,action='append',default=[]);p.add_argument('--replay-system',type=Path)
- a=p.parse_args();s=a.source.resolve();out=a.output.resolve();j=a.java_home.resolve();jar=a.json_jar.resolve();base=a.baseline_source.resolve()
+ a=p.parse_args();s=a.source.resolve();out=a.output.resolve();j=a.java_home.resolve();jar=a.json_jar.resolve()
+ base=a.baseline_source.resolve() if a.baseline_source else s/'tests/native-model-projection/preprojection-compact'
  assert not out.exists() and s not in out.parents
  assert pin(jar)['sha256']=='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'
  out.mkdir(parents=True);env=dict(os.environ)
  for k in ('JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','_JAVA_OPTIONS','CLASSPATH','PYTHONPATH'):env.pop(k,None)
  env['JAVA_HOME']=str(j);env['PATH']=str(j/'bin')+':'+env.get('PATH','');env['PYTHONDONTWRITEBYTECODE']='1'
  pkg=s/'src/org/trillionnium/hepta/local';tests=s/'tests/native-model-projection'
- sources=[pkg/'LocalTaskController.java',pkg/'VisualPromptProjection.java',*sorted(tests.glob('*'))]
+ original=[base/'src/org/trillionnium/hepta/local/LocalTaskController.java',base/'src/org/trillionnium/hepta/local/VisualPromptProjection.java']
+ sources=[pkg/'LocalTaskController.java',pkg/'VisualPromptProjection.java',*sorted(tests.rglob('*')),*original]
  before={str(f):pin(f) for f in sources if f.is_file()}
  r={'schema':'hepta.native-model-projection-host-validation.v1','passed':False,'steps':[],'inputs_before':before,'replays':[],
-    'phone_operations':0,'android_runtime':False,'model_inference':False,'exact_token_count_measured':False,'latency_measured':False}
+    'baseline_scope':'new pinned pre-native-projection counterfactual; both sides use compact24/ws1, not historical96 outputs',
+    'baseline_sources_before':[pin(f) for f in original],'phone_operations':0,'android_runtime':False,'model_inference':False,'exact_token_count_measured':False,'latency_measured':False}
  def run(n,argv,timeout=180):
   cmd=list(map(str,argv));start=time.monotonic();v=subprocess.run(cmd,cwd=out,env=env,capture_output=True,timeout=timeout)
   so=out/(n+'.stdout');se=out/(n+'.stderr');so.write_bytes(v.stdout);se.write_bytes(v.stderr)
@@ -75,8 +79,7 @@ def main():
   run('wiring',[j/'bin/java','-cp',candidate_cp,'org.trillionnium.hepta.local.NativeModelPromptWiringHostTest',out/'WIRING.json'])
   r['wiring']=json.loads((out/'WIRING.json').read_text());assert r['wiring']['passed'] is True
   baseline=out/'baseline-classes';baseline.mkdir()
-  original=[base/'src/org/trillionnium/hepta/local/LocalTaskController.java',base/'src/org/trillionnium/hepta/local/VisualPromptProjection.java']
-  assert [pin(f)['sha256'] for f in original]==['57fddc5bacb0b88f60a4095086a5b7cca043d80827794ade7184572b71d8354a','024c24468fe9493396030e7f4c243531d86d2074f3c2157e0776b4792d484bb8']
+  assert [pin(f)['sha256'] for f in original]==['d8db23c8095ba08420e5dfe118584941767bf90681010c5c3ee2005cb0e7c8d4','52443e185e163210c9dc7b4de27d4031568bc12af985ec72898f88e3dbe68506']
   run('baseline-compile',[j/'bin/javac','--release','8','-encoding','UTF-8','-proc:none','-Xlint:all','-Werror','-cp',entry,'-d',baseline,*original])
   baseline_cp=str(baseline)+os.pathsep+candidate_cp
   run('baseline-terminal',[j/'bin/java','-cp',baseline_cp,'org.trillionnium.hepta.local.NativeTerminalStatusHostTest',out/'baseline-terminal'])
@@ -90,7 +93,7 @@ def main():
   baseline_files={str(f.relative_to(out/'baseline-non-native')):f.read_bytes() for f in (out/'baseline-non-native').rglob('*') if f.is_file()}
   assert candidate_files==baseline_files and len(candidate_files)==13,'ordinary/visual/Notes actual artifacts differ'
   r['non_native_byte_identical']={'files':[{'path':n,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()} for n,b in sorted(candidate_files.items())],
-      'ordinary_visual_notes_system_prompt_grammar_budget_exact':True,'visual_private_evidence_exact':True,'historical_notes_fixture':pin(notes)}
+      'ordinary_visual_notes_system_prompt_grammar_budget_exact':True,'comparison_scope':'both sides use current compact format; historical96 artifacts are not asserted equal','visual_private_evidence_exact':True,'historical_notes_fixture':pin(notes)}
   r['inputs_unchanged']=before=={str(f):pin(f) for f in sources if f.is_file()};assert r['inputs_unchanged'];r['passed']=True
  except Exception as error:r['error']=type(error).__name__+': '+str(error)
  finally:

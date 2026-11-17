@@ -87,6 +87,48 @@
             f.main.drain();f.awaitSample();SystemClock.now+=200;f.main.drain();f.awaitSample();f.finish();
             DiagnosticChecks.check(f.delivered.size()==1&&f.errors.isEmpty(),"diagnostic callback changed observation");f.dispose();
         });
+        diag("actual_unsealed_publication_records_short_circuit_and_same_reads",()->{
+            ObserverPipelineHost f=nativeFixture();f.begin();ObservationRequest r=f.activeObservation;
+            f.awaitSample();SystemClock.now+=200;f.main.drain();f.awaitSample();f.finish();
+            org.json.JSONObject j=report(r),seal=j.getJSONObject("last_pair_seal"),predicates=seal.getJSONObject("predicates");
+            DiagnosticChecks.check(!predicates.getBoolean("native_graph_rechecked")&&predicates.isNull("frozen_window_present")
+                    &&predicates.isNull("authorization_present")&&!seal.getBoolean("seal_created"),"legacy incomplete native evidence cannot create a seal");
+            DiagnosticChecks.check("whole_observed_graph".equals(j.getJSONObject("last_publication_check").getString("mode"))
+                    &&f.reads.get()==4&&f.shots.size()==1&&f.delivered.size()==1,"existing full reads and one screenshot preserved");
+            DiagnosticChecks.check(j.getBoolean("retained_graph_stamps_released_at_terminal"),"published trace releases bounded stamp references");f.dispose();
+        });
+        for(final int at:new int[]{3,4})diag("actual_retained_read_difference_stage_"+at+"_does_not_add_reads",()->{
+            ObserverPipelineHost f=nativeFixture();f.readHook=(g,n)->{
+                if(n==at)g.digest="changed";boundGraph(g);
+                String hash=sha(g.digest.getBytes(StandardCharsets.UTF_8));
+                ObservationDiagnostics.NodeStamp node=new ObservationDiagnostics.NodeStamp("n1","0",hash,DiagnosticChecks.OWNER,0,0,100,100);
+                g.diagnosticStamp=new ObservationDiagnostics.GraphStamp(g.packageName,g.backgroundGeneration,g.backgroundOwnerSha,
+                        g.displayId,g.windowId,hash,hash,DiagnosticChecks.OWNER,g.truncated,Collections.singletonList(node));
+            };
+            f.begin();ObservationRequest r=f.activeObservation;f.awaitSample();SystemClock.now+=200;f.main.drain();f.awaitSample();f.finish();
+            org.json.JSONObject j=report(r),m=j.getJSONObject("last_read_mismatch"),d=m.getJSONObject("graph_difference");
+            DiagnosticChecks.check((at==3?"screenshot_graph":"saved_graph").equals(m.getString("mismatch_stage"))
+                    &&d.getInt("changed_retained_path_count")==1&&d.getJSONArray("node_differences").length()==1,"exact retained before/after and mismatch stage");
+            DiagnosticChecks.check(d.isNull("selected_original_path")&&!d.getBoolean("grants_action_authority")
+                    &&f.reads.get()==at&&f.shots.size()==1&&f.delivered.isEmpty(),"diagnosis neither adds a read nor accepts stale output");
+            DiagnosticChecks.check(r.deadline==11000&&f.directory.list().length==0,"fixed original deadline and unpublished file cleanup");f.dispose();
+        });
+        diag("actual_stale_read_records_missing_stamp_without_substitute_read",()->{
+            ObserverPipelineHost f=nativeFixture();f.readHook=(g,n)->{boundGraph(g);if(n==3)throw new StaleObservation();};
+            f.begin();ObservationRequest r=f.activeObservation;f.awaitSample();SystemClock.now+=200;f.main.drain();f.awaitSample();f.finish();
+            org.json.JSONObject m=report(r).getJSONObject("last_read_mismatch");
+            DiagnosticChecks.check("SCREENSHOT_GRAPH_STALE".equals(m.getString("existing_event"))
+                    &&"after_stamp_unavailable".equals(m.getString("noncomparable_reason"))&&m.isNull("graph_difference"),"missing complete after is explicit");
+            DiagnosticChecks.check(f.reads.get()==3&&f.shots.size()==1&&f.delivered.isEmpty(),"no diagnostic retry/read/output");f.dispose();
+        });
+        diag("actual_changed_window_stamp_is_not_a_same_identity_difference",()->{
+            ObserverPipelineHost f=nativeFixture();f.readHook=(g,n)->{if(n==3)g.windowId=99;boundGraph(g);};
+            f.begin();ObservationRequest r=f.activeObservation;f.awaitSample();SystemClock.now+=200;f.main.drain();f.awaitSample();f.finish();
+            org.json.JSONObject m=report(r).getJSONObject("last_read_mismatch");
+            DiagnosticChecks.check(!m.getBoolean("same_identity_comparable")&&"window_identity_changed".equals(m.getString("noncomparable_reason"))
+                    &&m.isNull("graph_difference"),"foreign window cannot be classified as content motion");
+            DiagnosticChecks.check(f.delivered.isEmpty()&&f.reads.get()==3&&f.directory.list().length==0,"same original refusal and cleanup");f.dispose();
+        });
         observationIo.executor.shutdown();
     }
 

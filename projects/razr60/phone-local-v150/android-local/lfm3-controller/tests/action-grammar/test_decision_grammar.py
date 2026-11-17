@@ -17,6 +17,7 @@ class GrammarTests(unittest.TestCase):
     def setUpClass(cls):
         cls.labeled=Recognizer((DIRECTORY/'labeled-targets.gbnf').read_text())
         cls.all=Recognizer((DIRECTORY/'all.gbnf').read_text())
+        cls.query_entry=Recognizer((DIRECTORY/'query-entry-compact.gbnf').read_text())
         cls.system=Recognizer((DIRECTORY/'system.gbnf').read_text())
         cls.discovery_before=Recognizer((DIRECTORY/'discovery-before.gbnf').read_text())
         cls.discovery_after=Recognizer((DIRECTORY/'discovery-after.gbnf').read_text())
@@ -57,8 +58,8 @@ class GrammarTests(unittest.TestCase):
         self.assertFalse(self.all.accepts(raw('scroll',node_label='',node_id='n3',direction='diagonal')))
         self.assertFalse(self.all.accepts(raw('done',status='maybe',summary='x')))
     def test_unicode_string_and_control_bounds(self):
-        self.assertTrue(self.all.accepts(raw('back',reason='😀'*96)))
-        self.assertFalse(self.all.accepts(raw('back',reason='😀'*97)))
+        self.assertTrue(self.all.accepts(raw('back',reason='😀'*24)))
+        self.assertFalse(self.all.accepts(raw('back',reason='😀'*25)))
         self.assertTrue(self.all.accepts(raw('type',node_label='',node_id='n2',text='😀'*1024)))
         self.assertFalse(self.all.accepts(raw('type',node_label='',node_id='n2',text='😀'*1025)))
         self.assertFalse(self.all.accepts(raw('type',node_label='',node_id='n2',text='\0')))
@@ -78,7 +79,8 @@ class GrammarTests(unittest.TestCase):
         self.assertFalse(self.all.accepts(good[:-1]+',"action":"back"}'))
         self.assertFalse(self.all.accepts(good+good))
         self.assertFalse(self.all.accepts('```json\n'+good+'\n```'))
-        self.assertTrue(self.all.accepts(' \n'+good+'\t'))
+        self.assertFalse(self.all.accepts(' \n'+good+'\t'))
+        self.assertTrue(self.all.accepts(' '+good+' '))
     def test_system_window_has_only_available_actions(self):
         self.assertTrue(self.system.accepts(raw('back','android')))
         self.assertTrue(self.system.accepts(raw('done','android',status='partial',summary='需要更多界面信息')))
@@ -153,5 +155,51 @@ class GrammarTests(unittest.TestCase):
     def test_reason_never_selects_or_repairs_the_pair(self):
         self.assertTrue(self.labeled.accepts(raw('click',reason='点击文字3的n14',node_label='1',node_id='n12')))
         self.assertFalse(self.labeled.accepts(raw('click',reason='点击文字3的n14',node_label='3',node_id='n12')))
+
+    def test_compact_separator_whitespace_is_zero_or_one_ascii_space(self):
+        good=raw('click',node_label='',node_id='n1')
+        spaced=json.dumps(json.loads(good),ensure_ascii=False,separators=(', ', ': '))
+        self.assertTrue(self.all.accepts(good))
+        self.assertTrue(self.all.accepts(' '+spaced+' '))
+        for padding in ['  ',' '*8,'\t','\n','\r','\r\n','\u00a0']:
+            with self.subTest(padding=repr(padding)):
+                self.assertFalse(self.all.accepts(padding+good))
+                self.assertFalse(self.all.accepts(good+padding))
+                self.assertFalse(self.all.accepts(good.replace(',"action"',','+padding+'"action"',1)))
+                self.assertFalse(self.all.accepts(good.replace(':"click"',':'+padding+'"click"',1)))
+    def test_short_reason_scalar_bound_includes_escaped_characters(self):
+        for reason in ['字','字'*24,'😀'*24,'"\n\\'*8]:
+            self.assertEqual(len(reason),1 if reason=='字' else 24)
+            self.assertTrue(self.all.accepts(raw('back',reason=reason)))
+        for reason in ['', '字'*25, '😀'*25, '"\n\\'*8+'x', 'x'*96]:
+            self.assertFalse(self.all.accepts(raw('back',reason=reason)))
+    def test_string_content_whitespace_and_body_bounds_are_unchanged(self):
+        text='正文'+' '*8+'\n\t第二行'
+        self.assertTrue(self.all.accepts(raw('type',node_label='',node_id='n2',text=text)))
+        self.assertTrue(self.all.accepts(raw('type',node_label='',node_id='n2',text='😀'*1024)))
+        self.assertFalse(self.all.accepts(raw('type',node_label='',node_id='n2',text='😀'*1025)))
+        self.assertTrue(self.all.accepts(raw('done',status='partial',summary='字'*1024)))
+        self.assertFalse(self.all.accepts(raw('done',status='partial',summary='字'*1025)))
+    def test_synthetic_query_entry_retains_exact_domain_and_completion(self):
+        fields=dict(node_label='搜索推荐商品优惠',node_id='n16')
+        click=raw('click','com.example.catalog',reason='进入查询入口',**fields)
+        self.assertTrue(self.query_entry.accepts(click))
+        self.assertTrue(self.query_entry.accepts(raw('wait','com.example.catalog',duration_ms=100)))
+        self.assertTrue(self.query_entry.accepts(raw('done','com.example.catalog',status='partial',summary='结果条件尚未满足')))
+        invalid=[
+            raw('done','com.example.catalog',status='success',summary='查到结果'),
+            raw('type','com.example.catalog',node_label=fields['node_label'],node_id='n16',text='新查询'),
+            raw('home','com.example.catalog'),raw('back','com.example.catalog'),
+            raw('open','com.example.catalog'),raw('click','com.example.catalog',node_label='推荐商品',node_id='n16'),
+            raw('click','com.example.catalog',node_label=fields['node_label'],node_id='n17'),
+            click.replace(OBS,'0'*32),click.replace('com.example.catalog','com.example.other'),
+            click[:-1],click[:click.index('"node_id"')+5],click+'\n{}',
+        ]
+        for value in invalid:
+            with self.subTest(value=value):self.assertFalse(self.query_entry.accepts(value))
+    def test_partial_object_cannot_be_completed_or_dispatched_by_recognition(self):
+        complete=raw('click',node_label='',node_id='n1')
+        for limit in [0,1,complete.index('"action"'),complete.index('"node_id"')+5,len(complete)-1]:
+            self.assertFalse(self.all.accepts(complete[:limit]))
 
 if __name__=='__main__':unittest.main(verbosity=2)

@@ -99,7 +99,11 @@
             ObserverPipelineHost f=seedFixture((x,g,n)->{if(n==5&&"unknown_during_read".equals(reason))x.noteObservationEvent(-1);});
             ObservationRequest r=seedAdmitted(f);
             if("unknown_in_gap".equals(reason))f.noteObservationEvent(-1);
-            SystemClock.now+=200;f.main.drain();await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"next seed read");
+            final Object pendingBefore=f.pendingScreenshot;
+            SystemClock.now+=200;f.main.drainUntil(()->observationIo.active.get()>0||f.reads.get()>=5);
+            await(()->!observationIoBusy.get()&&observationIo.active.get()==0,"next seed read");
+            check(f.reads.get()==5&&r.resampleSeed!=null&&count(r,"SAMPLE_READY")==1
+                    &&f.shots.size()==1&&f.pendingScreenshot==pendingBefore,"fifth sample callback must remain queued");
             if("unknown_before_accept".equals(reason))f.noteObservationEvent(-1);
             f.main.drain();check(r.resampleSeed==null&&count(r,"SAMPLE_READY")==1&&f.shots.size()==1,"unknown borrowed seed");
             check(f.delivered.isEmpty()&&f.directory.list().length==0,"unknown published");f.dispose();

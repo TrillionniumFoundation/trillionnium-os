@@ -68,9 +68,12 @@ public final class ProfilePermissionTransientHostTest {
         yes(dump.contains(permission)&&dump.contains(home),"two-record fixture shape changed");
         String expanded=dump.replace(permission,"* Hist  #2: ActivityRecord{"+permissionRecord+" u10 ")
                 .replace(home,"* Hist  #1: ActivityRecord{"+targetRecord+" u10 ");
-        Matcher row=unique("^ +\\* Task\\{"+Pattern.quote(leafRecord)+" #"+leafId+" [^{}\\r\\n]+\\}$",expanded);
+        int hierarchyEnd=expanded.indexOf("\nActivityTaskSupervisor state:");
+        yes(hierarchyEnd>0,"fixture supervisor boundary missing");
+        Matcher row=unique("^ +\\* Task\\{"+Pattern.quote(leafRecord)+" #"+leafId+" [^{}\\r\\n]+\\}$",
+                expanded.substring(0,hierarchyEnd));
         yes(row.group().contains("sz=2"),"fixture raw task size changed");
-        expanded=expanded.replace(row.group(),row.group().replace("sz=2","sz=3"));
+        expanded=expanded.substring(0,row.start())+row.group().replace("sz=2","sz=3")+expanded.substring(row.end());
         int start=expanded.indexOf("* Hist  #1: ActivityRecord{"+targetRecord+" u10 ");
         int end=expanded.indexOf("\nActivityTaskSupervisor state:",start);
         int nextDisplay=expanded.indexOf("\nDisplay #",start);

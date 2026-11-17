@@ -147,7 +147,7 @@ public final class NotesEditorPhaseHostTest {
         throw new AssertionError("production prompt entry unavailable");
     }
     private static String decision(Frame f,String tool,String node,String label,String target,String status)throws Exception{
-        JSONObject o=new JSONObject().put("reason","explicit synthetic host choice, not an original phone action").put("action",tool).put("observation_id",f.observationId);
+        JSONObject o=new JSONObject().put("reason","synthetic editor choice").put("action",tool).put("observation_id",f.observationId);
         if("open".equals(tool))o.put("app_label",SELF.equals(target)?"Hepta":"Moto 笔记").put("package",target);
         else if(org.trillionnium.hepta.background.FixedIntentTools.isTool(tool)){
             FixedIntentTarget t=targets().get(tool);o.put("app_label",t.appLabel).put("package",t.packageName).put("notes.create".equals(tool)?"text":"query","notes.create".equals(tool)?BODY:"无关查询");
@@ -175,7 +175,8 @@ public final class NotesEditorPhaseHostTest {
         return out;
     }
     private static String canonical(ActionDecision d)throws Exception{
-        JSONObject o=new JSONObject().put("reason",d.reason).put("action",d.action).put("observation_id",d.observationId);
+        // Current-grammar projection only; the original model decision and trace bytes stay unchanged.
+        JSONObject o=new JSONObject().put("reason","synthetic editor check").put("action",d.action).put("observation_id",d.observationId);
         if(d.appLabel!=null)o.put("app_label",d.appLabel);o.put("package",d.packageName);
         if(d.nodeId!=null)o.put("node_label",d.nodeLabel).put("node_id",d.nodeId);
         if(d.text!=null)o.put("text",d.text);if(d.direction!=null)o.put("direction",d.direction);

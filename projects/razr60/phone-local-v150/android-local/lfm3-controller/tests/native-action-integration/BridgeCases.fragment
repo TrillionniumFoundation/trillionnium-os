@@ -27,7 +27,7 @@
             yes(f.dispatch(),"motion only inside unchanged disjoint anchor");
             yes(!new JSONObject(f.work.nativeActionProof).getBoolean("changed_paths_truncated"),"all changed paths recorded");
         });
-        signatureCases();rejectionCases();effectCases();
+        signatureCases();rejectionCases();effectCases();earlySignatureDiagnosticCases();
     }
     static void signatureCases()throws Exception{
         one("actual_NodeRef_census_Intent_live_chain_share_full_signature_hash",()->{
@@ -156,5 +156,92 @@
         one("claimed_guard_cannot_bypass_original_worker_cancellation",()->{
             Fixture f=setup(NativeActionSnapshotCheck.YEAR,"claimed-cancel");f.work.nativeGuard.claim(f.action,f.run,SystemClock.now);f.service.cancelled=true;
             IntegrationChecks.rejects(()->f.service.enterActionEffect(f.work),"actual ActionExecutionState still checks cancellation after claim");f.noEffect("claimed guard is not effect authority alone");
+        });
+    }
+
+    static void changedSearchHint(Fixture f,String term)throws Exception{
+        f.fresh.nodes.get(f.raw.target+"/0").put("description","搜索"+term);
+        f.fresh.nodes.get(f.raw.target+"/0/0").put("text",term);
+        Graph updated=f.graph(f.fresh,null);updated.close();
+    }
+    static String earlySignatureRefusal(Fixture f){
+        f.service.earlyDiagnosticFixture=true;
+        try{
+            f.service.backgroundBeforeDispatch(f.task,f.service.current,f.action,
+                    f.work.graph.refs.get(f.action.nodeId).node,true,f.work);
+            return null;
+        }catch(StaleObservation refused){return refused.getMessage();}
+    }
+    static void earlySignatureDiagnosticCases()throws Exception{
+        one("early_search_hint_mismatch_records_two_censuses_but_still_refuses",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"early-search-pair");
+            changedSearchHint(f,"空调");
+            yes("后台节点内容已变化，需重新观察".equals(earlySignatureRefusal(f)),"same original stale refusal");
+            JSONObject d=new JSONObject(f.work.nativeActionRejection),r=d.getJSONObject("rejected_refresh");
+            yes(d.getBoolean("diagnostic_only")&&!d.getBoolean("grants_dispatch")
+                    &&!d.getBoolean("target_hint_variation_allowed"),"diagnostic supplies no comparison or permit");
+            yes(d.getBoolean("complete_two_censuses")&&!d.getBoolean("fresh_screenshot_observed")
+                    &&d.getBoolean("census_collected_after_refusal")&&!d.getBoolean("rejected_refresh_and_census_atomic"),"time/pixel limits explicit");
+            yes("initial_background_target_refresh".equals(d.getString("refusal_stage"))
+                    &&"搜索空调 · 空调".equals(r.getString("child_text")),"actual rejected descendant facts retained");
+            yes(!r.getString("original_ref_signature_sha256").equals(r.getString("refreshed_ref_signature_sha256"))
+                    &&r.getBoolean("child_text_sources_complete")&&r.getJSONArray("child_text_sources").length()==2,"original unequal composite signatures and sources");
+            yes(!f.work.nativeActionRevalidated&&f.work.nativeActionProof==null
+                    &&Integer.valueOf(0).equals(f.work.nativeGuard.evidence().get("state")),"guard remains unclaimed and no revalidation flag");
+            yes(d.getJSONObject("before").getJSONArray("nodes").length()==d.getJSONObject("fresh").getJSONArray("nodes").length(),"complete actual host populations");
+            f.noEffect("diagnosis never dispatches");
+        });
+        one("early_unchanged_target_does_not_acquire_diagnostic_census",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"early-unchanged");
+            yes(earlySignatureRefusal(f)==null&&f.work.nativeActionRejection==null,"unchanged path remains original");
+            yes(!f.service.events.contains("full_census"),"no added read on successful equality");f.noEffect("no effect invoked by preflight");
+        });
+        one("early_signature_nonsearch_purpose_keeps_refusal_without_diagnostic",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.YEAR,"early-other-purpose");
+            f.data.get(f.raw.target).values.put("text","new date");
+            yes("后台节点内容已变化，需重新观察".equals(earlySignatureRefusal(f)),"other purpose stays refused");
+            yes(f.work.nativeActionRejection==null&&!f.service.events.contains("full_census"),"no generic signature exception");f.noEffect("other purpose no effect");
+        });
+        one("early_search_diagnostic_does_not_overwrite_prior_evidence",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"early-existing");changedSearchHint(f,"空调");
+            f.work.nativeActionRejection="existing diagnostic";
+            yes("后台节点内容已变化，需重新观察".equals(earlySignatureRefusal(f)),"existing evidence does not accept");
+            yes("existing diagnostic".equals(f.work.nativeActionRejection),"first evidence preserved");f.noEffect("no effect");
+        });
+        for(String failure:Arrays.asList("installed","owner","original_census","fresh_census","deadline","cancel","closed_guard")){
+            final String kind=failure;
+            one("early_search_diagnostic_unavailable_"+kind+"_keeps_refusal",()->{
+                Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"early-unavailable:"+kind);changedSearchHint(f,"空调");
+                if("installed".equals(kind))f.installedCurrent=false;
+                else if("owner".equals(kind))f.service.background.ownerSha256=hash("changed owner");
+                else if("original_census".equals(kind))f.work.graph.nativeActionNodes=null;
+                else if("fresh_census".equals(kind))f.service.serviceInfo.flags=0;
+                else if("deadline".equals(kind))SystemClock.now=f.work.state.deadlineElapsed;
+                else if("cancel".equals(kind))f.service.cancelled=true;
+                else f.work.nativeGuard.close();
+                if("deadline".equals(kind)||"cancel".equals(kind))
+                    IntegrationChecks.rejects(()->earlySignatureRefusal(f),"original worker gate rejects before diagnostics");
+                else yes(earlySignatureRefusal(f)!=null,"no diagnostic failure can pass the original gate");
+                yes(f.work.nativeActionRejection==null&&!f.work.nativeActionRevalidated&&f.work.nativeActionProof==null,"no fabricated evidence/authority");
+                f.noEffect("unavailable diagnostic no effect");
+            });
+        }
+        one("early_search_main_display_or_window_change_never_collects_or_effects",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"early-main");changedSearchHint(f,"空调");f.service.background.display=0;
+            IntegrationChecks.rejects(()->earlySignatureRefusal(f),"actual positive display required");
+            yes(f.work.nativeActionRejection==null,"no main display diagnostic claim");f.noEffect("main no effect");
+        });
+        one("early_search_diagnostic_cancellation_during_census_keeps_refusal",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"early-race");changedSearchHint(f,"空调");
+            f.service.windowMutation=()->{f.service.cancelled=true;};
+            yes("后台节点内容已变化，需重新观察".equals(earlySignatureRefusal(f)),"original refusal after best-effort read");
+            yes(f.work.nativeActionRejection==null&&f.work.nativeActionProof==null,"cancelled read cannot publish complete evidence");
+            f.noEffect("cancel race no effect");
+        });
+        one("early_search_visibility_failure_is_not_reclassified_as_hint_change",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH,"early-hidden");f.data.get(f.raw.target).values.put("visible",false);
+            yes("后台节点内容已变化，需重新观察".equals(earlySignatureRefusal(f)),"same visibility refusal");
+            yes(f.work.nativeActionRejection==null&&!f.service.events.contains("full_census"),"no signature-only diagnostic for invisible target");
+            f.noEffect("invisible target no effect");
         });
     }

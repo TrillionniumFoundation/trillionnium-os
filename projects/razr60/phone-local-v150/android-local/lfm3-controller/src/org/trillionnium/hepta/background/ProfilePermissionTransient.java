@@ -78,6 +78,71 @@ public final class ProfilePermissionTransient {
         }
     }
 
+    /** A failed read classification only: it cannot supply a Proof, window or input permit. */
+    static final class ReadChange extends Exception {
+        private static final long serialVersionUID=1L;
+        private final ProfileTarget target;
+        private final BackgroundOwnedSingleTask.Task root,leaf;
+        private final long observedAt;
+        private ReadChange(ProfileTarget target,BackgroundOwnedSingleTask.Task root,
+                BackgroundOwnedSingleTask.Task leaf,long observedAt){
+            super("same owned identity with a known permission presentation change");
+            this.target=target;this.root=root;this.leaf=leaf;this.observedAt=observedAt;
+        }
+        boolean matchesRetained(ProfileTarget expected,BackgroundOwnedSingleTask.Task heldRoot,
+                BackgroundOwnedSingleTask.Task heldLeaf,long now){
+            return target.same(expected)&&sameRetainedIdentity(root,heldRoot)&&sameRetainedIdentity(leaf,heldLeaf)
+                    &&now>=observedAt&&now-observedAt<MAX_AGE_MS;
+        }
+        long retryDeadline(long originalDeadline){return Math.min(originalDeadline,observedAt+MAX_AGE_MS);}
+        void requireSameReadIdentity(BackgroundOwnedSingleTask.Task currentRoot,
+                BackgroundOwnedSingleTask.Task currentLeaf,long now)throws Exception{
+            need(now>=observedAt&&now-observedAt<MAX_AGE_MS,"PROFILE_PERMISSION_READ_RETRY_DEADLINE");
+            need(sameReadIdentity(root,currentRoot)&&sameReadIdentity(leaf,currentLeaf),
+                    "PROFILE_PERMISSION_READ_RETRY_IDENTITY_CHANGED");
+        }
+    }
+    /** Preserve the original refusal; only this exact structural transition adds a read-only cause. */
+    static ProfileTaskPolicy.Refusal changedRootRefusal(ProfileTarget target,
+            BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,
+            List<BackgroundOwnedSingleTask.Task> roots,List<BackgroundOwnedSingleTask.Task> leaves,
+            Authority authority,long started,long now){
+        ProfileTaskPolicy.Refusal refused=new ProfileTaskPolicy.Refusal("PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ");
+        if(target==null||root==null||leaf==null||authority==null||roots==null||leaves==null
+                ||roots.size()!=1||leaves.size()!=1||now<started||now-started>MAX_AGE_MS)return refused;
+        BackgroundOwnedSingleTask.Task currentRoot=roots.get(0),currentLeaf=leaves.get(0);
+        if(sameTaskInfo(root,currentRoot)||!sameReadIdentity(root,currentRoot)||!sameReadIdentity(leaf,currentLeaf)
+                ||authority.user!=target.profile.userId||root.user!=0||root.parent!=-1||root.display<=0
+                ||leaf.user!=target.profile.userId||leaf.parent!=root.id||leaf.display!=root.display
+                ||leaf.uid!=target.fullUid||root.token==null||leaf.token==null||root.token.equals(leaf.token)
+                ||root.cookies.isEmpty()||root.intentComponent!=null||root.real!=null||root.orig!=null
+                ||!targetComponent(target,leaf.intentComponent)||!targetComponent(target,leaf.base)
+                ||!targetComponent(target,leaf.real)||(leaf.orig!=null&&!targetComponent(target,leaf.orig))
+                ||(root.base!=null&&!root.base.equals(leaf.base))
+                ||!COMPONENT.equals(root.top)||!COMPONENT.equals(leaf.top)
+                ||root.topUid!=authority.uid||leaf.topUid!=authority.uid
+                ||!livePresentation(root,leaf)||!livePresentation(currentRoot,currentLeaf))return refused;
+        boolean permission=COMPONENT.equals(currentRoot.top)&&COMPONENT.equals(currentLeaf.top)
+                &&currentRoot.topUid==authority.uid&&currentLeaf.topUid==authority.uid;
+        boolean targetTop=targetComponent(target,currentRoot.top)&&Objects.equals(currentRoot.top,currentLeaf.top)
+                &&currentRoot.topUid==target.fullUid&&currentLeaf.topUid==target.fullUid;
+        if(permission||targetTop)refused.initCause(new ReadChange(target,root,leaf,now));
+        return refused;
+    }
+    static boolean sameReadIdentity(BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b){
+        return sameRetainedIdentity(a,b)&&a.cookies.equals(b.cookies)
+                &&Objects.equals(a.intentComponent,b.intentComponent)&&Objects.equals(a.base,b.base)
+                &&Objects.equals(a.real,b.real)&&Objects.equals(a.orig,b.orig);
+    }
+    private static boolean sameRetainedIdentity(BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b){
+        return a!=null&&b!=null&&a.id==b.id&&a.display==b.display&&a.user==b.user&&a.parent==b.parent
+                &&a.uid==b.uid&&Objects.equals(a.token,b.token);
+    }
+    private static boolean livePresentation(BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf){
+        return root!=null&&leaf!=null&&root.running&&root.visible&&leaf.running&&leaf.visible
+                &&root.activities==leaf.activities&&root.activities>0&&root.activities<=32;
+    }
+
     public static boolean sameTaskInfo(BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b){
         return a!=null&&b!=null&&a.id==b.id&&a.display==b.display&&a.user==b.user&&a.parent==b.parent
                 &&a.uid==b.uid&&a.topUid==b.topUid&&a.activities==b.activities&&a.running==b.running&&a.visible==b.visible

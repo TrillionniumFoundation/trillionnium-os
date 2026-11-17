@@ -116,7 +116,7 @@ public final class CalculatorInputGuardHostTest {
         check(prompt.startsWith(prefix)&&end>prefix.length(),"actual prompt sections present");return new JSONObject(prompt.substring(prefix.length(),end));
     }
     private static String choice(Frame f,String tool,String node,String label)throws Exception{
-        JSONObject o=new JSONObject().put("reason","host IO choice; not a missing phone action").put("action",tool).put("observation_id",f.observationId);
+        JSONObject o=new JSONObject().put("reason","synthetic input choice").put("action",tool).put("observation_id",f.observationId);
         if("open".equals(tool))o.put("app_label","Hepta").put("package",SELF);
         else if(fixed().containsKey(tool)){
             FixedIntentTarget t=fixed().get(tool);o.put("app_label",t.appLabel).put("package",t.packageName).put("notes.create".equals(tool)?"text":"query","explicit host-only payload");
@@ -176,7 +176,8 @@ public final class CalculatorInputGuardHostTest {
         }
         ActionDecision recorded=ActionDecision.parse(failed.getJSONObject("action").toString(),ActionDecision.FIXED_INTENT_ACTION_SCHEMA);
         check("type".equals(recorded.action)&&"n22".equals(recorded.nodeId)&&"31*47".equals(recorded.text),"original failed decision retained without fabricated after text");
-        grammar("original-failed-type",grammar,failed.getJSONObject("action").toString(),false);
+        // Current-grammar counterfactual only; the original failed action/receipt remains unchanged for postparse checks.
+        grammar("original-failed-type",grammar,new JSONObject(failed.getJSONObject("action").toString()).put("reason","synthetic input check").toString(),false);
         denied(()->postparse(built,gate,recorded),"original failed type rejected after parse");
         for(String tool:new String[]{"type","submit","notes.create","web.search","open"}){
             String a=choice(f,tool,"type".equals(tool)||"submit".equals(tool)?"n22":null,"0");

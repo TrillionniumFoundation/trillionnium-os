@@ -62,6 +62,32 @@ public final class DecisionGrammarHostTest {
         check(denied,"capability cannot admit a node missing from the supplied projection");
         denied=false;try{DecisionGrammar.create(OBS,"android",set(),set(),set(),scrolls(set()),supplied);}catch(IllegalArgumentException expected){denied=true;}
         check(denied,"a different package cannot reuse the projection");
+        // Authored synthetic query-entry scope; no real phone task or screen data.
+        String catalog="com.example.catalog";
+        java.util.Map<String,String> queryLabels=new java.util.LinkedHashMap<String,String>();
+        queryLabels.put("n16","搜索推荐商品优惠");
+        org.trillionnium.hepta.local.TaskAuthorization.Frame queryOwner=
+                org.trillionnium.hepta.local.TaskAuthorization.parse("查询目录中的商品价格").bind("11111111111111111111111111111111").frame();
+        DecisionGrammar queryEntry=DecisionGrammar.createFixedIntentAuthorized(
+                OBS,catalog,set(),set("n16"),set(),
+                java.util.Collections.<String,org.trillionnium.hepta.local.ObservedScrollActions>emptyMap(),
+                java.util.Collections.<String,org.trillionnium.hepta.local.ObservedImeEnter>emptyMap(),
+                ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,OBS,catalog,queryLabels),
+                org.trillionnium.hepta.local.ObservedAppLabels.create(org.trillionnium.hepta.local.ObservedAppLabels.SCHEMA,OBS,catalog,java.util.Collections.<String,String>emptyMap()),
+                queryOwner,true,java.util.Collections.<String,org.trillionnium.hepta.background.FixedIntentTarget>emptyMap(),
+                java.util.Collections.<String,String>emptyMap(),set("click","wait","done"),false,set("failure","partial"));
+        check(queryEntry.actions.equals(Arrays.asList("click","wait","done")),"compact output cannot add actions to the synthetic query-entry domain");
+        check(!queryEntry.successAllowed&&queryEntry.doneStatuses.equals(set("failure","partial")),"compact output cannot grant completed results");
+        Files.write(out.resolve("query-entry-compact.gbnf"),queryEntry.text.getBytes(StandardCharsets.UTF_8));
+        String compact="{\"reason\":\"进入查询入口\",\"action\":\"click\",\"observation_id\":\""+OBS+"\",\"package\":\""+catalog+"\",\"node_label\":\"搜索推荐商品优惠\",\"node_id\":\"n16\"}";
+        org.trillionnium.hepta.local.ActionDecision complete=org.trillionnium.hepta.local.ActionDecision.parse(compact,org.trillionnium.hepta.local.ActionDecision.FIXED_INTENT_ACTION_SCHEMA);
+        check("click".equals(complete.action)&&"n16".equals(complete.nodeId),"complete compact JSON retains the same typed action");
+        for(String partial:new String[]{compact.substring(0,compact.length()-1),compact.substring(0,compact.indexOf("\"node_id\"")+5)}){
+            boolean partialDenied=false;
+            try{org.trillionnium.hepta.local.ActionDecision.parse(partial,org.trillionnium.hepta.local.ActionDecision.FIXED_INTENT_ACTION_SCHEMA);}
+            catch(org.trillionnium.hepta.local.ActionDecision.InvalidActionException expected){partialDenied=true;}
+            check(partialDenied,"the real parser still rejects partial JSON without recovery");
+        }
         System.out.println("PASS "+assertions+" grammar construction/binding assertions; native_grammar_tested=false");
     }
 }

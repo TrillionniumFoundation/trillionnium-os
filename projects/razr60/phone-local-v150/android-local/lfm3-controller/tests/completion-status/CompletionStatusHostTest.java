@@ -111,7 +111,7 @@ public final class CompletionStatusHostTest {
         throw new AssertionError("actual controller prompt overload unavailable");
     }
     private static String decision(Frame current,String action,String status)throws Exception{
-        JSONObject row=new JSONObject().put("reason","explicit host test choice").put("action",action)
+        JSONObject row=new JSONObject().put("reason","host test choice").put("action",action)
                 .put("observation_id",current.observationId).put("package",current.packageName);
         if("done".equals(action))row.put("status",status).put("summary","host test outcome, not phone success");
         return row.toString();
@@ -192,7 +192,8 @@ public final class CompletionStatusHostTest {
                     "prompt does not offer a success claim");
             String prefix="original-v49-step-"+step+"-";
             grammar(prefix+"old-success-was-generatable",text(String.format(java.util.Locale.ROOT,"step-%02d-grammar.gbnf",step)),canonical(original),true);
-            grammar(prefix+"new-success-unavailable",grammar,canonical(original),false);
+            // Only the current-grammar counterfactual gets a short synthetic explanation; the original/historical grammar row above is unchanged.
+            grammar(prefix+"new-success-unavailable",grammar,new JSONObject(canonical(original)).put("reason","synthetic status check").toString(),false);
             deniedCompletion(()->grammar.requireCompletionStatus(original),prefix+"grammar-independent postparse refusal");
             deniedCompletion(()->postparse(built,original,authority),prefix+"complete postparse cannot escape");
             for(String status:new String[]{"partial","failure"}){
@@ -301,11 +302,11 @@ public final class CompletionStatusHostTest {
                 String json;
                 if(calls==1){
                     FixedIntentTarget target=grammar.fixedIntentTargets.get("notes.create");check(target!=null,"ordinary model can still choose the exact-body creation tool");
-                    json=new JSONObject().put("reason","explicit synthetic model creation").put("action","notes.create").put("observation_id",grammar.observationId)
+                    json=new JSONObject().put("reason","synthetic model create").put("action","notes.create").put("observation_id",grammar.observationId)
                             .put("app_label",ObservedAppLabels.project(target.appLabel)).put("package",target.packageName).put("text",TaskCompletionGateHostTest.BODY).toString();
                 }else{
                     check(calls==2&&grammar.actions.contains("back"),"back remains an offered choice, never a scheduled automatic effect");
-                    json=new JSONObject().put("reason","explicit synthetic model stop").put("action","done").put("observation_id",grammar.observationId)
+                    json=new JSONObject().put("reason","synthetic model stop").put("action","done").put("observation_id",grammar.observationId)
                             .put("package",grammar.currentPackage).put("status",status).put("summary","model elects to stop without claiming save").toString();
                 }
                 grammar("actual-controller-"+status+"-"+calls,grammar,json,true);callback.onSuccess(json,TaskCompletionGateHostTest.id(calls+7100));

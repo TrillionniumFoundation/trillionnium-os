@@ -1,0 +1,29 @@
+{
+  "files": [
+    {
+      "changes": "SYSTEM literal only",
+      "compact_bytes": 176029,
+      "compact_sha256": "d8db23c8095ba08420e5dfe118584941767bf90681010c5c3ee2005cb0e7c8d4",
+      "original_git_blob_sha": "f2e324fddc639cb0f88cf6a3fb9c8bd29f2b9f9b",
+      "original_sha256": "57fddc5bacb0b88f60a4095086a5b7cca043d80827794ade7184572b71d8354a",
+      "path": "src/org/trillionnium/hepta/local/LocalTaskController.java"
+    },
+    {
+      "changes": "SYSTEM literal only",
+      "compact_bytes": 9584,
+      "compact_sha256": "52443e185e163210c9dc7b4de27d4031568bc12af985ec72898f88e3dbe68506",
+      "original_git_blob_sha": "8677b3b5f614f95eb7dc27d13ba133bfbb95cf38",
+      "original_sha256": "024c24468fe9493396030e7f4c243531d86d2074f3c2157e0776b4792d484bb8",
+      "path": "src/org/trillionnium/hepta/local/VisualPromptProjection.java"
+    }
+  ],
+  "historical_96_sources_or_receipts_modified": false,
+  "kind": "new_counterfactual_not_historical_output",
+  "methods_and_pre_projection_routing_preserved": true,
+  "original_repository_prefix": "projects/razr60/phone-local-v150/android-local/lfm3-controller/",
+  "original_source_head": "337bc9cb8cc071adca6d854caddf4bf9840ec853",
+  "phone_operations": 0,
+  "schema": "hepta.compact-pre-native-projection-comparator.v1",
+  "shared_dependencies": "Both sides deliberately use the current compiled grammar, domains and explicit host IO fixtures. These two complete classes independently retain the old pre-native-projection implementation.",
+  "system_format": "reason1..24 Unicode characters; each formatting whitespace location0..1 ordinary space"
+}

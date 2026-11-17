@@ -42,7 +42,7 @@ public final class TextOnlyClickHostTest {
     }
     private static String action(PromptAdmissionFixture.Result frame,String action,String id)throws Exception{
         Map<String,Object> row=new LinkedHashMap<String,Object>();
-        row.put("reason","Use only observed current action facts.");row.put("action",action);
+        row.put("reason","Use current facts.");row.put("action",action);
         row.put("observation_id",frame.grammar.observationId);row.put("package",frame.grammar.currentPackage);
         if(id!=null){row.put("node_label",frame.grammar.targets.labels.get(id));row.put("node_id",id);}
         if("type".equals(action))row.put("text","host boundary test");
