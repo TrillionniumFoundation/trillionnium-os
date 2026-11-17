@@ -7,7 +7,7 @@ p.add_argument('--source',type=Path,default=Path(__file__).resolve().parents[2])
 for n in ('output','java-home','json-jar'):p.add_argument('--'+n,type=Path,required=True)
 a=p.parse_args();a.output.mkdir(parents=True,exist_ok=False);(a.output/'classes').mkdir()
 sha=lambda b:hashlib.sha256(b).hexdigest()
-PRODUCTION_PINS={'src/org/trillionnium/hepta/local/WebShoppingObservationStability.java': '613148d806b0eade9b3c893a652e5661e45f22e53476a884d3eb5be8576a6eaa', 'src/org/trillionnium/hepta/local/WebObservationTiming.java': '23cc115bf8eb378dcc1f26ee0d682df3e861df61ff22ea2cf822df84dfbd9027', 'src/org/trillionnium/hepta/local/HeptaAccessibilityService.java': '1ca8f425f780be1130f1a81529d5abc9b3be6153459f6f0c4c9c6b3cecbbd718', 'src/org/trillionnium/hepta/local/WebFlightSession.java': 'a86f308053da7f615c05fb9da03634df73f0f131ad1576165c7a1b07bd63d471'}
+PRODUCTION_PINS={'src/org/trillionnium/hepta/local/WebShoppingObservationStability.java': '70170e5f9f9946021ea703ff668116a5d68f354a65424b469be9cf3da596e52f', 'src/org/trillionnium/hepta/local/WebObservationTiming.java': '23cc115bf8eb378dcc1f26ee0d682df3e861df61ff22ea2cf822df84dfbd9027', 'src/org/trillionnium/hepta/local/HeptaAccessibilityService.java': '755cb2596148024102616087e6f241bec72b965649a6390c17185c3662f9144e', 'src/org/trillionnium/hepta/local/WebFlightSession.java': 'a86f308053da7f615c05fb9da03634df73f0f131ad1576165c7a1b07bd63d471'}
 m={'files':[{'path':k,'sha256':v} for k,v in PRODUCTION_PINS.items()]}
 for path,digest in PRODUCTION_PINS.items():assert sha((a.source/path).read_bytes())==digest
 tree=ast.parse((a.source/'tests/web-flight/run_query_host_tests.py').read_text())

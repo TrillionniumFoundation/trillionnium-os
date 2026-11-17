@@ -211,8 +211,12 @@ public final class LocalTaskController implements AutoCloseable {
 
 
     private static String systemPrompt(LocalRuntimeConfig config){
+        return systemPrompt(config,false);
+    }
+    private static String systemPrompt(LocalRuntimeConfig config,boolean nativeApp){
         if(config==null)throw new IllegalArgumentException("local configuration required");
-        return config.profile.visual()?VisualPromptProjection.SYSTEM:SYSTEM;
+        return config.profile.visual()?VisualPromptProjection.SYSTEM:
+                nativeApp?VisualPromptProjection.NATIVE_SYSTEM:SYSTEM;
     }
 
     public LocalTaskController(HeptaAccessibilityService service,LocalInference inference){
@@ -448,8 +452,10 @@ public final class LocalTaskController implements AutoCloseable {
                     emit("正在用手机本地模型规划第 "+steps+" 步…");
                     record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-budget-%d.json",steps,attempt),frame.budgetJson());
                     if(frame.visualPromptOriginal!=null)record(evidence,
-                            String.format(java.util.Locale.ROOT,"step-%02d-visual-prompt-source-%d.json",steps,attempt),frame.visualPromptEvidence());
-                    ModelAnswer answer=awaitModel(prompt,frame.grammar,deadline,before,instruction,authorization,background);
+                            String.format(java.util.Locale.ROOT,"step-%02d-%s-prompt-source-%d.json",steps,
+                                    config.profile.visual()?"visual":"native",attempt),
+                            frame.visualPromptEvidence(config.profile.visual()?VisualPromptProjection.SCHEMA:VisualPromptProjection.NATIVE_SCHEMA));
+                    ModelAnswer answer=awaitModel(prompt,frame.grammar,deadline,before,instruction,authorization,background,frame.nativeDomain!=null);
                     record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-model-%d.json",steps,attempt),
                             new JSONObject().put("run_id",answer.runId).put("raw_text",answer.text).put("observation_id",before.id)
                                     .put("original_instruction_sha256",HeptaAccessibilityService.sha(instruction.getBytes(StandardCharsets.UTF_8))));
@@ -1170,9 +1176,9 @@ public final class LocalTaskController implements AutoCloseable {
     private static final class ModelAnswer {final String text,runId;ModelAnswer(String text,String runId){this.text=text;this.runId=runId;}}
     private ModelAnswer awaitModel(String prompt,DecisionGrammar grammar,long taskDeadline,
                                   PhoneObservation before,String originalInstruction,
-                                  TaskAuthorization.Gate authorization,BackgroundSession background)throws Exception{
+                                  TaskAuthorization.Gate authorization,BackgroundSession background,boolean nativeApp)throws Exception{
         final LocalRuntimeConfig runtime=inference.configuration();
-        final String system=systemPrompt(runtime);
+        final String system=systemPrompt(runtime,nativeApp);
         if(!ConservativeTokenBudget.estimate(system,prompt,runtime).mayAttemptNative())
             throw new IllegalStateException("完整指令超出手机本地上下文上限，请拆分任务");
         long remaining=taskDeadline-SystemClock.elapsedRealtime();if(remaining<1000)throw new IllegalStateException("任务时间已用完");
@@ -1460,8 +1466,11 @@ public final class LocalTaskController implements AutoCloseable {
             this.historyProjectionBytes=historyProjectionBytes;this.requiredNodes=requiredNodes;
         }
         JSONObject visualPromptEvidence()throws Exception{
-            if(visualPromptOriginal==null)throw new IllegalStateException("visual model projection absent");
-            return new JSONObject().put("schema",VisualPromptProjection.SCHEMA)
+            return visualPromptEvidence(VisualPromptProjection.SCHEMA);
+        }
+        JSONObject visualPromptEvidence(String schema)throws Exception{
+            if(visualPromptOriginal==null)throw new IllegalStateException("model metadata projection absent");
+            return new JSONObject().put("schema",schema)
                     .put("original_controller_data",visualPromptOriginal)
                     .put("original_owner_rewritten",false).put("metadata_projection_filtered_screen_or_history",false)
                     .put("grammar_or_dispatch_authority_changed",false)
@@ -1732,12 +1741,13 @@ public final class LocalTaskController implements AutoCloseable {
             if(lastTransition!=null)data.put("last_transition",new JSONObject(lastTransition.forCurrent(observation.id,observation.packageName)));
             data.put("screen",screen);
             // Escape markup only in untrusted JSON. Owner text is unchanged.
-            // Visual inference keeps the complete audit data privately, while
-            // redundant transport identifiers do not consume model context.
-            // Current screen, history, authority domains and OWNER stay intact.
-            JSONObject modelData=config.profile.visual()?VisualPromptProjection.project(data):data;
+            // Keep complete audit data privately for visual and native model views.
+            // Grammar and dispatch still use the original typed authority/domain.
+            // Current screen, history, permitted targets and OWNER stay intact.
+            JSONObject modelData=config.profile.visual()?VisualPromptProjection.project(data):
+                    nativeDomain!=null?VisualPromptProjection.projectNative(data):data;
             String text="UNTRUSTED_DATA\n"+promptSections(modelData).replace("<","\\u003c")+"\nOWNER\n"+owner;
-            ConservativeTokenBudget budget=ConservativeTokenBudget.estimate(systemPrompt(config),text,config);
+            ConservativeTokenBudget budget=ConservativeTokenBudget.estimate(systemPrompt(config,nativeDomain!=null),text,config);
             // Exact-token profiles retain this bounded observation and complete
             // history. A byte heuristic must not erase readouts or reject them
             // before the native same-input-ID budget guard can decide.
@@ -1756,7 +1766,7 @@ public final class LocalTaskController implements AutoCloseable {
                 NotesTaskPhaseGuard.Domain phaseDomain=taskPhase.bind(clicks,edits,submits.keySet(),fixedTargets,packages,scrolls);phaseGuard.publish(phaseDomain);
                 CalculatorTaskInputGuard.Domain calculatorDomain=calculator.bind(clicks,edits,submits.keySet(),fixedTargets,packages,scrolls);calculatorGuard.publish(calculatorDomain);
                 return new PromptFrame(text,ids,packages,budget,grammar,nodeCount,observation.nodes.size(),appCount,history.length(),catalogue,
-                        editableFields.size(),editableFieldsObserved,visibleText.size(),visibleTextObserved,events,historyBytes,appSearch,requiredIds.size(),clicks,phaseDomain,calculatorDomain,nativeDomain,config.profile.visual()?data:null);
+                        editableFields.size(),editableFieldsObserved,visibleText.size(),visibleTextObserved,events,historyBytes,appSearch,requiredIds.size(),clicks,phaseDomain,calculatorDomain,nativeDomain,config.profile.visual()||nativeDomain!=null?data:null);
             }
             // Only profiles with a proved upper bound reach optional reductions.
             // Keep the complete readable action trace, including labels and typed text.

@@ -30,6 +30,8 @@ public final class ProfileOwnedTask {
         void removeLeaf(Object token)throws Exception;
         boolean deleteRoot(Object token)throws Exception;
         void pause()throws Exception;
+        default ProfilePermissionTransient.Proof permissionTransient(BackgroundOwnedSingleTask.Task root,
+                BackgroundOwnedSingleTask.Task leaf)throws Exception{return null;}
     }
     private final Platform platform;
     private final ProfileTarget target;
@@ -39,6 +41,8 @@ public final class ProfileOwnedTask {
     private final Set<Integer> beforeIds=new LinkedHashSet<Integer>();
     private Map<Integer,ProfileTaskPolicy.Leaf> personal=Collections.emptyMap();
     private Map<String,Object> personalAudit=Collections.emptyMap();
+    private volatile Map<String,Object> lastLeafValidation=Collections.emptyMap();
+    private Map<String,Object> permissionEvidence=Collections.emptyMap();
     private BackgroundOwnedSingleTask.Task root,leaf;
     private String leafTokenId;
     private boolean rootAttempted,prepared,dispatchMarked,startAccepted,retiring,rootRemoved,leafRemoved;
@@ -79,6 +83,32 @@ public final class ProfileOwnedTask {
         need(startAccepted&&!retiring,"PROFILE_TASK_NOT_ACTIVE");
         return observeTree(true)!=null;
     }
+    /** Read-only state coordination inside the caller's original request deadline.
+     * A verified permission top is only a reason to read again, never a business
+     * window or input grant. Ordinary observe/window and retirement stay separate. */
+    public synchronized boolean observeStateUntil(long deadline)throws Exception{
+        need(startAccepted&&!retiring,"PROFILE_TASK_NOT_ACTIVE");
+        boolean permissionPending=false;
+        while(true){
+            platform.guard();
+            need(platform.now()<deadline,permissionPending?"PROFILE_PERMISSION_SETUP_REQUIRED":"PROFILE_STATE_READ_DEADLINE");
+            actual(true);
+            need(platform.now()<deadline,permissionPending?"PROFILE_PERMISSION_SETUP_REQUIRED":"PROFILE_STATE_READ_DEADLINE");
+            try{
+                BackgroundOwnedSingleTask.Task current=observeTreeSample(true);
+                platform.guard();
+                need(platform.now()<deadline,"PROFILE_STATE_READ_DEADLINE");
+                return current!=null;
+            }catch(VerifiedPermissionPending pending){
+                platform.guard();
+                long now=platform.now();
+                // The ordinary platform pause is 20 ms. Never start it without
+                // room in this same deadline; a late return cannot become success.
+                need(now<deadline&&deadline-now>20,"PROFILE_PERMISSION_SETUP_REQUIRED");
+                permissionPending=true;platform.pause();
+            }
+        }
+    }
     public synchronized WindowOwnership window(int windowId,int observedTaskId,long deadline)throws Exception{
         need(startAccepted&&!retiring&&windowId>=0&&observedTaskId>0,"PROFILE_WINDOW_REQUEST_INVALID");
         platform.guard();ProfileTarget fresh=actual(true);
@@ -103,18 +133,25 @@ public final class ProfileOwnedTask {
             ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(personal);
             List<BackgroundOwnedSingleTask.Task> roots=checked(platform.roots());
             if(!roots.isEmpty()){
-                need(roots.size()==1,"PROFILE_FOREIGN_ROOT_ON_DISPLAY");requireRoot(roots.get(0),true);
+                need(roots.size()==1,"PROFILE_FOREIGN_ROOT_ON_DISPLAY");
+                BackgroundOwnedSingleTask.Task currentRoot=roots.get(0);
+                if(ProfilePermissionTransient.COMPONENT.equals(currentRoot.top))requireRootIdentity(currentRoot);
+                else requireRoot(currentRoot,true);
                 List<BackgroundOwnedSingleTask.Task> children=checked(platform.children(root.token));
                 need(children.size()<=1,"PROFILE_FOREIGN_CHILD_TASK");
                 if(!children.isEmpty()){
-                    BackgroundOwnedSingleTask.Task candidate=children.get(0);requireLeaf(candidate,global);
+                    BackgroundOwnedSingleTask.Task candidate=children.get(0);
+                    ProfilePermissionTransient.Proof permission=permissionForOwnedPair(currentRoot,candidate,global);
+                    if(permission==null){requireRoot(currentRoot,true);requireLeaf(candidate,global);}
                     if(leaf==null){leaf=candidate;leafTokenId=UUID.randomUUID().toString();}
                     else need(sameTask(leaf,candidate),"PROFILE_LEAF_TOKEN_CHANGED");
                     global.requireOnlyOwned(target,display,root.id,leaf.id);
                     platform.recents().requireOnlyOwned(target,leaf.id);
+                    if(permission!=null)permission.requireMatches(target,currentRoot,candidate,platform.now());
                     // Retained real WindowContainerToken only. No removal by arbitrary task ID.
                     platform.removeLeaf(leaf.token);leafRemoved=true;
                 }else{
+                    requireRoot(currentRoot,true);
                     global.requireDedicatedEmpty(target);
                     if(leaf!=null)need(!global.allIds.contains(leaf.id)&&!platform.recents().ids.contains(leaf.id),
                             "PROFILE_DETACHED_RECENT_LEAF_UNRESOLVED");
@@ -173,6 +210,8 @@ public final class ProfileOwnedTask {
     public synchronized boolean cleanupKnown(){return cleanupKnown&&!identityUnknown&&!foreignTasks;}
     public synchronized boolean started(){return dispatchMarked;}
     public synchronized Map<String,Object> personalAudit(){return personalAudit;}
+    /** Diagnostic readback only; neither serialized identifiers nor these booleans grant authority. */
+    public Map<String,Object> lastLeafValidation(){return lastLeafValidation;}
     public synchronized Map<String,Object> cleanupEvidence(){
         Map<String,Object> out=new LinkedHashMap<String,Object>();
         out.put("schema","hepta.profile-task-cleanup.v1");out.put("generation",generation);out.put("display_id",display);
@@ -199,6 +238,8 @@ public final class ProfileOwnedTask {
         out.put("launch_task_id_override",false);out.put("preexisting_task_reparented",false);
         out.put("default_cross_profile_filters_modified",false);out.put("serialized_token_is_authority",false);
         out.put("personal_task_audit",personalAudit);
+        out.put("last_leaf_validation",lastLeafValidation);
+        out.put("permission_transient",permissionEvidence);
         out.put("cleanup",cleanupEvidence());return Collections.unmodifiableMap(out);
     }
     private ProfileTarget actual(boolean ready)throws Exception{
@@ -213,10 +254,32 @@ public final class ProfileOwnedTask {
         need(checked(platform.children(root.token)).isEmpty(),"PROFILE_PREPARED_ROOT_NOT_EMPTY");
         global.requireOnlyOwned(target,display,root.id,-1);
     }
+    private static final class VerifiedPermissionPending extends Exception {
+        private static final long serialVersionUID=1L;
+        private VerifiedPermissionPending(){}
+    }
     private BackgroundOwnedSingleTask.Task observeTree(boolean visible)throws Exception{
+        try{return observeTreeSample(visible);}
+        catch(VerifiedPermissionPending pending){throw new ProfileTaskPolicy.Refusal("PROFILE_PERMISSION_SETUP_REQUIRED");}
+    }
+    private BackgroundOwnedSingleTask.Task observeTreeSample(boolean visible)throws Exception{
         ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(personal);
         List<BackgroundOwnedSingleTask.Task> roots=checked(platform.roots());
-        need(roots.size()==1,"PROFILE_DISPLAY_ROOT_CHANGED");requireRoot(roots.get(0),true);
+        need(roots.size()==1,"PROFILE_DISPLAY_ROOT_CHANGED");
+        if(ProfilePermissionTransient.COMPONENT.equals(roots.get(0).top)){
+            // A verified permission transient can retain ownership, never a business window.
+            requireRootIdentity(roots.get(0));
+            List<BackgroundOwnedSingleTask.Task> permissionChildren=checked(platform.children(root.token));
+            need(permissionChildren.size()==1,"PROFILE_FOREIGN_CHILD_TASK");
+            BackgroundOwnedSingleTask.Task candidate=permissionChildren.get(0);
+            ProfilePermissionTransient.Proof permission=permissionForOwnedPair(roots.get(0),candidate,global);
+            need(permission!=null,"PROFILE_ROOT_FOREIGN_ACTIVITY");
+            if(leaf==null){leaf=candidate;leafTokenId=UUID.randomUUID().toString();}
+            else need(sameTask(leaf,candidate),"PROFILE_LEAF_TOKEN_CHANGED");
+            global.requireOnlyOwned(target,display,root.id,candidate.id);
+            throw new VerifiedPermissionPending();
+        }
+        requireRoot(roots.get(0),true);
         List<BackgroundOwnedSingleTask.Task> children=checked(platform.children(root.token));
         need(children.size()<=1,"PROFILE_FOREIGN_CHILD_TASK");
         if(children.isEmpty()){
@@ -231,25 +294,114 @@ public final class ProfileOwnedTask {
         return candidate;
     }
     private void requireRoot(BackgroundOwnedSingleTask.Task current,boolean mayHaveActivities)throws Exception{
-        need(current!=null&&current.id>0&&current.token!=null&&current.display==display&&current.user==0
-                &&current.parent==-1&&current.cookies.contains(rootCookie)&&current.intentComponent==null
-                &&current.real==null&&current.orig==null,"PROFILE_ROOT_IDENTITY_CHANGED");
-        if(root!=null)need(sameTask(root,current)&&root.uid==current.uid,"PROFILE_ROOT_TOKEN_CHANGED");
+        requireRootIdentity(current);
         if(!mayHaveActivities)need(current.activities==0&&!current.running&&!current.visible
                 &&current.base==null&&current.top==null&&current.topUid==-1,"PROFILE_ROOT_NOT_EMPTY");
         else need((current.base==null||inPackage(current.base))&&(current.top==null||inPackage(current.top))
                 &&(current.topUid==-1||current.topUid==target.fullUid),"PROFILE_ROOT_FOREIGN_ACTIVITY");
     }
+    private void requireRootIdentity(BackgroundOwnedSingleTask.Task current)throws Exception{
+        need(current!=null&&current.id>0&&current.token!=null&&current.display==display&&current.user==0
+                &&current.parent==-1&&current.cookies.contains(rootCookie)&&current.intentComponent==null
+                &&current.real==null&&current.orig==null,"PROFILE_ROOT_IDENTITY_CHANGED");
+        if(root!=null)need(sameTask(root,current)&&root.uid==current.uid,"PROFILE_ROOT_TOKEN_CHANGED");
+    }
     private void requireLeaf(BackgroundOwnedSingleTask.Task current,ProfileTaskPolicy.Snapshot global)throws Exception{
+        requireLeaf(current,global,null,null);
+    }
+    private void requireLeaf(BackgroundOwnedSingleTask.Task current,ProfileTaskPolicy.Snapshot global,
+            BackgroundOwnedSingleTask.Task currentRoot,ProfilePermissionTransient.Proof permission)throws Exception{
+        // Typed fresh proof is the sole exception for a permission top; every stable identity
+        // and retained-Binder rule below is the upstream validator, including its diagnostics.
+        if(permission!=null)permission.requireMatches(target,currentRoot,current,platform.now());
+        final boolean retained=leaf!=null;
+        final boolean cookiePresent=current!=null&&current.cookies.contains(launchCookie);
+        Map<String,Boolean> checks=new LinkedHashMap<String,Boolean>();
+        checks.put("dispatch_marked",dispatchMarked);
+        checks.put("task_info_present",current!=null);
+        checks.put("task_id_positive",current!=null&&current.id>0);
+        checks.put("task_id_differs_from_root",current!=null&&current.id!=root.id);
+        checks.put("task_id_absent_before_launch",current!=null&&!beforeIds.contains(current.id));
+        checks.put("actual_task_token_present",current!=null&&current.token!=null);
+        checks.put("actual_task_token_differs_from_root",current!=null&&current.token!=null&&!root.token.equals(current.token));
+        checks.put("display_matches",current!=null&&current.display==display);
+        checks.put("user_matches",current!=null&&current.user==target.profile.userId);
+        checks.put("parent_matches",current!=null&&current.parent==root.id);
+        checks.put("full_uid_matches",current!=null&&current.uid==target.fullUid);
+        checks.put("top_activity_info_uid_matches",current!=null&&current.topUid==target.fullUid);
+        // Activity launch cookies are admission proof, not a durable Task identity. Once claimed,
+        // only the retained actual token and exact task tuple can authorize another observation.
+        // The retained leaf is never cleared or replaced, including after disappearance/refusal.
+        checks.put("first_claim_launch_cookie",retained||cookiePresent);
+        checks.put("intent_package_matches",current!=null&&inPackage(current.intentComponent));
+        checks.put("base_package_matches",current!=null&&inPackage(current.base));
+        checks.put("top_package_matches",current!=null&&inPackage(current.top));
+        checks.put("real_package_matches",current!=null&&inPackage(current.real));
+        checks.put("orig_package_matches",current!=null&&(current.orig==null||inPackage(current.orig)));
+        boolean identity=true;
+        for(Map.Entry<String,Boolean> check:checks.entrySet()){
+            boolean provedPermissionTop=permission!=null&&("top_activity_info_uid_matches".equals(check.getKey())
+                    ||"top_package_matches".equals(check.getKey()));
+            if(!provedPermissionTop)identity&=check.getValue();
+        }
+        boolean retainedIdentity=!retained||sameTask(leaf,current);
+        ProfileTaskPolicy.Leaf actual=global.leaves.get(current==null?-1:current.id);
+        boolean complete=actual!=null&&current!=null&&actual.user==current.user
+                &&actual.parent==root.id&&actual.display==display;
+        String refusal=!identity?"PROFILE_NEW_LEAF_NOT_PROVEN":!retainedIdentity?"PROFILE_LEAF_TOKEN_CHANGED"
+                :!complete?"PROFILE_LEAF_NOT_IN_COMPLETE_GLOBAL_SNAPSHOT":null;
+        Map<String,Object> detail=new LinkedHashMap<String,Object>();
+        detail.put("schema","hepta.profile-leaf-validation.v1");detail.put("observed_elapsed_ms",platform.now());
+        detail.put("phase",retained?"retained_leaf":"first_claim");detail.put("valid",refusal==null);
+        detail.put("refusal_code",refusal);detail.put("launch_cookie_present",cookiePresent);
+        detail.put("retained_task_id",retained?leaf.id:null);
+        detail.put("actual_task_token_equal_to_retained",retained&&current!=null?Objects.equals(leaf.token,current.token):null);
+        detail.put("retained_task_identity_matches",retained?retainedIdentity:null);
+        detail.put("complete_global_leaf_matches",complete);detail.put("checks",Collections.unmodifiableMap(checks));
+        detail.put("observed_task_id",current==null?null:current.id);
+        detail.put("observed_parent_id",current==null?null:current.parent);
+        detail.put("observed_display_id",current==null?null:current.display);
+        detail.put("observed_user_id",current==null?null:current.user);
+        detail.put("observed_full_uid",current==null?null:current.uid);
+        detail.put("observed_top_activity_info_uid",current==null?null:current.topUid);
+        detail.put("serialized_token_is_authority",false);
+        if(permission!=null){
+            // Keep the actual target-top check values false; this is cleanup ownership only.
+            detail.put("permission_transient_verified",true);detail.put("business_observation_allowed",false);
+            detail.put("permission_input_allowed",false);detail.put("retirement_only",true);
+        }
+        lastLeafValidation=Collections.unmodifiableMap(detail);
+        need(refusal==null,refusal);
+    }
+    private void requirePermissionLeafIdentity(BackgroundOwnedSingleTask.Task current,
+            ProfileTaskPolicy.Snapshot global)throws Exception{
+        // Read-only proof admission. A first claim still needs its own launch cookie; an
+        // already retained leaf uses its exact actual Binder/tuple and is never re-claimed.
         need(dispatchMarked&&current!=null&&current.id>0&&current.id!=root.id&&!beforeIds.contains(current.id)
                 &&current.token!=null&&!root.token.equals(current.token)&&current.display==display
                 &&current.user==target.profile.userId&&current.parent==root.id&&current.uid==target.fullUid
-                &&current.topUid==target.fullUid&&current.cookies.contains(launchCookie)
-                &&inPackage(current.intentComponent)&&inPackage(current.base)&&inPackage(current.top)
+                &&(leaf!=null||current.cookies.contains(launchCookie))
+                &&inPackage(current.intentComponent)&&inPackage(current.base)
                 &&inPackage(current.real)&&(current.orig==null||inPackage(current.orig)),"PROFILE_NEW_LEAF_NOT_PROVEN");
+        if(leaf!=null)need(sameTask(leaf,current),"PROFILE_LEAF_TOKEN_CHANGED");
         ProfileTaskPolicy.Leaf actual=global.leaves.get(current.id);
         need(actual!=null&&actual.user==current.user&&actual.parent==root.id&&actual.display==display,
                 "PROFILE_LEAF_NOT_IN_COMPLETE_GLOBAL_SNAPSHOT");
+    }
+    private ProfilePermissionTransient.Proof permissionForOwnedPair(BackgroundOwnedSingleTask.Task currentRoot,
+            BackgroundOwnedSingleTask.Task candidate,ProfileTaskPolicy.Snapshot global)throws Exception{
+        // A lone foreign leaf top remains an ordinary upstream refusal, including its error code.
+        if(!ProfilePermissionTransient.COMPONENT.equals(currentRoot.top)
+                ||!ProfilePermissionTransient.COMPONENT.equals(candidate.top))return null;
+        requireRootIdentity(currentRoot);requirePermissionLeafIdentity(candidate,global);
+        need((currentRoot.base==null||inPackage(currentRoot.base))
+                &&currentRoot.topUid==candidate.topUid&&candidate.topUid/100000==target.profile.userId,
+                "PROFILE_ROOT_FOREIGN_ACTIVITY");
+        global.requireOnlyOwned(target,display,root.id,candidate.id);
+        ProfilePermissionTransient.Proof proof=platform.permissionTransient(currentRoot,candidate);
+        need(proof!=null,"PROFILE_PERMISSION_PROOF_UNAVAILABLE");
+        requireLeaf(candidate,global,currentRoot,proof);
+        permissionEvidence=proof.evidence();return proof;
     }
     private static List<BackgroundOwnedSingleTask.Task> checked(List<BackgroundOwnedSingleTask.Task> rows)throws Exception{
         need(rows!=null&&rows.size()<=2048,"PROFILE_TASK_QUERY_INCOMPLETE");

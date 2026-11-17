@@ -9,6 +9,10 @@ import subprocess
 import sys
 import time
 
+PROFILE_INPUTS = (
+    "src/org/trillionnium/hepta/background/ProfileIdentity.java",
+    "src/org/trillionnium/hepta/background/ProfileTarget.java",
+)
 INPUTS = (
     "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
     "src/org/trillionnium/hepta/background/BackgroundOwnedTaskPolicy.java",
@@ -21,7 +25,7 @@ INPUTS = (
     "tests/owned-single-task/fixtures/PROVENANCE.json",
     "src/org/trillionnium/hepta/local/BackgroundSession.java",
     "src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java",
-)
+) + PROFILE_INPUTS
 JSON_BYTES = 78332
 JSON_SHA = "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"
 
@@ -79,7 +83,7 @@ def main():
             raise RuntimeError("actual reconciliation source boundary changed: " + marker)
     helper = session[session.index(helper_start):session.index(helper_end)]
     condition = session[session.index(condition_start):session.index(condition_end)]
-    marker = '.put("owned_task_retirement_required",selection.allowedPackages.contains("com.xiaomi.shop"));}'
+    marker = '.put("owned_task_retirement_required",profileTarget()!=null||selection.allowedPackages.contains("com.xiaomi.shop"));'
     if session.count(marker) != 1:
         raise RuntimeError("durable whole-scope retirement marker missing")
     write_call = 'MobiMindPrivateFiles.writeNew(journal,baseJournal().toString().getBytes(StandardCharsets.UTF_8));'
@@ -164,7 +168,8 @@ final class BrokerProtocol {
         ("compile", [str(java_home / "bin/javac"), "--release", "8", "-encoding", "UTF-8",
                      "-Xlint:all", "-Werror", "-cp", str(jar), "-d", str(classes),
                      str(source / INPUTS[1]), str(source / INPUTS[2]), str(source / INPUTS[4]), str(projection),
-                     str(snapshot_projection), str(component_projection), str(protocol_projection)]),
+                     str(snapshot_projection), str(component_projection), str(protocol_projection),
+                     *[str(source / name) for name in PROFILE_INPUTS]]),
         ("owned-single-task-cases", [str(java_home / "bin/java"), "-ea", "-cp",
                                     str(classes) + os.pathsep + str(jar),
                                     "org.trillionnium.hepta.background.OwnedSingleTaskHostTest",

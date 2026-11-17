@@ -296,6 +296,7 @@ final class WebShoppingObservationStability {
     private static final int PRIVATE_NATIVE_PAIR_BYTES=2*1024*1024;
     /** A private, stackless locator attached at the actual first rejection; never an action capability. */
     private static final class NativeContainmentPoint extends Exception {
+        private static final long serialVersionUID = 1L;
         final JSONArray before,after;final JSONObject row;
         final String target,container,path;final boolean beforeSide;
         final int[] containerBox,targetBox,rowBox;

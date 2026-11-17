@@ -17,6 +17,7 @@
         private final java.util.concurrent.atomic.AtomicInteger hostVerifiedRehashes=
                 new java.util.concurrent.atomic.AtomicInteger();
         private final Installed installed;
+        final org.trillionnium.hepta.background.ProfileTarget profileTarget=null;
         private final Map<String,String> hostApkHashes,hostApkPaths;
         private final String declaredApkSetSha256;
         final String packageName;
@@ -64,6 +65,12 @@
                     "exact synthetic host file required; declared provider hash is separate");
             value.verify(context);
             return new CompletionInstalledIdentity(value);
+        }
+
+        static CompletionInstalledIdentity captureNativeApp(Context context,NativeAppGoal goal,BackgroundSession background)throws Exception{
+            if(background!=null&&background.profileTarget()!=null)
+                throw new AssertionError("native routing entry fixture has no profile installed IO");
+            return captureNativeApp(context,goal);
         }
 
         void verify(Context context)throws Exception{

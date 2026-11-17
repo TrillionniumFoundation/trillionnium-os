@@ -41,7 +41,7 @@ def prepare(source, output, entries):
             "    /** APK-set hash = ")
     template = source / "tests/native-app-routing/InstalledIdentityFixture.template"
     replacement = template.read_bytes()
-    require(sha(replacement) == "2cd5ef0db6c38491754f70d6cf71770b913e70dc8762a5ffa7c15185f43d8060",
+    require(sha(replacement) == "c5f1d82d5d1726b4a5ca8368d662e54adeb2100fadb64e42fb28264a6e6e6dd1",
             "reviewed native installed IO fixture differs")
     projected = config.decode().replace(old_class, replacement.decode(), 1).encode()
     generated_config = output / "QualificationScopeConfig.java"

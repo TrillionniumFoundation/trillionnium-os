@@ -6,7 +6,10 @@ import argparse, hashlib, json, os, stat, subprocess, time, traceback
 SCHEMA="hepta.native-xiaomi-product-compiled-gate.v1"
 SHARED={
 "src/org/trillionnium/hepta/local/NativeAppGoal.java":"beb5b1ed745404a30ada6d32cd2174c6b608b96f02f6d5916f84fd2c4b92bae5",
-"src/org/trillionnium/hepta/local/NativeAppEvidence.java":"ff8b76cd14ed4d2ebfb4e6bbe20ea5dac7e391fa934726f921b195055ad37d37",
+"src/org/trillionnium/hepta/local/NativeAppEvidence.java":"5ddf2055e23f96efcbc223a17b21d0a7a8e8d0fc2aae788b5d316e7f9eb006b3",
+"src/org/trillionnium/hepta/background/ProfileIdentity.java":"7c170e15deb8407a80b4dbcab3564697d2192c63365bb5a062ecba6f3ebbadcd",
+"src/org/trillionnium/hepta/background/ProfileTarget.java":"b65d62af4dd9f68d6c0070b21bf7fe0127a0a1898cc0f6ee604c9d56fa83f821",
+"src/org/trillionnium/hepta/background/WindowOwnership.java":"60ccf09113a3463179dfa64cc463eeca363006a30f5518747751420cfc1fb80c",
 "src/org/trillionnium/hepta/local/ObservedChildText.java":"56433b62f9c4c895edac441160fcdc4aaee7365586daa4b86863448dc4dd54d5",
 "src/org/trillionnium/hepta/local/ObservedTargetLabels.java":"c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba"}
 PATHS=[*SHARED,"src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java","tests/native-xiaomi-product/NativeXiaomiProductPageHostTest.java","tests/native-app-fixtures/NativeXmlFixture.java"]

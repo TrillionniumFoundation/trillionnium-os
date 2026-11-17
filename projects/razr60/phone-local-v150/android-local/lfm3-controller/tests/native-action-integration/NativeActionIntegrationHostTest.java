@@ -12,6 +12,8 @@ final class NativeActionIntegrationHostTest {
         NativeCarouselCurrentnessHostTest.run(source);
         NativeXiaomiHomeVariationHostTest.run(source);
         NativeXiaomiEntryObservationHostTest.run(source);
+        NativeStableSearchIconHostTest.run(source);
+        XiaomiActionGuardHost.writePendingBoundary(out.getParent().resolve("PENDING-BOUNDARY.json"));
         IntegrationChecks.finish(out,"hepta.native-action-integration-host.v1",
                 "Actual Session and extracted Service bridge methods with complete synthetic census and explicit Android boundaries. Original provider/year roundtrip and Xiaomi XML factories reused; no phone, SDK, model, platform effect or business qualification.");
     }

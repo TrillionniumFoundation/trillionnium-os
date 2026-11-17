@@ -11,7 +11,7 @@ def prepare(source,output):
  for name in copies:
   dst=output/name;dst.parent.mkdir(parents=True,exist_ok=True);text=(fixtures/name).read_text()
   if name=='org/json/JSONObject.java':
-   text=text.replace('    public boolean has(String key)', '    public String optString(String key){return optString(key,"");}\n    public String optString(String key,String fallback){Object value=fields.get(key);return value instanceof String?(String)value:fallback;}\n    public boolean has(String key)')
+   text=text.replace('    public boolean has(String key)', '    public String optString(String key){return optString(key,"");}\n    public boolean has(String key)')
   if name=='android/system/Os.java':
    text=text.replace(' public static void close(', ' public static boolean failUnlink;\n public static void remove(String s)throws Exception{if(failUnlink)throw new IOException("synthetic remove failure");Files.delete(Paths.get(s));}\n public static void rename(String a,String b)throws Exception{Files.move(Paths.get(a),Paths.get(b),StandardCopyOption.REPLACE_EXISTING);}\n public static void close(')
   dst.write_text(text);files.append(dst)

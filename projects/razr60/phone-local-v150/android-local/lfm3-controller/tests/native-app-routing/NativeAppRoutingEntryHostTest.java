@@ -30,6 +30,7 @@ public final class NativeAppRoutingEntryHostTest {
         String initial=CTRIP;boolean choiceCurrent=true;int checks;
         NativeUi(LocalTaskSession tasks,LocalModelEngine engine){super(tasks,engine);backgroundMode.setChecked(true);backgroundPackages.addAll(packages(CTRIP,HELPER));}
         @Override String selectedBackgroundPackage(){return initial;}
+        @Override org.trillionnium.hepta.background.ProfileTarget selectedProfileTarget(){return null;}
         @Override void requireCurrentBackgroundChoice(){checks++;if(!choiceCurrent)throw new IllegalStateException("synthetic changed installed/owner choice");}
     }
     static void installed(QualificationScopeHostTest.Env e)throws Exception{

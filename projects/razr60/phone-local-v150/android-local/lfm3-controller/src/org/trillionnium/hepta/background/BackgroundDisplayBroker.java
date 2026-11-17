@@ -317,7 +317,7 @@ public final class BackgroundDisplayBroker {
                 if ("ACTIVE".equals(state)) {
                     verifyDisplay();
                     if(config.profileTarget!=null){
-                        if(profileOwnedTask!=null&&!profileOwnedTask.observe())throw new BrokerProtocol.Refusal("PROFILE_TASK_NOT_OBSERVED");
+                        if(profileOwnedTask!=null&&!profileOwnedTask.observeStateUntil(Math.min(r.deadline,expires)-100))throw new BrokerProtocol.Refusal("PROFILE_TASK_NOT_OBSERVED");
                         else if(profileOwnedTask==null)requireUnlaunchedProfileEmpty();
                         if(profileOwnedTask!=null)refreshProfileTaskEvidence();
                     } else {
@@ -1006,6 +1006,8 @@ public final class BackgroundDisplayBroker {
                     .put("profile_current_identity_verified",ok&&"ACTIVE".equals(state)&&actual!=null
                             &&config.profileTarget.same(actual.target))
                     .put("profile_cleanup",new JSONObject(cleanup))
+                    .put("profile_last_leaf_validation",profileOwnedTask==null?JSONObject.NULL:
+                            new JSONObject(profileOwnedTask.lastLeafValidation()))
                     .put("profile_personal_task_audit",profilePersonalAudit==null?JSONObject.NULL:new JSONObject(profilePersonalAudit))
                     .put("profile_cleanup_known",Boolean.TRUE.equals(cleanup.get("cleanup_known")))
                     .put("profile_custody_retained",closing.get()&&profileCustody.retain());
@@ -1023,6 +1025,8 @@ public final class BackgroundDisplayBroker {
             .put("owned_single_task",ownedSingleTask==null?JSONObject.NULL:new JSONObject(ownedSingleTask.evidence()))
             .put("profile_cleanup",config.profileTarget==null?JSONObject.NULL:new JSONObject(
                     profileCleanupReadback==null?emptyProfileCleanup(false):profileCleanupReadback))
+            .put("profile_last_leaf_validation",profileOwnedTask==null?JSONObject.NULL:
+                    new JSONObject(profileOwnedTask.lastLeafValidation()))
             .put("profile_custody_retained",config.profileTarget!=null&&profileCustody.retain())); }
         catch (Throwable ignored) { System.err.println("terminal_receipt_unavailable"); }
     }
