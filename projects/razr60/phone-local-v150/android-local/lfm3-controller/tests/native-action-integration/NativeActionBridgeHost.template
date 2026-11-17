@@ -5,6 +5,8 @@ import java.util.*;
 import java.security.MessageDigest;
 import org.json.JSONObject;
 import org.json.JSONArray;
+import org.trillionnium.hepta.background.ProfileTarget;
+import org.trillionnium.hepta.background.WindowOwnership;
 
 /** Exact Service methods below execute against explicit fake Android endpoints.
  * Full graph facts are synthetic contract fixtures, never phone observations.
@@ -76,6 +78,7 @@ final class NativeActionBridgeHost {
     }
     static final class PhoneObservation {
         String id,packageName,treeSha256,screenshotSha256,backgroundBootstrapPackage;
+        WindowOwnership profileWindow;
         int windowId,rotation,width,height;long capturedElapsedMillis;
         ObservationState state;ObservedWindowMetadata windowMetadata;List<String> backgroundAllowedPackages;
         static final class CollectionStats {
@@ -92,6 +95,10 @@ final class NativeActionBridgeHost {
         String taskId,generation,ownerSha256;int display=7;boolean active=true;
         org.trillionnium.hepta.local.BackgroundSession.Selection selection;
         int displayId(){return display;}void requireActive(){if(!active)throw new StaleObservation("fake lease retired");}
+        ProfileTarget profileTarget(){return selection.profileTarget;}
+        void requireHistoricalProfileWindow(WindowOwnership proof,int window,int task,long captured){
+            throw new AssertionError("legacy action fixture has no historical profile RPC proof");
+        }
     }
     static final class QualificationScopeConfig {static final class Bound{boolean current=true;Object config;void refuse(String reason){current=false;}}}
     static final class QualificationScope {static final class Violation extends IllegalStateException{private static final long serialVersionUID=1L;Violation(String text){super(text);}}}
@@ -114,6 +121,7 @@ final class NativeActionBridgeHost {
     }
     static final class Graph {
         PhoneObservation.CollectionStats collectionStats;ObservationDiagnostics.GraphStamp diagnosticStamp;
+        WindowOwnership profileWindow;
         boolean nativeObservationComplete,truncated;String packageName,digest,backgroundGeneration,backgroundBootstrapPackage,backgroundSelectionRaw,backgroundOwnerSha;
         int windowId,rotation,displayId;Rect bounds;ObservationState state;ObservedWindowMetadata windowMetadata;
         List<String> backgroundAllowedPackages=Collections.emptyList();final List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();
@@ -148,6 +156,14 @@ final class NativeActionBridgeHost {
     boolean ownsBackground(String task,BackgroundSession value){return owns(task)&&background==value&&value.active;}
     boolean locked(){return isLocked;}BackgroundSession currentBackground(){return background;}
     BackgroundSession backgroundFor(String task){return owns(task)?background:null;}
+    // Profile IO is outside these user0 cases. The actual profile guards below
+    // still execute; an attempted profile read cannot receive a synthetic proof.
+    AccessibilityNodeInfo selectedRoot(BackgroundSession selected,GraphBudget budget){
+        throw new AssertionError("legacy action fixture cannot select an actual profile root");
+    }
+    WindowOwnership readProfileWindow(AccessibilityNodeInfo root,BackgroundSession selected,GraphBudget budget){
+        throw new AssertionError("legacy action fixture cannot produce an actual profile proof");
+    }
     static void checkReadBudget(GraphBudget budget){if(budget!=null)budget.check();}
     static String string(CharSequence s){return s==null?"":s.toString();}
     static String message(Throwable e){return e.getMessage()==null?e.getClass().getSimpleName():e.getMessage();}

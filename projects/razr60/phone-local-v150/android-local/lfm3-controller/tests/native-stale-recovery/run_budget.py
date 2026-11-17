@@ -28,8 +28,8 @@ def identity(path):
 assert sha(runner.read_bytes()) == 'a3dfbeea735c501a5bf0c529987b0ebaf4e805401c0859b99f325e551e066540'
 assert sha(a.json_jar.read_bytes()) == '3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'
 assert sha((src/'SessionTerminalEvidence.java').read_bytes()) == '566cbd71a364d51069de271afd7db641fcdf2b97f93682107e4f76e9405b7db0'
-assert sha((src/'LocalTaskSession.java').read_bytes()) == '09ce1dfa98264ba68a1ca73867e99d1b0ac70bafa77f062e2f2c3942ced9cedf'
-assert sha((src/'NativeActionSnapshotCheck.java').read_bytes()) == '75da5b89f756eb86f4291fa92df9297349c6f456331ec35aae84601f93e262cc'
+assert sha((src/'LocalTaskSession.java').read_bytes()) == '554c46104381e80aba393928e81e78a899ffabb362b700c5195c62226b76310e'
+assert sha((src/'NativeActionSnapshotCheck.java').read_bytes()) == '793b45bfbcfcd7754b0765d6342be5e7cba6e014696fabda908c0d718f5234a8'
 
 # Use the already reviewed real-file IO fixture producer through its complete
 # generation stage. Do not run its unrelated fixture cases or change any source.
@@ -66,7 +66,10 @@ import org.json.JSONObject;import java.util.*;
  * and the stale-history construction are copied exactly from production. */
 final class CensusProjectionBridge {
  static final class Guard {Map<String,Object> evidence(){return Collections.emptyMap();}}
- static final class ActionWork {final ActionExecutionState state;String diagnosticFreshness,nativeActionRejection,nativeActionProof;Guard nativeGuard;
+ static final class ProfileProofBoundary {
+  private ProfileProofBoundary(){throw new AssertionError("legacy census fixture cannot create a profile proof");}
+  Map<String,Object> evidence(){throw new AssertionError("legacy census fixture cannot serialize profile authority");}}
+ static final class ActionWork {final ActionExecutionState state;String diagnosticFreshness,nativeActionRejection,nativeActionProof;Guard nativeGuard;ProfileProofBoundary profileDispatchProof;
   ActionWork(ActionExecutionState state){this.state=state;}}
  static final class Action {String action="click",packageName="ctrip.android.view",appLabel=null;}
  static final class Before {String packageName="ctrip.android.view";}

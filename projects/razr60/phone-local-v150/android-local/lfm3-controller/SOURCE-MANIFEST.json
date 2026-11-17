@@ -23,7 +23,7 @@
     "previous_manifest_sha256": "3b442123253504d89138cb3c02381ba978ef589453cc2a806fe1a98ed861a9af",
     "recognized_booking_pending_phase_budget_ms": 16000
   },
-  "candidate_status": "ci_containment_repair_source_frozen_before_current_targeted_gates",
+  "candidate_status": "native_gate_fixture_repair_frozen_before_current_full_gates",
   "candidate_version_assigned": true,
   "ci_containment_repair_amendment": {
     "baseline_manifest_sha256": "8dd4b459a4da939f8594df16a5198fbce6cdd2fc6e7a298b5b0956fca4c57889",
@@ -7770,9 +7770,9 @@
       "sha256": "2c2f4e14ea38e16fe3a8d50e2ca96dcacd5417250c63f1c99949b59c905b2b1c"
     },
     {
-      "bytes": 15185,
+      "bytes": 15195,
       "path": "tests/native-action-integration/BridgeCases.fragment",
-      "sha256": "52b323c9ef4c575543e48a2aeb9009de77910c6fab754f951f79d2a80e4ab4d6"
+      "sha256": "42d4200830feca704a0dc4ef9143eec8c08356fbc64fda6d12ccd5cdf8a3d5f9"
     },
     {
       "bytes": 2724,
@@ -7780,9 +7780,9 @@
       "sha256": "8d65a7ced1795834bfe8a921bade5d496a5eb25bfc465340e81c50998a9102ba"
     },
     {
-      "bytes": 32030,
+      "bytes": 33072,
       "path": "tests/native-action-integration/NativeActionBridgeHost.template",
-      "sha256": "6c58d537346f1b60f0d141c953a14d308bbdd6a9f3444eab9d85050cceb050e2"
+      "sha256": "69787ce69d23a1dcf40d2756010f20222bb31c25b6879ab55a91e8e405b509bd"
     },
     {
       "bytes": 1106,
@@ -7830,9 +7830,9 @@
       "sha256": "b27ecaed3a4dd0419fbc49809887b2e6b77cd0a80be17b006d0d8cab72c41d4a"
     },
     {
-      "bytes": 13200,
+      "bytes": 13604,
       "path": "tests/native-action-integration/run_host.py",
-      "sha256": "3a398aa036b1d04fb754e4785cbe3c845b7f39094d66bdf90dfc100b7aa47679"
+      "sha256": "aea2df1c642ee4fb6d69989a947424942b916146b58e6add4213eb220472002e"
     },
     {
       "bytes": 717,
@@ -8155,14 +8155,14 @@
       "sha256": "1308891068baba0f28878af870f59dfad5702894c35ee6900df60f94a5121dc3"
     },
     {
-      "bytes": 11074,
+      "bytes": 11171,
       "path": "tests/native-observation-events/run_host.py",
-      "sha256": "86729b665b5219e113ce12e3dd9b3bf31f82e10ee54d9dc2d9614ed8a34c7244"
+      "sha256": "0b69749ff3bf0a45bda52c048693a9e8b332e9818a4e1668906d40c46aea7a7b"
     },
     {
-      "bytes": 25100,
+      "bytes": 25249,
       "path": "tests/native-observation-read-retry/ControllerReadRetryHost.template",
-      "sha256": "87116b0f97aa198c360048513e113c24d439eed445897f54112bbdca26a2819e"
+      "sha256": "95e60de8a2cef4528ef73c748bfb78538452c911465fc2137bc4dbad65b85abb"
     },
     {
       "bytes": 1646,
@@ -8260,9 +8260,9 @@
       "sha256": "ee840432dd43450fc48c3b32d9d62ef6cfec47d4824979fa87c8e3a784adcdcd"
     },
     {
-      "bytes": 9103,
+      "bytes": 9423,
       "path": "tests/native-stale-recovery/run_budget.py",
-      "sha256": "20fa1ab7a853968580e1effc8b4ea6d62899b2733956ec7018e5d11244f8580a"
+      "sha256": "a22b4ef58379ff8ead9731a1ca33d72a6cdd27a15c77a063b35d517848c0d970"
     },
     {
       "bytes": 14162,
@@ -8275,9 +8275,9 @@
       "sha256": "8eaace63632804555f6e93a4885c17e7b0f6bfa688142266e4c6735c6e995a14"
     },
     {
-      "bytes": 14407,
+      "bytes": 14912,
       "path": "tests/native-xiaomi-home-loading/LoadingWindowBridgeHost.template",
-      "sha256": "90d07724272c61038768d92ee0a1a5db88529bfffa4a60459339ec852ea95d9e"
+      "sha256": "2d3a63f650be80bcca2280ca22b1fe47cd072e546524cd20221a294f9d7f1ea6"
     },
     {
       "bytes": 3915,
@@ -8445,9 +8445,9 @@
       "sha256": "3f4c53a545c42dff04f4aeeaa990b695add1217cc0e468c1054de75c19005a26"
     },
     {
-      "bytes": 6864,
+      "bytes": 7249,
       "path": "tests/native-xiaomi-product/run_host.py",
-      "sha256": "933cab2e5d9230326fc6e4b42143a6482fe710a44f1108f9136f28472f6dff3a"
+      "sha256": "de712670e5b1cb4f489cd27140b943f640a8df839123be79ca968df52fc982ed"
     },
     {
       "bytes": 2443,
@@ -8690,9 +8690,9 @@
       "sha256": "08bbe21273899fc4aa81ba6b6d6eb66ed578057cd16724269bbd89dfc956918d"
     },
     {
-      "bytes": 7673,
+      "bytes": 8077,
       "path": "tests/observation-diagnostics/DiagnosticGraphHost.template",
-      "sha256": "cc237152d952666ace5a62b7bb858f26c72a12d2e7383559d93de15b2d5803c6"
+      "sha256": "2bf26523a43cd41cd574a075aedd3cf9df90d0b10d5c4515a652b479a3806fe1"
     },
     {
       "bytes": 10108,
@@ -8705,9 +8705,9 @@
       "sha256": "ca1cb0b78a660eca9da04bdcbde82e340d4f9d90dbcdb639d8ab8c6032505cfb"
     },
     {
-      "bytes": 14443,
+      "bytes": 14540,
       "path": "tests/observation-diagnostics/run_host.py",
-      "sha256": "96f7ea4762ed5db5cc52be31dfe56b357c3002d88887316ee172a3a0c14fd496"
+      "sha256": "73dfc4bcc567e9296b28b1149428fe5acab9794902d37bd7b1c5294d1f2db9f4"
     },
     {
       "bytes": 1190,
@@ -8800,9 +8800,9 @@
       "sha256": "99143bd0a8d5489361c6af990f43c6b604afe77fc05cb0239154db5dcfae84d2"
     },
     {
-      "bytes": 14230,
+      "bytes": 14491,
       "path": "tests/owned-single-task/run_host.py",
-      "sha256": "b2342eec75cdd6a77e4de445bf86dd86871739086a84655c7b68a550b8427283"
+      "sha256": "b4afad90e030247375d3e5735624254c51989ccbd7d553333ba966047af92329"
     },
     {
       "bytes": 7754,
@@ -12704,6 +12704,38 @@
     ],
     "task_deadlines_unchanged": true
   },
+  "native_gate_fixture_repair_amendment": {
+    "baseline_manifest_sha256": "b566e4000f5e726f3020f0bf618d4b3ae31d0d2bbaa8cf5defd35eee558b7b9f",
+    "census_projection_exact_source_pins_rebound": true,
+    "changed_nonmanifest_paths": [
+      "tests/native-action-integration/BridgeCases.fragment",
+      "tests/native-action-integration/NativeActionBridgeHost.template",
+      "tests/native-action-integration/run_host.py",
+      "tests/native-observation-events/run_host.py",
+      "tests/native-observation-read-retry/ControllerReadRetryHost.template",
+      "tests/native-stale-recovery/run_budget.py",
+      "tests/native-xiaomi-home-loading/LoadingWindowBridgeHost.template",
+      "tests/native-xiaomi-product/run_host.py",
+      "tests/observation-diagnostics/DiagnosticGraphHost.template",
+      "tests/observation-diagnostics/run_host.py",
+      "tests/owned-single-task/run_host.py"
+    ],
+    "current_instance_effect_entry_and_profile_guards_extracted_verbatim": true,
+    "current_terminal_profile_failure_branch_required_verbatim": true,
+    "legacy_profile_proof_fields_cannot_create_device_authority": true,
+    "normal_git_parent": "438540124b1b85cd0b86f8531756cd256cc99e70",
+    "original_test_cases_assertions_and_strict_compile_flags_unchanged": true,
+    "owned_journal_marker_exact_current_profile_or_xiaomi_condition_required": true,
+    "owned_reconciliation_helper_extracted_verbatim": true,
+    "phone_operations": 0,
+    "production_source_inputs_canonical_lf_sha256": "ce6c572418f7cf88e54c08d7c72ff3a76827794d7f07a69be085073e026751c2",
+    "production_source_inputs_count": 334,
+    "production_source_inputs_unchanged": true,
+    "profile_io_boundaries_refuse_unmodeled_device_proof": true,
+    "runtime_model_and_android_build_configuration_unchanged": true,
+    "validation": "Current executions are recorded separately. Historical reports are not current gate or device qualification.",
+    "xiaomi_shared_dto_pin_and_exact_real_profile_compile_dependencies_rebound": true
+  },
   "native_terminal_joint_revision": {
     "baseline_manifest_sha256": "d0ac553ae69e8f7291b8db0e242e18baa28fb25ec0df324d1b6afad7a07d9f0d",
     "new_action_authority": false,
@@ -14569,7 +14601,7 @@
     "unknown_goal_retry_added": false
   },
   "xiaomi_home_loading_amendment": {
-    "accessibility_label": "Hepta \u624b\u673a\u52a9\u624b",
+    "accessibility_label": "Hepta 手机助手",
     "automatic_action_replay": false,
     "cause": "Actual complete first Xiaomi frame contained only navigation and message icon; old parser stopped before content loaded and old same-package background window replacement permanently refused scope.",
     "maximum_model_issued_loading_waits": 2,

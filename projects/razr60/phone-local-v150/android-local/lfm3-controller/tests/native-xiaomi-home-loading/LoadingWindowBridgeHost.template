@@ -39,11 +39,12 @@ final class LoadingWindowBridgeHost {
     }
     private static final class BackgroundSession {
         int display=20;boolean active=true;
+        final Object profileTarget=null; // This legacy window fixture has no profile selection.
         int displayId(){return display;}
         boolean allows(String pkg){return PACKAGE.equals(pkg);}
         void requireActive(){if(!active)throw new IllegalStateException("retired background lease");}
     }
-    private static final class PhoneObservation {int windowId=138,display=20;String packageName=PACKAGE;}
+    private static final class PhoneObservation {int windowId=138,display=20;String packageName=PACKAGE;final Object profileWindow=null;}
     private static final class ActionDecision {String action="wait",packageName=PACKAGE,nodeId;}
     private static final class NodeRef {AccessibilityNodeInfo node;String signature="original";}
     private static final class Graph {final Map<String,NodeRef> refs=new HashMap<String,NodeRef>();}
@@ -96,6 +97,11 @@ final class LoadingWindowBridgeHost {
     private static String message(Exception error){return error.getMessage();}
     private static Object observedChildText(AccessibilityNodeInfo node,boolean background,GraphBudget budget){return null;}
     private static String nodeSignature(AccessibilityNodeInfo node,Object text){return node.signature;}
+    // Profile task lookup is a separate Android adapter, outside these user0 cases.
+    private static void requireActualProfileTask(BackgroundSession value,PhoneObservation frame,AccessibilityWindowInfo window){
+        if(value.profileTarget!=null||frame.profileWindow!=null)
+            throw new AssertionError("legacy window fixture cannot admit a profile task");
+    }
     // ACTUAL_METHODS
     private void nextWindow(){root.windowId=139;root.window.id=139;}
     private void guardThenHostEffect(AccessibilityNodeInfo node,boolean required){

@@ -55,7 +55,9 @@ final class ControllerReadRetryHost {
             default void onDiagnostic(Callable<String> snapshot){}
             default void onReadRetryAvailable(String error,NativeObservationRetryProof proof){onError(error);}
         }
-        static final class NativeReadIdentity {String packageName,generation,owner;int windowId,displayId;}
+        static final class NativeReadIdentity {String packageName,generation,owner;int windowId,displayId;
+            final org.trillionnium.hepta.background.WindowOwnership profileWindow=null; // Legacy user0 fixture; no profile proof producer.
+        }
         static final class ObservationRequest {
             String taskId,requestId;BackgroundSession background;NativeReadIdentity readIdentity;
             long started,deadline,failedAt;int readWorksFinished=3,readGraphChanges=2,readCaptureFailures=1;

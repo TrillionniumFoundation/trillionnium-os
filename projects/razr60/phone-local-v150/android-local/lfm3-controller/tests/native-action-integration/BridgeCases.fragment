@@ -155,6 +155,6 @@
         });
         one("claimed_guard_cannot_bypass_original_worker_cancellation",()->{
             Fixture f=setup(NativeActionSnapshotCheck.YEAR,"claimed-cancel");f.work.nativeGuard.claim(f.action,f.run,SystemClock.now);f.service.cancelled=true;
-            IntegrationChecks.rejects(()->enterActionEffect(f.work),"actual ActionExecutionState still checks cancellation after claim");f.noEffect("claimed guard is not effect authority alone");
+            IntegrationChecks.rejects(()->f.service.enterActionEffect(f.work),"actual ActionExecutionState still checks cancellation after claim");f.noEffect("claimed guard is not effect authority alone");
         });
     }

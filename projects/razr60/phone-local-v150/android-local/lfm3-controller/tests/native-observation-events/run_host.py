@@ -72,6 +72,7 @@ def generate(source,out,h):
     branch='''}else if(!graph.digest.equals(now.digest)){
                     if(work!=null&&work.nativeGuard!=null){
                         try{compareNativeAction(taskId,expected,action,now,work);work.nativeActionRevalidated=true;}
+                        catch(ProfileOwnershipViolation identityChanged){throw identityChanged;}
                         catch(Exception mismatch){recordStaleDiagnostic(work,graph,now,action.nodeId);
                             return "stale:原生目的复核失败："+message(mismatch);}
                     }else{recordStaleDiagnostic(work,graph,now,action.nodeId);return "stale:目标窗口内容已变化";}
