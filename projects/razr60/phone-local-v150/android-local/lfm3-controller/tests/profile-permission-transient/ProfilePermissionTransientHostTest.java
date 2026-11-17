@@ -60,6 +60,37 @@ public final class ProfilePermissionTransientHostTest {
     static ProfilePermissionTransient.Proof verify(String dump)throws Exception{
         return ProfilePermissionTransient.verify(dump,target(),root(),leaf(),authority(),1000,1001);
     }
+    // Authored lifecycle variant. It models the observed finishing-tail shape;
+    // the TaskInfo counts and tokens remain synthetic, not historical phone evidence.
+    static String finishingSplashTail(String dump){
+        String permission="* Hist  #1: ActivityRecord{"+permissionRecord+" u10 ";
+        String home="* Hist  #0: ActivityRecord{"+targetRecord+" u10 ";
+        yes(dump.contains(permission)&&dump.contains(home),"two-record fixture shape changed");
+        String expanded=dump.replace(permission,"* Hist  #2: ActivityRecord{"+permissionRecord+" u10 ")
+                .replace(home,"* Hist  #1: ActivityRecord{"+targetRecord+" u10 ");
+        int hierarchyEnd=expanded.indexOf("\nActivityTaskSupervisor state:");
+        yes(hierarchyEnd>0,"fixture supervisor boundary missing");
+        Matcher row=unique("^ +\\* Task\\{"+Pattern.quote(leafRecord)+" #"+leafId+" [^{}\\r\\n]+\\}$",
+                expanded.substring(0,hierarchyEnd));
+        yes(row.group().contains("sz=2"),"fixture raw task size changed");
+        expanded=expanded.substring(0,row.start())+row.group().replace("sz=2","sz=3")+expanded.substring(row.end());
+        int start=expanded.indexOf("* Hist  #1: ActivityRecord{"+targetRecord+" u10 ");
+        int end=expanded.indexOf("\nActivityTaskSupervisor state:",start);
+        int nextDisplay=expanded.indexOf("\nDisplay #",start);
+        yes(end>start,"fixture supervisor boundary missing");
+        if(nextDisplay>=0&&nextDisplay<end)end=nextDisplay;
+        String tail="\n      * Hist  #0: ActivityRecord{finishing_splash u10 "
+                +ProfileBrokerHostTest.SPLASH+" t"+leafId+" f}}\n"
+                +"        packageName=ctrip.android.view processName=ctrip.android.view\n"
+                +"        rootOfTask=false task=Task{"+leafRecord+" #"+leafId+" type=undefined A=1010367:ctrip.android.view}\n"
+                +"        app=ProcessRecord{finishing_process 2002:ctrip.android.view/u10a367}\n"
+                +"        state=STOPPING delayedResume=false finishing=true\n";
+        return expanded.substring(0,end)+tail+expanded.substring(end);
+    }
+    static BackgroundOwnedSingleTask.Task activityCount(BackgroundOwnedSingleTask.Task t,int count){
+        return new BackgroundOwnedSingleTask.Task(t.id,t.display,t.user,t.parent,t.uid,t.topUid,count,
+                t.token,t.cookies,t.intentComponent,t.base,t.top,t.real,t.orig,t.running,t.visible);
+    }
     static final class Adapter implements ProfileOwnedTask.Platform {
         final ProfileBrokerHostTest.Fake f=new ProfileBrokerHostTest.Fake();
         final String original;
@@ -101,7 +132,7 @@ public final class ProfilePermissionTransientHostTest {
             // Explicit ID remapping for coordinator fixtures; original is separately tested unchanged.
             String dump=original.replace("Display #"+displayId+" ","Display #7 ").replace("#"+rootId+" ","#200 ")
                     .replace("rootTaskId="+rootId+" ","rootTaskId=200 ").replace("#"+leafId+" ","#300 ")
-                    .replace("t"+leafId+"}","t300}");
+                    .replace("t"+leafId+"}","t300}").replace("t"+leafId+" f}","t300 f}");
             if(wrongCaller)dump=dump.replace("launchedFromUid=1010367 launchedFromPackage=ctrip.android.view","launchedFromUid=10367 launchedFromPackage=ctrip.android.view");
             ProfilePermissionTransient.Proof proof=ProfilePermissionTransient.verify(dump,target(),r,l,authority(),f.now,f.now);
             if(stale)f.now+=2001;return proof;
@@ -273,6 +304,56 @@ public final class ProfilePermissionTransientHostTest {
                 else a.f.globalMissingLeaf=true;
                 refused(()->p.retire(2400));yes(!a.f.mutations.contains("remove_leaf")&&!p.cleanupKnown(),"foreign/incomplete scope removed");
             }
+        });
+        test("finishing Splash stays in raw proof while live Home supplies TaskInfo base",()->{
+            String expanded=finishingSplashTail(dump);
+            Map<String,Object> e=verify(expanded).evidence();
+            yes(e.get("leaf_task_id").equals(leafId),"finishing-tail proof changed leaf");
+            yes(Boolean.FALSE.equals(e.get("business_observation_allowed"))
+                    &&Boolean.FALSE.equals(e.get("permission_input_allowed")),"finishing-tail proof gained authority");
+            ProfileBrokerHostTest.reject("PROFILE_PERMISSION_CHAIN_INCOMPLETE",()->
+                    ProfilePermissionTransient.verify(expanded,target(),root(),activityCount(leaf(),3),authority(),1000,1001));
+        });
+        test("finishing raw records retain foreign user UID token ordinal and root checks",()->{
+            String expanded=finishingSplashTail(dump);
+            String rootLine="rootOfTask=false task=Task{"+leafRecord+" #"+leafId
+                    +" type=undefined A=1010367:ctrip.android.view}\n        app=ProcessRecord{finishing_process";
+            String[][] changes={
+                {"finishing_splash u10 ctrip.android.view/","finishing_splash u10 foreign.app/"},
+                {"finishing_splash u10 ","finishing_splash u0 "},
+                {"finishing_process 2002:ctrip.android.view/u10a367}","finishing_process 2002:ctrip.android.view/u10a368}"},
+                {"ActivityRecord{finishing_splash ","ActivityRecord{"+targetRecord+" "},
+                {"* Hist  #0: ActivityRecord{finishing_splash ","* Hist  #1: ActivityRecord{finishing_splash "},
+                {"finishing_splash u10 "+ProfileBrokerHostTest.SPLASH+" t"+leafId+" f}}",
+                 "finishing_splash u10 "+ProfileBrokerHostTest.SPLASH+" t"+(leafId+1)+" f}}"},
+                {rootLine,rootLine.replace("rootOfTask=false","rootOfTask=true")},
+                {"* Hist  #1: ActivityRecord{"+targetRecord+" u10 "+HOME,
+                 "* Hist  #1: ActivityRecord{"+targetRecord+" u10 foreign.app/.Main"}};
+            for(String[] pair:changes){
+                yes(expanded.contains(pair[0]),"finishing-tail negative fixture absent");
+                refused(()->verify(expanded.replace(pair[0],pair[1])));
+            }
+        });
+        test("new permission top still refuses INITIALIZING or absent process",()->{
+            String expanded=finishingSplashTail(dump);
+            String initializing=expanded.replace("state=RESUMED delayedResume=false finishing=false",
+                    "state=INITIALIZING delayedResume=false finishing=false");
+            yes(!initializing.equals(expanded),"permission state fixture absent");
+            ProfileBrokerHostTest.reject("PROFILE_PERMISSION_ACTIVITY_IDENTITY_UNPROVEN",()->verify(initializing));
+            String noProcess=expanded.replaceAll("app=ProcessRecord\\{[^\\r\\n{}]+:com\\.android\\.permissioncontroller/u10a335\\}","app=null");
+            yes(!noProcess.equals(expanded),"permission process fixture absent");
+            ProfileBrokerHostTest.reject("PROFILE_PERMISSION_PROCESS_UNPROVEN",()->verify(noProcess));
+        });
+        test("finishing-tail permission proof preserves observe window and retirement boundaries",()->{
+            Adapter a=new Adapter(finishingSplashTail(dump));ProfileOwnedTask p=a.start(true);
+            String retained=(String)p.evidence().get("leaf_token_id");a.permission=true;
+            ProfileBrokerHostTest.reject("PROFILE_PERMISSION_SETUP_REQUIRED",()->p.observe());
+            ProfileBrokerHostTest.reject("PROFILE_PERMISSION_SETUP_REQUIRED",()->p.window(4,300,2000));
+            yes(retained.equals(p.evidence().get("leaf_token_id")),"finishing-tail transition re-claimed leaf");
+            yes(Boolean.FALSE.equals(p.lastLeafValidation().get("business_observation_allowed"))
+                    &&Boolean.FALSE.equals(p.lastLeafValidation().get("permission_input_allowed")),"finishing tail gained action authority");
+            p.retire(2400);yes(p.cleanupKnown(),"finishing-tail owned retirement failed");
+            yes(a.f.mutations.equals(Arrays.asList("create","bind","remove_leaf","delete_root")),"finishing-tail proof added mutation");
         });
         System.out.println("{\"schema\":\"hepta.profile-permission-transient-host-tests.v1\",\"passed\":true,\"cases\":"+cases+",\"assertions\":"+checks+",\"fixture_kind\":\""+fixtureKind+"\",\"fixture_sha256\":\""+digest+"\",\"taskinfo_fixtures_synthetic\":true,\"phone_contacted\":false,\"android_build\":false}");
     }

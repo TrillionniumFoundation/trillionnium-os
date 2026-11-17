@@ -1,6 +1,6 @@
 # Permission transient retirement: host contract
 
-This gate compiles the production pure Java ownership policy and permission-chain verifier with Java `--release 8`. It retains the twelve original boundary cases against an authored, complete synthetic activity hierarchy and adds twenty-one synthetic structural/read-retry cases. The actual permission-pair bracket method is separately extracted into an explicit synthetic organizer/clock harness. The full Android package-manager and task-organizer adapters are not compiled by this gate; the Android build and device qualification remain separate requirements.
+This gate compiles the production pure Java ownership policy and permission-chain verifier with Java `--release 8`. It retains the twelve original boundary cases against an authored, complete synthetic activity hierarchy, adds four finishing-chain boundary cases, and preserves twenty-one synthetic structural/read-retry cases. The actual permission-pair bracket method is separately extracted into an explicit synthetic organizer/clock harness. The full Android package-manager and task-organizer adapters are not compiled by this gate; the Android build and device qualification remain separate requirements.
 
 ## Current product contract
 
@@ -22,6 +22,15 @@ The proof expires after 2,000 ms measured from acquisition start, including the 
 
 `com.motorola.deviceguard/.permission.activity.ClipboardDialogActivity` on another root or on display 0 is explicitly outside this contract. The negative test retains that activity in the complete hierarchy and rejects it. This change cannot prevent or repair OEM global UI appearing on the main display.
 
+## Finishing records and TaskInfo counts
+
+The complete raw activity chain remains bounded and every record still passes user, task, token, ordinal, package, process-UID, root and foreign-activity checks, including finishing records. The count and base corresponding to TaskInfo are taken only from non-finishing records. This follows the checked upstream TaskActivitiesReport.accept and fillTaskInfo implementation at the fixed AOSP revision below: finishing activities are skipped before the report counts activities or selects its base. This reference does not establish the device OEM implementation or identify any missing field in a historical phone refusal:
+https://android.googlesource.com/platform/frameworks/base/+/a42e14ce6379/services/core/java/com/android/server/wm/Task.java
+
+Four additional cases retain the original twelve and exercise a synthetic finishing Splash tail below Home and a new PermissionController top; wrong raw-record identities; INITIALIZING or absent permission process; and unchanged observe/window refusal and exact owned retirement. The state and process guards are unchanged. A proof still grants neither business observation nor permission input.
+
+These lifecycle variants and all TaskInfo counts are authored test inputs. A historical broker refusal did not persist its internal numActivities or activity dump; the test does not claim to reproduce those missing historical values. Existing failures remain unchanged, and no permission is granted, denied or automatically handled by this change.
+
 ## One bounded read after a classified permission-pair change
 
 Only the public window operation on an already retained owned leaf can attempt this new read. The original PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ refusal remains a refusal. Its string alone, an unrelated cause, or a marker bound to a different actual Binder cannot trigger retry. A private typed cause classifies one narrow failed read: the root and leaf still have the same actual tokens, task/user/display/parent/full UID, exact cookie lists and intent/base/real/original components, while their known, visible, running top presentation changes together between the exact trusted same-user PermissionController and the target app, or its bounded activity count changes. Missing, mixed, foreign or unknown state is not classified.
@@ -32,7 +41,7 @@ The retry latch is per owned task and is never reset: a second failure propagate
 
 Acceptance must complete strictly before both the original caller deadline and the classification's observed completion time plus 2,000 ms. Backward time or elapsed-budget failure yields no window. These checks do not claim a hard preemptive wall-clock cancellation of an in-flight framework call; the existing bounded Android read/deadline mechanisms remain in force. The new classifier timestamps the completed bracket read, not the instant before querying its child.
 
-The default canonical gate now runs the original twelve cases plus twenty-one read-retry cases. It compiles the real pure classifier/coordinator and the exact production bracket method with clearly synthetic framework and clock surfaces. It covers refusal-string and cause spoofing, changed token/tuple/cookies/base/UID, incomplete/mixed/foreign state, no retained leaf, fresh global and installed-identity failure, cancellation, rollback time, both deadline boundaries, single-use retry, new full PC proof, and unchanged negative mutation assertions. The original broker 47-case gate and actual private dump replay remain separate.
+The default canonical gate runs sixteen permission-chain cases (the original twelve plus four finishing-chain cases) and twenty-one read-retry cases. It compiles the real pure classifier/coordinator and the exact production bracket method with clearly synthetic framework and clock surfaces. It covers refusal-string and cause spoofing, changed token/tuple/cookies/base/UID, incomplete/mixed/foreign state, no retained leaf, fresh global and installed-identity failure, cancellation, rollback time, both deadline boundaries, single-use retry, new full PC proof, and unchanged negative mutation assertions. The original broker 47-case gate and actual private dump replay remain separate.
 
 This typed path is a conservative response to a possible structural presentation change. Historical failure records which contain only the refusal code, without the two TaskInfo snapshots or changed fields, do not establish that this classifier would admit those cases. Host tests are not evidence of a repaired phone workflow.
 

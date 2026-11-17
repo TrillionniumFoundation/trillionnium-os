@@ -147,7 +147,7 @@ def main():
                 raise RuntimeError(kind + ' summary missing or duplicated')
             summary = summaries[0]
             expected_sha = SYNTHETIC_SHA if kind == 'synthetic' else ACTUAL_SHA
-            if not (summary.get('passed') is True and summary.get('cases') == 12
+            if not (summary.get('passed') is True and summary.get('cases') == 16
                     and summary.get('fixture_kind') == kind
                     and summary.get('fixture_sha256') == expected_sha
                     and summary.get('taskinfo_fixtures_synthetic') is True
