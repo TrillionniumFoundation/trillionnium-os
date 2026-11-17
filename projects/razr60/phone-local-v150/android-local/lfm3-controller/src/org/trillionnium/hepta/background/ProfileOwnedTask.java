@@ -48,6 +48,7 @@ public final class ProfileOwnedTask {
     private boolean rootAttempted,prepared,dispatchMarked,startAccepted,retiring,rootRemoved,leafRemoved;
     private boolean identityUnknown,foreignTasks,cleanupKnown,liveAbsent,recentsAbsent;
     private String recentsBeforeSha,recentsAfterSha;
+    private boolean permissionReadRetryUsed;
     public ProfileOwnedTask(Platform platform,ProfileTarget target,String generation,String requestId,int display)throws Exception{
         need(platform!=null&&target!=null&&ProfileIdentity.uuid(generation)&&ProfileIdentity.uuid(requestId)&&display>0,
                 "PROFILE_OWNED_ARGUMENTS_INVALID");
@@ -87,7 +88,25 @@ public final class ProfileOwnedTask {
         need(startAccepted&&!retiring&&windowId>=0&&observedTaskId>0,"PROFILE_WINDOW_REQUEST_INVALID");
         platform.guard();ProfileTarget fresh=actual(true);
         long at=platform.now();
-        BackgroundOwnedSingleTask.Task current=observeTree(true);
+        BackgroundOwnedSingleTask.Task current;
+        try{current=observeTree(true);}
+        catch(ProfileTaskPolicy.Refusal refused){
+            // A string alone never authorizes retry. The failed proof is discarded, and
+            // only an already retained actual Binder may receive one complete fresh read.
+            Throwable cause=refused.getCause();long retryAt=platform.now();
+            if(!"PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ".equals(refused.code)
+                    ||!(cause instanceof ProfilePermissionTransient.ReadChange)||leaf==null||permissionReadRetryUsed
+                    ||retryAt>=deadline)throw refused;
+            ProfilePermissionTransient.ReadChange change=(ProfilePermissionTransient.ReadChange)cause;
+            if(!change.matchesRetained(target,root,leaf,retryAt))throw refused;
+            permissionReadRetryUsed=true;
+            long retryDeadline=change.retryDeadline(deadline);
+            platform.guard();fresh=actual(true);at=platform.now();
+            if(at<retryAt||at>=retryDeadline)throw refused;
+            current=observeTree(true,change);platform.guard();
+            long completed=platform.now();
+            if(completed<at||completed>=retryDeadline)throw refused;
+        }
         need(current!=null&&current.id==observedTaskId,"PROFILE_WINDOW_TASK_MISMATCH");
         platform.guard();need(platform.now()<deadline,"PROFILE_WINDOW_DEADLINE");
         return new WindowOwnership(fresh,generation,display,windowId,current.id,current.parent,
@@ -214,6 +233,7 @@ public final class ProfileOwnedTask {
         out.put("personal_task_audit",personalAudit);
         out.put("last_leaf_validation",lastLeafValidation);
         out.put("permission_transient",permissionEvidence);
+        out.put("permission_read_retry_used",permissionReadRetryUsed);
         out.put("cleanup",cleanupEvidence());return Collections.unmodifiableMap(out);
     }
     private ProfileTarget actual(boolean ready)throws Exception{
@@ -229,6 +249,9 @@ public final class ProfileOwnedTask {
         global.requireOnlyOwned(target,display,root.id,-1);
     }
     private BackgroundOwnedSingleTask.Task observeTree(boolean visible)throws Exception{
+        return observeTree(visible,null);
+    }
+    private BackgroundOwnedSingleTask.Task observeTree(boolean visible,ProfilePermissionTransient.ReadChange retry)throws Exception{
         ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(personal);
         List<BackgroundOwnedSingleTask.Task> roots=checked(platform.roots());
         need(roots.size()==1,"PROFILE_DISPLAY_ROOT_CHANGED");
@@ -238,6 +261,7 @@ public final class ProfileOwnedTask {
             List<BackgroundOwnedSingleTask.Task> permissionChildren=checked(platform.children(root.token));
             need(permissionChildren.size()==1,"PROFILE_FOREIGN_CHILD_TASK");
             BackgroundOwnedSingleTask.Task candidate=permissionChildren.get(0);
+            if(retry!=null)retry.requireSameReadIdentity(roots.get(0),candidate,platform.now());
             ProfilePermissionTransient.Proof permission=permissionForOwnedPair(roots.get(0),candidate,global);
             need(permission!=null,"PROFILE_ROOT_FOREIGN_ACTIVITY");
             if(leaf==null){leaf=candidate;leafTokenId=UUID.randomUUID().toString();}
@@ -252,7 +276,9 @@ public final class ProfileOwnedTask {
             need(leaf==null,"PROFILE_OWNED_LEAF_DISAPPEARED");
             global.requireOnlyOwned(target,display,root.id,-1);return null;
         }
-        BackgroundOwnedSingleTask.Task candidate=children.get(0);requireLeaf(candidate,global);
+        BackgroundOwnedSingleTask.Task candidate=children.get(0);
+        if(retry!=null)retry.requireSameReadIdentity(roots.get(0),candidate,platform.now());
+        requireLeaf(candidate,global);
         if(leaf==null){leaf=candidate;leafTokenId=UUID.randomUUID().toString();}
         else need(sameTask(leaf,candidate),"PROFILE_LEAF_TOKEN_CHANGED");
         global.requireOnlyOwned(target,display,root.id,candidate.id);

@@ -1,6 +1,6 @@
 # Permission transient retirement: host contract
 
-This gate compiles the production pure Java ownership policy and permission-chain verifier with Java `--release 8`. It runs twelve boundary cases against an authored, complete synthetic activity hierarchy. The Android package-manager and task-organizer adapters are not compiled by this gate; the Android build and device qualification remain separate requirements.
+This gate compiles the production pure Java ownership policy and permission-chain verifier with Java `--release 8`. It retains the twelve original boundary cases against an authored, complete synthetic activity hierarchy and adds twenty-one synthetic structural/read-retry cases. The actual permission-pair bracket method is separately extracted into an explicit synthetic organizer/clock harness. The full Android package-manager and task-organizer adapters are not compiled by this gate; the Android build and device qualification remain separate requirements.
 
 ## Current product contract
 
@@ -22,6 +22,20 @@ The proof expires after 2,000 ms measured from acquisition start, including the 
 
 `com.motorola.deviceguard/.permission.activity.ClipboardDialogActivity` on another root or on display 0 is explicitly outside this contract. The negative test retains that activity in the complete hierarchy and rejects it. This change cannot prevent or repair OEM global UI appearing on the main display.
 
+## One bounded read after a classified permission-pair change
+
+Only the public window operation on an already retained owned leaf can attempt this new read. The original PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ refusal remains a refusal. Its string alone, an unrelated cause, or a marker bound to a different actual Binder cannot trigger retry. A private typed cause classifies one narrow failed read: the root and leaf still have the same actual tokens, task/user/display/parent/full UID, exact cookie lists and intent/base/real/original components, while their known, visible, running top presentation changes together between the exact trusted same-user PermissionController and the target app, or its bounded activity count changes. Missing, mixed, foreign or unknown state is not classified.
+
+The failed permission proof is discarded. The fresh read starts again with installed target identity, complete global scope and current root/leaf validation. It also compares the short-lived retry identity, including cookies and underlying base, to the classified failed pair. A new target window requires the ordinary complete target proof and the actual observed accessibility task ID. A still-visible permission activity requires a new full system-package and caller/resultTo proof and yields only PROFILE_PERMISSION_SETUP_REQUIRED. It never becomes a business window. No input, grant/deny, launch, task move, broker restart, model request or cleanup action is added.
+
+The retry latch is per owned task and is never reset: a second failure propagates, and a later window call cannot obtain another retry. First claim, public observe, and retirement do not use this mechanism. Original long-lived retained Binder semantics remain unchanged; activity cookies already absent before the failed pair can remain absent, while a cookie change within the pair or fresh retry is refused.
+
+Acceptance must complete strictly before both the original caller deadline and the classification's observed completion time plus 2,000 ms. Backward time or elapsed-budget failure yields no window. These checks do not claim a hard preemptive wall-clock cancellation of an in-flight framework call; the existing bounded Android read/deadline mechanisms remain in force. The new classifier timestamps the completed bracket read, not the instant before querying its child.
+
+The default canonical gate now runs the original twelve cases plus twenty-one read-retry cases. It compiles the real pure classifier/coordinator and the exact production bracket method with clearly synthetic framework and clock surfaces. It covers refusal-string and cause spoofing, changed token/tuple/cookies/base/UID, incomplete/mixed/foreign state, no retained leaf, fresh global and installed-identity failure, cancellation, rollback time, both deadline boundaries, single-use retry, new full PC proof, and unchanged negative mutation assertions. The original broker 47-case gate and actual private dump replay remain separate.
+
+This typed path is a conservative response to a possible structural presentation change. Historical failure records which contain only the refusal code, without the two TaskInfo snapshots or changed fields, do not establish that this classifier would admit those cases. Host tests are not evidence of a repaired phone workflow.
+
 ## Two separate evidence classes
 
 `fixtures/synthetic-activities.txt` is hand-authored test data, not a captured device log. Its main display contains only an invented `com.example.viewer` task. Its other display contains invented root/leaf and activity/process tokens. It includes only the fields needed to exercise the production complete-hierarchy verifier; it has no copied main-screen task inventory, private application paths, display configuration, account content or device log tail. Package/component/APEX identity constants intentionally match the narrow production contract.
@@ -30,7 +44,7 @@ The default gate always compiles and runs the synthetic positive and boundary ca
 
 An optional `--real-dump` argument adds a second run of the same cases on one previously saved, unchanged actual dump. The runner requires exactly 91,980 bytes and SHA-256 `6e945458e4af25724f189ff477ebb4ab19a58099762d3d6827c3d42728c4d2fb`. That private file must be outside the source tree and is never copied into it. The production verifier receives the original complete text for the initial positive. Only the later coordinator fixtures remap IDs into synthetic `TaskInfo` fixtures. The result labels the dump as actual saved bytes while still marking all `TaskInfo`/clock/framework objects as synthetic. It is a host replay, not a new phone test.
 
-Do not add that private dump, screenshots, raw user/device logs, host result directories or real private paths to the public source manifest. Only the authored fixture, this document, the Java test and Python runner belong in this directory. Actual and synthetic test claims must remain distinct.
+Do not add that private dump, screenshots, raw user/device logs, host result directories or real private paths to the public source manifest. Only the authored fixture, this document, the Java tests and Python runner belong in this directory. Actual and synthetic test claims must remain distinct.
 
 ## Running the gate
 

@@ -135,7 +135,8 @@ public final class NotesRecoveryHostTest {
     }
     private static void grammar(String name,DecisionGrammar grammar,ActionDecision decision,boolean expected)throws Exception{
         Map<String,Object> c=new LinkedHashMap<String,Object>();c.put("name",name);c.put("grammar",grammar.text);
-        JSONObject o=new JSONObject().put("reason",decision.reason).put("action",decision.action).put("observation_id",decision.observationId);
+        // Grammar-only synthetic explanation; the original decision and recorded reason remain unchanged.
+        JSONObject o=new JSONObject().put("reason","synthetic node check").put("action",decision.action).put("observation_id",decision.observationId);
         if("open".equals(decision.action))o.put("app_label",decision.appLabel);
         o.put("package",decision.packageName);if(decision.nodeId!=null)o.put("node_label",decision.nodeLabel).put("node_id",decision.nodeId);
         c.put("json",o.toString());c.put("accepted",expected);grammarCases.add(c);

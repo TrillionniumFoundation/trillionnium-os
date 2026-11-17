@@ -15,6 +15,61 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+
+def pair_probe(background, output):
+    """Compile the actual bracket method with explicit synthetic organizer/clock surfaces."""
+    platform = background / 'ProfileTaskPlatform.java'
+    text = platform.read_text()
+    start = '    private void requireSamePermissionPair('
+    end = '    @Override public void createRoot('
+    if text.count(start) != 1 or text.count(end) != 1:
+        raise RuntimeError('Permission pair method extraction is ambiguous')
+    if (text.count('requireSamePermissionPair(root,leaf,before,started);') != 1
+            or text.count('requireSamePermissionPair(root,leaf,after,started);recheck(false);') != 1):
+        raise RuntimeError('Both actual permission proof brackets must use the classifier')
+    method = text[text.index(start):text.index(end)]
+    prefix = """package org.trillionnium.hepta.background;
+import java.util.List;
+/** Synthetic organizer and monotonic clock; actual production bracket method below. */
+final class PermissionPairProbe {
+    final ProfileTarget expected;
+    final Organizer organizer;
+    static final class SystemClock {
+        static long time;
+        static long elapsedRealtime(){return time;}
+    }
+    static final class Organizer {
+        final List<BackgroundOwnedSingleTask.Task> rootRows,leafRows;
+        final Object rootToken;
+        int rootReads,childReads;
+        long afterChildClock=-1;
+        Organizer(List<BackgroundOwnedSingleTask.Task> rootRows,List<BackgroundOwnedSingleTask.Task> leafRows,Object rootToken){
+            this.rootRows=rootRows;this.leafRows=leafRows;this.rootToken=rootToken;
+        }
+        List<BackgroundOwnedSingleTask.Task> roots(){rootReads++;return rootRows;}
+        List<BackgroundOwnedSingleTask.Task> children(Object token){
+            if(!rootToken.equals(token))throw new AssertionError("unowned child query");
+            childReads++;if(afterChildClock>=0)SystemClock.time=afterChildClock;return leafRows;
+        }
+    }
+    PermissionPairProbe(ProfileTarget expected,List<BackgroundOwnedSingleTask.Task> roots,
+            List<BackgroundOwnedSingleTask.Task> leaves,Object token){
+        this.expected=expected;organizer=new Organizer(roots,leaves,token);SystemClock.time=1100;
+    }
+    void check(BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,
+            ProfilePermissionTransient.Authority authority,long started)throws Exception{
+        requireSamePermissionPair(root,leaf,authority,started);
+    }
+"""
+    raw = (prefix + method + '}\n').encode()
+    path = output / 'PermissionPairProbe.java'
+    with path.open('xb') as stream:
+        stream.write(raw)
+    return path, {'source_sha256': sha(platform),
+                  'method_sha256': hashlib.sha256(method.encode()).hexdigest(),
+                  'generated_probe_sha256': hashlib.sha256(raw).hexdigest(),
+                  'framework_surface_synthetic': True}
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('source', 'java-home', 'output'):
@@ -33,8 +88,10 @@ def main():
              'ProfileOwnedTask', 'ProfilePermissionTransient', 'ProfileDisplayCustody']
     files = [background / (name + '.java') for name in names]
     files += [source / 'tests/profile-broker/ProfileBrokerHostTest.java',
-              here / 'ProfilePermissionTransientHostTest.java']
-    tracked = files + [Path(__file__).resolve(), fixture, here / 'README.md']
+              here / 'ProfilePermissionTransientHostTest.java',
+              here / 'ProfilePermissionReadRetryHostTest.java']
+    tracked = files + [Path(__file__).resolve(), fixture, here / 'README.md',
+                       background / 'ProfileTaskPlatform.java']
     result = {'schema': 'hepta.profile-permission-transient-canonical-host.v1',
               'all_pass': False, 'phone_contacted': False, 'android_build': False,
               'android_adapters_compiled': False, 'java_release': 8,
@@ -72,10 +129,11 @@ def main():
                 raise RuntimeError('Explicit private actual fixture pin differs')
             result['private_actual_fixture'] = {'bytes': 91980, 'sha256': ACTUAL_SHA,
                                                 'kind': 'actual_saved_bytes', 'copied_into_source': False}
+        probe, result['pair_bracket_extraction'] = pair_probe(background, output)
         classes = output / 'classes'
         run('compile', [str(args.java_home / 'bin/javac'), '--release', '8', '-encoding', 'UTF-8',
                         '-Xlint:all,-options', '-Werror', '-proc:none', '-d', str(classes)]
-            + [str(path) for path in files])
+            + [str(path) for path in files] + [str(probe)])
         cases = [('synthetic', fixture)]
         if private is not None:
             cases.append(('actual', private))
@@ -97,9 +155,25 @@ def main():
                     and summary.get('android_build') is False):
                 raise RuntimeError(kind + ' result contract differs')
             result[kind + '_summary'] = summary
+        retry_stdout = run('read-retry', [str(args.java_home / 'bin/java'), '-cp', str(classes),
+                           'org.trillionnium.hepta.background.ProfilePermissionReadRetryHostTest',
+                           str(fixture)])
+        retry_summaries = [json.loads(line) for line in retry_stdout.decode('utf-8').splitlines()
+                           if line.startswith('{')]
+        if len(retry_summaries) != 1:
+            raise RuntimeError('Read-retry summary missing or duplicated')
+        retry_summary = retry_summaries[0]
+        if not (retry_summary.get('passed') is True and retry_summary.get('cases') == 21
+                and retry_summary.get('fixture_sha256') == SYNTHETIC_SHA
+                and retry_summary.get('taskinfo_and_framework_fixtures_synthetic') is True
+                and retry_summary.get('real_pair_bracket_method_extracted') is True
+                and retry_summary.get('phone_contacted') is False
+                and retry_summary.get('android_build') is False):
+            raise RuntimeError('Read-retry result contract differs')
+        result['read_retry_summary'] = retry_summary
         result['source_inputs_unchanged'] = pins == {str(path.relative_to(source)): sha(path) for path in tracked}
         result['private_actual_unchanged'] = private is None or sha(private) == private_pin
-        expected_stages = 3 if private is not None else 2
+        expected_stages = 4 if private is not None else 3
         result['all_pass'] = (len(result['stages']) == expected_stages
                               and result['source_inputs_unchanged'] and result['private_actual_unchanged'])
     except Exception as error:

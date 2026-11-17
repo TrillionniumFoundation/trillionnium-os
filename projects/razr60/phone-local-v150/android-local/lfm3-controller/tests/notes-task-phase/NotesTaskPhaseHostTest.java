@@ -102,7 +102,8 @@ public final class NotesTaskPhaseHostTest {
     }
     private static void grammar(String name,DecisionGrammar grammar,ActionDecision decision,boolean expected)throws Exception{
         Map<String,Object> c=new LinkedHashMap<String,Object>();c.put("name",name);c.put("grammar",grammar.text);
-        JSONObject a=new JSONObject().put("reason",decision.reason).put("action",decision.action).put("observation_id",decision.observationId);
+        // Grammar-only synthetic explanation; original decisions and trace bytes remain unchanged for domain/dispatch checks.
+        JSONObject a=new JSONObject().put("reason","synthetic phase check").put("action",decision.action).put("observation_id",decision.observationId);
         if("notes.create".equals(decision.action))a.put("app_label",decision.appLabel).put("package",decision.packageName).put("text",decision.text);
         else{a.put("package",decision.packageName);if(decision.nodeId!=null)a.put("node_label",decision.nodeLabel).put("node_id",decision.nodeId);if("type".equals(decision.action))a.put("text",decision.text);}
         c.put("json",a.toString());c.put("accepted",expected);grammarCases.add(c);

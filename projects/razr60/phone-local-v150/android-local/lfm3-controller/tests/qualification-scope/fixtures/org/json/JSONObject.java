@@ -29,6 +29,9 @@ public final class JSONObject {
         try{return getJSONObject(key);}catch(JSONException missingOrWrongType){return null;}
     }
     public boolean optBoolean(String key,boolean fallback){Object value=fields.get(key);return value instanceof Boolean?(Boolean)value:fallback;}
+    public Object opt(String key){try{return get(key);}catch(JSONException missing){return null;}}
+    public String optString(String key,String fallback){Object value=opt(key);return value==null||value==NULL?fallback:String.valueOf(value);}
+    public Object remove(String key){Object value=opt(key);fields.remove(key);return value;}
     public boolean has(String key){return fields.containsKey(key);}
     public boolean isNull(String key){return !has(key)||fields.get(key)==NULL||fields.get(key)==null;}
     public int length(){return fields.size();}

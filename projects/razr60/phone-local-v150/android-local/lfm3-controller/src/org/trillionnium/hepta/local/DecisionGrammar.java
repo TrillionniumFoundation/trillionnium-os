@@ -315,13 +315,13 @@ public final class DecisionGrammar {
         rule(rules,"duration","[1-9] [0-9]{2} | "+literal("1")+" [0-9]{3} | "+literal("2000"));
         rule(rules,"app-offset",literal("0")+" | [1-9] [0-9]{0,2} | [1-3] [0-9]{3} | "+literal("40")+" [0-8] [0-9] | "+literal("409")+" [0-5]");
         rule(rules,"query-string",literal("\"")+" json-char{0,64} "+literal("\""));
-        rule(rules,"reason-string",literal("\"")+" json-char{1,96} "+literal("\""));
+        rule(rules,"reason-string",literal("\"")+" json-char{1,24} "+literal("\""));
         // At most 1024 Unicode scalar values imply at most 4096 decoded UTF-8 bytes.
         rule(rules,"text-string",literal("\"")+" json-char{0,1024} "+literal("\""));
         if(fixedTargets!=null)rule(rules,"fixed-payload-string",literal("\"")+" json-char{1,1024} "+literal("\""));
         rule(rules,"summary-string",literal("\"")+" json-char{1,1024} "+literal("\""));
         rules.append("json-char ::= [^\"\\\\\\x00-\\x1F] | "+literal("\\")+" [\"\\\\/bfnrt]\n");
-        rule(rules,"ws","[ \\t\\n\\r]{0,8}");
+        rule(rules,"ws","[ ]{0,1}");
         List<String> ruleNames=new ArrayList<String>();for(String branch:branches)ruleNames.add(branch.replace('_','-').replace('.','-'));
         return new DecisionGrammar(targets,"root ::= ws ("+join(ruleNames," | ")+") ws\n"+rules.toString(),branches,scrolls,appLabels,authorization,submits,imeProtocol,fixedTargets,doneStatuses);
     }

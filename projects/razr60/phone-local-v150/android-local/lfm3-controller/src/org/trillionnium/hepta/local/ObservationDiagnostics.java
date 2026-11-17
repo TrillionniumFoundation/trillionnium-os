@@ -36,6 +36,7 @@ final class ObservationDiagnostics {
     private String afterStage;
     private Map<String,Object> pairSeal,publication,lastMismatch;
     private long mismatchTotal;
+    private Map<String,Object> lastSavedGraphChange,lastSeedDecision;private long seedAdmissions;
     private static final String[] SEAL_PREDICATES={"native_graph_rechecked","frozen_window_present","frozen_window_matches",
         "authorization_present","authorization_same","pair_events_same","pair_unknown_events_same","capture_unknown_events_same",
         "sample_start_after_request","sample_complete_after_start","sample_complete_before_capture","capture_before_callback",
@@ -77,6 +78,22 @@ final class ObservationDiagnostics {
         row.put("frame_key_sha256",key);row.put("app_tree_sha256",appTree);
         row.put("observation_state_sha256",state);row.put("window_metadata_sha256",window);row.put("truncated",truncated);
         append(frames,row,MAX_FRAMES);frameTotal=plus(frameTotal,1);
+    }
+    /** Reuse bounded hashes already collected on the worker; never performs another read. */
+    synchronized void savedGraphChange(GraphStamp before,GraphStamp after,boolean nativeComplete,
+                                       boolean frozenWindow,boolean candidate,long now){
+        if(ended)return;Map<String,Object> delta=difference(before,after,null);if(delta==null)return;
+        delta.put("stage","saved_graph");delta.put("elapsed_ms",clock(now)-started);
+        delta.put("native_observation_complete",nativeComplete);delta.put("frozen_window_available",frozenWindow);
+        delta.put("seed_candidate",candidate);lastSavedGraphChange=Collections.unmodifiableMap(delta);
+    }
+    synchronized void seedDecision(String decision,long now){
+        if(ended||!("admitted".equals(decision)||"discarded_before_admission".equals(decision)
+                ||"invalidated_before_sample".equals(decision)||"replaced_by_sample".equals(decision)
+                ||"ready".equals(decision)))return;
+        Map<String,Object> row=map();row.put("decision",decision);row.put("elapsed_ms",clock(now)-started);
+        row.put("grants_action_authority",false);lastSeedDecision=Collections.unmodifiableMap(row);
+        if("admitted".equals(decision))seedAdmissions=plus(seedAdmissions,1);
     }
     synchronized void missingSample(){if(!ended){note(Event.SAMPLE_MISSING);previousSampleKey=null;}}
     /** References are immutable bounded values from reads which already occurred.
@@ -156,6 +173,15 @@ final class ObservationDiagnostics {
         }
         return value;
     }
+    /** Preserve prior diagnostics while dropping only the optional second graph detail. */
+    static Map<String,Object> withoutSavedGraphDifference(Map<String,Object> original){
+        Map<String,Object> value=new LinkedHashMap<String,Object>(original);
+        if(value.containsKey("last_native_saved_graph_change")){
+            value.remove("last_native_saved_graph_change");
+            value.put("native_saved_graph_detail_omitted_for_budget",true);
+        }
+        return value;
+    }
     synchronized void published(String id,long now){if(!ended&&id(id)){publishedObservationId=id;note(Event.PUBLISHED);finish("published",now);}}
     synchronized void finish(String status,long now){
         if(ended)return;if(!"published".equals(status)&&!"failed".equals(status))return;
@@ -192,6 +218,9 @@ final class ObservationDiagnostics {
         value.put("read_mismatch_records_truncated",mismatchTotal>1);
         value.put("retained_graph_stamps_released_at_terminal",ended&&capturedStamp==null&&afterStamp==null);
         value.put("node_text_recorded",false);value.put("screenshot_pixels_recorded",false);
+        if(lastSavedGraphChange!=null)value.put("last_native_saved_graph_change",copyMap(lastSavedGraphChange));
+        if(lastSeedDecision!=null){value.put("last_native_seed_decision",copyMap(lastSeedDecision));
+            value.put("native_seed_admission_count",seedAdmissions);}
         value.put("grants_action_authority",false);value.put("changes_deadline",false);return value;
     }
     private static Map<String,Object> map(){return new LinkedHashMap<String,Object>();}

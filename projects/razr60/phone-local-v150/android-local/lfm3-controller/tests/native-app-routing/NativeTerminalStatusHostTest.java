@@ -155,7 +155,7 @@ public final class NativeTerminalStatusHostTest {
         check(grammarStatuses(bound).equals(statuses("failure"))&&!bound.successAllowed,"later domain publication cannot widen an earlier grammar snapshot");
     }
     private static String terminal(DecisionGrammar grammar,String status){
-        return "{\"reason\":\"explicit host status test\",\"action\":\"done\",\"observation_id\":\""+grammar.observationId
+        return "{\"reason\":\"host status check\",\"action\":\"done\",\"observation_id\":\""+grammar.observationId
                 +"\",\"package\":\""+grammar.currentPackage+"\",\"status\":\""+status+"\",\"summary\":\"host fixture\"}";
     }
     private static void compare(String name,DecisionGrammar grammar,NativeAppDomain domain,Set<String> expected)throws Exception{
