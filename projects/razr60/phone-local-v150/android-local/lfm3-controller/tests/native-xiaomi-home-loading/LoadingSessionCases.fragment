@@ -45,7 +45,7 @@
             check(f.windowId==138&&f.displayId==20&&f.capturedElapsedMs==39140302L,"original frame identity/timing preserved");
         });
         one("existing_ready_home_retains_original_observed_search_target",()->{
-            Harness h=new Harness("ready");h.xml("home.xml");check("home_search".equals(h.session.domain().phase)&&h.node("open_search")!=null,"original home search remains usable");h.noQueryOrResult();
+            Harness h=new Harness("ready");h.xml("home.xml");check("home_search".equals(h.session.domain().phase)&&h.node(NativeXiaomiProductPage.SEARCH_ICON)!=null,"original home search remains usable");h.noQueryOrResult();
         });
         one("incomplete_or_truncated_home_shell_is_not_loading_authority",()->{
             NativeAppEvidence.Frame f=ActualXiaomiHomeLoadingFixture.frame();
@@ -110,7 +110,7 @@
         });
         one("stale_undispatched_wait_keeps_session_live_and_requires_fresh_frame",()->{
             Harness h=new Harness("stale");loading(h,138);String old=h.frame.observationId;h.issue(waitAction(h),false,false,true);h.xml("home.xml");
-            check(!old.equals(h.frame.observationId)&&h.node("open_search")!=null,"fresh supported home restores original query path");
+            check(!old.equals(h.frame.observationId)&&h.node(NativeXiaomiProductPage.SEARCH_ICON)!=null,"fresh supported home restores original query path");
             check(((Number)h.progress().get("product_home_loading_wait_attempts")).intValue()==1,"stale wait still consumes bounded proposal");h.noQueryOrResult();
         });
         one("two_waits_exhaust_budget_without_reset_by_window_generation",()->{
@@ -128,7 +128,7 @@
             Harness h=new Harness("reentry-clock");loading(h,138);long first=h.frame.capturedElapsedMs;h.xml("home.xml");h.clock=first+15000;loading(h,139);exhausted(h);
         });
         one("pending_open_search_is_not_proved_by_loading_shell",()->{
-            Harness h=new Harness("pending");h.xml("home.xml");h.issue(h.action("open_search"),true,true,false);loading(h,139);h.pendingOnly();
+            Harness h=new Harness("pending");h.xml("home.xml");h.issue(h.action(NativeXiaomiProductPage.SEARCH_ICON),true,true,false);loading(h,139);h.pendingOnly();
             check(((List<?>)h.progress().get("transitions")).isEmpty(),"loading shell cannot verify query navigation");
         });
         one("pending_modal_back_reaches_failure_only_after_two_real_model_waits",()->{

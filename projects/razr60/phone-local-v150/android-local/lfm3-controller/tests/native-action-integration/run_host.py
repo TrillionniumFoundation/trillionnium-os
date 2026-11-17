@@ -88,6 +88,15 @@ def generate(source,out):
     projection=replace(original,main,(source/TEST/'XiaomiGuardCases.fragment').read_text())
     projection=replace(projection,'class NativeXiaomiModalSessionHostTest','class XiaomiActionGuardHost')
     projection=replace(projection,'private NativeXiaomiModalSessionHostTest(){}','private XiaomiActionGuardHost(){}')
+    # Exact Controller accepted-outcome barrier and complete await methods.
+    pending_parts={
+      'controller_pending_await':body(controller,'    private PhoneObservation awaitObservation(final String id,final File directory,final TaskAuthorization.Gate authorization,final long deadline)throws Exception{'),
+      'controller_pending_await_request':body(controller,'    private PhoneObservation awaitObservation(final String id,final File directory,final TaskAuthorization.Gate authorization,final long deadline,'),
+      'controller_pending_barrier':section(controller,'                staleRounds=0;checkActive(deadline);',
+        '                JSONObject row=new JSONObject().put("step",steps).put("action",action.action).put("detail",outcome.detail)')}
+    for name,value in pending_parts.items():projection=replace(projection,'{{'+name+'}}',value)
+    projection=replace(projection,'import java.nio.charset.StandardCharsets;','import java.io.File;\nimport java.nio.charset.StandardCharsets;')
+    methods.update(pending_parts)
     write(out/'XiaomiActionGuardHost.java',projection)
     write(out/'android/util/DisplayMetrics.java','package android.util; public final class DisplayMetrics { public int widthPixels,heightPixels; }\n')
     return service,controller,parts,methods,original,main
@@ -107,7 +116,7 @@ def sources(source,out):
       source/'tests/native-app-provider/NativeResourceHomeHostTest.java',
       source/'tests/native-xiaomi-image-modal/ActualXiaomiImageModalFixture.java']
     paths += [source/TEST/(name+'.java') for name in ['IntegrationChecks','NativeActionSessionHostTest',
-        'NativeActionSnapshotCheckHostTest','NativeCarouselCurrentnessHostTest','NativeXiaomiHomeVariationHostTest','NativeXiaomiEntryObservationHostTest','NativeActionIntegrationHostTest']]
+        'NativeActionSnapshotCheckHostTest','NativeCarouselCurrentnessHostTest','NativeXiaomiHomeVariationHostTest','NativeXiaomiEntryObservationHostTest','NativeStableSearchIconHostTest','NativeActionIntegrationHostTest']]
     paths += sorted((out/'generated').rglob('*.java'))
     if not any(str(p).endswith('/android/util/Log.java') for p in paths):
         log=out/'generated/android/util/Log.java'
@@ -148,7 +157,7 @@ def main():
           'source_files':{name:meta(source/PKG/(name+'.java')) for name in ('HeptaAccessibilityService','LocalTaskController','NativeAppSession','NativeActionSnapshotCheck')},
           'methods':{name:{'bytes':len(value.encode()),'sha256':sha(value.encode())} for name,value in {**parts,**methods}.items()},
           'xiaomi_original_harness':meta(source/'tests/native-app-provider/NativeXiaomiModalSessionHostTest.java'),
-          'xiaomi_only_main_and_outer_name_changed':True,'xiaomi_old_main_sha256':sha(oldmain.encode()),
+          'xiaomi_only_main_and_outer_name_changed':False,'xiaomi_main_outer_name_and_File_import_only':True,'xiaomi_old_main_sha256':sha(oldmain.encode()),
           'background_fixture':bgrecord,'actual_image_fixture':modal_record,
           'boundary':'Session/authorization/provider classes and Service extracted bodies are actual. Complete census rows, Android APIs, traversal, clock, installed verifier and performAction are explicit synthetic host endpoints. No PhoneObservation screenshot is fabricated as device proof.'}
         save(out/'EXTRACTION.json',record)
@@ -163,6 +172,13 @@ def main():
         pure=json.loads((out/'PURE-CASES.json').read_text());cases=json.loads((out/'CASES.json').read_text())
         need(pure['schema']=='hepta.native-action-snapshot-candidate-host.v1' and pure['all_pass'] is True and pure['cases']==76 and pure['assertions']==157 and len(set(pure['names']))==76,'original complete pure matrix required')
         need(cases['schema']=='hepta.native-action-integration-host.v1' and cases['all_pass'] is True and cases['cases']==len(cases['case_names'])==len(set(cases['case_names'])) and cases['assertions']>0,'actual complete unique integration cases required')
+        pending=json.loads((out/'PENDING-BOUNDARY.json').read_text())
+        need(pending['schema']=='hepta.r5.native-pending-controller-boundary.v1'
+             and pending['actual_controller_barrier_completed'] is True
+             and pending['next_model_waited_for_actual_session_observed'] is True
+             and pending['fresh_pending_domain_refused_second_icon'] is True
+             and pending['direct_session_pending_barrier_claimed'] is False,'actual Controller ordering and explicit Session API boundary')
+        report['pending_boundary_file']=meta(out/'PENDING-BOUNDARY.json')
         report.update(cases=cases,pure=pure,cases_file=meta(out/'CASES.json'),pure_cases_file=meta(out/'PURE-CASES.json'),extraction_file=meta(out/'EXTRACTION.json'),
             generated_files={str(p.relative_to(generated)):meta(p) for p in sorted(generated.rglob('*.java'))},all_pass=True)
     except Exception as error:report['error']={'type':type(error).__name__,'message':str(error)}

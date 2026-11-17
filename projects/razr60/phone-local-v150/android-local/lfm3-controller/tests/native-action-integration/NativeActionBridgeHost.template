@@ -247,15 +247,15 @@ final class NativeActionBridgeHost {
         Fixture(String p,String label)throws Exception{this(p,label,null);}
         Fixture(String p,String label,NativeActionSnapshotCheckHostTest.Fixture recorded)throws Exception{
             fixture=this;purpose=p;task=id("bridge-task:"+label);run=id("bridge-model:"+label);
-            raw=recorded!=null?recorded:NativeActionSnapshotCheck.SEARCH.equals(p)?NativeActionSnapshotCheckHostTest.xiaomi():NativeActionSnapshotCheck.OPEN.equals(p)?NativeActionSnapshotCheckHostTest.home():NativeActionSnapshotCheckHostTest.form(p);
-            owner=NativeActionSnapshotCheck.SEARCH.equals(p)?"在小米商城查一下小米AX3000T的售价":NativeAppProviderHostTest.OWNER;
+            raw=recorded!=null?recorded:NativeActionSnapshotCheck.SEARCH_ICON.equals(p)?NativeActionSnapshotCheckHostTest.xiaomi():NativeActionSnapshotCheck.OPEN.equals(p)?NativeActionSnapshotCheckHostTest.home():NativeActionSnapshotCheckHostTest.form(p);
+            owner=NativeActionSnapshotCheck.SEARCH_ICON.equals(p)?"在小米商城查一下小米AX3000T的售价":NativeAppProviderHostTest.OWNER;
             BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,raw.pkg,Collections.singleton(raw.pkg));
             selection=new org.trillionnium.hepta.local.BackgroundSession.Selection(target);authorization=TaskAuthorization.parse(owner).forExecutionSelection(selection);gate=authorization.bind(task);
             background=new BackgroundSession();background.taskId=task;background.generation=NativeAppProviderHostTest.GENERATION;background.ownerSha256=target.ownerSha256;background.selection=selection;
             taskAuthorization=gate;windowRows.add(new AccessibilityWindowInfo());SystemClock.now=1000;
-            NativeAppEvidence.Installed installed=new NativeAppEvidence.Installed(raw.pkg,NativeActionSnapshotCheck.SEARCH.equals(p)?10485:10367,
-                    NativeActionSnapshotCheck.SEARCH.equals(p)?20261010L:1779L,
-                    Collections.singletonMap("base",NativeActionSnapshotCheck.SEARCH.equals(p)?"95883c057eb15bc6e50a82f2e22da13b77980871624f60a2fb9e50cfdf4a8373":NativeCtripFlightPage.BASE_APK_SHA256));
+            NativeAppEvidence.Installed installed=new NativeAppEvidence.Installed(raw.pkg,NativeActionSnapshotCheck.SEARCH_ICON.equals(p)?10485:10367,
+                    NativeActionSnapshotCheck.SEARCH_ICON.equals(p)?20261010L:1779L,
+                    Collections.singletonMap("base",NativeActionSnapshotCheck.SEARCH_ICON.equals(p)?"95883c057eb15bc6e50a82f2e22da13b77980871624f60a2fb9e50cfdf4a8373":NativeCtripFlightPage.BASE_APK_SHA256));
             session=new NativeAppSession(task,gate,selection,installed,NativeAppObservation.selectionSha(selection),background.generation,7,
                     ()->{if(!installedCurrent)throw new IllegalStateException("host installed change");events.add("installed");},
                     (leaf,value)->{Map<String,Object> e=NativeAppEvidence.map();e.put("leaf",leaf);e.put("value",NativeAppEvidence.immutableMap(value));journal.add(e);});
@@ -263,6 +263,9 @@ final class NativeActionBridgeHost {
             if(NativeActionSnapshotCheck.QUERY.equals(p))year();
             String selected=null;for(Map.Entry<String,String> e:session.domain().purposes.entrySet())if(p.equals(e.getValue()))selected=e.getKey();
             if(selected==null)throw new AssertionError("synthetic full provider fixture does not admit original purpose: "+p+" "+session.domain().evidence());
+            // Actual default Session chooses the icon; effects must be counted
+            // on that selected NodeRef, never on the old synthetic switcher.
+            raw.target=frame.byId.get(selected).path;raw.label=frame.byId.get(selected).label;
             action=click(selected);SystemClock.now+=10;step++;gate.check(action,run);session.beforeModelAction(step,action,run,SystemClock.now);
             NativeAppSession.ActionGuard guard=session.actionGuard(action,run,frame.observationId,SystemClock.now,SystemClock.now+8000);
             work=new ActionWork(task,current,run,scope,gate,background,()->cancelled,currentGraph.copyForAction(action.nodeId,null),null,SystemClock.now,SystemClock.now+8000,guard);
@@ -340,7 +343,7 @@ final class NativeActionBridgeHost {
             session.modelActionOutcome(back,second,true,true,false,hash("host-back-receipt"),++SystemClock.now);observeGraph(raw);
             yes(Boolean.TRUE.equals(((Map<?,?>)session.evidence().get("progress")).get("calendar_year_proved")),"bridge query uses actual Session calendar roundtrip");
         }
-        void neutralText(){String path=NativeActionSnapshotCheck.SEARCH.equals(purpose)?"0/2/0":NativeActionSnapshotCheck.OPEN.equals(purpose)?"0/1/0":"0/0/7/0";
+        void neutralText(){String path=NativeActionSnapshotCheck.SEARCH_ICON.equals(purpose)?"0/2/0":NativeActionSnapshotCheck.OPEN.equals(purpose)?"0/1/0":"0/0/7/0";
             fresh.nodes.get(path).put("text","host unrelated updated text");fresh.nodes.get(path).put("label","host unrelated updated text");}
         boolean dispatch()throws Exception{
             String refusal=validate(task,current,action,null,()->cancelled,work);if(refusal!=null)return false;

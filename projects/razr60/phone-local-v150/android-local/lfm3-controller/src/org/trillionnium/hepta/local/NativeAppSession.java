@@ -111,7 +111,7 @@ final class NativeAppSession {
         if(current!=null)need(frame.capturedElapsedMs>=current.frame.capturedElapsedMs,"native observation clock moved backwards");
         observations.put(frame.observationId,frame.sourceRecordSha);acceptedClaim=null;
         flight=NativeCtripFlightPage.supported(goal)?NativeCtripFlightPage.inspect(goal,frame):null;
-        product=NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName)?NativeXiaomiProductPage.inspect(goal,frame):null;
+        product=NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName)?NativeXiaomiProductPage.inspectPreferredNavigation(goal,frame):null;
         if(product!=null&&NativeXiaomiProductPage.HOME_LOADING.equals(product.phase)&&productHomeLoadingSince<0)
             productHomeLoadingSince=frame.capturedElapsedMs;
         if(pending!=null)advancePending(frame);
@@ -422,7 +422,7 @@ final class NativeAppSession {
                 &&a.before.frame.observationId.equals(observation)&&a.started<=issued,
                 "guard requires the same journaled in-flight original Attempt");
         if(!"click".equals(action.action)||!java.util.Arrays.asList(NativeActionSnapshotCheck.OPEN,
-                NativeActionSnapshotCheck.YEAR,NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH).contains(a.purpose))return null;
+                NativeActionSnapshotCheck.YEAR,NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH,NativeActionSnapshotCheck.SEARCH_ICON).contains(a.purpose))return null;
         need(action.toolChildOrigin==null&&a.guard==null&&deadline>issued&&deadline-issued<=8000,
                 "one original native action worker budget required");
         current.requireCurrent(action);requireFrame(a.before.frame);
@@ -559,7 +559,7 @@ final class NativeAppSession {
     private boolean provedUnenteredGuardedAction(Attempt a,Map<String,Object> x,long finished){
         ActionGuard g=a.guard;
         if(!java.util.Arrays.asList(NativeActionSnapshotCheck.OPEN,NativeActionSnapshotCheck.YEAR,
-                NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH).contains(a.purpose)
+                NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH,NativeActionSnapshotCheck.SEARCH_ICON).contains(a.purpose)
                 ||g==null||g.action!=a.action||g.frame!=a.before.frame||!provedUnenteredAction(a,x,finished))return false;
         if(executionNumber(x,"queued_elapsed_ms")<g.issued||executionNumber(x,"deadline_elapsed_ms")!=g.deadline)return false;
         Object raw=x.get("native_action_guard");if(!(raw instanceof Map<?,?>))return false;
@@ -625,6 +625,12 @@ final class NativeAppSession {
                         &&a.product.quote.amountDecimal.equals(product.quote.amountDecimal)&&a.product.quote.currency.equals(product.quote.currency),"same queried product/card and displayed price required");
                 proof.put("query",productQueryProof);proof.put("search_card",a.product.quote.evidence());proof.put("detail",product.quote.evidence());
                 productOpenProof=NativeAppEvidence.immutableMap(proof);productSemantic=product.quote.semanticFingerprint;complete=true;
+            }else if(NativeXiaomiProductPage.SEARCH_ICON.equals(a.purpose)&&a.product!=null&&a.product.searchIconNavigationCandidate){
+                complete=java.util.Arrays.asList("search_input","search_submit","search_suggestion").contains(product.phase);
+                if(complete){
+                    proof.put("navigation_only",true);proof.put("fresh_search_contract_phase",product.phase);
+                    proof.put("query_or_result_proof_created",false);proof.put("business_transition_verified",false);
+                }
             }else if("set_product_query".equals(a.purpose)||"open_search".equals(a.purpose)||"return_to_owned_product_search".equals(a.purpose)){
                 complete=!"unrecognized_native_page".equals(product.phase)&&!"observation_unavailable".equals(product.phase)
                         &&!NativeXiaomiProductPage.HOME_LOADING.equals(product.phase);

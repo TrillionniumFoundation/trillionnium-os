@@ -83,6 +83,32 @@ public final class ProfileOwnedTask {
         need(startAccepted&&!retiring,"PROFILE_TASK_NOT_ACTIVE");
         return observeTree(true)!=null;
     }
+    /** Read-only state coordination inside the caller's original request deadline.
+     * A verified permission top is only a reason to read again, never a business
+     * window or input grant. Ordinary observe/window and retirement stay separate. */
+    public synchronized boolean observeStateUntil(long deadline)throws Exception{
+        need(startAccepted&&!retiring,"PROFILE_TASK_NOT_ACTIVE");
+        boolean permissionPending=false;
+        while(true){
+            platform.guard();
+            need(platform.now()<deadline,permissionPending?"PROFILE_PERMISSION_SETUP_REQUIRED":"PROFILE_STATE_READ_DEADLINE");
+            actual(true);
+            need(platform.now()<deadline,permissionPending?"PROFILE_PERMISSION_SETUP_REQUIRED":"PROFILE_STATE_READ_DEADLINE");
+            try{
+                BackgroundOwnedSingleTask.Task current=observeTreeSample(true);
+                platform.guard();
+                need(platform.now()<deadline,"PROFILE_STATE_READ_DEADLINE");
+                return current!=null;
+            }catch(VerifiedPermissionPending pending){
+                platform.guard();
+                long now=platform.now();
+                // The ordinary platform pause is 20 ms. Never start it without
+                // room in this same deadline; a late return cannot become success.
+                need(now<deadline&&deadline-now>20,"PROFILE_PERMISSION_SETUP_REQUIRED");
+                permissionPending=true;platform.pause();
+            }
+        }
+    }
     public synchronized WindowOwnership window(int windowId,int observedTaskId,long deadline)throws Exception{
         need(startAccepted&&!retiring&&windowId>=0&&observedTaskId>0,"PROFILE_WINDOW_REQUEST_INVALID");
         platform.guard();ProfileTarget fresh=actual(true);
@@ -228,7 +254,15 @@ public final class ProfileOwnedTask {
         need(checked(platform.children(root.token)).isEmpty(),"PROFILE_PREPARED_ROOT_NOT_EMPTY");
         global.requireOnlyOwned(target,display,root.id,-1);
     }
+    private static final class VerifiedPermissionPending extends Exception {
+        private static final long serialVersionUID=1L;
+        private VerifiedPermissionPending(){}
+    }
     private BackgroundOwnedSingleTask.Task observeTree(boolean visible)throws Exception{
+        try{return observeTreeSample(visible);}
+        catch(VerifiedPermissionPending pending){throw new ProfileTaskPolicy.Refusal("PROFILE_PERMISSION_SETUP_REQUIRED");}
+    }
+    private BackgroundOwnedSingleTask.Task observeTreeSample(boolean visible)throws Exception{
         ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(personal);
         List<BackgroundOwnedSingleTask.Task> roots=checked(platform.roots());
         need(roots.size()==1,"PROFILE_DISPLAY_ROOT_CHANGED");
@@ -243,7 +277,7 @@ public final class ProfileOwnedTask {
             if(leaf==null){leaf=candidate;leafTokenId=UUID.randomUUID().toString();}
             else need(sameTask(leaf,candidate),"PROFILE_LEAF_TOKEN_CHANGED");
             global.requireOnlyOwned(target,display,root.id,candidate.id);
-            throw new ProfileTaskPolicy.Refusal("PROFILE_PERMISSION_SETUP_REQUIRED");
+            throw new VerifiedPermissionPending();
         }
         requireRoot(roots.get(0),true);
         List<BackgroundOwnedSingleTask.Task> children=checked(platform.children(root.token));

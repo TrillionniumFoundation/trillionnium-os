@@ -317,7 +317,7 @@ public final class BackgroundDisplayBroker {
                 if ("ACTIVE".equals(state)) {
                     verifyDisplay();
                     if(config.profileTarget!=null){
-                        if(profileOwnedTask!=null&&!profileOwnedTask.observe())throw new BrokerProtocol.Refusal("PROFILE_TASK_NOT_OBSERVED");
+                        if(profileOwnedTask!=null&&!profileOwnedTask.observeStateUntil(Math.min(r.deadline,expires)-100))throw new BrokerProtocol.Refusal("PROFILE_TASK_NOT_OBSERVED");
                         else if(profileOwnedTask==null)requireUnlaunchedProfileEmpty();
                         if(profileOwnedTask!=null)refreshProfileTaskEvidence();
                     } else {

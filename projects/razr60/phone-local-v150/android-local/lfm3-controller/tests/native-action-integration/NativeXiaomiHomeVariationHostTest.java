@@ -58,7 +58,7 @@ final class NativeXiaomiHomeVariationHostTest {
         IntegrationChecks.one("recorded_xiaomi_home_rejects_"+name,()->{Fixture f=stableEntry(raw);yes(Boolean.FALSE.equals(f.compare().get("grants_dispatch")),"unmutated host entry control passes");change.apply(f);IntegrationChecks.rejects(()->f.compare(),"complete changed predicate must refuse "+name);});
     }
     static NativeActionBridgeHost.Fixture bridge(Map<String,Object> raw,String label)throws Exception{
-        Fixture data=TARGET.equals(map(raw.get("census")).get("target_path"))?new Fixture(raw):stableEntry(raw);NativeActionBridgeHost.Fixture f=new NativeActionBridgeHost().new Fixture(NativeActionSnapshotCheck.SEARCH,"recorded-home:"+label,data.bridge(false));
+        Fixture data=TARGET.equals(map(raw.get("census")).get("target_path"))?new Fixture(raw):stableEntry(raw);NativeActionBridgeHost.Fixture f=new NativeActionBridgeHost().new Fixture(NativeActionSnapshotCheck.SEARCH_ICON,"recorded-home:"+label,data.bridge(false));
         f.fresh=data.bridge(true);return f;
     }
     static void run(Path source)throws Exception{
@@ -83,12 +83,13 @@ final class NativeXiaomiHomeVariationHostTest {
         for(final String unchanged:Arrays.asList(BANNER,SWITCHER))IntegrationChecks.one("host_query_entry_exact_hint_and_banner_"+unchanged.replace('/','_'),()->{
             Fixture f=stableEntry(raw);f.replaceFreshBranch(unchanged);yes(Boolean.FALSE.equals(f.compare().get("grants_dispatch")),"independent decoration proof stays non-authoritative");
         });
-        IntegrationChecks.one("recorded_entry_hint_change_is_stale_before_service_comparator",()->{
+        IntegrationChecks.one("recorded_changed_entry_and_old_default_action_remain_refused",()->{
             Fixture data=new Fixture(raw).entryTarget(true);
+            IntegrationChecks.rejects(()->data.compare(),"legacy changed target hint remains stale");
             NativeActionBridgeHost.Fixture f=bridge(data.root,"changed-entry-hint");
-            yes("stale".equals(NativeActionBridgeHost.actualComparisonDisposition(f)),"actual Service rejects changed derived NodeRef before comparator as stale");
-            yes(!NativeActionBridgeHost.recordedRejectionPresent(f),"pre-comparator signature refusal is not mislabeled comparator failure");
-            f.noEffect("changing target hint dispatches no action");
+            ActionDecision oldEntry=f.click(f.ids.get(TARGET));
+            IntegrationChecks.rejects(()->f.session.domain().requireCurrent(oldEntry),"actual new default does not admit old entry action");
+            f.noEffect("old switcher proposal dispatches no action");
         });
         negative(raw,"second_visible_banner_page",f->{Map<String,Object> n=f.node(true,BANNER+"/5");n.put("visible",true);n.put("bounds",f.node(true,BANNER).get("bounds"));n.put("label","");n.put("ref_signature_sha256",f.node(true,BANNER+"/6").get("ref_signature_sha256"));});
         negative(raw,"changed_visible_banner_coverage",f->f.node(true,BANNER+"/6").put("bounds",NativeActionSnapshotCheckHostTest.rect(1,0,1224,931)));
@@ -119,7 +120,7 @@ final class NativeXiaomiHomeVariationHostTest {
         negative(raw,"duplicate_census_path",f->{f.rows(true).add(copyMap(f.node(true,BANNER+"/6")));f.env(true).put("visited",83);});
         negative(raw,"foreign_action_purpose",f->f.census.put("purpose",NativeActionSnapshotCheck.QUERY));
         IntegrationChecks.one("recorded_xiaomi_variation_reaches_actual_final_live_chain_once",()->{
-            NativeActionBridgeHost.Fixture f=bridge(raw,"dispatch");yes(f.dispatch()&&f.effects()==1,"actual extracted compare and final live chain accept one explicit host entry click");
+            NativeActionBridgeHost.Fixture f=bridge(raw,"dispatch");yes(f.dispatch()&&f.effects()==1,"actual extracted compare and final live chain accept one explicit host icon click");
             yes(f.service.events.contains("full_census"),"actual Service performs fresh census before effect");
         });
         IntegrationChecks.one("recorded_xiaomi_live_ancestor_change_after_fresh_census_refuses",()->{
@@ -128,8 +129,8 @@ final class NativeXiaomiHomeVariationHostTest {
             IntegrationChecks.rejects(()->f.dispatch(),"final original ancestor refresh remains exact");f.noEffect("late ancestor change never enters effect");
         });
         IntegrationChecks.one("recorded_xiaomi_live_child_reference_replacement_refuses",()->{
-            NativeActionBridgeHost.Fixture f=bridge(raw,"live-reference");NativeActionBridgeHost.NodeData parent=f.data.get("0/0"),target=f.data.get(TARGET);
-            parent.beforeRefresh=()->{NativeActionBridgeHost.NodeData replacement=new NativeActionBridgeHost.NodeData(target.values);replacement.parent=parent;parent.children.set(3,replacement);};
+            NativeActionBridgeHost.Fixture f=bridge(raw,"live-reference");NativeActionBridgeHost.NodeData parent=f.data.get("0/0"),target=f.data.get(f.raw.target);
+            parent.beforeRefresh=()->{NativeActionBridgeHost.NodeData replacement=new NativeActionBridgeHost.NodeData(target.values);replacement.parent=parent;parent.children.set(Integer.parseInt(f.raw.target.substring(f.raw.target.lastIndexOf('/')+1)),replacement);};
             IntegrationChecks.rejects(()->f.dispatch(),"same fields cannot replace the original retained child object");f.noEffect("late actual reference replacement never enters effect");
         });
         runR18Transition(source);
@@ -226,9 +227,10 @@ final class NativeXiaomiHomeVariationHostTest {
         IntegrationChecks.one("recorded_r18_transition_reaches_original_search_ax_target_only",()->{
             NativeActionBridgeHost.Fixture f=bridge(raw,"two-clip-target");
             yes(f.dispatch()&&f.effects()==1,"actual compare/final census/live chain accepts one synthetic directed AX click");
-            yes(f.data.get(TARGET).effects==1,"effect belongs to the host query-entry NodeRef");
+            yes(f.data.get(f.raw.target).effects==1&&OLD_ICON.equals(f.raw.target),"effect belongs to actual default icon NodeRef");
+            yes(f.data.get(TARGET).effects==0,"legacy switcher receives no effect");
             boolean untouched=true;for(Map.Entry<String,NativeActionBridgeHost.NodeData> e:f.data.entrySet())
-                if(!TARGET.equals(e.getKey())&&e.getValue().effects!=0)untouched=false;
+                if(!f.raw.target.equals(e.getKey())&&e.getValue().effects!=0)untouched=false;
             yes(untouched,"no banner clip or other node receives the effect");
             yes(f.service.events.contains("full_census"),"fresh full census still executes before original target action");
         });

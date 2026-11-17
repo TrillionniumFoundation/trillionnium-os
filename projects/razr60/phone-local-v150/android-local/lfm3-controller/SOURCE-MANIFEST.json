@@ -85,7 +85,7 @@
     "production_source_inputs_count": 334,
     "validation": "Source frozen after host-only focused fixture validation and before followup CI. Existing signed APK and phone evidence remain bound to db9a277; byte-identical production inputs do not rename its build head. Original CI failure is preserved."
   },
-  "candidate_status": "R4_R2_MERGED_SOURCE_PENDING_ROOT_FREEZE_APPROVAL",
+  "candidate_status": "R5_COMBINED_SOURCE_FROZEN_PENDING_COMBINED_CI_ANDROID_BUILD_PHONE",
   "candidate_version_assigned": true,
   "ci_containment_repair_amendment": {
     "baseline_manifest_sha256": "8dd4b459a4da939f8594df16a5198fbce6cdd2fc6e7a298b5b0956fca4c57889",
@@ -106,7 +106,7 @@
     "routing_fixture_change": "Match the existing three-argument installed-identity API for ordinary sessions while refusing profile IO, and explicitly select no profile in the existing ordinary native UI fixture; original gate flags, case names, counts and assertions are unchanged.",
     "validation": "Current targeted results are recorded separately; historical host and phone results do not qualify this candidate."
   },
-  "complete_source_files": 2133,
+  "complete_source_files": 2135,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -145,15 +145,14 @@
   "current_validation": {
     "all_blockers_closed": false,
     "android_compiled_at_freeze": false,
-    "base626_results_are_historical": true,
-    "focused_permission_assertions": 348,
-    "focused_permission_gate_pass": true,
-    "phase": "r4_two_production_changes_focused16_pass_pending_exact_head_full_gates_build_phone",
+    "author_focused_results_are_not_combined_execution": true,
+    "combined_tests_run": false,
+    "phase": "combined_source_closure_only",
     "phone_tested": false,
     "profile_permission_synthetic_cases_required": 16,
     "required_canonical_checks": 113,
     "required_native_gates": 19,
-    "upstream_profile_broker_original_cases_required": 47
+    "state_settle_cases_required": 21
   },
   "dom_reuse_and_reopen_amendment": {
     "action_replay_added": false,
@@ -6315,9 +6314,9 @@
       "sha256": "1e0a313b943d12352bd740cc30dd9834b86225a9c52b27117319f44810f9f409"
     },
     {
-      "bytes": 69322,
+      "bytes": 69364,
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "sha256": "10b3dfe60a7f0693aff7123713e8f854b6203dc4978729702321e5b00a7d3acb"
+      "sha256": "e1d5eafb5879a45014921275194f65c6a02ba719ba864030691d23d6979c88da"
     },
     {
       "bytes": 25279,
@@ -6370,9 +6369,9 @@
       "sha256": "7c170e15deb8407a80b4dbcab3564697d2192c63365bb5a062ecba6f3ebbadcd"
     },
     {
-      "bytes": 27203,
+      "bytes": 29114,
       "path": "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
-      "sha256": "0ca396d12621cfb0e0d49a78954c69ea0270edb1dd94b74cbc9ca4e99b733727"
+      "sha256": "fe07b9922df5aa5db32f3b8e691fc6cf8489a823bedcbc45a5474329915545fa"
     },
     {
       "bytes": 19548,
@@ -6635,9 +6634,9 @@
       "sha256": "11ff3d26283dc4e8789c427363043675427e647bff6524b1c5a987afba4a8a9c"
     },
     {
-      "bytes": 43361,
+      "bytes": 48778,
       "path": "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
-      "sha256": "793b45bfbcfcd7754b0765d6342be5e7cba6e014696fabda908c0d718f5234a8"
+      "sha256": "de64eaf86b0a1a31f48fcf3ea933d3ec821d385788a619fc19881829acf33aec"
     },
     {
       "bytes": 9873,
@@ -6660,9 +6659,9 @@
       "sha256": "c2d0227fb8994b4deb570833b2aa3cae5181304c4c7582c9ba9f960925a846e7"
     },
     {
-      "bytes": 72481,
+      "bytes": 73113,
       "path": "src/org/trillionnium/hepta/local/NativeAppSession.java",
-      "sha256": "9a9b6da3844c559c93170a3680f732366a02e368abd82d28c5c4775170b1e26e"
+      "sha256": "32e08da04c4264c64286f7ee0ec14ddae96245dea81caf674f1026d53731ccff"
     },
     {
       "bytes": 2562,
@@ -6675,9 +6674,9 @@
       "sha256": "0b99bed52ada56eb57e04452ae0728ec82298496fb8343da71d0345f14e6419d"
     },
     {
-      "bytes": 40071,
+      "bytes": 42007,
       "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
-      "sha256": "d7e760032b9fdc0889330730ebe880a48f1cf786284f1f961571b12272233313"
+      "sha256": "8e85ffb81776f5f79381adb05dce9d078cf72c2e5f50ecbb043283735331abf0"
     },
     {
       "bytes": 21274,
@@ -7825,9 +7824,9 @@
       "sha256": "2c2f4e14ea38e16fe3a8d50e2ca96dcacd5417250c63f1c99949b59c905b2b1c"
     },
     {
-      "bytes": 15195,
+      "bytes": 18501,
       "path": "tests/native-action-integration/BridgeCases.fragment",
-      "sha256": "42d4200830feca704a0dc4ef9143eec8c08356fbc64fda6d12ccd5cdf8a3d5f9"
+      "sha256": "b9dfd34d29b75bb277da1a61eb43b7e8e04cf8b7dbc829b62864cb9d01e32df7"
     },
     {
       "bytes": 2724,
@@ -7835,14 +7834,14 @@
       "sha256": "8d65a7ced1795834bfe8a921bade5d496a5eb25bfc465340e81c50998a9102ba"
     },
     {
-      "bytes": 33072,
+      "bytes": 33355,
       "path": "tests/native-action-integration/NativeActionBridgeHost.template",
-      "sha256": "69787ce69d23a1dcf40d2756010f20222bb31c25b6879ab55a91e8e405b509bd"
+      "sha256": "9c32ce3804ddc0e8f9b11b02894f79353982dfe99df340b324e35ad3b2d7ccd1"
     },
     {
-      "bytes": 1106,
+      "bytes": 1260,
       "path": "tests/native-action-integration/NativeActionIntegrationHostTest.java",
-      "sha256": "69ef66f0683c77f65375bf4a1a52e226e08e42fa626393f3c803d013377dbd65"
+      "sha256": "739d6d0704fc283ef8941e0ed6917359d0075ac85c0fb829f96250163392fe5a"
     },
     {
       "bytes": 18860,
@@ -7860,19 +7859,24 @@
       "sha256": "4dae1d479bc1691a2b53e33eb6b781dfa382403cb664f356a71de9f5ff47f90d"
     },
     {
+      "bytes": 15335,
+      "path": "tests/native-action-integration/NativeStableSearchIconHostTest.java",
+      "sha256": "361cf5d9a7979a99b724728646f258f729f2d37ff13ee038989bfab557fa2cc4"
+    },
+    {
       "bytes": 10840,
       "path": "tests/native-action-integration/NativeXiaomiEntryObservationHostTest.java",
       "sha256": "9f21bc21eed0ea29a651886e22c338dfd119b2d2c699da9c539f06ec738f81dd"
     },
     {
-      "bytes": 25350,
+      "bytes": 25560,
       "path": "tests/native-action-integration/NativeXiaomiHomeVariationHostTest.java",
-      "sha256": "7689f6eec9e37962d11c7409ccf3de36f5777f7b87f94b18106529cd59f732fa"
+      "sha256": "fefa20a05a154f587d06e2f9b7b49d719bb9e6cd75cf42c88bbcd7f81476b9a3"
     },
     {
-      "bytes": 3964,
+      "bytes": 13683,
       "path": "tests/native-action-integration/XiaomiGuardCases.fragment",
-      "sha256": "234b99740e6df065febe0d35005dced7e236e794b620dc9484f0f1bc3916f730"
+      "sha256": "c413f7ceb51f187258d40d0e402e947a425dc03d88776dd14094f1bf894529c3"
     },
     {
       "bytes": 181894,
@@ -7885,9 +7889,9 @@
       "sha256": "b27ecaed3a4dd0419fbc49809887b2e6b77cd0a80be17b006d0d8cab72c41d4a"
     },
     {
-      "bytes": 13604,
+      "bytes": 15326,
       "path": "tests/native-action-integration/run_host.py",
-      "sha256": "aea2df1c642ee4fb6d69989a947424942b916146b58e6add4213eb220472002e"
+      "sha256": "fb1057034bb5acda3869cd79aa1e68780b60021dcc738659fcda3b7bd020c6c0"
     },
     {
       "bytes": 717,
@@ -7965,9 +7969,9 @@
       "sha256": "26d6f8b232170f3e787584ad7e7f629e0b61cb7aa26b6c87e2f82e67fcb74d2c"
     },
     {
-      "bytes": 20756,
+      "bytes": 20800,
       "path": "tests/native-app-provider/NativeXiaomiModalSessionHostTest.java",
-      "sha256": "2b1e5d1a55fddc081e0d8c68e4cfc64d5fd731e71295113558dc17c22690c769"
+      "sha256": "216c645fbc3db4c789dfb33c337e2df13b4edbe311eda826b098fc0fb950edaf"
     },
     {
       "bytes": 20982,
@@ -8335,14 +8339,14 @@
       "sha256": "0ba1fce0f544145e5eda8becf71e7e1c4b097c9977eed5bc580ffb1c99821b2c"
     },
     {
-      "bytes": 28177,
+      "bytes": 28187,
       "path": "tests/native-stale-recovery/RecoveryCases.fragment",
-      "sha256": "ee840432dd43450fc48c3b32d9d62ef6cfec47d4824979fa87c8e3a784adcdcd"
+      "sha256": "393a582d788f541ec49407f595c8ef31136b15569b037b6d1b82c3072ea67af5"
     },
     {
-      "bytes": 9423,
+      "bytes": 9479,
       "path": "tests/native-stale-recovery/run_budget.py",
-      "sha256": "a22b4ef58379ff8ead9731a1ca33d72a6cdd27a15c77a063b35d517848c0d970"
+      "sha256": "628ef2059e36b73f415121b382e98d6c24209afe50aa03949b3b076c3694bf37"
     },
     {
       "bytes": 14162,
@@ -8350,9 +8354,9 @@
       "sha256": "fdb18d8024a6859db276da2527ddbdcbb85972acb1cb3c8e0b53cb65b9d96c76"
     },
     {
-      "bytes": 16857,
+      "bytes": 16923,
       "path": "tests/native-xiaomi-home-loading/LoadingSessionCases.fragment",
-      "sha256": "8eaace63632804555f6e93a4885c17e7b0f6bfa688142266e4c6735c6e995a14"
+      "sha256": "7ebf5031592d433a5e889858f6b88fac9e7035d6bc4c1f8110557e123c4609da"
     },
     {
       "bytes": 14912,
@@ -8425,9 +8429,9 @@
       "sha256": "0d95c9cc4bcbd9cad51d544af7c0b4b64d8760aed7c169b618ce928180ce1751"
     },
     {
-      "bytes": 28134,
+      "bytes": 28200,
       "path": "tests/native-xiaomi-login/LoginSessionCases.fragment",
-      "sha256": "909d0f8ba05872af2a9834b4ee04b01d3748a045cceb191c0253398292beb347"
+      "sha256": "963f17e960f78ac96ce29fd80e00b5b3c985f9a5c7d162b141a896360dbb6590"
     },
     {
       "bytes": 4988,
@@ -9035,9 +9039,14 @@
       "sha256": "7ac5d394010ca7e42e87ea7902bd96dd425530df3eaf4f485a8ce5efb529f162"
     },
     {
-      "bytes": 9797,
+      "bytes": 21105,
+      "path": "tests/profile-permission-transient/ProfileStateSettleHostTest.java",
+      "sha256": "def0b550864c8abaff472de0ad2275d900ff620ebe23538c52ddbdcfe7db066b"
+    },
+    {
+      "bytes": 11021,
       "path": "tests/profile-permission-transient/README.md",
-      "sha256": "3d354f42504133f101bcce3690685ce219a725b87d365821c50823d021486272"
+      "sha256": "3fd9faa14bb74fdc8a6c660774750a78717043c0ba46b0c6271566365a449a80"
     },
     {
       "bytes": 2306,
@@ -9045,9 +9054,9 @@
       "sha256": "7f8adcb158486f74a1ebe342e54902b9fc7550ed7b0dd7bf11b36d1d97ab63f0"
     },
     {
-      "bytes": 6219,
+      "bytes": 9039,
       "path": "tests/profile-permission-transient/run_host.py",
-      "sha256": "054e335e93423dbdb75bdefd025fe67b85fd22facb8f1603825536dcfaec2695"
+      "sha256": "1e61b7a06c4b973bff21451d60147f45607b39f9069cb9cc5d168a6e0728c133"
     },
     {
       "bytes": 2706,
@@ -15083,6 +15092,325 @@
       "tests/profile-permission-transient/README.md",
       "tests/profile-permission-transient/run_host.py",
       "tools/run_host_checks.py"
+    ]
+  },
+  "r5_combined_search_state_settle_amendment": {
+    "android_build": false,
+    "author_evidence": [
+      {
+        "bytes": 11933,
+        "path": "/tmp/razr-r5-mi-candidate-3ba6aa282569/candidate-r5/HANDOFF.json",
+        "sha256": "c7a6cfb85b7b206e0aa445b9e61b51826b145b21d68a30ae560aea729481e972"
+      },
+      {
+        "bytes": 114119,
+        "path": "/tmp/razr-r5-mi-candidate-3ba6aa282569/candidate-r5/FOCUSED-HANDOFF.json",
+        "sha256": "33ac9f9ab7b9646432643dd1b87c521f9581d267def8b99f880fb65dab18e579"
+      },
+      {
+        "bytes": 6324,
+        "path": "/tmp/razr-ctrip-state-settle-3ba6aa282569/VALIDATION-HANDOFF.json",
+        "sha256": "962f23381d859f3d0b58cd19b3018f9d535a4597121edd25ffe2a0741947830f"
+      },
+      {
+        "bytes": 6509,
+        "path": "/tmp/razr-ctrip-state-settle-3ba6aa282569/validation-r3/profile-permission-transient/RESULT.json",
+        "sha256": "819fa52f341787fc6afb8214f75d57aa47e667b64c08ce16cc0737d91fac589c"
+      }
+    ],
+    "author_focused_evidence_not_combined_ci": true,
+    "authored_candidates": {
+      "ctrip": {
+        "authored_manifest_metadata_delta": {
+          "candidate_status": "CTRIP_STATE_SETTLE_HOST_VALIDATED_NOT_PUBLISHED",
+          "complete_source_files": 2134,
+          "current_validation": {
+            "all_blockers_closed": false,
+            "android_compiled_at_freeze": false,
+            "canonical_full_suite_run": false,
+            "native_full_suite_run": false,
+            "original_permission_assertions": 348,
+            "original_permission_cases": 16,
+            "phase": "state_only_settle_focused_host_pass_no_android_build_or_phone",
+            "phone_tested": false,
+            "profile_permission_synthetic_cases_required": 16,
+            "state_settle_assertions": 311,
+            "state_settle_cases": 21,
+            "targeted_host_all_pass": true
+          },
+          "profile_state_readonly_settle_amendment": {
+            "android_build": false,
+            "base_head": "d38f635b8f28d8c5cbd3783fc826a1d937b04beb",
+            "base_manifest_sha256": "06627221c6379d85ec68d7b1f36308e87e58379b727eb64985cd59b3d0765cc4",
+            "baseline_current_validation_historical": {
+              "all_blockers_closed": false,
+              "android_compiled_at_freeze": false,
+              "base626_results_are_historical": true,
+              "focused_permission_assertions": 348,
+              "focused_permission_gate_pass": true,
+              "phase": "r4_two_production_changes_focused16_pass_pending_exact_head_full_gates_build_phone",
+              "phone_tested": false,
+              "profile_permission_synthetic_cases_required": 16,
+              "required_canonical_checks": 113,
+              "required_native_gates": 19,
+              "upstream_profile_broker_original_cases_required": 47
+            },
+            "broker_operation": "state",
+            "broker_response_margin_ms": 100,
+            "deadline_reset": false,
+            "fresh_ordinary_app_proof_required": true,
+            "generic_refusal_text_can_trigger_wait": false,
+            "local_toolchain": "Linux Azul JDK 17.0.19; --release 8 -Xlint:all,-options -Werror -proc:none",
+            "normal_user0_personal_audit_admission_policy_unchanged": true,
+            "ordinary_observe_window_launch_back_input_retirement_unchanged": true,
+            "original_permission_test_sha256": "7ac5d394010ca7e42e87ea7902bd96dd425530df3eaf4f485a8ce5efb529f162",
+            "other_production_inputs_byte_identical": 333,
+            "permission_initializing_candidate_adopted": false,
+            "phone_operations": 0,
+            "private_typed_full_permission_proof_marker": true,
+            "production_changed_paths": [
+              "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
+              "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java"
+            ],
+            "source_input_count": 335,
+            "source_input_map_sha256": "29b51f5351fc97e277d78264c79dcbb332008e2f1c6f53c05ead14c452e5681a",
+            "state_request_budget_ms_unchanged": 1800,
+            "synchronous_binder_call_preemption_claimed": false,
+            "targeted_host_result": {
+              "bytes": 6509,
+              "path": "/tmp/razr-ctrip-state-settle-3ba6aa282569/validation-r3/profile-permission-transient/RESULT.json",
+              "sha256": "819fa52f341787fc6afb8214f75d57aa47e667b64c08ce16cc0737d91fac589c"
+            },
+            "test_changed_or_added_paths": [
+              "tests/profile-permission-transient/ProfileStateSettleHostTest.java",
+              "tests/profile-permission-transient/run_host.py",
+              "tests/profile-permission-transient/README.md"
+            ]
+          }
+        },
+        "candidate": {
+          "bytes": 59107,
+          "path": "/tmp/razr-ctrip-state-settle-3ba6aa282569/CANDIDATE-SOURCE.json",
+          "sha256": "525783f8f2979752f14a7f7d8cdb9f9324b080c685bd24178eccd5c7788fe9b0"
+        },
+        "manifest": {
+          "bytes": 684160,
+          "path": "/tmp/razr-ctrip-state-settle-3ba6aa282569/source/SOURCE-MANIFEST.json",
+          "sha256": "6663143e1bdb0852eed8ec87254b0b7917f7224beb5d279de6c9cdbcb43131ee"
+        },
+        "scope": "Metadata of separately authored source; not assertions of combined execution."
+      },
+      "mi": {
+        "authored_manifest_metadata_delta": {
+          "candidate_status": "R5_SEARCH_ICON_CANDIDATE_FROZEN_BEFORE_FOCUSED_TEST_AND_ROOT_REVIEW",
+          "complete_source_files": 2134,
+          "current_validation": {
+            "all_blockers_closed": false,
+            "android_compiled_at_freeze": false,
+            "device_icon_semantics_verified": false,
+            "focused_tests_executed_at_freeze": false,
+            "phase": "source_frozen_before_targeted_host_execution",
+            "phone_tested": false,
+            "required_canonical_checks": 113,
+            "required_native_gates": 19
+          },
+          "r5_stable_search_icon_amendment": {
+            "base_head": "d38f635b8f28d8c5cbd3783fc826a1d937b04beb",
+            "baseline_current_validation_historical": {
+              "all_blockers_closed": false,
+              "android_compiled_at_freeze": false,
+              "base626_results_are_historical": true,
+              "focused_permission_assertions": 348,
+              "focused_permission_gate_pass": true,
+              "phase": "r4_two_production_changes_focused16_pass_pending_exact_head_full_gates_build_phone",
+              "phone_tested": false,
+              "profile_permission_synthetic_cases_required": 16,
+              "required_canonical_checks": 113,
+              "required_native_gates": 19,
+              "upstream_profile_broker_original_cases_required": 47
+            },
+            "baseline_manifest_sha256": "06627221c6379d85ec68d7b1f36308e87e58379b727eb64985cd59b3d0765cc4",
+            "canonical113_not_direct_new_suite_entry": true,
+            "default_session_directly_tested": true,
+            "fresh_search_contract_required_after_click": true,
+            "hint_variation": "Only the exact known two noninteractive descendants' literal text, paired description, recomputed derived labels/full reference hashes; all captured other fields stay exact.",
+            "legacy_open_search_contract_preserved": true,
+            "navigation_semantics_device_verified": false,
+            "new_suite_ci_path": "existing native19 workflow gate: tests/native-action-integration/run_host.py",
+            "no_budget_runtime_or_permission_change": true,
+            "no_common_service_freshness_change": true,
+            "original_provider55_source_unchanged": true,
+            "original_pure76_source_unchanged": true,
+            "original_recorded_fixtures_unchanged": true,
+            "product_test_only_legacy_mode": false,
+            "production_changed_inputs": [
+              {
+                "old_sha256": "793b45bfbcfcd7754b0765d6342be5e7cba6e014696fabda908c0d718f5234a8",
+                "path": "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
+                "sha256": "de64eaf86b0a1a31f48fcf3ea933d3ec821d385788a619fc19881829acf33aec"
+              },
+              {
+                "old_sha256": "9a9b6da3844c559c93170a3680f732366a02e368abd82d28c5c4775170b1e26e",
+                "path": "src/org/trillionnium/hepta/local/NativeAppSession.java",
+                "sha256": "32e08da04c4264c64286f7ee0ec14ddae96245dea81caf674f1026d53731ccff"
+              },
+              {
+                "old_sha256": "d7e760032b9fdc0889330730ebe880a48f1cf786284f1f961571b12272233313",
+                "path": "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java",
+                "sha256": "8e85ffb81776f5f79381adb05dce9d078cf72c2e5f50ecbb043283735331abf0"
+              }
+            ],
+            "production_default_new_purpose": "open_search_icon",
+            "source_freeze_scope": "Candidate only; current source frozen before focused execution, publication, Android build or phone test. Downstream results are separate receipts bound to this manifest.",
+            "test_changes": [
+              {
+                "bytes": 18501,
+                "new_sha256": "b9dfd34d29b75bb277da1a61eb43b7e8e04cf8b7dbc829b62864cb9d01e32df7",
+                "old_sha256": "42d4200830feca704a0dc4ef9143eec8c08356fbc64fda6d12ccd5cdf8a3d5f9",
+                "path": "tests/native-action-integration/BridgeCases.fragment",
+                "reason": "Exercise actual production default icon in all prior bridge guard/effect cases; add exact original-reference/PM/final-census checks."
+              },
+              {
+                "bytes": 33355,
+                "new_sha256": "9c32ce3804ddc0e8f9b11b02894f79353982dfe99df340b324e35ad3b2d7ccd1",
+                "old_sha256": "69787ce69d23a1dcf40d2756010f20222bb31c25b6879ab55a91e8e405b509bd",
+                "path": "tests/native-action-integration/NativeActionBridgeHost.template",
+                "reason": "Host endpoint follows actual Session-selected icon and keeps original verbatim Service bodies. No product legacy mode."
+              },
+              {
+                "bytes": 1260,
+                "new_sha256": "739d6d0704fc283ef8941e0ed6917359d0075ac85c0fb829f96250163392fe5a",
+                "old_sha256": "69ef66f0683c77f65375bf4a1a52e226e08e42fa626393f3c803d013377dbd65",
+                "path": "tests/native-action-integration/NativeActionIntegrationHostTest.java",
+                "reason": "Run new suite through original integration main, not an off-CI temporary main. Also executes verbatim accepted-observation barrier and complete Controller await methods with actual Session, bounded host acquisition latch, fresh-domain refusal, and explicit direct API limitation; no production barrier change."
+              },
+              {
+                "bytes": 15335,
+                "new_sha256": "361cf5d9a7979a99b724728646f258f729f2d37ff13ee038989bfab557fa2cc4",
+                "old_sha256": null,
+                "path": "tests/native-action-integration/NativeStableSearchIconHostTest.java",
+                "reason": "New default provider, exact literal/reference comparator, full-UID/window/overlay/role negatives, retained-reference live Service and post-click Session semantics."
+              },
+              {
+                "bytes": 25560,
+                "new_sha256": "fefa20a05a154f587d06e2f9b7b49d719bb9e6cd75cf42c88bbcd7f81476b9a3",
+                "old_sha256": "7689f6eec9e37962d11c7409ccf3de36f5777f7b87f94b18106529cd59f732fa",
+                "path": "tests/native-action-integration/NativeXiaomiHomeVariationHostTest.java",
+                "reason": "Original raw fixtures, pure legacy intent/refusal/bounds cases unchanged; actual Service cases now exercise new default. Former old-entry runtime path is now denied by domain before dispatch."
+              },
+              {
+                "bytes": 13683,
+                "new_sha256": "c413f7ceb51f187258d40d0e402e947a425dc03d88776dd14094f1bf894529c3",
+                "old_sha256": "234b99740e6df065febe0d35005dced7e236e794b620dc9484f0f1bc3916f730",
+                "path": "tests/native-action-integration/XiaomiGuardCases.fragment",
+                "reason": "Existing Session guards use current default; new cases keep navigation pending until fresh original editor contract. New receipt-only test observes pending/proof state before a new frame; subsequent fresh-home/direct-results cases still require pending domain with no new actions. Also executes verbatim accepted-observation barrier and complete Controller await methods with actual Session, bounded host acquisition latch, fresh-domain refusal, and explicit direct API limitation; no production barrier change."
+              },
+              {
+                "bytes": 15326,
+                "new_sha256": "fb1057034bb5acda3869cd79aa1e68780b60021dcc738659fcda3b7bd020c6c0",
+                "old_sha256": "aea2df1c642ee4fb6d69989a947424942b916146b58e6add4213eb220472002e",
+                "path": "tests/native-action-integration/run_host.py",
+                "reason": "Compile new focused suite in existing canonical native-action-integration gate; original pure76 and strict flags unchanged. Also executes verbatim accepted-observation barrier and complete Controller await methods with actual Session, bounded host acquisition latch, fresh-domain refusal, and explicit direct API limitation; no production barrier change."
+              },
+              {
+                "bytes": 20800,
+                "new_sha256": "216c645fbc3db4c789dfb33c337e2df13b4edbe311eda826b098fc0fb950edaf",
+                "old_sha256": "2b1e5d1a55fddc081e0d8c68e4cfc64d5fd731e71295113558dc17c22690c769",
+                "path": "tests/native-app-provider/NativeXiaomiModalSessionHostTest.java",
+                "reason": "Two home re-entry expectations name actual new default; image modal/query/result assertions retained."
+              },
+              {
+                "bytes": 28187,
+                "new_sha256": "393a582d788f541ec49407f595c8ef31136b15569b037b6d1b82c3072ea67af5",
+                "old_sha256": "ee840432dd43450fc48c3b32d9d62ef6cfec47d4824979fa87c8e3a784adcdcd",
+                "path": "tests/native-stale-recovery/RecoveryCases.fragment",
+                "reason": "Existing Xiaomi fresh re-observation proof names actual new default; no retry/budget change."
+              },
+              {
+                "bytes": 16923,
+                "new_sha256": "7ebf5031592d433a5e889858f6b88fac9e7035d6bc4c1f8110557e123c4609da",
+                "old_sha256": "8eaace63632804555f6e93a4885c17e7b0f6bfa688142266e4c6735c6e995a14",
+                "path": "tests/native-xiaomi-home-loading/LoadingSessionCases.fragment",
+                "reason": "Loading/re-entry expectations use current default; budgets and terminal assertions retained."
+              },
+              {
+                "bytes": 28200,
+                "new_sha256": "963f17e960f78ac96ce29fd80e00b5b3c985f9a5c7d162b141a896360dbb6590",
+                "old_sha256": "909d0f8ba05872af2a9834b4ee04b01d3748a045cceb191c0253398292beb347",
+                "path": "tests/native-xiaomi-login/LoginSessionCases.fragment",
+                "reason": "Login interruption/re-entry expectations use current default; every login safety assertion retained."
+              },
+              {
+                "old_sha256": "a22b4ef58379ff8ead9731a1ca33d72a6cdd27a15c77a063b35d517848c0d970",
+                "path": "tests/native-stale-recovery/run_budget.py",
+                "reason": "Keep the strict census budget comparator pin exact for the reviewed three-production candidate and compile/hash its existing ObservedTargetLabels dependency. No assertion, compiler flag, fixture producer, or budget threshold changes.",
+                "sha256": "628ef2059e36b73f415121b382e98d6c24209afe50aa03949b3b076c3694bf37"
+              }
+            ]
+          }
+        },
+        "candidate": {
+          "bytes": 63084,
+          "path": "/tmp/razr-r5-mi-candidate-3ba6aa282569/candidate-r5/CANDIDATE-SOURCE.json",
+          "sha256": "83f8c82f9c1a7d30adb98f0774cb3f95616214e0dcb7fb11583ca9c635adbe22"
+        },
+        "manifest": {
+          "bytes": 690467,
+          "path": "/tmp/razr-r5-mi-candidate-3ba6aa282569/candidate-r5/source/SOURCE-MANIFEST.json",
+          "sha256": "5691bba41f580d2d6c48ed12a62a7f39d30f17005cf4e14d9b859df2198b9f36"
+        },
+        "scope": "Metadata of separately authored source; not assertions of combined execution."
+      }
+    },
+    "base_head": "d38f635b8f28d8c5cbd3783fc826a1d937b04beb",
+    "base_manifest_sha256": "06627221c6379d85ec68d7b1f36308e87e58379b727eb64985cd59b3d0765cc4",
+    "baseline_current_validation_historical": {
+      "all_blockers_closed": false,
+      "android_compiled_at_freeze": false,
+      "base626_results_are_historical": true,
+      "focused_permission_assertions": 348,
+      "focused_permission_gate_pass": true,
+      "phase": "r4_two_production_changes_focused16_pass_pending_exact_head_full_gates_build_phone",
+      "phone_tested": false,
+      "profile_permission_synthetic_cases_required": 16,
+      "required_canonical_checks": 113,
+      "required_native_gates": 19,
+      "upstream_profile_broker_original_cases_required": 47
+    },
+    "candidate_overlap": [
+      "SOURCE-MANIFEST.json"
+    ],
+    "existing_recents_explicitly_removed": false,
+    "github_writes": 0,
+    "new_model_or_runtime_configuration": false,
+    "other_production_inputs_byte_identical": 330,
+    "permission_initializing_candidate_adopted": false,
+    "phone_operations": 0,
+    "production_changed_paths": [
+      "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
+      "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
+      "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
+      "src/org/trillionnium/hepta/local/NativeAppSession.java",
+      "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java"
+    ],
+    "source_input_count": 335,
+    "source_input_map_sha256": "c3c6576c77dd619848371b1ccfba5e2adda93c08205ac18e45e0e9552732ed7f",
+    "test_changed_or_added_paths": [
+      "tests/native-action-integration/BridgeCases.fragment",
+      "tests/native-action-integration/NativeActionBridgeHost.template",
+      "tests/native-action-integration/NativeActionIntegrationHostTest.java",
+      "tests/native-action-integration/NativeStableSearchIconHostTest.java",
+      "tests/native-action-integration/NativeXiaomiHomeVariationHostTest.java",
+      "tests/native-action-integration/XiaomiGuardCases.fragment",
+      "tests/native-action-integration/run_host.py",
+      "tests/native-app-provider/NativeXiaomiModalSessionHostTest.java",
+      "tests/native-stale-recovery/RecoveryCases.fragment",
+      "tests/native-stale-recovery/run_budget.py",
+      "tests/native-xiaomi-home-loading/LoadingSessionCases.fragment",
+      "tests/native-xiaomi-login/LoginSessionCases.fragment",
+      "tests/profile-permission-transient/ProfileStateSettleHostTest.java",
+      "tests/profile-permission-transient/README.md",
+      "tests/profile-permission-transient/run_host.py"
     ]
   },
   "release_version_assigned": false,

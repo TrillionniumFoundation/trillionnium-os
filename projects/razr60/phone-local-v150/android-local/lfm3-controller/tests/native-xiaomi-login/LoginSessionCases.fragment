@@ -160,11 +160,11 @@
             check(Boolean.FALSE.equals(proof.get("business_transition_verified"))&&Boolean.FALSE.equals(proof.get("query_or_result_proof_created")),"login observation is not business progress");
         });
         one("effect_entered_return_to_home_then_login_reappearance_stays_blocked",()->{
-            Harness h=new Harness("reentry");login(h);h.perform(EXIT,"home.xml");check(h.node("open_search")!=null,"fresh supported home can resume original query");
+            Harness h=new Harness("reentry");login(h);h.perform(EXIT,"home.xml");check(h.node(NativeXiaomiProductPage.SEARCH_ICON)!=null,"fresh supported home can resume original query");
             h.noQueryOrResult();login(h);blocked(h);
         });
         one("login_interrupts_prior_navigation_without_manufacturing_its_proof",()->{
-            Harness h=new Harness("interruption");h.xml("home.xml");h.issue(h.action("open_search"),true,true,false);login(h);
+            Harness h=new Harness("interruption");h.xml("home.xml");h.issue(h.action(NativeXiaomiProductPage.SEARCH_ICON),true,true,false);login(h);
             check(h.progress().get("pending")==null&&EXIT.equals(h.session.domain().purposes.get("n0")),"fresh explicit login can offer its one return");
             check(Boolean.TRUE.equals(((Map<?,?>)((List<?>)h.progress().get("transitions")).get(0)).get("login_interrupted_navigation")),"interruption is reported explicitly");h.noQueryOrResult();
         });
@@ -260,7 +260,7 @@
         });
         one("fresh_home_after_single_login_return_preserves_original_query_card_detail_chain",()->{
             Harness h=new Harness("complete");login(h);h.perform(EXIT,"home.xml");h.noQueryOrResult();
-            h.perform("open_search","search-entry.xml");h.perform("set_product_query","suggestions.xml");
+            h.perform(NativeXiaomiProductPage.SEARCH_ICON,"search-entry.xml");h.perform("set_product_query","suggestions.xml");
             h.perform(h.node("submit_exact_suggestion")!=null?"submit_exact_suggestion":"submit_product_query","results.xml");h.perform("open_exact_product","detail.xml");
             check(h.session.domain().resultReady&&h.completionGate.verified(h.completion),"original separately proved price chain remains necessary and usable");
             h.claim();check(Boolean.TRUE.equals(h.terminal(true).get("completion_verified")),"full explicit host query/final/cleanup composition remains intact");

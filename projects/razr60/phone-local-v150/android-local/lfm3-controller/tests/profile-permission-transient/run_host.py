@@ -33,8 +33,10 @@ def main():
              'ProfileOwnedTask', 'ProfilePermissionTransient', 'ProfileDisplayCustody']
     files = [background / (name + '.java') for name in names]
     files += [source / 'tests/profile-broker/ProfileBrokerHostTest.java',
-              here / 'ProfilePermissionTransientHostTest.java']
-    tracked = files + [Path(__file__).resolve(), fixture, here / 'README.md']
+              here / 'ProfilePermissionTransientHostTest.java', here / 'ProfileStateSettleHostTest.java']
+    broker = background / 'BackgroundDisplayBroker.java'
+    session = source / 'src/org/trillionnium/hepta/local/BackgroundSession.java'
+    tracked = files + [Path(__file__).resolve(), fixture, here / 'README.md', broker, session]
     result = {'schema': 'hepta.profile-permission-transient-canonical-host.v1',
               'all_pass': False, 'phone_contacted': False, 'android_build': False,
               'android_adapters_compiled': False, 'java_release': 8,
@@ -60,6 +62,20 @@ def main():
     try:
         pins = {str(path.relative_to(source)): sha(path) for path in tracked}
         result['source_inputs'] = pins
+        broker_text = broker.read_text()
+        state = broker_text.split('} else if ("state".equals(r.operation)) {', 1)[1].split(
+            '} else if(config.profileTarget!=null&&"launch".equals(r.operation)) {', 1)[0]
+        state_call = ('if(profileOwnedTask!=null&&!profileOwnedTask.observeStateUntil(Math.min(r.deadline,expires)-100))'
+                      'throw new BrokerProtocol.Refusal("PROFILE_TASK_NOT_OBSERVED");')
+        if (state_call not in state or broker_text.count('.observeStateUntil(') != 1
+                or 'if(profileOwnedTask.observe()){observed=true;break;}' not in broker_text
+                or 'profileOwnedTask.window(r.windowId,r.observedTaskId,Math.min(r.deadline,expires))' not in broker_text
+                or 'accept(call("state",null,1800),true)' not in session.read_text()):
+            raise RuntimeError('State-only original-request wiring differs')
+        result['state_settle_wiring'] = {'state_only': True, 'state_request_budget_ms': 1800,
+                                        'response_margin_ms': 100, 'new_rpc': False,
+                                        'coordinator_compiled_and_executed': False,
+                                        'android_broker_wiring_static_only': True}
         if fixture.stat().st_size != 2306 or sha(fixture) != SYNTHETIC_SHA:
             raise RuntimeError('Synthetic fixture pin differs')
         result['synthetic_fixture'] = {'bytes': 2306, 'sha256': SYNTHETIC_SHA, 'kind': 'authored_synthetic'}
@@ -97,9 +113,28 @@ def main():
                     and summary.get('android_build') is False):
                 raise RuntimeError(kind + ' result contract differs')
             result[kind + '_summary'] = summary
+        stdout = run('state-settle', [str(args.java_home / 'bin/java'), '-cp', str(classes),
+                                     'org.trillionnium.hepta.background.ProfileStateSettleHostTest', str(fixture)])
+        summaries = [json.loads(line) for line in stdout.decode('utf-8').splitlines()
+                     if line.startswith('{')]
+        if len(summaries) != 1:
+            raise RuntimeError('State settle summary missing or duplicated')
+        settled = summaries[0]
+        names = settled.get('case_names')
+        if not (settled.get('schema') == 'hepta.profile-state-settle-host-tests.v1'
+                and settled.get('passed') is True and settled.get('cases') == 21
+                and type(names) is list and len(names) == 21 and len(set(names)) == 21
+                and type(settled.get('assertions')) is int and settled['assertions'] > 0
+                and settled.get('fixture_sha256') == SYNTHETIC_SHA
+                and settled.get('real_coordinator_executed') is True
+                and settled.get('framework_and_clock_synthetic') is True
+                and settled.get('phone_contacted') is False and settled.get('android_build') is False):
+            raise RuntimeError('State settle result contract differs')
+        result['state_settle_summary'] = settled
+        result['state_settle_wiring']['coordinator_compiled_and_executed'] = True
         result['source_inputs_unchanged'] = pins == {str(path.relative_to(source)): sha(path) for path in tracked}
         result['private_actual_unchanged'] = private is None or sha(private) == private_pin
-        expected_stages = 3 if private is not None else 2
+        expected_stages = 4 if private is not None else 3
         result['all_pass'] = (len(result['stages']) == expected_stages
                               and result['source_inputs_unchanged'] and result['private_actual_unchanged'])
     except Exception as error:

@@ -20,6 +20,7 @@ final class NativeXiaomiProductPage {
     static final String HOME_LOADING="home_loading",HOME_LOADING_EXHAUSTED="home_loading_budget_exhausted";
     static final String LOGIN="native_login",LOGIN_BLOCKED="native_login_requires_user";
     static final String LOGIN_EXIT="leave_native_login_once";
+    static final String SEARCH_ICON="open_search_icon";
     private static final String TITLE="Xiaomi路由器AX3000T";
     private static final String VIEW="android.view.ViewGroup";
     private static final String TEXT="android.widget.TextView";
@@ -37,11 +38,17 @@ final class NativeXiaomiProductPage {
         final Set<String> clickIds;
         final Map<String,String> editValues,purposes;
         final Quote quote;
+        final boolean searchIconNavigationCandidate;
         private final Map<String,Object> record;
         private Page(NativeAppEvidence.Frame frame,String phase,List<String> missing,
                 Set<String> clicks,Map<String,String> edits,Map<String,String> purposes,
                 Map<String,Object> actionFacts,Quote quote){
-            this.frame=frame;this.phase=phase;
+            this(frame,phase,missing,clicks,edits,purposes,actionFacts,quote,false);
+        }
+        private Page(NativeAppEvidence.Frame frame,String phase,List<String> missing,
+                Set<String> clicks,Map<String,String> edits,Map<String,String> purposes,
+                Map<String,Object> actionFacts,Quote quote,boolean searchIconNavigationCandidate){
+            this.frame=frame;this.phase=phase;this.searchIconNavigationCandidate=searchIconNavigationCandidate;
             this.missing=Collections.unmodifiableList(new ArrayList<String>(missing));
             clickIds=Collections.unmodifiableSet(new LinkedHashSet<String>(clicks));
             editValues=Collections.unmodifiableMap(new LinkedHashMap<String,String>(edits));
@@ -52,7 +59,13 @@ final class NativeXiaomiProductPage {
             e.put("quote",quote==null?null:quote.evidence());
             e.put("installed_identity_verified_here",false);e.put("dispatch_authority",false);
             e.put("query_dispatched",false);e.put("task_completion_authority",false);
-            e.put("order_submitted",false);record=frozen(e);
+            e.put("order_submitted",false);
+            if(searchIconNavigationCandidate){
+                e.put("navigation_candidate","stable_search_icon");
+                e.put("navigation_semantics_device_verified",false);
+                e.put("fresh_search_contract_required",true);
+            }
+            record=frozen(e);
         }
         Map<String,Object> evidence(){return record;}
         Map<String,Object> modelView(){
@@ -100,7 +113,16 @@ final class NativeXiaomiProductPage {
         Map<String,Object> modelView(){return view;}
     }
 
+    /** Retained switcher parser: its historical fixtures and scope are unchanged. */
     static Page inspect(NativeAppGoal goal,NativeAppEvidence.Frame frame){
+        return inspect(goal,frame,false);
+    }
+    /** A current, exact icon can be proposed as navigation; this is not proof
+     * that it opens an editor. Only a fresh existing search contract can do that. */
+    static Page inspectPreferredNavigation(NativeAppGoal goal,NativeAppEvidence.Frame frame){
+        return inspect(goal,frame,true);
+    }
+    private static Page inspect(NativeAppGoal goal,NativeAppEvidence.Frame frame,boolean preferSearchIcon){
         NativeAppEvidence.need(goal!=null&&frame!=null,"Xiaomi goal and actual frame required");
         NativeAppEvidence.need(NativeAppGoal.PRODUCT_PRICE.equals(goal.kind)
                 &&NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName)
@@ -118,7 +140,7 @@ final class NativeXiaomiProductPage {
         if(detailMarkers)return detail(goal,frame,models);
         if(uniqueText(frame,"综合")!=null&&uniqueText(frame,"销量")!=null&&uniqueText(frame,"价格")!=null)
             return results(goal,frame,models);
-        return inputOrHome(goal,frame);
+        return inputOrHome(goal,frame,preferSearchIcon);
     }
 
     /** Recognizes the complete observed login form for the pinned native App.
@@ -289,7 +311,7 @@ final class NativeXiaomiProductPage {
         }
     }
 
-    private static Page inputOrHome(NativeAppGoal goal,NativeAppEvidence.Frame frame){
+    private static Page inputOrHome(NativeAppGoal goal,NativeAppEvidence.Frame frame,boolean preferSearchIcon){
         List<NativeAppEvidence.Node> fields=new ArrayList<NativeAppEvidence.Node>();
         for(NativeAppEvidence.Node n:frame.nodes)
             if(usable(frame,n)&&n.editable&&"android.widget.EditText".equals(n.className))fields.add(n);
@@ -369,7 +391,7 @@ final class NativeXiaomiProductPage {
             }
         }
         if(home!=null&&search!=null&&search.bottom<home.top){
-            Page entry=homeSearchEntry(frame,home,search);
+            Page entry=homeSearchEntry(frame,home,search,preferSearchIcon);
             return entry!=null?entry:page(frame,"home_unverified","observed_native_query_entry_required",null,null);
         }
         if(home!=null&&search==null&&navigationOnlyHome(frame))
@@ -382,7 +404,7 @@ final class NativeXiaomiProductPage {
      * it has not proved that it opens an editable product query. The two exact
      * noninteractive descendants supply the original entry label, never a
      * replacement label or the owner's requested product as current UI text. */
-    private static Page homeSearchEntry(NativeAppEvidence.Frame frame,NativeAppEvidence.Node home,NativeAppEvidence.Node icon){
+    private static Page homeSearchEntry(NativeAppEvidence.Frame frame,NativeAppEvidence.Node home,NativeAppEvidence.Node icon,boolean preferSearchIcon){
         String hp="com.xiaomi.shop.plugin.homepage:id/";
         NativeAppEvidence.Node entry=null,pager=null,hint=null,term=null;int entries=0,pagers=0,icons=0,descendants=0;
         for(NativeAppEvidence.Node n:frame.nodes){
@@ -409,13 +431,19 @@ final class NativeXiaomiProductPage {
                 ||!hint.text.isEmpty()||!term.description.isEmpty()||term.text.trim().isEmpty()
                 ||!hint.description.equals("搜索"+term.text)||!hint.within(entry)||!term.within(hint)
                 ||!entry.label.equals(ObservedTargetLabels.project(hint.description+" · "+term.text)))return null;
-        Map<String,String> purposes=new LinkedHashMap<String,String>();purposes.put(entry.id,"open_search");
+        if(preferSearchIcon&&(!icon.text.isEmpty()||!"搜索".equals(icon.label)))return null;
+        NativeAppEvidence.Node chosen=preferSearchIcon?icon:entry;
+        Map<String,String> purposes=new LinkedHashMap<String,String>();purposes.put(chosen.id,preferSearchIcon?SEARCH_ICON:"open_search");
         Map<String,Object> proof=map();proof.put("home_marker",home.fact("text"));proof.put("query_entry",entry.fact("description"));
         proof.put("query_entry_original_label",entry.label);proof.put("entry_hint",hint.fact("description"));proof.put("entry_hint_term",term.fact("text"));
-        proof.put("adjacent_search_icon",icon.fact("description"));proof.put("adjacent_search_icon_offered",false);
-        proof.put("hint_is_owner_query",false);Map<String,Object> facts=map();facts.put(entry.id,proof);
-        return new Page(frame,"home_search",Collections.<String>emptyList(),Collections.singleton(entry.id),
-                Collections.<String,String>emptyMap(),purposes,facts,null);
+        proof.put("adjacent_search_icon",icon.fact("description"));proof.put("adjacent_search_icon_offered",preferSearchIcon);
+        if(preferSearchIcon){
+            proof.put("navigation_target",icon.fact("description"));proof.put("query_entry_offered",false);
+            proof.put("navigation_semantics_device_verified",false);proof.put("fresh_search_contract_required",true);
+        }
+        proof.put("hint_is_owner_query",false);Map<String,Object> facts=map();facts.put(chosen.id,proof);
+        return new Page(frame,"home_search",Collections.<String>emptyList(),Collections.singleton(chosen.id),
+                Collections.<String,String>emptyMap(),purposes,facts,null,preferSearchIcon);
     }
     private static boolean homeSearchNeutral(NativeAppEvidence.Node n){
         return !n.editable&&!n.scrollable&&n.scrollDirections.isEmpty()&&Boolean.FALSE.equals(n.selected)

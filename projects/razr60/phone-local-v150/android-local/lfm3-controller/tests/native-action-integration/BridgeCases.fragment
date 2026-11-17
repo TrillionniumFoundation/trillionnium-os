@@ -1,7 +1,7 @@
     static Fixture setup(String purpose,String name)throws Exception{NativeActionBridgeHost h=new NativeActionBridgeHost();return h.new Fixture(purpose,name);}
     static void run(java.nio.file.Path source)throws Exception{
         sourceRoot=source;
-        for(String purpose:Arrays.asList(NativeActionSnapshotCheck.OPEN,NativeActionSnapshotCheck.YEAR,NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH)){
+        for(String purpose:Arrays.asList(NativeActionSnapshotCheck.OPEN,NativeActionSnapshotCheck.YEAR,NativeActionSnapshotCheck.QUERY,NativeActionSnapshotCheck.SEARCH_ICON)){
             final String p=purpose;
             one("actual_bridge_accepts_complete_disjoint_change_"+p,()->{
                 Fixture f=setup(p,"positive:"+p);f.neutralText();yes(f.dispatch(),"same purpose through actual validate/final/click blocks");
@@ -158,3 +158,50 @@
             IntegrationChecks.rejects(()->f.service.enterActionEffect(f.work),"actual ActionExecutionState still checks cancellation after claim");f.noEffect("claimed guard is not effect authority alone");
         });
     }
+
+
+    static final class IconCensus {
+        final NativeActionSnapshotCheck.Intent intent;
+        final NativeActionSnapshotCheck.Snapshot before,fresh;final long now;
+        IconCensus(NativeActionSnapshotCheck.Intent i,NativeActionSnapshotCheck.Snapshot a,NativeActionSnapshotCheck.Snapshot z,long n){
+            intent=i;before=a;fresh=z;now=n;
+        }
+    }
+    static void rotateIconHint(Fixture f,String term){
+        Map<String,Object> entry=f.fresh.nodes.get("0/0/0"),hint=f.fresh.nodes.get("0/0/0/0"),text=f.fresh.nodes.get("0/0/0/0/0");
+        entry.put("label",ObservedTargetLabels.project("搜索"+term+" · "+term));
+        hint.put("description","搜索"+term);hint.put("label","搜索"+term);text.put("text",term);text.put("label",term);
+    }
+    static IconCensus iconCensus(String name,String term)throws Exception{
+        Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"icon-census:"+name);
+        if(term!=null)rotateIconHint(f,term);
+        Graph fresh=f.graph(f.fresh,f.work.budget());
+        try{return new IconCensus(f.work.nativeGuard.intent(f.work.graph.refs.get(f.action.nodeId).signature),
+                nativeActionSnapshot(f.work.graph,f.work.nativeGuard),nativeActionSnapshot(fresh,f.work.nativeGuard),SystemClock.now);}
+        finally{fresh.close();}
+    }
+    static void stableIconLiveCases()throws Exception{
+        one("stable_icon_actual_service_keeps_original_node_and_one_effect",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"icon-live");
+            yes("com.xiaomi.shop.plugin.homepage:id/searchIcon".equals(f.frame.byId.get(f.action.nodeId).viewId),"production default selects actual icon");
+            NodeRef original=f.work.graph.refs.get(f.action.nodeId);rotateIconHint(f,"REDMI K系列电池换新");
+            yes(f.dispatch()&&f.effects()==1,"complete compare, live chain and one explicit host effect");
+            yes(f.work.graph.refs.get(f.action.nodeId)==original&&f.work.nativeActionRevalidated,"original retained ref, not a replacement target");
+            yes(f.data.get("0/0/0").effects==0,"switcher never receives fallback effect");
+        });
+        one("stable_icon_final_scope_io_revalidates_rotated_hint",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"icon-final");rotateIconHint(f,"充电宝");
+            f.service.scopeMutation=()->rotateIconHint(f,"电视");
+            yes(f.dispatch()&&f.effects()==1,"second full census keeps only classified hint rotation");
+        });
+        one("stable_icon_actual_node_replacement_refused",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"icon-replaced");rotateIconHint(f,"电视");
+            f.data.put(f.raw.target,new NodeData(f.fresh.nodes.get(f.raw.target)));
+            yes(!f.dispatch(),"same fields do not replace original actual node");f.noEffect("replaced icon not entered");
+        });
+        one("stable_icon_installed_uid_or_apk_replacement_refused",()->{
+            Fixture f=setup(NativeActionSnapshotCheck.SEARCH_ICON,"icon-install");rotateIconHint(f,"电视");f.installedCurrent=false;
+            IntegrationChecks.rejects(()->f.dispatch(),"same original installed verifier remains required");f.noEffect("no effect after PM replacement");
+        });
+    }
+
