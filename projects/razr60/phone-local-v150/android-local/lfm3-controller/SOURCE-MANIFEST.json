@@ -23,7 +23,7 @@
     "previous_manifest_sha256": "3b442123253504d89138cb3c02381ba978ef589453cc2a806fe1a98ed861a9af",
     "recognized_booking_pending_phase_budget_ms": 16000
   },
-  "candidate_status": "source_candidate_requires_separate_current_build_and_device_qualification",
+  "candidate_status": "permission_retirement_and_nonblocking_diagnostics_merge_frozen_before_current_full_gates",
   "candidate_version_assigned": true,
   "ci_containment_repair_amendment": {
     "baseline_manifest_sha256": "8dd4b459a4da939f8594df16a5198fbce6cdd2fc6e7a298b5b0956fca4c57889",
@@ -81,8 +81,13 @@
     "updated_full_test_passed": true
   },
   "current_validation": {
+    "additional_parents": [
+      "db9a27790ae356cdafe401e7c554e4561a919fca"
+    ],
+    "all_current_22_gates_require_reexecution": true,
     "android_compiled_at_freeze": false,
     "embedded_host_result_is_current": false,
+    "first_parent": "ad1651075bca04044ae295ef268a106c3a11e247",
     "phone_tested": false,
     "required_host_validation": [
       "canonical including permission transient",
@@ -90,7 +95,7 @@
       "all 19 native gates from unchanged base CI workflow",
       "additional original raw-fixture host check"
     ],
-    "scope": "source freeze only; current host/build/device results are separately bound receipts"
+    "scope": "current merged source freeze only; current host/build/device results are separately bound receipts"
   },
   "dom_reuse_and_reopen_amendment": {
     "action_replay_added": false,
@@ -6307,9 +6312,9 @@
       "sha256": "7c170e15deb8407a80b4dbcab3564697d2192c63365bb5a062ecba6f3ebbadcd"
     },
     {
-      "bytes": 27207,
+      "bytes": 27203,
       "path": "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
-      "sha256": "efeda2811e343559c4571214f637ff5eaac391e8205266d01b8c2c101d9631cb"
+      "sha256": "0ca396d12621cfb0e0d49a78954c69ea0270edb1dd94b74cbc9ca4e99b733727"
     },
     {
       "bytes": 19548,
@@ -12834,6 +12839,51 @@
       "phone_claims_from_host_tests": false
     }
   },
+  "permission_retirement_diagnostic_merge_amendment": {
+    "additional_parents": [
+      "db9a27790ae356cdafe401e7c554e4561a919fca"
+    ],
+    "android_build_at_freeze": false,
+    "changed_production_paths": [
+      "src/org/trillionnium/hepta/background/ProfileOwnedTask.java"
+    ],
+    "current_host_gates_require_full_reexecution": 22,
+    "current_java_source_count": 163,
+    "current_production_source_input_count": 335,
+    "current_production_source_input_map_sha256": "588ba2015c95a2f489a7f38209f77a0e01bf7b2893eb42dd4d2cc7850c5c8580",
+    "earlier_diagnostic_amendment_is_historical_additional_parent_scope": true,
+    "earlier_permission_amendment_is_historical_first_parent_scope": true,
+    "first_parent": "ad1651075bca04044ae295ef268a106c3a11e247",
+    "first_parent_host_result_sha256": "9193d048b24143f54851b3371e84e4cf4c3d960a5ea92393f08488f584b8e41a",
+    "first_parent_manifest_sha256": "0888446295d65cc0eb019bca2396c67f5d7607968d8786fdc1eae868707f9eef",
+    "first_parent_results_reused_as_current_gate_results": false,
+    "first_parent_source_input_map_sha256": "cd71af584acd37ba246d37e4eed2cba20207975d0a302c873b6291ceb00dc5d5",
+    "first_parent_tree": "004dce289758e46c1d2282f72ae28144fe32d545",
+    "merged_owned_task_sha256": "0ca396d12621cfb0e0d49a78954c69ea0270edb1dd94b74cbc9ca4e99b733727",
+    "only_production_delta_from_first_parent": "volatile immutable diagnostic snapshot; diagnostic getter does not acquire task monitor",
+    "permission_proof_and_authorization_unchanged": true,
+    "phone_operations": 0,
+    "previous_owned_task_sha256": "efeda2811e343559c4571214f637ff5eaac391e8205266d01b8c2c101d9631cb",
+    "upstream_diagnostic_parent": "071dccc05ca62372e73891ce82d5b400f3d3754f",
+    "upstream_diagnostic_source_input_count": 334,
+    "upstream_diagnostic_source_input_map_sha256": "6b7dc5b7c4fe309fd609e35346616b2cfa32364be63398703ba361b21218d004",
+    "upstream_diagnostic_tree": "b77a1d6657d7f987ccb1dd04935ebee7c47ea8fb"
+  },
+  "permission_retirement_merge_base_validation": {
+    "first_parent": "ad1651075bca04044ae295ef268a106c3a11e247",
+    "historical_current_validation": {
+      "android_compiled_at_freeze": false,
+      "embedded_host_result_is_current": false,
+      "phone_tested": false,
+      "required_host_validation": [
+        "canonical including permission transient",
+        "unchanged upstream profile broker 47 cases and 449 assertions",
+        "all 19 native gates from unchanged base CI workflow",
+        "additional original raw-fixture host check"
+      ],
+      "scope": "source freeze only; current host/build/device results are separately bound receipts"
+    }
+  },
   "permission_transient_retirement_amendment": {
     "android_build_at_freeze": false,
     "base_head": "071dccc05ca62372e73891ce82d5b400f3d3754f",
@@ -13023,6 +13073,24 @@
     "phone_claims_from_host_tests": false
   },
   "production_build_inputs_count": 335,
+  "profile_diagnostic_readback_amendment": {
+    "all_authorization_guards_and_cleanup_state_unchanged": true,
+    "baseline_manifest_sha256": "ce970f63f4291200eda2d3c1d75f819104eb6a24c1dc077ece82b57c8fbb6633",
+    "changed_nonmanifest_paths": [
+      "src/org/trillionnium/hepta/background/ProfileOwnedTask.java"
+    ],
+    "diagnostic_getter_does_not_acquire_task_monitor": true,
+    "existing_error_codes_and_diagnostic_schema_unchanged": true,
+    "immutable_snapshot_published_via_volatile_reference": true,
+    "normal_git_parent": "071dccc05ca62372e73891ce82d5b400f3d3754f",
+    "phone_operations": 0,
+    "production_changed_paths": [
+      "src/org/trillionnium/hepta/background/ProfileOwnedTask.java"
+    ],
+    "production_source_inputs_canonical_lf_sha256": "6b7dc5b7c4fe309fd609e35346616b2cfa32364be63398703ba361b21218d004",
+    "production_source_inputs_count": 334,
+    "validation": "Source frozen before this candidate's Android build, signed APK assembly and phone qualification. Later build and validation outcomes are recorded in separate candidate-bound receipts; parent receipts remain bound to 071dccc05ca62372e73891ce82d5b400f3d3754f."
+  },
   "profile_leaf_retention_amendment": {
     "additional_diagnostic_field": "profile_last_leaf_validation",
     "baseline_manifest_sha256": "ed31eb3a8a6fabe573cf359ca1357c57fc9763624538593445853fcdee203319",
