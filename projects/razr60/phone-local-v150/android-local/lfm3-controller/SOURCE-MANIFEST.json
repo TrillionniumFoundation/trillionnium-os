@@ -23,7 +23,7 @@
     "previous_manifest_sha256": "3b442123253504d89138cb3c02381ba978ef589453cc2a806fe1a98ed861a9af",
     "recognized_booking_pending_phase_budget_ms": 16000
   },
-  "candidate_status": "native_gate_fixture_repair_frozen_before_current_full_gates",
+  "candidate_status": "profile_leaf_retention_frozen_before_current_full_gates",
   "candidate_version_assigned": true,
   "ci_containment_repair_amendment": {
     "baseline_manifest_sha256": "8dd4b459a4da939f8594df16a5198fbce6cdd2fc6e7a298b5b0956fca4c57889",
@@ -6265,9 +6265,9 @@
       "sha256": "1e0a313b943d12352bd740cc30dd9834b86225a9c52b27117319f44810f9f409"
     },
     {
-      "bytes": 68980,
+      "bytes": 69322,
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "sha256": "f750c04cbc1c61b6c62682e26e79240db95c9ed73dae4008c9f94239903203cb"
+      "sha256": "10b3dfe60a7f0693aff7123713e8f854b6203dc4978729702321e5b00a7d3acb"
     },
     {
       "bytes": 25279,
@@ -6320,9 +6320,9 @@
       "sha256": "7c170e15deb8407a80b4dbcab3564697d2192c63365bb5a062ecba6f3ebbadcd"
     },
     {
-      "bytes": 18172,
+      "bytes": 21617,
       "path": "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
-      "sha256": "c2159cd8cbb2dbada39809f7315b336450d9552fbe4e7441aef2337971ffcc64"
+      "sha256": "67c30e4d36753e561a3f97e34f319bfa1dd770f9fea696f94e0e30216ccd32ba"
     },
     {
       "bytes": 15352,
@@ -8855,9 +8855,9 @@
       "sha256": "6c63b54de5c40df4b50e1c3a93c0bbec36fd8f639565e50ef30f50a33c8251f5"
     },
     {
-      "bytes": 18198,
+      "bytes": 27862,
       "path": "tests/profile-broker/ProfileBrokerHostTest.java",
-      "sha256": "6ee383f1d65ed7b078f193f95d97bf0decdc0fb6c86b7ca22574791a2cadf9f5"
+      "sha256": "5880a651260aa18566364f4dbca427c5adbba8048eee7f1b8a3d55f4a6f69e04"
     },
     {
       "bytes": 2872,
@@ -12947,6 +12947,38 @@
     "phone_claims_from_host_tests": false
   },
   "production_build_inputs_count": 334,
+  "profile_leaf_retention_amendment": {
+    "additional_diagnostic_field": "profile_last_leaf_validation",
+    "baseline_manifest_sha256": "ed31eb3a8a6fabe573cf359ca1357c57fc9763624538593445853fcdee203319",
+    "changed_nonmanifest_paths": [
+      "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
+      "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
+      "tests/profile-broker/ProfileBrokerHostTest.java"
+    ],
+    "diagnostic_values_are_not_authority": true,
+    "existing_error_codes_cleanup_fields_quarantine_and_recovery_unchanged": true,
+    "first_claim_cookie_and_new_task_requirements_unchanged": true,
+    "full_uid_top_activity_info_components_pm_and_global_snapshot_guards_retained": true,
+    "historical_phone_failure_single_cause_proved": false,
+    "normal_git_parent": "6ec43822d34b15932df337b8e567843106df1531",
+    "phone_operations": 0,
+    "production_changed_paths": [
+      "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
+      "src/org/trillionnium/hepta/background/ProfileOwnedTask.java"
+    ],
+    "production_source_inputs_canonical_lf_sha256": "61c92efc230215314a8cddc704528bdc4bc52764649c717a6c4bc027a00817e0",
+    "production_source_inputs_count": 334,
+    "production_source_inputs_path_sequence_unchanged": true,
+    "retained_actual_task_binder_and_exact_id_user_parent_display_required": true,
+    "retained_leaf_never_cleared_or_replaced": true,
+    "reviewed_source_and_test_patch_sha256": "94af2ef49e4887c85f87c8c8272f4aa2379b54c6a008c029e0d62e07f61b0493",
+    "root_cookie_requirement_unchanged": true,
+    "runtime_model_and_android_build_configuration_unchanged": true,
+    "targeted_host_assertions": 449,
+    "targeted_host_cases": 47,
+    "targeted_host_result_sha256": "74e87f913d40a7bfb085e48cbfec687266ed52539dd9de18b2c61ea1c08693d9",
+    "validation": "Frozen exact-head full host gates, Android build, original-signer assembly and phone acceptance are separate future receipts. Historical reports do not qualify this candidate."
+  },
   "profile_recents_prelaunch_recovery_amendment": {
     "android_manifest_unchanged": true,
     "approved_union_sha256": "5534162a73d21b5c82882ffa334a4dae2e8f357caa7736c7f63e5e07a192f0f0",

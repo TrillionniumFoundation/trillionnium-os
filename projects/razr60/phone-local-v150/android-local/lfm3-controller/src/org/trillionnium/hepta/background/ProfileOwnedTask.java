@@ -39,6 +39,7 @@ public final class ProfileOwnedTask {
     private final Set<Integer> beforeIds=new LinkedHashSet<Integer>();
     private Map<Integer,ProfileTaskPolicy.Leaf> personal=Collections.emptyMap();
     private Map<String,Object> personalAudit=Collections.emptyMap();
+    private Map<String,Object> lastLeafValidation=Collections.emptyMap();
     private BackgroundOwnedSingleTask.Task root,leaf;
     private String leafTokenId;
     private boolean rootAttempted,prepared,dispatchMarked,startAccepted,retiring,rootRemoved,leafRemoved;
@@ -173,6 +174,8 @@ public final class ProfileOwnedTask {
     public synchronized boolean cleanupKnown(){return cleanupKnown&&!identityUnknown&&!foreignTasks;}
     public synchronized boolean started(){return dispatchMarked;}
     public synchronized Map<String,Object> personalAudit(){return personalAudit;}
+    /** Diagnostic readback only; neither serialized identifiers nor these booleans grant authority. */
+    public synchronized Map<String,Object> lastLeafValidation(){return lastLeafValidation;}
     public synchronized Map<String,Object> cleanupEvidence(){
         Map<String,Object> out=new LinkedHashMap<String,Object>();
         out.put("schema","hepta.profile-task-cleanup.v1");out.put("generation",generation);out.put("display_id",display);
@@ -199,6 +202,7 @@ public final class ProfileOwnedTask {
         out.put("launch_task_id_override",false);out.put("preexisting_task_reparented",false);
         out.put("default_cross_profile_filters_modified",false);out.put("serialized_token_is_authority",false);
         out.put("personal_task_audit",personalAudit);
+        out.put("last_leaf_validation",lastLeafValidation);
         out.put("cleanup",cleanupEvidence());return Collections.unmodifiableMap(out);
     }
     private ProfileTarget actual(boolean ready)throws Exception{
@@ -241,15 +245,54 @@ public final class ProfileOwnedTask {
                 &&(current.topUid==-1||current.topUid==target.fullUid),"PROFILE_ROOT_FOREIGN_ACTIVITY");
     }
     private void requireLeaf(BackgroundOwnedSingleTask.Task current,ProfileTaskPolicy.Snapshot global)throws Exception{
-        need(dispatchMarked&&current!=null&&current.id>0&&current.id!=root.id&&!beforeIds.contains(current.id)
-                &&current.token!=null&&!root.token.equals(current.token)&&current.display==display
-                &&current.user==target.profile.userId&&current.parent==root.id&&current.uid==target.fullUid
-                &&current.topUid==target.fullUid&&current.cookies.contains(launchCookie)
-                &&inPackage(current.intentComponent)&&inPackage(current.base)&&inPackage(current.top)
-                &&inPackage(current.real)&&(current.orig==null||inPackage(current.orig)),"PROFILE_NEW_LEAF_NOT_PROVEN");
-        ProfileTaskPolicy.Leaf actual=global.leaves.get(current.id);
-        need(actual!=null&&actual.user==current.user&&actual.parent==root.id&&actual.display==display,
-                "PROFILE_LEAF_NOT_IN_COMPLETE_GLOBAL_SNAPSHOT");
+        final boolean retained=leaf!=null;
+        final boolean cookiePresent=current!=null&&current.cookies.contains(launchCookie);
+        Map<String,Boolean> checks=new LinkedHashMap<String,Boolean>();
+        checks.put("dispatch_marked",dispatchMarked);
+        checks.put("task_info_present",current!=null);
+        checks.put("task_id_positive",current!=null&&current.id>0);
+        checks.put("task_id_differs_from_root",current!=null&&current.id!=root.id);
+        checks.put("task_id_absent_before_launch",current!=null&&!beforeIds.contains(current.id));
+        checks.put("actual_task_token_present",current!=null&&current.token!=null);
+        checks.put("actual_task_token_differs_from_root",current!=null&&current.token!=null&&!root.token.equals(current.token));
+        checks.put("display_matches",current!=null&&current.display==display);
+        checks.put("user_matches",current!=null&&current.user==target.profile.userId);
+        checks.put("parent_matches",current!=null&&current.parent==root.id);
+        checks.put("full_uid_matches",current!=null&&current.uid==target.fullUid);
+        checks.put("top_activity_info_uid_matches",current!=null&&current.topUid==target.fullUid);
+        // Activity launch cookies are admission proof, not a durable Task identity. Once claimed,
+        // only the retained actual token and exact task tuple can authorize another observation.
+        // The retained leaf is never cleared or replaced, including after disappearance/refusal.
+        checks.put("first_claim_launch_cookie",retained||cookiePresent);
+        checks.put("intent_package_matches",current!=null&&inPackage(current.intentComponent));
+        checks.put("base_package_matches",current!=null&&inPackage(current.base));
+        checks.put("top_package_matches",current!=null&&inPackage(current.top));
+        checks.put("real_package_matches",current!=null&&inPackage(current.real));
+        checks.put("orig_package_matches",current!=null&&(current.orig==null||inPackage(current.orig)));
+        boolean identity=true;for(boolean match:checks.values())identity&=match;
+        boolean retainedIdentity=!retained||sameTask(leaf,current);
+        ProfileTaskPolicy.Leaf actual=global.leaves.get(current==null?-1:current.id);
+        boolean complete=actual!=null&&current!=null&&actual.user==current.user
+                &&actual.parent==root.id&&actual.display==display;
+        String refusal=!identity?"PROFILE_NEW_LEAF_NOT_PROVEN":!retainedIdentity?"PROFILE_LEAF_TOKEN_CHANGED"
+                :!complete?"PROFILE_LEAF_NOT_IN_COMPLETE_GLOBAL_SNAPSHOT":null;
+        Map<String,Object> detail=new LinkedHashMap<String,Object>();
+        detail.put("schema","hepta.profile-leaf-validation.v1");detail.put("observed_elapsed_ms",platform.now());
+        detail.put("phase",retained?"retained_leaf":"first_claim");detail.put("valid",refusal==null);
+        detail.put("refusal_code",refusal);detail.put("launch_cookie_present",cookiePresent);
+        detail.put("retained_task_id",retained?leaf.id:null);
+        detail.put("actual_task_token_equal_to_retained",retained&&current!=null?Objects.equals(leaf.token,current.token):null);
+        detail.put("retained_task_identity_matches",retained?retainedIdentity:null);
+        detail.put("complete_global_leaf_matches",complete);detail.put("checks",Collections.unmodifiableMap(checks));
+        detail.put("observed_task_id",current==null?null:current.id);
+        detail.put("observed_parent_id",current==null?null:current.parent);
+        detail.put("observed_display_id",current==null?null:current.display);
+        detail.put("observed_user_id",current==null?null:current.user);
+        detail.put("observed_full_uid",current==null?null:current.uid);
+        detail.put("observed_top_activity_info_uid",current==null?null:current.topUid);
+        detail.put("serialized_token_is_authority",false);
+        lastLeafValidation=Collections.unmodifiableMap(detail);
+        need(refusal==null,refusal);
     }
     private static List<BackgroundOwnedSingleTask.Task> checked(List<BackgroundOwnedSingleTask.Task> rows)throws Exception{
         need(rows!=null&&rows.size()<=2048,"PROFILE_TASK_QUERY_INCOMPLETE");

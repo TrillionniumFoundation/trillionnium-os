@@ -9,6 +9,15 @@ public final class ProfileBrokerHostTest {
     static final String GEN="12345678-1234-4234-9234-123456789abc",REQUEST="22345678-1234-4234-9234-123456789abc";
     static final String SPLASH="ctrip.android.view/ctrip.business.splash.CtripSplashActivity";
     static final String HOME="ctrip.android.view/ctrip.android.view.home.CtripHomeActivity";
+    static final String FOREIGN="com.android.permissioncontroller/com.android.permissioncontroller.permission.ui.GrantPermissionsActivity";
+    /** Separate TaskInfo token wrappers may still refer to the same actual Binder. */
+    static final class TaskToken {
+        final Object binder;
+        TaskToken(Object binder){this.binder=binder;}
+        @Override public boolean equals(Object other){return other instanceof TaskToken&&((TaskToken)other).binder==binder;}
+        @Override public int hashCode(){return System.identityHashCode(binder);}
+        @Override public String toString(){return "same-diagnostic-task-token";}
+    }
     static ProfileTarget target(long serial,int uid){return new ProfileTarget(new ProfileIdentity(10,serial,0,
             "android.os.usertype.profile.MANAGED"),uid,ProfileTarget.CTRIP,SPLASH,1779,
             Collections.singletonMap("base",repeat('a')),Collections.singleton(repeat('b')));}
@@ -38,10 +47,12 @@ public final class ProfileBrokerHostTest {
     static final class Fake implements ProfileOwnedTask.Platform {
         ProfileTarget actual=target(10,1010367);
         boolean root,app,recentsApp,foreign,personalMoved,wrongCookie,wrongUid,wrongUser,wrongParent;
+        boolean wrongDisplay,wrongTopUid,foreignTop,extraChild,globalMissingLeaf,missingRootCookie;
+        boolean wrongIntent,wrongBase,wrongReal,wrongOrig;
         boolean removeThrows,keepRecents,deleteThrows,delayedDelete,pendingDelete,cancel;
         boolean initialProfileLive,initialProfileRecent,personalAdded,personalClosed;
         Object rootToken=new Object(),leafToken=new Object(),rootCookie,launchCookie;
-        final List<String> mutations=new ArrayList<String>();long now=1000;
+        final List<String> mutations=new ArrayList<String>();long now=1000;int leafId=300;
         @Override public ProfileTarget recheck(boolean ready){return actual;}
         @Override public void guard()throws Exception{if(cancel)throw new ProfileTaskPolicy.Refusal("CANCELLED");}
         @Override public long now(){return now;}
@@ -53,9 +64,9 @@ public final class ProfileBrokerHostTest {
                     new int[]{50},new int[]{0},new String[]{launcher},new int[][]{{0,0,1080,2400}}));
             if(!personalClosed)rows.add(row(100,personalMoved?7:0,0,100,0,HOME,true));
             if(personalAdded)rows.add(row(102,0,0,102,0,HOME,true));
-            if(root){int leaf=app?300:200;
-                rows.add(new ProfileTaskPolicy.Root(200,7,0,app?1:0,app,app?SPLASH:null,app?HOME:null,
-                        new int[]{leaf},new int[]{app?(wrongUser?0:10):0},new String[]{app?HOME:"unknown"},
+            if(root){boolean reported=app&&!globalMissingLeaf;int leaf=reported?leafId:200;
+                rows.add(new ProfileTaskPolicy.Root(200,7,0,reported?1:0,reported,reported?SPLASH:null,reported?HOME:null,
+                        new int[]{leaf},new int[]{reported?(wrongUser?0:10):0},new String[]{reported?HOME:"unknown"},
                         new int[][]{{0,0,1080,2400}}));}
             if(initialProfileLive)rows.add(row(400,0,0,401,10,HOME,false));
             if(foreign)rows.add(row(402,7,0,403,10,HOME,false));
@@ -63,16 +74,23 @@ public final class ProfileBrokerHostTest {
         }
         @Override public ProfileTaskPolicy.Recents recents()throws Exception{
             if(initialProfileRecent)return ProfileTaskPolicy.Recents.parse(recent(100,0,10367,401,10,1010367));
-            return ProfileTaskPolicy.Recents.parse(recentsApp?recent(100,0,10367,300,10,1010367):recent(100,0,10367));
+            return ProfileTaskPolicy.Recents.parse(recentsApp?recent(100,0,10367,leafId,10,1010367):recent(100,0,10367));
         }
         BackgroundOwnedSingleTask.Task rootRow(){return new BackgroundOwnedSingleTask.Task(200,7,0,-1,0,app?1010367:-1,
-                app?1:0,rootToken,Collections.singletonList(rootCookie),null,app?SPLASH:null,app?HOME:null,null,null,app,app);}
-        BackgroundOwnedSingleTask.Task leafRow(){return new BackgroundOwnedSingleTask.Task(300,7,wrongUser?0:10,wrongParent?900:200,
-                wrongUid?10367:1010367,wrongUid?10367:1010367,1,leafToken,
-                Collections.singletonList(wrongCookie?new Object():launchCookie),SPLASH,SPLASH,HOME,SPLASH,null,true,true);}
+                app?1:0,rootToken,missingRootCookie?Collections.emptyList():Collections.singletonList(rootCookie),
+                null,app?SPLASH:null,app?HOME:null,null,null,app,app);}
+        BackgroundOwnedSingleTask.Task leafRow(){return new BackgroundOwnedSingleTask.Task(leafId,wrongDisplay?8:7,wrongUser?0:10,wrongParent?900:200,
+                wrongUid?10367:1010367,wrongUid||wrongTopUid?10367:1010367,1,leafToken,
+                wrongCookie?Collections.emptyList():Collections.singletonList(launchCookie),wrongIntent?FOREIGN:SPLASH,
+                wrongBase?FOREIGN:SPLASH,foreignTop?FOREIGN:HOME,wrongReal?FOREIGN:SPLASH,wrongOrig?FOREIGN:null,true,true);}
         @Override public List<BackgroundOwnedSingleTask.Task> roots(){return root?Collections.singletonList(rootRow()):Collections.emptyList();}
         @Override public List<BackgroundOwnedSingleTask.Task> children(Object token){
-            yes(rootToken.equals(token),"wrong root token query");return app?Collections.singletonList(leafRow()):Collections.emptyList();}
+            yes(rootToken.equals(token),"wrong root token query");
+            if(!app)return Collections.emptyList();
+            if(!extraChild)return Collections.singletonList(leafRow());
+            BackgroundOwnedSingleTask.Task extra=new BackgroundOwnedSingleTask.Task(301,7,10,200,1010367,1010367,1,
+                    new Object(),Collections.singletonList(launchCookie),SPLASH,SPLASH,HOME,SPLASH,null,true,true);
+            return Arrays.asList(leafRow(),extra);}
         @Override public void createRoot(Object cookie){yes(!root,"root reused");rootCookie=cookie;root=true;mutations.add("create");}
         @Override public void bindRoot(Object token,Object cookie){yes(rootToken.equals(token),"bind arbitrary token");launchCookie=cookie;mutations.add("bind");}
         @Override public void removeLeaf(Object token)throws Exception{
@@ -138,10 +156,113 @@ public final class ProfileBrokerHostTest {
             Fake f=new Fake();ProfileOwnedTask p=active(f);f.wrongUser=true;
             reject("PROFILE_NEW_LEAF_NOT_PROVEN",()->p.window(14,300,2000));
         });
-        test("leaf cookie and parent are independently required",()->{
-            Fake f=new Fake();ProfileOwnedTask p=active(f);f.wrongCookie=true;
-            reject("PROFILE_NEW_LEAF_NOT_PROVEN",()->p.observe());f.wrongCookie=false;f.wrongParent=true;
+        test("first claim still requires the actual launch cookie",()->{
+            Fake f=new Fake();ProfileOwnedTask p=prepared(f);p.beforeDispatch();f.launch();p.accepted(0);f.wrongCookie=true;
             reject("PROFILE_NEW_LEAF_NOT_PROVEN",()->p.observe());
+            Map<String,Object> detail=p.lastLeafValidation();
+            yes("first_claim".equals(detail.get("phase"))&&Boolean.FALSE.equals(detail.get("launch_cookie_present")),"missing-cookie diagnostic");
+            yes(Boolean.FALSE.equals(((Map<?,?>)detail.get("checks")).get("first_claim_launch_cookie")),"first-claim gate absent");
+            yes(p.evidence().get("leaf_task_id")==null,"failed first claim retained a leaf");
+            reject("PROFILE_NEW_LEAF_NOT_PROVEN",()->p.retire(2400));
+            yes(!f.mutations.contains("remove_leaf")&&!p.cleanupKnown(),"unclaimed cookie-free leaf removed");
+        });
+        test("retained actual Binder survives activity-cookie loss across wrappers",()->{
+            Fake f=new Fake();Object binder=new Object();f.leafToken=new TaskToken(binder);ProfileOwnedTask p=active(f);
+            String retained=(String)p.evidence().get("leaf_token_id");
+            f.leafToken=new TaskToken(binder);f.wrongCookie=true;
+            yes(p.observe(),"same Binder without activity cookie rejected");
+            WindowOwnership w=p.window(14,300,2000);
+            yes(retained.equals(w.taskTokenId),"retained authority was replaced");
+            Map<String,Object> detail=p.lastLeafValidation();
+            yes("retained_leaf".equals(detail.get("phase"))&&Boolean.TRUE.equals(detail.get("valid")),"retained validation missing");
+            yes(Boolean.FALSE.equals(detail.get("launch_cookie_present"))
+                    &&Boolean.TRUE.equals(detail.get("actual_task_token_equal_to_retained")),"cookie/Binder distinction missing");
+            p.retire(2400);yes(p.cleanupKnown(),"same actual leaf not retired after cookie loss");
+            yes(f.mutations.equals(Arrays.asList("create","bind","remove_leaf","delete_root")),"cookie loss changed cleanup sequence");
+        });
+        test("same task ID and identical diagnostic token text cannot replace actual Binder",()->{
+            Fake f=new Fake();f.leafToken=new TaskToken(new Object());ProfileOwnedTask p=active(f);
+            String retained=(String)p.evidence().get("leaf_token_id");Object old=f.leafToken;
+            f.leafToken=new TaskToken(new Object());
+            yes(old.toString().equals(f.leafToken.toString()),"fixture did not collide on diagnostic text");
+            reject("PROFILE_LEAF_TOKEN_CHANGED",()->p.window(14,300,2000));
+            yes(Boolean.FALSE.equals(p.lastLeafValidation().get("actual_task_token_equal_to_retained")),"actual token mismatch not diagnosed");
+            yes(retained.equals(p.evidence().get("leaf_token_id")),"token replacement reclaimed");
+            reject("PROFILE_LEAF_TOKEN_CHANGED",()->p.retire(2400));
+            yes(!f.mutations.contains("remove_leaf")&&!p.cleanupKnown(),"replacement leaf removed");
+        });
+        for(String field:new String[]{"display","parent","user","uid"})test("same retained Binder with changed "+field+" rejects",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);f.wrongCookie=true;
+            if("display".equals(field))f.wrongDisplay=true;
+            else if("parent".equals(field))f.wrongParent=true;
+            else if("user".equals(field))f.wrongUser=true;
+            else f.wrongUid=true;
+            reject("PROFILE_NEW_LEAF_NOT_PROVEN",()->p.window(14,300,2000));
+            yes(Boolean.TRUE.equals(p.lastLeafValidation().get("actual_task_token_equal_to_retained")),"fixture changed Binder");
+            String key="uid".equals(field)?"full_uid_matches":field+"_matches";
+            yes(Boolean.FALSE.equals(((Map<?,?>)p.lastLeafValidation().get("checks")).get(key)),"changed field not diagnosed: "+field);
+        });
+        test("same retained Binder with another task ID rejects",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);f.leafId=302;
+            reject("PROFILE_LEAF_TOKEN_CHANGED",()->p.window(14,302,2000));
+            yes(Integer.valueOf(300).equals(p.evidence().get("leaf_task_id")),"task ID was reclaimed");
+        });
+        test("disappeared leaf is never re-claimed even with a valid fresh cookie",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);f.app=false;
+            reject("PROFILE_OWNED_LEAF_DISAPPEARED",()->p.observe());
+            f.app=true;f.leafId=302;f.leafToken=new Object();
+            reject("PROFILE_LEAF_TOKEN_CHANGED",()->p.observe());
+            yes(Integer.valueOf(300).equals(p.evidence().get("leaf_task_id")),"replacement task was claimed");
+            reject("PROFILE_LEAF_TOKEN_CHANGED",()->p.retire(2400));
+            yes(!f.mutations.contains("remove_leaf"),"replacement task removed");
+        });
+        test("retained leaf still rejects foreign topActivityInfo UID",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);f.wrongCookie=true;f.wrongTopUid=true;
+            reject("PROFILE_NEW_LEAF_NOT_PROVEN",()->p.window(14,300,2000));
+            yes(Boolean.FALSE.equals(((Map<?,?>)p.lastLeafValidation().get("checks")).get("top_activity_info_uid_matches")),"foreign top UID not diagnosed");
+        });
+        for(String field:new String[]{"intent","base","top","real","orig"})test("retained leaf still rejects foreign "+field+" package",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);f.wrongCookie=true;
+            if("intent".equals(field))f.wrongIntent=true;
+            else if("base".equals(field))f.wrongBase=true;
+            else if("top".equals(field))f.foreignTop=true;
+            else if("real".equals(field))f.wrongReal=true;
+            else f.wrongOrig=true;
+            reject("PROFILE_NEW_LEAF_NOT_PROVEN",()->p.window(14,300,2000));
+            yes(Boolean.FALSE.equals(((Map<?,?>)p.lastLeafValidation().get("checks")).get(field+"_package_matches")),"foreign component not diagnosed");
+        });
+        test("additional child rejects despite retained Binder and cookie loss",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);f.wrongCookie=true;f.extraChild=true;
+            reject("PROFILE_FOREIGN_CHILD_TASK",()->p.window(14,300,2000));
+            reject("PROFILE_FOREIGN_CHILD_TASK",()->p.retire(2400));
+            yes(!f.mutations.contains("remove_leaf"),"multiple children were removed");
+        });
+        test("retained Binder cannot bypass complete global leaf snapshot",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);f.wrongCookie=true;f.globalMissingLeaf=true;
+            reject("PROFILE_LEAF_NOT_IN_COMPLETE_GLOBAL_SNAPSHOT",()->p.window(14,300,2000));
+            yes(Boolean.FALSE.equals(p.lastLeafValidation().get("complete_global_leaf_matches")),"global absence not diagnosed");
+        });
+        test("retained Binder cannot bypass an unrelated global target-profile task",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);f.wrongCookie=true;f.foreign=true;
+            reject("PROFILE_FOREIGN_ROOT_ON_DISPLAY",()->p.window(14,300,2000));
+        });
+        test("PM version update invalidates retained leaf before window proof or cleanup",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);f.wrongCookie=true;
+            f.actual=new ProfileTarget(new ProfileIdentity(10,10,0,"android.os.usertype.profile.MANAGED"),
+                    1010367,ProfileTarget.CTRIP,SPLASH,1780,Collections.singletonMap("base",repeat('a')),Collections.singleton(repeat('b')));
+            reject("PROFILE_INSTALLATION_IDENTITY_CHANGED",()->p.window(14,300,2000));
+            reject("PROFILE_INSTALLATION_IDENTITY_CHANGED",()->p.retire(2400));
+            yes(!f.mutations.contains("remove_leaf")&&!p.cleanupKnown(),"updated installation was mutated");
+        });
+        test("first claim cookie never authorizes a preexisting task ID",()->{
+            Fake f=new Fake();ProfileOwnedTask p=prepared(f);p.beforeDispatch();f.launch();p.accepted(0);
+            f.leafId=100;f.personalClosed=true;
+            reject("PROFILE_NEW_LEAF_NOT_PROVEN",()->p.observe());
+            yes(p.evidence().get("leaf_task_id")==null,"preexisting task claimed");
+        });
+        test("root-cookie ownership remains required after leaf admission",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);f.wrongCookie=true;f.missingRootCookie=true;
+            reject("PROFILE_ROOT_IDENTITY_CHANGED",()->p.window(14,300,2000));
         });
         test("foreign profile task forbids removal of any task",()->{
             Fake f=new Fake();ProfileOwnedTask p=active(f);f.foreign=true;
