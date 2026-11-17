@@ -21,6 +21,8 @@ final class LoadingWindowBridgeHost {
     private interface Test {void run()throws Exception;}
     private static void check(boolean value,String reason){assertions++;if(!value)throw new AssertionError(reason);}
     private static void one(String name,Test test)throws Exception{check(!names.contains(name),"unique case");test.run();names.add(name);}
+    // Synthetic timestamp for the diagnostic call only; ActionWork keeps its original time gate.
+    private static final class SystemClock {static long elapsedRealtime(){return 1000L;}}
     private static final class Display {static final int DEFAULT_DISPLAY=0;}
     private static final class Rect {boolean isEmpty(){return false;}}
     private static final class GraphBudget {}
@@ -47,8 +49,17 @@ final class LoadingWindowBridgeHost {
     private static final class PhoneObservation {int windowId=138,display=20;String packageName=PACKAGE;final Object profileWindow=null;}
     private static final class ActionDecision {String action="wait",packageName=PACKAGE,nodeId;}
     private static final class NodeRef {AccessibilityNodeInfo node;String signature="original";}
-    private static final class Graph {final Map<String,NodeRef> refs=new HashMap<String,NodeRef>();}
+    private static final class Graph {
+        final Map<String,NodeRef> refs=new HashMap<String,NodeRef>();
+        boolean sameWindow(Graph other){throw new AssertionError("window fixture has no diagnostic census");}
+        void close(){throw new AssertionError("window fixture has no diagnostic census");}
+    }
     private static final class ActionWork {
+        // No native Attempt can exist in this window-only fixture. The actual
+        // diagnostic helper therefore takes its original null-guard return.
+        final NativeAppSession.ActionGuard nativeGuard=null;
+        final Graph graph=null;final BackgroundSession background=null;
+        final ActionExecutionState state=null;String nativeActionRejection;
         boolean stopped;long now=1000,deadline=9000;
         void check(){if(stopped||now>=deadline)throw new IllegalStateException(stopped?"stopped":"action deadline");}
         void phase(String name){check();}GraphBudget budget(){check();return null;}
@@ -95,12 +106,23 @@ final class LoadingWindowBridgeHost {
     private Graph graphForAction(ActionWork value){value.check();return graph;}
     private static String string(Object value){return value==null?"":value.toString();}
     private static String message(Exception error){return error.getMessage();}
-    private static Object observedChildText(AccessibilityNodeInfo node,boolean background,GraphBudget budget){return null;}
+    private static ObservedChildText.Result observedChildText(AccessibilityNodeInfo node,boolean background,GraphBudget budget){return null;}
     private static String nodeSignature(AccessibilityNodeInfo node,Object text){return node.signature;}
     // Profile task lookup is a separate Android adapter, outside these user0 cases.
     private static void requireActualProfileTask(BackgroundSession value,PhoneObservation frame,AccessibilityWindowInfo window){
         if(value.profileTarget!=null||frame.profileWindow!=null)
             throw new AssertionError("legacy window fixture cannot admit a profile task");
+    }
+    // Throwing type boundaries: the immutable null nativeGuard prevents these
+    // diagnostic census endpoints from being entered or granting any result.
+    private void requireNativeActionGuard(String task,PhoneObservation frame,ActionDecision action,ActionWork value){
+        throw new AssertionError("window fixture has no native Attempt authority");
+    }
+    private static NativeActionSnapshotCheck.Snapshot nativeActionSnapshot(Graph graph,NativeAppSession.ActionGuard guard){
+        throw new AssertionError("window fixture has no native census");
+    }
+    private Graph readGraph(GraphBudget budget,BackgroundSession value){
+        throw new AssertionError("window fixture cannot perform a diagnostic read");
     }
     // ACTUAL_METHODS
     private void nextWindow(){root.windowId=139;root.window.id=139;}

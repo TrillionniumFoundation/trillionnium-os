@@ -63,6 +63,7 @@ final class NativeActionBridgeHost {
         Object value(String key){if(released)throw new AssertionError("used recycled fake reference");return data.values.get(key);}
         String s(String k){return (String)value(k);}boolean b(String k){return ((Boolean)value(k)).booleanValue();}
         CharSequence getPackageName(){return s("package");}int getWindowId(){return ((Integer)value("window_id")).intValue();}
+        AccessibilityWindowInfo getWindow(){AccessibilityWindowInfo window=new AccessibilityWindowInfo();window.id=getWindowId();return window;}
         CharSequence getClassName(){return s("class");}String getViewIdResourceName(){return s("view_id");}
         CharSequence getText(){return s("text");}CharSequence getContentDescription(){return s("description");}
         boolean isPassword(){return b("password");}boolean isVisibleToUser(){return b("visible");}boolean isEnabled(){return b("enabled");}
@@ -94,6 +95,7 @@ final class NativeActionBridgeHost {
     static final class BackgroundSession {
         String taskId,generation,ownerSha256;int display=7;boolean active=true;
         org.trillionnium.hepta.local.BackgroundSession.Selection selection;
+        boolean allows(String pkg){return selection!=null&&selection.taskTarget.nativeGoal!=null&&selection.taskTarget.nativeGoal.packageName.equals(pkg);}
         int displayId(){return display;}void requireActive(){if(!active)throw new StaleObservation("fake lease retired");}
         ProfileTarget profileTarget(){return selection.profileTarget;}
         void requireHistoricalProfileWindow(WindowOwnership proof,int window,int task,long captured){
@@ -158,8 +160,17 @@ final class NativeActionBridgeHost {
     BackgroundSession backgroundFor(String task){return owns(task)?background:null;}
     // Profile IO is outside these user0 cases. The actual profile guards below
     // still execute; an attempted profile read cannot receive a synthetic proof.
+    boolean earlyDiagnosticFixture;
     AccessibilityNodeInfo selectedRoot(BackgroundSession selected,GraphBudget budget){
-        throw new AssertionError("legacy action fixture cannot select an actual profile root");
+        if(!earlyDiagnosticFixture||selected!=background||selected.profileTarget()!=null)
+            throw new AssertionError("legacy action fixture cannot select an actual profile root");
+        checkReadBudget(budget);selected.requireActive();return new AccessibilityNodeInfo(fixture.data.get("0"));
+    }
+    void requireActualProfileTask(BackgroundSession selected,PhoneObservation frame,AccessibilityWindowInfo window){
+        if(selected.profileTarget()!=null||frame.profileWindow!=null)
+            throw new AssertionError("no synthetic actual profile task proof");
+        if(selected!=background||window.getDisplayId()!=selected.displayId()||window.getId()!=frame.windowId)
+            throw new StaleObservation("fake actual task/window differs");
     }
     WindowOwnership readProfileWindow(AccessibilityNodeInfo root,BackgroundSession selected,GraphBudget budget){
         throw new AssertionError("legacy action fixture cannot produce an actual profile proof");

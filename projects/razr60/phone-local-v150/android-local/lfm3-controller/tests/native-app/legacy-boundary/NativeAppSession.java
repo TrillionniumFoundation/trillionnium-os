@@ -20,7 +20,20 @@ final class NativeAppSession {
             InstalledVerifier verifier,Journal journal)throws Exception{throw unavailable();}
     /** Type-only new API; these legacy cases cannot create or claim a native Attempt. */
     static final class ActionGuard {
+        // Type closure only: no constructor or operation creates a usable guard.
+        final String purpose=null;
+        final NativeAppGoal goal=null;
+        final NativeAppEvidence.Frame frame=null;
+        final NativeAppEvidence.Node targetNode=null;
+        final BackgroundTaskTarget.SelectionBinding selection=null;
+        final BackgroundTaskTarget target=null;
+        final TaskAuthorization.Gate authorization=null;
+        final Map<String,Object> identity=null;
+        final long issued=0,deadline=0;
         private ActionGuard(){throw unavailable();}
+        void requireOpen(ActionDecision action,String run,long now){throw unavailable();}
+        void verifyInstalled()throws Exception{throw unavailable();}
+        NativeActionSnapshotCheck.Intent intent(String originalFullSignature){throw unavailable();}
         void requireClaimed(){throw unavailable();}
         void close(){throw unavailable();}
         void closeAfterUnenteredAwait(Map<String,Object> execution,java.util.concurrent.atomic.AtomicBoolean cancelled){throw unavailable();}

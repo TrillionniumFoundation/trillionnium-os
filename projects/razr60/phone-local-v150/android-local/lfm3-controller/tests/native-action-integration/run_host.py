@@ -17,6 +17,8 @@ METHODS={
  'begin_census':'    private void beginNativeActionCensus(',
  'collect_node':'    private static void collectNativeActionNode(',
  'finish_census':'    private void finishNativeActionCensus(',
+ 'early_background':'    private void backgroundBeforeDispatch(',
+ 'early_signature_diagnostic':'    private void recordNativeSearchTargetSignatureRefusal(',
  'guard':'    private void requireNativeActionGuard(',
  'snapshot':'    private static NativeActionSnapshotCheck.Snapshot nativeActionSnapshot(',
  'compare':'    private Map<String,Object> compareNativeAction(',

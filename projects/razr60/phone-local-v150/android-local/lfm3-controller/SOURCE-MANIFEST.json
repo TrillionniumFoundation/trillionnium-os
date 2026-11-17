@@ -23,7 +23,7 @@
     "previous_manifest_sha256": "3b442123253504d89138cb3c02381ba978ef589453cc2a806fe1a98ed861a9af",
     "recognized_booking_pending_phase_budget_ms": 16000
   },
-  "candidate_status": "permission_retirement_and_nonblocking_diagnostics_merge_frozen_before_current_full_gates",
+  "candidate_status": "paired_observation_diagnostics_with_host_dependency_closure_frozen_before_current_full_gates",
   "candidate_version_assigned": true,
   "ci_containment_repair_amendment": {
     "baseline_manifest_sha256": "8dd4b459a4da939f8594df16a5198fbce6cdd2fc6e7a298b5b0956fca4c57889",
@@ -44,7 +44,7 @@
     "routing_fixture_change": "Match the existing three-argument installed-identity API for ordinary sessions while refusing profile IO, and explicitly select no profile in the existing ordinary native UI fixture; original gate flags, case names, counts and assertions are unchanged.",
     "validation": "Current targeted results are recorded separately; historical host and phone results do not qualify this candidate."
   },
-  "complete_source_files": 2128,
+  "complete_source_files": 2130,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -81,13 +81,11 @@
     "updated_full_test_passed": true
   },
   "current_validation": {
-    "additional_parents": [
-      "db9a27790ae356cdafe401e7c554e4561a919fca"
-    ],
+    "additional_parents": [],
     "all_current_22_gates_require_reexecution": true,
     "android_compiled_at_freeze": false,
     "embedded_host_result_is_current": false,
-    "first_parent": "ad1651075bca04044ae295ef268a106c3a11e247",
+    "first_parent": "9c55f271dafbef19fa1ba5dd6bcd929746e8ef45",
     "phone_tested": false,
     "required_host_validation": [
       "canonical including permission transient",
@@ -95,7 +93,7 @@
       "all 19 native gates from unchanged base CI workflow",
       "additional original raw-fixture host check"
     ],
-    "scope": "current merged source freeze only; current host/build/device results are separately bound receipts"
+    "scope": "current diagnostic source freeze only; current host/build/device results are separately bound receipts"
   },
   "dom_reuse_and_reopen_amendment": {
     "action_replay_added": false,
@@ -6482,9 +6480,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 288276,
+      "bytes": 295321,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "755cb2596148024102616087e6f241bec72b965649a6390c17185c3662f9144e"
+      "sha256": "e823cf0ceb8790ed6912cd1916b87add3a3f365b83cc299e18965203b133bf7a"
     },
     {
       "bytes": 711,
@@ -6642,9 +6640,9 @@
       "sha256": "b3824b28f3b68ba06b010e28f9a8aa508bde0c401fc95b73cae45a82acaff2e7"
     },
     {
-      "bytes": 13636,
+      "bytes": 21564,
       "path": "src/org/trillionnium/hepta/local/ObservationDiagnostics.java",
-      "sha256": "c5549acf81475cc0e5cc73fc8651360b90aee5b63c51ef67b54f899dc87d4cd7"
+      "sha256": "305e36f14f76bcbdb57920b22d8f9ef56d4cc6028aded4326138fba9ab0e21a5"
     },
     {
       "bytes": 4368,
@@ -7767,9 +7765,14 @@
       "sha256": "2c2f4e14ea38e16fe3a8d50e2ca96dcacd5417250c63f1c99949b59c905b2b1c"
     },
     {
-      "bytes": 15195,
+      "bytes": 22427,
       "path": "tests/native-action-integration/BridgeCases.fragment",
-      "sha256": "42d4200830feca704a0dc4ef9143eec8c08356fbc64fda6d12ccd5cdf8a3d5f9"
+      "sha256": "e7b4be2cf59c2f6a9864da6426366b6f3ca30469b55f2aeaf6c0145b5341a8f8"
+    },
+    {
+      "bytes": 2876,
+      "path": "tests/native-action-integration/EARLY-REFUSAL-DIAGNOSTICS.md",
+      "sha256": "60f96bacbdff171fa554147fd16643de311389cf2c33a777a1259a94735e5d7e"
     },
     {
       "bytes": 2724,
@@ -7777,9 +7780,9 @@
       "sha256": "8d65a7ced1795834bfe8a921bade5d496a5eb25bfc465340e81c50998a9102ba"
     },
     {
-      "bytes": 33072,
+      "bytes": 34075,
       "path": "tests/native-action-integration/NativeActionBridgeHost.template",
-      "sha256": "69787ce69d23a1dcf40d2756010f20222bb31c25b6879ab55a91e8e405b509bd"
+      "sha256": "ffb31b25650ca03c6d6fb4e9f5af4b717ce398903ad193e6dec8e6ef590243cf"
     },
     {
       "bytes": 1106,
@@ -7827,9 +7830,9 @@
       "sha256": "b27ecaed3a4dd0419fbc49809887b2e6b77cd0a80be17b006d0d8cab72c41d4a"
     },
     {
-      "bytes": 13604,
+      "bytes": 13762,
       "path": "tests/native-action-integration/run_host.py",
-      "sha256": "aea2df1c642ee4fb6d69989a947424942b916146b58e6add4213eb220472002e"
+      "sha256": "cf4c49477adfaeaae1264c9a4960a6e3cb75fef252ae841664c3920f030f2311"
     },
     {
       "bytes": 717,
@@ -8042,9 +8045,9 @@
       "sha256": "98d166056d434785dde61a6150145c0cc56fbf1519e88770e3319ed3b50f2b93"
     },
     {
-      "bytes": 4543,
+      "bytes": 5323,
       "path": "tests/native-app/legacy-boundary/NativeAppSession.java",
-      "sha256": "0aa774fb848cee2a9ea3a776bc5eb27dab9182a2665b874c8f81e601cf496846"
+      "sha256": "4d5cbee6305733da5f597994d849c21c47fda60cb4a379dff9c3c7874329e8d3"
     },
     {
       "bytes": 8666,
@@ -8272,9 +8275,9 @@
       "sha256": "8eaace63632804555f6e93a4885c17e7b0f6bfa688142266e4c6735c6e995a14"
     },
     {
-      "bytes": 14912,
+      "bytes": 16430,
       "path": "tests/native-xiaomi-home-loading/LoadingWindowBridgeHost.template",
-      "sha256": "2d3a63f650be80bcca2280ca22b1fe47cd072e546524cd20221a294f9d7f1ea6"
+      "sha256": "b323fcf8221339b44bb3a44c9fd098e362df19ad66437c634ca668d47d7cb5a8"
     },
     {
       "bytes": 3915,
@@ -8302,9 +8305,9 @@
       "sha256": "6d5a588bf2639b1d6dce6064d86531ea8b134c22dc930d35ee43d88e2e47421c"
     },
     {
-      "bytes": 17171,
+      "bytes": 17555,
       "path": "tests/native-xiaomi-home-loading/run_host.py",
-      "sha256": "02bf60f91704c924250c705ce2c30972fd5001ce3b620a580b481a890dd70b1d"
+      "sha256": "5f7ff772fc4f2bccfca567183a1dd9cc1034c52c1ee5a745b97d4371f23a9933"
     },
     {
       "bytes": 2395,
@@ -8692,14 +8695,19 @@
       "sha256": "2bf26523a43cd41cd574a075aedd3cf9df90d0b10d5c4515a652b479a3806fe1"
     },
     {
-      "bytes": 10108,
+      "bytes": 14619,
       "path": "tests/observation-diagnostics/DiagnosticPipelineCases.fragment",
-      "sha256": "9a74bab837ce0aa24839df18e21aff0f1d0fc9baf50bd454d3798908a42d4004"
+      "sha256": "9714c26956448b7c3bf2adf70dce262b8e44bba85d405b995ce64a238623c8c4"
     },
     {
-      "bytes": 9309,
+      "bytes": 19207,
       "path": "tests/observation-diagnostics/ObservationDiagnosticsHostTest.java",
-      "sha256": "ca1cb0b78a660eca9da04bdcbde82e340d4f9d90dbcdb639d8ab8c6032505cfb"
+      "sha256": "9bcc10a2c39604c07c19c1a71bd2b1c8ef00d87d0b5684d6e2c67f85b9194d7c"
+    },
+    {
+      "bytes": 6367,
+      "path": "tests/observation-diagnostics/SEAL-AND-MISMATCH-DIAGNOSTICS.md",
+      "sha256": "312e0a3cdaa03dc17e47211e46429b6047c254a39447e661b7e66e4347c745a7"
     },
     {
       "bytes": 14540,
@@ -9117,9 +9125,9 @@
       "sha256": "68c05819b2fada5657ce5fd4f19fff55a11f1253a0d3aa22c58d082f2f816212"
     },
     {
-      "bytes": 12967,
+      "bytes": 13002,
       "path": "tests/qualification-scope/ServiceFixture.template",
-      "sha256": "42cd3e6f91874e611c420e8cc3e0fba0c092398c0d4a46378bc7449fb5328a86"
+      "sha256": "c902288438f5ee84d333357e24aeb38b449a44fb14f515a9066cf76b53cd26b8"
     },
     {
       "bytes": 2158,
@@ -9337,9 +9345,9 @@
       "sha256": "79f935c7c05d3ff5d5b3b246137c6e940f22457a83b6bbb7ad1950968aec9b6d"
     },
     {
-      "bytes": 19174,
+      "bytes": 19481,
       "path": "tests/qualification-scope/prepare_fixture.py",
-      "sha256": "cc6524ba6da483bf0e57035d3ff706746baeb348e4e64660a551bad72b149564"
+      "sha256": "87597e39b5b5e6eb844563783b607503fd2284625762e9490dc88cb33e0cf073"
     },
     {
       "bytes": 2997,
@@ -10377,9 +10385,9 @@
       "sha256": "d4b6bf0b16a67c0395c7faaf7f1c16742fdcf28d97e287289cc398ee9291ac62"
     },
     {
-      "bytes": 42967,
+      "bytes": 43033,
       "path": "tests/web-flight/run_query_host_tests.py",
-      "sha256": "ed7253ae2b5c62fbb3909c903714984f6d165bd8aadc9affaae10be14d0cd216"
+      "sha256": "9056aa2d50c245729cfed30838bb0dda807641928ced3399e18fdc6774e8e0c2"
     },
     {
       "bytes": 5108,
@@ -10567,9 +10575,9 @@
       "sha256": "a513114211897bb620ecbbab38aadcce3a9137c58071df269cca7f828034118e"
     },
     {
-      "bytes": 22285,
+      "bytes": 22314,
       "path": "tools/run_host_checks.py",
-      "sha256": "98054f2fd6c4b83406ba1b5759af6dffc3442f907affd6d4d8cbd1a2f20917a8"
+      "sha256": "4583b98ca947df53fec8e8442ac6031e1f12daecf747e6750045d4ac33a821f7"
     },
     {
       "bytes": 1243,
@@ -12753,6 +12761,58 @@
     "validation": "Current executions are recorded separately. Historical reports are not current gate or device qualification.",
     "xiaomi_shared_dto_pin_and_exact_real_profile_compile_dependencies_rebound": true
   },
+  "native_paired_observation_diagnostic_amendment": {
+    "additional_parents": [],
+    "android_build_at_freeze": false,
+    "changed_production_paths": [
+      "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "src/org/trillionnium/hepta/local/ObservationDiagnostics.java"
+    ],
+    "ctrip_additional_graph_reads": 0,
+    "ctrip_additional_screenshots": 0,
+    "current_host_gates_require_full_reexecution": 22,
+    "current_java_source_count": 163,
+    "current_production_source_input_count": 335,
+    "current_production_source_input_map_sha256": "46319b9dc71fd505009cf16eba803fc4c9e8703b5d063d9f5c29861d2493570c",
+    "deadline_extension": false,
+    "failed_run_kept_unchanged_and_not_relabelled_pass": true,
+    "first_parent": "9c55f271dafbef19fa1ba5dd6bcd929746e8ef45",
+    "first_parent_manifest_sha256": "d8a677dc1e390c959ae8c39f74cbbebd336e41af3a48eb253603e408ae932f52",
+    "first_parent_results_reused_as_current_gate_results": false,
+    "first_parent_source_input_map_sha256": "588ba2015c95a2f489a7f38209f77a0e01bf7b2893eb42dd4d2cc7850c5c8580",
+    "first_parent_tree": "bae099b1828910d075c5c2405de230ca11d843c2",
+    "host_dependency_closure_preserves_real_extracted_methods": true,
+    "legacy_native_session_and_census_endpoints_remain_throwing": true,
+    "mi_refusal_remains_stale": true,
+    "mi_subsequent_census_is_not_atomic_with_rejected_refresh": true,
+    "native_runtime_and_signing_configuration_unchanged": true,
+    "new_action_permission_or_retries": false,
+    "node_text_added_to_observation_record": false,
+    "observation_record_byte_limit": 16384,
+    "original_failed_host_result_sha256": "fb33db81c7625470e75026591f289b6cc6686f3b416db29243329b757676c7fe",
+    "phone_operations": 0,
+    "public_test_and_contract_paths": [
+      "tests/native-action-integration/BridgeCases.fragment",
+      "tests/native-action-integration/EARLY-REFUSAL-DIAGNOSTICS.md",
+      "tests/native-action-integration/NativeActionBridgeHost.template",
+      "tests/native-action-integration/run_host.py",
+      "tests/native-app/legacy-boundary/NativeAppSession.java",
+      "tests/native-xiaomi-home-loading/LoadingWindowBridgeHost.template",
+      "tests/native-xiaomi-home-loading/run_host.py",
+      "tests/observation-diagnostics/DiagnosticPipelineCases.fragment",
+      "tests/observation-diagnostics/ObservationDiagnosticsHostTest.java",
+      "tests/observation-diagnostics/SEAL-AND-MISMATCH-DIAGNOSTICS.md",
+      "tests/qualification-scope/ServiceFixture.template",
+      "tests/qualification-scope/prepare_fixture.py",
+      "tests/web-flight/run_query_host_tests.py",
+      "tools/run_host_checks.py"
+    ],
+    "purpose": "bounded evidence for existing early target-signature and screenshot/publication refusals",
+    "reported_node_difference_limit": 8,
+    "retained_stamp_node_limit": 512,
+    "seal_short_circuit_order_preserved": true,
+    "temporary_stamps_released_on_reset_and_terminal": true
+  },
   "native_terminal_joint_revision": {
     "baseline_manifest_sha256": "d0ac553ae69e8f7291b8db0e242e18baa28fb25ec0df324d1b6afad7a07d9f0d",
     "new_action_authority": false,
@@ -12810,6 +12870,26 @@
     "normal_git_parent": "480d4bb76c194901b55607193168718eb0592ec7",
     "page_text_recorded": false,
     "phone_operations": 0
+  },
+  "paired_diagnostic_base_validation": {
+    "first_parent": "9c55f271dafbef19fa1ba5dd6bcd929746e8ef45",
+    "historical_current_validation": {
+      "additional_parents": [
+        "db9a27790ae356cdafe401e7c554e4561a919fca"
+      ],
+      "all_current_22_gates_require_reexecution": true,
+      "android_compiled_at_freeze": false,
+      "embedded_host_result_is_current": false,
+      "first_parent": "ad1651075bca04044ae295ef268a106c3a11e247",
+      "phone_tested": false,
+      "required_host_validation": [
+        "canonical including permission transient",
+        "unchanged upstream profile broker 47 cases and 449 assertions",
+        "all 19 native gates from unchanged base CI workflow",
+        "additional original raw-fixture host check"
+      ],
+      "scope": "current merged source freeze only; current host/build/device results are separately bound receipts"
+    }
   },
   "permission_retirement_base_validation": {
     "base_head": "071dccc05ca62372e73891ce82d5b400f3d3754f",

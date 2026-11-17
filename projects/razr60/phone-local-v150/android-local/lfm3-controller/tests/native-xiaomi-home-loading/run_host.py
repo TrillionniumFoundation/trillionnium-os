@@ -28,6 +28,7 @@ METHODS = {
     'action_check': '    private static void actionCheck(',
     'action_phase': '    private static void actionPhase(',
     'node_refresh': '    private boolean refreshActionNode(',
+    'early_refusal_diagnostic': '    private void recordNativeSearchTargetSignatureRefusal(',
 }
 
 
@@ -127,7 +128,12 @@ def fixture(source, generated):
 
 def bridge(source, generated, body, template):
     service = (source / PKG / 'HeptaAccessibilityService.java').read_text()
-    methods = {name: body(service, signature) for name, signature in METHODS.items()}
+    signatures = dict(METHODS)
+    # Preserve the exact optional R12 negative control, which predates this helper.
+    # Current production must supply the complete real diagnostic body.
+    if sha(service.encode()) == OLD_SERVICE_SHA:
+        del signatures['early_refusal_diagnostic']
+    methods = {name: body(service, signature) for name, signature in signatures.items()}
     write(generated / 'LoadingWindowBridgeHost.java', replace(template, '    // ACTUAL_METHODS', '\n'.join(methods.values())))
     return {name: dict(bytes=len(value.encode()), sha256=sha(value.encode())) for name, value in methods.items()}
 

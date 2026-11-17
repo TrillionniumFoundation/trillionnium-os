@@ -88,7 +88,103 @@ final class ObservationDiagnosticsHostTest {
             plain.retire();traced.retire();DiagnosticChecks.check(plain.sample(11001,a,true)==traced.sample(11001,a,true),"retirement changed");
         });
     }
+    static ObservationDiagnostics.GraphStamp readStamp(String pkg,String generation,String owner,int display,int window,int count,boolean changed){
+        List<ObservationDiagnostics.NodeStamp> nodes=new ArrayList<ObservationDiagnostics.NodeStamp>();
+        for(int i=0;i<count;i++)nodes.add(new ObservationDiagnostics.NodeStamp("n"+(i+1),"0/"+i,
+                DiagnosticChecks.repeat(changed?'b':'a',64),DiagnosticChecks.OWNER,0,i,100,i+1));
+        String digest=DiagnosticChecks.repeat(changed?'b':'a',64);
+        return new ObservationDiagnostics.GraphStamp(pkg,generation,owner,display,window,digest,digest,DiagnosticChecks.OWNER,false,nodes);
+    }
+    static ObservationDiagnostics.GraphStamp readStamp(int count,boolean changed){
+        return readStamp(DiagnosticChecks.APP,DiagnosticChecks.GENERATION,DiagnosticChecks.OWNER,9,71,count,changed);
+    }
+    static void readDiagnostics()throws Exception{
+        DiagnosticChecks.run("seal_short_circuit_records_only_evaluated_original_value",()->{
+            ObservationDiagnostics d=fresh();d.beginSeal(2,0,3,0,false,true);int[] effects={0};
+            boolean result=ObservationDiagnostics.sealPredicate(d,0,false)
+                    &&ObservationDiagnostics.sealPredicate(d,1,++effects[0]>0);
+            JSONObject j=json(d,1000).getJSONObject("last_pair_seal"),p=j.getJSONObject("predicates");
+            DiagnosticChecks.check(!result&&effects[0]==0&&!p.getBoolean("native_graph_rechecked")&&p.isNull("frozen_window_present"),"unevaluated branch remains unevaluated");
+            DiagnosticChecks.check(!j.getBoolean("seal_created")&&j.getBoolean("predicate_null_means_not_evaluated"),"no false seal claim");
+        });
+        DiagnosticChecks.run("seal_event_comparison_retains_exact_values_and_never_changes_result",()->{
+            ObservationDiagnostics d=fresh();d.beginSeal(4,0,8,0,false,true);
+            DiagnosticChecks.check(!ObservationDiagnostics.sealCounter(d,5,8,9),"unequal watermarks still fail");
+            JSONObject j=json(d,1000).getJSONObject("last_pair_seal");
+            DiagnosticChecks.check(j.getLong("pair_events_same_expected")==8&&j.getLong("pair_events_same_observed")==9,"actual evaluated operands");
+            DiagnosticChecks.check(ObservationDiagnostics.sealCounter(null,5,Long.MAX_VALUE,Long.MAX_VALUE)
+                    &&!ObservationDiagnostics.sealCounter(null,5,0,1),"untraced exact equality unchanged");
+            DiagnosticChecks.check(ObservationDiagnostics.sealPredicate(d,99,true)&&!ObservationDiagnostics.sealPredicate(d,-1,false),"invalid diagnostic index cannot alter result");
+        });
+        DiagnosticChecks.run("capture_read_difference_is_bounded_and_has_no_selected_action",()->{
+            ObservationDiagnostics d=fresh();d.capture(readStamp(12,false));d.retained("saved_graph",readStamp(12,true));
+            d.note(ObservationDiagnostics.Event.SAVED_GRAPH_CHANGED);JSONObject j=json(d,1000).getJSONObject("last_read_mismatch"),v=j.getJSONObject("graph_difference");
+            DiagnosticChecks.check(j.getBoolean("same_identity_comparable")&&j.isNull("noncomparable_reason"),"same owned values comparable");
+            DiagnosticChecks.check(v.getInt("changed_retained_path_count")==12&&v.getJSONArray("node_differences").length()==8
+                    &&v.getBoolean("node_differences_truncated")&&!v.getBoolean("complete_tree_claimed"),"same original eight-node bound and truncation");
+            DiagnosticChecks.check(v.isNull("selected_original_path")&&j.isNull("selected_node_id")&&!v.getBoolean("grants_action_authority")
+                    &&j.getInt("additional_graph_reads")==0&&j.getInt("additional_screenshots")==0,"no action or read authority");
+        });
+        for(final String kind:Arrays.asList("package","generation","owner","display","window"))DiagnosticChecks.run("read_difference_refuses_"+kind+"_identity",()->{
+            ObservationDiagnostics d=fresh();d.capture(readStamp(1,false));
+            d.retained("screenshot_graph",readStamp("package".equals(kind)?"other.app":DiagnosticChecks.APP,
+                    "generation".equals(kind)?"22222222-2222-3333-4444-555555555555":DiagnosticChecks.GENERATION,
+                    "owner".equals(kind)?DiagnosticChecks.repeat('b',64):DiagnosticChecks.OWNER,"display".equals(kind)?0:9,
+                    "window".equals(kind)?99:71,1,true));
+            d.note(ObservationDiagnostics.Event.SCREENSHOT_GRAPH_CHANGED);JSONObject j=json(d,1000).getJSONObject("last_read_mismatch");
+            DiagnosticChecks.check(!j.getBoolean("same_identity_comparable")&&j.isNull("graph_difference"),"identity mismatch is not a content comparison");
+            DiagnosticChecks.check(j.getString("noncomparable_reason").contains(kind),"fixed identity reason");
+        });
+        DiagnosticChecks.run("missing_or_wrong_stage_stamp_is_not_reused",()->{
+            ObservationDiagnostics d=fresh();d.note(ObservationDiagnostics.Event.SCREENSHOT_GRAPH_STALE);
+            DiagnosticChecks.check("captured_stamp_unavailable".equals(json(d,1000).getJSONObject("last_read_mismatch").getString("noncomparable_reason")),"no fabricated before");
+            d.capture(readStamp(1,false));d.retained("screenshot_graph",readStamp(1,true));d.note(ObservationDiagnostics.Event.SAVED_GRAPH_STALE);
+            JSONObject j=json(d,1000).getJSONObject("last_read_mismatch");
+            DiagnosticChecks.check("after_stamp_unavailable".equals(j.getString("noncomparable_reason"))&&j.isNull("graph_difference"),"different-stage after is unavailable");
+            d.retained("saved_graph",null);d.note(ObservationDiagnostics.Event.SAVED_GRAPH_MISSING);
+            DiagnosticChecks.check(json(d,1000).getLong("read_mismatch_count")==3&&json(d,1000).getBoolean("read_mismatch_records_truncated"),"one retained record has explicit overflow");
+        });
+        DiagnosticChecks.run("terminal_releases_stamp_references_and_freezes_new_fields",()->{
+            ObservationDiagnostics d=fresh();d.capture(readStamp(512,false));d.retained("saved_graph",readStamp(512,true));
+            d.note(ObservationDiagnostics.Event.SAVED_GRAPH_CHANGED);d.finish("failed",1100);String frozen=json(d,1100).toString();
+            for(String name:Arrays.asList("capturedStamp","afterStamp")){
+                java.lang.reflect.Field field=ObservationDiagnostics.class.getDeclaredField(name);field.setAccessible(true);
+                DiagnosticChecks.check(field.get(d)==null,"terminal retains no GraphStamp "+name);
+            }
+            d.capture(readStamp(1,false));d.retained("saved_graph",readStamp(1,true));d.beginSeal(0,0,0,0,false,true);
+            ObservationDiagnostics.sealPredicate(d,0,true);d.sealCreated();d.publicationMode(true,0);d.publicationDecision(false,false,false,true);
+            DiagnosticChecks.check(frozen.equals(json(d,9999).toString())&&json(d,9999).getBoolean("retained_graph_stamps_released_at_terminal"),"late updates cannot rewrite terminal");
+        });
+        DiagnosticChecks.run("new_capture_and_retry_cannot_reuse_previous_stamp_or_seal",()->{
+            ObservationDiagnostics d=fresh();d.capture(readStamp(1,false));d.retained("saved_graph",readStamp(1,true));
+            d.beginSeal(0,0,0,0,false,true);d.sealCreated();d.publicationMode(true,0);d.reset();
+            d.note(ObservationDiagnostics.Event.SAVED_GRAPH_CHANGED);
+            DiagnosticChecks.check("captured_stamp_unavailable".equals(json(d,1000).getJSONObject("last_read_mismatch").getString("noncomparable_reason")),"retry drops old before");
+            d.capture(readStamp(1,false));JSONObject j=json(d,1000);
+            DiagnosticChecks.check(j.isNull("last_pair_seal")&&j.isNull("last_publication_check"),"new attempt does not inherit old seal or mode");
+        });
+        DiagnosticChecks.run("nested_snapshot_mutation_cannot_rewrite_pair_or_read_evidence",()->{
+            ObservationDiagnostics d=fresh();d.capture(readStamp(1,false));d.retained("saved_graph",readStamp(1,true));
+            d.note(ObservationDiagnostics.Event.SAVED_GRAPH_CHANGED);d.beginSeal(1,0,2,0,false,true);ObservationDiagnostics.sealPredicate(d,0,true);
+            String original=json(d,1000).toString();Map<String,Object> copy=d.snapshot(1000);
+            ((Map<?,?>)((Map<?,?>)copy.get("last_pair_seal")).get("predicates")).clear();
+            ((Map<?,?>)((Map<?,?>)copy.get("last_read_mismatch")).get("graph_difference")).clear();
+            DiagnosticChecks.check(original.equals(json(d,1000).toString()),"nested returned maps are independent");
+        });
+        DiagnosticChecks.run("byte_cap_omission_preserves_old_fields_and_explicit_truncation",()->{
+            ObservationDiagnostics d=fresh();d.capture(readStamp(12,false));d.retained("saved_graph",readStamp(12,true));
+            d.note(ObservationDiagnostics.Event.SAVED_GRAPH_CHANGED);Map<String,Object> original=d.snapshot(1000);
+            Map<String,Object> stripped=ObservationDiagnostics.withoutReadDifference(original);
+            JSONObject a=new JSONObject(original),b=new JSONObject(stripped),r=b.getJSONObject("last_read_mismatch");
+            DiagnosticChecks.check(r.isNull("graph_difference")&&r.getBoolean("graph_difference_omitted_for_byte_limit")
+                    &&r.getBoolean("node_differences_truncated"),"omission is explicit without hiding prior truncation");
+            DiagnosticChecks.check(a.getJSONObject("last_read_mismatch").has("graph_difference")
+                    &&!a.getJSONObject("last_read_mismatch").isNull("graph_difference"),"original snapshot remains intact");
+            DiagnosticChecks.check(a.getJSONObject("events").toString().equals(b.getJSONObject("events").toString())
+                    &&a.getLong("deadline_elapsed_ms")==b.getLong("deadline_elapsed_ms")&&!b.getBoolean("changes_deadline"),"preexisting evidence and deadline retained");
+        });
+    }
     public static void main(String[] args)throws Exception{
-        pure();ObserverPipelineHost.diagnosticTests();DiagnosticGraphHost.runTests();DiagnosticControllerHost.runTests();DiagnosticChecks.finish(args[0]);
+        pure();readDiagnostics();ObserverPipelineHost.diagnosticTests();DiagnosticGraphHost.runTests();DiagnosticControllerHost.runTests();DiagnosticChecks.finish(args[0]);
     }
 }
