@@ -48,7 +48,7 @@
     "production_source_inputs_count": 334,
     "validation": "Source frozen after host-only focused fixture validation and before followup CI. Existing signed APK and phone evidence remain bound to db9a277; byte-identical production inputs do not rename its build head. Original CI failure is preserved."
   },
-  "candidate_status": "cancel_fixture_sync_source_frozen_before_followup_ci",
+  "candidate_status": "native_model_projection_source_frozen_after_host_validation_before_build_and_phone",
   "candidate_version_assigned": true,
   "ci_containment_repair_amendment": {
     "baseline_manifest_sha256": "8dd4b459a4da939f8594df16a5198fbce6cdd2fc6e7a298b5b0956fca4c57889",
@@ -69,7 +69,7 @@
     "routing_fixture_change": "Match the existing three-argument installed-identity API for ordinary sessions while refusing profile IO, and explicitly select no profile in the existing ordinary native UI fixture; original gate flags, case names, counts and assertions are unchanged.",
     "validation": "Current targeted results are recorded separately; historical host and phone results do not qualify this candidate."
   },
-  "complete_source_files": 2123,
+  "complete_source_files": 2127,
   "completion_protocol_contract_amendment": {
     "changed_nonmanifest_paths": [
       "tests/action-grammar/test_completion_protocol.py"
@@ -6545,9 +6545,9 @@
       "sha256": "e99ef5b8c965dc5d09983a638412b3b5329f0dd9180099e8fe8f8e824153c991"
     },
     {
-      "bytes": 175757,
+      "bytes": 176469,
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "57fddc5bacb0b88f60a4095086a5b7cca043d80827794ade7184572b71d8354a"
+      "sha256": "dae13095de81c993c0c0944f964a7a31bc8a8b2448d147a407e603bcdf65da01"
     },
     {
       "bytes": 51726,
@@ -6915,9 +6915,9 @@
       "sha256": "aab2a12e324aae8191dff73c3b43f8643f7edba8a5f418d67219901bcdea6d1c"
     },
     {
-      "bytes": 9335,
+      "bytes": 14842,
       "path": "src/org/trillionnium/hepta/local/VisualPromptProjection.java",
-      "sha256": "024c24468fe9493396030e7f4c243531d86d2074f3c2157e0776b4792d484bb8"
+      "sha256": "60a8f5c94205d3b1d60d95981f3f45ad5785e274c28994d72125c49426d4e115"
     },
     {
       "bytes": 57155,
@@ -8170,6 +8170,26 @@
       "sha256": "b1f7c2f71e4ead2a89d2a1ef5a32039949f670382f62d67b5e5e3411715359fe"
     },
     {
+      "bytes": 13396,
+      "path": "tests/native-model-projection/NativeModelPromptProjectionHostTest.java",
+      "sha256": "16167211c5e0c37272c6419e22578ab63844ecd0300f287099129d77dfb70e1e"
+    },
+    {
+      "bytes": 5223,
+      "path": "tests/native-model-projection/NativeModelPromptWiringHostTest.java",
+      "sha256": "f45f6406f04a81fd99603b6c5960b4031126ab4fd8c5dea788cef8363ef4f9eb"
+    },
+    {
+      "bytes": 5405,
+      "path": "tests/native-model-projection/NonNativePromptArtifactHostTest.java",
+      "sha256": "058c2e5333f2b1815fddbd261b386cc7f02cc8b53d65c487f76082a051f0bb32"
+    },
+    {
+      "bytes": 9889,
+      "path": "tests/native-model-projection/run_host.py",
+      "sha256": "33acdef9d8b7645d1b858ee596a8afd62d7d192ddce1cee9118e9f8ab70fdc78"
+    },
+    {
       "bytes": 1971,
       "path": "tests/native-observation-events/EventChecks.java",
       "sha256": "b8b8c1302af4a19643e6dda64702e49f887bb5613a6bb0ddc298941b00fccc0a"
@@ -9305,9 +9325,9 @@
       "sha256": "0970084f500c6be873496ca16394e90d0c15f9866da256736925263dae1f1f0a"
     },
     {
-      "bytes": 4947,
+      "bytes": 5282,
       "path": "tests/qualification-scope/fixtures/org/json/JSONObject.java",
-      "sha256": "9f1fc41c40603549d74d6989d7b2308be22f21267b9bdf6f4aebd1a1594c1323"
+      "sha256": "842f599613d88a004cbd7960408417db1f39eb6bd1b26f34fec23fe8d31df5bb"
     },
     {
       "bytes": 336,
@@ -12760,6 +12780,48 @@
     "runtime_model_and_android_build_configuration_unchanged": true,
     "validation": "Current executions are recorded separately. Historical reports are not current gate or device qualification.",
     "xiaomi_shared_dto_pin_and_exact_real_profile_compile_dependencies_rebound": true
+  },
+  "native_model_projection_amendment": {
+    "actual_prompt_replay_pairs": 5,
+    "changed_nonmanifest_paths": [
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "src/org/trillionnium/hepta/local/VisualPromptProjection.java",
+      "tests/native-model-projection/NativeModelPromptProjectionHostTest.java",
+      "tests/native-model-projection/NativeModelPromptWiringHostTest.java",
+      "tests/native-model-projection/NonNativePromptArtifactHostTest.java",
+      "tests/native-model-projection/run_host.py",
+      "tests/qualification-scope/fixtures/org/json/JSONObject.java"
+    ],
+    "different_unknown_and_observed_provider_values_retained": true,
+    "failure_partial_only_when_current_domain_allows": true,
+    "first_validation_failure_preserved_sha256": "4edd5d692a07b7570aa01367442967673c8d6cbe51247c9a60f781cdf7aac107",
+    "focused_validation_result_sha256": "9cb3c7e3386b355ca39d758e8da3c7cd6733e40663a594aa6a2c549481a99331",
+    "formal_json_fixture_api_only": [
+      "opt",
+      "optString",
+      "remove"
+    ],
+    "full_private_observation_and_history_retained": true,
+    "model_copy_only": true,
+    "native_grammar_rows_identical": 69,
+    "native_tree_path_and_parent_class_retained": true,
+    "new_focused_runner_invoked_in_current_public_ci": false,
+    "non_native_visual_notes_outputs_byte_identical": 13,
+    "normal_git_parent": "ab6b61a38ecf54086c58c96493365e0158f885b6",
+    "owner_instructions_unchanged": true,
+    "parent_manifest_sha256": "d8964c57bd969732acc1ce05ce0168efaf37cdb438acc66e86a1778e97e8c6b5",
+    "phone_operations": 0,
+    "private_fixtures_or_phone_evidence_added_to_git": false,
+    "private_replay_pairs_sha256": "d66cc740abf53b0fbb450c8d0ed87f55be59863f75f2907b154f36c94e29bf44",
+    "production_changed_paths": [
+      "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "src/org/trillionnium/hepta/local/VisualPromptProjection.java"
+    ],
+    "production_patch_sha256": "6b175aa4334ca8ae1a3360bbf2c013b6a2f5828825515bbcb2d6e8e7e85882f0",
+    "review_candidate_sha256": "ad732d804425c1730c5189633a98859245dfa8a71034563cd375e1a00c019c47",
+    "test_only_patch_sha256": "cad8d4ee0316f6dccb6f3004e5303ae5b9e2c10c5511c612d547ce1f3c8ff4f1",
+    "typed_domain_grammar_dispatch_authority_cleanup_unchanged": true,
+    "validation": "Source frozen after host-only structural, controller-wiring, unchanged-path and five actual-input replay validation, before this candidate Android build, signing, exact-head CI and phone qualification. Host UTF-8 byte reductions do not prove native token count, latency or business improvement. Later outcomes require their own candidate-bound receipts; original failures remain bound to their original sources."
   },
   "native_terminal_joint_revision": {
     "baseline_manifest_sha256": "d0ac553ae69e8f7291b8db0e242e18baa28fb25ec0df324d1b6afad7a07d9f0d",
