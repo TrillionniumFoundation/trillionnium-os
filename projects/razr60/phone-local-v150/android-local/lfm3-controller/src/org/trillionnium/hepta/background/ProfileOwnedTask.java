@@ -39,7 +39,7 @@ public final class ProfileOwnedTask {
     private final Set<Integer> beforeIds=new LinkedHashSet<Integer>();
     private Map<Integer,ProfileTaskPolicy.Leaf> personal=Collections.emptyMap();
     private Map<String,Object> personalAudit=Collections.emptyMap();
-    private Map<String,Object> lastLeafValidation=Collections.emptyMap();
+    private volatile Map<String,Object> lastLeafValidation=Collections.emptyMap();
     private BackgroundOwnedSingleTask.Task root,leaf;
     private String leafTokenId;
     private boolean rootAttempted,prepared,dispatchMarked,startAccepted,retiring,rootRemoved,leafRemoved;
@@ -175,7 +175,7 @@ public final class ProfileOwnedTask {
     public synchronized boolean started(){return dispatchMarked;}
     public synchronized Map<String,Object> personalAudit(){return personalAudit;}
     /** Diagnostic readback only; neither serialized identifiers nor these booleans grant authority. */
-    public synchronized Map<String,Object> lastLeafValidation(){return lastLeafValidation;}
+    public Map<String,Object> lastLeafValidation(){return lastLeafValidation;}
     public synchronized Map<String,Object> cleanupEvidence(){
         Map<String,Object> out=new LinkedHashMap<String,Object>();
         out.put("schema","hepta.profile-task-cleanup.v1");out.put("generation",generation);out.put("display_id",display);

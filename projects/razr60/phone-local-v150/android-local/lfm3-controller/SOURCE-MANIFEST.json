@@ -23,7 +23,7 @@
     "previous_manifest_sha256": "3b442123253504d89138cb3c02381ba978ef589453cc2a806fe1a98ed861a9af",
     "recognized_booking_pending_phase_budget_ms": 16000
   },
-  "candidate_status": "profile_leaf_retention_frozen_before_current_full_gates",
+  "candidate_status": "profile_diagnostic_readback_source_frozen_before_build_and_phone",
   "candidate_version_assigned": true,
   "ci_containment_repair_amendment": {
     "baseline_manifest_sha256": "8dd4b459a4da939f8594df16a5198fbce6cdd2fc6e7a298b5b0956fca4c57889",
@@ -6320,9 +6320,9 @@
       "sha256": "7c170e15deb8407a80b4dbcab3564697d2192c63365bb5a062ecba6f3ebbadcd"
     },
     {
-      "bytes": 21617,
+      "bytes": 21613,
       "path": "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
-      "sha256": "67c30e4d36753e561a3f97e34f319bfa1dd770f9fea696f94e0e30216ccd32ba"
+      "sha256": "50a63a4d523773604993e3db9795e08c40e500e8c9aaaeedef75cfea979a46b0"
     },
     {
       "bytes": 15352,
@@ -12947,6 +12947,24 @@
     "phone_claims_from_host_tests": false
   },
   "production_build_inputs_count": 334,
+  "profile_diagnostic_readback_amendment": {
+    "all_authorization_guards_and_cleanup_state_unchanged": true,
+    "baseline_manifest_sha256": "ce970f63f4291200eda2d3c1d75f819104eb6a24c1dc077ece82b57c8fbb6633",
+    "changed_nonmanifest_paths": [
+      "src/org/trillionnium/hepta/background/ProfileOwnedTask.java"
+    ],
+    "diagnostic_getter_does_not_acquire_task_monitor": true,
+    "existing_error_codes_and_diagnostic_schema_unchanged": true,
+    "immutable_snapshot_published_via_volatile_reference": true,
+    "normal_git_parent": "071dccc05ca62372e73891ce82d5b400f3d3754f",
+    "phone_operations": 0,
+    "production_changed_paths": [
+      "src/org/trillionnium/hepta/background/ProfileOwnedTask.java"
+    ],
+    "production_source_inputs_canonical_lf_sha256": "6b7dc5b7c4fe309fd609e35346616b2cfa32364be63398703ba361b21218d004",
+    "production_source_inputs_count": 334,
+    "validation": "Source frozen before this candidate's Android build, signed APK assembly and phone qualification. Later build and validation outcomes are recorded in separate candidate-bound receipts; parent receipts remain bound to 071dccc05ca62372e73891ce82d5b400f3d3754f."
+  },
   "profile_leaf_retention_amendment": {
     "additional_diagnostic_field": "profile_last_leaf_validation",
     "baseline_manifest_sha256": "ed31eb3a8a6fabe573cf359ca1357c57fc9763624538593445853fcdee203319",
