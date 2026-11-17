@@ -118,6 +118,7 @@ public final class ObserverPipelineHost {
         JSONObject(Map<?,?> map){value=new org.json.JSONObject(map);}
         JSONObject(String raw){throw new AssertionError("observer scheduling fixture cannot construct Selection provenance");}
         @Override public String toString(){return value.toString();}
+        String toString(int indent)throws org.json.JSONException{return value.toString(indent);}
     }
     static final class Handler {
         static final class Job {final long when;final Runnable task;Job(long when,Runnable task){this.when=when;this.task=task;}}

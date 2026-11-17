@@ -83,6 +83,7 @@ public final class PromptAdmissionFixture {
     }
     private interface InferenceConfig { LocalRuntimeConfig configuration(); }
     public static void awaitAdmission(String prompt,final LocalRuntimeConfig config)throws Exception{
+        final boolean nativeApp=false; // This original fixture exercises ordinary/visual admission.
         InferenceConfig inference=new InferenceConfig(){
             public LocalRuntimeConfig configuration(){return config;}
         };

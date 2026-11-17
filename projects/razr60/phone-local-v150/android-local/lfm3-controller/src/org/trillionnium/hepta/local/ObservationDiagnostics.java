@@ -32,6 +32,7 @@ final class ObservationDiagnostics {
     private long phaseAt,lastClock,transitionTotal,frameTotal;
     private boolean ended,clockRegressed,workerActive;
     private String previousSampleKey,publishedObservationId,terminal;
+    private Map<String,Object> lastSavedGraphChange,lastSeedDecision;private long seedAdmissions;
 
     ObservationDiagnostics(String task,String request,String owner,String pkg,String generation,int display,int sequence,long started,long deadline){
         if(!id(task)||!id(request)||!sha(owner)||pkg==null||pkg.length()>128||!pkg.matches("[A-Za-z0-9_.]+")
@@ -68,6 +69,22 @@ final class ObservationDiagnostics {
         row.put("observation_state_sha256",state);row.put("window_metadata_sha256",window);row.put("truncated",truncated);
         append(frames,row,MAX_FRAMES);frameTotal=plus(frameTotal,1);
     }
+    /** Reuse bounded hashes already collected on the worker; never performs another read. */
+    synchronized void savedGraphChange(GraphStamp before,GraphStamp after,boolean nativeComplete,
+                                       boolean frozenWindow,boolean candidate,long now){
+        if(ended)return;Map<String,Object> delta=difference(before,after,null);if(delta==null)return;
+        delta.put("stage","saved_graph");delta.put("elapsed_ms",clock(now)-started);
+        delta.put("native_observation_complete",nativeComplete);delta.put("frozen_window_available",frozenWindow);
+        delta.put("seed_candidate",candidate);lastSavedGraphChange=Collections.unmodifiableMap(delta);
+    }
+    synchronized void seedDecision(String decision,long now){
+        if(ended||!("admitted".equals(decision)||"discarded_before_admission".equals(decision)
+                ||"invalidated_before_sample".equals(decision)||"replaced_by_sample".equals(decision)
+                ||"ready".equals(decision)))return;
+        Map<String,Object> row=map();row.put("decision",decision);row.put("elapsed_ms",clock(now)-started);
+        row.put("grants_action_authority",false);lastSeedDecision=Collections.unmodifiableMap(row);
+        if("admitted".equals(decision))seedAdmissions=plus(seedAdmissions,1);
+    }
     synchronized void missingSample(){if(!ended){note(Event.SAMPLE_MISSING);previousSampleKey=null;}}
     synchronized void published(String id,long now){if(!ended&&id(id)){publishedObservationId=id;note(Event.PUBLISHED);finish("published",now);}}
     synchronized void finish(String status,long now){
@@ -98,6 +115,9 @@ final class ObservationDiagnostics {
         value.put("last_graphs",copyRows(frames));value.put("graph_record_count",frameTotal);
         value.put("graph_records_truncated",frameTotal>MAX_FRAMES);value.put("graph_record_limit",MAX_FRAMES);
         value.put("node_text_recorded",false);value.put("screenshot_pixels_recorded",false);
+        if(lastSavedGraphChange!=null)value.put("last_native_saved_graph_change",new LinkedHashMap<String,Object>(lastSavedGraphChange));
+        if(lastSeedDecision!=null){value.put("last_native_seed_decision",new LinkedHashMap<String,Object>(lastSeedDecision));
+            value.put("native_seed_admission_count",seedAdmissions);}
         value.put("grants_action_authority",false);value.put("changes_deadline",false);return value;
     }
     private static Map<String,Object> map(){return new LinkedHashMap<String,Object>();}

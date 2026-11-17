@@ -26,6 +26,10 @@ public final class JSONObject {
         if(value instanceof Collection<?>)return new JSONArray((Collection<?>)value);
         throw new JSONException("not array");
     }
+    public Object opt(String key){return fields.get(key);}
+    public String optString(String key,String fallback){Object value=opt(key);return value==null||value==NULL?fallback:value.toString();}
+    public JSONObject optJSONObject(String key){Object value=opt(key);return value instanceof JSONObject?(JSONObject)value:null;}
+    public Object remove(String key){return fields.remove(key);}
     public boolean has(String key){return fields.containsKey(key);}
     public boolean isNull(String key){return !has(key)||fields.get(key)==NULL||fields.get(key)==null;}
     public int length(){return fields.size();}

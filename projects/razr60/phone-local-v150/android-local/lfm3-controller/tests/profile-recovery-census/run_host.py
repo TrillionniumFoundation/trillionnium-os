@@ -17,7 +17,7 @@ def main():
  bg=a.source_root/'src/org/trillionnium/hepta/background'
  candidate=(a.candidate_root or a.source_root)/'src/org/trillionnium/hepta/background/ProfileRecoveryProcesses.java'
  if sha(candidate)!=a.expected_processes:raise RuntimeError('Candidate process source differs')
- names=['ProfileIdentity','ProfileTarget','WindowOwnership','BrokerProtocol','FixedIntentTools','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfileOwnedTask','ProfileDisplayCustody','ProfilePrelaunchRecovery']
+ names=['ProfileIdentity','ProfileTarget','WindowOwnership','BrokerProtocol','FixedIntentTools','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfileOwnedTask','ProfilePermissionTransient','ProfileDisplayCustody','ProfilePrelaunchRecovery']
  common=[bg/(n+'.java') for n in names]
  legacy=a.source_root/'tests/profile-recovery/ProfileRecoveryHostTest.java'
  test=Path(__file__).with_name('ProfileRecoveryCensusHostTest.java')

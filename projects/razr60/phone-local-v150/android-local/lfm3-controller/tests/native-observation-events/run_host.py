@@ -16,7 +16,7 @@ TEST=Path('tests/native-observation-events')
 JAVA=['HeptaAccessibilityService.java','PhoneObservation.java','ObservationDiagnostics.java',
       'ObservationStabilityGate.java','ActionExecutionState.java','TaskCancellationQueue.java',
       'ObservedWindowMetadata.java','ObservationState.java','ImeVisibility.java']
-OWN=['run_host.py','EventChecks.java','EventPipelineCases.fragment']
+OWN=['run_host.py','EventChecks.java','EventPipelineCases.fragment','SavedGraphSeedCases.fragment']
 
 def helper(source):
     p=source/'tests/observation-diagnostics/run_host.py'
@@ -86,6 +86,55 @@ def generate(source,out,h):
         'boundary':'Actual observer/CollectionStats/metadata/state/gate code; synthetic collected Graph/NodeRef and Selection carriers, clock, callback, Android screenshot IO. No Android/currentness, pixels or action qualification.',
         'final_saved_read_event_watermark_is_conservative':True,'unbounded_continuous_events_not_claimed_live':True}
 
+
+def add_saved_graph_seed_cases(source,out,h,extraction):
+    # Called only by this existing runner. Other original fixture consumers keep generate() unchanged.
+    service=(source/PKG/'HeptaAccessibilityService.java').read_text()
+    case_source=(source/TEST/'SavedGraphSeedCases.fragment').read_text()
+    factory=h.body(service,'    private static FrozenObservationWindow frozenObservationWindow(Graph graph){')
+    path=out/'ObserverPipelineHost.java';text=path.read_text()
+    text=replace(text,'        long readStartedElapsedMs,readCompletedElapsedMs;',
+        '        long readStartedElapsedMs,readCompletedElapsedMs;\n'
+        '        List<Object> nativeActionNodes;Map<String,Object> nativeActionWindows;int nativeActionWidth,nativeActionHeight;')
+    text=replace(text,'    private static FrozenObservationWindow frozenObservationWindow(Graph graph){return null;}',factory)
+    boundary=h.body(text,'    private FrozenObservationWindow readFrozenObservationWindow(ObservationRequest request,CaptureIdentity identity){')
+    text=replace(text,boundary,
+        '    private FrozenObservationWindow readFrozenObservationWindow(ObservationRequest request,CaptureIdentity identity){\n'
+        '        if(seedFrozenRead==null)throw new AssertionError("legacy fixture cannot supply current frozen-window IO");\n'
+        '        return seedFrozenRead.read(request,identity);\n    }')
+    text=replace(text,'    public static void main(String[] args)throws Exception{',case_source+'\n    public static void main(String[] args)throws Exception{')
+    text=replace(text,'        observationIo.executor.shutdown();EventChecks.finish(args[0]);',
+        '        savedGraphSeedCases();\n        savedGraphSeedAdditionalCases();\n        savedGraphSeedProfileCases();\n        observationIo.executor.shutdown();EventChecks.finish(args[0]);')
+    evidence=(source/PKG/'NativeAppEvidence.java').read_text()
+    profile_parts={
+        'same_owner':h.body(evidence,'    static boolean sameProfileOwner(WindowOwnership a,WindowOwnership b){'),
+        'target':h.body(evidence,'    static void requireProfileTarget(ProfileTarget expected,WindowOwnership actual){'),
+        'need':h.body(evidence,'    static void need(boolean yes,String why){'),
+        'owner_guard':h.body(service,'    private static void requireSameProfileOwner(WindowOwnership original,WindowOwnership actual){'),
+        'owner_exception':h.body(service,'    private static final class ProfileOwnershipViolation extends IllegalStateException {')}
+    text=replace(text,h.body(text,'    static final class WindowOwnership {'),"    /** Synthetic fields; production equality/target predicates below are verbatim. */\n    static final class ProfileIdentity {final int userId=10;final long serial=10;}\n    static final class ProfileTarget {final String sha256=EventChecks.OWNER;final ProfileIdentity profile=new ProfileIdentity();final int fullUid=1010367;}\n    static final class WindowOwnership {\n        final String targetSha256,generation,taskTokenId;final int displayId,taskId,parentTaskId,userId,fullUid,windowId;final long userSerial;\n        WindowOwnership(String change){\n            targetSha256=\"target\".equals(change)?EventChecks.repeat('d',64):EventChecks.OWNER;\n            generation=\"generation\".equals(change)?\"99999999-2222-3333-4444-555555555555\":EventChecks.GENERATION;\n            taskTokenId=\"token\".equals(change)?\"replacement-held-token\":\"original-held-token\";\n            displayId=\"display\".equals(change)?10:9;taskId=\"task\".equals(change)?1000006:1000005;\n            parentTaskId=\"parent\".equals(change)?1368:1367;userId=\"user\".equals(change)?11:10;\n            userSerial=\"serial\".equals(change)?11:10;fullUid=\"uid\".equals(change)?1010368:1010367;windowId=7;\n        }\n        Map<String,Object> evidence(){throw new AssertionError(\"synthetic profile fields are not device proof\");}\n    }\n")
+    text=replace(text,h.body(text,'    static final class NativeAppEvidence {'),
+        '    static final class NativeAppEvidence {\n'+profile_parts['same_owner']+'\n'+profile_parts['target']+'\n'+profile_parts['need']+'\n    }')
+    text=replace(text,h.body(text,'    static void requireSameProfileOwner(WindowOwnership before,WindowOwnership after){'),
+        profile_parts['owner_exception']+'\n'+profile_parts['owner_guard'])
+    text=replace(text,'        Object profileTarget(){return null;} // Explicit scheduling fixture has no profile selection.',
+        '        ProfileTarget profile;ProfileTarget profileTarget(){return profile;} // Explicit synthetic selection only.')
+    text=replace(text,'        synchronized boolean post(Runnable runnable){return postDelayed(runnable,0);}',
+        '        volatile Runnable afterWorkerPost;\n'
+        '        boolean post(Runnable runnable){boolean posted=postDelayed(runnable,0);\n'
+        '            Runnable hook=afterWorkerPost;if(!isMain()&&hook!=null)hook.run();return posted;}')
+    extraction['saved_graph_profile_predicates']={key:{'bytes':len(value.encode()),'sha256':h.sha(value.encode())} for key,value in profile_parts.items()}
+    extraction['profile_fields_synthetic_not_device_ownership']=True
+    path.write_text(text,encoding='utf-8')
+    extraction['saved_graph_seed_cases']={
+        'existing_runner_executes_new_cases':True,
+        'original_event_cases_preserved':h.meta(source/TEST/'EventPipelineCases.fragment'),
+        'new_cases':h.meta(source/TEST/'SavedGraphSeedCases.fragment'),
+        'frozen_window_factory_verbatim':{'bytes':len(factory.encode()),'sha256':h.sha(factory.encode())},
+        'no_production_body_rewritten':True,'extra_android_values_are_synthetic':True,
+        'whole_actual_observer_section_includes_seed_and_capture':True}
+    return extraction
+
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--source',type=Path,required=True);ap.add_argument('--output',type=Path,required=True)
     ap.add_argument('--java-home',type=Path,required=True);ap.add_argument('--json-jar',type=Path,required=True);a=ap.parse_args()
@@ -94,7 +143,7 @@ def main():
     tools=[java,javac,jdk/'lib/modules',jdk/'lib/ct.sym',jar]
     if not all(p.is_file() for p in tools):raise RuntimeError('strict JDK17 and JSON closure required')
     if jar.stat().st_size!=78332 or h.sha(jar.read_bytes())!='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed':raise RuntimeError('JSON pin')
-    inputs=[source/PKG/n for n in JAVA]+[source/TEST/n for n in OWN]+[
+    inputs=[source/PKG/'NativeAppEvidence.java']+[source/PKG/n for n in JAVA]+[source/TEST/n for n in OWN]+[
         source/'tests/observation-pipeline/ObserverPipelineHost.template',source/'tests/observation-diagnostics/run_host.py']+tools
     before=[h.meta(p) for p in inputs];tool_before=[h.meta(p) for p in tools]
     r={'schema':'hepta.native-observation-events-host-gate.v1','all_pass':False,'stages':[],
@@ -104,7 +153,7 @@ def main():
        'observation_budget':{'settle_ms':10000,'capture_margin_ms':2000,'total_ms':12000,
            'task_deadline_caps_total':True,'retry_renews_deadline':False,'legacy_explicit_ten_second_cases_retained':True}}
     try:
-        generated=output/'generated';generated.mkdir();extraction=generate(source,generated,h);h.save(output/'EXTRACTION.json',extraction)
+        generated=output/'generated';generated.mkdir();extraction=generate(source,generated,h);extraction=add_saved_graph_seed_cases(source,generated,h,extraction);h.save(output/'EXTRACTION.json',extraction)
         classes=output/'classes';classes.mkdir()
         sources=[source/PKG/n for n in JAVA if n not in ('HeptaAccessibilityService.java','PhoneObservation.java')]
         sources += [source/TEST/'EventChecks.java',generated/'ObserverPipelineHost.java']
