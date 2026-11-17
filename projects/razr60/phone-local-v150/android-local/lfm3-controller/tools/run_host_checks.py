@@ -226,7 +226,7 @@ def main():
         if (permission_gate.get("schema")!="hepta.profile-permission-transient-canonical-host.v1"
                 or permission_gate.get("all_pass") is not True or permission_gate.get("source_inputs_unchanged") is not True
                 or permission_gate.get("real_dump_requested") is not False
-                or permission_cases.get("passed") is not True or permission_cases.get("cases")!=12
+                or permission_cases.get("passed") is not True or permission_cases.get("cases")!=16
                 or permission_cases.get("fixture_kind")!="synthetic"):
             raise RuntimeError("Mandatory permission transient gate receipt differs")
         report["permission_transient_gate"]={"bytes":len(permission_raw),

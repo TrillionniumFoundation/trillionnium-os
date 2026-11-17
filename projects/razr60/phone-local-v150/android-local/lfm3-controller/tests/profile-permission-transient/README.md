@@ -1,6 +1,6 @@
 # Permission transient retirement: host contract
 
-This gate compiles the production pure Java ownership policy and permission-chain verifier with Java `--release 8`. It runs twelve boundary cases against an authored, complete synthetic activity hierarchy. The Android package-manager and task-organizer adapters are not compiled by this gate; the Android build and device qualification remain separate requirements.
+This gate compiles the production pure Java ownership policy and permission-chain verifier with Java `--release 8`. It runs sixteen boundary cases against an authored, complete synthetic activity hierarchy. The Android package-manager and task-organizer adapters are not compiled by this gate; the Android build and device qualification remain separate requirements.
 
 ## Current product contract
 
@@ -21,6 +21,15 @@ The `permission_transient` retirement evidence, when present, uses `hepta.profil
 The proof expires after 2,000 ms measured from acquisition start, including the reads. Unknown, changed, stale or incomplete evidence is refused; custody is retained when safe cleanup cannot be proved. Host timing does not establish device timing. Device package-manager reflection and the two-sided hashing/dump budget need actual qualification; a slow or failed read must not cause a deadline, identity or ownership rule to be relaxed.
 
 `com.motorola.deviceguard/.permission.activity.ClipboardDialogActivity` on another root or on display 0 is explicitly outside this contract. The negative test retains that activity in the complete hierarchy and rejects it. This change cannot prevent or repair OEM global UI appearing on the main display.
+
+## Finishing records and TaskInfo counts
+
+The complete raw activity chain remains bounded and every record still passes user, task, token, ordinal, package, process-UID, root and foreign-activity checks, including finishing records. The count and base corresponding to TaskInfo are taken only from non-finishing records. This matches Android 16 TaskInfoHelper, which skips finishing activities before counting or selecting baseActivity:
+https://github.com/aosp-mirror/platform_frameworks_base/blob/android-16.0.0_r1/services/core/java/com/android/server/wm/ActivityTaskSupervisor.java
+
+Four additional cases retain the original twelve and exercise a synthetic finishing Splash tail below Home and a new PermissionController top; wrong raw-record identities; INITIALIZING or absent permission process; and unchanged observe/window refusal and exact owned retirement. The state and process guards are unchanged. A proof still grants neither business observation nor permission input.
+
+These lifecycle variants and all TaskInfo counts are authored test inputs. A historical broker refusal did not persist its internal numActivities or activity dump; the test does not claim to reproduce those missing historical values. Existing failures remain unchanged, and no permission is granted, denied or automatically handled by this change.
 
 ## Two separate evidence classes
 

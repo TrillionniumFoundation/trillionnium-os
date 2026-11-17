@@ -151,7 +151,13 @@ public final class ProfilePermissionTransient {
             if(row.display==root.display)need(row.id==root.id||row.id==leaf.id,"PROFILE_PERMISSION_FOREIGN_TASK");
             for(Activity a:row.activities)if(a.user==target.profile.userId)need(row.id==leaf.id,"PROFILE_PERMISSION_FOREIGN_ACTIVITY");
         }
-        List<Activity> chain=child.activities;need(chain.size()>=2&&chain.size()<=32&&chain.size()==leaf.activities,"PROFILE_PERMISSION_CHAIN_INCOMPLETE");
+        List<Activity> chain=child.activities;
+        need(chain.size()>=2&&chain.size()<=32,"PROFILE_PERMISSION_CHAIN_INCOMPLETE");
+        // TaskInfo counts and selects its base from non-finishing activities. The full
+        // raw chain below still supplies every identity, ordinal, and foreign check.
+        int liveCount=0;Activity base=null;
+        for(Activity a:chain)if(!a.finishing){liveCount++;base=a;}
+        need(liveCount>=2&&liveCount==leaf.activities,"PROFILE_PERMISSION_CHAIN_INCOMPLETE");
         Set<String> tokens=new HashSet<String>();
         for(int i=0;i<chain.size();i++){
             Activity a=chain.get(i);need(a.user==target.profile.userId&&a.ordinal==chain.size()-1-i&&tokens.add(a.token),"PROFILE_PERMISSION_CHAIN_IDENTITY_CHANGED");
@@ -159,10 +165,10 @@ public final class ProfilePermissionTransient {
             String owner=one(a.detail,"rootOfTask=");
             Matcher own=Pattern.compile("rootOfTask=(true|false) task=Task\\{([^\\s{}]+) #([0-9]+) [^{}]+\\}").matcher(owner);
             need(own.matches()&&own.group(2).equals(child.token)&&number(own.group(3))==leaf.id
-                    &&own.group(1).equals(i==chain.size()-1?"true":"false"),"PROFILE_PERMISSION_PRESERVED_BASE_UNPROVEN");
+                    &&own.group(1).equals(a==base?"true":"false"),"PROFILE_PERMISSION_PRESERVED_BASE_UNPROVEN");
             if(i>0)requireProcess(a,target.packageName,target.fullUid);
         }
-        Activity top=chain.get(0),base=chain.get(chain.size()-1);
+        Activity top=chain.get(0);
         need(COMPONENT.equals(top.component)&&base.component.equals(leaf.base)&&!top.finishing&&!top.exiting
                 &&!base.finishing&&!base.exiting,"PROFILE_PERMISSION_BASE_COMPONENT_CHANGED");
         need(one(top.detail,"packageName=").equals("packageName="+PACKAGE+" processName="+PACKAGE)

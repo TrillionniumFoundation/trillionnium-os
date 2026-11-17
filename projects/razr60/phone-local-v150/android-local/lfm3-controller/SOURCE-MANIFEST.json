@@ -85,7 +85,7 @@
     "production_source_inputs_count": 334,
     "validation": "Source frozen after host-only focused fixture validation and before followup CI. Existing signed APK and phone evidence remain bound to db9a277; byte-identical production inputs do not rename its build head. Original CI failure is preserved."
   },
-  "candidate_status": "host_validated_saved_graph_seed_pending_root_freeze",
+  "candidate_status": "R4_R2_MERGED_SOURCE_PENDING_ROOT_FREEZE_APPROVAL",
   "candidate_version_assigned": true,
   "ci_containment_repair_amendment": {
     "baseline_manifest_sha256": "8dd4b459a4da939f8594df16a5198fbce6cdd2fc6e7a298b5b0956fca4c57889",
@@ -145,14 +145,14 @@
   "current_validation": {
     "all_blockers_closed": false,
     "android_compiled_at_freeze": false,
-    "phase": "targeted_saved_graph_host_pass_before_exact_head_canonical_and_native_gates",
+    "base626_results_are_historical": true,
+    "focused_permission_assertions": 348,
+    "focused_permission_gate_pass": true,
+    "phase": "r4_two_production_changes_focused16_pass_pending_exact_head_full_gates_build_phone",
     "phone_tested": false,
-    "profile_permission_synthetic_cases_required": 12,
+    "profile_permission_synthetic_cases_required": 16,
     "required_canonical_checks": 113,
     "required_native_gates": 19,
-    "scope": "R3 six focused host gates passed; R2 canonical113/focused16 evidence remains historical; final exact-head canonical113/native19, Android compilation and phone acceptance still required.",
-    "targeted_host_all_pass": true,
-    "targeted_host_gates": 6,
     "upstream_profile_broker_original_cases_required": 47
   },
   "dom_reuse_and_reopen_amendment": {
@@ -190,9 +190,9 @@
       "sha256": "e3a0fa3a85d59f1104564af2495a694e0e609f6ed8b18d597fbb0db128a564cb"
     },
     {
-      "bytes": 2592,
+      "bytes": 2629,
       "path": "AndroidManifest.xml",
-      "sha256": "525748cb9cab5693f4c55570ec93192e7990065d1fe2e94629990195fa436e69"
+      "sha256": "9b6ffd86ddf2b4e2ae62bdc254d39b2d8d77138b4e3f8d12cabff476562cf118"
     },
     {
       "bytes": 12777,
@@ -6380,9 +6380,9 @@
       "sha256": "f0a250bc72ec631aa11fee84900740120a5a1161aa114d7d348249c3885e7d9f"
     },
     {
-      "bytes": 17905,
+      "bytes": 18221,
       "path": "src/org/trillionnium/hepta/background/ProfilePermissionTransient.java",
-      "sha256": "8b97f7a14d55262100059efc77b84bf0e05e2b6f076e16d9487b4a4dca407f74"
+      "sha256": "f4898906fa4e588ea7d300afc669f25329bf3a96ba2aab9fc72f95a4e367ae93"
     },
     {
       "bytes": 13742,
@@ -9030,14 +9030,14 @@
       "sha256": "8a5886202510ae3b36840ccdb99d11d6b3d5bd89bc5006f06d898cf516bbab1b"
     },
     {
-      "bytes": 22844,
+      "bytes": 29281,
       "path": "tests/profile-permission-transient/ProfilePermissionTransientHostTest.java",
-      "sha256": "c1c3442d2b45d167fee9cd248084b25baece3a6c68c07384a611966b74de4980"
+      "sha256": "7ac5d394010ca7e42e87ea7902bd96dd425530df3eaf4f485a8ce5efb529f162"
     },
     {
-      "bytes": 8464,
+      "bytes": 9797,
       "path": "tests/profile-permission-transient/README.md",
-      "sha256": "7ffcf648e4430b869cabee7171c4d51965314ad530db3c514d7814ab3152328d"
+      "sha256": "3d354f42504133f101bcce3690685ce219a725b87d365821c50823d021486272"
     },
     {
       "bytes": 2306,
@@ -9047,7 +9047,7 @@
     {
       "bytes": 6219,
       "path": "tests/profile-permission-transient/run_host.py",
-      "sha256": "2e6af0fe99d97a421e1b32bb35e23e5c93e1477417eab7f541e3191d68c1b25b"
+      "sha256": "054e335e93423dbdb75bdefd025fe67b85fd22facb8f1603825536dcfaec2695"
     },
     {
       "bytes": 2706,
@@ -10652,7 +10652,7 @@
     {
       "bytes": 22285,
       "path": "tools/run_host_checks.py",
-      "sha256": "98054f2fd6c4b83406ba1b5759af6dffc3442f907affd6d4d8cbd1a2f20917a8"
+      "sha256": "9c6714767b1fea3c2e68002d9de1dccfafb63fcdc5075b7723e3aaae7e5ef3f7"
     },
     {
       "bytes": 1243,
@@ -15047,6 +15047,42 @@
     "production_paths": [
       "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
       "src/org/trillionnium/hepta/local/NativeXiaomiProductPage.java"
+    ]
+  },
+  "r4_permission_livechain_recents_amendment": {
+    "auto_remove_applies_to_normal_MainActivity_root_tasks_too": true,
+    "base_head": "626091ba8d12297b9e5b27b19f88619bae0444a9",
+    "base_manifest_sha256": "7b55bd2326ce07010351287e1f30babd8f3620b8119f04241b258eda06f393c4",
+    "baseline_current_validation_historical": {
+      "all_blockers_closed": false,
+      "android_compiled_at_freeze": false,
+      "phase": "targeted_saved_graph_host_pass_before_exact_head_canonical_and_native_gates",
+      "phone_tested": false,
+      "profile_permission_synthetic_cases_required": 12,
+      "required_canonical_checks": 113,
+      "required_native_gates": 19,
+      "scope": "R3 six focused host gates passed; R2 canonical113/focused16 evidence remains historical; final exact-head canonical113/native19, Android compilation and phone acceptance still required.",
+      "targeted_host_all_pass": true,
+      "targeted_host_gates": 6,
+      "upstream_profile_broker_original_cases_required": 47
+    },
+    "canonical_gate_single_count_fix_host_checked": true,
+    "canonical_permission_gate_expected_cases": 16,
+    "existing_recents_not_explicitly_removed": true,
+    "focused_assertions": 348,
+    "focused_gate_result_sha256": "c4de808598f674983dc561daa74fe01bcf88ae92fd701e8a7cf6322cef7c6723",
+    "focused_synthetic_cases": 16,
+    "no_permission_input_or_new_task_cleanup_api": true,
+    "permission_proof_remains_retirement_only": true,
+    "production_changed_paths": [
+      "AndroidManifest.xml",
+      "src/org/trillionnium/hepta/background/ProfilePermissionTransient.java"
+    ],
+    "test_changed_paths": [
+      "tests/profile-permission-transient/ProfilePermissionTransientHostTest.java",
+      "tests/profile-permission-transient/README.md",
+      "tests/profile-permission-transient/run_host.py",
+      "tools/run_host_checks.py"
     ]
   },
   "release_version_assigned": false,
