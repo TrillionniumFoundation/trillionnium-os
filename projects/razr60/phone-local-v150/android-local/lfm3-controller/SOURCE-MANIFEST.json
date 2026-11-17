@@ -23,7 +23,32 @@
     "previous_manifest_sha256": "3b442123253504d89138cb3c02381ba978ef589453cc2a806fe1a98ed861a9af",
     "recognized_booking_pending_phase_budget_ms": 16000
   },
-  "candidate_status": "profile_diagnostic_readback_source_frozen_before_build_and_phone",
+  "cancel_fixture_sync_amendment": {
+    "baseline_manifest_sha256": "a6631b2ecbb27f8d47545f125f0c556e59a99fcb27ab17002d3d20dfcd1b7d10",
+    "cancel_modes_only_fake_cleanup_requires_callback": true,
+    "changed_nonmanifest_paths": [
+      "tests/calculator-input/FailedActionObservationHostTest.java"
+    ],
+    "controlled_delayed_callback_passed": true,
+    "controlled_original_failure_reproduction_sha256": "6cf39a1923625bf9b0dcbcb3968e43baff2de39ba04b608b69999e98279875e0",
+    "existing_signed_apk_relabelled_as_followup": false,
+    "existing_signed_apk_source_head": "db9a27790ae356cdafe401e7c554e4561a919fca",
+    "fake_wait_timeout_ms": 3000,
+    "focused_validation_result_sha256": "59a533bd5994a671bd6ad762b1243393a491db1365d230b36b966313c90ded58",
+    "historical_ci_schedule_proved": false,
+    "normal_git_parent": "db9a27790ae356cdafe401e7c554e4561a919fca",
+    "original_assertions_and_case_order_retained": true,
+    "original_cases": 5,
+    "original_checks": 106,
+    "phone_operations": 0,
+    "preinterrupted_fake_refuses_cleanup_and_preserves_flag": true,
+    "production_changed_paths": [],
+    "production_inputs_byte_identical_to_parent": true,
+    "production_source_inputs_canonical_lf_sha256": "6b7dc5b7c4fe309fd609e35346616b2cfa32364be63398703ba361b21218d004",
+    "production_source_inputs_count": 334,
+    "validation": "Source frozen after host-only focused fixture validation and before followup CI. Existing signed APK and phone evidence remain bound to db9a277; byte-identical production inputs do not rename its build head. Original CI failure is preserved."
+  },
+  "candidate_status": "cancel_fixture_sync_source_frozen_before_followup_ci",
   "candidate_version_assigned": true,
   "ci_containment_repair_amendment": {
     "baseline_manifest_sha256": "8dd4b459a4da939f8594df16a5198fbce6cdd2fc6e7a298b5b0956fca4c57889",
@@ -7525,9 +7550,9 @@
       "sha256": "c811909e69656225e243d48ef7994c3b2a9a244ea3e4a9bc197691e9592cd536"
     },
     {
-      "bytes": 13074,
+      "bytes": 13855,
       "path": "tests/calculator-input/FailedActionObservationHostTest.java",
-      "sha256": "327dd99130c583594b88bb2cdca5be1bf62f223859706907cc803fcb50be80a8"
+      "sha256": "5350a9de095bb8a6db232abfcc76cb9757afd107b9d11fe2d47a22a9005bbf1a"
     },
     {
       "bytes": 89639,

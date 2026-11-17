@@ -29,11 +29,21 @@ public final class FailedActionObservationHostTest {
     private static final class Model implements LocalInference {
         final QualificationScopeHostTest.Env env;
         int calls,ends,cancellations,observationsAtRequest;String task;
-        Model(QualificationScopeHostTest.Env env){this.env=env;}
+        final boolean cancellationExpected;
+        final CountDownLatch cancellationEntered=new CountDownLatch(1);
+        Model(QualificationScopeHostTest.Env env,boolean cancellationExpected){this.env=env;this.cancellationExpected=cancellationExpected;}
         public LocalRuntimeConfig configuration(){return env.runtime;}
         public void beginTask(String id){task=id;}
-        public void cancelTask(){cancellations++;}
-        public TaskCleanup endTask(){ends++;return new TaskCleanup(true,true,true,0,TaskCompletionGateHostTest.id(831),task,true,QualificationScopeHostTest.H);}
+        public void cancelTask(){cancellations++;cancellationEntered.countDown();}
+        public TaskCleanup endTask(){
+            ends++;
+            // This fake worker must observe its actual queued cancellation before claiming cleanup.
+            if(cancellationExpected)try{
+                if(!cancellationEntered.await(3,TimeUnit.SECONDS))
+                    throw new AssertionError("fake cancelled worker cleanup preceded its actual cancellation callback");
+            }catch(InterruptedException interrupted){Thread.currentThread().interrupt();throw new AssertionError("fake cancellation wait interrupted",interrupted);}
+            return new TaskCleanup(true,true,true,0,TaskCompletionGateHostTest.id(831),task,true,QualificationScopeHostTest.H);
+        }
         public Handle generate(String prompt,String system,File image,DecisionGrammar grammar,int maximumTokens,long timeout,Callback callback){
             calls++;observationsAtRequest=env.service.observations;
             check(calls==1,"no repeated native request after a failed dispatched write");
@@ -51,7 +61,7 @@ public final class FailedActionObservationHostTest {
 
     private static void run(String mode)throws Exception{
         try(QualificationScopeHostTest.Env e=new QualificationScopeHostTest.Env(false)){
-            Model model=new Model(e);final int[] diagnosticReads={0};
+            Model model=new Model(e,mode.startsWith("cancel-"));final int[] diagnosticReads={0};
             // The fake Android SET_TEXT API accepts once. Its delayed readback
             // differs or refresh fails. Production service determines the outcome.
             e.service.effectHook=()->{
