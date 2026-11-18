@@ -1,18 +1,18 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "a4a734fbfe94310b811523945bd91714da56526b",
-  "base_manifest_sha256": "326db9c72689f88d237f2c24377991aad4ea4cb77762be573f07458515a4dd67",
-  "candidate_status": "public_profile_cleanup_and_postlaunch_recovery_candidate_not_deployed",
+  "base_head": "2f84043f9b8a9b7bdecfd9224a4e422f5a98584d",
+  "base_manifest_sha256": "a3b87b7f8c31563823a43fe9d1b4425ef1973d458a4702054411f9b4cf0b761e",
+  "candidate_status": "separate_root_refusal_diagnostic_tests_candidate_not_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 183,
   "production_build_inputs_count": 355,
   "production_input_map_sha256": "bdf6a174e00140a157e7732dd9116fde1e74b49c6752a4b611c3b9d5fe0dfa87",
-  "complete_source_files": 2194,
+  "complete_source_files": 2195,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Consume public profile cleanup with exact scope-bound history proof; recover a retired postlaunch public task through fresh absence; retain first root-activity refusal diagnostics without relaxing display or task ownership checks",
+  "scope": "Restore the byte-identical original 47 ownership cases; run the expanded 57-case refusal diagnostic in a separate class and history phase; all 355 production inputs remain unchanged from 2f840",
   "files": [
     {
       "path": ".gitignore",
@@ -8891,8 +8891,13 @@
     },
     {
       "path": "tests/profile-broker/ProfileBrokerHostTest.java",
-      "bytes": 35268,
-      "sha256": "126cf01db895a4632f907bdb4b16cfed1e4f299686892afa221b366cb181f74e"
+      "bytes": 27862,
+      "sha256": "5880a651260aa18566364f4dbca427c5adbba8048eee7f1b8a3d55f4a6f69e04"
+    },
+    {
+      "path": "tests/profile-broker/ProfileRootRefusalHostTest.java",
+      "bytes": 35279,
+      "sha256": "7bcd80dd104982be55003d7b6b9a6d67cb8e8646c7dc1ca40943f291cd84baae"
     },
     {
       "path": "tests/profile-broker/run_profile_broker_host.py",
@@ -9301,8 +9306,8 @@
     },
     {
       "path": "tests/public-profile-history/run_host.py",
-      "bytes": 4250,
-      "sha256": "8eff5ba9e71c275b5d000e27ab109488f4a21d5fc5847964a10da1e988136860"
+      "bytes": 4898,
+      "sha256": "4e71b30bd2f5d9c038ab5ad60f9e37c4f26d0ab3e6315e2e5d7b75cf8c601d3e"
     },
     {
       "path": "tests/qualification-scope/BackgroundFreshnessHostTest.java",

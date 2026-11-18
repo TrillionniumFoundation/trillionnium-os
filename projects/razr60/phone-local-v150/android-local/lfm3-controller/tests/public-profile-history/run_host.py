@@ -24,13 +24,18 @@ def main():
            'BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfileOwnedTask',
            'ProfilePermissionTransient','ProfileDisplayCustody','PublicOwnGroupPhysicalFence','PublicProfileRecentHistory']
     files=[bg/(n+'.java') for n in names]+[s/'tests/profile-broker/ProfileBrokerHostTest.java',Path(__file__).with_name('PublicProfileHistoryHostTest.java')]
-    tracked=files+[Path(__file__).resolve(),bg/'ProfileTaskPlatform.java',bg/'BackgroundDisplayBroker.java']
+    diagnostic=s/'tests/profile-broker/ProfileRootRefusalHostTest.java'
+    tracked=files+[Path(__file__).resolve(),bg/'ProfileTaskPlatform.java',bg/'BackgroundDisplayBroker.java',diagnostic]
     pins={str(p):sha(p) for p in tracked};classes=out/'classes';classes.mkdir()
     cp=str(classes)+os.pathsep+str(a.json_jar.resolve());jdk=a.java_home.resolve()/'bin'
+    diagnostic_classes=out/'root-diagnostic-classes';diagnostic_classes.mkdir()
+    diagnostic_cp=str(diagnostic_classes)+os.pathsep+cp
     flags=['-source','8','-target','8'] if a.java8_syntax_only else ['--release','8']
     commands=[('compile',[str(jdk/'javac'),*flags,'-Xlint:all,-options','-Werror','-proc:none','-encoding','UTF-8','-cp',str(a.json_jar.resolve()),'-d',str(classes),*map(str,files)]),
               ('history',[str(jdk/'java'),'-cp',cp,'org.trillionnium.hepta.background.PublicProfileHistoryHostTest',str(a.actual_recents.resolve())]),
-              ('legacy-private',[str(jdk/'java'),'-cp',cp,'org.trillionnium.hepta.background.ProfileBrokerHostTest'])]
+              ('legacy-private',[str(jdk/'java'),'-cp',cp,'org.trillionnium.hepta.background.ProfileBrokerHostTest']),
+              ('root-diagnostic-compile',[str(jdk/'javac'),*flags,'-Xlint:all,-options','-Werror','-proc:none','-encoding','UTF-8','-cp',cp,'-d',str(diagnostic_classes),str(diagnostic)]),
+              ('root-diagnostic',[str(jdk/'java'),'-cp',diagnostic_cp,'org.trillionnium.hepta.background.ProfileRootRefusalHostTest'])]
     result={'schema':'hepta.public-profile-history-host-validation.v1','all_pass':False,'strict_release8':not a.java8_syntax_only,
             'source_inputs':pins,'actual_archived_recents_inputs':ACTUAL,'json_jar_sha256':JSON_SHA,
             'phone_contacted':False,'android_runtime':False,'framework_and_clock_fixtures_synthetic':True,'stages':[]}
@@ -40,12 +45,13 @@ def main():
         result['stages'].append({'stage':name,'argv':argv,'exit_code':run.returncode,'elapsed_seconds':time.monotonic()-started,
             'stdout_sha256':hashlib.sha256(run.stdout).hexdigest(),'stderr_sha256':hashlib.sha256(run.stderr).hexdigest()})
         if run.returncode:break
-        if name!='compile':result[name]=json.loads(run.stdout.decode('utf-8').splitlines()[0])
+        if name not in ('compile','root-diagnostic-compile'):result[name]=json.loads(run.stdout.decode('utf-8').splitlines()[0])
     result['inputs_unchanged']=pins=={str(p):sha(p) for p in tracked}
     result['archived_recents_unchanged']=ACTUAL=={n:sha(a.actual_recents/n) for n in ACTUAL}
-    result['all_pass']=len(result['stages'])==3 and all(x['exit_code']==0 for x in result['stages']) and result['inputs_unchanged'] and result['archived_recents_unchanged']
+    result['all_pass']=len(result['stages'])==5 and all(x['exit_code']==0 for x in result['stages']) and result['inputs_unchanged'] and result['archived_recents_unchanged']
     (out/'RESULT.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps({'all_pass':result['all_pass'],'strict_release8':result['strict_release8'],'result':str(out/'RESULT.json'),
-                      'history':result.get('history'),'legacy_private':result.get('legacy-private')},ensure_ascii=False))
+                      'history':result.get('history'),'legacy_private':result.get('legacy-private'),
+                      'root_diagnostic':result.get('root-diagnostic')},ensure_ascii=False))
     return 0 if result['all_pass'] else 1
 if __name__=='__main__':raise SystemExit(main())
