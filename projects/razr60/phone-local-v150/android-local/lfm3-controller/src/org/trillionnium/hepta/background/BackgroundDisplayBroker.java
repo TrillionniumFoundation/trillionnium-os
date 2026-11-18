@@ -70,6 +70,14 @@ public final class BackgroundDisplayBroker {
     private volatile int displayId = -1;
     private volatile int displayFlags;
     private volatile JSONObject displayPolicyReadback;
+    private volatile PublicOwnGroupFramework publicOwnGroupFramework;
+    private volatile boolean publicOwnGroupDisplayReady;
+    private volatile PublicOwnGroupPolicy.Readback publicOwnGroupLastReadback;
+    private final AtomicBoolean publicAdmissionRetired=new AtomicBoolean();
+    private final PublicOwnGroupSurfaceRetirement publicSurfaceRetirement=new PublicOwnGroupSurfaceRetirement();
+    // Only the object actually returned by this session's create API. Never reconstructed from an id or wire.
+    private volatile VirtualDisplay publicCreateReturnedHandle;
+    private volatile PublicOwnGroupTaskFence publicTaskFence;
     private volatile DisplayGeometry displayGeometry;
     private volatile JSONObject displayGeometryReadback;
     private final java.util.Map<String,Integer> displayFlagConstants=new java.util.LinkedHashMap<String,Integer>();
@@ -89,6 +97,11 @@ public final class BackgroundDisplayBroker {
     private volatile ProfilePackages profilePackages;
     private volatile ProfilePackages.Readback profileReadback;
     private volatile ProfileOwnedTask profileOwnedTask;
+    private volatile boolean profilePreparing;
+    private volatile String profilePreparationState="NOT_STARTED";
+    private volatile java.util.Map<Integer,String> permissionPhysicalBaseline;
+    private volatile PermissionWindowObservation permissionWindow;
+    private volatile String permissionWindowRequest;
     private volatile ProfileTaskPlatform profilePlatform;
     private volatile BrokerProtocol.Request activeProfileRequest;
     private volatile WindowOwnership profileWindow;
@@ -104,6 +117,8 @@ public final class BackgroundDisplayBroker {
     private BackgroundDisplayBroker(BrokerProtocol.Config config) throws BrokerProtocol.Refusal {
         this.config = config;
         if (config.expiresElapsedMs <= started) throw new BrokerProtocol.Refusal("START_EXPIRED");
+        if(config.publicOwnGroupScope!=null&&config.publicOwnGroupScope.createdElapsedMs>started)
+            throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_CREATED_IN_FUTURE");
         expires = Math.min(started + config.ttlMs, config.expiresElapsedMs);
         displayName = "hepta-bg-" + config.generation;
     }
@@ -114,7 +129,9 @@ public final class BackgroundDisplayBroker {
         try {
             int uid = android.os.Process.myUid();
             if (uid != 0 && uid != 2000) throw new BrokerProtocol.Refusal("BROKER_REQUIRES_EXISTING_SHELL_OR_ROOT");
-            broker = new BackgroundDisplayBroker(BrokerProtocol.Config.parse(args));
+            BrokerProtocol.Config config=BrokerProtocol.Config.parse(args);
+            if(config.publicOwnGroupScope!=null&&uid!=0)throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_ROOT_REQUIRED");
+            broker = new BackgroundDisplayBroker(config);
             final BackgroundDisplayBroker owner = broker;
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 owner.beginCleanup("process_shutdown");
@@ -155,10 +172,12 @@ public final class BackgroundDisplayBroker {
         displays = (DisplayManager) shell.getSystemService(Context.DISPLAY_SERVICE);
         keyguard = (KeyguardManager) shell.getSystemService(Context.KEYGUARD_SERVICE);
         if (displays == null || keyguard == null) throw new BrokerProtocol.Refusal("FRAMEWORK_SERVICE_MISSING");
+        if(config.publicOwnGroupScope!=null)publicOwnGroupFramework=new PublicOwnGroupFramework(shell,displays,config.publicOwnGroupScope);
         requireUnlocked();
         virtualFlags = fields(DisplayManager.class, "VIRTUAL_DISPLAY_FLAG_PUBLIC", "VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY",
             "VIRTUAL_DISPLAY_FLAG_SUPPORTS_TOUCH", "VIRTUAL_DISPLAY_FLAG_DESTROY_CONTENT_ON_REMOVAL",
             "VIRTUAL_DISPLAY_FLAG_TRUSTED", "VIRTUAL_DISPLAY_FLAG_OWN_FOCUS", "VIRTUAL_DISPLAY_FLAG_STEAL_TOP_FOCUS_DISABLED");
+        if(config.publicOwnGroupScope!=null)virtualFlags=publicOwnGroupFramework.requestedFlags;
         requiredDisplayFlags = fields(Display.class, "FLAG_TRUSTED", "FLAG_OWN_FOCUS", "FLAG_STEAL_TOP_FOCUS_DISABLED");
         forbiddenDisplayFlags = fields(Display.class, "FLAG_SECURE", "FLAG_ALWAYS_UNLOCKED");
         for(String name:BrokerProtocol.DisplayPolicy.REQUIRED)displayFlagConstants.put(name,Display.class.getField(name).getInt(null));
@@ -189,6 +208,8 @@ public final class BackgroundDisplayBroker {
                     config.profileTarget,Math.min(expires,started+STARTUP_MS));
         }
         checkOwnerPackages();
+        if(config.publicOwnGroupScope!=null)publicTaskFence=new PublicOwnGroupTaskFence(
+                BackgroundTaskOrganizer.profileSnapshot(activityTasks),config.publicOwnGroupScope.targetUserId,config.generation);
         requireUnlocked();
         frameworkReady = true;
         Thread locks = new Thread(() -> {
@@ -252,6 +273,16 @@ public final class BackgroundDisplayBroker {
                 } catch (Throwable error) {
                     response = response(request, false, code(error), false);
                 }
+                if(config.publicOwnGroupScope!=null&&(closing.get()||publicAdmissionRetired.get())
+                        &&request!=null&&!"close".equals(request.operation)){
+                    // This is our own already serialized receipt, possibly for a real dispatched
+                    // effect. Retiring admission must never rewrite that historical truth to false.
+                    JSONObject retired=new JSONObject(new String(response,StandardCharsets.UTF_8));
+                    retired.put("ok",false).put("error","PUBLIC_SCOPE_RETIRED").put("state",state)
+                        .put("public_scope_admission_retired",true).put("public_scope_closing",true)
+                        .put("public_own_group_readback_wire",JSONObject.NULL).put("public_surface_detach",publicDetachEvidence());
+                    response=retired.toString().getBytes(StandardCharsets.UTF_8);
+                }
                 BrokerProtocol.writeFrame(accepted.getOutputStream(), response);
                 // Only perform(close) may set closing. A rejected close envelope cannot retire the session.
                 // Its successfully authenticated response is flushed before the loop notices closing.
@@ -267,7 +298,8 @@ public final class BackgroundDisplayBroker {
 
     private byte[] perform(BrokerProtocol.Request r) throws Exception {
         boolean dispatched = false;
-        if(config.profileTarget!=null){activeProfileRequest=r;profileWindow=null;profileWindowRequest=null;profileRequestDispatched=false;}
+        if(config.profileTarget!=null){activeProfileRequest=r;profileWindow=null;profileWindowRequest=null;
+            permissionWindow=null;permissionWindowRequest=null;profileRequestDispatched=false;}
         try {
             if ("close".equals(r.operation)) {
                 beginCleanup("client_close");
@@ -275,6 +307,12 @@ public final class BackgroundDisplayBroker {
                 return response(r, "RELEASED".equals(state), "RELEASED".equals(state) ? null : "CLEANUP_NOT_CONFIRMED", false);
             }
             guard(r, false);
+            if(config.profileTarget!=null&&profilePreparing&&!java.util.Arrays.asList("prepare_state","permission_window","prepare_done").contains(r.operation)
+                    &&!(config.publicOwnGroupScope!=null&&"display_policy".equals(r.operation)))
+                throw new BrokerProtocol.Refusal("PROFILE_PERMISSION_PREPARATION_ACTIVE");
+            if(config.publicOwnGroupScope!=null&&"display_policy".equals(r.operation)){
+                guard(r,true);return response(r,true,null,false);
+            }
             if ("create".equals(r.operation)) {
                 if ("ACTIVE".equals(state)) { verifyDisplay(); return response(r, true, null, false); }
                 if (!"INITIAL".equals(state)) throw new BrokerProtocol.Refusal("SESSION_NOT_CREATABLE");
@@ -282,6 +320,8 @@ public final class BackgroundDisplayBroker {
                   guard(r, false);
                   createInFlight = true;
                   try {
+                    if(config.publicOwnGroupScope!=null&&publicCreateReturnedHandle!=null)
+                        throw new BrokerProtocol.Refusal("PUBLIC_CREATE_HANDLE_ALREADY_BOUND");
                     ensureNameAbsent();
                     if(config.profileTarget!=null)profileReadback=ProfileTaskPlatform.preflight(
                             activityTasks,profilePackages,config.profileTarget,Math.min(r.deadline,expires));
@@ -302,7 +342,9 @@ public final class BackgroundDisplayBroker {
                     if(config.profileTarget!=null)profileCustody.beforeCreate();
                     VirtualDisplay created = displays.createVirtualDisplay(displayName, geometry.width, geometry.height, geometry.density,
                         surfaceReader.getSurface(), virtualFlags);
+                    if(config.publicOwnGroupScope!=null)publicCreateReturnedHandle=created;
                     virtual = created;
+                    if(config.publicOwnGroupScope!=null&&created!=null&&closing.get())startPublicSurfaceDetach(created);
                     if (created == null) throw new BrokerProtocol.Refusal("DISPLAY_CREATION_FAILED");
                     displayId = created.getDisplay().getDisplayId();
                     if (displayId <= Display.DEFAULT_DISPLAY) throw new BrokerProtocol.Refusal("DEFAULT_DISPLAY_REFUSED");
@@ -325,6 +367,30 @@ public final class BackgroundDisplayBroker {
                         if(ownedSingleTask!=null&&!ownedSingleTask.observe())throw new BrokerProtocol.Refusal("OWNED_TASK_NOT_OBSERVED");
                     }
                 }
+            } else if(config.profileTarget!=null&&"prepare".equals(r.operation)) {
+                guard(r,true);
+                if(profileOwnedTask!=null||profilePreparing)throw new BrokerProtocol.Refusal("PROFILE_LAUNCH_ALREADY_ATTEMPTED");
+                permissionPhysicalBaseline=permissionPhysicalFence(r);profilePreparing=true;
+                dispatched=launchProfile(r,true);
+            } else if(config.profileTarget!=null&&"prepare_state".equals(r.operation)) {
+                requirePermissionPreparing(r);
+                profilePreparationState=profileOwnedTask.initializationState(Math.min(r.deadline,expires));
+                requirePermissionPhysicalUnchanged(permissionPhysicalFence(r));refreshProfileTaskEvidence();
+            } else if(config.profileTarget!=null&&"permission_window".equals(r.operation)) {
+                requirePermissionPreparing(r);
+                java.util.Map<Integer,String> before=permissionPhysicalFence(r);requirePermissionPhysicalUnchanged(before);
+                ProfileOwnedTask.PermissionRead read=profileOwnedTask.permissionForInitialization(r.windowId,r.observedTaskId,Math.min(r.deadline,expires));
+                java.util.Map<Integer,String> after=permissionPhysicalFence(r);requirePermissionPhysicalUnchanged(after);
+                if(!before.equals(after))throw new BrokerProtocol.Refusal("PROFILE_PERMISSION_PHYSICAL_CHANGED_DURING_READ");
+                guard(r,true);permissionWindow=PermissionWindowObservation.fromLive(read,after,SystemClock.elapsedRealtime());
+                permissionWindowRequest=r.requestId;profilePreparationState="PERMISSION_PENDING";refreshProfileTaskEvidence();
+            } else if(config.profileTarget!=null&&"prepare_done".equals(r.operation)) {
+                requirePermissionPreparing(r);
+                if(!"APP_READY".equals(profileOwnedTask.initializationState(Math.min(r.deadline,expires))))
+                    throw new BrokerProtocol.Refusal("PROFILE_PERMISSION_SETUP_REQUIRED");
+                requirePermissionPhysicalUnchanged(permissionPhysicalFence(r));
+                if(!profileOwnedTask.observe())throw new BrokerProtocol.Refusal("PROFILE_TASK_NOT_OBSERVED");
+                profilePreparing=false;profilePreparationState="COMPLETE";refreshProfileTaskEvidence();
             } else if(config.profileTarget!=null&&"launch".equals(r.operation)) {
                 dispatched=launchProfile(r);
             } else if(config.profileTarget!=null&&"window".equals(r.operation)) {
@@ -509,7 +575,23 @@ public final class BackgroundDisplayBroker {
         for(ProfileTaskPolicy.Root root:snapshot.roots)if(root.display==displayId)
             throw new BrokerProtocol.Refusal("PROFILE_FOREIGN_ROOT_ON_DISPLAY");
     }
-    private boolean launchProfile(BrokerProtocol.Request r)throws Exception {
+    private void requirePermissionPreparing(BrokerProtocol.Request r)throws Exception{
+        guard(r,true);
+        if(!profilePreparing||profileOwnedTask==null||permissionPhysicalBaseline==null)
+            throw new BrokerProtocol.Refusal("PROFILE_PERMISSION_PREPARATION_NOT_ACTIVE");
+    }
+    private java.util.Map<Integer,String> permissionPhysicalFence(BrokerProtocol.Request r)throws Exception{
+        guard(r,true);java.util.Map<Integer,String> value=config.publicOwnGroupScope==null?
+                ProfilePermissionPhysicalReader.read(windowManager,displays,config.profileTarget.profile.userId,()->Math.min(r.deadline,expires)):
+                PublicOwnGroupPhysicalReader.read(windowManager,displays,config.profileTarget.profile.userId,()->Math.min(r.deadline,expires));
+        guard(r,true);return value;
+    }
+    private void requirePermissionPhysicalUnchanged(java.util.Map<Integer,String> actual)throws Exception{
+        if(permissionPhysicalBaseline==null||!permissionPhysicalBaseline.equals(actual))
+            throw new BrokerProtocol.Refusal("PROFILE_PERMISSION_PHYSICAL_DISPLAY_CHANGED");
+    }
+    private boolean launchProfile(BrokerProtocol.Request r)throws Exception{return launchProfile(r,false);}
+    private boolean launchProfile(BrokerProtocol.Request r,boolean initialization)throws Exception {
         guard(r,true);
         if(profileOwnedTask!=null)throw new BrokerProtocol.Refusal("PROFILE_LAUNCH_ALREADY_ATTEMPTED");
         final ProfileTaskPolicy.Activity initial=profileReadback.activity;
@@ -545,10 +627,14 @@ public final class BackgroundDisplayBroker {
         boolean observed=false;
         while(SystemClock.elapsedRealtime()<Math.min(r.deadline,expires)-100){
             guard(r,true);
-            if(profileOwnedTask.observe()){observed=true;break;}
+            if(initialization){
+                profilePreparationState=profileOwnedTask.initializationState(Math.min(r.deadline,expires));
+                if(!"WAITING".equals(profilePreparationState)){observed=true;break;}
+            }else if(profileOwnedTask.observe()){observed=true;break;}
             Thread.sleep(40);
         }
         if(!observed)throw new BrokerProtocol.Refusal("PROFILE_LAUNCH_NOT_OBSERVED");
+        if(initialization)requirePermissionPhysicalUnchanged(permissionPhysicalFence(r));
         refreshProfileTaskEvidence();
         return true;
     }
@@ -580,6 +666,19 @@ public final class BackgroundDisplayBroker {
     }
 
     private void requireUnlocked() throws BrokerProtocol.Refusal {
+        if(config.publicOwnGroupScope!=null){
+            if(publicAdmissionRetired.get())throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_RETIRED");
+            try{
+                PublicOwnGroupFramework framework=publicOwnGroupFramework;
+                if(framework==null)throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_FRAMEWORK_UNAVAILABLE");
+                if(publicOwnGroupDisplayReady)framework.read(config.generation,displayId,displayName);
+                else framework.preflight();
+                PublicOwnGroupTaskFence taskFence=publicTaskFence;
+                if(taskFence!=null&&displayId>1)taskFence.observe(BackgroundTaskOrganizer.profileSnapshot(activityTasks),displayId,SystemClock.elapsedRealtime());
+                lastUnlockedCheck=SystemClock.elapsedRealtime();return;
+            }catch(BrokerProtocol.Refusal refusal){throw refusal;}
+            catch(Exception unavailable){throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_POLICY_UNAVAILABLE");}
+        }
         KeyguardManager manager = keyguard;
         if (manager == null) throw new BrokerProtocol.Refusal("KEYGUARD_UNAVAILABLE");
         if (manager.isKeyguardLocked() || manager.isDeviceLocked()) throw new BrokerProtocol.Refusal("DEVICE_LOCKED");
@@ -601,6 +700,10 @@ public final class BackgroundDisplayBroker {
             .put("matches_snapshot", matches);
         if (!matches) throw new BrokerProtocol.Refusal("DISPLAY_GEOMETRY_CHANGED");
         int flags = actual.getFlags(); displayFlags = flags;
+        if(config.publicOwnGroupScope!=null){
+            publicOwnGroupLastReadback=publicOwnGroupFramework.read(config.generation,displayId,displayName);
+            publicOwnGroupDisplayReady=true;displayPolicyReadback=null;return;
+        }
         if ((flags & requiredDisplayFlags) != requiredDisplayFlags || (flags & forbiddenDisplayFlags) != 0)
             throw new BrokerProtocol.Refusal("DISPLAY_FLAGS_NOT_ACCEPTED");
         Object policy = getImePolicy.invoke(windowManager, displayId);
@@ -820,6 +923,7 @@ public final class BackgroundDisplayBroker {
         Thread watchdog = new Thread(() -> {
             while (true) {
                 long now = SystemClock.elapsedRealtime();
+                if(config.publicOwnGroupScope!=null)publicSurfaceRetirement.observeDeadline(now);
                 if (cleanupStarted.get() && now - cleanupAt >= CLEANUP_MS) {
                     boolean known = cleanupDone.getCount() == 0 && "RELEASED".equals(state);
                     if(config.profileTarget!=null&&profileCustody.known()){
@@ -857,6 +961,7 @@ public final class BackgroundDisplayBroker {
 
     private void beginCleanup(String reason) {
         closing.set(true);
+        if(config.publicOwnGroupScope!=null){publicAdmissionRetired.set(true);beginPublicSurfaceDetach();}
         if (!cleanupStarted.compareAndSet(false, true)) return;
         cleanupAt = SystemClock.elapsedRealtime(); terminalReason = reason; state = "CLOSING";
         if(config.profileTarget!=null){beginProfileCleanup();return;}
@@ -893,6 +998,52 @@ public final class BackgroundDisplayBroker {
         }, "HeptaBackgroundCleanup");
         cleanup.setDaemon(true); cleanup.start();
     }
+
+    private void beginPublicSurfaceDetach(){
+        if(config.publicOwnGroupScope==null||!publicAdmissionRetired.get()||!closing.get())return;
+        if(!publicSurfaceRetirement.request(SystemClock.elapsedRealtime()))return;
+        startPublicSurfaceDetach(null);
+    }
+    private void startPublicSurfaceDetach(final VirtualDisplay lateCreated){
+        if(config.publicOwnGroupScope==null||!publicAdmissionRetired.get()||!closing.get()||!publicSurfaceRetirement.retired())return;
+        try{
+        PublicOwnGroupSurfaceRetirement.OwnedSurface operation=new PublicOwnGroupSurfaceRetirement.OwnedSurface(){
+            private VirtualDisplay exact;
+            @Override public String prepare()throws Exception{
+                // A create call can still be returning. Wait only for that actual in-memory handle;
+                // expiry/stall keeps UNKNOWN and never invents authority from the display number.
+                long until=publicSurfaceRetirement.deadlineElapsed();
+                while(lateCreated==null&&publicCreateReturnedHandle==null&&createInFlight&&SystemClock.elapsedRealtime()<until)Thread.sleep(10);
+                exact=lateCreated==null?publicCreateReturnedHandle:lateCreated;
+                if(exact==null||exact!=virtual)throw new IOException("PUBLIC_OWNED_SURFACE_HANDLE_UNAVAILABLE");
+                if(lateCreated!=null){
+                    if(exact!=publicCreateReturnedHandle)throw new IOException("PUBLIC_CREATE_RETURNED_HANDLE_CHANGED");
+                    return "CREATE_RETURNED_HANDLE_ONLY";
+                }
+                PublicOwnGroupFramework framework=publicOwnGroupFramework;
+                if(framework!=null&&framework.hasFrozenIdentity()){
+                    if(!framework.frozenIdentityMatches(displayId,displayName))throw new IOException("PUBLIC_FROZEN_SURFACE_IDENTITY_CHANGED");
+                    return "FROZEN_FRAMEWORK_IDENTITY";
+                }
+                // Initializing has never admitted input/model work. The real returned Binder-owning
+                // object is sufficient only for requesting this surface's shutdown, never for activation.
+                return "CREATE_RETURNED_HANDLE_ONLY";
+            }
+            @Override public void detach(PublicOwnGroupSurfaceRetirement.ApiEntry entry)throws Exception{
+                if(!publicAdmissionRetired.get()||!closing.get()||exact==null||exact!=publicCreateReturnedHandle||exact!=virtual)
+                    throw new IOException("PUBLIC_OWNED_SURFACE_HANDLE_CHANGED");
+                entry.beforeCall();
+                exact.setSurface(null);
+            }
+        };
+        Thread worker=new Thread(()->{
+            if(lateCreated==null)publicSurfaceRetirement.run(operation,SystemClock::elapsedRealtime);
+            else publicSurfaceRetirement.runLateCreated(operation,SystemClock::elapsedRealtime);
+        },"HeptaPublicOwnedSurfaceDetach");
+        worker.setDaemon(true);worker.start();
+        }catch(Throwable unavailable){publicSurfaceRetirement.workerUnavailable(unavailable,SystemClock.elapsedRealtime());}
+    }
+    private JSONObject publicDetachEvidence(){return new JSONObject(publicSurfaceRetirement.evidence());}
 
     private void beginProfileCleanup(){
         Thread cleanup=new Thread(()->{
@@ -981,7 +1132,12 @@ public final class BackgroundDisplayBroker {
     }
     private byte[] response(BrokerProtocol.Request r, boolean ok, String error, boolean dispatched) throws Exception {
         DisplayGeometry geometry=displayGeometry;
-        JSONObject value = new JSONObject().put("version", config.profileTarget==null?BrokerProtocol.VERSION:BrokerProtocol.PROFILE_VERSION)
+        PublicOwnGroupPolicy.Readback publicReply=null;
+        if(config.publicOwnGroupScope!=null&&r!=null&&ok&&"ACTIVE".equals(state)&&!closing.get()&&!publicAdmissionRetired.get()){
+            publicReply=publicOwnGroupFramework.read(r.requestId,displayId,displayName);
+            if(closing.get()||publicAdmissionRetired.get()||!"ACTIVE".equals(state))throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_RETIRED_DURING_READ");
+        }
+        JSONObject value = new JSONObject().put("version", config.protocolVersion())
             .put("request_id", r == null ? JSONObject.NULL : r.requestId).put("generation", config.generation)
             .put("ok", ok).put("state", state).put("display_id", displayId).put("flags", displayFlags)
             .put("width", geometry==null?JSONObject.NULL:geometry.width)
@@ -990,9 +1146,15 @@ public final class BackgroundDisplayBroker {
             .put("display_geometry_snapshot",geometry==null?JSONObject.NULL:new JSONObject(geometry.evidence()))
             .put("display_geometry_readback",displayGeometryReadback==null?JSONObject.NULL:new JSONObject(displayGeometryReadback.toString()))
             .put("dispatched", dispatched).put("display_name", displayName)
-            .put("expires_elapsed_ms", expires).put("capture_secure", false).put("always_unlocked", false)
+            .put("expires_elapsed_ms", expires).put("capture_secure", false).put("always_unlocked", config.publicOwnGroupScope!=null)
             .put("ime_policy", "hide")
             .put("display_policy_readback", displayPolicyReadback==null?JSONObject.NULL:new JSONObject(displayPolicyReadback.toString()));
+        if(config.publicOwnGroupScope!=null){
+            value.put("display_scope_sha256",config.publicOwnGroupScope.sha256)
+                .put("public_own_group_readback_wire",publicReply==null?JSONObject.NULL:publicReply.wire())
+                .put("public_scope_admission_retired",publicAdmissionRetired.get()).put("public_scope_closing",closing.get()).put("public_surface_detach",publicDetachEvidence())
+                .put("public_task_location",publicTaskFence==null?JSONObject.NULL:new JSONObject(publicTaskFence.evidence()));
+        }
         if (r != null) {value.put("operation", r.operation);
             if(fixedIntentProofs.containsKey(r.requestId))value.put("fixed_intent",fixedIntentProofs.get(r.requestId));
             if(taskLaunchPolicies.containsKey(r.requestId))value.put("task_launch_policy",taskLaunchPolicies.get(r.requestId));
@@ -1013,13 +1175,17 @@ public final class BackgroundDisplayBroker {
                     .put("profile_custody_retained",closing.get()&&profileCustody.retain());
             WindowOwnership window=profileWindow;
             if(r!=null&&window!=null&&r.requestId.equals(profileWindowRequest))value.put("window_ownership_wire",window.wire());
+            value.put("profile_permission_preparing",profilePreparing).put("profile_permission_preparation_state",profilePreparationState);
+            PermissionWindowObservation permission=permissionWindow;
+            if(r!=null&&permission!=null&&r.requestId.equals(permissionWindowRequest))
+                value.put("permission_window_wire",permission.wire());
         }
         if (error != null) value.put("error", error);
         if (!terminalReason.isEmpty()) value.put("terminal_reason", terminalReason);
         return value.toString().getBytes(StandardCharsets.UTF_8);
     }
     private void printTerminal() {
-        try { System.out.println(new JSONObject().put("schema", "hepta.background-broker-terminal.v1")
+        try { JSONObject terminal=new JSONObject().put("schema", "hepta.background-broker-terminal.v1")
             .put("generation", config.generation).put("state", state).put("display_id", displayId)
             .put("reason", terminalReason).put("release_confirmed", "RELEASED".equals(state))
             .put("owned_single_task",ownedSingleTask==null?JSONObject.NULL:new JSONObject(ownedSingleTask.evidence()))
@@ -1027,7 +1193,10 @@ public final class BackgroundDisplayBroker {
                     profileCleanupReadback==null?emptyProfileCleanup(false):profileCleanupReadback))
             .put("profile_last_leaf_validation",profileOwnedTask==null?JSONObject.NULL:
                     new JSONObject(profileOwnedTask.lastLeafValidation()))
-            .put("profile_custody_retained",config.profileTarget!=null&&profileCustody.retain())); }
+            .put("profile_custody_retained",config.profileTarget!=null&&profileCustody.retain());
+            if(config.publicOwnGroupScope!=null)terminal.put("display_scope_sha256",config.publicOwnGroupScope.sha256)
+                    .put("public_scope_admission_retired",publicAdmissionRetired.get()).put("public_surface_detach",publicDetachEvidence());
+            System.out.println(terminal); }
         catch (Throwable ignored) { System.err.println("terminal_receipt_unavailable"); }
     }
     private static int fields(Class<?> type, String... names) throws Exception {

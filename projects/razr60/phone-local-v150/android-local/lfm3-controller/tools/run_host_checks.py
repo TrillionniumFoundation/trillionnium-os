@@ -39,7 +39,7 @@ def main():
                 ROOT/"tests/native-app/legacy-boundary/NativeAppSession.java"]
     report["web_fixture_boundary"]="Legacy non-Web tests use a type-only WebTaskDomain whose methods throw; actual Web classes have an independent gate"
     report["native_fixture_boundary"]="Legacy non-native tests compile the real pure NativeAppEvidence/Domain and an unconstructible all-throw NativeAppSession; native session execution has an independent mandatory gate"
-    sources += [ROOT/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","BackgroundOwnedTaskPolicy","ProfileIdentity","ProfileTarget","WindowOwnership")]
+    sources += [ROOT/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","PublicOwnGroupPolicy","BackgroundOwnedTaskPolicy","ProfileIdentity","ProfileTarget","WindowOwnership")]
     tests=sorted((ROOT/"tests").glob("*HostTest.java"))+[
         ROOT/"tests/action-parser/ActionDecisionHostTest.java",
         ROOT/"tests/action-grammar/DecisionGrammarHostTest.java"]
@@ -231,6 +231,34 @@ def main():
             raise RuntimeError("Mandatory permission transient gate receipt differs")
         report["permission_transient_gate"]={"bytes":len(permission_raw),
             "sha256":hashlib.sha256(permission_raw).hexdigest(),"cases":permission_cases}
+        # The new preparation route does not change any ordinary ownership gate.
+        # Execute its core and actual worker separately; Android IO remains explicit.
+        permission_contracts={
+            "profile-permission-initialization":("hepta.permission-init-core-host.v1",{
+                "new_policy_cases":(59,210),"physical_fence_cases":(23,35)}),
+            "profile-permission-ui":("hepta.permission-ui-host.v1",{"checks":(15,72)})}
+        report["permission_initialization_gates"]={}
+        for name,(schema,case_contracts) in permission_contracts.items():
+            run(name,[sys.executable,"-B",ROOT/"tests"/name/"run_host.py",
+                "--source",ROOT,"--output",out/name,"--java-home",java_home])
+            receipt_raw=(out/name/"RESULT.json").read_bytes()
+            receipt=json.loads(receipt_raw)
+            if (receipt.get("schema")!=schema or receipt.get("all_pass") is not True
+                    or receipt.get("source_inputs_unchanged") is not True
+                    or receipt.get("java_release_api_check") is not True
+                    or receipt.get("phone_contacted") is not False
+                    or receipt.get("android_adapters_compiled") is not False):
+                raise RuntimeError("Permission initialization gate receipt differs: "+name)
+            for key,(cases,assertions) in case_contracts.items():
+                actual=receipt.get(key,{})
+                if (actual.get("all_pass") is not True or type(actual.get("cases")) is not int
+                        or actual["cases"]!=cases or type(actual.get("assertions")) is not int
+                        or actual["assertions"]!=assertions or actual.get("android_adapter_executed") is not False
+                        or actual.get("phone_contacted") is not False):
+                    raise RuntimeError("Permission initialization cases differ: "+name+"/"+key)
+            report["permission_initialization_gates"][name]={"bytes":len(receipt_raw),
+                "sha256":hashlib.sha256(receipt_raw).hexdigest(),
+                "cases":{key:receipt[key] for key in case_contracts}}
         run("visual-prompt-projection",[sys.executable,"-B",ROOT/"tests/visual-prompt-projection/run_host_tests.py",
             "--source",ROOT,"--out",out/"visual-prompt-projection","--json-jar",json_jar,"--release8"])
         run("vlm-result-contract",[sys.executable,"-B",ROOT/"tests/vlm-contract/run_host_tests.py",

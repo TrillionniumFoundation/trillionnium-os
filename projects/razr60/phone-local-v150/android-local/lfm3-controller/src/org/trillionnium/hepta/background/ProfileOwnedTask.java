@@ -83,6 +83,17 @@ public final class ProfileOwnedTask {
         need(startAccepted&&!retiring,"PROFILE_TASK_NOT_ACTIVE");
         return observeTree(true)!=null;
     }
+    /** A separate owner-only preparation state. The private marker is created
+     * only after the original complete permission proof; no text/error matching.
+     * Ordinary observe/window never accept a permission top. */
+    public synchronized String initializationState(long deadline)throws Exception{
+        need(startAccepted&&!retiring,"PROFILE_TASK_NOT_ACTIVE");platform.guard();actual(true);
+        need(platform.now()<deadline,"PROFILE_PERMISSION_READ_DEADLINE");
+        String result;
+        try{result=observeTreeSample(true)==null?"WAITING":"APP_READY";}
+        catch(VerifiedPermissionPending pending){result="PERMISSION_PENDING";}
+        platform.guard();need(platform.now()<deadline,"PROFILE_PERMISSION_READ_DEADLINE");return result;
+    }
     /** Read-only state coordination inside the caller's original request deadline.
      * A verified permission top is only a reason to read again, never a business
      * window or input grant. Ordinary observe/window and retirement stay separate. */
@@ -119,6 +130,72 @@ public final class ProfileOwnedTask {
         return new WindowOwnership(fresh,generation,display,windowId,current.id,current.parent,
                 leafTokenId,UUID.randomUUID().toString(),current.user,fresh.profile.serial,current.topUid,
                 at,Math.min(deadline,at+10000));
+    }
+    /** A separate, read-only permission identity. It never becomes WindowOwnership,
+     * a business observation, or an input permit. The caller still needs a separate
+     * owner-bound initialization policy and a live accessibility-window corroboration. */
+    public synchronized PermissionRead permissionForInitialization(int windowId,int observedTaskId,long deadline)throws Exception{
+        need(startAccepted&&!retiring&&windowId>=0&&observedTaskId>0,"PROFILE_PERMISSION_READ_INVALID");
+        platform.guard();actual(true);
+        need(platform.now()<deadline,"PROFILE_PERMISSION_READ_DEADLINE");
+        ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(personal);
+        List<BackgroundOwnedSingleTask.Task> roots=checked(platform.roots());
+        need(roots.size()==1,"PROFILE_DISPLAY_ROOT_CHANGED");
+        BackgroundOwnedSingleTask.Task currentRoot=roots.get(0);requireRootIdentity(currentRoot);
+        List<BackgroundOwnedSingleTask.Task> children=checked(platform.children(root.token));
+        need(children.size()==1,"PROFILE_FOREIGN_CHILD_TASK");
+        BackgroundOwnedSingleTask.Task candidate=children.get(0);
+        need(candidate.id==observedTaskId,"PROFILE_PERMISSION_WINDOW_TASK_MISMATCH");
+        ProfilePermissionTransient.Proof proof=permissionForOwnedPair(currentRoot,candidate,global);
+        need(proof!=null,"PROFILE_PERMISSION_PROOF_UNAVAILABLE");
+        if(leaf==null){leaf=candidate;leafTokenId=UUID.randomUUID().toString();}
+        else need(sameTask(leaf,candidate),"PROFILE_LEAF_TOKEN_CHANGED");
+        platform.recents().requireOnlyOwned(target,candidate.id);platform.guard();
+        long now=platform.now();need(now<deadline,"PROFILE_PERMISSION_READ_DEADLINE");
+        proof.requireMatches(target,currentRoot,candidate,now);
+        return new PermissionRead(target,generation,windowId,currentRoot,candidate,leafTokenId,proof,now,deadline);
+    }
+    /** Private construction from this live owned task. There is deliberately no
+     * fromWire/fromJson constructor and no flag that promotes the retirement proof. */
+    public static final class PermissionRead {
+        public final ProfileTarget target;
+        public final String generation,leafTokenId,activityRecord,resultToActivityRecord;
+        public final int displayId,windowId,rootTaskId,taskId,permissionUid;
+        public final long observedElapsedMs,expiresElapsedMs;
+        private final BackgroundOwnedSingleTask.Task root,leaf;
+        private final ProfilePermissionTransient.Proof proof;
+        private PermissionRead(ProfileTarget target,String generation,int windowId,
+                BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,String leafTokenId,
+                ProfilePermissionTransient.Proof proof,long now,long deadline)throws Exception{
+            this.target=target;this.generation=generation;this.windowId=windowId;this.root=root;this.leaf=leaf;
+            this.leafTokenId=leafTokenId;this.proof=proof;displayId=leaf.display;rootTaskId=root.id;taskId=leaf.id;
+            Map<String,Object> facts=proof.evidence();permissionUid=((Number)facts.get("permission_uid")).intValue();
+            activityRecord=(String)facts.get("activity_record");resultToActivityRecord=(String)facts.get("result_to_activity_record");
+            long proofStart=((Number)facts.get("observed_start_elapsed_ms")).longValue();
+            observedElapsedMs=now;expiresElapsedMs=Math.min(deadline,proofStart+ProfilePermissionTransient.MAX_AGE_MS);
+            requireFresh(now);
+        }
+        public void requireFresh(long now)throws Exception{
+            need(now>=observedElapsedMs&&now<expiresElapsedMs,"PROFILE_PERMISSION_READ_STALE");
+            proof.requireMatches(target,root,leaf,now);
+        }
+        public boolean sameOwnedTask(PermissionRead other){
+            return other!=null&&target.same(other.target)&&generation.equals(other.generation)
+                    &&displayId==other.displayId&&leafTokenId.equals(other.leafTokenId)
+                    &&sameTask(root,other.root)&&sameTask(leaf,other.leaf);
+        }
+        public boolean sameRequest(PermissionRead other){
+            return sameOwnedTask(other)&&windowId==other.windowId&&permissionUid==other.permissionUid
+                    &&activityRecord.equals(other.activityRecord)&&resultToActivityRecord.equals(other.resultToActivityRecord);
+        }
+        public Map<String,Object> evidence(){
+            Map<String,Object> value=new LinkedHashMap<String,Object>(proof.evidence());
+            value.put("schema","hepta.profile-permission-initialization-read.v1");
+            value.put("generation",generation);value.put("window_id",windowId);
+            value.put("observed_elapsed_ms",observedElapsedMs);value.put("expires_elapsed_ms",expiresElapsedMs);
+            value.put("business_observation_allowed",false);value.put("permission_input_allowed",false);
+            value.put("serialized_evidence_is_authority",false);return Collections.unmodifiableMap(value);
+        }
     }
     public synchronized void retire(long deadline)throws Exception{
         need(!retiring,"PROFILE_RETIRE_ALREADY_ATTEMPTED");retiring=true;

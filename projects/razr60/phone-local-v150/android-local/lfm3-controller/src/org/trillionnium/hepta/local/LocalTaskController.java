@@ -399,11 +399,29 @@ public final class LocalTaskController implements AutoCloseable {
                 backgroundSelection.requireTaskTarget(instruction,authorization.authorization);
                 QualificationScope.require(!scope.restricted(),"qualification scope 已启用，后台任务拒绝；原测试范围保持不变");
                 checkActive(deadline);
-                background=new BackgroundSession(service,taskId,instruction,backgroundSelection,filesRoot);
+                // The final UI selection was already bound by original owner
+                // authorization above. Failure in this branch is terminal: there
+                // is no retry using the legacy or physical display policy.
+                background=backgroundSelection.independentProfileDisplay
+                        ?BackgroundSession.experimentalPublicOwnGroup(service,taskId,instruction,backgroundSelection,filesRoot)
+                        :new BackgroundSession(service,taskId,instruction,backgroundSelection,filesRoot);
                 service.bindBackgroundSession(taskId,background);
                 record(evidence,"background-binding.json",background.evidence());
                 emit("正在建立手机后台空间，并打开你选择的起始应用…");
-                try{background.start(new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}});}
+                final HeptaAccessibilityService.Cancellation preparationCancel=new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}};
+                final NativeAppGoal preparationGoal=completion.nativeGoal();final File preparationEvidence=evidence;
+                try{
+                    if(background.profileTarget()!=null&&preparationGoal!=null
+                            &&NativeAppGoal.FLIGHT_RESULTS.equals(preparationGoal.kind)
+                            &&org.trillionnium.hepta.background.ProfileTarget.CTRIP.equals(preparationGoal.packageName)){
+                        background.startWithPermissionInitialization(preparationCancel,new BackgroundSession.InitializationHandler(){
+                            public void prepare(BackgroundSession owned,long preparationDeadline,HeptaAccessibilityService.Cancellation cancel)throws Exception{
+                                emitForTask(taskId,"正在核对隔离资料中应用的首次权限请求…");
+                                service.prepareProfilePermissionInitialization(taskId,preparationGoal,authorization,owned,preparationEvidence,cancel,preparationDeadline);
+                            }
+                        },deadline);
+                    }else background.start(preparationCancel);
+                }
                 finally{record(evidence,"background-bootstrap.json",background.evidence());}
                 checkActive(deadline);
             }
@@ -857,6 +875,7 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("final_observation_id",observation==null?JSONObject.NULL:observation.id).put("cleanup_known",cleanup)
                     .put("observation_read_worker_pending_at_terminal",service.observationReadWorkPending())
                     .put("action_worker_pending_at_terminal",service.actionWorkPending())
+                    .put("profile_permission_preparation",service.permissionInitializationEvidence(taskId)==null?JSONObject.NULL:service.permissionInitializationEvidence(taskId))
                     .put("native_cancel_worker_pending_at_terminal",service.nativeCancellationWorkPending())
                     .put("native_cancellation",cancellation==null?JSONObject.NULL:new JSONObject(cancellation.evidence()))
                     .put("expected_scope_sha256",QualificationScopeConfig.nullable(expectedScopeSha256))
@@ -1207,6 +1226,14 @@ public final class LocalTaskController implements AutoCloseable {
                         checkActive(taskDeadline);
                     }});
         }
+        final HeptaAccessibilityService.Cancellation modelScopeCancel=new HeptaAccessibilityService.Cancellation(){
+            public boolean isCancelled(){return cancelled.get()||SystemClock.elapsedRealtime()>=taskDeadline;}
+        };
+        if(background!=null&&background.usesExperimentalPublicOwnGroup()){
+            checkActive(taskDeadline);
+            service.requireExperimentalModelScope(this,authorization.taskId,authorization,background,modelScopeCancel,taskDeadline);
+            checkActive(taskDeadline);
+        }
         LocalInference.Handle handle=inference.generateObserved(prompt,system,currentFrame,grammar,LocalRuntimeConfig.GENERATION_TOKENS,timeout,new LocalInference.Callback(){
             public void onSuccess(String raw,String runId){if(delivered.compareAndSet(false,true)){result.set(new ModelAnswer(raw,runId));ready.countDown();}}
             public void onFailure(String message,boolean cleanup){if(delivered.compareAndSet(false,true)){error.set(message);cleanupKnown.set(cleanup);ready.countDown();}}
@@ -1223,7 +1250,10 @@ public final class LocalTaskController implements AutoCloseable {
         synchronized(handleLock){if(activeInference==handle)activeInference=null;}
         if(!cleanupKnown.get())throw new CleanupUnknown("本地推理退出状态未知，已停止新任务："+error.get());
         checkActive(taskDeadline);if(error.get()!=null)throw new IllegalStateException("本地推理失败："+error.get());
-        ModelAnswer answer=result.get();if(answer==null||answer.text==null)throw new IllegalStateException("本地模型没有返回结果");return answer;
+        ModelAnswer answer=result.get();if(answer==null||answer.text==null)throw new IllegalStateException("本地模型没有返回结果");
+        if(background!=null&&background.usesExperimentalPublicOwnGroup())
+            service.requireExperimentalModelScope(this,authorization.taskId,authorization,background,modelScopeCancel,taskDeadline);
+        return answer;
     }
     private static final class NativeObservationTransientFailure extends IllegalStateException {
         private static final long serialVersionUID=1L;

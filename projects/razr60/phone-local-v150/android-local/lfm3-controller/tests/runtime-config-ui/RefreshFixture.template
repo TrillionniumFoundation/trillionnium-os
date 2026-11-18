@@ -64,14 +64,17 @@ public final class RuntimeConfigUiHostTest {
     private final Widget modelDiagnostics=new Widget(),backgroundSummary=new Widget(),taskDiagnostics=new Widget();
     private final Widget backgroundPermissionState=new Widget(),openRootManager=new Widget(),prepareBackgroundPermission=new Widget();
     private final Widget backgroundMode=new Widget(),pickBackgroundApps=new Widget(),initialBackgroundApp=new Widget();
+    private final Widget independentProfileDisplay=new Widget(); // Legacy mode only; no profile authority.
     private final Widget cleanupBackground=new Widget(),acknowledgeInterruption=new Widget(),backgroundChoiceState=new Widget();
     private final Widget startTask=new Widget(),stopTask=new Widget(),runText=new Widget(),taskResult=new Widget();
     private final Widget visualProbeOutput=new Widget(),uiVenusProbeOutput=new Widget();
     private final java.util.Set<String> backgroundPackages=new java.util.TreeSet<String>();
-    private String backgroundModePreferenceError,backgroundSelectionPreferenceError;
+    private String backgroundModePreferenceError,backgroundSelectionPreferenceError,backgroundDisplayPreferenceError;
+    private Object selectedProfileTarget(){return null;} // Model-state fixture has no selected managed profile.
     private String lastShownProbeId,lastShownVisualProbeId,lastShownUiVenusProbeId;
     private int renderCalls;
     private final Widget taskAuthorizationInfo=null; // This original model-config fixture has no preview pane.
+    private final Widget profilePermissionCard=null; // No permission pane in this original model-config fixture.
     private boolean cachedModelFilePresent;
     // Explicit view/catalogue IO fixture; this model-config gate never launches a profile catalogue.
     private boolean profileCatalogueLoading;private final Widget pickProfileTarget=new Widget();
@@ -86,6 +89,7 @@ public final class RuntimeConfigUiHostTest {
 {{refresh}}
 {{refresh_impl}}
 {{preview_absent}}
+{{permission_absent}}
 
     public static void main(String[] args)throws Exception {
         File files=new File(args[0]);File model=new File(files,"model/model.bin");

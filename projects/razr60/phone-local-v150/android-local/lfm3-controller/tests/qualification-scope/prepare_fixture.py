@@ -27,6 +27,7 @@ def prepare(source, output):
         'background_binding': section(s, '    synchronized void bindBackgroundSession(', '    private void refreshApps()'),
         'app_catalogue': section(s, '    public AppCatalogueRanker.Page appCatalogue(', '    private String diagnosticTask;'),
         'lease': section(s, '    public synchronized boolean acquireTask(', '    private boolean locked()'),
+        'background_lock': section(s, '    private boolean locked(BackgroundSession background)', '    private int rotation('),
         # Keep each original dispatch method verbatim. The new native bridge is
         # executed by its separate gate; this non-native fixture has throwing endpoints.
         'scope_validate_dispatch': (section(s, '    synchronized void bindQualificationScope(', '    private void requireNativeActionGuard(')
@@ -142,7 +143,7 @@ def prepare(source, output):
     web_dom_canonical=source/'src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java'
     files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java',web_protocol,web_dom_canonical,
               source/'tests/web-flight/legacy-boundary/WebShoppingQuote.java']
-    files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','FixedIntentDispatch','BrokerProtocol','ProfileIdentity','ProfileTarget','WindowOwnership')]
+    files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','FixedIntentDispatch','BrokerProtocol','PublicOwnGroupPolicy','ProfileIdentity','ProfileTarget','WindowOwnership')]
     # The real immutable Selection is now part of ordinary authorization admission.
     # Replace only that former fixture class; broker/display transport stays explicit IO fake.
     background_raw=(pkg/'BackgroundSession.java').read_text()
@@ -189,6 +190,7 @@ def prepare(source, output):
             'compiler_path':str(web_fixture_compile),'bytes':len(web_fixture_raw),
             'sha256':hashlib.sha256(web_fixture_raw).hexdigest(),'byte_identical':True},
         'native_app_fixture_boundary':'Real immutable NativeAppEvidence/NativeAppDomain and actual observation copying compile; NativeAppSession and the four-purpose Service bridge are all-throw type boundaries for these original non-native cases. Separate native provider gates replace the Session; the native-action gate executes the actual complete collector/bridge/final checker.',
+        'permission_initialization_boundary':'Original non-profile cases retain the complete production Service and Controller call sites. The explicit empty permission-worker type cannot prepare or obtain profile authority; its absent receipt is null, like a never-started real worker. The independent permission-ui gate executes the real worker and core.',
         'native_action_bridge_excluded':{'bytes':len(section(s,'    private void requireNativeActionGuard(','    private String validate(').encode()),
             'sha256':hashlib.sha256(section(s,'    private void requireNativeActionGuard(','    private String validate(').encode()).hexdigest()},
         'phone_operations':False,'native_inference':False}

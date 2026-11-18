@@ -19,6 +19,7 @@ parts={'observation_callback':section('    public interface ObservationCallback'
        'acquire':section('    public synchronized boolean acquireTask(', '    public synchronized void releaseTask('),
        'recovery_idle':section('    synchronized boolean recoveryControllerIdle(', '    synchronized void retireControllerAfterAcknowledgement('),
        'action_pending':section('    boolean actionWorkPending()', '    void retireActionWork('),
+       'background_lock':section('    private boolean locked(BackgroundSession background)', '    private int rotation('),
        'cancellation_pending':section('    boolean nativeCancellationWorkPending()', '    boolean requestNativeCancellation('),
        'observation':section('    /** Each observation owns', '    synchronized void bindQualificationScope(')}
 template_path=Path(__file__).with_name('ObserverPipelineHost.template')

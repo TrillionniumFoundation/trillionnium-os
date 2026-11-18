@@ -64,6 +64,11 @@ def main():
     if not preview.startswith(preview_guard):
         raise RuntimeError("exact production absent-preview guard changed")
     methods["preview_absent"] = preview_guard + '\n        throw new AssertionError("authorization preview is outside the model-config fixture");\n    }'
+    permission = method(ui, "private void refreshProfilePermission()")
+    permission_guard = "private void refreshProfilePermission(){\n        if(profilePermissionCard==null)return;"
+    if not permission.startswith(permission_guard):
+        raise RuntimeError("exact production absent-permission-pane guard changed")
+    methods["permission_absent"] = permission_guard + '\n        throw new AssertionError("profile permission UI is outside the model-config fixture");\n    }'
     generated = template_file.read_text()
     for name, body in methods.items():
         marker = "{{" + name + "}}"
@@ -92,6 +97,8 @@ def main():
         "view_session_io_fixtures": True, "android_runtime": False, "phone_tested": False,
         "preview_boundary":"Actual absent-pane guard only, present pane throws; original configuration assertions do not qualify native authorization preview",
         "preview_absent_guard_sha256":hashlib.sha256(preview_guard.encode()).hexdigest(),
+        "permission_boundary":"Exact absent-pane guard only; a present pane throws. Permission worker and choice lifecycle have their separate gate; no rendered UI claim.",
+        "permission_absent_guard_sha256":hashlib.sha256(permission_guard.encode()).hexdigest(),
         "native_model_tested": False, "configuration_modified": False}
     for name, command in stages:
         try:
