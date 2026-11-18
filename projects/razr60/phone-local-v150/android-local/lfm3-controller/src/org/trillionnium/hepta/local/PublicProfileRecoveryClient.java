@@ -57,7 +57,7 @@ final class PublicProfileRecoveryClient {
                 createOrRequireExact(archive,raw);archives.put(name,archive);
                 refs.put(name,new JSONObject().put("file",archive.getName()).put("bytes",raw.length).put("sha256",HeptaAccessibilityService.sha(raw)));
             }
-            JSONObject value=new JSONObject().put("schema","hepta.public-profile-absence-commit.v1")
+            JSONObject value=new JSONObject().put("schema",request.postlaunch?"hepta.public-profile-postlaunch-absence-commit.v1":"hepta.public-profile-absence-commit.v1")
                     .put("source","owned_readonly_process_then_private_durable_receipt")
                     .put("request_id",request.requestId).put("task_id",request.taskId).put("generation",request.generation)
                     .put("journal_sha256",request.journalSha256).put("originals_sha256",request.originalsSha256)
@@ -65,7 +65,9 @@ final class PublicProfileRecoveryClient {
                     .put("transport",new JSONObject().put("owned_process_exit_observed",true).put("exit_code",0).put("output_eof",true)
                             .put("output_complete",true).put("stdout_bytes",outputBytes).put("stdout_sha256",outputSha256).put("command_sha256",commandSha256))
                     .put("validated_elapsed_ms",validatedElapsed).put("automatic_resume",false).put("rewrites_original_task_result",false)
-                    .put("historical_creation_unknown",true).put("broker_release_response",false);
+                    .put("historical_creation_unknown",!request.postlaunch).put("broker_release_response",false);
+            if(request.postlaunch)value.put("profile_bootstrap_dispatched",true).put("historical_broker_release_observed",true)
+                    .put("recorded_owned_identity",request.recordedOwnedIdentity());
             byte[] raw=value.toString(2).getBytes(StandardCharsets.UTF_8);File receipt=new File(task,base+".json");
             createOrRequireExact(receipt,raw);MobiMindPrivateFiles.syncDirectory(task);
             savedReceipt=receipt;savedSha256=HeptaAccessibilityService.sha(raw);
@@ -86,9 +88,13 @@ final class PublicProfileRecoveryClient {
                 throw new IOException("公共恢复的原始字节归档发生变化");
         }
         void requireLease(String task,String generation,String owner,long created,long expires,int boot,ProfileTarget target,PublicOwnGroupPolicy.Scope scope)throws Exception{
+            requireLease(task,generation,owner,created,expires,boot,target,scope,-1);
+        }
+        void requireLease(String task,String generation,String owner,long created,long expires,int boot,ProfileTarget target,PublicOwnGroupPolicy.Scope scope,int display)throws Exception{
             if(!request.taskId.equals(task)||!request.generation.equals(generation)||!request.ownerSha256.equals(owner)
                     ||request.created!=created||request.expires!=expires||request.oldBoot!=boot||target==null||!request.target.same(target)
-                    ||scope==null||!request.publicScope.wire().equals(scope.wire())||!request.publicScope.sha256.equals(scope.sha256))
+                    ||scope==null||!request.publicScope.wire().equals(scope.wire())||!request.publicScope.sha256.equals(scope.sha256)
+                    ||request.displayId!=display||request.postlaunch!=(display>1))
                 throw new IOException("公共恢复凭据不属于当前原始租约");
             requirePersisted();requireOriginals(false);
         }
@@ -96,11 +102,11 @@ final class PublicProfileRecoveryClient {
         JSONObject evidence()throws Exception{
             requirePersisted();return new JSONObject().put("schema","hepta.background-reconcile.v1").put("generation",request.generation)
                     .put("cleanup_known",true).put("broker_released",false).put("broker_response",JSONObject.NULL)
-                    .put("reconciliation_source",PublicProfileAbsenceRecovery.SOURCE).put("public_profile_absence",proof())
+                    .put("reconciliation_source",request.source()).put("public_profile_absence",proof())
                     .put("public_profile_receipt_path",savedReceipt.getPath()).put("public_profile_receipt_sha256",savedSha256)
                     .put("original_journal_sha256",request.journalSha256).put("originals_sha256",request.originalsSha256)
                     .put("current_absence_verified",true).put("recovery_interval_physical_unchanged",true)
-                    .put("historical_creation_unknown",true).put("display_absence_observed",true).put("automatic_resume",false);
+                    .put("historical_creation_unknown",!request.postlaunch).put("display_absence_observed",true).put("automatic_resume",false);
         }
     }
     static Receipt collect(Context context,MobiMindPrivateFiles.Read journal,BackgroundSession.ReconciliationCheck check)throws Exception{
@@ -124,7 +130,10 @@ final class PublicProfileRecoveryClient {
         JSONObject controller=RecoveryControllerIdentity.read(context,uid,SystemClock.elapsedRealtime()+PublicProfileAbsenceRecovery.LIMIT_MS);
         File apk=new File(context.getApplicationInfo().sourceDir).getCanonicalFile();
         if(!apk.getPath().equals(PublicProfileAbsenceRecovery.string(controller,"source_path")))throw new IOException("公共恢复的当前代码与安装身份不一致");
-        PublicProfileAbsenceRecovery.Request request=PublicProfileAbsenceRecovery.request(originals,controller,uid,UUID.randomUUID().toString(),SystemClock.elapsedRealtime(),boot);
+        boolean postlaunch=PublicProfileAbsenceRecovery.number(old,"display_id")>1&&Boolean.TRUE.equals(old.get("profile_launch_attempted"));
+        PublicProfileAbsenceRecovery.Request request=postlaunch
+                ?PublicProfileAbsenceRecovery.postlaunchRequest(originals,controller,uid,UUID.randomUUID().toString(),SystemClock.elapsedRealtime(),boot)
+                :PublicProfileAbsenceRecovery.request(originals,controller,uid,UUID.randomUUID().toString(),SystemClock.elapsedRealtime(),boot);
         String command="CLASSPATH="+quote(apk.getPath())+" /system/bin/app_process / org.trillionnium.hepta.background.PublicProfileRecoveryMain --request "+quote(request.wire());
         // The complete command must also fit the unchanged root proc-census bound.
         if(command.getBytes(StandardCharsets.UTF_8).length>=60000)throw new IOException("公共恢复命令超过完整进程核验上限");
@@ -170,7 +179,7 @@ final class PublicProfileRecoveryClient {
             value.put("output_file",raw.getName()).put("output_bytes",output.length).put("output_sha256",HeptaAccessibilityService.sha(output));
             if(capture.eof&&capture.failure==null){try{JSONObject diagnostic=PublicProfileAbsenceRecovery.object(output);
                 String code=PublicProfileAbsenceRecovery.string(diagnostic,"error");
-                if(PublicProfileAbsenceRecovery.SCHEMA.equals(diagnostic.optString("schema"))&&request.requestId.equals(diagnostic.optString("request_id"))
+                if(request.proofSchema().equals(diagnostic.optString("schema"))&&request.requestId.equals(diagnostic.optString("request_id"))
                         &&Boolean.FALSE.equals(diagnostic.get("cleanup_known"))&&code.matches("[A-Z0-9_]{1,96}"))value.put("checker_error",code);
             }catch(Exception notAnErrorRecord){/* Retain actual bytes without treating them as a proof. */}}
         }

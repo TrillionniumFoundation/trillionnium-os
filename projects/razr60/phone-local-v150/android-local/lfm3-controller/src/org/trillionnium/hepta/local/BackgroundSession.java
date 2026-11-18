@@ -319,20 +319,27 @@ final class BackgroundSession {
     synchronized boolean postlaunchRecoveryEligible(){return publicOwnGroupScope==null&&profileTarget()!=null&&retired&&profileLaunchAttempted&&displayId>0
             &&"CLEANUP_UNKNOWN".equals(state);}
     /** This is a distinct drained public lease, not an extension of private proof authority. */
-    synchronized boolean publicProfileRecoveryEligible(){return publicOwnGroupScope!=null&&profileTarget()!=null&&profileTarget().profile.userId==10
+    synchronized boolean publicProfileRecoveryEligible(){return publicProfilePostlaunchRecoveryEligible()||publicOwnGroupScope!=null&&profileTarget()!=null&&profileTarget().profile.userId==10
             &&retired&&!profileLaunchAttempted&&!bootstrapDispatched&&!permissionPreparing&&displayId==-1
             &&brokerExitObserved&&brokerExitCode!=null&&"CLEANUP_UNKNOWN".equals(state);}
+    /** A failed prepare_done can leave its stage bit set after the controller and
+     * broker have both exited. Actual permission/action/observation worker gates
+     * remain in the service and client; this predicate grants no input authority. */
+    private boolean publicProfilePostlaunchRecoveryEligible(){return publicOwnGroupScope!=null&&profileTarget()!=null
+            &&profileTarget().profile.userId==10&&retired&&profileLaunchAttempted&&bootstrapDispatched&&displayId>1
+            &&brokerExitObserved&&Integer.valueOf(0).equals(brokerExitCode)&&"CLEANUP_UNKNOWN".equals(state);}
     synchronized void acceptReconciliation(Cleanup result)throws Exception{
         if(result==null)throw new IOException("后台清理凭据缺失");
         if(result.publicProfileRecovery!=null){
             PublicProfileRecoveryClient.Receipt receipt=result.publicProfileRecovery;
             if(result.prelaunchRecovery!=null||result.postlaunchRecovery!=null||!result.known||!publicProfileRecoveryEligible()
-                    ||hasUnreleased(context)||!displayAbsent(context,-1,displayName)
+                    ||hasUnreleased(context)||!displayAbsent(context,displayId,displayName)
                     ||!generation.equals(result.evidence.getString("generation"))
-                    ||!org.trillionnium.hepta.background.PublicProfileAbsenceRecovery.SOURCE.equals(result.evidence.getString("reconciliation_source"))
+                    ||receipt.request.postlaunch!=(displayId>1)||receipt.request.displayId!=displayId
+                    ||!receipt.request.source().equals(result.evidence.getString("reconciliation_source"))
                     ||!receipt.receiptSha256().equals(result.evidence.getString("public_profile_receipt_sha256")))
                 throw new IOException("公共恢复凭据不属于当前已停止的租约");
-            receipt.requireLease(taskId,generation,ownerSha256,createdElapsed,expiresElapsed,bootCount,profileTarget(),publicOwnGroupScope);
+            receipt.requireLease(taskId,generation,ownerSha256,createdElapsed,expiresElapsed,bootCount,profileTarget(),publicOwnGroupScope,displayId);
             retirePublicScope();retired=true;state="RELEASED";cleanupConfirmed=true;return;
         }
         if(result.postlaunchRecovery!=null){
@@ -869,7 +876,7 @@ final class BackgroundSession {
     }
     private void ensureProfileCleanup(JSONObject response)throws Exception{
         if(profileTarget()==null)return;
-        JSONObject proof=checkedProfileCleanup(response,profileTarget(),generation,displayId,profileLaunchAttempted);
+        JSONObject proof=checkedProfileCleanup(response,profileTarget(),publicOwnGroupScope,generation,displayId,profileLaunchAttempted);
         if(!displayAbsent(context,displayId,displayName))throw new IOException("profile display absence is not established");
         proof.put("display_absence_observed",true);profileCleanupEvidence=proof;
     }
@@ -906,13 +913,17 @@ final class BackgroundSession {
         }
         return new JSONObject(proof.toString());
     }
-    private static JSONObject checkedProfileCleanup(JSONObject response,ProfileTarget target,String generation,int display,boolean launched)throws Exception{
+    private static JSONObject checkedProfileCleanup(JSONObject response,ProfileTarget target,PublicOwnGroupPolicy.Scope publicScope,
+            String generation,int display,boolean launched)throws Exception{
         if(response==null||!Boolean.TRUE.equals(response.get("profile_cleanup_known"))
                 ||!target.same(ProfileTarget.fromWire(response.getString("profile_target_wire"))))
             throw new IOException("profile cleanup missing actual broker scope");
         JSONObject proof=response.getJSONObject("profile_cleanup");
-        requireProfileFields(proof,"schema","generation","display_id","target_sha256","user_id","user_serial","full_uid",
+        if(publicScope==null)requireProfileFields(proof,"schema","generation","display_id","target_sha256","user_id","user_serial","full_uid",
                 "cleanup_known","live_tasks_absent","recents_tasks_absent","foreign_tasks_present","identity_unknown","owned_tasks");
+        else requireProfileFields(proof,"schema","generation","display_id","target_sha256","user_id","user_serial","full_uid",
+                "cleanup_known","live_tasks_absent","recents_tasks_absent","foreign_tasks_present","identity_unknown","owned_tasks",
+                "public_foreign_recent_history","recents_absence_scope");
         if(!"hepta.profile-task-cleanup.v1".equals(proof.getString("schema"))
                 ||!generation.equals(proof.getString("generation"))||display!=strictInt(proof,"display_id")
                 ||!target.sha256.equals(proof.getString("target_sha256"))||target.profile.userId!=strictInt(proof,"user_id")
@@ -924,7 +935,7 @@ final class BackgroundSession {
             if(!Boolean.FALSE.equals(proof.get(key)))throw new IOException("profile cleanup identity unknown");
         JSONArray tasks=proof.getJSONArray("owned_tasks");
         if(tasks.length()>32||(launched&&tasks.length()==0))throw new IOException("profile owned task cleanup incomplete");
-        Set<Integer> ids=new java.util.HashSet<Integer>();Set<String> tokens=new java.util.HashSet<String>();
+        Set<Integer> ids=new java.util.HashSet<Integer>(),ownedIds=new java.util.HashSet<Integer>();Set<String> tokens=new java.util.HashSet<String>();
         for(int i=0;i<tasks.length();i++){
             JSONObject task=tasks.getJSONObject(i);
             requireProfileFields(task,"task_id","parent_task_id","task_token_id","user_id","user_serial","full_uid","live_absent","recents_absent");
@@ -934,8 +945,56 @@ final class BackgroundSession {
                     ||target.profile.userId!=strictInt(task,"user_id")||target.profile.serial!=strictLong(task,"user_serial")
                     ||target.fullUid!=strictInt(task,"full_uid")||!Boolean.TRUE.equals(task.get("live_absent"))
                     ||!Boolean.TRUE.equals(task.get("recents_absent")))throw new IOException("profile leaf cleanup differs");
+            ownedIds.add(id);ownedIds.add(parent);
         }
+        if(publicScope!=null)checkedPublicProfileHistory(response,proof,publicScope,target,generation,display,ownedIds);
         return new JSONObject(proof.toString());
+    }
+    /** Consume only the public broker's terminal custody projection. Serialized
+     * task IDs do not become removal authority or an independent Binder census.
+     * A refused business operation may still carry a confirmed RELEASED cleanup. */
+    private static void checkedPublicProfileHistory(JSONObject response,JSONObject proof,PublicOwnGroupPolicy.Scope scope,
+            ProfileTarget target,String generation,int display,Set<Integer> ownedIds)throws Exception{
+        if(target.profile.userId!=10||target.profile.parentUserId!=0||!ProfileTarget.CTRIP.equals(target.packageName)
+                ||scope.targetUserId!=target.profile.userId||!scope.targetSha256.equals(target.sha256)
+                ||!scope.generation.equals(generation)||strictInt(response,"version")!=BrokerProtocol.PUBLIC_OWN_GROUP_PROFILE_VERSION
+                ||!generation.equals(response.getString("generation"))||display!=strictInt(response,"display_id")
+                ||!"RELEASED".equals(response.getString("state"))||!scope.sha256.equals(response.getString("display_scope_sha256"))
+                ||!Boolean.TRUE.equals(response.get("public_scope_admission_retired"))
+                ||!Boolean.TRUE.equals(response.get("public_scope_closing"))
+                ||!Boolean.FALSE.equals(response.get("profile_custody_retained"))
+                ||!"owned_target_only_with_foreign_history_preserved".equals(proof.getString("recents_absence_scope")))
+            throw new IOException("public profile cleanup scope differs");
+        JSONObject history=proof.getJSONObject("public_foreign_recent_history");
+        requireProfileFields(history,"schema","target_sha256","foreign_dormant_history_preserved","history_refusal_latched",
+                "history_refusal_reason","baseline_elapsed_ms","current_elapsed_ms","baseline_raw_sha256","current_raw_sha256",
+                "nonowned_history_sha256","baseline_task_ids","owned_task_ids","owned_target_absent","serialized_task_ids_grant_authority");
+        if(!"hepta.public-profile-history-custody.v1".equals(history.getString("schema"))
+                ||!target.sha256.equals(history.getString("target_sha256"))
+                ||!Boolean.TRUE.equals(history.get("foreign_dormant_history_preserved"))
+                ||!Boolean.FALSE.equals(history.get("history_refusal_latched"))||history.get("history_refusal_reason")!=JSONObject.NULL
+                ||!Boolean.TRUE.equals(history.get("owned_target_absent"))
+                ||!Boolean.FALSE.equals(history.get("serialized_task_ids_grant_authority")))
+            throw new IOException("public profile preserved history is unknown");
+        long before=strictLong(history,"baseline_elapsed_ms"),after=strictLong(history,"current_elapsed_ms");
+        if(before<scope.createdElapsedMs||after<before||after>SystemClock.elapsedRealtime())
+            throw new IOException("public profile history clock differs");
+        for(String key:new String[]{"baseline_raw_sha256","current_raw_sha256","nonowned_history_sha256"})
+            if(!history.getString(key).matches("[0-9a-f]{64}"))throw new IOException("public profile history digest differs");
+        Set<Integer> baseline=checkedProfileTaskIds(history.getJSONArray("baseline_task_ids"));
+        Set<Integer> retained=checkedProfileTaskIds(history.getJSONArray("owned_task_ids"));
+        if(!retained.equals(ownedIds)||!Collections.disjoint(baseline,retained))
+            throw new IOException("public profile history task binding differs");
+    }
+    private static Set<Integer> checkedProfileTaskIds(JSONArray values)throws Exception{
+        Set<Integer> ids=new java.util.HashSet<Integer>();
+        for(int i=0;i<values.length();i++){
+            Object raw=values.get(i);
+            if(!(raw instanceof Integer)&&!(raw instanceof Long))throw new IOException("public profile task id type differs");
+            long id=((Number)raw).longValue();
+            if(id<=0||id>Integer.MAX_VALUE||!ids.add((int)id))throw new IOException("public profile task id differs");
+        }
+        return ids;
     }
     private static void requireProfileFields(JSONObject value,String... names)throws Exception{
         Set<String> expected=new TreeSet<String>(java.util.Arrays.asList(names)),actual=new TreeSet<String>();
@@ -1020,8 +1079,9 @@ final class BackgroundSession {
         if(!isUuid(generation)||!("hepta-bg-"+generation).equals(socket)||!socket.equals(name))throw new IOException("旧后台租约身份无效");
         int id=old.getInt("display_id");long expiry=old.getLong("expires_elapsed_ms");
         ProfileTarget target=journalProfileTarget(old);PublicOwnGroupPolicy.Scope publicScope=journalPublicScope(old);
-        if(publicScope!=null&&target!=null&&target.profile.userId==10&&prelaunchCheck!=null&&id==-1
-                &&Boolean.FALSE.equals(old.get("profile_launch_attempted"))&&"CLEANUP_UNKNOWN".equals(old.getString("state"))
+        if(publicScope!=null&&target!=null&&target.profile.userId==10&&prelaunchCheck!=null
+                &&(id==-1&&Boolean.FALSE.equals(old.get("profile_launch_attempted"))
+                    ||id>1&&Boolean.TRUE.equals(old.get("profile_launch_attempted")))&&"CLEANUP_UNKNOWN".equals(old.getString("state"))
                 &&readBootCount(context)==old.getInt("boot_count")&&expiry<Long.MAX_VALUE-2000
                 &&SystemClock.elapsedRealtime()>expiry+2000){
             // The normal UI epoch, serial recovery writer and drained service exclude Start/close.
@@ -1032,7 +1092,7 @@ final class BackgroundSession {
             prelaunchCheck.check();root.unchanged(context);receipt.requireOriginals(true);originalRead.unchangedPath();
             byte[] current=MobiMindPrivateFiles.read(path,16384,true).bytes;
             if(!java.util.Arrays.equals(originalJournal,current)||!receipt.request.journalSha256.equals(HeptaAccessibilityService.sha(current))
-                    ||!displayAbsent(context,-1,name))throw new IOException("公共恢复期间原租约或显示状态发生变化");
+                    ||receipt.request.displayId!=id||!displayAbsent(context,id,name))throw new IOException("公共恢复期间原租约或显示状态发生变化");
             receipt.request.requireFence(SystemClock.elapsedRealtime(),readBootCount(context));
             prelaunchCheck.check();root.unchanged(context);originalRead.unchangedPath();
             // Commit only the background lease. All original failure files and independent leases remain.
@@ -1050,7 +1110,7 @@ final class BackgroundSession {
         try{response=exchange(socket,generation,closeRequest,4000);
             released=response.getBoolean("ok")&&"RELEASED".equals(response.getString("state"));
             if(response.getInt("display_id")>0)id=response.getInt("display_id");
-            if(released&&target!=null)profileCleanup=checkedProfileCleanup(response,target,generation,id,old.getBoolean("profile_launch_attempted"));
+            if(released&&target!=null)profileCleanup=checkedProfileCleanup(response,target,publicScope,generation,id,old.getBoolean("profile_launch_attempted"));
             if(released&&journalRequiresPersonalNotes(old,publicScope))
                 checkedPersonalNotesCleanup(response,publicScope,generation,id);
         }catch(ConnectionUnavailable absent){connectionUnavailable=true;/* No fallback for an invalid/authentication-failed response. */}

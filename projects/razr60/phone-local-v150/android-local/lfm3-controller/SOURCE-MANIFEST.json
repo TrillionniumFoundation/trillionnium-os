@@ -1,18 +1,18 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "50b6ca4b3d9f654d989dfaccdb27bcbe6c315e91",
-  "base_manifest_sha256": "977f97886ff2b57e3c78bb0d5ce9534279c94214e7d2edb8dcf164270926481b",
-  "candidate_status": "android_icu_regression_fixture_scope_candidate_not_deployed",
+  "base_head": "a4a734fbfe94310b811523945bd91714da56526b",
+  "base_manifest_sha256": "326db9c72689f88d237f2c24377991aad4ea4cb77762be573f07458515a4dd67",
+  "candidate_status": "public_profile_cleanup_and_postlaunch_recovery_candidate_not_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 183,
   "production_build_inputs_count": 355,
-  "production_input_map_sha256": "86338a86c84305746c9f04aa1d422e57a4dd2ed1534c8b731c7b09ab587ad759",
-  "complete_source_files": 2189,
+  "production_input_map_sha256": "bdf6a174e00140a157e7732dd9116fde1e74b49c6752a4b611c3b9d5fe0dfa87",
+  "complete_source_files": 2194,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Scope Android ICU regression fixtures to exact intent/baseIntent lines and raise strict expected cases/assertions to 26/40; all 355 production inputs and 183 Java sources remain byte-identical; no main-display fallback",
+  "scope": "Consume public profile cleanup with exact scope-bound history proof; recover a retired postlaunch public task through fresh absence; retain first root-activity refusal diagnostics without relaxing display or task ownership checks",
   "files": [
     {
       "path": ".gitignore",
@@ -6156,8 +6156,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "bytes": 93723,
-      "sha256": "0725eb897e34e5db55b861bf4960163a3037787f1a00512d615a7cb2ac26e62d"
+      "bytes": 94057,
+      "sha256": "9087b73bc8dfee4a6cbba5b203b363ba076e6e4f24a928988c098bcf5b64fd93"
     },
     {
       "path": "src/org/trillionnium/hepta/background/BackgroundOwnedSingleTask.java",
@@ -6221,8 +6221,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
-      "bytes": 37843,
-      "sha256": "efa0a4818eeb3680d33669a7efa312a7a89a3e978675233f9f713417a4b6f113"
+      "bytes": 43317,
+      "sha256": "7ce9eb4acce8221a4f97b96e840c522e7c0cd1f8a394bca88f8dea2e8308286b"
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfilePackages.java",
@@ -6331,8 +6331,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicProfileAbsenceRecovery.java",
-      "bytes": 29158,
-      "sha256": "25fed32cad3a5682ff97a27c9e574635de376a5cb2deaaa4e50367b0b0ef6fa6"
+      "bytes": 45456,
+      "sha256": "0720609d39865d45e1e2dc7f429b9640c99dd9392bb4673d630ab1725db9a138"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicProfileRecentHistory.java",
@@ -6341,8 +6341,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicProfileRecoveryMain.java",
-      "bytes": 14587,
-      "sha256": "8930a8b2ecee55f0bd03abd57caccfa8ad1c22f9ffea2d8c42758fe8ed7e325d"
+      "bytes": 15536,
+      "sha256": "ba635572802c4f293a18b30d98aaa623232a783c070a2aa903afe923b5901d97"
     },
     {
       "path": "src/org/trillionnium/hepta/background/RecoveryControllerIdentity.java",
@@ -6386,8 +6386,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
-      "bytes": 95718,
-      "sha256": "589af601e243e41328ca0d5b727bcc35f4ed53ab0b1ce0998d8aa63e9cf8a4cb"
+      "bytes": 101263,
+      "sha256": "bd7467c31da9a99781b2dfd64f7bdfec44926881184c44a8306c1730a8506e71"
     },
     {
       "path": "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
@@ -6746,8 +6746,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/PublicProfileRecoveryClient.java",
-      "bytes": 17695,
-      "sha256": "8bef0ad5e3611fc8323ab617cd14ef14bd335eef27dc267eab3c60a6a3760f56"
+      "bytes": 18666,
+      "sha256": "7bf6fb32c46456a1501b9d40b7b609c8c5f4adacd101ab723ee24754ba82aa54"
     },
     {
       "path": "src/org/trillionnium/hepta/local/QualificationScope.java",
@@ -8891,8 +8891,8 @@
     },
     {
       "path": "tests/profile-broker/ProfileBrokerHostTest.java",
-      "bytes": 27862,
-      "sha256": "5880a651260aa18566364f4dbca427c5adbba8048eee7f1b8a3d55f4a6f69e04"
+      "bytes": 35268,
+      "sha256": "126cf01db895a4632f907bdb4b16cfed1e4f299686892afa221b366cb181f74e"
     },
     {
       "path": "tests/profile-broker/run_profile_broker_host.py",
@@ -9255,6 +9255,16 @@
       "sha256": "3039261e439cbf070166ac3432f50fb451f2801ab3203252fa45e524464841b1"
     },
     {
+      "path": "tests/public-profile-absence/PublicProfilePostlaunchAbsenceHostTest.java",
+      "bytes": 14619,
+      "sha256": "69d402994634c107b21fa0d5f2c9e26c47906a83aa4cbd3962a65548bf20c0df"
+    },
+    {
+      "path": "tests/public-profile-absence/PublicProfilePostlaunchRecoveryClientHostTest.java",
+      "bytes": 18250,
+      "sha256": "7a654d184d0bcf2ebf81da8661d68eb0362d402e9438df67ce871d49832106e9"
+    },
+    {
       "path": "tests/public-profile-absence/PublicProfileRecoveryClientHostTest.java",
       "bytes": 18760,
       "sha256": "629f5fe465a74c667cbd48c1e1eff5d110ede5fac807b9adae0bd0cda5c7d779"
@@ -9268,6 +9278,21 @@
       "path": "tests/public-profile-absence/run_host.py",
       "bytes": 12684,
       "sha256": "a6e7d32af2cc66de02d89a751f80d4768c598ab783cc0d37797de7d5cfb2d2c5"
+    },
+    {
+      "path": "tests/public-profile-absence/run_postlaunch_host.py",
+      "bytes": 7848,
+      "sha256": "eb51d8e00cef122b40aa1f2217b899ec9a43652384f702193b9f0244da4b8ce5"
+    },
+    {
+      "path": "tests/public-profile-cleanup/PublicProfileCleanupHostTest.java",
+      "bytes": 22279,
+      "sha256": "06538000c0deebc4d39be8317974eff6cd1abfc9e3493ff10d3ef2912882f546"
+    },
+    {
+      "path": "tests/public-profile-cleanup/run_host.py",
+      "bytes": 8119,
+      "sha256": "4aaaabfb5bb41420c8eeb6d05b1ad0f65840ab13b7bb8154d4f2533814374f74"
     },
     {
       "path": "tests/public-profile-history/PublicProfileHistoryHostTest.java",

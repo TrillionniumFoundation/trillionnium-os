@@ -1318,6 +1318,8 @@ public final class BackgroundDisplayBroker {
                     .put("profile_cleanup",new JSONObject(cleanup))
                     .put("profile_last_leaf_validation",profileOwnedTask==null?JSONObject.NULL:
                             new JSONObject(profileOwnedTask.lastLeafValidation()))
+                    .put("profile_first_root_refusal",profileOwnedTask==null?JSONObject.NULL:
+                            new JSONObject(profileOwnedTask.firstRootRefusal()))
                     .put("profile_personal_task_audit",profilePersonalAudit==null?JSONObject.NULL:new JSONObject(profilePersonalAudit))
                     .put("profile_cleanup_known",Boolean.TRUE.equals(cleanup.get("cleanup_known")))
                     .put("profile_custody_retained",closing.get()&&profileCustody.retain());
@@ -1342,6 +1344,8 @@ public final class BackgroundDisplayBroker {
                     profileCleanupReadback==null?emptyProfileCleanup(false):profileCleanupReadback))
             .put("profile_last_leaf_validation",profileOwnedTask==null?JSONObject.NULL:
                     new JSONObject(profileOwnedTask.lastLeafValidation()))
+            .put("profile_first_root_refusal",profileOwnedTask==null?JSONObject.NULL:
+                    new JSONObject(profileOwnedTask.firstRootRefusal()))
             .put("profile_custody_retained",config.profileTarget!=null&&profileCustody.retain());
             if(config.publicOwnGroupScope!=null)terminal.put("display_scope_sha256",config.publicOwnGroupScope.sha256)
                     .put("public_scope_admission_retired",publicAdmissionRetired.get()).put("public_surface_detach",publicDetachEvidence());

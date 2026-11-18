@@ -51,11 +51,14 @@ public final class ProfileBrokerHostTest {
         boolean wrongIntent,wrongBase,wrongReal,wrongOrig;
         boolean removeThrows,keepRecents,deleteThrows,delayedDelete,pendingDelete,cancel;
         boolean initialProfileLive,initialProfileRecent,personalAdded,personalClosed;
+        boolean diagnosticClockThrows;
+        String rootBaseOverride,rootTopOverride;
+        int rootTopUidOverride=Integer.MIN_VALUE,rootReads,childReads;
         Object rootToken=new Object(),leafToken=new Object(),rootCookie,launchCookie;
         final List<String> mutations=new ArrayList<String>();long now=1000;int leafId=300;
         @Override public ProfileTarget recheck(boolean ready){return actual;}
         @Override public void guard()throws Exception{if(cancel)throw new ProfileTaskPolicy.Refusal("CANCELLED");}
-        @Override public long now(){return now;}
+        @Override public long now(){if(diagnosticClockThrows)throw new IllegalStateException("diagnostic clock unavailable");return now;}
         @Override public Object newCookie(){return new Object();}
         @Override public ProfileTaskPolicy.Snapshot snapshot()throws Exception{
             List<ProfileTaskPolicy.Root> rows=new ArrayList<ProfileTaskPolicy.Root>();
@@ -76,15 +79,18 @@ public final class ProfileBrokerHostTest {
             if(initialProfileRecent)return ProfileTaskPolicy.Recents.parse(recent(100,0,10367,401,10,1010367));
             return ProfileTaskPolicy.Recents.parse(recentsApp?recent(100,0,10367,leafId,10,1010367):recent(100,0,10367));
         }
-        BackgroundOwnedSingleTask.Task rootRow(){return new BackgroundOwnedSingleTask.Task(200,7,0,-1,0,app?1010367:-1,
+        BackgroundOwnedSingleTask.Task rootRow(){return new BackgroundOwnedSingleTask.Task(200,7,0,-1,0,
+                app?(rootTopUidOverride==Integer.MIN_VALUE?1010367:rootTopUidOverride):-1,
                 app?1:0,rootToken,missingRootCookie?Collections.emptyList():Collections.singletonList(rootCookie),
-                null,app?SPLASH:null,app?HOME:null,null,null,app,app);}
+                null,app?(rootBaseOverride==null?SPLASH:rootBaseOverride):null,
+                app?(rootTopOverride==null?HOME:rootTopOverride):null,null,null,app,app);}
         BackgroundOwnedSingleTask.Task leafRow(){return new BackgroundOwnedSingleTask.Task(leafId,wrongDisplay?8:7,wrongUser?0:10,wrongParent?900:200,
                 wrongUid?10367:1010367,wrongUid||wrongTopUid?10367:1010367,1,leafToken,
                 wrongCookie?Collections.emptyList():Collections.singletonList(launchCookie),wrongIntent?FOREIGN:SPLASH,
                 wrongBase?FOREIGN:SPLASH,foreignTop?FOREIGN:HOME,wrongReal?FOREIGN:SPLASH,wrongOrig?FOREIGN:null,true,true);}
-        @Override public List<BackgroundOwnedSingleTask.Task> roots(){return root?Collections.singletonList(rootRow()):Collections.emptyList();}
+        @Override public List<BackgroundOwnedSingleTask.Task> roots(){rootReads++;return root?Collections.singletonList(rootRow()):Collections.emptyList();}
         @Override public List<BackgroundOwnedSingleTask.Task> children(Object token){
+            childReads++;
             yes(rootToken.equals(token),"wrong root token query");
             if(!app)return Collections.emptyList();
             if(!extraChild)return Collections.singletonList(leafRow());
@@ -354,6 +360,72 @@ public final class ProfileBrokerHostTest {
             try{ProfileTaskPolicy.Recents.parse(recent(100,0,10367).replace("    Activities=[]\n",""));
                 throw new AssertionError("truncated recents accepted");}
             catch(BackgroundOwnedSingleTask.Refusal good){yes("RECENTS_TASK_DETAIL_INCOMPLETE".equals(good.code),good.code);}
+        });
+        test("valid profile aggregate root has no refusal diagnostic",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);
+            yes(p.firstRootRefusal().isEmpty(),"valid user0 container falsely diagnosed");
+            yes(f.rootRow().user==0&&f.rootRow().topUid==1010367,"synthetic cross-user aggregate fixture differs");
+        });
+        for(String changed:new String[]{"base","top","system_uid","personal_uid"})test("root refusal preserves exact "+changed+" without new reads",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);Map<String,Object> prior=p.lastLeafValidation();
+            if(changed.equals("base"))f.rootBaseOverride="com.example.foreign/com.example.foreign.Main";
+            if(changed.equals("top"))f.rootTopOverride="com.example.foreign/com.example.foreign.Main";
+            if(changed.equals("system_uid"))f.rootTopUidOverride=1000;
+            if(changed.equals("personal_uid"))f.rootTopUidOverride=10367;
+            int roots=f.rootReads,children=f.childReads;List<String> effects=new ArrayList<String>(f.mutations);
+            reject("PROFILE_ROOT_FOREIGN_ACTIVITY",()->p.observe());
+            Map<String,Object> d=p.firstRootRefusal();Map<?,?> r=(Map<?,?>)d.get("root"),checks=(Map<?,?>)d.get("checks");
+            yes("root_activity".equals(d.get("phase"))&&Boolean.TRUE.equals(d.get("diagnostic_capture_complete")),"first refusal path lost");
+            yes(((Number)r.get("user_id")).intValue()==0&&((Number)r.get("effective_uid")).intValue()==0,"container identity changed");
+            yes(Boolean.TRUE.equals(r.get("actual_token_equal_to_retained"))&&Boolean.TRUE.equals(r.get("root_cookie_present")),"actual root Binder/cookie relation missing");
+            yes(Boolean.FALSE.equals(d.get("candidate_read_in_this_path"))&&Boolean.FALSE.equals(d.get("retained_leaf_is_current_sample")),"stale leaf relabeled current");
+            yes(d.get("prior_leaf_validation")==prior,"prior leaf evidence replaced");
+            String key=changed.equals("base")?"root_base_package_or_null":changed.equals("top")?"root_top_package_or_null":"root_top_uid_target_or_absent";
+            yes(Boolean.FALSE.equals(checks.get(key)),"failed root predicate missing");
+            if(changed.endsWith("uid"))yes(((Number)r.get("top_activity_info_uid")).intValue()==f.rootTopUidOverride,"foreign root UID normalized away");
+            yes(f.rootReads==roots+1&&f.childReads==children&&effects.equals(f.mutations),"diagnostic queried/mutated framework");
+            yes(Boolean.FALSE.equals(d.get("serialized_evidence_is_authority"))&&Boolean.FALSE.equals(d.get("allows_input_or_model_resumption")),"diagnostic became authority");
+        });
+        test("permission root and ordinary leaf mismatch is diagnosed and still refused",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);f.rootTopOverride=FOREIGN;f.rootTopUidOverride=1010335;
+            reject("PROFILE_ROOT_FOREIGN_ACTIVITY",()->p.observe());
+            Map<String,Object> d=p.firstRootRefusal();Map<?,?> c=(Map<?,?>)d.get("candidate"),checks=(Map<?,?>)d.get("checks");
+            yes("permission_root_without_verified_leaf".equals(d.get("phase"))&&Boolean.TRUE.equals(d.get("candidate_read_in_this_path")),"permission race path absent");
+            yes(((Number)c.get("top_activity_info_uid")).intValue()==1010367&&Boolean.FALSE.equals(checks.get("candidate_top_is_permission_component")),"observed ordinary child rewritten");
+            yes(f.mutations.equals(Arrays.asList("create","bind")),"refusal caused a task mutation");
+        });
+        test("permission pair wrong profile uid remains rejected with original fields",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);f.rootTopOverride=FOREIGN;f.rootTopUidOverride=1010335;
+            f.foreignTop=true;f.wrongTopUid=true;
+            reject("PROFILE_ROOT_FOREIGN_ACTIVITY",()->p.observe());
+            Map<String,Object> d=p.firstRootRefusal();Map<?,?> c=(Map<?,?>)d.get("candidate"),checks=(Map<?,?>)d.get("checks");
+            yes("permission_pair".equals(d.get("phase")),"pair UID refusal indistinguishable");
+            yes(((Number)c.get("top_activity_info_uid")).intValue()==10367,"candidate UID relabeled target user");
+            yes(Boolean.FALSE.equals(checks.get("root_and_candidate_top_uid_equal"))&&Boolean.FALSE.equals(checks.get("candidate_top_uid_is_target_user")),"pair predicate mismatch lost");
+        });
+        test("first refusal survives successful later observation and owned retirement",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);f.rootTopUidOverride=1000;
+            reject("PROFILE_ROOT_FOREIGN_ACTIVITY",()->p.observe());Map<String,Object> first=p.firstRootRefusal();
+            f.rootTopUidOverride=10367;f.now+=1;reject("PROFILE_ROOT_FOREIGN_ACTIVITY",()->p.observe());
+            yes(first==p.firstRootRefusal(),"second refusal overwrote first");
+            f.rootTopUidOverride=Integer.MIN_VALUE;f.now+=1;yes(p.observe(),"original valid ownership changed");p.retire(2400);
+            yes(p.cleanupKnown()&&first==p.firstRootRefusal(),"cleanup erased refusal or changed original ownership");
+            yes(((Number)((Map<?,?>)first.get("root")).get("top_activity_info_uid")).intValue()==1000,"retirement overwrote failed root UID");
+            try{first.put("allows_input_or_model_resumption",true);throw new AssertionError("mutable diagnostic");}catch(UnsupportedOperationException expected){assertions++;}
+        });
+        test("diagnostic clock failure preserves original fail-closed error",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);f.rootTopUidOverride=1000;f.diagnosticClockThrows=true;
+            reject("PROFILE_ROOT_FOREIGN_ACTIVITY",()->p.observe());Map<String,Object> first=p.firstRootRefusal();
+            yes(Boolean.FALSE.equals(first.get("diagnostic_capture_complete")),"missing evidence marked complete");
+            yes("java.lang.IllegalStateException".equals(first.get("diagnostic_failure_type")),"capture failure lost");
+            f.diagnosticClockThrows=false;f.rootTopUidOverride=Integer.MIN_VALUE;p.retire(2400);
+            yes(p.cleanupKnown()&&first==p.firstRootRefusal(),"diagnostic failure obstructed cleanup");
+        });
+        test("diagnostic component cap is explicit and does not authorize foreign root",()->{
+            Fake f=new Fake();ProfileOwnedTask p=active(f);char[] longName=new char[900];Arrays.fill(longName,'x');f.rootBaseOverride=new String(longName);
+            reject("PROFILE_ROOT_FOREIGN_ACTIVITY",()->p.observe());
+            Map<?,?> r=(Map<?,?>)p.firstRootRefusal().get("root"),components=(Map<?,?>)r.get("components"),base=(Map<?,?>)components.get("base");
+            yes(Boolean.TRUE.equals(base.get("truncated"))&&((Number)base.get("utf16_length")).intValue()==900&&((String)base.get("value")).length()==512,"oversized component silently truncated");
         });
         System.out.println("{\"schema\":\"hepta.profile-broker-host-tests.v1\",\"passed\":true,\"cases\":"+cases.size()
                 +",\"assertions\":"+assertions+",\"framework_fixtures_synthetic\":true,\"phone_contacted\":false}");
