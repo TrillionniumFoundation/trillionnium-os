@@ -8976,8 +8976,8 @@
     },
     {
       "path": "tests/profile-permission-transient/run_host.py",
-      "bytes": 9063,
-      "sha256": "7007391b867cf517366e1b5f82a228b3e490c760da3a13eeb155d929b67fbdae"
+      "bytes": 10338,
+      "sha256": "d991325541486b0cdae664cfa8d46817af6a41d82bc536f49c64c1564a21a37a"
     },
     {
       "path": "tests/profile-permission-ui/ProfilePermissionUiLifecycleHostTest.java",
