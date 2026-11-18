@@ -16,6 +16,10 @@ final class NativeActionBridgeHost {
     static final long MAX_OBSERVATION_AGE_MS=90000;
     static final String DISPLAY_SERVICE="display";
     static final class SystemClock {static long now=1000;static long elapsedRealtime(){return now;}}
+    static final class Looper {
+        static final Thread MAIN=Thread.currentThread();
+        static Thread myLooper(){return Thread.currentThread();}static Thread getMainLooper(){return MAIN;}
+    }
     static final class Rect {
         int left,top,right,bottom;
         Rect(){}Rect(int l,int t,int r,int b){left=l;top=t;right=r;bottom=b;}Rect(Rect b){this(b.left,b.top,b.right,b.bottom);}
@@ -92,9 +96,26 @@ final class NativeActionBridgeHost {
         }
     }
     static final class BackgroundSession {
+        final NativeActionBridgeHost fixtureOwner;
         String taskId,generation,ownerSha256;int display=7;boolean active=true;
         org.trillionnium.hepta.local.BackgroundSession.Selection selection;
-        int displayId(){return display;}void requireActive(){if(!active)throw new StaleObservation("fake lease retired");}
+        BackgroundSession(NativeActionBridgeHost owner){fixtureOwner=owner;}
+        int displayId(){return display;}
+        // These existing user0 action cases model only the legacy lock policy.
+        // No synthetic RPC or display-scope proof may admit an independent mode.
+        private void requireLegacyOnly(){
+            if(selection==null||selection.profileTarget!=null||selection.independentProfileDisplay||selection.independentPersonalDisplay)
+                throw new AssertionError("legacy action fixture cannot confirm a profile or independent display scope");
+        }
+        void requireActive(){
+            requireLegacyOnly();
+            if(!active||fixtureOwner.background!=this||!fixtureOwner.owned||fixtureOwner.isLocked||display<=1)
+                throw new StaleObservation("fake legacy lease retired or locked");
+        }
+        void requireAdmissionActive(){requireActive();}
+        void requirePolicyBeforeEffect(Cancellation cancel,long deadline){
+            requireLegacyOnly(); // Actual legacy Session returns without a policy RPC.
+        }
         ProfileTarget profileTarget(){return selection.profileTarget;}
         void requireHistoricalProfileWindow(WindowOwnership proof,int window,int task,long captured){
             throw new AssertionError("legacy action fixture has no historical profile RPC proof");
@@ -251,7 +272,7 @@ final class NativeActionBridgeHost {
             owner=NativeActionSnapshotCheck.SEARCH_ICON.equals(p)?"在小米商城查一下小米AX3000T的售价":NativeAppProviderHostTest.OWNER;
             BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,raw.pkg,Collections.singleton(raw.pkg));
             selection=new org.trillionnium.hepta.local.BackgroundSession.Selection(target);authorization=TaskAuthorization.parse(owner).forExecutionSelection(selection);gate=authorization.bind(task);
-            background=new BackgroundSession();background.taskId=task;background.generation=NativeAppProviderHostTest.GENERATION;background.ownerSha256=target.ownerSha256;background.selection=selection;
+            background=new BackgroundSession(NativeActionBridgeHost.this);background.taskId=task;background.generation=NativeAppProviderHostTest.GENERATION;background.ownerSha256=target.ownerSha256;background.selection=selection;
             taskAuthorization=gate;windowRows.add(new AccessibilityWindowInfo());SystemClock.now=1000;
             NativeAppEvidence.Installed installed=new NativeAppEvidence.Installed(raw.pkg,NativeActionSnapshotCheck.SEARCH_ICON.equals(p)?10485:10367,
                     NativeActionSnapshotCheck.SEARCH_ICON.equals(p)?20261010L:1779L,

@@ -402,7 +402,7 @@ public final class LocalTaskController implements AutoCloseable {
                 // The final UI selection was already bound by original owner
                 // authorization above. Failure in this branch is terminal: there
                 // is no retry using the legacy or physical display policy.
-                background=backgroundSelection.independentProfileDisplay
+                background=backgroundSelection.independentProfileDisplay||backgroundSelection.independentPersonalDisplay
                         ?BackgroundSession.experimentalPublicOwnGroup(service,taskId,instruction,backgroundSelection,filesRoot)
                         :new BackgroundSession(service,taskId,instruction,backgroundSelection,filesRoot);
                 service.bindBackgroundSession(taskId,background);

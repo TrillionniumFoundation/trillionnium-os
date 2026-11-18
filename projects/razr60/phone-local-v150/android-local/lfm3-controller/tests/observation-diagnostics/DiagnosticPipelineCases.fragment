@@ -6,7 +6,7 @@
     }
     static ObserverPipelineHost nativeFixture()throws Exception{
         ObserverPipelineHost f=new ObserverPipelineHost();f.lease=DiagnosticChecks.TASK;
-        BackgroundSession bg=new BackgroundSession(9);bg.taskId=f.lease;bg.ownerSha256=DiagnosticChecks.OWNER;bg.generation=DiagnosticChecks.GENERATION;
+        BackgroundSession bg=new BackgroundSession(9);bg.ownerSha256=DiagnosticChecks.OWNER;bg.generation=DiagnosticChecks.GENERATION;
         BackgroundTaskTarget t=new BackgroundTaskTarget();t.route=BackgroundTaskTarget.NATIVE_APP;t.explicitSelection=true;
         t.ownerSha256=bg.ownerSha256;t.packageName=DiagnosticChecks.APP;t.nativeGoal=new NativeAppGoal();
         t.nativeGoal.ownerSha256=t.ownerSha256;t.nativeGoal.packageName=t.packageName;
@@ -36,7 +36,15 @@
                 ObservationDiagnostics d=f.observationDiagnostic(r);DiagnosticChecks.check(d!=null&&d.sequence==i&&ids.add(d.requestId),"bounded unique request "+i);
             }
             DiagnosticChecks.check(f.observationDiagnostic(r)==null,"97th diagnostic refused");
-            f.lease="33333333333333333333333333333333";f.taskBackground.taskId=f.lease;r=new ObservationRequest(f.lease,f.directory,callback,()->false,11000,f.taskBackground);
+            // A new task receives a new constructor-bound legacy lease. The
+            // captured prior lease/task ID remains immutable and cannot revive.
+            BackgroundSession prior=f.taskBackground;prior.closed=true;f.lease="33333333333333333333333333333333";
+            BackgroundSession next=new BackgroundSession(prior.displayId());next.ownerSha256=prior.ownerSha256;next.generation=prior.generation;
+            next.selection.taskTarget=prior.selection.taskTarget;next.selection.initialPackage=prior.selection.initialPackage;
+            next.selection.allowedPackages=prior.selection.allowedPackages;f.taskBackground=next;
+            DiagnosticChecks.check(prior.taskId.equals(DiagnosticChecks.TASK)&&next.taskId.equals(f.lease),"new task preserves prior immutable lease identity");
+            DiagnosticChecks.check(f.observationDiagnostic(r)==null,"prior task request remains retired after replacement");
+            r=new ObservationRequest(f.lease,f.directory,callback,()->false,11000,f.taskBackground);
             DiagnosticChecks.check(f.observationDiagnostic(r).sequence==1,"new task starts separate sequence");f.dispose();
         });
         diag("actual_default_callback_keeps_legacy_non_native_observation",()->{

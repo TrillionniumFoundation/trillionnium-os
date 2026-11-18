@@ -65,12 +65,14 @@ public final class RuntimeConfigUiHostTest {
     private final Widget backgroundPermissionState=new Widget(),openRootManager=new Widget(),prepareBackgroundPermission=new Widget();
     private final Widget backgroundMode=new Widget(),pickBackgroundApps=new Widget(),initialBackgroundApp=new Widget();
     private final Widget independentProfileDisplay=new Widget(); // Legacy mode only; no profile authority.
+    private final Widget independentPersonalDisplay=new Widget(); // Unchecked; this model-state fixture has no personal display choice.
     private final Widget cleanupBackground=new Widget(),acknowledgeInterruption=new Widget(),backgroundChoiceState=new Widget();
     private final Widget startTask=new Widget(),stopTask=new Widget(),runText=new Widget(),taskResult=new Widget();
     private final Widget visualProbeOutput=new Widget(),uiVenusProbeOutput=new Widget();
     private final java.util.Set<String> backgroundPackages=new java.util.TreeSet<String>();
     private String backgroundModePreferenceError,backgroundSelectionPreferenceError,backgroundDisplayPreferenceError;
     private Object selectedProfileTarget(){return null;} // Model-state fixture has no selected managed profile.
+    private boolean personalIndependentTarget(){return false;} // No selected Notes/MiShop target in this model-state fixture.
     private String lastShownProbeId,lastShownVisualProbeId,lastShownUiVenusProbeId;
     private int renderCalls;
     private final Widget taskAuthorizationInfo=null; // This original model-config fixture has no preview pane.

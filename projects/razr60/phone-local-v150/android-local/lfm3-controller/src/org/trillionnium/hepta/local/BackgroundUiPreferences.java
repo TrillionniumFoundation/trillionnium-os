@@ -24,7 +24,8 @@ import java.util.TreeSet;
 final class BackgroundUiPreferences {
     private static final String FILE="background-ui-choice-v1";
     private static final String SCHEMA="hepta.background-ui-choice.v1",PROFILE_SCHEMA="hepta.background-ui-profile-choice.v1";
-    private static final String MODE="enabled",SELECTION="selection",INDEPENDENT_PROFILE_DISPLAY="independent_profile_display";
+    private static final String MODE="enabled",SELECTION="selection",INDEPENDENT_PROFILE_DISPLAY="independent_profile_display",
+            INDEPENDENT_PERSONAL_DISPLAY="independent_personal_display";
     private static final int MAX_BYTES=8192;
 
     static final class Installed {
@@ -81,8 +82,22 @@ final class BackgroundUiPreferences {
         return ((Boolean)value).booleanValue();
     }
     static void saveIndependentProfileDisplay(Context context,boolean enabled){
-        if(!preferences(context).edit().putBoolean(INDEPENDENT_PROFILE_DISPLAY,enabled).commit())
+        SharedPreferences.Editor editor=preferences(context).edit().putBoolean(INDEPENDENT_PROFILE_DISPLAY,enabled);
+        if(enabled)editor.putBoolean(INDEPENDENT_PERSONAL_DISPLAY,false);
+        if(!editor.commit())
             throw new IllegalStateException("independent display choice was not persisted");
+    }
+    static boolean independentPersonalDisplay(Context context){
+        Map<String,?> values=preferences(context).getAll();
+        if(!values.containsKey(INDEPENDENT_PERSONAL_DISPLAY))return false;
+        Object value=values.get(INDEPENDENT_PERSONAL_DISPLAY);
+        if(!(value instanceof Boolean))throw new IllegalStateException("saved personal display choice is malformed");
+        return ((Boolean)value).booleanValue();
+    }
+    static void saveIndependentPersonalDisplay(Context context,boolean enabled){
+        SharedPreferences.Editor editor=preferences(context).edit().putBoolean(INDEPENDENT_PERSONAL_DISPLAY,enabled);
+        if(enabled)editor.putBoolean(INDEPENDENT_PROFILE_DISPLAY,false);
+        if(!editor.commit())throw new IllegalStateException("personal display choice was not persisted");
     }
     static Selection load(Context context)throws Exception{
         Map<String,?> values=preferences(context).getAll();

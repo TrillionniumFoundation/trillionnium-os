@@ -44,7 +44,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             if(accessibilityUiStarted&&!isFinishing()&&!isDestroyed())refresh();
         }
     };
-    private CheckBox backgroundMode,independentProfileDisplay;
+    private CheckBox backgroundMode,independentProfileDisplay,independentPersonalDisplay;
     private String backgroundDisplayPreferenceError;
     private Button pickBackgroundApps,pickProfileTarget,cleanupBackground;
     private boolean profileCatalogueLoading;
@@ -117,6 +117,10 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         independentProfileDisplay=new CheckBox(this);
         independentProfileDisplay.setText("独立后台显示（无锁屏密码设备的隔离资料应用）");
         page.addView(independentProfileDisplay);
+        independentPersonalDisplay=new CheckBox(this);
+        independentPersonalDisplay.setText("个人空间独立后台显示（备忘录、小米商城）");
+        page.addView(independentPersonalDisplay);
+        page.addView(text("需要所选应用没有正在使用或保留的任务。若发现既有任务会停止，不会关闭或搬动它。",12));
         page.addView(text("仅用于设备和所选资料都未设置锁屏密码的情形。每次开始都会核验实际条件；条件不满足时任务停止。",12));
         page.addView(text("资料隔离当前支持携程，需要已配置的专属工作资料。个人空间已有任务会保留。",12));
         backgroundChoiceState=text("",12);page.addView(backgroundChoiceState);
@@ -235,7 +239,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             String owner=taskInput.getText().toString();TaskAuthorization preview=TaskAuthorization.parse(owner);
             if(backgroundMode!=null&&backgroundMode.isChecked()){
                 BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,selectedBackgroundPackage(),backgroundPackages,selectedProfileTarget());
-                preview=preview.forExecutionSelection(new BackgroundSession.Selection(target,selectedIndependentProfileDisplay()));
+                preview=preview.forExecutionSelection(new BackgroundSession.Selection(target,selectedIndependentProfileDisplay(),selectedIndependentPersonalDisplay()));
             }
             taskAuthorizationInfo.setText(preview.summary());
         }
@@ -344,7 +348,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                     throw new IllegalStateException("当前 qualification scope 已启用，后台任务不可启动；原范围保持不变");
                 requireCurrentBackgroundChoice();
                 BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,selectedBackgroundPackage(),backgroundPackages,selectedProfileTarget());
-                selection=new BackgroundSession.Selection(target,selectedIndependentProfileDisplay());
+                selection=new BackgroundSession.Selection(target,selectedIndependentProfileDisplay(),selectedIndependentPersonalDisplay());
                 authorization=originalAuthorization.forExecutionSelection(selection);
                 selection.requireTaskTarget(owner,authorization);
                 if(authorization.requireFindAppBeforeOpen||!authorization.allowedTools.contains("open"))
@@ -383,8 +387,24 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         return selected;
     }
     private void restoreIndependentProfileDisplay(){
-        try{independentProfileDisplay.setChecked(BackgroundUiPreferences.independentProfileDisplay(this));backgroundDisplayPreferenceError=null;}
-        catch(Exception error){independentProfileDisplay.setChecked(false);backgroundDisplayPreferenceError="无法读取后台显示方式，请重新选择。";}
+        try{
+            boolean profile=BackgroundUiPreferences.independentProfileDisplay(this),personal=BackgroundUiPreferences.independentPersonalDisplay(this);
+            if(profile&&personal)throw new IllegalStateException("后台显示方式冲突");
+            independentProfileDisplay.setChecked(profile);independentPersonalDisplay.setChecked(personal);backgroundDisplayPreferenceError=null;
+        }catch(Exception error){independentProfileDisplay.setChecked(false);independentPersonalDisplay.setChecked(false);
+            backgroundDisplayPreferenceError="无法读取后台显示方式，请重新选择。";}
+    }
+    private boolean personalIndependentTarget(){
+        String selected=selectedBackgroundPackage();
+        return selectedProfileTarget()==null&&("com.motorola.stylus".equals(selected)||"com.xiaomi.shop".equals(selected));
+    }
+    private boolean selectedIndependentPersonalDisplay(){
+        if(backgroundDisplayPreferenceError!=null)throw new IllegalStateException(backgroundDisplayPreferenceError);
+        boolean selected=independentPersonalDisplay!=null&&independentPersonalDisplay.isChecked();
+        if(selected!=BackgroundUiPreferences.independentPersonalDisplay(this))throw new IllegalStateException("个人空间后台显示方式已变化，请重新选择");
+        if(selected&&(independentProfileDisplay.isChecked()||!personalIndependentTarget()))
+            throw new IllegalStateException("个人空间独立显示需要明确选择备忘录或小米商城；不会改变资料或迁移任务");
+        return selected;
     }
     private org.trillionnium.hepta.background.ProfileTarget selectedProfileTarget(){
         return rememberedBackgroundSelection==null?null:rememberedBackgroundSelection.profileTarget;
@@ -500,8 +520,21 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             try{
                 boolean selected=independentProfileDisplay.isChecked();
                 if(selected&&selectedProfileTarget()==null)throw new IllegalStateException("请先选择隔离资料中的应用");
-                BackgroundUiPreferences.saveIndependentProfileDisplay(this,selected);backgroundDisplayPreferenceError=null;
+                BackgroundUiPreferences.saveIndependentProfileDisplay(this,selected);restoreIndependentProfileDisplay();
             }catch(Exception error){backgroundDisplayPreferenceError="后台显示方式未保存："+HeptaAccessibilityService.message(error);}
+            refresh();
+        });
+        independentPersonalDisplay.setOnClickListener(view -> {
+            if(!hasWindowFocus()||!independentPersonalDisplay.isShown()||isFinishing()||isDestroyed()
+                    ||tasks.isRunning()||engine.isBusy()||tasks.isBlocked()||tasks.isRecovering()
+                    ||tasks.hasBackgroundLease()||backgroundPermission.blocksOtherWork()){
+                restoreIndependentProfileDisplay();refresh();return;
+            }
+            try{
+                boolean selected=independentPersonalDisplay.isChecked();
+                if(selected&&!personalIndependentTarget())throw new IllegalStateException("请明确选择个人空间的备忘录或小米商城");
+                BackgroundUiPreferences.saveIndependentPersonalDisplay(this,selected);restoreIndependentProfileDisplay();
+            }catch(Exception error){backgroundDisplayPreferenceError="个人空间后台显示方式未保存："+HeptaAccessibilityService.message(error);}
             refresh();
         });
         backgroundMode.setOnClickListener(view -> {
@@ -554,6 +587,9 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         if(backgroundDisplayPreferenceError!=null)return backgroundDisplayPreferenceError;
         if(backgroundMode.isChecked()&&independentProfileDisplay.isChecked()&&selectedProfileTarget()==null)
             return "独立后台显示需要明确选择隔离资料中的应用；个人空间选择保持不变。";
+        if(backgroundMode.isChecked()&&independentPersonalDisplay.isChecked()
+                &&(independentProfileDisplay.isChecked()||!personalIndependentTarget()))
+            return "个人空间独立显示需要选择备忘录或小米商城，不能同时选择隔离资料模式。";
         return null;
     }
     private void refreshBackgroundTaskTarget(){
@@ -690,7 +726,8 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         backgroundPermissionState.setText(backgroundPermission.state());
         backgroundSummary.setText(tasks.isRunning()&&backgroundMode.isChecked()?"正在后台执行":
                 tasks.hasBackgroundLease()?"上次后台空间待清理":
-                backgroundMode.isChecked()?(independentProfileDisplay.isChecked()?"将在所选隔离资料应用的独立后台显示中操作":"将在所选起始应用的后台空间操作")
+                backgroundMode.isChecked()?(independentProfileDisplay.isChecked()?"将在所选隔离资料应用的独立后台显示中操作":
+                        independentPersonalDisplay.isChecked()?"将在所选个人空间应用的新建独立后台显示中操作":"将在所选起始应用的后台空间操作")
                         :"前台模式会操作主屏幕；点击「开始任务」表示同意本次主屏操作");
         openRootManager.setEnabled(rootManagerNavigationIdle());
         prepareBackgroundPermission.setEnabled(!busy&&!tasks.isBlocked()&&!tasks.isRecovering()&&!tasks.hasBackgroundLease()
@@ -700,6 +737,9 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         independentProfileDisplay.setEnabled(backgroundMode.isChecked()&&!busy&&!tasks.isBlocked()&&!tasks.isRecovering()
                 &&!tasks.hasBackgroundLease()&&!backgroundPermission.blocksOtherWork()
                 &&(selectedProfileTarget()!=null||independentProfileDisplay.isChecked()||backgroundDisplayPreferenceError!=null));
+        independentPersonalDisplay.setEnabled(backgroundMode.isChecked()&&!busy&&!tasks.isBlocked()&&!tasks.isRecovering()
+                &&!tasks.hasBackgroundLease()&&!backgroundPermission.blocksOtherWork()
+                &&(personalIndependentTarget()||independentPersonalDisplay.isChecked()||backgroundDisplayPreferenceError!=null));
         cleanupBackground.setVisibility(tasks.hasBackgroundLease()?View.VISIBLE:View.GONE);
         cleanupBackground.setEnabled(!tasks.isRunning()&&!tasks.isRecovering()&&!backgroundPermission.blocksOtherWork());
         boolean recoveryAvailable=tasks.canAcknowledgeInterruption();

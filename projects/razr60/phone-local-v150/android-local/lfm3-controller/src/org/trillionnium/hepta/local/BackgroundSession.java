@@ -54,20 +54,24 @@ final class BackgroundSession {
         final BackgroundTaskTarget taskTarget;
         final ProfileTarget profileTarget;
         final boolean independentProfileDisplay;
+        final boolean independentPersonalDisplay;
         Selection(String initial,Set<String> allowed){this(initial,allowed,null,null,null,null);}
         Selection(BackgroundTaskTarget target){this(target,false);}
         Selection(BackgroundTaskTarget target,boolean independentProfileDisplay){
+            this(target,independentProfileDisplay,false);
+        }
+        Selection(BackgroundTaskTarget target,boolean independentProfileDisplay,boolean independentPersonalDisplay){
             this(requireExplicit(target).packageName,target.effectivePackages,target.originalInitialPackage,
-                    new TreeSet<String>(target.originalPackages),target.ownerSha256,target.recognition,target,independentProfileDisplay);
+                    new TreeSet<String>(target.originalPackages),target.ownerSha256,target.recognition,target,independentProfileDisplay,independentPersonalDisplay);
         }
         Selection(String initial,Set<String> allowed,String uiInitial,Set<String> uiAllowed,
                   String ownerSha,String recognition){this(initial,allowed,uiInitial,uiAllowed,ownerSha,recognition,null);}
         private Selection(String initial,Set<String> allowed,String uiInitial,Set<String> uiAllowed,
                   String ownerSha,String recognition,BackgroundTaskTarget target){
-            this(initial,allowed,uiInitial,uiAllowed,ownerSha,recognition,target,false);
+            this(initial,allowed,uiInitial,uiAllowed,ownerSha,recognition,target,false,false);
         }
         private Selection(String initial,Set<String> allowed,String uiInitial,Set<String> uiAllowed,
-                  String ownerSha,String recognition,BackgroundTaskTarget target,boolean independentProfileDisplay){
+                  String ownerSha,String recognition,BackgroundTaskTarget target,boolean independentProfileDisplay,boolean independentPersonalDisplay){
             if(allowed==null||allowed.isEmpty()||allowed.size()>6)throw new IllegalArgumentException("请选择 1 至 6 个后台任务应用");
             TreeSet<String> copy=new TreeSet<String>();
             for(String value:allowed){checkPackage(value);copy.add(value);}
@@ -78,6 +82,10 @@ final class BackgroundSession {
             if(independentProfileDisplay&&(target==null||!target.explicitSelection||profileTarget==null))
                 throw new IllegalArgumentException("独立后台显示需要明确选择并核验隔离资料中的应用；不会迁移个人空间应用");
             this.independentProfileDisplay=independentProfileDisplay;
+            if(independentPersonalDisplay&&(independentProfileDisplay||target==null||!target.explicitSelection||profileTarget!=null
+                    ||copy.size()!=1||!("com.motorola.stylus".equals(initial)||"com.xiaomi.shop".equals(initial))))
+                throw new IllegalArgumentException("个人空间独立显示仅支持明确选择的备忘录或小米商城；不会迁移既有任务");
+            this.independentPersonalDisplay=independentPersonalDisplay;
             if(ownerSha==null){
                 if(uiInitial!=null||uiAllowed!=null||recognition!=null)throw new IllegalArgumentException("任务范围来源不完整");
                 ownerSelection=null;
@@ -127,6 +135,8 @@ final class BackgroundSession {
             if(profileTarget!=null)value.put("profile_target_wire",profileTarget.wire()).put("profile_target_sha256",profileTarget.sha256);
             if(independentProfileDisplay)value.put("display_scope_mode","public_own_group_no_credentials_v1")
                     .put("display_scope_mode_source","immutable_start_selection").put("display_scope_mode_grants_authority",false);
+            if(independentPersonalDisplay)value.put("display_scope_mode","public_own_group_personal_no_credentials_v1")
+                    .put("display_scope_mode_source","immutable_start_selection").put("display_scope_mode_grants_authority",false);
             return value;
         }
     }
@@ -161,6 +171,7 @@ final class BackgroundSession {
     private volatile JSONObject lastResponse;
     private volatile JSONObject appDisplayReadback;
     private volatile JSONObject profileCleanupEvidence;
+    private volatile JSONObject personalNotesCleanupEvidence;
     private volatile boolean profileLaunchAttempted;
     private volatile boolean permissionPreparing;
     private final java.util.IdentityHashMap<WindowOwnership,Boolean> profileProofs=new java.util.IdentityHashMap<WindowOwnership,Boolean>();
@@ -175,7 +186,7 @@ final class BackgroundSession {
                       QualificationScopeConfig.FilesRoot filesRoot)throws Exception{
         this(context,taskId,owner,selection,filesRoot,false);
     }
-    /** Explicit ordinary-Start profile mode. The immutable selection captures the
+    /** Explicit ordinary-Start display mode. The immutable selection captures the
      * visible saved choice; real root and App display proofs grant each live scope. */
     static BackgroundSession experimentalPublicOwnGroup(Context context,String taskId,String owner,Selection selection,
             QualificationScopeConfig.FilesRoot filesRoot)throws Exception{
@@ -201,6 +212,8 @@ final class BackgroundSession {
     private int protocolVersion(){return publicOwnGroupScope==null?(profileTarget()==null?BrokerProtocol.VERSION:BrokerProtocol.PROFILE_VERSION)
             :(profileTarget()==null?BrokerProtocol.PUBLIC_OWN_GROUP_VERSION:BrokerProtocol.PUBLIC_OWN_GROUP_PROFILE_VERSION);}
     boolean usesExperimentalPublicOwnGroup(){return publicOwnGroupScope!=null;}
+    private boolean requiresPersonalNotesRetirement(){return publicOwnGroupScope!=null&&profileTarget()==null
+            &&selection.allowedPackages.size()==1&&"com.motorola.stylus".equals(selection.initialPackage);}
     private JSONObject request(String operation,String pkg,long deadline)throws Exception{
         JSONObject value=new JSONObject().put("version",protocolVersion()).put("request_id",UUID.randomUUID().toString())
                 .put("generation",generation).put("deadline_elapsed_ms",deadline).put("op",operation);
@@ -358,6 +371,7 @@ final class BackgroundSession {
                 .put("broker_output",brokerOutput==null?JSONObject.NULL:brokerOutput.evidence())
                 .put("app_display_readback",appDisplayReadback==null?JSONObject.NULL:new JSONObject(appDisplayReadback.toString()))
                 .put("last_broker_response",lastResponse==null?JSONObject.NULL:new JSONObject(lastResponse.toString()));
+            if(personalNotesCleanupEvidence!=null)value.put("personal_notes_cleanup",new JSONObject(personalNotesCleanupEvidence.toString()));
             // Keep the exact existing Selection observation/wire schema. New
             // route audit belongs to this real session, never to screen data.
             if(selection.taskTarget!=null)value.put("execution_target",new JSONObject(selection.taskTarget.evidence()));
@@ -375,6 +389,7 @@ final class BackgroundSession {
         if(publicOwnGroupScope!=null)value.put("public_own_group_scope_wire",publicOwnGroupScope.wire())
                 .put("public_own_group_scope_sha256",publicOwnGroupScope.sha256).put("public_own_group_experimental",true)
                 .put("public_scope_serialization_grants_authority",false);
+        if(requiresPersonalNotesRetirement())value.put("personal_notes_retirement_required",true);
         if(profileTarget()!=null)value.put("profile_target_wire",profileTarget().wire()).put("profile_target_sha256",profileTarget().sha256)
                 .put("profile_isolation_required",true).put("profile_launch_attempted",profileLaunchAttempted);
         if(profileCleanupEvidence!=null)value.put("profile_cleanup",new JSONObject(profileCleanupEvidence.toString()));
@@ -807,19 +822,19 @@ final class BackgroundSession {
             }else if(!spawnAttempted){state="RELEASED";known=true;deleteJournal();}
             else if("RELEASED".equals(state)&&lastResponse!=null&&displayAbsent(context,displayId,displayName)){
                 // A failed launch can already return system-confirmed RELEASED and exit the broker.
-                ensureProfileCleanup(lastResponse);known=true;deleteJournal();
+                ensureProfileCleanup(lastResponse);ensurePersonalNotesCleanup(lastResponse);known=true;deleteJournal();
             }
             else{
                 JSONObject response=call("close",null,3500);accept(response,false);
                 known=response.getBoolean("ok")&&"RELEASED".equals(state)&&displayAbsent(context,displayId,displayName);
-                if(known){ensureProfileCleanup(response);deleteJournal();}else saveJournal();
+                if(known){ensureProfileCleanup(response);ensurePersonalNotesCleanup(response);deleteJournal();}else saveJournal();
             }
         }catch(Exception failure){known=false;error=HeptaAccessibilityService.message(failure);state="CLEANUP_UNKNOWN";
             try{if(MobiMindPrivateFiles.exists(journal))saveJournal();}catch(Exception ignored){} }
         if(brokerProcess!=null){
             try{brokerExitObserved=brokerProcess.waitFor(700,TimeUnit.MILLISECONDS);if(brokerExitObserved)brokerExitCode=brokerProcess.exitValue();}
             catch(InterruptedException interrupted){Thread.currentThread().interrupt();}
-            if(!known&&!brokerExitObserved&&profileTarget()==null)brokerProcess.destroy(); // Never counts as release evidence.
+            if(!known&&!brokerExitObserved&&profileTarget()==null&&!requiresPersonalNotesRetirement())brokerProcess.destroy(); // Never counts as release evidence.
         }
         if(brokerOutput!=null){
             try{if(brokerOutputThread!=null)brokerOutputThread.join(200);}
@@ -837,6 +852,39 @@ final class BackgroundSession {
         JSONObject proof=checkedProfileCleanup(response,profileTarget(),generation,displayId,profileLaunchAttempted);
         if(!displayAbsent(context,displayId,displayName))throw new IOException("profile display absence is not established");
         proof.put("display_absence_observed",true);profileCleanupEvidence=proof;
+    }
+    private void ensurePersonalNotesCleanup(JSONObject response)throws Exception{
+        if(!requiresPersonalNotesRetirement())return;
+        JSONObject proof=checkedPersonalNotesCleanup(response,publicOwnGroupScope,generation,displayId);
+        if(!displayAbsent(context,displayId,displayName))throw new IOException("NOTES_APP_DISPLAY_ABSENCE_UNPROVED");
+        personalNotesCleanupEvidence=proof;
+    }
+    private static JSONObject checkedPersonalNotesCleanup(JSONObject response,PublicOwnGroupPolicy.Scope scope,
+            String generation,int display)throws Exception{
+        if(response==null||scope==null||scope.targetUserId!=0||!Boolean.TRUE.equals(response.get("ok"))
+                ||!"RELEASED".equals(response.getString("state"))||!scope.sha256.equals(response.getString("display_scope_sha256")))
+            throw new IOException("NOTES_CLEANUP_ROOT_SCOPE_UNBOUND");
+        JSONObject proof=response.getJSONObject("personal_notes_cleanup");
+        if(!"hepta.public-personal-notes-cleanup.v1".equals(proof.getString("schema"))
+                ||!generation.equals(proof.getString("generation"))||!scope.sha256.equals(proof.getString("scope_sha256"))
+                ||!"com.motorola.stylus".equals(proof.getString("package"))
+                ||strictInt(proof,"target_uid")<10000||strictInt(proof,"target_uid")>=90000
+                ||!Boolean.TRUE.equals(proof.get("cleanup_known"))||!Boolean.FALSE.equals(proof.get("identity_unknown"))
+                ||!Boolean.FALSE.equals(proof.get("custodian_retained"))||!Boolean.FALSE.equals(proof.get("arbitrary_task_removal_used"))
+                ||!Boolean.FALSE.equals(proof.get("force_stop_used"))||!Boolean.FALSE.equals(proof.get("caller_flag_is_cleanup_proof")))
+            throw new IOException("NOTES_CLEANUP_PROOF_INVALID");
+        if(Boolean.TRUE.equals(proof.get("no_display_create_attempted"))){
+            if(display!=-1||proof.getInt("display_id")!=-1||!Boolean.FALSE.equals(proof.get("create_attempted"))
+                    ||!Boolean.FALSE.equals(proof.get("launch_dispatched"))||proof.getJSONArray("actual_observed_tasks").length()!=0)
+                throw new IOException("NOTES_CLEANUP_NOT_CREATED_DISAGREES");
+        }else{
+            if(display<=1||strictInt(proof,"display_id")!=display||strictInt(proof,"absence_reads")<2)
+                throw new IOException("NOTES_CLEANUP_DOUBLE_ABSENCE_REQUIRED");
+            for(String key:new String[]{"create_attempted","pre_release_tasks_verified","release_api_entered","release_api_returned",
+                    "display_absence_verified","live_tasks_absent","all_recents_sections_absent","prior_hidden_history_preserved"})
+                if(!Boolean.TRUE.equals(proof.get(key)))throw new IOException("NOTES_CLEANUP_ABSENCE_UNPROVED");
+        }
+        return new JSONObject(proof.toString());
     }
     private static JSONObject checkedProfileCleanup(JSONObject response,ProfileTarget target,String generation,int display,boolean launched)throws Exception{
         if(response==null||!Boolean.TRUE.equals(response.get("profile_cleanup_known"))
@@ -963,6 +1011,8 @@ final class BackgroundSession {
             released=response.getBoolean("ok")&&"RELEASED".equals(response.getString("state"));
             if(response.getInt("display_id")>0)id=response.getInt("display_id");
             if(released&&target!=null)profileCleanup=checkedProfileCleanup(response,target,generation,id,old.getBoolean("profile_launch_attempted"));
+            if(released&&journalRequiresPersonalNotes(old,publicScope))
+                checkedPersonalNotesCleanup(response,publicScope,generation,id);
         }catch(ConnectionUnavailable absent){connectionUnavailable=true;/* No fallback for an invalid/authentication-failed response. */}
         int currentBoot=readBootCount(context),oldBoot=old.getInt("boot_count");
         boolean newBoot=currentBoot>=0&&oldBoot>=0&&currentBoot!=oldBoot;
@@ -1062,12 +1112,29 @@ final class BackgroundSession {
     private static JSONObject readJournal(File file)throws Exception{
         return parseJournal(MobiMindPrivateFiles.read(file,16384,true).bytes);
     }
+    private static boolean journalRequiresPersonalNotes(JSONObject journal,PublicOwnGroupPolicy.Scope scope)throws Exception{
+        if(scope==null||scope.targetUserId!=0){
+            if(journal.has("personal_notes_retirement_required"))throw new IOException("NOTES_JOURNAL_SCOPE_INVALID");
+            return false;
+        }
+        JSONObject selection=journal.getJSONObject("selection");
+        boolean expected="com.motorola.stylus".equals(selection.getString("bootstrap_package"));
+        if(expected){
+            JSONArray allowed=selection.getJSONArray("allowed_packages");
+            if(allowed.length()!=1||!"com.motorola.stylus".equals(allowed.get(0))
+                    ||!"public_own_group_personal_no_credentials_v1".equals(selection.getString("display_scope_mode"))
+                    ||!Boolean.TRUE.equals(journal.get("personal_notes_retirement_required")))
+                throw new IOException("NOTES_JOURNAL_TASK_BINDING_INVALID");
+        }else if(journal.has("personal_notes_retirement_required"))throw new IOException("NOTES_JOURNAL_SCOPE_INVALID");
+        return expected;
+    }
     private static JSONObject parseJournal(byte[] bytes)throws Exception{
         JSONObject value=new JSONObject(new String(bytes,StandardCharsets.UTF_8));
         if(!SCHEMA.equals(value.getString("schema"))||value.getInt("app_uid")!=android.os.Process.myUid())throw new IOException("后台租约格式或应用 UID 不匹配");
         long created=value.getLong("created_elapsed_ms"),expiry=value.getLong("expires_elapsed_ms");
         if(created<0||expiry<=created||expiry-created!=TTL_MS)throw new IOException("后台租约截止时间无效");
-        journalProfileTarget(value);journalPublicScope(value);
+        journalProfileTarget(value);PublicOwnGroupPolicy.Scope publicScope=journalPublicScope(value);
+        journalRequiresPersonalNotes(value,publicScope);
         return value;
     }
     private static boolean displayAbsent(Context context,int id,String name){

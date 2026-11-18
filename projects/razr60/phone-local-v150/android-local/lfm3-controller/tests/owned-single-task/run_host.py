@@ -75,7 +75,10 @@ def main():
     cases = None
     session = (source / INPUTS[9]).read_text(encoding="utf-8")
     helper_start = "    private static boolean ownedTaskRetirementRequired(JSONObject journal)throws Exception{"
-    helper_end = "    private static JSONObject readJournal(File file)throws Exception{"
+    # Keep the original two-method transitive closure. The newly inserted
+    # journalPublicScope helper is not called by the condition or either method;
+    # its complete production validation is exercised by the full Session gates.
+    helper_end = "    private static PublicOwnGroupPolicy.Scope journalPublicScope(JSONObject journal)throws Exception{"
     condition_start = "        boolean ownedTaskRetirement=ownedTaskRetirementRequired(old);"
     condition_end = "        JSONObject evidence=new JSONObject().put(\"schema\",\"hepta.background-reconcile.v1\")"
     for marker in (helper_start, helper_end, condition_start, condition_end):
@@ -83,7 +86,7 @@ def main():
             raise RuntimeError("actual reconciliation source boundary changed: " + marker)
     helper = session[session.index(helper_start):session.index(helper_end)]
     condition = session[session.index(condition_start):session.index(condition_end)]
-    marker = '.put("owned_task_retirement_required",profileTarget()!=null||selection.allowedPackages.contains("com.xiaomi.shop"));'
+    marker = '.put("owned_task_retirement_required",publicOwnGroupScope!=null||profileTarget()!=null||selection.allowedPackages.contains("com.xiaomi.shop"));'
     if session.count(marker) != 1:
         raise RuntimeError("durable whole-scope retirement marker missing")
     write_call = 'MobiMindPrivateFiles.writeNew(journal,baseJournal().toString().getBytes(StandardCharsets.UTF_8));'
@@ -155,6 +158,8 @@ final class BrokerProtocol {
                   "helper_sha256": hashlib.sha256(helper.encode()).hexdigest(),
                   "projection": {"path": projection.name, **pin(projection)},
                   "durable_marker_covers_all_allowed_packages": True,
+                  "durable_marker_covers_public_scope": True,
+                  "actual_helper_names": ["ownedTaskRetirementRequired", "journalProfileTarget"],
                   "write_new_call_precedes_process_start": True,
                   "display_absence_is_explicit_host_double": True,
                   "broker_snapshot": {"source_path": INPUTS[0], "source_sha256": before[INPUTS[0]]["sha256"],

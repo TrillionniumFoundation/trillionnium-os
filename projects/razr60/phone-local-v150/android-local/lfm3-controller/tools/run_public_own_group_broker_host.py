@@ -8,8 +8,8 @@ def main():
     bg=candidate/'src/org/trillionnium/hepta/background'
     names=['BrokerProtocol','FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','BackgroundOwnedTaskPolicy',
            'BackgroundOwnedSingleTask','ProfileTaskPolicy','PublicOwnGroupPolicy',
-           'PublicOwnGroupSurfaceRetirement','PublicOwnGroupTaskFence','PublicOwnGroupPhysicalFence']
-    tests=['PublicSurfaceRetirementHostTest','PublicTaskFenceHostTest','PublicPhysicalAuditHostTest']
+           'PublicOwnGroupSurfaceRetirement','PublicOwnGroupTaskFence','PublicOwnGroupPhysicalFence','PublicPersonalNotesCustody']
+    tests=['PublicSurfaceRetirementHostTest','PublicTaskFenceHostTest','PublicPhysicalAuditHostTest','PersonalNotesCustodyHostTest']
     files=[bg/(name+'.java') for name in names]+[candidate/'tests/public-own-group-policy'/(name+'.java') for name in tests]
     pins={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     classes=out/'classes';classes.mkdir()

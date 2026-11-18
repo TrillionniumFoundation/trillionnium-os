@@ -60,14 +60,15 @@ final class ServicePolicyFixture {
         'independent_reader_writer':exact(preferences_raw,'    static boolean independentProfileDisplay(Context context){','    static Selection load(Context context)throws Exception{')}
     preference_fixture=fixture/'org/trillionnium/hepta/local/BackgroundUiPreferences.java'
     preference_fixture.write_text('''package org.trillionnium.hepta.local;
-import android.content.Context;import java.util.*;
+import android.content.Context;import android.content.SharedPreferences;import java.util.*;
 final class BackgroundUiPreferences {
  static final Map<String,Object> saved=new LinkedHashMap<String,Object>();static boolean commitAllowed=true;static int writes;
  static final class Preferences {Map<String,?> getAll(){return saved;}Editor edit(){return new Editor();}}
- static final class Editor {String key;boolean value;Editor putBoolean(String key,boolean value){this.key=key;this.value=value;return this;}
-  boolean commit(){writes++;saved.put(key,value);return commitAllowed;}}
+ static final class Editor implements SharedPreferences.Editor {final Map<String,Object> pending=new LinkedHashMap<String,Object>();public Editor putBoolean(String key,boolean value){pending.put(key,value);return this;}
+  public boolean commit(){writes++;saved.putAll(pending);return commitAllowed;}}
  static Preferences preferences(Context context){return new Preferences();}
 '''+''.join(preference_parts.values())+'}\n');files.append(preference_fixture)
+    shared_preferences=fixture/'android/content/SharedPreferences.java';shared_preferences.write_text('package android.content;public interface SharedPreferences {interface Editor {Editor putBoolean(String key,boolean value);boolean commit();}}\n');files.append(shared_preferences)
     ui_raw=(source/'src/org/trillionnium/hepta/local/MainActivity.java').read_text()
     ui_mode_parts={'mode_read_restore':exact(ui_raw,'    private boolean selectedIndependentProfileDisplay(){','    private org.trillionnium.hepta.background.ProfileTarget selectedProfileTarget(){'),
         'visible_choice_listener':exact(ui_raw,'    private void installBackgroundPreferenceListeners(){','        backgroundMode.setOnClickListener(view -> {')+'    }\n'}
@@ -80,11 +81,11 @@ final class ModeUiFixture extends Context {
   void setOnClickListener(Click value){listener=value;}void click(){checked=!checked;listener.click(this);}}
  static final class Busy {boolean running,busy,blocked,recovering,lease;boolean isRunning(){return running;}boolean isBusy(){return busy;}boolean isBlocked(){return blocked;}
   boolean isRecovering(){return recovering;}boolean hasBackgroundLease(){return lease;}boolean blocksOtherWork(){return busy;}}
- final Check independentProfileDisplay=new Check();String backgroundDisplayPreferenceError;ProfileTarget target;
+ final Check independentProfileDisplay=new Check(),independentPersonalDisplay=new Check();String backgroundDisplayPreferenceError;ProfileTarget target;String personalPackage="com.motorola.stylus";
  final Busy tasks=new Busy(),engine=new Busy(),backgroundPermission=new Busy();boolean focus=true,finishing,destroyed;int refreshes;
  ModeUiFixture(java.io.File root){super(root);}boolean hasWindowFocus(){return focus;}boolean isFinishing(){return finishing;}boolean isDestroyed(){return destroyed;}
- ProfileTarget selectedProfileTarget(){return target;}void refresh(){refreshes++;}
- void restore(){restoreIndependentProfileDisplay();}void install(){installBackgroundPreferenceListeners();}boolean selected(){return selectedIndependentProfileDisplay();}
+ ProfileTarget selectedProfileTarget(){return target;}String selectedBackgroundPackage(){return target==null?personalPackage:target.packageName;}void refresh(){refreshes++;}
+ void restore(){restoreIndependentProfileDisplay();}void install(){installBackgroundPreferenceListeners();}boolean selected(){return selectedIndependentProfileDisplay();}boolean personalSelected(){return selectedIndependentPersonalDisplay();}
 '''+''.join(ui_mode_parts.values())+'}\n');files.append(ui_fixture)
     controller_raw=(source/'src/org/trillionnium/hepta/local/LocalTaskController.java').read_text()
     factory=exact(controller_raw,'                background=backgroundSelection.independentProfileDisplay','                service.bindBackgroundSession(taskId,background);')
@@ -102,10 +103,11 @@ final class ModeFactoryFixture {
     tests=[('org.trillionnium.hepta.background.PublicOwnGroupPolicyHostTest','policy'),('org.trillionnium.hepta.local.PublicOwnGroupSessionHostTest','public-session'),
            ('org.trillionnium.hepta.local.ServiceScopeHostTest','service-scope'),
            ('org.trillionnium.hepta.local.ModeActivationHostTest','mode-activation'),
+           ('org.trillionnium.hepta.local.PersonalModeHostTest','personal-mode'),
            ('org.trillionnium.hepta.local.BackgroundSessionHostTest','legacy-session'),('org.trillionnium.hepta.local.ProfileSessionHostTest','legacy-profile'),
            ('org.trillionnium.hepta.local.BackgroundTaskTargetHostTest','legacy-target')]
     for cls,name in tests:
-        where='public-own-group-policy' if name in ('policy','public-session','service-scope','mode-activation') else 'background-session'
+        where='public-own-group-policy' if name in ('policy','public-session','service-scope','mode-activation','personal-mode') else 'background-session'
         files.append(source/'tests'/where/(cls.rsplit('.',1)[1]+'.java'))
     files=list(dict.fromkeys(pathlib.Path(p).resolve() for p in files))
     classes=out/'classes';classes.mkdir();pins={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in files}

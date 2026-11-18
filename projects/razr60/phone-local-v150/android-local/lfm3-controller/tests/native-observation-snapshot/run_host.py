@@ -27,13 +27,14 @@ def generate(source,out,h):
       'recovery_idle':h.section(service,'    synchronized boolean recoveryControllerIdle(','    synchronized void retireControllerAfterAcknowledgement('),
       'action_pending':h.section(service,'    boolean actionWorkPending()','    void retireActionWork('),
       'cancellation_pending':h.section(service,'    boolean nativeCancellationWorkPending()','    boolean requestNativeCancellation('),
+      'background_lock':h.section(service,'    private boolean locked(BackgroundSession background)','    private int rotation('),
       'observation':h.section(service,'    /** Each observation owns','    synchronized void bindQualificationScope('),
       'complete_native':h.body(service,'    private static boolean completeNativeObservationGraph(Graph graph){'),
       'collection_stats':h.body(phone,'    public static final class CollectionStats {'),
       'immutable_map':h.body(evidence,'    static Map<String,Object> immutableMap(Map<String,Object> source){'),
       'immutable_value':h.body(evidence,'    private static Object immutableValue(Object value,int depth){')}
     template=(BUNDLE/'tests/observation-pipeline/ObserverPipelineHost.template').read_text()
-    for key in ('observation_callback','diagnostic','acquire','recovery_idle','action_pending','cancellation_pending','observation'):
+    for key in ('observation_callback','diagnostic','acquire','recovery_idle','action_pending','cancellation_pending','background_lock','observation'):
         template=once(template,'{{'+key+'}}',parts[key])
     main=h.body(template,'    public static void main(String[] args)throws Exception{')
     extra=parts['complete_native']+'\n'+parts['immutable_map']+'\n'+parts['immutable_value']+'\n'

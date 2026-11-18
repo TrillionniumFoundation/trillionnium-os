@@ -31,6 +31,10 @@ public final class NativeAppRoutingEntryHostTest {
         NativeUi(LocalTaskSession tasks,LocalModelEngine engine){super(tasks,engine);backgroundMode.setChecked(true);backgroundPackages.addAll(packages(CTRIP,HELPER));}
         @Override String selectedBackgroundPackage(){return initial;}
         @Override org.trillionnium.hepta.background.ProfileTarget selectedProfileTarget(){return null;}
+        // This routing fixture deliberately exercises the existing personal-space display path.
+        // Independent-mode UI and real Selection/Observation boundaries have separate gates.
+        @Override boolean selectedIndependentProfileDisplay(){return false;}
+        @Override boolean selectedIndependentPersonalDisplay(){return false;}
         @Override void requireCurrentBackgroundChoice(){checks++;if(!choiceCurrent)throw new IllegalStateException("synthetic changed installed/owner choice");}
     }
     static void installed(QualificationScopeHostTest.Env e)throws Exception{
@@ -60,6 +64,8 @@ public final class NativeAppRoutingEntryHostTest {
             check(frozen!=null&&frozen.taskTarget!=null&&CTRIP.equals(frozen.initialPackage),"actual Session receives explicit target");
             frozen.requireTaskTarget(owner,auth);
             JSONObject wire=frozen.json(),readback=new JSONObject(wire.toString());
+            check(!wire.has("display_scope_mode")&&!wire.has("display_scope_mode_source")
+                    &&!wire.has("display_scope_mode_grants_authority"),"legacy native routing has no independent display authority");
             check(WebEvidenceReceipt.same(wire,readback),"nested original Selection survives actual canonical equality through host JSON IO");
             JSONObject changed=new JSONObject(wire.toString()),proof=changed.getJSONObject("owner_task_selection");
             proof.put("owner_sha256","0000000000000000000000000000000000000000000000000000000000000000");

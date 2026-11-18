@@ -78,6 +78,8 @@ public final class BackgroundDisplayBroker {
     // Only the object actually returned by this session's create API. Never reconstructed from an id or wire.
     private volatile VirtualDisplay publicCreateReturnedHandle;
     private volatile PublicOwnGroupTaskFence publicTaskFence;
+    private volatile PublicPersonalNotesCustody publicNotesCustody;
+    private volatile PublicPersonalNotesReader publicNotesReader;
     private volatile DisplayGeometry displayGeometry;
     private volatile JSONObject displayGeometryReadback;
     private final java.util.Map<String,Integer> displayFlagConstants=new java.util.LinkedHashMap<String,Integer>();
@@ -137,6 +139,7 @@ public final class BackgroundDisplayBroker {
                 owner.beginCleanup("process_shutdown");
                 owner.awaitCleanup(CLEANUP_MS);
                 owner.holdProfileCustody();
+                owner.holdPublicNotesCustody();
             }, "HeptaBackgroundShutdown"));
             broker.startWatchdog();
             broker.initializeFramework();
@@ -161,6 +164,7 @@ public final class BackgroundDisplayBroker {
         // A profile custodian is deliberately retained when owned-task absence is unknown.
         // SIGKILL/OS death remains unprovable: Binder death can destroy the virtual display.
         if(broker!=null)broker.holdProfileCustody();
+        if(broker!=null)broker.holdPublicNotesCustody();
         System.exit(exit);
     }
 
@@ -208,6 +212,17 @@ public final class BackgroundDisplayBroker {
                     config.profileTarget,Math.min(expires,started+STARTUP_MS));
         }
         checkOwnerPackages();
+        if(config.publicOwnGroupScope!=null&&config.profileTarget==null
+                &&config.packages.size()==1&&config.packages.contains(PublicPersonalNotesCustody.PACKAGE)){
+            android.content.pm.ApplicationInfo before=shell.getPackageManager().getApplicationInfo(PublicPersonalNotesCustody.PACKAGE,0);
+            PublicOwnGroupPhysicalFence.RecentCensus recents=PublicOwnGroupPhysicalFence.inspectRecents(
+                    BackgroundTaskOrganizer.profileRecents(()->Math.min(expires,started+STARTUP_MS)));
+            ProfileTaskPolicy.Snapshot actual=BackgroundTaskOrganizer.profileSnapshot(activityTasks);
+            android.content.pm.ApplicationInfo after=shell.getPackageManager().getApplicationInfo(PublicPersonalNotesCustody.PACKAGE,0);
+            if(before==null||after==null||before.uid!=after.uid||!before.enabled||!after.enabled
+                    ||before.sourceDir==null||!before.sourceDir.equals(after.sourceDir))throw new BrokerProtocol.Refusal("NOTES_INSTALLATION_CHANGED");
+            publicNotesCustody=new PublicPersonalNotesCustody(config.generation,config.publicOwnGroupScope.sha256,before.uid,actual,recents);
+        }
         if(config.publicOwnGroupScope!=null)publicTaskFence=new PublicOwnGroupTaskFence(
                 BackgroundTaskOrganizer.profileSnapshot(activityTasks),config.publicOwnGroupScope.targetUserId,config.generation);
         requireUnlocked();
@@ -340,6 +355,7 @@ public final class BackgroundDisplayBroker {
                     guard(r, false);
                     dispatched = true;
                     if(config.profileTarget!=null)profileCustody.beforeCreate();
+                    if(publicNotesCustody!=null)publicNotesCustody.beforeCreate();
                     VirtualDisplay created = displays.createVirtualDisplay(displayName, geometry.width, geometry.height, geometry.density,
                         surfaceReader.getSurface(), virtualFlags);
                     if(config.publicOwnGroupScope!=null)publicCreateReturnedHandle=created;
@@ -351,6 +367,12 @@ public final class BackgroundDisplayBroker {
                     if (closing.get()) throw new BrokerProtocol.Refusal("SESSION_CLOSING");
                     setImePolicy.invoke(windowManager, displayId, imeHide);
                     verifyDisplay();
+                    if(publicNotesCustody!=null){
+                        publicNotesCustody.bindDisplay(displayId);
+                        publicNotesReader=new PublicPersonalNotesReader(shell,activityTasks,displayId,
+                                ()->cleanupStarted.get()?cleanupAt+CLEANUP_MS-100:Math.min(expires,requestDeadline>0?requestDeadline:expires));
+                        if(publicNotesReader.uid!=publicNotesCustody.expectedUid())throw new BrokerProtocol.Refusal("NOTES_INSTALLATION_CHANGED");
+                    }
                     guard(r, false);
                     state = "ACTIVE";
                   } finally { createInFlight = false; }
@@ -472,6 +494,7 @@ public final class BackgroundDisplayBroker {
                             .put("goal_independently_verified",false));
                     }
                     dispatched = true; launched.add(r.packageName);
+                    if(publicNotesCustody!=null)publicNotesCustody.markLaunch();
                     effectInFlight = true;
                     try {
                         // systemMain() supplies a Context but does not register this shell process as
@@ -673,8 +696,13 @@ public final class BackgroundDisplayBroker {
                 if(framework==null)throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_FRAMEWORK_UNAVAILABLE");
                 if(publicOwnGroupDisplayReady)framework.read(config.generation,displayId,displayName);
                 else framework.preflight();
+                // New personal mode keeps the original package-location rule on
+                // fresh policy reads too; user activity in other apps stays free.
+                if(config.profileTarget==null&&displayId>1)verifyLaunchedLocations(snapshot());
                 PublicOwnGroupTaskFence taskFence=publicTaskFence;
                 if(taskFence!=null&&displayId>1)taskFence.observe(BackgroundTaskOrganizer.profileSnapshot(activityTasks),displayId,SystemClock.elapsedRealtime());
+                if(publicNotesCustody!=null&&publicNotesReader!=null)
+                    publicNotesCustody.observe(publicNotesReader.frame(),SystemClock.elapsedRealtime());
                 lastUnlockedCheck=SystemClock.elapsedRealtime();return;
             }catch(BrokerProtocol.Refusal refusal){throw refusal;}
             catch(Exception unavailable){throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_POLICY_UNAVAILABLE");}
@@ -932,6 +960,12 @@ public final class BackgroundDisplayBroker {
                     if(config.profileTarget!=null&&profileCustody.retain()){
                         quarantineProfile("cleanup_deadline");printTerminal();return;
                     }
+                    if(publicNotesCustody!=null&&publicNotesCustody.known()){
+                        state="RELEASED";printTerminal();Runtime.getRuntime().halt(0);
+                    }
+                    if(publicNotesCustody!=null&&publicNotesCustody.retain()){
+                        quarantinePublicNotes("NOTES_CLEANUP_DEADLINE");printTerminal();return;
+                    }
                     if (!known) state = "CLEANUP_UNKNOWN";
                     printTerminal();
                     // Bound even a stalled cleanup or a client that stops reading the close response.
@@ -961,10 +995,12 @@ public final class BackgroundDisplayBroker {
 
     private void beginCleanup(String reason) {
         closing.set(true);
+        if(publicNotesCustody!=null)publicNotesCustody.retireAdmission();
         if(config.publicOwnGroupScope!=null){publicAdmissionRetired.set(true);beginPublicSurfaceDetach();}
         if (!cleanupStarted.compareAndSet(false, true)) return;
         cleanupAt = SystemClock.elapsedRealtime(); terminalReason = reason; state = "CLOSING";
         if(config.profileTarget!=null){beginProfileCleanup();return;}
+        if(publicNotesCustody!=null){beginPublicNotesCleanup();return;}
         Thread cleanup = new Thread(() -> {
             boolean releaseCallFailed = false;
             try {
@@ -1044,6 +1080,69 @@ public final class BackgroundDisplayBroker {
         }catch(Throwable unavailable){publicSurfaceRetirement.workerUnavailable(unavailable,SystemClock.elapsedRealtime());}
     }
     private JSONObject publicDetachEvidence(){return new JSONObject(publicSurfaceRetirement.evidence());}
+
+    private void beginPublicNotesCleanup(){
+        try{
+        Thread cleanup=new Thread(()->{
+            try{
+                PublicPersonalNotesCustody custody=publicNotesCustody;
+                synchronized(dispatchGate){
+                    if(!custody.createAttempted()){
+                        if(virtual!=null||createInFlight||effectInFlight)throw new IOException("NOTES_CREATE_STATE_UNKNOWN");
+                        custody.notCreated();state="RELEASED";return;
+                    }
+                    PublicPersonalNotesReader reader=publicNotesReader;
+                    if(reader==null||virtual==null||virtual!=publicCreateReturnedHandle||createInFlight||effectInFlight)
+                        throw new IOException("NOTES_OWNED_DISPLAY_OR_READER_UNKNOWN");
+                    PublicPersonalNotesCustody.Frame before=reader.frame();
+                    PublicOwnGroupPhysicalFence.RecentCensus beforeRecents=reader.recents();
+                    custody.prepareRelease(before,beforeRecents,SystemClock.elapsedRealtime());
+                    // Only this session's actual create-returned VD handle is released.
+                    // No per-task remove, reparent, caller-supplied id or process kill.
+                    if(virtual!=publicCreateReturnedHandle)throw new IOException("NOTES_OWNED_DISPLAY_CHANGED");
+                    custody.enterRelease();virtual.release();custody.releaseReturned();
+                    ImageReader images=surfaceReader;if(images!=null)images.close();
+                    HandlerThread worker=displayThread;if(worker!=null)worker.quitSafely();
+                }
+                long end=cleanupAt+CLEANUP_MS-100;
+                while(SystemClock.elapsedRealtime()<end){
+                    if(!publicOwnedDisplayAbsent()){Thread.sleep(25);continue;}
+                    long begin=SystemClock.elapsedRealtime();
+                    ProfileTaskPolicy.Snapshot live=publicNotesReader.global();
+                    PublicPersonalNotesCustody.Frame remaining=null;
+                    if(custody.needsActualTasks(live)){remaining=publicNotesReader.frame();live=remaining.global;}
+                    PublicOwnGroupPhysicalFence.RecentCensus recents=publicNotesReader.recents();
+                    long finish=SystemClock.elapsedRealtime();
+                    custody.observeAbsence(live,recents,remaining,publicOwnedDisplayAbsent(),begin,finish,SystemClock.elapsedRealtime());
+                    if(custody.known()){state="RELEASED";return;}
+                    Thread.sleep(50);
+                }
+                throw new IOException("NOTES_CLEANUP_ABSENCE_DEADLINE");
+            }catch(Throwable error){quarantinePublicNotes(error.getMessage());}
+            finally{cleanupDone.countDown();}
+        },"HeptaPublicNotesCleanup");cleanup.setDaemon(true);cleanup.start();
+        }catch(Throwable scheduling){quarantinePublicNotes("NOTES_CLEANUP_WORKER_UNAVAILABLE");cleanupDone.countDown();}
+    }
+    private boolean publicOwnedDisplayAbsent()throws Exception{
+        DisplayManager manager=displays;
+        if(manager==null)return false;
+        if(displayId>0&&manager.getDisplay(displayId)!=null)return false;
+        Display[] all=manager.getDisplays();if(all==null)return false;
+        for(Display value:all)if(value==null||displayName.equals(value.getName()))return false;
+        return true;
+    }
+    private void quarantinePublicNotes(String reason){
+        PublicPersonalNotesCustody custody=publicNotesCustody;
+        if(custody!=null&&!custody.known())custody.unresolved(reason);
+        serve=false;state=custody!=null&&custody.known()?"RELEASED":"CLEANUP_UNKNOWN";
+        if(terminalReason.isEmpty())terminalReason=reason==null?"NOTES_CLEANUP_UNKNOWN":reason;
+        LocalServerSocket socket=server;if(socket!=null)try{socket.close();}catch(IOException ignored){}
+    }
+    private void holdPublicNotesCustody(){
+        while(publicNotesCustody!=null&&publicNotesCustody.retain()){
+            try{Thread.sleep(250);}catch(InterruptedException ignored){}
+        }
+    }
 
     private void beginProfileCleanup(){
         Thread cleanup=new Thread(()->{
@@ -1160,6 +1259,7 @@ public final class BackgroundDisplayBroker {
             if(taskLaunchPolicies.containsKey(r.requestId))value.put("task_launch_policy",taskLaunchPolicies.get(r.requestId));
         }
         if(ownedSingleTask!=null)value.put("owned_single_task",new JSONObject(ownedSingleTask.evidence()));
+        if(publicNotesCustody!=null)value.put("personal_notes_cleanup",new JSONObject(publicNotesCustody.evidence()));
         if(config.profileTarget!=null){
             ProfilePackages.Readback actual=profileReadback;
             java.util.Map<String,Object> cleanup=profileCleanupReadback;
@@ -1196,6 +1296,7 @@ public final class BackgroundDisplayBroker {
             .put("profile_custody_retained",config.profileTarget!=null&&profileCustody.retain());
             if(config.publicOwnGroupScope!=null)terminal.put("display_scope_sha256",config.publicOwnGroupScope.sha256)
                     .put("public_scope_admission_retired",publicAdmissionRetired.get()).put("public_surface_detach",publicDetachEvidence());
+            if(publicNotesCustody!=null)terminal.put("personal_notes_cleanup",new JSONObject(publicNotesCustody.evidence()));
             System.out.println(terminal); }
         catch (Throwable ignored) { System.err.println("terminal_receipt_unavailable"); }
     }

@@ -68,6 +68,7 @@ def generate(source,output):
       'recovery_idle':section(service,'    synchronized boolean recoveryControllerIdle(','    synchronized void retireControllerAfterAcknowledgement('),
       'action_pending':section(service,'    boolean actionWorkPending()','    void retireActionWork('),
       'cancellation_pending':section(service,'    boolean nativeCancellationWorkPending()','    boolean requestNativeCancellation('),
+      'background_lock':section(service,'    private boolean locked(BackgroundSession background)','    private int rotation('),
       'observation':section(service,'    /** Each observation owns','    synchronized void bindQualificationScope(')}
     template=(source/'tests/observation-pipeline/ObserverPipelineHost.template').read_text()
     for name,value in parts.items():

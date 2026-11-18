@@ -36,6 +36,7 @@ def generate(source,out,h):
       'recovery_idle':h.section(service,'    synchronized boolean recoveryControllerIdle(','    synchronized void retireControllerAfterAcknowledgement('),
       'action_pending':h.section(service,'    boolean actionWorkPending()','    void retireActionWork('),
       'cancellation_pending':h.section(service,'    boolean nativeCancellationWorkPending()','    boolean requestNativeCancellation('),
+      'background_lock':h.section(service,'    private boolean locked(BackgroundSession background)','    private int rotation('),
       'observation':h.section(service,'    /** Each observation owns','    synchronized void bindQualificationScope('),
       'complete_native':h.body(service,'    private static boolean completeNativeObservationGraph(Graph graph){'),
       'collection_stats':h.body(phone,'    public static final class CollectionStats {')}

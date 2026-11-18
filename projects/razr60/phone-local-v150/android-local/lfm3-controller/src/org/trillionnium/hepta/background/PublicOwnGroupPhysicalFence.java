@@ -125,12 +125,47 @@ public final class PublicOwnGroupPhysicalFence {
         need(out.size()==2,"PHYSICAL_BOTH_FOCI_REQUIRED");return out;
     }
     private static final class Recent {
-        int task,user,uid,root,display;String token,affinity,activity,base,flags;
+        int task,user,uid,root,display;String token,affinity,activity,base,flags,label;
         String data(){return task+"|"+token+"|"+affinity+"|"+user+"|"+uid+"|"+root+"|"+display+"|"+activity+"|"+base+"|"+flags;}
     }
+    /** Complete read-only membership and actual UID facts. These values never
+     * authorize task removal; detached hidden labels retain unknown ownership. */
+    public static final class RecentRecord {
+        public final int task,user,uid,root,display;
+        public final String token,affinity,activity,base,flags,label,identity;
+        private RecentRecord(Recent row){task=row.task;user=row.user;uid=row.uid;root=row.root;display=row.display;
+            token=row.token;affinity=row.affinity;activity=row.activity;base=row.base;flags=row.flags;label=row.label;
+            identity=row.data()+"|"+label;}
+    }
+    private static final class RecentFact {
+        final int task;final String value;
+        RecentFact(int task,String value){this.task=task;this.value=value;}
+    }
+    public static final class RecentCensus {
+        public final Map<Integer,RecentRecord> records;
+        public final Map<Integer,String> hiddenLabels;
+        public final Set<Integer> allIds;
+        public final String rawSha256;
+        private final String projection;
+        private final List<RecentFact> facts;
+        private RecentCensus(String projection,Map<Integer,Recent> rows,Map<Integer,String> hidden,List<RecentFact> facts,String raw){
+            this.projection=projection;Map<Integer,RecentRecord> copy=new LinkedHashMap<Integer,RecentRecord>();
+            for(Map.Entry<Integer,Recent> entry:rows.entrySet())copy.put(entry.getKey(),new RecentRecord(entry.getValue()));
+            records=Collections.unmodifiableMap(copy);hiddenLabels=Collections.unmodifiableMap(new LinkedHashMap<Integer,String>(hidden));
+            Set<Integer> ids=new java.util.LinkedHashSet<Integer>(rows.keySet());ids.addAll(hidden.keySet());allIds=Collections.unmodifiableSet(ids);
+            this.facts=Collections.unmodifiableList(new ArrayList<RecentFact>(facts));
+            rawSha256=ProfileIdentity.sha(raw.getBytes(StandardCharsets.UTF_8));
+        }
+        String historyExcept(Set<Integer> owned){
+            need(owned!=null,"RECENT_HISTORY_OWNED_IDS_MISSING");StringBuilder out=new StringBuilder();
+            for(RecentFact fact:facts)if(!owned.contains(fact.task))append(out,fact.value);
+            return out.toString();
+        }
+    }
+    public static RecentCensus inspectRecents(String raw){return recents(raw,0);}
     private static Recent label(String label){
         Matcher m=one("^Task\\{([0-9a-f]+) #([0-9]+) ([^{}\\r\\n]+)\\}$",label,"PHYSICAL_RECENT_LABEL_INVALID");
-        Recent r=new Recent();r.token=m.group(1);r.task=n(m.group(2));r.affinity=optional("(?:^| )A=([^\\s]+)",m.group(3));return r;
+        Recent r=new Recent();r.token=m.group(1);r.task=n(m.group(2));r.affinity=optional("(?:^| )A=([^\\s]+)",m.group(3));r.label=label;return r;
     }
     private static String[] intent(String value){
         if("null".equals(value))return new String[]{"null","null"};
@@ -142,7 +177,7 @@ public final class PublicOwnGroupPhysicalFence {
         long out=(long)n(m.group(1))*100000+("a".equals(m.group(2))?10000:"ai".equals(m.group(2))?90000:"i".equals(m.group(2))?99000:0)+n(m.group(3));
         need(out<=Integer.MAX_VALUE,"PHYSICAL_RECENT_UID_INVALID");return (int)out;
     }
-    private static String recents(String raw,int targetUser){
+    private static RecentCensus recents(String raw,int targetUser){
         String text=checked(raw,"ACTIVITY MANAGER RECENT TASKS (dumpsys activity recents)");
         // Reuse the existing complete recent-task membership parser as an
         // independent fence before the richer stable-identity projection.
@@ -153,8 +188,8 @@ public final class PublicOwnGroupPhysicalFence {
         String[] lines=pre.split("\n");need(lines.length==5||lines.length==6,"PHYSICAL_RECENTS_PREAMBLE_INVALID");
         need(lines[1].matches("mRecentsUid=[0-9]+")&&lines[2].matches("mRecentsComponent=ComponentInfo\\{[^{}\\r\\n]+\\}")
                 &&lines[3].matches("mFreezeTaskListReordering=(true|false)")&&lines[4].matches("mFreezeTaskListReorderingPendingTimeout=(true|false)"),"PHYSICAL_RECENTS_PREAMBLE_INVALID");
-        Map<Integer,Recent> rows=new LinkedHashMap<Integer,Recent>();StringBuilder out=new StringBuilder();
-        for(int i=1;i<5;i++)append(out,lines[i]);
+        Map<Integer,Recent> rows=new LinkedHashMap<Integer,Recent>();StringBuilder out=new StringBuilder();List<RecentFact> facts=new ArrayList<RecentFact>();
+        for(int i=1;i<5;i++){append(out,lines[i]);facts.add(new RecentFact(-1,lines[i]));}
         List<Matcher> heads=matches("^  \\* Recent #([0-9]+): (Task\\{[^{}\\r\\n]+\\})$",internal);
         need(!heads.isEmpty()&&internal.substring(0,heads.get(0).start()).trim().isEmpty(),"PHYSICAL_INTERNAL_RECENTS_MISSING");
         for(int i=0;i<heads.size();i++){
@@ -168,7 +203,8 @@ public final class PublicOwnGroupPhysicalFence {
             r.activity="null".equals(activity)?"null":component(activity);
             r.display=n(one("^    lastDisplayId=(-?[0-9]+)[ \\t\\r\\n]*\\z",body,"PHYSICAL_RECENT_DISPLAY_MISSING").group(1));
             String[] in=intent(one("^    intent=(\\{[^\\r\\n]*\\}|null)$",body,"PHYSICAL_RECENT_INTENT_MISSING").group(1));r.base=in[0];r.flags=in[1];
-            need(rows.put(r.task,r)==null,"PHYSICAL_RECENT_DUPLICATE");if(targetUser==0||r.user!=targetUser)append(out,"internal|"+r.data());
+            need(rows.put(r.task,r)==null,"PHYSICAL_RECENT_DUPLICATE");if(targetUser==0||r.user!=targetUser){
+                String fact="internal|"+r.data();append(out,fact);facts.add(new RecentFact(r.task,fact));}
         }
         Set<Integer> seen=new HashSet<Integer>();heads=matches("^  \\* RecentTaskInfo #([0-9]+):[ \\t]*$",visible);
         need(!heads.isEmpty()&&visible.substring(0,heads.get(0).start()).trim().isEmpty(),"PHYSICAL_VISIBLE_RECENTS_MISSING");
@@ -181,8 +217,10 @@ public final class PublicOwnGroupPhysicalFence {
             String excluded=one("^    isExcluded=(true|false) [^\\r\\n]*$",body,"PHYSICAL_VISIBLE_EXCLUSION_MISSING").group(1);
             String[] in=intent(one("^    baseIntent=(Intent \\{[^\\r\\n]*\\}|null)$",body,"PHYSICAL_VISIBLE_INTENT_MISSING").group(1));
             need(display==r.display&&in[0].equals(r.base)&&in[1].equals(r.flags),"PHYSICAL_VISIBLE_INTERNAL_MISMATCH");
-            if(targetUser==0||user!=targetUser)append(out,"visible|"+id+"|"+user+"|"+identity.group(3)+"|"+excluded+"|"+display+"|"+in[0]+"|"+in[1]);
+            if(targetUser==0||user!=targetUser){String fact="visible|"+id+"|"+user+"|"+identity.group(3)+"|"+excluded+"|"+display+"|"+in[0]+"|"+in[1];
+                append(out,fact);facts.add(new RecentFact(id,fact));}
         }
+        Map<Integer,String> hiddenLabels=new LinkedHashMap<Integer,String>();
         if(lines.length==6){
             Matcher m=one("^mHiddenTasks=(\\[.*\\])$",lines[5],"PHYSICAL_HIDDEN_LIST_INVALID");String value=m.group(1);
             List<Matcher> hidden=matches("Task\\{[^{}\\r\\n]+\\}",value);String residual=value.replaceAll("Task\\{[^{}\\r\\n]+\\}","");
@@ -194,16 +232,17 @@ public final class PublicOwnGroupPhysicalFence {
                 // AOSP mHiddenTasks may retain references absent from mTasks. Preserve the
                 // complete observed label and sequence for every user, including unknown
                 // ownership. No user, child count, task death or action authority is inferred.
-                append(out,"hidden|"+h.group());
+                append(out,"hidden|"+h.group());facts.add(new RecentFact(item.task,"hidden|"+h.group()));
+                hiddenLabels.put(item.task,h.group());
             }
         }
-        return out.toString();
+        return new RecentCensus(out.toString(),rows,hiddenLabels,facts,text);
     }
     public static Map<Integer,String> capture(String activities,String windows,String recents,Map<Integer,DisplayFacts> displays,int targetUser){
         need(targetUser>=0&&displays!=null&&displays.size()==2&&displays.containsKey(0)&&displays.containsKey(1)
                 &&displays.get(0).id==0&&displays.get(1).id==1&&!displays.get(0).uniqueId.equals(displays.get(1).uniqueId),"PHYSICAL_DISPLAY_CENSUS_INCOMPLETE");
         Hierarchy hierarchy=activities(activities,targetUser);Map<Integer,String> focused=windows(windows,hierarchy,displays,targetUser);
-        String recent=recents(recents,targetUser);Map<Integer,String> result=new LinkedHashMap<Integer,String>();
+        String recent=recents(recents,targetUser).projection;Map<Integer,String> result=new LinkedHashMap<Integer,String>();
         for(int id:new int[]{0,1}){StringBuilder raw=new StringBuilder();append(raw,SCHEMA);append(raw,displays.get(id).data());
             append(raw,hierarchy.rows.get(id).toString());append(raw,focused.get(id));append(raw,recent);
             result.put(id,ProfileIdentity.sha(raw.toString().getBytes(StandardCharsets.UTF_8)));}
