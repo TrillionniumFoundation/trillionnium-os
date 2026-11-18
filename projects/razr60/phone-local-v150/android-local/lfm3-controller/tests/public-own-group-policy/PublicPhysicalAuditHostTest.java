@@ -71,8 +71,13 @@ public final class PublicPhysicalAuditHostTest {
       yes("a".equals(((String[])intent.invoke(null,value))[1]),"literal flag boundary changed");
   });
   test("flags adjacent to closing brace preserve full recents identity",()->{
-    String value=recents(true).replace("flg=0x10000000 cmp=","cmp=")
-      .replace("/.Main}","/.Main flg=0x10000000}").replace("/.Main }","/.Main flg=0x10000000}");
+    String value=recents(true);
+    for(String pkg:new String[]{ProfileTarget.CTRIP,"com.example.cover"}){
+      value=value.replace("    intent={flg=0x10000000 cmp="+pkg+"/.Main}",
+          "    intent={cmp="+pkg+"/.Main flg=0x10000000}");
+      value=value.replace("    baseIntent=Intent { flg=0x10000000 cmp="+pkg+"/.Main }",
+          "    baseIntent=Intent { cmp="+pkg+"/.Main flg=0x10000000}");
+    }
     yes(baseline().equals(from(value)),"closing brace changed recents identity");
   });
   test("duplicate flags still refuse after literal brace compatibility fix",()->

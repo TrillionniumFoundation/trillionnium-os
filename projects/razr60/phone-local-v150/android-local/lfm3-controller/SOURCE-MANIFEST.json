@@ -1,8 +1,8 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "82461458fdf47eaa61bc6db3096380aefd252d38",
-  "base_manifest_sha256": "c0eec98122f074aa1bb0753f003793a0c072a51fdd56d8f19714316c2ee8be65",
-  "candidate_status": "android_icu_literal_brace_parity_candidate_not_deployed",
+  "base_head": "50b6ca4b3d9f654d989dfaccdb27bcbe6c315e91",
+  "base_manifest_sha256": "977f97886ff2b57e3c78bb0d5ce9534279c94214e7d2edb8dcf164270926481b",
+  "candidate_status": "android_icu_regression_fixture_scope_candidate_not_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
@@ -12,7 +12,7 @@
   "complete_source_files": 2189,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Escape literal right braces for Android ICU task-intent parsing; preserve exact task history and existing public/private isolation policies; no main-display fallback",
+  "scope": "Scope Android ICU regression fixtures to exact intent/baseIntent lines and raise strict expected cases/assertions to 26/40; all 355 production inputs and 183 Java sources remain byte-identical; no main-display fallback",
   "files": [
     {
       "path": ".gitignore",
@@ -8986,8 +8986,8 @@
     },
     {
       "path": "tests/profile-permission-initialization/PhysicalDisplayFenceHostTest.java",
-      "bytes": 12248,
-      "sha256": "e58bb90da2643c209efb4ad58da4240b535fa948b02cd3842aaa510a7174110f"
+      "bytes": 12536,
+      "sha256": "686c0dc8de20a70da2a067b3ccc20d938ee24f320a2f06bdc6f12ff8ee48a9d3"
     },
     {
       "path": "tests/profile-permission-initialization/ProfilePermissionInitializationHostTest.java",
@@ -9226,8 +9226,8 @@
     },
     {
       "path": "tests/public-own-group-policy/PublicPhysicalAuditHostTest.java",
-      "bytes": 9212,
-      "sha256": "07f689fd33e09615a50fdcc721997b2ab1454011dbd61ab8c050b8d7c24b90d5"
+      "bytes": 9454,
+      "sha256": "125f21a796237ca37e54722b5d9510122f81bbe15ad89827cc25cfe01226bde2"
     },
     {
       "path": "tests/public-own-group-policy/PublicSurfaceRetirementHostTest.java",
@@ -10752,7 +10752,7 @@
     {
       "path": "tools/run_host_checks.py",
       "bytes": 24421,
-      "sha256": "1c3fce22a7e01b3888edbc61c2d91d08b1f9023e3e4a94877dc556da6bef7ccd"
+      "sha256": "419e06259c8bcbf4b968037e92cb61a06eec29d7ab8cb3431b7727432a966422"
     },
     {
       "path": "tools/run_public_own_group_adapter_host.py",
