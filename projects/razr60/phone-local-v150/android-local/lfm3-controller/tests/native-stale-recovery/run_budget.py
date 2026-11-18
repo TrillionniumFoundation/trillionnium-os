@@ -28,7 +28,7 @@ def identity(path):
 assert sha(runner.read_bytes()) == 'a3dfbeea735c501a5bf0c529987b0ebaf4e805401c0859b99f325e551e066540'
 assert sha(a.json_jar.read_bytes()) == '3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'
 assert sha((src/'SessionTerminalEvidence.java').read_bytes()) == '566cbd71a364d51069de271afd7db641fcdf2b97f93682107e4f76e9405b7db0'
-assert sha((src/'LocalTaskSession.java').read_bytes()) == '554c46104381e80aba393928e81e78a899ffabb362b700c5195c62226b76310e'
+assert sha((src/'LocalTaskSession.java').read_bytes()) == '1d15f40b9f6205dac8fc2436544f648038a8a48e13b404941e73a47338188ca6'
 assert sha((src/'NativeActionSnapshotCheck.java').read_bytes()) == 'de64eaf86b0a1a31f48fcf3ea933d3ec821d385788a619fc19881829acf33aec'
 
 # Use the already reviewed real-file IO fixture producer through its complete

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.hardware.display.DisplayManager;
 import android.os.IBinder;
 import android.os.SystemClock;
-import android.provider.Settings;
 import android.view.Display;
 import android.view.WindowManager;
 import java.io.ByteArrayOutputStream;
@@ -26,12 +25,16 @@ final class PublicOwnGroupFramework {
     private Map<Integer,String> physicalBaseline;
     private PublicOwnGroupPolicy.Readback first;
 
-    PublicOwnGroupFramework(Context shell,DisplayManager displays,PublicOwnGroupPolicy.Scope scope)throws Exception{
+    PublicOwnGroupFramework(Context shell,DisplayManager displays,PublicOwnGroupPolicy.Scope scope,
+            ProfileRecoveryBootCount bootCount,long initializationDeadline)throws Exception{
         this.shell=shell;this.displays=displays;this.scope=scope;
         need(shell!=null&&displays!=null&&scope!=null&&android.os.Process.myUid()==0,"PUBLIC_SCOPE_ROOT_REQUIRED");
         need(android.os.Build.VERSION.SDK_INT==36,"PUBLIC_SCOPE_PLATFORM_UNSUPPORTED");
         need(integer(Context.class.getMethod("getUserId").invoke(shell))==0,"PUBLIC_SCOPE_CONTEXT_USER_INVALID");
-        need(Settings.Global.getInt(shell.getContentResolver(),Settings.Global.BOOT_COUNT,-1)==scope.bootCount,"PUBLIC_SCOPE_BOOT_CHANGED");
+        // A standalone root app_process has no registered IApplicationThread for ContentResolver.
+        // Read the real SettingsService value through the same owned command used by recovery.
+        PublicOwnGroupBootIdentity.requireCurrent(bootCount,scope.bootCount,
+                SystemClock.elapsedRealtime(),initializationDeadline);
         windows=Class.forName("android.view.WindowManagerGlobal").getMethod("getWindowManagerService").invoke(null);
         activities=Class.forName("android.app.ActivityManager").getMethod("getService").invoke(null);
         Object binder=Class.forName("android.os.ServiceManager").getMethod("getService",String.class).invoke(null,"trust");

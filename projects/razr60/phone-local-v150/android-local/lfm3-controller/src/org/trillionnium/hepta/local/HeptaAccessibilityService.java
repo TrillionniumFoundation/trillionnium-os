@@ -427,8 +427,21 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 &&(taskWeb==null||taskWeb.released())
                 &&(lease==null||(expected!=null&&lease.equals(expected.currentTaskId())));
     }
+    /** Public receipt admission has its own type and eligibility; it grants no action authority. */
+    synchronized boolean publicProfileReconciliationIdle(LocalTaskController expected){
+        return live==this&&ownedController==expected&&(expected==null||!expected.isRunning())
+                &&activeObservation==null&&!capturePending&&!observationReadWorkPending()&&!actionWorkPending()&&!nativeCancellationWorkPending()
+                &&(taskBackground==null||taskBackground.publicProfileRecoveryEligible())
+                &&(taskWeb==null||taskWeb.released())
+                &&(lease==null||(expected!=null&&lease.equals(expected.currentTaskId())));
+    }
     synchronized void acceptBackgroundReconciliation(BackgroundSession.Cleanup cleanup)throws Exception{
         if(cleanup==null)throw new IllegalStateException("后台清理凭据缺失");
+        if(cleanup.publicProfileRecovery!=null){
+            if(cleanup.prelaunchRecovery!=null||cleanup.postlaunchRecovery!=null||!publicProfileReconciliationIdle(ownedController))
+                throw new IllegalStateException("公共恢复的控制器工作尚未排空");
+            if(taskBackground!=null)taskBackground.acceptReconciliation(cleanup);return;
+        }
         if(cleanup.postlaunchRecovery!=null){
             if(cleanup.prelaunchRecovery!=null||!postlaunchReconciliationIdle(ownedController))
                 throw new IllegalStateException("已启动恢复的控制器工作尚未排空");

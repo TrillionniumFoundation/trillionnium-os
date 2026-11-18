@@ -31,6 +31,13 @@ final class ProfileTaskPlatform implements ProfileOwnedTask.Platform {
                 .requireDedicatedEmpty(actual.target);
         return actual;
     }
+    static ProfilePackages.Readback publicPreflight(Object activityTasks,ProfilePackages packages,
+            ProfileTarget expected,long deadline)throws Exception {
+        ProfilePackages.Readback actual=packages.read(expected.profile.userId,true,deadline);
+        ProfileTaskPolicy.need(expected.same(actual.target),"PROFILE_INSTALLATION_IDENTITY_CHANGED");
+        BackgroundTaskOrganizer.profileSnapshot(activityTasks).requireDedicatedEmpty(actual.target);
+        return actual;
+    }
     @Override public ProfileTarget recheck(boolean ready)throws Exception {
         ProfilePackages.Readback actual=packages.read(expected.profile.userId,ready,deadline.getAsLong());
         ProfileTaskPolicy.need(expected.same(actual.target),"PROFILE_INSTALLATION_IDENTITY_CHANGED");
@@ -47,6 +54,7 @@ final class ProfileTaskPlatform implements ProfileOwnedTask.Platform {
     @Override public ProfileTaskPolicy.Recents recents()throws Exception{
         return ProfileTaskPolicy.Recents.parse(BackgroundTaskOrganizer.profileRecents(deadline));
     }
+    @Override public String publicRecentsDump()throws Exception{return BackgroundTaskOrganizer.profileRecents(deadline);}
     @Override public List<BackgroundOwnedSingleTask.Task> roots()throws Exception{return organizer.roots();}
     @Override public List<BackgroundOwnedSingleTask.Task> children(Object token)throws Exception{return organizer.children(token);}
     @Override public ProfilePermissionTransient.Proof permissionTransient(BackgroundOwnedSingleTask.Task root,

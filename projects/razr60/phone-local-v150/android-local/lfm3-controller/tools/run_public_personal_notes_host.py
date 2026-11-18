@@ -16,6 +16,9 @@ def main():
     cleanup_ms=int(cleanup_constants[0]);assert cleanup_ms==1500
     start='    private void beginPublicNotesCleanup(){';end='    private void beginProfileCleanup(){'
     assert raw.count(start)==1 and raw.count(end)==1;hunk=raw[raw.index(start):raw.index(end)]
+    release_start='    private String releasedState() {';release_end='    private void haltAfterBootRead(int exit) {'
+    assert raw.count(release_start)==1 and raw.count(release_end)==1
+    release_hunk=raw[raw.index(release_start):raw.index(release_end)]
     bg=out/'fixture/org/trillionnium/hepta/background';bg.mkdir(parents=True,exist_ok=True)
     fixture=bg/'NotesCleanupAdapterFixture.java'
     fixture.write_text(('''package org.trillionnium.hepta.background;
@@ -24,7 +27,7 @@ final class NotesCleanupAdapterFixture {
  static final long CLEANUP_MS=__ACTUAL_CLEANUP_MS__;final Object dispatchGate=new Object();final CountDownLatch cleanupDone=new CountDownLatch(1);
  volatile PublicPersonalNotesCustody publicNotesCustody;volatile PublicPersonalNotesReader publicNotesReader;
  volatile VirtualDisplay virtual,publicCreateReturnedHandle;volatile boolean createInFlight,effectInFlight,serve;
- volatile String state="CLOSING",terminalReason="";long cleanupAt;int displayId=7;String displayName="owned-session";
+ volatile String state="CLOSING",terminalReason="",bootReadRetirementFailure;long cleanupAt;int displayId=7;String displayName="owned-session";
  final DisplayManager displays=new DisplayManager();ImageReader surfaceReader;HandlerThread displayThread;
  static final class SystemClock {static long elapsedRealtime(){return java.lang.System.nanoTime()/1000000L;}}
  static final class Display {final int id;final String name;Display(int i,String n){id=i;name=n;}String getName(){return name;}}
@@ -38,7 +41,7 @@ final class NotesCleanupAdapterFixture {
   virtual=new VirtualDisplay();publicCreateReturnedHandle=virtual;publicNotesReader=new PublicPersonalNotesReader();}
  void start(){cleanupAt=SystemClock.elapsedRealtime();beginPublicNotesCleanup();}
  void finished()throws Exception{if(!cleanupDone.await(3,TimeUnit.SECONDS))throw new AssertionError("cleanup did not finish");}
-'''+hunk+'}\n').replace('__ACTUAL_CLEANUP_MS__',str(cleanup_ms)));files.append(fixture)
+'''+release_hunk+hunk+'}\n').replace('__ACTUAL_CLEANUP_MS__',str(cleanup_ms)));files.append(fixture)
     reader=bg/'PublicPersonalNotesReader.java'
     reader.write_text('''package org.trillionnium.hepta.background;
 import java.util.*;import java.util.concurrent.*;

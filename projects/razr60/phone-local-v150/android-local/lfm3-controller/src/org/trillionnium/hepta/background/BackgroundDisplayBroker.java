@@ -50,6 +50,9 @@ public final class BackgroundDisplayBroker {
     private static final long STARTUP_MS = 8000, SOCKET_MS = 3000, CLEANUP_MS = 1500;
     private final BrokerProtocol.Config config;
     private final BrokerProtocol.Receipts receipts = new BrokerProtocol.Receipts();
+    // Published before the watchdog starts; cancellation addresses only this owned read-only child.
+    private final ProfileRecoveryBootCount publicBootCount=new ProfileRecoveryBootCount(SystemClock::elapsedRealtime);
+    private volatile String bootReadRetirementFailure;
     private final Object dispatchGate = new Object();
     private final long started = SystemClock.elapsedRealtime();
     private final long expires;
@@ -105,6 +108,7 @@ public final class BackgroundDisplayBroker {
     private volatile PermissionWindowObservation permissionWindow;
     private volatile String permissionWindowRequest;
     private volatile ProfileTaskPlatform profilePlatform;
+    private volatile PublicProfileRecentHistory.Baseline publicProfileHistory;
     private volatile BrokerProtocol.Request activeProfileRequest;
     private volatile WindowOwnership profileWindow;
     private volatile String profileWindowRequest;
@@ -176,7 +180,8 @@ public final class BackgroundDisplayBroker {
         displays = (DisplayManager) shell.getSystemService(Context.DISPLAY_SERVICE);
         keyguard = (KeyguardManager) shell.getSystemService(Context.KEYGUARD_SERVICE);
         if (displays == null || keyguard == null) throw new BrokerProtocol.Refusal("FRAMEWORK_SERVICE_MISSING");
-        if(config.publicOwnGroupScope!=null)publicOwnGroupFramework=new PublicOwnGroupFramework(shell,displays,config.publicOwnGroupScope);
+        if(config.publicOwnGroupScope!=null)publicOwnGroupFramework=new PublicOwnGroupFramework(
+                shell,displays,config.publicOwnGroupScope,publicBootCount,Math.min(expires,started+STARTUP_MS));
         requireUnlocked();
         virtualFlags = fields(DisplayManager.class, "VIRTUAL_DISPLAY_FLAG_PUBLIC", "VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY",
             "VIRTUAL_DISPLAY_FLAG_SUPPORTS_TOUCH", "VIRTUAL_DISPLAY_FLAG_DESTROY_CONTENT_ON_REMOVAL",
@@ -208,8 +213,7 @@ public final class BackgroundDisplayBroker {
         if(config.profileTarget==null) snapshot(); // Existing user-0 policy is unchanged.
         else {
             profilePackages=new ProfilePackages(shell);
-            profileReadback=ProfileTaskPlatform.preflight(activityTasks,profilePackages,
-                    config.profileTarget,Math.min(expires,started+STARTUP_MS));
+            profileReadback=profilePreflight(Math.min(expires,started+STARTUP_MS));
         }
         checkOwnerPackages();
         if(config.publicOwnGroupScope!=null&&config.profileTarget==null
@@ -338,8 +342,7 @@ public final class BackgroundDisplayBroker {
                     if(config.publicOwnGroupScope!=null&&publicCreateReturnedHandle!=null)
                         throw new BrokerProtocol.Refusal("PUBLIC_CREATE_HANDLE_ALREADY_BOUND");
                     ensureNameAbsent();
-                    if(config.profileTarget!=null)profileReadback=ProfileTaskPlatform.preflight(
-                            activityTasks,profilePackages,config.profileTarget,Math.min(r.deadline,expires));
+                    if(config.profileTarget!=null)profileReadback=profilePreflight(Math.min(r.deadline,expires));
                     final DisplayGeometry geometry = DisplayGeometry.snapshotDefault(displays);
                     displayGeometry = geometry;
                     guard(r, false);
@@ -581,6 +584,15 @@ public final class BackgroundDisplayBroker {
         if(!config.profileTarget.same(actual.target))throw new BrokerProtocol.Refusal("PROFILE_INSTALLATION_IDENTITY_CHANGED");
         profileReadback=actual;
     }
+    private ProfilePackages.Readback profilePreflight(long deadline)throws Exception{
+        if(config.publicOwnGroupScope==null)return ProfileTaskPlatform.preflight(activityTasks,profilePackages,config.profileTarget,deadline);
+        ProfilePackages.Readback actual=ProfileTaskPlatform.publicPreflight(activityTasks,profilePackages,config.profileTarget,deadline);
+        String raw=BackgroundTaskOrganizer.profileRecents(()->deadline);
+        if(publicProfileHistory==null)publicProfileHistory=new PublicProfileRecentHistory.Baseline(PublicProfileRecentHistory.absence(raw,actual.target),SystemClock.elapsedRealtime());
+        else publicProfileHistory.requireTargetAbsent(raw,actual.target,SystemClock.elapsedRealtime());
+        // Both actual Binder samples still require every target-profile live root/leaf absent.
+        BackgroundTaskOrganizer.profileSnapshot(activityTasks).requireDedicatedEmpty(actual.target);return actual;
+    }
     private long profileDeadline(){
         return cleanupStarted.get()?cleanupAt+CLEANUP_MS-100:
                 Math.min(expires,requestDeadline>0?requestDeadline:started+STARTUP_MS);
@@ -593,8 +605,12 @@ public final class BackgroundDisplayBroker {
     private void requireUnlaunchedProfileEmpty()throws Exception {
         ProfileTaskPolicy.Snapshot snapshot=BackgroundTaskOrganizer.profileSnapshot(activityTasks);
         snapshot.requireDedicatedEmpty(config.profileTarget);
-        ProfileTaskPolicy.Recents.parse(BackgroundTaskOrganizer.profileRecents(()->profileDeadline()))
-                .requireDedicatedEmpty(config.profileTarget);
+        String raw=BackgroundTaskOrganizer.profileRecents(()->profileDeadline());
+        if(config.publicOwnGroupScope==null)ProfileTaskPolicy.Recents.parse(raw).requireDedicatedEmpty(config.profileTarget);
+        else{
+            if(publicProfileHistory==null)throw new BrokerProtocol.Refusal("PUBLIC_HISTORY_BASELINE_UNAVAILABLE");
+            publicProfileHistory.requireTargetAbsent(raw,config.profileTarget,SystemClock.elapsedRealtime());
+        }
         for(ProfileTaskPolicy.Root root:snapshot.roots)if(root.display==displayId)
             throw new BrokerProtocol.Refusal("PROFILE_FOREIGN_ROOT_ON_DISPLAY");
     }
@@ -630,7 +646,7 @@ public final class BackgroundDisplayBroker {
             if(!initial.same(profileReadback.activity))throw new BrokerProtocol.Refusal("PROFILE_ACTIVITY_INFO_CHANGED");
             profilePlatform=new ProfileTaskPlatform(activityTasks,options,displayId,profilePackages,
                     config.profileTarget,()->profileActiveGuard(),()->profileDeadline());
-            profileOwnedTask=new ProfileOwnedTask(profilePlatform,config.profileTarget,config.generation,r.requestId,displayId);
+            profileOwnedTask=new ProfileOwnedTask(profilePlatform,config.profileTarget,config.generation,r.requestId,displayId,publicProfileHistory);
             effectInFlight=true;
             try{profileOwnedTask.prepare();}finally{effectInFlight=false;}
             guard(r,true);
@@ -955,22 +971,21 @@ public final class BackgroundDisplayBroker {
                 if (cleanupStarted.get() && now - cleanupAt >= CLEANUP_MS) {
                     boolean known = cleanupDone.getCount() == 0 && "RELEASED".equals(state);
                     if(config.profileTarget!=null&&profileCustody.known()){
-                        state="RELEASED";printTerminal();Runtime.getRuntime().halt(0);
+                        state=releasedState();haltAfterBootRead(0);
                     }
                     if(config.profileTarget!=null&&profileCustody.retain()){
                         quarantineProfile("cleanup_deadline");printTerminal();return;
                     }
                     if(publicNotesCustody!=null&&publicNotesCustody.known()){
-                        state="RELEASED";printTerminal();Runtime.getRuntime().halt(0);
+                        state=releasedState();haltAfterBootRead(0);
                     }
                     if(publicNotesCustody!=null&&publicNotesCustody.retain()){
                         quarantinePublicNotes("NOTES_CLEANUP_DEADLINE");printTerminal();return;
                     }
                     if (!known) state = "CLEANUP_UNKNOWN";
-                    printTerminal();
                     // Bound even a stalled cleanup or a client that stops reading the close response.
                     // Process death without confirmed absence is never labeled RELEASED.
-                    Runtime.getRuntime().halt(known ? 0 : 70);
+                    haltAfterBootRead(known ? 0 : 70);
                 }
                 if (!closing.get()) {
                     if (now >= expires) shutdown("SESSION_EXPIRED");
@@ -993,8 +1008,27 @@ public final class BackgroundDisplayBroker {
         serve = false; beginCleanup(reason); closeSockets();
     }
 
+    private void retireBootRead() {
+        try { publicBootCount.abortForDeadline(); }
+        catch(Throwable failure) { bootReadRetirementFailure=failure.getClass().getName(); }
+    }
+
+    private String releasedState() {
+        return bootReadRetirementFailure==null?"RELEASED":"CLEANUP_UNKNOWN";
+    }
+
+    private void haltAfterBootRead(int exit) {
+        try {
+            retireBootRead();
+            if(bootReadRetirementFailure!=null)state="CLEANUP_UNKNOWN";
+            printTerminal();
+        }
+        finally { Runtime.getRuntime().halt(bootReadRetirementFailure==null?exit:70); }
+    }
+
     private void beginCleanup(String reason) {
         closing.set(true);
+        retireBootRead();
         if(publicNotesCustody!=null)publicNotesCustody.retireAdmission();
         if(config.publicOwnGroupScope!=null){publicAdmissionRetired.set(true);beginPublicSurfaceDetach();}
         if (!cleanupStarted.compareAndSet(false, true)) return;
@@ -1027,7 +1061,7 @@ public final class BackgroundDisplayBroker {
                     Thread.sleep(25);
                 }
                 // A release exception can still end in proven absence; the actual absence is decisive.
-                state = gone && !createInFlight && !effectInFlight ? "RELEASED" : "CLEANUP_UNKNOWN";
+                state = gone && !createInFlight && !effectInFlight ? releasedState() : "CLEANUP_UNKNOWN";
                 if (releaseCallFailed && !gone) terminalReason += ":release_api_failed";
             } catch (Throwable error) { state = "CLEANUP_UNKNOWN"; }
             finally { cleanupDone.countDown(); }
@@ -1089,7 +1123,7 @@ public final class BackgroundDisplayBroker {
                 synchronized(dispatchGate){
                     if(!custody.createAttempted()){
                         if(virtual!=null||createInFlight||effectInFlight)throw new IOException("NOTES_CREATE_STATE_UNKNOWN");
-                        custody.notCreated();state="RELEASED";return;
+                        custody.notCreated();state=releasedState();return;
                     }
                     PublicPersonalNotesReader reader=publicNotesReader;
                     if(reader==null||virtual==null||virtual!=publicCreateReturnedHandle||createInFlight||effectInFlight)
@@ -1114,7 +1148,7 @@ public final class BackgroundDisplayBroker {
                     PublicOwnGroupPhysicalFence.RecentCensus recents=publicNotesReader.recents();
                     long finish=SystemClock.elapsedRealtime();
                     custody.observeAbsence(live,recents,remaining,publicOwnedDisplayAbsent(),begin,finish,SystemClock.elapsedRealtime());
-                    if(custody.known()){state="RELEASED";return;}
+                    if(custody.known()){state=releasedState();return;}
                     Thread.sleep(50);
                 }
                 throw new IOException("NOTES_CLEANUP_ABSENCE_DEADLINE");
@@ -1134,7 +1168,7 @@ public final class BackgroundDisplayBroker {
     private void quarantinePublicNotes(String reason){
         PublicPersonalNotesCustody custody=publicNotesCustody;
         if(custody!=null&&!custody.known())custody.unresolved(reason);
-        serve=false;state=custody!=null&&custody.known()?"RELEASED":"CLEANUP_UNKNOWN";
+        serve=false;state=custody!=null&&custody.known()?releasedState():"CLEANUP_UNKNOWN";
         if(terminalReason.isEmpty())terminalReason=reason==null?"NOTES_CLEANUP_UNKNOWN":reason;
         LocalServerSocket socket=server;if(socket!=null)try{socket.close();}catch(IOException ignored){}
     }
@@ -1179,7 +1213,13 @@ public final class BackgroundDisplayBroker {
                     Thread.sleep(25);
                 }
                 if(!gone)throw new IOException("PROFILE_DISPLAY_ABSENCE_UNCONFIRMED");
-                profileCustody.displayVerifiedAbsent();state="RELEASED";
+                if(publicProfileHistory!=null){
+                    recheckProfile(false,cleanupAt+CLEANUP_MS-100);
+                    BackgroundTaskOrganizer.profileSnapshot(activityTasks).requireDedicatedEmpty(config.profileTarget);
+                    publicProfileHistory.requireTargetAbsent(BackgroundTaskOrganizer.profileRecents(()->cleanupAt+CLEANUP_MS-100),
+                            config.profileTarget,SystemClock.elapsedRealtime());
+                }
+                profileCustody.displayVerifiedAbsent();state=releasedState();
             }catch(Throwable error){
                 // Never release, close the surface, halt, or exit merely because retire failed.
                 if(profileOwnedTask!=null)refreshProfileTaskEvidence();
@@ -1200,7 +1240,10 @@ public final class BackgroundDisplayBroker {
         out.put("user_id",target.profile.userId);out.put("user_serial",target.profile.serial);out.put("full_uid",target.fullUid);
         out.put("cleanup_known",known);out.put("live_tasks_absent",known);out.put("recents_tasks_absent",known);
         out.put("foreign_tasks_present",false);out.put("identity_unknown",!known);
-        out.put("owned_tasks",java.util.Collections.emptyList());return java.util.Collections.unmodifiableMap(out);
+        out.put("owned_tasks",java.util.Collections.emptyList());
+        if(publicProfileHistory!=null){out.put("public_foreign_recent_history",publicProfileHistory.evidence());
+            out.put("recents_absence_scope","owned_target_only_with_foreign_history_preserved");}
+        return java.util.Collections.unmodifiableMap(out);
     }
     private void quarantineProfile(String reason){
         profileCustody.unresolved();serve=false;state="CLEANUP_UNKNOWN";
@@ -1233,6 +1276,10 @@ public final class BackgroundDisplayBroker {
         DisplayGeometry geometry=displayGeometry;
         PublicOwnGroupPolicy.Readback publicReply=null;
         if(config.publicOwnGroupScope!=null&&r!=null&&ok&&"ACTIVE".equals(state)&&!closing.get()&&!publicAdmissionRetired.get()){
+            if(config.profileTarget!=null){
+                if(profileOwnedTask==null)requireUnlaunchedProfileEmpty();
+                else profileOwnedTask.verifyPublicRecentHistory();
+            }
             publicReply=publicOwnGroupFramework.read(r.requestId,displayId,displayName);
             if(closing.get()||publicAdmissionRetired.get()||!"ACTIVE".equals(state))throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_RETIRED_DURING_READ");
         }
@@ -1252,7 +1299,8 @@ public final class BackgroundDisplayBroker {
             value.put("display_scope_sha256",config.publicOwnGroupScope.sha256)
                 .put("public_own_group_readback_wire",publicReply==null?JSONObject.NULL:publicReply.wire())
                 .put("public_scope_admission_retired",publicAdmissionRetired.get()).put("public_scope_closing",closing.get()).put("public_surface_detach",publicDetachEvidence())
-                .put("public_task_location",publicTaskFence==null?JSONObject.NULL:new JSONObject(publicTaskFence.evidence()));
+                .put("public_task_location",publicTaskFence==null?JSONObject.NULL:new JSONObject(publicTaskFence.evidence()))
+                .put("public_profile_recent_history",publicProfileHistory==null?JSONObject.NULL:new JSONObject(publicProfileHistory.evidence()));
         }
         if (r != null) {value.put("operation", r.operation);
             if(fixedIntentProofs.containsKey(r.requestId))value.put("fixed_intent",fixedIntentProofs.get(r.requestId));
@@ -1288,6 +1336,7 @@ public final class BackgroundDisplayBroker {
         try { JSONObject terminal=new JSONObject().put("schema", "hepta.background-broker-terminal.v1")
             .put("generation", config.generation).put("state", state).put("display_id", displayId)
             .put("reason", terminalReason).put("release_confirmed", "RELEASED".equals(state))
+            .put("boot_count_read_retirement_failure",bootReadRetirementFailure==null?JSONObject.NULL:bootReadRetirementFailure)
             .put("owned_single_task",ownedSingleTask==null?JSONObject.NULL:new JSONObject(ownedSingleTask.evidence()))
             .put("profile_cleanup",config.profileTarget==null?JSONObject.NULL:new JSONObject(
                     profileCleanupReadback==null?emptyProfileCleanup(false):profileCleanupReadback))

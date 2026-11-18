@@ -23,6 +23,7 @@ public final class ProfileOwnedTask {
         Object newCookie();
         ProfileTaskPolicy.Snapshot snapshot()throws Exception;
         ProfileTaskPolicy.Recents recents()throws Exception;
+        default String publicRecentsDump()throws Exception{throw new IllegalStateException("PUBLIC_HISTORY_PLATFORM_UNAVAILABLE");}
         List<BackgroundOwnedSingleTask.Task> roots()throws Exception;
         List<BackgroundOwnedSingleTask.Task> children(Object token)throws Exception;
         void createRoot(Object cookie)throws Exception;
@@ -33,8 +34,17 @@ public final class ProfileOwnedTask {
         default ProfilePermissionTransient.Proof permissionTransient(BackgroundOwnedSingleTask.Task root,
                 BackgroundOwnedSingleTask.Task leaf)throws Exception{return null;}
     }
+    /** Package-local public-mode observation seam. The default private path has
+     * no dependency on public recents/JSON adapters and retains its strict gate. */
+    interface PublicRecentHistory {
+        void observe(String raw,ProfileTarget target,BackgroundOwnedSingleTask.Task root,
+                BackgroundOwnedSingleTask.Task leaf,int display,long elapsed)throws Exception;
+        Set<Integer> observedIds();
+        Map<String,Object> evidence();
+    }
     private final Platform platform;
     private final ProfileTarget target;
+    private final PublicRecentHistory publicHistory;
     private final String generation,requestId;
     private final int display;
     private final Object rootCookie,launchCookie;
@@ -49,9 +59,14 @@ public final class ProfileOwnedTask {
     private boolean identityUnknown,foreignTasks,cleanupKnown,liveAbsent,recentsAbsent;
     private String recentsBeforeSha,recentsAfterSha;
     public ProfileOwnedTask(Platform platform,ProfileTarget target,String generation,String requestId,int display)throws Exception{
+        this(platform,target,generation,requestId,display,null);
+    }
+    public ProfileOwnedTask(Platform platform,ProfileTarget target,String generation,String requestId,int display,
+            PublicRecentHistory publicHistory)throws Exception{
         need(platform!=null&&target!=null&&ProfileIdentity.uuid(generation)&&ProfileIdentity.uuid(requestId)&&display>0,
                 "PROFILE_OWNED_ARGUMENTS_INVALID");
         this.platform=platform;this.target=target;this.generation=generation;this.requestId=requestId;this.display=display;
+        this.publicHistory=publicHistory;need(publicHistory==null||display>1,"PUBLIC_HISTORY_DISPLAY_INVALID");
         rootCookie=platform.newCookie();launchCookie=platform.newCookie();
         need(rootCookie!=null&&launchCookie!=null&&!rootCookie.equals(launchCookie),"PROFILE_COOKIE_INVALID");
     }
@@ -59,22 +74,22 @@ public final class ProfileOwnedTask {
         need(!rootAttempted&&!prepared,"PROFILE_LAUNCH_ALREADY_ATTEMPTED");
         platform.guard();actual(true);
         ProfileTaskPolicy.Snapshot before=platform.snapshot();before.requireDedicatedEmpty(target);
-        ProfileTaskPolicy.Recents recents=platform.recents();recents.requireDedicatedEmpty(target);
-        beforeIds.addAll(before.allIds);beforeIds.addAll(recents.ids);personal=before.personalTargets();
+        ProfileTaskPolicy.Recents recents=readRecents();requireRecentEmpty(recents);
+        beforeIds.addAll(before.allIds);beforeIds.addAll(recentIds(recents));personal=before.personalTargets();
         personalAudit=before.personalAudit(personal);
         recentsBeforeSha=recents.sha256;
         need(checked(platform.roots()).isEmpty(),"PROFILE_DISPLAY_NOT_EMPTY");
-        platform.guard();rootAttempted=true;platform.createRoot(rootCookie);
+        platform.guard();if(publicHistory!=null)requireRecentEmpty(readRecents());rootAttempted=true;platform.createRoot(rootCookie);
         List<BackgroundOwnedSingleTask.Task> roots=checked(platform.roots());
         need(roots.size()==1,"PROFILE_NEW_ROOT_NOT_UNIQUE");root=roots.get(0);
         requireRoot(root,false);
         need(!beforeIds.contains(root.id)&&checked(platform.children(root.token)).isEmpty(),"PROFILE_ROOT_PREEXISTED");
-        requirePrepared();platform.guard();platform.bindRoot(root.token,launchCookie);prepared=true;
+        requirePrepared();platform.guard();if(publicHistory!=null)requireRecentEmpty(readRecents());platform.bindRoot(root.token,launchCookie);prepared=true;
     }
     public synchronized void beforeDispatch()throws Exception{
         need(prepared&&!dispatchMarked&&!retiring,"PROFILE_LAUNCH_ALREADY_ATTEMPTED");
         platform.guard();actual(true);requirePrepared();
-        platform.recents().requireDedicatedEmpty(target);platform.guard();dispatchMarked=true;
+        requireRecentEmpty(readRecents());platform.guard();dispatchMarked=true;
     }
     public synchronized void accepted(int result)throws Exception{
         need(dispatchMarked&&!startAccepted&&result==0,"PROFILE_START_NOT_FRESH_SUCCESS");startAccepted=true;
@@ -150,7 +165,7 @@ public final class ProfileOwnedTask {
         need(proof!=null,"PROFILE_PERMISSION_PROOF_UNAVAILABLE");
         if(leaf==null){leaf=candidate;leafTokenId=UUID.randomUUID().toString();}
         else need(sameTask(leaf,candidate),"PROFILE_LEAF_TOKEN_CHANGED");
-        platform.recents().requireOnlyOwned(target,candidate.id);platform.guard();
+        requireRecentOnlyOwned(readRecents(),candidate.id);platform.guard();
         long now=platform.now();need(now<deadline,"PROFILE_PERMISSION_READ_DEADLINE");
         proof.requireMatches(target,currentRoot,candidate,now);
         return new PermissionRead(target,generation,windowId,currentRoot,candidate,leafTokenId,proof,now,deadline);
@@ -202,7 +217,7 @@ public final class ProfileOwnedTask {
         try{
             actual(false);
             if(!rootAttempted){
-                platform.snapshot().requireDedicatedEmpty(target);platform.recents().requireDedicatedEmpty(target);
+                platform.snapshot().requireDedicatedEmpty(target);requireRecentEmpty(readRecents());
                 need(checked(platform.roots()).isEmpty(),"PROFILE_FOREIGN_ROOT_ON_DISPLAY");
                 liveAbsent=true;recentsAbsent=true;cleanupKnown=true;return;
             }
@@ -223,28 +238,29 @@ public final class ProfileOwnedTask {
                     if(leaf==null){leaf=candidate;leafTokenId=UUID.randomUUID().toString();}
                     else need(sameTask(leaf,candidate),"PROFILE_LEAF_TOKEN_CHANGED");
                     global.requireOnlyOwned(target,display,root.id,leaf.id);
-                    platform.recents().requireOnlyOwned(target,leaf.id);
+                    requireRecentOnlyOwned(readRecents(),leaf.id);
                     if(permission!=null)permission.requireMatches(target,currentRoot,candidate,platform.now());
                     // Retained real WindowContainerToken only. No removal by arbitrary task ID.
                     platform.removeLeaf(leaf.token);leafRemoved=true;
                 }else{
                     requireRoot(currentRoot,true);
                     global.requireDedicatedEmpty(target);
-                    if(leaf!=null)need(!global.allIds.contains(leaf.id)&&!platform.recents().ids.contains(leaf.id),
+                    if(leaf!=null)need(!global.allIds.contains(leaf.id)&&!recentIds(readRecents()).contains(leaf.id),
                             "PROFILE_DETACHED_RECENT_LEAF_UNRESOLVED");
                 }
                 while(platform.now()<deadline){
                     actual(false);
                     ProfileTaskPolicy.Snapshot current=platform.snapshot();personalAudit=current.personalAudit(personal);
-                    ProfileTaskPolicy.Recents recent=platform.recents();recentsAfterSha=recent.sha256;
-                    recent.requireOnlyOwned(target,leaf==null?-1:leaf.id);
-                    boolean noLeaf=(leaf==null||(!current.allIds.contains(leaf.id)&&!recent.ids.contains(leaf.id)));
+                    ProfileTaskPolicy.Recents recent=readRecents();recentsAfterSha=recent.sha256;
+                    requireRecentOnlyOwned(recent,leaf==null?-1:leaf.id);
+                    boolean noLeaf=(leaf==null||(!current.allIds.contains(leaf.id)&&!recentIds(recent).contains(leaf.id)));
                     if(noLeaf){
-                        current.requireDedicatedEmpty(target);recent.requireDedicatedEmpty(target);
+                        current.requireDedicatedEmpty(target);requireRecentEmpty(recent);
                         List<BackgroundOwnedSingleTask.Task> currentRoots=checked(platform.roots());
                         need(currentRoots.size()==1,"PROFILE_ROOT_CHANGED_DURING_RETIRE");
                         requireRoot(currentRoots.get(0),false);
                         need(checked(platform.children(root.token)).isEmpty(),"PROFILE_ROOT_CHILDREN_REMAIN");
+                        if(publicHistory!=null)requireRecentEmpty(readRecents());
                         need(platform.deleteRoot(root.token),"PROFILE_ROOT_DELETE_NOT_ACCEPTED");rootRemoved=true;break;
                     }
                     // Any unrelated profile leaf or task on this display vetoes further cleanup.
@@ -270,8 +286,8 @@ public final class ProfileOwnedTask {
     public synchronized boolean absent()throws Exception{
         if(identityUnknown||!retiring)return false;
         actual(false);ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(personal);
-        ProfileTaskPolicy.Recents recent=platform.recents();recentsAfterSha=recent.sha256;
-        global.requireDedicatedEmpty(target);recent.requireDedicatedEmpty(target);
+        ProfileTaskPolicy.Recents recent=readRecents();recentsAfterSha=recent.sha256;
+        global.requireDedicatedEmpty(target);requireRecentEmpty(recent);
         List<BackgroundOwnedSingleTask.Task> remaining=checked(platform.roots());
         if(!remaining.isEmpty()){
             need(rootRemoved&&remaining.size()==1,"PROFILE_FOREIGN_ROOT_ON_DISPLAY");
@@ -280,7 +296,7 @@ public final class ProfileOwnedTask {
             return false;
         }
         liveAbsent=(root==null||!global.allIds.contains(root.id))&&(leaf==null||!global.allIds.contains(leaf.id));
-        recentsAbsent=(root==null||!recent.ids.contains(root.id))&&(leaf==null||!recent.ids.contains(leaf.id));
+        recentsAbsent=(root==null||!recentIds(recent).contains(root.id))&&(leaf==null||!recentIds(recent).contains(leaf.id));
         cleanupKnown=liveAbsent&&recentsAbsent&&(!dispatchMarked||leaf!=null);
         return cleanupKnown;
     }
@@ -301,7 +317,10 @@ public final class ProfileOwnedTask {
             item.put("task_token_id",leafTokenId);item.put("user_id",leaf.user);item.put("user_serial",target.profile.serial);
             item.put("full_uid",leaf.uid);item.put("live_absent",liveAbsent);item.put("recents_absent",recentsAbsent);owned.add(item);
         }
-        out.put("owned_tasks",owned);return Collections.unmodifiableMap(out);
+        out.put("owned_tasks",owned);
+        if(publicHistory!=null){out.put("public_foreign_recent_history",publicHistory.evidence());
+            out.put("recents_absence_scope","owned_target_only_with_foreign_history_preserved");}
+        return Collections.unmodifiableMap(out);
     }
     public synchronized Map<String,Object> evidence(){
         Map<String,Object> out=new LinkedHashMap<String,Object>();
@@ -317,6 +336,7 @@ public final class ProfileOwnedTask {
         out.put("personal_task_audit",personalAudit);
         out.put("last_leaf_validation",lastLeafValidation);
         out.put("permission_transient",permissionEvidence);
+        if(publicHistory!=null)out.put("public_foreign_recent_history",publicHistory.evidence());
         out.put("cleanup",cleanupEvidence());return Collections.unmodifiableMap(out);
     }
     private ProfileTarget actual(boolean ready)throws Exception{
@@ -330,6 +350,7 @@ public final class ProfileOwnedTask {
         need(roots.size()==1,"PROFILE_PREPARED_ROOT_CHANGED");requireRoot(roots.get(0),false);
         need(checked(platform.children(root.token)).isEmpty(),"PROFILE_PREPARED_ROOT_NOT_EMPTY");
         global.requireOnlyOwned(target,display,root.id,-1);
+        if(publicHistory!=null)requireRecentEmpty(readRecents());
     }
     private static final class VerifiedPermissionPending extends Exception {
         private static final long serialVersionUID=1L;
@@ -354,6 +375,7 @@ public final class ProfileOwnedTask {
             if(leaf==null){leaf=candidate;leafTokenId=UUID.randomUUID().toString();}
             else need(sameTask(leaf,candidate),"PROFILE_LEAF_TOKEN_CHANGED");
             global.requireOnlyOwned(target,display,root.id,candidate.id);
+            if(publicHistory!=null)requireRecentOnlyOwned(readRecents(),candidate.id);
             throw new VerifiedPermissionPending();
         }
         requireRoot(roots.get(0),true);
@@ -361,14 +383,31 @@ public final class ProfileOwnedTask {
         need(children.size()<=1,"PROFILE_FOREIGN_CHILD_TASK");
         if(children.isEmpty()){
             need(leaf==null,"PROFILE_OWNED_LEAF_DISAPPEARED");
-            global.requireOnlyOwned(target,display,root.id,-1);return null;
+            global.requireOnlyOwned(target,display,root.id,-1);
+            if(publicHistory!=null)requireRecentEmpty(readRecents());return null;
         }
         BackgroundOwnedSingleTask.Task candidate=children.get(0);requireLeaf(candidate,global);
         if(leaf==null){leaf=candidate;leafTokenId=UUID.randomUUID().toString();}
         else need(sameTask(leaf,candidate),"PROFILE_LEAF_TOKEN_CHANGED");
         global.requireOnlyOwned(target,display,root.id,candidate.id);
+        if(publicHistory!=null)requireRecentOnlyOwned(readRecents(),candidate.id);
         if(visible&&(!candidate.running||!candidate.visible||candidate.activities<1))return null;
         return candidate;
+    }
+    private ProfileTaskPolicy.Recents readRecents()throws Exception{
+        if(publicHistory==null)return platform.recents();
+        String raw=platform.publicRecentsDump();ProfileTaskPolicy.Recents recent=ProfileTaskPolicy.Recents.parse(raw);
+        publicHistory.observe(raw,target,root,leaf,display,platform.now());return recent;
+    }
+    public synchronized void verifyPublicRecentHistory()throws Exception{if(publicHistory!=null)readRecents();}
+    private Set<Integer> recentIds(ProfileTaskPolicy.Recents recent){return publicHistory==null?recent.ids:publicHistory.observedIds();}
+    private void requireRecentEmpty(ProfileTaskPolicy.Recents recent)throws Exception{
+        if(publicHistory==null)recent.requireDedicatedEmpty(target);
+        else need(leaf==null||!publicHistory.observedIds().contains(leaf.id),"PUBLIC_HISTORY_OWNED_TARGET_RECENT_REMAINS");
+    }
+    private void requireRecentOnlyOwned(ProfileTaskPolicy.Recents recent,int id)throws Exception{
+        if(publicHistory==null)recent.requireOnlyOwned(target,id);
+        else need(id<0||leaf!=null&&leaf.id==id,"PUBLIC_HISTORY_OWNED_TARGET_UNBOUND");
     }
     private void requireRoot(BackgroundOwnedSingleTask.Task current,boolean mayHaveActivities)throws Exception{
         requireRootIdentity(current);

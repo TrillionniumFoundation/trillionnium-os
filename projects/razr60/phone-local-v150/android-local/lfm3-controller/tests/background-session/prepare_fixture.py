@@ -12,6 +12,7 @@ def prepare(source,output):
   dst=output/name;dst.parent.mkdir(parents=True,exist_ok=True);text=(fixtures/name).read_text()
   if name=='org/json/JSONObject.java':
    text=text.replace('    public boolean has(String key)', '    public String optString(String key){return optString(key,"");}\n    public boolean has(String key)')
+   text=text.replace('    private static String quote(', '    public static String quote(')
   if name=='android/system/Os.java':
    text=text.replace(' public static void close(', ' public static boolean failUnlink;\n public static void remove(String s)throws Exception{if(failUnlink)throw new IOException("synthetic remove failure");Files.delete(Paths.get(s));}\n public static void rename(String a,String b)throws Exception{Files.move(Paths.get(a),Paths.get(b),StandardCopyOption.REPLACE_EXISTING);}\n public static void close(')
   dst.write_text(text);files.append(dst)
@@ -40,6 +41,9 @@ public final class LocalSocket implements Closeable {
  public InputStream getInputStream()throws IOException{events.add("input");sent=output.toByteArray();try{return new ByteArrayInputStream(responder.reply(sent));}catch(IOException e){throw e;}catch(Exception e){throw new IOException(e);}}
  public void close(){events.add("close");connected=false;}
 }''',
+ 'org/trillionnium/hepta/background/RecoveryControllerIdentity.java':'''package org.trillionnium.hepta.background;
+/** Explicit unavailable PackageManager/APK IO for generic legacy tests. */
+public final class RecoveryControllerIdentity {public static org.json.JSONObject read(android.content.Context context,int uid,long deadline)throws Exception{throw new java.io.IOException("host fixture cannot certify a current installed APK");}}''',
  'org/trillionnium/hepta/local/HostRecoveryProcessBoundary.java':'''package org.trillionnium.hepta.local;
 /** Root-process IO is unavailable in this generic host fixture; never returns synthetic authority. */
 final class HostRecoveryProcessBoundary {static Process start(String command)throws java.io.IOException{throw new java.io.IOException("host fixture cannot launch a recovery root process");}}''',
@@ -55,8 +59,8 @@ final class HostRecoveryProcessBoundary {static Process start(String command)thr
  'BackgroundTaskTarget','NativeAppGoal','NotesOwnerIntent','TaskAuthorization','ActionDecision','DecisionGrammar',
  'ObservedTargetLabels','ObservedAppLabels','ObservedScrollActions','ObservedImeEnter','AppCatalogueRanker')]
  files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java']
- files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('BrokerProtocol','PublicOwnGroupPolicy')]
- files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','WindowOwnership','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfilePrelaunchRecovery','ProfilePostlaunchRecovery','PermissionWindowObservation','ProfileOwnedTask','ProfilePermissionTransient','ProfileDisplayCustody')]
+ files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('BrokerProtocol','PublicOwnGroupPolicy','PublicOwnGroupPhysicalFence','PublicProfileRecentHistory')]
+ files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','WindowOwnership','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfilePrelaunchRecovery','ProfilePostlaunchRecovery','PublicProfileAbsenceRecovery','PermissionWindowObservation','ProfileOwnedTask','ProfilePermissionTransient','ProfileDisplayCustody')]
  # Keep the actual recovery client, projecting only the root process factory to a refusing IO boundary.
  # The dedicated recovery gate replaces the same factory with its explicit owned-process fixture.
  recovery_source=pkg/'ProfileRecoveryClient.java';recovery_raw=recovery_source.read_text()
@@ -70,6 +74,11 @@ final class HostRecoveryProcessBoundary {static Process start(String command)thr
  post_projection=output/'org/trillionnium/hepta/local/ProfilePostlaunchRecoveryClient.java'
  post_projection.write_text(post_raw.replace(recovery_seam,'HostRecoveryProcessBoundary.start(command)'))
  files.append(post_projection)
+ public_source=pkg/'PublicProfileRecoveryClient.java';public_raw=public_source.read_text()
+ if public_raw.count(recovery_seam)!=1:raise RuntimeError('nonunique public recovery process factory seam')
+ public_projection=output/'org/trillionnium/hepta/local/PublicProfileRecoveryClient.java'
+ public_projection.write_text(public_raw.replace(recovery_seam,'HostRecoveryProcessBoundary.start(command)'))
+ files.append(public_projection)
  # The exact finalization block is shared with the existing warm-finalization harness.
  # Android/model IO remains fake; the status policy itself is not reimplemented here.
  warm_helper=source/'tests/warm-finalization/prepare_fixture.py'
@@ -79,5 +88,6 @@ final class HostRecoveryProcessBoundary {static Process start(String command)thr
  files += [p for p in terminal_files if p.name in ('LocalInference.java','ControllerFinalizationFixture.java','TaskCancellationQueue.java')]
 
  records={'schema':'hepta.background-client-host-extraction.v1','actual_full_classes':['BackgroundSession','MobiMindPrivateFiles','QualificationScope','BrokerProtocol','ProfilePrelaunchRecovery','ProfilePostlaunchRecovery','ProfileTaskPolicy','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask'],'actual_files_root_sha256':hashlib.sha256(part.encode()).hexdigest(),'boundary':'Android LocalSocket/DisplayManager/Keyguard/clock IO are explicit fakes; no broker process, Android runtime, root, model or phone actions','source_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in files if p.parent==pkg},'controller_finalization':terminal_record,'recovery_client_projection':{'source_sha256':hashlib.sha256(recovery_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(recovery_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','recovery_success_or_phone_qualification_claimed':False},'postlaunch_client_projection':{'source_sha256':hashlib.sha256(post_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(post_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','recovery_success_or_phone_qualification_claimed':False}}
+ records['public_profile_client_projection']={'source_sha256':hashlib.sha256(public_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(public_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','installed_identity_boundary':'explicit always-unavailable PackageManager/APK test double','recovery_success_or_phone_qualification_claimed':False}
  (output/'EXTRACTION.json').write_text(json.dumps(records,indent=2)+'\n')
  return files,records

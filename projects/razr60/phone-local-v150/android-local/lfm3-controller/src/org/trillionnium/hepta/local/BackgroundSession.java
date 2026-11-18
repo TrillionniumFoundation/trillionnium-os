@@ -145,13 +145,18 @@ final class BackgroundSession {
         final boolean known;final JSONObject evidence;
         final ProfileRecoveryClient.Receipt prelaunchRecovery;
         final ProfilePostlaunchRecoveryClient.Receipt postlaunchRecovery;
+        final PublicProfileRecoveryClient.Receipt publicProfileRecovery;
         Cleanup(boolean known,JSONObject evidence){this(known,evidence,null,null);}
         private Cleanup(boolean known,JSONObject evidence,ProfileRecoveryClient.Receipt receipt){
             this(known,evidence,receipt,null);
         }
         private Cleanup(boolean known,JSONObject evidence,ProfileRecoveryClient.Receipt prelaunch,
                 ProfilePostlaunchRecoveryClient.Receipt postlaunch){
-            this.known=known;this.evidence=evidence;prelaunchRecovery=prelaunch;postlaunchRecovery=postlaunch;
+            this(known,evidence,prelaunch,postlaunch,null);
+        }
+        private Cleanup(boolean known,JSONObject evidence,ProfileRecoveryClient.Receipt prelaunch,
+                ProfilePostlaunchRecoveryClient.Receipt postlaunch,PublicProfileRecoveryClient.Receipt publicProfile){
+            this.known=known;this.evidence=evidence;prelaunchRecovery=prelaunch;postlaunchRecovery=postlaunch;publicProfileRecovery=publicProfile;
         }
     }
     final String taskId,generation,socketName,displayName,ownerSha256;
@@ -313,8 +318,23 @@ final class BackgroundSession {
             &&("INITIAL".equals(state)||"CLEANUP_UNKNOWN".equals(state));}
     synchronized boolean postlaunchRecoveryEligible(){return publicOwnGroupScope==null&&profileTarget()!=null&&retired&&profileLaunchAttempted&&displayId>0
             &&"CLEANUP_UNKNOWN".equals(state);}
+    /** This is a distinct drained public lease, not an extension of private proof authority. */
+    synchronized boolean publicProfileRecoveryEligible(){return publicOwnGroupScope!=null&&profileTarget()!=null&&profileTarget().profile.userId==10
+            &&retired&&!profileLaunchAttempted&&!bootstrapDispatched&&!permissionPreparing&&displayId==-1
+            &&brokerExitObserved&&brokerExitCode!=null&&"CLEANUP_UNKNOWN".equals(state);}
     synchronized void acceptReconciliation(Cleanup result)throws Exception{
         if(result==null)throw new IOException("后台清理凭据缺失");
+        if(result.publicProfileRecovery!=null){
+            PublicProfileRecoveryClient.Receipt receipt=result.publicProfileRecovery;
+            if(result.prelaunchRecovery!=null||result.postlaunchRecovery!=null||!result.known||!publicProfileRecoveryEligible()
+                    ||hasUnreleased(context)||!displayAbsent(context,-1,displayName)
+                    ||!generation.equals(result.evidence.getString("generation"))
+                    ||!org.trillionnium.hepta.background.PublicProfileAbsenceRecovery.SOURCE.equals(result.evidence.getString("reconciliation_source"))
+                    ||!receipt.receiptSha256().equals(result.evidence.getString("public_profile_receipt_sha256")))
+                throw new IOException("公共恢复凭据不属于当前已停止的租约");
+            receipt.requireLease(taskId,generation,ownerSha256,createdElapsed,expiresElapsed,bootCount,profileTarget(),publicOwnGroupScope);
+            retirePublicScope();retired=true;state="RELEASED";cleanupConfirmed=true;return;
+        }
         if(result.postlaunchRecovery!=null){
             ProfilePostlaunchRecoveryClient.Receipt receipt=result.postlaunchRecovery;
             if(result.prelaunchRecovery!=null||!result.known||!postlaunchRecoveryEligible()
@@ -328,7 +348,7 @@ final class BackgroundSession {
         }
         if(result.prelaunchRecovery==null){acceptReconciliation(result.evidence);return;}
         ProfileRecoveryClient.Receipt receipt=result.prelaunchRecovery;
-        if(!result.known||profileTarget()==null||profileLaunchAttempted||displayId!=-1
+        if(!result.known||publicOwnGroupScope!=null||profileTarget()==null||profileLaunchAttempted||displayId!=-1
                 ||hasUnreleased(context)||!displayAbsent(context,displayId,displayName)
                 ||!generation.equals(result.evidence.getString("generation"))
                 ||!ProfilePrelaunchRecovery.SOURCE.equals(result.evidence.getString("reconciliation_source"))
@@ -994,11 +1014,31 @@ final class BackgroundSession {
         QualificationScopeConfig.FilesRoot root=new QualificationScopeConfig.FilesRoot(context);
         File path=new File(root.path,JOURNAL);
         if(!MobiMindPrivateFiles.exists(path))return new Cleanup(true,new JSONObject().put("cleanup_known",true).put("no_lease",true));
-        byte[] originalJournal=MobiMindPrivateFiles.read(path,16384,true).bytes;
+        MobiMindPrivateFiles.Read originalRead=MobiMindPrivateFiles.read(path,16384,true);
+        byte[] originalJournal=originalRead.bytes;
         JSONObject old=parseJournal(originalJournal);String generation=old.getString("generation"),socket=old.getString("socket"),name=old.getString("display_name");
         if(!isUuid(generation)||!("hepta-bg-"+generation).equals(socket)||!socket.equals(name))throw new IOException("旧后台租约身份无效");
         int id=old.getInt("display_id");long expiry=old.getLong("expires_elapsed_ms");
         ProfileTarget target=journalProfileTarget(old);PublicOwnGroupPolicy.Scope publicScope=journalPublicScope(old);
+        if(publicScope!=null&&target!=null&&target.profile.userId==10&&prelaunchCheck!=null&&id==-1
+                &&Boolean.FALSE.equals(old.get("profile_launch_attempted"))&&"CLEANUP_UNKNOWN".equals(old.getString("state"))
+                &&readBootCount(context)==old.getInt("boot_count")&&expiry<Long.MAX_VALUE-2000
+                &&SystemClock.elapsedRealtime()>expiry+2000){
+            // The normal UI epoch, serial recovery writer and drained service exclude Start/close.
+            // Do not send even an old-broker close command in this read-only recovery branch.
+            prelaunchCheck.check();originalRead.unchangedPath();
+            PublicProfileRecoveryClient.Receipt receipt=PublicProfileRecoveryClient.collect(context,originalRead,prelaunchCheck);
+            receipt.persist(context);final JSONObject verifiedEvidence=receipt.evidence();
+            prelaunchCheck.check();root.unchanged(context);receipt.requireOriginals(true);originalRead.unchangedPath();
+            byte[] current=MobiMindPrivateFiles.read(path,16384,true).bytes;
+            if(!java.util.Arrays.equals(originalJournal,current)||!receipt.request.journalSha256.equals(HeptaAccessibilityService.sha(current))
+                    ||!displayAbsent(context,-1,name))throw new IOException("公共恢复期间原租约或显示状态发生变化");
+            receipt.request.requireFence(SystemClock.elapsedRealtime(),readBootCount(context));
+            prelaunchCheck.check();root.unchanged(context);originalRead.unchangedPath();
+            // Commit only the background lease. All original failure files and independent leases remain.
+            Os.remove(path.getPath());MobiMindPrivateFiles.syncDirectory(root.path);
+            return new Cleanup(true,verifiedEvidence,null,null,receipt);
+        }
         int recoveryVersion=publicScope==null?(target==null?BrokerProtocol.VERSION:BrokerProtocol.PROFILE_VERSION)
                 :(target==null?BrokerProtocol.PUBLIC_OWN_GROUP_VERSION:BrokerProtocol.PUBLIC_OWN_GROUP_PROFILE_VERSION);
         JSONObject closeRequest=new JSONObject().put("version",recoveryVersion)

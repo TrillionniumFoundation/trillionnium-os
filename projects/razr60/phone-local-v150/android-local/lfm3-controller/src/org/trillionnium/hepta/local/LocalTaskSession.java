@@ -500,7 +500,8 @@ public final class LocalTaskSession {
                     throw new IOException("启动前恢复的普通 UI 会话已变化");
                 if(service==null){if(priorController!=null)throw new IOException("原控制器服务无法核验");}
                 else if(service!=HeptaAccessibilityService.connected()
-                        ||(!service.prelaunchReconciliationIdle(priorController)&&!service.postlaunchReconciliationIdle(priorController)))
+                        ||(!service.prelaunchReconciliationIdle(priorController)&&!service.postlaunchReconciliationIdle(priorController)
+                                &&!service.publicProfileReconciliationIdle(priorController)))
                     throw new IOException("原控制器观察、动作或取消工作尚未排空");
             }
         };
