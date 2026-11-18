@@ -1,18 +1,18 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "8311365a45dc999a7cfb56494a9b63f43772ef94",
-  "base_manifest_sha256": "a61dacc4b1e08445205bcb7f4c588821029025d713c6094b778e7091fe861182",
-  "candidate_status": "public_profile_preserved_history_recovery_and_broker_boot_candidate_not_deployed",
+  "base_head": "82461458fdf47eaa61bc6db3096380aefd252d38",
+  "base_manifest_sha256": "c0eec98122f074aa1bb0753f003793a0c072a51fdd56d8f19714316c2ee8be65",
+  "candidate_status": "android_icu_literal_brace_parity_candidate_not_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 183,
   "production_build_inputs_count": 355,
-  "production_input_map_sha256": "b893b8eb82836d59360590bd53b29c40565146c44af122bd83783e0618c82877",
+  "production_input_map_sha256": "86338a86c84305746c9f04aa1d422e57a4dd2ed1534c8b731c7b09ab587ad759",
   "complete_source_files": 2189,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Fix root broker boot identity read; preserve dormant foreign task history while proving public user-10 target absence and ordinary UI recovery; preserve private dedicated-profile policy; no main-display fallback",
+  "scope": "Escape literal right braces for Android ICU task-intent parsing; preserve exact task history and existing public/private isolation policies; no main-display fallback",
   "files": [
     {
       "path": ".gitignore",
@@ -6201,8 +6201,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PhysicalDisplayFence.java",
-      "bytes": 17463,
-      "sha256": "e55160171923691614deda0c2b7f9890b83a8d078a181250be71866640ae7df6"
+      "bytes": 17465,
+      "sha256": "fee03ea52f86f426e525f43956bbd1443d8a8313829e7324b0a9c841d694fe7b"
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfileCatalogueMain.java",
@@ -6296,8 +6296,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupPhysicalFence.java",
-      "bytes": 21179,
-      "sha256": "9fd12fb87e4d3b9c73f14c72306e4855d976f396b018e264bbb380c3981e90b9"
+      "bytes": 21181,
+      "sha256": "675a95167a01ecbb928288a52113646e1e2c903d1453cfb8e0307355a9723a38"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupPhysicalReader.java",
@@ -8986,8 +8986,8 @@
     },
     {
       "path": "tests/profile-permission-initialization/PhysicalDisplayFenceHostTest.java",
-      "bytes": 11160,
-      "sha256": "e87a827ce5ebccd6954730902d929c1fed23f89a49935408f79a130e39a37079"
+      "bytes": 12248,
+      "sha256": "e58bb90da2643c209efb4ad58da4240b535fa948b02cd3842aaa510a7174110f"
     },
     {
       "path": "tests/profile-permission-initialization/ProfilePermissionInitializationHostTest.java",
@@ -9226,8 +9226,8 @@
     },
     {
       "path": "tests/public-own-group-policy/PublicPhysicalAuditHostTest.java",
-      "bytes": 8259,
-      "sha256": "4e7ba90964f328a2601a004104e232af99ff0763ab60d0eb075779b5dc6acfe8"
+      "bytes": 9212,
+      "sha256": "07f689fd33e09615a50fdcc721997b2ab1454011dbd61ab8c050b8d7c24b90d5"
     },
     {
       "path": "tests/public-own-group-policy/PublicSurfaceRetirementHostTest.java",

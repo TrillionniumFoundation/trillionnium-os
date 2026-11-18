@@ -65,6 +65,18 @@ public final class PublicPhysicalAuditHostTest {
   test("full visible recents boundary is mandatory",()->refuse(()->from(recents(true).split("  Visible recent tasks")[0])));
   test("malformed hidden residual refuses",()->refuse(()->from(hidden(DETACHED+", unknown"))));
   test("permission denied dump is not a real observation",()->refuse(()->capture(activities(),windows()+"Permission Denial\n",recents(true))));
+  test("literal closing brace space and end terminate the same hexadecimal flags",()->{
+    java.lang.reflect.Method intent=PublicOwnGroupPhysicalFence.class.getDeclaredMethod("intent",String.class);intent.setAccessible(true);
+    for(String value:new String[]{"flg=0x0000a","{flg=0x0000a}","{flg=0x0000a cmp=com.example/.Main}"})
+      yes("a".equals(((String[])intent.invoke(null,value))[1]),"literal flag boundary changed");
+  });
+  test("flags adjacent to closing brace preserve full recents identity",()->{
+    String value=recents(true).replace("flg=0x10000000 cmp=","cmp=")
+      .replace("/.Main}","/.Main flg=0x10000000}").replace("/.Main }","/.Main flg=0x10000000}");
+    yes(baseline().equals(from(value)),"closing brace changed recents identity");
+  });
+  test("duplicate flags still refuse after literal brace compatibility fix",()->
+    refuse(()->from(recents(true).replace("flg=0x10000000 cmp=","flg=0x10000000 flg=0x10000000 cmp="))));
   System.out.println("{\"cases\":"+cases+",\"assertions\":"+checks+",\"all_pass\":true,\"phone_contacted\":false,\"actual_framework_executed\":false}");
  }
 }

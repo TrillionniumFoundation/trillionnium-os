@@ -87,6 +87,18 @@ public final class PhysicalDisplayFenceHostTest {
                 catch(BrokerProtocol.Refusal expected){yes("REQUEST_FIELDS".equals(expected.code),"unexpected extra field refusal");}
             }
         });
+        test("literal closing brace space and end terminate the same hexadecimal flags",()->{
+            java.lang.reflect.Method intent=PhysicalDisplayFence.class.getDeclaredMethod("intent",String.class);intent.setAccessible(true);
+            for(String value:new String[]{"flg=0x0000a","{flg=0x0000a}","{flg=0x0000a cmp=com.example/.Main}"})
+                yes("a".equals(((String[])intent.invoke(null,value))[1]),"literal flag boundary changed");
+        });
+        test("flags adjacent to closing brace preserve full recents identity",()->{
+            String value=recents(true).replace("flg=0x10000000 cmp=","cmp=")
+                .replace("/.Main}","/.Main flg=0x10000000}").replace("/.Main }","/.Main flg=0x10000000}");
+            yes(baseline().equals(capture(activities(),windows(),value)),"closing brace changed recents identity");
+        });
+        test("duplicate flags still refuse after literal brace compatibility fix",()->
+            refuse(()->capture(activities(),windows(),recents(true).replace("flg=0x10000000 cmp=","flg=0x10000000 flg=0x10000000 cmp="))));
         System.out.println("{\"cases\":"+cases+",\"assertions\":"+checks+",\"all_pass\":true,\"android_adapter_executed\":false,\"phone_contacted\":false}");
     }
 }

@@ -169,7 +169,7 @@ public final class PublicOwnGroupPhysicalFence {
     }
     private static String[] intent(String value){
         if("null".equals(value))return new String[]{"null","null"};
-        String comp=optional("(?:^|[ {])cmp=([^\\s}]+)",value),flags=optional("(?:^|[ {])flg=0x([0-9a-fA-F]+)(?= |}|$)",value);
+        String comp=optional("(?:^|[ {])cmp=([^\\s}]+)",value),flags=optional("(?:^|[ {])flg=0x([0-9a-fA-F]+)(?= |\\}|$)",value);
         return new String[]{comp.isEmpty()?"null":component(comp),flags.isEmpty()?"0":Long.toHexString(Long.parseLong(flags,16))};
     }
     private static int uid(String value){
