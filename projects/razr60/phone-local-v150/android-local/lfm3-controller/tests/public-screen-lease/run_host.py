@@ -17,7 +17,8 @@ def main():
     # executes the production state machine, including a real concurrent acquire/retire race.
     exact={
         'only_three_argument_power_api':'PowerManager.class.getMethod("newWakeLock",int.class,String.class,int.class)',
-        'create_before_activation':'                    verifyDisplay();\n                    acquirePublicScreenLease(created);',
+        'create_before_activation':'                    verifyDisplay();\n                    acquirePublicScreenLease(created,displayInitializationDeadline);',
+        'initial_wait_uses_frozen_deadline':'        },initializationDeadline,Thread::sleep);',
         'cleanup_latch':'        closing.set(true);\n        retirePublicScreenLease();\n        retireBootRead();',
         'notes_quarantine':'    private void quarantinePublicNotes(String reason){\n        retirePublicScreenLease();',
         'profile_quarantine':'    private void quarantineProfile(String reason){\n        retirePublicScreenLease();',
@@ -31,6 +32,10 @@ def main():
         if value not in actual:raise RuntimeError('actual broker/framework power integration missing: '+key)
     if broker.count('token.acquire(remaining);')!=1 or broker.count('newDisplayWakeLock.invoke(')!=1:
         raise RuntimeError('screen lease must have one actual acquire site')
+    deadline='final long displayInitializationDeadline=Math.min(Math.min(r.deadline,expires),SystemClock.elapsedRealtime()+5000);'
+    create='VirtualDisplay created = displays.createVirtualDisplay('
+    if broker.count(deadline)!=1 or broker.count(create)!=1 or broker.index(deadline)>broker.index(create):
+        raise RuntimeError('initial readiness deadline must be frozen before the actual create call')
     start='    PublicOwnGroupScreenLease.Snapshot screenSnapshot(int id,String name)throws Exception{'
     end='    synchronized boolean hasFrozenIdentity()'
     if framework.count(start)!=1 or framework.count(end)!=1:raise RuntimeError('exact actual census hunk missing')
@@ -71,7 +76,17 @@ final class PublicOwnGroupPolicy {
  }
 }
 ''')
-    files=[bg/'PublicOwnGroupScreenLease.java',source/'tests/public-screen-lease/PublicOwnGroupScreenLeaseHostTest.java']
+    initialization=out/'PublicScreenInitializationFixture.java'
+    initialization.write_text('''package org.trillionnium.hepta.background;
+final class PublicScreenInitializationFixture {
+ static final class Request {final long deadline;Request(long value){deadline=value;}}
+ static final class SystemClock {static long now;static long elapsedRealtime(){return now;}}
+ static long deadline(long request,long expires,long now){Request r=new Request(request);SystemClock.now=now;
+ '''+deadline+'''return displayInitializationDeadline;}
+}
+''')
+    files=[bg/'PublicOwnGroupScreenLease.java',source/'tests/public-screen-lease/PublicOwnGroupScreenLeaseHostTest.java',
+           source/'tests/public-screen-lease/PublicOwnGroupInitialScreenHostTest.java',initialization]
     files.append(fixture)
     inputs=files+[bg/'BackgroundDisplayBroker.java',bg/'PublicOwnGroupFramework.java',pathlib.Path(__file__).resolve()]
     def pin(p):
@@ -81,9 +96,11 @@ final class PublicOwnGroupPolicy {
     compiler=[str(args.java_home/'bin/javac')] if args.java_home else ([shutil.which('javac')] if shutil.which('javac') else [java,'-m','jdk.compiler/com.sun.tools.javac.Main'])
     classes=out/'classes';classes.mkdir()
     commands=[('compile',compiler+['--release','8','-Xlint:all','-Werror','-encoding','UTF-8','-d',str(classes)]+list(map(str,files))),
-              ('screen-lease',[java,'-cp',str(classes),'org.trillionnium.hepta.background.PublicOwnGroupScreenLeaseHostTest'])]
+              ('screen-lease',[java,'-cp',str(classes),'org.trillionnium.hepta.background.PublicOwnGroupScreenLeaseHostTest']),
+              ('initial-readiness',[java,'-cp',str(classes),'org.trillionnium.hepta.background.PublicOwnGroupInitialScreenHostTest'])]
     report={'schema':'hepta.public-screen-lease-host-run.v1','phone_operations':0,'android_power_api_executed':False,
-            'inputs_before':before,'integration_checks':list(exact),'actual_census_hunk_sha256':hashlib.sha256(census.encode()).hexdigest(),'stages':[]}
+            'inputs_before':before,'integration_checks':list(exact),'actual_census_hunk_sha256':hashlib.sha256(census.encode()).hexdigest(),
+            'actual_initial_deadline_hunk_sha256':hashlib.sha256(deadline.encode()).hexdigest(),'stages':[]}
     for name,argv in commands:
         started=time.monotonic();result=subprocess.run(argv,capture_output=True,timeout=30)
         stdout=out/(name+'.stdout');stderr=out/(name+'.stderr');stdout.write_bytes(result.stdout);stderr.write_bytes(result.stderr)
@@ -92,10 +109,12 @@ final class PublicOwnGroupPolicy {
         report['stages'].append(row)
         if result.returncode:break
         if name=='screen-lease':report['test']=json.loads(result.stdout)
+        if name=='initial-readiness':report['initial_readiness_test']=json.loads(result.stdout)
     report['inputs_after']=[pin(p) for p in inputs]
-    report['passed']=len(report['stages'])==2 and all(row['exit_code']==0 for row in report['stages']) and report['inputs_before']==report['inputs_after']
+    report['passed']=len(report['stages'])==3 and all(row['exit_code']==0 for row in report['stages']) and report['inputs_before']==report['inputs_after']
     path=out/'RESULT.json';path.write_text(json.dumps(report,indent=2)+'\n')
-    print(json.dumps({'passed':report['passed'],'result':pin(path),'test':report.get('test')}))
+    print(json.dumps({'passed':report['passed'],'result':pin(path),'test':report.get('test'),
+                     'initial_readiness_test':report.get('initial_readiness_test')}))
     return 0 if report['passed'] else 1
 
 if __name__=='__main__':raise SystemExit(main())

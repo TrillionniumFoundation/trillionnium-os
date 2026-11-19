@@ -376,6 +376,8 @@ public final class BackgroundDisplayBroker {
                     dispatched = true;
                     if(config.profileTarget!=null)profileCustody.beforeCreate();
                     if(publicNotesCustody!=null)publicNotesCustody.beforeCreate();
+                    // Freeze before create; automatic ON readiness never obtains a new request budget.
+                    final long displayInitializationDeadline=Math.min(Math.min(r.deadline,expires),SystemClock.elapsedRealtime()+5000);
                     VirtualDisplay created = displays.createVirtualDisplay(displayName, geometry.width, geometry.height, geometry.density,
                         surfaceReader.getSurface(), virtualFlags);
                     if(config.publicOwnGroupScope!=null)publicCreateReturnedHandle=created;
@@ -387,7 +389,7 @@ public final class BackgroundDisplayBroker {
                     if (closing.get()) throw new BrokerProtocol.Refusal("SESSION_CLOSING");
                     setImePolicy.invoke(windowManager, displayId, imeHide);
                     verifyDisplay();
-                    acquirePublicScreenLease(created);
+                    acquirePublicScreenLease(created,displayInitializationDeadline);
                     if(publicNotesCustody!=null){
                         publicNotesCustody.bindDisplay(displayId);
                         publicNotesReader=new PublicPersonalNotesReader(shell,activityTasks,displayId,
@@ -803,13 +805,13 @@ public final class BackgroundDisplayBroker {
             .put("observed_started_elapsed_ms",readStarted).put("observed_ended_elapsed_ms",SystemClock.elapsedRealtime());
     }
 
-    private void acquirePublicScreenLease(final VirtualDisplay created)throws Exception{
+    private void acquirePublicScreenLease(final VirtualDisplay created,long initializationDeadline)throws Exception{
         if(config.publicOwnGroupScope==null)return;
         if(created==null||created!=publicCreateReturnedHandle||created!=virtual||!publicOwnGroupDisplayReady
                 ||publicOwnGroupLastReadback==null||!publicOwnGroupFramework.frozenIdentityMatches(displayId,displayName))
             throw new IOException("PUBLIC_SCREEN_CREATE_HANDLE_UNBOUND");
         final PublicOwnGroupPolicy.DisplayState bound=publicOwnGroupLastReadback.display;
-        publicScreenLease.acquire(new PublicOwnGroupScreenLease.Port(){
+        publicScreenLease.acquireInitiallyOn(new PublicOwnGroupScreenLease.Port(){
             private PowerManager.WakeLock token;
             @Override public PublicOwnGroupScreenLease.Snapshot read()throws Exception{
                 if(created!=publicCreateReturnedHandle||created!=virtual||created.getDisplay().getDisplayId()!=displayId
@@ -831,7 +833,7 @@ public final class BackgroundDisplayBroker {
             }
             @Override public boolean held(){return token!=null&&token.isHeld();}
             @Override public void release(){if(token!=null&&token.isHeld())token.release();}
-        });
+        },initializationDeadline,Thread::sleep);
     }
     private void retirePublicScreenLease(){if(publicScreenLease!=null)publicScreenLease.retire();}
 
