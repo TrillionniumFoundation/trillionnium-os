@@ -50,9 +50,11 @@ python3 tests/personal-notes-absence/run_host.py \
   --json-jar /path/to/json-20240303.jar --output /new/output/path
 ```
 
-The runner compiles with `--release 8 -Xlint:all,-options -Werror`. It retains 48 pure
-policy cases / 56 assertions and 22 application client/lease cases / 192
-assertions, and separately runs 33 post-model cases / 47 assertions. All original/task/controller values are authored synthetic values.
+The runner compiles with `--release 8 -Xlint:all,-options -Werror`. It retains all
+previous cases and runs 91 pure policy cases / 109 assertions and 27 application
+client/lease cases / 247 assertions, plus 33 post-model cases / 47 assertions.
+All original/task/controller values are authored synthetic values; captured
+phone records, task instructions and private scope material are not embedded.
 The complete production BackgroundSession, private-files implementation and
 Notes client are compiled. Only the client's owned Process factory is replaced.
 Four service admission methods are extracted exactly from production source.
@@ -92,3 +94,25 @@ is held and rechecked before sampling, durable commit and lease acceptance;
 additional steps, attempts or completion evidence are refused. The ordinary
 12-second double-absence check and the separate acknowledgement are unchanged.
 A model close does not establish that a dispatched unknown tool had no effect.
+
+## Display creation failed before application launch
+
+The same seven-record request also accepts a narrowly proven prelaunch failure.
+Both original bootstrap and cleanup records must say that no application launch
+was dispatched. The failed final operation must be `create`, with retired and
+closing admission, an empty task-location record and no launch-policy field.
+The creation response's `dispatched=true` describes display creation; it does not
+mean that the application or a model was launched. Both version-2 custody records
+must show zero observed tasks, no pending reads, no release call and no previous
+absence assertion. An uninitialised custody display ID of -1 is accepted only in
+this branch; the exact positive display identity still comes from the journal.
+The original result must retain zero steps, no model/native dispatch and no
+business effect. A post-model input set cannot enter this branch.
+
+Eligibility permits an already stopped Notes lease with a recorded spawn attempt
+to enter this validation. It cannot itself retire a journal or accept a JSON
+cleanup flag. The normal private receipt, current control CAS, current APK check,
+deadline and fresh complete absence samples remain mandatory. Empty remembered
+task IDs never substitute for the absence of every Notes task and history record.
+The host regressions exercise the actual client and lease through this path,
+including failed checks, current-control replacement and rejected eligibility.

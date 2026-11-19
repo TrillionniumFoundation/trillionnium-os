@@ -1,18 +1,18 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "43c37afe8ab550595f95475a0d87969bd718e531",
-  "base_manifest_sha256": "6f1fa20401d3d7d07d4942cd54019fc37055e3daa0596a1426e559145629b34a",
-  "candidate_status": "shared_virtual_group_candidate_not_compiled_or_deployed",
+  "base_head": "d5ade453b1edb9cc5c94d5cf9c574226f68d27f0",
+  "base_manifest_sha256": "453189ef99fa896b851f8cc0f1280acb7bab3bdb867021c73c74edc8387ed49c",
+  "candidate_status": "prelaunch_notes_recovery_candidate_not_compiled_or_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 191,
   "production_build_inputs_count": 363,
-  "production_input_map_sha256": "1f311fb85c51fa534c8d6d8fdd1eabda041ff394c038f7e69c5264c544e3561f",
+  "production_input_map_sha256": "f70149df0940ca92493d54e48e8a29ebbe729f6f0a6d7e53f939ea86bf76df06",
   "complete_source_files": 2246,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Accept non-singleton non-default groups containing only virtual displays; retain exact owned-display identity and exclude physical/default displays; update corresponding host regressions.",
+  "scope": "Allow formal App-owned absence recovery for an exact failed prelaunch Notes generation only after independent process, virtual-display and task absence; retain all failed originals and require fresh ordinary idle after explicit clear and acknowledgment.",
   "files": [
     {
       "path": ".gitignore",
@@ -6336,8 +6336,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
-      "bytes": 57870,
-      "sha256": "7020ee664b33d0ad07b7ecf2a4ec5835bac362a9de704d9c76a5daf756ca3639"
+      "bytes": 60553,
+      "sha256": "ba3dd9c1fcb0687c049228424811f4883fd0c32b3d6e4c584be98e801793c8e2"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
@@ -6411,8 +6411,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
-      "bytes": 112021,
-      "sha256": "5d5e4a920f9ed8ccffbc2f9d44f8e90200f989e99d83057b5ac97c6ef0386b52"
+      "bytes": 112197,
+      "sha256": "ede84688a33e2fed09df21470188a1c4439e1006d8cda12346bc4f2dd1d60474"
     },
     {
       "path": "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
@@ -9081,8 +9081,8 @@
     },
     {
       "path": "tests/personal-notes-absence/PersonalNotesAbsenceHostTest.java",
-      "bytes": 23925,
-      "sha256": "48ef34a6489c7ac75a91887a80509f872121b79067ec68fe29081c5277bf4cd1"
+      "bytes": 35516,
+      "sha256": "a89f74fe186af50296cbe658f8f576b3da5b621b9b03b28aa4f862599f68e3d7"
     },
     {
       "path": "tests/personal-notes-absence/PersonalNotesPostModelHostTest.java",
@@ -9091,13 +9091,13 @@
     },
     {
       "path": "tests/personal-notes-absence/PersonalNotesRecoveryClientHostTest.java",
-      "bytes": 17726,
-      "sha256": "f4793e70724ec233fd49033f3aaa785ff354212048befeffde92ff51194b523a"
+      "bytes": 21622,
+      "sha256": "39147f1f1fc618c981e1d46a6f6dca4585a19699371cd6e9c63cd3adf1614390"
     },
     {
       "path": "tests/personal-notes-absence/README.md",
-      "bytes": 5718,
-      "sha256": "b81f771aa44f8d76e7db2f55ab0f8a19fd30986d3d4381b913cda17fc3cf285b"
+      "bytes": 7294,
+      "sha256": "5125fe5ab13bae46515e02e4643993add57c4c1144204024f8c82ae76883bf9d"
     },
     {
       "path": "tests/personal-notes-absence/run_host.py",
@@ -11036,8 +11036,8 @@
     },
     {
       "path": "tools/run_host_checks.py",
-      "bytes": 42591,
-      "sha256": "05371e25a2669f0f71c0a91d66f95956c1983e2135e91c3a811de73d1ab8991a"
+      "bytes": 42592,
+      "sha256": "5c6f530c37d00b48f812a660afa857f87dcbdbcbd3ee317f405c37b3820ff961"
     },
     {
       "path": "tools/run_public_own_group_adapter_host.py",

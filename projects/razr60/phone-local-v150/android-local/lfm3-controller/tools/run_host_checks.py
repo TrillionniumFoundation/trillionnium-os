@@ -321,10 +321,10 @@ def main():
                 or notes_absence.get("json_jar_sha256")!="3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"):
             raise RuntimeError("Notes absence requires strict Java 8 compilation and unchanged synthetic host provenance")
         notes_absence_contracts={
-            "policy":("hepta.personal-notes-absence-host.v1","cases",48,56,"case_names",
-                "36eec7f8df6a35a7b9711158c8ee7894847c529c99bfbb45d2d70a294b410593"),
-            "client":("hepta.personal-notes-recovery-client-host-tests.v1","checks",22,192,"cases",
-                "775837c86f2ca609de131778c2bc321b0df2653211831b1cbc1e4edce3147e60"),
+            "policy":("hepta.personal-notes-absence-host.v1","cases",91,109,"case_names",
+                "945275de9519682a14a8fbda5b914bb8098349bcb66b854d924ea713d75d9560"),
+            "client":("hepta.personal-notes-recovery-client-host-tests.v1","checks",27,247,"cases",
+                "a3bc86072c411a9ed2cd791ce832e690812b6fc333248be4ac0e1af823188c9a"),
             "post-model":("hepta.personal-notes-post-model-host.v1","cases",33,47,"case_names",
                 "345293266abe6da61ff120b40438f2cc17c71063ad732b81a6efa65ed0dd028a")}
         for key,(schema,metric,count,assertions,names_metric,names_hash) in notes_absence_contracts.items():

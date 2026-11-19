@@ -354,9 +354,11 @@ final class BackgroundSession {
             &&profileTarget().profile.userId==10&&retired&&profileLaunchAttempted&&bootstrapDispatched&&displayId>1
             &&brokerExitObserved&&Integer.valueOf(0).equals(brokerExitCode)&&"CLEANUP_UNKNOWN".equals(state);}
     /** Read-only absence recovery for a stopped personal Notes lease. The original
-     * broker exit/release remains unknown; only a new opaque receipt can close it. */
+     * broker exit/release remains unknown; only a new opaque receipt can close it.
+     * A failed display create can precede bootstrap launch. Eligibility admits
+     * the strict original-record check; it does not itself retire the lease. */
     synchronized boolean personalNotesRecoveryEligible(){return publicOwnGroupScope!=null&&profileTarget()==null
-            &&requiresPersonalNotesRetirement()&&retired&&bootstrapDispatched&&displayId>1&&"CLEANUP_UNKNOWN".equals(state);}
+            &&requiresPersonalNotesRetirement()&&retired&&(bootstrapDispatched||spawnAttempted)&&displayId>1&&"CLEANUP_UNKNOWN".equals(state);}
     synchronized void acceptReconciliation(Cleanup result)throws Exception{
         if(result==null)throw new IOException("后台清理凭据缺失");
         if(result.personalNotesRecovery!=null){
