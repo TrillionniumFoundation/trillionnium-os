@@ -1,8 +1,8 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "c529e021556a0648d9aebf0011d7cd984c1ece8c",
-  "base_manifest_sha256": "ce4bae0075fc1bfaaf3cd082479f9dd350303a51bf61de7197d9ae44f565cb68",
-  "candidate_status": "typed_completion_task_location_profile_sampling_candidate_not_compiled_or_deployed",
+  "base_head": "ac1708dfbabaff4344983306f0c3f018e3708025",
+  "base_manifest_sha256": "55f76a771a5e3b1972540e359670a87b964dcef1138d75fdb52e5bb3fa9472e3",
+  "candidate_status": "host_compilation_dependency_successor_not_compiled_or_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
@@ -12,7 +12,7 @@
   "complete_source_files": 2246,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Normalize structured local completion receipts recursively without changing proof rules, and observe complete typed task locations independently of App identity while retaining the existing owned-anchor, package, profile, relocation, escape, and cleanup guards. Resample only typed identity-stable profile init/state reads within their original deadline, preserve complete permission proof equality, and retain a bounded first-mismatch diagnostic.",
+  "scope": "Retain all reviewed R16 production bytes; complete the explicit Main UI and Notes TaskInfo host compiler source lists for PublicOwnGroupTaskFence and bind the Notes runner to the already-reviewed current Organizer. All original assertions, fixtures, source modes, and complete production input map remain unchanged.",
   "files": [
     {
       "path": ".gitignore",
@@ -7911,8 +7911,8 @@
     },
     {
       "path": "tests/main-ui-permission/run_host.py",
-      "bytes": 9676,
-      "sha256": "f9956c9ae18930ba1fef218d445c5d70a525090dcb814b11eaea955061b2bc53"
+      "bytes": 9702,
+      "sha256": "17c1a621ce19edd5f66b1b79882ce9488cda480bffca1ac180de42436037ed94"
     },
     {
       "path": "tests/nanbeige42/run_host_profile_checks.py",
@@ -8776,8 +8776,8 @@
     },
     {
       "path": "tests/notes-task-info-reader/run_host.py",
-      "bytes": 9485,
-      "sha256": "10c3d98ce6f0f8ea4e5f35701ff5f238be738c83728c741425010a2a17ea7fdd"
+      "bytes": 9511,
+      "sha256": "900d42feace5f1ce5af47e58a31eedcab991ac6925b51be84e57278b57287772"
     },
     {
       "path": "tests/notes-task-info-reader/synthetic-notes-census.json",

@@ -61,7 +61,7 @@ public android.content.pm.ApplicationInfo getApplicationInfo(){return applicatio
     files.append(digest_fixture)
     bg=source/'src/org/trillionnium/hepta/background'
     names=['BrokerProtocol','FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','BackgroundOwnedTaskPolicy',
-           'BackgroundOwnedSingleTask','ProfileTaskPolicy','PublicOwnGroupPolicy','PublicOwnGroupPhysicalFence',
+           'BackgroundOwnedSingleTask','ProfileTaskPolicy','PublicOwnGroupTaskFence','PublicOwnGroupPolicy','PublicOwnGroupPhysicalFence',
            'BackgroundTaskOrganizer','PublicPermissionControllerUi']
     files += [bg/(name+'.java') for name in names]+[fixture,source/'tests/public-own-group-policy/PublicPhysicalAuditHostTest.java',
         own/'PublicPermissionControllerUiHostTest.java',own/'MainActivityLocatorHostTest.java']
