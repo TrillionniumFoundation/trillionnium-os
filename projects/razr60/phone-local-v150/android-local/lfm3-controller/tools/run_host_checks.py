@@ -160,7 +160,9 @@ def main():
                 or settings_gate.get("full_production_engine_and_transaction") is not True
                 or settings_gate.get("phone_operations")!=0 or settings_gate.get("native_model_executed") is not False):
             raise RuntimeError("Local model settings host gate receipt differs")
-        for name,count,assertions in (("transaction",43,196),("generation",15,100)):
+        if set(settings_gate.get("cases",{}))!={"transaction","generation","context_files"}:
+            raise RuntimeError("Local model settings case groups differ")
+        for name,count,assertions in (("transaction",43,196),("generation",15,100),("context_files",8,36)):
             actual=settings_gate.get("cases",{}).get(name,{})
             original=json.loads((out/"local-model-settings"/(name+"-cases")/"RESULT.json").read_bytes())
             if (actual!=original or actual.get("passed") is not True

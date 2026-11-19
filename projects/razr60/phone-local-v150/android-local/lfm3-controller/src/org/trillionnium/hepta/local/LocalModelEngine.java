@@ -53,14 +53,18 @@ public final class LocalModelEngine implements AutoCloseable {
 
     public LocalModelEngine(Context context) {
         this.context = context.getApplicationContext();
-        this.files = this.context.getFilesDir();
+        File privateFiles=this.context.getFilesDir();
+        boolean contextValidated=false;
         try {
-            RuntimeConfigTransaction.Snapshot source=RuntimeConfigTransaction.current(files);
+            privateFiles=RuntimeConfigTransaction.contextFiles(this.context);
+            contextValidated=true;
+            RuntimeConfigTransaction.Snapshot source=RuntimeConfigTransaction.current(privateFiles);
             runtime=generation(source,new ModelFileVerifier());
         } catch (Exception error) {
             runtime=new RuntimeGeneration(LocalRuntimeConfig.defaults(),null,new ModelFileVerifier(),error.toString());
         }
-        try { settingsBlocked=RuntimeConfigTransaction.pending(files); }
+        this.files=privateFiles;
+        try { settingsBlocked=!contextValidated||RuntimeConfigTransaction.pending(files); }
         catch(Exception unknown){settingsBlocked=true;}
     }
 

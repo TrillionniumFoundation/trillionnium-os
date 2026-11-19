@@ -1,5 +1,6 @@
 package org.trillionnium.hepta.local;
 
+import android.content.Context;
 import android.system.Os;
 import android.system.OsConstants;
 import android.system.StructStat;
@@ -49,6 +50,27 @@ final class RuntimeConfigTransaction {
         this.files=files;this.root=root;this.directory=directory;this.id=id;this.before=before;this.after=after;
         this.previousLast=previousLast;this.recoveringPending=recovery;
         intentRead=intent;beforeRead=oldRaw;afterRead=newRaw;lastBackupRead=lastRaw;
+    }
+    /** Only a framework Context root may contain Android's platform parent-directory alias. */
+    static File contextFiles(Context context)throws Exception{
+        Context application=context.getApplicationContext();
+        File path=application==null?null:application.getFilesDir();
+        if(path==null||!path.isAbsolute())throw new IOException("private Context files path unavailable");
+        // lstat the original leaf before resolving parents: a files symlink is never admitted.
+        StructStat before=Os.lstat(path.getPath());
+        if(!OsConstants.S_ISDIR(before.st_mode)||before.st_uid!=android.os.Process.myUid())
+            throw new IOException("private Context files identity unavailable");
+        File canonical=path.getCanonicalFile();
+        StructStat resolved=Os.lstat(canonical.getPath());
+        if(!sameDirectory(before,resolved)||!sameDirectory(before,Os.lstat(path.getPath()))
+                ||!canonical.equals(path.getCanonicalFile())
+                ||!sameDirectory(resolved,Os.lstat(canonical.getPath())))
+            throw new IOException("private Context files identity changed");
+        return canonical;
+    }
+    private static boolean sameDirectory(StructStat a,StructStat b){
+        return a.st_dev==b.st_dev&&a.st_ino==b.st_ino&&a.st_uid==b.st_uid
+                &&a.st_gid==b.st_gid&&a.st_mode==b.st_mode;
     }
     private static File canonicalFiles(File files)throws Exception{
         File value=files.getCanonicalFile();

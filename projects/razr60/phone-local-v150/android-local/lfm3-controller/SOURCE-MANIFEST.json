@@ -1,15 +1,15 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "0d9dad7a8850e4c76246cf1fc6d1545570316c3c",
-  "base_manifest_sha256": "6e04c7f17c264f1c6fe204ab472f6779341b5d8e11c7b0d1c2c68c3984874e07",
-  "candidate_status": "test_contract_source_candidate_not_compiled_or_deployed",
+  "base_head": "39b207e194f8016480d718b0a8f7752cb7a74d53",
+  "base_manifest_sha256": "2ba019e43f1bda7030812480d4b2ae7c6b0619bba73722d9a7095cc9b28cea1f",
+  "candidate_status": "context_root_source_candidate_not_compiled_or_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 189,
   "production_build_inputs_count": 361,
-  "production_input_map_sha256": "726f9cc5b83a3538ee35fed2ce528cda430a9d124f8f9d5eb9388bf080a12bdf",
-  "complete_source_files": 2231,
+  "production_input_map_sha256": "611ce792a6a9f50716f34d78217f724b596a9776ebb1682ba6df37a398ce8612",
+  "complete_source_files": 2232,
   "phone_qualified": false,
   "android_qualified": false,
   "scope": [
@@ -18,7 +18,8 @@
     "Allow one observed Ctrip login return following an actual flight query",
     "Independently prove absence of a failed personal Notes lease before ordinary recovery acknowledgement",
     "Parse Motorola glued recent-task headers without changing original bytes or foreign-task protection",
-    "Synchronize exact host expectations with the additional recents parser regression cases"
+    "Synchronize exact host expectations with the additional recents parser regression cases",
+    "Normalize only the trusted Android Context files root while preserving strict arbitrary-file and descendant identity checks"
   ],
   "files": [
     {
@@ -6503,13 +6504,13 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalModelEngine.java",
-      "bytes": 86271,
-      "sha256": "d2ad1c9df7d476e36f5d223152f2d2db2ce5b50e1939e08ede83bce278d4080d"
+      "bytes": 86488,
+      "sha256": "51f4372683c9b2c9c4359534a16b04a75944d6866cd621e34f5f0b3628fe4fde"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalModelSettings.java",
-      "bytes": 8730,
-      "sha256": "5d9018e1af8d44edadfbb0d49e3665351d1a575b206635d16168e83814566915"
+      "bytes": 8841,
+      "sha256": "e81150b9143e5a7679233b604e0ff61882df179b9ffd2decdbee7e7b544bd50f"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalProbeApplication.java",
@@ -6833,8 +6834,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/RuntimeConfigTransaction.java",
-      "bytes": 19909,
-      "sha256": "58582569585c1a48a6667d84dca3858f0fd3729b3cc24dda80a044cbb7a5edb8"
+      "bytes": 21309,
+      "sha256": "22c9965ea7f3bff25a1a0efc20dac44198a711df84f5ff84e348f49403eccfe1"
     },
     {
       "path": "src/org/trillionnium/hepta/local/SameStateNoEffectGuard.java",
@@ -7798,8 +7799,8 @@
     },
     {
       "path": "tests/local-model-settings/CASE-CONTRACT.json",
-      "bytes": 3222,
-      "sha256": "76a6c45a0dc84f4e2c3df303e929e875ab059c3271455625ce135eef20c62ae6"
+      "bytes": 3794,
+      "sha256": "88337f619b8b5350d3c37319f4b635fe9afbf95afa7840766a4d1b2a1622989b"
     },
     {
       "path": "tests/local-model-settings/PRODUCTION-SOURCES.json",
@@ -7808,13 +7809,18 @@
     },
     {
       "path": "tests/local-model-settings/README.md",
-      "bytes": 3774,
-      "sha256": "25eee6a485e59342d06b56931bb9f12c2e6aee050f5265e6bbe41ae40b6f407e"
+      "bytes": 4676,
+      "sha256": "0ca694c7b928a68d5b5759fe26cf8687a57d0984170cf950611a014530ce26e7"
     },
     {
       "path": "tests/local-model-settings/RuntimeConfigTransactionHostTest.java",
       "bytes": 18644,
       "sha256": "3f761cd03ecd9c2cd871409e52df8dcf85bca84842d7a1fa336eca578a803b49"
+    },
+    {
+      "path": "tests/local-model-settings/RuntimeContextFilesHostTest.java",
+      "bytes": 10444,
+      "sha256": "a31c6be12e1d23fff1f482f5bacd1349bb2a71b4a8c478cdbcc4e0f9f2a07dbf"
     },
     {
       "path": "tests/local-model-settings/RuntimeGenerationHostTest.java",
@@ -7888,8 +7894,8 @@
     },
     {
       "path": "tests/local-model-settings/run_host.py",
-      "bytes": 8295,
-      "sha256": "8659702bd0cc25f0a89f8755d4ac56ce9b22939c4575277d9375f951a01ecb06"
+      "bytes": 8421,
+      "sha256": "9dc3ec6c37105e7f17ac4fb6fe2c6ab1f25e6c8b25aed73d46fbc59228e9f551"
     },
     {
       "path": "tests/nanbeige42/run_host_profile_checks.py",
@@ -10968,8 +10974,8 @@
     },
     {
       "path": "tools/run_host_checks.py",
-      "bytes": 34891,
-      "sha256": "10b9eda41b12fea76ad4977c36bbc2db9d45fa6dee22384aa98129504b2a90c4"
+      "bytes": 35081,
+      "sha256": "3f648f6d3eba12f51acdac3c27b78bea9349f3de7fc55f6c4f49b64cd01888a0"
     },
     {
       "path": "tools/run_public_own_group_adapter_host.py",

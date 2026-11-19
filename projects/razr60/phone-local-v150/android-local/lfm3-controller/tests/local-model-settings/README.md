@@ -23,3 +23,7 @@ Android UID translation, descriptor metadata and directory fsync are declared su
 ## Evidence
 
 All compiler/test argv, wall/elapsed time, exit codes and complete stdout/stderr are saved in a fresh output directory. The original typed case records are saved per suite and bound by SHA256. The gate requires exact case names, 43/196 and 15/100 counts, zero Phone/native-model effects, and unchanged production, fixture, tool and JSON inputs. CASE-CONTRACT.json preserves the original names. PRODUCTION-SOURCES.json lists the complete explicit compilation inputs. The canonical hook adds this gate without changing previous checks or their required counts.
+
+## Framework private-directory aliases
+
+`RuntimeContextFilesHostTest` adds 8 cases and 36 assertions against the same complete production engine and transaction. A real ancestor symlink models the platform alias in an Android application mount namespace. Engine initialization, configuration commit, and exact previous-byte restore succeed through the trusted `Context` entry, while ordinary `File` inputs retain their strict canonical requirement. Real files-leaf, model, configuration, settings, and transaction-directory symlinks remain rejected; a real directory replacement between identity samples and a synthetic wrong UID also fail closed. The original 43 transaction / 196 assertions and 15 generation / 100 assertions are unchanged. Host Context, UID/FD metadata, and directory fsync remain declared platform surrogates; this does not claim Android runtime or hardware inference acceptance.

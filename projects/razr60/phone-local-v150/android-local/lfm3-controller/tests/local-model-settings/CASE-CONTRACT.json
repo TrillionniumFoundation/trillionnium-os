@@ -71,5 +71,20 @@
       "closed-engine-refuses-new-settings",
       "independent-permission-barrier-retained"
     ]
+  },
+  "context_files": {
+    "schema": "hepta.local-model-settings-context-files-host.v1",
+    "cases": 8,
+    "assertions": 36,
+    "names": [
+      "context-ancestor-alias-engine-commit-and-exact-restore",
+      "context-files-leaf-symlink-rejected",
+      "context-files-replaced-during-resolution-rejected",
+      "context-files-owner-mismatch-rejected",
+      "context-internal-model-symlink-rejected",
+      "context-internal-config-symlink-rejected",
+      "context-internal-settings-symlink-rejected",
+      "context-transaction-directory-symlink-rejected"
+    ]
   }
 }

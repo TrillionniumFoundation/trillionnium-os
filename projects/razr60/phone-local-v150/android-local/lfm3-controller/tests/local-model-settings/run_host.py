@@ -72,7 +72,8 @@ def main():
         need(not any(p.is_symlink() for p in fixture_paths),"fixture symlink")
         fixture=[p for p in fixture_paths if p.is_file()]
         need(len(fixture)==13 and all(p.suffix==".java" for p in fixture),"exact 13 explicit boundary source files")
-        tests=[test/"RuntimeConfigTransactionHostTest.java",test/"RuntimeGenerationHostTest.java"]
+        tests=[test/"RuntimeConfigTransactionHostTest.java",test/"RuntimeGenerationHostTest.java",
+               test/"RuntimeContextFilesHostTest.java"]
         for path in fixture+tests:take(path)
         jar=take(a.json_jar)
         need(len(jar)==78332 and sha(jar)=="3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed",
@@ -88,7 +89,8 @@ def main():
         result["cases"]={};result["case_receipts"]={}
         for label,main,expected_count,expected_assertions in (
                 ("transaction","RuntimeConfigTransactionHostTest",43,196),
-                ("generation","RuntimeGenerationHostTest",15,100)):
+                ("generation","RuntimeGenerationHostTest",15,100),
+                ("context_files","RuntimeContextFilesHostTest",8,36)):
             case_dir=out/(label+"-cases")
             contract=contracts[label]
             need(type(contract["cases"])is int and contract["cases"]==expected_count

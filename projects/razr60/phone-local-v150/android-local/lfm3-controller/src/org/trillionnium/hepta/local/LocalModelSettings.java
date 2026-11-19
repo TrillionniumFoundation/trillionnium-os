@@ -32,7 +32,7 @@ final class LocalModelSettings implements AutoCloseable {
     boolean restoreAvailable(){return restoreAvailable;}
     String state(){return state;}
     private void refreshRestore(){
-        try{restoreAvailable=RuntimeConfigTransaction.restoreAvailable(app.getFilesDir());}
+        try{restoreAvailable=RuntimeConfigTransaction.restoreAvailable(RuntimeConfigTransaction.contextFiles(app));}
         catch(Exception unknown){restoreAvailable=true;}
     }
     private void publish(){
@@ -85,8 +85,9 @@ final class LocalModelSettings implements AutoCloseable {
         String message;
         try{
             requireOwner(lease,service);quiet(samples);
-            transaction=restore?RuntimeConfigTransaction.restore(app.getFilesDir()):
-                    RuntimeConfigTransaction.prepare(app.getFilesDir(),selected,true);
+            File configFiles=RuntimeConfigTransaction.contextFiles(app);
+            transaction=restore?RuntimeConfigTransaction.restore(configFiles):
+                    RuntimeConfigTransaction.prepare(configFiles,selected,true);
             LocalRuntimeConfig target=RuntimeConfigTransaction.decode(transaction.target());
             ModelFileVerifier verifier=engine.verifySettingsModel(lease,target);
             requireOwner(lease,service);quiet(samples);
@@ -119,7 +120,7 @@ final class LocalModelSettings implements AutoCloseable {
                     original.unchanged();
                     onMain(()->{app.requireModelSettingsIdle(service);engine.publishSettings(lease,prior);return null;});
                     transaction.finishRollback();restored=true;
-                }else if(lease.previous.source!=null&&!RuntimeConfigTransaction.pending(app.getFilesDir())){
+                }else if(lease.previous.source!=null&&!RuntimeConfigTransaction.pending(RuntimeConfigTransaction.contextFiles(app))){
                     lease.previous.source.unchanged();restored=true;
                 }
             }catch(Exception rollback){message+="；原配置恢复尚未确认："+HeptaAccessibilityService.message(rollback);}
