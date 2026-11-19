@@ -19,26 +19,51 @@ import org.json.JSONObject;
  * organizer mutation guards are unconditionally throwing boundaries. */
 final class PublicPersonalNotesReader {
     /** Exact rejected framework row. Serialized fields confer no task authority. */
-    static final class TaskInfoReadFailure extends IOException {
+    static class TaskInfoReadFailure extends IOException {
         private static final long serialVersionUID=1L;
         final Map<String,Object> evidence;
         TaskInfoReadFailure(String code,String stage,BackgroundOwnedSingleTask.Task task,int uid,int display){
+            this(code,stage,task,uid,display,null,0,null);
+        }
+        TaskInfoReadFailure(String code,String stage,BackgroundOwnedSingleTask.Task task,int uid,int display,
+                BackgroundOwnedSingleTask.Task previous,int attempt,String comparison){
             super(code);Map<String,Object> row=new LinkedHashMap<String,Object>();
             row.put("schema","hepta.notes-taskinfo-row-refusal.v1");row.put("stage",stage);
             row.put("reason",code);row.put("expected_uid",uid);row.put("expected_display_id",display);
             row.put("actual_row_available",task!=null);row.put("serialized_fields_grant_authority",false);
-            if(task!=null){
-                row.put("task_id",task.id);row.put("user_id",task.user);row.put("display_id",task.display);
-                row.put("parent_id",task.parent);row.put("effective_uid",task.uid);row.put("top_uid",task.topUid);
-                row.put("num_activities",task.activities);row.put("is_running",task.running);row.put("is_visible",task.visible);
-                row.put("intent_component",nullable(task.intentComponent));row.put("base_activity",nullable(task.base));
-                row.put("real_activity",nullable(task.real));row.put("top_activity",nullable(task.top));row.put("orig_activity",nullable(task.orig));
-                row.put("token_present",task.token!=null);row.put("token_identity_in_reader",task.token==null?JSONObject.NULL:System.identityHashCode(task.token));
-                List<Integer> cookies=new ArrayList<Integer>();for(Object cookie:task.cookies)cookies.add(System.identityHashCode(cookie));
-                row.put("launch_cookie_identities_in_reader",Collections.unmodifiableList(cookies));
+            if(task!=null)row.putAll(taskFields(task));
+            if(previous!=null){
+                Map<String,Object> old=taskFields(previous),current=taskFields(task);
+                List<String> changed=new ArrayList<String>();
+                for(String key:old.keySet())if(!Objects.equals(old.get(key),current.get(key)))changed.add(key);
+                row.put("comparison_before",old);row.put("comparison_after",current);
+                row.put("changed_fields",Collections.unmodifiableList(changed));row.put("sample_attempt",attempt);
+                row.put("comparison_kind",comparison);
             }
             evidence=Collections.unmodifiableMap(row);
         }
+    }
+    /** A complete valid target row may change its activity state while Android
+     * completes a launch. Only this typed, identity-preserving change is sampled
+     * again; it never authorizes a second Intent or a partial/inconsistent frame. */
+    private static final class ActivityStateChanged extends TaskInfoReadFailure {
+        private static final long serialVersionUID=1L;
+        ActivityStateChanged(String stage,BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b,
+                int uid,int display,int attempt){
+            super("NOTES_ROOT_TASKINFO_CHANGED",stage,b,uid,display,a,attempt,"activity_state");
+        }
+    }
+    private static Map<String,Object> taskFields(BackgroundOwnedSingleTask.Task task){
+        Map<String,Object> row=new LinkedHashMap<String,Object>();
+        row.put("task_id",task.id);row.put("user_id",task.user);row.put("display_id",task.display);
+        row.put("parent_id",task.parent);row.put("effective_uid",task.uid);row.put("top_uid",task.topUid);
+        row.put("num_activities",task.activities);row.put("is_running",task.running);row.put("is_visible",task.visible);
+        row.put("intent_component",nullable(task.intentComponent));row.put("base_activity",nullable(task.base));
+        row.put("real_activity",nullable(task.real));row.put("top_activity",nullable(task.top));row.put("orig_activity",nullable(task.orig));
+        row.put("token_present",task.token!=null);row.put("token_identity_in_reader",task.token==null?JSONObject.NULL:System.identityHashCode(task.token));
+        List<Integer> cookies=new ArrayList<Integer>();for(Object cookie:task.cookies)cookies.add(System.identityHashCode(cookie));
+        row.put("launch_cookie_identities_in_reader",Collections.unmodifiableList(cookies));
+        return Collections.unmodifiableMap(row);
     }
     /** Keeps the first runtime refusal distinct from a later cleanup refusal. */
     static final class FailureAudit {
@@ -65,6 +90,8 @@ final class PublicPersonalNotesReader {
     final int uid;
     private final int display;
     private final String sourceDir;
+    private static final int MAX_TASKINFO_SAMPLES=3;
+    private static final long MAX_FRAME_MS=1500;
     PublicPersonalNotesReader(Context context,Object activities,int display,LongSupplier deadline)throws Exception{
         this.context=context;this.activities=activities;this.deadline=deadline;
         need(display>1,"NOTES_OWN_DISPLAY_INVALID");this.display=display;
@@ -87,20 +114,42 @@ final class PublicPersonalNotesReader {
         // Android 16 getChildTasks() returns null for such tasks; null is not an
         // empty-child proof. Use two complete independent ATM leaf censuses around
         // the real organizer root TaskInfo query, without ever calling children().
-        BackgroundTaskOrganizer.ReadOnlyRootCensus before=reader.readOnlyRootCensus();
-        List<BackgroundOwnedSingleTask.Task> actual=reader.roots();
-        BackgroundTaskOrganizer.ReadOnlyRootCensus after=reader.readOnlyRootCensus();
-        Map<Integer,BackgroundOwnedSingleTask.Task> first=index(before.displayRoots,"before_all_roots");
-        Map<Integer,BackgroundOwnedSingleTask.Task> middle=index(actual,"owned_display_roots"),last=index(after.displayRoots,"after_all_roots");
-        need(first.keySet().equals(middle.keySet())&&middle.keySet().equals(last.keySet()),"NOTES_ROOT_CENSUS_CHANGED");
-        List<PublicPersonalNotesCustody.Node> nodes=new ArrayList<PublicPersonalNotesCustody.Node>();
-        for(BackgroundOwnedSingleTask.Task task:actual){
-            sameActualTask(first.get(task.id),task);sameActualTask(task,last.get(task.id));
-            requireSoleLeaf(before.global,task);requireSoleLeaf(after.global,task);
-            nodes.add(new PublicPersonalNotesCustody.Node(task,Collections.<PublicPersonalNotesCustody.Node>emptyList()));
+        Map<Integer,BackgroundOwnedSingleTask.Task> identities=null;
+        for(int attempt=1;attempt<=MAX_TASKINFO_SAMPLES;attempt++){
+            check();need(SystemClock.elapsedRealtime()-begin<=MAX_FRAME_MS,"NOTES_TASK_FRAME_INVALID");
+            BackgroundTaskOrganizer.ReadOnlyRootCensus before=reader.readOnlyRootCensus();
+            List<BackgroundOwnedSingleTask.Task> actual=reader.roots();
+            BackgroundTaskOrganizer.ReadOnlyRootCensus after=reader.readOnlyRootCensus();
+            Map<Integer,BackgroundOwnedSingleTask.Task> first=index(before.displayRoots,"before_all_roots");
+            Map<Integer,BackgroundOwnedSingleTask.Task> middle=index(actual,"owned_display_roots"),last=index(after.displayRoots,"after_all_roots");
+            need(first.keySet().equals(middle.keySet())&&middle.keySet().equals(last.keySet()),"NOTES_ROOT_CENSUS_CHANGED");
+            if(identities==null)identities=first;
+            need(identities.keySet().equals(first.keySet()),"NOTES_ROOT_CENSUS_CHANGED");
+            // Keep the first complete census's Binder identity through every
+            // resample. A later coherent token/UID/cookie replacement is still
+            // forbidden, even when the prior mismatch was only visibility.
+            for(BackgroundOwnedSingleTask.Task task:actual){
+                sameIdentity(identities.get(task.id),first.get(task.id),"resample_before",attempt);
+                sameIdentity(identities.get(task.id),task,"resample_organizer",attempt);
+                sameIdentity(identities.get(task.id),last.get(task.id),"resample_after",attempt);
+            }
+            try{
+                List<PublicPersonalNotesCustody.Node> nodes=new ArrayList<PublicPersonalNotesCustody.Node>();
+                for(BackgroundOwnedSingleTask.Task task:actual){
+                    sameActualTask(first.get(task.id),task,"before_vs_organizer",attempt);
+                    sameActualTask(task,last.get(task.id),"organizer_vs_after",attempt);
+                    requireSoleLeaf(before.global,task);requireSoleLeaf(after.global,task);
+                    nodes.add(new PublicPersonalNotesCustody.Node(task,Collections.<PublicPersonalNotesCustody.Node>emptyList()));
+                }
+                check();
+                return new PublicPersonalNotesCustody.Frame(after.global,nodes,begin,SystemClock.elapsedRealtime());
+            }catch(ActivityStateChanged changed){
+                if(attempt==MAX_TASKINFO_SAMPLES)throw changed;
+                check();need(SystemClock.elapsedRealtime()-begin<=MAX_FRAME_MS,"NOTES_TASK_FRAME_INVALID");
+                Thread.sleep(20);
+            }
         }
-        check();
-        return new PublicPersonalNotesCustody.Frame(after.global,nodes,begin,SystemClock.elapsedRealtime());
+        throw new IOException("NOTES_ROOT_TASKINFO_CHANGED");
     }
     private Map<Integer,BackgroundOwnedSingleTask.Task> index(List<BackgroundOwnedSingleTask.Task> tasks,String stage)throws Exception{
         need(tasks!=null&&tasks.size()<=PublicPersonalNotesCustody.MAX_TASKS,"NOTES_ROOT_CENSUS_UNAVAILABLE");
@@ -122,13 +171,17 @@ final class PublicPersonalNotesReader {
         return value!=null&&value.startsWith(PublicPersonalNotesCustody.PACKAGE+"/");
     }
     private static boolean nullablePackage(String value){return value==null||inPackage(value);}
-    private static void sameActualTask(BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b)throws Exception{
-        need(a!=null&&b!=null&&a.id==b.id&&a.display==b.display&&a.user==b.user&&a.parent==b.parent
-                &&a.uid==b.uid&&a.topUid==b.topUid&&a.activities==b.activities&&a.running==b.running
-                &&a.visible==b.visible&&Objects.equals(a.token,b.token)&&a.cookies.equals(b.cookies)
-                &&Objects.equals(a.intentComponent,b.intentComponent)&&Objects.equals(a.base,b.base)
-                &&Objects.equals(a.top,b.top)&&Objects.equals(a.real,b.real)&&Objects.equals(a.orig,b.orig),
-                "NOTES_ROOT_TASKINFO_CHANGED");
+    private void sameIdentity(BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b,String stage,int attempt)throws Exception{
+        if(!(a!=null&&b!=null&&a.id==b.id&&a.display==b.display&&a.user==b.user&&a.parent==b.parent
+                &&a.uid==b.uid&&Objects.equals(a.token,b.token)&&a.cookies.equals(b.cookies)
+                &&Objects.equals(a.intentComponent,b.intentComponent)&&Objects.equals(a.real,b.real)&&Objects.equals(a.orig,b.orig)))
+            throw new TaskInfoReadFailure("NOTES_ROOT_TASKINFO_CHANGED",stage,b,uid,display,a,attempt,"immutable_identity");
+    }
+    private void sameActualTask(BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b,String stage,int attempt)throws Exception{
+        sameIdentity(a,b,stage,attempt);
+        if(!(a.topUid==b.topUid&&a.activities==b.activities&&a.running==b.running&&a.visible==b.visible
+                &&Objects.equals(a.base,b.base)&&Objects.equals(a.top,b.top)))
+            throw new ActivityStateChanged(stage,a,b,uid,display,attempt);
     }
     private void requireSoleLeaf(ProfileTaskPolicy.Snapshot global,BackgroundOwnedSingleTask.Task task)throws Exception{
         need(global!=null,"NOTES_GLOBAL_CENSUS_UNAVAILABLE");

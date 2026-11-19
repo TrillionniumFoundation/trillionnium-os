@@ -75,7 +75,7 @@ public final class NotesTaskInfoReaderHostTest {
         final List<String> trace=new ArrayList<String>();
         int allReads,rootReads,childrenCalls,mutations;
         long deadline=100000;
-        Runnable onOwnRead,onAfterRead;
+        Runnable onBeforeRead,onOwnRead,onAfterRead;
         final PublicPersonalNotesReader reader;
         final ITaskOrganizerController organizer=new ITaskOrganizerController(){
             public Object getRootTasks(int display,int[] types){
@@ -148,7 +148,7 @@ public final class NotesTaskInfoReaderHostTest {
                 throw new IOException("incomplete original capture");
             List<Object> result=new ArrayList<Object>();for(int i=0;i<rows.length();i++)result.add(row(rows.getJSONObject(i),global));return result;
         }
-        public Object getAllRootTaskInfos(){int index=allReads++;trace.add("all");if(index%2==1&&onAfterRead!=null)onAfterRead.run();return index%2==0?before:after;}
+        public Object getAllRootTaskInfos(){int index=allReads++;trace.add("all");if(index%2==0&&onBeforeRead!=null)onBeforeRead.run();if(index%2==1&&onAfterRead!=null)onAfterRead.run();return index%2==0?before:after;}
         public IWindowOrganizerController getWindowOrganizerController(){return controller;}
         @SuppressWarnings("unchecked") List<Object> list(int p){return (List<Object>)(p==0?before:p==1?own:after);}
         TaskInfo task(int p){for(Object o:list(p))if(o instanceof TaskInfo&&((TaskInfo)o).taskId==1464)return (TaskInfo)o;throw new AssertionError("target row missing in fixture");}
@@ -259,6 +259,65 @@ public final class NotesTaskInfoReaderHostTest {
                 .put("case_names",new ArrayList<String>(names.subList(startNames,names.size())))
                 .put("framework_and_binder_fixtures_synthetic",true).put("phone_operations",0);
     }
+    static JSONObject stabilityCases()throws Exception{
+        int startCases=cases,startChecks=checks,startNames=names.size();
+        for(final String field:new String[]{"visibility","activities","editor-top","empty-activities"})
+            test("bounded complete resampling accepts settled same-identity "+field,()->{
+                e.onAfterRead=()->{if(e.allReads==2)for(int p=0;p<3;p++){
+                    TaskInfo t=e.task(p);
+                    if("visibility".equals(field))t.isVisible=!t.isVisible;
+                    else if("activities".equals(field))t.numActivities++;
+                    else if("editor-top".equals(field)){t.topActivity=new ComponentName(PKG,PKG+".edit.NoteEditorActivity");t.topActivityInfo.name=PKG+".edit.NoteEditorActivity";}
+                    else emptyActivities(t);
+                }};
+                PublicPersonalNotesCustody.Frame f=e.frame();
+                yes(e.rootReads==2&&e.allReads==4&&f.roots.size()==1);
+                yes(f.roots.get(0).task.token==e.task(0).token.asBinder()&&f.end-f.begin<=1500);
+            });
+        test("continuous activity-state mismatch stops after three complete samples with actual pair diagnostic",()->{
+            e.task(1).isVisible=!e.task(1).isVisible;
+            PublicPersonalNotesReader.TaskInfoReadFailure failure=null;
+            try{e.frame();}catch(PublicPersonalNotesReader.TaskInfoReadFailure actual){failure=actual;}
+            yes(failure!=null&&e.rootReads==3&&e.allReads==6);
+            JSONObject row=new JSONObject(failure.evidence);
+            yes(row.getString("reason").equals("NOTES_ROOT_TASKINFO_CHANGED")&&row.getInt("sample_attempt")==3
+                    &&row.getString("comparison_kind").equals("activity_state")&&row.getJSONArray("changed_fields").toString().contains("is_visible"));
+            yes(row.getJSONObject("comparison_before").getInt("task_id")==1464
+                    &&row.getJSONObject("comparison_after").getInt("task_id")==1464&&!row.getBoolean("serialized_fields_grant_authority"));
+        });
+        for(final String field:new String[]{"token","cookie","uid","component","new-root"})
+            test("settled resample still refuses changed original "+field,()->{
+                e.onAfterRead=()->{if(e.allReads==2)for(int p=0;p<3;p++)e.task(p).isVisible=!e.task(p).isVisible;};
+                e.onBeforeRead=()->{if(e.allReads==3){
+                    if("new-root".equals(field)){e.empty();return;}
+                    IBinder replacement=new Binder();
+                    for(int p=0;p<3;p++){
+                        TaskInfo t=e.task(p);
+                        if("token".equals(field))t.token=new WindowContainerToken(replacement);
+                        else if("cookie".equals(field))t.launchCookies.add(replacement);
+                        else change(t,field);
+                    }
+                }};
+                refuses(null,()->e.frame());yes(e.rootReads==2&&e.allReads==4);
+            });
+        test("first token mismatch is never retried despite activity-state drift",()->{
+            e.task(1).token=new WindowContainerToken(new Binder());e.task(1).isVisible=!e.task(1).isVisible;
+            PublicPersonalNotesReader.TaskInfoReadFailure failure=null;
+            try{e.frame();}catch(PublicPersonalNotesReader.TaskInfoReadFailure actual){failure=actual;}
+            yes(failure!=null&&e.rootReads==1&&e.allReads==2);
+            JSONObject row=new JSONObject(failure.evidence);
+            yes(row.getString("comparison_kind").equals("immutable_identity")&&row.getInt("sample_attempt")==1);
+        });
+        test("resampling does not extend original frame age or outer deadline",()->{
+            e.onAfterRead=()->{if(e.allReads==2){for(int p=0;p<3;p++)e.task(p).isVisible=!e.task(p).isVisible;SystemClock.now+=1501;}};
+            refuses("NOTES_TASK_FRAME_INVALID",()->e.frame());yes(e.rootReads==1&&e.allReads==2);
+        });
+        return new JSONObject().put("schema","hepta.notes-taskinfo-stability-host.v1").put("all_pass",true)
+                .put("cases",cases-startCases).put("assertions",checks-startChecks)
+                .put("case_names",new ArrayList<String>(names.subList(startNames,names.size())))
+                .put("framework_and_binder_fixtures_synthetic",true).put("phone_operations",0)
+                .put("intent_redispatches",0).put("maximum_complete_samples",3).put("maximum_frame_ms",1500);
+    }
     public static void main(String[] args)throws Exception{
         if(args.length!=2||!("actual_archived_capture".equals(args[1])||"synthetic_derived_fixture".equals(args[1])))
             throw new IOException("exact input path and explicit provenance mode required");
@@ -351,9 +410,11 @@ public final class NotesTaskInfoReaderHostTest {
         });
         int originalCases=cases,originalChecks=checks;List<String> originalNames=new ArrayList<String>(names);
         JSONObject emptyActivity=emptyActivityCases();
+        JSONObject stability=stabilityCases();
         JSONObject result=new JSONObject().put("schema","hepta.notes-task-info-reader-host.v2").put("all_pass",true)
                 .put("cases",originalCases).put("assertions",originalChecks).put("case_names",originalNames)
                 .put("empty_activity",emptyActivity)
+                .put("taskinfo_stability",stability)
                 .put("input_mode",args[1]).put("input_sha256",digest(raw)).put("archived_capture_replayed",actualCapture)
                 .put("actual_capture_sha256",actualCapture?RAW_SHA:JSONObject.NULL).put("reference_capture_sha256",RAW_SHA)
                 .put("input_values_rehydrated",true).put("synthetic_binder_tokens",true).put("framework_and_clock_fixtures_synthetic",true)

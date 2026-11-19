@@ -274,8 +274,8 @@ def main():
                 or any(type(notes_cases.get(k)) is not int or notes_cases[k]!=0
                     for k in ("phone_operations","get_child_tasks_calls","mutation_calls"))
                 or type(notes_cases.get("cases")) is not int or notes_cases["cases"]!=71
-                or type(notes_cases.get("assertions")) is not int or notes_cases["assertions"]!=220):
-            raise RuntimeError("Notes TaskInfo case receipt or original 71/220 contract differs")
+                or type(notes_cases.get("assertions")) is not int or notes_cases["assertions"]!=238):
+            raise RuntimeError("Notes TaskInfo case receipt or original 71 cases and bounded-sampling assertion contract differs")
         notes_names=notes_cases.get("case_names")
         if (type(notes_names) is not list or len(notes_names)!=71
                 or any(type(name) is not str or not name for name in notes_names) or len(set(notes_names))!=71):
@@ -290,6 +290,18 @@ def main():
                 or notes_empty.get("framework_and_binder_fixtures_synthetic") is not True
                 or type(notes_empty.get("phone_operations")) is not int or notes_empty["phone_operations"]!=0):
             raise RuntimeError("Notes empty-activity and actual-field diagnostic cases differ")
+        notes_stability=notes_cases.get("taskinfo_stability",{})
+        if (notes_stability.get("schema")!="hepta.notes-taskinfo-stability-host.v1" or notes_stability.get("all_pass") is not True
+                or type(notes_stability.get("cases")) is not int or notes_stability["cases"]!=12
+                or type(notes_stability.get("assertions")) is not int or notes_stability["assertions"]!=60
+                or type(notes_stability.get("case_names")) is not list or len(notes_stability["case_names"])!=12
+                or any(type(name) is not str or not name for name in notes_stability["case_names"])
+                or len(set(notes_stability["case_names"]))!=12
+                or notes_stability.get("framework_and_binder_fixtures_synthetic") is not True
+                or type(notes_stability.get("phone_operations")) is not int or notes_stability["phone_operations"]!=0
+                or type(notes_stability.get("intent_redispatches")) is not int or notes_stability["intent_redispatches"]!=0
+                or notes_stability.get("maximum_complete_samples")!=3 or notes_stability.get("maximum_frame_ms")!=1500):
+            raise RuntimeError("Notes bounded read-only stability and immutable identity cases differ")
         notes_private=notes_gate.get("original_private_cases",{})
         if (notes_private.get("schema")!="hepta.profile-broker-host-tests.v1" or notes_private.get("passed") is not True
                 or type(notes_private.get("cases")) is not int or notes_private["cases"]!=47
@@ -325,8 +337,8 @@ def main():
                 "945275de9519682a14a8fbda5b914bb8098349bcb66b854d924ea713d75d9560"),
             "client":("hepta.personal-notes-recovery-client-host-tests.v1","checks",27,247,"cases",
                 "a3bc86072c411a9ed2cd791ce832e690812b6fc333248be4ac0e1af823188c9a"),
-            "post-model":("hepta.personal-notes-post-model-host.v1","cases",33,47,"case_names",
-                "345293266abe6da61ff120b40438f2cc17c71063ad732b81a6efa65ed0dd028a")}
+            "post-model":("hepta.personal-notes-post-model-host.v1","cases",51,89,"case_names",
+                "6069172caafbc3746974a84016abc18409b16ccd4cb9635dc5c90f5ea7a3ddb9")}
         for key,(schema,metric,count,assertions,names_metric,names_hash) in notes_absence_contracts.items():
             cases=notes_absence.get(key,{})
             if (cases.get("schema")!=schema or cases.get("all_pass",cases.get("passed")) is not True
@@ -363,7 +375,7 @@ def main():
             raise RuntimeError("Foreground concurrency host receipt differs")
         concurrency_contracts={
             "custody":(23,44,"1634b5644fbb6accc3c4e9dce37d6c10203fa9954d0b0cbe26079c256c1fcdc6"),
-            "receipts":(15,17,"e38ade821d1bb966ca34f199f434401836a80bcebea05403944a510a750d7318"),
+            "receipts":(25,30,"c503a5913d9899568542aa784d996a8822fc25302eee3b962d6d5730477fbe8b"),
             "recovery_entry":(6,8,"02d4d12aead56f784df256a64a920dce313d364ee0edcf71e54aeb6023384fa0")}
         if set(concurrency.get("cases",{}))!=set(concurrency_contracts):
             raise RuntimeError("Foreground concurrency case groups differ")

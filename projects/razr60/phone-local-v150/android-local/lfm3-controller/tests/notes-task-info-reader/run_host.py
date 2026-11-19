@@ -40,7 +40,7 @@ def main():
     tracked=list(dict.fromkeys(files+private_files+[own/'prepare_fixture.py',Path(__file__).resolve(),capture,jar,jdk/'bin/javac',jdk/'bin/java',jdk/'lib/ct.sym']))
     before=[pin(p) for p in tracked]
     need(pin(bg/'BackgroundTaskOrganizer.java')['sha256']=='97761262f44a23dba4479110169acbf1ba5176973f571bc119b8e27bfb9d5339','approved organizer differs')
-    need(pin(bg/'PublicPersonalNotesReader.java')['sha256']=='3213dcc29531eaaa1e41903fcdadddfa3fd626304a5871cfdfe87c549b229170','approved reader differs')
+    need(pin(bg/'PublicPersonalNotesReader.java')['sha256']=='38089d685875781319cec9b159822470d7b507c0fa8df6ceb13a00be158ee46f','approved reader differs')
     need(pin(s/'tests/profile-broker/ProfileBrokerHostTest.java')['sha256']=='5880a651260aa18566364f4dbca427c5adbba8048eee7f1b8a3d55f4a6f69e04','original private test bytes differ')
     classes=out/'classes';classes.mkdir();pc=out/'private-classes';pc.mkdir()
     env=dict(os.environ)
@@ -62,7 +62,7 @@ def main():
                 cases=json.loads(raw(out/(name+'.stdout')).decode().splitlines()[-1])
                 need(cases['schema']=='hepta.notes-task-info-reader-host.v2' and cases['all_pass'] is True and cases['input_values_rehydrated'] is True and cases['synthetic_binder_tokens'] is True and cases['phone_operations']==cases['get_child_tasks_calls']==cases['mutation_calls']==0,'typed reflection receipt')
                 need(cases['input_mode']==input_mode and cases['input_sha256']==expected_sha and cases['archived_capture_replayed'] is actual_capture and cases['actual_capture_sha256']==(CAPTURE_SHA if actual_capture else None) and cases['reference_capture_sha256']==CAPTURE_SHA,'input provenance differs')
-                need(len(cases['case_names'])==cases['cases']==len(set(cases['case_names']))==71 and cases['assertions']==220,'all original cases and assertions retained');report['reflection_cases']=cases
+                need(len(cases['case_names'])==cases['cases']==len(set(cases['case_names']))==71 and cases['assertions']==238,'all original cases and assertions retained');report['reflection_cases']=cases
                 extra=cases.get('empty_activity',{})
                 need(extra.get('schema')=='hepta.notes-empty-activity-host.v1' and extra.get('all_pass') is True
                      and extra.get('cases')==14 and extra.get('assertions')==59
@@ -70,6 +70,14 @@ def main():
                      and extra.get('framework_and_binder_fixtures_synthetic') is True
                      and type(extra.get('phone_operations')) is int and extra['phone_operations']==0,
                      'exact empty-activity and diagnostic cases required')
+                stable=cases.get('taskinfo_stability',{})
+                need(stable.get('schema')=='hepta.notes-taskinfo-stability-host.v1' and stable.get('all_pass') is True
+                     and stable.get('cases')==12 and stable.get('assertions')==60
+                     and len(stable.get('case_names',[]))==len(set(stable.get('case_names',[])))==12
+                     and stable.get('maximum_complete_samples')==3 and stable.get('maximum_frame_ms')==1500
+                     and stable.get('intent_redispatches')==stable.get('phone_operations')==0
+                     and stable.get('framework_and_binder_fixtures_synthetic') is True,
+                     'bounded read-only TaskInfo convergence and immutable-identity refusal cases required')
             elif name=='original-private-cases':
                 cases=json.loads(raw(out/(name+'.stdout')).decode().splitlines()[0]);need(cases['passed'] is True and cases['cases']==47 and cases['assertions']==449,'unchanged original private assertions');report['original_private_cases']=cases
         report['all_pass']=True

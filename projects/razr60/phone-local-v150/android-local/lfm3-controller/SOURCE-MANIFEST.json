@@ -1,18 +1,18 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "d5ade453b1edb9cc5c94d5cf9c574226f68d27f0",
-  "base_manifest_sha256": "453189ef99fa896b851f8cc0f1280acb7bab3bdb867021c73c74edc8387ed49c",
-  "candidate_status": "prelaunch_notes_recovery_candidate_not_compiled_or_deployed",
+  "base_head": "8fc364015644c59e1f5e356e7e8d914785736bd1",
+  "base_manifest_sha256": "cea6be3532416e730e4883ce50cbf9b49892249220a144e6a909309f565f7bb3",
+  "candidate_status": "postmodel_notes_runtime_recovery_candidate_not_compiled_or_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 191,
   "production_build_inputs_count": 363,
-  "production_input_map_sha256": "f70149df0940ca92493d54e48e8a29ebbe729f6f0a6d7e53f939ea86bf76df06",
+  "production_input_map_sha256": "a2c7f72b12ec8d2c367194048f2526882dd3479f6ad5e4941d299281c9713497",
   "complete_source_files": 2246,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Allow formal App-owned absence recovery for an exact failed prelaunch Notes generation only after independent process, virtual-display and task absence; retain all failed originals and require fresh ordinary idle after explicit clear and acknowledgment.",
+  "scope": "Stabilize owned Notes TaskInfo sampling, bind the exact released broker cleanup receipt, and permit formal App-owned recovery of an independently absent post-model Notes generation while preserving all failure originals and requiring explicit clear, acknowledgment, and fresh ordinary idle.",
   "files": [
     {
       "path": ".gitignore",
@@ -6336,8 +6336,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
-      "bytes": 60553,
-      "sha256": "ba3dd9c1fcb0687c049228424811f4883fd0c32b3d6e4c584be98e801793c8e2"
+      "bytes": 62795,
+      "sha256": "ff398845fec920062049e7ba5212b7be7502b2e2470b1aff3f82969bd26d9400"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
@@ -6351,8 +6351,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesReader.java",
-      "bytes": 11322,
-      "sha256": "3213dcc29531eaaa1e41903fcdadddfa3fd626304a5871cfdfe87c549b229170"
+      "bytes": 14921,
+      "sha256": "38089d685875781319cec9b159822470d7b507c0fa8df6ceb13a00be158ee46f"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicProfileAbsenceRecovery.java",
@@ -6411,8 +6411,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
-      "bytes": 112197,
-      "sha256": "ede84688a33e2fed09df21470188a1c4439e1006d8cda12346bc4f2dd1d60474"
+      "bytes": 112433,
+      "sha256": "66648f9c10dbee82211f26acaa63528b5df2046d1fdd7d12d4bc32301e67d32a"
     },
     {
       "path": "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
@@ -8761,8 +8761,8 @@
     },
     {
       "path": "tests/notes-task-info-reader/NotesTaskInfoReaderHostTest.java",
-      "bytes": 30633,
-      "sha256": "73fca900d031b46c5953d70ecfc12e6d66ccd94b7761e621e3be46812da5cc61"
+      "bytes": 35221,
+      "sha256": "58e8222fc154eb4bb8ae69d64c19171587c24cea5124dbccd8c3f85854723c90"
     },
     {
       "path": "tests/notes-task-info-reader/README.md",
@@ -8776,8 +8776,8 @@
     },
     {
       "path": "tests/notes-task-info-reader/run_host.py",
-      "bytes": 8726,
-      "sha256": "21f3ef71c969f089536bc8ee72f8c35a7586a8fd30430a5a83d469e62947bb82"
+      "bytes": 9485,
+      "sha256": "10c3d98ce6f0f8ea4e5f35701ff5f238be738c83728c741425010a2a17ea7fdd"
     },
     {
       "path": "tests/notes-task-info-reader/synthetic-notes-census.json",
@@ -9086,8 +9086,8 @@
     },
     {
       "path": "tests/personal-notes-absence/PersonalNotesPostModelHostTest.java",
-      "bytes": 30400,
-      "sha256": "ed60a040fa74e07752b896d5a4090dece693fc004f5a89391d218440fa25b234"
+      "bytes": 41794,
+      "sha256": "6582475c168436ce7975f982372b8ea0e13b03ca38cf44fd42632d63175cc2bc"
     },
     {
       "path": "tests/personal-notes-absence/PersonalNotesRecoveryClientHostTest.java",
@@ -9526,8 +9526,8 @@
     },
     {
       "path": "tests/public-profile-history/ForegroundConcurrencySessionHostTest.java",
-      "bytes": 5483,
-      "sha256": "ddcf1f34dabee0b49de85f3427827bb501289cac0f380d41af9ebea887212d62"
+      "bytes": 7981,
+      "sha256": "92e9e2c54cde2852189e2e0f7c4ef9b3670928543097964fed4d200714609798"
     },
     {
       "path": "tests/public-profile-history/PublicProfileHistoryHostTest.java",
@@ -9537,7 +9537,7 @@
     {
       "path": "tests/public-profile-history/run_concurrency_host.py",
       "bytes": 7342,
-      "sha256": "ba14cd1c68ff6a2bc670fcdfee2619d03a158151be29eb4cc41c614099a72f89"
+      "sha256": "43833db8d2ea5b084113c64fea38de65a8a0ee6452fd7778d71292bad964ada4"
     },
     {
       "path": "tests/public-profile-history/run_host.py",
@@ -11036,8 +11036,8 @@
     },
     {
       "path": "tools/run_host_checks.py",
-      "bytes": 42592,
-      "sha256": "5c6f530c37d00b48f812a660afa857f87dcbdbcbd3ee317f405c37b3820ff961"
+      "bytes": 43862,
+      "sha256": "0e451e9262f36ae09f645130452b8dfb0db059a0a3cce62881274cf73c6f9875"
     },
     {
       "path": "tools/run_public_own_group_adapter_host.py",

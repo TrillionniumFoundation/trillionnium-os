@@ -122,6 +122,38 @@ public final class PersonalNotesPostModelHostTest {
         JSONObject get(String key){return obj(inputs.get(key));}void put(String key,JSONObject value){inputs.put(key,raw(value));}
         void mutate(String key,Change change)throws Exception{JSONObject v=get(key);change.run(v);put(key,v);}
         void syncCleanup(JSONObject cleanup){put("cleanup",cleanup);JSONObject result=get("result"),session=copy(cleanup);session.remove("cleanup_known");session.remove("cleanup_error");result.put("background_cleanup",cleanup).put("background_session",session);put("result",result);}
+        void syncTerminal(JSONObject terminal){
+            put("broker_output",terminal);JSONObject broker=get("broker_receipt");
+            broker.put("stored_bytes",inputs.get("broker_output").length).put("observed_bytes",inputs.get("broker_output").length)
+                    .put("stored_sha256",hash(inputs.get("broker_output")));put("broker_receipt",broker);
+            JSONObject cleanup=get("cleanup");cleanup.put("broker_output",broker);syncCleanup(cleanup);
+        }
+        void releasedCustodies(Change change)throws Exception{
+            JSONObject cleanup=get("cleanup"),terminal=get("broker_output");
+            change.run(cleanup.getJSONObject("last_broker_response").getJSONObject("personal_notes_cleanup"));
+            change.run(terminal.getJSONObject("personal_notes_cleanup"));syncCleanup(cleanup);syncTerminal(terminal);
+        }
+        Fixture released()throws Exception{
+            JSONObject cleanup=get("cleanup"),last=cleanup.getJSONObject("last_broker_response");
+            JSONObject custody=copy(last.getJSONObject("personal_notes_cleanup")).put("schema","hepta.public-personal-notes-cleanup.v2")
+                    .put("absence_reads",2).put("pending_owned_reads",8).put("failure","")
+                    .put("history_preservation_scope","nonphysical_and_unresolved_recents")
+                    .put("history_preservation_interval","pre_release_to_absence")
+                    .put("hidden_history_preservation_interval","initial_to_absence");
+            flags(custody,true,"cleanup_known","pre_release_tasks_verified","release_api_entered","release_api_returned",
+                    "display_absence_verified","live_tasks_absent","all_recents_sections_absent","prior_hidden_history_preserved",
+                    "nonphysical_history_preserved","nonphysical_hidden_history_preserved");
+            flags(custody,false,"identity_unknown","custodian_retained","no_display_create_attempted","physical_history_frozen",
+                    "unrelated_physical_history_changes_observed","recents_presentation_changes_observed");
+            for(String key:new String[]{"initial_recents_sha256","pre_release_recents_sha256","final_recents_sha256"})
+                custody.put(key,hash(raw("synthetic "+key)));
+            last.put("state","RELEASED").put("public_scope_closing",true).put("personal_notes_cleanup",custody);
+            cleanup.put("broker_process_exit_observed",true).put("broker_process_exit_code",0)
+                    .put("cleanup_error","NOTES_CLEANUP_ROOT_SCOPE_UNBOUND");syncCleanup(cleanup);
+            JSONObject broker=get("broker_receipt");broker.put("eof_seen",true);put("broker_receipt",broker);
+            JSONObject terminal=get("broker_output").put("state","RELEASED").put("release_confirmed",true)
+                    .put("personal_notes_cleanup",copy(custody));syncTerminal(terminal);return this;
+        }
         void syncSession(JSONObject session){put("model_session_receipt",session);JSONObject result=get("result");result.put("model_session",new JSONObject().put("task_id",base.task).put("worker_generation",worker).put("process_started",true).put("process_exit_observed",true).put("exit_code",0).put("receipt_valid",true).put("app_receipt_sha256",hash(inputs.get("model_session_receipt"))));put("result",result);}
         void syncGeneration(JSONObject value){put("generation_cleanup_receipt",value);JSONObject session=get("model_session_receipt"),g=session.getJSONObject("worker_generation_cleanup");g.put("native_cleanup",value).put("native_receipt_sha256",hash(inputs.get("generation_cleanup_receipt")));syncSession(session);}
         void syncNative(JSONObject value){put("native_session_receipt",value);JSONObject session=get("model_session_receipt");session.put("native_session_receipt",value);syncSession(session);}
@@ -132,8 +164,9 @@ public final class PersonalNotesPostModelHostTest {
     }
     static final class Env implements AutoCloseable {
         final Fixture fixture;final Path root,task,journal;final Context context;final Map<Path,byte[]> originals=new LinkedHashMap<Path,byte[]>();
-        Env()throws Exception{
-            fixture=new Fixture();root=Files.createTempDirectory("notes-post-model-host-").toRealPath();context=new Context(root.toFile());fixture.bindRunPaths(root.toString());
+        Env()throws Exception{this(false);}
+        Env(boolean released)throws Exception{
+            fixture=released?new Fixture().released():new Fixture();root=Files.createTempDirectory("notes-post-model-host-").toRealPath();context=new Context(root.toFile());fixture.bindRunPaths(root.toString());
             MobiMindPrivateFiles.directory(root.resolve("control-tasks").toFile(),true);task=root.resolve("control-tasks").resolve(fixture.base.task);MobiMindPrivateFiles.directory(task.toFile(),true);
             MobiMindPrivateFiles.directory(root.resolve("runs").toFile(),true);Path run=root.resolve("runs").resolve(fixture.run),worker=root.resolve("runs").resolve(fixture.worker);MobiMindPrivateFiles.directory(run.toFile(),true);MobiMindPrivateFiles.directory(worker.toFile(),true);
             journal=root.resolve(BackgroundSession.JOURNAL);write(journal,fixture.inputs.get("journal"));write(root.resolve("control-session.json"),raw(fixture.base.control));
@@ -184,6 +217,56 @@ public final class PersonalNotesPostModelHostTest {
         test("client_rechecks_extra_bytes_before_durable_commit",()->{try(Env e=new Env()){PublicPersonalNotesRecoveryClient.Receipt receipt=e.collect();Path path=e.root.resolve("runs").resolve(e.fixture.run).resolve("app-receipt.json");Files.write(path,raw("changed"));refuse(()->receipt.persist(e.context));}});
         test("nested_cancellation_cannot_contradict_normal_close",()->{Fixture f=new Fixture();JSONObject s=f.get("model_session_receipt");s.getJSONObject("owned_worker_cancellation").put("term_destroy_attempts",1);f.syncSession(s);refuse(f::request);});
         test("retired_action_authority_rejected",()->{Fixture f=new Fixture();f.mutate("step_action",v->v.getJSONObject("task_authorization").put("callback_lease_current",false));refuse(f::request);});
+        test("released_terminal_keeps_failed_business_and_full_wire",()->{Fixture f=new Fixture().released();f.full();PublicPersonalNotesAbsenceRecovery.Request r=f.request();
+            need(r.postModelDrained&&r.recordedTaskIds.size()==2&&r.inputHashes().length()==15);
+            need(PublicPersonalNotesAbsenceRecovery.fromWire(r.wire()).wire().equals(r.wire()));
+            need(f.get("result").getString("status").equals("blocked")&&!f.get("result").getBoolean("cleanup_known")
+                    &&f.get("broker_output").getBoolean("release_confirmed")&&!f.get("cleanup").getJSONObject("last_broker_response").getBoolean("ok"));});
+        test("released_terminal_requires_all_drained_originals",()->{Fixture f=new Fixture().released();for(String key:new String[]{"step_model","step_action","fixed_intent_attempt","model_request_receipt","model_session_receipt","native_session_receipt","generation_identity","generation_cleanup_receipt"})f.inputs.remove(key);refuse(f::request);});
+        test("released_terminal_requires_release_confirmed",()->{Fixture f=new Fixture().released();JSONObject t=f.get("broker_output").put("release_confirmed",false);f.syncTerminal(t);refuse(f::request);});
+        test("released_terminal_requires_owned_process_exit",()->{Fixture f=new Fixture().released();JSONObject c=f.get("cleanup").put("broker_process_exit_observed",false).put("broker_process_exit_code",JSONObject.NULL);f.syncCleanup(c);refuse(f::request);});
+        test("released_terminal_requires_zero_exit",()->{Fixture f=new Fixture().released();JSONObject c=f.get("cleanup").put("broker_process_exit_code",1);f.syncCleanup(c);refuse(f::request);});
+        test("released_terminal_requires_complete_eof",()->{Fixture f=new Fixture().released();JSONObject b=f.get("broker_receipt").put("eof_seen",false);f.put("broker_receipt",b);f.syncTerminal(f.get("broker_output"));refuse(f::request);});
+        test("released_terminal_last_response_state_must_agree",()->{Fixture f=new Fixture().released();JSONObject c=f.get("cleanup");c.getJSONObject("last_broker_response").put("state","CLEANUP_UNKNOWN");f.syncCleanup(c);refuse(f::request);});
+        test("released_terminal_cannot_promote_business_ok",()->{Fixture f=new Fixture().released();JSONObject c=f.get("cleanup");c.getJSONObject("last_broker_response").put("ok",true);f.syncCleanup(c);refuse(f::request);});
+        test("released_terminal_requires_same_custody_bytes",()->{Fixture f=new Fixture().released();JSONObject c=f.get("cleanup");c.getJSONObject("last_broker_response").getJSONObject("personal_notes_cleanup").put("pending_owned_reads",9);f.syncCleanup(c);refuse(f::request);});
+        test("released_custody_requires_complete_retirement_flags",()->{for(String key:new String[]{"cleanup_known","pre_release_tasks_verified","release_api_entered","release_api_returned","display_absence_verified","live_tasks_absent","all_recents_sections_absent","prior_hidden_history_preserved","nonphysical_history_preserved","nonphysical_hidden_history_preserved"}){Fixture f=new Fixture().released();f.releasedCustodies(c->c.put(key,false));refuse(f::request);}});
+        test("released_custody_refuses_unknown_or_retained_identity",()->{for(String key:new String[]{"identity_unknown","custodian_retained","no_display_create_attempted"}){Fixture f=new Fixture().released();f.releasedCustodies(c->c.put(key,true));refuse(f::request);}});
+        test("released_custody_requires_two_absence_reads",()->{Fixture f=new Fixture().released();f.releasedCustodies(c->c.put("absence_reads",1));refuse(f::request);});
+        test("released_custody_refuses_failure",()->{Fixture f=new Fixture().released();f.releasedCustodies(c->c.put("failure","synthetic failure"));refuse(f::request);});
+        test("released_custody_requires_all_history_hashes",()->{for(String key:new String[]{"initial_recents_sha256","pre_release_recents_sha256","final_recents_sha256"}){Fixture f=new Fixture().released();f.releasedCustodies(c->c.put(key,""));refuse(f::request);}});
+        test("released_terminal_does_not_skip_native_drain_proof",()->{Fixture f=new Fixture().released();JSONObject n=f.get("generation_cleanup_receipt");n.put("empty_readbacks",1);f.syncGeneration(n);f.request();refuse(f::full);});
+        test("released_terminal_still_requires_fresh_absence",()->{Fixture f=new Fixture().released();PublicPersonalNotesAbsenceRecovery.Request r=f.request();
+            JSONObject valid=PersonalNotesAbsenceHostTest.proof(r);need(PublicPersonalNotesAbsenceRecovery.validate(valid,r,r.started+21,r.requestBoot).getBoolean("cleanup_known"));
+            JSONObject process=copy(valid);process.getJSONObject("after").getJSONObject("process").put("old_creator_absent",false);refuse(()->PublicPersonalNotesAbsenceRecovery.validate(process,r,r.started+21,r.requestBoot));
+            JSONObject physical=copy(valid);physical.getJSONObject("after").getJSONObject("physical").put("0",hash(raw("changed main")));refuse(()->PublicPersonalNotesAbsenceRecovery.validate(physical,r,r.started+21,r.requestBoot));
+            JSONObject task=copy(valid);task.getJSONObject("after").getJSONObject("live").getJSONArray("roots").getJSONObject(0).put("top",f.pkg+"/.Main");refuse(()->PublicPersonalNotesAbsenceRecovery.validate(task,r,r.started+21,r.requestBoot));});
+        test("client_archives_released_originals_without_rewriting_failure",()->{try(Env e=new Env(true)){PublicPersonalNotesRecoveryClient.Receipt receipt=e.collect();receipt.persist(e.context);receipt.requirePersisted();receipt.requireOriginals(true);
+            need(receipt.request.postModelDrained&&FakePersonalNotesRecoveryProcess.calls==1);try(java.util.stream.Stream<Path> p=Files.list(e.task)){need(p.filter(x->x.getFileName().toString().contains(".original-")).count()==16);}e.unchanged();}});
+        test("client_archives_current_interrupted_control_after_update",()->{try(Env e=new Env(true)){
+            // Authored startup-shaped state only: this test does not claim an
+            // actual package update or invoke the Android startup producer.
+            Path control=e.root.resolve("control-session.json");byte[] previous=Files.readAllBytes(control);
+            Path archiveDir=e.root.resolve("session-recovery");MobiMindPrivateFiles.directory(archiveDir.toFile(),true);
+            Path archive=archiveDir.resolve("control-session.json."+hash(previous)+".json");e.write(archive,previous);
+            JSONObject startup=new JSONObject().put("schema","hepta.session-recovery.v1").put("decision","blocked_interrupted")
+                    .put("reason","synthetic preserved blocked session").put("previous_status","blocked")
+                    .put("previous_session_sha256",hash(previous)).put("read_error",JSONObject.NULL)
+                    .put("interruption_latch","control-session.interrupted.json").put("interruption_latch_observed",true)
+                    .put("interruption_latch_synced",true).put("recovery_pending_barrier_observed",false)
+                    .put("automatic_resume",false).put("native_cleanup_independently_observed",false)
+                    .put("preserved_records",new JSONArray().put(new JSONObject().put("original_name","control-session.json")
+                            .put("path",archive.toString()).put("sha256",hash(previous)).put("bytes",previous.length)));
+            byte[] current=raw(obj(previous).put("status","interrupted").put("cleanup_known",false)
+                    .put("background_lease_unreleased",true).put("web_helper_lease_unreleased",false).put("startup_recovery",startup));
+            Files.write(control,current);e.originals.put(control,current);
+            PublicPersonalNotesRecoveryClient.Receipt receipt=e.collect();receipt.persist(e.context);receipt.requirePersisted();receipt.requireOriginals(true);
+            need(receipt.request.postModelDrained&&FakePersonalNotesRecoveryProcess.calls==1);
+            need(receipt.request.currentControlSha256.equals(hash(current))&&!receipt.request.currentControlSha256.equals(hash(previous))
+                    &&Arrays.equals(receipt.request.original("current_control"),current));
+            need(obj(Files.readAllBytes(e.task.resolve("result.json"))).getString("status").equals("blocked"));
+            try(java.util.stream.Stream<Path> p=Files.list(e.task)){need(p.filter(x->x.getFileName().toString().contains(".original-")).count()==16);}
+            e.unchanged();}});
         System.out.println(new JSONObject().put("schema","hepta.personal-notes-post-model-host.v1").put("passed",true).put("cases",cases).put("assertions",assertions).put("case_names",names).put("phone_operations",0).put("current_absence_samples_synthetic",true).put("business_success_claimed",false));
     }
 }

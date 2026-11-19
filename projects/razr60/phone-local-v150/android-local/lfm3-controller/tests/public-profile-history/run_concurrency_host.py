@@ -16,7 +16,7 @@ import time
 JSON_SHA = '3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'
 CONTRACTS = {
     'custody': (23, 44, '1634b5644fbb6accc3c4e9dce37d6c10203fa9954d0b0cbe26079c256c1fcdc6'),
-    'receipts': (15, 17, 'e38ade821d1bb966ca34f199f434401836a80bcebea05403944a510a750d7318'),
+    'receipts': (25, 30, 'c503a5913d9899568542aa784d996a8822fc25302eee3b962d6d5730477fbe8b'),
     'recovery_entry': (6, 8, '02d4d12aead56f784df256a64a920dce313d364ee0edcf71e54aeb6023384fa0'),
 }
 

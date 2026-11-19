@@ -19,8 +19,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /** Independent current absence for an expired personal Notes lease. The failed
- * task remains failed and the historical broker release remains unknown. These
- * serialized observations cannot create an App receipt or authorize any effect. */
+ * task and its historical broker records stay unchanged. These current absence
+ * observations cannot create an App receipt or authorize any business effect. */
 public final class PublicPersonalNotesAbsenceRecovery {
     public static final String REQUEST_SCHEMA="hepta.personal-notes-absence-request.v1";
     public static final String DRAINED_REQUEST_SCHEMA="hepta.personal-notes-absence-request.v2";
@@ -42,6 +42,7 @@ public final class PublicPersonalNotesAbsenceRecovery {
         public final java.util.Set<Integer> recordedTaskIds;
         public final boolean postModelDrained;
         private final boolean prelaunchCreateFailure;
+        private final boolean releasedPostModelTerminal;
         private final Map<String,byte[]> originals;
         private final byte[] currentControl;
         private final String controllerText;
@@ -97,17 +98,31 @@ public final class PublicPersonalNotesAbsenceRecovery {
                     &&ProfileIdentity.sha(output).equals(string(broker,"stored_sha256")),"NOTES_BROKER_OUTPUT_BYTES");
             requireBootstrapPrefix(bootstrap.getJSONObject("broker_output"),broker,output);
             JSONObject terminal=object(output);
+            // A failed action can complete its owned retirement before returning
+            // ok=false. Derive this shape from the preserved terminal bytes; it
+            // still requires the complete one-step drained model proof and fresh
+            // independent absence. It never promotes the failed business result.
+            releasedPostModelTerminal="RELEASED".equals(string(terminal,"state"));
+            need(!releasedPostModelTerminal||postModelDrained,"NOTES_RELEASED_REQUIRES_DRAINED_MODEL");
             need("hepta.background-broker-terminal.v1".equals(string(terminal,"schema"))&&generation.equals(string(terminal,"generation"))
-                    &&number(terminal,"display_id")==displayId&&"CLEANUP_UNKNOWN".equals(string(terminal,"state"))
+                    &&number(terminal,"display_id")==displayId&&(releasedPostModelTerminal||"CLEANUP_UNKNOWN".equals(string(terminal,"state")))
                     &&publicScope.sha256.equals(string(terminal,"display_scope_sha256")),"NOTES_BROKER_TERMINAL_BINDING");
-            no(terminal,"release_confirmed");yes(terminal,"public_scope_admission_retired");
+            if(releasedPostModelTerminal){
+                yes(terminal,"release_confirmed");yes(cleanup,"broker_process_exit_observed");yes(broker,"eof_seen");
+                need(number(cleanup,"broker_process_exit_code")==0,"NOTES_RELEASED_BROKER_EXIT");
+            }else no(terminal,"release_confirmed");
+            yes(terminal,"public_scope_admission_retired");
             JSONObject custody=terminal.getJSONObject("personal_notes_cleanup");
-            targetUid=notesCustody(custody);
+            targetUid=notesCustody(custody,releasedPostModelTerminal);
             JSONObject last=cleanup.getJSONObject("last_broker_response");
             need(generation.equals(string(last,"generation"))&&number(last,"display_id")==displayId
                     &&publicScope.sha256.equals(string(last,"display_scope_sha256"))&&number(last,"version")==BrokerProtocol.PUBLIC_OWN_GROUP_VERSION,
                     "NOTES_LAST_RESPONSE_BINDING");
-            need(notesCustody(last.getJSONObject("personal_notes_cleanup"))==targetUid,"NOTES_TARGET_UID_CHANGED");
+            need(notesCustody(last.getJSONObject("personal_notes_cleanup"),releasedPostModelTerminal)==targetUid,"NOTES_TARGET_UID_CHANGED");
+            if(releasedPostModelTerminal){
+                need(same(custody,last.getJSONObject("personal_notes_cleanup")),"NOTES_RELEASED_CUSTODY_CHANGED");
+                yes(last,"public_scope_closing");
+            }
             java.util.Set<Integer> ids=new TreeSet<Integer>();
             for(JSONObject c:new JSONObject[]{custody,last.getJSONObject("personal_notes_cleanup")}){
                 JSONArray observed=c.getJSONArray("actual_observed_tasks");need(observed.length()<=32,"NOTES_RECORDED_TASK_BOUND");
@@ -193,11 +208,12 @@ public final class PublicPersonalNotesAbsenceRecovery {
             need(number(early,"version")==BrokerProtocol.PUBLIC_OWN_GROUP_VERSION&&generation.equals(string(early,"generation"))
                     &&number(early,"display_id")==displayId&&publicScope.sha256.equals(string(early,"display_scope_sha256"))
                     &&"launch".equals(string(early,"operation"))&&"ACTIVE".equals(string(early,"state"))
-                    &&"notes.create".equals(string(last,"operation"))&&"CLEANUP_UNKNOWN".equals(string(last,"state"))
+                    &&"notes.create".equals(string(last,"operation"))
+                    &&(releasedPostModelTerminal?"RELEASED":"CLEANUP_UNKNOWN").equals(string(last,"state"))
                     &&ProfileIdentity.uuid(string(early,"request_id"))&&ProfileIdentity.uuid(string(last,"request_id"))
                     &&!string(early,"request_id").equals(string(last,"request_id")),"NOTES_DRAINED_BOOTSTRAP_BINDING");
             yes(early,"ok","dispatched");no(last,"ok");yes(last,"dispatched","public_scope_admission_retired");
-            need(notesCustody(early.getJSONObject("personal_notes_cleanup"))==targetUid,"NOTES_TARGET_UID_CHANGED");
+            need(notesCustody(early.getJSONObject("personal_notes_cleanup"),false)==targetUid,"NOTES_TARGET_UID_CHANGED");
             JSONObject location=early.getJSONObject("public_task_location"),later=last.getJSONObject("public_task_location"),launch=early.getJSONObject("task_launch_policy");
             need("hepta.public-own-group.task-location.v1".equals(string(location,"schema"))&&generation.equals(string(location,"generation"))
                     &&number(location,"display_id")==displayId&&number(location,"target_user_id")==0
@@ -343,14 +359,24 @@ public final class PublicPersonalNotesAbsenceRecovery {
             // The App client additionally replays the unchanged WorkerGenerationProof
             // validator against these exact raw bytes before creating an opaque receipt.
         }
-        private int notesCustody(JSONObject c)throws Exception{
+        private int notesCustody(JSONObject c,boolean released)throws Exception{
             boolean concurrent="hepta.public-personal-notes-cleanup.v2".equals(string(c,"schema"));
             need((concurrent||"hepta.public-personal-notes-cleanup.v1".equals(string(c,"schema")))&&generation.equals(string(c,"generation"))
                     &&publicScope.sha256.equals(string(c,"scope_sha256"))&&PACKAGE.equals(string(c,"package"))
                     &&(number(c,"display_id")==displayId||(prelaunchCreateFailure&&number(c,"display_id")==-1)),
                     "NOTES_CUSTODY_BINDING");
             long uid=number(c,"target_uid");need(uid>=10000&&uid<90000,"NOTES_TARGET_UID");
-            yes(c,"create_attempted");no(c,"cleanup_known","arbitrary_task_removal_used","force_stop_used","caller_flag_is_cleanup_proof");
+            yes(c,"create_attempted");no(c,"arbitrary_task_removal_used","force_stop_used","caller_flag_is_cleanup_proof");
+            if(released){
+                need(releasedPostModelTerminal&&postModelDrained&&!prelaunchCreateFailure&&concurrent,"NOTES_RELEASED_CUSTODY_KIND");
+                yes(c,"cleanup_known","pre_release_tasks_verified","release_api_entered","release_api_returned",
+                        "display_absence_verified","live_tasks_absent","all_recents_sections_absent","prior_hidden_history_preserved");
+                no(c,"identity_unknown","custodian_retained","no_display_create_attempted");
+                need(number(c,"absence_reads")>=2&&string(c,"failure").isEmpty()
+                        &&ProfileIdentity.hash(string(c,"initial_recents_sha256"))
+                        &&ProfileIdentity.hash(string(c,"pre_release_recents_sha256"))
+                        &&ProfileIdentity.hash(string(c,"final_recents_sha256")),"NOTES_RELEASED_CUSTODY_INCOMPLETE");
+            }else no(c,"cleanup_known");
             if(prelaunchCreateFailure){
                 // An uninitialised custodian has no observed task to retire.
                 // Recovery still requires independent current absence of the
@@ -372,7 +398,8 @@ public final class PublicPersonalNotesAbsenceRecovery {
                         &&c.get("unrelated_physical_history_changes_observed") instanceof Boolean
                         &&c.get("recents_presentation_changes_observed") instanceof Boolean
                         &&c.get("prior_hidden_history_preserved") instanceof Boolean,"NOTES_CUSTODY_HISTORY_SCOPE");
-                no(c,"nonphysical_history_preserved","nonphysical_hidden_history_preserved");
+                if(released)yes(c,"nonphysical_history_preserved","nonphysical_hidden_history_preserved");
+                else no(c,"nonphysical_history_preserved","nonphysical_hidden_history_preserved");
             }
             return (int)uid;
         }

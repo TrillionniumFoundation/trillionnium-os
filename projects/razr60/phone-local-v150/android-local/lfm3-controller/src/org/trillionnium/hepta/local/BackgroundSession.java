@@ -953,7 +953,10 @@ final class BackgroundSession {
     }
     private static JSONObject checkedPersonalNotesCleanup(JSONObject response,PublicOwnGroupPolicy.Scope scope,
             String generation,int display)throws Exception{
-        if(response==null||scope==null||scope.targetUserId!=0||!Boolean.TRUE.equals(response.get("ok"))
+        // Business refusal and terminal custody are separate facts. A failed
+        // notes.create may already carry the authenticated broker's RELEASED
+        // proof; all scope, double-absence and history checks remain required.
+        if(response==null||scope==null||scope.targetUserId!=0||!(response.get("ok") instanceof Boolean)
                 ||!"RELEASED".equals(response.getString("state"))||!scope.sha256.equals(response.getString("display_scope_sha256")))
             throw new IOException("NOTES_CLEANUP_ROOT_SCOPE_UNBOUND");
         JSONObject proof=response.getJSONObject("personal_notes_cleanup");
