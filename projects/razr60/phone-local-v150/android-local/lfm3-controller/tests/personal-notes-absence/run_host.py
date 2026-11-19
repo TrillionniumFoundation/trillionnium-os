@@ -40,7 +40,7 @@ def main():
         raise RuntimeError('pinned actual org.json differs')
     test = source / 'tests/personal-notes-absence'
     bg, local = (source / 'src/org/trillionnium/hepta' / leaf for leaf in ('background', 'local'))
-    pure_names = ['ProfileIdentity', 'ProfileTarget', 'WindowOwnership', 'BrokerProtocol', 'FixedIntentTools',
+    pure_names = ['ProfileIdentity', 'ProfileTarget', 'WindowOwnership', 'BrokerProtocol','PublicPermissionControllerUi', 'FixedIntentTools',
                   'BackgroundOwnedTaskPolicy', 'BackgroundOwnedSingleTask', 'ProfileTaskPolicy', 'ProfileOwnedTask',
                   'ProfilePermissionTransient', 'ProfileDisplayCustody', 'ProfilePrelaunchRecovery',
                   'ProfileRecoveryProcesses', 'PublicOwnGroupPolicy', 'PublicOwnGroupPhysicalFence',

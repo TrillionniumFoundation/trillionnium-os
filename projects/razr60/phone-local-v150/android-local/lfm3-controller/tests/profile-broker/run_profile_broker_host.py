@@ -22,7 +22,7 @@ def main():
     a = p.parse_args()
     a.output.mkdir(parents=True, exist_ok=False)
     test = Path(__file__).with_name('ProfileBrokerHostTest.java')
-    names = ['ProfileIdentity', 'ProfileTarget', 'WindowOwnership', 'BrokerProtocol', 'PublicOwnGroupPolicy', 'FixedIntentTools',
+    names = ['ProfileIdentity', 'ProfileTarget', 'WindowOwnership', 'BrokerProtocol','PublicPermissionControllerUi', 'PublicOwnGroupPolicy', 'FixedIntentTools',
              'BackgroundOwnedTaskPolicy', 'BackgroundOwnedSingleTask', 'ProfileTaskPolicy',
              'ProfileOwnedTask','ProfilePermissionTransient', 'ProfileDisplayCustody']
     inputs = [a.source / (n + '.java') for n in names] + [test]

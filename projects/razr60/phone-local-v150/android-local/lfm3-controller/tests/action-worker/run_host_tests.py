@@ -129,7 +129,7 @@ def main():
     relative = ['local/ActionExecutionState.java', 'local/TaskCancellationQueue.java', 'local/ObservationDiagnostics.java', 'local/NativeActionSnapshotCheck.java', 'local/ObservedChildText.java',
                 'local/FixedIntentAttemptGuard.java', 'local/ObservedImeEnter.java',
                 'background/FixedIntentTarget.java', 'background/FixedIntentTools.java',
-                'background/BrokerProtocol.java', 'background/ProfileIdentity.java', 'background/ProfileTarget.java',
+                'background/BrokerProtocol.java', 'background/PublicPermissionControllerUi.java', 'background/ProfileIdentity.java', 'background/ProfileTarget.java',
                 'background/PublicOwnGroupPolicy.java', 'background/WindowOwnership.java',
                 'local/ObservedTargetLabels.java', 'local/NativeAppEvidence.java', 'local/OwnedWorkerCancellation.java',
                 'local/LocalRuntimeConfig.java', 'local/ModelProfile.java', 'local/ModelFileVerifier.java',

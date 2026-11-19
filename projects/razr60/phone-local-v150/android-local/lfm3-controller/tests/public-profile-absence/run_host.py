@@ -41,7 +41,7 @@ def main():
     test = source / 'tests/public-profile-absence'
     bg = source / 'src/org/trillionnium/hepta/background'
     local = source / 'src/org/trillionnium/hepta/local'
-    pure_names = ['ProfileIdentity', 'ProfileTarget', 'WindowOwnership', 'BrokerProtocol', 'FixedIntentTools',
+    pure_names = ['ProfileIdentity', 'ProfileTarget', 'WindowOwnership', 'BrokerProtocol','PublicPermissionControllerUi', 'FixedIntentTools',
                   'BackgroundOwnedTaskPolicy', 'BackgroundOwnedSingleTask', 'ProfileTaskPolicy', 'ProfileOwnedTask',
                   'ProfilePermissionTransient', 'ProfileDisplayCustody', 'ProfilePrelaunchRecovery',
                   'ProfileRecoveryProcesses', 'PublicOwnGroupPolicy', 'PublicOwnGroupPhysicalFence',

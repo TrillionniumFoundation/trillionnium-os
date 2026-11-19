@@ -231,6 +231,9 @@ public final class PublicProfileAbsenceRecovery {
                     &&Boolean.TRUE.equals(readback.get("root_rpc_registered"))
                     &&Boolean.FALSE.equals(readback.get("serialization_grants_authority")),"PUBLIC_POSTLAUNCH_APP_READBACK");
             JSONObject cleaned=terminal.getJSONObject("profile_cleanup");
+            JSONObject history=cleaned.getJSONObject("public_foreign_recent_history");
+            boolean concurrent="hepta.public-profile-history-custody.v2".equals(string(history,"schema"));
+            String historyScope=concurrent?"owned_target_only_with_unrelated_physical_history_audited":"owned_target_only_with_foreign_history_preserved";
             ProfilePrelaunchRecovery.keys(cleaned,"schema","generation","display_id","target_sha256","user_id","user_serial","full_uid",
                     "cleanup_known","live_tasks_absent","recents_tasks_absent","foreign_tasks_present","identity_unknown","owned_tasks",
                     "public_foreign_recent_history","recents_absence_scope");
@@ -241,7 +244,7 @@ public final class PublicProfileAbsenceRecovery {
                     &&number(cleaned,"full_uid")==target.fullUid&&Boolean.TRUE.equals(cleaned.get("cleanup_known"))
                     &&Boolean.TRUE.equals(cleaned.get("live_tasks_absent"))&&Boolean.TRUE.equals(cleaned.get("recents_tasks_absent"))
                     &&Boolean.FALSE.equals(cleaned.get("foreign_tasks_present"))&&Boolean.FALSE.equals(cleaned.get("identity_unknown"))
-                    &&"owned_target_only_with_foreign_history_preserved".equals(string(cleaned,"recents_absence_scope")),
+                    &&historyScope.equals(string(cleaned,"recents_absence_scope")),
                     "PUBLIC_POSTLAUNCH_ORIGINAL_PROFILE_CLEANUP");
             JSONArray tasks=cleaned.getJSONArray("owned_tasks");need(tasks.length()==1,"PUBLIC_POSTLAUNCH_BOOTSTRAP_OWNED_COUNT");
             JSONObject task=tasks.getJSONObject(0);ProfilePrelaunchRecovery.keys(task,"task_id","parent_task_id","task_token_id","user_id",
@@ -269,11 +272,25 @@ public final class PublicProfileAbsenceRecovery {
                     "top_activity_info_uid_matches","first_claim_launch_cookie","intent_package_matches","base_package_matches","top_package_matches",
                     "real_package_matches","orig_package_matches"};
             ProfilePrelaunchRecovery.keys(checks,required);for(String key:required)need(Boolean.TRUE.equals(checks.get(key)),"PUBLIC_POSTLAUNCH_ORIGINAL_LEAF_CHECK");
-            JSONObject history=cleaned.getJSONObject("public_foreign_recent_history");
-            need("hepta.public-profile-history-custody.v1".equals(string(history,"schema"))&&target.sha256.equals(string(history,"target_sha256"))
-                    &&Boolean.TRUE.equals(history.get("foreign_dormant_history_preserved"))&&Boolean.FALSE.equals(history.get("history_refusal_latched"))
+            need((concurrent||"hepta.public-profile-history-custody.v1".equals(string(history,"schema")))&&target.sha256.equals(string(history,"target_sha256"))
+                    &&Boolean.TRUE.equals(history.get(concurrent?"nonphysical_history_preserved":"foreign_dormant_history_preserved"))&&Boolean.FALSE.equals(history.get("history_refusal_latched"))
                     &&history.get("history_refusal_reason")==JSONObject.NULL&&Boolean.TRUE.equals(history.get("owned_target_absent"))
                     &&Boolean.FALSE.equals(history.get("serialized_task_ids_grant_authority")),"PUBLIC_POSTLAUNCH_ORIGINAL_HISTORY");
+            if(concurrent){
+                ProfilePrelaunchRecovery.keys(history,"schema","target_sha256","foreign_dormant_history_preserved","history_refusal_latched",
+                        "history_refusal_reason","baseline_elapsed_ms","current_elapsed_ms","baseline_raw_sha256","current_raw_sha256",
+                        "nonowned_history_sha256","baseline_task_ids","owned_task_ids","owned_target_absent","serialized_task_ids_grant_authority",
+                        "history_preservation_scope","physical_history_frozen","unrelated_physical_history_changes_observed",
+                        "protected_history_sha256","current_protected_history_sha256","nonphysical_history_preserved","recents_presentation_changes_observed");
+                need("nonphysical_and_unresolved_recents".equals(string(history,"history_preservation_scope"))
+                        &&Boolean.FALSE.equals(history.get("physical_history_frozen"))
+                        &&history.get("unrelated_physical_history_changes_observed") instanceof Boolean
+                        &&history.get("recents_presentation_changes_observed") instanceof Boolean
+                        &&Boolean.valueOf(!history.getBoolean("unrelated_physical_history_changes_observed")&&!history.getBoolean("recents_presentation_changes_observed")).equals(history.get("foreign_dormant_history_preserved"))
+                        &&ProfileIdentity.hash(string(history,"protected_history_sha256"))
+                        &&string(history,"protected_history_sha256").equals(string(history,"current_protected_history_sha256")),
+                        "PUBLIC_POSTLAUNCH_PROTECTED_HISTORY_SCOPE");
+            }
             JSONArray retained=history.getJSONArray("owned_task_ids"),baseline=history.getJSONArray("baseline_task_ids");
             need(retained.length()==2&&numberAt(retained,0)==root&&numberAt(retained,1)==leaf,"PUBLIC_POSTLAUNCH_ORIGINAL_OWNED_SET");
             TreeSet<Long> ids=new TreeSet<Long>();for(int i=0;i<baseline.length();i++){long n=numberAt(baseline,i);

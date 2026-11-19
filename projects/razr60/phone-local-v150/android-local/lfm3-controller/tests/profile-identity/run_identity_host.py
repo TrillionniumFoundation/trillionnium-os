@@ -20,7 +20,7 @@ def main():
     classes.mkdir()
     pkg = source / 'src/org/trillionnium/hepta/background'
     files = [pkg / (name + '.java') for name in (
-        'ProfileIdentity', 'ProfileTarget', 'WindowOwnership', 'BrokerProtocol', 'FixedIntentTools')]
+        'ProfileIdentity', 'ProfileTarget', 'WindowOwnership', 'BrokerProtocol','PublicPermissionControllerUi','PublicOwnGroupPolicy', 'FixedIntentTools')]
     files += [Path(__file__).with_name('ProfileIdentityHostTest.java'),
               source / 'tests/background-broker/BrokerProtocolHostTest.java']
     pins = {str(x.relative_to(source)): hashlib.sha256(x.read_bytes()).hexdigest() for x in files}

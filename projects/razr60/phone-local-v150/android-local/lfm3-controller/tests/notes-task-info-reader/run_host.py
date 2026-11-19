@@ -33,13 +33,13 @@ def main():
     spec=importlib.util.spec_from_file_location('notes_actual_reflection_fixture',own/'prepare_fixture.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
     stubs=module.prepare(out/'android-host-ports')
     bg=s/'src/org/trillionnium/hepta/background'
-    production=['BrokerProtocol','FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','PublicOwnGroupPolicy','PublicOwnGroupPhysicalFence','PublicPersonalNotesCustody','BackgroundTaskOrganizer','PublicPersonalNotesReader']
+    production=['BrokerProtocol','PublicPermissionControllerUi','FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','PublicOwnGroupPolicy','PublicOwnGroupPhysicalFence','PublicPersonalNotesCustody','BackgroundTaskOrganizer','PublicPersonalNotesReader']
     files=[bg/(n+'.java') for n in production]+[s/'tests/public-own-group-policy/PublicPhysicalAuditHostTest.java',own/'NotesTaskInfoReaderHostTest.java']+stubs
-    private_names=['ProfileIdentity','ProfileTarget','WindowOwnership','BrokerProtocol','PublicOwnGroupPolicy','FixedIntentTools','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfileOwnedTask','ProfilePermissionTransient','ProfileDisplayCustody','PublicOwnGroupPhysicalFence','PublicProfileRecentHistory']
+    private_names=['ProfileIdentity','ProfileTarget','WindowOwnership','BrokerProtocol','PublicPermissionControllerUi','PublicOwnGroupPolicy','FixedIntentTools','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfileOwnedTask','ProfilePermissionTransient','ProfileDisplayCustody','PublicOwnGroupPhysicalFence','PublicProfileRecentHistory']
     private_files=[bg/(n+'.java') for n in private_names]+[s/'tests/profile-broker/ProfileBrokerHostTest.java']
     tracked=list(dict.fromkeys(files+private_files+[own/'prepare_fixture.py',Path(__file__).resolve(),capture,jar,jdk/'bin/javac',jdk/'bin/java',jdk/'lib/ct.sym']))
     before=[pin(p) for p in tracked]
-    need(pin(bg/'BackgroundTaskOrganizer.java')['sha256']=='e3f8f3af351d3a2fe8dcf7cbe322fbe3a799baa9f54252cdd6244e621056808c','approved organizer differs')
+    need(pin(bg/'BackgroundTaskOrganizer.java')['sha256']=='97761262f44a23dba4479110169acbf1ba5176973f571bc119b8e27bfb9d5339','approved organizer differs')
     need(pin(bg/'PublicPersonalNotesReader.java')['sha256']=='b914cec58a5d1b3e9d16816b8d840271ce55d27dd1885b35cbb895a46c3db66a','approved reader differs')
     need(pin(s/'tests/profile-broker/ProfileBrokerHostTest.java')['sha256']=='5880a651260aa18566364f4dbca427c5adbba8048eee7f1b8a3d55f4a6f69e04','original private test bytes differ')
     classes=out/'classes';classes.mkdir();pc=out/'private-classes';pc.mkdir()

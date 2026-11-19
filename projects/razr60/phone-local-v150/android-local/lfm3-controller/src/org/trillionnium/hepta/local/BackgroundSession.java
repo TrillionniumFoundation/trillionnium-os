@@ -55,6 +55,7 @@ final class BackgroundSession {
         final ProfileTarget profileTarget;
         final boolean independentProfileDisplay;
         final boolean independentPersonalDisplay;
+        final org.trillionnium.hepta.background.PublicPermissionControllerUi.Locator controllerUi;
         Selection(String initial,Set<String> allowed){this(initial,allowed,null,null,null,null);}
         Selection(BackgroundTaskTarget target){this(target,false);}
         Selection(BackgroundTaskTarget target,boolean independentProfileDisplay){
@@ -64,6 +65,12 @@ final class BackgroundSession {
             this(requireExplicit(target).packageName,target.effectivePackages,target.originalInitialPackage,
                     new TreeSet<String>(target.originalPackages),target.ownerSha256,target.recognition,target,independentProfileDisplay,independentPersonalDisplay);
         }
+        Selection(BackgroundTaskTarget target,boolean independentProfileDisplay,boolean independentPersonalDisplay,
+                org.trillionnium.hepta.background.PublicPermissionControllerUi.Locator controllerUi){
+            this(requireExplicit(target).packageName,target.effectivePackages,target.originalInitialPackage,
+                    new TreeSet<String>(target.originalPackages),target.ownerSha256,target.recognition,target,
+                    independentProfileDisplay,independentPersonalDisplay,controllerUi);
+        }
         Selection(String initial,Set<String> allowed,String uiInitial,Set<String> uiAllowed,
                   String ownerSha,String recognition){this(initial,allowed,uiInitial,uiAllowed,ownerSha,recognition,null);}
         private Selection(String initial,Set<String> allowed,String uiInitial,Set<String> uiAllowed,
@@ -72,6 +79,11 @@ final class BackgroundSession {
         }
         private Selection(String initial,Set<String> allowed,String uiInitial,Set<String> uiAllowed,
                   String ownerSha,String recognition,BackgroundTaskTarget target,boolean independentProfileDisplay,boolean independentPersonalDisplay){
+            this(initial,allowed,uiInitial,uiAllowed,ownerSha,recognition,target,independentProfileDisplay,independentPersonalDisplay,null);
+        }
+        private Selection(String initial,Set<String> allowed,String uiInitial,Set<String> uiAllowed,
+                  String ownerSha,String recognition,BackgroundTaskTarget target,boolean independentProfileDisplay,boolean independentPersonalDisplay,
+                  org.trillionnium.hepta.background.PublicPermissionControllerUi.Locator controllerUi){
             if(allowed==null||allowed.isEmpty()||allowed.size()>6)throw new IllegalArgumentException("请选择 1 至 6 个后台任务应用");
             TreeSet<String> copy=new TreeSet<String>();
             for(String value:allowed){checkPackage(value);copy.add(value);}
@@ -86,6 +98,11 @@ final class BackgroundSession {
                     ||copy.size()!=1||!("com.motorola.stylus".equals(initial)||"com.xiaomi.shop".equals(initial))))
                 throw new IllegalArgumentException("个人空间独立显示仅支持明确选择的备忘录或小米商城；不会迁移既有任务");
             this.independentPersonalDisplay=independentPersonalDisplay;
+            if(controllerUi!=null&&(!independentProfileDisplay||target==null||profileTarget==null
+                    ||profileTarget.profile.userId!=10||!ProfileTarget.CTRIP.equals(profileTarget.packageName)
+                    ||ownerSha==null||!ownerSha.equals(controllerUi.ownerSha256)))
+                throw new IllegalArgumentException("CONTROLLER_UI_SELECTION_UNBOUND");
+            this.controllerUi=controllerUi;
             if(ownerSha==null){
                 if(uiInitial!=null||uiAllowed!=null||recognition!=null)throw new IllegalArgumentException("任务范围来源不完整");
                 ownerSelection=null;
@@ -278,6 +295,7 @@ final class BackgroundSession {
         JSONObject request=request(op,pkg,deadline);
         if("permission_window".equals(op))request.put("window_id",window).put("task_id",task);
         JSONObject response=exchangeForSession(request,7500,cancel);accept(response,true);requirePermissionPreparationActive();
+        requireControllerUiObservation(response);
         if(!"prepare_done".equals(op)&&!response.getBoolean("profile_permission_preparing"))throw new IOException("后台权限初始化阶段不一致");
         return response;
     }
@@ -496,17 +514,40 @@ final class BackgroundSession {
             if(cancellation.isCancelled())throw new IOException("权限初始化任务已停止");
             long deadline=Math.min(expiresElapsed,boundedActionDeadline(originalDeadline,9000));
             JSONObject request=request("prepare",selection.initialPackage,deadline);
+            if(publicOwnGroupScope!=null&&selection.controllerUi!=null)
+                request.put("controller_ui_locator",selection.controllerUi.wire());
             launch=exchangeForSession(request,9500,cancellation);
         }
         bootstrapDispatched=launch.optBoolean("dispatched",false);
         accept(launch,true);requireActive();saveJournal();
         if(handler!=null){
+            requireControllerUiObservation(launch);
             if(!launch.getBoolean("profile_permission_preparing"))throw new IOException("后台未进入权限初始化阶段");
             permissionPreparing=true;handler.prepare(this,Math.min(originalDeadline,expiresElapsed),cancellation);
             requirePermissionPreparationActive();
             if(!"APP_READY".equals(readPreparation(cancellation,originalDeadline)))throw new IOException("权限初始化后未读回普通应用窗口");
             finishPermissionPreparation(cancellation,originalDeadline);saveJournal();
         }
+    }
+    private void requireControllerUiObservation(JSONObject response)throws Exception{
+        if(publicOwnGroupScope==null||selection.controllerUi==null)return;
+        org.trillionnium.hepta.background.PublicPermissionControllerUi.Locator source=selection.controllerUi;
+        JSONObject proof=response.getJSONObject("permission_controller_ui");
+        requireProfileFields(proof,"schema","generation","scope_sha256","locator_sha256","owner_uid","owner_pid",
+                "task_id","display_id","owned_display_id","component","actual_task_token_retained","observed_elapsed_ms",
+                "serialized_locator_grants_authority","physical_input_authorized","observation_valid");
+        if(!"hepta.permission-controller-ui-observation.v1".equals(proof.getString("schema"))
+                ||!generation.equals(proof.getString("generation"))||!publicOwnGroupScope.sha256.equals(proof.getString("scope_sha256"))
+                ||!HeptaAccessibilityService.sha(source.wire().getBytes(StandardCharsets.UTF_8)).equals(proof.getString("locator_sha256"))||strictInt(proof,"owner_uid")!=source.uid
+                ||strictInt(proof,"owner_pid")!=source.pid||strictInt(proof,"task_id")!=source.task
+                ||strictInt(proof,"display_id")!=source.display||strictInt(proof,"owned_display_id")!=displayId
+                ||!org.trillionnium.hepta.background.PublicPermissionControllerUi.COMPONENT.equals(proof.getString("component"))
+                ||!Boolean.TRUE.equals(proof.get("actual_task_token_retained"))
+                ||!Boolean.TRUE.equals(proof.get("observation_valid"))
+                ||!Boolean.FALSE.equals(proof.get("serialized_locator_grants_authority"))
+                ||!Boolean.FALSE.equals(proof.get("physical_input_authorized"))
+                ||strictLong(proof,"observed_elapsed_ms")<createdElapsed||strictLong(proof,"observed_elapsed_ms")>SystemClock.elapsedRealtime())
+            throw new IOException("CONTROLLER_UI_OBSERVATION_UNBOUND");
     }
     /** No model-issued action can change the immutable package/display binding. */
     JSONObject action(String operation,String pkg,HeptaAccessibilityService.Cancellation cancellation)throws Exception{
@@ -914,7 +955,8 @@ final class BackgroundSession {
                 ||!"RELEASED".equals(response.getString("state"))||!scope.sha256.equals(response.getString("display_scope_sha256")))
             throw new IOException("NOTES_CLEANUP_ROOT_SCOPE_UNBOUND");
         JSONObject proof=response.getJSONObject("personal_notes_cleanup");
-        if(!"hepta.public-personal-notes-cleanup.v1".equals(proof.getString("schema"))
+        boolean concurrent="hepta.public-personal-notes-cleanup.v2".equals(proof.getString("schema"));
+        if((!concurrent&&!"hepta.public-personal-notes-cleanup.v1".equals(proof.getString("schema")))
                 ||!generation.equals(proof.getString("generation"))||!scope.sha256.equals(proof.getString("scope_sha256"))
                 ||!"com.motorola.stylus".equals(proof.getString("package"))
                 ||strictInt(proof,"target_uid")<10000||strictInt(proof,"target_uid")>=90000
@@ -922,6 +964,14 @@ final class BackgroundSession {
                 ||!Boolean.FALSE.equals(proof.get("custodian_retained"))||!Boolean.FALSE.equals(proof.get("arbitrary_task_removal_used"))
                 ||!Boolean.FALSE.equals(proof.get("force_stop_used"))||!Boolean.FALSE.equals(proof.get("caller_flag_is_cleanup_proof")))
             throw new IOException("NOTES_CLEANUP_PROOF_INVALID");
+        if(concurrent&&(!"nonphysical_and_unresolved_recents".equals(proof.getString("history_preservation_scope"))
+                ||!"pre_release_to_absence".equals(proof.getString("history_preservation_interval"))
+                ||!"initial_to_absence".equals(proof.getString("hidden_history_preservation_interval"))
+                ||!Boolean.FALSE.equals(proof.get("physical_history_frozen"))
+                ||!(proof.get("unrelated_physical_history_changes_observed") instanceof Boolean)
+                ||!(proof.get("recents_presentation_changes_observed") instanceof Boolean)
+                ||!(proof.get("prior_hidden_history_preserved") instanceof Boolean)))
+            throw new IOException("NOTES_CLEANUP_HISTORY_SCOPE_INVALID");
         if(Boolean.TRUE.equals(proof.get("no_display_create_attempted"))){
             if(display!=-1||proof.getInt("display_id")!=-1||!Boolean.FALSE.equals(proof.get("create_attempted"))
                     ||!Boolean.FALSE.equals(proof.get("launch_dispatched"))||proof.getJSONArray("actual_observed_tasks").length()!=0)
@@ -930,8 +980,14 @@ final class BackgroundSession {
             if(display<=1||strictInt(proof,"display_id")!=display||strictInt(proof,"absence_reads")<2)
                 throw new IOException("NOTES_CLEANUP_DOUBLE_ABSENCE_REQUIRED");
             for(String key:new String[]{"create_attempted","pre_release_tasks_verified","release_api_entered","release_api_returned",
-                    "display_absence_verified","live_tasks_absent","all_recents_sections_absent","prior_hidden_history_preserved"})
+                    "display_absence_verified","live_tasks_absent","all_recents_sections_absent"})
                 if(!Boolean.TRUE.equals(proof.get(key)))throw new IOException("NOTES_CLEANUP_ABSENCE_UNPROVED");
+            if(concurrent){
+                if(!Boolean.TRUE.equals(proof.get("nonphysical_history_preserved"))
+                        ||!Boolean.TRUE.equals(proof.get("nonphysical_hidden_history_preserved")))
+                    throw new IOException("NOTES_CLEANUP_PROTECTED_HISTORY_UNPROVED");
+            }else if(!Boolean.TRUE.equals(proof.get("prior_hidden_history_preserved")))
+                throw new IOException("NOTES_CLEANUP_ABSENCE_UNPROVED");
         }
         return new JSONObject(proof.toString());
     }
@@ -977,6 +1033,9 @@ final class BackgroundSession {
      * A refused business operation may still carry a confirmed RELEASED cleanup. */
     private static void checkedPublicProfileHistory(JSONObject response,JSONObject proof,PublicOwnGroupPolicy.Scope scope,
             ProfileTarget target,String generation,int display,Set<Integer> ownedIds)throws Exception{
+        JSONObject history=proof.getJSONObject("public_foreign_recent_history");
+        boolean concurrent="hepta.public-profile-history-custody.v2".equals(history.getString("schema"));
+        String expectedScope=concurrent?"owned_target_only_with_unrelated_physical_history_audited":"owned_target_only_with_foreign_history_preserved";
         if(target.profile.userId!=10||target.profile.parentUserId!=0||!ProfileTarget.CTRIP.equals(target.packageName)
                 ||scope.targetUserId!=target.profile.userId||!scope.targetSha256.equals(target.sha256)
                 ||!scope.generation.equals(generation)||strictInt(response,"version")!=BrokerProtocol.PUBLIC_OWN_GROUP_PROFILE_VERSION
@@ -985,19 +1044,31 @@ final class BackgroundSession {
                 ||!Boolean.TRUE.equals(response.get("public_scope_admission_retired"))
                 ||!Boolean.TRUE.equals(response.get("public_scope_closing"))
                 ||!Boolean.FALSE.equals(response.get("profile_custody_retained"))
-                ||!"owned_target_only_with_foreign_history_preserved".equals(proof.getString("recents_absence_scope")))
+                ||!expectedScope.equals(proof.getString("recents_absence_scope")))
             throw new IOException("public profile cleanup scope differs");
-        JSONObject history=proof.getJSONObject("public_foreign_recent_history");
-        requireProfileFields(history,"schema","target_sha256","foreign_dormant_history_preserved","history_refusal_latched",
+        if(concurrent)requireProfileFields(history,"schema","target_sha256","foreign_dormant_history_preserved","history_refusal_latched",
+                "history_refusal_reason","baseline_elapsed_ms","current_elapsed_ms","baseline_raw_sha256","current_raw_sha256",
+                "nonowned_history_sha256","baseline_task_ids","owned_task_ids","owned_target_absent","serialized_task_ids_grant_authority",
+                "history_preservation_scope","physical_history_frozen","unrelated_physical_history_changes_observed",
+                "protected_history_sha256","current_protected_history_sha256","nonphysical_history_preserved","recents_presentation_changes_observed");
+        else requireProfileFields(history,"schema","target_sha256","foreign_dormant_history_preserved","history_refusal_latched",
                 "history_refusal_reason","baseline_elapsed_ms","current_elapsed_ms","baseline_raw_sha256","current_raw_sha256",
                 "nonowned_history_sha256","baseline_task_ids","owned_task_ids","owned_target_absent","serialized_task_ids_grant_authority");
-        if(!"hepta.public-profile-history-custody.v1".equals(history.getString("schema"))
+        if((!concurrent&&!"hepta.public-profile-history-custody.v1".equals(history.getString("schema")))
                 ||!target.sha256.equals(history.getString("target_sha256"))
-                ||!Boolean.TRUE.equals(history.get("foreign_dormant_history_preserved"))
+                ||!Boolean.TRUE.equals(history.get(concurrent?"nonphysical_history_preserved":"foreign_dormant_history_preserved"))
                 ||!Boolean.FALSE.equals(history.get("history_refusal_latched"))||history.get("history_refusal_reason")!=JSONObject.NULL
                 ||!Boolean.TRUE.equals(history.get("owned_target_absent"))
                 ||!Boolean.FALSE.equals(history.get("serialized_task_ids_grant_authority")))
             throw new IOException("public profile preserved history is unknown");
+        if(concurrent&&(!"nonphysical_and_unresolved_recents".equals(history.getString("history_preservation_scope"))
+                ||!Boolean.FALSE.equals(history.get("physical_history_frozen"))
+                ||!(history.get("unrelated_physical_history_changes_observed") instanceof Boolean)
+                ||!(history.get("recents_presentation_changes_observed") instanceof Boolean)
+                ||!Boolean.valueOf(!history.getBoolean("unrelated_physical_history_changes_observed")&&!history.getBoolean("recents_presentation_changes_observed")).equals(history.get("foreign_dormant_history_preserved"))
+                ||!history.getString("protected_history_sha256").matches("[0-9a-f]{64}")
+                ||!history.getString("protected_history_sha256").equals(history.getString("current_protected_history_sha256"))))
+            throw new IOException("public profile protected history scope differs");
         long before=strictLong(history,"baseline_elapsed_ms"),after=strictLong(history,"current_elapsed_ms");
         if(before<scope.createdElapsedMs||after<before||after>SystemClock.elapsedRealtime())
             throw new IOException("public profile history clock differs");

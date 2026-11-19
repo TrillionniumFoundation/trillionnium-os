@@ -15,10 +15,11 @@ import java.util.Set;
  * Normal Notes NEW_TASK/MULTIPLE_TASK/NEW_DOCUMENT policy remains unchanged.
  * Unknown pre-release ownership retains the VD owner with admission retired.
  * Proven own residue may be polled within the existing cleanup deadline; any
- * changed token, UID, foreign task or prior history permanently stays unknown.
+ * changed owned token/UID, foreign task on our display or unresolved history
+ * permanently stays unknown. Unrelated user-0 physical activity is audited.
  * A released display alone never establishes live/recents task absence. */
 final class PublicPersonalNotesCustody {
-    static final String PACKAGE="com.motorola.stylus",SCHEMA="hepta.public-personal-notes-cleanup.v1";
+    static final String PACKAGE="com.motorola.stylus",SCHEMA="hepta.public-personal-notes-cleanup.v2";
     static final int MAX_TASKS=32;
     static final class Node {
         final BackgroundOwnedSingleTask.Task task;
@@ -42,11 +43,14 @@ final class PublicPersonalNotesCustody {
     private final int uid;
     private final Set<Integer> initialIds;
     private final List<String> hiddenBaseline;
+    private final List<String> fullHiddenBaseline;
+    private final PublicOwnGroupPhysicalFence.RecentCensus initialRecents;
+    private PublicOwnGroupPhysicalFence.RecentCensus releaseCensus,lastRecents;
     private final String initialRecentsSha;
     private final Map<Integer,BackgroundOwnedSingleTask.Task> observed=new LinkedHashMap<Integer,BackgroundOwnedSingleTask.Task>();
     private final Map<Integer,PublicOwnGroupPhysicalFence.RecentRecord> releaseRecents=new LinkedHashMap<Integer,PublicOwnGroupPhysicalFence.RecentRecord>();
     private int display=-1,absenceReads,pendingReads;
-    private boolean attempted,launched,retiring,releasePrepared,releaseAttempted,releaseReturned,unknown,known;
+    private boolean attempted,launched,retiring,releasePrepared,releaseAttempted,releaseReturned,unknown,known,physicalHistoryChanged,hiddenHistoryChanged,presentationChanged;
     private long lastObservation=-1,lastAbsence=-1;
     private String finalRecentsSha="",failure="",releaseHistory="",releaseRecentsSha="";
 
@@ -56,14 +60,17 @@ final class PublicPersonalNotesCustody {
                 &&initial!=null&&recents!=null,"NOTES_CUSTODY_BINDING_INVALID");
         this.generation=generation;scopeSha256=scopeSha;this.uid=uid;
         requireNoNotes(initial);requireNoNotes(recents);
-        for(String label:recents.hiddenLabels.values())need(!label.contains(PACKAGE),"NOTES_ALREADY_HAS_HIDDEN_TASK");
+        for(String label:recents.hiddenLabels.values())need(!targetHidden(label),"NOTES_ALREADY_HAS_HIDDEN_TASK");
         Set<Integer> ids=new LinkedHashSet<Integer>(initial.allIds);ids.addAll(recents.allIds);
-        initialIds=Collections.unmodifiableSet(ids);hiddenBaseline=Collections.unmodifiableList(new ArrayList<String>(recents.hiddenLabels.values()));
+        initialIds=Collections.unmodifiableSet(ids);initialRecents=lastRecents=recents;
+        fullHiddenBaseline=Collections.unmodifiableList(new ArrayList<String>(recents.hiddenLabels.values()));
+        hiddenBaseline=Collections.unmodifiableList(hiddenHistory(recents,true));
         initialRecentsSha=recents.rawSha256;
     }
     private static void need(boolean ok,String code){if(!ok)throw new IllegalStateException(code);}
     private static boolean pkg(String value){return value!=null&&(value.equals(PACKAGE)||value.startsWith(PACKAGE+"/"));}
     private static boolean nullablePkg(String value){return value==null||pkg(value);}
+    private boolean targetHidden(String label){return label.contains(PACKAGE)||label.contains("A="+uid+":");}
     private static void requireNoNotes(ProfileTaskPolicy.Snapshot snapshot){
         for(ProfileTaskPolicy.Root root:snapshot.roots)need(!pkg(root.base)&&!pkg(root.top),"NOTES_ALREADY_HAS_LIVE_TASK");
         for(ProfileTaskPolicy.Leaf leaf:snapshot.leaves.values())need(!pkg(leaf.name),"NOTES_ALREADY_HAS_LIVE_TASK");
@@ -132,11 +139,17 @@ final class PublicPersonalNotesCustody {
                     requireOwnedRecent(row);releaseRecents.put(row.task,row);
                 }else need(row.uid!=uid&&!pkg(row.activity)&&!pkg(row.base),"NOTES_UNOBSERVED_TASK_IN_RECENTS");
             }
+            requireUnownedRecents(recents);
             for(Map.Entry<Integer,String> hidden:recents.hiddenLabels.entrySet())if(observed.containsKey(hidden.getKey())){
                 PublicOwnGroupPhysicalFence.RecentRecord row=releaseRecents.get(hidden.getKey());
                 need(row!=null&&row.label.equals(hidden.getValue()),"NOTES_RELEASE_HIDDEN_IDENTITY_UNKNOWN");
             }
-            requireHiddenBaseline(recents);releaseHistory=recents.historyExcept(observed.keySet());
+            initialRecents.requirePhysicalIdentities(recents,observed.keySet(),uid);
+            requireHiddenBaseline(recents);releaseHistory=protectedHistory(recents);
+            physicalHistoryChanged|=!initialRecents.unrelatedPhysicalHistory(observed.keySet(),uid).equals(recents.unrelatedPhysicalHistory(observed.keySet(),uid));
+            hiddenHistoryChanged|=!fullHiddenBaseline.equals(hiddenHistory(recents,false));
+            presentationChanged|=!initialRecents.recentsPresentation().equals(recents.recentsPresentation());
+            releaseCensus=lastRecents=recents;
             releaseRecentsSha=recents.rawSha256;releasePrepared=true;
         }catch(RuntimeException error){unresolved(error.getMessage());throw error;}
     }
@@ -144,10 +157,32 @@ final class PublicPersonalNotesCustody {
         need(row.user==0&&row.uid==uid&&row.display==display&&observed.containsKey(row.root)
                 &&pkg(row.activity)&&pkg(row.base),"NOTES_RECENT_UID_OR_PACKAGE_CHANGED");
     }
-    private void requireHiddenBaseline(PublicOwnGroupPhysicalFence.RecentCensus recents){
+    private List<String> hiddenHistory(PublicOwnGroupPhysicalFence.RecentCensus recents,boolean protectedOnly){
         List<String> unrelated=new ArrayList<String>();
-        for(Map.Entry<Integer,String> row:recents.hiddenLabels.entrySet())if(!observed.containsKey(row.getKey()))unrelated.add(row.getValue());
-        need(hiddenBaseline.equals(unrelated),"NOTES_HIDDEN_HISTORY_NOT_PRESERVED");
+        Set<Integer> physical=protectedOnly?recents.unrelatedPhysicalIds(observed.keySet(),uid):Collections.emptySet();
+        for(Map.Entry<Integer,String> row:recents.hiddenLabels.entrySet())
+            if(!observed.containsKey(row.getKey())&&!physical.contains(row.getKey()))unrelated.add(row.getValue());
+        return unrelated;
+    }
+    private String protectedHistory(PublicOwnGroupPhysicalFence.RecentCensus recents){
+        Set<Integer> excluded=new LinkedHashSet<Integer>(observed.keySet());
+        excluded.addAll(recents.unrelatedPhysicalIds(observed.keySet(),uid));return recents.protectedRuntimeHistoryExcept(excluded);
+    }
+    private void requireHiddenBaseline(PublicOwnGroupPhysicalFence.RecentCensus recents){
+        need(hiddenBaseline.equals(hiddenHistory(recents,true)),"NOTES_UNRESOLVED_HIDDEN_HISTORY_NOT_PRESERVED");
+    }
+    private void requireUnownedRecents(PublicOwnGroupPhysicalFence.RecentCensus recents){
+        for(PublicOwnGroupPhysicalFence.RecentRecord row:recents.records.values())if(!observed.containsKey(row.task)){
+            need(row.uid!=uid&&!pkg(row.activity)&&!pkg(row.base)&&!targetHidden(row.label)
+                    &&row.display!=display&&!observed.containsKey(row.root),"NOTES_UNOBSERVED_TASK_IN_RECENTS");
+            for(PublicOwnGroupPhysicalFence.RecentRecord owned:releaseRecents.values())
+                need(!owned.token.equals(row.token),"NOTES_OWNED_RECENT_TOKEN_REUSED");
+        }
+        for(Map.Entry<Integer,String> hidden:recents.hiddenLabels.entrySet())if(!observed.containsKey(hidden.getKey())){
+            need(!targetHidden(hidden.getValue()),"NOTES_UNOBSERVED_HIDDEN_TARGET");
+            for(PublicOwnGroupPhysicalFence.RecentRecord owned:releaseRecents.values())
+                need(!hidden.getValue().startsWith("Task{"+owned.token+" #"),"NOTES_OWNED_HIDDEN_TOKEN_REUSED");
+        }
     }
     synchronized void retireAdmission(){retiring=true;}
     synchronized void enterRelease(){need(releasePrepared&&!unknown&&!releaseAttempted,"NOTES_RELEASE_NOT_ADMITTED");releaseAttempted=true;}
@@ -177,7 +212,10 @@ final class PublicPersonalNotesCustody {
                 need(!pkg(root.base)&&!pkg(root.top),"NOTES_TASK_ESCAPED_AFTER_RELEASE");
             for(ProfileTaskPolicy.Leaf leaf:live.leaves.values())if(leaf.display!=display)
                 need(!pkg(leaf.name),"NOTES_TASK_ESCAPED_AFTER_RELEASE");
-            need(releaseHistory.equals(recents.historyExcept(observed.keySet())),"NOTES_PRIOR_HISTORY_CHANGED_AFTER_RELEASE");
+            requireUnownedRecents(recents);
+            releaseCensus.requirePhysicalIdentities(recents,observed.keySet(),uid);
+            lastRecents.requirePhysicalIdentities(recents,observed.keySet(),uid);
+            need(releaseHistory.equals(protectedHistory(recents)),"NOTES_PROTECTED_HISTORY_CHANGED_AFTER_RELEASE");
             requireHiddenBaseline(recents);
             for(int id:observed.keySet())if(recents.allIds.contains(id)){
                 PublicOwnGroupPhysicalFence.RecentRecord frozen=releaseRecents.get(id),row=recents.records.get(id);
@@ -187,7 +225,10 @@ final class PublicPersonalNotesCustody {
                 if(hidden!=null)need(frozen.label.equals(hidden),"NOTES_REMAINING_HIDDEN_TOKEN_CHANGED");
                 pending=true;
             }
-            lastAbsence=end;finalRecentsSha=recents.rawSha256;absenceReads++;
+            physicalHistoryChanged|=!lastRecents.unrelatedPhysicalHistory(observed.keySet(),uid).equals(recents.unrelatedPhysicalHistory(observed.keySet(),uid));
+            hiddenHistoryChanged|=!hiddenHistory(lastRecents,false).equals(hiddenHistory(recents,false));
+            presentationChanged|=!lastRecents.recentsPresentation().equals(recents.recentsPresentation());
+            lastRecents=recents;lastAbsence=end;finalRecentsSha=recents.rawSha256;absenceReads++;
             if(pending){absenceReads=0;pendingReads++;return;}
             if(absenceReads>=2)known=true;
         }catch(RuntimeException error){unresolved(error.getMessage());throw error;}
@@ -205,7 +246,13 @@ final class PublicPersonalNotesCustody {
         out.put("release_api_entered",releaseAttempted);out.put("release_api_returned",releaseReturned);
         out.put("absence_reads",absenceReads);out.put("pending_owned_reads",pendingReads);out.put("cleanup_known",known());out.put("identity_unknown",unknown);
         out.put("display_absence_verified",known()&&attempted);out.put("live_tasks_absent",known()&&attempted);
-        out.put("all_recents_sections_absent",known()&&attempted);out.put("prior_hidden_history_preserved",known()&&attempted);
+        out.put("all_recents_sections_absent",known()&&attempted);
+        out.put("prior_hidden_history_preserved",known()&&attempted&&!hiddenHistoryChanged);
+        out.put("history_preservation_scope","nonphysical_and_unresolved_recents");out.put("physical_history_frozen",false);
+        out.put("history_preservation_interval","pre_release_to_absence");out.put("hidden_history_preservation_interval","initial_to_absence");
+        out.put("unrelated_physical_history_changes_observed",physicalHistoryChanged);
+        out.put("recents_presentation_changes_observed",presentationChanged);
+        out.put("nonphysical_history_preserved",known()&&attempted);out.put("nonphysical_hidden_history_preserved",known()&&attempted);
         out.put("no_display_create_attempted",!attempted);out.put("custodian_retained",retain());out.put("failure",failure);
         out.put("initial_recents_sha256",initialRecentsSha);out.put("pre_release_recents_sha256",releaseRecentsSha);out.put("final_recents_sha256",finalRecentsSha);
         List<Map<String,Object>> tasks=new ArrayList<Map<String,Object>>();

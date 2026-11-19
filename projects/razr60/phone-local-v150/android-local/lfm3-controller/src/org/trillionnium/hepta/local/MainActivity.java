@@ -378,6 +378,25 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     }
     @Override public void onLocalModelSettingsChanged(){refresh();}
 
+    /** Only the actual physical-screen MainActivity's ordinary Start callback
+     * creates a locator. A VD owner keeps the existing strict initialization path. */
+    private org.trillionnium.hepta.background.PublicPermissionControllerUi.Locator controllerUiFromOwnerButton(String owner){
+        android.app.Activity activity=this;
+        if(activity==null||android.os.Looper.myLooper()!=android.os.Looper.getMainLooper())
+            throw new IllegalArgumentException("CONTROLLER_UI_MAIN_THREAD_REQUIRED");
+        android.view.Display actual=activity.getDisplay();
+        if(actual==null||!actual.isValid())throw new IllegalArgumentException("CONTROLLER_UI_DISPLAY_UNAVAILABLE");
+        if(actual.getDisplayId()>1)return null;
+        if(activity.getClass()!=MainActivity.class||activity.isFinishing()||activity.isDestroyed()||!activity.hasWindowFocus()
+                ||activity.getWindow()==null||!activity.getWindow().getDecorView().isShown()
+                ||activity.getComponentName()==null
+                ||!org.trillionnium.hepta.background.PublicPermissionControllerUi.COMPONENT.equals(activity.getComponentName().flattenToString())
+                ||activity.getApplicationInfo().uid!=android.os.Process.myUid())
+            throw new IllegalArgumentException("CONTROLLER_UI_OWNER_BUTTON_NOT_VISIBLE");
+        return org.trillionnium.hepta.background.PublicPermissionControllerUi.fromMainActivityButton(
+                android.os.Process.myUid(),android.os.Process.myPid(),activity.getTaskId(),actual.getDisplayId(),
+                android.os.SystemClock.elapsedRealtime(),HeptaAccessibilityService.sha(owner.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+    }
     private boolean beginTask(String owner,String source,String nonceSha){
         try{
             if(tasks.isRunning()||tasks.isBlocked()||engine.isBusy())throw new IllegalStateException("已有本地请求正在运行或退出状态待确认");
@@ -400,7 +419,9 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                     throw new IllegalStateException("当前 qualification scope 已启用，后台任务不可启动；原范围保持不变");
                 requireCurrentBackgroundChoice();
                 BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,selectedBackgroundPackage(),backgroundPackages,selectedProfileTarget());
-                selection=new BackgroundSession.Selection(target,selectedIndependentProfileDisplay(),selectedIndependentPersonalDisplay());
+                boolean independentProfile=selectedIndependentProfileDisplay();
+                selection=new BackgroundSession.Selection(target,independentProfile,selectedIndependentPersonalDisplay(),
+                        independentProfile?controllerUiFromOwnerButton(owner):null);
                 authorization=originalAuthorization.forExecutionSelection(selection);
                 selection.requireTaskTarget(owner,authorization);
                 if(authorization.requireFindAppBeforeOpen||!authorization.allowedTools.contains("open"))

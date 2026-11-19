@@ -106,7 +106,7 @@ public final class BrokerSurfaceAdapterHostTest {
 }
 ''')
     bg=candidate/'src/org/trillionnium/hepta/background'
-    names=['BrokerProtocol','FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','PublicOwnGroupPolicy','PublicOwnGroupSurfaceRetirement']
+    names=['BrokerProtocol','PublicPermissionControllerUi','FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','PublicOwnGroupPolicy','PublicOwnGroupSurfaceRetirement']
     files=[bg/(n+'.java') for n in names]+[java,test]+list(sorted((fixture/'base/org/json').glob('*.java')))
     classes=out/'classes';classes.mkdir()
     if args.java_home:

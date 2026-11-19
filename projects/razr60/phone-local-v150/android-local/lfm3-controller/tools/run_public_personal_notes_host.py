@@ -102,7 +102,7 @@ public final class NotesCleanupAdapterHostTest {
  }
 }
 ''');files.append(test)
-    names=['BrokerProtocol','FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','PublicOwnGroupPolicy','PublicOwnGroupPhysicalFence','PublicPersonalNotesCustody']
+    names=['BrokerProtocol','PublicPermissionControllerUi','FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','PublicOwnGroupPolicy','PublicOwnGroupPhysicalFence','PublicPersonalNotesCustody']
     files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in names]
     files += [source/'tests/public-own-group-policy'/(name+'.java') for name in ['PublicPhysicalAuditHostTest','PersonalNotesCustodyHostTest','PersonalNotesSessionHostTest']]
     files=list(dict.fromkeys(pathlib.Path(p).resolve() for p in files));classes=out/'classes';classes.mkdir()

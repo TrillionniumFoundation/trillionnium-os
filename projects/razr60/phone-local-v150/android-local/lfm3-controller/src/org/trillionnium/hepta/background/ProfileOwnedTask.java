@@ -321,8 +321,9 @@ public final class ProfileOwnedTask {
             item.put("full_uid",leaf.uid);item.put("live_absent",liveAbsent);item.put("recents_absent",recentsAbsent);owned.add(item);
         }
         out.put("owned_tasks",owned);
-        if(publicHistory!=null){out.put("public_foreign_recent_history",publicHistory.evidence());
-            out.put("recents_absence_scope","owned_target_only_with_foreign_history_preserved");}
+        if(publicHistory!=null){Map<String,Object> history=publicHistory.evidence();out.put("public_foreign_recent_history",history);
+            out.put("recents_absence_scope","hepta.public-profile-history-custody.v2".equals(history.get("schema"))
+                    ?"owned_target_only_with_unrelated_physical_history_audited":"owned_target_only_with_foreign_history_preserved");}
         return Collections.unmodifiableMap(out);
     }
     public synchronized Map<String,Object> evidence(){

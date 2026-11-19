@@ -158,6 +158,10 @@ final class EngineReleaseProjection {
         result["cases"]=cases;result["all_pass"]=True
     except Exception as error:
         result["error"]=type(error).__name__+": "+str(error)
+        import traceback
+        detail=traceback.format_exc()
+        result["diagnostic_traceback"]=detail
+        put(a.output/"DIAGNOSTIC-TRACEBACK.txt",detail.encode())
     finally:
         result["inputs_unchanged"]=all(path.read_bytes()==raw for path,raw in inputs.items())
         result["all_pass"]=result["all_pass"] and result["inputs_unchanged"]

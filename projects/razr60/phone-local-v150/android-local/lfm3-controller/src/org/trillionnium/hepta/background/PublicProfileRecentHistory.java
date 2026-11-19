@@ -135,8 +135,10 @@ public final class PublicProfileRecentHistory {
                 need(uid!=target.fullUid,"PUBLIC_HISTORY_TARGET_HIDDEN_PRESENT");
             }
         }
-        private String history(Set<Integer> owned){StringBuilder out=new StringBuilder();append(out,preamble);
-            append(out,"hidden_field="+hiddenField);
+        private String history(Set<Integer> owned){return history(owned,false);}
+        private String history(Set<Integer> owned,boolean runtime){StringBuilder out=new StringBuilder();
+            append(out,runtime?preamble.replaceAll("(?m)^(mFreezeTaskListReordering(?:PendingTimeout)?)=(?:true|false)$","$1=false"):preamble);
+            append(out,runtime?"hidden_field=complete_observation":"hidden_field="+hiddenField);
             for(Row r:rows.values())if(!owned.contains(r.fact.task)){append(out,"internal|"+r.fact.label);append(out,r.stable);}
             for(VisibleRow r:visible)if(!owned.contains(r.id)){append(out,"visible|"+r.id);append(out,r.stable);}
             for(Map.Entry<Integer,String> h:census.hiddenLabels.entrySet())if(!owned.contains(h.getKey()))append(out,"hidden|"+h.getValue());
@@ -145,6 +147,27 @@ public final class PublicProfileRecentHistory {
             need(maxAgeAdvance>=0,"PUBLIC_HISTORY_AGE_INTERVAL");
             need(after!=null&&target.same(after.target)&&history(own).equals(after.history(own)),"PUBLIC_HISTORY_CHANGED");
             for(Row r:rows.values())if(!own.contains(r.fact.task)){
+                Row later=after.rows.get(r.fact.task);need(later!=null&&later.lastActive==r.lastActive&&later.age>=r.age
+                        &&later.age-r.age<=maxAgeAdvance,"PUBLIC_HISTORY_AGE_REVERSED_OR_JUMPED");}
+        }
+        private Set<Integer> runtimeExcluded(Set<Integer> own){
+            Set<Integer> excluded=new LinkedHashSet<Integer>(own);
+            excluded.addAll(census.unrelatedPhysicalIds(own,target.fullUid));return excluded;
+        }
+        private String protectedHistory(Set<Integer> own){return history(runtimeExcluded(own),true);}
+        private String physicalHistory(Set<Integer> own){
+            Set<Integer> physical=census.unrelatedPhysicalIds(own,target.fullUid);StringBuilder out=new StringBuilder();
+            for(Row r:rows.values())if(physical.contains(r.fact.task)){append(out,"internal|"+r.fact.label);append(out,r.stable);}
+            for(VisibleRow r:visible)if(physical.contains(r.id)){append(out,"visible|"+r.id);append(out,r.stable);}
+            for(Map.Entry<Integer,String> h:census.hiddenLabels.entrySet())if(physical.contains(h.getKey()))append(out,"hidden|"+h.getValue());
+            return out.toString();
+        }
+        private void sameProtectedHistory(Snapshot after,Set<Integer> own,long maxAgeAdvance){
+            need(maxAgeAdvance>=0&&after!=null&&target.same(after.target),"PUBLIC_HISTORY_RUNTIME_SCOPE");
+            census.requirePhysicalIdentities(after.census,own,target.fullUid);
+            need(protectedHistory(own).equals(after.protectedHistory(own)),"PUBLIC_HISTORY_PROTECTED_CHANGED");
+            Set<Integer> excluded=runtimeExcluded(own);
+            for(Row r:rows.values())if(!excluded.contains(r.fact.task)){
                 Row later=after.rows.get(r.fact.task);need(later!=null&&later.lastActive==r.lastActive&&later.age>=r.age
                         &&later.age-r.age<=maxAgeAdvance,"PUBLIC_HISTORY_AGE_REVERSED_OR_JUMPED");}
         }
@@ -188,14 +211,13 @@ public final class PublicProfileRecentHistory {
         private final Snapshot first;private Snapshot last;private final Set<Integer> originalIds;
         private final Set<String> originalTokens;private final Map<Integer,String> ownedTokens=new LinkedHashMap<Integer,String>();
         private final Map<Integer,BackgroundOwnedSingleTask.Task> retained=new LinkedHashMap<Integer,BackgroundOwnedSingleTask.Task>();
-        private final long firstAt;private long lastAt;private boolean failed;private String failure;
+        private final long firstAt;private long lastAt;private boolean failed,physicalHistoryChanged,presentationChanged;private String failure;
         public Baseline(Snapshot admitted,long elapsed){need(admitted!=null&&elapsed>=0,"PUBLIC_HISTORY_BASELINE_MISSING");admitted.requireForeign(NONE);first=admitted;last=admitted;firstAt=lastAt=elapsed;
             originalIds=Collections.unmodifiableSet(new LinkedHashSet<Integer>(admitted.census.allIds));originalTokens=Collections.unmodifiableSet(new HashSet<String>(admitted.tokens.values()));}
         public synchronized Set<Integer> originalIds(){return originalIds;}
         public synchronized Set<Integer> observedIds(){return Collections.unmodifiableSet(new LinkedHashSet<Integer>(last.census.allIds));}
         public synchronized void requireTargetAbsent(String raw,ProfileTarget target,long elapsed)throws Exception{
-            try{requireCurrent(elapsed);Snapshot next=absence(raw,target);first.sameHistory(next,NONE,ageBudget(firstAt,elapsed));
-                last.sameHistory(next,NONE,ageBudget(lastAt,elapsed));last=next;lastAt=elapsed;}
+            try{requireCurrent(elapsed);Snapshot next=absence(raw,target);observeHistory(next,NONE,elapsed);}
             catch(Exception error){failed=true;failure=error.getMessage();throw error;}
         }
         public synchronized void observe(String raw,ProfileTarget target,BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,int display,long elapsed)throws Exception{
@@ -213,8 +235,19 @@ public final class PublicProfileRecentHistory {
                     for(Map.Entry<Integer,String> entry:ownedTokens.entrySet())need(entry.getKey()==id||!entry.getValue().equals(token),"PUBLIC_HISTORY_OWNED_TOKEN_REUSED");
                     ownedTokens.put(id,token);}
             }
-            next.requireForeign(own);first.sameHistory(next,own,ageBudget(firstAt,elapsed));last.sameHistory(next,own,ageBudget(lastAt,elapsed));last=next;lastAt=elapsed;
+            for(PublicOwnGroupPhysicalFence.RecentRecord row:next.census.records.values())if(!own.contains(row.task))
+                need(row.display!=display&&!own.contains(row.root),"PUBLIC_HISTORY_FOREIGN_ON_OWNED_DISPLAY");
+            for(Map.Entry<Integer,String> token:next.tokens.entrySet())if(!own.contains(token.getKey()))
+                need(!ownedTokens.containsValue(token.getValue()),"PUBLIC_HISTORY_OWNED_TOKEN_REUSED");
+            next.requireForeign(own);observeHistory(next,own,elapsed);
             }catch(Exception error){failed=true;failure=error.getMessage();throw error;}
+        }
+        private void observeHistory(Snapshot next,Set<Integer> own,long elapsed){
+            first.sameProtectedHistory(next,own,ageBudget(firstAt,elapsed));
+            last.sameProtectedHistory(next,own,ageBudget(lastAt,elapsed));
+            physicalHistoryChanged|=!last.physicalHistory(own).equals(next.physicalHistory(own));
+            presentationChanged|=!last.census.recentsPresentation().equals(next.census.recentsPresentation())||last.hiddenField!=next.hiddenField;
+            last=next;lastAt=elapsed;
         }
         private void requireCurrent(long elapsed){need(!failed,"PUBLIC_HISTORY_PREVIOUS_REFUSAL");need(elapsed>=lastAt,"PUBLIC_HISTORY_CLOCK_REVERSED");}
         private static long ageBudget(long before,long after){need(before>=0&&after>=before,"PUBLIC_HISTORY_CLOCK_REVERSED");return (after-before)/1000+2;}
@@ -227,8 +260,14 @@ public final class PublicProfileRecentHistory {
         }
         public synchronized boolean ownedAbsent(){if(failed)return false;for(int id:retained.keySet())if(last.census.allIds.contains(id))return false;return true;}
         public synchronized Map<String,Object> evidence(){Map<String,Object> out=new LinkedHashMap<String,Object>();
-            out.put("schema","hepta.public-profile-history-custody.v1");out.put("target_sha256",first.target.sha256);
-            out.put("foreign_dormant_history_preserved",!failed);out.put("history_refusal_latched",failed);out.put("history_refusal_reason",failure);
+            out.put("schema","hepta.public-profile-history-custody.v2");out.put("target_sha256",first.target.sha256);
+            out.put("foreign_dormant_history_preserved",!failed&&!physicalHistoryChanged&&!presentationChanged);
+            out.put("nonphysical_history_preserved",!failed);out.put("history_refusal_latched",failed);out.put("history_refusal_reason",failure==null?JSONObject.NULL:failure);
+            out.put("history_preservation_scope","nonphysical_and_unresolved_recents");out.put("physical_history_frozen",false);
+            out.put("unrelated_physical_history_changes_observed",physicalHistoryChanged);
+            out.put("recents_presentation_changes_observed",presentationChanged);
+            out.put("protected_history_sha256",ProfileIdentity.sha(first.protectedHistory(retained.keySet())));
+            out.put("current_protected_history_sha256",ProfileIdentity.sha(last.protectedHistory(retained.keySet())));
             out.put("baseline_elapsed_ms",firstAt);out.put("current_elapsed_ms",lastAt);
             out.put("baseline_raw_sha256",first.census.rawSha256);out.put("current_raw_sha256",last.census.rawSha256);
             out.put("nonowned_history_sha256",ProfileIdentity.sha(first.history(retained.keySet())));

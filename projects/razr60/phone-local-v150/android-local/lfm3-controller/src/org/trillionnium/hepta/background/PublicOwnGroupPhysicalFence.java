@@ -69,6 +69,9 @@ public final class PublicOwnGroupPhysicalFence {
         final Map<Integer,List<Activity>> activities=new LinkedHashMap<Integer,List<Activity>>();
     }
     private static Hierarchy activities(String raw,int targetUser){
+        return activities(raw,targetUser,null);
+    }
+    private static Hierarchy activities(String raw,int targetUser,PublicPermissionControllerUi.Bound controller){
         String text=checked(raw,"ACTIVITY MANAGER ACTIVITIES (dumpsys activity activities)");
         String end="\nActivityTaskSupervisor state:\n";need(text.indexOf(end)>=0&&text.indexOf(end)==text.lastIndexOf(end),"PHYSICAL_HIERARCHY_END_MISSING");
         Hierarchy result=new Hierarchy();Set<Integer> ids=new HashSet<Integer>();List<int[]> stack=new ArrayList<int[]>();int display=-1;
@@ -84,7 +87,10 @@ public final class PublicOwnGroupPhysicalFence {
                 while(!stack.isEmpty()&&stack.get(stack.size()-1)[0]>=level)stack.remove(stack.size()-1);
                 int parent=stack.isEmpty()?-1:stack.get(stack.size()-1)[1];
                 String affinity=optional("(?:^| )A=([^\\s]+)",body),intent=optional("(?:^| )I=([^\\s]+)",body);
-                if(display==0||display==1)need((targetUser==0||user!=targetUser)&&!affinity.endsWith(":"+CONTROLLER)&&!intent.startsWith(CONTROLLER+"/"),"PHYSICAL_BACKGROUND_TASK_ESCAPED");
+                if(display==0||display==1)need((targetUser==0||user!=targetUser)
+                        &&((!affinity.endsWith(":"+CONTROLLER)&&!intent.startsWith(CONTROLLER+"/"))
+                        ||(controller!=null&&controller.taskRow(display,task,user,affinity,intent.isEmpty()?"":component(intent)))),
+                        "PHYSICAL_BACKGROUND_TASK_ESCAPED");
                 append(result.rows.get(display),"task|"+m.group(2)+"|"+task+"|"+parent+"|"+user+"|"+affinity+"|"+intent);
                 stack.add(new int[]{level,task,user});
             }else if(line.matches("\\s*\\* Hist\\b.*")){
@@ -92,13 +98,19 @@ public final class PublicOwnGroupPhysicalFence {
                 need(display>=0&&!stack.isEmpty(),"PHYSICAL_ACTIVITY_OUTSIDE_TASK");int[] parent=stack.get(stack.size()-1);int user=n(m.group(3)),task=n(m.group(5));
                 need(m.group(1).length()>parent[0]&&task==parent[1]&&user==parent[2],"PHYSICAL_ACTIVITY_PARENT_INVALID");
                 Activity activity=new Activity(m.group(2),user,m.group(4),task);
-                if(display==0||display==1)need((targetUser==0||user!=targetUser)&&!activity.component.startsWith(CONTROLLER+"/"),"PHYSICAL_BACKGROUND_ACTIVITY_ESCAPED");
+                if(display==0||display==1)need((targetUser==0||user!=targetUser)
+                        &&(!activity.component.startsWith(CONTROLLER+"/")
+                        ||(controller!=null&&controller.activityRow(display,task,user,activity.component))),"PHYSICAL_BACKGROUND_ACTIVITY_ESCAPED");
                 result.activities.get(display).add(activity);append(result.rows.get(display),"activity|"+activity.data());
             }
         }
         need(result.rows.containsKey(0)&&result.rows.containsKey(1)&&!ids.isEmpty(),"PHYSICAL_BOTH_HIERARCHIES_REQUIRED");return result;
     }
     private static Map<Integer,String> windows(String raw,Hierarchy hierarchy,Map<Integer,DisplayFacts> displays,int targetUser){
+        return windows(raw,hierarchy,displays,targetUser,null);
+    }
+    private static Map<Integer,String> windows(String raw,Hierarchy hierarchy,Map<Integer,DisplayFacts> displays,int targetUser,
+            PublicPermissionControllerUi.Bound controller){
         String text=checked(raw,"WINDOW MANAGER DISPLAY CONTENTS (dumpsys window displays)");
         List<Matcher> heads=matches("^  Display: mDisplayId=([0-9]+)\\b[^\\r\\n]*$",text);Set<Integer> seen=new HashSet<Integer>();
         Map<Integer,String> out=new LinkedHashMap<Integer,String>();
@@ -112,7 +124,9 @@ public final class PublicOwnGroupPhysicalFence {
             else{
                 Matcher w=one("^Window\\{([0-9a-f]+) u([0-9]+) ([^{}\\r\\n]+)\\}$",focus,"PHYSICAL_FOCUS_INVALID");
                 Matcher a=one("^ActivityRecord\\{([0-9a-f]+) u([0-9]+) ([A-Za-z0-9_.$]+/[A-Za-z0-9_.$]+) t([0-9]+)(?: f\\})?(?: isExiting)?\\}$",app,"PHYSICAL_FOCUSED_ACTIVITY_INVALID");
-                need((targetUser==0||n(w.group(2))!=targetUser)&&!w.group(3).contains(CONTROLLER+"/"),"PHYSICAL_BACKGROUND_FOCUS_ESCAPED");
+                need((targetUser==0||n(w.group(2))!=targetUser)&&(!w.group(3).contains(CONTROLLER+"/")
+                        ||(controller!=null&&n(w.group(2))==0&&PublicPermissionControllerUi.COMPONENT.equals(component(w.group(3)))
+                        &&controller.activityRow(display,n(a.group(4)),n(a.group(2)),component(a.group(3))))),"PHYSICAL_BACKGROUND_FOCUS_ESCAPED");
                 Activity expected=new Activity(a.group(1),n(a.group(2)),a.group(3),n(a.group(4)));int count=0;
                 for(Activity actual:hierarchy.activities.get(display))if(actual.data().equals(expected.data()))count++;
                 need(count==1,"PHYSICAL_FOCUSED_ACTIVITY_NOT_IN_DISPLAY");
@@ -160,6 +174,42 @@ public final class PublicOwnGroupPhysicalFence {
             need(owned!=null,"RECENT_HISTORY_OWNED_IDS_MISSING");StringBuilder out=new StringBuilder();
             for(RecentFact fact:facts)if(!owned.contains(fact.task))append(out,fact.value);
             return out.toString();
+        }
+        /** Observation-only exception for resolved, unrelated user-0 activity
+         * on the two physical displays. Never includes an owned ID, target UID,
+         * virtual-display record or detached label with unresolved identity. */
+        Set<Integer> unrelatedPhysicalIds(Set<Integer> owned,int targetUid){
+            need(owned!=null&&targetUid>=0,"RECENT_PHYSICAL_SCOPE_MISSING");
+            Set<Integer> out=new java.util.LinkedHashSet<Integer>();
+            for(RecentRecord row:records.values())if(!owned.contains(row.task)&&row.uid!=targetUid
+                    &&row.user==0&&row.uid>=0&&row.uid<100000&&(row.display==0||row.display==1))out.add(row.task);
+            return out;
+        }
+        String unrelatedPhysicalHistory(Set<Integer> owned,int targetUid){
+            Set<Integer> physical=unrelatedPhysicalIds(owned,targetUid);StringBuilder out=new StringBuilder();
+            for(RecentFact fact:facts)if(physical.contains(fact.task))append(out,fact.value);
+            return out.toString();
+        }
+        private static boolean presentationFact(RecentFact fact){return fact.task==-1
+                &&(fact.value.startsWith("mFreezeTaskListReordering=")||fact.value.startsWith("mFreezeTaskListReorderingPendingTimeout="));}
+        String recentsPresentation(){StringBuilder out=new StringBuilder();
+            for(RecentFact fact:facts)if(presentationFact(fact))append(out,fact.value);return out.toString();}
+        String protectedRuntimeHistoryExcept(Set<Integer> excluded){
+            need(excluded!=null,"RECENT_HISTORY_OWNED_IDS_MISSING");StringBuilder out=new StringBuilder();
+            // Both booleans were already uniquely and strictly parsed above.
+            // Their presentation state is audited separately, never discarded
+            // from the original full physical or recovery projection.
+            for(RecentFact fact:facts)if(!excluded.contains(fact.task)&&!presentationFact(fact))append(out,fact.value);
+            return out.toString();
+        }
+        void requirePhysicalIdentities(RecentCensus after,Set<Integer> owned,int targetUid){
+            need(after!=null,"RECENT_PHYSICAL_READ_UNAVAILABLE");
+            Set<Integer> next=after.unrelatedPhysicalIds(owned,targetUid);
+            for(int id:unrelatedPhysicalIds(owned,targetUid)){
+                RecentRecord before=records.get(id),later=after.records.get(id);
+                if(later!=null)need(next.contains(id)&&before.token.equals(later.token)&&before.user==later.user
+                        &&before.uid==later.uid&&before.root==later.root,"RECENT_PHYSICAL_IDENTITY_CHANGED");
+            }
         }
     }
     public static RecentCensus inspectRecents(String raw){return recents(raw,0);}
@@ -263,6 +313,31 @@ public final class PublicOwnGroupPhysicalFence {
         Hierarchy hierarchy=activities(activities,targetUser);Map<Integer,String> focused=windows(windows,hierarchy,displays,targetUser);
         String recent=recents(recents,targetUser).projection;Map<Integer,String> result=new LinkedHashMap<Integer,String>();
         for(int id:new int[]{0,1}){StringBuilder raw=new StringBuilder();append(raw,SCHEMA);append(raw,displays.get(id).data());
+            append(raw,hierarchy.rows.get(id).toString());append(raw,focused.get(id));append(raw,recent);
+            result.put(id,ProfileIdentity.sha(raw.toString().getBytes(StandardCharsets.UTF_8)));}
+        return Collections.unmodifiableMap(result);
+    }
+    /** Permission initialization only: the exact actual Start-button owner stays
+     * in the projection. This never suppresses an owned/background task or
+     * changes strict capture(), which remains the recovery/diagnostic entry. */
+    static Map<Integer,String> captureControllerInitialization(String activities,String windows,String recents,
+            Map<Integer,DisplayFacts> displays,int targetUser,PublicPermissionControllerUi.Bound controller){
+        need(targetUser==10&&controller!=null&&displays!=null&&displays.size()==2&&displays.containsKey(0)&&displays.containsKey(1)
+                &&displays.get(0).id==0&&displays.get(1).id==1&&!displays.get(0).uniqueId.equals(displays.get(1).uniqueId),
+                "CONTROLLER_UI_PHYSICAL_CENSUS_INVALID");
+        controller.requireValid();Map<String,Object> owner=controller.evidence();
+        Hierarchy hierarchy=activities(activities,targetUser,controller);
+        int matches=0;for(Activity row:hierarchy.activities.get(controller.display()))
+            if(controller.activityRow(controller.display(),row.task,row.user,row.component))matches++;
+        need(matches==1,"CONTROLLER_UI_ACTIVITY_NOT_UNIQUE");
+        Map<Integer,String> focused=windows(windows,hierarchy,displays,targetUser,controller);
+        RecentCensus recentCensus=recents(recents,targetUser);RecentRecord source=recentCensus.records.get(controller.task());
+        need(source!=null&&source.user==0&&source.uid==controller.uid()&&source.display==controller.display()
+                &&source.root==controller.rootTask()&&PublicPermissionControllerUi.COMPONENT.equals(source.base)
+                &&PublicPermissionControllerUi.COMPONENT.equals(source.activity),"CONTROLLER_UI_RECENT_IDENTITY_DISAGREES");
+        String recent=recentCensus.projection;Map<Integer,String> result=new LinkedHashMap<Integer,String>();
+        for(int id:new int[]{0,1}){StringBuilder raw=new StringBuilder();append(raw,"hepta.permission-controller-physical-audit.v1");
+            append(raw,(String)owner.get("scope_sha256"));append(raw,(String)owner.get("locator_sha256"));append(raw,displays.get(id).data());
             append(raw,hierarchy.rows.get(id).toString());append(raw,focused.get(id));append(raw,recent);
             result.put(id,ProfileIdentity.sha(raw.toString().getBytes(StandardCharsets.UTF_8)));}
         return Collections.unmodifiableMap(result);

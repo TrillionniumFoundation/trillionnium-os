@@ -28,7 +28,7 @@ def main():
     classes = output / 'classes'
     classes.mkdir()
     background = source / 'src/org/trillionnium/hepta/background'
-    names = ['ProfileIdentity', 'ProfileTarget', 'WindowOwnership', 'BrokerProtocol', 'PublicOwnGroupPolicy',
+    names = ['ProfileIdentity', 'ProfileTarget', 'WindowOwnership', 'BrokerProtocol','PublicPermissionControllerUi', 'PublicOwnGroupPolicy',
              'FixedIntentTools', 'BackgroundOwnedTaskPolicy', 'BackgroundOwnedSingleTask',
              'ProfileTaskPolicy', 'ProfileOwnedTask', 'ProfilePermissionTransient', 'ProfileDisplayCustody',
              'PermissionWindowObservation', 'PhysicalDisplayFence']

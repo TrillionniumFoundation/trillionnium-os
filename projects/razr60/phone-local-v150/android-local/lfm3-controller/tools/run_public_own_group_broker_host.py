@@ -6,7 +6,7 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('--source',type=pathlib.Path);parser.add_argument('--output',type=pathlib.Path,required=True);parser.add_argument('--java-home',type=pathlib.Path);parser.add_argument('--release8',action='store_true');args=parser.parse_args()
     root=pathlib.Path(__file__).resolve().parent;candidate=(args.source or root.parent).resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=False)
     bg=candidate/'src/org/trillionnium/hepta/background'
-    names=['BrokerProtocol','FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','BackgroundOwnedTaskPolicy',
+    names=['BrokerProtocol','PublicPermissionControllerUi','FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','BackgroundOwnedTaskPolicy',
            'BackgroundOwnedSingleTask','ProfileTaskPolicy','PublicOwnGroupPolicy',
            'PublicOwnGroupSurfaceRetirement','PublicOwnGroupTaskFence','PublicOwnGroupPhysicalFence','PublicPersonalNotesCustody']
     tests=['PublicSurfaceRetirementHostTest','PublicTaskFenceHostTest','PublicPhysicalAuditHostTest','PersonalNotesCustodyHostTest']

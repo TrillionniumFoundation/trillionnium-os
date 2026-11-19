@@ -20,7 +20,7 @@ def main():
     if sha(a.json_jar)!=JSON_SHA:raise RuntimeError('actual org.json pin differs')
     if {n:sha(a.actual_recents/n) for n in ACTUAL}!=ACTUAL:raise RuntimeError('archived recents pins differ')
     bg=s/'src/org/trillionnium/hepta/background'
-    names=['ProfileIdentity','ProfileTarget','WindowOwnership','BrokerProtocol','PublicOwnGroupPolicy','FixedIntentTools',
+    names=['ProfileIdentity','ProfileTarget','WindowOwnership','BrokerProtocol','PublicPermissionControllerUi','PublicOwnGroupPolicy','FixedIntentTools',
            'BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfileOwnedTask',
            'ProfilePermissionTransient','ProfileDisplayCustody','PublicOwnGroupPhysicalFence','PublicProfileRecentHistory']
     files=[bg/(n+'.java') for n in names]+[s/'tests/profile-broker/ProfileBrokerHostTest.java',Path(__file__).with_name('PublicProfileHistoryHostTest.java')]

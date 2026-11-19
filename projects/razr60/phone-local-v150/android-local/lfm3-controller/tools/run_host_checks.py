@@ -39,7 +39,7 @@ def main():
                 ROOT/"tests/native-app/legacy-boundary/NativeAppSession.java"]
     report["web_fixture_boundary"]="Legacy non-Web tests use a type-only WebTaskDomain whose methods throw; actual Web classes have an independent gate"
     report["native_fixture_boundary"]="Legacy non-native tests compile the real pure NativeAppEvidence/Domain and an unconstructible all-throw NativeAppSession; native session execution has an independent mandatory gate"
-    sources += [ROOT/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","PublicOwnGroupPolicy","BackgroundOwnedTaskPolicy","ProfileIdentity","ProfileTarget","WindowOwnership")]
+    sources += [ROOT/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","PublicPermissionControllerUi","PublicOwnGroupPolicy","BackgroundOwnedTaskPolicy","ProfileIdentity","ProfileTarget","WindowOwnership")]
     tests=sorted((ROOT/"tests").glob("*HostTest.java"))+[
         ROOT/"tests/action-parser/ActionDecisionHostTest.java",
         ROOT/"tests/action-grammar/DecisionGrammarHostTest.java"]
@@ -173,6 +173,8 @@ def main():
             "cases":settings_gate["cases"]}
         run("background-broker",[sys.executable,"-B",ROOT/"tests/background-broker/run_host_checks.py",
             "--java",java,"--javac",shutil.which("javac"),"--out",out/"background-broker"])
+        run("main-ui-permission",[sys.executable,"-B",ROOT/"tests/main-ui-permission/run_host.py",
+            "--source",ROOT,"--output",out/"main-ui-permission","--java-home",java_home,"--json-jar",json_jar])
         run("python-tools",[sys.executable,"-m","unittest","discover","-s","tools","-p","test_*.py","-v"])
         run("mobimind-private-staging",[sys.executable,"-m","unittest","discover","-s",
             ROOT/"provenance/mobimind-app-only-r1/tests","-p","test_*.py","-v"])
@@ -301,6 +303,38 @@ def main():
         report["personal_notes_absence_gate"]={"bytes":len(notes_absence_raw),
             "sha256":hashlib.sha256(notes_absence_raw).hexdigest(),
             "policy":notes_absence["policy"],"client":notes_absence["client"]}
+        run("foreground-concurrency",[sys.executable,"-B",ROOT/"tests/public-profile-history/run_concurrency_host.py",
+            "--source",ROOT,"--output",out/"foreground-concurrency","--java-home",java_home,"--json-jar",json_jar])
+        concurrency_raw=(out/"foreground-concurrency/RESULT.json").read_bytes()
+        concurrency=json.loads(concurrency_raw)
+        if (concurrency.get("schema")!="hepta.foreground-concurrency-host.v1"
+                or concurrency.get("all_pass") is not True or concurrency.get("strict_release8") is not True
+                or concurrency.get("source_inputs_unchanged") is not True or concurrency.get("json_jar_unchanged") is not True
+                or concurrency.get("framework_and_user_activity_synthetic") is not True
+                or concurrency.get("actual_production_custody_and_receipt_readers") is not True
+                or concurrency.get("android_runtime") is not False or concurrency.get("native_model_executed") is not False
+                or type(concurrency.get("phone_operations")) is not int or concurrency["phone_operations"]!=0):
+            raise RuntimeError("Foreground concurrency host receipt differs")
+        concurrency_contracts={
+            "custody":(23,44,"1634b5644fbb6accc3c4e9dce37d6c10203fa9954d0b0cbe26079c256c1fcdc6"),
+            "receipts":(15,17,"e38ade821d1bb966ca34f199f434401836a80bcebea05403944a510a750d7318"),
+            "recovery_entry":(6,8,"02d4d12aead56f784df256a64a920dce313d364ee0edcf71e54aeb6023384fa0")}
+        if set(concurrency.get("cases",{}))!=set(concurrency_contracts):
+            raise RuntimeError("Foreground concurrency case groups differ")
+        for name,(count,assertions,names_sha) in concurrency_contracts.items():
+            cases=concurrency["cases"][name]
+            names=cases.get("case_names")
+            if (cases.get("passed") is not True or type(cases.get("cases")) is not int or cases["cases"]!=count
+                    or type(cases.get("assertions")) is not int or cases["assertions"]!=assertions
+                    or type(names) is not list or len(names)!=count or len(set(names))!=count
+                    or cases.get("case_names_sha256")!=names_sha
+                    or hashlib.sha256(json.dumps(names,ensure_ascii=False,separators=(",",":")).encode()).hexdigest()!=names_sha):
+                raise RuntimeError("Foreground concurrency case contract differs: "+name)
+        if ([row.get("name") for row in concurrency.get("stages",[])]!=["compile","custody","receipts","recovery_entry"]
+                or any(row.get("exit_code")!=0 for row in concurrency["stages"])):
+            raise RuntimeError("Foreground concurrency compile/run stages incomplete")
+        report["foreground_concurrency_gate"]={"bytes":len(concurrency_raw),
+            "sha256":hashlib.sha256(concurrency_raw).hexdigest(),"cases":concurrency["cases"]}
         run("owned-worker-cancellation",[sys.executable,"-B",ROOT/"tests/owned-worker-cancellation/run_host_tests.py",
             "--source",ROOT,"--output",out/"owned-worker-cancellation"])
         run("background-owned-task-policy",[sys.executable,"-B",ROOT/"tests/background-owned-task/run_host_tests.py",

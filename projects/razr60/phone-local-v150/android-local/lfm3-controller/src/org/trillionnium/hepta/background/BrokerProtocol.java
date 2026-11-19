@@ -153,7 +153,9 @@ public final class BrokerProtocol {
         public final int targetUid;
         public final int version,windowId,observedTaskId;
         public final String profileTargetSha256,displayScopeSha256;
-        private Request(byte[] bytes, String id, String gen, String op, String pkg, long deadline,String payload,String attemptId,int targetUid,int version,String profileTargetSha256,String displayScopeSha256,int windowId,int observedTaskId) {
+        public final PublicPermissionControllerUi.Locator controllerUi;
+        private Request(byte[] bytes, String id, String gen, String op, String pkg, long deadline,String payload,String attemptId,int targetUid,int version,String profileTargetSha256,String displayScopeSha256,int windowId,int observedTaskId,PublicPermissionControllerUi.Locator controllerUi) {
+            this.controllerUi=controllerUi;
             this.payload=payload;this.attemptId=attemptId;this.targetUid=targetUid;
             this.version=version;this.profileTargetSha256=profileTargetSha256;this.displayScopeSha256=displayScopeSha256;this.windowId=windowId;this.observedTaskId=observedTaskId;
             this.bytes = bytes.clone(); requestId = id; generation = gen; operation = op;
@@ -186,6 +188,11 @@ public final class BrokerProtocol {
             if(profile&&fixed)throw new Refusal("PROFILE_FIXED_INTENT_NOT_ALLOWED");
             if ("launch".equals(op) || "prepare".equals(op) || "back".equals(op)||fixed) expected.add("package");
             if(fixed)expected.addAll(Arrays.asList("payload","attempt_id","target_uid"));
+            boolean controllerUi=map.containsKey("controller_ui_locator");
+            if(controllerUi){
+                if(!publicScope||!profile||!"prepare".equals(op))throw new Refusal("CONTROLLER_UI_OPERATION_NOT_ALLOWED");
+                expected.add("controller_ui_locator");
+            }
             if (!map.keySet().equals(expected)) throw new Refusal("REQUEST_FIELDS");
             String targetSha=profile?string(map,"target_sha256"):null;
             String scopeSha=publicScope?string(map,"display_scope_sha256"):null;
@@ -213,7 +220,10 @@ public final class BrokerProtocol {
                 try{fixedProfile.validatePayload(payload);}catch(IllegalArgumentException invalid){throw new Refusal("FIXED_PAYLOAD_INVALID");}
                 targetUid=(int)uid;
             }
-            return new Request(input, id, gen, op, pkg, deadline,payload,attempt,targetUid,version,targetSha,scopeSha,windowId,taskId);
+            PublicPermissionControllerUi.Locator controller=null;
+            if(controllerUi){try{controller=PublicPermissionControllerUi.Locator.fromWire(string(map,"controller_ui_locator"));}
+                catch(IllegalArgumentException invalid){throw new Refusal("CONTROLLER_UI_LOCATOR_INVALID");}}
+            return new Request(input, id, gen, op, pkg, deadline,payload,attempt,targetUid,version,targetSha,scopeSha,windowId,taskId,controller);
         }
         public void authenticate(Config config, int peerUid) throws Refusal {
             if (peerUid != config.ownerUid) throw new Refusal("CALLER_UID_MISMATCH");

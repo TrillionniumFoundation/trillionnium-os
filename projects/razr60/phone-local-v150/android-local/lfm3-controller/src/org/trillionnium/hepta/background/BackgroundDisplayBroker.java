@@ -81,6 +81,8 @@ public final class BackgroundDisplayBroker {
     // Only the object actually returned by this session's create API. Never reconstructed from an id or wire.
     private volatile VirtualDisplay publicCreateReturnedHandle;
     private volatile PublicOwnGroupTaskFence publicTaskFence;
+    private volatile PublicPermissionControllerUi.Bound permissionControllerUi;
+    private int activeRequestPeerPid=-1;
     private volatile PublicPersonalNotesCustody publicNotesCustody;
     private volatile PublicPersonalNotesReader publicNotesReader;
     private volatile DisplayGeometry displayGeometry;
@@ -281,6 +283,7 @@ public final class BackgroundDisplayBroker {
                 try {
                     request = BrokerProtocol.Request.parse(BrokerProtocol.readFrame(accepted.getInputStream()));
                     request.authenticate(config, accepted.getPeerCredentials().getUid());
+                    activeRequestPeerPid=accepted.getPeerCredentials().getPid();
                     response = receipts.replay(request);
                     if (response == null) {
                         request.checkDeadline(SystemClock.elapsedRealtime(), expires);
@@ -310,7 +313,7 @@ public final class BackgroundDisplayBroker {
                 if (requestDeadline != 0) shutdown("CLIENT_TRANSPORT_LOST");
             } finally {
                 try { accepted.close(); } catch (IOException ignored) {}
-                connection = null; requestDeadline = 0; connectionDeadline = 0;
+                connection = null; requestDeadline = 0; connectionDeadline = 0;activeRequestPeerPid=-1;
             }
         }
     }
@@ -395,6 +398,16 @@ public final class BackgroundDisplayBroker {
             } else if(config.profileTarget!=null&&"prepare".equals(r.operation)) {
                 guard(r,true);
                 if(profileOwnedTask!=null||profilePreparing)throw new BrokerProtocol.Refusal("PROFILE_LAUNCH_ALREADY_ATTEMPTED");
+                if(r.controllerUi!=null){
+                    if(config.publicOwnGroupScope==null||permissionControllerUi!=null)
+                        throw new BrokerProtocol.Refusal("CONTROLLER_UI_SCOPE_INVALID");
+                    PublicOwnGroupPolicy.Scope scope=config.publicOwnGroupScope;
+                    PublicPermissionControllerUi.Session originScope=new PublicPermissionControllerUi.Session(scope.sha256,scope.generation,
+                            scope.ownerSha256,scope.appUid,scope.targetUserId,scope.createdElapsedMs,scope.expiresElapsedMs);
+                    permissionControllerUi=PublicPermissionControllerUi.bind(r.controllerUi,originScope,
+                            config.ownerUid,activeRequestPeerPid,BackgroundTaskOrganizer.readOnlyControllerTask(
+                            activityTasks,r.controllerUi.task,r.controllerUi.display,()->Math.min(r.deadline,expires)),displayId,SystemClock.elapsedRealtime());
+                }
                 permissionPhysicalBaseline=permissionPhysicalFence(r);profilePreparing=true;
                 dispatched=launchProfile(r,true);
             } else if(config.profileTarget!=null&&"prepare_state".equals(r.operation)) {
@@ -620,6 +633,12 @@ public final class BackgroundDisplayBroker {
             throw new BrokerProtocol.Refusal("PROFILE_PERMISSION_PREPARATION_NOT_ACTIVE");
     }
     private java.util.Map<Integer,String> permissionPhysicalFence(BrokerProtocol.Request r)throws Exception{
+        if(permissionControllerUi!=null){
+            guard(r,true);permissionControllerUi.requirePeer(config.ownerUid,activeRequestPeerPid);
+            java.util.Map<Integer,String> value=PublicOwnGroupPhysicalReader.readControllerInitialization(windowManager,displays,
+                    activityTasks,config.profileTarget.profile.userId,permissionControllerUi,()->Math.min(r.deadline,expires));
+            guard(r,true);return value;
+        }
         guard(r,true);java.util.Map<Integer,String> value=config.publicOwnGroupScope==null?
                 ProfilePermissionPhysicalReader.read(windowManager,displays,config.profileTarget.profile.userId,()->Math.min(r.deadline,expires)):
                 PublicOwnGroupPhysicalReader.read(windowManager,displays,config.profileTarget.profile.userId,()->Math.min(r.deadline,expires));
@@ -1308,6 +1327,7 @@ public final class BackgroundDisplayBroker {
         }
         if(ownedSingleTask!=null)value.put("owned_single_task",new JSONObject(ownedSingleTask.evidence()));
         if(publicNotesCustody!=null)value.put("personal_notes_cleanup",new JSONObject(publicNotesCustody.evidence()));
+        if(permissionControllerUi!=null)value.put("permission_controller_ui",new JSONObject(permissionControllerUi.evidence()));
         if(config.profileTarget!=null){
             ProfilePackages.Readback actual=profileReadback;
             java.util.Map<String,Object> cleanup=profileCleanupReadback;

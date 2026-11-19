@@ -123,6 +123,10 @@ def prepare(source, output):
         raise RuntimeError('one model-settings-only UI block in legacy scope fixture')
     ui_parts['intent_start'] = ui_parts['intent_start'].replace(ui_settings_only, '', 1)
     fixture = (Path(__file__).parent / 'UiFixture.template').read_text()
+    # The legacy scope fixture has no actual Activity/physical identity.
+    # Null keeps its existing VD/strict path; the exact capture method has its own gate.
+    fixture = fixture.replace('{{intent_start}}',
+        '    private org.trillionnium.hepta.background.PublicPermissionControllerUi.Locator controllerUiFromOwnerButton(String owner){return null;}\n{{intent_start}}',1)
     for name,code in ui_parts.items():fixture=fixture.replace('{{'+name+'}}',code)
     (output / 'ScopeUiFixture.java').write_text(fixture)
     # Execute the actual saved-mode default/type check. Only SharedPreferences IO
@@ -159,7 +163,7 @@ def prepare(source, output):
     web_dom_canonical=source/'src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java'
     files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java',web_protocol,web_dom_canonical,
               source/'tests/web-flight/legacy-boundary/WebShoppingQuote.java']
-    files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','FixedIntentDispatch','BrokerProtocol','PublicOwnGroupPolicy','ProfileIdentity','ProfileTarget','WindowOwnership')]
+    files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','FixedIntentDispatch','BrokerProtocol','PublicPermissionControllerUi','PublicOwnGroupPolicy','ProfileIdentity','ProfileTarget','WindowOwnership')]
     # The real immutable Selection is now part of ordinary authorization admission.
     # Replace only that former fixture class; broker/display transport stays explicit IO fake.
     background_raw=(pkg/'BackgroundSession.java').read_text()

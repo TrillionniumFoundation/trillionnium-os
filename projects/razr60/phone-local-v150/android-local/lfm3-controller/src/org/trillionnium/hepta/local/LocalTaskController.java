@@ -407,7 +407,8 @@ public final class LocalTaskController implements AutoCloseable {
                         :new BackgroundSession(service,taskId,instruction,backgroundSelection,filesRoot);
                 service.bindBackgroundSession(taskId,background);
                 record(evidence,"background-binding.json",background.evidence());
-                emit("正在建立手机后台空间，并打开你选择的起始应用…");
+                emit(backgroundSelection.controllerUi==null?"正在建立手机后台空间，并打开你选择的起始应用…"
+                        :"正在准备后台权限，请保持本页可见；完成后可切换其他应用。");
                 final HeptaAccessibilityService.Cancellation preparationCancel=new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}};
                 final NativeAppGoal preparationGoal=completion.nativeGoal();final File preparationEvidence=evidence;
                 try{
@@ -416,7 +417,8 @@ public final class LocalTaskController implements AutoCloseable {
                             &&org.trillionnium.hepta.background.ProfileTarget.CTRIP.equals(preparationGoal.packageName)){
                         background.startWithPermissionInitialization(preparationCancel,new BackgroundSession.InitializationHandler(){
                             public void prepare(BackgroundSession owned,long preparationDeadline,HeptaAccessibilityService.Cancellation cancel)throws Exception{
-                                emitForTask(taskId,"正在核对隔离资料中应用的首次权限请求…");
+                                emitForTask(taskId,backgroundSelection.controllerUi==null?"正在核对隔离资料中应用的首次权限请求…"
+                                        :"正在准备后台权限，请保持本页可见；完成后可切换其他应用。");
                                 service.prepareProfilePermissionInitialization(taskId,preparationGoal,authorization,owned,preparationEvidence,cancel,preparationDeadline);
                             }
                         },deadline);

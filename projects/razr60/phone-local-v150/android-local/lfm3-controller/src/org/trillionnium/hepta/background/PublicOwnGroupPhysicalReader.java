@@ -33,6 +33,24 @@ final class PublicOwnGroupPhysicalReader {
         if(SystemClock.elapsedRealtime()>=deadline.getAsLong())throw new IOException("PUBLIC_AUDIT_PHYSICAL_READ_DEADLINE");
         return PublicOwnGroupPhysicalFence.capture(activities,windows,recents,after,targetUser);
     }
+    /** A live broker-held owner token brackets the complete, unchanged raw
+     * observations. No serialized task identifier alone enters this path. */
+    static Map<Integer,String> readControllerInitialization(Object windowManager,DisplayManager displays,Object activityTasks,
+            int targetUser,PublicPermissionControllerUi.Bound controller,LongSupplier deadline)throws Exception{
+        if(android.os.Build.VERSION.SDK_INT!=36||targetUser!=10||controller==null)
+            throw new IOException("CONTROLLER_UI_PHYSICAL_PLATFORM_UNSUPPORTED");
+        controller.recheck(BackgroundTaskOrganizer.readOnlyControllerTask(activityTasks,controller.task(),controller.display(),deadline),SystemClock.elapsedRealtime());
+        Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> before=displayFacts(displays);
+        Object am=Class.forName("android.app.ActivityManager").getMethod("getService").invoke(null);
+        String activities=dump(am,new String[]{"-a","activities"},deadline);
+        String windows=dump(windowManager,new String[]{"-a","displays"},deadline);
+        String recents=dump(am,new String[]{"-a","recents"},deadline);
+        Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> after=displayFacts(displays);
+        for(int id:new int[]{0,1})if(!before.get(id).data().equals(after.get(id).data()))throw new IOException("PUBLIC_AUDIT_PHYSICAL_STATE_CHANGED_DURING_READ");
+        controller.recheck(BackgroundTaskOrganizer.readOnlyControllerTask(activityTasks,controller.task(),controller.display(),deadline),SystemClock.elapsedRealtime());
+        if(SystemClock.elapsedRealtime()>=deadline.getAsLong())throw new IOException("PUBLIC_AUDIT_PHYSICAL_READ_DEADLINE");
+        return PublicOwnGroupPhysicalFence.captureControllerInitialization(activities,windows,recents,after,targetUser,controller);
+    }
     private static Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> displayFacts(DisplayManager manager)throws Exception{
         Display[] all=manager.getDisplays();if(all==null||all.length<2||all.length>32)throw new IOException("PUBLIC_AUDIT_PHYSICAL_CENSUS_UNAVAILABLE");
         Map<Integer,PublicOwnGroupPhysicalFence.DisplayFacts> result=new LinkedHashMap<Integer,PublicOwnGroupPhysicalFence.DisplayFacts>();

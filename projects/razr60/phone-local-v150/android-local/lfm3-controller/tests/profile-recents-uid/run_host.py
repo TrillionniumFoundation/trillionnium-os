@@ -18,7 +18,7 @@ def main():
     src=a.source.resolve()/'src/org/trillionnium/hepta/background'
     existing=a.source.resolve()/'tests/profile-broker/ProfileBrokerHostTest.java'
     test=Path(__file__).with_name('ProfileRecentUidHostTest.java')
-    names=['ProfileIdentity','ProfileTarget','WindowOwnership','BrokerProtocol','FixedIntentTools',
+    names=['ProfileIdentity','ProfileTarget','WindowOwnership','BrokerProtocol','PublicPermissionControllerUi','PublicOwnGroupPolicy','FixedIntentTools',
            'BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfileOwnedTask','ProfilePermissionTransient','ProfileDisplayCustody']
     before={str(p):sha(p) for p in [src/(n+'.java') for n in names]+[existing,test,a.candidate_policy]}
     actual_sha=sha(a.actual_recents) if a.actual_recents else None

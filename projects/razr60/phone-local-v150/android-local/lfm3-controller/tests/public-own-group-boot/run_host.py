@@ -36,7 +36,7 @@ final class BrokerBootLifecycleFixture {
  void printTerminal(){terminalStates.add(state);}
  void watchdogKnown(){
 '''+known_branch+'\n }\n'+halt+cleanup+'}\n')
-names=['BrokerProtocol','FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','PublicOwnGroupPolicy',
+names=['BrokerProtocol','PublicPermissionControllerUi','FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','PublicOwnGroupPolicy',
        'ProfileRecoveryBootCount','PublicOwnGroupBootIdentity']
 sources=[bg/(n+'.java') for n in names]+[fixture,Path(__file__).resolve().parent/'PublicOwnGroupBootIdentityHostTest.java']
 def ident(path):

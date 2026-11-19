@@ -60,7 +60,7 @@ def main():
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content+'\n')
         generated.append(path)
-    names = ['ProfileIdentity','ProfileTarget','WindowOwnership','BrokerProtocol','PublicOwnGroupPolicy','FixedIntentTools',
+    names = ['ProfileIdentity','ProfileTarget','WindowOwnership','BrokerProtocol','PublicPermissionControllerUi','PublicOwnGroupPolicy','FixedIntentTools',
              'BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfileOwnedTask',
              'ProfilePermissionTransient','ProfileDisplayCustody','PermissionWindowObservation']
     background = source/'src/org/trillionnium/hepta/background'

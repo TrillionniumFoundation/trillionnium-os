@@ -160,11 +160,22 @@ public final class PublicPersonalNotesAbsenceRecovery {
             journalSha256=ProfileIdentity.sha(originals.get("journal"));originalsSha256=ProfileIdentity.sha(canonical(inputHashes()));requireFence(now,boot);
         }
         private int notesCustody(JSONObject c)throws Exception{
-            need("hepta.public-personal-notes-cleanup.v1".equals(string(c,"schema"))&&generation.equals(string(c,"generation"))
+            boolean concurrent="hepta.public-personal-notes-cleanup.v2".equals(string(c,"schema"));
+            need((concurrent||"hepta.public-personal-notes-cleanup.v1".equals(string(c,"schema")))&&generation.equals(string(c,"generation"))
                     &&publicScope.sha256.equals(string(c,"scope_sha256"))&&PACKAGE.equals(string(c,"package"))&&number(c,"display_id")==displayId,
                     "NOTES_CUSTODY_BINDING");
             long uid=number(c,"target_uid");need(uid>=10000&&uid<90000,"NOTES_TARGET_UID");
             yes(c,"create_attempted","launch_dispatched");no(c,"cleanup_known","arbitrary_task_removal_used","force_stop_used","caller_flag_is_cleanup_proof");
+            if(concurrent){
+                need("nonphysical_and_unresolved_recents".equals(string(c,"history_preservation_scope"))
+                        &&"pre_release_to_absence".equals(string(c,"history_preservation_interval"))
+                        &&"initial_to_absence".equals(string(c,"hidden_history_preservation_interval"))
+                        &&Boolean.FALSE.equals(c.get("physical_history_frozen"))
+                        &&c.get("unrelated_physical_history_changes_observed") instanceof Boolean
+                        &&c.get("recents_presentation_changes_observed") instanceof Boolean
+                        &&c.get("prior_hidden_history_preserved") instanceof Boolean,"NOTES_CUSTODY_HISTORY_SCOPE");
+                no(c,"nonphysical_history_preserved","nonphysical_hidden_history_preserved");
+            }
             return (int)uid;
         }
         private void requireSelection(JSONObject s)throws Exception{

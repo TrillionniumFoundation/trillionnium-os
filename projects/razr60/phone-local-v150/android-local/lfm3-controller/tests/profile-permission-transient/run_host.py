@@ -28,7 +28,7 @@ def main():
     here = Path(__file__).resolve().parent
     fixture = here / 'fixtures/synthetic-activities.txt'
     background = source / 'src/org/trillionnium/hepta/background'
-    names = ['ProfileIdentity', 'ProfileTarget', 'WindowOwnership', 'BrokerProtocol', 'PublicOwnGroupPolicy', 'FixedIntentTools',
+    names = ['ProfileIdentity', 'ProfileTarget', 'WindowOwnership', 'BrokerProtocol','PublicPermissionControllerUi', 'PublicOwnGroupPolicy', 'FixedIntentTools',
              'BackgroundOwnedTaskPolicy', 'BackgroundOwnedSingleTask', 'ProfileTaskPolicy',
              'ProfileOwnedTask', 'ProfilePermissionTransient', 'ProfileDisplayCustody']
     files = [background / (name + '.java') for name in names]
