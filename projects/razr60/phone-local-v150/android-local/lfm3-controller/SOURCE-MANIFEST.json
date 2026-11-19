@@ -1,20 +1,23 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "26da3267bd75305910c758d076f93e3cdcd0e3ea",
-  "base_manifest_sha256": "7567a5d860e22bbad49c359a0ddd9a6f57240c553a29a65eee5cbf9f4017395d",
-  "candidate_status": "notes_cleanup_fixture_source_candidate_not_compiled_or_deployed",
+  "base_head": "403cd90b558c8fb76a5e551c50cc1cd13eb3e9bd",
+  "base_manifest_sha256": "e3b10f1c4c8cfad730aad2babb0f24175268b0f08697c6eb09e29672308bbe29",
+  "candidate_status": "notes_empty_root_and_drained_model_recovery_candidate_not_compiled_or_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 190,
   "production_build_inputs_count": 362,
-  "production_input_map_sha256": "819e668fa051dca7e8c8f52dc08569c557fc54d6b7fa44ecf54bacac37437ece",
-  "complete_source_files": 2240,
+  "production_input_map_sha256": "4af9f79e3466c93ce21a884cac868192634fed12dd8f528197a3f3276178d73a",
+  "complete_source_files": 2241,
   "phone_qualified": false,
   "android_qualified": false,
   "scope": [
-    "Preserve all Q7 production bytes, the original failed full-host result, and all Q4 recovery history.",
-    "Distinguish legacy Notes cleanup v1 false-field rejection from actual v2 audited physical-history changes in the original adapter test; preserve all original 15 cases and add v2 nonphysical-history negative coverage."
+    "Retain the actual Q8 task failure and unknown tool outcome; no business result or old cleanup record is rewritten.",
+    "Recognize only the fully consistent finishing Notes task tuple while retaining UID, component, token, ownership and location requirements; preserve rejected-row diagnostics.",
+    "Add a versioned single drained notes.create recovery request backed by fifteen unchanged originals and the original worker-generation cleanup verifier.",
+    "Retain the pre-model seven-original recovery, fresh double absence, durable original archives, exact lease CAS and separate ordinary UI acknowledgement.",
+    "Preserve all original host assertions and add separate empty-task and post-model cases; no phone or business qualification is claimed by source publication."
   ],
   "files": [
     {
@@ -6159,8 +6162,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "bytes": 95825,
-      "sha256": "cd67e7a1ef2efa8d62455d7ec1930446031be3c701dfddd8d64044094326c389"
+      "bytes": 96429,
+      "sha256": "d486c65f7d025c4167cdb94261f66644d5b75fa4ae2887d3ba4973e4a74f4eaa"
     },
     {
       "path": "src/org/trillionnium/hepta/background/BackgroundOwnedSingleTask.java",
@@ -6334,13 +6337,13 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesAbsenceRecovery.java",
-      "bytes": 36545,
-      "sha256": "7bfb47a2ce9a94386a022e24f4d640858a7f40f18d34b02a49b02b8d288a0fc2"
+      "bytes": 57870,
+      "sha256": "7020ee664b33d0ad07b7ecf2a4ec5835bac362a9de704d9c76a5daf756ca3639"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesCustody.java",
-      "bytes": 20244,
-      "sha256": "7f1372cf68d577ae8cdec888d18252553fe9c09836327f1132b3cb5f4c89c0b9"
+      "bytes": 20945,
+      "sha256": "e39a101f7932d513e80b82799819ccd47b50aaef2d4d0cb5e7b63b9189eb8ccb"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesHistory.java",
@@ -6349,8 +6352,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesReader.java",
-      "bytes": 7554,
-      "sha256": "b914cec58a5d1b3e9d16816b8d840271ce55d27dd1885b35cbb895a46c3db66a"
+      "bytes": 11322,
+      "sha256": "3213dcc29531eaaa1e41903fcdadddfa3fd626304a5871cfdfe87c549b229170"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicProfileAbsenceRecovery.java",
@@ -6774,8 +6777,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java",
-      "bytes": 19033,
-      "sha256": "60ccf0140058e9df722f13d56ee8b46c3345bfca193a3870435d2e81515bab67"
+      "bytes": 25113,
+      "sha256": "4401796504d20698aa8536a5be07aa67ef33ee8c3661bf17f8a3c9c45fc8b087"
     },
     {
       "path": "src/org/trillionnium/hepta/local/PublicProfileRecoveryClient.java",
@@ -7504,8 +7507,8 @@
     },
     {
       "path": "tests/background-session/prepare_fixture.py",
-      "bytes": 15596,
-      "sha256": "81a6e37b3449ef731eefced9d9c98434db54ad5ed1fac62d725b5e2d19294cde"
+      "bytes": 15620,
+      "sha256": "057c0ea362fcc5aa89107344d2f6a9fc39e7ad316bf3590731932929f3e888dd"
     },
     {
       "path": "tests/background-session/run_host_tests.py",
@@ -8759,13 +8762,13 @@
     },
     {
       "path": "tests/notes-task-info-reader/NotesTaskInfoReaderHostTest.java",
-      "bytes": 23626,
-      "sha256": "0c005e5a839463c6afda74dd58f65b1ccfd4246ad30d5edc76e144c3bd027f7c"
+      "bytes": 30633,
+      "sha256": "73fca900d031b46c5953d70ecfc12e6d66ccd94b7761e621e3be46812da5cc61"
     },
     {
       "path": "tests/notes-task-info-reader/README.md",
-      "bytes": 2565,
-      "sha256": "4fdf98088f16fd6b62f342ac1761c7e0826c45575cfac701873f44ed25858745"
+      "bytes": 3318,
+      "sha256": "12d667d38bda9f165f0df7b82485c80ae4a516891f2d85f94883d1aca397aca4"
     },
     {
       "path": "tests/notes-task-info-reader/prepare_fixture.py",
@@ -8774,8 +8777,8 @@
     },
     {
       "path": "tests/notes-task-info-reader/run_host.py",
-      "bytes": 8118,
-      "sha256": "daa281a25cfd9fba9b0b28f00008138b3bf8634fc96b1d9fd7fd8a93bb84353a"
+      "bytes": 8726,
+      "sha256": "21f3ef71c969f089536bc8ee72f8c35a7586a8fd30430a5a83d469e62947bb82"
     },
     {
       "path": "tests/notes-task-info-reader/synthetic-notes-census.json",
@@ -9083,19 +9086,24 @@
       "sha256": "48ef34a6489c7ac75a91887a80509f872121b79067ec68fe29081c5277bf4cd1"
     },
     {
+      "path": "tests/personal-notes-absence/PersonalNotesPostModelHostTest.java",
+      "bytes": 30400,
+      "sha256": "ed60a040fa74e07752b896d5a4090dece693fc004f5a89391d218440fa25b234"
+    },
+    {
       "path": "tests/personal-notes-absence/PersonalNotesRecoveryClientHostTest.java",
       "bytes": 17726,
       "sha256": "f4793e70724ec233fd49033f3aaa785ff354212048befeffde92ff51194b523a"
     },
     {
       "path": "tests/personal-notes-absence/README.md",
-      "bytes": 4134,
-      "sha256": "575ebf4a80165183ed44d16a4a1dba0980799706e4fd5c9aeb2838ed844aac84"
+      "bytes": 5718,
+      "sha256": "b81f771aa44f8d76e7db2f55ab0f8a19fd30986d3d4381b913cda17fc3cf285b"
     },
     {
       "path": "tests/personal-notes-absence/run_host.py",
-      "bytes": 10903,
-      "sha256": "c6bc5dea85fc49bc0f97acfd73743036f0334634faec626ed682acde328c2f80"
+      "bytes": 11188,
+      "sha256": "17047b674c16e097b35e036ce24b884e2a69a234cb6494869b02236c3596af4b"
     },
     {
       "path": "tests/profile-broker/ProfileBrokerHostTest.java",
@@ -11009,8 +11017,8 @@
     },
     {
       "path": "tools/run_host_checks.py",
-      "bytes": 38200,
-      "sha256": "7400b239f5241bc6765fbfc02451a610431fbf1e97479531f9b3c4d1ffc2cc71"
+      "bytes": 39357,
+      "sha256": "8b196275a70a7cec01e0d417441717d01794b98db5e429149c19b3926462ba59"
     },
     {
       "path": "tools/run_public_own_group_adapter_host.py",

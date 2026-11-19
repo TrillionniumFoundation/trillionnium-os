@@ -246,6 +246,16 @@ def main():
         if (type(notes_names) is not list or len(notes_names)!=71
                 or any(type(name) is not str or not name for name in notes_names) or len(set(notes_names))!=71):
             raise RuntimeError("Notes TaskInfo case names are incomplete or duplicated")
+        notes_empty=notes_cases.get("empty_activity",{})
+        if (notes_empty.get("schema")!="hepta.notes-empty-activity-host.v1" or notes_empty.get("all_pass") is not True
+                or type(notes_empty.get("cases")) is not int or notes_empty["cases"]!=14
+                or type(notes_empty.get("assertions")) is not int or notes_empty["assertions"]!=59
+                or type(notes_empty.get("case_names")) is not list or len(notes_empty["case_names"])!=14
+                or any(type(name) is not str or not name for name in notes_empty["case_names"])
+                or len(set(notes_empty["case_names"]))!=14
+                or notes_empty.get("framework_and_binder_fixtures_synthetic") is not True
+                or type(notes_empty.get("phone_operations")) is not int or notes_empty["phone_operations"]!=0):
+            raise RuntimeError("Notes empty-activity and actual-field diagnostic cases differ")
         notes_private=notes_gate.get("original_private_cases",{})
         if (notes_private.get("schema")!="hepta.profile-broker-host-tests.v1" or notes_private.get("passed") is not True
                 or type(notes_private.get("cases")) is not int or notes_private["cases"]!=47
@@ -280,7 +290,9 @@ def main():
             "policy":("hepta.personal-notes-absence-host.v1","cases",48,56,"case_names",
                 "36eec7f8df6a35a7b9711158c8ee7894847c529c99bfbb45d2d70a294b410593"),
             "client":("hepta.personal-notes-recovery-client-host-tests.v1","checks",22,192,"cases",
-                "775837c86f2ca609de131778c2bc321b0df2653211831b1cbc1e4edce3147e60")}
+                "775837c86f2ca609de131778c2bc321b0df2653211831b1cbc1e4edce3147e60"),
+            "post-model":("hepta.personal-notes-post-model-host.v1","cases",33,47,"case_names",
+                "345293266abe6da61ff120b40438f2cc17c71063ad732b81a6efa65ed0dd028a")}
         for key,(schema,metric,count,assertions,names_metric,names_hash) in notes_absence_contracts.items():
             cases=notes_absence.get(key,{})
             if (cases.get("schema")!=schema or cases.get("all_pass",cases.get("passed")) is not True
@@ -297,12 +309,12 @@ def main():
                 raise RuntimeError("Notes absence aggregate differs from actual Java stdout: "+key)
         notes_absence_stages=notes_absence.get("stages")
         if (type(notes_absence_stages) is not list or [row.get("stage") for row in notes_absence_stages]!=
-                ["policy-compile","policy","client-compile","client"]
+                ["policy-compile","policy","client-compile","client","post-model"]
                 or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in notes_absence_stages)):
-            raise RuntimeError("Notes absence lacks all four real compile/run stages")
+            raise RuntimeError("Notes absence lacks all five real compile/run stages")
         report["personal_notes_absence_gate"]={"bytes":len(notes_absence_raw),
             "sha256":hashlib.sha256(notes_absence_raw).hexdigest(),
-            "policy":notes_absence["policy"],"client":notes_absence["client"]}
+            "policy":notes_absence["policy"],"client":notes_absence["client"],"post-model":notes_absence["post-model"]}
         run("foreground-concurrency",[sys.executable,"-B",ROOT/"tests/public-profile-history/run_concurrency_host.py",
             "--source",ROOT,"--output",out/"foreground-concurrency","--java-home",java_home,"--json-jar",json_jar])
         concurrency_raw=(out/"foreground-concurrency/RESULT.json").read_bytes()

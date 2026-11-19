@@ -57,7 +57,7 @@ final class HostRecoveryProcessBoundary {static Process start(String command)thr
   dst=output/name;dst.parent.mkdir(parents=True,exist_ok=True);dst.write_text(text);files.append(dst)
  files += [pkg/(name+'.java') for name in ('BackgroundSession','MobiMindPrivateFiles','QualificationScope',
  'BackgroundTaskTarget','NativeAppGoal','NotesOwnerIntent','TaskAuthorization','ActionDecision','DecisionGrammar',
- 'ObservedTargetLabels','ObservedAppLabels','ObservedScrollActions','ObservedImeEnter','AppCatalogueRanker')]
+ 'ObservedTargetLabels','ObservedAppLabels','ObservedScrollActions','ObservedImeEnter','AppCatalogueRanker','WorkerGenerationProof')]
  files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java']
  files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('BrokerProtocol','PublicPermissionControllerUi','PublicOwnGroupPolicy','PublicOwnGroupPhysicalFence','PublicProfileRecentHistory')]
  files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','WindowOwnership','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfilePrelaunchRecovery','ProfilePostlaunchRecovery','PublicProfileAbsenceRecovery','PublicPersonalNotesAbsenceRecovery','PublicPersonalNotesHistory','PermissionWindowObservation','ProfileOwnedTask','ProfilePermissionTransient','ProfileDisplayCustody')]

@@ -102,7 +102,8 @@ public final class RecoveryControllerIdentity {
     projected = fixture / 'org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java'
     projected.write_text(raw_client.replace(seam, 'FakePersonalNotesRecoveryProcess.start(command)'))
     files += [bg / 'ProfileRecoveryProcesses.java', shared_test, test / 'FakePersonalNotesRecoveryProcess.java',
-              test / 'PersonalNotesRecoveryClientHostTest.java', test / 'PersonalNotesAbsenceHostTest.java']
+              test / 'PersonalNotesRecoveryClientHostTest.java', test / 'PersonalNotesAbsenceHostTest.java',
+              test / 'PersonalNotesPostModelHostTest.java']
     service = local / 'HeptaAccessibilityService.java'
     service_text = service.read_text()
     methods = []
@@ -128,7 +129,9 @@ final class PersonalNotesRecoveryIdleFixture {
     classes.mkdir()
     commands += [('client-compile', [*compile_args, '-d', str(classes), *map(str, files)]),
                  ('client', [str(jdk / 'java'), '-cp', str(classes) + os.pathsep + str(args.json_jar.resolve()),
-                             'org.trillionnium.hepta.local.PersonalNotesRecoveryClientHostTest'])]
+                             'org.trillionnium.hepta.local.PersonalNotesRecoveryClientHostTest']),
+                 ('post-model', [str(jdk / 'java'), '-cp', str(classes) + os.pathsep + str(args.json_jar.resolve()),
+                             'org.trillionnium.hepta.local.PersonalNotesPostModelHostTest'])]
     sources = list(dict.fromkeys(pure + files + [helper, client, service, local / 'LocalTaskSession.java',
                                                bg / 'PublicPersonalNotesAbsenceMain.java']))
     pins = {str(p): sha(p) for p in sources}
@@ -150,7 +153,7 @@ final class PersonalNotesRecoveryIdleFixture {
                                  'stdout_sha256': hashlib.sha256(run.stdout).hexdigest(), 'stderr_sha256': hashlib.sha256(run.stderr).hexdigest()})
         if run.returncode:
             break
-        if name in ('policy', 'client'):
+        if name in ('policy', 'client', 'post-model'):
             result[name] = json.loads(run.stdout)
     result['inputs_unchanged'] = pins == {str(p): sha(p) for p in sources}
     result['all_pass'] = len(result['stages']) == len(commands) and all(x['exit_code'] == 0 for x in result['stages']) and result['inputs_unchanged']

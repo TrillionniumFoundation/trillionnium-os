@@ -23,12 +23,16 @@ import org.json.JSONObject;
  * serialized observations cannot create an App receipt or authorize any effect. */
 public final class PublicPersonalNotesAbsenceRecovery {
     public static final String REQUEST_SCHEMA="hepta.personal-notes-absence-request.v1";
+    public static final String DRAINED_REQUEST_SCHEMA="hepta.personal-notes-absence-request.v2";
     public static final String SCHEMA="hepta.personal-notes-current-absence.v2";
     public static final String SOURCE="fresh_personal_notes_absence_with_preserved_failure";
     public static final String PACKAGE="com.motorola.stylus";
     public static final long LIMIT_MS=12000,TTL_MS=540000,EXPIRY_GRACE_MS=2000;
     public static final int MAX_ORIGINAL=131072,MAX_BUNDLE=262144,MAX_WIRE=65536,MAX_OUTPUT=524288,MAX_RECEIPT=786432;
     private static final String[] INPUTS={"journal","owner","bootstrap","cleanup","result","broker_receipt","broker_output"};
+    private static final String[] DRAINED_INPUTS={"journal","owner","bootstrap","cleanup","result","broker_receipt","broker_output",
+            "step_model","step_action","fixed_intent_attempt","model_request_receipt","model_session_receipt",
+            "native_session_receipt","generation_identity","generation_cleanup_receipt"};
     private PublicPersonalNotesAbsenceRecovery(){}
     public static final class Request {
         public final int ownerUid,oldBoot,requestBoot,displayId,targetUid;
@@ -36,14 +40,17 @@ public final class PublicPersonalNotesAbsenceRecovery {
         public final String requestId,taskId,generation,ownerSha256,displayName,journalSha256,originalsSha256,currentControlSha256;
         public final PublicOwnGroupPolicy.Scope publicScope;
         public final java.util.Set<Integer> recordedTaskIds;
+        public final boolean postModelDrained;
         private final Map<String,byte[]> originals;
         private final byte[] currentControl;
         private final String controllerText;
         private Request(Map<String,byte[]> input,byte[] control,JSONObject controller,int uid,String id,long now,int boot)throws Exception{
             need(uid>=10000&&uid<90000&&ProfileIdentity.uuid(id)&&now>=0&&boot>=0,"NOTES_REQUEST_IDENTITY");
-            need(input!=null&&input.keySet().equals(new TreeSet<String>(Arrays.asList(INPUTS))),"NOTES_INPUT_SET");
+            need(input!=null,"NOTES_INPUT_SET");
+            postModelDrained=input.keySet().equals(new TreeSet<String>(Arrays.asList(DRAINED_INPUTS)));
+            need(postModelDrained||input.keySet().equals(new TreeSet<String>(Arrays.asList(INPUTS))),"NOTES_INPUT_SET");
             LinkedHashMap<String,byte[]> copy=new LinkedHashMap<String,byte[]>();int total=0;
-            for(String name:INPUTS){byte[] raw=input.get(name);need(raw!=null&&raw.length>0&&raw.length<=MAX_ORIGINAL,"NOTES_INPUT_BOUND");
+            for(String name:postModelDrained?DRAINED_INPUTS:INPUTS){byte[] raw=input.get(name);need(raw!=null&&raw.length>0&&raw.length<=MAX_ORIGINAL,"NOTES_INPUT_BOUND");
                 total+=raw.length;need(total<=MAX_BUNDLE,"NOTES_INPUT_BOUND");copy.put(name,raw.clone());}
             originals=Collections.unmodifiableMap(copy);
             JSONObject j=object(originals.get("journal"));
@@ -113,25 +120,27 @@ public final class PublicPersonalNotesAbsenceRecovery {
                     &&number(launch,"display_id")==displayId&&PACKAGE.equals(string(launch,"package"))&&number(launch,"target_uid")==targetUid
                     &&string(launch,"component").startsWith(PACKAGE+"/")&&string(launch,"request_id").equals(string(last,"request_id"))
                     &&Boolean.TRUE.equals(launch.get("activity_info_rechecked_before_dispatch")),"NOTES_ORIGINAL_LAUNCH_TARGET");
-            need(same(bootstrap.getJSONObject("last_broker_response"),last),"NOTES_ORIGINAL_RESPONSE_CHANGED");
+            if(postModelDrained)requireDrainedBootstrap(bootstrap.getJSONObject("last_broker_response"),last,ids);
+            else need(same(bootstrap.getJSONObject("last_broker_response"),last),"NOTES_ORIGINAL_RESPONSE_CHANGED");
             recordedTaskIds=Collections.unmodifiableSet(ids);
-            need(taskId.equals(string(result,"task_id"))&&"blocked".equals(string(result,"status"))&&number(result,"steps")==0
+            need(taskId.equals(string(result,"task_id"))&&"blocked".equals(string(result,"status"))&&number(result,"steps")== (postModelDrained?1:0)
                     &&Boolean.FALSE.equals(result.get("cleanup_known"))&&Boolean.FALSE.equals(result.get("completion_verified"))
                     &&Boolean.FALSE.equals(result.get("model_reported_success"))&&Boolean.FALSE.equals(result.get("external_model"))
                     &&Boolean.FALSE.equals(result.get("automatic_replay"))&&Boolean.FALSE.equals(result.get("controller_completion_requested"))
-                    &&result.get("last_action_execution")==JSONObject.NULL&&result.get("final_observation_id")==JSONObject.NULL
+                    &&(postModelDrained||(result.get("last_action_execution")==JSONObject.NULL&&result.get("final_observation_id")==JSONObject.NULL))
                     &&result.get("model_done_status")==JSONObject.NULL&&result.get("completion_actor")==JSONObject.NULL,
                     "NOTES_RECOVERY_BUSINESS_OR_MODEL_DISPATCH");
             for(String key:new String[]{"observation_read_worker_pending_at_terminal","action_worker_pending_at_terminal","native_cancel_worker_pending_at_terminal"})
                 need(Boolean.FALSE.equals(result.get(key)),"NOTES_RECOVERY_WORKER_PENDING");
-            need(result.getJSONArray("submit_attempts").length()==0&&result.getJSONArray("fixed_intent_attempts").length()==0
+            need(result.getJSONArray("submit_attempts").length()==0&&result.getJSONArray("fixed_intent_attempts").length()==(postModelDrained?1:0)
                     &&(!result.has("profile_permission_preparation")||result.get("profile_permission_preparation")==JSONObject.NULL),"NOTES_RECOVERY_EFFECT_ATTEMPT");
             JSONObject nativeWork=result.getJSONObject("native_cancellation"),model=result.getJSONObject("model_session");
             need(taskId.equals(string(nativeWork,"task_id"))&&Boolean.TRUE.equals(nativeWork.get("native_cleanup_known"))
                     &&nativeWork.get("run_id")==JSONObject.NULL,"NOTES_RECOVERY_NATIVE_UNKNOWN");
             for(String key:new String[]{"request_reserved","executor_accepted","worker_started","signal_entered","submission_unknown"})
                 need(Boolean.FALSE.equals(nativeWork.get(key)),"NOTES_RECOVERY_NATIVE_DISPATCH");
-            need(taskId.equals(string(model,"task_id"))&&Boolean.FALSE.equals(model.get("process_started"))&&Boolean.FALSE.equals(model.get("process_exit_observed"))
+            if(postModelDrained)requireDrainedModel(result,owner,model,last);
+            else need(taskId.equals(string(model,"task_id"))&&Boolean.FALSE.equals(model.get("process_started"))&&Boolean.FALSE.equals(model.get("process_exit_observed"))
                     &&model.get("worker_generation")==JSONObject.NULL&&model.get("exit_code")==JSONObject.NULL
                     &&Boolean.TRUE.equals(model.get("receipt_valid"))&&model.get("app_receipt_sha256")==JSONObject.NULL,
                     "NOTES_RECOVERY_MODEL_SESSION");
@@ -147,8 +156,8 @@ public final class PublicPersonalNotesAbsenceRecovery {
                 String key=authorizationKeys.next();need(same(authorization.get(key),gate.get(key)),"NOTES_RECOVERY_AUTHORIZATION_CHANGED");}
             for(String key:new String[]{"discovery_run_id","opened_package","catalogue_sha256","discovery_observation_id",
                     "open_run_id","opened_observation_id","pending_open_package"})
-                need(gate.get(key)==JSONObject.NULL,"NOTES_RECOVERY_AUTHORIZATION_EFFECT");
-            need(gate.getJSONArray("found_packages").length()==0&&gate.getJSONObject("last_check").length()==0,
+                need(postModelDrained&&"catalogue_sha256".equals(key)?ProfileIdentity.hash(string(gate,key)):gate.get(key)==JSONObject.NULL,"NOTES_RECOVERY_AUTHORIZATION_EFFECT");
+            need(gate.getJSONArray("found_packages").length()==0&&(postModelDrained||gate.getJSONObject("last_check").length()==0),
                     "NOTES_RECOVERY_AUTHORIZATION_EFFECT");
             long terminalAt=number(result,"terminal_decided_elapsed_ms");need(terminalAt>=created&&terminalAt<=started,"NOTES_RECOVERY_TERMINAL_CLOCK");
             PublicProfileAbsenceRecovery.requireController(controller,uid);controllerText=canonical(controller);
@@ -158,6 +167,163 @@ public final class PublicPersonalNotesAbsenceRecovery {
             need(taskId.equals(string(current,"task_id"))&&ownerSha256.equals(string(current,"instruction_sha256")),"NOTES_CURRENT_CONTROL_BINDING");
             currentControl=control.clone();currentControlSha256=ProfileIdentity.sha(control);
             journalSha256=ProfileIdentity.sha(originals.get("journal"));originalsSha256=ProfileIdentity.sha(canonical(inputHashes()));requireFence(now,boot);
+        }
+        /** A different terminal response is permitted only for the single recorded
+         * Notes create below. Neither a drained worker nor an absent task proves
+         * that the attempted note was not created. All failure bytes stay intact. */
+        private void requireDrainedBootstrap(JSONObject early,JSONObject last,java.util.Set<Integer> ids)throws Exception{
+            need(number(early,"version")==BrokerProtocol.PUBLIC_OWN_GROUP_VERSION&&generation.equals(string(early,"generation"))
+                    &&number(early,"display_id")==displayId&&publicScope.sha256.equals(string(early,"display_scope_sha256"))
+                    &&"launch".equals(string(early,"operation"))&&"ACTIVE".equals(string(early,"state"))
+                    &&"notes.create".equals(string(last,"operation"))&&"CLEANUP_UNKNOWN".equals(string(last,"state"))
+                    &&ProfileIdentity.uuid(string(early,"request_id"))&&ProfileIdentity.uuid(string(last,"request_id"))
+                    &&!string(early,"request_id").equals(string(last,"request_id")),"NOTES_DRAINED_BOOTSTRAP_BINDING");
+            yes(early,"ok","dispatched");no(last,"ok");yes(last,"dispatched","public_scope_admission_retired");
+            need(notesCustody(early.getJSONObject("personal_notes_cleanup"))==targetUid,"NOTES_TARGET_UID_CHANGED");
+            JSONObject location=early.getJSONObject("public_task_location"),later=last.getJSONObject("public_task_location"),launch=early.getJSONObject("task_launch_policy");
+            need("hepta.public-own-group.task-location.v1".equals(string(location,"schema"))&&generation.equals(string(location,"generation"))
+                    &&number(location,"display_id")==displayId&&number(location,"target_user_id")==0
+                    &&number(location,"observed_elapsed_ms")>=created&&number(location,"observed_elapsed_ms")<=number(later,"observed_elapsed_ms")
+                    &&number(later,"observed_elapsed_ms")<=started,"NOTES_DRAINED_BOOTSTRAP_LOCATION");
+            no(location,"task_mutation_authority");
+            JSONArray originalTasks=location.getJSONArray("observed_owned_task_ids"),finalTasks=later.getJSONArray("observed_owned_task_ids");
+            need(originalTasks.length()>0&&originalTasks.length()<=32,"NOTES_RECORDED_TASK_BOUND");
+            java.util.Set<Long> retained=new TreeSet<Long>();for(int i=0;i<finalTasks.length();i++)retained.add(numberAt(finalTasks,i));
+            for(int i=0;i<originalTasks.length();i++){long task=numberAt(originalTasks,i);need(task>0&&task<=Integer.MAX_VALUE&&retained.contains(task),"NOTES_DRAINED_OWNED_TASK_LOST");ids.add((int)task);}
+            JSONArray oldRows=early.getJSONObject("personal_notes_cleanup").getJSONArray("actual_observed_tasks");
+            JSONArray finalRows=last.getJSONObject("personal_notes_cleanup").getJSONArray("actual_observed_tasks");
+            need(oldRows.length()>0&&oldRows.length()<=32,"NOTES_RECORDED_TASK_BOUND");
+            for(int i=0;i<oldRows.length();i++){JSONObject row=oldRows.getJSONObject(i);boolean found=false;
+                for(int n=0;n<finalRows.length();n++)if(number(row,"task_id")==number(finalRows.getJSONObject(n),"task_id")){
+                    need(!found&&same(row,finalRows.getJSONObject(n)),"NOTES_DRAINED_OWNED_IDENTITY_CHANGED");found=true;}
+                need(found,"NOTES_DRAINED_OWNED_IDENTITY_LOST");}
+            need("hepta.background-task-launch-policy.v1".equals(string(launch,"schema"))&&generation.equals(string(launch,"generation"))
+                    &&number(launch,"display_id")==displayId&&PACKAGE.equals(string(launch,"package"))&&number(launch,"target_uid")==targetUid
+                    &&string(launch,"component").startsWith(PACKAGE+"/")&&string(launch,"request_id").equals(string(early,"request_id")),"NOTES_DRAINED_BOOTSTRAP_TARGET");
+            yes(launch,"activity_info_rechecked_before_dispatch");
+        }
+        private void requireDrainedModel(JSONObject result,JSONObject owner,JSONObject projection,JSONObject last)throws Exception{
+            JSONObject step=object(originals.get("step_model")),action=object(originals.get("step_action")),attempt=object(originals.get("fixed_intent_attempt"));
+            JSONObject work=result.getJSONObject("last_action_execution"),fixed=result.getJSONArray("fixed_intent_attempts").getJSONObject(0);
+            String run=string(step,"run_id"),observation=string(step,"observation_id"),authorization=string(owner,"task_authorization_sha256");
+            need(run.matches("[0-9a-f]{32}")&&observation.matches("[0-9a-f]{32}")&&ownerSha256.equals(string(step,"original_instruction_sha256"))
+                    &&observation.equals(string(result,"final_observation_id"))&&run.equals(string(action,"model_run_id"))
+                    &&same(work,action.getJSONObject("action_execution"))&&same(fixed,action.getJSONObject("fixed_intent")),"NOTES_DRAINED_ACTION_BINDING");
+            no(action,"accepted","stale","done_success_eligible");yes(action,"dispatched","model_issued");
+            JSONObject issued=object(string(step,"raw_text").getBytes(StandardCharsets.UTF_8));
+            need(same(issued,action.getJSONObject("action"))&&"notes.create".equals(string(issued,"action"))
+                    &&PACKAGE.equals(string(issued,"package"))&&observation.equals(string(issued,"observation_id")),"NOTES_DRAINED_MODEL_ACTION");
+            need("hepta.action-execution.v1".equals(string(work,"schema"))&&"serial_action_worker".equals(string(work,"execution_kind"))
+                    &&string(work,"operation_id").matches("[0-9a-f]{32}")&&taskId.equals(string(work,"task_id"))
+                    &&run.equals(string(work,"model_run_id"))&&observation.equals(string(work,"observation_id"))
+                    &&authorization.equals(string(work,"authorization_sha256"))&&number(work,"display_id")==displayId
+                    &&generation.equals(string(work,"background_generation"))&&number(work,"window_id")>=0,"NOTES_DRAINED_ACTION_IDENTITY");
+            yes(work,"effect_entered","worker_drained","callback_published","callback_authority_current");
+            no(work,"effect_returned","retired","phases_truncated","automatic_redispatch");
+            need(work.get("api_accepted")==JSONObject.NULL&&work.get("retirement_reason")==JSONObject.NULL,"NOTES_DRAINED_EFFECT_REMAINS_UNKNOWN");
+            long terminal=number(result,"terminal_decided_elapsed_ms"),queued=number(work,"queued_elapsed_ms"),drained=number(work,"worker_drained_elapsed_ms");
+            need(queued>=created&&drained>=queued&&drained<=terminal&&number(work,"deadline_elapsed_ms")>queued,"NOTES_DRAINED_ACTION_CLOCK");
+            need("hepta.fixed-intent-attempt.v1".equals(string(attempt,"schema"))&&"consumed_before_call".equals(string(attempt,"stage"))
+                    &&"hepta.fixed-intent-result.v1".equals(string(fixed,"schema")),"NOTES_DRAINED_ATTEMPT_SCHEMA");
+            Iterator<String> attemptKeys=attempt.keys();while(attemptKeys.hasNext()){String key=attemptKeys.next();
+                if(!"schema".equals(key)&&!"stage".equals(key))need(same(attempt.get(key),fixed.get(key)),"NOTES_DRAINED_ATTEMPT_CHANGED");}
+            need(taskId.equals(string(attempt,"task_id"))&&run.equals(string(attempt,"model_run_id"))&&observation.equals(string(attempt,"observation_id"))
+                    &&number(attempt,"source_window_id")==number(work,"window_id")&&PACKAGE.equals(string(attempt,"source_package"))
+                    &&number(attempt,"display_id")==displayId&&generation.equals(string(attempt,"background_generation"))
+                    &&"notes.create".equals(string(attempt,"action"))&&number(attempt,"attempt_ordinal")==1
+                    &&ProfileIdentity.hash(string(attempt,"attempt_id"))&&ProfileIdentity.sha(string(issued,"text")).equals(string(attempt,"payload_sha256")),"NOTES_DRAINED_ATTEMPT_IDENTITY");
+            yes(attempt,"attempt_consumed");no(attempt,"automatic_retry_allowed");yes(fixed,"dispatch_attempted");
+            no(fixed,"goal_independently_verified","saved_or_search_results_verified");
+            need(fixed.get("api_accepted")==JSONObject.NULL&&"unknown".equals(string(fixed,"result"))&&"draft_opened".equals(string(fixed,"requested_outcome")),"NOTES_DRAINED_EFFECT_REMAINS_UNKNOWN");
+            JSONObject target=attempt.getJSONObject("target"),brokerFixed=last.getJSONObject("fixed_intent"),launch=last.getJSONObject("task_launch_policy");
+            need("installed_package_manager".equals(string(target,"source"))&&"notes.create".equals(string(target,"action"))
+                    &&PACKAGE.equals(string(target,"package"))&&number(target,"target_uid")==targetUid&&string(target,"component").startsWith(PACKAGE+"/")
+                    &&string(target,"component").equals(string(launch,"component"))&&target.get("required_permission")==JSONObject.NULL,"NOTES_DRAINED_TARGET");
+            yes(target,"exported","activity_enabled","application_enabled","declared_intent_filter_matched","ordinary_caller_permission_checked");
+            need("hepta.background-fixed-intent.v1".equals(string(brokerFixed,"schema"))&&same(target,brokerFixed.getJSONObject("target"))
+                    &&string(last,"request_id").equals(string(brokerFixed,"request_id"))&&generation.equals(string(brokerFixed,"generation"))
+                    &&number(brokerFixed,"display_id")==displayId&&number(brokerFixed,"ordinary_caller_uid")==ownerUid
+                    &&"notes.create".equals(string(brokerFixed,"action"))&&string(attempt,"attempt_id").equals(string(brokerFixed,"attempt_id"))
+                    &&string(attempt,"payload_sha256").equals(string(brokerFixed,"payload_sha256")),"NOTES_DRAINED_BROKER_ATTEMPT");
+            yes(brokerFixed,"attempt_consumed");no(brokerFixed,"goal_independently_verified");
+            JSONObject gate=result.getJSONObject("task_authorization"),check=gate.getJSONObject("last_check");
+            yes(action.getJSONObject("task_authorization"),"callback_lease_current");no(action.getJSONObject("task_authorization"),"callback_cancelled");
+            need(same(gate,without(action.getJSONObject("task_authorization"),"callback_lease_current","callback_cancelled"))&&authorization.equals(string(action,"task_authorization_sha256"))
+                    &&"hepta.owner-action-check.v1".equals(string(check,"schema"))&&taskId.equals(string(check,"task_id"))
+                    &&authorization.equals(string(check,"authorization_sha256"))&&run.equals(string(check,"model_run_id"))
+                    &&"notes.create".equals(string(check,"action"))&&PACKAGE.equals(string(check,"target_package")),"NOTES_DRAINED_AUTHORIZATION");yes(check,"allowed");
+            requireNormalModelClose(projection,run,observation,step,drained,terminal);
+        }
+        private void requireNormalModelClose(JSONObject projection,String run,String observation,JSONObject step,long drained,long terminal)throws Exception{
+            JSONObject request=object(originals.get("model_request_receipt")),session=object(originals.get("model_session_receipt"));
+            JSONObject nativeSession=object(originals.get("native_session_receipt")),generationReceipt=object(originals.get("generation_cleanup_receipt"));
+            String worker=string(session,"worker_generation");long appPid=number(session,"app_pid");
+            need(worker.matches("[0-9a-f]{32}")&&"hepta.local-model.task-session.v1".equals(string(session,"schema"))
+                    &&taskId.equals(string(session,"task_id"))&&number(session,"app_uid")==ownerUid&&appPid>1&&appPid==number(object(originals.get("broker_receipt")),"app_pid")
+                    &&"hepta.local-model.task-request.v1".equals(string(request,"schema"))&&taskId.equals(string(request,"task_id"))
+                    &&worker.equals(string(request,"worker_generation"))&&run.equals(string(request,"run_id"))
+                    &&number(request,"app_uid")==ownerUid&&number(request,"app_pid")==appPid&&number(request,"request_sequence")==1
+                    &&observation.equals(string(request,"grammar_observation_id"))&&PACKAGE.equals(string(request,"grammar_current_package"))
+                    &&ProfileIdentity.sha(string(step,"raw_text")).equals(string(request,"raw_text_sha256_read")),"NOTES_DRAINED_REQUEST_RECEIPT");
+            yes(request,"process_started","inference_completed","request_committed","native_result_binding_valid");
+            no(request,"process_exit_observed","caller_cancellation_requested","cancel_requested","timeout_observed","force_destroy_sent","automatic_retry");
+            need(request.get("exit_code")==JSONObject.NULL&&"request_completed".equals(string(request,"status")),"NOTES_DRAINED_REQUEST_STATE");
+            need(taskId.equals(string(projection,"task_id"))&&worker.equals(string(projection,"worker_generation"))
+                    &&number(projection,"exit_code")==0&&ProfileIdentity.sha(originals.get("model_session_receipt")).equals(string(projection,"app_receipt_sha256")),"NOTES_DRAINED_SESSION_PROJECTION");
+            yes(projection,"process_started","process_exit_observed","receipt_valid");
+            yes(session,"process_started","process_exit_observed","cleanup_known","native_session_binding_valid","generation_cleanup_known","generation_unforced");
+            no(session,"caller_cancellation_requested","cancel_requested","force_destroy_sent","parent_force_destroy_sent","automatic_restart","cross_task_reuse");
+            need(number(session,"finisher_submitted_monotonic_ns")/1000000L>=drained
+                    &&number(session,"finisher_submitted_monotonic_ns")/1000000L<=terminal
+                    &&number(session,"exit_code")==0&&number(session,"requests_sent")==1&&number(session,"requests_accepted")==1
+                    &&"normal_close_with_observed_sdk_cleanup".equals(string(session,"cleanup_classification"))
+                    &&same(nativeSession,session.getJSONObject("native_session_receipt")),"NOTES_DRAINED_SESSION_CLOSE");
+            for(JSONObject receipt:new JSONObject[]{request,session}){
+                JSONObject cancellation=receipt.getJSONObject("owned_worker_cancellation");boolean closed=receipt==session;
+                need("hepta.owned-worker-cancellation.v1".equals(string(cancellation,"schema"))&&taskId.equals(string(cancellation,"task_id"))
+                        &&worker.equals(string(cancellation,"worker_generation"))&&number(cancellation,"term_destroy_attempts")==0
+                        &&number(cancellation,"force_destroy_attempts")==0&&cancellation.get("signal_error")==JSONObject.NULL
+                        &&Boolean.valueOf(closed).equals(cancellation.get("process_exit_observed"))
+                        &&(closed?number(cancellation,"exit_code")==0:cancellation.get("exit_code")==JSONObject.NULL),"NOTES_DRAINED_CANCELLATION_AUDIT");
+                yes(cancellation,"process_bound");no(cancellation,"requested","termination_started","term_destroy_returned","force_destroy_returned","sdk_cleanup_proven_by_this_object");
+            }
+            JSONObject nativeRequest=request.getJSONObject("native_receipt"),g=session.getJSONObject("worker_generation_cleanup");
+            need("hepta.geniex-task-request.result.v1".equals(string(nativeRequest,"schema"))&&worker.equals(string(nativeRequest,"worker_generation"))
+                    &&taskId.equals(string(nativeRequest,"task_id"))&&run.equals(string(nativeRequest,"request_id"))&&number(nativeRequest,"request_sequence")==1
+                    &&number(nativeRequest,"pid")==number(request,"worker_pid")&&number(nativeRequest,"request_status")==0
+                    &&string(request,"raw_text_sha256_read").equals(string(nativeRequest,"raw_text_sha256")),"NOTES_DRAINED_NATIVE_REQUEST");
+            no(nativeRequest,"process_exit_observed","automatic_retry");
+            need("hepta.geniex-task-session.result.v1".equals(string(nativeSession,"schema"))&&worker.equals(string(nativeSession,"worker_generation"))
+                    &&taskId.equals(string(nativeSession,"task_id"))&&number(nativeSession,"pid")==number(request,"worker_pid")
+                    &&number(nativeSession,"last_request_status")==0&&number(nativeSession,"signal_observed")==0,"NOTES_DRAINED_NATIVE_SESSION");
+            no(nativeSession,"process_exit_observed","control_channel_write_failed");
+            no(nativeSession.getJSONObject("sdk_exception_boundary"),"caught","automatic_retry");
+            yes(nativeSession,"model_metadata_unchanged_before_close","close_requested","sdk_destroy_attempted","sdk_deinit_attempted");
+            for(String key:new String[]{"requests_received","requests_completed","model_hash_count","sdk_init_count","model_create_count","model_reset_count","control_done_attempts","control_done_delivered"})
+                need(number(nativeSession,key)==1,"NOTES_DRAINED_NATIVE_COUNTS");
+            for(String key:new String[]{"sdk_destroy_rc","sdk_deinit_rc","control_channel_last_errno","last_request_return_status"})need(number(nativeSession,key)==0,"NOTES_DRAINED_NATIVE_CLOSE");
+            need("hepta.worker-generation.app-cleanup.v1".equals(string(g,"schema"))&&taskId.equals(string(g,"task_id"))&&worker.equals(string(g,"worker_generation"))
+                    &&number(g,"app_uid")==ownerUid&&number(g,"app_pid")==appPid&&ProfileIdentity.sha(originals.get("generation_identity")).equals(string(g,"identity_sha256"))
+                    &&ProfileIdentity.sha(originals.get("generation_cleanup_receipt")).equals(string(g,"native_receipt_sha256"))
+                    &&same(generationReceipt,g.getJSONObject("native_cleanup")),"NOTES_DRAINED_GENERATION_RAW_BINDING");
+            yes(g,"direct_process_exit_observed","helper_started","helper_exit_observed","cleanup_known","descendant_force_known","generation_unforced");
+            no(g,"helper_force_destroy_sent","helper_currently_alive","descendant_force_used","automatic_retry");
+            need(number(g,"helper_exit_code")==0&&g.get("error")==JSONObject.NULL&&"pinned_sdk_inheriting_process_group_and_generation_markers".equals(string(g,"scope"))
+                    &&number(g,"finisher_submitted_monotonic_ns")==number(session,"finisher_submitted_monotonic_ns")
+                    &&number(g,"finisher_deadline_monotonic_ns")==number(session,"finisher_deadline_monotonic_ns"),"NOTES_DRAINED_GENERATION_CLOSE");
+            for(String key:new String[]{"task_id","worker_generation","scope_token","app_uid","app_pid","app_start_ticks","boot_id","identity_sha256","cleanup_nonce"})
+                need(same(g.get(key),generationReceipt.get(key)),"NOTES_DRAINED_GENERATION_IDENTITY");
+            need("hepta.worker-generation.cleanup.v1".equals(string(generationReceipt,"schema"))&&number(generationReceipt,"leader_pid")==number(request,"worker_pid")
+                    &&number(generationReceipt,"pgid")==number(request,"worker_pid")&&number(generationReceipt,"term_attempts")==0&&number(generationReceipt,"kill_attempts")==0
+                    &&generationReceipt.getJSONArray("targets").length()==0&&number(generationReceipt,"ended_monotonic_ns")/1000000L<=terminal,"NOTES_DRAINED_GENERATION_UNFORCED");
+            yes(generationReceipt,"cleanup_known","scan_complete","pidfd_supported");
+            for(String key:new String[]{"remaining_owned_count","unknown_count","escaped_generation_count"})need(number(generationReceipt,key)==0,"NOTES_DRAINED_GENERATION_UNKNOWN");
+            StringBuilder identity=new StringBuilder("hepta.worker-generation.v1\n");
+            for(String key:new String[]{"task_id","worker_generation","scope_token","app_uid","app_pid","app_start_ticks","leader_pid","leader_start_ticks","pgid","boot_id"})
+                identity.append(key).append('=').append(generationReceipt.get(key)).append('\n');
+            need(Arrays.equals(identity.toString().getBytes(StandardCharsets.US_ASCII),originals.get("generation_identity")),"NOTES_DRAINED_IDENTITY_BYTES");
+            // The App client additionally replays the unchanged WorkerGenerationProof
+            // validator against these exact raw bytes before creating an opaque receipt.
         }
         private int notesCustody(JSONObject c)throws Exception{
             boolean concurrent="hepta.public-personal-notes-cleanup.v2".equals(string(c,"schema"));
@@ -237,12 +403,12 @@ public final class PublicPersonalNotesAbsenceRecovery {
                     ||java.util.regex.Pattern.compile("(?<![A-Za-z0-9])u0a"+(targetUid-10000)+"(?=$|[^A-Za-z0-9])").matcher(text).find();
         }
         public JSONObject controller()throws Exception{return object(controllerText.getBytes(StandardCharsets.UTF_8));}
-        public JSONObject inputHashes()throws Exception{JSONObject out=new JSONObject();for(String name:INPUTS){byte[] b=originals.get(name);
+        public JSONObject inputHashes()throws Exception{JSONObject out=new JSONObject();for(String name:originals.keySet()){byte[] b=originals.get(name);
             out.put(name,new JSONObject().put("bytes",b.length).put("sha256",ProfileIdentity.sha(b)));}return out;}
         public String wire()throws Exception{
             ByteArrayOutputStream bytes=new ByteArrayOutputStream();DataOutputStream out=new DataOutputStream(bytes);
-            out.writeUTF(REQUEST_SCHEMA);out.writeInt(ownerUid);out.writeUTF(requestId);out.writeLong(started);out.writeInt(requestBoot);
-            put(out,controllerText.getBytes(StandardCharsets.UTF_8));put(out,currentControl);for(String name:INPUTS)put(out,originals.get(name));out.flush();
+            out.writeUTF(postModelDrained?DRAINED_REQUEST_SCHEMA:REQUEST_SCHEMA);out.writeInt(ownerUid);out.writeUTF(requestId);out.writeLong(started);out.writeInt(requestBoot);
+            put(out,controllerText.getBytes(StandardCharsets.UTF_8));put(out,currentControl);for(String name:originals.keySet())put(out,originals.get(name));out.flush();
             need(bytes.size()<=MAX_BUNDLE+MAX_ORIGINAL+8192,"NOTES_WIRE_BOUND");ByteArrayOutputStream compressed=new ByteArrayOutputStream();
             try(GZIPOutputStream zip=new GZIPOutputStream(compressed)){zip.write(bytes.toByteArray());}
             String value=Base64.getEncoder().encodeToString(compressed.toByteArray());need(value.length()<=MAX_WIRE,"NOTES_WIRE_BOUND");return value;
@@ -256,9 +422,10 @@ public final class PublicPersonalNotesAbsenceRecovery {
         need(Base64.getEncoder().encodeToString(zipped).equals(wire),"NOTES_WIRE_NONCANONICAL");
         ByteArrayOutputStream decoded=new ByteArrayOutputStream();try(GZIPInputStream in=new GZIPInputStream(new ByteArrayInputStream(zipped))){
             byte[] b=new byte[4096];int n;while((n=in.read(b))!=-1){need(decoded.size()+n<=MAX_BUNDLE+MAX_ORIGINAL+8192,"NOTES_WIRE_BOUND");decoded.write(b,0,n);}}
-        DataInputStream in=new DataInputStream(new ByteArrayInputStream(decoded.toByteArray()));need(REQUEST_SCHEMA.equals(in.readUTF()),"NOTES_REQUEST_SCHEMA");
+        DataInputStream in=new DataInputStream(new ByteArrayInputStream(decoded.toByteArray()));String schema=in.readUTF();
+        need(REQUEST_SCHEMA.equals(schema)||DRAINED_REQUEST_SCHEMA.equals(schema),"NOTES_REQUEST_SCHEMA");
         int uid=in.readInt();String id=in.readUTF();long now=in.readLong();int boot=in.readInt();JSONObject controller=object(take(in,8192));byte[] control=take(in,MAX_ORIGINAL);
-        Map<String,byte[]> inputs=new LinkedHashMap<String,byte[]>();for(String name:INPUTS)inputs.put(name,take(in,MAX_ORIGINAL));need(in.read()==-1,"NOTES_WIRE_TRAILING");
+        Map<String,byte[]> inputs=new LinkedHashMap<String,byte[]>();for(String name:DRAINED_REQUEST_SCHEMA.equals(schema)?DRAINED_INPUTS:INPUTS)inputs.put(name,take(in,MAX_ORIGINAL));need(in.read()==-1,"NOTES_WIRE_TRAILING");
         Request r=new Request(inputs,control,controller,uid,id,now,boot);need(r.wire().equals(wire),"NOTES_WIRE_NONCANONICAL");return r;
     }
     public static JSONObject validate(JSONObject value,Request r,long now,int boot)throws Exception{

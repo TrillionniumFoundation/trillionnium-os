@@ -40,6 +40,7 @@ final class PublicPersonalNotesRecoveryClient {
         }
         JSONObject proof()throws Exception{return PublicPersonalNotesAbsenceRecovery.object(proofText.getBytes(StandardCharsets.UTF_8));}
         void requireOriginals(boolean journalPresent)throws Exception{
+            if(request.postModelDrained)requireTaskEntries(originals.get("result").path.getParentFile(),true);
             for(Map.Entry<String,MobiMindPrivateFiles.Read> item:originals.entrySet()){
                 // The typed receipt already persisted both CAS inputs before unlink. The
                 // normal UI may subsequently persist its own recovered session state.
@@ -119,13 +120,14 @@ final class PublicPersonalNotesRecoveryClient {
         if(!taskId.matches("[0-9a-f]{32}")||!generation.matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"))
             throw new IOException("备忘录独立缺席恢复的原任务身份无效");
         File task=existingDirectory(new File(existingDirectory(new File(root.path,"control-tasks")),taskId));
-        String[] leaves=task.list();if(leaves==null)throw new IOException("备忘录独立缺席恢复的原任务目录不可读");
-        for(String name:leaves)if(name.matches("step-[0-9]+-.*")||name.startsWith("ime-submit-")||name.startsWith("fixed-intent-")
-                ||name.startsWith("native-app-")||name.startsWith("controller-completion-"))throw new IOException("备忘录独立缺席恢复发现原任务已有模型或业务步骤");
         Map<String,MobiMindPrivateFiles.Read> actual=new LinkedHashMap<String,MobiMindPrivateFiles.Read>();actual.put("journal",journal);
         for(String[] item:new String[][]{{"owner","owner.json"},{"bootstrap","background-bootstrap.json"},{"cleanup","background-cleanup.json"},
                 {"result","result.json"},{"broker_receipt","background-broker-"+generation+".json"},{"broker_output","background-broker-"+generation+".bin"}})
             actual.put(item[0],MobiMindPrivateFiles.read(new File(task,item[1]),PublicPersonalNotesAbsenceRecovery.MAX_ORIGINAL,true));
+        JSONObject failed=PublicPersonalNotesAbsenceRecovery.object(actual.get("result").bytes);
+        boolean postModel=PublicPersonalNotesAbsenceRecovery.number(failed,"steps")==1;
+        requireTaskEntries(task,postModel);
+        if(postModel)collectDrainedOriginals(root.path,task,failed,actual);
         Map<String,byte[]> originals=new LinkedHashMap<String,byte[]>();for(Map.Entry<String,MobiMindPrivateFiles.Read> entry:actual.entrySet())originals.put(entry.getKey(),entry.getValue().bytes);
         int uid=android.os.Process.myUid(),boot=Settings.Global.getInt(context.getContentResolver(),Settings.Global.BOOT_COUNT,-1);
         JSONObject controller=RecoveryControllerIdentity.read(context,uid,SystemClock.elapsedRealtime()+PublicPersonalNotesAbsenceRecovery.LIMIT_MS);
@@ -135,10 +137,11 @@ final class PublicPersonalNotesRecoveryClient {
         actual.put("current_control",currentControl);
         PublicPersonalNotesAbsenceRecovery.Request request=PublicPersonalNotesAbsenceRecovery.request(originals,currentControl.bytes,controller,uid,
                 UUID.randomUUID().toString(),SystemClock.elapsedRealtime(),boot);
+        if(request.postModelDrained)requireDrainedGeneration(request);
         String command="CLASSPATH="+quote(apk.getPath())+" /system/bin/app_process / org.trillionnium.hepta.background.PublicPersonalNotesAbsenceMain --request "+quote(request.wire());
         // The complete command must also fit the unchanged root proc-census bound.
         if(command.getBytes(StandardCharsets.UTF_8).length>=60000)throw new IOException("备忘录独立缺席恢复命令超过完整进程核验上限");
-        check.check();for(MobiMindPrivateFiles.Read first:actual.values())first.unchangedPath();
+        check.check();requireTaskEntries(task,postModel);for(MobiMindPrivateFiles.Read first:actual.values())first.unchangedPath();
         final Process process=new ProcessBuilder("su","-c",command).redirectErrorStream(true).start();
         final Capture capture=new Capture(process.getInputStream());Thread reader=new Thread(capture,"hepta-personal-notes-recovery-read");reader.setDaemon(true);reader.start();
         boolean exited=false;
@@ -150,7 +153,7 @@ final class PublicPersonalNotesRecoveryClient {
             byte[] output=capture.bytes;JSONObject verified=PublicPersonalNotesAbsenceRecovery.validate(PublicPersonalNotesAbsenceRecovery.object(output),request,
                     SystemClock.elapsedRealtime(),Settings.Global.getInt(context.getContentResolver(),Settings.Global.BOOT_COUNT,-1));
             if(!PublicPersonalNotesAbsenceRecovery.same(controller,RecoveryControllerIdentity.read(context,uid,request.deadline)))throw new IOException("备忘录独立缺席恢复期间当前安装代码发生变化");
-            check.check();Receipt receipt=new Receipt(request,verified,output,command,SystemClock.elapsedRealtime(),actual);
+            check.check();requireTaskEntries(task,postModel);Receipt receipt=new Receipt(request,verified,output,command,SystemClock.elapsedRealtime(),actual);
             receipt.requireOriginals(true);request.requireFence(SystemClock.elapsedRealtime(),Settings.Global.getInt(context.getContentResolver(),Settings.Global.BOOT_COUNT,-1));
             return receipt;
         }catch(Exception error){
@@ -159,6 +162,60 @@ final class PublicPersonalNotesRecoveryClient {
             catch(Exception archiveFailure){error.addSuppressed(archiveFailure);}
             throw error;
         }finally{if(!exited)process.destroy();}
+    }
+    private static void requireTaskEntries(File task,boolean postModel)throws Exception{
+        String[] leaves=task.list();if(leaves==null)throw new IOException("备忘录独立缺席恢复的原任务目录不可读");
+        java.util.Set<String> singleStep=new java.util.HashSet<String>(Arrays.asList("step-01-before.json","step-01-budget-0.json",
+                "step-01-model-0.json","step-01-action.json","step-01-failed-after-diagnostic.json","fixed-intent-01-attempt.json"));
+        for(String name:leaves)if(name.matches("step-[0-9]+-.*")||name.startsWith("ime-submit-")||name.startsWith("fixed-intent-")
+                ||name.startsWith("native-app-")||name.startsWith("controller-completion-")){
+            if(!postModel||!singleStep.contains(name))throw new IOException("备忘录独立缺席恢复发现未覆盖的模型或业务步骤");
+        }
+    }
+    private static String id(JSONObject object,String key)throws Exception{
+        String value=PublicPersonalNotesAbsenceRecovery.string(object,key);
+        if(!value.matches("[0-9a-f]{32}"))throw new IOException("备忘录已退出模型的原件身份无效");return value;
+    }
+    private static void collectDrainedOriginals(File root,File task,JSONObject failed,Map<String,MobiMindPrivateFiles.Read> actual)throws Exception{
+        for(String[] item:new String[][]{{"step_model","step-01-model-0.json"},{"step_action","step-01-action.json"},{"fixed_intent_attempt","fixed-intent-01-attempt.json"}})
+            actual.put(item[0],MobiMindPrivateFiles.read(new File(task,item[1]),PublicPersonalNotesAbsenceRecovery.MAX_ORIGINAL,true));
+        JSONObject step=PublicPersonalNotesAbsenceRecovery.object(actual.get("step_model").bytes);
+        String run=id(step,"run_id"),generation=id(failed.getJSONObject("model_session"),"worker_generation");
+        if(run.equals(generation))throw new IOException("备忘录模型请求与工作进程目录重合");
+        File runs=existingDirectory(new File(root,"runs")),request=existingDirectory(new File(runs,run)),worker=existingDirectory(new File(runs,generation));
+        actual.put("model_request_receipt",MobiMindPrivateFiles.read(new File(request,"app-receipt.json"),PublicPersonalNotesAbsenceRecovery.MAX_ORIGINAL,true));
+        actual.put("model_session_receipt",MobiMindPrivateFiles.read(new File(worker,"app-session-receipt.json"),PublicPersonalNotesAbsenceRecovery.MAX_ORIGINAL,true));
+        actual.put("native_session_receipt",MobiMindPrivateFiles.read(new File(worker,"native-session-result.json"),PublicPersonalNotesAbsenceRecovery.MAX_ORIGINAL,true));
+        JSONObject session=PublicPersonalNotesAbsenceRecovery.object(actual.get("model_session_receipt").bytes),cleanup=session.getJSONObject("worker_generation_cleanup");
+        String nonce=id(cleanup,"cleanup_nonce");
+        File identity=new File(worker,"worker-generation.identity"),nativeReceipt=new File(worker,"generation-cleanup-"+nonce+".json");
+        // Receipt paths are compared with derived owned paths; they are never used
+        // as input paths and never widen the read-only recovery file set.
+        if(!identity.getPath().equals(PublicPersonalNotesAbsenceRecovery.string(cleanup,"identity_file"))
+                ||!nativeReceipt.getPath().equals(PublicPersonalNotesAbsenceRecovery.string(cleanup,"native_receipt_file")))
+            throw new IOException("备忘录模型退出原件不属于固定私有工作目录");
+        actual.put("generation_identity",MobiMindPrivateFiles.read(identity,WorkerGenerationProof.IDENTITY_LIMIT,true));
+        actual.put("generation_cleanup_receipt",MobiMindPrivateFiles.read(nativeReceipt,WorkerGenerationProof.RECEIPT_LIMIT,true));
+    }
+    static void requireDrainedGeneration(PublicPersonalNotesAbsenceRecovery.Request request)throws Exception{
+        if(!request.postModelDrained)throw new IOException("备忘录退出证明不属于已执行单步恢复");
+        JSONObject session=PublicPersonalNotesAbsenceRecovery.object(request.original("model_session_receipt")),g=session.getJSONObject("worker_generation_cleanup");
+        JSONObject nativeReceipt=PublicPersonalNotesAbsenceRecovery.object(request.original("generation_cleanup_receipt"));
+        WorkerGenerationProof.Expected expected=new WorkerGenerationProof.Expected(request.taskId,id(session,"worker_generation"),id(g,"scope_token"),
+                PublicPersonalNotesAbsenceRecovery.string(g,"boot_id"),request.ownerUid,
+                PublicPersonalNotesAbsenceRecovery.number(g,"app_pid"),PublicPersonalNotesAbsenceRecovery.number(g,"app_start_ticks"));
+        WorkerGenerationProof.Identity identity=WorkerGenerationProof.identity(request.original("generation_identity"),expected);
+        String nonce=id(g,"cleanup_nonce");
+        JSONObject verified=WorkerGenerationProof.bindCleanup(identity,nonce,
+                PublicPersonalNotesAbsenceRecovery.number(g,"submitted_monotonic_ns"),PublicPersonalNotesAbsenceRecovery.number(g,"deadline_monotonic_ns"),
+                PublicPersonalNotesAbsenceRecovery.number(session,"finisher_submitted_monotonic_ns"),PublicPersonalNotesAbsenceRecovery.number(session,"finisher_deadline_monotonic_ns"),
+                nativeReceipt,Boolean.TRUE.equals(g.get("helper_exit_observed")),Integer.valueOf((int)PublicPersonalNotesAbsenceRecovery.number(g,"helper_exit_code")),
+                !Boolean.FALSE.equals(g.get("helper_force_destroy_sent")));
+        if(!PublicPersonalNotesAbsenceRecovery.same(verified,g.getJSONObject("native_cleanup"))
+                ||WorkerGenerationProof.boundForceAttempts(identity,nonce,nativeReceipt)!=0
+                ||PublicPersonalNotesAbsenceRecovery.number(nativeReceipt,"term_attempts")!=0
+                ||PublicPersonalNotesAbsenceRecovery.number(nativeReceipt,"kill_attempts")!=0||nativeReceipt.getJSONArray("targets").length()!=0)
+            throw new IOException("备忘录原模型工作进程没有完整的无强制退出证明");
     }
     private static void recordFailedAttempt(Context context,PublicPersonalNotesAbsenceRecovery.Request request,Capture capture,
             Thread reader,Process process,boolean exited,String command,Exception error)throws Exception{

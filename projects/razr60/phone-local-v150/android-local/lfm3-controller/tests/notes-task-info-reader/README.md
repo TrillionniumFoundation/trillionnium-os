@@ -15,3 +15,14 @@ An optional `--actual-census /absolute/capture` mode accepts only the separately
 The production fix retains the generic null refusal. Notes reads a complete root/leaf census before and after the organizer root snapshot, requires the same exact task and Binder identity, validates the ordinary root is its sole leaf, and keeps installation, user, UID, component, display, cookie, time, and physical-fence checks. A global null response, absent or inconsistent child arrays, nested or foreign task, changed identity, or incomplete census remains a refusal. `RootTaskInfo.visible` and `TaskInfo.isVisible` retain their distinct meanings. This fix does not retire an existing quarantined broker or rewrite an old failed task result.
 
 The canonical runner owns registration of the default synthetic gate and checks the v2 provenance, exact fixture, unchanged inputs, the original case/assertion totals, and four actual successful compile/run stages. The README is documentation; it introduces no additional runtime authority or test threshold.
+
+Android 16 empty-activity compatibility adds a separate 14-case / 59-assertion
+receipt without changing the original 71 cases / 220 assertions. A coherent
+zero-activity root keeps its real UID, Intent, realActivity, token and leaf identity.
+Null base/top with top UID -1 and isRunning false does not prove task absence.
+The custody case retains that root as pending, then requires two complete later
+absence samples. Malformed tuples, active missing base, foreign identity and
+changed tokens remain refused. The diagnostic case preserves the exact rejected
+row and separates the first runtime refusal from the first cleanup refusal.
+These are synthetic framework tests; they do not recreate an unrecorded live
+TaskInfo sample or qualify phone cleanup.

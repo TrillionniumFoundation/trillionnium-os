@@ -9,7 +9,11 @@ the application cleanup authority.
 ## Product behavior
 
 The request derives its task, generation, owner, user 0 Notes UID and remembered
-task IDs from seven exact original records. It separately binds the current
+task IDs from seven exact original records for a pre-model failure. A separate versioned
+request accepts one drained `notes.create` attempt with an unknown effect, adding
+eight exact originals: model step, action step, consumed fixed-intent attempt,
+request/session/native-session receipts, worker generation identity and its native
+cleanup receipt. There is no wider model-cancellation or retry recovery branch. It separately binds the current
 blocked control-session record and the actual installed controller. There are no
 device, boot, PID, task, APK hash or maintenance-path pins in product sources.
 
@@ -24,7 +28,7 @@ hash is used, and no remembered task is excluded from the history comparison.
 
 The application accepts a private in-memory receipt only from its own completed
 checker process, with exit code 0, complete EOF, the same installed APK and a fresh
-12-second request. It durably archives the seven originals and the current
+12-second request. It durably archives all seven or fifteen originals and the current
 control snapshot before compare-and-swap removal of the exact active journal.
 The original task result and cleanup remain failed/unknown. This receipt means
 current absence; it does not mean normal broker release or business success.
@@ -46,9 +50,9 @@ python3 tests/personal-notes-absence/run_host.py \
   --json-jar /path/to/json-20240303.jar --output /new/output/path
 ```
 
-The runner compiles with `--release 8 -Xlint:all,-options -Werror`. It runs 44 pure
-policy cases / 48 assertions and 22 application client/lease cases / 192
-assertions. All original/task/controller values are authored synthetic values.
+The runner compiles with `--release 8 -Xlint:all,-options -Werror`. It retains 48 pure
+policy cases / 56 assertions and 22 application client/lease cases / 192
+assertions, and separately runs 33 post-model cases / 47 assertions. All original/task/controller values are authored synthetic values.
 The complete production BackgroundSession, private-files implementation and
 Notes client are compiled. Only the client's owned Process factory is replaced.
 Four service admission methods are extracted exactly from production source.
@@ -70,3 +74,21 @@ gate does not replace Binder/PackageManager execution or claim that Main has run
 on a device. A maintenance-only wrapper may pin candidate DEX and actual installed
 APK separately; it cannot create the application's opaque receipt or acknowledge
 an interrupted ordinary session.
+
+## One drained model request
+
+The extra branch binds the successful bootstrap and later failed create response
+separately, retaining all originally observed task identities. It cross-checks the
+consumed attempt and unknown action result, requires no pending workers, and binds
+the request output to the single action. A normal model close must include the
+App's observed exit, the native SDK close receipt, and the unchanged
+`WorkerGenerationProof` verification of the exact generation identity and cleanup
+bytes. No TERM/KILL attempts are accepted in this narrow branch. The original App
+PID is historical evidence and need not equal the new recovery UI's process PID.
+
+All extra file paths are derived from validated task/run/generation/nonce IDs.
+Receipt-supplied paths do not authorize arbitrary file reads. Every extra original
+is held and rechecked before sampling, durable commit and lease acceptance;
+additional steps, attempts or completion evidence are refused. The ordinary
+12-second double-absence check and the separate acknowledgement are unchanged.
+A model close does not establish that a dispatched unknown tool had no effect.

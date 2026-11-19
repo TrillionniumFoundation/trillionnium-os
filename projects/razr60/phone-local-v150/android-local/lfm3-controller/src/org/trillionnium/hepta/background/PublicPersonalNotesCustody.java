@@ -70,6 +70,15 @@ final class PublicPersonalNotesCustody {
     private static void need(boolean ok,String code){if(!ok)throw new IllegalStateException(code);}
     private static boolean pkg(String value){return value!=null&&(value.equals(PACKAGE)||value.startsWith(PACKAGE+"/"));}
     private static boolean nullablePkg(String value){return value==null||pkg(value);}
+    /** Android 16 excludes finishing activities from TaskInfo's base/top/count.
+     * This is a real, identity-bearing root, never an absent task or cleanup proof. */
+    static boolean emptyActivityLeaf(BackgroundOwnedSingleTask.Task task,int expectedUid){
+        return task!=null&&task.uid==expectedUid&&task.activities==0&&!task.running
+                &&task.topUid==-1&&task.base==null&&task.top==null
+                &&task.intentComponent!=null&&task.intentComponent.startsWith(PACKAGE+"/")
+                &&task.real!=null&&task.real.startsWith(PACKAGE+"/")
+                &&(task.orig==null||task.orig.startsWith(PACKAGE+"/"));
+    }
     private boolean targetHidden(String label){return label.contains(PACKAGE)||label.contains("A="+uid+":");}
     private static void requireNoNotes(ProfileTaskPolicy.Snapshot snapshot){
         for(ProfileTaskPolicy.Root root:snapshot.roots)need(!pkg(root.base)&&!pkg(root.top),"NOTES_ALREADY_HAS_LIVE_TASK");
@@ -120,9 +129,10 @@ final class PublicPersonalNotesCustody {
                 &&rows.size()<MAX_TASKS&&rows.put(task.id,task)==null,"NOTES_TASK_NOT_NEW_ON_OWN_DISPLAY");
         need(parent<0?task.parent<0:task.parent==parent,"NOTES_TASK_PARENT_CHANGED");
         if(node.children.isEmpty()){
-            need(task.uid==uid&&(task.topUid==uid||(task.activities==0&&task.topUid==-1))
+            need((task.uid==uid&&(task.topUid==uid||(task.activities==0&&task.topUid==-1))
                     &&pkg(task.intentComponent)&&pkg(task.base)&&pkg(task.real)
-                    &&nullablePkg(task.top)&&nullablePkg(task.orig),"NOTES_ACTUAL_LEAF_UID_OR_PACKAGE_UNKNOWN");
+                    &&nullablePkg(task.top)&&nullablePkg(task.orig))||emptyActivityLeaf(task,uid),
+                    "NOTES_ACTUAL_LEAF_UID_OR_PACKAGE_UNKNOWN");
             leaves.add(task.id);
         }else{
             need((task.uid==0||task.uid==uid)&&nullablePkg(task.intentComponent)&&nullablePkg(task.base)

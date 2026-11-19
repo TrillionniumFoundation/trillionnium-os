@@ -53,6 +53,7 @@ public final class BackgroundDisplayBroker {
     // Published before the watchdog starts; cancellation addresses only this owned read-only child.
     private final ProfileRecoveryBootCount publicBootCount=new ProfileRecoveryBootCount(SystemClock::elapsedRealtime);
     private volatile String bootReadRetirementFailure;
+    private final PublicPersonalNotesReader.FailureAudit publicNotesReadFailures=new PublicPersonalNotesReader.FailureAudit();
     private final Object dispatchGate = new Object();
     private final long started = SystemClock.elapsedRealtime();
     private final long expires;
@@ -740,7 +741,10 @@ public final class BackgroundDisplayBroker {
                     publicNotesCustody.observe(publicNotesReader.frame(),SystemClock.elapsedRealtime());
                 lastUnlockedCheck=SystemClock.elapsedRealtime();return;
             }catch(BrokerProtocol.Refusal refusal){throw refusal;}
-            catch(Exception unavailable){throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_POLICY_UNAVAILABLE");}
+            catch(Exception unavailable){
+                if(publicNotesCustody!=null)publicNotesReadFailures.runtime(unavailable,SystemClock.elapsedRealtime());
+                throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_POLICY_UNAVAILABLE");
+            }
         }
         KeyguardManager manager = keyguard;
         if (manager == null) throw new BrokerProtocol.Refusal("KEYGUARD_UNAVAILABLE");
@@ -1171,7 +1175,9 @@ public final class BackgroundDisplayBroker {
                     Thread.sleep(50);
                 }
                 throw new IOException("NOTES_CLEANUP_ABSENCE_DEADLINE");
-            }catch(Throwable error){quarantinePublicNotes(error.getMessage());}
+            }catch(Throwable error){
+                publicNotesReadFailures.cleanup(error,SystemClock.elapsedRealtime());quarantinePublicNotes(error.getMessage());
+            }
             finally{cleanupDone.countDown();}
         },"HeptaPublicNotesCleanup");cleanup.setDaemon(true);cleanup.start();
         }catch(Throwable scheduling){quarantinePublicNotes("NOTES_CLEANUP_WORKER_UNAVAILABLE");cleanupDone.countDown();}
@@ -1326,7 +1332,8 @@ public final class BackgroundDisplayBroker {
             if(taskLaunchPolicies.containsKey(r.requestId))value.put("task_launch_policy",taskLaunchPolicies.get(r.requestId));
         }
         if(ownedSingleTask!=null)value.put("owned_single_task",new JSONObject(ownedSingleTask.evidence()));
-        if(publicNotesCustody!=null)value.put("personal_notes_cleanup",new JSONObject(publicNotesCustody.evidence()));
+        if(publicNotesCustody!=null)value.put("personal_notes_cleanup",new JSONObject(publicNotesCustody.evidence()))
+                .put("personal_notes_task_info_diagnostics",new JSONObject(publicNotesReadFailures.evidence()));
         if(permissionControllerUi!=null)value.put("permission_controller_ui",new JSONObject(permissionControllerUi.evidence()));
         if(config.profileTarget!=null){
             ProfilePackages.Readback actual=profileReadback;
@@ -1369,7 +1376,8 @@ public final class BackgroundDisplayBroker {
             .put("profile_custody_retained",config.profileTarget!=null&&profileCustody.retain());
             if(config.publicOwnGroupScope!=null)terminal.put("display_scope_sha256",config.publicOwnGroupScope.sha256)
                     .put("public_scope_admission_retired",publicAdmissionRetired.get()).put("public_surface_detach",publicDetachEvidence());
-            if(publicNotesCustody!=null)terminal.put("personal_notes_cleanup",new JSONObject(publicNotesCustody.evidence()));
+            if(publicNotesCustody!=null)terminal.put("personal_notes_cleanup",new JSONObject(publicNotesCustody.evidence()))
+                    .put("personal_notes_task_info_diagnostics",new JSONObject(publicNotesReadFailures.evidence()));
             System.out.println(terminal); }
         catch (Throwable ignored) { System.err.println("terminal_receipt_unavailable"); }
     }

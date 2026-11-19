@@ -177,6 +177,88 @@ public final class NotesTaskInfoReaderHostTest {
         byte[] d=MessageDigest.getInstance("SHA-256").digest(b);StringBuilder s=new StringBuilder();
         for(byte v:d)s.append(String.format(Locale.ROOT,"%02x",v&255));return s.toString();
     }
+    static void emptyActivities(TaskInfo task){
+        task.numActivities=0;task.isRunning=false;task.baseActivity=null;
+        task.topActivity=null;task.topActivityInfo=null;
+    }
+    static void emptyActivities(){for(int p=0;p<3;p++)emptyActivities(e.task(p));}
+    static JSONObject emptyActivityCases()throws Exception{
+        int startCases=cases,startChecks=checks,startNames=names.size();
+        test("coherent Android16 empty activities retain actual root identity",()->{
+            emptyActivities();PublicPersonalNotesCustody.Frame f=e.frame();
+            yes(f.roots.size()==1&&f.global.allIds.contains(1464));
+            BackgroundOwnedSingleTask.Task t=f.roots.get(0).task;
+            yes(t.activities==0&&!t.running&&t.topUid==-1&&t.base==null&&t.top==null
+                    &&t.uid==10382&&COMP.equals(t.intentComponent)&&COMP.equals(t.real)
+                    &&t.token==e.task(0).token.asBinder());
+        });
+        test("empty root remains pending and needs two complete later absence samples",()->{
+            Env initial=new Env();initial.empty();PublicPersonalNotesCustody.Frame baseline=initial.frame();
+            PublicOwnGroupPhysicalFence.RecentCensus recents=PublicOwnGroupPhysicalFence.inspectRecents(PublicPhysicalAuditHostTest.recents(false));
+            PublicPersonalNotesCustody custody=new PublicPersonalNotesCustody("11111111-1111-4111-8111-111111111111",String.join("",Collections.nCopies(64,"a")),10382,baseline.global,recents);
+            custody.beforeCreate();custody.bindDisplay(205);custody.markLaunch();emptyActivities();
+            PublicPersonalNotesCustody.Frame f=e.frame();custody.observe(f,f.end);
+            yes(!custody.known()&&((List<?>)custody.evidence().get("actual_observed_tasks")).size()==1);
+            custody.retireAdmission();f=e.frame();custody.prepareRelease(f,recents,f.end);
+            custody.enterRelease();custody.releaseReturned();yes(!custody.known());
+            f=e.frame();custody.observeAbsence(f.global,recents,f,true,f.begin,f.end,f.end);
+            yes(!custody.known()&&((Number)custody.evidence().get("absence_reads")).intValue()==0);
+            f=e.frame();custody.observeAbsence(f.global,recents,f,true,f.begin,f.end,f.end);
+            yes(!custody.known()&&((Number)custody.evidence().get("pending_owned_reads")).intValue()==2);
+            e.empty();f=e.frame();custody.observeAbsence(f.global,recents,true,f.begin,f.end,f.end);yes(!custody.known());
+            f=e.frame();custody.observeAbsence(f.global,recents,true,f.begin,f.end,f.end);yes(custody.known()&&!custody.retain());
+            yes(initial.childrenCalls==0&&initial.mutations==0);
+        });
+        for(final String field:new String[]{"uid","activities","running","intent","real","orig","top","user","base"})
+            test("empty activity tuple refuses mismatched "+field,()->{
+                for(int phase=0;phase<3;phase++){
+                    TaskInfo task=e.task(phase);ActivityInfo info=task.topActivityInfo;ComponentName top=task.topActivity;emptyActivities(task);
+                    if("uid".equals(field))task.effectiveUid++;
+                    else if("activities".equals(field))task.numActivities=1;
+                    else if("running".equals(field))task.isRunning=true;
+                    else if("intent".equals(field))task.baseIntent.setComponent(null);
+                    else if("real".equals(field))task.realActivity=null;
+                    else if("orig".equals(field))task.origActivity=new ComponentName("com.other.app","com.other.app.Main");
+                    else if("top".equals(field)){task.topActivity=top;task.topActivityInfo=info;}
+                    else if("user".equals(field))task.userId=10;
+                    else if("base".equals(field))task.baseActivity=new ComponentName("com.other.app","com.other.app.Main");
+                }
+                refuses(null,()->e.frame());
+            });
+        test("active activity without base component remains refused",()->{
+            for(int p=0;p<3;p++)e.task(p).baseActivity=null;
+            refuses("NOTES_ROOT_UID_OR_COMPONENT_UNAVAILABLE",()->e.frame());
+        });
+        test("empty root token change between censuses remains refused",()->{
+            emptyActivities();e.task(1).token=new WindowContainerToken(new Binder());
+            refuses("NOTES_ROOT_TASKINFO_CHANGED",()->e.frame());
+        });
+        test("first runtime and cleanup diagnostics preserve exact rejected row independently",()->{
+            emptyActivities();for(int p=0;p<3;p++)e.task(p).effectiveUid++;
+            PublicPersonalNotesReader.TaskInfoReadFailure actual=null;
+            try{e.frame();}catch(PublicPersonalNotesReader.TaskInfoReadFailure failure){actual=failure;}
+            if(actual==null)throw new AssertionError("missing real TaskInfo refusal");
+            PublicPersonalNotesReader.FailureAudit audit=new PublicPersonalNotesReader.FailureAudit();
+            audit.runtime(actual,101);audit.runtime(new IOException("later runtime"),102);
+            audit.cleanup(new IOException("cleanup unavailable"),103);audit.cleanup(actual,104);
+            JSONObject evidence=new JSONObject(audit.evidence()),runtime=evidence.getJSONObject("first_runtime_failure");
+            JSONObject row=runtime.getJSONObject("actual_root_read_failure");
+            yes(row.getInt("effective_uid")==10383&&row.getInt("expected_uid")==10382&&row.getInt("task_id")==1464);
+            yes(row.has("base_activity")&&row.isNull("base_activity")&&row.has("top_activity")&&row.isNull("top_activity")
+                    &&row.getInt("num_activities")==0&&!row.getBoolean("is_running"));
+            yes(row.getString("stage").equals("before_all_roots")&&runtime.getLong("observed_elapsed_ms")==101
+                    &&runtime.getString("reason").equals("NOTES_ROOT_UID_OR_COMPONENT_UNAVAILABLE"));
+            JSONObject cleanup=evidence.getJSONObject("first_cleanup_failure");
+            yes(cleanup.getString("phase").equals("cleanup")&&cleanup.getLong("observed_elapsed_ms")==103
+                    &&cleanup.getString("reason").equals("cleanup unavailable")&&cleanup.isNull("actual_root_read_failure"));
+            yes(!evidence.getBoolean("diagnostics_grant_authority")&&!evidence.getBoolean("provides_cleanup_proof")
+                    &&!row.getBoolean("serialized_fields_grant_authority"));
+        });
+        return new JSONObject().put("schema","hepta.notes-empty-activity-host.v1").put("all_pass",true)
+                .put("cases",cases-startCases).put("assertions",checks-startChecks)
+                .put("case_names",new ArrayList<String>(names.subList(startNames,names.size())))
+                .put("framework_and_binder_fixtures_synthetic",true).put("phone_operations",0);
+    }
     public static void main(String[] args)throws Exception{
         if(args.length!=2||!("actual_archived_capture".equals(args[1])||"synthetic_derived_fixture".equals(args[1])))
             throw new IOException("exact input path and explicit provenance mode required");
@@ -267,8 +349,11 @@ public final class NotesTaskInfoReaderHostTest {
             f=e.frame();c.observeAbsence(f.global,recents,true,f.begin,f.end,f.end);yes(c.known()&&!c.retain());
             yes(initial.childrenCalls==0&&initial.mutations==0);
         });
+        int originalCases=cases,originalChecks=checks;List<String> originalNames=new ArrayList<String>(names);
+        JSONObject emptyActivity=emptyActivityCases();
         JSONObject result=new JSONObject().put("schema","hepta.notes-task-info-reader-host.v2").put("all_pass",true)
-                .put("cases",cases).put("assertions",checks).put("case_names",names)
+                .put("cases",originalCases).put("assertions",originalChecks).put("case_names",originalNames)
+                .put("empty_activity",emptyActivity)
                 .put("input_mode",args[1]).put("input_sha256",digest(raw)).put("archived_capture_replayed",actualCapture)
                 .put("actual_capture_sha256",actualCapture?RAW_SHA:JSONObject.NULL).put("reference_capture_sha256",RAW_SHA)
                 .put("input_values_rehydrated",true).put("synthetic_binder_tokens",true).put("framework_and_clock_fixtures_synthetic",true)
