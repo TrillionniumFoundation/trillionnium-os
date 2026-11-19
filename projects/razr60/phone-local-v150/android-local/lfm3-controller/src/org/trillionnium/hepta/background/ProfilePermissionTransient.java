@@ -84,6 +84,87 @@ public final class ProfilePermissionTransient {
                 &&Objects.equals(a.token,b.token)&&a.cookies.equals(b.cookies)&&Objects.equals(a.intentComponent,b.intentComponent)
                 &&Objects.equals(a.base,b.base)&&Objects.equals(a.top,b.top)&&Objects.equals(a.real,b.real)&&Objects.equals(a.orig,b.orig);
     }
+
+    /** A read may be retried only while its original live task capabilities remain identical.
+     * This signal is never a permission proof, a window, or cleanup authority. */
+    static final class ReadChanged extends Exception {
+        private static final long serialVersionUID=1L;
+        final BackgroundOwnedSingleTask.Task root,leaf;final String code;
+        private ReadChanged(BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,String code){
+            super(code);this.root=root;this.leaf=leaf;this.code=code;
+        }
+        void requireRoot(BackgroundOwnedSingleTask.Task current)throws Exception{
+            need(sameReadIdentity(root,current),"PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ");
+        }
+        void requireLeaf(BackgroundOwnedSingleTask.Task current)throws Exception{
+            need(sameReadIdentity(leaf,current),"PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ");
+        }
+        void requireAttempt(ReadChanged current)throws Exception{requireRoot(current.root);requireLeaf(current.leaf);}
+    }
+    static boolean sameReadIdentity(BackgroundOwnedSingleTask.Task a,BackgroundOwnedSingleTask.Task b){
+        return a!=null&&b!=null&&a.id>0&&a.token!=null&&b.token!=null
+                &&a.id==b.id&&a.display==b.display&&a.user==b.user&&a.parent==b.parent&&a.uid==b.uid
+                &&Objects.equals(a.token,b.token)&&a.cookies.equals(b.cookies)
+                &&Objects.equals(a.intentComponent,b.intentComponent)&&Objects.equals(a.base,b.base)
+                &&Objects.equals(a.real,b.real)&&Objects.equals(a.orig,b.orig);
+    }
+    private static boolean knownReadPresentation(ProfileTarget target,BackgroundOwnedSingleTask.Task task,int permissionUid){
+        return task!=null&&task.activities>0&&task.activities<=2048
+                &&((task.topUid==target.fullUid&&targetComponent(target,task.top))
+                    ||(task.topUid==permissionUid&&COMPONENT.equals(task.top)));
+    }
+    static void requireSameRead(ProfileTarget target,BackgroundOwnedSingleTask.Task root,
+            BackgroundOwnedSingleTask.Task leaf,BackgroundOwnedSingleTask.Task currentRoot,
+            BackgroundOwnedSingleTask.Task currentLeaf)throws Exception{
+        need(sameReadIdentity(root,currentRoot),"PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ");
+        need(sameReadIdentity(leaf,currentLeaf),"PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ");
+        boolean rootSame=sameTaskInfo(root,currentRoot),leafSame=sameTaskInfo(leaf,currentLeaf);
+        if(rootSame&&leafSame)return;
+        String code=rootSame?"PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ":"PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ";
+        need(target!=null&&knownReadPresentation(target,currentRoot,root.topUid)
+                &&knownReadPresentation(target,currentLeaf,root.topUid),code);
+        throw new ReadChanged(root,leaf,code);
+    }
+    /** Fixed-size, read-only mismatch diagnostics. Binder/cookie objects never leave the process. */
+    static Map<String,Object> readMismatch(String phase,long observed,int rootCount,int leafCount,
+            BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,
+            BackgroundOwnedSingleTask.Task currentRoot,BackgroundOwnedSingleTask.Task currentLeaf){
+        Map<String,Object> out=new LinkedHashMap<String,Object>();
+        out.put("schema","hepta.profile-permission-read-mismatch.v1");out.put("phase",phase);
+        out.put("observed_elapsed_ms",observed);out.put("root_count",rootCount);out.put("leaf_count",leafCount);
+        out.put("root",readDifference(root,currentRoot));out.put("leaf",readDifference(leaf,currentLeaf));
+        out.put("serialized_evidence_is_authority",false);out.put("allows_input_or_model_resumption",false);
+        return Collections.unmodifiableMap(out);
+    }
+    private static Map<String,Object> readDifference(BackgroundOwnedSingleTask.Task before,BackgroundOwnedSingleTask.Task after){
+        Map<String,Object> out=new LinkedHashMap<String,Object>();Map<String,Object> equal=new LinkedHashMap<String,Object>();
+        out.put("before",readSummary(before));out.put("after",readSummary(after));
+        if(before!=null&&after!=null){
+            equal.put("task_id",before.id==after.id);equal.put("display_id",before.display==after.display);
+            equal.put("user_id",before.user==after.user);equal.put("parent_task_id",before.parent==after.parent);
+            equal.put("full_uid",before.uid==after.uid);equal.put("top_activity_info_uid",before.topUid==after.topUid);
+            equal.put("activity_count",before.activities==after.activities);equal.put("running",before.running==after.running);
+            equal.put("visible",before.visible==after.visible);equal.put("actual_binder",Objects.equals(before.token,after.token));
+            equal.put("actual_cookies",before.cookies.equals(after.cookies));equal.put("intent",Objects.equals(before.intentComponent,after.intentComponent));
+            equal.put("base",Objects.equals(before.base,after.base));equal.put("top",Objects.equals(before.top,after.top));
+            equal.put("real",Objects.equals(before.real,after.real));equal.put("orig",Objects.equals(before.orig,after.orig));
+        }
+        out.put("equal_fields",Collections.unmodifiableMap(equal));
+        out.put("complete_identity_equal",sameReadIdentity(before,after));out.put("complete_taskinfo_equal",sameTaskInfo(before,after));
+        return Collections.unmodifiableMap(out);
+    }
+    private static Map<String,Object> readSummary(BackgroundOwnedSingleTask.Task task){
+        if(task==null)return null;Map<String,Object> out=new LinkedHashMap<String,Object>();
+        out.put("task_id",task.id);out.put("display_id",task.display);out.put("user_id",task.user);
+        out.put("parent_task_id",task.parent);out.put("full_uid",task.uid);out.put("top_activity_info_uid",task.topUid);
+        out.put("activity_count",task.activities);out.put("running",task.running);out.put("visible",task.visible);
+        out.put("actual_binder_present",task.token!=null);out.put("cookie_count",task.cookies.size());
+        out.put("intent",boundedReadText(task.intentComponent));out.put("base",boundedReadText(task.base));
+        out.put("top",boundedReadText(task.top));out.put("real",boundedReadText(task.real));out.put("orig",boundedReadText(task.orig));
+        return Collections.unmodifiableMap(out);
+    }
+    private static String boundedReadText(String value){return value==null?null:value.length()<=256?value:value.substring(0,256);}
+
     private static final class TaskRow {
         int id,user,display,parent,indent;String token,body;
         final List<Integer> children=new ArrayList<Integer>();

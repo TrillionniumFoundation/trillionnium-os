@@ -3,6 +3,7 @@ package org.trillionnium.hepta.local;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.graphics.Rect;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.trillionnium.hepta.background.FixedIntentTarget;
 import org.trillionnium.hepta.background.FixedIntentTools;
@@ -71,6 +72,80 @@ public final class TaskCompletionGateHostTest {
         test("final_window_change_is_recoverable_missing_evidence",()->{TaskCompletionGate g=gate();Frame e=launched(g);TaskCompletionGate.Check c=g.successClaim(2,id(2),e,false);check(!c.verified&&c.retryAllowed&&Boolean.FALSE.equals(c.evidence.get("final_observation_stable")),"changing final frame is not successful completion");});
         test("unknown_readonly_goal_requires_no_write",()->{String owner="读出当前页面的标题，不要点击或输入。";TaskCompletionGate g=new TaskCompletionGate(TASK,owner,TaskAuthorization.parse(owner));Frame f=initial();g.observed(f);check(!g.verified(f)&&Boolean.FALSE.equals(g.prompt(f).get("writes_required_for_unknown_or_read_only_goal")),"no universal write/effect prerequisite");check(!((List<?>)g.prompt(f).get("missing")).contains("model_bound_notes_create_with_owner_body_missing"),"unknown task cannot acquire a note-writing obligation");for(String key:Arrays.asList("notes_launch_observed","editor_body_observed","list_observed","same_list_item_reopened","web_query_dispatched"))check(!g.prompt(f).containsKey(key),"unknown goal has no irrelevant method stages: "+key);});
         test("web_prompt_contains_only_its_relevant_method_stage",()->{TaskCompletionGate g=new TaskCompletionGate(TASK,WEB,TaskAuthorization.parse(WEB));Map<String,Object> p=g.prompt(initial());check(p.containsKey("web_query_dispatched"),"web method stage remains visible");for(String key:Arrays.asList("notes_launch_observed","editor_body_observed","list_observed","same_list_item_reopened"))check(!p.containsKey(key),"web query has no note-writing stage: "+key);});
+    }
+    static Object completionBridge(String method,Class<?> type,Object value)throws Exception{
+        java.lang.reflect.Method bridge=LocalTaskController.class.getDeclaredMethod(method,type);bridge.setAccessible(true);
+        try{return bridge.invoke(null,value);}catch(java.lang.reflect.InvocationTargetException wrapped){
+            Throwable cause=wrapped.getCause();if(cause instanceof Exception)throw (Exception)cause;if(cause instanceof Error)throw (Error)cause;throw wrapped;
+        }
+    }
+    @SuppressWarnings("unchecked") static Map<String,Object> receiptObject(JSONObject value)throws Exception{return (Map<String,Object>)completionBridge("completionFixed",JSONObject.class,value);}
+    @SuppressWarnings("unchecked") static Map<String,Object> receiptMap(Map<?,?> value)throws Exception{return (Map<String,Object>)completionBridge("completionMap",Map.class,value);}
+    static void rejected(Case run,String message)throws Exception{
+        try{run.run();}catch(IllegalArgumentException|IllegalStateException expected){check(expected.getMessage().contains(message),"exact typed rejection: "+expected);return;}
+        throw new AssertionError("unsupported receipt accepted: "+message);
+    }
+    static JSONObject brokerArrays()throws Exception{
+        JSONArray tasks=new JSONArray();for(int task:Arrays.asList(41,42))tasks.put(new JSONObject().put("task_id",task).put("display_id",7).put("user_id",0).put("full_uid",10382).put("parent_task_id",-1).put("retirement",JSONObject.NULL));
+        return new JSONObject().put("public_task_location",new JSONObject().put("observed_owned_task_ids",new JSONArray().put(41).put(42)))
+                .put("personal_notes_cleanup",new JSONObject().put("actual_observed_tasks",tasks));
+    }
+    static void receiptCases()throws Exception{
+        test("completion_receipt_android_arrays_preserve_nullable_tasks_and_body",()->{
+            StringBuilder body=new StringBuilder();for(int i=0;i<40;i++)body.append("正文 ").append(i).append('\n');body.append("结束");
+            Map<String,Object> copied=receiptObject(new JSONObject().put("broker_response",brokerArrays()).put("body",body.toString()));
+            Map<?,?> broker=(Map<?,?>)copied.get("broker_response"),location=(Map<?,?>)broker.get("public_task_location"),cleanup=(Map<?,?>)broker.get("personal_notes_cleanup");
+            check(Arrays.asList(41,42).equals(location.get("observed_owned_task_ids")),"Android JSONArray task ids become ordered integer values");
+            List<?> tasks=(List<?>)cleanup.get("actual_observed_tasks");check(tasks.size()==2&&Integer.valueOf(42).equals(((Map<?,?>)tasks.get(1)).get("task_id")),"object array retains both task identities");
+            check(((Map<?,?>)tasks.get(0)).containsKey("retirement")&&((Map<?,?>)tasks.get(0)).get("retirement")==null,"JSONObject.NULL is retained as a present null field");
+            check(body.toString().equals(copied.get("body"))&&body.toString().split("\n",-1).length==41,"40 actual line feeds and owner text remain exact strings");
+        });
+        test("completion_receipt_mixed_map_list_recursion_copies_without_aliases",()->{
+            Map<String,Object> nested=new LinkedHashMap<String,Object>();nested.put("null",JSONObject.NULL);nested.put("integer",Long.valueOf(9));
+            JSONObject object=new JSONObject().put("value","before");JSONArray array=new JSONArray().put(object).put(JSONObject.NULL);
+            List<Object> list=new ArrayList<Object>(Arrays.<Object>asList(null,JSONObject.NULL,nested,array));Map<String,Object> raw=new LinkedHashMap<String,Object>();raw.put("rows",list);
+            Map<String,Object> copied=receiptMap(raw);List<?> rows=(List<?>)copied.get("rows");
+            check(rows.size()==4&&rows.get(0)==null&&rows.get(1)==null&&((Map<?,?>)rows.get(2)).get("null")==null,"Map and List members share null conversion");
+            nested.put("integer",Long.valueOf(10));object.put("value","after");array.put("later");list.clear();
+            check(rows.size()==4&&Long.valueOf(9).equals(((Map<?,?>)rows.get(2)).get("integer")),"source Map/List mutation does not change copied evidence");
+            List<?> inner=(List<?>)rows.get(3);check(inner.size()==2&&"before".equals(((Map<?,?>)inner.get(0)).get("value"))&&inner.get(1)==null,"nested JSONObject/JSONArray are copied recursively");
+        });
+        test("completion_receipt_empty_arrays_null_and_scalar_types_preserved",()->{
+            check(receiptObject(null)==null,"absent receipt remains absent");
+            Map<String,Object> copied=receiptObject(new JSONObject().put("empty",new JSONArray()).put("null",JSONObject.NULL).put("integer",Long.valueOf(7)).put("boolean",true).put("text",""));
+            check(((List<?>)copied.get("empty")).isEmpty()&&copied.containsKey("null")&&copied.get("null")==null,"empty array differs from explicit null");
+            check(copied.get("integer") instanceof Long&&Boolean.TRUE.equals(copied.get("boolean"))&&"".equals(copied.get("text")),"no scalar coercion or stringify fallback");
+        });
+        test("completion_receipt_nested_unknown_objects_and_nonlist_collections_rejected",()->{
+            rejected(()->receiptObject(new JSONObject().put("rows",new JSONArray().put(new Object()))),"completion receipt contains unsupported value");
+            for(Object bad:Arrays.<Object>asList(new Object(),Collections.singleton("not a List"),new int[]{1,2})){
+                Map<String,Object> raw=new LinkedHashMap<String,Object>();raw.put("rows",Arrays.asList(bad));rejected(()->receiptMap(raw),"completion receipt contains unsupported value");
+            }
+        });
+        test("completion_receipt_nested_nonstring_map_key_rejected",()->{
+            Map<Object,Object> bad=new LinkedHashMap<Object,Object>();bad.put(Integer.valueOf(1),"not a string key");Map<String,Object> raw=new LinkedHashMap<String,Object>();raw.put("rows",Arrays.<Object>asList(bad));
+            rejected(()->receiptMap(raw),"completion receipt key must be a string");
+        });
+        test("completion_receipt_normalization_preserves_downstream_numeric_boundaries",()->{
+            for(Number number:Arrays.<Number>asList(Double.NaN,Double.POSITIVE_INFINITY,Float.NEGATIVE_INFINITY)){
+                Map<String,Object> raw=new LinkedHashMap<String,Object>();raw.put("rows",Arrays.<Object>asList(number));Map<String,Object> copied=receiptMap(raw);
+                rejected(()->{java.lang.reflect.Method method=TaskCompletionGate.class.getDeclaredMethod("immutableMap",Map.class);method.setAccessible(true);try{method.invoke(null,copied);}catch(java.lang.reflect.InvocationTargetException wrapped){throw (RuntimeException)wrapped.getCause();}},"finite result number");
+                rejected(()->NativeAppEvidence.immutableMap(copied),"immutable native evidence scalar type");
+            }
+            Map<String,Object> fractional=new LinkedHashMap<String,Object>();fractional.put("rows",Arrays.<Object>asList(Double.valueOf(1.5)));Map<String,Object> copied=receiptMap(fractional);
+            rejected(()->NativeAppEvidence.immutableMap(copied),"immutable native evidence scalar type");
+        });
+        test("completion_receipt_arrays_allow_bound_launch_but_never_prove_save",()->{
+            TaskCompletionGate g=gate();Frame before=initial(),after=editor();ActionDecision a=action(before,"notes.create",BODY,null);JSONObject raw=new JSONObject(fixed(before,a,id(1))).put("broker_response",brokerArrays());
+            g.observed(before);g.action(1,id(1),a,true,true,false,before,after,receiptObject(raw));
+            check(Boolean.TRUE.equals(g.prompt(after).get("notes_launch_observed")),"complete original fixed Intent identity permits recording the real launch");
+            check(!g.verified(after),"arrays and editor body do not prove save/list/same-item reopen");
+        });
+        test("completion_receipt_arrays_cannot_repair_foreign_fixed_identity",()->{
+            TaskCompletionGate g=gate();Frame before=initial(),after=editor();ActionDecision a=action(before,"notes.create",BODY,null);JSONObject raw=new JSONObject(fixed(before,a,id(1))).put("task_id",id(99)).put("broker_response",brokerArrays());
+            g.observed(before);g.action(1,id(1),a,true,true,false,before,after,receiptObject(raw));
+            check(!Boolean.TRUE.equals(g.prompt(after).get("notes_launch_observed"))&&!g.verified(after),"normalization grants no task identity or completion authority");
+        });
     }
     static void installPackage(QualificationScopeHostTest.Env e,String tool)throws Exception{
         ActivityInfo a=FixedIntentIntegrationHostTest.install(e,tool,10382);PackageInfo p=new PackageInfo();p.packageName=a.packageName;p.version=1;p.applicationInfo=a.applicationInfo;
@@ -252,7 +327,7 @@ public final class TaskCompletionGateHostTest {
     }
     public static void main(String[] args)throws Exception{
         output=Paths.get(args[0]);Files.createDirectories(output);QualificationScopeHostTest.output=output;
-        pureCases();test("bridge_clears_whitespace_masked_truncated_child",()->bridgeCase());
+        pureCases();receiptCases();test("bridge_clears_whitespace_masked_truncated_child",()->bridgeCase());
         test("actual_controller_first_done_recovers_and_real_note_chain_completes",()->controllerCase("complete",OWNER,true,2));
         test("actual_controller_external_window_detour_recovers_only_after_same_item_click",()->controllerCase("detour",OWNER,true,5));
         test("actual_controller_draft_only_done_remains_partial_once",()->controllerCase("draft",DRAFT_OWNER,false,3));

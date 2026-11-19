@@ -17,6 +17,16 @@ public final class PublicTaskFenceHostTest {
     static ProfileTaskPolicy.Snapshot snapshot(ProfileTaskPolicy.Root... roots)throws Exception{return new ProfileTaskPolicy.Snapshot(Arrays.asList(roots));}
     static ProfileTaskPolicy.Snapshot initial()throws Exception{return snapshot(row(100,0,0,100,0),row(101,1,0,101,0));}
     static PublicOwnGroupTaskFence fence(int target)throws Exception{return new PublicOwnGroupTaskFence(initial(),target,GEN);}
+    static PublicOwnGroupTaskFence.LocationRoot locationRoot(int id,int display,int rootUser,int[] children,int[] childUsers,String[] names)throws Exception{
+        int[][] bounds=new int[children.length][];for(int i=0;i<children.length;i++)bounds[i]=new int[]{0,0,500,500};
+        return new PublicOwnGroupTaskFence.LocationRoot(id,display,rootUser,children,childUsers,names,bounds);
+    }
+    static PublicOwnGroupTaskFence.LocationRoot located(int id,int display,int rootUser,int child,int user)throws Exception{
+        return locationRoot(id,display,rootUser,new int[]{child},new int[]{user},new String[]{"com.example.app/com.example.app.Main"});
+    }
+    static PublicOwnGroupTaskFence.Census locations(PublicOwnGroupTaskFence.LocationRoot... roots)throws Exception{
+        return new PublicOwnGroupTaskFence.Census(Arrays.asList(roots));
+    }
     public static void main(String[] args)throws Exception{
         test("ordinary user can change physical tasks during profile work",()->{PublicOwnGroupTaskFence f=fence(10);
             f.observe(snapshot(row(102,0,0,102,0),row(101,1,0,101,0),row(200,7,0,300,10)),7,100);
@@ -46,6 +56,52 @@ public final class PublicTaskFenceHostTest {
             refuse(()->f.observe(initial(),7,200),"PUBLIC_TASK_FENCE_UNAVAILABLE");});
         test("owned display identity cannot change",()->{PublicOwnGroupTaskFence f=fence(0);f.observe(initial(),7,100);
             refuse(()->f.observe(initial(),8,200),"PUBLIC_TASK_FENCE_DISPLAY_CHANGED");});
+        test("location census retains active root and raw unknown empty anchor without granting App authority",()->{
+            PublicOwnGroupTaskFence f=fence(0);
+            f.observe(locations(located(100,0,0,100,0),located(101,1,0,101,0),
+                locationRoot(200,7,0,new int[]{201,202},new int[]{0,0},new String[]{"unknown","com.xiaomi.shop/com.xiaomi.shop2.activity.MainActivity"})),7,100);
+            yes(Arrays.asList(200,201,202).equals(f.evidence().get("observed_owned_task_ids")),"complete root/anchor/app locations retained");
+            yes(Boolean.FALSE.equals(f.evidence().get("task_mutation_authority"))&&!Boolean.TRUE.equals(f.evidence().get("recents_unchanged_claimed")),"location observation grants no identity/removal proof");
+        });
+        test("location census uses actual profile child user under a user zero container",()->{
+            PublicOwnGroupTaskFence f=fence(10);
+            f.observe(locations(located(100,0,0,100,0),located(101,1,0,101,0),located(200,7,0,300,10)),7,100);
+            yes(Arrays.asList(200,300).equals(f.evidence().get("observed_owned_task_ids")),"user zero root and user ten leaf both retained");
+            PublicOwnGroupTaskFence main=fence(10);
+            refuse(()->main.observe(locations(located(100,0,0,300,10),located(101,1,0,101,0)),7,100),"PUBLIC_TARGET_PROFILE_ON_PHYSICAL_DISPLAY");
+            PublicOwnGroupTaskFence foreign=fence(10);
+            refuse(()->foreign.observe(locations(located(100,0,0,100,0),located(101,1,0,101,0),located(200,9,0,300,10)),7,100),"PUBLIC_TARGET_PROFILE_ON_FOREIGN_DISPLAY");
+        });
+        test("location census refuses unknown users incomplete parallel arrays and bounds",()->{
+            refuse(()->locationRoot(200,7,0,new int[]{201},new int[]{-1},new String[]{"unknown"}),"PUBLIC_TASK_LOCATION_CHILD_IDENTITY_INVALID");
+            refuse(()->locationRoot(200,7,0,new int[]{201},null,new String[]{"unknown"}),"PUBLIC_TASK_LOCATION_ARRAYS_INCOMPLETE");
+            refuse(()->locationRoot(200,7,0,new int[]{201},new int[0],new String[]{"unknown"}),"PUBLIC_TASK_LOCATION_ARRAYS_INCOMPLETE");
+            refuse(()->locationRoot(200,7,0,new int[]{201},new int[]{0},new String[0]),"PUBLIC_TASK_LOCATION_ARRAYS_INCOMPLETE");
+            refuse(()->locationRoot(200,7,0,new int[]{201},new int[]{0},new String[]{null}),"PUBLIC_TASK_LOCATION_CHILD_NAME_UNAVAILABLE");
+            for(int[] bound:new int[][]{null,new int[]{0,0,1},new int[]{5,0,4,9},new int[]{0,0,500,32769}})
+                refuse(()->new PublicOwnGroupTaskFence.LocationRoot(200,7,0,new int[]{201},new int[]{0},new String[]{"unknown"},new int[][]{bound}),"PUBLIC_TASK_LOCATION_CHILD_BOUNDS_INVALID");
+            refuse(()->new PublicOwnGroupTaskFence.LocationRoot(200,7,0,new int[]{201},new int[]{0},new String[]{"unknown"},null),"PUBLIC_TASK_LOCATION_ARRAYS_INCOMPLETE");
+        });
+        test("location census refuses duplicate root or leaf identifiers and incomplete root lists",()->{
+            refuse(()->locations(located(200,7,0,201,0),located(200,7,0,202,0)),"PUBLIC_TASK_LOCATION_ROOT_DUPLICATE");
+            refuse(()->locations(located(200,7,0,201,0),located(202,7,0,201,0)),"PUBLIC_TASK_LOCATION_LEAF_DUPLICATE_OR_BOUND");
+            refuse(()->locationRoot(200,7,0,new int[]{201,201},new int[]{0,0},new String[]{"unknown","unknown"}),"PUBLIC_TASK_LOCATION_CHILD_IDENTITY_INVALID");
+            refuse(()->locations(),"PUBLIC_TASK_LOCATION_ROOT_QUERY_INCOMPLETE");
+            refuse(()->new PublicOwnGroupTaskFence.Census(null),"PUBLIC_TASK_LOCATION_ROOT_QUERY_INCOMPLETE");
+            refuse(()->locations((PublicOwnGroupTaskFence.LocationRoot)null),"PUBLIC_TASK_LOCATION_ROOT_DUPLICATE");
+        });
+        test("location census copies inputs and preserves relocation escape and irreversible refusal",()->{
+            int[] ids={201},users={0};String[] names={"unknown"};
+            PublicOwnGroupTaskFence.Census original=locations(located(100,0,0,100,0),located(101,1,0,101,0),locationRoot(200,7,0,ids,users,names));
+            ids[0]=100;users[0]=10;names[0]=null;PublicOwnGroupTaskFence f=fence(0);f.observe(original,7,100);
+            yes(Arrays.asList(200,201).equals(f.evidence().get("observed_owned_task_ids")),"later array mutation cannot replace recorded identity");
+            refuse(()->f.observe(locations(located(100,0,0,201,0),located(101,1,0,101,0)),7,200),"PUBLIC_OBSERVED_OWNED_TASK_ESCAPED");
+            refuse(()->f.observe(original,7,300),"PUBLIC_TASK_FENCE_UNAVAILABLE");
+            PublicOwnGroupTaskFence historical=fence(0);
+            refuse(()->historical.observe(locations(located(102,0,0,102,0),located(101,1,0,101,0),located(200,7,0,100,0)),7,100),"PUBLIC_PREEXISTING_TASK_MOVED_TO_OWNED_DISPLAY");
+            PublicOwnGroupTaskFence escaped=fence(0);escaped.observe(original,7,100);
+            refuse(()->escaped.observe(locations(located(100,0,0,100,0),located(101,1,0,101,0),located(200,9,0,201,0)),7,200),"PUBLIC_OBSERVED_OWNED_TASK_ESCAPED");
+        });
         System.out.println("{\"cases\":"+cases+",\"assertions\":"+assertions+",\"all_pass\":true,\"phone_contacted\":false,\"actual_framework_executed\":false}");
     }
 }

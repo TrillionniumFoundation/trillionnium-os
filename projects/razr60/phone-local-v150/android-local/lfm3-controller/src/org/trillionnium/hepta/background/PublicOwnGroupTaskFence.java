@@ -11,6 +11,54 @@ import java.util.Set;
  * and task IDs actually observed on this owned VD must never escape to them.
  * Prior tasks may not be moved into this session's new display. */
 final class PublicOwnGroupTaskFence {
+    /** Location-only census. Names retain their raw parallel-array shape but
+     * never become App identity or a capability to act on a task. */
+    private static final class Location {
+        final int id,display,user;
+        Location(int id,int display,int user){this.id=id;this.display=display;this.user=user;}
+    }
+    static final class LocationRoot {
+        final Location root;
+        final java.util.List<Location> children;
+        LocationRoot(int id,int display,int user,int[] ids,int[] users,String[] names,int[][] bounds)throws BrokerProtocol.Refusal{
+            need(id>0&&display>=0&&user>=0,"PUBLIC_TASK_LOCATION_ROOT_INVALID");
+            need(ids!=null&&users!=null&&names!=null&&bounds!=null&&ids.length==users.length
+                    &&ids.length==names.length&&ids.length==bounds.length&&ids.length<=ProfileTaskPolicy.MAX_LEAVES,
+                    "PUBLIC_TASK_LOCATION_ARRAYS_INCOMPLETE");
+            root=new Location(id,display,user);
+            java.util.List<Location> copy=new java.util.ArrayList<Location>();Set<Integer> unique=new java.util.HashSet<Integer>();
+            for(int i=0;i<ids.length;i++){
+                need(ids[i]>0&&users[i]>=0&&unique.add(ids[i]),"PUBLIC_TASK_LOCATION_CHILD_IDENTITY_INVALID");
+                need(names[i]!=null,"PUBLIC_TASK_LOCATION_CHILD_NAME_UNAVAILABLE");
+                int[] b=bounds[i];need(b!=null&&b.length==4&&b[2]>=b[0]&&b[3]>=b[1],"PUBLIC_TASK_LOCATION_CHILD_BOUNDS_INVALID");
+                for(int v:b)need(v>=-32768&&v<=32768,"PUBLIC_TASK_LOCATION_CHILD_BOUNDS_INVALID");
+                copy.add(new Location(ids[i],display,users[i]));
+            }
+            children=Collections.unmodifiableList(copy);
+        }
+    }
+    static final class Census {
+        final java.util.List<Location> locations;
+        Census(java.util.List<LocationRoot> roots)throws BrokerProtocol.Refusal{
+            need(roots!=null&&!roots.isEmpty()&&roots.size()<=ProfileTaskPolicy.MAX_ROOTS,"PUBLIC_TASK_LOCATION_ROOT_QUERY_INCOMPLETE");
+            java.util.List<Location> all=new java.util.ArrayList<Location>(),leaves=new java.util.ArrayList<Location>();
+            Set<Integer> rootIds=new java.util.HashSet<Integer>(),leafIds=new java.util.HashSet<Integer>();
+            for(LocationRoot row:roots){
+                need(row!=null&&rootIds.add(row.root.id),"PUBLIC_TASK_LOCATION_ROOT_DUPLICATE");all.add(row.root);
+                for(Location child:row.children){
+                    need(leafIds.add(child.id)&&leaves.size()<ProfileTaskPolicy.MAX_LEAVES,"PUBLIC_TASK_LOCATION_LEAF_DUPLICATE_OR_BOUND");
+                    leaves.add(child);
+                }
+            }
+            all.addAll(leaves);locations=Collections.unmodifiableList(all);
+        }
+    }
+    private static java.util.List<Location> locations(ProfileTaskPolicy.Snapshot actual){
+        java.util.List<Location> rows=new java.util.ArrayList<Location>();
+        for(ProfileTaskPolicy.Root root:actual.roots)rows.add(new Location(root.id,root.display,root.user));
+        for(ProfileTaskPolicy.Leaf leaf:actual.leaves.values())rows.add(new Location(leaf.id,leaf.display,leaf.user));
+        return rows;
+    }
     private final Set<Integer> initialIds,observedOnOwned=new LinkedHashSet<Integer>();
     private final int targetUser;
     private final String generation;
@@ -24,17 +72,19 @@ final class PublicOwnGroupTaskFence {
     }
     private static void need(boolean ok,String reason)throws BrokerProtocol.Refusal{if(!ok)throw new BrokerProtocol.Refusal(reason);}
     synchronized void observe(ProfileTaskPolicy.Snapshot actual,int ownedDisplay,long now)throws BrokerProtocol.Refusal{
+        observeLocations(actual==null?null:locations(actual),ownedDisplay,now);
+    }
+    synchronized void observe(Census actual,int ownedDisplay,long now)throws BrokerProtocol.Refusal{
+        observeLocations(actual==null?null:actual.locations,ownedDisplay,now);
+    }
+    private void observeLocations(java.util.List<Location> actual,int ownedDisplay,long now)throws BrokerProtocol.Refusal{
         try{
             need(!retired&&actual!=null&&ownedDisplay>1&&now>=0,"PUBLIC_TASK_FENCE_UNAVAILABLE");
             need(display<0||display==ownedDisplay,"PUBLIC_TASK_FENCE_DISPLAY_CHANGED");
             Set<Integer> currentOwned=new LinkedHashSet<Integer>();
-            for(ProfileTaskPolicy.Root root:actual.roots){
-                location(root.id,root.display,root.user,ownedDisplay);
-                if(root.display==ownedDisplay)currentOwned.add(root.id);
-            }
-            for(ProfileTaskPolicy.Leaf leaf:actual.leaves.values()){
-                location(leaf.id,leaf.display,leaf.user,ownedDisplay);
-                if(leaf.display==ownedDisplay)currentOwned.add(leaf.id);
+            for(Location row:actual){
+                location(row.id,row.display,row.user,ownedDisplay);
+                if(row.display==ownedDisplay)currentOwned.add(row.id);
             }
             Set<Integer> cumulative=new LinkedHashSet<Integer>(observedOnOwned);cumulative.addAll(currentOwned);
             need(cumulative.size()<=ProfileTaskPolicy.MAX_LEAVES*2,"PUBLIC_TASK_FENCE_BOUNDS");

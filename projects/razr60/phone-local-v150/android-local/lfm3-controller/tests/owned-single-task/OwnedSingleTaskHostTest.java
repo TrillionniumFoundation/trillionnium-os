@@ -124,6 +124,41 @@ public final class OwnedSingleTaskHostTest {
         +"    userId=0 effectiveUid=u0a485 mCallingPackage="+pkg+"\n    Activities=[]\n"
         +"    taskId="+id+" rootTaskId="+id+"\n";}
 
+    private static BrokerPolicyFixture publicFixture(Mock p,BackgroundOwnedSingleTask owned)throws Exception{
+        String other="example.other/example.other.Main";
+        BrokerPolicyFixture.RootInfo main=new BrokerPolicyFixture.RootInfo(10,0,new int[]{10},new String[]{other},other,1,true);
+        BrokerPolicyFixture.RootInfo cover=new BrokerPolicyFixture.RootInfo(11,1,new int[]{11},new String[]{other},other,1,true);
+        BrokerPolicyFixture f=new BrokerPolicyFixture(main,cover);f.ownedSingleTask=owned;
+        BrokerPolicyFixture.RootInfo active=new BrokerPolicyFixture.RootInfo(p.outer.id,7,new int[]{p.anchor.id,p.app.id},
+                new String[]{"unknown",BackgroundOwnedSingleTask.COMPONENT},BackgroundOwnedSingleTask.COMPONENT,1,true);
+        f.activityTasks.set(main,cover,active);f.launched.add(BackgroundOwnedSingleTask.PACKAGE);return f;
+    }
+    private static void publicFenceCases()throws Exception{
+        test("actual_public_policy_active_root_and_proved_anchor_reaches_complete_location_fence",()->{
+            Mock p=new Mock();BackgroundOwnedSingleTask s=started(p);BrokerPolicyFixture f=publicFixture(p,s);
+            check(BackgroundOwnedSingleTask.PACKAGE.equals(f.visibleTop()),"original broker snapshot proves only its held empty anchor");
+            try{BackgroundTaskOrganizer.profileSnapshot(f.activityTasks);throw new AssertionError("strict profile parser relaxed");}
+            catch(ProfileTaskPolicy.Refusal expected){check("PROFILE_CHILD_COMPONENT_UNKNOWN".equals(expected.code),"original profile name contract unchanged");}
+            f.policy();check(f.publicTaskFence.evidence().get("observed_owned_task_ids").equals(Arrays.asList(p.outer.id,p.anchor.id,p.app.id)),"complete public location census reaches real fence");
+            check(Boolean.FALSE.equals(f.publicTaskFence.evidence().get("retired"))&&Boolean.FALSE.equals(s.evidence().get("new_leaf_ownership_verified")),"location guard does not invent App leaf ownership");
+            check(s.observe(),"separate retained token/cookie/UID check still required");s.retire();check(s.absent(),"original exact owned cleanup succeeds");
+        });
+        test("actual_public_policy_rejects_unknown_real_child_user_without_copying_root_user",()->{
+            Mock p=new Mock();BackgroundOwnedSingleTask s=started(p);BrokerPolicyFixture f=publicFixture(p,s);
+            BrokerPolicyFixture.RootInfo r=(BrokerPolicyFixture.RootInfo)f.activityTasks.rows.get(2);
+            r.childTaskUserIds=null;brokerRejected("PUBLIC_SCOPE_POLICY_UNAVAILABLE",f::policy);
+            r.childTaskUserIds=new int[]{0,-1};brokerRejected("PUBLIC_TASK_LOCATION_CHILD_IDENTITY_INVALID",f::policy);
+            check(f.publicTaskFence.evidence().get("observed_owned_task_ids").equals(Collections.emptyList()),"invalid census never enters fence");
+            s.retire();check(s.absent(),"read refusal does not erase exact cleanup ownership");
+        });
+        test("actual_public_policy_location_census_cannot_replace_owned_anchor_identity_proof",()->{
+            Mock p=new Mock();BackgroundOwnedSingleTask s=started(p);BrokerPolicyFixture f=publicFixture(p,s);
+            f.ownedSingleTask=null;brokerRejected("TASK_COMPONENT_UNRESOLVED",f::policy);
+            f.ownedSingleTask=s;p.anchor.cookies.clear();brokerRejected("PUBLIC_SCOPE_POLICY_UNAVAILABLE",f::policy);
+            check(f.publicTaskFence.evidence().get("observed_owned_task_ids").equals(Collections.emptyList()),"unproved anchor fails before location observation");
+        });
+    }
+
     public static void main(String[] args)throws Exception{
         Path fixtures=Paths.get(args[0]),out=Paths.get(args[1]);
         fixtureRecents=new String(Files.readAllBytes(fixtures.resolve("recents-shape.txt")),StandardCharsets.UTF_8);
@@ -218,6 +253,7 @@ public final class OwnedSingleTaskHostTest {
         test("actual_snapshot_proof_has_no_guard_callback",()->{Mock p=new Mock();BackgroundOwnedSingleTask s=observed(p);int guards=p.guards;p.guardFails=true;check(BackgroundOwnedSingleTask.PACKAGE.equals(snapshot(p,s).top(7)),"fresh read does not re-enter snapshot location guard");check(p.guards==guards,"no guard callback from anchor proof");});
         test("actual_snapshot_main_display_package_guard_preserved",()->{Mock p=new Mock();BackgroundOwnedSingleTask s=observed(p);OwnedTaskSnapshotProjection.RootInfo main=new OwnedTaskSnapshotProjection.RootInfo(10,0,new int[]{10},new String[]{BackgroundOwnedSingleTask.COMPONENT},BackgroundOwnedSingleTask.COMPONENT,1,true);brokerRejected("APP_ALREADY_ON_MAIN_DISPLAY",()->new OwnedTaskSnapshotProjection(s,snapshotRoot(p),main).requireNoOtherDisplay(BackgroundOwnedSingleTask.PACKAGE,7));});
         test("actual_snapshot_old_empty_root_contract_preserved",()->{OwnedTaskSnapshotProjection.RootInfo empty=new OwnedTaskSnapshotProjection.RootInfo(10,7,new int[]{10},new String[]{"unknown"},null,0,false);check(new OwnedTaskSnapshotProjection(null,empty).top(7)==null,"original fully empty container predicate unchanged");});
+        publicFenceCases();
         JSONObject result=new JSONObject().put("schema","hepta.owned-single-task-host.v1").put("cases",names.size())
             .put("assertions",assertions).put("case_names",new JSONArray(names)).put("all_pass",true)
             .put("framework_io_synthetic",true).put("android_capability_verified",false)

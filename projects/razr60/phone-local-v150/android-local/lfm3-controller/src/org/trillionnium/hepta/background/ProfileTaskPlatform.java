@@ -16,6 +16,7 @@ final class ProfileTaskPlatform implements ProfileOwnedTask.Platform {
     private final BackgroundTaskOrganizer.Check active;
     private final LongSupplier deadline;
     private volatile ProfilePackages.Readback last;
+    private volatile java.util.Map<String,Object> firstPermissionReadMismatch=java.util.Collections.emptyMap();
     ProfileTaskPlatform(Object activityTasks,ActivityOptions options,int display,ProfilePackages packages,
             ProfileTarget expected,BackgroundTaskOrganizer.Check active,LongSupplier deadline)throws Exception {
         this.activityTasks=activityTasks;this.packages=packages;this.expected=expected;
@@ -66,23 +67,38 @@ final class ProfileTaskPlatform implements ProfileOwnedTask.Platform {
         long started=SystemClock.elapsedRealtime();
         ProfileTaskPolicy.need(started<deadline.getAsLong(),"PROFILE_PERMISSION_PROOF_DEADLINE");recheck(false);
         ProfilePermissionTransient.Authority before=packages.permissionController(expected.profile.userId,deadline.getAsLong());
-        requireSamePermissionPair(root,leaf);
+        requireSamePermissionPair(root,leaf,"before_activity_dump");
         BackgroundTaskOrganizer.profileSnapshot(activityTasks).requireOnlyOwned(expected,root.display,root.id,leaf.id);
         String chain=organizer.activitiesDump();
         ProfilePermissionTransient.Authority after=packages.permissionController(expected.profile.userId,deadline.getAsLong());
         ProfileTaskPolicy.need(before.same(after),"PROFILE_PERMISSION_SYSTEM_IDENTITY_CHANGED");
-        requireSamePermissionPair(root,leaf);recheck(false);
+        requireSamePermissionPair(root,leaf,"after_activity_dump");recheck(false);
         BackgroundTaskOrganizer.profileSnapshot(activityTasks).requireOnlyOwned(expected,root.display,root.id,leaf.id);
         ProfileTaskPolicy.need(SystemClock.elapsedRealtime()<deadline.getAsLong(),"PROFILE_PERMISSION_PROOF_DEADLINE");
         return ProfilePermissionTransient.verify(chain,expected,root,leaf,after,started,SystemClock.elapsedRealtime());
     }
-    private void requireSamePermissionPair(BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf)throws Exception{
+    @Override public java.util.Map<String,Object> permissionReadMismatchEvidence(){return firstPermissionReadMismatch;}
+    private synchronized void recordPermissionMismatch(String phase,List<BackgroundOwnedSingleTask.Task> roots,
+            List<BackgroundOwnedSingleTask.Task> leaves,BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf){
+        if(!firstPermissionReadMismatch.isEmpty())return;
+        try{firstPermissionReadMismatch=ProfilePermissionTransient.readMismatch(phase,SystemClock.elapsedRealtime(),
+                roots==null?-1:roots.size(),leaves==null?-1:leaves.size(),root,leaf,
+                roots!=null&&roots.size()==1?roots.get(0):null,leaves!=null&&leaves.size()==1?leaves.get(0):null);}
+        catch(RuntimeException ignored){/* Diagnostics cannot change the original refusal or create authority. */}
+    }
+    private void requireSamePermissionPair(BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf,
+            String phase)throws Exception{
         List<BackgroundOwnedSingleTask.Task> roots=organizer.roots();
-        ProfileTaskPolicy.need(roots!=null&&roots.size()==1&&ProfilePermissionTransient.sameTaskInfo(root,roots.get(0)),
-                "PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ");
+        BackgroundOwnedSingleTask.Task currentRoot=roots!=null&&roots.size()==1?roots.get(0):null;
+        if(!ProfilePermissionTransient.sameReadIdentity(root,currentRoot)){
+            recordPermissionMismatch(phase,roots,null,root,leaf);
+            throw new ProfileTaskPolicy.Refusal("PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ");
+        }
         List<BackgroundOwnedSingleTask.Task> leaves=organizer.children(root.token);
-        ProfileTaskPolicy.need(leaves!=null&&leaves.size()==1&&ProfilePermissionTransient.sameTaskInfo(leaf,leaves.get(0)),
-                "PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ");
+        BackgroundOwnedSingleTask.Task currentLeaf=leaves!=null&&leaves.size()==1?leaves.get(0):null;
+        if(!ProfilePermissionTransient.sameTaskInfo(root,currentRoot)||!ProfilePermissionTransient.sameTaskInfo(leaf,currentLeaf))
+            recordPermissionMismatch(phase,roots,leaves,root,leaf);
+        ProfilePermissionTransient.requireSameRead(expected,root,leaf,currentRoot,currentLeaf);
     }
     @Override public void createRoot(Object cookie)throws Exception{organizer.createRoot(cookie);}
     @Override public void bindRoot(Object token,Object cookie)throws Exception{organizer.bindProfileRoot(token,cookie);}

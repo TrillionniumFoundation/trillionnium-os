@@ -755,7 +755,7 @@ public final class BackgroundDisplayBroker {
                 // fresh policy reads too; user activity in other apps stays free.
                 if(config.profileTarget==null&&displayId>1)verifyLaunchedLocations(snapshot());
                 PublicOwnGroupTaskFence taskFence=publicTaskFence;
-                if(taskFence!=null&&displayId>1)taskFence.observe(BackgroundTaskOrganizer.profileSnapshot(activityTasks),displayId,SystemClock.elapsedRealtime());
+                if(taskFence!=null&&displayId>1)taskFence.observe(BackgroundTaskOrganizer.publicTaskLocations(activityTasks),displayId,SystemClock.elapsedRealtime());
                 if(publicNotesCustody!=null&&publicNotesReader!=null)
                     publicNotesCustody.observe(publicNotesReader.frame(),SystemClock.elapsedRealtime());
                 lastUnlockedCheck=SystemClock.elapsedRealtime();return;
@@ -1407,6 +1407,8 @@ public final class BackgroundDisplayBroker {
                             new JSONObject(profileOwnedTask.lastLeafValidation()))
                     .put("profile_first_root_refusal",profileOwnedTask==null?JSONObject.NULL:
                             new JSONObject(profileOwnedTask.firstRootRefusal()))
+                    .put("profile_permission_first_read_mismatch",profileOwnedTask==null?JSONObject.NULL:
+                            new JSONObject(profileOwnedTask.firstPermissionReadMismatch()))
                     .put("profile_personal_task_audit",profilePersonalAudit==null?JSONObject.NULL:new JSONObject(profilePersonalAudit))
                     .put("profile_cleanup_known",Boolean.TRUE.equals(cleanup.get("cleanup_known")))
                     .put("profile_custody_retained",closing.get()&&profileCustody.retain());
@@ -1433,6 +1435,8 @@ public final class BackgroundDisplayBroker {
                     new JSONObject(profileOwnedTask.lastLeafValidation()))
             .put("profile_first_root_refusal",profileOwnedTask==null?JSONObject.NULL:
                     new JSONObject(profileOwnedTask.firstRootRefusal()))
+            .put("profile_permission_first_read_mismatch",profileOwnedTask==null?JSONObject.NULL:
+                    new JSONObject(profileOwnedTask.firstPermissionReadMismatch()))
             .put("profile_custody_retained",config.profileTarget!=null&&profileCustody.retain());
             if(config.publicOwnGroupScope!=null)terminal.put("display_scope_sha256",config.publicOwnGroupScope.sha256)
                     .put("public_scope_admission_retired",publicAdmissionRetired.get()).put("public_surface_detach",publicDetachEvidence())

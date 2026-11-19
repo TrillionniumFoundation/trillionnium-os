@@ -155,6 +155,35 @@ final class BackgroundTaskOrganizer implements BackgroundOwnedSingleTask.Platfor
         return new ProfileTaskPolicy.Snapshot(out);
     }
 
+    /** Complete task locations for the observational public-scope fence only.
+     * App names are not interpreted here. The broker's package snapshot and
+     * retained-token/profile ownership checks remain separate effect gates. */
+    static PublicOwnGroupTaskFence.Census publicTaskLocations(Object activityTasks)throws Exception{
+        Object raw=Class.forName("android.app.IActivityTaskManager").getMethod("getAllRootTaskInfos").invoke(activityTasks);
+        return publicTaskLocationRows(raw);
+    }
+    private static PublicOwnGroupTaskFence.Census publicTaskLocationRows(Object raw)throws Exception{
+        if(!(raw instanceof List)||((List<?>)raw).size()>ProfileTaskPolicy.MAX_ROOTS)
+            throw new IOException("PUBLIC_TASK_LOCATION_ROOT_QUERY_INCOMPLETE");
+        List<PublicOwnGroupTaskFence.LocationRoot> out=new ArrayList<PublicOwnGroupTaskFence.LocationRoot>();
+        for(Object row:(List<?>)raw){
+            if(row==null)throw new IOException("PUBLIC_TASK_LOCATION_ROOT_QUERY_INCOMPLETE");
+            Object ids=field(row,"childTaskIds"),users=field(row,"childTaskUserIds");
+            Object names=field(row,"childTaskNames"),bounds=field(row,"childTaskBounds");
+            if(!(ids instanceof int[])||!(users instanceof int[])||!(names instanceof String[])
+                    ||!(bounds instanceof android.graphics.Rect[]))throw new IOException("PUBLIC_TASK_LOCATION_CHILD_ARRAYS_UNAVAILABLE");
+            android.graphics.Rect[] rectangles=(android.graphics.Rect[])bounds;int[][] geometry=new int[rectangles.length][];
+            for(int i=0;i<rectangles.length;i++){
+                android.graphics.Rect r=rectangles[i];
+                if(r==null)throw new IOException("PUBLIC_TASK_LOCATION_CHILD_BOUNDS_UNAVAILABLE");
+                geometry[i]=new int[]{r.left,r.top,r.right,r.bottom};
+            }
+            out.add(new PublicOwnGroupTaskFence.LocationRoot(integer(row,"taskId"),integer(row,"displayId"),integer(row,"userId"),
+                    (int[])ids,(int[])users,(String[])names,geometry));
+        }
+        return new PublicOwnGroupTaskFence.Census(out);
+    }
+
     /** Read-only Notes census: complete global child arrays and real TaskInfo fields
      * from this same ATM response. Existing organizer roots()/children()/rows()
      * contracts, including null refusal, are unchanged. */

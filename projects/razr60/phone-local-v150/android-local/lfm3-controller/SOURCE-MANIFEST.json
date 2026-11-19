@@ -1,18 +1,18 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "8fc364015644c59e1f5e356e7e8d914785736bd1",
-  "base_manifest_sha256": "cea6be3532416e730e4883ce50cbf9b49892249220a144e6a909309f565f7bb3",
-  "candidate_status": "postmodel_notes_runtime_recovery_candidate_not_compiled_or_deployed",
+  "base_head": "c529e021556a0648d9aebf0011d7cd984c1ece8c",
+  "base_manifest_sha256": "ce4bae0075fc1bfaaf3cd082479f9dd350303a51bf61de7197d9ae44f565cb68",
+  "candidate_status": "typed_completion_task_location_profile_sampling_candidate_not_compiled_or_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 191,
   "production_build_inputs_count": 363,
-  "production_input_map_sha256": "a2c7f72b12ec8d2c367194048f2526882dd3479f6ad5e4941d299281c9713497",
+  "production_input_map_sha256": "b884ba2817feb0149ca0622c73dc758f6b93290096d866ebdfc73b5fdcd1bd4e",
   "complete_source_files": 2246,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Stabilize owned Notes TaskInfo sampling, bind the exact released broker cleanup receipt, and permit formal App-owned recovery of an independently absent post-model Notes generation while preserving all failure originals and requiring explicit clear, acknowledgment, and fresh ordinary idle.",
+  "scope": "Normalize structured local completion receipts recursively without changing proof rules, and observe complete typed task locations independently of App identity while retaining the existing owned-anchor, package, profile, relocation, escape, and cleanup guards. Resample only typed identity-stable profile init/state reads within their original deadline, preserve complete permission proof equality, and retain a bounded first-mismatch diagnostic.",
   "files": [
     {
       "path": ".gitignore",
@@ -6156,8 +6156,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "bytes": 101191,
-      "sha256": "b2f1177585930f0ccd2e5d2770e69f2c8d21eea5b5005ec5f31289a068262064"
+      "bytes": 101575,
+      "sha256": "b079273a10e986233fc25fbbb6267c5a1b963fd13d175e9ee3110c0d33781cb3"
     },
     {
       "path": "src/org/trillionnium/hepta/background/BackgroundOwnedSingleTask.java",
@@ -6171,8 +6171,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/BackgroundTaskOrganizer.java",
-      "bytes": 27612,
-      "sha256": "97761262f44a23dba4479110169acbf1ba5176973f571bc119b8e27bfb9d5339"
+      "bytes": 29736,
+      "sha256": "70eeb8e550dc77638687d5fa224fc2cd014f20991a1df94a232685244d9904ec"
     },
     {
       "path": "src/org/trillionnium/hepta/background/BrokerProtocol.java",
@@ -6221,8 +6221,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
-      "bytes": 43505,
-      "sha256": "bb0baa793ab1ea5d2c1ccf60b88414efe3a34f57d8508cfd16b4c0745056bbcd"
+      "bytes": 45506,
+      "sha256": "8a73b3ef8e5df3702a56433aeb2ec93b5888bb148b8aae7be57b9f51985e4d5a"
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfilePackages.java",
@@ -6236,8 +6236,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfilePermissionTransient.java",
-      "bytes": 18221,
-      "sha256": "f4898906fa4e588ea7d300afc669f25329bf3a96ba2aab9fc72f95a4e367ae93"
+      "bytes": 24744,
+      "sha256": "87cf5de7b171a82a1ba0cb614eaf32193b6192048a882713e007b6c6b6dd03ce"
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfilePostlaunchRecovery.java",
@@ -6276,8 +6276,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfileTaskPlatform.java",
-      "bytes": 6540,
-      "sha256": "807a1463115e8e79c39164631031ac3b7fbf325340fefeebd4401b84a3004fcc"
+      "bytes": 7953,
+      "sha256": "48ee97facded47ecd943b2baf75fb938d5759693732138092c0b22434ad78353"
     },
     {
       "path": "src/org/trillionnium/hepta/background/ProfileTaskPolicy.java",
@@ -6321,8 +6321,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupTaskFence.java",
-      "bytes": 3874,
-      "sha256": "9a6feef77e7395a5c873255df79a4962e55684be594e8bef998ec09049280bdd"
+      "bytes": 7201,
+      "sha256": "35c3e86088e11c389eac7493e8e130cf6fa71e21ad83795ef062b9a4f1b7d1cf"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPermissionControllerUi.java",
@@ -6526,8 +6526,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 179393,
-      "sha256": "64120a69e109263c47694287a148a6d60fd2ae3e8edb6e60effd6b7350a03873"
+      "bytes": 179787,
+      "sha256": "23b4c8fd5d0c1ad3d93f743f2866e2a1070bcca4441c12f59b4104336e5228ab"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -7581,8 +7581,8 @@
     },
     {
       "path": "tests/completion/TaskCompletionGateHostTest.java",
-      "bytes": 31779,
-      "sha256": "a6a93a12cef3775d4115372e49e53064341064c4f880f7444e4634dc3bdf630f"
+      "bytes": 40280,
+      "sha256": "ef66b44b024c04e12796510806c079738f49bc39e11a49e86fd09dc4282a9044"
     },
     {
       "path": "tests/completion/fixtures/RESULT.json",
@@ -9001,8 +9001,8 @@
     },
     {
       "path": "tests/owned-single-task/OwnedSingleTaskHostTest.java",
-      "bytes": 30204,
-      "sha256": "5312fbeff115681aa552be95ce48f3f4df2355401393721b0039752b455d2990"
+      "bytes": 33782,
+      "sha256": "2b27d3d1ab1532fca66f607a1b2af26281bb29a74cb67890883793f71284c61d"
     },
     {
       "path": "tests/owned-single-task/fixtures/PROVENANCE.json",
@@ -9021,8 +9021,8 @@
     },
     {
       "path": "tests/owned-single-task/run_host.py",
-      "bytes": 14946,
-      "sha256": "951b8fcbf1e2a7ab454f3ee1c0a084b61989843ea7a06fbc26e1357c9483e6dc"
+      "bytes": 21547,
+      "sha256": "a407730d559dff1410d8d224f9406f930b2fa43dfdd25dff640d7573dd7da68a"
     },
     {
       "path": "tests/owned-worker-cancellation/NativeCancellationPipeHostTest.java",
@@ -9231,8 +9231,8 @@
     },
     {
       "path": "tests/profile-permission-transient/ProfileStateSettleHostTest.java",
-      "bytes": 21105,
-      "sha256": "def0b550864c8abaff472de0ad2275d900ff620ebe23538c52ddbdcfe7db066b"
+      "bytes": 35486,
+      "sha256": "f1a5060afee2cf24a78abb237a5e175988ccc3a0192478cf25ce401087d20d0a"
     },
     {
       "path": "tests/profile-permission-transient/README.md",
@@ -9246,8 +9246,8 @@
     },
     {
       "path": "tests/profile-permission-transient/run_host.py",
-      "bytes": 10369,
-      "sha256": "81132ea4261d864280d47db3593c8bd644414a9f74b89efeb78a3279cf9b460a"
+      "bytes": 14300,
+      "sha256": "722f10b69f02dd6a335b3f9fff25de2bb1bb671b84ef1f0467322b3a61e4a34a"
     },
     {
       "path": "tests/profile-permission-ui/ProfilePermissionUiLifecycleHostTest.java",
@@ -9456,8 +9456,8 @@
     },
     {
       "path": "tests/public-own-group-policy/PublicTaskFenceHostTest.java",
-      "bytes": 5104,
-      "sha256": "54b47f2b4a01e271a5c71df5b5b1f37820b8cb65b0b6c3e7ca99835c1b398e7f"
+      "bytes": 10974,
+      "sha256": "a5122e89414c3b3901fd2488f43b4f7d23b7579faa7a5c31be2cf3f0c1657773"
     },
     {
       "path": "tests/public-own-group-policy/ServiceScopeHostTest.java",

@@ -1175,11 +1175,7 @@ public final class LocalTaskController implements AutoCloseable {
     private static java.util.Map<String,Object> completionFixed(JSONObject object)throws Exception{
         if(object==null)return null;java.util.Map<String,Object> value=new java.util.LinkedHashMap<String,Object>();
         java.util.Iterator<String> keys=object.keys();while(keys.hasNext()){
-            String key=keys.next();Object item=object.get(key);
-            if(item==JSONObject.NULL)value.put(key,null);else if(item instanceof JSONObject)value.put(key,completionFixed((JSONObject)item));
-            else if(item instanceof java.util.Map<?,?>)value.put(key,completionMap((java.util.Map<?,?>)item));
-            else if(item instanceof String||item instanceof Number||item instanceof Boolean)value.put(key,item);
-            else throw new IllegalStateException("completion receipt contains unsupported value");
+            String key=keys.next();value.put(key,completionValue(object.get(key)));
         }
         return value;
     }
@@ -1187,12 +1183,28 @@ public final class LocalTaskController implements AutoCloseable {
         java.util.Map<String,Object> result=new java.util.LinkedHashMap<String,Object>();
         for(java.util.Map.Entry<?,?> entry:raw.entrySet()){
             if(!(entry.getKey() instanceof String))throw new IllegalStateException("completion receipt key must be a string");
-            Object v=entry.getValue();if(v==JSONObject.NULL||v==null)v=null;
-            else if(v instanceof JSONObject)v=completionFixed((JSONObject)v);else if(v instanceof java.util.Map<?,?>)v=completionMap((java.util.Map<?,?>)v);
-            else if(!(v instanceof String||v instanceof Number||v instanceof Boolean))throw new IllegalStateException("completion receipt value unsupported");
-            result.put((String)entry.getKey(),v);
+            result.put((String)entry.getKey(),completionValue(entry.getValue()));
         }
         return result;
+    }
+    /** Android JSONArray is not Iterable. Copy each present value without turning
+     * missing entries, unknown objects or receipt text into completion evidence. */
+    private static Object completionValue(Object value)throws Exception{
+        if(value==null||value==JSONObject.NULL)return null;
+        if(value instanceof JSONObject)return completionFixed((JSONObject)value);
+        if(value instanceof java.util.Map<?,?>)return completionMap((java.util.Map<?,?>)value);
+        if(value instanceof JSONArray){
+            JSONArray array=(JSONArray)value;java.util.List<Object> copied=new java.util.ArrayList<Object>();
+            for(int i=0;i<array.length();i++)copied.add(completionValue(array.get(i)));
+            return copied;
+        }
+        if(value instanceof java.util.List<?>){
+            java.util.List<Object> copied=new java.util.ArrayList<Object>();
+            for(Object item:(java.util.List<?>)value)copied.add(completionValue(item));
+            return copied;
+        }
+        if(value instanceof String||value instanceof Number||value instanceof Boolean)return value;
+        throw new IllegalStateException("completion receipt contains unsupported value");
     }
     private static final class ModelAnswer {final String text,runId;ModelAnswer(String text,String runId){this.text=text;this.runId=runId;}}
     private ModelAnswer awaitModel(String prompt,DecisionGrammar grammar,long taskDeadline,

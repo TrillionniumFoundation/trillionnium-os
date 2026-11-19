@@ -31,6 +31,7 @@ public final class ProfileOwnedTask {
         void removeLeaf(Object token)throws Exception;
         boolean deleteRoot(Object token)throws Exception;
         void pause()throws Exception;
+        default Map<String,Object> permissionReadMismatchEvidence(){return Collections.emptyMap();}
         default ProfilePermissionTransient.Proof permissionTransient(BackgroundOwnedSingleTask.Task root,
                 BackgroundOwnedSingleTask.Task leaf)throws Exception{return null;}
     }
@@ -106,7 +107,7 @@ public final class ProfileOwnedTask {
         need(startAccepted&&!retiring,"PROFILE_TASK_NOT_ACTIVE");platform.guard();actual(true);
         need(platform.now()<deadline,"PROFILE_PERMISSION_READ_DEADLINE");
         String result;
-        try{result=observeTreeSample(true)==null?"WAITING":"APP_READY";}
+        try{result=observeStateSample(true,deadline,"PROFILE_PERMISSION_READ_DEADLINE")==null?"WAITING":"APP_READY";}
         catch(VerifiedPermissionPending pending){result="PERMISSION_PENDING";}
         platform.guard();need(platform.now()<deadline,"PROFILE_PERMISSION_READ_DEADLINE");return result;
     }
@@ -122,7 +123,7 @@ public final class ProfileOwnedTask {
             actual(true);
             need(platform.now()<deadline,permissionPending?"PROFILE_PERMISSION_SETUP_REQUIRED":"PROFILE_STATE_READ_DEADLINE");
             try{
-                BackgroundOwnedSingleTask.Task current=observeTreeSample(true);
+                BackgroundOwnedSingleTask.Task current=observeStateSample(true,deadline,"PROFILE_STATE_READ_DEADLINE");
                 platform.guard();
                 need(platform.now()<deadline,"PROFILE_STATE_READ_DEADLINE");
                 return current!=null;
@@ -308,6 +309,8 @@ public final class ProfileOwnedTask {
     public Map<String,Object> lastLeafValidation(){return lastLeafValidation;}
     /** First rejected root sample only. It neither claims a task nor changes any admission rule. */
     public Map<String,Object> firstRootRefusal(){return firstRootRefusal;}
+    /** First bounded platform sampling mismatch; it never grants task or input authority. */
+    public Map<String,Object> firstPermissionReadMismatch(){return platform.permissionReadMismatchEvidence();}
     public synchronized Map<String,Object> cleanupEvidence(){
         Map<String,Object> out=new LinkedHashMap<String,Object>();
         out.put("schema","hepta.profile-task-cleanup.v1");out.put("generation",generation);out.put("display_id",display);
@@ -340,6 +343,7 @@ public final class ProfileOwnedTask {
         out.put("personal_task_audit",personalAudit);
         out.put("last_leaf_validation",lastLeafValidation);
         out.put("permission_transient",permissionEvidence);
+        out.put("permission_first_read_mismatch",firstPermissionReadMismatch());
         if(publicHistory!=null)out.put("public_foreign_recent_history",publicHistory.evidence());
         out.put("cleanup",cleanupEvidence());return Collections.unmodifiableMap(out);
     }
@@ -364,16 +368,38 @@ public final class ProfileOwnedTask {
         try{return observeTreeSample(visible);}
         catch(VerifiedPermissionPending pending){throw new ProfileTaskPolicy.Refusal("PROFILE_PERMISSION_SETUP_REQUIRED");}
     }
+    /** Retry only a typed, identity-stable presentation change while reading init/state.
+     * Every retry re-reads the complete graph. The first live pair stays pinned even
+     * before the first leaf claim; ordinary window, permission input and cleanup do not retry. */
+    private BackgroundOwnedSingleTask.Task observeStateSample(boolean visible,long deadline,String deadlineCode)throws Exception{
+        ProfilePermissionTransient.ReadChanged pinned=null;
+        for(int attempt=0;attempt<3;attempt++){
+            try{return observeTreeSample(visible,pinned);}
+            catch(ProfilePermissionTransient.ReadChanged changed){
+                if(pinned==null)pinned=changed;else pinned.requireAttempt(changed);
+                need(attempt<2,changed.code);
+                platform.guard();long now=platform.now();
+                need(now<deadline&&deadline-now>20,deadlineCode);platform.pause();
+                platform.guard();actual(true);need(platform.now()<deadline,deadlineCode);
+            }
+        }
+        throw new AssertionError("bounded state sampling exhausted");
+    }
     private BackgroundOwnedSingleTask.Task observeTreeSample(boolean visible)throws Exception{
+        return observeTreeSample(visible,null);
+    }
+    private BackgroundOwnedSingleTask.Task observeTreeSample(boolean visible,ProfilePermissionTransient.ReadChanged pinned)throws Exception{
         ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(personal);
         List<BackgroundOwnedSingleTask.Task> roots=checked(platform.roots());
         need(roots.size()==1,"PROFILE_DISPLAY_ROOT_CHANGED");
+        if(pinned!=null)pinned.requireRoot(roots.get(0));
         if(ProfilePermissionTransient.COMPONENT.equals(roots.get(0).top)){
             // A verified permission transient can retain ownership, never a business window.
             requireRootIdentity(roots.get(0));
             List<BackgroundOwnedSingleTask.Task> permissionChildren=checked(platform.children(root.token));
             need(permissionChildren.size()==1,"PROFILE_FOREIGN_CHILD_TASK");
             BackgroundOwnedSingleTask.Task candidate=permissionChildren.get(0);
+            if(pinned!=null)pinned.requireLeaf(candidate);
             ProfilePermissionTransient.Proof permission=permissionForOwnedPair(roots.get(0),candidate,global);
             requireRootActivity(permission!=null,"permission_root_without_verified_leaf",roots.get(0),candidate);
             if(leaf==null){leaf=candidate;leafTokenId=UUID.randomUUID().toString();}
@@ -386,11 +412,14 @@ public final class ProfileOwnedTask {
         List<BackgroundOwnedSingleTask.Task> children=checked(platform.children(root.token));
         need(children.size()<=1,"PROFILE_FOREIGN_CHILD_TASK");
         if(children.isEmpty()){
+            if(pinned!=null)pinned.requireLeaf(null);
             need(leaf==null,"PROFILE_OWNED_LEAF_DISAPPEARED");
             global.requireOnlyOwned(target,display,root.id,-1);
             if(publicHistory!=null)requireRecentEmpty(readRecents());return null;
         }
-        BackgroundOwnedSingleTask.Task candidate=children.get(0);requireLeaf(candidate,global);
+        BackgroundOwnedSingleTask.Task candidate=children.get(0);
+        if(pinned!=null)pinned.requireLeaf(candidate);
+        requireLeaf(candidate,global);
         if(leaf==null){leaf=candidate;leafTokenId=UUID.randomUUID().toString();}
         else need(sameTask(leaf,candidate),"PROFILE_LEAF_TOKEN_CHANGED");
         global.requireOnlyOwned(target,display,root.id,candidate.id);

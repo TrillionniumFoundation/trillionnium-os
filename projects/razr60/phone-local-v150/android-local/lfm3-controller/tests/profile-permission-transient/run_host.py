@@ -11,6 +11,8 @@ SYNTHETIC_SHA = '7f8adcb158486f74a1ebe342e54902b9fc7550ed7b0dd7bf11b36d1d97ab63f
 ACTUAL_SHA = '6e945458e4af25724f189ff477ebb4ab19a58099762d3d6827c3d42728c4d2fb'
 
 
+ORIGINAL_PERMISSION_PAIR = "    private void requireSamePermissionPair(BackgroundOwnedSingleTask.Task root,BackgroundOwnedSingleTask.Task leaf)throws Exception{\n        List<BackgroundOwnedSingleTask.Task> roots=organizer.roots();\n        ProfileTaskPolicy.need(roots!=null&&roots.size()==1&&ProfilePermissionTransient.sameTaskInfo(root,roots.get(0)),\n                \"PROFILE_PERMISSION_ROOT_CHANGED_DURING_READ\");\n        List<BackgroundOwnedSingleTask.Task> leaves=organizer.children(root.token);\n        ProfileTaskPolicy.need(leaves!=null&&leaves.size()==1&&ProfilePermissionTransient.sameTaskInfo(leaf,leaves.get(0)),\n                \"PROFILE_PERMISSION_LEAF_CHANGED_DURING_READ\");\n    }\n"
+
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -36,7 +38,8 @@ def main():
               here / 'ProfilePermissionTransientHostTest.java', here / 'ProfileStateSettleHostTest.java']
     broker = background / 'BackgroundDisplayBroker.java'
     session = source / 'src/org/trillionnium/hepta/local/BackgroundSession.java'
-    tracked = files + [Path(__file__).resolve(), fixture, here / 'README.md', broker, session]
+    platform = background / 'ProfileTaskPlatform.java'
+    tracked = files + [Path(__file__).resolve(), fixture, here / 'README.md', broker, session, platform]
     result = {'schema': 'hepta.profile-permission-transient-canonical-host.v1',
               'all_pass': False, 'phone_contacted': False, 'android_build': False,
               'android_adapters_compiled': False, 'java_release': 8,
@@ -104,6 +107,47 @@ def main():
                 raise RuntimeError('Explicit private actual fixture pin differs')
             result['private_actual_fixture'] = {'bytes': 91980, 'sha256': ACTUAL_SHA,
                                                 'kind': 'actual_saved_bytes', 'copied_into_source': False}
+        platform_text = platform.read_text()
+        start = '    @Override public java.util.Map<String,Object> permissionReadMismatchEvidence()'
+        end = '    @Override public void createRoot'
+        if platform_text.count(start) != 1 or platform_text.count(end) != 1:
+            raise RuntimeError('Exact permission pair adapter extraction boundary changed')
+        pair = platform_text[platform_text.index(start):platform_text.index(end)]
+        def adapter(name, body, current):
+            prefix = '''package org.trillionnium.hepta.background;
+import java.util.*;
+/** Only framework rows and time below are synthetic; the complete platform pair method follows. */
+'''
+            if current:
+                prefix += 'interface PermissionPairReadDiagnosticPort {Map<String,Object> permissionReadMismatchEvidence();}\n'
+            prefix += 'final class '+name+(' implements PermissionPairReadDiagnosticPort' if current else '')+' {\n'
+            prefix += '''
+    static final class SystemClock {static long elapsedRealtime(){return 1000;}}
+    static final class Rows {
+        List<BackgroundOwnedSingleTask.Task> rootRows,leafRows;int childrenCalls;
+        Rows(List<BackgroundOwnedSingleTask.Task> r,List<BackgroundOwnedSingleTask.Task> l){rootRows=r;leafRows=l;}
+        List<BackgroundOwnedSingleTask.Task> roots(){return rootRows;}
+        List<BackgroundOwnedSingleTask.Task> children(Object token){childrenCalls++;return leafRows;}
+    }
+    final Rows organizer;final ProfileTarget expected=ProfilePermissionTransientHostTest.target();
+    private volatile Map<String,Object> firstPermissionReadMismatch=Collections.emptyMap();
+'''
+            prefix += '    '+name+'(List<BackgroundOwnedSingleTask.Task> r,List<BackgroundOwnedSingleTask.Task> l){organizer=new Rows(r,l);}\n'
+            prefix += '    void read(BackgroundOwnedSingleTask.Task r,BackgroundOwnedSingleTask.Task l,String phase)throws Exception{requireSamePermissionPair(r,l'+(',phase' if current else '')+');}\n'
+            return prefix+body+'}\n'
+        current_adapter=output/'PermissionPairReadHostAdapter.java'
+        original_adapter=output/'OriginalPermissionPairReadHostAdapter.java'
+        current_adapter.write_text(adapter('PermissionPairReadHostAdapter',pair,True))
+        original_adapter.write_text(adapter('OriginalPermissionPairReadHostAdapter',ORIGINAL_PERMISSION_PAIR,False))
+        files += [current_adapter,original_adapter]
+        result['permission_pair_adapter'] = {
+            'complete_current_method_and_diagnostic_body_sha256': hashlib.sha256(pair.encode()).hexdigest(),
+            'original_method_sha256': hashlib.sha256(ORIGINAL_PERMISSION_PAIR.encode()).hexdigest(),
+            'original_platform_head': 'c529e021556a0648d9aebf0011d7cd984c1ece8c',
+            'original_platform_sha256': '807a1463115e8e79c39164631031ac3b7fbf325340fefeebd4401b84a3004fcc',
+            'current_adapter_sha256': sha(current_adapter), 'original_adapter_sha256': sha(original_adapter),
+            'framework_and_clock_are_explicit_synthetic_ports': True,
+            'actual_phone_first_pair_values_available': False, 'phone_operations': 0}
         classes = output / 'classes'
         run('compile', [str(args.java_home / 'bin/javac'), '--release', '8', '-encoding', 'UTF-8',
                         '-Xlint:all,-options', '-Werror', '-proc:none', '-d', str(classes)]
@@ -138,8 +182,8 @@ def main():
         settled = summaries[0]
         names = settled.get('case_names')
         if not (settled.get('schema') == 'hepta.profile-state-settle-host-tests.v1'
-                and settled.get('passed') is True and settled.get('cases') == 21
-                and type(names) is list and len(names) == 21 and len(set(names)) == 21
+                and settled.get('passed') is True and settled.get('cases') == 29
+                and type(names) is list and len(names) == 29 and len(set(names)) == 29
                 and type(settled.get('assertions')) is int and settled['assertions'] > 0
                 and settled.get('fixture_sha256') == SYNTHETIC_SHA
                 and settled.get('real_coordinator_executed') is True
