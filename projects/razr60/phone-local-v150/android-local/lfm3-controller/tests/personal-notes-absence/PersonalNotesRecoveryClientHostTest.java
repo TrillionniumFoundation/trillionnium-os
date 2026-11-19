@@ -39,11 +39,12 @@ public final class PersonalNotesRecoveryClientHostTest {
     private static final class Env implements AutoCloseable {
         final Path dir,task,journal;final Context context;final BackgroundSession session;
         final Map<Path,byte[]> originalFiles=new LinkedHashMap<Path,byte[]>();
-        Env()throws Exception{
+        Env()throws Exception{this(fixture);}
+        Env(org.trillionnium.hepta.background.PersonalNotesAbsenceHostTest.Fixture values)throws Exception{
             dir=Files.createTempDirectory("hepta-public-recovery-host-").toRealPath();context=new Context(dir.toFile());
-            JSONObject old=new JSONObject(new String(fixture.inputs.get("journal"),StandardCharsets.UTF_8));
-            JSONObject owner=new JSONObject(new String(fixture.inputs.get("owner"),StandardCharsets.UTF_8));
-            SystemClock.now=fixture.created;
+            JSONObject old=new JSONObject(new String(values.inputs.get("journal"),StandardCharsets.UTF_8));
+            JSONObject owner=new JSONObject(new String(values.inputs.get("owner"),StandardCharsets.UTF_8));
+            SystemClock.now=values.created;
             String instruction=owner.getString("instruction"),pkg="com.motorola.stylus";
             BackgroundTaskTarget chosen=BackgroundTaskTarget.resolveExplicitSelection(instruction,pkg,Collections.singleton(pkg));
             session=BackgroundSession.experimentalPublicOwnGroup(context,TASK,instruction,new BackgroundSession.Selection(chosen,false,true),new QualificationScopeConfig.FilesRoot(context));
@@ -53,13 +54,13 @@ public final class PersonalNotesRecoveryClientHostTest {
             PublicOwnGroupPolicy.Scope scope=PublicOwnGroupPolicy.Scope.fromWire(old.getString("public_own_group_scope_wire"));field(session,"publicOwnGroupScope",scope);
             Field key=BackgroundSession.class.getDeclaredField("publicScopeOwner");key.setAccessible(true);Object ownerKey=key.get(session);
             PublicOwnGroupPolicy.LiveLease lease=new PublicOwnGroupPolicy.LiveLease(ownerKey,scope);lease.retire(ownerKey);field(session,"publicScopeLease",lease);
-            field(session,"retired",true);field(session,"spawnAttempted",true);field(session,"bootstrapDispatched",true);field(session,"displayId",fixture.display);field(session,"brokerExitObserved",false);field(session,"state","CLEANUP_UNKNOWN");
+            field(session,"retired",true);field(session,"spawnAttempted",true);field(session,"bootstrapDispatched",new JSONObject(new String(values.inputs.get("bootstrap"),StandardCharsets.UTF_8)).getBoolean("bootstrap_dispatched"));field(session,"displayId",values.display);field(session,"brokerExitObserved",false);field(session,"state","CLEANUP_UNKNOWN");
             MobiMindPrivateFiles.directory(dir.resolve("control-tasks").toFile(),true);task=dir.resolve("control-tasks").resolve(TASK);MobiMindPrivateFiles.directory(task.toFile(),true);
-            journal=dir.resolve(BackgroundSession.JOURNAL);MobiMindPrivateFiles.writeNew(journal.toFile(),fixture.inputs.get("journal"));
-            MobiMindPrivateFiles.writeNew(dir.resolve("control-session.json").toFile(),fixture.control.toString().getBytes(StandardCharsets.UTF_8));
+            journal=dir.resolve(BackgroundSession.JOURNAL);MobiMindPrivateFiles.writeNew(journal.toFile(),values.inputs.get("journal"));
+            MobiMindPrivateFiles.writeNew(dir.resolve("control-session.json").toFile(),values.control.toString().getBytes(StandardCharsets.UTF_8));
             for(String[] pair:new String[][]{{"owner","owner.json"},{"bootstrap","background-bootstrap.json"},{"cleanup","background-cleanup.json"},{"result","result.json"},{"broker_receipt","background-broker-"+GEN+".json"},{"broker_output","background-broker-"+GEN+".bin"}}){
-                Path out=task.resolve(pair[1]);byte[] b=fixture.inputs.get(pair[0]);MobiMindPrivateFiles.writeNew(out.toFile(),b);originalFiles.put(out,b);}
-            SystemClock.now=fixture.now;
+                Path out=task.resolve(pair[1]);byte[] b=values.inputs.get(pair[0]);MobiMindPrivateFiles.writeNew(out.toFile(),b);originalFiles.put(out,b);}
+            SystemClock.now=values.now;
         }
         void originalsUnchanged()throws Exception{for(Map.Entry<Path,byte[]> entry:originalFiles.entrySet())need(Arrays.equals(entry.getValue(),Files.readAllBytes(entry.getKey())));}
         long commits()throws Exception{try(java.util.stream.Stream<Path> stream=Files.list(task)){return stream.filter(p->p.getFileName().toString().matches("background-personal-notes-absence-[0-9a-f-]+\\.json")).count();}}
@@ -169,6 +170,32 @@ public final class PersonalNotesRecoveryClientHostTest {
         test("ttl_before_expiry_retains_existing_close_path",()->{try(Env e=new Env()){
             SystemClock.now=e.session.expiresElapsed-1;BackgroundSession.Cleanup c=BackgroundSession.reconcile(e.context,idle());
             need(!c.known&&FakePersonalNotesRecoveryProcess.calls==0&&LocalSocket.connections>0&&Files.exists(e.journal));e.originalsUnchanged();
+        }});
+        test("prelaunch_create_failure_uses_opaque_notes_receipt_and_preserves_zero_launch",()->{try(Env e=new Env(new org.trillionnium.hepta.background.PersonalNotesAbsenceHostTest.Fixture().prelaunch())){
+            need(e.session.personalNotesRecoveryEligible());BackgroundSession.Cleanup c=BackgroundSession.reconcile(e.context,idle());
+            need(c.known&&c.personalNotesRecovery!=null&&c.prelaunchRecovery==null&&c.postlaunchRecovery==null&&c.publicProfileRecovery==null);
+            need(FakePersonalNotesRecoveryProcess.calls==1&&FakePersonalNotesRecoveryProcess.lastRequest.recordedTaskIds.isEmpty()&&!FakePersonalNotesRecoveryProcess.lastRequest.postModelDrained&&LocalSocket.connections==0);
+            need(!Files.exists(e.journal)&&e.commits()==1&&!c.evidence.getBoolean("broker_released")&&!c.evidence.getBoolean("historical_broker_release_observed"));e.originalsUnchanged();
+            reject(()->e.session.acceptReconciliation(new BackgroundSession.Cleanup(true,c.evidence)));e.session.acceptReconciliation(c);need(e.session.released());e.originalsUnchanged();
+        }});
+        test("prelaunch_create_failure_checker_failure_retains_lease",()->{try(Env e=new Env(new org.trillionnium.hepta.background.PersonalNotesAbsenceHostTest.Fixture().prelaunch())){
+            FakePersonalNotesRecoveryProcess.exit=70;reject(()->BackgroundSession.reconcile(e.context,idle()));need(Files.exists(e.journal)&&e.commits()==0&&e.attempts()==1&&LocalSocket.connections==0);e.originalsUnchanged();
+        }});
+        test("prelaunch_create_failure_current_control_cas_still_required",()->{try(Env e=new Env(new org.trillionnium.hepta.background.PersonalNotesAbsenceHostTest.Fixture().prelaunch())){
+            FakePersonalNotesRecoveryProcess.afterReply=()->{try{Files.write(e.dir.resolve("control-session.json"),new byte[]{1});}catch(Exception x){throw new RuntimeException(x);}};
+            reject(()->BackgroundSession.reconcile(e.context,idle()));need(Files.exists(e.journal)&&e.commits()==0);e.originalsUnchanged();
+        }});
+        test("prelaunch_create_failure_uses_notes_idle_gate_without_model_dispatch",()->{try(Env e=new Env(new org.trillionnium.hepta.background.PersonalNotesAbsenceHostTest.Fixture().prelaunch())){
+            PersonalNotesRecoveryIdleFixture f=new PersonalNotesRecoveryIdleFixture(e.session);need(f.personalNotesReconciliationIdle(f.ownedController));
+            need(!f.prelaunchReconciliationIdle(f.ownedController)&&!f.postlaunchReconciliationIdle(f.ownedController)&&!f.publicProfileReconciliationIdle(f.ownedController));
+            f.pendingNative=true;need(!f.personalNotesReconciliationIdle(f.ownedController));need(FakePersonalNotesRecoveryProcess.calls==0);e.originalsUnchanged();
+        }});
+        test("prelaunch_eligibility_requires_actual_spawn_and_stopped_owned_display",()->{try(Env e=new Env(new org.trillionnium.hepta.background.PersonalNotesAbsenceHostTest.Fixture().prelaunch())){
+            field(e.session,"spawnAttempted",false);need(!e.session.personalNotesRecoveryEligible());field(e.session,"spawnAttempted",true);
+            field(e.session,"retired",false);need(!e.session.personalNotesRecoveryEligible());field(e.session,"retired",true);
+            field(e.session,"state","ACTIVE");need(!e.session.personalNotesRecoveryEligible());field(e.session,"state","CLEANUP_UNKNOWN");
+            field(e.session,"displayId",0);need(!e.session.personalNotesRecoveryEligible());field(e.session,"displayId",fixture.display);
+            need(e.session.personalNotesRecoveryEligible()&&FakePersonalNotesRecoveryProcess.calls==0&&Files.exists(e.journal));e.originalsUnchanged();
         }});
         System.out.println(new JSONObject().put("schema","hepta.personal-notes-recovery-client-host-tests.v1").put("passed",true).put("checks",checks)
                 .put("assertions",assertions).put("cases",names).put("actual_client_except_owned_process_factory",true).put("actual_background_session",true)

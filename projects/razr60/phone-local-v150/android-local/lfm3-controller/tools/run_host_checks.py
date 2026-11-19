@@ -183,26 +183,26 @@ def main():
                 or [row.get("name") for row in screen.get("stages",[])]!=["compile","screen-lease","initial-readiness"]
                 or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in screen.get("stages",[]))
                 or screen_test.get("schema")!="hepta.public-screen-lease-host.v1" or screen_test.get("all_pass") is not True
-                or type(screen_test.get("cases")) is not int or screen_test["cases"]!=36
-                or type(screen_test.get("assertions")) is not int or screen_test["assertions"]!=73
+                or type(screen_test.get("cases")) is not int or screen_test["cases"]!=42
+                or type(screen_test.get("assertions")) is not int or screen_test["assertions"]!=85
                 or screen_test.get("phone_operations")!=0 or screen_test.get("android_power_api_executed") is not False):
             raise RuntimeError("Actual isolated screen-lease host contract differs")
         screen_names=screen_test.get("case_names")
-        if (type(screen_names) is not list or len(screen_names)!=36 or len(set(screen_names))!=36
+        if (type(screen_names) is not list or len(screen_names)!=42 or len(set(screen_names))!=42
                 or any(type(name) is not str or not name for name in screen_names)
                 or hashlib.sha256("\n".join(screen_names).encode()).hexdigest()!=
-                    "fcc50dabae810227be559e134b0c0c17541873d91eb8685a6412b8778be44a64"
+                    "65e0331d44e95ad29dbdf4e533dd64bd68e6567e82439a5b29371a02528318af"
                 or json.loads((out/"public-screen-lease/screen-lease.stdout").read_bytes())!=screen_test):
             raise RuntimeError("Screen-lease original case names or raw receipt differ")
         initial=screen.get("initial_readiness_test",{});initial_names=initial.get("case_names")
         if (initial.get("schema")!="hepta.public-screen-initial-readiness-host.v1" or initial.get("all_pass") is not True
-                or type(initial.get("cases")) is not int or initial["cases"]!=24
-                or type(initial.get("assertions")) is not int or initial["assertions"]!=65
+                or type(initial.get("cases")) is not int or initial["cases"]!=25
+                or type(initial.get("assertions")) is not int or initial["assertions"]!=68
                 or initial.get("phone_operations")!=0 or initial.get("android_power_api_executed") is not False
-                or type(initial_names) is not list or len(initial_names)!=24 or len(set(initial_names))!=24
+                or type(initial_names) is not list or len(initial_names)!=25 or len(set(initial_names))!=25
                 or any(type(name) is not str or not name for name in initial_names)
                 or hashlib.sha256("\n".join(initial_names).encode()).hexdigest()!=
-                    "9ff85d66cf88640ae6ce28e4ad82770f48845ebae54d342c5feea75f8fc9c563"
+                    "24f9b3dc06329b6af33eec47640a51491564e6ef13770100cd40348e37e2964b"
                 or json.loads((out/"public-screen-lease/initial-readiness.stdout").read_bytes())!=initial):
             raise RuntimeError("Initial screen readiness case names or raw receipt differ")
         report["public_screen_lease_gate"]={"bytes":len(screen_raw),"sha256":hashlib.sha256(screen_raw).hexdigest(),
@@ -321,10 +321,10 @@ def main():
                 or notes_absence.get("json_jar_sha256")!="3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"):
             raise RuntimeError("Notes absence requires strict Java 8 compilation and unchanged synthetic host provenance")
         notes_absence_contracts={
-            "policy":("hepta.personal-notes-absence-host.v1","cases",48,56,"case_names",
-                "36eec7f8df6a35a7b9711158c8ee7894847c529c99bfbb45d2d70a294b410593"),
-            "client":("hepta.personal-notes-recovery-client-host-tests.v1","checks",22,192,"cases",
-                "775837c86f2ca609de131778c2bc321b0df2653211831b1cbc1e4edce3147e60"),
+            "policy":("hepta.personal-notes-absence-host.v1","cases",91,109,"case_names",
+                "945275de9519682a14a8fbda5b914bb8098349bcb66b854d924ea713d75d9560"),
+            "client":("hepta.personal-notes-recovery-client-host-tests.v1","checks",27,247,"cases",
+                "a3bc86072c411a9ed2cd791ce832e690812b6fc333248be4ac0e1af823188c9a"),
             "post-model":("hepta.personal-notes-post-model-host.v1","cases",33,47,"case_names",
                 "345293266abe6da61ff120b40438f2cc17c71063ad732b81a6efa65ed0dd028a")}
         for key,(schema,metric,count,assertions,names_metric,names_hash) in notes_absence_contracts.items():

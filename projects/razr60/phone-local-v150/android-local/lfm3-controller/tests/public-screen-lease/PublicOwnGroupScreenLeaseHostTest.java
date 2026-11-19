@@ -72,7 +72,7 @@ public final class PublicOwnGroupScreenLeaseHostTest {
         invalid("main power group refused",p->p.group=0);
         invalid("cover power group refused",p->p.group=1);
         invalid("unknown physical group refused",p->p.cover=-1);
-        invalid("another virtual display sharing the group refused",p->p.members=2);
+        invalid("group membership beyond the complete census bound refused",p->p.members=33);
         invalid("unknown group membership refused",p->p.members=0);
         invalid("wrong owner refused",p->p.uid=2000);
         invalid("wrong generation refused",p->p.name="hepta-bg-replacement");
@@ -141,10 +141,11 @@ public final class PublicOwnGroupScreenLeaseHostTest {
             f.screenSnapshot(210,"hepta-bg-"+GEN).requireIsolatedOn(GEN);
             yes(f.service.enumerations==2&&f.service.directReads==4,"incomplete direct Binder census");
         });
-        test("disabled display sharing the group is refused by actual census",()->{
+        test("disabled virtual peer sharing the group is included by actual census",()->{
             PublicScreenCensusFixture f=new PublicScreenCensusFixture();f.service.ids=new int[]{0,1,210,211};
             f.service.rows.put(211,new PublicScreenCensusFixture.Info(211,5,2,1));
-            refuse(()->f.screenSnapshot(210,"hepta-bg-"+GEN).requireIsolatedOn(GEN));
+            PublicOwnGroupScreenLease.Snapshot actual=f.screenSnapshot(210,"hepta-bg-"+GEN);
+            actual.requireIsolatedOn(GEN);yes(actual.groupMembers==2,"virtual peer omitted from census");
         });
         test("actual census rejects duplicate logical display ids",()->{
             PublicScreenCensusFixture f=new PublicScreenCensusFixture();f.service.ids=new int[]{0,1,210,210};
@@ -174,6 +175,41 @@ public final class PublicOwnGroupScreenLeaseHostTest {
         test("actual census rejects already sleeping created display",()->{
             PublicScreenCensusFixture f=new PublicScreenCensusFixture();f.service.rows.get(210).state=1;
             refuse(()->f.screenSnapshot(210,"hepta-bg-"+GEN).requireIsolatedOn(GEN));
+        });
+        test("shared virtual group holds the exact created display token",()->{
+            Clock c=new Clock();Port p=new Port(c);p.members=2;PublicOwnGroupScreenLease l=lease(c);
+            l.acquire(p);l.requireActive();
+            yes(p.acquiredDisplay==210&&p.acquiredFlags==0xa&&p.acquires==1,"shared group changed token scope");
+            l.retire();released(l,p);yes(p.releases==1,"owned token release repeated");
+        });
+        test("virtual peers may join and leave without replacing the owned display",()->{
+            Clock c=new Clock();Port p=new Port(c);PublicOwnGroupScreenLease l=lease(c);l.acquire(p);
+            p.members=2;l.requireActive();p.members=3;l.requireActive();p.members=1;l.requireActive();
+            yes(p.acquires==1&&p.releases==0&&p.held,"virtual membership change retired a valid token");
+            l.retire();released(l,p);
+        });
+        test("releasing one token in a shared virtual group preserves the other token",()->{
+            Clock c=new Clock();Port a=new Port(c),b=new Port(c);a.members=2;b.members=2;
+            String other="6bd0794d-bdaf-48ef-8dbf-f63c6befca85";
+            b.id=211;b.name="hepta-bg-"+other;b.unique="virtual:peer";
+            PublicOwnGroupScreenLease first=lease(c),second=new PublicOwnGroupScreenLease(other,21000,c);
+            first.acquire(a);second.acquire(b);first.retire();released(first,a);second.requireActive();
+            yes(b.held&&b.releases==0&&b.acquiredDisplay==211,"peer token was released or retargeted");
+            second.retire();released(second,b);
+        });
+        test("complete census rejects an additional physical display even in another group",()->{
+            PublicScreenCensusFixture f=new PublicScreenCensusFixture();f.service.ids=new int[]{0,1,210,211};
+            f.service.rows.put(211,new PublicScreenCensusFixture.Info(211,1,3,2));
+            refuse(()->f.screenSnapshot(210,"hepta-bg-"+GEN));
+        });
+        test("complete census rejects unknown display type in the shared group",()->{
+            PublicScreenCensusFixture f=new PublicScreenCensusFixture();f.service.ids=new int[]{0,1,210,211};
+            f.service.rows.put(211,new PublicScreenCensusFixture.Info(211,0,2,2));
+            refuse(()->f.screenSnapshot(210,"hepta-bg-"+GEN));
+        });
+        test("changing the owned power group still retires its exact token",()->{
+            Clock c=new Clock();Port p=new Port(c);p.members=2;PublicOwnGroupScreenLease l=lease(c);l.acquire(p);
+            p.group=3;refuse(l::requireActive);released(l,p);
         });
         StringBuilder json=new StringBuilder("{\"schema\":\"hepta.public-screen-lease-host.v1\",\"all_pass\":true,\"cases\":")
                 .append(names.size()).append(",\"assertions\":").append(checks)

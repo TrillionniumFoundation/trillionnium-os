@@ -79,6 +79,41 @@ public final class PersonalNotesAbsenceHostTest {
         }
         public PublicPersonalNotesAbsenceRecovery.Request request()throws Exception{return PublicPersonalNotesAbsenceRecovery.request(inputs,raw(control),controller,uid,"aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",now,boot);}
         void mutate(String input,Mutation change)throws Exception{JSONObject o=new JSONObject(new String(inputs.get(input),StandardCharsets.UTF_8));change.run(o);inputs.put(input,raw(o));}
+        /** Synthetic create-failure shape: no captured phone identities or private task bytes. */
+        public Fixture prelaunch()throws Exception{
+            mutate("bootstrap",b->{
+                b.put("bootstrap_dispatched",false);
+                JSONObject last=b.getJSONObject("last_broker_response"),c=last.getJSONObject("personal_notes_cleanup");
+                last.remove("task_launch_policy");last.put("operation","create").put("state","CLEANUP_UNKNOWN")
+                        .put("request_id","bbbbbbbb-cccc-4ddd-8eee-ffffffffffff").put("ok",false).put("dispatched",true)
+                        .put("public_scope_admission_retired",true).put("public_scope_closing",true);
+                last.getJSONObject("public_task_location").put("observed_owned_task_ids",new JSONArray()).put("observed_elapsed_ms",created+20)
+                        .put("initial_task_count",2).put("retired",false).put("physical_user_activity_frozen",false).put("recents_unchanged_claimed",false);
+                c.put("schema","hepta.public-personal-notes-cleanup.v2").put("display_id",-1).put("launch_dispatched",false)
+                        .put("absence_reads",0).put("pending_owned_reads",0).put("identity_unknown",true).put("custodian_retained",true)
+                        .put("history_preservation_scope","nonphysical_and_unresolved_recents").put("history_preservation_interval","pre_release_to_absence")
+                        .put("hidden_history_preservation_interval","initial_to_absence").put("initial_recents_sha256",ProfileIdentity.sha("synthetic initial history"))
+                        .put("pre_release_recents_sha256","").put("final_recents_sha256","");
+                for(String key:new String[]{"pre_release_tasks_verified","release_api_entered","release_api_returned","display_absence_verified","live_tasks_absent",
+                        "all_recents_sections_absent","prior_hidden_history_preserved","physical_history_frozen","unrelated_physical_history_changes_observed",
+                        "recents_presentation_changes_observed","nonphysical_history_preserved","nonphysical_hidden_history_preserved","no_display_create_attempted"})c.put(key,false);
+                mutate("broker_output",t->t.put("personal_notes_cleanup",copy(c)));
+            });
+            syncOutputs();return this;
+        }
+        void syncOutputs()throws Exception{
+            byte[] output=inputs.get("broker_output");JSONObject broker=new JSONObject(new String(inputs.get("broker_receipt"),StandardCharsets.UTF_8));
+            broker.put("stored_bytes",output.length).put("observed_bytes",output.length).put("stored_sha256",ProfileIdentity.sha(output));inputs.put("broker_receipt",raw(broker));
+            JSONObject bootstrap=new JSONObject(new String(inputs.get("bootstrap"),StandardCharsets.UTF_8)).put("broker_output",broker);
+            JSONObject cleanup=copy(bootstrap).put("cleanup_known",false).put("cleanup_error","synthetic original refusal");
+            inputs.put("bootstrap",raw(bootstrap));inputs.put("cleanup",raw(cleanup));
+            mutate("result",r->r.put("background_session",copy(bootstrap)).put("background_cleanup",copy(cleanup)));
+        }
+        void response(Mutation change)throws Exception{mutate("bootstrap",b->change.run(b.getJSONObject("last_broker_response")));syncOutputs();}
+        void custodies(Mutation change)throws Exception{
+            mutate("bootstrap",b->change.run(b.getJSONObject("last_broker_response").getJSONObject("personal_notes_cleanup")));
+            mutate("broker_output",t->change.run(t.getJSONObject("personal_notes_cleanup")));syncOutputs();
+        }
     }
     static String recents(int age){return PublicPhysicalAuditHostTest.recents(false).replace("    Activities=[]\n","    Activities=[]\n    lastActiveTime=2000 (inactive for "+age+"s)\n");}
     static JSONObject sample(PublicPersonalNotesAbsenceRecovery.Request r,long a,long b,int age)throws Exception{
@@ -105,6 +140,8 @@ public final class PersonalNotesAbsenceHostTest {
             .put("current_absence_verified",true).put("recovery_interval_physical_unchanged",true).put("foreign_history_preserved",true).put("cleanup_known",true)
             .put("automatic_resume",false).put("broker_release_response",false).put("historical_broker_release_observed",false).put("business_success",false).put("rewrites_original_task_result",false);}
     static void badProof(String name,Mutation change)throws Exception{test(name,()->{Fixture f=new Fixture();PublicPersonalNotesAbsenceRecovery.Request r=f.request();JSONObject p=proof(r);change.run(p);
+        refuse(()->PublicPersonalNotesAbsenceRecovery.validate(p,r,r.started+21,r.requestBoot));});}
+    static void badPrelaunchProof(String name,Mutation change)throws Exception{test(name,()->{PublicPersonalNotesAbsenceRecovery.Request r=new Fixture().prelaunch().request();JSONObject p=proof(r);change.run(p);
         refuse(()->PublicPersonalNotesAbsenceRecovery.validate(p,r,r.started+21,r.requestBoot));});}
     public static void main(String[] args)throws Exception{
         test("dynamic synthetic identities and wire round trip",()->{Fixture f=new Fixture();PublicPersonalNotesAbsenceRecovery.Request r=f.request();
@@ -167,6 +204,44 @@ public final class PersonalNotesAbsenceHostTest {
             refuse(()->a.requireSame(PublicProfileRecentHistory.absence(value.replace("supportsSplitScreenMultiWindow=true","supportsSplitScreenMultiWindow=false"),target),1));
             String own=PublicPhysicalAuditHostTest.recents(true).replace("    Activities=[]\n","    Activities=[]\n    lastActiveTime=2000 (inactive for 5s)\n");
             refuse(()->PublicProfileRecentHistory.absence(PublicPhysicalAuditHostTest.gluedVisible(own),target));});
+        test("prelaunch create failure binds seven originals without invented tasks",()->{
+            Fixture f=new Fixture().prelaunch();Map<String,byte[]> before=new LinkedHashMap<String,byte[]>();for(Map.Entry<String,byte[]> e:f.inputs.entrySet())before.put(e.getKey(),e.getValue().clone());
+            PublicPersonalNotesAbsenceRecovery.Request r=f.request();yes(!r.postModelDrained&&r.recordedTaskIds.isEmpty()&&r.recordedOwnedIdentity().getJSONArray("task_ids").length()==0,"zero launch identities");
+            yes(r.displayId==f.display&&r.targetUid==f.targetUid,"journal display retained despite uninitialised custody");
+            yes(PublicPersonalNotesAbsenceRecovery.fromWire(r.wire()).wire().equals(r.wire()),"prelaunch wire roundtrip");
+            yes(PublicPersonalNotesAbsenceRecovery.validate(proof(r),r,r.started+21,r.requestBoot).getBoolean("cleanup_known"),"only fresh synthetic absence accepted");
+            for(Map.Entry<String,byte[]> e:before.entrySet())yes(Arrays.equals(e.getValue(),r.original(e.getKey())),"original unchanged "+e.getKey());
+        });
+        test("prelaunch initialized own display is accepted without launch",()->{Fixture f=new Fixture().prelaunch();f.custodies(c->c.put("display_id",f.display));yes(f.request().recordedTaskIds.isEmpty(),"no invented launch");});
+        for(String input:new String[]{"bootstrap","cleanup"})test("prelaunch refuses inconsistent "+input+" dispatch",()->{Fixture f=new Fixture().prelaunch();f.mutate(input,b->b.put("bootstrap_dispatched",true));refuse(()->f.request());});
+        for(String key:new String[]{"bootstrap_dispatched","bootstrap_model_issued"})test("prelaunch refuses string boolean "+key,()->{Fixture f=new Fixture().prelaunch();f.mutate("bootstrap",b->b.put(key,"false"));f.syncOutputs();refuse(()->f.request());});
+        test("prelaunch refuses missing dispatch field",()->{Fixture f=new Fixture().prelaunch();f.mutate("cleanup",b->b.remove("bootstrap_dispatched"));refuse(()->f.request());});
+        test("prelaunch refuses drained model input set",()->{Fixture f=new Fixture().prelaunch();for(String key:new String[]{"step_model","step_action","fixed_intent_attempt","model_request_receipt","model_session_receipt","native_session_receipt","generation_identity","generation_cleanup_receipt"})f.inputs.put(key,raw(new JSONObject()));refuse(()->f.request());});
+        test("prelaunch refuses launch response",()->{Fixture f=new Fixture().prelaunch();f.response(r->r.put("operation","launch"));refuse(()->f.request());});
+        test("prelaunch refuses even null launch policy",()->{Fixture f=new Fixture().prelaunch();f.response(r->r.put("task_launch_policy",JSONObject.NULL));refuse(()->f.request());});
+        test("prelaunch refuses non UUID response identity",()->{Fixture f=new Fixture().prelaunch();f.response(r->r.put("request_id","caller-label"));refuse(()->f.request());});
+        for(String key:new String[]{"ok","dispatched","public_scope_admission_retired","public_scope_closing"})test("prelaunch refuses incompatible create "+key,()->{Fixture f=new Fixture().prelaunch();f.response(r->r.put(key,"ok".equals(key)));refuse(()->f.request());});
+        test("prelaunch refuses active bootstrap state",()->{Fixture f=new Fixture().prelaunch();f.mutate("bootstrap",b->b.put("state","ACTIVE"));f.syncOutputs();refuse(()->f.request());});
+        test("prelaunch refuses observed launch task",()->{Fixture f=new Fixture().prelaunch();f.response(r->r.getJSONObject("public_task_location").put("observed_owned_task_ids",new JSONArray().put(f.oldTask)));refuse(()->f.request());});
+        test("prelaunch refuses later location timestamp",()->{Fixture f=new Fixture().prelaunch();f.response(r->r.getJSONObject("public_task_location").put("observed_elapsed_ms",f.now));refuse(()->f.request());});
+        test("prelaunch refuses changed location display",()->{Fixture f=new Fixture().prelaunch();f.response(r->r.getJSONObject("public_task_location").put("display_id",88));refuse(()->f.request());});
+        for(String key:new String[]{"launch_dispatched","release_api_entered","release_api_returned","pre_release_tasks_verified","display_absence_verified","live_tasks_absent","all_recents_sections_absent"})test("prelaunch refuses prior "+key,()->{Fixture f=new Fixture().prelaunch();f.custodies(c->c.put(key,true));refuse(()->f.request());});
+        for(String key:new String[]{"pending_owned_reads","absence_reads"})test("prelaunch refuses nonzero "+key,()->{Fixture f=new Fixture().prelaunch();f.custodies(c->c.put(key,1));refuse(()->f.request());});
+        test("prelaunch refuses missing typed custody field",()->{Fixture f=new Fixture().prelaunch();f.custodies(c->c.remove("launch_dispatched"));refuse(()->f.request());});
+        test("prelaunch refuses string false custody field",()->{Fixture f=new Fixture().prelaunch();f.custodies(c->c.put("launch_dispatched","false"));refuse(()->f.request());});
+        test("prelaunch refuses foreign custody display",()->{Fixture f=new Fixture().prelaunch();f.custodies(c->c.put("display_id",88));refuse(()->f.request());});
+        test("prelaunch refuses observed custody task",()->{Fixture f=new Fixture().prelaunch();f.custodies(c->c.put("actual_observed_tasks",new JSONArray().put(new JSONObject().put("task_id",f.oldTask))));refuse(()->f.request());});
+        test("prelaunch refuses inconsistent last response",()->{Fixture f=new Fixture().prelaunch();f.mutate("cleanup",c->c.getJSONObject("last_broker_response").put("request_id","cccccccc-dddd-4eee-8fff-aaaaaaaaaaaa"));refuse(()->f.request());});
+        test("prelaunch refuses model process start",()->{Fixture f=new Fixture().prelaunch();f.mutate("result",r->r.getJSONObject("model_session").put("process_started",true));refuse(()->f.request());});
+        test("prelaunch refuses native reservation",()->{Fixture f=new Fixture().prelaunch();f.mutate("result",r->r.getJSONObject("native_cancellation").put("request_reserved",true));refuse(()->f.request());});
+        test("prelaunch refuses completed action",()->{Fixture f=new Fixture().prelaunch();f.mutate("result",r->r.put("steps",1));refuse(()->f.request());});
+        test("prelaunch refuses changed current control",()->{Fixture f=new Fixture().prelaunch();f.control.put("task_id","bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");refuse(()->f.request());});
+        test("prelaunch refuses journal scope replacement",()->{Fixture f=new Fixture().prelaunch();f.mutate("journal",j->j.put("public_own_group_scope_wire","changed"));refuse(()->f.request());});
+        badPrelaunchProof("prelaunch empty task set still refuses own display",p->p.getJSONObject("after").getJSONObject("displays").getJSONArray("rows").getJSONObject(1).put("id",77));
+        badPrelaunchProof("prelaunch empty task set still refuses Notes on main",p->p.getJSONObject("after").getJSONObject("live").getJSONArray("roots").getJSONObject(0).put("top","com.motorola.stylus/.Main"));
+        badPrelaunchProof("prelaunch empty task set still refuses creator",p->p.getJSONObject("after").getJSONObject("process").put("old_creator_absent",false));
+        badPrelaunchProof("prelaunch empty task set still refuses main change",p->p.getJSONObject("after").getJSONObject("physical").put("0",ProfileIdentity.sha("changed")));
+        test("prelaunch empty task set still refuses hidden Notes history",()->{PublicPersonalNotesAbsenceRecovery.Request r=new Fixture().prelaunch().request();String history=recents(5).replace("  Recent tasks:\n","mHiddenTasks=[Task{abc #999 type=standard A=23456:com.motorola.stylus}]\n  Recent tasks:\n");refuse(()->PublicPersonalNotesHistory.absence(history,r));});
         System.out.println(new JSONObject().put("schema","hepta.personal-notes-absence-host.v1").put("all_pass",true).put("cases",cases).put("assertions",assertions)
                 .put("case_names",new JSONArray(names)).put("framework_fixtures_synthetic",true).put("phone_operations",0).put("android_runtime",false).put("business_success_claimed",false));
     }
