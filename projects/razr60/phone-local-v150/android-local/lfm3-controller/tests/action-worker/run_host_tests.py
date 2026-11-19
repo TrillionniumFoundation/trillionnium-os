@@ -86,8 +86,11 @@ def main():
         '/*__REMAINING_TIMEOUT__*/': (background, 'private static int remainingActionTimeout(JSONObject request,int maximum,'),
         '/*__READ_RESPONSE__*/': (background, 'private static void readResponseBytes(LocalSocket socket,DataInputStream input,byte[] bytes,'),
         '/*__RUN_HANDLE__*/': (engine, 'public static final class RunHandle {'),
-        '/*__CLAIM_PROCESS__*/': (engine, 'private static void claimProcess(RunHandle handle,AtomicReference<RunHandle> local){'),
+        '/*__CLAIM_PROCESS__*/': (engine, 'private void claimProcess(RunHandle handle,AtomicReference<RunHandle> local){'),
+        '/*__RUNTIME_GENERATION__*/': (engine, 'static final class RuntimeGeneration {'),
         '/*__CANCEL_ACTIVE__*/': (engine, 'public void cancelActive() {'),
+        '/*__PROFILE_OWNERSHIP_VIOLATION__*/': (service, 'private static final class ProfileOwnershipViolation extends IllegalStateException {'),
+        '/*__REQUIRE_SAME_PROFILE_OWNER__*/': (service, 'private static void requireSameProfileOwner(WindowOwnership original,WindowOwnership actual){'),
         '/*__ACTION_GRAPH__*/': (service, 'private static final class Graph {'),
         '/*__GRAPH_BUDGET__*/': (service, 'private interface GraphBudget {'),
         '/*__CHECK_READ_BUDGET__*/': (service, 'private static void checkReadBudget(GraphBudget budget){'),
@@ -126,7 +129,10 @@ def main():
     relative = ['local/ActionExecutionState.java', 'local/TaskCancellationQueue.java', 'local/ObservationDiagnostics.java', 'local/NativeActionSnapshotCheck.java', 'local/ObservedChildText.java',
                 'local/FixedIntentAttemptGuard.java', 'local/ObservedImeEnter.java',
                 'background/FixedIntentTarget.java', 'background/FixedIntentTools.java',
-                'background/BrokerProtocol.java', 'local/OwnedWorkerCancellation.java',
+                'background/BrokerProtocol.java', 'background/ProfileIdentity.java', 'background/ProfileTarget.java',
+                'background/PublicOwnGroupPolicy.java', 'background/WindowOwnership.java',
+                'local/ObservedTargetLabels.java', 'local/NativeAppEvidence.java', 'local/OwnedWorkerCancellation.java',
+                'local/LocalRuntimeConfig.java', 'local/ModelProfile.java', 'local/ModelFileVerifier.java',
                 'webprotocol/WebDomCanonical.java']
     sources = [source / name for name in relative]
     sources += sorted((root / 'tests/qualification-scope/fixtures/org/json').glob('*.java'))
@@ -146,6 +152,8 @@ def main():
               'compile_command': compile_command, 'compiler_returncode': compile_result.returncode,
               'java8_bytecode_target': True, 'java8_api_cross_compile': False,
               'android_compilation': False, 'phone_operations': 0, 'device_qualification': False}
+    report['permission_ui_boundary'] = ('No permission-preparation work is created by these original Stop/action cases; the explicit fixture models only retire() with ACTIVE absent. Real permission UI work and retirement are not qualified.')
+    report['settings_boundary'] = ('Exact generation type and actual config/profile/verifier; default generation and snapshot IO are fixture boundaries. Original Stop/action cases and assertions are unchanged.')
     report['graph_lifetime_boundary'] = ('Exact production Graph, NodeRef copy constructor and region ownership helpers execute against '
                                         'instrumented node/geometry/bridge carriers, with the actual production WebDomCanonical and '
                                         'Flight collection limit. No Android Binder, Web ARM or native region authority is created.')

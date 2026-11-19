@@ -130,6 +130,9 @@ final class BackgroundTaskOrganizer implements BackgroundOwnedSingleTask.Platfor
     /** Strict parallel arrays from RootTaskInfo, including every actual child user. */
     static ProfileTaskPolicy.Snapshot profileSnapshot(Object activityTasks)throws Exception{
         Object raw=Class.forName("android.app.IActivityTaskManager").getMethod("getAllRootTaskInfos").invoke(activityTasks);
+        return profileSnapshotRows(raw);
+    }
+    private static ProfileTaskPolicy.Snapshot profileSnapshotRows(Object raw)throws Exception{
         if(!(raw instanceof List)||((List<?>)raw).size()>ProfileTaskPolicy.MAX_ROOTS)
             throw new IOException("PROFILE_ROOT_QUERY_INCOMPLETE");
         List<ProfileTaskPolicy.Root> out=new ArrayList<ProfileTaskPolicy.Root>();
@@ -150,6 +153,25 @@ final class BackgroundTaskOrganizer implements BackgroundOwnedSingleTask.Platfor
                     component(field(row,"topActivity")),(int[])ids,(int[])users,(String[])names,geometry));
         }
         return new ProfileTaskPolicy.Snapshot(out);
+    }
+
+    /** Read-only Notes census: complete global child arrays and real TaskInfo fields
+     * from this same ATM response. Existing organizer roots()/children()/rows()
+     * contracts, including null refusal, are unchanged. */
+    static final class ReadOnlyRootCensus {
+        final ProfileTaskPolicy.Snapshot global;
+        final List<BackgroundOwnedSingleTask.Task> displayRoots;
+        ReadOnlyRootCensus(ProfileTaskPolicy.Snapshot global,List<BackgroundOwnedSingleTask.Task> roots){
+            this.global=global;
+            this.displayRoots=java.util.Collections.unmodifiableList(new ArrayList<BackgroundOwnedSingleTask.Task>(roots));
+        }
+    }
+    ReadOnlyRootCensus readOnlyRootCensus()throws Exception{
+        Object raw=allRoots.invoke(activityTasks);
+        ProfileTaskPolicy.Snapshot global=profileSnapshotRows(raw);
+        List<Object> selected=new ArrayList<Object>();
+        for(Object row:(List<?>)raw)if(integer(row,"displayId")==display)selected.add(row);
+        return new ReadOnlyRootCensus(global,rows(selected));
     }
 
     /** Full raw recent-task dump, before any profile display or organizer container exists. */

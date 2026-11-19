@@ -267,6 +267,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         return taskController(engine.configuration().profile.visual()
                 ?new VlmInferenceAdapter(this,engine):new EngineInferenceAdapter(engine));
     }
+    /** Pure idle query for local configuration; no controller retirement or recovery authority. */
+    synchronized boolean modelSettingsIdle(){
+        if(Looper.myLooper()!=Looper.getMainLooper())throw new IllegalStateException("settings service check must run on main");
+        return live==this&&lease==null&&(ownedController==null||!ownedController.isRunning())
+                &&activeObservation==null&&!capturePending&&!observationReadWorkPending()&&!actionWorkPending()&&!nativeCancellationWorkPending()
+                &&(taskBackground==null||taskBackground.released())&&(taskWeb==null||taskWeb.released());
+    }
     /** Administrative retirement only; no action, inference, capture or old task is restarted. */
     synchronized boolean recoveryControllerIdle(LocalTaskController expected){
         if(Looper.myLooper()!=Looper.getMainLooper())throw new IllegalStateException("recovery service check must run on main thread");
@@ -435,8 +442,22 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 &&(taskWeb==null||taskWeb.released())
                 &&(lease==null||(expected!=null&&lease.equals(expected.currentTaskId())));
     }
+    /** Personal Notes receipt admission has its own type and eligibility; it grants no action authority. */
+    synchronized boolean personalNotesReconciliationIdle(LocalTaskController expected){
+        return live==this&&ownedController==expected&&(expected==null||!expected.isRunning())
+                &&activeObservation==null&&!capturePending&&!observationReadWorkPending()&&!actionWorkPending()&&!nativeCancellationWorkPending()
+                &&(taskBackground==null||taskBackground.personalNotesRecoveryEligible())
+                &&(taskWeb==null||taskWeb.released())
+                &&(lease==null||(expected!=null&&lease.equals(expected.currentTaskId())));
+    }
     synchronized void acceptBackgroundReconciliation(BackgroundSession.Cleanup cleanup)throws Exception{
         if(cleanup==null)throw new IllegalStateException("后台清理凭据缺失");
+        if(cleanup.personalNotesRecovery!=null){
+            if(cleanup.prelaunchRecovery!=null||cleanup.postlaunchRecovery!=null||cleanup.publicProfileRecovery!=null
+                    ||!personalNotesReconciliationIdle(ownedController))
+                throw new IllegalStateException("备忘录恢复的控制器工作尚未排空");
+            if(taskBackground!=null)taskBackground.acceptReconciliation(cleanup);return;
+        }
         if(cleanup.publicProfileRecovery!=null){
             if(cleanup.prelaunchRecovery!=null||cleanup.postlaunchRecovery!=null||!publicProfileReconciliationIdle(ownedController))
                 throw new IllegalStateException("公共恢复的控制器工作尚未排空");

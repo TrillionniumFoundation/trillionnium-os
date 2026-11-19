@@ -18,7 +18,7 @@ final class BackgroundSession {
                 .put("main_display_fallback",false).put("home_allowed",false);
             }catch(Exception failure){throw new IllegalStateException("synthetic explicit Selection encoding failed",failure);}}
     }
-    static final class Cleanup {final boolean known;final JSONObject evidence=new JSONObject();final Object prelaunchRecovery=null,postlaunchRecovery=null,publicProfileRecovery=null;Cleanup(boolean value){known=value;}}
+    static final class Cleanup {final boolean known;final JSONObject evidence=new JSONObject();final Object prelaunchRecovery=null,postlaunchRecovery=null,publicProfileRecovery=null,personalNotesRecovery=null;Cleanup(boolean value){known=value;}}
     static int controllerDisplay=-1;
     final String taskId,generation,ownerSha256;final Selection selection;final int testDisplay;boolean testClosed;
     BackgroundSession(Context c,String id,String owner,Selection s,QualificationScopeConfig.FilesRoot root){
@@ -35,6 +35,7 @@ final class BackgroundSession {
     boolean prelaunchRecoveryEligible(){return false;} // This legacy IO fake cannot establish profile recovery.
     boolean postlaunchRecoveryEligible(){return false;} // No launched-profile absence authority in this IO fake.
     boolean publicProfileRecoveryEligible(){return false;} // No public-profile absence authority in this legacy IO fake.
+    boolean personalNotesRecoveryEligible(){return false;} // No personal Notes recovery or receipt authority in this legacy IO fake.
     boolean allows(String p){return selection.allowedPackages.contains(p);}
     int displayId(){return testDisplay;}
     JSONObject evidence(){try{return new JSONObject().put("task_id",taskId).put("generation",generation).put("display_id",testDisplay);}catch(Exception error){throw new IllegalStateException(error);}}

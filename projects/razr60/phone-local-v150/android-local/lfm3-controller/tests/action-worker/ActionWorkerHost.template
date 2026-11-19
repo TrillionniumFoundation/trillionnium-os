@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.UUID;
 import org.json.JSONArray;
 import org.trillionnium.hepta.background.FixedIntentTarget;
+import org.trillionnium.hepta.background.WindowOwnership;
 
 /** JVM concurrency cases. No Android device, SDK process, UI or physical fsync-stall claim. */
 public final class ActionWorkerHost {
@@ -116,6 +117,8 @@ public final class ActionWorkerHost {
         private static final class StaleObservation extends IllegalStateException {
             private static final long serialVersionUID=1L;StaleObservation(String message){super(message);}
         }
+        /*__PROFILE_OWNERSHIP_VIOLATION__*/
+        /*__REQUIRE_SAME_PROFILE_OWNER__*/
         /*__ACTION_GRAPH__*/
         private static final class ActionWork {
             final ActionExecutionState state=state(new Clock());boolean cancelled;
@@ -144,9 +147,15 @@ public final class ActionWorkerHost {
     }
     private static final class ActionWork {final ActionExecutionState state;ActionWork(ActionExecutionState state){this.state=state;}}
     private static final class WebFlightSession {static boolean hasUnreleased(Service service){return service.unreleased;}}
+    /** These Stop/action cases create no permission-preparation work. This boundary
+     * models only the production retire() early return for ACTIVE == null. */
+    private static final class NoPermissionUiWork {
+        void retire(String taskId,String reason){}
+    }
     private static final class Service {
         static Service live;
         final TaskCancellationQueue nativeCancellationQueue;
+        final NoPermissionUiWork profilePermissionUi=new NoPermissionUiWork();
         volatile String lease=TASK;
         volatile ActionWork activeAction;
         boolean unreleased;
@@ -177,6 +186,11 @@ public final class ActionWorkerHost {
         /*__STOP_IF_TASK__*/
     }
     private static final class EngineFixture {
+        private static final class RuntimeConfigTransaction {static final class Snapshot{}}
+        /*__RUNTIME_GENERATION__*/
+        final RuntimeGeneration runtime=new RuntimeGeneration(LocalRuntimeConfig.defaults(),null,new ModelFileVerifier(),null);
+        final AtomicBoolean closed=new AtomicBoolean(false);
+        boolean settingsBlocked;
         static TaskCancellationQueue ACTIVE_CANCELLATION;
         static Object PROCESS_ADMISSION;
         static final AtomicReference<RunHandle> PROCESS_ACTIVE=new AtomicReference<RunHandle>();
@@ -356,28 +370,28 @@ public final class ActionWorkerHost {
         run("diagnostic_cancel_returns_with_exact_handle_and_blocks_process_admission_until_drain",new Case(){public void run()throws Exception{
             ExecutorService cancel=Executors.newSingleThreadExecutor(),ui=Executors.newSingleThreadExecutor();EngineFixture.reset(cancel);
             final EngineFixture engine=new EngineFixture();final EngineFixture.RunHandle old=new EngineFixture.RunHandle();final BlockingProcess process=new BlockingProcess();old.child.set(process);
-            EngineFixture.claimProcess(old,engine.active);
+            engine.claimProcess(old,engine.active);
             try{join(ui.submit(new Runnable(){public void run(){engine.cancelActive();}}));await(process.entered);
                 check(old.isCancellationRequested()&&EngineFixture.ACTIVE_CANCELLATION.pending(),"diagnostic Stop did not request before async signal");
                 // Host Process reports an actual exit while destroy() itself remains blocked; cleanup clears the old model slot.
                 check(!process.isAlive(),"host exit not reached");engine.active.compareAndSet(old,null);EngineFixture.PROCESS_ACTIVE.compareAndSet(old,null);
-                refused(new Runnable(){public void run(){EngineFixture.claimProcess(new EngineFixture.RunHandle(),engine.active);}});
+                refused(new Runnable(){public void run(){engine.claimProcess(new EngineFixture.RunHandle(),engine.active);}});
                 check("run".equals(engine.lastCancellation.evidence().get("identity_kind"))&&engine.lastCancellation.evidence().get("task_id")==null
                         &&old.runId.equals(engine.lastCancellation.evidence().get("run_id")),"diagnostic run was mislabelled as owner task");
                 process.release.countDown();check(engine.lastCancellation.awaitDrain(2000),"diagnostic cancel did not drain");
-                EngineFixture.RunHandle next=new EngineFixture.RunHandle();EngineFixture.claimProcess(next,engine.active);check(engine.active.get()==next&&process.destroys.get()==1,"admission failed after real drain or old signal repeated");
+                EngineFixture.RunHandle next=new EngineFixture.RunHandle();engine.claimProcess(next,engine.active);check(engine.active.get()==next&&process.destroys.get()==1,"admission failed after real drain or old signal repeated");
             }finally{process.release.countDown();shutdown(ui);shutdown(cancel);EngineFixture.PROCESS_ACTIVE.set(null);}
         }});
         run("old_handle_reservation_and_new_process_admission_share_atomic_gate",new Case(){public void run()throws Exception{
             final CountDownLatch submitted=new CountDownLatch(1),allowSubmitReturn=new CountDownLatch(1),newAdmissionAttempted=new CountDownLatch(1);
             final AtomicReference<Runnable> queued=new AtomicReference<Runnable>();
             EngineFixture.reset(new Executor(){public void execute(Runnable value){queued.set(value);submitted.countDown();try{await(allowSubmitReturn);}catch(InterruptedException error){throw new IllegalStateException(error);}}});
-            final EngineFixture engine=new EngineFixture();final EngineFixture.RunHandle old=new EngineFixture.RunHandle();EngineFixture.claimProcess(old,engine.active);
+            final EngineFixture engine=new EngineFixture();final EngineFixture.RunHandle old=new EngineFixture.RunHandle();engine.claimProcess(old,engine.active);
             ExecutorService workers=Executors.newFixedThreadPool(3);
             try{Future<?> cancellation=workers.submit(new Runnable(){public void run(){engine.cancelActive();}});await(submitted);
                 // No child was attached to this old host run. Completion clears exactly its two slots while submission is paused.
                 check(old.child.get()==null,"unexpected host child");engine.active.compareAndSet(old,null);EngineFixture.PROCESS_ACTIVE.compareAndSet(old,null);
-                Future<?> admission=workers.submit(new Runnable(){public void run(){newAdmissionAttempted.countDown();refused(new Runnable(){public void run(){EngineFixture.claimProcess(new EngineFixture.RunHandle(),engine.active);}});}});
+                Future<?> admission=workers.submit(new Runnable(){public void run(){newAdmissionAttempted.countDown();refused(new Runnable(){public void run(){engine.claimProcess(new EngineFixture.RunHandle(),engine.active);}});}});
                 final Service replacement=new Service(EngineFixture.ACTIVE_CANCELLATION);replacement.lease=null;
                 Future<?> taskAdmission=workers.submit(new Runnable(){public void run(){check(!replacement.acquireTask("99999999999999999999999999999999",new Runnable(){public void run(){}}),"replacement service admitted task during old cancel reservation");}});
                 await(newAdmissionAttempted);allowSubmitReturn.countDown();join(cancellation);join(admission);join(taskAdmission);
@@ -388,11 +402,11 @@ public final class ActionWorkerHost {
         }});
         run("ordinary_stop_button_never_looks_up_new_engine_handle_after_task_stop",new Case(){public void run(){
             Deferred executor=new Deferred();EngineFixture.reset(executor);final EngineFixture engine=new EngineFixture();final EngineFixture.RunHandle newer=new EngineFixture.RunHandle();
-            TaskUi tasks=new TaskUi();tasks.running=true;tasks.afterStop=new Runnable(){public void run(){EngineFixture.claimProcess(newer,engine.active);}};
+            TaskUi tasks=new TaskUi();tasks.running=true;tasks.afterStop=new Runnable(){public void run(){engine.claimProcess(newer,engine.active);}};
             new StopButtonFixture(tasks,engine).click();check(tasks.stops==1&&!newer.isCancellationRequested()&&executor.work==null,"ordinary Stop reached a later engine handle");EngineFixture.PROCESS_ACTIVE.set(null);
         }});
         run("ordinary_stop_button_preserves_independent_diagnostic_cancellation",new Case(){public void run(){
-            Deferred executor=new Deferred();EngineFixture.reset(executor);EngineFixture engine=new EngineFixture();EngineFixture.RunHandle diagnostic=new EngineFixture.RunHandle();EngineFixture.claimProcess(diagnostic,engine.active);
+            Deferred executor=new Deferred();EngineFixture.reset(executor);EngineFixture engine=new EngineFixture();EngineFixture.RunHandle diagnostic=new EngineFixture.RunHandle();engine.claimProcess(diagnostic,engine.active);
             TaskUi tasks=new TaskUi();new StopButtonFixture(tasks,engine).click();check(diagnostic.isCancellationRequested()&&executor.work!=null,"diagnostic Stop capability lost");executor.executeQueued();
             check(!EngineFixture.ACTIVE_CANCELLATION.pending()&&flag(engine.lastCancellation.evidence(),"signal_returned"),"captured diagnostic cancellation incomplete");EngineFixture.PROCESS_ACTIVE.set(null);
         }});

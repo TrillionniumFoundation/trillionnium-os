@@ -2,7 +2,7 @@
 from pathlib import Path
 import hashlib,json,importlib.util
 
-def prepare(source,output):
+def prepare(source,output,*,include_terminal=True):
  source,output=Path(source),Path(output);output.mkdir(parents=True,exist_ok=True)
  pkg=source/'src/org/trillionnium/hepta/local';fixtures=source/'tests/qualification-scope/fixtures'
  copies=['org/json/JSONException.java','org/json/FixtureJson.java','org/json/JSONObject.java','org/json/JSONArray.java',
@@ -60,7 +60,7 @@ final class HostRecoveryProcessBoundary {static Process start(String command)thr
  'ObservedTargetLabels','ObservedAppLabels','ObservedScrollActions','ObservedImeEnter','AppCatalogueRanker')]
  files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java']
  files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('BrokerProtocol','PublicOwnGroupPolicy','PublicOwnGroupPhysicalFence','PublicProfileRecentHistory')]
- files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','WindowOwnership','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfilePrelaunchRecovery','ProfilePostlaunchRecovery','PublicProfileAbsenceRecovery','PermissionWindowObservation','ProfileOwnedTask','ProfilePermissionTransient','ProfileDisplayCustody')]
+ files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','WindowOwnership','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfilePrelaunchRecovery','ProfilePostlaunchRecovery','PublicProfileAbsenceRecovery','PublicPersonalNotesAbsenceRecovery','PublicPersonalNotesHistory','PermissionWindowObservation','ProfileOwnedTask','ProfilePermissionTransient','ProfileDisplayCustody')]
  # Keep the actual recovery client, projecting only the root process factory to a refusing IO boundary.
  # The dedicated recovery gate replaces the same factory with its explicit owned-process fixture.
  recovery_source=pkg/'ProfileRecoveryClient.java';recovery_raw=recovery_source.read_text()
@@ -79,15 +79,25 @@ final class HostRecoveryProcessBoundary {static Process start(String command)thr
  public_projection=output/'org/trillionnium/hepta/local/PublicProfileRecoveryClient.java'
  public_projection.write_text(public_raw.replace(recovery_seam,'HostRecoveryProcessBoundary.start(command)'))
  files.append(public_projection)
+ # The Notes branch also compiles its complete production client. Generic tests
+ # preserve the same refusing process boundary and cannot manufacture a receipt.
+ notes_source=pkg/'PublicPersonalNotesRecoveryClient.java';notes_raw=notes_source.read_text()
+ if notes_raw.count(recovery_seam)!=1:raise RuntimeError('nonunique Notes recovery process factory seam')
+ notes_projection=output/'org/trillionnium/hepta/local/PublicPersonalNotesRecoveryClient.java'
+ notes_projection.write_text(notes_raw.replace(recovery_seam,'HostRecoveryProcessBoundary.start(command)'))
+ files.append(notes_projection)
  # The exact finalization block is shared with the existing warm-finalization harness.
  # Android/model IO remains fake; the status policy itself is not reimplemented here.
- warm_helper=source/'tests/warm-finalization/prepare_fixture.py'
- warm_spec=importlib.util.spec_from_file_location('background_terminal_fixture',warm_helper)
- warm=importlib.util.module_from_spec(warm_spec);warm_spec.loader.exec_module(warm)
- terminal_files,terminal_record=warm.prepare(source,output/'terminal')
- files += [p for p in terminal_files if p.name in ('LocalInference.java','ControllerFinalizationFixture.java','TaskCancellationQueue.java')]
+ terminal_record={'included':False,'reason':'dedicated recovery gate does not exercise controller finalization'}
+ if include_terminal:
+  warm_helper=source/'tests/warm-finalization/prepare_fixture.py'
+  warm_spec=importlib.util.spec_from_file_location('background_terminal_fixture',warm_helper)
+  warm=importlib.util.module_from_spec(warm_spec);warm_spec.loader.exec_module(warm)
+  terminal_files,terminal_record=warm.prepare(source,output/'terminal')
+  files += [p for p in terminal_files if p.name in ('LocalInference.java','ControllerFinalizationFixture.java','TaskCancellationQueue.java')]
 
  records={'schema':'hepta.background-client-host-extraction.v1','actual_full_classes':['BackgroundSession','MobiMindPrivateFiles','QualificationScope','BrokerProtocol','ProfilePrelaunchRecovery','ProfilePostlaunchRecovery','ProfileTaskPolicy','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask'],'actual_files_root_sha256':hashlib.sha256(part.encode()).hexdigest(),'boundary':'Android LocalSocket/DisplayManager/Keyguard/clock IO are explicit fakes; no broker process, Android runtime, root, model or phone actions','source_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in files if p.parent==pkg},'controller_finalization':terminal_record,'recovery_client_projection':{'source_sha256':hashlib.sha256(recovery_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(recovery_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','recovery_success_or_phone_qualification_claimed':False},'postlaunch_client_projection':{'source_sha256':hashlib.sha256(post_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(post_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','recovery_success_or_phone_qualification_claimed':False}}
  records['public_profile_client_projection']={'source_sha256':hashlib.sha256(public_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(public_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','installed_identity_boundary':'explicit always-unavailable PackageManager/APK test double','recovery_success_or_phone_qualification_claimed':False}
+ records['personal_notes_client_projection']={'source_sha256':hashlib.sha256(notes_raw.encode()).hexdigest(),'projected_sha256':hashlib.sha256(notes_projection.read_bytes()).hexdigest(),'single_replacement':'root ProcessBuilder factory -> always-throwing host IO boundary','recovery_success_or_phone_qualification_claimed':False}
  (output/'EXTRACTION.json').write_text(json.dumps(records,indent=2)+'\n')
  return files,records

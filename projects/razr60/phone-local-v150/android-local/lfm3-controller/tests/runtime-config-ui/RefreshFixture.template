@@ -16,13 +16,21 @@ public final class RuntimeConfigUiHostTest {
     private static final class VlmPins {static final String PROJECTOR="projector.bin";}
     private static final class LocalRuntimeConfig {String compute="gpu";final Profile profile=new Profile();boolean visualObservationOnly;}
     private static final class LocalModelEngine {
-        final File files;final LocalRuntimeConfig configuration=new LocalRuntimeConfig();String configurationError;
+        final File files;final LocalRuntimeConfig configuration=new LocalRuntimeConfig();
+        final RuntimeGeneration runtime=new RuntimeGeneration(configuration);
+        private static final class RuntimeGeneration {
+            final LocalRuntimeConfig config;String error;
+            RuntimeGeneration(LocalRuntimeConfig config){this.config=config;}
+{{generation_configuration}}
+        }
         boolean busy;Result result;
         LocalModelEngine(File files){this.files=files;}
         boolean isBusy(){return busy;}Result lastResult(){return result;}
         static final class Result {String runId="text-result";}
 {{model_directory}}
 {{model_file}}
+{{model_directory_config}}
+{{model_file_config}}
 {{configuration}}
     }
     private static final class LocalTaskSession {
@@ -55,6 +63,13 @@ public final class RuntimeConfigUiHostTest {
         static Object connected(){return new Object();}
         static String message(Exception error){return error.getMessage();}
     }
+    // These original view cases never run a settings transaction. New settings controls remain ineligible.
+    private static final class LocalModelSettings {boolean isBusy(){return false;}String state(){return "fixture settings idle";}}
+    private static final class LocalProbeApplication {boolean canChangeLocalModelSettings(boolean restore){return false;}}
+    private final LocalModelSettings modelSettings=new LocalModelSettings();
+    private final LocalProbeApplication application=new LocalProbeApplication();
+    private Object getApplication(){return application;}
+    private final Widget chooseLocalModel=new Widget(),restoreLocalModel=new Widget(),localModelSettingsState=new Widget();
     private final LocalModelEngine engine;
     private final LocalTaskSession tasks=new LocalTaskSession();
     private final BackgroundPermissionSession backgroundPermission=new BackgroundPermissionSession();
@@ -98,7 +113,7 @@ public final class RuntimeConfigUiHostTest {
         if(!model.getParentFile().mkdirs()||!model.createNewFile())throw new IllegalStateException("fresh model fixture required");
 
         RuntimeConfigUiHostTest invalid=new RuntimeConfigUiHostTest(files);
-        invalid.engine.configurationError=CONFIG_ERROR;
+        invalid.engine.runtime.error=CONFIG_ERROR;
         invalid.refresh();
         check(invalid.modelInfo.text.contains(CONFIG_ERROR),"configuration failure must remain visible");
         check(invalid.modelDiagnostics.text.contains("运行参数待修正"),"configuration diagnostics must request repair");
@@ -108,7 +123,7 @@ public final class RuntimeConfigUiHostTest {
         check(invalid.openRootManager.enabled&&invalid.prepareBackgroundPermission.enabled,"configuration error must retain idle permission controls");
         check(invalid.backgroundMode.enabled&&invalid.pickBackgroundApps.enabled&&invalid.initialBackgroundApp.enabled,"configuration error must retain owner UI choices");
         invalid.refresh();
-        check(invalid.modelInfo.text.contains(CONFIG_ERROR)&&CONFIG_ERROR.equals(invalid.engine.configurationError),"refresh must not clear or silently replace the configuration error");
+        check(invalid.modelInfo.text.contains(CONFIG_ERROR)&&CONFIG_ERROR.equals(invalid.engine.runtime.error),"refresh must not clear or silently replace the configuration error");
 
         invalid.tasks.running=true;invalid.refresh();
         check(invalid.stopTask.enabled,"configuration error must not prevent Stop for an active task");
@@ -122,7 +137,7 @@ public final class RuntimeConfigUiHostTest {
 
         RuntimeConfigUiHostTest background=new RuntimeConfigUiHostTest(files);
         background.backgroundMode.checked=true;background.backgroundPackages.add("example.notes");
-        background.engine.configurationError=CONFIG_ERROR;background.refresh();
+        background.engine.runtime.error=CONFIG_ERROR;background.refresh();
         check(background.backgroundMode.checked&&background.backgroundPackages.contains("example.notes"),"refresh must preserve selected background mode and range");
         check(!background.startTask.enabled,"background mode must not re-enable invalid configuration");
 

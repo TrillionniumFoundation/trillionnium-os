@@ -98,6 +98,15 @@ def prepare(source, output):
         'record_exists': section(session, '    private static boolean recordExists(', '    /** Create once; never unlink'),
         'read_record': section(session, '    private static byte[] readSessionRecord(', '    private JSONArray archivePriorRecords('),
     }
+    # The legacy session fixture executes the original task/terminal methods.
+    # The new read-only model-settings admission is covered by its separate gate;
+    # do not fabricate recovery/journal permission endpoints in this fixture.
+    session_settings_only = section(session,
+        '    /** Read-only settings admission. Reuses the ordinary startup/terminal policy without acknowledging it. */',
+        '    private LeaseState readLeaseState(){')
+    if session_parts['persist'].count(session_settings_only) != 1:
+        raise RuntimeError('one model-settings-only helper block in legacy session fixture')
+    session_parts['persist'] = session_parts['persist'].replace(session_settings_only, '', 1)
     fixture = (Path(__file__).parent / 'SessionFixture.template').read_text()
     for name, code in session_parts.items():fixture=fixture.replace('{{'+name+'}}',code)
     (output / 'LocalTaskSession.java').write_text(fixture)
@@ -106,6 +115,13 @@ def prepare(source, output):
         'binding': section(ui, '    @Override protected void onSaveInstanceState(', '    @Override protected void onNewIntent('),
         'intent_start': section(ui, '    private void handleIntent(', '    private void runProbe('),
     }
+    # The actual Intent and beginTask bodies remain exact. Model chooser,
+    # restore and listener UI are tested by the independent settings gate.
+    ui_settings_only = section(ui, '    private void chooseLocalModelFromOwnerButton(){',
+        '    private boolean beginTask(')
+    if ui_parts['intent_start'].count(ui_settings_only) != 1:
+        raise RuntimeError('one model-settings-only UI block in legacy scope fixture')
+    ui_parts['intent_start'] = ui_parts['intent_start'].replace(ui_settings_only, '', 1)
     fixture = (Path(__file__).parent / 'UiFixture.template').read_text()
     for name,code in ui_parts.items():fixture=fixture.replace('{{'+name+'}}',code)
     (output / 'ScopeUiFixture.java').write_text(fixture)
@@ -171,6 +187,13 @@ def prepare(source, output):
         'full_actual_classes':['TaskCompletionGate','NotesCompletionEvidence','LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','SessionTerminalEvidence'],
         'boundary':'Android IO and effect endpoints are fakes; production admission/dispatch and controller code is executed',
         'observer_helper_excluded_from_legacy_collector':{'bytes':len(observer_only.encode()),'sha256':hashlib.sha256(observer_only.encode()).hexdigest(),'covered_by':'tests/native-observation-snapshot/run_host.py','legacy_collector_methods_modified':False},
+        'model_settings_helpers_excluded_from_legacy_fixture':{
+            'covered_by':'tests/local-model-settings/run_host.py',
+            'session_admission':{'bytes':len(session_settings_only.encode()),'sha256':hashlib.sha256(session_settings_only.encode()).hexdigest()},
+            'owner_ui':{'bytes':len(ui_settings_only.encode()),'sha256':hashlib.sha256(ui_settings_only.encode()).hexdigest()},
+            'legacy_session_and_intent_methods_modified':False,
+            'separate_gate_execution_not_claimed_here':True},
+        'personal_notes_recovery_fixture_boundary':'Eligibility is explicitly false and the receipt is always null; this legacy IO fixture cannot create or accept personal Notes recovery authority.',
         'web_fixture_boundary':'Explicit empty Web journal only; real Web OWNER/selection and every helper action/cleanup throw AssertionError; actual Web classes have their separate gate',
         'background_fixture_boundary':'Actual complete immutable Selection and package check extracted verbatim; all broker/display transport remains explicit IO fake and not Android proof',
         'native_validation_prefix_sha256':hashlib.sha256(web_entry_prefix.encode()).hexdigest(),

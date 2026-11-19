@@ -46,6 +46,8 @@ def main():
     def all_inputs():
         paths=set(ROOT.glob("*.py"))
         paths.add(ROOT/"tests/vlm-contract/requirements.txt")
+        paths.update(ROOT/"tests/local-model-settings"/name for name in ("CASE-CONTRACT.json","PRODUCTION-SOURCES.json","README.md"))
+        paths.add(ROOT/"tests/notes-task-info-reader/synthetic-notes-census.json")
         for directory, extensions in (("src",("*.java",)),("tests",("*.java","*.py","*.template","*.inc")),
                                       ("native",("*.c","*.cpp","*.h","*.inc","*.py")),("tools",("*.py",))):
             for extension in extensions: paths.update((ROOT/directory).rglob(extension))
@@ -148,6 +150,25 @@ def main():
             "--source",ROOT,"--output",out/"background-permission-session","--release8"])
         run("runtime-config-ui",[sys.executable,"-B",ROOT/"tests/runtime-config-ui/run_host_tests.py",
             "--source",ROOT,"--output",out/"runtime-config-ui","--release8"])
+        run("local-model-settings",[sys.executable,"-B",ROOT/"tests/local-model-settings/run_host.py",
+            "--source",ROOT,"--output",out/"local-model-settings","--java-home",java_home,"--json-jar",json_jar])
+        settings_raw=(out/"local-model-settings/RESULT.json").read_bytes()
+        settings_gate=json.loads(settings_raw)
+        if (settings_gate.get("schema")!="hepta.local-model-settings-host-gate.v1"
+                or settings_gate.get("all_pass") is not True or settings_gate.get("inputs_unchanged") is not True
+                or settings_gate.get("java_release_api_check") is not True
+                or settings_gate.get("full_production_engine_and_transaction") is not True
+                or settings_gate.get("phone_operations")!=0 or settings_gate.get("native_model_executed") is not False):
+            raise RuntimeError("Local model settings host gate receipt differs")
+        for name,count,assertions in (("transaction",43,196),("generation",15,100)):
+            actual=settings_gate.get("cases",{}).get(name,{})
+            original=json.loads((out/"local-model-settings"/(name+"-cases")/"RESULT.json").read_bytes())
+            if (actual!=original or actual.get("passed") is not True
+                    or type(actual.get("cases")) is not int or actual["cases"]!=count
+                    or type(actual.get("assertions")) is not int or actual["assertions"]!=assertions):
+                raise RuntimeError("Local model settings original cases differ: "+name)
+        report["local_model_settings_gate"]={"bytes":len(settings_raw),"sha256":hashlib.sha256(settings_raw).hexdigest(),
+            "cases":settings_gate["cases"]}
         run("background-broker",[sys.executable,"-B",ROOT/"tests/background-broker/run_host_checks.py",
             "--java",java,"--javac",shutil.which("javac"),"--out",out/"background-broker"])
         run("python-tools",[sys.executable,"-m","unittest","discover","-s","tools","-p","test_*.py","-v"])
@@ -182,6 +203,102 @@ def main():
             "--source",ROOT,"--output",out/"observation-collection","--release8"])
         run("notes-owner-intent",[sys.executable,"-B",ROOT/"tests/notes-owner-intent/run_host_tests.py",
             "--source",ROOT,"--output",out/"notes-owner-intent","--release8"])
+        run("notes-task-info-reader",[sys.executable,"-B",ROOT/"tests/notes-task-info-reader/run_host.py",
+            "--source",ROOT,"--output",out/"notes-task-info-reader","--java-home",java_home,"--json-jar",json_jar])
+        notes_raw=(out/"notes-task-info-reader/RESULT.json").read_bytes()
+        notes_gate=json.loads(notes_raw)
+        notes_fixture={"path":str(ROOT/"tests/notes-task-info-reader/synthetic-notes-census.json"),
+            "bytes":18714,"sha256":"8b44610ab210e5882d5de0cb61583992ccb626ed021b63af277f47407c3af201"}
+        if (notes_gate.get("schema")!="hepta.notes-task-info-reader-gate.v2"
+                or notes_gate.get("all_pass") is not True or notes_gate.get("inputs_unchanged") is not True
+                or notes_gate.get("framework_and_binder_fixtures_synthetic") is not True
+                or notes_gate.get("android_runtime") is not False or notes_gate.get("hardware_qualification_claimed") is not False
+                or type(notes_gate.get("phone_operations")) is not int or notes_gate["phone_operations"]!=0
+                or notes_gate.get("input_mode")!="synthetic_derived_fixture"
+                or notes_gate.get("archived_capture_replayed") is not False or notes_gate.get("input_fixture")!=notes_fixture):
+            raise RuntimeError("Notes TaskInfo gate requires the exact bundled synthetic input and v2 provenance")
+        if (notes_gate.get("inputs_before")!=notes_gate.get("inputs_after")
+                or type(notes_gate.get("inputs_before")) is not list or notes_fixture not in notes_gate["inputs_before"]
+                or not any(row["path"]=="tests/notes-task-info-reader/synthetic-notes-census.json"
+                    and row["sha256"]==notes_fixture["sha256"] for row in report["source_inputs"])):
+            raise RuntimeError("Notes synthetic fixture is missing from complete fixed before/after inputs")
+        notes_cases=notes_gate.get("reflection_cases",{})
+        if (notes_cases.get("schema")!="hepta.notes-task-info-reader-host.v2" or notes_cases.get("all_pass") is not True
+                or notes_cases.get("input_mode")!="synthetic_derived_fixture"
+                or notes_cases.get("input_sha256")!=notes_fixture["sha256"]
+                or notes_cases.get("archived_capture_replayed") is not False
+                or "actual_capture_sha256" not in notes_cases or notes_cases["actual_capture_sha256"] is not None
+                or notes_cases.get("input_values_rehydrated") is not True
+                or notes_cases.get("synthetic_binder_tokens") is not True
+                or notes_cases.get("framework_and_clock_fixtures_synthetic") is not True
+                or notes_cases.get("complete_production_reflection_adapters") is not True
+                or notes_cases.get("hardware_qualification_claimed") is not False
+                or any(type(notes_cases.get(k)) is not int or notes_cases[k]!=0
+                    for k in ("phone_operations","get_child_tasks_calls","mutation_calls"))
+                or type(notes_cases.get("cases")) is not int or notes_cases["cases"]!=71
+                or type(notes_cases.get("assertions")) is not int or notes_cases["assertions"]!=220):
+            raise RuntimeError("Notes TaskInfo case receipt or original 71/220 contract differs")
+        notes_names=notes_cases.get("case_names")
+        if (type(notes_names) is not list or len(notes_names)!=71
+                or any(type(name) is not str or not name for name in notes_names) or len(set(notes_names))!=71):
+            raise RuntimeError("Notes TaskInfo case names are incomplete or duplicated")
+        notes_private=notes_gate.get("original_private_cases",{})
+        if (notes_private.get("schema")!="hepta.profile-broker-host-tests.v1" or notes_private.get("passed") is not True
+                or type(notes_private.get("cases")) is not int or notes_private["cases"]!=47
+                or type(notes_private.get("assertions")) is not int or notes_private["assertions"]!=449
+                or notes_private.get("framework_fixtures_synthetic") is not True or notes_private.get("phone_contacted") is not False):
+            raise RuntimeError("Notes gate changed the original private 47/449 contract")
+        notes_stages=notes_gate.get("stages")
+        if (type(notes_stages) is not list or [row.get("name") for row in notes_stages]!=
+                ["compile-reflection","reflection-cases","compile-original-private","original-private-cases"]
+                or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in notes_stages)):
+            raise RuntimeError("Notes gate lacks its four actual compile/run stages")
+        report["notes_task_info_reader_gate"]={"bytes":len(notes_raw),
+            "sha256":hashlib.sha256(notes_raw).hexdigest(),"input_fixture":notes_fixture,
+            "cases":notes_cases,"original_private_cases":notes_private}
+        run("personal-notes-absence",[sys.executable,"-B",ROOT/"tests/personal-notes-absence/run_host.py",
+            "--source",ROOT,"--output",out/"personal-notes-absence","--java-home",java_home,"--json-jar",json_jar])
+        notes_absence_raw=(out/"personal-notes-absence/RESULT.json").read_bytes()
+        notes_absence=json.loads(notes_absence_raw)
+        if (notes_absence.get("schema")!="hepta.personal-notes-absence-host-validation.v1"
+                or notes_absence.get("all_pass") is not True or notes_absence.get("strict_release8") is not True
+                or notes_absence.get("inputs_unchanged") is not True
+                or notes_absence.get("all_task_values_synthetic") is not True
+                or notes_absence.get("framework_samples_synthetic") is not True
+                or notes_absence.get("current_installation_pm_fixture_synthetic") is not True
+                or notes_absence.get("owned_process_factory_replacements_only") is not True
+                or notes_absence.get("android_runtime") is not False
+                or notes_absence.get("business_success_claimed") is not False
+                or type(notes_absence.get("phone_operations")) is not int or notes_absence["phone_operations"]!=0
+                or notes_absence.get("json_jar_sha256")!="3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"):
+            raise RuntimeError("Notes absence requires strict Java 8 compilation and unchanged synthetic host provenance")
+        notes_absence_contracts={
+            "policy":("hepta.personal-notes-absence-host.v1","cases",44,48,"case_names",
+                "5268244879a35b3fb10d3a9d14131c01e53426f193239647eb5b3f82a6a99cf3"),
+            "client":("hepta.personal-notes-recovery-client-host-tests.v1","checks",22,192,"cases",
+                "775837c86f2ca609de131778c2bc321b0df2653211831b1cbc1e4edce3147e60")}
+        for key,(schema,metric,count,assertions,names_metric,names_hash) in notes_absence_contracts.items():
+            cases=notes_absence.get(key,{})
+            if (cases.get("schema")!=schema or cases.get("all_pass",cases.get("passed")) is not True
+                    or type(cases.get(metric)) is not int or cases[metric]!=count
+                    or type(cases.get("assertions")) is not int or cases["assertions"]!=assertions):
+                raise RuntimeError("Notes absence case contract changed: "+key)
+            names=cases.get(names_metric)
+            if (type(names) is not list or len(names)!=count or len(set(names))!=count
+                    or any(type(name) is not str or not name for name in names)
+                    or hashlib.sha256(json.dumps(names,ensure_ascii=True,separators=(",",":")).encode()).hexdigest()!=names_hash):
+                raise RuntimeError("Notes absence case identities changed: "+key)
+            original=json.loads((out/"personal-notes-absence"/(key+".stdout")).read_bytes())
+            if original!=cases:
+                raise RuntimeError("Notes absence aggregate differs from actual Java stdout: "+key)
+        notes_absence_stages=notes_absence.get("stages")
+        if (type(notes_absence_stages) is not list or [row.get("stage") for row in notes_absence_stages]!=
+                ["policy-compile","policy","client-compile","client"]
+                or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in notes_absence_stages)):
+            raise RuntimeError("Notes absence lacks all four real compile/run stages")
+        report["personal_notes_absence_gate"]={"bytes":len(notes_absence_raw),
+            "sha256":hashlib.sha256(notes_absence_raw).hexdigest(),
+            "policy":notes_absence["policy"],"client":notes_absence["client"]}
         run("owned-worker-cancellation",[sys.executable,"-B",ROOT/"tests/owned-worker-cancellation/run_host_tests.py",
             "--source",ROOT,"--output",out/"owned-worker-cancellation"])
         run("background-owned-task-policy",[sys.executable,"-B",ROOT/"tests/background-owned-task/run_host_tests.py",

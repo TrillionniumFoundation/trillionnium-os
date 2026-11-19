@@ -28,7 +28,11 @@ def identity(path):
 assert sha(runner.read_bytes()) == 'a3dfbeea735c501a5bf0c529987b0ebaf4e805401c0859b99f325e551e066540'
 assert sha(a.json_jar.read_bytes()) == '3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed'
 assert sha((src/'SessionTerminalEvidence.java').read_bytes()) == '566cbd71a364d51069de271afd7db641fcdf2b97f93682107e4f76e9405b7db0'
-assert sha((src/'LocalTaskSession.java').read_bytes()) == '1d15f40b9f6205dac8fc2436544f648038a8a48e13b404941e73a47338188ca6'
+# Preserve the audited legacy file and admit only this reviewed successor. The
+# 21 terminal method bodies below remain byte-identical to the legacy contract.
+assert sha((src/'LocalTaskSession.java').read_bytes()) in {
+    '1d15f40b9f6205dac8fc2436544f648038a8a48e13b404941e73a47338188ca6',
+    '62ad8ddd5b022150df23b04a9f17ee563336a7b92c1728fb091782be91c97bfc'}
 assert sha((src/'NativeActionSnapshotCheck.java').read_bytes()) == 'de64eaf86b0a1a31f48fcf3ea933d3ec821d385788a619fc19881829acf33aec'
 
 # Use the already reviewed real-file IO fixture producer through its complete
@@ -45,6 +49,13 @@ try:
 finally:
     sys.argv = saved_argv
 body = ns['body']
+# This gate exercises the real terminal projection, not the unrelated model
+# settings/recovery UI methods added elsewhere in LocalTaskSession. Retain an
+# exact fixed digest of every original exercised method, before any case runs.
+terminal_projection = ns['record']['extracted_methods']
+assert len(terminal_projection) == 21
+assert sha(json.dumps(terminal_projection, ensure_ascii=True, sort_keys=True,
+                      separators=(',', ':')).encode()) == '40cb05319f03a05f57d07495381e6a9ae3f8448d65b2539c0264445e9c7c849c'
 
 controller = (src/'LocalTaskController.java').read_text(encoding='utf-8')
 service = (src/'HeptaAccessibilityService.java').read_text(encoding='utf-8')

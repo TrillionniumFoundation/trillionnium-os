@@ -56,6 +56,10 @@ final class NativeCtripLoginLoadingHostTest {
     static NativeCtripFlightPage.Page inspect(JSONObject r)throws Exception{return NativeCtripFlightPage.inspect(NativeAppProviderHostTest.goal(),frame(harness("inspect"),r));}
     static void unavailable(JSONObject r)throws Exception{NativeCtripFlightPage.Page p=inspect(r);check(NativeCtripFlightPage.UNAVAILABLE.equals(p.phase),"unsupported shape stays unavailable");check(p.form==null&&p.homeFlight==null&&p.quotes.isEmpty(),"no business fields or actions");}
     static void noEffects(NativeAppDomain d){check(d.clickIds.isEmpty()&&d.resourceClickIds.isEmpty()&&d.editValues.isEmpty()&&!d.backAllowed&&!d.resultReady,"no effect or successful result permission");}
+    static void boundedReturnOnly(NativeAppDomain d){
+        check(d.clickIds.equals(Collections.singleton("n0"))&&d.resourceClickIds.isEmpty()&&d.editValues.isEmpty()&&!d.backAllowed&&!d.resultReady,"only explicit return; no account, system Back or result authority");
+        check(d.purposes.size()==1&&NativeCtripFlightPage.LOGIN_EXIT.equals(d.purposes.get("n0")),"Ctrip query-bound return purpose");
+    }
     static ActionDecision action(NativeAppProviderHostTest.Harness h,String kind,String status,String id)throws Exception{
         JSONObject j=new JSONObject().put("action",kind).put("package",h.frame.packageName).put("observation_id",h.frame.observationId);
         if(status!=null)j.put("status",status).put("summary","synthetic host result");
@@ -184,8 +188,8 @@ final class NativeCtripLoginLoadingHostTest {
             check(!h.session.domain().resultReady&&h.session.domain().missing.contains("same_task_explicit_query_missing"),"stale proposal creates no query proof");
         });
         one("complete_cards_without_query_proof_remain_unverified",()->{NativeAppProviderHostTest.Harness h=harness("cached-cards");h.observe("result17.xml");check(!h.session.domain().resultReady&&h.session.domain().backAllowed,"complete cached quotes are not task completion");});
-        one("loading_then_login_has_truthful_blocker_and_no_return_permission",()->{NativeAppProviderHostTest.Harness h=harness("loading-login");query17(h);observe(h,loading());observe(h,login());check(NativeCtripFlightPage.LOGIN_REQUIRED.equals(h.session.domain().phase),"real observed next phase");noEffects(h.session.domain());});
-        one("login_revokes_previously_ready_flight_cards",()->{NativeAppProviderHostTest.Harness h=harness("ready-login");h.ready();observe(h,login());noEffects(h.session.domain());check(!h.gate.verified(h.completion),"login cannot reuse prior result");});
+        one("loading_then_login_has_only_bounded_return_without_result",()->{NativeAppProviderHostTest.Harness h=harness("loading-login");query17(h);observe(h,loading());observe(h,login());check(NativeCtripFlightPage.LOGIN_REQUIRED.equals(h.session.domain().phase),"real observed next phase");boundedReturnOnly(h.session.domain());});
+        one("login_revokes_previously_ready_flight_cards",()->{NativeAppProviderHostTest.Harness h=harness("ready-login");h.ready();observe(h,login());boundedReturnOnly(h.session.domain());check(!h.gate.verified(h.completion),"login cannot reuse prior result");});
         one("incomplete_loading_observation_never_receives_result_or_navigation",()->{NativeAppProviderHostTest.Harness h=harness("incomplete-loading");query17(h);JSONObject r=loading();r.put("nodes_truncated",true);observe(h,r);noEffects(h.session.domain());check(!h.gate.verified(h.completion),"incomplete post-query frame no result");});
         Map<String,Object> out=NativeAppEvidence.map();out.put("schema","hepta.native-ctrip-login-loading-host.v1");out.put("all_pass",true);
         out.put("case_names",names);out.put("cases",names.size());out.put("assertions",checks);out.put("phone_operations",0);out.put("android_runtime",false);

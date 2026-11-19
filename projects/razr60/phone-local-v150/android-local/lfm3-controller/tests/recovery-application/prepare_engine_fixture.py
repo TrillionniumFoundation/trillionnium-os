@@ -17,7 +17,8 @@ def prepare(source,output):
         "RunHandle":_section(engine,"    public static final class RunHandle {","    /** Retains the existing process-wide slot"),
         "external_path":_section(engine,"    /** Shares the existing single-model slot","    /** An aggregate startup barrier"),
         "recovery_path":_section(engine,"    /** An aggregate startup barrier","    public RunHandle start("),
-        "process_admission":_section(engine,"    private static void claimProcess(","    public Result lastResult()"),
+        "process_admission":_section(engine,"    private void claimProcess(","    public Result lastResult()"),
+        "runtime_generation":_section(engine,"    static final class RuntimeGeneration {","    private volatile RuntimeGeneration runtime;"),
         "captured_cancellation":_section(engine,"    public void cancelActive() {","    JSONObject cancellationEvidence()"),
     }
     declarations=[]
@@ -29,6 +30,8 @@ def prepare(source,output):
         "    private final AtomicBoolean closed",
         "    private volatile TaskCancellationQueue.Ticket lastCancellation",
         "    private final Context context;",
+        "    private volatile RuntimeGeneration runtime;",
+        "    private volatile boolean settingsBlocked;",
     ):
         matches=[line for line in engine.splitlines() if line.startswith(prefix)]
         if len(matches)!=1:
@@ -41,7 +44,10 @@ def prepare(source,output):
         "import android.content.Context;\nimport java.util.UUID;\nimport java.util.concurrent.atomic.*;\n"
         "public final class LocalModelEngine implements AutoCloseable {\n"
         +"\n".join(declarations)+"\n"
-        +"public LocalModelEngine(Context context){this.context=context.getApplicationContext();}\n"
+        +"public LocalModelEngine(Context context){this.context=context.getApplicationContext();runtime=new RuntimeGeneration(LocalRuntimeConfig.defaults(),null,new ModelFileVerifier(),null);}\n"
+        +"private static final class RuntimeConfigTransaction {static final class Snapshot{}}\n"
+        +"boolean settingsAdmissionAvailable(boolean restoring){throw new AssertionError(\"settings admission is outside the legacy recovery fixture\");}\n"
+        +parts["runtime_generation"]
         +parts["RunHandle"]+parts["external_path"]+parts["recovery_path"]
         +parts["process_admission"]+parts["captured_cancellation"]
         +"@Override public void close(){closed.set(true);cancelActive();}\n}\n"
@@ -49,12 +55,30 @@ def prepare(source,output):
     engine_file=output/"LocalModelEngine.java";engine_file.write_text(rendered,encoding="utf-8")
     names=["LocalProbeApplication.java","RecoverySlotHandoff.java","RecoveryDispatch.java",
            "RecoveryQuiescence.java","RecoveryJournalTransaction.java","DiagnosticStartupGate.java","OwnedWorkerCancellation.java",
-           "TaskCancellationQueue.java"]
+           "TaskCancellationQueue.java","LocalRuntimeConfig.java","ModelProfile.java","ModelFileVerifier.java"]
     actual=[package/name for name in names]
     fixtures=sorted((source/"tests/recovery-application").rglob("*.java"))
     if len(fixtures)!=11:
         raise RuntimeError("unexpected Application host fixture closure")
-    all_sources=actual+[engine_file]+fixtures
+    # The new Application owns this service, but these original recovery cases never enter settings.
+    # Calls into settings-specific policy fail loudly; the full production Engine/settings gate is separate.
+    settings_file=output/"LocalModelSettings.java"
+    settings_file.write_text("""package org.trillionnium.hepta.local;
+final class LocalModelSettings implements AutoCloseable {
+ LocalModelSettings(LocalProbeApplication app,LocalModelEngine engine){}
+ boolean isBusy(){throw new AssertionError("settings UI is outside the legacy recovery fixture");}
+ boolean restoreAvailable(){throw new AssertionError("settings UI is outside the legacy recovery fixture");}
+ public void close(){}
+}
+""",encoding="utf-8")
+    service_file=output/"HeptaAccessibilityService.java"
+    service_file.write_text("""package org.trillionnium.hepta.local;
+final class HeptaAccessibilityService {
+ static HeptaAccessibilityService connected(){throw new AssertionError("settings UI is outside the legacy recovery fixture");}
+ boolean modelSettingsIdle(){throw new AssertionError("settings UI is outside the legacy recovery fixture");}
+}
+""",encoding="utf-8")
+    all_sources=actual+[engine_file,settings_file,service_file]+fixtures
     digest=lambda b:hashlib.sha256(b).hexdigest()
     record={
         "scope":"actual Application and exact Engine external/recovery members; Android/normal IO/Session/permission Session/diagnostic fixtures",
@@ -66,6 +90,7 @@ def prepare(source,output):
         "generated_engine_fixture_sha256":digest(rendered.encode()),
         "java_inputs":[{"path":str(path),"sha256":digest(path.read_bytes())} for path in all_sources],
         "not_android_runtime":True,"not_session_filesystem_durability":True,
+        "runtime_boundary":"Exact RuntimeGeneration class and actual config/profile/verifier types; snapshot IO is opaque, default construction is a fixture; new settings UI throws if entered. Original recovery assertions are unchanged.",
     }
     (output/"EXTRACTION.json").write_text(json.dumps(record,indent=2)+"\n",encoding="utf-8")
     return all_sources

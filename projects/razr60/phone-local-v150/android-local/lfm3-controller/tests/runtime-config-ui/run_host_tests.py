@@ -56,6 +56,9 @@ def main():
         "model_directory": method(engine, "public File modelDirectory()"),
         "model_file": method(engine, "public File modelFile()"),
         "configuration": method(engine, "public LocalRuntimeConfig configuration()"),
+        "model_directory_config": method(engine, "private File modelDirectory(LocalRuntimeConfig config)"),
+        "model_file_config": method(engine, "private File modelFile(LocalRuntimeConfig config)"),
+        "generation_configuration": method(engine, "LocalRuntimeConfig configuration(){"),
     }
     # The original model-config fixture has no authorization-preview pane.
     # Retain the actual absent-pane guard; any attempt to use a present pane throws.
@@ -99,6 +102,7 @@ def main():
         "preview_absent_guard_sha256":hashlib.sha256(preview_guard.encode()).hexdigest(),
         "permission_boundary":"Exact absent-pane guard only; a present pane throws. Permission worker and choice lifecycle have their separate gate; no rendered UI claim.",
         "permission_absent_guard_sha256":hashlib.sha256(permission_guard.encode()).hexdigest(),
+        "generation_boundary":"Exact three dependency methods; the original seven UI/config subjects and assertions remain. Mutable configuration/error are view fixture inputs, not production settings or publication.",
         "native_model_tested": False, "configuration_modified": False}
     for name, command in stages:
         try:

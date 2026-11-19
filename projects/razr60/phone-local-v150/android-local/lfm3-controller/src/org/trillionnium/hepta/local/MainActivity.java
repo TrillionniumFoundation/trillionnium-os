@@ -17,8 +17,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 /** Visible owner task UI, application-owned session, and explicit local model diagnostics. */
-public final class MainActivity extends Activity implements LocalTaskSession.Listener,BackgroundPermissionSession.Listener {
+public final class MainActivity extends Activity implements LocalTaskSession.Listener,BackgroundPermissionSession.Listener,LocalModelSettings.Listener {
     private LocalModelEngine engine;
+    private LocalModelSettings modelSettings;
+    private Button chooseLocalModel,restoreLocalModel;
+    private TextView localModelSettingsState;
     private LocalTaskSession tasks;
     private MobiMindModelEngine visualDiagnostic;
     private UiVenusModelEngine uiVenusDiagnostic;
@@ -71,7 +74,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         super.onCreate(state);
         LocalProbeApplication app=(LocalProbeApplication)getApplication();
         engine=app.modelEngine();tasks=app.taskSession();visualDiagnostic=app.mobiMindDiagnostic();
-        backgroundPermission=app.backgroundPermissionPreparation();
+        backgroundPermission=app.backgroundPermissionPreparation();modelSettings=app.modelSettings();
         uiVenusDiagnostic=app.uiVenusDiagnostic();
         ScrollView outer=new ScrollView(this);outer.setFillViewport(true);
         LinearLayout page=new LinearLayout(this);page.setOrientation(LinearLayout.VERTICAL);
@@ -188,6 +191,12 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         diagnostics=new LinearLayout(this);diagnostics.setOrientation(LinearLayout.VERTICAL);diagnostics.setVisibility(View.GONE);page.addView(diagnostics);
         showDiagnostics.setOnClickListener(v -> diagnostics.setVisibility(diagnostics.getVisibility()==View.VISIBLE?View.GONE:View.VISIBLE));
         modelDiagnostics=text("",12);diagnostics.addView(modelDiagnostics);
+        LinearLayout modelSettingsButtons=new LinearLayout(this);diagnostics.addView(modelSettingsButtons);
+        chooseLocalModel=new Button(this);chooseLocalModel.setText("本地模型设置");modelSettingsButtons.addView(chooseLocalModel);
+        restoreLocalModel=new Button(this);restoreLocalModel.setText("恢复上次配置");modelSettingsButtons.addView(restoreLocalModel);
+        chooseLocalModel.setOnClickListener(v -> chooseLocalModelFromOwnerButton());
+        restoreLocalModel.setOnClickListener(v -> restoreLocalModelFromOwnerButton());
+        localModelSettingsState=text("",12);diagnostics.addView(localModelSettingsState);
         diagnostics.addView(showBackgroundPermission);diagnostics.addView(backgroundPermissionDetails);
         diagnostics.addView(text("本次指令的权限与工具范围",12));diagnostics.addView(taskAuthorizationInfo);
         diagnostics.addView(text("任务记录",12));diagnostics.addView(progress);
@@ -326,6 +335,49 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             probePrompt.post(() -> runProbe(image,max));
         }
     }
+    private void chooseLocalModelFromOwnerButton(){
+        LocalProbeApplication app=(LocalProbeApplication)getApplication();
+        if(profileCatalogueLoading||!app.canChangeLocalModelSettings(false)){
+            localModelSettingsState.setText("请先等待任务、后台空间和模型队列完全空闲。");return;
+        }
+        final String[] labels={
+            "LFM3-1.7B · Hexagon NPU（基线）\nQAD Q4_0 · 可用内存门槛 3 GiB",
+            "LFM3-1.7B · Adreno GPU\nQAD Q4_0 · 可用内存门槛 3 GiB",
+            "LFM2.5-8B-A1B · Hexagon NPU（实验）\nQ4_0 · 可用内存门槛 7 GiB",
+            "LFM2.5-8B-A1B · Adreno GPU（实验）\nQ4_0 · 可用内存门槛 7 GiB"};
+        int current=0;
+        try{LocalRuntimeConfig config=engine.configuration();current=(config.profile==ModelProfile.LFM25_8B_A1B?2:0)+("gpu".equals(config.compute)?1:0);}
+        catch(Exception unavailable){/* The actual apply still rejects an unreadable prior configuration. */}
+        final int[] selected={current};
+        new AlertDialog.Builder(this).setTitle("选择本地模型 · 8192 上下文 / 4 线程")
+                .setSingleChoiceItems(labels,current,(dialog,which)->selected[0]=which)
+                .setNegativeButton("取消",null).setPositiveButton("保存",(dialog,which)->{
+                    int choice=selected[0];
+                    try{
+                        if(choice<0||choice>=4||profileCatalogueLoading||!app.canChangeLocalModelSettings(false))
+                            throw new IllegalStateException("设置范围或当前空闲状态已变化");
+                        modelSettings.start((choice<2?ModelProfile.LFM3:ModelProfile.LFM25_8B_A1B).id,
+                                choice%2==0?"npu":"gpu",false);refresh();
+                    }catch(Exception error){localModelSettingsState.setText("未更改配置："+HeptaAccessibilityService.message(error));}
+                }).show();
+    }
+    private void restoreLocalModelFromOwnerButton(){
+        LocalProbeApplication app=(LocalProbeApplication)getApplication();
+        if(profileCatalogueLoading||!app.canChangeLocalModelSettings(true)){
+            localModelSettingsState.setText("当前没有可恢复的配置，或任务和模型队列尚未空闲。");return;
+        }
+        new AlertDialog.Builder(this).setTitle("恢复上一次模型配置")
+                .setMessage("核验空闲后恢复上次保存前的本地模型设置。本次不会启动推理或操作应用。")
+                .setNegativeButton("取消",null).setPositiveButton("恢复",(dialog,which)->{
+                    try{
+                        if(profileCatalogueLoading||!app.canChangeLocalModelSettings(true))
+                            throw new IllegalStateException("当前空闲状态已变化");
+                        modelSettings.start(null,null,true);refresh();
+                    }catch(Exception error){localModelSettingsState.setText("未开始恢复："+HeptaAccessibilityService.message(error));}
+                }).show();
+    }
+    @Override public void onLocalModelSettingsChanged(){refresh();}
+
     private boolean beginTask(String owner,String source,String nonceSha){
         try{
             if(tasks.isRunning()||tasks.isBlocked()||engine.isBusy())throw new IllegalStateException("已有本地请求正在运行或退出状态待确认");
@@ -721,6 +773,10 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         }
         modelInfo.setText(modelState+" · "+(available?"无障碍已启用":"请启用无障碍"));
         modelDiagnostics.setText(modelName+" · "+device+" · 无外部模型");
+        LocalProbeApplication modelApp=(LocalProbeApplication)getApplication();
+        chooseLocalModel.setEnabled(!profileCatalogueLoading&&modelApp.canChangeLocalModelSettings(false));
+        restoreLocalModel.setEnabled(!profileCatalogueLoading&&modelApp.canChangeLocalModelSettings(true));
+        localModelSettingsState.setText(modelSettings.state()+"\n设置只使用本机文件；不自动回退 CPU。内存门槛不是实测峰值，8B 仍需同条件验证。");
         taskState.setText(TaskDisplayText.forStatus(tasks.state()));taskLog.setText(tasks.log());
         boolean busy=tasks.isRunning()||engine.isBusy()||profileCatalogueLoading;
         backgroundPermissionState.setText(backgroundPermission.state());
@@ -741,7 +797,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                 &&!tasks.hasBackgroundLease()&&!backgroundPermission.blocksOtherWork()
                 &&(personalIndependentTarget()||independentPersonalDisplay.isChecked()||backgroundDisplayPreferenceError!=null));
         cleanupBackground.setVisibility(tasks.hasBackgroundLease()?View.VISIBLE:View.GONE);
-        cleanupBackground.setEnabled(!tasks.isRunning()&&!tasks.isRecovering()&&!backgroundPermission.blocksOtherWork());
+        cleanupBackground.setEnabled(!modelSettings.isBusy()&&!tasks.isRunning()&&!tasks.isRecovering()&&!backgroundPermission.blocksOtherWork());
         boolean recoveryAvailable=tasks.canAcknowledgeInterruption();
         acknowledgeInterruption.setVisibility(tasks.isBlocked()||tasks.isRecovering()||recoveryAvailable?View.VISIBLE:View.GONE);
         acknowledgeInterruption.setEnabled(recoveryAvailable);
@@ -750,7 +806,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         pickBackgroundApps.setText(backgroundError==null
                 ?(backgroundPackages.isEmpty()?"选择后台应用范围":"后台范围："+backgroundPackages.size()+" 个应用（更改）")
                 :"后台应用范围（需重新确认）");
-        startTask.setEnabled(available&&configurationReady&&!busy&&!tasks.isBlocked()&&(!backgroundMode.isChecked()||backgroundError==null));stopTask.setEnabled(busy);
+        startTask.setEnabled(available&&configurationReady&&!busy&&!tasks.isBlocked()&&(!backgroundMode.isChecked()||backgroundError==null));stopTask.setEnabled(busy&&!modelSettings.isBusy());
         runText.setEnabled(configurationReady&&!visualProfile&&!busy&&!tasks.isBlocked());
         LocalTaskController.TaskResult result=tasks.lastResult();
         if(result!=null){
@@ -815,7 +871,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             android.system.Os.chmod(file.getBaseFile().getPath(),0600);
         }catch(Exception ignored){if(out!=null)file.failWrite(out);}
     }
-    @Override protected void onStart(){super.onStart();if(tasks!=null)tasks.bind(this);if(backgroundPermission!=null)backgroundPermission.bind(this);
+    @Override protected void onStart(){super.onStart();if(tasks!=null)tasks.bind(this);if(backgroundPermission!=null)backgroundPermission.bind(this);if(modelSettings!=null)modelSettings.bind(this);
         accessibilityUiStarted=true;HeptaAccessibilityService.addConnectionListener(accessibilityConnectionChanged);
         if(profilePermissionService!=null)profilePermissionService.permissionUi().bind(profilePermissionChanged);
         refreshProfilePermission();
@@ -831,6 +887,6 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             profilePermissionService.permissionUi().ownerVisibility(this,null,false);
             profilePermissionService.permissionUi().unbind(profilePermissionChanged);
         }
-        if(tasks!=null)tasks.unbind(this);if(backgroundPermission!=null)backgroundPermission.unbind(this);super.onStop();
+        if(tasks!=null)tasks.unbind(this);if(backgroundPermission!=null)backgroundPermission.unbind(this);if(modelSettings!=null)modelSettings.unbind(this);super.onStop();
     }
 }

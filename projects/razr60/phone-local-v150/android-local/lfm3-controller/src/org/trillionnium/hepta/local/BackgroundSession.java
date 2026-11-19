@@ -146,6 +146,7 @@ final class BackgroundSession {
         final ProfileRecoveryClient.Receipt prelaunchRecovery;
         final ProfilePostlaunchRecoveryClient.Receipt postlaunchRecovery;
         final PublicProfileRecoveryClient.Receipt publicProfileRecovery;
+        final PublicPersonalNotesRecoveryClient.Receipt personalNotesRecovery;
         Cleanup(boolean known,JSONObject evidence){this(known,evidence,null,null);}
         private Cleanup(boolean known,JSONObject evidence,ProfileRecoveryClient.Receipt receipt){
             this(known,evidence,receipt,null);
@@ -156,7 +157,13 @@ final class BackgroundSession {
         }
         private Cleanup(boolean known,JSONObject evidence,ProfileRecoveryClient.Receipt prelaunch,
                 ProfilePostlaunchRecoveryClient.Receipt postlaunch,PublicProfileRecoveryClient.Receipt publicProfile){
-            this.known=known;this.evidence=evidence;prelaunchRecovery=prelaunch;postlaunchRecovery=postlaunch;publicProfileRecovery=publicProfile;
+            this(known,evidence,prelaunch,postlaunch,publicProfile,null);
+        }
+        private Cleanup(boolean known,JSONObject evidence,ProfileRecoveryClient.Receipt prelaunch,
+                ProfilePostlaunchRecoveryClient.Receipt postlaunch,PublicProfileRecoveryClient.Receipt publicProfile,
+                PublicPersonalNotesRecoveryClient.Receipt personalNotes){
+            this.known=known;this.evidence=evidence;prelaunchRecovery=prelaunch;postlaunchRecovery=postlaunch;
+            publicProfileRecovery=publicProfile;personalNotesRecovery=personalNotes;
         }
     }
     final String taskId,generation,socketName,displayName,ownerSha256;
@@ -328,8 +335,23 @@ final class BackgroundSession {
     private boolean publicProfilePostlaunchRecoveryEligible(){return publicOwnGroupScope!=null&&profileTarget()!=null
             &&profileTarget().profile.userId==10&&retired&&profileLaunchAttempted&&bootstrapDispatched&&displayId>1
             &&brokerExitObserved&&Integer.valueOf(0).equals(brokerExitCode)&&"CLEANUP_UNKNOWN".equals(state);}
+    /** Read-only absence recovery for a stopped personal Notes lease. The original
+     * broker exit/release remains unknown; only a new opaque receipt can close it. */
+    synchronized boolean personalNotesRecoveryEligible(){return publicOwnGroupScope!=null&&profileTarget()==null
+            &&requiresPersonalNotesRetirement()&&retired&&bootstrapDispatched&&displayId>1&&"CLEANUP_UNKNOWN".equals(state);}
     synchronized void acceptReconciliation(Cleanup result)throws Exception{
         if(result==null)throw new IOException("后台清理凭据缺失");
+        if(result.personalNotesRecovery!=null){
+            PublicPersonalNotesRecoveryClient.Receipt receipt=result.personalNotesRecovery;
+            if(result.prelaunchRecovery!=null||result.postlaunchRecovery!=null||result.publicProfileRecovery!=null
+                    ||!result.known||!personalNotesRecoveryEligible()||hasUnreleased(context)
+                    ||!displayAbsent(context,displayId,displayName)||!generation.equals(result.evidence.getString("generation"))
+                    ||!receipt.request.source().equals(result.evidence.getString("reconciliation_source"))
+                    ||!receipt.receiptSha256().equals(result.evidence.getString("personal_notes_receipt_sha256")))
+                throw new IOException("备忘录缺席恢复凭据不属于当前停止的个人空间租约");
+            receipt.requireLease(taskId,generation,ownerSha256,createdElapsed,expiresElapsed,bootCount,publicOwnGroupScope,displayId);
+            retirePublicScope();retired=true;state="RELEASED";cleanupConfirmed=true;return;
+        }
         if(result.publicProfileRecovery!=null){
             PublicProfileRecoveryClient.Receipt receipt=result.publicProfileRecovery;
             if(result.prelaunchRecovery!=null||result.postlaunchRecovery!=null||!result.known||!publicProfileRecoveryEligible()
@@ -1098,6 +1120,26 @@ final class BackgroundSession {
             // Commit only the background lease. All original failure files and independent leases remain.
             Os.remove(path.getPath());MobiMindPrivateFiles.syncDirectory(root.path);
             return new Cleanup(true,verifiedEvidence,null,null,receipt);
+        }
+        if(publicScope!=null&&target==null&&prelaunchCheck!=null&&id>1
+                &&journalRequiresPersonalNotes(old,publicScope)&&"CLEANUP_UNKNOWN".equals(old.getString("state"))
+                &&readBootCount(context)==old.getInt("boot_count")&&expiry<Long.MAX_VALUE-2000
+                &&SystemClock.elapsedRealtime()>expiry+2000){
+            // No close, display, task, package or process mutation enters this branch.
+            prelaunchCheck.check();originalRead.unchangedPath();
+            PublicPersonalNotesRecoveryClient.Receipt receipt=PublicPersonalNotesRecoveryClient.collect(context,originalRead,prelaunchCheck);
+            receipt.persist(context);final JSONObject verifiedEvidence=receipt.evidence();
+            prelaunchCheck.check();root.unchanged(context);receipt.requireOriginals(true);originalRead.unchangedPath();
+            byte[] current=MobiMindPrivateFiles.read(path,16384,true).bytes;
+            if(!java.util.Arrays.equals(originalJournal,current)||!receipt.request.journalSha256.equals(HeptaAccessibilityService.sha(current))
+                    ||receipt.request.displayId!=id||!displayAbsent(context,id,name))
+                throw new IOException("备忘录缺席恢复期间原租约或显示状态发生变化");
+            receipt.request.requireFence(SystemClock.elapsedRealtime(),readBootCount(context));
+            prelaunchCheck.check();root.unchanged(context);receipt.requireOriginals(true);originalRead.unchangedPath();
+            // Only this CAS-bound active lease is retired. Its failed task, cleanup and
+            // original control-session bytes have already been durably archived.
+            Os.remove(path.getPath());MobiMindPrivateFiles.syncDirectory(root.path);
+            return new Cleanup(true,verifiedEvidence,null,null,null,receipt);
         }
         int recoveryVersion=publicScope==null?(target==null?BrokerProtocol.VERSION:BrokerProtocol.PROFILE_VERSION)
                 :(target==null?BrokerProtocol.PUBLIC_OWN_GROUP_VERSION:BrokerProtocol.PUBLIC_OWN_GROUP_PROFILE_VERSION);

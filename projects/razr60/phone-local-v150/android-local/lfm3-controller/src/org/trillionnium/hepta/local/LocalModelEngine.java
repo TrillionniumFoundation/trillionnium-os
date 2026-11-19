@@ -20,7 +20,8 @@ public final class LocalModelEngine implements AutoCloseable {
     private static final int OUTPUT_LIMIT = 1024 * 1024;
     private final Context context;
     private final File files;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final java.util.concurrent.ThreadPoolExecutor executor = new java.util.concurrent.ThreadPoolExecutor(
+            1,1,0L,TimeUnit.MILLISECONDS,new java.util.concurrent.LinkedBlockingQueue<Runnable>());
     private static final AtomicReference<RunHandle> PROCESS_ACTIVE = new AtomicReference<>();
     // Only flags/CAS/queue reservation run under this gate; no native signal, IO or exit wait.
     private static final TaskCancellationQueue ACTIVE_CANCELLATION = TaskCancellationQueue.processQueue();
@@ -30,19 +31,37 @@ public final class LocalModelEngine implements AutoCloseable {
     private final AtomicBoolean closed = new AtomicBoolean(false);
     private volatile Result lastResult;
     private volatile TaskCancellationQueue.Ticket lastCancellation;
-    private final ModelFileVerifier modelVerifier = new ModelFileVerifier();
-    private final LocalRuntimeConfig configuration;
-    private final String configurationError;
+    /** Stable engine shell; one immutable configuration/cache generation per explicit settings commit. */
+    static final class RuntimeGeneration {
+        final String id=UUID.randomUUID().toString().replace("-","");
+        final LocalRuntimeConfig config;
+        final RuntimeConfigTransaction.Snapshot source;
+        final ModelFileVerifier verifier;
+        final String error;
+        RuntimeGeneration(LocalRuntimeConfig config,RuntimeConfigTransaction.Snapshot source,
+                ModelFileVerifier verifier,String error){
+            this.config=config;this.source=source;this.verifier=verifier;this.error=error;
+        }
+        LocalRuntimeConfig configuration(){
+            if(error!=null)throw new IllegalStateException("本地运行参数无效："+error);
+            return config;
+        }
+    }
+    private volatile RuntimeGeneration runtime;
+    private volatile boolean settingsBlocked;
+    private SettingsReservation settingsReservation;
 
     public LocalModelEngine(Context context) {
         this.context = context.getApplicationContext();
         this.files = this.context.getFilesDir();
-        LocalRuntimeConfig selected = LocalRuntimeConfig.defaults();
-        String failure = null;
-        try { selected = readConfiguration(); }
-        catch (Exception error) { failure = error.getMessage(); }
-        this.configuration = selected;
-        this.configurationError = failure;
+        try {
+            RuntimeConfigTransaction.Snapshot source=RuntimeConfigTransaction.current(files);
+            runtime=generation(source,new ModelFileVerifier());
+        } catch (Exception error) {
+            runtime=new RuntimeGeneration(LocalRuntimeConfig.defaults(),null,new ModelFileVerifier(),error.toString());
+        }
+        try { settingsBlocked=RuntimeConfigTransaction.pending(files); }
+        catch(Exception unknown){settingsBlocked=true;}
     }
 
     public static final class Request {
@@ -92,6 +111,7 @@ public final class LocalModelEngine implements AutoCloseable {
         private RunHandle(String runId){this(runId,null);}
         private RunHandle(String runId,RunHandle taskOwner){this.runId=runId;this.taskOwner=taskOwner;this.cancelTicket=TaskCancellationQueue.Ticket.forRun(this,runId);}
         private final RunHandle taskOwner;
+        private RuntimeGeneration runtime;
         private final TaskCancellationQueue.Ticket cancelTicket;
         private final AtomicBoolean cancelRequested = new AtomicBoolean(false);
         // A caller may be Stop, a deadline, or lifecycle shutdown. Internal failure cleanup is separate.
@@ -117,6 +137,7 @@ public final class LocalModelEngine implements AutoCloseable {
     public final class WarmTask {
         public final String taskId;
         private final RunHandle owner=new RunHandle();
+        private final RuntimeGeneration runtime;
         private final OwnedWorkerCancellation cancellation;
         private final AtomicReference<RunHandle> request=new AtomicReference<>();
         private final AtomicBoolean ending=new AtomicBoolean();
@@ -128,9 +149,9 @@ public final class LocalModelEngine implements AutoCloseable {
         private Future<LocalInference.TaskCleanup> finisher;
         private long finisherSubmittedNanos,finisherDeadlineNanos;
         private int acceptedRequests;
-        private WarmTask(String taskId){
-            this.taskId=taskId;
-            cancellation="npu".equals(configuration.compute)
+        private WarmTask(String taskId,RuntimeGeneration runtime){
+            this.taskId=taskId;this.runtime=runtime;
+            cancellation="npu".equals(runtime.configuration().compute)
                     ?OwnedWorkerCancellation.forWarmNpu(owner.runId,taskId)
                     :new OwnedWorkerCancellation(owner.runId,taskId);
             owner.ownedCancellation=cancellation; // Fixed before either task or Process can be published.
@@ -141,11 +162,14 @@ public final class LocalModelEngine implements AutoCloseable {
     public synchronized WarmTask beginWarmTask(String taskId){
         LocalProbeApplication.requirePermissionPreparationIdle(context);
         if(!WarmProcessSession.validId(taskId)||closed.get())throw new IllegalStateException("invalid or closed task model session");
-        configuration();
-        WarmTask task=new WarmTask(taskId);
-        claimProcess(task.owner,active);warmActive.set(task);
-        if(closed.get())task.owner.cancel();
-        return task;
+        synchronized(PROCESS_ADMISSION){
+            RuntimeGeneration snapshot=runtime;snapshot.configuration();
+            WarmTask task=new WarmTask(taskId,snapshot);
+            claimProcess(task.owner,active);warmActive.set(task);
+            if(task.owner.runtime!=snapshot)throw new IllegalStateException("warm configuration generation changed");
+            if(closed.get())task.owner.cancel();
+            return task;
+        }
     }
     public void cancelWarmTask(WarmTask task){
         if(task==null||warmActive.get()!=task)return;
@@ -157,6 +181,7 @@ public final class LocalModelEngine implements AutoCloseable {
         if(task==null||warmActive.get()!=task||task.ending.get()||task.owner.isCancellationRequested()
                 ||PROCESS_ACTIVE.get()!=task.owner||closed.get())throw new IllegalStateException("task worker unavailable or retired");
         final RunHandle handle=new RunHandle(UUID.randomUUID().toString().replace("-",""),task.owner);
+        handle.runtime=task.runtime;
         if(!task.request.compareAndSet(null,handle))throw new IllegalStateException("overlapping task model request");
         try{executor.execute(()->execute(handle,request,listener,task));}
         catch(RuntimeException error){task.request.compareAndSet(handle,null);throw error;}
@@ -311,6 +336,7 @@ public final class LocalModelEngine implements AutoCloseable {
         checkSdkOriginal(new File(run,"system.txt"),system,held);
         checkSdkOriginal(new File(run,"grammar.gbnf"),grammar,held);
         if(grammar!=null&&!sha256(grammar).equals(request.controllerGrammar.sha256))throw new IOException("original grammar identity differs");
+        LocalRuntimeConfig configuration=task.runtime.configuration();
         String modelPath=new File(new File(canonicalFiles,"model"),configuration.profile.fileName).getPath();
         SdkExceptionFailure.Expected expected=new SdkExceptionFailure.Expected(configuration,task.generation(),task.taskId,h.runId,
                 task.session.workerPid(),task.session.requestsSent(),task.acceptedRequests,request.maxTokens,
@@ -339,7 +365,7 @@ public final class LocalModelEngine implements AutoCloseable {
             MobiMindPrivateFiles.Read appRequest=MobiMindPrivateFiles.read(new File(run,"app-receipt.json"),OUTPUT_LIMIT,true);
             MobiMindPrivateFiles.Read session=MobiMindPrivateFiles.read(new File(new File(runs,task.generation()),"native-session-result.json"),OUTPUT_LIMIT,true);
             boolean bound=Arrays.equals(session.bytes,nativeClose)&&saved.appReceiptHash.equals(sha256(appRequest.bytes))
-                    &&saved.proof.matches(configuration,task.generation(),task.taskId,task.session.workerPid(),
+                    &&saved.proof.matches(task.runtime.configuration(),task.generation(),task.taskId,task.session.workerPid(),
                         task.session.requestsSent(),task.acceptedRequests,nativeRequest.bytes,session.bytes,observed,exit,force);
             nativeRequest.unchangedPath();appRequest.unchangedPath();session.unchangedPath();
             return bound;
@@ -635,14 +661,14 @@ public final class LocalModelEngine implements AutoCloseable {
         return handle;
     }
 
-    private static void claimProcess(RunHandle handle,AtomicReference<RunHandle> local){
+    private void claimProcess(RunHandle handle,AtomicReference<RunHandle> local){
         synchronized(PROCESS_ADMISSION){
-            if(ACTIVE_CANCELLATION.pending()||!PROCESS_ACTIVE.compareAndSet(null,handle))
-                throw new IllegalStateException("local model or captured cancellation still owns the process slot");
-            local.set(handle);
+            if(closed.get()||settingsBlocked||ACTIVE_CANCELLATION.pending()||!PROCESS_ACTIVE.compareAndSet(null,handle))
+                throw new IllegalStateException("local model, settings or captured cancellation still owns the process slot");
+            handle.runtime=runtime;local.set(handle);
         }
     }
-    public boolean isBusy() { return PROCESS_ACTIVE.get() != null||ACTIVE_CANCELLATION.pending()||LocalProbeApplication.permissionPreparationBlocks(context); }
+    public boolean isBusy() { return settingsBlocked||PROCESS_ACTIVE.get() != null||ACTIVE_CANCELLATION.pending()||LocalProbeApplication.permissionPreparationBlocks(context); }
     public Result lastResult() { return lastResult; }
     /** Captures once under the same gate as all process admissions. Return is a request, never exit proof. */
     public void cancelActive() {
@@ -656,27 +682,94 @@ public final class LocalModelEngine implements AutoCloseable {
         }
     }
     JSONObject cancellationEvidence(){TaskCancellationQueue.Ticket value=lastCancellation;return value==null?null:new JSONObject(value.evidence());}
-    public File modelDirectory() { return new File(files, configuration.profile.visual()?"gui-owl-model":"model"); }
-    public File modelFile() { return new File(modelDirectory(), configuration.profile.fileName); }
-    public LocalRuntimeConfig configuration() {
-        if (configurationError != null) throw new IllegalStateException("本地运行参数无效：" + configurationError);
-        return configuration;
+    public File modelDirectory() { return modelDirectory(configuration()); }
+    public File modelFile() { return modelFile(configuration()); }
+    private File modelDirectory(LocalRuntimeConfig config){return new File(files,config.profile.visual()?"gui-owl-model":"model");}
+    private File modelFile(LocalRuntimeConfig config){return new File(modelDirectory(config),config.profile.fileName);}
+    public LocalRuntimeConfig configuration() { return runtime.configuration(); }
+    static RuntimeGeneration generation(RuntimeConfigTransaction.Snapshot source,ModelFileVerifier verifier)throws Exception{
+        return new RuntimeGeneration(RuntimeConfigTransaction.decode(source),source,verifier,null);
     }
-    private LocalRuntimeConfig readConfiguration() throws Exception {
-        // Configuration has one stable location before the selected profile is known.
-        File dir = new File(files,"model").getCanonicalFile();
-        File file = new File(dir, "runtime-config.json");
-        if (!file.exists()) return LocalRuntimeConfig.defaults();
-        if (!dir.getParentFile().equals(files.getCanonicalFile()) || !file.getCanonicalFile().equals(file))
-            throw new IOException("runtime-config must remain in app-private files/model");
-        android.system.StructStat st = Os.lstat(file.getPath());
-        if (!android.system.OsConstants.S_ISREG(st.st_mode) || st.st_uid != android.os.Process.myUid()
-                || st.st_nlink != 1 || (st.st_mode & 0777) != 0600)
-            throw new IOException("runtime-config must be a single app-owned regular mode0600 file");
-        JSONObject value = new JSONObject(new String(readBounded(file, 4096), StandardCharsets.UTF_8));
-        Map<String,Object> fields=new java.util.HashMap<>();
-        Iterator<String> names=value.keys();while(names.hasNext()){String key=names.next();fields.put(key,value.get(key));}
-        return LocalRuntimeConfig.fromFields(fields);
+    boolean settingsBlocked(){return settingsBlocked;}
+    private boolean executorIdle(){return executor.getActiveCount()==0&&executor.getQueue().isEmpty();}
+    boolean settingsAdmissionAvailable(boolean restoring){
+        synchronized(PROCESS_ADMISSION){
+            return !closed.get()&&(!settingsBlocked||restoring)&&settingsReservation==null
+                    &&PROCESS_ACTIVE.get()==null&&active.get()==null&&warmActive.get()==null
+                    &&!ACTIVE_CANCELLATION.pending()&&executorIdle();
+        }
+    }
+    /** A settings reservation cannot attach a Process, signal a PID or borrow recovery authority. */
+    final class SettingsReservation {
+        private final LocalModelEngine owner=LocalModelEngine.this;
+        private final RunHandle handle=new RunHandle();
+        final RuntimeGeneration previous;
+        private RuntimeGeneration expected;
+        private boolean finished;
+        private SettingsReservation(RuntimeGeneration previous){this.previous=previous;expected=previous;}
+        void requireOwned(){
+            synchronized(PROCESS_ADMISSION){
+                if(finished||settingsReservation!=this||PROCESS_ACTIVE.get()!=handle
+                        ||active.get()!=null||warmActive.get()!=null||handle.child.get()!=null
+                        ||ACTIVE_CANCELLATION.pending()||!executorIdle()||runtime!=expected)
+                    throw new IllegalStateException("settings reservation is no longer exclusive");
+            }
+        }
+    }
+    SettingsReservation reserveSettings(boolean restoring){
+        if(android.os.Looper.myLooper()!=android.os.Looper.getMainLooper())
+            throw new IllegalStateException("settings must be requested by the ordinary owner UI");
+        synchronized(PROCESS_ADMISSION){
+            if(!settingsAdmissionAvailable(restoring))throw new IllegalStateException("model or settings work is not idle");
+            SettingsReservation value=new SettingsReservation(runtime);
+            if(!PROCESS_ACTIVE.compareAndSet(null,value.handle))throw new IllegalStateException("model slot changed");
+            settingsReservation=value;return value;
+        }
+    }
+    private void requireSettingsOwner(SettingsReservation lease){
+        if(lease==null||lease.owner!=this)throw new IllegalStateException("settings reservation belongs to another engine");
+        lease.requireOwned();
+    }
+    ModelFileVerifier verifySettingsModel(SettingsReservation lease,LocalRuntimeConfig selected)throws Exception{
+        requireSettingsOwner(lease);RuntimeConfigTransaction.requireText(selected);
+        ActivityManager.MemoryInfo info=memoryInfo();
+        if(!MemoryAvailability.read(info.availMem,info.totalMem,info.lowMemory).admits(selected.profile.minimumAvailableBytes))
+            throw new IOException("available memory is below the selected profile admission threshold");
+        File directory=modelDirectory(selected).getCanonicalFile(),model=modelFile(selected).getCanonicalFile();
+        if(!directory.equals(new File(files.getCanonicalFile(),"model"))||!directory.isDirectory()
+                ||!model.getParentFile().equals(directory)||!model.getName().equals(selected.profile.fileName))
+            throw new IOException("selected model is not the pinned app-private GGUF");
+        android.system.StructStat before=Os.lstat(model.getPath());
+        if(!android.system.OsConstants.S_ISREG(before.st_mode)||before.st_uid!=android.os.Process.myUid()
+                ||before.st_nlink!=1||before.st_size!=selected.profile.bytes)
+            throw new IOException("selected GGUF owner, type, link count or size differs");
+        ModelFileVerifier verifier=new ModelFileVerifier();
+        verifier.verify(model,selected.profile,()->closed.get());
+        android.system.StructStat after=Os.lstat(model.getPath());
+        if(before.st_dev!=after.st_dev||before.st_ino!=after.st_ino||before.st_size!=after.st_size
+                ||before.st_uid!=after.st_uid||before.st_gid!=after.st_gid||before.st_mode!=after.st_mode
+                ||before.st_nlink!=after.st_nlink||before.st_mtime!=after.st_mtime||before.st_ctime!=after.st_ctime)
+            throw new IOException("selected GGUF identity changed during verification");
+        requireSettingsOwner(lease);return verifier;
+    }
+    void publishSettings(SettingsReservation lease,RuntimeGeneration next){
+        if(android.os.Looper.myLooper()!=android.os.Looper.getMainLooper())
+            throw new IllegalStateException("settings generation publication must run on main");
+        synchronized(PROCESS_ADMISSION){
+            requireSettingsOwner(lease);
+            if(closed.get()||next==null||next.error!=null||next.source==null)
+                throw new IllegalStateException("settings generation is unavailable");
+            runtime=next;lease.expected=next;
+        }
+    }
+    void finishSettings(SettingsReservation lease,boolean exactStorageKnown){
+        if(android.os.Looper.myLooper()!=android.os.Looper.getMainLooper())
+            throw new IllegalStateException("settings completion must run on main");
+        synchronized(PROCESS_ADMISSION){
+            requireSettingsOwner(lease);settingsBlocked=!exactStorageKnown;
+            if(!PROCESS_ACTIVE.compareAndSet(lease.handle,null))throw new IllegalStateException("settings slot changed");
+            lease.finished=true;settingsReservation=null;
+        }
     }
     public long availableMemoryBytes() {
         ActivityManager.MemoryInfo info = memoryInfo();
@@ -714,7 +807,14 @@ public final class LocalModelEngine implements AutoCloseable {
             put(receipt, "expected_parent_pid", android.os.Process.myPid());
             put(receipt, "parent_death_guard_is_cleanup_proof", false);
             put(receipt, "package_name", context.getPackageName());
-            LocalRuntimeConfig config = configuration();
+            RuntimeGeneration snapshot=h.runtime;
+            if(snapshot==null||(task!=null&&snapshot!=task.runtime))
+                throw new IOException("request lacks its original runtime generation");
+            LocalRuntimeConfig config = snapshot.configuration();
+            snapshot.source.unchanged();
+            put(receipt,"runtime_generation_id",snapshot.id);
+            put(receipt,"runtime_configuration_sha256",snapshot.source.sha());
+            put(receipt,"runtime_configuration_present",snapshot.source.exists);
             if(config.profile.visual())throw new IOException("visual tasks require their current-frame adapter");
             put(receipt, "runtime", LocalRuntimeConfig.RUNTIME);
             put(receipt, "mode", LocalRuntimeConfig.MODE);
@@ -749,14 +849,14 @@ public final class LocalModelEngine implements AutoCloseable {
                 status = "insufficient_memory";
                 throw new IOException("selected model refused: available physical RAM below profile threshold, invalid measurement, or Android lowMemory=true; source="+admission.source);
             }
-            File model = modelDirectory().getCanonicalFile();
+            File model = modelDirectory(config).getCanonicalFile();
             if (!model.getParentFile().equals(files.getCanonicalFile()) || !model.isDirectory())
                 throw new IOException("model must be imported into app private files/model");
-            File selectedModel = modelFile().getCanonicalFile();
+            File selectedModel = modelFile(config).getCanonicalFile();
             if (!selectedModel.getParentFile().equals(model) || !selectedModel.getName().equals(config.profile.fileName))
                 throw new IOException("only the selected pinned app-private GGUF is accepted");
             if (h.isCancellationRequested()) { status = "cancelled_before_start"; throw new IOException("cancel requested before model verification"); }
-            modelVerifier.verify(selectedModel,config.profile, () -> h.isCancellationRequested());
+            snapshot.verifier.verify(selectedModel,config.profile, () -> h.isCancellationRequested());
             File nativeDir = new File(context.getApplicationInfo().nativeLibraryDir).getCanonicalFile();
             File runner = new File(nativeDir, "libhepta_local_runner.so").getCanonicalFile();
             if (!runner.getParentFile().equals(nativeDir) || !runner.isFile() || !runner.canExecute())

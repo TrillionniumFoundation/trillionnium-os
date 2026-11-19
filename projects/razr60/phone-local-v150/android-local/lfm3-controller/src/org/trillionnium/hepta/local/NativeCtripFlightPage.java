@@ -27,6 +27,7 @@ final class NativeCtripFlightPage {
     static final String HOME="ctrip_home",FORM="ctrip_single_flight_form",CALENDAR="ctrip_native_calendar";
     static final String RESULTS="ctrip_single_flight_results",OVERLAY="ctrip_research_overlay",UNAVAILABLE="unavailable";
     static final String LOGIN_REQUIRED="ctrip_login_required";
+    static final String LOGIN_EXIT="ctrip_exit_observed_login_once";
     static final String FIRST_LAUNCH_PRIVACY="ctrip_first_launch_privacy";
     private static final String PREFIX="ctrip.android.view:id/";
     private static final Pattern FORM_DATE=Pattern.compile("([0-9]{1,2})月([0-9]{1,2})日(今天|明天|后天|周[一二三四五六日天])");
@@ -245,7 +246,7 @@ final class NativeCtripFlightPage {
 
     /** Read only the observed v1779 login obstruction. Account identifiers are
      * deliberately not read. Recognition creates no login, consent, registration,
-     * return-navigation or result authority. */
+     * result authority. A separately checked return node still needs Session authority. */
     private static boolean hasLoginMarker(NativeAppEvidence.Frame f){
         for(NativeAppEvidence.Node n:f.nodes)if((PREFIX+"bLoginBtn").equals(n.viewId)
                 ||(PREFIX+"tvLoginMiddle").equals(n.viewId)||(PREFIX+"tvServiceProtocolRemark").equals(n.viewId))return true;
@@ -275,6 +276,21 @@ final class NativeCtripFlightPage {
                 &&select.right<=remark.left&&remark.right<=protocol.left&&protocol.right<=privacy.left
                 &&privacy.bottom<=carrier.top,"ordered nonoverlapping login anchors required");
         return empty(f,LOGIN_REQUIRED,"native_ctrip_login_requires_user_handling");
+    }
+    /** A current observed return control, never a coordinate or system Back fallback.
+     * Missing or ambiguous controls leave the recognized login page non-actionable. */
+    static NativeAppEvidence.Node loginReturnControl(Page page){
+        if(page==null||!LOGIN_REQUIRED.equals(page.phase))return null;
+        NativeAppEvidence.Frame f=page.frame;
+        try{
+            NativeAppEvidence.Node back=loginNode(f,"ivTitleBarLeftBtn","android.widget.ImageView","","返回",true);
+            NativeAppEvidence.Node subtitle=loginNode(f,"tvPersonalizedSubtitle","android.widget.TextView","账号安全，放心登录","",false);
+            need(parent(back.path).equals(parent(subtitle.path))&&"android.widget.ScrollView".equals(back.parentClass)
+                    &&back.path.equals(parent(subtitle.path)+"/0")&&back.bottom<=subtitle.top&&back.right<=subtitle.left
+                    &&"返回".equals(back.label)&&back.scrollDirections.isEmpty(),
+                    "same visible top-left login return control required");
+            return back;
+        }catch(IllegalArgumentException unavailable){return null;}
     }
     private static NativeAppEvidence.Node loginNode(NativeAppEvidence.Frame f,String id,String cls,String text,String description,boolean clickable){
         NativeAppEvidence.Node value=null;
