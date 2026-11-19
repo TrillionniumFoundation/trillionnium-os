@@ -1,8 +1,8 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "403cd90b558c8fb76a5e551c50cc1cd13eb3e9bd",
-  "base_manifest_sha256": "e3b10f1c4c8cfad730aad2babb0f24175268b0f08697c6eb09e29672308bbe29",
-  "candidate_status": "notes_empty_root_and_drained_model_recovery_candidate_not_compiled_or_deployed",
+  "base_head": "b472d924b4317b1d3b8872cc22975ea2f4a27858",
+  "base_manifest_sha256": "1342063762e68cc8be7c9dfad5c46b847219cd69325ca8d2ffb92f2bf2f3bc02",
+  "candidate_status": "notes_recovery_host_fixture_candidate_not_compiled_or_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
@@ -13,11 +13,9 @@
   "phone_qualified": false,
   "android_qualified": false,
   "scope": [
-    "Retain the actual Q8 task failure and unknown tool outcome; no business result or old cleanup record is rewritten.",
-    "Recognize only the fully consistent finishing Notes task tuple while retaining UID, component, token, ownership and location requirements; preserve rejected-row diagnostics.",
-    "Add a versioned single drained notes.create recovery request backed by fifteen unchanged originals and the original worker-generation cleanup verifier.",
-    "Retain the pre-model seven-original recovery, fresh double absence, durable original archives, exact lease CAS and separate ordinary UI acknowledgement.",
-    "Preserve all original host assertions and add separate empty-task and post-model cases; no phone or business qualification is claimed by source publication."
+    "Supply JSONArray.opt(int) in the existing host fixture, matching null for an out-of-range index and retaining the stored value for a valid index.",
+    "Include the actual Reader diagnostics classes and actual Broker audit field in the extracted Notes cleanup host fixture.",
+    "Keep every production byte and every original test assertion unchanged; preserve the failed Q9 full-host result."
   ],
   "files": [
     {
@@ -9732,8 +9730,8 @@
     },
     {
       "path": "tests/qualification-scope/fixtures/org/json/JSONArray.java",
-      "bytes": 1293,
-      "sha256": "ad6d26d77bbe345e88e226d9ce41c33d7fa97e7758ad0e428209dd9746f6fe75"
+      "bytes": 1372,
+      "sha256": "74b2ed085ac845413e1f38e8217ad6108c7c8f2bb836ff8c513e9a181c4e6e58"
     },
     {
       "path": "tests/qualification-scope/fixtures/org/json/JSONException.java",
@@ -11037,8 +11035,8 @@
     },
     {
       "path": "tools/run_public_personal_notes_host.py",
-      "bytes": 20632,
-      "sha256": "cf7c17b0d75c777f46daead298e0d940e5d5a6155ca1de59520d1d627b1cb813"
+      "bytes": 21703,
+      "sha256": "ef48247de63b7a2d6e0e9a4f5a95e179d2a28befbeea0798d44586fe56264b16"
     },
     {
       "path": "tools/suite-navigation-draft.json",

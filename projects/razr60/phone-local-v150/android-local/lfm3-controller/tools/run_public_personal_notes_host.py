@@ -12,6 +12,15 @@ def main():
     os_file=out/'fixture/android/system/Os.java';os_source=os_file.read_text();assert os_source.count('r.st_uid=((Number)a.get("uid")).intValue();')==1
     os_file.write_text(os_source.replace('r.st_uid=((Number)a.get("uid")).intValue();','r.st_uid=10123;'))
     raw=(source/'src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java').read_text()
+    reader_source=source/'src/org/trillionnium/hepta/background/PublicPersonalNotesReader.java'
+    reader_raw=reader_source.read_text()
+    diagnostics_start='    /** Exact rejected framework row. Serialized fields confer no task authority. */'
+    diagnostics_end='    private final Context context;'
+    assert reader_raw.count(diagnostics_start)==1 and reader_raw.count(diagnostics_end)==1
+    diagnostics_hunk=reader_raw[reader_raw.index(diagnostics_start):reader_raw.index(diagnostics_end)]
+    diagnostics_fields=re.findall(r'(?m)^    private final PublicPersonalNotesReader\.FailureAudit publicNotesReadFailures=new PublicPersonalNotesReader\.FailureAudit\(\);$',raw)
+    assert len(diagnostics_fields)==1
+    diagnostics_field=diagnostics_fields[0]+'\n'
     cleanup_constants=re.findall(r'\bCLEANUP_MS\s*=\s*([0-9]+)\s*;',raw);assert len(cleanup_constants)==1
     cleanup_ms=int(cleanup_constants[0]);assert cleanup_ms==1500
     start='    private void beginPublicNotesCleanup(){';end='    private void beginProfileCleanup(){'
@@ -25,7 +34,7 @@ def main():
 import java.io.*;import java.util.*;import java.util.concurrent.*;
 final class NotesCleanupAdapterFixture {
  static final long CLEANUP_MS=__ACTUAL_CLEANUP_MS__;final Object dispatchGate=new Object();final CountDownLatch cleanupDone=new CountDownLatch(1);
- volatile PublicPersonalNotesCustody publicNotesCustody;volatile PublicPersonalNotesReader publicNotesReader;
+'''+diagnostics_field+''' volatile PublicPersonalNotesCustody publicNotesCustody;volatile PublicPersonalNotesReader publicNotesReader;
  volatile VirtualDisplay virtual,publicCreateReturnedHandle;volatile boolean createInFlight,effectInFlight,serve;
  volatile String state="CLOSING",terminalReason="",bootReadRetirementFailure;long cleanupAt;int displayId=7;String displayName="owned-session";
  final DisplayManager displays=new DisplayManager();ImageReader surfaceReader;HandlerThread displayThread;
@@ -44,8 +53,9 @@ final class NotesCleanupAdapterFixture {
 '''+release_hunk+hunk+'}\n').replace('__ACTUAL_CLEANUP_MS__',str(cleanup_ms)));files.append(fixture)
     reader=bg/'PublicPersonalNotesReader.java'
     reader.write_text('''package org.trillionnium.hepta.background;
-import java.util.*;import java.util.concurrent.*;
+import java.util.*;import java.util.concurrent.*;import java.io.IOException;import org.json.JSONObject;
 final class PublicPersonalNotesReader {
+'''+diagnostics_hunk+'''
  final Object token=new Object();int uid=PersonalNotesCustodyHostTest.UID;String raw=PersonalNotesCustodyHostTest.raw();
  String[] recentsSequence;int recentsReads,liveReads,pendingLiveReads,frameReads;boolean changeLiveToken;
  CountDownLatch entered,proceed;
@@ -128,9 +138,9 @@ public final class NotesCleanupAdapterHostTest {
     flags=['--release','8','-Xlint:all'] if args.release8 else ['-source','8','-target','8','-Xlint:all,-options']
     stages=[('compile',compiler+flags+['-Werror','-d',str(classes),*map(str,files)]),('notes-cleanup',[java,'-cp',str(classes),'org.trillionnium.hepta.background.NotesCleanupAdapterHostTest']),('notes-session',[java,'-cp',str(classes),'org.trillionnium.hepta.local.PersonalNotesSessionHostTest'])]
     pins={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
-    provenance_paths=[source/'src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java',source/'src/org/trillionnium/hepta/local/BackgroundSession.java',pathlib.Path(__file__).resolve()]
+    provenance_paths=[source/'src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java',reader_source,source/'src/org/trillionnium/hepta/local/BackgroundSession.java',pathlib.Path(__file__).resolve()]
     provenance={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in provenance_paths}
-    report={'schema':'hepta.personal-notes.adapter-host.v1','phone_contacted':False,'status':'NOT_DEPLOYED','actual_cleanup_deadline_ms':cleanup_ms,'actual_broker_hunk_sha256':hashlib.sha256(hunk.encode()).hexdigest(),'source_sha256':pins,'extraction_provenance_sha256':provenance,'fake_ports':['VD release','DisplayManager','TaskInfo and Binder tokens','full recents input','root transport','Android App UID and corresponding private-file UID','owned Process wait/destroy'],'fixture_extraction':record,'stages':[]}
+    report={'schema':'hepta.personal-notes.adapter-host.v1','phone_contacted':False,'status':'NOT_DEPLOYED','actual_cleanup_deadline_ms':cleanup_ms,'actual_broker_hunk_sha256':hashlib.sha256(hunk.encode()).hexdigest(),'actual_reader_diagnostics_hunk_sha256':hashlib.sha256(diagnostics_hunk.encode()).hexdigest(),'actual_broker_diagnostics_field_sha256':hashlib.sha256(diagnostics_field.encode()).hexdigest(),'source_sha256':pins,'extraction_provenance_sha256':provenance,'fake_ports':['VD release','DisplayManager','TaskInfo and Binder tokens','full recents input','root transport','Android App UID and corresponding private-file UID','owned Process wait/destroy'],'fixture_extraction':record,'stages':[]}
     for name,argv in stages:
         run=subprocess.run(argv,capture_output=True,text=True,timeout=40);(out/(name+'.stdout')).write_text(run.stdout);(out/(name+'.stderr')).write_text(run.stderr)
         report['stages'].append({'name':name,'exit_code':run.returncode});print(name,run.returncode,run.stdout[-2000:])
