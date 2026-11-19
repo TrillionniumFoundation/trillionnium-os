@@ -173,6 +173,28 @@ def main():
             "cases":settings_gate["cases"]}
         run("background-broker",[sys.executable,"-B",ROOT/"tests/background-broker/run_host_checks.py",
             "--java",java,"--javac",shutil.which("javac"),"--out",out/"background-broker"])
+        run("public-screen-lease",[sys.executable,"-B",ROOT/"tests/public-screen-lease/run_host.py",
+            "--source",ROOT,"--output",out/"public-screen-lease","--java-home",java_home])
+        screen_raw=(out/"public-screen-lease/RESULT.json").read_bytes()
+        screen=json.loads(screen_raw);screen_test=screen.get("test",{})
+        if (screen.get("schema")!="hepta.public-screen-lease-host-run.v1" or screen.get("passed") is not True
+                or screen.get("phone_operations")!=0 or screen.get("android_power_api_executed") is not False
+                or screen.get("inputs_before")!=screen.get("inputs_after")
+                or [row.get("name") for row in screen.get("stages",[])]!=["compile","screen-lease"]
+                or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in screen.get("stages",[]))
+                or screen_test.get("schema")!="hepta.public-screen-lease-host.v1" or screen_test.get("all_pass") is not True
+                or type(screen_test.get("cases")) is not int or screen_test["cases"]!=36
+                or type(screen_test.get("assertions")) is not int or screen_test["assertions"]!=73
+                or screen_test.get("phone_operations")!=0 or screen_test.get("android_power_api_executed") is not False):
+            raise RuntimeError("Actual isolated screen-lease host contract differs")
+        screen_names=screen_test.get("case_names")
+        if (type(screen_names) is not list or len(screen_names)!=36 or len(set(screen_names))!=36
+                or any(type(name) is not str or not name for name in screen_names)
+                or hashlib.sha256("\n".join(screen_names).encode()).hexdigest()!=
+                    "fcc50dabae810227be559e134b0c0c17541873d91eb8685a6412b8778be44a64"
+                or json.loads((out/"public-screen-lease/screen-lease.stdout").read_bytes())!=screen_test):
+            raise RuntimeError("Screen-lease original case names or raw receipt differ")
+        report["public_screen_lease_gate"]={"bytes":len(screen_raw),"sha256":hashlib.sha256(screen_raw).hexdigest(),"test":screen_test}
         run("main-ui-permission",[sys.executable,"-B",ROOT/"tests/main-ui-permission/run_host.py",
             "--source",ROOT,"--output",out/"main-ui-permission","--java-home",java_home,"--json-jar",json_jar])
         run("python-tools",[sys.executable,"-m","unittest","discover","-s","tools","-p","test_*.py","-v"])

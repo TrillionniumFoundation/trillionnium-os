@@ -15,6 +15,8 @@ def exact(start,end):
     begin=raw.index(start);return raw[begin:raw.index(end,begin)]
 halt=exact('    private void retireBootRead() {','    private void beginCleanup(String reason) {')
 cleanup=exact('    private void beginCleanup(String reason) {','        if(publicNotesCustody!=null)publicNotesCustody.retireAdmission();')+'    }\n'
+screen_retire=re.findall(r'(?m)^    private void retirePublicScreenLease\(\)\{[^\n]+\}$',raw)
+assert len(screen_retire)==1
 known_branch=re.search(r'if\(config.profileTarget!=null&&profileCustody.known\(\)\)\{\n(.*?)\n\s*\}',raw,re.S).group(1)
 assert raw.count('private final ProfileRecoveryBootCount publicBootCount=new ProfileRecoveryBootCount(SystemClock::elapsedRealtime);')==1
 assert raw.count('shell,displays,config.publicOwnGroupScope,publicBootCount,Math.min(expires,started+STARTUP_MS)')==1
@@ -27,6 +29,7 @@ fixture.write_text('''package org.trillionnium.hepta.background;
 import java.util.concurrent.atomic.AtomicBoolean;
 final class BrokerBootLifecycleFixture {
  final AtomicBoolean closing=new AtomicBoolean();final ProfileRecoveryBootCount publicBootCount;volatile String bootReadRetirementFailure;
+ PublicOwnGroupScreenLease publicScreenLease;
  String state="INITIAL";final java.util.List<String> terminalStates=new java.util.ArrayList<String>();
  BrokerBootLifecycleFixture(ProfileRecoveryBootCount reader){publicBootCount=reader;}
  static final class Halted extends Error {private static final long serialVersionUID=1L;final int exit;Halted(int exit){this.exit=exit;}}
@@ -35,15 +38,15 @@ final class BrokerBootLifecycleFixture {
  String released(){return releasedState();}
  void printTerminal(){terminalStates.add(state);}
  void watchdogKnown(){
-'''+known_branch+'\n }\n'+halt+cleanup+'}\n')
+'''+known_branch+'\n }\n'+halt+cleanup+screen_retire[0]+'\n}\n')
 names=['BrokerProtocol','PublicPermissionControllerUi','FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','PublicOwnGroupPolicy',
-       'ProfileRecoveryBootCount','PublicOwnGroupBootIdentity']
+       'ProfileRecoveryBootCount','PublicOwnGroupBootIdentity','PublicOwnGroupScreenLease']
 sources=[bg/(n+'.java') for n in names]+[fixture,Path(__file__).resolve().parent/'PublicOwnGroupBootIdentityHostTest.java']
 def ident(path):
     raw=path.read_bytes();return {'path':str(path),'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
 report={'schema':'hepta.public-scope-boot-host-run.v1','phone_contacted':False,'android_runtime':False,'sources':[ident(x) for x in sources],
         'broker':ident(bg/'BackgroundDisplayBroker.java'),'framework':ident(bg/'PublicOwnGroupFramework.java'),
-        'exact_hunks':{k:hashlib.sha256(v.encode()).hexdigest() for k,v in [('halt',halt),('cleanup_entry',cleanup),('watchdog_known_branch',known_branch)]},'commands':[]}
+        'exact_hunks':{k:hashlib.sha256(v.encode()).hexdigest() for k,v in [('halt',halt),('cleanup_entry',cleanup),('watchdog_known_branch',known_branch),('screen_retirement',screen_retire[0])]},'commands':[]}
 commands=[('compile',[str(a.jdk_bin/'javac'),'--release','8','-Xlint:all,-options','-Werror','-proc:none','-d',str(classes)]+[str(x) for x in sources],30),
           ('test',[str(a.jdk_bin/'java'),'-cp',str(classes),'org.trillionnium.hepta.background.PublicOwnGroupBootIdentityHostTest'],20)]
 for name,argv,timeout in commands:

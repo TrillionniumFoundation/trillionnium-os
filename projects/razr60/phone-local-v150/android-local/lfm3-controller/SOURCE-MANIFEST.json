@@ -1,21 +1,22 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "b472d924b4317b1d3b8872cc22975ea2f4a27858",
-  "base_manifest_sha256": "1342063762e68cc8be7c9dfad5c46b847219cd69325ca8d2ffb92f2bf2f3bc02",
-  "candidate_status": "notes_recovery_host_fixture_candidate_not_compiled_or_deployed",
+  "base_head": "e14340cc55c2980f49f4f808e3eea251c26101ee",
+  "base_manifest_sha256": "37b5de5b134e5ca2618f1a360cfaf317ce52e6601e4301e2fb17c085b6694267",
+  "candidate_status": "isolated_display_screen_lease_candidate_not_compiled_or_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
-  "main_java_sources": 190,
-  "production_build_inputs_count": 362,
-  "production_input_map_sha256": "4af9f79e3466c93ce21a884cac868192634fed12dd8f528197a3f3276178d73a",
-  "complete_source_files": 2241,
+  "main_java_sources": 191,
+  "production_build_inputs_count": 363,
+  "production_input_map_sha256": "855729f57eea3d9a92af81d93e56d9da2da4aa489d9f50c6b833b2a96416117c",
+  "complete_source_files": 2245,
   "phone_qualified": false,
   "android_qualified": false,
   "scope": [
-    "Supply JSONArray.opt(int) in the existing host fixture, matching null for an out-of-range index and retaining the stored value for a valid index.",
-    "Include the actual Reader diagnostics classes and actual Broker audit field in the extracted Notes cleanup host fixture.",
-    "Keep every production byte and every original test assertion unchanged; preserve the failed Q9 full-host result."
+    "Hold one SCREEN_BRIGHT wake-lock token bound to the freshly created public own-group display; no wake-up flags, global lock, permission change or renewal.",
+    "Require the complete includeDisabled Binder display census, an isolated group, exact created handle and frozen display identity, and an already-ON display before activation.",
+    "Retire the screen lease on the original absolute deadline, cleanup and quarantine while preserving independent task/display absence and unknown business effects.",
+    "Keep every original test assertion and append the actual 36-case screen lease gate with 73 assertions."
   ],
   "files": [
     {
@@ -6160,8 +6161,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "bytes": 96429,
-      "sha256": "d486c65f7d025c4167cdb94261f66644d5b75fa4ae2887d3ba4973e4a74f4eaa"
+      "bytes": 100845,
+      "sha256": "1b5286161410a2ff529e4c11b85c19ccb6b26fbf1750fb0fdb05c14a60107173"
     },
     {
       "path": "src/org/trillionnium/hepta/background/BackgroundOwnedSingleTask.java",
@@ -6295,8 +6296,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupFramework.java",
-      "bytes": 12805,
-      "sha256": "31dd834d17f6aedf12db89cf549bfb9ecf78858ed9c9ed4f0ed50ed71718ec34"
+      "bytes": 16199,
+      "sha256": "92f5c1c98ce1a6c1409764eae03c89d62e8b246a2e42879eca3a74987fd9d0df"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupPhysicalFence.java",
@@ -6312,6 +6313,11 @@
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupPolicy.java",
       "bytes": 18536,
       "sha256": "a92c58ed5856614a11479839f0803c2a83e014721842b63361de5a4d9e34b471"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/background/PublicOwnGroupScreenLease.java",
+      "bytes": 8043,
+      "sha256": "978f71bf9b327ef3f7df06a9a89d9387db629111c4fa074c7bbd95df6022be40"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupSurfaceRetirement.java",
@@ -9410,8 +9416,8 @@
     },
     {
       "path": "tests/public-own-group-boot/run_host.py",
-      "bytes": 5014,
-      "sha256": "1ef69bc7b2f54501e73a8bcb68a5f9ebb8bf070d880aa3dbefee177717166901"
+      "bytes": 5269,
+      "sha256": "7517eba0b7847ffa9d31ca380f07d33ffb5016d3218a781bd9388f783953e326"
     },
     {
       "path": "tests/public-own-group-policy/ModeActivationHostTest.java",
@@ -9542,6 +9548,21 @@
       "path": "tests/public-profile-history/run_host.py",
       "bytes": 4929,
       "sha256": "e6895e847f32046d3bc68cca5aacd124ee9a3e1b3b1e18148a57c29b487f4e02"
+    },
+    {
+      "path": "tests/public-screen-lease/PublicOwnGroupScreenLeaseHostTest.java",
+      "bytes": 13151,
+      "sha256": "c083e5cdfef7f06848c098b55a5f0e8a2b66bbee53e346b7614001d03d8e25fe"
+    },
+    {
+      "path": "tests/public-screen-lease/README.md",
+      "bytes": 1000,
+      "sha256": "453828141833413f881a3737257656b52954d01b1921ba6736214b86cb135649"
+    },
+    {
+      "path": "tests/public-screen-lease/run_host.py",
+      "bytes": 7407,
+      "sha256": "defdf26b9abe7478fb3f8f6552dfde6c1a0a4e1f65c138b1838fe07f744b84cb"
     },
     {
       "path": "tests/qualification-scope/BackgroundFreshnessHostTest.java",
@@ -11015,8 +11036,8 @@
     },
     {
       "path": "tools/run_host_checks.py",
-      "bytes": 39357,
-      "sha256": "8b196275a70a7cec01e0d417441717d01794b98db5e429149c19b3926462ba59"
+      "bytes": 41461,
+      "sha256": "831aeac1879bceee6d42f79aae6523bd027dc2b03d8580e16c33cbb6f93ef092"
     },
     {
       "path": "tools/run_public_own_group_adapter_host.py",
@@ -11035,8 +11056,8 @@
     },
     {
       "path": "tools/run_public_personal_notes_host.py",
-      "bytes": 21703,
-      "sha256": "ef48247de63b7a2d6e0e9a4f5a95e179d2a28befbeea0798d44586fe56264b16"
+      "bytes": 21995,
+      "sha256": "22281a33a75b6e8e22717107c2a9938b23e1daeb0b978a564a24f734ffb8e3b0"
     },
     {
       "path": "tools/suite-navigation-draft.json",

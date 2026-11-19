@@ -28,6 +28,8 @@ def main():
     release_start='    private String releasedState() {';release_end='    private void haltAfterBootRead(int exit) {'
     assert raw.count(release_start)==1 and raw.count(release_end)==1
     release_hunk=raw[raw.index(release_start):raw.index(release_end)]
+    screen_retire=re.findall(r'(?m)^    private void retirePublicScreenLease\(\)\{[^\n]+\}$',raw)
+    assert len(screen_retire)==1
     bg=out/'fixture/org/trillionnium/hepta/background';bg.mkdir(parents=True,exist_ok=True)
     fixture=bg/'NotesCleanupAdapterFixture.java'
     fixture.write_text(('''package org.trillionnium.hepta.background;
@@ -38,6 +40,7 @@ final class NotesCleanupAdapterFixture {
  volatile VirtualDisplay virtual,publicCreateReturnedHandle;volatile boolean createInFlight,effectInFlight,serve;
  volatile String state="CLOSING",terminalReason="",bootReadRetirementFailure;long cleanupAt;int displayId=7;String displayName="owned-session";
  final DisplayManager displays=new DisplayManager();ImageReader surfaceReader;HandlerThread displayThread;
+ PublicOwnGroupScreenLease publicScreenLease;
  static final class SystemClock {static long elapsedRealtime(){return java.lang.System.nanoTime()/1000000L;}}
  static final class Display {final int id;final String name;Display(int i,String n){id=i;name=n;}String getName(){return name;}}
  static final class DisplayManager {volatile boolean present=true;Display getDisplay(int id){return id==7&&present?new Display(7,"owned-session"):null;}Display[] getDisplays(){return present?new Display[]{new Display(7,"owned-session")}:new Display[0];}}
@@ -50,7 +53,8 @@ final class NotesCleanupAdapterFixture {
   virtual=new VirtualDisplay();publicCreateReturnedHandle=virtual;publicNotesReader=new PublicPersonalNotesReader();}
  void start(){cleanupAt=SystemClock.elapsedRealtime();beginPublicNotesCleanup();}
  void finished()throws Exception{if(!cleanupDone.await(3,TimeUnit.SECONDS))throw new AssertionError("cleanup did not finish");}
-'''+release_hunk+hunk+'}\n').replace('__ACTUAL_CLEANUP_MS__',str(cleanup_ms)));files.append(fixture)
+'''+release_hunk+hunk+screen_retire[0]+'\n}\n').replace('__ACTUAL_CLEANUP_MS__',str(cleanup_ms)));files.append(fixture)
+    files.append(source/'src/org/trillionnium/hepta/background/PublicOwnGroupScreenLease.java')
     reader=bg/'PublicPersonalNotesReader.java'
     reader.write_text('''package org.trillionnium.hepta.background;
 import java.util.*;import java.util.concurrent.*;import java.io.IOException;import org.json.JSONObject;

@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -77,6 +78,9 @@ public final class BackgroundDisplayBroker {
     private volatile PublicOwnGroupFramework publicOwnGroupFramework;
     private volatile boolean publicOwnGroupDisplayReady;
     private volatile PublicOwnGroupPolicy.Readback publicOwnGroupLastReadback;
+    private final PublicOwnGroupScreenLease publicScreenLease;
+    private volatile PowerManager publicPowerManager;
+    private Method newDisplayWakeLock;
     private final AtomicBoolean publicAdmissionRetired=new AtomicBoolean();
     private final PublicOwnGroupSurfaceRetirement publicSurfaceRetirement=new PublicOwnGroupSurfaceRetirement();
     // Only the object actually returned by this session's create API. Never reconstructed from an id or wire.
@@ -130,6 +134,9 @@ public final class BackgroundDisplayBroker {
             throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_CREATED_IN_FUTURE");
         expires = Math.min(started + config.ttlMs, config.expiresElapsedMs);
         displayName = "hepta-bg-" + config.generation;
+        try { publicScreenLease=config.publicOwnGroupScope==null?null:
+                new PublicOwnGroupScreenLease(config.generation,expires,SystemClock::elapsedRealtime); }
+        catch(IOException invalid){throw new BrokerProtocol.Refusal(invalid.getMessage());}
     }
 
     public static void main(String[] args) {
@@ -185,6 +192,12 @@ public final class BackgroundDisplayBroker {
         if (displays == null || keyguard == null) throw new BrokerProtocol.Refusal("FRAMEWORK_SERVICE_MISSING");
         if(config.publicOwnGroupScope!=null)publicOwnGroupFramework=new PublicOwnGroupFramework(
                 shell,displays,config.publicOwnGroupScope,publicBootCount,Math.min(expires,started+STARTUP_MS));
+        if(config.publicOwnGroupScope!=null){
+            publicPowerManager=(PowerManager)shell.getSystemService(Context.POWER_SERVICE);
+            if(publicPowerManager==null)throw new BrokerProtocol.Refusal("PUBLIC_SCREEN_POWER_SERVICE_UNAVAILABLE");
+            // The two-argument overload can address all display groups. There is no fallback.
+            newDisplayWakeLock=PowerManager.class.getMethod("newWakeLock",int.class,String.class,int.class);
+        }
         requireUnlocked();
         virtualFlags = fields(DisplayManager.class, "VIRTUAL_DISPLAY_FLAG_PUBLIC", "VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY",
             "VIRTUAL_DISPLAY_FLAG_SUPPORTS_TOUCH", "VIRTUAL_DISPLAY_FLAG_DESTROY_CONTENT_ON_REMOVAL",
@@ -374,6 +387,7 @@ public final class BackgroundDisplayBroker {
                     if (closing.get()) throw new BrokerProtocol.Refusal("SESSION_CLOSING");
                     setImePolicy.invoke(windowManager, displayId, imeHide);
                     verifyDisplay();
+                    acquirePublicScreenLease(created);
                     if(publicNotesCustody!=null){
                         publicNotesCustody.bindDisplay(displayId);
                         publicNotesReader=new PublicPersonalNotesReader(shell,activityTasks,displayId,
@@ -730,7 +744,10 @@ public final class BackgroundDisplayBroker {
             try{
                 PublicOwnGroupFramework framework=publicOwnGroupFramework;
                 if(framework==null)throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_FRAMEWORK_UNAVAILABLE");
-                if(publicOwnGroupDisplayReady)framework.read(config.generation,displayId,displayName);
+                if(publicOwnGroupDisplayReady){
+                    framework.read(config.generation,displayId,displayName);
+                    if("ACTIVE".equals(state))publicScreenLease.requireActive();
+                }
                 else framework.preflight();
                 // New personal mode keeps the original package-location rule on
                 // fresh policy reads too; user activity in other apps stays free.
@@ -769,6 +786,7 @@ public final class BackgroundDisplayBroker {
         int flags = actual.getFlags(); displayFlags = flags;
         if(config.publicOwnGroupScope!=null){
             publicOwnGroupLastReadback=publicOwnGroupFramework.read(config.generation,displayId,displayName);
+            if("ACTIVE".equals(state))publicScreenLease.requireActive();
             publicOwnGroupDisplayReady=true;displayPolicyReadback=null;return;
         }
         if ((flags & requiredDisplayFlags) != requiredDisplayFlags || (flags & forbiddenDisplayFlags) != 0)
@@ -784,6 +802,38 @@ public final class BackgroundDisplayBroker {
             .put("display_id",displayId).put("display_name",displayName)
             .put("observed_started_elapsed_ms",readStarted).put("observed_ended_elapsed_ms",SystemClock.elapsedRealtime());
     }
+
+    private void acquirePublicScreenLease(final VirtualDisplay created)throws Exception{
+        if(config.publicOwnGroupScope==null)return;
+        if(created==null||created!=publicCreateReturnedHandle||created!=virtual||!publicOwnGroupDisplayReady
+                ||publicOwnGroupLastReadback==null||!publicOwnGroupFramework.frozenIdentityMatches(displayId,displayName))
+            throw new IOException("PUBLIC_SCREEN_CREATE_HANDLE_UNBOUND");
+        final PublicOwnGroupPolicy.DisplayState bound=publicOwnGroupLastReadback.display;
+        publicScreenLease.acquire(new PublicOwnGroupScreenLease.Port(){
+            private PowerManager.WakeLock token;
+            @Override public PublicOwnGroupScreenLease.Snapshot read()throws Exception{
+                if(created!=publicCreateReturnedHandle||created!=virtual||created.getDisplay().getDisplayId()!=displayId
+                        ||closing.get()||publicAdmissionRetired.get())throw new IOException("PUBLIC_SCREEN_CREATE_HANDLE_RETIRED");
+                PublicOwnGroupScreenLease.Snapshot actual=publicOwnGroupFramework.screenSnapshot(displayId,displayName);
+                if(actual.id!=bound.displayId||!actual.name.equals(bound.name)||!actual.uniqueId.equals(bound.uniqueId)
+                        ||actual.group!=bound.groupId||actual.ownerUid!=bound.ownerUid||!actual.ownerPackage.equals(bound.ownerPackage)
+                        ||actual.flags!=bound.flags)throw new IOException("PUBLIC_SCREEN_FROZEN_IDENTITY_CHANGED");
+                return actual;
+            }
+            @Override public void acquire(int flags,int selected,long remaining)throws Exception{
+                if(flags!=0x0000000a||selected!=displayId||selected<=1||remaining<=0||remaining>BrokerProtocol.MAX_TTL_MS
+                        ||closing.get()||publicAdmissionRetired.get())throw new IOException("PUBLIC_SCREEN_ACQUIRE_SCOPE_INVALID");
+                Object value=newDisplayWakeLock.invoke(publicPowerManager,flags,"HeptaBackground:"+config.generation,selected);
+                if(!(value instanceof PowerManager.WakeLock))throw new IOException("PUBLIC_SCREEN_WAKE_LOCK_UNAVAILABLE");
+                token=(PowerManager.WakeLock)value;token.setReferenceCounted(false);
+                // No ACQUIRE_CAUSES_WAKEUP or ON_AFTER_RELEASE: a newly created display must still be ON.
+                token.acquire(remaining);
+            }
+            @Override public boolean held(){return token!=null&&token.isHeld();}
+            @Override public void release(){if(token!=null&&token.isHeld())token.release();}
+        });
+    }
+    private void retirePublicScreenLease(){if(publicScreenLease!=null)publicScreenLease.retire();}
 
     /** Logical maximum display region, not physical panel pixels or a foreground App window. */
     static final class DisplayGeometry {
@@ -990,6 +1040,9 @@ public final class BackgroundDisplayBroker {
         Thread watchdog = new Thread(() -> {
             while (true) {
                 long now = SystemClock.elapsedRealtime();
+                // PowerManager's timeout posts to the unpumped main Looper in this app_process.
+                // This independent watchdog is the authoritative absolute screen-lease deadline.
+                if(publicScreenLease!=null)publicScreenLease.observeDeadline(now);
                 if(config.publicOwnGroupScope!=null)publicSurfaceRetirement.observeDeadline(now);
                 if (cleanupStarted.get() && now - cleanupAt >= CLEANUP_MS) {
                     boolean known = cleanupDone.getCount() == 0 && "RELEASED".equals(state);
@@ -1042,6 +1095,7 @@ public final class BackgroundDisplayBroker {
 
     private void haltAfterBootRead(int exit) {
         try {
+            retirePublicScreenLease();
             retireBootRead();
             if(bootReadRetirementFailure!=null)state="CLEANUP_UNKNOWN";
             printTerminal();
@@ -1051,6 +1105,7 @@ public final class BackgroundDisplayBroker {
 
     private void beginCleanup(String reason) {
         closing.set(true);
+        retirePublicScreenLease();
         retireBootRead();
         if(publicNotesCustody!=null)publicNotesCustody.retireAdmission();
         if(config.publicOwnGroupScope!=null){publicAdmissionRetired.set(true);beginPublicSurfaceDetach();}
@@ -1191,6 +1246,7 @@ public final class BackgroundDisplayBroker {
         return true;
     }
     private void quarantinePublicNotes(String reason){
+        retirePublicScreenLease();
         PublicPersonalNotesCustody custody=publicNotesCustody;
         if(custody!=null&&!custody.known())custody.unresolved(reason);
         serve=false;state=custody!=null&&custody.known()?releasedState():"CLEANUP_UNKNOWN";
@@ -1271,6 +1327,7 @@ public final class BackgroundDisplayBroker {
         return java.util.Collections.unmodifiableMap(out);
     }
     private void quarantineProfile(String reason){
+        retirePublicScreenLease();
         profileCustody.unresolved();serve=false;state="CLEANUP_UNKNOWN";
         java.util.Map<String,Object> previous=profileCleanupReadback;
         java.util.Map<String,Object> out=new java.util.LinkedHashMap<String,Object>(
@@ -1301,6 +1358,7 @@ public final class BackgroundDisplayBroker {
         DisplayGeometry geometry=displayGeometry;
         PublicOwnGroupPolicy.Readback publicReply=null;
         if(config.publicOwnGroupScope!=null&&r!=null&&ok&&"ACTIVE".equals(state)&&!closing.get()&&!publicAdmissionRetired.get()){
+            publicScreenLease.requireActive();
             if(config.profileTarget!=null){
                 if(profileOwnedTask==null)requireUnlaunchedProfileEmpty();
                 else profileOwnedTask.verifyPublicRecentHistory();
@@ -1375,7 +1433,8 @@ public final class BackgroundDisplayBroker {
                     new JSONObject(profileOwnedTask.firstRootRefusal()))
             .put("profile_custody_retained",config.profileTarget!=null&&profileCustody.retain());
             if(config.publicOwnGroupScope!=null)terminal.put("display_scope_sha256",config.publicOwnGroupScope.sha256)
-                    .put("public_scope_admission_retired",publicAdmissionRetired.get()).put("public_surface_detach",publicDetachEvidence());
+                    .put("public_scope_admission_retired",publicAdmissionRetired.get()).put("public_surface_detach",publicDetachEvidence())
+                    .put("public_screen_lease",new JSONObject(publicScreenLease.evidence()));
             if(publicNotesCustody!=null)terminal.put("personal_notes_cleanup",new JSONObject(publicNotesCustody.evidence()))
                     .put("personal_notes_task_info_diagnostics",new JSONObject(publicNotesReadFailures.evidence()));
             System.out.println(terminal); }

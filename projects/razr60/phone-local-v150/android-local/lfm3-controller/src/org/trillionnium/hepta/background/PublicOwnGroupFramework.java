@@ -18,8 +18,9 @@ final class PublicOwnGroupFramework {
     private final Context shell;
     private final DisplayManager displays;
     private final PublicOwnGroupPolicy.Scope scope;
-    private final Object windows,trust,activities;
+    private final Object windows,trust,activities,displayService;
     private final Method keyguardLocked,keyguardSecure,deviceSecure,deviceLocked,currentUser,getIme,getDisplayInfo;
+    private final Method getAllDisplayIds,getDirectDisplayInfo;
     private final Class<?> infoType;
     final int requestedFlags,actualFlags,imeHide,destroyMode;
     private Map<Integer,String> physicalBaseline;
@@ -47,6 +48,13 @@ final class PublicOwnGroupFramework {
         currentUser=Class.forName("android.app.IActivityManager").getMethod("getCurrentUserId");
         getIme=wm.getMethod("getDisplayImePolicy",int.class);
         infoType=Class.forName("android.view.DisplayInfo");getDisplayInfo=Display.class.getMethod("getDisplayInfo",infoType);
+        Object displayBinder=Class.forName("android.os.ServiceManager").getMethod("getService",String.class).invoke(null,"display");
+        need(displayBinder instanceof IBinder,"PUBLIC_SCREEN_DISPLAY_SERVICE_UNAVAILABLE");
+        displayService=Class.forName("android.hardware.display.IDisplayManager$Stub").getMethod("asInterface",IBinder.class).invoke(null,displayBinder);
+        need(displayService!=null,"PUBLIC_SCREEN_DISPLAY_SERVICE_UNAVAILABLE");
+        Class<?> displayApi=Class.forName("android.hardware.display.IDisplayManager");
+        getAllDisplayIds=displayApi.getMethod("getDisplayIds",boolean.class);
+        getDirectDisplayInfo=displayApi.getMethod("getDisplayInfo",int.class);
         requestedFlags=bits(DisplayManager.class,"VIRTUAL_DISPLAY_FLAG_PUBLIC","VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY",
                 "VIRTUAL_DISPLAY_FLAG_SUPPORTS_TOUCH","VIRTUAL_DISPLAY_FLAG_DESTROY_CONTENT_ON_REMOVAL","VIRTUAL_DISPLAY_FLAG_TRUSTED",
                 "VIRTUAL_DISPLAY_FLAG_OWN_DISPLAY_GROUP","VIRTUAL_DISPLAY_FLAG_ALWAYS_UNLOCKED","VIRTUAL_DISPLAY_FLAG_OWN_FOCUS",
@@ -133,6 +141,42 @@ final class PublicOwnGroupFramework {
         PublicOwnGroupPolicy.Readback value=new PublicOwnGroupPolicy.Readback(scope,requestId,begin,SystemClock.elapsedRealtime(),allowed,ending,state,after);
         synchronized(this){need(first==null||first.sameLifetimeIdentity(value),"PUBLIC_SCOPE_DISPLAY_LIFETIME_IDENTITY_CHANGED");if(first==null)first=value;}
         return value;
+    }
+    /** Read-only power scope census. A screen lock affects a display group, so no other
+     * physical or virtual display may share the exact created display's group. */
+    PublicOwnGroupScreenLease.Snapshot screenSnapshot(int id,String name)throws Exception{
+        PublicOwnGroupPolicy.DisplayState owned=display(id,name);
+        // DisplayManager.getDisplays() omits disabled logical displays. Such a display could
+        // still share the group, so only the direct includeDisabled Binder census is sufficient.
+        Object ids=getAllDisplayIds.invoke(displayService,true);
+        need(ids instanceof int[],"PUBLIC_SCREEN_CENSUS_UNAVAILABLE");
+        int[] all=(int[])ids;
+        need(all.length>=3&&all.length<=32,"PUBLIC_SCREEN_CENSUS_UNAVAILABLE");
+        java.util.Set<Integer> seen=new java.util.HashSet<Integer>();
+        int members=0,main=-1,cover=-1;Object target=null;
+        for(int current:all){
+            Object actual=getDirectDisplayInfo.invoke(displayService,current);
+            need(current>=0&&seen.add(current)&&infoType.isInstance(actual)&&field(actual,"displayId")==current,
+                    "PUBLIC_SCREEN_CENSUS_UNAVAILABLE");
+            int type=field(actual,"type"),group=field(actual,"displayGroupId");
+            need(group>=0,"PUBLIC_SCREEN_CENSUS_UNAVAILABLE");
+            if(current==0||current==1){
+                need(type==1&&group!=owned.groupId,"PUBLIC_SCREEN_PHYSICAL_GROUP_REFUSED");
+                if(current==0)main=group;else cover=group;
+            }else need(type==5,"PUBLIC_SCREEN_UNREVIEWED_PHYSICAL_DISPLAY");
+            if(group==owned.groupId)members++;
+            if(current==id){
+                need(type==5&&owned.uniqueId.equals(text(actual,"uniqueId"))&&owned.name.equals(text(actual,"name"))
+                        &&owned.flags==field(actual,"flags")&&owned.groupId==group&&owned.ownerUid==field(actual,"ownerUid")
+                        &&owned.ownerPackage.equals(text(actual,"ownerPackageName")),"PUBLIC_SCREEN_IDENTITY_CHANGED_DURING_READ");
+                target=actual;
+            }
+        }
+        Object ending=getAllDisplayIds.invoke(displayService,true);
+        need(ending instanceof int[]&&java.util.Arrays.equals(all,(int[])ending),"PUBLIC_SCREEN_CENSUS_CHANGED");
+        need(target!=null&&main==owned.physical0GroupId&&cover==owned.physical1GroupId,"PUBLIC_SCREEN_CENSUS_UNAVAILABLE");
+        return new PublicOwnGroupScreenLease.Snapshot(id,5,owned.flags,owned.ownerUid,owned.groupId,main,cover,
+                members,field(target,"state"),owned.name,owned.uniqueId,owned.ownerPackage,true);
     }
     synchronized boolean hasFrozenIdentity(){return first!=null;}
     /** Frozen, actual framework facts only. During shutdown the broker separately checks
