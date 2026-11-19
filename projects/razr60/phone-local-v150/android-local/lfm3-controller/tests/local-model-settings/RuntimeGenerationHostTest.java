@@ -74,9 +74,10 @@ public final class RuntimeGenerationHostTest {
   run("real-executor-active-and-queued-work-block-settings",()->{
    LocalModelEngine e=engine(fresh("queue"));CountDownLatch entered=new CountDownLatch(1),release=new CountDownLatch(1);
    executor(e).execute(()->{entered.countDown();try{release.await();}catch(InterruptedException err){Thread.currentThread().interrupt();}});
+   Future<?> queued;
    try{check(entered.await(2,TimeUnit.SECONDS),"real worker active");check(processSlot().get()==null,"queue guard independently checked");reject(()->e.reserveSettings(false));
-    executor(e).execute(()->{});check(executor(e).getQueue().size()==1,"real pending queue exists");reject(()->e.reserveSettings(false));}
-   finally{release.countDown();}idleExecutor(e);LocalModelEngine.SettingsReservation lease=e.reserveSettings(false);e.finishSettings(lease,true);
+    queued=executor(e).submit(()->{});check(executor(e).getQueue().size()==1,"real pending queue exists");reject(()->e.reserveSettings(false));}
+   finally{release.countDown();}queued.get(3,TimeUnit.SECONDS);idleExecutor(e);LocalModelEngine.SettingsReservation lease=e.reserveSettings(false);e.finishSettings(lease,true);
   });
   run("foreign-settings-lease-cannot-publish-or-release",()->{
    LocalModelEngine owner=engine(fresh("owner")),foreign=engine(fresh("foreign"));LocalModelEngine.SettingsReservation lease=owner.reserveSettings(false);

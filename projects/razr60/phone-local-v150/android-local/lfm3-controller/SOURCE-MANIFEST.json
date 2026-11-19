@@ -1,8 +1,8 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "39b207e194f8016480d718b0a8f7752cb7a74d53",
-  "base_manifest_sha256": "2ba019e43f1bda7030812480d4b2ae7c6b0619bba73722d9a7095cc9b28cea1f",
-  "candidate_status": "context_root_source_candidate_not_compiled_or_deployed",
+  "base_head": "302602f2893faf32326673ad358794b299855e49",
+  "base_manifest_sha256": "ff5de24e9a242e33bd301f8e98f8c47807bf76872e531576cba4fa979895c8e9",
+  "candidate_status": "test_wait_source_candidate_not_compiled_or_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
@@ -19,7 +19,8 @@
     "Independently prove absence of a failed personal Notes lease before ordinary recovery acknowledgement",
     "Parse Motorola glued recent-task headers without changing original bytes or foreign-task protection",
     "Synchronize exact host expectations with the additional recents parser regression cases",
-    "Normalize only the trusted Android Context files root while preserving strict arbitrary-file and descendant identity checks"
+    "Normalize only the trusted Android Context files root while preserving strict arbitrary-file and descendant identity checks",
+    "Wait for the existing queued executor test task to complete before asserting the original idle admission"
   ],
   "files": [
     {
@@ -7824,8 +7825,8 @@
     },
     {
       "path": "tests/local-model-settings/RuntimeGenerationHostTest.java",
-      "bytes": 18716,
-      "sha256": "873c49e9179f451f37c62ae2241036b755082a99de6faace76998060b9d7486b"
+      "bytes": 18774,
+      "sha256": "347c3c4d12fe74fe5fe92f5d9c0792a29a42573a3502ecacd303c535284a2256"
     },
     {
       "path": "tests/local-model-settings/fixtures/android/app/ActivityManager.java",
