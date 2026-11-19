@@ -1,8 +1,8 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "43c37afe8ab550595f95475a0d87969bd718e531",
-  "base_manifest_sha256": "6f1fa20401d3d7d07d4942cd54019fc37055e3daa0596a1426e559145629b34a",
-  "candidate_status": "controller_handoff_and_notes_failure_candidate_not_compiled_or_deployed",
+  "base_head": "f4e0a985c3df17fdcc318e957c863e237140e0e4",
+  "base_manifest_sha256": "ee58a7e328921c35fe0a4cd9d7bac8ac5a8aeae5e451afba3b37646ee3fc624e",
+  "candidate_status": "runtask_signature_fixture_successor_not_compiled_or_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
@@ -13,19 +13,16 @@
   "phone_qualified": false,
   "android_qualified": false,
   "scope": {
-    "reviewed_paths": 20,
-    "production_changed_paths": 9,
-    "new_paths": 8,
-    "new_production_java": 3,
+    "reviewed_paths": 2,
+    "production_changed_paths": 0,
+    "new_paths": 0,
+    "new_production_java": 0,
     "source_files": 2254,
     "java_sources": 194,
     "production_inputs": 366,
     "canonical_entries": 122,
     "features": [
-      "Explicit read-only controller-display handoff before creating an independently owned background display",
-      "Bind exact Notes cleanup identity immediately after create returns a valid handle",
-      "Authenticate and consume only a complete no-launch create-failure release proof",
-      "Preserve blocked pre-launch Notes failures for ordinary App Recovery with fresh absence evidence"
+      "Update two original runTask test entry bindings to the actual six-parameter production method; preserve every original assertion and production byte"
     ],
     "original_canonical_assertions_and_order_preserved": 115,
     "new_mandatory_steps": [
@@ -8411,8 +8408,8 @@
     },
     {
       "path": "tests/native-observation-read-retry/run_host.py",
-      "bytes": 7673,
-      "sha256": "e4a9da62a0eea53aeb663a77965812121b6c2c8120c2e02ced177dd208865338"
+      "bytes": 7755,
+      "sha256": "f664083f80f0e0f93f48bbf3a8c3cc2814b96deea85c9e1ce30ab97d773c8eac"
     },
     {
       "path": "tests/native-observation-retry/README.md",
@@ -8851,8 +8848,8 @@
     },
     {
       "path": "tests/notes-task-phase/NotesTaskPhaseHostTest.java",
-      "bytes": 24869,
-      "sha256": "86fc314b06ee332e12daf528d703f9ca4ddda1ed6a42c853d2acc6639accd8db"
+      "bytes": 24947,
+      "sha256": "b9699254a662229d9e1178abaaa341fce48e404a124b4a211c4f2826c1550a0f"
     },
     {
       "path": "tests/notes-task-phase/NotesTaskScopeHostTest.java",

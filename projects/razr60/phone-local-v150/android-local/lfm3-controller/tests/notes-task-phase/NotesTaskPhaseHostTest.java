@@ -222,8 +222,8 @@ public final class NotesTaskPhaseHostTest {
             // ticket before enqueueing the worker. It carries no exit proof.
             field(controller,"taskCancellation",new TaskCancellationQueue.Ticket(e.service,e.task));
             HeptaAccessibilityService.live=null;
-            Method run=LocalTaskController.class.getDeclaredMethod("runTask",String.class,String.class,String.class,TaskAuthorization.Gate.class,BackgroundSession.Selection.class);
-            run.setAccessible(true);run.invoke(controller,e.task,TaskCompletionGateHostTest.OWNER,null,gate,null);
+            Method run=LocalTaskController.class.getDeclaredMethod("runTask",String.class,String.class,String.class,TaskAuthorization.Gate.class,BackgroundSession.Selection.class,org.trillionnium.hepta.background.ControllerDisplayHandoff.Locator.class);
+            run.setAccessible(true);run.invoke(controller,e.task,TaskCompletionGateHostTest.OWNER,null,gate,null,null);
             check(ended[0]==1&&terminal[0]!=null&&!((Boolean)field(controller,"running")).booleanValue(),"service loss before worker entry still runs final cleanup and terminal callback");
             check(e.service.lease==null&&e.service.effects()==0,"early phase lookup failure releases lease without effects");
             controller.close();
