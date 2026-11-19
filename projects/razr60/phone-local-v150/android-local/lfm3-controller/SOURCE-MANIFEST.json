@@ -1,8 +1,8 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "0a8cdfba2ecfb2293f93b3c53df6610ef58bf452",
-  "base_manifest_sha256": "29b2fc9260cabe0166a79982a3abdf843453a663792e862e0aef4971e0dfd41a",
-  "candidate_status": "recents_boundary_source_candidate_not_compiled_or_deployed",
+  "base_head": "0d9dad7a8850e4c76246cf1fc6d1545570316c3c",
+  "base_manifest_sha256": "6e04c7f17c264f1c6fe204ab472f6779341b5d8e11c7b0d1c2c68c3984874e07",
+  "candidate_status": "test_contract_source_candidate_not_compiled_or_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
@@ -17,7 +17,8 @@
     "Read ordinary personal Notes task leaves without discarding complete root census",
     "Allow one observed Ctrip login return following an actual flight query",
     "Independently prove absence of a failed personal Notes lease before ordinary recovery acknowledgement",
-    "Parse Motorola glued recent-task headers without changing original bytes or foreign-task protection"
+    "Parse Motorola glued recent-task headers without changing original bytes or foreign-task protection",
+    "Synchronize exact host expectations with the additional recents parser regression cases"
   ],
   "files": [
     {
@@ -10968,7 +10969,7 @@
     {
       "path": "tools/run_host_checks.py",
       "bytes": 34891,
-      "sha256": "78bc3f7fe1434ee7a1becee6f2a4c6770a214a94b46c2533e508bb9ca6656205"
+      "sha256": "10b9eda41b12fea76ad4977c36bbc2db9d45fa6dee22384aa98129504b2a90c4"
     },
     {
       "path": "tools/run_public_own_group_adapter_host.py",
