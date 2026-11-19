@@ -163,6 +163,25 @@ public final class PublicOwnGroupPhysicalFence {
         }
     }
     public static RecentCensus inspectRecents(String raw){return recents(raw,0);}
+    /** Motorola's final lastDisplayId is printed without a newline; the next
+     * RecentTaskInfo header may immediately follow it. Recognize only that
+     * complete field boundary. Preserve the original body bytes and raw hash;
+     * inserting a newline would change the last surviving foreign row on removal. */
+    static List<Matcher> visibleRecentHeaders(String visible){
+        need(visible!=null&&visible.length()<=MAX,"PHYSICAL_VISIBLE_RECENTS_BOUND");
+        List<Matcher> heads=matches("  \\* RecentTaskInfo #([0-9]+):[ \\t]*$",visible);
+        need(!heads.isEmpty()&&heads.size()<=ProfileTaskPolicy.MAX_LEAVES
+                &&visible.substring(0,heads.get(0).start()).trim().isEmpty(),"PHYSICAL_VISIBLE_RECENTS_MISSING");
+        int count=0,at=0;String marker="RecentTaskInfo";
+        while((at=visible.indexOf(marker,at))>=0){count++;at+=marker.length();}
+        need(count==heads.size(),"PHYSICAL_VISIBLE_HEADER_INCOMPLETE");
+        for(Matcher head:heads){
+            int start=head.start();if(start==0||visible.charAt(start-1)=='\n')continue;
+            int line=visible.lastIndexOf('\n',start-1)+1;
+            need(visible.substring(line,start).matches("    lastDisplayId=-?[0-9]+"),"PHYSICAL_VISIBLE_HEADER_BOUNDARY");
+        }
+        return heads;
+    }
     private static Recent label(String label){
         Matcher m=one("^Task\\{([0-9a-f]+) #([0-9]+) ([^{}\\r\\n]+)\\}$",label,"PHYSICAL_RECENT_LABEL_INVALID");
         Recent r=new Recent();r.token=m.group(1);r.task=n(m.group(2));r.affinity=optional("(?:^| )A=([^\\s]+)",m.group(3));r.label=label;return r;
@@ -206,7 +225,7 @@ public final class PublicOwnGroupPhysicalFence {
             need(rows.put(r.task,r)==null,"PHYSICAL_RECENT_DUPLICATE");if(targetUser==0||r.user!=targetUser){
                 String fact="internal|"+r.data();append(out,fact);facts.add(new RecentFact(r.task,fact));}
         }
-        Set<Integer> seen=new HashSet<Integer>();heads=matches("^  \\* RecentTaskInfo #([0-9]+):[ \\t]*$",visible);
+        Set<Integer> seen=new HashSet<Integer>();heads=visibleRecentHeaders(visible);
         need(!heads.isEmpty()&&visible.substring(0,heads.get(0).start()).trim().isEmpty(),"PHYSICAL_VISIBLE_RECENTS_MISSING");
         for(int i=0;i<heads.size();i++){
             Matcher h=heads.get(i);need(n(h.group(1))==i,"PHYSICAL_VISIBLE_INDICES_INCOMPLETE");

@@ -25,7 +25,6 @@ public final class PublicProfileRecentHistory {
     public static final String SCHEMA="hepta.public-profile-preserved-recents.v1";
     private static final String INTERNAL="  Recent tasks:\n",VISIBLE="  Visible recent tasks (most recent first):\n";
     private static final Pattern HEAD=Pattern.compile("(?m)^  \\* Recent #([0-9]+): (Task\\{([0-9a-f]+) #([0-9]+) [^{}\\r\\n]+\\})$");
-    private static final Pattern VHEAD=Pattern.compile("(?m)^  \\* RecentTaskInfo #([0-9]+):[ \\t]*$");
     private static final Pattern AGE=Pattern.compile("(?m)^    lastActiveTime=(0|[1-9][0-9]*) \\(inactive for (0|[1-9][0-9]*)s\\)$");
     private static final Set<Integer> NONE=Collections.emptySet();
     private PublicProfileRecentHistory(){}
@@ -99,7 +98,7 @@ public final class PublicProfileRecentHistory {
                 Row row=new Row(f,body);need(parsed.put(id,row)==null,"PUBLIC_HISTORY_DUPLICATE_ID");putToken(ts,tokenOwners,id,f.token);
             }
             need(parsed.keySet().equals(census.records.keySet()),"PUBLIC_HISTORY_MEMBERSHIP");
-            List<VisibleRow> visibleRows=new ArrayList<VisibleRow>();List<Matcher> visibleHeads=matches(VHEAD,vis);
+            List<VisibleRow> visibleRows=new ArrayList<VisibleRow>();List<Matcher> visibleHeads=PublicOwnGroupPhysicalFence.visibleRecentHeaders(vis);
             for(int i=0;i<visibleHeads.size();i++){
                 Matcher h=visibleHeads.get(i);need(decimal(h.group(1))==i,"PUBLIC_HISTORY_VISIBLE_ORDER");
                 String body=vis.substring(h.end(),i+1<visibleHeads.size()?visibleHeads.get(i+1).start():vis.length());

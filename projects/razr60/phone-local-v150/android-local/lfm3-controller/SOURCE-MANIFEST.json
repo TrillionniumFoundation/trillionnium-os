@@ -1,14 +1,14 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "d1b54d48b85010c128a97d2435769cf1c4e0942d",
-  "base_manifest_sha256": "ace1db23265512341e0be1361799ec38ed6d0084d838d40d495fa0f894c537a6",
-  "candidate_status": "combined_a8_source_candidate_not_compiled_or_deployed",
+  "base_head": "0a8cdfba2ecfb2293f93b3c53df6610ef58bf452",
+  "base_manifest_sha256": "29b2fc9260cabe0166a79982a3abdf843453a663792e862e0aef4971e0dfd41a",
+  "candidate_status": "recents_boundary_source_candidate_not_compiled_or_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 189,
   "production_build_inputs_count": 361,
-  "production_input_map_sha256": "9eec5708c2d920a8c189b89d753d0a8df24400145ee58a79920e62ffd32df237",
+  "production_input_map_sha256": "726f9cc5b83a3538ee35fed2ce528cda430a9d124f8f9d5eb9388bf080a12bdf",
   "complete_source_files": 2231,
   "phone_qualified": false,
   "android_qualified": false,
@@ -16,7 +16,8 @@
     "Local model configuration persistence and generation synchronization",
     "Read ordinary personal Notes task leaves without discarding complete root census",
     "Allow one observed Ctrip login return following an actual flight query",
-    "Independently prove absence of a failed personal Notes lease before ordinary recovery acknowledgement"
+    "Independently prove absence of a failed personal Notes lease before ordinary recovery acknowledgement",
+    "Parse Motorola glued recent-task headers without changing original bytes or foreign-task protection"
   ],
   "files": [
     {
@@ -6301,8 +6302,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupPhysicalFence.java",
-      "bytes": 21181,
-      "sha256": "675a95167a01ecbb928288a52113646e1e2c903d1453cfb8e0307355a9723a38"
+      "bytes": 22442,
+      "sha256": "aa4144ee00ad9decb0c052e8b90e51d0fd4516846b61a56e343973afd80e77ed"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupPhysicalReader.java",
@@ -6341,8 +6342,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesHistory.java",
-      "bytes": 13266,
-      "sha256": "ea7bcb8fc849988baea6ceb0c0a40c98d390d0c1db818845a81a9a3fdb9c64e9"
+      "bytes": 13197,
+      "sha256": "29232617cb34bcd85b768549474f895edf4a55b5c235c494ff8edef928380cf2"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicPersonalNotesReader.java",
@@ -6356,8 +6357,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicProfileRecentHistory.java",
-      "bytes": 22490,
-      "sha256": "d412675f98623cb02afdd0584f32cc93488ec604a6ff28d6199f8e4152ca8432"
+      "bytes": 22421,
+      "sha256": "51666488e0f53f774619bede9873e3e61e5851a64b5878a117c0f4ad905146d2"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicProfileRecoveryMain.java",
@@ -9056,8 +9057,8 @@
     },
     {
       "path": "tests/personal-notes-absence/PersonalNotesAbsenceHostTest.java",
-      "bytes": 21047,
-      "sha256": "6078f89b36a9fe0e4f635448ded7a13f8512c2c50c65d08153f14e48540cc2f6"
+      "bytes": 23925,
+      "sha256": "48ef34a6489c7ac75a91887a80509f872121b79067ec68fe29081c5277bf4cd1"
     },
     {
       "path": "tests/personal-notes-absence/PersonalNotesRecoveryClientHostTest.java",
@@ -9416,8 +9417,8 @@
     },
     {
       "path": "tests/public-own-group-policy/PublicPhysicalAuditHostTest.java",
-      "bytes": 9454,
-      "sha256": "125f21a796237ca37e54722b5d9510122f81bbe15ad89827cc25cfe01226bde2"
+      "bytes": 11669,
+      "sha256": "f5e1c8699e39f22fbb13eb7d2a007f85f38a4feeb34941556e6b6182f736fa72"
     },
     {
       "path": "tests/public-own-group-policy/PublicSurfaceRetirementHostTest.java",

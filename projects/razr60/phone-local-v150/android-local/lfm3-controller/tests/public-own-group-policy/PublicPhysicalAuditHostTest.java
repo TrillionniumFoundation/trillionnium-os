@@ -38,6 +38,9 @@ public final class PublicPhysicalAuditHostTest {
         m.put(0,new PublicOwnGroupPhysicalFence.DisplayFacts(0,"local:1000",1,2,0,1224,2992));m.put(1,new PublicOwnGroupPhysicalFence.DisplayFacts(1,"local:1001",1,1,0,1080,1272));return m;}
     static Map<Integer,String> capture(String a,String w,String r){return PublicOwnGroupPhysicalFence.capture(a,w,r,displays(),10);}
     static Map<Integer,String> baseline(){return capture(activities(),windows(),recents(true));}
+    static String gluedVisible(String raw){String marker="  Visible recent tasks (most recent first):\n";
+        int at=raw.indexOf(marker)+marker.length();String visible=raw.substring(at).replace("\n  * RecentTaskInfo","  * RecentTaskInfo");
+        if(visible.endsWith("\n"))visible=visible.substring(0,visible.length()-1);return raw.substring(0,at)+visible;}
 
  static String hidden(String value){return recents(true).replace("  Recent tasks:\n","mHiddenTasks=["+value+"]\n  Recent tasks:\n");}
  static final String DETACHED="Task{2bbd66 #1182 type=standard A=10481:org.trillionnium.hepta.local}";
@@ -82,6 +85,26 @@ public final class PublicPhysicalAuditHostTest {
   });
   test("duplicate flags still refuse after literal brace compatibility fix",()->
     refuse(()->from(recents(true).replace("flg=0x10000000 cmp=","flg=0x10000000 flg=0x10000000 cmp="))));
+  test("glued visible headers preserve all physical facts",()->{
+    yes(baseline().equals(from(gluedVisible(recents(true)))),"glued profile rows changed physical facts");
+    yes(from(recents(false)).equals(from(gluedVisible(recents(false)))),"glued personal rows changed physical facts");});
+  test("glued visible parsing keeps exact original raw hash",()->{
+    String value=gluedVisible(recents(true));PublicOwnGroupPhysicalFence.RecentCensus c=PublicOwnGroupPhysicalFence.inspectRecents(value);
+    yes(c.records.size()==3&&c.allIds.size()==3,"visible membership disappeared");
+    yes(c.rawSha256.equals(ProfileIdentity.sha(value)),"parser rewrote raw dump");});
+  test("inline header outside complete final display field refuses",()->
+    refuse(()->from(gluedVisible(recents(true)).replace("lastDisplayId=0  * RecentTaskInfo","lastDisplayId=0 suffix  * RecentTaskInfo"))));
+  test("unrecognized visible header cannot disappear",()->
+    refuse(()->from(gluedVisible(recents(true)).replace("RecentTaskInfo #1:","RecentTaskInfo #broken:"))));
+  test("glued duplicate visible ordinal refuses",()->
+    refuse(()->from(gluedVisible(recents(true)).replace("RecentTaskInfo #1:","RecentTaskInfo #0:"))));
+  test("glued duplicate visible identity refuses",()->
+    refuse(()->from(gluedVisible(recents(true)).replace("id=101 userId=0","id=100 userId=0"))));
+  test("glued visible user and display still match full internal identity",()->{
+    refuse(()->from(gluedVisible(recents(true)).replace("id=101 userId=0","id=101 userId=10")));
+    refuse(()->from(gluedVisible(recents(true)).replace("lastDisplayId=1  * RecentTaskInfo","lastDisplayId=2  * RecentTaskInfo")));});
+  test("glued visible record without identity refuses",()->
+    refuse(()->from(gluedVisible(recents(true)).replace("    id=101 userId=0 hasTask=true lastActiveTime=2000\n",""))));
   System.out.println("{\"cases\":"+cases+",\"assertions\":"+checks+",\"all_pass\":true,\"phone_contacted\":false,\"actual_framework_executed\":false}");
  }
 }

@@ -144,6 +144,29 @@ public final class PersonalNotesAbsenceHostTest {
         test("bounded natural inactivity accepted",()->{PublicPersonalNotesAbsenceRecovery.Request r=new Fixture().request();PublicPersonalNotesHistory.absence(recents(5),r).requireSameForeign(PublicPersonalNotesHistory.absence(recents(6),r),1);yes(true,"age only");});
         test("age reversal refuses",()->{PublicPersonalNotesAbsenceRecovery.Request r=new Fixture().request();refuse(()->PublicPersonalNotesHistory.absence(recents(5),r).requireSameForeign(PublicPersonalNotesHistory.absence(recents(4),r),1));});
         test("deadline and boot remain strict",()->{PublicPersonalNotesAbsenceRecovery.Request r=new Fixture().request();refuse(()->r.requireFence(r.deadline,r.oldBoot));refuse(()->r.requireFence(r.started,r.oldBoot+1));});
+        test("glued Notes absence preserves exact raw and complete foreign history",()->{
+            PublicPersonalNotesAbsenceRecovery.Request r=new Fixture().request();String value=PublicPhysicalAuditHostTest.gluedVisible(recents(5));
+            PublicPersonalNotesHistory.Snapshot a=PublicPersonalNotesHistory.absence(value,r);
+            a.requireSameForeign(PublicPersonalNotesHistory.absence(PublicPhysicalAuditHostTest.gluedVisible(recents(6)),r),1);
+            yes(a.evidence().get("raw_text").equals(value),"history rewrote raw text");
+            yes(a.evidence().get("raw_sha256").equals(ProfileIdentity.sha(value)),"history rewrote raw hash");
+            yes(((Number)a.evidence().get("history_record_count")).intValue()==2,"foreign row disappeared");});
+        test("glued Notes history still rejects foreign body changes",()->{
+            PublicPersonalNotesAbsenceRecovery.Request r=new Fixture().request();String value=PublicPhysicalAuditHostTest.gluedVisible(recents(5));
+            PublicPersonalNotesHistory.Snapshot a=PublicPersonalNotesHistory.absence(value,r);
+            refuse(()->a.requireSameForeign(PublicPersonalNotesHistory.absence(value.replace("supportsSplitScreenMultiWindow=true","supportsSplitScreenMultiWindow=false"),r),1));});
+        test("glued Notes history still rejects target package aliases",()->{
+            PublicPersonalNotesAbsenceRecovery.Request r=new Fixture().request();String value=PublicPhysicalAuditHostTest.gluedVisible(recents(5));
+            refuse(()->PublicPersonalNotesHistory.absence(value.replace("com.example.cover","com.motorola.stylus"),r));});
+        test("glued profile history keeps profile ten and foreign guards",()->{
+            ProfileTarget target=new ProfileTarget(new ProfileIdentity(10,10,0,ProfileIdentity.MANAGED),1010367,ProfileTarget.CTRIP,
+                    ProfileTarget.CTRIP+"/ctrip.android.view.Home",1,Collections.singletonMap("base",ProfileIdentity.sha("synthetic APK")),Collections.singleton(ProfileIdentity.sha("synthetic signer")));
+            String value=PublicPhysicalAuditHostTest.gluedVisible(recents(5));PublicProfileRecentHistory.Snapshot a=PublicProfileRecentHistory.absence(value,target);
+            a.requireSame(PublicProfileRecentHistory.absence(PublicPhysicalAuditHostTest.gluedVisible(recents(6)),target),1);
+            yes(a.evidence().get("raw_text").equals(value),"profile history rewrote raw");
+            refuse(()->a.requireSame(PublicProfileRecentHistory.absence(value.replace("supportsSplitScreenMultiWindow=true","supportsSplitScreenMultiWindow=false"),target),1));
+            String own=PublicPhysicalAuditHostTest.recents(true).replace("    Activities=[]\n","    Activities=[]\n    lastActiveTime=2000 (inactive for 5s)\n");
+            refuse(()->PublicProfileRecentHistory.absence(PublicPhysicalAuditHostTest.gluedVisible(own),target));});
         System.out.println(new JSONObject().put("schema","hepta.personal-notes-absence-host.v1").put("all_pass",true).put("cases",cases).put("assertions",assertions)
                 .put("case_names",new JSONArray(names)).put("framework_fixtures_synthetic",true).put("phone_operations",0).put("android_runtime",false).put("business_success_claimed",false));
     }
