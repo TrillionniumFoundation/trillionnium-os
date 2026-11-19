@@ -427,7 +427,11 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                 if(authorization.requireFindAppBeforeOpen||!authorization.allowedTools.contains("open"))
                     throw new IllegalStateException("当前指令不允许打开所选后台起始应用，后台任务未启动");
             }else{selection=null;authorization=originalAuthorization;}
-            if(!tasks.schedule(owner,source,nonceSha,expectedScope,authorization,selection,500))throw new IllegalStateException("本地任务未能取得唯一会话");
+            final org.trillionnium.hepta.background.ControllerDisplayHandoff.Locator displayHandoff=
+                    selection==null?null:ControllerDisplayHandoffClient.capture(this,owner);
+            if(displayHandoff!=null&&!selection.independentProfileDisplay&&!selection.independentPersonalDisplay)
+                throw new IllegalStateException("控制显示交接只支持明确选择的独立后台空间");
+            if(!tasks.schedule(owner,source,nonceSha,expectedScope,authorization,selection,displayHandoff,500))throw new IllegalStateException("本地任务未能取得唯一会话");
             scopeLaunch=scopeLaunch.accepted();
             InputMethodManager input=(InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
             if(input!=null)input.hideSoftInputFromWindow(taskInput.getWindowToken(),0);

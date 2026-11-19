@@ -386,16 +386,13 @@ public final class BackgroundDisplayBroker {
                     if (created == null) throw new BrokerProtocol.Refusal("DISPLAY_CREATION_FAILED");
                     displayId = created.getDisplay().getDisplayId();
                     if (displayId <= Display.DEFAULT_DISPLAY) throw new BrokerProtocol.Refusal("DEFAULT_DISPLAY_REFUSED");
+                    // Capture only cleanup identity before IME/policy/power can fail. This
+                    // grants no ACTIVE admission; cleanup still proves both task censuses.
+                    bindPublicNotesCleanupIdentity(created);
                     if (closing.get()) throw new BrokerProtocol.Refusal("SESSION_CLOSING");
                     setImePolicy.invoke(windowManager, displayId, imeHide);
                     verifyDisplay();
                     acquirePublicScreenLease(created,displayInitializationDeadline);
-                    if(publicNotesCustody!=null){
-                        publicNotesCustody.bindDisplay(displayId);
-                        publicNotesReader=new PublicPersonalNotesReader(shell,activityTasks,displayId,
-                                ()->cleanupStarted.get()?cleanupAt+CLEANUP_MS-100:Math.min(expires,requestDeadline>0?requestDeadline:expires));
-                        if(publicNotesReader.uid!=publicNotesCustody.expectedUid())throw new BrokerProtocol.Refusal("NOTES_INSTALLATION_CHANGED");
-                    }
                     guard(r, false);
                     state = "ACTIVE";
                   } finally { createInFlight = false; }
@@ -597,6 +594,18 @@ public final class BackgroundDisplayBroker {
         } finally {if(config.profileTarget!=null)activeProfileRequest=null;}
     }
 
+    private void bindPublicNotesCleanupIdentity(VirtualDisplay created)throws Exception{
+        if(publicNotesCustody==null)return;
+        if(created==null||created!=virtual||created!=publicCreateReturnedHandle||displayId<=1
+                ||!createInFlight||publicNotesReader!=null||effectInFlight||!launched.isEmpty()
+                ||ownedSingleTask!=null||!fixedToolsConsumed.isEmpty()||!fixedIntentProofs.isEmpty()
+                ||!taskLaunchPolicies.isEmpty())throw new BrokerProtocol.Refusal("NOTES_CREATE_CLEANUP_BINDING_INVALID");
+        publicNotesCustody.bindDisplay(displayId);
+        PublicPersonalNotesReader reader=new PublicPersonalNotesReader(shell,activityTasks,displayId,
+                ()->cleanupStarted.get()?cleanupAt+CLEANUP_MS-100:Math.min(expires,requestDeadline>0?requestDeadline:expires));
+        if(reader.uid!=publicNotesCustody.expectedUid())throw new BrokerProtocol.Refusal("NOTES_INSTALLATION_CHANGED");
+        publicNotesReader=reader;
+    }
     private void guard(BrokerProtocol.Request r, boolean active) throws Exception {
         r.checkDeadline(SystemClock.elapsedRealtime(), expires);
         if (closing.get()) throw new BrokerProtocol.Refusal("SESSION_CLOSING");

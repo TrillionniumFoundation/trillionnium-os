@@ -47,7 +47,7 @@ def main():
                   'PublicProfileRecentHistory', 'PublicProfileAbsenceRecovery', 'PublicPersonalNotesHistory',
                   'PublicPersonalNotesAbsenceRecovery']
     shared_test = source / 'tests/public-own-group-policy/PublicPhysicalAuditHostTest.java'
-    pure = [bg / (name + '.java') for name in pure_names] + [shared_test, test / 'PersonalNotesAbsenceHostTest.java']
+    pure = [bg / (name + '.java') for name in pure_names] + [shared_test, test / 'PersonalNotesAbsenceHostTest.java', test / 'PersonalNotesPreLaunchHostTest.java']
     jdk = args.java_home.resolve() / 'bin'
     compiler = [str(jdk / 'javac')]
     if args.java8_syntax_only and not (jdk / 'javac').exists():
@@ -58,7 +58,9 @@ def main():
     pure_classes.mkdir()
     commands = [('policy-compile', [*compile_args, '-d', str(pure_classes), *map(str, pure)]),
                 ('policy', [str(jdk / 'java'), '-cp', str(pure_classes) + os.pathsep + str(args.json_jar.resolve()),
-                            'org.trillionnium.hepta.background.PersonalNotesAbsenceHostTest'])]
+                            'org.trillionnium.hepta.background.PersonalNotesAbsenceHostTest']),
+                ('pre-launch', [str(jdk / 'java'), '-cp', str(pure_classes) + os.pathsep + str(args.json_jar.resolve()),
+                                'org.trillionnium.hepta.background.PersonalNotesPreLaunchHostTest'])]
     helper = source / 'tests/background-session/prepare_fixture.py'
     spec = importlib.util.spec_from_file_location('notes_recovery_bg_fixture', helper)
     module = importlib.util.module_from_spec(spec)
@@ -153,7 +155,7 @@ final class PersonalNotesRecoveryIdleFixture {
                                  'stdout_sha256': hashlib.sha256(run.stdout).hexdigest(), 'stderr_sha256': hashlib.sha256(run.stderr).hexdigest()})
         if run.returncode:
             break
-        if name in ('policy', 'client', 'post-model'):
+        if name in ('policy', 'pre-launch', 'client', 'post-model'):
             result[name] = json.loads(run.stdout)
     result['inputs_unchanged'] = pins == {str(p): sha(p) for p in sources}
     result['all_pass'] = len(result['stages']) == len(commands) and all(x['exit_code'] == 0 for x in result['stages']) and result['inputs_unchanged']

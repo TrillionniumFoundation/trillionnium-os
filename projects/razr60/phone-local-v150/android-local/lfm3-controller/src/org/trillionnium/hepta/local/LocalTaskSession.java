@@ -86,6 +86,13 @@ public final class LocalTaskSession {
     }
     public boolean schedule(final String owner,String source,String testNonceSha,final String expectedScopeSha256,final TaskAuthorization authorization,
                             final BackgroundSession.Selection selection,long delayMillis){
+        return schedule(owner,source,testNonceSha,expectedScopeSha256,authorization,selection,null,delayMillis);
+    }
+    public boolean schedule(final String owner,String source,String testNonceSha,final String expectedScopeSha256,final TaskAuthorization authorization,
+                            final BackgroundSession.Selection selection,final org.trillionnium.hepta.background.ControllerDisplayHandoff.Locator displayHandoff,long delayMillis){
+        if(displayHandoff!=null&&(selection==null||!"user_button".equals(source)
+                ||(!selection.independentProfileDisplay&&!selection.independentPersonalDisplay)))
+            throw new IllegalArgumentException("HANDOFF_SELECTION_REQUIRED");
         QualificationScope.expected(expectedScopeSha256);
         TaskAuthorization.require(authorization!=null,"任务授权合同缺失");authorization.requireOwner(owner);
         if (Looper.myLooper()!=Looper.getMainLooper()) throw new IllegalStateException("schedule must run on main thread");
@@ -110,7 +117,7 @@ public final class LocalTaskSession {
             pending=false;
             if(HeptaAccessibilityService.connected()!=service){setState("无障碍服务已断开，任务未启动");persist("not_started",true);return;}
             try{
-                boolean started=controller.start(owner,expectedScopeSha256,authorization,selection,new LocalTaskController.Listener(){
+                boolean started=controller.start(owner,expectedScopeSha256,authorization,selection,displayHandoff,new LocalTaskController.Listener(){
                     public void onState(String value){if(epoch>recoveryIgnoredGeneration&&epoch==generation&&!pending)receiveState(value);}
                     public void onFinished(LocalTaskController.TaskResult result){
                         if(epoch<=recoveryIgnoredGeneration)return;

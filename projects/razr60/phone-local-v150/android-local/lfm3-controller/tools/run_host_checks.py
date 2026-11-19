@@ -207,6 +207,23 @@ def main():
             raise RuntimeError("Initial screen readiness case names or raw receipt differ")
         report["public_screen_lease_gate"]={"bytes":len(screen_raw),"sha256":hashlib.sha256(screen_raw).hexdigest(),
             "test":screen_test,"initial_readiness_test":initial}
+        run("controller-display-handoff",[sys.executable,"-B",ROOT/"tests/controller-display-handoff/run_host.py",
+            "--source",ROOT,"--output",out/"controller-display-handoff","--java-home",java_home,"--json-jar",json_jar])
+        handoff_raw=(out/"controller-display-handoff/RESULT.json").read_bytes()
+        handoff=json.loads(handoff_raw)
+        if (handoff.get("schema")!="hepta.controller-display-handoff-host.v1" or handoff.get("all_pass") is not True
+                or handoff.get("strict_release8") is not True or handoff.get("phone_operations")!=0
+                or handoff.get("android_runtime") is not False or handoff.get("root_reader_executed") is not False
+                or handoff.get("synthetic_contract_tests") is not True
+                or handoff.get("inputs_before")!=handoff.get("inputs_after")
+                or [row.get("name") for row in handoff.get("stages",[])]!=["compile","contract"]
+                or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in handoff["stages"])
+                or handoff.get("test")!={"all_pass":True,"phone_operations":0,"cases":45,"assertions":54,"synthetic_contract_tests":True}
+                or hashlib.sha256((out/"controller-display-handoff/contract.stdout").read_bytes()).hexdigest()!=
+                    "c1696676c10363ac09fc9742dce956a4be376d50b9cd56d5aecbbd11689bf582"):
+            raise RuntimeError("Actual controller-display handoff contract or original 45/54 cases differ")
+        report["controller_display_handoff_gate"]={"bytes":len(handoff_raw),
+            "sha256":hashlib.sha256(handoff_raw).hexdigest(),"test":handoff["test"]}
         run("main-ui-permission",[sys.executable,"-B",ROOT/"tests/main-ui-permission/run_host.py",
             "--source",ROOT,"--output",out/"main-ui-permission","--java-home",java_home,"--json-jar",json_jar])
         run("python-tools",[sys.executable,"-m","unittest","discover","-s","tools","-p","test_*.py","-v"])
@@ -323,6 +340,8 @@ def main():
         notes_absence_contracts={
             "policy":("hepta.personal-notes-absence-host.v1","cases",48,56,"case_names",
                 "36eec7f8df6a35a7b9711158c8ee7894847c529c99bfbb45d2d70a294b410593"),
+            "pre-launch":("hepta.personal-notes-prelaunch-host.v1","cases",35,42,"case_names",
+                "9908c4ef704f71dbc02abbce340895e801cee47c8928ea119b71fe42eac82705"),
             "client":("hepta.personal-notes-recovery-client-host-tests.v1","checks",22,192,"cases",
                 "775837c86f2ca609de131778c2bc321b0df2653211831b1cbc1e4edce3147e60"),
             "post-model":("hepta.personal-notes-post-model-host.v1","cases",33,47,"case_names",
@@ -343,12 +362,13 @@ def main():
                 raise RuntimeError("Notes absence aggregate differs from actual Java stdout: "+key)
         notes_absence_stages=notes_absence.get("stages")
         if (type(notes_absence_stages) is not list or [row.get("stage") for row in notes_absence_stages]!=
-                ["policy-compile","policy","client-compile","client","post-model"]
+                ["policy-compile","policy","pre-launch","client-compile","client","post-model"]
                 or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in notes_absence_stages)):
-            raise RuntimeError("Notes absence lacks all five real compile/run stages")
+            raise RuntimeError("Notes absence lacks all six real compile/run stages")
         report["personal_notes_absence_gate"]={"bytes":len(notes_absence_raw),
             "sha256":hashlib.sha256(notes_absence_raw).hexdigest(),
-            "policy":notes_absence["policy"],"client":notes_absence["client"],"post-model":notes_absence["post-model"]}
+            "policy":notes_absence["policy"],"pre-launch":notes_absence["pre-launch"],
+            "client":notes_absence["client"],"post-model":notes_absence["post-model"]}
         run("foreground-concurrency",[sys.executable,"-B",ROOT/"tests/public-profile-history/run_concurrency_host.py",
             "--source",ROOT,"--output",out/"foreground-concurrency","--java-home",java_home,"--json-jar",json_jar])
         concurrency_raw=(out/"foreground-concurrency/RESULT.json").read_bytes()

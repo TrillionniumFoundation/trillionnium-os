@@ -129,6 +129,34 @@ def prepare(source, output):
         '    private org.trillionnium.hepta.background.PublicPermissionControllerUi.Locator controllerUiFromOwnerButton(String owner){return null;}\n{{intent_start}}',1)
     for name,code in ui_parts.items():fixture=fixture.replace('{{'+name+'}}',code)
     (output / 'ScopeUiFixture.java').write_text(fixture)
+    # Preserve the complete production owner-button, Session and Controller
+    # bodies. These original foreground cases have no real Activity display;
+    # capture returns only null, and the new read-only root IO endpoint throws.
+    # The independent controller-display-handoff gate executes the actual pure
+    # handoff contract. This fixture cannot construct a Locator or a proof.
+    (output/'ControllerDisplayHandoff.java').write_text('''package org.trillionnium.hepta.background;
+public final class ControllerDisplayHandoff {
+ private ControllerDisplayHandoff(){throw new AssertionError("legacy scope fixture");}
+ public static final class Locator {private Locator(){throw new AssertionError("no handoff authority");}}
+}
+''')
+    (output/'ControllerDisplayHandoffClient.java').write_text('''package org.trillionnium.hepta.local;
+import android.app.Activity;import android.content.Context;import java.io.File;import java.io.IOException;
+import org.trillionnium.hepta.background.ControllerDisplayHandoff;
+/** Explicit absent caller-display capture and throwing root IO only. */
+final class ControllerDisplayHandoffClient {
+ private ControllerDisplayHandoffClient(){throw new AssertionError("legacy scope fixture");}
+ interface Check {void check()throws Exception;}
+ static final class ReaderExitUnknown extends IOException {
+  private static final long serialVersionUID=1L;
+  ReaderExitUnknown(){super("legacy fixture cannot run a handoff reader");}
+ }
+ static ControllerDisplayHandoff.Locator capture(Activity activity,String owner){return null;}
+ static void await(Context context,File evidence,String task,String owner,ControllerDisplayHandoff.Locator locator,long deadline,Check check)throws Exception{
+  throw new AssertionError("legacy scope fixture cannot perform display handoff IO");
+ }
+}
+''')
     # Execute the actual saved-mode default/type check. Only SharedPreferences IO
     # is replaced by a supplied map; no selection, persistence or task authority.
     preferences_raw=(pkg/'BackgroundUiPreferences.java').read_text()
@@ -198,6 +226,7 @@ def prepare(source, output):
             'legacy_session_and_intent_methods_modified':False,
             'separate_gate_execution_not_claimed_here':True},
         'personal_notes_recovery_fixture_boundary':'Eligibility is explicitly false and the receipt is always null; this legacy IO fixture cannot create or accept personal Notes recovery authority.',
+        'controller_display_handoff_fixture_boundary':'Exact owner-button, Session and Controller bodies; capture is explicit null and root IO always throws, with no constructible Locator or receipt. Actual pure contract is tested separately by tests/controller-display-handoff/run_host.py.',
         'web_fixture_boundary':'Explicit empty Web journal only; real Web OWNER/selection and every helper action/cleanup throw AssertionError; actual Web classes have their separate gate',
         'background_fixture_boundary':'Actual complete immutable Selection and package check extracted verbatim; all broker/display transport remains explicit IO fake and not Android proof',
         'native_validation_prefix_sha256':hashlib.sha256(web_entry_prefix.encode()).hexdigest(),

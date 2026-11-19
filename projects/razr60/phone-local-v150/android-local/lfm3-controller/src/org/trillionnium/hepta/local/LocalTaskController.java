@@ -247,6 +247,14 @@ public final class LocalTaskController implements AutoCloseable {
     }
     public synchronized boolean start(final String instruction,final String expectedScopeSha256,final TaskAuthorization ownerAuthorization,
                                       final BackgroundSession.Selection backgroundSelection,final Listener callback){
+        return start(instruction,expectedScopeSha256,ownerAuthorization,backgroundSelection,null,callback);
+    }
+    public synchronized boolean start(final String instruction,final String expectedScopeSha256,final TaskAuthorization ownerAuthorization,
+                                      final BackgroundSession.Selection backgroundSelection,
+                                      final org.trillionnium.hepta.background.ControllerDisplayHandoff.Locator displayHandoff,final Listener callback){
+        if(displayHandoff!=null&&(backgroundSelection==null
+                ||(!backgroundSelection.independentProfileDisplay&&!backgroundSelection.independentPersonalDisplay)))
+            throw new IllegalArgumentException("HANDOFF_SELECTION_REQUIRED");
         LocalProbeApplication.requirePermissionPreparationIdle(service);
         TaskAuthorization.require(ownerAuthorization!=null,"任务授权合同缺失");ownerAuthorization.requireOwner(instruction);
         QualificationScope.expected(expectedScopeSha256);
@@ -274,7 +282,7 @@ public final class LocalTaskController implements AutoCloseable {
         try{authorization=service.bindTaskAuthorization(id,ownerAuthorization);}
         catch(RuntimeException error){service.releaseTask(id);throw error;}
         listener=callback;currentTaskId=id;currentActualScopeSha256=null;lastResult=null;taskCancellation=new TaskCancellationQueue.Ticket(service,id);stopRequestedElapsed.set(-1);cancelled.set(false);terminalDecisionSealed=false;running=true;
-        try{worker.execute(new Runnable(){public void run(){runTask(id,instruction,expectedScopeSha256,authorization,backgroundSelection);}});}
+        try{worker.execute(new Runnable(){public void run(){runTask(id,instruction,expectedScopeSha256,authorization,backgroundSelection,displayHandoff);}});}
         catch(RuntimeException error){running=false;service.releaseTask(id);throw error;}
         return true;
     }
@@ -312,7 +320,7 @@ public final class LocalTaskController implements AutoCloseable {
         }});
     }
 
-    private void runTask(String taskId,String instruction,String expectedScopeSha256,TaskAuthorization.Gate authorization,BackgroundSession.Selection backgroundSelection){
+    private void runTask(String taskId,String instruction,String expectedScopeSha256,TaskAuthorization.Gate authorization,BackgroundSession.Selection backgroundSelection,org.trillionnium.hepta.background.ControllerDisplayHandoff.Locator displayHandoff){
         pendingObservationDiagnostics.clear();observationDiagnosticErrors=0;nativeObservationRetryUsed=false;
         QualificationScopeConfig.Bound scope=null;
         BackgroundSession background=null;BackgroundSession.Cleanup backgroundCleanup=null;
@@ -399,6 +407,14 @@ public final class LocalTaskController implements AutoCloseable {
                 backgroundSelection.requireTaskTarget(instruction,authorization.authorization);
                 QualificationScope.require(!scope.restricted(),"qualification scope 已启用，后台任务拒绝；原测试范围保持不变");
                 checkActive(deadline);
+                if(displayHandoff!=null){
+                    emit("正在准备后台执行…");
+                    final long originalTaskDeadline=deadline;
+                    try{ControllerDisplayHandoffClient.await(service,evidence,taskId,instruction,displayHandoff,originalTaskDeadline,
+                            new ControllerDisplayHandoffClient.Check(){public void check()throws Exception{checkActive(originalTaskDeadline);}});}
+                    catch(ControllerDisplayHandoffClient.ReaderExitUnknown unknown){throw new CleanupUnknown(unknown.getMessage());}
+                    checkActive(deadline);
+                }
                 // The final UI selection was already bound by original owner
                 // authorization above. Failure in this branch is terminal: there
                 // is no retry using the legacy or physical display policy.

@@ -2,6 +2,10 @@
 """Execute actual Notes cleanup/receipt code with explicit inert Android ports."""
 import argparse,hashlib,importlib.util,json,pathlib,re,shutil,subprocess
 
+def replace(text,before,after):
+    assert text.count(before)==1,'exact inert fixture seam changed: '+before[:70]
+    return text.replace(before,after)
+
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--source',type=pathlib.Path);ap.add_argument('--output',type=pathlib.Path,required=True);ap.add_argument('--java-home',type=pathlib.Path);ap.add_argument('--release8',action='store_true');args=ap.parse_args()
     source=(args.source or pathlib.Path(__file__).resolve().parent.parent).resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=False)
@@ -131,24 +135,83 @@ public final class NotesCleanupAdapterHostTest {
  }
 }
 ''');files.append(test)
+    # Execute the exact create-return tail and cleanup-only identity binding.
+    # These inert ports do not simulate Android display-group/power semantics.
+    tail_start='                    if (created == null) throw new BrokerProtocol.Refusal("DISPLAY_CREATION_FAILED");'
+    tail_end='                    state = "ACTIVE";'
+    helper_start='    private void bindPublicNotesCleanupIdentity('
+    helper_end='    private void guard('
+    assert all(raw.count(marker)==1 for marker in (tail_start,tail_end,helper_start,helper_end))
+    create_tail_start=raw.index(tail_start)
+    tail=raw[create_tail_start:raw.index(tail_end,create_tail_start)+len(tail_end)]
+    helper=raw[raw.index(helper_start):raw.index(helper_end,raw.index(helper_start))]
+    assert tail.index('bindPublicNotesCleanupIdentity(created);')<tail.index('if (closing.get())')<tail.index('setImePolicy.invoke')<tail.index('verifyDisplay();')<tail.index('acquirePublicScreenLease')
+    adapter_path,reader_path,focused=fixture,reader,bg
+    fixture = adapter_path.read_text()
+    fixture = replace(fixture, 'static final class Display {final int id;', 'static final class Display {static final int DEFAULT_DISPLAY=0;final int id;')
+    fixture = replace(fixture, 'String getName(){return name;}', 'String getName(){return name;}int getDisplayId(){return id;}')
+    fixture = replace(fixture, 'final class VirtualDisplay {int calls;boolean fail;',
+                      'final class VirtualDisplay {int calls;boolean fail;Display getDisplay(){return new Display(returnedId,displayName);}')
+    fixture = replace(fixture, ' PublicOwnGroupScreenLease publicScreenLease;', ''' PublicOwnGroupScreenLease publicScreenLease;
+ final java.util.concurrent.atomic.AtomicBoolean closing=new java.util.concurrent.atomic.AtomicBoolean();
+ final java.util.concurrent.atomic.AtomicBoolean cleanupStarted=new java.util.concurrent.atomic.AtomicBoolean();
+ final Set<String> launched=new LinkedHashSet<String>(),fixedToolsConsumed=new LinkedHashSet<String>();
+ final Map<String,Object> fixedIntentProofs=new LinkedHashMap<String,Object>(),taskLaunchPolicies=new LinkedHashMap<String,Object>();
+ Object ownedSingleTask,shell,activityTasks,windowManager;long expires=Long.MAX_VALUE,requestDeadline;
+ int returnedId=7,imeHide,imeCalls,policyCalls,powerCalls,guardCalls;boolean failPolicy,failIme;
+ final ImePort setImePolicy=new ImePort();
+ final class ImePort {Object invoke(Object target,int display,int policy)throws Exception{imeCalls++;if(failIme)throw new IOException("ime_failure");return null;}}
+ void verifyDisplay()throws Exception{policyCalls++;if(failPolicy)throw new BrokerProtocol.Refusal("PUBLIC_SCOPE_DISPLAY_INFORMATION_UNKNOWN");}
+ void acquirePublicScreenLease(VirtualDisplay created,long deadline){powerCalls++;}
+ void guard(BrokerProtocol.Request request,boolean active)throws Exception{guardCalls++;if(closing.get())throw new BrokerProtocol.Refusal("SESSION_CLOSING");}
+ void bindCreated(VirtualDisplay created)throws Exception{bindPublicNotesCleanupIdentity(created);}
+ void createTail(VirtualDisplay created)throws Exception{
+  synchronized(dispatchGate){createInFlight=true;virtual=created;publicCreateReturnedHandle=created;
+   BrokerProtocol.Request r=null;long displayInitializationDeadline=SystemClock.elapsedRealtime()+3000;
+   try{
+''' + tail + '''
+   }finally{createInFlight=false;}
+  }
+ }
+''' + helper)
+    reader = reader_path.read_text()
+    reader = replace(reader, ' final Object token=new Object();', ''' static boolean constructorFailure;static int constructorUid;
+ static CountDownLatch constructorEntered,constructorProceed;boolean emptyOwnedFrame;
+ PublicPersonalNotesReader(){}
+ PublicPersonalNotesReader(Object context,Object activities,int display,java.util.function.LongSupplier deadline)throws Exception{
+  if(constructorEntered!=null){constructorEntered.countDown();if(!constructorProceed.await(1,TimeUnit.SECONDS))throw new IOException("constructor_wait_expired");}
+  if(constructorFailure)throw new IOException("actual_reader_constructor_failed");
+  if(constructorUid!=0)uid=constructorUid;emptyOwnedFrame=true;
+ }
+ final Object token=new Object();''')
+    reader = replace(reader, '  return new PublicPersonalNotesCustody.Frame(PersonalNotesCustodyHostTest.global(300),',
+                     '  if(emptyOwnedFrame)return new PublicPersonalNotesCustody.Frame(PersonalNotesCustodyHostTest.global(-1),Collections.emptyList(),now,now);\n  return new PublicPersonalNotesCustody.Frame(PersonalNotesCustodyHostTest.global(300),')
+    fixture_file, reader_file = focused / adapter_path.name, focused / reader_path.name
+    fixture_file.write_text(fixture)
+    reader_file.write_text(reader)
     names=['BrokerProtocol','PublicPermissionControllerUi','FixedIntentTools','FixedIntentTarget','ProfileIdentity','ProfileTarget','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','PublicOwnGroupPolicy','PublicOwnGroupPhysicalFence','PublicPersonalNotesCustody']
     files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in names]
-    files += [source/'tests/public-own-group-policy'/(name+'.java') for name in ['PublicPhysicalAuditHostTest','PersonalNotesCustodyHostTest','PersonalNotesSessionHostTest']]
+    files += [source/'tests/public-own-group-policy'/(name+'.java') for name in ['PublicPhysicalAuditHostTest','PersonalNotesCustodyHostTest','PersonalNotesSessionHostTest','NotesCreateFailureBrokerHostTest','NotesCreateFailureSessionHostTest']]
     files=list(dict.fromkeys(pathlib.Path(p).resolve() for p in files));classes=out/'classes';classes.mkdir()
     if args.java_home:
         java=str(args.java_home.resolve()/'bin/java');compiler=[str(args.java_home.resolve()/'bin/javac')]
         if not pathlib.Path(java).is_file() or not pathlib.Path(compiler[0]).is_file():raise SystemExit('Java home must contain java and javac')
     else:java=shutil.which('java') or 'java';compiler=[shutil.which('javac')] if shutil.which('javac') else [java,'-m','jdk.compiler/com.sun.tools.javac.Main']
     flags=['--release','8','-Xlint:all'] if args.release8 else ['-source','8','-target','8','-Xlint:all,-options']
-    stages=[('compile',compiler+flags+['-Werror','-d',str(classes),*map(str,files)]),('notes-cleanup',[java,'-cp',str(classes),'org.trillionnium.hepta.background.NotesCleanupAdapterHostTest']),('notes-session',[java,'-cp',str(classes),'org.trillionnium.hepta.local.PersonalNotesSessionHostTest'])]
+    stages=[('compile',compiler+flags+['-Werror','-d',str(classes),*map(str,files)]),('notes-cleanup',[java,'-cp',str(classes),'org.trillionnium.hepta.background.NotesCleanupAdapterHostTest']),('notes-session',[java,'-cp',str(classes),'org.trillionnium.hepta.local.PersonalNotesSessionHostTest']),('create-failure-broker',[java,'-cp',str(classes),'org.trillionnium.hepta.background.NotesCreateFailureBrokerHostTest']),('create-failure-session',[java,'-cp',str(classes),'org.trillionnium.hepta.local.NotesCreateFailureSessionHostTest'])]
     pins={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     provenance_paths=[source/'src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java',reader_source,source/'src/org/trillionnium/hepta/local/BackgroundSession.java',pathlib.Path(__file__).resolve()]
     provenance={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in provenance_paths}
-    report={'schema':'hepta.personal-notes.adapter-host.v1','phone_contacted':False,'status':'NOT_DEPLOYED','actual_cleanup_deadline_ms':cleanup_ms,'actual_broker_hunk_sha256':hashlib.sha256(hunk.encode()).hexdigest(),'actual_reader_diagnostics_hunk_sha256':hashlib.sha256(diagnostics_hunk.encode()).hexdigest(),'actual_broker_diagnostics_field_sha256':hashlib.sha256(diagnostics_field.encode()).hexdigest(),'source_sha256':pins,'extraction_provenance_sha256':provenance,'fake_ports':['VD release','DisplayManager','TaskInfo and Binder tokens','full recents input','root transport','Android App UID and corresponding private-file UID','owned Process wait/destroy'],'fixture_extraction':record,'stages':[]}
+    report={'schema':'hepta.personal-notes.adapter-host.v1','phone_contacted':False,'status':'NOT_DEPLOYED','actual_cleanup_deadline_ms':cleanup_ms,'actual_broker_hunk_sha256':hashlib.sha256(hunk.encode()).hexdigest(),'actual_create_tail_sha256':hashlib.sha256(tail.encode()).hexdigest(),'actual_cleanup_identity_binder_sha256':hashlib.sha256(helper.encode()).hexdigest(),'actual_reader_diagnostics_hunk_sha256':hashlib.sha256(diagnostics_hunk.encode()).hexdigest(),'actual_broker_diagnostics_field_sha256':hashlib.sha256(diagnostics_field.encode()).hexdigest(),'source_sha256':pins,'extraction_provenance_sha256':provenance,'fake_ports':['VD release','DisplayManager','TaskInfo and Binder tokens','full recents input','root transport','Android App UID and corresponding private-file UID','owned Process wait/destroy'],'fixture_extraction':record,'stages':[]}
     for name,argv in stages:
         run=subprocess.run(argv,capture_output=True,text=True,timeout=40);(out/(name+'.stdout')).write_text(run.stdout);(out/(name+'.stderr')).write_text(run.stderr)
         report['stages'].append({'name':name,'exit_code':run.returncode});print(name,run.returncode,run.stdout[-2000:])
         if run.returncode:print(run.stderr[-7000:]);break
+        if name in ('create-failure-broker','create-failure-session'):
+            summaries=[json.loads(line) for line in run.stdout.splitlines() if line.startswith('{')]
+            expected=(14,34) if name=='create-failure-broker' else (34,97)
+            assert len(summaries)==1 and (summaries[0].get('cases'),summaries[0].get('assertions'))==expected and summaries[0].get('passed') is True and summaries[0].get('phone_contacted') is False
+            report.setdefault('create_failure_groups',{})[name]=summaries[0]
     report['source_unchanged']=all(hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()==h for p,h in list(pins.items())+list(provenance.items()))
     report['passed']=len(report['stages'])==len(stages) and all(r['exit_code']==0 for r in report['stages']) and report['source_unchanged']
     (out/'RESULT.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({'passed':report['passed'],'phone_contacted':False}));return 0 if report['passed'] else 1

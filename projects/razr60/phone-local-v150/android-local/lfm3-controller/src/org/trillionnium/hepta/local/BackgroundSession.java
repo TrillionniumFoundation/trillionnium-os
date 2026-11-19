@@ -203,6 +203,7 @@ final class BackgroundSession {
     private volatile JSONObject personalNotesCleanupEvidence;
     private volatile boolean profileLaunchAttempted;
     private volatile boolean permissionPreparing;
+    private NotesCreateFailureRelease notesCreateFailureRelease;
     private final java.util.IdentityHashMap<WindowOwnership,Boolean> profileProofs=new java.util.IdentityHashMap<WindowOwnership,Boolean>();
     private final java.util.IdentityHashMap<PermissionWindowObservation,Boolean> permissionProofs=new java.util.IdentityHashMap<PermissionWindowObservation,Boolean>();
     private Process brokerProcess;
@@ -784,6 +785,13 @@ final class BackgroundSession {
         try{
             RootRpcReply reply=exchangeWithPeer(socketName,generation,request,timeout,bound);
             JSONObject response=reply.response;
+            if(!closing&&requiresPersonalNotesRetirement()&&"create".equals(request.getString("op"))
+                    &&Boolean.FALSE.equals(response.get("ok"))&&"RELEASED".equals(response.getString("state"))){
+                if(!"INITIAL".equals(state)||displayId!=-1||bootstrapDispatched||profileLaunchAttempted
+                        ||permissionPreparing||notesCreateFailureRelease!=null)
+                    throw new IOException("NOTES_CREATE_FAILURE_NOT_INITIAL");
+                notesCreateFailureRelease=NotesCreateFailureRelease.capture(reply,request,publicOwnGroupScope,generation);
+            }
             if("ACTIVE".equals(response.getString("state"))&&Boolean.TRUE.equals(response.get("ok"))){
                 if(closing||retired||strictLong(response,"expires_elapsed_ms")!=expiresElapsed
                         ||!Boolean.FALSE.equals(response.get("public_scope_admission_retired"))
@@ -848,6 +856,60 @@ final class BackgroundSession {
         final JSONObject response;final int peerUid;final long began;
         private RootRpcReply(JSONObject response,int peerUid,long began){this.response=response;this.peerUid=peerUid;this.began=began;}
     }
+    /** A frozen, authenticated failed-create reply is cleanup evidence only.
+     * It cannot be created from a journal, terminal log, caller flag or lost reply. */
+    private static final class NotesCreateFailureRelease {
+        private final String requestWire,responseWire;
+        private final int peerUid;
+        private final long began;
+        private NotesCreateFailureRelease(RootRpcReply reply,JSONObject request){
+            requestWire=request.toString();responseWire=reply.response.toString();peerUid=reply.peerUid;began=reply.began;
+        }
+        static NotesCreateFailureRelease capture(RootRpcReply reply,JSONObject request,
+                PublicOwnGroupPolicy.Scope scope,String generation)throws Exception{
+            checkedNotesCreateFailureRelease(reply,request,scope,generation);
+            return new NotesCreateFailureRelease(reply,request);
+        }
+        JSONObject requireCurrent(JSONObject response,PublicOwnGroupPolicy.Scope scope,String generation,int display)throws Exception{
+            if(response==null||!responseWire.equals(response.toString())||display!=strictInt(response,"display_id"))
+                throw new IOException("NOTES_CREATE_FAILURE_REPLY_CHANGED");
+            return checkedNotesCreateFailureRelease(new RootRpcReply(new JSONObject(responseWire),peerUid,began),
+                    new JSONObject(requestWire),scope,generation);
+        }
+    }
+    private static JSONObject checkedNotesCreateFailureRelease(RootRpcReply reply,JSONObject request,
+            PublicOwnGroupPolicy.Scope scope,String generation)throws Exception{
+        if(reply==null||reply.peerUid!=0||request==null||scope==null||scope.targetUserId!=0
+                ||scope.appUid!=android.os.Process.myUid()||!scope.generation.equals(generation)
+                ||strictInt(request,"version")!=BrokerProtocol.PUBLIC_OWN_GROUP_VERSION
+                ||!"create".equals(request.getString("op"))||request.has("package")
+                ||!generation.equals(request.getString("generation"))
+                ||!scope.sha256.equals(request.getString("display_scope_sha256")))
+            throw new IOException("NOTES_CREATE_FAILURE_REQUEST_UNBOUND");
+        JSONObject response=reply.response;
+        if(response==null||strictInt(response,"version")!=strictInt(request,"version")
+                ||!request.getString("request_id").equals(response.getString("request_id"))
+                ||!generation.equals(response.getString("generation"))
+                ||!"create".equals(response.getString("operation"))||!Boolean.FALSE.equals(response.get("ok"))
+                ||!(response.get("error") instanceof String)||response.getString("error").isEmpty()
+                ||!"RELEASED".equals(response.getString("state"))||!Boolean.TRUE.equals(response.get("dispatched"))
+                ||!scope.sha256.equals(response.getString("display_scope_sha256"))
+                ||!("hepta-bg-"+generation).equals(response.getString("display_name"))
+                ||strictLong(response,"expires_elapsed_ms")!=scope.expiresElapsedMs
+                ||!Boolean.TRUE.equals(response.get("public_scope_admission_retired"))
+                ||!Boolean.TRUE.equals(response.get("public_scope_closing"))
+                ||!response.has("public_own_group_readback_wire")||!response.isNull("public_own_group_readback_wire")
+                ||response.has("fixed_intent")||response.has("task_launch_policy")||response.has("owned_single_task"))
+            throw new IOException("NOTES_CREATE_FAILURE_REPLY_UNBOUND");
+        JSONObject proof=response.getJSONObject("personal_notes_cleanup");
+        if(!Boolean.TRUE.equals(proof.get("create_attempted"))||!Boolean.FALSE.equals(proof.get("no_display_create_attempted"))
+                ||!Boolean.FALSE.equals(proof.get("launch_dispatched"))||proof.getJSONArray("actual_observed_tasks").length()!=0
+                ||strictInt(proof,"pending_owned_reads")!=0)
+            throw new IOException("NOTES_CREATE_FAILURE_EFFECT_OR_TASK_UNKNOWN");
+        // Keep ok=false and its error intact. Every existing release/absence/history
+        // predicate below still runs; no successful create or business is inferred.
+        return checkedPersonalNotesCleanupEvidence(response,scope,generation,strictInt(response,"display_id"));
+    }
     private static RootRpcReply exchangeWithPeer(String name,String generation,JSONObject request,int timeout,
             HeptaAccessibilityService.Cancellation cancellation)throws Exception{
         long began=SystemClock.elapsedRealtime();
@@ -910,6 +972,13 @@ final class BackgroundSession {
                 if(spawnAttempted)throw new IOException("后台持久租约消失，清理无法核验");
                 state="RELEASED";known=true;
             }else if(!spawnAttempted){state="RELEASED";known=true;deleteJournal();}
+            else if(notesCreateFailureRelease!=null){
+                if(!requiresPersonalNotesRetirement()||bootstrapDispatched||profileLaunchAttempted||permissionPreparing
+                        ||!"RELEASED".equals(state)||!displayAbsent(context,displayId,displayName))
+                    throw new IOException("NOTES_CREATE_FAILURE_CURRENT_STATE_UNKNOWN");
+                personalNotesCleanupEvidence=notesCreateFailureRelease.requireCurrent(lastResponse,publicOwnGroupScope,generation,displayId);
+                known=true;deleteJournal();
+            }
             else if("RELEASED".equals(state)&&lastResponse!=null&&displayAbsent(context,displayId,displayName)){
                 // A failed launch can already return system-confirmed RELEASED and exit the broker.
                 ensureProfileCleanup(lastResponse);ensurePersonalNotesCleanup(lastResponse);known=true;deleteJournal();
@@ -954,6 +1023,10 @@ final class BackgroundSession {
         if(response==null||scope==null||scope.targetUserId!=0||!Boolean.TRUE.equals(response.get("ok"))
                 ||!"RELEASED".equals(response.getString("state"))||!scope.sha256.equals(response.getString("display_scope_sha256")))
             throw new IOException("NOTES_CLEANUP_ROOT_SCOPE_UNBOUND");
+        return checkedPersonalNotesCleanupEvidence(response,scope,generation,display);
+    }
+    private static JSONObject checkedPersonalNotesCleanupEvidence(JSONObject response,PublicOwnGroupPolicy.Scope scope,
+            String generation,int display)throws Exception{
         JSONObject proof=response.getJSONObject("personal_notes_cleanup");
         boolean concurrent="hepta.public-personal-notes-cleanup.v2".equals(proof.getString("schema"));
         if((!concurrent&&!"hepta.public-personal-notes-cleanup.v1".equals(proof.getString("schema")))
