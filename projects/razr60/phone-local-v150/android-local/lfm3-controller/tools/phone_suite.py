@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Run an explicitly frozen set of Hepta phone cases, once each, without retries.
+"""Validate frozen Hepta case plans and analyze existing dispatch evidence.
 
 This driver qualifies only the cases in its manifest. It does not claim full
 phone, offline, vision, battery, or production acceptance from a navigation suite.
-Validation is offline; only the explicit run subcommand contacts a phone.
+Validation is offline. The legacy run subcommand is retired before output or ADB.
 """
 from __future__ import annotations
 
@@ -737,6 +737,9 @@ def summarize(report):
 
 
 def run_suite(args, plan, plan_bytes):
+    raise acceptance.DriverError("Legacy phone-suite run is retired: use the owned virtual display harness with the normal background Start button and a verified current app selection; no case was submitted")
+    # Unreachable legacy ledger body is retained only for pinned, fake-only host
+    # regressions. Refusal must never be recorded as an uncertain submission.
     validate_plan(plan, require_runnable=True)  # Before mkdir or any phone command.
     root = args.output.expanduser().resolve()
     root.mkdir(parents=True, exist_ok=False, mode=0o700)
@@ -808,7 +811,7 @@ def main():
     sub = parser.add_subparsers(dest="operation", required=True)
     validate = sub.add_parser("validate", help="validate a plan without contacting ADB")
     validate.add_argument("plan", type=Path)
-    run = sub.add_parser("run", help="run each frozen case exactly once")
+    run = sub.add_parser("run", help="retired: refuses before plan reads, output or ADB; use the owned-background Start harness")
     run.add_argument("plan", type=Path)
     run.add_argument("--adb", required=True)
     run.add_argument("--adb-host", default="127.0.0.1")
@@ -817,15 +820,13 @@ def main():
     run.add_argument("--output", required=True, type=Path)
     run.add_argument("--command-timeout", type=float, default=20)
     args = parser.parse_args()
+    if args.operation == "run":
+        return run_suite(args, None, None)
     raw = args.plan.read_bytes()
     plan = acceptance.strict_json(raw)
     validation = validate_plan(plan)
-    if args.operation == "validate":
-        print(json.dumps(validation, ensure_ascii=False, indent=2))
-        return 0
-    if not 1 <= args.adb_port <= 65535 or not 1 <= args.command_timeout <= 120 or not re.fullmatch(r"[A-Za-z0-9._:-]{1,128}", args.serial):
-        parser.error("invalid explicit device identity or command timeout")
-    return run_suite(args, plan, raw)
+    print(json.dumps(validation, ensure_ascii=False, indent=2))
+    return 0
 
 
 if __name__ == "__main__":

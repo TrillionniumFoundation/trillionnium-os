@@ -41,6 +41,7 @@ def body(source,signature):
 
 signatures=[
     'public boolean schedule(final String owner,String source,String testNonceSha,final String expectedScopeSha256,final TaskAuthorization authorization,\n                            final BackgroundSession.Selection selection,long delayMillis){',
+    'public boolean schedule(final String owner,String source,String testNonceSha,final String expectedScopeSha256,final TaskAuthorization authorization,\n                            final BackgroundSession.Selection selection,final org.trillionnium.hepta.background.ControllerDisplayHandoff.Locator displayHandoff,long delayMillis){',
     'public void stop() {',
     'private void receiveState(String value) {',
     'private void receiveFinished(LocalTaskController.TaskResult result) {',
@@ -53,6 +54,27 @@ signatures=[
 ]
 source=session.read_text();methods=[body(source,s) for s in signatures]
 text=template.read_text();assert text.count('{{SESSION_METHODS}}')==1
+# These original journal cases are foreground-only. Keep both real schedule
+# bodies; the explicit IO fixture accepts only the original null handoff route.
+selection='static final class BackgroundSession {static final class Selection {'
+assert text.count(selection)==1
+text=text.replace(selection,selection+'\n        final boolean independentProfileDisplay=false,independentPersonalDisplay=false;',1)
+start='        boolean start(String owner,String expected,TaskAuthorization authorization,BackgroundSession.Selection selection,Listener listener){'
+assert text.count(start)==1
+text=text.replace(start,'''        boolean start(String owner,String expected,TaskAuthorization authorization,BackgroundSession.Selection selection,
+                org.trillionnium.hepta.background.ControllerDisplayHandoff.Locator handoff,Listener listener){
+            if(handoff!=null)throw new AssertionError("journal fixture has no display-handoff authority");
+            return start(owner,expected,authorization,selection,listener);
+        }
+'''+start,1)
+handoff=out/'ControllerDisplayHandoff.java'
+handoff.write_text('''package org.trillionnium.hepta.background;
+/** Type-only null path. No caller locator, proof or root reader can be constructed. */
+public final class ControllerDisplayHandoff {
+ private ControllerDisplayHandoff(){throw new AssertionError("journal-only fixture");}
+ public static final class Locator {private Locator(){throw new AssertionError("no handoff authority");}}
+}
+''')
 harness=out/'SessionJournalHost.java';harness.write_text(text.replace('{{SESSION_METHODS}}','\n'.join(methods)))
 def identity(path):
     b=path.read_bytes();return {'path':str(path.relative_to(root)),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'git_blob_sha1':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()}
@@ -60,8 +82,9 @@ record={'schema':'hepta.session-journal-host-run.v1','all_pass':False,
         'source_inputs':[identity(p) for p in [session,queue,template,Path(__file__).resolve()]],
         'extracted_methods':[{'signature':s,'body_sha256':hashlib.sha256(b.encode()).hexdigest()} for s,b in zip(signatures,methods)],
         'android_compilation':False,'android_and_json_boundaries_stubbed':True,'physical_fsync_stall_test':False,
+        'controller_handoff_boundary':'Both actual schedule overloads; immutable null-only type and controller IO fixture, never a root reader or a handoff proof',
         'java8_bytecode_target':True,'java8_api_cross_compile':False,'phone_operations':0}
-command=['/usr/bin/java','-m','jdk.compiler/com.sun.tools.javac.Main','-source','8','-target','8','-Xlint:all,-options','-Werror','-d',str(classes),str(queue),str(harness)]
+command=['/usr/bin/java','-m','jdk.compiler/com.sun.tools.javac.Main','-source','8','-target','8','-Xlint:all,-options','-Werror','-d',str(classes),str(queue),str(handoff),str(harness)]
 record['compile_command']=command
 p=subprocess.run(command,capture_output=True,timeout=60)
 (out/'compiler.stdout').write_bytes(p.stdout);(out/'compiler.stderr').write_bytes(p.stderr)

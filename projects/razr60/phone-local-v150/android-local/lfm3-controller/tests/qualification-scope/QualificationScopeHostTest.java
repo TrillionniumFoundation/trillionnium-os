@@ -411,10 +411,41 @@ public final class QualificationScopeHostTest {
             ui.intent(new Intent().putExtra("task","打开设置").putExtra(QualificationScope.EXPECTED_EXTRA,"bad"));check(!ui.start(),"malformed expectation denied");
             ui.endUi();check(ui.scopeLaunch.claim("普通任务")==null,"explicit stop clears only UI claim");
         }});
-        test("actual_private_debug_start_passes_same_expected_scope",()->{try(Env e=new Env(true)){
-            e.service.testInference=new CountingModel(e,"done",SETTINGS,null);LocalModelEngine engine=new LocalModelEngine(Paths.get(e.pm.packages.get("org.trillionnium.hepta.local").applicationInfo.sourceDir).toFile(),e.runtime);LocalTaskSession tasks=new LocalTaskSession(e.service,engine);ScopeUiFixture ui=new ScopeUiFixture(tasks,engine);
-            Handler.hold=true;ui.intent(new Intent().putExtra("auto_task",true).putExtra("test_nonce","synthetic-nonce").putExtra(QualificationScope.EXPECTED_EXTRA,e.scopeSha));
-            check(tasks.pending&&e.scopeSha.equals(tasks.expectedScopeSha)&&"private_debug_nonce".equals(tasks.origin),"core private trigger expectation");ui.endUi();check(!tasks.isRunning(),"pending cancelled");
+        test("actual_mode_reader_defaults_background_and_preserves_explicit_choices",()->{
+            Map<String,Object> saved=new HashMap<String,Object>();BackgroundModePreferencesFixture.saved=saved;
+            check(BackgroundModePreferencesFixture.mode(null),"an absent saved preference must default to background");
+            saved.put("enabled",Boolean.FALSE);check(!BackgroundModePreferencesFixture.mode(null),"explicit manual foreground choice remains valid");
+            saved.put("enabled",Boolean.TRUE);check(BackgroundModePreferencesFixture.mode(null),"saved background choice remains valid");
+            saved.put("enabled","false");boolean malformed=false;
+            try{BackgroundModePreferencesFixture.mode(null);}catch(IllegalStateException expected){malformed=true;}
+            check(malformed,"malformed preference must not become a foreground choice");
+        });
+        test("actual_scoped_prefill_keeps_background_and_refuses_scope_conversion",()->{try(Env e=new Env(true)){
+            LocalModelEngine engine=new LocalModelEngine(Paths.get(e.pm.packages.get("org.trillionnium.hepta.local").applicationInfo.sourceDir).toFile(),e.runtime);LocalTaskSession tasks=new LocalTaskSession(e.service,engine);ScopeUiFixture ui=new ScopeUiFixture(tasks,engine);
+            ui.backgroundMode.setChecked(true);byte[] scopeBefore=Files.readAllBytes(e.dir.resolve(QualificationScope.FILE_NAME));
+            ui.intent(new Intent().putExtra("task","打开设置").putExtra(QualificationScope.EXPECTED_EXTRA,e.scopeSha));
+            check(ui.backgroundMode.isChecked()&&e.scopeSha.equals(ui.scopeLaunch.claim("打开设置")),"scope prefill must preserve background mode and original scope binding");
+            check(!ui.start()&&!tasks.isRunning()&&e.service.effects()==0,"foreground qualification cannot be converted to background authority");
+            check(Arrays.equals(scopeBefore,Files.readAllBytes(e.dir.resolve(QualificationScope.FILE_NAME))),"refusal cannot change the qualification scope");
         }});
+        for(boolean background:new boolean[]{false,true})for(String nonce:new String[]{"synthetic-nonce","invalid",null})
+            test("actual_private_debug_refused_before_nonce_mode_"+background+"_nonce_"+nonce,()->{try(Env e=new Env(true)){
+                CountingModel model=new CountingModel(e,"done",SETTINGS,null);e.service.testInference=model;
+                LocalModelEngine engine=new LocalModelEngine(Paths.get(e.pm.packages.get("org.trillionnium.hepta.local").applicationInfo.sourceDir).toFile(),e.runtime);LocalTaskSession tasks=new LocalTaskSession(e.service,engine);ScopeUiFixture ui=new ScopeUiFixture(tasks,engine);
+                ui.backgroundMode.setChecked(background);
+                ui.intent(new Intent().putExtra("task","打开设置").putExtra(QualificationScope.EXPECTED_EXTRA,e.scopeSha));
+                byte[] scopeBefore=Files.readAllBytes(e.dir.resolve(QualificationScope.FILE_NAME));int consumes=PrivateDebugTask.consumeCalls;
+                Intent trigger=new Intent().putExtra("auto_task",true).putExtra("test_nonce",nonce).putExtra("task","自动请求不能替换已有任务")
+                        .putExtra("auto_run",true).putExtra(QualificationScope.EXPECTED_EXTRA,"bad");
+                Handler.hold=true;ui.intent(trigger);
+                check(!tasks.pending&&!tasks.isRunning()&&tasks.taskId==null&&model.calls==0&&e.service.effects()==0,"automatic request must create no session, model call or app effect");
+                check(PrivateDebugTask.consumeCalls==consumes&&!ui.debugConsumed&&!ui.debugAccepted&&ui.debugTriggers==1,"rejection must precede nonce consumption and record refusal");
+                check(ui.debugError!=null&&ui.debugError.contains("后台")&&ui.debugError.contains("开始任务"),"refusal explains the supported background Start path");
+                check(ui.backgroundMode.isChecked()==background&&"打开设置".equals(ui.taskInput.text)&&e.scopeSha.equals(ui.scopeLaunch.claim("打开设置")),"rejected automatic request cannot replace the owner's mode, task or scope");
+                check(Arrays.equals(scopeBefore,Files.readAllBytes(e.dir.resolve(QualificationScope.FILE_NAME))),"rejection cannot change persisted scope");
+                check(!Files.exists(e.dir.resolve("control-session.json"))&&Handler.queued.isEmpty(),"no task journal or queued automatic work");
+                check(!trigger.hasExtra("auto_task")&&!trigger.hasExtra("test_nonce")&&!trigger.hasExtra("auto_run"),"one-use launch selectors removed without consuming private nonce");
+                ui.intent(trigger);check(ui.debugTriggers==1&&PrivateDebugTask.consumeCalls==consumes&&!tasks.isRunning(),"Activity replay cannot revive rejected automatic request");
+            }});
     }
 }

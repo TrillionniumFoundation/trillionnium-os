@@ -45,11 +45,12 @@ final class LocalProbeApplication {
     pieces = {
         "run_handle": section(engine, "    public static final class RunHandle {", "    /** Retains the existing process-wide slot"),
         "external_lease": section(engine, "    /** Shares the existing single-model slot", "    /** An aggregate startup barrier"),
-        "process_admission": section(engine, "    private static void claimProcess(", "    public Result lastResult()"),
+        "process_admission": section(engine, "    private void claimProcess(", "    public Result lastResult()"),
+        "runtime_generation": section(engine, "    static final class RuntimeGeneration {", "    private volatile RuntimeGeneration runtime;"),
         "captured_cancellation": section(engine, "    public void cancelActive() {", "    JSONObject cancellationEvidence()"),
     }
     declarations = []
-    for prefix in ("    private static final AtomicReference<RunHandle> PROCESS_ACTIVE", "    private static final TaskCancellationQueue ACTIVE_CANCELLATION", "    private static final Object PROCESS_ADMISSION", "    private final AtomicReference<RunHandle> active", "    private final AtomicBoolean closed", "    private volatile TaskCancellationQueue.Ticket lastCancellation"):
+    for prefix in ("    private static final AtomicReference<RunHandle> PROCESS_ACTIVE", "    private static final TaskCancellationQueue ACTIVE_CANCELLATION", "    private static final Object PROCESS_ADMISSION", "    private final AtomicReference<RunHandle> active", "    private final AtomicBoolean closed", "    private volatile TaskCancellationQueue.Ticket lastCancellation", "    private volatile RuntimeGeneration runtime;", "    private volatile boolean settingsBlocked;"):
         matches = [line for line in engine.splitlines() if line.startswith(prefix)]
         if len(matches) != 1:
             raise RuntimeError("nonunique declaration: " + prefix)
@@ -58,7 +59,8 @@ final class LocalProbeApplication {
 import java.util.UUID;import java.util.concurrent.atomic.*;
 final class LocalModelEngine implements AutoCloseable {
  private final android.content.Context context;
- LocalModelEngine(android.content.Context context){this.context=context;}
+ LocalModelEngine(android.content.Context context){this.context=context;runtime=new RuntimeGeneration(LocalRuntimeConfig.defaults(),null,new ModelFileVerifier(),null);}
+ private static final class RuntimeConfigTransaction {static final class Snapshot{}}
 ''' + "\n".join(declarations) + "\n" + "\n".join(pieces.values()) + '''
  static void fixtureReset(){if(ACTIVE_CANCELLATION.pending())throw new AssertionError("real cancellation worker still active");PROCESS_ACTIVE.set(null);}
  public void close(){closed.set(true);cancelActive();}
@@ -66,7 +68,7 @@ final class LocalModelEngine implements AutoCloseable {
 '''
     generated = output / "org/trillionnium/hepta/local/LocalModelEngine.java"
     generated.write_text(rendered)
-    files += [generated, *[package / (name + ".java") for name in ("BackgroundPermissionPreparation", "BackgroundPermissionSession", "MobiMindContract", "MobiMindPins", "OwnedWorkerCancellation")]]
+    files += [generated, *[package / (name + ".java") for name in ("BackgroundPermissionPreparation", "BackgroundPermissionSession", "MobiMindContract", "MobiMindPins", "OwnedWorkerCancellation", "LocalRuntimeConfig", "ModelProfile", "ModelFileVerifier")]]
     cancellation = package / "TaskCancellationQueue.java"
     if cancellation not in files:
         files.append(cancellation)
@@ -76,6 +78,7 @@ final class LocalModelEngine implements AutoCloseable {
               "production_declaration_sha256": hashlib.sha256(("\n".join(declarations) + "\n").encode()).hexdigest(),
               "task_cancellation_queue_sha256": hashlib.sha256(cancellation.read_bytes()).hexdigest(),
               "cancellation_boundary": "Unchanged process-wide TaskCancellationQueue with exact Engine admission and captured cancellation; host tests await real ticket drain before resetting their process fixture",
+              "runtime_boundary": "Exact RuntimeGeneration and config/profile/verifier; opaque snapshot and default constructor are normal model IO fixtures. Original permission assertions unchanged.",
               "android_io_fake": True, "process_launch_fake": True, "phone_tested": False, "real_fsync_or_magisk_tested": False}
     (output / "PERMISSION-EXTRACTION.json").write_text(json.dumps(record, indent=2) + "\n")
     return files, record

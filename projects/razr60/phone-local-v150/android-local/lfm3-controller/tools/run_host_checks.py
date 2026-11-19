@@ -39,13 +39,15 @@ def main():
                 ROOT/"tests/native-app/legacy-boundary/NativeAppSession.java"]
     report["web_fixture_boundary"]="Legacy non-Web tests use a type-only WebTaskDomain whose methods throw; actual Web classes have an independent gate"
     report["native_fixture_boundary"]="Legacy non-native tests compile the real pure NativeAppEvidence/Domain and an unconstructible all-throw NativeAppSession; native session execution has an independent mandatory gate"
-    sources += [ROOT/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","BackgroundOwnedTaskPolicy","ProfileIdentity","ProfileTarget","WindowOwnership")]
+    sources += [ROOT/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","PublicPermissionControllerUi","PublicOwnGroupPolicy","BackgroundOwnedTaskPolicy","ProfileIdentity","ProfileTarget","WindowOwnership")]
     tests=sorted((ROOT/"tests").glob("*HostTest.java"))+[
         ROOT/"tests/action-parser/ActionDecisionHostTest.java",
         ROOT/"tests/action-grammar/DecisionGrammarHostTest.java"]
     def all_inputs():
         paths=set(ROOT.glob("*.py"))
         paths.add(ROOT/"tests/vlm-contract/requirements.txt")
+        paths.update(ROOT/"tests/local-model-settings"/name for name in ("CASE-CONTRACT.json","PRODUCTION-SOURCES.json","README.md"))
+        paths.add(ROOT/"tests/notes-task-info-reader/synthetic-notes-census.json")
         for directory, extensions in (("src",("*.java",)),("tests",("*.java","*.py","*.template","*.inc")),
                                       ("native",("*.c","*.cpp","*.h","*.inc","*.py")),("tools",("*.py",))):
             for extension in extensions: paths.update((ROOT/directory).rglob(extension))
@@ -148,8 +150,82 @@ def main():
             "--source",ROOT,"--output",out/"background-permission-session","--release8"])
         run("runtime-config-ui",[sys.executable,"-B",ROOT/"tests/runtime-config-ui/run_host_tests.py",
             "--source",ROOT,"--output",out/"runtime-config-ui","--release8"])
+        run("local-model-settings",[sys.executable,"-B",ROOT/"tests/local-model-settings/run_host.py",
+            "--source",ROOT,"--output",out/"local-model-settings","--java-home",java_home,"--json-jar",json_jar])
+        settings_raw=(out/"local-model-settings/RESULT.json").read_bytes()
+        settings_gate=json.loads(settings_raw)
+        if (settings_gate.get("schema")!="hepta.local-model-settings-host-gate.v1"
+                or settings_gate.get("all_pass") is not True or settings_gate.get("inputs_unchanged") is not True
+                or settings_gate.get("java_release_api_check") is not True
+                or settings_gate.get("full_production_engine_and_transaction") is not True
+                or settings_gate.get("phone_operations")!=0 or settings_gate.get("native_model_executed") is not False):
+            raise RuntimeError("Local model settings host gate receipt differs")
+        if set(settings_gate.get("cases",{}))!={"transaction","generation","context_files"}:
+            raise RuntimeError("Local model settings case groups differ")
+        for name,count,assertions in (("transaction",43,196),("generation",15,100),("context_files",8,36)):
+            actual=settings_gate.get("cases",{}).get(name,{})
+            original=json.loads((out/"local-model-settings"/(name+"-cases")/"RESULT.json").read_bytes())
+            if (actual!=original or actual.get("passed") is not True
+                    or type(actual.get("cases")) is not int or actual["cases"]!=count
+                    or type(actual.get("assertions")) is not int or actual["assertions"]!=assertions):
+                raise RuntimeError("Local model settings original cases differ: "+name)
+        report["local_model_settings_gate"]={"bytes":len(settings_raw),"sha256":hashlib.sha256(settings_raw).hexdigest(),
+            "cases":settings_gate["cases"]}
         run("background-broker",[sys.executable,"-B",ROOT/"tests/background-broker/run_host_checks.py",
             "--java",java,"--javac",shutil.which("javac"),"--out",out/"background-broker"])
+        run("public-screen-lease",[sys.executable,"-B",ROOT/"tests/public-screen-lease/run_host.py",
+            "--source",ROOT,"--output",out/"public-screen-lease","--java-home",java_home])
+        screen_raw=(out/"public-screen-lease/RESULT.json").read_bytes()
+        screen=json.loads(screen_raw);screen_test=screen.get("test",{})
+        if (screen.get("schema")!="hepta.public-screen-lease-host-run.v1" or screen.get("passed") is not True
+                or screen.get("phone_operations")!=0 or screen.get("android_power_api_executed") is not False
+                or screen.get("inputs_before")!=screen.get("inputs_after")
+                or [row.get("name") for row in screen.get("stages",[])]!=["compile","screen-lease","initial-readiness"]
+                or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in screen.get("stages",[]))
+                or screen_test.get("schema")!="hepta.public-screen-lease-host.v1" or screen_test.get("all_pass") is not True
+                or type(screen_test.get("cases")) is not int or screen_test["cases"]!=36
+                or type(screen_test.get("assertions")) is not int or screen_test["assertions"]!=73
+                or screen_test.get("phone_operations")!=0 or screen_test.get("android_power_api_executed") is not False):
+            raise RuntimeError("Actual isolated screen-lease host contract differs")
+        screen_names=screen_test.get("case_names")
+        if (type(screen_names) is not list or len(screen_names)!=36 or len(set(screen_names))!=36
+                or any(type(name) is not str or not name for name in screen_names)
+                or hashlib.sha256("\n".join(screen_names).encode()).hexdigest()!=
+                    "fcc50dabae810227be559e134b0c0c17541873d91eb8685a6412b8778be44a64"
+                or json.loads((out/"public-screen-lease/screen-lease.stdout").read_bytes())!=screen_test):
+            raise RuntimeError("Screen-lease original case names or raw receipt differ")
+        initial=screen.get("initial_readiness_test",{});initial_names=initial.get("case_names")
+        if (initial.get("schema")!="hepta.public-screen-initial-readiness-host.v1" or initial.get("all_pass") is not True
+                or type(initial.get("cases")) is not int or initial["cases"]!=24
+                or type(initial.get("assertions")) is not int or initial["assertions"]!=65
+                or initial.get("phone_operations")!=0 or initial.get("android_power_api_executed") is not False
+                or type(initial_names) is not list or len(initial_names)!=24 or len(set(initial_names))!=24
+                or any(type(name) is not str or not name for name in initial_names)
+                or hashlib.sha256("\n".join(initial_names).encode()).hexdigest()!=
+                    "9ff85d66cf88640ae6ce28e4ad82770f48845ebae54d342c5feea75f8fc9c563"
+                or json.loads((out/"public-screen-lease/initial-readiness.stdout").read_bytes())!=initial):
+            raise RuntimeError("Initial screen readiness case names or raw receipt differ")
+        report["public_screen_lease_gate"]={"bytes":len(screen_raw),"sha256":hashlib.sha256(screen_raw).hexdigest(),
+            "test":screen_test,"initial_readiness_test":initial}
+        run("controller-display-handoff",[sys.executable,"-B",ROOT/"tests/controller-display-handoff/run_host.py",
+            "--source",ROOT,"--output",out/"controller-display-handoff","--java-home",java_home,"--json-jar",json_jar])
+        handoff_raw=(out/"controller-display-handoff/RESULT.json").read_bytes()
+        handoff=json.loads(handoff_raw)
+        if (handoff.get("schema")!="hepta.controller-display-handoff-host.v1" or handoff.get("all_pass") is not True
+                or handoff.get("strict_release8") is not True or handoff.get("phone_operations")!=0
+                or handoff.get("android_runtime") is not False or handoff.get("root_reader_executed") is not False
+                or handoff.get("synthetic_contract_tests") is not True
+                or handoff.get("inputs_before")!=handoff.get("inputs_after")
+                or [row.get("name") for row in handoff.get("stages",[])]!=["compile","contract"]
+                or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in handoff["stages"])
+                or handoff.get("test")!={"all_pass":True,"phone_operations":0,"cases":45,"assertions":54,"synthetic_contract_tests":True}
+                or hashlib.sha256((out/"controller-display-handoff/contract.stdout").read_bytes()).hexdigest()!=
+                    "c1696676c10363ac09fc9742dce956a4be376d50b9cd56d5aecbbd11689bf582"):
+            raise RuntimeError("Actual controller-display handoff contract or original 45/54 cases differ")
+        report["controller_display_handoff_gate"]={"bytes":len(handoff_raw),
+            "sha256":hashlib.sha256(handoff_raw).hexdigest(),"test":handoff["test"]}
+        run("main-ui-permission",[sys.executable,"-B",ROOT/"tests/main-ui-permission/run_host.py",
+            "--source",ROOT,"--output",out/"main-ui-permission","--java-home",java_home,"--json-jar",json_jar])
         run("python-tools",[sys.executable,"-m","unittest","discover","-s","tools","-p","test_*.py","-v"])
         run("mobimind-private-staging",[sys.executable,"-m","unittest","discover","-s",
             ROOT/"provenance/mobimind-app-only-r1/tests","-p","test_*.py","-v"])
@@ -182,6 +258,149 @@ def main():
             "--source",ROOT,"--output",out/"observation-collection","--release8"])
         run("notes-owner-intent",[sys.executable,"-B",ROOT/"tests/notes-owner-intent/run_host_tests.py",
             "--source",ROOT,"--output",out/"notes-owner-intent","--release8"])
+        run("notes-task-info-reader",[sys.executable,"-B",ROOT/"tests/notes-task-info-reader/run_host.py",
+            "--source",ROOT,"--output",out/"notes-task-info-reader","--java-home",java_home,"--json-jar",json_jar])
+        notes_raw=(out/"notes-task-info-reader/RESULT.json").read_bytes()
+        notes_gate=json.loads(notes_raw)
+        notes_fixture={"path":str(ROOT/"tests/notes-task-info-reader/synthetic-notes-census.json"),
+            "bytes":18714,"sha256":"8b44610ab210e5882d5de0cb61583992ccb626ed021b63af277f47407c3af201"}
+        if (notes_gate.get("schema")!="hepta.notes-task-info-reader-gate.v2"
+                or notes_gate.get("all_pass") is not True or notes_gate.get("inputs_unchanged") is not True
+                or notes_gate.get("framework_and_binder_fixtures_synthetic") is not True
+                or notes_gate.get("android_runtime") is not False or notes_gate.get("hardware_qualification_claimed") is not False
+                or type(notes_gate.get("phone_operations")) is not int or notes_gate["phone_operations"]!=0
+                or notes_gate.get("input_mode")!="synthetic_derived_fixture"
+                or notes_gate.get("archived_capture_replayed") is not False or notes_gate.get("input_fixture")!=notes_fixture):
+            raise RuntimeError("Notes TaskInfo gate requires the exact bundled synthetic input and v2 provenance")
+        if (notes_gate.get("inputs_before")!=notes_gate.get("inputs_after")
+                or type(notes_gate.get("inputs_before")) is not list or notes_fixture not in notes_gate["inputs_before"]
+                or not any(row["path"]=="tests/notes-task-info-reader/synthetic-notes-census.json"
+                    and row["sha256"]==notes_fixture["sha256"] for row in report["source_inputs"])):
+            raise RuntimeError("Notes synthetic fixture is missing from complete fixed before/after inputs")
+        notes_cases=notes_gate.get("reflection_cases",{})
+        if (notes_cases.get("schema")!="hepta.notes-task-info-reader-host.v2" or notes_cases.get("all_pass") is not True
+                or notes_cases.get("input_mode")!="synthetic_derived_fixture"
+                or notes_cases.get("input_sha256")!=notes_fixture["sha256"]
+                or notes_cases.get("archived_capture_replayed") is not False
+                or "actual_capture_sha256" not in notes_cases or notes_cases["actual_capture_sha256"] is not None
+                or notes_cases.get("input_values_rehydrated") is not True
+                or notes_cases.get("synthetic_binder_tokens") is not True
+                or notes_cases.get("framework_and_clock_fixtures_synthetic") is not True
+                or notes_cases.get("complete_production_reflection_adapters") is not True
+                or notes_cases.get("hardware_qualification_claimed") is not False
+                or any(type(notes_cases.get(k)) is not int or notes_cases[k]!=0
+                    for k in ("phone_operations","get_child_tasks_calls","mutation_calls"))
+                or type(notes_cases.get("cases")) is not int or notes_cases["cases"]!=71
+                or type(notes_cases.get("assertions")) is not int or notes_cases["assertions"]!=220):
+            raise RuntimeError("Notes TaskInfo case receipt or original 71/220 contract differs")
+        notes_names=notes_cases.get("case_names")
+        if (type(notes_names) is not list or len(notes_names)!=71
+                or any(type(name) is not str or not name for name in notes_names) or len(set(notes_names))!=71):
+            raise RuntimeError("Notes TaskInfo case names are incomplete or duplicated")
+        notes_empty=notes_cases.get("empty_activity",{})
+        if (notes_empty.get("schema")!="hepta.notes-empty-activity-host.v1" or notes_empty.get("all_pass") is not True
+                or type(notes_empty.get("cases")) is not int or notes_empty["cases"]!=14
+                or type(notes_empty.get("assertions")) is not int or notes_empty["assertions"]!=59
+                or type(notes_empty.get("case_names")) is not list or len(notes_empty["case_names"])!=14
+                or any(type(name) is not str or not name for name in notes_empty["case_names"])
+                or len(set(notes_empty["case_names"]))!=14
+                or notes_empty.get("framework_and_binder_fixtures_synthetic") is not True
+                or type(notes_empty.get("phone_operations")) is not int or notes_empty["phone_operations"]!=0):
+            raise RuntimeError("Notes empty-activity and actual-field diagnostic cases differ")
+        notes_private=notes_gate.get("original_private_cases",{})
+        if (notes_private.get("schema")!="hepta.profile-broker-host-tests.v1" or notes_private.get("passed") is not True
+                or type(notes_private.get("cases")) is not int or notes_private["cases"]!=47
+                or type(notes_private.get("assertions")) is not int or notes_private["assertions"]!=449
+                or notes_private.get("framework_fixtures_synthetic") is not True or notes_private.get("phone_contacted") is not False):
+            raise RuntimeError("Notes gate changed the original private 47/449 contract")
+        notes_stages=notes_gate.get("stages")
+        if (type(notes_stages) is not list or [row.get("name") for row in notes_stages]!=
+                ["compile-reflection","reflection-cases","compile-original-private","original-private-cases"]
+                or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in notes_stages)):
+            raise RuntimeError("Notes gate lacks its four actual compile/run stages")
+        report["notes_task_info_reader_gate"]={"bytes":len(notes_raw),
+            "sha256":hashlib.sha256(notes_raw).hexdigest(),"input_fixture":notes_fixture,
+            "cases":notes_cases,"original_private_cases":notes_private}
+        run("personal-notes-absence",[sys.executable,"-B",ROOT/"tests/personal-notes-absence/run_host.py",
+            "--source",ROOT,"--output",out/"personal-notes-absence","--java-home",java_home,"--json-jar",json_jar])
+        notes_absence_raw=(out/"personal-notes-absence/RESULT.json").read_bytes()
+        notes_absence=json.loads(notes_absence_raw)
+        if (notes_absence.get("schema")!="hepta.personal-notes-absence-host-validation.v1"
+                or notes_absence.get("all_pass") is not True or notes_absence.get("strict_release8") is not True
+                or notes_absence.get("inputs_unchanged") is not True
+                or notes_absence.get("all_task_values_synthetic") is not True
+                or notes_absence.get("framework_samples_synthetic") is not True
+                or notes_absence.get("current_installation_pm_fixture_synthetic") is not True
+                or notes_absence.get("owned_process_factory_replacements_only") is not True
+                or notes_absence.get("android_runtime") is not False
+                or notes_absence.get("business_success_claimed") is not False
+                or type(notes_absence.get("phone_operations")) is not int or notes_absence["phone_operations"]!=0
+                or notes_absence.get("json_jar_sha256")!="3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"):
+            raise RuntimeError("Notes absence requires strict Java 8 compilation and unchanged synthetic host provenance")
+        notes_absence_contracts={
+            "policy":("hepta.personal-notes-absence-host.v1","cases",48,56,"case_names",
+                "36eec7f8df6a35a7b9711158c8ee7894847c529c99bfbb45d2d70a294b410593"),
+            "pre-launch":("hepta.personal-notes-prelaunch-host.v1","cases",35,42,"case_names",
+                "9908c4ef704f71dbc02abbce340895e801cee47c8928ea119b71fe42eac82705"),
+            "client":("hepta.personal-notes-recovery-client-host-tests.v1","checks",22,192,"cases",
+                "775837c86f2ca609de131778c2bc321b0df2653211831b1cbc1e4edce3147e60"),
+            "post-model":("hepta.personal-notes-post-model-host.v1","cases",33,47,"case_names",
+                "345293266abe6da61ff120b40438f2cc17c71063ad732b81a6efa65ed0dd028a")}
+        for key,(schema,metric,count,assertions,names_metric,names_hash) in notes_absence_contracts.items():
+            cases=notes_absence.get(key,{})
+            if (cases.get("schema")!=schema or cases.get("all_pass",cases.get("passed")) is not True
+                    or type(cases.get(metric)) is not int or cases[metric]!=count
+                    or type(cases.get("assertions")) is not int or cases["assertions"]!=assertions):
+                raise RuntimeError("Notes absence case contract changed: "+key)
+            names=cases.get(names_metric)
+            if (type(names) is not list or len(names)!=count or len(set(names))!=count
+                    or any(type(name) is not str or not name for name in names)
+                    or hashlib.sha256(json.dumps(names,ensure_ascii=True,separators=(",",":")).encode()).hexdigest()!=names_hash):
+                raise RuntimeError("Notes absence case identities changed: "+key)
+            original=json.loads((out/"personal-notes-absence"/(key+".stdout")).read_bytes())
+            if original!=cases:
+                raise RuntimeError("Notes absence aggregate differs from actual Java stdout: "+key)
+        notes_absence_stages=notes_absence.get("stages")
+        if (type(notes_absence_stages) is not list or [row.get("stage") for row in notes_absence_stages]!=
+                ["policy-compile","policy","pre-launch","client-compile","client","post-model"]
+                or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in notes_absence_stages)):
+            raise RuntimeError("Notes absence lacks all six real compile/run stages")
+        report["personal_notes_absence_gate"]={"bytes":len(notes_absence_raw),
+            "sha256":hashlib.sha256(notes_absence_raw).hexdigest(),
+            "policy":notes_absence["policy"],"pre-launch":notes_absence["pre-launch"],
+            "client":notes_absence["client"],"post-model":notes_absence["post-model"]}
+        run("foreground-concurrency",[sys.executable,"-B",ROOT/"tests/public-profile-history/run_concurrency_host.py",
+            "--source",ROOT,"--output",out/"foreground-concurrency","--java-home",java_home,"--json-jar",json_jar])
+        concurrency_raw=(out/"foreground-concurrency/RESULT.json").read_bytes()
+        concurrency=json.loads(concurrency_raw)
+        if (concurrency.get("schema")!="hepta.foreground-concurrency-host.v1"
+                or concurrency.get("all_pass") is not True or concurrency.get("strict_release8") is not True
+                or concurrency.get("source_inputs_unchanged") is not True or concurrency.get("json_jar_unchanged") is not True
+                or concurrency.get("framework_and_user_activity_synthetic") is not True
+                or concurrency.get("actual_production_custody_and_receipt_readers") is not True
+                or concurrency.get("android_runtime") is not False or concurrency.get("native_model_executed") is not False
+                or type(concurrency.get("phone_operations")) is not int or concurrency["phone_operations"]!=0):
+            raise RuntimeError("Foreground concurrency host receipt differs")
+        concurrency_contracts={
+            "custody":(23,44,"1634b5644fbb6accc3c4e9dce37d6c10203fa9954d0b0cbe26079c256c1fcdc6"),
+            "receipts":(15,17,"e38ade821d1bb966ca34f199f434401836a80bcebea05403944a510a750d7318"),
+            "recovery_entry":(6,8,"02d4d12aead56f784df256a64a920dce313d364ee0edcf71e54aeb6023384fa0")}
+        if set(concurrency.get("cases",{}))!=set(concurrency_contracts):
+            raise RuntimeError("Foreground concurrency case groups differ")
+        for name,(count,assertions,names_sha) in concurrency_contracts.items():
+            cases=concurrency["cases"][name]
+            names=cases.get("case_names")
+            if (cases.get("passed") is not True or type(cases.get("cases")) is not int or cases["cases"]!=count
+                    or type(cases.get("assertions")) is not int or cases["assertions"]!=assertions
+                    or type(names) is not list or len(names)!=count or len(set(names))!=count
+                    or cases.get("case_names_sha256")!=names_sha
+                    or hashlib.sha256(json.dumps(names,ensure_ascii=False,separators=(",",":")).encode()).hexdigest()!=names_sha):
+                raise RuntimeError("Foreground concurrency case contract differs: "+name)
+        if ([row.get("name") for row in concurrency.get("stages",[])]!=["compile","custody","receipts","recovery_entry"]
+                or any(row.get("exit_code")!=0 for row in concurrency["stages"])):
+            raise RuntimeError("Foreground concurrency compile/run stages incomplete")
+        report["foreground_concurrency_gate"]={"bytes":len(concurrency_raw),
+            "sha256":hashlib.sha256(concurrency_raw).hexdigest(),"cases":concurrency["cases"]}
         run("owned-worker-cancellation",[sys.executable,"-B",ROOT/"tests/owned-worker-cancellation/run_host_tests.py",
             "--source",ROOT,"--output",out/"owned-worker-cancellation"])
         run("background-owned-task-policy",[sys.executable,"-B",ROOT/"tests/background-owned-task/run_host_tests.py",
@@ -231,6 +450,34 @@ def main():
             raise RuntimeError("Mandatory permission transient gate receipt differs")
         report["permission_transient_gate"]={"bytes":len(permission_raw),
             "sha256":hashlib.sha256(permission_raw).hexdigest(),"cases":permission_cases}
+        # The new preparation route does not change any ordinary ownership gate.
+        # Execute its core and actual worker separately; Android IO remains explicit.
+        permission_contracts={
+            "profile-permission-initialization":("hepta.permission-init-core-host.v1",{
+                "new_policy_cases":(59,210),"physical_fence_cases":(26,40)}),
+            "profile-permission-ui":("hepta.permission-ui-host.v1",{"checks":(15,72)})}
+        report["permission_initialization_gates"]={}
+        for name,(schema,case_contracts) in permission_contracts.items():
+            run(name,[sys.executable,"-B",ROOT/"tests"/name/"run_host.py",
+                "--source",ROOT,"--output",out/name,"--java-home",java_home])
+            receipt_raw=(out/name/"RESULT.json").read_bytes()
+            receipt=json.loads(receipt_raw)
+            if (receipt.get("schema")!=schema or receipt.get("all_pass") is not True
+                    or receipt.get("source_inputs_unchanged") is not True
+                    or receipt.get("java_release_api_check") is not True
+                    or receipt.get("phone_contacted") is not False
+                    or receipt.get("android_adapters_compiled") is not False):
+                raise RuntimeError("Permission initialization gate receipt differs: "+name)
+            for key,(cases,assertions) in case_contracts.items():
+                actual=receipt.get(key,{})
+                if (actual.get("all_pass") is not True or type(actual.get("cases")) is not int
+                        or actual["cases"]!=cases or type(actual.get("assertions")) is not int
+                        or actual["assertions"]!=assertions or actual.get("android_adapter_executed") is not False
+                        or actual.get("phone_contacted") is not False):
+                    raise RuntimeError("Permission initialization cases differ: "+name+"/"+key)
+            report["permission_initialization_gates"][name]={"bytes":len(receipt_raw),
+                "sha256":hashlib.sha256(receipt_raw).hexdigest(),
+                "cases":{key:receipt[key] for key in case_contracts}}
         run("visual-prompt-projection",[sys.executable,"-B",ROOT/"tests/visual-prompt-projection/run_host_tests.py",
             "--source",ROOT,"--out",out/"visual-prompt-projection","--json-jar",json_jar,"--release8"])
         run("vlm-result-contract",[sys.executable,"-B",ROOT/"tests/vlm-contract/run_host_tests.py",

@@ -130,6 +130,9 @@ final class BackgroundTaskOrganizer implements BackgroundOwnedSingleTask.Platfor
     /** Strict parallel arrays from RootTaskInfo, including every actual child user. */
     static ProfileTaskPolicy.Snapshot profileSnapshot(Object activityTasks)throws Exception{
         Object raw=Class.forName("android.app.IActivityTaskManager").getMethod("getAllRootTaskInfos").invoke(activityTasks);
+        return profileSnapshotRows(raw);
+    }
+    private static ProfileTaskPolicy.Snapshot profileSnapshotRows(Object raw)throws Exception{
         if(!(raw instanceof List)||((List<?>)raw).size()>ProfileTaskPolicy.MAX_ROOTS)
             throw new IOException("PROFILE_ROOT_QUERY_INCOMPLETE");
         List<ProfileTaskPolicy.Root> out=new ArrayList<ProfileTaskPolicy.Root>();
@@ -150,6 +153,87 @@ final class BackgroundTaskOrganizer implements BackgroundOwnedSingleTask.Platfor
                     component(field(row,"topActivity")),(int[])ids,(int[])users,(String[])names,geometry));
         }
         return new ProfileTaskPolicy.Snapshot(out);
+    }
+
+    /** Read-only Notes census: complete global child arrays and real TaskInfo fields
+     * from this same ATM response. Existing organizer roots()/children()/rows()
+     * contracts, including null refusal, are unchanged. */
+    static final class ReadOnlyRootCensus {
+        final ProfileTaskPolicy.Snapshot global;
+        final List<BackgroundOwnedSingleTask.Task> displayRoots;
+        ReadOnlyRootCensus(ProfileTaskPolicy.Snapshot global,List<BackgroundOwnedSingleTask.Task> roots){
+            this.global=global;
+            this.displayRoots=java.util.Collections.unmodifiableList(new ArrayList<BackgroundOwnedSingleTask.Task>(roots));
+        }
+    }
+    ReadOnlyRootCensus readOnlyRootCensus()throws Exception{
+        Object raw=allRoots.invoke(activityTasks);
+        ProfileTaskPolicy.Snapshot global=profileSnapshotRows(raw);
+        List<Object> selected=new ArrayList<Object>();
+        for(Object row:(List<?>)raw)if(integer(row,"displayId")==display)selected.add(row);
+        return new ReadOnlyRootCensus(global,rows(selected));
+    }
+
+    /** Read-only locator resolution. No organizer is registered and no launch,
+     * transaction, task-id action, reparent or removal method is called. */
+    static PublicPermissionControllerUi.Task readOnlyControllerTask(Object activityTasks,int task,int display,
+            LongSupplier deadline)throws Exception{
+        if(task<=0||(display!=0&&display!=1)||deadline==null||SystemClock.elapsedRealtime()>=deadline.getAsLong())
+            throw new IOException("CONTROLLER_UI_QUERY_INVALID");
+        Class<?> atm=Class.forName("android.app.IActivityTaskManager");
+        Object raw=atm.getMethod("getAllRootTaskInfos").invoke(activityTasks);
+        ProfileTaskPolicy.Snapshot global=profileSnapshotRows(raw);
+        ProfileTaskPolicy.Leaf leaf=global.leaves.get(task);int rootId=leaf==null?task:leaf.parent;
+        Object root=null;
+        for(Object row:(List<?>)raw)if(integer(row,"taskId")==rootId){
+            if(root!=null||integer(row,"displayId")!=display)throw new IOException("CONTROLLER_UI_GLOBAL_TASK_AMBIGUOUS");
+            root=row;
+        }
+        if(root==null||(leaf!=null&&(leaf.display!=display||leaf.user!=0)))
+            throw new IOException("CONTROLLER_UI_NOT_IN_GLOBAL_CENSUS");
+        Class<?> tokenType=Class.forName("android.window.WindowContainerToken");
+        Method binder=tokenType.getMethod("asBinder");Object selected=root;
+        if(integer(root,"taskId")!=task){
+            Object window=atm.getMethod("getWindowOrganizerController").invoke(activityTasks);
+            Object organizer=Class.forName("android.window.IWindowOrganizerController").getMethod("getTaskOrganizerController").invoke(window);
+            Method children=Class.forName("android.window.ITaskOrganizerController").getMethod("getChildTasks",tokenType,int[].class);
+            List<Object> queue=new ArrayList<Object>();queue.add(root);Set<Integer> seen=new LinkedHashSet<Integer>();selected=null;
+            for(int at=0;at<queue.size();at++){
+                if(queue.size()>ProfileTaskPolicy.MAX_LEAVES||SystemClock.elapsedRealtime()>=deadline.getAsLong())
+                    throw new IOException("CONTROLLER_UI_QUERY_BOUND");
+                Object current=queue.get(at);int id=integer(current,"taskId");
+                if(!seen.add(id)||integer(current,"displayId")!=display)throw new IOException("CONTROLLER_UI_TREE_AMBIGUOUS");
+                if(id==task){if(selected!=null)throw new IOException("CONTROLLER_UI_TREE_AMBIGUOUS");selected=current;continue;}
+                Object value=children.invoke(organizer,field(current,"token"),null);
+                if(value==null)continue;
+                if(!(value instanceof List)||((List<?>)value).size()>ProfileTaskPolicy.MAX_LEAVES)
+                    throw new IOException("CONTROLLER_UI_CHILDREN_UNKNOWN");
+                for(Object child:(List<?>)value){
+                    if(child==null||integer(child,"parentTaskId")!=id)throw new IOException("CONTROLLER_UI_CHILD_PARENT_CHANGED");
+                    queue.add(child);
+                }
+            }
+        }
+        if(selected==null||SystemClock.elapsedRealtime()>=deadline.getAsLong())throw new IOException("CONTROLLER_UI_TASK_NOT_FOUND");
+        PublicPermissionControllerUi.Task value=readControllerTaskRow(selected,binder);
+        if(value.id!=task||value.display!=display||value.user!=0
+                ||(leaf!=null&&value.id!=rootId&&value.parent!=leaf.parent))
+            throw new IOException("CONTROLLER_UI_GLOBAL_TASK_DISAGREES");
+        return value;
+    }
+    private static PublicPermissionControllerUi.Task readControllerTaskRow(Object row,Method tokenBinder)throws Exception{
+        Object token=field(row,"token"),binder=token==null?null:tokenBinder.invoke(token);
+        if(!(binder instanceof IBinder))throw new IOException("CONTROLLER_UI_TASK_TOKEN_UNKNOWN");
+        Object rawIntent=field(row,"baseIntent"),rawInfo=field(row,"topActivityInfo");
+        if(!(rawIntent instanceof Intent)||!(rawInfo instanceof ActivityInfo))throw new IOException("CONTROLLER_UI_TASK_INFO_UNKNOWN");
+        ActivityInfo info=(ActivityInfo)rawInfo;String top=component(field(row,"topActivity"));
+        if(info.applicationInfo==null||info.packageName==null||info.name==null
+                ||!info.packageName.equals(info.applicationInfo.packageName)||!(info.packageName+"/"+info.name).equals(top))
+            throw new IOException("CONTROLLER_UI_TOP_UID_UNKNOWN");
+        return new PublicPermissionControllerUi.Task(integer(row,"taskId"),integer(row,"displayId"),integer(row,"userId"),
+                integer(row,"parentTaskId"),integer(row,"effectiveUid"),info.applicationInfo.uid,integer(row,"numActivities"),binder,
+                component(((Intent)rawIntent).getComponent()),component(field(row,"baseActivity")),top,
+                component(field(row,"realActivity")),component(field(row,"origActivity")),bool(row,"isRunning"),bool(row,"isVisible"));
     }
 
     /** Full raw recent-task dump, before any profile display or organizer container exists. */

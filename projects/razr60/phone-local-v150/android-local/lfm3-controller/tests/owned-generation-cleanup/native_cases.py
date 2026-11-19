@@ -133,7 +133,7 @@ class Scope:
     def alive_child(self):
         if not self.child:return False
         try:return proc(self.child)["state"] not in ("Z","X")
-        except FileNotFoundError:return False
+        except (FileNotFoundError,ProcessLookupError):return False
     def close(self):
         if self.process.poll() is None:
             try:exact_signal(self.process.pid,signal.SIGTERM)

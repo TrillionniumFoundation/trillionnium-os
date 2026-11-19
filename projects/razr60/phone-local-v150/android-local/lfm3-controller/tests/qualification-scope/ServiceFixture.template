@@ -48,6 +48,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
     static final int GLOBAL_ACTION_BACK=1,GLOBAL_ACTION_HOME=2;
     final Handler main=new Handler(Looper.getMainLooper());
     volatile String lease;Runnable stopListener;QualificationScopeConfig.Bound taskScope;TaskAuthorization.Gate taskAuthorization;NotesTaskPhaseGuard taskNotesPhase;CalculatorTaskInputGuard taskCalculatorInput;BackgroundSession taskBackground;WebFlightSession taskWeb;SubmitAttemptGuard taskSubmitAttempts;FixedIntentAttemptGuard taskFixedIntentAttempts;
+    private final ProfilePermissionUiSession profilePermissionUi=new ProfilePermissionUiSession(this);
     final java.util.concurrent.Executor backgroundIo=Runnable::run;
     private static java.util.concurrent.ExecutorService worker(String name){return java.util.concurrent.Executors.newSingleThreadExecutor(r->{Thread t=new Thread(r,name);t.setDaemon(true);return t;});}
     private static final java.util.concurrent.ExecutorService actionIo=worker("scope-action-fixture");
@@ -76,6 +77,7 @@ public final class HeptaAccessibilityService extends android.content.Context {
     public synchronized LocalTaskController taskController(LocalModelEngine engine){if(ownedController==null)ownedController=new LocalTaskController(this,testInference);return ownedController;}
 {{lease}}
     private boolean locked(){return false;}
+{{background_lock}}
     private void refreshApps(){}
 {{web_binding}}
 {{background_binding}}

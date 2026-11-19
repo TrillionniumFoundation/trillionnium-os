@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Offline tests: this module never invokes ADB or connects to a phone."""
+"""Offline current-entry refusals and historical helpers; never real ADB or a phone.
+
+Legacy full-flow assertions use only the pinned unreachable former body with
+FakeAdb. Their synthetic passes do not qualify a current background App task.
+"""
+import ast
+import builtins
 import contextlib
 import importlib.util
 import io
@@ -97,7 +103,26 @@ class FakeAdb:
         return sorted(p[len(path)+1:] for p in self.files if p.startswith(path+'/') and '/' not in p[len(path)+1:])
 
 
+def historical_run_task(args):
+    """Test-only legacy body; the public function remains unconditionally refused."""
+    source = SOURCE.read_text()
+    function = next(node for node in ast.parse(source).body if isinstance(node, ast.FunctionDef) and node.name == 'run_task')
+    if not isinstance(function.body[0], ast.Raise):
+        raise AssertionError('current run_task must refuse before the historical body')
+    body = ''.join(source.splitlines(True)[function.body[1].lineno-1:function.end_lineno])
+    if m.digest(body.encode()) != 'd835146316602f53c0c2a3989162bfd97af1ca2cd8a23d41d6b71268c3add2ef':
+        raise AssertionError('historical mutation body must remain byte-identical')
+    if m.Adb is not FakeAdb:
+        raise AssertionError('historical fixture requires FakeAdb; real transport is forbidden')
+    function.body = function.body[1:]
+    namespace = dict(m.__dict__)
+    with patch.object(m.subprocess, 'run', side_effect=AssertionError('historical fixture cannot start a process')):
+        exec(compile(ast.Module(body=[function], type_ignores=[]), '<offline-legacy-acceptance-fixture>', 'exec'), namespace)
+        return namespace['run_task'](args)
+
+
 class AcceptanceTests(unittest.TestCase):
+    """Original historical flow/helper assertions retained with fake-only IO."""
     def setUp(self):
         FakeAdb.instances=[]; FakeAdb.missing_native=False; FakeAdb.reject=False; FakeAdb.corrupt_raw=False
         FakeAdb.native_overrides={}; FakeAdb.app_overrides={}
@@ -111,7 +136,7 @@ class AcceptanceTests(unittest.TestCase):
     def run_fake(self, **changes):
         args=self.args(**changes)
         with patch.object(m,'Adb',FakeAdb), patch.object(m,'capture_ui',return_value=xml_view()), contextlib.redirect_stdout(io.StringIO()):
-            code=m.run_task(args)
+            code=historical_run_task(args)
         return code,json.loads((args.evidence_root/args.case_id/'acceptance.json').read_text())
     def test_pass_requires_ui_and_native_receipts(self):
         code, report=self.run_fake(); self.assertEqual(code,0); self.assertTrue(report['native_receipts_verified'])
@@ -211,7 +236,7 @@ class AcceptanceTests(unittest.TestCase):
         self.assertEqual(sum(label=='launch-once' for label,_,_ in FakeAdb.instances[-1].calls),1)
     def test_existing_case_refuses_before_adb(self):
         self.run_fake(); count=len(FakeAdb.instances)
-        with patch.object(m,'Adb',FakeAdb),self.assertRaises(FileExistsError):m.run_task(self.args())
+        with patch.object(m,'Adb',FakeAdb),self.assertRaises(FileExistsError):historical_run_task(self.args())
         self.assertEqual(len(FakeAdb.instances),count)
     def test_owner_is_stdin_data_not_shell(self):
         owner='原文 $(id) `test` "; echo unexpected; #'
@@ -242,6 +267,55 @@ class AcceptanceTests(unittest.TestCase):
     def test_collect_status_has_no_action(self):
         fake=FakeAdb(self.args()); m.current_status(fake)
         self.assertFalse(fake.launched); self.assertEqual(fake.calls,[])
+
+
+class CurrentEntryTests(unittest.TestCase):
+    @contextlib.contextmanager
+    def no_effects(self):
+        with contextlib.ExitStack() as stack:
+            guarded = [(m, 'Adb'), (m.subprocess, 'run'), (m.subprocess, 'Popen'),
+                (m, 'private_write'), (m, 'write_json'), (m.os, 'open'),
+                (builtins, 'open'), (io, 'open'), (m.os, 'mkdir'), (m.os, 'makedirs'),
+                (m.Path, 'open'), (m.Path, 'mkdir'), (m.Path, 'resolve'),
+                (m.Path, 'expanduser'), (m.Path, 'write_bytes'), (m.Path, 'write_text')]
+            calls = [stack.enter_context(patch.object(owner, name,
+                side_effect=AssertionError('retired run-task must have no IO: '+name))) for owner, name in guarded]
+            yield
+            for call in calls:
+                call.assert_not_called()
+
+    def test_direct_run_task_refuses_before_args_or_any_io(self):
+        class UnreadableArgs:
+            def __getattr__(self, name):
+                raise AssertionError('retired run-task cannot read arguments: '+name)
+        with self.no_effects(), self.assertRaisesRegex(m.DriverError, 'owned virtual display.*background Start'):
+            m.run_task(UnreadableArgs())
+
+    def test_cli_run_task_refuses_before_any_io_even_with_old_setup_flags(self):
+        argv = ['phone_acceptance.py', '--adb', '/never/executed', '--adb-port', '12345', '--serial', 'FAKE',
+            'run-task', '--case-id', 'retired-test', '--instruction', 'read only', '--evidence-root', '/never/created',
+            '--setup-home', '--include-screenshots']
+        with patch.object(m.sys, 'argv', argv), self.no_effects(), self.assertRaisesRegex(m.DriverError, 'retired'):
+            m.main()
+
+    def test_cli_collect_status_keeps_receipt_only_path(self):
+        reads = []
+        class ReceiptOnlyAdb:
+            def __init__(self, args, evidence=None):
+                if evidence is not None:
+                    raise AssertionError('test requested no output directory')
+            def app_json(self, path):
+                reads.append(path)
+                return None
+        argv = ['phone_acceptance.py', '--adb', '/fake', '--adb-port', '12345', '--serial', 'FAKE', 'collect-status']
+        output = io.StringIO()
+        with patch.object(m.sys, 'argv', argv), patch.object(m, 'Adb', ReceiptOnlyAdb), \
+                patch.object(m.subprocess, 'run', side_effect=AssertionError('no process in fake read test')), \
+                patch.object(m, 'private_write', side_effect=AssertionError('no requested output')), \
+                contextlib.redirect_stdout(output):
+            self.assertEqual(m.main(), 0)
+        self.assertEqual(reads, ['files/debug-trigger-result.json', 'files/control-session.json'])
+        self.assertEqual(json.loads(output.getvalue()), {'package': m.PACKAGE, 'trigger': None, 'session': None})
 
 
 class AcceleratorLogEvidenceTests(unittest.TestCase):

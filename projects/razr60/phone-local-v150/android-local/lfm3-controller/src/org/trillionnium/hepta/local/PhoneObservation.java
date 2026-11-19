@@ -327,6 +327,22 @@ public final class PhoneObservation {
             boolean profileWire=value.has("profile_target_wire"),profileSha=value.has("profile_target_sha256");
             require(profileWire==profileSha,"profile Selection requires wire and digest together");
             if(profileWire){keys.add("profile_target_wire");keys.add("profile_target_sha256");}
+            boolean displayMode=value.has("display_scope_mode"),displaySource=value.has("display_scope_mode_source"),
+                    displayAuthority=value.has("display_scope_mode_grants_authority");
+            require(displayMode==displaySource&&displayMode==displayAuthority,"display Selection requires its complete provenance");
+            if(displayMode){
+                keys.add("display_scope_mode");keys.add("display_scope_mode_source");keys.add("display_scope_mode_grants_authority");
+                Object mode=value.get("display_scope_mode");
+                boolean profileMode="public_own_group_no_credentials_v1".equals(mode),
+                        personalMode="public_own_group_personal_no_credentials_v1".equals(mode);
+                require((profileMode||personalMode)&&profileMode==profileWire
+                        &&"immutable_start_selection".equals(value.get("display_scope_mode_source"))
+                        &&Boolean.FALSE.equals(value.get("display_scope_mode_grants_authority"))
+                        &&value.has("owner_task_selection")&&allowed.equals(Collections.singletonList(initial)),
+                        "display Selection mode or provenance differs from its explicit target");
+                if(personalMode)require("com.motorola.stylus".equals(initial)||"com.xiaomi.shop".equals(initial),
+                        "personal display Selection app is unsupported");
+            }
             exactKeys(value,keys);
             if(profileWire){
                 Object wire=value.get("profile_target_wire"),digest=value.get("profile_target_sha256");
@@ -366,6 +382,7 @@ public final class PhoneObservation {
                     Object choice=choices.get(i);require(choice instanceof String&&originals.add((String)choice),"original UI scope differs");
                 }
                 Object oldInitial=proof.get("original_ui_initial_package");
+                if(displayMode)require(initial.equals(oldInitial),"display Selection must retain its explicit initial app");
                 require(oldInitial instanceof String&&originals.contains(oldInitial)&&originals.containsAll(allowed)
                         &&Boolean.TRUE.equals(proof.get("effective_scope_within_selected_apps"))
                         &&Boolean.valueOf(allowed.size()<originals.size()).equals(proof.get("effective_scope_strictly_smaller"))

@@ -86,6 +86,13 @@ public final class LocalTaskSession {
     }
     public boolean schedule(final String owner,String source,String testNonceSha,final String expectedScopeSha256,final TaskAuthorization authorization,
                             final BackgroundSession.Selection selection,long delayMillis){
+        return schedule(owner,source,testNonceSha,expectedScopeSha256,authorization,selection,null,delayMillis);
+    }
+    public boolean schedule(final String owner,String source,String testNonceSha,final String expectedScopeSha256,final TaskAuthorization authorization,
+                            final BackgroundSession.Selection selection,final org.trillionnium.hepta.background.ControllerDisplayHandoff.Locator displayHandoff,long delayMillis){
+        if(displayHandoff!=null&&(selection==null||!"user_button".equals(source)
+                ||(!selection.independentProfileDisplay&&!selection.independentPersonalDisplay)))
+            throw new IllegalArgumentException("HANDOFF_SELECTION_REQUIRED");
         QualificationScope.expected(expectedScopeSha256);
         TaskAuthorization.require(authorization!=null,"任务授权合同缺失");authorization.requireOwner(owner);
         if (Looper.myLooper()!=Looper.getMainLooper()) throw new IllegalStateException("schedule must run on main thread");
@@ -110,7 +117,7 @@ public final class LocalTaskSession {
             pending=false;
             if(HeptaAccessibilityService.connected()!=service){setState("无障碍服务已断开，任务未启动");persist("not_started",true);return;}
             try{
-                boolean started=controller.start(owner,expectedScopeSha256,authorization,selection,new LocalTaskController.Listener(){
+                boolean started=controller.start(owner,expectedScopeSha256,authorization,selection,displayHandoff,new LocalTaskController.Listener(){
                     public void onState(String value){if(epoch>recoveryIgnoredGeneration&&epoch==generation&&!pending)receiveState(value);}
                     public void onFinished(LocalTaskController.TaskResult result){
                         if(epoch<=recoveryIgnoredGeneration)return;
@@ -500,7 +507,9 @@ public final class LocalTaskSession {
                     throw new IOException("启动前恢复的普通 UI 会话已变化");
                 if(service==null){if(priorController!=null)throw new IOException("原控制器服务无法核验");}
                 else if(service!=HeptaAccessibilityService.connected()
-                        ||(!service.prelaunchReconciliationIdle(priorController)&&!service.postlaunchReconciliationIdle(priorController)))
+                        ||(!service.prelaunchReconciliationIdle(priorController)&&!service.postlaunchReconciliationIdle(priorController)
+                                &&!service.publicProfileReconciliationIdle(priorController)
+                                &&!service.personalNotesReconciliationIdle(priorController)))
                     throw new IOException("原控制器观察、动作或取消工作尚未排空");
             }
         };
@@ -630,6 +639,32 @@ public final class LocalTaskSession {
         final boolean background,web;
         LeaseState(boolean background,boolean web){this.background=background;this.web=web;}
         boolean unreleased(){return background||web;}
+    }
+    /** Read-only settings admission. Reuses the ordinary startup/terminal policy without acknowledging it. */
+    void requireModelSettingsJournalIdle()throws Exception{
+        if(Looper.myLooper()==Looper.getMainLooper())throw new IllegalStateException("settings journal read must run on a worker");
+        if(isRunning()||isBlocked()||isRecovering())throw new IOException("task journal work is not idle");
+        long epoch=generation;
+        File files=context.getFilesDir().getCanonicalFile(),base=new File(files,"control-session.json");
+        if(recordExists(new File(files,INTERRUPTION_LATCH))||recordExists(new File(files,"control-session.json.bak"))
+                ||recordExists(new File(files,"control-session.json.new")))
+            throw new IOException("task session has an unresolved storage marker");
+        RecoveryJournalStore store=new RecoveryJournalStore(context);
+        if(!store.pendingBarriers().isEmpty()||readLeaseState().unreleased())
+            throw new IOException("task recovery or background/web lease is still present");
+        if(recordExists(base)){
+            byte[] original=readSessionRecord(base);JSONObject prior=parseSessionJson(original);verifyTerminalEvidence(prior);
+            Map<String,Object> fields=fieldsOf(prior);RecoveryJournalTransaction.Proof proof=null;
+            if(RecoveryJournalTransaction.IDLE_STATUS.equals(fields.get("status")))
+                proof=RecoveryJournalTransaction.verifyReady(store,android.os.Process.myUid(),prior.getString("recovery_transaction_id"),original);
+            if(!SessionRecovery.evaluate(fields,android.os.Process.myUid(),false,proof).allowNewTask
+                    ||!java.util.Arrays.equals(original,readSessionRecord(base)))
+                throw new IOException("task terminal or idle journal changed");
+        }
+        if(epoch!=generation||isRunning()||isBlocked()||isRecovering()||readLeaseState().unreleased()
+                ||recordExists(new File(files,INTERRUPTION_LATCH))||recordExists(new File(files,"control-session.json.bak"))
+                ||recordExists(new File(files,"control-session.json.new"))||!store.pendingBarriers().isEmpty())
+            throw new IOException("task owner changed during settings admission");
     }
     private LeaseState readLeaseState(){
         LeaseState leases=new LeaseState(BackgroundSession.hasUnreleased(context),WebFlightSession.hasUnreleased(context));

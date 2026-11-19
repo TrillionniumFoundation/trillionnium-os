@@ -113,7 +113,7 @@ public final class PromptAdmissionFixture {
         raise RuntimeError("Exact Web type-boundary compiler copy required")
     files += [package / "web/WebFlightGoal.java",package / "web/WebShoppingGoal.java",web_fixture_compile,
               source/"tests/web-flight/legacy-boundary/WebShoppingQuote.java"]
-    files += [source/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","ProfileIdentity","ProfileTarget","WindowOwnership")]
+    files += [source/"src/org/trillionnium/hepta/background"/(name+".java") for name in ("FixedIntentTools","FixedIntentTarget","BrokerProtocol","PublicPermissionControllerUi","PublicOwnGroupPolicy","ProfileIdentity","ProfileTarget","WindowOwnership")]
     digest = lambda value: hashlib.sha256(value).hexdigest()
     record = {
         "scope": "Exact production full prompt builder, Java pre-native guard and LocalModelEngine UTF-8 input limit; Android Rect and JSON serialization are explicit IO fixtures",

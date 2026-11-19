@@ -80,6 +80,7 @@ def main():
             result["retained_predicates"][name]={"byte_identical":True,"bytes":len(after.encode()),"sha256":sha(after.encode()),
                                                 "identity_check_not_product_execution":True}
         handle=java_block(engine,"public static final class RunHandle {")
+        runtime_generation=java_block(engine,"static final class RuntimeGeneration {")
         first='            boolean callerCancellation=h.callerCancellationRequested();'
         last='            try{\n                ActivityManager.MemoryInfo after=memoryInfo();'
         need(engine.count(first)==1 and engine.count(last)==1,"exact classification block required")
@@ -96,7 +97,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import org.json.JSONObject;
 final class RunHandleFixture {
-'''+handle+'''
+    private static final class RuntimeConfigTransaction {static final class Snapshot{}}
+'''+runtime_generation+'\n'+handle+'''
     static RunHandle handle(String id,RunHandle owner){return new RunHandle(id,owner);}
     static void internalCleanup(RunHandle handle){handle.cancelForFailure();}
     static void requestOnly(RunHandle handle){handle.requestCancellationOnly();}
@@ -109,8 +111,9 @@ final class RunHandleFixture {
 '''+put_method+'\n'+sha_method+'\n}\n'
         generated=a.output/"generated/org/trillionnium/hepta/local/RunHandleFixture.java";put(generated,wrapper.encode())
         result["extracted_current_blocks"]={k:{"bytes":len(v.encode()),"sha256":sha(v.encode())} for k,v in {
-            "RunHandle":handle,"failure_classification":classification,"failure_raw_hash_line":raw_hash_line,"receipt_put":put_method,"sha256":sha_method}.items()}
-        java_names=["SdkExceptionFailure.java","LocalRuntimeConfig.java","ModelProfile.java","ConservativeTokenBudget.java",
+            "RunHandle":handle,"runtime_generation_type":runtime_generation,"failure_classification":classification,"failure_raw_hash_line":raw_hash_line,"receipt_put":put_method,"sha256":sha_method}.items()}
+        result["settings_boundary"]="Exact RunHandle generation field type; snapshot IO is opaque and no settings construction/publication is executed. Original SDK failure predicates and assertions are unchanged."
+        java_names=["SdkExceptionFailure.java","LocalRuntimeConfig.java","ModelProfile.java","ModelFileVerifier.java","ConservativeTokenBudget.java",
                     "OwnedWorkerCancellation.java","TaskCancellationQueue.java"]
         sources=[package/n for n in java_names]+[test/"SdkExceptionFailureHostTest.java"]
         for path in sources:take(path)

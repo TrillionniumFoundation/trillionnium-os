@@ -142,8 +142,10 @@ public final class DecisionGrammar {
                               "    /** Shares the existing single-model slot"),
         "external_lease": section(engine, "    /** Shares the existing single-model slot",
                                   "    /** An aggregate startup barrier"),
-        "admission": section(engine, "    private static void claimProcess(",
+        "admission": section(engine, "    private void claimProcess(",
                              "    public Result lastResult()"),
+        "runtime_generation": section(engine, "    static final class RuntimeGeneration {",
+                                      "    private volatile RuntimeGeneration runtime;"),
         "captured_stop": section(engine, "    public void cancelActive() {",
                                  "    JSONObject cancellationEvidence()"),
     }
@@ -154,7 +156,9 @@ public final class DecisionGrammar {
             "    private static final Object PROCESS_ADMISSION",
             "    private final AtomicReference<RunHandle> active",
             "    private final AtomicBoolean closed",
-            "    private volatile TaskCancellationQueue.Ticket lastCancellation"):
+            "    private volatile TaskCancellationQueue.Ticket lastCancellation",
+            "    private volatile RuntimeGeneration runtime;",
+            "    private volatile boolean settingsBlocked;"):
         matches = [line for line in engine.splitlines() if line.startswith(prefix)]
         if len(matches) != 1:
             raise ValueError("nonunique engine field: " + prefix)
@@ -164,7 +168,9 @@ import android.content.Context;import java.util.*;import java.util.concurrent.*;
 public final class LocalModelEngine implements AutoCloseable {
  private final Context context;private final ExecutorService executor;private final LocalRuntimeConfig config;
  public LocalModelEngine(Context context,LocalRuntimeConfig config,ExecutorService executor){
-  this.context=context;this.config=config;this.executor=executor;}
+  this.context=context;this.config=config;this.executor=executor;
+  runtime=new RuntimeGeneration(config,null,new ModelFileVerifier(),null);}
+ private static final class RuntimeConfigTransaction {static final class Snapshot{}}
  public LocalRuntimeConfig configuration(){return config;}
 """ + "\n".join(declarations) + "\n" + "\n".join(parts.values()) + """
  static void fixtureReset(){if(ACTIVE_CANCELLATION.pending())throw new AssertionError("actual cancellation queue still running");
@@ -189,7 +195,7 @@ public final class LocalModelEngine implements AutoCloseable {
     write("org/trillionnium/hepta/local/ObservationModeHostTest.java", template.replace("/* EXACT_OBSERVE_GATE */", gate))
     actual_names = [
         "VlmInferenceAdapter", "VlmResultContract", "VlmPins", "UiVenusPins",
-        "LocalInference", "LocalRuntimeConfig", "ModelProfile", "MobiMindContract",
+        "LocalInference", "LocalRuntimeConfig", "ModelProfile", "ModelFileVerifier", "MobiMindContract",
         "MobiMindPins", "MobiMindPrivateFiles", "WorkerGenerationProof",
         "OwnedWorkerCancellation", "WarmProcessSession", "TaskCancellationQueue", "MemoryAvailability",
     ]
@@ -202,6 +208,7 @@ public final class LocalModelEngine implements AutoCloseable {
         "controller_observe_gate_sha256": sha(gate.encode()),
         "controller_source_sha256": sha(controller.encode()),
         "fixtures": "Android services/UID/fsync surrogate, model launch and generation helper simulated; grammar public projection fixture",
+        "settings_boundary": "Exact generation type and actual verifier; snapshot IO and passed immutable config are fixture inputs. No settings transaction or native model is executed.",
         "adapter_code_rewritten": False,
         "native_inference_executed": False,
         "generation_cleanup_kernel_proven": False,

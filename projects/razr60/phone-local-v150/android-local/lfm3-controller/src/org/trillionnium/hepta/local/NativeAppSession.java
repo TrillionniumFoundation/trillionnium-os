@@ -45,6 +45,8 @@ final class NativeAppSession {
     private boolean retired,terminalConsumed,invalid,productQueryAttempted,productModalExitAttempted;
     private boolean productLoginExitReserved;
     private String productLoginProposalObservation;
+    private boolean flightLoginExitAttempted;
+    private String flightLoginProposalObservation;
     private String invalidReason;
     private String reservationReobserveId;
     private long reservationReobserveAfter;
@@ -135,11 +137,24 @@ final class NativeAppSession {
                     :"携程首次启动指引尚未完成，未执行机票查询。结束 partial 或 failure，如实报告初始化阻碍。");
             missing.add(flight.missing);
         }
-        else if("ctrip_login_required".equals(phase)){
-            view.put("observed_login_page",true);view.put("requires_user_handling",true);
+        else if(NativeCtripFlightPage.LOGIN_REQUIRED.equals(phase)){
+            NativeAppEvidence.Node loginReturn=NativeCtripFlightPage.loginReturnControl(flight);
+            boolean mayReturn=pending==null&&!flightLoginExitAttempted&&loginReturn!=null
+                    &&calendarYearProof!=null&&lastQueryProof!=null&&lastQueryDate!=null&&queryAttempts.contains(lastQueryDate);
+            view.put("observed_login_page",true);view.put("requires_user_handling",!mayReturn);
+            view.put("login_exit_attempted",flightLoginExitAttempted);
             view.put("credentials_or_agreement_actions_available",false);
-            view.put("next_goal","当前携程为本机号码登录页；尚未取得可核验的机票结果。结束 partial 或 failure，如实说明当前登录阻碍，需要用户自行处理。");
-            missing.add(flight.missing);
+            view.put("public_browsing_requires_login_verified",false);
+            if(mayReturn){
+                grant(clicks,purposes,loginReturn,NativeCtripFlightPage.LOGIN_EXIT);
+                view.put("login_return_control",loginReturn.fact("description"));
+                view.put("last_explicit_query_date",lastQueryDate.toString());
+                view.put("next_goal","本任务已在携程实际执行查询并观察到对应日期结果页，当前为登录页面。可由本次模型选择当前明确的返回控件一次，再观察实际结果，或如实结束 failure。不能登录、输入账号、接受协议、注册或选择其他登录方式；返回本身不代表查询完成。");
+                missing.add("native_ctrip_login_bounded_return_available");
+            }else{
+                view.put("next_goal","当前携程登录页面没有可用的一次返回权限；尚未取得可核验的机票结果。结束 partial 或 failure，如实报告当前阻碍，不能声称公开浏览必定要求登录。");
+                missing.add(flight.missing);
+            }
         }
         else if(NativeXiaomiProductPage.HOME_LOADING.equals(phase)){
             view.putAll(product.modelView());
@@ -188,6 +203,9 @@ final class NativeAppSession {
                 }else missing.add("new_proved_form_date_or_query_budget_missing");
             }else if(NativeCtripFlightPage.CALENDAR.equals(phase)){
                 view.put("calendar_month_headers",flight.calendarMonths);back=true;purposes.put("back","return_from_calendar");
+                view.put("next_goal",calendarInspection!=null&&calendarProposedDate!=null
+                        ?"已观察本次日期控件打开的日历年月标题；当前未暴露可选择的日期节点。由模型选择现有 back 返回表单以核对日期，不能等待出一个可猜测的日期坐标；尚未选择或证明目标出发日期。"
+                        :"当前日历未暴露可选择的日期节点。由模型选择现有 back 返回表单并重新观察；不能猜测日期坐标，也不能把日历标题当作已选择目标日期。");
                 missing.add("native_day_cells_unavailable_no_coordinate_permission");
             }else if(NativeCtripFlightPage.OVERLAY.equals(phase)){
                 back=true;purposes.put("back","dismiss_research_sheet");missing.add("overlay_blocks_all_underlying_results");
@@ -465,6 +483,16 @@ final class NativeAppSession {
                     "one prequery image-modal Back proposal required");
             productModalExitAttempted=true; // Consumed even if the actual dispatch is later stale.
         }
+        else if(NativeCtripFlightPage.LOGIN_EXIT.equals(purpose)){
+            NativeAppEvidence.Node loginReturn=NativeCtripFlightPage.loginReturnControl(flight);
+            requireFrame(current.frame);
+            need("click".equals(action.action)&&pending==null&&!flightLoginExitAttempted&&loginReturn!=null
+                    &&loginReturn.id.equals(action.nodeId)&&calendarYearProof!=null&&lastQueryProof!=null
+                    &&lastQueryDate!=null&&queryAttempts.contains(lastQueryDate),
+                    "one model proposal for the observed Ctrip return after an actual query/result chain required");
+            flightLoginExitAttempted=true;flightLoginProposalObservation=current.frame.observationId;
+            date=lastQueryDate; // Consumed even if dispatch is later stale, rejected or unknown.
+        }
         else if(NativeXiaomiProductPage.LOGIN_EXIT.equals(purpose)){
             need(product!=null&&NativeXiaomiProductPage.LOGIN.equals(product.phase)&&pending==null
                     &&!productLoginExitReserved&&!current.frame.observationId.equals(productLoginProposalObservation),
@@ -606,6 +634,14 @@ final class NativeAppSession {
             else if("verify_form_after_result_date".equals(p)&&NativeCtripFlightPage.FORM.equals(flight.phase)){
                 confirmedFormDate=a.date!=null&&calendarYearProof!=null&&flight.form.matches(a.date)?a.date:null;
                 proof.put("form_after",flight.form.evidence());proof.put("proved_departure_date",confirmedFormDate==null?null:confirmedFormDate.toString());complete=true;
+            }else if(NativeCtripFlightPage.LOGIN_EXIT.equals(p)&&a.flight!=null
+                    &&NativeCtripFlightPage.LOGIN_REQUIRED.equals(a.flight.phase)&&NativeCtripFlightPage.RESULTS.equals(flight.phase)
+                    &&a.date!=null&&a.date.equals(lastQueryDate)&&lastQueryProof!=null
+                    &&a.date.equals(flight.displayedMonthDay(a.date))
+                    &&NativeAppEvidence.sameProfileOwner(a.before.frame.profileWindow,frame.profileWindow)){
+                proof.put("navigation_only",true);proof.put("query_or_result_proof_created",false);
+                proof.put("prior_actual_query_proof_sha256",NativeAppEvidence.fingerprint(lastQueryProof));
+                proof.put("returned_query_date",a.date.toString());complete=true;
             }else if("open_flight_form".equals(p)&&NativeCtripFlightPage.FORM.equals(flight.phase))complete=true;
             else if("dismiss_research_sheet".equals(p)&&!NativeCtripFlightPage.OVERLAY.equals(flight.phase)&&!NativeCtripFlightPage.UNAVAILABLE.equals(flight.phase))complete=true;
         }else{
@@ -660,6 +696,8 @@ final class NativeAppSession {
         e.put("product_modal_exit_attempted",productModalExitAttempted);
         e.put("product_login_exit_reserved",productLoginExitReserved);
         e.put("product_login_proposal_observation",productLoginProposalObservation);
+        e.put("flight_login_exit_attempted",flightLoginExitAttempted);
+        e.put("flight_login_proposal_observation",flightLoginProposalObservation);
         e.put("product_home_loading_since_elapsed_ms",productHomeLoadingSince<0?null:Long.valueOf(productHomeLoadingSince));
         e.put("product_home_loading_wait_attempts",productHomeLoadingWaits);
         e.put("product_query_observed",productQueryProof!=null);e.put("product_detail_navigation_observed",productOpenProof!=null);e.put("pending",pending==null?null:pending.evidence());e.put("transitions",transitions);return e;}

@@ -205,6 +205,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private volatile ActionWork activeAction;
     private volatile ActionExecutionState lastActionExecution;
     private static final TaskCancellationQueue nativeCancellationQueue=TaskCancellationQueue.processQueue();
+    private final ProfilePermissionUiSession profilePermissionUi=new ProfilePermissionUiSession(this);
     private Runnable stopListener;
     private LocalTaskController ownedController;
     private long lastScreenshotAt;
@@ -246,6 +247,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(activeObservation!=null)failObservation(activeObservation,"无障碍服务已中断");
     }
     @Override public void onDestroy() {
+        String permissionTask=lease;if(permissionTask!=null)profilePermissionUi.retire(permissionTask,"service_destroyed");
         ActionWork action=activeAction;if(action!=null)action.state.retire("service_destroyed");
         LocalTaskController controller; synchronized(this){controller=ownedController;}
         if(controller!=null)controller.close();
@@ -264,6 +266,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     public synchronized LocalTaskController taskController(LocalModelEngine engine){
         return taskController(engine.configuration().profile.visual()
                 ?new VlmInferenceAdapter(this,engine):new EngineInferenceAdapter(engine));
+    }
+    /** Pure idle query for local configuration; no controller retirement or recovery authority. */
+    synchronized boolean modelSettingsIdle(){
+        if(Looper.myLooper()!=Looper.getMainLooper())throw new IllegalStateException("settings service check must run on main");
+        return live==this&&lease==null&&(ownedController==null||!ownedController.isRunning())
+                &&activeObservation==null&&!capturePending&&!observationReadWorkPending()&&!actionWorkPending()&&!nativeCancellationWorkPending()
+                &&(taskBackground==null||taskBackground.released())&&(taskWeb==null||taskWeb.released());
     }
     /** Administrative retirement only; no action, inference, capture or old task is restarted. */
     synchronized boolean recoveryControllerIdle(LocalTaskController expected){
@@ -340,6 +349,16 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private synchronized boolean owns(String taskId) { return taskId.equals(lease) && live==this; }
     private boolean locked() { KeyguardManager value=(KeyguardManager)getSystemService(KEYGUARD_SERVICE);return value!=null&&value.isKeyguardLocked(); }
+    /** The exact background lease chooses its own display scope; foreground keeps its old guard. */
+    private boolean locked(BackgroundSession background) {
+        if(background==null)return locked();
+        if(!ownsBackground(background.taskId,background))return true;
+        try{
+            if(Looper.myLooper()==Looper.getMainLooper())background.requireAdmissionActive();
+            else background.requireActive();
+            return false;
+        }catch(RuntimeException unavailable){return true;}
+    }
     private int rotation(int displayId) {
         DisplayManager manager=(DisplayManager)getSystemService(DISPLAY_SERVICE);
         Display display=manager==null?null:manager.getDisplay(displayId);
@@ -364,6 +383,40 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private synchronized BackgroundSession currentBackground(){return taskBackground;}
     private synchronized boolean ownsBackground(String id,BackgroundSession background){return owns(id)&&taskBackground==background;}
+    ProfilePermissionUiSession permissionUi(){return profilePermissionUi;}
+    /** Short captured-identity checks only; suitable for cancellation and node-read budgets. */
+    synchronized boolean permissionInitializationCurrent(String id,QualificationScopeConfig.Bound scope,
+            TaskAuthorization.Gate authorization,BackgroundSession background){
+        return owns(id)&&scope!=null&&taskScope==scope&&authorization!=null&&taskAuthorization==authorization
+                &&background!=null&&taskBackground==background&&taskWeb==null&&background.profileTarget()!=null;
+    }
+    /** The dedicated permission path never calls selectedRoot()/observe(), adds
+     * PermissionController to allowedPackages, or lends its receipt to an LLM. */
+    void requirePermissionInitializationCurrent(String id,QualificationScopeConfig.Bound scope,
+            TaskAuthorization.Gate authorization,BackgroundSession background,Cancellation cancel,long deadline)throws Exception{
+        if(Looper.myLooper()==Looper.getMainLooper()||cancel==null||cancel.isCancelled()
+                ||SystemClock.elapsedRealtime()>=deadline||!permissionInitializationCurrent(id,scope,authorization,background))
+            throw new IllegalStateException("权限准备的原任务、授权、后台租约或期限已退休");
+        QualificationScope.require(!scope.restricted(),"permission preparation cannot expand a qualification scope");
+        scope.verifyUnchanged();scope.requireReady();authorization.ready();background.requirePermissionPreparationActive();
+        if(!authorization.authorization.instructionSha256.equals(background.ownerSha256)||background.displayId()<=1
+                ||locked(background)||cancel.isCancelled()||SystemClock.elapsedRealtime()>=deadline
+                ||!permissionInitializationCurrent(id,scope,authorization,background))
+            throw new IllegalStateException("权限准备的显示、锁状态或原指令身份发生变化");
+    }
+    void prepareProfilePermissionInitialization(String id,NativeAppGoal goal,TaskAuthorization.Gate authorization,
+            BackgroundSession background,File evidence,Cancellation cancel,long deadline)throws Exception{
+        QualificationScopeConfig.Bound scope=scopeFor(id);
+        requirePermissionInitializationCurrent(id,scope,authorization,background,cancel,deadline);
+        if(goal==null||!NativeAppGoal.FLIGHT_RESULTS.equals(goal.kind)
+                ||!org.trillionnium.hepta.background.ProfileTarget.CTRIP.equals(goal.packageName)
+                ||!goal.ownerSha256.equals(background.ownerSha256)||!goal.ownerSha256.equals(authorization.authorization.instructionSha256)
+                ||!goal.packageName.equals(background.profileTarget().packageName)
+                ||observationReadWorkPending()||actionSlot.pending()||nativeCancellationWorkPending())
+            throw new IllegalStateException("权限初始化只适用于当前原指令绑定的隔离资料查票任务");
+        profilePermissionUi.prepare(id,goal,authorization,scope,background,evidence,cancel,deadline);
+    }
+    JSONObject permissionInitializationEvidence(String id){return profilePermissionUi.evidence(id);}
     JSONObject backgroundEvidence(String id){BackgroundSession background=backgroundFor(id);return background==null?null:background.evidence();}
     /** Read-only worker guard for the narrow prelaunch recovery; it never grants input authority. */
     synchronized boolean prelaunchReconciliationIdle(LocalTaskController expected){
@@ -381,8 +434,35 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 &&(taskWeb==null||taskWeb.released())
                 &&(lease==null||(expected!=null&&lease.equals(expected.currentTaskId())));
     }
+    /** Public receipt admission has its own type and eligibility; it grants no action authority. */
+    synchronized boolean publicProfileReconciliationIdle(LocalTaskController expected){
+        return live==this&&ownedController==expected&&(expected==null||!expected.isRunning())
+                &&activeObservation==null&&!capturePending&&!observationReadWorkPending()&&!actionWorkPending()&&!nativeCancellationWorkPending()
+                &&(taskBackground==null||taskBackground.publicProfileRecoveryEligible())
+                &&(taskWeb==null||taskWeb.released())
+                &&(lease==null||(expected!=null&&lease.equals(expected.currentTaskId())));
+    }
+    /** Personal Notes receipt admission has its own type and eligibility; it grants no action authority. */
+    synchronized boolean personalNotesReconciliationIdle(LocalTaskController expected){
+        return live==this&&ownedController==expected&&(expected==null||!expected.isRunning())
+                &&activeObservation==null&&!capturePending&&!observationReadWorkPending()&&!actionWorkPending()&&!nativeCancellationWorkPending()
+                &&(taskBackground==null||taskBackground.personalNotesRecoveryEligible())
+                &&(taskWeb==null||taskWeb.released())
+                &&(lease==null||(expected!=null&&lease.equals(expected.currentTaskId())));
+    }
     synchronized void acceptBackgroundReconciliation(BackgroundSession.Cleanup cleanup)throws Exception{
         if(cleanup==null)throw new IllegalStateException("后台清理凭据缺失");
+        if(cleanup.personalNotesRecovery!=null){
+            if(cleanup.prelaunchRecovery!=null||cleanup.postlaunchRecovery!=null||cleanup.publicProfileRecovery!=null
+                    ||!personalNotesReconciliationIdle(ownedController))
+                throw new IllegalStateException("备忘录恢复的控制器工作尚未排空");
+            if(taskBackground!=null)taskBackground.acceptReconciliation(cleanup);return;
+        }
+        if(cleanup.publicProfileRecovery!=null){
+            if(cleanup.prelaunchRecovery!=null||cleanup.postlaunchRecovery!=null||!publicProfileReconciliationIdle(ownedController))
+                throw new IllegalStateException("公共恢复的控制器工作尚未排空");
+            if(taskBackground!=null)taskBackground.acceptReconciliation(cleanup);return;
+        }
         if(cleanup.postlaunchRecovery!=null){
             if(cleanup.prelaunchRecovery!=null||!postlaunchReconciliationIdle(ownedController))
                 throw new IllegalStateException("已启动恢复的控制器工作尚未排空");
@@ -440,6 +520,24 @@ public final class HeptaAccessibilityService extends AccessibilityService {
      * is not relabeled fresh; the existing action path still reacquires and
      * compares current nodes before any tool effect.
      */
+    /** Model admission for the explicit experiment shares the exact existing task,
+     * controller and live background object; serialized policy data is insufficient. */
+    void requireExperimentalModelScope(LocalTaskController expectedController,String id,TaskAuthorization.Gate auth,
+            BackgroundSession expected,Cancellation cancel,long deadline){
+        if(expected==null||!expected.usesExperimentalPublicOwnGroup())return;
+        synchronized(this){
+            TaskAuthorization.require(live==this&&ownedController==expectedController&&ownsAuthorization(id,auth)
+                    &&taskBackground==expected&&id.equals(expected.taskId)
+                    &&auth.authorization.instructionSha256.equals(expected.ownerSha256),"本地模型后台作用域已退休");
+        }
+        requireTaskAuthorization(id,auth);expected.requirePolicyBeforeEffect(cancel,deadline);
+        synchronized(this){
+            TaskAuthorization.require(live==this&&ownedController==expectedController&&ownsAuthorization(id,auth)
+                    &&taskBackground==expected&&id.equals(expected.taskId),"本地模型策略读取期间任务已退休");
+        }
+        if(cancel==null||cancel.isCancelled()||SystemClock.elapsedRealtime()>=deadline)
+            throw new IllegalStateException("本地模型原任务已停止或到期");
+    }
     void requireVisualFrameOwnership(LocalTaskController expectedController,String id,
             TaskAuthorization.Gate auth,BackgroundSession expected,PhoneObservation observed,DecisionGrammar grammar){
         synchronized(this){
@@ -782,7 +880,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         long now=SystemClock.elapsedRealtime();
         if(proof.issuer!=this||!proof.taskId.equals(request.taskId)||proof.background!=request.background
                 ||proof.before!=current||proof.authorization==null||proof.authorization!=taskAuthorization
-                ||!owns(request.taskId)||!ownsBackground(request.taskId,request.background)||request.cancel.isCancelled()||locked()
+                ||!owns(request.taskId)||!ownsBackground(request.taskId,request.background)||request.cancel.isCancelled()||locked(request.background)
                 ||activeObservation!=null||capturePending||observationIoBusy.get()||actionWorkPending()||nativeCancellationWorkPending()
                 ||request.started<proof.drainedAt||now<request.started||now>=request.deadline
                 ||request.deadline>ObservationStabilityGate.requestDeadline(request.started,Long.MAX_VALUE)
@@ -800,7 +898,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(!request.gate.requestAlive(SystemClock.elapsedRealtime(),owns(request.taskId)&&!request.cancel.isCancelled())){
             failObservation(request,"任务停止或本次观察已超时");return false;
         }
-        if(locked()){failObservation(request,"手机已锁定，请正常解锁后重新发起任务");return false;}
+        if(locked(request.background)){failObservation(request,"当前显示范围的锁状态或后台显示凭据不可用");return false;}
         return true;
     }
     /** Called only on main: unlike readGraph/PNG work, this watchdog never waits for the worker. */
@@ -994,7 +1092,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 long now=SystemClock.elapsedRealtime();
                 if(!request.finished||request.readWorksStarted!=completed||request.readWorksFinished!=completed
                         ||request.captured!=null||request.shotPending||request.cancel.isCancelled()
-                        ||now<drainedAt||drainedAt<request.failedAt||request.failedAt<request.started||now>=request.deadline||locked()
+                        ||now<drainedAt||drainedAt<request.failedAt||request.failedAt<request.started||now>=request.deadline||locked(request.background)
                         ||!owns(request.taskId)||!ownsBackground(request.taskId,request.background)
                         ||request.readBefore!=current||request.readAuthorization!=taskAuthorization
                         ||request.readIdentity==null||!request.readIdentity.matches(currentGraph)
@@ -1517,8 +1615,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             return taskId.equals(lease);
         }},signal);
     }
-    boolean actionWorkPending(){return actionSlot.pending();}
+    boolean actionWorkPending(){return actionSlot.pending()||ProfilePermissionUiSession.workPending();}
     void retireActionWork(String taskId,String reason){
+        profilePermissionUi.retire(taskId,reason);
         ActionWork work=activeAction;if(work!=null&&work.state.taskId.equals(taskId))work.state.retire(reason);
     }
     JSONObject actionExecutionEvidence(String taskId){
@@ -1615,7 +1714,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             work.profileDispatchProof=actual;actionCheck(work);
         }finally{root.recycle();}
     }
-    private void enterActionEffect(ActionWork work){if(work!=null){requireLiveProfileBeforeEffect(work);work.enterEffect();}}
+    private void enterActionEffect(ActionWork work){if(work!=null){
+        requireLiveProfileBeforeEffect(work);
+        if(work.background!=null)work.background.requirePolicyBeforeEffect(actionCancellation(work,work.cancel),work.state.deadlineElapsed);
+        actionCheck(work);work.enterEffect();
+    }}
     private static void actionEffectReturned(ActionWork work,Boolean accepted){if(work!=null)work.effectReturned(accepted);}
     private boolean refreshActionNode(ActionWork work,AccessibilityNodeInfo node){
         actionPhase(work,"node_refresh");actionCheck(work);boolean refreshed=node.refresh();actionCheck(work);return refreshed;
@@ -1800,7 +1903,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private String validate(String taskId,PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets,Cancellation cancel,ActionWork work){
         Graph graph=graphForAction(work);
         if(cancel.isCancelled()||!owns(taskId))return "任务已停止";
-        if(locked())return "手机已锁定";
+        if(locked(work.background))return "当前显示范围的锁状态或后台显示凭据不可用";
         try{requireBackgroundObservation(taskId,expected);}catch(Exception mismatch){return "后台观察无效："+message(mismatch);}
         if(expected!=current||graph==null||!expected.id.equals(action.observationId))return "stale:观察标识已失效";
         String bindingError=targetBindingError(expected,action,targets);if(bindingError!=null)return bindingError;
@@ -3034,7 +3137,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             Cancellation cancel,long deadline)throws Exception{
         if(Looper.myLooper()==Looper.getMainLooper())throw new IllegalStateException("Flight authority IO must stay off main");
         requireFlightObservationLive(web,source,currentFrame,cancel,deadline);
-        if(locked())throw new StaleObservation("Flight只读观察时手机已锁定");
+        if(locked(source.background))throw new StaleObservation("Flight只读观察的显示范围锁状态或凭据不可用");
         source.scope.verifyUnchanged();source.scope.requireReady();source.authorization.ready();
         source.background.requireActive();requireBackgroundObservation(web.taskId,source.frame);
         requireFlightObservationLive(web,source,currentFrame,cancel,deadline);

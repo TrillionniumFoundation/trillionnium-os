@@ -22,6 +22,10 @@ import java.util.UUID;
 public final class BrokerProtocol {
     public static final int VERSION = 1;
     public static final int PROFILE_VERSION = 2;
+    public static final int PUBLIC_OWN_GROUP_VERSION = 3;
+    public static final int PUBLIC_OWN_GROUP_PROFILE_VERSION = 4;
+    public static boolean isProfileVersion(int version){return version==PROFILE_VERSION||version==PUBLIC_OWN_GROUP_PROFILE_VERSION;}
+    public static boolean isPublicOwnGroupVersion(int version){return version==PUBLIC_OWN_GROUP_VERSION||version==PUBLIC_OWN_GROUP_PROFILE_VERSION;}
     public static final int MAX_REQUEST = 16384;
     public static final int MAX_RESPONSE = 65536;
     public static final int MAX_REQUEST_IDS = 128;
@@ -80,22 +84,27 @@ public final class BrokerProtocol {
         public final long ttlMs;
         public final long expiresElapsedMs;
         public final ProfileTarget profileTarget;
+        public final PublicOwnGroupPolicy.Scope publicOwnGroupScope;
+        public int protocolVersion(){return publicOwnGroupScope==null?(profileTarget==null?VERSION:PROFILE_VERSION)
+                :(profileTarget==null?PUBLIC_OWN_GROUP_VERSION:PUBLIC_OWN_GROUP_PROFILE_VERSION);}
         private Config(String socket, int owner, String generation, Set<String> packages,
-                       long ttl, long expiry, ProfileTarget profileTarget) {
+                       long ttl, long expiry, ProfileTarget profileTarget,PublicOwnGroupPolicy.Scope publicOwnGroupScope) {
             socketName = socket; ownerUid = owner; this.generation = generation;
             this.packages = Collections.unmodifiableSet(new LinkedHashSet<String>(packages));
-            ttlMs = ttl; expiresElapsedMs = expiry; this.profileTarget=profileTarget;
+            ttlMs = ttl; expiresElapsedMs = expiry; this.profileTarget=profileTarget; this.publicOwnGroupScope=publicOwnGroupScope;
         }
         public static Config parse(String[] args) throws Refusal {
-            if (args.length != 12 && args.length != 14) throw new Refusal("INVALID_ARGUMENTS");
+            if (args==null||(args.length != 12 && args.length != 14 && args.length != 16)) throw new Refusal("INVALID_ARGUMENTS");
             Map<String,String> a = new HashMap<String,String>();
             Set<String> keys = new LinkedHashSet<String>(Arrays.asList("--socket", "--owner-uid",
                 "--generation", "--allowed-packages", "--ttl-ms", "--expires-elapsed-ms"));
-            if(args.length==14)keys.add("--profile-target");
+            keys.add("--profile-target");keys.add("--public-own-group-scope");
             for (int i = 0; i < args.length; i += 2) {
                 if (!keys.contains(args[i]) || a.put(args[i], args[i + 1]) != null)
                     throw new Refusal("INVALID_ARGUMENTS");
             }
+            for(String required:new String[]{"--socket","--owner-uid","--generation","--allowed-packages","--ttl-ms","--expires-elapsed-ms"})
+                if(!a.containsKey(required))throw new Refusal("INVALID_ARGUMENTS");
             String gen = a.get("--generation");
             if (!uuid(gen)) throw new Refusal("INVALID_GENERATION");
             String socket = a.get("--socket");
@@ -118,12 +127,18 @@ public final class BrokerProtocol {
                 if (!packageName(row) || !packages.add(row)) throw new Refusal("INVALID_PACKAGE_SCOPE");
             }
             ProfileTarget target=null;
-            if(args.length==14){
+            if(a.containsKey("--profile-target")){
                 try{target=ProfileTarget.fromWire(a.get("--profile-target"));}
                 catch(IllegalArgumentException invalid){throw new Refusal("PROFILE_TARGET_INVALID");}
                 if(packages.size()!=1||!packages.contains(target.packageName))throw new Refusal("PROFILE_PACKAGE_SCOPE_INVALID");
             }
-            return new Config(socket, (int) uid, gen, packages, ttl, expiry,target);
+            PublicOwnGroupPolicy.Scope scope=null;
+            if(a.containsKey("--public-own-group-scope")){
+                try{scope=PublicOwnGroupPolicy.Scope.fromWire(a.get("--public-own-group-scope"));scope.requireConfig((int)uid,gen,expiry,target);
+                    if(!socket.equals("hepta-bg-"+gen)||expiry-scope.createdElapsedMs!=ttl)throw new IllegalArgumentException("scope lifetime/socket");}
+                catch(IllegalArgumentException invalid){throw new Refusal("PUBLIC_SCOPE_CONFIG_INVALID");}
+            }
+            return new Config(socket, (int) uid, gen, packages, ttl, expiry,target,scope);
         }
     }
 
@@ -137,10 +152,12 @@ public final class BrokerProtocol {
         public final String payload,attemptId;
         public final int targetUid;
         public final int version,windowId,observedTaskId;
-        public final String profileTargetSha256;
-        private Request(byte[] bytes, String id, String gen, String op, String pkg, long deadline,String payload,String attemptId,int targetUid,int version,String profileTargetSha256,int windowId,int observedTaskId) {
+        public final String profileTargetSha256,displayScopeSha256;
+        public final PublicPermissionControllerUi.Locator controllerUi;
+        private Request(byte[] bytes, String id, String gen, String op, String pkg, long deadline,String payload,String attemptId,int targetUid,int version,String profileTargetSha256,String displayScopeSha256,int windowId,int observedTaskId,PublicPermissionControllerUi.Locator controllerUi) {
+            this.controllerUi=controllerUi;
             this.payload=payload;this.attemptId=attemptId;this.targetUid=targetUid;
-            this.version=version;this.profileTargetSha256=profileTargetSha256;this.windowId=windowId;this.observedTaskId=observedTaskId;
+            this.version=version;this.profileTargetSha256=profileTargetSha256;this.displayScopeSha256=displayScopeSha256;this.windowId=windowId;this.observedTaskId=observedTaskId;
             this.bytes = bytes.clone(); requestId = id; generation = gen; operation = op;
             packageName = pkg; this.deadline = deadline;
         }
@@ -156,16 +173,30 @@ public final class BrokerProtocol {
                 "generation", "deadline_elapsed_ms", "op"));
             String op = string(map, "op");
             long rawVersion=number(map,"version");
-            if(rawVersion!=VERSION&&rawVersion!=PROFILE_VERSION)throw new Refusal("PROTOCOL_VERSION");
-            int version=(int)rawVersion;boolean profile=version==PROFILE_VERSION,window="window".equals(op);
+            if(rawVersion!=VERSION&&rawVersion!=PROFILE_VERSION&&rawVersion!=PUBLIC_OWN_GROUP_VERSION&&rawVersion!=PUBLIC_OWN_GROUP_PROFILE_VERSION)
+                throw new Refusal("PROTOCOL_VERSION");
+            int version=(int)rawVersion;boolean profile=isProfileVersion(version),publicScope=isPublicOwnGroupVersion(version),
+                    window="window".equals(op)||"permission_window".equals(op);
+            boolean policyRead="display_policy".equals(op);
+            if(policyRead&&!publicScope)throw new Refusal("OPERATION_NOT_ALLOWED");
+            if(publicScope)expected.add("display_scope_sha256");
+            boolean preparation=Arrays.asList("prepare","prepare_state","permission_window","prepare_done").contains(op);
+            if(preparation&&!profile)throw new Refusal("OPERATION_NOT_ALLOWED");
             boolean fixed=FixedIntentTools.isTool(op);
             if(profile)expected.add("target_sha256");
             if(window){if(!profile)throw new Refusal("OPERATION_NOT_ALLOWED");expected.addAll(Arrays.asList("package","window_id","task_id"));}
             if(profile&&fixed)throw new Refusal("PROFILE_FIXED_INTENT_NOT_ALLOWED");
-            if ("launch".equals(op) || "back".equals(op)||fixed) expected.add("package");
+            if ("launch".equals(op) || "prepare".equals(op) || "back".equals(op)||fixed) expected.add("package");
             if(fixed)expected.addAll(Arrays.asList("payload","attempt_id","target_uid"));
+            boolean controllerUi=map.containsKey("controller_ui_locator");
+            if(controllerUi){
+                if(!publicScope||!profile||!"prepare".equals(op))throw new Refusal("CONTROLLER_UI_OPERATION_NOT_ALLOWED");
+                expected.add("controller_ui_locator");
+            }
             if (!map.keySet().equals(expected)) throw new Refusal("REQUEST_FIELDS");
             String targetSha=profile?string(map,"target_sha256"):null;
+            String scopeSha=publicScope?string(map,"display_scope_sha256"):null;
+            if(publicScope&&!ProfileIdentity.hash(scopeSha))throw new Refusal("PUBLIC_SCOPE_DIGEST_INVALID");
             if(profile&&!ProfileIdentity.hash(targetSha))throw new Refusal("PROFILE_TARGET_DIGEST_INVALID");
             int windowId=-1,taskId=-1;
             if(window){long w=number(map,"window_id"),t=number(map,"task_id");
@@ -174,9 +205,9 @@ public final class BrokerProtocol {
             }
             String id = string(map, "request_id"), gen = string(map, "generation");
             if (!uuid(id) || !uuid(gen)) throw new Refusal("INVALID_REQUEST_IDENTITY");
-            if (!fixed&&!Arrays.asList("create", "state", "launch", "back", "close", "window").contains(op))
+            if (!fixed&&!preparation&&!policyRead&&!Arrays.asList("create", "state", "launch", "back", "close", "window").contains(op))
                 throw new Refusal("OPERATION_NOT_ALLOWED");
-            String pkg = ("launch".equals(op) || "back".equals(op)||fixed||window) ? string(map, "package") : null;
+            String pkg = ("launch".equals(op) || "prepare".equals(op) || "back".equals(op)||fixed||window) ? string(map, "package") : null;
             if (pkg != null && !packageName(pkg)) throw new Refusal("INVALID_PACKAGE");
             long deadline = number(map, "deadline_elapsed_ms");
             if (deadline <= 0) throw new Refusal("INVALID_DEADLINE");
@@ -189,13 +220,19 @@ public final class BrokerProtocol {
                 try{fixedProfile.validatePayload(payload);}catch(IllegalArgumentException invalid){throw new Refusal("FIXED_PAYLOAD_INVALID");}
                 targetUid=(int)uid;
             }
-            return new Request(input, id, gen, op, pkg, deadline,payload,attempt,targetUid,version,targetSha,windowId,taskId);
+            PublicPermissionControllerUi.Locator controller=null;
+            if(controllerUi){try{controller=PublicPermissionControllerUi.Locator.fromWire(string(map,"controller_ui_locator"));}
+                catch(IllegalArgumentException invalid){throw new Refusal("CONTROLLER_UI_LOCATOR_INVALID");}}
+            return new Request(input, id, gen, op, pkg, deadline,payload,attempt,targetUid,version,targetSha,scopeSha,windowId,taskId,controller);
         }
         public void authenticate(Config config, int peerUid) throws Refusal {
             if (peerUid != config.ownerUid) throw new Refusal("CALLER_UID_MISMATCH");
             if (!generation.equals(config.generation)) throw new Refusal("GENERATION_MISMATCH");
-            if(config.profileTarget==null){if(version!=VERSION||profileTargetSha256!=null)throw new Refusal("PROFILE_SCOPE_MISMATCH");}
-            else if(version!=PROFILE_VERSION||!config.profileTarget.sha256.equals(profileTargetSha256))throw new Refusal("PROFILE_SCOPE_MISMATCH");
+            if(version!=config.protocolVersion())throw new Refusal("PROFILE_SCOPE_MISMATCH");
+            if(config.profileTarget==null){if(profileTargetSha256!=null)throw new Refusal("PROFILE_SCOPE_MISMATCH");}
+            else if(!config.profileTarget.sha256.equals(profileTargetSha256))throw new Refusal("PROFILE_SCOPE_MISMATCH");
+            if(config.publicOwnGroupScope==null){if(displayScopeSha256!=null)throw new Refusal("PUBLIC_SCOPE_MISMATCH");}
+            else if(!config.publicOwnGroupScope.sha256.equals(displayScopeSha256))throw new Refusal("PUBLIC_SCOPE_MISMATCH");
             if (packageName != null && !config.packages.contains(packageName))
                 throw new Refusal("PACKAGE_NOT_ALLOWED");
         }
@@ -212,7 +249,7 @@ public final class BrokerProtocol {
         public synchronized byte[] replay(Request request) throws Refusal {
             byte[][] row = records.get(request.requestId);
             if (row == null) {
-                int maximum = request.version == PROFILE_VERSION ? MAX_PROFILE_REQUEST_IDS : MAX_REQUEST_IDS;
+                int maximum = (isProfileVersion(request.version)||isPublicOwnGroupVersion(request.version)) ? MAX_PROFILE_REQUEST_IDS : MAX_REQUEST_IDS;
                 int limit = "close".equals(request.operation) ? maximum : maximum - 1;
                 if (records.size() >= limit) throw new Refusal("SESSION_REQUEST_LIMIT");
                 return null;
@@ -223,7 +260,7 @@ public final class BrokerProtocol {
         public synchronized void remember(Request request, byte[] response) throws Refusal {
             if (response.length == 0 || response.length > MAX_RESPONSE) throw new Refusal("RESPONSE_SIZE");
             if (records.containsKey(request.requestId)) throw new Refusal("REQUEST_ALREADY_RECORDED");
-            int maximum = request.version == PROFILE_VERSION ? MAX_PROFILE_REQUEST_IDS : MAX_REQUEST_IDS;
+            int maximum = (isProfileVersion(request.version)||isPublicOwnGroupVersion(request.version)) ? MAX_PROFILE_REQUEST_IDS : MAX_REQUEST_IDS;
             int limit = "close".equals(request.operation) ? maximum : maximum - 1;
             if (records.size() >= limit) throw new Refusal("SESSION_REQUEST_LIMIT");
             records.put(request.requestId, new byte[][] {request.bytes.clone(), response.clone()});
@@ -279,7 +316,7 @@ public final class BrokerProtocol {
                 else { int start = p; while (p < text.length() && Character.isDigit(text.charAt(p))) p++;
                     value = Long.valueOf(decimal(text.substring(start, p))); }
                 if (result.containsKey(key)) throw new Refusal("DUPLICATE_FIELD");
-                result.put(key, value); if (result.size() > 9) throw new Refusal("REQUEST_FIELDS");
+                result.put(key, value); if (result.size() > 10) throw new Refusal("REQUEST_FIELDS");
                 ws(); if (p < text.length() && text.charAt(p) == '}') { p++; break; }
                 take(',');
             }

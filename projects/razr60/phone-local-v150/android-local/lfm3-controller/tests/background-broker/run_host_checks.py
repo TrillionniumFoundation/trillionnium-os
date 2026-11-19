@@ -20,6 +20,8 @@ def main():
     classes.mkdir()
     root = Path(__file__).resolve().parents[2]
     files = [root/'src/org/trillionnium/hepta/background/BrokerProtocol.java',
+             root/'src/org/trillionnium/hepta/background/PublicPermissionControllerUi.java',
+             root/'src/org/trillionnium/hepta/background/PublicOwnGroupPolicy.java',
              root/'tests/background-broker/BrokerProtocolHostTest.java']
     # Compile the exact production whole-root snapshot and its policy, with only Android IO fields faked.
     broker = root/'src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java'

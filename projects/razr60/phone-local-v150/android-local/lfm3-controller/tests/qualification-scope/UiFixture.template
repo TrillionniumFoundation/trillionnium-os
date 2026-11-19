@@ -13,6 +13,8 @@ public final class ScopeUiFixture extends Activity {
     java.util.Set<String> backgroundPackages=new java.util.TreeSet<String>();
     String selectedBackgroundPackage(){return null;}
     org.trillionnium.hepta.background.ProfileTarget selectedProfileTarget(){throw new AssertionError("foreground fixture has no profile selection authority");}
+    boolean selectedIndependentProfileDisplay(){throw new AssertionError("foreground fixture cannot confirm a background display mode");}
+    boolean selectedIndependentPersonalDisplay(){throw new AssertionError("foreground fixture cannot confirm a personal background display mode");}
     // Foreground scope tests do not simulate a persisted background choice.
     // Entering the background branch must fail, never grant synthetic UI authority.
     void requireCurrentBackgroundChoice(){throw new AssertionError("background preference path is outside this foreground scope fixture");}
@@ -27,7 +29,8 @@ public final class ScopeUiFixture extends Activity {
     void restore(Bundle b){restoreScopeUi(b);}void save(Bundle b){onSaveInstanceState(b);}
     void endUi(){tasks.stop();scopeLaunch=QualificationScope.Launch.normal();scopeLaunchError=null;}
     void runUiVenusProbe(String n,boolean c){}void runVisualProbe(String n,boolean c){}void runProbe(boolean i,int m){}
-    void recordDebugTrigger(String n,boolean a,boolean c,String e){}
+    int debugTriggers;boolean debugAccepted,debugConsumed;String debugError,debugNonceSha;
+    void recordDebugTrigger(String n,boolean a,boolean c,String e){debugTriggers++;debugNonceSha=n;debugAccepted=a;debugConsumed=c;debugError=e;}
 {{binding}}
 {{intent_start}}
 }

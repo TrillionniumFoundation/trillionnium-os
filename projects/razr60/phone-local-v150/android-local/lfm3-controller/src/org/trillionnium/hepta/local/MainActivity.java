@@ -17,14 +17,25 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 /** Visible owner task UI, application-owned session, and explicit local model diagnostics. */
-public final class MainActivity extends Activity implements LocalTaskSession.Listener,BackgroundPermissionSession.Listener {
+public final class MainActivity extends Activity implements LocalTaskSession.Listener,BackgroundPermissionSession.Listener,LocalModelSettings.Listener {
     private LocalModelEngine engine;
+    private LocalModelSettings modelSettings;
+    private Button chooseLocalModel,restoreLocalModel;
+    private TextView localModelSettingsState;
     private LocalTaskSession tasks;
     private MobiMindModelEngine visualDiagnostic;
     private UiVenusModelEngine uiVenusDiagnostic;
     private BackgroundPermissionSession backgroundPermission;
     private Button prepareBackgroundPermission,openRootManager;
     private TextView backgroundPermissionState;
+    private LinearLayout profilePermissionCard;
+    private TextView profilePermissionMessage;
+    private Button denyProfilePermission;
+    private HeptaAccessibilityService profilePermissionService;
+    private ProfilePermissionUiSession.Presentation shownProfilePermission;
+    private final ProfilePermissionUiSession.Listener profilePermissionChanged=new ProfilePermissionUiSession.Listener(){
+        public void onPermissionUiChanged(){if(accessibilityUiStarted&&!isFinishing()&&!isDestroyed())refreshProfilePermission();}
+    };
     private TextView backgroundSummary,modelDiagnostics,taskDiagnostics;
     private EditText taskInput, probePrompt;
     private TextView modelInfo, taskState, taskLog, taskResult, probeOutput;
@@ -36,7 +47,8 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             if(accessibilityUiStarted&&!isFinishing()&&!isDestroyed())refresh();
         }
     };
-    private CheckBox backgroundMode;
+    private CheckBox backgroundMode,independentProfileDisplay,independentPersonalDisplay;
+    private String backgroundDisplayPreferenceError;
     private Button pickBackgroundApps,pickProfileTarget,cleanupBackground;
     private boolean profileCatalogueLoading;
     private Spinner initialBackgroundApp;
@@ -62,7 +74,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         super.onCreate(state);
         LocalProbeApplication app=(LocalProbeApplication)getApplication();
         engine=app.modelEngine();tasks=app.taskSession();visualDiagnostic=app.mobiMindDiagnostic();
-        backgroundPermission=app.backgroundPermissionPreparation();
+        backgroundPermission=app.backgroundPermissionPreparation();modelSettings=app.modelSettings();
         uiVenusDiagnostic=app.uiVenusDiagnostic();
         ScrollView outer=new ScrollView(this);outer.setFillViewport(true);
         LinearLayout page=new LinearLayout(this);page.setOrientation(LinearLayout.VERTICAL);
@@ -105,6 +117,14 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         pickBackgroundApps.setOnClickListener(v -> chooseBackgroundApps());
         pickProfileTarget=button("选择隔离资料中的携程");page.addView(pickProfileTarget);
         pickProfileTarget.setOnClickListener(v -> chooseProfileTarget());
+        independentProfileDisplay=new CheckBox(this);
+        independentProfileDisplay.setText("独立后台显示（无锁屏密码设备的隔离资料应用）");
+        page.addView(independentProfileDisplay);
+        independentPersonalDisplay=new CheckBox(this);
+        independentPersonalDisplay.setText("个人空间独立后台显示（备忘录、小米商城）");
+        page.addView(independentPersonalDisplay);
+        page.addView(text("需要所选应用没有正在使用或保留的任务。若发现既有任务会停止，不会关闭或搬动它。",12));
+        page.addView(text("仅用于设备和所选资料都未设置锁屏密码的情形。每次开始都会核验实际条件；条件不满足时任务停止。",12));
         page.addView(text("资料隔离当前支持携程，需要已配置的专属工作资料。个人空间已有任务会保留。",12));
         backgroundChoiceState=text("",12);page.addView(backgroundChoiceState);
         initialBackgroundApp=new Spinner(this){
@@ -143,6 +163,25 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                 catch(Exception error){taskState.setText("无法确认中断："+HeptaAccessibilityService.message(error));}
             }).show());
         taskState=text("",15);taskState.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);page.addView(taskState);
+        profilePermissionCard=new LinearLayout(this);profilePermissionCard.setOrientation(LinearLayout.VERTICAL);
+        profilePermissionCard.setVisibility(View.GONE);page.addView(profilePermissionCard);
+        profilePermissionMessage=text("",13);profilePermissionMessage.setTextIsSelectable(true);profilePermissionCard.addView(profilePermissionMessage);
+        denyProfilePermission=button("拒绝此权限");profilePermissionCard.addView(denyProfilePermission);
+        denyProfilePermission.setOnClickListener(v -> {
+            android.graphics.Rect visibleButton=new android.graphics.Rect();
+            if(!accessibilityUiStarted||!hasWindowFocus()||isFinishing()||isDestroyed()
+                    ||!denyProfilePermission.isShown()||!denyProfilePermission.isEnabled()
+                    ||!denyProfilePermission.getGlobalVisibleRect(visibleButton)||visibleButton.isEmpty()
+                    ||!profilePermissionMessage.isShown())return;
+            HeptaAccessibilityService current=HeptaAccessibilityService.connected();
+            ProfilePermissionUiSession.Presentation captured=shownProfilePermission;
+            if(current!=null&&current==profilePermissionService&&captured!=null&&tasks.isRunning()
+                    &&captured.taskId.equals(tasks.taskId())){
+                current.permissionUi().ownerVisibility(this,captured,true);
+                current.permissionUi().denyFromOwnerButton(captured,this);
+            }
+            refreshProfilePermission();
+        });
         ScrollView progress=new ScrollView(this);
         progress.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
         progress.setLayoutParams(new LinearLayout.LayoutParams(-1,dp(150)));
@@ -152,6 +191,12 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         diagnostics=new LinearLayout(this);diagnostics.setOrientation(LinearLayout.VERTICAL);diagnostics.setVisibility(View.GONE);page.addView(diagnostics);
         showDiagnostics.setOnClickListener(v -> diagnostics.setVisibility(diagnostics.getVisibility()==View.VISIBLE?View.GONE:View.VISIBLE));
         modelDiagnostics=text("",12);diagnostics.addView(modelDiagnostics);
+        LinearLayout modelSettingsButtons=new LinearLayout(this);diagnostics.addView(modelSettingsButtons);
+        chooseLocalModel=new Button(this);chooseLocalModel.setText("本地模型设置");modelSettingsButtons.addView(chooseLocalModel);
+        restoreLocalModel=new Button(this);restoreLocalModel.setText("恢复上次配置");modelSettingsButtons.addView(restoreLocalModel);
+        chooseLocalModel.setOnClickListener(v -> chooseLocalModelFromOwnerButton());
+        restoreLocalModel.setOnClickListener(v -> restoreLocalModelFromOwnerButton());
+        localModelSettingsState=text("",12);diagnostics.addView(localModelSettingsState);
         diagnostics.addView(showBackgroundPermission);diagnostics.addView(backgroundPermissionDetails);
         diagnostics.addView(text("本次指令的权限与工具范围",12));diagnostics.addView(taskAuthorizationInfo);
         diagnostics.addView(text("任务记录",12));diagnostics.addView(progress);
@@ -203,7 +248,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             String owner=taskInput.getText().toString();TaskAuthorization preview=TaskAuthorization.parse(owner);
             if(backgroundMode!=null&&backgroundMode.isChecked()){
                 BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,selectedBackgroundPackage(),backgroundPackages,selectedProfileTarget());
-                preview=preview.forExecutionSelection(new BackgroundSession.Selection(target));
+                preview=preview.forExecutionSelection(new BackgroundSession.Selection(target,selectedIndependentProfileDisplay(),selectedIndependentPersonalDisplay()));
             }
             taskAuthorizationInfo.setText(preview.summary());
         }
@@ -232,16 +277,16 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     }
     /** Consume the restriction once. Reused Intents cannot replay or clear a pending claim. */
     private void acceptScopePrefill(Intent intent,String task,String expected,boolean hasExpected,boolean autoTask){
-        if(intent.getBooleanExtra(SCOPE_INTENT_CONSUMED,false)||tasks.isRunning())return;
+        // Legacy automated requests have no verified background selection. They
+        // cannot replace the owner's pending task, scope claim, or display choice.
+        if(autoTask||intent.getBooleanExtra(SCOPE_INTENT_CONSUMED,false)||tasks.isRunning())return;
         boolean normalEntry=Intent.ACTION_MAIN.equals(intent.getAction())&&intent.hasCategory(Intent.CATEGORY_LAUNCHER);
         if(task==null&&!hasExpected&&!normalEntry&&!autoTask)return;
         scopeLaunch=QualificationScope.Launch.normal();scopeLaunchError=null;
-        if(hasExpected||autoTask)backgroundMode.setChecked(false);
         if(task!=null)taskInput.setText(task);
         try{
             QualificationScope.require(!hasExpected||expected!=null,"null expected scope extra");
-            if(!autoTask)scopeLaunch=QualificationScope.Launch.prefill(task,expected);
-            else QualificationScope.expected(expected); // The consumed private request supplies the exact OWNER below.
+            scopeLaunch=QualificationScope.Launch.prefill(task,expected);
         }catch(Exception error){scopeLaunchError=HeptaAccessibilityService.message(error);}
     }
 
@@ -275,23 +320,12 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         }
         if(intent.getBooleanExtra("auto_task",false)){
             final String nonce=intent.getStringExtra("test_nonce");
-            intent.removeExtra("auto_task");intent.removeExtra("test_nonce");
-            boolean consumed=false;
-            try{
-                if(tasks.isRunning()||tasks.isBlocked()||engine.isBusy())throw new IllegalStateException("已有本地请求或退出状态待确认");
-                if(HeptaAccessibilityService.connected()==null)throw new IllegalStateException("请先正常启用 Hepta 手机助手无障碍服务");
-                PrivateDebugTask request=PrivateDebugTask.consume(this,nonce);
-                consumed=true;
-                if(scopeLaunchError!=null)throw new IllegalStateException(scopeLaunchError);
-                if(hasExpectedScope&&suppliedTask!=null)QualificationScope.require(suppliedTask.equals(request.instruction),"private OWNER differs from scoped prefill");
-                scopeLaunch=QualificationScope.Launch.prefill(request.instruction,expectedScope);
-                taskInput.setText(request.instruction);
-                boolean accepted=beginTask(request.instruction,"private_debug_nonce",request.nonceSha256);
-                recordDebugTrigger(request.nonceSha256,accepted,consumed,accepted?null:"前台任务未启动");
-            }catch(Exception error){
-                taskState.setText("未启动测试任务："+HeptaAccessibilityService.message(error));
-                recordDebugTrigger(nonce==null?null:HeptaAccessibilityService.sha(nonce.getBytes(StandardCharsets.UTF_8)),false,consumed,HeptaAccessibilityService.message(error));
-            }
+            intent.removeExtra("auto_task");intent.removeExtra("test_nonce");intent.removeExtra("auto_run");
+            // A private nonce proves neither a selected virtual display nor an
+            // owner-confirmed background app range. Refuse before consuming it.
+            String error="自动测试需要已确认的后台应用范围。请启用「在后台空间操作」、选择目标应用后点击「开始任务」；旧自动入口不会执行手机操作。";
+            taskState.setText("未启动测试任务："+error);
+            recordDebugTrigger(nonce==null?null:HeptaAccessibilityService.sha(nonce.getBytes(StandardCharsets.UTF_8)),false,false,error);
             return;
         }
         String supplied=intent.getStringExtra("prompt");if(supplied!=null)probePrompt.setText(supplied);
@@ -300,6 +334,68 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             intent.removeExtra("auto_run");diagnostics.setVisibility(View.VISIBLE);
             probePrompt.post(() -> runProbe(image,max));
         }
+    }
+    private void chooseLocalModelFromOwnerButton(){
+        LocalProbeApplication app=(LocalProbeApplication)getApplication();
+        if(profileCatalogueLoading||!app.canChangeLocalModelSettings(false)){
+            localModelSettingsState.setText("请先等待任务、后台空间和模型队列完全空闲。");return;
+        }
+        final String[] labels={
+            "LFM3-1.7B · Hexagon NPU（基线）\nQAD Q4_0 · 可用内存门槛 3 GiB",
+            "LFM3-1.7B · Adreno GPU\nQAD Q4_0 · 可用内存门槛 3 GiB",
+            "LFM2.5-8B-A1B · Hexagon NPU（实验）\nQ4_0 · 可用内存门槛 7 GiB",
+            "LFM2.5-8B-A1B · Adreno GPU（实验）\nQ4_0 · 可用内存门槛 7 GiB"};
+        int current=0;
+        try{LocalRuntimeConfig config=engine.configuration();current=(config.profile==ModelProfile.LFM25_8B_A1B?2:0)+("gpu".equals(config.compute)?1:0);}
+        catch(Exception unavailable){/* The actual apply still rejects an unreadable prior configuration. */}
+        final int[] selected={current};
+        new AlertDialog.Builder(this).setTitle("选择本地模型 · 8192 上下文 / 4 线程")
+                .setSingleChoiceItems(labels,current,(dialog,which)->selected[0]=which)
+                .setNegativeButton("取消",null).setPositiveButton("保存",(dialog,which)->{
+                    int choice=selected[0];
+                    try{
+                        if(choice<0||choice>=4||profileCatalogueLoading||!app.canChangeLocalModelSettings(false))
+                            throw new IllegalStateException("设置范围或当前空闲状态已变化");
+                        modelSettings.start((choice<2?ModelProfile.LFM3:ModelProfile.LFM25_8B_A1B).id,
+                                choice%2==0?"npu":"gpu",false);refresh();
+                    }catch(Exception error){localModelSettingsState.setText("未更改配置："+HeptaAccessibilityService.message(error));}
+                }).show();
+    }
+    private void restoreLocalModelFromOwnerButton(){
+        LocalProbeApplication app=(LocalProbeApplication)getApplication();
+        if(profileCatalogueLoading||!app.canChangeLocalModelSettings(true)){
+            localModelSettingsState.setText("当前没有可恢复的配置，或任务和模型队列尚未空闲。");return;
+        }
+        new AlertDialog.Builder(this).setTitle("恢复上一次模型配置")
+                .setMessage("核验空闲后恢复上次保存前的本地模型设置。本次不会启动推理或操作应用。")
+                .setNegativeButton("取消",null).setPositiveButton("恢复",(dialog,which)->{
+                    try{
+                        if(profileCatalogueLoading||!app.canChangeLocalModelSettings(true))
+                            throw new IllegalStateException("当前空闲状态已变化");
+                        modelSettings.start(null,null,true);refresh();
+                    }catch(Exception error){localModelSettingsState.setText("未开始恢复："+HeptaAccessibilityService.message(error));}
+                }).show();
+    }
+    @Override public void onLocalModelSettingsChanged(){refresh();}
+
+    /** Only the actual physical-screen MainActivity's ordinary Start callback
+     * creates a locator. A VD owner keeps the existing strict initialization path. */
+    private org.trillionnium.hepta.background.PublicPermissionControllerUi.Locator controllerUiFromOwnerButton(String owner){
+        android.app.Activity activity=this;
+        if(activity==null||android.os.Looper.myLooper()!=android.os.Looper.getMainLooper())
+            throw new IllegalArgumentException("CONTROLLER_UI_MAIN_THREAD_REQUIRED");
+        android.view.Display actual=activity.getDisplay();
+        if(actual==null||!actual.isValid())throw new IllegalArgumentException("CONTROLLER_UI_DISPLAY_UNAVAILABLE");
+        if(actual.getDisplayId()>1)return null;
+        if(activity.getClass()!=MainActivity.class||activity.isFinishing()||activity.isDestroyed()||!activity.hasWindowFocus()
+                ||activity.getWindow()==null||!activity.getWindow().getDecorView().isShown()
+                ||activity.getComponentName()==null
+                ||!org.trillionnium.hepta.background.PublicPermissionControllerUi.COMPONENT.equals(activity.getComponentName().flattenToString())
+                ||activity.getApplicationInfo().uid!=android.os.Process.myUid())
+            throw new IllegalArgumentException("CONTROLLER_UI_OWNER_BUTTON_NOT_VISIBLE");
+        return org.trillionnium.hepta.background.PublicPermissionControllerUi.fromMainActivityButton(
+                android.os.Process.myUid(),android.os.Process.myPid(),activity.getTaskId(),actual.getDisplayId(),
+                android.os.SystemClock.elapsedRealtime(),HeptaAccessibilityService.sha(owner.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
     }
     private boolean beginTask(String owner,String source,String nonceSha){
         try{
@@ -323,13 +419,19 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                     throw new IllegalStateException("当前 qualification scope 已启用，后台任务不可启动；原范围保持不变");
                 requireCurrentBackgroundChoice();
                 BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,selectedBackgroundPackage(),backgroundPackages,selectedProfileTarget());
-                selection=new BackgroundSession.Selection(target);
+                boolean independentProfile=selectedIndependentProfileDisplay();
+                selection=new BackgroundSession.Selection(target,independentProfile,selectedIndependentPersonalDisplay(),
+                        independentProfile?controllerUiFromOwnerButton(owner):null);
                 authorization=originalAuthorization.forExecutionSelection(selection);
                 selection.requireTaskTarget(owner,authorization);
                 if(authorization.requireFindAppBeforeOpen||!authorization.allowedTools.contains("open"))
-                    throw new IllegalStateException("当前指令的方法限制不允许预先打开后台起始应用，请使用前台模式");
+                    throw new IllegalStateException("当前指令不允许打开所选后台起始应用，后台任务未启动");
             }else{selection=null;authorization=originalAuthorization;}
-            if(!tasks.schedule(owner,source,nonceSha,expectedScope,authorization,selection,500))throw new IllegalStateException("本地任务未能取得唯一会话");
+            final org.trillionnium.hepta.background.ControllerDisplayHandoff.Locator displayHandoff=
+                    selection==null?null:ControllerDisplayHandoffClient.capture(this,owner);
+            if(displayHandoff!=null&&!selection.independentProfileDisplay&&!selection.independentPersonalDisplay)
+                throw new IllegalStateException("控制显示交接只支持明确选择的独立后台空间");
+            if(!tasks.schedule(owner,source,nonceSha,expectedScope,authorization,selection,displayHandoff,500))throw new IllegalStateException("本地任务未能取得唯一会话");
             scopeLaunch=scopeLaunch.accepted();
             InputMethodManager input=(InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
             if(input!=null)input.hideSoftInputFromWindow(taskInput.getWindowToken(),0);
@@ -351,6 +453,35 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                 result -> runOnUiThread(() -> {renderProbe(result);refresh();}));
             refresh();
         }catch(Exception error){probeOutput.setText("无法启动："+error);refresh();}
+    }
+    private boolean selectedIndependentProfileDisplay(){
+        if(backgroundDisplayPreferenceError!=null)throw new IllegalStateException(backgroundDisplayPreferenceError);
+        boolean selected=independentProfileDisplay!=null&&independentProfileDisplay.isChecked();
+        if(selected!=BackgroundUiPreferences.independentProfileDisplay(this))
+            throw new IllegalStateException("后台显示方式已变化，请重新选择后开始");
+        if(selected&&selectedProfileTarget()==null)
+            throw new IllegalStateException("请明确选择已核验的隔离资料应用；个人空间应用不会被自动迁移");
+        return selected;
+    }
+    private void restoreIndependentProfileDisplay(){
+        try{
+            boolean profile=BackgroundUiPreferences.independentProfileDisplay(this),personal=BackgroundUiPreferences.independentPersonalDisplay(this);
+            if(profile&&personal)throw new IllegalStateException("后台显示方式冲突");
+            independentProfileDisplay.setChecked(profile);independentPersonalDisplay.setChecked(personal);backgroundDisplayPreferenceError=null;
+        }catch(Exception error){independentProfileDisplay.setChecked(false);independentPersonalDisplay.setChecked(false);
+            backgroundDisplayPreferenceError="无法读取后台显示方式，请重新选择。";}
+    }
+    private boolean personalIndependentTarget(){
+        String selected=selectedBackgroundPackage();
+        return selectedProfileTarget()==null&&("com.motorola.stylus".equals(selected)||"com.xiaomi.shop".equals(selected));
+    }
+    private boolean selectedIndependentPersonalDisplay(){
+        if(backgroundDisplayPreferenceError!=null)throw new IllegalStateException(backgroundDisplayPreferenceError);
+        boolean selected=independentPersonalDisplay!=null&&independentPersonalDisplay.isChecked();
+        if(selected!=BackgroundUiPreferences.independentPersonalDisplay(this))throw new IllegalStateException("个人空间后台显示方式已变化，请重新选择");
+        if(selected&&(independentProfileDisplay.isChecked()||!personalIndependentTarget()))
+            throw new IllegalStateException("个人空间独立显示需要明确选择备忘录或小米商城；不会改变资料或迁移任务");
+        return selected;
     }
     private org.trillionnium.hepta.background.ProfileTarget selectedProfileTarget(){
         return rememberedBackgroundSelection==null?null:rememberedBackgroundSelection.profileTarget;
@@ -429,7 +560,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         pickBackgroundApps.setText(backgroundPackages.isEmpty()?"选择后台应用范围":"后台范围："+backgroundPackages.size()+" 个应用（更改）");
     }
     private void restoreBackgroundUi(Bundle state){
-        backgroundMode.setChecked(state.getBoolean("background_mode",false));
+        backgroundMode.setChecked(state.getBoolean("background_mode",true));
         try{
             java.util.ArrayList<String> saved=state.getStringArrayList("background_packages");
             if(saved!=null&&saved.size()>6)throw new IllegalStateException("saved range too large");
@@ -443,6 +574,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     }
     /** Restore only owner UI choices. Nothing here creates or resumes a task. */
     private void restoreBackgroundPreferences(){
+        restoreIndependentProfileDisplay();
         try{backgroundMode.setChecked(BackgroundUiPreferences.mode(this));backgroundModePreferenceError=null;}
         catch(Exception error){backgroundMode.setChecked(true);backgroundModePreferenceError="无法读取上次的后台模式，请重新选择。";}
         try{
@@ -456,6 +588,32 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         }
     }
     private void installBackgroundPreferenceListeners(){
+        independentProfileDisplay.setOnClickListener(view -> {
+            if(!hasWindowFocus()||!independentProfileDisplay.isShown()||isFinishing()||isDestroyed()
+                    ||tasks.isRunning()||engine.isBusy()||tasks.isBlocked()||tasks.isRecovering()
+                    ||tasks.hasBackgroundLease()||backgroundPermission.blocksOtherWork()){
+                restoreIndependentProfileDisplay();refresh();return;
+            }
+            try{
+                boolean selected=independentProfileDisplay.isChecked();
+                if(selected&&selectedProfileTarget()==null)throw new IllegalStateException("请先选择隔离资料中的应用");
+                BackgroundUiPreferences.saveIndependentProfileDisplay(this,selected);restoreIndependentProfileDisplay();
+            }catch(Exception error){backgroundDisplayPreferenceError="后台显示方式未保存："+HeptaAccessibilityService.message(error);}
+            refresh();
+        });
+        independentPersonalDisplay.setOnClickListener(view -> {
+            if(!hasWindowFocus()||!independentPersonalDisplay.isShown()||isFinishing()||isDestroyed()
+                    ||tasks.isRunning()||engine.isBusy()||tasks.isBlocked()||tasks.isRecovering()
+                    ||tasks.hasBackgroundLease()||backgroundPermission.blocksOtherWork()){
+                restoreIndependentProfileDisplay();refresh();return;
+            }
+            try{
+                boolean selected=independentPersonalDisplay.isChecked();
+                if(selected&&!personalIndependentTarget())throw new IllegalStateException("请明确选择个人空间的备忘录或小米商城");
+                BackgroundUiPreferences.saveIndependentPersonalDisplay(this,selected);restoreIndependentProfileDisplay();
+            }catch(Exception error){backgroundDisplayPreferenceError="个人空间后台显示方式未保存："+HeptaAccessibilityService.message(error);}
+            refresh();
+        });
         backgroundMode.setOnClickListener(view -> {
             try{BackgroundUiPreferences.saveMode(this,backgroundMode.isChecked());backgroundModePreferenceError=null;}
             catch(Exception error){backgroundModePreferenceError="后台模式未能保存，请重新选择。";}
@@ -501,7 +659,15 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         }catch(Exception error){backgroundSelectionPreferenceError="已选应用的安装信息发生变化或不可用，请重新选择范围。";}
     }
     private String backgroundChoiceError(){
-        return backgroundModePreferenceError!=null?backgroundModePreferenceError:backgroundSelectionPreferenceError;
+        if(backgroundModePreferenceError!=null)return backgroundModePreferenceError;
+        if(backgroundSelectionPreferenceError!=null)return backgroundSelectionPreferenceError;
+        if(backgroundDisplayPreferenceError!=null)return backgroundDisplayPreferenceError;
+        if(backgroundMode.isChecked()&&independentProfileDisplay.isChecked()&&selectedProfileTarget()==null)
+            return "独立后台显示需要明确选择隔离资料中的应用；个人空间选择保持不变。";
+        if(backgroundMode.isChecked()&&independentPersonalDisplay.isChecked()
+                &&(independentProfileDisplay.isChecked()||!personalIndependentTarget()))
+            return "个人空间独立显示需要选择备忘录或小米商城，不能同时选择隔离资料模式。";
+        return null;
     }
     private void refreshBackgroundTaskTarget(){
         if(backgroundChoiceState==null||initialBackgroundApp==null||backgroundInitialLabel==null||backgroundMode==null)return;
@@ -578,8 +744,42 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     @Override public void onSessionChanged(){refresh(false);}
     @Override public void onPermissionPreparationChanged(){refresh();}
     private void refresh(){refresh(true);}
+    /** Display-only reattachment; never launches an Activity, grants a permission,
+     * restores an old input attempt or broadens the selected business App range. */
+    private void refreshProfilePermission(){
+        if(profilePermissionCard==null)return;
+        HeptaAccessibilityService connected=HeptaAccessibilityService.connected();
+        if(profilePermissionService!=connected){
+            if(profilePermissionService!=null){
+                profilePermissionService.permissionUi().ownerVisibility(this,null,false);
+                profilePermissionService.permissionUi().unbind(profilePermissionChanged);
+            }
+            profilePermissionService=connected;
+            if(profilePermissionService!=null&&accessibilityUiStarted)profilePermissionService.permissionUi().bind(profilePermissionChanged);
+        }
+        ProfilePermissionUiSession.Presentation value=profilePermissionService==null?null:profilePermissionService.permissionUi().current();
+        shownProfilePermission=value;
+        if(value==null){
+            profilePermissionCard.setVisibility(View.GONE);denyProfilePermission.setEnabled(false);
+            if(profilePermissionService!=null)profilePermissionService.permissionUi().ownerVisibility(this,null,false);
+            return;
+        }
+        StringBuilder text=new StringBuilder(value.state);
+        if(!value.message.isEmpty())text.append("\n\n系统请求原文：\n").append(value.message);
+        if(!value.visibleOptions.isEmpty()){
+            text.append("\n\n系统当前显示的选项：");
+            for(String label:value.visibleOptions)text.append("\n• ").append(label);
+            text.append("\n此处仅可选择拒绝；允许类选项仅作展示。");
+        }
+        profilePermissionMessage.setText(text.toString());profilePermissionCard.setVisibility(View.VISIBLE);
+        denyProfilePermission.setEnabled(value.denyAvailable&&tasks.isRunning()&&value.taskId.equals(tasks.taskId()));
+        profilePermissionService.permissionUi().ownerVisibility(this,value,accessibilityUiStarted&&hasWindowFocus()
+                &&!isFinishing()&&!isDestroyed()&&profilePermissionCard.isShown()&&profilePermissionMessage.isShown()
+                &&tasks.isRunning()&&value.taskId.equals(tasks.taskId()));
+    }
     private void refresh(boolean inspectModelFile){
         if(modelInfo==null)return;
+        refreshProfilePermission();
         boolean available=HeptaAccessibilityService.connected()!=null;
         String device,modelName="本地模型",modelState;
         boolean configurationReady=false,visualProfile=false,visualObserve=false;
@@ -598,19 +798,31 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         }
         modelInfo.setText(modelState+" · "+(available?"无障碍已启用":"请启用无障碍"));
         modelDiagnostics.setText(modelName+" · "+device+" · 无外部模型");
+        LocalProbeApplication modelApp=(LocalProbeApplication)getApplication();
+        chooseLocalModel.setEnabled(!profileCatalogueLoading&&modelApp.canChangeLocalModelSettings(false));
+        restoreLocalModel.setEnabled(!profileCatalogueLoading&&modelApp.canChangeLocalModelSettings(true));
+        localModelSettingsState.setText(modelSettings.state()+"\n设置只使用本机文件；不自动回退 CPU。内存门槛不是实测峰值，8B 仍需同条件验证。");
         taskState.setText(TaskDisplayText.forStatus(tasks.state()));taskLog.setText(tasks.log());
         boolean busy=tasks.isRunning()||engine.isBusy()||profileCatalogueLoading;
         backgroundPermissionState.setText(backgroundPermission.state());
         backgroundSummary.setText(tasks.isRunning()&&backgroundMode.isChecked()?"正在后台执行":
                 tasks.hasBackgroundLease()?"上次后台空间待清理":
-                backgroundMode.isChecked()?"将在所选起始应用的后台空间操作":"前台模式会操作主屏幕；点击「开始任务」表示同意本次主屏操作");
+                backgroundMode.isChecked()?(independentProfileDisplay.isChecked()?"将在所选隔离资料应用的独立后台显示中操作":
+                        independentPersonalDisplay.isChecked()?"将在所选个人空间应用的新建独立后台显示中操作":"将在所选起始应用的后台空间操作")
+                        :"前台模式会操作主屏幕；点击「开始任务」表示同意本次主屏操作");
         openRootManager.setEnabled(rootManagerNavigationIdle());
         prepareBackgroundPermission.setEnabled(!busy&&!tasks.isBlocked()&&!tasks.isRecovering()&&!tasks.hasBackgroundLease()
                 &&!visualDiagnostic.isBusy()&&!visualDiagnostic.isBlocked()&&!uiVenusDiagnostic.isBusy()&&!uiVenusDiagnostic.isBlocked());
         backgroundMode.setEnabled(!busy&&!tasks.isRecovering());pickBackgroundApps.setEnabled(!busy&&!tasks.isRecovering());initialBackgroundApp.setEnabled(!busy&&!tasks.isRecovering());
         pickProfileTarget.setEnabled(!busy&&!tasks.isBlocked()&&!tasks.isRecovering()&&!tasks.hasBackgroundLease()&&!backgroundPermission.blocksOtherWork());
+        independentProfileDisplay.setEnabled(backgroundMode.isChecked()&&!busy&&!tasks.isBlocked()&&!tasks.isRecovering()
+                &&!tasks.hasBackgroundLease()&&!backgroundPermission.blocksOtherWork()
+                &&(selectedProfileTarget()!=null||independentProfileDisplay.isChecked()||backgroundDisplayPreferenceError!=null));
+        independentPersonalDisplay.setEnabled(backgroundMode.isChecked()&&!busy&&!tasks.isBlocked()&&!tasks.isRecovering()
+                &&!tasks.hasBackgroundLease()&&!backgroundPermission.blocksOtherWork()
+                &&(personalIndependentTarget()||independentPersonalDisplay.isChecked()||backgroundDisplayPreferenceError!=null));
         cleanupBackground.setVisibility(tasks.hasBackgroundLease()?View.VISIBLE:View.GONE);
-        cleanupBackground.setEnabled(!tasks.isRunning()&&!tasks.isRecovering()&&!backgroundPermission.blocksOtherWork());
+        cleanupBackground.setEnabled(!modelSettings.isBusy()&&!tasks.isRunning()&&!tasks.isRecovering()&&!backgroundPermission.blocksOtherWork());
         boolean recoveryAvailable=tasks.canAcknowledgeInterruption();
         acknowledgeInterruption.setVisibility(tasks.isBlocked()||tasks.isRecovering()||recoveryAvailable?View.VISIBLE:View.GONE);
         acknowledgeInterruption.setEnabled(recoveryAvailable);
@@ -619,7 +831,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         pickBackgroundApps.setText(backgroundError==null
                 ?(backgroundPackages.isEmpty()?"选择后台应用范围":"后台范围："+backgroundPackages.size()+" 个应用（更改）")
                 :"后台应用范围（需重新确认）");
-        startTask.setEnabled(available&&configurationReady&&!busy&&!tasks.isBlocked()&&(!backgroundMode.isChecked()||backgroundError==null));stopTask.setEnabled(busy);
+        startTask.setEnabled(available&&configurationReady&&!busy&&!tasks.isBlocked()&&(!backgroundMode.isChecked()||backgroundError==null));stopTask.setEnabled(busy&&!modelSettings.isBusy());
         runText.setEnabled(configurationReady&&!visualProfile&&!busy&&!tasks.isBlocked());
         LocalTaskController.TaskResult result=tasks.lastResult();
         if(result!=null){
@@ -684,11 +896,22 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             android.system.Os.chmod(file.getBaseFile().getPath(),0600);
         }catch(Exception ignored){if(out!=null)file.failWrite(out);}
     }
-    @Override protected void onStart(){super.onStart();if(tasks!=null)tasks.bind(this);if(backgroundPermission!=null)backgroundPermission.bind(this);
+    @Override protected void onStart(){super.onStart();if(tasks!=null)tasks.bind(this);if(backgroundPermission!=null)backgroundPermission.bind(this);if(modelSettings!=null)modelSettings.bind(this);
         accessibilityUiStarted=true;HeptaAccessibilityService.addConnectionListener(accessibilityConnectionChanged);
+        if(profilePermissionService!=null)profilePermissionService.permissionUi().bind(profilePermissionChanged);
+        refreshProfilePermission();
     }
     @Override protected void onResume(){super.onResume();if(tasks!=null){recheckBackgroundChoice();refresh();}}
+    @Override public void onWindowFocusChanged(boolean focused){
+        super.onWindowFocusChanged(focused);
+        if(!focused&&profilePermissionService!=null)profilePermissionService.permissionUi().ownerVisibility(this,null,false);
+        if(focused&&accessibilityUiStarted)refreshProfilePermission();
+    }
     @Override protected void onStop(){accessibilityUiStarted=false;HeptaAccessibilityService.removeConnectionListener(accessibilityConnectionChanged);
-        if(tasks!=null)tasks.unbind(this);if(backgroundPermission!=null)backgroundPermission.unbind(this);super.onStop();
+        if(profilePermissionService!=null){
+            profilePermissionService.permissionUi().ownerVisibility(this,null,false);
+            profilePermissionService.permissionUi().unbind(profilePermissionChanged);
+        }
+        if(tasks!=null)tasks.unbind(this);if(backgroundPermission!=null)backgroundPermission.unbind(this);if(modelSettings!=null)modelSettings.unbind(this);super.onStop();
     }
 }

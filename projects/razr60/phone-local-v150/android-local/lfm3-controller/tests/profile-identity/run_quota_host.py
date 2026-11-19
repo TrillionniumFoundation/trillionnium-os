@@ -17,11 +17,11 @@ def main():
     source,out=a.source.resolve(),a.output.resolve()
     out.mkdir(parents=True,exist_ok=False)
     package=source/'src/org/trillionnium/hepta/background'
-    common=[package/(n+'.java') for n in ('ProfileIdentity','ProfileTarget','WindowOwnership','FixedIntentTools')]
+    common=[package/(n+'.java') for n in ('ProfileIdentity','ProfileTarget','WindowOwnership','FixedIntentTools','PublicPermissionControllerUi','PublicOwnGroupPolicy')]
     test=Path(__file__).with_name('ProfileQuotaHostTest.java')
     broker=package/'BackgroundDisplayBroker.java'
     text=broker.read_text()
-    ordered='request.authenticate(config, accepted.getPeerCredentials().getUid());\n                    response = receipts.replay(request);'
+    ordered='request.authenticate(config, accepted.getPeerCredentials().getUid());\n                    activeRequestPeerPid=accepted.getPeerCredentials().getPid();\n                    response = receipts.replay(request);'
     assert text.count(ordered)==1,'broker authentication/replay order changed'
     def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
     variants=[]

@@ -11,10 +11,12 @@ import android.provider.Settings;
 import android.system.Os;
 import android.view.Display;
 import org.trillionnium.hepta.background.BrokerProtocol;
+import org.trillionnium.hepta.background.PublicOwnGroupPolicy;
 import org.trillionnium.hepta.background.ProfileTarget;
 import org.trillionnium.hepta.background.ProfilePrelaunchRecovery;
 import org.trillionnium.hepta.background.ProfilePostlaunchRecovery;
 import org.trillionnium.hepta.background.WindowOwnership;
+import org.trillionnium.hepta.background.PermissionWindowObservation;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -51,15 +53,37 @@ final class BackgroundSession {
         private final Map<String,Object> ownerSelection;
         final BackgroundTaskTarget taskTarget;
         final ProfileTarget profileTarget;
+        final boolean independentProfileDisplay;
+        final boolean independentPersonalDisplay;
+        final org.trillionnium.hepta.background.PublicPermissionControllerUi.Locator controllerUi;
         Selection(String initial,Set<String> allowed){this(initial,allowed,null,null,null,null);}
-        Selection(BackgroundTaskTarget target){
+        Selection(BackgroundTaskTarget target){this(target,false);}
+        Selection(BackgroundTaskTarget target,boolean independentProfileDisplay){
+            this(target,independentProfileDisplay,false);
+        }
+        Selection(BackgroundTaskTarget target,boolean independentProfileDisplay,boolean independentPersonalDisplay){
             this(requireExplicit(target).packageName,target.effectivePackages,target.originalInitialPackage,
-                    new TreeSet<String>(target.originalPackages),target.ownerSha256,target.recognition,target);
+                    new TreeSet<String>(target.originalPackages),target.ownerSha256,target.recognition,target,independentProfileDisplay,independentPersonalDisplay);
+        }
+        Selection(BackgroundTaskTarget target,boolean independentProfileDisplay,boolean independentPersonalDisplay,
+                org.trillionnium.hepta.background.PublicPermissionControllerUi.Locator controllerUi){
+            this(requireExplicit(target).packageName,target.effectivePackages,target.originalInitialPackage,
+                    new TreeSet<String>(target.originalPackages),target.ownerSha256,target.recognition,target,
+                    independentProfileDisplay,independentPersonalDisplay,controllerUi);
         }
         Selection(String initial,Set<String> allowed,String uiInitial,Set<String> uiAllowed,
                   String ownerSha,String recognition){this(initial,allowed,uiInitial,uiAllowed,ownerSha,recognition,null);}
         private Selection(String initial,Set<String> allowed,String uiInitial,Set<String> uiAllowed,
                   String ownerSha,String recognition,BackgroundTaskTarget target){
+            this(initial,allowed,uiInitial,uiAllowed,ownerSha,recognition,target,false,false);
+        }
+        private Selection(String initial,Set<String> allowed,String uiInitial,Set<String> uiAllowed,
+                  String ownerSha,String recognition,BackgroundTaskTarget target,boolean independentProfileDisplay,boolean independentPersonalDisplay){
+            this(initial,allowed,uiInitial,uiAllowed,ownerSha,recognition,target,independentProfileDisplay,independentPersonalDisplay,null);
+        }
+        private Selection(String initial,Set<String> allowed,String uiInitial,Set<String> uiAllowed,
+                  String ownerSha,String recognition,BackgroundTaskTarget target,boolean independentProfileDisplay,boolean independentPersonalDisplay,
+                  org.trillionnium.hepta.background.PublicPermissionControllerUi.Locator controllerUi){
             if(allowed==null||allowed.isEmpty()||allowed.size()>6)throw new IllegalArgumentException("请选择 1 至 6 个后台任务应用");
             TreeSet<String> copy=new TreeSet<String>();
             for(String value:allowed){checkPackage(value);copy.add(value);}
@@ -67,6 +91,18 @@ final class BackgroundSession {
             if(!copy.contains(initial))throw new IllegalArgumentException("起始应用必须属于本次后台范围");
             initialPackage=initial;allowedPackages=Collections.unmodifiableList(new ArrayList<String>(copy));
             taskTarget=target;profileTarget=target==null?null:target.profileTarget;
+            if(independentProfileDisplay&&(target==null||!target.explicitSelection||profileTarget==null))
+                throw new IllegalArgumentException("独立后台显示需要明确选择并核验隔离资料中的应用；不会迁移个人空间应用");
+            this.independentProfileDisplay=independentProfileDisplay;
+            if(independentPersonalDisplay&&(independentProfileDisplay||target==null||!target.explicitSelection||profileTarget!=null
+                    ||copy.size()!=1||!("com.motorola.stylus".equals(initial)||"com.xiaomi.shop".equals(initial))))
+                throw new IllegalArgumentException("个人空间独立显示仅支持明确选择的备忘录或小米商城；不会迁移既有任务");
+            this.independentPersonalDisplay=independentPersonalDisplay;
+            if(controllerUi!=null&&(!independentProfileDisplay||target==null||profileTarget==null
+                    ||profileTarget.profile.userId!=10||!ProfileTarget.CTRIP.equals(profileTarget.packageName)
+                    ||ownerSha==null||!ownerSha.equals(controllerUi.ownerSha256)))
+                throw new IllegalArgumentException("CONTROLLER_UI_SELECTION_UNBOUND");
+            this.controllerUi=controllerUi;
             if(ownerSha==null){
                 if(uiInitial!=null||uiAllowed!=null||recognition!=null)throw new IllegalArgumentException("任务范围来源不完整");
                 ownerSelection=null;
@@ -114,6 +150,10 @@ final class BackgroundSession {
                 .put("main_display_fallback",false).put("home_allowed",false);
             if(ownerSelection!=null)value.put("owner_task_selection",new JSONObject(ownerSelection));
             if(profileTarget!=null)value.put("profile_target_wire",profileTarget.wire()).put("profile_target_sha256",profileTarget.sha256);
+            if(independentProfileDisplay)value.put("display_scope_mode","public_own_group_no_credentials_v1")
+                    .put("display_scope_mode_source","immutable_start_selection").put("display_scope_mode_grants_authority",false);
+            if(independentPersonalDisplay)value.put("display_scope_mode","public_own_group_personal_no_credentials_v1")
+                    .put("display_scope_mode_source","immutable_start_selection").put("display_scope_mode_grants_authority",false);
             return value;
         }
     }
@@ -122,13 +162,25 @@ final class BackgroundSession {
         final boolean known;final JSONObject evidence;
         final ProfileRecoveryClient.Receipt prelaunchRecovery;
         final ProfilePostlaunchRecoveryClient.Receipt postlaunchRecovery;
+        final PublicProfileRecoveryClient.Receipt publicProfileRecovery;
+        final PublicPersonalNotesRecoveryClient.Receipt personalNotesRecovery;
         Cleanup(boolean known,JSONObject evidence){this(known,evidence,null,null);}
         private Cleanup(boolean known,JSONObject evidence,ProfileRecoveryClient.Receipt receipt){
             this(known,evidence,receipt,null);
         }
         private Cleanup(boolean known,JSONObject evidence,ProfileRecoveryClient.Receipt prelaunch,
                 ProfilePostlaunchRecoveryClient.Receipt postlaunch){
+            this(known,evidence,prelaunch,postlaunch,null);
+        }
+        private Cleanup(boolean known,JSONObject evidence,ProfileRecoveryClient.Receipt prelaunch,
+                ProfilePostlaunchRecoveryClient.Receipt postlaunch,PublicProfileRecoveryClient.Receipt publicProfile){
+            this(known,evidence,prelaunch,postlaunch,publicProfile,null);
+        }
+        private Cleanup(boolean known,JSONObject evidence,ProfileRecoveryClient.Receipt prelaunch,
+                ProfilePostlaunchRecoveryClient.Receipt postlaunch,PublicProfileRecoveryClient.Receipt publicProfile,
+                PublicPersonalNotesRecoveryClient.Receipt personalNotes){
             this.known=known;this.evidence=evidence;prelaunchRecovery=prelaunch;postlaunchRecovery=postlaunch;
+            publicProfileRecovery=publicProfile;personalNotesRecovery=personalNotes;
         }
     }
     final String taskId,generation,socketName,displayName,ownerSha256;
@@ -138,14 +190,22 @@ final class BackgroundSession {
     private final QualificationScopeConfig.FilesRoot filesRoot;
     private final File journal;
     private final int bootCount;
+    private final PublicOwnGroupPolicy.Scope publicOwnGroupScope;
+    private final Object publicScopeOwner=new Object(),publicScopeIo=new Object();
+    private final PublicOwnGroupPolicy.LiveLease publicScopeLease;
+    private volatile PublicOwnGroupPolicy.Readback publicScopeReadback;
     private volatile String state="INITIAL";
     private volatile int displayId=-1;
     private volatile boolean retired,spawnAttempted,bootstrapDispatched,cleanupConfirmed;
     private volatile JSONObject lastResponse;
     private volatile JSONObject appDisplayReadback;
     private volatile JSONObject profileCleanupEvidence;
+    private volatile JSONObject personalNotesCleanupEvidence;
     private volatile boolean profileLaunchAttempted;
+    private volatile boolean permissionPreparing;
+    private NotesCreateFailureRelease notesCreateFailureRelease;
     private final java.util.IdentityHashMap<WindowOwnership,Boolean> profileProofs=new java.util.IdentityHashMap<WindowOwnership,Boolean>();
+    private final java.util.IdentityHashMap<PermissionWindowObservation,Boolean> permissionProofs=new java.util.IdentityHashMap<PermissionWindowObservation,Boolean>();
     private Process brokerProcess;
     private volatile boolean brokerExitObserved;
     private volatile Integer brokerExitCode;
@@ -154,6 +214,18 @@ final class BackgroundSession {
 
     BackgroundSession(Context context,String taskId,String owner,Selection selection,
                       QualificationScopeConfig.FilesRoot filesRoot)throws Exception{
+        this(context,taskId,owner,selection,filesRoot,false);
+    }
+    /** Explicit ordinary-Start display mode. The immutable selection captures the
+     * visible saved choice; real root and App display proofs grant each live scope. */
+    static BackgroundSession experimentalPublicOwnGroup(Context context,String taskId,String owner,Selection selection,
+            QualificationScopeConfig.FilesRoot filesRoot)throws Exception{
+        if(selection==null)throw new IllegalArgumentException("explicit task selection required");
+        selection.requireImmutableTarget(owner);
+        return new BackgroundSession(context,taskId,owner,selection,filesRoot,true);
+    }
+    private BackgroundSession(Context context,String taskId,String owner,Selection selection,
+                      QualificationScopeConfig.FilesRoot filesRoot,boolean publicOwnGroup)throws Exception{
         if(taskId==null||!taskId.matches("[0-9a-f]{32}")||selection==null)throw new IllegalArgumentException("后台会话身份缺失");
         this.context=context.getApplicationContext();this.taskId=taskId;this.selection=selection;this.filesRoot=filesRoot;
         filesRoot.unchanged(context);journal=new File(filesRoot.path,JOURNAL);
@@ -161,27 +233,85 @@ final class BackgroundSession {
         generation=UUID.randomUUID().toString();socketName="hepta-bg-"+generation;displayName=socketName;
         ownerSha256=HeptaAccessibilityService.sha(owner.getBytes(StandardCharsets.UTF_8));
         createdElapsed=SystemClock.elapsedRealtime();expiresElapsed=createdElapsed+TTL_MS;bootCount=readBootCount(context);
+        publicOwnGroupScope=publicOwnGroup?new PublicOwnGroupPolicy.Scope(taskId,ownerSha256,generation,android.os.Process.myUid(),
+                profileTarget(),createdElapsed,expiresElapsed,bootCount):null;
+        publicScopeLease=publicOwnGroupScope==null?null:new PublicOwnGroupPolicy.LiveLease(publicScopeOwner,publicOwnGroupScope);
     }
     boolean allows(String pkg){return selection.allowedPackages.contains(pkg);}
     ProfileTarget profileTarget(){return selection.profileTarget;}
-    private int protocolVersion(){return profileTarget()==null?BrokerProtocol.VERSION:BrokerProtocol.PROFILE_VERSION;}
+    private int protocolVersion(){return publicOwnGroupScope==null?(profileTarget()==null?BrokerProtocol.VERSION:BrokerProtocol.PROFILE_VERSION)
+            :(profileTarget()==null?BrokerProtocol.PUBLIC_OWN_GROUP_VERSION:BrokerProtocol.PUBLIC_OWN_GROUP_PROFILE_VERSION);}
+    boolean usesExperimentalPublicOwnGroup(){return publicOwnGroupScope!=null;}
+    private boolean requiresPersonalNotesRetirement(){return publicOwnGroupScope!=null&&profileTarget()==null
+            &&selection.allowedPackages.size()==1&&"com.motorola.stylus".equals(selection.initialPackage);}
     private JSONObject request(String operation,String pkg,long deadline)throws Exception{
         JSONObject value=new JSONObject().put("version",protocolVersion()).put("request_id",UUID.randomUUID().toString())
                 .put("generation",generation).put("deadline_elapsed_ms",deadline).put("op",operation);
         if(pkg!=null)value.put("package",pkg);
         if(profileTarget()!=null)value.put("target_sha256",profileTarget().sha256);
+        if(publicOwnGroupScope!=null)value.put("display_scope_sha256",publicOwnGroupScope.sha256);
         return value;
     }
     void verifyProfileInstallation()throws Exception{
         if(profileTarget()==null)throw new IllegalStateException("profile target required");
         verifyRemote();
     }
+    interface InitializationHandler {
+        void prepare(BackgroundSession session,long originalDeadline,HeptaAccessibilityService.Cancellation cancel)throws Exception;
+    }
+    void requirePermissionPreparationActive(){
+        requireActive();
+        if(!permissionPreparing||profileTarget()==null||!ProfileTarget.CTRIP.equals(profileTarget().packageName)||!profileLaunchAttempted)
+            throw new IllegalStateException("同一隔离用户的权限初始化尚未开始或已经结束");
+    }
+    String readPreparation(HeptaAccessibilityService.Cancellation cancel,long originalDeadline)throws Exception{
+        JSONObject response=permissionRpc("prepare_state",null,-1,-1,cancel,originalDeadline);
+        String value=response.getString("profile_permission_preparation_state");
+        if(!java.util.Arrays.asList("APP_READY","PERMISSION_PENDING","WAITING").contains(value))throw new IOException("权限初始化状态不可验证");
+        return value;
+    }
+    PermissionWindowObservation verifyPermissionWindow(int windowId,int observedTaskId,HeptaAccessibilityService.Cancellation cancel,long originalDeadline)throws Exception{
+        requirePermissionPreparationActive();long begun=SystemClock.elapsedRealtime();
+        long deadline=Math.min(expiresElapsed,boundedActionDeadline(originalDeadline,7000));
+        JSONObject response=permissionRpc("permission_window",profileTarget().packageName,windowId,observedTaskId,cancel,deadline);
+        PermissionWindowObservation proof=PermissionWindowObservation.fromWire(response.getString("permission_window_wire"),profileTarget());
+        long now=SystemClock.elapsedRealtime();proof.requireMatches(profileTarget(),generation,displayId,windowId,observedTaskId,now);
+        if(proof.observedElapsedMs<begun||proof.expiresElapsedMs>deadline||cancel.isCancelled())throw new IOException("权限读取超过原始请求或任务已停止");
+        synchronized(permissionProofs){
+            if(permissionProofs.size()>=BrokerProtocol.MAX_PROFILE_REQUEST_IDS)throw new IOException("权限读取凭据数量超限");
+            permissionProofs.put(proof,Boolean.TRUE);
+        }
+        return proof;
+    }
+    void requirePermissionWindow(PermissionWindowObservation proof,long now){
+        requirePermissionPreparationActive();
+        synchronized(permissionProofs){if(proof==null||!permissionProofs.containsKey(proof))
+            throw new IllegalStateException("权限窗口并非来自当前后台服务的实际已认证读取");}
+        proof.requireMatches(profileTarget(),generation,displayId,proof.windowId,proof.taskId,now);
+    }
+    private JSONObject permissionRpc(String op,String pkg,int window,int task,HeptaAccessibilityService.Cancellation cancel,long originalDeadline)throws Exception{
+        requirePermissionPreparationActive();
+        if(cancel==null||cancel.isCancelled())throw new IOException("权限初始化已停止");
+        long deadline=Math.min(expiresElapsed,boundedActionDeadline(originalDeadline,7000));
+        JSONObject request=request(op,pkg,deadline);
+        if("permission_window".equals(op))request.put("window_id",window).put("task_id",task);
+        JSONObject response=exchangeForSession(request,7500,cancel);accept(response,true);requirePermissionPreparationActive();
+        requireControllerUiObservation(response);
+        if(!"prepare_done".equals(op)&&!response.getBoolean("profile_permission_preparing"))throw new IOException("后台权限初始化阶段不一致");
+        return response;
+    }
+    private void finishPermissionPreparation(HeptaAccessibilityService.Cancellation cancel,long originalDeadline)throws Exception{
+        JSONObject response=permissionRpc("prepare_done",null,-1,-1,cancel,originalDeadline);
+        if(response.getBoolean("profile_permission_preparing")||!"COMPLETE".equals(response.getString("profile_permission_preparation_state")))
+            throw new IOException("普通应用窗口尚未重新通过验证");
+        permissionPreparing=false;synchronized(permissionProofs){permissionProofs.clear();}
+    }
     WindowOwnership verifyProfileWindow(int windowId,int observedTaskId,HeptaAccessibilityService.Cancellation cancel,long originalDeadline)throws Exception{
         ProfileTarget target=profileTarget();if(target==null)throw new IllegalStateException("profile target required");
         requireActive();if(cancel==null||cancel.isCancelled())throw new IOException("profile observation cancelled");
         long begun=SystemClock.elapsedRealtime(),deadline=Math.min(expiresElapsed,boundedActionDeadline(originalDeadline,4000));
         JSONObject request=request("window",target.packageName,deadline).put("window_id",windowId).put("task_id",observedTaskId);
-        JSONObject response=exchange(socketName,generation,request,4500,cancel);accept(response,true);requireActive();
+        JSONObject response=exchangeForSession(request,4500,cancel);accept(response,true);requireActive();
         WindowOwnership proof=WindowOwnership.fromWire(response.getString("window_ownership_wire"),target);
         long now=SystemClock.elapsedRealtime();proof.requireMatches(target,generation,displayId,windowId,observedTaskId,now);
         if(proof.observedElapsedMs<begun||proof.expiresElapsedMs>deadline||cancel.isCancelled())
@@ -210,12 +340,49 @@ final class BackgroundSession {
     }
     int displayId(){return displayId;}
     boolean released(){return "RELEASED".equals(state)&&retired&&cleanupConfirmed;}
-    synchronized boolean prelaunchRecoveryEligible(){return profileTarget()!=null&&retired&&!profileLaunchAttempted&&displayId==-1
+    synchronized boolean prelaunchRecoveryEligible(){return publicOwnGroupScope==null&&profileTarget()!=null&&retired&&!profileLaunchAttempted&&displayId==-1
             &&("INITIAL".equals(state)||"CLEANUP_UNKNOWN".equals(state));}
-    synchronized boolean postlaunchRecoveryEligible(){return profileTarget()!=null&&retired&&profileLaunchAttempted&&displayId>0
+    synchronized boolean postlaunchRecoveryEligible(){return publicOwnGroupScope==null&&profileTarget()!=null&&retired&&profileLaunchAttempted&&displayId>0
             &&"CLEANUP_UNKNOWN".equals(state);}
+    /** This is a distinct drained public lease, not an extension of private proof authority. */
+    synchronized boolean publicProfileRecoveryEligible(){return publicProfilePostlaunchRecoveryEligible()||publicOwnGroupScope!=null&&profileTarget()!=null&&profileTarget().profile.userId==10
+            &&retired&&!profileLaunchAttempted&&!bootstrapDispatched&&!permissionPreparing&&displayId==-1
+            &&brokerExitObserved&&brokerExitCode!=null&&"CLEANUP_UNKNOWN".equals(state);}
+    /** A failed prepare_done can leave its stage bit set after the controller and
+     * broker have both exited. Actual permission/action/observation worker gates
+     * remain in the service and client; this predicate grants no input authority. */
+    private boolean publicProfilePostlaunchRecoveryEligible(){return publicOwnGroupScope!=null&&profileTarget()!=null
+            &&profileTarget().profile.userId==10&&retired&&profileLaunchAttempted&&bootstrapDispatched&&displayId>1
+            &&brokerExitObserved&&Integer.valueOf(0).equals(brokerExitCode)&&"CLEANUP_UNKNOWN".equals(state);}
+    /** Read-only absence recovery for a stopped personal Notes lease. The original
+     * broker exit/release remains unknown; only a new opaque receipt can close it. */
+    synchronized boolean personalNotesRecoveryEligible(){return publicOwnGroupScope!=null&&profileTarget()==null
+            &&requiresPersonalNotesRetirement()&&retired&&bootstrapDispatched&&displayId>1&&"CLEANUP_UNKNOWN".equals(state);}
     synchronized void acceptReconciliation(Cleanup result)throws Exception{
         if(result==null)throw new IOException("后台清理凭据缺失");
+        if(result.personalNotesRecovery!=null){
+            PublicPersonalNotesRecoveryClient.Receipt receipt=result.personalNotesRecovery;
+            if(result.prelaunchRecovery!=null||result.postlaunchRecovery!=null||result.publicProfileRecovery!=null
+                    ||!result.known||!personalNotesRecoveryEligible()||hasUnreleased(context)
+                    ||!displayAbsent(context,displayId,displayName)||!generation.equals(result.evidence.getString("generation"))
+                    ||!receipt.request.source().equals(result.evidence.getString("reconciliation_source"))
+                    ||!receipt.receiptSha256().equals(result.evidence.getString("personal_notes_receipt_sha256")))
+                throw new IOException("备忘录缺席恢复凭据不属于当前停止的个人空间租约");
+            receipt.requireLease(taskId,generation,ownerSha256,createdElapsed,expiresElapsed,bootCount,publicOwnGroupScope,displayId);
+            retirePublicScope();retired=true;state="RELEASED";cleanupConfirmed=true;return;
+        }
+        if(result.publicProfileRecovery!=null){
+            PublicProfileRecoveryClient.Receipt receipt=result.publicProfileRecovery;
+            if(result.prelaunchRecovery!=null||result.postlaunchRecovery!=null||!result.known||!publicProfileRecoveryEligible()
+                    ||hasUnreleased(context)||!displayAbsent(context,displayId,displayName)
+                    ||!generation.equals(result.evidence.getString("generation"))
+                    ||receipt.request.postlaunch!=(displayId>1)||receipt.request.displayId!=displayId
+                    ||!receipt.request.source().equals(result.evidence.getString("reconciliation_source"))
+                    ||!receipt.receiptSha256().equals(result.evidence.getString("public_profile_receipt_sha256")))
+                throw new IOException("公共恢复凭据不属于当前已停止的租约");
+            receipt.requireLease(taskId,generation,ownerSha256,createdElapsed,expiresElapsed,bootCount,profileTarget(),publicOwnGroupScope,displayId);
+            retirePublicScope();retired=true;state="RELEASED";cleanupConfirmed=true;return;
+        }
         if(result.postlaunchRecovery!=null){
             ProfilePostlaunchRecoveryClient.Receipt receipt=result.postlaunchRecovery;
             if(result.prelaunchRecovery!=null||!result.known||!postlaunchRecoveryEligible()
@@ -229,7 +396,7 @@ final class BackgroundSession {
         }
         if(result.prelaunchRecovery==null){acceptReconciliation(result.evidence);return;}
         ProfileRecoveryClient.Receipt receipt=result.prelaunchRecovery;
-        if(!result.known||profileTarget()==null||profileLaunchAttempted||displayId!=-1
+        if(!result.known||publicOwnGroupScope!=null||profileTarget()==null||profileLaunchAttempted||displayId!=-1
                 ||hasUnreleased(context)||!displayAbsent(context,displayId,displayName)
                 ||!generation.equals(result.evidence.getString("generation"))
                 ||!ProfilePrelaunchRecovery.SOURCE.equals(result.evidence.getString("reconciliation_source"))
@@ -248,10 +415,19 @@ final class BackgroundSession {
             JSONObject response=proof.getJSONObject("broker_response");
             if(!Boolean.TRUE.equals(proof.get("broker_released"))||!Boolean.TRUE.equals(response.get("ok"))
                     ||!"RELEASED".equals(response.getString("state"))||!"close".equals(response.getString("operation"))
-                    ||strictInt(response,"version")!=BrokerProtocol.PROFILE_VERSION
+                    ||strictInt(response,"version")!=protocolVersion()
                     ||!generation.equals(response.getString("generation")))
                 throw new IOException("profile reconciliation lacks the actual release response");
             ensureProfileCleanup(response);
+        }
+        if(publicOwnGroupScope!=null){
+            JSONObject response=proof.getJSONObject("broker_response");
+            if(!Boolean.TRUE.equals(proof.get("broker_released"))||!Boolean.TRUE.equals(response.get("ok"))
+                    ||!"RELEASED".equals(response.getString("state"))||!"close".equals(response.getString("operation"))
+                    ||strictInt(response,"version")!=protocolVersion()
+                    ||!publicOwnGroupScope.sha256.equals(response.getString("display_scope_sha256")))
+                throw new IOException("PUBLIC_SCOPE_RECONCILIATION_NOT_VERIFIED");
+            retirePublicScope();
         }
         retired=true;state="RELEASED";cleanupConfirmed=true;
     }
@@ -263,6 +439,7 @@ final class BackgroundSession {
                 .put("broker_output",brokerOutput==null?JSONObject.NULL:brokerOutput.evidence())
                 .put("app_display_readback",appDisplayReadback==null?JSONObject.NULL:new JSONObject(appDisplayReadback.toString()))
                 .put("last_broker_response",lastResponse==null?JSONObject.NULL:new JSONObject(lastResponse.toString()));
+            if(personalNotesCleanupEvidence!=null)value.put("personal_notes_cleanup",new JSONObject(personalNotesCleanupEvidence.toString()));
             // Keep the exact existing Selection observation/wire schema. New
             // route audit belongs to this real session, never to screen data.
             if(selection.taskTarget!=null)value.put("execution_target",new JSONObject(selection.taskTarget.evidence()));
@@ -276,7 +453,11 @@ final class BackgroundSession {
             .put("display_id",displayId).put("state",state).put("created_elapsed_ms",createdElapsed).put("expires_elapsed_ms",expiresElapsed)
             .put("boot_count",bootCount).put("selection",selection.json())
             // This durable pre-spawn ceiling covers every later permitted Xiaomi launch.
-            .put("owned_task_retirement_required",profileTarget()!=null||selection.allowedPackages.contains("com.xiaomi.shop"));
+            .put("owned_task_retirement_required",publicOwnGroupScope!=null||profileTarget()!=null||selection.allowedPackages.contains("com.xiaomi.shop"));
+        if(publicOwnGroupScope!=null)value.put("public_own_group_scope_wire",publicOwnGroupScope.wire())
+                .put("public_own_group_scope_sha256",publicOwnGroupScope.sha256).put("public_own_group_experimental",true)
+                .put("public_scope_serialization_grants_authority",false);
+        if(requiresPersonalNotesRetirement())value.put("personal_notes_retirement_required",true);
         if(profileTarget()!=null)value.put("profile_target_wire",profileTarget().wire()).put("profile_target_sha256",profileTarget().sha256)
                 .put("profile_isolation_required",true).put("profile_launch_attempted",profileLaunchAttempted);
         if(profileCleanupEvidence!=null)value.put("profile_cleanup",new JSONObject(profileCleanupEvidence.toString()));
@@ -285,9 +466,18 @@ final class BackgroundSession {
 
     /** Worker only. The durable lease precedes su and the first create request. */
     void start(HeptaAccessibilityService.Cancellation cancellation)throws Exception{
+        startInternal(cancellation,null,Long.MAX_VALUE);
+    }
+    void startWithPermissionInitialization(HeptaAccessibilityService.Cancellation cancellation,InitializationHandler handler,long originalDeadline)throws Exception{
+        if(handler==null||profileTarget()==null||!ProfileTarget.CTRIP.equals(profileTarget().packageName))
+            throw new IllegalArgumentException("隔离用户携程初始化绑定缺失");
+        startInternal(cancellation,handler,originalDeadline);
+    }
+    private void startInternal(HeptaAccessibilityService.Cancellation cancellation,InitializationHandler handler,long originalDeadline)throws Exception{
         LocalProbeApplication.requirePermissionPreparationIdle(context);
         if(android.os.Looper.myLooper()==android.os.Looper.getMainLooper())throw new IllegalStateException("后台创建不得阻塞主线程");
-        requireUnlocked();filesRoot.unchanged(context);
+        if(publicOwnGroupScope==null)requireUnlocked();else requireNoPositiveAppCredential();
+        filesRoot.unchanged(context);
         if(profileTarget()!=null)ProfileCatalogueClient.requireCurrent(context,profileTarget());
         MobiMindPrivateFiles.writeNew(journal,baseJournal().toString().getBytes(StandardCharsets.UTF_8));
         if(cancellation.isCancelled())throw new IllegalStateException("任务已停止，后台空间未启动");
@@ -298,6 +488,7 @@ final class BackgroundSession {
                 +" --socket "+quote(socketName)+" --owner-uid "+android.os.Process.myUid()
                 +" --generation "+quote(generation)+" --allowed-packages "+quote(packages)
                 +(profileTarget()==null?"":" --profile-target "+quote(profileTarget().wire()))
+                +(publicOwnGroupScope==null?"":" --public-own-group-scope "+quote(publicOwnGroupScope.wire()))
                 +" --ttl-ms "+TTL_MS+" --expires-elapsed-ms "+expiresElapsed;
         File taskRoot=MobiMindPrivateFiles.directory(new File(filesRoot.path,"control-tasks"),false);
         File taskDirectory=MobiMindPrivateFiles.directory(new File(taskRoot,taskId),false);
@@ -318,8 +509,46 @@ final class BackgroundSession {
         requireActive();saveJournal();
         if(cancellation.isCancelled())throw new IllegalStateException("任务已停止，正在释放后台空间");
         if(profileTarget()!=null){profileLaunchAttempted=true;saveJournal();}
-        JSONObject launch=call("launch",selection.initialPackage,4000);bootstrapDispatched=launch.optBoolean("dispatched",false);
+        JSONObject launch;
+        if(handler==null)launch=call("launch",selection.initialPackage,4000);
+        else{
+            if(cancellation.isCancelled())throw new IOException("权限初始化任务已停止");
+            long deadline=Math.min(expiresElapsed,boundedActionDeadline(originalDeadline,9000));
+            JSONObject request=request("prepare",selection.initialPackage,deadline);
+            if(publicOwnGroupScope!=null&&selection.controllerUi!=null)
+                request.put("controller_ui_locator",selection.controllerUi.wire());
+            launch=exchangeForSession(request,9500,cancellation);
+        }
+        bootstrapDispatched=launch.optBoolean("dispatched",false);
         accept(launch,true);requireActive();saveJournal();
+        if(handler!=null){
+            requireControllerUiObservation(launch);
+            if(!launch.getBoolean("profile_permission_preparing"))throw new IOException("后台未进入权限初始化阶段");
+            permissionPreparing=true;handler.prepare(this,Math.min(originalDeadline,expiresElapsed),cancellation);
+            requirePermissionPreparationActive();
+            if(!"APP_READY".equals(readPreparation(cancellation,originalDeadline)))throw new IOException("权限初始化后未读回普通应用窗口");
+            finishPermissionPreparation(cancellation,originalDeadline);saveJournal();
+        }
+    }
+    private void requireControllerUiObservation(JSONObject response)throws Exception{
+        if(publicOwnGroupScope==null||selection.controllerUi==null)return;
+        org.trillionnium.hepta.background.PublicPermissionControllerUi.Locator source=selection.controllerUi;
+        JSONObject proof=response.getJSONObject("permission_controller_ui");
+        requireProfileFields(proof,"schema","generation","scope_sha256","locator_sha256","owner_uid","owner_pid",
+                "task_id","display_id","owned_display_id","component","actual_task_token_retained","observed_elapsed_ms",
+                "serialized_locator_grants_authority","physical_input_authorized","observation_valid");
+        if(!"hepta.permission-controller-ui-observation.v1".equals(proof.getString("schema"))
+                ||!generation.equals(proof.getString("generation"))||!publicOwnGroupScope.sha256.equals(proof.getString("scope_sha256"))
+                ||!HeptaAccessibilityService.sha(source.wire().getBytes(StandardCharsets.UTF_8)).equals(proof.getString("locator_sha256"))||strictInt(proof,"owner_uid")!=source.uid
+                ||strictInt(proof,"owner_pid")!=source.pid||strictInt(proof,"task_id")!=source.task
+                ||strictInt(proof,"display_id")!=source.display||strictInt(proof,"owned_display_id")!=displayId
+                ||!org.trillionnium.hepta.background.PublicPermissionControllerUi.COMPONENT.equals(proof.getString("component"))
+                ||!Boolean.TRUE.equals(proof.get("actual_task_token_retained"))
+                ||!Boolean.TRUE.equals(proof.get("observation_valid"))
+                ||!Boolean.FALSE.equals(proof.get("serialized_locator_grants_authority"))
+                ||!Boolean.FALSE.equals(proof.get("physical_input_authorized"))
+                ||strictLong(proof,"observed_elapsed_ms")<createdElapsed||strictLong(proof,"observed_elapsed_ms")>SystemClock.elapsedRealtime())
+            throw new IOException("CONTROLLER_UI_OBSERVATION_UNBOUND");
     }
     /** No model-issued action can change the immutable package/display binding. */
     JSONObject action(String operation,String pkg,HeptaAccessibilityService.Cancellation cancellation)throws Exception{
@@ -331,7 +560,7 @@ final class BackgroundSession {
         if(pkg!=null&&!allows(pkg))throw new IllegalArgumentException("目标应用未在本次后台范围内");
         long deadline=boundedActionDeadline(actionDeadline,4000);
         JSONObject request=request(operation,pkg,deadline);
-        JSONObject response=exchange(socketName,generation,request,4500,cancellation);accept(response,true);requireActive();return response;
+        JSONObject response=exchangeForSession(request,4500,cancellation);accept(response,true);requireActive();return response;
     }
     JSONObject fixedIntent(org.trillionnium.hepta.background.FixedIntentTarget target,String payload,String attemptId,HeptaAccessibilityService.Cancellation cancellation)throws Exception{
         return fixedIntent(target,payload,attemptId,cancellation,Long.MAX_VALUE);
@@ -344,10 +573,9 @@ final class BackgroundSession {
         requireActive();if(cancellation.isCancelled())throw new IllegalStateException("任务已停止");
         if(!allows(target.packageName))throw new IllegalArgumentException("固定工具目标不在后台范围");
         long deadline=boundedActionDeadline(actionDeadline,4000);
-        JSONObject request=new JSONObject().put("version",1).put("request_id",UUID.randomUUID().toString())
-                .put("generation",generation).put("deadline_elapsed_ms",deadline).put("op",target.action)
-                .put("package",target.packageName).put("target_uid",target.uid).put("payload",payload).put("attempt_id",attemptId);
-        JSONObject response=exchange(socketName,generation,request,4500,cancellation);
+        JSONObject request=request(target.action,target.packageName,deadline)
+                .put("target_uid",target.uid).put("payload",payload).put("attempt_id",attemptId);
+        JSONObject response=exchangeForSession(request,4500,cancellation);
         accept(response,true);requireActive();
         if(!target.action.equals(response.getString("operation"))||!response.getBoolean("dispatched"))throw new IOException("固定工具回执未确认派发");
         JSONObject proof=response.getJSONObject("fixed_intent"),installed=proof.getJSONObject("target");
@@ -368,8 +596,29 @@ final class BackgroundSession {
             throw new IOException("固定工具回执 MIME 不匹配");
         return response;
     }
-    void verifyRemote()throws Exception{requireActive();accept(call("state",null,1800),true);requireActive();}
-    synchronized void requireActive(){
+    void verifyRemote()throws Exception{requireActive();accept(call(publicOwnGroupScope!=null&&permissionPreparing?"prepare_state":"state",null,1800),true);requireActive();}
+    void requireActive(){
+        if(publicOwnGroupScope==null){requireLegacyActive();return;}
+        if(retired||!"ACTIVE".equals(state)||displayId<=Display.DEFAULT_DISPLAY)
+            throw new IllegalStateException("后台空间已退休或未完成创建；不会使用主屏幕");
+        if(SystemClock.elapsedRealtime()>=expiresElapsed)throw new IllegalStateException("后台会话已到期");
+        if(publicOwnGroupScope==null)requireUnlocked();
+        try{
+            if(publicOwnGroupScope!=null){
+                requireNoPositiveAppCredential();
+                if(android.os.Looper.myLooper()!=android.os.Looper.getMainLooper()
+                        &&publicScopeLease.refreshRequired(publicScopeOwner,SystemClock.elapsedRealtime()))
+                    refreshPublicPolicy(null,expiresElapsed,false);
+            }
+            appDisplayReadback=readAppDisplay(lastResponse,displayId);
+            if(retired||!"ACTIVE".equals(state))throw new IOException("PUBLIC_SCOPE_RETIRED_DURING_APP_READ");
+        }catch(Exception failure){
+            if(publicOwnGroupScope!=null)retirePublicScope();
+            throw new IllegalStateException("后台屏幕策略读回不一致："+HeptaAccessibilityService.message(failure),failure);
+        }
+    }
+    /** Original legacy lock and monitor boundaries are preserved exactly. */
+    private synchronized void requireLegacyActive(){
         if(retired||!"ACTIVE".equals(state)||displayId<=Display.DEFAULT_DISPLAY)
             throw new IllegalStateException("后台空间已退休或未完成创建；不会使用主屏幕");
         if(SystemClock.elapsedRealtime()>=expiresElapsed)throw new IllegalStateException("后台会话已到期");
@@ -377,9 +626,68 @@ final class BackgroundSession {
         try{appDisplayReadback=readAppDisplay(lastResponse,displayId);}
         catch(Exception failure){throw new IllegalStateException("后台屏幕策略读回不一致："+HeptaAccessibilityService.message(failure),failure);}
     }
+    /** A main-thread watcher may schedule a worker from the same live object.
+     * This check has no authority to read nodes, dispatch an input or renew proof. */
+    void requireAdmissionActive(){
+        if(publicOwnGroupScope==null){requireActive();return;}
+        if(retired||!"ACTIVE".equals(state)||displayId<=1)throw new IllegalStateException("后台显示作用域未激活或已退休");
+        try{publicScopeLease.requireAdmission(publicScopeOwner,SystemClock.elapsedRealtime());
+            requireNoPositiveAppCredential();readPublicDisplay(displayId);
+        }catch(Exception unavailable){retirePublicScope();throw new IllegalStateException("后台显示准入已失效",unavailable);}
+    }
+    /** Worker-only, forced actual root RPC immediately before an input enters.
+     * The original action/permission deadline and cancellation are preserved. */
+    void requirePolicyBeforeEffect(HeptaAccessibilityService.Cancellation cancel,long originalDeadline){
+        if(publicOwnGroupScope==null)return;
+        if(android.os.Looper.myLooper()==android.os.Looper.getMainLooper())throw new IllegalStateException("实验显示输入必须由已有worker派发");
+        try{refreshPublicPolicy(cancel,originalDeadline,true);requireActive();}
+        catch(Exception unavailable){retirePublicScope();throw new IllegalStateException("派发前后台显示策略不可验证",unavailable);}
+    }
+    private void refreshPublicPolicy(HeptaAccessibilityService.Cancellation cancellation,long originalDeadline,boolean force)throws Exception{
+        synchronized(publicScopeIo){
+            if(retired||!"ACTIVE".equals(state)||displayId<=1)throw new IOException("PUBLIC_SCOPE_RETIRED");
+            if(!force&&!publicScopeLease.refreshRequired(publicScopeOwner,SystemClock.elapsedRealtime()))return;
+            long deadline=Math.min(expiresElapsed,boundedActionDeadline(originalDeadline,1500));
+            JSONObject request=request("display_policy",null,deadline);
+            JSONObject response=exchangeForSession(request,1500,cancellation);accept(response,true);
+        }
+    }
+    private void requireNoPositiveAppCredential(){
+        KeyguardManager keyguard=(KeyguardManager)context.getSystemService(Context.KEYGUARD_SERVICE);
+        if(keyguard==null||keyguard.isKeyguardSecure()||keyguard.isDeviceSecure()||keyguard.isDeviceLocked()
+                ||readBootCount(context)!=bootCount)
+            throw new IllegalStateException("实验显示仅允许当前无凭据设备及同一次启动");
+        // Public false values are only a negative guard. Permission to create/use
+        // the display comes solely from the actual root direct-Binder readback.
+    }
+    private void retirePublicScope(){
+        retired=true;if(publicScopeLease!=null)publicScopeLease.retire(publicScopeOwner);
+    }
+    private PublicOwnGroupPolicy.AppDisplay readPublicDisplay(int id)throws Exception{
+        long begin=SystemClock.elapsedRealtime();DisplayManager manager=(DisplayManager)context.getSystemService(Context.DISPLAY_SERVICE);
+        Display display=manager==null?null:manager.getDisplay(id);
+        if(display==null||display.getDisplayId()!=id||!displayName.equals(display.getName())||!display.isValid())
+            throw new IOException("PUBLIC_SCOPE_APP_DISPLAY_UNAVAILABLE");
+        return new PublicOwnGroupPolicy.AppDisplay(id,display.getName(),display.getFlags(),display.isValid(),begin,SystemClock.elapsedRealtime());
+    }
     /** The ordinary app uses only public Display getters; hidden constants stay in the broker. */
     private JSONObject readAppDisplay(JSONObject response,int id)throws Exception{
         appDisplayReadback=null; // A failed current read must not retain a prior successful readback as current evidence.
+        if(publicOwnGroupScope!=null){
+            PublicOwnGroupPolicy.AppDisplay actual=readPublicDisplay(id);
+            PublicOwnGroupPolicy.Readback proof=publicScopeLease.current(publicScopeOwner,SystemClock.elapsedRealtime(),actual);
+            if(response==null||proof!=publicScopeReadback||!proof.requestId.equals(response.getString("request_id"))
+                    ||!publicOwnGroupScope.sha256.equals(response.getString("display_scope_sha256")))
+                throw new IOException("PUBLIC_SCOPE_NOT_CURRENT_AUTHENTICATED_RESPONSE");
+            return new JSONObject().put("schema","hepta.public-own-group.app-readback.v1")
+                    .put("source","ordinary_app_public_display_readback").put("task_id",taskId).put("generation",generation)
+                    .put("app_uid",android.os.Process.myUid()).put("app_pid",android.os.Process.myPid()).put("boot_count",bootCount)
+                    .put("display_id",actual.id).put("display_name",actual.name).put("flags",actual.flags).put("valid",true)
+                    .put("scope_sha256",publicOwnGroupScope.sha256).put("broker_request_id",proof.requestId)
+                    .put("broker_readback_sha256",proof.sha256).put("root_rpc_registered",true)
+                    .put("observed_started_elapsed_ms",actual.begin).put("observed_ended_elapsed_ms",actual.end)
+                    .put("serialization_grants_authority",false);
+        }
         BrokerProtocol.DisplayPolicy policy=readBrokerPolicy(response,id);
         long started=SystemClock.elapsedRealtime();
         DisplayManager manager=(DisplayManager)context.getSystemService(Context.DISPLAY_SERVICE);
@@ -403,7 +711,8 @@ final class BackgroundSession {
     private BrokerProtocol.DisplayPolicy readBrokerPolicy(JSONObject response,int id)throws Exception{
         if(response==null||id<=0||!Boolean.TRUE.equals(response.get("ok"))||!"ACTIVE".equals(response.getString("state"))
                 ||strictInt(response,"version")!=protocolVersion()||!isUuid(response.getString("request_id"))||!generation.equals(response.getString("generation"))
-                ||!java.util.Arrays.asList("create","state","launch","back","window","notes.create","web.search").contains(response.getString("operation"))
+                ||!java.util.Arrays.asList("create","state","launch","back","window","notes.create","web.search",
+                    "prepare","prepare_state","permission_window","prepare_done").contains(response.getString("operation"))
                 ||strictLong(response,"expires_elapsed_ms")!=expiresElapsed
                 ||id!=strictInt(response,"display_id")||!displayName.equals(response.getString("display_name")))
             throw new IOException("后台策略回执身份不匹配");
@@ -456,13 +765,55 @@ final class BackgroundSession {
         JSONObject readback="ACTIVE".equals(next)?readAppDisplay(response,id):null;
         state=next;if(id>0)displayId=id;lastResponse=new JSONObject(response.toString());
         if(readback!=null)appDisplayReadback=readback;
-        if("RELEASED".equals(next)||"CLEANUP_UNKNOWN".equals(next)||"CLOSING".equals(next))retired=true;
+        if("RELEASED".equals(next)||"CLEANUP_UNKNOWN".equals(next)||"CLOSING".equals(next)){
+            retired=true;if(publicOwnGroupScope!=null)retirePublicScope();
+        }
         if(requireSuccess&&!response.getBoolean("ok"))throw new IOException("后台服务拒绝："+response.optString("error","operation_failed")
                 +" "+response.optString("message",""));
     }
     private JSONObject call(String operation,String pkg,int budget)throws Exception{
         JSONObject request=request(operation,pkg,SystemClock.elapsedRealtime()+budget);
-        return exchange(socketName,generation,request,budget+500);
+        return exchangeForSession(request,budget+500,null);
+    }
+    private JSONObject exchangeForSession(JSONObject request,int timeout,HeptaAccessibilityService.Cancellation cancel)throws Exception{
+        if(publicOwnGroupScope==null)return exchange(socketName,generation,request,timeout,cancel);
+        final boolean closing="close".equals(request.getString("op"));
+        final HeptaAccessibilityService.Cancellation original=cancel;
+        HeptaAccessibilityService.Cancellation bound=new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){
+            return (!closing&&retired)||(original!=null&&original.isCancelled());
+        }};
+        try{
+            RootRpcReply reply=exchangeWithPeer(socketName,generation,request,timeout,bound);
+            JSONObject response=reply.response;
+            if(!closing&&requiresPersonalNotesRetirement()&&"create".equals(request.getString("op"))
+                    &&Boolean.FALSE.equals(response.get("ok"))&&"RELEASED".equals(response.getString("state"))){
+                if(!"INITIAL".equals(state)||displayId!=-1||bootstrapDispatched||profileLaunchAttempted
+                        ||permissionPreparing||notesCreateFailureRelease!=null)
+                    throw new IOException("NOTES_CREATE_FAILURE_NOT_INITIAL");
+                notesCreateFailureRelease=NotesCreateFailureRelease.capture(reply,request,publicOwnGroupScope,generation);
+            }
+            if("ACTIVE".equals(response.getString("state"))&&Boolean.TRUE.equals(response.get("ok"))){
+                if(closing||retired||strictLong(response,"expires_elapsed_ms")!=expiresElapsed
+                        ||!Boolean.FALSE.equals(response.get("public_scope_admission_retired"))
+                        ||!Boolean.FALSE.equals(response.get("public_scope_closing"))
+                        ||!displayName.equals(response.getString("display_name")))throw new IOException("PUBLIC_SCOPE_RESPONSE_LEASE_INVALID");
+                PublicOwnGroupPolicy.Readback proof=PublicOwnGroupPolicy.Readback.fromWire(response.getString("public_own_group_readback_wire"),publicOwnGroupScope);
+                int id=strictInt(response,"display_id");
+                if(proof.display.displayId!=id||proof.display.flags!=strictInt(response,"flags")||(displayId>0&&displayId!=id))
+                    throw new IOException("PUBLIC_SCOPE_RESPONSE_DISPLAY_CHANGED");
+                PublicOwnGroupPolicy.AppDisplay actual=readPublicDisplay(id);
+                publicScopeLease.registerRootRpc(publicScopeOwner,proof,reply.peerUid,request.getString("request_id"),reply.began,
+                        SystemClock.elapsedRealtime(),actual);
+                publicScopeReadback=proof;
+            }
+            if(!closing&&!Boolean.TRUE.equals(response.get("ok")))retirePublicScope();
+            return response;
+        }catch(ConnectionUnavailable unavailable){
+            // No socket connected and no request byte was sent. Only the original
+            // bounded create/connect loop may retry this unambiguous condition.
+            if(!"create".equals(request.getString("op"))||!"INITIAL".equals(state)||retired)retirePublicScope();
+            throw unavailable;
+        }catch(Exception failure){if(!closing)retirePublicScope();throw failure;}
     }
     private static final class ConnectionUnavailable extends IOException {
         private static final long serialVersionUID=1L;
@@ -499,6 +850,70 @@ final class BackgroundSession {
     }
     private static JSONObject exchange(String name,String generation,JSONObject request,int timeout,
             HeptaAccessibilityService.Cancellation cancellation)throws Exception{
+        return exchangeWithPeer(name,generation,request,timeout,cancellation).response;
+    }
+    private static final class RootRpcReply {
+        final JSONObject response;final int peerUid;final long began;
+        private RootRpcReply(JSONObject response,int peerUid,long began){this.response=response;this.peerUid=peerUid;this.began=began;}
+    }
+    /** A frozen, authenticated failed-create reply is cleanup evidence only.
+     * It cannot be created from a journal, terminal log, caller flag or lost reply. */
+    private static final class NotesCreateFailureRelease {
+        private final String requestWire,responseWire;
+        private final int peerUid;
+        private final long began;
+        private NotesCreateFailureRelease(RootRpcReply reply,JSONObject request){
+            requestWire=request.toString();responseWire=reply.response.toString();peerUid=reply.peerUid;began=reply.began;
+        }
+        static NotesCreateFailureRelease capture(RootRpcReply reply,JSONObject request,
+                PublicOwnGroupPolicy.Scope scope,String generation)throws Exception{
+            checkedNotesCreateFailureRelease(reply,request,scope,generation);
+            return new NotesCreateFailureRelease(reply,request);
+        }
+        JSONObject requireCurrent(JSONObject response,PublicOwnGroupPolicy.Scope scope,String generation,int display)throws Exception{
+            if(response==null||!responseWire.equals(response.toString())||display!=strictInt(response,"display_id"))
+                throw new IOException("NOTES_CREATE_FAILURE_REPLY_CHANGED");
+            return checkedNotesCreateFailureRelease(new RootRpcReply(new JSONObject(responseWire),peerUid,began),
+                    new JSONObject(requestWire),scope,generation);
+        }
+    }
+    private static JSONObject checkedNotesCreateFailureRelease(RootRpcReply reply,JSONObject request,
+            PublicOwnGroupPolicy.Scope scope,String generation)throws Exception{
+        if(reply==null||reply.peerUid!=0||request==null||scope==null||scope.targetUserId!=0
+                ||scope.appUid!=android.os.Process.myUid()||!scope.generation.equals(generation)
+                ||strictInt(request,"version")!=BrokerProtocol.PUBLIC_OWN_GROUP_VERSION
+                ||!"create".equals(request.getString("op"))||request.has("package")
+                ||!generation.equals(request.getString("generation"))
+                ||!scope.sha256.equals(request.getString("display_scope_sha256")))
+            throw new IOException("NOTES_CREATE_FAILURE_REQUEST_UNBOUND");
+        JSONObject response=reply.response;
+        if(response==null||strictInt(response,"version")!=strictInt(request,"version")
+                ||!request.getString("request_id").equals(response.getString("request_id"))
+                ||!generation.equals(response.getString("generation"))
+                ||!"create".equals(response.getString("operation"))||!Boolean.FALSE.equals(response.get("ok"))
+                ||!(response.get("error") instanceof String)||response.getString("error").isEmpty()
+                ||!"RELEASED".equals(response.getString("state"))||!Boolean.TRUE.equals(response.get("dispatched"))
+                ||!scope.sha256.equals(response.getString("display_scope_sha256"))
+                ||!("hepta-bg-"+generation).equals(response.getString("display_name"))
+                ||strictLong(response,"expires_elapsed_ms")!=scope.expiresElapsedMs
+                ||!Boolean.TRUE.equals(response.get("public_scope_admission_retired"))
+                ||!Boolean.TRUE.equals(response.get("public_scope_closing"))
+                ||!response.has("public_own_group_readback_wire")||!response.isNull("public_own_group_readback_wire")
+                ||response.has("fixed_intent")||response.has("task_launch_policy")||response.has("owned_single_task"))
+            throw new IOException("NOTES_CREATE_FAILURE_REPLY_UNBOUND");
+        JSONObject proof=response.getJSONObject("personal_notes_cleanup");
+        if(!Boolean.TRUE.equals(proof.get("create_attempted"))||!Boolean.FALSE.equals(proof.get("no_display_create_attempted"))
+                ||!Boolean.FALSE.equals(proof.get("launch_dispatched"))||proof.getJSONArray("actual_observed_tasks").length()!=0
+                ||strictInt(proof,"pending_owned_reads")!=0)
+            throw new IOException("NOTES_CREATE_FAILURE_EFFECT_OR_TASK_UNKNOWN");
+        // Keep ok=false and its error intact. Every existing release/absence/history
+        // predicate below still runs; no successful create or business is inferred.
+        return checkedPersonalNotesCleanupEvidence(response,scope,generation,strictInt(response,"display_id"));
+    }
+    private static RootRpcReply exchangeWithPeer(String name,String generation,JSONObject request,int timeout,
+            HeptaAccessibilityService.Cancellation cancellation)throws Exception{
+        long began=SystemClock.elapsedRealtime();
+        boolean publicScope=BrokerProtocol.isPublicOwnGroupVersion(request.getInt("version"));
         byte[] bytes=request.toString().getBytes(StandardCharsets.UTF_8);
         if(bytes.length<1||bytes.length>REQUEST_LIMIT)throw new IOException("后台请求长度越界");
         try(LocalSocket socket=new LocalSocket()){
@@ -507,7 +922,8 @@ final class BackgroundSession {
             // Android creates the socket FD during connect; setSoTimeout before it throws.
             socket.setSoTimeout(remainingActionTimeout(request,timeout,cancellation));
             Credentials peer=socket.getPeerCredentials();
-            if(peer==null||(peer.getUid()!=0&&peer.getUid()!=2000))throw new IOException("后台服务身份不是 shell/root");
+            if(peer==null||(publicScope?peer.getUid()!=0:(peer.getUid()!=0&&peer.getUid()!=2000)))
+                throw new IOException(publicScope?"实验后台服务必须是真实root socket peer":"后台服务身份不是 shell/root");
             DataOutputStream output=new DataOutputStream(socket.getOutputStream());
             socket.setSoTimeout(remainingActionTimeout(request,timeout,cancellation));
             // connect/peer inspection can block. Recheck the original action authority before the first write.
@@ -526,14 +942,17 @@ final class BackgroundSession {
             JSONObject result=(JSONObject)value;
             if(result.getInt("version")!=request.getInt("version")||!request.getString("request_id").equals(result.getString("request_id"))
                     ||!generation.equals(result.getString("generation")))throw new IOException("后台响应请求/会话标识不匹配");
-            if(request.getInt("version")==BrokerProtocol.PROFILE_VERSION
+            if(BrokerProtocol.isProfileVersion(request.getInt("version"))
                     &&(!request.getString("op").equals(result.getString("operation"))
                        ||!request.getString("target_sha256").equals(ProfileTarget.fromWire(result.getString("profile_target_wire")).sha256)))
                 throw new IOException("profile response scope or operation differs");
+            if(publicScope&&(!request.getString("op").equals(result.getString("operation"))
+                    ||!request.getString("display_scope_sha256").equals(result.getString("display_scope_sha256"))))
+                throw new IOException("PUBLIC_SCOPE_RESPONSE_IDENTITY_CHANGED");
             String state=result.getString("state");
             if(!java.util.Arrays.asList("INITIAL","ACTIVE","CLOSING","RELEASED","CLEANUP_UNKNOWN").contains(state))throw new IOException("后台响应状态未知");
             result.getBoolean("ok");result.getInt("display_id");
-            return result;
+            return new RootRpcReply(result,peer.getUid(),began);
         }
     }
     private synchronized void saveJournal()throws Exception{
@@ -546,27 +965,35 @@ final class BackgroundSession {
     }
     /** Retire locally first; release proof requires broker readback and app-side display absence. */
     synchronized Cleanup close(){
-        retired=true;boolean known=false;String error=null;
+        retired=true;if(publicOwnGroupScope!=null)retirePublicScope();
+        boolean known=false;String error=null;
         try{
             if(!MobiMindPrivateFiles.exists(journal)){
                 if(spawnAttempted)throw new IOException("后台持久租约消失，清理无法核验");
                 state="RELEASED";known=true;
             }else if(!spawnAttempted){state="RELEASED";known=true;deleteJournal();}
+            else if(notesCreateFailureRelease!=null){
+                if(!requiresPersonalNotesRetirement()||bootstrapDispatched||profileLaunchAttempted||permissionPreparing
+                        ||!"RELEASED".equals(state)||!displayAbsent(context,displayId,displayName))
+                    throw new IOException("NOTES_CREATE_FAILURE_CURRENT_STATE_UNKNOWN");
+                personalNotesCleanupEvidence=notesCreateFailureRelease.requireCurrent(lastResponse,publicOwnGroupScope,generation,displayId);
+                known=true;deleteJournal();
+            }
             else if("RELEASED".equals(state)&&lastResponse!=null&&displayAbsent(context,displayId,displayName)){
                 // A failed launch can already return system-confirmed RELEASED and exit the broker.
-                ensureProfileCleanup(lastResponse);known=true;deleteJournal();
+                ensureProfileCleanup(lastResponse);ensurePersonalNotesCleanup(lastResponse);known=true;deleteJournal();
             }
             else{
                 JSONObject response=call("close",null,3500);accept(response,false);
                 known=response.getBoolean("ok")&&"RELEASED".equals(state)&&displayAbsent(context,displayId,displayName);
-                if(known){ensureProfileCleanup(response);deleteJournal();}else saveJournal();
+                if(known){ensureProfileCleanup(response);ensurePersonalNotesCleanup(response);deleteJournal();}else saveJournal();
             }
         }catch(Exception failure){known=false;error=HeptaAccessibilityService.message(failure);state="CLEANUP_UNKNOWN";
             try{if(MobiMindPrivateFiles.exists(journal))saveJournal();}catch(Exception ignored){} }
         if(brokerProcess!=null){
             try{brokerExitObserved=brokerProcess.waitFor(700,TimeUnit.MILLISECONDS);if(brokerExitObserved)brokerExitCode=brokerProcess.exitValue();}
             catch(InterruptedException interrupted){Thread.currentThread().interrupt();}
-            if(!known&&!brokerExitObserved&&profileTarget()==null)brokerProcess.destroy(); // Never counts as release evidence.
+            if(!known&&!brokerExitObserved&&profileTarget()==null&&!requiresPersonalNotesRetirement())brokerProcess.destroy(); // Never counts as release evidence.
         }
         if(brokerOutput!=null){
             try{if(brokerOutputThread!=null)brokerOutputThread.join(200);}
@@ -581,17 +1008,73 @@ final class BackgroundSession {
     }
     private void ensureProfileCleanup(JSONObject response)throws Exception{
         if(profileTarget()==null)return;
-        JSONObject proof=checkedProfileCleanup(response,profileTarget(),generation,displayId,profileLaunchAttempted);
+        JSONObject proof=checkedProfileCleanup(response,profileTarget(),publicOwnGroupScope,generation,displayId,profileLaunchAttempted);
         if(!displayAbsent(context,displayId,displayName))throw new IOException("profile display absence is not established");
         proof.put("display_absence_observed",true);profileCleanupEvidence=proof;
     }
-    private static JSONObject checkedProfileCleanup(JSONObject response,ProfileTarget target,String generation,int display,boolean launched)throws Exception{
+    private void ensurePersonalNotesCleanup(JSONObject response)throws Exception{
+        if(!requiresPersonalNotesRetirement())return;
+        JSONObject proof=checkedPersonalNotesCleanup(response,publicOwnGroupScope,generation,displayId);
+        if(!displayAbsent(context,displayId,displayName))throw new IOException("NOTES_APP_DISPLAY_ABSENCE_UNPROVED");
+        personalNotesCleanupEvidence=proof;
+    }
+    private static JSONObject checkedPersonalNotesCleanup(JSONObject response,PublicOwnGroupPolicy.Scope scope,
+            String generation,int display)throws Exception{
+        if(response==null||scope==null||scope.targetUserId!=0||!Boolean.TRUE.equals(response.get("ok"))
+                ||!"RELEASED".equals(response.getString("state"))||!scope.sha256.equals(response.getString("display_scope_sha256")))
+            throw new IOException("NOTES_CLEANUP_ROOT_SCOPE_UNBOUND");
+        return checkedPersonalNotesCleanupEvidence(response,scope,generation,display);
+    }
+    private static JSONObject checkedPersonalNotesCleanupEvidence(JSONObject response,PublicOwnGroupPolicy.Scope scope,
+            String generation,int display)throws Exception{
+        JSONObject proof=response.getJSONObject("personal_notes_cleanup");
+        boolean concurrent="hepta.public-personal-notes-cleanup.v2".equals(proof.getString("schema"));
+        if((!concurrent&&!"hepta.public-personal-notes-cleanup.v1".equals(proof.getString("schema")))
+                ||!generation.equals(proof.getString("generation"))||!scope.sha256.equals(proof.getString("scope_sha256"))
+                ||!"com.motorola.stylus".equals(proof.getString("package"))
+                ||strictInt(proof,"target_uid")<10000||strictInt(proof,"target_uid")>=90000
+                ||!Boolean.TRUE.equals(proof.get("cleanup_known"))||!Boolean.FALSE.equals(proof.get("identity_unknown"))
+                ||!Boolean.FALSE.equals(proof.get("custodian_retained"))||!Boolean.FALSE.equals(proof.get("arbitrary_task_removal_used"))
+                ||!Boolean.FALSE.equals(proof.get("force_stop_used"))||!Boolean.FALSE.equals(proof.get("caller_flag_is_cleanup_proof")))
+            throw new IOException("NOTES_CLEANUP_PROOF_INVALID");
+        if(concurrent&&(!"nonphysical_and_unresolved_recents".equals(proof.getString("history_preservation_scope"))
+                ||!"pre_release_to_absence".equals(proof.getString("history_preservation_interval"))
+                ||!"initial_to_absence".equals(proof.getString("hidden_history_preservation_interval"))
+                ||!Boolean.FALSE.equals(proof.get("physical_history_frozen"))
+                ||!(proof.get("unrelated_physical_history_changes_observed") instanceof Boolean)
+                ||!(proof.get("recents_presentation_changes_observed") instanceof Boolean)
+                ||!(proof.get("prior_hidden_history_preserved") instanceof Boolean)))
+            throw new IOException("NOTES_CLEANUP_HISTORY_SCOPE_INVALID");
+        if(Boolean.TRUE.equals(proof.get("no_display_create_attempted"))){
+            if(display!=-1||proof.getInt("display_id")!=-1||!Boolean.FALSE.equals(proof.get("create_attempted"))
+                    ||!Boolean.FALSE.equals(proof.get("launch_dispatched"))||proof.getJSONArray("actual_observed_tasks").length()!=0)
+                throw new IOException("NOTES_CLEANUP_NOT_CREATED_DISAGREES");
+        }else{
+            if(display<=1||strictInt(proof,"display_id")!=display||strictInt(proof,"absence_reads")<2)
+                throw new IOException("NOTES_CLEANUP_DOUBLE_ABSENCE_REQUIRED");
+            for(String key:new String[]{"create_attempted","pre_release_tasks_verified","release_api_entered","release_api_returned",
+                    "display_absence_verified","live_tasks_absent","all_recents_sections_absent"})
+                if(!Boolean.TRUE.equals(proof.get(key)))throw new IOException("NOTES_CLEANUP_ABSENCE_UNPROVED");
+            if(concurrent){
+                if(!Boolean.TRUE.equals(proof.get("nonphysical_history_preserved"))
+                        ||!Boolean.TRUE.equals(proof.get("nonphysical_hidden_history_preserved")))
+                    throw new IOException("NOTES_CLEANUP_PROTECTED_HISTORY_UNPROVED");
+            }else if(!Boolean.TRUE.equals(proof.get("prior_hidden_history_preserved")))
+                throw new IOException("NOTES_CLEANUP_ABSENCE_UNPROVED");
+        }
+        return new JSONObject(proof.toString());
+    }
+    private static JSONObject checkedProfileCleanup(JSONObject response,ProfileTarget target,PublicOwnGroupPolicy.Scope publicScope,
+            String generation,int display,boolean launched)throws Exception{
         if(response==null||!Boolean.TRUE.equals(response.get("profile_cleanup_known"))
                 ||!target.same(ProfileTarget.fromWire(response.getString("profile_target_wire"))))
             throw new IOException("profile cleanup missing actual broker scope");
         JSONObject proof=response.getJSONObject("profile_cleanup");
-        requireProfileFields(proof,"schema","generation","display_id","target_sha256","user_id","user_serial","full_uid",
+        if(publicScope==null)requireProfileFields(proof,"schema","generation","display_id","target_sha256","user_id","user_serial","full_uid",
                 "cleanup_known","live_tasks_absent","recents_tasks_absent","foreign_tasks_present","identity_unknown","owned_tasks");
+        else requireProfileFields(proof,"schema","generation","display_id","target_sha256","user_id","user_serial","full_uid",
+                "cleanup_known","live_tasks_absent","recents_tasks_absent","foreign_tasks_present","identity_unknown","owned_tasks",
+                "public_foreign_recent_history","recents_absence_scope");
         if(!"hepta.profile-task-cleanup.v1".equals(proof.getString("schema"))
                 ||!generation.equals(proof.getString("generation"))||display!=strictInt(proof,"display_id")
                 ||!target.sha256.equals(proof.getString("target_sha256"))||target.profile.userId!=strictInt(proof,"user_id")
@@ -603,7 +1086,7 @@ final class BackgroundSession {
             if(!Boolean.FALSE.equals(proof.get(key)))throw new IOException("profile cleanup identity unknown");
         JSONArray tasks=proof.getJSONArray("owned_tasks");
         if(tasks.length()>32||(launched&&tasks.length()==0))throw new IOException("profile owned task cleanup incomplete");
-        Set<Integer> ids=new java.util.HashSet<Integer>();Set<String> tokens=new java.util.HashSet<String>();
+        Set<Integer> ids=new java.util.HashSet<Integer>(),ownedIds=new java.util.HashSet<Integer>();Set<String> tokens=new java.util.HashSet<String>();
         for(int i=0;i<tasks.length();i++){
             JSONObject task=tasks.getJSONObject(i);
             requireProfileFields(task,"task_id","parent_task_id","task_token_id","user_id","user_serial","full_uid","live_absent","recents_absent");
@@ -613,8 +1096,71 @@ final class BackgroundSession {
                     ||target.profile.userId!=strictInt(task,"user_id")||target.profile.serial!=strictLong(task,"user_serial")
                     ||target.fullUid!=strictInt(task,"full_uid")||!Boolean.TRUE.equals(task.get("live_absent"))
                     ||!Boolean.TRUE.equals(task.get("recents_absent")))throw new IOException("profile leaf cleanup differs");
+            ownedIds.add(id);ownedIds.add(parent);
         }
+        if(publicScope!=null)checkedPublicProfileHistory(response,proof,publicScope,target,generation,display,ownedIds);
         return new JSONObject(proof.toString());
+    }
+    /** Consume only the public broker's terminal custody projection. Serialized
+     * task IDs do not become removal authority or an independent Binder census.
+     * A refused business operation may still carry a confirmed RELEASED cleanup. */
+    private static void checkedPublicProfileHistory(JSONObject response,JSONObject proof,PublicOwnGroupPolicy.Scope scope,
+            ProfileTarget target,String generation,int display,Set<Integer> ownedIds)throws Exception{
+        JSONObject history=proof.getJSONObject("public_foreign_recent_history");
+        boolean concurrent="hepta.public-profile-history-custody.v2".equals(history.getString("schema"));
+        String expectedScope=concurrent?"owned_target_only_with_unrelated_physical_history_audited":"owned_target_only_with_foreign_history_preserved";
+        if(target.profile.userId!=10||target.profile.parentUserId!=0||!ProfileTarget.CTRIP.equals(target.packageName)
+                ||scope.targetUserId!=target.profile.userId||!scope.targetSha256.equals(target.sha256)
+                ||!scope.generation.equals(generation)||strictInt(response,"version")!=BrokerProtocol.PUBLIC_OWN_GROUP_PROFILE_VERSION
+                ||!generation.equals(response.getString("generation"))||display!=strictInt(response,"display_id")
+                ||!"RELEASED".equals(response.getString("state"))||!scope.sha256.equals(response.getString("display_scope_sha256"))
+                ||!Boolean.TRUE.equals(response.get("public_scope_admission_retired"))
+                ||!Boolean.TRUE.equals(response.get("public_scope_closing"))
+                ||!Boolean.FALSE.equals(response.get("profile_custody_retained"))
+                ||!expectedScope.equals(proof.getString("recents_absence_scope")))
+            throw new IOException("public profile cleanup scope differs");
+        if(concurrent)requireProfileFields(history,"schema","target_sha256","foreign_dormant_history_preserved","history_refusal_latched",
+                "history_refusal_reason","baseline_elapsed_ms","current_elapsed_ms","baseline_raw_sha256","current_raw_sha256",
+                "nonowned_history_sha256","baseline_task_ids","owned_task_ids","owned_target_absent","serialized_task_ids_grant_authority",
+                "history_preservation_scope","physical_history_frozen","unrelated_physical_history_changes_observed",
+                "protected_history_sha256","current_protected_history_sha256","nonphysical_history_preserved","recents_presentation_changes_observed");
+        else requireProfileFields(history,"schema","target_sha256","foreign_dormant_history_preserved","history_refusal_latched",
+                "history_refusal_reason","baseline_elapsed_ms","current_elapsed_ms","baseline_raw_sha256","current_raw_sha256",
+                "nonowned_history_sha256","baseline_task_ids","owned_task_ids","owned_target_absent","serialized_task_ids_grant_authority");
+        if((!concurrent&&!"hepta.public-profile-history-custody.v1".equals(history.getString("schema")))
+                ||!target.sha256.equals(history.getString("target_sha256"))
+                ||!Boolean.TRUE.equals(history.get(concurrent?"nonphysical_history_preserved":"foreign_dormant_history_preserved"))
+                ||!Boolean.FALSE.equals(history.get("history_refusal_latched"))||history.get("history_refusal_reason")!=JSONObject.NULL
+                ||!Boolean.TRUE.equals(history.get("owned_target_absent"))
+                ||!Boolean.FALSE.equals(history.get("serialized_task_ids_grant_authority")))
+            throw new IOException("public profile preserved history is unknown");
+        if(concurrent&&(!"nonphysical_and_unresolved_recents".equals(history.getString("history_preservation_scope"))
+                ||!Boolean.FALSE.equals(history.get("physical_history_frozen"))
+                ||!(history.get("unrelated_physical_history_changes_observed") instanceof Boolean)
+                ||!(history.get("recents_presentation_changes_observed") instanceof Boolean)
+                ||!Boolean.valueOf(!history.getBoolean("unrelated_physical_history_changes_observed")&&!history.getBoolean("recents_presentation_changes_observed")).equals(history.get("foreign_dormant_history_preserved"))
+                ||!history.getString("protected_history_sha256").matches("[0-9a-f]{64}")
+                ||!history.getString("protected_history_sha256").equals(history.getString("current_protected_history_sha256"))))
+            throw new IOException("public profile protected history scope differs");
+        long before=strictLong(history,"baseline_elapsed_ms"),after=strictLong(history,"current_elapsed_ms");
+        if(before<scope.createdElapsedMs||after<before||after>SystemClock.elapsedRealtime())
+            throw new IOException("public profile history clock differs");
+        for(String key:new String[]{"baseline_raw_sha256","current_raw_sha256","nonowned_history_sha256"})
+            if(!history.getString(key).matches("[0-9a-f]{64}"))throw new IOException("public profile history digest differs");
+        Set<Integer> baseline=checkedProfileTaskIds(history.getJSONArray("baseline_task_ids"));
+        Set<Integer> retained=checkedProfileTaskIds(history.getJSONArray("owned_task_ids"));
+        if(!retained.equals(ownedIds)||!Collections.disjoint(baseline,retained))
+            throw new IOException("public profile history task binding differs");
+    }
+    private static Set<Integer> checkedProfileTaskIds(JSONArray values)throws Exception{
+        Set<Integer> ids=new java.util.HashSet<Integer>();
+        for(int i=0;i<values.length();i++){
+            Object raw=values.get(i);
+            if(!(raw instanceof Integer)&&!(raw instanceof Long))throw new IOException("public profile task id type differs");
+            long id=((Number)raw).longValue();
+            if(id<=0||id>Integer.MAX_VALUE||!ids.add((int)id))throw new IOException("public profile task id differs");
+        }
+        return ids;
     }
     private static void requireProfileFields(JSONObject value,String... names)throws Exception{
         Set<String> expected=new TreeSet<String>(java.util.Arrays.asList(names)),actual=new TreeSet<String>();
@@ -693,25 +1239,71 @@ final class BackgroundSession {
         QualificationScopeConfig.FilesRoot root=new QualificationScopeConfig.FilesRoot(context);
         File path=new File(root.path,JOURNAL);
         if(!MobiMindPrivateFiles.exists(path))return new Cleanup(true,new JSONObject().put("cleanup_known",true).put("no_lease",true));
-        byte[] originalJournal=MobiMindPrivateFiles.read(path,16384,true).bytes;
+        MobiMindPrivateFiles.Read originalRead=MobiMindPrivateFiles.read(path,16384,true);
+        byte[] originalJournal=originalRead.bytes;
         JSONObject old=parseJournal(originalJournal);String generation=old.getString("generation"),socket=old.getString("socket"),name=old.getString("display_name");
         if(!isUuid(generation)||!("hepta-bg-"+generation).equals(socket)||!socket.equals(name))throw new IOException("旧后台租约身份无效");
         int id=old.getInt("display_id");long expiry=old.getLong("expires_elapsed_ms");
-        ProfileTarget target=journalProfileTarget(old);
-        JSONObject closeRequest=new JSONObject().put("version",target==null?BrokerProtocol.VERSION:BrokerProtocol.PROFILE_VERSION)
+        ProfileTarget target=journalProfileTarget(old);PublicOwnGroupPolicy.Scope publicScope=journalPublicScope(old);
+        if(publicScope!=null&&target!=null&&target.profile.userId==10&&prelaunchCheck!=null
+                &&(id==-1&&Boolean.FALSE.equals(old.get("profile_launch_attempted"))
+                    ||id>1&&Boolean.TRUE.equals(old.get("profile_launch_attempted")))&&"CLEANUP_UNKNOWN".equals(old.getString("state"))
+                &&readBootCount(context)==old.getInt("boot_count")&&expiry<Long.MAX_VALUE-2000
+                &&SystemClock.elapsedRealtime()>expiry+2000){
+            // The normal UI epoch, serial recovery writer and drained service exclude Start/close.
+            // Do not send even an old-broker close command in this read-only recovery branch.
+            prelaunchCheck.check();originalRead.unchangedPath();
+            PublicProfileRecoveryClient.Receipt receipt=PublicProfileRecoveryClient.collect(context,originalRead,prelaunchCheck);
+            receipt.persist(context);final JSONObject verifiedEvidence=receipt.evidence();
+            prelaunchCheck.check();root.unchanged(context);receipt.requireOriginals(true);originalRead.unchangedPath();
+            byte[] current=MobiMindPrivateFiles.read(path,16384,true).bytes;
+            if(!java.util.Arrays.equals(originalJournal,current)||!receipt.request.journalSha256.equals(HeptaAccessibilityService.sha(current))
+                    ||receipt.request.displayId!=id||!displayAbsent(context,id,name))throw new IOException("公共恢复期间原租约或显示状态发生变化");
+            receipt.request.requireFence(SystemClock.elapsedRealtime(),readBootCount(context));
+            prelaunchCheck.check();root.unchanged(context);originalRead.unchangedPath();
+            // Commit only the background lease. All original failure files and independent leases remain.
+            Os.remove(path.getPath());MobiMindPrivateFiles.syncDirectory(root.path);
+            return new Cleanup(true,verifiedEvidence,null,null,receipt);
+        }
+        if(publicScope!=null&&target==null&&prelaunchCheck!=null&&id>1
+                &&journalRequiresPersonalNotes(old,publicScope)&&"CLEANUP_UNKNOWN".equals(old.getString("state"))
+                &&readBootCount(context)==old.getInt("boot_count")&&expiry<Long.MAX_VALUE-2000
+                &&SystemClock.elapsedRealtime()>expiry+2000){
+            // No close, display, task, package or process mutation enters this branch.
+            prelaunchCheck.check();originalRead.unchangedPath();
+            PublicPersonalNotesRecoveryClient.Receipt receipt=PublicPersonalNotesRecoveryClient.collect(context,originalRead,prelaunchCheck);
+            receipt.persist(context);final JSONObject verifiedEvidence=receipt.evidence();
+            prelaunchCheck.check();root.unchanged(context);receipt.requireOriginals(true);originalRead.unchangedPath();
+            byte[] current=MobiMindPrivateFiles.read(path,16384,true).bytes;
+            if(!java.util.Arrays.equals(originalJournal,current)||!receipt.request.journalSha256.equals(HeptaAccessibilityService.sha(current))
+                    ||receipt.request.displayId!=id||!displayAbsent(context,id,name))
+                throw new IOException("备忘录缺席恢复期间原租约或显示状态发生变化");
+            receipt.request.requireFence(SystemClock.elapsedRealtime(),readBootCount(context));
+            prelaunchCheck.check();root.unchanged(context);receipt.requireOriginals(true);originalRead.unchangedPath();
+            // Only this CAS-bound active lease is retired. Its failed task, cleanup and
+            // original control-session bytes have already been durably archived.
+            Os.remove(path.getPath());MobiMindPrivateFiles.syncDirectory(root.path);
+            return new Cleanup(true,verifiedEvidence,null,null,null,receipt);
+        }
+        int recoveryVersion=publicScope==null?(target==null?BrokerProtocol.VERSION:BrokerProtocol.PROFILE_VERSION)
+                :(target==null?BrokerProtocol.PUBLIC_OWN_GROUP_VERSION:BrokerProtocol.PUBLIC_OWN_GROUP_PROFILE_VERSION);
+        JSONObject closeRequest=new JSONObject().put("version",recoveryVersion)
                 .put("request_id",UUID.randomUUID().toString()).put("generation",generation)
                 .put("deadline_elapsed_ms",SystemClock.elapsedRealtime()+3500).put("op","close");
         if(target!=null)closeRequest.put("target_sha256",target.sha256);
+        if(publicScope!=null)closeRequest.put("display_scope_sha256",publicScope.sha256);
         JSONObject response=null,profileCleanup=null;boolean released=false,connectionUnavailable=false;
         try{response=exchange(socket,generation,closeRequest,4000);
             released=response.getBoolean("ok")&&"RELEASED".equals(response.getString("state"));
             if(response.getInt("display_id")>0)id=response.getInt("display_id");
-            if(released&&target!=null)profileCleanup=checkedProfileCleanup(response,target,generation,id,old.getBoolean("profile_launch_attempted"));
+            if(released&&target!=null)profileCleanup=checkedProfileCleanup(response,target,publicScope,generation,id,old.getBoolean("profile_launch_attempted"));
+            if(released&&journalRequiresPersonalNotes(old,publicScope))
+                checkedPersonalNotesCleanup(response,publicScope,generation,id);
         }catch(ConnectionUnavailable absent){connectionUnavailable=true;/* No fallback for an invalid/authentication-failed response. */}
         int currentBoot=readBootCount(context),oldBoot=old.getInt("boot_count");
         boolean newBoot=currentBoot>=0&&oldBoot>=0&&currentBoot!=oldBoot;
         boolean noLateCreate=newBoot||SystemClock.elapsedRealtime()>expiry+2000;
-        if(!released&&connectionUnavailable&&target!=null&&prelaunchCheck!=null&&noLateCreate
+        if(!released&&connectionUnavailable&&publicScope==null&&target!=null&&prelaunchCheck!=null&&noLateCreate
                 &&id==-1&&Boolean.FALSE.equals(old.get("profile_launch_attempted"))){
             prelaunchCheck.check();
             ProfileRecoveryClient.Receipt receipt=ProfileRecoveryClient.collect(context,originalJournal,prelaunchCheck);
@@ -730,7 +1322,7 @@ final class BackgroundSession {
             Os.remove(path.getPath());MobiMindPrivateFiles.syncDirectory(root.path);
             return new Cleanup(true,verifiedEvidence,receipt);
         }
-        if(!released&&connectionUnavailable&&target!=null&&prelaunchCheck!=null&&noLateCreate
+        if(!released&&connectionUnavailable&&publicScope==null&&target!=null&&prelaunchCheck!=null&&noLateCreate
                 &&id>0&&Boolean.TRUE.equals(old.get("profile_launch_attempted"))
                 &&"CLEANUP_UNKNOWN".equals(old.getString("state"))){
             prelaunchCheck.check();
@@ -787,15 +1379,48 @@ final class BackgroundSession {
                 ||!target.sha256.equals(selection.getString("profile_target_sha256")))throw new IOException("profile journal Selection differs");
         return target;
     }
+    private static PublicOwnGroupPolicy.Scope journalPublicScope(JSONObject journal)throws Exception{
+        if(!journal.has("public_own_group_scope_wire")){
+            if(journal.has("public_own_group_scope_sha256")||journal.has("public_own_group_experimental")
+                    ||journal.has("public_scope_serialization_grants_authority"))throw new IOException("PUBLIC_SCOPE_JOURNAL_INCOMPLETE");
+            return null;
+        }
+        PublicOwnGroupPolicy.Scope scope=PublicOwnGroupPolicy.Scope.fromWire(journal.getString("public_own_group_scope_wire"));
+        scope.requireConfig(strictInt(journal,"app_uid"),journal.getString("generation"),strictLong(journal,"expires_elapsed_ms"),journalProfileTarget(journal));
+        if(!scope.sha256.equals(journal.getString("public_own_group_scope_sha256"))
+                ||!scope.taskId.equals(journal.getString("task_id"))||!scope.ownerSha256.equals(journal.getString("owner_sha256"))
+                ||scope.createdElapsedMs!=strictLong(journal,"created_elapsed_ms")||scope.bootCount!=strictInt(journal,"boot_count")
+                ||!Boolean.TRUE.equals(journal.get("public_own_group_experimental"))
+                ||!Boolean.FALSE.equals(journal.get("public_scope_serialization_grants_authority"))
+                ||!Boolean.TRUE.equals(journal.get("owned_task_retirement_required")))throw new IOException("PUBLIC_SCOPE_JOURNAL_BINDING_INVALID");
+        return scope;
+    }
     private static JSONObject readJournal(File file)throws Exception{
         return parseJournal(MobiMindPrivateFiles.read(file,16384,true).bytes);
+    }
+    private static boolean journalRequiresPersonalNotes(JSONObject journal,PublicOwnGroupPolicy.Scope scope)throws Exception{
+        if(scope==null||scope.targetUserId!=0){
+            if(journal.has("personal_notes_retirement_required"))throw new IOException("NOTES_JOURNAL_SCOPE_INVALID");
+            return false;
+        }
+        JSONObject selection=journal.getJSONObject("selection");
+        boolean expected="com.motorola.stylus".equals(selection.getString("bootstrap_package"));
+        if(expected){
+            JSONArray allowed=selection.getJSONArray("allowed_packages");
+            if(allowed.length()!=1||!"com.motorola.stylus".equals(allowed.get(0))
+                    ||!"public_own_group_personal_no_credentials_v1".equals(selection.getString("display_scope_mode"))
+                    ||!Boolean.TRUE.equals(journal.get("personal_notes_retirement_required")))
+                throw new IOException("NOTES_JOURNAL_TASK_BINDING_INVALID");
+        }else if(journal.has("personal_notes_retirement_required"))throw new IOException("NOTES_JOURNAL_SCOPE_INVALID");
+        return expected;
     }
     private static JSONObject parseJournal(byte[] bytes)throws Exception{
         JSONObject value=new JSONObject(new String(bytes,StandardCharsets.UTF_8));
         if(!SCHEMA.equals(value.getString("schema"))||value.getInt("app_uid")!=android.os.Process.myUid())throw new IOException("后台租约格式或应用 UID 不匹配");
         long created=value.getLong("created_elapsed_ms"),expiry=value.getLong("expires_elapsed_ms");
         if(created<0||expiry<=created||expiry-created!=TTL_MS)throw new IOException("后台租约截止时间无效");
-        journalProfileTarget(value);
+        journalProfileTarget(value);PublicOwnGroupPolicy.Scope publicScope=journalPublicScope(value);
+        journalRequiresPersonalNotes(value,publicScope);
         return value;
     }
     private static boolean displayAbsent(Context context,int id,String name){

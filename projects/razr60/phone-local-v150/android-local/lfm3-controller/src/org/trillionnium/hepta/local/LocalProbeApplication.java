@@ -5,6 +5,7 @@ import android.app.Application;
 public final class LocalProbeApplication extends Application {
     private LocalModelEngine model;
     private LocalTaskSession tasks;
+    private LocalModelSettings modelSettings;
     private MobiMindModelEngine visualDiagnostic;
     private UiVenusModelEngine uiVenusDiagnostic;
     private volatile BackgroundPermissionSession backgroundPermission;
@@ -54,6 +55,22 @@ public final class LocalProbeApplication extends Application {
         if(tasks.isRunning()||tasks.isBlocked()||tasks.isRecovering()||tasks.hasBackgroundLease()||model.isBusy()||!otherDiagnosticsClean())
             throw new IllegalStateException("请先结束当前任务、诊断或原后台空间；权限准备不会清除这些状态");
         backgroundPermission.startFromOwnerButton();
+    }
+
+    synchronized LocalModelSettings modelSettings(){initializeSessions();return modelSettings;}
+    boolean canChangeLocalModelSettings(boolean restore){
+        recoveryMainThread();initializeSessions();
+        try{
+            requireModelSettingsIdle(HeptaAccessibilityService.connected());
+            return !modelSettings.isBusy()&&(!restore||modelSettings.restoreAvailable())&&model.settingsAdmissionAvailable(restore);
+        }catch(RuntimeException unavailable){return false;}
+    }
+    void requireModelSettingsIdle(HeptaAccessibilityService expected){
+        recoveryMainThread();initializeSessions();
+        if(expected==null||HeptaAccessibilityService.connected()!=expected||!expected.modelSettingsIdle()
+                ||tasks.isRunning()||tasks.isBlocked()||tasks.isRecovering()||tasks.hasBackgroundLease()
+                ||!otherDiagnosticsClean()||recoveryBarrier!=null||controlRecoveryAttempt!=null||controlRecoveryCallbackFailed)
+            throw new IllegalStateException("任务、后台空间、模型队列或屏幕读写尚未空闲；模型设置未开始");
     }
 
     private static void recoveryMainThread(){
@@ -175,9 +192,11 @@ public final class LocalProbeApplication extends Application {
         DiagnosticStartupGate gate = new DiagnosticStartupGate(tasks.isBlocked(), visualDiagnostic.isBlocked(), uiVenusDiagnostic.isBlocked());
         gate.apply(() -> recoveryBarrier = model.reserveRecoveryBarrier());
         initialized = true;
+        modelSettings = new LocalModelSettings(this,model);
     }
 
     @Override public void onTerminate() {
+        if(modelSettings!=null)modelSettings.close();
         if(backgroundPermission!=null)backgroundPermission.close();
         if (visualDiagnostic != null) visualDiagnostic.close();
         if (uiVenusDiagnostic != null) uiVenusDiagnostic.close();

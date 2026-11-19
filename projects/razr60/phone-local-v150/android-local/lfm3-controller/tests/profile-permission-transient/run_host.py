@@ -28,7 +28,7 @@ def main():
     here = Path(__file__).resolve().parent
     fixture = here / 'fixtures/synthetic-activities.txt'
     background = source / 'src/org/trillionnium/hepta/background'
-    names = ['ProfileIdentity', 'ProfileTarget', 'WindowOwnership', 'BrokerProtocol', 'FixedIntentTools',
+    names = ['ProfileIdentity', 'ProfileTarget', 'WindowOwnership', 'BrokerProtocol','PublicPermissionControllerUi', 'PublicOwnGroupPolicy', 'FixedIntentTools',
              'BackgroundOwnedTaskPolicy', 'BackgroundOwnedSingleTask', 'ProfileTaskPolicy',
              'ProfileOwnedTask', 'ProfilePermissionTransient', 'ProfileDisplayCustody']
     files = [background / (name + '.java') for name in names]
@@ -67,15 +67,31 @@ def main():
             '} else if(config.profileTarget!=null&&"launch".equals(r.operation)) {', 1)[0]
         state_call = ('if(profileOwnedTask!=null&&!profileOwnedTask.observeStateUntil(Math.min(r.deadline,expires)-100))'
                       'throw new BrokerProtocol.Refusal("PROFILE_TASK_NOT_OBSERVED");')
+        # The new scope has a distinct permission-preparation state operation.
+        # Check its exact selector before projecting ONLY the legacy null-scope
+        # branch to the original literal. Keep the original 1800 ms assertion
+        # below; this source projection grants no transport/display authority.
+        session_text = session.read_text()
+        state_selector = 'publicOwnGroupScope!=null&&permissionPreparing?"prepare_state":"state"'
+        current_verify = ('void verifyRemote()throws Exception{requireActive();accept(call('
+                          + state_selector + ',null,1800),true);requireActive();}')
+        if (session_text.count(current_verify) != 1
+                or session_text.count('call(' + state_selector + ',null,1800)') != 1):
+            raise RuntimeError('Exact scope-guarded state/preparation request wiring differs')
+        legacy_session_text = session_text.replace(
+            'call(' + state_selector + ',null,1800)', 'call("state",null,1800)', 1)
         if (state_call not in state or broker_text.count('.observeStateUntil(') != 1
                 or 'if(profileOwnedTask.observe()){observed=true;break;}' not in broker_text
                 or 'profileOwnedTask.window(r.windowId,r.observedTaskId,Math.min(r.deadline,expires))' not in broker_text
-                or 'accept(call("state",null,1800),true)' not in session.read_text()):
+                or 'accept(call("state",null,1800),true)' not in legacy_session_text):
             raise RuntimeError('State-only original-request wiring differs')
         result['state_settle_wiring'] = {'state_only': True, 'state_request_budget_ms': 1800,
                                         'response_margin_ms': 100, 'new_rpc': False,
                                         'coordinator_compiled_and_executed': False,
                                         'android_broker_wiring_static_only': True}
+        result['state_settle_wiring']['legacy_projection_scope'] = 'publicOwnGroupScope == null'
+        result['state_settle_wiring']['exact_new_selector_checked'] = state_selector
+        result['state_settle_wiring']['new_scope_coordinator_execution_claimed'] = False
         if fixture.stat().st_size != 2306 or sha(fixture) != SYNTHETIC_SHA:
             raise RuntimeError('Synthetic fixture pin differs')
         result['synthetic_fixture'] = {'bytes': 2306, 'sha256': SYNTHETIC_SHA, 'kind': 'authored_synthetic'}

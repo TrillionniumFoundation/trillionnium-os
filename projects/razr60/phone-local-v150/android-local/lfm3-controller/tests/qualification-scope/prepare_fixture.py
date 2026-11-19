@@ -27,6 +27,7 @@ def prepare(source, output):
         'background_binding': section(s, '    synchronized void bindBackgroundSession(', '    private void refreshApps()'),
         'app_catalogue': section(s, '    public AppCatalogueRanker.Page appCatalogue(', '    private String diagnosticTask;'),
         'lease': section(s, '    public synchronized boolean acquireTask(', '    private boolean locked()'),
+        'background_lock': section(s, '    private boolean locked(BackgroundSession background)', '    private int rotation('),
         # Keep each original dispatch method verbatim. The new native bridge is
         # executed by its separate gate; this non-native fixture has throwing endpoints.
         'scope_validate_dispatch': (section(s, '    synchronized void bindQualificationScope(', '    private void requireNativeActionGuard(')
@@ -97,6 +98,15 @@ def prepare(source, output):
         'record_exists': section(session, '    private static boolean recordExists(', '    /** Create once; never unlink'),
         'read_record': section(session, '    private static byte[] readSessionRecord(', '    private JSONArray archivePriorRecords('),
     }
+    # The legacy session fixture executes the original task/terminal methods.
+    # The new read-only model-settings admission is covered by its separate gate;
+    # do not fabricate recovery/journal permission endpoints in this fixture.
+    session_settings_only = section(session,
+        '    /** Read-only settings admission. Reuses the ordinary startup/terminal policy without acknowledging it. */',
+        '    private LeaseState readLeaseState(){')
+    if session_parts['persist'].count(session_settings_only) != 1:
+        raise RuntimeError('one model-settings-only helper block in legacy session fixture')
+    session_parts['persist'] = session_parts['persist'].replace(session_settings_only, '', 1)
     fixture = (Path(__file__).parent / 'SessionFixture.template').read_text()
     for name, code in session_parts.items():fixture=fixture.replace('{{'+name+'}}',code)
     (output / 'LocalTaskSession.java').write_text(fixture)
@@ -105,9 +115,63 @@ def prepare(source, output):
         'binding': section(ui, '    @Override protected void onSaveInstanceState(', '    @Override protected void onNewIntent('),
         'intent_start': section(ui, '    private void handleIntent(', '    private void runProbe('),
     }
+    # The actual Intent and beginTask bodies remain exact. Model chooser,
+    # restore and listener UI are tested by the independent settings gate.
+    ui_settings_only = section(ui, '    private void chooseLocalModelFromOwnerButton(){',
+        '    private boolean beginTask(')
+    if ui_parts['intent_start'].count(ui_settings_only) != 1:
+        raise RuntimeError('one model-settings-only UI block in legacy scope fixture')
+    ui_parts['intent_start'] = ui_parts['intent_start'].replace(ui_settings_only, '', 1)
     fixture = (Path(__file__).parent / 'UiFixture.template').read_text()
+    # The legacy scope fixture has no actual Activity/physical identity.
+    # Null keeps its existing VD/strict path; the exact capture method has its own gate.
+    fixture = fixture.replace('{{intent_start}}',
+        '    private org.trillionnium.hepta.background.PublicPermissionControllerUi.Locator controllerUiFromOwnerButton(String owner){return null;}\n{{intent_start}}',1)
     for name,code in ui_parts.items():fixture=fixture.replace('{{'+name+'}}',code)
     (output / 'ScopeUiFixture.java').write_text(fixture)
+    # Preserve the complete production owner-button, Session and Controller
+    # bodies. These original foreground cases have no real Activity display;
+    # capture returns only null, and the new read-only root IO endpoint throws.
+    # The independent controller-display-handoff gate executes the actual pure
+    # handoff contract. This fixture cannot construct a Locator or a proof.
+    (output/'ControllerDisplayHandoff.java').write_text('''package org.trillionnium.hepta.background;
+public final class ControllerDisplayHandoff {
+ private ControllerDisplayHandoff(){throw new AssertionError("legacy scope fixture");}
+ public static final class Locator {private Locator(){throw new AssertionError("no handoff authority");}}
+}
+''')
+    (output/'ControllerDisplayHandoffClient.java').write_text('''package org.trillionnium.hepta.local;
+import android.app.Activity;import android.content.Context;import java.io.File;import java.io.IOException;
+import org.trillionnium.hepta.background.ControllerDisplayHandoff;
+/** Explicit absent caller-display capture and throwing root IO only. */
+final class ControllerDisplayHandoffClient {
+ private ControllerDisplayHandoffClient(){throw new AssertionError("legacy scope fixture");}
+ interface Check {void check()throws Exception;}
+ static final class ReaderExitUnknown extends IOException {
+  private static final long serialVersionUID=1L;
+  ReaderExitUnknown(){super("legacy fixture cannot run a handoff reader");}
+ }
+ static ControllerDisplayHandoff.Locator capture(Activity activity,String owner){return null;}
+ static void await(Context context,File evidence,String task,String owner,ControllerDisplayHandoff.Locator locator,long deadline,Check check)throws Exception{
+  throw new AssertionError("legacy scope fixture cannot perform display handoff IO");
+ }
+}
+''')
+    # Execute the actual saved-mode default/type check. Only SharedPreferences IO
+    # is replaced by a supplied map; no selection, persistence or task authority.
+    preferences_raw=(pkg/'BackgroundUiPreferences.java').read_text()
+    mode_parts={
+        'mode_key':section(preferences_raw, '    private static final String MODE=', '    private static final int MAX_BYTES='),
+        'mode':section(preferences_raw, '    static boolean mode(Context context){', '    static void saveMode('),
+    }
+    (output/'BackgroundModePreferencesFixture.java').write_text(
+        'package org.trillionnium.hepta.local;\nimport android.content.Context;\nimport java.util.Map;\n'
+        '/** Exact production mode reader; SharedPreferences is explicit host IO. */\n'
+        'final class BackgroundModePreferencesFixture {\n'
+        '    static Map<String,?> saved;\n'
+        '    static final class Preferences {Map<String,?> getAll(){return saved;}}\n'
+        '    private static Preferences preferences(Context context){return new Preferences();}\n'
+        +mode_parts['mode_key']+mode_parts['mode']+'}\n')
     pure=['BackgroundTaskTarget','NativeAppGoal','NativeAppEvidence','NativeAppDomain','NativeCtripFlightPage','NativeXiaomiProductPage','NativeAppObservation','NotesCreateWorkflow','NotesOwnerIntent','CalculatorTaskInputGuard','CalculatorGoalContract','CalculatorCompletionEvidence','NotesTaskPhaseGuard','TaskCompletionGate','NotesCompletionEvidence','FixedIntentAttemptGuard','LastModelDecisionProjection','TaskAuthorization','ActionDecision','ActionPolicy','ObservedTargetLabels','ObservedScrollActions','ObservedImeEnter','SubmitAttemptGuard','ObservationStabilityGate','RecentActionProjection',
           'PersistentActionPolicy','ImeVisibility','ObservationState','ObservedWindowMetadata','ObservedChildText',
           'RepeatActionGuard','SameStateNoEffectGuard','DecisionGrammar','ModelProfile','LocalRuntimeConfig','VlmPins',
@@ -127,7 +191,7 @@ def prepare(source, output):
     web_dom_canonical=source/'src/org/trillionnium/hepta/webprotocol/WebDomCanonical.java'
     files += [pkg/'web/WebFlightGoal.java',pkg/'web/WebShoppingGoal.java',web_protocol,web_dom_canonical,
               source/'tests/web-flight/legacy-boundary/WebShoppingQuote.java']
-    files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','FixedIntentDispatch','BrokerProtocol','ProfileIdentity','ProfileTarget','WindowOwnership')]
+    files += [source/'src/org/trillionnium/hepta/background'/(name+'.java') for name in ('FixedIntentTools','FixedIntentTarget','FixedIntentDispatch','BrokerProtocol','PublicPermissionControllerUi','PublicOwnGroupPolicy','ProfileIdentity','ProfileTarget','WindowOwnership')]
     # The real immutable Selection is now part of ordinary authorization admission.
     # Replace only that former fixture class; broker/display transport stays explicit IO fake.
     background_raw=(pkg/'BackgroundSession.java').read_text()
@@ -150,11 +214,19 @@ def prepare(source, output):
     files += [p for p in sorted((Path(__file__).parent/'fixtures').rglob('*.java'))
               if p.name not in ('BackgroundSession.java','WebFlightSession.java')]
     files += [Path(__file__).parent/'QualificationScopeHostTest.java',Path(__file__).parent/'BackgroundFreshnessHostTest.java']
-    record={'schema':'hepta.scope-host-extraction.v1','source_files':{n:hashlib.sha256((pkg/n).read_bytes()).hexdigest() for n in ['TaskAuthorization.java','HeptaAccessibilityService.java','LocalTaskSession.java','SessionTerminalEvidence.java','MainActivity.java','LocalTaskController.java','QualificationScope.java','QualificationScopeConfig.java']},
-        'extracted':{n:{'bytes':len(v.encode()),'sha256':hashlib.sha256(v.encode()).hexdigest()} for n,v in {**pieces,**comparison_parts,**session_parts,**ui_parts,**{'background_'+n:v for n,v in snapshot_parts.items()}}.items()},
+    record={'schema':'hepta.scope-host-extraction.v1','source_files':{n:hashlib.sha256((pkg/n).read_bytes()).hexdigest() for n in ['TaskAuthorization.java','HeptaAccessibilityService.java','LocalTaskSession.java','SessionTerminalEvidence.java','MainActivity.java','BackgroundUiPreferences.java','LocalTaskController.java','QualificationScope.java','QualificationScopeConfig.java']},
+        'extracted':{n:{'bytes':len(v.encode()),'sha256':hashlib.sha256(v.encode()).hexdigest()} for n,v in {**pieces,**comparison_parts,**session_parts,**ui_parts,**{'preferences_'+n:v for n,v in mode_parts.items()},**{'background_'+n:v for n,v in snapshot_parts.items()}}.items()},
         'full_actual_classes':['TaskCompletionGate','NotesCompletionEvidence','LocalTaskController','QualificationScope','QualificationScopeConfig','MobiMindPrivateFiles','SessionTerminalEvidence'],
         'boundary':'Android IO and effect endpoints are fakes; production admission/dispatch and controller code is executed',
         'observer_helper_excluded_from_legacy_collector':{'bytes':len(observer_only.encode()),'sha256':hashlib.sha256(observer_only.encode()).hexdigest(),'covered_by':'tests/native-observation-snapshot/run_host.py','legacy_collector_methods_modified':False},
+        'model_settings_helpers_excluded_from_legacy_fixture':{
+            'covered_by':'tests/local-model-settings/run_host.py',
+            'session_admission':{'bytes':len(session_settings_only.encode()),'sha256':hashlib.sha256(session_settings_only.encode()).hexdigest()},
+            'owner_ui':{'bytes':len(ui_settings_only.encode()),'sha256':hashlib.sha256(ui_settings_only.encode()).hexdigest()},
+            'legacy_session_and_intent_methods_modified':False,
+            'separate_gate_execution_not_claimed_here':True},
+        'personal_notes_recovery_fixture_boundary':'Eligibility is explicitly false and the receipt is always null; this legacy IO fixture cannot create or accept personal Notes recovery authority.',
+        'controller_display_handoff_fixture_boundary':'Exact owner-button, Session and Controller bodies; capture is explicit null and root IO always throws, with no constructible Locator or receipt. Actual pure contract is tested separately by tests/controller-display-handoff/run_host.py.',
         'web_fixture_boundary':'Explicit empty Web journal only; real Web OWNER/selection and every helper action/cleanup throw AssertionError; actual Web classes have their separate gate',
         'background_fixture_boundary':'Actual complete immutable Selection and package check extracted verbatim; all broker/display transport remains explicit IO fake and not Android proof',
         'native_validation_prefix_sha256':hashlib.sha256(web_entry_prefix.encode()).hexdigest(),
@@ -174,6 +246,7 @@ def prepare(source, output):
             'compiler_path':str(web_fixture_compile),'bytes':len(web_fixture_raw),
             'sha256':hashlib.sha256(web_fixture_raw).hexdigest(),'byte_identical':True},
         'native_app_fixture_boundary':'Real immutable NativeAppEvidence/NativeAppDomain and actual observation copying compile; NativeAppSession and the four-purpose Service bridge are all-throw type boundaries for these original non-native cases. Separate native provider gates replace the Session; the native-action gate executes the actual complete collector/bridge/final checker.',
+        'permission_initialization_boundary':'Original non-profile cases retain the complete production Service and Controller call sites. The explicit empty permission-worker type cannot prepare or obtain profile authority; its absent receipt is null, like a never-started real worker. The independent permission-ui gate executes the real worker and core.',
         'native_action_bridge_excluded':{'bytes':len(section(s,'    private void requireNativeActionGuard(','    private String validate(').encode()),
             'sha256':hashlib.sha256(section(s,'    private void requireNativeActionGuard(','    private String validate(').encode()).hexdigest()},
         'phone_operations':False,'native_inference':False}

@@ -14,7 +14,7 @@ def main():
     a=ap.parse_args();a.output.mkdir(parents=True,exist_ok=False)
     if sha(a.json_jar)!='3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed': raise RuntimeError('JSON jar pin differs')
     bg=a.source/'src/org/trillionnium/hepta/background'
-    names=['ProfileIdentity','ProfileTarget','WindowOwnership','BrokerProtocol','FixedIntentTools','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfileOwnedTask','ProfilePermissionTransient','ProfileDisplayCustody','ProfilePrelaunchRecovery','ProfileRecoveryProcesses']
+    names=['ProfileIdentity','ProfileTarget','WindowOwnership','BrokerProtocol','PublicPermissionControllerUi','PublicOwnGroupPolicy','FixedIntentTools','BackgroundOwnedTaskPolicy','BackgroundOwnedSingleTask','ProfileTaskPolicy','ProfileOwnedTask','ProfilePermissionTransient','ProfileDisplayCustody','ProfilePrelaunchRecovery','ProfileRecoveryProcesses']
     files=[bg/(n+'.java') for n in names]+[Path(__file__).with_name('ProfileRecoveryHostTest.java')]
     pins={str(p.relative_to(a.source)):sha(p) for p in files}
     classes=a.output/'classes';classes.mkdir()

@@ -21,7 +21,7 @@
     }
     static ObserverPipelineHost nativeFixture(final Change change)throws Exception{
         ObserverPipelineHost f=new ObserverPipelineHost();f.lease=EventChecks.TASK;
-        BackgroundSession bg=new BackgroundSession(9);bg.taskId=f.lease;bg.ownerSha256=EventChecks.OWNER;bg.generation=EventChecks.GENERATION;
+        BackgroundSession bg=new BackgroundSession(9);bg.ownerSha256=EventChecks.OWNER;bg.generation=EventChecks.GENERATION;
         BackgroundTaskTarget t=new BackgroundTaskTarget();t.route=BackgroundTaskTarget.NATIVE_APP;t.explicitSelection=true;
         t.ownerSha256=bg.ownerSha256;t.packageName=EventChecks.APP;t.nativeGoal=new NativeAppGoal();
         t.nativeGoal.ownerSha256=t.ownerSha256;t.nativeGoal.packageName=t.packageName;

@@ -13,6 +13,26 @@ an explicit owner bootstrap, recorded as `bootstrap_model_issued=false`.
 Subsequent model requests, decisions, authorization, observations, semantic
 Accessibility actions and completion evidence use the existing ordinary app UID.
 
+Background mode is the default when no preference has been saved. An explicitly
+saved manual foreground choice is preserved. A task or qualification-scope
+prefill never switches display mode. An existing foreground qualification scope
+still blocks background execution; it is not removed or reinterpreted.
+
+Automated App tests must use the normal background **开始任务** path after the
+current application range and initial target have been verified. The legacy
+`auto_task` Intent is refused before reading the nonce-backed private request,
+consuming the nonce or scheduling work: that format has no verified background selection.
+Its rejection leaves the current task text, scope claim and display choice intact.
+The old `tools/phone_acceptance.py run-task` and `tools/phone_suite.py run` drivers
+are also retired at their entries, before creating output, connecting to ADB,
+writing a nonce or launching Hepta on the main display. They have no override flag.
+The `collect-status` receipt reads, offline suite `validate` parser and pure
+evidence helpers remain available; retained legacy flow tests use fake IO
+only and do not establish current background operation.
+Model-only probes remain available, and explicit manual foreground operation is
+still a separate supported user choice. A rejected automatic request is not a
+successful background test.
+
 The normal `su` request starts the broker from the installed APK. This requires
 the phone owner to have authorized Hepta through the existing system mechanism;
 the application does not change privilege policy or authorize itself. Devices

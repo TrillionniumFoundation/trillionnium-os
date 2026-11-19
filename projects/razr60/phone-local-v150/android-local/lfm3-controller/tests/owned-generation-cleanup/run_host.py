@@ -67,7 +67,8 @@ def main():
         end="        task.cleanup=result;return result;"
         need(engine.count(start)==1 and engine.count(end)==1,"actual release block anchors")
         release=engine[engine.index(start):engine.index(end,engine.index(start))+len(end)]
-        claim=block(engine,"private static void claimProcess(")
+        claim=block(engine,"private void claimProcess(")
+        runtime_generation=block(engine,"static final class RuntimeGeneration {")
         cleanup=block(scope,"static final class Cleanup {")
         contract=block(inference,"final class TaskCleanup {")
         force_lines=[x for x in engine.splitlines() if "force|=generationCleanup.forceKnown&&generationCleanup.forceUsed;" in x]
@@ -76,6 +77,7 @@ def main():
         at=engine.index(marker);cancel=engine[at:engine.index(";",at)+1]
         projection="""package org.trillionnium.hepta.local;
 import java.io.*;
+import java.util.UUID;
 import java.util.concurrent.atomic.*;
 import org.json.JSONObject;
 final class EngineReleaseProjection {
@@ -84,10 +86,15 @@ final class EngineReleaseProjection {
     // Cancellation-queue execution is covered by its existing independent gate.
     static final Queue ACTIVE_CANCELLATION=new Queue();
     static final class Queue { boolean pending(){return false;} }
+    final AtomicBoolean closed=new AtomicBoolean(false);
+    boolean settingsBlocked;
+    private static final class RuntimeConfigTransaction {static final class Snapshot{}}
+"""+runtime_generation+"""
+    final RuntimeGeneration runtime=new RuntimeGeneration(LocalRuntimeConfig.defaults(),null,new ModelFileVerifier(),null);
     final AtomicReference<RunHandle> active=new AtomicReference<>();
     final AtomicReference<WarmTask> warmActive=new AtomicReference<>();
     final WarmTask task=new WarmTask();
-    static final class RunHandle { final AtomicReference<Process> child=new AtomicReference<>(); }
+    static final class RunHandle { final AtomicReference<Process> child=new AtomicReference<>(); RuntimeGeneration runtime; }
     static final class WarmTask {
         final RunHandle owner=new RunHandle();LocalInference.TaskCleanup cleanup;
         final String taskId="11111111111111111111111111111111";
@@ -126,10 +133,12 @@ final class EngineReleaseProjection {
         put(generated/"EngineReleaseProjection.java",projection.encode())
         put(generated/"LocalInference.java",("package org.trillionnium.hepta.local;\ninterface LocalInference {\n"+contract+"\n}\n").encode())
         result["extracted_current_blocks"]={k:{"bytes":len(v.encode()),"sha256":sha(v.encode())} for k,v in {
-            "actual_release":release,"actual_claimProcess":claim,"actual_Cleanup_unforced":cleanup,
+            "actual_release":release,"actual_claimProcess":claim,"runtime_generation_type":runtime_generation,"actual_Cleanup_unforced":cleanup,
             "actual_TaskCleanup":contract,"actual_force_aggregate":force_lines[0],"actual_cancel_conjunction":cancel}.items()}
+        result["settings_boundary"]="Exact generation type and actual config/profile/verifier; snapshot IO and default generation construction are host fixture inputs. Original cleanup/admission cases do not qualify settings."
         classes=a.output/"classes";classes.mkdir()
-        sources=[package/"WorkerGenerationProof.java",test/"WorkerGenerationHostTest.java",
+        sources=[package/"WorkerGenerationProof.java",package/"LocalRuntimeConfig.java",package/"ModelProfile.java",
+                 package/"ModelFileVerifier.java",test/"WorkerGenerationHostTest.java",
                  generated/"EngineReleaseProjection.java",generated/"LocalInference.java"]
         run("java-compile",[a.java_home/"bin/javac","--release","8","-encoding","UTF-8","-Xlint:all","-Werror",
                             "-cp",a.json_jar,"-d",classes,*sources])
@@ -149,6 +158,10 @@ final class EngineReleaseProjection {
         result["cases"]=cases;result["all_pass"]=True
     except Exception as error:
         result["error"]=type(error).__name__+": "+str(error)
+        import traceback
+        detail=traceback.format_exc()
+        result["diagnostic_traceback"]=detail
+        put(a.output/"DIAGNOSTIC-TRACEBACK.txt",detail.encode())
     finally:
         result["inputs_unchanged"]=all(path.read_bytes()==raw for path,raw in inputs.items())
         result["all_pass"]=result["all_pass"] and result["inputs_unchanged"]

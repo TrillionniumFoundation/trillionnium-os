@@ -33,7 +33,7 @@
     }
     static ObserverPipelineHost fixture(final Change change)throws Exception{
         ObserverPipelineHost f=new ObserverPipelineHost();f.lease=SnapshotChecks.TASK;f.taskAuthorization=new Object();
-        BackgroundSession bg=new BackgroundSession(9);bg.taskId=f.lease;bg.ownerSha256=SnapshotChecks.OWNER;bg.generation=SnapshotChecks.GENERATION;
+        BackgroundSession bg=new BackgroundSession(9);bg.ownerSha256=SnapshotChecks.OWNER;bg.generation=SnapshotChecks.GENERATION;
         BackgroundTaskTarget target=new BackgroundTaskTarget();target.route=BackgroundTaskTarget.NATIVE_APP;target.explicitSelection=true;
         target.ownerSha256=bg.ownerSha256;target.packageName=SnapshotChecks.APP;target.nativeGoal=new NativeAppGoal();
         target.nativeGoal.ownerSha256=target.ownerSha256;target.nativeGoal.packageName=target.packageName;

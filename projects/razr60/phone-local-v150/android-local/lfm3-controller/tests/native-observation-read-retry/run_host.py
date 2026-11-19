@@ -31,7 +31,7 @@ def main():
         controller=(source/PKG/'LocalTaskController.java').read_text(encoding='utf-8')
         service=(source/PKG/'HeptaAccessibilityService.java').read_text(encoding='utf-8')
         need(controller.count('nativeObservationRetryUsed=false;')==1,'one budget reset at task entry')
-        run_task=extractor.body(controller,'    private void runTask(String taskId,String instruction,String expectedScopeSha256,TaskAuthorization.Gate authorization,BackgroundSession.Selection backgroundSelection){')
+        run_task=extractor.body(controller,'    private void runTask(String taskId,String instruction,String expectedScopeSha256,TaskAuthorization.Gate authorization,BackgroundSession.Selection backgroundSelection,org.trillionnium.hepta.background.ControllerDisplayHandoff.Locator displayHandoff){')
         need(run_task.count('nativeObservationRetryUsed=false;')==1,'budget reset belongs to actual task entry')
         need(run_task.count('long deadline=SystemClock.elapsedRealtime()+MAX_TASK_MS;')==1,'one original task deadline')
         need(run_task.count('awaitAfterStaleNativeAction(')==1,'one recovery callsite')

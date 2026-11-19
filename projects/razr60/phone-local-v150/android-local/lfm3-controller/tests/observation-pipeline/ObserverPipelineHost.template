@@ -37,12 +37,22 @@ public final class ObserverPipelineHost {
     }
     static final class Selection {BackgroundTaskTarget taskTarget;String initialPackage;List<String> allowedPackages;}
     static final class BackgroundSession {
-        final int display;boolean closed;String taskId,ownerSha256,generation;
+        final int display;boolean closed;final String taskId;String ownerSha256,generation;
+        final ObserverPipelineHost fixtureOwner;
         final Selection selection=new Selection();
-        BackgroundSession(int display){this.display=display;}
+        BackgroundSession(int display){this.display=display;fixtureOwner=live;taskId=fixtureOwner.lease;}
         int displayId(){return display;}boolean released(){return closed;}
         Object profileTarget(){return null;} // Explicit scheduling fixture has no profile selection.
+        // Only the legacy scheduling branch is represented. No experimental scope is created.
+        void requireAdmissionActive(){requireActive();}
+        void requireActive(){
+            if(closed||fixtureOwner!=live||fixtureOwner.locked||!taskId.equals(fixtureOwner.lease)||display<=1)
+                throw new IllegalStateException("synthetic background lease or lock unavailable");
+        }
     }
+    // These original scheduling cases create no permission worker. The separate
+    // permission-ui gate executes the real shared worker and its pending state.
+    static final class ProfilePermissionUiSession {static boolean workPending(){return false;}}
     // Explicit IO boundary only: these states stand for the existing Web journal,
     // controller lifecycle and Android looper. No admission policy is duplicated.
     static final class WebFlightSession {
@@ -166,6 +176,7 @@ public final class ObserverPipelineHost {
     private synchronized boolean ownsBackground(String id,BackgroundSession background){return owns(id)&&taskBackground==background;}
     private synchronized BackgroundSession backgroundFor(String id){if(!owns(id))throw new IllegalStateException("retired fixture lease");return taskBackground;}
     private boolean locked(){return locked;}
+{{background_lock}}
     private Graph readGraph(GraphBudget budget,BackgroundSession background){
         expect(!isMain(),"observation graph read on main");budget.check();int n=reads.incrementAndGet();
         Graph graph=new Graph(n,background==null?0:background.displayId());graph.readStartedElapsedMs=SystemClock.now;graphs.add(graph);
