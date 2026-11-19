@@ -5,7 +5,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/** One non-renewable screen lease for the actual isolated display returned to this broker.
+/** One non-renewable screen lease for the actual display returned to this broker.
+ * The power group must exclude physical displays. Android may place other virtual
+ * displays in the same group; this token can keep them awake but grants no input,
+ * task, or display-cleanup authority over them.
  * The port never offers a global wake lock or a wake-up operation. Retiring the screen lease
  * does not prove task/display cleanup, and does not release a retained display custodian. */
 final class PublicOwnGroupScreenLease {
@@ -35,7 +38,7 @@ final class PublicOwnGroupScreenLease {
                     &&("hepta-bg-"+generation).equals(name)&&uniqueId!=null&&!uniqueId.isEmpty(),
                     "PUBLIC_SCREEN_IDENTITY_INVALID");
             need(flags==7040&&group>0&&mainGroup>=0&&coverGroup>=0&&group!=mainGroup
-                    &&group!=coverGroup&&groupMembers==1,"PUBLIC_SCREEN_GROUP_NOT_ISOLATED");
+                    &&group!=coverGroup&&groupMembers>=1&&groupMembers<=32,"PUBLIC_SCREEN_GROUP_NOT_ISOLATED");
         }
         void requireIsolatedOn(String generation) throws IOException {
             requireIsolatedIdentity(generation);

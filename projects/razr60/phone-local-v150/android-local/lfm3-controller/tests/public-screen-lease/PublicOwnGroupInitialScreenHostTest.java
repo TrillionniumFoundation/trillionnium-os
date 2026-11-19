@@ -160,13 +160,13 @@ public final class PublicOwnGroupInitialScreenHostTest {
             refuse("PUBLIC_SCREEN_INITIAL_IDENTITY_CHANGED",()->l.acquireInitiallyOn(p,4000,p.waiter()));
             yes(p.pauses==1&&p.acquires==0,"identity failure was retried");
         });
-        test("disabled foreign display joining the group is refused by the next complete census",()->{
+        test("disabled additional physical display is refused by the next complete census",()->{
             Clock c=new Clock();Port p=new Port(c);p.census=new PublicScreenCensusFixture();p.census.service.rows.get(210).state=1;
             p.onPause=()->{p.census.service.ids=new int[]{0,1,210,211};
-                p.census.service.rows.put(211,new PublicScreenCensusFixture.Info(211,5,2,1));};
+                p.census.service.rows.put(211,new PublicScreenCensusFixture.Info(211,1,2,1));};
             PublicOwnGroupScreenLease l=lease(c);
-            refuse("PUBLIC_SCREEN_GROUP_NOT_ISOLATED",()->l.acquireInitiallyOn(p,4000,p.waiter()));
-            yes(p.pauses==1&&p.acquires==0,"disabled foreign group member ignored");
+            refuse("PUBLIC_SCREEN_UNREVIEWED_PHYSICAL_DISPLAY",()->l.acquireInitiallyOn(p,4000,p.waiter()));
+            yes(p.pauses==1&&p.acquires==0,"disabled physical group member ignored");
         });
         test("missing direct display information is never treated as readiness",()->{
             Clock c=new Clock();Port p=new Port(c);p.census=new PublicScreenCensusFixture();p.census.service.rows.get(210).state=1;
@@ -224,6 +224,16 @@ public final class PublicOwnGroupInitialScreenHostTest {
             Clock c=new Clock();Port p=new Port(c);p.state=2;p.afterRead=()->c.now=999;PublicOwnGroupScreenLease l=lease(c);
             refuse("PUBLIC_SCREEN_INITIAL_CLOCK_REVERSED",()->l.acquireInitiallyOn(p,4000,p.waiter()));
             yes(p.acquires==0&&p.pauses==0,"reversed time accepted");
+        });
+        test("virtual peer joining during automatic readiness preserves the original budget",()->{
+            Clock c=new Clock();Port p=new Port(c);p.census=new PublicScreenCensusFixture();p.census.service.rows.get(210).state=1;
+            p.onPause=()->{p.census.service.ids=new int[]{0,1,210,211};
+                p.census.service.rows.put(211,new PublicScreenCensusFixture.Info(211,5,2,1));
+                p.census.service.rows.get(210).state=2;};
+            PublicOwnGroupScreenLease l=lease(c);l.acquireInitiallyOn(p,4000,p.waiter());
+            yes(p.pauses==1&&p.acquires==1&&p.remaining==19975,"virtual peer renewed or blocked readiness");
+            yes(p.census.screenSnapshot(210,"hepta-bg-"+GEN).groupMembers==2,"shared group omitted from evidence");
+            released(l,p);
         });
         StringBuilder json=new StringBuilder("{\"schema\":\"hepta.public-screen-initial-readiness-host.v1\",\"all_pass\":true,\"cases\":")
                 .append(names.size()).append(",\"assertions\":").append(checks)

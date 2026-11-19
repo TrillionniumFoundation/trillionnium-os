@@ -1,18 +1,18 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "d59d770d1e5a8458f1cafe109bc53d0d6668190e",
-  "base_manifest_sha256": "faeb1ba336c63c6e2d98f7c8bd43a5ef2b64ffa01c4f640c12372095a84d4c5a",
-  "candidate_status": "initial_display_readiness_candidate_not_compiled_or_deployed",
+  "base_head": "43c37afe8ab550595f95475a0d87969bd718e531",
+  "base_manifest_sha256": "6f1fa20401d3d7d07d4942cd54019fc37055e3daa0596a1426e559145629b34a",
+  "candidate_status": "shared_virtual_group_candidate_not_compiled_or_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 191,
   "production_build_inputs_count": 363,
-  "production_input_map_sha256": "bad58cb85a629aa275b4c458593db74744b57d4467aff6bd170354e8234ab7af",
+  "production_input_map_sha256": "1f311fb85c51fa534c8d6d8fdd1eabda041ff394c038f7e69c5264c544e3561f",
   "complete_source_files": 2246,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Initial automatic own-display ON readiness only within the frozen original create request and session deadlines; no wake operation, no renewal, unchanged full isolated-group census and original acquisition/retirement gates. Original 36/73 host cases plus separate 24/65 readiness cases.",
+  "scope": "Accept non-singleton non-default groups containing only virtual displays; retain exact owned-display identity and exclude physical/default displays; update corresponding host regressions.",
   "files": [
     {
       "path": ".gitignore",
@@ -6291,8 +6291,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupFramework.java",
-      "bytes": 16199,
-      "sha256": "92f5c1c98ce1a6c1409764eae03c89d62e8b246a2e42879eca3a74987fd9d0df"
+      "bytes": 16287,
+      "sha256": "3ef9cb8e32ac88d93a3375d25a80a3eeffc9892fb23385918884f06ae218b7db"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupPhysicalFence.java",
@@ -6311,8 +6311,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupScreenLease.java",
-      "bytes": 11561,
-      "sha256": "59796b0a08a70c1ed2cca096b8a69cf29f422a49ace6e938c4499b32b673d211"
+      "bytes": 11785,
+      "sha256": "c3f29dccb0c3d43d15bb04820b54397af5b8dae8069e5befd9ff5f9608f7cda3"
     },
     {
       "path": "src/org/trillionnium/hepta/background/PublicOwnGroupSurfaceRetirement.java",
@@ -9546,18 +9546,18 @@
     },
     {
       "path": "tests/public-screen-lease/PublicOwnGroupInitialScreenHostTest.java",
-      "bytes": 16495,
-      "sha256": "e6892e7addbe49735c0a20f38097cdfa9855d574ef2849baddde154f9a534024"
+      "bytes": 17308,
+      "sha256": "6f9c567f19b8cb4f9b97de85fae9411904e52379c410b630bb4a9bf902cdb057"
     },
     {
       "path": "tests/public-screen-lease/PublicOwnGroupScreenLeaseHostTest.java",
-      "bytes": 13151,
-      "sha256": "c083e5cdfef7f06848c098b55a5f0e8a2b66bbee53e346b7614001d03d8e25fe"
+      "bytes": 15850,
+      "sha256": "0aa1abd2176c9c19cb8a60319b8ffbcefaeaad4bb8ae9abe6751bd5fea80b7c0"
     },
     {
       "path": "tests/public-screen-lease/README.md",
-      "bytes": 1621,
-      "sha256": "85867366f418cf7d136d2d654cf7579d0e729accec8fb55c312b1a5aa8c3950e"
+      "bytes": 2916,
+      "sha256": "f35f23c719f89b7fb7a54d00632dcbdbabee996dd7e8c0fa18df4d4bcc4e36c7"
     },
     {
       "path": "tests/public-screen-lease/run_host.py",
@@ -11037,7 +11037,7 @@
     {
       "path": "tools/run_host_checks.py",
       "bytes": 42591,
-      "sha256": "af50226f14e31e385300609a9df686e9fcc2b94aed6bdefd7f3424436b20fec5"
+      "sha256": "05371e25a2669f0f71c0a91d66f95956c1983e2135e91c3a811de73d1ab8991a"
     },
     {
       "path": "tools/run_public_own_group_adapter_host.py",

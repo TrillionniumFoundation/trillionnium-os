@@ -142,8 +142,9 @@ final class PublicOwnGroupFramework {
         synchronized(this){need(first==null||first.sameLifetimeIdentity(value),"PUBLIC_SCOPE_DISPLAY_LIFETIME_IDENTITY_CHANGED");if(first==null)first=value;}
         return value;
     }
-    /** Read-only power scope census. A screen lock affects a display group, so no other
-     * physical or virtual display may share the exact created display's group. */
+    /** Read-only power scope census. A screen lock affects a display group, so every
+     * physical display is excluded. Android own-display groups may contain multiple
+     * virtual displays; group membership does not confer input or cleanup authority. */
     PublicOwnGroupScreenLease.Snapshot screenSnapshot(int id,String name)throws Exception{
         PublicOwnGroupPolicy.DisplayState owned=display(id,name);
         // DisplayManager.getDisplays() omits disabled logical displays. Such a display could

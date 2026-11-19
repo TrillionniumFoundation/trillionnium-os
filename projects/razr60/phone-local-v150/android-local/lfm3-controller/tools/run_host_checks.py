@@ -183,26 +183,26 @@ def main():
                 or [row.get("name") for row in screen.get("stages",[])]!=["compile","screen-lease","initial-readiness"]
                 or any(type(row.get("exit_code")) is not int or row["exit_code"]!=0 for row in screen.get("stages",[]))
                 or screen_test.get("schema")!="hepta.public-screen-lease-host.v1" or screen_test.get("all_pass") is not True
-                or type(screen_test.get("cases")) is not int or screen_test["cases"]!=36
-                or type(screen_test.get("assertions")) is not int or screen_test["assertions"]!=73
+                or type(screen_test.get("cases")) is not int or screen_test["cases"]!=42
+                or type(screen_test.get("assertions")) is not int or screen_test["assertions"]!=85
                 or screen_test.get("phone_operations")!=0 or screen_test.get("android_power_api_executed") is not False):
             raise RuntimeError("Actual isolated screen-lease host contract differs")
         screen_names=screen_test.get("case_names")
-        if (type(screen_names) is not list or len(screen_names)!=36 or len(set(screen_names))!=36
+        if (type(screen_names) is not list or len(screen_names)!=42 or len(set(screen_names))!=42
                 or any(type(name) is not str or not name for name in screen_names)
                 or hashlib.sha256("\n".join(screen_names).encode()).hexdigest()!=
-                    "fcc50dabae810227be559e134b0c0c17541873d91eb8685a6412b8778be44a64"
+                    "65e0331d44e95ad29dbdf4e533dd64bd68e6567e82439a5b29371a02528318af"
                 or json.loads((out/"public-screen-lease/screen-lease.stdout").read_bytes())!=screen_test):
             raise RuntimeError("Screen-lease original case names or raw receipt differ")
         initial=screen.get("initial_readiness_test",{});initial_names=initial.get("case_names")
         if (initial.get("schema")!="hepta.public-screen-initial-readiness-host.v1" or initial.get("all_pass") is not True
-                or type(initial.get("cases")) is not int or initial["cases"]!=24
-                or type(initial.get("assertions")) is not int or initial["assertions"]!=65
+                or type(initial.get("cases")) is not int or initial["cases"]!=25
+                or type(initial.get("assertions")) is not int or initial["assertions"]!=68
                 or initial.get("phone_operations")!=0 or initial.get("android_power_api_executed") is not False
-                or type(initial_names) is not list or len(initial_names)!=24 or len(set(initial_names))!=24
+                or type(initial_names) is not list or len(initial_names)!=25 or len(set(initial_names))!=25
                 or any(type(name) is not str or not name for name in initial_names)
                 or hashlib.sha256("\n".join(initial_names).encode()).hexdigest()!=
-                    "9ff85d66cf88640ae6ce28e4ad82770f48845ebae54d342c5feea75f8fc9c563"
+                    "24f9b3dc06329b6af33eec47640a51491564e6ef13770100cd40348e37e2964b"
                 or json.loads((out/"public-screen-lease/initial-readiness.stdout").read_bytes())!=initial):
             raise RuntimeError("Initial screen readiness case names or raw receipt differ")
         report["public_screen_lease_gate"]={"bytes":len(screen_raw),"sha256":hashlib.sha256(screen_raw).hexdigest(),
