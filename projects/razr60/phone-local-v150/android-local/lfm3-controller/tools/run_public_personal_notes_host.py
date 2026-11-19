@@ -91,12 +91,27 @@ public final class NotesCleanupAdapterHostTest {
    c.beforeCreate();c.bindDisplay(7);c.markLaunch();PersonalNotesCustodyHostTest.prepare(c,token);c.enterRelease();c.releaseReturned();PersonalNotesCustodyHostTest.absence(c,PersonalNotesCustodyHostTest.raw(),200);PersonalNotesCustodyHostTest.absence(c,PersonalNotesCustodyHostTest.raw(),250);
    JSONObject proof=new JSONObject(c.evidence()),response=new JSONObject().put("ok",true).put("state","RELEASED").put("display_scope_sha256",s.sha256).put("personal_notes_cleanup",proof);
    yes(appCheck(response,s,7)!=null);
+   // Keep the complete legacy v1 contract distinct from actual v2 producer evidence.
+   Map<String,Object> legacyEvidence=new LinkedHashMap<String,Object>(c.evidence());legacyEvidence.put("schema","hepta.public-personal-notes-cleanup.v1");
+   for(String key:new String[]{"history_preservation_scope","physical_history_frozen","history_preservation_interval","hidden_history_preservation_interval","unrelated_physical_history_changes_observed","recents_presentation_changes_observed","nonphysical_history_preserved","nonphysical_hidden_history_preserved"})legacyEvidence.remove(key);
+   JSONObject legacy=new JSONObject(response.toString()).put("personal_notes_cleanup",new JSONObject(legacyEvidence));yes(appCheck(legacy,s,7)!=null);
    for(String key:new String[]{"cleanup_known","create_attempted","pre_release_tasks_verified","release_api_entered","release_api_returned","display_absence_verified","live_tasks_absent","all_recents_sections_absent","prior_hidden_history_preserved"}){
+    JSONObject bad=new JSONObject(legacy.toString());JSONObject nested=bad.getJSONObject("personal_notes_cleanup");nested.put(key,false);bad.put("personal_notes_cleanup",nested);refuse(()->appCheck(bad,s,7));
+   }
+   for(String key:new String[]{"cleanup_known","create_attempted","pre_release_tasks_verified","release_api_entered","release_api_returned","display_absence_verified","live_tasks_absent","all_recents_sections_absent","nonphysical_history_preserved","nonphysical_hidden_history_preserved"}){
     JSONObject bad=new JSONObject(response.toString());JSONObject nested=bad.getJSONObject("personal_notes_cleanup");nested.put(key,false);bad.put("personal_notes_cleanup",nested);refuse(()->appCheck(bad,s,7));
    }
-   JSONObject lone=new JSONObject(response.toString());JSONObject nested=lone.getJSONObject("personal_notes_cleanup");nested.put("absence_reads",1);lone.put("personal_notes_cleanup",nested);refuse(()->appCheck(lone,s,7));
+   for(JSONObject version:new JSONObject[]{legacy,response}){
+    JSONObject lone=new JSONObject(version.toString());JSONObject nested=lone.getJSONObject("personal_notes_cleanup");nested.put("absence_reads",1);lone.put("personal_notes_cleanup",nested);refuse(()->appCheck(lone,s,7));
+    refuse(()->appCheck(version,s,8));
+   }
    JSONObject callerFlag=new JSONObject().put("ok",true).put("state","RELEASED").put("display_scope_sha256",s.sha256).put("owned_task_retirement_required",true);refuse(()->appCheck(callerFlag,s,7));
-   refuse(()->appCheck(response,s,8));
+   // A real v2 custody transition may change only a resolved unrelated physical hidden row.
+   String raw=PersonalNotesCustodyHostTest.raw(),hidden=PersonalNotesCustodyHostTest.hidden(raw,PersonalNotesCustodyHostTest.recents(raw).records.get(100).label);
+   PublicPersonalNotesCustody concurrent=new PublicPersonalNotesCustody(PersonalNotesCustodyHostTest.GEN,s.sha256,PersonalNotesCustodyHostTest.UID,PersonalNotesCustodyHostTest.global(-1),PersonalNotesCustodyHostTest.recents(raw));
+   concurrent.beforeCreate();concurrent.bindDisplay(7);concurrent.markLaunch();PersonalNotesCustodyHostTest.prepare(concurrent,new Object());concurrent.enterRelease();concurrent.releaseReturned();PersonalNotesCustodyHostTest.absence(concurrent,hidden,200);PersonalNotesCustodyHostTest.absence(concurrent,hidden,250);
+   JSONObject changed=new JSONObject(concurrent.evidence());yes(!changed.getBoolean("prior_hidden_history_preserved")&&changed.getBoolean("unrelated_physical_history_changes_observed")&&changed.getBoolean("nonphysical_history_preserved")&&changed.getBoolean("nonphysical_hidden_history_preserved"));
+   yes(appCheck(new JSONObject(response.toString()).put("personal_notes_cleanup",changed),s,7)!=null);
   });
   System.out.println("{\\"cases\\":"+cases+",\\"assertions\\":"+checks+",\\"passed\\":true,\\"phone_contacted\\":false,\\"actual_broker_cleanup_hunk\\":true,\\"full_app_session_receipt_check\\":true}");
  }

@@ -1,8 +1,8 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "d1726b3456f338b5243a5ed6044819a065fd445d",
-  "base_manifest_sha256": "c742073b49b9eee9249b0bf4bd5229232dc02a659c351aabe73f0afc97a3ef42",
-  "candidate_status": "foreground_and_main_ui_source_candidate_not_compiled_or_deployed",
+  "base_head": "26da3267bd75305910c758d076f93e3cdcd0e3ea",
+  "base_manifest_sha256": "7567a5d860e22bbad49c359a0ddd9a6f57240c553a29a65eee5cbf9f4017395d",
+  "candidate_status": "notes_cleanup_fixture_source_candidate_not_compiled_or_deployed",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
@@ -13,10 +13,8 @@
   "phone_qualified": false,
   "android_qualified": false,
   "scope": [
-    "Preserve all Q6 source including Context-root alias fix, original signer/native baseline, and original failed receipts.",
-    "Permit audited unrelated physical foreground history during owned background runtime while preserving target/owned/task identity checks and strict accident-recovery evidence.",
-    "Permit only authenticated actual physical Hepta MainActivity Start during scoped permission initialization; retained original strict recovery and virtual-display callers.",
-    "Preserve all original host assertions; add two candidate-reviewed gates, explicit pure-type source dependencies, and fixture ESRCH/traceback handling."
+    "Preserve all Q7 production bytes, the original failed full-host result, and all Q4 recovery history.",
+    "Distinguish legacy Notes cleanup v1 false-field rejection from actual v2 audited physical-history changes in the original adapter test; preserve all original 15 cases and add v2 nonphysical-history negative coverage."
   ],
   "files": [
     {
@@ -11031,8 +11029,8 @@
     },
     {
       "path": "tools/run_public_personal_notes_host.py",
-      "bytes": 18118,
-      "sha256": "17c7c3b0b98b750cf691543a91f69afa07e25ff428d22e03f1926ee5df3cc623"
+      "bytes": 20632,
+      "sha256": "cf7c17b0d75c777f46daead298e0d940e5d5a6155ca1de59520d1d627b1cb813"
     },
     {
       "path": "tools/suite-navigation-draft.json",
