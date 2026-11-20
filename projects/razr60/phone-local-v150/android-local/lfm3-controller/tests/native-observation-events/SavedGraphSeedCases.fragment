@@ -754,8 +754,10 @@
     }
 
     /** Actual observer producer/serial queue, synthetic Android/Session endpoints.
-     * The 9827/14916 timings model the retained ec583 diagnostic and original
-     * finished+15000 cap; this is not a replay of missing phone pixels or a claim
+     * The 9827/14916 and 8536/14923 timings model retained ec583/d06a
+     * diagnostics and original finished+15000 caps. All Graphs, seals, pixels
+     * and clocks below are synthetic; d06a did not archive a private seal or
+     * event watermarks. This is not a replay of missing phone pixels or a claim
      * that the replacement read would succeed on that phone. Entered-action
      * receipt and durable Session issuance are tested in the consumer gate. */
     static final class PostEffectReadResult implements ObservationCallback {
@@ -773,22 +775,26 @@
         final ObserverPipelineHost f;final LocalTaskController controller=new LocalTaskController();
         final NativeAppSession nativeTask=new NativeAppSession();final NativeAppSession.PostEffectReadPermit permit;
         final PostEffectReadResult out=new PostEffectReadResult();final PhoneObservation prior;
-        final long started,transition;long taskDeadline;final int priorReads;ObservationRequest request;File discarded;
+        final long started,transition,discardElapsed;long taskDeadline;final int priorReads;ObservationRequest request;File discarded;
         String fault="none";boolean startupWindow;
-        PostEffectReadScenario()throws Exception{
+        PostEffectReadScenario()throws Exception{this(false,9827);}
+        PostEffectReadScenario(boolean current1079,long discardElapsed)throws Exception{
+            this.discardElapsed=discardElapsed;
             f=seedFixture(null,false);f.ownedController=controller;f.autoScreenshot=true;
             f.readHook=(g,n)->{sealedReadGraph(g,"published-home-before-effect");sealGraph(g);};
             f.seedFrozenRead=(r,i)->i.frozenWindow;twoSamples(f);prior=f.current;priorReads=f.reads.get();
             check(prior!=null&&f.taskObservationAdmissions==1,"prior actual observer admission required");
             // Explicit synthetic clock anchored at the recorded request's start.
-            SystemClock.now=531775479;started=SystemClock.now;taskDeadline=started+480000;transition=started-84+15000;
+            SystemClock.now=current1079?537992402:531775479;started=SystemClock.now;taskDeadline=started+480000;
+            transition=started-(current1079?77:84)+15000;
             permit=new NativeAppSession.PostEffectReadPermit(nativeTask,f.taskAuthorization,f.lease,
                     f.taskBackground.selection,f.taskBackground.generation,f.taskBackground.displayId(),transition);
             f.autoScreenshot=false;f.pendingScreenshot=null;
             f.readHook=(g,n)->{
                 int k=n-priorReads;sealedReadGraph(g,"complete-new-flight-form");g.windowId=8;
                 if(startupWindow&&k==1){SystemClock.now=started+1000;g.windowId=7;g.digest="normal-startup-window";}
-                else {int p=k-(startupWindow?1:0);SystemClock.now=started+(p==1?7431:p==2?8223:p==3?8858:10246);}
+                else {int p=k-(startupWindow?1:0);SystemClock.now=started+(current1079
+                        ?(p==1?6039:p==2?6874:p==3?7504:10191):(p==1?7431:p==2?8223:p==3?8858:10246));}
                 if(k==1&&"foreign_start".equals(fault))g.backgroundOwnerSha=EventChecks.repeat('b',64);
                 if(k==(startupWindow?4:3)&&"unsealed".equals(fault))f.noteObservationEvent(9);
                 if(k==(startupWindow?4:3)&&"incomplete".equals(fault))g.nativeActionNodes=null;
@@ -796,9 +802,10 @@
                 if(k==(startupWindow?4:3)&&"profile".equals(fault))g.profileWindow=new WindowOwnership("uid");
                 sealGraph(g);
             };
-            Bitmap.encodeHook=()->SystemClock.now=started+9600;f.hashHook=()->SystemClock.now=started+9700;
+            Bitmap.encodeHook=()->SystemClock.now=started+(current1079?7505:9600);
+            f.hashHook=()->SystemClock.now=started+(current1079?8349:9700);
             f.seedFrozenRead=(r,i)->{
-                SystemClock.now=started+("early".equals(fault)?9799:"expired".equals(fault)?12000:9827);
+                SystemClock.now=started+("expired".equals(fault)?12000:discardElapsed);
                 if("no_window".equals(fault))return null;
                 if("window_stale".equals(fault))throw new StaleObservation();
                 if(!"no_event".equals(fault))f.noteObservationEvent("unknown".equals(fault)?-1:"main_event".equals(fault)?0:9);
@@ -830,10 +837,11 @@
         }
         PostEffectObservationRetryProof proof()throws Exception{
             queue();accept();released();check(out.proofs.size()==1&&out.failures.size()==1&&out.observations.isEmpty(),"one failed post-effect read proof");
-            check(request.failedAt==started+9827&&request.deadline==Math.min(started+12000,taskDeadline),"actual cut point does not move old terminal/deadline");
-            check(count(request,"SAMPLE_EXPIRED")==0&&f.reads.get()==priorReads+(startupWindow?4:3),"no extra sample after insufficient remaining gap");
+            check(request.failedAt==started+discardElapsed&&request.deadline==Math.min(started+12000,taskDeadline),"actual cut point does not move old terminal/deadline");
+            check(count(request,"SAMPLE_EXPIRED")==0&&f.reads.get()==priorReads+(startupWindow?4:3),"qualified failed capture drains immediately without another sample");
             PostEffectObservationRetryProof proof=out.proofs.get(0);Map<String,Object> e=proof.evidence();
-            check(proof.identity.windowId==8&&((Number)e.get("original_transition_deadline_elapsed_ms")).longValue()-request.failedAt==5089,"latest sealed identity and original five-second remainder");
+            check(proof.identity.windowId==8&&((Number)e.get("original_transition_deadline_elapsed_ms")).longValue()==transition,"latest sealed identity and original transition deadline");
+            check("sealed_pair_target_event_after_window_check".equals(e.get("reason")),"reason describes the current qualified capture, not a remaining-gap heuristic");
             check(Boolean.FALSE.equals(e.get("grants_action_authority"))&&Boolean.FALSE.equals(e.get("action_replayed"))
                     &&Boolean.FALSE.equals(e.get("business_completion_verified"))&&Boolean.TRUE.equals(e.get("read_worker_drained")),"proof is new-read-only");
             return proof;
@@ -867,12 +875,32 @@
             int reads=s.f.reads.get();PostEffectReadResult duplicate=new PostEffectReadResult();s.submitFresh(proof,duplicate,s.transition);
             check(duplicate.failures.size()==1&&duplicate.observations.isEmpty()&&s.f.reads.get()==reads,"private replacement proof consumed once");s.dispose();
         });
+        for(final long elapsed:new long[]{8536,9799})eventCase("post_effect_qualified_capture_immediate_new_read_at_"+elapsed,()->{
+            boolean current1079=elapsed==8536;PostEffectReadScenario s=new PostEffectReadScenario(current1079,elapsed);
+            PostEffectObservationRetryProof proof=s.proof();long remaining=current1079?6387:5117;
+            check(s.transition-s.request.failedAt==remaining&&s.request.failedAt-s.started==elapsed,
+                    "recorded clock anchors retain the original fifteen-second remainder");
+            check(s.request.failedAt<s.started+10000-ObservationStabilityGate.SAMPLE_GAP_MS,
+                    "qualified capture does not wait for the old last-gap heuristic");
+            int before=s.f.reads.get();s.prepareFresh("same");PostEffectReadResult next=new PostEffectReadResult();s.submitFresh(proof,next,s.transition);
+            ObservationRequest replacement=s.f.activeObservation;
+            check(replacement!=null&&replacement!=s.request&&replacement.started==s.request.failedAt
+                    &&replacement.deadline==s.transition&&replacement.deadline-replacement.started==remaining,
+                    "one fresh request is clipped to the original transition, not twelve renewed seconds");
+            s.finishFresh();check(next.observations.size()==1&&next.failures.isEmpty()&&next.proofs.isEmpty(),"independent fresh capture can publish");
+            check(s.f.reads.get()==before+3&&s.f.taskObservationAdmissions==3&&s.permit.admissions.get()==2,
+                    "fresh two samples and paired graph, one replacement and no action repeat");
+            check(s.f.current!=s.prior&&s.f.current.capturedElapsedMillis>s.request.failedAt&&!s.discarded.exists(),
+                    "only a new PNG/frame survives; rejected capture remains discarded");
+            int reads=s.f.reads.get();PostEffectReadResult duplicate=new PostEffectReadResult();s.submitFresh(proof,duplicate,s.transition);
+            check(duplicate.failures.size()==1&&duplicate.observations.isEmpty()&&s.f.reads.get()==reads,"early replacement proof is still one-use");s.dispose();
+        });
         for(final String fault:new String[]{"no_event","main_event"})eventCase("post_effect_normal_success_keeps_"+fault,()->{
             PostEffectReadScenario s=new PostEffectReadScenario();s.startupWindow=true;s.fault=fault;s.queue();s.accept();
             check(s.out.observations.size()==1&&s.out.proofs.isEmpty()&&s.out.failures.isEmpty(),"ordinary post-effect first read unchanged");
             check(s.request.postEffectIdentity==null&&s.f.taskObservationAdmissions==2&&s.permit.admissions.get()==1,"normal result does not use replacement");s.dispose();
         });
-        for(final String fault:new String[]{"early","expired","unknown","no_window","window_stale","unsealed","incomplete","foreign_pair","foreign_start","profile"})
+        for(final String fault:new String[]{"expired","unknown","no_window","window_stale","unsealed","incomplete","foreign_pair","foreign_start","profile"})
             eventCase("post_effect_capture_refuses_"+fault,()->{
                 PostEffectReadScenario s=new PostEffectReadScenario();s.fault=fault;s.queue();s.accept();
                 check(s.out.proofs.isEmpty()&&s.out.observations.isEmpty()&&s.f.current==s.prior,"unqualified capture grants no replacement");

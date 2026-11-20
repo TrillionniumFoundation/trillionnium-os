@@ -108,6 +108,128 @@ public final class NativeXiaomiProductPageHostTest {
         check(Boolean.FALSE.equals(q.evidence().get("order_submitted"))&&Boolean.FALSE.equals(q.evidence().get("task_complete")),"pure quote has no order/completion");
         check(Boolean.FALSE.equals(q.evidence().get("promotions_deducted_from_amount"))&&Boolean.FALSE.equals(q.evidence().get("lowest_price_verified")),"no discount/lowest-price inference");
     }
+    /** Explicit synthetic Frame/NodeRef bindings for the five toolbar nodes
+     * retained in task a535abf2. The separate raw-JSON replay checks all three
+     * original 56/64/67-node records; this does not fill their unsaved census. */
+    private static NativeAppEvidence.Node rootNode(String nodeId,String cls,String text,String path,String parent,
+            String label,boolean click,boolean editable,int left,int top,int right,int bottom){
+        return new NativeAppEvidence.Node(nodeId,NativeAppGoal.XIAOMI_PACKAGE,cls,"",text,"",path,parent,
+                hash("HOST_DIRECT_ROOT_TOOLBAR\n"+nodeId+"\n"+text+"\n"+path),label,left,top,right,bottom,
+                true,false,click,editable,false,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,Collections.<String>emptySet());
+    }
+    private static NativeAppEvidence.Frame directRootFrame(String query)throws Exception{
+        List<NativeAppEvidence.Node> nodes=new ArrayList<NativeAppEvidence.Node>();
+        nodes.add(rootNode("n0","android.view.ViewGroup","","0/0","android.widget.FrameLayout","搜索",true,false,81,328,367,421));
+        nodes.add(rootNode("n1","android.widget.EditText",query,"0/1","android.widget.FrameLayout",query,true,true,162,130,1074,334));
+        nodes.add(rootNode("n2","android.widget.TextView","Type-C快充数据线","0/2","android.widget.FrameLayout","Type-C快充数据线",false,false,162,152,1108,237));
+        nodes.add(rootNode("n3","android.view.ViewGroup","","0/4","android.widget.FrameLayout","搜索",true,false,958,333,1142,421));
+        nodes.add(rootNode("n4","android.view.ViewGroup","","0/5","android.widget.FrameLayout","",true,false,68,154,150,236));
+        nodes.add(rootNode("n6","android.widget.TextView","搜索","0/0/0","android.view.ViewGroup","搜索",false,false,167,347,257,401));
+        nodes.add(rootNode("n7","android.widget.TextView","搜索","0/4/0","android.view.ViewGroup","搜索",false,false,999,347,1101,408));
+        nodes.add(rootNode("n9","android.view.ViewGroup","","0/6/1","android.widget.ScrollView","xiaomi路由器ax3000t",true,false,54,613,573,701));
+        nodes.add(rootNode("n25","android.widget.TextView","xiaomi路由器ax3000t","0/6/1/0","android.view.ViewGroup","xiaomi路由器ax3000t",false,false,95,630,532,684));
+        return frame(load("search-entry"),nodes,false,true,1,true);
+    }
+    private static void rootChangedRejected(String nodeId,String key,Object value)throws Exception{
+        NativeAppEvidence.Frame f=directRootFrame("");NativeAppEvidence.Node n=f.byId.get(nodeId);
+        unavailable(replace(f,n,alter(n,key,value)),"direct-root rejected "+nodeId+" "+key+" "+value);
+    }
+    private static void directRootCases()throws Exception{
+        test("direct_root_toolbar_edits_only_literal_owner_query",()->{
+            NativeAppEvidence.Frame f=directRootFrame("");NativeXiaomiProductPage.Page p=inspect(f);
+            check("search_input".equals(p.phase)&&p.missing.isEmpty()&&p.clickIds.isEmpty(),"exact root toolbar is an input, not a result");
+            check(p.editValues.equals(Collections.singletonMap("n1","AX3000T"))&&"set_product_query".equals(p.purposes.get("n1")),"only immutable owner literal in actual field");
+            check(p.quote==null&&!p.purposes.containsKey("n0")&&!p.purposes.containsKey("n4")&&!p.purposes.containsKey("n9"),"no mode, blank back, history, or quote authority");
+        });
+        test("direct_root_verified_query_offers_only_right_normal_search",()->{
+            NativeXiaomiProductPage.Page p=inspect(directRootFrame("AX3000T"));
+            check("search_submit".equals(p.phase)&&p.editValues.isEmpty()&&p.clickIds.equals(Collections.singleton("n3")),"only right ordinary button after actual text match");
+            check(p.purposes.equals(Collections.singletonMap("n3","submit_product_query"))&&p.quote==null,"no same-text history or query result proof");
+            check(Boolean.FALSE.equals(p.evidence().get("dispatch_authority"))&&Boolean.FALSE.equals(p.evidence().get("query_dispatched"))&&Boolean.FALSE.equals(p.evidence().get("task_completion_authority")),"pure parser supplies no dispatch or completion");
+        });
+        test("direct_root_wrong_existing_text_is_replaced_with_owner_span",()->{
+            NativeXiaomiProductPage.Page p=inspect(directRootFrame("REDMI Note 17"));
+            check(p.editValues.equals(Collections.singletonMap("n1","AX3000T"))&&p.clickIds.isEmpty(),"placeholder or other query never becomes requested model");
+        });
+        test("direct_root_requires_unique_editable_field",()->{
+            NativeAppEvidence.Frame f=directRootFrame("");List<NativeAppEvidence.Node> nodes=new ArrayList<NativeAppEvidence.Node>(f.nodes);
+            nodes.add(rootNode("n8","android.widget.EditText","","0/7","android.widget.FrameLayout","",true,true,100,500,1100,600));
+            unavailable(frame(f,nodes,false,true,1,true),"second actual editable field");
+        });
+        test("direct_root_field_cannot_borrow_unknown_parent_or_nested_path",()->{
+            rootChangedRejected("n1","parent","android.widget.LinearLayout");
+            rootChangedRejected("n1","path","0/9/1");rootChangedRejected("n1","path","0/3");
+        });
+        test("direct_root_does_not_mix_legacy_button_or_label_indices",()->{
+            rootChangedRejected("n3","path","0/3");rootChangedRejected("n6","path","0/0/2");rootChangedRejected("n7","path","0/4/1");
+        });
+        test("direct_root_requires_both_controls_and_both_literal_labels",()->{
+            for(String nodeId:new String[]{"n0","n3","n6","n7"}){
+                NativeAppEvidence.Frame f=directRootFrame("");unavailable(replace(f,f.byId.get(nodeId),null),"missing toolbar node "+nodeId);
+            }
+        });
+        test("direct_root_duplicate_native_path_is_rejected_by_frame",()->{
+            NativeAppEvidence.Frame f=directRootFrame("");List<NativeAppEvidence.Node> nodes=new ArrayList<NativeAppEvidence.Node>(f.nodes);
+            nodes.add(alter(f.byId.get("n3"),"id","n30"));boolean rejected=false;
+            try{frame(f,nodes,false,true,1,true);}catch(IllegalArgumentException expected){rejected=true;}
+            check(rejected,"no duplicate native path carrier can enter parser");
+        });
+        test("direct_root_disabled_field_control_or_label_is_unavailable",()->{
+            for(String nodeId:new String[]{"n0","n1","n3","n6","n7"})rootChangedRejected(nodeId,"enabled",Boolean.FALSE);
+        });
+        test("direct_root_selection_tuple_must_be_observed_and_neutral",()->{
+            for(String nodeId:new String[]{"n0","n1","n3","n6","n7"}){
+                rootChangedRejected(nodeId,"selected",null);rootChangedRejected(nodeId,"selected",Boolean.TRUE);
+                rootChangedRejected(nodeId,"checkable",Boolean.TRUE);
+            }
+        });
+        test("direct_root_labels_cannot_be_interactive_or_editable",()->{
+            for(String nodeId:new String[]{"n6","n7"}){
+                rootChangedRejected(nodeId,"clickable",Boolean.TRUE);rootChangedRejected(nodeId,"editable",Boolean.TRUE);
+                rootChangedRejected(nodeId,"scrollable",Boolean.TRUE);
+            }
+        });
+        test("direct_root_field_and_controls_require_current_click_capability",()->{
+            for(String nodeId:new String[]{"n0","n1","n3"})rootChangedRejected(nodeId,"clickable",Boolean.FALSE);
+            rootChangedRejected("n1","editable",Boolean.FALSE);rootChangedRejected("n3","scrollable",Boolean.TRUE);
+        });
+        test("direct_root_foreign_node_package_is_rejected",()->{
+            NativeAppEvidence.Frame f=directRootFrame("");NativeAppEvidence.Node n=f.byId.get("n3");
+            unavailable(replace(f,n,edit(n,null,null,null,"foreign.app",null,null,null)),"foreign button even with same text and path");
+        });
+        test("direct_root_control_parent_and_label_class_are_bound",()->{
+            rootChangedRejected("n0","parent","android.view.ViewGroup");rootChangedRejected("n3","parent","android.view.ViewGroup");
+            rootChangedRejected("n6","parent","android.widget.FrameLayout");rootChangedRejected("n7","class","android.view.View");
+        });
+        test("direct_root_swapped_controls_do_not_offer_mode_toggle",()->{
+            NativeAppEvidence.Frame f=directRootFrame("");NativeAppEvidence.Node n=f.byId.get("n3");
+            unavailable(replace(f,n,edit(n,null,null,null,null,null,null,new int[]{81,328,367,421})),"right search moved onto left mode");
+        });
+        test("direct_root_label_must_remain_inside_its_real_control",()->{
+            NativeAppEvidence.Frame f=directRootFrame("");NativeAppEvidence.Node n=f.byId.get("n7");
+            unavailable(replace(f,n,edit(n,null,null,null,null,null,null,new int[]{950,347,1101,408})),"label outside exact right control");
+        });
+        test("direct_root_text_and_resource_variant_are_exact",()->{
+            rootChangedRejected("n7","text","AI 搜索");rootChangedRejected("n3","description","搜索");
+            rootChangedRejected("n3","label","登录");rootChangedRejected("n1","view","com.xiaomi.shop:id/unknown_field");
+        });
+        test("direct_root_incomplete_or_unobserved_window_is_unavailable",()->{
+            NativeAppEvidence.Frame f=directRootFrame("");unavailable(frame(f,f.nodes,true,true,1,true),"truncated");
+            unavailable(frame(f,f.nodes,false,false,1,true),"incomplete");unavailable(frame(f,f.nodes,false,true,2,true),"wrong window type");
+            unavailable(frame(f,f.nodes,false,true,1,false),"unobserved metadata");
+        });
+        test("direct_root_same_text_history_never_becomes_suggestion",()->{
+            NativeAppEvidence.Frame f=directRootFrame("AX3000T");List<NativeAppEvidence.Node> nodes=new ArrayList<NativeAppEvidence.Node>(f.nodes);
+            nodes.add(rootNode("n29","android.widget.TextView","xiaomi路由器ax3000t","0/6/2","android.widget.ScrollView","xiaomi路由器ax3000t",false,false,100,750,800,820));
+            NativeXiaomiProductPage.Page p=inspect(frame(f,nodes,false,true,1,true));
+            check("search_submit".equals(p.phase)&&p.clickIds.equals(Collections.singleton("n3"))&&p.quote==null,"history loading and duplicate text do not alter normal query target");
+        });
+        test("direct_root_repeated_observation_has_no_query_or_completion_claim",()->{
+            NativeAppEvidence.Frame f=directRootFrame("");NativeXiaomiProductPage.Page a=inspect(f),b=inspect(f);
+            check(a.editValues.equals(b.editValues)&&a.quote==null&&b.quote==null&&a.clickIds.isEmpty()&&b.clickIds.isEmpty(),"no parser-state promotion or automatic query");
+        });
+    }
+
     private static void cases()throws Exception{
         test("actual_home_selects_observed_query_entry_not_adjacent_icon",()->{
             NativeAppEvidence.Frame f=load("home");NativeXiaomiProductPage.Page p=inspect(f);
@@ -317,12 +439,13 @@ public final class NativeXiaomiProductPageHostTest {
         test("empty_native_page_has_no_business_or_action_fallback",()->{
             NativeAppEvidence.Frame f=load("detail");unavailable(frame(f,Collections.<NativeAppEvidence.Node>emptyList(),false,true,1,true),"empty observed page");
         });
+        directRootCases();
     }
     private static String json(boolean pass){
         StringBuilder out=new StringBuilder("{\"schema\":\"hepta.native-xiaomi-product-host.v1\",\"all_pass\":");
         out.append(pass).append(",\"cases\":").append(names.size()).append(",\"assertions\":").append(checks).append(",\"case_names\":[");
         for(int i=0;i<names.size();i++){if(i>0)out.append(',');out.append('"').append(names.get(i)).append('"');}
-        return out.append("],\"fixture_values_actual\":false,\"public_fixtures_have_explicit_private_value_redactions\":true,\"quote_and_action_source_values_match_original\":true,\"frame_bindings_node_signatures_collection_and_window_metadata_synthetic\":true,\"model_inference\":false,\"android_runtime\":false,\"phone_operations\":0,\"query_executed\":false,\"business_verified\":false}\n").toString();
+        return out.append("],\"fixture_values_actual\":false,\"public_fixtures_have_explicit_private_value_redactions\":true,\"quote_and_action_source_values_match_original\":true,\"frame_bindings_node_signatures_collection_and_window_metadata_synthetic\":true,\"direct_root_toolbar_shape_and_negative_mutations_synthetic\":true,\"model_inference\":false,\"android_runtime\":false,\"phone_operations\":0,\"query_executed\":false,\"business_verified\":false}\n").toString();
     }
     public static void main(String[] args)throws Exception{
         fixtures=Paths.get(args[0]);Path out=Paths.get(args[1]);boolean pass=false;

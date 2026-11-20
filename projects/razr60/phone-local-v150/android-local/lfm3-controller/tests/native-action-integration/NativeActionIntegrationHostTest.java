@@ -9,6 +9,7 @@ final class NativeActionIntegrationHostTest {
         NativeActionSessionHostTest.run(source,scratch.resolve("home"));
         XiaomiActionGuardHost.run(source.resolve("tests/native-xiaomi-product/fixtures"));
         NativeActionBridgeHost.run(source);
+        NativeActionBridgeHost.runOpenClaim(source,scratch.resolve("open-claim"));
         NativeCarouselCurrentnessHostTest.run(source);
         NativeXiaomiHomeVariationHostTest.run(source);
         NativeXiaomiEntryObservationHostTest.run(source);

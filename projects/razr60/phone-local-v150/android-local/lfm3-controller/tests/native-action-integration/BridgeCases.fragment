@@ -428,3 +428,232 @@
         });
     }
 
+
+    /** Same synthetic Android bridge as the retained action cases. The Controller
+     * await/finally, Session, guard, ActionExecutionState and writer are actual.
+     * This endpoint never calls guard.claim: the extracted click branch must. */
+    static final class OpenController {
+        final Fixture fixture;final File directory;
+        final NativeAppSession activeNativeTask;
+        final java.util.concurrent.atomic.AtomicBoolean cancelled=new java.util.concurrent.atomic.AtomicBoolean();
+        final HeptaAccessibilityService service;
+        HeptaAccessibilityService.ActionOutcome outcome;
+        long taskDeadline,finished;
+        OpenController(Fixture value,File directory){
+            fixture=value;this.directory=directory;activeNativeTask=value.session;
+            service=new HeptaAccessibilityService(this);taskDeadline=SystemClock.elapsedRealtime()+480000;
+        }
+        void checkActive(long deadline){
+            if(cancelled.get()||SystemClock.elapsedRealtime()>=deadline)throw new IllegalStateException("synthetic task stopped or expired");
+        }
+        synchronized void stop(){cancelled.set(true);fixture.service.cancelled=true;}
+        static final class android {static final class system {static final class Os {
+            static void chmod(String path,int mode)throws java.io.IOException{
+                if(mode!=0600)throw new AssertionError("only original private receipt mode");
+                java.nio.file.Files.setPosixFilePermissions(java.nio.file.Paths.get(path),java.util.EnumSet.of(
+                        java.nio.file.attribute.PosixFilePermission.OWNER_READ,java.nio.file.attribute.PosixFilePermission.OWNER_WRITE));
+            }
+        }}}
+        {{open_record}}
+        {{open_cleanup_unknown}}
+        {{open_execution_projection}}
+        {{open_await_action}}
+        static JSONObject wire(Map<?,?> value){
+            JSONObject result=new JSONObject();for(Map.Entry<?,?> entry:value.entrySet()){
+                if(!(entry.getKey() instanceof String))throw new IllegalArgumentException("actual receipt string keys required");
+                result.put((String)entry.getKey(),wireValue(entry.getValue()));
+            }return result;
+        }
+        private static Object wireValue(Object value){
+            // Explicit Android JSONObject.NULL contract; desktop JSONObject(Map)
+            // otherwise removes null retirement_reason/query_history fields.
+            if(value==null)return JSONObject.NULL;
+            if(value instanceof Map<?,?>)return wire((Map<?,?>)value);
+            if(value instanceof List<?>){JSONArray result=new JSONArray();for(Object item:(List<?>)value)result.put(wireValue(item));return result;}
+            if(value instanceof String||value instanceof Number||value instanceof Boolean)return value;
+            throw new IllegalArgumentException("unsupported actual receipt value");
+        }
+        static final class HeptaAccessibilityService {
+            interface Cancellation {boolean isCancelled();}
+            interface ActionCallback {void onResult(ActionOutcome value);}
+            static final class ActionOutcome {
+                final boolean accepted,dispatched,stale;final JSONObject actionExecution;
+                ActionOutcome(boolean a,boolean d,boolean s,JSONObject execution){accepted=a;dispatched=d;stale=s;actionExecution=execution;}
+            }
+            final OpenController controller;final ActionExecutionState.Slot slot=new ActionExecutionState.Slot();
+            NativeAppSession.ActionGuard guard;ActionWork lastWork;
+            int performCalls,retireCalls;boolean legacyBranch,drain=true,callbackCurrent=true,cancelWhenClaimed;
+            IntegrationChecks.Work beforeCallback;
+            HeptaAccessibilityService(OpenController value){controller=value;}
+            boolean actionWorkPending(){return slot.pending();}
+            boolean nativeCancellationWorkPending(){return false;}
+            void retireActionWork(String task,String reason){
+                yes(controller.fixture.task.equals(task),"retirement keeps the actual task");retireCalls++;
+                if(lastWork!=null)lastWork.state.retire(reason);
+            }
+            void perform(String task,PhoneObservation observed,ActionDecision action,ObservedTargetLabels targets,
+                    org.trillionnium.hepta.background.FixedIntentTarget fixedTarget,TaskAuthorization.Gate authorization,
+                    String run,long deadline,NativeAppSession.ActionGuard supplied,Cancellation cancellation,ActionCallback callback)throws Exception{
+                performCalls++;guard=supplied;Fixture f=controller.fixture;NativeActionBridgeHost bridge=f.service;
+                yes(task.equals(f.task)&&observed==bridge.current&&action==f.action&&authorization==f.gate&&run.equals(f.run),
+                        "real await receives the same action, observation and private authorization");
+                yes(supplied!=null&&supplied.selection==f.selection&&supplied.authorization==authorization&&supplied.frame==f.frame,
+                        "one real Session/selection/Attempt supplies the guard; no copied authority");
+                yes(f.work==null&&deadline==supplied.deadline&&supplied.issued==SystemClock.elapsedRealtime(),
+                        "deferred fixture has no preclaimed guard or work; actual await supplies eight-second deadline");
+                NativeActionBridgeHost.Cancellation checkedCancellation=()->{
+                    if(cancelWhenClaimed&&Integer.valueOf(1).equals(supplied.evidence().get("state")))controller.stop();
+                    return cancellation.isCancelled();
+                };
+                f.work=bridge.new ActionWork(task,observed,run,bridge.scope,authorization,bridge.background,checkedCancellation,
+                        bridge.currentGraph.copyForAction(action.nodeId,null),null,SystemClock.elapsedRealtime(),deadline,supplied);
+                lastWork=f.work;yes(slot.acquire(lastWork.state),"actual ActionExecutionState slot acquired once");
+                boolean accepted=false,stale=false;
+                try{
+                    SystemClock.now++;lastWork.phase("worker_started");
+                    bridge.scopeBeforeDispatch(task,bridge.scope,observed,action,null,false,lastWork);
+                    bridge.scopeBeforeDispatch(task,bridge.scope,observed,action,lastWork.graph.refs.get(action.nodeId).node,true,lastWork);
+                    String refusal=bridge.validate(task,observed,action,targets,checkedCancellation,lastWork);
+                    if(refusal!=null)stale=refusal.startsWith("stale:");
+                    else{
+                        if(legacyBranch)bridge.legacyOpenClickBranch(task,observed,action,lastWork);
+                        else bridge.clickBranch(task,observed,action,lastWork);
+                        accepted=bridge.callbackAccepted;
+                    }
+                }catch(StaleObservation refusal){stale=true;}
+                catch(IllegalArgumentException|IllegalStateException refusal){accepted=false;}
+                finally{
+                    lastWork.graph.close();
+                    if(drain){SystemClock.now++;lastWork.state.drained();slot.release(lastWork.state);}
+                }
+                if(beforeCallback!=null)beforeCallback.run();
+                SystemClock.now++;
+                boolean published=drain&&lastWork.state.publish(cancellation.isCancelled(),callbackCurrent&&lastWork.currentLease());
+                Map<String,Object> raw=lastWork.state.evidence();raw.put("native_action_guard",supplied.evidence());
+                if(lastWork.nativeActionProof!=null)raw.put("native_action_revalidation",new JSONObject(lastWork.nativeActionProof).toMap());
+                callback.onResult(new ActionOutcome(accepted&&published,lastWork.state.effectEntered(),stale,wire(raw)));
+            }
+        }
+        void invoke()throws Exception{
+            outcome=awaitAction(fixture.task,fixture.service.current,fixture.action,null,null,fixture.gate,fixture.run,taskDeadline);
+        }
+        void commit()throws Exception{
+            yes(outcome!=null,"actual callback and Controller finally precede the durable outcome");finished=SystemClock.elapsedRealtime();
+            JSONObject receipt=new JSONObject().put("explicit_host_android_endpoint",true).put("accepted",outcome.accepted)
+                    .put("dispatched",outcome.dispatched).put("stale",outcome.stale).put("action_execution",outcome.actionExecution);
+            record(directory,"step-01-action.json",receipt);
+            activeNativeTask.modelActionOutcome(fixture.action,fixture.run,outcome.accepted,outcome.dispatched,outcome.stale,
+                    sha(receipt.toString(2).getBytes(StandardCharsets.UTF_8)),finished,nativeQueryExecution(outcome.actionExecution));
+        }
+        NativeAppSession.PostEffectReadPermit permit(){return activeNativeTask.postEffectReadPermit(fixture.action,fixture.run,fixture.frame.observationId);}
+    }
+    /** The old 1079 click body is a fixed-hash inverse of the sole dispatch
+     * condition change. It demonstrates the retained failure, not a live route. */
+    void legacyOpenClickBranch(String taskId,PhoneObservation expected,ActionDecision action,ActionWork work)throws Exception{
+        Graph graph=work.graph;Cancellation cancel=work.cancel;QualificationScopeConfig.Bound dispatchScope=work.scope;
+        TaskAuthorization.Gate authorization=work.authorization;String modelRunId=work.state.modelRunId;
+        ActionCallback callback=outcome->{callbackAccepted=outcome.accepted;};
+        {{open_legacy_selected_refresh}}
+        boolean accepted;
+        {{open_legacy_click_branch}}
+    }
+    static OpenController openController(java.nio.file.Path directory,String label)throws Exception{
+        java.nio.file.Path path=directory.resolve(label);java.nio.file.Files.createDirectory(path);
+        NativeActionBridgeHost service=new NativeActionBridgeHost();
+        Fixture fixture=service.new Fixture(NativeActionSnapshotCheck.OPEN,"exact-open:"+label,null,true,path.toFile());
+        service.exerciseBackgroundPrecheck=true;return new OpenController(fixture,path.toFile());
+    }
+    static boolean openAvailable(OpenController controller){
+        for(Map<String,Object> entry:controller.fixture.journal){
+            if(!"native-app-outcome-01.json".equals(entry.get("leaf")))continue;
+            Map<?,?> value=(Map<?,?>)entry.get("value"),attempt=(Map<?,?>)value.get("attempt");
+            Map<?,?> receipt=(Map<?,?>)attempt.get("actual_action_receipt");
+            return Boolean.TRUE.equals(receipt.get("post_effect_read_recovery_available"));
+        }return false;
+    }
+    static void runOpenClaim(java.nio.file.Path source,java.nio.file.Path directory)throws Exception{
+        sourceRoot=source;java.nio.file.Files.createDirectories(directory);
+        one("open_claim_equal_tree_actual_service_finally_durable_once_permit",()->{
+            OpenController c=openController(directory,"equal");Fixture f=c.fixture;
+            yes(f.work==null&&c.permit()==null,"no fixture work or permit before extracted awaitAction");
+            c.invoke();
+            yes(c.outcome.accepted&&c.outcome.dispatched&&!c.outcome.stale&&f.effects()==1,"one real extracted click through fake Android endpoint");
+            yes(!f.work.nativeActionRevalidated,"equal-digest validation does not mark a variation comparison");
+            yes(Collections.frequency(f.service.events,"full_census")==2&&f.work.nativeActionProof!=null,"original final census runs even for unchanged OPEN");
+            yes(c.outcome.actionExecution.getJSONObject("native_action_guard").getInt("state")==1,"actual callback sees the real claim before Controller closes");
+            yes(Integer.valueOf(2).equals(c.service.guard.evidence().get("state")),"actual Controller finally seals a closed guard");
+            yes(c.outcome.actionExecution.getBoolean("effect_entered")&&c.outcome.actionExecution.getBoolean("effect_returned")
+                    &&c.outcome.actionExecution.getBoolean("worker_drained")&&c.outcome.actionExecution.getBoolean("callback_authority_current"),"actual ActionExecutionState lifecycle");
+            yes(!c.service.actionWorkPending()&&!c.service.nativeCancellationWorkPending()&&c.permit()==null,"drained callback alone is not durable read authority");
+            c.commit();yes(openAvailable(c),"actual Session durable receipt explicitly records recovery availability");
+            yes(java.nio.file.Files.size(directory.resolve("equal/native-app-outcome-01.json"))>0,"actual writer creates and fsyncs the Session outcome");
+            NativeAppSession.PostEffectReadPermit permit=c.permit();yes(permit!=null&&permit.transitionDeadline()==c.finished+15000,"same private pending OPEN and unchanged original transition deadline");
+            IntegrationChecks.rejects(()->c.permit(),"permit cannot be issued twice");
+            permit.admit(false);permit.admit(true);IntegrationChecks.rejects(()->permit.admit(true),"no third observation admission");
+            IntegrationChecks.rejects(()->c.service.guard.requireClaimed(),"closed guard cannot enter a second effect");
+            yes(c.service.performCalls==1&&f.effects()==1,"no repeated click or synthetic manual guard claim");
+        });
+        one("open_claim_old_exact_branch_preserves_actual_unclaimed_failure",()->{
+            OpenController c=openController(directory,"old-branch");c.service.legacyBranch=true;c.invoke();
+            yes(c.outcome.accepted&&c.outcome.dispatched&&c.fixture.effects()==1,"old complete equal-tree click really reaches effect endpoint");
+            yes(Collections.frequency(c.fixture.service.events,"full_census")==1&&c.fixture.work.nativeActionProof==null,"old branch skipped final native claim");
+            yes(c.outcome.actionExecution.getJSONObject("native_action_guard").getInt("state")==0,"old callback preserves unclaimed state0");
+            yes(Integer.valueOf(2).equals(c.service.guard.evidence().get("state")),"old actual await finally still closes guard");
+            c.commit();yes(!openAvailable(c)&&c.permit()==null,"state0 then bare state2 cannot issue the private entered permit");
+        });
+        one("open_claim_changed_tree_retains_existing_purpose_comparison",()->{
+            OpenController c=openController(directory,"changed");c.fixture.neutralText();c.invoke();c.commit();
+            yes(c.outcome.accepted&&c.fixture.work.nativeActionRevalidated&&c.fixture.effects()==1,"existing complete variation branch preserved");
+            yes(openAvailable(c)&&c.permit()!=null,"real final guard still connects to durable entered handoff");
+        });
+        one("open_claim_stop_before_final_claim_never_enters_effect",()->{
+            OpenController c=openController(directory,"stop-before");c.fixture.service.afterFinalCensus=()->c.stop();c.invoke();
+            yes(!c.outcome.accepted&&!c.outcome.dispatched&&c.fixture.effects()==0,"stop before claim blocks effect");
+            c.commit();yes(!openAvailable(c)&&c.permit()==null,"no entered permit after stopped read-only precheck");
+        });
+        one("open_claim_stop_after_atomic_claim_before_effect_never_enters",()->{
+            OpenController c=openController(directory,"stop-after");c.service.cancelWhenClaimed=true;c.invoke();
+            yes(c.cancelled.get()&&!c.outcome.dispatched&&c.fixture.effects()==0,"same cancellation token wins after claim and before effect");
+            c.commit();yes(!openAvailable(c)&&c.permit()==null,"claim without entered accepted effect is not a permit");
+        });
+        one("open_claim_changed_private_authorization_refuses_before_effect",()->{
+            OpenController c=openController(directory,"authorization");c.fixture.service.afterFinalCensus=()->c.fixture.service.authorizationCurrent=false;c.invoke();
+            yes(!c.outcome.dispatched&&c.fixture.effects()==0,"actual final authorization check remains required");
+            c.commit();yes(c.permit()==null,"foreign authorization cannot acquire entered read context");
+        });
+        one("open_claim_same_values_new_selection_pointer_refuses",()->{
+            OpenController c=openController(directory,"selection");
+            c.fixture.service.afterFinalCensus=()->c.fixture.service.background.selection=new org.trillionnium.hepta.local.BackgroundSession.Selection(c.fixture.selection.executionTarget());
+            c.invoke();yes(!c.outcome.dispatched&&c.fixture.effects()==0,"final checker keeps exact private selection object");
+            c.commit();yes(c.permit()==null,"same textual target cannot substitute private selection");
+        });
+        one("open_claim_final_census_keeps_original_eight_second_deadline",()->{
+            OpenController c=openController(directory,"deadline");c.fixture.service.afterFinalCensus=()->SystemClock.now=c.service.guard.deadline;
+            boolean refused=false;try{c.invoke();}catch(OpenController.CleanupUnknown expected){refused=true;}
+            yes(refused&&c.cancelled.get()&&c.fixture.effects()==0,"late final read refuses without extending action budget");
+            yes(c.service.retireCalls==1&&c.permit()==null,"real await timeout cleanup retains no permit");
+        });
+        one("open_claim_undrained_real_action_state_refuses_handoff",()->{
+            OpenController c=openController(directory,"undrained");c.service.drain=false;
+            boolean refused=false;try{c.invoke();}catch(OpenController.CleanupUnknown expected){refused=true;}
+            yes(refused&&c.cancelled.get()&&c.fixture.effects()==1&&c.service.actionWorkPending(),"entered work without actual drain remains pending");
+            yes(c.permit()==null,"no read permit while original action still owns its slot");
+        });
+        one("open_claim_noncurrent_actual_callback_does_not_issue",()->{
+            OpenController c=openController(directory,"callback");c.service.callbackCurrent=false;c.invoke();c.commit();
+            yes(c.fixture.effects()==1&&!c.outcome.accepted&&!openAvailable(c)&&c.permit()==null,"entered effect does not override noncurrent callback refusal");
+        });
+        one("open_claim_stop_before_real_finally_erases_entered_handoff",()->{
+            OpenController c=openController(directory,"stop-callback");c.service.beforeCallback=()->c.stop();c.invoke();c.commit();
+            yes(c.fixture.effects()==1&&c.cancelled.get()&&!openAvailable(c)&&c.permit()==null,"stop monitor revokes pending entered receipt");
+        });
+        one("open_claim_durable_outcome_failure_keeps_inflight_and_no_permit",()->{
+            OpenController c=openController(directory,"journal");c.invoke();c.fixture.failActualOutcome=true;
+            IntegrationChecks.ioRejects(()->c.commit(),"actual Session journal endpoint fails before outcome creation");
+            yes(c.fixture.effects()==1&&c.permit()==null&&!java.nio.file.Files.exists(directory.resolve("journal/native-app-outcome-01.json")),"failed journal cannot issue a permit or repeat effect");
+        });
+        one("open_claim_ordinary_close_cannot_replace_private_seal",()->{
+            OpenController c=openController(directory,"normal-close");c.invoke();c.service.guard.close();c.commit();
+            yes(c.fixture.effects()==1&&!openAvailable(c)&&c.permit()==null,"bare state2 remains insufficient after private seal is cleared");
+        });
+    }
