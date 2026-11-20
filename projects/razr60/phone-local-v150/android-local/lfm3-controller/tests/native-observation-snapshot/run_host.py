@@ -77,7 +77,7 @@ def generate(source,out,h):
         expect(!isMain(),"identity Android IO on main");windowChecks.incrementAndGet();
         if(windowHook!=null)windowHook.run();requireObservationWork(request);
         if("missing".equals(windowFailure))throw new NoActiveWindow();
-        if(windowFailure!=null)throw new StaleObservation();
+        if(windowFailure!=null)throw new StaleObservation("synthetic frozen-window failure");
         requireTaskAuthorization(request.taskId,taskAuthorization);return windowValue;
     }''')
     template=once(template,'        expect(owns(task)&&authorization!=null&&authorization==taskAuthorization,"retired fixture authorization");',

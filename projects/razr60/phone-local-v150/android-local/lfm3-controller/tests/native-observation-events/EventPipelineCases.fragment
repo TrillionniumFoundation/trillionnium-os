@@ -52,7 +52,7 @@
     }
     static void captureCases()throws Exception{
         for(final int at:new int[]{3,4})for(final boolean stale:new boolean[]{false,true})eventCase("fresh_graph_"+at+"_"+(stale?"stale":"missing")+"_still_retries",()->{
-            ObserverPipelineHost f=nativeFixture((x,g,n)->{if(n<=3)x.noteObservationEvent(9);if(n==at){if(stale)throw new StaleObservation();throw new NoActiveWindow();}});
+            ObserverPipelineHost f=nativeFixture((x,g,n)->{if(n<=3)x.noteObservationEvent(9);if(n==at){if(stale)throw new StaleObservation("synthetic stale observation");throw new NoActiveWindow();}});
             ObservationRequest r=twoSamples(f);noPublication(f,r,"unavailable fresh graph");
             check(count(r,(at==3?"SCREENSHOT":"SAVED")+"_GRAPH_"+(stale?"STALE":"MISSING"))==1&&count(r,"CAPTURE_RETRY")==1,"reason lost");f.dispose();
         });

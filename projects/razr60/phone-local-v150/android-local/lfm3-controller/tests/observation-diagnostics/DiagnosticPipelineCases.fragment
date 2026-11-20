@@ -67,7 +67,7 @@
             DiagnosticChecks.check(e.getInt("SAMPLE_EVENT_RESET")==1&&e.getInt("SAMPLE_MISSING")==1,"actual reset distinguishable");f.dispose();
         });
         for(final boolean stale:new boolean[]{false,true})diag("actual_sample_"+(stale?"stale_root":"missing_root")+"_reason_is_distinct",()->{
-            ObserverPipelineHost f=nativeFixture();f.readHook=(g,n)->{boundGraph(g);if(stale)throw new StaleObservation();throw new NoActiveWindow();};f.begin();ObservationRequest r=f.activeObservation;f.awaitSample();
+            ObserverPipelineHost f=nativeFixture();f.readHook=(g,n)->{boundGraph(g);if(stale)throw new StaleObservation("synthetic stale observation");throw new NoActiveWindow();};f.begin();ObservationRequest r=f.activeObservation;f.awaitSample();
             org.json.JSONObject e=report(r).getJSONObject("events");DiagnosticChecks.check(e.getInt(stale?"SAMPLE_STALE_ROOT":"SAMPLE_NO_ROOT")==1&&e.getInt("SAMPLE_MISSING")==1,"sample category");f.dispose();
         });
         for(final int at:new int[]{3,4})diag("actual_capture_changed_graph_"+at+"_has_specific_reason",()->{

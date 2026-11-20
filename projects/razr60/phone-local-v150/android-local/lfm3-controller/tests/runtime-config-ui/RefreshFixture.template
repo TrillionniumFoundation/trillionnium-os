@@ -70,8 +70,13 @@ public final class RuntimeConfigUiHostTest {
     }
     // These original view cases never run a settings transaction. New settings controls remain ineligible.
     private static final class LocalModelSettings {boolean isBusy(){return false;}String state(){return "fixture settings idle";}}
-    private static final class LocalProbeApplication {boolean canChangeLocalModelSettings(boolean restore){return false;}}
+    // Importer and application admission are view inputs only; real I/O/slot behavior has its own gate.
+    private static final class LocalModelImport {boolean busy;String stateText="fixture import idle";boolean isBusy(){return busy;}String state(){return stateText;}}
+    private static final class LocalProbeApplication {boolean importEligible;boolean canImportLocalModel(){return importEligible;}boolean canChangeLocalModelSettings(boolean restore){return false;}}
     private final LocalModelSettings modelSettings=new LocalModelSettings();
+    private final LocalModelImport modelImport=new LocalModelImport();
+    private String pendingImportAsset;
+    private final Widget modelIdentity=new Widget(),importLocalModel=new Widget(),cancelModelImport=new Widget(),localModelImportState=new Widget();
     private final LocalProbeApplication application=new LocalProbeApplication();
     private Object getApplication(){return application;}
     private final Widget chooseLocalModel=new Widget(),restoreLocalModel=new Widget(),localModelSettingsState=new Widget();
@@ -162,6 +167,34 @@ public final class RuntimeConfigUiHostTest {
         check(gui.beginTaskModelPreflightError().contains("需要启用后台"),"GUI preflight keeps the same background requirement");
         text.engine.busy=true;
         check(text.beginTaskModelPreflightError().contains("已有本地请求"),"text preflight keeps the same exclusive model gate");
+        return checks-before;
+    }
+
+    public static int importerUiChecks(File files)throws Exception{
+        int before=checks;
+        RuntimeConfigUiHostTest ui=new RuntimeConfigUiHostTest(files);
+        present(ui.engine.modelFile());ui.refresh();
+        check("本地模型已导入 · 无障碍已启用".equals(ui.modelInfo.text),"existing exact readiness node stays compatible");
+        check(ui.modelIdentity.text.contains("fixture model")&&ui.modelIdentity.text.contains("Adreno GPU"),"separate home identity shows the selected model and GPU");
+        ui.engine.configuration.compute="npu";ui.refresh();
+        check(ui.modelIdentity.text.contains("Hexagon NPU"),"home identity tracks the selected NPU");
+        check(!ui.importLocalModel.enabled,"import UI follows denied application admission");
+        check(ui.cancelModelImport.visibility==View.GONE&&!ui.cancelModelImport.enabled,"idle import has no enabled cancellation");
+        check("fixture import idle".equals(ui.localModelImportState.text),"idle importer state is visible");
+        ui.application.importEligible=true;ui.refresh();
+        check(ui.importLocalModel.enabled,"idle eligible admission enables the file selection entry");
+        ui.pendingImportAsset="fixture-selection";ui.refresh();
+        check(!ui.importLocalModel.enabled,"outstanding file selection cannot start a second picker");
+        ui.pendingImportAsset=null;ui.profileCatalogueLoading=true;ui.refresh();
+        check(!ui.importLocalModel.enabled,"catalogue loading excludes file selection");
+        ui.profileCatalogueLoading=false;ui.application.importEligible=false;
+        ui.modelImport.busy=true;ui.modelImport.stateText="正在导入本地文件";ui.engine.busy=true;ui.refresh();
+        check(!ui.importLocalModel.enabled&&ui.cancelModelImport.visibility==View.VISIBLE&&ui.cancelModelImport.enabled,"busy import offers cancellation without second import");
+        check("正在导入本地文件".equals(ui.localModelImportState.text),"active importer progress is visible");
+        check(!ui.startTask.enabled&&!ui.runText.enabled&&!ui.stopTask.enabled,"import-held model slot excludes task and probe controls");
+        ui.modelImport.busy=false;ui.modelImport.stateText="本地文件已就绪";ui.engine.busy=false;ui.application.importEligible=true;ui.refresh();
+        check(ui.importLocalModel.enabled&&ui.cancelModelImport.visibility==View.GONE&&!ui.cancelModelImport.enabled&&ui.startTask.enabled&&ui.runText.enabled,"terminal importer view restores idle controls");
+        check("本地文件已就绪".equals(ui.localModelImportState.text)&&ui.renderCalls==0,"importer state display performs no inference");
         return checks-before;
     }
 

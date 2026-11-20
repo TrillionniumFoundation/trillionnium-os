@@ -83,7 +83,7 @@
                 sealGraph(g);
             };
             f.seedFrozenRead=(r,i)->{
-                if("producer_retry".equals(fault))throw new StaleObservation();
+                if("producer_retry".equals(fault))throw new StaleObservation("synthetic stale observation");
                 if("during_window".equals(fault))f.noteObservationEvent(9);
                 if("foreign_window".equals(fault))return new FrozenObservationWindow(i.frozenWindow.packageName,i.frozenWindow.windowId+1,
                         i.frozenWindow.displayId,i.frozenWindow.rotation,i.frozenWindow.left,i.frozenWindow.top,
@@ -256,7 +256,7 @@
             ObserverPipelineHost f=seedFixture((x,g,n)->{
                 if(n!=5)return;
                 if("missing".equals(reason))throw new NoActiveWindow();
-                if("stale".equals(reason))throw new StaleObservation();
+                if("stale".equals(reason))throw new StaleObservation("synthetic stale observation");
                 if("incomplete".equals(reason))g.collectionStats=null;else changeIdentity(g,reason);
             });ObservationRequest r=seedAdmitted(f);seedNextRead(f);
             check(r.resampleSeed==null&&count(r,"SAMPLE_READY")==1&&f.shots.size()==1,"changed next graph borrowed seed");
@@ -422,7 +422,7 @@
                         g.windowMetadata=ObservedWindowMetadata.observed(new int[]{0,0,1079,2400},"android.widget.FrameLayout",1,9,new int[]{0,0,1079,2400},EventChecks.APP);
                     }else if(n==1&&"incomplete".equals(prefix))g.collectionStats=null;
                     else if(n==1&&"stale_after_complete".equals(prefix))g.digest="earlier-owned-content";
-                    else if(n==4)throw new StaleObservation();
+                    else if(n==4)throw new StaleObservation("synthetic stale observation");
                     else throw new NoActiveWindow();
                 }else SystemClock.now=start+(n==5?8202:n==6?8931:9431);
                 if(n==7&&"no_seal".equals(fault))f.noteObservationEvent(9);
@@ -436,7 +436,7 @@
             f.seedFrozenRead=(r,i)->{
                 SystemClock.now=r.started+("early".equals(fault)?9999:"expired".equals(fault)?12000:10452);
                 if("no_window".equals(fault))return null;
-                if("window_stale".equals(fault))throw new StaleObservation();
+                if("window_stale".equals(fault))throw new StaleObservation("synthetic stale observation");
                 if(!"no_event".equals(fault))f.noteObservationEvent("unknown".equals(fault)?-1:9);
                 return i.frozenWindow;
             };
@@ -809,7 +809,7 @@
             f.seedFrozenRead=(r,i)->{
                 SystemClock.now=started+("expired".equals(fault)?12000:discardElapsed);
                 if("no_window".equals(fault))return null;
-                if("window_stale".equals(fault))throw new StaleObservation();
+                if("window_stale".equals(fault))throw new StaleObservation("synthetic stale observation");
                 if(!"no_event".equals(fault))f.noteObservationEvent("unknown".equals(fault)?-1:"main_event".equals(fault)?0:9);
                 return i.frozenWindow;
             };

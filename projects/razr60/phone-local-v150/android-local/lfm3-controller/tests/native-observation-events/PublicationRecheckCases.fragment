@@ -74,7 +74,7 @@
                     if(n==1){s.f.noteObservationEvent(9);return i.frozenWindow;}
                     if("unknown".equals(fault)){s.f.noteObservationEvent(-1);return i.frozenWindow;}
                     if("missing_root".equals(fault))throw new NoActiveWindow();
-                    if("stale_identity".equals(fault))throw new StaleObservation();
+                    if("stale_identity".equals(fault))throw new StaleObservation("synthetic stale observation");
                     FrozenObservationWindow w=i.frozenWindow;
                     return new FrozenObservationWindow(w.packageName,w.windowId+("window".equals(fault)?1:0),
                             w.displayId,w.rotation,w.left+("geometry".equals(fault)?1:0),w.top,w.right,w.bottom,w.width,w.height,

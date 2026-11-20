@@ -89,7 +89,7 @@ public final class ObserverPipelineHost {
         static Thread myLooper(){return Thread.currentThread();}static Thread getMainLooper(){return mainThread;}
     }
     static final class NoActiveWindow extends IllegalStateException {private static final long serialVersionUID=1L;}
-    static final class StaleObservation extends IllegalStateException {private static final long serialVersionUID=1L;}
+    static final class StaleObservation extends IllegalStateException {private static final long serialVersionUID=1L;StaleObservation(String message){super(message);}}
     static final class Graph {
         ObservationDiagnostics.GraphStamp diagnosticStamp;
         ObservationDiagnostics.CensusStamp diagnosticCensus;

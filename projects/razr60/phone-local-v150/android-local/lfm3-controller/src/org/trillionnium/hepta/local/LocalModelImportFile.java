@@ -94,7 +94,7 @@ final class LocalModelImportFile {
         File dir=directory(files,pin),target=new File(dir,pin.filename);
         File temporary=new File(dir,".hepta-import-"+value.getString("token")+".partial");
         removeTemporary(temporary,target,pin,null);
-        held.unchangedPath();Os.unlink(pending.getPath());MobiMindPrivateFiles.syncDirectory(files);
+        held.unchangedPath();Os.remove(pending.getPath());MobiMindPrivateFiles.syncDirectory(files);
     }
     private static void removeTemporary(File temporary,File target,Pin pin,StructStat owned)throws Exception{
         if(MobiMindPrivateFiles.exists(temporary)){
@@ -105,7 +105,7 @@ final class LocalModelImportFile {
                         ||!inode(actual,regular(target,pin.bytes)))
                     throw new IOException("导入临时文件仍有未知引用");
             }
-            Os.unlink(temporary.getPath());MobiMindPrivateFiles.syncDirectory(temporary.getParentFile());
+            Os.remove(temporary.getPath());MobiMindPrivateFiles.syncDirectory(temporary.getParentFile());
         }
         if(MobiMindPrivateFiles.exists(temporary))throw new IOException("导入临时文件尚未清理");
     }
@@ -173,7 +173,7 @@ final class LocalModelImportFile {
             finishMarker();finished=true;
         }
         private void finishMarker()throws Exception{
-            if(!markerRemoved){marker.unchangedPath();Os.unlink(marker.path.getPath());markerRemoved=true;}
+            if(!markerRemoved){marker.unchangedPath();Os.remove(marker.path.getPath());markerRemoved=true;}
             MobiMindPrivateFiles.syncDirectory(files);
             if(MobiMindPrivateFiles.exists(marker.path))throw new IOException("导入记录尚未完成");
         }

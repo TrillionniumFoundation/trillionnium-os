@@ -3,7 +3,7 @@
   "base_head": "804af9f1eeaa5c1207e8e256f88e4474d79c7639",
   "base_manifest_sha256": "acc303856e2af4be95c4e8a74cc115d97ebed9c7482db4891ca243fc4c44c617",
   "candidate_exact_git_head": null,
-  "candidate_status": "integrated_r2_complete_host_android_phone_validation_pending",
+  "candidate_status": "integrated_r3_complete_host_android_phone_validation_pending",
   "complete_source_files": 2312,
   "files": [
     {
@@ -6492,9 +6492,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 354046,
+      "bytes": 354175,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "a159f998b25ce0df98062181e3a3a821853a045be4b5e17a3cdef1e4190bf639"
+      "sha256": "cc4483fb87b78049fce6bd864b154454560b297adce3c121e497ed0ee04680b5"
     },
     {
       "bytes": 711,
@@ -6529,7 +6529,7 @@
     {
       "bytes": 11814,
       "path": "src/org/trillionnium/hepta/local/LocalModelImportFile.java",
-      "sha256": "006cc0d604286f2f107187d0e31995cd4943c2d48f895b37b597762d55961459"
+      "sha256": "018f36659f6b5de16a3508e96b1b804f1a87ff88213cc2cbd258838b3d1ed656"
     },
     {
       "bytes": 9423,
@@ -8542,19 +8542,19 @@
       "sha256": "b8b8c1302af4a19643e6dda64702e49f887bb5613a6bb0ddc298941b00fccc0a"
     },
     {
-      "bytes": 25587,
+      "bytes": 25616,
       "path": "tests/native-observation-events/EventPipelineCases.fragment",
-      "sha256": "65bfaa4f79ea32033b1080706a2ddcd38ba5c5bfa1f499280f3fce6c6549cc34"
+      "sha256": "c6f71fab64f76e1e8285eb6c82bfd79ec05cc4d737878fad80a6f37a69f6d243"
     },
     {
-      "bytes": 10431,
+      "bytes": 10460,
       "path": "tests/native-observation-events/PublicationRecheckCases.fragment",
-      "sha256": "9eabdfbac09f684d3751c42a0d5e6cfb93ee322a65735c731c76fc1f3ac38551"
+      "sha256": "a194335ea6ebee1bb5830190ef46645d84a2cd672b6ef0977aceb642b8a6d32b"
     },
     {
-      "bytes": 84855,
+      "bytes": 85000,
       "path": "tests/native-observation-events/SavedGraphSeedCases.fragment",
-      "sha256": "735d39361efc6628be6f9074d61a74c2d986a514f3a007b64c7eab43fa86eea7"
+      "sha256": "39f8b1060264a291e5e1575e18039cafccc63a49eba29d1af3f0c3094a01af18"
     },
     {
       "bytes": 17464,
@@ -8607,9 +8607,9 @@
       "sha256": "949f168c1c546ff9b113f0c0b580b2bb77d47307ed603eb880595dcb2e01f274"
     },
     {
-      "bytes": 14328,
+      "bytes": 14361,
       "path": "tests/native-observation-snapshot/run_host.py",
-      "sha256": "885ffe0745a30bff156e1d0019c43de8176297ceaeb60240f6cf3f94ed2482bb"
+      "sha256": "bbc8a5429d90bb1d3cb7b761d1ac67679520f6b1de317afc506d2a295c140e3e"
     },
     {
       "bytes": 9080,
@@ -9132,9 +9132,9 @@
       "sha256": "dea4ac14044972e44efb9bfac0354b98c39dd3c252b19122effe178e607721f1"
     },
     {
-      "bytes": 13576,
+      "bytes": 13605,
       "path": "tests/observation-diagnostics/DiagnosticPipelineCases.fragment",
-      "sha256": "5cbd8f21086aca9bec80157cf8001037e5f452c83a47a0e4ebec8dc73425d5c2"
+      "sha256": "0c4cf44cd3b001c8814b76283812f986ba729a9a50fbae8199d0b2607a4b0e9b"
     },
     {
       "bytes": 9309,
@@ -9172,9 +9172,9 @@
       "sha256": "69dfa87658899c2c01fced6810066d2a146f9634dc31604e36ef6858b5981c53"
     },
     {
-      "bytes": 34627,
+      "bytes": 34676,
       "path": "tests/observation-pipeline/ObserverPipelineHost.template",
-      "sha256": "318cd082d6a6b89820b4892a3cd2a714fdb8636abec26833f2e223a863329888"
+      "sha256": "c13a2152891f7f7a4373421b8060f683c1d7d6dd92725bee86081cda9c660799"
     },
     {
       "bytes": 5883,
@@ -9229,7 +9229,7 @@
     {
       "bytes": 5250,
       "path": "tests/offline-model-import/run_host.py",
-      "sha256": "401b79138c82949223ec6f1a03de5ef2a7a17551179f5e99d3892f4631e3ada0"
+      "sha256": "81742136afa3ddd61ddb943900283e6a9dad9c0c7fdce7d599c5592e4ac0f1ed"
     },
     {
       "bytes": 11667,
@@ -10242,14 +10242,14 @@
       "sha256": "cf6846193c3242e6fefaba9fd8321b274eb8ca98e73cf793ca04ca29d9864089"
     },
     {
-      "bytes": 24251,
+      "bytes": 27551,
       "path": "tests/runtime-config-ui/RefreshFixture.template",
-      "sha256": "4cd70319b5add1ae7d2c21a907d18581d63b9304630988d40ff0af1d1e9ea097"
+      "sha256": "e2445ba44f9a1626f760739a89bede8c39138a84f57b6030305db22bf21f61a2"
     },
     {
-      "bytes": 11550,
+      "bytes": 12708,
       "path": "tests/runtime-config-ui/run_host_tests.py",
-      "sha256": "91396e8e3201ba2dfd92bd7641c9ce51e00ac8ef2107c031d1906c30ea77ffd4"
+      "sha256": "e2c4be7bf81f64d8d1902981a5985605883e947ebe1257ccf3bebb37aa7207ae"
     },
     {
       "bytes": 19435,
@@ -11565,11 +11565,11 @@
   "main_java_sources": 196,
   "phone_qualified": false,
   "production_build_inputs_count": 371,
-  "production_input_map_sha256": "1ac34e99d00c4e70faaaf1ea35e50e61e619975681fa686d064606aa86275e10",
+  "production_input_map_sha256": "dbfb7153b4f14936dfffd2dfc3611b5e608eae073ba0088829ba3d0cc59d341f",
   "schema": "hepta.local-source.v3",
-  "scope": "Reviewed successor of 804af9. Preserve its pinned local runtime, compact 8B tool grammar, complete owner-intent parsing, virtual-display isolation and action/deadline contracts. Incorporate the reviewed Xiaomi search-carousel comparator and complete negative regressions; add one same-request, original-deadline frozen-window publication recheck after a known target event, plus bounded sample/full-census diagnostics. Add application-owned, exact-hash offline model import and visible model/backend controls; preserve existing models, task/config mutual exclusion, cancellation and no-replace publication. No new model, Android or phone qualification is asserted by this source manifest. Preserve the legacy exact readiness status in a separate accessible node from model/backend identity. Extract complete original UI methods for shared host fixtures and explicitly model import IO ownership in the recovery Application fixture; retain all original recovery assertions.",
-  "source_parent_head": "de5c96aebb0e6f42e7ec55ea129e83645d503686",
-  "source_parent_manifest_sha256": "60417aa28a9e024181341ba3de294fc679d9ebf13adb7fbdc844eee0c5f245c9",
+  "scope": "Reviewed successor of 804af9. Preserve its pinned local runtime, compact 8B tool grammar, complete owner-intent parsing, virtual-display isolation and action/deadline contracts. Incorporate the reviewed Xiaomi search-carousel comparator and complete negative regressions; add one same-request, original-deadline frozen-window publication recheck after a known target event, plus bounded sample/full-census diagnostics. Add application-owned, exact-hash offline model import and visible model/backend controls; preserve existing models, task/config mutual exclusion, cancellation and no-replace publication. No new model, Android or phone qualification is asserted by this source manifest. Preserve the legacy exact readiness status in a separate accessible node from model/backend identity. Extract complete original UI methods for shared host fixtures and explicitly model import IO ownership in the recovery Application fixture; retain all original recovery assertions. Align the runtime UI fixture with the exact refresh implementation while preserving all original assertions. Compile all 196 production Java sources against the Android public SDK. Add the missing LinkedHashMap import, pass actual String exception constructors, and use the public Os.remove API for already-bound regular temporary files. Retain every deadline, ownership, inode, fsync, publication and action check.",
+  "source_parent_head": "cd65b9cb5eefa8ec5cc341d60023f276528e5647",
+  "source_parent_manifest_sha256": "c03e51a92ca93381fc3de9fd2e8a390e9ed305825ce0f2c90020bed2dfac93e4",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

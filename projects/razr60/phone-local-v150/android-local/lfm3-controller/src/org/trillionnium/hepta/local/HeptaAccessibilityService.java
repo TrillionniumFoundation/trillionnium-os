@@ -35,6 +35,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1725,10 +1726,10 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 try{
                     requireObservationWork(request);
                     if(!postEffectObservationOwner(request)||request.postEffectIdentityRejected)
-                        throw new StaleObservation();
+                        throw new StaleObservation("late-event publication recheck owner changed");
                     product.checkedEvents=request.events;
                     product.publicationCheckStartedAt=SystemClock.elapsedRealtime();
-                    if(request.unknownEvents!=0)throw new StaleObservation();
+                    if(request.unknownEvents!=0)throw new StaleObservation("late-event publication recheck has unknown events");
                     matched=product.identity.frozenWindow.matches(readFrozenObservationWindow(request,product.identity));
                     product.frozenWindowRechecked=matched;
                     if(!matched){request.postEffectIdentityRejected=true;request.note(ObservationDiagnostics.Event.SAVED_GRAPH_CHANGED);}

@@ -42,9 +42,9 @@ def main():
   try{hit("BEFORE_LINK",to);Files.createLink(Paths.get(to),Paths.get(from));hit("AFTER_LINK",to);}
   catch(Exception e){throw failure("link",e);}
  }
- public static void unlink(String path)throws ErrnoException{
+ public static void remove(String path)throws ErrnoException{
   try{hit("BEFORE_UNLINK",path);Files.delete(Paths.get(path));hit("AFTER_UNLINK",path);}
-  catch(Exception e){throw failure("unlink",e);}
+  catch(Exception e){throw failure("remove",e);}
  }
 """
         osfile.write_text(old.rstrip()[:-1]+extra+"}\n")
