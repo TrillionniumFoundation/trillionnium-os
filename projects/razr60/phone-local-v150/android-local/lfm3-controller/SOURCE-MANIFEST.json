@@ -1,18 +1,18 @@
 {
   "schema": "hepta.local-source.v3",
-  "base_head": "1090c6c766b3fbfa763887a44d8ef24c1a24f31b",
-  "base_manifest_sha256": "722ba07c52792f20d20585b5d0e94802a129bb1e382e375de1de7efb8b740844",
-  "candidate_status": "dynamic_ui_full_host_and_android_validation_pending",
+  "base_head": "057ab26f58b62e7ffda49f1bedaf3f12aa73ddfb",
+  "base_manifest_sha256": "fdddf991aadd236a22da511509169944556d588fe794b1c06c7a691794e60bc2",
+  "candidate_status": "dynamic_ui_import_closure_full_host_and_android_validation_pending",
   "candidate_exact_git_head": null,
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime",
   "main_java_sources": 192,
   "production_build_inputs_count": 367,
-  "production_input_map_sha256": "40d30b11242fa148cdd5b2574597618206ed0c88ed546fb3942b7a933e3f05b1",
+  "production_input_map_sha256": "7f92a639cb9e4acb62346e6a03eb92b2775febad46939c4fad87c709dc8b7fb7",
   "complete_source_files": 2286,
   "phone_qualified": false,
   "android_qualified": false,
-  "scope": "Only complete SEARCH image-carousel comparison and bounded read-only full-census difference diagnostics. Existing target identity, private guard, full fresh action validation, 8s/10s/12s/15s/480s deadlines and recovery budgets remain unchanged. Original first-child-unavailable failure is not covered; Ctrip diagnostics do not resolve or reclassify its failed business result. Original full30/canonical123 and Python306 on this combined source remain pending. This materialization regenerates the complete manifest. All other 364 production inputs, including RuntimeInferenceAdapter, model, prompts, controller, Session, owner parsing, permission/completion logic and native runtime bytes, are inherited unchanged from published1090c6. Original full30/canonical123 and Python306, Git CAS, Android compile/signing and actual Phone validation remain pending.",
+  "scope": "Add only java.util.LinkedHashMap import required by the two already-reviewed diagnostic uses. All Service class-body bytes, SEARCH comparison, observation qualification, action guards, time budgets, retries, model runtime and permissions remain unchanged from published057. This materialization regenerates the complete manifest. All other 366 production inputs, including RuntimeInferenceAdapter, model, prompts, controller, Session, owner parsing, permission/completion logic and native runtime bytes, are inherited unchanged from published057ab26. The original057 full-host success and failed Android javac remain separate historical evidence. Original full30/canonical123 and Python306, Git CAS, Android compile/signing and actual Phone validation remain pending.",
   "files": [
     {
       "path": ".gitignore",
@@ -6501,8 +6501,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 349064,
-      "sha256": "a32f8192ab194b28801a705286602f1974b7c2c3cb5968448794afb42bdcd354"
+      "bytes": 349096,
+      "sha256": "22ce2cbcc4b31c5c7d624626d78e52401db249aad8ee001e14846eb66fb0e66f"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
