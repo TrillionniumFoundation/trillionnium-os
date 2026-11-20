@@ -1043,7 +1043,7 @@ final class BackgroundSession {
         JSONObject history=proof.getJSONObject("public_foreign_recent_history");
         boolean concurrent="hepta.public-profile-history-custody.v2".equals(history.getString("schema"));
         String expectedScope=concurrent?"owned_target_only_with_unrelated_physical_history_audited":"owned_target_only_with_foreign_history_preserved";
-        if(target.profile.userId!=10||target.profile.parentUserId!=0||!ProfileTarget.CTRIP.equals(target.packageName)
+        if(target.profile.userId!=10||target.profile.parentUserId!=0||!ProfileTarget.supportsPackage(target.packageName)
                 ||scope.targetUserId!=target.profile.userId||!scope.targetSha256.equals(target.sha256)
                 ||!scope.generation.equals(generation)||strictInt(response,"version")!=BrokerProtocol.PUBLIC_OWN_GROUP_PROFILE_VERSION
                 ||!generation.equals(response.getString("generation"))||display!=strictInt(response,"display_id")

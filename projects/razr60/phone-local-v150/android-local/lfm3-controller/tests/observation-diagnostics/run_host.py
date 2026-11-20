@@ -21,7 +21,7 @@ JAVA = ['HeptaAccessibilityService.java','LocalTaskController.java','Observation
         'ObservationStabilityGate.java','ActionExecutionState.java','TaskCancellationQueue.java','ObservedWindowMetadata.java',
         'NativeActionSnapshotCheck.java','ObservedChildText.java','ObservedTargetLabels.java']
 OWN = ['run_host.py','DiagnosticChecks.java','ObservationDiagnosticsHostTest.java',
-       'DiagnosticPipelineCases.fragment','DiagnosticGraphHost.template','DiagnosticControllerHost.template']
+       'DiagnosticPipelineCases.fragment','DiagnosticGraphHost.template','DiagnosticControllerHost.template','CompactCensusDiagnosticsHostTest.java']
 
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def meta(path):
@@ -157,7 +157,7 @@ def main():
         generated=output/'generated';generated.mkdir();extraction=generate(source,generated);save(output/'EXTRACTION.json',extraction)
         classes=output/'classes';classes.mkdir()
         sources=[source/PKG/x for x in JAVA if x not in ('HeptaAccessibilityService.java','LocalTaskController.java')]
-        sources += [source/TEST/'DiagnosticChecks.java',source/TEST/'ObservationDiagnosticsHostTest.java']+sorted(generated.glob('*.java'))
+        sources += [source/TEST/'DiagnosticChecks.java',source/TEST/'ObservationDiagnosticsHostTest.java',source/TEST/'CompactCensusDiagnosticsHostTest.java']+sorted(generated.glob('*.java'))
         command=[str(javac),'--release','8','-encoding','UTF-8','-Xlint:all','-Werror','-cp',str(jar),'-d',str(classes)]+list(map(str,sources))
         compiled=stage('compile',command,output);report['stages'].append(compiled)
         if compiled['exit_code']!=0:raise RuntimeError('actual diagnostic wiring compilation failed')
@@ -165,6 +165,14 @@ def main():
         if executed['exit_code']!=0:raise RuntimeError('actual diagnostic wiring cases failed')
         cases=json.loads((output/'CASES.json').read_text())
         if cases['all_pass'] is not True or cases['cases']!=len(cases['case_names']) or len(set(cases['case_names']))!=cases['cases']:raise RuntimeError('complete unique case identity required')
+        compact=stage('compact-cases',[str(java),'-cp',str(classes)+os.pathsep+str(jar),'org.trillionnium.hepta.local.CompactCensusDiagnosticsHostTest',str(output/'COMPACT-CASES.json')],output);report['stages'].append(compact)
+        if compact['exit_code']!=0:raise RuntimeError('actual compact census diagnostic cases failed')
+        compact_cases=json.loads((output/'COMPACT-CASES.json').read_text())
+        if compact_cases['all_pass'] is not True or compact_cases['cases']!=15 or len(compact_cases['case_names'])!=15 or len(set(compact_cases['case_names']))!=15 or compact_cases['assertions']<=0:
+            raise RuntimeError('complete unique compact census case identity required')
+        if compact_cases['actual_tracker_and_Service_snapshot'] is not True or compact_cases['deadline_or_sampling_changed'] is not False or compact_cases['android_execution'] is not False or compact_cases['phone_operations']!=0 or compact_cases['business_completion_verified'] is not False:
+            raise RuntimeError('compact diagnostic boundary changed')
+        report['compact_cases']=compact_cases;report['compact_cases_file']=meta(output/'COMPACT-CASES.json')
         report['cases']=cases;report['cases_file']=meta(output/'CASES.json');report['extraction_file']=meta(output/'EXTRACTION.json')
         report['generated_files']={p.name:meta(p) for p in sorted(generated.glob('*.java'))}
         report['actual_Service_observation_and_callback_compiled_verbatim']=True

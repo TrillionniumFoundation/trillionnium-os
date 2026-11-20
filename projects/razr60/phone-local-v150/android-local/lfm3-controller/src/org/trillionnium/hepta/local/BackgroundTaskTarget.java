@@ -36,7 +36,7 @@ final class BackgroundTaskTarget {
     private BackgroundTaskTarget(String owner,String target,String recognition,String initial,Set<String> selected,
                                  boolean explicitSelection,NativeAppGoal nativeGoal,ProfileTarget profileTarget){
         if(profileTarget!=null&&(!explicitSelection||!profileTarget.packageName.equals(target)||selected.size()!=1
-                ||!selected.contains(target)||!target.equals(initial)))throw new IllegalArgumentException("隔离资料仅支持明确选择的单一携程实例");
+                ||!selected.contains(target)||!target.equals(initial)))throw new IllegalArgumentException("隔离资料仅支持明确选择的单一应用实例");
         this.profileTarget=profileTarget;
         this.packageName=target;this.recognition=recognition;
         ownerSha256=FixedIntentTarget.payloadSha256(owner);originalInitialPackage=initial;

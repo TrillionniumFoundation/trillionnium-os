@@ -614,7 +614,7 @@ public final class BackgroundDisplayBroker {
 
     private void recheckProfile(boolean ready,long deadline)throws Exception {
         if(profilePackages==null)throw new BrokerProtocol.Refusal("PROFILE_PLATFORM_UNAVAILABLE");
-        ProfilePackages.Readback actual=profilePackages.read(config.profileTarget.profile.userId,ready,deadline);
+        ProfilePackages.Readback actual=profilePackages.read(config.profileTarget.profile.userId,config.profileTarget.packageName,ready,deadline);
         if(!config.profileTarget.same(actual.target))throw new BrokerProtocol.Refusal("PROFILE_INSTALLATION_IDENTITY_CHANGED");
         profileReadback=actual;
     }
@@ -687,11 +687,7 @@ public final class BackgroundDisplayBroker {
         if(profileOwnedTask!=null)throw new BrokerProtocol.Refusal("PROFILE_LAUNCH_ALREADY_ATTEMPTED");
         final ProfileTaskPolicy.Activity initial=profileReadback.activity;
         initial.requireEligible(config.profileTarget);
-        final ComponentName component=ComponentName.unflattenFromString(profileReadback.target.component);
-        if(component==null)throw new BrokerProtocol.Refusal("PROFILE_LAUNCHER_UNAVAILABLE");
-        final Intent intent=new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
-                .setComponent(component).setPackage(r.packageName)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        final Intent intent=ProfilePackages.launchIntent(profileReadback.target);
         final ActivityOptions options=ActivityOptions.makeBasic().setLaunchDisplayId(displayId);
         synchronized(dispatchGate){
             guard(r,true);requireUnlaunchedProfileEmpty();

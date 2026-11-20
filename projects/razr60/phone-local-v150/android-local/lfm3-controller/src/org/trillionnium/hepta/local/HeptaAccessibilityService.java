@@ -575,6 +575,12 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         final BackgroundSession background=backgroundFor(taskId);
         scope.verifyUnchanged();refreshApps();
         Map<String,String> available=new HashMap<String,String>(launchable);
+        // A selected profile installation need not be installed in the controller's user.
+        // This adds read-only discovery facts; launch and action still require the live lease.
+        if(background!=null&&background.profileTarget()!=null){
+            org.trillionnium.hepta.background.ProfileTarget target=background.profileTarget();
+            available.put(target.packageName,target.appLabel()+" · 工作资料 "+target.profile.userId);
+        }
         // The immutable catalogue is filtered before ranking/pagination (93cbeb scope fix).
         java.util.Iterator<Map.Entry<String,String>> entries=available.entrySet().iterator();
         while(entries.hasNext()){
@@ -632,6 +638,16 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     while(!fits(snapshot)&&!rows.isEmpty()){
                         rows.remove(rows.size()-1);detail.put("retained_detail_count",rows.size());
                         detail.put("node_differences_truncated",true);detail.put("details_omitted_for_budget",true);
+                    }
+                }
+                if(detail.get("compact_node_differences") instanceof List){
+                    List<Object> rows=new ArrayList<Object>((List<Object>)detail.get("compact_node_differences"));
+                    detail.put("compact_node_differences",rows);
+                    int total=((Number)detail.get("changed_path_count")).intValue();
+                    while(!fits(snapshot)&&!rows.isEmpty()){
+                        rows.remove(rows.size()-1);detail.put("compact_retained_count",rows.size());
+                        detail.put("compact_omitted_count",total-rows.size());detail.put("compact_truncated",true);
+                        detail.put("compact_omitted_for_budget",true);
                     }
                 }
                 raw=new JSONObject(snapshot).toString();

@@ -97,21 +97,21 @@ public final class ProfileTaskPolicy {
             if(leafId>0){Leaf leaf=leaves.get(leafId);need(leaf!=null&&leaf.user==target.profile.userId
                     &&leaf.parent==rootId&&leaf.display==display,"PROFILE_OWNED_LEAF_MISSING");}
         }
-        public Map<Integer,Leaf> personalTargets(){
+        public Map<Integer,Leaf> personalTargets(ProfileTarget target){
             Map<Integer,Leaf> result=new LinkedHashMap<Integer,Leaf>();
-            for(Leaf leaf:leaves.values())if(leaf.user==0&&leaf.display==0&&inPackageName(leaf.name))result.put(leaf.id,leaf);
-            for(Root root:roots)if(root.user==0&&root.display==0&&(inPackage(root.base)||inPackage(root.top)))
+            for(Leaf leaf:leaves.values())if(leaf.user==0&&leaf.display==0&&inPackageName(leaf.name,target))result.put(leaf.id,leaf);
+            for(Root root:roots)if(root.user==0&&root.display==0&&(inPackage(root.base,target)||inPackage(root.top,target)))
                 for(int id:root.childIds){Leaf leaf=leaves.get(id);if(leaf.user==0)result.put(id,leaf);}
             return Collections.unmodifiableMap(result);
         }
-        public Map<String,Object> personalAudit(Map<Integer,Leaf> previous){
+        public Map<String,Object> personalAudit(ProfileTarget target,Map<Integer,Leaf> previous){
             List<Integer> absent=new ArrayList<Integer>(),relocated=new ArrayList<Integer>(),added=new ArrayList<Integer>();
             for(Leaf old:previous.values()){
                 Leaf now=leaves.get(old.id);
                 if(now==null)absent.add(old.id);
                 else if(now.user!=0||now.display!=0||now.parent!=old.parent)relocated.add(old.id);
             }
-            Map<Integer,Leaf> current=personalTargets();
+            Map<Integer,Leaf> current=personalTargets(target);
             for(int id:current.keySet())if(!previous.containsKey(id))added.add(id);
             Map<String,Object> out=new LinkedHashMap<String,Object>();
             out.put("schema","hepta.profile-personal-task-audit.v1");out.put("user_id",0);
@@ -220,6 +220,6 @@ public final class ProfileTaskPolicy {
     }
     private static boolean validComponent(String s){return s==null||s.matches("[A-Za-z][A-Za-z0-9_.]*/[A-Za-z_.$][A-Za-z0-9_.$]*");}
     private static boolean validName(String s){return (validComponent(s)&&s!=null)||BrokerProtocol.packageName(s);}
-    private static boolean inPackageName(String s){return ProfileTarget.CTRIP.equals(s)||inPackage(s);}
-    private static boolean inPackage(String s){return s!=null&&s.startsWith(ProfileTarget.CTRIP+"/");}
+    private static boolean inPackageName(String s,ProfileTarget target){return target.packageName.equals(s)||inPackage(s,target);}
+    private static boolean inPackage(String s,ProfileTarget target){return s!=null&&s.startsWith(target.packageName+"/");}
 }

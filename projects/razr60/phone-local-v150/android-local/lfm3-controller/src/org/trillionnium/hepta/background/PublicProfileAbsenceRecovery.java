@@ -70,7 +70,7 @@ public final class PublicProfileAbsenceRecovery {
                     &&Boolean.TRUE.equals(journal.get("owned_task_retirement_required")),"PUBLIC_RECOVERY_NOT_UNDISPATCHED_PROFILE");
             target=ProfileTarget.fromWire(string(journal,"profile_target_wire"));
             need(target.profile.userId==10&&target.profile.parentUserId==0&&target.profile.serial>0
-                    &&ProfileIdentity.MANAGED.equals(target.profile.type)&&ProfileTarget.CTRIP.equals(target.packageName)
+                    &&ProfileIdentity.MANAGED.equals(target.profile.type)&&ProfileTarget.supportsPackage(target.packageName)
                     &&target.sha256.equals(string(journal,"profile_target_sha256")),"PUBLIC_RECOVERY_PROFILE_SCOPE");
             created=number(journal,"created_elapsed_ms");expires=number(journal,"expires_elapsed_ms");
             long previousBoot=number(journal,"boot_count");

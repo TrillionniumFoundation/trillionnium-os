@@ -77,8 +77,8 @@ public final class ProfileOwnedTask {
         platform.guard();actual(true);
         ProfileTaskPolicy.Snapshot before=platform.snapshot();before.requireDedicatedEmpty(target);
         ProfileTaskPolicy.Recents recents=readRecents();requireRecentEmpty(recents);
-        beforeIds.addAll(before.allIds);beforeIds.addAll(recentIds(recents));personal=before.personalTargets();
-        personalAudit=before.personalAudit(personal);
+        beforeIds.addAll(before.allIds);beforeIds.addAll(recentIds(recents));personal=before.personalTargets(target);
+        personalAudit=before.personalAudit(target,personal);
         recentsBeforeSha=recents.sha256;
         need(checked(platform.roots()).isEmpty(),"PROFILE_DISPLAY_NOT_EMPTY");
         platform.guard();if(publicHistory!=null)requireRecentEmpty(readRecents());rootAttempted=true;platform.createRoot(rootCookie);
@@ -155,7 +155,7 @@ public final class ProfileOwnedTask {
         need(startAccepted&&!retiring&&windowId>=0&&observedTaskId>0,"PROFILE_PERMISSION_READ_INVALID");
         platform.guard();actual(true);
         need(platform.now()<deadline,"PROFILE_PERMISSION_READ_DEADLINE");
-        ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(personal);
+        ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(target,personal);
         List<BackgroundOwnedSingleTask.Task> roots=checked(platform.roots());
         need(roots.size()==1,"PROFILE_DISPLAY_ROOT_CHANGED");
         BackgroundOwnedSingleTask.Task currentRoot=roots.get(0);requireRootIdentity(currentRoot);
@@ -224,7 +224,7 @@ public final class ProfileOwnedTask {
                 liveAbsent=true;recentsAbsent=true;cleanupKnown=true;return;
             }
             need(root!=null,"PROFILE_ROOT_CREATE_UNRESOLVED");
-            ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(personal);
+            ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(target,personal);
             List<BackgroundOwnedSingleTask.Task> roots=checked(platform.roots());
             if(!roots.isEmpty()){
                 need(roots.size()==1,"PROFILE_FOREIGN_ROOT_ON_DISPLAY");
@@ -252,7 +252,7 @@ public final class ProfileOwnedTask {
                 }
                 while(platform.now()<deadline){
                     actual(false);
-                    ProfileTaskPolicy.Snapshot current=platform.snapshot();personalAudit=current.personalAudit(personal);
+                    ProfileTaskPolicy.Snapshot current=platform.snapshot();personalAudit=current.personalAudit(target,personal);
                     ProfileTaskPolicy.Recents recent=readRecents();recentsAfterSha=recent.sha256;
                     requireRecentOnlyOwned(recent,leaf==null?-1:leaf.id);
                     boolean noLeaf=(leaf==null||(!current.allIds.contains(leaf.id)&&!recentIds(recent).contains(leaf.id)));
@@ -287,7 +287,7 @@ public final class ProfileOwnedTask {
     }
     public synchronized boolean absent()throws Exception{
         if(identityUnknown||!retiring)return false;
-        actual(false);ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(personal);
+        actual(false);ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(target,personal);
         ProfileTaskPolicy.Recents recent=readRecents();recentsAfterSha=recent.sha256;
         global.requireDedicatedEmpty(target);requireRecentEmpty(recent);
         List<BackgroundOwnedSingleTask.Task> remaining=checked(platform.roots());
@@ -353,7 +353,7 @@ public final class ProfileOwnedTask {
     }
     private void requirePrepared()throws Exception{
         ProfileTaskPolicy.Snapshot global=platform.snapshot();
-        global.requireDedicatedEmpty(target);personalAudit=global.personalAudit(personal);
+        global.requireDedicatedEmpty(target);personalAudit=global.personalAudit(target,personal);
         List<BackgroundOwnedSingleTask.Task> roots=checked(platform.roots());
         need(roots.size()==1,"PROFILE_PREPARED_ROOT_CHANGED");requireRoot(roots.get(0),false);
         need(checked(platform.children(root.token)).isEmpty(),"PROFILE_PREPARED_ROOT_NOT_EMPTY");
@@ -397,7 +397,7 @@ public final class ProfileOwnedTask {
         return observeTreeSample(visible,null);
     }
     private BackgroundOwnedSingleTask.Task observeTreeSample(boolean visible,ProfilePermissionTransient.ReadChanged pinned)throws Exception{
-        ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(personal);
+        ProfileTaskPolicy.Snapshot global=platform.snapshot();personalAudit=global.personalAudit(target,personal);
         List<BackgroundOwnedSingleTask.Task> roots=checked(platform.roots());
         need(roots.size()==1,"PROFILE_DISPLAY_ROOT_CHANGED");
         if(pinned!=null)pinned.requireRoot(roots.get(0));

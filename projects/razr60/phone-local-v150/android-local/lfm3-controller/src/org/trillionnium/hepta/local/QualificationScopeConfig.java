@@ -196,7 +196,8 @@ final class QualificationScopeConfig {
             if(background==null||background.profileTarget()==null)return captureNativeApp(context,goal);
             background.verifyProfileInstallation();
             org.trillionnium.hepta.background.ProfileTarget target=background.profileTarget();
-            QualificationScope.require(goal!=null&&NativeAppGoal.CTRIP_PACKAGE.equals(goal.packageName)
+            QualificationScope.require(goal!=null&&(NativeAppGoal.CTRIP_PACKAGE.equals(goal.packageName)
+                    ||NativeAppGoal.XIAOMI_PACKAGE.equals(goal.packageName))
                     &&goal.packageName.equals(target.packageName),"explicit profile native target differs");
             return new CompletionInstalledIdentity(target);
         }

@@ -16,6 +16,7 @@ final class ObservationDiagnostics {
     static final int MAX_RECORDS=96,MAX_TRANSITIONS=16,MAX_FRAMES=6,MAX_NODE_DIFFS=8,MAX_NODES=512,MAX_JSON_BYTES=16384;
     // Same existing full native-census limits; these do not expand observation collection.
     static final int MAX_CENSUS_NODES=1536,MAX_CENSUS_TEXT=32768;
+    static final int MAX_COMPACT_NODE_DIFFS=64;
     enum Event {
         SAMPLE_START,SAMPLE_NO_ROOT,SAMPLE_STALE_ROOT,SAMPLE_ERROR,SAMPLE_EVENT_RESET,SAMPLE_EVENT_RECHECKED,
         SAMPLE_KEY_CHANGED,SAMPLE_MISSING,SAMPLE_READY,SAMPLE_WAIT,SAMPLE_EXPIRED,SAMPLE_CANCELLED,
@@ -125,13 +126,15 @@ final class ObservationDiagnostics {
             delta.put("both_match_request",before.belongs(this)&&after.belongs(this));
         }else{
             TreeSet<String> paths=new TreeSet<String>(before.nodes.keySet());paths.addAll(after.nodes.keySet());
-            List<Map<String,Object>> details=new ArrayList<Map<String,Object>>();int changed=0;
+            List<Map<String,Object>> details=new ArrayList<Map<String,Object>>(),compact=new ArrayList<Map<String,Object>>();int changed=0;
             for(String path:paths){Map<String,Object> a=before.nodes.get(path),b=after.nodes.get(path);
                 if(a!=null&&a.equals(b))continue;changed++;
-                if(details.size()<MAX_NODE_DIFFS){Map<String,Object> row=map();row.put("native_path",path);
-                    row.put("parent_path",parentPath(path));List<String> fields=new ArrayList<String>();
+                List<String> fields=new ArrayList<String>();
+                if(details.size()<MAX_NODE_DIFFS||compact.size()<MAX_COMPACT_NODE_DIFFS)
                     for(String key:CENSUS_NODE_KEYS)if(a==null||b==null||!Objects.equals(a.get(key),b.get(key)))fields.add(key);
-                    row.put("changed_fields",Collections.unmodifiableList(fields));
+                if(compact.size()<MAX_COMPACT_NODE_DIFFS)compact.add(compactCensusDifference(path,a,b,fields));
+                if(details.size()<MAX_NODE_DIFFS){Map<String,Object> row=map();row.put("native_path",path);
+                    row.put("parent_path",parentPath(path));row.put("changed_fields",Collections.unmodifiableList(fields));
                     row.put("before",a==null?null:censusNodeEvidence(a));row.put("after",b==null?null:censusNodeEvidence(b));
                     details.add(Collections.unmodifiableMap(row));
                 }
@@ -142,6 +145,10 @@ final class ObservationDiagnostics {
             delta.put("changed_path_count",changed);delta.put("node_differences",Collections.unmodifiableList(details));
             delta.put("retained_detail_count",details.size());delta.put("node_differences_truncated",changed>details.size());
             delta.put("details_omitted_for_budget",false);
+            delta.put("compact_difference_limit",MAX_COMPACT_NODE_DIFFS);
+            delta.put("compact_node_differences",Collections.unmodifiableList(compact));
+            delta.put("compact_retained_count",compact.size());delta.put("compact_omitted_count",changed-compact.size());
+            delta.put("compact_truncated",changed>compact.size());delta.put("compact_omitted_for_budget",false);
         }
         lastFullGraphChange=Collections.unmodifiableMap(delta);fullGraphChanges=plus(fullGraphChanges,1);
     }
@@ -250,6 +257,24 @@ final class ObservationDiagnostics {
                 &&d.packageName.equals(identity.get("package"))&&d.generation.equals(identity.get("background_generation"))&&d.displayId==integer(identity,"display_id");}
         Map<String,Object> summary(){Map<String,Object> out=map();out.put("app_tree_sha256",appTree);out.put("observation_state_sha256",state);
             out.put("window_metadata_sha256",window);out.put("full_native_nodes",nodes.size());return Collections.unmodifiableMap(out);}
+    }
+    /** Field names, changed geometry and content hashes only. This is a bounded
+     * diagnostic projection of copied full censuses, never a comparison policy. */
+    private static Map<String,Object> compactCensusDifference(String path,Map<String,Object> before,
+            Map<String,Object> after,List<String> fields){
+        Map<String,Object> out=map();out.put("native_path",path);
+        out.put("change_type",before==null?"added":after==null?"removed":"changed");
+        out.put("changed_fields",Collections.unmodifiableList(fields));
+        if(fields.contains("bounds")){out.put("before_bounds",before==null?null:before.get("bounds"));
+            out.put("after_bounds",after==null?null:after.get("bounds"));}
+        Map<String,Object> textHashes=map();
+        for(String key:Arrays.asList("text","description","label"))if(fields.contains(key)){
+            String a=before==null?null:(String)before.get(key),b=after==null?null:(String)after.get(key);
+            Map<String,Object> hashes=map();hashes.put("before",a==null?null:contentHash(a));hashes.put("after",b==null?null:contentHash(b));
+            textHashes.put(key,Collections.unmodifiableMap(hashes));
+        }
+        if(!textHashes.isEmpty())out.put("changed_text_sha256",Collections.unmodifiableMap(textHashes));
+        return Collections.unmodifiableMap(out);
     }
     private static Map<String,Object> censusNodeEvidence(Map<String,Object> node){
         Map<String,Object> out=map();for(String key:Arrays.asList("package","window_id","class","parent_class","view_id","bounds","children"))out.put(key,node.get(key));

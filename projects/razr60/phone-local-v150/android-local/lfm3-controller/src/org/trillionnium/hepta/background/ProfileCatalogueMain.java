@@ -47,8 +47,8 @@ public final class ProfileCatalogueMain {
                 throw new IOException("PROFILE_CATALOGUE_OWNER_MISMATCH");
             ProfilePackages packages=new ProfilePackages(shell);
             List<String> targets=new ArrayList<String>();
-            for(int user:packages.selectableUsers()){
-                try{targets.add(packages.read(user,true,deadline).target.wire());}
+            for(int user:packages.selectableUsers())for(String packageName:ProfileTarget.PACKAGES){
+                try{targets.add(packages.read(user,packageName,true,deadline).target.wire());}
                 catch(PackageManager.NameNotFoundException missing){ /* Package not installed in this profile. */ }
                 catch(IOException unavailable){
                     String code=unavailable.getMessage();

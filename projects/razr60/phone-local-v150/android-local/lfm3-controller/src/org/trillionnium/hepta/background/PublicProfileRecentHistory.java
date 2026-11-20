@@ -79,7 +79,7 @@ public final class PublicProfileRecentHistory {
         private final List<VisibleRow> visible;
         private final Map<Integer,String> tokens;
         private Snapshot(String raw,ProfileTarget target)throws Exception{
-            need(target!=null&&target.profile.userId==10&&target.profile.parentUserId==0&&ProfileTarget.CTRIP.equals(target.packageName),"PUBLIC_HISTORY_TARGET");
+            need(target!=null&&target.profile.userId==10&&target.profile.parentUserId==0&&ProfileTarget.supportsPackage(target.packageName),"PUBLIC_HISTORY_TARGET");
             byte[] bytes=raw==null?null:raw.getBytes(StandardCharsets.UTF_8);
             need(bytes!=null&&bytes.length>0&&bytes.length<=BackgroundOwnedSingleTask.MAX_DUMP_BYTES,"PUBLIC_HISTORY_RAW_BOUND");
             this.raw=raw;this.target=target;census=PublicOwnGroupPhysicalFence.inspectRecents(raw);

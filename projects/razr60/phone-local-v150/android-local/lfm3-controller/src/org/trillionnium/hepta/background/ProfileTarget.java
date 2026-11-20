@@ -16,7 +16,11 @@ import java.util.TreeSet;
 
 /** Target installation captured for an explicit profile; never a model-selected user. */
 public final class ProfileTarget {
-    public static final String SCHEMA="hepta.profile-target.v1",CTRIP="ctrip.android.view";
+    public static final String SCHEMA="hepta.profile-target.v1",CTRIP="ctrip.android.view",XIAOMI="com.xiaomi.shop";
+    /** Compiled providers only. Model text and screen text cannot add an installation. */
+    public static final java.util.List<String> PACKAGES=java.util.Collections.unmodifiableList(java.util.Arrays.asList(CTRIP,XIAOMI));
+    public static boolean supportsPackage(String value){return CTRIP.equals(value)||XIAOMI.equals(value);}
+    public String appLabel(){return CTRIP.equals(packageName)?"携程":"小米商城";}
     public static final int MAX_WIRE=16384;
     public final ProfileIdentity profile;
     public final int fullUid;
@@ -29,7 +33,7 @@ public final class ProfileTarget {
                          long versionCode,Map<String,String> apkHashes,Set<String> signerSha256) {
         ProfileIdentity.need(profile!=null&&fullUid>0&&fullUid/100000==profile.userId
                 &&fullUid%100000>=10000&&fullUid%100000<90000,"PROFILE_TARGET_UID_INVALID");
-        ProfileIdentity.need(CTRIP.equals(packageName)&&component!=null&&component.startsWith(packageName+"/")
+        ProfileIdentity.need(supportsPackage(packageName)&&component!=null&&component.startsWith(packageName+"/")
                 &&component.length()<=512&&component.substring(packageName.length()+1).matches("[A-Za-z_$][A-Za-z0-9_.$]*")
                 &&versionCode>0,"PROFILE_TARGET_COMPONENT_INVALID");
         ProfileIdentity.need(apkHashes!=null&&!apkHashes.isEmpty()&&apkHashes.size()<=32&&apkHashes.containsKey("base"),"PROFILE_TARGET_APK_SET_INVALID");

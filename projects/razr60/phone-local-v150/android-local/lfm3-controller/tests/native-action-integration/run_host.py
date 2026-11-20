@@ -143,7 +143,7 @@ def sources(source,out):
       source/'tests/native-app-provider/NativeResourceHomeHostTest.java',
       source/'tests/native-xiaomi-image-modal/ActualXiaomiImageModalFixture.java']
     paths += [source/TEST/(name+'.java') for name in ['IntegrationChecks','NativeActionSessionHostTest',
-        'NativeActionSnapshotCheckHostTest','NativeCarouselCurrentnessHostTest','NativeXiaomiHomeVariationHostTest','NativeXiaomiEntryObservationHostTest','NativeStableSearchIconHostTest','NativeActionIntegrationHostTest']]
+        'NativeActionSnapshotCheckHostTest','NativeCtripNestedBranchHostTest','NativeCarouselCurrentnessHostTest','NativeXiaomiHomeVariationHostTest','NativeXiaomiEntryObservationHostTest','NativeStableSearchIconHostTest','NativeActionIntegrationHostTest']]
     paths += sorted((out/'generated').rglob('*.java'))
     if not any(str(p).endswith('/android/util/Log.java') for p in paths):
         log=out/'generated/android/util/Log.java'
@@ -197,6 +197,7 @@ def main():
         classes=out/'classes';classes.mkdir()
         commands=[('compile',[jdk/'bin/javac','--release','8','-encoding','UTF-8','-proc:none','-Xlint:all,-options','-Werror','-cp',jar,'-d',classes,*paths]),
           ('pure-cases',[jdk/'bin/java','-cp',str(classes)+os.pathsep+str(jar),'org.trillionnium.hepta.local.NativeActionSnapshotCheckHostTest',out/'PURE-CASES.json']),
+          ('nested-ctrip-cases',[jdk/'bin/java','-cp',str(classes)+os.pathsep+str(jar),'org.trillionnium.hepta.local.NativeCtripNestedBranchHostTest',out/'NESTED-CTRIP-CASES.json']),
           ('integration-cases',[jdk/'bin/java','-cp',str(classes)+os.pathsep+str(jar),'org.trillionnium.hepta.local.NativeActionIntegrationHostTest',source,out/'CASES.json',out/'private'])]
         for name,command in commands:
             result=stage(name,command,out,env);report['stages'].append(result)
@@ -205,6 +206,15 @@ def main():
         need(pure['schema']=='hepta.native-action-snapshot-candidate-host.v1' and pure['all_pass'] is True and pure['cases']==76 and pure['assertions']==157 and len(set(pure['names']))==76,'original complete pure matrix required')
         need(cases['schema']=='hepta.native-action-integration-host.v1' and cases['all_pass'] is True and cases['cases']==len(cases['case_names'])==len(set(cases['case_names'])) and cases['assertions']>0,'actual complete unique integration cases required')
         need(all(name in cases['case_names'] for name in EXPECTED_EQUAL_OPEN_CASES),'all equal-tree OPEN pre-effect claim regressions required')
+        nested=json.loads((out/'NESTED-CTRIP-CASES.json').read_text())
+        need(nested['schema']=='hepta.ctrip-nested-disjoint-host.v1' and nested['all_pass'] is True
+             and nested['cases']==90 and len(nested['case_names'])==len(set(nested['case_names']))==90
+             and nested['assertions']>0 and nested['actual_comparator'] is True
+             and nested['complete_synthetic_censuses'] is True and nested['baseline_control'] is False
+             and nested['android_execution'] is False and nested['screenshot_admission_changed'] is False
+             and nested['platform_dispatch_executed'] is False and nested['business_completion_verified'] is False,
+             'complete nested Ctrip positive and refusal matrix required')
+        report['nested_ctrip']=nested;report['nested_ctrip_file']=meta(out/'NESTED-CTRIP-CASES.json')
         pending=json.loads((out/'PENDING-BOUNDARY.json').read_text())
         need(pending['schema']=='hepta.r5.native-pending-controller-boundary.v1'
              and pending['actual_controller_barrier_completed'] is True

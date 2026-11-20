@@ -56,7 +56,7 @@ public final class ProfilePostlaunchRecoveryMain {
             AndroidProc proc=new AndroidProc(request);
             JSONObject processBefore=ProfileRecoveryProcesses.capture(proc,android.os.Process.myPid(),request.ownerUid,request.generation,request.started,request.deadline);
             ProfilePackages pm=new ProfilePackages(shell);
-            ProfilePackages.Readback before=pm.read(request.target.profile.userId,true,request.deadline);
+            ProfilePackages.Readback before=pm.read(request.target.profile.userId,request.target.packageName,true,request.deadline);
             ProfilePostlaunchRecovery.need(request.target.same(before.target),"RECOVERY_INSTALLATION_CHANGED");
             Object atm=Class.forName("android.app.ActivityTaskManager").getMethod("getService").invoke(null);
             ProfilePostlaunchRecovery.need(atm!=null,"RECOVERY_TASK_SERVICE");
@@ -66,7 +66,7 @@ public final class ProfilePostlaunchRecoveryMain {
                     BackgroundTaskOrganizer.profileRecents(()->bound.deadline));
             recents.requireDedicatedEmpty(before.target);
             JSONObject displays=displays(shell,request);
-            ProfilePackages.Readback after=pm.read(request.target.profile.userId,true,request.deadline);
+            ProfilePackages.Readback after=pm.read(request.target.profile.userId,request.target.packageName,true,request.deadline);
             ProfilePostlaunchRecovery.need(before.target.same(after.target)&&before.activity.same(after.activity),
                     "RECOVERY_INSTALLATION_CHANGED_DURING_READ");
             JSONObject processAfter=ProfileRecoveryProcesses.capture(proc,android.os.Process.myPid(),request.ownerUid,request.generation,request.started,request.deadline);

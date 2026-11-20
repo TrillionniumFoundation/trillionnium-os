@@ -3,8 +3,8 @@
   "base_head": "804af9f1eeaa5c1207e8e256f88e4474d79c7639",
   "base_manifest_sha256": "acc303856e2af4be95c4e8a74cc115d97ebed9c7482db4891ca243fc4c44c617",
   "candidate_exact_git_head": null,
-  "candidate_status": "integrated_r3_complete_host_android_phone_validation_pending",
-  "complete_source_files": 2312,
+  "candidate_status": "integrated_r4_complete_host_android_phone_validation_pending",
+  "complete_source_files": 2323,
   "files": [
     {
       "bytes": 100,
@@ -6162,9 +6162,9 @@
       "sha256": "1e0a313b943d12352bd740cc30dd9834b86225a9c52b27117319f44810f9f409"
     },
     {
-      "bytes": 103949,
+      "bytes": 103607,
       "path": "src/org/trillionnium/hepta/background/BackgroundDisplayBroker.java",
-      "sha256": "bbd621bb40fa36d56a3731cb9246dc8fdd4b6cbd79564280113e35b751adef24"
+      "sha256": "eb102d260c2c1ddbfbc83d811e3d5356f39d31a6c0c6b23abc3aa44ebe5e7ce1"
     },
     {
       "bytes": 25279,
@@ -6212,9 +6212,9 @@
       "sha256": "fee03ea52f86f426e525f43956bbd1443d8a8313829e7324b0a9c841d694fe7b"
     },
     {
-      "bytes": 4302,
+      "bytes": 4360,
       "path": "src/org/trillionnium/hepta/background/ProfileCatalogueMain.java",
-      "sha256": "57cacf9c4de0c3d7fe65a439d2a50d1d2e8c5756b9da1df743eb433f9af5cf6f"
+      "sha256": "1fea96b41e8a63372f599fc7f54607e37d9c3bb793ec378e3bcac25abc5cc665"
     },
     {
       "bytes": 806,
@@ -6227,14 +6227,14 @@
       "sha256": "7c170e15deb8407a80b4dbcab3564697d2192c63365bb5a062ecba6f3ebbadcd"
     },
     {
-      "bytes": 46130,
+      "bytes": 46185,
       "path": "src/org/trillionnium/hepta/background/ProfileOwnedTask.java",
-      "sha256": "d98c8affa3f97e3a067f2cba1e45db7e8e2692cd90cbcf73d52ae904d920cb18"
+      "sha256": "9459155306fa7f81aafb2b886b843f6245179a5fbd85d85fdd756d5efa96f7b7"
     },
     {
-      "bytes": 19548,
+      "bytes": 21140,
       "path": "src/org/trillionnium/hepta/background/ProfilePackages.java",
-      "sha256": "f0a250bc72ec631aa11fee84900740120a5a1161aa114d7d348249c3885e7d9f"
+      "sha256": "45ba900bb29b4efc12e7fef732e7d68c9594929c17ae67855f600cb5ee4e0630"
     },
     {
       "bytes": 5328,
@@ -6252,9 +6252,9 @@
       "sha256": "a6f9da68bffa89040399b4ce58d9d94814ac9bedda2818448b1bfea4d057ec7a"
     },
     {
-      "bytes": 14614,
+      "bytes": 14668,
       "path": "src/org/trillionnium/hepta/background/ProfilePostlaunchRecoveryMain.java",
-      "sha256": "73e74ef5d72b89d67c4a245fff33912f4818739c9d955094cf7fc84a74b19494"
+      "sha256": "a33660d03ce4eed48b245bf72799c63e2ac296dfb18662a9fbcd28b7a8176b5a"
     },
     {
       "bytes": 13485,
@@ -6267,9 +6267,9 @@
       "sha256": "97f5461774ca53a70b6f43c9bdaf201bb902b904f334b97d4e2e3bd8c686cdec"
     },
     {
-      "bytes": 13852,
+      "bytes": 13906,
       "path": "src/org/trillionnium/hepta/background/ProfileRecoveryMain.java",
-      "sha256": "069970c4c1d9350e709d18b7b2da4e204178727efbf1c0894066a02384a4b79f"
+      "sha256": "d276645f797b4f6c9a2f1aed1fc5f6b18c0dea5dc0083ed411b1f67a7fe99014"
     },
     {
       "bytes": 11235,
@@ -6277,19 +6277,19 @@
       "sha256": "9fd0453f33c93094e6ace8fdcdcbb959d47cbac480b2e5f1bbfe03a29a987dc9"
     },
     {
-      "bytes": 6309,
+      "bytes": 6758,
       "path": "src/org/trillionnium/hepta/background/ProfileTarget.java",
-      "sha256": "b65d62af4dd9f68d6c0070b21bf7fe0127a0a1898cc0f6ee604c9d56fa83f821"
+      "sha256": "dc531ca250c26ed4db0605f55ed54db6039b5354ec4a6d98c8ba80cf90ade8eb"
     },
     {
-      "bytes": 8186,
+      "bytes": 8249,
       "path": "src/org/trillionnium/hepta/background/ProfileTaskPlatform.java",
-      "sha256": "a037b524fd3221848cfb7d7dcb458627c3bba755960a883f12e6e501fdc72d2e"
+      "sha256": "ecdd2e0ee3153456042bc8c76dda9d122d8617ee432aaf551e1b0cdfb9f4ac84"
     },
     {
-      "bytes": 14622,
+      "bytes": 14737,
       "path": "src/org/trillionnium/hepta/background/ProfileTaskPolicy.java",
-      "sha256": "10b547aa371a305a712891d228ee6f5a5fe9f8599f121a392f48ff685568c55b"
+      "sha256": "e4e66c9ceabe3891a2780bae581ed543970cfaec21ea0bf29aba684cdbe5ba88"
     },
     {
       "bytes": 1107,
@@ -6362,19 +6362,19 @@
       "sha256": "38089d685875781319cec9b159822470d7b507c0fa8df6ceb13a00be158ee46f"
     },
     {
-      "bytes": 47410,
+      "bytes": 47413,
       "path": "src/org/trillionnium/hepta/background/PublicProfileAbsenceRecovery.java",
-      "sha256": "7ca735e3688a7ccb04d05ec65be5caa8b04a59c77493d5af01c867c109339af1"
+      "sha256": "ab236b4dfa834b85aed61e4cc0949ef42ae2824615816571a892c8b2102a5895"
     },
     {
-      "bytes": 25852,
+      "bytes": 25855,
       "path": "src/org/trillionnium/hepta/background/PublicProfileRecentHistory.java",
-      "sha256": "c8f5d7af3c458870638ad17473346d6f006122d289b0c84b4212891a41b40404"
+      "sha256": "86320c904ff3529f6312f4885f9bc32393ab2f399219ccebc525ba3d1334208b"
     },
     {
-      "bytes": 15536,
+      "bytes": 15557,
       "path": "src/org/trillionnium/hepta/background/PublicProfileRecoveryMain.java",
-      "sha256": "ba635572802c4f293a18b30d98aaa623232a783c070a2aa903afe923b5901d97"
+      "sha256": "f6cd54a6a16240402049016a6b84128eaca3ffadb0d4e3df7fa2ee6ef98a1ab4"
     },
     {
       "bytes": 5475,
@@ -6417,14 +6417,14 @@
       "sha256": "f344fbdd76154a086f4103868231203746056f2133331a54c48dac5e251d559e"
     },
     {
-      "bytes": 112577,
+      "bytes": 112580,
       "path": "src/org/trillionnium/hepta/local/BackgroundSession.java",
-      "sha256": "ff7a56d8a243650f017a3a4d40a72601e3f9517606352b6120504558660a3ced"
+      "sha256": "ff3d36153468ac1dd5a7ee576b858fee2f112a996b2ff29c4221164730172e6e"
     },
     {
       "bytes": 8844,
       "path": "src/org/trillionnium/hepta/local/BackgroundTaskTarget.java",
-      "sha256": "411b819a7cca81d69b10be9747f9360be94e2514f06c186dcede20338281773a"
+      "sha256": "194dd6cd6e42770f9cf4c926dd61d60f81761c8a32309d405d773478d4219b27"
     },
     {
       "bytes": 14252,
@@ -6492,9 +6492,9 @@
       "sha256": "fc12b1a25c3ac76f7f94b4fed6b44148869fae647a9f27f92445c3763b90f954"
     },
     {
-      "bytes": 354175,
+      "bytes": 355368,
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "cc4483fb87b78049fce6bd864b154454560b297adce3c121e497ed0ee04680b5"
+      "sha256": "be9a8d5af4f1cf1457d8d21727031193661e133c2736de68c2d178cbcbf084f3"
     },
     {
       "bytes": 711,
@@ -6557,9 +6557,9 @@
       "sha256": "62ad8ddd5b022150df23b04a9f17ee563336a7b92c1728fb091782be91c97bfc"
     },
     {
-      "bytes": 77692,
+      "bytes": 77972,
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "sha256": "c2edf868dea33873c605839ed05b434e80843e1c85b2292d782bb74d6713da80"
+      "sha256": "2401c0bed43100ac5d6760a6722fa36a14a7bdf4f12bf95c40fe14ce0586ce86"
     },
     {
       "bytes": 4417,
@@ -6612,9 +6612,9 @@
       "sha256": "6beab5c1f36381efefef19e4705d5bb56cab64ca055a32ec264aded7492e137f"
     },
     {
-      "bytes": 59139,
+      "bytes": 62465,
       "path": "src/org/trillionnium/hepta/local/NativeActionSnapshotCheck.java",
-      "sha256": "39fed7241743499db4fa5f6c3c5fef71ee80eb354281bb6f8a888fc63b29b756"
+      "sha256": "d4736f666443118a80340c74bd940009c0e30cf1d3e817e961bd2334f233e500"
     },
     {
       "bytes": 10085,
@@ -6677,9 +6677,9 @@
       "sha256": "b3824b28f3b68ba06b010e28f9a8aa508bde0c401fc95b73cae45a82acaff2e7"
     },
     {
-      "bytes": 29029,
+      "bytes": 31067,
       "path": "src/org/trillionnium/hepta/local/ObservationDiagnostics.java",
-      "sha256": "ade876716b32987e0df69ac461b43e7de693f266d625089b06d609eee7ab41a2"
+      "sha256": "223d68b0e7c0020563a52772bd777d47e973c6facc2935ddfa2a33e7348923fa"
     },
     {
       "bytes": 4368,
@@ -6767,9 +6767,9 @@
       "sha256": "e26ea7ba9b8b96d41958102df5f2888954be7f213159c8cc64d6cab4df663c38"
     },
     {
-      "bytes": 5046,
+      "bytes": 5856,
       "path": "src/org/trillionnium/hepta/local/ProfileCatalogueClient.java",
-      "sha256": "49794028fa8c0fb60526721f41dbe75ad64e40a1c145d63fb49a905183e3758c"
+      "sha256": "bd6629fe5fc14b656a7afc8b8e8af43260c5b57d5c4180200cf80b90b7b04d6f"
     },
     {
       "bytes": 14222,
@@ -6817,9 +6817,9 @@
       "sha256": "1879d69f1f344e3f4f7d2f8afd12a78a2747ca183d8895ac9e5e2b6f4f0e3a5d"
     },
     {
-      "bytes": 21841,
+      "bytes": 21919,
       "path": "src/org/trillionnium/hepta/local/QualificationScopeConfig.java",
-      "sha256": "12be3ccc3ab3ef3545538453b7702a04fd30cfeef2cc3cf7cc7cc2279473ca80"
+      "sha256": "cdd7d37884bfe48e2ba2e4b73d20def23d1ed76d86bbcba40c1dc4f16db8e23a"
     },
     {
       "bytes": 21282,
@@ -8062,6 +8062,11 @@
       "sha256": "4dae1d479bc1691a2b53e33eb6b781dfa382403cb664f356a71de9f5ff47f90d"
     },
     {
+      "bytes": 19814,
+      "path": "tests/native-action-integration/NativeCtripNestedBranchHostTest.java",
+      "sha256": "ae4c1c8738f7de6fd8a228aa587450462cc9ceae3c1d66fe09c89b9361042448"
+    },
+    {
       "bytes": 15335,
       "path": "tests/native-action-integration/NativeStableSearchIconHostTest.java",
       "sha256": "361cf5d9a7979a99b724728646f258f729f2d37ff13ee038989bfab557fa2cc4"
@@ -8097,9 +8102,9 @@
       "sha256": "b27ecaed3a4dd0419fbc49809887b2e6b77cd0a80be17b006d0d8cab72c41d4a"
     },
     {
-      "bytes": 18450,
+      "bytes": 19523,
       "path": "tests/native-action-integration/run_host.py",
-      "sha256": "dc9196eaeb175c48d96afdd4c73363c1639d6f893c331a13e02cb887055ddb2b"
+      "sha256": "7c584301833b2f67e4a61616cb01c7c37f1dc77cd79e00c92494bc88e7e33cca"
     },
     {
       "bytes": 717,
@@ -9117,6 +9122,11 @@
       "sha256": "ed5b0f826ec44c06e2f477b7c6f8a36fd661af174632974e0e1a9dfee75912eb"
     },
     {
+      "bytes": 18711,
+      "path": "tests/observation-diagnostics/CompactCensusDiagnosticsHostTest.java",
+      "sha256": "8c0405fed8440e2ee13fd7656322a1b8fe4388fd7a869ae28f38765454b22fb3"
+    },
+    {
       "bytes": 1584,
       "path": "tests/observation-diagnostics/DiagnosticChecks.java",
       "sha256": "02872d79635dfe0f9448bdfa33b6a802154b006d4a8c2cc0e2cb4e174bb11859"
@@ -9142,9 +9152,9 @@
       "sha256": "ca1cb0b78a660eca9da04bdcbde82e340d4f9d90dbcdb639d8ab8c6032505cfb"
     },
     {
-      "bytes": 15261,
+      "bytes": 16517,
       "path": "tests/observation-diagnostics/run_host.py",
-      "sha256": "1735839bbd853d43addfea7223fff49e55604849fdb5a5d7a495826329898111"
+      "sha256": "153a9edece2f275adc7276dcd40dea8bb7480db692a3f7dd622792ebb4399b74"
     },
     {
       "bytes": 13092,
@@ -11282,6 +11292,51 @@
       "sha256": "866980f57ddb300c8ddd46eaf744f17201421de758c2f44fa780786c40310f77"
     },
     {
+      "bytes": 15137,
+      "path": "tests/xiaomi-profile/NativeProfileIdentityHostTest.java",
+      "sha256": "3cb92cb0fcc2d28604dab385db439b24717d23c966d695dfb8060bfd124afbb5"
+    },
+    {
+      "bytes": 4946,
+      "path": "tests/xiaomi-profile/ProfileCatalogueHostTest.java",
+      "sha256": "9dedafe44c31a82bbbbcf5eef0e90cf0be65f44e7725208403bde6abe31558c1"
+    },
+    {
+      "bytes": 10319,
+      "path": "tests/xiaomi-profile/ProfilePackagesHostTest.java",
+      "sha256": "91acf8cc76a2208e503945bf235e40b72675ede8d356b0ad7ea1aaf19c0ca586"
+    },
+    {
+      "bytes": 29329,
+      "path": "tests/xiaomi-profile/XiaomiProfileBrokerHostTest.java",
+      "sha256": "6a7d5aac8b5ce3234afc65308b8999e9a85ad092e8dd859dfd4e0268d0e074f8"
+    },
+    {
+      "bytes": 22910,
+      "path": "tests/xiaomi-profile/XiaomiPublicProfileCleanupHostTest.java",
+      "sha256": "ef07577a40d2e0e4f842c02aa564524112c2ae7bf3665d623d76a488f82c8685"
+    },
+    {
+      "bytes": 8979,
+      "path": "tests/xiaomi-profile/android_ports.py",
+      "sha256": "187e4d62fad8e6e306419dd619aea00d34de100f5cf7401b7b70b99fa928c5f2"
+    },
+    {
+      "bytes": 5098,
+      "path": "tests/xiaomi-profile/run_cleanup_host.py",
+      "sha256": "7fc162d871c9a4b53bb6302160818a8604e8b8a41d04e754cd4f77ecb9b97583"
+    },
+    {
+      "bytes": 7142,
+      "path": "tests/xiaomi-profile/run_host.py",
+      "sha256": "397dfce959fd321225b5c2449dac7a59d14463679d7277d697370d59d4d5fc4b"
+    },
+    {
+      "bytes": 8660,
+      "path": "tests/xiaomi-profile/run_native_host.py",
+      "sha256": "c1fd9faa32ea057f4e0f77b5789fd436aa09eb42b01c49cf97231a6ceea261d9"
+    },
+    {
       "bytes": 10326,
       "path": "tools/PHONE-ACCEPTANCE.md",
       "sha256": "bc1a2d53739dd0942587a2f591eb3d7be73036295bf39d3c03ed759415a5b5dd"
@@ -11565,11 +11620,11 @@
   "main_java_sources": 196,
   "phone_qualified": false,
   "production_build_inputs_count": 371,
-  "production_input_map_sha256": "dbfb7153b4f14936dfffd2dfc3611b5e608eae073ba0088829ba3d0cc59d341f",
+  "production_input_map_sha256": "f9b61bb4d2f1d570196a471bd070dcc5ddb21132c96f659b6c6fbc00b9f87875",
   "schema": "hepta.local-source.v3",
-  "scope": "Reviewed successor of 804af9. Preserve its pinned local runtime, compact 8B tool grammar, complete owner-intent parsing, virtual-display isolation and action/deadline contracts. Incorporate the reviewed Xiaomi search-carousel comparator and complete negative regressions; add one same-request, original-deadline frozen-window publication recheck after a known target event, plus bounded sample/full-census diagnostics. Add application-owned, exact-hash offline model import and visible model/backend controls; preserve existing models, task/config mutual exclusion, cancellation and no-replace publication. No new model, Android or phone qualification is asserted by this source manifest. Preserve the legacy exact readiness status in a separate accessible node from model/backend identity. Extract complete original UI methods for shared host fixtures and explicitly model import IO ownership in the recovery Application fixture; retain all original recovery assertions. Align the runtime UI fixture with the exact refresh implementation while preserving all original assertions. Compile all 196 production Java sources against the Android public SDK. Add the missing LinkedHashMap import, pass actual String exception constructors, and use the public Os.remove API for already-bound regular temporary files. Retain every deadline, ownership, inode, fsync, publication and action check.",
-  "source_parent_head": "cd65b9cb5eefa8ec5cc341d60023f276528e5647",
-  "source_parent_manifest_sha256": "c03e51a92ca93381fc3de9fd2e8a390e9ed305825ce0f2c90020bed2dfac93e4",
+  "scope": "Reviewed successor of 804af9. Preserve its pinned local runtime, compact 8B tool grammar, complete owner-intent parsing, virtual-display isolation and action/deadline contracts. Incorporate the reviewed Xiaomi search-carousel comparator and complete negative regressions; add one same-request, original-deadline frozen-window publication recheck after a known target event, plus bounded sample/full-census diagnostics. Add application-owned, exact-hash offline model import and visible model/backend controls; preserve existing models, task/config mutual exclusion, cancellation and no-replace publication. No new model, Android or phone qualification is asserted by this source manifest. Preserve the legacy exact readiness status in a separate accessible node from model/backend identity. Extract complete original UI methods for shared host fixtures and explicitly model import IO ownership in the recovery Application fixture; retain all original recovery assertions. Align the runtime UI fixture with the exact refresh implementation while preserving all original assertions. Compile all 196 production Java sources against the Android public SDK. Add the missing LinkedHashMap import, pass actual String exception constructors, and use the public Os.remove API for already-bound regular temporary files. Retain every deadline, ownership, inode, fsync, publication and action check. Integrate the reviewed Xiaomi fixed managed-profile instance extension with complete original Ctrip guards, profile ownership and cleanup, and nine additive test files. Admit only strictly proved passive nested Ctrip form-disjoint regions under unchanged containing ancestry, with complete before/fresh path-union classification and the original final live action checks. Add bounded compact full-census diagnostic field differences, preserving both original 16 KiB limits and explicit omissions; this does not relax observation pairing or authorize actions. Launcher label and original assertions are preserved.",
+  "source_parent_head": "76b9ce144a1de99f467ce14faf517ae1fd83f838",
+  "source_parent_manifest_sha256": "f7e69207517cc601330c554f86659f9d4de50095f4bd1fd5af6ce11035957ffe",
   "version_code": 69,
   "version_name": "0.69.0-native-background-runtime"
 }

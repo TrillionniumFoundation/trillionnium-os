@@ -130,7 +130,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         backgroundPermissionDetails.addView(text("先选择可操作的应用范围，再选择本次任务的起始应用。任务会使用你明确选择的应用，不会自动改用网页查询工具。开始时会先打开该应用。后台任务需要本机 root 授权；应用兼容性可能影响隔离，遇到越界或锁屏会停止。",12));
         pickBackgroundApps=button("选择后台应用范围");page.addView(pickBackgroundApps);
         pickBackgroundApps.setOnClickListener(v -> chooseBackgroundApps());
-        pickProfileTarget=button("选择隔离资料中的携程");page.addView(pickProfileTarget);
+        pickProfileTarget=button("选择隔离资料中的应用");page.addView(pickProfileTarget);
         pickProfileTarget.setOnClickListener(v -> chooseProfileTarget());
         independentProfileDisplay=new CheckBox(this);
         independentProfileDisplay.setText("独立后台显示（无锁屏密码设备的隔离资料应用）");
@@ -140,7 +140,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         page.addView(independentPersonalDisplay);
         page.addView(text("需要所选应用没有正在使用或保留的任务。若发现既有任务会停止，不会关闭或搬动它。",12));
         page.addView(text("仅用于设备和所选资料都未设置锁屏密码的情形。每次开始都会核验实际条件；条件不满足时任务停止。",12));
-        page.addView(text("资料隔离当前支持携程，需要已配置的专属工作资料。个人空间已有任务会保留。",12));
+        page.addView(text("资料隔离支持携程、小米商城，需要已配置的专属工作资料；一次执行一个资料应用。个人空间已有任务会保留。",12));
         backgroundChoiceState=text("",12);page.addView(backgroundChoiceState);
         initialBackgroundApp=new Spinner(this){
             @Override public boolean performClick(){backgroundInitialChoicePending=true;return super.performClick();}
@@ -474,7 +474,8 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                 BackgroundTaskTarget target=BackgroundTaskTarget.resolveExplicitSelection(owner,selectedBackgroundPackage(),backgroundPackages,selectedProfileTarget());
                 boolean independentProfile=selectedIndependentProfileDisplay();
                 selection=new BackgroundSession.Selection(target,independentProfile,selectedIndependentPersonalDisplay(),
-                        independentProfile?controllerUiFromOwnerButton(owner):null);
+                        independentProfile&&target.profileTarget!=null&&org.trillionnium.hepta.background.ProfileTarget.CTRIP.equals(target.profileTarget.packageName)
+                                ?controllerUiFromOwnerButton(owner):null);
                 authorization=originalAuthorization.forExecutionSelection(selection);
                 selection.requireTaskTarget(owner,authorization);
                 if(authorization.requireFindAppBeforeOpen||!authorization.allowedTools.contains("open"))
@@ -539,7 +540,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         if(profileCatalogueLoading||!hasWindowFocus()||isFinishing()||isDestroyed()
                 ||tasks.isRunning()||engine.isBusy()||tasks.isBlocked()||tasks.isRecovering()
                 ||tasks.hasBackgroundLease()||backgroundPermission.blocksOtherWork())return;
-        profileCatalogueLoading=true;taskState.setText("正在读取隔离资料中的携程……");refresh();
+        profileCatalogueLoading=true;taskState.setText("正在读取隔离资料中的携程和小米商城……");refresh();
         new Thread(() -> {
             java.util.List<org.trillionnium.hepta.background.ProfileTarget> found=null;String error=null;
             try{found=ProfileCatalogueClient.load(getApplicationContext());}catch(Exception failure){error=HeptaAccessibilityService.message(failure);}
@@ -549,10 +550,10 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
                 if(isFinishing()||isDestroyed())return;
                 refresh();
                 if(failure!=null){taskState.setText("无法读取隔离资料："+failure);return;}
-                if(targets==null||targets.isEmpty()){taskState.setText("未找到可用工作资料中的携程。请完成专属资料配置、解锁资料并安装携程，然后重新读取。");return;}
+                if(targets==null||targets.isEmpty()){taskState.setText("未找到可用工作资料中的携程或小米商城。请完成专属资料配置、解锁资料并在资料中安装目标应用，然后重新读取。");return;}
                 if(!hasWindowFocus()||tasks.isRunning()||engine.isBusy()||tasks.isBlocked()||tasks.isRecovering()||tasks.hasBackgroundLease())return;
                 String[] labels=new String[targets.size()];
-                for(int i=0;i<labels.length;i++)labels[i]="携程 · 工作资料 "+targets.get(i).profile.userId;
+                for(int i=0;i<labels.length;i++)labels[i]=targets.get(i).appLabel()+" · 工作资料 "+targets.get(i).profile.userId;
                 new AlertDialog.Builder(this).setTitle("明确选择本次隔离实例").setItems(labels,(dialog,index) -> {
                     if(tasks.isRunning()||engine.isBusy()||tasks.isBlocked()||tasks.isRecovering()||tasks.hasBackgroundLease())return;
                     try{
@@ -579,7 +580,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             backgroundAppLabels.put(pkg,String.valueOf(info.loadLabel(getPackageManager())));
         }
         org.trillionnium.hepta.background.ProfileTarget profile=selectedProfileTarget();
-        if(includeSelectedProfile&&profile!=null)backgroundAppLabels.put(profile.packageName,"携程 · 工作资料 "+profile.profile.userId);
+        if(includeSelectedProfile&&profile!=null)backgroundAppLabels.put(profile.packageName,profile.appLabel()+" · 工作资料 "+profile.profile.userId);
     }
     private void chooseBackgroundApps(){
         reloadBackgroundApps(false);final java.util.List<String> packages=new java.util.ArrayList<String>(backgroundAppLabels.keySet());

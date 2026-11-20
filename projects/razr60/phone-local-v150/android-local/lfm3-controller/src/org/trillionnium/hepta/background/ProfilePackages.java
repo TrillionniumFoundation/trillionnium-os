@@ -65,7 +65,8 @@ final class ProfilePackages {
         }
         need(unique.contains(0),"PROFILE_PARENT_MISSING");return result;
     }
-    Readback read(int userId,boolean requireReady,long deadline)throws Exception{
+    Readback read(int userId,String packageName,boolean requireReady,long deadline)throws Exception{
+        need(ProfileTarget.supportsPackage(packageName),"PROFILE_PACKAGE_NOT_SUPPORTED");
         checkTime(deadline);requireParentCurrent();
         ProfileIdentity identity=identity(userId);
         UserHandle handle=handle(userId);
@@ -76,33 +77,36 @@ final class ProfilePackages {
         Object contextUser=Context.class.getMethod("getUserId").invoke(userContext);
         need(contextUser instanceof Integer&&((Integer)contextUser)==userId,"PROFILE_CONTEXT_USER_MISMATCH");
         PackageManager pm=userContext.getPackageManager();
-        PackageInfo before=pm.getPackageInfo(ProfileTarget.CTRIP,PackageManager.GET_SIGNING_CERTIFICATES);
+        PackageInfo before=pm.getPackageInfo(packageName,PackageManager.GET_SIGNING_CERTIFICATES);
         ApplicationInfo app=before.applicationInfo;
-        need(app!=null&&ProfileTarget.CTRIP.equals(before.packageName)&&ProfileTarget.CTRIP.equals(app.packageName)
+        need(app!=null&&packageName.equals(before.packageName)&&packageName.equals(app.packageName)
                 &&app.uid>0&&app.uid/100000==userId&&(app.flags&ApplicationInfo.FLAG_INSTALLED)!=0,
                 "PROFILE_INSTALLATION_NOT_PRESENT");
-        boolean suspended=pm.isPackageSuspended(ProfileTarget.CTRIP);
-        if(requireReady)need(app.enabled&&!suspended&&!pm.isInstantApp(ProfileTarget.CTRIP),"PROFILE_PACKAGE_UNAVAILABLE");
-        Intent launcher=pm.getLaunchIntentForPackage(ProfileTarget.CTRIP);
+        boolean suspended=pm.isPackageSuspended(packageName);
+        if(requireReady)need(app.enabled&&!suspended&&!pm.isInstantApp(packageName),"PROFILE_PACKAGE_UNAVAILABLE");
+        Intent launcher=pm.getLaunchIntentForPackage(packageName);
         need(launcher!=null&&launcher.getComponent()!=null
-                &&ProfileTarget.CTRIP.equals(launcher.getComponent().getPackageName()),"PROFILE_LAUNCHER_UNAVAILABLE");
-        ComponentName component=launcher.getComponent();
+                &&packageName.equals(launcher.getComponent().getPackageName()),"PROFILE_LAUNCHER_UNAVAILABLE");
+        ComponentName launcherComponent=launcher.getComponent();
+        Intent home=ProfileTarget.XIAOMI.equals(packageName)?BackgroundTaskOrganizer.nativeHome(userContext,launcher):null;
+        if(ProfileTarget.XIAOMI.equals(packageName))need(home!=null,"PROFILE_NATIVE_HOME_UNAVAILABLE");
+        ComponentName component=home==null?launcherComponent:home.getComponent();
         ActivityInfo activity=pm.getActivityInfo(component,0);
         need(activity.applicationInfo!=null&&activity.applicationInfo.uid==app.uid
                 &&Objects.equals(activity.applicationInfo.sourceDir,app.sourceDir),"PROFILE_ACTIVITY_UID_MISMATCH");
         Map<String,String> paths=paths(app);Map<String,String> hashes=new TreeMap<String,String>();
         for(Map.Entry<String,String> row:paths.entrySet()){checkTime(deadline);hashes.put(row.getKey(),hashApk(row.getValue(),deadline));}
         Set<String> signers=signers(before);
-        PackageInfo after=pm.getPackageInfo(ProfileTarget.CTRIP,PackageManager.GET_SIGNING_CERTIFICATES);
+        PackageInfo after=pm.getPackageInfo(packageName,PackageManager.GET_SIGNING_CERTIFICATES);
         need(after.applicationInfo!=null&&after.applicationInfo.uid==app.uid&&after.getLongVersionCode()==before.getLongVersionCode()
                 &&after.lastUpdateTime==before.lastUpdateTime&&after.firstInstallTime==before.firstInstallTime
                 &&paths.equals(paths(after.applicationInfo))&&signers.equals(signers(after))
-                &&after.applicationInfo.enabled==app.enabled&&pm.isPackageSuspended(ProfileTarget.CTRIP)==suspended,
+                &&after.applicationInfo.enabled==app.enabled&&pm.isPackageSuspended(packageName)==suspended,
                 "PROFILE_INSTALLATION_CHANGED_DURING_READ");
         ProfileIdentity finalIdentity=identity(userId);
         need(identity.same(finalIdentity)&&running==userState("isUserRunning",handle)&&unlocked==userState("isUserUnlocked",handle)
                 &&quiet==users.isQuietModeEnabled(handle),"PROFILE_STATE_CHANGED_DURING_READ");
-        ProfileTarget actual=new ProfileTarget(identity,app.uid,ProfileTarget.CTRIP,
+        ProfileTarget actual=new ProfileTarget(identity,app.uid,packageName,
                 component.getPackageName()+"/"+component.getClassName(),before.getLongVersionCode(),hashes,signers);
         int forbidden=0;
         for(String name:new String[]{"FLAG_ALLOW_TASK_REPARENTING","FLAG_RELINQUISH_TASK_IDENTITY","FLAG_SHOW_FOR_ALL_USERS"}){
@@ -114,8 +118,12 @@ final class ProfilePackages {
                 activity.documentLaunchMode,activity.flags,forbidden,activity.enabled,activity.applicationInfo.enabled,
                 activity.exported,activity.targetActivity,activity.permission,activity.applicationInfo.sourceDir,activity.taskAffinity);
         if(requireReady)facts.requireEligible(actual);
-        Intent finalLauncher=pm.getLaunchIntentForPackage(ProfileTarget.CTRIP);
-        need(finalLauncher!=null&&component.equals(finalLauncher.getComponent()),"PROFILE_LAUNCHER_CHANGED_DURING_READ");
+        Intent finalLauncher=pm.getLaunchIntentForPackage(packageName);
+        need(finalLauncher!=null&&launcherComponent.equals(finalLauncher.getComponent()),"PROFILE_LAUNCHER_CHANGED_DURING_READ");
+        if(ProfileTarget.XIAOMI.equals(packageName)){
+            Intent finalHome=BackgroundTaskOrganizer.nativeHome(userContext,finalLauncher);
+            need(finalHome!=null&&component.equals(finalHome.getComponent()),"PROFILE_NATIVE_HOME_CHANGED_DURING_READ");
+        }
         ActivityInfo checked=pm.getActivityInfo(component,0);
         need(checked.applicationInfo!=null,"PROFILE_ACTIVITY_CHANGED_DURING_READ");
         ProfileTaskPolicy.Activity finalFacts=new ProfileTaskPolicy.Activity(checked.packageName,
@@ -124,6 +132,19 @@ final class ProfilePackages {
                 checked.exported,checked.targetActivity,checked.permission,checked.applicationInfo.sourceDir,checked.taskAffinity);
         need(facts.same(finalFacts),"PROFILE_ACTIVITY_CHANGED_DURING_READ");
         checkTime(deadline);return new Readback(actual,facts,running,unlocked,quiet,suspended);
+    }
+    /** No caller-provided action/extras. The actual target-user PM read binds this component. */
+    static Intent launchIntent(ProfileTarget target)throws Exception{
+        need(target!=null&&ProfileTarget.supportsPackage(target.packageName),"PROFILE_PACKAGE_NOT_SUPPORTED");
+        ComponentName component=ComponentName.unflattenFromString(target.component);
+        need(component!=null,"PROFILE_LAUNCHER_UNAVAILABLE");
+        boolean home=ProfileTarget.XIAOMI.equals(target.packageName);
+        if(home)need(BackgroundOwnedSingleTask.COMPONENT.equals(target.component),"PROFILE_NATIVE_HOME_COMPONENT_INVALID");
+        Intent intent=new Intent(home?BackgroundOwnedSingleTask.ACTION:Intent.ACTION_MAIN)
+                .setComponent(component).setPackage(target.packageName)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        if(!home)intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        return intent;
     }
     ProfilePermissionTransient.Authority permissionController(int userId,long deadline)throws Exception{
         checkTime(deadline);requireParentCurrent();ProfileIdentity profile=identity(userId);

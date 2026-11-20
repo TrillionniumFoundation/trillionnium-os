@@ -25,7 +25,7 @@ final class ProfileTaskPlatform implements ProfileOwnedTask.Platform {
     }
     static ProfilePackages.Readback preflight(Object activityTasks,ProfilePackages packages,
             ProfileTarget expected,long deadline)throws Exception {
-        ProfilePackages.Readback actual=packages.read(expected.profile.userId,true,deadline);
+        ProfilePackages.Readback actual=packages.read(expected.profile.userId,expected.packageName,true,deadline);
         ProfileTaskPolicy.need(expected.same(actual.target),"PROFILE_INSTALLATION_IDENTITY_CHANGED");
         BackgroundTaskOrganizer.profileSnapshot(activityTasks).requireDedicatedEmpty(actual.target);
         ProfileTaskPolicy.Recents.parse(BackgroundTaskOrganizer.profileRecents(()->deadline))
@@ -34,13 +34,13 @@ final class ProfileTaskPlatform implements ProfileOwnedTask.Platform {
     }
     static ProfilePackages.Readback publicPreflight(Object activityTasks,ProfilePackages packages,
             ProfileTarget expected,long deadline)throws Exception {
-        ProfilePackages.Readback actual=packages.read(expected.profile.userId,true,deadline);
+        ProfilePackages.Readback actual=packages.read(expected.profile.userId,expected.packageName,true,deadline);
         ProfileTaskPolicy.need(expected.same(actual.target),"PROFILE_INSTALLATION_IDENTITY_CHANGED");
         BackgroundTaskOrganizer.profileSnapshot(activityTasks).requireDedicatedEmpty(actual.target);
         return actual;
     }
     @Override public ProfileTarget recheck(boolean ready)throws Exception {
-        ProfilePackages.Readback actual=packages.read(expected.profile.userId,ready,deadline.getAsLong());
+        ProfilePackages.Readback actual=packages.read(expected.profile.userId,expected.packageName,ready,deadline.getAsLong());
         ProfileTaskPolicy.need(expected.same(actual.target),"PROFILE_INSTALLATION_IDENTITY_CHANGED");
         if(ready)actual.activity.requireEligible(actual.target);
         last=actual;return actual.target;

@@ -556,13 +556,16 @@ final class NativeActionSnapshotCheck {
         Map<String,Object> x=new TreeMap<String,Object>(a.v),y=new TreeMap<String,Object>(z.v);
         for(String field:fields){x.remove(field);y.remove(field);}return x.equals(y);
     }
-    /** Roots are derived from the complete tree's real sibling relationships.
+    /** Roots are derived from complete, real ancestry and sibling relationships.
      * No numeric path (including 0/0/7) is whitelisted. All changed/new/deleted
      * descendants must be fully present in one of these fixed disjoint regions. */
     private static Set<String> anchors(Intent in,Snapshot old,Snapshot fresh,Scope scope){Set<String> out=new TreeSet<String>();
         for(Node a:old.nodes.values()){
-            if("0".equals(a.path)||scope.ancestors.contains(a.path)||protectedPath(a.path,scope.roots)||!scope.ancestors.contains(parent(a.path)))continue;
+            if("0".equals(a.path)||scope.ancestors.contains(a.path)||protectedPath(a.path,scope.roots)||protectedPath(a.path,out))continue;
+            boolean nested=!scope.ancestors.contains(parent(a.path));
+            if(nested&&!nestedCtripBranch(in,old,fresh,scope,a))continue;
             Node z=fresh.nodes.get(a.path);if(z==null||!a.visible()||!z.visible())continue;
+            if(nested&&(!passiveNestedBranch(old,a)||!passiveNestedBranch(fresh,z)))continue;
             Map<String,Object> x=new TreeMap<String,Object>(a.v),y=new TreeMap<String,Object>(z.v);
             for(String k:Arrays.asList("text","description","label","ref_signature_sha256","children")){x.remove(k);y.remove(k);}
             if(neutralHorizontalScrollMetadata(in,a,z)){x.remove("scroll_actions");y.remove("scroll_actions");}
@@ -570,6 +573,51 @@ final class NativeActionSnapshotCheck {
             for(String p:scope.roots)if(intersects(a.bounds,old.node(p).bounds))clear=false;
             if(clear&&neutral(old,a,scope)&&neutral(fresh,z,scope))out.add(a.path);
         }return out;
+    }
+    /** A partially overlapping outer container is never a variable region.
+     * For the two existing Ctrip form purposes only, a deeper region may be
+     * considered when every intervening, non-protected ancestor is unchanged
+     * in every census field and still contains the candidate's whole bounds.
+     * The caller separately proves the candidate and all visible descendants
+     * disjoint from the complete protected form in both full snapshots. */
+    private static boolean nestedCtripBranch(Intent in,Snapshot old,Snapshot fresh,Scope scope,Node candidate){
+        if(!CTRIP.equals(in.pkg)||!(YEAR.equals(in.purpose)||QUERY.equals(in.purpose)))return false;
+        String p=parent(candidate.path);
+        for(int depth=0;depth<64;depth++){
+            if(scope.ancestors.contains(p))return true;
+            if("0".equals(p)||protectedPath(p,scope.roots))return false;
+            Node a=old.nodes.get(p),z=fresh.nodes.get(p);
+            if(a==null||z==null||!a.usable()||!z.usable()||!nestedCtripAncestor(a)||!nestedCtripAncestor(z)
+                    ||!a.v.equals(z.v)||!contains(a.bounds,candidate.bounds)||!contains(z.bounds,candidate.bounds))return false;
+            p=parent(p);
+        }
+        return false;
+    }
+    /** A stable containing pager may expose known horizontal navigation.
+     * Other intermediate nodes remain passive; a clickable/scrolling descendant
+     * cannot be bypassed by selecting an even smaller variable anchor below it. */
+    private static boolean nestedCtripAncestor(Node node){
+        if(!neutralFlags(node)||b(node.v,"clickable")||b(node.v,"action_click")
+                ||!"hepta.observed-ime-enter.v1|true|false|null".equals(s(node.v,"ime_enter"))
+                ||node.v.get("input_sha256")!=null)return false;
+        if(!b(node.v,"scrollable"))return ("hepta.observed-scroll-actions.v1|observed").equals(s(node.v,"scroll_actions"));
+        return ("androidx.viewpager.widget.ViewPager".equals(node.cls)
+                ||"android.support.v4.view.ViewPager".equals(node.cls)
+                ||"android.widget.HorizontalScrollView".equals(node.cls))
+                &&knownHorizontalScrollActions(s(node.v,"scroll_actions"));
+    }
+    /** New nested regions have no observed input capability in either complete census.
+     * Unknown action metadata is not absence. Existing direct sibling rules
+     * retain their separate, narrower-purpose carousel contract. */
+    private static boolean passiveNestedBranch(Snapshot snapshot,Node anchor){
+        String emptyScroll="hepta.observed-scroll-actions.v1|observed";
+        String absentIme="hepta.observed-ime-enter.v1|true|false|null";
+        for(Node node:snapshot.nodes.values())if(node.path.equals(anchor.path)||under(node.path,anchor.path)){
+            if(!neutralFlags(node)||b(node.v,"clickable")||b(node.v,"action_click")||b(node.v,"scrollable")
+                    ||!emptyScroll.equals(s(node.v,"scroll_actions"))||!absentIme.equals(s(node.v,"ime_enter"))
+                    ||node.v.get("input_sha256")!=null)return false;
+        }
+        return true;
     }
     /** Only metadata of an already proved disjoint, neutral carousel may vary.
      * The comparator supports click purposes only; no scroll target gains authority. */

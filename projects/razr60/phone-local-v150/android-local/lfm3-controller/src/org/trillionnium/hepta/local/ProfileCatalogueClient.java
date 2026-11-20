@@ -55,28 +55,40 @@ final class ProfileCatalogueClient {
                 throw new java.io.IOException("隔离资料核验未得到完整回执");
             String raw=StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
                     .onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(output.toByteArray())).toString();
-            JSONTokener parser=new JSONTokener(raw);Object value=parser.nextValue();
-            if(!(value instanceof JSONObject)||parser.nextClean()!=0)throw new java.io.IOException("隔离资料回执格式无效");
-            JSONObject result=(JSONObject)value;
-            if(!"hepta.profile-catalogue.v1".equals(result.getString("schema"))
-                    ||result.getInt("owner_uid")!=uid||!request.equals(result.getString("request_id")))
-                throw new java.io.IOException("隔离资料回执身份不匹配");
-            JSONArray rows=result.getJSONArray("targets");
-            if(rows.length()>4)throw new java.io.IOException("隔离资料目录超出上限");
-            List<ProfileTarget> targets=new ArrayList<ProfileTarget>();Set<Integer> users=new HashSet<Integer>();Set<Long> serials=new HashSet<Long>();
-            for(int i=0;i<rows.length();i++){
-                Object row=rows.get(i);if(!(row instanceof String))throw new java.io.IOException("隔离资料目标格式无效");
-                ProfileTarget target=ProfileTarget.fromWire((String)row);
-                if(!users.add(target.profile.userId)||!serials.add(target.profile.serial))throw new java.io.IOException("隔离资料目标重复");
-                targets.add(target);
-            }
-            return Collections.unmodifiableList(targets);
+            return decode(raw,uid,request);
         }finally{if(!exit)process.destroy();}
+    }
+    /** Pure receipt decoding; duplicate identities are package instances, not merely users. */
+    static List<ProfileTarget> decode(String raw,int uid,String request)throws Exception{
+        JSONTokener parser=new JSONTokener(raw);Object value=parser.nextValue();
+        if(!(value instanceof JSONObject)||parser.nextClean()!=0)throw new java.io.IOException("隔离资料回执格式无效");
+        JSONObject result=(JSONObject)value;
+        if(!"hepta.profile-catalogue.v1".equals(result.getString("schema"))
+                ||result.getInt("owner_uid")!=uid||!request.equals(result.getString("request_id")))
+            throw new java.io.IOException("隔离资料回执身份不匹配");
+        JSONArray rows=result.getJSONArray("targets");
+        if(rows.length()>4*ProfileTarget.PACKAGES.size())throw new java.io.IOException("隔离资料目录超出上限");
+        List<ProfileTarget> targets=new ArrayList<ProfileTarget>();Set<String> instances=new HashSet<String>();
+        java.util.Map<Integer,Long> users=new java.util.HashMap<Integer,Long>();
+        java.util.Map<Long,Integer> serials=new java.util.HashMap<Long,Integer>();
+        for(int i=0;i<rows.length();i++){
+            Object row=rows.get(i);if(!(row instanceof String))throw new java.io.IOException("隔离资料目标格式无效");
+            ProfileTarget target=ProfileTarget.fromWire((String)row);
+            int user=target.profile.userId;long serial=target.profile.serial;
+            Long previousSerial=users.get(user);Integer previousUser=serials.get(serial);
+            if((previousSerial!=null&&previousSerial.longValue()!=serial)||(previousUser!=null&&previousUser.intValue()!=user)
+                    ||!instances.add(user+":"+serial+":"+target.packageName))
+                throw new java.io.IOException("隔离资料目标重复或身份矛盾");
+            users.put(user,serial);serials.put(serial,user);
+            if(users.size()>4)throw new java.io.IOException("隔离资料目录超出上限");
+            targets.add(target);
+        }
+        return Collections.unmodifiableList(targets);
     }
     static void requireCurrent(Context context,ProfileTarget expected)throws Exception{
         if(expected==null)throw new IllegalArgumentException("profile target required");
         for(ProfileTarget actual:load(context))if(actual.same(expected))return;
-        throw new IllegalStateException("隔离资料或携程安装身份发生变化，请重新选择");
+        throw new IllegalStateException("隔离资料或所选应用安装身份发生变化，请重新选择");
     }
     private static String quote(String value){return "'"+value.replace("'","'\\''")+"'";}
 }

@@ -78,7 +78,7 @@ public final class PublicProfileRecoveryMain {
     }
     private static JSONObject sample(PublicProfileAbsenceRecovery.Request r,AndroidProc proc,ProfilePackages pm,Object atm,Object wm,DisplayManager dm,boolean first)throws Exception{
         long begin=SystemClock.elapsedRealtime();JSONObject processes=first?processes(proc,r):null;
-        ProfilePackages.Readback installation=pm.read(r.target.profile.userId,true,r.deadline);
+        ProfilePackages.Readback installation=pm.read(r.target.profile.userId,r.target.packageName,true,r.deadline);
         need(r.target.same(installation.target),"PUBLIC_RECOVERY_TARGET_INSTALLATION_CHANGED");
         ProfileTaskPolicy.Snapshot live=BackgroundTaskOrganizer.profileSnapshot(atm);live.requireDedicatedEmpty(r.target);r.requireRecordedLiveAbsent(live);
         String recentRaw=BackgroundTaskOrganizer.profileRecents(()->r.deadline);
